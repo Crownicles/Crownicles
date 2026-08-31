@@ -135,38 +135,48 @@ function emptyCitySubmenus(): Record<CitySubmenu, CityEntry[]> {
 	return {home: [], homeBed: [], homeChest: [], homeGarden: [], homeCooking: [], homeUpgrade: [], notary: [], inn: [], enchanter: [], blacksmith: [], scrapDealer: [], royalBlacksmith: [], guild: []};
 }
 
-function addCityEntry(state: CityGroupingState, entry: CityEntry, options: CityGroupingOptions): void {
-	const {reaction} = entry;
-	if (reaction.type === GENERIC_REACTION_KINDS.REFUSE) return;
-	const navigation = CITY_NAVIGATION_REACTIONS[reaction.type];
-	if (navigation) {
-		state.groups[navigation.group].push(navigation.view === "home" ? homeNavigationItem(options.homeOwned) : navigationItem(navigation.view, navigation.key));
-		return;
-	}
-	if (reaction.type === CITY_REACTION_KINDS.EXIT) {
+function addNavigationEntry(state: CityGroupingState, entry: CityEntry, options: CityGroupingOptions): boolean {
+	const navigation = CITY_NAVIGATION_REACTIONS[entry.reaction.type];
+	if (!navigation) return false;
+	state.groups[navigation.group].push(navigation.view === "home" ? homeNavigationItem(options.homeOwned) : navigationItem(navigation.view, navigation.key));
+	return true;
+}
+
+function addTerminalEntry(state: CityGroupingState, entry: CityEntry): boolean {
+	if (entry.reaction.type === CITY_REACTION_KINDS.EXIT) {
 		state.groups.quit.push({kind: "reaction", entry});
-		return;
+		return true;
 	}
-	if (reaction.type === CITY_REACTION_KINDS.SHOP) {
+	if (entry.reaction.type === CITY_REACTION_KINDS.SHOP) {
 		state.groups.shops.push({kind: "reaction", entry});
-		return;
+		return true;
 	}
-	if (reaction.type === CITY_REACTION_KINDS.INN_MEAL || reaction.type === CITY_REACTION_KINDS.INN_ROOM) {
-		const innId = (reaction.data as {innId: string}).innId;
-		state.inns.set(innId, [...(state.inns.get(innId) ?? []), entry]);
-		return;
-	}
-	if (reaction.type === CITY_REACTION_KINDS.ENCHANT) {
+	return false;
+}
+
+function addInnEntry(state: CityGroupingState, entry: CityEntry): boolean {
+	if (entry.reaction.type !== CITY_REACTION_KINDS.INN_MEAL && entry.reaction.type !== CITY_REACTION_KINDS.INN_ROOM) return false;
+	const innId = (entry.reaction.data as {innId: string}).innId;
+	state.inns.set(innId, [...(state.inns.get(innId) ?? []), entry]);
+	return true;
+}
+
+function addSubmenuEntry(state: CityGroupingState, entry: CityEntry): boolean {
+	if (entry.reaction.type === CITY_REACTION_KINDS.ENCHANT) {
 		state.submenus.enchanter.push(entry);
-		return;
+		return true;
 	}
-	const submenu = CITY_SUBMENU_REACTIONS[reaction.type];
-	if (submenu) {
-		state.submenus[submenu].push(entry);
-		state.hasNotary ||= submenu === "notary";
-		state.hasGuildActions ||= submenu === "guild";
-		return;
-	}
+	const submenu = CITY_SUBMENU_REACTIONS[entry.reaction.type];
+	if (!submenu) return false;
+	state.submenus[submenu].push(entry);
+	state.hasNotary ||= submenu === "notary";
+	state.hasGuildActions ||= submenu === "guild";
+	return true;
+}
+
+function addCityEntry(state: CityGroupingState, entry: CityEntry, options: CityGroupingOptions): void {
+	if (entry.reaction.type === GENERIC_REACTION_KINDS.REFUSE) return;
+	if (addNavigationEntry(state, entry, options) || addTerminalEntry(state, entry) || addInnEntry(state, entry) || addSubmenuEntry(state, entry)) return;
 	state.groups.services.push({kind: "reaction", entry});
 }
 

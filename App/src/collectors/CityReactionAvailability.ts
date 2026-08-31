@@ -1,18 +1,21 @@
 import {CITY_REACTION_KINDS, CityMobileSnapshot, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
 import {itemSnapshotForReaction} from "@/src/collectors/CityItemPresentation";
 
+type AvailabilityResolver = (snapshot: CityMobileSnapshot | undefined) => boolean;
+
+const DIRECT_AVAILABILITY: Partial<Record<ReactionCollectorReaction["type"], AvailabilityResolver>> = {
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: snapshot => snapshot?.guildDomainNotary?.canAfford ?? true,
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: snapshot => snapshot?.apartmentNotary?.forSale?.canAfford ?? true,
+	[CITY_REACTION_KINDS.BUY_HOME]: snapshot => snapshot?.home?.manage?.canBuy ?? true,
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: snapshot => snapshot?.home?.manage?.canUpgrade ?? true,
+	[CITY_REACTION_KINDS.MOVE_HOME]: snapshot => snapshot?.home?.manage?.canMove ?? true,
+	[CITY_REACTION_KINDS.GARDEN_HARVEST]: snapshot => snapshot?.home?.owned?.garden?.eligibility.canHarvest ?? true,
+	[CITY_REACTION_KINDS.GARDEN_WATER]: snapshot => snapshot?.home?.owned?.garden?.eligibility.canWaterGarden ?? true,
+	[CITY_REACTION_KINDS.GARDEN_COMPOST]: snapshot => snapshot?.home?.owned?.garden?.eligibility.canCompost ?? true
+};
+
 function directAvailability(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): boolean | undefined {
-	switch (reaction.type) {
-		case CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY: return snapshot?.guildDomainNotary?.canAfford ?? true;
-		case CITY_REACTION_KINDS.APARTMENT_BUY: return snapshot?.apartmentNotary?.forSale?.canAfford ?? true;
-		case CITY_REACTION_KINDS.BUY_HOME: return snapshot?.home?.manage?.canBuy ?? true;
-		case CITY_REACTION_KINDS.UPGRADE_HOME: return snapshot?.home?.manage?.canUpgrade ?? true;
-		case CITY_REACTION_KINDS.MOVE_HOME: return snapshot?.home?.manage?.canMove ?? true;
-		case CITY_REACTION_KINDS.GARDEN_HARVEST: return snapshot?.home?.owned?.garden?.eligibility.canHarvest ?? true;
-		case CITY_REACTION_KINDS.GARDEN_WATER: return snapshot?.home?.owned?.garden?.eligibility.canWaterGarden ?? true;
-		case CITY_REACTION_KINDS.GARDEN_COMPOST: return snapshot?.home?.owned?.garden?.eligibility.canCompost ?? true;
-		default: return undefined;
-	}
+	return DIRECT_AVAILABILITY[reaction.type]?.(snapshot);
 }
 
 function apartmentRentAvailability(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): boolean | undefined {

@@ -7,20 +7,44 @@ export function homeIconPath(level: number | undefined): string {
 	return `city.home.${safeLevel}`;
 }
 
+type OwnedHome = NonNullable<NonNullable<CityMobileSnapshot["home"]>["owned"]>;
+
+function bedItem(home: OwnedHome): CityListItem {
+	return {kind: "navigation", key: "home-bed", view: "homeBed", iconPath: "city.homeUpgrades.bed", title: i18n.t("app:city.labels.bed"), subtitle: i18n.t("commands:report.city.homes.bed.menuDescription", {health: home.bedHealthRegeneration})};
+}
+
+function chestItem(home: OwnedHome): CityListItem {
+	const stored = home.chestItemCount === undefined ? "" : ` · ${i18n.t("items:object", {count: home.chestItemCount})}`;
+	return {kind: "navigation", key: "home-chest", view: "homeChest", iconPath: "city.homeUpgrades.chest", title: i18n.t("commands:report.city.homes.chest.menuLabel"), subtitle: `${i18n.t("commands:report.city.homes.chest.menuDescription")}${stored}`};
+}
+
+function gardenItem(home: OwnedHome): CityListItem {
+	return {kind: "navigation", key: "home-garden", view: "homeGarden", iconPath: "city.homeUpgrades.garden", title: i18n.t("app:city.labels.garden"), subtitle: i18n.t("commands:report.city.homes.garden.menuDescription", {ready: home.gardenReadyPlots ?? 0, total: home.gardenTotalPlots ?? home.gardenPlots})};
+}
+
+function cookingItem(home: OwnedHome): CityListItem {
+	return {kind: "navigation", key: "home-cooking", view: "homeCooking", iconPath: "city.homeUpgrades.cooking", title: i18n.t("app:city.labels.cooking"), subtitle: i18n.t("app:city.subtitles.cooking", {level: home.cookingLevel ?? 0})};
+}
+
+function upgradeStationItem(): CityListItem {
+	return {kind: "navigation", key: "home-upgrade-station", view: "homeUpgrade", iconPath: "city.homeUpgrades.upgradeEquipment", title: i18n.t("commands:report.city.homes.upgradeStation.menuLabel"), subtitle: i18n.t("commands:report.city.homes.upgradeStation.menuDescription")};
+}
+
+function notaryItem(): CityListItem {
+	return {kind: "navigation", key: "home-notary", view: "notary", iconPath: "city.manageHome", title: i18n.t("app:city.labels.manageHome"), subtitle: i18n.t("app:city.subtitles.notary")};
+}
+
 export function homeFeatureItems(snapshot: CityMobileSnapshot | undefined): CityListItem[] {
 	const home = snapshot?.home?.owned;
 	if (!home) return [];
-	const items: CityListItem[] = [];
-	if (home.hasBed) items.push({kind: "navigation", key: "home-bed", view: "homeBed", iconPath: "city.homeUpgrades.bed", title: i18n.t("app:city.labels.bed"), subtitle: i18n.t("commands:report.city.homes.bed.menuDescription", {health: home.bedHealthRegeneration})});
-	if (home.hasChest) {
-		const stored = home.chestItemCount === undefined ? "" : ` · ${i18n.t("items:object", {count: home.chestItemCount})}`;
-		items.push({kind: "navigation", key: "home-chest", view: "homeChest", iconPath: "city.homeUpgrades.chest", title: i18n.t("commands:report.city.homes.chest.menuLabel"), subtitle: `${i18n.t("commands:report.city.homes.chest.menuDescription")}${stored}`});
-	}
-	if (home.hasGarden) items.push({kind: "navigation", key: "home-garden", view: "homeGarden", iconPath: "city.homeUpgrades.garden", title: i18n.t("app:city.labels.garden"), subtitle: i18n.t("commands:report.city.homes.garden.menuDescription", {ready: home.gardenReadyPlots ?? 0, total: home.gardenTotalPlots ?? home.gardenPlots})});
-	if (home.hasCooking) items.push({kind: "navigation", key: "home-cooking", view: "homeCooking", iconPath: "city.homeUpgrades.cooking", title: i18n.t("app:city.labels.cooking"), subtitle: i18n.t("app:city.subtitles.cooking", {level: home.cookingLevel ?? 0})});
-	if (home.hasUpgradeStation) items.push({kind: "navigation", key: "home-upgrade-station", view: "homeUpgrade", iconPath: "city.homeUpgrades.upgradeEquipment", title: i18n.t("commands:report.city.homes.upgradeStation.menuLabel"), subtitle: i18n.t("commands:report.city.homes.upgradeStation.menuDescription")});
-	if (snapshot?.home?.manage) items.push({kind: "navigation", key: "home-notary", view: "notary", iconPath: "city.manageHome", title: i18n.t("app:city.labels.manageHome"), subtitle: i18n.t("app:city.subtitles.notary")});
-	return items;
+	return [
+		home.hasBed ? bedItem(home) : undefined,
+		home.hasChest ? chestItem(home) : undefined,
+		home.hasGarden ? gardenItem(home) : undefined,
+		home.hasCooking ? cookingItem(home) : undefined,
+		home.hasUpgradeStation ? upgradeStationItem() : undefined,
+		snapshot?.home?.manage ? notaryItem() : undefined
+	].filter((item): item is CityListItem => item !== undefined);
 }
 
 export function gardenPlotItems(snapshot: CityMobileSnapshot | undefined): CityListItem[] {

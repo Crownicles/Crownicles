@@ -61,32 +61,37 @@ function contextualSubtitle(reaction: ReactionCollectorReaction, snapshot: CityM
 	}
 }
 
+function enchantSubtitle(snapshot: CityMobileSnapshot | undefined): string | undefined {
+	return snapshot?.enchanter ? `${AppIcons.getIcon(`enchantmentTypes.${snapshot.enchanter.enchantmentType}`)} ${i18n.t(`items:enchantments.${snapshot.enchanter.enchantmentId}`)} · ${formatMoney(snapshot.enchanter.enchantmentCost.money)} et ${snapshot.enchanter.enchantmentCost.gems} ${AppIcons.getIcon("unitValues.gem")}` : undefined;
+}
+
+function upgradeSubtitle(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: CityMobileItem): string | undefined {
+	const upgrades = reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE ? snapshot?.blacksmith?.upgradeableItems : snapshot?.royalBlacksmith?.upgradeableItems;
+	const upgrade = upgrades?.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
+	if (!upgrade) return undefined;
+	const buyMaterials = (reaction.data as {buyMaterials?: boolean}).buyMaterials;
+	const missingMaterials = !upgrade.hasAllMaterials && buyMaterials ? i18n.t("app:city.summary.missingMaterials", {price: formatMoney(upgrade.missingMaterialsCost)}) : "";
+	return i18n.t("app:city.subtitles.upgradeDetails", {from: item.itemLevel, to: upgrade.nextLevel, materials: materialSummary(upgrade.materials), missingMaterials});
+}
+
+function disenchantSubtitle(snapshot: CityMobileSnapshot | undefined, item: CityMobileItem): string | undefined {
+	const disenchant = snapshot?.blacksmith?.disenchantableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
+	return disenchant ? i18n.t("app:city.subtitles.disenchantDetails", {enchantment: `${AppIcons.getIcon(`enchantmentTypes.${disenchant.enchantmentType}`)} ${i18n.t(`items:enchantments.${disenchant.enchantmentId}`)}`}) : undefined;
+}
+
+function recycleSubtitle(snapshot: CityMobileSnapshot | undefined, item: CityMobileItem): string | undefined {
+	const recycle = snapshot?.scrapDealer?.recyclableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
+	return recycle ? i18n.t("app:city.subtitles.recycleDetails", {materials: recycle.recoveredMaterials.map(material => `${material.quantity} × ${i18n.t(`models:materials.${material.materialId}`)}`).join(", ")}) : undefined;
+}
+
 function itemSubtitle(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: CityMobileItem): string | undefined {
 	switch (reaction.type) {
-		case CITY_REACTION_KINDS.ENCHANT:
-			return snapshot?.enchanter ? `${AppIcons.getIcon(`enchantmentTypes.${snapshot.enchanter.enchantmentType}`)} ${i18n.t(`items:enchantments.${snapshot.enchanter.enchantmentId}`)} · ${formatMoney(snapshot.enchanter.enchantmentCost.money)} et ${snapshot.enchanter.enchantmentCost.gems} ${AppIcons.getIcon("unitValues.gem")}` : undefined;
-		case CITY_REACTION_KINDS.BLACKSMITH_UPGRADE: {
-			const upgrade = snapshot?.blacksmith?.upgradeableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
-			if (!upgrade) return undefined;
-			const missingMaterials = !upgrade.hasAllMaterials && reaction.data.buyMaterials ? i18n.t("app:city.summary.missingMaterials", {price: formatMoney(upgrade.missingMaterialsCost)}) : "";
-			return i18n.t("app:city.subtitles.upgradeDetails", {from: item.itemLevel, to: upgrade.nextLevel, materials: materialSummary(upgrade.materials), missingMaterials});
-		}
-		case CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT: {
-			const disenchant = snapshot?.blacksmith?.disenchantableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
-			return disenchant ? i18n.t("app:city.subtitles.disenchantDetails", {enchantment: `${AppIcons.getIcon(`enchantmentTypes.${disenchant.enchantmentType}`)} ${i18n.t(`items:enchantments.${disenchant.enchantmentId}`)}`}) : undefined;
-		}
-		case CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE: {
-			const recycle = snapshot?.scrapDealer?.recyclableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
-			return recycle ? i18n.t("app:city.subtitles.recycleDetails", {materials: recycle.recoveredMaterials.map(material => `${material.quantity} × ${i18n.t(`models:materials.${material.materialId}`)}`).join(", ")}) : undefined;
-		}
-		case CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE: {
-			const upgrade = snapshot?.royalBlacksmith?.upgradeableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
-			if (!upgrade) return undefined;
-			const missingMaterials = !upgrade.hasAllMaterials && reaction.data.buyMaterials ? i18n.t("app:city.summary.missingMaterials", {price: formatMoney(upgrade.missingMaterialsCost)}) : "";
-			return i18n.t("app:city.subtitles.upgradeDetails", {from: item.itemLevel, to: upgrade.nextLevel, materials: materialSummary(upgrade.materials), missingMaterials});
-		}
-		default:
-			return undefined;
+		case CITY_REACTION_KINDS.ENCHANT: return enchantSubtitle(snapshot);
+		case CITY_REACTION_KINDS.BLACKSMITH_UPGRADE:
+		case CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE: return upgradeSubtitle(reaction, snapshot, item);
+		case CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT: return disenchantSubtitle(snapshot, item);
+		case CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE: return recycleSubtitle(snapshot, item);
+		default: return undefined;
 	}
 }
 

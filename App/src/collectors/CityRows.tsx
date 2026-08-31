@@ -30,45 +30,31 @@ type CityRowsProps = {
 	reactionAvailable: (reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined) => boolean;
 };
 
-export function CityRows({items, collector, onChoose, onNavigate, locked, iconForPath, rowIcon, rowTitle, rowSubtitle, rowEnd, reactionAvailable}: CityRowsProps): ReactNode {
-	return items.map(item => {
-		if (item.kind === "navigation") {
-			return <Row
-				key={`${collector.id}-${item.key}`}
-				disabled={locked}
-				onPress={locked ? undefined : (): void => onNavigate(item)}
-				icon={iconForPath(item.iconPath)}
-				title={item.title}
-				subtitle={item.subtitle}
-				chevron={!locked}
-			/>;
-		}
-		if (item.kind === "info") {
-			return <Row
-				key={`${collector.id}-${item.key}`}
-				disabled
-				icon={iconForPath(item.iconPath)}
-				title={item.title}
-				subtitle={item.subtitle}
-			/>;
-		}
+function navigationRow(item: CityNavigationItem, collector: ReactionCollectorCreation, locked: boolean, iconForPath: CityRowsProps["iconForPath"], onNavigate: CityRowsProps["onNavigate"]): ReactNode {
+	return <Row key={`${collector.id}-${item.key}`} disabled={locked} onPress={locked ? undefined : (): void => onNavigate(item)} icon={iconForPath(item.iconPath)} title={item.title} subtitle={item.subtitle} chevron={!locked} />;
+}
 
-		const {reaction, index} = item.entry;
-		const snapshot = collector.data.type === CITY_DATA_KINDS.CITY ? collector.data.data.snapshot : undefined;
-		const choosable = isChoosable(reaction, collector.data) && reactionAvailable(reaction, snapshot);
-		const disabled = locked || !choosable;
-		return <Row
-			key={`${collector.id}-${index}`}
-			disabled={disabled}
-			onPress={disabled ? undefined : (): void => onChoose(index)}
-			icon={rowIcon(reaction, snapshot)}
-			title={rowTitle(reaction, collector.data, snapshot)}
-			subtitle={rowSubtitle(reaction, snapshot)}
-			end={rowEnd(reaction, snapshot)}
-			tone={reaction.type === CITY_REACTION_KINDS.EXIT ? "danger" : undefined}
-			chevron={choosable && !locked}
-		/>;
-	});
+function infoRow(item: CityInfoItem, collector: ReactionCollectorCreation, iconForPath: CityRowsProps["iconForPath"]): ReactNode {
+	return <Row key={`${collector.id}-${item.key}`} disabled icon={iconForPath(item.iconPath)} title={item.title} subtitle={item.subtitle} />;
+}
+
+function reactionRow(item: CityReactionItem, props: CityRowsProps): ReactNode {
+	const {collector, locked, onChoose, rowIcon, rowTitle, rowSubtitle, rowEnd, reactionAvailable} = props;
+	const {reaction, index} = item.entry;
+	const snapshot = collector.data.type === CITY_DATA_KINDS.CITY ? collector.data.data.snapshot : undefined;
+	const choosable = isChoosable(reaction, collector.data) && reactionAvailable(reaction, snapshot);
+	const disabled = locked || !choosable;
+	return <Row key={`${collector.id}-${index}`} disabled={disabled} onPress={disabled ? undefined : (): void => onChoose(index)} icon={rowIcon(reaction, snapshot)} title={rowTitle(reaction, collector.data, snapshot)} subtitle={rowSubtitle(reaction, snapshot)} end={rowEnd(reaction, snapshot)} tone={reaction.type === CITY_REACTION_KINDS.EXIT ? "danger" : undefined} chevron={choosable && !locked} />;
+}
+
+function cityRow(item: CityListItem, props: CityRowsProps): ReactNode {
+	if (item.kind === "navigation") return navigationRow(item, props.collector, props.locked, props.iconForPath, props.onNavigate);
+	if (item.kind === "info") return infoRow(item, props.collector, props.iconForPath);
+	return reactionRow(item, props);
+}
+
+export function CityRows(props: CityRowsProps): ReactNode {
+	return props.items.map(item => cityRow(item, props));
 }
 
 export function CitySection({title, hint, items, collector, onChoose, onNavigate, locked, first = false, ...rowRenderers}: CityRowsProps & {title: string; hint?: string; first?: boolean}): ReactNode {

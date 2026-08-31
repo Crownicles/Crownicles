@@ -34,6 +34,38 @@ function shopItemSubtitle(amount: number, price: number, currency: "money" | "ge
 	});
 }
 
+type ShopGroup = {reaction: ShopItemReaction; index: number};
+type AdditionalShopData = {remainingPotions?: number; remainingTokens?: number};
+
+function groupShopReactions(collector: ReactionCollectorCreation): Map<string, ShopGroup[]> {
+	const groups = new Map<string, ShopGroup[]>();
+	collector.reactions.forEach((reaction, index) => {
+		if (reaction.type !== SHOP_REACTION_KINDS.ITEM) return;
+		const current = groups.get(reaction.data.shopCategoryId) ?? [];
+		current.push({reaction, index});
+		groups.set(reaction.data.shopCategoryId, current);
+	});
+	return groups;
+}
+
+function stockNote(additionalShopData: AdditionalShopData | undefined): string | undefined {
+	if (additionalShopData?.remainingPotions !== undefined) return i18n.t("app:city.shop.remainingPotions", {count: additionalShopData.remainingPotions});
+	return additionalShopData?.remainingTokens !== undefined ? i18n.t("app:city.shop.remainingTokens", {count: additionalShopData.remainingTokens}) : undefined;
+}
+
+function ShopGroups({groups, collector, currency, locked, choose}: {groups: Map<string, ShopGroup[]>; collector: ReactionCollectorCreation; currency: "money" | "gem"; locked: boolean; choose: (index: number) => void}): ReactNode {
+	return [...groups.entries()].map(([categoryId, entries], index) => (
+		<Fragment key={categoryId}>
+			<SectionHeader first={index === 0}>{categoryLabel(categoryId, entries.length)}</SectionHeader>
+			<Panel>{entries.map(({reaction, index: reactionIndex}) => {
+				const choosable = isChoosable(reaction, collector.data);
+				const disabled = locked || !choosable;
+				return <Row key={`${collector.id}-${reactionIndex}`} disabled={disabled} onPress={disabled ? undefined : (): void => choose(reactionIndex)} title={shopItemName({shopItemId: reaction.data.shopItemId})} subtitle={shopItemSubtitle(reaction.data.amount, reaction.data.price, currency)} end={currencyLabel(reaction.data.price, currency)} chevron={!disabled} />;
+			})}</Panel>
+		</Fragment>
+	));
+}
+
 export function ShopCollector({collector, onChoose, submitting}: ShopCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
 	if (collector.data.type !== SHOP_DATA_KINDS.COLLECTOR) {
@@ -42,15 +74,7 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 
 	const {currency, availableCurrency, additionalShopData} = collector.data.data;
 	const locked = answered || submitting;
-	const groups = new Map<string, {reaction: ShopItemReaction; index: number}[]>();
-	collector.reactions.forEach((reaction, index) => {
-		if (reaction.type !== SHOP_REACTION_KINDS.ITEM) {
-			return;
-		}
-		const current = groups.get(reaction.data.shopCategoryId) ?? [];
-		current.push({reaction, index});
-		groups.set(reaction.data.shopCategoryId, current);
-	});
+	const groups = groupShopReactions(collector);
 
 	const choose = (index: number): void => {
 		if (locked) {
@@ -60,11 +84,7 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 		onChoose(index);
 	};
 
-	const stockNote = additionalShopData?.remainingPotions !== undefined
-		? i18n.t("app:city.shop.remainingPotions", {count: additionalShopData.remainingPotions})
-		: additionalShopData?.remainingTokens !== undefined
-			? i18n.t("app:city.shop.remainingTokens", {count: additionalShopData.remainingTokens})
-			: undefined;
+	const note = stockNote(additionalShopData);
 	const closeIndex = collector.reactions.findIndex(reaction => reaction.type === SHOP_REACTION_KINDS.CLOSE);
 
 	return (
@@ -77,29 +97,8 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 			<Panel>
 				<KeyValue label={i18n.t("app:city.shop.availableCurrency")} value={currencyLabel(availableCurrency, currency)} />
 			</Panel>
-			{stockNote ? <Note>{stockNote}</Note> : null}
-			{[...groups.entries()].map(([categoryId, entries], index) => (
-				<Fragment key={categoryId}>
-					<SectionHeader first={index === 0}>{categoryLabel(categoryId, entries.length)}</SectionHeader>
-					<Panel>
-						{entries.map(({reaction, index: reactionIndex}) => {
-							const choosable = isChoosable(reaction, collector.data);
-							const disabled = locked || !choosable;
-							return (
-								<Row
-									key={`${collector.id}-${reactionIndex}`}
-									disabled={disabled}
-									onPress={disabled ? undefined : (): void => choose(reactionIndex)}
-									title={shopItemName({shopItemId: reaction.data.shopItemId})}
-									subtitle={shopItemSubtitle(reaction.data.amount, reaction.data.price, currency)}
-									end={currencyLabel(reaction.data.price, currency)}
-									chevron={!disabled}
-								/>
-							);
-						})}
-					</Panel>
-				</Fragment>
-			))}
+			{note ? <Note>{note}</Note> : null}
+			<ShopGroups groups={groups} collector={collector} currency={currency} locked={locked} choose={choose} />
 			{closeIndex >= 0 ? (
 				<Panel>
 					<Row
