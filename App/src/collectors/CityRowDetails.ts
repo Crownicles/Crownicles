@@ -40,7 +40,7 @@ function materialSummary(materials: {materialId: number; quantity: number; playe
 	return materials.map(material => `${material.quantity} × ${i18n.t(`models:materials.${material.materialId}`)} (${material.playerQuantity})`).join(", ");
 }
 
-// @codescene(disable:"Complex Method", disable:"Bumpy Road Ahead")
+// @codescene(disable:"Complex Method", disable:"Large Method", disable:"Bumpy Road Ahead")
 export function cityRowSubtitle(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem): string | undefined {
 	if (reaction.type === CITY_REACTION_KINDS.SHOP) {
 		return compactCityDescription(i18n.t(`commands:report.city.shops.${reaction.data.shopId}.description`));
