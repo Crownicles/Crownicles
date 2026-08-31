@@ -18,9 +18,11 @@ export default class GetCurrentReactionCollectorsCommand {
 	})
 	execute(response: CrowniclesPacket[], player: Player, _packet: CommandGetCurrentReactionCollectorsPacket, _context: PacketContext): void {
 		response.push(makePacket(CommandGetCurrentReactionCollectorsPacketRes, {
-			// Collectors are built when they are opened and `build()` intentionally throws when called
-			// a second time. Reuse the already materialized creation packet when the mobile app
-			// reconnects and asks for the current collector state.
+			/*
+			 * Collectors are built when they are opened and `build()` intentionally throws when called
+			 * a second time. Reuse the already materialized creation packet when the mobile app
+			 * reconnects and asks for the current collector state.
+			 */
 			collectors: ReactionCollectorController.getCollectorsOfPlayer(player.keycloakId).map(c => c.creationPacket)
 		}));
 	}
