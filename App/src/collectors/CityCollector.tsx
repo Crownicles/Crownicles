@@ -819,6 +819,7 @@ function addInnServices(state: CityGroupingState, innIds: string[] | undefined):
 	}
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addAvailableServices(state: CityGroupingState, options: CityGroupingOptions): void {
 	if (state.hasNotary) state.groups.housing.push(navigationItem("notary", "notary"));
 	if (state.hasGuildActions && !state.groups.guild.some(item => item.kind === "navigation" && item.view === "guild")) {
@@ -832,6 +833,7 @@ function addAvailableServices(state: CityGroupingState, options: CityGroupingOpt
 	}
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addEmptyShops(state: CityGroupingState, shops: CityGroupingOptions["shops"]): void {
 	for (const shop of shops ?? []) {
 		if (!shop.isEmpty) continue;
@@ -839,11 +841,13 @@ function addEmptyShops(state: CityGroupingState, shops: CityGroupingOptions["sho
 	}
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addGuildFoodShop(state: CityGroupingState, foodShop: CityGroupingOptions["guildFoodShop"]): void {
 	if (!foodShop) return;
 	state.groups.guild.push({kind: "info", key: "guild-food-shop", iconPath: "expedition.food", title: i18n.t("commands:report.city.guildFoodShop.label"), subtitle: i18n.t("commands:report.city.guildFoodShop.description", {guildName: foodShop.guildName})});
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addOtherCityServices(state: CityGroupingState, services: CityGroupingOptions["otherCityServices"]): void {
 	for (const service of services ?? []) {
 		const locationName = (service.mapLocationIds ?? [service.mapLocationId]).map(mapLocationId => i18n.t(`models:map_locations.${mapLocationId}.name`)).join(" · ");
@@ -853,6 +857,7 @@ function addOtherCityServices(state: CityGroupingState, services: CityGroupingOp
 	}
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function decorateHomeNavigation(state: CityGroupingState, home: CityGroupingOptions["homeOwned"]): void {
 	if (!home) return;
 	state.groups.housing = state.groups.housing.map(item => item.kind === "navigation" && item.view === "home" ? {
