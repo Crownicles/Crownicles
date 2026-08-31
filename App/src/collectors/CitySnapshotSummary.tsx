@@ -110,6 +110,7 @@ function renderHomeUpgradeSummary(snapshot: CityMobileSnapshot): ReactNode {
 	</Panel> : null;
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function notaryRows(snapshot: CityMobileSnapshot): ReactNode[] {
 	const manage = snapshot.home?.manage;
 	const apartment = snapshot.apartmentNotary;

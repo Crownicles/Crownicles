@@ -8,6 +8,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {isChoosable, reactionLabel} from "@/src/collectors/CollectorLabels";
 import {CitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
 import {citySnapshotNote} from "@/src/collectors/CitySnapshotNote";
+import {cityRowEnd as renderCityRowEnd} from "@/src/collectors/CityRowDetails";
 import {Button, ButtonRow, Hero, Note, Panel, Row, Screen, SectionHeader} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -249,6 +250,7 @@ function cityRowTitle(reaction: ReactionCollectorReaction, collectorData: Reacti
 	}
 }
 
+// Kept local for the navigation catalogue; row-specific details live in CityRowDetails.
 function compactCityDescription(description: string): string {
 	const firstParagraph = description.split("\n\n")[0].trim();
 	const firstSentence = firstParagraph.match(/^.*?[.!?](?:\s|$)/)?.[0];
@@ -373,48 +375,6 @@ function cityRowSubtitle(reaction: ReactionCollectorReaction, snapshot?: CityMob
 	}
 	const key = CITY_SUBTITLE_KEYS[reaction.type];
 	return key ? compactCityDescription(i18n.t(key)) : undefined;
-}
-
-// @codescene(disable:"Complex Method")
-function cityRowEnd(reaction: ReactionCollectorReaction, snapshot?: CityMobileSnapshot): string | undefined {
-	switch (reaction.type) {
-		case CITY_REACTION_KINDS.INN_MEAL:
-		case CITY_REACTION_KINDS.INN_ROOM:
-			return formatMoney(reaction.data.price);
-		case CITY_REACTION_KINDS.BLACKSMITH_UPGRADE:
-		case CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE: {
-			const item = itemSnapshotForReaction(snapshot, reaction);
-			const upgrade = item && (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE
-				? snapshot?.blacksmith?.upgradeableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory)
-				: snapshot?.royalBlacksmith?.upgradeableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory));
-			return upgrade ? formatMoney(upgrade.upgradeCost) : undefined;
-		}
-		case CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT: {
-			const item = itemSnapshotForReaction(snapshot, reaction);
-			const disenchant = item && snapshot?.blacksmith?.disenchantableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
-			return disenchant ? formatMoney(disenchant.disenchantCost) : undefined;
-		}
-		case CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE: {
-			const item = itemSnapshotForReaction(snapshot, reaction);
-			const recycle = item && snapshot?.scrapDealer?.recyclableItems.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
-			return recycle && recycle.recoveredMoney > 0 ? formatMoney(recycle.recoveredMoney) : undefined;
-		}
-		case CITY_REACTION_KINDS.BUY_HOME:
-			return snapshot?.home?.manage?.newPrice === undefined ? undefined : formatMoney(snapshot.home.manage.newPrice);
-		case CITY_REACTION_KINDS.UPGRADE_HOME:
-			return snapshot?.home?.manage?.upgradePrice === undefined ? undefined : formatMoney(snapshot.home.manage.upgradePrice);
-		case CITY_REACTION_KINDS.MOVE_HOME:
-			return snapshot?.home?.manage?.movePrice === undefined ? undefined : formatMoney(snapshot.home.manage.movePrice);
-		case CITY_REACTION_KINDS.APARTMENT_BUY:
-			return snapshot?.apartmentNotary?.forSale ? formatMoney(snapshot.apartmentNotary.forSale.price) : undefined;
-		case CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT: {
-			const apartmentId = (reaction.data as {apartmentId?: number}).apartmentId;
-			const apartment = snapshot?.apartmentNotary?.ownedApartments.find(candidate => candidate.apartmentId === apartmentId);
-			return apartment && apartment.accumulatedRent > 0 ? formatMoney(apartment.accumulatedRent) : undefined;
-		}
-		default:
-			return undefined;
-	}
 }
 
 type CityGroup = "housing" | "services" | "shops" | "guild" | "elsewhere" | "quit";
@@ -1106,6 +1066,7 @@ function CityRows({items, collector, onChoose, onNavigate, locked}: {
 
 		const {reaction, index} = item.entry;
 		const snapshot = collector.data.type === CITY_DATA_KINDS.CITY ? collector.data.data.snapshot : undefined;
+		const itemSnapshot = itemSnapshotForReaction(snapshot, reaction);
 		const choosable = isChoosable(reaction, collector.data) && cityReactionAvailable(reaction, snapshot);
 		const disabled = locked || !choosable;
 		return (
@@ -1116,7 +1077,7 @@ function CityRows({items, collector, onChoose, onNavigate, locked}: {
 				icon={cityRowIcon(reaction, snapshot)}
 				title={cityRowTitle(reaction, collector.data, snapshot)}
 				subtitle={cityRowSubtitle(reaction, snapshot)}
-				end={cityRowEnd(reaction, snapshot)}
+				end={renderCityRowEnd(reaction, snapshot, itemSnapshot)}
 				tone={reaction.type === CITY_REACTION_KINDS.EXIT ? "danger" : undefined}
 				chevron={choosable && !locked}
 			/>
