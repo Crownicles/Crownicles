@@ -4,6 +4,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {KeyValue, Panel, StatBar} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
+import {renderCityNotarySummary} from "@/src/collectors/CityNotarySummary";
 
 type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
 
@@ -110,34 +111,6 @@ function renderHomeUpgradeSummary(snapshot: CityMobileSnapshot): ReactNode {
 	</Panel> : null;
 }
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional")
-function notaryRows(snapshot: CityMobileSnapshot): ReactNode[] {
-	const manage = snapshot.home?.manage;
-	const apartment = snapshot.apartmentNotary;
-	const sale = apartment?.forSale;
-	const domain = snapshot.guildDomainNotary;
-	const apartmentPrice = sale
-		? sale.canAfford
-			? formatMoney(sale.price)
-			: i18n.t("app:city.summary.missingMoney", {amount: formatMoney(sale.missingMoney ?? 0)})
-		: undefined;
-	return [
-		manage?.currentMoney !== undefined && <KeyValue key="money" label={i18n.t("app:city.summary.money")} value={formatMoney(manage.currentMoney)} />,
-		manage?.upgradePrice !== undefined && <KeyValue key="upgrade" label={i18n.t("app:city.summary.upgradePrice")} value={formatMoney(manage.upgradePrice)} />,
-		manage?.newPrice !== undefined && <KeyValue key="purchase" label={i18n.t("app:city.summary.purchasePrice")} value={formatMoney(manage.newPrice)} />,
-		manage?.movePrice !== undefined && <KeyValue key="move" label={i18n.t("app:city.summary.movePrice")} value={formatMoney(manage.movePrice)} />,
-		apartmentPrice && <KeyValue key="apartment" label={i18n.t("app:city.summary.apartmentPrice")} value={apartmentPrice} />,
-		apartment && apartment.ownedCount > 0 && <KeyValue key="rents" label={i18n.t("app:city.summary.rents")} value={`${apartment.ownedCount} · ${formatMoney(apartment.accumulatedRent)}`} />,
-		domain && <KeyValue key="domain" label={i18n.t("app:city.summary.domain")} value={domain.hasDomain ? i18n.t("app:common.yes") : i18n.t("app:common.no")} />,
-		domain && <KeyValue key="domain-cost" label={i18n.t("app:city.summary.domainCost")} value={formatMoney(domain.cost)} />
-	].filter(Boolean) as ReactNode[];
-}
-
-function renderNotarySummary(snapshot: CityMobileSnapshot): ReactNode {
-	const rows = notaryRows(snapshot);
-	return rows.length > 0 ? <Panel>{rows}</Panel> : null;
-}
-
 function renderEnchanterSummary(snapshot: CityMobileSnapshot): ReactNode {
 	const data = snapshot.enchanter;
 	if (!data) {
@@ -217,7 +190,7 @@ const SUMMARY_RENDERERS: Partial<Record<CitySubmenu, SummaryRenderer>> = {
 	homeCooking: renderHomeCookingSummary,
 	homeGarden: renderHomeGardenSummary,
 	homeUpgrade: renderHomeUpgradeSummary,
-	notary: renderNotarySummary,
+	notary: renderCityNotarySummary,
 	enchanter: renderEnchanterSummary,
 	blacksmith: renderBlacksmithSummary,
 	scrapDealer: renderScrapDealerSummary,
