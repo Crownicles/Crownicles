@@ -1,9 +1,16 @@
-import {CITY_REACTION_KINDS, CityMobileItem, CityMobileSnapshot, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
+import {CITY_REACTION_KINDS, CityMobileItem, CityMobileSnapshot, CityMobileUpgradeItem, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
 import {formatMoney} from "@/src/collectors/CityText";
+
+type UpgradeItemsResolver = (snapshot: CityMobileSnapshot | undefined) => CityMobileUpgradeItem[] | undefined;
+
+const UPGRADE_ITEMS_RESOLVERS: Partial<Record<ReactionCollectorReaction["type"], UpgradeItemsResolver>> = {
+	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: snapshot => snapshot?.blacksmith?.upgradeableItems,
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: snapshot => snapshot?.royalBlacksmith?.upgradeableItems
+};
 
 function upgradeEnd(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem): string | undefined {
 	if (!item) return undefined;
-	const upgrades = reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE ? snapshot?.blacksmith?.upgradeableItems : snapshot?.royalBlacksmith?.upgradeableItems;
+	const upgrades = UPGRADE_ITEMS_RESOLVERS[reaction.type]?.(snapshot);
 	const upgrade = upgrades?.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
 	return upgrade ? formatMoney(upgrade.upgradeCost) : undefined;
 }

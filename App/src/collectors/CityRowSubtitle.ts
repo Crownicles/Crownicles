@@ -1,6 +1,7 @@
 import {
 	CITY_REACTION_KINDS,
 	CityMobileItem,
+	CityMobileUpgradeItem,
 	CityMobileSnapshot,
 	ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
@@ -78,12 +79,24 @@ function enchantSubtitle(snapshot: CityMobileSnapshot | undefined): string | und
 	return snapshot?.enchanter ? `${AppIcons.getIcon(`enchantmentTypes.${snapshot.enchanter.enchantmentType}`)} ${i18n.t(`items:enchantments.${snapshot.enchanter.enchantmentId}`)} · ${formatMoney(snapshot.enchanter.enchantmentCost.money)} et ${snapshot.enchanter.enchantmentCost.gems} ${AppIcons.getIcon("unitValues.gem")}` : undefined;
 }
 
+type UpgradeItemsResolver = (snapshot: CityMobileSnapshot | undefined) => CityMobileUpgradeItem[] | undefined;
+
+const UPGRADE_ITEMS_RESOLVERS: Partial<Record<ReactionCollectorReaction["type"], UpgradeItemsResolver>> = {
+	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: snapshot => snapshot?.blacksmith?.upgradeableItems,
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: snapshot => snapshot?.royalBlacksmith?.upgradeableItems
+};
+
+function missingMaterialsSubtitle(upgrade: CityMobileUpgradeItem, buyMaterials: boolean | undefined): string {
+	if (upgrade.hasAllMaterials || !buyMaterials) return "";
+	return i18n.t("app:city.summary.missingMaterials", {price: formatMoney(upgrade.missingMaterialsCost)});
+}
+
 function upgradeSubtitle(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: CityMobileItem): string | undefined {
-	const upgrades = reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE ? snapshot?.blacksmith?.upgradeableItems : snapshot?.royalBlacksmith?.upgradeableItems;
+	const upgrades = UPGRADE_ITEMS_RESOLVERS[reaction.type]?.(snapshot);
 	const upgrade = upgrades?.find(candidate => candidate.itemId === item.itemId && candidate.itemCategory === item.itemCategory);
 	if (!upgrade) return undefined;
 	const buyMaterials = (reaction.data as {buyMaterials?: boolean}).buyMaterials;
-	const missingMaterials = !upgrade.hasAllMaterials && buyMaterials ? i18n.t("app:city.summary.missingMaterials", {price: formatMoney(upgrade.missingMaterialsCost)}) : "";
+	const missingMaterials = missingMaterialsSubtitle(upgrade, buyMaterials);
 	return i18n.t("app:city.subtitles.upgradeDetails", {from: item.itemLevel, to: upgrade.nextLevel, materials: materialSummary(upgrade.materials), missingMaterials});
 }
 

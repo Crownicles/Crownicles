@@ -28,6 +28,8 @@ type CityCollectorProps = {
 	submitting: boolean;
 };
 
+type CityCollectorData = Extract<ReactionCollectorCreation["data"], {type: typeof CITY_DATA_KINDS.CITY}>;
+
 export type CityEntry = {reaction: ReactionCollectorReaction; index: number};
 export type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
 
@@ -148,6 +150,89 @@ function cityOverview({collector, model, locationName, locationDescription, mapI
 	</Screen>;
 }
 
+function cityGroupingOptions(data: CityCollectorData): Parameters<typeof groupCityEntries>[1] {
+	const snapshot = data.data.snapshot;
+	return {
+		availableServices: data.data.availableServices,
+		innIds: snapshot?.inns?.map(inn => inn.innId),
+		homeOwned: snapshot?.home?.owned,
+		homeManage: snapshot?.home?.manage,
+		shops: snapshot?.shops,
+		guildFoodShop: snapshot?.guildFoodShop,
+		otherCityServices: snapshot?.otherCityServices
+	};
+}
+
+function renderGardenView({collector, model, snapshot, choose, gardenCloseIndex, locked}: {
+	collector: ReactionCollectorCreation;
+	model: CityMenuModel;
+	snapshot: CityMobileSnapshot | undefined;
+	choose: (index: number) => void;
+	gardenCloseIndex: number;
+	locked: boolean;
+}): ReactNode {
+	return <CitySubmenuView
+		view="homeGarden"
+		entries={model.submenus.homeGarden}
+		collector={collector}
+		snapshot={snapshot}
+		onChoose={choose}
+		onNavigate={() => undefined}
+		onBack={() => { if (gardenCloseIndex >= 0) choose(gardenCloseIndex); }}
+		backLabel={i18n.t("app:city.actions.close")}
+		locked={locked}
+	/>;
+}
+
+function renderSubmenuView({submenu, innId, model, collector, snapshot, choose, navigate, setSubmenu, locked}: {
+	submenu: CitySubmenu;
+	innId: string | undefined;
+	model: CityMenuModel;
+	collector: ReactionCollectorCreation;
+	snapshot: CityMobileSnapshot | undefined;
+	choose: (index: number) => void;
+	navigate: (item: CityNavigationItem) => void;
+	setSubmenu: (submenu: CitySubmenu | null) => void;
+	locked: boolean;
+}): ReactNode {
+	const submenuEntries = submenu === "inn" && innId
+		? model.submenus.inn.filter(entry => (entry.reaction.data as {innId: string}).innId === innId)
+		: model.submenus[submenu];
+	return <CitySubmenuView
+		view={submenu}
+		innId={innId}
+		entries={submenuEntries}
+		collector={collector}
+		snapshot={snapshot}
+		onChoose={choose}
+		onNavigate={navigate}
+		onBack={() => setSubmenu(null)}
+		locked={locked}
+	/>;
+}
+
+function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting}: {
+	collector: ReactionCollectorCreation;
+	model: CityMenuModel;
+	snapshot: CityMobileSnapshot | undefined;
+	gardenOnly: boolean;
+	gardenCloseIndex: number;
+	submenu: CitySubmenu | null;
+	innId: string | undefined;
+	choose: (index: number) => void;
+	navigate: (item: CityNavigationItem) => void;
+	setSubmenu: (submenu: CitySubmenu | null) => void;
+	locked: boolean;
+	locationName: string;
+	locationDescription: string;
+	mapIcon: ReactNode | undefined;
+	submitting: boolean;
+}): ReactNode {
+	if (gardenOnly) return renderGardenView({collector, model, snapshot, choose, gardenCloseIndex, locked});
+	if (submenu) return renderSubmenuView({submenu, innId, model, collector, snapshot, choose, navigate, setSubmenu, locked});
+	return cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting});
+}
+
 export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);
@@ -155,18 +240,12 @@ export function CityCollector({collector, onChoose, submitting}: CityCollectorPr
 	if (collector.data.type !== CITY_DATA_KINDS.CITY) return null;
 	const locked = answered || submitting;
 	const entries = collector.reactions.map((reaction, index) => ({reaction, index}));
-	const model = groupCityEntries(entries, {
-		availableServices: collector.data.data.availableServices,
-		innIds: collector.data.data.snapshot?.inns?.map(inn => inn.innId),
-		homeOwned: collector.data.data.snapshot?.home?.owned,
-		homeManage: collector.data.data.snapshot?.home?.manage,
-		shops: collector.data.data.snapshot?.shops,
-		guildFoodShop: collector.data.data.snapshot?.guildFoodShop,
-		otherCityServices: collector.data.data.snapshot?.otherCityServices
-	});
-	const locationName = i18n.t(`models:map_locations.${collector.data.data.mapLocationId}.name`);
-	const locationDescription = i18n.t(`models:map_locations.${collector.data.data.mapLocationId}.description`);
-	const mapIcon = AppIcons.getIconOrNull(`mapTypes.${collector.data.data.mapTypeId}`);
+	const data = collector.data;
+	const snapshot = data.data.snapshot;
+	const model = groupCityEntries(entries, cityGroupingOptions(data));
+	const locationName = i18n.t(`models:map_locations.${data.data.mapLocationId}.name`);
+	const locationDescription = i18n.t(`models:map_locations.${data.data.mapLocationId}.description`);
+	const mapIcon = AppIcons.getIconOrNull(`mapTypes.${data.data.mapTypeId}`);
 	const choose = (index: number): void => {
 		if (locked) return;
 		setAnswered(true);
@@ -176,14 +255,7 @@ export function CityCollector({collector, onChoose, submitting}: CityCollectorPr
 		setInnId(item.innId);
 		setSubmenu(item.view);
 	};
-	const gardenOnly = collector.data.data.gardenOnly === true;
+	const gardenOnly = data.data.gardenOnly === true;
 	const gardenCloseIndex = gardenOnly ? collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE) : -1;
-
-	if (gardenOnly) return <CitySubmenuView view="homeGarden" entries={model.submenus.homeGarden} collector={collector} snapshot={collector.data.data.snapshot} onChoose={choose} onNavigate={() => undefined} onBack={() => {if (gardenCloseIndex >= 0) choose(gardenCloseIndex);}} backLabel={i18n.t("app:city.actions.close")} locked={locked} />;
-	if (submenu) {
-		const submenuEntries = submenu === "inn" && innId ? model.submenus.inn.filter(entry => (entry.reaction.data as {innId: string}).innId === innId) : model.submenus[submenu];
-		return <CitySubmenuView view={submenu} innId={innId} entries={submenuEntries} collector={collector} snapshot={collector.data.data.snapshot} onChoose={choose} onNavigate={navigate} onBack={() => setSubmenu(null)} locked={locked} />;
-	}
-
-	return cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting});
+	return cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting});
 }

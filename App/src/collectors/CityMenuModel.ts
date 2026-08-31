@@ -174,9 +174,20 @@ function addSubmenuEntry(state: CityGroupingState, entry: CityEntry): boolean {
 	return true;
 }
 
+type CityEntryHandler = (state: CityGroupingState, entry: CityEntry, options: CityGroupingOptions) => boolean;
+
+const CITY_ENTRY_HANDLERS: CityEntryHandler[] = [
+	addNavigationEntry,
+	(state, entry) => addTerminalEntry(state, entry),
+	(state, entry) => addInnEntry(state, entry),
+	(state, entry) => addSubmenuEntry(state, entry)
+];
+
 function addCityEntry(state: CityGroupingState, entry: CityEntry, options: CityGroupingOptions): void {
 	if (entry.reaction.type === GENERIC_REACTION_KINDS.REFUSE) return;
-	if (addNavigationEntry(state, entry, options) || addTerminalEntry(state, entry) || addInnEntry(state, entry) || addSubmenuEntry(state, entry)) return;
+	for (const handler of CITY_ENTRY_HANDLERS) {
+		if (handler(state, entry, options)) return;
+	}
 	state.groups.services.push({kind: "reaction", entry});
 }
 

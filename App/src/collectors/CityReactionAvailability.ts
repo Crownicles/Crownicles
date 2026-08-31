@@ -1,4 +1,4 @@
-import {CITY_REACTION_KINDS, CityMobileSnapshot, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
+import {CITY_REACTION_KINDS, CityMobileSnapshot, CityMobileUpgradeItem, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
 import {itemSnapshotForReaction} from "@/src/collectors/CityItemPresentation";
 
 type AvailabilityResolver = (snapshot: CityMobileSnapshot | undefined) => boolean;
@@ -24,17 +24,29 @@ function apartmentRentAvailability(reaction: ReactionCollectorReaction, snapshot
 	return snapshot?.apartmentNotary?.ownedApartments.find(apartment => apartment.apartmentId === apartmentId)?.canClaim ?? true;
 }
 
-function upgradeAvailability(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: NonNullable<ReturnType<typeof itemSnapshotForReaction>>, royal: boolean): boolean {
-	const upgrades = royal ? snapshot?.royalBlacksmith?.upgradeableItems : snapshot?.blacksmith?.upgradeableItems;
+type UpgradeItemsResolver = (snapshot: CityMobileSnapshot | undefined) => CityMobileUpgradeItem[] | undefined;
+
+const UPGRADE_ITEMS_RESOLVERS: Record<"blacksmith" | "royalBlacksmith", UpgradeItemsResolver> = {
+	blacksmith: snapshot => snapshot?.blacksmith?.upgradeableItems,
+	royalBlacksmith: snapshot => snapshot?.royalBlacksmith?.upgradeableItems
+};
+
+function upgradeCanUse(upgrade: CityMobileUpgradeItem | undefined, buyMaterials: boolean | undefined): boolean {
+	if (!upgrade) return true;
+	return buyMaterials ? upgrade.canBuyAndUpgrade : upgrade.canUpgrade;
+}
+
+function upgradeAvailability(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: NonNullable<ReturnType<typeof itemSnapshotForReaction>>, source: "blacksmith" | "royalBlacksmith"): boolean {
+	const upgrades = UPGRADE_ITEMS_RESOLVERS[source](snapshot);
 	const upgrade = upgrades?.find(candidate => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory);
 	const buyMaterials = (reaction.data as {buyMaterials?: boolean}).buyMaterials;
-	return buyMaterials ? upgrade?.canBuyAndUpgrade ?? true : upgrade?.canUpgrade ?? true;
+	return upgradeCanUse(upgrade, buyMaterials);
 }
 
 function equipmentAvailability(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: NonNullable<ReturnType<typeof itemSnapshotForReaction>>): boolean {
-	if (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE) return upgradeAvailability(reaction, snapshot, item, false);
+	if (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE) return upgradeAvailability(reaction, snapshot, item, "blacksmith");
 	if (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT) return snapshot?.blacksmith?.disenchantableItems.find(candidate => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory)?.canDisenchant ?? true;
-	if (reaction.type === CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE) return upgradeAvailability(reaction, snapshot, item, true);
+	if (reaction.type === CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE) return upgradeAvailability(reaction, snapshot, item, "royalBlacksmith");
 	return true;
 }
 
