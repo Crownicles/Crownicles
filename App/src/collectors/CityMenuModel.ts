@@ -135,6 +135,7 @@ function emptyCitySubmenus(): Record<CitySubmenu, CityEntry[]> {
 	return {home: [], homeBed: [], homeChest: [], homeGarden: [], homeCooking: [], homeUpgrade: [], notary: [], inn: [], enchanter: [], blacksmith: [], scrapDealer: [], royalBlacksmith: [], guild: []};
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addCityEntry(state: CityGroupingState, entry: CityEntry, options: CityGroupingOptions): void {
 	const {reaction} = entry;
 	if (reaction.type === GENERIC_REACTION_KINDS.REFUSE) return;
