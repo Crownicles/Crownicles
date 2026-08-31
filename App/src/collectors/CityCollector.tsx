@@ -5,7 +5,7 @@ import {
 	CityMobileItem, CityMobileSnapshot, ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
-import {isChoosable, reactionLabel} from "@/src/collectors/CollectorLabels";
+import {reactionLabel} from "@/src/collectors/CollectorLabels";
 import {CitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
 import {citySnapshotNote} from "@/src/collectors/CitySnapshotNote";
 import {
@@ -13,7 +13,8 @@ import {
 	cityRowSubtitle as renderCityRowSubtitle,
 	compactCityDescription
 } from "@/src/collectors/CityRowDetails";
-import {Button, ButtonRow, Hero, Note, Panel, Row, Screen, SectionHeader} from "@/src/design/Primitives";
+import {CitySection} from "@/src/collectors/CityRows";
+import {Button, ButtonRow, Hero, Note, Screen} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
@@ -908,82 +909,6 @@ function groupCityEntries(entries: CityEntry[], options: {
 	return {groups, submenus};
 }
 
-// @codescene(disable:"Complex Method")
-function CityRows({items, collector, onChoose, onNavigate, locked}: {
-	items: CityListItem[];
-	collector: ReactionCollectorCreation;
-	onChoose: (reactionIndex: number) => void;
-	onNavigate: (item: CityNavigationItem) => void;
-	locked: boolean;
-}): ReactNode {
-	return items.map(item => {
-		if (item.kind === "navigation") {
-			return (
-				<Row
-					key={`${collector.id}-${item.key}`}
-					disabled={locked}
-					onPress={locked ? undefined : (): void => onNavigate(item)}
-					icon={iconForPath(item.iconPath)}
-					title={item.title}
-					subtitle={item.subtitle}
-					chevron={!locked}
-				/>
-			);
-		}
-		if (item.kind === "info") {
-			return (
-				<Row
-					key={`${collector.id}-${item.key}`}
-					disabled
-					icon={iconForPath(item.iconPath)}
-					title={item.title}
-					subtitle={item.subtitle}
-				/>
-			);
-		}
-
-		const {reaction, index} = item.entry;
-		const snapshot = collector.data.type === CITY_DATA_KINDS.CITY ? collector.data.data.snapshot : undefined;
-		const itemSnapshot = itemSnapshotForReaction(snapshot, reaction);
-		const choosable = isChoosable(reaction, collector.data) && cityReactionAvailable(reaction, snapshot);
-		const disabled = locked || !choosable;
-		return (
-			<Row
-				key={`${collector.id}-${index}`}
-				disabled={disabled}
-				onPress={disabled ? undefined : (): void => onChoose(index)}
-				icon={cityRowIcon(reaction, snapshot)}
-				title={cityRowTitle(reaction, collector.data, snapshot)}
-				subtitle={renderCityRowSubtitle(reaction, snapshot, itemSnapshot)}
-				end={renderCityRowEnd(reaction, snapshot, itemSnapshot)}
-				tone={reaction.type === CITY_REACTION_KINDS.EXIT ? "danger" : undefined}
-				chevron={choosable && !locked}
-			/>
-		);
-	});
-}
-
-function CitySection({title, hint, items, collector, onChoose, onNavigate, locked, first = false}: {
-	title: string;
-	hint?: string;
-	items: CityListItem[];
-	collector: ReactionCollectorCreation;
-	onChoose: (reactionIndex: number) => void;
-	onNavigate: (item: CityNavigationItem) => void;
-	locked: boolean;
-	first?: boolean;
-}): ReactNode {
-	if (items.length === 0) {
-		return null;
-	}
-	return (
-		<>
-			<SectionHeader first={first} action={hint ? {hint} : undefined}>{title}</SectionHeader>
-			<Panel><CityRows items={items} collector={collector} onChoose={onChoose} onNavigate={onNavigate} locked={locked} /></Panel>
-		</>
-	);
-}
-
 function submenuTitle(view: CitySubmenu, innId?: string): {eyebrow: string; title: string; subtitle?: string} {
 	if (view === "inn" && innId) {
 		const name = i18n.t(`commands:report.city.inns.names.${innId}`);
@@ -1035,6 +960,12 @@ function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, o
 					onNavigate={onNavigate}
 					locked={locked}
 					first={index === 0}
+					iconForPath={iconForPath}
+					rowIcon={cityRowIcon}
+					rowTitle={cityRowTitle}
+					rowSubtitle={renderCityRowSubtitle}
+					rowEnd={renderCityRowEnd}
+					reactionAvailable={cityReactionAvailable}
 				/>
 			))}
 			{citySnapshotNote(view, snapshot)}
@@ -1147,6 +1078,12 @@ export function CityCollector({collector, onChoose, submitting}: CityCollectorPr
 					onNavigate={navigate}
 					locked={locked}
 					first={index === 0}
+					iconForPath={iconForPath}
+					rowIcon={cityRowIcon}
+					rowTitle={cityRowTitle}
+					rowSubtitle={renderCityRowSubtitle}
+					rowEnd={renderCityRowEnd}
+					reactionAvailable={cityReactionAvailable}
 				/>
 			))}
 			{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
