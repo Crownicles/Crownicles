@@ -14,6 +14,7 @@ import {
 	compactCityDescription
 } from "@/src/collectors/CityRowDetails";
 import {CitySection} from "@/src/collectors/CityRows";
+import {submenuSections as buildSubmenuSections} from "@/src/collectors/CitySubmenuSections";
 import {Button, ButtonRow, Hero, Note, Screen} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -25,9 +26,9 @@ type CityCollectorProps = {
 	submitting: boolean;
 };
 
-type CityEntry = {reaction: ReactionCollectorReaction; index: number};
+export type CityEntry = {reaction: ReactionCollectorReaction; index: number};
 
-type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
+export type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
 
 type CityNavigationItem = {
 	kind: "navigation";
@@ -48,7 +49,7 @@ type CityInfoItem = {
 };
 
 type CityReactionItem = {kind: "reaction"; entry: CityEntry};
-type CityListItem = CityNavigationItem | CityInfoItem | CityReactionItem;
+export type CityListItem = CityNavigationItem | CityInfoItem | CityReactionItem;
 
 type CityMenuModel = {
 	groups: Record<CityGroup, CityListItem[]>;
@@ -297,7 +298,7 @@ const CITY_SUBMENU_ORDER: Record<CitySubmenu, number> = {
 	guild: 0
 };
 
-type CitySubmenuSection = {title: string; items: CityListItem[]};
+export type CitySubmenuSection = {title: string; items: CityListItem[]};
 
 function homeIconPath(level: number | undefined): string {
 	const safeLevel = Math.max(1, Math.min(8, level ?? 5));
@@ -499,97 +500,6 @@ function enchantmentCatalogItems(): CityInfoItem[] {
 		iconPath: entry.iconPath,
 		title: i18n.t(entry.titleKey),
 		subtitle: i18n.t(entry.subtitleKey)
-	}));
-}
-
-// @codescene(disable:"Complex Method")
-function submenuSections(view: CitySubmenu, entries: CityEntry[], snapshot?: CityMobileSnapshot): CitySubmenuSection[] {
-	if (view === "inn") {
-		return [
-			{title: i18n.t("app:city.titles.meals"), items: entries.filter(entry => entry.reaction.type === CITY_REACTION_KINDS.INN_MEAL).map(entry => ({kind: "reaction" as const, entry}))},
-			{title: i18n.t("app:city.titles.rooms"), items: entries.filter(entry => entry.reaction.type === CITY_REACTION_KINDS.INN_ROOM).map(entry => ({kind: "reaction" as const, entry}))}
-		];
-	}
-	if (view === "home") {
-		return [{
-			title: i18n.t("app:city.titles.homeServices"),
-			items: [
-				...entries.map(entry => ({kind: "reaction" as const, entry})),
-				...homeFeatureItems(snapshot)
-			]
-		}];
-	}
-	if (view === "homeBed") {
-		return [{
-			title: i18n.t("app:city.titles.actions"),
-			items: entries.map(entry => ({kind: "reaction" as const, entry}))
-		}];
-	}
-	if (view === "homeChest") {
-		return [{title: i18n.t("app:city.titles.storage"), items: homeChestItems(snapshot)}];
-	}
-	if (view === "homeCooking") {
-		return [{title: i18n.t("app:city.titles.cooking"), items: homeCookingItems(snapshot)}];
-	}
-	if (view === "guild") {
-		return [{
-			title: i18n.t("app:city.titles.actions"),
-			items: [...guildFeatureItems(snapshot), ...entries.map(entry => ({kind: "reaction" as const, entry}))]
-		}];
-	}
-	if (view === "enchanter") {
-		return [
-			{title: i18n.t("app:city.titles.eligibleEquipment"), items: entries.map(entry => ({kind: "reaction" as const, entry}))},
-			{title: i18n.t("app:city.enchantmentCatalog.title"), items: enchantmentCatalogItems()}
-		];
-	}
-	if (view === "homeGarden") {
-		return [{
-			title: i18n.t("app:city.titles.garden"),
-			items: [
-				...gardenPlotItems(snapshot),
-				...entries.map(entry => ({kind: "reaction" as const, entry}))
-			]
-		}];
-	}
-	if (view === "homeUpgrade") {
-		return [{
-			title: i18n.t("app:city.titles.equipment"),
-			items: entries.map(entry => ({kind: "reaction" as const, entry}))
-		}];
-	}
-	const groups: Record<string, CityEntry[]> = {};
-	const add = (titleKey: string, entry: CityEntry): void => {
-		(groups[titleKey] ??= []).push(entry);
-	};
-	for (const entry of entries) {
-		const type = entry.reaction.type;
-		if (view === "notary") {
-			add(type === CITY_REACTION_KINDS.APARTMENT_BUY || type === CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT
-				? "app:city.titles.apartments"
-				: type === CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY
-					? "app:city.labels.guildDomain"
-					: "app:city.titles.yourHome", entry);
-		}
-		else if (view === "blacksmith") {
-			add(type === CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT ? "app:city.titles.disenchant" : "app:city.titles.equipment", entry);
-		}
-		else if (view === "scrapDealer") {
-			add("app:city.titles.recycling", entry);
-		}
-		else if (view === "royalBlacksmith") {
-			add("app:city.titles.equipment", entry);
-		}
-		else if (view === "enchanter") {
-			add("app:city.titles.eligibleEquipment", entry);
-		}
-		else {
-			add("app:city.titles.actions", entry);
-		}
-	}
-	return Object.entries(groups).map(([titleKey, groupedEntries]) => ({
-		title: i18n.t(titleKey),
-		items: groupedEntries.map(entry => ({kind: "reaction" as const, entry}))
 	}));
 }
 
@@ -923,7 +833,14 @@ function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, o
 		? "city.inn"
 		: view === "home" ? homeIconPath(snapshot?.home?.owned?.level) : cityNavigationMeta(view as Exclude<CitySubmenu, "inn">).iconPath;
 	const icon = AppIcons.getIconOrNull(iconPath);
-	const sections = submenuSections(view, entries, snapshot);
+	const sections = buildSubmenuSections(view, entries, snapshot, {
+		homeFeatureItems,
+		gardenPlotItems,
+		homeChestItems,
+		homeCookingItems,
+		guildFeatureItems,
+		enchantmentCatalogItems
+	});
 	const visibleSections = sections.filter(section => section.items.length > 0);
 
 	return (
