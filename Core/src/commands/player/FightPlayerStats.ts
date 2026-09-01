@@ -1,35 +1,13 @@
 import Player from "../../core/database/game/models/Player";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import type { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
 import TournamentParticipant from "../../core/database/game/models/TournamentParticipant";
 import { getEffectiveLevel } from "../../core/tournaments/TournamentRules";
+import type { FightPlayerStats } from "../../../../Lib/src/types/FightPlayerStats";
 
-export type PlayerStats = {
-	pet?: {
-		petTypeId: number;
-		petSex: SexTypeShort;
-		petNickname: string;
-		isOnExpedition: boolean;
-	};
-	classId: number;
-	fightRanking: { glory: number };
-	energy: {
-		value: number;
-		max: number;
-	};
-	attack: number;
-	defense: number;
-	speed: number;
-	breath: {
-		base: number;
-		max: number;
-		regen: number;
-	};
-};
-
-export async function getPlayerStats(player: Player, tournamentParticipant?: TournamentParticipant): Promise<PlayerStats> {
+export async function getPlayerStats(player: Player, tournamentParticipant?: TournamentParticipant): Promise<FightPlayerStats> {
 	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
 	const petEntity = await PetEntities.getById(player.petId);
 	const effectiveLevel = tournamentParticipant

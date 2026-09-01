@@ -8,3 +8,14 @@ export type TournamentFightContext = {
 	defenderParticipantId: number;
 	category: TournamentCategory;
 };
+
+export type TournamentRewardRank = {
+	rank: number;
+	categoryParticipantCount: number;
+};
+
+export type TournamentRewardAmounts = {
+	experience: number;
+	money: number;
+	itemCount: number;
+};
