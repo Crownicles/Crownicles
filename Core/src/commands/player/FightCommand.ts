@@ -379,6 +379,10 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 		await TournamentManager.resolveFight(fight, response);
 		return;
 	}
+	await regularFightEndCallback(fight, response);
+}
+
+async function regularFightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
 	notifyDefenderOfAttack(fight);
 
 	const fightLogId = await crowniclesInstance?.logsDatabase.logFight(fight) ?? null;
@@ -587,8 +591,10 @@ function fightValidationEndCallback(player: Player, context: PacketContext, tour
 				{
 					fighter1: askingFighter, fighter2: incomingFighter
 				},
-				FightOvertimeBehavior.END_FIGHT_DRAW,
-				context
+				{
+					overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+					context
+				}
 			);
 			fightController.setEndCallback(fightEndCallback);
 			fightsDefenderCooldowns.set(opponent.keycloakId, Date.now() + minutesToMilliseconds(FightConstants.DEFENDER_COOLDOWN_MINUTES));
@@ -641,14 +647,15 @@ async function startTournamentFight(response: CrowniclesPacket[], player: Player
 			fighter1: askingFighter,
 			fighter2: incomingFighter
 		},
-		FightOvertimeBehavior.END_FIGHT_DRAW,
-		context,
-		false,
 		{
-			tournamentId: tournament.id,
-			attackerParticipantId: participant.id,
-			defenderParticipantId: opponentParticipant.id,
-			category: participant.category
+			overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+			context,
+			tournamentContext: {
+				tournamentId: tournament.id,
+				attackerParticipantId: participant.id,
+				defenderParticipantId: opponentParticipant.id,
+				category: participant.category
+			}
 		}
 	);
 	fightController.setEndCallback(fightEndCallback);

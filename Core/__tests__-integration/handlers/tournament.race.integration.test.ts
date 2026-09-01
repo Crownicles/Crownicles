@@ -21,6 +21,7 @@ import type { InventorySlot as InventorySlotType } from "../../src/core/database
 
 type TournamentManagerModule = typeof import("../../src/core/tournaments/TournamentManager");
 type PacketUtilsModule = typeof import("../../src/core/utils/PacketUtils");
+type InventoryInfoModule = typeof import("../../src/core/database/game/models/InventoryInfo");
 type InventorySlotsModule = typeof import("../../src/core/database/game/models/InventorySlot");
 
 const GUILD_ID = "tournament-race-guild";
@@ -68,7 +69,8 @@ describe("TournamentManager integration", () => {
 		TournamentParticipant = env.crownicles.gameDatabase.sequelize.models.TournamentParticipant as ModelStatic<TournamentParticipantType>;
 		TournamentFight = env.crownicles.gameDatabase.sequelize.models.TournamentFight as ModelStatic<TournamentFightType>;
 		PlayerBadges = env.crownicles.gameDatabase.sequelize.models.PlayerBadges as ModelStatic<PlayerBadgesType>;
-		InventoryInfo = env.crownicles.gameDatabase.sequelize.models.InventoryInfo as ModelStatic<InventoryInfoType>;
+		const inventoryInfoModule = loadProductionModule<InventoryInfoModule>("core/database/game/models/InventoryInfo");
+		InventoryInfo = inventoryInfoModule.InventoryInfo as ModelStatic<InventoryInfoType>;
 		const inventoryModule = loadProductionModule<InventorySlotsModule>("core/database/game/models/InventorySlot");
 		InventorySlot = inventoryModule.InventorySlot as ModelStatic<InventorySlotType>;
 		inventorySlots = inventoryModule.InventorySlots;

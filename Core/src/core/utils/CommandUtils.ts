@@ -136,10 +136,8 @@ export abstract class CommandUtils {
 	 * @param requirements
 	 */
 	static async verifyCommandRequirements(player: Player, context: PacketContext, response: CrowniclesPacket[], requirements: RequirementsWithoutBlocked): Promise<boolean> {
-		if (!await TournamentManager.verifyCommandAccess(player, context, response, requirements.tournamentAccess ?? "none")) {
-			return false;
-		}
-		if (!CommandUtils.checkEffects(player, response, requirements.allowedEffects ?? [], requirements.disallowedEffects ?? [])) {
+		if (!await TournamentManager.verifyCommandAccess(player, context, response, requirements.tournamentAccess ?? "none")
+			|| !CommandUtils.checkEffects(player, response, requirements.allowedEffects ?? [], requirements.disallowedEffects ?? [])) {
 			return false;
 		}
 

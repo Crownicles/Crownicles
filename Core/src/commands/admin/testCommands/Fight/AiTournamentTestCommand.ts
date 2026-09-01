@@ -659,9 +659,11 @@ async function executeSingleFight(params: {
 			fighter1,
 			fighter2
 		},
-		FightOvertimeBehavior.END_FIGHT_DRAW,
-		context,
-		true // Silent mode
+		{
+			overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+			context,
+			silentMode: true
+		}
 	);
 
 	let result = {
