@@ -11,16 +11,17 @@ import {
 	findTournamentForContext, getParticipant
 } from "./TournamentQueries";
 import type { TournamentCommandAccess } from "./TournamentTypes";
+import Tournament from "../database/game/models/Tournament";
 
 function pushError(response: CrowniclesPacket[], errorCode: typeof TournamentErrorCodes[keyof typeof TournamentErrorCodes]): void {
 	response.push(makePacket(CommandTournamentErrorPacketRes, { errorCode }));
 }
 
-function isRegistrationOpen(tournament: Awaited<ReturnType<typeof findTournamentForContext>>): boolean {
-	return tournament?.status === TournamentStatuses.REGISTRATION || tournament?.status === TournamentStatuses.COMBAT;
+function isRegistrationOpen(tournament: Tournament): boolean {
+	return tournament.status === TournamentStatuses.REGISTRATION || tournament.status === TournamentStatuses.COMBAT;
 }
 
-function verifyRegistrationAccess(tournament: NonNullable<Awaited<ReturnType<typeof findTournamentForContext>>>, response: CrowniclesPacket[]): boolean {
+function verifyRegistrationAccess(tournament: Tournament, response: CrowniclesPacket[]): boolean {
 	if (isRegistrationOpen(tournament)) {
 		return true;
 	}
@@ -31,7 +32,7 @@ function verifyRegistrationAccess(tournament: NonNullable<Awaited<ReturnType<typ
 }
 
 async function verifyParticipantAccess(
-	tournament: NonNullable<Awaited<ReturnType<typeof findTournamentForContext>>>,
+	tournament: Tournament,
 	player: Player,
 	response: CrowniclesPacket[],
 	access: TournamentCommandAccess

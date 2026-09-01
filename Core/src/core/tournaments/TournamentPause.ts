@@ -30,24 +30,53 @@ type ResumeData = {
 	remainingMs: number;
 };
 
-function getResumeData(tournament: Tournament, context: PacketContext): ResumeData {
+type ResumeChannel = {
+	channelId: string;
+	guildId: string;
+};
+
+function getResumeChannel(context: PacketContext): ResumeChannel {
 	const channelId = context.discord?.channel;
 	if (!channelId || !context.frontEndSubOrigin) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
 	}
+	return {
+		channelId,
+		guildId: context.frontEndSubOrigin
+	};
+}
+
+function requireBotOwner(context: PacketContext): void {
 	if (context.discord?.isBotOwner !== true) {
 		throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
 	}
+}
+
+function getPausedStatus(tournament: Tournament): ResumableTournamentStatus {
 	if (tournament.status !== TournamentStatuses.PAUSED || !tournament.pausedFromStatus) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
 	}
-	if (tournament.discordGuildId !== context.frontEndSubOrigin) {
-		throw new TournamentDomainError(TournamentErrorCodes.CODE_GUILD_MISMATCH);
-	}
-	const previousStatus = tournament.pausedFromStatus;
-	if (previousStatus !== TournamentStatuses.REGISTRATION && previousStatus !== TournamentStatuses.COMBAT) {
+	if (tournament.pausedFromStatus !== TournamentStatuses.REGISTRATION
+		&& tournament.pausedFromStatus !== TournamentStatuses.COMBAT) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
 	}
+	return tournament.pausedFromStatus;
+}
+
+function requireSameGuild(tournament: Tournament, guildId: string): void {
+	if (tournament.discordGuildId !== guildId) {
+		throw new TournamentDomainError(TournamentErrorCodes.CODE_GUILD_MISMATCH);
+	}
+}
+
+function getResumeData(tournament: Tournament, context: PacketContext): ResumeData {
+	const {
+		channelId,
+		guildId
+	} = getResumeChannel(context);
+	requireBotOwner(context);
+	const previousStatus = getPausedStatus(tournament);
+	requireSameGuild(tournament, guildId);
 	return {
 		channelId,
 		previousStatus,

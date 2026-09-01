@@ -4,6 +4,7 @@ import {
 import Player, { Players } from "../../core/database/game/models/Player";
 import Tournament from "../../core/database/game/models/Tournament";
 import { TournamentManager } from "../../core/tournaments/TournamentManager";
+import { getEffectiveLevel } from "../../core/tournaments/TournamentRules";
 import { TournamentStatuses } from "../../../../Lib/src/types/Tournament";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { ClassDataController } from "../../data/Class";
@@ -52,7 +53,7 @@ async function startTournamentFight(flow: TournamentFightFlow): Promise<void> {
 	}
 
 	const askingFighter = new PlayerFighter(flow.player, playerClass, {
-		effectiveLevel: TournamentManager.getEffectiveLevel(participant.category, flow.player.level),
+		effectiveLevel: getEffectiveLevel(participant.category, flow.player.level),
 		tournamentMode: true
 	});
 	askingFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
@@ -61,7 +62,7 @@ async function startTournamentFight(flow: TournamentFightFlow): Promise<void> {
 
 	const incomingFighter = new AiPlayerFighter(opponent, opponentClass, {
 		allowPotionConsumption: false,
-		effectiveLevel: TournamentManager.getEffectiveLevel(opponentParticipant.category, opponent.level),
+		effectiveLevel: getEffectiveLevel(opponentParticipant.category, opponent.level),
 		tournamentMode: true
 	});
 	incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
