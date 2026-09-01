@@ -81,12 +81,14 @@ export default class TournamentCommand {
 	@adminCommand(CommandTournamentCreatePacketReq, context => context.discord?.isGuildAdministrator === true)
 	static async create(response: CrowniclesPacket[], packet: CommandTournamentCreatePacketReq, context: PacketContext): Promise<void> {
 		try {
-			const tournament = await createTournament(
+			const tournament = await createTournament({
 				context,
-				packet.code,
-				packet.registrationDays,
-				packet.combatDays
-			);
+				code: packet.code,
+				duration: {
+					registrationDays: packet.registrationDays,
+					combatDays: packet.combatDays
+				}
+			});
 			response.push(makePacket(CommandTournamentCreatePacketRes, {
 				tournamentId: tournament.id,
 				registrationEndsAt: tournament.registrationEndsAt.getTime(),
