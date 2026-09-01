@@ -60,6 +60,9 @@ export async function registerPlayer(context: PacketContext, player: Player): Pr
 			keycloakId: player.keycloakId,
 			category: getCategoryForLevel(player.level),
 			lateRegistration,
+			startedNotificationSent: false,
+			endingNotificationSent: false,
+			endedNotificationSent: false,
 			normalLeagueId: player.getLeague().id,
 			attackGloryPoints: TournamentConstants.INITIAL_ATTACK_GLORY,
 			defenseGloryPoints: lateRegistration

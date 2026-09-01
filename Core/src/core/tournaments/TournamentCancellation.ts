@@ -2,9 +2,8 @@ import {
 	TournamentNotificationEvents, TournamentStatuses
 } from "../../../../Lib/src/types/Tournament";
 import { TournamentErrorCodes } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
-import { sendTournamentEvent } from "./TournamentNotifications";
+import { claimTournamentEvent } from "./TournamentNotifications";
 import { Tournament } from "../database/game/models/Tournament";
-import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
 import { TournamentDomainError } from "./TournamentErrors";
 
 export type TournamentCancellationRequest = {
@@ -18,7 +17,7 @@ export async function cancelTournament(request: TournamentCancellationRequest): 
 	if (!request.isGuildAdministrator) {
 		throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
 	}
-	let participants: TournamentParticipant[] = [];
+	let shouldNotify = false;
 	await Tournament.withLocked(request.tournamentId, async tournament => {
 		if (tournament.status === TournamentStatuses.COMPLETED || tournament.status === TournamentStatuses.CANCELLED) {
 			return;
@@ -26,14 +25,14 @@ export async function cancelTournament(request: TournamentCancellationRequest): 
 		if (tournament.discordGuildId !== request.discordGuildId) {
 			throw new TournamentDomainError(TournamentErrorCodes.CODE_GUILD_MISMATCH);
 		}
-		participants = await TournamentParticipant.findAll({ where: { tournamentId: request.tournamentId } });
 		tournament.status = TournamentStatuses.CANCELLED;
 		tournament.rewardsDistributed = true;
-		tournament.endedNotificationSent = true;
+		tournament.cancellationReason = request.reason;
 		await tournament.save();
+		shouldNotify = true;
 	});
-	if (participants.length > 0) {
-		sendTournamentEvent(request.tournamentId, participants, {
+	if (shouldNotify) {
+		await claimTournamentEvent(request.tournamentId, {
 			event: TournamentNotificationEvents.ENDED,
 			cancellationReason: request.reason
 		});

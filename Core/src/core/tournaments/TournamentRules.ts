@@ -51,7 +51,8 @@ export const CONTEXT_STATUSES = [
 export const PROCESSABLE_STATUSES = [
 	TournamentStatuses.REGISTRATION,
 	TournamentStatuses.COMBAT,
-	TournamentStatuses.COMPLETED
+	TournamentStatuses.COMPLETED,
+	TournamentStatuses.CANCELLED
 ];
 
 export function getCategoryForLevel(level: number): TournamentCategory {
