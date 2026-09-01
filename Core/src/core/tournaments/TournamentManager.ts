@@ -1,9 +1,8 @@
 import {
-	CrowniclesPacket, makePacket, PacketContext
+	CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandTournamentErrorPacketRes,
-	TournamentErrorCode, TournamentErrorCodes
+	TournamentErrorCodes
 } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
 import {
 	TournamentCategory, TournamentNotificationEvents,
@@ -165,9 +164,5 @@ export abstract class TournamentManager {
 
 	public static async resolveFight(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
 		await resolveTournamentFight(fight, response);
-	}
-
-	private static pushError(response: CrowniclesPacket[], errorCode: TournamentErrorCode): void {
-		response.push(makePacket(CommandTournamentErrorPacketRes, { errorCode }));
 	}
 }
