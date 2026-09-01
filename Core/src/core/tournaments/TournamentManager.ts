@@ -742,6 +742,7 @@ export abstract class TournamentManager {
 	}
 
 	private static async finishTournament(tournamentId: number): Promise<void> {
+		await this.sendEndingNotificationIfDue(tournamentId);
 		await Tournament.withLocked(tournamentId, async tournament => {
 			if (tournament.status !== TournamentStatuses.COMBAT || Date.now() < tournament.combatEndsAt.getTime()) {
 				return;
