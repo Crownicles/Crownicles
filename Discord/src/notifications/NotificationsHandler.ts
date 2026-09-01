@@ -32,6 +32,7 @@ import { GDPRExportCompleteNotificationPacket } from "../../../Lib/src/packets/n
 import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
 import { ZipArchive } from "archiver";
 import { DiscordConstants } from "../DiscordConstants";
+import { TournamentNotificationPacket } from "../../../Lib/src/packets/notifications/TournamentNotificationPacket";
 
 /**
  * Create a ZIP buffer from CSV files
@@ -189,6 +190,26 @@ export abstract class NotificationsHandler {
 					petDisplay: `${petIcon} **${petName}**`
 				});
 				notificationType = NotificationsTypes.PET_EXPEDITION;
+				break;
+			}
+			case TournamentNotificationPacket.name: {
+				const packet = notification.packet as TournamentNotificationPacket;
+				const category = i18n.t(`commands:tournament.categories.${packet.category}`, { lng });
+				const winner = packet.winnerKeycloakId
+					? await DisplayUtils.getEscapedUsername(packet.winnerKeycloakId, lng)
+					: i18n.t("notifications:tournament.noWinner", { lng });
+				const eventKey = packet.cancellationReason ? "cancelled" : packet.event;
+				notificationContent = i18n.t(`notifications:tournament.${eventKey}`, {
+					lng,
+					category,
+					winner,
+					rank: packet.rank ?? i18n.t("notifications:tournament.unranked", { lng }),
+					xp: packet.xp ?? 0,
+					money: packet.money ?? 0,
+					itemCount: packet.itemCount ?? 0,
+					reason: packet.cancellationReason ?? ""
+				});
+				notificationType = NotificationsTypes.TOURNAMENT;
 				break;
 			}
 			case GDPRExportCompleteNotificationPacket.name: {

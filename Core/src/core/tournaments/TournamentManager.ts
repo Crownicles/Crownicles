@@ -34,11 +34,13 @@ import { crowniclesInstance } from "../../app";
 import { PacketUtils } from "../utils/PacketUtils";
 import { TournamentNotificationPacket } from "../../../../Lib/src/packets/notifications/TournamentNotificationPacket";
 import { TournamentFightRewardPacket } from "../../../../Lib/src/packets/fights/TournamentFightRewardPacket";
+import { Badge } from "../../../../Lib/src/types/Badge";
 import { EloUtils } from "../utils/EloUtils";
 import {
 	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import type { FightController } from "../fights/FightController";
 import type { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 
@@ -137,7 +139,9 @@ function getTournamentPhaseEnd(tournament: Tournament): Date {
 function getEndingNotificationDate(tournament: Tournament): Date {
 	const combatDuration = tournament.combatEndsAt.getTime() - tournament.registrationEndsAt.getTime();
 	const configuredLead = hoursToMilliseconds(asHours(TournamentConstants.ENDING_NOTIFICATION_LEAD_HOURS));
-	const lead = Math.min(configuredLead, Math.floor(combatDuration / 2));
+	const lead = combatDuration < configuredLead
+		? Math.floor(combatDuration / 2)
+		: configuredLead;
 	return new Date(tournament.combatEndsAt.getTime() - lead);
 }
 
@@ -155,6 +159,14 @@ export abstract class TournamentManager {
 
 	public static getEffectiveLevel(category: TournamentCategory, level: number): number {
 		return getEffectiveLevel(category, level);
+	}
+
+	public static getRewardMultiplier(participantCount: number, category: TournamentCategory): number {
+		return getRewardMultiplier(participantCount, category);
+	}
+
+	public static getRewardItemCount(participantCount: number, category: TournamentCategory): number {
+		return getRewardItemCount(participantCount, category);
 	}
 
 	public static async generateCode(discordGuildId: string): Promise<{
@@ -284,6 +296,9 @@ export abstract class TournamentManager {
 	}
 
 	public static async getTournamentForContext(context: PacketContext): Promise<Tournament | null> {
+		if (!Tournament.sequelize) {
+			return null;
+		}
 		const guildId = context.frontEndSubOrigin;
 		const channelIds = [context.discord?.channel, context.discord?.parentChannel]
 			.filter((channelId): channelId is string => Boolean(channelId));
@@ -469,6 +484,19 @@ export abstract class TournamentManager {
 		});
 	}
 
+	public static async pauseTournamentForChannel(discordGuildId: string, discordChannelId: string): Promise<void> {
+		const tournament = await Tournament.findOne({
+			where: {
+				discordGuildId,
+				discordChannelId,
+				status: { [Op.in]: [TournamentStatuses.REGISTRATION, TournamentStatuses.COMBAT] }
+			}
+		});
+		if (tournament) {
+			await this.pauseTournament(tournament.id);
+		}
+	}
+
 	public static async resumeTournament(tournamentId: number, context: PacketContext): Promise<Tournament> {
 		const channelId = context.discord?.channel;
 		if (!channelId || !context.frontEndSubOrigin) {
@@ -477,6 +505,9 @@ export abstract class TournamentManager {
 		return await Tournament.withLocked(tournamentId, async tournament => {
 			if (tournament.status !== TournamentStatuses.PAUSED || !tournament.pausedFromStatus) {
 				throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
+			}
+			if (tournament.discordGuildId !== context.frontEndSubOrigin) {
+				throw new TournamentDomainError(TournamentErrorCodes.CODE_GUILD_MISMATCH);
 			}
 			const remainingMs = tournament.pausedRemainingMs ?? 0;
 			const previousStatus = tournament.pausedFromStatus;
@@ -519,6 +550,9 @@ export abstract class TournamentManager {
 	}
 
 	public static async processDueTournaments(): Promise<void> {
+		if (!Tournament.sequelize) {
+			return;
+		}
 		const tournaments = await Tournament.findAll({
 			where: { status: { [Op.in]: PROCESSABLE_STATUSES } }
 		});
@@ -574,6 +608,8 @@ export abstract class TournamentManager {
 				const attackerResult = getGameResult(attackerWon, isDraw);
 				const defenderResult = getGameResult(!attackerWon, isDraw);
 				const oldAttackerAttack = attacker.attackGloryPoints;
+				const oldAttackerDefense = attacker.defenseGloryPoints;
+				const oldDefenderAttack = defender.attackGloryPoints;
 				const oldDefenderDefense = defender.defenseGloryPoints;
 				const newAttackerAttack = EloUtils.calculateNewRating(
 					attacker.attackGloryPoints,
@@ -590,6 +626,10 @@ export abstract class TournamentManager {
 				attacker.attackGloryPoints = newAttackerAttack;
 				defender.defenseGloryPoints = newDefenderDefense;
 				await Promise.all([attacker.save(), defender.save()]);
+				await Promise.all([
+					crowniclesInstance?.logsDatabase.logPlayersAttackGloryPoints(attacker.keycloakId, newAttackerAttack, NumberChangeReason.TOURNAMENT_FIGHT),
+					crowniclesInstance?.logsDatabase.logPlayersDefenseGloryPoints(defender.keycloakId, newDefenderDefense, NumberChangeReason.TOURNAMENT_FIGHT)
+				]);
 				await TournamentFight.create({
 					tournamentId: tournament.id,
 					attackerParticipantId: attacker.id,
@@ -604,13 +644,13 @@ export abstract class TournamentManager {
 						category: attacker.category,
 						oldAttackGloryPoints: oldAttackerAttack,
 						newAttackGloryPoints: newAttackerAttack,
-						oldDefenseGloryPoints: attacker.defenseGloryPoints,
+						oldDefenseGloryPoints: oldAttackerDefense,
 						newDefenseGloryPoints: attacker.defenseGloryPoints
 					},
 					player2: {
 						keycloakId: defender.keycloakId,
 						category: defender.category,
-						oldAttackGloryPoints: defender.attackGloryPoints,
+						oldAttackGloryPoints: oldDefenderAttack,
 						newAttackGloryPoints: defender.attackGloryPoints,
 						oldDefenseGloryPoints: oldDefenderDefense,
 						newDefenseGloryPoints: newDefenderDefense
@@ -773,6 +813,9 @@ export abstract class TournamentManager {
 			reason: NumberChangeReason.TOURNAMENT_REWARD,
 			ignoreBlessing: true
 		});
+		if (participant.isWinner) {
+			await PlayerBadgesManager.addBadge(player.id, Badge.TOURNAMENT_WINNER);
+		}
 		const league = LeagueDataController.instance.getById(participant.normalLeagueId) ?? player.getLeague();
 		for (let index = 0; index < participant.rewardItemCount; index++) {
 			const item = league.generateRewardItem();

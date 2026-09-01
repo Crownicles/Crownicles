@@ -27,6 +27,8 @@ import { HomeGardenSlots } from "../../../../core/database/game/models/HomeGarde
 import { HomePlantStorages } from "../../../../core/database/game/models/HomePlantStorage";
 import { PlayerCookingRecipe } from "../../../../core/database/game/models/PlayerCookingRecipe";
 import { GlobalBlessing } from "../../../../core/database/game/models/GlobalBlessing";
+import Tournament from "../../../../core/database/game/models/Tournament";
+import TournamentParticipant from "../../../../core/database/game/models/TournamentParticipant";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
 
@@ -324,6 +326,9 @@ async function exportMiscData(
 
 	// Player cooking recipes discovered
 	await exportPlayerCookingRecipes(player.id, csvFiles);
+
+	// Tournament data
+	await exportTournamentData(player, csvFiles);
 }
 
 async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
@@ -400,6 +405,48 @@ async function exportPlayerCookingRecipes(playerId: number, csvFiles: GDPRCsvFil
 		csvFiles["22_cooking_recipes.csv"] = toCSV(recipes.map(r => ({
 			recipeId: r.recipeId,
 			sourceMapId: r.sourceMapId
+		})));
+	}
+}
+
+async function exportTournamentData(
+	player: NonNullable<Player>,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const createdTournaments = await Tournament.findAll({
+		where: { createdByKeycloakId: player.keycloakId }
+	});
+	if (createdTournaments.length > 0) {
+		csvFiles["24_tournaments_created.csv"] = toCSV(createdTournaments.map(tournament => ({
+			tournamentId: tournament.id,
+			status: tournament.status,
+			registrationEndsAt: tournament.registrationEndsAt,
+			combatEndsAt: tournament.combatEndsAt,
+			createdAt: tournament.createdAt,
+			updatedAt: tournament.updatedAt
+		})));
+	}
+
+	const participations = await TournamentParticipant.findAll({
+		where: { playerId: player.id }
+	});
+	if (participations.length > 0) {
+		csvFiles["25_tournament_participations.csv"] = toCSV(participations.map(participant => ({
+			tournamentId: participant.tournamentId,
+			category: participant.category,
+			lateRegistration: participant.lateRegistration,
+			normalLeagueId: participant.normalLeagueId,
+			attackGloryPoints: participant.attackGloryPoints,
+			defenseGloryPoints: participant.defenseGloryPoints,
+			finalRank: participant.finalRank,
+			isWinner: participant.isWinner,
+			rewardXp: participant.rewardXp,
+			rewardMoney: participant.rewardMoney,
+			rewardItemCount: participant.rewardItemCount,
+			rewardGrantedAt: participant.rewardGrantedAt,
+			registeredAt: participant.registeredAt,
+			createdAt: participant.createdAt,
+			updatedAt: participant.updatedAt
 		})));
 	}
 }

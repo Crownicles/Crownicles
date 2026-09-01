@@ -14,6 +14,9 @@ import { MqttTopicUtils } from "../../../Lib/src/utils/MqttTopicUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { PacketConstants } from "../../../Lib/src/constants/PacketConstants";
 import { RightGroup } from "../../../Lib/src/types/RightGroup";
+import {
+	ChannelType, PermissionsBitField
+} from "discord.js";
 
 export type AskedPlayer = {
 	keycloakId?: string;
@@ -71,9 +74,19 @@ export abstract class PacketUtils {
 			discord: {
 				user: interaction.user.id,
 				channel: interaction.channel.id,
+				parentChannel: [
+					ChannelType.PublicThread,
+					ChannelType.PrivateThread,
+					ChannelType.AnnouncementThread
+				].includes(interaction.channel.type)
+					? interaction.channel.parentId ?? undefined
+					: undefined,
 				interaction: interaction.id,
 				language: interaction.userLanguage,
-				shardId
+				shardId,
+				guildMemberCount: interaction.guild?.memberCount,
+				isGuildAdministrator: interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator) ?? false,
+				isBotOwner: interaction.user.id === discordConfig.OWNER_ID
 			},
 			rightGroups: groups.payload.groups as RightGroup[]
 		};
