@@ -602,7 +602,7 @@ async function startTournamentFight(response: CrowniclesPacket[], player: Player
 		response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
 		return;
 	}
-	const opponentParticipant = await TournamentManager.findOpponent(tournament, participant);
+	const opponentParticipant = await TournamentManager.findAndReserveOpponent(tournament, participant);
 	if (!opponentParticipant) {
 		response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
 		return;
@@ -646,7 +646,6 @@ async function startTournamentFight(response: CrowniclesPacket[], player: Player
 		}
 	);
 	fightController.setEndCallback(fightEndCallback);
-	TournamentManager.reserveDefender(tournament.id, opponentParticipant.id);
 	await fightController.startFight(response);
 }
 

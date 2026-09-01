@@ -200,6 +200,12 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			primaryKey: true,
 			autoIncrement: true
 		},
+		fightId: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(64),
+			allowNull: false,
+			unique: true
+		},
 		tournamentId: {
 			type: DataTypes.INTEGER,
 			allowNull: false
