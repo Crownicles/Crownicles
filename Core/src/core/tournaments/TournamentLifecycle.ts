@@ -31,6 +31,13 @@ type TournamentNotificationConfiguration = {
 	eventData: (tournament: Tournament) => TournamentEventData;
 };
 
+type TournamentParticipantId = TournamentParticipant["id"];
+
+type TournamentParticipantSnapshot = {
+	tournament: Tournament;
+	participantIds: TournamentParticipantId[];
+};
+
 function prepareParticipantReward(
 	participant: TournamentParticipant,
 	index: number,
@@ -50,15 +57,15 @@ class TournamentParticipantsChangedError extends Error {
 }
 
 function getLockedTournamentEntities(
-	entities: unknown[],
-	participantCount: number
+	entities: readonly unknown[],
+	participantIds: TournamentParticipantId[]
 ): {
 	tournament: Tournament;
 	participants: TournamentParticipant[];
 } {
 	const tournament = entities.find((entity): entity is Tournament => entity instanceof Tournament);
 	const participants = entities.filter((entity): entity is TournamentParticipant => entity instanceof TournamentParticipant);
-	if (!tournament || participants.length !== participantCount) {
+	if (!tournament || participants.length !== participantIds.length) {
 		throw new TournamentParticipantsChangedError();
 	}
 	return {
@@ -67,25 +74,28 @@ function getLockedTournamentEntities(
 	};
 }
 
-async function assertParticipantSnapshotIsCurrent(tournamentId: number, participantIds: number[]): Promise<void> {
-	const participantIdSet = new Set(participantIds);
-	const currentParticipants = await TournamentParticipant.findAll({ where: { tournamentId } });
+async function assertParticipantSnapshotIsCurrent(snapshot: TournamentParticipantSnapshot): Promise<void> {
+	const participantIdSet = new Set(snapshot.participantIds);
+	const currentParticipants = await TournamentParticipant.findAll({ where: { tournamentId: snapshot.tournament.id } });
 	if (currentParticipants.some(participant => !participantIdSet.has(participant.id))) {
 		throw new TournamentParticipantsChangedError();
 	}
 }
 
-async function freezeTournamentAttempt(tournamentId: number, participantIds: number[]): Promise<void> {
+async function freezeTournamentAttempt(snapshot: TournamentParticipantSnapshot): Promise<void> {
 	const lockKeys: LockKey[] = [
-		Tournament.lockKey(tournamentId),
-		...participantIds.map(participantId => TournamentParticipant.lockKey(participantId))
+		Tournament.lockKey(snapshot.tournament.id),
+		...snapshot.participantIds.map(participantId => TournamentParticipant.lockKey(participantId))
 	];
 	await withLockedEntities(lockKeys, async entities => {
 		const {
 			tournament,
 			participants
-		} = getLockedTournamentEntities(entities, participantIds.length);
-		await assertParticipantSnapshotIsCurrent(tournamentId, participantIds);
+		} = getLockedTournamentEntities(entities, snapshot.participantIds);
+		await assertParticipantSnapshotIsCurrent({
+			tournament,
+			participantIds: snapshot.participantIds
+		});
 		if (tournament.status !== TournamentStatuses.COMBAT || Date.now() < tournament.combatEndsAt.getTime()) {
 			return;
 		}
@@ -110,53 +120,53 @@ async function freezeTournamentAttempt(tournamentId: number, participantIds: num
 	});
 }
 
-async function advanceRegistration(tournamentId: number): Promise<void> {
+async function advanceRegistration(tournament: Tournament): Promise<void> {
 	let event: TournamentEventData | null = null;
-	await Tournament.withLocked(tournamentId, async tournament => {
-		if (tournament.status !== TournamentStatuses.REGISTRATION || Date.now() < tournament.registrationEndsAt.getTime()) {
+	await Tournament.withLocked(tournament.id, async lockedTournament => {
+		if (lockedTournament.status !== TournamentStatuses.REGISTRATION || Date.now() < lockedTournament.registrationEndsAt.getTime()) {
 			return;
 		}
-		const participants = await TournamentParticipant.findAll({ where: { tournamentId } });
+		const participants = await TournamentParticipant.findAll({ where: { tournamentId: lockedTournament.id } });
 		const categoryCounts = getCategoryCounts(participants);
 		const hasEnoughParticipants = participants.length >= TournamentConstants.MINIMUM_TOTAL_PARTICIPANTS
 			&& categoryCounts[TournamentCategories.LEVEL_50] >= TournamentConstants.MINIMUM_PARTICIPANTS_PER_CATEGORY
 			&& categoryCounts[TournamentCategories.LEVEL_100] >= TournamentConstants.MINIMUM_PARTICIPANTS_PER_CATEGORY;
 		if (!hasEnoughParticipants) {
-			tournament.status = TournamentStatuses.CANCELLED;
-			tournament.rewardsDistributed = true;
-			tournament.cancellationReason = "tooFewParticipants";
+			lockedTournament.status = TournamentStatuses.CANCELLED;
+			lockedTournament.rewardsDistributed = true;
+			lockedTournament.cancellationReason = "tooFewParticipants";
 			event = {
 				event: TournamentNotificationEvents.ENDED,
 				cancellationReason: "tooFewParticipants"
 			};
 		}
 		else {
-			tournament.status = TournamentStatuses.COMBAT;
+			lockedTournament.status = TournamentStatuses.COMBAT;
 			event = { event: TournamentNotificationEvents.STARTED };
 		}
-		await tournament.save();
+		await lockedTournament.save();
 	});
 	if (event) {
-		await claimTournamentEvent(tournamentId, event);
+		await claimTournamentEvent(tournament.id, event);
 	}
 }
 
 async function sendTournamentNotificationIfReady(
-	tournamentId: number,
+	tournament: Tournament,
 	configuration: TournamentNotificationConfiguration
 ): Promise<void> {
 	let shouldSend = false;
 	let eventData: TournamentEventData | null = null;
-	await Tournament.withLocked(tournamentId, tournament => {
-		if (!configuration.isReady(tournament)) {
+	await Tournament.withLocked(tournament.id, lockedTournament => {
+		if (!configuration.isReady(lockedTournament)) {
 			return Promise.resolve();
 		}
-		eventData = configuration.eventData(tournament);
+		eventData = configuration.eventData(lockedTournament);
 		shouldSend = true;
 		return Promise.resolve();
 	});
 	if (shouldSend) {
-		await claimTournamentEvent(tournamentId, eventData!);
+		await claimTournamentEvent(tournament.id, eventData!);
 	}
 }
 
@@ -176,22 +186,22 @@ function isEndedNotificationReady(tournament: Tournament): boolean {
 		&& !tournament.endedNotificationSent;
 }
 
-function sendStartedNotificationIfNeeded(tournamentId: number): Promise<void> {
-	return sendTournamentNotificationIfReady(tournamentId, {
+function sendStartedNotificationIfNeeded(tournament: Tournament): Promise<void> {
+	return sendTournamentNotificationIfReady(tournament, {
 		isReady: isStartedNotificationReady,
 		eventData: () => ({ event: TournamentNotificationEvents.STARTED })
 	});
 }
 
-async function sendEndingNotificationIfDue(tournamentId: number): Promise<void> {
-	await sendTournamentNotificationIfReady(tournamentId, {
+async function sendEndingNotificationIfDue(tournament: Tournament): Promise<void> {
+	await sendTournamentNotificationIfReady(tournament, {
 		isReady: isEndingNotificationReady,
 		eventData: () => ({ event: TournamentNotificationEvents.ENDING })
 	});
 }
 
-async function sendEndedNotificationIfReady(tournamentId: number): Promise<void> {
-	await sendTournamentNotificationIfReady(tournamentId, {
+async function sendEndedNotificationIfReady(tournament: Tournament): Promise<void> {
+	await sendTournamentNotificationIfReady(tournament, {
 		isReady: isEndedNotificationReady,
 		eventData: tournament => ({
 			event: TournamentNotificationEvents.ENDED,
@@ -200,12 +210,15 @@ async function sendEndedNotificationIfReady(tournamentId: number): Promise<void>
 	});
 }
 
-async function freezeTournament(tournamentId: number): Promise<void> {
+async function freezeTournament(tournament: Tournament): Promise<void> {
 	while (true) {
-		const participantIds = (await TournamentParticipant.findAll({ where: { tournamentId } }))
+		const participantIds = (await TournamentParticipant.findAll({ where: { tournamentId: tournament.id } }))
 			.map(participant => participant.id);
 		try {
-			await freezeTournamentAttempt(tournamentId, participantIds);
+			await freezeTournamentAttempt({
+				tournament,
+				participantIds
+			});
 			return;
 		}
 		catch (error) {
@@ -216,36 +229,36 @@ async function freezeTournament(tournamentId: number): Promise<void> {
 	}
 }
 
-async function finishTournament(tournamentId: number): Promise<void> {
-	await sendEndingNotificationIfDue(tournamentId);
-	await freezeTournament(tournamentId);
-	await distributeRewards(tournamentId);
-	await sendEndedNotificationIfReady(tournamentId);
+async function finishTournament(tournament: Tournament): Promise<void> {
+	await sendEndingNotificationIfDue(tournament);
+	await freezeTournament(tournament);
+	await distributeRewards(tournament.id);
+	await sendEndedNotificationIfReady(tournament);
 }
 
 type DueTournamentHandler = (tournament: Tournament) => Promise<void>;
 
 async function processRegistrationDeadline(tournament: Tournament): Promise<void> {
 	if (Date.now() >= tournament.registrationEndsAt.getTime()) {
-		await advanceRegistration(tournament.id);
+		await advanceRegistration(tournament);
 	}
 }
 
 async function processCombatDeadline(tournament: Tournament): Promise<void> {
-	await sendStartedNotificationIfNeeded(tournament.id);
+	await sendStartedNotificationIfNeeded(tournament);
 	const processFinish = Date.now() >= tournament.combatEndsAt.getTime();
-	await (processFinish ? finishTournament : sendEndingNotificationIfDue)(tournament.id);
+	await (processFinish ? finishTournament : sendEndingNotificationIfDue)(tournament);
 }
 
 async function processCompletedTournament(tournament: Tournament): Promise<void> {
 	if (!tournament.rewardsDistributed) {
 		await distributeRewards(tournament.id);
 	}
-	await sendEndedNotificationIfReady(tournament.id);
+	await sendEndedNotificationIfReady(tournament);
 }
 
 async function processCancelledTournament(tournament: Tournament): Promise<void> {
-	await sendEndedNotificationIfReady(tournament.id);
+	await sendEndedNotificationIfReady(tournament);
 }
 
 const dueTournamentHandlers: Partial<Record<TournamentStatus, DueTournamentHandler>> = {
