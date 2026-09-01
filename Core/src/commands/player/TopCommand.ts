@@ -26,7 +26,7 @@ export default class TopCommand {
 		packet: CommandTopPacketReq,
 		context: PacketContext
 	): Promise<void> {
-		if (await TournamentManager.getTournamentForContext(context)) {
+		if (await TournamentManager.findTournamentForContext(context, true)) {
 			response.push(makePacket(CommandTournamentTopPacketRes, await TournamentManager.getTopData(context, player)));
 			return;
 		}

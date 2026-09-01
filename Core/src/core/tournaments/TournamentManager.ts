@@ -41,6 +41,7 @@ import {
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
+import { AsyncLock } from "../../../../Lib/src/locks/AsyncLock";
 import type { FightController } from "../fights/FightController";
 import type { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 
@@ -91,6 +92,12 @@ const ACTIVE_STATUSES = [
 	TournamentStatuses.PAUSED
 ];
 
+const CONTEXT_STATUSES = [
+	...ACTIVE_STATUSES,
+	TournamentStatuses.COMPLETED,
+	TournamentStatuses.CANCELLED
+];
+
 const PROCESSABLE_STATUSES = [
 	TournamentStatuses.REGISTRATION,
 	TournamentStatuses.COMBAT,
@@ -98,6 +105,7 @@ const PROCESSABLE_STATUSES = [
 ];
 
 const tournamentDefenderCooldowns = new Map<string, number>();
+const tournamentMatchmakingLocks = new Map<number, AsyncLock>();
 
 function getCategoryForLevel(level: number): TournamentCategory {
 	return level >= 100 ? TournamentCategories.LEVEL_100 : TournamentCategories.LEVEL_50;
@@ -296,6 +304,10 @@ export abstract class TournamentManager {
 	}
 
 	public static async getTournamentForContext(context: PacketContext): Promise<Tournament | null> {
+		return await this.findTournamentForContext(context, false);
+	}
+
+	public static async findTournamentForContext(context: PacketContext, includeFinished: boolean): Promise<Tournament | null> {
 		if (!Tournament.sequelize) {
 			return null;
 		}
@@ -309,7 +321,7 @@ export abstract class TournamentManager {
 			where: {
 				discordGuildId: guildId,
 				discordChannelId: { [Op.in]: channelIds },
-				status: { [Op.in]: ACTIVE_STATUSES }
+				status: { [Op.in]: includeFinished ? CONTEXT_STATUSES : ACTIVE_STATUSES }
 			},
 			order: [["id", "DESC"]]
 		});
@@ -353,9 +365,19 @@ export abstract class TournamentManager {
 			}
 		});
 		const now = Date.now();
+		const recentDefenses = await TournamentFight.findAll({
+			where: {
+				tournamentId: tournament.id,
+				defenderParticipantId: { [Op.in]: candidateIds },
+				playedAt: {
+					[Op.gt]: new Date(now - minutesToMilliseconds(asMinutes(FightConstants.DEFENDER_COOLDOWN_MINUTES)))
+				}
+			}
+		});
+		const recentDefenderIds = new Set(recentDefenses.map(fight => fight.defenderParticipantId));
 		for (const candidate of candidates) {
 			const cooldownKey = this.getDefenderCooldownKey(tournament.id, candidate.id);
-			if ((tournamentDefenderCooldowns.get(cooldownKey) ?? 0) > now) {
+			if ((tournamentDefenderCooldowns.get(cooldownKey) ?? 0) > now || recentDefenderIds.has(candidate.id)) {
 				continue;
 			}
 			const pairFights = fights.filter(fight =>
@@ -373,6 +395,25 @@ export abstract class TournamentManager {
 		return null;
 	}
 
+	public static async findAndReserveOpponent(tournament: Tournament, participant: TournamentParticipant): Promise<TournamentParticipant | null> {
+		let lock = tournamentMatchmakingLocks.get(tournament.id);
+		if (!lock) {
+			lock = new AsyncLock();
+			tournamentMatchmakingLocks.set(tournament.id, lock);
+		}
+		const release = await lock.acquire();
+		try {
+			const opponent = await this.findOpponent(tournament, participant);
+			if (opponent) {
+				this.reserveDefender(tournament.id, opponent.id);
+			}
+			return opponent;
+		}
+		finally {
+			release();
+		}
+	}
+
 	public static reserveDefender(tournamentId: number, participantId: number): void {
 		tournamentDefenderCooldowns.set(
 			this.getDefenderCooldownKey(tournamentId, participantId),
@@ -382,7 +423,7 @@ export abstract class TournamentManager {
 
 	public static async verifyCommandAccess(player: Player, context: PacketContext, response: CrowniclesPacket[], access: TournamentCommandAccess): Promise<boolean> {
 		await this.processDueTournaments();
-		const tournament = await this.getTournamentForContext(context);
+		const tournament = await this.findTournamentForContext(context, true);
 		if (!tournament) {
 			return true;
 		}
@@ -399,7 +440,7 @@ export abstract class TournamentManager {
 				: TournamentErrorCodes.INVALID_PHASE);
 			return false;
 		}
-		if (tournament.status === TournamentStatuses.PAUSED) {
+		if (tournament.status === TournamentStatuses.PAUSED && access !== "participant") {
 			this.pushError(response, TournamentErrorCodes.PAUSED);
 			return false;
 		}
@@ -412,7 +453,12 @@ export abstract class TournamentManager {
 			this.pushError(response, TournamentErrorCodes.INVALID_PHASE);
 			return false;
 		}
-		if (access === "participant" && tournament.status !== TournamentStatuses.REGISTRATION && tournament.status !== TournamentStatuses.COMBAT) {
+		if (access === "participant"
+			&& tournament.status !== TournamentStatuses.REGISTRATION
+			&& tournament.status !== TournamentStatuses.COMBAT
+			&& tournament.status !== TournamentStatuses.PAUSED
+			&& tournament.status !== TournamentStatuses.COMPLETED
+			&& tournament.status !== TournamentStatuses.CANCELLED) {
 			this.pushError(response, TournamentErrorCodes.INVALID_PHASE);
 			return false;
 		}
@@ -420,7 +466,7 @@ export abstract class TournamentManager {
 	}
 
 	public static async getStatusData(context: PacketContext, player: Player): Promise<TournamentStatusData> {
-		const tournament = await this.getTournamentForContext(context);
+		const tournament = await this.findTournamentForContext(context, true);
 		if (!tournament) {
 			throw new TournamentDomainError(TournamentErrorCodes.NOT_FOUND);
 		}
@@ -440,7 +486,7 @@ export abstract class TournamentManager {
 	}
 
 	public static async getTopData(context: PacketContext, player: Player): Promise<TournamentTopData> {
-		const tournament = await this.getTournamentForContext(context);
+		const tournament = await this.findTournamentForContext(context, true);
 		if (!tournament) {
 			throw new TournamentDomainError(TournamentErrorCodes.NOT_FOUND);
 		}
@@ -529,11 +575,14 @@ export abstract class TournamentManager {
 		});
 	}
 
-	public static async cancelTournament(tournamentId: number, reason: string): Promise<void> {
+	public static async cancelTournament(tournamentId: number, discordGuildId: string, reason: string): Promise<void> {
 		let participants: TournamentParticipant[] = [];
 		await Tournament.withLocked(tournamentId, async tournament => {
 			if (tournament.status === TournamentStatuses.COMPLETED || tournament.status === TournamentStatuses.CANCELLED) {
 				return;
+			}
+			if (tournament.discordGuildId !== discordGuildId) {
+				throw new TournamentDomainError(TournamentErrorCodes.CODE_GUILD_MISMATCH);
 			}
 			participants = await TournamentParticipant.findAll({ where: { tournamentId } });
 			tournament.status = TournamentStatuses.CANCELLED;
@@ -599,10 +648,16 @@ export abstract class TournamentManager {
 				attacker,
 				defender
 			]) => {
+				if (await TournamentFight.findOne({ where: { fightId: fight.id } })) {
+					return;
+				}
 				if (tournament.status !== TournamentStatuses.COMBAT || Date.now() >= tournament.combatEndsAt.getTime()) {
 					return;
 				}
-				if (attacker.category !== fightContext.category || defender.category !== fightContext.category) {
+				if (attacker.tournamentId !== tournament.id
+					|| defender.tournamentId !== tournament.id
+					|| attacker.category !== fightContext.category
+					|| defender.category !== fightContext.category) {
 					return;
 				}
 				const attackerResult = getGameResult(attackerWon, isDraw);
@@ -631,6 +686,7 @@ export abstract class TournamentManager {
 					crowniclesInstance?.logsDatabase.logPlayersDefenseGloryPoints(defender.keycloakId, newDefenderDefense, NumberChangeReason.TOURNAMENT_FIGHT)
 				]);
 				await TournamentFight.create({
+					fightId: fight.id,
 					tournamentId: tournament.id,
 					attackerParticipantId: attacker.id,
 					defenderParticipantId: defender.id,

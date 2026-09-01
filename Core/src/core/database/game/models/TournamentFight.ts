@@ -5,6 +5,8 @@ import {
 export class TournamentFight extends Model {
 	declare readonly id: number;
 
+	declare fightId: string;
+
 	declare tournamentId: number;
 
 	declare attackerParticipantId: number;
@@ -28,6 +30,12 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true
+		},
+		fightId: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(64),
+			allowNull: false,
+			unique: true
 		},
 		tournamentId: {
 			type: DataTypes.INTEGER,

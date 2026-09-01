@@ -37,7 +37,7 @@ function pushTournamentError(response: CrowniclesPacket[], error: unknown, reaso
 export default class TournamentCommand {
 	@adminCommand(CommandTournamentContextPacketReq, (): boolean => true)
 	static async context(response: CrowniclesPacket[], _packet: CommandTournamentContextPacketReq, context: PacketContext): Promise<void> {
-		const tournament = await TournamentManager.getTournamentForContext(context);
+		const tournament = await TournamentManager.findTournamentForContext(context, true);
 		const player = context.keycloakId ? await Players.getByKeycloakId(context.keycloakId) : null;
 		const participant = tournament && player
 			? await TournamentManager.getParticipant(tournament.id, player.id)
@@ -142,9 +142,9 @@ export default class TournamentCommand {
 	}
 
 	@adminCommand(CommandTournamentCancelPacketReq, context => context.discord?.isGuildAdministrator === true)
-	static async cancel(response: CrowniclesPacket[], packet: CommandTournamentCancelPacketReq): Promise<void> {
+	static async cancel(response: CrowniclesPacket[], packet: CommandTournamentCancelPacketReq, context: PacketContext): Promise<void> {
 		try {
-			await TournamentManager.cancelTournament(packet.tournamentId, "manual");
+			await TournamentManager.cancelTournament(packet.tournamentId, context.frontEndSubOrigin, "manual");
 			response.push(makePacket(CommandTournamentCancelPacketRes, {
 				tournamentId: packet.tournamentId
 			}));
