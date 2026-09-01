@@ -1,3 +1,5 @@
+import { ItemRarity } from "./ItemConstants";
+
 export abstract class TournamentConstants {
 	static readonly MINIMUM_SERVER_MEMBER_COUNT = 1000;
 
@@ -31,14 +33,22 @@ export abstract class TournamentConstants {
 
 	static readonly LEVEL_50_REWARD_DIVISOR = 2;
 
-	static readonly RANK_REWARD_MAX_PERCENT = 150;
+	static readonly RANK_REWARD_MAX_PERCENT = 120;
 
-	static readonly RANK_REWARD_MIN_PERCENT = 50;
+	static readonly RANK_REWARD_MIN_PERCENT = 25;
 
 	static readonly RANK_REWARD_PERCENT_RANGE =
 		TournamentConstants.RANK_REWARD_MAX_PERCENT - TournamentConstants.RANK_REWARD_MIN_PERCENT;
 
 	static readonly REWARD_PERCENTAGE_DIVISOR = 100;
+
+	static readonly BASE_XP_REWARD = 2000;
+
+	static readonly BASE_MONEY_REWARD = 2000;
+
+	static readonly REWARD_ITEM_MIN_RARITY = ItemRarity.UNCOMMON;
+
+	static readonly REWARD_ITEM_MAX_RARITY = ItemRarity.EPIC;
 
 	static readonly BASE_LEVEL_100_ITEM_REWARD_COUNT = 2;
 

@@ -10,11 +10,9 @@ import {
 import { Tournament } from "../database/game/models/Tournament";
 import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
 import Player from "../database/game/models/Player";
-import { LeagueDataController } from "../../data/League";
 import {
-	getCategoryCounts, getEndingNotificationDate, getRewardItemCount,
-	getRewardMultiplier, PROCESSABLE_STATUSES, sortParticipants,
-	TournamentRewardRank
+	getCategoryCounts, getEndingNotificationDate, getTournamentRewardAmounts,
+	PROCESSABLE_STATUSES, sortParticipants, TournamentRewardRank
 } from "./TournamentRules";
 import {
 	claimTournamentEvent, TournamentEventData
@@ -22,7 +20,6 @@ import {
 import { distributeRewards } from "./TournamentRewards";
 
 type TournamentRewardPreparationContext = {
-	playersById: Map<number, Player>;
 	category: typeof TournamentCategories[keyof typeof TournamentCategories];
 	participantCount: number;
 	rankData: TournamentRewardRank;
@@ -44,14 +41,12 @@ function prepareParticipantReward(
 	participant: TournamentParticipant,
 	context: TournamentRewardPreparationContext
 ): void {
-	const league = LeagueDataController.instance.getById(participant.normalLeagueId)
-		?? context.playersById.get(participant.playerId)?.getLeague();
-	const rewardMultiplier = getRewardMultiplier(context.participantCount, context.category, context.rankData);
+	const rewardAmounts = getTournamentRewardAmounts(context.participantCount, context.category, context.rankData);
 	participant.finalRank = context.rankData.rank;
 	participant.isWinner = context.rankData.rank === 1;
-	participant.rewardXp = league ? Math.round(league.getXPToAward() * rewardMultiplier) : 0;
-	participant.rewardMoney = league ? Math.round(league.getMoneyToAward() * rewardMultiplier) : 0;
-	participant.rewardItemCount = getRewardItemCount(context.participantCount, context.category, context.rankData);
+	participant.rewardXp = rewardAmounts.experience;
+	participant.rewardMoney = rewardAmounts.money;
+	participant.rewardItemCount = rewardAmounts.itemCount;
 }
 
 class TournamentParticipantsChangedError extends Error {
@@ -109,7 +104,6 @@ async function freezeTournamentAttempt(snapshot: TournamentParticipantSnapshot):
 			const categoryParticipants = sortParticipants(participants.filter(participant => participant.category === category), playersById);
 			for (const [index, participant] of categoryParticipants.entries()) {
 				prepareParticipantReward(participant, {
-					playersById,
 					category,
 					participantCount,
 					rankData: {
