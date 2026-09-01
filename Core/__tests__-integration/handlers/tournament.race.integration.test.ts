@@ -21,6 +21,7 @@ import type { InventorySlot as InventorySlotType } from "../../src/core/database
 
 type TournamentManagerModule = typeof import("../../src/core/tournaments/TournamentManager");
 type PacketUtilsModule = typeof import("../../src/core/utils/PacketUtils");
+type EloUtilsModule = typeof import("../../src/core/utils/EloUtils");
 type InventoryInfoModule = typeof import("../../src/core/database/game/models/InventoryInfo");
 type InventorySlotsModule = typeof import("../../src/core/database/game/models/InventorySlot");
 
@@ -48,6 +49,7 @@ function buildContext(keycloakId: string): PacketContext {
 describe("TournamentManager integration", () => {
 	let env: CoreTestEnvironment;
 	let manager: TournamentManagerModule["TournamentManager"];
+	let eloUtils: EloUtilsModule["EloUtils"];
 	let packetUtils: PacketUtilsModule["PacketUtils"];
 	let Player: ModelStatic<PlayerType>;
 	let Tournament: ModelStatic<TournamentType>;
@@ -62,6 +64,7 @@ describe("TournamentManager integration", () => {
 	beforeAll(async () => {
 		env = await setupCoreForTests("tournament");
 		manager = loadProductionModule<TournamentManagerModule>("core/tournaments/TournamentManager").TournamentManager;
+		eloUtils = loadProductionModule<EloUtilsModule>("core/utils/EloUtils").EloUtils;
 		packetUtils = loadProductionModule<PacketUtilsModule>("core/utils/PacketUtils").PacketUtils;
 		Player = env.crownicles.gameDatabase.sequelize.models.Player as ModelStatic<PlayerType>;
 		Tournament = env.crownicles.gameDatabase.sequelize.models.Tournament as ModelStatic<TournamentType>;
@@ -252,6 +255,13 @@ describe("TournamentManager integration", () => {
 		const attackerParticipant = await manager.registerPlayer(buildContext(attacker.keycloakId), attacker);
 		const defenderParticipant = await manager.registerPlayer(buildContext(defender.keycloakId), defender);
 		await TournamentParticipant.update({ defenseGloryPoints: 750 }, { where: { id: defenderParticipant.id } });
+		defenderParticipant.defenseGloryPoints = 750;
+		const expectedDefenderDefense = eloUtils.calculateNewRating(
+			defenderParticipant.defenseGloryPoints,
+			attackerParticipant.attackGloryPoints,
+			0,
+			eloUtils.getKFactorFromGlory(defenderParticipant.getTotalGloryPoints())
+		);
 		const fightInitiator = {};
 		const fakeFight = {
 			id: "tournament-fight-idempotence",
@@ -269,11 +279,13 @@ describe("TournamentManager integration", () => {
 
 		await manager.resolveFight(fakeFight, []);
 		const afterFirstResolution = await TournamentParticipant.findByPk(attackerParticipant.id);
+		const afterFirstDefenderResolution = await TournamentParticipant.findByPk(defenderParticipant.id);
 		await manager.resolveFight(fakeFight, []);
 		const afterSecondResolution = await TournamentParticipant.findByPk(attackerParticipant.id);
 
 		expect(await TournamentFight.count()).toBe(1);
 		expect(afterSecondResolution?.attackGloryPoints).toBe(afterFirstResolution?.attackGloryPoints);
+		expect(afterFirstDefenderResolution?.defenseGloryPoints).toBe(expectedDefenderDefense);
 	});
 
 	it("freezes the two category rankings and grants final rewards once", async () => {
@@ -339,8 +351,24 @@ describe("TournamentManager integration", () => {
 			level: index < 10 ? 50 : 100
 		})));
 		const participants = await Promise.all(players.map(player => manager.registerPlayer(buildContext(player.keycloakId), player)));
+		await Promise.all(players.map(player => InventoryInfo.upsert({
+			playerId: player.id,
+			weaponSlots: 3,
+			armorSlots: 3,
+			potionSlots: 3,
+			objectSlots: 3,
+			plantSlots: 1
+		})));
 		const fullPlayer = players[0];
 		await inventorySlots.getOfPlayer(fullPlayer.id);
+		await InventoryInfo.upsert({
+			playerId: fullPlayer.id,
+			weaponSlots: 1,
+			armorSlots: 1,
+			potionSlots: 1,
+			objectSlots: 1,
+			plantSlots: 1
+		});
 		await Promise.all([
 			ItemCategory.WEAPON,
 			ItemCategory.ARMOR,

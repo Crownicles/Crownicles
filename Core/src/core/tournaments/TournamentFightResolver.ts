@@ -104,18 +104,20 @@ async function resolveTournamentFightUnderLock(
 		defenderAttack: defender.attackGloryPoints,
 		defenderDefense: defender.defenseGloryPoints
 	};
-	attacker.attackGloryPoints = EloUtils.calculateNewRating(
+	const newAttackerAttack = EloUtils.calculateNewRating(
 		attacker.attackGloryPoints,
 		defender.defenseGloryPoints,
 		attackerResult,
 		EloUtils.getKFactorFromGlory(attacker.getTotalGloryPoints())
 	);
-	defender.defenseGloryPoints = EloUtils.calculateNewRating(
+	const newDefenderDefense = EloUtils.calculateNewRating(
 		defender.defenseGloryPoints,
 		attacker.attackGloryPoints,
 		defenderResult,
 		EloUtils.getKFactorFromGlory(defender.getTotalGloryPoints())
 	);
+	attacker.attackGloryPoints = newAttackerAttack;
+	defender.defenseGloryPoints = newDefenderDefense;
 	await Promise.all([attacker.save(), defender.save()]);
 	await TournamentFight.create({
 		fightId: parameters.fight.id,
