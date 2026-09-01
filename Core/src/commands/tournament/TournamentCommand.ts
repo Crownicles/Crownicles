@@ -15,9 +15,19 @@ import Player, { Players } from "../../core/database/game/models/Player";
 import {
 	adminCommand, commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
+import { TournamentDomainError } from "../../core/tournaments/TournamentErrors";
 import {
-	TournamentDomainError, TournamentManager
-} from "../../core/tournaments/TournamentManager";
+	findTournamentForContext, getParticipant
+} from "../../core/tournaments/TournamentQueries";
+import {
+	pauseTournamentForChannel, resumeTournament
+} from "../../core/tournaments/TournamentPause";
+import {
+	generateTournamentCode, createTournament
+} from "../../core/tournaments/TournamentCreation";
+import { registerPlayer } from "../../core/tournaments/TournamentRegistration";
+import { getStatusData } from "../../core/tournaments/TournamentRanking";
+import { cancelTournament } from "../../core/tournaments/TournamentCancellation";
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
@@ -37,10 +47,10 @@ function pushTournamentError(response: CrowniclesPacket[], error: unknown, reaso
 export default class TournamentCommand {
 	@adminCommand(CommandTournamentContextPacketReq, (): boolean => true)
 	static async context(response: CrowniclesPacket[], _packet: CommandTournamentContextPacketReq, context: PacketContext): Promise<void> {
-		const tournament = await TournamentManager.findTournamentForContext(context, true);
+		const tournament = await findTournamentForContext(context, true);
 		const player = context.keycloakId ? await Players.getByKeycloakId(context.keycloakId) : null;
 		const participant = tournament && player
-			? await TournamentManager.getParticipant(tournament.id, player.id)
+			? await getParticipant(tournament.id, player.id)
 			: null;
 		response.push(makePacket(CommandTournamentContextPacketRes, {
 			active: tournament !== null,
@@ -51,13 +61,13 @@ export default class TournamentCommand {
 
 	@adminCommand(CommandTournamentPausePacketReq, (): boolean => true)
 	static async pause(_response: CrowniclesPacket[], packet: CommandTournamentPausePacketReq): Promise<void> {
-		await TournamentManager.pauseTournamentForChannel(packet.discordGuildId, packet.discordChannelId);
+		await pauseTournamentForChannel(packet.discordGuildId, packet.discordChannelId);
 	}
 
 	@adminCommand(CommandTournamentGenerateCodePacketReq, context => context.discord?.isBotOwner === true)
 	static async generateCode(response: CrowniclesPacket[], _packet: CommandTournamentGenerateCodePacketReq, context: PacketContext): Promise<void> {
 		try {
-			const result = await TournamentManager.generateCode(context.frontEndSubOrigin);
+			const result = await generateTournamentCode(context.frontEndSubOrigin);
 			response.push(makePacket(CommandTournamentGenerateCodePacketRes, {
 				code: result.code,
 				expiresAt: result.expiresAt.getTime()
@@ -71,7 +81,7 @@ export default class TournamentCommand {
 	@adminCommand(CommandTournamentCreatePacketReq, context => context.discord?.isGuildAdministrator === true)
 	static async create(response: CrowniclesPacket[], packet: CommandTournamentCreatePacketReq, context: PacketContext): Promise<void> {
 		try {
-			const tournament = await TournamentManager.createTournament(
+			const tournament = await createTournament(
 				context,
 				packet.code,
 				packet.registrationDays,
@@ -98,7 +108,7 @@ export default class TournamentCommand {
 	})
 	static async register(response: CrowniclesPacket[], player: Player, _packet: CommandTournamentRegisterPacketReq, context: PacketContext): Promise<void> {
 		try {
-			const participant = await TournamentManager.registerPlayer(context, player);
+			const participant = await registerPlayer(context, player);
 			response.push(makePacket(CommandTournamentRegisterPacketRes, {
 				tournamentId: participant.tournamentId,
 				category: participant.category,
@@ -119,7 +129,7 @@ export default class TournamentCommand {
 	})
 	static async status(response: CrowniclesPacket[], player: Player, _packet: CommandTournamentStatusPacketReq, context: PacketContext): Promise<void> {
 		try {
-			response.push(makePacket(CommandTournamentStatusPacketRes, await TournamentManager.getStatusData(context, player)));
+			response.push(makePacket(CommandTournamentStatusPacketRes, await getStatusData(context, player)));
 		}
 		catch (error) {
 			pushTournamentError(response, error, "Tournament status retrieval failed");
@@ -129,7 +139,7 @@ export default class TournamentCommand {
 	@adminCommand(CommandTournamentResumePacketReq, context => context.discord?.isBotOwner === true)
 	static async resume(response: CrowniclesPacket[], packet: CommandTournamentResumePacketReq, context: PacketContext): Promise<void> {
 		try {
-			const tournament = await TournamentManager.resumeTournament(packet.tournamentId, context);
+			const tournament = await resumeTournament(packet.tournamentId, context);
 			response.push(makePacket(CommandTournamentResumePacketRes, {
 				tournamentId: tournament.id,
 				channelId: tournament.discordChannelId
@@ -143,7 +153,12 @@ export default class TournamentCommand {
 	@adminCommand(CommandTournamentCancelPacketReq, context => context.discord?.isGuildAdministrator === true)
 	static async cancel(response: CrowniclesPacket[], packet: CommandTournamentCancelPacketReq, context: PacketContext): Promise<void> {
 		try {
-			await TournamentManager.cancelTournament(packet.tournamentId, context.frontEndSubOrigin, "manual", context.discord?.isGuildAdministrator === true);
+			await cancelTournament({
+				tournamentId: packet.tournamentId,
+				discordGuildId: context.frontEndSubOrigin,
+				reason: "manual",
+				isGuildAdministrator: context.discord?.isGuildAdministrator === true
+			});
 			response.push(makePacket(CommandTournamentCancelPacketRes, {
 				tournamentId: packet.tournamentId
 			}));

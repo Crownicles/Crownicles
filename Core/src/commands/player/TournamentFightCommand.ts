@@ -3,8 +3,9 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player, { Players } from "../../core/database/game/models/Player";
 import Tournament from "../../core/database/game/models/Tournament";
-import { TournamentManager } from "../../core/tournaments/TournamentManager";
 import { getEffectiveLevel } from "../../core/tournaments/TournamentRules";
+import { getParticipant } from "../../core/tournaments/TournamentQueries";
+import { findAndReserveOpponent } from "../../core/tournaments/TournamentMatchmaking";
 import { TournamentStatuses } from "../../../../Lib/src/types/Tournament";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { ClassDataController } from "../../data/Class";
@@ -35,12 +36,12 @@ type TournamentFightFlow = {
 };
 
 async function startTournamentFight(flow: TournamentFightFlow): Promise<void> {
-	const participant = await TournamentManager.getParticipant(flow.tournament.id, flow.player.id);
+	const participant = await getParticipant(flow.tournament.id, flow.player.id);
 	if (!participant) {
 		flow.response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
 		return;
 	}
-	const opponentParticipant = await TournamentManager.findAndReserveOpponent(flow.tournament, participant);
+	const opponentParticipant = await findAndReserveOpponent(flow.tournament, participant);
 	if (!opponentParticipant) {
 		flow.response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
 		return;
@@ -110,7 +111,7 @@ function tournamentFightValidationEndCallback(flow: TournamentFightFlow): EndCal
 }
 
 export async function executeTournamentFightCommand(flow: TournamentFightFlow): Promise<void> {
-	const participant = await TournamentManager.getParticipant(flow.tournament.id, flow.player.id);
+	const participant = await getParticipant(flow.tournament.id, flow.player.id);
 	if (!participant || flow.tournament.status !== TournamentStatuses.COMBAT) {
 		flow.response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
 		return;

@@ -11,7 +11,8 @@ import {
 	getTopKind, getTopPacket, NO_GUILD_ID, TopKind, TopStorage
 } from "../../core/utils/TopUtils";
 import { CommandTournamentTopPacketRes } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
-import { TournamentManager } from "../../core/tournaments/TournamentManager";
+import { findTournamentForContext } from "../../core/tournaments/TournamentQueries";
+import { getTopData } from "../../core/tournaments/TournamentRanking";
 
 export default class TopCommand {
 	@commandRequires(CommandTopPacketReq, {
@@ -26,8 +27,8 @@ export default class TopCommand {
 		packet: CommandTopPacketReq,
 		context: PacketContext
 	): Promise<void> {
-		if (await TournamentManager.findTournamentForContext(context, true)) {
-			response.push(makePacket(CommandTournamentTopPacketRes, await TournamentManager.getTopData(context, player, packet.page)));
+		if (await findTournamentForContext(context, true)) {
+			response.push(makePacket(CommandTournamentTopPacketRes, await getTopData(context, player, packet.page)));
 			return;
 		}
 		const topKind = getTopKind(packet.dataType, packet.timing);
