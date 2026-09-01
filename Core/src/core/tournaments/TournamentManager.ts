@@ -5,7 +5,7 @@ import {
 	TournamentErrorCodes
 } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
 import {
-	TournamentCategory, TournamentNotificationEvents,
+	TournamentNotificationEvents,
 	TournamentStatuses
 } from "../../../../Lib/src/types/Tournament";
 import { Tournament } from "../database/game/models/Tournament";
@@ -19,9 +19,7 @@ import type {
 	TournamentCommandAccess
 } from "./TournamentTypes";
 import {
-	getCategoryForLevel, getEffectiveLevel,
-	getRewardItemCount,
-	getRewardMultiplier, TournamentStatusData, TournamentTopData
+	TournamentStatusData, TournamentTopData
 } from "./TournamentRules";
 import {
 	sendTournamentEvent
@@ -56,22 +54,6 @@ export type {
 } from "./TournamentTypes";
 
 export abstract class TournamentManager {
-	public static getCategoryForLevel(level: number): TournamentCategory {
-		return getCategoryForLevel(level);
-	}
-
-	public static getEffectiveLevel(category: TournamentCategory, level: number): number {
-		return getEffectiveLevel(category, level);
-	}
-
-	public static getRewardMultiplier(participantCount: number, category: TournamentCategory): number {
-		return getRewardMultiplier(participantCount, category);
-	}
-
-	public static getRewardItemCount(participantCount: number, category: TournamentCategory): number {
-		return getRewardItemCount(participantCount, category);
-	}
-
 	public static async generateCode(discordGuildId: string): Promise<TournamentCodeGenerationResult> {
 		return await generateTournamentCode(discordGuildId);
 	}

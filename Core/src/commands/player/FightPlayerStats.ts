@@ -3,8 +3,8 @@ import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
-import { TournamentManager } from "../../core/tournaments/TournamentManager";
 import TournamentParticipant from "../../core/database/game/models/TournamentParticipant";
+import { getEffectiveLevel } from "../../core/tournaments/TournamentRules";
 
 export type PlayerStats = {
 	pet?: {
@@ -33,7 +33,7 @@ export async function getPlayerStats(player: Player, tournamentParticipant?: Tou
 	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
 	const petEntity = await PetEntities.getById(player.petId);
 	const effectiveLevel = tournamentParticipant
-		? TournamentManager.getEffectiveLevel(tournamentParticipant.category, player.level)
+		? getEffectiveLevel(tournamentParticipant.category, player.level)
 		: player.level;
 	const includePotion = !tournamentParticipant;
 	const maxEnergy = player.getMaxCumulativeEnergy(playerActiveObjects, effectiveLevel);
