@@ -36,6 +36,11 @@ export type TournamentEventData = {
 	cancellationReason?: string;
 };
 
+export type TournamentRewardRank = {
+	rank: number;
+	categoryParticipantCount: number;
+};
+
 export const ACTIVE_STATUSES = [
 	TournamentStatuses.REGISTRATION,
 	TournamentStatuses.COMBAT,
@@ -70,7 +75,7 @@ export function getCategoryCounts(participants: TournamentParticipant[]): Record
 	};
 }
 
-export function getRewardMultiplier(participantCount: number, category: TournamentCategory): number {
+function getBaseRewardMultiplier(participantCount: number, category: TournamentCategory): number {
 	const baseMultiplier = TournamentConstants.MINIMUM_REWARD_MULTIPLIER
 		+ Math.floor((participantCount - TournamentConstants.MINIMUM_TOTAL_PARTICIPANTS) / TournamentConstants.REWARD_MULTIPLIER_PARTICIPANT_STEP);
 	return category === TournamentCategories.LEVEL_50
@@ -78,12 +83,36 @@ export function getRewardMultiplier(participantCount: number, category: Tourname
 		: baseMultiplier;
 }
 
-export function getRewardItemCount(participantCount: number, category: TournamentCategory): number {
+export function getRankRewardFactor({
+	rank,
+	categoryParticipantCount
+}: TournamentRewardRank): number {
+	const maximumRankOffset = Math.max(categoryParticipantCount - 1, 1);
+	const rankOffset = Math.min(Math.max(rank - 1, 0), maximumRankOffset);
+	const rewardPercent = TournamentConstants.RANK_REWARD_MAX_PERCENT
+		- Math.round(TournamentConstants.RANK_REWARD_PERCENT_RANGE * rankOffset / maximumRankOffset);
+	return rewardPercent / TournamentConstants.REWARD_PERCENTAGE_DIVISOR;
+}
+
+export function getRewardMultiplier(
+	participantCount: number,
+	category: TournamentCategory,
+	rankData: TournamentRewardRank
+): number {
+	return getBaseRewardMultiplier(participantCount, category) * getRankRewardFactor(rankData);
+}
+
+export function getRewardItemCount(
+	participantCount: number,
+	category: TournamentCategory,
+	rankData: TournamentRewardRank
+): number {
 	const level100ItemCount = TournamentConstants.BASE_LEVEL_100_ITEM_REWARD_COUNT
 		+ Math.floor(participantCount / TournamentConstants.ADDITIONAL_ITEM_PARTICIPANT_STEP);
-	return category === TournamentCategories.LEVEL_50
+	const categoryItemCount = category === TournamentCategories.LEVEL_50
 		? Math.ceil(level100ItemCount / TournamentConstants.LEVEL_50_REWARD_DIVISOR)
 		: level100ItemCount;
+	return Math.max(1, Math.ceil(categoryItemCount * getRankRewardFactor(rankData)));
 }
 
 export function getTournamentPhaseEnd(tournament: Tournament): Date {
