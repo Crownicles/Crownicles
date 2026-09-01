@@ -1,5 +1,6 @@
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import {
 	getSlotCountForCategory,
 	type ChestSlotsPerCategory
@@ -13,7 +14,6 @@ import {
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { crowniclesInstance } from "../../app";
 import type { GenericItem } from "../../data/GenericItem";
-import { LeagueDataController } from "../../data/League";
 import {
 	InventoryInfo, InventoryInfos
 } from "../database/game/models/InventoryInfo";
@@ -26,7 +26,7 @@ import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import { Tournament } from "../database/game/models/Tournament";
 import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
 import {
-	generateRandomLootEnchantment, generateRandomLootLevel
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel
 } from "../utils/ItemUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
@@ -77,9 +77,11 @@ async function applyTournamentRewardUnderLock(
 	participant: Locked<TournamentParticipant>
 ): Promise<TournamentRewardItem[] | null> {
 	const response: CrowniclesPacket[] = [];
-	const league = LeagueDataController.instance.getById(participant.normalLeagueId) ?? player.getLeague();
 	const rewardItems = Array.from({ length: participant.rewardItemCount }, (): TournamentRewardItem => {
-		const item = league.generateRewardItem();
+		const item = generateRandomItem({
+			minRarity: TournamentConstants.REWARD_ITEM_MIN_RARITY,
+			maxRarity: TournamentConstants.REWARD_ITEM_MAX_RARITY
+		});
 		return {
 			item,
 			itemLevel: generateRandomLootLevel(),

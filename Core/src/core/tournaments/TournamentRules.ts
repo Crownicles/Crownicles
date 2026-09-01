@@ -41,6 +41,12 @@ export type TournamentRewardRank = {
 	categoryParticipantCount: number;
 };
 
+export type TournamentRewardAmounts = {
+	experience: number;
+	money: number;
+	itemCount: number;
+};
+
 export const ACTIVE_STATUSES = [
 	TournamentStatuses.REGISTRATION,
 	TournamentStatuses.COMBAT,
@@ -113,6 +119,19 @@ export function getRewardItemCount(
 		? Math.ceil(level100ItemCount / TournamentConstants.LEVEL_50_REWARD_DIVISOR)
 		: level100ItemCount;
 	return Math.max(1, Math.ceil(categoryItemCount * getRankRewardFactor(rankData)));
+}
+
+export function getTournamentRewardAmounts(
+	participantCount: number,
+	category: TournamentCategory,
+	rankData: TournamentRewardRank
+): TournamentRewardAmounts {
+	const rewardMultiplier = getRewardMultiplier(participantCount, category, rankData);
+	return {
+		experience: Math.round(TournamentConstants.BASE_XP_REWARD * rewardMultiplier),
+		money: Math.round(TournamentConstants.BASE_MONEY_REWARD * rewardMultiplier),
+		itemCount: getRewardItemCount(participantCount, category, rankData)
+	};
 }
 
 export function getTournamentPhaseEnd(tournament: Tournament): Date {

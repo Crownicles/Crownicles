@@ -17,6 +17,7 @@ import {
 } from "../../../Lib/src/types/Tournament";
 import { TournamentErrorCodes } from "../../../Lib/src/packets/commands/CommandTournamentPacket";
 import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
+import { TournamentConstants } from "../../../Lib/src/constants/TournamentConstants";
 import type { InventoryInfo as InventoryInfoType } from "../../src/core/database/game/models/InventoryInfo";
 import type { InventorySlot as InventorySlotType } from "../../src/core/database/game/models/InventorySlot";
 
@@ -374,6 +375,11 @@ describe("Tournament modules integration", () => {
 			objectSlots: 3
 		})));
 		const participants = await Promise.all(players.map(player => manager.registerPlayer(buildContext(player.keycloakId), player)));
+		await Promise.all(participants
+			.filter(participant => participant.category === TournamentCategories.LEVEL_100)
+			.map(participant => TournamentParticipant.update({ normalLeagueId: 10 }, {
+				where: { id: participant.id }
+			})));
 		await Tournament.update({ startedNotificationSent: true }, { where: { id: tournament.id } });
 		await TournamentParticipant.update({ startedNotificationSent: true }, { where: { tournamentId: tournament.id } });
 		await TournamentParticipant.update({
@@ -407,6 +413,12 @@ describe("Tournament modules integration", () => {
 		const level100Ranking = finishedParticipants
 			.filter(participant => participant.category === TournamentCategories.LEVEL_100)
 			.sort((left, right) => (left.finalRank ?? 0) - (right.finalRank ?? 0));
+		const firstRankFactor = TournamentConstants.RANK_REWARD_MAX_PERCENT / TournamentConstants.REWARD_PERCENTAGE_DIVISOR;
+		const lastRankFactor = TournamentConstants.RANK_REWARD_MIN_PERCENT / TournamentConstants.REWARD_PERCENTAGE_DIVISOR;
+		expect(level100Ranking[0].rewardXp).toBe(TournamentConstants.BASE_XP_REWARD * TournamentConstants.MINIMUM_REWARD_MULTIPLIER * firstRankFactor);
+		expect(level100Ranking.at(-1)!.rewardXp).toBe(TournamentConstants.BASE_XP_REWARD * TournamentConstants.MINIMUM_REWARD_MULTIPLIER * lastRankFactor);
+		expect(level100Ranking[0].rewardMoney).toBe(TournamentConstants.BASE_MONEY_REWARD * TournamentConstants.MINIMUM_REWARD_MULTIPLIER * firstRankFactor);
+		expect(level100Ranking.at(-1)!.rewardMoney).toBe(TournamentConstants.BASE_MONEY_REWARD * TournamentConstants.MINIMUM_REWARD_MULTIPLIER * lastRankFactor);
 		expect(level100Ranking[0].rewardXp).toBeGreaterThan(level100Ranking.at(-1)!.rewardXp);
 		expect(level100Ranking[0].rewardMoney).toBeGreaterThan(level100Ranking.at(-1)!.rewardMoney);
 		expect(await PlayerBadges.count()).toBe(2);
