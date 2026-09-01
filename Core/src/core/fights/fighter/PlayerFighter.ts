@@ -28,6 +28,11 @@ export type PveMemberStats = {
 	attack: number; speed: number;
 };
 
+type PlayerFighterOptions = {
+	effectiveLevel?: number;
+	tournamentMode?: boolean;
+};
+
 /**
  * Fighter
  * Class representing a human-controlled player in a fight
@@ -39,9 +44,12 @@ export class PlayerFighter extends PlayerBaseFighter {
 
 	protected petAssisted: boolean;
 
-	public constructor(player: Player, playerClass: Class) {
-		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
+	private readonly tournamentMode: boolean;
+
+	public constructor(player: Player, playerClass: Class, options: PlayerFighterOptions = {}) {
+		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds), options.effectiveLevel);
 		this.petAssisted = false;
+		this.tournamentMode = options.tournamentMode ?? false;
 	}
 
 	/**
@@ -67,7 +75,9 @@ export class PlayerFighter extends PlayerBaseFighter {
 	async startFight(_fightView: FightView, startStatus: FighterStatus, response: CrowniclesPacket[]): Promise<void> {
 		this.status = startStatus;
 
-		await this.consumeFightPotionIfNeeded(response, FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER);
+		if (!this.tournamentMode) {
+			await this.consumeFightPotionIfNeeded(response, FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER);
+		}
 		this.block();
 	}
 
@@ -79,6 +89,9 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 * @param turnCount The number of turns that the fight lasted
 	 */
 	async endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void> {
+		if (this.tournamentMode) {
+			return;
+		}
 		await this.player.reload();
 		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
 		this.player.setEnergyLost(this.stats.maxEnergy! - this.stats.energy!, NumberChangeReason.FIGHT, playerActiveObjects);
@@ -129,8 +142,10 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 */
 	public async loadStats(isPvE = false): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.energy = this.player.getCumulativeEnergy(playerActiveObjects);
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
+		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects, this.level);
+		this.stats.energy = this.tournamentMode
+			? this.stats.maxEnergy
+			: this.player.getCumulativeEnergy(playerActiveObjects);
 		this.loadCombatStats(playerActiveObjects, isPvE);
 		this.metallicItemCount = await InventorySlots.countObjectsOfPlayer(this.player.id, ItemConstants.TAGS.METALLIC);
 		if (this.player.petId) {

@@ -86,7 +86,7 @@ export class FightView {
 			activeFighter: {
 				keycloakId: playingFighter instanceof MonsterFighter ? undefined : playingFighter.player.keycloakId,
 				monsterId: playingFighter instanceof MonsterFighter ? playingFighter.monster.id : undefined,
-				glory: playingFighter instanceof MonsterFighter ? undefined : playingFighter.player.getGloryPoints(),
+				glory: playingFighter instanceof MonsterFighter ? undefined : playingFighter.getDisplayedGloryPoints(),
 				stats: {
 					power: playingFighter.getEnergy(),
 					attack: playingFighter.getAttack(),
@@ -100,7 +100,7 @@ export class FightView {
 			defendingFighter: {
 				keycloakId: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.player.keycloakId,
 				monsterId: defendingFighter instanceof MonsterFighter ? defendingFighter.monster.id : undefined,
-				glory: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.player.getGloryPoints(),
+				glory: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.getDisplayedGloryPoints(),
 				stats: {
 					power: defendingFighter.getEnergy(),
 					attack: defendingFighter.getAttack(),
