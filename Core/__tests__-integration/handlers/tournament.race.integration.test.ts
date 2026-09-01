@@ -11,13 +11,14 @@ import type TournamentCodeType from "../../src/core/database/game/models/Tournam
 import type TournamentParticipantType from "../../src/core/database/game/models/TournamentParticipant";
 import type TournamentFightType from "../../src/core/database/game/models/TournamentFight";
 import type PlayerBadgesType from "../../src/core/database/game/models/PlayerBadges";
-import type { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
+import type { CrowniclesPacket, PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
 	TournamentCategories, TournamentStatuses
 } from "../../../Lib/src/types/Tournament";
 import { TournamentErrorCodes } from "../../../Lib/src/packets/commands/CommandTournamentPacket";
 import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
 import { TournamentConstants } from "../../../Lib/src/constants/TournamentConstants";
+import { ItemFoundPacket } from "../../../Lib/src/packets/events/ItemFoundPacket";
 import type { InventoryInfo as InventoryInfoType } from "../../src/core/database/game/models/InventoryInfo";
 import type { InventorySlot as InventorySlotType } from "../../src/core/database/game/models/InventorySlot";
 
@@ -28,6 +29,7 @@ type TournamentMatchmakingModule = typeof import("../../src/core/tournaments/Tou
 type TournamentPauseModule = typeof import("../../src/core/tournaments/TournamentPause");
 type TournamentLifecycleModule = typeof import("../../src/core/tournaments/TournamentLifecycle");
 type TournamentRankingModule = typeof import("../../src/core/tournaments/TournamentRanking");
+type TournamentRewardsModule = typeof import("../../src/core/tournaments/TournamentRewards");
 type TournamentFightResolverModule = typeof import("../../src/core/tournaments/TournamentFightResolver");
 type PacketUtilsModule = typeof import("../../src/core/utils/PacketUtils");
 type EloUtilsModule = typeof import("../../src/core/utils/EloUtils");
@@ -43,7 +45,9 @@ type TournamentTestApi = {
 	findOpponent: TournamentMatchmakingModule["findOpponent"];
 	pauseTournament: TournamentPauseModule["pauseTournament"];
 	resumeTournament: TournamentPauseModule["resumeTournament"];
+	getStatusData: TournamentRankingModule["getStatusData"];
 	getTopData: TournamentRankingModule["getTopData"];
+	claimTournamentReward: TournamentRewardsModule["claimTournamentReward"];
 	processDueTournaments: TournamentLifecycleModule["processDueTournaments"];
 	resolveFight: TournamentFightResolverModule["resolveTournamentFight"];
 };
@@ -107,7 +111,9 @@ describe("Tournament modules integration", () => {
 			findOpponent: matchmaking.findOpponent,
 			pauseTournament: pause.pauseTournament,
 			resumeTournament: pause.resumeTournament,
+			getStatusData: ranking.getStatusData,
 			getTopData: ranking.getTopData,
+			claimTournamentReward: loadProductionModule<TournamentRewardsModule>("core/tournaments/TournamentRewards").claimTournamentReward,
 			processDueTournaments: lifecycle.processDueTournaments,
 			resolveFight: fightResolver.resolveTournamentFight
 		};
@@ -199,6 +205,33 @@ describe("Tournament modules integration", () => {
 		expect(top.pageNumber).toBe(1);
 		expect(top.totalPages).toBe(1);
 		sendNotifications.mockRestore();
+	});
+
+	it("shows the guild tournament status from any channel", async () => {
+		const owner = await Player.create({
+			keycloakId: "tournament-owner-status",
+			level: 100
+		});
+		const code = await manager.generateCode(GUILD_ID);
+		await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
+		const player = await Player.create({
+			keycloakId: "tournament-status-player",
+			level: 100
+		});
+		await manager.registerPlayer(buildContext(player.keycloakId), player);
+		const statusContext = buildContext(player.keycloakId);
+		statusContext.discord!.channel = "unrelated-channel";
+
+		const status = await manager.getStatusData(statusContext, player);
+
+		expect(status.discordGuildId).toBe(GUILD_ID);
+		expect(status.discordChannelId).toBe(CHANNEL_ID);
+		expect(status.status).toBe(TournamentStatuses.REGISTRATION);
+		expect(status.participantCount).toBe(1);
+		expect(status.categoryCounts[TournamentCategories.LEVEL_100]).toBe(1);
+		expect(status.category).toBe(TournamentCategories.LEVEL_100);
+		expect(status.rank).toBe(1);
+		expect(status.reward).toBeUndefined();
 	});
 
 	it("assigns a late registration 750 attack and zero defense glory", async () => {
@@ -405,10 +438,10 @@ describe("Tournament modules integration", () => {
 		});
 		const winners = finishedParticipants.filter(participant => participant.isWinner);
 		expect(finished?.status).toBe(TournamentStatuses.COMPLETED);
-		expect(finished?.rewardsDistributed).toBe(true);
+		expect(finished?.rewardsDistributed).toBe(false);
 		expect(winners).toHaveLength(2);
 		expect(finishedParticipants.every(participant => participant.finalRank !== null)).toBe(true);
-		expect(finishedParticipants.every(participant => participant.rewardGrantedAt !== null)).toBe(true);
+		expect(finishedParticipants.every(participant => participant.rewardGrantedAt === null)).toBe(true);
 		expect(finishedParticipants.every(participant => participant.endedNotificationSent)).toBe(true);
 		const level100Ranking = finishedParticipants
 			.filter(participant => participant.category === TournamentCategories.LEVEL_100)
@@ -421,8 +454,30 @@ describe("Tournament modules integration", () => {
 		expect(level100Ranking.at(-1)!.rewardMoney).toBe(TournamentConstants.BASE_MONEY_REWARD * TournamentConstants.MINIMUM_REWARD_MULTIPLIER * lastRankFactor);
 		expect(level100Ranking[0].rewardXp).toBeGreaterThan(level100Ranking.at(-1)!.rewardXp);
 		expect(level100Ranking[0].rewardMoney).toBeGreaterThan(level100Ranking.at(-1)!.rewardMoney);
-		expect(await PlayerBadges.count()).toBe(2);
+		const level100Winner = winners.find(participant => participant.category === TournamentCategories.LEVEL_100)!;
+		const winnerPlayer = players.find(player => player.id === level100Winner.playerId)!;
+		const claimResponse: CrowniclesPacket[] = [];
+		await manager.claimTournamentReward(buildContext(winnerPlayer.keycloakId), claimResponse, winnerPlayer);
+		const finishedStatus = await manager.getStatusData(buildContext(winnerPlayer.keycloakId), winnerPlayer);
+		const statusParticipant = finishedParticipants.find(participant => participant.playerId === winnerPlayer.id)!;
+		expect(finishedStatus.rank).toBe(statusParticipant.finalRank);
+		expect(finishedStatus.reward).toEqual({
+			xp: statusParticipant.rewardXp,
+			money: statusParticipant.rewardMoney,
+			itemCount: statusParticipant.rewardItemCount,
+			granted: true
+		});
+		expect(claimResponse.filter(packet => packet.constructor.name === "ItemFoundPacket")).toHaveLength(level100Winner.rewardItemCount);
+		const claimedItem = claimResponse.find(packet => packet.constructor.name === ItemFoundPacket.name) as ItemFoundPacket;
+		expect(claimedItem.itemWithDetails.itemCategory).not.toBe(ItemCategory.POTION);
+		expect((await Tournament.findByPk(tournament.id))?.rewardsDistributed).toBe(false);
+		expect(await PlayerBadges.count()).toBe(1);
 		expect(sendNotifications).toHaveBeenCalledTimes(2);
+		for (const player of players) {
+			await manager.claimTournamentReward(buildContext(player.keycloakId), [], player);
+		}
+		expect(await PlayerBadges.count()).toBe(2);
+		expect((await Tournament.findByPk(tournament.id))?.rewardsDistributed).toBe(true);
 		await manager.processDueTournaments();
 		expect(sendNotifications).toHaveBeenCalledTimes(2);
 		sendNotifications.mockRestore();
@@ -511,12 +566,12 @@ describe("Tournament modules integration", () => {
 			objectSlots: 4,
 			plantSlots: 1
 		});
-		await manager.processDueTournaments();
+		await manager.claimTournamentReward(buildContext(fullPlayer.keycloakId), [], fullPlayer);
 
 		const granted = await TournamentParticipant.findByPk(participants[0].id);
 		const completedTournament = await Tournament.findByPk(tournament.id);
 		expect(granted?.rewardGrantedAt).not.toBeNull();
-		expect(completedTournament?.rewardsDistributed).toBe(true);
+		expect(completedTournament?.rewardsDistributed).toBe(false);
 		sendNotifications.mockRestore();
 	});
 });

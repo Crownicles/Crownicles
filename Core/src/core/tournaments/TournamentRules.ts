@@ -1,7 +1,7 @@
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import {
 	TournamentCategories, TournamentCategory, TournamentNotificationEvent,
-	TournamentStatus, TournamentStatuses, TournamentTopCategory
+	TournamentRewardSummary, TournamentStatus, TournamentStatuses, TournamentTopCategory
 } from "../../../../Lib/src/types/Tournament";
 import {
 	asHours, hoursToMilliseconds
@@ -17,6 +17,8 @@ import type {
 export type TournamentStatusData = {
 	tournamentId: number;
 	status: TournamentStatus;
+	discordGuildId: string;
+	discordChannelId: string;
 	registrationEndsAt: number;
 	combatEndsAt: number;
 	participantCount: number;
@@ -24,6 +26,8 @@ export type TournamentStatusData = {
 	category?: TournamentCategory;
 	attackGloryPoints?: number;
 	defenseGloryPoints?: number;
+	rank?: number;
+	reward?: TournamentRewardSummary;
 };
 
 export type TournamentTopData = {
@@ -100,19 +104,6 @@ export function getRewardMultiplier(
 	return getBaseRewardMultiplier(participantCount, category) * getRankRewardFactor(rankData);
 }
 
-export function getRewardItemCount(
-	participantCount: number,
-	category: TournamentCategory,
-	rankData: TournamentRewardRank
-): number {
-	const level100ItemCount = TournamentConstants.BASE_LEVEL_100_ITEM_REWARD_COUNT
-		+ Math.floor(participantCount / TournamentConstants.ADDITIONAL_ITEM_PARTICIPANT_STEP);
-	const categoryItemCount = category === TournamentCategories.LEVEL_50
-		? Math.ceil(level100ItemCount / TournamentConstants.LEVEL_50_REWARD_DIVISOR)
-		: level100ItemCount;
-	return Math.max(1, Math.ceil(categoryItemCount * getRankRewardFactor(rankData)));
-}
-
 export function getTournamentRewardAmounts(
 	participantCount: number,
 	category: TournamentCategory,
@@ -122,7 +113,7 @@ export function getTournamentRewardAmounts(
 	return {
 		experience: Math.round(TournamentConstants.BASE_XP_REWARD * rewardMultiplier),
 		money: Math.round(TournamentConstants.BASE_MONEY_REWARD * rewardMultiplier),
-		itemCount: getRewardItemCount(participantCount, category, rankData)
+		itemCount: TournamentConstants.REWARD_ITEM_COUNT
 	};
 }
 

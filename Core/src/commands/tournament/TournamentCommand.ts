@@ -28,6 +28,7 @@ import {
 import { registerPlayer } from "../../core/tournaments/TournamentRegistration";
 import { getStatusData } from "../../core/tournaments/TournamentRanking";
 import { cancelTournament } from "../../core/tournaments/TournamentCancellation";
+import { claimTournamentReward } from "../../core/tournaments/TournamentRewards";
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
@@ -127,10 +128,11 @@ export default class TournamentCommand {
 	@commandRequires(CommandTournamentStatusPacketReq, {
 		notBlocked: false,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE,
-		tournamentAccess: "participant"
+		tournamentAccess: "status"
 	})
 	static async status(response: CrowniclesPacket[], player: Player, _packet: CommandTournamentStatusPacketReq, context: PacketContext): Promise<void> {
 		try {
+			await claimTournamentReward(context, response, player);
 			response.push(makePacket(CommandTournamentStatusPacketRes, await getStatusData(context, player)));
 		}
 		catch (error) {

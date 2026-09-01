@@ -64,6 +64,9 @@ export async function verifyCommandAccess(
 	if (!tournament) {
 		return true;
 	}
+	if (access === "status") {
+		return true;
+	}
 	if (access === "none") {
 		pushError(response, TournamentErrorCodes.ACCESS_DENIED);
 		return false;

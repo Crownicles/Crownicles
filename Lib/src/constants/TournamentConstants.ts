@@ -1,5 +1,3 @@
-import { ItemRarity } from "./ItemConstants";
-
 export abstract class TournamentConstants {
 	static readonly MINIMUM_SERVER_MEMBER_COUNT = 1000;
 
@@ -46,13 +44,9 @@ export abstract class TournamentConstants {
 
 	static readonly BASE_MONEY_REWARD = 2000;
 
-	static readonly REWARD_ITEM_MIN_RARITY = ItemRarity.UNCOMMON;
+	static readonly REWARD_ITEM_COUNT = 1;
 
-	static readonly REWARD_ITEM_MAX_RARITY = ItemRarity.EPIC;
-
-	static readonly BASE_LEVEL_100_ITEM_REWARD_COUNT = 2;
-
-	static readonly ADDITIONAL_ITEM_PARTICIPANT_STEP = 50;
+	static readonly REWARD_ITEM_TOP_RANK_LIMIT = 15;
 
 	static readonly BO3_MAX_GAMES = 3;
 

@@ -70,6 +70,20 @@ export async function handleTournamentRegister(context: PacketContext, packet: C
 		})));
 }
 
+function getTournamentRewardDescription(packet: CommandTournamentStatusPacketRes, lng: Language): string {
+	if (!packet.reward) {
+		return i18n.t("commands:tournament.noReward", { lng });
+	}
+	return i18n.t(packet.reward.granted
+		? "commands:tournament.rewardGranted"
+		: "commands:tournament.rewardPending", {
+		lng,
+		xp: DisplayUtils.formatNumber(packet.reward.xp, lng),
+		money: DisplayUtils.formatNumber(packet.reward.money, lng),
+		itemCount: packet.reward.itemCount
+	});
+}
+
 export async function handleTournamentStatus(context: PacketContext, packet: CommandTournamentStatusPacketRes): Promise<void> {
 	await editTournamentReply(context, interaction => {
 		const lng = interaction.userLanguage;
@@ -77,6 +91,8 @@ export async function handleTournamentStatus(context: PacketContext, packet: Com
 			.setTitle(i18n.t("commands:tournament.statusTitle", { lng }))
 			.setDescription(i18n.t("commands:tournament.status", {
 				lng,
+				server: interaction.guild?.name ?? packet.discordGuildId,
+				channel: `<#${packet.discordChannelId}>`,
 				tournamentId: packet.tournamentId,
 				status: i18n.t(`commands:tournament.statuses.${packet.status}`, { lng }),
 				registrationEndsAt: finishInTimeDisplay(new Date(packet.registrationEndsAt)),
@@ -87,8 +103,10 @@ export async function handleTournamentStatus(context: PacketContext, packet: Com
 				category: packet.category
 					? i18n.t(`commands:tournament.categories.${packet.category}`, { lng })
 					: i18n.t("commands:tournament.notRegistered", { lng }),
-				attackGloryPoints: packet.attackGloryPoints ?? 0,
-				defenseGloryPoints: packet.defenseGloryPoints ?? 0
+				rank: packet.rank ?? i18n.t("commands:tournament.unranked", { lng }),
+				attackGloryPoints: DisplayUtils.formatNumber(packet.attackGloryPoints ?? 0, lng),
+				defenseGloryPoints: DisplayUtils.formatNumber(packet.defenseGloryPoints ?? 0, lng),
+				reward: getTournamentRewardDescription(packet, lng)
 			}));
 	});
 }

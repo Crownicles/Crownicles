@@ -18,7 +18,6 @@ import type { TournamentRewardRank } from "./TournamentTypes";
 import {
 	claimTournamentEvent, TournamentEventData
 } from "./TournamentNotifications";
-import { distributeRewards } from "./TournamentRewards";
 
 type TournamentRewardPreparationContext = {
 	category: typeof TournamentCategories[keyof typeof TournamentCategories];
@@ -182,7 +181,6 @@ function isStartedNotificationReady(tournament: Tournament): boolean {
 
 function isEndedNotificationReady(tournament: Tournament): boolean {
 	return (tournament.status === TournamentStatuses.COMPLETED || tournament.status === TournamentStatuses.CANCELLED)
-		&& tournament.rewardsDistributed
 		&& !tournament.endedNotificationSent;
 }
 
@@ -232,7 +230,6 @@ async function freezeTournament(tournament: Tournament): Promise<void> {
 async function finishTournament(tournament: Tournament): Promise<void> {
 	await sendEndingNotificationIfDue(tournament);
 	await freezeTournament(tournament);
-	await distributeRewards(tournament.id);
 	await sendEndedNotificationIfReady(tournament);
 }
 
@@ -251,9 +248,6 @@ async function processCombatDeadline(tournament: Tournament): Promise<void> {
 }
 
 async function processCompletedTournament(tournament: Tournament): Promise<void> {
-	if (!tournament.rewardsDistributed) {
-		await distributeRewards(tournament.id);
-	}
 	await sendEndedNotificationIfReady(tournament);
 }
 

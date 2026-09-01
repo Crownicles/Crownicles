@@ -421,9 +421,9 @@
     "name": "tournament-register",
     "description": "S'inscrire au tournoi de ce salon."
   },
-  "tournament-status": {
-    "name": "tournament-status",
-    "description": "Voir l'état du tournoi de ce salon."
+  "tournament": {
+    "name": "tournament",
+    "description": "Voir l'état du tournoi de ce serveur."
   },
   "tournament-resume": {
     "name": "tournament-resume",
