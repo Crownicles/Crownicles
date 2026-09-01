@@ -1,7 +1,7 @@
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import {
-	TournamentCategories, TournamentCategory, TournamentNotificationEvents,
-	TournamentStatuses, TournamentTopCategory
+	TournamentCategories, TournamentCategory, TournamentNotificationEvent,
+	TournamentStatus, TournamentStatuses, TournamentTopCategory
 } from "../../../../Lib/src/types/Tournament";
 import {
 	asHours, hoursToMilliseconds
@@ -10,10 +10,13 @@ import type Tournament from "../database/game/models/Tournament";
 import type TournamentParticipant from "../database/game/models/TournamentParticipant";
 import type Player from "../database/game/models/Player";
 import type { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
+import type {
+	TournamentRewardAmounts, TournamentRewardRank
+} from "./TournamentTypes";
 
 export type TournamentStatusData = {
 	tournamentId: number;
-	status: typeof TournamentStatuses[keyof typeof TournamentStatuses];
+	status: TournamentStatus;
 	registrationEndsAt: number;
 	combatEndsAt: number;
 	participantCount: number;
@@ -32,19 +35,8 @@ export type TournamentTopData = {
 };
 
 export type TournamentEventData = {
-	event: typeof TournamentNotificationEvents[keyof typeof TournamentNotificationEvents];
+	event: TournamentNotificationEvent;
 	cancellationReason?: string;
-};
-
-export type TournamentRewardRank = {
-	rank: number;
-	categoryParticipantCount: number;
-};
-
-export type TournamentRewardAmounts = {
-	experience: number;
-	money: number;
-	itemCount: number;
 };
 
 export const ACTIVE_STATUSES = [

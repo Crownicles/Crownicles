@@ -73,12 +73,12 @@ async function runRequirementChecks(
 	requirements: RequirementsWithoutBlocked
 ): Promise<boolean> {
 	const checks: RequirementCheck[] = [
-		(): boolean | Promise<boolean> => verifyCommandAccess(player, context, response, requirements.tournamentAccess ?? "none"),
-		(): boolean | Promise<boolean> => CommandUtils.checkEffects(player, response, requirements.allowedEffects ?? [], requirements.disallowedEffects ?? []),
-		(): boolean | Promise<boolean> => verifyLevelRequirement(player, response, requirements.level),
-		(): boolean | Promise<boolean> => verifyRightGroupRequirement(context, response, requirements.rightGroup),
-		(): boolean | Promise<boolean> => verifyWhereRequirement(player, response, requirements.whereAllowed),
-		(): boolean | Promise<boolean> => verifyGuildRequirement(player, response, requirements)
+		verifyCommandAccess.bind(undefined, player, context, response, requirements.tournamentAccess ?? "none"),
+		CommandUtils.checkEffects.bind(CommandUtils, player, response, requirements.allowedEffects ?? [], requirements.disallowedEffects ?? []),
+		verifyLevelRequirement.bind(undefined, player, response, requirements.level),
+		verifyRightGroupRequirement.bind(undefined, context, response, requirements.rightGroup),
+		verifyWhereRequirement.bind(undefined, player, response, requirements.whereAllowed),
+		verifyGuildRequirement.bind(undefined, player, response, requirements)
 	];
 	for (const check of checks) {
 		if (!await check()) {

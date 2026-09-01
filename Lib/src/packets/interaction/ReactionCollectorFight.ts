@@ -5,41 +5,18 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
-import { SexTypeShort } from "../../constants/StringConstants";
-
-type PlayerStats = {
-	pet?: {
-		petTypeId: number;
-		petSex: SexTypeShort;
-		petNickname: string;
-		isOnExpedition: boolean;
-	};
-	classId: number;
-	fightRanking: { glory: number };
-	energy: {
-		value: number;
-		max: number;
-	};
-	attack: number;
-	defense: number;
-	speed: number;
-	breath: {
-		base: number;
-		max: number;
-		regen: number;
-	};
-};
+import type { FightPlayerStats } from "../../types/FightPlayerStats";
 
 export class ReactionCollectorFightData extends ReactionCollectorData {
-	playerStats!: PlayerStats;
+	playerStats!: FightPlayerStats;
 }
 
 export type ReactionCollectorFightPacket = AcceptRefusePacket<ReactionCollectorFightData>;
 
 export class ReactionCollectorFight extends ReactionCollector {
-	private readonly playerStats: PlayerStats;
+	private readonly playerStats: FightPlayerStats;
 
-	constructor(playerStats: PlayerStats) {
+	constructor(playerStats: FightPlayerStats) {
 		super();
 		this.playerStats = playerStats;
 	}

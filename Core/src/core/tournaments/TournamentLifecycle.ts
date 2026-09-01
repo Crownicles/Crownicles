@@ -12,8 +12,9 @@ import { TournamentParticipant } from "../database/game/models/TournamentPartici
 import Player from "../database/game/models/Player";
 import {
 	getCategoryCounts, getEndingNotificationDate, getTournamentRewardAmounts,
-	PROCESSABLE_STATUSES, sortParticipants, TournamentRewardRank
+	PROCESSABLE_STATUSES, sortParticipants
 } from "./TournamentRules";
+import type { TournamentRewardRank } from "./TournamentTypes";
 import {
 	claimTournamentEvent, TournamentEventData
 } from "./TournamentNotifications";
