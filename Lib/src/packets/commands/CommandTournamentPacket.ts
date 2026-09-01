@@ -27,6 +27,26 @@ export const TournamentErrorCodes = {
 export type TournamentErrorCode = typeof TournamentErrorCodes[keyof typeof TournamentErrorCodes];
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandTournamentContextPacketReq extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandTournamentContextPacketRes extends CrowniclesPacket {
+	active!: boolean;
+
+	participant!: boolean;
+
+	status?: TournamentStatus;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandTournamentPausePacketReq extends CrowniclesPacket {
+	discordGuildId!: string;
+
+	discordChannelId!: string;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandTournamentGenerateCodePacketReq extends CrowniclesPacket {
 }
 

@@ -15,6 +15,10 @@ import { DiscordDatabase } from "../database/discord/DiscordDatabase";
 import { CrowniclesDiscordWebServer } from "./CrowniclesDiscordWebServer";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { DiscordConstants } from "../DiscordConstants";
+import { CommandTournamentPausePacketReq } from "../../../Lib/src/packets/commands/CommandTournamentPacket";
+import { PacketUtils } from "../utils/PacketUtils";
+import { PacketConstants } from "../../../Lib/src/constants/PacketConstants";
+import { makePacket } from "../../../Lib/src/packets/CrowniclesPacket";
 import "source-map-support/register";
 
 process.on("uncaughtException", error => {
@@ -190,6 +194,25 @@ async function connectAndStartBot(): Promise<void> {
 	client.on("ready", () => console.log("Bot is ready"));
 	client.on("guildCreate", onDiscordGuildCreate);
 	client.on("guildDelete", onDiscordGuildDelete);
+	client.on("channelDelete", channel => {
+		if (!("guildId" in channel) || !channel.guildId) {
+			return;
+		}
+		PacketUtils.sendPacketToBackend({
+			frontEndOrigin: PacketConstants.FRONT_END_ORIGINS.DISCORD,
+			frontEndSubOrigin: channel.guildId,
+			discord: {
+				user: "",
+				interaction: "",
+				channel: channel.id,
+				language: LANGUAGE.ENGLISH,
+				shardId
+			}
+		}, makePacket(CommandTournamentPausePacketReq, {
+			discordGuildId: channel.guildId,
+			discordChannelId: channel.id
+		}));
+	});
 
 	crowniclesClient = client;
 

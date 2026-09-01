@@ -3,12 +3,6 @@ import {
 	TournamentCategory, TournamentNotificationEvent
 } from "../../types/Tournament";
 
-export type TournamentNotificationItem = {
-	itemId: number;
-	itemLevel: number;
-	itemEnchantmentId?: string | null;
-};
-
 export class TournamentNotificationPacket extends NotificationPacket {
 	event!: TournamentNotificationEvent;
 
@@ -29,8 +23,6 @@ export class TournamentNotificationPacket extends NotificationPacket {
 	money?: number;
 
 	itemCount?: number;
-
-	items?: TournamentNotificationItem[];
 
 	cancellationReason?: string;
 }
