@@ -11,7 +11,9 @@ import {
 	CommandTournamentErrorPacketRes,
 	TournamentErrorCode, TournamentErrorCodes
 } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
+import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
+import { getSlotCountForCategory } from "../../../../Lib/src/types/HomeFeatures";
 import {
 	TournamentCategories, TournamentCategory, TournamentNotificationEvents,
 	TournamentStatuses
@@ -25,7 +27,11 @@ import { TournamentCode } from "../database/game/models/TournamentCode";
 import { TournamentFight } from "../database/game/models/TournamentFight";
 import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
 import Player from "../database/game/models/Player";
+import { InventoryInfos } from "../database/game/models/InventoryInfo";
+import { InventorySlots } from "../database/game/models/InventorySlot";
+import { Homes } from "../database/game/models/Home";
 import { LeagueDataController } from "../../data/League";
+import type { GenericItem } from "../../data/GenericItem";
 import {
 	generateRandomLootEnchantment, generateRandomLootLevel
 } from "../utils/ItemUtils";
@@ -61,6 +67,12 @@ export type TournamentFightContext = {
 	category: TournamentCategory;
 };
 
+type TournamentRewardItem = {
+	item: GenericItem;
+	itemLevel: number;
+	itemEnchantmentId: string | null;
+};
+
 export class TournamentDomainError extends Error {
 	public readonly code: TournamentErrorCode;
 
@@ -73,6 +85,31 @@ export class TournamentDomainError extends Error {
 
 const tournamentDefenderCooldowns = new Map<string, number>();
 const tournamentMatchmakingLocks = new Map<number, AsyncLock>();
+
+async function hasInventorySpaceForItems(playerId: number, rewardItems: TournamentRewardItem[]): Promise<boolean> {
+	const inventorySlots = await InventorySlots.getOfPlayer(playerId);
+	const inventoryInfo = await InventoryInfos.getOfPlayer(playerId);
+	const home = await Homes.getOfPlayer(playerId);
+	const inventoryBonus = home?.getLevel()?.features.inventoryBonus;
+	const availableSlots = new Map<ItemCategory, number>();
+
+	for (const rewardItem of rewardItems) {
+		const category = rewardItem.item.getCategory();
+		let available = availableSlots.get(category);
+		if (available === undefined) {
+			const slotsLimit = inventoryInfo.slotLimitForCategory(category)
+				+ (inventoryBonus ? getSlotCountForCategory(inventoryBonus, category) : 0);
+			const categorySlots = inventorySlots.filter(slot => slot.itemCategory === category && slot.slot < slotsLimit);
+			const emptyEquippedSlot = categorySlots.some(slot => slot.isEquipped() && slot.itemId === 0);
+			available = Math.max(0, slotsLimit - categorySlots.length + (emptyEquippedSlot ? 1 : 0));
+		}
+		if (available === 0) {
+			return false;
+		}
+		availableSlots.set(category, available - 1);
+	}
+	return true;
+}
 
 export abstract class TournamentManager {
 	public static getCategoryForLevel(level: number): TournamentCategory {
@@ -781,15 +818,24 @@ export abstract class TournamentManager {
 				continue;
 			}
 			try {
-				await withLockedEntities(
+				const rewardItems = await withLockedEntities(
 					[Player.lockKey(participant.playerId), TournamentParticipant.lockKey(participant.id)] as const,
 					async ([player, lockedParticipant]) => {
 						if (lockedParticipant.rewardGrantedAt) {
-							return;
+							return null;
 						}
-						await this.applyTournamentRewardUnderLock(player, lockedParticipant);
+						return await this.applyTournamentRewardUnderLock(player, lockedParticipant);
 					}
 				);
+				if (rewardItems) {
+					try {
+						await Promise.all(rewardItems.map(({ item }) =>
+							crowniclesInstance?.logsDatabase.logItemGain(participant.keycloakId, item)));
+					}
+					catch (error) {
+						CrowniclesLogger.errorWithObj(`Tournament item reward log for participant ${participant.id} failed`, error);
+					}
+				}
 			}
 			catch (error) {
 				if (error instanceof LockedRowNotFoundError) {
@@ -814,8 +860,24 @@ export abstract class TournamentManager {
 		}
 	}
 
-	private static async applyTournamentRewardUnderLock(player: Player, participant: Locked<TournamentParticipant>): Promise<void> {
+	private static async applyTournamentRewardUnderLock(
+		player: Player,
+		participant: Locked<TournamentParticipant>
+	): Promise<TournamentRewardItem[] | null> {
 		const response: CrowniclesPacket[] = [];
+		const league = LeagueDataController.instance.getById(participant.normalLeagueId) ?? player.getLeague();
+		const rewardItems = Array.from({ length: participant.rewardItemCount }, (): TournamentRewardItem => {
+			const item = league.generateRewardItem();
+			return {
+				item,
+				itemLevel: generateRandomLootLevel(),
+				itemEnchantmentId: generateRandomLootEnchantment(item)
+			};
+		});
+		if (!await hasInventorySpaceForItems(player.id, rewardItems)) {
+			CrowniclesLogger.warn(`Tournament item reward is pending because player ${player.id} inventory is full`);
+			return null;
+		}
 		await player.addExperience({
 			amount: participant.rewardXp,
 			response,
@@ -830,20 +892,15 @@ export abstract class TournamentManager {
 		if (participant.isWinner) {
 			await PlayerBadgesManager.addBadge(player.id, Badge.TOURNAMENT_WINNER);
 		}
-		const league = LeagueDataController.instance.getById(participant.normalLeagueId) ?? player.getLeague();
-		for (let index = 0; index < participant.rewardItemCount; index++) {
-			const item = league.generateRewardItem();
-			const added = await player.giveItem(item, generateRandomLootLevel(), generateRandomLootEnchantment(item));
+		for (const rewardItem of rewardItems) {
+			const added = await player.giveItem(rewardItem.item, rewardItem.itemLevel, rewardItem.itemEnchantmentId);
 			if (!added) {
-				CrowniclesLogger.warn(`Tournament item reward could not fit in player ${player.id} inventory`);
-			}
-			else {
-				crowniclesInstance?.logsDatabase.logItemGain(player.keycloakId, item)
-					.then();
+				throw new Error(`Tournament item reward could not fit in player ${player.id} inventory`);
 			}
 		}
 		participant.rewardGrantedAt = new Date();
 		await participant.save();
+		return rewardItems;
 	}
 
 	private static async sendEndedNotificationIfReady(tournamentId: number): Promise<void> {
