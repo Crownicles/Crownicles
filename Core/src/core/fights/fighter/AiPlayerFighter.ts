@@ -22,6 +22,7 @@ import { ItemConstants } from "../../../../../Lib/src/constants/ItemConstants";
 type AiPlayerFighterOptions = {
 	allowPotionConsumption?: boolean;
 	effectiveLevel?: number;
+	tournamentMode?: boolean;
 	preloadedActiveObjects?: PlayerActiveObjects;
 	preloadedPetEntity?: PetEntity | null;
 };
@@ -39,6 +40,8 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 
 	private readonly allowPotionConsumption: boolean;
 
+	private readonly tournamentMode: boolean;
+
 	private readonly preloadedActiveObjects?: PlayerActiveObjects;
 
 	private readonly preloadedPetEntity?: PetEntity | null;
@@ -49,6 +52,7 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 		this.class = playerClass;
 		this.classBehavior = getAiClassBehavior(playerClass.id);
 		this.allowPotionConsumption = options.allowPotionConsumption ?? true;
+		this.tournamentMode = options.tournamentMode ?? false;
 		this.preloadedActiveObjects = options.preloadedActiveObjects;
 		this.preloadedPetEntity = options.preloadedPetEntity;
 	}
@@ -97,7 +101,7 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 		const playerActiveObjects: PlayerActiveObjects = this.preloadedActiveObjects ?? await InventorySlots.getPlayerActiveObjects(this.player.id);
 		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects, this.level);
 		this.stats.energy = this.stats.maxEnergy;
-		this.loadCombatStats(playerActiveObjects, isPvE);
+		this.loadCombatStats(playerActiveObjects, isPvE, !this.tournamentMode);
 		this.glory = this.player.getGloryPoints();
 		this.metallicItemCount = await InventorySlots.countObjectsOfPlayer(this.player.id, ItemConstants.TAGS.METALLIC);
 		await this.loadPetEntity();

@@ -99,6 +99,7 @@ async function getPlayerStats(player: Player, tournamentParticipant?: Tournament
 	const effectiveLevel = tournamentParticipant
 		? TournamentManager.getEffectiveLevel(tournamentParticipant.category, player.level)
 		: player.level;
+	const includePotion = !tournamentParticipant;
 	const maxEnergy = player.getMaxCumulativeEnergy(playerActiveObjects, effectiveLevel);
 
 	return {
@@ -118,9 +119,9 @@ async function getPlayerStats(player: Player, tournamentParticipant?: Tournament
 			value: tournamentParticipant ? maxEnergy : player.getCumulativeEnergy(playerActiveObjects),
 			max: maxEnergy
 		},
-		attack: player.getCumulativeAttack(playerActiveObjects, effectiveLevel),
-		defense: player.getCumulativeDefense(playerActiveObjects, effectiveLevel),
-		speed: player.getCumulativeSpeed(playerActiveObjects, effectiveLevel),
+		attack: player.getCumulativeAttack(playerActiveObjects, effectiveLevel, includePotion),
+		defense: player.getCumulativeDefense(playerActiveObjects, effectiveLevel, includePotion),
+		speed: player.getCumulativeSpeed(playerActiveObjects, effectiveLevel, includePotion),
 		breath: {
 			base: player.getBaseBreath(playerActiveObjects),
 			max: player.getMaxBreath(playerActiveObjects),
@@ -629,6 +630,7 @@ async function startTournamentFight(response: CrowniclesPacket[], player: Player
 	const incomingFighter = new AiPlayerFighter(opponent, opponentClass, {
 		allowPotionConsumption: false,
 		effectiveLevel: TournamentManager.getEffectiveLevel(opponentParticipant.category, opponent.level)
+		,tournamentMode: true
 	});
 	incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
 	await incomingFighter.loadStats();

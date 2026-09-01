@@ -73,13 +73,13 @@ export abstract class PlayerBaseFighter extends Fighter {
 	 * @param playerActiveObjects
 	 * @param isPvE True if the fight is against a monster (PVE), false against another player (PVP)
 	 */
-	protected loadCombatStats(playerActiveObjects: PlayerActiveObjects, isPvE: boolean): void {
+	protected loadCombatStats(playerActiveObjects: PlayerActiveObjects, isPvE: boolean, includePotion = true): void {
 		const {
 			player, stats
 		} = this;
-		stats.attack = player.getCumulativeAttack(playerActiveObjects, this.level);
-		stats.defense = player.getCumulativeDefense(playerActiveObjects, this.level);
-		stats.speed = player.getCumulativeSpeed(playerActiveObjects, this.level);
+		stats.attack = player.getCumulativeAttack(playerActiveObjects, this.level, includePotion);
+		stats.defense = player.getCumulativeDefense(playerActiveObjects, this.level, includePotion);
+		stats.speed = player.getCumulativeSpeed(playerActiveObjects, this.level, includePotion);
 		stats.breath = player.getBaseBreath(playerActiveObjects);
 		stats.maxBreath = player.getMaxBreath(playerActiveObjects);
 		stats.breathRegen = player.getBreathRegen();

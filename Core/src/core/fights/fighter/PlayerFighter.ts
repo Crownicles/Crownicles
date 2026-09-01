@@ -146,7 +146,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 		this.stats.energy = this.tournamentMode
 			? this.stats.maxEnergy
 			: this.player.getCumulativeEnergy(playerActiveObjects);
-		this.loadCombatStats(playerActiveObjects, isPvE);
+		this.loadCombatStats(playerActiveObjects, isPvE, !this.tournamentMode);
 		this.metallicItemCount = await InventorySlots.countObjectsOfPlayer(this.player.id, ItemConstants.TAGS.METALLIC);
 		if (this.player.petId) {
 			// Check if pet is available based on fight role

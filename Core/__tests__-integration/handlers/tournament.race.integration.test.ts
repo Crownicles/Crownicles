@@ -281,7 +281,8 @@ describe("TournamentManager integration", () => {
 		});
 		await Tournament.update({
 			status: TournamentStatuses.COMBAT,
-			combatEndsAt: new Date(Date.now() - 1)
+			registrationEndsAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+			combatEndsAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
 		}, {
 			where: { id: tournament.id }
 		});
@@ -300,7 +301,7 @@ describe("TournamentManager integration", () => {
 		expect(finishedParticipants.every(participant => participant.finalRank !== null)).toBe(true);
 		expect(finishedParticipants.every(participant => participant.rewardGrantedAt !== null)).toBe(true);
 		expect(await PlayerBadges.count()).toBe(2);
-		expect(sendNotifications).toHaveBeenCalledOnce();
+		expect(sendNotifications).toHaveBeenCalledTimes(2);
 		sendNotifications.mockRestore();
 	});
 });
