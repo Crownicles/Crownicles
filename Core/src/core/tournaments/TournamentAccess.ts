@@ -16,6 +16,42 @@ function pushError(response: CrowniclesPacket[], errorCode: typeof TournamentErr
 	response.push(makePacket(CommandTournamentErrorPacketRes, { errorCode }));
 }
 
+function isRegistrationOpen(tournament: Awaited<ReturnType<typeof findTournamentForContext>>): boolean {
+	return tournament?.status === TournamentStatuses.REGISTRATION || tournament?.status === TournamentStatuses.COMBAT;
+}
+
+function verifyRegistrationAccess(tournament: NonNullable<Awaited<ReturnType<typeof findTournamentForContext>>>, response: CrowniclesPacket[]): boolean {
+	if (isRegistrationOpen(tournament)) {
+		return true;
+	}
+	pushError(response, tournament.status === TournamentStatuses.PAUSED
+		? TournamentErrorCodes.PAUSED
+		: TournamentErrorCodes.INVALID_PHASE);
+	return false;
+}
+
+async function verifyParticipantAccess(
+	tournament: NonNullable<Awaited<ReturnType<typeof findTournamentForContext>>>,
+	player: Player,
+	response: CrowniclesPacket[],
+	access: TournamentCommandAccess
+): Promise<boolean> {
+	if (tournament.status === TournamentStatuses.PAUSED && access !== "participant") {
+		pushError(response, TournamentErrorCodes.PAUSED);
+		return false;
+	}
+	const participant = await getParticipant(tournament.id, player.id);
+	if (!participant) {
+		pushError(response, TournamentErrorCodes.NOT_REGISTERED);
+		return false;
+	}
+	if (access === "fight" && tournament.status !== TournamentStatuses.COMBAT) {
+		pushError(response, TournamentErrorCodes.INVALID_PHASE);
+		return false;
+	}
+	return true;
+}
+
 export async function verifyCommandAccess(
 	player: Player,
 	context: PacketContext,
@@ -32,26 +68,7 @@ export async function verifyCommandAccess(
 		return false;
 	}
 	if (access === "registration") {
-		if (tournament.status === TournamentStatuses.REGISTRATION || tournament.status === TournamentStatuses.COMBAT) {
-			return true;
-		}
-		pushError(response, tournament.status === TournamentStatuses.PAUSED
-			? TournamentErrorCodes.PAUSED
-			: TournamentErrorCodes.INVALID_PHASE);
-		return false;
+		return verifyRegistrationAccess(tournament, response);
 	}
-	if (tournament.status === TournamentStatuses.PAUSED && access !== "participant") {
-		pushError(response, TournamentErrorCodes.PAUSED);
-		return false;
-	}
-	const participant = await getParticipant(tournament.id, player.id);
-	if (!participant) {
-		pushError(response, TournamentErrorCodes.NOT_REGISTERED);
-		return false;
-	}
-	if (access === "fight" && tournament.status !== TournamentStatuses.COMBAT) {
-		pushError(response, TournamentErrorCodes.INVALID_PHASE);
-		return false;
-	}
-	return true;
+	return await verifyParticipantAccess(tournament, player, response, access);
 }

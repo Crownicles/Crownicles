@@ -11,6 +11,7 @@ import { AiPlayerFighter } from "../../../../core/fights/fighter/AiPlayerFighter
 import { FightController } from "../../../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../../../core/fights/FightOvertimeBehavior";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
+import type { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	Pet, PetDataController
 } from "../../../../data/Pet";
@@ -210,6 +211,24 @@ export const commandInfo: ITestCommand = {
 	description: "Lance un ou plusieurs combats entre deux joueurs contrôlés par l'IA (mode silencieux). Les IDs sont les IDs de la table Player (nombres). Paramètre optionnel : amount (1-10000, défaut 1) = nombre de combats."
 };
 
+function createSilentAiFight(
+	fighter1: AiPlayerFighter,
+	fighter2: AiPlayerFighter,
+	context: PacketContext
+): FightController {
+	return new FightController(
+		{
+			fighter1,
+			fighter2
+		},
+		{
+			overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+			context,
+			silentMode: true
+		}
+	);
+}
+
 /**
  * Execute an AI vs AI fight
  */
@@ -217,8 +236,6 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 	const player1Id = parseInt(args[0], 10);
 	const player2Id = parseInt(args[1], 10);
 	const amount = args.length > 2 ? Math.min(Math.max(parseInt(args[2], 10), 1), 10000) : 1;
-	const silentMode = true;
-
 	const player1 = await Players.getById(player1Id);
 	const player2 = await Players.getById(player2Id);
 
@@ -259,17 +276,7 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 			stats.player2MaxEnergy = fighter2.getMaxEnergy();
 		}
 
-		const fightController = new FightController(
-			{
-				fighter1,
-				fighter2
-			},
-			{
-				overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
-				context,
-				silentMode
-			}
-		);
+		const fightController = createSilentAiFight(fighter1, fighter2, context);
 
 		fightController.setEndCallback(fight => {
 			const winner = fight.getWinnerFighter();
