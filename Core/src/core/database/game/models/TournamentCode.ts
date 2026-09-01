@@ -1,7 +1,9 @@
 import {
 	DataTypes, Model, Sequelize
 } from "sequelize";
-import { LockKey } from "../../../../../../Lib/src/locks/withLockedEntities";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 export class TournamentCode extends Model {
 	declare readonly id: number;
@@ -23,6 +25,10 @@ export class TournamentCode extends Model {
 			model: TournamentCode,
 			id
 		};
+	}
+
+	static withLocked<R>(id: number, fn: (code: TournamentCode) => Promise<R>): Promise<R> {
+		return withLockedEntities([TournamentCode.lockKey(id)], ([code]) => fn(code));
 	}
 }
 

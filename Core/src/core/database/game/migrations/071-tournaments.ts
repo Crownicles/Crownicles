@@ -247,7 +247,11 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	await context.addIndex("tournament_participants", ["tournamentId", "category"], {
 		name: "idx_tournament_participants_tournament_category"
 	});
-	await context.addIndex("tournament_fights", ["tournamentId", "attackerParticipantId", "defenderParticipantId"], {
+	await context.addIndex("tournament_fights", [
+		"tournamentId",
+		"attackerParticipantId",
+		"defenderParticipantId"
+	], {
 		name: "idx_tournament_fights_pair"
 	});
 }

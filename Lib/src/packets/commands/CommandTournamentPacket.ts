@@ -20,7 +20,8 @@ export const TournamentErrorCodes = {
 	INVALID_DURATION: "invalidDuration",
 	INVALID_CHANNEL: "invalidChannel",
 	NO_OPPONENT: "noOpponent",
-	PAUSED: "paused"
+	PAUSED: "paused",
+	NOT_REGISTERED: "notRegistered"
 } as const;
 
 export type TournamentErrorCode = typeof TournamentErrorCodes[keyof typeof TournamentErrorCodes];

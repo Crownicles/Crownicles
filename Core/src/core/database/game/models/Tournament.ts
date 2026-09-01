@@ -4,9 +4,7 @@ import {
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
-import {
-	TournamentCategory, TournamentStatus
-} from "../../../../../../Lib/src/types/Tournament";
+import { TournamentStatus } from "../../../../../../Lib/src/types/Tournament";
 
 export class Tournament extends Model {
 	declare readonly id: number;
