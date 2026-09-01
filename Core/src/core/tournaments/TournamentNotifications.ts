@@ -5,7 +5,7 @@ import {
 	TournamentNotificationPacket
 } from "../../../../Lib/src/packets/notifications/TournamentNotificationPacket";
 import {
-	TournamentCategories, TournamentCategory, TournamentNotificationEvents
+	TournamentCategories, TournamentCategory, TournamentNotificationEvents, TournamentStatuses
 } from "../../../../Lib/src/types/Tournament";
 import { PacketUtils } from "../utils/PacketUtils";
 import TournamentParticipant from "../database/game/models/TournamentParticipant";
@@ -29,6 +29,16 @@ const sentFieldByEvent = {
 type TournamentNotificationSentField = typeof sentFieldByEvent[keyof typeof sentFieldByEvent];
 
 class TournamentParticipantsChangedError extends Error {
+}
+
+function isEventApplicable(
+	status: Tournament["status"],
+	event: TournamentEventData["event"]
+): boolean {
+	if (event === TournamentNotificationEvents.ENDED) {
+		return status === TournamentStatuses.COMPLETED || status === TournamentStatuses.CANCELLED;
+	}
+	return status === TournamentStatuses.COMBAT;
 }
 
 function hasParticipantSnapshotChanged(expectedIds: number[], currentParticipants: TournamentParticipant[]): boolean {
@@ -63,6 +73,9 @@ export async function claimTournamentEvent(
 						.filter((entity): entity is TournamentParticipant => entity instanceof TournamentParticipant);
 					if (!lockedTournament || participantEntities.length !== participantIds.length) {
 						throw new TournamentParticipantsChangedError();
+					}
+					if (!isEventApplicable(lockedTournament.status, eventData.event)) {
+						return [];
 					}
 					const currentParticipants = await TournamentParticipant.findAll({ where: { tournamentId } });
 					if (hasParticipantSnapshotChanged(participantIds, currentParticipants)) {
