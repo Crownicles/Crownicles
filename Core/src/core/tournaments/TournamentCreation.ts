@@ -20,6 +20,17 @@ export type TournamentCodeGenerationResult = {
 	expiresAt: Date;
 };
 
+export type TournamentDuration = {
+	registrationDays: number;
+	combatDays: number;
+};
+
+export type TournamentCreationRequest = {
+	context: PacketContext;
+	code: string;
+	duration: TournamentDuration;
+};
+
 type TournamentCreationData = {
 	guildId: string;
 	channelId: string;
@@ -103,12 +114,11 @@ function validateDurations(registrationDays: number, combatDays: number): void {
 
 function validateCreationData(
 	context: PacketContext,
-	registrationDays: number,
-	combatDays: number
+	duration: TournamentDuration
 ): TournamentCreationData {
 	const creationData = validateChannelAndCreator(context);
 	validateGuildSize(context.discord?.guildMemberCount);
-	validateDurations(registrationDays, combatDays);
+	validateDurations(duration.registrationDays, duration.combatDays);
 	return creationData;
 }
 
@@ -130,12 +140,11 @@ function validateCode(
 
 function buildTournament(
 	creationData: TournamentCreationData,
-	registrationDays: number,
-	combatDays: number,
+	duration: TournamentDuration,
 	now: number
 ): Promise<Tournament> {
-	const registrationEndsAt = new Date(now + daysToMilliseconds(asDays(registrationDays)));
-	const combatEndsAt = new Date(registrationEndsAt.getTime() + daysToMilliseconds(asDays(combatDays)));
+	const registrationEndsAt = new Date(now + daysToMilliseconds(asDays(duration.registrationDays)));
+	const combatEndsAt = new Date(registrationEndsAt.getTime() + daysToMilliseconds(asDays(duration.combatDays)));
 	return Tournament.create({
 		discordGuildId: creationData.guildId,
 		discordChannelId: creationData.channelId,
@@ -168,20 +177,17 @@ export async function generateTournamentCode(discordGuildId: string): Promise<To
 }
 
 export async function createTournament(
-	context: PacketContext,
-	code: string,
-	registrationDays: number,
-	combatDays: number
+	request: TournamentCreationRequest
 ): Promise<Tournament> {
-	const creationData = validateCreationData(context, registrationDays, combatDays);
-	const codeInstance = await TournamentCode.findOne({ where: { codeHash: hashCode(code) } });
+	const creationData = validateCreationData(request.context, request.duration);
+	const codeInstance = await TournamentCode.findOne({ where: { codeHash: hashCode(request.code) } });
 	if (!codeInstance) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CODE);
 	}
 	return await TournamentCode.withLocked(codeInstance.id, async lockedCode => {
 		const now = Date.now();
 		validateCode(lockedCode, creationData.guildId, now);
-		const tournament = await buildTournament(creationData, registrationDays, combatDays, now);
+		const tournament = await buildTournament(creationData, request.duration, now);
 		lockedCode.consumedAt = new Date(now);
 		await lockedCode.save();
 		return tournament;

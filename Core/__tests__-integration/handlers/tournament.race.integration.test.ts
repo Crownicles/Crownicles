@@ -34,8 +34,8 @@ type InventoryInfoModule = typeof import("../../src/core/database/game/models/In
 type InventorySlotsModule = typeof import("../../src/core/database/game/models/InventorySlot");
 
 type TournamentTestApi = {
-	generateCode: TournamentCreationModule["generateTournamentCode"];
-	createTournament: TournamentCreationModule["createTournament"];
+	generateCode: (discordGuildId: string) => ReturnType<TournamentCreationModule["generateTournamentCode"]>;
+	createTournament: (context: PacketContext, code: string, registrationDays: number, combatDays: number) => ReturnType<TournamentCreationModule["createTournament"]>;
 	registerPlayer: TournamentRegistrationModule["registerPlayer"];
 	findTournamentForContext: TournamentQueriesModule["findTournamentForContext"];
 	getParticipant: TournamentQueriesModule["getParticipant"];
@@ -94,8 +94,12 @@ describe("Tournament modules integration", () => {
 		const ranking = loadProductionModule<TournamentRankingModule>("core/tournaments/TournamentRanking");
 		const fightResolver = loadProductionModule<TournamentFightResolverModule>("core/tournaments/TournamentFightResolver");
 		manager = {
-			generateCode: creation.generateTournamentCode,
-			createTournament: creation.createTournament,
+			generateCode: discordGuildId => creation.generateTournamentCode(discordGuildId),
+			createTournament: (context, code, registrationDays, combatDays) => creation.createTournament({
+				context,
+				code,
+				duration: { registrationDays, combatDays }
+			}),
 			registerPlayer: registration.registerPlayer,
 			findTournamentForContext: queries.findTournamentForContext,
 			getParticipant: queries.getParticipant,
