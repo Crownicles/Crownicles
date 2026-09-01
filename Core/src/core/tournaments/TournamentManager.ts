@@ -480,7 +480,9 @@ export abstract class TournamentManager {
 		if (!tournament) {
 			throw new TournamentDomainError(TournamentErrorCodes.NOT_FOUND);
 		}
-		const participants = await TournamentParticipant.findAll({ where: { tournamentId: tournament.id } });
+		const participants = await TournamentParticipant.findAll({
+			where: { tournamentId: tournament.id }
+		});
 		const participant = participants.find(candidate => candidate.playerId === player.id);
 		return {
 			tournamentId: tournament.id,
@@ -517,7 +519,10 @@ export abstract class TournamentManager {
 			pageNumber,
 			totalPages,
 			elementsPerPage: TournamentConstants.TOP_ELEMENTS_PER_PAGE,
-			categories: sortedParticipantsByCategory.map(({ category, participants: categoryParticipants }) => {
+			categories: sortedParticipantsByCategory.map(({
+				category,
+				participants: categoryParticipants
+			}) => {
 				const pageStart = (pageNumber - 1) * TournamentConstants.TOP_ELEMENTS_PER_PAGE;
 				const pageParticipants = categoryParticipants.slice(pageStart, pageStart + TournamentConstants.TOP_ELEMENTS_PER_PAGE);
 				return {
