@@ -31,30 +31,14 @@ function hashCode(code: string): string {
 		.digest("hex");
 }
 
-function validateCreationData(
-	context: PacketContext,
-	registrationDays: number,
-	combatDays: number
-): TournamentCreationData {
+function validateChannelAndCreator(context: PacketContext): TournamentCreationData {
 	const guildId = context.frontEndSubOrigin;
 	const channelId = context.discord?.channel;
-	const guildMemberCount = context.discord?.guildMemberCount;
 	if (!guildId || guildId === PacketConstants.FRONT_END_SUB_ORIGINS.UNKNOWN || !channelId) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
 	}
 	if (context.discord?.isGuildAdministrator !== true) {
 		throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
-	}
-	if (guildMemberCount === undefined || guildMemberCount < TournamentConstants.MINIMUM_SERVER_MEMBER_COUNT) {
-		throw new TournamentDomainError(TournamentErrorCodes.GUILD_TOO_SMALL);
-	}
-	if (!Number.isInteger(registrationDays)
-		|| registrationDays < TournamentConstants.REGISTRATION_MINIMUM_DAYS
-		|| registrationDays > TournamentConstants.REGISTRATION_MAXIMUM_DAYS
-		|| !Number.isInteger(combatDays)
-		|| combatDays < TournamentConstants.COMBAT_MINIMUM_DAYS
-		|| combatDays > TournamentConstants.COMBAT_MAXIMUM_DAYS) {
-		throw new TournamentDomainError(TournamentErrorCodes.INVALID_DURATION);
 	}
 	if (!context.keycloakId) {
 		throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
@@ -64,6 +48,74 @@ function validateCreationData(
 		channelId,
 		createdByKeycloakId: context.keycloakId
 	};
+}
+
+function validateGuildSize(guildMemberCount: number | undefined): void {
+	if (guildMemberCount === undefined || guildMemberCount < TournamentConstants.MINIMUM_SERVER_MEMBER_COUNT) {
+		throw new TournamentDomainError(TournamentErrorCodes.GUILD_TOO_SMALL);
+	}
+}
+
+function validateDurations(registrationDays: number, combatDays: number): void {
+	if (!Number.isInteger(registrationDays)
+		|| registrationDays < TournamentConstants.REGISTRATION_MINIMUM_DAYS
+		|| registrationDays > TournamentConstants.REGISTRATION_MAXIMUM_DAYS
+		|| !Number.isInteger(combatDays)
+		|| combatDays < TournamentConstants.COMBAT_MINIMUM_DAYS
+		|| combatDays > TournamentConstants.COMBAT_MAXIMUM_DAYS) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_DURATION);
+	}
+}
+
+function validateCreationData(
+	context: PacketContext,
+	registrationDays: number,
+	combatDays: number
+): TournamentCreationData {
+	const creationData = validateChannelAndCreator(context);
+	validateGuildSize(context.discord?.guildMemberCount);
+	validateDurations(registrationDays, combatDays);
+	return creationData;
+}
+
+function validateCode(
+	code: TournamentCode,
+	guildId: string,
+	now: number
+): void {
+	if (code.consumedAt) {
+		throw new TournamentDomainError(TournamentErrorCodes.USED_CODE);
+	}
+	if (code.expiresAt.getTime() <= now) {
+		throw new TournamentDomainError(TournamentErrorCodes.EXPIRED_CODE);
+	}
+	if (code.discordGuildId !== guildId) {
+		throw new TournamentDomainError(TournamentErrorCodes.CODE_GUILD_MISMATCH);
+	}
+}
+
+function buildTournament(
+	creationData: TournamentCreationData,
+	registrationDays: number,
+	combatDays: number,
+	now: number
+): Promise<Tournament> {
+	const registrationEndsAt = new Date(now + daysToMilliseconds(asDays(registrationDays)));
+	const combatEndsAt = new Date(registrationEndsAt.getTime() + daysToMilliseconds(asDays(combatDays)));
+	return Tournament.create({
+		discordGuildId: creationData.guildId,
+		discordChannelId: creationData.channelId,
+		createdByKeycloakId: creationData.createdByKeycloakId,
+		status: TournamentStatuses.REGISTRATION,
+		pausedFromStatus: null,
+		registrationEndsAt,
+		combatEndsAt,
+		pausedRemainingMs: null,
+		startedNotificationSent: false,
+		endingNotificationSent: false,
+		endedNotificationSent: false,
+		rewardsDistributed: false
+	});
 }
 
 export async function generateTournamentCode(discordGuildId: string): Promise<TournamentCodeGenerationResult> {
@@ -87,43 +139,15 @@ export async function createTournament(
 	registrationDays: number,
 	combatDays: number
 ): Promise<Tournament> {
-	const {
-		guildId,
-		channelId,
-		createdByKeycloakId
-	} = validateCreationData(context, registrationDays, combatDays);
+	const creationData = validateCreationData(context, registrationDays, combatDays);
 	const codeInstance = await TournamentCode.findOne({ where: { codeHash: hashCode(code) } });
 	if (!codeInstance) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CODE);
 	}
 	return await TournamentCode.withLocked(codeInstance.id, async lockedCode => {
 		const now = Date.now();
-		if (lockedCode.consumedAt) {
-			throw new TournamentDomainError(TournamentErrorCodes.USED_CODE);
-		}
-		if (lockedCode.expiresAt.getTime() <= now) {
-			throw new TournamentDomainError(TournamentErrorCodes.EXPIRED_CODE);
-		}
-		if (lockedCode.discordGuildId !== guildId) {
-			throw new TournamentDomainError(TournamentErrorCodes.CODE_GUILD_MISMATCH);
-		}
-
-		const registrationEndsAt = new Date(now + daysToMilliseconds(asDays(registrationDays)));
-		const combatEndsAt = new Date(registrationEndsAt.getTime() + daysToMilliseconds(asDays(combatDays)));
-		const tournament = await Tournament.create({
-			discordGuildId: guildId,
-			discordChannelId: channelId,
-			createdByKeycloakId,
-			status: TournamentStatuses.REGISTRATION,
-			pausedFromStatus: null,
-			registrationEndsAt,
-			combatEndsAt,
-			pausedRemainingMs: null,
-			startedNotificationSent: false,
-			endingNotificationSent: false,
-			endedNotificationSent: false,
-			rewardsDistributed: false
-		});
+		validateCode(lockedCode, creationData.guildId, now);
+		const tournament = await buildTournament(creationData, registrationDays, combatDays, now);
 		lockedCode.consumedAt = new Date(now);
 		await lockedCode.save();
 		return tournament;
