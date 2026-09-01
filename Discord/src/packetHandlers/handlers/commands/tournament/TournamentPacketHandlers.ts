@@ -16,7 +16,8 @@ import {
 
 export default class TournamentPacketHandlers {
 	@packetHandler(CommandTournamentContextPacketRes)
-	async context(_context: PacketContext, _packet: CommandTournamentContextPacketRes): Promise<void> {
+	context(_context: PacketContext, _packet: CommandTournamentContextPacketRes): Promise<void> {
+		return Promise.resolve();
 	}
 
 	@packetHandler(CommandTournamentGenerateCodePacketRes)
