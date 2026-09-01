@@ -15,6 +15,7 @@ import type { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
 	TournamentCategories, TournamentStatuses
 } from "../../../Lib/src/types/Tournament";
+import { TournamentErrorCodes } from "../../../Lib/src/packets/commands/CommandTournamentPacket";
 import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
 import type { InventoryInfo as InventoryInfoType } from "../../src/core/database/game/models/InventoryInfo";
 import type { InventorySlot as InventorySlotType } from "../../src/core/database/game/models/InventorySlot";
@@ -171,6 +172,25 @@ describe("TournamentManager integration", () => {
 		expect(participant.attackGloryPoints).toBe(750);
 		expect(participant.defenseGloryPoints).toBe(0);
 		expect(participant.lateRegistration).toBe(true);
+	});
+
+	it("rejects registration after the tournament has been completed", async () => {
+		const owner = await Player.create({
+			keycloakId: "tournament-owner-completed-registration",
+			level: 100
+		});
+		const code = await manager.generateCode(GUILD_ID);
+		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
+		await Tournament.update({ status: TournamentStatuses.COMPLETED }, { where: { id: tournament.id } });
+		const player = await Player.create({
+			keycloakId: "tournament-completed-registration",
+			level: 100
+		});
+
+		await expect(manager.registerPlayer(buildContext(player.keycloakId), player)).rejects.toMatchObject({
+			code: TournamentErrorCodes.NOT_FOUND
+		});
+		expect(await TournamentParticipant.count({ where: { tournamentId: tournament.id } })).toBe(0);
 	});
 
 	it("matches a distant opponent from the same category without a glory gap cap", async () => {

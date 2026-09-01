@@ -4,6 +4,9 @@ import {
 	TournamentCategories, TournamentNotificationEvents, TournamentStatuses
 } from "../../../../Lib/src/types/Tournament";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import {
+	LockKey, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { Tournament } from "../database/game/models/Tournament";
 import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
 import Player from "../database/game/models/Player";
@@ -36,6 +39,9 @@ function prepareParticipantReward(
 	participant.rewardXp = league ? Math.round(league.getXPToAward() * rewardMultiplier) : 0;
 	participant.rewardMoney = league ? Math.round(league.getMoneyToAward() * rewardMultiplier) : 0;
 	participant.rewardItemCount = getRewardItemCount(context.participantCount, context.category);
+}
+
+class TournamentParticipantsChangedError extends Error {
 }
 
 async function advanceRegistration(tournamentId: number): Promise<void> {
@@ -113,32 +119,62 @@ async function sendEndedNotificationIfReady(tournamentId: number): Promise<void>
 	}
 }
 
-async function finishTournament(tournamentId: number): Promise<void> {
-	await sendEndingNotificationIfDue(tournamentId);
-	await Tournament.withLocked(tournamentId, async tournament => {
-		if (tournament.status !== TournamentStatuses.COMBAT || Date.now() < tournament.combatEndsAt.getTime()) {
-			return;
-		}
-		const participants = await TournamentParticipant.findAll({ where: { tournamentId } });
-		const players = await Player.findAll({
-			where: { id: { [Op.in]: participants.map(participant => participant.playerId) } }
-		});
-		const playersById = new Map(players.map(player => [player.id, player]));
-		const participantCount = participants.length;
-		for (const category of Object.values(TournamentCategories)) {
-			const categoryParticipants = sortParticipants(participants.filter(participant => participant.category === category), playersById);
-			for (const [index, participant] of categoryParticipants.entries()) {
-				prepareParticipantReward(participant, index, {
-					playersById,
-					category,
-					participantCount
+async function freezeTournament(tournamentId: number): Promise<void> {
+	let frozen = false;
+	while (!frozen) {
+		const participantIds = (await TournamentParticipant.findAll({ where: { tournamentId } }))
+			.map(participant => participant.id);
+		const lockKeys: LockKey[] = [
+			Tournament.lockKey(tournamentId),
+			...participantIds.map(participantId => TournamentParticipant.lockKey(participantId))
+		];
+		try {
+			await withLockedEntities(lockKeys, async entities => {
+				const tournament = entities.find((entity): entity is Tournament => entity instanceof Tournament);
+				const participants = entities.filter((entity): entity is TournamentParticipant => entity instanceof TournamentParticipant);
+				if (!tournament || participants.length !== participantIds.length) {
+					throw new TournamentParticipantsChangedError();
+				}
+				const participantIdSet = new Set(participantIds);
+				const currentParticipantIds = await TournamentParticipant.findAll({ where: { tournamentId } });
+				if (currentParticipantIds.some(participant => !participantIdSet.has(participant.id))) {
+					throw new TournamentParticipantsChangedError();
+				}
+				if (tournament.status !== TournamentStatuses.COMBAT || Date.now() < tournament.combatEndsAt.getTime()) {
+					return;
+				}
+				const players = await Player.findAll({
+					where: { id: { [Op.in]: participants.map(participant => participant.playerId) } }
 				});
-				await participant.save();
+				const playersById = new Map(players.map(player => [player.id, player]));
+				const participantCount = participants.length;
+				for (const category of Object.values(TournamentCategories)) {
+					const categoryParticipants = sortParticipants(participants.filter(participant => participant.category === category), playersById);
+					for (const [index, participant] of categoryParticipants.entries()) {
+						prepareParticipantReward(participant, index, {
+							playersById,
+							category,
+							participantCount
+						});
+						await participant.save();
+					}
+				}
+				tournament.status = TournamentStatuses.COMPLETED;
+				await tournament.save();
+			});
+			frozen = true;
+		}
+		catch (error) {
+			if (!(error instanceof TournamentParticipantsChangedError)) {
+				throw error;
 			}
 		}
-		tournament.status = TournamentStatuses.COMPLETED;
-		await tournament.save();
-	});
+	}
+}
+
+async function finishTournament(tournamentId: number): Promise<void> {
+	await sendEndingNotificationIfDue(tournamentId);
+	await freezeTournament(tournamentId);
 	await distributeRewards(tournamentId);
 	await sendEndedNotificationIfReady(tournamentId);
 }

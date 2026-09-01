@@ -11,6 +11,9 @@ import { getCategoryForLevel } from "./TournamentRules";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 
 function assertRegistrationIsOpen(tournament: Tournament): void {
+	if (tournament.status !== TournamentStatuses.REGISTRATION && tournament.status !== TournamentStatuses.COMBAT) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
+	}
 	const now = Date.now();
 	if (tournament.status === TournamentStatuses.REGISTRATION && now >= tournament.registrationEndsAt.getTime()) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
