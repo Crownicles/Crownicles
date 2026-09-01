@@ -33,6 +33,8 @@ export class Tournament extends Model {
 
 	declare rewardsDistributed: boolean;
 
+	declare cancellationReason: string | null;
+
 	declare createdAt: Date;
 
 	declare updatedAt: Date;
@@ -112,6 +114,11 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
 			defaultValue: false
+		},
+		cancellationReason: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(64),
+			allowNull: true
 		},
 		createdAt: {
 			type: DataTypes.DATE,

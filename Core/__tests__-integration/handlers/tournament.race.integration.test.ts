@@ -186,7 +186,9 @@ describe("Tournament modules integration", () => {
 		await manager.processDueTournaments();
 
 		const started = await Tournament.findByPk(tournament.id);
+		const startedParticipants = await TournamentParticipant.findAll({ where: { tournamentId: tournament.id } });
 		expect(started?.status).toBe(TournamentStatuses.COMBAT);
+		expect(startedParticipants.every(participant => participant.startedNotificationSent)).toBe(true);
 		expect(sendNotifications).toHaveBeenCalledOnce();
 		expect(sendNotifications.mock.calls[0][0]).toHaveLength(20);
 		const top = await manager.getTopData(buildContext(players[0].keycloakId), players[0], 1);
@@ -372,6 +374,8 @@ describe("Tournament modules integration", () => {
 			objectSlots: 3
 		})));
 		const participants = await Promise.all(players.map(player => manager.registerPlayer(buildContext(player.keycloakId), player)));
+		await Tournament.update({ startedNotificationSent: true }, { where: { id: tournament.id } });
+		await TournamentParticipant.update({ startedNotificationSent: true }, { where: { tournamentId: tournament.id } });
 		await TournamentParticipant.update({
 			attackGloryPoints: 1000,
 			defenseGloryPoints: 1000
@@ -399,7 +403,10 @@ describe("Tournament modules integration", () => {
 		expect(winners).toHaveLength(2);
 		expect(finishedParticipants.every(participant => participant.finalRank !== null)).toBe(true);
 		expect(finishedParticipants.every(participant => participant.rewardGrantedAt !== null)).toBe(true);
+		expect(finishedParticipants.every(participant => participant.endedNotificationSent)).toBe(true);
 		expect(await PlayerBadges.count()).toBe(2);
+		expect(sendNotifications).toHaveBeenCalledTimes(2);
+		await manager.processDueTournaments();
 		expect(sendNotifications).toHaveBeenCalledTimes(2);
 		sendNotifications.mockRestore();
 	});

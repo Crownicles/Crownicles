@@ -157,7 +157,8 @@ function buildTournament(
 		startedNotificationSent: false,
 		endingNotificationSent: false,
 		endedNotificationSent: false,
-		rewardsDistributed: false
+		rewardsDistributed: false,
+		cancellationReason: null
 	});
 }
 

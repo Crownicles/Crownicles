@@ -16,7 +16,7 @@ import {
 	getRewardMultiplier, PROCESSABLE_STATUSES, sortParticipants
 } from "./TournamentRules";
 import {
-	sendTournamentEvent, TournamentEventData
+	claimTournamentEvent, TournamentEventData
 } from "./TournamentNotifications";
 import { distributeRewards } from "./TournamentRewards";
 
@@ -28,8 +28,7 @@ type TournamentRewardPreparationContext = {
 
 type TournamentNotificationConfiguration = {
 	isReady: (tournament: Tournament) => boolean;
-	markSent: (tournament: Tournament) => void;
-	eventData: TournamentEventData;
+	eventData: (tournament: Tournament) => TournamentEventData;
 };
 
 function prepareParticipantReward(
@@ -112,13 +111,12 @@ async function freezeTournamentAttempt(tournamentId: number, participantIds: num
 }
 
 async function advanceRegistration(tournamentId: number): Promise<void> {
-	let participants: TournamentParticipant[] = [];
 	let event: TournamentEventData | null = null;
 	await Tournament.withLocked(tournamentId, async tournament => {
 		if (tournament.status !== TournamentStatuses.REGISTRATION || Date.now() < tournament.registrationEndsAt.getTime()) {
 			return;
 		}
-		participants = await TournamentParticipant.findAll({ where: { tournamentId } });
+		const participants = await TournamentParticipant.findAll({ where: { tournamentId } });
 		const categoryCounts = getCategoryCounts(participants);
 		const hasEnoughParticipants = participants.length >= TournamentConstants.MINIMUM_TOTAL_PARTICIPANTS
 			&& categoryCounts[TournamentCategories.LEVEL_50] >= TournamentConstants.MINIMUM_PARTICIPANTS_PER_CATEGORY
@@ -126,7 +124,7 @@ async function advanceRegistration(tournamentId: number): Promise<void> {
 		if (!hasEnoughParticipants) {
 			tournament.status = TournamentStatuses.CANCELLED;
 			tournament.rewardsDistributed = true;
-			tournament.endedNotificationSent = true;
+			tournament.cancellationReason = "tooFewParticipants";
 			event = {
 				event: TournamentNotificationEvents.ENDED,
 				cancellationReason: "tooFewParticipants"
@@ -134,13 +132,12 @@ async function advanceRegistration(tournamentId: number): Promise<void> {
 		}
 		else {
 			tournament.status = TournamentStatuses.COMBAT;
-			tournament.startedNotificationSent = true;
 			event = { event: TournamentNotificationEvents.STARTED };
 		}
 		await tournament.save();
 	});
 	if (event) {
-		sendTournamentEvent(tournamentId, participants, event);
+		await claimTournamentEvent(tournamentId, event);
 	}
 }
 
@@ -148,55 +145,58 @@ async function sendTournamentNotificationIfReady(
 	tournamentId: number,
 	configuration: TournamentNotificationConfiguration
 ): Promise<void> {
-	let participants: TournamentParticipant[] = [];
 	let shouldSend = false;
-	await Tournament.withLocked(tournamentId, async tournament => {
+	let eventData: TournamentEventData | null = null;
+	await Tournament.withLocked(tournamentId, tournament => {
 		if (!configuration.isReady(tournament)) {
-			return;
+			return Promise.resolve();
 		}
-		participants = await TournamentParticipant.findAll({ where: { tournamentId } });
-		configuration.markSent(tournament);
-		await tournament.save();
+		eventData = configuration.eventData(tournament);
 		shouldSend = true;
+		return Promise.resolve();
 	});
 	if (shouldSend) {
-		sendTournamentEvent(tournamentId, participants, configuration.eventData);
+		await claimTournamentEvent(tournamentId, eventData!);
 	}
 }
 
 function isEndingNotificationReady(tournament: Tournament): boolean {
 	return tournament.status === TournamentStatuses.COMBAT
-		&& !tournament.endingNotificationSent
 		&& Date.now() >= getEndingNotificationDate(tournament).getTime();
 }
 
-function markEndingNotificationSent(tournament: Tournament): void {
-	tournament.endingNotificationSent = true;
+function isStartedNotificationReady(tournament: Tournament): boolean {
+	return tournament.status === TournamentStatuses.COMBAT
+		&& !tournament.startedNotificationSent;
 }
 
 function isEndedNotificationReady(tournament: Tournament): boolean {
-	return tournament.status === TournamentStatuses.COMPLETED
+	return (tournament.status === TournamentStatuses.COMPLETED || tournament.status === TournamentStatuses.CANCELLED)
 		&& tournament.rewardsDistributed
 		&& !tournament.endedNotificationSent;
 }
 
-function markEndedNotificationSent(tournament: Tournament): void {
-	tournament.endedNotificationSent = true;
+function sendStartedNotificationIfNeeded(tournamentId: number): Promise<void> {
+	return sendTournamentNotificationIfReady(tournamentId, {
+		isReady: isStartedNotificationReady,
+		eventData: () => ({ event: TournamentNotificationEvents.STARTED })
+	});
 }
 
 async function sendEndingNotificationIfDue(tournamentId: number): Promise<void> {
 	await sendTournamentNotificationIfReady(tournamentId, {
 		isReady: isEndingNotificationReady,
-		markSent: markEndingNotificationSent,
-		eventData: { event: TournamentNotificationEvents.ENDING }
+		eventData: () => ({ event: TournamentNotificationEvents.ENDING })
 	});
 }
 
 async function sendEndedNotificationIfReady(tournamentId: number): Promise<void> {
 	await sendTournamentNotificationIfReady(tournamentId, {
 		isReady: isEndedNotificationReady,
-		markSent: markEndedNotificationSent,
-		eventData: { event: TournamentNotificationEvents.ENDED }
+		eventData: tournament => ({
+			event: TournamentNotificationEvents.ENDED,
+			cancellationReason: tournament.cancellationReason ?? undefined
+		})
 	});
 }
 
@@ -230,6 +230,7 @@ async function processDueTournament(tournament: Tournament): Promise<void> {
 		return;
 	}
 	if (tournament.status === TournamentStatuses.COMBAT) {
+		await sendStartedNotificationIfNeeded(tournament.id);
 		if (Date.now() >= tournament.combatEndsAt.getTime()) {
 			await finishTournament(tournament.id);
 		}
@@ -238,8 +239,14 @@ async function processDueTournament(tournament: Tournament): Promise<void> {
 		}
 		return;
 	}
-	if (tournament.status === TournamentStatuses.COMPLETED && !tournament.rewardsDistributed) {
-		await distributeRewards(tournament.id);
+	if (tournament.status === TournamentStatuses.COMPLETED) {
+		if (!tournament.rewardsDistributed) {
+			await distributeRewards(tournament.id);
+		}
+		await sendEndedNotificationIfReady(tournament.id);
+		return;
+	}
+	if (tournament.status === TournamentStatuses.CANCELLED) {
 		await sendEndedNotificationIfReady(tournament.id);
 	}
 }

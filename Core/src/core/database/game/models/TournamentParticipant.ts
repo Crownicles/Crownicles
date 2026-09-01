@@ -17,6 +17,12 @@ export class TournamentParticipant extends Model {
 
 	declare lateRegistration: boolean;
 
+	declare startedNotificationSent: boolean;
+
+	declare endingNotificationSent: boolean;
+
+	declare endedNotificationSent: boolean;
+
 	declare normalLeagueId: number;
 
 	declare attackGloryPoints: number;
@@ -79,6 +85,21 @@ export function initModel(sequelize: Sequelize): void {
 			allowNull: false
 		},
 		lateRegistration: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
+		startedNotificationSent: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
+		endingNotificationSent: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
+		endedNotificationSent: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
 			defaultValue: false
