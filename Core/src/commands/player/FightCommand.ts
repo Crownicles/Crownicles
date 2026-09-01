@@ -671,7 +671,7 @@ export default class FightCommand {
 		tournamentAccess: "fight"
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
-		const tournament = await TournamentManager.getTournamentForContext(context);
+		const tournament = await TournamentManager.findTournamentForContext(context, true);
 		if (tournament) {
 			const participant = await TournamentManager.getParticipant(tournament.id, player.id);
 			if (!participant || tournament.status !== TournamentStatuses.COMBAT) {

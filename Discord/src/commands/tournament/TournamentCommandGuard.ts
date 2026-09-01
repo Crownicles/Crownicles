@@ -51,18 +51,25 @@ export async function checkTournamentCommandAccess(
 			context,
 			makePacket(CommandTournamentContextPacketReq, {}),
 			async (_responseContext, _packetName, responsePacket) => {
+				if (settled) {
+					return;
+				}
 				const packet = responsePacket as CommandTournamentContextPacketRes;
 				if (!packet.active || isAllowedInTournament(interaction.commandName, packet.participant, isBotOwner(interaction))) {
 					finish(true);
 					return;
 				}
-				await replyTournamentError(interaction, "accessDenied");
-				finish(false);
+				try {
+					await replyTournamentError(interaction, "accessDenied");
+				}
+				finally {
+					finish(false);
+				}
 			},
 			{
 				timeoutMs: TournamentConstants.CONTEXT_QUERY_TIMEOUT_MS,
 				onTimeout: (): void => finish(true)
 			}
-		);
+		).catch(() => finish(true));
 	});
 }
