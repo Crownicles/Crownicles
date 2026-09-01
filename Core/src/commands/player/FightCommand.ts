@@ -629,8 +629,8 @@ async function startTournamentFight(response: CrowniclesPacket[], player: Player
 
 	const incomingFighter = new AiPlayerFighter(opponent, opponentClass, {
 		allowPotionConsumption: false,
-		effectiveLevel: TournamentManager.getEffectiveLevel(opponentParticipant.category, opponent.level)
-		,tournamentMode: true
+		effectiveLevel: TournamentManager.getEffectiveLevel(opponentParticipant.category, opponent.level),
+		tournamentMode: true
 	});
 	incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
 	await incomingFighter.loadStats();
