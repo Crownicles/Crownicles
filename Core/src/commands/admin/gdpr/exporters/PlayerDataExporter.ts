@@ -1,4 +1,5 @@
 import { GDPRAnonymizer } from "../GDPRAnonymizer";
+import { Op } from "sequelize";
 import {
 	toCSV, GDPRCsvFiles
 } from "../CSVUtils";
@@ -29,6 +30,7 @@ import { PlayerCookingRecipe } from "../../../../core/database/game/models/Playe
 import { GlobalBlessing } from "../../../../core/database/game/models/GlobalBlessing";
 import Tournament from "../../../../core/database/game/models/Tournament";
 import TournamentParticipant from "../../../../core/database/game/models/TournamentParticipant";
+import TournamentFight from "../../../../core/database/game/models/TournamentFight";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
 
@@ -448,6 +450,32 @@ async function exportTournamentData(
 			createdAt: participant.createdAt,
 			updatedAt: participant.updatedAt
 		})));
+	}
+
+	const participantIds = participations.map(participant => participant.id);
+	if (participantIds.length > 0) {
+		const fights = await TournamentFight.findAll({
+			where: {
+				[Op.or]: [
+					{ attackerParticipantId: { [Op.in]: participantIds } },
+					{ defenderParticipantId: { [Op.in]: participantIds } }
+				]
+			}
+		});
+		if (fights.length > 0) {
+			const participationIds = new Set(participantIds);
+			csvFiles["26_tournament_fights.csv"] = toCSV(fights.map(fight => {
+				const isAttacker = participationIds.has(fight.attackerParticipantId);
+				const ownParticipantId = isAttacker ? fight.attackerParticipantId : fight.defenderParticipantId;
+				return {
+					tournamentId: fight.tournamentId,
+					role: isAttacker ? "attacker" : "defender",
+					result: fight.draw ? "draw" : fight.winnerParticipantId === ownParticipantId ? "win" : "loss",
+					draw: fight.draw,
+					playedAt: fight.playedAt
+				};
+			}));
+		}
 	}
 }
 

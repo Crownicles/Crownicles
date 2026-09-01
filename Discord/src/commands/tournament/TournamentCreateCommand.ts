@@ -34,8 +34,7 @@ async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser)
 	sendTournamentPacket(await createTournamentContext(interaction, user), makePacket(CommandTournamentCreatePacketReq, {
 		code,
 		registrationDays,
-		combatDays,
-		guildMemberCount: interaction.guild.memberCount
+		combatDays
 	}));
 	return null;
 }

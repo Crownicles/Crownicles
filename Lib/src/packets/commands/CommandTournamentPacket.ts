@@ -64,8 +64,6 @@ export class CommandTournamentCreatePacketReq extends CrowniclesPacket {
 	registrationDays!: number;
 
 	combatDays!: number;
-
-	guildMemberCount!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -148,6 +146,12 @@ export class CommandTournamentTopPacketRes extends CrowniclesPacket {
 	tournamentId!: number;
 
 	categories!: TournamentTopCategory[];
+
+	pageNumber!: number;
+
+	totalPages!: number;
+
+	elementsPerPage!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

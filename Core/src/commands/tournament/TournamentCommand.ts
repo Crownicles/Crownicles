@@ -75,8 +75,7 @@ export default class TournamentCommand {
 				context,
 				packet.code,
 				packet.registrationDays,
-				packet.combatDays,
-				packet.guildMemberCount
+				packet.combatDays
 			);
 			response.push(makePacket(CommandTournamentCreatePacketRes, {
 				tournamentId: tournament.id,
@@ -144,7 +143,7 @@ export default class TournamentCommand {
 	@adminCommand(CommandTournamentCancelPacketReq, context => context.discord?.isGuildAdministrator === true)
 	static async cancel(response: CrowniclesPacket[], packet: CommandTournamentCancelPacketReq, context: PacketContext): Promise<void> {
 		try {
-			await TournamentManager.cancelTournament(packet.tournamentId, context.frontEndSubOrigin, "manual");
+			await TournamentManager.cancelTournament(packet.tournamentId, context.frontEndSubOrigin, "manual", context.discord?.isGuildAdministrator === true);
 			response.push(makePacket(CommandTournamentCancelPacketRes, {
 				tournamentId: packet.tournamentId
 			}));
