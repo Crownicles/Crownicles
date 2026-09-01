@@ -429,8 +429,10 @@ export async function doPVEBoss(
 				fighter1: playerFighter,
 				fighter2: monsterFighter
 			},
-			FightOvertimeBehavior.INCREASE_DAMAGE_PVE,
-			context
+			{
+				overtimeBehavior: FightOvertimeBehavior.INCREASE_DAMAGE_PVE,
+				context
+			}
 		);
 		fight.setEndCallback(fightCallback);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.START_BOSS_FIGHT);

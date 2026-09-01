@@ -22,128 +22,94 @@ function getInteraction(context: PacketContext): CrowniclesInteraction | null {
 	return context.discord?.interaction ? DiscordCache.getInteraction(context.discord.interaction) : null;
 }
 
-export async function handleTournamentGenerateCode(context: PacketContext, packet: CommandTournamentGenerateCodePacketRes): Promise<void> {
+type TournamentEmbedBuilder = (interaction: CrowniclesInteraction) => CrowniclesEmbed;
+
+async function editTournamentReply(context: PacketContext, buildEmbed: TournamentEmbedBuilder): Promise<void> {
 	const interaction = getInteraction(context);
 	if (!interaction) {
 		return;
 	}
 	await interaction.editReply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setTitle(i18n.t("commands:tournament.codeTitle", { lng: interaction.userLanguage }))
-				.setDescription(i18n.t("commands:tournament.codeCreated", {
-					lng: interaction.userLanguage,
-					code: packet.code,
-					expiresAt: dateDisplay(new Date(packet.expiresAt))
-				}))
-		]
+		embeds: [buildEmbed(interaction)]
 	});
+}
+
+export async function handleTournamentGenerateCode(context: PacketContext, packet: CommandTournamentGenerateCodePacketRes): Promise<void> {
+	await editTournamentReply(context, interaction => new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:tournament.codeTitle", { lng: interaction.userLanguage }))
+		.setDescription(i18n.t("commands:tournament.codeCreated", {
+			lng: interaction.userLanguage,
+			code: packet.code,
+			expiresAt: dateDisplay(new Date(packet.expiresAt))
+		})));
 }
 
 export async function handleTournamentCreate(context: PacketContext, packet: CommandTournamentCreatePacketRes): Promise<void> {
-	const interaction = getInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setTitle(i18n.t("commands:tournament.createTitle", { lng: interaction.userLanguage }))
-				.setDescription(i18n.t("commands:tournament.created", {
-					lng: interaction.userLanguage,
-					tournamentId: packet.tournamentId,
-					registrationEndsAt: dateDisplay(new Date(packet.registrationEndsAt)),
-					combatEndsAt: dateDisplay(new Date(packet.combatEndsAt)),
-					channel: `<#${packet.channelId}>`
-				}))
-		]
-	});
+	await editTournamentReply(context, interaction => new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:tournament.createTitle", { lng: interaction.userLanguage }))
+		.setDescription(i18n.t("commands:tournament.created", {
+			lng: interaction.userLanguage,
+			tournamentId: packet.tournamentId,
+			registrationEndsAt: dateDisplay(new Date(packet.registrationEndsAt)),
+			combatEndsAt: dateDisplay(new Date(packet.combatEndsAt)),
+			channel: `<#${packet.channelId}>`
+		})));
 }
 
 export async function handleTournamentRegister(context: PacketContext, packet: CommandTournamentRegisterPacketRes): Promise<void> {
-	const interaction = getInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setTitle(i18n.t("commands:tournament.registerTitle", { lng: interaction.userLanguage }))
-				.setDescription(i18n.t("commands:tournament.registered", {
-					lng: interaction.userLanguage,
-					category: i18n.t(`commands:tournament.categories.${packet.category}`, { lng: interaction.userLanguage }),
-					attackGloryPoints: packet.attackGloryPoints,
-					defenseGloryPoints: packet.defenseGloryPoints,
-					lateRegistration: packet.lateRegistration
-						? i18n.t("commands:tournament.lateRegistration", { lng: interaction.userLanguage })
-						: ""
-				}))
-		]
-	});
+	await editTournamentReply(context, interaction => new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:tournament.registerTitle", { lng: interaction.userLanguage }))
+		.setDescription(i18n.t("commands:tournament.registered", {
+			lng: interaction.userLanguage,
+			category: i18n.t(`commands:tournament.categories.${packet.category}`, { lng: interaction.userLanguage }),
+			attackGloryPoints: packet.attackGloryPoints,
+			defenseGloryPoints: packet.defenseGloryPoints,
+			lateRegistration: packet.lateRegistration
+				? i18n.t("commands:tournament.lateRegistration", { lng: interaction.userLanguage })
+				: ""
+		})));
 }
 
 export async function handleTournamentStatus(context: PacketContext, packet: CommandTournamentStatusPacketRes): Promise<void> {
-	const interaction = getInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setTitle(i18n.t("commands:tournament.statusTitle", { lng }))
-				.setDescription(i18n.t("commands:tournament.status", {
-					lng,
-					tournamentId: packet.tournamentId,
-					status: i18n.t(`commands:tournament.statuses.${packet.status}`, { lng }),
-					registrationEndsAt: finishInTimeDisplay(new Date(packet.registrationEndsAt)),
-					combatEndsAt: finishInTimeDisplay(new Date(packet.combatEndsAt)),
-					participantCount: packet.participantCount,
-					level50Count: packet.categoryCounts.level50,
-					level100Count: packet.categoryCounts.level100,
-					category: packet.category
-						? i18n.t(`commands:tournament.categories.${packet.category}`, { lng })
-						: i18n.t("commands:tournament.notRegistered", { lng }),
-					attackGloryPoints: packet.attackGloryPoints ?? 0,
-					defenseGloryPoints: packet.defenseGloryPoints ?? 0
-				}))
-		]
+	await editTournamentReply(context, interaction => {
+		const lng = interaction.userLanguage;
+		return new CrowniclesEmbed()
+			.setTitle(i18n.t("commands:tournament.statusTitle", { lng }))
+			.setDescription(i18n.t("commands:tournament.status", {
+				lng,
+				tournamentId: packet.tournamentId,
+				status: i18n.t(`commands:tournament.statuses.${packet.status}`, { lng }),
+				registrationEndsAt: finishInTimeDisplay(new Date(packet.registrationEndsAt)),
+				combatEndsAt: finishInTimeDisplay(new Date(packet.combatEndsAt)),
+				participantCount: packet.participantCount,
+				level50Count: packet.categoryCounts.level50,
+				level100Count: packet.categoryCounts.level100,
+				category: packet.category
+					? i18n.t(`commands:tournament.categories.${packet.category}`, { lng })
+					: i18n.t("commands:tournament.notRegistered", { lng }),
+				attackGloryPoints: packet.attackGloryPoints ?? 0,
+				defenseGloryPoints: packet.defenseGloryPoints ?? 0
+			}));
 	});
 }
 
 export async function handleTournamentResume(context: PacketContext, packet: CommandTournamentResumePacketRes): Promise<void> {
-	const interaction = getInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setTitle(i18n.t("commands:tournament.resumeTitle", { lng: interaction.userLanguage }))
-				.setDescription(i18n.t("commands:tournament.resumed", {
-					lng: interaction.userLanguage,
-					tournamentId: packet.tournamentId,
-					channel: `<#${packet.channelId}>`
-				}))
-		]
-	});
+	await editTournamentReply(context, interaction => new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:tournament.resumeTitle", { lng: interaction.userLanguage }))
+		.setDescription(i18n.t("commands:tournament.resumed", {
+			lng: interaction.userLanguage,
+			tournamentId: packet.tournamentId,
+			channel: `<#${packet.channelId}>`
+		})));
 }
 
 export async function handleTournamentCancel(context: PacketContext, packet: CommandTournamentCancelPacketRes): Promise<void> {
-	const interaction = getInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setTitle(i18n.t("commands:tournament.cancelTitle", { lng: interaction.userLanguage }))
-				.setDescription(i18n.t("commands:tournament.cancelled", {
-					lng: interaction.userLanguage,
-					tournamentId: packet.tournamentId
-				}))
-		]
-	});
+	await editTournamentReply(context, interaction => new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:tournament.cancelTitle", { lng: interaction.userLanguage }))
+		.setDescription(i18n.t("commands:tournament.cancelled", {
+			lng: interaction.userLanguage,
+			tournamentId: packet.tournamentId
+		})));
 }
 
 export async function handleTournamentTop(context: PacketContext, packet: CommandTournamentTopPacketRes): Promise<void> {
@@ -188,18 +154,10 @@ export async function handleTournamentTop(context: PacketContext, packet: Comman
 }
 
 export async function handleTournamentError(context: PacketContext, packet: CommandTournamentErrorPacketRes): Promise<void> {
-	const interaction = getInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setErrorColor()
-				.setTitle(i18n.t("commands:tournament.errorTitle", { lng: interaction.userLanguage }))
-				.setDescription(i18n.t(`commands:tournament.errors.${packet.errorCode}`, { lng: interaction.userLanguage }))
-		]
-	});
+	await editTournamentReply(context, interaction => new CrowniclesEmbed()
+		.setErrorColor()
+		.setTitle(i18n.t("commands:tournament.errorTitle", { lng: interaction.userLanguage }))
+		.setDescription(i18n.t(`commands:tournament.errors.${packet.errorCode}`, { lng: interaction.userLanguage })));
 }
 
 export async function handleTournamentFightReward(context: PacketContext, packet: TournamentFightRewardPacket): Promise<void> {

@@ -411,10 +411,7 @@ async function exportPlayerCookingRecipes(playerId: number, csvFiles: GDPRCsvFil
 	}
 }
 
-async function exportTournamentData(
-	player: NonNullable<Player>,
-	csvFiles: GDPRCsvFiles
-): Promise<void> {
+async function exportCreatedTournaments(player: NonNullable<Player>, csvFiles: GDPRCsvFiles): Promise<void> {
 	const createdTournaments = await Tournament.findAll({
 		where: { createdByKeycloakId: player.keycloakId }
 	});
@@ -428,7 +425,12 @@ async function exportTournamentData(
 			updatedAt: tournament.updatedAt
 		})));
 	}
+}
 
+async function exportTournamentParticipations(
+	player: NonNullable<Player>,
+	csvFiles: GDPRCsvFiles
+): Promise<TournamentParticipant[]> {
 	const participations = await TournamentParticipant.findAll({
 		where: { playerId: player.id }
 	});
@@ -451,8 +453,13 @@ async function exportTournamentData(
 			updatedAt: participant.updatedAt
 		})));
 	}
+	return participations;
+}
 
-	const participantIds = participations.map(participant => participant.id);
+async function exportTournamentFights(
+	participantIds: number[],
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
 	if (participantIds.length > 0) {
 		const fights = await TournamentFight.findAll({
 			where: {
@@ -477,6 +484,15 @@ async function exportTournamentData(
 			}));
 		}
 	}
+}
+
+async function exportTournamentData(
+	player: NonNullable<Player>,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	await exportCreatedTournaments(player, csvFiles);
+	const participations = await exportTournamentParticipations(player, csvFiles);
+	await exportTournamentFights(participations.map(participant => participant.id), csvFiles);
 }
 
 /**

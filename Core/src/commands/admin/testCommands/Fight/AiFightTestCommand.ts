@@ -264,9 +264,11 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 				fighter1,
 				fighter2
 			},
-			FightOvertimeBehavior.END_FIGHT_DRAW,
-			context,
-			silentMode
+			{
+				overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+				context,
+				silentMode
+			}
 		);
 
 		fightController.setEndCallback(fight => {

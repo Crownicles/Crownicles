@@ -80,8 +80,10 @@ describe('FightController endFight fallback', () => {
 
 		const fight = new FightController(
 			{ fighter1: initiator, fighter2: opponent },
-			FightOvertimeBehavior.END_FIGHT_DRAW,
-			{} as Record<string, unknown>
+			{
+				overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+				context: {} as Record<string, unknown>
+			}
 		);
 
 		const response: unknown[] = [];
@@ -104,8 +106,10 @@ describe('FightController endFight fallback', () => {
 
 		const fight = new FightController(
 			{ fighter1: initiator, fighter2: opponent },
-			FightOvertimeBehavior.END_FIGHT_DRAW,
-			{} as Record<string, unknown>
+			{
+				overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+				context: {} as Record<string, unknown>
+			}
 		);
 
 		fight.turn = FightConstants.MAX_TURNS;

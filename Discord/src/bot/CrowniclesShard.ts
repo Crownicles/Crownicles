@@ -134,6 +134,13 @@ function hasTournamentChannelPermissions(channel: NonThreadGuildBasedChannel): b
 	]) ?? false;
 }
 
+function shouldPauseTournamentForChannelUpdate(channel: NonThreadGuildBasedChannel): boolean {
+	return Boolean(channel.guildId)
+		&& !channel.isThread()
+		&& Boolean(crowniclesClient.user)
+		&& !hasTournamentChannelPermissions(channel);
+}
+
 /**
  * The main function of the bot : makes the bot start
  */
@@ -231,7 +238,7 @@ async function connectAndStartBot(): Promise<void> {
 		pauseTournamentForChannel(channel.guildId, channel.id);
 	});
 	client.on("channelUpdate", (_oldChannel, newChannel) => {
-		if (!("guildId" in newChannel) || !newChannel.guildId || newChannel.isThread() || !crowniclesClient.user) {
+		if (!("guildId" in newChannel) || !shouldPauseTournamentForChannelUpdate(newChannel)) {
 			return;
 		}
 		if (!hasTournamentChannelPermissions(newChannel)) {
