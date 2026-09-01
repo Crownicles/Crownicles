@@ -18,6 +18,9 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { MapCache } from "../maps/MapCache";
 import { RequirementWherePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementWherePacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import {
+	TournamentCommandAccess, TournamentManager
+} from "../tournaments/TournamentManager";
 
 type Requirements = {
 	disallowedEffects?: Effect[];
@@ -28,6 +31,7 @@ type Requirements = {
 	guildRoleNeeded?: GuildRole;
 	notBlocked: boolean;
 	whereAllowed: WhereAllowed[];
+	tournamentAccess?: TournamentCommandAccess;
 };
 
 type RequirementsWithoutBlocked = Omit<Requirements, "notBlocked">;
@@ -132,6 +136,9 @@ export abstract class CommandUtils {
 	 * @param requirements
 	 */
 	static async verifyCommandRequirements(player: Player, context: PacketContext, response: CrowniclesPacket[], requirements: RequirementsWithoutBlocked): Promise<boolean> {
+		if (!await TournamentManager.verifyCommandAccess(player, context, response, requirements.tournamentAccess ?? "none")) {
+			return false;
+		}
 		if (!CommandUtils.checkEffects(player, response, requirements.allowedEffects ?? [], requirements.disallowedEffects ?? [])) {
 			return false;
 		}

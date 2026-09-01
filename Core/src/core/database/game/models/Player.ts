@@ -855,7 +855,7 @@ export class Player extends Model {
 		});
 	}
 
-	public getMaxStatsValue(): StatValues {
+	public getMaxStatsValue(level = this.level): StatValues {
 		const playerClass = ClassDataController.instance.getById(this.class);
 		if (!playerClass) {
 			return {
@@ -863,9 +863,9 @@ export class Player extends Model {
 			};
 		}
 		return {
-			attack: playerClass.getAttackValue(this.level),
-			defense: playerClass.getDefenseValue(this.level),
-			speed: playerClass.getSpeedValue(this.level)
+			attack: playerClass.getAttackValue(level),
+			defense: playerClass.getDefenseValue(level),
+			speed: playerClass.getSpeedValue(level)
 		};
 	}
 
@@ -940,8 +940,8 @@ export class Player extends Model {
 	 * in fights (see {@link EnchantmentUtils.getOutgoingDamageMultiplier}), not on the raw attack stat.
 	 * @param playerActiveObjects
 	 */
-	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects): number {
-		const playerAttack = this.getMaxStatsValue().attack;
+	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, level = this.level): number {
+		const playerAttack = this.getMaxStatsValue(level).attack;
 		const weaponAttack = playerActiveObjects.weapon.item.getAttack(playerActiveObjects.weapon.itemLevel);
 		const armorAttack = playerActiveObjects.armor.item.getAttack(playerActiveObjects.armor.itemLevel);
 		const objectAttack = playerActiveObjects.object.item.getAttack();
@@ -965,8 +965,8 @@ export class Player extends Model {
 	 * in fights (see {@link EnchantmentUtils.getIncomingDamageMultiplier}), not on the raw defense stat.
 	 * @param playerActiveObjects
 	 */
-	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects): number {
-		const playerDefense = this.getMaxStatsValue().defense;
+	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects, level = this.level): number {
+		const playerDefense = this.getMaxStatsValue(level).defense;
 		const defense = playerDefense
 			+ (playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel) < playerDefense
 				? playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel)
@@ -985,8 +985,8 @@ export class Player extends Model {
 	 * Calculate the cumulative speed of the player
 	 * @param playerActiveObjects
 	 */
-	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects): number {
-		const playerSpeed = this.getMaxStatsValue().speed;
+	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects, level = this.level): number {
+		const playerSpeed = this.getMaxStatsValue(level).speed;
 		const speed = playerSpeed
 			+ (playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel) < playerSpeed
 				? playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel)
@@ -1026,11 +1026,11 @@ export class Player extends Model {
 	/**
 	 * Get the player max cumulative energy
 	 */
-	public getMaxCumulativeEnergy(playerActiveObjects: PlayerActiveObjects): number {
+	public getMaxCumulativeEnergy(playerActiveObjects: PlayerActiveObjects, level = this.level): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
 		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.MAX_ENERGY, EnchantmentConstants.MAX_ENERGY_MULTIPLIER);
 
-		return Math.round((playerClass?.getMaxCumulativeEnergyValue(this.level) ?? FightConstants.PLAYER_MAX_ENERGY) * multiplier);
+		return Math.round((playerClass?.getMaxCumulativeEnergyValue(level) ?? FightConstants.PLAYER_MAX_ENERGY) * multiplier);
 	}
 
 	/**

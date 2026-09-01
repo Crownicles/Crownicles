@@ -1,4 +1,6 @@
-import { Op } from "sequelize";
+import {
+	literal, Op
+} from "sequelize";
 import {
 	createHash, randomBytes
 } from "node:crypto";
@@ -15,8 +17,9 @@ import {
 	TournamentStatuses, TournamentTopCategory
 } from "../../../../Lib/src/types/Tournament";
 import {
-	asDays, asHours, daysToMilliseconds, hoursToMilliseconds
+	asDays, asHours, asMinutes, daysToMilliseconds, hoursToMilliseconds, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
+import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { Tournament } from "../database/game/models/Tournament";
 import { TournamentCode } from "../database/game/models/TournamentCode";
 import { TournamentFight } from "../database/game/models/TournamentFight";
@@ -39,7 +42,7 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import type { FightController } from "../fights/FightController";
 import type { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 
-export type TournamentCommandAccess = "none" | "registration" | "participant";
+export type TournamentCommandAccess = "none" | "registration" | "participant" | "fight";
 
 export type TournamentFightContext = {
 	tournamentId: number;
@@ -91,6 +94,8 @@ const PROCESSABLE_STATUSES = [
 	TournamentStatuses.COMBAT,
 	TournamentStatuses.COMPLETED
 ];
+
+const tournamentDefenderCooldowns = new Map<string, number>();
 
 function getCategoryForLevel(level: number): TournamentCategory {
 	return level >= 100 ? TournamentCategories.LEVEL_100 : TournamentCategories.LEVEL_50;
@@ -304,6 +309,62 @@ export abstract class TournamentManager {
 		});
 	}
 
+	public static async findOpponent(tournament: Tournament, participant: TournamentParticipant): Promise<TournamentParticipant | null> {
+		const candidates = await TournamentParticipant.findAll({
+			where: {
+				tournamentId: tournament.id,
+				category: participant.category,
+				id: { [Op.ne]: participant.id }
+			},
+			order: [[literal(`ABS(defenseGloryPoints - ${participant.attackGloryPoints})`), "ASC"], ["registeredAt", "ASC"]]
+		});
+		const candidateIds = candidates.map(candidate => candidate.id);
+		if (candidateIds.length === 0) {
+			return null;
+		}
+		const fights = await TournamentFight.findAll({
+			where: {
+				tournamentId: tournament.id,
+				[Op.or]: [
+					{
+						attackerParticipantId: participant.id,
+						defenderParticipantId: { [Op.in]: candidateIds }
+					},
+					{
+						defenderParticipantId: participant.id,
+						attackerParticipantId: { [Op.in]: candidateIds }
+					}
+				]
+			}
+		});
+		const now = Date.now();
+		for (const candidate of candidates) {
+			const cooldownKey = this.getDefenderCooldownKey(tournament.id, candidate.id);
+			if ((tournamentDefenderCooldowns.get(cooldownKey) ?? 0) > now) {
+				continue;
+			}
+			const pairFights = fights.filter(fight =>
+				(fight.attackerParticipantId === participant.id && fight.defenderParticipantId === candidate.id)
+				|| (fight.attackerParticipantId === candidate.id && fight.defenderParticipantId === participant.id));
+			const participantWins = pairFights.filter(fight => fight.winnerParticipantId === participant.id).length;
+			const candidateWins = pairFights.filter(fight => fight.winnerParticipantId === candidate.id).length;
+			if (pairFights.length >= TournamentConstants.BO3_MAX_GAMES
+				|| participantWins >= TournamentConstants.BO3_WINS_TO_FINISH
+				|| candidateWins >= TournamentConstants.BO3_WINS_TO_FINISH) {
+				continue;
+			}
+			return candidate;
+		}
+		return null;
+	}
+
+	public static reserveDefender(tournamentId: number, participantId: number): void {
+		tournamentDefenderCooldowns.set(
+			this.getDefenderCooldownKey(tournamentId, participantId),
+			Date.now() + minutesToMilliseconds(asMinutes(FightConstants.DEFENDER_COOLDOWN_MINUTES))
+		);
+	}
+
 	public static async verifyCommandAccess(player: Player, context: PacketContext, response: CrowniclesPacket[], access: TournamentCommandAccess): Promise<boolean> {
 		await this.processDueTournaments();
 		const tournament = await this.getTournamentForContext(context);
@@ -330,6 +391,10 @@ export abstract class TournamentManager {
 		const participant = await this.getParticipant(tournament.id, player.id);
 		if (!participant) {
 			this.pushError(response, TournamentErrorCodes.NOT_REGISTERED);
+			return false;
+		}
+		if (access === "fight" && tournament.status !== TournamentStatuses.COMBAT) {
+			this.pushError(response, TournamentErrorCodes.INVALID_PHASE);
 			return false;
 		}
 		if (access === "participant" && tournament.status !== TournamentStatuses.REGISTRATION && tournament.status !== TournamentStatuses.COMBAT) {
@@ -560,6 +625,10 @@ export abstract class TournamentManager {
 	private static hashCode(code: string): string {
 		return createHash("sha256").update(code.trim().toUpperCase())
 			.digest("hex");
+	}
+
+	private static getDefenderCooldownKey(tournamentId: number, participantId: number): string {
+		return `${tournamentId}:${participantId}`;
 	}
 
 	private static pushError(response: CrowniclesPacket[], errorCode: TournamentErrorCode): void {
