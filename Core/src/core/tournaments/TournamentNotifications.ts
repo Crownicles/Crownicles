@@ -49,51 +49,81 @@ function hasParticipantSnapshotChanged(expectedIds: number[], currentParticipant
 	return currentParticipants.some(participant => !expectedIdSet.has(participant.id));
 }
 
+async function getParticipantIds(tournamentId: number): Promise<number[]> {
+	const participants = await TournamentParticipant.findAll({ where: { tournamentId } });
+	return participants.map(participant => participant.id);
+}
+
+type LockedNotificationEntities = {
+	tournament: Tournament;
+	participants: TournamentParticipant[];
+};
+
+function getLockedNotificationEntities(
+	entities: readonly unknown[],
+	participantCount: number
+): LockedNotificationEntities {
+	const tournament = entities.find((entity): entity is Tournament => entity instanceof Tournament);
+	const participants = entities.filter((entity): entity is TournamentParticipant => entity instanceof TournamentParticipant);
+	if (!tournament || participants.length !== participantCount) {
+		throw new TournamentParticipantsChangedError();
+	}
+	return {
+		tournament,
+		participants
+	};
+}
+
+async function claimTournamentEventAttempt(
+	tournamentId: number,
+	participantIds: number[],
+	eventData: TournamentEventData
+): Promise<TournamentParticipant[]> {
+	const participantLockKeys = participantIds.map(participantId => TournamentParticipant.lockKey(participantId));
+	return await withLockedEntities(
+		[
+			...participantLockKeys,
+			Tournament.lockKey(tournamentId)
+		] as const,
+		async entities => {
+			const {
+				tournament,
+				participants
+			} = getLockedNotificationEntities(entities, participantIds.length);
+			if (!isEventApplicable(tournament.status, eventData.event)) {
+				return [];
+			}
+			const currentParticipants = await TournamentParticipant.findAll({ where: { tournamentId } });
+			if (hasParticipantSnapshotChanged(participantIds, currentParticipants)) {
+				throw new TournamentParticipantsChangedError();
+			}
+			const sentField: TournamentNotificationSentField = sentFieldByEvent[eventData.event];
+			const participantsToNotify = participants.filter(participant => !participant[sentField]);
+			if (participantsToNotify.length === 0) {
+				return [];
+			}
+			await Promise.all(participantsToNotify.map(async participant => {
+				participant[sentField] = true;
+				await participant.save();
+			}));
+			tournament[sentField] = true;
+			await tournament.save();
+			return participantsToNotify;
+		}
+	);
+}
+
 export async function claimTournamentEvent(
 	tournamentId: number,
 	eventData: TournamentEventData
 ): Promise<void> {
 	while (true) {
-		const participants = await TournamentParticipant.findAll({ where: { tournamentId } });
-		if (participants.length === 0) {
+		const participantIds = await getParticipantIds(tournamentId);
+		if (participantIds.length === 0) {
 			return;
 		}
-		const participantIds = participants.map(participant => participant.id);
-		const participantLockKeys = participantIds.map(participantId => TournamentParticipant.lockKey(participantId));
 		try {
-			const lockedParticipants = await withLockedEntities(
-				[
-					...participantLockKeys,
-					Tournament.lockKey(tournamentId)
-				] as const,
-				async entities => {
-					const sentField: TournamentNotificationSentField = sentFieldByEvent[eventData.event];
-					const lockedTournament = entities.find(entity => entity instanceof Tournament);
-					const participantEntities = entities
-						.filter((entity): entity is TournamentParticipant => entity instanceof TournamentParticipant);
-					if (!lockedTournament || participantEntities.length !== participantIds.length) {
-						throw new TournamentParticipantsChangedError();
-					}
-					if (!isEventApplicable(lockedTournament.status, eventData.event)) {
-						return [];
-					}
-					const currentParticipants = await TournamentParticipant.findAll({ where: { tournamentId } });
-					if (hasParticipantSnapshotChanged(participantIds, currentParticipants)) {
-						throw new TournamentParticipantsChangedError();
-					}
-					const participantsToNotify = participantEntities.filter(participant => !participant[sentField]);
-					if (participantsToNotify.length === 0) {
-						return [];
-					}
-					await Promise.all(participantsToNotify.map(async participant => {
-						participant[sentField] = true;
-						await participant.save();
-					}));
-					lockedTournament[sentField] = true;
-					await lockedTournament.save();
-					return participantsToNotify;
-				}
-			);
+			const lockedParticipants = await claimTournamentEventAttempt(tournamentId, participantIds, eventData);
 			if (lockedParticipants.length > 0) {
 				sendTournamentEvent(tournamentId, lockedParticipants, eventData);
 			}
