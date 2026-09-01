@@ -115,6 +115,13 @@ export class FightController {
 	}
 
 	/**
+	 * Check whether this fight was cancelled because its Discord interaction failed.
+	 */
+	public isBugged(): boolean {
+		return this.state === FightState.BUG;
+	}
+
+	/**
 	 * Get the playing fighter or null if the fight is not running
 	 * @returns
 	 */

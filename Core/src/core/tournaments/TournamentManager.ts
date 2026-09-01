@@ -14,10 +14,10 @@ import {
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import {
 	TournamentCategories, TournamentCategory, TournamentNotificationEvents,
-	TournamentStatuses, TournamentTopCategory
+	TournamentStatuses
 } from "../../../../Lib/src/types/Tournament";
 import {
-	asDays, asHours, asMinutes, daysToMilliseconds, hoursToMilliseconds, minutesToMilliseconds
+	asDays, asMinutes, daysToMilliseconds, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { Tournament } from "../database/game/models/Tournament";
@@ -31,8 +31,6 @@ import {
 } from "../utils/ItemUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { crowniclesInstance } from "../../app";
-import { PacketUtils } from "../utils/PacketUtils";
-import { TournamentNotificationPacket } from "../../../../Lib/src/packets/notifications/TournamentNotificationPacket";
 import { TournamentFightRewardPacket } from "../../../../Lib/src/packets/fights/TournamentFightRewardPacket";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { EloUtils } from "../utils/EloUtils";
@@ -41,9 +39,18 @@ import {
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
-import { AsyncLock } from "../../../../Lib/src/locks/AsyncLock";
 import type { FightController } from "../fights/FightController";
-import type { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
+import {
+	ACTIVE_STATUSES, CONTEXT_STATUSES, PROCESSABLE_STATUSES,
+	getCategoryCounts, getCategoryForLevel, getEffectiveLevel,
+	getEndingNotificationDate, getGameResult, getRewardItemCount,
+	getRewardMultiplier, getTournamentPhaseEnd, sortParticipants,
+	TournamentStatusData, TournamentTopData
+} from "./TournamentRules";
+import {
+	sendTournamentEvent, TournamentEventData
+} from "./TournamentNotifications";
+import { AsyncLock } from "../../../../Lib/src/locks/AsyncLock";
 
 export type TournamentCommandAccess = "none" | "registration" | "participant" | "fight";
 
@@ -64,104 +71,8 @@ export class TournamentDomainError extends Error {
 	}
 }
 
-type TournamentStatusData = {
-	tournamentId: number;
-	status: typeof TournamentStatuses[keyof typeof TournamentStatuses];
-	registrationEndsAt: number;
-	combatEndsAt: number;
-	participantCount: number;
-	categoryCounts: Record<TournamentCategory, number>;
-	category?: TournamentCategory;
-	attackGloryPoints?: number;
-	defenseGloryPoints?: number;
-};
-
-type TournamentTopData = {
-	tournamentId: number;
-	categories: TournamentTopCategory[];
-	pageNumber: number;
-	totalPages: number;
-	elementsPerPage: number;
-};
-
-type TournamentEventData = {
-	event: typeof TournamentNotificationEvents[keyof typeof TournamentNotificationEvents];
-	cancellationReason?: string;
-};
-
-const ACTIVE_STATUSES = [
-	TournamentStatuses.REGISTRATION,
-	TournamentStatuses.COMBAT,
-	TournamentStatuses.PAUSED
-];
-
-const CONTEXT_STATUSES = [
-	...ACTIVE_STATUSES,
-	TournamentStatuses.COMPLETED,
-	TournamentStatuses.CANCELLED
-];
-
-const PROCESSABLE_STATUSES = [
-	TournamentStatuses.REGISTRATION,
-	TournamentStatuses.COMBAT,
-	TournamentStatuses.COMPLETED
-];
-
 const tournamentDefenderCooldowns = new Map<string, number>();
 const tournamentMatchmakingLocks = new Map<number, AsyncLock>();
-
-function getCategoryForLevel(level: number): TournamentCategory {
-	return level >= 100 ? TournamentCategories.LEVEL_100 : TournamentCategories.LEVEL_50;
-}
-
-function getEffectiveLevel(category: TournamentCategory, level: number): number {
-	return Math.min(level, category === TournamentCategories.LEVEL_50 ? 50 : 100);
-}
-
-function getCategoryCounts(participants: TournamentParticipant[]): Record<TournamentCategory, number> {
-	return {
-		[TournamentCategories.LEVEL_50]: participants.filter(participant => participant.category === TournamentCategories.LEVEL_50).length,
-		[TournamentCategories.LEVEL_100]: participants.filter(participant => participant.category === TournamentCategories.LEVEL_100).length
-	};
-}
-
-function getRewardMultiplier(participantCount: number, category: TournamentCategory): number {
-	const baseMultiplier = TournamentConstants.MINIMUM_REWARD_MULTIPLIER
-		+ Math.floor((participantCount - TournamentConstants.MINIMUM_TOTAL_PARTICIPANTS) / TournamentConstants.REWARD_MULTIPLIER_PARTICIPANT_STEP);
-	return category === TournamentCategories.LEVEL_50
-		? baseMultiplier / TournamentConstants.LEVEL_50_REWARD_DIVISOR
-		: baseMultiplier;
-}
-
-function getRewardItemCount(participantCount: number, category: TournamentCategory): number {
-	const level100ItemCount = TournamentConstants.BASE_LEVEL_100_ITEM_REWARD_COUNT
-		+ Math.floor(participantCount / TournamentConstants.ADDITIONAL_ITEM_PARTICIPANT_STEP);
-	return category === TournamentCategories.LEVEL_50
-		? Math.ceil(level100ItemCount / TournamentConstants.LEVEL_50_REWARD_DIVISOR)
-		: level100ItemCount;
-}
-
-function getTournamentPhaseEnd(tournament: Tournament): Date {
-	return tournament.status === TournamentStatuses.REGISTRATION
-		? tournament.registrationEndsAt
-		: tournament.combatEndsAt;
-}
-
-function getEndingNotificationDate(tournament: Tournament): Date {
-	const combatDuration = tournament.combatEndsAt.getTime() - tournament.registrationEndsAt.getTime();
-	const configuredLead = hoursToMilliseconds(asHours(TournamentConstants.ENDING_NOTIFICATION_LEAD_HOURS));
-	const lead = combatDuration < configuredLead
-		? Math.floor(combatDuration / 2)
-		: configuredLead;
-	return new Date(tournament.combatEndsAt.getTime() - lead);
-}
-
-function getGameResult(isWinner: boolean, isDraw: boolean): EloGameResult {
-	if (isDraw) {
-		return 0.5;
-	}
-	return isWinner ? 1 : 0;
-}
 
 export abstract class TournamentManager {
 	public static getCategoryForLevel(level: number): TournamentCategory {
@@ -509,7 +420,7 @@ export abstract class TournamentManager {
 		const playersById = new Map(playerInstances.map(playerInstance => [playerInstance.id, playerInstance]));
 		const sortedParticipantsByCategory = Object.values(TournamentCategories).map(category => ({
 			category,
-			participants: this.sortParticipants(participants.filter(participant => participant.category === category), playersById)
+			participants: sortParticipants(participants.filter(participant => participant.category === category), playersById)
 		}));
 		const totalParticipants = Math.max(0, ...sortedParticipantsByCategory.map(category => category.participants.length));
 		const totalPages = Math.max(1, Math.ceil(totalParticipants / TournamentConstants.TOP_ELEMENTS_PER_PAGE));
@@ -623,7 +534,7 @@ export abstract class TournamentManager {
 			await tournament.save();
 		});
 		if (participants.length > 0) {
-			await this.sendTournamentEvent(tournamentId, participants, {
+			sendTournamentEvent(tournamentId, participants, {
 				event: TournamentNotificationEvents.ENDED,
 				cancellationReason: reason
 			});
@@ -663,7 +574,7 @@ export abstract class TournamentManager {
 
 	public static async resolveFight(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
 		const fightContext = fight.tournamentContext;
-		if (!fightContext) {
+		if (!fightContext || fight.isBugged()) {
 			return;
 		}
 		const isDraw = fight.isADraw();
@@ -805,7 +716,7 @@ export abstract class TournamentManager {
 			await tournament.save();
 		});
 		if (event) {
-			await this.sendTournamentEvent(tournamentId, participants, event);
+			sendTournamentEvent(tournamentId, participants, event);
 		}
 	}
 
@@ -824,7 +735,7 @@ export abstract class TournamentManager {
 			shouldSend = true;
 		});
 		if (shouldSend) {
-			await this.sendTournamentEvent(tournamentId, participants, {
+			sendTournamentEvent(tournamentId, participants, {
 				event: TournamentNotificationEvents.ENDING
 			});
 		}
@@ -842,7 +753,7 @@ export abstract class TournamentManager {
 			const playersById = new Map(players.map(player => [player.id, player]));
 			const participantCount = participants.length;
 			for (const category of Object.values(TournamentCategories)) {
-				const categoryParticipants = this.sortParticipants(participants.filter(participant => participant.category === category), playersById);
+				const categoryParticipants = sortParticipants(participants.filter(participant => participant.category === category), playersById);
 				for (const [index, participant] of categoryParticipants.entries()) {
 					const league = LeagueDataController.instance.getById(participant.normalLeagueId)
 						?? playersById.get(participant.playerId)?.getLeague();
@@ -949,48 +860,9 @@ export abstract class TournamentManager {
 			shouldSend = true;
 		});
 		if (shouldSend) {
-			await this.sendTournamentEvent(tournamentId, participants, {
+			sendTournamentEvent(tournamentId, participants, {
 				event: TournamentNotificationEvents.ENDED
 			});
 		}
-	}
-
-	private static sendTournamentEvent(tournamentId: number, participants: TournamentParticipant[], eventData: TournamentEventData): void {
-		if (participants.length === 0) {
-			return;
-		}
-		const categoryCounts = getCategoryCounts(participants);
-		const winnersByCategory = new Map(
-			Object.values(TournamentCategories).map(category => [
-				category,
-				participants.find(participant => participant.category === category && participant.isWinner)?.keycloakId
-			])
-		);
-		PacketUtils.sendNotifications(participants.map(participant => makePacket(TournamentNotificationPacket, {
-			keycloakId: participant.keycloakId,
-			event: eventData.event,
-			tournamentId,
-			category: participant.category,
-			participantCount: participants.length,
-			categoryParticipantCount: categoryCounts[participant.category],
-			winnerKeycloakId: winnersByCategory.get(participant.category),
-			rank: participant.finalRank ?? undefined,
-			xp: participant.rewardXp || undefined,
-			money: participant.rewardMoney || undefined,
-			itemCount: participant.rewardItemCount || undefined,
-			cancellationReason: eventData.cancellationReason
-		})));
-	}
-
-	private static sortParticipants(participants: TournamentParticipant[], playersById: Map<number, Player>): TournamentParticipant[] {
-		return [...participants].sort((left, right) => {
-			const gloryDifference = right.getTotalGloryPoints() - left.getTotalGloryPoints();
-			if (gloryDifference !== 0) {
-				return gloryDifference;
-			}
-			const leftLevel = getEffectiveLevel(left.category, playersById.get(left.playerId)?.level ?? 0);
-			const rightLevel = getEffectiveLevel(right.category, playersById.get(right.playerId)?.level ?? 0);
-			return rightLevel - leftLevel || left.playerId - right.playerId;
-		});
 	}
 }

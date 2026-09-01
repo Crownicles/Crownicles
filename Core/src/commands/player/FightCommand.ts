@@ -96,6 +96,10 @@ export const fightsDefenderCooldowns = new Map<string, number>();
 async function getPlayerStats(player: Player, tournamentParticipant?: TournamentParticipant): Promise<PlayerStats> {
 	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
 	const petEntity = await PetEntities.getById(player.petId);
+	const effectiveLevel = tournamentParticipant
+		? TournamentManager.getEffectiveLevel(tournamentParticipant.category, player.level)
+		: player.level;
+	const maxEnergy = player.getMaxCumulativeEnergy(playerActiveObjects, effectiveLevel);
 
 	return {
 		pet: petEntity
@@ -111,12 +115,12 @@ async function getPlayerStats(player: Player, tournamentParticipant?: Tournament
 			glory: tournamentParticipant?.getTotalGloryPoints() ?? player.getGloryPoints()
 		},
 		energy: {
-			value: player.getCumulativeEnergy(playerActiveObjects),
-			max: player.getMaxCumulativeEnergy(playerActiveObjects)
+			value: tournamentParticipant ? maxEnergy : player.getCumulativeEnergy(playerActiveObjects),
+			max: maxEnergy
 		},
-		attack: player.getCumulativeAttack(playerActiveObjects),
-		defense: player.getCumulativeDefense(playerActiveObjects),
-		speed: player.getCumulativeSpeed(playerActiveObjects),
+		attack: player.getCumulativeAttack(playerActiveObjects, effectiveLevel),
+		defense: player.getCumulativeDefense(playerActiveObjects, effectiveLevel),
+		speed: player.getCumulativeSpeed(playerActiveObjects, effectiveLevel),
 		breath: {
 			base: player.getBaseBreath(playerActiveObjects),
 			max: player.getMaxBreath(playerActiveObjects),

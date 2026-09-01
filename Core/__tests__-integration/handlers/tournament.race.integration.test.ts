@@ -125,6 +125,12 @@ describe("TournamentManager integration", () => {
 		expect(started?.status).toBe(TournamentStatuses.COMBAT);
 		expect(sendNotifications).toHaveBeenCalledOnce();
 		expect(sendNotifications.mock.calls[0][0]).toHaveLength(20);
+		const top = await manager.getTopData(buildContext(players[0].keycloakId), players[0], 1);
+		expect(top.categories).toHaveLength(2);
+		expect(top.categories.every(category => category.totalParticipants === 10)).toBe(true);
+		expect(top.categories.every(category => category.elements.length === 10)).toBe(true);
+		expect(top.pageNumber).toBe(1);
+		expect(top.totalPages).toBe(1);
 		sendNotifications.mockRestore();
 	});
 
@@ -234,6 +240,7 @@ describe("TournamentManager integration", () => {
 		const fightInitiator = {};
 		const fakeFight = {
 			id: "tournament-fight-idempotence",
+			isBugged: (): boolean => false,
 			tournamentContext: {
 				tournamentId: tournament.id,
 				attackerParticipantId: attackerParticipant.id,
