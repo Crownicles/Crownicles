@@ -1,5 +1,7 @@
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
-import { TournamentStatuses } from "../../../../Lib/src/types/Tournament";
+import {
+	TournamentStatuses, TournamentStatus
+} from "../../../../Lib/src/types/Tournament";
 import { Tournament } from "../database/game/models/Tournament";
 import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
 import Player from "../database/game/models/Player";
@@ -10,15 +12,24 @@ import { TournamentErrorCodes } from "../../../../Lib/src/packets/commands/Comma
 import { getCategoryForLevel } from "./TournamentRules";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 
+function isRegistrationStatus(status: TournamentStatus): status is typeof TournamentStatuses.REGISTRATION | typeof TournamentStatuses.COMBAT {
+	return status === TournamentStatuses.REGISTRATION || status === TournamentStatuses.COMBAT;
+}
+
+function getRegistrationDeadline(tournament: Tournament): Date | null {
+	switch (tournament.status) {
+		case TournamentStatuses.REGISTRATION:
+			return tournament.registrationEndsAt;
+		case TournamentStatuses.COMBAT:
+			return tournament.combatEndsAt;
+		default:
+			return null;
+	}
+}
+
 function assertRegistrationIsOpen(tournament: Tournament): void {
-	if (tournament.status !== TournamentStatuses.REGISTRATION && tournament.status !== TournamentStatuses.COMBAT) {
-		throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
-	}
-	const now = Date.now();
-	if (tournament.status === TournamentStatuses.REGISTRATION && now >= tournament.registrationEndsAt.getTime()) {
-		throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
-	}
-	if (tournament.status === TournamentStatuses.COMBAT && now >= tournament.combatEndsAt.getTime()) {
+	const deadline = getRegistrationDeadline(tournament);
+	if (!deadline || Date.now() >= deadline.getTime()) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
 	}
 }
@@ -26,7 +37,7 @@ function assertRegistrationIsOpen(tournament: Tournament): void {
 export async function registerPlayer(context: PacketContext, player: Player): Promise<TournamentParticipant> {
 	await processDueTournaments();
 	const tournament = await findTournamentForContext(context, false);
-	if (!tournament || (tournament.status !== TournamentStatuses.REGISTRATION && tournament.status !== TournamentStatuses.COMBAT)) {
+	if (!tournament || !isRegistrationStatus(tournament.status)) {
 		throw new TournamentDomainError(TournamentErrorCodes.NOT_FOUND);
 	}
 

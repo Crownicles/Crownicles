@@ -31,17 +31,29 @@ function hashCode(code: string): string {
 		.digest("hex");
 }
 
+function requireGuildId(guildId: string): string {
+	if (!guildId) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
+	}
+	if (guildId === PacketConstants.FRONT_END_SUB_ORIGINS.UNKNOWN) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
+	}
+	return guildId;
+}
+
+function requireChannelId(channelId: string | undefined): string {
+	if (!channelId) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
+	}
+	return channelId;
+}
+
 function getTournamentChannel(context: PacketContext): {
 	guildId: string; channelId: string;
 } {
-	const guildId = context.frontEndSubOrigin;
-	const channelId = context.discord?.channel;
-	if (!guildId || guildId === PacketConstants.FRONT_END_SUB_ORIGINS.UNKNOWN || !channelId) {
-		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
-	}
 	return {
-		guildId,
-		channelId
+		guildId: requireGuildId(context.frontEndSubOrigin),
+		channelId: requireChannelId(context.discord?.channel)
 	};
 }
 

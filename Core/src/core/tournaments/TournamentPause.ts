@@ -1,5 +1,7 @@
 import { Op } from "sequelize";
-import { TournamentStatuses } from "../../../../Lib/src/types/Tournament";
+import {
+	TournamentStatuses
+} from "../../../../Lib/src/types/Tournament";
 import { TournamentErrorCodes } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { getTournamentPhaseEnd } from "./TournamentRules";
@@ -18,6 +20,48 @@ function updateResumedPhaseDates(
 		return;
 	}
 	tournament.combatEndsAt = new Date(Date.now() + remainingMs);
+}
+
+type ResumableTournamentStatus = typeof TournamentStatuses.REGISTRATION | typeof TournamentStatuses.COMBAT;
+
+type ResumeData = {
+	channelId: string;
+	previousStatus: ResumableTournamentStatus;
+	remainingMs: number;
+};
+
+function getResumeData(tournament: Tournament, context: PacketContext): ResumeData {
+	const channelId = context.discord?.channel;
+	if (!channelId || !context.frontEndSubOrigin) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
+	}
+	if (context.discord?.isBotOwner !== true) {
+		throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
+	}
+	if (tournament.status !== TournamentStatuses.PAUSED || !tournament.pausedFromStatus) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
+	}
+	if (tournament.discordGuildId !== context.frontEndSubOrigin) {
+		throw new TournamentDomainError(TournamentErrorCodes.CODE_GUILD_MISMATCH);
+	}
+	const previousStatus = tournament.pausedFromStatus;
+	if (previousStatus !== TournamentStatuses.REGISTRATION && previousStatus !== TournamentStatuses.COMBAT) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
+	}
+	return {
+		channelId,
+		previousStatus,
+		remainingMs: tournament.pausedRemainingMs ?? 0
+	};
+}
+
+function applyResume(tournament: Tournament, context: PacketContext, resumeData: ResumeData): void {
+	updateResumedPhaseDates(tournament, resumeData.previousStatus, resumeData.remainingMs);
+	tournament.discordGuildId = context.frontEndSubOrigin;
+	tournament.discordChannelId = resumeData.channelId;
+	tournament.status = resumeData.previousStatus;
+	tournament.pausedFromStatus = null;
+	tournament.pausedRemainingMs = null;
 }
 
 export async function pauseTournament(tournamentId: number): Promise<void> {
@@ -47,31 +91,8 @@ export async function pauseTournamentForChannel(discordGuildId: string, discordC
 }
 
 export async function resumeTournament(tournamentId: number, context: PacketContext): Promise<Tournament> {
-	const channelId = context.discord?.channel;
-	if (!channelId || !context.frontEndSubOrigin) {
-		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
-	}
-	if (context.discord?.isBotOwner !== true) {
-		throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
-	}
 	return await Tournament.withLocked(tournamentId, async tournament => {
-		if (tournament.status !== TournamentStatuses.PAUSED || !tournament.pausedFromStatus) {
-			throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
-		}
-		if (tournament.discordGuildId !== context.frontEndSubOrigin) {
-			throw new TournamentDomainError(TournamentErrorCodes.CODE_GUILD_MISMATCH);
-		}
-		const remainingMs = tournament.pausedRemainingMs ?? 0;
-		const previousStatus = tournament.pausedFromStatus;
-		if (previousStatus !== TournamentStatuses.REGISTRATION && previousStatus !== TournamentStatuses.COMBAT) {
-			throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
-		}
-		updateResumedPhaseDates(tournament, previousStatus, remainingMs);
-		tournament.discordGuildId = context.frontEndSubOrigin;
-		tournament.discordChannelId = channelId;
-		tournament.status = previousStatus;
-		tournament.pausedFromStatus = null;
-		tournament.pausedRemainingMs = null;
+		applyResume(tournament, context, getResumeData(tournament, context));
 		await tournament.save();
 		return tournament;
 	});
