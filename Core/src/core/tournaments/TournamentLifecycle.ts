@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import {
-	TournamentCategories, TournamentNotificationEvents, TournamentStatuses
+	TournamentCategories, TournamentNotificationEvents, TournamentStatus, TournamentStatuses
 } from "../../../../Lib/src/types/Tournament";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import {
@@ -223,31 +223,42 @@ async function finishTournament(tournamentId: number): Promise<void> {
 	await sendEndedNotificationIfReady(tournamentId);
 }
 
-async function processDueTournament(tournament: Tournament): Promise<void> {
-	if (tournament.status === TournamentStatuses.REGISTRATION
-		&& Date.now() >= tournament.registrationEndsAt.getTime()) {
+type DueTournamentHandler = (tournament: Tournament) => Promise<void>;
+
+async function processRegistrationDeadline(tournament: Tournament): Promise<void> {
+	if (Date.now() >= tournament.registrationEndsAt.getTime()) {
 		await advanceRegistration(tournament.id);
-		return;
 	}
-	if (tournament.status === TournamentStatuses.COMBAT) {
-		await sendStartedNotificationIfNeeded(tournament.id);
-		if (Date.now() >= tournament.combatEndsAt.getTime()) {
-			await finishTournament(tournament.id);
-		}
-		else {
-			await sendEndingNotificationIfDue(tournament.id);
-		}
-		return;
+}
+
+async function processCombatDeadline(tournament: Tournament): Promise<void> {
+	await sendStartedNotificationIfNeeded(tournament.id);
+	const processFinish = Date.now() >= tournament.combatEndsAt.getTime();
+	await (processFinish ? finishTournament : sendEndingNotificationIfDue)(tournament.id);
+}
+
+async function processCompletedTournament(tournament: Tournament): Promise<void> {
+	if (!tournament.rewardsDistributed) {
+		await distributeRewards(tournament.id);
 	}
-	if (tournament.status === TournamentStatuses.COMPLETED) {
-		if (!tournament.rewardsDistributed) {
-			await distributeRewards(tournament.id);
-		}
-		await sendEndedNotificationIfReady(tournament.id);
-		return;
-	}
-	if (tournament.status === TournamentStatuses.CANCELLED) {
-		await sendEndedNotificationIfReady(tournament.id);
+	await sendEndedNotificationIfReady(tournament.id);
+}
+
+async function processCancelledTournament(tournament: Tournament): Promise<void> {
+	await sendEndedNotificationIfReady(tournament.id);
+}
+
+const dueTournamentHandlers: Partial<Record<TournamentStatus, DueTournamentHandler>> = {
+	[TournamentStatuses.REGISTRATION]: processRegistrationDeadline,
+	[TournamentStatuses.COMBAT]: processCombatDeadline,
+	[TournamentStatuses.COMPLETED]: processCompletedTournament,
+	[TournamentStatuses.CANCELLED]: processCancelledTournament
+};
+
+async function processDueTournament(tournament: Tournament): Promise<void> {
+	const handler = dueTournamentHandlers[tournament.status];
+	if (handler) {
+		await handler(tournament);
 	}
 }
 
