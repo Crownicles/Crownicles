@@ -15,9 +15,13 @@ import type { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
 	TournamentCategories, TournamentStatuses
 } from "../../../Lib/src/types/Tournament";
+import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
+import type { InventoryInfo as InventoryInfoType } from "../../src/core/database/game/models/InventoryInfo";
+import type { InventorySlot as InventorySlotType } from "../../src/core/database/game/models/InventorySlot";
 
 type TournamentManagerModule = typeof import("../../src/core/tournaments/TournamentManager");
 type PacketUtilsModule = typeof import("../../src/core/utils/PacketUtils");
+type InventorySlotsModule = typeof import("../../src/core/database/game/models/InventorySlot");
 
 const GUILD_ID = "tournament-race-guild";
 const CHANNEL_ID = "tournament-race-channel";
@@ -50,6 +54,9 @@ describe("TournamentManager integration", () => {
 	let TournamentParticipant: ModelStatic<TournamentParticipantType>;
 	let TournamentFight: ModelStatic<TournamentFightType>;
 	let PlayerBadges: ModelStatic<PlayerBadgesType>;
+	let InventoryInfo: ModelStatic<InventoryInfoType>;
+	let InventorySlot: ModelStatic<InventorySlotType>;
+	let inventorySlots: InventorySlotsModule["InventorySlots"];
 
 	beforeAll(async () => {
 		env = await setupCoreForTests("tournament");
@@ -61,6 +68,10 @@ describe("TournamentManager integration", () => {
 		TournamentParticipant = env.crownicles.gameDatabase.sequelize.models.TournamentParticipant as ModelStatic<TournamentParticipantType>;
 		TournamentFight = env.crownicles.gameDatabase.sequelize.models.TournamentFight as ModelStatic<TournamentFightType>;
 		PlayerBadges = env.crownicles.gameDatabase.sequelize.models.PlayerBadges as ModelStatic<PlayerBadgesType>;
+		InventoryInfo = env.crownicles.gameDatabase.sequelize.models.InventoryInfo as ModelStatic<InventoryInfoType>;
+		const inventoryModule = loadProductionModule<InventorySlotsModule>("core/database/game/models/InventorySlot");
+		InventorySlot = inventoryModule.InventorySlot as ModelStatic<InventorySlotType>;
+		inventorySlots = inventoryModule.InventorySlots;
 	});
 
 	afterAll(async () => {
@@ -75,6 +86,8 @@ describe("TournamentManager integration", () => {
 			await Tournament.destroy({ truncate: true, force: true });
 			await TournamentCode.destroy({ truncate: true, force: true });
 			await PlayerBadges.destroy({ truncate: true, force: true });
+			await InventorySlot.destroy({ truncate: true, force: true });
+			await InventoryInfo.destroy({ truncate: true, force: true });
 			await Player.destroy({ truncate: true, force: true });
 		}
 		finally {
@@ -272,6 +285,13 @@ describe("TournamentManager integration", () => {
 			keycloakId: `tournament-finish-${index}`,
 			level: index < 10 ? 50 : 100
 		})));
+		await Promise.all(players.map(player => InventoryInfo.create({
+			playerId: player.id,
+			weaponSlots: 3,
+			armorSlots: 3,
+			potionSlots: 3,
+			objectSlots: 3
+		})));
 		const participants = await Promise.all(players.map(player => manager.registerPlayer(buildContext(player.keycloakId), player)));
 		await TournamentParticipant.update({
 			attackGloryPoints: 1000,
@@ -302,6 +322,74 @@ describe("TournamentManager integration", () => {
 		expect(finishedParticipants.every(participant => participant.rewardGrantedAt !== null)).toBe(true);
 		expect(await PlayerBadges.count()).toBe(2);
 		expect(sendNotifications).toHaveBeenCalledTimes(2);
+		sendNotifications.mockRestore();
+	});
+
+	it("keeps rewards pending until a full inventory has room", async () => {
+		const owner = await Player.create({
+			keycloakId: "tournament-owner-inventory",
+			level: 100
+		});
+		const code = await manager.generateCode(GUILD_ID);
+		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
+		const players = await Promise.all(Array.from({ length: 20 }, (_, index) => Player.create({
+			keycloakId: `tournament-inventory-${index}`,
+			level: index < 10 ? 50 : 100
+		})));
+		const participants = await Promise.all(players.map(player => manager.registerPlayer(buildContext(player.keycloakId), player)));
+		const fullPlayer = players[0];
+		await inventorySlots.getOfPlayer(fullPlayer.id);
+		await Promise.all([
+			ItemCategory.WEAPON,
+			ItemCategory.ARMOR,
+			ItemCategory.POTION,
+			ItemCategory.OBJECT
+		].map(itemCategory => InventorySlot.update({ itemId: 1 }, {
+			where: {
+				playerId: fullPlayer.id,
+				itemCategory,
+				slot: 0
+			}
+		})));
+		const initialExperience = fullPlayer.experience;
+		const initialMoney = fullPlayer.money;
+		await Tournament.update({
+			status: TournamentStatuses.COMBAT,
+			registrationEndsAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+			combatEndsAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+		}, {
+			where: { id: tournament.id }
+		});
+
+		const sendNotifications = vi.spyOn(packetUtils, "sendNotifications").mockImplementation(() => undefined);
+		await manager.processDueTournaments();
+
+		const pending = await TournamentParticipant.findByPk(participants[0].id);
+		const unchangedPlayer = await Player.findByPk(fullPlayer.id);
+		const pendingTournament = await Tournament.findByPk(tournament.id);
+		expect(pending?.rewardGrantedAt).toBeNull();
+		expect(unchangedPlayer?.experience).toBe(initialExperience);
+		expect(unchangedPlayer?.money).toBe(initialMoney);
+		expect(pendingTournament?.rewardsDistributed).toBe(false);
+
+		await Promise.all([
+			ItemCategory.WEAPON,
+			ItemCategory.ARMOR,
+			ItemCategory.POTION,
+			ItemCategory.OBJECT
+		].map(itemCategory => InventorySlot.update({ itemId: 0 }, {
+			where: {
+				playerId: fullPlayer.id,
+				itemCategory,
+				slot: 0
+			}
+		})));
+		await manager.processDueTournaments();
+
+		const granted = await TournamentParticipant.findByPk(participants[0].id);
+		const completedTournament = await Tournament.findByPk(tournament.id);
+		expect(granted?.rewardGrantedAt).not.toBeNull();
+		expect(completedTournament?.rewardsDistributed).toBe(true);
 		sendNotifications.mockRestore();
 	});
 });
