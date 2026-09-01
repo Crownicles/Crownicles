@@ -30,6 +30,11 @@ type TournamentRewardItem = {
 	itemEnchantmentId: string | null;
 };
 
+type TournamentRewardClaim = {
+	tournament: Tournament;
+	participant: TournamentParticipant;
+};
+
 const NON_POTION_ITEM_CATEGORIES = [
 	ItemCategory.WEAPON,
 	ItemCategory.ARMOR,
@@ -104,14 +109,13 @@ async function markRewardsAsDistributed(tournamentId: number): Promise<void> {
 	});
 }
 
-export async function claimTournamentReward(
+async function findTournamentRewardClaim(
 	context: PacketContext,
-	response: CrowniclesPacket[],
 	player: Player
-): Promise<void> {
+): Promise<TournamentRewardClaim | null> {
 	const tournament = await findLatestTournamentForGuild(context.frontEndSubOrigin);
 	if (!tournament || tournament.status !== TournamentStatuses.COMPLETED) {
-		return;
+		return null;
 	}
 	const participant = await TournamentParticipant.findOne({
 		where: {
@@ -120,13 +124,22 @@ export async function claimTournamentReward(
 		}
 	});
 	if (!participant || participant.rewardGrantedAt) {
-		return;
+		return null;
 	}
-	const responseStart = response.length;
-	let rewardItem: TournamentRewardItem | null = null;
+	return {
+		tournament,
+		participant
+	};
+}
+
+async function claimRewardForParticipant(
+	claim: TournamentRewardClaim,
+	response: CrowniclesPacket[],
+	responseStart: number
+): Promise<TournamentRewardItem | null> {
 	try {
-		rewardItem = await withLockedEntities(
-			[Player.lockKey(participant.playerId), TournamentParticipant.lockKey(participant.id)] as const,
+		return await withLockedEntities(
+			[Player.lockKey(claim.participant.playerId), TournamentParticipant.lockKey(claim.participant.id)] as const,
 			async ([lockedPlayer, lockedParticipant]) => {
 				if (lockedParticipant.rewardGrantedAt) {
 					return null;
@@ -138,26 +151,47 @@ export async function claimTournamentReward(
 	catch (error) {
 		response.splice(responseStart);
 		if (error instanceof LockedRowNotFoundError) {
-			CrowniclesLogger.warn(`Tournament reward skipped because player ${participant.playerId} no longer exists`);
+			CrowniclesLogger.warn(`Tournament reward skipped because player ${claim.participant.playerId} no longer exists`);
 		}
 		else {
-			CrowniclesLogger.errorWithObj(`Tournament reward claim for participant ${participant.id} failed`, error);
+			CrowniclesLogger.errorWithObj(`Tournament reward claim for participant ${claim.participant.id} failed`, error);
 		}
+		return null;
+	}
+}
+
+async function logClaimedReward(claim: TournamentRewardClaim, rewardItem: TournamentRewardItem): Promise<void> {
+	try {
+		await crowniclesInstance?.logsDatabase.logItemGain(claim.participant.keycloakId, rewardItem.item);
+	}
+	catch (error) {
+		CrowniclesLogger.errorWithObj(`Tournament item reward log for participant ${claim.participant.id} failed`, error);
+	}
+}
+
+async function markClaimedRewardsAsDistributed(claim: TournamentRewardClaim): Promise<void> {
+	try {
+		await markRewardsAsDistributed(claim.tournament.id);
+	}
+	catch (error) {
+		CrowniclesLogger.errorWithObj(`Tournament reward distribution state update for tournament ${claim.tournament.id} failed`, error);
+	}
+}
+
+export async function claimTournamentReward(
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	player: Player
+): Promise<void> {
+	const claim = await findTournamentRewardClaim(context, player);
+	if (!claim) {
 		return;
 	}
+	const responseStart = response.length;
+	const rewardItem = await claimRewardForParticipant(claim, response, responseStart);
 	if (!rewardItem) {
 		return;
 	}
-	try {
-		await crowniclesInstance?.logsDatabase.logItemGain(participant.keycloakId, rewardItem.item);
-	}
-	catch (error) {
-		CrowniclesLogger.errorWithObj(`Tournament item reward log for participant ${participant.id} failed`, error);
-	}
-	try {
-		await markRewardsAsDistributed(tournament.id);
-	}
-	catch (error) {
-		CrowniclesLogger.errorWithObj(`Tournament reward distribution state update for tournament ${tournament.id} failed`, error);
-	}
+	await logClaimedReward(claim, rewardItem);
+	await markClaimedRewardsAsDistributed(claim);
 }
