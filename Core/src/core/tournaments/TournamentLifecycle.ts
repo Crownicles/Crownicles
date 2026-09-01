@@ -26,6 +26,12 @@ type TournamentRewardPreparationContext = {
 	participantCount: number;
 };
 
+type TournamentNotificationConfiguration = {
+	isReady: (tournament: Tournament) => boolean;
+	markSent: (tournament: Tournament) => void;
+	eventData: TournamentEventData;
+};
+
 function prepareParticipantReward(
 	participant: TournamentParticipant,
 	index: number,
@@ -42,6 +48,67 @@ function prepareParticipantReward(
 }
 
 class TournamentParticipantsChangedError extends Error {
+}
+
+function getLockedTournamentEntities(
+	entities: unknown[],
+	participantCount: number
+): {
+	tournament: Tournament;
+	participants: TournamentParticipant[];
+} {
+	const tournament = entities.find((entity): entity is Tournament => entity instanceof Tournament);
+	const participants = entities.filter((entity): entity is TournamentParticipant => entity instanceof TournamentParticipant);
+	if (!tournament || participants.length !== participantCount) {
+		throw new TournamentParticipantsChangedError();
+	}
+	return {
+		tournament,
+		participants
+	};
+}
+
+async function assertParticipantSnapshotIsCurrent(tournamentId: number, participantIds: number[]): Promise<void> {
+	const participantIdSet = new Set(participantIds);
+	const currentParticipants = await TournamentParticipant.findAll({ where: { tournamentId } });
+	if (currentParticipants.some(participant => !participantIdSet.has(participant.id))) {
+		throw new TournamentParticipantsChangedError();
+	}
+}
+
+async function freezeTournamentAttempt(tournamentId: number, participantIds: number[]): Promise<void> {
+	const lockKeys: LockKey[] = [
+		Tournament.lockKey(tournamentId),
+		...participantIds.map(participantId => TournamentParticipant.lockKey(participantId))
+	];
+	await withLockedEntities(lockKeys, async entities => {
+		const {
+			tournament,
+			participants
+		} = getLockedTournamentEntities(entities, participantIds.length);
+		await assertParticipantSnapshotIsCurrent(tournamentId, participantIds);
+		if (tournament.status !== TournamentStatuses.COMBAT || Date.now() < tournament.combatEndsAt.getTime()) {
+			return;
+		}
+		const players = await Player.findAll({
+			where: { id: { [Op.in]: participants.map(participant => participant.playerId) } }
+		});
+		const playersById = new Map(players.map(player => [player.id, player]));
+		const participantCount = participants.length;
+		for (const category of Object.values(TournamentCategories)) {
+			const categoryParticipants = sortParticipants(participants.filter(participant => participant.category === category), playersById);
+			for (const [index, participant] of categoryParticipants.entries()) {
+				prepareParticipantReward(participant, index, {
+					playersById,
+					category,
+					participantCount
+				});
+				await participant.save();
+			}
+		}
+		tournament.status = TournamentStatuses.COMPLETED;
+		await tournament.save();
+	});
 }
 
 async function advanceRegistration(tournamentId: number): Promise<void> {
@@ -77,92 +144,69 @@ async function advanceRegistration(tournamentId: number): Promise<void> {
 	}
 }
 
-async function sendEndingNotificationIfDue(tournamentId: number): Promise<void> {
+async function sendTournamentNotificationIfReady(
+	tournamentId: number,
+	configuration: TournamentNotificationConfiguration
+): Promise<void> {
 	let participants: TournamentParticipant[] = [];
 	let shouldSend = false;
 	await Tournament.withLocked(tournamentId, async tournament => {
-		if (tournament.status !== TournamentStatuses.COMBAT
-			|| tournament.endingNotificationSent
-			|| Date.now() < getEndingNotificationDate(tournament).getTime()) {
+		if (!configuration.isReady(tournament)) {
 			return;
 		}
 		participants = await TournamentParticipant.findAll({ where: { tournamentId } });
-		tournament.endingNotificationSent = true;
+		configuration.markSent(tournament);
 		await tournament.save();
 		shouldSend = true;
 	});
 	if (shouldSend) {
-		sendTournamentEvent(tournamentId, participants, {
-			event: TournamentNotificationEvents.ENDING
-		});
+		sendTournamentEvent(tournamentId, participants, configuration.eventData);
 	}
+}
+
+function isEndingNotificationReady(tournament: Tournament): boolean {
+	return tournament.status === TournamentStatuses.COMBAT
+		&& !tournament.endingNotificationSent
+		&& Date.now() >= getEndingNotificationDate(tournament).getTime();
+}
+
+function markEndingNotificationSent(tournament: Tournament): void {
+	tournament.endingNotificationSent = true;
+}
+
+function isEndedNotificationReady(tournament: Tournament): boolean {
+	return tournament.status === TournamentStatuses.COMPLETED
+		&& tournament.rewardsDistributed
+		&& !tournament.endedNotificationSent;
+}
+
+function markEndedNotificationSent(tournament: Tournament): void {
+	tournament.endedNotificationSent = true;
+}
+
+async function sendEndingNotificationIfDue(tournamentId: number): Promise<void> {
+	await sendTournamentNotificationIfReady(tournamentId, {
+		isReady: isEndingNotificationReady,
+		markSent: markEndingNotificationSent,
+		eventData: { event: TournamentNotificationEvents.ENDING }
+	});
 }
 
 async function sendEndedNotificationIfReady(tournamentId: number): Promise<void> {
-	let participants: TournamentParticipant[] = [];
-	let shouldSend = false;
-	await Tournament.withLocked(tournamentId, async tournament => {
-		if (tournament.status !== TournamentStatuses.COMPLETED
-			|| !tournament.rewardsDistributed
-			|| tournament.endedNotificationSent) {
-			return;
-		}
-		participants = await TournamentParticipant.findAll({ where: { tournamentId } });
-		tournament.endedNotificationSent = true;
-		await tournament.save();
-		shouldSend = true;
+	await sendTournamentNotificationIfReady(tournamentId, {
+		isReady: isEndedNotificationReady,
+		markSent: markEndedNotificationSent,
+		eventData: { event: TournamentNotificationEvents.ENDED }
 	});
-	if (shouldSend) {
-		sendTournamentEvent(tournamentId, participants, {
-			event: TournamentNotificationEvents.ENDED
-		});
-	}
 }
 
 async function freezeTournament(tournamentId: number): Promise<void> {
-	let frozen = false;
-	while (!frozen) {
+	while (true) {
 		const participantIds = (await TournamentParticipant.findAll({ where: { tournamentId } }))
 			.map(participant => participant.id);
-		const lockKeys: LockKey[] = [
-			Tournament.lockKey(tournamentId),
-			...participantIds.map(participantId => TournamentParticipant.lockKey(participantId))
-		];
 		try {
-			await withLockedEntities(lockKeys, async entities => {
-				const tournament = entities.find((entity): entity is Tournament => entity instanceof Tournament);
-				const participants = entities.filter((entity): entity is TournamentParticipant => entity instanceof TournamentParticipant);
-				if (!tournament || participants.length !== participantIds.length) {
-					throw new TournamentParticipantsChangedError();
-				}
-				const participantIdSet = new Set(participantIds);
-				const currentParticipantIds = await TournamentParticipant.findAll({ where: { tournamentId } });
-				if (currentParticipantIds.some(participant => !participantIdSet.has(participant.id))) {
-					throw new TournamentParticipantsChangedError();
-				}
-				if (tournament.status !== TournamentStatuses.COMBAT || Date.now() < tournament.combatEndsAt.getTime()) {
-					return;
-				}
-				const players = await Player.findAll({
-					where: { id: { [Op.in]: participants.map(participant => participant.playerId) } }
-				});
-				const playersById = new Map(players.map(player => [player.id, player]));
-				const participantCount = participants.length;
-				for (const category of Object.values(TournamentCategories)) {
-					const categoryParticipants = sortParticipants(participants.filter(participant => participant.category === category), playersById);
-					for (const [index, participant] of categoryParticipants.entries()) {
-						prepareParticipantReward(participant, index, {
-							playersById,
-							category,
-							participantCount
-						});
-						await participant.save();
-					}
-				}
-				tournament.status = TournamentStatuses.COMPLETED;
-				await tournament.save();
-			});
-			frozen = true;
+			await freezeTournamentAttempt(tournamentId, participantIds);
+			return;
 		}
 		catch (error) {
 			if (!(error instanceof TournamentParticipantsChangedError)) {
