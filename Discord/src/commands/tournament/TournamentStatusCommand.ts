@@ -17,7 +17,7 @@ async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser)
 }
 
 export const commandInfo: ICommand = {
-	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("tournament-status") as SlashCommandBuilder,
+	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("tournament") as SlashCommandBuilder,
 	getPacket,
 	mainGuildCommand: false
 };

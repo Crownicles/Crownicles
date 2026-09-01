@@ -2,7 +2,7 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import {
-	TournamentCategory, TournamentStatus, TournamentTopCategory
+	TournamentCategory, TournamentRewardSummary, TournamentStatus, TournamentTopCategory
 } from "../../types/Tournament";
 
 export const TournamentErrorCodes = {
@@ -104,6 +104,10 @@ export class CommandTournamentStatusPacketRes extends CrowniclesPacket {
 
 	status!: TournamentStatus;
 
+	discordGuildId!: string;
+
+	discordChannelId!: string;
+
 	registrationEndsAt!: number;
 
 	combatEndsAt!: number;
@@ -117,6 +121,10 @@ export class CommandTournamentStatusPacketRes extends CrowniclesPacket {
 	attackGloryPoints?: number;
 
 	defenseGloryPoints?: number;
+
+	rank?: number;
+
+	reward?: TournamentRewardSummary;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)

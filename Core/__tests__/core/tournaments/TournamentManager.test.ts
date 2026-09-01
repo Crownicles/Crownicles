@@ -6,8 +6,8 @@ import {
 	TournamentCategories
 } from "../../../../Lib/src/types/Tournament";
 import {
-	getCategoryForLevel, getEffectiveLevel, getRankRewardFactor, getRewardItemCount,
-	getRewardMultiplier, getTournamentRewardAmounts
+	getCategoryForLevel, getEffectiveLevel, getRankRewardFactor, getRewardMultiplier,
+	getTournamentRewardAmounts
 } from "../../../src/core/tournaments/TournamentRules";
 
 describe("Tournament rules", () => {
@@ -37,14 +37,11 @@ describe("Tournament rules", () => {
 		expect(getRewardMultiplier(50, TournamentCategories.LEVEL_50, last)).toBe(2.875);
 	});
 
-	it("scales objects from category ranking while keeping one minimum", () => {
+	it("gives exactly one object to every rank", () => {
 		const first = { rank: 1, categoryParticipantCount: 10 };
-		const last = { rank: 10, categoryParticipantCount: 10 };
-		expect(getRewardItemCount(50, TournamentCategories.LEVEL_100, first)).toBe(4);
-		expect(getRewardItemCount(50, TournamentCategories.LEVEL_100, last)).toBe(1);
-		expect(getRewardItemCount(50, TournamentCategories.LEVEL_50, first)).toBe(3);
-		expect(getRewardItemCount(50, TournamentCategories.LEVEL_50, last)).toBe(1);
-		expect(getRewardItemCount(20, TournamentCategories.LEVEL_50, last)).toBe(1);
+		const last = { rank: 20, categoryParticipantCount: 20 };
+		expect(getTournamentRewardAmounts(50, TournamentCategories.LEVEL_100, first).itemCount).toBe(1);
+		expect(getTournamentRewardAmounts(50, TournamentCategories.LEVEL_50, last).itemCount).toBe(1);
 	});
 
 	it("uses fixed XP and money bases independent of the player's league", () => {
@@ -53,7 +50,7 @@ describe("Tournament rules", () => {
 		expect(getTournamentRewardAmounts(50, TournamentCategories.LEVEL_100, first)).toEqual({
 			experience: 55200,
 			money: 55200,
-			itemCount: 4
+			itemCount: 1
 		});
 		expect(getTournamentRewardAmounts(50, TournamentCategories.LEVEL_100, last)).toEqual({
 			experience: 11500,

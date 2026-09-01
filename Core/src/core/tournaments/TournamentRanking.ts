@@ -1,21 +1,53 @@
 import { Op } from "sequelize";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	TournamentCategories
+	TournamentCategories, TournamentStatuses
 } from "../../../../Lib/src/types/Tournament";
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
 import Player from "../database/game/models/Player";
+import type Tournament from "../database/game/models/Tournament";
 import {
 	getCategoryCounts, getEffectiveLevel, sortParticipants,
 	TournamentStatusData, TournamentTopData
 } from "./TournamentRules";
-import { findTournamentForContext } from "./TournamentQueries";
+import {
+	findLatestTournamentForGuild, findTournamentForContext
+} from "./TournamentQueries";
 import { TournamentDomainError } from "./TournamentErrors";
 import { TournamentErrorCodes } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
 
+type TournamentParticipantStatusData = Partial<Pick<
+	TournamentStatusData,
+	"category" | "attackGloryPoints" | "defenseGloryPoints" | "rank" | "reward"
+>>;
+
+async function getParticipantRank(
+	tournament: Tournament,
+	participant: TournamentParticipant | undefined,
+	participants: TournamentParticipant[]
+): Promise<number | undefined> {
+	if (!participant) {
+		return undefined;
+	}
+	if (participant.finalRank !== null) {
+		return participant.finalRank;
+	}
+	if (tournament.status === TournamentStatuses.COMPLETED || tournament.status === TournamentStatuses.CANCELLED) {
+		return undefined;
+	}
+	const playerInstances = await Player.findAll({
+		where: { id: { [Op.in]: participants.map(candidate => candidate.playerId) } }
+	});
+	const playersById = new Map(playerInstances.map(playerInstance => [playerInstance.id, playerInstance]));
+	const categoryParticipants = participants.filter(candidate => candidate.category === participant.category);
+	const rank = sortParticipants(categoryParticipants, playersById)
+		.findIndex(candidate => candidate.playerId === participant.playerId);
+	return rank === -1 ? undefined : rank + 1;
+}
+
 export async function getStatusData(context: PacketContext, player: Player): Promise<TournamentStatusData> {
-	const tournament = await findTournamentForContext(context, true);
+	const tournament = await findLatestTournamentForGuild(context.frontEndSubOrigin);
 	if (!tournament) {
 		throw new TournamentDomainError(TournamentErrorCodes.NOT_FOUND);
 	}
@@ -23,16 +55,34 @@ export async function getStatusData(context: PacketContext, player: Player): Pro
 		where: { tournamentId: tournament.id }
 	});
 	const participant = participants.find(candidate => candidate.playerId === player.id);
+	const rank = await getParticipantRank(tournament, participant, participants);
+	const participantData: TournamentParticipantStatusData = {};
+	if (participant) {
+		participantData.category = participant.category;
+		participantData.attackGloryPoints = participant.attackGloryPoints;
+		participantData.defenseGloryPoints = participant.defenseGloryPoints;
+		if (rank !== undefined) {
+			participantData.rank = rank;
+		}
+		if (participant.finalRank !== null) {
+			participantData.reward = {
+				xp: participant.rewardXp,
+				money: participant.rewardMoney,
+				itemCount: participant.rewardItemCount,
+				granted: participant.rewardGrantedAt !== null
+			};
+		}
+	}
 	return {
 		tournamentId: tournament.id,
 		status: tournament.status,
+		discordGuildId: tournament.discordGuildId,
+		discordChannelId: tournament.discordChannelId,
 		registrationEndsAt: tournament.registrationEndsAt.getTime(),
 		combatEndsAt: tournament.combatEndsAt.getTime(),
 		participantCount: participants.length,
 		categoryCounts: getCategoryCounts(participants),
-		category: participant?.category,
-		attackGloryPoints: participant?.attackGloryPoints,
-		defenseGloryPoints: participant?.defenseGloryPoints
+		...participantData
 	};
 }
 

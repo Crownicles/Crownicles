@@ -39,3 +39,10 @@ export type TournamentTopCategory = {
 	yourRank?: number;
 	elements: TournamentTopEntry[];
 };
+
+export type TournamentRewardSummary = {
+	xp: number;
+	money: number;
+	itemCount: number;
+	granted: boolean;
+};

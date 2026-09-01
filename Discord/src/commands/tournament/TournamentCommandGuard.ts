@@ -12,21 +12,15 @@ import {
 } from "./TournamentCommandUtils";
 
 const TOURNAMENT_COMMAND_NAMES = new Set([
-	"tournament-code",
-	"tournament-create",
-	"tournament-register",
-	"tournament-status",
-	"tournament-resume",
-	"tournament-cancel",
 	"fight",
 	"top"
 ]);
 
 export function isAllowedInTournament(commandName: string, participant: boolean, owner: boolean): boolean {
-	if (commandName === "tournament-register" || commandName.startsWith("tournament-")) {
-		if (commandName === "tournament-status") {
-			return participant;
-		}
+	if (commandName === "tournament") {
+		return true;
+	}
+	if (commandName.startsWith("tournament-")) {
 		if (commandName === "tournament-resume") {
 			return owner;
 		}

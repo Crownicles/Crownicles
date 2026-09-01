@@ -26,6 +26,19 @@ export async function findTournamentForContext(context: PacketContext, includeFi
 	});
 }
 
+export async function findLatestTournamentForGuild(discordGuildId: string): Promise<Tournament | null> {
+	if (!Tournament.sequelize || !discordGuildId) {
+		return null;
+	}
+	return await Tournament.findOne({
+		where: {
+			discordGuildId,
+			status: { [Op.in]: CONTEXT_STATUSES }
+		},
+		order: [["id", "DESC"]]
+	});
+}
+
 export async function getParticipant(tournamentId: number, playerId: number): Promise<TournamentParticipant | null> {
 	return await TournamentParticipant.findOne({
 		where: {
