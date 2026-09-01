@@ -79,6 +79,9 @@ type TournamentStatusData = {
 type TournamentTopData = {
 	tournamentId: number;
 	categories: TournamentTopCategory[];
+	pageNumber: number;
+	totalPages: number;
+	elementsPerPage: number;
 };
 
 type TournamentEventData = {
@@ -193,11 +196,18 @@ export abstract class TournamentManager {
 		};
 	}
 
-	public static async createTournament(context: PacketContext, code: string, registrationDays: number, combatDays: number, guildMemberCount: number): Promise<Tournament> {
+	public static async createTournament(context: PacketContext, code: string, registrationDays: number, combatDays: number): Promise<Tournament> {
 		const guildId = context.frontEndSubOrigin;
 		const channelId = context.discord?.channel;
+		const guildMemberCount = context.discord?.guildMemberCount;
 		if (!guildId || guildId === "unknown" || !channelId) {
 			throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
+		}
+		if (context.discord?.isGuildAdministrator !== true) {
+			throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
+		}
+		if (guildMemberCount === undefined) {
+			throw new TournamentDomainError(TournamentErrorCodes.GUILD_TOO_SMALL);
 		}
 		if (guildMemberCount < TournamentConstants.MINIMUM_SERVER_MEMBER_COUNT) {
 			throw new TournamentDomainError(TournamentErrorCodes.GUILD_TOO_SMALL);
@@ -485,7 +495,7 @@ export abstract class TournamentManager {
 		};
 	}
 
-	public static async getTopData(context: PacketContext, player: Player): Promise<TournamentTopData> {
+	public static async getTopData(context: PacketContext, player: Player, requestedPage?: number): Promise<TournamentTopData> {
 		const tournament = await this.findTournamentForContext(context, true);
 		if (!tournament) {
 			throw new TournamentDomainError(TournamentErrorCodes.NOT_FOUND);
@@ -495,17 +505,28 @@ export abstract class TournamentManager {
 			where: { id: { [Op.in]: participants.map(participant => participant.playerId) } }
 		});
 		const playersById = new Map(playerInstances.map(playerInstance => [playerInstance.id, playerInstance]));
+		const sortedParticipantsByCategory = Object.values(TournamentCategories).map(category => ({
+			category,
+			participants: this.sortParticipants(participants.filter(participant => participant.category === category), playersById)
+		}));
+		const totalParticipants = Math.max(0, ...sortedParticipantsByCategory.map(category => category.participants.length));
+		const totalPages = Math.max(1, Math.ceil(totalParticipants / TournamentConstants.TOP_ELEMENTS_PER_PAGE));
+		const pageNumber = Math.min(Math.max(requestedPage ?? 1, 1), totalPages);
 		return {
 			tournamentId: tournament.id,
-			categories: Object.values(TournamentCategories).map(category => {
-				const categoryParticipants = this.sortParticipants(participants.filter(participant => participant.category === category), playersById);
+			pageNumber,
+			totalPages,
+			elementsPerPage: TournamentConstants.TOP_ELEMENTS_PER_PAGE,
+			categories: sortedParticipantsByCategory.map(({ category, participants: categoryParticipants }) => {
+				const pageStart = (pageNumber - 1) * TournamentConstants.TOP_ELEMENTS_PER_PAGE;
+				const pageParticipants = categoryParticipants.slice(pageStart, pageStart + TournamentConstants.TOP_ELEMENTS_PER_PAGE);
 				return {
 					category,
 					totalParticipants: categoryParticipants.length,
 					yourRank: categoryParticipants.findIndex(participant => participant.playerId === player.id) + 1 || undefined,
-					elements: categoryParticipants.map((participant, index) => ({
+					elements: pageParticipants.map((participant, index) => ({
 						playerKeycloakId: participant.keycloakId,
-						rank: index + 1,
+						rank: pageStart + index + 1,
 						category,
 						attackGloryPoints: participant.attackGloryPoints,
 						defenseGloryPoints: participant.defenseGloryPoints,
@@ -548,6 +569,9 @@ export abstract class TournamentManager {
 		if (!channelId || !context.frontEndSubOrigin) {
 			throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
 		}
+		if (context.discord?.isBotOwner !== true) {
+			throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
+		}
 		return await Tournament.withLocked(tournamentId, async tournament => {
 			if (tournament.status !== TournamentStatuses.PAUSED || !tournament.pausedFromStatus) {
 				throw new TournamentDomainError(TournamentErrorCodes.INVALID_PHASE);
@@ -575,7 +599,10 @@ export abstract class TournamentManager {
 		});
 	}
 
-	public static async cancelTournament(tournamentId: number, discordGuildId: string, reason: string): Promise<void> {
+	public static async cancelTournament(tournamentId: number, discordGuildId: string, reason: string, isGuildAdministrator: boolean): Promise<void> {
+		if (!isGuildAdministrator) {
+			throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
+		}
 		let participants: TournamentParticipant[] = [];
 		await Tournament.withLocked(tournamentId, async tournament => {
 			if (tournament.status === TournamentStatuses.COMPLETED || tournament.status === TournamentStatuses.CANCELLED) {
@@ -637,7 +664,7 @@ export abstract class TournamentManager {
 		const isDraw = fight.isADraw();
 		const winner = fight.getWinnerFighter();
 		const attackerWon = !isDraw && winner === fight.fightInitiator;
-		await withLockedEntities(
+		const gloryChanges = await withLockedEntities(
 			[
 				Tournament.lockKey(fightContext.tournamentId),
 				TournamentParticipant.lockKey(fightContext.attackerParticipantId),
@@ -649,16 +676,16 @@ export abstract class TournamentManager {
 				defender
 			]) => {
 				if (await TournamentFight.findOne({ where: { fightId: fight.id } })) {
-					return;
+					return null;
 				}
 				if (tournament.status !== TournamentStatuses.COMBAT || Date.now() >= tournament.combatEndsAt.getTime()) {
-					return;
+					return null;
 				}
 				if (attacker.tournamentId !== tournament.id
 					|| defender.tournamentId !== tournament.id
 					|| attacker.category !== fightContext.category
 					|| defender.category !== fightContext.category) {
-					return;
+					return null;
 				}
 				const attackerResult = getGameResult(attackerWon, isDraw);
 				const defenderResult = getGameResult(!attackerWon, isDraw);
@@ -681,10 +708,12 @@ export abstract class TournamentManager {
 				attacker.attackGloryPoints = newAttackerAttack;
 				defender.defenseGloryPoints = newDefenderDefense;
 				await Promise.all([attacker.save(), defender.save()]);
-				await Promise.all([
-					crowniclesInstance?.logsDatabase.logPlayersAttackGloryPoints(attacker.keycloakId, newAttackerAttack, NumberChangeReason.TOURNAMENT_FIGHT),
-					crowniclesInstance?.logsDatabase.logPlayersDefenseGloryPoints(defender.keycloakId, newDefenderDefense, NumberChangeReason.TOURNAMENT_FIGHT)
-				]);
+				const gloryChanges = {
+					attackerKeycloakId: attacker.keycloakId,
+					attackerGlory: newAttackerAttack,
+					defenderKeycloakId: defender.keycloakId,
+					defenderGlory: newDefenderDefense
+				};
 				await TournamentFight.create({
 					fightId: fight.id,
 					tournamentId: tournament.id,
@@ -714,8 +743,20 @@ export abstract class TournamentManager {
 					draw: isDraw,
 					winnerKeycloakId: isDraw ? undefined : attackerWon ? attacker.keycloakId : defender.keycloakId
 				}));
+				return gloryChanges;
 			}
 		);
+		if (gloryChanges) {
+			try {
+				await Promise.all([
+					crowniclesInstance?.logsDatabase.logPlayersAttackGloryPoints(gloryChanges.attackerKeycloakId, gloryChanges.attackerGlory, NumberChangeReason.TOURNAMENT_FIGHT),
+					crowniclesInstance?.logsDatabase.logPlayersDefenseGloryPoints(gloryChanges.defenderKeycloakId, gloryChanges.defenderGlory, NumberChangeReason.TOURNAMENT_FIGHT)
+				]);
+			}
+			catch (error) {
+				CrowniclesLogger.errorWithObj("Tournament glory log failed after fight commit", error);
+			}
+		}
 	}
 
 	private static hashCode(code: string): string {

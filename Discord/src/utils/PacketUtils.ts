@@ -67,6 +67,11 @@ export abstract class PacketUtils {
 			throw new Error("Error while getting user groups");
 		}
 
+		const isThread = [
+			ChannelType.PublicThread,
+			ChannelType.PrivateThread,
+			ChannelType.AnnouncementThread
+		].includes(interaction.channel.type);
 		return {
 			frontEndOrigin: PacketConstants.FRONT_END_ORIGINS.DISCORD,
 			frontEndSubOrigin: interaction.guild?.id ?? PacketConstants.FRONT_END_SUB_ORIGINS.UNKNOWN,
@@ -74,19 +79,17 @@ export abstract class PacketUtils {
 			discord: {
 				user: interaction.user.id,
 				channel: interaction.channel.id,
-				parentChannel: [
-					ChannelType.PublicThread,
-					ChannelType.PrivateThread,
-					ChannelType.AnnouncementThread
-				].includes(interaction.channel.type)
-					? interaction.channel.parentId ?? undefined
-					: undefined,
 				interaction: interaction.id,
 				language: interaction.userLanguage,
 				shardId,
-				guildMemberCount: interaction.guild?.memberCount,
 				isGuildAdministrator: interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator) ?? false,
-				isBotOwner: interaction.user.id === discordConfig.OWNER_ID
+					isBotOwner: interaction.user.id === discordConfig.OWNER_ID,
+					...(isThread && interaction.channel.parentId
+						? { parentChannel: interaction.channel.parentId }
+						: {}),
+					...(interaction.guild
+						? { guildMemberCount: interaction.guild.memberCount }
+						: {})
 			},
 			rightGroups: groups.payload.groups as RightGroup[]
 		};

@@ -136,6 +136,7 @@ const EXPORTED_TABLES = {
 	"GlobalBlessing": "23_current_blessing.csv",
 	"Tournament": "24_tournaments_created.csv",
 	"TournamentParticipant": "25_tournament_participations.csv",
+	"TournamentFight": "26_tournament_fights.csv",
 
 	// ============ LOGS DATABASE - Player Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersScore": "logs/15_score_history.csv",

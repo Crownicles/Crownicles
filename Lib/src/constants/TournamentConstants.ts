@@ -40,4 +40,6 @@ export abstract class TournamentConstants {
 	static readonly BO3_WINS_TO_FINISH = 2;
 
 	static readonly CONTEXT_QUERY_TIMEOUT_MS = 5000;
+
+	static readonly TOP_ELEMENTS_PER_PAGE = 15;
 }

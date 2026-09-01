@@ -2878,7 +2878,7 @@
     "resumed": "Le tournoi `{{tournamentId}}` reprend dans {{channel}}.",
     "cancelTitle": "Tournoi annulé",
     "cancelled": "Le tournoi `{{tournamentId}}` a été annulé. Aucune récompense ne sera distribuée.",
-    "topTitle": "Classement du tournoi",
+    "topTitle": "Classement du tournoi (page {{pageNumber}}/{{totalPages}})",
     "topCategory": "**{{category}}** ({{totalParticipants}} participants)\nVotre rang : {{yourRank}}\n{{entries}}",
     "topEntry": "{{rank}}. **{{pseudo}}** — {{totalGloryPoints}} gloire ({{attackGloryPoints}} attaque / {{defenseGloryPoints}} défense), niveau effectif {{effectiveLevel}}",
     "unranked": "non classé",

@@ -22,7 +22,7 @@ const TOURNAMENT_COMMAND_NAMES = new Set([
 	"top"
 ]);
 
-function isAllowedInTournament(commandName: string, participant: boolean, owner: boolean): boolean {
+export function isAllowedInTournament(commandName: string, participant: boolean, owner: boolean): boolean {
 	if (commandName === "tournament-register" || commandName.startsWith("tournament-")) {
 		if (commandName === "tournament-status") {
 			return participant;

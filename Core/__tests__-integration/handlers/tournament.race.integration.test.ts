@@ -10,6 +10,7 @@ import type TournamentType from "../../src/core/database/game/models/Tournament"
 import type TournamentCodeType from "../../src/core/database/game/models/TournamentCode";
 import type TournamentParticipantType from "../../src/core/database/game/models/TournamentParticipant";
 import type TournamentFightType from "../../src/core/database/game/models/TournamentFight";
+import type PlayerBadgesType from "../../src/core/database/game/models/PlayerBadges";
 import type { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
 	TournamentCategories, TournamentStatuses
@@ -31,7 +32,10 @@ function buildContext(keycloakId: string): PacketContext {
 			interaction: `interaction-${keycloakId}`,
 			channel: CHANNEL_ID,
 			language: "fr",
-			shardId: 0
+				shardId: 0,
+				guildMemberCount: 1000,
+				isGuildAdministrator: true,
+				isBotOwner: true
 		}
 	};
 }
@@ -45,6 +49,7 @@ describe("TournamentManager integration", () => {
 	let TournamentCode: ModelStatic<TournamentCodeType>;
 	let TournamentParticipant: ModelStatic<TournamentParticipantType>;
 	let TournamentFight: ModelStatic<TournamentFightType>;
+	let PlayerBadges: ModelStatic<PlayerBadgesType>;
 
 	beforeAll(async () => {
 		env = await setupCoreForTests("tournament");
@@ -55,6 +60,7 @@ describe("TournamentManager integration", () => {
 		TournamentCode = env.crownicles.gameDatabase.sequelize.models.TournamentCode as ModelStatic<TournamentCodeType>;
 		TournamentParticipant = env.crownicles.gameDatabase.sequelize.models.TournamentParticipant as ModelStatic<TournamentParticipantType>;
 		TournamentFight = env.crownicles.gameDatabase.sequelize.models.TournamentFight as ModelStatic<TournamentFightType>;
+		PlayerBadges = env.crownicles.gameDatabase.sequelize.models.PlayerBadges as ModelStatic<PlayerBadgesType>;
 	});
 
 	afterAll(async () => {
@@ -68,6 +74,7 @@ describe("TournamentManager integration", () => {
 			await TournamentParticipant.destroy({ truncate: true, force: true });
 			await Tournament.destroy({ truncate: true, force: true });
 			await TournamentCode.destroy({ truncate: true, force: true });
+			await PlayerBadges.destroy({ truncate: true, force: true });
 			await Player.destroy({ truncate: true, force: true });
 		}
 		finally {
@@ -81,7 +88,7 @@ describe("TournamentManager integration", () => {
 			level: 50
 		});
 		const code = await manager.generateCode(GUILD_ID);
-		await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1, 1000);
+		await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
 		const player = await Player.create({
 			keycloakId: "tournament-racer",
 			level: 50
@@ -103,7 +110,7 @@ describe("TournamentManager integration", () => {
 			level: 50
 		});
 		const code = await manager.generateCode(GUILD_ID);
-		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1, 1000);
+		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
 		const players = await Promise.all(Array.from({ length: 20 }, (_, index) => Player.create({
 			keycloakId: `tournament-threshold-${index}`,
 			level: index < 10 ? 50 : 100
@@ -127,7 +134,7 @@ describe("TournamentManager integration", () => {
 			level: 100
 		});
 		const code = await manager.generateCode(GUILD_ID);
-		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1, 1000);
+		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
 		await Tournament.update({ status: TournamentStatuses.COMBAT }, { where: { id: tournament.id } });
 		const player = await Player.create({
 			keycloakId: "tournament-late-player",
@@ -142,13 +149,76 @@ describe("TournamentManager integration", () => {
 		expect(participant.lateRegistration).toBe(true);
 	});
 
+	it("matches a distant opponent from the same category without a glory gap cap", async () => {
+		const owner = await Player.create({
+			keycloakId: "tournament-owner-matchmaking",
+			level: 100
+		});
+		const code = await manager.generateCode(GUILD_ID);
+		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
+		await Tournament.update({ status: TournamentStatuses.COMBAT }, { where: { id: tournament.id } });
+		const attacker = await Player.create({
+			keycloakId: "tournament-attacker-matchmaking",
+			level: 100
+		});
+		const distantOpponent = await Player.create({
+			keycloakId: "tournament-distant-opponent",
+			level: 100
+		});
+		const attackerParticipant = await manager.registerPlayer(buildContext(attacker.keycloakId), attacker);
+		const opponentParticipant = await manager.registerPlayer(buildContext(distantOpponent.keycloakId), distantOpponent);
+		await TournamentParticipant.update({
+			attackGloryPoints: 4000,
+			defenseGloryPoints: 4000
+		}, {
+			where: { id: attackerParticipant.id }
+		});
+		await TournamentParticipant.update({
+			attackGloryPoints: 0,
+			defenseGloryPoints: 0
+		}, {
+			where: { id: opponentParticipant.id }
+		});
+
+		const selected = await manager.findOpponent(tournament, await TournamentParticipant.findByPk(attackerParticipant.id) as TournamentParticipantType);
+
+		expect(selected?.id).toBe(opponentParticipant.id);
+	});
+
+	it("pauses and resumes with the same phase and a frozen remaining duration", async () => {
+		const owner = await Player.create({
+			keycloakId: "tournament-owner-pause",
+			level: 100
+		});
+		const code = await manager.generateCode(GUILD_ID);
+		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
+		await Tournament.update({
+			registrationEndsAt: new Date(Date.now() + 120_000),
+			combatEndsAt: new Date(Date.now() + 240_000)
+		}, {
+			where: { id: tournament.id }
+		});
+
+		await manager.pauseTournament(tournament.id);
+		const paused = await Tournament.findByPk(tournament.id);
+		expect(paused?.status).toBe(TournamentStatuses.PAUSED);
+		expect(paused?.pausedFromStatus).toBe(TournamentStatuses.REGISTRATION);
+		expect(paused?.pausedRemainingMs).toBeGreaterThan(0);
+
+		await manager.resumeTournament(tournament.id, buildContext(owner.keycloakId));
+		const resumed = await Tournament.findByPk(tournament.id);
+		expect(resumed?.status).toBe(TournamentStatuses.REGISTRATION);
+		expect(resumed?.pausedRemainingMs).toBeNull();
+		expect(resumed?.discordChannelId).toBe(CHANNEL_ID);
+	});
+
 	it("resolves the same fight only once", async () => {
 		const owner = await Player.create({
 			keycloakId: "tournament-owner-idempotence",
 			level: 100
 		});
 		const code = await manager.generateCode(GUILD_ID);
-		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1, 1000);
+		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
 		await Tournament.update({ status: TournamentStatuses.COMBAT }, { where: { id: tournament.id } });
 		const attacker = await Player.create({
 			keycloakId: "tournament-attacker-idempotence",
@@ -182,5 +252,48 @@ describe("TournamentManager integration", () => {
 
 		expect(await TournamentFight.count()).toBe(1);
 		expect(afterSecondResolution?.attackGloryPoints).toBe(afterFirstResolution?.attackGloryPoints);
+	});
+
+	it("freezes the two category rankings and grants final rewards once", async () => {
+		const owner = await Player.create({
+			keycloakId: "tournament-owner-finish",
+			level: 100
+		});
+		const code = await manager.generateCode(GUILD_ID);
+		const tournament = await manager.createTournament(buildContext(owner.keycloakId), code.code, 1, 1);
+		const players = await Promise.all(Array.from({ length: 20 }, (_, index) => Player.create({
+			keycloakId: `tournament-finish-${index}`,
+			level: index < 10 ? 50 : 100
+		})));
+		const participants = await Promise.all(players.map(player => manager.registerPlayer(buildContext(player.keycloakId), player)));
+		await TournamentParticipant.update({
+			attackGloryPoints: 1000,
+			defenseGloryPoints: 1000
+		}, {
+			where: { id: participants[0].id }
+		});
+		await Tournament.update({
+			status: TournamentStatuses.COMBAT,
+			combatEndsAt: new Date(Date.now() - 1)
+		}, {
+			where: { id: tournament.id }
+		});
+
+		const sendNotifications = vi.spyOn(packetUtils, "sendNotifications").mockImplementation(() => undefined);
+		await manager.processDueTournaments();
+
+		const finished = await Tournament.findByPk(tournament.id);
+		const finishedParticipants = await TournamentParticipant.findAll({
+			where: { tournamentId: tournament.id }
+		});
+		const winners = finishedParticipants.filter(participant => participant.isWinner);
+		expect(finished?.status).toBe(TournamentStatuses.COMPLETED);
+		expect(finished?.rewardsDistributed).toBe(true);
+		expect(winners).toHaveLength(2);
+		expect(finishedParticipants.every(participant => participant.finalRank !== null)).toBe(true);
+		expect(finishedParticipants.every(participant => participant.rewardGrantedAt !== null)).toBe(true);
+		expect(await PlayerBadges.count()).toBe(2);
+		expect(sendNotifications).toHaveBeenCalledOnce();
+		sendNotifications.mockRestore();
 	});
 });

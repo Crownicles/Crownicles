@@ -177,7 +177,11 @@ export async function handleTournamentTop(context: PacketContext, packet: Comman
 	await interaction.editReply({
 		embeds: [
 			new CrowniclesEmbed()
-				.setTitle(i18n.t("commands:tournament.topTitle", { lng }))
+				.setTitle(i18n.t("commands:tournament.topTitle", {
+					lng,
+					pageNumber: packet.pageNumber,
+					totalPages: packet.totalPages
+				}))
 				.setDescription(categoryDescriptions.join("\n\n"))
 		]
 	});

@@ -119,11 +119,23 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		},
 		tournamentId: {
 			type: DataTypes.INTEGER,
-			allowNull: false
+			allowNull: false,
+			references: {
+				model: "tournaments",
+				key: "id"
+			},
+			onDelete: "CASCADE",
+			onUpdate: "CASCADE"
 		},
 		playerId: {
 			type: DataTypes.INTEGER,
-			allowNull: false
+			allowNull: false,
+			references: {
+				model: "players",
+				key: "id"
+			},
+			onDelete: "CASCADE",
+			onUpdate: "CASCADE"
 		},
 		keycloakId: {
 			// eslint-disable-next-line new-cap
@@ -208,19 +220,43 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		},
 		tournamentId: {
 			type: DataTypes.INTEGER,
-			allowNull: false
+			allowNull: false,
+			references: {
+				model: "tournaments",
+				key: "id"
+			},
+			onDelete: "CASCADE",
+			onUpdate: "CASCADE"
 		},
 		attackerParticipantId: {
 			type: DataTypes.INTEGER,
-			allowNull: false
+			allowNull: false,
+			references: {
+				model: "tournament_participants",
+				key: "id"
+			},
+			onDelete: "CASCADE",
+			onUpdate: "CASCADE"
 		},
 		defenderParticipantId: {
 			type: DataTypes.INTEGER,
-			allowNull: false
+			allowNull: false,
+			references: {
+				model: "tournament_participants",
+				key: "id"
+			},
+			onDelete: "CASCADE",
+			onUpdate: "CASCADE"
 		},
 		winnerParticipantId: {
 			type: DataTypes.INTEGER,
-			allowNull: true
+			allowNull: true,
+			references: {
+				model: "tournament_participants",
+				key: "id"
+			},
+			onDelete: "SET NULL",
+			onUpdate: "CASCADE"
 		},
 		draw: {
 			type: DataTypes.BOOLEAN,
