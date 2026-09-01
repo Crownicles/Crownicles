@@ -18,9 +18,8 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { MapCache } from "../maps/MapCache";
 import { RequirementWherePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementWherePacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import {
-	TournamentCommandAccess, TournamentManager
-} from "../tournaments/TournamentManager";
+import { verifyCommandAccess } from "../tournaments/TournamentAccess";
+import type { TournamentCommandAccess } from "../tournaments/TournamentTypes";
 
 type Requirements = {
 	disallowedEffects?: Effect[];
@@ -74,7 +73,7 @@ async function runRequirementChecks(
 	requirements: RequirementsWithoutBlocked
 ): Promise<boolean> {
 	const checks: RequirementCheck[] = [
-		(): boolean | Promise<boolean> => TournamentManager.verifyCommandAccess(player, context, response, requirements.tournamentAccess ?? "none"),
+		(): boolean | Promise<boolean> => verifyCommandAccess(player, context, response, requirements.tournamentAccess ?? "none"),
 		(): boolean | Promise<boolean> => CommandUtils.checkEffects(player, response, requirements.allowedEffects ?? [], requirements.disallowedEffects ?? []),
 		(): boolean | Promise<boolean> => verifyLevelRequirement(player, response, requirements.level),
 		(): boolean | Promise<boolean> => verifyRightGroupRequirement(context, response, requirements.rightGroup),

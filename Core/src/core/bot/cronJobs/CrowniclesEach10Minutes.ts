@@ -1,6 +1,6 @@
 import { set10MinutesCronJob } from "../../utils/CronInterface";
 import { TopStorage } from "../../utils/TopUtils";
-import { TournamentManager } from "../../tournaments/TournamentManager";
+import { processDueTournaments } from "../../tournaments/TournamentLifecycle";
 
 export class CrowniclesEach10Minutes {
 	public static async programCronJob(): Promise<void> {
@@ -13,6 +13,6 @@ export class CrowniclesEach10Minutes {
 	static async job(): Promise<void> {
 		await TopStorage.getInstance()
 			.updateTops();
-		await TournamentManager.processDueTournaments();
+		await processDueTournaments();
 	}
 }

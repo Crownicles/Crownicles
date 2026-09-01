@@ -49,7 +49,8 @@ import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { TournamentManager } from "../../core/tournaments/TournamentManager";
+import { findTournamentForContext } from "../../core/tournaments/TournamentQueries";
+import { resolveTournamentFight } from "../../core/tournaments/TournamentFightResolver";
 import { getPlayerStats } from "./FightPlayerStats";
 import { executeTournamentFightCommand } from "./TournamentFightCommand";
 
@@ -312,7 +313,7 @@ function buildPlayerGloryInfo(player: Player, oldGlory: number): FightRewardPack
  */
 async function fightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
 	if (fight.tournamentContext) {
-		await TournamentManager.resolveFight(fight, response);
+		await resolveTournamentFight(fight, response);
 		return;
 	}
 	await regularFightEndCallback(fight, response);
@@ -547,7 +548,7 @@ export default class FightCommand {
 		tournamentAccess: "fight"
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
-		const tournament = await TournamentManager.findTournamentForContext(context, true);
+		const tournament = await findTournamentForContext(context, true);
 		if (tournament) {
 			await executeTournamentFightCommand({
 				response,

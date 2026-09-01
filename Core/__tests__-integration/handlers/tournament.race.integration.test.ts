@@ -20,11 +20,32 @@ import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
 import type { InventoryInfo as InventoryInfoType } from "../../src/core/database/game/models/InventoryInfo";
 import type { InventorySlot as InventorySlotType } from "../../src/core/database/game/models/InventorySlot";
 
-type TournamentManagerModule = typeof import("../../src/core/tournaments/TournamentManager");
+type TournamentCreationModule = typeof import("../../src/core/tournaments/TournamentCreation");
+type TournamentRegistrationModule = typeof import("../../src/core/tournaments/TournamentRegistration");
+type TournamentQueriesModule = typeof import("../../src/core/tournaments/TournamentQueries");
+type TournamentMatchmakingModule = typeof import("../../src/core/tournaments/TournamentMatchmaking");
+type TournamentPauseModule = typeof import("../../src/core/tournaments/TournamentPause");
+type TournamentLifecycleModule = typeof import("../../src/core/tournaments/TournamentLifecycle");
+type TournamentRankingModule = typeof import("../../src/core/tournaments/TournamentRanking");
+type TournamentFightResolverModule = typeof import("../../src/core/tournaments/TournamentFightResolver");
 type PacketUtilsModule = typeof import("../../src/core/utils/PacketUtils");
 type EloUtilsModule = typeof import("../../src/core/utils/EloUtils");
 type InventoryInfoModule = typeof import("../../src/core/database/game/models/InventoryInfo");
 type InventorySlotsModule = typeof import("../../src/core/database/game/models/InventorySlot");
+
+type TournamentTestApi = {
+	generateCode: TournamentCreationModule["generateTournamentCode"];
+	createTournament: TournamentCreationModule["createTournament"];
+	registerPlayer: TournamentRegistrationModule["registerPlayer"];
+	findTournamentForContext: TournamentQueriesModule["findTournamentForContext"];
+	getParticipant: TournamentQueriesModule["getParticipant"];
+	findOpponent: TournamentMatchmakingModule["findOpponent"];
+	pauseTournament: TournamentPauseModule["pauseTournament"];
+	resumeTournament: TournamentPauseModule["resumeTournament"];
+	getTopData: TournamentRankingModule["getTopData"];
+	processDueTournaments: TournamentLifecycleModule["processDueTournaments"];
+	resolveFight: TournamentFightResolverModule["resolveTournamentFight"];
+};
 
 const GUILD_ID = "tournament-race-guild";
 const CHANNEL_ID = "tournament-race-channel";
@@ -47,9 +68,9 @@ function buildContext(keycloakId: string): PacketContext {
 	};
 }
 
-describe("TournamentManager integration", () => {
+describe("Tournament modules integration", () => {
 	let env: CoreTestEnvironment;
-	let manager: TournamentManagerModule["TournamentManager"];
+	let manager: TournamentTestApi;
 	let eloUtils: EloUtilsModule["EloUtils"];
 	let packetUtils: PacketUtilsModule["PacketUtils"];
 	let Player: ModelStatic<PlayerType>;
@@ -64,7 +85,27 @@ describe("TournamentManager integration", () => {
 
 	beforeAll(async () => {
 		env = await setupCoreForTests("tournament");
-		manager = loadProductionModule<TournamentManagerModule>("core/tournaments/TournamentManager").TournamentManager;
+		const creation = loadProductionModule<TournamentCreationModule>("core/tournaments/TournamentCreation");
+		const registration = loadProductionModule<TournamentRegistrationModule>("core/tournaments/TournamentRegistration");
+		const queries = loadProductionModule<TournamentQueriesModule>("core/tournaments/TournamentQueries");
+		const matchmaking = loadProductionModule<TournamentMatchmakingModule>("core/tournaments/TournamentMatchmaking");
+		const pause = loadProductionModule<TournamentPauseModule>("core/tournaments/TournamentPause");
+		const lifecycle = loadProductionModule<TournamentLifecycleModule>("core/tournaments/TournamentLifecycle");
+		const ranking = loadProductionModule<TournamentRankingModule>("core/tournaments/TournamentRanking");
+		const fightResolver = loadProductionModule<TournamentFightResolverModule>("core/tournaments/TournamentFightResolver");
+		manager = {
+			generateCode: creation.generateTournamentCode,
+			createTournament: creation.createTournament,
+			registerPlayer: registration.registerPlayer,
+			findTournamentForContext: queries.findTournamentForContext,
+			getParticipant: queries.getParticipant,
+			findOpponent: matchmaking.findOpponent,
+			pauseTournament: pause.pauseTournament,
+			resumeTournament: pause.resumeTournament,
+			getTopData: ranking.getTopData,
+			processDueTournaments: lifecycle.processDueTournaments,
+			resolveFight: fightResolver.resolveTournamentFight
+		};
 		eloUtils = loadProductionModule<EloUtilsModule>("core/utils/EloUtils").EloUtils;
 		packetUtils = loadProductionModule<PacketUtilsModule>("core/utils/PacketUtils").PacketUtils;
 		Player = env.crownicles.gameDatabase.sequelize.models.Player as ModelStatic<PlayerType>;

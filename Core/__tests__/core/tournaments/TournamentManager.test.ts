@@ -9,7 +9,7 @@ import {
 	getCategoryForLevel, getEffectiveLevel, getRewardItemCount, getRewardMultiplier
 } from "../../../src/core/tournaments/TournamentRules";
 
-describe("TournamentManager rules", () => {
+describe("Tournament rules", () => {
 	it("assigns the expected category at each level boundary", () => {
 		expect(getCategoryForLevel(TournamentConstants.MINIMUM_PLAYER_LEVEL))
 			.toBe(TournamentCategories.LEVEL_50);
