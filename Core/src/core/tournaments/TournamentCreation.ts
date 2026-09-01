@@ -31,22 +31,43 @@ function hashCode(code: string): string {
 		.digest("hex");
 }
 
-function validateChannelAndCreator(context: PacketContext): TournamentCreationData {
+function getTournamentChannel(context: PacketContext): {
+	guildId: string; channelId: string;
+} {
 	const guildId = context.frontEndSubOrigin;
 	const channelId = context.discord?.channel;
 	if (!guildId || guildId === PacketConstants.FRONT_END_SUB_ORIGINS.UNKNOWN || !channelId) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CHANNEL);
 	}
+	return {
+		guildId,
+		channelId
+	};
+}
+
+function requireGuildAdministrator(context: PacketContext): void {
 	if (context.discord?.isGuildAdministrator !== true) {
 		throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
 	}
+}
+
+function requireTournamentCreator(context: PacketContext): string {
 	if (!context.keycloakId) {
 		throw new TournamentDomainError(TournamentErrorCodes.ACCESS_DENIED);
 	}
+	return context.keycloakId;
+}
+
+function validateChannelAndCreator(context: PacketContext): TournamentCreationData {
+	const {
+		guildId,
+		channelId
+	} = getTournamentChannel(context);
+	requireGuildAdministrator(context);
 	return {
 		guildId,
 		channelId,
-		createdByKeycloakId: context.keycloakId
+		createdByKeycloakId: requireTournamentCreator(context)
 	};
 }
 
@@ -57,12 +78,13 @@ function validateGuildSize(guildMemberCount: number | undefined): void {
 }
 
 function validateDurations(registrationDays: number, combatDays: number): void {
-	if (!Number.isInteger(registrationDays)
-		|| registrationDays < TournamentConstants.REGISTRATION_MINIMUM_DAYS
-		|| registrationDays > TournamentConstants.REGISTRATION_MAXIMUM_DAYS
-		|| !Number.isInteger(combatDays)
-		|| combatDays < TournamentConstants.COMBAT_MINIMUM_DAYS
-		|| combatDays > TournamentConstants.COMBAT_MAXIMUM_DAYS) {
+	const isRegistrationDurationValid = Number.isInteger(registrationDays)
+		&& registrationDays >= TournamentConstants.REGISTRATION_MINIMUM_DAYS
+		&& registrationDays <= TournamentConstants.REGISTRATION_MAXIMUM_DAYS;
+	const isCombatDurationValid = Number.isInteger(combatDays)
+		&& combatDays >= TournamentConstants.COMBAT_MINIMUM_DAYS
+		&& combatDays <= TournamentConstants.COMBAT_MAXIMUM_DAYS;
+	if (!isRegistrationDurationValid || !isCombatDurationValid) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_DURATION);
 	}
 }

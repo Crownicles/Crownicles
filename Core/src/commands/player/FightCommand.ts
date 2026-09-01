@@ -43,42 +43,15 @@ import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 import { PacketUtils } from "../../core/utils/PacketUtils";
 import { PlayerWasAttackedNotificationPacket } from "../../../../Lib/src/packets/notifications/PlayerWasAttackedNotificationPacket";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
-import { PetUtils } from "../../core/utils/PetUtils";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
 import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { TournamentManager } from "../../core/tournaments/TournamentManager";
-import { Tournament } from "../../core/database/game/models/Tournament";
-import { TournamentParticipant } from "../../core/database/game/models/TournamentParticipant";
-import { TournamentStatuses } from "../../../../Lib/src/types/Tournament";
-
-type PlayerStats = {
-	pet?: {
-		petTypeId: number;
-		petSex: SexTypeShort;
-		petNickname: string;
-		isOnExpedition: boolean;
-	};
-	classId: number;
-	fightRanking: { glory: number };
-	energy: {
-		value: number;
-		max: number;
-	};
-	attack: number;
-	defense: number;
-	speed: number;
-	breath: {
-		base: number;
-		max: number;
-		regen: number;
-	};
-};
+import { getPlayerStats } from "./FightPlayerStats";
+import { executeTournamentFightCommand } from "./TournamentFightCommand";
 
 type FightInitiatorInformation = {
 	playerDailyFightSummary: PersonalFightDailySummary;
@@ -92,43 +65,6 @@ type FightInitiatorInformation = {
  * Fights are logged at the end of the fight
  */
 export const fightsDefenderCooldowns = new Map<string, number>();
-
-async function getPlayerStats(player: Player, tournamentParticipant?: TournamentParticipant): Promise<PlayerStats> {
-	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
-	const petEntity = await PetEntities.getById(player.petId);
-	const effectiveLevel = tournamentParticipant
-		? TournamentManager.getEffectiveLevel(tournamentParticipant.category, player.level)
-		: player.level;
-	const includePotion = !tournamentParticipant;
-	const maxEnergy = player.getMaxCumulativeEnergy(playerActiveObjects, effectiveLevel);
-
-	return {
-		pet: petEntity
-			? {
-				petTypeId: petEntity.typeId!,
-				petSex: petEntity.sex as SexTypeShort,
-				petNickname: petEntity.nickname,
-				isOnExpedition: await PetUtils.isPetOnExpedition(player.id)
-			}
-			: undefined,
-		classId: player.class,
-		fightRanking: {
-			glory: tournamentParticipant?.getTotalGloryPoints() ?? player.getGloryPoints()
-		},
-		energy: {
-			value: tournamentParticipant ? maxEnergy : player.getCumulativeEnergy(playerActiveObjects),
-			max: maxEnergy
-		},
-		attack: player.getCumulativeAttack(playerActiveObjects, effectiveLevel, includePotion),
-		defense: player.getCumulativeDefense(playerActiveObjects, effectiveLevel, includePotion),
-		speed: player.getCumulativeSpeed(playerActiveObjects, effectiveLevel, includePotion),
-		breath: {
-			base: player.getBaseBreath(playerActiveObjects),
-			max: player.getMaxBreath(playerActiveObjects),
-			regen: player.getBreathRegen()
-		}
-	};
-}
 
 /**
  * Calculate the money reward for the initiator of the fight
@@ -559,15 +495,10 @@ async function findOpponent(player: Player): Promise<Player | null> {
 	return null;
 }
 
-function fightValidationEndCallback(player: Player, context: PacketContext, tournament?: Tournament): EndCallback {
+function fightValidationEndCallback(player: Player, context: PacketContext): EndCallback {
 	return async (collector, response): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-			if (tournament) {
-				await startTournamentFight(response, player, context, tournament);
-				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.FIGHT_CONFIRMATION);
-				return;
-			}
 			const opponent = await findOpponent(player);
 			if (!opponent) {
 				response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
@@ -607,61 +538,6 @@ function fightValidationEndCallback(player: Player, context: PacketContext, tour
 	};
 }
 
-async function startTournamentFight(response: CrowniclesPacket[], player: Player, context: PacketContext, tournament: Tournament): Promise<void> {
-	const participant = await TournamentManager.getParticipant(tournament.id, player.id);
-	if (!participant) {
-		response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
-		return;
-	}
-	const opponentParticipant = await TournamentManager.findAndReserveOpponent(tournament, participant);
-	if (!opponentParticipant) {
-		response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
-		return;
-	}
-	const opponent = await Players.getById(opponentParticipant.playerId);
-	const playerClass = ClassDataController.instance.getById(player.class);
-	const opponentClass = ClassDataController.instance.getById(opponent.class);
-	if (!playerClass || !opponentClass) {
-		throw new Error("Class not found for tournament player or opponent");
-	}
-
-	const askingFighter = new PlayerFighter(player, playerClass, {
-		effectiveLevel: TournamentManager.getEffectiveLevel(participant.category, player.level),
-		tournamentMode: true
-	});
-	askingFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
-	await askingFighter.loadStats();
-	askingFighter.tournamentGloryPoints = participant.getTotalGloryPoints();
-
-	const incomingFighter = new AiPlayerFighter(opponent, opponentClass, {
-		allowPotionConsumption: false,
-		effectiveLevel: TournamentManager.getEffectiveLevel(opponentParticipant.category, opponent.level),
-		tournamentMode: true
-	});
-	incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
-	await incomingFighter.loadStats();
-	incomingFighter.tournamentGloryPoints = opponentParticipant.getTotalGloryPoints();
-
-	const fightController = new FightController(
-		{
-			fighter1: askingFighter,
-			fighter2: incomingFighter
-		},
-		{
-			overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
-			context,
-			tournamentContext: {
-				tournamentId: tournament.id,
-				attackerParticipantId: participant.id,
-				defenderParticipantId: opponentParticipant.id,
-				category: participant.category
-			}
-		}
-	);
-	fightController.setEndCallback(fightEndCallback);
-	await fightController.startFight(response);
-}
-
 export default class FightCommand {
 	@commandRequires(CommandFightPacketReq, {
 		notBlocked: true,
@@ -673,26 +549,13 @@ export default class FightCommand {
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
 		const tournament = await TournamentManager.findTournamentForContext(context, true);
 		if (tournament) {
-			const participant = await TournamentManager.getParticipant(tournament.id, player.id);
-			if (!participant || tournament.status !== TournamentStatuses.COMBAT) {
-				response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
-				return;
-			}
-			const collector = new ReactionCollectorFight(
-				await getPlayerStats(player, participant)
-			);
-			const collectorPacket = new ReactionCollectorInstance(
-				collector,
+			await executeTournamentFightCommand({
+				response,
+				player,
 				context,
-				{
-					allowedPlayerKeycloakIds: [player.keycloakId],
-					reactionLimit: 1
-				},
-				fightValidationEndCallback(player, context, tournament)
-			)
-				.block(player.keycloakId, BlockingConstants.REASONS.FIGHT_CONFIRMATION)
-				.build();
-			response.push(collectorPacket);
+				tournament,
+				fightEndCallback
+			});
 			return;
 		}
 		const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
