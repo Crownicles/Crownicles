@@ -13,7 +13,8 @@ import Player from "../database/game/models/Player";
 import { LeagueDataController } from "../../data/League";
 import {
 	getCategoryCounts, getEndingNotificationDate, getRewardItemCount,
-	getRewardMultiplier, PROCESSABLE_STATUSES, sortParticipants
+	getRewardMultiplier, PROCESSABLE_STATUSES, sortParticipants,
+	TournamentRewardRank
 } from "./TournamentRules";
 import {
 	claimTournamentEvent, TournamentEventData
@@ -24,6 +25,7 @@ type TournamentRewardPreparationContext = {
 	playersById: Map<number, Player>;
 	category: typeof TournamentCategories[keyof typeof TournamentCategories];
 	participantCount: number;
+	rankData: TournamentRewardRank;
 };
 
 type TournamentNotificationConfiguration = {
@@ -40,17 +42,16 @@ type TournamentParticipantSnapshot = {
 
 function prepareParticipantReward(
 	participant: TournamentParticipant,
-	index: number,
 	context: TournamentRewardPreparationContext
 ): void {
 	const league = LeagueDataController.instance.getById(participant.normalLeagueId)
 		?? context.playersById.get(participant.playerId)?.getLeague();
-	const rewardMultiplier = getRewardMultiplier(context.participantCount, context.category);
-	participant.finalRank = index + 1;
-	participant.isWinner = index === 0;
+	const rewardMultiplier = getRewardMultiplier(context.participantCount, context.category, context.rankData);
+	participant.finalRank = context.rankData.rank;
+	participant.isWinner = context.rankData.rank === 1;
 	participant.rewardXp = league ? Math.round(league.getXPToAward() * rewardMultiplier) : 0;
 	participant.rewardMoney = league ? Math.round(league.getMoneyToAward() * rewardMultiplier) : 0;
-	participant.rewardItemCount = getRewardItemCount(context.participantCount, context.category);
+	participant.rewardItemCount = getRewardItemCount(context.participantCount, context.category, context.rankData);
 }
 
 class TournamentParticipantsChangedError extends Error {
@@ -107,10 +108,14 @@ async function freezeTournamentAttempt(snapshot: TournamentParticipantSnapshot):
 		for (const category of Object.values(TournamentCategories)) {
 			const categoryParticipants = sortParticipants(participants.filter(participant => participant.category === category), playersById);
 			for (const [index, participant] of categoryParticipants.entries()) {
-				prepareParticipantReward(participant, index, {
+				prepareParticipantReward(participant, {
 					playersById,
 					category,
-					participantCount
+					participantCount,
+					rankData: {
+						rank: index + 1,
+						categoryParticipantCount: categoryParticipants.length
+					}
 				});
 				await participant.save();
 			}

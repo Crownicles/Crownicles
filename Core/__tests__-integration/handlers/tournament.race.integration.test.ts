@@ -404,6 +404,11 @@ describe("Tournament modules integration", () => {
 		expect(finishedParticipants.every(participant => participant.finalRank !== null)).toBe(true);
 		expect(finishedParticipants.every(participant => participant.rewardGrantedAt !== null)).toBe(true);
 		expect(finishedParticipants.every(participant => participant.endedNotificationSent)).toBe(true);
+		const level100Ranking = finishedParticipants
+			.filter(participant => participant.category === TournamentCategories.LEVEL_100)
+			.sort((left, right) => (left.finalRank ?? 0) - (right.finalRank ?? 0));
+		expect(level100Ranking[0].rewardXp).toBeGreaterThan(level100Ranking.at(-1)!.rewardXp);
+		expect(level100Ranking[0].rewardMoney).toBeGreaterThan(level100Ranking.at(-1)!.rewardMoney);
 		expect(await PlayerBadges.count()).toBe(2);
 		expect(sendNotifications).toHaveBeenCalledTimes(2);
 		await manager.processDueTournaments();
@@ -486,6 +491,14 @@ describe("Tournament modules integration", () => {
 				slot: 0
 			}
 		})));
+		await InventoryInfo.upsert({
+			playerId: fullPlayer.id,
+			weaponSlots: 4,
+			armorSlots: 4,
+			potionSlots: 4,
+			objectSlots: 4,
+			plantSlots: 1
+		});
 		await manager.processDueTournaments();
 
 		const granted = await TournamentParticipant.findByPk(participants[0].id);
