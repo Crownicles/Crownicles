@@ -1,5 +1,5 @@
 import {
-	Client, GuildMember, Guild, IntentsBitField, Options, Partials, TextChannel
+	Client, GuildMember, Guild, IntentsBitField, NonThreadGuildBasedChannel, Options, Partials, PermissionsBitField, TextChannel
 } from "discord.js";
 import { Constants } from "../../../Lib/src/constants/Constants";
 import { loadConfig } from "../config/DiscordConfig";
@@ -104,6 +104,36 @@ export abstract class Intents {
 		];
 }
 
+function pauseTournamentForChannel(guildId: string, channelId: string): void {
+	PacketUtils.sendPacketToBackend({
+		frontEndOrigin: PacketConstants.FRONT_END_ORIGINS.DISCORD,
+		frontEndSubOrigin: guildId,
+		discord: {
+			user: "",
+			interaction: "",
+			channel: channelId,
+			language: LANGUAGE.ENGLISH,
+			shardId
+		}
+	}, makePacket(CommandTournamentPausePacketReq, {
+		discordGuildId: guildId,
+		discordChannelId: channelId
+	}));
+}
+
+function hasTournamentChannelPermissions(channel: NonThreadGuildBasedChannel): boolean {
+	const permissions = channel.permissionsFor(crowniclesClient.user!.id);
+	return permissions?.has([
+		PermissionsBitField.Flags.ViewChannel,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.SendMessagesInThreads,
+		PermissionsBitField.Flags.AddReactions,
+		PermissionsBitField.Flags.EmbedLinks,
+		PermissionsBitField.Flags.AttachFiles,
+		PermissionsBitField.Flags.ReadMessageHistory
+	]) ?? false;
+}
+
 /**
  * The main function of the bot : makes the bot start
  */
@@ -198,20 +228,15 @@ async function connectAndStartBot(): Promise<void> {
 		if (!("guildId" in channel) || !channel.guildId) {
 			return;
 		}
-		PacketUtils.sendPacketToBackend({
-			frontEndOrigin: PacketConstants.FRONT_END_ORIGINS.DISCORD,
-			frontEndSubOrigin: channel.guildId,
-			discord: {
-				user: "",
-				interaction: "",
-				channel: channel.id,
-				language: LANGUAGE.ENGLISH,
-				shardId
-			}
-		}, makePacket(CommandTournamentPausePacketReq, {
-			discordGuildId: channel.guildId,
-			discordChannelId: channel.id
-		}));
+		pauseTournamentForChannel(channel.guildId, channel.id);
+	});
+	client.on("channelUpdate", (_oldChannel, newChannel) => {
+		if (!("guildId" in newChannel) || !newChannel.guildId || newChannel.isThread() || !crowniclesClient.user) {
+			return;
+		}
+		if (!hasTournamentChannelPermissions(newChannel)) {
+			pauseTournamentForChannel(newChannel.guildId, newChannel.id);
+		}
 	});
 
 	crowniclesClient = client;
