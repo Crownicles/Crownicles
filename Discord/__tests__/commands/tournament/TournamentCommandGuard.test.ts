@@ -3,6 +3,8 @@ import {
 } from "vitest";
 import { isAllowedInTournament } from "../../../src/commands/tournament/TournamentCommandGuard";
 import { commandInfo } from "../../../src/commands/tournament/TournamentStatusCommand";
+import { commandInfo as tournamentCreateCommandInfo } from "../../../src/commands/tournament/TournamentCreateCommand";
+import { TournamentLevelLimitModes } from "../../../../Lib/src/types/Tournament";
 
 describe("TournamentCommandGuard", () => {
 	it("only allows registration for non-participants", () => {
@@ -26,5 +28,15 @@ describe("TournamentCommandGuard", () => {
 	it("registers the overview as a global tournament command", () => {
 		expect(commandInfo.slashCommandBuilder.name).toBe("tournament");
 		expect(commandInfo.mainGuildCommand).toBe(false);
+	});
+
+	it("exposes optional level limit options when creating a tournament", () => {
+		const command = tournamentCreateCommandInfo.slashCommandBuilder.toJSON();
+		const levelMode = command.options?.find(option => option.name === "level-mode");
+		const levelCap = command.options?.find(option => option.name === "level-cap");
+
+		expect(levelMode?.required).not.toBe(true);
+		expect(levelMode?.choices?.map(choice => choice.value)).toEqual(Object.values(TournamentLevelLimitModes));
+		expect(levelCap?.required).not.toBe(true);
 	});
 });

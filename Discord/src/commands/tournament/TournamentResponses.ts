@@ -17,6 +17,18 @@ import { resolveKeycloakPlayerName } from "../../utils/KeycloakPlayerUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { TournamentFightRewardPacket } from "../../../../Lib/src/packets/fights/TournamentFightRewardPacket";
 import { escapeUsername } from "../../utils/StringUtils";
+import type { TournamentLevelLimitMode } from "../../../../Lib/src/types/Tournament";
+
+function getTournamentLevelRuleDescription(
+	levelLimitMode: TournamentLevelLimitMode,
+	levelCap: number | null,
+	lng: Language
+): string {
+	return i18n.t(`commands:tournament.levelModes.${levelLimitMode}`, {
+		lng,
+		levelCap: levelCap ?? 0
+	});
+}
 
 function getInteraction(context: PacketContext): CrowniclesInteraction | null {
 	return context.discord?.interaction ? DiscordCache.getInteraction(context.discord.interaction) : null;
@@ -52,7 +64,8 @@ export async function handleTournamentCreate(context: PacketContext, packet: Com
 			tournamentId: packet.tournamentId,
 			registrationEndsAt: dateDisplay(new Date(packet.registrationEndsAt)),
 			combatEndsAt: dateDisplay(new Date(packet.combatEndsAt)),
-			channel: `<#${packet.channelId}>`
+			channel: `<#${packet.channelId}>`,
+			levelRule: getTournamentLevelRuleDescription(packet.levelLimitMode, packet.levelCap, interaction.userLanguage)
 		})));
 }
 
@@ -97,6 +110,7 @@ export async function handleTournamentStatus(context: PacketContext, packet: Com
 				status: i18n.t(`commands:tournament.statuses.${packet.status}`, { lng }),
 				registrationEndsAt: finishInTimeDisplay(new Date(packet.registrationEndsAt)),
 				combatEndsAt: finishInTimeDisplay(new Date(packet.combatEndsAt)),
+				levelRule: getTournamentLevelRuleDescription(packet.levelLimitMode, packet.levelCap, lng),
 				participantCount: packet.participantCount,
 				level50Count: packet.categoryCounts.level50,
 				level100Count: packet.categoryCounts.level100,

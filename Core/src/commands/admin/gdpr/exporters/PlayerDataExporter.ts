@@ -419,6 +419,8 @@ async function exportCreatedTournaments(player: NonNullable<Player>, csvFiles: G
 		csvFiles["24_tournaments_created.csv"] = toCSV(createdTournaments.map(tournament => ({
 			tournamentId: tournament.id,
 			status: tournament.status,
+			levelLimitMode: tournament.levelLimitMode,
+			levelCap: tournament.levelCap,
 			cancellationReason: tournament.cancellationReason,
 			registrationEndsAt: tournament.registrationEndsAt,
 			combatEndsAt: tournament.combatEndsAt,

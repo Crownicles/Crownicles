@@ -414,7 +414,21 @@
       "combat-days": {
         "name": "combat-days",
         "description": "Durée des combats en jours, de 1 à 7."
+      },
+      "level-mode": {
+        "name": "level-mode",
+        "description": "Choisir la règle de niveau du tournoi."
+      },
+      "level-cap": {
+        "name": "level-cap",
+        "description": "Plafond utilisé par les modes concernés."
       }
+    },
+    "levelModes": {
+      "category": "Par catégorie",
+      "unlimited": "Sans plafond",
+      "cap": "Plafonner",
+      "reject": "Refuser au-dessus du plafond"
     }
   },
   "tournament-register": {

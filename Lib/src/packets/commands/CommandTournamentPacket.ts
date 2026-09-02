@@ -2,7 +2,7 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import {
-	TournamentCategory, TournamentRewardSummary, TournamentStatus, TournamentTopCategory
+	TournamentCategory, TournamentLevelLimitMode, TournamentRewardSummary, TournamentStatus, TournamentTopCategory
 } from "../../types/Tournament";
 
 export const TournamentErrorCodes = {
@@ -19,6 +19,8 @@ export const TournamentErrorCodes = {
 	GUILD_TOO_SMALL: "guildTooSmall",
 	INVALID_DURATION: "invalidDuration",
 	INVALID_CHANNEL: "invalidChannel",
+	INVALID_LEVEL_LIMIT: "invalidLevelLimit",
+	LEVEL_TOO_HIGH: "levelTooHigh",
 	NO_OPPONENT: "noOpponent",
 	PAUSED: "paused",
 	NOT_REGISTERED: "notRegistered"
@@ -64,6 +66,10 @@ export class CommandTournamentCreatePacketReq extends CrowniclesPacket {
 	registrationDays!: number;
 
 	combatDays!: number;
+
+	levelLimitMode?: TournamentLevelLimitMode;
+
+	levelCap?: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -75,6 +81,10 @@ export class CommandTournamentCreatePacketRes extends CrowniclesPacket {
 	combatEndsAt!: number;
 
 	channelId!: string;
+
+	levelLimitMode!: TournamentLevelLimitMode;
+
+	levelCap!: number | null;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
@@ -103,6 +113,10 @@ export class CommandTournamentStatusPacketRes extends CrowniclesPacket {
 	tournamentId!: number;
 
 	status!: TournamentStatus;
+
+	levelLimitMode!: TournamentLevelLimitMode;
+
+	levelCap!: number | null;
 
 	discordGuildId!: string;
 

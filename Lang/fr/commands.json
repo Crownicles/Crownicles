@@ -2867,12 +2867,12 @@
     "codeTitle": "Code de tournoi",
     "codeCreated": "Code : `{{code}}`\nValable jusqu'au {{expiresAt}}. Ce code ne peut être utilisé qu'une seule fois sur ce serveur.",
     "createTitle": "Tournoi créé",
-    "created": "Le tournoi `{{tournamentId}}` utilisera {{channel}}. Les inscriptions se terminent {{registrationEndsAt}} et les combats se terminent {{combatEndsAt}}.",
+    "created": "Le tournoi `{{tournamentId}}` utilisera {{channel}}. Les inscriptions se terminent {{registrationEndsAt}} et les combats se terminent {{combatEndsAt}}. Règle de niveau : {{levelRule}}.",
     "registerTitle": "Inscription au tournoi",
     "registered": "Vous êtes inscrit dans la catégorie **{{category}}** avec {{attackGloryPoints}} gloire d'attaque et {{defenseGloryPoints}} gloire de défense.{{lateRegistration}}",
     "lateRegistration": " Vous commencez tardivement avec une défense tournoi nulle.",
     "statusTitle": "État du tournoi",
-    "status": "Serveur : **{{server}}**\nSalon du tournoi : {{channel}}\nTournoi `{{tournamentId}}` : **{{status}}**\nInscriptions : {{registrationEndsAt}}\nCombats : {{combatEndsAt}}\nParticipants : {{participantCount}} (Niveau 50 : {{level50Count}}, niveau 100 : {{level100Count}})\nVotre catégorie : {{category}}\nVotre rang : {{rank}}\nVotre gloire : {{attackGloryPoints}} attaque / {{defenseGloryPoints}} défense\nVotre récompense : {{reward}}",
+    "status": "Serveur : **{{server}}**\nSalon du tournoi : {{channel}}\nTournoi `{{tournamentId}}` : **{{status}}**\nRègle de niveau : {{levelRule}}\nInscriptions : {{registrationEndsAt}}\nCombats : {{combatEndsAt}}\nParticipants : {{participantCount}} (Niveau 50 : {{level50Count}}, niveau 100 : {{level100Count}})\nVotre catégorie : {{category}}\nVotre rang : {{rank}}\nVotre gloire : {{attackGloryPoints}} attaque / {{defenseGloryPoints}} défense\nVotre récompense : {{reward}}",
     "notRegistered": "vous n'êtes pas inscrit",
     "noReward": "Aucune récompense préparée pour le moment.",
     "rewardGranted": "{{xp}} XP, {{money}} pièces et {{itemCount}} objets distribués.",
@@ -2897,6 +2897,12 @@
       "completed": "terminé",
       "cancelled": "annulé"
     },
+    "levelModes": {
+      "category": "plafond par catégorie (niveau 50 ou 100)",
+      "unlimited": "niveaux sans plafond",
+      "cap": "niveau plafonné à {{levelCap}}",
+      "reject": "niveaux supérieurs à {{levelCap}} interdits"
+    },
     "fightReward": {
       "title": "Résultat du combat tournoi",
       "draw": "{{player1}} et {{player2}} font égalité.\n{{player1}} : {{player1AttackChange}} attaque / {{player1DefenseChange}} défense\n{{player2}} : {{player2AttackChange}} attaque / {{player2DefenseChange}} défense",
@@ -2917,6 +2923,8 @@
       "guildTooSmall": "Le serveur doit compter au moins 1 000 membres.",
       "invalidDuration": "Les durées doivent être comprises entre 1 et 7 jours.",
       "invalidChannel": "Cette commande doit être exécutée dans un salon texte valide.",
+      "invalidLevelLimit": "La configuration de niveau est invalide. Un plafond doit être un niveau entier d'au moins 8 et être associé au mode choisi.",
+      "levelTooHigh": "Votre niveau est trop élevé pour les conditions d'inscription de ce tournoi.",
       "noOpponent": "Aucun adversaire tournoi n'est disponible pour le moment.",
       "paused": "Le tournoi est actuellement en pause.",
       "notRegistered": "Vous devez être inscrit pour utiliser cette commande dans le salon tournoi.",

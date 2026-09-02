@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import {
-	TournamentCategories
+	TournamentCategories, TournamentLevelLimitModes
 } from "../../../../Lib/src/types/Tournament";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import {
@@ -25,6 +25,25 @@ describe("Tournament rules", () => {
 		expect(getEffectiveLevel(TournamentCategories.LEVEL_50, 42)).toBe(42);
 		expect(getEffectiveLevel(TournamentCategories.LEVEL_50, 99)).toBe(50);
 		expect(getEffectiveLevel(TournamentCategories.LEVEL_100, 150)).toBe(100);
+	});
+
+	it("supports category, unlimited and custom level modes", () => {
+		expect(getEffectiveLevel(TournamentCategories.LEVEL_100, 150, {
+		levelLimitMode: TournamentLevelLimitModes.CATEGORY,
+		levelCap: null
+	})).toBe(100);
+		expect(getEffectiveLevel(TournamentCategories.LEVEL_100, 150, {
+		levelLimitMode: TournamentLevelLimitModes.UNLIMITED,
+		levelCap: null
+	})).toBe(150);
+		expect(getEffectiveLevel(TournamentCategories.LEVEL_100, 150, {
+		levelLimitMode: TournamentLevelLimitModes.CAP,
+		levelCap: 20
+	})).toBe(20);
+		expect(getEffectiveLevel(TournamentCategories.LEVEL_100, 15, {
+		levelLimitMode: TournamentLevelLimitModes.CAP,
+		levelCap: 20
+	})).toBe(15);
 	});
 
 	it("scales XP and money from category ranking", () => {

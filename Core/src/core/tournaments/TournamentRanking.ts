@@ -41,7 +41,7 @@ async function getParticipantRank(
 	});
 	const playersById = new Map(playerInstances.map(playerInstance => [playerInstance.id, playerInstance]));
 	const categoryParticipants = participants.filter(candidate => candidate.category === participant.category);
-	const rank = sortParticipants(categoryParticipants, playersById)
+	const rank = sortParticipants(categoryParticipants, playersById, tournament)
 		.findIndex(candidate => candidate.playerId === participant.playerId);
 	return rank === -1 ? undefined : rank + 1;
 }
@@ -76,6 +76,8 @@ export async function getStatusData(context: PacketContext, player: Player): Pro
 	return {
 		tournamentId: tournament.id,
 		status: tournament.status,
+		levelLimitMode: tournament.levelLimitMode,
+		levelCap: tournament.levelCap,
 		discordGuildId: tournament.discordGuildId,
 		discordChannelId: tournament.discordChannelId,
 		registrationEndsAt: tournament.registrationEndsAt.getTime(),
@@ -98,7 +100,11 @@ export async function getTopData(context: PacketContext, player: Player, request
 	const playersById = new Map(playerInstances.map(playerInstance => [playerInstance.id, playerInstance]));
 	const sortedParticipantsByCategory = Object.values(TournamentCategories).map(category => ({
 		category,
-		participants: sortParticipants(participants.filter(participant => participant.category === category), playersById)
+		participants: sortParticipants(
+			participants.filter(participant => participant.category === category),
+			playersById,
+			tournament
+		)
 	}));
 	const totalParticipants = Math.max(0, ...sortedParticipantsByCategory.map(category => category.participants.length));
 	const totalPages = Math.max(1, Math.ceil(totalParticipants / TournamentConstants.TOP_ELEMENTS_PER_PAGE));
@@ -124,7 +130,7 @@ export async function getTopData(context: PacketContext, player: Player, request
 					attackGloryPoints: participant.attackGloryPoints,
 					defenseGloryPoints: participant.defenseGloryPoints,
 					totalGloryPoints: participant.getTotalGloryPoints(),
-					effectiveLevel: getEffectiveLevel(category, playersById.get(participant.playerId)?.level ?? 0)
+					effectiveLevel: getEffectiveLevel(category, playersById.get(participant.playerId)?.level ?? 0, tournament)
 				}))
 			};
 		})

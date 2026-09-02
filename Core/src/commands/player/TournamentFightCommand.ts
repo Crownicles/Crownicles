@@ -54,7 +54,7 @@ async function startTournamentFight(flow: TournamentFightFlow): Promise<void> {
 	}
 
 	const askingFighter = new PlayerFighter(flow.player, playerClass, {
-		effectiveLevel: getEffectiveLevel(participant.category, flow.player.level),
+		effectiveLevel: getEffectiveLevel(participant.category, flow.player.level, flow.tournament),
 		tournamentMode: true
 	});
 	askingFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
@@ -63,7 +63,7 @@ async function startTournamentFight(flow: TournamentFightFlow): Promise<void> {
 
 	const incomingFighter = new AiPlayerFighter(opponent, opponentClass, {
 		allowPotionConsumption: false,
-		effectiveLevel: getEffectiveLevel(opponentParticipant.category, opponent.level),
+		effectiveLevel: getEffectiveLevel(opponentParticipant.category, opponent.level, flow.tournament),
 		tournamentMode: true
 	});
 	incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
@@ -116,7 +116,7 @@ export async function executeTournamentFightCommand(flow: TournamentFightFlow): 
 		flow.response.push(makePacket(CommandFightOpponentsNotFoundPacket, {}));
 		return;
 	}
-	const collector = new ReactionCollectorFight(await getPlayerStats(flow.player, participant));
+	const collector = new ReactionCollectorFight(await getPlayerStats(flow.player, participant, flow.tournament));
 	const collectorPacket = new ReactionCollectorInstance(
 		collector,
 		flow.context,

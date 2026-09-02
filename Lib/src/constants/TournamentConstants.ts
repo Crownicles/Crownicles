@@ -5,6 +5,8 @@ export abstract class TournamentConstants {
 
 	static readonly MINIMUM_PLAYER_LEVEL = 8;
 
+	static readonly MAX_LEVEL_CAP = 2_147_483_647;
+
 	static readonly MINIMUM_TOTAL_PARTICIPANTS = 20;
 
 	static readonly MINIMUM_PARTICIPANTS_PER_CATEGORY = 10;
