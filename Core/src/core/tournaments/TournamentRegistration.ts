@@ -1,6 +1,6 @@
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import {
-	TournamentStatuses, TournamentStatus
+	TournamentLevelLimitModes, TournamentStatuses, TournamentStatus
 } from "../../../../Lib/src/types/Tournament";
 import { Tournament } from "../database/game/models/Tournament";
 import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
@@ -34,6 +34,13 @@ function assertRegistrationIsOpen(tournament: Tournament): void {
 	}
 }
 
+function assertPlayerLevelIsAllowed(tournament: Tournament, player: Player): void {
+	if (tournament.levelLimitMode === TournamentLevelLimitModes.REJECT
+		&& tournament.levelCap !== null && player.level > tournament.levelCap) {
+		throw new TournamentDomainError(TournamentErrorCodes.LEVEL_TOO_HIGH);
+	}
+}
+
 export async function registerPlayer(context: PacketContext, player: Player): Promise<TournamentParticipant> {
 	await processDueTournaments();
 	const tournament = await findTournamentForContext(context, false);
@@ -43,6 +50,7 @@ export async function registerPlayer(context: PacketContext, player: Player): Pr
 
 	return await Tournament.withLocked(tournament.id, async lockedTournament => {
 		assertRegistrationIsOpen(lockedTournament);
+		assertPlayerLevelIsAllowed(lockedTournament, player);
 		const existing = await TournamentParticipant.findOne({
 			where: {
 				tournamentId: lockedTournament.id,

@@ -13,7 +13,7 @@ import type TournamentFightType from "../../src/core/database/game/models/Tourna
 import type PlayerBadgesType from "../../src/core/database/game/models/PlayerBadges";
 import type { CrowniclesPacket, PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
-	TournamentCategories, TournamentStatuses
+	TournamentCategories, TournamentLevelLimitMode, TournamentLevelLimitModes, TournamentStatuses
 } from "../../../Lib/src/types/Tournament";
 import { TournamentErrorCodes } from "../../../Lib/src/packets/commands/CommandTournamentPacket";
 import { ItemCategory, ItemRarity } from "../../../Lib/src/constants/ItemConstants";
@@ -36,9 +36,20 @@ type EloUtilsModule = typeof import("../../src/core/utils/EloUtils");
 type InventoryInfoModule = typeof import("../../src/core/database/game/models/InventoryInfo");
 type InventorySlotsModule = typeof import("../../src/core/database/game/models/InventorySlot");
 
+type TournamentLevelOptions = {
+	levelLimitMode?: TournamentLevelLimitMode;
+	levelCap?: number;
+};
+
 type TournamentTestApi = {
 	generateCode: (discordGuildId: string) => ReturnType<TournamentCreationModule["generateTournamentCode"]>;
-	createTournament: (context: PacketContext, code: string, registrationDays: number, combatDays: number) => ReturnType<TournamentCreationModule["createTournament"]>;
+	createTournament: (
+		context: PacketContext,
+		code: string,
+		registrationDays: number,
+		combatDays: number,
+		levelOptions?: TournamentLevelOptions
+	) => ReturnType<TournamentCreationModule["createTournament"]>;
 	registerPlayer: TournamentRegistrationModule["registerPlayer"];
 	findTournamentForContext: TournamentQueriesModule["findTournamentForContext"];
 	getParticipant: TournamentQueriesModule["getParticipant"];
@@ -100,10 +111,11 @@ describe("Tournament modules integration", () => {
 		const fightResolver = loadProductionModule<TournamentFightResolverModule>("core/tournaments/TournamentFightResolver");
 		manager = {
 			generateCode: discordGuildId => creation.generateTournamentCode(discordGuildId),
-			createTournament: (context, code, registrationDays, combatDays) => creation.createTournament({
+			createTournament: (context, code, registrationDays, combatDays, levelOptions) => creation.createTournament({
 				context,
 				code,
-				duration: { registrationDays, combatDays }
+				duration: { registrationDays, combatDays },
+				...(levelOptions ?? {})
 			}),
 			registerPlayer: registration.registerPlayer,
 			findTournamentForContext: queries.findTournamentForContext,
@@ -227,11 +239,73 @@ describe("Tournament modules integration", () => {
 		expect(status.discordGuildId).toBe(GUILD_ID);
 		expect(status.discordChannelId).toBe(CHANNEL_ID);
 		expect(status.status).toBe(TournamentStatuses.REGISTRATION);
+		expect(status.levelLimitMode).toBe(TournamentLevelLimitModes.CATEGORY);
+		expect(status.levelCap).toBeNull();
 		expect(status.participantCount).toBe(1);
 		expect(status.categoryCounts[TournamentCategories.LEVEL_100]).toBe(1);
 		expect(status.category).toBe(TournamentCategories.LEVEL_100);
 		expect(status.rank).toBe(1);
 		expect(status.reward).toBeUndefined();
+	});
+
+	it("persists custom level limits and rejects players above the limit", async () => {
+		const owner = await Player.create({
+			keycloakId: "tournament-owner-level-limit",
+			level: 100
+		});
+		const capCode = await manager.generateCode(GUILD_ID);
+		const cappedTournament = await manager.createTournament(
+			buildContext(owner.keycloakId),
+			capCode.code,
+			1,
+			1,
+			{
+				levelLimitMode: TournamentLevelLimitModes.CAP,
+				levelCap: 20
+			}
+		);
+		const cappedPlayer = await Player.create({
+			keycloakId: "tournament-capped-player",
+			level: 100
+		});
+		await manager.registerPlayer(buildContext(cappedPlayer.keycloakId), cappedPlayer);
+
+		const persistedCappedTournament = await Tournament.findByPk(cappedTournament.id);
+		const cappedTop = await manager.getTopData(buildContext(cappedPlayer.keycloakId), cappedPlayer, 1);
+		expect(persistedCappedTournament?.levelLimitMode).toBe(TournamentLevelLimitModes.CAP);
+		expect(persistedCappedTournament?.levelCap).toBe(20);
+		expect(cappedTop.categories.find(category => category.category === TournamentCategories.LEVEL_100)?.elements[0].effectiveLevel).toBe(20);
+
+		const rejectCode = await manager.generateCode(GUILD_ID);
+		await manager.createTournament(
+			buildContext(owner.keycloakId),
+			rejectCode.code,
+			1,
+			1,
+			{
+				levelLimitMode: TournamentLevelLimitModes.REJECT,
+				levelCap: 20
+			}
+		);
+		const rejectedPlayer = await Player.create({
+			keycloakId: "tournament-rejected-player",
+			level: 21
+		});
+
+		await expect(manager.registerPlayer(buildContext(rejectedPlayer.keycloakId), rejectedPlayer))
+			.rejects.toMatchObject({ code: TournamentErrorCodes.LEVEL_TOO_HIGH });
+
+		const invalidCode = await manager.generateCode(GUILD_ID);
+		await expect(manager.createTournament(
+			buildContext(owner.keycloakId),
+			invalidCode.code,
+			1,
+			1,
+			{
+				levelLimitMode: TournamentLevelLimitModes.CAP,
+				levelCap: TournamentConstants.MAX_LEVEL_CAP + 1
+			}
+		)).rejects.toMatchObject({ code: TournamentErrorCodes.INVALID_LEVEL_LIMIT });
 	});
 
 	it("assigns a late registration 750 attack and zero defense glory", async () => {

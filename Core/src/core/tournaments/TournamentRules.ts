@@ -1,8 +1,8 @@
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import {
-	TournamentCategories, TournamentCategory, TournamentNotificationEvent,
-	TournamentRewardSummary, TournamentStatus, TournamentStatuses, TournamentTopCategory
+	TournamentCategories, TournamentCategory, TournamentLevelLimitModes, TournamentLevelSettings,
+	TournamentNotificationEvent, TournamentRewardSummary, TournamentStatus, TournamentStatuses, TournamentTopCategory
 } from "../../../../Lib/src/types/Tournament";
 import {
 	asHours, hoursToMilliseconds
@@ -18,6 +18,8 @@ import type {
 export type TournamentStatusData = {
 	tournamentId: number;
 	status: TournamentStatus;
+	levelLimitMode: TournamentLevelSettings["levelLimitMode"];
+	levelCap: number | null;
 	discordGuildId: string;
 	discordChannelId: string;
 	registrationEndsAt: number;
@@ -67,8 +69,19 @@ export function getCategoryForLevel(level: number): TournamentCategory {
 	return level >= 100 ? TournamentCategories.LEVEL_100 : TournamentCategories.LEVEL_50;
 }
 
-export function getEffectiveLevel(category: TournamentCategory, level: number): number {
-	return Math.min(level, category === TournamentCategories.LEVEL_50 ? 50 : 100);
+export function getEffectiveLevel(
+	category: TournamentCategory,
+	level: number,
+	levelSettings?: TournamentLevelSettings
+): number {
+	const categoryCap = category === TournamentCategories.LEVEL_50 ? 50 : 100;
+	if (!levelSettings || levelSettings.levelLimitMode === TournamentLevelLimitModes.CATEGORY) {
+		return Math.min(level, categoryCap);
+	}
+	if (levelSettings.levelLimitMode === TournamentLevelLimitModes.UNLIMITED) {
+		return level;
+	}
+	return Math.min(level, levelSettings.levelCap ?? categoryCap);
 }
 
 export function getCategoryCounts(participants: TournamentParticipant[]): Record<TournamentCategory, number> {
@@ -152,14 +165,18 @@ export function getGameResult(isWinner: boolean, isDraw: boolean): EloGameResult
 	return isWinner ? 1 : 0;
 }
 
-export function sortParticipants(participants: TournamentParticipant[], playersById: Map<number, Player>): TournamentParticipant[] {
+export function sortParticipants(
+	participants: TournamentParticipant[],
+	playersById: Map<number, Player>,
+	levelSettings?: TournamentLevelSettings
+): TournamentParticipant[] {
 	return [...participants].sort((left, right) => {
 		const gloryDifference = right.getTotalGloryPoints() - left.getTotalGloryPoints();
 		if (gloryDifference !== 0) {
 			return gloryDifference;
 		}
-		const leftLevel = getEffectiveLevel(left.category, playersById.get(left.playerId)?.level ?? 0);
-		const rightLevel = getEffectiveLevel(right.category, playersById.get(right.playerId)?.level ?? 0);
+		const leftLevel = getEffectiveLevel(left.category, playersById.get(left.playerId)?.level ?? 0, levelSettings);
+		const rightLevel = getEffectiveLevel(right.category, playersById.get(right.playerId)?.level ?? 0, levelSettings);
 		return rightLevel - leftLevel || left.playerId - right.playerId;
 	});
 }

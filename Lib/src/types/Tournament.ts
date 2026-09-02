@@ -15,6 +15,20 @@ export const TournamentStatuses = {
 
 export type TournamentStatus = typeof TournamentStatuses[keyof typeof TournamentStatuses];
 
+export const TournamentLevelLimitModes = {
+	CATEGORY: "category",
+	UNLIMITED: "unlimited",
+	CAP: "cap",
+	REJECT: "reject"
+} as const;
+
+export type TournamentLevelLimitMode = typeof TournamentLevelLimitModes[keyof typeof TournamentLevelLimitModes];
+
+export type TournamentLevelSettings = {
+	levelLimitMode: TournamentLevelLimitMode;
+	levelCap: number | null;
+};
+
 export const TournamentNotificationEvents = {
 	STARTED: "started",
 	ENDING: "ending",

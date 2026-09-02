@@ -101,7 +101,11 @@ async function freezeTournamentAttempt(snapshot: TournamentParticipantSnapshot):
 		const playersById = new Map(players.map(player => [player.id, player]));
 		const participantCount = participants.length;
 		for (const category of Object.values(TournamentCategories)) {
-			const categoryParticipants = sortParticipants(participants.filter(participant => participant.category === category), playersById);
+			const categoryParticipants = sortParticipants(
+				participants.filter(participant => participant.category === category),
+				playersById,
+				tournament
+			);
 			for (const [index, participant] of categoryParticipants.entries()) {
 				prepareParticipantReward(participant, {
 					category,

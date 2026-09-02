@@ -10,10 +10,13 @@ import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	asDays, daysToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	TournamentLevelLimitMode, TournamentLevelLimitModes, TournamentLevelSettings,
+	TournamentStatuses
+} from "../../../../Lib/src/types/Tournament";
 import { Tournament } from "../database/game/models/Tournament";
 import { TournamentCode } from "../database/game/models/TournamentCode";
 import { TournamentDomainError } from "./TournamentErrors";
-import { TournamentStatuses } from "../../../../Lib/src/types/Tournament";
 
 export type TournamentCodeGenerationResult = {
 	code: string;
@@ -29,12 +32,18 @@ export type TournamentCreationRequest = {
 	context: PacketContext;
 	code: string;
 	duration: TournamentDuration;
+	levelLimitMode?: TournamentLevelLimitMode;
+	levelCap?: number;
 };
 
-type TournamentCreationData = {
+type TournamentCreationChannelData = {
 	guildId: string;
 	channelId: string;
 	createdByKeycloakId: string;
+};
+
+type TournamentCreationData = TournamentCreationChannelData & {
+	levelSettings: TournamentLevelSettings;
 };
 
 function hashCode(code: string): string {
@@ -81,7 +90,7 @@ function requireTournamentCreator(context: PacketContext): string {
 	return context.keycloakId;
 }
 
-function validateChannelAndCreator(context: PacketContext): TournamentCreationData {
+function validateChannelAndCreator(context: PacketContext): TournamentCreationChannelData {
 	const {
 		guildId,
 		channelId
@@ -112,14 +121,50 @@ function validateDurations(registrationDays: number, combatDays: number): void {
 	}
 }
 
+function normalizeLevelSettings(
+	levelLimitMode: TournamentLevelLimitMode | undefined,
+	levelCap: number | undefined
+): TournamentLevelSettings {
+	const mode = levelLimitMode ?? (levelCap === undefined
+		? TournamentLevelLimitModes.CATEGORY
+		: TournamentLevelLimitModes.CAP);
+	const customCapMode = mode === TournamentLevelLimitModes.CAP || mode === TournamentLevelLimitModes.REJECT;
+	const knownMode = mode === TournamentLevelLimitModes.CATEGORY
+		|| mode === TournamentLevelLimitModes.UNLIMITED
+		|| customCapMode;
+	if (!knownMode || customCapMode !== (levelCap !== undefined)) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_LEVEL_LIMIT);
+	}
+	if (!customCapMode) {
+		return {
+			levelLimitMode: mode,
+			levelCap: null
+		};
+	}
+	if (levelCap === undefined || !Number.isInteger(levelCap)
+		|| levelCap < TournamentConstants.MINIMUM_PLAYER_LEVEL
+		|| levelCap > TournamentConstants.MAX_LEVEL_CAP) {
+		throw new TournamentDomainError(TournamentErrorCodes.INVALID_LEVEL_LIMIT);
+	}
+	return {
+		levelLimitMode: mode,
+		levelCap
+	};
+}
+
 function validateCreationData(
 	context: PacketContext,
-	duration: TournamentDuration
+	duration: TournamentDuration,
+	levelLimitMode: TournamentLevelLimitMode | undefined,
+	levelCap: number | undefined
 ): TournamentCreationData {
 	const creationData = validateChannelAndCreator(context);
 	validateGuildSize(context.discord?.guildMemberCount);
 	validateDurations(duration.registrationDays, duration.combatDays);
-	return creationData;
+	return {
+		...creationData,
+		levelSettings: normalizeLevelSettings(levelLimitMode, levelCap)
+	};
 }
 
 function validateCode(
@@ -150,6 +195,8 @@ function buildTournament(
 		discordChannelId: creationData.channelId,
 		createdByKeycloakId: creationData.createdByKeycloakId,
 		status: TournamentStatuses.REGISTRATION,
+		levelLimitMode: creationData.levelSettings.levelLimitMode,
+		levelCap: creationData.levelSettings.levelCap,
 		pausedFromStatus: null,
 		registrationEndsAt,
 		combatEndsAt,
@@ -180,7 +227,12 @@ export async function generateTournamentCode(discordGuildId: string): Promise<To
 export async function createTournament(
 	request: TournamentCreationRequest
 ): Promise<Tournament> {
-	const creationData = validateCreationData(request.context, request.duration);
+	const creationData = validateCreationData(
+		request.context,
+		request.duration,
+		request.levelLimitMode,
+		request.levelCap
+	);
 	const codeInstance = await TournamentCode.findOne({ where: { codeHash: hashCode(request.code) } });
 	if (!codeInstance) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CODE);

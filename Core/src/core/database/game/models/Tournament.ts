@@ -4,7 +4,9 @@ import {
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
-import { TournamentStatus } from "../../../../../../Lib/src/types/Tournament";
+import {
+	TournamentLevelLimitMode, TournamentStatus
+} from "../../../../../../Lib/src/types/Tournament";
 
 export class Tournament extends Model {
 	declare readonly id: number;
@@ -16,6 +18,10 @@ export class Tournament extends Model {
 	declare createdByKeycloakId: string;
 
 	declare status: TournamentStatus;
+
+	declare levelLimitMode: TournamentLevelLimitMode;
+
+	declare levelCap: number | null;
 
 	declare pausedFromStatus: TournamentStatus | null;
 
@@ -77,6 +83,15 @@ export function initModel(sequelize: Sequelize): void {
 			// eslint-disable-next-line new-cap
 			type: DataTypes.STRING(16),
 			allowNull: false
+		},
+		levelLimitMode: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(16),
+			allowNull: false
+		},
+		levelCap: {
+			type: DataTypes.INTEGER,
+			allowNull: true
 		},
 		pausedFromStatus: {
 			// eslint-disable-next-line new-cap

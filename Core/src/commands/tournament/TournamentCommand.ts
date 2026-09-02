@@ -88,13 +88,17 @@ export default class TournamentCommand {
 				duration: {
 					registrationDays: packet.registrationDays,
 					combatDays: packet.combatDays
-				}
+				},
+				...packet.levelLimitMode ? { levelLimitMode: packet.levelLimitMode } : {},
+				...packet.levelCap !== undefined ? { levelCap: packet.levelCap } : {}
 			});
 			response.push(makePacket(CommandTournamentCreatePacketRes, {
 				tournamentId: tournament.id,
 				registrationEndsAt: tournament.registrationEndsAt.getTime(),
 				combatEndsAt: tournament.combatEndsAt.getTime(),
-				channelId: tournament.discordChannelId
+				channelId: tournament.discordChannelId,
+				levelLimitMode: tournament.levelLimitMode,
+				levelCap: tournament.levelCap
 			}));
 		}
 		catch (error) {
