@@ -5,9 +5,10 @@ import { TournamentConstants } from "../../../../Lib/src/constants/TournamentCon
 import {
 	TournamentCategories
 } from "../../../../Lib/src/types/Tournament";
+import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import {
 	getCategoryForLevel, getEffectiveLevel, getRankRewardFactor, getRewardMultiplier,
-	getTournamentRewardAmounts
+	getTournamentRewardAmounts, getTournamentRewardItemMinimumRarity
 } from "../../../src/core/tournaments/TournamentRules";
 
 describe("Tournament rules", () => {
@@ -42,6 +43,14 @@ describe("Tournament rules", () => {
 		const last = { rank: 20, categoryParticipantCount: 20 };
 		expect(getTournamentRewardAmounts(50, TournamentCategories.LEVEL_100, first).itemCount).toBe(1);
 		expect(getTournamentRewardAmounts(50, TournamentCategories.LEVEL_50, last).itemCount).toBe(1);
+	});
+
+	it("lowers the top 15 minimum item rarity from legendary to rare", () => {
+		expect(getTournamentRewardItemMinimumRarity(1)).toBe(ItemRarity.LEGENDARY);
+		expect(getTournamentRewardItemMinimumRarity(2)).toBe(ItemRarity.EPIC);
+		expect(getTournamentRewardItemMinimumRarity(6)).toBe(ItemRarity.SPECIAL);
+		expect(getTournamentRewardItemMinimumRarity(11)).toBe(ItemRarity.RARE);
+		expect(getTournamentRewardItemMinimumRarity(15)).toBe(ItemRarity.RARE);
 	});
 
 	it("uses fixed XP and money bases independent of the player's league", () => {

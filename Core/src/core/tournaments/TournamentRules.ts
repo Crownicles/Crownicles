@@ -1,4 +1,5 @@
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
+import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import {
 	TournamentCategories, TournamentCategory, TournamentNotificationEvent,
 	TournamentRewardSummary, TournamentStatus, TournamentStatuses, TournamentTopCategory
@@ -115,6 +116,18 @@ export function getTournamentRewardAmounts(
 		money: Math.round(TournamentConstants.BASE_MONEY_REWARD * rewardMultiplier),
 		itemCount: TournamentConstants.REWARD_ITEM_COUNT
 	};
+}
+
+export function getTournamentRewardItemMinimumRarity(rank: number): ItemRarity {
+	const rankOffset = Math.min(
+		Math.max(rank - 1, 0),
+		TournamentConstants.REWARD_ITEM_TOP_RANK_RARITY_STEPS
+	);
+	const rarityReduction = Math.ceil(
+		TournamentConstants.REWARD_ITEM_MIN_RARITY_RANGE * rankOffset
+		/ TournamentConstants.REWARD_ITEM_TOP_RANK_RARITY_STEPS
+	);
+	return (TournamentConstants.REWARD_ITEM_MIN_RARITY_FIRST_RANK - rarityReduction) as ItemRarity;
 }
 
 export function getTournamentPhaseEnd(tournament: Tournament): Date {

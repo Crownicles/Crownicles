@@ -18,6 +18,7 @@ import { Tournament } from "../database/game/models/Tournament";
 import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
 import { findLatestTournamentForGuild } from "./TournamentQueries";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { getTournamentRewardItemMinimumRarity } from "./TournamentRules";
 import {
 	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel,
 	toItemWithDetails
@@ -46,7 +47,10 @@ function generateTournamentRewardItem(participant: TournamentParticipant): Gener
 		return generateRandomItem({});
 	}
 	const category = NON_POTION_ITEM_CATEGORIES[RandomUtils.randInt(0, NON_POTION_ITEM_CATEGORIES.length)];
-	return generateRandomItem({ itemCategory: category });
+	return generateRandomItem({
+		itemCategory: category,
+		minRarity: getTournamentRewardItemMinimumRarity(participant.finalRank)
+	});
 }
 
 async function applyTournamentRewardUnderLock(

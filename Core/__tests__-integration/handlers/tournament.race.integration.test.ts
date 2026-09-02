@@ -16,7 +16,7 @@ import {
 	TournamentCategories, TournamentStatuses
 } from "../../../Lib/src/types/Tournament";
 import { TournamentErrorCodes } from "../../../Lib/src/packets/commands/CommandTournamentPacket";
-import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
+import { ItemCategory, ItemRarity } from "../../../Lib/src/constants/ItemConstants";
 import { TournamentConstants } from "../../../Lib/src/constants/TournamentConstants";
 import { ItemFoundPacket } from "../../../Lib/src/packets/events/ItemFoundPacket";
 import type { InventoryInfo as InventoryInfoType } from "../../src/core/database/game/models/InventoryInfo";
@@ -470,6 +470,7 @@ describe("Tournament modules integration", () => {
 		expect(claimResponse.filter(packet => packet.constructor.name === "ItemFoundPacket")).toHaveLength(level100Winner.rewardItemCount);
 		const claimedItem = claimResponse.find(packet => packet.constructor.name === ItemFoundPacket.name) as ItemFoundPacket;
 		expect(claimedItem.itemWithDetails.itemCategory).not.toBe(ItemCategory.POTION);
+		expect(claimedItem.itemWithDetails.rarity).toBeGreaterThanOrEqual(ItemRarity.LEGENDARY);
 		expect((await Tournament.findByPk(tournament.id))?.rewardsDistributed).toBe(false);
 		expect(await PlayerBadges.count()).toBe(1);
 		expect(sendNotifications).toHaveBeenCalledTimes(2);
