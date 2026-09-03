@@ -35,10 +35,14 @@ function assertRegistrationIsOpen(tournament: Tournament): void {
 }
 
 function assertPlayerLevelIsAllowed(tournament: Tournament, player: Player): void {
-	if (tournament.levelLimitMode === TournamentLevelLimitModes.REJECT
-		&& tournament.levelCap !== null && player.level > tournament.levelCap) {
-		throw new TournamentDomainError(TournamentErrorCodes.LEVEL_TOO_HIGH);
+	if (tournament.levelLimitMode !== TournamentLevelLimitModes.REJECT) {
+		return;
 	}
+	const levelCap = tournament.levelCap;
+	if (levelCap === null || player.level <= levelCap) {
+		return;
+	}
+	throw new TournamentDomainError(TournamentErrorCodes.LEVEL_TOO_HIGH);
 }
 
 export async function registerPlayer(context: PacketContext, player: Player): Promise<TournamentParticipant> {

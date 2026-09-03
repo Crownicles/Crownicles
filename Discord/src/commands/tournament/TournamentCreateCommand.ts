@@ -38,21 +38,55 @@ function getLevelModeChoice(mode: TournamentLevelLimitMode): LevelModeChoice {
 	};
 }
 
+type TournamentCreationValidation = (interaction: CrowniclesInteraction) => string | null;
+
+function validateGuildPresence(interaction: CrowniclesInteraction): string | null {
+	return interaction.guild ? null : "guildOnly";
+}
+
+function validateAdministrator(interaction: CrowniclesInteraction): string | null {
+	return isGuildAdministrator(interaction) ? null : "administratorOnly";
+}
+
+function validateGuildSize(interaction: CrowniclesInteraction): string | null {
+	return hasMinimumGuildSize(interaction) ? null : "guildTooSmall";
+}
+
+function validateChannelType(interaction: CrowniclesInteraction): string | null {
+	return interaction.channel.type === ChannelType.GuildText
+		|| interaction.channel.type === ChannelType.GuildAnnouncement
+		? null
+		: "invalidChannel";
+}
+
+function validateChannelPermissions(interaction: CrowniclesInteraction): string | null {
+	return isTournamentParentChannel(interaction) && hasTournamentChannelPermissions(interaction)
+		? null
+		: "missingChannelPermissions";
+}
+
+const TOURNAMENT_CREATION_VALIDATIONS: TournamentCreationValidation[] = [
+	validateGuildPresence,
+	validateAdministrator,
+	validateGuildSize,
+	validateChannelType,
+	validateChannelPermissions
+];
+
+function getTournamentCreationValidationError(interaction: CrowniclesInteraction): string | null {
+	for (const validation of TOURNAMENT_CREATION_VALIDATIONS) {
+		const errorKey = validation(interaction);
+		if (errorKey) {
+			return errorKey;
+		}
+	}
+	return null;
+}
+
 async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<null> {
-	if (!interaction.guild) {
-		return await replyTournamentError(interaction, "guildOnly");
-	}
-	if (!isGuildAdministrator(interaction)) {
-		return await replyTournamentError(interaction, "administratorOnly");
-	}
-	if (!hasMinimumGuildSize(interaction)) {
-		return await replyTournamentError(interaction, "guildTooSmall");
-	}
-	if (interaction.channel.type !== ChannelType.GuildText && interaction.channel.type !== ChannelType.GuildAnnouncement) {
-		return await replyTournamentError(interaction, "invalidChannel");
-	}
-	if (!isTournamentParentChannel(interaction) || !hasTournamentChannelPermissions(interaction)) {
-		return await replyTournamentError(interaction, "missingChannelPermissions");
+	const validationError = getTournamentCreationValidationError(interaction);
+	if (validationError) {
+		return await replyTournamentError(interaction, validationError);
 	}
 	const code = interaction.options.getString("code", true);
 	const registrationDays = interaction.options.getInteger("registration-days", true);
