@@ -47,13 +47,20 @@ describe("Tournament rules", () => {
 	});
 
 	it("scales XP and money from category ranking", () => {
-		const first = { rank: 1, categoryParticipantCount: 10 };
-		const last = { rank: 10, categoryParticipantCount: 10 };
+		const first = { rank: 1, categoryParticipantCount: 30 };
+		const rankEleven = { rank: 11, categoryParticipantCount: 30 };
+		const last = { rank: 30, categoryParticipantCount: 30 };
 		expect(getRankRewardFactor(first)).toBe(1.2);
+		expect(getRankRewardFactor(rankEleven)).toBe(0.5);
 		expect(getRankRewardFactor(last)).toBe(0.25);
+		expect(getRankRewardFactor({ rank: 0, categoryParticipantCount: 30 })).toBe(1.2);
+		expect(getRankRewardFactor({ rank: 99, categoryParticipantCount: 30 })).toBe(0.25);
+		expect(getRankRewardFactor({ rank: 10, categoryParticipantCount: 10 })).toBe(0.25);
 		expect(getRewardMultiplier(50, TournamentCategories.LEVEL_100, first)).toBeCloseTo(27.6);
+		expect(getRewardMultiplier(50, TournamentCategories.LEVEL_100, rankEleven)).toBe(11.5);
 		expect(getRewardMultiplier(50, TournamentCategories.LEVEL_100, last)).toBe(5.75);
 		expect(getRewardMultiplier(50, TournamentCategories.LEVEL_50, first)).toBeCloseTo(13.8);
+		expect(getRewardMultiplier(50, TournamentCategories.LEVEL_50, rankEleven)).toBe(5.75);
 		expect(getRewardMultiplier(50, TournamentCategories.LEVEL_50, last)).toBe(2.875);
 	});
 

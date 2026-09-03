@@ -42,6 +42,13 @@ export abstract class TournamentConstants {
 	static readonly RANK_REWARD_PERCENT_RANGE =
 		TournamentConstants.RANK_REWARD_MAX_PERCENT - TournamentConstants.RANK_REWARD_MIN_PERCENT;
 
+	static readonly RANK_REWARD_TARGET_RANK = 11;
+
+	static readonly RANK_REWARD_TARGET_PERCENT = 50;
+
+	static readonly RANK_REWARD_TARGET_PERCENT_OFFSET =
+		TournamentConstants.RANK_REWARD_TARGET_PERCENT - TournamentConstants.RANK_REWARD_MIN_PERCENT;
+
 	static readonly REWARD_PERCENTAGE_DIVISOR = 100;
 
 	static readonly BASE_XP_REWARD = 2000;
