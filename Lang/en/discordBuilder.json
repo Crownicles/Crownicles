@@ -394,5 +394,69 @@
   "blessing": {
     "name": "blessing",
     "description": "See the current state of the global blessing."
+  },
+  "tournament-code": {
+    "name": "tournament-code",
+    "description": "Générer un code de tournoi pour ce serveur."
+  },
+  "tournament-create": {
+    "name": "tournament-create",
+    "description": "Créer un tournoi dans ce salon.",
+    "options": {
+      "code": {
+        "name": "code",
+        "description": "Le code de tournoi généré par le propriétaire du bot."
+      },
+      "registration-days": {
+        "name": "registration-days",
+        "description": "Durée des inscriptions en jours, de 1 à 7."
+      },
+      "combat-days": {
+        "name": "combat-days",
+        "description": "Durée des combats en jours, de 1 à 7."
+      },
+      "level-mode": {
+        "name": "level-mode",
+        "description": "Choisir la règle de niveau du tournoi."
+      },
+      "level-cap": {
+        "name": "level-cap",
+        "description": "Plafond utilisé par les modes concernés."
+      }
+    },
+    "levelModes": {
+      "category": "Par catégorie",
+      "unlimited": "Sans plafond",
+      "cap": "Plafonner",
+      "reject": "Refuser au-dessus du plafond"
+    }
+  },
+  "tournament-register": {
+    "name": "tournament-register",
+    "description": "S'inscrire au tournoi de ce salon."
+  },
+  "tournament": {
+    "name": "tournament",
+    "description": "Voir l'état du tournoi de ce serveur."
+  },
+  "tournament-resume": {
+    "name": "tournament-resume",
+    "description": "Reprendre un tournoi en pause dans ce salon.",
+    "options": {
+      "tournament-id": {
+        "name": "tournament-id",
+        "description": "Identifiant du tournoi à reprendre."
+      }
+    }
+  },
+  "tournament-cancel": {
+    "name": "tournament-cancel",
+    "description": "Annuler un tournoi.",
+    "options": {
+      "tournament-id": {
+        "name": "tournament-id",
+        "description": "Identifiant du tournoi à annuler."
+      }
+    }
   }
 }
