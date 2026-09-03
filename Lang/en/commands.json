@@ -2223,7 +2223,8 @@
       "guildStatusChange": "Change of guild status",
       "energy": "Regenerated energy",
       "dailyBonus": "Daily bonus",
-      "petExpedition": "Pet expedition completed"
+      "petExpedition": "Pet expedition completed",
+      "tournament": "Tournoi"
     },
     "enableDisable": "Enable/Disable",
     "sendLocationField": "Send location:",
@@ -2860,6 +2861,77 @@
         "name": "Measurement",
         "description": "Level {{level, number}}/{{maxLevel, number}}\nShelter pets gain love points daily."
       }
+    }
+  },
+  "tournament": {
+    "codeTitle": "Code de tournoi",
+    "codeCreated": "Code : `{{code}}`\nValable jusqu'au {{expiresAt}}. Ce code ne peut être utilisé qu'une seule fois sur ce serveur.",
+    "createTitle": "Tournoi créé",
+    "created": "Le tournoi `{{tournamentId}}` utilisera {{channel}}. Les inscriptions se terminent {{registrationEndsAt}} et les combats se terminent {{combatEndsAt}}. Règle de niveau : {{levelRule}}.",
+    "registerTitle": "Inscription au tournoi",
+    "registered": "Vous êtes inscrit dans la catégorie **{{category}}** avec {{attackGloryPoints}} gloire d'attaque et {{defenseGloryPoints}} gloire de défense.{{lateRegistration}}",
+    "lateRegistration": " Vous commencez tardivement avec une défense tournoi nulle.",
+    "statusTitle": "État du tournoi",
+    "status": "Serveur : **{{server}}**\nSalon du tournoi : {{channel}}\nTournoi `{{tournamentId}}` : **{{status}}**\nRègle de niveau : {{levelRule}}\nInscriptions : {{registrationEndsAt}}\nCombats : {{combatEndsAt}}\nParticipants : {{participantCount}} (Niveau 50 : {{level50Count}}, niveau 100 : {{level100Count}})\nVotre catégorie : {{category}}\nVotre rang : {{rank}}\nVotre gloire : {{attackGloryPoints}} attaque / {{defenseGloryPoints}} défense\nVotre récompense : {{reward}}",
+    "notRegistered": "vous n'êtes pas inscrit",
+    "noReward": "Aucune récompense préparée pour le moment.",
+    "rewardGranted": "{{xp}} XP, {{money}} pièces et {{itemCount}} objets distribués.",
+    "rewardPending": "{{xp}} XP, {{money}} pièces et {{itemCount}} objets en attente de place dans l'inventaire.",
+    "resumeTitle": "Tournoi repris",
+    "resumed": "Le tournoi `{{tournamentId}}` reprend dans {{channel}}.",
+    "cancelTitle": "Tournoi annulé",
+    "cancelled": "Le tournoi `{{tournamentId}}` a été annulé. Aucune récompense ne sera distribuée.",
+    "topTitle": "Classement du tournoi (page {{pageNumber}}/{{totalPages}})",
+    "topCategory": "**{{category}}** ({{totalParticipants}} participants)\nVotre rang : {{yourRank}}\n{{entries}}",
+    "topEntry": "{{rank}}. **{{pseudo}}** — {{totalGloryPoints}} gloire ({{attackGloryPoints}} attaque / {{defenseGloryPoints}} défense), niveau effectif {{effectiveLevel}}",
+    "unranked": "non classé",
+    "emptyCategory": "Aucun participant dans cette catégorie.",
+    "categories": {
+      "level50": "Niveau 50",
+      "level100": "Niveau 100"
+    },
+    "statuses": {
+      "registration": "inscriptions",
+      "combat": "combats",
+      "paused": "en pause",
+      "completed": "terminé",
+      "cancelled": "annulé"
+    },
+    "levelModes": {
+      "category": "plafond par catégorie (niveau 50 ou 100)",
+      "unlimited": "niveaux sans plafond",
+      "cap": "niveau plafonné à {{levelCap}}",
+      "reject": "niveaux supérieurs à {{levelCap}} interdits"
+    },
+    "fightReward": {
+      "title": "Résultat du combat tournoi",
+      "draw": "{{player1}} et {{player2}} font égalité.\n{{player1}} : {{player1AttackChange}} attaque / {{player1DefenseChange}} défense\n{{player2}} : {{player2AttackChange}} attaque / {{player2DefenseChange}} défense",
+      "result": "{{winner}} remporte le combat.\n{{player1}} : {{player1AttackChange}} attaque / {{player1DefenseChange}} défense\n{{player2}} : {{player2AttackChange}} attaque / {{player2DefenseChange}} défense"
+    },
+    "errorTitle": "Tournoi indisponible",
+    "errors": {
+      "notFound": "Aucun tournoi correspondant à ce contexte n'est disponible.",
+      "accessDenied": "Cette commande n'est pas disponible dans le salon tournoi.",
+      "invalidPhase": "Cette action n'est pas disponible pendant la phase actuelle.",
+      "alreadyRegistered": "Vous êtes déjà inscrit à ce tournoi.",
+      "levelTooLow": "Le niveau minimum pour participer est le niveau 8.",
+      "tooFewParticipants": "Le tournoi est annulé car les seuils de participants ne sont pas atteints.",
+      "invalidCode": "Ce code de tournoi est invalide.",
+      "expiredCode": "Ce code de tournoi a expiré.",
+      "usedCode": "Ce code de tournoi a déjà été utilisé.",
+      "codeGuildMismatch": "Ce code appartient à un autre serveur.",
+      "guildTooSmall": "Le serveur doit compter au moins 1 000 membres.",
+      "invalidDuration": "Les durées doivent être comprises entre 1 et 7 jours.",
+      "invalidChannel": "Cette commande doit être exécutée dans un salon texte valide.",
+      "invalidLevelLimit": "La configuration de niveau est invalide. Un plafond doit être un niveau entier d'au moins 8 et être associé au mode choisi.",
+      "levelTooHigh": "Votre niveau est trop élevé pour les conditions d'inscription de ce tournoi.",
+      "noOpponent": "Aucun adversaire tournoi n'est disponible pour le moment.",
+      "paused": "Le tournoi est actuellement en pause.",
+      "notRegistered": "Vous devez être inscrit pour utiliser cette commande dans le salon tournoi.",
+      "guildOnly": "Cette commande doit être utilisée sur un serveur Discord.",
+      "ownerOnly": "Cette commande est réservée au propriétaire du bot.",
+      "administratorOnly": "Cette commande est réservée aux administrateurs du serveur.",
+      "missingChannelPermissions": "Le bot n'a pas toutes les permissions nécessaires dans ce salon."
     }
   }
 }
