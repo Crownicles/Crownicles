@@ -104,9 +104,22 @@ export function getRankRewardFactor({
 	categoryParticipantCount
 }: TournamentRewardRank): number {
 	const maximumRankOffset = Math.max(categoryParticipantCount - 1, 1);
-	const rankOffset = Math.min(Math.max(rank - 1, 0), maximumRankOffset);
-	const rewardPercent = TournamentConstants.RANK_REWARD_MAX_PERCENT
-		- Math.round(TournamentConstants.RANK_REWARD_PERCENT_RANGE * rankOffset / maximumRankOffset);
+	const effectiveRank = Math.min(Math.max(rank, 1), Math.max(categoryParticipantCount, 1));
+	const rankOffset = effectiveRank - 1;
+	if (categoryParticipantCount <= TournamentConstants.RANK_REWARD_TARGET_RANK) {
+		const rewardPercent = TournamentConstants.RANK_REWARD_MAX_PERCENT
+			- Math.round(TournamentConstants.RANK_REWARD_PERCENT_RANGE * rankOffset / maximumRankOffset);
+		return rewardPercent / TournamentConstants.REWARD_PERCENTAGE_DIVISOR;
+	}
+	if (effectiveRank === TournamentConstants.RANK_REWARD_TARGET_RANK) {
+		return TournamentConstants.RANK_REWARD_TARGET_PERCENT / TournamentConstants.REWARD_PERCENTAGE_DIVISOR;
+	}
+	const targetRankPosition = (categoryParticipantCount - TournamentConstants.RANK_REWARD_TARGET_RANK) / maximumRankOffset;
+	const targetRewardPosition = TournamentConstants.RANK_REWARD_TARGET_PERCENT_OFFSET / TournamentConstants.RANK_REWARD_PERCENT_RANGE;
+	const exponent = Math.log(targetRewardPosition) / Math.log(targetRankPosition);
+	const rankPosition = (categoryParticipantCount - effectiveRank) / maximumRankOffset;
+	const rewardPercent = TournamentConstants.RANK_REWARD_MIN_PERCENT
+		+ TournamentConstants.RANK_REWARD_PERCENT_RANGE * Math.pow(rankPosition, exponent);
 	return rewardPercent / TournamentConstants.REWARD_PERCENTAGE_DIVISOR;
 }
 
