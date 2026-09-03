@@ -47,5 +47,13 @@
     "success": "A exportação do RGPD foi gerada com sucesso.\n\n**ID do jogador anonimizado:** `{{anonymizedId}}`\n**Arquivos gerados:** {{fileCount}}\n\nO arquivo ZIP está disponível como anexo.",
     "error": "Ocorreu um erro durante a exportação do RGPD: {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
+  },
+  "tournament": {
+    "started": "{emote:notifications.types.tournament} Le tournoi commence. Les combats sont ouverts dans les catégories {{category}}.",
+    "ending": "{emote:notifications.types.tournament} Le tournoi se termine bientôt. Il reste peu de temps pour faire progresser votre gloire en catégorie {{category}}.",
+    "ended": "{emote:notifications.types.tournament} Le tournoi est terminé. Votre rang en catégorie {{category}} : {{rank}}. Vainqueur : {{winner}}. Récompenses : {{xp}} XP, {{money}} pièces et {{itemCount}} objet(s).",
+    "cancelled": "{emote:notifications.types.tournament} Le tournoi est annulé car le nombre minimum de participants n'a pas été atteint.",
+    "noWinner": "aucun vainqueur",
+    "unranked": "non classé"
   }
 }
