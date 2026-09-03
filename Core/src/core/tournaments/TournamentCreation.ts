@@ -121,6 +121,18 @@ function validateDurations(registrationDays: number, combatDays: number): void {
 	}
 }
 
+function levelModeRequiresCap(mode: TournamentLevelLimitMode): boolean {
+	return mode === TournamentLevelLimitModes.CAP || mode === TournamentLevelLimitModes.REJECT;
+}
+
+function isValidLevelCap(levelCap: number | undefined): levelCap is number {
+	if (levelCap === undefined || !Number.isInteger(levelCap)) {
+		return false;
+	}
+	return levelCap >= TournamentConstants.MINIMUM_PLAYER_LEVEL
+		&& levelCap <= TournamentConstants.MAX_LEVEL_CAP;
+}
+
 function normalizeLevelSettings(
 	levelLimitMode: TournamentLevelLimitMode | undefined,
 	levelCap: number | undefined
@@ -128,22 +140,18 @@ function normalizeLevelSettings(
 	const mode = levelLimitMode ?? (levelCap === undefined
 		? TournamentLevelLimitModes.CATEGORY
 		: TournamentLevelLimitModes.CAP);
-	const customCapMode = mode === TournamentLevelLimitModes.CAP || mode === TournamentLevelLimitModes.REJECT;
-	const knownMode = mode === TournamentLevelLimitModes.CATEGORY
-		|| mode === TournamentLevelLimitModes.UNLIMITED
-		|| customCapMode;
-	if (!knownMode || customCapMode !== (levelCap !== undefined)) {
+	const requiresCap = levelModeRequiresCap(mode);
+	const knownMode = Object.values(TournamentLevelLimitModes).includes(mode);
+	if (!knownMode || requiresCap !== (levelCap !== undefined)) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_LEVEL_LIMIT);
 	}
-	if (!customCapMode) {
+	if (!requiresCap) {
 		return {
 			levelLimitMode: mode,
 			levelCap: null
 		};
 	}
-	if (levelCap === undefined || !Number.isInteger(levelCap)
-		|| levelCap < TournamentConstants.MINIMUM_PLAYER_LEVEL
-		|| levelCap > TournamentConstants.MAX_LEVEL_CAP) {
+	if (!isValidLevelCap(levelCap)) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_LEVEL_LIMIT);
 	}
 	return {
