@@ -1,0 +1,523 @@
+{
+  "common": {
+    "loading": "Chargement",
+    "error": "Les informations n'ont pas pu être récupérées",
+    "retry": "Réessayer",
+    "yes": "Oui",
+    "no": "Non",
+    "connectionError": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
+    "reconnect": "Se reconnecter",
+    "assetsUpdateError": "Les ressources de l'application n'ont pas pu être mises à jour. Vérifiez votre connexion puis réessayez.",
+    "assetsUpdating": "Mise à jour de l'application…"
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "loginAction": "Se connecter",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "invalidToken": "La connexion a échoué : le jeton reçu est invalide.",
+    "loginFailed": "Échec de la connexion",
+    "unknownError": "Une erreur inconnue est survenue."
+  },
+  "settings": {
+    "title": "Paramètres",
+    "developerMode": "Mode développeur",
+    "ping": "Ping",
+    "logout": "Se déconnecter"
+  },
+  "navigation": {
+    "classInfo": "Informations de classe",
+    "featureNotAvailable": "Cette fonctionnalité sera disponible prochainement."
+  },
+  "collector": {
+    "accept": "Confirmer",
+    "refuse": "Annuler",
+    "unknownChoice": "Choix indisponible dans cette version",
+    "pending": "Une action est en attente",
+    "answering": "Votre choix est envoyé…",
+    "timeLeft": "{{seconds}} s",
+    "expired": "Le temps imparti est écoulé",
+    "titles": {
+      "drink": "Quelle potion boire ?",
+      "bigEvent": "Événement en cours",
+      "altar": "L'autel des bénédictions",
+      "badPet": "Un familier en colère",
+      "gardener": "Le jardinier",
+      "gobletsGame": "Le jeu des gobelets",
+      "interactOtherPlayers": "Un autre aventurier",
+      "limoges": "Le conteur de Limoges",
+      "lottery": "La loterie",
+      "petFood": "Une trouvaille pour le familier",
+      "witch": "La sorcière",
+      "itemChoice": "Choisir dans l'inventaire",
+      "itemAccept": "Gérer l'objet reçu",
+      "destination": "Où souhaitez-vous aller ?",
+      "city": "Ville",
+      "unknown": "Une action est en attente"
+    },
+    "descriptions": {
+      "interactOtherPlayers": "Vous croisez un aventurier sur la route. Il semble avoir besoin d'une pièce.",
+      "interactOtherPlayersRanked": "Vous croisez un aventurier classé au rang {{rank}}. Il semble avoir besoin d'une pièce.",
+      "unknownPlayer": "Une rencontre vous attend sur la route.",
+      "gardenerSeed": "Graine proposée : {{seed}}.",
+      "itemChoice": "Votre inventaire est plein. Choisissez l'objet à remplacer par {{item}}.",
+      "itemAccept": "Votre inventaire est plein. Choisissez quoi faire de {{item}} pour accueillir l'objet reçu.",
+      "unknownItem": "cet objet",
+      "unknownPet": "votre familier",
+      "destination": "Choisissez la prochaine étape de votre aventure.",
+      "unknownDuration": "durée inconnue"
+    },
+    "choices": {
+      "altarContribute": "Offrir {{amount}} {emote:unitValues.money}",
+      "replaceItem": "Remplacer {{item}}",
+      "replaceItemInSlot": "Remplacer {{item}} (emplacement {{slot}})",
+      "drinkPotion": "Boire la potion",
+      "lotteryEasy": "Petite récompense",
+      "lotteryMedium": "Récompense moyenne",
+      "lotteryHard": "Grande récompense",
+      "destination": "{{destination}} ({{duration}})",
+      "stayInCity": "Rester en ville"
+    }
+  },
+  "tabs": {
+    "arena": "Arène",
+    "guild": "Guilde",
+    "adventure": "Aventure",
+    "profile": "Profil",
+    "pet": "Familier"
+  },
+  "adventure": {
+    "eyebrow": "Votre aventure",
+    "cityTitle": "Arrivée en ville",
+    "citySubtitle": "Position actuelle : {{location}}",
+    "travel": {
+      "eyebrow": "Rapport · en voyage",
+      "title": "Tout se passe bien dans votre aventure",
+      "subtitle": "Prochain arrêt prévu dans {{nextStop}}. Le trajet vers {{destination}} durera encore {{remaining}}."
+    },
+    "alteration": {
+      "eyebrow": "Rapport · altération",
+      "title": "Altération d'état",
+      "description": "Cette altération vous affecte encore pendant {{time}}.",
+      "fields": {
+        "status": "État",
+        "timeRemaining": "Temps restant",
+        "price": "Prix du soin"
+      }
+    },
+    "smallEvent": {
+      "eyebrow": "Rapport · mini-événement",
+      "resultTitle": "Résultat du mini-événement",
+      "resultDescription": "Le mini-événement {{event}} est terminé.",
+      "continue": "Continuer"
+    },
+    "event": {
+      "eyebrow": "Rapport · événement",
+      "resultTitle": "Conséquences de votre choix",
+      "resultDescription": "Les conséquences ont été appliquées à votre aventure.",
+      "continue": "Continuer",
+      "fields": {
+        "points": "Points",
+        "money": "Argent",
+        "health": "Santé",
+        "energy": "Énergie",
+        "gems": "Gemmes",
+        "tokens": "Jetons",
+        "experience": "Expérience",
+        "timeLost": "Temps perdu"
+      }
+    },
+    "destination": {
+      "eyebrow": "Rapport · destination"
+    },
+    "lottery": {
+      "resultTitle": "Résultat de la loterie",
+      "win": "Vous remportez le lot.",
+      "lose": "Vous repartez sans gain.",
+      "loseWithMalus": "Vous perdez votre mise.",
+      "poor": "Le lotier refuse votre mise.",
+      "noAnswer": "La loterie est terminée.",
+      "rewards": {
+        "money": "Argent gagné",
+        "xp": "Expérience gagnée",
+        "points": "Points gagnés",
+        "guildXp": "Expérience de guilde gagnée"
+      },
+      "fields": {
+        "moneyLost": "Argent perdu"
+      }
+    },
+    "tokens": {
+      "continue": "Continuer",
+      "fields": {
+        "cost": "Jetons à dépenser",
+        "balance": "Vos jetons",
+        "price": "Prix unitaire",
+        "money": "Votre argent",
+        "spent": "Jetons dépensés",
+        "received": "Jetons reçus"
+      },
+      "use": {
+        "eyebrow": "Rapport · en voyage",
+        "title": "Avancer dans le voyage",
+        "description": "Utilisez des jetons pour atteindre immédiatement le prochain arrêt de votre aventure.",
+        "confirm": "Dépenser {{count}} jeton(s)",
+        "cancel": "Conserver mes jetons"
+      },
+      "merchant": {
+        "eyebrow": "Rapport · marchand de jetons",
+        "title": "{emote:unitValues.token} Le marchand de jetons",
+        "description": "Les jetons permettent d'avancer jusqu'au prochain arrêt. Le marchand vous propose les lots actuellement accessibles.",
+        "limits": "Limite d'achat : {{maxDaily}} par jour et {{maxWeekly}} par semaine.",
+        "buyOne": "Acheter {{amount}} jeton — {{price}} {emote:unitValues.money}",
+        "buyMany": "Acheter {{amount}} jetons — {{price}} {emote:unitValues.money}",
+        "cancel": "Ne rien acheter"
+      },
+      "outcomes": {
+        "used": "Jetons utilisés",
+        "arrived": "Vous êtes arrivé à destination. Consultez la suite de votre aventure.",
+        "nextStop": "Vous avez atteint le prochain arrêt de votre aventure.",
+        "useRefused": "Vous avez conservé vos jetons.",
+        "bought": "Achat conclu",
+        "tooMuch": "Le marchand ne peut plus vous vendre de jetons pour le moment.",
+        "full": "Votre bourse de jetons est déjà pleine.",
+        "merchantRefused": "Vous avez quitté le marchand sans achat.",
+        "cannotAfford": "Vous n'avez pas assez d'argent pour acheter un jeton.",
+        "charity": "Le marchand vous offre quelques jetons pour reprendre la route.",
+        "charityAlreadyUsed": "Le marchand vous a déjà aidé cette semaine."
+      }
+    },
+    "heal": {
+      "use": {
+        "eyebrow": "Rapport · soin",
+        "title": "Acheter un soin",
+        "description": "Retirez votre altération pour {{price}} pièces. Votre solde actuel est de {{money}} pièces.",
+        "confirm": "Payer {{price}} pièces",
+        "cancel": "Renoncer"
+      },
+      "fields": {
+        "cost": "Prix du soin",
+        "balance": "Votre argent",
+        "spent": "Argent dépensé"
+      },
+      "outcomes": {
+        "accepted": "Soin acheté",
+        "arrived": "L'altération a été soignée à votre arrivée.",
+        "nextStop": "L'altération a été soignée. Vous pouvez reprendre votre aventure.",
+        "refused": "Soin annulé",
+        "refusedDescription": "Vous avez conservé votre argent et votre altération.",
+        "noAlteration": "Aucune altération à soigner",
+        "noAlterationDescription": "L'altération a déjà pris fin.",
+        "cannotHealOccupied": "Cette altération ne peut pas être soignée ici",
+        "cannotHealOccupiedDescription": "Utilisez des jetons pour avancer malgré cette situation."
+      },
+      "continue": "Continuer"
+    },
+    "fields": {
+      "departure": "Départ",
+      "arrival": "Arrivée",
+      "timeRemaining": "Temps restant",
+      "points": "Points récoltés"
+    },
+    "duration": {
+      "hoursMinutes": "{{hours}} h {{minutes}}",
+      "minutes": "{{minutes}} minutes"
+    },
+    "now": "Maintenant",
+    "quick": {
+      "advance": "Avancer",
+      "heal": "Se soigner",
+      "map": "Carte"
+    },
+    "onTheRoad": "Progression sur la route",
+    "noNextStop": "Aucun arrêt prévu avant l'arrivée",
+    "unknownLocation": "Lieu inconnu",
+    "empty": "Aucun rapport de voyage disponible"
+  },
+  "city": {
+    "titles": {
+      "eyebrow": "Vous êtes en ville",
+      "housing": "Votre logement",
+      "services": "Services",
+      "shops": "Commerces",
+      "guild": "Guilde",
+      "otherCities": "Ailleurs sur la carte",
+      "quit": "Quitter",
+      "meals": "Repas",
+      "rooms": "Chambres",
+      "actions": "Actions",
+      "yourHome": "Votre maison",
+      "apartments": "Les logis",
+      "homeServices": "Services chez vous",
+      "storage": "Stockage",
+      "cooking": "Cuisine",
+      "garden": "Jardin",
+      "equipment": "Améliorer un équipement",
+      "disenchant": "Désenchanter",
+      "recycling": "Équipements recyclables",
+      "eligibleEquipment": "Vos équipements éligibles"
+    },
+    "subtitles": {
+      "home": "Retrouver votre maison et ses services",
+      "homeScreen": "Un havre de paix pour préparer vos prochaines aventures",
+      "bed": "Récupérez votre vie gratuitement dans votre lit",
+      "chest": "Stocker vos équipements et vos plantes",
+      "garden": "Cultiver, arroser et récolter vos plantes",
+      "upgradeStation": "Améliorer vos équipements avec les ressources de la maison",
+      "cookingScreen": "Préparer des recettes et gérer vos fourneaux",
+      "cooking": "Fourneau de niveau {{level}}",
+      "homeDetails": "Maison de niveau {{level}} · {{services}}",
+      "bedDetails": "Récupère {{health}} points de vie",
+      "mealDetails": "Énergie +{{energy}} {emote:unitValues.energy}",
+      "roomDetails": "Vie +{{health}} {emote:unitValues.health}",
+      "notary": "Acheter, améliorer ou déplacer un logement",
+      "otherCities": "Services propres à d'autres villes",
+      "noActions": "Aucune action disponible pour le moment.",
+      "upgradeDetails": "Niveau {{from}} → {{to}} · {{materials}}{{missingMaterials}}",
+      "disenchantDetails": "{{enchantment}} · retirer l'enchantement",
+      "recycleDetails": "Rend {{materials}}"
+    },
+    "enchantmentCatalog": {
+      "title": "Catalogue des enchantements",
+      "attack": "Attaque I à III",
+      "attackDetails": "Jusqu'à +10 % de dégâts · armes",
+      "pvpPveAttack": "Attaque PvP et PvE I à III",
+      "pvpPveAttackDetails": "Jusqu'à +12 % contre joueurs ou monstres · armes",
+      "defense": "Défense I à III",
+      "defenseDetails": "Jusqu'à −8,3 % de dégâts reçus · armures",
+      "speed": "Vitesse I à III",
+      "speedDetails": "Jusqu'à +20 % de vitesse · armures",
+      "energy": "Énergie max I à III",
+      "energyDetails": "Jusqu'à +9 % d'énergie · armures",
+      "breath": "Souffle de base I à II et souffle max",
+      "breathDetails": "+2 au souffle initial, +3 au souffle maximal",
+      "elemental": "Aspect de feu, de givre ou de venin",
+      "elementalDetails": "+20 % de dégâts d'altération et +25 % de résistance"
+    },
+    "garden": {
+      "plot": "Parcelle {{slot}}",
+      "plotPlant": "Parcelle {{slot}} · {{plant}}",
+      "empty": "Libre · une graine peut y être plantée",
+      "ready": "Prête à récolter",
+      "growing": "Croissance · {{progress}} %"
+    },
+    "labels": {
+      "home": "Votre maison",
+      "apartment": "Votre logis",
+      "bed": "Le lit",
+      "manageHome": "Gérer la maison",
+      "chest": "Le coffre",
+      "cooking": "La cuisine",
+      "garden": "Le jardin",
+      "upgradeStation": "L'établi d'équipement",
+      "enchanter": "L'enchanteur",
+      "blacksmith": "Le forgeron",
+      "scrapDealer": "Le ferrailleur",
+      "royalBlacksmith": "Le forgeron royal",
+      "guildDomain": "Domaine de guilde",
+      "inn": "{{name}}"
+    },
+    "summary": {
+      "energy": "Énergie",
+      "health": "Vie",
+      "level": "Niveau actuel",
+      "homeType": "Type de logement",
+      "apartment": "Logis",
+      "mainHome": "Maison principale",
+      "cooking": "Cuisine",
+      "cookingSlots": "Emplacements de cuisine",
+      "cookingSlotsDetails": "Nombre d'emplacements : {{count}}",
+      "bedRegeneration": "Régénération du lit",
+      "gardenPlots": "Parcelles du jardin",
+      "upgradeableItems": "Équipements améliorables",
+      "services": "Services disponibles",
+      "bed": "lit",
+      "chest": "coffre",
+      "garden": "jardin",
+      "forge": "forge",
+      "available": "Disponible",
+      "fullHealth": "Vie au maximum",
+      "storedItems": "Objets dans le coffre",
+      "depositableItems": "Objets de la réserve",
+      "cookingStatus": "Préparations",
+      "cookingStatusUnavailable": "Les recettes en cours seront synchronisées ici",
+      "upgradePrice": "Amélioration",
+      "purchasePrice": "Achat",
+      "movePrice": "Déménagement",
+      "apartmentPrice": "Logis ici",
+      "rents": "Rentes",
+      "enchantment": "Enchantement du jour",
+      "compatibleWith": "Compatible avec",
+      "price": "Coût",
+      "missingMaterials": " · matériaux manquants achetés pour {{price}}",
+      "missingMoney": "Il manque {{amount}}",
+      "unaffordable": "Fonds insuffisants",
+      "discount": "Réduction mage",
+      "eligibleItems": "Équipements éligibles",
+      "money": "Votre argent",
+      "upgrades": "Améliorations possibles",
+      "disenchantable": "Équipements désenchantables",
+      "recyclableItems": "Équipements recyclables",
+      "status": "État",
+      "requiredPlayerLevel": "Niveau requis",
+      "playerLevel": "Votre niveau",
+      "gems": "Gemmes",
+      "guild": "Guilde",
+      "guildLevel": "Niveau de guilde",
+      "treasury": "Trésorerie",
+      "buildings": "Bâtiments",
+      "buildingLevel": "{{building}} · niv. {{level}}",
+      "buildingLevels": "Boutique {{shop}} · refuge {{shelter}} · garde-manger {{pantry}} · terrain {{training}}",
+      "foodStock": "Nourriture en stock",
+      "foodStockDetails": "Friandises {{common}} · viande {{carnivorous}} · salade {{herbivorous}} · soupe ultime {{ultimate}}",
+      "domain": "Domaine implanté",
+      "domainCost": "Coût du domaine"
+    },
+    "status": {
+      "not_worthy": "Niveau requis non atteint",
+      "items_too_low": "Aucun équipement éligible",
+      "all_maxed": "Équipements déjà au maximum",
+      "ready": "Amélioration disponible"
+    },
+    "notes": {
+      "blacksmithMissingMaterials": "Le forgeron peut vendre les matériaux manquants avant l'amélioration.",
+      "blacksmith": "Le forgeron peut améliorer jusqu'au niveau 4 ; le niveau 5 est réservé au forgeron royal.",
+      "scrapDealer": "Le démontage est définitif : seuls les équipements de réserve non enchantés sont acceptés.",
+      "royalBlacksmith": "Le forgeron royal est le seul artisan capable de porter un équipement au niveau 5.",
+      "enchanter": "Mernil change de ville chaque jour et propose un seul enchantement quotidien.",
+      "inn": "Un repas est disponible toutes les 12 h et une chambre toutes les 24 h.",
+      "garden": "L'arrosage est possible toutes les 12 heures. Le jardin à distance permet seulement la récolte.",
+      "notary": "Chaque ville applique son propre coefficient de prix pour les logements.",
+      "guildDomain": "Le domaine regroupe la boutique, le refuge, l'entrepôt et la ménagerie de votre guilde.",
+      "chest": "Le coffre est consultable ici ; les dépôts et retraits utilisent le flux dédié.",
+      "cooking": "Le niveau du fourneau est synchronisé ; les recettes en cours apparaîtront dans le flux cuisine."
+    },
+    "reactions": {
+      "enchant": "Aller voir l'enchanteur",
+      "buyHome": "Acheter une maison",
+      "upgradeHome": "Améliorer la maison",
+      "moveHome": "Déménager la maison",
+      "home": "Rentrer chez vous",
+      "bed": "Se reposer chez vous",
+      "upgradeItem": "Améliorer l'équipement",
+      "blacksmith": "Aller chez le forgeron",
+      "blacksmithUpgrade": "Améliorer un équipement",
+      "disenchant": "Désenchanter un équipement",
+      "scrapDealer": "Aller chez le ferrailleur",
+      "recycle": "Recycler un équipement",
+      "royalBlacksmith": "Aller chez le forgeron royal",
+      "royalBlacksmithUpgrade": "Améliorer un équipement au niveau 5",
+      "gardenHarvest": "Récolter le jardin",
+      "gardenWater": "Arroser le jardin",
+      "gardenCompost": "Composter des plantes ({{quantity}})",
+      "guildDomain": "Visiter le domaine de guilde",
+      "guildNotary": "Consulter le notaire de guilde",
+      "apartmentBuy": "Acheter le logis",
+      "claimRent": "Percevoir la rente"
+    },
+    "actions": {
+      "home": "Aller chez vous",
+      "notary": "Voir le notaire",
+      "back": "Retour",
+      "close": "Fermer"
+    },
+    "shop": {
+      "eyebrow": "Commerce de la ville",
+      "title": "Boutique",
+      "description": "Choisissez un article. Le prix et la quantité sont affichés avant confirmation.",
+      "availableCurrency": "Votre solde",
+      "item": "Acheter {{amount}} × {{item}} pour {{price}}",
+      "itemDetails": "Quantité : {{amount}} · Prix : {{price}}",
+      "dailyPotion": "Potion du jour",
+      "close": "Fermer la boutique",
+      "remainingPotions": "Potions restantes aujourd'hui : {{count}}",
+      "remainingTokens": "Jetons restants à l'achat : {{count}}"
+    }
+  },
+  "pet": {
+    "eyebrow": "Votre familier",
+    "noPet": "Aucun familier ne vous accompagne pour le moment",
+    "titles": {
+      "sheet": "Fiche",
+      "mood": "Moral"
+    },
+    "fields": {
+      "type": "Type",
+      "nickname": "Surnom",
+      "rarity": "Rareté",
+      "sex": "Sexe",
+      "mood": "Mentalité"
+    },
+    "moodScale": "Le moral progresse en nourrissant et en caressant le familier"
+  },
+  "profile": {
+    "eyebrow": "Profil",
+    "subtitle": "{{className}} · niveau {{level, number}} · {{location}}",
+    "level": "Niveau {{level}}",
+    "titles": {
+      "information": "Informations",
+      "scoreAndRank": "Score et Rang",
+      "statistics": "Statistiques",
+      "missions": "Missions",
+      "gloryAndLeague": "Gloire et ligue",
+      "status": "Temps restant",
+      "cooking": "Cuisine",
+      "guild": "Guilde",
+      "destination": "Destination",
+      "pet": "Familier",
+      "inventory": "Inventaire"
+    },
+    "fields": {
+      "health": "Vie",
+      "experience": "Expérience",
+      "money": "Argent",
+      "tokens": "Jetons",
+      "energy": "Énergie",
+      "attack": "Attaque",
+      "defense": "Défense",
+      "speed": "Vitesse",
+      "breath": "Souffle",
+      "breathRegen": "Récupération de souffle",
+      "gems": "Gemmes",
+      "campaign": "Campagne",
+      "rank": "Classement",
+      "score": "Score",
+      "gloryRank": "Classement de gloire",
+      "glory": "Points de gloire",
+      "league": "Ligue",
+      "effect": "État",
+      "cooking": "Grade",
+      "guild": "Guilde",
+      "location": "Position",
+      "pet": "Familier"
+    },
+    "formats": {
+      "number": "{{value, number}}",
+      "progress": "{{value, number}} / {{max, number}}",
+      "percentage": "{{value, number}} %",
+      "rank": "{{rank, number}} / {{players, number}}",
+      "cooking": "Niveau {{level, number}} · {{grade}}"
+    },
+    "values": {
+      "none": "Aucun",
+      "unknown": "Classe inconnue",
+      "unknownLocation": "Lieu inconnu",
+      "unranked": "Non classé"
+    },
+    "inventory": {
+      "equippedItems": "Objets équipés",
+      "backupItems": "Reserve d'objets",
+      "seeBackupItems": "Voir la réserve d'objets",
+      "seeEquippedItems": "Voir les objets équipés",
+      "empty": "Aucun objet à afficher",
+      "emptySlot": "Emplacement vide",
+      "actions": {
+        "drink": "Boire",
+        "switch": "Échanger",
+        "sell": "Vendre",
+        "close": "Fermer",
+        "equip": "Équiper"
+      }
+    },
+    "notFound": "Profil introuvable"
+  }
+}

@@ -34,6 +34,10 @@ services:
       # JAVA_OPTS: -XX:UseSVE=0 # Uncomment for macOS due to a keycloak bug https://github.com/keycloak/keycloak/issues/36008
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      # Pins the issuer and the identity provider redirect URIs to a single address, so that a token
+      # stays valid whichever address a service uses to reach Keycloak. Override it in keycloak/.env
+      # with the LAN address when a phone or another machine has to sign in.
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-http://localhost:8080}
       DB_VENDOR: mariadb
       DB_ADDR: 127.0.0.1:3307
       DB_DATABASE: keycloak

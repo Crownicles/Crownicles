@@ -1507,7 +1507,9 @@ export class Players {
 			? askedPlayer.keycloakId === originalPlayer.keycloakId
 				? originalPlayer
 				: await Players.getByKeycloakId(askedPlayer.keycloakId)
-			: await Players.getByRank(askedPlayer.rank ?? 1);
+			: askedPlayer.rank
+				? await Players.getByRank(askedPlayer.rank)
+				: originalPlayer;
 	}
 
 	/**

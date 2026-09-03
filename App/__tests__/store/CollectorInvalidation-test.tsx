@@ -1,0 +1,141 @@
+import { ReactElement } from "react";
+import { Text } from "react-native";
+import { screen, waitFor, act } from "@testing-library/react-native";
+import { useGameQuery } from "@/src/store/useGameQuery";
+import { useGameInvalidations } from "@/src/store/GameInvalidations";
+import { GAME_ENTITIES } from "@/src/store/GameEntities";
+import { GameAnswer } from "@/src/networking/GameClient";
+import { DRINK_DATA_KINDS, ITEM_DATA_KINDS } from "ws-packets/src/fromServer/collectors";
+import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
+import { InventoryRes } from "ws-packets/src/fromServer/inventory/InventoryRes";
+import {renderWithGameQuery} from "@/src/testing/testUtils";
+
+jest.mock("expo-router", () => ({
+	useFocusEffect: (): void => undefined
+}));
+
+/**
+ * Drinking is resolved by the server well after the screen asked for it, so what a screen shows
+ * next depends on the collector telling the store which entities to read again.
+ */
+describe("invalidation after a collector is answered", () => {
+	it("reads the profile and the inventory again once a drink collector is answered", async () => {
+		let profileReads = 0;
+		let inventoryReads = 0;
+
+		const readProfile = (): Promise<GameAnswer<ProfileRes>> => {
+			profileReads++;
+			return Promise.resolve({ kind: "answer", packet: { health: { value: profileReads === 1 ? 50 : 67 } } as ProfileRes });
+		};
+		const readInventory = (): Promise<GameAnswer<InventoryRes>> => {
+			inventoryReads++;
+			return Promise.resolve({ kind: "answer", packet: { foundPlayer: true } as InventoryRes });
+		};
+
+		let answerDrink = (): void => undefined;
+
+		function DrinkScreen(): ReactElement {
+			const profile = useGameQuery<ProfileRes>(GAME_ENTITIES.PROFILE, readProfile);
+			useGameQuery<InventoryRes>(GAME_ENTITIES.INVENTORY, readInventory);
+			const { afterCollector } = useGameInvalidations();
+
+			answerDrink = (): void => afterCollector(DRINK_DATA_KINDS.COLLECTOR);
+
+			return <Text>{profile.status === "ready" ? `health ${profile.data.health.value}` : profile.status}</Text>;
+		}
+
+		await renderWithGameQuery(<DrinkScreen />);
+		await waitFor(() => expect(screen.getByText("health 50")).toBeTruthy());
+		expect(inventoryReads).toBe(1);
+
+		await act(async () => {
+			answerDrink();
+		});
+
+		await waitFor(() => expect(screen.getByText("health 67")).toBeTruthy());
+		expect(inventoryReads).toBe(2);
+	});
+
+	it("refreshes the profile even when the collector kind is unknown", async () => {
+		let profileReads = 0;
+		const readProfile = (): Promise<GameAnswer<ProfileRes>> => {
+			profileReads++;
+			return Promise.resolve({ kind: "answer", packet: { level: profileReads } as ProfileRes });
+		};
+
+		let answerUnknown = (): void => undefined;
+
+		function UnknownCollectorScreen(): ReactElement {
+			const profile = useGameQuery<ProfileRes>(GAME_ENTITIES.PROFILE, readProfile);
+			const { afterCollector } = useGameInvalidations();
+			answerUnknown = (): void => afterCollector("unknown");
+
+			return <Text>{profile.status === "ready" ? `level ${profile.data.level}` : profile.status}</Text>;
+		}
+
+		await renderWithGameQuery(<UnknownCollectorScreen />);
+		await waitFor(() => expect(screen.getByText("level 1")).toBeTruthy());
+
+		await act(async () => {
+			answerUnknown();
+		});
+
+		await waitFor(() => expect(screen.getByText("level 2")).toBeTruthy());
+	});
+
+	it("leaves untouched entities alone", async () => {
+		let petReads = 0;
+		const readPet = (): Promise<GameAnswer<ProfileRes>> => {
+			petReads++;
+			return Promise.resolve({ kind: "answer", packet: {} as ProfileRes });
+		};
+
+		let answerDrink = (): void => undefined;
+
+		function PetScreen(): ReactElement {
+			const pet = useGameQuery<ProfileRes>(GAME_ENTITIES.PET, readPet);
+			const { afterCollector } = useGameInvalidations();
+
+			answerDrink = (): void => afterCollector(DRINK_DATA_KINDS.COLLECTOR);
+
+			return <Text>{pet.status}</Text>;
+		}
+
+		await renderWithGameQuery(<PetScreen />);
+		await waitFor(() => expect(screen.getByText("ready")).toBeTruthy());
+
+		await act(async () => {
+			answerDrink();
+		});
+
+		expect(petReads).toBe(1);
+	});
+
+	it("reads the inventory again once an item collector is answered", async () => {
+		let inventoryReads = 0;
+		const readInventory = (): Promise<GameAnswer<InventoryRes>> => {
+			inventoryReads++;
+			return Promise.resolve({ kind: "answer", packet: { foundPlayer: true } as InventoryRes });
+		};
+
+		let answerItem = (): void => undefined;
+
+		function ItemScreen(): ReactElement {
+			useGameQuery<InventoryRes>(GAME_ENTITIES.INVENTORY, readInventory);
+			const { afterCollector } = useGameInvalidations();
+
+			answerItem = (): void => afterCollector(ITEM_DATA_KINDS.CHOICE);
+
+			return <Text>{inventoryReads}</Text>;
+		}
+
+		await renderWithGameQuery(<ItemScreen />);
+		await waitFor(() => expect(inventoryReads).toBe(1));
+
+		await act(async () => {
+			answerItem();
+		});
+
+		await waitFor(() => expect(inventoryReads).toBe(2));
+	});
+});

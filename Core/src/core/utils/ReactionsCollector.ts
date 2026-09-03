@@ -13,7 +13,9 @@ import { BlockingUtils } from "./BlockingUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { PacketUtils } from "./PacketUtils";
 import { BlockingReason } from "../../../../Lib/src/constants/BlockingConstants";
-import { ReactionCollectorStopPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorStopPacket";
+import {
+	REACTION_COLLECTOR_STOP_REASONS, ReactionCollectorStopPacket
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorStopPacket";
 import {
 	ReactionCollectorResetTimerPacketReq,
 	ReactionCollectorResetTimerPacketRes
@@ -70,7 +72,7 @@ export class ReactionCollectorInstance {
 
 	private readonly mainPacket: boolean;
 
-	private endedByTime!: boolean;
+	private endedByTime = false;
 
 	private endTimeout!: NodeJS.Timeout;
 
@@ -151,7 +153,8 @@ export class ReactionCollectorInstance {
 		collectors.delete(this.id);
 		const packets: CrowniclesPacket[] = response ?? [];
 		packets.push(makePacket(ReactionCollectorStopPacket, {
-			id: this.id
+			id: this.id,
+			reason: this.endedByTime ? REACTION_COLLECTOR_STOP_REASONS.EXPIRED : REACTION_COLLECTOR_STOP_REASONS.RESOLVED
 		}));
 		if (this.endCallback) {
 			await this.endCallback(this, packets);
@@ -220,5 +223,15 @@ export abstract class ReactionCollectorController {
 				endTime: collector.creationPacket.endTime
 			}));
 		}
+	}
+
+	public static getCollectorsOfPlayer(keycloakId: string): ReactionCollectorInstance[] {
+		const result: ReactionCollectorInstance[] = [];
+		for (const collector of collectors.values()) {
+			if (!collector.hasEnded && collector.context.keycloakId === keycloakId) {
+				result.push(collector);
+			}
+		}
+		return result;
 	}
 }

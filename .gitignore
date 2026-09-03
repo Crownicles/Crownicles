@@ -7,12 +7,16 @@
 **/dist
 **/coverage
 **/config/config.toml
+keycloak/.env
 **/test-results.xml
 **/test-integration-results.xml
 .run
 mqtt5
 bdd
 .claude
+
+# Package archives
+**/*.tgz
 
 # Test command export files
 players-export-*.json

@@ -5,8 +5,7 @@ import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { setupRegisterRoute } from "./routes/RegisterRoute";
 import { setupLoginRoute } from "./routes/LoginRoute";
 import { setupRefreshTokenRoute } from "./routes/RefreshTokenRoute";
-import { DiscordSsoConfig } from "../config/DiscordSsoConfig";
-import { setupDiscordRoutes } from "./routes/DiscordRoutes";
+import { setupAssetsRoutes } from "./routes/AssetsRoute";
 
 // todo add anti spam mechanism and registering with a captcha
 
@@ -49,14 +48,14 @@ export class RestApi {
 	private readonly allowNewUsersRegistering: boolean;
 
 	/**
-	 * Discord SSO configuration.
-	 */
-	private readonly discordSso?: DiscordSsoConfig;
-
-	/**
 	 * Flag to enable beta login.
 	 */
 	private readonly betaLogin: boolean;
+
+	/**
+	 * Debug mode for the server.
+	 */
+	private readonly debugMode: boolean;
 
 	/**
 	 * Constructor for the RestApi class.
@@ -64,36 +63,42 @@ export class RestApi {
 	 */
 	constructor(options: {
 		allowNewUsersRegistering: boolean;
-		discordSso?: DiscordSsoConfig;
 		betaLogin: boolean;
+		debugMode: boolean;
 	}) {
 		this.server = fastify();
 		this.allowNewUsersRegistering = options.allowNewUsersRegistering;
-		this.discordSso = options.discordSso;
 		this.betaLogin = options.betaLogin;
-
-		this.setupRoutes();
+		this.debugMode = options.debugMode;
 	}
 
 	/**
 	 * Sets up the routes for the API.
 	 */
-	private setupRoutes(): void {
+	private async setupRoutes(): Promise<void> {
+		this.server.setNotFoundHandler((request, reply) => {
+			CrowniclesLogger.warn("Not found request", {
+				...getRequestLoggerMetadata(request)
+			});
+			reply.status(404).send({ error: "Not Found" });
+		});
+
 		setupRegisterRoute(this.server, this.allowNewUsersRegistering);
 		setupLoginRoute(this.server, this.betaLogin);
 		setupRefreshTokenRoute(this.server);
-
-		if (this.discordSso) {
-			setupDiscordRoutes(this.server, this.discordSso, this.betaLogin);
-		}
+		await setupAssetsRoutes(this.server, this.debugMode);
 	}
 
 	/**
 	 * Starts the server on the specified port.
 	 * @param port
 	 */
-	public start(port: number): void {
-		this.server.listen({ port }, (err, address) => {
+	public async start(port: number): Promise<void> {
+		await this.setupRoutes();
+
+		this.server.listen({
+			port, host: "0.0.0.0"
+		}, (err, address) => {
 			if (err) {
 				CrowniclesLogger.errorWithObj("Failed to start Rest API", err);
 				process.exit(1);

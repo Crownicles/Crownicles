@@ -4,8 +4,8 @@ import "source-map-support/register";
 import { RestApi } from "./services/RestApi";
 import { WebSocketServer } from "./services/WebSocketServer";
 import { MqttManager } from "./mqtt/MqttManager";
-import { registerAllClientTranslators } from "./protobuf/fromClient/FromClientTranslator";
-import { registerAllServerTranslators } from "./protobuf/fromServer/FromServerTranslator";
+import { registerAllClientTranslators } from "./packets/fromClient/FromClientTranslator";
+import { registerAllServerTranslators } from "./packets/fromServer/FromServerTranslator";
 
 process.on("uncaughtException", error => {
 	console.error(`Uncaught exception: ${error}`);
@@ -48,10 +48,10 @@ async function main(): Promise<void> {
 	MqttManager.connectClients();
 
 	// Initialize and start the Rest API server
-	new RestApi({
+	await new RestApi({
 		allowNewUsersRegistering: restWsConfig.REST_API_ALLOW_NEW_USERS_REGISTERING,
-		discordSso: restWsConfig.REST_API_DISCORD_SSO,
-		betaLogin: restWsConfig.REST_API_BETA_LOGIN
+		betaLogin: restWsConfig.REST_API_BETA_LOGIN,
+		debugMode: restWsConfig.DEBUG
 	}).start(restWsConfig.REST_API_PORT);
 
 	// Initialize and start the WebSocket server

@@ -4,6 +4,7 @@ import {
 	ReactionCollectorCreationPacket,
 	ReactionCollectorEnded
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { CommandGetCurrentReactionCollectorsPacketRes } from "../../../../Lib/src/packets/commands/CommandGetCurrentReactionCollectorsPacket";
 import { ReactionCollectorBigEventData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import {
 	chooseDestinationCollector,
@@ -264,5 +265,13 @@ export default class ReactionCollectorHandler {
 			});
 		});
 		await Promise.resolve();
+	}
+
+	@packetHandler(CommandGetCurrentReactionCollectorsPacketRes)
+	async getCurrentReactionCollectorsRes(_context: PacketContext, _packet: CommandGetCurrentReactionCollectorsPacketRes): Promise<void> {
+		/*
+		 * This packet is only useful to the mobile app, which restores its reaction collectors on reconnection.
+		 * On Discord the collectors live in the process memory, so there is nothing to restore.
+		 */
 	}
 }

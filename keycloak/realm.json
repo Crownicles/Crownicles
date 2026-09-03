@@ -26,7 +26,7 @@
   "oauth2DeviceCodeLifespan": 600,
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
-  "sslRequired": "external",
+  "sslRequired": "none",
   "registrationAllowed": false,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
@@ -917,6 +917,48 @@
         "offline_access",
         "microprofile-jwt"
       ]
+    },
+    {
+      "clientId": "crownicles-app",
+      "name": "Crownicles mobile app",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "http://localhost:8081/*",
+        "crownicles://*",
+        "exp://*"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "post.logout.redirect.uris": "crownicles://*##exp://*",
+        "pkce.code.challenge.method": "S256"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "access": {
+        "view": true,
+        "configure": true,
+        "manage": true
+      },
+      "optionalClientScopes": [
+        "offline_access"
+      ]
     }
   ],
   "clientScopes": [
@@ -1459,7 +1501,66 @@
   "enabledEventTypes": [],
   "adminEventsEnabled": false,
   "adminEventsDetailsEnabled": false,
-  "identityProviders": [],
+  "identityProviders": [
+    {
+      "alias": "discord",
+      "displayName": "Discord",
+      "providerId": "oauth2",
+      "enabled": true,
+      "trustEmail": true,
+      "firstBrokerLoginFlowAlias": "auto link first login",
+      "config": {
+        "userInfoUrl": "https://discord.com/api/users/@me",
+        "clientId": "TO_REPLACE_WITH_YOUR_DISCORD_CLIENT_ID",
+        "tokenUrl": "https://discord.com/api/oauth2/token",
+        "clientAuthMethod": "client_secret_post",
+        "authorizationUrl": "https://discord.com/oauth2/authorize",
+        "syncMode": "FORCE",
+        "fullNameClaim": "global_name",
+        "userIDClaim": "id",
+        "clientSecret": "TO_REPLACE_WITH_YOUR_DISCORD_CLIENT_SECRET",
+        "userNameClaim": "id",
+        "emailClaim": "email",
+        "defaultScope": "identify email"
+      },
+      "types": [
+        "USER_AUTHENTICATION",
+        "EXCHANGE_EXTERNAL_TOKEN"
+      ],
+      "mappers": [
+        {
+          "name": "discordId",
+          "identityProviderAlias": "discord",
+          "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+          "config": {
+            "syncMode": "INHERIT",
+            "claim": "id",
+            "user.attribute": "discordId"
+          }
+        },
+        {
+          "name": "gameUsername",
+          "identityProviderAlias": "discord",
+          "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+          "config": {
+            "syncMode": "FORCE",
+            "claim": "global_name",
+            "user.attribute": "gameUsername"
+          }
+        },
+        {
+          "name": "username",
+          "identityProviderAlias": "discord",
+          "identityProviderMapper": "oidc-username-idp-mapper",
+          "config": {
+            "template": "discord-${CLAIM.id}",
+            "syncMode": "INHERIT",
+            "target": "LOCAL"
+          }
+        }
+      ]
+    }
+  ],
   "identityProviderMappers": [],
   "components": {
     "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
@@ -2140,6 +2241,29 @@
           "requirement": "REQUIRED",
           "priority": 10,
           "autheticatorFlow": false,
+          "userSetupAllowed": false
+        }
+      ]
+    },
+    {
+      "alias": "auto link first login",
+      "description": "Links a brokered login to the existing account bearing the same username",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "idp-create-user-if-unique",
+          "authenticatorFlow": false,
+          "requirement": "ALTERNATIVE",
+          "priority": 0,
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "idp-auto-link",
+          "authenticatorFlow": false,
+          "requirement": "ALTERNATIVE",
+          "priority": 1,
           "userSetupAllowed": false
         }
       ]
