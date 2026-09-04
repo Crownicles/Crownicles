@@ -9,12 +9,12 @@
   "rewardFactor": 0.65,
   "attacks": [
     {
-      "id": "simpleAttack",
+      "id": "skeletonSimpleAttack",
       "minLevel": 0,
       "weight": 6
     },
     {
-      "id": "shieldAttack",
+      "id": "skeletonShieldAttack",
       "minLevel": 0,
       "weight": 4
     },
@@ -24,7 +24,7 @@
       "weight": 2
     },
     {
-      "id": "cursedAttack",
+      "id": "skeletonCursedAttack",
       "minLevel": 50,
       "weight": 2
     },
