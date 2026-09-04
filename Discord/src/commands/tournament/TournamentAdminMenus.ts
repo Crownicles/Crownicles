@@ -1,5 +1,6 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ContainerBuilder, TextDisplayBuilder
+	ActionRowBuilder, ButtonBuilder, ContainerBuilder, MessageComponentInteraction,
+	TextDisplayBuilder
 } from "discord.js";
 import {
 	CommandTournamentAdminMenuPacketRes, CommandTournamentCancelPacketReq,
@@ -24,7 +25,9 @@ import {
 	sendPacketFromMenu, TOURNAMENT_DURATION_OPTIONS, TOURNAMENT_LEVEL_CAP_OPTIONS,
 	TOURNAMENT_MENU_IDS, type TournamentMenuContext
 } from "./TournamentMenuUtils";
-import type { CrowniclesNestedMenu } from "../../messages/CrowniclesNestedMenus";
+import type {
+	CrowniclesNestedMenu, CrowniclesNestedMenus
+} from "../../messages/CrowniclesNestedMenus";
 
 export type TournamentCreationMenuState = {
 	registrationDays?: number;
@@ -33,7 +36,7 @@ export type TournamentCreationMenuState = {
 	levelCap?: number;
 };
 
-type DurationChoiceOptions = {
+type ButtonChoiceSectionOptions = {
 	container: ContainerBuilder;
 	context: TournamentMenuContext;
 	labelKey: string;
@@ -44,6 +47,12 @@ type ButtonChoice = {
 	customId: string;
 	label: string;
 	style: typeof ReportCityButtonStyles[keyof typeof ReportCityButtonStyles];
+};
+
+type DurationChoiceOptions = {
+	prefix: string;
+	selectedDays?: number;
+	lng: TournamentMenuContext["interaction"]["userLanguage"];
 };
 
 function getLanguage(context: TournamentMenuContext): TournamentMenuContext["interaction"]["userLanguage"] {
@@ -143,7 +152,7 @@ function buildAdminRootMenu(
 	};
 }
 
-function addDurationChoices(options: DurationChoiceOptions): void {
+function addButtonChoiceSection(options: ButtonChoiceSectionOptions): void {
 	const {
 		container, context, labelKey, choices
 	} = options;
@@ -158,6 +167,17 @@ function addDurationChoices(options: DurationChoiceOptions): void {
 			.setStyle(choice.style));
 	}
 	container.addActionRowComponents(...rows);
+}
+
+function buildDurationChoices(options: DurationChoiceOptions): ButtonChoice[] {
+	const {
+		prefix, selectedDays, lng
+	} = options;
+	return TOURNAMENT_DURATION_OPTIONS.map(days => ({
+		customId: `${prefix}${days}`,
+		label: getDayLabel(days, lng),
+		style: days === selectedDays ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
+	}));
 }
 
 function getLevelModeLabel(mode: TournamentLevelLimitMode, lng: TournamentMenuContext["interaction"]["userLanguage"]): string {
@@ -183,31 +203,21 @@ function isCompleteTournamentCreationMenuState(state: TournamentCreationMenuStat
 	return isCreationComplete(state);
 }
 
-function addLevelModeChoices(container: ContainerBuilder, context: TournamentMenuContext, state: TournamentCreationMenuState): void {
+function buildLevelModeChoices(context: TournamentMenuContext, state: TournamentCreationMenuState): ButtonChoice[] {
 	const lng = getLanguage(context);
-	addDurationChoices({
-		container,
-		context,
-		labelKey: "commands:tournament.menu.levelMode",
-		choices: Object.values(TournamentLevelLimitModes).map(mode => ({
-			customId: `${TOURNAMENT_MENU_IDS.CREATE_LEVEL_MODE_PREFIX}${mode}`,
-			label: getLevelModeLabel(mode, lng),
-			style: mode === state.levelLimitMode ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
-		}))
-	});
+	return Object.values(TournamentLevelLimitModes).map(mode => ({
+		customId: `${TOURNAMENT_MENU_IDS.CREATE_LEVEL_MODE_PREFIX}${mode}`,
+		label: getLevelModeLabel(mode, lng),
+		style: mode === state.levelLimitMode ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
+	}));
 }
 
-function addLevelCapChoices(container: ContainerBuilder, context: TournamentMenuContext, state: TournamentCreationMenuState): void {
-	addDurationChoices({
-		container,
-		context,
-		labelKey: "commands:tournament.menu.levelCap",
-		choices: TOURNAMENT_LEVEL_CAP_OPTIONS.map(levelCap => ({
-			customId: `${TOURNAMENT_MENU_IDS.CREATE_LEVEL_CAP_PREFIX}${levelCap}`,
-			label: levelCap.toString(),
-			style: levelCap === state.levelCap ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
-		}))
-	});
+function buildLevelCapChoices(state: TournamentCreationMenuState): ButtonChoice[] {
+	return TOURNAMENT_LEVEL_CAP_OPTIONS.map(levelCap => ({
+		customId: `${TOURNAMENT_MENU_IDS.CREATE_LEVEL_CAP_PREFIX}${levelCap}`,
+		label: levelCap.toString(),
+		style: levelCap === state.levelCap ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
+	}));
 }
 
 function buildCreationPacket(state: TournamentCreationMenuState): CrowniclesPacket | null {
@@ -255,35 +265,45 @@ function applyCreationSelection(customId: string, state: TournamentCreationMenuS
 	return true;
 }
 
-function buildAdminCreateMenu(context: TournamentMenuContext, state: TournamentCreationMenuState): CrowniclesNestedMenu {
+function buildAdminCreateContainer(context: TournamentMenuContext, state: TournamentCreationMenuState): ContainerBuilder {
 	const lng = getLanguage(context);
 	const container = createContainer(
 		i18n.t("commands:tournament.menu.createWizardTitle", { lng }),
 		i18n.t("commands:tournament.menu.createWizardDescription", { lng })
 	);
-	addDurationChoices({
+	addButtonChoiceSection({
 		container,
 		context,
 		labelKey: "commands:tournament.menu.registrationDuration",
-		choices: TOURNAMENT_DURATION_OPTIONS.map(days => ({
-			customId: `${TOURNAMENT_MENU_IDS.CREATE_REGISTRATION_PREFIX}${days}`,
-			label: getDayLabel(days, lng),
-			style: days === state.registrationDays ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
-		}))
+		choices: buildDurationChoices({
+			prefix: TOURNAMENT_MENU_IDS.CREATE_REGISTRATION_PREFIX,
+			selectedDays: state.registrationDays,
+			lng
+		})
 	});
-	addDurationChoices({
+	addButtonChoiceSection({
 		container,
 		context,
 		labelKey: "commands:tournament.menu.combatDuration",
-		choices: TOURNAMENT_DURATION_OPTIONS.map(days => ({
-			customId: `${TOURNAMENT_MENU_IDS.CREATE_COMBAT_PREFIX}${days}`,
-			label: getDayLabel(days, lng),
-			style: days === state.combatDays ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
-		}))
+		choices: buildDurationChoices({
+			prefix: TOURNAMENT_MENU_IDS.CREATE_COMBAT_PREFIX,
+			selectedDays: state.combatDays,
+			lng
+		})
 	});
-	addLevelModeChoices(container, context, state);
+	addButtonChoiceSection({
+		container,
+		context,
+		labelKey: "commands:tournament.menu.levelMode",
+		choices: buildLevelModeChoices(context, state)
+	});
 	if (isCustomLevelMode(state.levelLimitMode)) {
-		addLevelCapChoices(container, context, state);
+		addButtonChoiceSection({
+			container,
+			context,
+			labelKey: "commands:tournament.menu.levelCap",
+			choices: buildLevelCapChoices(state)
+		});
 	}
 	addSeparator(container);
 	const actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder()
@@ -294,32 +314,43 @@ function buildAdminCreateMenu(context: TournamentMenuContext, state: TournamentC
 		.setDisabled(!isCreationComplete(state)));
 	container.addActionRowComponents(actionRow);
 	addMenuNavigation(container, TOURNAMENT_MENU_IDS.ADMIN_ROOT, lng);
+	return container;
+}
+
+async function handleAdminCreateInteraction(
+	context: TournamentMenuContext,
+	state: TournamentCreationMenuState,
+	componentInteraction: MessageComponentInteraction,
+	nestedMenus: CrowniclesNestedMenus
+): Promise<void> {
+	if (!componentInteraction.isButton()) {
+		return;
+	}
+	if (applyCreationSelection(componentInteraction.customId, state)) {
+		nestedMenus.registerMenu(TOURNAMENT_MENU_IDS.ADMIN_CREATE, buildAdminCreateMenu(context, state));
+		await changeMenu(componentInteraction, nestedMenus, TOURNAMENT_MENU_IDS.ADMIN_CREATE);
+		return;
+	}
+	if (componentInteraction.customId === TOURNAMENT_MENU_IDS.CREATE_CONFIRM) {
+		const packet = buildCreationPacket(state);
+		if (packet) {
+			await sendPacketFromMenu(componentInteraction, nestedMenus, context.context, packet);
+		}
+		return;
+	}
+	if (componentInteraction.customId === TOURNAMENT_MENU_IDS.BACK) {
+		await changeMenu(componentInteraction, nestedMenus, TOURNAMENT_MENU_IDS.ADMIN_ROOT);
+		return;
+	}
+	if (componentInteraction.customId === TOURNAMENT_MENU_IDS.CLOSE) {
+		await closeMenu(componentInteraction, nestedMenus);
+	}
+}
+
+function buildAdminCreateMenu(context: TournamentMenuContext, state: TournamentCreationMenuState): CrowniclesNestedMenu {
 	return {
-		containers: [container],
-		createCollector: createMenuCollector(context, async (componentInteraction, nestedMenus) => {
-			if (!componentInteraction.isButton()) {
-				return;
-			}
-			if (applyCreationSelection(componentInteraction.customId, state)) {
-				nestedMenus.registerMenu(TOURNAMENT_MENU_IDS.ADMIN_CREATE, buildAdminCreateMenu(context, state));
-				await changeMenu(componentInteraction, nestedMenus, TOURNAMENT_MENU_IDS.ADMIN_CREATE);
-				return;
-			}
-			if (componentInteraction.customId === TOURNAMENT_MENU_IDS.CREATE_CONFIRM) {
-				const packet = buildCreationPacket(state);
-				if (packet) {
-					await sendPacketFromMenu(componentInteraction, nestedMenus, context.context, packet);
-				}
-				return;
-			}
-			if (componentInteraction.customId === TOURNAMENT_MENU_IDS.BACK) {
-				await changeMenu(componentInteraction, nestedMenus, TOURNAMENT_MENU_IDS.ADMIN_ROOT);
-				return;
-			}
-			if (componentInteraction.customId === TOURNAMENT_MENU_IDS.CLOSE) {
-				await closeMenu(componentInteraction, nestedMenus);
-			}
-		})
+		containers: [buildAdminCreateContainer(context, state)],
+		createCollector: createMenuCollector(context, handleAdminCreateInteraction.bind(undefined, context, state))
 	};
 }
 
