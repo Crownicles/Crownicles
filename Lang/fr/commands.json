@@ -2950,6 +2950,7 @@
       "createConfirmButton": "Créer le tournoi",
       "day": "{{count}} jour",
       "days": "{{count}} jours",
+      "paused": "temps en pause",
       "back": "Retour",
       "close": "Fermer"
     },

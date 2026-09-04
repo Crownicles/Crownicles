@@ -248,6 +248,30 @@ describe("Tournament modules integration", () => {
 		expect(status.reward).toBeUndefined();
 	});
 
+	it("prefers the active tournament in the current channel over a newer finished one", async () => {
+		const owner = await Player.create({
+			keycloakId: "tournament-owner-context-priority",
+			level: 100
+		});
+		const activeCode = await manager.generateCode(GUILD_ID);
+		const activeTournament = await manager.createTournament(buildContext(owner.keycloakId), activeCode.code, 1, 1);
+
+		const finishedContext = buildContext(owner.keycloakId);
+		finishedContext.discord!.channel = "finished-tournament-channel";
+		const finishedCode = await manager.generateCode(GUILD_ID);
+		const finishedTournament = await manager.createTournament(finishedContext, finishedCode.code, 1, 1);
+		await Tournament.update({ status: TournamentStatuses.COMPLETED }, { where: { id: finishedTournament.id } });
+
+		const player = await Player.create({
+			keycloakId: "tournament-context-priority-player",
+			level: 100
+		});
+		const status = await manager.getStatusData(buildContext(player.keycloakId), player);
+
+		expect(status.tournamentId).toBe(activeTournament.id);
+		expect(status.status).toBe(TournamentStatuses.REGISTRATION);
+	});
+
 	it("persists custom level limits and rejects players above the limit", async () => {
 		const owner = await Player.create({
 			keycloakId: "tournament-owner-level-limit",
