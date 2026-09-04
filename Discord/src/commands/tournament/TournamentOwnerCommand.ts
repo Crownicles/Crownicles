@@ -1,5 +1,5 @@
 import {
-	MessageFlags, PermissionsBitField
+	PermissionsBitField
 } from "discord.js";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -25,7 +25,7 @@ async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser)
 	if (!isTournamentParentChannel(interaction) || !hasTournamentChannelPermissions(interaction)) {
 		return await replyTournamentError(interaction, "missingChannelPermissions");
 	}
-	await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+	await interaction.deferReply({ ephemeral: true });
 	sendTournamentPacket(
 		await createTournamentContext(interaction, user),
 		makePacket(CommandTournamentOwnerMenuPacketReq, {})
