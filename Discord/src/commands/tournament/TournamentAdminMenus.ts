@@ -37,8 +37,13 @@ type DurationChoiceOptions = {
 	container: ContainerBuilder;
 	context: TournamentMenuContext;
 	labelKey: string;
-	selectedDays: number | undefined;
-	customIdPrefix: string;
+	choices: ButtonChoice[];
+};
+
+type ButtonChoice = {
+	customId: string;
+	label: string;
+	style: typeof ReportCityButtonStyles[keyof typeof ReportCityButtonStyles];
 };
 
 function getLanguage(context: TournamentMenuContext): TournamentMenuContext["interaction"]["userLanguage"] {
@@ -140,19 +145,19 @@ function buildAdminRootMenu(
 
 function addDurationChoices(options: DurationChoiceOptions): void {
 	const {
-		container, context, labelKey, selectedDays, customIdPrefix
+		container, context, labelKey, choices
 	} = options;
 	const lng = getLanguage(context);
 	addSeparator(container);
 	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(i18n.t(labelKey, { lng })));
-	const row = new ActionRowBuilder<ButtonBuilder>();
-	for (const days of TOURNAMENT_DURATION_OPTIONS) {
-		row.addComponents(new ButtonBuilder()
-			.setCustomId(`${customIdPrefix}${days}`)
-			.setLabel(getDayLabel(days, lng))
-			.setStyle(days === selectedDays ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION));
+	const rows = [new ActionRowBuilder<ButtonBuilder>()];
+	for (const choice of choices) {
+		addButtonToRow(rows, new ButtonBuilder()
+			.setCustomId(choice.customId)
+			.setLabel(choice.label)
+			.setStyle(choice.style));
 	}
-	container.addActionRowComponents(row);
+	container.addActionRowComponents(...rows);
 }
 
 function getLevelModeLabel(mode: TournamentLevelLimitMode, lng: TournamentMenuContext["interaction"]["userLanguage"]): string {
@@ -180,30 +185,29 @@ function isCompleteTournamentCreationMenuState(state: TournamentCreationMenuStat
 
 function addLevelModeChoices(container: ContainerBuilder, context: TournamentMenuContext, state: TournamentCreationMenuState): void {
 	const lng = getLanguage(context);
-	addSeparator(container);
-	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(i18n.t("commands:tournament.menu.levelMode", { lng })));
-	const row = new ActionRowBuilder<ButtonBuilder>();
-	for (const mode of Object.values(TournamentLevelLimitModes)) {
-		row.addComponents(new ButtonBuilder()
-			.setCustomId(`${TOURNAMENT_MENU_IDS.CREATE_LEVEL_MODE_PREFIX}${mode}`)
-			.setLabel(getLevelModeLabel(mode, lng))
-			.setStyle(mode === state.levelLimitMode ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION));
-	}
-	container.addActionRowComponents(row);
+	addDurationChoices({
+		container,
+		context,
+		labelKey: "commands:tournament.menu.levelMode",
+		choices: Object.values(TournamentLevelLimitModes).map(mode => ({
+			customId: `${TOURNAMENT_MENU_IDS.CREATE_LEVEL_MODE_PREFIX}${mode}`,
+			label: getLevelModeLabel(mode, lng),
+			style: mode === state.levelLimitMode ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
+		}))
+	});
 }
 
 function addLevelCapChoices(container: ContainerBuilder, context: TournamentMenuContext, state: TournamentCreationMenuState): void {
-	const lng = getLanguage(context);
-	addSeparator(container);
-	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(i18n.t("commands:tournament.menu.levelCap", { lng })));
-	const rows = [new ActionRowBuilder<ButtonBuilder>()];
-	for (const levelCap of TOURNAMENT_LEVEL_CAP_OPTIONS) {
-		addButtonToRow(rows, new ButtonBuilder()
-			.setCustomId(`${TOURNAMENT_MENU_IDS.CREATE_LEVEL_CAP_PREFIX}${levelCap}`)
-			.setLabel(levelCap.toString())
-			.setStyle(levelCap === state.levelCap ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION));
-	}
-	container.addActionRowComponents(...rows);
+	addDurationChoices({
+		container,
+		context,
+		labelKey: "commands:tournament.menu.levelCap",
+		choices: TOURNAMENT_LEVEL_CAP_OPTIONS.map(levelCap => ({
+			customId: `${TOURNAMENT_MENU_IDS.CREATE_LEVEL_CAP_PREFIX}${levelCap}`,
+			label: levelCap.toString(),
+			style: levelCap === state.levelCap ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
+		}))
+	});
 }
 
 function buildCreationPacket(state: TournamentCreationMenuState): CrowniclesPacket | null {
@@ -261,15 +265,21 @@ function buildAdminCreateMenu(context: TournamentMenuContext, state: TournamentC
 		container,
 		context,
 		labelKey: "commands:tournament.menu.registrationDuration",
-		selectedDays: state.registrationDays,
-		customIdPrefix: TOURNAMENT_MENU_IDS.CREATE_REGISTRATION_PREFIX
+		choices: TOURNAMENT_DURATION_OPTIONS.map(days => ({
+			customId: `${TOURNAMENT_MENU_IDS.CREATE_REGISTRATION_PREFIX}${days}`,
+			label: getDayLabel(days, lng),
+			style: days === state.registrationDays ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
+		}))
 	});
 	addDurationChoices({
 		container,
 		context,
 		labelKey: "commands:tournament.menu.combatDuration",
-		selectedDays: state.combatDays,
-		customIdPrefix: TOURNAMENT_MENU_IDS.CREATE_COMBAT_PREFIX
+		choices: TOURNAMENT_DURATION_OPTIONS.map(days => ({
+			customId: `${TOURNAMENT_MENU_IDS.CREATE_COMBAT_PREFIX}${days}`,
+			label: getDayLabel(days, lng),
+			style: days === state.combatDays ? ReportCityButtonStyles.CONFIRM : ReportCityButtonStyles.OPTION
+		}))
 	});
 	addLevelModeChoices(container, context, state);
 	if (isCustomLevelMode(state.levelLimitMode)) {
