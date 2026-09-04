@@ -47,7 +47,8 @@ async function getParticipantRank(
 }
 
 export async function getStatusData(context: PacketContext, player: Player): Promise<TournamentStatusData> {
-	const tournament = await findLatestTournamentForGuild(context.frontEndSubOrigin);
+	const tournament = await findTournamentForContext(context, true)
+		?? await findLatestTournamentForGuild(context.frontEndSubOrigin);
 	if (!tournament) {
 		throw new TournamentDomainError(TournamentErrorCodes.NOT_FOUND);
 	}

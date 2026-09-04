@@ -13,8 +13,10 @@ import {
 	CommandTournamentOwnerMenuPacketRes, CommandTournamentPausePacketReq, TournamentErrorCodes
 } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
 import { TournamentStatuses } from "../../../../Lib/src/types/Tournament";
+import type { TournamentStatusData } from "../../core/tournaments/TournamentRules";
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import Player, { Players } from "../../core/database/game/models/Player";
+import type Tournament from "../../core/database/game/models/Tournament";
 import {
 	adminCommand, commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
@@ -45,6 +47,66 @@ function pushTournamentError(response: CrowniclesPacket[], error: unknown, reaso
 	response.push(makePacket(CommandTournamentErrorPacketRes, {
 		errorCode: TournamentErrorCodes.NOT_FOUND
 	}));
+}
+
+type AutomaticRegistrationResult = {
+	newlyRegistered: boolean;
+	shouldRefreshStatus: boolean;
+};
+
+function canAutomaticallyRegister(
+	status: TournamentStatusData,
+	contextTournament: Tournament | null
+): boolean {
+	return !status.category
+		&& contextTournament?.id === status.tournamentId
+		&& (status.status === TournamentStatuses.REGISTRATION || status.status === TournamentStatuses.COMBAT);
+}
+
+async function automaticallyRegisterPlayer(
+	context: PacketContext,
+	player: Player,
+	status: TournamentStatusData,
+	contextTournament: Tournament | null
+): Promise<AutomaticRegistrationResult> {
+	if (!canAutomaticallyRegister(status, contextTournament)) {
+		return {
+			newlyRegistered: false,
+			shouldRefreshStatus: false
+		};
+	}
+	try {
+		await registerPlayer(context, player);
+		return {
+			newlyRegistered: true,
+			shouldRefreshStatus: true
+		};
+	}
+	catch (error) {
+		if (!(error instanceof TournamentDomainError) || error.code !== TournamentErrorCodes.ALREADY_REGISTERED) {
+			throw error;
+		}
+		return {
+			newlyRegistered: false,
+			shouldRefreshStatus: true
+		};
+	}
+}
+
+async function getStatusForPlayerCommand(
+	context: PacketContext,
+	player: Player
+): Promise<{
+	status: TournamentStatusData;
+	newlyRegistered: boolean;
+}> {
+	const initialStatus = await getStatusData(context, player);
+	const contextTournament = await findTournamentForContext(context, false);
+	const registration = await automaticallyRegisterPlayer(context, player, initialStatus, contextTournament);
+	return {
+		status: registration.shouldRefreshStatus ? await getStatusData(context, player) : initialStatus,
+		newlyRegistered: registration.newlyRegistered
+	};
 }
 
 export default class TournamentCommand {
@@ -138,30 +200,10 @@ export default class TournamentCommand {
 	static async status(response: CrowniclesPacket[], player: Player, _packet: CommandTournamentStatusPacketReq, context: PacketContext): Promise<void> {
 		try {
 			await claimTournamentReward(context, response, player);
-			const initialStatus = await getStatusData(context, player);
-			const contextTournament = await findTournamentForContext(context, false);
-			const canRegister = !initialStatus.category
-				&& contextTournament?.id === initialStatus.tournamentId
-				&& (initialStatus.status === TournamentStatuses.REGISTRATION || initialStatus.status === TournamentStatuses.COMBAT);
-			let newlyRegistered = false;
-			let shouldRefreshStatus = false;
-			if (canRegister) {
-				try {
-					await registerPlayer(context, player);
-					newlyRegistered = true;
-					shouldRefreshStatus = true;
-				}
-				catch (error) {
-					if (!(error instanceof TournamentDomainError) || error.code !== TournamentErrorCodes.ALREADY_REGISTERED) {
-						throw error;
-					}
-					shouldRefreshStatus = true;
-				}
-			}
-			const status = shouldRefreshStatus ? await getStatusData(context, player) : initialStatus;
+			const statusData = await getStatusForPlayerCommand(context, player);
 			response.push(makePacket(CommandTournamentStatusPacketRes, {
-				...status,
-				newlyRegistered
+				...statusData.status,
+				newlyRegistered: statusData.newlyRegistered
 			}));
 		}
 		catch (error) {

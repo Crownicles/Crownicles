@@ -61,17 +61,20 @@ async function editTournamentReply(context: PacketContext, buildEmbed: Tournamen
 	});
 }
 
-type TournamentContainerBuilder = (interaction: CrowniclesInteraction) => {
-	title: string;
-	description: string;
+type TournamentMenuReply = {
+	titleKey: string;
+	buildDescription: (interaction: CrowniclesInteraction) => string;
 };
 
-async function editTournamentMenuReply(context: PacketContext, buildContainer: TournamentContainerBuilder): Promise<void> {
+async function editTournamentMenuReply(context: PacketContext, reply: TournamentMenuReply): Promise<void> {
 	const interaction = getInteraction(context);
 	if (!interaction) {
 		return;
 	}
-	const content = buildContainer(interaction);
+	const content = {
+		title: i18n.t(reply.titleKey, { lng: interaction.userLanguage }),
+		description: reply.buildDescription(interaction)
+	};
 	const container = new ContainerBuilder()
 		.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(StringUtils.formatHeader(content.title)),
@@ -84,21 +87,21 @@ async function editTournamentMenuReply(context: PacketContext, buildContainer: T
 	});
 }
 
-export async function handleTournamentGenerateCode(context: PacketContext, packet: CommandTournamentGenerateCodePacketRes): Promise<void> {
-	await editTournamentMenuReply(context, interaction => ({
-		title: i18n.t("commands:tournament.codeTitle", { lng: interaction.userLanguage }),
-		description: i18n.t("commands:tournament.codeCreated", {
+export function handleTournamentGenerateCode(context: PacketContext, packet: CommandTournamentGenerateCodePacketRes): Promise<void> {
+	return editTournamentMenuReply(context, {
+		titleKey: "commands:tournament.codeTitle",
+		buildDescription: interaction => i18n.t("commands:tournament.codeCreated", {
 			lng: interaction.userLanguage,
 			code: packet.code,
 			expiresAt: dateDisplay(new Date(packet.expiresAt))
 		})
-	}));
+	});
 }
 
-export async function handleTournamentCreate(context: PacketContext, packet: CommandTournamentCreatePacketRes): Promise<void> {
-	await editTournamentMenuReply(context, interaction => ({
-		title: i18n.t("commands:tournament.createTitle", { lng: interaction.userLanguage }),
-		description: i18n.t("commands:tournament.created", {
+export function handleTournamentCreate(context: PacketContext, packet: CommandTournamentCreatePacketRes): Promise<void> {
+	return editTournamentMenuReply(context, {
+		titleKey: "commands:tournament.createTitle",
+		buildDescription: interaction => i18n.t("commands:tournament.created", {
 			lng: interaction.userLanguage,
 			tournamentId: packet.tournamentId,
 			registrationEndsAt: dateDisplay(new Date(packet.registrationEndsAt)),
@@ -106,7 +109,7 @@ export async function handleTournamentCreate(context: PacketContext, packet: Com
 			channel: `<#${packet.channelId}>`,
 			levelRule: getTournamentLevelRuleDescription(packet.levelLimitMode, packet.levelCap, interaction.userLanguage)
 		})
-	}));
+	});
 }
 
 function getTournamentRewardDescription(packet: CommandTournamentStatusPacketRes, lng: Language): string {
@@ -151,25 +154,25 @@ export async function handleTournamentStatus(context: PacketContext, packet: Com
 	});
 }
 
-export async function handleTournamentResume(context: PacketContext, packet: CommandTournamentResumePacketRes): Promise<void> {
-	await editTournamentMenuReply(context, interaction => ({
-		title: i18n.t("commands:tournament.resumeTitle", { lng: interaction.userLanguage }),
-		description: i18n.t("commands:tournament.resumed", {
+export function handleTournamentResume(context: PacketContext, packet: CommandTournamentResumePacketRes): Promise<void> {
+	return editTournamentMenuReply(context, {
+		titleKey: "commands:tournament.resumeTitle",
+		buildDescription: interaction => i18n.t("commands:tournament.resumed", {
 			lng: interaction.userLanguage,
 			tournamentId: packet.tournamentId,
 			channel: `<#${packet.channelId}>`
 		})
-	}));
+	});
 }
 
-export async function handleTournamentCancel(context: PacketContext, packet: CommandTournamentCancelPacketRes): Promise<void> {
-	await editTournamentMenuReply(context, interaction => ({
-		title: i18n.t("commands:tournament.cancelTitle", { lng: interaction.userLanguage }),
-		description: i18n.t("commands:tournament.cancelled", {
+export function handleTournamentCancel(context: PacketContext, packet: CommandTournamentCancelPacketRes): Promise<void> {
+	return editTournamentMenuReply(context, {
+		titleKey: "commands:tournament.cancelTitle",
+		buildDescription: interaction => i18n.t("commands:tournament.cancelled", {
 			lng: interaction.userLanguage,
 			tournamentId: packet.tournamentId
 		})
-	}));
+	});
 }
 
 export async function handleTournamentTop(context: PacketContext, packet: CommandTournamentTopPacketRes): Promise<void> {
@@ -242,23 +245,29 @@ export async function handleTournamentTop(context: PacketContext, packet: Comman
 	}).send(interaction);
 }
 
-export async function handleTournamentError(context: PacketContext, packet: CommandTournamentErrorPacketRes): Promise<void> {
+export function handleTournamentError(context: PacketContext, packet: CommandTournamentErrorPacketRes): Promise<void> {
 	const interaction = getInteraction(context);
 	if (!interaction) {
-		return;
+		return Promise.resolve();
 	}
-	const buildErrorContent: TournamentContainerBuilder = () => ({
+	const buildErrorContent = (): {
+		title: string;
+		description: string;
+	} => ({
 		title: i18n.t("commands:tournament.errorTitle", { lng: interaction.userLanguage }),
 		description: i18n.t(`commands:tournament.errors.${packet.errorCode}`, { lng: interaction.userLanguage })
 	});
 	if (interaction.isComponentsV2()) {
-		await editTournamentMenuReply(context, buildErrorContent);
-		return;
+		return editTournamentMenuReply(context, {
+			titleKey: "commands:tournament.errorTitle",
+			buildDescription: () => buildErrorContent().description
+		});
 	}
-	await editTournamentReply(context, _currentInteraction => new CrowniclesEmbed()
+	const errorContent = buildErrorContent();
+	return editTournamentReply(context, _currentInteraction => new CrowniclesEmbed()
 		.setErrorColor()
-		.setTitle(buildErrorContent(interaction).title)
-		.setDescription(buildErrorContent(interaction).description));
+		.setTitle(errorContent.title)
+		.setDescription(errorContent.description));
 }
 
 export async function handleTournamentFightReward(context: PacketContext, packet: TournamentFightRewardPacket): Promise<void> {
