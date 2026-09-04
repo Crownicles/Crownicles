@@ -1,6 +1,7 @@
 import {
 	createHash, randomBytes
 } from "node:crypto";
+import { Op } from "sequelize";
 import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import { PacketConstants } from "../../../../Lib/src/constants/PacketConstants";
 import {
@@ -30,7 +31,7 @@ export type TournamentDuration = {
 
 export type TournamentCreationRequest = {
 	context: PacketContext;
-	code: string;
+	code?: string;
 	duration: TournamentDuration;
 	levelLimitMode?: TournamentLevelLimitMode;
 	levelCap?: number;
@@ -191,6 +192,20 @@ function validateCode(
 	}
 }
 
+async function findCodeForCreation(code: string | undefined, guildId: string): Promise<TournamentCode | null> {
+	if (code) {
+		return await TournamentCode.findOne({ where: { codeHash: hashCode(code) } });
+	}
+	return await TournamentCode.findOne({
+		where: {
+			discordGuildId: guildId,
+			consumedAt: null,
+			expiresAt: { [Op.gt]: new Date() }
+		},
+		order: [["id", "DESC"]]
+	});
+}
+
 function buildTournament(
 	creationData: TournamentCreationData,
 	duration: TournamentDuration,
@@ -241,7 +256,7 @@ export async function createTournament(
 		request.levelLimitMode,
 		request.levelCap
 	);
-	const codeInstance = await TournamentCode.findOne({ where: { codeHash: hashCode(request.code) } });
+	const codeInstance = await findCodeForCreation(request.code, creationData.guildId);
 	if (!codeInstance) {
 		throw new TournamentDomainError(TournamentErrorCodes.INVALID_CODE);
 	}

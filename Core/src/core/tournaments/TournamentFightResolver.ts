@@ -36,10 +36,8 @@ type TournamentGloryChanges = {
 };
 
 type TournamentGlorySnapshot = {
-	attackerAttack: number;
-	attackerDefense: number;
-	defenderAttack: number;
-	defenderDefense: number;
+	attackerTotal: number;
+	defenderTotal: number;
 };
 
 function isValidTournamentFight(
@@ -66,18 +64,14 @@ function buildTournamentFightPacket(
 		player1: {
 			keycloakId: attacker.keycloakId,
 			category: attacker.category,
-			oldAttackGloryPoints: snapshot.attackerAttack,
-			newAttackGloryPoints: attacker.attackGloryPoints,
-			oldDefenseGloryPoints: snapshot.attackerDefense,
-			newDefenseGloryPoints: attacker.defenseGloryPoints
+			oldTotalGloryPoints: snapshot.attackerTotal,
+			newTotalGloryPoints: attacker.getTotalGloryPoints()
 		},
 		player2: {
 			keycloakId: defender.keycloakId,
 			category: defender.category,
-			oldAttackGloryPoints: snapshot.defenderAttack,
-			newAttackGloryPoints: defender.attackGloryPoints,
-			oldDefenseGloryPoints: snapshot.defenderDefense,
-			newDefenseGloryPoints: defender.defenseGloryPoints
+			oldTotalGloryPoints: snapshot.defenderTotal,
+			newTotalGloryPoints: defender.getTotalGloryPoints()
 		},
 		draw: parameters.isDraw,
 		winnerKeycloakId: parameters.isDraw
@@ -99,10 +93,8 @@ async function resolveTournamentFightUnderLock(
 	const attackerResult = getGameResult(parameters.attackerWon, parameters.isDraw);
 	const defenderResult = getGameResult(!parameters.attackerWon, parameters.isDraw);
 	const snapshot: TournamentGlorySnapshot = {
-		attackerAttack: attacker.attackGloryPoints,
-		attackerDefense: attacker.defenseGloryPoints,
-		defenderAttack: defender.attackGloryPoints,
-		defenderDefense: defender.defenseGloryPoints
+		attackerTotal: attacker.getTotalGloryPoints(),
+		defenderTotal: defender.getTotalGloryPoints()
 	};
 	const newAttackerAttack = EloUtils.calculateNewRating(
 		attacker.attackGloryPoints,

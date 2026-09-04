@@ -1,23 +1,38 @@
 import { packetHandler } from "../../../PacketHandler";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
+	CommandTournamentAdminMenuPacketRes,
 	CommandTournamentCancelPacketRes, CommandTournamentCreatePacketRes,
 	CommandTournamentContextPacketRes,
 	CommandTournamentErrorPacketRes, CommandTournamentGenerateCodePacketRes,
-	CommandTournamentRegisterPacketRes, CommandTournamentResumePacketRes,
+	CommandTournamentOwnerMenuPacketRes,
+	CommandTournamentResumePacketRes,
 	CommandTournamentStatusPacketRes, CommandTournamentTopPacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandTournamentPacket";
 import { TournamentFightRewardPacket } from "../../../../../../Lib/src/packets/fights/TournamentFightRewardPacket";
 import {
 	handleTournamentCancel, handleTournamentCreate, handleTournamentError,
-	handleTournamentFightReward, handleTournamentGenerateCode, handleTournamentRegister,
+	handleTournamentFightReward, handleTournamentGenerateCode,
 	handleTournamentResume, handleTournamentStatus, handleTournamentTop
 } from "../../../../commands/tournament/TournamentResponses";
+import {
+	handleTournamentAdminMenu, handleTournamentOwnerMenu
+} from "../../../../commands/tournament/TournamentMenus";
 
 export default class TournamentPacketHandlers {
 	@packetHandler(CommandTournamentContextPacketRes)
 	context(_context: PacketContext, _packet: CommandTournamentContextPacketRes): Promise<void> {
 		return Promise.resolve();
+	}
+
+	@packetHandler(CommandTournamentAdminMenuPacketRes)
+	async adminMenu(context: PacketContext, packet: CommandTournamentAdminMenuPacketRes): Promise<void> {
+		await handleTournamentAdminMenu(context, packet);
+	}
+
+	@packetHandler(CommandTournamentOwnerMenuPacketRes)
+	async ownerMenu(context: PacketContext, packet: CommandTournamentOwnerMenuPacketRes): Promise<void> {
+		await handleTournamentOwnerMenu(context, packet);
 	}
 
 	@packetHandler(CommandTournamentGenerateCodePacketRes)
@@ -28,11 +43,6 @@ export default class TournamentPacketHandlers {
 	@packetHandler(CommandTournamentCreatePacketRes)
 	async create(context: PacketContext, packet: CommandTournamentCreatePacketRes): Promise<void> {
 		await handleTournamentCreate(context, packet);
-	}
-
-	@packetHandler(CommandTournamentRegisterPacketRes)
-	async register(context: PacketContext, packet: CommandTournamentRegisterPacketRes): Promise<void> {
-		await handleTournamentRegister(context, packet);
 	}
 
 	@packetHandler(CommandTournamentStatusPacketRes)
