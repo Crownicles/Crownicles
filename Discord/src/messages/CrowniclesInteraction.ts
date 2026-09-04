@@ -88,6 +88,7 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 		discordInteraction.editReply = CrowniclesInteraction.prototype.editReply.bind(discordInteraction);
 
 		const interaction = discordInteraction as unknown as CrowniclesInteraction;
+		interaction.isComponentsV2 = CrowniclesInteraction.prototype.isComponentsV2.bind(interaction);
 		interaction._channel = CrowniclesChannel.cast(discordInteraction.channel as GuildTextBasedChannel);
 		if (discordInteraction.isCommand() && "options" in discordInteraction) {
 			interaction.options = this.properCastOptions(discordInteraction.options as CommandInteractionOptionResolver);
