@@ -2,7 +2,7 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import {
-	TournamentCategory, TournamentLevelLimitMode, TournamentRewardSummary, TournamentStatus, TournamentTopCategory
+	TournamentCategory, TournamentLevelLimitMode, TournamentMenuSummary, TournamentRewardSummary, TournamentStatus, TournamentTopCategory
 } from "../../types/Tournament";
 
 export const TournamentErrorCodes = {
@@ -42,6 +42,26 @@ export class CommandTournamentContextPacketRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandTournamentAdminMenuPacketReq extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandTournamentAdminMenuPacketRes extends CrowniclesPacket {
+	tournaments!: TournamentMenuSummary[];
+
+	hasAvailableCode!: boolean;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandTournamentOwnerMenuPacketReq extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandTournamentOwnerMenuPacketRes extends CrowniclesPacket {
+	pausedTournaments!: TournamentMenuSummary[];
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandTournamentPausePacketReq extends CrowniclesPacket {
 	discordGuildId!: string;
 
@@ -61,7 +81,7 @@ export class CommandTournamentGenerateCodePacketRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandTournamentCreatePacketReq extends CrowniclesPacket {
-	code!: string;
+	code?: string;
 
 	registrationDays!: number;
 
@@ -88,29 +108,14 @@ export class CommandTournamentCreatePacketRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandTournamentRegisterPacketReq extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandTournamentRegisterPacketRes extends CrowniclesPacket {
-	tournamentId!: number;
-
-	category!: TournamentCategory;
-
-	attackGloryPoints!: number;
-
-	defenseGloryPoints!: number;
-
-	lateRegistration!: boolean;
-}
-
-@sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandTournamentStatusPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandTournamentStatusPacketRes extends CrowniclesPacket {
 	tournamentId!: number;
+
+	newlyRegistered!: boolean;
 
 	status!: TournamentStatus;
 
@@ -132,9 +137,9 @@ export class CommandTournamentStatusPacketRes extends CrowniclesPacket {
 
 	category?: TournamentCategory;
 
-	attackGloryPoints?: number;
+	totalGloryPoints?: number;
 
-	defenseGloryPoints?: number;
+	lateRegistration?: boolean;
 
 	rank?: number;
 

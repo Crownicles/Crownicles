@@ -6,10 +6,8 @@ import { TournamentCategory } from "../../types/Tournament";
 type TournamentFightPlayerReward = {
 	keycloakId: string;
 	category: TournamentCategory;
-	oldAttackGloryPoints: number;
-	newAttackGloryPoints: number;
-	oldDefenseGloryPoints: number;
-	newDefenseGloryPoints: number;
+	oldTotalGloryPoints: number;
+	newTotalGloryPoints: number;
 };
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
