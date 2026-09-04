@@ -20,7 +20,7 @@ import { ReportCityButtonStyles } from "../player/report/ReportCityMenuConstants
 import {
 	addMenuNavigation, addSeparator, buildTournamentConfirmationMenu,
 	buildTournamentSelectionMenu, changeMenu, closeMenu, createContainer,
-	createMenuCollector, getDayLabel,
+	createMenuCollector, getDayLabel, parseMenuId,
 	sendPacketFromMenu, TOURNAMENT_DURATION_OPTIONS, TOURNAMENT_LEVEL_CAP_OPTIONS,
 	TOURNAMENT_MENU_IDS, type TournamentMenuContext
 } from "./TournamentMenuUtils";
@@ -39,11 +39,6 @@ type DurationChoiceOptions = {
 	labelKey: string;
 	selectedDays: number | undefined;
 	customIdPrefix: string;
-};
-
-type CreationSelection = {
-	prefix: string;
-	apply: (state: TournamentCreationMenuState, customId: string) => void;
 };
 
 function getLanguage(context: TournamentMenuContext): TournamentMenuContext["interaction"]["userLanguage"] {
@@ -174,6 +169,15 @@ function isCreationComplete(state: TournamentCreationMenuState): boolean {
 		&& (!isCustomLevelMode(state.levelLimitMode) || state.levelCap !== undefined);
 }
 
+type CompleteTournamentCreationMenuState = TournamentCreationMenuState & {
+	registrationDays: number;
+	combatDays: number;
+};
+
+function isCompleteTournamentCreationMenuState(state: TournamentCreationMenuState): state is CompleteTournamentCreationMenuState {
+	return isCreationComplete(state);
+}
+
 function addLevelModeChoices(container: ContainerBuilder, context: TournamentMenuContext, state: TournamentCreationMenuState): void {
 	const lng = getLanguage(context);
 	addSeparator(container);
@@ -203,7 +207,7 @@ function addLevelCapChoices(container: ContainerBuilder, context: TournamentMenu
 }
 
 function buildCreationPacket(state: TournamentCreationMenuState): CrowniclesPacket | null {
-	if (!isCreationComplete(state) || state.registrationDays === undefined || state.combatDays === undefined) {
+	if (!isCompleteTournamentCreationMenuState(state)) {
 		return null;
 	}
 	return makePacket(CommandTournamentCreatePacketReq, {
@@ -215,40 +219,35 @@ function buildCreationPacket(state: TournamentCreationMenuState): CrowniclesPack
 }
 
 function applyCreationSelection(customId: string, state: TournamentCreationMenuState): boolean {
-	const selections: CreationSelection[] = [
+	const numericSelections: {
+		prefix: string;
+		stateKey: "registrationDays" | "combatDays" | "levelCap";
+	}[] = [
 		{
 			prefix: TOURNAMENT_MENU_IDS.CREATE_REGISTRATION_PREFIX,
-			apply: (currentState, selectedId): void => {
-				currentState.registrationDays = Number.parseInt(selectedId.slice(TOURNAMENT_MENU_IDS.CREATE_REGISTRATION_PREFIX.length), 10);
-			}
+			stateKey: "registrationDays"
 		},
 		{
 			prefix: TOURNAMENT_MENU_IDS.CREATE_COMBAT_PREFIX,
-			apply: (currentState, selectedId): void => {
-				currentState.combatDays = Number.parseInt(selectedId.slice(TOURNAMENT_MENU_IDS.CREATE_COMBAT_PREFIX.length), 10);
-			}
-		},
-		{
-			prefix: TOURNAMENT_MENU_IDS.CREATE_LEVEL_MODE_PREFIX,
-			apply: (currentState, selectedId): void => {
-				currentState.levelLimitMode = selectedId.slice(TOURNAMENT_MENU_IDS.CREATE_LEVEL_MODE_PREFIX.length) as TournamentLevelLimitMode;
-				if (!isCustomLevelMode(currentState.levelLimitMode)) {
-					currentState.levelCap = undefined;
-				}
-			}
+			stateKey: "combatDays"
 		},
 		{
 			prefix: TOURNAMENT_MENU_IDS.CREATE_LEVEL_CAP_PREFIX,
-			apply: (currentState, selectedId): void => {
-				currentState.levelCap = Number.parseInt(selectedId.slice(TOURNAMENT_MENU_IDS.CREATE_LEVEL_CAP_PREFIX.length), 10);
-			}
+			stateKey: "levelCap"
 		}
 	];
-	const selection = selections.find(candidate => customId.startsWith(candidate.prefix));
-	if (!selection) {
+	const numericSelection = numericSelections.find(selection => customId.startsWith(selection.prefix));
+	if (numericSelection) {
+		state[numericSelection.stateKey] = parseMenuId(customId, numericSelection.prefix);
+		return true;
+	}
+	if (!customId.startsWith(TOURNAMENT_MENU_IDS.CREATE_LEVEL_MODE_PREFIX)) {
 		return false;
 	}
-	selection.apply(state, customId);
+	state.levelLimitMode = customId.slice(TOURNAMENT_MENU_IDS.CREATE_LEVEL_MODE_PREFIX.length) as TournamentLevelLimitMode;
+	if (!isCustomLevelMode(state.levelLimitMode)) {
+		state.levelCap = undefined;
+	}
 	return true;
 }
 

@@ -61,24 +61,21 @@ async function editTournamentReply(context: PacketContext, buildEmbed: Tournamen
 	});
 }
 
-type TournamentMenuReply = {
-	titleKey: string;
-	buildDescription: (interaction: CrowniclesInteraction) => string;
-};
-
-async function editTournamentMenuReply(context: PacketContext, reply: TournamentMenuReply): Promise<void> {
+async function editTournamentMenuReply(
+	context: PacketContext,
+	titleKey: string,
+	buildDescription: (interaction: CrowniclesInteraction) => string
+): Promise<void> {
 	const interaction = getInteraction(context);
 	if (!interaction) {
 		return;
 	}
-	const content = {
-		title: i18n.t(reply.titleKey, { lng: interaction.userLanguage }),
-		description: reply.buildDescription(interaction)
-	};
+	const title = i18n.t(titleKey, { lng: interaction.userLanguage });
+	const description = buildDescription(interaction);
 	const container = new ContainerBuilder()
 		.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(StringUtils.formatHeader(content.title)),
-			new TextDisplayBuilder().setContent(content.description)
+			new TextDisplayBuilder().setContent(StringUtils.formatHeader(title)),
+			new TextDisplayBuilder().setContent(description)
 		);
 	await interaction.editReply({
 		embeds: [],
@@ -88,28 +85,22 @@ async function editTournamentMenuReply(context: PacketContext, reply: Tournament
 }
 
 export function handleTournamentGenerateCode(context: PacketContext, packet: CommandTournamentGenerateCodePacketRes): Promise<void> {
-	return editTournamentMenuReply(context, {
-		titleKey: "commands:tournament.codeTitle",
-		buildDescription: interaction => i18n.t("commands:tournament.codeCreated", {
-			lng: interaction.userLanguage,
-			code: packet.code,
-			expiresAt: dateDisplay(new Date(packet.expiresAt))
-		})
-	});
+	return editTournamentMenuReply(context, "commands:tournament.codeTitle", interaction => i18n.t("commands:tournament.codeCreated", {
+		lng: interaction.userLanguage,
+		code: packet.code,
+		expiresAt: dateDisplay(new Date(packet.expiresAt))
+	}));
 }
 
 export function handleTournamentCreate(context: PacketContext, packet: CommandTournamentCreatePacketRes): Promise<void> {
-	return editTournamentMenuReply(context, {
-		titleKey: "commands:tournament.createTitle",
-		buildDescription: interaction => i18n.t("commands:tournament.created", {
-			lng: interaction.userLanguage,
-			tournamentId: packet.tournamentId,
-			registrationEndsAt: dateDisplay(new Date(packet.registrationEndsAt)),
-			combatEndsAt: dateDisplay(new Date(packet.combatEndsAt)),
-			channel: `<#${packet.channelId}>`,
-			levelRule: getTournamentLevelRuleDescription(packet.levelLimitMode, packet.levelCap, interaction.userLanguage)
-		})
-	});
+	return editTournamentMenuReply(context, "commands:tournament.createTitle", interaction => i18n.t("commands:tournament.created", {
+		lng: interaction.userLanguage,
+		tournamentId: packet.tournamentId,
+		registrationEndsAt: dateDisplay(new Date(packet.registrationEndsAt)),
+		combatEndsAt: dateDisplay(new Date(packet.combatEndsAt)),
+		channel: `<#${packet.channelId}>`,
+		levelRule: getTournamentLevelRuleDescription(packet.levelLimitMode, packet.levelCap, interaction.userLanguage)
+	}));
 }
 
 function getTournamentRewardDescription(packet: CommandTournamentStatusPacketRes, lng: Language): string {
@@ -155,24 +146,18 @@ export async function handleTournamentStatus(context: PacketContext, packet: Com
 }
 
 export function handleTournamentResume(context: PacketContext, packet: CommandTournamentResumePacketRes): Promise<void> {
-	return editTournamentMenuReply(context, {
-		titleKey: "commands:tournament.resumeTitle",
-		buildDescription: interaction => i18n.t("commands:tournament.resumed", {
-			lng: interaction.userLanguage,
-			tournamentId: packet.tournamentId,
-			channel: `<#${packet.channelId}>`
-		})
-	});
+	return editTournamentMenuReply(context, "commands:tournament.resumeTitle", interaction => i18n.t("commands:tournament.resumed", {
+		lng: interaction.userLanguage,
+		tournamentId: packet.tournamentId,
+		channel: `<#${packet.channelId}>`
+	}));
 }
 
 export function handleTournamentCancel(context: PacketContext, packet: CommandTournamentCancelPacketRes): Promise<void> {
-	return editTournamentMenuReply(context, {
-		titleKey: "commands:tournament.cancelTitle",
-		buildDescription: interaction => i18n.t("commands:tournament.cancelled", {
-			lng: interaction.userLanguage,
-			tournamentId: packet.tournamentId
-		})
-	});
+	return editTournamentMenuReply(context, "commands:tournament.cancelTitle", interaction => i18n.t("commands:tournament.cancelled", {
+		lng: interaction.userLanguage,
+		tournamentId: packet.tournamentId
+	}));
 }
 
 export async function handleTournamentTop(context: PacketContext, packet: CommandTournamentTopPacketRes): Promise<void> {
@@ -258,10 +243,7 @@ export function handleTournamentError(context: PacketContext, packet: CommandTou
 		description: i18n.t(`commands:tournament.errors.${packet.errorCode}`, { lng: interaction.userLanguage })
 	});
 	if (interaction.isComponentsV2()) {
-		return editTournamentMenuReply(context, {
-			titleKey: "commands:tournament.errorTitle",
-			buildDescription: () => buildErrorContent().description
-		});
+		return editTournamentMenuReply(context, "commands:tournament.errorTitle", () => buildErrorContent().description);
 	}
 	const errorContent = buildErrorContent();
 	return editTournamentReply(context, _currentInteraction => new CrowniclesEmbed()
