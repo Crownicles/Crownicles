@@ -1,8 +1,9 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { ChannelType } from "discord.js";
+import {
+	MessageFlags, PermissionsBitField
+} from "discord.js";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { CommandTournamentResumePacketReq } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
+import { CommandTournamentOwnerMenuPacketReq } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
@@ -12,32 +13,29 @@ import {
 } from "./TournamentCommandUtils";
 
 async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<null> {
-	if (!isBotOwner(interaction)) {
-		return await replyTournamentError(interaction, "ownerOnly");
-	}
 	if (!interaction.guild) {
 		return await replyTournamentError(interaction, "guildOnly");
+	}
+	if (!isBotOwner(interaction)) {
+		return await replyTournamentError(interaction, "ownerOnly");
 	}
 	if (!hasMinimumGuildSize(interaction)) {
 		return await replyTournamentError(interaction, "guildTooSmall");
 	}
-	if (interaction.channel.type !== ChannelType.GuildText && interaction.channel.type !== ChannelType.GuildAnnouncement) {
-		return await replyTournamentError(interaction, "invalidChannel");
-	}
 	if (!isTournamentParentChannel(interaction) || !hasTournamentChannelPermissions(interaction)) {
 		return await replyTournamentError(interaction, "missingChannelPermissions");
 	}
-	const tournamentId = interaction.options.getInteger("tournament-id", true);
-	await interaction.deferReply();
-	sendTournamentPacket(await createTournamentContext(interaction, user), makePacket(CommandTournamentResumePacketReq, {
-		tournamentId
-	}));
+	await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+	sendTournamentPacket(
+		await createTournamentContext(interaction, user),
+		makePacket(CommandTournamentOwnerMenuPacketReq, {})
+	);
 	return null;
 }
 
 export const commandInfo: ICommand = {
-	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("tournament-resume")
-		.addIntegerOption(option => SlashCommandBuilderGenerator.generateOption("tournament-resume", "tournament-id", option).setRequired(true)) as SlashCommandBuilder,
+	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("tournament-owner")
+		.setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator.toString()),
 	getPacket,
 	mainGuildCommand: false
 };

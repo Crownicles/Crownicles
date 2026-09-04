@@ -27,8 +27,8 @@ export type TournamentStatusData = {
 	participantCount: number;
 	categoryCounts: Record<TournamentCategory, number>;
 	category?: TournamentCategory;
-	attackGloryPoints?: number;
-	defenseGloryPoints?: number;
+	totalGloryPoints?: number;
+	lateRegistration?: boolean;
 	rank?: number;
 	reward?: TournamentRewardSummary;
 };

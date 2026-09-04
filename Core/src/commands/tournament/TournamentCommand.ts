@@ -2,22 +2,25 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
+	CommandTournamentAdminMenuPacketReq, CommandTournamentAdminMenuPacketRes,
 	CommandTournamentCancelPacketReq, CommandTournamentCancelPacketRes,
 	CommandTournamentContextPacketReq, CommandTournamentContextPacketRes,
 	CommandTournamentCreatePacketReq, CommandTournamentCreatePacketRes,
 	CommandTournamentErrorPacketRes, CommandTournamentGenerateCodePacketReq,
-	CommandTournamentGenerateCodePacketRes, CommandTournamentRegisterPacketReq,
-	CommandTournamentRegisterPacketRes, CommandTournamentResumePacketReq,
+	CommandTournamentGenerateCodePacketRes, CommandTournamentResumePacketReq,
 	CommandTournamentResumePacketRes, CommandTournamentStatusPacketReq,
-	CommandTournamentStatusPacketRes, CommandTournamentPausePacketReq, TournamentErrorCodes
+	CommandTournamentStatusPacketRes, CommandTournamentOwnerMenuPacketReq,
+	CommandTournamentOwnerMenuPacketRes, CommandTournamentPausePacketReq, TournamentErrorCodes
 } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
+import { TournamentStatuses } from "../../../../Lib/src/types/Tournament";
+import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import Player, { Players } from "../../core/database/game/models/Player";
 import {
 	adminCommand, commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { TournamentDomainError } from "../../core/tournaments/TournamentErrors";
 import {
-	findTournamentForContext, getParticipant
+	findTournamentForContext, getParticipant, getTournamentAdminMenuData, getTournamentOwnerMenuData
 } from "../../core/tournaments/TournamentQueries";
 import {
 	pauseTournamentForChannel, resumeTournament
@@ -29,7 +32,6 @@ import { registerPlayer } from "../../core/tournaments/TournamentRegistration";
 import { getStatusData } from "../../core/tournaments/TournamentRanking";
 import { cancelTournament } from "../../core/tournaments/TournamentCancellation";
 import { claimTournamentReward } from "../../core/tournaments/TournamentRewards";
-import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 function pushTournamentError(response: CrowniclesPacket[], error: unknown, reason: string): void {
@@ -58,6 +60,26 @@ export default class TournamentCommand {
 			participant: participant !== null,
 			status: tournament?.status
 		}));
+	}
+
+	@adminCommand(CommandTournamentAdminMenuPacketReq, context => context.discord?.isGuildAdministrator === true)
+	static async adminMenu(response: CrowniclesPacket[], _packet: CommandTournamentAdminMenuPacketReq, context: PacketContext): Promise<void> {
+		try {
+			response.push(makePacket(CommandTournamentAdminMenuPacketRes, await getTournamentAdminMenuData(context.frontEndSubOrigin)));
+		}
+		catch (error) {
+			pushTournamentError(response, error, "Tournament admin menu retrieval failed");
+		}
+	}
+
+	@adminCommand(CommandTournamentOwnerMenuPacketReq, context => context.discord?.isBotOwner === true)
+	static async ownerMenu(response: CrowniclesPacket[], _packet: CommandTournamentOwnerMenuPacketReq, context: PacketContext): Promise<void> {
+		try {
+			response.push(makePacket(CommandTournamentOwnerMenuPacketRes, await getTournamentOwnerMenuData(context.frontEndSubOrigin)));
+		}
+		catch (error) {
+			pushTournamentError(response, error, "Tournament owner menu retrieval failed");
+		}
 	}
 
 	@adminCommand(CommandTournamentPausePacketReq, (): boolean => true)
@@ -106,38 +128,41 @@ export default class TournamentCommand {
 		}
 	}
 
-	@commandRequires(CommandTournamentRegisterPacketReq, {
+	@commandRequires(CommandTournamentStatusPacketReq, {
 		notBlocked: true,
 		level: TournamentConstants.MINIMUM_PLAYER_LEVEL,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
-		tournamentAccess: "registration"
-	})
-	static async register(response: CrowniclesPacket[], player: Player, _packet: CommandTournamentRegisterPacketReq, context: PacketContext): Promise<void> {
-		try {
-			const participant = await registerPlayer(context, player);
-			response.push(makePacket(CommandTournamentRegisterPacketRes, {
-				tournamentId: participant.tournamentId,
-				category: participant.category,
-				attackGloryPoints: participant.attackGloryPoints,
-				defenseGloryPoints: participant.defenseGloryPoints,
-				lateRegistration: participant.lateRegistration
-			}));
-		}
-		catch (error) {
-			pushTournamentError(response, error, "Tournament registration failed");
-		}
-	}
-
-	@commandRequires(CommandTournamentStatusPacketReq, {
-		notBlocked: false,
-		whereAllowed: CommandUtils.WHERE.EVERYWHERE,
 		tournamentAccess: "status"
 	})
 	static async status(response: CrowniclesPacket[], player: Player, _packet: CommandTournamentStatusPacketReq, context: PacketContext): Promise<void> {
 		try {
 			await claimTournamentReward(context, response, player);
-			response.push(makePacket(CommandTournamentStatusPacketRes, await getStatusData(context, player)));
+			const initialStatus = await getStatusData(context, player);
+			const contextTournament = await findTournamentForContext(context, false);
+			const canRegister = !initialStatus.category
+				&& contextTournament?.id === initialStatus.tournamentId
+				&& (initialStatus.status === TournamentStatuses.REGISTRATION || initialStatus.status === TournamentStatuses.COMBAT);
+			let newlyRegistered = false;
+			let shouldRefreshStatus = false;
+			if (canRegister) {
+				try {
+					await registerPlayer(context, player);
+					newlyRegistered = true;
+					shouldRefreshStatus = true;
+				}
+				catch (error) {
+					if (!(error instanceof TournamentDomainError) || error.code !== TournamentErrorCodes.ALREADY_REGISTERED) {
+						throw error;
+					}
+					shouldRefreshStatus = true;
+				}
+			}
+			const status = shouldRefreshStatus ? await getStatusData(context, player) : initialStatus;
+			response.push(makePacket(CommandTournamentStatusPacketRes, {
+				...status,
+				newlyRegistered
+			}));
 		}
 		catch (error) {
 			pushTournamentError(response, error, "Tournament status retrieval failed");

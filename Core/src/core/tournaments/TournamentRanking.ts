@@ -19,7 +19,7 @@ import { TournamentErrorCodes } from "../../../../Lib/src/packets/commands/Comma
 
 type TournamentParticipantStatusData = Partial<Pick<
 	TournamentStatusData,
-	"category" | "attackGloryPoints" | "defenseGloryPoints" | "rank" | "reward"
+	"category" | "totalGloryPoints" | "lateRegistration" | "rank" | "reward"
 >>;
 
 async function getParticipantRank(
@@ -59,8 +59,8 @@ export async function getStatusData(context: PacketContext, player: Player): Pro
 	const participantData: TournamentParticipantStatusData = {};
 	if (participant) {
 		participantData.category = participant.category;
-		participantData.attackGloryPoints = participant.attackGloryPoints;
-		participantData.defenseGloryPoints = participant.defenseGloryPoints;
+		participantData.totalGloryPoints = participant.getTotalGloryPoints();
+		participantData.lateRegistration = participant.lateRegistration;
 		if (rank !== undefined) {
 			participantData.rank = rank;
 		}
@@ -127,8 +127,6 @@ export async function getTopData(context: PacketContext, player: Player, request
 					playerKeycloakId: participant.keycloakId,
 					rank: pageStart + index + 1,
 					category,
-					attackGloryPoints: participant.attackGloryPoints,
-					defenseGloryPoints: participant.defenseGloryPoints,
 					totalGloryPoints: participant.getTotalGloryPoints(),
 					effectiveLevel: getEffectiveLevel(category, playersById.get(participant.playerId)?.level ?? 0, tournament)
 				}))

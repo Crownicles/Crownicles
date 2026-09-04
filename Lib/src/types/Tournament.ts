@@ -41,8 +41,6 @@ export type TournamentTopEntry = {
 	playerKeycloakId: string;
 	rank: number;
 	category: TournamentCategory;
-	attackGloryPoints: number;
-	defenseGloryPoints: number;
 	totalGloryPoints: number;
 	effectiveLevel: number;
 };
@@ -59,4 +57,13 @@ export type TournamentRewardSummary = {
 	money: number;
 	itemCount: number;
 	granted: boolean;
+};
+
+export type TournamentMenuSummary = {
+	id: number;
+	status: TournamentStatus;
+	discordChannelId: string;
+	registrationEndsAt: number;
+	combatEndsAt: number;
+	participantCount: number;
 };

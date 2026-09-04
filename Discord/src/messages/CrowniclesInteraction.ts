@@ -246,6 +246,10 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 
 	private _isV2 = false;
 
+	public isComponentsV2(): boolean {
+		return this._isV2;
+	}
+
 	private static isV2FlaggedOptions(options: string | MessagePayload | InteractionEditReplyOptions): boolean {
 		return typeof options === "object"
 			&& !(options instanceof MessagePayload)

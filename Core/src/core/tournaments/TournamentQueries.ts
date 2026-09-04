@@ -5,6 +5,10 @@ import {
 } from "./TournamentRules";
 import { Tournament } from "../database/game/models/Tournament";
 import { TournamentParticipant } from "../database/game/models/TournamentParticipant";
+import { TournamentCode } from "../database/game/models/TournamentCode";
+import {
+	TournamentStatuses, type TournamentMenuSummary
+} from "../../../../Lib/src/types/Tournament";
 
 export async function findTournamentForContext(context: PacketContext, includeFinished: boolean): Promise<Tournament | null> {
 	if (!Tournament.sequelize) {
@@ -46,4 +50,57 @@ export async function getParticipant(tournamentId: number, playerId: number): Pr
 			playerId
 		}
 	});
+}
+
+async function toTournamentMenuSummary(tournament: Tournament): Promise<TournamentMenuSummary> {
+	return {
+		id: tournament.id,
+		status: tournament.status,
+		discordChannelId: tournament.discordChannelId,
+		registrationEndsAt: tournament.registrationEndsAt.getTime(),
+		combatEndsAt: tournament.combatEndsAt.getTime(),
+		participantCount: await TournamentParticipant.count({
+			where: { tournamentId: tournament.id }
+		})
+	};
+}
+
+export async function getTournamentAdminMenuData(discordGuildId: string): Promise<{
+	tournaments: TournamentMenuSummary[];
+	hasAvailableCode: boolean;
+}> {
+	const tournaments = await Tournament.findAll({
+		where: {
+			discordGuildId,
+			status: { [Op.in]: ACTIVE_STATUSES }
+		},
+		order: [["id", "DESC"]]
+	});
+	const availableCode = await TournamentCode.findOne({
+		where: {
+			discordGuildId,
+			consumedAt: null,
+			expiresAt: { [Op.gt]: new Date() }
+		},
+		order: [["id", "DESC"]]
+	});
+	return {
+		tournaments: await Promise.all(tournaments.map(toTournamentMenuSummary)),
+		hasAvailableCode: availableCode !== null
+	};
+}
+
+export async function getTournamentOwnerMenuData(discordGuildId: string): Promise<{
+	pausedTournaments: TournamentMenuSummary[];
+}> {
+	const tournaments = await Tournament.findAll({
+		where: {
+			discordGuildId,
+			status: TournamentStatuses.PAUSED
+		},
+		order: [["id", "DESC"]]
+	});
+	return {
+		pausedTournaments: await Promise.all(tournaments.map(toTournamentMenuSummary))
+	};
 }

@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { MessageFlags } from "discord.js";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTournamentStatusPacketReq } from "../../../../Lib/src/packets/commands/CommandTournamentPacket";
@@ -11,7 +10,7 @@ import {
 } from "./TournamentCommandUtils";
 
 async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<null> {
-	await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+	await interaction.deferReply();
 	sendTournamentPacket(await createTournamentContext(interaction, user), makePacket(CommandTournamentStatusPacketReq, {}));
 	return null;
 }
