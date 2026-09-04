@@ -146,6 +146,29 @@ describe("city shop message handoff", () => {
 
 		expect(message.edit).toHaveBeenCalledOnce();
 	});
+
+	it("edits an ephemeral menu through the interaction", async () => {
+		const collector = { stop: vi.fn() };
+		const message = {
+			flags: { has: vi.fn().mockReturnValue(true) },
+			edit: vi.fn(),
+			createMessageComponentCollector: vi.fn(() => collector)
+		} as unknown as Message;
+		const interaction = {
+			editReply: vi.fn().mockResolvedValue(message)
+		};
+		const menu = {
+			containers: [],
+			createCollector: vi.fn(() => collector)
+		} as CrowniclesNestedMenu;
+		const nestedMenus = new CrowniclesNestedMenus(menu, new Map());
+
+		await nestedMenus.send(interaction as never);
+		await nestedMenus.stopCurrentCollector();
+
+		expect(interaction.editReply).toHaveBeenCalledTimes(2);
+		expect(message.edit).not.toHaveBeenCalled();
+	});
 });
 
 describe("city services", () => {
