@@ -257,7 +257,6 @@ describe("Tournament modules integration", () => {
 		const activeTournament = await manager.createTournament(buildContext(owner.keycloakId), activeCode.code, 1, 1);
 
 		const finishedContext = buildContext(owner.keycloakId);
-		finishedContext.discord!.channel = "finished-tournament-channel";
 		const finishedCode = await manager.generateCode(GUILD_ID);
 		const finishedTournament = await manager.createTournament(finishedContext, finishedCode.code, 1, 1);
 		await Tournament.update({ status: TournamentStatuses.COMPLETED }, { where: { id: finishedTournament.id } });
