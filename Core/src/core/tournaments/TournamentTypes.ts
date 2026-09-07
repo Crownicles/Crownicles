@@ -1,6 +1,6 @@
 import type { TournamentCategory } from "../../../../Lib/src/types/Tournament";
 
-export type TournamentCommandAccess = "none" | "participant" | "fight" | "status";
+export type TournamentCommandAccess = "none" | "participant" | "fight" | "status" | "bypass";
 
 export type TournamentFightContext = {
 	tournamentId: number;

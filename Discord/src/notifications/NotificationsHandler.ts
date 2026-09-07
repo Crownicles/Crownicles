@@ -206,7 +206,7 @@ export abstract class NotificationsHandler {
 					rank: packet.rank ?? i18n.t("notifications:tournament.unranked", { lng }),
 					xp: packet.xp ?? 0,
 					money: packet.money ?? 0,
-					itemCount: packet.itemCount ?? 0,
+					count: packet.itemCount ?? 0,
 					reason: packet.cancellationReason ?? ""
 				});
 				notificationType = NotificationsTypes.TOURNAMENT;
