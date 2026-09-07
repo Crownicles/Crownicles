@@ -15,6 +15,8 @@ import {
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { getCategoryCounts } from "./TournamentRules";
 
+const TEST_PLAYER_PREFIX = "tournament-test-";
+
 export type TournamentEventData = {
 	event: typeof TournamentNotificationEvents[keyof typeof TournamentNotificationEvents];
 	cancellationReason?: string;
@@ -142,7 +144,7 @@ export function sendTournamentEvent(
 	participants: TournamentParticipant[],
 	eventData: TournamentEventData
 ): void {
-	if (participants.length === 0) {
+	if (participants.some(participant => participant.keycloakId.startsWith(TEST_PLAYER_PREFIX))) {
 		return;
 	}
 	const categoryCounts = getCategoryCounts(participants);

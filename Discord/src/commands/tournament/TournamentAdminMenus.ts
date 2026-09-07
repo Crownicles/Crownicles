@@ -103,7 +103,7 @@ function buildAdminRootMenu(
 		i18n.t("commands:tournament.menu.adminTitle", { lng }),
 		i18n.t("commands:tournament.menu.adminDescription", {
 			lng,
-			activeCount: packet.tournaments.length
+			count: packet.tournaments.length
 		})
 	);
 	addCitySection({

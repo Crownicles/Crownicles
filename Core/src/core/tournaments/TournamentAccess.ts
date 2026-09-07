@@ -45,6 +45,9 @@ export async function verifyCommandAccess(
 	response: CrowniclesPacket[],
 	access: TournamentCommandAccess
 ): Promise<boolean> {
+	if (access === "bypass") {
+		return true;
+	}
 	await processDueTournaments();
 	const tournament = await findTournamentForContext(context, true);
 	if (!tournament) {

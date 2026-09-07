@@ -108,7 +108,10 @@ export default class TestCommand {
 	// Don't use adminCommand there because we need all the checks for the player
 	@commandRequires(CommandTestPacketReq, {
 		notBlocked: false,
-		whereAllowed: CommandUtils.WHERE.EVERYWHERE
+		whereAllowed: CommandUtils.WHERE.EVERYWHERE,
+
+		// Test commands must stay usable in a tournament channel, otherwise fixtures can no longer be cleaned up
+		tournamentAccess: "bypass"
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandTestPacketReq, context: PacketContext): Promise<void> {
 		if (!botConfig.TEST_MODE) {

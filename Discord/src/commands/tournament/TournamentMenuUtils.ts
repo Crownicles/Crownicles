@@ -235,7 +235,7 @@ export function getTournamentSummaryDescription(summary: TournamentMenuSummary, 
 	return i18n.t("commands:tournament.menu.tournamentSummary", {
 		lng,
 		status: i18n.t(`commands:tournament.statuses.${summary.status}`, { lng }),
-		participantCount: summary.participantCount,
+		count: summary.participantCount,
 		channel: `<#${summary.discordChannelId}>`,
 		phaseEnd
 	});

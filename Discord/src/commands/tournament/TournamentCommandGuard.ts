@@ -21,11 +21,14 @@ const TOURNAMENT_MANAGEMENT_COMMAND_NAMES = new Set([
 	"tournament-owner"
 ]);
 
+// Debug commands must stay usable in a tournament channel, otherwise test fixtures can no longer be cleaned up
+const TOURNAMENT_BYPASS_COMMAND_NAMES = new Set(["test"]);
+
 export function isAllowedInTournament(commandName: string, participant: boolean, _owner: boolean): boolean {
 	if (commandName === "tournament") {
 		return true;
 	}
-	if (TOURNAMENT_MANAGEMENT_COMMAND_NAMES.has(commandName)) {
+	if (TOURNAMENT_MANAGEMENT_COMMAND_NAMES.has(commandName) || TOURNAMENT_BYPASS_COMMAND_NAMES.has(commandName)) {
 		return true;
 	}
 	return participant && TOURNAMENT_COMMAND_NAMES.has(commandName);

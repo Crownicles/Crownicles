@@ -1,5 +1,5 @@
 import {
-	ContainerBuilder, TextDisplayBuilder
+	ContainerBuilder, EmbedField, TextDisplayBuilder
 } from "discord.js";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
@@ -27,7 +27,9 @@ import {
 import { DiscordCache } from "../../bot/DiscordCache";
 import { DiscordMQTT } from "../../bot/DiscordMQTT";
 import { CrowniclesPaginatedEmbed } from "../../messages/CrowniclesPaginatedEmbed";
-import type { TournamentLevelLimitMode } from "../../../../Lib/src/types/Tournament";
+import {
+	TournamentStatuses, type TournamentLevelLimitMode, type TournamentRewardSummary
+} from "../../../../Lib/src/types/Tournament";
 import { TopDataType } from "../../../../Lib/src/types/TopDataType";
 import { TopTiming } from "../../../../Lib/src/types/TopTimings";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
@@ -103,45 +105,116 @@ export function handleTournamentCreate(context: PacketContext, packet: CommandTo
 	}));
 }
 
-function getTournamentRewardDescription(packet: CommandTournamentStatusPacketRes, lng: Language): string {
-	if (!packet.reward) {
-		return i18n.t("commands:tournament.noReward", { lng });
-	}
-	return i18n.t(packet.reward.granted
+function getTournamentRewardDescription(reward: TournamentRewardSummary, lng: Language): string {
+	return i18n.t(reward.granted
 		? "commands:tournament.rewardGranted"
 		: "commands:tournament.rewardPending", {
 		lng,
-		xp: DisplayUtils.formatNumber(packet.reward.xp, lng),
-		money: DisplayUtils.formatNumber(packet.reward.money, lng),
-		itemCount: packet.reward.itemCount
+		xp: DisplayUtils.formatNumber(reward.xp, lng),
+		money: DisplayUtils.formatNumber(reward.money, lng),
+		itemCount: reward.itemCount
 	});
+}
+
+function getTournamentPhaseEnd(packet: CommandTournamentStatusPacketRes, lng: Language): string {
+	switch (packet.status) {
+		case TournamentStatuses.REGISTRATION:
+			return i18n.t("commands:tournament.phaseEndRegistration", {
+				lng,
+				date: finishInTimeDisplay(new Date(packet.registrationEndsAt))
+			});
+		case TournamentStatuses.COMBAT:
+			return i18n.t("commands:tournament.phaseEndCombat", {
+				lng,
+				date: finishInTimeDisplay(new Date(packet.combatEndsAt))
+			});
+		case TournamentStatuses.PAUSED:
+			return i18n.t("commands:tournament.phaseEndPaused", { lng });
+		default:
+			return i18n.t("commands:tournament.phaseEndOver", { lng });
+	}
+}
+
+function buildTournamentStatusFields(packet: CommandTournamentStatusPacketRes, lng: Language): EmbedField[] {
+	const participantsInCategory = packet.category
+		? i18n.t("commands:tournament.participantsInCategory", {
+			lng,
+			count: packet.categoryCounts[packet.category]
+		})
+		: "";
+	const fields: EmbedField[] = [
+		{
+			name: i18n.t("commands:tournament.tournamentField.fieldName", { lng }),
+			value: i18n.t("commands:tournament.tournamentField.fieldValue", {
+				lng,
+				channel: `<#${packet.discordChannelId}>`,
+				phaseEnd: getTournamentPhaseEnd(packet, lng),
+				levelRule: getTournamentLevelRuleDescription(packet.levelLimitMode, packet.levelCap, lng)
+			}),
+			inline: false
+		},
+		{
+			name: i18n.t("commands:tournament.participantsField.fieldName", { lng }),
+			value: `${i18n.t("commands:tournament.participantsField.fieldValue", {
+				lng,
+				count: packet.participantCount
+			})}${participantsInCategory}`,
+			inline: false
+		}
+	];
+	if (packet.category) {
+		fields.push({
+			name: i18n.t("commands:tournament.participationField.fieldName", { lng }),
+			value: i18n.t("commands:tournament.participationField.fieldValue", {
+				lng,
+				category: i18n.t(`commands:tournament.categories.${packet.category}`, { lng }),
+				rank: packet.rank ?? i18n.t("commands:tournament.unranked", { lng }),
+				categoryParticipantCount: packet.categoryCounts[packet.category],
+				totalGloryPoints: DisplayUtils.formatNumber(packet.totalGloryPoints ?? 0, lng)
+			}),
+			inline: false
+		});
+	}
+	else {
+		fields.push({
+			name: i18n.t("commands:tournament.notRegisteredField.fieldName", { lng }),
+			value: i18n.t("commands:tournament.notRegisteredField.fieldValue", { lng }),
+			inline: false
+		});
+	}
+
+	// The reward line is only meaningful once the tournament actually prepared one
+	if (packet.reward) {
+		fields.push({
+			name: i18n.t("commands:tournament.rewardField.fieldName", { lng }),
+			value: getTournamentRewardDescription(packet.reward, lng),
+			inline: false
+		});
+	}
+	return fields;
 }
 
 export async function handleTournamentStatus(context: PacketContext, packet: CommandTournamentStatusPacketRes): Promise<void> {
 	await editTournamentReply(context, interaction => {
 		const lng = interaction.userLanguage;
+		if (packet.newlyRegistered) {
+			return new CrowniclesEmbed()
+				.setTitle(i18n.t("commands:tournament.registerTitle", { lng }))
+				.setDescription(i18n.t("commands:tournament.registered", {
+					lng,
+					category: packet.category
+						? i18n.t(`commands:tournament.categories.${packet.category}`, { lng })
+						: i18n.t("commands:tournament.notRegistered", { lng }),
+					totalGloryPoints: DisplayUtils.formatNumber(packet.totalGloryPoints ?? 0, lng),
+					lateRegistration: packet.lateRegistration ? i18n.t("commands:tournament.lateRegistration", { lng }) : ""
+				}));
+		}
 		return new CrowniclesEmbed()
-			.setTitle(i18n.t(packet.newlyRegistered ? "commands:tournament.registerTitle" : "commands:tournament.statusTitle", { lng }))
-			.setDescription(i18n.t(packet.newlyRegistered ? "commands:tournament.registered" : "commands:tournament.status", {
+			.setTitle(i18n.t("commands:tournament.statusTitle", {
 				lng,
-				category: packet.category
-					? i18n.t(`commands:tournament.categories.${packet.category}`, { lng })
-					: i18n.t("commands:tournament.notRegistered", { lng }),
-				totalGloryPoints: DisplayUtils.formatNumber(packet.totalGloryPoints ?? 0, lng),
-				lateRegistration: packet.lateRegistration ? i18n.t("commands:tournament.lateRegistration", { lng }) : "",
-				server: interaction.guild?.name ?? packet.discordGuildId,
-				channel: `<#${packet.discordChannelId}>`,
-				tournamentId: packet.tournamentId,
-				status: i18n.t(`commands:tournament.statuses.${packet.status}`, { lng }),
-				registrationEndsAt: finishInTimeDisplay(new Date(packet.registrationEndsAt)),
-				combatEndsAt: finishInTimeDisplay(new Date(packet.combatEndsAt)),
-				levelRule: getTournamentLevelRuleDescription(packet.levelLimitMode, packet.levelCap, lng),
-				participantCount: packet.participantCount,
-				level50Count: packet.categoryCounts.level50,
-				level100Count: packet.categoryCounts.level100,
-				rank: packet.rank ?? i18n.t("commands:tournament.unranked", { lng }),
-				reward: getTournamentRewardDescription(packet, lng)
-			}));
+				status: i18n.t(`commands:tournament.statuses.${packet.status}`, { lng })
+			}))
+			.addFields(buildTournamentStatusFields(packet, lng));
 	});
 }
 
