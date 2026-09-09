@@ -48,8 +48,8 @@ export class GlobalMqttClient extends RestWsMqttClient {
 				if (packet.name.startsWith("SmallEvent") && packet.name.endsWith("Packet")) {
 					translatedPackets.push({
 						id: context.packetId,
-						name: SmallEventResultRes.name,
-						packet: await translateSmallEventResult(packet.name, packet.packet)
+						name: SmallEventResultRes.wireName,
+						packet: await translateSmallEventResult()
 					});
 					continue;
 				}

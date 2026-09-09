@@ -3,12 +3,9 @@ import { SmallEventResultRes } from "../../../../../WsPackets/src/fromServer/sma
 
 /**
  * Fallback used for small-event packets that do not have a dedicated mobile representation yet.
- * The event-specific Core packet is preserved in the payload so no resolution disappears between
- * the collector stop and the next report refresh.
+ * Only the fact that the event resolved crosses the wire: the Core payload is keyed by developer
+ * field names, so the app could not show it in the player's language.
  */
-export function translateSmallEventResult(eventName: string, data: object): Promise<SmallEventResultRes> {
-	return asyncMakeFromServerPacket(SmallEventResultRes, {
-		eventName,
-		data: data as Record<string, unknown>
-	});
+export function translateSmallEventResult(): Promise<SmallEventResultRes> {
+	return asyncMakeFromServerPacket(SmallEventResultRes, {});
 }

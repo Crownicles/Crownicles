@@ -71,7 +71,7 @@ export default function Index() {
 		setPingTime(null);
 		const startTime = Date.now();
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(PingReq, { time: startTime }), {
-			[PingRes.name]: (packet: PingRes) => {
+			[PingRes.wireName]: (packet: PingRes) => {
 				const elapsed = Date.now() - packet.time;
 				setPingTime(elapsed);
 				setPingLoading(false);

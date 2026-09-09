@@ -7,6 +7,8 @@ import { FromClientPacket } from "./FromClientPacket";
  * so a client cannot answer on behalf of somebody else.
  */
 export class ReactionCollectorReactReq extends FromClientPacket {
+	public static readonly wireName = "ReactionCollectorReactReq";
+
 	public collectorId!: string;
 
 	/**

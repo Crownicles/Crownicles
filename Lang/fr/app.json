@@ -107,7 +107,7 @@
     "smallEvent": {
       "eyebrow": "Rapport · mini-événement",
       "resultTitle": "Résultat du mini-événement",
-      "resultDescription": "Le mini-événement {{event}} est terminé.",
+      "resultDescription": "La rencontre est terminée, votre voyage reprend.",
       "continue": "Continuer"
     },
     "event": {

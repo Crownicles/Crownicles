@@ -1,6 +1,8 @@
 import { FromServerPacket } from "../FromServerPacket";
 
 export class ReportTravelSummaryRes extends FromServerPacket {
+	public static readonly wireName = "ReportTravelSummaryRes";
+
 	startMap!: {
 		id: number;
 		type: string;

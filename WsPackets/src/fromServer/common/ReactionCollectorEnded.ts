@@ -5,4 +5,5 @@ import { FromServerPacket } from "../FromServerPacket";
  * or was already closed. The matching interface must be dismissed rather than left waiting.
  */
 export class ReactionCollectorEnded extends FromServerPacket {
+	public static readonly wireName = "ReactionCollectorEnded";
 }

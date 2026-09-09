@@ -6,7 +6,8 @@ import {
 	ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
-import {compactCityDescription, formatMoney, materialSummary} from "@/src/collectors/CityText";
+import {compactCityDescription, materialSummary} from "@/src/collectors/CityText";
+import {formatMoney} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
 const CITY_SUBTITLE_KEYS: Partial<Record<ReactionCollectorReaction["type"], string>> = {

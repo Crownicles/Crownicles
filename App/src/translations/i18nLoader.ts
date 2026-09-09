@@ -77,6 +77,14 @@ function loadNativeLanguageAssets(resources: I18nResources): void {
 	resources[LANGUAGE.GERMAN].native = germanNative;
 }
 
+/**
+ * Language i18next currently resolves keys in. Read through the module that owns the instance so
+ * callers do not have to know how i18next is imported.
+ */
+export function currentLanguage(): string {
+	return i18next.language;
+}
+
 export function reloadI18n(languagesAssets = new Map<string, string>()): Promise<void> {
 	const reload = async (): Promise<void> => {
 		const resources = loadLanguageAssets(languagesAssets);

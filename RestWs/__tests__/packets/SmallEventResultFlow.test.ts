@@ -1,25 +1,17 @@
 import {describe, expect, it} from "vitest";
-import {makePacket} from "../../../Lib/src/packets/CrowniclesPacket";
-import {SmallEventAltarContributedPacket} from "../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
 import {SmallEventResultRes} from "../../../WsPackets/src/fromServer/smallEvents/SmallEventResultRes";
 import {translateSmallEventResult} from "../../src/packets/fromServer/translators/SmallEventResultServerTranslator";
 
 describe("generic small-event result over the WebSocket protocol", () => {
-	it("preserves an altar resolution when no dedicated translator exists", async () => {
-		const source = makePacket(SmallEventAltarContributedPacket, {
-			amount: 130,
-			blessingTriggered: false,
-			blessingType: 0,
-			newPoolAmount: 130,
-			poolThreshold: 500,
-			bonusGems: 0,
-			bonusItemGiven: false,
-			badgeAwarded: false
-		});
-
-		const result = await translateSmallEventResult(source.constructor.name, source);
+	/*
+	 * Core has one result packet per small event, keyed by developer field names. The app cannot
+	 * show those in the player's language, so the fallback announces the resolution and nothing
+	 * else: the collector closes and the report refreshes instead of the player being stuck.
+	 */
+	it("announces the resolution without leaking the Core payload", async () => {
+		const result = await translateSmallEventResult();
 
 		expect(result).toBeInstanceOf(SmallEventResultRes);
-		expect(result).toMatchObject({eventName: "SmallEventAltarContributedPacket", data: source});
+		expect(Object.keys(result)).toEqual([]);
 	});
 });

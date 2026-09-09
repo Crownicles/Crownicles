@@ -1,4 +1,4 @@
-import {FromServerPacket} from "../FromServerPacket";
+import { FromServerPacket } from "../FromServerPacket";
 
 /**
  * The core can reject a request while a reaction collector is still open. This is a normal
@@ -6,5 +6,7 @@ import {FromServerPacket} from "../FromServerPacket";
  * retry the report once the action is resolved.
  */
 export class Blocked extends FromServerPacket {
+	public static readonly wireName = "Blocked";
+
 	reasons!: string[];
 }

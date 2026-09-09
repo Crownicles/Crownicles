@@ -1,5 +1,7 @@
-import {ReactionCollectorDataKind, ReactionCollectorReactionKind} from "../ReactionCollectorProtocol";
-import {ItemWithDetails} from "../../../objects/ItemWithDetails";
+import {
+	ReactionCollectorDataKind, ReactionCollectorReactionKind
+} from "../ReactionCollectorProtocol";
+import { ItemWithDetails } from "../../../objects/ItemWithDetails";
 
 /**
  * The city shop is a collector in its own right.  Keeping its payload in the collector contract

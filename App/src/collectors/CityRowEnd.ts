@@ -1,5 +1,5 @@
 import {CITY_REACTION_KINDS, CityMobileItem, CityMobileSnapshot, CityMobileUpgradeItem, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
-import {formatMoney} from "@/src/collectors/CityText";
+import {formatMoney} from "@/src/display/Amounts";
 
 type UpgradeItemsResolver = (snapshot: CityMobileSnapshot | undefined) => CityMobileUpgradeItem[] | undefined;
 

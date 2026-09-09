@@ -2,8 +2,13 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 
-class TestRequest extends FromClientPacket {}
+// The identifiers deliberately differ from the class names: a minified bundle mangles the latter.
+class TestRequest extends FromClientPacket {
+	static readonly wireName = "test.request";
+}
 class TestResponse extends FromServerPacket {
+	static readonly wireName = "test.response";
+
 	value!: string;
 }
 
@@ -46,14 +51,15 @@ describe("WebSocketClient", () => {
 		const responseHandler = jest.fn();
 
 		client.sendPacket(new TestRequest(), {
-			[TestResponse.name]: responseHandler as never
+			[TestResponse.wireName]: responseHandler as never
 		});
 
 		const sentPacket = JSON.parse(socket.send.mock.calls[0][0] as string) as {id: string; name: string};
-		expect(sentPacket.name).toBe(TestRequest.name);
+		expect(sentPacket.name).toBe(TestRequest.wireName);
+		expect(sentPacket.name).not.toBe(TestRequest.name);
 		handleIncomingPacket(client, {
 			id: sentPacket.id,
-			name: TestResponse.name,
+			name: TestResponse.wireName,
 			packet: {value: "ok"}
 		});
 
@@ -64,16 +70,16 @@ describe("WebSocketClient", () => {
 		const {client, socket} = clientWithSocket();
 		const responseHandler = jest.fn();
 		const pushedHandler = jest.fn();
-		const unregister = client.registerPushedPacketHandler(TestResponse.name, pushedHandler);
+		const unregister = client.registerPushedPacketHandler(TestResponse.wireName, pushedHandler);
 
 		client.sendPacket(new TestRequest(), {
-			[TestResponse.name]: responseHandler as never
+			[TestResponse.wireName]: responseHandler as never
 		});
 
 		const sentPacket = JSON.parse(socket.send.mock.calls[0][0] as string) as {id: string};
 		handleIncomingPacket(client, {
 			id: sentPacket.id,
-			name: TestResponse.name,
+			name: TestResponse.wireName,
 			packet: {value: "ok"}
 		});
 
@@ -106,7 +112,7 @@ describe("WebSocketClient", () => {
 		const request = new TestRequest();
 		const responseHandler = jest.fn();
 
-		client.sendPacket(request, {[TestResponse.name]: responseHandler as never});
+		client.sendPacket(request, {[TestResponse.wireName]: responseHandler as never});
 
 		const [queuedPacket] = queuedPackets(client) as {id: string; packet: TestRequest}[];
 		expect(queuedPacket.packet).toBe(request);
@@ -119,7 +125,7 @@ describe("WebSocketClient", () => {
 		expect(sentPacket.id).toBe(queuedPacket.id);
 		handleIncomingPacket(client, {
 			id: sentPacket.id,
-			name: TestResponse.name,
+			name: TestResponse.wireName,
 			packet: {value: "reconnected"}
 		});
 

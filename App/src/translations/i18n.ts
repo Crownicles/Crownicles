@@ -2,7 +2,7 @@
 import * as i18next from "i18next";
 import {Language} from "@/src/translations/Language";
 import {AppIcons} from "@/src/AppIcons";
-import {reloadI18n} from "@/src/translations/i18nLoader";
+import {reloadI18n, currentLanguage} from "@/src/translations/i18nLoader";
 
 /**
  * Get the corresponding to emote for the given emote name
@@ -154,6 +154,14 @@ export class I18nCrownicles {
 
 	static async changeLanguage(language: Language): Promise<void> {
 		await i18next.changeLanguage(language);
+	}
+
+	/**
+	 * Language keys are currently resolved in. Number and date formatting follow it so they match
+	 * the text around them.
+	 */
+	static get language(): string {
+		return currentLanguage();
 	}
 }
 

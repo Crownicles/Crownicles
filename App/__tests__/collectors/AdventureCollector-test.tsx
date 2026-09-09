@@ -275,19 +275,12 @@ const outcomeScenarios: OutcomeScenario[] = [
 		}
 	},
 	{
-		name: "shows a generic result for an altar resolution",
-		renderOutcome: onContinue => <SmallEventOutcome
-			outcome={{
-				eventName: "SmallEventAltarContributedPacket",
-				data: {amount: 130, blessingTriggered: false}
-			}}
-			onContinue={onContinue}
-		/>,
+		name: "shows a fully translated result for a mini-event without a dedicated design",
+		renderOutcome: onContinue => <SmallEventOutcome onContinue={onContinue} />,
 		continueText: "app:adventure.smallEvent.continue",
 		assertView: () => {
 			expect(screen.getByText("app:adventure.smallEvent.resultTitle")).toBeTruthy();
-			expect(screen.getByText("Amount")).toBeTruthy();
-			expect(screen.getByText("130")).toBeTruthy();
+			expect(screen.getByText("app:adventure.smallEvent.resultDescription")).toBeTruthy();
 		}
 	}
 ];

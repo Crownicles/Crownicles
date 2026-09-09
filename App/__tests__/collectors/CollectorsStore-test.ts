@@ -57,7 +57,7 @@ describe("CollectorsStore", () => {
 		const stop = new ReactionCollectorStop();
 		Object.assign(stop, {collectorId: item.id, reason: COLLECTOR_STOP_REASONS.RESOLVED});
 		const registeredHandler = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
-		registeredHandler.dispatch(ReactionCollectorStop.name, stop);
+		registeredHandler.dispatch(ReactionCollectorStop.wireName, stop);
 		expect(collectorsStore.getSnapshot()).toHaveLength(0);
 		expect(collectorsStore.isAnswerPending(item.id)).toBe(false);
 		expect(resolution).toHaveBeenCalledWith("unknown");
@@ -82,7 +82,7 @@ describe("CollectorsStore", () => {
 		const unsubscribe = collectorsStore.subscribeToResolution(resolution);
 		const registeredHandler = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 
-		registeredHandler.dispatch(ReportStayInCity.name, new ReportStayInCity());
+		registeredHandler.dispatch(ReportStayInCity.wireName, new ReportStayInCity());
 
 		expect(resolution).toHaveBeenCalledWith(CITY_DATA_KINDS.CITY);
 		unsubscribe();
@@ -97,7 +97,7 @@ describe("CollectorsStore", () => {
 		const handlers = sendPacket.mock.calls[0]?.[1];
 		const response = new CommandGetCurrentReactionCollectorsRes();
 		response.collectors = [current];
-		handlers[CommandGetCurrentReactionCollectorsRes.name](response as never);
+		handlers[CommandGetCurrentReactionCollectorsRes.wireName](response as never);
 
 		expect(collectorsStore.getSnapshot()).toEqual([current]);
 		collectorsStore.removeExpired(Number.MAX_SAFE_INTEGER);

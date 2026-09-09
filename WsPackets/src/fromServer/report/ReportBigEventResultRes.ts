@@ -2,6 +2,8 @@ import { FromServerPacket } from "../FromServerPacket";
 
 /** The consequences applied after the player chooses a possibility in a big event. */
 export class ReportBigEventResultRes extends FromServerPacket {
+	public static readonly wireName = "ReportBigEventResultRes";
+
 	eventId!: number;
 
 	possibilityId!: string;

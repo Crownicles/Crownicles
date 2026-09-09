@@ -1,6 +1,7 @@
 import {ReactNode} from "react";
 import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
+import {formatMoney} from "@/src/display/Amounts";
 import {KeyValue, Panel, StatBar} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
@@ -10,10 +11,6 @@ type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCookin
 
 type SummaryRenderer = (snapshot: CityMobileSnapshot) => ReactNode;
 type OwnedHome = NonNullable<NonNullable<CityMobileSnapshot["home"]>["owned"]>;
-
-function formatMoney(value: number): string {
-	return `${value.toLocaleString("fr-FR")} ${AppIcons.getIcon("unitValues.money")}`;
-}
 
 function homeServices(home: OwnedHome): string {
 	return [

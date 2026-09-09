@@ -4,6 +4,7 @@ import {
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { readdirSync } from "fs";
 import { FromServerPacket } from "../../../../WsPackets/src/fromServer/FromServerPacket";
+import { FromServerPacketLike } from "../../../../WsPackets/src/MakePackets";
 
 /**
  * Properties saved for each server translator
@@ -19,9 +20,10 @@ type ServerTranslatorProperties = {
 const serverTranslators = new Map<string, ServerTranslatorProperties>();
 
 /**
- * Class type of packet coming from the server
+ * Class type of a packet coming from Core over MQTT. Core is not minified, so its class name is
+ * the identifier the broker carries.
  */
-type FromServerPacketLike<Packet extends FromServerPacket> = new () => Packet;
+type CrowniclesPacketLike<Packet extends CrowniclesPacket> = new () => Packet;
 
 /**
  * Function type of server translator
@@ -33,11 +35,11 @@ type ServerTranslatorFunction<T extends CrowniclesPacket, U extends FromServerPa
  * @param packet The packet type to translate from
  * @param proto The protobuf type to translate to
  */
-export const fromServerTranslator = <T extends CrowniclesPacket, U extends FromServerPacket>(packet: FromServerPacketLike<T>, proto: FromServerPacketLike<U>) =>
+export const fromServerTranslator = <T extends CrowniclesPacket, U extends FromServerPacket>(packet: CrowniclesPacketLike<T>, proto: FromServerPacketLike<U>) =>
 	<V>(_target: V, _prop: string, descriptor: TypedPropertyDescriptor<ServerTranslatorFunction<T, U>>): void => {
 		serverTranslators.set(packet.name, {
 			translatorFunc: descriptor.value! as unknown as ServerTranslatorFunction<CrowniclesPacket, FromServerPacket>,
-			protoName: proto.name
+			protoName: proto.wireName
 		});
 		CrowniclesLogger.info(`[ServerTranslator] Registered ${packet.name}`);
 	};

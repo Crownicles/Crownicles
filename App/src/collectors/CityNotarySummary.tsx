@@ -1,6 +1,6 @@
 import {ReactNode} from "react";
 import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
-import {formatMoney} from "@/src/collectors/CityText";
+import {formatMoney} from "@/src/display/Amounts";
 import {KeyValue, Panel} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 

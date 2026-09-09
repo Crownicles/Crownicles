@@ -200,6 +200,7 @@ sequenceDiagram
     <div class="grid">
       <article class="card wide blue"><h3>Deux identifiants, deux rôles</h3><p><strong>packetId</strong> relie une réponse à une requête mobile. <strong>keycloakId</strong> relie une connexion authentifiée au joueur Core. Le second ne doit pas être fourni par le client.</p></article>
       <article class="card wide gold"><h3>REST n'est pas le gameplay</h3><p>Dans la PR, REST sert surtout les hashes et téléchargements d'assets. Les profils, inventaires et interactions passent par WebSocket, puis MQTT.</p></article>
+      <article class="card wide green"><h3>Le nom transporté est déclaré, pas déduit</h3><p>Le champ <code>name</code> vient du <code>wireName</code> que chaque classe de <code>WsPackets</code> déclare, jamais de son nom de classe : l'app est publiée minifiée, où les noms de classes sont réécrits, et une app installée survit à un renommage back-end. Le gel est vérifié par <code>RestWs/__tests__/packets/WireNames.test.ts</code>.</p></article>
     </div>
   </section>
 
@@ -229,25 +230,31 @@ flowchart TD
     <div class="grid">
       <article class="card green"><h3>Contrat mobile</h3><ul><li><code>id</code> du collector</li><li><code>data</code> discriminée par <code>type</code></li><li><code>reactions[]</code> dont l'ordre compte</li><li><code>endTime</code> pour un timer local</li></ul></article>
       <article class="card coral"><h3>Référence Discord</h3><p>Discord possède déjà un registre de dizaines de familles : combat, inventaire, boutique, pets, guildes, expéditions et événements.</p></article>
-      <article class="card blue"><h3>Point encore à construire dans App</h3><p>Un store global doit recevoir les collectors spontanés, les restaurer après reconnexion, afficher les choix, envoyer la réaction et retirer les collectors terminés.</p></article>
+      <article class="card blue"><h3>Où en est l'app</h3><p><code>collectorsStore</code> reçoit les collectors spontanés, les restaure après reconnexion (<code>GetCurrentReactionCollectors</code>), les fait expirer localement et envoie la réaction. <strong>L'habillage visuel reste provisoire</strong> : il sera repris pour coller à <code>mobile.html</code>.</p></article>
     </div>
   </section>
 
   <section class="view" id="mobile">
-    <div class="view-head"><div><h2>À l'intérieur de l'app</h2><p>La PR installe le shell et un premier flux métier. Les onglets sont déjà nommés, mais plusieurs écrans restent des placeholders.</p></div></div>
+    <div class="view-head"><div><h2>À l'intérieur de l'app</h2><p>Le shell, le cache de state et le moteur de collectors sont en place. Aventure, profil et familier parlent au jeu ; arène et guilde restent des placeholders.</p></div></div>
     <div class="diagram"><pre class="mermaid">
 flowchart TB
   Root["app/_layout.tsx\nAuthProvider + PreferencesProvider"] --> Protected["(protected)/_layout.tsx\nredirect + assets + SafeArea"]
-  Protected --> Tabs["(tabs)/_layout.tsx\nProfileProvider + Tabs"]
+  Protected --> Tabs["(tabs)/_layout.tsx\nGameQueryProvider + CollectorsProvider"]
   Root --> Login["login.tsx\nKeycloakAuth.login()"]
+  Tabs --> Adventure["index.tsx\nReportReq + jetons + soin"]
   Tabs --> Profile["profile.tsx\nProfileReq + InventoryReq"]
-  Tabs --> Adventure["index.tsx\nplaceholder"]
+  Tabs --> Pet["pet.tsx\nPetReq"]
   Tabs --> Arena["arena.tsx\nplaceholder"]
   Tabs --> Guild["guild.tsx\nplaceholder"]
-  Tabs --> Pet["pet.tsx\nplaceholder"]
   Tabs --> Settings["settings/index.tsx\nlogout + dev ping"]
-  Profile --> WS["WebSocketClient"]
-  Profile --> Inventory["Inventory + Item\nprésentation locale"]
+  Adventure --> Store["collectorsStore\nsuivi, expiration, réponse"]
+  Adventure --> Events["reportEventStore\nissues d'évènements"]
+  Adventure --> Query["useGameQuery\ncache TanStack Query"]
+  Profile --> Query
+  Pet --> Query
+  Query --> Client["GameClient\nWebSocketClient"]
+  Store --> Client
+  Events --> Client
   Protected --> Assets["AssetsManager\nRestApi + FileSystem"]
   Assets --> I18n["i18n + AppIcons"]
   classDef route fill:#dceee4,stroke:#24735a,color:#18201d
@@ -255,12 +262,12 @@ flowchart TB
   classDef net fill:#dcecf4,stroke:#39729b,color:#18201d
   class Root,Protected,Tabs route
   class Login,Profile,Adventure,Arena,Guild,Pet,Settings screen
-  class WS,Inventory,Assets,I18n net
+  class Client,Store,Events,Query,Assets,I18n net
     </pre></div>
     <div class="grid">
-      <article class="card green"><h3>Déjà branché</h3><p>Session Keycloak, refresh token, reconnexion WebSocket, profile, inventory, assets, traductions et déconnexion.</p></article>
-      <article class="card coral"><h3>À brancher</h3><p>Aventure, combat, guildes, pets, écrans de création de personnage, erreurs métier et moteur générique de collectors.</p></article>
-      <article class="card gold"><h3>Principe d'évolution</h3><p>Les écrans doivent consommer des contrats <code>WsPackets</code> et des stores métier, sans connaître MQTT, les classes Core ou les composants Discord.</p></article>
+      <article class="card green"><h3>Déjà branché</h3><p>Session Keycloak, refresh token, reconnexion WebSocket, rapport de voyage, profil, inventaire, familier, assets, traductions et déconnexion.</p></article>
+      <article class="card coral"><h3>À brancher</h3><p>Combat, guildes, ville au-delà des collectors, création de personnage et les écrans de la maquette qui n'ont pas encore de commande exposée.</p></article>
+      <article class="card gold"><h3>Principe d'évolution</h3><p>Les écrans consomment des contrats <code>WsPackets</code> et des stores métier, sans connaître MQTT, les classes Core ou les composants Discord.</p></article>
     </div>
   </section>
 

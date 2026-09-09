@@ -36,10 +36,10 @@ export class GameClient {
 	): Promise<GameAnswer<Answer>> {
 		return new Promise(resolve => {
 			const handlers: { [packetName: string]: (packet: never) => void } = {
-				[expected.name]: (packet: Answer): void => resolve({ kind: "answer", packet })
+				[expected.wireName]: (packet: Answer): void => resolve({ kind: "answer", packet })
 			};
 			for (const alternative of alternatives) {
-				handlers[alternative.name] = (): void => resolve({ kind: "alternative", packetName: alternative.name });
+				handlers[alternative.wireName] = (): void => resolve({ kind: "alternative", packetName: alternative.wireName });
 			}
 
 			WebSocketClient.getInstance().sendPacket(request, handlers, {

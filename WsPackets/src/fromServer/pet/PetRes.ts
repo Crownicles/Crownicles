@@ -30,6 +30,8 @@ export type PetExpedition = {
 };
 
 export class PetRes extends FromServerPacket {
+	public static readonly wireName = "PetRes";
+
 	pet!: OwnedPet;
 
 	/**

@@ -35,7 +35,7 @@ describe("ReportEventStore", () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 		const result = outcome();
 
-		registry.dispatch(ReportBigEventResultRes.name, result);
+		registry.dispatch(ReportBigEventResultRes.wireName, result);
 
 		expect(reportEventStore.getSnapshot()).toBe(result);
 		expect(listener).toHaveBeenCalledTimes(1);
@@ -54,7 +54,7 @@ describe("ReportEventStore", () => {
 			level: "medium"
 		};
 
-		registry.dispatch(SmallEventLotteryWinRes.name, result);
+		registry.dispatch(SmallEventLotteryWinRes.wireName, result);
 
 		expect(reportEventStore.getLotterySnapshot()).toEqual({kind: "win", packet: result});
 		reportEventStore.clearLottery();
@@ -65,7 +65,7 @@ describe("ReportEventStore", () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 		const result: ReportUseTokensAcceptedRes = {tokensSpent: 2, isArrived: true};
 
-		registry.dispatch(ReportUseTokensAcceptedRes.name, result);
+		registry.dispatch(ReportUseTokensAcceptedRes.wireName, result);
 
 		expect(reportEventStore.getTokenSnapshot()).toEqual({kind: "used", packet: result});
 		reportEventStore.clearTokens();
@@ -74,12 +74,9 @@ describe("ReportEventStore", () => {
 
 	it("keeps a generic mini-event resolution until the player continues", () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
-		const result: SmallEventResultRes = {
-			eventName: "SmallEventAltarContributedPacket",
-			data: {amount: 130, blessingTriggered: false}
-		};
+		const result: SmallEventResultRes = {};
 
-		registry.dispatch(SmallEventResultRes.name, result);
+		registry.dispatch(SmallEventResultRes.wireName, result);
 
 		expect(reportEventStore.getSmallEventSnapshot()).toBe(result);
 		reportEventStore.clearSmallEvent();

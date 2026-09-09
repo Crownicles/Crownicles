@@ -4,6 +4,8 @@ import {
 } from "../collectors";
 
 export class ReactionCollectorCreation extends FromServerPacket {
+	public static readonly wireName = "ReactionCollectorCreation";
+
 	id!: string;
 
 	data!: ReactionCollectorData;

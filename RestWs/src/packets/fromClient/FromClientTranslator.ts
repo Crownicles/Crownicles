@@ -4,16 +4,12 @@ import {
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { readdirSync } from "fs";
 import { FromClientPacket } from "../../../../WsPackets/src/fromClient/FromClientPacket";
+import { FromClientPacketLike } from "../../../../WsPackets/src/MakePackets";
 
 /**
  * Map of all client translators
  */
 const clientTranslators = new Map<string, ClientTranslatorFunction<FromClientPacket, CrowniclesPacket>>();
-
-/**
- * Class type of packet coming from the client
- */
-type FromClientPacketLike<Packet extends FromClientPacket> = new () => Packet;
 
 /**
  * Function type of client translator
@@ -26,8 +22,8 @@ type ClientTranslatorFunction<T extends FromClientPacket, U extends CrowniclesPa
  */
 export const fromClientTranslator = <T extends FromClientPacket, U extends CrowniclesPacket>(packet: FromClientPacketLike<T>) =>
 	<V>(_target: V, _prop: string, descriptor: TypedPropertyDescriptor<ClientTranslatorFunction<T, U>>): void => {
-		clientTranslators.set(packet.name, descriptor.value! as unknown as ClientTranslatorFunction<FromClientPacket, CrowniclesPacket>);
-		CrowniclesLogger.info(`[ClientTranslator] Registered ${packet.name}`);
+		clientTranslators.set(packet.wireName, descriptor.value! as unknown as ClientTranslatorFunction<FromClientPacket, CrowniclesPacket>);
+		CrowniclesLogger.info(`[ClientTranslator] Registered ${packet.wireName}`);
 	};
 
 /**

@@ -29,9 +29,9 @@ class CollectorsStore {
 
 	public constructor() {
 		const client = WebSocketClient.getInstance();
-		client.registerPushedPacketHandler(ReactionCollectorCreation.name, this.track);
-		client.registerPushedPacketHandler(ReactionCollectorStop.name, this.stop);
-		client.registerPushedPacketHandler(ReportStayInCity.name, this.stayInCity);
+		client.registerPushedPacketHandler(ReactionCollectorCreation.wireName, this.track);
+		client.registerPushedPacketHandler(ReactionCollectorStop.wireName, this.stop);
+		client.registerPushedPacketHandler(ReportStayInCity.wireName, this.stayInCity);
 	}
 
 	public readonly subscribe = (listener: StoreListener): (() => void) => {
@@ -61,7 +61,7 @@ class CollectorsStore {
 		WebSocketClient.getInstance().sendPacket(
 			makeFromClientPacket(CommandGetCurrentReactionCollectorsReq, {}),
 			{
-				[CommandGetCurrentReactionCollectorsRes.name]: (packet: CommandGetCurrentReactionCollectorsRes): void => {
+				[CommandGetCurrentReactionCollectorsRes.wireName]: (packet: CommandGetCurrentReactionCollectorsRes): void => {
 					for (const collector of packet.collectors) {
 						this.track(collector);
 					}

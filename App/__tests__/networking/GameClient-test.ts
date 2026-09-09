@@ -4,11 +4,17 @@ import {AppConstants} from "@/src/AppConstants";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 
-class TestRequest extends FromClientPacket {}
+class TestRequest extends FromClientPacket {
+	static readonly wireName = "TestRequest";
+}
 class TestResponse extends FromServerPacket {
+	static readonly wireName = "TestResponse";
+
 	value!: string;
 }
-class TestAlternative extends FromServerPacket {}
+class TestAlternative extends FromServerPacket {
+	static readonly wireName = "TestAlternative";
+}
 
 describe("GameClient", () => {
 	beforeEach(() => {
@@ -18,7 +24,7 @@ describe("GameClient", () => {
 	it("resolves the expected answer", async () => {
 		const request = new TestRequest();
 		const sendPacket = jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation((_packet, handlers) => {
-			handlers[TestResponse.name]({value: "ok"} as never);
+			handlers[TestResponse.wireName]({value: "ok"} as never);
 		});
 
 		await expect(GameClient.request(request, TestResponse)).resolves.toEqual({
@@ -32,12 +38,12 @@ describe("GameClient", () => {
 
 	it("turns a legitimate alternative response into an empty answer", async () => {
 		jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation((_packet, handlers) => {
-			handlers[TestAlternative.name]({} as never);
+			handlers[TestAlternative.wireName]({} as never);
 		});
 
 		await expect(GameClient.request(new TestRequest(), TestResponse, [TestAlternative])).resolves.toEqual({
 			kind: "alternative",
-			packetName: TestAlternative.name
+			packetName: TestAlternative.wireName
 		});
 	});
 

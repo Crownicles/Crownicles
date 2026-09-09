@@ -2,6 +2,7 @@ import {Fragment, ReactNode, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {SHOP_DATA_KINDS, SHOP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
+import {AmountUnit, formatAmount} from "@/src/display/Amounts";
 import {isChoosable} from "@/src/collectors/CollectorLabels";
 import {shopItemName} from "@/src/collectors/ShopLabels";
 import {Hero, KeyValue, Note, Panel, Row, Screen, SectionHeader} from "@/src/design/Primitives";
@@ -15,12 +16,12 @@ type ShopCollectorProps = {
 
 type ShopItemReaction = Extract<ReactionCollectorCreation["reactions"][number], {type: typeof SHOP_REACTION_KINDS.ITEM}>;
 
-function currencyIcon(currency: "money" | "gem"): string {
+function currencyIcon(currency: AmountUnit): string {
 	return AppIcons.getIcon(`unitValues.${currency}`);
 }
 
-function currencyLabel(value: number, currency: "money" | "gem"): string {
-	return `${value.toLocaleString("fr-FR")} ${currencyIcon(currency)}`;
+function currencyLabel(value: number, currency: AmountUnit): string {
+	return formatAmount(value, currency);
 }
 
 function categoryLabel(categoryId: string, count: number): string {

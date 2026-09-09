@@ -3,6 +3,7 @@ import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
+import {wireNameOf} from "ws-packets/src/MakePackets";
 import {PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
 
 export type WebSocketPacketResponseHandler<T extends FromServerPacket> = (packet: T) => void;
@@ -340,7 +341,7 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 				if (queuedPacket) {
 					this.socket.send(JSON.stringify({
 						id: queuedPacket.id,
-						name: queuedPacket.packet.constructor.name,
+						name: wireNameOf(queuedPacket.packet),
 						data: queuedPacket.packet
 					}));
 				}

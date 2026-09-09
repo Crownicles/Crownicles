@@ -5,6 +5,8 @@ import { MainItem } from "../../objects/MainItem";
 import { PlantId } from "../../objects/PlantId";
 
 export class InventoryRes extends FromServerPacket {
+	public static readonly wireName = "InventoryRes";
+
 	foundPlayer!: boolean;
 
 	data?: {

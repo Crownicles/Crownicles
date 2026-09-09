@@ -19,6 +19,8 @@ export type CollectorStopReason = typeof COLLECTOR_STOP_REASONS[keyof typeof COL
  * instead of waiting forever.
  */
 export class ReactionCollectorStop extends FromServerPacket {
+	public static readonly wireName = "ReactionCollectorStop";
+
 	collectorId!: string;
 
 	reason!: CollectorStopReason;

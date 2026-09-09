@@ -77,6 +77,8 @@ type Cooking = {
 };
 
 export class ProfileRes extends FromServerPacket {
+	public static readonly wireName = "ProfileRes";
+
 	badges!: string[];
 
 	stats?: Stats;

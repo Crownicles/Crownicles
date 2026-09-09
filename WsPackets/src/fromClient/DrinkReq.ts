@@ -5,4 +5,5 @@ import { FromClientPacket } from "./FromClientPacket";
  * request carries no choice of its own.
  */
 export class DrinkReq extends FromClientPacket {
+	public static readonly wireName = "DrinkReq";
 }

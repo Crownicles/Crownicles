@@ -143,9 +143,9 @@ function renderMainItemStat(icon: string, stat: MainItemStat): ReactElement {
 
 function MainItemStats({item}: MainItemStatsProps): ReactElement | null {
 	const stats = [
-		{key: "attack", icon: "⚔️", stat: item.attack},
-		{key: "defense", icon: "🛡️", stat: item.defense},
-		{key: "speed", icon: "🚀", stat: item.speed}
+		{key: "attack", icon: AppIcons.getIcon("unitValues.attack"), stat: item.attack},
+		{key: "defense", icon: AppIcons.getIcon("unitValues.defense"), stat: item.defense},
+		{key: "speed", icon: AppIcons.getIcon("unitValues.speed"), stat: item.speed}
 	].filter(({stat}) => stat.baseValue + stat.upgradeValue > 0);
 
 	if (stats.length === 0) {

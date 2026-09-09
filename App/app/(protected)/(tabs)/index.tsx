@@ -53,6 +53,7 @@ import {
 import {
   EmptyState, Hero, KeyValue, Panel, QuickAction, QuickActions, Screen
 } from "@/src/design/Primitives";
+import {formatMoney} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
@@ -354,7 +355,7 @@ function CollectorOutcomeView({
 		);
 	}
 	if (smallEventOutcome) {
-		return <SmallEventOutcomeScreen outcome={smallEventOutcome} onContinue={reportEventStore.clearSmallEvent} />;
+		return <SmallEventOutcomeScreen onContinue={reportEventStore.clearSmallEvent} />;
 	}
 	return null;
 }
@@ -480,7 +481,7 @@ function AlterationPanel({packet, metrics, currentTime}: {
 			{packet.heal ? (
 				<KeyValue
 					label={i18n.t("app:adventure.alteration.fields.price")}
-					value={`${packet.heal.price.toLocaleString("fr-FR")} 💰`}
+					value={formatMoney(packet.heal.price)}
 				/>
 			) : null}
 		</Panel>
@@ -632,7 +633,7 @@ export default function Index(): ReactNode {
 
 	const reportIsWaitingForCollector = openCollectors.length > 0
 		&& (reportState.status === "loading"
-			|| reportState.status === "empty" && reportState.packetName === ReactionCollectorCreation.name);
+			|| reportState.status === "empty" && reportState.packetName === ReactionCollectorCreation.wireName);
 	const reportStatus = ReportStatusView({reportState, waitingForCollector: reportIsWaitingForCollector});
 	if (reportStatus) {
 		return reportStatus;
