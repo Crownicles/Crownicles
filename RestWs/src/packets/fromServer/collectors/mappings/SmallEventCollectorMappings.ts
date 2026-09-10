@@ -5,6 +5,10 @@ import {
 	ReactionCollectorBadPetReaction, ReactionCollectorBadPetSmallEventData
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { ReactionCollectorGardenerData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorGardener";
+import { ReactionCollectorCartData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCart";
+import {
+	ReactionCollectorFightPetData, ReactionCollectorFightPetReaction
+} from "../../../../../../Lib/src/packets/interaction/ReactionCollectorFightPet";
 import {
 	ReactionCollectorGobletsGameBiggestReaction,
 	ReactionCollectorGobletsGameCrackedReaction,
@@ -26,15 +30,21 @@ import {
 	ReactionCollectorPetFoodSendPetReaction,
 	ReactionCollectorPetFoodSmallEventData
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPetFoodSmallEvent";
+import { ReactionCollectorGoToPVEIslandData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
+import { ReactionCollectorShopSmallEventData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorShopSmallEvent";
+import { ReactionCollectorEpicShopSmallEventData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorEpicShopSmallEvent";
+import {
+	ReactionCollectorRecipeShopSmallEventData, RecipeShopSource
+} from "../../../../../../Lib/src/packets/interaction/ReactionCollectorRecipeShopSmallEvent";
 import {
 	ReactionCollectorWitchData, ReactionCollectorWitchReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorWitch";
 import {
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_FOOD_TYPES, SMALL_EVENT_GOBLET_IDS,
 	SMALL_EVENT_GOBLET_STRATEGIES, SMALL_EVENT_BAD_PET_ACTION_IDS,
-	SMALL_EVENT_REACTION_KINDS,
+	SMALL_EVENT_REACTION_KINDS, SMALL_EVENT_RECIPE_SHOP_SOURCES,
 	SmallEventBadPetActionId,
-	SmallEventGobletId, SmallEventGobletStrategy
+	SmallEventGobletId, SmallEventGobletStrategy, SmallEventRecipeShopSource
 } from "../../../../../../WsPackets/src/fromServer/collectors";
 import { PetSex } from "../../../../../../WsPackets/src/objects/OwnedPet";
 import {
@@ -51,6 +61,17 @@ function isBadPetActionId(id: string): id is SmallEventBadPetActionId {
 
 function isFoodType(foodType: string): foodType is typeof SMALL_EVENT_FOOD_TYPES[keyof typeof SMALL_EVENT_FOOD_TYPES] {
 	return Object.values(SMALL_EVENT_FOOD_TYPES).includes(foodType as typeof SMALL_EVENT_FOOD_TYPES[keyof typeof SMALL_EVENT_FOOD_TYPES]);
+}
+
+function toRecipeShopSource(source: RecipeShopSource): SmallEventRecipeShopSource | null {
+	switch (source) {
+		case RecipeShopSource.FARMER:
+			return SMALL_EVENT_RECIPE_SHOP_SOURCES.FARMER;
+		case RecipeShopSource.GASPARD_JO:
+			return SMALL_EVENT_RECIPE_SHOP_SOURCES.GASPARD_JO;
+		default:
+			return null;
+	}
 }
 
 function isGobletId(id: string | undefined): id is typeof SMALL_EVENT_GOBLET_IDS[keyof typeof SMALL_EVENT_GOBLET_IDS] {
@@ -82,6 +103,9 @@ export const smallEventReactionMappings: ReactionMapping[] = [
 	})),
 	defineReactionMapping(ReactionCollectorBadPetReaction, SMALL_EVENT_REACTION_KINDS.BAD_PET, reaction =>
 		isBadPetActionId(reaction.id) ? { id: reaction.id } : null),
+	defineReactionMapping(ReactionCollectorFightPetReaction, SMALL_EVENT_REACTION_KINDS.FIGHT_PET, reaction => ({
+		actionId: reaction.actionId
+	})),
 	defineReactionMapping(ReactionCollectorGobletsGameMetalReaction, SMALL_EVENT_REACTION_KINDS.GOBLETS_GAME, reaction => mapGobletReaction(reaction)),
 	defineReactionMapping(ReactionCollectorGobletsGameBiggestReaction, SMALL_EVENT_REACTION_KINDS.GOBLETS_GAME, reaction => mapGobletReaction(reaction)),
 	defineReactionMapping(ReactionCollectorGobletsGameSparklingReaction, SMALL_EVENT_REACTION_KINDS.GOBLETS_GAME, reaction => mapGobletReaction(reaction)),
@@ -113,6 +137,14 @@ export const smallEventDataMappings: DataMapping[] = [
 			...data.petNickname === undefined ? {} : { petNickname: data.petNickname }
 		};
 	}),
+	defineDataMapping(ReactionCollectorCartData, SMALL_EVENT_DATA_KINDS.CART, data => ({
+		displayedDestination: { ...data.displayedDestination },
+		price: data.price
+	})),
+	defineDataMapping(ReactionCollectorFightPetData, SMALL_EVENT_DATA_KINDS.FIGHT_PET, data => ({
+		petId: data.petId,
+		isFemale: data.isFemale
+	})),
 	defineDataMapping(ReactionCollectorGardenerData, SMALL_EVENT_DATA_KINDS.GARDENER, data => ({
 		seedId: data.seedId,
 		cost: data.cost,
@@ -136,6 +168,29 @@ export const smallEventDataMappings: DataMapping[] = [
 			foodType: data.foodType,
 			petSex: data.petSex
 		};
+	}),
+	defineDataMapping(ReactionCollectorGoToPVEIslandData, SMALL_EVENT_DATA_KINDS.PVE_ISLAND, data => ({
+		price: data.price,
+		energy: { ...data.energy }
+	})),
+	defineDataMapping(ReactionCollectorShopSmallEventData, SMALL_EVENT_DATA_KINDS.SHOP, data => ({
+		item: data.item,
+		price: data.price
+	})),
+	defineDataMapping(ReactionCollectorEpicShopSmallEventData, SMALL_EVENT_DATA_KINDS.EPIC_SHOP, data => ({
+		item: data.item,
+		price: data.price,
+		tip: data.tip
+	})),
+	defineDataMapping(ReactionCollectorRecipeShopSmallEventData, SMALL_EVENT_DATA_KINDS.RECIPE_SHOP, data => {
+		const source = toRecipeShopSource(data.source);
+		return source
+			? {
+				source,
+				recipe: data.recipe,
+				recipeCost: data.recipeCost
+			}
+			: null;
 	}),
 	defineDataMapping(ReactionCollectorWitchData, SMALL_EVENT_DATA_KINDS.WITCH, () => ({}))
 ];

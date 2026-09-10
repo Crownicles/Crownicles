@@ -7,6 +7,8 @@ import {
 	SmallEventLotteryWinRes
 } from "ws-packets/src/fromServer/smallEvents/SmallEventLotteryRes";
 import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
+import {SmallEventWitchResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventWitchResultRes";
+import {SmallEventChoiceResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventChoiceResultRes";
 import {
 	ReportTokenMerchantBoughtRes,
 	ReportTokenMerchantCannotAffordRes,
@@ -28,13 +30,19 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 type Listener = () => void;
 
+const SILENT_SMALL_EVENT_RESULTS = new Set(["SmallEventSpaceInitialPacket"]);
+const SILENT_SMALL_EVENT_SUFFIXES = ["RefusePacket", "NoAnswerPacket"];
+
+function shouldPresentAutomaticSmallEvent(outcome: SmallEventResultRes): boolean {
+	return !SILENT_SMALL_EVENT_RESULTS.has(outcome.eventName)
+		&& !SILENT_SMALL_EVENT_SUFFIXES.some(suffix => outcome.eventName.endsWith(suffix));
+}
+
 export type LotteryOutcome =
 	| {kind: "noAnswer"; packet: SmallEventLotteryNoAnswerRes}
 	| {kind: "poor"; packet: SmallEventLotteryPoorRes}
 	| {kind: "win"; packet: SmallEventLotteryWinRes}
 	| {kind: "lose"; packet: SmallEventLotteryLoseRes};
-
-export type SmallEventOutcome = SmallEventResultRes;
 
 export type TokenOutcome =
 	| {kind: "used"; packet: ReportUseTokensAcceptedRes}
@@ -46,6 +54,9 @@ export type TokenOutcome =
 	| {kind: "cannotAfford"; packet: ReportTokenMerchantCannotAffordRes}
 	| {kind: "charity"; packet: ReportTokenMerchantCharityRes}
 	| {kind: "charityAlreadyUsed"; packet: ReportTokenMerchantCharityAlreadyUsedRes};
+
+export type TokenOutcomeRequiringAcknowledgement = Exclude<TokenOutcome,
+{kind: "used" | "useRefused" | "merchantRefused"}>;
 
 export type HealOutcome =
 	| {kind: "accepted"; packet: ReportBuyHealAcceptedRes}
@@ -62,7 +73,11 @@ class ReportEventStore {
 
 	private lotteryOutcome: LotteryOutcome | null = null;
 
-	private smallEventOutcome: SmallEventOutcome | null = null;
+	private witchOutcome: SmallEventWitchResultRes | null = null;
+
+	private choiceOutcome: SmallEventChoiceResultRes | null = null;
+
+	private automaticOutcome: SmallEventResultRes | null = null;
 
 	private tokenOutcome: TokenOutcome | null = null;
 
@@ -77,7 +92,9 @@ class ReportEventStore {
 		client.registerPushedPacketHandler<SmallEventLotteryPoorRes>(SmallEventLotteryPoorRes.wireName, packet => this.setLotteryOutcome({kind: "poor", packet}));
 		client.registerPushedPacketHandler<SmallEventLotteryWinRes>(SmallEventLotteryWinRes.wireName, packet => this.setLotteryOutcome({kind: "win", packet}));
 		client.registerPushedPacketHandler<SmallEventLotteryLoseRes>(SmallEventLotteryLoseRes.wireName, packet => this.setLotteryOutcome({kind: "lose", packet}));
-		client.registerPushedPacketHandler<SmallEventResultRes>(SmallEventResultRes.wireName, this.setSmallEventOutcome);
+		client.registerPushedPacketHandler<SmallEventResultRes>(SmallEventResultRes.wireName, this.setAutomaticOutcome);
+		client.registerPushedPacketHandler<SmallEventWitchResultRes>(SmallEventWitchResultRes.wireName, this.setWitchOutcome);
+		client.registerPushedPacketHandler<SmallEventChoiceResultRes>(SmallEventChoiceResultRes.wireName, this.setChoiceOutcome);
 		client.registerPushedPacketHandler<ReportUseTokensAcceptedRes>(ReportUseTokensAcceptedRes.wireName, packet => this.setTokenOutcome({kind: "used", packet}));
 		client.registerPushedPacketHandler<ReportUseTokensRefusedRes>(ReportUseTokensRefusedRes.wireName, packet => this.setTokenOutcome({kind: "useRefused", packet}));
 		client.registerPushedPacketHandler<ReportTokenMerchantBoughtRes>(ReportTokenMerchantBoughtRes.wireName, packet => this.setTokenOutcome({kind: "bought", packet}));
@@ -104,7 +121,11 @@ class ReportEventStore {
 
 	public readonly getLotterySnapshot = (): LotteryOutcome | null => this.lotteryOutcome;
 
-	public readonly getSmallEventSnapshot = (): SmallEventOutcome | null => this.smallEventOutcome;
+	public readonly getWitchSnapshot = (): SmallEventWitchResultRes | null => this.witchOutcome;
+
+	public readonly getChoiceSnapshot = (): SmallEventChoiceResultRes | null => this.choiceOutcome;
+
+	public readonly getAutomaticSnapshot = (): SmallEventResultRes | null => this.automaticOutcome;
 
 	public readonly getTokenSnapshot = (): TokenOutcome | null => this.tokenOutcome;
 
@@ -126,11 +147,27 @@ class ReportEventStore {
 		this.notify();
 	};
 
-	public readonly clearSmallEvent = (): void => {
-		if (this.smallEventOutcome === null) {
+	public readonly clearWitch = (): void => {
+		if (this.witchOutcome === null) {
 			return;
 		}
-		this.smallEventOutcome = null;
+		this.witchOutcome = null;
+		this.notify();
+	};
+
+	public readonly clearChoice = (): void => {
+		if (this.choiceOutcome === null) {
+			return;
+		}
+		this.choiceOutcome = null;
+		this.notify();
+	};
+
+	public readonly clearAutomatic = (): void => {
+		if (this.automaticOutcome === null) {
+			return;
+		}
+		this.automaticOutcome = null;
 		this.notify();
 	};
 
@@ -160,8 +197,21 @@ class ReportEventStore {
 		this.notify();
 	};
 
-	private readonly setSmallEventOutcome = (outcome: SmallEventOutcome): void => {
-		this.smallEventOutcome = outcome;
+	private readonly setWitchOutcome = (outcome: SmallEventWitchResultRes): void => {
+		this.witchOutcome = outcome;
+		this.notify();
+	};
+
+	private readonly setChoiceOutcome = (outcome: SmallEventChoiceResultRes): void => {
+		this.choiceOutcome = outcome;
+		this.notify();
+	};
+
+	private readonly setAutomaticOutcome = (outcome: SmallEventResultRes): void => {
+		if (!shouldPresentAutomaticSmallEvent(outcome)) {
+			return;
+		}
+		this.automaticOutcome = outcome;
 		this.notify();
 	};
 
@@ -192,8 +242,16 @@ export function useLotteryOutcome(): LotteryOutcome | null {
 	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getLotterySnapshot, reportEventStore.getLotterySnapshot);
 }
 
-export function useSmallEventOutcome(): SmallEventOutcome | null {
-	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getSmallEventSnapshot, reportEventStore.getSmallEventSnapshot);
+export function useWitchOutcome(): SmallEventWitchResultRes | null {
+	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getWitchSnapshot, reportEventStore.getWitchSnapshot);
+}
+
+export function useSmallEventChoiceOutcome(): SmallEventChoiceResultRes | null {
+	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getChoiceSnapshot, reportEventStore.getChoiceSnapshot);
+}
+
+export function useAutomaticSmallEventOutcome(): SmallEventResultRes | null {
+	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getAutomaticSnapshot, reportEventStore.getAutomaticSnapshot);
 }
 
 export function useTokenOutcome(): TokenOutcome | null {

@@ -1,6 +1,9 @@
 import {ReactNode, useEffect, useState} from "react";
 import {View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import {
+	BIG_EVENT_DATA_KINDS, BIG_EVENT_END_POSSIBILITY_ID, BIG_EVENT_REACTION_KINDS
+} from "ws-packets/src/fromServer/collectors";
 import {Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 import {
@@ -31,13 +34,15 @@ export function CollectorChoices({collector, onChoose, submitting = false}: {
 	submitting?: boolean;
 }): ReactNode {
 	const secondsLeft = useSecondsLeft(collector.endTime);
-	const [answered, setAnswered] = useState(false);
-	const locked = answered || submitting || secondsLeft === 0;
+	const [answeredCollectorId, setAnsweredCollectorId] = useState<string | null>(null);
+	const locked = answeredCollectorId === collector.id || submitting || secondsLeft === 0;
 	const choices = collector.reactions.map((reaction, index) => ({
 		reaction,
 		index,
 		key: `${collector.id}-${index}`
-	}));
+	})).filter(choice => !(collector.data.type === BIG_EVENT_DATA_KINDS.COLLECTOR
+		&& choice.reaction.type === BIG_EVENT_REACTION_KINDS.POSSIBILITY
+		&& choice.reaction.data.name === BIG_EVENT_END_POSSIBILITY_ID));
 
 	return (
 		<Panel>
@@ -48,7 +53,7 @@ export function CollectorChoices({collector, onChoose, submitting = false}: {
 						key={choice.key}
 						disabled={locked || !choosable}
 						onPress={locked || !choosable ? undefined : (): void => {
-							setAnswered(true);
+							setAnsweredCollectorId(collector.id);
 							onChoose(choice.index);
 						}}
 						title={reactionLabel(choice.reaction, collector.data)}

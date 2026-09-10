@@ -64,7 +64,7 @@ describe("CollectorsStore", () => {
 		unsubscribe();
 	});
 
-	it("notifies the app when a collector expires locally", () => {
+	it("drops an expired collector without asking for a refresh the server will announce", () => {
 		const resolution = jest.fn();
 		const unsubscribe = collectorsStore.subscribeToResolution(resolution);
 		const item = collector("collector-expired");
@@ -73,7 +73,7 @@ describe("CollectorsStore", () => {
 		collectorsStore.removeExpired(Number.MAX_SAFE_INTEGER);
 
 		expect(collectorsStore.getSnapshot()).toHaveLength(0);
-		expect(resolution).toHaveBeenCalledWith("unknown");
+		expect(resolution).not.toHaveBeenCalled();
 		unsubscribe();
 	});
 

@@ -26,6 +26,7 @@ import {
 } from "ws-packets/src/fromServer/report/ReportHealRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {Blocked} from "ws-packets/src/fromServer/common/Blocked";
+import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
 import {AppIcons} from "@/src/AppIcons";
 import {GameAnswer, GameClient} from "@/src/networking/GameClient";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
@@ -36,23 +37,26 @@ import {
 	BigEventOutcome as BigEventOutcomeScreen,
 	HealOutcome as HealOutcomeScreen,
 	LotteryOutcome as LotteryOutcomeScreen,
-	SmallEventOutcome as SmallEventOutcomeScreen,
-	TokenOutcome as TokenOutcomeScreen
+	TokenOutcome as TokenOutcomeScreen,
+	WitchOutcome as WitchOutcomeScreen
 } from "@/src/collectors/AdventureCollector";
 import type {
 	LotteryOutcome as LotteryOutcomeData,
-	SmallEventOutcome as SmallEventOutcomeData,
 	TokenOutcome as TokenOutcomeData
 } from "@/src/collectors/ReportEventStore";
 import {
 	isAdventureScreenCollector, isBigEventCollector, isBuyHealCollector, isTokenUseCollector
 } from "@/src/collectors/CollectorRouting";
 import {
-	reportEventStore, useBigEventOutcome, useHealOutcome, useLotteryOutcome, useSmallEventOutcome, useTokenOutcome
+	reportEventStore, TokenOutcomeRequiringAcknowledgement, useBigEventOutcome, useHealOutcome,
+	useAutomaticSmallEventOutcome, useLotteryOutcome, useSmallEventChoiceOutcome, useTokenOutcome, useWitchOutcome
 } from "@/src/collectors/ReportEventStore";
+import {SmallEventChoiceOutcome as SmallEventChoiceOutcomeScreen} from "@/src/collectors/SmallEventChoiceOutcome";
+import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/src/collectors/AutomaticSmallEventOutcome";
 import {
-  EmptyState, Hero, KeyValue, Panel, QuickAction, QuickActions, Screen
+  EmptyState, Hero, KeyValue, Note, Panel, QuickAction, QuickActions, Screen, SectionHeader
 } from "@/src/design/Primitives";
+import {PlayerVitals} from "@/src/components/PlayerVitals";
 import {formatMoney} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -61,6 +65,8 @@ import {i18n} from "@/src/translations/i18n";
 const MILLISECONDS_PER_SECOND = 1_000;
 const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
+const SMALL_EVENT_REPORT_RETRY_DELAY = 100;
+const MAX_SMALL_EVENT_REPORT_RETRIES = 3;
 const MILLISECONDS_PER_MINUTE = MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE;
 const FULL_PROGRESS = 1;
 const NO_PROGRESS = 0;
@@ -140,8 +146,17 @@ function useCurrentTime(): number {
   return currentTime;
 }
 
-function requestReport(): Promise<GameAnswer<ReportTravelSummaryRes>> {
-	return GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes, [ReactionCollectorCreation, Blocked]);
+export async function requestReport(retriesLeft = MAX_SMALL_EVENT_REPORT_RETRIES): Promise<GameAnswer<ReportTravelSummaryRes>> {
+	const result = await GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes, [
+		ReactionCollectorCreation,
+		SmallEventResultRes,
+		Blocked
+	]);
+	if (result.kind !== "alternative" || result.packetName !== SmallEventResultRes.wireName || retriesLeft === 0) {
+		return result;
+	}
+	await new Promise(resolve => setTimeout(resolve, SMALL_EVENT_REPORT_RETRY_DELAY));
+	return requestReport(retriesLeft - 1);
 }
 
 function requestTokenAdvance(): Promise<GameAnswer<ReactionCollectorCreation>> {
@@ -211,7 +226,7 @@ function formatDuration(milliseconds: number): string {
   const durationKey = hours > NO_PROGRESS
     ? "app:adventure.duration.hoursMinutes"
     : "app:adventure.duration.minutes";
-  return i18n.t(durationKey, hours > NO_PROGRESS ? {hours, minutes} : {minutes: totalMinutes});
+	return i18n.t(durationKey, hours > NO_PROGRESS ? {hours, minutes} : {count: totalMinutes});
 }
 
 function mapName(map: MapPoint): string {
@@ -258,13 +273,24 @@ function TravelPath({packet, progress}: { packet: ReportTravelSummaryRes; progre
 }
 
 function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): string {
-  if (packet.nextStopTime > packet.arriveTime) {
-    return i18n.t("app:adventure.noNextStop");
-  }
   if (packet.nextStopTime <= currentTime) {
     return i18n.t("app:adventure.now");
   }
   return formatDuration(packet.nextStopTime - currentTime);
+}
+
+function hasNextStop(packet: ReportTravelSummaryRes): boolean {
+	return packet.nextStopTime <= packet.arriveTime;
+}
+
+/**
+ * Tied to the next stop rather than drawn at random: the screen ticks every second to move the
+ * traveller along the path, and an advice changing under the player's eyes reads as a glitch.
+ * Reaching a stop brings a new one.
+ */
+function travelAdvice(stopTime: number): string {
+	const advices = i18n.tArray("advices:advices");
+	return advices.length === 0 ? "" : advices[Math.abs(stopTime) % advices.length];
 }
 
 export function reportRefreshDelay(packet: ReportTravelSummaryRes, now = Date.now()): number | null {
@@ -302,7 +328,9 @@ type CollectorOutcomeViewProps = {
 	adventureCollector: ReactionCollectorCreation | undefined;
 	bigEventOutcome: ReportBigEventResultRes | null;
 	lotteryOutcome: LotteryOutcomeData | null;
-	smallEventOutcome: SmallEventOutcomeData | null;
+	witchOutcome: ReturnType<typeof useWitchOutcome>;
+	choiceOutcome: ReturnType<typeof useSmallEventChoiceOutcome>;
+	automaticOutcome: ReturnType<typeof useAutomaticSmallEventOutcome>;
 	tokenOutcome: TokenOutcomeData | null;
 	healOutcome: ReturnType<typeof useHealOutcome>;
 	reactToCollector: (collectorId: string, reactionIndex: number) => void;
@@ -311,12 +339,20 @@ type CollectorOutcomeViewProps = {
 	continueAfterHealOutcome: () => void;
 };
 
+export function tokenOutcomeNeedsAcknowledgement(outcome: TokenOutcomeData): outcome is TokenOutcomeRequiringAcknowledgement {
+	return outcome.kind !== "used"
+		&& outcome.kind !== "useRefused"
+		&& outcome.kind !== "merchantRefused";
+}
+
 function CollectorOutcomeView({
 	bigEventCollector,
 	adventureCollector,
 	bigEventOutcome,
 	lotteryOutcome,
-	smallEventOutcome,
+	witchOutcome,
+	choiceOutcome,
+	automaticOutcome,
 	tokenOutcome,
 	healOutcome,
 	reactToCollector,
@@ -339,7 +375,16 @@ function CollectorOutcomeView({
 	if (lotteryOutcome) {
 		return <LotteryOutcomeScreen outcome={lotteryOutcome} onContinue={reportEventStore.clearLottery} />;
 	}
-	if (tokenOutcome) {
+	if (witchOutcome) {
+		return <WitchOutcomeScreen outcome={witchOutcome} onContinue={reportEventStore.clearWitch} />;
+	}
+	if (choiceOutcome) {
+		return <SmallEventChoiceOutcomeScreen outcome={choiceOutcome} onContinue={reportEventStore.clearChoice} />;
+	}
+	if (automaticOutcome) {
+		return <AutomaticSmallEventOutcomeScreen outcome={automaticOutcome} onContinue={reportEventStore.clearAutomatic} />;
+	}
+	if (tokenOutcome && tokenOutcomeNeedsAcknowledgement(tokenOutcome)) {
 		return <TokenOutcomeScreen outcome={tokenOutcome} onContinue={continueAfterTokenOutcome} />;
 	}
 	if (healOutcome) {
@@ -354,9 +399,6 @@ function CollectorOutcomeView({
 			/>
 		);
 	}
-	if (smallEventOutcome) {
-		return <SmallEventOutcomeScreen onContinue={reportEventStore.clearSmallEvent} />;
-	}
 	return null;
 }
 
@@ -369,8 +411,7 @@ function ReportStatusView({
 }): ReactNode {
 	if (waitingForCollector) {
 		return <Centered><EmptyState>{i18n.t("app:collector.pending")}</EmptyState></Centered>;
-	}
-	switch (reportState.status) {
+	}	switch (reportState.status) {
 		case "loading":
 			return (
 				<Centered>
@@ -429,17 +470,14 @@ function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPend
 					disabled={!packet.heal.canAfford || healPending}
 					onPress={packet.heal.canAfford ? onHeal : undefined}
 				>
-					{i18n.t("app:adventure.quick.heal")}
+					{packet.heal.canAfford ? i18n.t("app:adventure.quick.heal") : i18n.t("app:adventure.quick.healNotEnough")}
 				</QuickAction>
 			) : null}
 			{packet.tokens ? (
 				<QuickAction icon={AppIcons.getIcon("unitValues.token")} disabled={advancePending} onPress={onAdvance}>
-					{i18n.t("app:adventure.quick.advance")}
-				</QuickAction>
-			) : null}
-			{!packet.isInCity ? (
-				<QuickAction icon={AppIcons.getIcon("expedition.map")}>
-					{i18n.t("app:adventure.quick.map")}
+					{packet.tokens.canAfford
+						? i18n.t("app:adventure.quick.advanceWithCost", {count: packet.tokens.cost})
+						: i18n.t("app:adventure.quick.getTokens")}
 				</QuickAction>
 			) : null}
 		</QuickActions>
@@ -495,6 +533,15 @@ type AdventureContext = {
 	destination: string;
 };
 
+function travelTitle(packet: ReportTravelSummaryRes): string {
+	const lastSmallEvent = packet.lastSmallEventId
+		? AppIcons.getIconOrNull(`smallEvents.${packet.lastSmallEventId}`)
+		: null;
+	return lastSmallEvent
+		? i18n.t("app:adventure.travel.titleWithLastEvent", {smallEvent: lastSmallEvent})
+		: i18n.t("app:adventure.travel.title");
+}
+
 function adventureTitle({packet}: AdventureContext): string {
 	if (isAlterationReport(packet)) {
 		return alterationTitle(packet);
@@ -502,7 +549,7 @@ function adventureTitle({packet}: AdventureContext): string {
 	if (packet.isInCity) {
 		return i18n.t("app:adventure.cityTitle");
 	}
-	return i18n.t("app:adventure.travel.title");
+	return travelTitle(packet);
 }
 
 function adventureSubtitle({packet, currentTime, metrics, destination}: AdventureContext): string {
@@ -515,6 +562,12 @@ function adventureSubtitle({packet, currentTime, metrics, destination}: Adventur
 	}
 	if (packet.isInCity) {
 		return i18n.t("app:adventure.citySubtitle", {location: destination});
+	}
+	if (!hasNextStop(packet)) {
+		return i18n.t("app:adventure.travel.subtitleArrivingSoon", {
+			destination,
+			remaining: formatDuration(remainingMilliseconds)
+		});
 	}
 	return i18n.t("app:adventure.travel.subtitle", {
 		nextStop: nextStopDuration(packet, currentTime),
@@ -537,6 +590,7 @@ function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending,
   const context: AdventureContext = {packet, currentTime, metrics, destination};
   const title = adventureTitle(context);
   const subtitle = adventureSubtitle(context);
+  const advice = travelAdvice(packet.nextStopTime);
 
   return (
     <Screen>
@@ -556,11 +610,17 @@ function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending,
 				healPending={healPending}
 			/>
 		) : null}
+		{advice ? (
+			<>
+				<SectionHeader>{i18n.t("app:adventure.advice")}</SectionHeader>
+				<Note>{advice}</Note>
+			</>
+		) : null}
     </Screen>
   );
 }
 
-export default function Index(): ReactNode {
+function AdventureBody(): ReactNode {
 	const reportState = useGameQuery<ReportTravelSummaryRes>(GAME_ENTITIES.REPORT, requestReport);
 	useReportRefreshAtNextStop(reportState.status === "ready" ? reportState.data : null);
 	const queryClient = useQueryClient();
@@ -575,10 +635,20 @@ export default function Index(): ReactNode {
 	const adventureCollector = openCollectors.find(isAdventureScreenCollector);
 	const bigEventOutcome = useBigEventOutcome();
 	const lotteryOutcome = useLotteryOutcome();
-	const smallEventOutcome = useSmallEventOutcome();
+	const witchOutcome = useWitchOutcome();
+	const choiceOutcome = useSmallEventChoiceOutcome();
+	const automaticOutcome = useAutomaticSmallEventOutcome();
 	const tokenOutcome = useTokenOutcome();
 	const healOutcome = useHealOutcome();
 	const currentTime = useCurrentTime();
+
+	useEffect(() => {
+		if (!tokenOutcome || tokenOutcomeNeedsAcknowledgement(tokenOutcome)) {
+			return;
+		}
+		// CollectorStop already invalidates profile and report for this resolved action.
+		reportEventStore.clearTokens();
+	}, [tokenOutcome]);
 
 	const advanceWithTokens = (): void => {
 		if (advancePending) {
@@ -619,7 +689,9 @@ export default function Index(): ReactNode {
     adventureCollector,
     bigEventOutcome,
 		lotteryOutcome,
-		smallEventOutcome,
+		witchOutcome,
+		choiceOutcome,
+		automaticOutcome,
 		tokenOutcome,
 		healOutcome,
 		reactToCollector,
@@ -630,8 +702,23 @@ export default function Index(): ReactNode {
   if (collectorOutcome) {
 		return collectorOutcome;
 	}
+	const pendingReportCollector = tokenUseCollector ?? buyHealCollector;
+	if (pendingReportCollector && reportState.status !== "ready") {
+		return (
+			<>
+				<Centered><ActivityIndicator /></Centered>
+				<AdventureCollector
+					collector={pendingReportCollector}
+					onChoose={(reactionIndex): void => reactToCollector(pendingReportCollector.id, reactionIndex)}
+					submitting={isAnswerPending(pendingReportCollector.id)}
+				/>
+			</>
+		);
+	}
 
-	const reportIsWaitingForCollector = openCollectors.length > 0
+	// Blocked means Core is busy with this player, not that the report is absent.
+	const reportIsWaitingForCollector = reportState.status === "empty" && reportState.packetName === Blocked.wireName
+		|| openCollectors.length > 0
 		&& (reportState.status === "loading"
 			|| reportState.status === "empty" && reportState.packetName === ReactionCollectorCreation.wireName);
 	const reportStatus = ReportStatusView({reportState, waitingForCollector: reportIsWaitingForCollector});
@@ -642,8 +729,8 @@ export default function Index(): ReactNode {
 		return null;
 	}
 
-		return (
-		<View style={styles.adventureRoot}>
+	return (
+		<>
 			<AdventureSheet
 				packet={reportState.data}
 				currentTime={currentTime}
@@ -666,6 +753,15 @@ export default function Index(): ReactNode {
 					submitting={isAnswerPending(buyHealCollector.id)}
 				/>
 			) : null}
+		</>
+	);
+}
+
+export default function Index(): ReactNode {
+	return (
+		<View style={styles.adventureRoot}>
+			<PlayerVitals />
+			<AdventureBody />
 		</View>
 	);
 }

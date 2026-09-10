@@ -23,3 +23,5 @@ export const BIG_EVENT_DATA_KINDS = {
 export const BIG_EVENT_REACTION_KINDS = {
 	POSSIBILITY: "bigEventPossibility"
 } as const satisfies Record<string, ReactionCollectorReactionKind>;
+
+export const BIG_EVENT_END_POSSIBILITY_ID = "end" as const;

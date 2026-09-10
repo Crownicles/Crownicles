@@ -70,7 +70,7 @@ function duration(milliseconds: number): string {
 			minutes: totalMinutes % MINUTES_PER_HOUR
 		});
 	}
-	return i18n.t("app:adventure.duration.minutes", {minutes: totalMinutes});
+	return i18n.t("app:adventure.duration.minutes", {count: totalMinutes});
 }
 
 function iconLabel(path: string, label: string): string {

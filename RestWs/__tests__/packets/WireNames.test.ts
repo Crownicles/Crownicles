@@ -57,7 +57,9 @@ const WIRE_NAMES = [
 	"SmallEventLotteryNoAnswerRes",
 	"SmallEventLotteryPoorRes",
 	"SmallEventLotteryWinRes",
-	"SmallEventResultRes"
+	"SmallEventChoiceResultRes",
+	"SmallEventResultRes",
+	"SmallEventWitchResultRes"
 ];
 
 const PACKETS_ROOT = join(__dirname, "../../../WsPackets/src");

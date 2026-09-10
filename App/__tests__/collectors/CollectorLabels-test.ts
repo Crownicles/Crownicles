@@ -21,7 +21,11 @@ jest.mock("@/src/AppIcons", () => ({
 
 jest.mock("@/src/translations/i18n", () => ({
 	i18n: {
-		t: (key: string): string => key,
+		t: (key: string, options?: Record<string, unknown>): string => {
+			if (key === "app:adventure.duration.minutes") return `${options?.count} minutes`;
+			if (key === "app:collector.choices.destination") return `${options?.destination} (${options?.duration})`;
+			return key;
+		},
 		tArray: (): string[] => []
 	}
 }));
@@ -152,12 +156,24 @@ describe("CollectorLabels", () => {
 		} as const;
 		const reaction = {
 			type: REPORT_COLLECTOR_REACTION_KINDS.DESTINATION,
-			data: {mapId: 3, mapTypeId: "port", tripDuration: 15 * 60_000}
+			data: {mapId: 3, mapTypeId: "port", tripDurationMinutes: 15}
 		} as const;
 
 		expect(collectorTitle(data)).toBe("app:collector.titles.destination");
 		expect(collectorDescription(data)).toBe("app:collector.descriptions.destination");
-		expect(reactionLabel(reaction, data)).toBe("app:collector.choices.destination");
+		expect(reactionLabel(reaction, data)).toBe("models:map_locations.3.name (15 minutes)");
 		expect(isChoosable(reaction, data)).toBe(true);
+	});
+
+	it("uses explicit actions for the PVE island invitation", () => {
+		const data = {
+			type: SMALL_EVENT_DATA_KINDS.PVE_ISLAND,
+			data: {price: 3, energy: {current: 80, max: 100}}
+		} as const;
+
+		expect(collectorTitle(data)).toBe("app:collector.pveIsland.title");
+		expect(collectorDescription(data)).toBe("app:collector.pveIsland.description");
+		expect(reactionLabel({type: "accept", data: {}}, data)).toContain("app:collector.pveIsland.embark");
+		expect(reactionLabel({type: "refuse", data: {}}, data)).toContain("app:collector.pveIsland.continueJourney");
 	});
 });

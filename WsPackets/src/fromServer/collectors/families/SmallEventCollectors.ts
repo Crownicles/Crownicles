@@ -3,6 +3,7 @@ import {
 } from "../ReactionCollectorProtocol";
 import { PlantId } from "../../../objects/PlantId";
 import { PetSex } from "../../../objects/OwnedPet";
+import { ItemWithDetails } from "../../../objects/ItemWithDetails";
 
 export const SMALL_EVENT_FOOD_TYPES = {
 	BAD_SMELL: "badSmell",
@@ -13,6 +14,13 @@ export const SMALL_EVENT_FOOD_TYPES = {
 } as const;
 
 export type SmallEventFoodType = typeof SMALL_EVENT_FOOD_TYPES[keyof typeof SMALL_EVENT_FOOD_TYPES];
+
+export const SMALL_EVENT_RECIPE_SHOP_SOURCES = {
+	FARMER: "farmer",
+	GASPARD_JO: "gaspardJo"
+} as const;
+
+export type SmallEventRecipeShopSource = typeof SMALL_EVENT_RECIPE_SHOP_SOURCES[keyof typeof SMALL_EVENT_RECIPE_SHOP_SOURCES];
 
 export const SMALL_EVENT_BAD_PET_ACTION_IDS = {
 	INTIMIDATE: "intimidate",
@@ -97,6 +105,18 @@ declare module "../ReactionCollectorProtocol" {
 			sex: PetSex;
 			petNickname?: string;
 		};
+		smallEventCart: {
+			displayedDestination: {
+				isDisplayed: boolean;
+				id?: number;
+				type?: string;
+			};
+			price: number;
+		};
+		smallEventFightPet: {
+			petId: number;
+			isFemale: boolean;
+		};
 		smallEventGardener: {
 			seedId: PlantId;
 			cost: number;
@@ -116,6 +136,31 @@ declare module "../ReactionCollectorProtocol" {
 			foodType: SmallEventFoodType;
 			petSex: PetSex;
 		};
+		smallEventPveIsland: {
+			price: number;
+			energy: {
+				current: number;
+				max: number;
+			};
+		};
+		smallEventShop: {
+			item: ItemWithDetails;
+			price: number;
+		};
+		smallEventEpicShop: {
+			item: ItemWithDetails;
+			price: number;
+			tip: boolean;
+		};
+		smallEventRecipeShop: {
+			source: SmallEventRecipeShopSource;
+			recipe: {
+				recipeId: string;
+				level: number;
+				recipeType: string;
+			};
+			recipeCost: number;
+		};
 		smallEventWitch: Record<string, never>;
 	}
 
@@ -125,6 +170,9 @@ declare module "../ReactionCollectorProtocol" {
 		};
 		smallEventBadPet: {
 			id: SmallEventBadPetActionId;
+		};
+		smallEventFightPet: {
+			actionId: string;
 		};
 		smallEventGobletsGame: {
 			id?: SmallEventGobletId;
@@ -145,18 +193,25 @@ declare module "../ReactionCollectorProtocol" {
 export const SMALL_EVENT_DATA_KINDS = {
 	ALTAR: "smallEventAltar",
 	BAD_PET: "smallEventBadPet",
+	CART: "smallEventCart",
+	FIGHT_PET: "smallEventFightPet",
 	GARDENER: "smallEventGardener",
 	GOBLETS_GAME: "smallEventGobletsGame",
 	INTERACT_OTHER_PLAYERS: "smallEventInteractOtherPlayers",
 	LIMOGES: "smallEventLimoges",
 	LOTTERY: "smallEventLottery",
 	PET_FOOD: "smallEventPetFood",
+	PVE_ISLAND: "smallEventPveIsland",
+	SHOP: "smallEventShop",
+	EPIC_SHOP: "smallEventEpicShop",
+	RECIPE_SHOP: "smallEventRecipeShop",
 	WITCH: "smallEventWitch"
 } as const satisfies Record<string, ReactionCollectorDataKind>;
 
 export const SMALL_EVENT_REACTION_KINDS = {
 	ALTAR_CONTRIBUTE: "smallEventAltarContribute",
 	BAD_PET: "smallEventBadPet",
+	FIGHT_PET: "smallEventFightPet",
 	GOBLETS_GAME: "smallEventGobletsGame",
 	LOTTERY_EASY: "smallEventLotteryEasy",
 	LOTTERY_MEDIUM: "smallEventLotteryMedium",

@@ -28,7 +28,7 @@ declare module "../ReactionCollectorProtocol" {
 		reportDestination: {
 			mapId: number;
 			mapTypeId: string;
-			tripDuration?: number;
+			tripDurationMinutes?: number;
 		};
 		reportStayInCity: Record<string, never>;
 		reportTokenMerchantBuy: {

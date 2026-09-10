@@ -3,15 +3,10 @@ import {SmallEventResultRes} from "../../../WsPackets/src/fromServer/smallEvents
 import {translateSmallEventResult} from "../../src/packets/fromServer/translators/SmallEventResultServerTranslator";
 
 describe("generic small-event result over the WebSocket protocol", () => {
-	/*
-	 * Core has one result packet per small event, keyed by developer field names. The app cannot
-	 * show those in the player's language, so the fallback announces the resolution and nothing
-	 * else: the collector closes and the report refreshes instead of the player being stuck.
-	 */
-	it("announces the resolution without leaking the Core payload", async () => {
-		const result = await translateSmallEventResult();
+	it("preserves the event identity and payload for the generic result renderer", async () => {
+		const result = await translateSmallEventResult("SmallEventWinHealthPacket", {amount: 12});
 
 		expect(result).toBeInstanceOf(SmallEventResultRes);
-		expect(Object.keys(result)).toEqual([]);
+		expect(result).toEqual({eventName: "SmallEventWinHealthPacket", data: {amount: 12}});
 	});
 });

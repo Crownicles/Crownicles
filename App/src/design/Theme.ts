@@ -41,6 +41,10 @@ export const Theme = {
 		noticeGap: 11,
 		tabBarVertical: 7,
 		tabBarHorizontal: 6,
+		vitalsBottom: 8,
+		walletBottom: 10,
+		chipVertical: 5,
+		chipHorizontal: 10,
 		screenTop: 16,
 		screenBottom: 26
 	},
@@ -51,6 +55,7 @@ export const Theme = {
 		tabBarIcon: 18,
 		headerIcon: 24,
 		travelTrackHeight: 5,
+		vitalBarHeight: 5,
 		quickActionHeight: 72,
 		quickActionIcon: 19
 	},
@@ -73,6 +78,7 @@ export const Theme = {
 		rowSubtitle: 12.5,
 		button: 14.5,
 		tabLabel: 10.5,
+		vitalLabel: 11,
 		chevron: 22
 	},
 	lineHeight: {
@@ -92,6 +98,8 @@ export const Theme = {
 	letterSpacing: {
 		hero: -0.9,
 		sectionHeader: -0.3,
-		eyebrow: 0.9
+		eyebrow: 0.9,
+		vitalLabel: -0.11,
+		chip: -0.12
 	}
 } as const;

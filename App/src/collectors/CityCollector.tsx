@@ -2,6 +2,7 @@ import {ReactNode, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
 	CITY_DATA_KINDS,
+	CITY_REACTION_KINDS,
 	GENERIC_REACTION_KINDS,
 	CityMobileSnapshot,
 	ReactionCollectorReaction
@@ -15,11 +16,13 @@ import {
 	cityRowEnd as renderCityRowEnd,
 	cityRowSubtitle as renderCityRowSubtitle
 } from "@/src/collectors/CityRowDetails";
-import {cityReactionAvailable, cityRowIcon, cityRowTitle, iconForPath} from "@/src/collectors/CityRowPresentation";
+import {
+	cityReactionAvailable, cityRowIcon, cityRowTitle, iconForPath, itemSnapshotForReaction
+} from "@/src/collectors/CityRowPresentation";
 import {groupCityEntries, cityNavigationMeta, submenuTitle} from "@/src/collectors/CityMenuModel";
 import {CitySection} from "@/src/collectors/CityRows";
 import {submenuSections as buildSubmenuSections} from "@/src/collectors/CitySubmenuSections";
-import {Button, ButtonRow, Hero, Note, Screen} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, Hero, Note, Screen} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 
 type CityCollectorProps = {
@@ -72,6 +75,45 @@ export type CityGroupingState = {
 	hasGuildActions: boolean;
 };
 export type CitySubmenuSection = {title: string; items: CityListItem[]};
+
+const CITY_REACTIONS_REQUIRING_CONFIRMATION = new Set<ReactionCollectorReaction["type"]>([
+	CITY_REACTION_KINDS.BUY_HOME,
+	CITY_REACTION_KINDS.UPGRADE_HOME,
+	CITY_REACTION_KINDS.MOVE_HOME,
+	CITY_REACTION_KINDS.APARTMENT_BUY,
+	CITY_REACTION_KINDS.INN_MEAL,
+	CITY_REACTION_KINDS.INN_ROOM,
+	CITY_REACTION_KINDS.ENCHANT,
+	CITY_REACTION_KINDS.UPGRADE_ITEM,
+	CITY_REACTION_KINDS.BLACKSMITH_UPGRADE,
+	CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT,
+	CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE,
+	CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE,
+	CITY_REACTION_KINDS.GARDEN_COMPOST,
+	CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY
+]);
+
+function CityActionConfirmation({entry, collector, snapshot, onConfirm, onCancel}: {
+	entry: CityEntry;
+	collector: ReactionCollectorCreation;
+	snapshot: CityMobileSnapshot | undefined;
+	onConfirm: () => void;
+	onCancel: () => void;
+}): ReactNode {
+	const item = itemSnapshotForReaction(snapshot, entry.reaction);
+	const subtitle = renderCityRowSubtitle(entry.reaction, snapshot, item);
+	const end = renderCityRowEnd(entry.reaction, snapshot, item);
+	return <Confirmation
+		title={i18n.t("app:city.confirmation.title")}
+		message={[cityRowTitle(entry.reaction, collector.data, snapshot), subtitle, end].filter(Boolean).join(" · ")}
+		onRequestClose={onCancel}
+	>
+		<ButtonRow>
+			<Button variant="primary" onPress={onConfirm}>{i18n.t("app:collector.accept")}</Button>
+			<Button onPress={onCancel}>{i18n.t("app:collector.refuse")}</Button>
+		</ButtonRow>
+	</Confirmation>;
+}
 
 function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, onNavigate, onBack, locked, backLabel}: {
 	view: CitySubmenu;
@@ -241,6 +283,7 @@ function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseI
 
 export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
+	const [pendingEntry, setPendingEntry] = useState<CityEntry>();
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);
 	const [innId, setInnId] = useState<string>();
 	if (collector.data.type !== CITY_DATA_KINDS.CITY) return null;
@@ -257,11 +300,31 @@ export function CityCollector({collector, onChoose, submitting}: CityCollectorPr
 		setAnswered(true);
 		onChoose(index);
 	};
+	const requestChoice = (index: number): void => {
+		const entry = entries[index];
+		if (entry && CITY_REACTIONS_REQUIRING_CONFIRMATION.has(entry.reaction.type)) {
+			setPendingEntry(entry);
+			return;
+		}
+		choose(index);
+	};
 	const navigate = (item: CityNavigationItem): void => {
 		setInnId(item.innId);
 		setSubmenu(item.view);
 	};
 	const gardenOnly = data.data.gardenOnly === true;
 	const gardenCloseIndex = gardenOnly ? collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE) : -1;
-	return cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting});
+	return <>
+		{cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose: requestChoice, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting})}
+		{pendingEntry ? <CityActionConfirmation
+			entry={pendingEntry}
+			collector={collector}
+			snapshot={snapshot}
+			onConfirm={(): void => {
+				setPendingEntry(undefined);
+				choose(pendingEntry.index);
+			}}
+			onCancel={(): void => setPendingEntry(undefined)}
+		/> : null}
+	</>;
 }

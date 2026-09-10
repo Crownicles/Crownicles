@@ -5,7 +5,9 @@ import {AppIcons} from "@/src/AppIcons";
 import {AmountUnit, formatAmount} from "@/src/display/Amounts";
 import {isChoosable} from "@/src/collectors/CollectorLabels";
 import {shopItemName} from "@/src/collectors/ShopLabels";
-import {Hero, KeyValue, Note, Panel, Row, Screen, SectionHeader} from "@/src/design/Primitives";
+import {
+	Button, ButtonRow, Confirmation, Hero, KeyValue, Note, Panel, Row, Screen, SectionHeader
+} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 
 type ShopCollectorProps = {
@@ -54,13 +56,20 @@ function stockNote(additionalShopData: AdditionalShopData | undefined): string |
 	return additionalShopData?.remainingTokens !== undefined ? i18n.t("app:city.shop.remainingTokens", {count: additionalShopData.remainingTokens}) : undefined;
 }
 
-function ShopGroups({groups, collector, currency, locked, choose}: {groups: Map<string, ShopGroup[]>; collector: ReactionCollectorCreation; currency: "money" | "gem"; locked: boolean; choose: (index: number) => void}): ReactNode {
+function ShopGroups({groups, collector, currency, availableCurrency, locked, choose}: {
+	groups: Map<string, ShopGroup[]>;
+	collector: ReactionCollectorCreation;
+	currency: "money" | "gem";
+	availableCurrency: number;
+	locked: boolean;
+	choose: (index: number) => void;
+}): ReactNode {
 	return [...groups.entries()].map(([categoryId, entries], index) => (
 		<Fragment key={categoryId}>
 			<SectionHeader first={index === 0}>{categoryLabel(categoryId, entries.length)}</SectionHeader>
 			<Panel>{entries.map(({reaction, index: reactionIndex}) => {
 				const choosable = isChoosable(reaction, collector.data);
-				const disabled = locked || !choosable;
+				const disabled = locked || !choosable || reaction.data.price > availableCurrency;
 				return <Row key={`${collector.id}-${reactionIndex}`} disabled={disabled} onPress={disabled ? undefined : (): void => choose(reactionIndex)} title={shopItemName({shopItemId: reaction.data.shopItemId})} subtitle={shopItemSubtitle(reaction.data.amount, reaction.data.price, currency)} end={currencyLabel(reaction.data.price, currency)} chevron={!disabled} />;
 			})}</Panel>
 		</Fragment>
@@ -69,6 +78,7 @@ function ShopGroups({groups, collector, currency, locked, choose}: {groups: Map<
 
 export function ShopCollector({collector, onChoose, submitting}: ShopCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
+	const [pendingPurchase, setPendingPurchase] = useState<ShopGroup>();
 	if (collector.data.type !== SHOP_DATA_KINDS.COLLECTOR) {
 		return null;
 	}
@@ -99,7 +109,19 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 				<KeyValue label={i18n.t("app:city.shop.availableCurrency")} value={currencyLabel(availableCurrency, currency)} />
 			</Panel>
 			{note ? <Note>{note}</Note> : null}
-			<ShopGroups groups={groups} collector={collector} currency={currency} locked={locked} choose={choose} />
+			<ShopGroups
+				groups={groups}
+				collector={collector}
+				currency={currency}
+				availableCurrency={availableCurrency}
+				locked={locked}
+				choose={(index): void => {
+					const reaction = collector.reactions[index];
+					if (reaction.type === SHOP_REACTION_KINDS.ITEM) {
+						setPendingPurchase({reaction, index});
+					}
+				}}
+			/>
 			{closeIndex >= 0 ? (
 				<Panel>
 					<Row
@@ -112,6 +134,22 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 				</Panel>
 			) : null}
 			{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
+			{pendingPurchase ? (
+				<Confirmation
+					title={i18n.t("app:city.shop.confirmTitle")}
+					message={shopItemName({shopItemId: pendingPurchase.reaction.data.shopItemId})}
+					onRequestClose={() => setPendingPurchase(undefined)}
+				>
+					<Panel>
+						<KeyValue label={i18n.t("app:city.shop.quantity")} value={String(pendingPurchase.reaction.data.amount)} />
+						<KeyValue label={i18n.t("app:city.shop.price")} value={currencyLabel(pendingPurchase.reaction.data.price, currency)} />
+					</Panel>
+					<ButtonRow>
+						<Button variant="primary" onPress={(): void => choose(pendingPurchase.index)}>{i18n.t("app:collector.accept")}</Button>
+						<Button onPress={(): void => setPendingPurchase(undefined)}>{i18n.t("app:collector.refuse")}</Button>
+					</ButtonRow>
+				</Confirmation>
+			) : null}
 		</Screen>
 	);
 }

@@ -21,7 +21,7 @@ export const reportCollectorReactionMappings: ReactionMapping[] = [
 	defineReactionMapping(ReactionCollectorChooseDestinationReaction, REPORT_COLLECTOR_REACTION_KINDS.DESTINATION, reaction => ({
 		mapId: reaction.mapId,
 		mapTypeId: reaction.mapTypeId,
-		...reaction.tripDuration === undefined ? {} : { tripDuration: reaction.tripDuration }
+		...reaction.tripDuration === undefined ? {} : { tripDurationMinutes: reaction.tripDuration }
 	})),
 	defineReactionMapping(ReactionCollectorStayInCityReaction, REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, () => ({})),
 	defineReactionMapping(ReactionCollectorTokenMerchantBuyReaction, REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, reaction => ({

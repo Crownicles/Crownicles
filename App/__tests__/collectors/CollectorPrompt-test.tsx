@@ -52,4 +52,16 @@ describe("CollectorPrompt", () => {
 
 		expect(onChoose).not.toHaveBeenCalled();
 	});
+
+	it("unlocks choices when the next collector replaces an answered one", async () => {
+		const onChoose = jest.fn();
+		const firstCollector = collector();
+		const view = await render(<CollectorPrompt collector={firstCollector} onChoose={onChoose} />);
+
+		await fireEvent.press(screen.getByText("valid choice"));
+		await view.rerender(<CollectorPrompt collector={{...firstCollector, id: "collector-2"}} onChoose={onChoose} />);
+		await fireEvent.press(screen.getByText("valid choice"));
+
+		expect(onChoose).toHaveBeenCalledTimes(2);
+	});
 });

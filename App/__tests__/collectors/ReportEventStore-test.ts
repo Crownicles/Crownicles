@@ -1,6 +1,10 @@
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {SmallEventLotteryWinRes} from "ws-packets/src/fromServer/smallEvents/SmallEventLotteryRes";
 import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
+import {SmallEventChoiceResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventChoiceResultRes";
+import {
+	SmallEventWitchResultRes, WITCH_OUTCOMES
+} from "ws-packets/src/fromServer/smallEvents/SmallEventWitchResultRes";
 import {ReportUseTokensAcceptedRes} from "ws-packets/src/fromServer/report/ReportTokenRes";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
@@ -25,7 +29,9 @@ describe("ReportEventStore", () => {
 	beforeEach((): void => {
 		reportEventStore.clear();
 		reportEventStore.clearLottery();
-		reportEventStore.clearSmallEvent();
+		reportEventStore.clearWitch();
+				reportEventStore.clearChoice();
+		reportEventStore.clearAutomatic();
 		reportEventStore.clearTokens();
 	});
 
@@ -72,14 +78,55 @@ describe("ReportEventStore", () => {
 		expect(reportEventStore.getTokenSnapshot()).toBeNull();
 	});
 
-	it("keeps a generic mini-event resolution until the player continues", () => {
+	it("absorbs a generic mini-event marker without creating UI state", () => {
+		const listener = jest.fn();
+		const unsubscribe = reportEventStore.subscribe(listener);
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
-		const result: SmallEventResultRes = {};
+		const result = {eventName: "SmallEventShopRefusePacket", data: {}} as SmallEventResultRes;
 
 		registry.dispatch(SmallEventResultRes.wireName, result);
 
-		expect(reportEventStore.getSmallEventSnapshot()).toBe(result);
-		reportEventStore.clearSmallEvent();
-		expect(reportEventStore.getSmallEventSnapshot()).toBeNull();
+		expect(listener).not.toHaveBeenCalled();
+		unsubscribe();
+	});
+
+	it("keeps an automatic mini-event result until the player continues", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		const result = {eventName: "SmallEventWinHealthPacket", data: {amount: 12}} as SmallEventResultRes;
+
+		registry.dispatch(SmallEventResultRes.wireName, result);
+
+		expect(reportEventStore.getAutomaticSnapshot()).toBe(result);
+		reportEventStore.clearAutomatic();
+		expect(reportEventStore.getAutomaticSnapshot()).toBeNull();
+	});
+
+	it("keeps the detailed witch result until the player continues", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		const result = {
+			ingredientId: "greenApple",
+			isIngredient: true,
+			forceEffect: false,
+			effectId: "sick",
+			timeLostMinutes: 0,
+			lifeLoss: 10,
+			outcome: WITCH_OUTCOMES.POTION
+		} as SmallEventWitchResultRes;
+
+		registry.dispatch(SmallEventWitchResultRes.wireName, result);
+
+		expect(reportEventStore.getWitchSnapshot()).toBe(result);
+		reportEventStore.clearWitch();
+		expect(reportEventStore.getWitchSnapshot()).toBeNull();
 	});
 });
+	it("keeps an interactive small-event result until the player continues", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		const result = {result: {event: "fightPet", outcome: "success", actionId: "attack", isFemale: false}} as SmallEventChoiceResultRes;
+
+		registry.dispatch(SmallEventChoiceResultRes.wireName, result);
+
+		expect(reportEventStore.getChoiceSnapshot()).toBe(result);
+		reportEventStore.clearChoice();
+		expect(reportEventStore.getChoiceSnapshot()).toBeNull();
+	});

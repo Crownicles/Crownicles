@@ -1,18 +1,26 @@
-import {ReactNode} from "react";
+import {ReactNode, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {
+	SmallEventWitchResultRes, WITCH_OUTCOMES
+} from "ws-packets/src/fromServer/smallEvents/SmallEventWitchResultRes";
+import {
 	BIG_EVENT_DATA_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS,
-	REPORT_COLLECTOR_REACTION_KINDS, CITY_DATA_KINDS, SHOP_DATA_KINDS, ReactionCollectorData, ReactionCollectorReaction
+	REPORT_COLLECTOR_REACTION_KINDS, CITY_DATA_KINDS, SHOP_DATA_KINDS, SMALL_EVENT_DATA_KINDS,
+	ReactionCollectorData, ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
 import {AMOUNT_UNITS, formatAmount, formatMoney, formatNumber} from "@/src/display/Amounts";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {CityCollector} from "@/src/collectors/CityCollector";
 import {ShopCollector} from "@/src/collectors/ShopCollector";
+import {SmallEventShopCollector} from "@/src/collectors/SmallEventShopCollector";
+import {RecipeShopCollector} from "@/src/collectors/RecipeShopCollector";
+import {PveIslandInvitationCollector} from "@/src/collectors/PveIslandInvitationCollector";
 import {collectorDescription, collectorTitle} from "@/src/collectors/CollectorLabels";
 import type {
-	HealOutcome as HealOutcomeData, LotteryOutcome as LotteryOutcomeData, TokenOutcome as TokenOutcomeData
+	HealOutcome as HealOutcomeData, LotteryOutcome as LotteryOutcomeData,
+	TokenOutcomeRequiringAcknowledgement
 } from "@/src/collectors/ReportEventStore";
 import {
 	Button, ButtonRow, Confirmation, Hero, KeyValue, Notice, Panel, Screen, StatBar
@@ -54,7 +62,7 @@ function duration(milliseconds: number): string {
 	const hours = Math.floor(minutes / 60);
 	return hours > 0
 		? i18n.t("app:adventure.duration.hoursMinutes", {hours, minutes: minutes % 60})
-		: i18n.t("app:adventure.duration.minutes", {minutes});
+		: i18n.t("app:adventure.duration.minutes", {count: minutes});
 }
 
 function signed(value: number): string {
@@ -130,6 +138,7 @@ function MerchantPurchaseButton({
 	firstAmount,
 	pricePerToken,
 	index,
+	playerMoney,
 	onChoose,
 	submitting
 }: {
@@ -137,30 +146,32 @@ function MerchantPurchaseButton({
 	firstAmount: number;
 	pricePerToken: number;
 	index: number;
-	onChoose: (reactionIndex: number) => void;
+	playerMoney: number;
+	onChoose: (reactionIndex: number, amount: number) => void;
 	submitting: boolean;
 }): ReactNode {
-	const canBuy = index >= 0 && !submitting;
+	const canBuy = index >= 0 && amount * pricePerToken <= playerMoney && !submitting;
 	return (
 		<Button
 			variant={amount === firstAmount ? "primary" : "secondary"}
 			disabled={!canBuy}
-			onPress={canBuy ? (): void => onChoose(index) : undefined}
+			onPress={canBuy ? (): void => onChoose(index, amount) : undefined}
 		>
 			{merchantPurchaseLabel(amount, pricePerToken)}
 		</Button>
 	);
 }
 
-function MerchantPurchaseActions({collector, onChoose, submitting}: {
+function MerchantPurchaseActions({collector, onPurchase, onRefuse, submitting}: {
 	collector: ReactionCollectorCreation;
-	onChoose: (reactionIndex: number) => void;
+	onPurchase: (reactionIndex: number, amount: number) => void;
+	onRefuse: (reactionIndex: number) => void;
 	submitting: boolean;
 }): ReactNode {
 	if (collector.data.type !== REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT) {
 		return null;
 	}
-	const {amounts, pricePerToken} = collector.data.data;
+	const {amounts, playerMoney, pricePerToken} = collector.data.data;
 	const refuseIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.REFUSE);
 	return (
 		<ButtonRow>
@@ -171,12 +182,13 @@ function MerchantPurchaseActions({collector, onChoose, submitting}: {
 					firstAmount={amounts[0]}
 					pricePerToken={pricePerToken}
 					index={merchantReactionIndex(collector.reactions, amount)}
-					onChoose={onChoose}
+					playerMoney={playerMoney}
+					onChoose={onPurchase}
 					submitting={submitting}
 				/>
 			))}
 			{refuseIndex >= 0 ? (
-				<Button disabled={submitting} onPress={submitting ? undefined : (): void => onChoose(refuseIndex)}>
+				<Button disabled={submitting} onPress={submitting ? undefined : (): void => onRefuse(refuseIndex)}>
 					{i18n.t("app:adventure.tokens.merchant.cancel")}
 				</Button>
 			) : null}
@@ -194,20 +206,18 @@ function TokenUseCollector({collector, onChoose, submitting}: {
 	}
 	const acceptIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.ACCEPT);
 	const refuseIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.REFUSE);
-	const canConfirm = acceptIndex >= 0 && !submitting;
+	const canConfirm = acceptIndex >= 0
+		&& collector.data.data.playerTokens >= collector.data.data.cost
+		&& !submitting;
 	const canRefuse = refuseIndex >= 0 && !submitting;
 
 	return (
 		<Confirmation
 			icon={<TwemojiIcon emoji={AppIcons.getIcon("unitValues.token")} size={Theme.dimensions.headerIcon} />}
 			title={i18n.t("app:adventure.tokens.use.title")}
-			message={i18n.t("app:adventure.tokens.use.description")}
+			message={i18n.t("app:adventure.tokens.use.description", {count: collector.data.data.cost})}
 			onRequestClose={canRefuse ? (): void => onChoose(refuseIndex) : undefined}
 		>
-			<Panel>
-				<KeyValue label={i18n.t("app:adventure.tokens.fields.cost")} value={formatTokens(collector.data.data.cost)} />
-				<KeyValue label={i18n.t("app:adventure.tokens.fields.balance")} value={formatTokens(collector.data.data.playerTokens)} />
-			</Panel>
 			<ButtonRow>
 				<Button variant="primary" disabled={!canConfirm} onPress={canConfirm ? (): void => onChoose(acceptIndex) : undefined}>
 					{i18n.t("app:adventure.tokens.use.confirm", {count: collector.data.data.cost})}
@@ -265,10 +275,12 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 	onChoose: (reactionIndex: number) => void;
 	submitting: boolean;
 }): ReactNode {
+	const [pendingPurchase, setPendingPurchase] = useState<{reactionIndex: number; amount: number} | null>(null);
 	if (collector.data.type !== REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT) {
 		return null;
 	}
-	const {maxDaily, maxWeekly} = collector.data.data;
+	const {maxDaily, maxWeekly, playerMoney, pricePerToken} = collector.data.data;
+	const purchasePrice = (pendingPurchase?.amount ?? 0) * pricePerToken;
 
 	return (
 		<Screen>
@@ -282,11 +294,37 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 				icon={AppIcons.getIconOrNull("collectors.warning") ? <TwemojiIcon emoji={AppIcons.getIcon("collectors.warning")} size={Theme.dimensions.headerIcon} /> : undefined}
 				title={i18n.t("app:adventure.tokens.merchant.limits", {maxDaily, maxWeekly})}
 			/>
-			<MerchantPurchaseActions collector={collector} onChoose={onChoose} submitting={submitting} />
+			<MerchantPurchaseActions
+				collector={collector}
+				onPurchase={(reactionIndex, amount): void => setPendingPurchase({reactionIndex, amount})}
+				onRefuse={onChoose}
+				submitting={submitting}
+			/>
+			{pendingPurchase ? (
+				<Confirmation
+					icon={<TwemojiIcon emoji={AppIcons.getIcon("unitValues.token")} size={Theme.dimensions.headerIcon} />}
+					title={i18n.t("app:adventure.tokens.merchant.confirmTitle", {count: pendingPurchase.amount})}
+					message={i18n.t("app:adventure.tokens.merchant.confirmDescription")}
+					onRequestClose={() => setPendingPurchase(null)}
+				>
+					<Panel>
+						<KeyValue label={i18n.t("app:adventure.tokens.fields.received")} value={`+${formatTokens(pendingPurchase.amount)}`} />
+						<KeyValue label={i18n.t("app:adventure.tokens.fields.costMoney")} value={`-${formatMoney(purchasePrice)}`} />
+						<KeyValue label={i18n.t("app:adventure.tokens.fields.remainingMoney")} value={formatMoney(playerMoney - purchasePrice)} />
+					</Panel>
+					<ButtonRow>
+						<Button variant="primary" disabled={submitting} onPress={submitting ? undefined : (): void => onChoose(pendingPurchase.reactionIndex)}>
+							{i18n.t("app:adventure.tokens.merchant.confirm")}
+						</Button>
+						<Button disabled={submitting} onPress={submitting ? undefined : (): void => setPendingPurchase(null)}>
+							{i18n.t("app:adventure.tokens.merchant.keepMoney")}
+						</Button>
+					</ButtonRow>
+				</Confirmation>
+			) : null}
 		</Screen>
 	);
 }
-
 /** The report-owned collector is rendered in the same screen hierarchy as the mobile mockup. */
 export function AdventureCollector({collector, onChoose, submitting}: {
 	collector: ReactionCollectorCreation;
@@ -308,6 +346,16 @@ export function AdventureCollector({collector, onChoose, submitting}: {
 	if (collector.data.type === SHOP_DATA_KINDS.COLLECTOR) {
 		return <ShopCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
 	}
+	if (collector.data.type === SMALL_EVENT_DATA_KINDS.SHOP
+		|| collector.data.type === SMALL_EVENT_DATA_KINDS.EPIC_SHOP) {
+		return <SmallEventShopCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
+	}
+	if (collector.data.type === SMALL_EVENT_DATA_KINDS.RECIPE_SHOP) {
+		return <RecipeShopCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
+	}
+	if (collector.data.type === SMALL_EVENT_DATA_KINDS.PVE_ISLAND) {
+		return <PveIslandInvitationCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
+	}
 	const description = collectorDescription(collector.data);
 	return (
 		<Screen>
@@ -320,28 +368,13 @@ export function AdventureCollector({collector, onChoose, submitting}: {
 		</Screen>
 	);
 }
-
-function tokenOutcomeDetails(outcome: TokenOutcomeData): {
+function tokenOutcomeDetails(outcome: TokenOutcomeRequiringAcknowledgement): {
 	eyebrow: string;
 	title: string;
 	description?: string;
 	fields: {label: string; value: string}[];
 } {
 	switch (outcome.kind) {
-		case "used":
-			return {
-				eyebrow: i18n.t("app:adventure.tokens.use.eyebrow"),
-				title: i18n.t("app:adventure.tokens.outcomes.used"),
-				description: i18n.t(outcome.packet.isArrived
-					? "app:adventure.tokens.outcomes.arrived"
-					: "app:adventure.tokens.outcomes.nextStop"),
-				fields: [{
-					label: i18n.t("app:adventure.tokens.fields.spent"),
-					value: `-${formatTokens(outcome.packet.tokensSpent)}`
-				}]
-			};
-		case "useRefused":
-			return {eyebrow: i18n.t("app:adventure.tokens.use.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.useRefused"), fields: []};
 		case "bought":
 			return {
 				eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"),
@@ -352,8 +385,6 @@ function tokenOutcomeDetails(outcome: TokenOutcomeData): {
 			return {eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.tooMuch"), fields: []};
 		case "full":
 			return {eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.full"), fields: []};
-		case "merchantRefused":
-			return {eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.merchantRefused"), fields: []};
 		case "cannotAfford":
 			return {eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.cannotAfford"), fields: []};
 		case "charity":
@@ -375,7 +406,7 @@ function tokenOutcomeDetails(outcome: TokenOutcomeData): {
 
 /** Keeps the player on a clear terminal screen after any token-flow action. */
 export function TokenOutcome({outcome, onContinue}: {
-	outcome: TokenOutcomeData;
+	outcome: TokenOutcomeRequiringAcknowledgement;
 	onContinue: () => void;
 }): ReactNode {
 	const details = tokenOutcomeDetails(outcome);
@@ -530,17 +561,58 @@ export function LotteryOutcome({outcome, onContinue}: {
 	);
 }
 
-/** Shows a generic resolution for mini-events without a dedicated result design yet. */
-export function SmallEventOutcome({onContinue}: {
+function witchOutcomeDescription(outcome: SmallEventWitchResultRes): string {
+	switch (outcome.outcome) {
+		case WITCH_OUTCOMES.POTION:
+			return i18n.t("app:adventure.witch.outcomes.potion");
+		case WITCH_OUTCOMES.EFFECT:
+			return i18n.t("app:adventure.witch.outcomes.effect");
+		case WITCH_OUTCOMES.LIFE_LOSS:
+			return i18n.t("app:adventure.witch.outcomes.lifeLoss");
+		case WITCH_OUTCOMES.NOTHING:
+			return i18n.t("app:adventure.witch.outcomes.nothing");
+		default:
+			return i18n.t("app:adventure.witch.outcomes.nothing");
+	}
+}
+
+function witchEffect(outcome: SmallEventWitchResultRes): string | null {
+	if (!outcome.forceEffect && outcome.outcome !== WITCH_OUTCOMES.EFFECT) {
+		return null;
+	}
+	const icon = AppIcons.getIconOrNull(`effects.${outcome.effectId}`);
+	const label = i18n.t(`error:effects.${outcome.effectId}.self`);
+	return icon ? `${icon} ${label}` : label;
+}
+
+export function WitchOutcome({outcome, onContinue}: {
+	outcome: SmallEventWitchResultRes;
 	onContinue: () => void;
 }): ReactNode {
+	const ingredientIcon = AppIcons.getIconOrNull(`witchSmallEvent.${outcome.ingredientId}`);
+	const ingredient = i18n.t(`smallEvents:witch.witchEventNames.${outcome.ingredientId}`);
+	const effect = witchEffect(outcome);
 	return (
 		<Screen>
 			<Hero
 				eyebrow={i18n.t("app:adventure.smallEvent.eyebrow")}
-				title={i18n.t("app:adventure.smallEvent.resultTitle")}
-				subtitle={i18n.t("app:adventure.smallEvent.resultDescription")}
+				title={i18n.t("app:adventure.witch.resultTitle")}
+				subtitle={witchOutcomeDescription(outcome)}
 			/>
+			<Panel>
+				<KeyValue label={i18n.t(outcome.isIngredient ? "app:adventure.witch.fields.ingredient" : "app:adventure.witch.fields.advice")} value={ingredientIcon ? `${ingredientIcon} ${ingredient}` : ingredient} />
+				{effect ? <KeyValue label={i18n.t("app:adventure.witch.fields.effect")} value={effect} /> : null}
+				{outcome.outcome === WITCH_OUTCOMES.LIFE_LOSS
+					? <KeyValue label={i18n.t("app:adventure.event.fields.health")} value={`-${formatNumber(outcome.lifeLoss)}`} />
+					: null}
+				{outcome.timeLostMinutes > 0
+					? <KeyValue label={i18n.t("app:adventure.event.fields.timeLost")} value={i18n.t("app:adventure.duration.minutes", {count: outcome.timeLostMinutes})} />
+					: null}
+				{outcome.discoveredRecipe ? <KeyValue
+					label={i18n.t("app:adventure.witch.fields.recipe")}
+					value={i18n.t("models:cooking.recipeDisplay", outcome.discoveredRecipe)}
+				/> : null}
+			</Panel>
 			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.smallEvent.continue")}</Button></ButtonRow>
 		</Screen>
 	);

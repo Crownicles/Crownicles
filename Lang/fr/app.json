@@ -28,6 +28,10 @@
     "classInfo": "Informations de classe",
     "featureNotAvailable": "Cette fonctionnalité sera disponible prochainement."
   },
+  "vitals": {
+    "health": "Vie",
+    "energy": "Énergie"
+  },
   "collector": {
     "accept": "Confirmer",
     "refuse": "Annuler",
@@ -41,12 +45,17 @@
       "bigEvent": "Événement en cours",
       "altar": "L'autel des bénédictions",
       "badPet": "Un familier en colère",
+      "cart": "Une charrette sur la route",
+      "fightPet": "Un familier sauvage",
       "gardener": "Le jardinier",
       "gobletsGame": "Le jeu des gobelets",
       "interactOtherPlayers": "Un autre aventurier",
       "limoges": "Le conteur de Limoges",
       "lottery": "La loterie",
       "petFood": "Une trouvaille pour le familier",
+      "shopSmallEvent": "Un marchand ambulant",
+      "epicShopSmallEvent": "Aldéric l'antiquaire",
+      "recipeShopSmallEvent": "Une recette à découvrir",
       "witch": "La sorcière",
       "itemChoice": "Choisir dans l'inventaire",
       "itemAccept": "Gérer l'objet reçu",
@@ -58,13 +67,37 @@
       "interactOtherPlayers": "Vous croisez un aventurier sur la route. Il semble avoir besoin d'une pièce.",
       "interactOtherPlayersRanked": "Vous croisez un aventurier classé au rang {{rank}}. Il semble avoir besoin d'une pièce.",
       "unknownPlayer": "Une rencontre vous attend sur la route.",
+      "cartKnown": "Le conducteur propose de vous déposer à {{destination}} pour {{price}} {emote:unitValues.money}.",
+      "cartUnknown": "Le conducteur propose un trajet vers une destination inconnue pour {{price}} {emote:unitValues.money}.",
+      "fightPet": "Un {{pet}} sauvage vous barre la route. Choisissez comment réagir.",
       "gardenerSeed": "Graine proposée : {{seed}}.",
       "itemChoice": "Votre inventaire est plein. Choisissez l'objet à remplacer par {{item}}.",
       "itemAccept": "Votre inventaire est plein. Choisissez quoi faire de {{item}} pour accueillir l'objet reçu.",
       "unknownItem": "cet objet",
       "unknownPet": "votre familier",
       "destination": "Choisissez la prochaine étape de votre aventure.",
-      "unknownDuration": "durée inconnue"
+      "unknownDuration": "durée inconnue",
+      "shopSmallEvent": "Un marchand rencontré sur la route vous propose un objet. Vérifiez bien son offre avant de décider.",
+      "epicShopSmallEvent": "Aldéric arrête sa charrette et vous présente l'une de ses antiquités.",
+      "recipeShopSmallEvent": {
+        "farmer": "La fermière vous propose de transmettre une recette conservée précieusement dans sa famille.",
+        "gaspardJo": "Gaspard-Jo sort un ancien grimoire de sa roulotte et vous propose d'en apprendre une recette."
+      }
+    },
+    "shop": {
+      "fields": {
+        "item": "Objet proposé",
+        "rarity": "Rareté",
+        "level": "Niveau",
+        "price": "Prix"
+      },
+      "tip": "Aldéric réserve ses meilleures offres aux aventuriers qui le trouvent sur la Route des Merveilles."
+    },
+    "recipeShop": {
+      "fields": {
+        "recipe": "Recette proposée",
+        "price": "Prix d'apprentissage"
+      }
     },
     "choices": {
       "altarContribute": "Offrir {{amount}} {emote:unitValues.money}",
@@ -76,6 +109,21 @@
       "lotteryHard": "Grande récompense",
       "destination": "{{destination}} ({{duration}})",
       "stayInCity": "Rester en ville"
+    },
+    "pveIsland": {
+      "title": "Cap sur l'île mystérieuse",
+      "description": "Un capitaine propose de vous conduire sur une île infestée de monstres.",
+      "energy": "Énergie disponible",
+      "crossing": "Prix de la traversée",
+      "free": "Gratuite",
+      "warningTitle": "Préparez votre expédition",
+      "warning": "Sur l'île, l'énergie ne se régénère pas. Les monstres deviennent plus redoutables à mesure que vous progressez.",
+      "embark": "Embarquer",
+      "continueJourney": "Continuer mon voyage"
+    },
+    "cart": {
+      "accept": "Monter dans la charrette",
+      "refuse": "Continuer à pied"
     }
   },
   "tabs": {
@@ -92,8 +140,11 @@
     "travel": {
       "eyebrow": "Rapport · en voyage",
       "title": "Tout se passe bien dans votre aventure",
-      "subtitle": "Prochain arrêt prévu dans {{nextStop}}. Le trajet vers {{destination}} durera encore {{remaining}}."
+      "titleWithLastEvent": "Tout se passe bien depuis votre dernière aventure {{smallEvent}}",
+      "subtitle": "Prochain arrêt prévu dans {{nextStop}}. Le trajet vers {{destination}} durera encore {{remaining}}.",
+      "subtitleArrivingSoon": "Plus aucun arrêt n'est prévu : vous arriverez à {{destination}} dans {{remaining}}."
     },
+    "advice": "Conseil",
     "alteration": {
       "eyebrow": "Rapport · altération",
       "title": "Altération d'état",
@@ -106,8 +157,6 @@
     },
     "smallEvent": {
       "eyebrow": "Rapport · mini-événement",
-      "resultTitle": "Résultat du mini-événement",
-      "resultDescription": "La rencontre est terminée, votre voyage reprend.",
       "continue": "Continuer"
     },
     "event": {
@@ -146,6 +195,182 @@
         "moneyLost": "Argent perdu"
       }
     },
+    "witch": {
+      "resultTitle": "Le résultat de la potion",
+      "outcomes": {
+        "potion": "La préparation réussit : la sorcière vous remet une potion.",
+        "effect": "La mixture produit un effet inattendu qui vous affecte immédiatement.",
+        "lifeLoss": "La préparation tourne mal et vous blesse.",
+        "nothing": "La potion est inutilisable. Vous reprenez votre route sans récompense."
+      },
+      "fields": {
+        "ingredient": "Ingrédient choisi",
+        "advice": "Conseil donné",
+        "effect": "Altération",
+        "recipe": "Recette découverte"
+      }
+    },
+    "choiceResults": {
+      "titles": {
+        "altar": "L'offrande à l'autel",
+        "badPet": "La rencontre est terminée",
+        "cart": "Le trajet en charrette",
+        "fightPet": "Le familier sauvage",
+        "gardener": "Le présent du jardinier",
+        "pveIsland": "Départ pour l'île mystérieuse",
+        "goblets": "Le gobelet est dévoilé",
+        "interactPoor": "Un geste généreux",
+        "limoges": "La réponse du conteur",
+        "petFood": "La recherche est terminée",
+        "recipeShop": "La recette du voyageur",
+        "shop": "Le marchand ambulant",
+        "epicShop": "L'offre d'Aldéric"
+      },
+      "fields": {
+        "pool": "Cagnotte de l'autel",
+        "contribution": "Offrande",
+        "gems": "Gemmes reçues",
+        "action": "Approche choisie",
+        "plant": "Plante",
+        "material": "Matériau",
+        "cost": "Prix payé",
+        "goblet": "Gobelet choisi",
+        "health": "Vie perdue",
+        "money": "Argent perdu",
+        "time": "Temps perdu",
+        "affection": "Affection",
+        "recipe": "Recette apprise"
+      },
+      "altar": {
+        "contributed": "Votre offrande rejoint la cagnotte de l'autel.",
+        "blessing": "Votre offrande complète la cagnotte et déclenche une bénédiction.",
+        "refused": "Vous quittez l'autel sans faire d'offrande.",
+        "cannotAfford": "Vous ne possédez pas assez d'argent pour cette offrande."
+      },
+      "badPet": {
+        "lostLove_one": "{{pet}} perd {{count}} point d'affection.",
+        "lostLove_other": "{{pet}} perd {{count}} points d'affection.",
+        "safe": "Votre réaction apaise la situation sans diminuer l'affection de {{pet}}."
+      },
+      "cart": {
+        "refused": "Vous refusez la proposition et continuez à pied.",
+        "cannotAfford": "Le voyage coûte plus cher que prévu et vous restez sur votre route.",
+        "scam": "Le conducteur ne vous dépose pas à l'endroit annoncé.",
+        "arrived": "La charrette vous conduit rapidement vers une nouvelle étape."
+      },
+      "fightPet": {
+        "success": "Votre approche fonctionne et vous remportez l'affrontement.",
+        "failure": "Votre approche échoue face au familier sauvage."
+      },
+      "gardener": {
+        "seed": "Le jardinier vous confie une graine pour votre jardin.",
+        "advice": "Le jardinier partage un conseil adapté à votre progression.",
+        "plant": "Le jardinier vous remet une plante.",
+        "material": "Le jardinier vous remet un matériau.",
+        "default": "Votre rencontre avec le jardinier prend fin."
+      },
+      "pveIsland": {
+        "acceptedAlone": "Vous embarquez seul vers l'île mystérieuse.",
+        "acceptedWithGuild": "Vous rejoignez un membre de votre guilde à bord et partez vers l'île mystérieuse.",
+        "notEnoughGems": "Vous ne possédez plus assez de gemmes pour payer la traversée."
+      },
+      "interactPoor": {
+        "donated": "Vous aidez l'aventurier dans le besoin avant de reprendre votre route."
+      },
+      "limoges": {
+        "success": "Votre réponse satisfait le conteur et vous rapporte une récompense.",
+        "failure": "Votre réponse ne convainc pas le conteur et entraîne une pénalité."
+      },
+      "petFood": {
+        "found_by_player": "Votre recherche aboutit et votre familier profite de la nourriture trouvée.",
+        "found_by_pet": "Votre familier revient avec de la nourriture.",
+        "found_anyway": "Votre familier trouve tout de même de quoi manger.",
+        "nothing": "Vous reprenez votre route sans vous attarder.",
+        "pet_failed": "Votre familier revient sans avoir trouvé de nourriture.",
+        "player_failed": "Votre recherche ne donne rien et vous fait perdre du temps."
+      },
+      "recipeShop": {
+        "accepted": "La recette est désormais ajoutée à votre carnet.",
+        "cannotBuy": "Vous ne possédez pas assez d'argent pour apprendre cette recette."
+      },
+      "shop": {
+        "purchased": "L'objet est acheté et ajouté à votre inventaire.",
+        "cannotBuy": "Vous ne possédez pas assez d'argent pour cette offre."
+      }
+    },
+    "automaticResults": {
+      "title": "Une rencontre sur la route",
+      "description": "Cet événement a modifié la suite de votre aventure.",
+      "fields": {
+        "amount": "Quantité",
+        "quantity": "Quantité obtenue",
+        "timeGained": "Temps gagné"
+      },
+      "titles": {
+        "advanceTime": "Un raccourci inattendu",
+        "bigBad": "Une mauvaise rencontre",
+        "boatAdvice": "Une rencontre en mer",
+        "bonusGuildPVEIsland": "L'aide de votre guilde",
+        "botFacts": "Une information surprenante",
+        "class": "Votre classe vous aide",
+        "doNothing": "Une halte tranquille",
+        "dwarfPetFan": "Un admirateur de familiers",
+        "expeditionAdvice": "Les conseils de Talvar",
+        "farmer": "Une rencontre avec la fermière",
+        "findItem": "Un objet trouvé",
+        "findMaterial": "Des matériaux trouvés",
+        "findMission": "Une nouvelle mission",
+        "findPet": "Un familier rencontré",
+        "findPotion": "Une potion trouvée",
+        "haunted": "Une présence inquiétante",
+        "infoFight": "Un conseil de combat",
+        "interactOtherPlayers": "Un aventurier croisé",
+        "leagueReward": "Récompense de ligue",
+        "pet": "Votre familier intervient",
+        "petDropToken": "Un jeton retrouvé",
+        "smallBad": "Un incident de voyage",
+        "spaceResult": "Les nouvelles du ciel",
+        "staffMember": "Une rencontre avec l'équipe",
+        "ultimateFoodMerchant": "Le marchand de nourriture ultime",
+        "winEnergy": "Un regain d'énergie",
+        "winEnergyOnIsland": "Un regain d'énergie sur l'île",
+        "winGuildXP": "Votre guilde progresse",
+        "winHealth": "Vous reprenez des forces",
+        "winPersonalXP": "Vous gagnez de l'expérience"
+      },
+      "descriptions": {
+        "advanceTime": "Vous trouvez un moyen de progresser plus rapidement vers votre destination.",
+        "bigBad": "Cette rencontre vous laisse quelques séquelles.",
+        "boatAdvice": "Un marin partage son expérience des îles mystérieuses.",
+        "bonusGuildPVEIsland": "Votre guilde influence l'issue de cette rencontre sur l'île.",
+        "botFacts": "Vous apprenez quelque chose sur le royaume et son histoire.",
+        "class": "Votre entraînement vous permet de tirer profit de la situation.",
+        "doNothing": "La route reste calme et vous poursuivez votre chemin.",
+        "dwarfPetFan": "Un nain passionné s'intéresse à votre compagnon.",
+        "expeditionAdvice": "Talvar vous transmet un conseil ou une récompense pour les expéditions.",
+        "farmer": "La fermière vous apporte son aide avant votre départ.",
+        "findItem": "Vous récupérez un objet découvert pendant votre voyage.",
+        "findMaterial": "Vous ramassez des matériaux utiles sur votre chemin.",
+        "findMission": "Cette rencontre ajoute une mission à votre journal.",
+        "findPet": "Votre rencontre avec un familier sauvage prend une tournure inattendue.",
+        "findPotion": "Vous récupérez une potion trouvée pendant votre voyage.",
+        "haunted": "Une présence étrange perturbe brièvement votre progression.",
+        "infoFight": "Vous obtenez une information qui pourra servir lors de vos combats.",
+        "interactOtherPlayers": "Votre route croise celle d'un autre aventurier.",
+        "leagueReward": "Votre activité en arène vous rapporte une récompense.",
+        "pet": "Votre compagnon intervient au cours du voyage.",
+        "petDropToken": "Un familier vous conduit jusqu'à un jeton perdu.",
+        "smallBad": "Un incident ralentit ou pénalise votre aventure.",
+        "spaceResult": "Un astronome partage ses observations avec vous.",
+        "staffMember": "Vous croisez un membre de l'équipe Crownicles.",
+        "ultimateFoodMerchant": "Le marchand vous présente ses provisions exceptionnelles.",
+        "winEnergy": "Une pause bienvenue restaure votre énergie.",
+        "winEnergyOnIsland": "Vous récupérez un peu d'énergie malgré les conditions de l'île.",
+        "winGuildXP": "Cette rencontre profite à toute votre guilde.",
+        "winHealth": "Cette rencontre vous permet de récupérer de la vie.",
+        "winPersonalXP": "Cette expérience vous rend plus aguerri."
+      }
+    },
     "tokens": {
       "continue": "Continuer",
       "fields": {
@@ -153,15 +378,16 @@
         "balance": "Vos jetons",
         "price": "Prix unitaire",
         "money": "Votre argent",
-        "spent": "Jetons dépensés",
+        "costMoney": "Coût total",
+        "remainingMoney": "Argent restant",
         "received": "Jetons reçus"
       },
       "use": {
-        "eyebrow": "Rapport · en voyage",
-        "title": "Avancer dans le voyage",
-        "description": "Utilisez des jetons pour atteindre immédiatement le prochain arrêt de votre aventure.",
-        "confirm": "Dépenser {{count}} jeton(s)",
-        "cancel": "Conserver mes jetons"
+        "title": "Atteindre le prochain arrêt ?",
+        "description_one": "Vous atteindrez immédiatement le prochain arrêt pour {{count}} jeton.",
+        "description_other": "Vous atteindrez immédiatement le prochain arrêt pour {{count}} jetons.",
+        "confirm": "Avancer",
+        "cancel": "Annuler"
       },
       "merchant": {
         "eyebrow": "Rapport · marchand de jetons",
@@ -170,17 +396,17 @@
         "limits": "Limite d'achat : {{maxDaily}} par jour et {{maxWeekly}} par semaine.",
         "buyOne": "Acheter {{amount}} jeton — {{price}} {emote:unitValues.money}",
         "buyMany": "Acheter {{amount}} jetons — {{price}} {emote:unitValues.money}",
-        "cancel": "Ne rien acheter"
+        "cancel": "Quitter le marchand",
+        "confirmTitle_one": "Acheter {{count}} jeton ?",
+        "confirmTitle_other": "Acheter {{count}} jetons ?",
+        "confirmDescription": "Vérifiez le coût et votre solde avant de confirmer.",
+        "confirm": "Confirmer l'achat",
+        "keepMoney": "Annuler"
       },
       "outcomes": {
-        "used": "Jetons utilisés",
-        "arrived": "Vous êtes arrivé à destination. Consultez la suite de votre aventure.",
-        "nextStop": "Vous avez atteint le prochain arrêt de votre aventure.",
-        "useRefused": "Vous avez conservé vos jetons.",
         "bought": "Achat conclu",
         "tooMuch": "Le marchand ne peut plus vous vendre de jetons pour le moment.",
         "full": "Votre bourse de jetons est déjà pleine.",
-        "merchantRefused": "Vous avez quitté le marchand sans achat.",
         "cannotAfford": "Vous n'avez pas assez d'argent pour acheter un jeton.",
         "charity": "Le marchand vous offre quelques jetons pour reprendre la route.",
         "charityAlreadyUsed": "Le marchand vous a déjà aidé cette semaine."
@@ -220,20 +446,25 @@
     },
     "duration": {
       "hoursMinutes": "{{hours}} h {{minutes}}",
-      "minutes": "{{minutes}} minutes"
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes"
     },
     "now": "Maintenant",
     "quick": {
-      "advance": "Avancer",
+      "advanceWithCost_one": "Avancer · {{count}} jeton",
+      "advanceWithCost_other": "Avancer · {{count}} jetons",
+      "getTokens": "Obtenir des jetons",
       "heal": "Se soigner",
-      "map": "Carte"
+      "healNotEnough": "Argent insuffisant"
     },
     "onTheRoad": "Progression sur la route",
-    "noNextStop": "Aucun arrêt prévu avant l'arrivée",
     "unknownLocation": "Lieu inconnu",
     "empty": "Aucun rapport de voyage disponible"
   },
   "city": {
+    "confirmation": {
+      "title": "Confirmer cette action"
+    },
     "titles": {
       "eyebrow": "Vous êtes en ville",
       "housing": "Votre logement",
@@ -424,6 +655,9 @@
       "eyebrow": "Commerce de la ville",
       "title": "Boutique",
       "description": "Choisissez un article. Le prix et la quantité sont affichés avant confirmation.",
+      "confirmTitle": "Confirmer cet achat",
+      "quantity": "Quantité",
+      "price": "Prix",
       "availableCurrency": "Votre solde",
       "item": "Acheter {{amount}} × {{item}} pour {{price}}",
       "itemDetails": "Quantité : {{amount}} · Prix : {{price}}",

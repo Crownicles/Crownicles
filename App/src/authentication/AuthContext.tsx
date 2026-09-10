@@ -1,6 +1,6 @@
 import React, {PropsWithChildren, useEffect} from "react";
 import {SplashScreen, useRouter} from "expo-router";
-import {deleteItemAsync, getItemAsync, setItemAsync} from "expo-secure-store";
+import {deleteStoredToken, readStoredToken, writeStoredToken} from "@/src/authentication/TokenStorage";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
@@ -64,12 +64,12 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 		while (shouldContinue) {
 			const tokenStorageKey = `${tokenStorageKeyTemplate}${count}`;
 			count++;
-			const result = await getItemAsync(tokenStorageKey).catch((error) => {
+			const result = await readStoredToken(tokenStorageKey).catch((error) => {
 				console.error("Failed to load token for clearing:", error);
 				return null;
 			});
 			if (result) {
-				await deleteItemAsync(tokenStorageKey).catch((error) => {
+				await deleteStoredToken(tokenStorageKey).catch((error) => {
 					console.error("Failed to clear token part:", error);
 				});
 			}
@@ -99,7 +99,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 
 		for (let i = 0; i < tokenParts.length; i++) {
 			const tokenStorageKey = `${tokenStorageKeyTemplate}${i + 1}`;
-			await setItemAsync(tokenStorageKey, tokenParts[i]).catch((error) => {
+			await writeStoredToken(tokenStorageKey, tokenParts[i]).catch((error) => {
 				console.error("Failed to save token part:", error);
 			});
 		}
@@ -113,7 +113,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 		while (shouldContinue) {
 			const tokenStorageKey = `${tokenStorageKeyTemplate}${count}`;
 			count++;
-			const result = await getItemAsync(tokenStorageKey).catch((error) => {
+			const result = await readStoredToken(tokenStorageKey).catch((error) => {
 				console.error("Failed to load token:", error);
 				onStateChange(AuthStateEnum.NO_TOKEN);
 			});

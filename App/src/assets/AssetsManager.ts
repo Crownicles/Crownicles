@@ -46,6 +46,30 @@ export class AssetsManager {
 	}
 
 	static async updateAssets(): Promise<void> {
+		const remoteAssets = await RestApi.getAssets();
+
+		this.assets = documentDirectory
+			? await this.updateCachedAssets(remoteAssets)
+			: await this.downloadAssets(remoteAssets);
+
+		await reloadI18n(AssetsManager.getAssets((asset) => asset.startsWith("Lang/")));
+		AppIcons.reloadAppIcons(AssetsManager.getAssets((asset) => asset === "icons.json"));
+	}
+
+	/**
+	 * Fallback for platforms without a document directory, such as a browser opened for development.
+	 * Nothing is cached between runs, so every asset is fetched again.
+	 * @param remoteAssets Assets the server offers
+	 */
+	private static async downloadAssets(remoteAssets: { file: string, hash: string }[]): Promise<Map<string, string>> {
+		const assets = new Map<string, string>();
+		for (const asset of remoteAssets) {
+			assets.set(asset.file, await RestApi.downloadAsset(asset.file));
+		}
+		return assets;
+	}
+
+	private static async updateCachedAssets(remoteAssets: { file: string, hash: string }[]): Promise<Map<string, string>> {
 		const documentDirectoryInfo = await getInfoAsync(documentDirectory!);
 		if (!documentDirectoryInfo.exists || !documentDirectoryInfo.isDirectory) {
 			throw new Error("Document directory does not exist or is not a directory.");
@@ -59,7 +83,6 @@ export class AssetsManager {
 		}
 
 		const localAssets = await this.readLocalAssets();
-		const remoteAssets = await RestApi.getAssets();
 
 		const assetsToUpdate = remoteAssets.filter(remoteAsset => {
 			const localAsset = localAssets.find(local => local.file === remoteAsset.file);
@@ -93,16 +116,13 @@ export class AssetsManager {
 			console.log(`Updated asset: ${assetToUpdate.file}`);
 		}
 
-		this.assets = new Map<string, string>();
+		const assets = new Map<string, string>();
 		for (const asset of remoteAssets) {
-			const assetContent = await readAsStringAsync(`${documentDirectory!}assets/${asset.file}`, {
+			assets.set(asset.file, await readAsStringAsync(`${documentDirectory!}assets/${asset.file}`, {
 				encoding: EncodingType.UTF8
-			});
-			this.assets.set(asset.file, assetContent);
+			}));
 		}
-
-		await reloadI18n(AssetsManager.getAssets((asset) => asset.startsWith("Lang/")));
-		AppIcons.reloadAppIcons(AssetsManager.getAssets((asset) => asset === "icons.json"));
+		return assets;
 	}
 
 	static getAssets(filter?: (file: string) => boolean): Map<string, string> {

@@ -19,6 +19,10 @@ import {
 	ReactionCollectorBadPetReaction, ReactionCollectorBadPetSmallEvent
 } from "../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import {ReactionCollectorGardener} from "../../../Lib/src/packets/interaction/ReactionCollectorGardener";
+import {ReactionCollectorCart} from "../../../Lib/src/packets/interaction/ReactionCollectorCart";
+import {
+	ReactionCollectorFightPet, ReactionCollectorFightPetReaction
+} from "../../../Lib/src/packets/interaction/ReactionCollectorFightPet";
 import {
 	ReactionCollectorGobletsGame
 } from "../../../Lib/src/packets/interaction/ReactionCollectorGobletsGame";
@@ -26,6 +30,12 @@ import {ReactionCollectorInteractOtherPlayersPoor} from "../../../Lib/src/packet
 import {ReactionCollectorLimoges} from "../../../Lib/src/packets/interaction/ReactionCollectorLimoges";
 import {ReactionCollectorLottery} from "../../../Lib/src/packets/interaction/ReactionCollectorLottery";
 import {ReactionCollectorPetFoodSmallEvent} from "../../../Lib/src/packets/interaction/ReactionCollectorPetFoodSmallEvent";
+import {ReactionCollectorGoToPVEIsland} from "../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
+import {ReactionCollectorShopSmallEvent} from "../../../Lib/src/packets/interaction/ReactionCollectorShopSmallEvent";
+import {ReactionCollectorEpicShopSmallEvent} from "../../../Lib/src/packets/interaction/ReactionCollectorEpicShopSmallEvent";
+import {
+	ReactionCollectorRecipeShopSmallEvent, RecipeShopSource
+} from "../../../Lib/src/packets/interaction/ReactionCollectorRecipeShopSmallEvent";
 import {ReactionCollectorWitch} from "../../../Lib/src/packets/interaction/ReactionCollectorWitch";
 import {PlantId} from "../../../Lib/src/constants/PlantConstants";
 import {
@@ -41,19 +51,40 @@ function map(packet: ReactionCollectorCreationPacket): ReturnType<typeof mapColl
 }
 
 describe("small-event collector mappings", () => {
-	it("maps every non-merchant small-event data payload", () => {
+	it("maps every small-event data payload", () => {
 		const badPetReaction = new ReactionCollectorBadPetReaction();
 		badPetReaction.id = "plead";
+		const fightPetReaction = new ReactionCollectorFightPetReaction();
+		fightPetReaction.actionId = "attack";
+		const shopItem = {
+			id: 7,
+			rarity: 1,
+			itemCategory: 0,
+			itemLevel: 2,
+			attack: {baseValue: 1, upgradeValue: 2, maxValue: 3},
+			defense: {baseValue: 1, upgradeValue: 2, maxValue: 3},
+			speed: {baseValue: 1, upgradeValue: 2, maxValue: 3}
+		};
 
 		const packets: [string, ReactionCollectorCreationPacket][] = [
 			[SMALL_EVENT_DATA_KINDS.ALTAR, new ReactionCollectorAltar([1, 5], 10, 100).creationPacket("altar", END_TIME)],
 			[SMALL_EVENT_DATA_KINDS.BAD_PET, new ReactionCollectorBadPetSmallEvent(2, "m", "Milo", [badPetReaction]).creationPacket("bad-pet", END_TIME)],
+			[SMALL_EVENT_DATA_KINDS.CART, new ReactionCollectorCart({isDisplayed: true, id: 4, type: "vi"}, 200).creationPacket("cart", END_TIME)],
+			[SMALL_EVENT_DATA_KINDS.FIGHT_PET, new ReactionCollectorFightPet(4, false, [fightPetReaction]).creationPacket("fight-pet", END_TIME)],
 			[SMALL_EVENT_DATA_KINDS.GARDENER, new ReactionCollectorGardener(PlantId.COMMON_HERB, 10, "paid", true).creationPacket("gardener", END_TIME)],
 			[SMALL_EVENT_DATA_KINDS.GOBLETS_GAME, new ReactionCollectorGobletsGame().creationPacket("goblets", END_TIME)],
 			[SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS, new ReactionCollectorInteractOtherPlayersPoor("other-player", 4).creationPacket("interact", END_TIME)],
 			[SMALL_EVENT_DATA_KINDS.LIMOGES, new ReactionCollectorLimoges("question-1").creationPacket("limoges", END_TIME)],
 			[SMALL_EVENT_DATA_KINDS.LOTTERY, new ReactionCollectorLottery().creationPacket("lottery", END_TIME)],
 			[SMALL_EVENT_DATA_KINDS.PET_FOOD, new ReactionCollectorPetFoodSmallEvent("meat", "f").creationPacket("pet-food", END_TIME)],
+			[SMALL_EVENT_DATA_KINDS.PVE_ISLAND, new ReactionCollectorGoToPVEIsland(3, 80, 100).creationPacket("pve-island", END_TIME)],
+			[SMALL_EVENT_DATA_KINDS.SHOP, new ReactionCollectorShopSmallEvent({item: shopItem, price: 200}).creationPacket("shop", END_TIME)],
+			[SMALL_EVENT_DATA_KINDS.EPIC_SHOP, new ReactionCollectorEpicShopSmallEvent({item: shopItem, price: 500, tip: true}).creationPacket("epic-shop", END_TIME)],
+			[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP, new ReactionCollectorRecipeShopSmallEvent({
+				source: RecipeShopSource.FARMER,
+				recipe: {recipeId: "healthPotion", level: 2, recipeType: "POTION_HEALTH"},
+				recipeCost: 300
+			}).creationPacket("recipe-shop", END_TIME)],
 			[SMALL_EVENT_DATA_KINDS.WITCH, new ReactionCollectorWitch([{id: "advice"}]).creationPacket("witch", END_TIME)]
 		];
 

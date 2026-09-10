@@ -127,16 +127,10 @@ class CollectorsStore {
 		this.notifyResolution(CITY_DATA_KINDS.CITY);
 	};
 
+	// The server stop packet owns refresh; focus refetch covers background expiration.
 	private readonly expireLocally = (collectorId: string): void => {
-		const collector = this.open.get(collectorId);
-		if (!collector) {
-			return;
-		}
 		this.answeredKinds.delete(collectorId);
 		this.forget(collectorId);
-		// This is a fallback for a backgrounded/offline app. A server stop packet may still follow;
-		// invalidating the same queries twice is harmless and keeps the report from getting stuck.
-		this.notifyResolution(collector.data.type);
 	};
 
 	private readonly forget = (collectorId: string): void => {
