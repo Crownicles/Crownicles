@@ -283,7 +283,7 @@ function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseI
 
 export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
-	const [pendingEntry, setPendingEntry] = useState<CityEntry>();
+	const [pendingEntry, setPendingEntry] = useState<CityEntry | null>(null);
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);
 	const [innId, setInnId] = useState<string>();
 	if (collector.data.type !== CITY_DATA_KINDS.CITY) return null;
@@ -321,10 +321,10 @@ export function CityCollector({collector, onChoose, submitting}: CityCollectorPr
 			collector={collector}
 			snapshot={snapshot}
 			onConfirm={(): void => {
-				setPendingEntry(undefined);
+				setPendingEntry(null);
 				choose(pendingEntry.index);
 			}}
-			onCancel={(): void => setPendingEntry(undefined)}
+			onCancel={(): void => setPendingEntry(null)}
 		/> : null}
 	</>;
 }

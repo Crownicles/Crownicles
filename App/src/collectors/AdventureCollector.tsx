@@ -1,4 +1,4 @@
-import {ReactNode, useState} from "react";
+import {ComponentType, ReactNode, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {
@@ -325,46 +325,39 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 		</Screen>
 	);
 }
-/** The report-owned collector is rendered in the same screen hierarchy as the mobile mockup. */
-export function AdventureCollector({collector, onChoose, submitting}: {
+type AdventureCollectorProps = {
 	collector: ReactionCollectorCreation;
 	onChoose: (reactionIndex: number) => void;
 	submitting: boolean;
-}): ReactNode {
-	if (collector.data.type === REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS) {
-		return <TokenUseCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
+};
+
+const SPECIALIZED_COLLECTORS: Partial<Record<ReactionCollectorData["type"], ComponentType<AdventureCollectorProps>>> = {
+	[REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS]: TokenUseCollector,
+	[REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL]: BuyHealCollector,
+	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: TokenMerchantCollector,
+	[CITY_DATA_KINDS.CITY]: CityCollector,
+	[SHOP_DATA_KINDS.COLLECTOR]: ShopCollector,
+	[SMALL_EVENT_DATA_KINDS.SHOP]: SmallEventShopCollector,
+	[SMALL_EVENT_DATA_KINDS.EPIC_SHOP]: SmallEventShopCollector,
+	[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP]: RecipeShopCollector,
+	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: PveIslandInvitationCollector
+};
+
+/** The report-owned collector is rendered in the same screen hierarchy as the mobile mockup. */
+export function AdventureCollector(props: AdventureCollectorProps): ReactNode {
+	const SpecializedCollector = SPECIALIZED_COLLECTORS[props.collector.data.type];
+	if (SpecializedCollector) {
+		return <SpecializedCollector {...props} />;
 	}
-	if (collector.data.type === REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL) {
-		return <BuyHealCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	}
-	if (collector.data.type === REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT) {
-		return <TokenMerchantCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	}
-	if (collector.data.type === CITY_DATA_KINDS.CITY) {
-		return <CityCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	}
-	if (collector.data.type === SHOP_DATA_KINDS.COLLECTOR) {
-		return <ShopCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	}
-	if (collector.data.type === SMALL_EVENT_DATA_KINDS.SHOP
-		|| collector.data.type === SMALL_EVENT_DATA_KINDS.EPIC_SHOP) {
-		return <SmallEventShopCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	}
-	if (collector.data.type === SMALL_EVENT_DATA_KINDS.RECIPE_SHOP) {
-		return <RecipeShopCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	}
-	if (collector.data.type === SMALL_EVENT_DATA_KINDS.PVE_ISLAND) {
-		return <PveIslandInvitationCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	}
-	const description = collectorDescription(collector.data);
+	const description = collectorDescription(props.collector.data);
 	return (
 		<Screen>
 			<Hero
-				eyebrow={eventEyebrow(collector)}
-				title={collectorTitle(collector.data)}
+				eyebrow={eventEyebrow(props.collector)}
+				title={collectorTitle(props.collector.data)}
 				subtitle={description}
 			/>
-			<CollectorChoices collector={collector} onChoose={onChoose} submitting={submitting} />
+			<CollectorChoices {...props} />
 		</Screen>
 	);
 }

@@ -146,13 +146,19 @@ function useCurrentTime(): number {
   return currentTime;
 }
 
+function shouldRetryReport(answer: GameAnswer<ReportTravelSummaryRes>, retriesLeft: number): boolean {
+	return retriesLeft > 0
+		&& answer.kind === "alternative"
+		&& answer.packetName === SmallEventResultRes.wireName;
+}
+
 export async function requestReport(retriesLeft = MAX_SMALL_EVENT_REPORT_RETRIES): Promise<GameAnswer<ReportTravelSummaryRes>> {
 	const result = await GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes, [
 		ReactionCollectorCreation,
 		SmallEventResultRes,
 		Blocked
 	]);
-	if (result.kind !== "alternative" || result.packetName !== SmallEventResultRes.wireName || retriesLeft === 0) {
+	if (!shouldRetryReport(result, retriesLeft)) {
 		return result;
 	}
 	await new Promise(resolve => setTimeout(resolve, SMALL_EVENT_REPORT_RETRY_DELAY));
@@ -345,6 +351,41 @@ export function tokenOutcomeNeedsAcknowledgement(outcome: TokenOutcomeData): out
 		&& outcome.kind !== "merchantRefused";
 }
 
+function collectorScreen(
+	collector: ReactionCollectorCreation,
+	reactToCollector: CollectorOutcomeViewProps["reactToCollector"],
+	isAnswerPending: CollectorOutcomeViewProps["isAnswerPending"]
+): ReactNode {
+	return <AdventureCollector
+		collector={collector}
+		onChoose={(reactionIndex): void => reactToCollector(collector.id, reactionIndex)}
+		submitting={isAnswerPending(collector.id)}
+	/>;
+}
+
+function storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome}: Pick<
+	CollectorOutcomeViewProps,
+	"bigEventOutcome" | "lotteryOutcome" | "witchOutcome" | "choiceOutcome" | "automaticOutcome"
+>): ReactNode {
+	if (bigEventOutcome) return <BigEventOutcomeScreen outcome={bigEventOutcome} onContinue={reportEventStore.clear} />;
+	if (lotteryOutcome) return <LotteryOutcomeScreen outcome={lotteryOutcome} onContinue={reportEventStore.clearLottery} />;
+	if (witchOutcome) return <WitchOutcomeScreen outcome={witchOutcome} onContinue={reportEventStore.clearWitch} />;
+	if (choiceOutcome) return <SmallEventChoiceOutcomeScreen outcome={choiceOutcome} onContinue={reportEventStore.clearChoice} />;
+	if (automaticOutcome) return <AutomaticSmallEventOutcomeScreen outcome={automaticOutcome} onContinue={reportEventStore.clearAutomatic} />;
+	return null;
+}
+
+function storedRecoveryOutcome({tokenOutcome, healOutcome, continueAfterTokenOutcome, continueAfterHealOutcome}: Pick<
+	CollectorOutcomeViewProps,
+	"tokenOutcome" | "healOutcome" | "continueAfterTokenOutcome" | "continueAfterHealOutcome"
+>): ReactNode {
+	if (tokenOutcome && tokenOutcomeNeedsAcknowledgement(tokenOutcome)) {
+		return <TokenOutcomeScreen outcome={tokenOutcome} onContinue={continueAfterTokenOutcome} />;
+	}
+	if (healOutcome) return <HealOutcomeScreen outcome={healOutcome} onContinue={continueAfterHealOutcome} />;
+	return null;
+}
+
 function CollectorOutcomeView({
 	bigEventCollector,
 	adventureCollector,
@@ -361,43 +402,14 @@ function CollectorOutcomeView({
 	continueAfterHealOutcome
 }: CollectorOutcomeViewProps): ReactNode {
 	if (bigEventCollector) {
-		return (
-			<AdventureCollector
-				collector={bigEventCollector}
-				onChoose={(reactionIndex): void => reactToCollector(bigEventCollector.id, reactionIndex)}
-				submitting={isAnswerPending(bigEventCollector.id)}
-			/>
-		);
+		return collectorScreen(bigEventCollector, reactToCollector, isAnswerPending);
 	}
-	if (bigEventOutcome) {
-		return <BigEventOutcomeScreen outcome={bigEventOutcome} onContinue={reportEventStore.clear} />;
-	}
-	if (lotteryOutcome) {
-		return <LotteryOutcomeScreen outcome={lotteryOutcome} onContinue={reportEventStore.clearLottery} />;
-	}
-	if (witchOutcome) {
-		return <WitchOutcomeScreen outcome={witchOutcome} onContinue={reportEventStore.clearWitch} />;
-	}
-	if (choiceOutcome) {
-		return <SmallEventChoiceOutcomeScreen outcome={choiceOutcome} onContinue={reportEventStore.clearChoice} />;
-	}
-	if (automaticOutcome) {
-		return <AutomaticSmallEventOutcomeScreen outcome={automaticOutcome} onContinue={reportEventStore.clearAutomatic} />;
-	}
-	if (tokenOutcome && tokenOutcomeNeedsAcknowledgement(tokenOutcome)) {
-		return <TokenOutcomeScreen outcome={tokenOutcome} onContinue={continueAfterTokenOutcome} />;
-	}
-	if (healOutcome) {
-		return <HealOutcomeScreen outcome={healOutcome} onContinue={continueAfterHealOutcome} />;
-	}
+	const eventOutcome = storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome});
+	if (eventOutcome) return eventOutcome;
+	const recoveryOutcome = storedRecoveryOutcome({tokenOutcome, healOutcome, continueAfterTokenOutcome, continueAfterHealOutcome});
+	if (recoveryOutcome) return recoveryOutcome;
 	if (adventureCollector) {
-		return (
-			<AdventureCollector
-				collector={adventureCollector}
-				onChoose={(reactionIndex): void => reactToCollector(adventureCollector.id, reactionIndex)}
-				submitting={isAnswerPending(adventureCollector.id)}
-			/>
-		);
+		return collectorScreen(adventureCollector, reactToCollector, isAnswerPending);
 	}
 	return null;
 }

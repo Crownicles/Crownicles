@@ -5,6 +5,7 @@ import {Button, ButtonRow, Hero, KeyValue, Notice, Panel, Screen} from "@/src/de
 import {i18n} from "@/src/translations/i18n";
 
 type ResultField = {label: string; value: string};
+type ResultFieldResolver = (outcome: SmallEventResultRes) => ResultField | null;
 
 function eventKey(eventName: string): string {
 	return eventName
@@ -37,26 +38,77 @@ function amountField(eventName: string, amount: number): ResultField {
 	return {label: i18n.t("app:adventure.automaticResults.fields.amount"), value: formatNumber(amount)};
 }
 
+function amountResultField(outcome: SmallEventResultRes): ResultField | null {
+	const amount = numberValue(outcome.data, "amount");
+	return amount === null || amount === 0 ? null : amountField(outcome.eventName, amount);
+}
+
+function gainedMoneyField(outcome: SmallEventResultRes): ResultField | null {
+	const money = numberValue(outcome.data, "money");
+	return money === null || money === 0
+		? null
+		: {label: i18n.t("app:adventure.event.fields.money"), value: `+${formatMoney(money)}`};
+}
+
+function lostMoneyField(outcome: SmallEventResultRes): ResultField | null {
+	const moneyLost = numberValue(outcome.data, "moneyLost");
+	return moneyLost === null || moneyLost <= 0
+		? null
+		: {label: i18n.t("app:adventure.event.fields.money"), value: `-${formatMoney(moneyLost)}`};
+}
+
+function lostHealthField(outcome: SmallEventResultRes): ResultField | null {
+	const lifeLost = numberValue(outcome.data, "lifeLost");
+	return lifeLost === null || lifeLost <= 0
+		? null
+		: {label: i18n.t("app:adventure.event.fields.health"), value: `-${formatNumber(lifeLost)}`};
+}
+
+function quantityField(outcome: SmallEventResultRes): ResultField | null {
+	const quantity = numberValue(outcome.data, "quantity");
+	return quantity === null || quantity <= 0
+		? null
+		: {label: i18n.t("app:adventure.automaticResults.fields.quantity"), value: formatNumber(quantity)};
+}
+
+function experienceField(outcome: SmallEventResultRes): ResultField | null {
+	const xp = numberValue(outcome.data, "xp");
+	return xp === null || xp <= 0
+		? null
+		: {label: i18n.t("app:adventure.event.fields.experience"), value: `+${formatNumber(xp)}`};
+}
+
+function effectField(outcome: SmallEventResultRes): ResultField | null {
+	const effectId = stringValue(outcome.data, "effectId");
+	return effectId
+		? {label: i18n.t("app:adventure.witch.fields.effect"), value: i18n.t(`error:effects.${effectId}.self`)}
+		: null;
+}
+
+function materialField(outcome: SmallEventResultRes): ResultField | null {
+	const materialId = stringValue(outcome.data, "materialId");
+	return materialId
+		? {label: i18n.t("app:adventure.choiceResults.fields.material"), value: i18n.t(`models:materials.${materialId}`)}
+		: null;
+}
+
+const RESULT_FIELD_RESOLVERS: ResultFieldResolver[] = [
+	amountResultField,
+	gainedMoneyField,
+	lostMoneyField,
+	lostHealthField,
+	quantityField,
+	experienceField,
+	effectField,
+	materialField
+];
+
+function isResultField(field: ResultField | null): field is ResultField {
+	return field !== null;
+}
+
 function resultFields(outcome: SmallEventResultRes): ResultField[] {
-	const {data, eventName} = outcome;
-	const fields: ResultField[] = [];
-	const amount = numberValue(data, "amount");
-	if (amount !== null && amount !== 0) fields.push(amountField(eventName, amount));
-	const money = numberValue(data, "money");
-	if (money !== null && money !== 0) fields.push({label: i18n.t("app:adventure.event.fields.money"), value: `+${formatMoney(money)}`});
-	const moneyLost = numberValue(data, "moneyLost");
-	if (moneyLost !== null && moneyLost > 0) fields.push({label: i18n.t("app:adventure.event.fields.money"), value: `-${formatMoney(moneyLost)}`});
-	const lifeLost = numberValue(data, "lifeLost");
-	if (lifeLost !== null && lifeLost > 0) fields.push({label: i18n.t("app:adventure.event.fields.health"), value: `-${formatNumber(lifeLost)}`});
-	const quantity = numberValue(data, "quantity");
-	if (quantity !== null && quantity > 0) fields.push({label: i18n.t("app:adventure.automaticResults.fields.quantity"), value: formatNumber(quantity)});
-	const xp = numberValue(data, "xp");
-	if (xp !== null && xp > 0) fields.push({label: i18n.t("app:adventure.event.fields.experience"), value: `+${formatNumber(xp)}`});
-	const effectId = stringValue(data, "effectId");
-	if (effectId) fields.push({label: i18n.t("app:adventure.witch.fields.effect"), value: i18n.t(`error:effects.${effectId}.self`)});
-	const materialId = stringValue(data, "materialId");
-	if (materialId) fields.push({label: i18n.t("app:adventure.choiceResults.fields.material"), value: i18n.t(`models:materials.${materialId}`)});
-	return fields;
+	return RESULT_FIELD_RESOLVERS.map(resolve => resolve(outcome)).filter(isResultField);
 }
 
 export function AutomaticSmallEventOutcome({outcome, onContinue}: {

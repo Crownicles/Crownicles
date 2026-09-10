@@ -111,22 +111,56 @@ function recipeShopDetails(result: Extract<SmallEventChoiceResult, {event: "reci
 	return {title: i18n.t("app:adventure.choiceResults.titles.recipeShop"), description: i18n.t(`app:adventure.choiceResults.recipeShop.${result.outcome}`), fields};
 }
 
-function resultDetails(result: SmallEventChoiceResult): OutcomeDetails {
+type TradeResult = Extract<SmallEventChoiceResult, {event: "recipeShop" | "shop" | "epicShop"}>;
+type CreatureResult = Extract<SmallEventChoiceResult, {event: "badPet" | "fightPet" | "gardener" | "petFood"}>;
+
+function assertUnhandledResult(result: never): never {
+	throw new Error(`Unhandled small event result: ${JSON.stringify(result)}`);
+}
+
+function isTradeResult(result: SmallEventChoiceResult): result is TradeResult {
+	return result.event === "recipeShop" || result.event === "shop" || result.event === "epicShop";
+}
+
+function isCreatureResult(result: SmallEventChoiceResult): result is CreatureResult {
+	return result.event === "badPet" || result.event === "fightPet" || result.event === "gardener" || result.event === "petFood";
+}
+
+function tradeResultDetails(result: TradeResult): OutcomeDetails {
 	switch (result.event) {
-		case "altar": return altarDetails(result);
+		case "recipeShop": return recipeShopDetails(result);
+		case "shop":
+		case "epicShop": return {title: i18n.t(`app:adventure.choiceResults.titles.${result.event}`), description: i18n.t(`app:adventure.choiceResults.shop.${result.outcome}`), fields: []};
+		default: return assertUnhandledResult(result);
+	}
+}
+
+function creatureResultDetails(result: CreatureResult): OutcomeDetails {
+	switch (result.event) {
 		case "badPet": return badPetDetails(result);
-		case "cart": return cartDetails(result);
 		case "fightPet": return fightPetDetails(result);
 		case "gardener": return gardenerDetails(result);
+		case "petFood": return petFoodDetails(result);
+		default: return assertUnhandledResult(result);
+	}
+}
+
+function otherResultDetails(result: Exclude<SmallEventChoiceResult, TradeResult | CreatureResult>): OutcomeDetails {
+	switch (result.event) {
+		case "altar": return altarDetails(result);
+		case "cart": return cartDetails(result);
 		case "pveIsland": return pveIslandDetails(result);
 		case "goblets": return gobletsDetails(result);
 		case "interactPoor": return {title: i18n.t("app:adventure.choiceResults.titles.interactPoor"), description: i18n.t("app:adventure.choiceResults.interactPoor.donated"), fields: []};
 		case "limoges": return limogesDetails(result);
-		case "petFood": return petFoodDetails(result);
-		case "recipeShop": return recipeShopDetails(result);
-		case "shop":
-		case "epicShop": return {title: i18n.t(`app:adventure.choiceResults.titles.${result.event}`), description: i18n.t(`app:adventure.choiceResults.shop.${result.outcome}`), fields: []};
+		default: return assertUnhandledResult(result);
 	}
+}
+
+function resultDetails(result: SmallEventChoiceResult): OutcomeDetails {
+	if (isTradeResult(result)) return tradeResultDetails(result);
+	if (isCreatureResult(result)) return creatureResultDetails(result);
+	return otherResultDetails(result);
 }
 
 export function SmallEventChoiceOutcome({outcome, onContinue}: {

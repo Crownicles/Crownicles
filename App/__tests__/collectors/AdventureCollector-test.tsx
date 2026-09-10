@@ -81,16 +81,13 @@ function confirmationCollector(id: string, data: ReactionCollectorCreation["data
 }
 
 async function chooseFirstCollectorChoice(
-	collector: ReactionCollectorCreation,
-	choiceText: string,
-	onChoose: jest.Mock,
-	assertView: () => void,
-	expectedIndex = 0
+	scenario: CollectorScenario,
+	onChoose: jest.Mock
 ): Promise<void> {
-	await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
-	assertView();
-	await fireEvent.press(screen.getByText(choiceText));
-	expect(onChoose).toHaveBeenCalledWith(expectedIndex);
+	await render(<AdventureCollector collector={scenario.collector()} onChoose={onChoose} submitting={false} />);
+	scenario.assertView();
+	await fireEvent.press(screen.getByText(scenario.choiceText));
+	expect(onChoose).toHaveBeenCalledWith(scenario.expectedIndex ?? 0);
 }
 
 async function continueOutcome(
@@ -373,7 +370,7 @@ const outcomeScenarios: OutcomeScenario[] = [
 
 describe("AdventureCollector", () => {
 	it.each(collectorScenarios)("$name", async scenario => {
-		await chooseFirstCollectorChoice(scenario.collector(), scenario.choiceText, jest.fn(), scenario.assertView, scenario.expectedIndex);
+		await chooseFirstCollectorChoice(scenario, jest.fn());
 	});
 
 	it("confirms a token bundle before buying it", async () => {

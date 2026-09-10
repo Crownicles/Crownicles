@@ -21,6 +21,50 @@ function useSecondsLeft(endTime: number): number {
 	return secondsLeft;
 }
 
+type IndexedChoice = {
+	reaction: ReactionCollectorCreation["reactions"][number];
+	index: number;
+	key: string;
+};
+
+function isServerOnlyChoice(collector: ReactionCollectorCreation, choice: IndexedChoice): boolean {
+	return collector.data.type === BIG_EVENT_DATA_KINDS.COLLECTOR
+		&& choice.reaction.type === BIG_EVENT_REACTION_KINDS.POSSIBILITY
+		&& choice.reaction.data.name === BIG_EVENT_END_POSSIBILITY_ID;
+}
+
+function visibleChoices(collector: ReactionCollectorCreation): IndexedChoice[] {
+	return collector.reactions
+		.map((reaction, index) => ({reaction, index, key: `${collector.id}-${index}`}))
+		.filter(choice => !isServerOnlyChoice(collector, choice));
+}
+
+function countdownLabel(secondsLeft: number, submitting: boolean): string {
+	if (submitting) {
+		return i18n.t("app:collector.answering");
+	}
+	return secondsLeft === 0
+		? i18n.t("app:collector.expired")
+		: i18n.t("app:collector.timeLeft", {seconds: secondsLeft});
+}
+
+function CollectorChoiceRow({choice, collector, locked, onChoose}: {
+	choice: IndexedChoice;
+	collector: ReactionCollectorCreation;
+	locked: boolean;
+	onChoose: (choice: IndexedChoice) => void;
+}): ReactNode {
+	const choosable = isChoosable(choice.reaction, collector.data);
+	const disabled = locked || !choosable;
+	return <Row
+		key={choice.key}
+		disabled={disabled}
+		onPress={disabled ? undefined : (): void => onChoose(choice)}
+		title={reactionLabel(choice.reaction, collector.data)}
+		chevron={choosable && !locked}
+	/>;
+}
+
 /**
  * Renders any collector: a statement, the choices in the order the server sent them, and a
  * countdown. Answering means sending back the position of the choice, so the order must never be
@@ -36,36 +80,21 @@ export function CollectorChoices({collector, onChoose, submitting = false}: {
 	const secondsLeft = useSecondsLeft(collector.endTime);
 	const [answeredCollectorId, setAnsweredCollectorId] = useState<string | null>(null);
 	const locked = answeredCollectorId === collector.id || submitting || secondsLeft === 0;
-	const choices = collector.reactions.map((reaction, index) => ({
-		reaction,
-		index,
-		key: `${collector.id}-${index}`
-	})).filter(choice => !(collector.data.type === BIG_EVENT_DATA_KINDS.COLLECTOR
-		&& choice.reaction.type === BIG_EVENT_REACTION_KINDS.POSSIBILITY
-		&& choice.reaction.data.name === BIG_EVENT_END_POSSIBILITY_ID));
+	const choose = (choice: IndexedChoice): void => {
+		setAnsweredCollectorId(collector.id);
+		onChoose(choice.index);
+	};
 
 	return (
 		<Panel>
-			{choices.map((choice) => {
-				const choosable = isChoosable(choice.reaction, collector.data);
-				return (
-					<Row
-						key={choice.key}
-						disabled={locked || !choosable}
-						onPress={locked || !choosable ? undefined : (): void => {
-							setAnsweredCollectorId(collector.id);
-							onChoose(choice.index);
-						}}
-						title={reactionLabel(choice.reaction, collector.data)}
-						chevron={choosable && !locked}
-					/>
-				);
-			})}
-			<Note>
-				{submitting
-					? i18n.t("app:collector.answering")
-					: secondsLeft === 0 ? i18n.t("app:collector.expired") : i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}
-			</Note>
+			{visibleChoices(collector).map(choice => <CollectorChoiceRow
+				key={choice.key}
+				choice={choice}
+				collector={collector}
+				locked={locked}
+				onChoose={choose}
+			/>)}
+			<Note>{countdownLabel(secondsLeft, submitting)}</Note>
 		</Panel>
 	);
 }

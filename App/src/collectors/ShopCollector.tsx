@@ -76,9 +76,49 @@ function ShopGroups({groups, collector, currency, availableCurrency, locked, cho
 	));
 }
 
+function ShopClose({index, locked, choose}: {index: number; locked: boolean; choose: (index: number) => void}): ReactNode {
+	if (index < 0) return null;
+	return (
+		<Panel>
+			<Row
+				disabled={locked}
+				onPress={locked ? undefined : (): void => choose(index)}
+				title={i18n.t("app:city.shop.close")}
+				tone="danger"
+				chevron={!locked}
+			/>
+		</Panel>
+	);
+}
+
+function PurchaseConfirmation({purchase, currency, onConfirm, onCancel}: {
+	purchase: ShopGroup | null;
+	currency: "money" | "gem";
+	onConfirm: (index: number) => void;
+	onCancel: () => void;
+}): ReactNode {
+	if (!purchase) return null;
+	return (
+		<Confirmation
+			title={i18n.t("app:city.shop.confirmTitle")}
+			message={shopItemName({shopItemId: purchase.reaction.data.shopItemId})}
+			onRequestClose={onCancel}
+		>
+			<Panel>
+				<KeyValue label={i18n.t("app:city.shop.quantity")} value={String(purchase.reaction.data.amount)} />
+				<KeyValue label={i18n.t("app:city.shop.price")} value={currencyLabel(purchase.reaction.data.price, currency)} />
+			</Panel>
+			<ButtonRow>
+				<Button variant="primary" onPress={(): void => onConfirm(purchase.index)}>{i18n.t("app:collector.accept")}</Button>
+				<Button onPress={onCancel}>{i18n.t("app:collector.refuse")}</Button>
+			</ButtonRow>
+		</Confirmation>
+	);
+}
+
 export function ShopCollector({collector, onChoose, submitting}: ShopCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
-	const [pendingPurchase, setPendingPurchase] = useState<ShopGroup>();
+	const [pendingPurchase, setPendingPurchase] = useState<ShopGroup | null>(null);
 	if (collector.data.type !== SHOP_DATA_KINDS.COLLECTOR) {
 		return null;
 	}
@@ -122,34 +162,14 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 					}
 				}}
 			/>
-			{closeIndex >= 0 ? (
-				<Panel>
-					<Row
-						disabled={locked}
-						onPress={locked ? undefined : (): void => choose(closeIndex)}
-						title={i18n.t("app:city.shop.close")}
-						tone="danger"
-						chevron={!locked}
-					/>
-				</Panel>
-			) : null}
+			<ShopClose index={closeIndex} locked={locked} choose={choose} />
 			{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
-			{pendingPurchase ? (
-				<Confirmation
-					title={i18n.t("app:city.shop.confirmTitle")}
-					message={shopItemName({shopItemId: pendingPurchase.reaction.data.shopItemId})}
-					onRequestClose={() => setPendingPurchase(undefined)}
-				>
-					<Panel>
-						<KeyValue label={i18n.t("app:city.shop.quantity")} value={String(pendingPurchase.reaction.data.amount)} />
-						<KeyValue label={i18n.t("app:city.shop.price")} value={currencyLabel(pendingPurchase.reaction.data.price, currency)} />
-					</Panel>
-					<ButtonRow>
-						<Button variant="primary" onPress={(): void => choose(pendingPurchase.index)}>{i18n.t("app:collector.accept")}</Button>
-						<Button onPress={(): void => setPendingPurchase(undefined)}>{i18n.t("app:collector.refuse")}</Button>
-					</ButtonRow>
-				</Confirmation>
-			) : null}
+			<PurchaseConfirmation
+				purchase={pendingPurchase}
+				currency={currency}
+				onConfirm={choose}
+				onCancel={(): void => setPendingPurchase(null)}
+			/>
 		</Screen>
 	);
 }
