@@ -35,6 +35,8 @@ const WIRE_NAMES = [
 	"SellCancelRes",
 	"InventoryReq",
 	"InventoryRes",
+	"MissionsReq",
+	"MissionsRes",
 	"PetNotFound",
 	"PetReq",
 	"PetRes",

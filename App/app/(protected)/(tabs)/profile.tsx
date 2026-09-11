@@ -1,7 +1,6 @@
 import {useNavigation} from "expo-router";
 import {ReactNode, useEffect, useState} from "react";
-import {ActivityIndicator, Modal, StyleSheet, View} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {ActivityIndicator, StyleSheet, View} from "react-native";
 import {GameClient} from "@/src/networking/GameClient";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
@@ -11,10 +10,10 @@ import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
+import {Missions as MissionsScreen} from "@/src/components/Missions";
+import {DetailScreen} from "@/src/design/DetailScreen";
 import {AppIcons} from "@/src/AppIcons";
 import {
-	Button,
-	ButtonRow,
 	EmptyState,
 	Hero,
 	KeyValue,
@@ -35,6 +34,7 @@ const MINIMUM_RATIO = 0;
 const MAXIMUM_RATIO = 1;
 const PET_RARITY_MIN = 0;
 const PET_RARITY_MAX = 8;
+type ProfilePage = "profile" | "inventory" | "missions";
 
 const styles = StyleSheet.create({
 	state: {
@@ -44,10 +44,6 @@ const styles = StyleSheet.create({
 	},
 	inventory: {
 		marginTop: Theme.spacing.sectionGap
-	},
-	modal: {
-		flex: 1,
-		backgroundColor: Theme.colors.paper
 	}
 });
 
@@ -280,7 +276,7 @@ function AdditionalProfileSections({profile}: {profile: ProfileRes}): ReactNode 
 	);
 }
 
-function ProfileDetails({profile, onInventory}: {profile: ProfileRes; onInventory: () => void}): ReactNode {
+function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: ProfilePage) => void}): ReactNode {
 	const subtitle = i18n.t("app:profile.subtitle", {
 		className: classLabel(profile),
 		level: profile.level,
@@ -289,7 +285,10 @@ function ProfileDetails({profile, onInventory}: {profile: ProfileRes; onInventor
 	return (
 		<>
 			<Hero eyebrow={i18n.t("app:profile.eyebrow")} title={profile.pseudo} subtitle={subtitle} />
-			<QuickActions><QuickAction icon={AppIcons.getIcon("inventory.stock")} onPress={onInventory}>{i18n.t("app:profile.titles.inventory")}</QuickAction></QuickActions>
+			<QuickActions>
+				<QuickAction icon={AppIcons.getIcon("inventory.stock")} onPress={(): void => onPage("inventory")}>{i18n.t("app:profile.titles.inventory")}</QuickAction>
+				<QuickAction icon={AppIcons.getIcon("missions.campaign")} onPress={(): void => onPage("missions")}>{i18n.t("app:profile.titles.missions")}</QuickAction>
+			</QuickActions>
 			<ProfileInformation profile={profile} />
 			<Statistics profile={profile} />
 			<Missions profile={profile} />
@@ -300,7 +299,7 @@ function ProfileDetails({profile, onInventory}: {profile: ProfileRes; onInventor
 	);
 }
 
-function ProfileState({state, onInventory}: {state: RequestState<ProfileRes>; onInventory: () => void}): ReactNode {
+function ProfileState({state, onPage}: {state: RequestState<ProfileRes>; onPage: (page: ProfilePage) => void}): ReactNode {
 	if (state.status === "loading") {
 		return (
 			<View style={styles.state}>
@@ -312,7 +311,7 @@ function ProfileState({state, onInventory}: {state: RequestState<ProfileRes>; on
 	if (state.status === "empty" || state.status === "failed") {
 		return <EmptyState>{state.status === "empty" ? i18n.t("app:profile.notFound") : i18n.t("app:common.error")}</EmptyState>;
 	}
-	return <ProfileDetails profile={state.data} onInventory={onInventory} />;
+	return <ProfileDetails profile={state.data} onPage={onPage} />;
 }
 
 function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNode {
@@ -329,20 +328,8 @@ function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNo
 	);
 }
 
-function InventoryModal({state, onClose}: {state: RequestState<InventoryRes>; onClose: () => void}): ReactNode {
-	return <Modal visible animationType="slide" onRequestClose={onClose}>
-		<SafeAreaView style={styles.modal}>
-			<Screen>
-				<ButtonRow><Button onPress={onClose}>{i18n.t("app:common.back")}</Button></ButtonRow>
-				<Hero eyebrow={i18n.t("app:profile.eyebrow")} title={i18n.t("app:profile.titles.inventory")} />
-				<InventorySection state={state} />
-			</Screen>
-		</SafeAreaView>
-	</Modal>;
-}
-
 export default function Profile(): ReactNode {
-	const [inventoryOpen, setInventoryOpen] = useState(false);
+	const [page, setPage] = useState<ProfilePage>("profile");
 	const profileState = usePlayerProfile();
 	const inventoryState = useGameQuery<InventoryRes>(
 		GAME_ENTITIES.INVENTORY,
@@ -357,10 +344,8 @@ export default function Profile(): ReactNode {
 		}
 	}, [profile, navigation]);
 
-	return (
-		<>
-			<Screen><ProfileState state={profileState} onInventory={(): void => setInventoryOpen(true)} /></Screen>
-			{inventoryOpen ? <InventoryModal state={inventoryState} onClose={(): void => setInventoryOpen(false)} /> : null}
-		</>
-	);
+	if (page !== "profile") return <DetailScreen title={i18n.t(`app:profile.titles.${page}`)} eyebrow={i18n.t("app:profile.eyebrow")} onClose={(): void => setPage("profile")}>
+		{page === "inventory" ? <InventorySection state={inventoryState} /> : <MissionsScreen />}
+	</DetailScreen>;
+	return <Screen><ProfileState state={profileState} onPage={setPage} /></Screen>;
 }

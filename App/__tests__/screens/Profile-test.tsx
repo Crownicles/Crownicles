@@ -5,7 +5,8 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 
 jest.mock("expo-router", () => ({
-	useNavigation: (): {setOptions: jest.Mock} => ({setOptions: jest.fn()})
+	useNavigation: (): {setOptions: jest.Mock} => ({setOptions: jest.fn()}),
+	useFocusEffect: jest.fn()
 }));
 
 jest.mock("@/src/store/useGameQuery", () => ({
@@ -19,6 +20,8 @@ jest.mock("@/src/store/usePlayerProfile", () => ({
 jest.mock("@/src/components/Inventory", () => ({
 	Inventory: (): null => null
 }));
+
+jest.mock("@/src/components/Missions", () => ({Missions: (): null => null}));
 
 jest.mock("@/src/AppIcons", () => ({
 	AppIcons: {
@@ -72,7 +75,7 @@ describe("Profile screen", () => {
 		expect(view.getByText("app:profile.eyebrow")).toBeTruthy();
 		expect(view.getByText("app:profile.titles.information")).toBeTruthy();
 		expect(view.getByText("app:profile.titles.statistics")).toBeTruthy();
-		expect(view.getByText("app:profile.titles.missions")).toBeTruthy();
+		expect(view.getAllByText("app:profile.titles.missions")).toHaveLength(2);
 		expect(view.getByText("app:profile.titles.scoreAndRank")).toBeTruthy();
 		expect(view.queryByText("app:profile.tooltips.money")).toBeNull();
 	});
@@ -83,5 +86,12 @@ describe("Profile screen", () => {
 		expect(view.getByText("app:common.back")).toBeTruthy();
 		await fireEvent.press(view.getByText("app:common.back"));
 		expect(view.queryByText("app:common.back")).toBeNull();
+	});
+
+	it("opens missions without keeping the profile behind a modal", async () => {
+		const view = await render(<Profile />);
+		await fireEvent.press(view.getByRole("button", {name: /app:profile.titles.missions/}));
+		expect(view.getByText("app:common.back")).toBeTruthy();
+		expect(view.queryByText("app:profile.titles.statistics")).toBeNull();
 	});
 });

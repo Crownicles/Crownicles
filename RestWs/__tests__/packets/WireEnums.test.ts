@@ -9,6 +9,8 @@ import { ItemNature } from "../../../WsPackets/src/objects/ItemNature";
 import { ItemRarity } from "../../../WsPackets/src/objects/ItemRarity";
 import {PlantId} from "../../../WsPackets/src/objects/PlantId";
 import {EQUIP_ACTIONS, EQUIP_ERRORS} from "../../../WsPackets/src/objects/EquipCategoryData";
+import { MissionType as LibMissionType } from "../../../Lib/src/types/CompletedMission";
+import { MISSION_TYPES } from "../../../WsPackets/src/objects/Mission";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -21,6 +23,7 @@ describe("wire enums mirror their back-end counterpart", () => {
 		["ItemNature", ItemNature, LibItemNature],
 		["ItemRarity", ItemRarity, LibItemRarity],
 		["PlantId", PlantId, LibPlantId],
+		["MissionType", MISSION_TYPES, LibMissionType],
 		["EquipAction", EQUIP_ACTIONS, ItemConstants.EQUIP_ACTIONS],
 		["EquipError", EQUIP_ERRORS, ItemConstants.EQUIP_ERRORS]
 	])("%s has the same members in the same order", (_name, wireEnum, libEnum) => {

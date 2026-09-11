@@ -748,6 +748,20 @@
     },
     "moodScale": "Le moral progresse en nourrissant et en caressant le familier"
   },
+  "missions": {
+    "campaign": "Campagne",
+    "daily": "Mission quotidienne",
+    "side": "Missions secondaires",
+    "progress": "Progression",
+    "completed": "Terminée",
+    "inProgress": "En cours",
+    "campaignCompleted": "Vous avez terminé la campagne.",
+    "empty": "Aucune mission disponible.",
+    "noSideMissions": "Vous n'avez aucune mission secondaire en cours.",
+    "resetsAt": "Renouvellement le {{date}}",
+    "expiresAt": "À terminer avant le {{date}}",
+    "risk": "{{icon}} {{risk}}"
+  },
   "profile": {
     "eyebrow": "Profil",
     "subtitle": "{{className}} · niveau {{level, number}} · {{location}}",
