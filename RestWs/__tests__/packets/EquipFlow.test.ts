@@ -37,6 +37,12 @@ describe("equipment over WebSocket", () => {
 		expect(CONTEXT.keycloakId).toBe("authenticated-player");
 	});
 
+	it("allows a deposit from the active slot", async () => {
+		const request = Object.assign(new EquipActionReq(), {action: ItemConstants.EQUIP_ACTIONS.DEPOSIT, slot: 0, itemCategory: ItemCategory.WEAPON});
+		const translated = await EquipCommandClientTranslator.action(CONTEXT, request);
+		expect(JSON.parse(JSON.stringify(translated))).toEqual({action: "deposit", slot: 0, itemCategory: 0});
+	});
+
 	it.each([{slot: -1}, {slot: 1.5}, {slot: 0}, {itemCategory: 99}, {action: "unsupported"}])("rejects invalid action coordinates %j", invalid => {
 		const request = Object.assign(new EquipActionReq(), {action: ItemConstants.EQUIP_ACTIONS.EQUIP, slot: 3, itemCategory: 0}, invalid);
 		expect(() => EquipCommandClientTranslator.action(CONTEXT, request)).toThrow(InvalidClientPacketError);

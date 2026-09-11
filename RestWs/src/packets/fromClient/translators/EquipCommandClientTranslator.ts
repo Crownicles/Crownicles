@@ -19,6 +19,15 @@ const ITEM_CATEGORIES = new Set([
 	ItemCategory.OBJECT
 ]);
 
+function validateEquipSlot(packet: EquipActionReq): void {
+	if (!Number.isSafeInteger(packet.slot) || packet.slot < 0) {
+		throw new InvalidClientPacketError("Invalid inventory slot");
+	}
+	if (packet.action === ItemConstants.EQUIP_ACTIONS.EQUIP && packet.slot === 0) {
+		throw new InvalidClientPacketError("Cannot equip the active slot");
+	}
+}
+
 function validateEquipAction(packet: EquipActionReq): void {
 	if (!Object.values(ItemConstants.EQUIP_ACTIONS).includes(packet.action)) {
 		throw new InvalidClientPacketError("Invalid equip action");
@@ -26,12 +35,7 @@ function validateEquipAction(packet: EquipActionReq): void {
 	if (!ITEM_CATEGORIES.has(packet.itemCategory)) {
 		throw new InvalidClientPacketError("Invalid item category");
 	}
-	if (!Number.isSafeInteger(packet.slot) || packet.slot < 0) {
-		throw new InvalidClientPacketError("Invalid inventory slot");
-	}
-	if (packet.action === ItemConstants.EQUIP_ACTIONS.EQUIP && packet.slot === 0) {
-		throw new InvalidClientPacketError("Cannot equip the active slot");
-	}
+	validateEquipSlot(packet);
 }
 
 export default class EquipCommandClientTranslator {

@@ -3,7 +3,7 @@ import {Modal, StyleSheet} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {EQUIP_DATA_KINDS, EQUIP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
-import {EQUIP_ACTIONS, EquipCategoryData, EquipAction} from "ws-packets/src/objects/EquipCategoryData";
+import {EQUIP_ACTIONS, EquipCategoryData} from "ws-packets/src/objects/EquipCategoryData";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {EquipActionReq} from "ws-packets/src/fromClient/EquipActionReq";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
@@ -17,7 +17,7 @@ import {itemDisplayName, itemIconPath, itemCategoryLabel} from "@/src/collectors
 import {i18n} from "@/src/translations/i18n";
 
 type EquipCollectorPacket = ReactionCollectorCreation & {data: Extract<ReactionCollectorCreation["data"], {type: typeof EQUIP_DATA_KINDS.COLLECTOR}>};
-type EquipmentSelection = {action: EquipAction; itemCategory: number; slot: number; item: ItemWithDetails};
+type EquipmentSelection = {request: EquipActionReq; item: ItemWithDetails};
 type EquipmentCategoryProps = {category: EquipCategoryData; locked: boolean; onSelect: (selection: EquipmentSelection) => void};
 
 const styles = StyleSheet.create({root: {flex: 1, backgroundColor: Theme.colors.paper}});
@@ -49,14 +49,14 @@ function EquipmentCategory({category, locked, onSelect}: EquipmentCategoryProps)
 				item={item.details}
 				end={i18n.t("app:equipment.slot", {slot: item.slot})}
 				disabled={locked}
-				onPress={(): void => onSelect({action: EQUIP_ACTIONS.EQUIP, itemCategory: category.category, slot: item.slot, item: item.details})}
+				onPress={(): void => onSelect({request: makeFromClientPacket(EquipActionReq, {action: EQUIP_ACTIONS.EQUIP, itemCategory: category.category, slot: item.slot}), item: item.details})}
 			/>)}
 			{reserveItems.length === 0 ? <Note>{i18n.t("app:equipment.emptyReserve")}</Note> : null}
 		</Panel>
 		<Note>{i18n.t("app:equipment.capacity", {count: reserveItems.length, max: category.maxReserveSlots})}</Note>
 		{equippedItem ? <ButtonRow><Button
 			disabled={locked || !canDeposit}
-			onPress={(): void => onSelect({action: EQUIP_ACTIONS.DEPOSIT, itemCategory: category.category, slot: 0, item: equippedItem.details})}
+			onPress={(): void => onSelect({request: makeFromClientPacket(EquipActionReq, {action: EQUIP_ACTIONS.DEPOSIT, itemCategory: category.category, slot: 0}), item: equippedItem.details})}
 		>{i18n.t(canDeposit ? "app:equipment.deposit" : "app:equipment.errors.reserveFull")}</Button></ButtonRow> : null}
 	</>;
 }
@@ -71,9 +71,9 @@ export function EquipCollector({collector, onChoose, submitting}: {
 	const close = (): void => { if (!locked && closeIndex >= 0) onChoose(closeIndex); };
 	const confirm = async (): Promise<void> => {
 		if (!selection || locked) return;
-		const {item, ...action} = selection;
+		const {request} = selection;
 		setSelection(null);
-		await submit(makeFromClientPacket<EquipActionReq>(EquipActionReq, action));
+		await submit(request);
 	};
 	return <Modal visible animationType="slide" onRequestClose={close}>
 		<SafeAreaView style={styles.root}>
@@ -84,7 +84,7 @@ export function EquipCollector({collector, onChoose, submitting}: {
 				<CollectorChoices collector={collector} onChoose={onChoose} submitting={locked} />
 			</Screen>
 			{selection ? <Confirmation
-				title={i18n.t(`app:equipment.confirm.${selection.action}`)}
+				title={i18n.t(`app:equipment.confirm.${selection.request.action}`)}
 				message={itemDisplayName(selection.item)}
 				onRequestClose={(): void => setSelection(null)}
 			><ButtonRow>
