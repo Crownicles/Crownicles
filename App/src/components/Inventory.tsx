@@ -2,17 +2,10 @@ import React, {useState} from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {MainItem} from "ws-packets/src/objects/MainItem";
 import {SupportItem} from "ws-packets/src/objects/SupportItem";
-import {DrinkReq} from "ws-packets/src/fromClient/DrinkReq";
-import {DrinkNoAvailablePotion} from "ws-packets/src/fromServer/drink/DrinkNoAvailablePotion";
-import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {GameClient} from "@/src/networking/GameClient";
-import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {Item} from "@/src/components/Item";
 import {i18n} from "@/src/translations/i18n";
 import {Theme} from "@/src/design/Theme";
-import {requestEquipment} from "@/src/store/useEquipmentActions";
-import {EquipNoItemRes} from "ws-packets/src/fromServer/equip/EquipNoItemRes";
+import {INVENTORY_MENUS, useInventoryMenus} from "@/src/store/useInventoryMenus";
 import {Note} from "@/src/design/Primitives";
 
 const styles = StyleSheet.create({
@@ -191,39 +184,10 @@ function createBackupSlotElements(
 
 export function Inventory({ inventoryData }: InventoryProps): React.ReactElement {
 	const [showBackupItems, setShowBackupItems] = useState<boolean>(false);
-	const [actionMessage, setActionMessage] = useState<string | null>(null);
-	const [openingEquipment, setOpeningEquipment] = useState(false);
-	const { track } = useCollectors();
-
-	// The server decides which potions can be drunk and offers them in a collector
-	const handleDrink = (): void => {
-		GameClient.request(makeFromClientPacket(DrinkReq, {}), ReactionCollectorCreation, [DrinkNoAvailablePotion])
-			.then(answer => {
-				if (answer.kind === "answer") {
-					track(answer.packet);
-				}
-			});
-	};
-
-	const handleSwitch = (_item: MainItem | SupportItem, _itemType: InventoryItemType): void => {
-		if (openingEquipment) return;
-		setOpeningEquipment(true);
-		setActionMessage(null);
-		requestEquipment().then(answer => {
-			if (answer.kind === "answer") {
-				track(answer.packet);
-				return;
-			}
-			setActionMessage(answer.kind === "alternative" && answer.packetName === EquipNoItemRes.wireName
-				? "app:equipment.noItems" : "app:common.connectionError");
-		}).catch(() => setActionMessage("app:common.connectionError"))
-			.finally(() => setOpeningEquipment(false));
-	};
-
-	const handleSell = (item: MainItem | SupportItem, itemType: InventoryItemType): void => {
-		console.log(`Selling ${itemType}:`, item);
-		// TODO: Implement sell action
-	};
+	const {message: actionMessage, open} = useInventoryMenus();
+	const handleDrink = (): Promise<void> => open(INVENTORY_MENUS.DRINK);
+	const handleSwitch = (): Promise<void> => open(INVENTORY_MENUS.EQUIP);
+	const handleSell = (): Promise<void> => open(INVENTORY_MENUS.SELL);
 
 	const renderItemTypeHeader = (itemType: InventoryItemType, currentCount?: number, maxSlots?: number): React.ReactElement => {
 		const typeNames = {
@@ -263,8 +227,8 @@ export function Inventory({ inventoryData }: InventoryProps): React.ReactElement
 								itemType={itemType}
 								isEmpty={isEmpty}
 								onDrink={!isEmpty && itemType === 'potion' ? handleDrink : undefined}
-								onSwitch={!isEmpty ? () => handleSwitch(item, itemType) : undefined}
-								onSell={!isEmpty ? () => handleSell(item, itemType) : undefined}
+								onSwitch={!isEmpty ? handleSwitch : undefined}
+								onSell={!isEmpty ? handleSell : undefined}
 							/>
 						</View>
 					);

@@ -1,6 +1,6 @@
 import {useCallback} from "react";
 import {useQueryClient} from "@tanstack/react-query";
-import {EQUIP_DATA_KINDS, ITEM_DATA_KINDS, ReactionCollectorDataKind} from "ws-packets/src/fromServer/collectors";
+import {EQUIP_DATA_KINDS, ITEM_DATA_KINDS, ReactionCollectorDataKind, SELL_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {DRINK_DATA_KINDS} from "ws-packets/src/fromServer/collectors/families/DrinkCollector";
 import {GAME_ENTITIES, gameKey, GameEntity} from "@/src/store/GameEntities";
 
@@ -13,6 +13,7 @@ import {GAME_ENTITIES, gameKey, GameEntity} from "@/src/store/GameEntities";
  * or another value displayed by the profile. The table adds entities specific to a kind.
  */
 const COLLECTOR_INVALIDATES: Partial<Record<ReactionCollectorDataKind, readonly GameEntity[]>> = {
+	[SELL_DATA_KINDS.COLLECTOR]: [GAME_ENTITIES.INVENTORY],
 	[EQUIP_DATA_KINDS.COLLECTOR]: [GAME_ENTITIES.INVENTORY],
 	[DRINK_DATA_KINDS.COLLECTOR]: [GAME_ENTITIES.INVENTORY],
 	[ITEM_DATA_KINDS.CHOICE]: [GAME_ENTITIES.INVENTORY],

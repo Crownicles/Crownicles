@@ -1,14 +1,10 @@
 import {useEffect, useRef, useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
-import {EquipReq} from "ws-packets/src/fromClient/EquipReq";
 import {EquipActionReq} from "ws-packets/src/fromClient/EquipActionReq";
 import {EquipActionRes} from "ws-packets/src/fromServer/equip/EquipActionRes";
-import {EquipNoItemRes} from "ws-packets/src/fromServer/equip/EquipNoItemRes";
-import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {Blocked} from "ws-packets/src/fromServer/common/Blocked";
 import {EquipCategoryData} from "ws-packets/src/objects/EquipCategoryData";
-import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {GameAnswer, GameClient} from "@/src/networking/GameClient";
+import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 
 type EquipmentActions = {
@@ -17,10 +13,6 @@ type EquipmentActions = {
 	error: string | null;
 	submit: (action: EquipActionReq) => Promise<void>;
 };
-
-export function requestEquipment(): Promise<GameAnswer<ReactionCollectorCreation>> {
-	return GameClient.request(makeFromClientPacket(EquipReq, {}), ReactionCollectorCreation, [EquipNoItemRes, Blocked]);
-}
 
 export function useEquipmentActions(initialCategories: EquipCategoryData[]): EquipmentActions {
 	const queryClient = useQueryClient();

@@ -4,8 +4,10 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
 import {Theme} from "@/src/design/Theme";
-import {EQUIP_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {EQUIP_DATA_KINDS, SELL_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {EquipCollector} from "@/src/collectors/EquipCollector";
+import {SaleOutcome, SellCollector} from "@/src/collectors/SellCollector";
+import {useSaleOutcome} from "@/src/store/useInventoryMenus";
 
 const styles = StyleSheet.create({
 	container: {
@@ -21,14 +23,16 @@ const styles = StyleSheet.create({
  */
 export function OpenCollectors(): ReactNode {
 	const { open, react, isAnswerPending } = useCollectors();
+	const {outcome, clear} = useSaleOutcome();
 	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector));
 
-	if (fallbackCollectors.length === 0) {
+	if (fallbackCollectors.length === 0 && !outcome) {
 		return null;
 	}
 
 	return (
 		<View style={styles.container}>
+			{outcome ? <SaleOutcome outcome={outcome} onContinue={clear} /> : null}
 			{fallbackCollectors.map(collector => collector.data.type === EQUIP_DATA_KINDS.COLLECTOR ? (
 				<EquipCollector
 					key={collector.id}
@@ -36,6 +40,8 @@ export function OpenCollectors(): ReactNode {
 					onChoose={(index): void => react(collector.id, index)}
 					submitting={isAnswerPending(collector.id)}
 				/>
+			) : collector.data.type === SELL_DATA_KINDS.COLLECTOR ? (
+				<SellCollector key={collector.id} collector={collector} onChoose={(index): void => react(collector.id, index)} submitting={isAnswerPending(collector.id)} />
 			) : (
 				<CollectorPrompt
 					key={collector.id}

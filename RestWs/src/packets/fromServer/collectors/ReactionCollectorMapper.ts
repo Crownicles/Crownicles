@@ -33,6 +33,9 @@ import {
 import {
 	equipDataMappings, equipReactionMappings
 } from "./mappings/EquipCollectorMappings";
+import {
+	sellDataMappings, sellReactionMappings
+} from "./mappings/SellCollectorMappings";
 
 const reactionMappings = indexMappings([
 	...genericReactionMappings,
@@ -43,7 +46,8 @@ const reactionMappings = indexMappings([
 	...reportCollectorReactionMappings,
 	...cityReactionMappings,
 	...shopReactionMappings,
-	...equipReactionMappings
+	...equipReactionMappings,
+	...sellReactionMappings
 ]);
 
 const dataMappings = indexMappings([
@@ -54,7 +58,8 @@ const dataMappings = indexMappings([
 	...reportCollectorDataMappings,
 	...cityDataMappings,
 	...shopDataMappings,
-	...equipDataMappings
+	...equipDataMappings,
+	...sellDataMappings
 ]);
 
 /**

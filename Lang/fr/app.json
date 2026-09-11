@@ -18,6 +18,23 @@
     "loginFailed": "Échec de la connexion",
     "unknownError": "Une erreur inconnue est survenue."
   },
+  "inventoryActions": {
+    "noPotion": "Vous ne possédez aucune potion utilisable hors combat."
+  },
+  "sale": {
+    "eyebrow": "Inventaire · réserve",
+    "title": "Vendre un équipement",
+    "noItems": "Votre réserve ne contient aucun objet à vendre ou à jeter.",
+    "itemSlot": "{{category}} · réserve {{slot}}",
+    "discard": "Jeter",
+    "confirmSell": "Vendre cet objet ?",
+    "confirmDiscard": "Jeter cet objet ?",
+    "price": "Prix de base",
+    "sold": "Objet vendu",
+    "discarded": "Objet jeté",
+    "received": "Argent reçu",
+    "continue": "Retour à l'inventaire"
+  },
   "equipment": {
     "eyebrow": "Inventaire",
     "title": "Gestion de l'équipement",
