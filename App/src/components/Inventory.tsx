@@ -1,306 +1,105 @@
-import React, {useState} from "react";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {MainItem} from "ws-packets/src/objects/MainItem";
-import {SupportItem} from "ws-packets/src/objects/SupportItem";
-import {Item} from "@/src/components/Item";
+import {Fragment, ReactNode, useState} from "react";
+import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
+import {MaterialQuantity} from "ws-packets/src/objects/MaterialQuantity";
+import {InventoryItemRow} from "@/src/components/InventoryItemRow";
 import {i18n} from "@/src/translations/i18n";
-import {Theme} from "@/src/design/Theme";
+import {AppIcons} from "@/src/AppIcons";
 import {INVENTORY_MENUS, useInventoryMenus} from "@/src/store/useInventoryMenus";
-import {Button, ButtonRow, Note} from "@/src/design/Primitives";
+import {KeyValue, Note, Panel, QuickAction, QuickActions, Row, SectionHeader} from "@/src/design/Primitives";
+import {SegmentedControl} from "@/src/design/SegmentedControl";
+import {formatNumber} from "@/src/display/Amounts";
 
-const styles = StyleSheet.create({
-	centerContent: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		padding: Theme.spacing.xxl,
-	},
-	placeholderText: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.body,
-		lineHeight: Theme.lineHeight.body,
-		color: Theme.colors.muted,
-		textAlign: 'center',
-	},
-	inventoryContent: {
-		padding: Theme.spacing.xl,
-	},
-	inventoryTitle: {
-		fontFamily: Theme.fonts.bold,
-		fontSize: Theme.fontSize.title,
-		marginBottom: Theme.spacing.xl,
-		color: Theme.colors.ink,
-	},
-	inventoryHeader: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		marginBottom: Theme.spacing.xl,
-	},
-	toggleButton: {
-		backgroundColor: Theme.colors.ink,
-		paddingHorizontal: Theme.spacing.md,
-		paddingVertical: Theme.spacing.xs,
-		borderRadius: Theme.pillRadius,
-	},
-	toggleButtonText: {
-		fontFamily: Theme.fonts.medium,
-		color: Theme.colors.paper,
-		fontSize: Theme.fontSize.caption,
-	},
-	inventoryList: {
-		gap: Theme.spacing.xl,
-	},
-	itemTypeHeader: {
-		backgroundColor: Theme.colors.wash,
-		paddingVertical: Theme.spacing.sm,
-		paddingHorizontal: Theme.spacing.md,
-		borderRadius: Theme.radius,
-		marginBottom: Theme.spacing.sm,
-	},
-	itemTypeHeaderText: {
-		fontFamily: Theme.fonts.bold,
-		fontSize: Theme.fontSize.rowTitle,
-		color: Theme.colors.ink
-	},
-});
+export type InventoryData = NonNullable<InventoryRes["data"]>;
+type InventoryArtifacts = Pick<InventoryRes, "hasTalisman" | "hasCloneTalisman" | "hasRemoteHarvestTalisman">;
+type InventoryView = "equipped" | "reserve" | "materials" | "plants";
+type InventoryCategory = {equipped: "weapon" | "armor" | "potion" | "object"; reserve: "backupWeapons" | "backupArmors" | "backupPotions" | "backupObjects"; slots: keyof InventoryData["slots"]};
 
-export interface InventoryData {
-	weapon?: MainItem;
-	armor?: MainItem;
-	potion?: SupportItem;
-	object?: SupportItem;
-	backupWeapons?: { display: MainItem; slot: number }[];
-	backupArmors?: { display: MainItem; slot: number }[];
-	backupPotions?: { display: SupportItem; slot: number }[];
-	backupObjects?: { display: SupportItem; slot: number }[];
-	slots?: {
-		weapons: number;
-		armors: number;
-		potions: number;
-		objects: number;
-	};
-}
-
-interface InventoryProps {
-	inventoryData: InventoryData | null;
-}
-
-type InventoryItemType = 'weapon' | 'armor' | 'potion' | 'object';
-type BackupItemKey = 'backupWeapons' | 'backupArmors' | 'backupPotions' | 'backupObjects';
-type InventorySlotKey = keyof NonNullable<InventoryData['slots']>;
-
-interface BackupItemData {
-	display: MainItem | SupportItem;
-	slot: number;
-}
-
-interface BackupItemTypeConfig {
-	type: InventoryItemType;
-	backupKey: BackupItemKey;
-	slotKey: InventorySlotKey;
-}
-
-interface BackupItemActions {
-	handleDrink: () => void;
-	handleSwitch: (item: MainItem | SupportItem, itemType: InventoryItemType) => void;
-	handleSell: (item: MainItem | SupportItem, itemType: InventoryItemType) => void;
-}
-
-const BACKUP_ITEM_TYPES: BackupItemTypeConfig[] = [
-	{ type: 'weapon', backupKey: 'backupWeapons', slotKey: 'weapons' },
-	{ type: 'armor', backupKey: 'backupArmors', slotKey: 'armors' },
-	{ type: 'potion', backupKey: 'backupPotions', slotKey: 'potions' },
-	{ type: 'object', backupKey: 'backupObjects', slotKey: 'objects' }
+const EQUIPPED_SLOT_COUNT = 1;
+const INVENTORY_VIEWS: InventoryView[] = ["equipped", "reserve", "materials", "plants"];
+const CATEGORIES: InventoryCategory[] = [
+	{equipped: "weapon", reserve: "backupWeapons", slots: "weapons"},
+	{equipped: "armor", reserve: "backupArmors", slots: "armors"},
+	{equipped: "potion", reserve: "backupPotions", slots: "potions"},
+	{equipped: "object", reserve: "backupObjects", slots: "objects"}
 ];
 
-const FILLED_SLOT_KEY_INDEX = 1;
-const EMPTY_SLOT_KEY_INDEX = 2;
-
-function getBackupSlotNumber(item: React.ReactElement): number {
-	const key = item.key?.toString() ?? '';
-	const keyParts = key.split('-');
-	const slotKeyIndex = key.includes('empty') ? EMPTY_SLOT_KEY_INDEX : FILLED_SLOT_KEY_INDEX;
-	return parseInt(keyParts[slotKeyIndex] || '0');
+function InventoryEquipment({data}: {data: InventoryData}): ReactNode {
+	return <Panel>{CATEGORIES.map(category => <InventoryItemRow key={category.equipped} item={data[category.equipped]} location={i18n.t(`items:${category.equipped}`, {count: 1})} />)}</Panel>;
 }
 
-function sortBackupSlots(items: React.ReactElement[]): React.ReactElement[] {
-	return items.sort((firstItem, secondItem) => getBackupSlotNumber(firstItem) - getBackupSlotNumber(secondItem));
+function InventoryReserve({data}: {data: InventoryData}): ReactNode {
+	return CATEGORIES.map(category => {
+		const items = [...data[category.reserve]].sort((first, second) => first.slot - second.slot);
+		const maximum = Math.max(0, data.slots[category.slots] - EQUIPPED_SLOT_COUNT);
+		return <Fragment key={category.equipped}>
+			<SectionHeader>{i18n.t(`items:${category.equipped}`, {count: maximum})}</SectionHeader>
+			<Panel>{items.length > 0
+				? items.map(item => <InventoryItemRow key={item.slot} item={item.display} location={i18n.t("app:equipment.slot", {slot: item.slot})} />)
+				: <Note>{i18n.t("app:equipment.emptyReserve")}</Note>}
+			</Panel>
+			<Note>{i18n.t("app:equipment.capacity", {count: items.length, max: maximum})}</Note>
+		</Fragment>;
+	});
 }
 
-function createFilledBackupSlotElement(
-	type: InventoryItemType,
-	item: BackupItemData,
-	actions: BackupItemActions
-): React.ReactElement {
-	const isEmpty = !item.display || item.display.id === 0;
-	return (
-		<Item
-			key={`${type}-${item.slot}`}
-			item={item.display}
-			itemType={type}
-			customKey={`${type}-${item.slot}`}
-			isBackupItem
-			onDrink={!isEmpty && type === 'potion' ? actions.handleDrink : undefined}
-			onSwitch={!isEmpty ? () => actions.handleSwitch(item.display, type) : undefined}
-			onSell={!isEmpty ? () => actions.handleSell(item.display, type) : undefined}
-		/>
-	);
+function InventoryMaterials({materials}: {materials: MaterialQuantity[]}): ReactNode {
+	if (materials.length === 0) return <Note>{i18n.t("app:inventory.noMaterials")}</Note>;
+	return <Panel>{materials.map(material => <KeyValue key={material.materialId} label={i18n.t(`models:materials.${material.materialId}`)} value={formatNumber(material.quantity)} />)}</Panel>;
 }
 
-function createEmptyBackupSlotElements(
-	type: InventoryItemType,
-	maxSlots: number,
-	filledSlots: Set<number>
-): React.ReactElement[] {
-	const emptySlotElements: React.ReactElement[] = [];
-	for (let slot = 1; slot <= maxSlots; slot++) {
-		if (!filledSlots.has(slot)) {
-			emptySlotElements.push(
-				<Item
-					key={`${type}-empty-${slot}`}
-					itemType={type}
-					isEmpty
-					customKey={`${type}-empty-${slot}`}
-				/>
-			);
-		}
+function InventoryPlants({plants}: {plants: InventoryData["plants"]}): ReactNode {
+	if (!plants) return <Note>{i18n.t("app:inventory.noPlants")}</Note>;
+	return <>
+		<Panel>
+			<KeyValue label={i18n.t("app:inventory.seed")} value={plants.seed ? i18n.t(`models:plants.${plants.seed}`) : i18n.t("app:profile.values.none")} />
+			{plants.plantSlots.map(plant => <KeyValue key={plant.slot} label={i18n.t(`models:plants.${plant.plantId}`)} value={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} />)}
+		</Panel>
+		<Note>{i18n.t("app:equipment.capacity", {count: plants.plantSlots.length, max: plants.maxPlantSlots})}</Note>
+	</>;
+}
+
+const ARTIFACTS = [
+	{field: "hasTalisman", name: "expedition"},
+	{field: "hasCloneTalisman", name: "clone"},
+	{field: "hasRemoteHarvestTalisman", name: "harvest"}
+] as const;
+
+function InventoryArtifactList({artifacts}: {artifacts: InventoryArtifacts}): ReactNode {
+	return <>
+		<SectionHeader>{i18n.t("app:inventory.artifacts.title")}</SectionHeader>
+		<Panel>{ARTIFACTS.map(artifact => <Row
+			key={artifact.field}
+			title={i18n.t(`app:inventory.artifacts.${artifact.name}`)}
+			end={i18n.t(artifacts[artifact.field] ? "app:inventory.owned" : "app:inventory.absent")}
+		/>)}</Panel>
+	</>;
+}
+
+function InventoryContent({view, data, artifacts}: {view: InventoryView; data: InventoryData; artifacts?: InventoryArtifacts}): ReactNode {
+	switch (view) {
+		case "equipped": return <><InventoryEquipment data={data} />{artifacts ? <InventoryArtifactList artifacts={artifacts} /> : null}</>;
+		case "reserve": return <InventoryReserve data={data} />;
+		case "materials": return <InventoryMaterials materials={data.materials} />;
+		case "plants": return <InventoryPlants plants={data.plants} />;
 	}
-	return emptySlotElements;
 }
 
-function createBackupSlotElements(
-	type: InventoryItemType,
-	backupItems: BackupItemData[] | undefined,
-	maxSlots: number,
-	actions: BackupItemActions
-): React.ReactElement[] {
-	const filledSlots = new Set(backupItems?.map(item => item.slot) ?? []);
-	const filledSlotElements = backupItems?.map(item => createFilledBackupSlotElement(type, item, actions)) ?? [];
-	const emptySlotElements = createEmptyBackupSlotElements(type, maxSlots, filledSlots);
+const ACTIONS = [
+	{menu: INVENTORY_MENUS.EQUIP, label: "equip", icon: "unitValues.attack"},
+	{menu: INVENTORY_MENUS.SELL, label: "sell", icon: "unitValues.money"},
+	{menu: INVENTORY_MENUS.DRINK, label: "drink", icon: "items.drinkPotion"},
+	{menu: INVENTORY_MENUS.DAILY, label: "daily", icon: "unitValues.xp"}
+];
 
-	return sortBackupSlots([...filledSlotElements, ...emptySlotElements]);
-}
-
-export function Inventory({ inventoryData }: InventoryProps): React.ReactElement {
-	const [showBackupItems, setShowBackupItems] = useState<boolean>(false);
-	const {message: actionMessage, open} = useInventoryMenus();
-	const handleDrink = (): Promise<void> => open(INVENTORY_MENUS.DRINK);
-	const handleSwitch = (): Promise<void> => open(INVENTORY_MENUS.EQUIP);
-	const handleSell = (): Promise<void> => open(INVENTORY_MENUS.SELL);
-
-	const renderItemTypeHeader = (itemType: InventoryItemType, currentCount?: number, maxSlots?: number): React.ReactElement => {
-		const typeNames = {
-			weapon: i18n.t("items:weapon", { count: maxSlots ?? 1 }),
-			armor: i18n.t("items:armor", { count: maxSlots ?? 1 }),
-			potion: i18n.t("items:potion", { count: maxSlots ?? 1 }),
-			object: i18n.t("items:object", { count: maxSlots ?? 1 })
-		};
-
-		const headerText = currentCount !== undefined && maxSlots !== undefined
-			? `${typeNames[itemType]} (${currentCount}/${maxSlots})`
-			: typeNames[itemType];
-
-		return (
-			<View style={styles.itemTypeHeader}>
-				<Text style={styles.itemTypeHeaderText}>{headerText}</Text>
-			</View>
-		);
-	};
-
-	const renderEquippedItemsByType = (): React.ReactElement | null => {
-		if (!inventoryData) return null;
-
-		const itemTypes: InventoryItemType[] = ['weapon', 'armor', 'potion', 'object'];
-
-		return (
-			<View style={styles.inventoryList}>
-				{itemTypes.map(itemType => {
-					const item = inventoryData[itemType];
-					const isEmpty = !item || item.id === 0;
-
-					return (
-						<View key={itemType}>
-							{renderItemTypeHeader(itemType)}
-							<Item
-								item={item}
-								itemType={itemType}
-								isEmpty={isEmpty}
-								onDrink={!isEmpty && itemType === 'potion' ? handleDrink : undefined}
-								onSwitch={!isEmpty ? handleSwitch : undefined}
-								onSell={!isEmpty ? handleSell : undefined}
-							/>
-						</View>
-					);
-				})}
-			</View>
-		);
-	};
-
-	const renderBackupItemType = (
-		itemTypeConfig: BackupItemTypeConfig,
-		data: InventoryData,
-		slots: NonNullable<InventoryData['slots']>
-	): React.ReactElement => {
-		const backupItems = data[itemTypeConfig.backupKey] as BackupItemData[] | undefined;
-		const maxSlots = slots[itemTypeConfig.slotKey];
-		const allSlots = createBackupSlotElements(itemTypeConfig.type, backupItems, maxSlots, {
-			handleDrink,
-			handleSwitch,
-			handleSell
-		});
-
-		return (
-			<View key={itemTypeConfig.type}>
-				{renderItemTypeHeader(itemTypeConfig.type, backupItems?.length || 0, maxSlots)}
-				{allSlots}
-			</View>
-		);
-	};
-
-	const renderBackupItemsByType = (): React.ReactElement | null => {
-		if (!inventoryData?.slots) return null;
-
-		const { slots } = inventoryData;
-		return (
-			<View style={styles.inventoryList}>
-				{BACKUP_ITEM_TYPES.map(itemType => renderBackupItemType(itemType, inventoryData, slots))}
-			</View>
-		);
-	};
-
-	if (!inventoryData) {
-		return (
-			<View style={styles.centerContent}>
-				<Text style={styles.placeholderText}>{i18n.t("app:common.loading")}</Text>
-			</View>
-		);
-	}
-
-	return (
-		<View style={styles.inventoryContent}>
-			{actionMessage ? <Note>{i18n.t(actionMessage)}</Note> : null}
-			<ButtonRow><Button onPress={(): Promise<void> => open(INVENTORY_MENUS.DAILY)}>{i18n.t("app:dailyBonus.claim")}</Button></ButtonRow>
-			<View style={styles.inventoryHeader}>
-				<Text style={styles.inventoryTitle}>
-					{showBackupItems
-						? i18n.t("app:profile.inventory.backupItems")
-						: i18n.t("app:profile.inventory.equippedItems")
-					}
-				</Text>
-				<TouchableOpacity
-					style={styles.toggleButton}
-					onPress={() => setShowBackupItems(!showBackupItems)}
-				>
-					<Text style={styles.toggleButtonText}>
-						{showBackupItems
-							? i18n.t("app:profile.inventory.seeEquippedItems")
-							: i18n.t("app:profile.inventory.seeBackupItems")
-						}
-					</Text>
-				</TouchableOpacity>
-			</View>
-			{showBackupItems ? renderBackupItemsByType() : renderEquippedItemsByType()}
-		</View>
-	);
+export function Inventory({inventoryData, artifacts}: {inventoryData: InventoryData | null; artifacts?: InventoryArtifacts}): ReactNode {
+	const [view, setView] = useState<InventoryView>("equipped");
+	const {message, pending, open} = useInventoryMenus();
+	if (!inventoryData) return <Note>{i18n.t("app:common.loading")}</Note>;
+	return <>
+		<SegmentedControl options={INVENTORY_VIEWS.map(value => ({value, label: i18n.t(`app:inventory.views.${value}`)}))} value={view} onChange={setView} label={i18n.t("app:profile.titles.inventory")} />
+		{message ? <Note>{i18n.t(message)}</Note> : null}
+		<InventoryContent view={view} data={inventoryData} artifacts={artifacts} />
+		<SectionHeader>{i18n.t("app:inventory.actions.title")}</SectionHeader>
+		<QuickActions>{ACTIONS.map(action => <QuickAction key={action.label} icon={AppIcons.getIcon(action.icon)} disabled={pending} onPress={(): Promise<void> => open(action.menu)}>{i18n.t(`app:inventory.actions.${action.label}`)}</QuickAction>)}</QuickActions>
+	</>;
 }

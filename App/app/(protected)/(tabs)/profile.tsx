@@ -1,6 +1,7 @@
 import {useNavigation} from "expo-router";
-import {ReactNode, useEffect} from "react";
-import {ActivityIndicator, StyleSheet, View} from "react-native";
+import {ReactNode, useEffect, useState} from "react";
+import {ActivityIndicator, Modal, StyleSheet, View} from "react-native";
+import {SafeAreaView} from "react-native-safe-area-context";
 import {GameClient} from "@/src/networking/GameClient";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
@@ -12,10 +13,14 @@ import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {AppIcons} from "@/src/AppIcons";
 import {
+	Button,
+	ButtonRow,
 	EmptyState,
 	Hero,
 	KeyValue,
 	Panel,
+	QuickAction,
+	QuickActions,
 	Screen,
 	SectionHeader,
 	StatBar
@@ -39,6 +44,10 @@ const styles = StyleSheet.create({
 	},
 	inventory: {
 		marginTop: Theme.spacing.sectionGap
+	},
+	modal: {
+		flex: 1,
+		backgroundColor: Theme.colors.paper
 	}
 });
 
@@ -271,7 +280,7 @@ function AdditionalProfileSections({profile}: {profile: ProfileRes}): ReactNode 
 	);
 }
 
-function ProfileDetails({profile}: {profile: ProfileRes}): ReactNode {
+function ProfileDetails({profile, onInventory}: {profile: ProfileRes; onInventory: () => void}): ReactNode {
 	const subtitle = i18n.t("app:profile.subtitle", {
 		className: classLabel(profile),
 		level: profile.level,
@@ -280,6 +289,7 @@ function ProfileDetails({profile}: {profile: ProfileRes}): ReactNode {
 	return (
 		<>
 			<Hero eyebrow={i18n.t("app:profile.eyebrow")} title={profile.pseudo} subtitle={subtitle} />
+			<QuickActions><QuickAction icon={AppIcons.getIcon("inventory.stock")} onPress={onInventory}>{i18n.t("app:profile.titles.inventory")}</QuickAction></QuickActions>
 			<ProfileInformation profile={profile} />
 			<Statistics profile={profile} />
 			<Missions profile={profile} />
@@ -290,7 +300,7 @@ function ProfileDetails({profile}: {profile: ProfileRes}): ReactNode {
 	);
 }
 
-function ProfileState({state}: {state: RequestState<ProfileRes>}): ReactNode {
+function ProfileState({state, onInventory}: {state: RequestState<ProfileRes>; onInventory: () => void}): ReactNode {
 	if (state.status === "loading") {
 		return (
 			<View style={styles.state}>
@@ -302,7 +312,7 @@ function ProfileState({state}: {state: RequestState<ProfileRes>}): ReactNode {
 	if (state.status === "empty" || state.status === "failed") {
 		return <EmptyState>{state.status === "empty" ? i18n.t("app:profile.notFound") : i18n.t("app:common.error")}</EmptyState>;
 	}
-	return <ProfileDetails profile={state.data} />;
+	return <ProfileDetails profile={state.data} onInventory={onInventory} />;
 }
 
 function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNode {
@@ -314,13 +324,25 @@ function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNo
 			: i18n.t("app:common.loading");
 	return (
 		<View style={styles.inventory}>
-			<SectionHeader>{i18n.t("app:profile.titles.inventory")}</SectionHeader>
-			{inventoryData ? <Inventory inventoryData={inventoryData} /> : <EmptyState>{emptyMessage}</EmptyState>}
+			{inventoryData ? <Inventory inventoryData={inventoryData} artifacts={state.status === "ready" ? state.data : {}} /> : <EmptyState>{emptyMessage}</EmptyState>}
 		</View>
 	);
 }
 
+function InventoryModal({state, onClose}: {state: RequestState<InventoryRes>; onClose: () => void}): ReactNode {
+	return <Modal visible animationType="slide" onRequestClose={onClose}>
+		<SafeAreaView style={styles.modal}>
+			<Screen>
+				<ButtonRow><Button onPress={onClose}>{i18n.t("app:common.back")}</Button></ButtonRow>
+				<Hero eyebrow={i18n.t("app:profile.eyebrow")} title={i18n.t("app:profile.titles.inventory")} />
+				<InventorySection state={state} />
+			</Screen>
+		</SafeAreaView>
+	</Modal>;
+}
+
 export default function Profile(): ReactNode {
+	const [inventoryOpen, setInventoryOpen] = useState(false);
 	const profileState = usePlayerProfile();
 	const inventoryState = useGameQuery<InventoryRes>(
 		GAME_ENTITIES.INVENTORY,
@@ -336,9 +358,9 @@ export default function Profile(): ReactNode {
 	}, [profile, navigation]);
 
 	return (
-		<Screen>
-			<ProfileState state={profileState} />
-			{profileState.status === "ready" ? <InventorySection state={inventoryState} /> : null}
-		</Screen>
+		<>
+			<Screen><ProfileState state={profileState} onInventory={(): void => setInventoryOpen(true)} /></Screen>
+			{inventoryOpen ? <InventoryModal state={inventoryState} onClose={(): void => setInventoryOpen(false)} /> : null}
+		</>
 	);
 }

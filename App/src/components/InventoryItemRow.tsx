@@ -1,0 +1,43 @@
+import {ReactNode} from "react";
+import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
+import {MainItem} from "ws-packets/src/objects/MainItem";
+import {MainItemStat} from "ws-packets/src/objects/MainItemStat";
+import {Row} from "@/src/design/Primitives";
+import {Theme} from "@/src/design/Theme";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {AppIcons} from "@/src/AppIcons";
+import {itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
+import {consumableDescription} from "@/src/display/ItemEffects";
+import {i18n} from "@/src/translations/i18n";
+
+function statValue(stat: MainItemStat): number {
+	return Math.min(stat.baseValue + stat.upgradeValue, stat.maxValue);
+}
+
+function mainItemStats(item: MainItem): string {
+	return [
+		i18n.t("items:attack", {value: statValue(item.attack)}),
+		i18n.t("items:defense", {value: statValue(item.defense)}),
+		i18n.t("items:speed", {value: statValue(item.speed)})
+	].join(" · ");
+}
+
+function inventoryItemDetails(item: ItemWithDetails): string {
+	const rarity = i18n.t(`items:raritiesWithoutEmote.${item.rarity}`);
+	if ("nature" in item) return i18n.t("app:inventory.itemSummary", {rarity, details: consumableDescription(item)});
+	const level = i18n.t("app:inventory.level", {level: item.itemLevel});
+	const enchantment = item.itemEnchantmentId ? i18n.t(`items:enchantments.${item.itemEnchantmentId}`) : "";
+	return i18n.t("app:inventory.itemSummary", {rarity, details: [level, mainItemStats(item), enchantment].filter(Boolean).join(" · ")});
+}
+
+export function InventoryItemRow({item, location}: {item: ItemWithDetails; location: string}): ReactNode {
+	if (item.id === 0) return <Row title={i18n.t("app:profile.inventory.emptySlot")} end={location} />;
+	const path = itemIconPath(item);
+	const icon = path ? AppIcons.getIconOrNull(path) : null;
+	return <Row
+		{...(icon ? {icon: <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} />} : {})}
+		title={itemDisplayName(item)}
+		subtitle={inventoryItemDetails(item)}
+		end={location}
+	/>;
+}

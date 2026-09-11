@@ -3,6 +3,7 @@
     "loading": "Chargement",
     "error": "Les informations n'ont pas pu être récupérées",
     "retry": "Réessayer",
+    "back": "Retour",
     "yes": "Oui",
     "no": "Non",
     "connectionError": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
@@ -17,6 +18,19 @@
     "invalidToken": "La connexion a échoué : le jeton reçu est invalide.",
     "loginFailed": "Échec de la connexion",
     "unknownError": "Une erreur inconnue est survenue."
+  },
+  "inventory": {
+    "views": {"equipped": "Équipement", "reserve": "Réserve", "materials": "Matériaux", "plants": "Plantes"},
+    "actions": {"title": "Actions", "equip": "Équiper", "sell": "Vendre", "drink": "Boire", "daily": "Bonus journalier"},
+    "itemSummary": "{{rarity}} · {{details}}",
+    "level": "Niveau {{level}}",
+    "noMaterials": "Vous ne transportez aucun matériau.",
+    "noPlants": "Vous ne transportez aucune plante ni graine.",
+    "seed": "Graine",
+    "plantSlot": "Emplacement {{slot}}",
+    "owned": "Obtenu",
+    "absent": "Absent",
+    "artifacts": {"title": "Artefacts", "expedition": "Talisman d'ancrage", "clone": "Talisman de clonage", "harvest": "Cœur sylvestre"}
   },
   "inventoryActions": {
     "noPotion": "Vous ne possédez aucune potion utilisable hors combat.",
@@ -789,19 +803,8 @@
       "unranked": "Non classé"
     },
     "inventory": {
-      "equippedItems": "Objets équipés",
-      "backupItems": "Reserve d'objets",
-      "seeBackupItems": "Voir la réserve d'objets",
-      "seeEquippedItems": "Voir les objets équipés",
       "empty": "Aucun objet à afficher",
-      "emptySlot": "Emplacement vide",
-      "actions": {
-        "drink": "Boire",
-        "switch": "Échanger",
-        "sell": "Vendre",
-        "close": "Fermer",
-        "equip": "Équiper"
-      }
+      "emptySlot": "Emplacement vide"
     },
     "notFound": "Profil introuvable"
   }

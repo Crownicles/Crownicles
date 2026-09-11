@@ -1,4 +1,4 @@
-import {render} from "@testing-library/react-native";
+import {fireEvent, render} from "@testing-library/react-native";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import Profile from "@/app/(protected)/(tabs)/profile";
 import {useGameQuery} from "@/src/store/useGameQuery";
@@ -75,5 +75,13 @@ describe("Profile screen", () => {
 		expect(view.getByText("app:profile.titles.missions")).toBeTruthy();
 		expect(view.getByText("app:profile.titles.scoreAndRank")).toBeTruthy();
 		expect(view.queryByText("app:profile.tooltips.money")).toBeNull();
+	});
+
+	it("opens the inventory and returns to the profile", async () => {
+		const view = await render(<Profile />);
+		await fireEvent.press(view.getByRole("button", {name: /app:profile.titles.inventory/}));
+		expect(view.getByText("app:common.back")).toBeTruthy();
+		await fireEvent.press(view.getByText("app:common.back"));
+		expect(view.queryByText("app:common.back")).toBeNull();
 	});
 });

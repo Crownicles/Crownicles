@@ -31,6 +31,7 @@ export const INVENTORY_MENUS = {
 
 type InventoryMenuState = {
 	message: string | null;
+	pending: boolean;
 	open: (menu: InventoryMenu) => Promise<void>;
 };
 
@@ -44,6 +45,7 @@ function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: Inv
 export function useInventoryMenus(): InventoryMenuState {
 	const {track} = useCollectors();
 	const [message, setMessage] = useState<string | null>(null);
+	const [pending, setPending] = useState(false);
 	const inFlight = useRef(false);
 	const active = useRef(true);
 
@@ -55,6 +57,7 @@ export function useInventoryMenus(): InventoryMenuState {
 	const open = async (menu: InventoryMenu): Promise<void> => {
 		if (inFlight.current) return;
 		inFlight.current = true;
+		setPending(true);
 		setMessage(null);
 		try {
 			const answer = await GameClient.request(makeFromClientPacket(menu.request, {}), ReactionCollectorCreation, [menu.emptyPacket, Blocked, ...menu.outcomePackets ?? []]);
@@ -67,8 +70,9 @@ export function useInventoryMenus(): InventoryMenuState {
 		}
 		finally {
 			inFlight.current = false;
+			if (active.current) setPending(false);
 		}
 	};
 
-	return {message, open};
+	return {message, pending, open};
 }
