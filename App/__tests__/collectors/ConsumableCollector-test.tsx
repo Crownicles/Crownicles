@@ -13,13 +13,15 @@ describe("daily bonus and potion outcomes", () => {
 		const collector: ReactionCollectorCreation = {id: "daily", endTime: Date.now() + 60_000, data: {type: DAILY_BONUS_DATA_KINDS.COLLECTOR, data: {}}, reactions: [
 			{type: "unknown", data: {serverType: "future"}},
 			{type: DAILY_BONUS_REACTION_KINDS.OBJECT, data: {object: {id: 3, itemCategory: 3, rarity: 1, nature: ItemNature.TIME_SPEEDUP, power: 90, maxPower: 90}}},
+			{type: DAILY_BONUS_REACTION_KINDS.OBJECT, data: {object: {id: 3, itemCategory: 3, rarity: 1, nature: ItemNature.TIME_SPEEDUP, power: 90, maxPower: 90}}},
 			{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
 		]};
 		const choose = jest.fn();
 		await render(<ConsumableCollector collector={collector} onChoose={choose} submitting={false} />);
-		await fireEvent.press(screen.getByRole("button", {name: /models:objects.3/}));
+		expect(screen.getAllByText("models:objects.3")).toHaveLength(3);
+		await fireEvent.press(screen.getAllByRole("button", {name: /models:objects.3/})[1]);
 		expect(choose).toHaveBeenCalledTimes(1);
-		expect(choose).toHaveBeenCalledWith(1);
+		expect(choose).toHaveBeenCalledWith(2);
 	});
 
 	it("uses the server cooldown in hours and updates the remaining duration", async () => {

@@ -20,9 +20,10 @@ function ConsumableMenu({collector, onChoose, submitting}: ConsumableCollectorPr
 		if (reaction.type === DAILY_BONUS_REACTION_KINDS.OBJECT) return [reaction.data.object];
 		return [];
 	});
+	const distinctItems = new Map(items.map(item => [item.id, item]));
 	return <Screen>
 		<Hero eyebrow={i18n.t("app:equipment.eyebrow")} title={i18n.t(collector.data.type === DAILY_BONUS_DATA_KINDS.COLLECTOR ? "app:dailyBonus.title" : "app:inventoryActions.drinkTitle")} />
-		<Panel>{items.map((item, index) => <KeyValue key={`${item.id}-${index}`} label={itemDisplayName(item)} value={consumableDescription(item)} />)}</Panel>
+		<Panel>{[...distinctItems.values()].map(item => <KeyValue key={item.id} label={itemDisplayName(item)} value={consumableDescription(item)} />)}</Panel>
 		<CollectorChoices collector={collector} onChoose={onChoose} submitting={submitting} />
 	</Screen>;
 }
