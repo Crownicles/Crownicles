@@ -41,6 +41,39 @@ function SaleRow({choice, locked, onSelect}: {choice: SaleChoice; locked: boolea
 	/>;
 }
 
+function SaleMenu({collector, locked, onSelect, onClose}: {
+	collector: ReactionCollectorCreation;
+	locked: boolean;
+	onSelect: (choice: SaleChoice) => void;
+	onClose: () => void;
+}): ReactNode {
+	return <Screen>
+		<Hero eyebrow={i18n.t("app:sale.eyebrow")} title={i18n.t("app:sale.title")} />
+		<Panel>{saleChoices(collector).map(choice => <SaleRow key={choice.index} choice={choice} locked={locked} onSelect={onSelect} />)}</Panel>
+		{locked ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
+		<ButtonRow><Button disabled={locked} onPress={onClose}>{i18n.t("app:sale.continue")}</Button></ButtonRow>
+	</Screen>;
+}
+
+function SaleConfirmation({selection, locked, onChoose, onCancel}: {
+	selection: SaleChoice;
+	locked: boolean;
+	onChoose: (index: number) => void;
+	onCancel: () => void;
+}): ReactNode {
+	return <Confirmation
+		title={i18n.t(selection.reaction.data.price === 0 ? "app:sale.confirmDiscard" : "app:sale.confirmSell")}
+		message={itemDisplayName(selection.reaction.data.item)}
+		onRequestClose={onCancel}
+	>
+		<Panel><KeyValue label={i18n.t("app:sale.price")} value={formatMoney(selection.reaction.data.price)} /></Panel>
+		<ButtonRow>
+			<Button variant="primary" disabled={locked} onPress={(): void => onChoose(selection.index)}>{i18n.t("app:collector.accept")}</Button>
+			<Button disabled={locked} onPress={onCancel}>{i18n.t("app:collector.refuse")}</Button>
+		</ButtonRow>
+	</Confirmation>;
+}
+
 export function SellCollector({collector, onChoose, submitting}: {
 	collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean;
 }): ReactNode {
@@ -50,7 +83,8 @@ export function SellCollector({collector, onChoose, submitting}: {
 	const locked = submitting || answered;
 	const refuseIndex = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE);
 	const choose = (index: number): void => {
-		if (sent.current || locked || index < 0) return;
+		if (index < 0) return;
+		if (sent.current || locked) return;
 		sent.current = true;
 		setAnswered(true);
 		setSelection(null);
@@ -59,23 +93,8 @@ export function SellCollector({collector, onChoose, submitting}: {
 	const close = (): void => choose(refuseIndex);
 	return <Modal visible animationType="slide" onRequestClose={close}>
 		<SafeAreaView style={styles.root}>
-			<Screen>
-				<Hero eyebrow={i18n.t("app:sale.eyebrow")} title={i18n.t("app:sale.title")} />
-				<Panel>{saleChoices(collector).map(choice => <SaleRow key={choice.index} choice={choice} locked={locked} onSelect={setSelection} />)}</Panel>
-				{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
-				<ButtonRow><Button disabled={locked} onPress={close}>{i18n.t("app:sale.continue")}</Button></ButtonRow>
-			</Screen>
-			{selection ? <Confirmation
-				title={i18n.t(selection.reaction.data.price === 0 ? "app:sale.confirmDiscard" : "app:sale.confirmSell")}
-				message={itemDisplayName(selection.reaction.data.item)}
-				onRequestClose={(): void => setSelection(null)}
-			>
-				<Panel><KeyValue label={i18n.t("app:sale.price")} value={formatMoney(selection.reaction.data.price)} /></Panel>
-				<ButtonRow>
-					<Button variant="primary" disabled={locked} onPress={(): void => choose(selection.index)}>{i18n.t("app:collector.accept")}</Button>
-					<Button disabled={locked} onPress={(): void => setSelection(null)}>{i18n.t("app:collector.refuse")}</Button>
-				</ButtonRow>
-			</Confirmation> : null}
+			<SaleMenu collector={collector} locked={locked} onSelect={setSelection} onClose={close} />
+			{selection ? <SaleConfirmation selection={selection} locked={locked} onChoose={choose} onCancel={(): void => setSelection(null)} /> : null}
 		</SafeAreaView>
 	</Modal>;
 }
