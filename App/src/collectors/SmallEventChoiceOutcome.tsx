@@ -13,16 +13,26 @@ function field(labelKey: string, value: string): OutcomeField {
 	return {label: i18n.t(labelKey), value};
 }
 
+function visibleFields(fields: {show: boolean; field: OutcomeField}[]): OutcomeField[] {
+	return fields.filter(candidate => candidate.show).map(candidate => candidate.field);
+}
+
+function altarRewardFields(result: Extract<SmallEventChoiceResult, {event: "altar"; outcome: "contributed"}>): OutcomeField[] {
+	return visibleFields([
+		{show: result.bonusGems > 0, field: field("app:adventure.choiceResults.fields.gems", `+${formatAmount(result.bonusGems, AMOUNT_UNITS.GEM)}`)},
+		{show: result.blessingTriggered, field: field("app:adventure.choiceResults.fields.blessing", i18n.t(`bot:blessingNames.${result.blessingType}`))},
+		{show: result.bonusItemGiven, field: field("app:adventure.choiceResults.fields.bonusItem", i18n.t("app:common.yes"))},
+		{show: result.badgeAwarded, field: field("app:adventure.choiceResults.fields.badge", i18n.t("app:common.yes"))}
+	]);
+}
+
 function altarDetails(result: Extract<SmallEventChoiceResult, {event: "altar"}>): OutcomeDetails {
 	const description = result.outcome === "contributed"
 		? i18n.t(result.blessingTriggered ? "app:adventure.choiceResults.altar.blessing" : "app:adventure.choiceResults.altar.contributed")
 		: i18n.t(result.canAfford ? "app:adventure.choiceResults.altar.refused" : "app:adventure.choiceResults.altar.cannotAfford");
 	const fields = [field("app:adventure.choiceResults.fields.pool", `${formatMoney(result.current)} / ${formatMoney(result.threshold)}`)];
 	if (result.amount > 0) fields.unshift(field("app:adventure.choiceResults.fields.contribution", formatMoney(result.amount)));
-	if (result.outcome === "contributed" && result.bonusGems > 0) fields.push(field("app:adventure.choiceResults.fields.gems", `+${formatAmount(result.bonusGems, AMOUNT_UNITS.GEM)}`));
-	if (result.outcome === "contributed" && result.blessingTriggered) fields.push(field("app:adventure.choiceResults.fields.blessing", i18n.t(`bot:blessingNames.${result.blessingType}`)));
-	if (result.outcome === "contributed" && result.bonusItemGiven) fields.push(field("app:adventure.choiceResults.fields.bonusItem", i18n.t("app:common.yes")));
-	if (result.outcome === "contributed" && result.badgeAwarded) fields.push(field("app:adventure.choiceResults.fields.badge", i18n.t("app:common.yes")));
+	if (result.outcome === "contributed") fields.push(...altarRewardFields(result));
 	return {title: i18n.t("app:adventure.choiceResults.titles.altar"), description, fields};
 }
 
