@@ -115,6 +115,14 @@ import { MaterialQuantity } from "../../../WsPackets/src/objects/MaterialQuantit
 import { OwnedPet } from "../../../WsPackets/src/objects/OwnedPet";
 import { SupportItem } from "../../../WsPackets/src/objects/SupportItem";
 import { ValueAndMax } from "../../../WsPackets/src/objects/ValueAndMax";
+import { CommandClassesInfoPacketRes } from "../../../Lib/src/packets/commands/CommandClassesInfoPacket";
+import { ReactionCollectorChangeClassDetails } from "../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
+import { ClassStats as LibClassStats } from "../../../Lib/src/types/ClassStats";
+import { ClassKind as LibClassKind } from "../../../Lib/src/types/ClassKind";
+import { ClassesInfoRes } from "../../../WsPackets/src/fromServer/classes/ClassesInfoRes";
+import {
+	AvailableClass, ClassStats, ClassKind
+} from "../../../WsPackets/src/objects/ClassDetails";
 
 type WireShape<Value> =
 	[Value] extends [number] ? "number"
@@ -276,8 +284,16 @@ type MaterialQuantityContract = Assert<IsEqual<WireShape<LibMaterialQuantity>, W
 type OwnedPetContract = Assert<IsEqual<WireShape<LibOwnedPet>, WireShape<OwnedPet>>>;
 type SupportItemContract = Assert<IsEqual<WireShape<SupportItemDetails>, WireShape<SupportItem>>>;
 type ValueAndMaxContract = Assert<IsEqual<WireShape<CommandProfilePacketRes["playerData"]["health"]>, WireShape<ValueAndMax>>>;
+type ClassesInfoContract = Assert<IsEqual<WireShape<CommandClassesInfoPacketRes>, WireShape<WirePacketFields<ClassesInfoRes>>>>;
+type AvailableClassContract = Assert<IsEqual<WireShape<ReactionCollectorChangeClassDetails>, WireShape<AvailableClass>>>;
+type ClassStatsContract = Assert<IsEqual<WireShape<LibClassStats>, WireShape<ClassStats>>>;
+type ClassKindContract = Assert<IsEqual<LibClassKind, ClassKind>>;
 
 export const packetContractChecks: {
+	classesInfo: ClassesInfoContract;
+	availableClass: AvailableClassContract;
+	classStats: ClassStatsContract;
+	classKind: ClassKindContract;
 	drinkRequest: DrinkRequestContract;
 	inventoryRequest: InventoryRequestContract;
 	petRequest: PetRequestContract;
@@ -327,6 +343,10 @@ export const packetContractChecks: {
 	supportItem: SupportItemContract;
 	valueAndMax: ValueAndMaxContract;
 } = {
+	classesInfo: true,
+	availableClass: true,
+	classStats: true,
+	classKind: true,
 	drinkRequest: true,
 	inventoryRequest: true,
 	petRequest: true,

@@ -2,6 +2,7 @@ import {useCallback} from "react";
 import {useFocusEffect} from "expo-router";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
+import {CommandRejection} from "ws-packets/src/objects/CommandRejection";
 import {GameAnswer} from "@/src/networking/GameClient";
 import {gameKey, GameEntity} from "@/src/store/GameEntities";
 import {AppConstants} from "@/src/AppConstants";
@@ -10,7 +11,7 @@ export type RequestState<Answer extends FromServerPacket> =
 	| { status: "loading" }
 	| { status: "ready"; data: Answer }
 	| { status: "empty"; packetName: string }
-	| { status: "failed" };
+	| { status: "failed"; rejection?: CommandRejection };
 
 /**
  * An answer the server actually gave.
@@ -82,6 +83,9 @@ export function useGameQuery<Answer extends FromServerPacket>(
 	}
 	if (query.isError) {
 		return { status: "failed" };
+	}
+	if (query.data.kind === "rejected") {
+		return {status: "failed", rejection: query.data.packet.rejection};
 	}
 	return query.data.kind === "alternative"
 		? { status: "empty", packetName: query.data.packetName }

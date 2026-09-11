@@ -4,13 +4,16 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
 import {Theme} from "@/src/design/Theme";
-import {DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, SELL_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, SELL_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {EquipCollector} from "@/src/collectors/EquipCollector";
 import {SellCollector} from "@/src/collectors/SellCollector";
 import {useInventoryOutcome} from "@/src/store/useInventoryOutcome";
 import {InventoryOutcome} from "@/src/collectors/InventoryOutcome";
 import {ConsumableCollector} from "@/src/collectors/ConsumableCollector";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import {ClassesCollector} from "@/src/collectors/ClassesCollector";
+import {ClassOutcome} from "@/src/collectors/ClassOutcome";
+import {useClassOutcome} from "@/src/store/useClassOutcome";
 
 const styles = StyleSheet.create({
 	container: {
@@ -21,6 +24,7 @@ const styles = StyleSheet.create({
 function InventoryCollector({collector, onChoose, submitting}: {
 	collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean;
 }): ReactNode {
+	if (collector.data.type === CLASSES_DATA_KINDS.COLLECTOR) return <ClassesCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
 	if (collector.data.type === EQUIP_DATA_KINDS.COLLECTOR) return <EquipCollector collector={{...collector, data: collector.data}} onChoose={onChoose} submitting={submitting} />;
 	if (collector.data.type === SELL_DATA_KINDS.COLLECTOR) return <SellCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
 	const consumable = collector.data.type === DAILY_BONUS_DATA_KINDS.COLLECTOR || collector.data.type === DRINK_DATA_KINDS.COLLECTOR;
@@ -37,14 +41,16 @@ function InventoryCollector({collector, onChoose, submitting}: {
 export function OpenCollectors(): ReactNode {
 	const { open, react, isAnswerPending } = useCollectors();
 	const {outcome, clear} = useInventoryOutcome();
+	const classOutcome = useClassOutcome();
 	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector));
 
-	if (fallbackCollectors.length === 0 && !outcome) {
+	if (fallbackCollectors.length === 0 && !outcome && !classOutcome.outcome) {
 		return null;
 	}
 
 	return (
 		<View style={styles.container}>
+			{classOutcome.outcome ? <ClassOutcome outcome={classOutcome.outcome} onContinue={classOutcome.clear} /> : null}
 			{outcome ? <InventoryOutcome outcome={outcome} onContinue={clear} /> : null}
 			{fallbackCollectors.map(collector => (
 				<InventoryCollector

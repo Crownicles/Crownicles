@@ -3,6 +3,7 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AppConstants} from "@/src/AppConstants";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
+import {CommandRejected} from "ws-packets/src/fromServer/common/CommandRejected";
 
 class TestRequest extends FromClientPacket {
 	static readonly wireName = "TestRequest";
@@ -53,5 +54,12 @@ describe("GameClient", () => {
 		});
 
 		await expect(GameClient.request(new TestRequest(), TestResponse)).resolves.toEqual({kind: "timeout"});
+	});
+
+	it("returns a typed server refusal without waiting for a timeout", async () => {
+		jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation((_packet, handlers) => {
+			handlers[CommandRejected.wireName]({rejection: {type: "level", requiredLevel: 10}} as never);
+		});
+		await expect(GameClient.request(new TestRequest(), TestResponse)).resolves.toEqual({kind: "rejected", packet: {rejection: {type: "level", requiredLevel: 10}}});
 	});
 });

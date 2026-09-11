@@ -73,11 +73,10 @@ export function Missions(): ReactNode {
 		return (): void => clearInterval(timer);
 	}, []);
 	useEffect(() => {
-		if (!resetsAt || resetsAt <= Date.now()) return;
-		const timer = setTimeout(() => {
+		const timer = resetsAt === null ? null : setTimeout(() => {
 			queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.MISSIONS)}).catch(console.error);
-		}, resetsAt - Date.now());
-		return (): void => clearTimeout(timer);
+		}, Math.max(0, resetsAt - Date.now()));
+		return (): void => {if (timer !== null) clearTimeout(timer);};
 	}, [resetsAt, queryClient]);
 	if (state.status === "loading") return <EmptyState>{i18n.t("app:common.loading")}</EmptyState>;
 	if (state.status === "failed") return <>

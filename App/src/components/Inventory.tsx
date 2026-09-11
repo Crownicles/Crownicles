@@ -4,7 +4,7 @@ import {MaterialQuantity} from "ws-packets/src/objects/MaterialQuantity";
 import {InventoryItemRow} from "@/src/components/InventoryItemRow";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
-import {INVENTORY_MENUS, useInventoryMenus} from "@/src/store/useInventoryMenus";
+import {INVENTORY_MENUS, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {KeyValue, Note, Panel, QuickAction, QuickActions, Row, SectionHeader} from "@/src/design/Primitives";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {formatNumber} from "@/src/display/Amounts";
@@ -80,7 +80,7 @@ function InventoryContent({view, data, artifacts}: {view: InventoryView; data: I
 		case "equipped": return <><InventoryEquipment data={data} />{artifacts ? <InventoryArtifactList artifacts={artifacts} /> : null}</>;
 		case "reserve": return <InventoryReserve data={data} />;
 		case "materials": return <InventoryMaterials materials={data.materials} />;
-		case "plants": return <InventoryPlants plants={data.plants} />;
+		default: return <InventoryPlants plants={data.plants} />;
 	}
 }
 
@@ -93,11 +93,11 @@ const ACTIONS = [
 
 export function Inventory({inventoryData, artifacts}: {inventoryData: InventoryData | null; artifacts?: InventoryArtifacts}): ReactNode {
 	const [view, setView] = useState<InventoryView>("equipped");
-	const {message, pending, open} = useInventoryMenus();
+	const {message, pending, open} = useCommandMenus();
 	if (!inventoryData) return <Note>{i18n.t("app:common.loading")}</Note>;
 	return <>
 		<SegmentedControl options={INVENTORY_VIEWS.map(value => ({value, label: i18n.t(`app:inventory.views.${value}`)}))} value={view} onChange={setView} label={i18n.t("app:profile.titles.inventory")} />
-		{message ? <Note>{i18n.t(message)}</Note> : null}
+		{message ? <Note>{message}</Note> : null}
 		<InventoryContent view={view} data={inventoryData} artifacts={artifacts} />
 		<SectionHeader>{i18n.t("app:inventory.actions.title")}</SectionHeader>
 		<QuickActions>{ACTIONS.map(action => <QuickAction key={action.label} icon={AppIcons.getIcon(action.icon)} disabled={pending} onPress={(): Promise<void> => open(action.menu)}>{i18n.t(`app:inventory.actions.${action.label}`)}</QuickAction>)}</QuickActions>

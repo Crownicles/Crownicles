@@ -5,7 +5,7 @@ import { useGameQuery } from "@/src/store/useGameQuery";
 import { useGameInvalidations } from "@/src/store/GameInvalidations";
 import { GAME_ENTITIES } from "@/src/store/GameEntities";
 import { GameAnswer } from "@/src/networking/GameClient";
-import { DRINK_DATA_KINDS, ITEM_DATA_KINDS } from "ws-packets/src/fromServer/collectors";
+import { CLASSES_DATA_KINDS, DRINK_DATA_KINDS, ITEM_DATA_KINDS } from "ws-packets/src/fromServer/collectors";
 import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
 import { InventoryRes } from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {renderWithGameQuery} from "@/src/testing/testUtils";
@@ -14,6 +14,8 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {DrinkRes} from "ws-packets/src/fromServer/drink/DrinkRes";
 import {DailyBonusRes} from "ws-packets/src/fromServer/inventory/DailyBonusRes";
 import {ItemNature} from "ws-packets/src/objects/ItemNature";
+import {ClassesRes} from "ws-packets/src/fromServer/classes/ClassesRes";
+import {useClassOutcome} from "@/src/store/useClassOutcome";
 
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined
@@ -24,6 +26,29 @@ jest.mock("expo-router", () => ({
  * next depends on the collector telling the store which entities to read again.
  */
 describe("invalidation after a collector is answered", () => {
+	it("waits for the class result and refreshes the profile only once", async () => {
+		let profileReads = 0;
+		const readProfile = (): Promise<GameAnswer<ProfileRes>> => {
+			profileReads++;
+			return Promise.resolve({kind: "answer", packet: {classId: profileReads === 1 ? 2 : 7} as ProfileRes});
+		};
+		let stopCollector = (): void => undefined;
+		function ClassScreen(): ReactElement {
+			const profile = useGameQuery(GAME_ENTITIES.PROFILE, readProfile);
+			const {afterCollector} = useGameInvalidations();
+			useClassOutcome();
+			stopCollector = (): void => afterCollector(CLASSES_DATA_KINDS.COLLECTOR);
+			return <Text>{profile.status === "ready" ? `class ${profile.data.classId}` : profile.status}</Text>;
+		}
+		await renderWithGameQuery(<ClassScreen />);
+		await waitFor(() => expect(screen.getByText("class 2")).toBeTruthy());
+		await act(async () => {stopCollector();});
+		expect(profileReads).toBe(1);
+		await act(async () => {Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry").dispatch(ClassesRes.wireName, {classId: 7});});
+		await waitFor(() => expect(screen.getByText("class 7")).toBeTruthy());
+		expect(profileReads).toBe(2);
+	});
+
 	it("reads the profile and the inventory again once a drink collector is answered", async () => {
 		let profileReads = 0;
 		let inventoryReads = 0;

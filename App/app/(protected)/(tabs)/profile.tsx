@@ -11,6 +11,7 @@ import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {Missions as MissionsScreen} from "@/src/components/Missions";
+import {Classes} from "@/src/components/Classes";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {AppIcons} from "@/src/AppIcons";
 import {
@@ -34,7 +35,7 @@ const MINIMUM_RATIO = 0;
 const MAXIMUM_RATIO = 1;
 const PET_RARITY_MIN = 0;
 const PET_RARITY_MAX = 8;
-type ProfilePage = "profile" | "inventory" | "missions";
+type ProfilePage = "profile" | "inventory" | "missions" | "classes";
 
 const styles = StyleSheet.create({
 	state: {
@@ -288,6 +289,7 @@ function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: 
 			<QuickActions>
 				<QuickAction icon={AppIcons.getIcon("inventory.stock")} onPress={(): void => onPage("inventory")}>{i18n.t("app:profile.titles.inventory")}</QuickAction>
 				<QuickAction icon={AppIcons.getIcon("missions.campaign")} onPress={(): void => onPage("missions")}>{i18n.t("app:profile.titles.missions")}</QuickAction>
+				<QuickAction icon={AppIcons.getIcon("commands.classes")} onPress={(): void => onPage("classes")}>{i18n.t("app:profile.titles.classes")}</QuickAction>
 			</QuickActions>
 			<ProfileInformation profile={profile} />
 			<Statistics profile={profile} />
@@ -328,6 +330,14 @@ function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNo
 	);
 }
 
+function ProfilePageContent({page, inventory}: {page: Exclude<ProfilePage, "profile">; inventory: RequestState<InventoryRes>}): ReactNode {
+	switch (page) {
+		case "inventory": return <InventorySection state={inventory} />;
+		case "missions": return <MissionsScreen />;
+		default: return <Classes />;
+	}
+}
+
 export default function Profile(): ReactNode {
 	const [page, setPage] = useState<ProfilePage>("profile");
 	const profileState = usePlayerProfile();
@@ -345,7 +355,7 @@ export default function Profile(): ReactNode {
 	}, [profile, navigation]);
 
 	if (page !== "profile") return <DetailScreen title={i18n.t(`app:profile.titles.${page}`)} eyebrow={i18n.t("app:profile.eyebrow")} onClose={(): void => setPage("profile")}>
-		{page === "inventory" ? <InventorySection state={inventoryState} /> : <MissionsScreen />}
+		<ProfilePageContent page={page} inventory={inventoryState} />
 	</DetailScreen>;
 	return <Screen><ProfileState state={profileState} onPage={setPage} /></Screen>;
 }

@@ -115,6 +115,10 @@ function inventoryPacket(): CommandInventoryPacketRes {
 describe("packet contracts", () => {
 	it("keeps the compile-time contract checks active", () => {
 		expect(packetContractChecks).toStrictEqual({
+			classesInfo: true,
+			availableClass: true,
+			classStats: true,
+			classKind: true,
 			drinkRequest: true,
 			inventoryRequest: true,
 			petRequest: true,

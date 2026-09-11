@@ -19,6 +19,11 @@
     "loginFailed": "Échec de la connexion",
     "unknownError": "Une erreur inconnue est survenue."
   },
+  "requirements": {
+    "level": "Cette action est disponible à partir du niveau {{level}}.",
+    "location": "Cette action n'est pas disponible à votre position actuelle.",
+    "effect": "{{effect}} Temps restant : {{duration}}."
+  },
   "inventory": {
     "views": {"equipped": "Équipement", "reserve": "Réserve", "materials": "Matériaux", "plants": "Plantes"},
     "actions": {"title": "Actions", "equip": "Équiper", "sell": "Vendre", "drink": "Boire", "daily": "Bonus journalier"},
@@ -762,6 +767,23 @@
     "expiresAt": "À terminer avant le {{date}}",
     "risk": "{{icon}} {{risk}}"
   },
+  "classes": {
+    "name": "{{icon}} {{name}}",
+    "change": "Changer de classe",
+    "comparison": "Comparer les classes",
+    "attacks": "Attaques de la classe",
+    "breathCost": "{{cost}} {emote:unitValues.breath}",
+    "tierKind": "Palier {{tier}} · {{kind}}",
+    "current": "Actuelle",
+    "empty": "Aucune classe disponible.",
+    "cancelled": "Changement de classe annulé.",
+    "unchanged": "Votre classe n'a pas changé.",
+    "cooldownAfter": "Après un changement, le prochain sera disponible dans {{duration}}.",
+    "confirm": "Choisir la classe {{name}} ?",
+    "availableAt": "Un nouveau changement sera possible le {{date}}.",
+    "outcomes": {"success": "Classe modifiée", "cooldown": "Changement indisponible", "cancelled": "Changement annulé"},
+    "kinds": {"basic": "Polyvalente", "attack": "Attaque", "defense": "Défense", "other": "Spécialisée"}
+  },
   "profile": {
     "eyebrow": "Profil",
     "subtitle": "{{className}} · niveau {{level, number}} · {{location}}",
@@ -771,6 +793,7 @@
       "scoreAndRank": "Score et Rang",
       "statistics": "Statistiques",
       "missions": "Missions",
+      "classes": "Classes",
       "gloryAndLeague": "Gloire et ligue",
       "status": "Temps restant",
       "cooking": "Cuisine",

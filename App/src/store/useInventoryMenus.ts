@@ -14,8 +14,10 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {Blocked} from "ws-packets/src/fromServer/common/Blocked";
 import {GameClient, GameAnswer} from "@/src/networking/GameClient";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
+import {i18n} from "@/src/translations/i18n";
+import {commandRejectionMessage} from "@/src/display/CommandRejection";
 
-type InventoryMenu = {
+export type CommandMenu = {
 	request: FromClientPacketLike<FromClientPacket>;
 	emptyPacket: FromServerPacketLike<FromServerPacket>;
 	emptyMessage: string;
@@ -27,22 +29,23 @@ export const INVENTORY_MENUS = {
 	SELL: {request: SellReq, emptyPacket: SellNoItemRes, emptyMessage: "app:sale.noItems"},
 	DRINK: {request: DrinkReq, emptyPacket: DrinkNoAvailablePotion, emptyMessage: "app:inventoryActions.noPotion"},
 	DAILY: {request: DailyBonusReq, emptyPacket: DailyBonusNoObjectRes, emptyMessage: "app:dailyBonus.noObject", outcomePackets: [DailyBonusRes, DailyBonusCooldownRes]}
-} satisfies Record<string, InventoryMenu>;
+} satisfies Record<string, CommandMenu>;
 
-type InventoryMenuState = {
+type CommandMenuState = {
 	message: string | null;
 	pending: boolean;
-	open: (menu: InventoryMenu) => Promise<void>;
+	open: (menu: CommandMenu) => Promise<void>;
 };
 
-function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: InventoryMenu): string | null {
-	if (answer.kind !== "alternative") return "app:common.connectionError";
-	if (answer.packetName === menu.emptyPacket.wireName) return menu.emptyMessage;
+function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: CommandMenu): string | null {
+	if (answer.kind === "rejected") return commandRejectionMessage(answer.packet.rejection);
+	if (answer.kind !== "alternative") return i18n.t("app:common.connectionError");
+	if (answer.packetName === menu.emptyPacket.wireName) return i18n.t(menu.emptyMessage);
 	if (menu.outcomePackets?.some(packet => packet.wireName === answer.packetName)) return null;
-	return "app:collector.pending";
+	return i18n.t("app:collector.pending");
 }
 
-export function useInventoryMenus(): InventoryMenuState {
+export function useCommandMenus(): CommandMenuState {
 	const {track} = useCollectors();
 	const [message, setMessage] = useState<string | null>(null);
 	const [pending, setPending] = useState(false);
@@ -54,7 +57,7 @@ export function useInventoryMenus(): InventoryMenuState {
 		return (): void => { active.current = false; };
 	}, []);
 
-	const open = async (menu: InventoryMenu): Promise<void> => {
+	const open = async (menu: CommandMenu): Promise<void> => {
 		if (inFlight.current) return;
 		inFlight.current = true;
 		setPending(true);
@@ -66,7 +69,7 @@ export function useInventoryMenus(): InventoryMenuState {
 			else setMessage(commandMessage(answer, menu));
 		}
 		catch {
-			if (active.current) setMessage("app:common.connectionError");
+			if (active.current) setMessage(i18n.t("app:common.connectionError"));
 		}
 		finally {
 			inFlight.current = false;

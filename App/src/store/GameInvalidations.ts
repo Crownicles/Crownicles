@@ -1,6 +1,6 @@
 import {useCallback} from "react";
 import {useQueryClient} from "@tanstack/react-query";
-import {DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, ITEM_DATA_KINDS, ReactionCollectorDataKind, SELL_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, ITEM_DATA_KINDS, ReactionCollectorDataKind, SELL_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {GAME_ENTITIES, gameKey, GameEntity} from "@/src/store/GameEntities";
 
 /**
@@ -18,6 +18,7 @@ const COLLECTOR_INVALIDATES: Partial<Record<ReactionCollectorDataKind, readonly 
 };
 
 const RESULT_OWNED_COLLECTORS = new Set<ReactionCollectorDataKind>([
+	CLASSES_DATA_KINDS.COLLECTOR,
 	DAILY_BONUS_DATA_KINDS.COLLECTOR,
 	SELL_DATA_KINDS.COLLECTOR,
 	DRINK_DATA_KINDS.COLLECTOR

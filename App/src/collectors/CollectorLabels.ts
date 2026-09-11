@@ -4,6 +4,7 @@ import {
 	EQUIP_DATA_KINDS, EQUIP_REACTION_KINDS,
 	SELL_DATA_KINDS, SELL_REACTION_KINDS,
 	DAILY_BONUS_DATA_KINDS, DAILY_BONUS_REACTION_KINDS,
+	CLASSES_DATA_KINDS, CLASSES_REACTION_KINDS,
 	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
@@ -215,6 +216,7 @@ function makeChoosableHandler<Kind extends ReactionCollectorReaction["type"]>(
 }
 
 const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => string> = {
+	[CLASSES_DATA_KINDS.COLLECTOR]: () => i18n.t("app:classes.change"),
 	[DAILY_BONUS_DATA_KINDS.COLLECTOR]: () => i18n.t("app:dailyBonus.title"),
 	[SELL_DATA_KINDS.COLLECTOR]: () => i18n.t("app:sale.title"),
 	[EQUIP_DATA_KINDS.COLLECTOR]: () => i18n.t("app:equipment.title"),
@@ -247,6 +249,7 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 };
 
 const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], DataHandler> = {
+	[CLASSES_DATA_KINDS.COLLECTOR]: () => undefined,
 	[DAILY_BONUS_DATA_KINDS.COLLECTOR]: () => undefined,
 	[SELL_DATA_KINDS.COLLECTOR]: () => undefined,
 	[EQUIP_DATA_KINDS.COLLECTOR]: () => undefined,
@@ -306,6 +309,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 };
 
 const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], ReactionHandler> = {
+	[CLASSES_REACTION_KINDS.CHOOSE]: makeReactionHandler(CLASSES_REACTION_KINDS.CHOOSE, reaction => withIcon(`classes.${reaction.data.classId}`, i18n.t(`models:classes.${reaction.data.classId}`))),
 	[DAILY_BONUS_REACTION_KINDS.OBJECT]: makeReactionHandler(DAILY_BONUS_REACTION_KINDS.OBJECT, reaction => itemDisplayName(reaction.data.object)),
 	[SELL_REACTION_KINDS.ITEM]: makeReactionHandler(SELL_REACTION_KINDS.ITEM, reaction => itemDisplayName(reaction.data.item)),
 	[EQUIP_REACTION_KINDS.CLOSE]: () => i18n.t("app:equipment.close"),
@@ -431,6 +435,7 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 };
 
 const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHandler> = {
+	[CLASSES_REACTION_KINDS.CHOOSE]: (_reaction, data) => isDataOfType(data, CLASSES_DATA_KINDS.COLLECTOR),
 	[DAILY_BONUS_REACTION_KINDS.OBJECT]: (_reaction, data) => isDataOfType(data, DAILY_BONUS_DATA_KINDS.COLLECTOR),
 	[SELL_REACTION_KINDS.ITEM]: (_reaction, data) => isDataOfType(data, SELL_DATA_KINDS.COLLECTOR),
 	[EQUIP_REACTION_KINDS.CLOSE]: (_reaction, data) => isDataOfType(data, EQUIP_DATA_KINDS.COLLECTOR),

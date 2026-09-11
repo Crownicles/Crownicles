@@ -10,7 +10,8 @@ export const GAME_ENTITIES = {
 	PET: "pet",
 	INVENTORY: "inventory",
 	GUILD: "guild",
-	MISSIONS: "missions"
+	MISSIONS: "missions",
+	CLASSES: "classes"
 } as const;
 
 export type GameEntity = typeof GAME_ENTITIES[keyof typeof GAME_ENTITIES];

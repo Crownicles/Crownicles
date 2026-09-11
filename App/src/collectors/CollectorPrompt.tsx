@@ -10,7 +10,7 @@ import {
 	collectorDescription, collectorTitle, isChoosable, reactionLabel
 } from "@/src/collectors/CollectorLabels";
 
-function useSecondsLeft(endTime: number): number {
+export function useSecondsLeft(endTime: number): number {
 	const [secondsLeft, setSecondsLeft] = useState(() => Math.max(0, Math.ceil((endTime - Date.now()) / 1000)));
 
 	useEffect(() => {

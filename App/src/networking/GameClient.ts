@@ -1,6 +1,7 @@
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {FromServerPacketLike} from "ws-packets/src/MakePackets";
+import {CommandRejected} from "ws-packets/src/fromServer/common/CommandRejected";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AppConstants} from "@/src/AppConstants";
 
@@ -14,6 +15,7 @@ import {AppConstants} from "@/src/AppConstants";
 export type GameAnswer<Answer extends FromServerPacket> =
 	| { kind: "answer"; packet: Answer }
 	| { kind: "alternative"; packetName: string }
+	| { kind: "rejected"; packet: CommandRejected }
 	| { kind: "timeout" };
 
 /**
@@ -36,6 +38,7 @@ export class GameClient {
 	): Promise<GameAnswer<Answer>> {
 		return new Promise(resolve => {
 			const handlers: { [packetName: string]: (packet: never) => void } = {
+				[CommandRejected.wireName]: (packet: CommandRejected): void => resolve({kind: "rejected", packet}),
 				[expected.wireName]: (packet: Answer): void => resolve({ kind: "answer", packet })
 			};
 			for (const alternative of alternatives) {
