@@ -19,7 +19,17 @@
     "unknownError": "Une erreur inconnue est survenue."
   },
   "inventoryActions": {
-    "noPotion": "Vous ne possédez aucune potion utilisable hors combat."
+    "noPotion": "Vous ne possédez aucune potion utilisable hors combat.",
+    "drinkTitle": "Boire une potion",
+    "drunk": "Potion consommée"
+  },
+  "dailyBonus": {
+    "title": "Bonus journalier",
+    "claim": "Activer le bonus journalier",
+    "received": "Bonus journalier activé",
+    "noObject": "Vous ne possédez aucun objet à effet journalier.",
+    "cooldown": "Bonus déjà utilisé",
+    "availableIn": "Le prochain bonus sera disponible dans {{time}}."
   },
   "sale": {
     "eyebrow": "Inventaire · réserve",

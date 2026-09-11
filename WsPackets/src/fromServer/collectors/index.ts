@@ -17,3 +17,4 @@ export * from "./families/CityCollectors";
 export * from "./families/ShopCollector";
 export * from "./families/EquipCollector";
 export * from "./families/SellCollector";
+export * from "./families/DailyBonusCollector";

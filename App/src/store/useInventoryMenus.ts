@@ -6,24 +6,27 @@ import {EquipReq} from "ws-packets/src/fromClient/EquipReq";
 import {SellReq} from "ws-packets/src/fromClient/SellReq";
 import {DrinkReq} from "ws-packets/src/fromClient/DrinkReq";
 import {EquipNoItemRes} from "ws-packets/src/fromServer/equip/EquipNoItemRes";
-import {SellNoItemRes, SellRes} from "ws-packets/src/fromServer/inventory/SellRes";
+import {SellNoItemRes} from "ws-packets/src/fromServer/inventory/SellRes";
+import {DailyBonusReq} from "ws-packets/src/fromClient/DailyBonusReq";
+import {DailyBonusCooldownRes, DailyBonusNoObjectRes, DailyBonusRes} from "ws-packets/src/fromServer/inventory/DailyBonusRes";
 import {DrinkNoAvailablePotion} from "ws-packets/src/fromServer/drink/DrinkNoAvailablePotion";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {Blocked} from "ws-packets/src/fromServer/common/Blocked";
 import {GameClient, GameAnswer} from "@/src/networking/GameClient";
-import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 
 type InventoryMenu = {
 	request: FromClientPacketLike<FromClientPacket>;
 	emptyPacket: FromServerPacketLike<FromServerPacket>;
 	emptyMessage: string;
+	outcomePackets?: FromServerPacketLike<FromServerPacket>[];
 };
 
 export const INVENTORY_MENUS = {
 	EQUIP: {request: EquipReq, emptyPacket: EquipNoItemRes, emptyMessage: "app:equipment.noItems"},
 	SELL: {request: SellReq, emptyPacket: SellNoItemRes, emptyMessage: "app:sale.noItems"},
-	DRINK: {request: DrinkReq, emptyPacket: DrinkNoAvailablePotion, emptyMessage: "app:inventoryActions.noPotion"}
+	DRINK: {request: DrinkReq, emptyPacket: DrinkNoAvailablePotion, emptyMessage: "app:inventoryActions.noPotion"},
+	DAILY: {request: DailyBonusReq, emptyPacket: DailyBonusNoObjectRes, emptyMessage: "app:dailyBonus.noObject", outcomePackets: [DailyBonusRes, DailyBonusCooldownRes]}
 } satisfies Record<string, InventoryMenu>;
 
 type InventoryMenuState = {
@@ -31,9 +34,10 @@ type InventoryMenuState = {
 	open: (menu: InventoryMenu) => Promise<void>;
 };
 
-function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: InventoryMenu): string {
+function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: InventoryMenu): string | null {
 	if (answer.kind !== "alternative") return "app:common.connectionError";
 	if (answer.packetName === menu.emptyPacket.wireName) return menu.emptyMessage;
+	if (menu.outcomePackets?.some(packet => packet.wireName === answer.packetName)) return null;
 	return "app:collector.pending";
 }
 
@@ -53,7 +57,7 @@ export function useInventoryMenus(): InventoryMenuState {
 		inFlight.current = true;
 		setMessage(null);
 		try {
-			const answer = await GameClient.request(makeFromClientPacket(menu.request, {}), ReactionCollectorCreation, [menu.emptyPacket, Blocked]);
+			const answer = await GameClient.request(makeFromClientPacket(menu.request, {}), ReactionCollectorCreation, [menu.emptyPacket, Blocked, ...menu.outcomePackets ?? []]);
 			if (!active.current) return;
 			if (answer.kind === "answer") track(answer.packet);
 			else setMessage(commandMessage(answer, menu));
@@ -67,12 +71,4 @@ export function useInventoryMenus(): InventoryMenuState {
 	};
 
 	return {message, open};
-}
-
-type SaleOutcomeState = {outcome: SellRes | null; clear: () => void};
-
-export function useSaleOutcome(): SaleOutcomeState {
-	const [outcome, setOutcome] = useState<SellRes | null>(null);
-	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<SellRes>(SellRes.wireName, setOutcome), []);
-	return {outcome, clear: (): void => setOutcome(null)};
 }

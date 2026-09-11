@@ -9,6 +9,11 @@ import { DRINK_DATA_KINDS, ITEM_DATA_KINDS } from "ws-packets/src/fromServer/col
 import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
 import { InventoryRes } from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {renderWithGameQuery} from "@/src/testing/testUtils";
+import {useInventoryOutcome} from "@/src/store/useInventoryOutcome";
+import {WebSocketClient} from "@/src/networking/WebSocketClient";
+import {DrinkRes} from "ws-packets/src/fromServer/drink/DrinkRes";
+import {DailyBonusRes} from "ws-packets/src/fromServer/inventory/DailyBonusRes";
+import {ItemNature} from "ws-packets/src/objects/ItemNature";
 
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined
@@ -38,8 +43,12 @@ describe("invalidation after a collector is answered", () => {
 			const profile = useGameQuery<ProfileRes>(GAME_ENTITIES.PROFILE, readProfile);
 			useGameQuery<InventoryRes>(GAME_ENTITIES.INVENTORY, readInventory);
 			const { afterCollector } = useGameInvalidations();
+			useInventoryOutcome();
 
-			answerDrink = (): void => afterCollector(DRINK_DATA_KINDS.COLLECTOR);
+			answerDrink = (): void => {
+				afterCollector(DRINK_DATA_KINDS.COLLECTOR);
+				Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry").dispatch(DrinkRes.wireName, {value: 17, itemNature: ItemNature.HEALTH});
+			};
 
 			return <Text>{profile.status === "ready" ? `health ${profile.data.health.value}` : profile.status}</Text>;
 		}
@@ -53,7 +62,28 @@ describe("invalidation after a collector is answered", () => {
 		});
 
 		await waitFor(() => expect(screen.getByText("health 67")).toBeTruthy());
+		expect(profileReads).toBe(2);
 		expect(inventoryReads).toBe(2);
+	});
+
+	it("refreshes the profile after a daily bonus with no collector", async () => {
+		let profileReads = 0;
+		const readProfile = (): Promise<GameAnswer<ProfileRes>> => {
+			profileReads++;
+			return Promise.resolve({kind: "answer", packet: {money: profileReads === 1 ? 50 : 75} as ProfileRes});
+		};
+		function DailyScreen(): ReactElement {
+			const profile = useGameQuery(GAME_ENTITIES.PROFILE, readProfile);
+			useInventoryOutcome();
+			return <Text>{profile.status === "ready" ? `money ${profile.data.money}` : profile.status}</Text>;
+		}
+		await renderWithGameQuery(<DailyScreen />);
+		await waitFor(() => expect(screen.getByText("money 50")).toBeTruthy());
+		await act(async () => {
+			Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry").dispatch(DailyBonusRes.wireName, {value: 25, itemNature: ItemNature.MONEY});
+		});
+		await waitFor(() => expect(screen.getByText("money 75")).toBeTruthy());
+		expect(profileReads).toBe(2);
 	});
 
 	it("refreshes the profile even when the collector kind is unknown", async () => {

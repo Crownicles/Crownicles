@@ -6,7 +6,7 @@ import {Item} from "@/src/components/Item";
 import {i18n} from "@/src/translations/i18n";
 import {Theme} from "@/src/design/Theme";
 import {INVENTORY_MENUS, useInventoryMenus} from "@/src/store/useInventoryMenus";
-import {Note} from "@/src/design/Primitives";
+import {Button, ButtonRow, Note} from "@/src/design/Primitives";
 
 const styles = StyleSheet.create({
 	centerContent: {
@@ -280,6 +280,7 @@ export function Inventory({ inventoryData }: InventoryProps): React.ReactElement
 	return (
 		<View style={styles.inventoryContent}>
 			{actionMessage ? <Note>{i18n.t(actionMessage)}</Note> : null}
+			<ButtonRow><Button onPress={(): Promise<void> => open(INVENTORY_MENUS.DAILY)}>{i18n.t("app:dailyBonus.claim")}</Button></ButtonRow>
 			<View style={styles.inventoryHeader}>
 				<Text style={styles.inventoryTitle}>
 					{showBackupItems

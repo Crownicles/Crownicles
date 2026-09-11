@@ -1,7 +1,6 @@
 import {useCallback} from "react";
 import {useQueryClient} from "@tanstack/react-query";
-import {EQUIP_DATA_KINDS, ITEM_DATA_KINDS, ReactionCollectorDataKind, SELL_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
-import {DRINK_DATA_KINDS} from "ws-packets/src/fromServer/collectors/families/DrinkCollector";
+import {DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, ITEM_DATA_KINDS, ReactionCollectorDataKind, SELL_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {GAME_ENTITIES, gameKey, GameEntity} from "@/src/store/GameEntities";
 
 /**
@@ -13,12 +12,16 @@ import {GAME_ENTITIES, gameKey, GameEntity} from "@/src/store/GameEntities";
  * or another value displayed by the profile. The table adds entities specific to a kind.
  */
 const COLLECTOR_INVALIDATES: Partial<Record<ReactionCollectorDataKind, readonly GameEntity[]>> = {
-	[SELL_DATA_KINDS.COLLECTOR]: [GAME_ENTITIES.INVENTORY],
 	[EQUIP_DATA_KINDS.COLLECTOR]: [GAME_ENTITIES.INVENTORY],
-	[DRINK_DATA_KINDS.COLLECTOR]: [GAME_ENTITIES.INVENTORY],
 	[ITEM_DATA_KINDS.CHOICE]: [GAME_ENTITIES.INVENTORY],
 	[ITEM_DATA_KINDS.ACCEPT]: [GAME_ENTITIES.INVENTORY]
 };
+
+const RESULT_OWNED_COLLECTORS = new Set<ReactionCollectorDataKind>([
+	DAILY_BONUS_DATA_KINDS.COLLECTOR,
+	SELL_DATA_KINDS.COLLECTOR,
+	DRINK_DATA_KINDS.COLLECTOR
+]);
 
 /**
  * Refreshes the views a player action made obsolete.
@@ -29,6 +32,7 @@ export function useGameInvalidations(): { afterCollector: (kind: ReactionCollect
 	const queryClient = useQueryClient();
 
 	const afterCollector = useCallback((kind: ReactionCollectorDataKind): void => {
+		if (RESULT_OWNED_COLLECTORS.has(kind)) return;
 		const entities = new Set<GameEntity>([
 			GAME_ENTITIES.PROFILE,
 				GAME_ENTITIES.REPORT,

@@ -36,6 +36,9 @@ import {
 import {
 	sellDataMappings, sellReactionMappings
 } from "./mappings/SellCollectorMappings";
+import {
+	dailyBonusDataMappings, dailyBonusReactionMappings
+} from "./mappings/DailyBonusCollectorMappings";
 
 const reactionMappings = indexMappings([
 	...genericReactionMappings,
@@ -47,7 +50,8 @@ const reactionMappings = indexMappings([
 	...cityReactionMappings,
 	...shopReactionMappings,
 	...equipReactionMappings,
-	...sellReactionMappings
+	...sellReactionMappings,
+	...dailyBonusReactionMappings
 ]);
 
 const dataMappings = indexMappings([
@@ -59,7 +63,8 @@ const dataMappings = indexMappings([
 	...cityDataMappings,
 	...shopDataMappings,
 	...equipDataMappings,
-	...sellDataMappings
+	...sellDataMappings,
+	...dailyBonusDataMappings
 ]);
 
 /**

@@ -13,6 +13,11 @@ import { join } from "path";
  * app. This list is the protocol; a diff on it has to be a deliberate decision.
  */
 const WIRE_NAMES = [
+	"DailyBonusReq",
+	"DailyBonusRes",
+	"DailyBonusNoObjectRes",
+	"DailyBonusCooldownRes",
+	"DailyBonusCancelRes",
 	"Blocked",
 	"CommandGetCurrentReactionCollectorsReq",
 	"CommandGetCurrentReactionCollectorsRes",
