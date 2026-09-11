@@ -20,6 +20,7 @@
     "unknownError": "Une erreur inconnue est survenue."
   },
   "requirements": {
+    "oracle": "Vous devez d'abord rencontrer l'Oracle pendant vos voyages.",
     "level": "Cette action est disponible à partir du niveau {{level}}.",
     "location": "Cette action n'est pas disponible à votre position actuelle.",
     "effect": "{{effect}} Temps restant : {{duration}}."
@@ -767,6 +768,54 @@
     "expiresAt": "À terminer avant le {{date}}",
     "risk": "{{icon}} {{risk}}"
   },
+  "reference": {
+    "empty": "Aucune information disponible.",
+    "percentage": "{{value, number}} %",
+    "blessing": {
+      "contributors": "Contributeurs",
+      "triggeredBy": "Déclenchée par",
+      "topContributor": "Plus gros contributeur",
+      "topAmount": "Contribution",
+      "endsAt": "Fin de la bénédiction",
+      "expiresAt": "Expiration de la cagnotte",
+      "pool": "Cagnotte de l'Oracle",
+      "all": "Toutes les bénédictions"
+    },
+    "badges": {
+      "total": "Badges obtenus : {{count}} / {{total}}",
+      "names": {
+        "top_v1_player": "Meilleur joueur de la première saison",
+        "top_10_v1": "Top 10 de la première saison",
+        "bot_owner": "Créateur de Crownicles",
+        "technical_team": "Équipe technique",
+        "top_glory": "Sommet du classement de gloire",
+        "support": "Équipe de support",
+        "contest": "Concours communautaire",
+        "major_bug_reporter": "Signalement d'un bug majeur",
+        "random": "Distinction surprise",
+        "first_20_members": "Premiers membres",
+        "top_1_before_reset": "Premier avant la remise à zéro",
+        "rich": "Fortune du royaume",
+        "advertiser": "Ambassadeur",
+        "redactor": "Équipe de rédaction",
+        "translator": "Équipe de traduction",
+        "top_week": "Champion de la semaine",
+        "christmas": "Fêtes de fin d'année",
+        "funny": "Humour remarquable",
+        "powerful_guild": "Guilde puissante",
+        "very_powerful_guild": "Guilde exceptionnelle",
+        "tournament_winner": "Vainqueur de tournoi",
+        "early_class_adopter": "Pionnier des classes",
+        "legendary_pet": "Familier légendaire",
+        "mission_completer": "Campagne accomplie",
+        "good_bug_reporter": "Signalements utiles",
+        "animal_lover": "Ami des familiers",
+        "expert_expediteur": "Expert des expéditions",
+        "oracle_patron": "Mécène de l'Oracle",
+        "sentimental_crafter": "Artisan sentimental"
+      }
+    }
+  },
   "classes": {
     "name": "{{icon}} {{name}}",
     "change": "Changer de classe",
@@ -794,6 +843,9 @@
       "statistics": "Statistiques",
       "missions": "Missions",
       "classes": "Classes",
+      "badges": "Badges",
+      "rarity": "Raretés",
+      "blessing": "Bénédictions",
       "gloryAndLeague": "Gloire et ligue",
       "status": "Temps restant",
       "cooking": "Cuisine",

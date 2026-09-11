@@ -36,6 +36,19 @@ function ClassConfirmation({selection, locked, onConfirm, onCancel}: {selection:
 	</Confirmation>;
 }
 
+function ClassMenu({collector, locked, secondsLeft, onSelect, onClose}: {
+	collector: ReactionCollectorCreation; locked: boolean; secondsLeft: number; onSelect: (choice: ClassChoice) => void; onClose: () => void;
+}): ReactNode {
+	if (collector.data.type !== CLASSES_DATA_KINDS.COLLECTOR) return null;
+	return <Screen>
+		<Hero eyebrow={i18n.t("app:profile.eyebrow")} title={i18n.t("app:classes.change")} />
+		<Note>{i18n.t("app:classes.cooldownAfter", {duration: formatDurationMinutes(collector.data.data.cooldownSeconds / SECONDS_PER_MINUTE)})}</Note>
+		<Panel>{classChoices(collector).map(choice => <Row key={choice.index} title={className(choice.details.id)} disabled={locked} onPress={(): void => onSelect(choice)} chevron />)}</Panel>
+		<Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note>
+		<ButtonRow><Button disabled={locked} onPress={onClose}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
+	</Screen>;
+}
+
 export function ClassesCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
 	const [selection, setSelection] = useState<ClassChoice | null>(null);
 	const [answered, setAnswered] = useState(false);
@@ -58,13 +71,7 @@ export function ClassesCollector({collector, onChoose, submitting}: {collector: 
 	const close = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
 	return <Modal visible animationType="slide" onRequestClose={close}>
 		<SafeAreaView style={styles.root}>
-			<Screen>
-				<Hero eyebrow={i18n.t("app:profile.eyebrow")} title={i18n.t("app:classes.change")} />
-				<Note>{i18n.t("app:classes.cooldownAfter", {duration: formatDurationMinutes(collector.data.data.cooldownSeconds / SECONDS_PER_MINUTE)})}</Note>
-				<Panel>{classChoices(collector).map(choice => <Row key={choice.index} title={className(choice.details.id)} disabled={locked} onPress={(): void => select(choice)} chevron />)}</Panel>
-				<Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note>
-				<ButtonRow><Button disabled={locked} onPress={close}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
-			</Screen>
+			<ClassMenu collector={collector} locked={locked} secondsLeft={secondsLeft} onSelect={select} onClose={close} />
 			{selection ? <ClassConfirmation selection={selection} locked={locked} onConfirm={(): void => choose(selection.index)} onCancel={(): void => setSelection(null)} /> : null}
 		</SafeAreaView>
 	</Modal>;

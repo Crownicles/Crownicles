@@ -11,7 +11,9 @@ export const GAME_ENTITIES = {
 	INVENTORY: "inventory",
 	GUILD: "guild",
 	MISSIONS: "missions",
-	CLASSES: "classes"
+	CLASSES: "classes",
+	RARITY: "rarity",
+	BLESSING: "blessing"
 } as const;
 
 export type GameEntity = typeof GAME_ENTITIES[keyof typeof GAME_ENTITIES];

@@ -8,6 +8,7 @@ import {Mission, MISSION_TYPES} from "ws-packets/src/objects/Mission";
 import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
+import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {Button, ButtonRow, EmptyState, Note, Panel, Row, SectionHeader, StatBar} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
@@ -68,16 +69,11 @@ export function Missions(): ReactNode {
 		return answer;
 	});
 	const resetsAt = state.status === "ready" ? state.data.dailyMission.resetsAt : null;
+	useGameDeadline(GAME_ENTITIES.MISSIONS, resetsAt);
 	useEffect(() => {
 		const timer = setInterval(() => setNow(Date.now()), CLOCK_INTERVAL);
 		return (): void => clearInterval(timer);
 	}, []);
-	useEffect(() => {
-		const timer = resetsAt === null ? null : setTimeout(() => {
-			queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.MISSIONS)}).catch(console.error);
-		}, Math.max(0, resetsAt - Date.now()));
-		return (): void => {if (timer !== null) clearTimeout(timer);};
-	}, [resetsAt, queryClient]);
 	if (state.status === "loading") return <EmptyState>{i18n.t("app:common.loading")}</EmptyState>;
 	if (state.status === "failed") return <>
 		<EmptyState>{i18n.t("app:common.error")}</EmptyState>

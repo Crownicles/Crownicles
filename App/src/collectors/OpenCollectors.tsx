@@ -43,8 +43,9 @@ export function OpenCollectors(): ReactNode {
 	const {outcome, clear} = useInventoryOutcome();
 	const classOutcome = useClassOutcome();
 	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector));
+	const outcomePending = outcome !== null || classOutcome.outcome !== null;
 
-	if (fallbackCollectors.length === 0 && !outcome && !classOutcome.outcome) {
+	if (fallbackCollectors.length === 0 && !outcomePending) {
 		return null;
 	}
 

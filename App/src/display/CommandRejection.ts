@@ -8,6 +8,7 @@ export function commandRejectionMessage(rejection: CommandRejection): string {
 	switch (rejection.type) {
 		case COMMAND_REJECTIONS.LEVEL: return i18n.t("app:requirements.level", {level: rejection.requiredLevel});
 		case COMMAND_REJECTIONS.LOCATION: return i18n.t("app:requirements.location");
+		case COMMAND_REJECTIONS.ORACLE: return i18n.t("app:requirements.oracle");
 		default: {
 			const effect = i18n.t(`error:effects.${rejection.currentEffectId}.self`);
 			return rejection.remainingTime > 0 ? i18n.t("app:requirements.effect", {effect, duration: formatDurationMinutes(rejection.remainingTime / MILLISECONDS_PER_MINUTE)}) : effect;
