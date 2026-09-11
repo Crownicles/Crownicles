@@ -41,6 +41,11 @@ function handleSocketOpen(client: WebSocketClient, socket: TestSocket): void {
 	handler.call(client, socket);
 }
 
+function handleSocketMessage(client: WebSocketClient, socket: TestSocket, packet: unknown): void {
+	const handler = Reflect.get(client, "handleSocketMessage") as (socket: TestSocket, event: MessageEvent) => void;
+	handler.call(client, socket, {data: JSON.stringify([packet])} as MessageEvent);
+}
+
 function queuedPackets(client: WebSocketClient): unknown[] {
 	return Reflect.get(client, "packetQueue") as unknown[];
 }
@@ -131,5 +136,35 @@ describe("WebSocketClient", () => {
 
 		expect(responseHandler).toHaveBeenCalledWith({value: "reconnected"});
 		warnSpy.mockRestore();
+	});
+
+	it("drops the previous session socket and pending requests on disconnect", () => {
+		const warnSpy = jest.spyOn(console, "warn").mockImplementation();
+		const {client, socket} = clientWithSocket({
+			readyState: 0,
+			send: jest.fn(),
+			close: jest.fn()
+		});
+		client.sendPacket(new TestRequest(), {[TestResponse.wireName]: jest.fn() as never});
+
+		client.disconnect();
+
+		expect(socket.close).toHaveBeenCalledTimes(1);
+		expect(Reflect.get(client, "socket")).toBeNull();
+		expect(queuedPackets(client)).toEqual([]);
+		expect(Reflect.get(client, "responseHandlers").size).toBe(0);
+		warnSpy.mockRestore();
+	});
+
+	it("ignores a packet arriving from the previous session socket", () => {
+		const {client, socket} = clientWithSocket();
+		const pushedHandler = jest.fn();
+		const unregister = client.registerPushedPacketHandler("PushedPacket", pushedHandler);
+		client.disconnect();
+
+		handleSocketMessage(client, socket, {name: "PushedPacket", packet: {value: "stale"}});
+
+		expect(pushedHandler).not.toHaveBeenCalled();
+		unregister();
 	});
 });

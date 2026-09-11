@@ -20,6 +20,9 @@ function altarDetails(result: Extract<SmallEventChoiceResult, {event: "altar"}>)
 	const fields = [field("app:adventure.choiceResults.fields.pool", `${formatMoney(result.current)} / ${formatMoney(result.threshold)}`)];
 	if (result.amount > 0) fields.unshift(field("app:adventure.choiceResults.fields.contribution", formatMoney(result.amount)));
 	if (result.outcome === "contributed" && result.bonusGems > 0) fields.push(field("app:adventure.choiceResults.fields.gems", `+${formatAmount(result.bonusGems, AMOUNT_UNITS.GEM)}`));
+	if (result.outcome === "contributed" && result.blessingTriggered) fields.push(field("app:adventure.choiceResults.fields.blessing", i18n.t(`bot:blessingNames.${result.blessingType}`)));
+	if (result.outcome === "contributed" && result.bonusItemGiven) fields.push(field("app:adventure.choiceResults.fields.bonusItem", i18n.t("app:common.yes")));
+	if (result.outcome === "contributed" && result.badgeAwarded) fields.push(field("app:adventure.choiceResults.fields.badge", i18n.t("app:common.yes")));
 	return {title: i18n.t("app:adventure.choiceResults.titles.altar"), description, fields};
 }
 

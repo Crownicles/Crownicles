@@ -52,6 +52,18 @@ class CollectorsStore {
 
 	public readonly isAnswerPending = (collectorId: string): boolean => this.answering.has(collectorId);
 
+	public readonly reset = (): void => {
+		for (const timer of this.timers.values()) {
+			clearTimeout(timer);
+		}
+		this.open.clear();
+		this.timers.clear();
+		this.answeredKinds.clear();
+		this.answering.clear();
+		this.snapshot = [];
+		this.notifyListeners();
+	};
+
 	/**
 	 * Rehydrates collectors that were created while the app was backgrounded or reconnecting.
 	 * Pushed packets are not replayed by the websocket server, so relying on them alone leaves the

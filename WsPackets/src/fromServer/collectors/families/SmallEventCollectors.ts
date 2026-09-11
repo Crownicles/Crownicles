@@ -4,6 +4,7 @@ import {
 import { PlantId } from "../../../objects/PlantId";
 import { PetSex } from "../../../objects/OwnedPet";
 import { ItemWithDetails } from "../../../objects/ItemWithDetails";
+import { RecipeDisplay } from "../../../objects/RecipeDisplay";
 
 export const SMALL_EVENT_FOOD_TYPES = {
 	BAD_SMELL: "badSmell",
@@ -125,7 +126,6 @@ declare module "../ReactionCollectorProtocol" {
 		};
 		smallEventGobletsGame: Record<string, never>;
 		smallEventInteractOtherPlayers: {
-			keycloakId: string;
 			rank?: number;
 		};
 		smallEventLimoges: {
@@ -154,11 +154,7 @@ declare module "../ReactionCollectorProtocol" {
 		};
 		smallEventRecipeShop: {
 			source: SmallEventRecipeShopSource;
-			recipe: {
-				recipeId: string;
-				level: number;
-				recipeType: string;
-			};
+			recipe: RecipeDisplay;
 			recipeCost: number;
 		};
 		smallEventWitch: Record<string, never>;

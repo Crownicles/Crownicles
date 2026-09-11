@@ -120,10 +120,19 @@ describe("CollectorLabels", () => {
 	it("uses a safe ranked description for the other-player collector", () => {
 		const data = {
 			type: SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS,
-			data: {keycloakId: "player", rank: 4}
+			data: {rank: 4}
 		} as const;
 
 		expect(collectorDescription(data)).toBe("app:collector.descriptions.interactOtherPlayersRanked");
+	});
+
+	it("does not invent a rank for an unranked player", () => {
+		const data = {
+			type: SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS,
+			data: {}
+		} as const;
+
+		expect(collectorDescription(data)).toBe("app:collector.descriptions.interactOtherPlayers");
 	});
 
 	it("renders the item that would be replaced", () => {

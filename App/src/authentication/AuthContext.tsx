@@ -163,6 +163,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 			navigateToAuthenticatedRoot();
 		}
 		else if (shouldRedirectToLogin) {
+			WebSocketClient.getInstance().disconnect();
 			router.replace("/login");
 		}
 		else if (shouldRestartAuthentication) {

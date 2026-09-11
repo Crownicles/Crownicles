@@ -10,7 +10,7 @@ import {
 	SmallEventGoToPVEIslandAcceptPacket, SmallEventGoToPVEIslandNotEnoughGemsPacket
 } from "../../../../../Lib/src/packets/smallEvents/SmallEventGoToPVEIslandPacket";
 import {
-	SmallEventGobletsGameMalus, SmallEventGobletsGamePacket, SmallEventGobletsGameStrategy
+	SmallEventGobletsGameMalus, SmallEventGobletsGamePacket
 } from "../../../../../Lib/src/packets/smallEvents/SmallEventGobletsGamePacket";
 import { SmallEventInteractOtherPlayersAcceptToGivePoorPacket } from "../../../../../Lib/src/packets/smallEvents/SmallEventInteractOtherPlayers";
 import { SmallEventLimogesPacket } from "../../../../../Lib/src/packets/smallEvents/SmallEventLimogesPacket";
@@ -24,37 +24,47 @@ import {
 import {
 	SmallEventEpicItemShopAcceptPacket, SmallEventEpicItemShopCannotBuyPacket
 } from "../../../../../Lib/src/packets/smallEvents/SmallEventEpicItemShopPacket";
-import { RecipeShopSource } from "../../../../../Lib/src/packets/interaction/ReactionCollectorRecipeShopSmallEvent";
 import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePackets";
 import {
 	SmallEventChoiceResult, SmallEventChoiceResultRes
 } from "../../../../../WsPackets/src/fromServer/smallEvents/SmallEventChoiceResultRes";
+import {
+	SMALL_EVENT_BAD_PET_ACTION_IDS, SMALL_EVENT_GOBLET_IDS,
+	SmallEventBadPetActionId, SmallEventGobletId
+} from "../../../../../WsPackets/src/fromServer/collectors";
+import { PetSex } from "../../../../../WsPackets/src/objects/OwnedPet";
 import { fromServerTranslator } from "../FromServerTranslator";
 
 function makeResult(result: SmallEventChoiceResult): Promise<SmallEventChoiceResultRes> {
 	return asyncMakeFromServerPacket(SmallEventChoiceResultRes, { result });
 }
 
-function recipeSource(source: RecipeShopSource): "farmer" | "gaspardJo" {
-	switch (source) {
-		case RecipeShopSource.FARMER:
-			return "farmer";
-		case RecipeShopSource.GASPARD_JO:
-			return "gaspardJo";
-		default:
-			throw new Error(`Unsupported recipe shop source: ${source}`);
-	}
-}
-
 type GobletsResult = Extract<SmallEventChoiceResult, { event: "goblets" }>;
 type PetFoodResult = Extract<SmallEventChoiceResult, { event: "petFood" }>;
 
-function gobletsMalus(malus: SmallEventGobletsGameMalus): GobletsResult["malus"] {
-	return malus;
+function badPetActionId(actionId: string): SmallEventBadPetActionId {
+	if (Object.values(SMALL_EVENT_BAD_PET_ACTION_IDS).includes(actionId as SmallEventBadPetActionId)) {
+		return actionId as SmallEventBadPetActionId;
+	}
+	throw new Error(`Unsupported bad pet action: ${actionId}`);
 }
 
-function gobletsStrategy(strategy: SmallEventGobletsGameStrategy): GobletsResult["strategy"] {
-	return strategy;
+function petSex(sex: string): PetSex {
+	if (sex === "m" || sex === "f") {
+		return sex;
+	}
+	throw new Error(`Unsupported pet sex: ${sex}`);
+}
+
+function gobletId(goblet: string): SmallEventGobletId {
+	if (Object.values(SMALL_EVENT_GOBLET_IDS).includes(goblet as SmallEventGobletId)) {
+		return goblet as SmallEventGobletId;
+	}
+	throw new Error(`Unsupported goblet: ${goblet}`);
+}
+
+function gobletsMalus(malus: SmallEventGobletsGameMalus): GobletsResult["malus"] {
+	return malus;
 }
 
 function petFoodOutcome(outcome: string): PetFoodResult["outcome"] {
@@ -89,14 +99,14 @@ export default class SmallEventChoiceResultServerTranslator {
 	@fromServerTranslator(SmallEventBadPetPacket, SmallEventChoiceResultRes)
 	public static badPet(_context: PacketContext, packet: SmallEventBadPetPacket): Promise<SmallEventChoiceResultRes> {
 		return makeResult({
-			event: "badPet", outcome: "resolved", loveLost: packet.loveLost, actionId: packet.interactionType, petId: packet.petId, sex: packet.sex, ...packet.petNickname === undefined ? {} : { petNickname: packet.petNickname }
+			event: "badPet", outcome: "resolved", loveLost: packet.loveLost, actionId: badPetActionId(packet.interactionType), petId: packet.petId, sex: petSex(packet.sex), ...packet.petNickname === undefined ? {} : { petNickname: packet.petNickname }
 		});
 	}
 
 	@fromServerTranslator(SmallEventCartPacket, SmallEventChoiceResultRes)
 	public static cart(_context: PacketContext, packet: SmallEventCartPacket): Promise<SmallEventChoiceResultRes> {
 		return makeResult({
-			event: "cart", outcome: "resolved", accepted: packet.travelDone.isAccepted, canAfford: packet.travelDone.hasEnoughMoney, isScam: packet.isScam, destinationWasKnown: packet.isDisplayed, pointsWon: packet.pointsWon
+			event: "cart", outcome: "resolved", accepted: packet.travelDone.isAccepted, canAfford: packet.travelDone.hasEnoughMoney, isScam: packet.isScam, pointsWon: packet.pointsWon
 		});
 	}
 
@@ -110,7 +120,7 @@ export default class SmallEventChoiceResultServerTranslator {
 	@fromServerTranslator(SmallEventGardenerPacket, SmallEventChoiceResultRes)
 	public static gardener(_context: PacketContext, packet: SmallEventGardenerPacket): Promise<SmallEventChoiceResultRes> {
 		return makeResult({
-			event: "gardener", outcome: "resolved", interactionName: packet.interactionName, plantId: packet.plantId, materialId: packet.materialId, cost: packet.cost, conditionKey: packet.conditionKey
+			event: "gardener", outcome: "resolved", interactionName: packet.interactionName, plantId: packet.plantId, materialId: packet.materialId, cost: packet.cost
 		});
 	}
 
@@ -131,7 +141,7 @@ export default class SmallEventChoiceResultServerTranslator {
 	@fromServerTranslator(SmallEventGobletsGamePacket, SmallEventChoiceResultRes)
 	public static goblets(_context: PacketContext, packet: SmallEventGobletsGamePacket): Promise<SmallEventChoiceResultRes> {
 		return makeResult({
-			event: "goblets", outcome: "resolved", malus: gobletsMalus(packet.malus), goblet: packet.goblet, value: packet.value, strategy: gobletsStrategy(packet.strategy), ...packet.itemId === undefined ? {} : { itemId: packet.itemId }, ...packet.itemCategory === undefined ? {} : { itemCategory: packet.itemCategory }
+			event: "goblets", outcome: "resolved", malus: gobletsMalus(packet.malus), goblet: gobletId(packet.goblet), value: packet.value
 		});
 	}
 
@@ -145,28 +155,28 @@ export default class SmallEventChoiceResultServerTranslator {
 	@fromServerTranslator(SmallEventLimogesPacket, SmallEventChoiceResultRes)
 	public static limoges(_context: PacketContext, packet: SmallEventLimogesPacket): Promise<SmallEventChoiceResultRes> {
 		return makeResult({
-			event: "limoges", outcome: packet.isSuccess ? "success" : "failure", questionId: packet.questionId, shouldHaveAccepted: packet.shouldHaveAccepted, ...packet.reward === undefined ? {} : { reward: { ...packet.reward } }, ...packet.penalty === undefined ? {} : { penalty: { ...packet.penalty } }
+			event: "limoges", outcome: packet.isSuccess ? "success" : "failure", ...packet.reward === undefined ? {} : { reward: { ...packet.reward } }, ...packet.penalty === undefined ? {} : { penalty: { ...packet.penalty } }
 		});
 	}
 
 	@fromServerTranslator(SmallEventPetFoodPacket, SmallEventChoiceResultRes)
 	public static petFood(_context: PacketContext, packet: SmallEventPetFoodPacket): Promise<SmallEventChoiceResultRes> {
 		return makeResult({
-			event: "petFood", outcome: petFoodOutcome(packet.outcome), foodType: packet.foodType, loveChange: packet.loveChange, petSex: packet.petSex, ...packet.timeLost === undefined ? {} : { timeLostMinutes: packet.timeLost }
+			event: "petFood", outcome: petFoodOutcome(packet.outcome), loveChange: packet.loveChange, ...packet.timeLost === undefined ? {} : { timeLostMinutes: packet.timeLost }
 		});
 	}
 
 	@fromServerTranslator(SmallEventRecipeShopAcceptedPacket, SmallEventChoiceResultRes)
 	public static recipeAccepted(_context: PacketContext, packet: SmallEventRecipeShopAcceptedPacket): Promise<SmallEventChoiceResultRes> {
 		return makeResult({
-			event: "recipeShop", outcome: "accepted", source: recipeSource(packet.source), recipe: packet.recipe, recipeCost: packet.recipeCost
+			event: "recipeShop", outcome: "accepted", recipe: packet.recipe, recipeCost: packet.recipeCost
 		});
 	}
 
 	@fromServerTranslator(SmallEventRecipeShopCannotBuyPacket, SmallEventChoiceResultRes)
-	public static recipeCannotBuy(_context: PacketContext, packet: SmallEventRecipeShopCannotBuyPacket): Promise<SmallEventChoiceResultRes> {
+	public static recipeCannotBuy(_context: PacketContext, _packet: SmallEventRecipeShopCannotBuyPacket): Promise<SmallEventChoiceResultRes> {
 		return makeResult({
-			event: "recipeShop", outcome: "cannotBuy", source: recipeSource(packet.source)
+			event: "recipeShop", outcome: "cannotBuy"
 		});
 	}
 

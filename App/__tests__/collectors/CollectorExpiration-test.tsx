@@ -6,6 +6,8 @@ import {CollectorsProvider, useCollectors} from "@/src/collectors/CollectorsCont
 import {collectorsStore} from "@/src/collectors/CollectorsStore";
 import {GameQueryProvider} from "@/src/store/GameQueryProvider";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
+import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 jest.mock("@/src/collectors/CollectorLabels", () => ({
 	collectorDescription: (): undefined => undefined,
@@ -98,6 +100,36 @@ describe("collector expiration", () => {
 		finally {
 			addEventListener.mockRestore();
 			collectorsStore.removeExpired(Number.MAX_SAFE_INTEGER);
+		}
+	});
+
+	it("removes the previous player's collectors when the session ends", async () => {
+		const sendPacket = jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();
+		const addEventListener = jest.spyOn(AppState, "addEventListener").mockReturnValue({remove: jest.fn()});
+		try {
+			const view = await render(
+				<GameQueryProvider>
+					<CollectorsProvider authState={AuthStateEnum.LOGGED_IN}>
+						<CollectorCount />
+					</CollectorsProvider>
+				</GameQueryProvider>
+			);
+			await act(async () => collectorsStore.track(collector(Date.now() + 60_000)));
+			await waitFor(() => expect(screen.getByText("1")).toBeTruthy());
+
+			await view.rerender(
+				<GameQueryProvider>
+					<CollectorsProvider authState={AuthStateEnum.NO_TOKEN}>
+						<CollectorCount />
+					</CollectorsProvider>
+				</GameQueryProvider>
+			);
+
+			await waitFor(() => expect(screen.getByText("0")).toBeTruthy());
+		}
+		finally {
+			addEventListener.mockRestore();
+			sendPacket.mockRestore();
 		}
 	});
 });

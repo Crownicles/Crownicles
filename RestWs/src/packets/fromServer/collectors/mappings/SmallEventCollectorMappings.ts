@@ -153,8 +153,7 @@ export const smallEventDataMappings: DataMapping[] = [
 	})),
 	defineDataMapping(ReactionCollectorGobletsGameData, SMALL_EVENT_DATA_KINDS.GOBLETS_GAME, () => ({})),
 	defineDataMapping(ReactionCollectorInteractOtherPlayersPoorData, SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS, data => ({
-		keycloakId: data.keycloakId,
-		...data.rank === undefined ? {} : { rank: data.rank }
+		...data.rank === undefined || data.rank <= 0 ? {} : { rank: data.rank }
 	})),
 	defineDataMapping(ReactionCollectorLimogesData, SMALL_EVENT_DATA_KINDS.LIMOGES, data => ({
 		questionId: data.questionId

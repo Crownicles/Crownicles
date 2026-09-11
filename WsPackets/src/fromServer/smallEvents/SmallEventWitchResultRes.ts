@@ -1,4 +1,5 @@
 import { FromServerPacket } from "../FromServerPacket";
+import { RecipeDisplay } from "../../objects/RecipeDisplay";
 
 export const WITCH_OUTCOMES = {
 	POTION: 0,
@@ -26,9 +27,5 @@ export class SmallEventWitchResultRes extends FromServerPacket {
 
 	outcome!: WitchOutcome;
 
-	discoveredRecipe?: {
-		recipeId: string;
-		level: number;
-		recipeType: string;
-	};
+	discoveredRecipe?: RecipeDisplay;
 }

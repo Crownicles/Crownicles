@@ -2,6 +2,7 @@ import {createContext, ReactNode, useContext, useEffect, useMemo, useRef, useSyn
 import {AppState} from "react-native";
 import type {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {collectorsStore} from "@/src/collectors/CollectorsStore";
+import {reportEventStore} from "@/src/collectors/ReportEventStore";
 import {useGameInvalidations} from "@/src/store/GameInvalidations";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 
@@ -43,8 +44,15 @@ export function CollectorsProvider({ children, authState }: { children: ReactNod
 	useEffect(() => {
 		const hasConnected = authState === AuthStateEnum.LOGGED_IN
 			&& previousAuthState.current !== AuthStateEnum.LOGGED_IN;
+		const sessionEnded = authState === AuthStateEnum.NO_TOKEN
+			|| authState === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED;
 		if (authState !== undefined) {
 			previousAuthState.current = authState;
+		}
+		if (sessionEnded) {
+			collectorsStore.reset();
+			reportEventStore.reset();
+			return;
 		}
 		if (hasConnected) {
 			collectorsStore.syncCurrent();

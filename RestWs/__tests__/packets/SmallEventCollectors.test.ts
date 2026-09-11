@@ -129,6 +129,14 @@ describe("small-event collector mappings", () => {
 		});
 	});
 
+	it("does not expose player identifiers or invalid ranks", () => {
+		const ranked = map(new ReactionCollectorInteractOtherPlayersPoor("other-player", 4).creationPacket("ranked", END_TIME));
+		const unranked = map(new ReactionCollectorInteractOtherPlayersPoor("other-player", 0).creationPacket("unranked", END_TIME));
+
+		expect(ranked.data).toEqual({type: SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS, data: {rank: 4}});
+		expect(unranked.data).toEqual({type: SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS, data: {}});
+	});
+
 	it("maps item reward collectors without changing their choice order", () => {
 		const itemDetails = {
 			id: 7,

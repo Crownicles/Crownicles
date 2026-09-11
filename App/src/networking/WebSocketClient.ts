@@ -54,6 +54,8 @@ export class WebSocketClient {
 
 	private cleanResponseHandlersIntervalId: number | null = null;
 
+	private reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
 	private constructor() {
 		// Singleton construction is restricted to getInstance().
 	}
@@ -67,6 +69,16 @@ export class WebSocketClient {
 
 	public registerPushedPacketHandler<Packet extends FromServerPacket>(packetName: string, callback: WebSocketPacketResponseHandler<Packet>): () => void {
 		return this.pushedPacketRegistry.register(packetName, callback);
+	}
+
+	public disconnect(): void {
+		const socket = this.socket;
+		this.socket = null;
+		socket?.close();
+		this.connectionAttempts = 0;
+		this.packetQueue = [];
+		this.responseHandlers.clear();
+		this.clearIntervals();
 	}
 
 	public async init(authToken: AuthToken, setState: (newState: AuthStateEnum) => void, saveToken: (token: AuthToken) => Promise<void>): Promise<void> {
@@ -203,7 +215,7 @@ export class WebSocketClient {
 			firstConnectionFlag = false;
 		};
 
-		socket.onmessage = (event): void => this.handleMessage(event);
+		socket.onmessage = (event): void => this.handleSocketMessage(socket, event);
 
 		socket.onerror = (error): void => this.handleSocketError(socket, error);
 
@@ -218,6 +230,13 @@ export class WebSocketClient {
 		this.connectionAttempts = 0;
 		this.setState?.(AuthStateEnum.LOGGED_IN);
 		this.processPacketQueue();
+	}
+
+	private handleSocketMessage(socket: WebSocket, event: MessageEvent): void {
+		if (this.socket !== socket) {
+			return;
+		}
+		this.handleMessage(event);
 	}
 
 	private handleMessage(event: MessageEvent): void {
@@ -325,7 +344,8 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 	}
 
 	private scheduleReconnect(authToken: AuthToken): void {
-		setTimeout((): void => {
+		this.reconnectTimeoutId = setTimeout((): void => {
+			this.reconnectTimeoutId = null;
 			console.log("Attempting to reconnect WebSocket...");
 			this.connectionAttempts++;
 			this.connect(authToken, false).catch((error) => {
@@ -389,6 +409,10 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 	}
 
 	private clearIntervals(): void {
+		if (this.reconnectTimeoutId !== null) {
+			clearTimeout(this.reconnectTimeoutId);
+			this.reconnectTimeoutId = null;
+		}
 		if (this.processPacketQueueIntervalId !== null) {
 			clearInterval(this.processPacketQueueIntervalId);
 			this.processPacketQueueIntervalId = null;

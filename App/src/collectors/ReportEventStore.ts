@@ -131,6 +131,17 @@ class ReportEventStore {
 
 	public readonly getHealSnapshot = (): HealOutcome | null => this.healOutcome;
 
+	public readonly reset = (): void => {
+		this.outcome = null;
+		this.lotteryOutcome = null;
+		this.witchOutcome = null;
+		this.choiceOutcome = null;
+		this.automaticOutcome = null;
+		this.tokenOutcome = null;
+		this.healOutcome = null;
+		this.notify();
+	};
+
 	public readonly clear = (): void => {
 		if (this.outcome === null) {
 			return;

@@ -126,10 +126,7 @@ function gardenerSeedDisplay(seedId: number): string {
 	return withIcon(`plants.${seedId}`, i18n.t(`models:plants.${seedId}`));
 }
 
-function interactOtherPlayersDescription(keycloakId: string, rank: number | undefined): string {
-	if (keycloakId.length === 0) {
-		return i18n.t("app:collector.descriptions.unknownPlayer");
-	}
+function interactOtherPlayersDescription(rank: number | undefined): string {
 	return rank === undefined
 		? i18n.t("app:collector.descriptions.interactOtherPlayers")
 		: i18n.t("app:collector.descriptions.interactOtherPlayersRanked", { rank });
@@ -266,7 +263,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 		seed: gardenerSeedDisplay(data.data.seedId)
 	})}`),
 	[SMALL_EVENT_DATA_KINDS.GOBLETS_GAME]: () => i18n.t("smallEvents:gobletsGame.intro"),
-	[SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS]: makeDataHandler(SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS, data => interactOtherPlayersDescription(data.data.keycloakId, data.data.rank)),
+	[SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS]: makeDataHandler(SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS, data => interactOtherPlayersDescription(data.data.rank)),
 	[SMALL_EVENT_DATA_KINDS.LIMOGES]: makeDataHandler(SMALL_EVENT_DATA_KINDS.LIMOGES, data => i18n.t(`smallEvents:limoges.questions.${data.data.questionId}`)),
 	[SMALL_EVENT_DATA_KINDS.LOTTERY]: () => i18n.t("smallEvents:lottery.intro"),
 	[SMALL_EVENT_DATA_KINDS.PET_FOOD]: makeDataHandler(SMALL_EVENT_DATA_KINDS.PET_FOOD, data => i18n.t(`smallEvents:petFood.intro.${data.data.foodType}_${data.data.petSex === "f" ? "female" : "male"}`)),

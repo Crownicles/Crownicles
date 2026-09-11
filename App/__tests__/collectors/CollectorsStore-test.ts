@@ -21,7 +21,7 @@ function collector(id: string, endTime = Date.now() + 60_000): ReactionCollector
 
 describe("CollectorsStore", () => {
 	beforeEach(() => {
-		collectorsStore.removeExpired(Number.MAX_SAFE_INTEGER);
+		collectorsStore.reset();
 	});
 
 	it("deduplicates a collector and notifies subscribers when it is removed", () => {
@@ -101,6 +101,19 @@ describe("CollectorsStore", () => {
 
 		expect(collectorsStore.getSnapshot()).toEqual([current]);
 		collectorsStore.removeExpired(Number.MAX_SAFE_INTEGER);
+		sendPacket.mockRestore();
+	});
+
+	it("clears collectors and pending answers when the player session ends", () => {
+		const sendPacket = jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();
+		const item = collector("collector-from-previous-player");
+		collectorsStore.track(item);
+		collectorsStore.react(item.id, 0);
+
+		collectorsStore.reset();
+
+		expect(collectorsStore.getSnapshot()).toEqual([]);
+		expect(collectorsStore.isAnswerPending(item.id)).toBe(false);
 		sendPacket.mockRestore();
 	});
 });

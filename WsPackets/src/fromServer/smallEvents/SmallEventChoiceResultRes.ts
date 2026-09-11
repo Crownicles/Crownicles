@@ -1,10 +1,9 @@
 import { FromServerPacket } from "../FromServerPacket";
-
-type RecipeDisplay = {
-	recipeId: string;
-	level: number;
-	recipeType: string;
-};
+import { PetSex } from "../../objects/OwnedPet";
+import { RecipeDisplay } from "../../objects/RecipeDisplay";
+import type {
+	SmallEventBadPetActionId, SmallEventGobletId
+} from "../collectors";
 
 export type SmallEventChoiceResult =
 	| {
@@ -14,16 +13,16 @@ export type SmallEventChoiceResult =
 		event: "altar"; outcome: "contributed"; amount: number; current: number; threshold: number; blessingTriggered: boolean; blessingType: number; bonusGems: number; bonusItemGiven: boolean; badgeAwarded: boolean;
 	}
 	| {
-		event: "badPet"; outcome: "resolved"; loveLost: number; actionId: string; petId: number; sex: string; petNickname?: string;
+		event: "badPet"; outcome: "resolved"; loveLost: number; actionId: SmallEventBadPetActionId; petId: number; sex: PetSex; petNickname?: string;
 	}
 	| {
-		event: "cart"; outcome: "resolved"; accepted: boolean; canAfford: boolean; isScam: boolean; destinationWasKnown: boolean; pointsWon: number;
+		event: "cart"; outcome: "resolved"; accepted: boolean; canAfford: boolean; isScam: boolean; pointsWon: number;
 	}
 	| {
 		event: "fightPet"; outcome: "success" | "failure"; actionId: string; isFemale: boolean;
 	}
 	| {
-		event: "gardener"; outcome: "resolved"; interactionName: string; plantId: number; materialId: number; cost: number; conditionKey: string;
+		event: "gardener"; outcome: "resolved"; interactionName: string; plantId: number; materialId: number; cost: number;
 	}
 	| {
 		event: "pveIsland"; outcome: "accepted"; alone: boolean; pointsWon: number;
@@ -32,7 +31,7 @@ export type SmallEventChoiceResult =
 		event: "pveIsland"; outcome: "notEnoughGems";
 	}
 	| {
-		event: "goblets"; outcome: "resolved"; malus: "life" | "time" | "nothing" | "end" | "item"; goblet: string; value: number; strategy: "classic" | "risky" | "safe" | "gambler"; itemId?: number; itemCategory?: number;
+		event: "goblets"; outcome: "resolved"; malus: "life" | "time" | "nothing" | "end" | "item"; goblet: SmallEventGobletId; value: number;
 	}
 	| {
 		event: "interactPoor"; outcome: "donated";
@@ -40,8 +39,6 @@ export type SmallEventChoiceResult =
 	| {
 		event: "limoges";
 		outcome: "success" | "failure";
-		questionId: string;
-		shouldHaveAccepted: boolean;
 		reward?: {
 			experience: number; score: number;
 		};
@@ -50,13 +47,13 @@ export type SmallEventChoiceResult =
 		};
 	}
 	| {
-		event: "petFood"; outcome: "found_by_player" | "found_by_pet" | "found_anyway" | "nothing" | "pet_failed" | "player_failed"; foodType: string; loveChange: number; petSex: string; timeLostMinutes?: number;
+		event: "petFood"; outcome: "found_by_player" | "found_by_pet" | "found_anyway" | "nothing" | "pet_failed" | "player_failed"; loveChange: number; timeLostMinutes?: number;
 	}
 	| {
-		event: "recipeShop"; outcome: "accepted"; source: "farmer" | "gaspardJo"; recipe: RecipeDisplay; recipeCost: number;
+		event: "recipeShop"; outcome: "accepted"; recipe: RecipeDisplay; recipeCost: number;
 	}
 	| {
-		event: "recipeShop"; outcome: "cannotBuy"; source: "farmer" | "gaspardJo";
+		event: "recipeShop"; outcome: "cannotBuy";
 	}
 	| {
 		event: "shop" | "epicShop"; outcome: "purchased" | "cannotBuy";

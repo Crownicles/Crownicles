@@ -6,6 +6,7 @@ import {
 	SmallEventWitchResultRes, WITCH_OUTCOMES
 } from "ws-packets/src/fromServer/smallEvents/SmallEventWitchResultRes";
 import {ReportUseTokensAcceptedRes} from "ws-packets/src/fromServer/report/ReportTokenRes";
+import {ReportBuyHealAcceptedRes} from "ws-packets/src/fromServer/report/ReportHealRes";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
 
@@ -27,12 +28,7 @@ function outcome(): ReportBigEventResultRes {
 
 describe("ReportEventStore", () => {
 	beforeEach((): void => {
-		reportEventStore.clear();
-		reportEventStore.clearLottery();
-		reportEventStore.clearWitch();
-				reportEventStore.clearChoice();
-		reportEventStore.clearAutomatic();
-		reportEventStore.clearTokens();
+		reportEventStore.reset();
 	});
 
 	it("keeps a pushed event result until the player continues", () => {
@@ -119,7 +115,7 @@ describe("ReportEventStore", () => {
 		reportEventStore.clearWitch();
 		expect(reportEventStore.getWitchSnapshot()).toBeNull();
 	});
-});
+
 	it("keeps an interactive small-event result until the player continues", () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 		const result = {result: {event: "fightPet", outcome: "success", actionId: "attack", isFemale: false}} as SmallEventChoiceResultRes;
@@ -130,3 +126,17 @@ describe("ReportEventStore", () => {
 		reportEventStore.clearChoice();
 		expect(reportEventStore.getChoiceSnapshot()).toBeNull();
 	});
+
+	it("clears every pending result when the player session ends", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(ReportBigEventResultRes.wireName, outcome());
+		registry.dispatch(SmallEventResultRes.wireName, {eventName: "SmallEventDoNothingPacket", data: {}});
+		registry.dispatch(ReportBuyHealAcceptedRes.wireName, {price: 10});
+
+		reportEventStore.reset();
+
+		expect(reportEventStore.getSnapshot()).toBeNull();
+		expect(reportEventStore.getAutomaticSnapshot()).toBeNull();
+		expect(reportEventStore.getHealSnapshot()).toBeNull();
+	});
+});
