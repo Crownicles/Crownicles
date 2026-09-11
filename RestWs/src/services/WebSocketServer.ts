@@ -9,6 +9,7 @@ import { IncomingMessage } from "http";
 import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../packets/fromClient/FromClientTranslator";
 import { InvalidClientPacketError } from "../packets/fromClient/InvalidClientPacketError";
+import { WEBSOCKET_SESSION_REPLACED_REASON } from "../../../WsPackets/src/WebSocketCloseReasons";
 import {
 	Server, WebSocket
 } from "ws";
@@ -148,7 +149,7 @@ export class WebSocketServer {
 				// Close the previous connection if it exists and save the new one
 				const currConnection = WebSocketServer.keycloakIdToClients.get(keycloakId);
 				if (currConnection && currConnection.readyState !== WebSocket.CLOSED) {
-					currConnection.close(1008, "New connection opened for this account");
+					currConnection.close(1008, WEBSOCKET_SESSION_REPLACED_REASON);
 				}
 				WebSocketServer.keycloakIdToClients.set(keycloakId, ws);
 

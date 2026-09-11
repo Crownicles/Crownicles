@@ -5,6 +5,7 @@ import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {wireNameOf} from "ws-packets/src/MakePackets";
 import {PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
+import {WEBSOCKET_SESSION_REPLACED_REASON} from "ws-packets/src/WebSocketCloseReasons";
 
 export type WebSocketPacketResponseHandler<T extends FromServerPacket> = (packet: T) => void;
 
@@ -304,6 +305,11 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 			return;
 		}
 		console.log("WebSocket connection closed.");
+		if (error.reason === WEBSOCKET_SESSION_REPLACED_REASON) {
+			this.disconnect();
+			this.setState?.(AuthStateEnum.CONNECTION_ERROR);
+			return;
+		}
 		if (error.reason === "Unauthorized") {
 			this.handleUnauthorizedClose();
 			return;

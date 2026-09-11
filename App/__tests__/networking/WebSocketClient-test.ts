@@ -1,6 +1,9 @@
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
+import {WEBSOCKET_SESSION_REPLACED_REASON} from "ws-packets/src/WebSocketCloseReasons";
+import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
+import {AuthToken} from "@/src/authentication/AuthToken";
 
 // The identifiers deliberately differ from the class names: a minified bundle mangles the latter.
 class TestRequest extends FromClientPacket {
@@ -166,5 +169,28 @@ describe("WebSocketClient", () => {
 
 		expect(pushedHandler).not.toHaveBeenCalled();
 		unregister();
+	});
+
+	it("does not reclaim the session after another client replaces it", () => {
+		jest.useFakeTimers();
+		try {
+			const {client, socket} = clientWithSocket();
+			const onStateChange = jest.fn();
+			Reflect.set(client, "setState", onStateChange);
+			const token = new AuthToken({accessToken: "local-test", refreshToken: "local-refresh", accessTokenExpiresAt: new Date(Date.now() + 60_000), refreshTokenExpiresAt: "never"});
+			const handleClose = Reflect.get(client, "handleSocketClose");
+
+			handleClose.call(client, socket, {reason: WEBSOCKET_SESSION_REPLACED_REASON}, token, false);
+			jest.runOnlyPendingTimers();
+
+			expect(onStateChange).toHaveBeenCalledTimes(1);
+			expect(onStateChange).toHaveBeenCalledWith(AuthStateEnum.CONNECTION_ERROR);
+			expect(Reflect.get(client, "reconnectTimeoutId")).toBeNull();
+			expect(Reflect.get(client, "socket")).toBeNull();
+			expect(queuedPackets(client)).toEqual([]);
+		}
+		finally {
+			jest.useRealTimers();
+		}
 	});
 });
