@@ -11,6 +11,9 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {Item} from "@/src/components/Item";
 import {i18n} from "@/src/translations/i18n";
 import {Theme} from "@/src/design/Theme";
+import {requestEquipment} from "@/src/store/useEquipmentActions";
+import {EquipNoItemRes} from "ws-packets/src/fromServer/equip/EquipNoItemRes";
+import {Note} from "@/src/design/Primitives";
 
 const styles = StyleSheet.create({
 	centerContent: {
@@ -188,6 +191,8 @@ function createBackupSlotElements(
 
 export function Inventory({ inventoryData }: InventoryProps): React.ReactElement {
 	const [showBackupItems, setShowBackupItems] = useState<boolean>(false);
+	const [actionMessage, setActionMessage] = useState<string | null>(null);
+	const [openingEquipment, setOpeningEquipment] = useState(false);
 	const { track } = useCollectors();
 
 	// The server decides which potions can be drunk and offers them in a collector
@@ -200,9 +205,19 @@ export function Inventory({ inventoryData }: InventoryProps): React.ReactElement
 			});
 	};
 
-	const handleSwitch = (item: MainItem | SupportItem, itemType: InventoryItemType): void => {
-		console.log(`Switching ${itemType}:`, item);
-		// TODO: Implement switch action
+	const handleSwitch = (_item: MainItem | SupportItem, _itemType: InventoryItemType): void => {
+		if (openingEquipment) return;
+		setOpeningEquipment(true);
+		setActionMessage(null);
+		requestEquipment().then(answer => {
+			if (answer.kind === "answer") {
+				track(answer.packet);
+				return;
+			}
+			setActionMessage(answer.kind === "alternative" && answer.packetName === EquipNoItemRes.wireName
+				? "app:equipment.noItems" : "app:common.connectionError");
+		}).catch(() => setActionMessage("app:common.connectionError"))
+			.finally(() => setOpeningEquipment(false));
 	};
 
 	const handleSell = (item: MainItem | SupportItem, itemType: InventoryItemType): void => {
@@ -300,6 +315,7 @@ export function Inventory({ inventoryData }: InventoryProps): React.ReactElement
 
 	return (
 		<View style={styles.inventoryContent}>
+			{actionMessage ? <Note>{i18n.t(actionMessage)}</Note> : null}
 			<View style={styles.inventoryHeader}>
 				<Text style={styles.inventoryTitle}>
 					{showBackupItems

@@ -18,6 +18,27 @@
     "loginFailed": "Échec de la connexion",
     "unknownError": "Une erreur inconnue est survenue."
   },
+  "equipment": {
+    "eyebrow": "Inventaire",
+    "title": "Gestion de l'équipement",
+    "equipped": "Porté",
+    "slot": "Réserve {{slot}}",
+    "noEquippedItem": "Aucun objet porté dans cette catégorie.",
+    "emptyReserve": "Aucun objet en réserve.",
+    "capacity": "Réserve : {{count}} / {{max}}",
+    "deposit": "Déposer dans la réserve",
+    "close": "Terminer",
+    "noItems": "Votre inventaire ne contient aucun équipement.",
+    "confirm": {
+      "equip": "Équiper cet objet ?",
+      "deposit": "Déposer cet objet ?"
+    },
+    "errors": {
+      "invalid": "Cet objet n'est plus disponible. Fermez ce menu puis réessayez.",
+      "noItem": "Aucun objet à déposer.",
+      "reserveFull": "La réserve est pleine."
+    }
+  },
   "settings": {
     "title": "Paramètres",
     "developerMode": "Mode développeur",

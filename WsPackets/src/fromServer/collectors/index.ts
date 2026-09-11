@@ -15,3 +15,4 @@ export * from "./families/ItemCollectors";
 export * from "./families/ReportCollectors";
 export * from "./families/CityCollectors";
 export * from "./families/ShopCollector";
+export * from "./families/EquipCollector";

@@ -4,6 +4,8 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
 import {Theme} from "@/src/design/Theme";
+import {EQUIP_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {EquipCollector} from "@/src/collectors/EquipCollector";
 
 const styles = StyleSheet.create({
 	container: {
@@ -27,7 +29,14 @@ export function OpenCollectors(): ReactNode {
 
 	return (
 		<View style={styles.container}>
-			{fallbackCollectors.map(collector => (
+			{fallbackCollectors.map(collector => collector.data.type === EQUIP_DATA_KINDS.COLLECTOR ? (
+				<EquipCollector
+					key={collector.id}
+					collector={{...collector, data: collector.data}}
+					onChoose={(index): void => react(collector.id, index)}
+					submitting={isAnswerPending(collector.id)}
+				/>
+			) : (
 				<CollectorPrompt
 					key={collector.id}
 					collector={collector}

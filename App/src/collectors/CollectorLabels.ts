@@ -1,6 +1,7 @@
 import {
 	BIG_EVENT_DATA_KINDS, BIG_EVENT_REACTION_KINDS,
 	DRINK_DATA_KINDS, DRINK_REACTION_KINDS,
+	EQUIP_DATA_KINDS, EQUIP_REACTION_KINDS,
 	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
@@ -136,6 +137,11 @@ function itemTypeFromCategory(category: number): typeof ITEM_TYPES_BY_CATEGORY[n
 	return ITEM_TYPES_BY_CATEGORY[category] ?? null;
 }
 
+export function itemCategoryLabel(category: number): string {
+	const type = itemTypeFromCategory(category);
+	return type ? i18n.t(`items:${type}`, {count: 1}) : i18n.t("app:collector.descriptions.unknownItem");
+}
+
 export function itemDisplayName(item: Item | ItemWithDetails): string {
 	const category = "category" in item ? item.category : item.itemCategory;
 	const itemType = itemTypeFromCategory(category);
@@ -207,6 +213,7 @@ function makeChoosableHandler<Kind extends ReactionCollectorReaction["type"]>(
 }
 
 const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => string> = {
+	[EQUIP_DATA_KINDS.COLLECTOR]: () => i18n.t("app:equipment.title"),
 	[DRINK_DATA_KINDS.COLLECTOR]: () => i18n.t("app:collector.titles.drink"),
 	[BIG_EVENT_DATA_KINDS.COLLECTOR]: () => i18n.t("app:collector.titles.bigEvent"),
 	[SMALL_EVENT_DATA_KINDS.ALTAR]: () => smallEventTitle("app:collector.titles.altar", "smallEvents.altar"),
@@ -236,6 +243,7 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 };
 
 const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], DataHandler> = {
+	[EQUIP_DATA_KINDS.COLLECTOR]: () => undefined,
 	[BIG_EVENT_DATA_KINDS.COLLECTOR]: makeDataHandler(BIG_EVENT_DATA_KINDS.COLLECTOR, data => i18n.t(`events:${data.data.eventId}.text`)),
 	[DRINK_DATA_KINDS.COLLECTOR]: () => undefined,
 	[SMALL_EVENT_DATA_KINDS.ALTAR]: makeDataHandler(SMALL_EVENT_DATA_KINDS.ALTAR, data => randomTranslation("smallEvents:altar.intro", {
@@ -292,6 +300,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 };
 
 const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], ReactionHandler> = {
+	[EQUIP_REACTION_KINDS.CLOSE]: () => i18n.t("app:equipment.close"),
 	[GENERIC_REACTION_KINDS.ACCEPT]: (_reaction, data) => data.type === ITEM_DATA_KINDS.ACCEPT
 		? withIcon("collectors.accept", i18n.t("app:collector.choices.replaceItem", {
 			item: itemDisplayName(data.data.itemWithDetails)
@@ -414,6 +423,7 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 };
 
 const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHandler> = {
+	[EQUIP_REACTION_KINDS.CLOSE]: (_reaction, data) => isDataOfType(data, EQUIP_DATA_KINDS.COLLECTOR),
 	[GENERIC_REACTION_KINDS.ACCEPT]: () => true,
 	[GENERIC_REACTION_KINDS.REFUSE]: () => true,
 	[DRINK_REACTION_KINDS.POTION]: () => true,
