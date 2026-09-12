@@ -16,18 +16,28 @@ function statusMessage(status: PetFreeStatus): string {
 	return i18n.t(status.petCanBeFreed ? "app:pet.management.available" : "app:pet.management.errors.changed");
 }
 
-function ManagementResult({outcome}: {outcome: Outcome}): ReactNode {
-	if (outcome.type === "error") return <Note>{i18n.t(`app:pet.management.errors.${outcome.error}`)}</Note>;
-	if (outcome.type === "freeStatus") return <Note>{statusMessage(outcome.status)}</Note>;
-	if (outcome.type === "transfer") return <Panel>
-		{outcome.oldPet ? <KeyValue label={i18n.t("app:pet.management.deposited")} value={petName(outcome.oldPet)} /> : null}
-		{outcome.newPet ? <KeyValue label={i18n.t("app:pet.management.withdrawn")} value={petName(outcome.newPet)} /> : null}
-	</Panel>;
+function FreedPetResult({outcome}: {outcome: Extract<Outcome, {type: "freed"}>}): ReactNode {
 	return <>
 		<Note>{i18n.t(outcome.isFromShelter ? "app:pet.management.freedShelter" : "app:pet.management.freed", {pet: expeditionPetName(outcome.pet)})}</Note>
 		<Panel><KeyValue label={i18n.t("app:pet.care.price")} value={formatMoney(outcome.freeCost)} /></Panel>
 		{outcome.luckyMeat ? <Note>{i18n.t("app:pet.management.meat")}</Note> : null}
 	</>;
+}
+
+function ManagementResult({outcome}: {outcome: Outcome}): ReactNode {
+	if (outcome.type === "error") return <Note>{i18n.t(`app:pet.management.errors.${outcome.error}`)}</Note>;
+	if (outcome.type === "freeStatus") return <Note>{statusMessage(outcome.status)}</Note>;
+	if (outcome.type === "salePrice") return <Note>{i18n.t("app:pet.sale.badPrice", {min: formatMoney(outcome.minPrice), max: formatMoney(outcome.maxPrice)})}</Note>;
+	if (outcome.type === "saleFunds") return <Note>{i18n.t("app:pet.sale.missingMoney", {money: formatMoney(outcome.missingMoney)})}</Note>;
+	if (outcome.type === "sold") return <>
+		<Note>{i18n.t("app:pet.sale.sold", {pet: petName(outcome.pet)})}</Note>
+		<Panel><KeyValue label={i18n.t("app:pet.sale.treasury", {guild: outcome.guildName})} value={formatMoney(outcome.treasuryEarned)} /></Panel>
+	</>;
+	if (outcome.type === "transfer") return <Panel>
+		{outcome.oldPet ? <KeyValue label={i18n.t("app:pet.management.deposited")} value={petName(outcome.oldPet)} /> : null}
+		{outcome.newPet ? <KeyValue label={i18n.t("app:pet.management.withdrawn")} value={petName(outcome.newPet)} /> : null}
+	</Panel>;
+	return <FreedPetResult outcome={outcome} />;
 }
 
 export function PetManagementOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {

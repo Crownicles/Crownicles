@@ -4,8 +4,9 @@ import {
 import {
 	ReactionCollectorPetFreeData, ReactionCollectorPetFreeShelterConfirmData, ReactionCollectorPetFreeSelectionData, ReactionCollectorPetFreeSelectReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
+import { ReactionCollectorPetSellData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPetSell";
 import {
-	PetFreeConfirmation, ShelterChoices
+	PetFreeConfirmation, ShelterChoices, PET_SALE_ROLES
 } from "../../../../../../WsPackets/src/objects/PetManagement";
 import {
 	PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTION_KINDS
@@ -29,6 +30,9 @@ function freeConfirmation(data: ReactionCollectorPetFreeData, isFromShelter: boo
 	};
 }
 export const petManagementDataMappings: DataMapping[] = [
+	defineDataMapping(ReactionCollectorPetSellData, PET_MANAGEMENT_DATA_KINDS.SELL, data => ({
+		pet: data.pet, price: data.price, role: PET_SALE_ROLES.OBSERVER
+	})),
 	defineDataMapping(ReactionCollectorPetTransferData, PET_MANAGEMENT_DATA_KINDS.TRANSFER, shelterChoices),
 	defineDataMapping(ReactionCollectorPetFreeSelectionData, PET_MANAGEMENT_DATA_KINDS.FREE_SELECT, shelterChoices),
 	defineDataMapping(ReactionCollectorPetFreeData, PET_MANAGEMENT_DATA_KINDS.FREE_CONFIRM, data => freeConfirmation(data, false)),

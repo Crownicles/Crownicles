@@ -31,6 +31,7 @@ type FilterFunction = (collector: ReactionCollectorInstance, keycloakId: string,
 export type CollectorOptions = {
 	time?: number;
 	allowedPlayerKeycloakIds?: string[];
+	visiblePlayerKeycloakIds?: string[];
 	reactionLimit?: number;
 	mainPacket?: boolean;
 };
@@ -72,6 +73,8 @@ export class ReactionCollectorInstance {
 
 	private readonly mainPacket: boolean;
 
+	private readonly visiblePlayerKeycloakIds: string[];
+
 	private endedByTime = false;
 
 	private endTimeout!: NodeJS.Timeout;
@@ -82,6 +85,7 @@ export class ReactionCollectorInstance {
 		this.time = collectorOptions.time ?? Constants.MESSAGES.COLLECTOR_TIME;
 		this.endTime = Date.now() + this.time;
 		this.mainPacket = collectorOptions.mainPacket ?? true;
+		this.visiblePlayerKeycloakIds = collectorOptions.visiblePlayerKeycloakIds ?? (context.keycloakId ? [context.keycloakId] : []);
 		this.collectCallback = collectCallback;
 		this._context = context;
 		this.endCallback = endCallback;
@@ -110,6 +114,10 @@ export class ReactionCollectorInstance {
 
 	get context(): PacketContext {
 		return this._context;
+	}
+
+	public isVisibleTo(keycloakId: string): boolean {
+		return this.visiblePlayerKeycloakIds.includes(keycloakId);
 	}
 
 	public async react(keycloakId: string, index: number, response: CrowniclesPacket[]): Promise<void> {
@@ -228,7 +236,7 @@ export abstract class ReactionCollectorController {
 	public static getCollectorsOfPlayer(keycloakId: string): ReactionCollectorInstance[] {
 		const result: ReactionCollectorInstance[] = [];
 		for (const collector of collectors.values()) {
-			if (!collector.hasEnded && collector.context.keycloakId === keycloakId) {
+			if (!collector.hasEnded && collector.isVisibleTo(keycloakId)) {
 				result.push(collector);
 			}
 		}

@@ -1,5 +1,5 @@
 import {afterEach, describe, expect, it, vi} from "vitest";
-import {createGuildInvitationCollector} from "../../../../src/commands/guild/GuildInviteCommand";
+import {createGuildInvitationCollector} from "../../../../src/core/utils/GuildInvitationCollector";
 import {ReactionCollectorController} from "../../../../src/core/utils/ReactionsCollector";
 import {ReactionCollectorGuildInvite} from "../../../../../Lib/src/packets/interaction/ReactionCollectorGuildInvite";
 import {PacketContext} from "../../../../../Lib/src/packets/CrowniclesPacket";

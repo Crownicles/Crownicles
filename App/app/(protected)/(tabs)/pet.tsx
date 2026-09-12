@@ -24,9 +24,13 @@ import {commandRejectionMessage} from "@/src/display/CommandRejection";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {missionDate} from "@/src/display/Missions";
 import {GuildShelter, PET_MANAGEMENT_MENUS} from "@/src/components/PetManagement";
+import {PetSale} from "@/src/components/PetSale";
+import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 
 const FEED_MENU: CommandMenu = {request: PetFeedReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetFeedRes]};
 const EXPEDITION_MENU: CommandMenu = {request: PetExpeditionReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetExpeditionRes, PetExpeditionErrorRes]};
+const PET_PAGES = {OVERVIEW: "overview", RENAME: "rename", SHELTER: "shelter", SELL: "sell"} as const;
+type PetPage = typeof PET_PAGES[keyof typeof PET_PAGES];
 
 const styles = StyleSheet.create({
 	centered: {
@@ -41,7 +45,7 @@ function Centered({ children }: { children: ReactNode }): ReactNode {
 	return <View style={styles.centered}>{children}</View>;
 }
 
-function PetSheet({packet, onRename, onShelter}: {packet: PetRes; onRename: () => void; onShelter: () => void}): ReactNode {
+function PetSheet({packet, onPage}: {packet: PetRes; onPage: (page: PetPage) => void}): ReactNode {
 	const pet = packet.pet;
 	const {pending, message, care} = usePetActions();
 	const menus = useCommandMenus();
@@ -58,7 +62,7 @@ function PetSheet({packet, onRename, onShelter}: {packet: PetRes; onRename: () =
 				{!packet.expeditionInProgress ? <QuickAction icon={AppIcons.getIcon("petCommand.pet")} disabled={pending} onPress={(): void => {care({type: "caress"}).catch(console.error);}}>{i18n.t("app:pet.care.caress")}</QuickAction> : null}
 				{!packet.expeditionInProgress ? <QuickAction icon={AppIcons.getIcon("foods.commonFood")} disabled={menus.pending} onPress={(): Promise<void> => menus.open(FEED_MENU)}>{i18n.t("app:pet.care.feed")}</QuickAction> : null}
 				<QuickAction icon={AppIcons.getIcon("commands.map")} disabled={menus.pending} onPress={(): Promise<void> => menus.open(EXPEDITION_MENU)}>{i18n.t("app:expedition.open")}</QuickAction>
-				<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={onRename}>{i18n.t("app:pet.care.rename")}</QuickAction>
+				<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={(): void => onPage(PET_PAGES.RENAME)}>{i18n.t("app:pet.care.rename")}</QuickAction>
 			</QuickActions>
 			{message ? <Note>{message}</Note> : null}
 			{menus.message ? <Note>{menus.message}</Note> : null}
@@ -78,32 +82,38 @@ function PetSheet({packet, onRename, onShelter}: {packet: PetRes; onRename: () =
 			</Panel>
 			<SectionHeader>{i18n.t("app:pet.management.title")}</SectionHeader>
 			<Panel>
-				<Row title={i18n.t("app:pet.management.shelter")} onPress={onShelter} chevron />
+				<Row title={i18n.t("app:pet.management.shelter")} onPress={(): void => onPage(PET_PAGES.SHELTER)} chevron />
 				<Row title={i18n.t("app:pet.management.transfer")} disabled={menus.pending} onPress={(): Promise<void> => menus.open(PET_MANAGEMENT_MENUS.TRANSFER)} chevron />
+				<Row title={i18n.t("app:pet.sale.title")} onPress={(): void => onPage(PET_PAGES.SELL)} chevron />
 				<Row title={i18n.t("app:pet.management.free")} tone="danger" disabled={menus.pending} onPress={(): Promise<void> => menus.open(PET_MANAGEMENT_MENUS.FREE)} chevron />
 			</Panel>
 		</Screen>
 	);
 }
 
+function PetDetails({page, pet, onClose}: {page: PetPage; pet: OwnedPet; onClose: () => void}): ReactNode {
+	return <DetailScreen title={i18n.t(page === PET_PAGES.RENAME ? "app:pet.care.rename" : "app:pet.sale.title")} eyebrow={i18n.t("app:pet.eyebrow")} onClose={onClose}>
+		{page === PET_PAGES.RENAME ? <PetNickname pet={pet} /> : <PetSale pet={pet} />}
+	</DetailScreen>;
+}
+
 export default function Pet(): ReactNode {
-	const [renaming, setRenaming] = useState(false);
-	const [shelter, setShelter] = useState(false);
+	const [page, setPage] = useState<PetPage>(PET_PAGES.OVERVIEW);
 	const state = useGameQuery<PetRes>(
 		GAME_ENTITIES.PET,
 		() => GameClient.request(makeFromClientPacket(PetReq, { askedPlayer: {} }), PetRes, [PetNotFound])
 	);
-	if (shelter) return <DetailScreen title={i18n.t("app:pet.management.shelter")} eyebrow={i18n.t("app:pet.eyebrow")} onClose={(): void => setShelter(false)}><GuildShelter /></DetailScreen>;
-	if (renaming && state.status === "ready") return <DetailScreen title={i18n.t("app:pet.care.rename")} eyebrow={i18n.t("app:pet.eyebrow")} onClose={(): void => setRenaming(false)}><PetNickname pet={state.data.pet} /></DetailScreen>;
+	if (page === PET_PAGES.SHELTER) return <DetailScreen title={i18n.t("app:pet.management.shelter")} eyebrow={i18n.t("app:pet.eyebrow")} onClose={(): void => setPage(PET_PAGES.OVERVIEW)}><GuildShelter /></DetailScreen>;
+	if (state.status === "ready" && page !== PET_PAGES.OVERVIEW) return <PetDetails page={page} pet={state.data.pet} onClose={(): void => setPage(PET_PAGES.OVERVIEW)} />;
 
 	switch (state.status) {
 		case "loading":
 			return <Centered><ActivityIndicator /></Centered>;
 		case "empty":
-			return <Screen><Note>{i18n.t("app:pet.noPet")}</Note><Panel><Row title={i18n.t("app:pet.management.shelter")} onPress={(): void => setShelter(true)} chevron /></Panel></Screen>;
+			return <Screen><Note>{i18n.t("app:pet.noPet")}</Note><Panel><Row title={i18n.t("app:pet.management.shelter")} onPress={(): void => setPage(PET_PAGES.SHELTER)} chevron /></Panel></Screen>;
 		case "failed":
 			return <Centered><Text style={styles.message}>{state.rejection ? commandRejectionMessage(state.rejection) : i18n.t("app:common.error")}</Text></Centered>;
 		default:
-			return <PetSheet packet={state.data} onRename={(): void => setRenaming(true)} onShelter={(): void => setShelter(true)} />;
+			return <PetSheet packet={state.data} onPage={setPage} />;
 	}
 }

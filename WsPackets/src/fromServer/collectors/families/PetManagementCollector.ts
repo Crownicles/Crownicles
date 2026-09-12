@@ -1,5 +1,5 @@
 import {
-	PetFreeConfirmation, ShelterChoices
+	PetFreeConfirmation, PetSaleOffer, ShelterChoices
 } from "../../../objects/PetManagement";
 import {
 	ReactionCollectorDataKind, ReactionCollectorReactionKind
@@ -10,6 +10,7 @@ declare module "../ReactionCollectorProtocol" {
 		petTransfer: ShelterChoices;
 		petFreeSelect: ShelterChoices;
 		petFreeConfirm: PetFreeConfirmation;
+		petSell: PetSaleOffer;
 	}
 	interface ReactionCollectorReactionPayloads {
 		petDeposit: Record<string, never>;
@@ -19,7 +20,7 @@ declare module "../ReactionCollectorProtocol" {
 	}
 }
 export const PET_MANAGEMENT_DATA_KINDS = {
-	TRANSFER: "petTransfer", FREE_SELECT: "petFreeSelect", FREE_CONFIRM: "petFreeConfirm"
+	TRANSFER: "petTransfer", FREE_SELECT: "petFreeSelect", FREE_CONFIRM: "petFreeConfirm", SELL: "petSell"
 } as const satisfies Record<string, ReactionCollectorDataKind>;
 export const PET_MANAGEMENT_REACTION_KINDS = {
 	DEPOSIT: "petDeposit", WITHDRAW: "petWithdraw", SWITCH: "petSwitch", FREE_SELECT: "petFreeSelect"

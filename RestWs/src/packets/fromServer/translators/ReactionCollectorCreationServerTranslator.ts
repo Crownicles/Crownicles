@@ -6,7 +6,7 @@ import { mapCollectorDisplay } from "../collectors/CollectorDisplayMapper";
 
 export default class ReactionCollectorCreationServerTranslator {
 	@fromServerTranslator(ReactionCollectorCreationPacket, ReactionCollectorCreation)
-	public static translate(_context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorCreation> {
-		return mapCollectorDisplay(packet);
+	public static translate(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorCreation> {
+		return mapCollectorDisplay(packet, context);
 	}
 }

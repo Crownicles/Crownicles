@@ -8,7 +8,6 @@ import {
 	CommandGuildInviteInvitingPlayerNotInGuild,
 	CommandGuildInviteLevelTooLow,
 	CommandGuildInvitePendingPacket,
-	CommandGuildInviteErrorPacket,
 	CommandGuildInvitePacketReq,
 	CommandGuildInvitePlayerNotFound,
 	CommandGuildInviteRefusePacketRes
@@ -38,6 +37,9 @@ import {
 } from "../../core/utils/CommandUtils.js";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { PacketUtils } from "../../core/utils/PacketUtils";
+import {
+	createGuildInvitationCollector, notifyInvitationAuthor
+} from "../../core/utils/GuildInvitationCollector";
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import {
 	Locked, LockedRowNotFoundError, withLockedEntities
@@ -98,7 +100,7 @@ export default class GuildInviteCommand {
 			.build();
 
 		if (context.webSocket) {
-			PacketUtils.sendPackets(invitationRecipientContext(context, invitedPlayer.keycloakId), [collectorPacket]);
+			PacketUtils.sendPackets(PacketUtils.webSocketContextForPlayer(context, invitedPlayer.keycloakId), [collectorPacket]);
 			response.push(makePacket(CommandGuildInvitePendingPacket, {
 				invitedPlayerKeycloakId: invitedPlayer.keycloakId, guildName: guild!.name
 			}));
@@ -106,28 +108,6 @@ export default class GuildInviteCommand {
 		}
 		response.push(collectorPacket);
 	}
-}
-
-function invitationRecipientContext(context: PacketContext, invitedKeycloakId: string): PacketContext {
-	return {
-		frontEndOrigin: context.frontEndOrigin, frontEndSubOrigin: context.frontEndSubOrigin, keycloakId: invitedKeycloakId, webSocket: {}
-	};
-}
-
-function notifyInvitationAuthor(context: PacketContext, response: CrowniclesPacket[]): void {
-	if (!context.webSocket) {
-		return;
-	}
-	const invitationResults = response.filter(packet => packet instanceof CommandGuildInviteErrorPacket
-		|| packet instanceof CommandGuildInviteAcceptPacketRes || packet instanceof CommandGuildInviteRefusePacketRes);
-	PacketUtils.sendPackets(context, invitationResults);
-}
-
-export function createGuildInvitationCollector(model: ReactionCollectorGuildInvite, context: PacketContext, invitedKeycloakId: string, endCallback: EndCallback): ReactionCollectorInstance {
-	return new ReactionCollectorInstance(model, context.webSocket ? invitationRecipientContext(context, invitedKeycloakId) : context, {
-		allowedPlayerKeycloakIds: [invitedKeycloakId],
-		reactionLimit: 1
-	}, endCallback);
 }
 
 /**

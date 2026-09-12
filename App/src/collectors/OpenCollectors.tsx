@@ -21,6 +21,7 @@ import {PetExpeditionCollector} from "@/src/collectors/PetExpeditionCollector";
 import {useExpeditionOutcome} from "@/src/store/useExpeditionOutcome";
 import {PetExpeditionOutcome} from "@/src/collectors/PetExpeditionOutcome";
 import {PetManagementCollector} from "@/src/collectors/PetManagementCollector";
+import {PetSellCollector} from "@/src/collectors/PetSellCollector";
 import {PetManagementOutcome} from "@/src/collectors/PetManagementOutcome";
 import {usePetManagementOutcome} from "@/src/store/usePetManagementOutcome";
 import {GuildCreateCollector} from "@/src/collectors/GuildCreateCollector";
@@ -44,6 +45,7 @@ const COLLECTOR_COMPONENTS: Partial<Record<ReactionCollectorDataKind, (props: Ac
 	[GUILD_DATA_KINDS.LEAVE]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.CREATE]: GuildCreateCollector,
 	[PET_MANAGEMENT_DATA_KINDS.TRANSFER]: PetManagementCollector,
+	[PET_MANAGEMENT_DATA_KINDS.SELL]: PetSellCollector,
 	[PET_MANAGEMENT_DATA_KINDS.FREE_SELECT]: PetManagementCollector,
 	[PET_MANAGEMENT_DATA_KINDS.FREE_CONFIRM]: PetManagementCollector,
 	[EXPEDITION_DATA_KINDS.CHOICE]: PetExpeditionCollector,

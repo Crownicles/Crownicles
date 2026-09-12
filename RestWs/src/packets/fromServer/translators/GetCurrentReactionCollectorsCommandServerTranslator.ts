@@ -7,9 +7,9 @@ import { mapCollectorDisplay } from "../collectors/CollectorDisplayMapper";
 
 export default class GetCurrentReactionCollectorsCommandServerTranslator {
 	@fromServerTranslator(CommandGetCurrentReactionCollectorsPacketRes, CommandGetCurrentReactionCollectorsRes)
-	public static async translate(_context: PacketContext, packet: CommandGetCurrentReactionCollectorsPacketRes): Promise<CommandGetCurrentReactionCollectorsRes> {
+	public static async translate(context: PacketContext, packet: CommandGetCurrentReactionCollectorsPacketRes): Promise<CommandGetCurrentReactionCollectorsRes> {
 		return asyncMakeFromServerPacket(CommandGetCurrentReactionCollectorsRes, {
-			collectors: await Promise.all(packet.collectors.map(mapCollectorDisplay))
+			collectors: await Promise.all(packet.collectors.map(collector => mapCollectorDisplay(collector, context)))
 		});
 	}
 }

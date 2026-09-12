@@ -10,7 +10,7 @@ import {
 	REACTION_COLLECTOR_STOP_REASONS, ReactionCollectorStopPacket
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorStopPacket";
 import { CrowniclesPacket, PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { ReactionCollectorInstance } from "../../../src/core/utils/ReactionsCollector";
+import { ReactionCollectorController, ReactionCollectorInstance } from "../../../src/core/utils/ReactionsCollector";
 import { PacketUtils } from "../../../src/core/utils/PacketUtils";
 
 const COLLECTOR_TIME = 5_000;
@@ -85,6 +85,19 @@ describe("ReactionCollectorInstance closing reason", () => {
 		await collector.react(PLAYER, 0, []);
 
 		expect(stopPacketOf(closingPackets).reason).toBe(REACTION_COLLECTOR_STOP_REASONS.RESOLVED);
+	});
+
+	it("restores a shared collector only for its explicit participants", async () => {
+		const collector = new ReactionCollectorInstance(new TestCollector(), context(), {
+			allowedPlayerKeycloakIds: [PLAYER, "buyer"],
+			visiblePlayerKeycloakIds: [PLAYER, "buyer"]
+		}, () => undefined);
+		collector.build();
+		expect(ReactionCollectorController.getCollectorsOfPlayer(PLAYER)).toContain(collector);
+		expect(ReactionCollectorController.getCollectorsOfPlayer("buyer")).toContain(collector);
+		expect(ReactionCollectorController.getCollectorsOfPlayer("outsider")).not.toContain(collector);
+		await collector.end([]);
+		expect(ReactionCollectorController.getCollectorsOfPlayer("buyer")).not.toContain(collector);
 	});
 
 	it("reports a collector closed by the flow as resolved", async () => {

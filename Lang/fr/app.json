@@ -762,8 +762,25 @@
       "cooldown": "Une nouvelle libération sera possible dans {{duration}}.",
       "missingMoney": "Il vous manque {{money}} pour cette libération.",
       "available": "Votre familier peut être libéré.",
-      "outcomes": {"transfer": "Transfert terminé", "freed": "Familier libéré", "freeStatus": "Libération indisponible", "error": "Action interrompue"},
-      "errors": {"busy": "Un autre membre utilise déjà le refuge.", "cancelled": "L'action a été annulée.", "changed": "La situation du refuge ou du familier a changé. Veuillez réessayer.", "noPet": "Aucun familier ne peut être transféré.", "feisty": "Un familier fielleux ne peut pas être transféré.", "expedition": "Ce familier est actuellement en expédition."}
+      "outcomes": {"transfer": "Transfert terminé", "freed": "Familier libéré", "freeStatus": "Libération indisponible", "error": "Action interrompue", "sold": "Vente terminée", "salePrice": "Prix invalide", "saleFunds": "Fonds insuffisants"},
+      "errors": {"busy": "Un autre membre utilise déjà le refuge.", "cancelled": "L'action a été annulée.", "changed": "La situation du familier ou d'un participant a changé. Veuillez réessayer.", "noPet": "Aucun familier n'est disponible pour cette action.", "feisty": "Cette action est impossible avec un familier fielleux.", "expedition": "Ce familier est actuellement en expédition.", "noGuild": "Il faut appartenir à une guilde pour vendre un familier.", "self": "Vous ne pouvez pas acheter votre propre familier.", "sameGuild": "L'acheteur appartient à la même guilde que le vendeur.", "hasPet": "L'acheteur possède déjà un familier.", "ownerOnly": "Seul le vendeur peut annuler cette offre.", "noBuyer": "Aucun acheteur n'a pu répondre à cette offre."}
+    },
+    "sale": {
+      "title": "Vendre le familier",
+      "offerTitle": "Vente de familier",
+      "rank": "Classement de l'acheteur",
+      "price": "Prix de vente",
+      "offer": "Proposer la vente",
+      "seller": "Vendeur",
+      "buyer": "Acheteur",
+      "waiting": "La réponse de l'acheteur est attendue.",
+      "buy": "Acheter le familier",
+      "cancel": "Annuler la vente",
+      "refuse": "Refuser l'offre",
+      "badPrice": "Le prix doit être compris entre {{min}} et {{max}}.",
+      "missingMoney": "Il manque {{money}} à l'acheteur.",
+      "sold": "La vente de {{pet}} est terminée.",
+      "treasury": "Trésorerie de {{guild}}"
     },
     "care": {
       "caress": "Caresser",
