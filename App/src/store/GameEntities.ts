@@ -11,6 +11,7 @@ export const GAME_ENTITIES = {
 	SHELTER: "shelter",
 	INVENTORY: "inventory",
 	GUILD: "guild",
+	GUILD_STORAGE: "guildStorage",
 	MISSIONS: "missions",
 	CLASSES: "classes",
 	RARITY: "rarity",

@@ -12,14 +12,9 @@ import {expeditionPetName} from "@/src/display/PetExpedition";
 import {formatMoney} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
-const KINDS = new Set<ReactionCollectorData["type"]>(Object.values(PET_MANAGEMENT_DATA_KINDS));
 const styles = StyleSheet.create({root: {flex: 1, backgroundColor: Theme.colors.paper}});
 type Choice = {index: number; reaction: ReactionCollectorReaction};
 type ManagementProps = {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean};
-
-export function isPetManagementCollector(data: ReactionCollectorData): boolean {
-	return KINDS.has(data.type);
-}
 
 function TransferMenu({collector, onChoose, submitting}: ManagementProps): ReactNode {
 	return <Panel>{collector.reactions.map((reaction, index) => ({reaction, index})).map(choice => <Row key={choice.index}

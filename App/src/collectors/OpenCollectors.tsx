@@ -4,7 +4,7 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
 import {Theme} from "@/src/design/Theme";
-import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, PET_FEED_DATA_KINDS, SELL_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, SELL_DATA_KINDS, GUILD_DATA_KINDS, ReactionCollectorDataKind} from "ws-packets/src/fromServer/collectors";
 import {EquipCollector} from "@/src/collectors/EquipCollector";
 import {SellCollector} from "@/src/collectors/SellCollector";
 import {useInventoryOutcome} from "@/src/store/useInventoryOutcome";
@@ -17,12 +17,15 @@ import {useClassOutcome} from "@/src/store/useClassOutcome";
 import {usePetFeedOutcome} from "@/src/store/usePetFeedOutcome";
 import {PetFeedCollector} from "@/src/collectors/PetFeedCollector";
 import {PetFeedOutcome} from "@/src/collectors/PetFeedOutcome";
-import {isExpeditionCollector, PetExpeditionCollector} from "@/src/collectors/PetExpeditionCollector";
+import {PetExpeditionCollector} from "@/src/collectors/PetExpeditionCollector";
 import {useExpeditionOutcome} from "@/src/store/useExpeditionOutcome";
 import {PetExpeditionOutcome} from "@/src/collectors/PetExpeditionOutcome";
-import {isPetManagementCollector, PetManagementCollector} from "@/src/collectors/PetManagementCollector";
+import {PetManagementCollector} from "@/src/collectors/PetManagementCollector";
 import {PetManagementOutcome} from "@/src/collectors/PetManagementOutcome";
 import {usePetManagementOutcome} from "@/src/store/usePetManagementOutcome";
+import {GuildCreateCollector} from "@/src/collectors/GuildCreateCollector";
+import {GuildOutcome} from "@/src/collectors/GuildOutcome";
+import {useGuildOutcome} from "@/src/store/useGuildOutcome";
 
 const styles = StyleSheet.create({
 	container: {
@@ -30,18 +33,30 @@ const styles = StyleSheet.create({
 	}
 });
 
-function InventoryCollector({collector, onChoose, submitting}: {
+type ActiveCollectorProps = {
 	collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean;
-}): ReactNode {
-	if (isPetManagementCollector(collector.data)) return <PetManagementCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	if (isExpeditionCollector(collector.data)) return <PetExpeditionCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	if (collector.data.type === PET_FEED_DATA_KINDS.GUILD || collector.data.type === PET_FEED_DATA_KINDS.PERSONAL) return <PetFeedCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	if (collector.data.type === CLASSES_DATA_KINDS.COLLECTOR) return <ClassesCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
+};
+
+const COLLECTOR_COMPONENTS: Partial<Record<ReactionCollectorDataKind, (props: ActiveCollectorProps) => ReactNode>> = {
+	[GUILD_DATA_KINDS.CREATE]: GuildCreateCollector,
+	[PET_MANAGEMENT_DATA_KINDS.TRANSFER]: PetManagementCollector,
+	[PET_MANAGEMENT_DATA_KINDS.FREE_SELECT]: PetManagementCollector,
+	[PET_MANAGEMENT_DATA_KINDS.FREE_CONFIRM]: PetManagementCollector,
+	[EXPEDITION_DATA_KINDS.CHOICE]: PetExpeditionCollector,
+	[EXPEDITION_DATA_KINDS.PROGRESS]: PetExpeditionCollector,
+	[EXPEDITION_DATA_KINDS.FINISHED]: PetExpeditionCollector,
+	[PET_FEED_DATA_KINDS.GUILD]: PetFeedCollector,
+	[PET_FEED_DATA_KINDS.PERSONAL]: PetFeedCollector,
+	[CLASSES_DATA_KINDS.COLLECTOR]: ClassesCollector,
+	[SELL_DATA_KINDS.COLLECTOR]: SellCollector,
+	[DAILY_BONUS_DATA_KINDS.COLLECTOR]: ConsumableCollector,
+	[DRINK_DATA_KINDS.COLLECTOR]: ConsumableCollector
+};
+
+function InventoryCollector({collector, onChoose, submitting}: ActiveCollectorProps): ReactNode {
 	if (collector.data.type === EQUIP_DATA_KINDS.COLLECTOR) return <EquipCollector collector={{...collector, data: collector.data}} onChoose={onChoose} submitting={submitting} />;
-	if (collector.data.type === SELL_DATA_KINDS.COLLECTOR) return <SellCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	const consumable = collector.data.type === DAILY_BONUS_DATA_KINDS.COLLECTOR || collector.data.type === DRINK_DATA_KINDS.COLLECTOR;
-	if (consumable) return <ConsumableCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
-	return <CollectorPrompt collector={collector} onChoose={onChoose} submitting={submitting} />;
+	const Component = COLLECTOR_COMPONENTS[collector.data.type] ?? CollectorPrompt;
+	return <Component collector={collector} onChoose={onChoose} submitting={submitting} />;
 }
 
 /**
@@ -57,8 +72,9 @@ export function OpenCollectors(): ReactNode {
 	const feedOutcome = usePetFeedOutcome();
 	const expeditionOutcome = useExpeditionOutcome();
 	const managementOutcome = usePetManagementOutcome();
+	const guildOutcome = useGuildOutcome();
 	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector));
-	const outcomePending = [outcome, classOutcome.outcome, feedOutcome.outcome, expeditionOutcome.outcome, managementOutcome.outcome].some(Boolean);
+	const outcomePending = [outcome, classOutcome.outcome, feedOutcome.outcome, expeditionOutcome.outcome, managementOutcome.outcome, guildOutcome.outcome].some(Boolean);
 
 	if (fallbackCollectors.length === 0 && !outcomePending) {
 		return null;
@@ -66,6 +82,7 @@ export function OpenCollectors(): ReactNode {
 
 	return (
 		<View style={styles.container}>
+			{guildOutcome.outcome ? <GuildOutcome outcome={guildOutcome.outcome} onContinue={guildOutcome.clear} /> : null}
 			{managementOutcome.outcome ? <PetManagementOutcome outcome={managementOutcome.outcome} onContinue={managementOutcome.clear} /> : null}
 			{expeditionOutcome.outcome ? <PetExpeditionOutcome outcome={expeditionOutcome.outcome} onContinue={expeditionOutcome.clear} /> : null}
 			{feedOutcome.outcome ? <PetFeedOutcome outcome={feedOutcome.outcome} onContinue={feedOutcome.clear} /> : null}

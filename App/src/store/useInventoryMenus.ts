@@ -34,7 +34,7 @@ export const INVENTORY_MENUS = {
 type CommandMenuState = {
 	message: string | null;
 	pending: boolean;
-	open: (menu: CommandMenu) => Promise<void>;
+	open: (menu: CommandMenu, request?: FromClientPacket) => Promise<void>;
 };
 
 function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: CommandMenu): string | null {
@@ -57,13 +57,13 @@ export function useCommandMenus(): CommandMenuState {
 		return (): void => { active.current = false; };
 	}, []);
 
-	const open = async (menu: CommandMenu): Promise<void> => {
+	const open = async (menu: CommandMenu, request?: FromClientPacket): Promise<void> => {
 		if (inFlight.current) return;
 		inFlight.current = true;
 		setPending(true);
 		setMessage(null);
 		try {
-			const answer = await GameClient.request(makeFromClientPacket(menu.request, {}), ReactionCollectorCreation, [menu.emptyPacket, Blocked, ...menu.outcomePackets ?? []]);
+			const answer = await GameClient.request(request ?? makeFromClientPacket(menu.request, {}), ReactionCollectorCreation, [menu.emptyPacket, Blocked, ...menu.outcomePackets ?? []]);
 			if (!active.current) return;
 			if (answer.kind === "answer") track(answer.packet);
 			else setMessage(commandMessage(answer, menu));

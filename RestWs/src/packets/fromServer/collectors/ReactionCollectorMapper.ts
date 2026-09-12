@@ -9,6 +9,7 @@ import {
 	CollectorMapping, indexMappings
 } from "./CollectorMapping";
 import { genericReactionMappings } from "./mappings/GenericReactionMappings";
+import { guildDataMappings } from "./mappings/GuildCollectorMappings";
 import {
 	petManagementDataMappings, petManagementReactionMappings
 } from "./mappings/PetManagementCollectorMappings";
@@ -71,6 +72,7 @@ const reactionMappings = indexMappings([
 ]);
 
 const dataMappings = indexMappings([
+	...guildDataMappings,
 	...petManagementDataMappings,
 	...expeditionDataMappings,
 	...petFeedDataMappings,
