@@ -7,8 +7,6 @@ const RARITY_RANGE = {
 	MAX: 8
 };
 
-const MAX_LOVE_LEVEL = 5;
-
 /**
  * i18next resolves the sex-dependent keys through a context, the same way the Discord client does.
  * @param sex
@@ -29,6 +27,10 @@ export function petNickname(pet: OwnedPet): string {
 	return pet.nickname ? pet.nickname : i18n.t("commands:pet.noNickname");
 }
 
+export function petName(pet: OwnedPet): string {
+	return pet.nickname || petTypeName(pet);
+}
+
 export function petRarity(pet: OwnedPet): string {
 	return i18n.t(`items:rarities.${Math.max(RARITY_RANGE.MIN, Math.min(pet.rarity, RARITY_RANGE.MAX))}`);
 }
@@ -40,8 +42,4 @@ export function petSex(pet: OwnedPet): string {
 
 export function petMood(pet: OwnedPet): string {
 	return i18n.t(`commands:pet.loveLevels.${pet.loveLevel}`, { context: sexContext(pet.sex) });
-}
-
-export function petMoodRatio(pet: OwnedPet): number {
-	return pet.loveLevel / MAX_LOVE_LEVEL;
 }

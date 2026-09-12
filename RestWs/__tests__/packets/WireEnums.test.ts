@@ -15,6 +15,9 @@ import { BlessingType as LibBlessingType } from "../../../Lib/src/constants/Bles
 import { BlessingType } from "../../../WsPackets/src/objects/BlessingType";
 import { Badge as LibBadge } from "../../../Lib/src/types/Badge";
 import { BADGE_CODES } from "../../../WsPackets/src/objects/Badge";
+import { PetFood as LibPetFood } from "../../../Lib/src/types/PetFood";
+import { CommandPetFeedResult } from "../../../Lib/src/packets/commands/CommandPetFeedPacket";
+import { PetFood, PET_FEED_RESULTS } from "../../../WsPackets/src/objects/PetFood";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -30,6 +33,8 @@ describe("wire enums mirror their back-end counterpart", () => {
 		["MissionType", MISSION_TYPES, LibMissionType],
 		["BlessingType", BlessingType, LibBlessingType],
 		["Badge", BADGE_CODES, LibBadge],
+		["PetFood", PetFood, LibPetFood],
+		["PetFeedResult", PET_FEED_RESULTS, CommandPetFeedResult],
 		["EquipAction", EQUIP_ACTIONS, ItemConstants.EQUIP_ACTIONS],
 		["EquipError", EQUIP_ERRORS, ItemConstants.EQUIP_ERRORS]
 	])("%s has the same members in the same order", (_name, wireEnum, libEnum) => {

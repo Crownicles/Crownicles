@@ -50,3 +50,7 @@ export class CommandPetPetNotFound extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandPetCaressPacketReq extends CrowniclesPacket {
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandPetCaressPacketRes extends CrowniclesPacket {
+}

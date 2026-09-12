@@ -739,6 +739,41 @@
     }
   },
   "pet": {
+    "care": {
+      "caress": "Caresser",
+      "feed": "Nourrir",
+      "rename": "Renommer",
+      "feedPet": "Nourrir {{pet}}",
+      "food": "Nourriture",
+      "price": "Prix",
+      "caressed": "Vous prenez un moment pour caresser votre familier.",
+      "newNickname": "Nouveau surnom",
+      "save": "Enregistrer",
+      "clear": "Effacer le surnom",
+      "invalidNickname": "Ce surnom n'est pas valide. Il doit contenir des lettres et ne pas utiliser de caractères spéciaux ni d'espaces répétés.",
+      "renamed": "Votre familier se nomme désormais {{nickname}}.",
+      "cleared": "Le surnom de votre familier a été effacé."
+    },
+    "feed": {
+      "food": "{{food}} · Entrepôt : {{amount}} / {{max}}",
+      "success": "Repas terminé",
+      "unavailable": "Nourrissage interrompu",
+      "results": {
+        "happy": "Votre familier a apprécié son repas.",
+        "veryHappy": "Votre familier a beaucoup apprécié son repas.",
+        "veryVeryHappy": "Votre familier est comblé par son repas.",
+        "dislike": "Votre familier a mangé, mais cette nourriture n'est pas à son goût."
+      },
+      "errors": {
+        "noPet": "Vous n'avez plus de familier à nourrir.",
+        "notHungry": "{{pet}} n'a pas encore faim.",
+        "expedition": "Votre familier est actuellement en expédition.",
+        "noMoney": "Vous n'avez pas assez d'argent pour acheter cette nourriture.",
+        "emptyStorage": "Cette nourriture n'est plus disponible dans l'entrepôt de la guilde.",
+        "situationChanged": "Votre familier a changé depuis l'ouverture du menu.",
+        "cancelled": "Le repas a été annulé."
+      }
+    },
     "eyebrow": "Votre familier",
     "noPet": "Aucun familier ne vous accompagne pour le moment",
     "titles": {
@@ -751,8 +786,7 @@
       "rarity": "Rareté",
       "sex": "Sexe",
       "mood": "Mentalité"
-    },
-    "moodScale": "Le moral progresse en nourrissant et en caressant le familier"
+    }
   },
   "missions": {
     "campaign": "Campagne",

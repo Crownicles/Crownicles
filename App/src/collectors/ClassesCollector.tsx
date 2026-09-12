@@ -1,4 +1,4 @@
-import {ReactNode, useRef, useState} from "react";
+import {ReactNode, useState} from "react";
 import {Modal, StyleSheet} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {AvailableClass} from "ws-packets/src/objects/ClassDetails";
@@ -8,7 +8,7 @@ import {Button, ButtonRow, Confirmation, Hero, Note, Panel, Row, Screen} from "@
 import {Theme} from "@/src/design/Theme";
 import {ClassStatistics} from "@/src/components/ClassStatistics";
 import {className} from "@/src/display/Classes";
-import {useSecondsLeft} from "@/src/collectors/CollectorPrompt";
+import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
 
@@ -51,21 +51,14 @@ function ClassMenu({collector, locked, secondsLeft, onSelect, onClose}: {
 
 export function ClassesCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
 	const [selection, setSelection] = useState<ClassChoice | null>(null);
-	const [answered, setAnswered] = useState(false);
-	const sent = useRef(false);
-	const secondsLeft = useSecondsLeft(collector.endTime);
-	const locked = submitting || answered || secondsLeft === 0;
+	const {locked, secondsLeft, answer} = useCollectorAnswer(collector, onChoose, submitting);
 	const select = (choice: ClassChoice): void => {
 		if (locked) return;
 		setSelection(choice);
 	};
 	const choose = (index: number): void => {
-		if (index < 0 || Date.now() >= collector.endTime) return;
-		if (sent.current || locked) return;
-		sent.current = true;
-		setAnswered(true);
 		setSelection(null);
-		onChoose(index);
+		answer(index);
 	};
 	if (collector.data.type !== CLASSES_DATA_KINDS.COLLECTOR) return null;
 	const close = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
