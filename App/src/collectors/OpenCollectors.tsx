@@ -38,6 +38,8 @@ type ActiveCollectorProps = {
 };
 
 const COLLECTOR_COMPONENTS: Partial<Record<ReactionCollectorDataKind, (props: ActiveCollectorProps) => ReactNode>> = {
+	[GUILD_DATA_KINDS.DESCRIPTION]: GuildCreateCollector,
+	[GUILD_DATA_KINDS.LEAVE]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.CREATE]: GuildCreateCollector,
 	[PET_MANAGEMENT_DATA_KINDS.TRANSFER]: PetManagementCollector,
 	[PET_MANAGEMENT_DATA_KINDS.FREE_SELECT]: PetManagementCollector,

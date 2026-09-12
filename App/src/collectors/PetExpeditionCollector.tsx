@@ -30,9 +30,7 @@ function ExpeditionDataDetails({data}: {data: ExpeditionData}): ReactNode {
 		<KeyValue label={i18n.t("app:expedition.risk")} value={expeditionRisk(data.data.riskCategory)} />
 		{data.data.foodConsumed !== undefined ? <KeyValue label={i18n.t("app:expedition.foodConsumed")} value={formatNumber(data.data.foodConsumed)} /> : null}
 	</Panel>;
-	return <>
-		<Note>{i18n.t(data.data.hasGuild ? "app:expedition.guildFood" : "app:expedition.noGuildFood", {amount: data.data.guildFoodAmount ?? 0})}</Note>
-	</>;
+	return <Note>{i18n.t(data.data.hasGuild ? "app:expedition.guildFood" : "app:expedition.noGuildFood", {amount: data.data.guildFoodAmount ?? 0})}</Note>;
 }
 
 function RecallChoices({collector, locked, onChoose}: Omit<MenuProps, "data">): ReactNode {

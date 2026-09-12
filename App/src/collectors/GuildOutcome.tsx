@@ -28,6 +28,20 @@ function DailyReward({reward}: {reward: GuildDailyReward}): ReactNode {
 	</>;
 }
 
+function GuildManagementResult({outcome}: {outcome: GuildCommandOutcome}): ReactNode {
+	switch (outcome.type) {
+		case "descriptionUpdated": return <Note>{i18n.t("app:guild.descriptionUpdated")}</Note>;
+		case "descriptionInvalid": return <Note>{i18n.t("app:guild.descriptionInvalid", {min: outcome.min, max: outcome.max})}</Note>;
+		case "notInGuild": return <Note>{i18n.t("app:requirements.guild")}</Note>;
+		case "forbidden": return <Note>{i18n.t("app:guild.forbidden")}</Note>;
+		case "left": return <>
+			<Note>{i18n.t(outcome.isGuildDestroyed ? "app:guild.dissolved" : "app:guild.left", {name: outcome.guildName})}</Note>
+			{outcome.newChiefName ? <Note>{i18n.t("app:guild.newChief", {name: outcome.newChiefName})}</Note> : null}
+		</>;
+		default: return <Note>{i18n.t("app:guild.cancelled")}</Note>;
+	}
+}
+
 function GuildResult({outcome}: {outcome: GuildCommandOutcome}): ReactNode {
 	switch (outcome.type) {
 		case "created": return <Note>{i18n.t("app:guild.created", {name: outcome.guildName})}</Note>;
@@ -35,7 +49,7 @@ function GuildResult({outcome}: {outcome: GuildCommandOutcome}): ReactNode {
 		case "daily": return <DailyReward reward={outcome.reward} />;
 		case "dailyCooldown": return <Note>{i18n.t("app:guild.dailyCooldown", {duration: formatDurationMinutes(outcome.remainingTime / MS_PER_MINUTE), total: formatDurationMinutes(outcome.totalTime * MINUTES_PER_HOUR)})}</Note>;
 		case "dailyIsland": return <Note>{i18n.t("app:guild.errors.dailyIsland")}</Note>;
-		default: return <Note>{i18n.t("app:guild.cancelled")}</Note>;
+		default: return <GuildManagementResult outcome={outcome} />;
 	}
 }
 

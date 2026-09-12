@@ -18,7 +18,7 @@ const COLLECTOR_INVALIDATES: Partial<Record<ReactionCollectorDataKind, readonly 
 };
 
 const RESULT_OWNED_COLLECTORS = new Set<ReactionCollectorDataKind>([
-	GUILD_DATA_KINDS.CREATE,
+	...Object.values(GUILD_DATA_KINDS),
 	...Object.values(PET_MANAGEMENT_DATA_KINDS),
 	...Object.values(EXPEDITION_DATA_KINDS),
 	PET_FEED_DATA_KINDS.GUILD,

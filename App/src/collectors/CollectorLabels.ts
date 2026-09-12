@@ -229,6 +229,8 @@ function makeChoosableHandler<Kind extends ReactionCollectorReaction["type"]>(
 }
 
 const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => string> = {
+	[GUILD_DATA_KINDS.DESCRIPTION]: () => i18n.t("app:guild.confirmDescription"),
+	[GUILD_DATA_KINDS.LEAVE]: () => i18n.t("app:guild.leave"),
 	[GUILD_DATA_KINDS.CREATE]: () => i18n.t("app:guild.create"),
 	[PET_MANAGEMENT_DATA_KINDS.TRANSFER]: () => i18n.t("app:pet.management.transfer"),
 	[PET_MANAGEMENT_DATA_KINDS.FREE_SELECT]: () => i18n.t("app:pet.management.free"),
@@ -271,6 +273,8 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 };
 
 const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], DataHandler> = {
+	[GUILD_DATA_KINDS.DESCRIPTION]: () => undefined,
+	[GUILD_DATA_KINDS.LEAVE]: () => undefined,
 	[GUILD_DATA_KINDS.CREATE]: () => undefined,
 	[PET_MANAGEMENT_DATA_KINDS.TRANSFER]: () => undefined,
 	[PET_MANAGEMENT_DATA_KINDS.FREE_SELECT]: () => undefined,

@@ -1,6 +1,7 @@
 import {ReactNode, useState} from "react";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {GuildCreateReq, GuildDailyReq, GuildStorageReq} from "ws-packets/src/fromClient/GuildReq";
+import {GuildDescriptionReq, GuildLeaveReq} from "ws-packets/src/fromClient/GuildManagementReq";
 import {GuildCommandRes, GuildStorageRes} from "ws-packets/src/fromServer/guild/GuildRes";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {GuildData, GuildMember} from "ws-packets/src/objects/Guild";
@@ -16,9 +17,11 @@ import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
-export type GuildPage = "overview" | "create" | "storage" | "shelter";
+export type GuildPage = "overview" | "create" | "storage" | "shelter" | "manage";
 const CREATE_MENU: CommandMenu = {request: GuildCreateReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
 const DAILY_MENU: CommandMenu = {request: GuildDailyReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
+const DESCRIPTION_MENU: CommandMenu = {request: GuildDescriptionReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
+const LEAVE_MENU: CommandMenu = {request: GuildLeaveReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
 const ISLAND_STATUSES = ["isOnPveIsland", "isOnBoat", "isPveIslandAlly", "cannotBeJoinedOnBoat"] as const;
 
 export function GuildCreation(): ReactNode {
@@ -45,6 +48,22 @@ function memberSubtitle(member: GuildMember, guild: GuildData): string {
 	return i18n.t("app:guild.memberDetails", {role: i18n.t(`app:guild.roles.${role}`), rank: member.rank, score: formatNumber(member.score), locations: locations.join(" · ")});
 }
 
+export function GuildManagement({guild}: {guild: GuildData}): ReactNode {
+	const [description, setDescription] = useState(guild.description ?? "");
+	const {pending, message, open} = useCommandMenus();
+	const member = guild.members.find(entry => entry.isSelf);
+	const canEdit = member && [guild.chiefId, guild.elderId].includes(member.id);
+	return <>
+		{canEdit ? <>
+			<TextField label={i18n.t("app:guild.description")} value={description} onChangeText={setDescription} multiline editable={!pending} />
+			<ButtonRow><Button disabled={pending} onPress={(): Promise<void> => open(DESCRIPTION_MENU, makeFromClientPacket(GuildDescriptionReq, {description}))}>{i18n.t("app:pet.care.save")}</Button></ButtonRow>
+		</> : null}
+		{message ? <Note>{message}</Note> : null}
+		<SectionHeader>{i18n.t("app:guild.membership")}</SectionHeader>
+		<Panel><Row title={i18n.t("app:guild.leave")} tone="danger" disabled={pending} onPress={(): Promise<void> => open(LEAVE_MENU)} chevron /></Panel>
+	</>;
+}
+
 export function GuildOverview({guild, onPage}: {guild: GuildData; onPage: (page: GuildPage) => void}): ReactNode {
 	const {pending, message, open} = useCommandMenus();
 	const isMember = guild.members.some(member => member.isSelf);
@@ -60,6 +79,7 @@ export function GuildOverview({guild, onPage}: {guild: GuildData; onPage: (page:
 			<QuickAction icon={AppIcons.getIcon("unitValues.xp")} disabled={pending} onPress={(): Promise<void> => open(DAILY_MENU)}>{i18n.t("app:guild.daily")}</QuickAction>
 			<QuickAction icon={AppIcons.getIcon("foods.commonFood")} onPress={(): void => onPage("storage")}>{i18n.t("app:guild.pages.storage")}</QuickAction>
 			<QuickAction icon={AppIcons.getIcon("other.pet")} onPress={(): void => onPage("shelter")}>{i18n.t("app:guild.pages.shelter")}</QuickAction>
+			<QuickAction icon={AppIcons.getIcon("guild.chief")} onPress={(): void => onPage("manage")}>{i18n.t("app:guild.pages.manage")}</QuickAction>
 		</QuickActions> : null}
 		{message ? <Note>{message}</Note> : null}
 		<SectionHeader action={{hint: formatNumber(guild.members.length)}}>{i18n.t("app:guild.members")}</SectionHeader>

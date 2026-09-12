@@ -3,6 +3,8 @@ import {makePacket, PacketContext} from "../../../Lib/src/packets/CrowniclesPack
 import {CommandGuildPacketRes} from "../../../Lib/src/packets/commands/CommandGuildPacket";
 import {CommandGuildDailyRewardPacket} from "../../../Lib/src/packets/commands/CommandGuildDailyPacket";
 import {ReactionCollectorGuildCreate} from "../../../Lib/src/packets/interaction/ReactionCollectorGuildCreate";
+import {ReactionCollectorGuildLeave} from "../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
+import {ReactionCollectorGuildDescription} from "../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
 import {GuildCreateReq} from "../../../WsPackets/src/fromClient/GuildReq";
 import GuildClientTranslator from "../../src/packets/fromClient/translators/GuildClientTranslator";
 import GuildServerTranslator from "../../src/packets/fromServer/translators/GuildServerTranslator";
@@ -11,6 +13,13 @@ import {mapCollectorCreation} from "../../src/packets/fromServer/collectors/Reac
 vi.mock("../../src/packets/fromServer/PlayerDisplay", () => ({resolvePlayerName: vi.fn(async () => "Aventurier")}));
 const CONTEXT: PacketContext = {keycloakId: "authenticated", frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {}};
 describe("guild commands", () => {
+	it("preserves dissolution and description in the server confirmations", () => {
+		const leave = mapCollectorCreation(new ReactionCollectorGuildLeave("Aurore", true, "").creationPacket("leave", 1_900_000_000_000));
+		expect(leave.data).toEqual({type: "guildLeave", data: {guildName: "Aurore", isGuildDestroyed: true}});
+		expect(leave.reactions.map(reaction => reaction.type)).toEqual(["accept", "refuse"]);
+		const description = mapCollectorCreation(new ReactionCollectorGuildDescription("Nouveau texte").creationPacket("description", 1_900_000_000_000));
+		expect(description.data).toEqual({type: "guildDescription", data: {description: "Nouveau texte"}});
+	});
 	it("authenticates creation and transports the Core confirmation price", async () => {
 		expect(await GuildClientTranslator.create(CONTEXT, Object.assign(new GuildCreateReq(), {askedGuildName: "Aurore", keycloakId: "other"}))).toMatchObject({keycloakId: "authenticated", askedGuildName: "Aurore"});
 		const collector = mapCollectorCreation(new ReactionCollectorGuildCreate("Aurore", 5000).creationPacket("guild", 1_900_000_000_000));

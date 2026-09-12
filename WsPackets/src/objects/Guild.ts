@@ -44,6 +44,15 @@ export type GuildDailyReward = {
 	superBadge?: boolean;
 };
 export type GuildCommandOutcome =
+	| { type: "descriptionUpdated" }
+	| {
+		type: "descriptionInvalid"; min: number; max: number;
+	}
+	| { type: "notInGuild" }
+	| { type: "forbidden" }
+	| {
+		type: "left"; guildName: string; isGuildDestroyed?: boolean; newChiefName?: string;
+	}
 	| {
 		type: "created"; guildName: string;
 	}

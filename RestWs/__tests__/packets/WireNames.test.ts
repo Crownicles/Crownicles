@@ -13,6 +13,7 @@ import { join } from "path";
  * app. This list is the protocol; a diff on it has to be a deliberate decision.
  */
 const WIRE_NAMES = [
+	"GuildDescriptionReq", "GuildLeaveReq",
 	"GuildReq", "GuildCreateReq", "GuildStorageReq", "GuildDailyReq", "GuildRes", "GuildStorageRes", "GuildCommandRes",
 	"PetTransferReq", "PetFreeReq", "GuildShelterReq", "PetManagementRes", "GuildShelterRes", "GuildShelterEmptyRes",
 	"PetExpeditionReq",
