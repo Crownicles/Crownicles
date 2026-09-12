@@ -5,6 +5,8 @@ import {GameClient} from "@/src/networking/GameClient";
 import {GuildCreateReq} from "ws-packets/src/fromClient/GuildReq";
 import {GuildCreateCollector} from "@/src/collectors/GuildCreateCollector";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import {GuildMembers} from "@/src/components/GuildMembers";
+import {GuildInviteReq} from "ws-packets/src/fromClient/GuildManagementReq";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
@@ -14,6 +16,17 @@ jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIco
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
 
 describe("guild screens", () => {
+	beforeEach(() => jest.clearAllMocks());
+	it("sends an invitation using the entered rank without selecting another identity", async () => {
+		const guild: GuildData = {name: "Aurore", chiefId: 7, elderId: null, level: 1, isMaxLevel: false, experience: {value: 0, max: 150}, rank: {unranked: true, rank: -1, numberOfGuilds: 3, score: 0}, members: [{id: 7, name: "Aventurier", isSelf: true, rank: 1, score: 0, islandStatus: {isOnPveIsland: false, isOnBoat: false, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}}]};
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		await render(<GuildMembers guild={guild} />);
+		await fireEvent.changeText(screen.getByLabelText("app:guild.inviteRank"), "42");
+		await fireEvent.press(screen.getByRole("button", {name: "app:guild.invite"}));
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
+		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(GuildInviteReq);
+		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({rank: 42});
+	});
 	it("warns before dissolution and sends refusal without quitting", async () => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {id: "leave", endTime: Date.now() + 60_000, data: {type: "guildLeave", data: {guildName: "Aurore", isGuildDestroyed: true}}, reactions: [{type: "accept", data: {}}, {type: "refuse", data: {}}]});
 		const onChoose = jest.fn();

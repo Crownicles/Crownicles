@@ -20,6 +20,7 @@
     "unknownError": "Une erreur inconnue est survenue."
   },
   "requirements": {
+    "guildRole": "Cette action nécessite le rôle {{role}} dans la guilde.",
     "guild": "Vous devez appartenir à une guilde pour effectuer cette action.",
     "oracle": "Vous devez d'abord rencontrer l'Oracle pendant vos voyages.",
     "level": "Cette action est disponible à partir du niveau {{level}}.",
@@ -814,6 +815,29 @@
     }
   },
   "guild": {
+    "invite": "Inviter un joueur",
+    "inviteRank": "Classement du joueur",
+    "invitation": "Invitation de guilde",
+    "confirmInvitation": "Vous avez reçu une invitation à rejoindre la guilde {{guild}}.",
+    "confirmMember": "Cette action concerne {{member}}, membre de {{guild}}.",
+    "requiredRoles": {"0": "membre", "1": "aîné", "2": "chef"},
+    "memberControls": {"promote": "Nommer aîné", "demote": "Retirer le rôle d'aîné", "kick": "Exclure le membre"},
+    "memberResults": {
+      "invited": "L'invitation a été envoyée à {{member}}. Sa réponse est attendue.",
+      "joined": "{{member}} a rejoint la guilde.",
+      "refused": "L'invitation de {{member}} a été refusée ou a expiré.",
+      "promoted": "{{member}} a été nommé aîné.",
+      "demoted": "{{member}} n'est plus aîné.",
+      "kicked": "{{member}} a été exclu de la guilde."
+    },
+    "memberErrors": {
+      "notFound": "Ce joueur est introuvable.", "noGuild": "Vous n'appartenez plus à une guilde.",
+      "level": "Ce joueur n'a pas le niveau nécessaire pour rejoindre une guilde.", "full": "La guilde est complète.",
+      "dead": "Ce joueur est actuellement K.O.", "island": "Ce joueur ne peut pas rejoindre une guilde depuis l'île.",
+      "alreadyMember": "Ce joueur appartient déjà à une guilde.", "sameGuild": "Ce joueur ne fait pas partie de votre guilde.",
+      "self": "Cette action ne peut pas vous viser.", "alreadyElder": "Ce membre est déjà aîné.",
+      "noElder": "La guilde n'a pas d'aîné.", "blocked": "Ce joueur a déjà une action en cours."
+    },
     "description": "Description de la guilde",
     "confirmDescription": "Enregistrer cette description ?",
     "descriptionUpdated": "La description de la guilde a été modifiée.",

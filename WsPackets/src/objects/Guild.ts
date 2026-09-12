@@ -44,6 +44,12 @@ export type GuildDailyReward = {
 	superBadge?: boolean;
 };
 export type GuildCommandOutcome =
+	| {
+		type: "memberAction"; action: GuildMemberAction; guildName?: string; memberName?: string;
+	}
+	| {
+		type: "memberError"; error: GuildMemberError;
+	}
 	| { type: "descriptionUpdated" }
 	| {
 		type: "descriptionInvalid"; min: number; max: number;
@@ -67,3 +73,23 @@ export type GuildCommandOutcome =
 		type: "dailyCooldown"; totalTime: number; remainingTime: number;
 	}
 	| { type: "dailyIsland" };
+
+export const GUILD_MEMBER_ACTIONS = {
+	INVITED: "invited", JOINED: "joined", REFUSED: "refused", PROMOTED: "promoted", DEMOTED: "demoted", KICKED: "kicked"
+} as const;
+export type GuildMemberAction = typeof GUILD_MEMBER_ACTIONS[keyof typeof GUILD_MEMBER_ACTIONS];
+export const GUILD_MEMBER_ERRORS = {
+	NOT_FOUND: "notFound",
+	NO_GUILD: "noGuild",
+	LEVEL: "level",
+	FULL: "full",
+	DEAD: "dead",
+	ISLAND: "island",
+	ALREADY_MEMBER: "alreadyMember",
+	SAME_GUILD: "sameGuild",
+	SELF: "self",
+	ALREADY_ELDER: "alreadyElder",
+	NO_ELDER: "noElder",
+	BLOCKED: "blocked"
+} as const;
+export type GuildMemberError = typeof GUILD_MEMBER_ERRORS[keyof typeof GUILD_MEMBER_ERRORS];

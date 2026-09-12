@@ -229,6 +229,8 @@ function makeChoosableHandler<Kind extends ReactionCollectorReaction["type"]>(
 }
 
 const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => string> = {
+	[GUILD_DATA_KINDS.INVITE]: () => i18n.t("app:guild.invitation"),
+	[GUILD_DATA_KINDS.MEMBER]: () => i18n.t("app:guild.members"),
 	[GUILD_DATA_KINDS.DESCRIPTION]: () => i18n.t("app:guild.confirmDescription"),
 	[GUILD_DATA_KINDS.LEAVE]: () => i18n.t("app:guild.leave"),
 	[GUILD_DATA_KINDS.CREATE]: () => i18n.t("app:guild.create"),
@@ -273,6 +275,8 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 };
 
 const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], DataHandler> = {
+	[GUILD_DATA_KINDS.INVITE]: () => undefined,
+	[GUILD_DATA_KINDS.MEMBER]: () => undefined,
 	[GUILD_DATA_KINDS.DESCRIPTION]: () => undefined,
 	[GUILD_DATA_KINDS.LEAVE]: () => undefined,
 	[GUILD_DATA_KINDS.CREATE]: () => undefined,

@@ -7,6 +7,8 @@ import {
 	CommandGuildInviteInvitedPlayerIsOnPveIsland,
 	CommandGuildInviteInvitingPlayerNotInGuild,
 	CommandGuildInviteLevelTooLow,
+	CommandGuildInvitePendingPacket,
+	CommandGuildInviteErrorPacket,
 	CommandGuildInvitePacketReq,
 	CommandGuildInvitePlayerNotFound,
 	CommandGuildInviteRefusePacketRes
@@ -35,6 +37,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils.js";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { PacketUtils } from "../../core/utils/PacketUtils";
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import {
 	Locked, LockedRowNotFoundError, withLockedEntities
@@ -49,7 +52,9 @@ export default class GuildInviteCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildInvitePacketReq, context: PacketContext): Promise<void> {
-		const invitedPlayer = await Players.getByKeycloakId(packet.invitedPlayerKeycloakId);
+		const invitedPlayer = packet.invitedPlayerRank === undefined
+			? await Players.getByKeycloakId(packet.invitedPlayerKeycloakId)
+			: await Players.getByRank(packet.invitedPlayerRank);
 		if (!invitedPlayer) {
 			response.push(makePacket(CommandGuildInvitePlayerNotFound, {}));
 			return;
@@ -75,26 +80,54 @@ export default class GuildInviteCommand {
 					invitedPlayerKeycloakId: invitedPlayer.keycloakId,
 					guildName: guild!.name
 				}));
+				notifyInvitationAuthor(context, response);
 				return;
 			}
 			await runAcceptInvitationUnderLock(invitedPlayer, player, guild!, response);
+			notifyInvitationAuthor(context, response);
 		};
 
-		const collectorPacket = new ReactionCollectorInstance(
+		const collectorPacket = createGuildInvitationCollector(
 			collector,
 			context,
-			{
-				allowedPlayerKeycloakIds: [player.keycloakId, invitedPlayer.keycloakId],
-				reactionLimit: 1
-			},
+			invitedPlayer.keycloakId,
 			endCallback
 		)
 			.block(invitedPlayer.keycloakId, BlockingConstants.REASONS.GUILD_ADD)
 			.block(player.keycloakId, BlockingConstants.REASONS.GUILD_ADD)
 			.build();
 
+		if (context.webSocket) {
+			PacketUtils.sendPackets(invitationRecipientContext(context, invitedPlayer.keycloakId), [collectorPacket]);
+			response.push(makePacket(CommandGuildInvitePendingPacket, {
+				invitedPlayerKeycloakId: invitedPlayer.keycloakId, guildName: guild!.name
+			}));
+			return;
+		}
 		response.push(collectorPacket);
 	}
+}
+
+function invitationRecipientContext(context: PacketContext, invitedKeycloakId: string): PacketContext {
+	return {
+		frontEndOrigin: context.frontEndOrigin, frontEndSubOrigin: context.frontEndSubOrigin, keycloakId: invitedKeycloakId, webSocket: {}
+	};
+}
+
+function notifyInvitationAuthor(context: PacketContext, response: CrowniclesPacket[]): void {
+	if (!context.webSocket) {
+		return;
+	}
+	const invitationResults = response.filter(packet => packet instanceof CommandGuildInviteErrorPacket
+		|| packet instanceof CommandGuildInviteAcceptPacketRes || packet instanceof CommandGuildInviteRefusePacketRes);
+	PacketUtils.sendPackets(context, invitationResults);
+}
+
+export function createGuildInvitationCollector(model: ReactionCollectorGuildInvite, context: PacketContext, invitedKeycloakId: string, endCallback: EndCallback): ReactionCollectorInstance {
+	return new ReactionCollectorInstance(model, context.webSocket ? invitationRecipientContext(context, invitedKeycloakId) : context, {
+		allowedPlayerKeycloakIds: [invitedKeycloakId],
+		reactionLimit: 1
+	}, endCallback);
 }
 
 /**

@@ -5,6 +5,10 @@ import {CommandGuildDailyRewardPacket} from "../../../Lib/src/packets/commands/C
 import {ReactionCollectorGuildCreate} from "../../../Lib/src/packets/interaction/ReactionCollectorGuildCreate";
 import {ReactionCollectorGuildLeave} from "../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
 import {ReactionCollectorGuildDescription} from "../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
+import {ReactionCollectorGuildElder} from "../../../Lib/src/packets/interaction/ReactionCollectorGuildElder";
+import {mapCollectorDisplay} from "../../src/packets/fromServer/collectors/CollectorDisplayMapper";
+import {CommandGuildInvitePendingPacket, CommandGuildInviteAcceptPacketRes} from "../../../Lib/src/packets/commands/CommandGuildInvitePacket";
+import GuildMembersServerTranslator from "../../src/packets/fromServer/translators/GuildMembersServerTranslator";
 import {GuildCreateReq} from "../../../WsPackets/src/fromClient/GuildReq";
 import GuildClientTranslator from "../../src/packets/fromClient/translators/GuildClientTranslator";
 import GuildServerTranslator from "../../src/packets/fromServer/translators/GuildServerTranslator";
@@ -13,6 +17,18 @@ import {mapCollectorCreation} from "../../src/packets/fromServer/collectors/Reac
 vi.mock("../../src/packets/fromServer/PlayerDisplay", () => ({resolvePlayerName: vi.fn(async () => "Aventurier")}));
 const CONTEXT: PacketContext = {keycloakId: "authenticated", frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {}};
 describe("guild commands", () => {
+	it("distinguishes a sent invitation from an accepted membership", async () => {
+		const data = {invitedPlayerKeycloakId: "recipient", guildName: "Aurore"};
+		const pending = await GuildMembersServerTranslator.invited(CONTEXT, makePacket(CommandGuildInvitePendingPacket, data));
+		const joined = await GuildMembersServerTranslator.joined(CONTEXT, makePacket(CommandGuildInviteAcceptPacketRes, data));
+		expect(pending.outcome).toEqual({type: "memberAction", action: "invited", memberName: "Aventurier", guildName: "Aurore"});
+		expect(joined.outcome).toMatchObject({type: "memberAction", action: "joined"});
+	});
+	it("resolves the member in a promotion confirmation without leaking the account ID", async () => {
+		const result = await mapCollectorDisplay(new ReactionCollectorGuildElder("Aurore", "private-target").creationPacket("promote", 1_900_000_000_000));
+		expect(result.data).toEqual({type: "guildMemberAction", data: {guildName: "Aurore", action: "promote", memberName: "Aventurier"}});
+		expect(JSON.stringify(result)).not.toContain("private-target");
+	});
 	it("preserves dissolution and description in the server confirmations", () => {
 		const leave = mapCollectorCreation(new ReactionCollectorGuildLeave("Aurore", true, "").creationPacket("leave", 1_900_000_000_000));
 		expect(leave.data).toEqual({type: "guildLeave", data: {guildName: "Aurore", isGuildDestroyed: true}});

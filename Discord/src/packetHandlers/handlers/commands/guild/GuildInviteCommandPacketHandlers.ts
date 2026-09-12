@@ -1,5 +1,6 @@
 import { packetHandler } from "../../../PacketHandler";
 import {
+	CommandGuildInvitePendingPacket,
 	CommandGuildInviteAcceptPacketRes,
 	CommandGuildInviteAlreadyInAGuild,
 	CommandGuildInviteGuildIsFull,
@@ -19,6 +20,11 @@ import {
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 
 export default class GuildInviteCommandPacketHandlers {
+	@packetHandler(CommandGuildInvitePendingPacket)
+	invitationPending(_context: PacketContext, _packet: CommandGuildInvitePendingPacket): Promise<void> {
+		return Promise.resolve();
+	}
+
 	@packetHandler(CommandGuildInviteInvitedPlayerIsDead)
 	async guildInviteInvitedPlayerIsDead(context: PacketContext, packet: CommandGuildInviteInvitedPlayerIsDead): Promise<void> {
 		await handleCommandGuildInviteError(packet, context, "error:effects.dead.other");

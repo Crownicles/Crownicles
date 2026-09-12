@@ -38,6 +38,8 @@ type ActiveCollectorProps = {
 };
 
 const COLLECTOR_COMPONENTS: Partial<Record<ReactionCollectorDataKind, (props: ActiveCollectorProps) => ReactNode>> = {
+	[GUILD_DATA_KINDS.INVITE]: GuildCreateCollector,
+	[GUILD_DATA_KINDS.MEMBER]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.DESCRIPTION]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.LEAVE]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.CREATE]: GuildCreateCollector,

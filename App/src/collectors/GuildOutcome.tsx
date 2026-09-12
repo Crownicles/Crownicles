@@ -42,8 +42,17 @@ function GuildManagementResult({outcome}: {outcome: GuildCommandOutcome}): React
 	}
 }
 
+function GuildMemberResult({outcome}: {outcome: Extract<GuildCommandOutcome, {type: "memberAction"}>}): ReactNode {
+	return <>
+		<Note>{i18n.t(`app:guild.memberResults.${outcome.action}`, {member: outcome.memberName ?? i18n.t("app:profile.values.unknown")})}</Note>
+		{outcome.guildName ? <Note>{outcome.guildName}</Note> : null}
+	</>;
+}
+
 function GuildResult({outcome}: {outcome: GuildCommandOutcome}): ReactNode {
 	switch (outcome.type) {
+		case "memberAction": return <GuildMemberResult outcome={outcome} />;
+		case "memberError": return <Note>{i18n.t(`app:guild.memberErrors.${outcome.error}`)}</Note>;
 		case "created": return <Note>{i18n.t("app:guild.created", {name: outcome.guildName})}</Note>;
 		case "creationStatus": return <Note>{creationMessage(outcome.status)}</Note>;
 		case "daily": return <DailyReward reward={outcome.reward} />;

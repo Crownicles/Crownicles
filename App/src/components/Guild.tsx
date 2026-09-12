@@ -10,6 +10,7 @@ import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {useCommandMenus, CommandMenu} from "@/src/store/useInventoryMenus";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
+import {GuildMembers} from "@/src/components/GuildMembers";
 import {Button, ButtonRow, Hero, KeyValue, Note, Panel, QuickAction, QuickActions, Row, SectionHeader, StatBar} from "@/src/design/Primitives";
 import {TextField} from "@/src/design/Inputs";
 import {Theme} from "@/src/design/Theme";
@@ -59,6 +60,7 @@ export function GuildManagement({guild}: {guild: GuildData}): ReactNode {
 			<ButtonRow><Button disabled={pending} onPress={(): Promise<void> => open(DESCRIPTION_MENU, makeFromClientPacket(GuildDescriptionReq, {description}))}>{i18n.t("app:pet.care.save")}</Button></ButtonRow>
 		</> : null}
 		{message ? <Note>{message}</Note> : null}
+		<GuildMembers guild={guild} />
 		<SectionHeader>{i18n.t("app:guild.membership")}</SectionHeader>
 		<Panel><Row title={i18n.t("app:guild.leave")} tone="danger" disabled={pending} onPress={(): Promise<void> => open(LEAVE_MENU)} chevron /></Panel>
 	</>;
