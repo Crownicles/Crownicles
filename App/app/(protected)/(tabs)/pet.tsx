@@ -11,7 +11,7 @@ import {PetExpeditionErrorRes, PetExpeditionRes} from "ws-packets/src/fromServer
 import {GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
-import {Hero, KeyValue, Note, Panel, QuickAction, QuickActions, Screen, SectionHeader} from "@/src/design/Primitives";
+import {Hero, KeyValue, Note, Panel, QuickAction, QuickActions, Row, Screen, SectionHeader} from "@/src/design/Primitives";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {PetNickname} from "@/src/components/PetNickname";
 import {usePetActions} from "@/src/store/usePetActions";
@@ -23,6 +23,7 @@ import {petIcon, petMood, petName, petNickname, petRarity, petSex, petTypeName} 
 import {commandRejectionMessage} from "@/src/display/CommandRejection";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {missionDate} from "@/src/display/Missions";
+import {GuildShelter, PET_MANAGEMENT_MENUS} from "@/src/components/PetManagement";
 
 const FEED_MENU: CommandMenu = {request: PetFeedReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetFeedRes]};
 const EXPEDITION_MENU: CommandMenu = {request: PetExpeditionReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetExpeditionRes, PetExpeditionErrorRes]};
@@ -40,7 +41,7 @@ function Centered({ children }: { children: ReactNode }): ReactNode {
 	return <View style={styles.centered}>{children}</View>;
 }
 
-function PetSheet({packet, onRename}: {packet: PetRes; onRename: () => void}): ReactNode {
+function PetSheet({packet, onRename, onShelter}: {packet: PetRes; onRename: () => void; onShelter: () => void}): ReactNode {
 	const pet = packet.pet;
 	const {pending, message, care} = usePetActions();
 	const menus = useCommandMenus();
@@ -75,26 +76,34 @@ function PetSheet({packet, onRename}: {packet: PetRes; onRename: () => void}): R
 			<Panel>
 				<KeyValue label={i18n.t("app:pet.fields.mood")} value={petMood(pet)} />
 			</Panel>
+			<SectionHeader>{i18n.t("app:pet.management.title")}</SectionHeader>
+			<Panel>
+				<Row title={i18n.t("app:pet.management.shelter")} onPress={onShelter} chevron />
+				<Row title={i18n.t("app:pet.management.transfer")} disabled={menus.pending} onPress={(): Promise<void> => menus.open(PET_MANAGEMENT_MENUS.TRANSFER)} chevron />
+				<Row title={i18n.t("app:pet.management.free")} tone="danger" disabled={menus.pending} onPress={(): Promise<void> => menus.open(PET_MANAGEMENT_MENUS.FREE)} chevron />
+			</Panel>
 		</Screen>
 	);
 }
 
 export default function Pet(): ReactNode {
 	const [renaming, setRenaming] = useState(false);
+	const [shelter, setShelter] = useState(false);
 	const state = useGameQuery<PetRes>(
 		GAME_ENTITIES.PET,
 		() => GameClient.request(makeFromClientPacket(PetReq, { askedPlayer: {} }), PetRes, [PetNotFound])
 	);
+	if (shelter) return <DetailScreen title={i18n.t("app:pet.management.shelter")} eyebrow={i18n.t("app:pet.eyebrow")} onClose={(): void => setShelter(false)}><GuildShelter /></DetailScreen>;
 	if (renaming && state.status === "ready") return <DetailScreen title={i18n.t("app:pet.care.rename")} eyebrow={i18n.t("app:pet.eyebrow")} onClose={(): void => setRenaming(false)}><PetNickname pet={state.data.pet} /></DetailScreen>;
 
 	switch (state.status) {
 		case "loading":
 			return <Centered><ActivityIndicator /></Centered>;
 		case "empty":
-			return <Centered><Text style={styles.message}>{i18n.t("app:pet.noPet")}</Text></Centered>;
+			return <Screen><Note>{i18n.t("app:pet.noPet")}</Note><Panel><Row title={i18n.t("app:pet.management.shelter")} onPress={(): void => setShelter(true)} chevron /></Panel></Screen>;
 		case "failed":
 			return <Centered><Text style={styles.message}>{state.rejection ? commandRejectionMessage(state.rejection) : i18n.t("app:common.error")}</Text></Centered>;
 		default:
-			return <PetSheet packet={state.data} onRename={(): void => setRenaming(true)} />;
+			return <PetSheet packet={state.data} onRename={(): void => setRenaming(true)} onShelter={(): void => setShelter(true)} />;
 	}
 }

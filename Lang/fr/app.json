@@ -20,6 +20,7 @@
     "unknownError": "Une erreur inconnue est survenue."
   },
   "requirements": {
+    "guild": "Vous devez appartenir à une guilde pour effectuer cette action.",
     "oracle": "Vous devez d'abord rencontrer l'Oracle pendant vos voyages.",
     "level": "Cette action est disponible à partir du niveau {{level}}.",
     "location": "Cette action n'est pas disponible à votre position actuelle.",
@@ -739,6 +740,30 @@
     }
   },
   "pet": {
+    "management": {
+      "title": "Gestion du familier",
+      "transfer": "Transférer",
+      "free": "Libérer un familier",
+      "shelter": "Refuge de la guilde",
+      "emptyShelter": "Le refuge n'accueille aucun familier.",
+      "confirmTransfer": "Confirmer ce transfert ?",
+      "irreversible": "Cette libération est définitive. Le familier ne pourra pas être récupéré.",
+      "origin": "Provenance",
+      "ownPet": "Votre familier",
+      "deposit": "Déposer {{pet}} au refuge",
+      "withdraw": "Adopter {{pet}}",
+      "switch": "Échanger avec {{pet}}",
+      "deposited": "Familier déposé",
+      "withdrawn": "Nouveau compagnon",
+      "freed": "{{pet}} a retrouvé sa liberté.",
+      "freedShelter": "{{pet}} a quitté définitivement le refuge.",
+      "meat": "De la viande a été ajoutée à l'entrepôt de la guilde.",
+      "cooldown": "Une nouvelle libération sera possible dans {{duration}}.",
+      "missingMoney": "Il vous manque {{money}} pour cette libération.",
+      "available": "Votre familier peut être libéré.",
+      "outcomes": {"transfer": "Transfert terminé", "freed": "Familier libéré", "freeStatus": "Libération indisponible", "error": "Action interrompue"},
+      "errors": {"busy": "Un autre membre utilise déjà le refuge.", "cancelled": "L'action a été annulée.", "changed": "La situation du refuge ou du familier a changé. Veuillez réessayer.", "noPet": "Aucun familier ne peut être transféré.", "feisty": "Un familier fielleux ne peut pas être transféré.", "expedition": "Ce familier est actuellement en expédition."}
+    },
     "care": {
       "caress": "Caresser",
       "feed": "Nourrir",

@@ -7,6 +7,7 @@ import {
 	CLASSES_DATA_KINDS, CLASSES_REACTION_KINDS,
 	PET_FEED_DATA_KINDS, PET_FEED_REACTION_KINDS,
 	EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS,
+	PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTION_KINDS,
 	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
@@ -23,6 +24,7 @@ import {PetSex} from "ws-packets/src/objects/OwnedPet";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
 import {shopItemName} from "@/src/collectors/ShopLabels";
+import {petName} from "@/src/display/PetDisplay";
 import type {TOptions} from "i18next";
 
 const SEX_CONTEXTS = {
@@ -69,6 +71,12 @@ const GARDENER_REWARD_CONDITION_KEYS = new Set<GardenerConditionKey>([
 	"fireItem",
 	"carnivorePet"
 ]);
+
+function shelterPetLabel(petEntityId: number, data: ReactionCollectorData): string {
+	if (data.type !== PET_MANAGEMENT_DATA_KINDS.TRANSFER && data.type !== PET_MANAGEMENT_DATA_KINDS.FREE_SELECT) return i18n.t("app:collector.unknownChoice");
+	const pet = data.data.shelterPets.find(entry => entry.petEntityId === petEntityId)?.pet ?? data.data.ownPet;
+	return pet ? petName(pet) : i18n.t("app:collector.unknownChoice");
+}
 
 function cityServiceLabel(service: string): string {
 	return i18n.t(`commands:report.city.shops.${service}.label`);
@@ -218,6 +226,9 @@ function makeChoosableHandler<Kind extends ReactionCollectorReaction["type"]>(
 }
 
 const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => string> = {
+	[PET_MANAGEMENT_DATA_KINDS.TRANSFER]: () => i18n.t("app:pet.management.transfer"),
+	[PET_MANAGEMENT_DATA_KINDS.FREE_SELECT]: () => i18n.t("app:pet.management.free"),
+	[PET_MANAGEMENT_DATA_KINDS.FREE_CONFIRM]: () => i18n.t("app:pet.management.free"),
 	[EXPEDITION_DATA_KINDS.CHOICE]: () => i18n.t("app:expedition.titles.expeditionChoice"),
 	[EXPEDITION_DATA_KINDS.PROGRESS]: () => i18n.t("app:expedition.titles.expeditionProgress"),
 	[EXPEDITION_DATA_KINDS.FINISHED]: () => i18n.t("app:expedition.titles.expeditionFinished"),
@@ -256,6 +267,9 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 };
 
 const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], DataHandler> = {
+	[PET_MANAGEMENT_DATA_KINDS.TRANSFER]: () => undefined,
+	[PET_MANAGEMENT_DATA_KINDS.FREE_SELECT]: () => undefined,
+	[PET_MANAGEMENT_DATA_KINDS.FREE_CONFIRM]: () => undefined,
 	[EXPEDITION_DATA_KINDS.CHOICE]: () => undefined,
 	[EXPEDITION_DATA_KINDS.PROGRESS]: () => undefined,
 	[EXPEDITION_DATA_KINDS.FINISHED]: () => undefined,
@@ -321,6 +335,10 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 };
 
 const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], ReactionHandler> = {
+	[PET_MANAGEMENT_REACTION_KINDS.DEPOSIT]: (_reaction, data) => i18n.t("app:pet.management.deposit", {pet: data.type === PET_MANAGEMENT_DATA_KINDS.TRANSFER && data.data.ownPet ? petName(data.data.ownPet) : ""}),
+	[PET_MANAGEMENT_REACTION_KINDS.WITHDRAW]: makeReactionHandler(PET_MANAGEMENT_REACTION_KINDS.WITHDRAW, (reaction, data) => i18n.t("app:pet.management.withdraw", {pet: shelterPetLabel(reaction.data.petEntityId, data)})),
+	[PET_MANAGEMENT_REACTION_KINDS.SWITCH]: makeReactionHandler(PET_MANAGEMENT_REACTION_KINDS.SWITCH, (reaction, data) => i18n.t("app:pet.management.switch", {pet: shelterPetLabel(reaction.data.petEntityId, data)})),
+	[PET_MANAGEMENT_REACTION_KINDS.FREE_SELECT]: makeReactionHandler(PET_MANAGEMENT_REACTION_KINDS.FREE_SELECT, (reaction, data) => shelterPetLabel(reaction.data.petEntityId, data)),
 	[EXPEDITION_REACTION_KINDS.SELECT]: () => i18n.t("app:expedition.start"),
 	[EXPEDITION_REACTION_KINDS.CANCEL]: () => i18n.t("app:collector.refuse"),
 	[EXPEDITION_REACTION_KINDS.RECALL]: () => i18n.t("app:expedition.recall"),
@@ -453,6 +471,10 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 };
 
 const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHandler> = {
+	[PET_MANAGEMENT_REACTION_KINDS.DEPOSIT]: (_reaction, data) => isDataOfType(data, PET_MANAGEMENT_DATA_KINDS.TRANSFER),
+	[PET_MANAGEMENT_REACTION_KINDS.WITHDRAW]: (_reaction, data) => isDataOfType(data, PET_MANAGEMENT_DATA_KINDS.TRANSFER),
+	[PET_MANAGEMENT_REACTION_KINDS.SWITCH]: (_reaction, data) => isDataOfType(data, PET_MANAGEMENT_DATA_KINDS.TRANSFER),
+	[PET_MANAGEMENT_REACTION_KINDS.FREE_SELECT]: (_reaction, data) => isDataOfType(data, PET_MANAGEMENT_DATA_KINDS.FREE_SELECT),
 	[EXPEDITION_REACTION_KINDS.SELECT]: (_reaction, data) => isDataOfType(data, EXPEDITION_DATA_KINDS.CHOICE),
 	[EXPEDITION_REACTION_KINDS.CANCEL]: (_reaction, data) => isDataOfType(data, EXPEDITION_DATA_KINDS.CHOICE),
 	[EXPEDITION_REACTION_KINDS.RECALL]: (_reaction, data) => isDataOfType(data, EXPEDITION_DATA_KINDS.PROGRESS),

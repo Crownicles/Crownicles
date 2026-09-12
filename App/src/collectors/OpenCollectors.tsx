@@ -20,6 +20,9 @@ import {PetFeedOutcome} from "@/src/collectors/PetFeedOutcome";
 import {isExpeditionCollector, PetExpeditionCollector} from "@/src/collectors/PetExpeditionCollector";
 import {useExpeditionOutcome} from "@/src/store/useExpeditionOutcome";
 import {PetExpeditionOutcome} from "@/src/collectors/PetExpeditionOutcome";
+import {isPetManagementCollector, PetManagementCollector} from "@/src/collectors/PetManagementCollector";
+import {PetManagementOutcome} from "@/src/collectors/PetManagementOutcome";
+import {usePetManagementOutcome} from "@/src/store/usePetManagementOutcome";
 
 const styles = StyleSheet.create({
 	container: {
@@ -30,6 +33,7 @@ const styles = StyleSheet.create({
 function InventoryCollector({collector, onChoose, submitting}: {
 	collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean;
 }): ReactNode {
+	if (isPetManagementCollector(collector.data)) return <PetManagementCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
 	if (isExpeditionCollector(collector.data)) return <PetExpeditionCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
 	if (collector.data.type === PET_FEED_DATA_KINDS.GUILD || collector.data.type === PET_FEED_DATA_KINDS.PERSONAL) return <PetFeedCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
 	if (collector.data.type === CLASSES_DATA_KINDS.COLLECTOR) return <ClassesCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
@@ -52,8 +56,9 @@ export function OpenCollectors(): ReactNode {
 	const classOutcome = useClassOutcome();
 	const feedOutcome = usePetFeedOutcome();
 	const expeditionOutcome = useExpeditionOutcome();
+	const managementOutcome = usePetManagementOutcome();
 	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector));
-	const outcomePending = [outcome, classOutcome.outcome, feedOutcome.outcome, expeditionOutcome.outcome].some(Boolean);
+	const outcomePending = [outcome, classOutcome.outcome, feedOutcome.outcome, expeditionOutcome.outcome, managementOutcome.outcome].some(Boolean);
 
 	if (fallbackCollectors.length === 0 && !outcomePending) {
 		return null;
@@ -61,6 +66,7 @@ export function OpenCollectors(): ReactNode {
 
 	return (
 		<View style={styles.container}>
+			{managementOutcome.outcome ? <PetManagementOutcome outcome={managementOutcome.outcome} onContinue={managementOutcome.clear} /> : null}
 			{expeditionOutcome.outcome ? <PetExpeditionOutcome outcome={expeditionOutcome.outcome} onContinue={expeditionOutcome.clear} /> : null}
 			{feedOutcome.outcome ? <PetFeedOutcome outcome={feedOutcome.outcome} onContinue={feedOutcome.clear} /> : null}
 			{classOutcome.outcome ? <ClassOutcome outcome={classOutcome.outcome} onContinue={classOutcome.clear} /> : null}
