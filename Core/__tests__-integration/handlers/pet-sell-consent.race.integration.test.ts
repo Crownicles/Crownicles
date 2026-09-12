@@ -37,7 +37,7 @@ describe("targeted pet sale consent", () => {
 		const {PacketUtils} = loadProductionModule<typeof import("../../src/core/utils/PacketUtils")>("core/utils/PacketUtils");
 		vi.spyOn(PacketUtils, "sendPackets").mockImplementation(() => undefined);
 		const {LogsDatabase} = loadProductionModule<typeof import("../../src/core/database/logs/LogsDatabase")>("core/database/logs/LogsDatabase");
-		vi.spyOn(LogsDatabase, "logPetSell").mockResolvedValue(undefined);
+		vi.spyOn(LogsDatabase, "logPetSell").mockImplementation(() => Promise.resolve());
 		const {MapCache} = loadProductionModule<typeof import("../../src/core/maps/MapCache")>("core/maps/MapCache");
 		MapCache.continentMapLinks = [MAP_LINK_ID];
 		await pinInertDailyMission(env);

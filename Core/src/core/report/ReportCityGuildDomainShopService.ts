@@ -57,6 +57,12 @@ async function runTreasuryDepositUnderLock(
 			PlayerMissionsInfo.lockKey(player.id)
 		] as const,
 		async ([lockedGuild, lockedPlayer]) => {
+			if (lockedPlayer.guildId !== guildId) {
+				return {
+					packet: makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.CANNOT_BUY }), logParams: null
+				};
+			}
+
 			/*
 			 * Re-validate against the locked rows. Another concurrent
 			 * handler (a parallel deposit, a shop purchase, …) may have
@@ -103,6 +109,10 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player || !player.guildId) {
 		response.push(makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD }));
+		return;
+	}
+	if (packet.expectedGuildId !== undefined && player.guildId !== packet.expectedGuildId) {
+		response.push(makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.CANNOT_BUY }));
 		return;
 	}
 

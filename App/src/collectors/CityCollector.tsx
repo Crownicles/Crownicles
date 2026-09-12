@@ -11,7 +11,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {CitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
 import {citySnapshotNote} from "@/src/collectors/CitySnapshotNote";
 import {gardenPlotItems, homeChestItems, homeCookingItems, homeFeatureItems, homeIconPath} from "@/src/collectors/CityHomeItems";
-import {enchantmentCatalogItems, guildFeatureItems} from "@/src/collectors/CityGuildItems";
+import {enchantmentCatalogItems} from "@/src/collectors/CityGuildItems";
 import {
 	cityRowEnd as renderCityRowEnd,
 	cityRowSubtitle as renderCityRowSubtitle
@@ -24,6 +24,7 @@ import {CitySection} from "@/src/collectors/CityRows";
 import {submenuSections as buildSubmenuSections} from "@/src/collectors/CitySubmenuSections";
 import {Button, ButtonRow, Confirmation, Hero, Note, Screen} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
+import {GuildDomain} from "@/src/components/GuildDomain";
 
 type CityCollectorProps = {
 	collector: ReactionCollectorCreation;
@@ -130,8 +131,13 @@ function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, o
 	const details = submenuTitle(view, innId);
 	const iconPath = view === "inn" ? "city.inn" : view === "home" ? homeIconPath(snapshot?.home?.owned?.level) : cityNavigationMeta(view as Exclude<CitySubmenu, "inn">).iconPath;
 	const icon = AppIcons.getIconOrNull(iconPath);
-	const sections = buildSubmenuSections(view, entries, snapshot, {homeFeatureItems, gardenPlotItems, homeChestItems, homeCookingItems, guildFeatureItems, enchantmentCatalogItems});
+	const sections = buildSubmenuSections(view, entries, snapshot, {homeFeatureItems, gardenPlotItems, homeChestItems, homeCookingItems, enchantmentCatalogItems});
 	const visibleSections = sections.filter(section => section.items.length > 0);
+	if (view === "guild" && (snapshot?.guildDomain || snapshot?.guildFoodShop)) return <Screen>
+		<Hero eyebrow={details.eyebrow} title={details.title} />
+		<GuildDomain />
+		<ButtonRow><Button onPress={onBack}>{i18n.t("app:city.actions.back")}</Button></ButtonRow>
+	</Screen>;
 
 	return (
 		<Screen>

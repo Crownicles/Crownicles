@@ -15,6 +15,8 @@ import {
 	AdventureCollector, BigEventOutcome, HealOutcome, LotteryOutcome, TokenOutcome, WitchOutcome
 } from "@/src/collectors/AdventureCollector";
 
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
+
 jest.mock("@/src/AppIcons", () => ({
 	AppIcons: {
 		getIconOrNull: (): null => null,
@@ -135,7 +137,12 @@ function cityCollector(): ReactionCollectorCreation {
 					}
 				},
 					shops: [{shopId: "generalShop", isEmpty: true}],
-					guildFoodShop: {guildName: "Les tests", playerMoney: 0, treasury: 0}
+					guildFoodShop: {
+						guildName: "Les tests", playerMoney: 0, treasury: 0,
+						food: {common: 0, herbivorous: 0, carnivorous: 0, ultimate: 0},
+						foodCaps: [150, 90, 90, 30], foodPrices: [20, 250, 250, 600],
+						maxBuyableFood: [0, 0, 0, 0], maxFoodCosts: [0, 0, 0, 0], canUseShop: true
+					}
 				}
 			}
 		},

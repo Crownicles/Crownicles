@@ -36,6 +36,7 @@ function apartmentRentEnd(reaction: ReactionCollectorReaction, snapshot: CityMob
 type EndResolver = (reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem) => string | undefined;
 
 const END_RESOLVERS: Partial<Record<ReactionCollectorReaction["type"], EndResolver>> = {
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: (_reaction, snapshot) => snapshot?.guildDomainNotary ? formatMoney(snapshot.guildDomainNotary.cost) : undefined,
 	[CITY_REACTION_KINDS.INN_MEAL]: reaction => formatMoney((reaction.data as {price: number}).price),
 	[CITY_REACTION_KINDS.INN_ROOM]: reaction => formatMoney((reaction.data as {price: number}).price),
 	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: upgradeEnd,

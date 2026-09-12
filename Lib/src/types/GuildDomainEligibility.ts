@@ -9,6 +9,8 @@ import { GuildBuilding } from "../constants/GuildDomainConstants";
 export type BuildingUpgradeEligibility = {
 	canAfford: boolean;
 	meetsLevel: boolean;
+	cost: number;
+	requiredGuildLevel: number;
 };
 
 /** Per-building upgrade eligibility computed by Core. */

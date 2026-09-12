@@ -11,10 +11,14 @@ import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {Button, ButtonRow, Hero, Note, Screen} from "@/src/design/Primitives";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {i18n} from "@/src/translations/i18n";
+import {GuildDomain} from "@/src/components/GuildDomain";
+
+const DETAIL_PAGES: Partial<Record<GuildPage, () => ReactNode>> = {storage: GuildStorage, shelter: GuildShelter, domain: GuildDomain};
 
 function GuildPageContent({page, state, onPage}: {page: GuildPage; state: RequestState<GuildRes>; onPage: (page: GuildPage) => void}): ReactNode {
-	if (page === "storage" || page === "shelter") return <DetailScreen title={i18n.t(`app:guild.pages.${page}`)} eyebrow={i18n.t("app:guild.eyebrow")} onClose={(): void => onPage("overview")}>
-		{page === "storage" ? <GuildStorage /> : <GuildShelter />}
+	const Content = DETAIL_PAGES[page];
+	if (Content) return <DetailScreen title={i18n.t(`app:guild.pages.${page}`)} eyebrow={i18n.t("app:guild.eyebrow")} onClose={(): void => onPage("overview")}>
+		<Content />
 	</DetailScreen>;
 	return <Screen><GameQueryContent state={state} entity={GAME_ENTITIES.GUILD}>{data => {
 		if (data.foundGuild && data.data) return <GuildOverview guild={data.data} onPage={onPage} />;

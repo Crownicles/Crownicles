@@ -73,7 +73,7 @@ const CITY_NAVIGATION_META: Record<Exclude<CitySubmenu, "inn">, CityNavigationDe
 	blacksmith: {iconPath: "city.services.blacksmith", titleKey: "app:city.labels.blacksmith", subtitleKey: "commands:report.city.blacksmith.menuDescription"},
 	scrapDealer: {iconPath: "city.services.scrapDealer", titleKey: "app:city.labels.scrapDealer", subtitleKey: "commands:report.city.scrapDealer.menuDescription"},
 	royalBlacksmith: {iconPath: "city.services.royalBlacksmith", titleKey: "app:city.labels.royalBlacksmith", subtitleKey: "commands:report.city.royalBlacksmith.menuDescription"},
-	guild: {iconPath: "city.guildDomain.menu", titleKey: "app:city.labels.guildDomain", subtitleKey: "commands:report.city.guildDomain.description"}
+	guild: {iconPath: "city.guildDomain.menu", titleKey: "app:city.labels.guildDomain", subtitleKey: "app:city.notes.guildDomain"}
 };
 
 type CityNavigationConfig = {group: Exclude<CityGroup, "elsewhere">; view: Exclude<CitySubmenu, "inn">; key: string};
@@ -243,7 +243,7 @@ function addEmptyShops(state: CityGroupingState, shops: CityGroupingOptions["sho
 
 function addGuildFoodShop(state: CityGroupingState, foodShop: CityGroupingOptions["guildFoodShop"]): void {
 	if (!foodShop) return;
-	state.groups.guild.push({kind: "info", key: "guild-food-shop", iconPath: "expedition.food", title: i18n.t("commands:report.city.guildFoodShop.label"), subtitle: i18n.t("commands:report.city.guildFoodShop.description", {guildName: foodShop.guildName})});
+	state.groups.guild.push({kind: "navigation", view: "guild", key: "guild-food-shop", iconPath: "expedition.food", title: i18n.t("commands:report.city.guildFoodShop.label"), subtitle: i18n.t("app:guildDomain.foodShopDescription", {guild: foodShop.guildName})});
 }
 
 function addOtherCityServices(state: CityGroupingState, services: CityGroupingOptions["otherCityServices"]): void {

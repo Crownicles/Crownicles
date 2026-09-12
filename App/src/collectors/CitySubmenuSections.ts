@@ -7,7 +7,6 @@ export type SubmenuDependencies = {
 	gardenPlotItems: (snapshot: CityMobileSnapshot | undefined) => CityListItem[];
 	homeChestItems: (snapshot: CityMobileSnapshot | undefined) => CityListItem[];
 	homeCookingItems: (snapshot: CityMobileSnapshot | undefined) => CityListItem[];
-	guildFeatureItems: (snapshot: CityMobileSnapshot | undefined) => CityListItem[];
 	enchantmentCatalogItems: () => CityListItem[];
 };
 
@@ -29,7 +28,7 @@ function simpleSections(view: CitySubmenu, entries: CityEntry[], snapshot: CityM
 		homeBed: () => [section("app:city.titles.actions", reactions)],
 		homeChest: () => [section("app:city.titles.storage", deps.homeChestItems(snapshot))],
 		homeCooking: () => [section("app:city.titles.cooking", deps.homeCookingItems(snapshot))],
-		guild: () => [section("app:city.titles.actions", [...deps.guildFeatureItems(snapshot), ...reactions])],
+		guild: () => [section("app:city.titles.actions", reactions)],
 		enchanter: () => [section("app:city.titles.eligibleEquipment", reactions), section("app:city.enchantmentCatalog.title", deps.enchantmentCatalogItems())],
 		homeGarden: () => [section("app:city.titles.garden", [...deps.gardenPlotItems(snapshot), ...reactions])],
 		homeUpgrade: () => [section("app:city.titles.equipment", reactions)]

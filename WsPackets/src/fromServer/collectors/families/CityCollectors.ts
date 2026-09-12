@@ -1,4 +1,8 @@
 import {
+	GuildDomainSnapshot, GuildFoodShop
+} from "../../../objects/GuildDomain";
+
+import {
 	ReactionCollectorDataKind,
 	ReactionCollectorReactionKind
 } from "../ReactionCollectorProtocol";
@@ -88,31 +92,14 @@ export type CityMobileSnapshot = {
 		playerGems: number;
 		upgradeableItems: CityMobileUpgradeItem[];
 	};
-	guildDomain?: {
-		guildName: string;
-		shopLevel: number;
-		shelterLevel: number;
-		pantryLevel: number;
-		trainingGroundLevel: number;
-		shelterMaxCount: number;
-		guildLevel: number;
-		treasury: number;
-		playerMoney: number;
-		food: {
-			common: number; carnivorous: number; herbivorous: number; ultimate: number;
-		};
-	};
+	guildDomain?: GuildDomainSnapshot;
 	guildDomainNotary?: {
 		hasDomain: boolean;
 		cost: number;
 		treasury: number;
 		canAfford: boolean;
 	};
-	guildFoodShop?: {
-		guildName: string;
-		playerMoney: number;
-		treasury: number;
-	};
+	guildFoodShop?: GuildFoodShop;
 	apartmentNotary?: {
 		forSale?: {
 			price: number; canAfford: boolean; missingMoney?: number;

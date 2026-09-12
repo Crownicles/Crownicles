@@ -20,6 +20,8 @@ import {EXPEDITION_ERRORS, EXPEDITION_FOOD_CAUSES} from "../../../WsPackets/src/
 import { PetFood as LibPetFood } from "../../../Lib/src/types/PetFood";
 import { CommandPetFeedResult } from "../../../Lib/src/packets/commands/CommandPetFeedPacket";
 import { PetFood, PET_FEED_RESULTS } from "../../../WsPackets/src/objects/PetFood";
+import {GuildBuilding as LibGuildBuilding, GUILD_DOMAIN_ERROR} from "../../../Lib/src/constants/GuildDomainConstants";
+import {GuildBuilding, GUILD_DOMAIN_ERRORS} from "../../../WsPackets/src/objects/GuildDomain";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -29,6 +31,8 @@ import { PetFood, PET_FEED_RESULTS } from "../../../WsPackets/src/objects/PetFoo
  */
 describe("wire enums mirror their back-end counterpart", () => {
 	it.each([
+		["GuildBuilding", GuildBuilding, LibGuildBuilding],
+		["GuildDomainError", GUILD_DOMAIN_ERRORS, GUILD_DOMAIN_ERROR],
 		["ItemNature", ItemNature, LibItemNature],
 		["ItemRarity", ItemRarity, LibItemRarity],
 		["PlantId", PlantId, LibPlantId],

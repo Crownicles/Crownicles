@@ -18,7 +18,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
-export type GuildPage = "overview" | "create" | "storage" | "shelter" | "manage";
+export type GuildPage = "overview" | "create" | "storage" | "shelter" | "manage" | "domain";
 const CREATE_MENU: CommandMenu = {request: GuildCreateReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
 const DAILY_MENU: CommandMenu = {request: GuildDailyReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
 const DESCRIPTION_MENU: CommandMenu = {request: GuildDescriptionReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
@@ -84,6 +84,7 @@ export function GuildOverview({guild, onPage}: {guild: GuildData; onPage: (page:
 			<QuickAction icon={AppIcons.getIcon("guild.chief")} onPress={(): void => onPage("manage")}>{i18n.t("app:guild.pages.manage")}</QuickAction>
 		</QuickActions> : null}
 		{message ? <Note>{message}</Note> : null}
+		{isMember ? <Panel><Row title={i18n.t("app:guild.pages.domain")} onPress={(): void => onPage("domain")} chevron /></Panel> : null}
 		<SectionHeader action={{hint: formatNumber(guild.members.length)}}>{i18n.t("app:guild.members")}</SectionHeader>
 		<Panel>{guild.members.map(member => <Row key={member.id} title={member.name ?? i18n.t("app:profile.values.unknown")}
 			subtitle={memberSubtitle(member, guild)} {...(member.isSelf ? {end: i18n.t("app:guild.you")} : {})}

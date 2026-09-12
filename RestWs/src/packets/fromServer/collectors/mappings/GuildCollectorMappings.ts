@@ -6,11 +6,13 @@ import { ReactionCollectorGuildKickData } from "../../../../../../Lib/src/packet
 import { ReactionCollectorGuildElderData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorGuildElder";
 import { ReactionCollectorGuildElderRemoveData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorGuildElderRemove";
 import { ReactionCollectorGuildInviteData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorGuildInvite";
+import { ReactionCollectorGuildReimburseData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorGuildReimburse";
 import {
 	DataMapping, defineDataMapping
 } from "../CollectorMapping";
 
 export const guildDataMappings: DataMapping[] = [
+	defineDataMapping(ReactionCollectorGuildReimburseData, GUILD_DATA_KINDS.REIMBURSE, data => ({ amount: data.amount })),
 	defineDataMapping(ReactionCollectorGuildInviteData, GUILD_DATA_KINDS.INVITE, data => ({ guildName: data.guildName })),
 	defineDataMapping(ReactionCollectorGuildKickData, GUILD_DATA_KINDS.MEMBER, data => ({
 		action: "kick", guildName: data.guildName

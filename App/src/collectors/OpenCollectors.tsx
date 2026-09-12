@@ -27,6 +27,8 @@ import {usePetManagementOutcome} from "@/src/store/usePetManagementOutcome";
 import {GuildCreateCollector} from "@/src/collectors/GuildCreateCollector";
 import {GuildOutcome} from "@/src/collectors/GuildOutcome";
 import {useGuildOutcome} from "@/src/store/useGuildOutcome";
+import {useGuildDomainOutcome} from "@/src/store/useGuildDomainOutcome";
+import {GuildDomainOutcome} from "@/src/collectors/GuildDomainOutcome";
 
 const styles = StyleSheet.create({
 	container: {
@@ -39,6 +41,7 @@ type ActiveCollectorProps = {
 };
 
 const COLLECTOR_COMPONENTS: Partial<Record<ReactionCollectorDataKind, (props: ActiveCollectorProps) => ReactNode>> = {
+	[GUILD_DATA_KINDS.REIMBURSE]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.INVITE]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.MEMBER]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.DESCRIPTION]: GuildCreateCollector,
@@ -79,8 +82,9 @@ export function OpenCollectors(): ReactNode {
 	const expeditionOutcome = useExpeditionOutcome();
 	const managementOutcome = usePetManagementOutcome();
 	const guildOutcome = useGuildOutcome();
+	const domainOutcome = useGuildDomainOutcome();
 	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector));
-	const outcomePending = [outcome, classOutcome.outcome, feedOutcome.outcome, expeditionOutcome.outcome, managementOutcome.outcome, guildOutcome.outcome].some(Boolean);
+	const outcomePending = [outcome, classOutcome.outcome, feedOutcome.outcome, expeditionOutcome.outcome, managementOutcome.outcome, guildOutcome.outcome, domainOutcome.outcome].some(Boolean);
 
 	if (fallbackCollectors.length === 0 && !outcomePending) {
 		return null;
@@ -88,6 +92,7 @@ export function OpenCollectors(): ReactNode {
 
 	return (
 		<View style={styles.container}>
+			{domainOutcome.outcome ? <GuildDomainOutcome outcome={domainOutcome.outcome} onContinue={domainOutcome.clear} /> : null}
 			{guildOutcome.outcome ? <GuildOutcome outcome={guildOutcome.outcome} onContinue={guildOutcome.clear} /> : null}
 			{managementOutcome.outcome ? <PetManagementOutcome outcome={managementOutcome.outcome} onContinue={managementOutcome.clear} /> : null}
 			{expeditionOutcome.outcome ? <PetExpeditionOutcome outcome={expeditionOutcome.outcome} onContinue={expeditionOutcome.clear} /> : null}

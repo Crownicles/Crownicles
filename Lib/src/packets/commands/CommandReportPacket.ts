@@ -816,6 +816,8 @@ export class CommandReportGuildDomainNotEnoughTreasuryRes extends CrowniclesPack
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainUpgradeReq extends CrowniclesPacket {
 	building!: GuildBuilding;
+
+	expectedLevel?: number;
 }
 
 @sendablePacket(PacketDirection.NONE)
@@ -868,6 +870,8 @@ export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainDepositTreasuryReq extends CrowniclesPacket {
 	amount!: number;
+
+	expectedGuildId?: number;
 
 	/** When true, the deposit is treated as a refund of a previous treasury withdrawal: no commission is taken. */
 	isReimburse?: boolean;
