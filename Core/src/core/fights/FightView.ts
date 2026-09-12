@@ -89,6 +89,7 @@ export class FightView {
 				glory: playingFighter instanceof MonsterFighter ? undefined : playingFighter.player.getGloryPoints(),
 				stats: {
 					power: playingFighter.getEnergy(),
+					maxEnergy: playingFighter.getMaxEnergy(),
 					attack: playingFighter.getAttack(),
 					defense: playingFighter.getDefense(),
 					speed: playingFighter.getSpeed(),
@@ -103,6 +104,7 @@ export class FightView {
 				glory: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.player.getGloryPoints(),
 				stats: {
 					power: defendingFighter.getEnergy(),
+					maxEnergy: defendingFighter.getMaxEnergy(),
 					attack: defendingFighter.getAttack(),
 					defense: defendingFighter.getDefense(),
 					speed: defendingFighter.getSpeed(),

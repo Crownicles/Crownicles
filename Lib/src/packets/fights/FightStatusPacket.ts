@@ -16,6 +16,7 @@ export class CommandFightStatusPacket extends CrowniclesPacket {
 		glory?: number;
 		stats: {
 			power: number;
+			maxEnergy?: number;
 			attack: number;
 			defense: number;
 			speed: number;
@@ -31,6 +32,7 @@ export class CommandFightStatusPacket extends CrowniclesPacket {
 		glory?: number;
 		stats: {
 			power: number;
+			maxEnergy?: number;
 			attack: number;
 			defense: number;
 			speed: number;

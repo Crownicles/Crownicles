@@ -9,6 +9,7 @@ import {
 	EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS,
 	PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTION_KINDS,
 	GUILD_DATA_KINDS,
+	FIGHT_DATA_KINDS, FIGHT_REACTION_KINDS,
 	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
@@ -26,6 +27,7 @@ import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
 import {shopItemName} from "@/src/collectors/ShopLabels";
 import {petName} from "@/src/display/PetDisplay";
+import {fightActionName} from "@/src/display/Fight";
 import type {TOptions} from "i18next";
 
 const SEX_CONTEXTS = {
@@ -229,6 +231,8 @@ function makeChoosableHandler<Kind extends ReactionCollectorReaction["type"]>(
 }
 
 const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => string> = {
+	[FIGHT_DATA_KINDS.CONFIRM]: () => i18n.t("app:arena.confirm"),
+	[FIGHT_DATA_KINDS.ACTION]: () => i18n.t("app:arena.action"),
 	[GUILD_DATA_KINDS.INVITE]: () => i18n.t("app:guild.invitation"),
 	[GUILD_DATA_KINDS.MEMBER]: () => i18n.t("app:guild.members"),
 	[GUILD_DATA_KINDS.DESCRIPTION]: () => i18n.t("app:guild.confirmDescription"),
@@ -277,6 +281,8 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 };
 
 const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], DataHandler> = {
+	[FIGHT_DATA_KINDS.CONFIRM]: () => undefined,
+	[FIGHT_DATA_KINDS.ACTION]: () => undefined,
 	[GUILD_DATA_KINDS.INVITE]: () => undefined,
 	[GUILD_DATA_KINDS.MEMBER]: () => undefined,
 	[GUILD_DATA_KINDS.DESCRIPTION]: () => undefined,
@@ -352,6 +358,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 };
 
 const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], ReactionHandler> = {
+	[FIGHT_REACTION_KINDS.ACTION]: makeReactionHandler(FIGHT_REACTION_KINDS.ACTION, reaction => fightActionName(reaction.data.id)),
 	[PET_MANAGEMENT_REACTION_KINDS.DEPOSIT]: (_reaction, data) => i18n.t("app:pet.management.deposit", {pet: data.type === PET_MANAGEMENT_DATA_KINDS.TRANSFER && data.data.ownPet ? petName(data.data.ownPet) : ""}),
 	[PET_MANAGEMENT_REACTION_KINDS.WITHDRAW]: makeReactionHandler(PET_MANAGEMENT_REACTION_KINDS.WITHDRAW, (reaction, data) => i18n.t("app:pet.management.withdraw", {pet: shelterPetLabel(reaction, data)})),
 	[PET_MANAGEMENT_REACTION_KINDS.SWITCH]: makeReactionHandler(PET_MANAGEMENT_REACTION_KINDS.SWITCH, (reaction, data) => i18n.t("app:pet.management.switch", {pet: shelterPetLabel(reaction, data)})),
@@ -488,6 +495,7 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 };
 
 const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHandler> = {
+	[FIGHT_REACTION_KINDS.ACTION]: (_reaction, data) => isDataOfType(data, FIGHT_DATA_KINDS.ACTION),
 	[PET_MANAGEMENT_REACTION_KINDS.DEPOSIT]: (_reaction, data) => isDataOfType(data, PET_MANAGEMENT_DATA_KINDS.TRANSFER),
 	[PET_MANAGEMENT_REACTION_KINDS.WITHDRAW]: (_reaction, data) => isDataOfType(data, PET_MANAGEMENT_DATA_KINDS.TRANSFER),
 	[PET_MANAGEMENT_REACTION_KINDS.SWITCH]: (_reaction, data) => isDataOfType(data, PET_MANAGEMENT_DATA_KINDS.TRANSFER),

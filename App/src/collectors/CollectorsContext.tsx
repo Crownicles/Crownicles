@@ -5,6 +5,7 @@ import {collectorsStore} from "@/src/collectors/CollectorsStore";
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
 import {useGameInvalidations} from "@/src/store/GameInvalidations";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
+import {fightStore} from "@/src/store/FightStore";
 
 type CollectorsState = {
 	open: ReactionCollectorCreation[];
@@ -52,10 +53,12 @@ export function CollectorsProvider({ children, authState }: { children: ReactNod
 		if (sessionEnded) {
 			collectorsStore.reset();
 			reportEventStore.reset();
+			fightStore.reset();
 			return;
 		}
 		if (hasConnected) {
 			collectorsStore.syncCurrent();
+			fightStore.syncCurrent();
 		}
 	}, [authState]);
 

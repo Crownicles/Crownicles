@@ -109,6 +109,18 @@ export class FightController {
 		return this.silentMode;
 	}
 
+	public sendCurrentState(response: CrowniclesPacket[]): void {
+		if (this.state !== FightState.RUNNING || this.silentMode) {
+			return;
+		}
+		const opponent = this.getNonFightInitiatorFighter();
+		if (!(opponent instanceof MonsterFighter) && !(opponent instanceof AiPlayerFighter)) {
+			return;
+		}
+		this._fightView.introduceFight(response, this.fightInitiator, opponent);
+		this._fightView.displayFightStatus(response);
+	}
+
 	/**
 	 * Get the playing fighter or null if the fight is not running
 	 * @returns

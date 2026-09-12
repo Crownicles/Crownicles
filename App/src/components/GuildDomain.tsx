@@ -79,7 +79,7 @@ function BuildingContents({domain, building, actions}: {domain: GuildDomainSnaps
 		case GuildBuilding.SHELTER:
 			return <Panel>
 				<KeyValue label={i18n.t("app:guildDomain.capacity")} value={i18n.t("app:profile.formats.progress", {value: domain.shelterPets.length, max: domain.shelterMaxCount})} />
-				{domain.shelterPets.map((pet, index) => <Row key={index} title={`${petIcon(pet)} ${petName(pet)}`} subtitle={petMood(pet)} />)}
+				{domain.shelterPets.map(pet => <Row key={pet.petEntityId} title={`${petIcon(pet)} ${petName(pet)}`} subtitle={petMood(pet)} />)}
 			</Panel>;
 		case GuildBuilding.PANTRY:
 			return <>{Object.values(PetFood).map((foodType, index) => <Panel key={foodType}>
@@ -89,6 +89,18 @@ function BuildingContents({domain, building, actions}: {domain: GuildDomainSnaps
 		default:
 			return <Note>{i18n.t("app:guildDomain.training", {count: domain.dailyLovePoints})}</Note>;
 	}
+}
+
+function DomainSummary({domain}: {domain: GuildDomainSnapshot}): ReactNode {
+	return <>
+		<Panel>
+			<KeyValue label={i18n.t("app:city.summary.guild")} value={domain.guildName} />
+			<KeyValue label={i18n.t("app:city.summary.treasury")} value={formatMoney(domain.treasury)} />
+			{domain.domainMapLocationId ? <KeyValue label={i18n.t("app:guildDomain.location")} value={i18n.t(`models:map_locations.${domain.domainMapLocationId}.name`)} /> : null}
+		</Panel>
+		{!domain.domainCityId ? <Note>{i18n.t("app:guildDomain.noDomain")}</Note> : null}
+		{!domain.isInCity ? <Note>{i18n.t("app:guildDomain.remote")}</Note> : null}
+	</>;
 }
 
 export function GuildDomainContent({domain}: {domain: GuildDomainSnapshot}): ReactNode {
@@ -102,13 +114,7 @@ export function GuildDomainContent({domain}: {domain: GuildDomainSnapshot}): Rea
 		open(DOMAIN_MENUS[selection.kind], selection.request).catch(console.error);
 	};
 	return <>
-		<Panel>
-			<KeyValue label={i18n.t("app:city.summary.guild")} value={domain.guildName} />
-			<KeyValue label={i18n.t("app:city.summary.treasury")} value={formatMoney(domain.treasury)} />
-			{domain.domainMapLocationId ? <KeyValue label={i18n.t("app:guildDomain.location")} value={i18n.t(`models:map_locations.${domain.domainMapLocationId}.name`)} /> : null}
-		</Panel>
-		{!domain.domainCityId ? <Note>{i18n.t("app:guildDomain.noDomain")}</Note> : null}
-		{!domain.isInCity ? <Note>{i18n.t("app:guildDomain.remote")}</Note> : null}
+		<DomainSummary domain={domain} />
 		{message ? <Note>{message}</Note> : null}
 		{building ? <>
 			<SectionHeader>{i18n.t(`commands:report.city.guildDomain.buildings.${building}`)}</SectionHeader>

@@ -32,34 +32,33 @@ const DOMAIN: GuildDomainSnapshot = {
 
 describe("guild screens", () => {
 	beforeEach(() => jest.clearAllMocks());
-	it("keeps the server reimbursement amount and original refusal index", async () => {
-		const collector = Object.assign(new ReactionCollectorCreation(), {id: "refund", endTime: Date.now() + 60_000, data: {type: "guildReimburse", data: {amount: 60}}, reactions: [{type: "accept", data: {}}, {type: "refuse", data: {}}]});
+	it.each([
+		{type: "guildReimburse", data: {amount: 60}, message: "app:guildDomain.confirmReimburse"},
+		{type: "guildLeave", data: {guildName: "Aurore", isGuildDestroyed: true}, message: "app:guild.dissolveWarning"}
+	])("preserves the server warning and refusal index for $type", async scenario => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {id: scenario.type, endTime: Date.now() + 60_000, data: {type: scenario.type, data: scenario.data}, reactions: [{type: "accept", data: {}}, {type: "refuse", data: {}}]});
 		const choose = jest.fn();
 		await render(<GuildCreateCollector collector={collector} onChoose={choose} submitting={false} />);
-		expect(screen.getByText("app:guildDomain.confirmReimburse")).toBeTruthy();
+		expect(screen.getByText(scenario.message)).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:collector.refuse"));
 		expect(choose).toHaveBeenCalledWith(1);
 	});
-	it("waits for confirmation before submitting the server deposit offer", async () => {
+	it.each([
+		{kind: "deposit", Packet: GuildDomainDepositReq, expected: {amount: 1000}},
+		{kind: "upgrade", Packet: GuildDomainUpgradeReq, expected: {building: "pantry", expectedLevel: 0}}
+	])("waits for confirmation and submits the server $kind offer", async scenario => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "GuildDomainRes"});
 		await render(<GuildDomainContent domain={DOMAIN} />);
-		await fireEvent.press(screen.getByText("app:guildDomain.depositNet"));
+		if (scenario.kind === "upgrade") {
+			await fireEvent.press(screen.getByText(/commands:report.city.guildDomain.buildings.pantry/));
+			await fireEvent.press(screen.getByRole("button", {name: "app:guildDomain.upgrade"}));
+		}
+		else await fireEvent.press(screen.getByText("app:guildDomain.depositNet"));
 		expect(GameClient.request).not.toHaveBeenCalled();
 		await fireEvent.press(screen.getByText("app:collector.accept"));
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
-		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(GuildDomainDepositReq);
-		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({amount: 1000});
-	});
-	it("binds an upgrade confirmation to the displayed building level", async () => {
-		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "GuildDomainRes"});
-		await render(<GuildDomainContent domain={DOMAIN} />);
-		await fireEvent.press(screen.getByText(/commands:report.city.guildDomain.buildings.pantry/));
-		await fireEvent.press(screen.getByRole("button", {name: "app:guildDomain.upgrade"}));
-		expect(GameClient.request).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("app:collector.accept"));
-		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
-		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(GuildDomainUpgradeReq);
-		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({building: "pantry", expectedLevel: 0});
+		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(scenario.Packet);
+		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject(scenario.expected);
 	});
 	it("sends an invitation using the entered rank without selecting another identity", async () => {
 		const guild: GuildData = {name: "Aurore", chiefId: 7, elderId: null, level: 1, isMaxLevel: false, experience: {value: 0, max: 150}, rank: {unranked: true, rank: -1, numberOfGuilds: 3, score: 0}, members: [{id: 7, name: "Aventurier", isSelf: true, rank: 1, score: 0, islandStatus: {isOnPveIsland: false, isOnBoat: false, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}}]};
@@ -70,14 +69,6 @@ describe("guild screens", () => {
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(GuildInviteReq);
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({rank: 42});
-	});
-	it("warns before dissolution and sends refusal without quitting", async () => {
-		const collector = Object.assign(new ReactionCollectorCreation(), {id: "leave", endTime: Date.now() + 60_000, data: {type: "guildLeave", data: {guildName: "Aurore", isGuildDestroyed: true}}, reactions: [{type: "accept", data: {}}, {type: "refuse", data: {}}]});
-		const onChoose = jest.fn();
-		await render(<GuildCreateCollector collector={collector} onChoose={onChoose} submitting={false} />);
-		expect(screen.getByText("app:guild.dissolveWarning")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:collector.refuse"));
-		expect(onChoose).toHaveBeenCalledWith(1);
 	});
 	it("shows the real guild and routes to the storage", async () => {
 		const data: GuildData = {name: "Aurore", description: "Notre guilde", chiefId: 7, elderId: null, level: 3, isMaxLevel: false, experience: {value: 3, max: 10}, rank: {unranked: false, rank: 1, numberOfGuilds: 3, score: 42}, members: [{id: 7, name: "Aventurier", isSelf: true, rank: 12, score: 42, islandStatus: {isOnPveIsland: false, isOnBoat: false, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}}]};

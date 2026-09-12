@@ -1,3 +1,5 @@
+export * from "./families/FightCollector";
+
 /**
  * Entry point of the reaction collector contract: import from here, never from `ReactionCollectorProtocol`
  * directly. Re-exporting every family from a single module guarantees each augmentation belongs to

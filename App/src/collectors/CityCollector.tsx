@@ -8,10 +8,7 @@ import {
 	ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
-import {CitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
-import {citySnapshotNote} from "@/src/collectors/CitySnapshotNote";
-import {gardenPlotItems, homeChestItems, homeCookingItems, homeFeatureItems, homeIconPath} from "@/src/collectors/CityHomeItems";
-import {enchantmentCatalogItems} from "@/src/collectors/CityGuildItems";
+import {CitySubmenuView} from "@/src/collectors/CitySubmenuView";
 import {
 	cityRowEnd as renderCityRowEnd,
 	cityRowSubtitle as renderCityRowSubtitle
@@ -19,12 +16,10 @@ import {
 import {
 	cityReactionAvailable, cityRowIcon, cityRowTitle, iconForPath, itemSnapshotForReaction
 } from "@/src/collectors/CityRowPresentation";
-import {groupCityEntries, cityNavigationMeta, submenuTitle} from "@/src/collectors/CityMenuModel";
+import {groupCityEntries} from "@/src/collectors/CityMenuModel";
 import {CitySection} from "@/src/collectors/CityRows";
-import {submenuSections as buildSubmenuSections} from "@/src/collectors/CitySubmenuSections";
 import {Button, ButtonRow, Confirmation, Hero, Note, Screen} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
-import {GuildDomain} from "@/src/components/GuildDomain";
 
 type CityCollectorProps = {
 	collector: ReactionCollectorCreation;
@@ -114,58 +109,6 @@ function CityActionConfirmation({entry, collector, snapshot, onConfirm, onCancel
 			<Button onPress={onCancel}>{i18n.t("app:collector.refuse")}</Button>
 		</ButtonRow>
 	</Confirmation>;
-}
-
-function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, onNavigate, onBack, locked, backLabel}: {
-	view: CitySubmenu;
-	innId?: string;
-	entries: CityEntry[];
-	collector: ReactionCollectorCreation;
-	snapshot?: CityMobileSnapshot;
-	onChoose: (reactionIndex: number) => void;
-	onNavigate: (item: CityNavigationItem) => void;
-	onBack: () => void;
-	locked: boolean;
-	backLabel?: string;
-}): ReactNode {
-	const details = submenuTitle(view, innId);
-	const iconPath = view === "inn" ? "city.inn" : view === "home" ? homeIconPath(snapshot?.home?.owned?.level) : cityNavigationMeta(view as Exclude<CitySubmenu, "inn">).iconPath;
-	const icon = AppIcons.getIconOrNull(iconPath);
-	const sections = buildSubmenuSections(view, entries, snapshot, {homeFeatureItems, gardenPlotItems, homeChestItems, homeCookingItems, enchantmentCatalogItems});
-	const visibleSections = sections.filter(section => section.items.length > 0);
-	if (view === "guild" && (snapshot?.guildDomain || snapshot?.guildFoodShop)) return <Screen>
-		<Hero eyebrow={details.eyebrow} title={details.title} />
-		<GuildDomain />
-		<ButtonRow><Button onPress={onBack}>{i18n.t("app:city.actions.back")}</Button></ButtonRow>
-	</Screen>;
-
-	return (
-		<Screen>
-			<Hero eyebrow={details.eyebrow} title={`${icon ? `${icon} ` : ""}${details.title}`} subtitle={details.subtitle} />
-			<CitySnapshotSummary view={view} snapshot={snapshot} />
-			{visibleSections.map((section, index) => (
-				<CitySection
-					key={section.title}
-					title={section.title}
-					items={section.items}
-					collector={collector}
-					onChoose={onChoose}
-					onNavigate={onNavigate}
-					locked={locked}
-					first={index === 0}
-					iconForPath={iconForPath}
-					rowIcon={cityRowIcon}
-					rowTitle={cityRowTitle}
-					rowSubtitle={renderCityRowSubtitle}
-					rowEnd={renderCityRowEnd}
-					reactionAvailable={cityReactionAvailable}
-				/>
-			))}
-			{citySnapshotNote(view, snapshot)}
-			{visibleSections.length === 0 ? <Note>{i18n.t("app:city.subtitles.noActions")}</Note> : null}
-			<ButtonRow><Button disabled={locked} onPress={locked ? undefined : onBack}>{backLabel ?? i18n.t("app:city.actions.back")}</Button></ButtonRow>
-		</Screen>
-	);
 }
 
 function citySectionDefinitions(): {key: CityGroup; title: string; hint?: string}[] {

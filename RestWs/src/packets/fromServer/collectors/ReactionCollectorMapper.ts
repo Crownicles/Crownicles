@@ -11,6 +11,9 @@ import {
 import { genericReactionMappings } from "./mappings/GenericReactionMappings";
 import { guildDataMappings } from "./mappings/GuildCollectorMappings";
 import {
+	fightDataMappings, fightReactionMappings
+} from "./mappings/FightCollectorMappings";
+import {
 	petManagementDataMappings, petManagementReactionMappings
 } from "./mappings/PetManagementCollectorMappings";
 import {
@@ -54,6 +57,7 @@ import {
 } from "./mappings/ClassesCollectorMappings";
 
 const reactionMappings = indexMappings([
+	...fightReactionMappings,
 	...petManagementReactionMappings,
 	...expeditionReactionMappings,
 	...petFeedReactionMappings,
@@ -72,6 +76,7 @@ const reactionMappings = indexMappings([
 ]);
 
 const dataMappings = indexMappings([
+	...fightDataMappings,
 	...guildDataMappings,
 	...petManagementDataMappings,
 	...expeditionDataMappings,

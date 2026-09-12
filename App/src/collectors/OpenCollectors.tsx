@@ -4,7 +4,7 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
 import {Theme} from "@/src/design/Theme";
-import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, SELL_DATA_KINDS, GUILD_DATA_KINDS, ReactionCollectorDataKind} from "ws-packets/src/fromServer/collectors";
+import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, SELL_DATA_KINDS, GUILD_DATA_KINDS, FIGHT_DATA_KINDS, ReactionCollectorDataKind} from "ws-packets/src/fromServer/collectors";
 import {EquipCollector} from "@/src/collectors/EquipCollector";
 import {SellCollector} from "@/src/collectors/SellCollector";
 import {useInventoryOutcome} from "@/src/store/useInventoryOutcome";
@@ -29,6 +29,7 @@ import {GuildOutcome} from "@/src/collectors/GuildOutcome";
 import {useGuildOutcome} from "@/src/store/useGuildOutcome";
 import {useGuildDomainOutcome} from "@/src/store/useGuildDomainOutcome";
 import {GuildDomainOutcome} from "@/src/collectors/GuildDomainOutcome";
+import {FightConfirmCollector, FightSession} from "@/src/collectors/FightCollector";
 
 const styles = StyleSheet.create({
 	container: {
@@ -41,6 +42,7 @@ type ActiveCollectorProps = {
 };
 
 const COLLECTOR_COMPONENTS: Partial<Record<ReactionCollectorDataKind, (props: ActiveCollectorProps) => ReactNode>> = {
+	[FIGHT_DATA_KINDS.CONFIRM]: FightConfirmCollector,
 	[GUILD_DATA_KINDS.REIMBURSE]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.INVITE]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.MEMBER]: GuildCreateCollector,
@@ -74,8 +76,7 @@ function InventoryCollector({collector, onChoose, submitting}: ActiveCollectorPr
  * A collector is not tied to the screen that opened it, and the server may open one on its own, so
  * it is rendered above the tabs rather than inside a screen.
  */
-export function OpenCollectors(): ReactNode {
-	const { open, react, isAnswerPending } = useCollectors();
+function PendingOutcomes(): ReactNode {
 	const {outcome, clear} = useInventoryOutcome();
 	const classOutcome = useClassOutcome();
 	const feedOutcome = usePetFeedOutcome();
@@ -83,15 +84,7 @@ export function OpenCollectors(): ReactNode {
 	const managementOutcome = usePetManagementOutcome();
 	const guildOutcome = useGuildOutcome();
 	const domainOutcome = useGuildDomainOutcome();
-	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector));
-	const outcomePending = [outcome, classOutcome.outcome, feedOutcome.outcome, expeditionOutcome.outcome, managementOutcome.outcome, guildOutcome.outcome, domainOutcome.outcome].some(Boolean);
-
-	if (fallbackCollectors.length === 0 && !outcomePending) {
-		return null;
-	}
-
-	return (
-		<View style={styles.container}>
+	return <>
 			{domainOutcome.outcome ? <GuildDomainOutcome outcome={domainOutcome.outcome} onContinue={domainOutcome.clear} /> : null}
 			{guildOutcome.outcome ? <GuildOutcome outcome={guildOutcome.outcome} onContinue={guildOutcome.clear} /> : null}
 			{managementOutcome.outcome ? <PetManagementOutcome outcome={managementOutcome.outcome} onContinue={managementOutcome.clear} /> : null}
@@ -99,6 +92,16 @@ export function OpenCollectors(): ReactNode {
 			{feedOutcome.outcome ? <PetFeedOutcome outcome={feedOutcome.outcome} onContinue={feedOutcome.clear} /> : null}
 			{classOutcome.outcome ? <ClassOutcome outcome={classOutcome.outcome} onContinue={classOutcome.clear} /> : null}
 			{outcome ? <InventoryOutcome outcome={outcome} onContinue={clear} /> : null}
+	</>;
+}
+
+export function OpenCollectors(): ReactNode {
+	const {open, react, isAnswerPending} = useCollectors();
+	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector) && collector.data.type !== FIGHT_DATA_KINDS.ACTION);
+	return <>
+		<FightSession />
+		<PendingOutcomes />
+		{fallbackCollectors.length > 0 ? <View style={styles.container}>
 			{fallbackCollectors.map(collector => (
 				<InventoryCollector
 					key={collector.id}
@@ -107,6 +110,6 @@ export function OpenCollectors(): ReactNode {
 					submitting={isAnswerPending(collector.id)}
 				/>
 			))}
-		</View>
-	);
+		</View> : null}
+	</>;
 }

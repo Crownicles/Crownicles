@@ -19,6 +19,8 @@ export type GuildFoodShopSnapshot = {
 export type GuildDepositOffer = {
 	amount: number; treasuryDeposited: number; canAfford: boolean;
 };
+export type GuildDomainPet = OwnedPet & { petEntityId: number };
+
 export type GuildDomainSnapshot = GuildFoodShopSnapshot & {
 	isInCity: boolean;
 	domainCityId: string | null;
@@ -30,7 +32,7 @@ export type GuildDomainSnapshot = GuildFoodShopSnapshot & {
 	guildLevel: number;
 	isChief: boolean;
 	isElder: boolean;
-	shelterPets: OwnedPet[];
+	shelterPets: GuildDomainPet[];
 	shelterMaxCount: number;
 	canUpgradeBuildings: BuildingUpgradeEligibilityMap;
 	canDeposit: DepositTierAffordability;

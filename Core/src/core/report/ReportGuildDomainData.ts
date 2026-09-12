@@ -88,7 +88,9 @@ export async function buildGuildDomainSnapshot(player: Player, guild: Guild): Pr
 		guildLevel: guild.level,
 		isChief: guild.chiefId === player.id,
 		isElder: guild.elderId === player.id,
-		shelterPets: shelterPets.filter(pet => pet !== null).map(pet => pet.asOwnedPet()),
+		shelterPets: shelterPets.filter(pet => pet !== null).map(pet => ({
+			...pet.asOwnedPet(), petEntityId: pet.id
+		})),
 		shelterMaxCount: GuildDomainConstants.getShelterSlots(guild.shelterLevel),
 		canUpgradeBuildings: buildCanUpgradeBuildings(guild),
 		canDeposit: {

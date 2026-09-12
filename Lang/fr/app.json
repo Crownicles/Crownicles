@@ -887,6 +887,18 @@
       "mood": "Mentalité"
     }
   },
+  "arena": {
+    "details": "Statistiques", "currentTurn": "Tour en cours",
+    "eyebrow": "COMBAT", "title": "Arène", "confirm": "Préparer le duel", "start": "Chercher un adversaire", "resume": "Reprendre le combat", "minimize": "Réduire",
+    "you": "Vous", "opponent": "Adversaire", "energy": "Énergie", "breath": "Souffle", "glory": "Gloire", "league": "Ligue", "class": "Classe", "pet": "Familier",
+    "turn": "Tour {{turn}} / {{max}}", "turns": "Tours joués", "waiting": "L'adversaire choisit son action…", "action": "Action de combat", "actionBreath": "{{value}} souffle",
+    "log": "Journal du combat", "logAction": "{{fighter}} · {{action}}", "effectLabel": "{{target}} · {{stat}}", "target": "Cible", "actor": "Lanceur",
+    "victory": "Victoire", "defeat": "Défaite", "draw": "Match nul", "gloryChange": "{{before}} → {{after}}", "petLove": "Votre familier gagne {{count}} points d'amour.",
+    "stats": {"attack": "Attaque", "defense": "Défense", "speed": "Vitesse", "breathRegen": "Souffle récupéré"},
+    "effects": {"damages": "Dégâts", "reflectedDamages": "Dégâts renvoyés", "attack": "Attaque (%)", "defense": "Défense (%)", "speed": "Vitesse (%)", "breath": "Souffle", "energy": "Énergie", "newAlteration": "Altération"},
+    "status": {"critical": "Coup critique", "missed": "Échec", "normal": "Action réussie", "maxUses": "Utilisations épuisées", "charging": "Préparation", "new": "Nouvelle altération", "randomAction": "Action imposée", "noAction": "Action impossible", "active": "Altération active", "stop": "Fin de l'altération", "generalEffect": "Intervention du familier", "success": "Intervention réussie", "afraid": "Familier effrayé", "failure": "Intervention sans effet", "other": "Effet de combat"},
+    "errors": {"energy": "Votre énergie est insuffisante pour lancer un duel.", "noOpponent": "Aucun adversaire n'est disponible pour le moment.", "refused": "La recherche de duel a été annulée.", "bugged": "Le combat a été interrompu par une erreur. Votre état est en cours de rafraîchissement."}
+  },
   "guildDomain": {
     "buildings": "Bâtiments",
     "foodShopDescription": "Nourriture pour les familiers de {{guild}}",
