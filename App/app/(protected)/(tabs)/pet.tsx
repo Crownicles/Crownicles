@@ -6,6 +6,8 @@ import {PetRes} from "ws-packets/src/fromServer/pet/PetRes";
 import {PetNotFound} from "ws-packets/src/fromServer/pet/PetNotFound";
 import {PetFeedReq} from "ws-packets/src/fromClient/PetCareReq";
 import {PetFeedRes} from "ws-packets/src/fromServer/pet/PetCareRes";
+import {PetExpeditionReq} from "ws-packets/src/fromClient/PetExpeditionReq";
+import {PetExpeditionErrorRes, PetExpeditionRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
 import {GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
@@ -19,8 +21,11 @@ import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {petIcon, petMood, petName, petNickname, petRarity, petSex, petTypeName} from "@/src/display/PetDisplay";
 import {commandRejectionMessage} from "@/src/display/CommandRejection";
+import {useGameDeadline} from "@/src/store/useGameDeadline";
+import {missionDate} from "@/src/display/Missions";
 
 const FEED_MENU: CommandMenu = {request: PetFeedReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetFeedRes]};
+const EXPEDITION_MENU: CommandMenu = {request: PetExpeditionReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetExpeditionRes, PetExpeditionErrorRes]};
 
 const styles = StyleSheet.create({
 	centered: {
@@ -39,6 +44,7 @@ function PetSheet({packet, onRename}: {packet: PetRes; onRename: () => void}): R
 	const pet = packet.pet;
 	const {pending, message, care} = usePetActions();
 	const menus = useCommandMenus();
+	useGameDeadline(GAME_ENTITIES.PET, packet.expeditionInProgress?.endTime ?? null);
 
 	return (
 		<Screen>
@@ -48,12 +54,14 @@ function PetSheet({packet, onRename}: {packet: PetRes; onRename: () => void}): R
 				subtitle={`${petTypeName(pet)} · ${petRarity(pet)}`}
 			/>
 			<QuickActions>
-				<QuickAction icon={AppIcons.getIcon("petCommand.pet")} disabled={pending} onPress={(): void => {care({type: "caress"}).catch(console.error);}}>{i18n.t("app:pet.care.caress")}</QuickAction>
-				<QuickAction icon={AppIcons.getIcon("foods.commonFood")} disabled={menus.pending} onPress={(): Promise<void> => menus.open(FEED_MENU)}>{i18n.t("app:pet.care.feed")}</QuickAction>
+				{!packet.expeditionInProgress ? <QuickAction icon={AppIcons.getIcon("petCommand.pet")} disabled={pending} onPress={(): void => {care({type: "caress"}).catch(console.error);}}>{i18n.t("app:pet.care.caress")}</QuickAction> : null}
+				{!packet.expeditionInProgress ? <QuickAction icon={AppIcons.getIcon("foods.commonFood")} disabled={menus.pending} onPress={(): Promise<void> => menus.open(FEED_MENU)}>{i18n.t("app:pet.care.feed")}</QuickAction> : null}
+				<QuickAction icon={AppIcons.getIcon("commands.map")} disabled={menus.pending} onPress={(): Promise<void> => menus.open(EXPEDITION_MENU)}>{i18n.t("app:expedition.open")}</QuickAction>
 				<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={onRename}>{i18n.t("app:pet.care.rename")}</QuickAction>
 			</QuickActions>
 			{message ? <Note>{message}</Note> : null}
 			{menus.message ? <Note>{menus.message}</Note> : null}
+			{packet.expeditionInProgress ? <Note>{i18n.t("app:expedition.overview", {date: missionDate(packet.expeditionInProgress.endTime)})}</Note> : null}
 
 			<SectionHeader>{i18n.t("app:pet.titles.sheet")}</SectionHeader>
 			<Panel>

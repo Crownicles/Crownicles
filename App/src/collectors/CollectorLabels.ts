@@ -6,6 +6,7 @@ import {
 	DAILY_BONUS_DATA_KINDS, DAILY_BONUS_REACTION_KINDS,
 	CLASSES_DATA_KINDS, CLASSES_REACTION_KINDS,
 	PET_FEED_DATA_KINDS, PET_FEED_REACTION_KINDS,
+	EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS,
 	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
@@ -217,6 +218,9 @@ function makeChoosableHandler<Kind extends ReactionCollectorReaction["type"]>(
 }
 
 const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => string> = {
+	[EXPEDITION_DATA_KINDS.CHOICE]: () => i18n.t("app:expedition.titles.expeditionChoice"),
+	[EXPEDITION_DATA_KINDS.PROGRESS]: () => i18n.t("app:expedition.titles.expeditionProgress"),
+	[EXPEDITION_DATA_KINDS.FINISHED]: () => i18n.t("app:expedition.titles.expeditionFinished"),
 	[PET_FEED_DATA_KINDS.GUILD]: () => i18n.t("app:pet.care.feed"),
 	[PET_FEED_DATA_KINDS.PERSONAL]: () => i18n.t("app:pet.care.feed"),
 	[CLASSES_DATA_KINDS.COLLECTOR]: () => i18n.t("app:classes.change"),
@@ -252,6 +256,9 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 };
 
 const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], DataHandler> = {
+	[EXPEDITION_DATA_KINDS.CHOICE]: () => undefined,
+	[EXPEDITION_DATA_KINDS.PROGRESS]: () => undefined,
+	[EXPEDITION_DATA_KINDS.FINISHED]: () => undefined,
 	[PET_FEED_DATA_KINDS.GUILD]: () => undefined,
 	[PET_FEED_DATA_KINDS.PERSONAL]: () => undefined,
 	[CLASSES_DATA_KINDS.COLLECTOR]: () => undefined,
@@ -314,6 +321,11 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 };
 
 const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], ReactionHandler> = {
+	[EXPEDITION_REACTION_KINDS.SELECT]: () => i18n.t("app:expedition.start"),
+	[EXPEDITION_REACTION_KINDS.CANCEL]: () => i18n.t("app:collector.refuse"),
+	[EXPEDITION_REACTION_KINDS.RECALL]: () => i18n.t("app:expedition.recall"),
+	[EXPEDITION_REACTION_KINDS.CLOSE]: () => i18n.t("app:common.back"),
+	[EXPEDITION_REACTION_KINDS.CLAIM]: () => i18n.t("app:expedition.claim"),
 	[PET_FEED_REACTION_KINDS.FOOD]: makeReactionHandler(PET_FEED_REACTION_KINDS.FOOD, reaction => i18n.t("app:pet.feed.food", {food: withIcon(`foods.${reaction.data.food}`, i18n.t(`models:foods.${reaction.data.food}`, {count: 1})), amount: reaction.data.amount, max: reaction.data.maxAmount})),
 	[CLASSES_REACTION_KINDS.CHOOSE]: makeReactionHandler(CLASSES_REACTION_KINDS.CHOOSE, reaction => withIcon(`classes.${reaction.data.classId}`, i18n.t(`models:classes.${reaction.data.classId}`))),
 	[DAILY_BONUS_REACTION_KINDS.OBJECT]: makeReactionHandler(DAILY_BONUS_REACTION_KINDS.OBJECT, reaction => itemDisplayName(reaction.data.object)),
@@ -441,6 +453,11 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 };
 
 const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHandler> = {
+	[EXPEDITION_REACTION_KINDS.SELECT]: (_reaction, data) => isDataOfType(data, EXPEDITION_DATA_KINDS.CHOICE),
+	[EXPEDITION_REACTION_KINDS.CANCEL]: (_reaction, data) => isDataOfType(data, EXPEDITION_DATA_KINDS.CHOICE),
+	[EXPEDITION_REACTION_KINDS.RECALL]: (_reaction, data) => isDataOfType(data, EXPEDITION_DATA_KINDS.PROGRESS),
+	[EXPEDITION_REACTION_KINDS.CLOSE]: (_reaction, data) => isDataOfType(data, EXPEDITION_DATA_KINDS.PROGRESS),
+	[EXPEDITION_REACTION_KINDS.CLAIM]: (_reaction, data) => isDataOfType(data, EXPEDITION_DATA_KINDS.FINISHED),
 	[PET_FEED_REACTION_KINDS.FOOD]: makeChoosableHandler(PET_FEED_REACTION_KINDS.FOOD, (reaction, data) => isDataOfType(data, PET_FEED_DATA_KINDS.GUILD) && reaction.data.amount > 0),
 	[CLASSES_REACTION_KINDS.CHOOSE]: (_reaction, data) => isDataOfType(data, CLASSES_DATA_KINDS.COLLECTOR),
 	[DAILY_BONUS_REACTION_KINDS.OBJECT]: (_reaction, data) => isDataOfType(data, DAILY_BONUS_DATA_KINDS.COLLECTOR),

@@ -15,6 +15,8 @@ import { BlessingType as LibBlessingType } from "../../../Lib/src/constants/Bles
 import { BlessingType } from "../../../WsPackets/src/objects/BlessingType";
 import { Badge as LibBadge } from "../../../Lib/src/types/Badge";
 import { BADGE_CODES } from "../../../WsPackets/src/objects/Badge";
+import {ExpeditionConstants} from "../../../Lib/src/constants/ExpeditionConstants";
+import {EXPEDITION_ERRORS, EXPEDITION_FOOD_CAUSES} from "../../../WsPackets/src/objects/PetExpedition";
 import { PetFood as LibPetFood } from "../../../Lib/src/types/PetFood";
 import { CommandPetFeedResult } from "../../../Lib/src/packets/commands/CommandPetFeedPacket";
 import { PetFood, PET_FEED_RESULTS } from "../../../WsPackets/src/objects/PetFood";
@@ -33,6 +35,8 @@ describe("wire enums mirror their back-end counterpart", () => {
 		["MissionType", MISSION_TYPES, LibMissionType],
 		["BlessingType", BlessingType, LibBlessingType],
 		["Badge", BADGE_CODES, LibBadge],
+		["ExpeditionErrors", EXPEDITION_ERRORS, ExpeditionConstants.ERROR_CODES],
+		["ExpeditionFoodCauses", EXPEDITION_FOOD_CAUSES, ExpeditionConstants.INSUFFICIENT_FOOD_CAUSES],
 		["PetFood", PetFood, LibPetFood],
 		["PetFeedResult", PET_FEED_RESULTS, CommandPetFeedResult],
 		["EquipAction", EQUIP_ACTIONS, ItemConstants.EQUIP_ACTIONS],

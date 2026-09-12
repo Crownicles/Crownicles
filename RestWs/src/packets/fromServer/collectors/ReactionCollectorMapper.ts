@@ -10,6 +10,9 @@ import {
 } from "./CollectorMapping";
 import { genericReactionMappings } from "./mappings/GenericReactionMappings";
 import {
+	expeditionDataMappings, expeditionReactionMappings
+} from "./mappings/PetExpeditionCollectorMappings";
+import {
 	petFeedDataMappings, petFeedReactionMappings
 } from "./mappings/PetFeedCollectorMappings";
 import {
@@ -47,6 +50,7 @@ import {
 } from "./mappings/ClassesCollectorMappings";
 
 const reactionMappings = indexMappings([
+	...expeditionReactionMappings,
 	...petFeedReactionMappings,
 	...genericReactionMappings,
 	...drinkReactionMappings,
@@ -63,6 +67,7 @@ const reactionMappings = indexMappings([
 ]);
 
 const dataMappings = indexMappings([
+	...expeditionDataMappings,
 	...petFeedDataMappings,
 	...drinkDataMappings,
 	...bigEventDataMappings,
