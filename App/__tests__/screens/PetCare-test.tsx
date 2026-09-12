@@ -4,6 +4,7 @@ import {PetNickname} from "@/src/components/PetNickname";
 import {PetFeedCollector} from "@/src/collectors/PetFeedCollector";
 import {PetSellCollector} from "@/src/collectors/PetSellCollector";
 import {PetSale} from "@/src/components/PetSale";
+import {PetPowersContent} from "@/src/components/PetPowers";
 import {PetSellReq} from "ws-packets/src/fromClient/PetManagementReq";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {PetNickReq} from "ws-packets/src/fromClient/PetCareReq";
@@ -20,6 +21,14 @@ const PET = {typeId: 1, nickname: "Aster", rarity: 1, sex: "m" as const, loveLev
 
 describe("pet care screens", () => {
 	beforeEach(() => jest.clearAllMocks());
+
+	it("filters the catalog by species and displays server-linked powers", async () => {
+		await render(<PetPowersContent powers={[{petTypeId: 1, rarity: 1, assistanceId: "bite"}, {petTypeId: 85, rarity: 1, assistanceId: "isUseless"}]} />);
+		expect(screen.getByText("app:pet.powers.effects.isUseless")).toBeTruthy();
+		await fireEvent.changeText(screen.getByLabelText("app:pet.powers.search"), "pets.85");
+		expect(screen.getByText("models:pets.85")).toBeTruthy();
+		expect(screen.queryByText("models:pets.1")).toBeNull();
+	});
 
 	it("offers a pet to the chosen rank without changing the price", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "PetManagementRes"});

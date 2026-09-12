@@ -10,12 +10,18 @@ import PetManagementClientTranslator from "../../src/packets/fromClient/translat
 import PetManagementServerTranslator from "../../src/packets/fromServer/translators/PetManagementServerTranslator";
 import {mapCollectorCreation} from "../../src/packets/fromServer/collectors/ReactionCollectorMapper";
 import {mapCollectorDisplay} from "../../src/packets/fromServer/collectors/CollectorDisplayMapper";
+import {readFileSync} from "node:fs";
+import {PetConstants} from "../../../Lib/src/constants/PetConstants";
 
 vi.mock("../../src/packets/fromServer/PlayerDisplay", () => ({resolvePlayerName: vi.fn(async () => "Aventurier")}));
 
 const CONTEXT: PacketContext = {keycloakId: "authenticated", frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {}};
 const PET = {typeId: 1, sex: "m" as const, nickname: "Aster", rarity: 1, loveLevel: 3, force: 10, feedDelay: 2};
 describe("pet ownership management", () => {
+	it("has a narrative description for every registered combat assistance", () => {
+		const french = JSON.parse(readFileSync(new URL("../../../Lang/fr/app.json", import.meta.url), "utf8"));
+		for (const behavior of PetConstants.PET_BEHAVIORS) expect(french.pet.powers.effects[behavior.behaviorId]).toEqual(expect.any(String));
+	});
 	it("keeps a targeted offer private and assigns controls from the authenticated context", async () => {
 		const packet = new ReactionCollectorPetSell("private-seller", 321, PET, "private-buyer").creationPacket("sale", 1_900_000_000_000);
 		for (const [keycloakId, role] of [["private-seller", "seller"], ["private-buyer", "buyer"], ["outsider", "observer"]]) {

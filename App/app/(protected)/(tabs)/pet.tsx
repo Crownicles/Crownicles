@@ -25,12 +25,20 @@ import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {missionDate} from "@/src/display/Missions";
 import {GuildShelter, PET_MANAGEMENT_MENUS} from "@/src/components/PetManagement";
 import {PetSale} from "@/src/components/PetSale";
+import {PetPowers} from "@/src/components/PetPowers";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 
 const FEED_MENU: CommandMenu = {request: PetFeedReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetFeedRes]};
 const EXPEDITION_MENU: CommandMenu = {request: PetExpeditionReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetExpeditionRes, PetExpeditionErrorRes]};
-const PET_PAGES = {OVERVIEW: "overview", RENAME: "rename", SHELTER: "shelter", SELL: "sell"} as const;
+const PET_PAGES = {OVERVIEW: "overview", RENAME: "rename", SHELTER: "shelter", SELL: "sell", POWERS: "powers"} as const;
 type PetPage = typeof PET_PAGES[keyof typeof PET_PAGES];
+const PET_PAGE_TITLES = {
+	[PET_PAGES.OVERVIEW]: "app:pet.titles.sheet",
+	[PET_PAGES.RENAME]: "app:pet.care.rename",
+	[PET_PAGES.SHELTER]: "app:pet.management.shelter",
+	[PET_PAGES.SELL]: "app:pet.sale.title",
+	[PET_PAGES.POWERS]: "app:pet.powers.title"
+} as const;
 
 const styles = StyleSheet.create({
 	centered: {
@@ -82,6 +90,7 @@ function PetSheet({packet, onPage}: {packet: PetRes; onPage: (page: PetPage) => 
 			</Panel>
 			<SectionHeader>{i18n.t("app:pet.management.title")}</SectionHeader>
 			<Panel>
+				<Row title={i18n.t("app:pet.powers.title")} onPress={(): void => onPage(PET_PAGES.POWERS)} chevron />
 				<Row title={i18n.t("app:pet.management.shelter")} onPress={(): void => onPage(PET_PAGES.SHELTER)} chevron />
 				<Row title={i18n.t("app:pet.management.transfer")} disabled={menus.pending} onPress={(): Promise<void> => menus.open(PET_MANAGEMENT_MENUS.TRANSFER)} chevron />
 				<Row title={i18n.t("app:pet.sale.title")} onPress={(): void => onPage(PET_PAGES.SELL)} chevron />
@@ -91,10 +100,11 @@ function PetSheet({packet, onPage}: {packet: PetRes; onPage: (page: PetPage) => 
 	);
 }
 
-function PetDetails({page, pet, onClose}: {page: PetPage; pet: OwnedPet; onClose: () => void}): ReactNode {
-	return <DetailScreen title={i18n.t(page === PET_PAGES.RENAME ? "app:pet.care.rename" : "app:pet.sale.title")} eyebrow={i18n.t("app:pet.eyebrow")} onClose={onClose}>
-		{page === PET_PAGES.RENAME ? <PetNickname pet={pet} /> : <PetSale pet={pet} />}
-	</DetailScreen>;
+function PetDetails({page, pet}: {page: PetPage; pet: OwnedPet | null}): ReactNode {
+	if (page === PET_PAGES.SHELTER) return <GuildShelter />;
+	if (page === PET_PAGES.POWERS) return <PetPowers />;
+	if (!pet) return <Note>{i18n.t("app:pet.noPet")}</Note>;
+	return page === PET_PAGES.RENAME ? <PetNickname pet={pet} /> : <PetSale pet={pet} />;
 }
 
 export default function Pet(): ReactNode {
@@ -103,14 +113,18 @@ export default function Pet(): ReactNode {
 		GAME_ENTITIES.PET,
 		() => GameClient.request(makeFromClientPacket(PetReq, { askedPlayer: {} }), PetRes, [PetNotFound])
 	);
-	if (page === PET_PAGES.SHELTER) return <DetailScreen title={i18n.t("app:pet.management.shelter")} eyebrow={i18n.t("app:pet.eyebrow")} onClose={(): void => setPage(PET_PAGES.OVERVIEW)}><GuildShelter /></DetailScreen>;
-	if (state.status === "ready" && page !== PET_PAGES.OVERVIEW) return <PetDetails page={page} pet={state.data.pet} onClose={(): void => setPage(PET_PAGES.OVERVIEW)} />;
+	if (page !== PET_PAGES.OVERVIEW) return <DetailScreen title={i18n.t(PET_PAGE_TITLES[page])} eyebrow={i18n.t("app:pet.eyebrow")} onClose={(): void => setPage(PET_PAGES.OVERVIEW)}>
+		<PetDetails page={page} pet={state.status === "ready" ? state.data.pet : null} />
+	</DetailScreen>;
 
 	switch (state.status) {
 		case "loading":
 			return <Centered><ActivityIndicator /></Centered>;
 		case "empty":
-			return <Screen><Note>{i18n.t("app:pet.noPet")}</Note><Panel><Row title={i18n.t("app:pet.management.shelter")} onPress={(): void => setPage(PET_PAGES.SHELTER)} chevron /></Panel></Screen>;
+			return <Screen><Note>{i18n.t("app:pet.noPet")}</Note><Panel>
+				<Row title={i18n.t("app:pet.management.shelter")} onPress={(): void => setPage(PET_PAGES.SHELTER)} chevron />
+				<Row title={i18n.t("app:pet.powers.title")} onPress={(): void => setPage(PET_PAGES.POWERS)} chevron />
+			</Panel></Screen>;
 		case "failed":
 			return <Centered><Text style={styles.message}>{state.rejection ? commandRejectionMessage(state.rejection) : i18n.t("app:common.error")}</Text></Centered>;
 		default:

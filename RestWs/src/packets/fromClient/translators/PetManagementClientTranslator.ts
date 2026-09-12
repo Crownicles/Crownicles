@@ -10,11 +10,21 @@ import {
 	PetTransferReq, PetFreeReq, PetSellReq, GuildShelterReq
 } from "../../../../../WsPackets/src/fromClient/PetManagementReq";
 import { InvalidClientPacketError } from "../InvalidClientPacketError";
+import { PetPowersReq } from "../../../../../WsPackets/src/fromClient/PetReq";
+import { CommandPetPowersPacketReq } from "../../../../../Lib/src/packets/commands/CommandPetPacket";
 
 export default class PetManagementClientTranslator {
+	@fromClientTranslator(PetPowersReq)
+	public static powers(_context: PacketContext, _packet: PetPowersReq): Promise<CommandPetPowersPacketReq> {
+		return asyncMakePacket(CommandPetPowersPacketReq, {});
+	}
+
 	@fromClientTranslator(PetSellReq)
 	public static sell(_context: PacketContext, packet: PetSellReq): Promise<CommandPetSellPacketReq> {
-		if (!Number.isSafeInteger(packet.rank) || packet.rank < 1 || !Number.isSafeInteger(packet.price)) {
+		if (!Number.isSafeInteger(packet.rank) || packet.rank < 1) {
+			throw new InvalidClientPacketError("Invalid pet sale request");
+		}
+		if (!Number.isSafeInteger(packet.price)) {
 			throw new InvalidClientPacketError("Invalid pet sale request");
 		}
 		return asyncMakePacket(CommandPetSellPacketReq, {

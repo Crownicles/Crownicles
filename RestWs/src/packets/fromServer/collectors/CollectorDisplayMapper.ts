@@ -9,7 +9,9 @@ import { ReactionCollectorCreation } from "../../../../../WsPackets/src/fromServ
 import {
 	GUILD_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, ReactionCollectorDataOf
 } from "../../../../../WsPackets/src/fromServer/collectors";
-import { PET_SALE_ROLES } from "../../../../../WsPackets/src/objects/PetManagement";
+import {
+	PET_SALE_ROLES, PetSaleRole
+} from "../../../../../WsPackets/src/objects/PetManagement";
 import { mapCollectorCreation } from "./ReactionCollectorMapper";
 import { resolvePlayerName } from "../PlayerDisplay";
 
@@ -20,13 +22,18 @@ const MEMBER_FIELDS = new Map([
 	[ReactionCollectorGuildLeaveData.name, "newChiefKeycloakId"]
 ]);
 
+function saleRole(source: ReactionCollectorPetSellData, context?: PacketContext): PetSaleRole {
+	if (!context?.keycloakId) {
+		return PET_SALE_ROLES.OBSERVER;
+	}
+	if (source.sellerKeycloakId === context.keycloakId) {
+		return PET_SALE_ROLES.SELLER;
+	}
+	return source.buyerKeycloakId === context.keycloakId ? PET_SALE_ROLES.BUYER : PET_SALE_ROLES.OBSERVER;
+}
+
 async function saleDisplay(data: ReactionCollectorDataOf<typeof PET_MANAGEMENT_DATA_KINDS.SELL>, source: ReactionCollectorPetSellData, context?: PacketContext): Promise<void> {
-	if (source.sellerKeycloakId === context?.keycloakId) {
-		data.data.role = PET_SALE_ROLES.SELLER;
-	}
-	else if (source.buyerKeycloakId && source.buyerKeycloakId === context?.keycloakId) {
-		data.data.role = PET_SALE_ROLES.BUYER;
-	}
+	data.data.role = saleRole(source, context);
 	const sellerName = await resolvePlayerName(source.sellerKeycloakId);
 	const buyerName = source.buyerKeycloakId ? await resolvePlayerName(source.buyerKeycloakId) : null;
 	if (sellerName) {

@@ -115,6 +115,7 @@ function inventoryPacket(): CommandInventoryPacketRes {
 describe("packet contracts", () => {
 	it("keeps the compile-time contract checks active", () => {
 		expect(packetContractChecks).toStrictEqual({
+			petPowers: true,
 			classesInfo: true,
 			availableClass: true,
 			classStats: true,

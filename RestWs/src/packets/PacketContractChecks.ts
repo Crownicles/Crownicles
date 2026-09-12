@@ -14,7 +14,8 @@ import {
 } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
 import {
 	CommandPetPacketReq,
-	CommandPetPacketRes
+	CommandPetPacketRes,
+	CommandPetPowersPacketRes
 } from "../../../Lib/src/packets/commands/CommandPetPacket";
 import {
 	CommandPingPacketReq,
@@ -71,7 +72,9 @@ import { CommandGetCurrentReactionCollectorsRes } from "../../../WsPackets/src/f
 import { InventoryReq } from "../../../WsPackets/src/fromClient/InventoryReq";
 import { InventoryRes } from "../../../WsPackets/src/fromServer/inventory/InventoryRes";
 import { PetReq } from "../../../WsPackets/src/fromClient/PetReq";
-import { PetRes } from "../../../WsPackets/src/fromServer/pet/PetRes";
+import {
+	PetRes, PetPowersRes
+} from "../../../WsPackets/src/fromServer/pet/PetRes";
 import { PingReq } from "../../../WsPackets/src/fromClient/PingReq";
 import { PingRes } from "../../../WsPackets/src/fromServer/ping/PingRes";
 import { ProfileReq } from "../../../WsPackets/src/fromClient/ProfileReq";
@@ -168,6 +171,7 @@ type PetResponseContract = Assert<IsEqual<
 	WireShape<Omit<CommandPetPacketRes, "askedKeycloakId">>,
 	WireShape<WirePacketFields<PetRes>>
 >>;
+type PetPowersContract = Assert<IsEqual<WireShape<CommandPetPowersPacketRes>, WireShape<WirePacketFields<PetPowersRes>>>>;
 type PingResponseContract = Assert<IsEqual<
 	WireShape<RenameField<CommandPingPacketRes, "clientTime", "time">>,
 	WireShape<WirePacketFields<PingRes>>
@@ -290,6 +294,7 @@ type ClassStatsContract = Assert<IsEqual<WireShape<LibClassStats>, WireShape<Cla
 type ClassKindContract = Assert<IsEqual<LibClassKind, ClassKind>>;
 
 export const packetContractChecks: {
+	petPowers: PetPowersContract;
 	classesInfo: ClassesInfoContract;
 	availableClass: AvailableClassContract;
 	classStats: ClassStatsContract;
@@ -343,6 +348,7 @@ export const packetContractChecks: {
 	supportItem: SupportItemContract;
 	valueAndMax: ValueAndMaxContract;
 } = {
+	petPowers: true,
 	classesInfo: true,
 	availableClass: true,
 	classStats: true,
