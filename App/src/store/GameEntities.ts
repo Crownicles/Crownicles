@@ -16,6 +16,9 @@ export const GAME_ENTITIES = {
 	GUILD_DOMAIN: "guildDomain",
 	MISSIONS: "missions",
 	CLASSES: "classes",
+	FIGHT_HISTORY: "fightHistory",
+	LEAGUES: "leagues",
+	RANKINGS: "rankings",
 	RARITY: "rarity",
 	BLESSING: "blessing"
 } as const;

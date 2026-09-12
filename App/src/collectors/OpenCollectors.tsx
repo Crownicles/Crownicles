@@ -29,7 +29,10 @@ import {GuildOutcome} from "@/src/collectors/GuildOutcome";
 import {useGuildOutcome} from "@/src/store/useGuildOutcome";
 import {useGuildDomainOutcome} from "@/src/store/useGuildDomainOutcome";
 import {GuildDomainOutcome} from "@/src/collectors/GuildDomainOutcome";
-import {FightConfirmCollector, FightSession} from "@/src/collectors/FightCollector";
+import {FightSession} from "@/src/collectors/FightCollector";
+import {FightConfirmCollector} from "@/src/collectors/FightActionCollector";
+import {useLeagueRewardOutcome} from "@/src/store/useLeagueRewardOutcome";
+import {LeagueRewardOutcome} from "@/src/collectors/LeagueRewardOutcome";
 
 const styles = StyleSheet.create({
 	container: {
@@ -84,7 +87,9 @@ function PendingOutcomes(): ReactNode {
 	const managementOutcome = usePetManagementOutcome();
 	const guildOutcome = useGuildOutcome();
 	const domainOutcome = useGuildDomainOutcome();
+	const leagueOutcome = useLeagueRewardOutcome();
 	return <>
+			{leagueOutcome.outcome ? <LeagueRewardOutcome outcome={leagueOutcome.outcome} onContinue={leagueOutcome.clear} /> : null}
 			{domainOutcome.outcome ? <GuildDomainOutcome outcome={domainOutcome.outcome} onContinue={domainOutcome.clear} /> : null}
 			{guildOutcome.outcome ? <GuildOutcome outcome={guildOutcome.outcome} onContinue={guildOutcome.clear} /> : null}
 			{managementOutcome.outcome ? <PetManagementOutcome outcome={managementOutcome.outcome} onContinue={managementOutcome.clear} /> : null}

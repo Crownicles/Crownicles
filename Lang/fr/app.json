@@ -888,6 +888,11 @@
     }
   },
   "arena": {
+    "unknownPlayer": "Joueur inconnu",
+    "pages": {"history": "Historique des combats", "leagues": "Ligues", "rankings": "Classements"},
+    "history": {"attacked": "Vous avez attaqué {{opponent}}", "defended": "{{opponent}} vous a attaqué", "opponentClass": "Classe adverse", "opponentGlory": "Gloire adverse", "empty": "Aucun combat n'est encore enregistré."},
+    "leagues": {"reward": "Récompense de ligue", "claim": "Réclamer la récompense", "catalog": "Les ligues", "threshold": "Gloire minimale", "seasonMoney": "Argent de fin de saison", "seasonXp": "Expérience de fin de saison", "winMoney": "Base d'une victoire", "nextClaim": "La récompense pourra être réclamée le {{date}}.", "noPoints": "Aucune gloire n'a été obtenue pendant la saison précédente.", "alreadyClaimed": "La récompense de cette saison a déjà été réclamée."},
+    "rankings": {"title": "Classements", "types": {"Score": "Score", "Glory": "Gloire", "Guild": "Guildes"}, "period": "Période", "timings": {"AllTime": "Général", "Week": "Semaine"}, "positions": "Classement", "yourRank": "Votre place : {{rank}}", "unavailable": "Vous ne pouvez pas figurer dans ce classement pour le moment.", "needFight_one": "Encore un combat avant d'entrer au classement.", "needFight_other": "Encore {{count}} combats avant d'entrer au classement.", "entry": "{{rank}}. {{name}}", "selfValue": "{{value}} · Vous", "value": "{{value}}", "page": "Page {{page}} / {{total}}", "previous": "Précédent", "next": "Suivant", "inactive": "Inactif"},
     "details": "Statistiques", "currentTurn": "Tour en cours",
     "eyebrow": "COMBAT", "title": "Arène", "confirm": "Préparer le duel", "start": "Chercher un adversaire", "resume": "Reprendre le combat", "minimize": "Réduire",
     "you": "Vous", "opponent": "Adversaire", "energy": "Énergie", "breath": "Souffle", "glory": "Gloire", "league": "Ligue", "class": "Classe", "pet": "Familier",

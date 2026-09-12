@@ -1,5 +1,5 @@
 import {fireEvent, render, screen} from "@testing-library/react-native";
-import {FightConfirmCollector, FightActions} from "@/src/collectors/FightCollector";
+import {FightConfirmCollector, FightActions} from "@/src/collectors/FightActionCollector";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));

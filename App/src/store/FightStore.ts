@@ -51,7 +51,9 @@ class FightStore {
 	public readonly syncCurrent = (): void => {
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(FightResumeReq, {}), {
 			[FightResumeRes.wireName]: (packet: FightResumeRes): void => {
-				if (!packet.active && !this.snapshot.result && !this.snapshot.error) this.reset();
+				if (packet.active) return;
+				if (this.snapshot.result || this.snapshot.error) return;
+				this.reset();
 			}
 		});
 	};
