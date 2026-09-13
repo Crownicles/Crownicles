@@ -8,6 +8,9 @@ import {AssetsManager} from "@/src/assets/AssetsManager";
 import {Theme} from "@/src/design/Theme";
 import {Button as DesignButton} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
+import {GameQueryProvider} from "@/src/store/GameQueryProvider";
+import {CollectorsProvider} from "@/src/collectors/CollectorsContext";
+import {OpenCollectors} from "@/src/collectors/OpenCollectors";
 
 const styles = StyleSheet.create({
 	overlay: {
@@ -143,16 +146,21 @@ function ReconnectingOverlay(): React.ReactElement {
 function AuthenticatedLayout({ state }: { state: AuthStateEnum }): React.ReactElement {
 	return (
 		<SafeAreaProvider>
-			<View style={styles.authenticatedRoot}>
-				<Stack screenOptions={{
-					headerShown: false,
-				}}>
-					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-				</Stack>
-				{state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && (
-					<ReconnectingOverlay />
-				)}
-			</View>
+			<GameQueryProvider authState={state}>
+				<CollectorsProvider authState={state}>
+					<View style={styles.authenticatedRoot}>
+						<Stack screenOptions={{
+							headerShown: false,
+						}}>
+							<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+						</Stack>
+						{state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && (
+							<ReconnectingOverlay />
+						)}
+						<OpenCollectors />
+					</View>
+				</CollectorsProvider>
+			</GameQueryProvider>
 		</SafeAreaProvider>
 	);
 }

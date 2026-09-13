@@ -15,7 +15,8 @@ import {
 	AdventureCollector, BigEventOutcome, HealOutcome, LotteryOutcome, TokenOutcome, WitchOutcome
 } from "@/src/collectors/AdventureCollector";
 
-jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
+const mockPush = jest.fn();
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: () => ({push: mockPush})}));
 
 jest.mock("@/src/AppIcons", () => ({
 	AppIcons: {
@@ -410,6 +411,25 @@ describe("AdventureCollector", () => {
 
 		await fireEvent.press(screen.getByText("commands:report.city.homes.bed.buttonLabel"));
 		expect(onChoose).toHaveBeenCalledWith(2);
+	});
+
+	it.each([
+		["commands:report.city.homes.chest.menuLabel", "chest"],
+		["app:city.labels.cooking", "cooking"]
+	])("opens %s independently of the expiring city collector", async (label, service) => {
+		mockPush.mockClear();
+		const onChoose = jest.fn();
+		const collector = cityCollector();
+		if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected city fixture");
+		const home = collector.data.data.snapshot?.home?.owned;
+		if (!home) throw new Error("Expected home fixture");
+		home.hasChest = true;
+		home.hasCooking = true;
+		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:city.labels.home"));
+		await fireEvent.press(screen.getByText(label));
+		expect(mockPush).toHaveBeenCalledWith({pathname: "/home/[service]", params: {service}});
+		expect(onChoose).not.toHaveBeenCalled();
 	});
 
 	it("confirms a paid city action before submitting its original index", async () => {

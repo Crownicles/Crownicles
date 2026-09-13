@@ -1,4 +1,5 @@
 import {ReactNode, useState} from "react";
+import {useRouter} from "expo-router";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
 	CITY_DATA_KINDS,
@@ -20,6 +21,7 @@ import {groupCityEntries} from "@/src/collectors/CityMenuModel";
 import {CitySection} from "@/src/collectors/CityRows";
 import {Button, ButtonRow, Confirmation, Hero, Note, Screen} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
+import {HOME_SERVICE_DESTINATIONS} from "@/src/navigation/HomeServices";
 
 type CityCollectorProps = {
 	collector: ReactionCollectorCreation;
@@ -231,6 +233,7 @@ function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseI
 }
 
 export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {
+	const router = useRouter();
 	const [answered, setAnswered] = useState(false);
 	const [pendingEntry, setPendingEntry] = useState<CityEntry | null>(null);
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);
@@ -258,6 +261,11 @@ export function CityCollector({collector, onChoose, submitting}: CityCollectorPr
 		choose(index);
 	};
 	const navigate = (item: CityNavigationItem): void => {
+		if (item.view in HOME_SERVICE_DESTINATIONS) {
+			const service = HOME_SERVICE_DESTINATIONS[item.view as keyof typeof HOME_SERVICE_DESTINATIONS];
+			router.push({pathname: "/home/[service]", params: {service}});
+			return;
+		}
 		setInnId(item.innId);
 		setSubmenu(item.view);
 	};

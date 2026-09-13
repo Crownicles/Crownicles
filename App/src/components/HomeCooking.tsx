@@ -2,12 +2,13 @@ import {ReactNode, useState} from "react";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {CookingMenuReq, CookingIgniteReq, CookingReviveReq, CookingWoodConfirmReq, CookingCraftReq, CookingPinReq, CookingUnpinReq} from "ws-packets/src/fromClient/CookingReq";
 import {CookingRes} from "ws-packets/src/fromServer/home/CookingRes";
-import {CookingMenu, CookingSlot, RecipeIngredients, CraftResult, CookingOutcome} from "ws-packets/src/objects/Cooking";
+import {CookingMenu, CookingSlot, RecipeIngredients, CookingOutcome} from "ws-packets/src/objects/Cooking";
 import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {CookingRequest, cookingMenuFromOutcome, useCookingActions} from "@/src/store/useCookingActions";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
+import {HomeCookingResults} from "@/src/components/HomeCookingResults";
 import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel, SectionHeader} from "@/src/design/Primitives";
 import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
@@ -51,37 +52,6 @@ function PinnedRecipe({menu, actions}: {menu: CookingMenu; actions: CookingActio
 	</>;
 }
 
-function PetFoodResult({food}: {food: NonNullable<CraftResult["petFood"]>}): ReactNode {
-	return <>
-		<KeyValue label={i18n.t(`models:foods.${food.type}`, {count: food.quantity, context: "capitalized"})} value={i18n.t("app:cooking.foodStored", {quantity: food.quantity, stored: food.storedQuantity})} />
-		{food.fedFromSurplus ? <Note>{i18n.t("app:cooking.petFed")}</Note> : null}
-		{food.surplusMaterialId ? <KeyValue label={i18n.t(`models:materials.${food.surplusMaterialId}`)} value={formatNumber(food.surplusMaterialQuantity ?? 0)} /> : null}
-	</>;
-}
-
-function CraftRewards({result}: {result: CraftResult}): ReactNode {
-	return <>
-		{result.potionId ? <KeyValue label={i18n.t("app:cooking.potion")} value={i18n.t(`models:potions.${result.potionId}`)} /> : null}
-		{result.failedPotionId ? <KeyValue label={i18n.t("app:cooking.consolation")} value={i18n.t(`models:potions.${result.failedPotionId}`)} /> : null}
-		{result.petFood ? <PetFoodResult food={result.petFood} /> : null}
-		{result.material ? <KeyValue label={i18n.t(`models:materials.${result.material.materialId}`)} value={formatNumber(result.material.quantity)} /> : null}
-		{result.materialSaved ? <Note>{i18n.t("app:cooking.savedMaterial", {material: i18n.t(`models:materials.${result.materialSaved}`)})}</Note> : null}
-		{result.bonusOutput ? <Note>{i18n.t("app:cooking.bonusOutput")}</Note> : null}
-	</>;
-}
-
-function CookingResult({outcome}: {outcome: CookingOutcome | null}): ReactNode {
-	if (outcome?.kind === "furnace") return <Note>{i18n.t(outcome.woodConsumed ? "app:cooking.woodConsumed" : "app:cooking.woodSaved", {material: i18n.t(`models:materials.${outcome.woodMaterialId}`)})}</Note>;
-	if (outcome?.kind !== "crafted" || outcome.result.error) return null;
-	const {result} = outcome;
-	return <>
-		<SectionHeader>{i18n.t(result.success ? "app:cooking.success" : "app:cooking.failed")}</SectionHeader>
-		<Panel><CraftRewards result={result} /><KeyValue label={i18n.t("app:cooking.xpGained")} value={formatNumber(result.cookingXpGained)} /></Panel>
-		{result.cookingLevelUp ? <Note>{i18n.t("app:cooking.levelUp", {level: result.menu.cookingLevel, grade: i18n.t(`models:cooking.grades.${result.menu.cookingGrade}`)})}</Note> : null}
-		{result.discoveredRecipes?.map(recipe => <Note key={recipe.recipeId}>{i18n.t("app:cooking.discovered", {recipe: i18n.t(`models:cooking.recipes.${recipe.recipeId}`), level: recipe.level})}</Note>)}
-	</>;
-}
-
 function FurnaceActions({isIgnited, actions}: {isIgnited: boolean; actions: CookingActions}): ReactNode {
 	const [revive, setRevive] = useState(false);
 	const confirmRevive = (): void => {
@@ -113,7 +83,7 @@ function CookingContent({menu}: {menu: CookingMenu}): ReactNode {
 	return <>
 		<Panel><KeyValue label={i18n.t("app:cooking.level")} value={formatNumber(menu.cookingLevel)} /><KeyValue label={i18n.t("app:cooking.grade")} value={i18n.t(`models:cooking.grades.${menu.cookingGrade}`)} /><KeyValue label={i18n.t("app:cooking.furnace")} value={i18n.t(menu.isIgnited ? "app:cooking.lit" : "app:cooking.unlit")} /></Panel>
 		{actions.message ? <Note>{actions.message}</Note> : null}
-		<CookingResult outcome={actions.outcome} />
+		<HomeCookingResults outcome={actions.outcome} />
 		<PinnedRecipe menu={menu} actions={actions} />
 		{menu.currentSlots.map(slot => <RecipeSlot key={slot.slotIndex} slot={slot} actions={actions} onSelect={setSelection} />)}
 		<FurnaceActions isIgnited={menu.isIgnited} actions={actions} />

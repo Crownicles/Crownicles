@@ -344,7 +344,7 @@ export async function handleCookingWoodConfirm(
 	const pending = consumePendingWoodConfirmation(keycloakId);
 
 	if (!packet.accepted) {
-		return loadCookingMenu(keycloakId, pending?.isRevive ?? false);
+		return buildCookingMenuResponse(await getPlayerAndHome(keycloakId), pending?.isRevive ?? false);
 	}
 	if (!pending) {
 		return [makePacket(CommandReportCookingUnavailableRes, {})];
@@ -955,9 +955,8 @@ export async function handleCookingCraft(
 	return await executeReadyCookingCraft(readyCraftContext, context);
 }
 
-async function loadCookingMenu(keycloakId: string, isIgnited: boolean): Promise<CrowniclesPacket[]> {
+async function buildCookingMenuResponse(data: PlayerAndHome | null, isIgnited: boolean): Promise<CrowniclesPacket[]> {
 	const response: CrowniclesPacket[] = [];
-	const data = await getPlayerAndHome(keycloakId);
 	if (!data) {
 		return [makePacket(CommandReportCookingUnavailableRes, {})];
 	}
@@ -971,8 +970,8 @@ async function loadCookingMenu(keycloakId: string, isIgnited: boolean): Promise<
 	return response;
 }
 
-export function handleCookingMenu(keycloakId: string, _packet: CommandReportCookingMenuReq): Promise<CrowniclesPacket[]> {
-	return loadCookingMenu(keycloakId, false);
+export async function handleCookingMenu(keycloakId: string, _packet: CommandReportCookingMenuReq): Promise<CrowniclesPacket[]> {
+	return buildCookingMenuResponse(await getPlayerAndHome(keycloakId), false);
 }
 
 async function validatePinRecipe(player: Player, recipeId: string): Promise<ValidatedPinRecipe | null> {

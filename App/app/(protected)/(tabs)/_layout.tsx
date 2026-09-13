@@ -1,10 +1,5 @@
 import {Tabs, useRouter} from "expo-router";
 import {Alert, Text, TouchableOpacity, View} from "react-native";
-import {useContext} from "react";
-import {AuthContext} from "@/src/authentication/AuthContext";
-import {GameQueryProvider} from "@/src/store/GameQueryProvider";
-import {CollectorsProvider} from "@/src/collectors/CollectorsContext";
-import {OpenCollectors} from "@/src/collectors/OpenCollectors";
 import {AppIcons} from "@/src/AppIcons";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
@@ -56,7 +51,7 @@ const ProfileHeader = ({ children }: { children?: string }) => {
 	);
 };
 
-function TabLayoutContent() {
+export default function TabLayout() {
 	const router = useRouter();
 
 	return (
@@ -102,18 +97,5 @@ function TabLayoutContent() {
 			}} />
 			<Tabs.Screen name="settings/index" options={{ href: null, title: i18n.t("app:settings.title") }} />
 		</Tabs>
-	);
-}
-
-export default function TabLayout() {
-	const {state: authState} = useContext(AuthContext);
-
-	return (
-		<GameQueryProvider authState={authState}>
-			<CollectorsProvider authState={authState}>
-				<TabLayoutContent />
-				<OpenCollectors />
-			</CollectorsProvider>
-		</GameQueryProvider>
 	);
 }

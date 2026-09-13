@@ -14,8 +14,6 @@ import {CitySection} from "@/src/collectors/CityRows";
 import {submenuSections} from "@/src/collectors/CitySubmenuSections";
 import {Button, ButtonRow, Hero, Note, Screen} from "@/src/design/Primitives";
 import {GuildDomain} from "@/src/components/GuildDomain";
-import {HomeChest} from "@/src/components/HomeChest";
-import {HomeCooking} from "@/src/components/HomeCooking";
 import {i18n} from "@/src/translations/i18n";
 
 type SubmenuProps = {
@@ -29,7 +27,7 @@ function submenuIcon(view: CitySubmenu, snapshot?: CityMobileSnapshot): string |
 	return AppIcons.getIconOrNull(cityNavigationMeta(view).iconPath);
 }
 
-const INTERACTIVE_SUBMENUS: Partial<Record<CitySubmenu, () => ReactNode>> = {guild: GuildDomain, homeChest: HomeChest, homeCooking: HomeCooking};
+const INTERACTIVE_SUBMENUS: Partial<Record<CitySubmenu, () => ReactNode>> = {guild: GuildDomain};
 
 export function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, onNavigate, onBack, locked, backLabel}: SubmenuProps): ReactNode {
 	const details = submenuTitle(view, innId);
