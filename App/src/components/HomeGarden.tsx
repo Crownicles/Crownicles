@@ -16,7 +16,7 @@ import {i18n} from "@/src/translations/i18n";
 
 const PERCENTAGE_SCALE = 100;
 type GardenSelection = {operation: GardenOperation; message: string};
-type GardenActions = {pending: boolean; select: (selection: GardenSelection) => void};
+type GardenActions = {pending: boolean; select: (selection: GardenSelection) => void; submit: (operation: GardenOperation) => Promise<void>};
 type GardenPlot = GardenSnapshot["plots"][number];
 
 function GardenPlotRow({plot, garden, actions}: {plot: GardenPlot; garden: GardenSnapshot; actions: GardenActions}): ReactNode {
@@ -53,10 +53,33 @@ function GardenResult({outcome}: {outcome: GardenOutcome | null}): ReactNode {
 	}
 }
 
+function GardenPlots({garden, actions}: {garden: GardenSnapshot; actions: GardenActions}): ReactNode {
+	return <>
+		<Panel><KeyValue label={i18n.t("app:inventory.seed")} value={garden.hasSeed ? i18n.t(`models:plants.${garden.seedPlantId}`) : i18n.t("app:profile.values.none")} /><KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={String(garden.totalPlots)} /></Panel>
+		<SectionHeader>{i18n.t("app:garden.plots")}</SectionHeader>
+		<Panel>{garden.plots.map(plot => <GardenPlotRow key={plot.slot} plot={plot} garden={garden} actions={actions} />)}</Panel>
+		<ButtonRow>
+			<Button variant="primary" disabled={actions.pending || !garden.eligibility.canHarvest} onPress={(): Promise<void> => actions.submit({type: GARDEN_OPERATIONS.HARVEST})}>{i18n.t("app:garden.harvest")}</Button>
+			{garden.accessMode === GARDEN_ACCESS.FULL ? <Button disabled={actions.pending || !garden.eligibility.canWaterGarden} onPress={(): Promise<void> => actions.submit({type: GARDEN_OPERATIONS.WATER})}>{i18n.t("app:garden.water")}</Button> : null}
+		</ButtonRow>
+	</>;
+}
+
+function GardenStorage({plants}: {plants: GardenSnapshot["plantStorage"]}): ReactNode {
+	return <>
+		<SectionHeader>{i18n.t("app:garden.storage")}</SectionHeader>
+		<Panel>{plants.map(plant => <KeyValue key={plant.plantId} label={i18n.t(`models:plants.${plant.plantId}`)} value={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} />)}{!plants.length ? <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note> : null}</Panel>
+	</>;
+}
+
+function GardenConfirmation({selection, pending, onConfirm, onClose}: {selection: GardenSelection; pending: boolean; onConfirm: () => void; onClose: () => void}): ReactNode {
+	return <Confirmation title={i18n.t(`app:garden.${selection.operation.type}`)} message={selection.message} onRequestClose={onClose}><ButtonRow><Button variant="primary" disabled={pending} onPress={onConfirm}>{i18n.t("app:collector.accept")}</Button><Button onPress={onClose}>{i18n.t("app:collector.refuse")}</Button></ButtonRow></Confirmation>;
+}
+
 function GardenContent({garden, offers}: {garden: GardenSnapshot; offers: GardenCompostOffer[]}): ReactNode {
 	const {pending, message, submit, outcome} = useGardenActions();
 	const [selection, setSelection] = useState<GardenSelection | null>(null);
-	const actions = {pending, select: setSelection};
+	const actions = {pending, select: setSelection, submit};
 	const confirm = (): void => {
 		if (!selection) return;
 		setSelection(null);
@@ -66,17 +89,10 @@ function GardenContent({garden, offers}: {garden: GardenSnapshot; offers: Garden
 		{garden.accessMode === GARDEN_ACCESS.READ_ONLY ? <Note>{i18n.t("app:garden.remote")}</Note> : null}
 		{message ? <Note>{message}</Note> : null}
 		<GardenResult outcome={outcome} />
-		<Panel><KeyValue label={i18n.t("app:inventory.seed")} value={garden.hasSeed ? i18n.t(`models:plants.${garden.seedPlantId}`) : i18n.t("app:profile.values.none")} /><KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={String(garden.totalPlots)} /></Panel>
-		<SectionHeader>{i18n.t("app:garden.plots")}</SectionHeader>
-		<Panel>{garden.plots.map(plot => <GardenPlotRow key={plot.slot} plot={plot} garden={garden} actions={actions} />)}</Panel>
-		<ButtonRow>
-			<Button variant="primary" disabled={pending || !garden.eligibility.canHarvest} onPress={(): Promise<void> => submit({type: GARDEN_OPERATIONS.HARVEST})}>{i18n.t("app:garden.harvest")}</Button>
-			{garden.accessMode === GARDEN_ACCESS.FULL ? <Button disabled={pending || !garden.eligibility.canWaterGarden} onPress={(): Promise<void> => submit({type: GARDEN_OPERATIONS.WATER})}>{i18n.t("app:garden.water")}</Button> : null}
-		</ButtonRow>
-		<SectionHeader>{i18n.t("app:garden.storage")}</SectionHeader>
-		<Panel>{garden.plantStorage.map(plant => <KeyValue key={plant.plantId} label={i18n.t(`models:plants.${plant.plantId}`)} value={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} />)}{!garden.plantStorage.length ? <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note> : null}</Panel>
+		<GardenPlots garden={garden} actions={actions} />
+		<GardenStorage plants={garden.plantStorage} />
 		<CompostOffers offers={offers} actions={actions} />
-		{selection ? <Confirmation title={i18n.t(`app:garden.${selection.operation.type}`)} message={selection.message} onRequestClose={(): void => setSelection(null)}><ButtonRow><Button variant="primary" disabled={pending} onPress={confirm}>{i18n.t("app:collector.accept")}</Button><Button onPress={(): void => setSelection(null)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow></Confirmation> : null}
+		{selection ? <GardenConfirmation selection={selection} pending={pending} onConfirm={confirm} onClose={(): void => setSelection(null)} /> : null}
 	</>;
 }
 
