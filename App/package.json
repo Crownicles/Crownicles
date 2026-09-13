@@ -22,12 +22,13 @@
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!(.pnpm|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-svg|ws-packets))"
+      "node_modules/(?!(.pnpm|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-svg|lucide-react-native|ws-packets))"
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.ts"
     ],
     "moduleNameMapper": {
+      "^lucide-react-native$": "<rootDir>/node_modules/lucide-react-native/dist/cjs/lucide-react-native.js",
       "^@babel/runtime/(.*)$": "<rootDir>/node_modules/@babel/runtime/$1"
     }
   },
@@ -60,6 +61,7 @@
     "expo-system-ui": "~57.0.2",
     "expo-web-browser": "~57.0.2",
     "i18next": "^25.3.2",
+    "lucide-react-native": "^1.45.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.2",
@@ -67,6 +69,7 @@
     "react-native-reanimated": "~4.5.1",
     "react-native-safe-area-context": "5.7.0",
     "react-native-screens": "~4.26.2",
+    "react-native-svg": "15.15.4",
     "react-native-uuid": "^2.0.3",
     "react-native-web": "~0.21.2",
     "react-native-webview": "13.16.1",

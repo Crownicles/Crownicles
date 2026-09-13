@@ -24,8 +24,11 @@ function failure(error: FightError): Promise<FightErrorRes> {
 }
 
 async function fighterStatus(context: PacketContext, fighter: CommandFightStatusPacket["activeFighter"]): Promise<FightFighter> {
+	const {
+		keycloakId: _keycloakId, monsterId: _monsterId, ...details
+	} = fighter;
 	return {
-		...await fightParticipant(context, fighter), stats: fighter.stats, ...fighter.glory === undefined ? {} : { glory: fighter.glory }
+		...await fightParticipant(context, fighter), ...details
 	};
 }
 

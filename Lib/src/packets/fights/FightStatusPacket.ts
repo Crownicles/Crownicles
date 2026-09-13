@@ -13,6 +13,9 @@ export class CommandFightStatusPacket extends CrowniclesPacket {
 	activeFighter!: {
 		keycloakId?: string;
 		monsterId?: string;
+		classId?: number;
+		level?: number;
+		alteration?: string;
 		glory?: number;
 		stats: {
 			power: number;
@@ -29,6 +32,9 @@ export class CommandFightStatusPacket extends CrowniclesPacket {
 	defendingFighter!: {
 		keycloakId?: string;
 		monsterId?: string;
+		classId?: number;
+		level?: number;
+		alteration?: string;
 		glory?: number;
 		stats: {
 			power: number;

@@ -24,10 +24,12 @@ describe("fight protocol", () => {
 	});
 	it("resolves participants while preserving the current fighter and statistics", async () => {
 		const stats = {power: 123, attack: 42, defense: 25, speed: 10, breath: 4, maxBreath: 12, breathRegen: 2};
-		const result = await FightServerTranslator.status(CONTEXT, makePacket(CommandFightStatusPacket, {fightId: "duel", numberOfTurn: 3, maxNumberOfTurn: 30, activeFighter: {keycloakId: "private-opponent", stats}, defendingFighter: {keycloakId: "private-self", stats}}));
+		const result = await FightServerTranslator.status(CONTEXT, makePacket(CommandFightStatusPacket, {fightId: "duel", numberOfTurn: 3, maxNumberOfTurn: 30, activeFighter: {keycloakId: "private-opponent", classId: 2, level: 45, alteration: "burned", stats}, defendingFighter: {keycloakId: "private-self", classId: 1, level: 30, stats}}));
 		expect(result.status.activeFighter.isSelf).toBe(false);
 		expect(result.status.defendingFighter.isSelf).toBe(true);
 		expect(result.status.activeFighter.stats).toEqual(stats);
+		expect(result.status.activeFighter).toMatchObject({classId: 2, level: 45, alteration: "burned"});
+		expect(result.status.defendingFighter).toMatchObject({classId: 1, level: 30});
 		expect(JSON.stringify(result)).not.toContain("private-");
 	});
 	it("keeps monster IDs and exact action breath costs in introductions", async () => {

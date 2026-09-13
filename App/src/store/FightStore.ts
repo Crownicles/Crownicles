@@ -6,7 +6,7 @@ import {FightIntroduction, FightStatus, FightLogEntry, FightEnd, FightReward, Fi
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 type Listener = () => void;
-export type FightLogRecord = {sequence: number; entry: FightLogEntry};
+export type FightLogRecord = {sequence: number; entry: FightLogEntry; before?: FightStatus; after?: FightStatus};
 export type FightSnapshot = {
 	introduction: FightIntroduction | null; status: FightStatus | null; logs: FightLogRecord[];
 	result: FightEnd | null; reward: FightReward | null; error: FightError | null;
@@ -22,8 +22,8 @@ class FightStore {
 	public constructor() {
 		const client = WebSocketClient.getInstance();
 		client.registerPushedPacketHandler<FightIntroductionRes>(FightIntroductionRes.wireName, packet => this.introduce(packet.introduction));
-		client.registerPushedPacketHandler<FightStatusRes>(FightStatusRes.wireName, packet => this.update({status: packet.status, waiting: !packet.status.activeFighter.isSelf}));
-		client.registerPushedPacketHandler<FightLogRes>(FightLogRes.wireName, packet => this.update({logs: [...this.snapshot.logs, {sequence: ++this.sequence, entry: packet.entry}]}));
+		client.registerPushedPacketHandler<FightStatusRes>(FightStatusRes.wireName, packet => this.updateStatus(packet.status));
+		client.registerPushedPacketHandler<FightLogRes>(FightLogRes.wireName, packet => this.addLog(packet.entry));
 		client.registerPushedPacketHandler<FightWaitRes>(FightWaitRes.wireName, () => this.update({waiting: true}));
 		client.registerPushedPacketHandler<FightEndRes>(FightEndRes.wireName, packet => this.update({result: packet.result, waiting: false, visible: true}));
 		client.registerPushedPacketHandler<FightRewardRes>(FightRewardRes.wireName, packet => this.update({reward: packet.reward, waiting: false, visible: true}));
@@ -33,6 +33,18 @@ class FightStore {
 	private introduce(introduction: FightIntroduction): void {
 		if (this.snapshot.introduction?.fightId !== introduction.fightId) this.snapshot = EMPTY_FIGHT;
 		this.update({introduction, visible: true, error: null});
+	}
+
+	private addLog(entry: FightLogEntry): void {
+		if (entry.fightId !== this.snapshot.introduction?.fightId) return;
+		const record: FightLogRecord = {sequence: ++this.sequence, entry, ...(this.snapshot.status ? {before: this.snapshot.status} : {})};
+		this.update({logs: [...this.snapshot.logs, record]});
+	}
+
+	private updateStatus(status: FightStatus): void {
+		if (status.fightId !== this.snapshot.introduction?.fightId) return;
+		const logs = this.snapshot.logs.map((record, index, records) => index === records.length - 1 ? {...record, after: status} : record);
+		this.update({status, logs, waiting: !status.activeFighter.isSelf});
 	}
 
 	private update(update: Partial<FightSnapshot>): void {

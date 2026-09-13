@@ -13,8 +13,8 @@ import {CommandFightStatusPacket} from "../../../../Lib/src/packets/fights/Fight
 
 const active: FightController[] = [];
 function createFight(silent = false): FightController {
-	const player = {keycloakId: "initiator", level: 10, getGloryPoints: (): number => 100} as Player;
-	const opponent = {keycloakId: "defender", level: 10, getGloryPoints: (): number => 100} as Player;
+	const player = {keycloakId: "initiator", class: 1, level: 10, getGloryPoints: (): number => 100} as Player;
+	const opponent = {keycloakId: "defender", class: 1, level: 10, getGloryPoints: (): number => 100} as Player;
 	const playerClass = ClassDataController.instance.getById(1)!;
 	const fighter1 = new PlayerFighter(player, playerClass);
 	const fighter2 = new AiPlayerFighter(opponent, playerClass);
@@ -43,6 +43,7 @@ describe("fight resume", () => {
 			expect.any(CommandFightIntroduceFightersPacket), expect.any(CommandFightStatusPacket)
 		]);
 		expect(response).toContainEqual(expect.objectContaining({fightId: fight.id, numberOfTurn: 1}));
+		expect(response).toContainEqual(expect.objectContaining({activeFighter: expect.objectContaining({classId: 1, level: 10})}));
 		expect(fight.turn).toBe(1);
 	});
 	it("does not restore silent simulations or finished fights", () => {

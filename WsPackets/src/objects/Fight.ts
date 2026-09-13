@@ -16,13 +16,13 @@ export type FightPlayerStats = {
 	};
 };
 export type FightParticipant = {
-	isSelf: boolean; name?: string; monsterId?: string;
+	isSelf: boolean; name?: string; monsterId?: string; classId?: number; level?: number;
 };
 export type FightFighterStats = {
 	power: number; maxEnergy?: number; attack: number; defense: number; speed: number; breath: number; maxBreath: number; breathRegen: number;
 };
 export type FightFighter = FightParticipant & {
-	glory?: number; stats: FightFighterStats;
+	glory?: number; alteration?: string; stats: FightFighterStats;
 };
 export type FightIntroduction = {
 	fightId: string;
