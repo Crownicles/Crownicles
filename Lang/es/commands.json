@@ -2974,10 +2974,10 @@
       "createWizardTitle": "Configuration du tournoi",
       "createWizardDescription": "Les choix sont modifiables avant la confirmation.",
       "createConfirmButton": "Créer le tournoi",
-      "day": "{{count}} jour",
-      "days": "{{count}} jours",
+      "day": "{{count}} día",
+      "days": "{{count}} días",
       "paused": "temps en pause",
-      "back": "Retour",
+      "back": "Volver",
       "close": "Fermer"
     },
     "fightReward": {
