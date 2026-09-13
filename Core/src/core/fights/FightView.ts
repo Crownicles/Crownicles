@@ -39,6 +39,29 @@ export class FightView {
 		this.fightController = fightController;
 	}
 
+	private fighterStatus(fighter: PlayerFighter | AiPlayerFighter | MonsterFighter): CommandFightStatusPacket["activeFighter"] {
+		const identity = fighter instanceof MonsterFighter
+			? { monsterId: fighter.monster.id }
+			: {
+				keycloakId: fighter.player.keycloakId, classId: fighter.player.class, glory: fighter.getDisplayedGloryPoints()
+			};
+		return {
+			...identity,
+			level: fighter.level,
+			...fighter.alteration ? { alteration: fighter.alteration.id } : {},
+			stats: {
+				power: fighter.getEnergy(),
+				maxEnergy: fighter.getMaxEnergy(),
+				attack: fighter.getAttack(),
+				defense: fighter.getDefense(),
+				speed: fighter.getSpeed(),
+				breath: fighter.getBreath(),
+				maxBreath: fighter.getMaxBreath(),
+				breathRegen: fighter.getRegenBreath()
+			}
+		};
+	}
+
 	/**
 	 * Send the fight intro message
 	 * @param fighter
@@ -83,42 +106,8 @@ export class FightView {
 			fightId: this.fightController.id,
 			numberOfTurn: this.fightController.turn,
 			maxNumberOfTurn: FightConstants.MAX_TURNS,
-			activeFighter: {
-				keycloakId: playingFighter instanceof MonsterFighter ? undefined : playingFighter.player.keycloakId,
-				monsterId: playingFighter instanceof MonsterFighter ? playingFighter.monster.id : undefined,
-				...playingFighter instanceof MonsterFighter ? {} : { classId: playingFighter.player.class },
-				level: playingFighter.level,
-				...playingFighter.alteration ? { alteration: playingFighter.alteration.id } : {},
-				glory: playingFighter instanceof MonsterFighter ? undefined : playingFighter.getDisplayedGloryPoints(),
-				stats: {
-					power: playingFighter.getEnergy(),
-					maxEnergy: playingFighter.getMaxEnergy(),
-					attack: playingFighter.getAttack(),
-					defense: playingFighter.getDefense(),
-					speed: playingFighter.getSpeed(),
-					breath: playingFighter.getBreath(),
-					maxBreath: playingFighter.getMaxBreath(),
-					breathRegen: playingFighter.getRegenBreath()
-				}
-			},
-			defendingFighter: {
-				keycloakId: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.player.keycloakId,
-				monsterId: defendingFighter instanceof MonsterFighter ? defendingFighter.monster.id : undefined,
-				...defendingFighter instanceof MonsterFighter ? {} : { classId: defendingFighter.player.class },
-				level: defendingFighter.level,
-				...defendingFighter.alteration ? { alteration: defendingFighter.alteration.id } : {},
-				glory: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.getDisplayedGloryPoints(),
-				stats: {
-					power: defendingFighter.getEnergy(),
-					maxEnergy: defendingFighter.getMaxEnergy(),
-					attack: defendingFighter.getAttack(),
-					defense: defendingFighter.getDefense(),
-					speed: defendingFighter.getSpeed(),
-					breath: defendingFighter.getBreath(),
-					maxBreath: defendingFighter.getMaxBreath(),
-					breathRegen: defendingFighter.getRegenBreath()
-				}
-			}
+			activeFighter: this.fighterStatus(playingFighter),
+			defendingFighter: this.fighterStatus(defendingFighter)
 		}));
 	}
 

@@ -1,6 +1,6 @@
 import {ReactNode, useState} from "react";
 import {Pressable, StyleSheet, Text, View} from "react-native";
-import {Clock3, Info, Wind, Swords, Shield, Zap} from "lucide-react-native";
+import {Clock3, Info, Wind, Swords, Shield, Zap} from "@/src/design/FightIcons";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {FIGHT_DATA_KINDS, FIGHT_REACTION_KINDS, GENERIC_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {Button, ButtonRow, Confirmation, KeyValue, Note} from "@/src/design/Primitives";
@@ -9,7 +9,7 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {FightIconButton, useCompactFight} from "@/src/components/FightControls";
 import {FIGHT_ACTION_MOTIONS, FIGHT_MOTIONS} from "@/src/display/FightMotion";
-import {FightGauge} from "@/src/components/FightStage";
+import {FightGauge} from "@/src/components/FightGauge";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {useFight} from "@/src/store/FightStore";
 import {fightActionName} from "@/src/display/Fight";
@@ -58,7 +58,7 @@ function FightActionButton({actionId, cost, disabled, onPress, onDetails}: {acti
 	return <View style={[styles.card, resting && styles.rest]}>
 		<Pressable accessibilityRole="button" accessibilityLabel={fightActionName(actionId)} accessibilityHint={description} accessibilityState={{disabled}} disabled={disabled} onPress={onPress} onLongPress={onDetails} style={({pressed}) => [styles.button, compact && styles.compactButton, pressed && styles.pressed, disabled && styles.disabled]}>
 			<View style={styles.name}>{icon ? <TwemojiIcon emoji={icon} size={compact ? 17 : 20} /> : null}<Text style={[styles.label, compact && styles.compactLabel]} numberOfLines={2}>{fightActionName(actionId)}</Text></View>
-			<View style={styles.foot}><Wind size={12} color={Theme.colors.blue} /><Text style={styles.cost}>{cost === undefined ? i18n.t("app:battle.unavailable") : i18n.t("app:arena.actionBreath", {value: cost})}</Text></View>
+			<View style={styles.foot}>{cost === undefined ? null : <><Wind size={12} color={Theme.colors.blue} /><Text style={styles.cost}>{i18n.t("app:arena.actionBreath", {value: cost})}</Text></>}</View>
 		</Pressable>
 		<View style={styles.info}><FightIconButton icon={Info} label={i18n.t("app:battle.actionDetails", {action: fightActionName(actionId)})} onPress={onDetails} /></View>
 	</View>;
@@ -107,7 +107,7 @@ export function FightActions({collector, onChoose, submitting}: CollectorProps):
 		else if (!actions.some(([id]) => id === reaction.data.id)) options.push({id: reaction.data.id, index});
 	});
 	return <>
-		<View style={styles.header}><Text style={styles.heading}>{i18n.t("app:battle.chooseAction")}</Text><View style={styles.timer}><Clock3 size={13} color={secondsLeft <= URGENT_REMAINING_SECONDS ? Theme.colors.red : Theme.colors.muted} /><Text style={[styles.timerText, secondsLeft <= URGENT_REMAINING_SECONDS && styles.urgent]}>{i18n.t("app:battle.seconds", {seconds: secondsLeft})}</Text></View></View>
+		<View style={styles.header}><Text style={styles.heading}>{i18n.t(locked ? "app:battle.actions" : "app:battle.chooseAction")}</Text><View style={styles.timer}><Clock3 size={13} color={secondsLeft <= URGENT_REMAINING_SECONDS ? Theme.colors.red : Theme.colors.muted} /><Text style={[styles.timerText, secondsLeft <= URGENT_REMAINING_SECONDS && styles.urgent]}>{i18n.t("app:battle.seconds", {seconds: secondsLeft})}</Text></View></View>
 		<ActionGrid options={options} locked={locked} onChoose={answer} />
 	</>;
 }

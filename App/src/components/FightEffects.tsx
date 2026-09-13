@@ -1,11 +1,11 @@
 import {ReactNode} from "react";
 import {Animated, StyleSheet, View} from "react-native";
-import {Crosshair, Droplets, Flame, HeartPulse, Shield, Snowflake, Sparkles, Wind, Zap, Skull, Swords, CircleDashed, Waves, PawPrint, AudioLines} from "lucide-react-native";
+import {Crosshair, Droplets, Flame, HeartPulse, Shield, Snowflake, Sparkles, Wind, Zap, Skull, Swords, CircleDashed, Waves, PawPrint, AudioLines} from "@/src/design/FightIcons";
 import {FightCue, FightImpact, FightMotion, FIGHT_MOTIONS} from "@/src/display/FightMotion";
 import {Theme} from "@/src/design/Theme";
 import {AppIcons} from "@/src/AppIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {formatNumber} from "@/src/display/Amounts";
+import {fightImpactLabel} from "@/src/display/Fight";
 import {i18n} from "@/src/translations/i18n";
 import {useCompactFight} from "@/src/components/FightControls";
 
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 	slash: {position: "absolute", top: 46, width: 5, height: 78, borderRadius: 3},
 	ring: {position: "absolute", width: 82, height: 82, borderRadius: 41, borderWidth: 2},
 	flash: {position: "absolute", top: 27, bottom: 70, width: "43%", borderRadius: Theme.radius},
-	impact: {position: "absolute", minWidth: 88, alignItems: "center", top: 36},
+	impact: {position: "absolute", minWidth: 88, alignItems: "center", top: 72},
 	amount: {fontFamily: Theme.fonts.extraBold, fontSize: 24, lineHeight: 30, textAlign: "center", textShadowColor: Theme.colors.paper, textShadowRadius: 4, textShadowOffset: {width: 0, height: 1}},
 	critical: {fontFamily: Theme.fonts.bold, fontSize: 9, color: Theme.colors.red, backgroundColor: Theme.colors.paper, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4},
 	miss: {position: "absolute", top: 122, width: 112, textAlign: "center", fontFamily: Theme.fonts.bold, fontSize: 12, color: Theme.colors.muted},
@@ -68,7 +68,7 @@ function TravelingEffect({cue, progress, width}: EffectProps): ReactNode {
 			{rotate: progress.interpolate({inputRange: [0, 1], outputRange: ["0deg", cue.motion === FIGHT_MOTIONS.RETURN ? "360deg" : "-12deg"]})},
 			{scale: progress.interpolate({inputRange: [0, 0.2, 0.65, 1], outputRange: [0.35, 0.8, 1.25, 0.3]})}
 		]
-	}]}>{useActionIcon && emoji ? <TwemojiIcon emoji={emoji} size={40} /> : <Icon size={42} color={cue.color} strokeWidth={2.4} />}</Animated.View>;
+	}]}>{useActionIcon && emoji ? <TwemojiIcon emoji={emoji} size={40} /> : <Icon size={42} color={cue.color} />}</Animated.View>;
 }
 
 function PulseEffect({cue, progress, width}: EffectProps): ReactNode {
@@ -76,7 +76,7 @@ function PulseEffect({cue, progress, width}: EffectProps): ReactNode {
 	const Icon = EFFECT_ICONS[cue.motion];
 	return <>
 		<Animated.View style={[styles.ring, {left: center - 41, top: EFFECT_Y - 41, borderColor: cue.color, opacity: progress.interpolate({inputRange: [0, 0.2, 1], outputRange: [0, 0.7, 0]}), transform: [{scale: progress.interpolate({inputRange: [0, 1], outputRange: [0.45, 1.6]})}]}]} />
-		<Animated.View style={[styles.glyph, {left: center - EFFECT_SIZE / 2, top: EFFECT_Y - EFFECT_SIZE / 2, opacity: effectOpacity(progress), transform: [{translateY: progress.interpolate({inputRange: [0, 1], outputRange: [8, -20]})}, {scale: progress.interpolate({inputRange: [0, 0.4, 1], outputRange: [0.5, 1.25, 0.95]})}]}]}><Icon size={46} color={cue.color} strokeWidth={1.7} /></Animated.View>
+		<Animated.View style={[styles.glyph, {left: center - EFFECT_SIZE / 2, top: EFFECT_Y - EFFECT_SIZE / 2, opacity: effectOpacity(progress), transform: [{translateY: progress.interpolate({inputRange: [0, 1], outputRange: [8, -20]})}, {scale: progress.interpolate({inputRange: [0, 0.4, 1], outputRange: [0.5, 1.25, 0.95]})}]}]}><Icon size={46} color={cue.color} /></Animated.View>
 	</>;
 }
 
@@ -87,7 +87,7 @@ function ImpactBurst({cue, progress, width}: EffectProps): ReactNode {
 			const angle = index * Math.PI / 3;
 			return <Animated.View key={index} style={[styles.ray, {left: center, top: EFFECT_Y, backgroundColor: cue.color, opacity: progress.interpolate({inputRange: [0, 0.28, 0.4, 1], outputRange: [0, 0, 1, 0]}), transform: [{translateX: progress.interpolate({inputRange: [0, 0.3, 1], outputRange: [0, 0, Math.cos(angle) * 52]})}, {translateY: progress.interpolate({inputRange: [0, 0.3, 1], outputRange: [0, 0, Math.sin(angle) * 46]})}, {rotate: `${index * 60}deg`}]}]} />;
 		})}
-		{cue.motion === FIGHT_MOTIONS.LIGHTNING ? <Animated.View style={[styles.lightning, {left: center - 27, opacity: effectOpacity(progress), transform: [{scaleY: progress.interpolate({inputRange: [0, 0.3, 1], outputRange: [0.1, 1.6, 0.4]})}]}]}><Zap size={54} color={cue.color} fill={cue.color} /></Animated.View> : null}
+		{cue.motion === FIGHT_MOTIONS.LIGHTNING ? <Animated.View style={[styles.lightning, {left: center - 27, opacity: effectOpacity(progress), transform: [{scaleY: progress.interpolate({inputRange: [0, 0.3, 1], outputRange: [0.1, 1.6, 0.4]})}]}]}><Zap size={54} color={cue.color} /></Animated.View> : null}
 	</>;
 }
 
@@ -101,7 +101,7 @@ function ActionEffect(props: EffectProps): ReactNode {
 function ImpactNumber({impact, cue, progress, width, position}: EffectProps & {impact: FightImpact; position: number}): ReactNode {
 	const negative = impact.kind === "damage" ? impact.amount > 0 : impact.amount < 0;
 	const color = negative ? Theme.colors.red : impact.kind === "breath" ? Theme.colors.blue : Theme.colors.green;
-	const amount = `${negative ? "-" : "+"}${formatNumber(Math.abs(impact.amount))}`;
+	const amount = fightImpactLabel(impact);
 	return <Animated.View style={[styles.impact, {left: width * STAGE_ANCHORS[impact.side] - 44, opacity: progress.interpolate({inputRange: [0, 0.32, 0.42, 0.8, 1], outputRange: [0, 0, 1, 1, 0]}), transform: [{translateY: progress.interpolate({inputRange: [0, 1], outputRange: [position * 25, position * 25 - 34]})}, {scale: progress.interpolate({inputRange: [0, 0.4, 0.6, 1], outputRange: [0.6, 1.15, 1, 1]})}]}]}>
 		{cue.critical && position === 0 ? <Animated.Text style={styles.critical}>{i18n.t("app:battle.critical")}</Animated.Text> : null}
 		<Animated.Text style={[styles.amount, {color}]}>{amount}</Animated.Text>

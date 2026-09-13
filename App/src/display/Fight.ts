@@ -1,6 +1,6 @@
 import {FightParticipant, FightLogEntry, FightEffect} from "ws-packets/src/objects/Fight";
 import {i18n} from "@/src/translations/i18n";
-import {fightCue} from "@/src/display/FightMotion";
+import {FightImpact, fightCue} from "@/src/display/FightMotion";
 import {formatNumber} from "@/src/display/Amounts";
 
 export function fighterName(fighter: FightParticipant): string {
@@ -11,6 +11,11 @@ export function fighterName(fighter: FightParticipant): string {
 
 export function fightActionName(actionId: string): string {
 	return i18n.t(`models:fight_actions.${actionId}.name`, {count: 1, defaultValue: i18n.t("app:arena.action")});
+}
+
+export function fightImpactLabel(impact: FightImpact): string {
+	const delta = impact.kind === "damage" ? -impact.amount : impact.amount;
+	return `${delta >= 0 ? "+" : "-"}${formatNumber(Math.abs(impact.amount))}`;
 }
 
 function statFeedback(effect: FightEffect | undefined): string[] {

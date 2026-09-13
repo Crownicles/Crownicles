@@ -1,15 +1,15 @@
 import {ReactNode, useState} from "react";
 import {Pressable, StyleSheet, Text, View} from "react-native";
-import {ChevronDown, Coins, Flag, Medal, Trophy, Swords} from "lucide-react-native";
-import {FightEffect, FightEnd, FightReward} from "ws-packets/src/objects/Fight";
+import {ChevronDown, Coins, Flag, Medal, Trophy, Swords} from "@/src/design/FightIcons";
+import {FightEffect, FightEnd, FightReward, FightLogEntry} from "ws-packets/src/objects/Fight";
 import {FightLogRecord} from "@/src/store/FightStore";
 import {KeyValue, Note, Panel} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {formatNumber} from "@/src/display/Amounts";
-import {fighterName, fightActionName} from "@/src/display/Fight";
+import {fighterName, fightActionName, fightImpactLabel} from "@/src/display/Fight";
 import {petName} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
-import {fightCue} from "@/src/display/FightMotion";
+import {FightCue, fightCue} from "@/src/display/FightMotion";
 import {AppIcons} from "@/src/AppIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 
@@ -41,25 +41,42 @@ function EffectDetails({effect, label}: {effect?: FightEffect; label: string}): 
 	</>;
 }
 
+function FightLogImpact({cue}: {cue: FightCue}): ReactNode {
+	const impact = cue.impacts.find(effect => effect.kind === "damage");
+	return <>
+		{impact ? <Text style={[styles.impact, impact.amount < 0 && {color: Theme.colors.green}]}>{fightImpactLabel(impact)}</Text> : null}
+		{cue.missed || cue.critical ? <Text style={[styles.status, {color: cue.color}]}>{i18n.t(cue.critical ? "app:battle.critical" : "app:battle.missed")}</Text> : null}
+	</>;
+}
+
+function FightLogSummary({record, compact, cue}: {record: FightLogRecord; compact: boolean; cue: FightCue}): ReactNode {
+	const icon = AppIcons.getIconOrNull(`fightActions.${cue.actionId}`);
+	const actor = record.entry.pet ? petName(record.entry.pet) : fighterName(record.entry.fighter);
+	const turn = record.before ? i18n.t("app:battle.shortTurn", {turn: record.before.numberOfTurn}) : "";
+	return <>
+		{icon ? <TwemojiIcon emoji={icon} size={23} /> : <Swords size={20} color={cue.color} />}
+		<View style={styles.entryBody}><Text style={styles.action}>{fightActionName(cue.actionId)}</Text><Text style={styles.actor}>{[actor, turn].filter(Boolean).join(" · ")}</Text></View>
+		<FightLogImpact cue={cue} />
+		{!compact ? <ChevronDown size={14} color={Theme.colors.muted} /> : null}
+	</>;
+}
+
+function FightLogEffects({entry, cue}: {entry: FightLogEntry; cue: FightCue}): ReactNode {
+	return <>
+		{entry.status ? <Note>{i18n.t(`app:arena.status.${entry.status}`, {defaultValue: i18n.t("app:arena.status.other")})}</Note> : null}
+		<EffectDetails effect={entry.fightActionEffectDealt} label={i18n.t(cue.periodic ? "app:arena.actor" : "app:arena.target")} />
+		<EffectDetails effect={entry.fightActionEffectReceived} label={i18n.t("app:arena.actor")} />
+	</>;
+}
+
 function FightLogLine({record, compact}: {record: FightLogRecord; compact: boolean}): ReactNode {
 	const [expanded, setExpanded] = useState(false);
-	const {entry} = record;
-	const cue = fightCue(entry);
-	const icon = AppIcons.getIconOrNull(`fightActions.${cue.actionId}`);
-	const impact = cue.impacts.find(effect => effect.kind === "damage");
+	const cue = fightCue(record.entry);
 	return <View style={[styles.entry, compact && styles.compact]}>
 		<Pressable accessibilityRole="button" accessibilityState={{expanded}} onPress={(): void => setExpanded(!expanded)} style={styles.entryHead}>
-			{icon ? <TwemojiIcon emoji={icon} size={23} /> : <Swords size={20} color={cue.color} />}
-			<View style={styles.entryBody}><Text style={styles.action}>{fightActionName(cue.actionId)}</Text><Text style={styles.actor}>{entry.pet ? petName(entry.pet) : fighterName(entry.fighter)}{record.before ? ` · ${i18n.t("app:battle.shortTurn", {turn: record.before.numberOfTurn})}` : ""}</Text></View>
-			{impact ? <Text style={styles.impact}>-{formatNumber(impact.amount)}</Text> : null}
-			{cue.missed || cue.critical ? <Text style={[styles.status, {color: cue.color}]}>{i18n.t(cue.critical ? "app:battle.critical" : "app:battle.missed")}</Text> : null}
-			{!compact ? <ChevronDown size={14} color={Theme.colors.muted} /> : null}
+			<FightLogSummary record={record} compact={compact} cue={cue} />
 		</Pressable>
-		{expanded ? <>
-			{entry.status ? <Note>{i18n.t(`app:arena.status.${entry.status}`, {defaultValue: i18n.t("app:arena.status.other")})}</Note> : null}
-			<EffectDetails effect={entry.fightActionEffectDealt} label={i18n.t(cue.periodic ? "app:arena.actor" : "app:arena.target")} />
-			<EffectDetails effect={entry.fightActionEffectReceived} label={i18n.t("app:arena.actor")} />
-		</> : null}
+		{expanded ? <FightLogEffects entry={record.entry} cue={cue} /> : null}
 	</View>;
 }
 
@@ -91,7 +108,7 @@ export function FightResult({result, reward}: {result: FightEnd; reward: FightRe
 	const won = !result.draw && result.winner.isSelf;
 	const Icon = won ? Trophy : Swords;
 	return <>
-		<View style={styles.result}><View style={styles.emblem}><Icon size={43} color={won ? Theme.colors.gold : Theme.colors.muted} strokeWidth={1.6} /></View><Text style={styles.resultTitle}>{i18n.t(result.draw ? "app:arena.draw" : won ? "app:arena.victory" : "app:arena.defeat")}</Text><Text style={styles.resultSubtitle}>{i18n.t("app:battle.finishedAgainst", {opponent: fighterName(opponent), turns: result.turns})}</Text></View>
+		<View style={styles.result}><View style={styles.emblem}><Icon size={43} color={won ? Theme.colors.gold : Theme.colors.muted} /></View><Text style={styles.resultTitle}>{i18n.t(result.draw ? "app:arena.draw" : won ? "app:arena.victory" : "app:arena.defeat")}</Text><Text style={styles.resultSubtitle}>{i18n.t("app:battle.finishedAgainst", {opponent: fighterName(opponent), turns: result.turns})}</Text></View>
 		{reward ? <FightRewards reward={reward} /> : null}
 		<Panel>
 			<KeyValue label={i18n.t("app:arena.turns")} value={formatNumber(result.turns)} />

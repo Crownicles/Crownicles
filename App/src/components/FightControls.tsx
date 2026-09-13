@@ -1,6 +1,6 @@
 import {ReactNode, useState} from "react";
 import {Pressable, StyleSheet, Text, View, useWindowDimensions} from "react-native";
-import {LucideIcon} from "lucide-react-native";
+import {LucideIcon} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 
 const styles = StyleSheet.create({
@@ -18,7 +18,7 @@ export function useCompactFight(): boolean {
 export function FightIconButton({icon: Icon, label, onPress, disabled = false}: {icon: LucideIcon; label: string; onPress: () => void; disabled?: boolean}): ReactNode {
 	const [hovered, setHovered] = useState(false);
 	return <View style={styles.root}>
-		<Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{disabled}} disabled={disabled} onPress={(): void => {setHovered(false); onPress();}} onHoverIn={(): void => setHovered(true)} onHoverOut={(): void => setHovered(false)} style={({pressed}) => [styles.button, pressed && styles.pressed]}><Icon size={19} color={disabled ? Theme.colors.faint : Theme.colors.muted} strokeWidth={1.8} /></Pressable>
+		<Pressable accessibilityRole="button" accessibilityLabel={label} accessibilityState={{disabled}} disabled={disabled} onPress={(): void => {setHovered(false); onPress();}} onHoverIn={(): void => setHovered(true)} onHoverOut={(): void => setHovered(false)} style={({pressed}) => [styles.button, pressed && styles.pressed]}><Icon size={19} color={disabled ? Theme.colors.faint : Theme.colors.muted} /></Pressable>
 		{hovered ? <View pointerEvents="none" style={styles.tooltip}><Text style={styles.label}>{label}</Text></View> : null}
 	</View>;
 }

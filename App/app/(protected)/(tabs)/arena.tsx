@@ -1,6 +1,6 @@
 import {ReactNode, useState} from "react";
 import {Pressable, StyleSheet, Text, View} from "react-native";
-import {ArrowRight, History, Medal, Swords, Trophy, Zap} from "lucide-react-native";
+import {ArrowRight, History, Medal, Swords, Trophy, Zap} from "@/src/design/FightIcons";
 import {FightReq} from "ws-packets/src/fromClient/FightReq";
 import {FightErrorRes} from "ws-packets/src/fromServer/fight/FightRes";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
@@ -14,7 +14,7 @@ import {Note, Screen} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
-import {FightGauge} from "@/src/components/FightStage";
+import {FightGauge} from "@/src/components/FightGauge";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {FightHistory, Leagues} from "@/src/components/ArenaReferences";
 import {Rankings} from "@/src/components/Rankings";
@@ -56,6 +56,18 @@ function ArenaProfile({profile}: {profile: ProfileRes}): ReactNode {
 	</>;
 }
 
+function ArenaStart({pending, ongoing, onStart}: {pending: boolean; ongoing: boolean; onStart: () => Promise<void>}): ReactNode {
+	const label = pending ? "app:battle.preparing" : ongoing ? "app:arena.resume" : "app:arena.start";
+	return <Pressable accessibilityRole="button" disabled={pending} onPress={ongoing ? fightStore.show : onStart} style={({pressed}) => [styles.start, pending && styles.disabled, pressed && styles.pressed]}><Swords size={20} color={Theme.colors.paper} /><Text style={styles.startLabel}>{i18n.t(label)}</Text><ArrowRight size={18} color={Theme.colors.paper} /></Pressable>;
+}
+
+function ArenaLinks({onSelect}: {onSelect: (page: ArenaPage) => void}): ReactNode {
+	return <View style={styles.links}>{(Object.keys(ARENA_PAGES) as ArenaPage[]).map(value => {
+		const Icon = ARENA_ICONS[value];
+		return <Pressable key={value} accessibilityRole="button" onPress={(): void => onSelect(value)} style={({pressed}) => [styles.link, pressed && styles.pressed]}><Icon size={21} color={value === "leagues" ? Theme.colors.gold : Theme.colors.muted} /><Text style={styles.linkText}>{i18n.t(`app:arena.pages.${value}`)}</Text><ArrowRight size={16} color={Theme.colors.faint} /></Pressable>;
+	})}</View>;
+}
+
 export default function Arena(): ReactNode {
 	const [page, setPage] = useState<ArenaPage | null>(null);
 	const state = usePlayerProfile();
@@ -68,13 +80,10 @@ export default function Arena(): ReactNode {
 		return <DetailScreen title={i18n.t(`app:arena.pages.${page}`)} eyebrow={i18n.t("app:arena.eyebrow")} onClose={(): void => setPage(null)}><Content /></DetailScreen>;
 	}
 	return <Screen>
-		<View style={styles.header}><View style={styles.emblem}><Swords size={27} color={Theme.colors.ink} strokeWidth={1.6} /></View><View><Text style={styles.eyebrow}>{i18n.t("app:arena.eyebrow")}</Text><Text style={styles.title}>{i18n.t("app:arena.title")}</Text></View></View>
+		<View style={styles.header}><View style={styles.emblem}><Swords size={27} color={Theme.colors.ink} /></View><View><Text style={styles.eyebrow}>{i18n.t("app:arena.eyebrow")}</Text><Text style={styles.title}>{i18n.t("app:arena.title")}</Text></View></View>
 		<GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{profile => <ArenaProfile profile={profile} />}</GameQueryContent>
 		{message ? <Note>{message}</Note> : null}
-		<Pressable accessibilityRole="button" disabled={pending} onPress={ongoing ? fightStore.show : start} style={({pressed}) => [styles.start, pending && styles.disabled, pressed && styles.pressed]}><Swords size={20} color={Theme.colors.paper} /><Text style={styles.startLabel}>{i18n.t(pending ? "app:battle.preparing" : ongoing ? "app:arena.resume" : "app:arena.start")}</Text><ArrowRight size={18} color={Theme.colors.paper} /></Pressable>
-		<View style={styles.links}>{(Object.keys(ARENA_PAGES) as ArenaPage[]).map(value => {
-			const Icon = ARENA_ICONS[value];
-			return <Pressable key={value} accessibilityRole="button" onPress={(): void => setPage(value)} style={({pressed}) => [styles.link, pressed && styles.pressed]}><Icon size={21} color={value === "leagues" ? Theme.colors.gold : Theme.colors.muted} /><Text style={styles.linkText}>{i18n.t(`app:arena.pages.${value}`)}</Text><ArrowRight size={16} color={Theme.colors.faint} /></Pressable>;
-		})}</View>
+		<ArenaStart pending={pending} ongoing={ongoing} onStart={start} />
+		<ArenaLinks onSelect={setPage} />
 	</Screen>;
 }

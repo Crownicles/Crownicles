@@ -53,6 +53,14 @@ function battle(): FightSnapshot {
 
 describe("live battle presentation", () => {
 	afterEach(() => jest.restoreAllMocks());
+	it("shows a recoverable refusal without a fake waiting battle", async () => {
+		const close = jest.fn();
+		await render(<FightLiveView fight={{...battle(), introduction: null, status: null, error: "energy"}} onChoose={jest.fn()} submitting={false} onClose={close} />);
+		expect(screen.getByText("app:arena.errors.energy")).toBeTruthy();
+		expect(screen.queryByText("app:battle.preparing")).toBeNull();
+		await fireEvent.press(screen.getByText("app:battle.returnToArena"));
+		expect(close).toHaveBeenCalledTimes(1);
+	});
 	it("keeps the player on the left during an opponent turn and exposes fighter details", async () => {
 		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
 		expect(within(screen.getByTestId("fight-fighter-self")).getByText("Aster")).toBeTruthy();

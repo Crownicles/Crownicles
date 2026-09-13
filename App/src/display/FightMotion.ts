@@ -10,6 +10,23 @@ export const FIGHT_MOTIONS = {
 } as const;
 export type FightMotion = typeof FIGHT_MOTIONS[keyof typeof FIGHT_MOTIONS];
 export type FightSide = "self" | "opponent";
+const CONTACT_MOTIONS = new Set<FightMotion>([FIGHT_MOTIONS.SLASH, FIGHT_MOTIONS.RAPID, FIGHT_MOTIONS.HEAVY, FIGHT_MOTIONS.BITE, FIGHT_MOTIONS.CLAW, FIGHT_MOTIONS.PIERCE, FIGHT_MOTIONS.QUAKE]);
+const STILL_FRAMES = [0, 0, 0, 0, 0, 0];
+
+export function isHeavyMotion(motion: FightMotion | undefined): boolean {
+	return motion === FIGHT_MOTIONS.HEAVY || motion === FIGHT_MOTIONS.QUAKE;
+}
+
+export function fighterMotionFrames(cue: FightCue | undefined, side: FightSide): number[] {
+	if (!cue) return STILL_FRAMES;
+	const direction = side === "self" ? 1 : -1;
+	if (side === cue.target && cue.target !== cue.actor) {
+		const frames = cue.missed ? [0, 0, -10, -10, -3, 0] : [0, 0, -10, 6, -3, 0];
+		return frames.map(value => value * direction);
+	}
+	if (cue.periodic || side !== cue.actor) return STILL_FRAMES;
+	return CONTACT_MOTIONS.has(cue.motion) ? [0, -4, 12, 5, -2, 0].map(value => value * direction) : STILL_FRAMES;
+}
 
 const MOTION_ACTIONS = {
 	slash: ["simpleAttack", "intenseAttack", "sabotageAttack", "stealWeapon", "useTool"],
