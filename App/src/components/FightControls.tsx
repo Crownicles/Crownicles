@@ -1,10 +1,11 @@
-import {ReactNode, useState} from "react";
-import {Pressable, StyleSheet, Text, View, useWindowDimensions} from "react-native";
-import {ChevronDown, History, LucideIcon, Swords, X} from "@/src/design/FightIcons";
+import {ReactNode, useRef, useState} from "react";
+import {LayoutChangeEvent, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions} from "react-native";
+import {ChevronDown, History, LucideIcon, X} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import type {FightLogRecord, FightSnapshot} from "@/src/store/FightStore";
 import type {FightPlayback} from "@/src/store/useFightPlayback";
-import {fightActionName, fightFeedback} from "@/src/display/Fight";
+import {fightEntryTitle} from "@/src/display/Fight";
+import {FightEventIcon, FightEventStory} from "@/src/components/FightDetails";
 import {i18n} from "@/src/translations/i18n";
 import {FightSpeedSetting} from "@/src/store/useFightSpeed";
 import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
@@ -21,12 +22,15 @@ const styles = StyleSheet.create({
 	title: {fontFamily: Theme.fonts.extraBold, fontSize: 22, lineHeight: 28, color: Theme.colors.ink},
 	headerActions: {flexDirection: "row", alignItems: "center"},
 	turn: {fontFamily: Theme.fonts.semiBold, fontSize: 11, color: Theme.colors.muted, textAlign: "right", fontVariant: ["tabular-nums"]},
-	activity: {flexDirection: "row", alignItems: "center", gap: 9, minHeight: 60, marginVertical: 12, padding: 12, borderWidth: 1, borderColor: Theme.colors.line, borderRadius: 12, backgroundColor: Theme.colors.wash},
+	activity: {marginVertical: 10, borderTopWidth: 1, borderBottomWidth: 1, borderColor: Theme.colors.line},
+	activityHead: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: 44},
+	feed: {height: 116},
+	compactFeed: {height: 86},
+	event: {flexDirection: "row", alignItems: "flex-start", gap: 9, paddingVertical: 8},
 	activityBody: {flex: 1, minWidth: 0},
 	activityTitle: {fontFamily: Theme.fonts.semiBold, fontSize: 12, lineHeight: 17, color: Theme.colors.ink},
 	activitySubtitle: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 15, color: Theme.colors.muted},
 	compactHeader: {paddingTop: 0, paddingBottom: 6},
-	compactActivity: {minHeight: 44, marginVertical: 8, paddingVertical: 0, paddingHorizontal: 9},
 	speed: {fontFamily: Theme.fonts.bold, fontSize: 13, color: Theme.colors.muted},
 	fastSpeed: {color: Theme.colors.blue},
 	fastButton: {backgroundColor: Theme.colors.wash}
@@ -63,13 +67,21 @@ export function FightHeader({fight, playback, phase, navigation, speedSetting}: 
 	</View>;
 }
 
-export function FightActivity({latest, ownTurn, onJournal}: {latest?: FightLogRecord; ownTurn: boolean; onJournal: () => void}): ReactNode {
+function FightLiveEvent({record, pending, onLayout}: {record: FightLogRecord; pending: boolean; onLayout: (event: LayoutChangeEvent) => void}): ReactNode {
+	return <View style={styles.event} onLayout={onLayout}>
+		<FightEventIcon entry={record.entry} size={22} />
+		<View style={styles.activityBody}><Text style={styles.activityTitle}>{fightEntryTitle(record.entry)}</Text><FightEventStory record={record} pending={pending} /></View>
+	</View>;
+}
+
+export function FightActivity({entries, pendingSequence, ownTurn, onJournal}: {entries: FightLogRecord[]; pendingSequence?: number; ownTurn: boolean; onJournal: () => void}): ReactNode {
 	const compact = useCompactFight();
-	const title = latest ? fightActionName(latest.entry.usedFightActionId ?? latest.entry.fightActionId) : i18n.t("app:battle.opening");
-	const subtitle = latest ? fightFeedback(latest.entry) : i18n.t(ownTurn ? "app:battle.ready" : "app:arena.waiting");
-	return <View style={[styles.activity, compact && styles.compactActivity]} accessibilityLiveRegion="polite">
-		<Swords size={19} color={Theme.colors.muted} />
-		<View style={styles.activityBody}><Text style={styles.activityTitle}>{title}</Text><Text style={styles.activitySubtitle}>{subtitle}</Text></View>
-		<FightIconButton icon={History} label={i18n.t("app:battle.showHistory")} onPress={onJournal} />
+	const feed = useRef<ScrollView>(null);
+	const latestSequence = entries.at(-1)?.sequence;
+	return <View style={styles.activity}>
+		<View style={styles.activityHead}><Text style={styles.activityTitle}>{i18n.t("app:battle.story.live")}</Text><FightIconButton icon={History} label={i18n.t("app:battle.showHistory")} onPress={onJournal} /></View>
+		<ScrollView ref={feed} style={[styles.feed, compact && styles.compactFeed]} nestedScrollEnabled accessibilityLiveRegion="polite">
+			{entries.length ? entries.slice(-3).map(record => <FightLiveEvent key={record.sequence} record={record} pending={record.sequence === pendingSequence} onLayout={(event): void => {if (record.sequence === latestSequence) feed.current?.scrollTo({y: event.nativeEvent.layout.y, animated: false});}} />) : <Text style={styles.activitySubtitle}>{i18n.t(ownTurn ? "app:battle.ready" : "app:arena.waiting")}</Text>}
+		</ScrollView>
 	</View>;
 }

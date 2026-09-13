@@ -1,5 +1,5 @@
-import {FightCue, FightMotion, FightSide} from "@/src/display/FightMotion";
-import {FIGHT_TIMING, FightFrames, stillFrames} from "@/src/display/FightEffectPrimitives";
+import {FightCue, FightMotion, FightSide, FIGHT_OUTCOMES} from "@/src/display/FightMotion";
+import {FIGHT_TIMING, FightFrames, multiplyFrames, stillFrames} from "@/src/display/FightEffectPrimitives";
 
 type FighterPose = {horizontal: FightFrames; vertical: FightFrames; scale: FightFrames; rotation: FightFrames; timing: FightFrames};
 const STILL_POSE: FighterPose = {horizontal: stillFrames(0), vertical: stillFrames(0), scale: stillFrames(1), rotation: stillFrames(0), timing: FIGHT_TIMING.SWING};
@@ -11,6 +11,9 @@ const REST_POSE: FighterPose = {...STILL_POSE, timing: [0, 0.18, 0.4, 0.56, 0.78
 const HIT_POSE: FighterPose = {...STILL_POSE, timing: FIGHT_TIMING.IMPACT, horizontal: [0, 0, -12, 5, -2, 0], rotation: [0, 0, -9, 4, -1, 0], scale: [1, 1, 0.94, 1.025, 1, 1]};
 const HEAVY_HIT: FighterPose = {...HIT_POSE, horizontal: [0, 0, -22, 8, -3, 0], rotation: [0, 0, -16, 7, -2, 0], scale: [1, 1, 0.85, 1.06, 0.98, 1]};
 const MISSED_POSE: FighterPose = {...STILL_POSE, timing: [0, 0.24, 0.34, 0.4, 0.65, 1], horizontal: [0, 0, -16, -20, -10, 0], rotation: [0, 0, -10, -12, -4, 0]};
+const FIZZLE_POSE: FighterPose = {...STILL_POSE, horizontal: [0, 2, 1, -4, -2, 0], rotation: [0, 2, -2, -4, -2, 0]};
+const PET_POSE: FighterPose = {...MELEE_POSE, horizontal: [0, 2, 10, 28, 10, 0], vertical: [0, -6, -14, -4, -2, 0]};
+const CRITICAL_RECOIL = 1.25;
 
 const ACTOR_POSES: Partial<Record<FightMotion, FighterPose>> = {
 	slash: MELEE_POSE, heavy: HEAVY_POSE, bite: {...MELEE_POSE, horizontal: [0, -3, -5, 20, 6, 0]},
@@ -26,6 +29,8 @@ const ACTOR_POSES: Partial<Record<FightMotion, FighterPose>> = {
 };
 const ACTION_POSES: Readonly<Partial<Record<string, FighterPose>>> = {
 	canonAttack: {...STILL_POSE, timing: [0, 0.25, 0.28, 0.4, 0.64, 1], horizontal: [0, 0, -18, -8, -2, 0], rotation: [0, 0, -9, -3, -1, 0]},
+	sabotageAttack: {...STILL_POSE, timing: FIGHT_TIMING.FLIGHT, horizontal: [0, -2, 5, 2, -1, 0], rotation: [0, -3, 6, 1, -1, 0]},
+	intenseAttack: {...HEAVY_POSE, timing: [0, 0.2, 0.34, 0.4, 0.76, 1], horizontal: [0, -10, -14, 36, 16, 0], rotation: [0, -14, -18, 18, 8, 0]},
 	shieldAttack: {...RAM_POSE, rotation: [0, -5, -5, 6, 2, 0]}, ramAttack: RAM_POSE, chargingAttack: RAM_POSE,
 	petCharge: {...RAM_POSE, horizontal: [0, -4, -6, 22, 6, 0]}, petSmallCharge: MELEE_POSE,
 	aerialDiveAttack: DIVE_POSE, fatalFlight: DIVE_POSE, slamAttack: DIVE_POSE,
@@ -49,13 +54,21 @@ const TARGET_ACTION_POSES: Readonly<Partial<Record<string, FighterPose>>> = {
 };
 
 function impactPose(cue: FightCue): FighterPose {
-	if (cue.missed) return MISSED_POSE;
-	return TARGET_ACTION_POSES[cue.actionId] ?? REACTION_POSES[cue.motion] ?? HIT_POSE;
+	if (cue.outcome === FIGHT_OUTCOMES.FIZZLED) return STILL_POSE;
+	if (cue.outcome === FIGHT_OUTCOMES.MISSED) return MISSED_POSE;
+	const pose = TARGET_ACTION_POSES[cue.actionId] ?? REACTION_POSES[cue.motion] ?? HIT_POSE;
+	return cue.critical ? {...pose, horizontal: multiplyFrames(pose.horizontal, CRITICAL_RECOIL), rotation: multiplyFrames(pose.rotation, CRITICAL_RECOIL)} : pose;
+}
+
+function actorPose(cue: FightCue): FighterPose {
+	if (cue.outcome === FIGHT_OUTCOMES.FIZZLED) return FIZZLE_POSE;
+	if (cue.pet) return PET_POSE;
+	return ACTION_POSES[cue.actionId] ?? ACTOR_POSES[cue.motion] ?? STILL_POSE;
 }
 
 function fighterPose(cue: FightCue | undefined, side: FightSide): FighterPose {
 	if (!cue || cue.periodic) return STILL_POSE;
-	if (cue.actor === side) return ACTION_POSES[cue.actionId] ?? ACTOR_POSES[cue.motion] ?? STILL_POSE;
+	if (cue.actor === side) return actorPose(cue);
 	return cue.target === side ? impactPose(cue) : STILL_POSE;
 }
 

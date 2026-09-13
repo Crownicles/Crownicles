@@ -48,6 +48,7 @@ export type FightLogEntry = {
 	customMessageFail?: boolean;
 	status?: string;
 	pet?: OwnedPet;
+	stateAfter?: FightStatus;
 	fightActionEffectDealt?: FightEffect;
 	fightActionEffectReceived?: FightEffect;
 };

@@ -1,4 +1,4 @@
-declare module "lucide-static/icons/*.svg" {
+declare module "*.svg" {
 	const source: number | import("expo-image").ImageSource;
 	export default source;
 }

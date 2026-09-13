@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
 	value: {fontFamily: Theme.fonts.bold, fontSize: 11, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
 	track: {height: 6, backgroundColor: Theme.colors.line, borderRadius: 3, overflow: "hidden"},
 	fill: {height: "100%", borderRadius: 3},
+	lossTrail: {position: "absolute", top: 0, left: 0, opacity: 0.28},
 	resource: {marginTop: Theme.spacing.md, padding: Theme.spacing.md, borderWidth: 1, borderColor: Theme.colors.line, borderRadius: Theme.radius, backgroundColor: Theme.colors.wash},
 	resourceTitle: {fontFamily: Theme.fonts.semiBold, fontSize: 12, color: Theme.colors.ink},
 	regen: {fontFamily: Theme.fonts.regular, fontSize: 10, color: Theme.colors.muted, marginTop: 6},
@@ -31,7 +32,10 @@ export function FightGauge({label, value, max, color, reducedMotion = false, ico
 	}, [fill, ratio, reducedMotion]);
 	return <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{now: value, ...(max === undefined ? {} : {max})}}>
 		<View style={styles.top}><View style={styles.meterLabel}>{Icon ? <Icon size={15} color={color} /> : null}<Text style={Icon ? styles.resourceTitle : styles.label}>{label}</Text></View><Text style={styles.value} adjustsFontSizeToFit minimumFontScale={0.8} numberOfLines={1}>{max === undefined ? formatNumber(value) : i18n.t("app:profile.formats.progress", {value, max})}</Text></View>
-		<View style={styles.track}><Animated.View style={[styles.fill, {backgroundColor: color, width: fill.interpolate({inputRange: [0, 1], outputRange: ["0%", "100%"]})}]} /></View>
+		<View style={styles.track}>
+			<Animated.View style={[styles.fill, styles.lossTrail, {backgroundColor: color, width: fill.interpolate({inputRange: [0, 1], outputRange: ["0%", "100%"]})}]} />
+			<View testID="fight-gauge-fill" style={[styles.fill, {backgroundColor: color, width: `${ratio * 100}%`}]} />
+		</View>
 	</View>;
 }
 

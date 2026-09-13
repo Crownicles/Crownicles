@@ -10,9 +10,9 @@ export type FightLogRecord = {sequence: number; entry: FightLogEntry; before?: F
 export type FightSnapshot = {
 	introduction: FightIntroduction | null; status: FightStatus | null; logs: FightLogRecord[];
 	result: FightEnd | null; reward: FightReward | null; error: FightError | null;
-	visible: boolean; waiting: boolean;
+	visible: boolean; waiting: boolean; playedSequence: number;
 };
-const EMPTY_FIGHT: FightSnapshot = {introduction: null, status: null, logs: [], result: null, reward: null, error: null, visible: false, waiting: false};
+const EMPTY_FIGHT: FightSnapshot = {introduction: null, status: null, logs: [], result: null, reward: null, error: null, visible: false, waiting: false, playedSequence: 0};
 
 class FightStore {
 	private snapshot: FightSnapshot = EMPTY_FIGHT;
@@ -37,13 +37,13 @@ class FightStore {
 
 	private addLog(entry: FightLogEntry): void {
 		if (entry.fightId !== this.snapshot.introduction?.fightId) return;
-		const record: FightLogRecord = {sequence: ++this.sequence, entry, ...(this.snapshot.status ? {before: this.snapshot.status} : {})};
-		this.update({logs: [...this.snapshot.logs, record]});
+		const record: FightLogRecord = {sequence: ++this.sequence, entry, ...(this.snapshot.status ? {before: this.snapshot.status} : {}), ...(entry.stateAfter ? {after: entry.stateAfter} : {})};
+		this.update({logs: [...this.snapshot.logs, record], ...(entry.stateAfter ? {status: entry.stateAfter} : {}), ...(!this.snapshot.visible ? {playedSequence: record.sequence} : {})});
 	}
 
 	private updateStatus(status: FightStatus): void {
 		if (status.fightId !== this.snapshot.introduction?.fightId) return;
-		const logs = this.snapshot.logs.map((record, index, records) => index === records.length - 1 ? {...record, after: status} : record);
+		const logs = this.snapshot.logs.map((record, index, records) => index === records.length - 1 && !record.after ? {...record, after: status} : record);
 		this.update({status, logs, waiting: !status.activeFighter.isSelf});
 	}
 
@@ -58,7 +58,12 @@ class FightStore {
 	};
 	public readonly getSnapshot = (): FightSnapshot => this.snapshot;
 	public readonly show = (): void => this.update({visible: true});
-	public readonly minimize = (): void => this.update({visible: false});
+	public readonly minimize = (): void => this.update({visible: false, playedSequence: this.snapshot.logs.at(-1)?.sequence ?? this.snapshot.playedSequence});
+	public readonly markPlayed = (fightId: string, sequence: number): void => {
+		if (fightId !== this.snapshot.introduction?.fightId) return;
+		if (sequence <= this.snapshot.playedSequence) return;
+		this.update({playedSequence: sequence});
+	};
 	public readonly reset = (): void => {this.snapshot = EMPTY_FIGHT; this.update({});};
 	public readonly syncCurrent = (): void => {
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(FightResumeReq, {}), {

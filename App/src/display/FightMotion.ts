@@ -1,4 +1,5 @@
 import {FightEffect, FightLogEntry} from "ws-packets/src/objects/Fight";
+import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {Theme} from "@/src/design/Theme";
 
 export const FIGHT_SPEEDS = {NORMAL: "normal", FAST: "fast"} as const;
@@ -52,7 +53,12 @@ export const FIGHT_ACTION_MOTIONS = new Map<string, FightMotion>(
 );
 
 const SELF_MOTIONS = new Set<FightMotion>([FIGHT_MOTIONS.SHIELD, FIGHT_MOTIONS.BLESSING, FIGHT_MOTIONS.HEAL, FIGHT_MOTIONS.REST, FIGHT_MOTIONS.CHARGE, FIGHT_MOTIONS.DODGE]);
-const MISSED_STATUSES = new Set(["missed", "maxUses", "failure", "afraid", "noAction"]);
+export const FIGHT_OUTCOMES = {HIT: "hit", CRITICAL: "critical", MISSED: "missed", FIZZLED: "fizzled", CHARGING: "charging"} as const;
+export type FightOutcome = typeof FIGHT_OUTCOMES[keyof typeof FIGHT_OUTCOMES];
+const STATUS_OUTCOMES: Readonly<Partial<Record<string, FightOutcome>>> = {
+	critical: FIGHT_OUTCOMES.CRITICAL, missed: FIGHT_OUTCOMES.MISSED, charging: FIGHT_OUTCOMES.CHARGING,
+	maxUses: FIGHT_OUTCOMES.FIZZLED, failure: FIGHT_OUTCOMES.FIZZLED, afraid: FIGHT_OUTCOMES.FIZZLED, noAction: FIGHT_OUTCOMES.FIZZLED
+};
 const ALTERATION_STATUSES = new Set(["new", "active", "stop", "randomAction", "noAction"]);
 const MOTION_COLORS: Partial<Record<FightMotion, string>> = {
 	flame: "#D96B32", frost: "#3F9CAE", lightning: Theme.colors.gold, wave: Theme.colors.blue,
@@ -67,7 +73,7 @@ type FightImpactSource = typeof FIGHT_IMPACT_SOURCES[keyof typeof FIGHT_IMPACT_S
 export type FightImpact = {side: FightSide; source: FightImpactSource; kind: "damage" | "energy" | "breath"; amount: number};
 export type FightCue = {
 	actionId: string; sourceActionId: string; motion: FightMotion; color: string; actor: FightSide; target: FightSide;
-	missed: boolean; critical: boolean; periodic: boolean; impacts: FightImpact[];
+	missed: boolean; critical: boolean; periodic: boolean; impacts: FightImpact[]; outcome: FightOutcome; pet?: OwnedPet;
 };
 
 export function fightMotionColor(motion: FightMotion): string {
@@ -100,7 +106,8 @@ export function fightCue(entry: FightLogEntry): FightCue {
 	const opponent: FightSide = entry.fighter.isSelf ? "opponent" : "self";
 	const periodic = ALTERATION_STATUSES.has(entry.status ?? "");
 	const target = animationTarget(entry, motion, actor, periodic);
+	const outcome = STATUS_OUTCOMES[entry.status ?? ""] ?? FIGHT_OUTCOMES.HIT;
 	const impacts = [...effectImpacts(entry.fightActionEffectDealt, periodic ? actor : opponent, FIGHT_IMPACT_SOURCES.DEALT), ...effectImpacts(entry.fightActionEffectReceived, actor, FIGHT_IMPACT_SOURCES.RECEIVED)];
 	if (entry.fightActionEffectDealt?.reflectedDamages) impacts.push({side: actor, source: FIGHT_IMPACT_SOURCES.REFLECTED, kind: "damage", amount: entry.fightActionEffectDealt.reflectedDamages});
-	return {actionId, sourceActionId: entry.fightActionId, motion, actor, target, impacts, periodic, color: fightMotionColor(motion), missed: MISSED_STATUSES.has(entry.status ?? ""), critical: entry.status === "critical"};
+	return {actionId, sourceActionId: entry.fightActionId, motion, actor, target, impacts, periodic, outcome, color: fightMotionColor(motion), missed: outcome === FIGHT_OUTCOMES.MISSED || outcome === FIGHT_OUTCOMES.FIZZLED, critical: outcome === FIGHT_OUTCOMES.CRITICAL, ...(entry.pet ? {pet: entry.pet} : {})};
 }

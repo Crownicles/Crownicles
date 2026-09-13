@@ -15,6 +15,31 @@ function status(power: number): FightStatus {
 
 describe("fight session", () => {
 	beforeEach(() => fightStore.reset());
+	it("plays the opening pet action received before mounting and does not replay it after reopening", async () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
+		registry.dispatch(FightStatusRes.wireName, {status: status(300)});
+		registry.dispatch(FightLogRes.wireName, {entry: {fightId: "duel", fighter: {isSelf: true}, fightActionId: "stealWeapon", status: "normal"}});
+		const {result, unmount} = await renderHook(useFightPlayback, {initialProps: fightStore.getSnapshot()});
+		expect(result.current.record?.entry.fightActionId).toBe("stealWeapon");
+		const sequence = result.current.record!.sequence;
+		await act(() => result.current.complete());
+		expect(fightStore.getSnapshot().playedSequence).toBe(sequence);
+		await unmount();
+		const reopened = await renderHook(useFightPlayback, {initialProps: fightStore.getSnapshot()});
+		expect(reopened.result.current.record).toBeUndefined();
+		expect(reopened.result.current.logs).toHaveLength(1);
+	});
+	it("keeps events received while minimized in the journal without replaying them on return", async () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
+		fightStore.minimize();
+		registry.dispatch(FightLogRes.wireName, {entry: {fightId: "duel", fighter: {isSelf: false}, fightActionId: "simpleAttack"}});
+		fightStore.show();
+		const {result} = await renderHook(useFightPlayback, {initialProps: fightStore.getSnapshot()});
+		expect(result.current.record).toBeUndefined();
+		expect(result.current.logs).toHaveLength(1);
+	});
 	it("plays a burst of actions in order before showing the next authoritative energy", async () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
@@ -33,6 +58,24 @@ describe("fight session", () => {
 		await act(() => result.current.complete());
 		await waitFor(() => expect(result.current.status?.activeFighter.stats.power).toBe(180));
 		expect(result.current.record).toBeUndefined();
+	});
+	it("applies each action's own energy at its impact even if a later turn has already arrived", async () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
+		registry.dispatch(FightStatusRes.wireName, {status: status(300)});
+		registry.dispatch(FightLogRes.wireName, {entry: {fightId: "duel", fighter: {isSelf: true}, fightActionId: "simpleAttack", stateAfter: status(240)}});
+		registry.dispatch(FightLogRes.wireName, {entry: {fightId: "duel", fighter: {isSelf: false}, fightActionId: "poisoned", status: "active", stateAfter: status(180)}});
+		registry.dispatch(FightStatusRes.wireName, {status: {...status(200), numberOfTurn: 2}});
+		const {result} = await renderHook(useFightPlayback, {initialProps: fightStore.getSnapshot()});
+		expect(result.current.status?.activeFighter.stats.power).toBe(300);
+		await act(() => result.current.impact());
+		expect(result.current.status?.activeFighter.stats.power).toBe(240);
+		await act(() => result.current.complete());
+		expect(result.current.status?.activeFighter.stats.power).toBe(240);
+		await act(() => result.current.impact());
+		expect(result.current.status?.activeFighter.stats.power).toBe(180);
+		await act(() => result.current.complete());
+		expect(result.current.status?.activeFighter.stats.power).toBe(200);
 	});
 	it("ignores packets belonging to another fight", () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");

@@ -108,6 +108,7 @@ export class FightController {
 			this.invertFighters();
 		}
 		this.state = FightState.RUNNING;
+		this._fightView.displayFightStatus(response);
 		await this.prepareNextTurn(response);
 	}
 

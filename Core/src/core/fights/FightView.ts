@@ -28,6 +28,9 @@ import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights
 import { BuggedFightPacket } from "../../../../Lib/src/packets/fights/BuggedFightPacket";
 import { PetAssistanceResult } from "../../../../Lib/src/types/PetAssistanceResult";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
+import {
+	FightFighterSnapshot, FightStatusSnapshot
+} from "../../../../Lib/src/types/FightStatusSnapshot";
 
 export class FightView {
 	public context: PacketContext;
@@ -39,7 +42,7 @@ export class FightView {
 		this.fightController = fightController;
 	}
 
-	private fighterStatus(fighter: PlayerFighter | AiPlayerFighter | MonsterFighter): CommandFightStatusPacket["activeFighter"] {
+	private fighterStatus(fighter: PlayerFighter | AiPlayerFighter | MonsterFighter): FightFighterSnapshot {
 		const identity = fighter instanceof MonsterFighter
 			? { monsterId: fighter.monster.id }
 			: {
@@ -50,7 +53,7 @@ export class FightView {
 			level: fighter.level,
 			...fighter.alteration ? { alteration: fighter.alteration.id } : {},
 			stats: {
-				power: fighter.getEnergy(),
+				power: Math.max(0, fighter.getEnergy()),
 				maxEnergy: fighter.getMaxEnergy(),
 				attack: fighter.getAttack(),
 				defense: fighter.getDefense(),
@@ -93,22 +96,29 @@ export class FightView {
 	/**
 	 * Summarize current fight status, displaying fighter's stats
 	 */
-	displayFightStatus(response: CrowniclesPacket[]): void {
-		if (this.fightController.isSilentMode()) {
-			return;
-		}
+	private statusSnapshot(): FightStatusSnapshot | undefined {
 		const playingFighter = this.fightController.getPlayingFighter();
 		const defendingFighter = this.fightController.getDefendingFighter();
 		if (!playingFighter || !defendingFighter) {
-			return;
+			return undefined;
 		}
-		response.push(makePacket(CommandFightStatusPacket, {
+		return {
 			fightId: this.fightController.id,
 			numberOfTurn: this.fightController.turn,
 			maxNumberOfTurn: FightConstants.MAX_TURNS,
 			activeFighter: this.fighterStatus(playingFighter),
 			defendingFighter: this.fighterStatus(defendingFighter)
-		}));
+		};
+	}
+
+	displayFightStatus(response: CrowniclesPacket[]): void {
+		if (this.fightController.isSilentMode()) {
+			return;
+		}
+		const snapshot = this.statusSnapshot();
+		if (snapshot) {
+			response.push(makePacket(CommandFightStatusPacket, snapshot));
+		}
 	}
 
 	/**
@@ -191,8 +201,10 @@ export class FightView {
 		};
 		const usedFightActionId = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction!.id : undefined;
 		fightActionResult = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction!.result : fightActionResult;
+		const stateAfter = this.statusSnapshot();
 		response.push(makePacket(CommandFightHistoryItemPacket, {
 			fightId: this.fightController.id,
+			...stateAfter ? { stateAfter } : {},
 			fighterKeycloakId: fighter instanceof MonsterFighter ? undefined : fighter.player.keycloakId,
 			monsterId: fighter instanceof MonsterFighter ? fighter.monster.id : undefined,
 

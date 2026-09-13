@@ -1,6 +1,7 @@
 import {ReactElement} from "react";
 import {Image, ImageSource} from "expo-image";
 import {Theme} from "@/src/design/Theme";
+import cannonAsset from "@/assets/images/fight/cannon.svg";
 import arrowRightAsset from "lucide-static/icons/arrow-right.svg";
 import audioLinesAsset from "lucide-static/icons/audio-lines.svg";
 import chevronDownAsset from "lucide-static/icons/chevron-down.svg";
@@ -40,6 +41,7 @@ function iconAsset(source: number | ImageSource): LucideIcon {
 }
 
 export const ArrowRight = iconAsset(arrowRightAsset);
+export const Cannon = iconAsset(cannonAsset);
 export const AudioLines = iconAsset(audioLinesAsset);
 export const ChevronDown = iconAsset(chevronDownAsset);
 export const CircleAlert = iconAsset(circleAlertAsset);

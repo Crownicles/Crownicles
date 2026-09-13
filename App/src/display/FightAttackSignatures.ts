@@ -29,11 +29,16 @@ const PIERCING: FightChoreography = [
 	{id: "piercing-exit", form: FIGHT_PARTICLE_FORMS.STREAK, width: 42, height: 2, timing: FIGHT_TIMING.ECHO, opacity: [0, 0, 0.8, 0.4, 0, 0], x: [0, 0, 18, 30, 42, 44], onHit: true}
 ];
 const INTENSE: FightChoreography = [
-	...bladeStroke("intense-rise", {angle: -48, length: 100, curve: 54, timing: FIGHT_TIMING.SWING}),
-	...bladeStroke("intense-reversal", {angle: 48, length: 108, curve: 60, timing: [0, 0.4, 0.46, 0.5, 0.64, 1]}),
+	{id: "intense-windup", form: FIGHT_PARTICLE_FORMS.ARC, anchor: "actor", width: 64, height: 56, timing: FIGHT_TIMING.SWING, opacity: [0, 0.5, 0.8, 0.3, 0, 0], rotation: [-100, -70, -35, 10, 30, 30], scale: [0.4, 0.8, 1, 0.7, 0.3, 0]},
+	{id: "intense-sweep", form: FIGHT_PARTICLE_FORMS.ARC, anchor: "actor", width: 116, height: 84, timing: FIGHT_TIMING.SWING, opacity: [0, 0, 0.2, 1, 0.35, 0], travel: [0, 0, 0.15, 0.85, 1, 1], rotation: [-60, -60, -35, 65, 130, 170], stretch: {horizontal: [0.2, 0.2, 0.4, 1.1, 1.3, 1.4], vertical: [0.7, 0.7, 0.9, 1, 0.5, 0.1]}},
+	{id: "intense-cut", form: FIGHT_PARTICLE_FORMS.STREAK, width: 96, height: 3, timing: FIGHT_TIMING.GLIMMER, opacity: [0, 0, 1, 0.7, 0, 0], rotation: stillFrames(-18), tint: Theme.colors.paper},
+	{id: "intense-exhale", form: FIGHT_PARTICLE_FORMS.GLYPH, glyph: FIGHT_MOTIONS.REST, anchor: "actor", width: 26, height: 26, timing: [0, 0.58, 0.68, 0.76, 0.88, 1], opacity: [0, 0, 0.35, 0.6, 0.25, 0], x: [0, 0, 10, 18, 26, 30], y: [10, 10, 4, -4, -12, -18], tint: Theme.colors.faint},
 	...fightBurst("intense-fragments", {radius: 42, size: 3})
 ];
-const SABOTAGE: FightChoreography = [...PIERCING,
+const SABOTAGE: FightChoreography = [
+	{id: "sabotage-fuse", form: FIGHT_PARTICLE_FORMS.GLYPH, glyph: FIGHT_MOTIONS.LIGHTNING, anchor: "actor", width: 28, height: 28, timing: FIGHT_TIMING.CAST, opacity: [0, 0.3, 0.85, 0.4, 0, 0], rotation: [-15, 0, 15, -10, 0, 0], tint: Theme.colors.gold},
+	{id: "sabotage-dart", form: FIGHT_PARTICLE_FORMS.SHARD, anchor: "actor", width: 22, height: 7, timing: FIGHT_TIMING.FLIGHT, opacity: [0, 0, 0.8, 1, 0, 0], travel: [0, 0, 0.12, 1, 1, 1], y: [0, 0, -5, 0, 0, 0], tint: Theme.colors.ink},
+	{id: "sabotage-discharge", form: FIGHT_PARTICLE_FORMS.GLYPH, glyph: FIGHT_MOTIONS.LIGHTNING, width: 36, height: 36, timing: FIGHT_TIMING.GLIMMER, opacity: [0, 0, 1, 0.55, 0, 0], tint: Theme.colors.gold, onHit: true},
 	{id: "armor-break", form: FIGHT_PARTICLE_FORMS.GLYPH, glyph: FIGHT_MOTIONS.SHIELD, width: 42, height: 42, timing: FIGHT_TIMING.IMPACT, opacity: [0, 0, 0.8, 0.55, 0, 0], rotation: [0, 0, 0, 18, 38, 50], stretch: {horizontal: [1, 1, 1, 1.2, 1.6, 1.8], vertical: [1, 1, 1, 0.75, 0.3, 0.1]}, tint: Theme.colors.blue, onHit: true},
 	...fightBurst("armor-pieces", {radius: 38, size: 4, tint: Theme.colors.blue})
 ];
@@ -76,6 +81,7 @@ const THROW: FightChoreography = [
 ];
 
 const CANNON: FightChoreography = [
+	{id: "cannon-carriage", form: FIGHT_PARTICLE_FORMS.GLYPH, glyph: FIGHT_MOTIONS.SHOT, anchor: "actor", width: 62, height: 62, timing: [0, 0.18, 0.28, 0.4, 0.7, 1], opacity: [0, 1, 1, 1, 0.6, 0], x: [12, 12, -4, 2, 8, 8], y: stillFrames(16), rotation: [0, 0, -6, -2, 0, 0], tint: Theme.colors.ink},
 	{id: "cannon-aim", form: FIGHT_PARTICLE_FORMS.GLYPH, glyph: FIGHT_MOTIONS.CHARGE, anchor: "actor", width: 34, height: 34, timing: FIGHT_TIMING.CAST, opacity: [0, 0.4, 1, 0.6, 0, 0], scale: [1.2, 1, 0.7, 0.3, 0, 0], tint: Theme.colors.ink},
 	{id: "cannon-barrel-flash", form: FIGHT_PARTICLE_FORMS.STREAK, anchor: "actor", width: 48, height: 5, timing: [0, 0.25, 0.28, 0.32, 0.38, 1], opacity: [0, 0, 1, 0.6, 0, 0], x: stillFrames(20), stretch: {horizontal: [0, 0, 0.6, 1.25, 0.5, 0], vertical: [1, 1, 1, 0.7, 0.2, 0.1]}, tint: Theme.colors.gold},
 	{id: "cannon-shell", form: FIGHT_PARTICLE_FORMS.MOTE, anchor: "actor", width: 16, height: 16, timing: FIGHT_TIMING.FLIGHT, opacity: [0, 0, 1, 1, 0, 0], travel: [0, 0, 0.04, 1, 1.04, 1.04], y: [0, 0, -2, 0, 8, 12], stretch: {horizontal: [1, 1, 1, 1.35, 0.5, 0.1], vertical: [1, 1, 1, 0.7, 0.5, 0.1]}, tint: Theme.colors.ink},

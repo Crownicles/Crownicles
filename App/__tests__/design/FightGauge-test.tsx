@@ -2,6 +2,7 @@ import {render, screen} from "@testing-library/react-native";
 import {FightGauge} from "@/src/components/FightGauge";
 import {reloadI18n} from "@/src/translations/i18nLoader";
 import french from "../../../Lang/fr/app.json";
+import {Animated} from "react-native";
 
 describe("fight gauge number formatting", () => {
 	beforeAll(async () => {
@@ -15,5 +16,15 @@ describe("fight gauge number formatting", () => {
 	it("keeps zero energy and its real maximum", async () => {
 		await render(<FightGauge label="Energy" value={0} max={1250} color="#3F9A5C" reducedMotion />);
 		expect(screen.getByText("0 / 1\u202f250")).toBeTruthy();
+	});
+	it("changes the main fill immediately even while the loss trail has not animated", async () => {
+		const timing = jest.spyOn(Animated, "timing").mockReturnValue({start: jest.fn(), stop: jest.fn(), reset: jest.fn()});
+		try {
+			const view = await render(<FightGauge label="Energy" value={100} max={100} color="#3F9A5C" />);
+			await view.rerender(<FightGauge label="Energy" value={63} max={100} color="#3F9A5C" />);
+			expect(screen.getByTestId("fight-gauge-fill")).toHaveStyle({width: "63%"});
+			expect(screen.getByText("63 / 100")).toBeTruthy();
+		}
+		finally {timing.mockRestore();}
 	});
 });

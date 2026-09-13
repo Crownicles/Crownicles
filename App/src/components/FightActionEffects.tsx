@@ -1,9 +1,9 @@
 import {ReactNode} from "react";
 import {Animated, StyleProp, StyleSheet, ViewStyle} from "react-native";
-import {FightCue} from "@/src/display/FightMotion";
+import {FightCue, FIGHT_OUTCOMES, FIGHT_MOTIONS} from "@/src/display/FightMotion";
 import {FIGHT_EFFECT_FRAMES, FIGHT_EFFECT_LAYOUT, FIGHT_PARTICLE_FORMS, FightChoreography, FightFrames, FightParticle} from "@/src/display/FightEffectPrimitives";
 import {AppIcons} from "@/src/AppIcons";
-import {Swords, Sword, Hammer, Sparkles, Flame, Snowflake, Zap, Waves, Droplets, HeartPulse, Shield, Wind, Crosshair, Skull, AudioLines, PawPrint, CircleDashed} from "@/src/design/FightIcons";
+import {Cannon, Swords, Sword, Hammer, Sparkles, Flame, Snowflake, Zap, Waves, Droplets, HeartPulse, Shield, Wind, Crosshair, Skull, AudioLines, PawPrint, CircleDashed} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 
 const REST_FRAMES: FightFrames = [0, 0, 0, 0, 0, 0];
@@ -14,7 +14,7 @@ const EFFECT_ICONS = {
 	flame: Flame, frost: Snowflake, lightning: Zap, wave: Waves, poison: Droplets, shield: Shield,
 	blessing: Sparkles, heal: HeartPulse, rest: Wind, charge: Crosshair, curse: Skull, drain: HeartPulse,
 	roar: AudioLines, summon: PawPrint, dodge: Wind, debuff: CircleDashed, quake: Zap, mimic: Sparkles,
-	bite: Swords, claw: Swords, slash: Swords, rapid: Sword, pierce: Sword, heavy: Hammer, shot: Crosshair, return: CircleDashed
+	bite: Swords, claw: Swords, slash: Swords, rapid: Sword, pierce: Sword, heavy: Hammer, shot: Cannon, return: CircleDashed
 } as const;
 const styles = StyleSheet.create({
 	particle: {position: "absolute", alignItems: "center", justifyContent: "center"},
@@ -39,12 +39,13 @@ function ParticleImage({particle, cue, color}: {particle: FightParticle; cue: Fi
 	if (particle.form !== FIGHT_PARTICLE_FORMS.GLYPH) return null;
 	const emoji = particle.glyph ? null : AppIcons.getIconOrNull(`fightActions.${cue.actionId}`);
 	const Icon = EFFECT_ICONS[particle.glyph ?? cue.motion];
+	if (particle.glyph === FIGHT_MOTIONS.SHOT) return <Animated.View style={{transform: [{scaleX: cue.actor === "self" ? 1 : -1}]}}><Icon size={size} color={color} /></Animated.View>;
 	return emoji ? <TwemojiIcon emoji={emoji} size={size} /> : <Icon size={size} color={color} />;
 }
 
 function particleHorizontalFrames(particle: FightParticle, cue: FightCue, width: number): number[] {
 	const direction = cue.actor === "self" ? 1 : -1;
-	const miss = cue.missed && !cue.periodic ? direction * MISS_OFFSET : 0;
+	const miss = cue.outcome === FIGHT_OUTCOMES.MISSED ? direction * MISS_OFFSET : 0;
 	const source = width * FIGHT_EFFECT_LAYOUT.anchors[cue.actor];
 	const target = width * FIGHT_EFFECT_LAYOUT.anchors[cue.target] + miss;
 	const origins = {actor: source, target, other: width * FIGHT_EFFECT_LAYOUT.anchors[cue.actor === "self" ? "opponent" : "self"]};

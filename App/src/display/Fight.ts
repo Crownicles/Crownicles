@@ -1,7 +1,10 @@
-import {FightParticipant, FightLogEntry, FightEffect} from "ws-packets/src/objects/Fight";
+import {FightParticipant, FightLogEntry, FightEffect, FightStatus} from "ws-packets/src/objects/Fight";
 import {i18n} from "@/src/translations/i18n";
-import {FightImpact, fightCue} from "@/src/display/FightMotion";
+import {FightImpact, FightSide, fightCue} from "@/src/display/FightMotion";
 import {formatNumber} from "@/src/display/Amounts";
+import {petName} from "@/src/display/PetDisplay";
+
+const DESCRIPTIVE_STATUSES = new Set(["new", "active", "stop", "randomAction", "noAction", "generalEffect", "success", "afraid", "failure"]);
 
 export function fighterSubtitle(fighter: FightParticipant): string {
 	const classLabel = fighter.classId === undefined ? "" : i18n.t(`models:classes.${fighter.classId}`);
@@ -30,16 +33,48 @@ export function fightImpactLabel(impact: FightImpact): string {
 
 function statFeedback(effect: FightEffect | undefined): string[] {
 	if (!effect) return [];
-	return (["attack", "defense", "speed"] as const).flatMap(stat => effect[stat] ? [i18n.t("app:battle.statChange", {stat: i18n.t(`app:arena.stats.${stat}`), value: `${effect[stat]! > 0 ? "+" : ""}${formatNumber(effect[stat]!)}`})] : []);
+	const stats = (["attack", "defense", "speed"] as const).flatMap(stat => effect[stat] ? [i18n.t("app:battle.statChange", {stat: i18n.t(`app:arena.stats.${stat}`), value: `${effect[stat]! > 0 ? "+" : ""}${formatNumber(effect[stat]!)}`})] : []);
+	if (effect.newAlteration) stats.push(i18n.t("app:battle.story.alteration", {effect: fightActionName(effect.newAlteration)}));
+	return stats;
 }
 
-export function fightFeedback(entry: FightLogEntry): string {
+function feedbackTarget(side: FightSide, entry: FightLogEntry, status?: FightStatus): string {
+	const fighter = [status?.activeFighter, status?.defendingFighter, entry.fighter].find(candidate => candidate && candidate.isSelf === (side === "self"));
+	return fighterName(fighter ?? {isSelf: side === "self"});
+}
+
+export function fightConsequences(entry: FightLogEntry, status?: FightStatus): string[] {
 	const cue = fightCue(entry);
-	const effects = cue.impacts.map(impact => {
+	const consequences: Record<FightSide, string[]> = {self: [], opponent: []};
+	for (const impact of cue.impacts) {
 		const delta = impact.kind === "damage" ? -impact.amount : impact.amount;
-		return i18n.t(`app:battle.feedback.${impact.kind}`, {value: formatNumber(Math.abs(impact.amount)), sign: delta >= 0 ? "+" : "-"});
-	});
-	const stats = [...statFeedback(entry.fightActionEffectReceived), ...statFeedback(entry.fightActionEffectDealt)];
-	const outcome = effects.length || stats.length ? [...effects, ...stats].join(" · ") : i18n.t(`app:arena.status.${entry.status ?? "normal"}`, {defaultValue: i18n.t("app:arena.status.other")});
-	return i18n.t("app:battle.actionResult", {fighter: fighterName(entry.fighter), result: outcome});
+		consequences[impact.side].push(i18n.t(`app:battle.feedback.${impact.kind}`, {value: formatNumber(Math.abs(impact.amount)), sign: delta >= 0 ? "+" : "-"}));
+	}
+	const opponent = cue.actor === "self" ? "opponent" : "self";
+	consequences[cue.actor].push(...statFeedback(entry.fightActionEffectReceived));
+	consequences[cue.periodic ? cue.actor : opponent].push(...statFeedback(entry.fightActionEffectDealt));
+	return (["self", "opponent"] as const).flatMap(side => consequences[side].length ? [i18n.t("app:battle.story.consequences", {target: feedbackTarget(side, entry, status), effects: consequences[side].join(i18n.t("app:battle.story.separator"))})] : []);
+}
+
+function narrativeActor(entry: FightLogEntry): string {
+	if (entry.fighter.name || entry.fighter.monsterId) return fighterDisplayName(entry.fighter);
+	return i18n.t(entry.fighter.isSelf ? "app:battle.story.self" : "app:battle.story.opponent");
+}
+
+function narrativeAction(entry: FightLogEntry): string {
+	const fallback = i18n.t(`commands:fight.actions.attacksResults.${entry.status ?? "normal"}.0`, {attack: fightActionName(entry.fightActionId), defaultValue: i18n.t("app:battle.story.generic", {attack: fightActionName(entry.fightActionId)})});
+	if (DESCRIPTIVE_STATUSES.has(entry.status ?? "")) return i18n.t(`models:fight_actions.${entry.fightActionId}.${entry.status}`, {petNickname: entry.pet ? petName(entry.pet) : "", defaultValue: fallback});
+	if (entry.customMessageFail) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessageFail`, {defaultValue: fallback});
+	if (entry.customMessage) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessage`, {defaultValue: fallback});
+	return fallback;
+}
+
+export function fightEntryTitle(entry: FightLogEntry): string {
+	return entry.pet ? i18n.t("app:battle.story.petAction", {pet: petName(entry.pet)}) : fightActionName(entry.usedFightActionId ?? entry.fightActionId);
+}
+
+export function fightNarrative(entry: FightLogEntry, pending = false): string {
+	const fighter = narrativeActor(entry);
+	if (pending) return i18n.t(entry.pet ? "app:battle.story.preparingPet" : "app:battle.story.preparingAttack", {fighter, pet: entry.pet ? petName(entry.pet) : "", attack: fightActionName(entry.fightActionId)});
+	return i18n.t("app:battle.story.sentence", {fighter, action: narrativeAction(entry)});
 }

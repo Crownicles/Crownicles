@@ -1,8 +1,9 @@
 import {FightCue, FightMotion, FIGHT_MOTIONS} from "@/src/display/FightMotion";
-import {FIGHT_PARTICLE_FORMS, FightChoreography, FightFrames, fightBurst} from "@/src/display/FightEffectPrimitives";
+import {FIGHT_PARTICLE_FORMS, FightChoreography, FightFrames} from "@/src/display/FightEffectPrimitives";
 import {Theme} from "@/src/design/Theme";
 import {FIGHT_ATTACK_SIGNATURES} from "@/src/display/FightAttackSignatures";
 import {FIGHT_CAST_PRELUDES, FIGHT_CHARGING_SIGNATURES, FIGHT_PERIODIC_SIGNATURES, FIGHT_SPELL_SIGNATURES} from "@/src/display/FightSpellSignatures";
+import {fightOutcomeEffects} from "@/src/display/FightOutcomeEffects";
 export {FIGHT_EFFECT_FRAMES, FIGHT_EFFECT_LAYOUT} from "@/src/display/FightEffectPrimitives";
 
 const STRIKE: FightFrames = [0, 0, 1, 0.75, 0, 0];
@@ -201,8 +202,6 @@ const ACTION_CHOREOGRAPHIES: Readonly<Partial<Record<string, FightChoreography>>
 	...FIGHT_SPELL_SIGNATURES
 };
 
-const CRITICAL_HIGHLIGHTS = fightBurst("critical-rays", {radius: 46, size: 2, tint: Theme.colors.gold});
-
 function actionChoreography(cue: FightCue): FightChoreography {
 	if (cue.periodic) return FIGHT_PERIODIC_SIGNATURES[cue.actionId] ?? PERIODIC;
 	if (cue.motion === FIGHT_MOTIONS.CHARGE) return FIGHT_CHARGING_SIGNATURES[cue.actionId] ?? CHARGE;
@@ -210,5 +209,5 @@ function actionChoreography(cue: FightCue): FightChoreography {
 }
 
 export function fightChoreography(cue: FightCue): FightChoreography {
-	return [...(FIGHT_CAST_PRELUDES[cue.sourceActionId] ?? []), ...actionChoreography(cue), ...(cue.critical ? CRITICAL_HIGHLIGHTS : [])];
+	return fightOutcomeEffects(cue, [...(FIGHT_CAST_PRELUDES[cue.sourceActionId] ?? []), ...actionChoreography(cue)]);
 }

@@ -6,12 +6,13 @@ import {FightLogRecord} from "@/src/store/FightStore";
 import {KeyValue, Note} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {formatNumber} from "@/src/display/Amounts";
-import {fighterName, fightActionName, fightImpactLabel} from "@/src/display/Fight";
-import {petName} from "@/src/display/PetDisplay";
+import {fighterName, fightEntryTitle, fightImpactLabel, fightNarrative, fightConsequences} from "@/src/display/Fight";
+import {petName, petIcon} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
 import {FightCue, fightCue} from "@/src/display/FightMotion";
 import {AppIcons} from "@/src/AppIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {FightNarrative} from "@/src/components/FightNarrative";
 
 const styles = StyleSheet.create({
 	entry: {borderBottomWidth: 1, borderBottomColor: Theme.colors.line, paddingVertical: Theme.spacing.md},
@@ -21,7 +22,10 @@ const styles = StyleSheet.create({
 	actor: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 15, color: Theme.colors.muted},
 	status: {fontFamily: Theme.fonts.bold, fontSize: 10},
 	compact: {paddingVertical: 8},
-	impact: {fontFamily: Theme.fonts.bold, fontSize: 12, color: Theme.colors.red}
+	impact: {fontFamily: Theme.fonts.bold, fontSize: 12, color: Theme.colors.red},
+	story: {fontFamily: Theme.fonts.regular, fontSize: 12, lineHeight: 18, color: Theme.colors.ink, marginTop: 6},
+	consequence: {fontFamily: Theme.fonts.medium, fontSize: 10, lineHeight: 15, color: Theme.colors.muted, marginTop: 3},
+	pending: {color: Theme.colors.muted}
 });
 
 function EffectDetails({effect, label}: {effect?: FightEffect; label: string}): ReactNode {
@@ -39,14 +43,25 @@ function FightLogImpact({cue}: {cue: FightCue}): ReactNode {
 	</>;
 }
 
-function FightLogSummary({record, compact, cue}: {record: FightLogRecord; compact: boolean; cue: FightCue}): ReactNode {
-	const icon = AppIcons.getIconOrNull(`fightActions.${cue.actionId}`);
+export function FightEventIcon({entry, size = 23}: {entry: FightLogEntry; size?: number}): ReactNode {
+	const icon = entry.pet ? petIcon(entry.pet) : AppIcons.getIconOrNull(`fightActions.${entry.usedFightActionId ?? entry.fightActionId}`);
+	return icon ? <TwemojiIcon emoji={icon} size={size} /> : <Swords size={size} color={fightCue(entry).color} />;
+}
+
+export function FightEventStory({record, pending = false}: {record: FightLogRecord; pending?: boolean}): ReactNode {
+	return <>
+		<FightNarrative style={[styles.story, pending && styles.pending]}>{fightNarrative(record.entry, pending)}</FightNarrative>
+		{!pending ? fightConsequences(record.entry, record.after ?? record.before).map(text => <Text key={text} style={styles.consequence}>{text}</Text>) : null}
+	</>;
+}
+
+function FightLogSummary({record, compact, cue, pending}: {record: FightLogRecord; compact: boolean; cue: FightCue; pending: boolean}): ReactNode {
 	const actor = record.entry.pet ? petName(record.entry.pet) : fighterName(record.entry.fighter);
 	const turn = record.before ? i18n.t("app:battle.shortTurn", {turn: record.before.numberOfTurn}) : "";
 	return <>
-		{icon ? <TwemojiIcon emoji={icon} size={23} /> : <Swords size={20} color={cue.color} />}
-		<View style={styles.entryBody}><Text style={styles.action}>{fightActionName(cue.actionId)}</Text><Text style={styles.actor}>{[actor, turn].filter(Boolean).join(" · ")}</Text></View>
-		<FightLogImpact cue={cue} />
+		<FightEventIcon entry={record.entry} />
+		<View style={styles.entryBody}><Text style={styles.action}>{fightEntryTitle(record.entry)}</Text><Text style={styles.actor}>{[actor, turn].filter(Boolean).join(" · ")}</Text></View>
+		{!pending ? <FightLogImpact cue={cue} /> : null}
 		{!compact ? <ChevronDown size={14} color={Theme.colors.muted} /> : null}
 	</>;
 }
@@ -59,19 +74,20 @@ function FightLogEffects({entry, cue}: {entry: FightLogEntry; cue: FightCue}): R
 	</>;
 }
 
-function FightLogLine({record, compact}: {record: FightLogRecord; compact: boolean}): ReactNode {
+function FightLogLine({record, compact, pending}: {record: FightLogRecord; compact: boolean; pending: boolean}): ReactNode {
 	const [expanded, setExpanded] = useState(false);
 	const cue = fightCue(record.entry);
 	return <View style={[styles.entry, compact && styles.compact]}>
-		<Pressable accessibilityRole="button" accessibilityState={{expanded}} onPress={(): void => setExpanded(!expanded)} style={styles.entryHead}>
-			<FightLogSummary record={record} compact={compact} cue={cue} />
+		<Pressable accessibilityRole="button" accessibilityState={{expanded, disabled: pending}} disabled={pending} onPress={(): void => setExpanded(!expanded)} style={styles.entryHead}>
+			<FightLogSummary record={record} compact={compact} cue={cue} pending={pending} />
 		</Pressable>
-		{expanded ? <FightLogEffects entry={record.entry} cue={cue} /> : null}
+		<FightEventStory record={record} pending={pending} />
+		{expanded && !pending ? <FightLogEffects entry={record.entry} cue={cue} /> : null}
 	</View>;
 }
 
-export function FightLog({entries, compact = false}: {entries: FightLogRecord[]; compact?: boolean}): ReactNode {
+export function FightLog({entries, compact = false, pendingSequence}: {entries: FightLogRecord[]; compact?: boolean; pendingSequence?: number}): ReactNode {
 	const visible = compact ? entries.slice(-2) : [...entries].reverse();
 	if (!visible.length) return <Note>{i18n.t("app:battle.opening")}</Note>;
-	return visible.map(record => <FightLogLine key={record.sequence} record={record} compact={compact} />);
+	return visible.map(record => <FightLogLine key={record.sequence} record={record} compact={compact} pending={record.sequence === pendingSequence} />);
 }

@@ -43,7 +43,7 @@ function FightTurn({fight, playback, collector, onChoose, submitting, navigation
 	return <>
 		<FightStage status={status} introduction={fight.introduction} record={playback.record} onImpact={playback.impact} onComplete={playback.complete} reducedMotion={playback.reducedMotion} speed={speed} />
 		<FightBreath fighter={self} reducedMotion={playback.reducedMotion} />
-		<FightActivity latest={playback.record ?? playback.logs.at(-1)} ownTurn={Boolean(collector) && !pending} onJournal={navigation.onJournal} />
+		<FightActivity entries={playback.logs} {...playback.record && !playback.impacted ? {pendingSequence: playback.record.sequence} : {}} ownTurn={Boolean(collector) && !pending} onJournal={navigation.onJournal} />
 		{collector ? <FightActions key={collector.id} collector={collector} onChoose={onChoose} submitting={pending} /> : <FightActionsWaiting actions={fight.introduction?.initiatorActions ?? []} />}
 	</>;
 }
@@ -55,9 +55,9 @@ function FightContent(props: FightContentProps): ReactNode {
 	return <><FightResult result={fight.result} reward={fight.reward} /><View style={styles.resultActions}><ButtonRow><Button variant="primary" onPress={navigation.onClose}>{i18n.t("app:battle.returnToArena")}</Button><Button onPress={navigation.onJournal}>{i18n.t("app:arena.log")}</Button></ButtonRow></View></>;
 }
 
-function FightJournal({entries, onClose}: {entries: FightLogRecord[]; onClose: () => void}): ReactNode {
+function FightJournal({entries, onClose, pendingSequence}: {entries: FightLogRecord[]; onClose: () => void; pendingSequence?: number}): ReactNode {
 	const {height} = useWindowDimensions();
-	return <Confirmation title={i18n.t("app:arena.log")} onRequestClose={onClose}><ScrollView style={[styles.journal, {maxHeight: height * 0.6}]}><FightLog entries={entries} /></ScrollView><ButtonRow><Button onPress={onClose}>{i18n.t("app:battle.backToFight")}</Button></ButtonRow></Confirmation>;
+	return <Confirmation title={i18n.t("app:arena.log")} onRequestClose={onClose}><ScrollView style={[styles.journal, {maxHeight: height * 0.6}]}><FightLog entries={entries} {...pendingSequence === undefined ? {} : {pendingSequence}} /></ScrollView><ButtonRow><Button onPress={onClose}>{i18n.t("app:battle.backToFight")}</Button></ButtonRow></Confirmation>;
 }
 
 export function FightLiveView(props: FightLiveProps): ReactNode {
@@ -69,6 +69,6 @@ export function FightLiveView(props: FightLiveProps): ReactNode {
 	return <ScrollView contentContainerStyle={[styles.content, compact && styles.compactContent]} showsVerticalScrollIndicator={false}>
 		<FightHeader fight={props.fight} playback={playback} phase={fightPhase(props, playback)} navigation={navigation} speedSetting={speedSetting} />
 		<FightContent {...props} playback={playback} navigation={navigation} speed={speedSetting.speed} />
-		{journal ? <FightJournal entries={playback.logs} onClose={(): void => setJournal(false)} /> : null}
+		{journal ? <FightJournal entries={playback.logs} {...playback.record && !playback.impacted ? {pendingSequence: playback.record.sequence} : {}} onClose={(): void => setJournal(false)} /> : null}
 	</ScrollView>;
 }

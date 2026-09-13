@@ -52,7 +52,7 @@ describe("fight collectors", () => {
 
 function battle(): FightSnapshot {
 	const fighter: FightFighter = {isSelf: true, name: "Aster", classId: 1, level: 10, stats: {power: 80, maxEnergy: 100, attack: 15, defense: 12, speed: 20, breath: 6, maxBreath: 10, breathRegen: 2}};
-	return {introduction: {fightId: "screen", initiator: fighter, opponent: {...fighter, name: "Arsene", isSelf: false}, initiatorActions: [["simpleAttack", 2]], opponentActions: []}, status: {fightId: "screen", numberOfTurn: 3, maxNumberOfTurn: 26, activeFighter: {...fighter, name: "Arsene", isSelf: false}, defendingFighter: fighter}, logs: [], result: null, reward: null, error: null, visible: true, waiting: true};
+	return {introduction: {fightId: "screen", initiator: fighter, opponent: {...fighter, name: "Arsene", isSelf: false}, initiatorActions: [["simpleAttack", 2]], opponentActions: []}, status: {fightId: "screen", numberOfTurn: 3, maxNumberOfTurn: 26, activeFighter: {...fighter, name: "Arsene", isSelf: false}, defendingFighter: fighter}, logs: [], result: null, reward: null, error: null, visible: true, waiting: true, playedSequence: 0};
 }
 
 describe("live battle presentation", () => {
@@ -108,9 +108,29 @@ describe("live battle presentation", () => {
 		await view.rerender(<FightLiveView fight={{...initial, logs: [{sequence: 1, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: true}, fightActionId: "fireAttack", status: "normal"}}]}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
 		expect(screen.queryByTestId("fight-effect-flame", {includeHiddenElements: true})).toBeNull();
 	});
+	it("shows the assisting pet for an action that arrived before the battle view mounted", async () => {
+		jest.spyOn(AccessibilityInfo, "isReduceMotionEnabled").mockResolvedValue(false);
+		jest.spyOn(Animated, "timing").mockReturnValue({start: jest.fn(), stop: jest.fn(), reset: jest.fn()});
+		const initial = battle();
+		const pet = {typeId: 1, nickname: "Milo", rarity: 1, sex: "m" as const, loveLevel: 5, force: 10, feedDelay: 0};
+		await render(<FightLiveView fight={{...initial, logs: [{sequence: 1, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: true, name: "Aster"}, fightActionId: "stealWeapon", status: "success", pet}}]}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(screen.getByTestId("fight-active-pet").props.accessibilityLabel).toBe("Milo");
+		expect(screen.getByTestId("fight-particle-stolen-weapon", {includeHiddenElements: true})).toBeTruthy();
+	});
 });
 
 describe("rendered attack trajectories", () => {
+	it.each(["normal", "critical", "missed", "maxUses"])("gives cannon outcome %s its own visible behavior", async status => {
+		const damages = status === "normal" || status === "critical" ? 27 : 0;
+		const cue = fightCue({fightId: "outcome", fighter: {isSelf: true}, fightActionId: "canonAttack", status, fightActionEffectDealt: {damages}});
+		await render(<FightEffects cue={cue} progress={new Animated.Value(0.44)} width={400} />);
+		const find = (id: string): ReturnType<typeof screen.queryByTestId> => screen.queryByTestId(`fight-particle-${id}`, {includeHiddenElements: true});
+		expect(Boolean(find("cannon-shell"))).toBe(status !== "maxUses");
+		expect(Boolean(find("cannon-impact-ring"))).toBe(damages > 0);
+		expect(Boolean(find("cannon-critical-pressure"))).toBe(status === "critical");
+		expect(Boolean(find("failed-preparation"))).toBe(status === "maxUses");
+		if (damages) expect(screen.getAllByText("-27", {includeHiddenElements: true})).toHaveLength(1);
+	});
 	it("winds up a heavy weapon at its owner before striking with a short impact", async () => {
 		const progress = new Animated.Value(0.2);
 		const cue = fightCue({fightId: "trajectory", fighter: {isSelf: true}, fightActionId: "heavyAttack", status: "normal"});

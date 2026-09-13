@@ -10,6 +10,10 @@ import {ClassDataController} from "../../../src/data/Class";
 import {CrowniclesPacket} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {CommandFightIntroduceFightersPacket} from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
 import {CommandFightStatusPacket} from "../../../../Lib/src/packets/fights/FightStatusPacket";
+import {CommandFightHistoryItemPacket} from "../../../../Lib/src/packets/fights/FightHistoryItemPacket";
+import {defaultFightActionResult} from "../../../../Lib/src/types/FightActionResult";
+import {FightView} from "../../../src/core/fights/FightView";
+import {FightActionDataController} from "../../../src/data/FightAction";
 
 const active: FightController[] = [];
 function createFight(silent = false): FightController {
@@ -55,5 +59,19 @@ describe("fight resume", () => {
 		const response: CrowniclesPacket[] = [];
 		fight.sendCurrentState(response);
 		expect(response).toEqual([]);
+	});
+	it("captures energy with the action and keeps that snapshot unchanged by later effects", () => {
+		const fight = createFight();
+		const view = new FightView({keycloakId: "initiator", frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {}}, fight);
+		const defender = fight.getDefendingFighter()!;
+		defender.setBaseEnergy(73);
+		const response: CrowniclesPacket[] = [];
+		view.addActionToHistory(response, fight.getPlayingFighter()!, FightActionDataController.instance.getById("simpleAttack")!, {...defaultFightActionResult(), damages: 27});
+		const history = response.find((packet): packet is CommandFightHistoryItemPacket => packet instanceof CommandFightHistoryItemPacket)!;
+		expect(history.stateAfter).toMatchObject({fightId: fight.id, numberOfTurn: 1, defendingFighter: {stats: {power: 73}}});
+		defender.setBaseEnergy(12);
+		view.displayFightStatus(response);
+		expect(history.stateAfter?.defendingFighter.stats.power).toBe(73);
+		expect(response.at(-1)).toMatchObject({defendingFighter: {stats: {power: 12}}});
 	});
 });

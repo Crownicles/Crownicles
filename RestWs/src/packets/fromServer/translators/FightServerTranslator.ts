@@ -2,6 +2,9 @@ import { fromServerTranslator } from "../FromServerTranslator";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandFightIntroduceFightersPacket } from "../../../../../Lib/src/packets/fights/FightIntroductionPacket";
 import { CommandFightStatusPacket } from "../../../../../Lib/src/packets/fights/FightStatusPacket";
+import {
+	FightFighterSnapshot, FightStatusSnapshot
+} from "../../../../../Lib/src/types/FightStatusSnapshot";
 import { CommandFightHistoryItemPacket } from "../../../../../Lib/src/packets/fights/FightHistoryItemPacket";
 import { CommandFightEndOfFightPacket } from "../../../../../Lib/src/packets/fights/EndOfFightPacket";
 import { FightRewardPacket } from "../../../../../Lib/src/packets/fights/FightRewardPacket";
@@ -14,7 +17,7 @@ import {
 	FightIntroductionRes, FightStatusRes, FightLogRes, FightEndRes, FightRewardRes, FightWaitRes, FightErrorRes, FightResumeRes
 } from "../../../../../WsPackets/src/fromServer/fight/FightRes";
 import {
-	FIGHT_ERRORS, FightError, FightFighter, FightRankingChange
+	FIGHT_ERRORS, FightError, FightFighter, FightRankingChange, FightStatus
 } from "../../../../../WsPackets/src/objects/Fight";
 import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePackets";
 import { fightParticipant } from "../FightDisplay";
@@ -23,12 +26,22 @@ function failure(error: FightError): Promise<FightErrorRes> {
 	return asyncMakeFromServerPacket(FightErrorRes, { error });
 }
 
-async function fighterStatus(context: PacketContext, fighter: CommandFightStatusPacket["activeFighter"]): Promise<FightFighter> {
+async function fighterStatus(context: PacketContext, fighter: FightFighterSnapshot): Promise<FightFighter> {
 	const {
 		keycloakId: _keycloakId, monsterId: _monsterId, ...details
 	} = fighter;
 	return {
 		...await fightParticipant(context, fighter), ...details
+	};
+}
+
+async function statusSnapshot(context: PacketContext, snapshot: FightStatusSnapshot): Promise<FightStatus> {
+	return {
+		fightId: snapshot.fightId,
+		numberOfTurn: snapshot.numberOfTurn,
+		maxNumberOfTurn: snapshot.maxNumberOfTurn,
+		activeFighter: await fighterStatus(context, snapshot.activeFighter),
+		defendingFighter: await fighterStatus(context, snapshot.defendingFighter)
 	};
 }
 
@@ -64,22 +77,17 @@ export default class FightServerTranslator {
 
 	@fromServerTranslator(CommandFightStatusPacket, FightStatusRes)
 	public static async status(context: PacketContext, packet: CommandFightStatusPacket): Promise<FightStatusRes> {
-		return asyncMakeFromServerPacket(FightStatusRes, { status: {
-			fightId: packet.fightId,
-			numberOfTurn: packet.numberOfTurn,
-			maxNumberOfTurn: packet.maxNumberOfTurn,
-			activeFighter: await fighterStatus(context, packet.activeFighter),
-			defendingFighter: await fighterStatus(context, packet.defendingFighter)
-		} });
+		return asyncMakeFromServerPacket(FightStatusRes, { status: await statusSnapshot(context, packet) });
 	}
 
 	@fromServerTranslator(CommandFightHistoryItemPacket, FightLogRes)
 	public static async log(context: PacketContext, packet: CommandFightHistoryItemPacket): Promise<FightLogRes> {
 		const {
-			fighterKeycloakId, monsterId, ...details
+			fighterKeycloakId, monsterId, stateAfter, ...details
 		} = packet;
 		return asyncMakeFromServerPacket(FightLogRes, { entry: {
 			...details,
+			...stateAfter ? { stateAfter: await statusSnapshot(context, stateAfter) } : {},
 			fighter: await fightParticipant(context, {
 				keycloakId: fighterKeycloakId, monsterId
 			})

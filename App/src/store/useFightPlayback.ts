@@ -1,10 +1,10 @@
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {AccessibilityInfo} from "react-native";
 import {FightStatus} from "ws-packets/src/objects/Fight";
-import {FightLogRecord, FightSnapshot} from "@/src/store/FightStore";
+import {FightLogRecord, FightSnapshot, fightStore} from "@/src/store/FightStore";
 
 type PlaybackCursor = {fightId: string | undefined; sequence: number; impactSequence?: number};
-export type FightPlayback = {record: FightLogRecord | undefined; status: FightStatus | null; logs: FightLogRecord[]; impact: () => void; complete: () => void; reducedMotion: boolean};
+export type FightPlayback = {record: FightLogRecord | undefined; status: FightStatus | null; logs: FightLogRecord[]; impact: () => void; complete: () => void; reducedMotion: boolean; impacted: boolean};
 type CursorState = [PlaybackCursor, Dispatch<SetStateAction<PlaybackCursor>>];
 
 export function useFightReducedMotion(): boolean {
@@ -21,7 +21,7 @@ export function useFightReducedMotion(): boolean {
 function usePlaybackCursor(fight: FightSnapshot): CursorState {
 	const fightId = fight.introduction?.fightId;
 	const lastSequence = fight.logs.at(-1)?.sequence ?? 0;
-	const [cursor, setCursor] = useState<PlaybackCursor>(() => ({fightId, sequence: lastSequence}));
+	const [cursor, setCursor] = useState<PlaybackCursor>(() => ({fightId, sequence: fight.playedSequence}));
 	if (fightId !== cursor.fightId) setCursor({fightId, sequence: 0});
 	if (!fight.visible && cursor.sequence !== lastSequence) setCursor({fightId, sequence: lastSequence});
 	return [cursor, setCursor];
@@ -43,6 +43,7 @@ export function useFightPlayback(fight: FightSnapshot): FightPlayback {
 	const complete = (): void => {
 		if (!record) return;
 		setCursor(previous => ({fightId: previous.fightId, sequence: record.sequence}));
+		if (fight.introduction) fightStore.markPlayed(fight.introduction.fightId, record.sequence);
 	};
-	return {record, status: playbackStatus(fight.status, record, cursor.impactSequence), logs: fight.logs.filter(entry => entry.sequence <= (record?.sequence ?? cursor.sequence)), impact, complete, reducedMotion};
+	return {record, status: playbackStatus(fight.status, record, cursor.impactSequence), logs: fight.logs.filter(entry => entry.sequence <= (record?.sequence ?? cursor.sequence)), impact, complete, reducedMotion, impacted: record?.sequence === cursor.impactSequence};
 }

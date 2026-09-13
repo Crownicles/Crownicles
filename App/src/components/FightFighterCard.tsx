@@ -45,12 +45,13 @@ function fighterIcon(fighter: FightFighter): string | null {
 	return fighter.classId === undefined ? null : AppIcons.getIconOrNull(`classes.${fighter.classId}`);
 }
 
-function FighterPortrait({fighter, pet, compact}: {fighter: FightFighter; pet?: OwnedPet; compact: boolean}): ReactNode {
-	const icon = fighterIcon(fighter);
+function FighterPortrait({fighter, pet, compact, assistance}: {fighter: FightFighter; pet?: OwnedPet; compact: boolean; assistance?: OwnedPet}): ReactNode {
+	const icon = assistance ? petIcon(assistance) : fighterIcon(fighter);
+	const companion = assistance ? fighterIcon(fighter) : pet ? petIcon(pet) : null;
 	const sizes = compact ? {fighter: 36, pet: 14} : {fighter: 55, pet: 20};
-	return <View style={[styles.portrait, compact && styles.compactPortrait]}><View style={styles.portraitBase} />
+	return <View style={[styles.portrait, compact && styles.compactPortrait]} {...assistance ? {testID: "fight-active-pet", accessibilityLabel: petName(assistance)} : {}}><View style={styles.portraitBase} />
 		{icon ? <TwemojiIcon emoji={icon} size={sizes.fighter} /> : <Swords size={sizes.fighter} color={Theme.colors.muted} />}
-		{pet ? <View style={styles.pet}><TwemojiIcon emoji={petIcon(pet)} size={sizes.pet} /></View> : null}
+		{companion ? <View style={styles.pet}><TwemojiIcon emoji={companion} size={sizes.pet} /></View> : null}
 	</View>;
 }
 
@@ -86,10 +87,11 @@ function FighterMotion({fighter, animation, children}: {fighter: FightFighter; a
 export function FightFighterCard({fighter, pet, animation}: {fighter: FightFighter; pet?: OwnedPet; animation: FightAnimation}): ReactNode {
 	const [expanded, setExpanded] = useState(false);
 	const compact = useCompactFight();
+	const assistance = animation.cue?.actor === (fighter.isSelf ? "self" : "opponent") ? animation.cue.pet : undefined;
 	return <View style={styles.participant} testID={`fight-fighter-${fighter.isSelf ? "self" : "opponent"}`}>
 		<Pressable accessibilityRole="button" accessibilityLabel={`${i18n.t("app:arena.details")} : ${fighterDisplayName(fighter)}`} onPress={(): void => setExpanded(true)} style={[styles.card, fighter.isSelf ? styles.selfCard : styles.foeCard, compact && styles.compactCard]}>
 			<FighterRole fighter={fighter} compact={compact} />
-			<FighterMotion fighter={fighter} animation={animation}><FighterPortrait fighter={fighter} pet={pet} compact={compact} /></FighterMotion>
+			<FighterMotion fighter={fighter} animation={animation}><FighterPortrait fighter={fighter} pet={pet} compact={compact} {...assistance ? {assistance} : {}} /></FighterMotion>
 			<FighterIdentity fighter={fighter} compact={compact} />
 			<View style={styles.energy}><FightGauge label={i18n.t("app:arena.energy")} value={fighter.stats.power} max={fighter.stats.maxEnergy} color={fighter.isSelf ? Theme.colors.green : Theme.colors.red} reducedMotion={animation.reducedMotion} /></View>
 		</Pressable>
