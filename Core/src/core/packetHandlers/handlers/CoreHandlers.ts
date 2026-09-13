@@ -11,6 +11,7 @@ import {
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import {
 	CommandReportHomeChestActionReq,
+	CommandReportHomeChestInfoReq,
 	CommandReportGardenHarvestReq,
 	CommandReportGardenPlantReq,
 	CommandReportGardenWaterReq,
@@ -45,6 +46,7 @@ import {
 } from "../../report/ReportCityGuildDomainService";
 import { handleFoodShopBuy } from "../../report/ReportCityFoodShopService";
 import { handleGuildDomainDepositTreasury } from "../../report/ReportCityGuildDomainShopService";
+import { handleHomeChestInfo } from "../../report/ReportCityChestService";
 import {
 	CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
@@ -81,6 +83,11 @@ export default class CoreHandlers {
 	@packetHandler(ReactionCollectorResetTimerPacketReq)
 	reactionCollectorResetTimer(response: CrowniclesPacket[], _context: PacketContext, packet: ReactionCollectorResetTimerPacketReq): void {
 		ReactionCollectorController.resetTimer(response, packet);
+	}
+
+	@packetHandler(CommandReportHomeChestInfoReq)
+	async homeChestInfo(response: CrowniclesPacket[], context: PacketContext, _packet: CommandReportHomeChestInfoReq): Promise<void> {
+		await handleHomeChestInfo(context.keycloakId!, response);
 	}
 
 	@packetHandler(CommandReportHomeChestActionReq)

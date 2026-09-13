@@ -54,6 +54,20 @@ function buildChestActionError(error: ChestError): ChestActionResult {
 
 const INVALID_CHEST_ACTION = buildChestActionError(HomeConstants.CHEST_ERRORS.INVALID);
 
+export async function handleHomeChestInfo(keycloakId: string, response: CrowniclesPacket[]): Promise<void> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	const home = player ? await Homes.getOfPlayer(player.id) : null;
+	const level = home?.getLevel();
+	if (!player || !home || !level) {
+		response.push(makePacket(CommandReportHomeChestActionRes, INVALID_CHEST_ACTION));
+		return;
+	}
+	const inventory = await InventorySlots.getOfPlayer(player.id);
+	response.push(makePacket(CommandReportHomeChestActionRes, {
+		success: true, ...await buildChestData(home, level, inventory, player)
+	}));
+}
+
 function hasChestActionContext(params: {
 	player: Player | null;
 	home: Home | null;
@@ -203,10 +217,7 @@ async function runChestActionUnderLock(
 
 	return {
 		success: true,
-		chestItems: refreshedData.chestItems,
-		depositableItems: refreshedData.depositableItems,
-		slotsPerCategory: refreshedData.slotsPerCategory,
-		inventoryCapacity: refreshedData.inventoryCapacity,
+		...refreshedData,
 		upgradeStation: buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel, player)
 	};
 }

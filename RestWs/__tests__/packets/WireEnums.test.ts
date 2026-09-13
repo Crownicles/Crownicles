@@ -28,6 +28,8 @@ import {EloGameResult as CoreEloGameResult} from "../../../Lib/src/types/EloGame
 import {TopDataType, TopTiming, EloGameResult} from "../../../WsPackets/src/objects/Rankings";
 import {Effect} from "../../../Lib/src/types/Effect";
 import {PLAYER_EFFECTS} from "../../../WsPackets/src/objects/PlayerUtility";
+import {HomeConstants} from "../../../Lib/src/constants/HomeConstants";
+import {CHEST_ACTIONS, CHEST_ERRORS, PLANT_TRANSFER_ACTIONS, PLANT_TRANSFER_ERRORS} from "../../../WsPackets/src/objects/HomeChest";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -37,6 +39,10 @@ import {PLAYER_EFFECTS} from "../../../WsPackets/src/objects/PlayerUtility";
  */
 describe("wire enums mirror their back-end counterpart", () => {
 	it.each([
+		["ChestActions", CHEST_ACTIONS, HomeConstants.CHEST_ACTIONS],
+		["ChestErrors", CHEST_ERRORS, HomeConstants.CHEST_ERRORS],
+		["PlantTransferActions", PLANT_TRANSFER_ACTIONS, HomeConstants.PLANT_TRANSFER_ACTIONS],
+		["PlantTransferErrors", PLANT_TRANSFER_ERRORS, HomeConstants.PLANT_TRANSFER_ERRORS],
 		["DeathEffect", PLAYER_EFFECTS, {DEAD: Effect.DEAD.id}],
 		["TopDataType", TopDataType, CoreTopDataType],
 		["TopTiming", TopTiming, CoreTopTiming],

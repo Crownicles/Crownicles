@@ -1,4 +1,24 @@
 {
+  "homeChest": {
+    "title": "Coffre de la maison",
+    "views": {"equipment": "Équipement", "plants": "Plantes"},
+    "chest": "Dans le coffre",
+    "inventory": "Dans l'inventaire",
+    "slot": "Emplacement {{slot}}",
+    "emptyChest": "Le coffre ne contient aucun équipement.",
+    "emptyInventory": "Aucun équipement à déposer.",
+    "noStoredPlants": "Aucune plante dans le coffre.",
+    "capacity": "Capacités",
+    "capacities": "Coffre : {{chest}} · Réserve : {{inventory}}",
+    "plantCapacity_one": "Capacité par plante : {{count}}",
+    "plantCapacity_other": "Capacité par plante : {{count}}",
+    "itemActions": "Déplacer un équipement",
+    "swapWith": "Échanger avec",
+    "unavailable": "Vous ne disposez pas d'un coffre accessible.",
+    "actions": {"deposit": "Déposer", "withdraw": "Retirer", "swap": "Échanger", "plantDeposit": "Déposer une plante", "plantWithdraw": "Retirer une plante"},
+    "done": {"deposit": "Équipement déposé dans le coffre.", "withdraw": "Équipement retiré du coffre.", "swap": "Équipements échangés.", "plantDeposit": "Plante déposée dans le coffre.", "plantWithdraw": "Plante retirée du coffre."},
+    "errors": {"invalid": "Ce déplacement n'est plus disponible. Actualisez le coffre puis réessayez.", "chestFull": "Le coffre est plein dans cette catégorie.", "inventoryFull": "Votre inventaire est plein dans cette catégorie.", "storageFull": "Le stockage de cette plante est plein.", "noEmptySlot": "Vous n'avez pas d'emplacement libre pour cette plante.", "notFound": "Cette plante n'est plus disponible."}
+  },
   "common": {
     "loading": "Chargement",
     "error": "Les informations n'ont pas pu être récupérées",

@@ -46,7 +46,9 @@ export function MapImage({packet}: {packet: MapRes}): ReactNode {
 	useEffect(() => {
 		let active = true;
 		Image.getSize(uri, (width, height): void => {
-			if (active && width > 0 && height > 0) setRatio(width / height);
+			if (!active) return;
+			if (width <= 0 || height <= 0) return;
+			setRatio(width / height);
 		}, () => undefined);
 		return (): void => {active = false;};
 	}, [uri]);

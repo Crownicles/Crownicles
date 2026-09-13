@@ -30,7 +30,7 @@ function inventoryItemDetails(item: ItemWithDetails): string {
 	return i18n.t("app:inventory.itemSummary", {rarity, details: [level, mainItemStats(item), enchantment].filter(Boolean).join(" · ")});
 }
 
-export function InventoryItemRow({item, location}: {item: ItemWithDetails; location: string}): ReactNode {
+export function InventoryItemRow({item, location, onPress, disabled}: {item: ItemWithDetails; location: string; onPress?: () => void; disabled?: boolean}): ReactNode {
 	if (item.id === 0) return <Row title={i18n.t("app:profile.inventory.emptySlot")} end={location} />;
 	const path = itemIconPath(item);
 	const icon = path ? AppIcons.getIconOrNull(path) : null;
@@ -39,5 +39,8 @@ export function InventoryItemRow({item, location}: {item: ItemWithDetails; locat
 		title={itemDisplayName(item)}
 		subtitle={inventoryItemDetails(item)}
 		end={location}
+		onPress={onPress}
+		disabled={disabled}
+		chevron={Boolean(onPress)}
 	/>;
 }

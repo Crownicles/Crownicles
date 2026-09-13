@@ -471,6 +471,9 @@ export class CommandReportApartmentRequiresHomeRes extends CrowniclesPacket impl
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportHomeChestInfoReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportHomeChestActionReq extends CrowniclesPacket {
 	action!: ChestAction;
 
@@ -502,6 +505,12 @@ export class CommandReportHomeChestActionRes extends CrowniclesPacket {
 
 	/** Max backup slots per category in the player's inventory */
 	inventoryCapacity!: ChestSlotsPerCategory;
+
+	plantStorage?: PlantStorageEntry[];
+
+	playerPlantSlots?: PlayerPlantSlotEntry[];
+
+	plantMaxCapacity?: number;
 
 	/** Refreshed home upgrade station after inventory mutations */
 	upgradeStation?: HomeUpgradeStationData;

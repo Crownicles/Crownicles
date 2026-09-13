@@ -14,6 +14,7 @@ import {CitySection} from "@/src/collectors/CityRows";
 import {submenuSections} from "@/src/collectors/CitySubmenuSections";
 import {Button, ButtonRow, Hero, Note, Screen} from "@/src/design/Primitives";
 import {GuildDomain} from "@/src/components/GuildDomain";
+import {HomeChest} from "@/src/components/HomeChest";
 import {i18n} from "@/src/translations/i18n";
 
 type SubmenuProps = {
@@ -29,9 +30,9 @@ function submenuIcon(view: CitySubmenu, snapshot?: CityMobileSnapshot): string |
 
 export function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, onNavigate, onBack, locked, backLabel}: SubmenuProps): ReactNode {
 	const details = submenuTitle(view, innId);
-	if (view === "guild") return <Screen>
+	if (view === "guild" || view === "homeChest") return <Screen>
 		<Hero eyebrow={details.eyebrow} title={details.title} />
-		<GuildDomain />
+		{view === "guild" ? <GuildDomain /> : <HomeChest />}
 		<ButtonRow><Button onPress={onBack}>{i18n.t("app:city.actions.back")}</Button></ButtonRow>
 	</Screen>;
 	const icon = submenuIcon(view, snapshot);
