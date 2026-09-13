@@ -111,6 +111,18 @@ describe("live battle presentation", () => {
 });
 
 describe("rendered attack trajectories", () => {
+	it("winds up a heavy weapon at its owner before striking with a short impact", async () => {
+		const progress = new Animated.Value(0.2);
+		const cue = fightCue({fightId: "trajectory", fighter: {isSelf: true}, fightActionId: "heavyAttack", status: "normal"});
+		await render(<FightEffects cue={cue} progress={progress} width={400} />);
+		expect(StyleSheet.flatten(screen.getByTestId("fight-particle-raised-weapon", {includeHiddenElements: true}).props.style).transform).toEqual(expect.arrayContaining([{translateX: 94}, {translateY: -32}]));
+		expect(StyleSheet.flatten(screen.getByTestId("fight-particle-downward-impact", {includeHiddenElements: true}).props.style).opacity).toBe(0);
+		await act(() => progress.setValue(0.4));
+		expect(StyleSheet.flatten(screen.getByTestId("fight-particle-raised-weapon", {includeHiddenElements: true}).props.style).transform).toEqual(expect.arrayContaining([{translateX: 306}, {translateY: 0}]));
+		expect(StyleSheet.flatten(screen.getByTestId("fight-particle-impact-core", {includeHiddenElements: true}).props.style).opacity).toBe(1);
+		await act(() => progress.setValue(0.56));
+		expect(StyleSheet.flatten(screen.getByTestId("fight-particle-impact-core", {includeHiddenElements: true}).props.style).opacity).toBe(0);
+	});
 	it.each([true, false])("lands a fireball on the defender at the impact frame (self: %s)", async isSelf => {
 		const progress = new Animated.Value(0);
 		const cue = fightCue({fightId: "trajectory", fighter: {isSelf}, fightActionId: "fireAttack", status: "normal"});
@@ -148,9 +160,11 @@ describe("rendered attack trajectories", () => {
 	});
 	it("shows poison damage on the affected fighter without launching another projectile", async () => {
 		const cue = fightCue({fightId: "trajectory", fighter: {isSelf: true}, fightActionId: "poisoned", status: "active", fightActionEffectDealt: {damages: 17}});
-		await render(<FightEffects cue={cue} progress={new Animated.Value(0.4)} width={400} />);
-		const style = StyleSheet.flatten(screen.getByTestId("fight-particle-periodic-mark", {includeHiddenElements: true}).props.style);
+		await render(<FightEffects cue={cue} progress={new Animated.Value(0.6)} width={400} />);
+		const style = StyleSheet.flatten(screen.getByTestId("fight-particle-venom-pool", {includeHiddenElements: true}).props.style);
 		expect(style.transform).toEqual(expect.arrayContaining([{translateX: 94}]));
+		expect(style.opacity).toBeGreaterThan(0);
+		expect(screen.getByText("-17", {includeHiddenElements: true})).toBeTruthy();
 		expect(screen.queryByTestId("fight-particle-venom-drop", {includeHiddenElements: true})).toBeNull();
 	});
 });

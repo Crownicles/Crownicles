@@ -14,8 +14,7 @@ import {i18n} from "@/src/translations/i18n";
 import {useCompactFight} from "@/src/components/FightControls";
 import {FightGauge} from "@/src/components/FightGauge";
 import {FightAnimation} from "@/src/store/useFightAnimation";
-import {fighterMotionFrames, fighterScaleFrames, fighterTiltFrames} from "@/src/display/FightTrajectories";
-import {FIGHT_EFFECT_FRAMES} from "@/src/display/FightChoreography";
+import {fighterMotionFrames, fighterScaleFrames, fighterTiltFrames, fighterLiftFrames, fighterTimingFrames} from "@/src/display/FightTrajectories";
 
 const styles = StyleSheet.create({
 	participant: {flex: 1, minWidth: 0},
@@ -80,19 +79,20 @@ function FighterMotion({fighter, animation, children}: {fighter: FightFighter; a
 	const side = fighter.isSelf ? "self" : "opponent";
 	const {cue, progress, reducedMotion} = animation;
 	const scales = fighterScaleFrames(cue, side);
-	return <Animated.View style={[styles.participant, !reducedMotion && {transform: [{translateX: progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: fighterMotionFrames(cue, side)})}, {scale: progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: scales})}, {rotate: progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: fighterTiltFrames(cue, side)})}]}]} testID={`fight-fighter-${side}`}>{children}</Animated.View>;
+	const timing = fighterTimingFrames(cue, side);
+	return <Animated.View style={!reducedMotion && {transform: [{translateX: progress.interpolate({inputRange: timing, outputRange: fighterMotionFrames(cue, side)})}, {translateY: progress.interpolate({inputRange: timing, outputRange: fighterLiftFrames(cue, side)})}, {scale: progress.interpolate({inputRange: timing, outputRange: scales})}, {rotate: progress.interpolate({inputRange: timing, outputRange: fighterTiltFrames(cue, side)})}]}} testID={`fight-portrait-${side}`}>{children}</Animated.View>;
 }
 
 export function FightFighterCard({fighter, pet, animation}: {fighter: FightFighter; pet?: OwnedPet; animation: FightAnimation}): ReactNode {
 	const [expanded, setExpanded] = useState(false);
 	const compact = useCompactFight();
-	return <FighterMotion fighter={fighter} animation={animation}>
+	return <View style={styles.participant} testID={`fight-fighter-${fighter.isSelf ? "self" : "opponent"}`}>
 		<Pressable accessibilityRole="button" accessibilityLabel={`${i18n.t("app:arena.details")} : ${fighterDisplayName(fighter)}`} onPress={(): void => setExpanded(true)} style={[styles.card, fighter.isSelf ? styles.selfCard : styles.foeCard, compact && styles.compactCard]}>
 			<FighterRole fighter={fighter} compact={compact} />
-			<FighterPortrait fighter={fighter} pet={pet} compact={compact} />
+			<FighterMotion fighter={fighter} animation={animation}><FighterPortrait fighter={fighter} pet={pet} compact={compact} /></FighterMotion>
 			<FighterIdentity fighter={fighter} compact={compact} />
 			<View style={styles.energy}><FightGauge label={i18n.t("app:arena.energy")} value={fighter.stats.power} max={fighter.stats.maxEnergy} color={fighter.isSelf ? Theme.colors.green : Theme.colors.red} reducedMotion={animation.reducedMotion} /></View>
 		</Pressable>
 		{expanded ? <FighterStats fighter={fighter} pet={pet} onClose={(): void => setExpanded(false)} /> : null}
-	</FighterMotion>;
+	</View>;
 }

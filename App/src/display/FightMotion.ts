@@ -66,7 +66,7 @@ export const FIGHT_IMPACT_SOURCES = {DEALT: "dealt", RECEIVED: "received", REFLE
 type FightImpactSource = typeof FIGHT_IMPACT_SOURCES[keyof typeof FIGHT_IMPACT_SOURCES];
 export type FightImpact = {side: FightSide; source: FightImpactSource; kind: "damage" | "energy" | "breath"; amount: number};
 export type FightCue = {
-	actionId: string; motion: FightMotion; color: string; actor: FightSide; target: FightSide;
+	actionId: string; sourceActionId: string; motion: FightMotion; color: string; actor: FightSide; target: FightSide;
 	missed: boolean; critical: boolean; periodic: boolean; impacts: FightImpact[];
 };
 
@@ -102,5 +102,5 @@ export function fightCue(entry: FightLogEntry): FightCue {
 	const target = animationTarget(entry, motion, actor, periodic);
 	const impacts = [...effectImpacts(entry.fightActionEffectDealt, periodic ? actor : opponent, FIGHT_IMPACT_SOURCES.DEALT), ...effectImpacts(entry.fightActionEffectReceived, actor, FIGHT_IMPACT_SOURCES.RECEIVED)];
 	if (entry.fightActionEffectDealt?.reflectedDamages) impacts.push({side: actor, source: FIGHT_IMPACT_SOURCES.REFLECTED, kind: "damage", amount: entry.fightActionEffectDealt.reflectedDamages});
-	return {actionId, motion, actor, target, impacts, periodic, color: fightMotionColor(motion), missed: MISSED_STATUSES.has(entry.status ?? ""), critical: entry.status === "critical"};
+	return {actionId, sourceActionId: entry.fightActionId, motion, actor, target, impacts, periodic, color: fightMotionColor(motion), missed: MISSED_STATUSES.has(entry.status ?? ""), critical: entry.status === "critical"};
 }

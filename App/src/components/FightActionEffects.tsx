@@ -1,11 +1,10 @@
 import {ReactNode} from "react";
 import {Animated, StyleProp, StyleSheet, ViewStyle} from "react-native";
 import {FightCue} from "@/src/display/FightMotion";
-import {FIGHT_EFFECT_FRAMES, FIGHT_EFFECT_LAYOUT, FIGHT_PARTICLE_FORMS, FightChoreography, FightFrames, FightParticle} from "@/src/display/FightChoreography";
+import {FIGHT_EFFECT_FRAMES, FIGHT_EFFECT_LAYOUT, FIGHT_PARTICLE_FORMS, FightChoreography, FightFrames, FightParticle} from "@/src/display/FightEffectPrimitives";
 import {AppIcons} from "@/src/AppIcons";
-import {Swords, Sparkles, Flame, Snowflake, Zap, Waves, Droplets, HeartPulse, Shield, Wind, Crosshair, Skull, AudioLines, PawPrint, CircleDashed} from "@/src/design/FightIcons";
+import {Swords, Sword, Hammer, Sparkles, Flame, Snowflake, Zap, Waves, Droplets, HeartPulse, Shield, Wind, Crosshair, Skull, AudioLines, PawPrint, CircleDashed} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {Theme} from "@/src/design/Theme";
 
 const REST_FRAMES: FightFrames = [0, 0, 0, 0, 0, 0];
 const SCALE_FRAMES: FightFrames = [1, 1, 1, 1, 1, 1];
@@ -15,7 +14,7 @@ const EFFECT_ICONS = {
 	flame: Flame, frost: Snowflake, lightning: Zap, wave: Waves, poison: Droplets, shield: Shield,
 	blessing: Sparkles, heal: HeartPulse, rest: Wind, charge: Crosshair, curse: Skull, drain: HeartPulse,
 	roar: AudioLines, summon: PawPrint, dodge: Wind, debuff: CircleDashed, quake: Zap, mimic: Sparkles,
-	bite: Swords, claw: Swords, slash: Swords, rapid: Swords, pierce: Swords, heavy: Swords, shot: Crosshair, return: CircleDashed
+	bite: Swords, claw: Swords, slash: Swords, rapid: Sword, pierce: Sword, heavy: Hammer, shot: Crosshair, return: CircleDashed
 } as const;
 const styles = StyleSheet.create({
 	particle: {position: "absolute", alignItems: "center", justifyContent: "center"},
@@ -27,17 +26,19 @@ const styles = StyleSheet.create({
 });
 
 type EffectProps = {cue: FightCue; progress: Animated.Value; width: number};
+type AnimatedFrame = Animated.AnimatedInterpolation<number>;
+type ParticleScale = [{scale: AnimatedFrame}, {scaleX: AnimatedFrame}, {scaleY: AnimatedFrame}];
 
-function interpolate(progress: Animated.Value, frames: readonly number[]): Animated.AnimatedInterpolation<number> {
-	return progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: [...frames], extrapolate: "clamp"});
+function interpolate(progress: Animated.Value, frames: readonly number[], timing: readonly number[]): Animated.AnimatedInterpolation<number> {
+	return progress.interpolate({inputRange: [...timing], outputRange: [...frames], extrapolate: "clamp"});
 }
 
 function ParticleImage({particle, cue, color}: {particle: FightParticle; cue: FightCue; color: string}): ReactNode {
 	const size = Math.min(particle.width, particle.height);
 	if (particle.form === FIGHT_PARTICLE_FORMS.SPARK) return <Sparkles size={size} color={color} />;
 	if (particle.form !== FIGHT_PARTICLE_FORMS.GLYPH) return null;
-	const emoji = AppIcons.getIconOrNull(`fightActions.${cue.actionId}`);
-	const Icon = EFFECT_ICONS[cue.motion];
+	const emoji = particle.glyph ? null : AppIcons.getIconOrNull(`fightActions.${cue.actionId}`);
+	const Icon = EFFECT_ICONS[particle.glyph ?? cue.motion];
 	return emoji ? <TwemojiIcon emoji={emoji} size={size} /> : <Icon size={size} color={color} />;
 }
 
@@ -46,24 +47,36 @@ function particleHorizontalFrames(particle: FightParticle, cue: FightCue, width:
 	const miss = cue.missed && !cue.periodic ? direction * MISS_OFFSET : 0;
 	const source = width * FIGHT_EFFECT_LAYOUT.anchors[cue.actor];
 	const target = width * FIGHT_EFFECT_LAYOUT.anchors[cue.target] + miss;
-	const origin = particle.anchor === "actor" ? source : target;
+	const origins = {actor: source, target, other: width * FIGHT_EFFECT_LAYOUT.anchors[cue.actor === "self" ? "opponent" : "self"]};
+	const origin = origins[particle.anchor ?? "target"];
 	return (particle.x ?? REST_FRAMES).map((offset, index) => origin + direction * offset + (target - source) * (particle.travel?.[index] ?? 0));
 }
 
-function particleAppearance(particle: FightParticle, color: string): StyleProp<ViewStyle> {
+function particleAppearance(particle: FightParticle, color: string, stageWidth: number): StyleProp<ViewStyle> {
 	const shape = particle.form === FIGHT_PARTICLE_FORMS.GLYPH || particle.form === FIGHT_PARTICLE_FORMS.SPARK ? null : styles[particle.form];
+	const width = particle.width + (particle.relativeWidth ?? 0) * stageWidth;
 	return [styles.particle, shape, {
-		width: particle.width, height: particle.height, top: FIGHT_EFFECT_LAYOUT.centerY - particle.height / 2, left: -particle.width / 2,
+		width, height: particle.height, top: FIGHT_EFFECT_LAYOUT.centerY - particle.height / 2, left: -width / 2,
 		borderColor: color, ...(FILLED_PARTICLE_FORMS.has(particle.form) ? {backgroundColor: color} : {})
 	}];
 }
 
+function particleScale(particle: FightParticle, progress: Animated.Value): ParticleScale {
+	const timing = particle.timing ?? FIGHT_EFFECT_FRAMES;
+	return [
+		{scale: interpolate(progress, particle.scale ?? SCALE_FRAMES, timing)},
+		{scaleX: interpolate(progress, particle.stretch?.horizontal ?? SCALE_FRAMES, timing)},
+		{scaleY: interpolate(progress, particle.stretch?.vertical ?? SCALE_FRAMES, timing)}
+	];
+}
+
 function AnimatedParticle({particle, cue, progress, width}: EffectProps & {particle: FightParticle}): ReactNode {
 	const direction = cue.actor === "self" ? 1 : -1;
-	const color = particle.light ? Theme.colors.paper : cue.color;
-	return <Animated.View testID={`fight-particle-${particle.id}`} style={[particleAppearance(particle, color), {
-		opacity: interpolate(progress, particle.opacity),
-		transform: [{translateX: interpolate(progress, particleHorizontalFrames(particle, cue, width))}, {translateY: interpolate(progress, particle.y ?? REST_FRAMES)}, {rotate: progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: (particle.rotation ?? REST_FRAMES).map(angle => `${angle * direction}deg`)})}, {scale: interpolate(progress, particle.scale ?? SCALE_FRAMES)}]
+	const color = particle.tint ?? cue.color;
+	const timing = particle.timing ?? FIGHT_EFFECT_FRAMES;
+	return <Animated.View testID={`fight-particle-${particle.id}`} style={[particleAppearance(particle, color, width), {
+		opacity: interpolate(progress, particle.opacity, timing),
+		transform: [{translateX: interpolate(progress, particleHorizontalFrames(particle, cue, width), timing)}, {translateY: interpolate(progress, particle.y ?? REST_FRAMES, timing)}, {rotate: progress.interpolate({inputRange: [...timing], outputRange: (particle.rotation ?? REST_FRAMES).map(angle => `${angle * direction}deg`)})}, ...particleScale(particle, progress)]
 	}]}><ParticleImage particle={particle} cue={cue} color={color} /></Animated.View>;
 }
 

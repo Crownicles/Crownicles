@@ -27,7 +27,7 @@ function ImpactNumber({impact, cue, progress, width, position}: EffectProps & {i
 	const negative = impact.kind === "damage" ? impact.amount > 0 : impact.amount < 0;
 	const color = negative ? Theme.colors.red : impact.kind === "breath" ? Theme.colors.blue : Theme.colors.green;
 	const amount = fightImpactLabel(impact);
-	return <Animated.View style={[styles.impact, {left: width * FIGHT_EFFECT_LAYOUT.anchors[impact.side] - 44, opacity: progress.interpolate({inputRange: [0, 0.32, 0.42, 0.8, 1], outputRange: [0, 0, 1, 1, 0]}), transform: [{translateY: progress.interpolate({inputRange: [0, 1], outputRange: [position * 25, position * 25 - 34]})}, {scale: progress.interpolate({inputRange: [0, 0.4, 0.6, 1], outputRange: [0.6, 1.15, 1, 1]})}]}]}>
+	return <Animated.View style={[styles.impact, {left: width * FIGHT_EFFECT_LAYOUT.anchors[impact.side] - 44, opacity: progress.interpolate({inputRange: [0, 0.4, 0.43, 0.8, 1], outputRange: [0, 0, 1, 1, 0]}), transform: [{translateY: progress.interpolate({inputRange: [0, 1], outputRange: [position * 25, position * 25 - 34]})}, {scale: progress.interpolate({inputRange: [0, 0.4, 0.6, 1], outputRange: [0.6, 1.15, 1, 1]})}]}]}>
 		{cue.critical && position === 0 ? <Animated.Text style={styles.critical}>{i18n.t("app:battle.critical")}</Animated.Text> : null}
 		<Animated.Text style={[styles.amount, {color}]}>{amount}</Animated.Text>
 	</Animated.View>;

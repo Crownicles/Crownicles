@@ -1,25 +1,9 @@
 import {FightCue, FightMotion, FIGHT_MOTIONS} from "@/src/display/FightMotion";
-
-export const FIGHT_EFFECT_FRAMES = [0, 0.18, 0.4, 0.56, 0.78, 1];
-export const FIGHT_EFFECT_LAYOUT = {anchors: {self: 0.235, opponent: 0.765}, centerY: 76};
-export const FIGHT_PARTICLE_FORMS = {STREAK: "streak", ARC: "arc", RING: "ring", SHARD: "shard", GLYPH: "glyph", SPARK: "spark", MOTE: "mote"} as const;
-export type FightFrames = readonly [number, number, number, number, number, number];
-export type FightParticle = {
-	id: string;
-	form: typeof FIGHT_PARTICLE_FORMS[keyof typeof FIGHT_PARTICLE_FORMS];
-	anchor?: "actor" | "target";
-	width: number;
-	height: number;
-	opacity: FightFrames;
-	x?: FightFrames;
-	y?: FightFrames;
-	scale?: FightFrames;
-	rotation?: FightFrames;
-	travel?: FightFrames;
-	light?: boolean;
-	onHit?: boolean;
-};
-export type FightChoreography = readonly FightParticle[];
+import {FIGHT_PARTICLE_FORMS, FightChoreography, FightFrames, fightBurst} from "@/src/display/FightEffectPrimitives";
+import {Theme} from "@/src/design/Theme";
+import {FIGHT_ATTACK_SIGNATURES} from "@/src/display/FightAttackSignatures";
+import {FIGHT_CAST_PRELUDES, FIGHT_CHARGING_SIGNATURES, FIGHT_PERIODIC_SIGNATURES, FIGHT_SPELL_SIGNATURES} from "@/src/display/FightSpellSignatures";
+export {FIGHT_EFFECT_FRAMES, FIGHT_EFFECT_LAYOUT} from "@/src/display/FightEffectPrimitives";
 
 const STRIKE: FightFrames = [0, 0, 1, 0.75, 0, 0];
 const FOLLOW_THROUGH: FightFrames = [0, 0, 0, 1, 0.25, 0];
@@ -27,30 +11,31 @@ const AFTERGLOW: FightFrames = [0, 0, 0.9, 0.6, 0.2, 0];
 const GROW: FightFrames = [0.1, 0.2, 1, 1.15, 1.3, 1.4];
 const FLIGHT: FightFrames = [0, 0.85, 1, 0.65, 0, 0];
 const OUTBOUND: FightFrames = [0, 0.08, 1, 1, 1, 1];
+const HEAVY_SWING_TIMING: FightFrames = [0, 0.2, 0.34, 0.4, 0.58, 1];
 
 const SLASH: FightChoreography = [
 	{id: "blade", form: FIGHT_PARTICLE_FORMS.ARC, width: 94, height: 60, opacity: STRIKE, x: [-28, -18, 0, 12, 25, 30], y: [-20, -14, 0, 12, 20, 24], rotation: [-65, -55, -35, -15, 0, 0], scale: GROW},
-	{id: "edge", form: FIGHT_PARTICLE_FORMS.STREAK, width: 4, height: 90, opacity: STRIKE, x: [-30, -20, 0, 18, 26, 30], y: [-24, -16, 0, 14, 24, 28], rotation: [32, 32, 32, 32, 32, 32], light: true},
+	{id: "edge", form: FIGHT_PARTICLE_FORMS.STREAK, width: 4, height: 90, opacity: STRIKE, x: [-30, -20, 0, 18, 26, 30], y: [-24, -16, 0, 14, 24, 28], rotation: [32, 32, 32, 32, 32, 32], tint: Theme.colors.paper},
 	{id: "crosscut", form: FIGHT_PARTICLE_FORMS.ARC, width: 72, height: 46, opacity: FOLLOW_THROUGH, rotation: [35, 35, 35, 55, 70, 80], scale: GROW}
 ];
 
 const RAPID: FightChoreography = [
 	{id: "opening-cut", form: FIGHT_PARTICLE_FORMS.STREAK, width: 3, height: 70, opacity: [0, 0.7, 0.2, 0, 0, 0], x: [-24, -12, 18, 25, 25, 25], y: [-14, -10, 0, 6, 6, 6], rotation: [55, 55, 55, 55, 55, 55]},
-	{id: "return-cut", form: FIGHT_PARTICLE_FORMS.STREAK, width: 4, height: 86, opacity: STRIKE, x: [20, 20, 0, -20, -28, -28], rotation: [-40, -40, -40, -40, -40, -40], light: true},
+	{id: "return-cut", form: FIGHT_PARTICLE_FORMS.STREAK, width: 4, height: 86, opacity: STRIKE, x: [20, 20, 0, -20, -28, -28], rotation: [-40, -40, -40, -40, -40, -40], tint: Theme.colors.paper},
 	{id: "finishing-cut", form: FIGHT_PARTICLE_FORMS.ARC, width: 92, height: 36, opacity: FOLLOW_THROUGH, x: [-24, -24, -12, 8, 28, 32], y: [12, 12, 12, 0, -10, -12], rotation: [-20, -20, -20, -20, -20, -20]},
 	{id: "speed-trail", form: FIGHT_PARTICLE_FORMS.STREAK, anchor: "actor", width: 62, height: 2, opacity: STRIKE, travel: [0, 0.05, 0.65, 0.9, 1, 1], y: [-18, -18, -18, -18, -18, -18]}
 ];
 
 const HEAVY: FightChoreography = [
-	{id: "raised-weapon", form: FIGHT_PARTICLE_FORMS.GLYPH, width: 44, height: 44, opacity: [0, 1, 0.8, 0, 0, 0], x: [-16, -14, 0, 10, 10, 10], y: [-22, -36, 0, 20, 20, 20], rotation: [-55, -65, 15, 40, 40, 40], scale: [0.75, 1, 1.25, 0.8, 0.8, 0.8]},
-	{id: "downward-impact", form: FIGHT_PARTICLE_FORMS.STREAK, width: 11, height: 94, opacity: STRIKE, y: [-42, -36, 0, 18, 28, 30], rotation: [-12, -12, -12, -12, -12, -12], scale: [0.1, 0.2, 1, 0.9, 0.5, 0.2]},
-	{id: "shockwave", form: FIGHT_PARTICLE_FORMS.RING, width: 84, height: 32, opacity: AFTERGLOW, y: [28, 28, 28, 28, 28, 28], scale: GROW, onHit: true},
-	{id: "impact-core", form: FIGHT_PARTICLE_FORMS.SPARK, width: 42, height: 42, opacity: STRIKE, scale: [0, 0, 1.2, 0.8, 0.2, 0], light: true, onHit: true}
+	{id: "raised-weapon", form: FIGHT_PARTICLE_FORMS.GLYPH, glyph: FIGHT_MOTIONS.HEAVY, anchor: "actor", width: 44, height: 44, timing: HEAVY_SWING_TIMING, opacity: [0, 1, 1, 1, 0, 0], travel: [0, 0, 0.25, 1, 1, 1], y: [-12, -32, -34, 0, 18, 24], rotation: [-35, -70, -50, 35, 65, 65], scale: [0.6, 1, 1.05, 1.15, 0.5, 0]},
+	{id: "downward-impact", form: FIGHT_PARTICLE_FORMS.STREAK, width: 9, height: 100, timing: HEAVY_SWING_TIMING, opacity: [0, 0, 0, 1, 0.1, 0], y: [-38, -38, -38, 0, 16, 28], rotation: [-24, -24, -24, -24, -24, -24], scale: [0.1, 0.1, 0.1, 1.15, 0.65, 0.1]},
+	{id: "shockwave", form: FIGHT_PARTICLE_FORMS.RING, width: 84, height: 32, timing: [0, 0.39, 0.4, 0.49, 0.7, 1], opacity: [0, 0, 0.9, 0.6, 0.15, 0], y: [30, 30, 30, 30, 30, 30], scale: [0.1, 0.1, 0.3, 1, 1.35, 1.55], onHit: true},
+	{id: "impact-core", form: FIGHT_PARTICLE_FORMS.SPARK, width: 42, height: 42, timing: [0, 0.39, 0.4, 0.44, 0.56, 1], opacity: [0, 0, 1, 0.8, 0, 0], scale: [0, 0, 1.2, 0.9, 0.2, 0], tint: Theme.colors.paper, onHit: true}
 ];
 
 const PIERCE: FightChoreography = [
 	{id: "thrust", form: FIGHT_PARTICLE_FORMS.STREAK, anchor: "actor", width: 92, height: 4, opacity: STRIKE, travel: [0, 0.05, 0.92, 1.1, 1.15, 1.15], scale: [0.15, 0.35, 1, 0.65, 0.2, 0]},
-	{id: "point", form: FIGHT_PARTICLE_FORMS.SHARD, anchor: "actor", width: 20, height: 8, opacity: STRIKE, travel: [0, 0.1, 1, 1.16, 1.18, 1.18], rotation: [0, 0, 0, 0, 0, 0], light: true},
+	{id: "point", form: FIGHT_PARTICLE_FORMS.SHARD, anchor: "actor", width: 20, height: 8, opacity: STRIKE, travel: [0, 0.1, 1, 1.16, 1.18, 1.18], rotation: [0, 0, 0, 0, 0, 0], tint: Theme.colors.paper},
 	{id: "entry-ring", form: FIGHT_PARTICLE_FORMS.RING, width: 24, height: 58, opacity: AFTERGLOW, scale: GROW, onHit: true}
 ];
 
@@ -210,27 +195,20 @@ const CHOREOGRAPHIES = {
 	roar: ROAR, summon: SUMMON, dodge: DODGE, debuff: DEBUFF, quake: QUAKE, mimic: MIMIC
 } satisfies Record<FightMotion, FightChoreography>;
 
-const ERUPTION: FightChoreography = [...QUAKE,
-	{id: "erupting-flame", form: FIGHT_PARTICLE_FORMS.GLYPH, width: 46, height: 46, opacity: FLIGHT, y: [32, 22, 0, -18, -32, -42], scale: [0.3, 0.6, 1.15, 1.2, 0.8, 0.4]}
-];
-const BLIZZARD: FightChoreography = [...FROST,
-	{id: "falling-ice", form: FIGHT_PARTICLE_FORMS.SHARD, width: 5, height: 30, opacity: FLIGHT, x: [-28, -22, -8, 4, 16, 20], y: [-42, -28, 0, 16, 28, 36], rotation: [28, 28, 28, 28, 28, 28]},
-	{id: "falling-snow", form: FIGHT_PARTICLE_FORMS.MOTE, width: 6, height: 6, opacity: FOLLOW_THROUGH, x: [10, 10, 16, 24, 30, 34], y: [-40, -40, -28, -8, 12, 26]}
-];
-const HEAVY_PROJECTILE: FightChoreography = [...SHOT,
-	{id: "projectile-shockwave", form: FIGHT_PARTICLE_FORMS.RING, width: 84, height: 60, opacity: AFTERGLOW, scale: GROW, onHit: true},
-	{id: "projectile-debris", form: FIGHT_PARTICLE_FORMS.SHARD, width: 10, height: 10, opacity: AFTERGLOW, x: [0, 0, -2, -18, -30, -34], y: [0, 0, 2, -12, 4, 24], rotation: [0, 0, 30, 90, 150, 210], onHit: true}
-];
 const ACTION_CHOREOGRAPHIES: Readonly<Partial<Record<string, FightChoreography>>> = {
-	eruptionAttack: ERUPTION, lavaWaveAttack: WAVE, blizzardRageAttack: BLIZZARD, glacialBreathAttack: BLIZZARD,
-	canonAttack: HEAVY_PROJECTILE, boulderTossAttack: HEAVY_PROJECTILE, createBomb: HEAVY_PROJECTILE,
-	concentration: CHARGE, concentrated: CHARGE, magmaBathAttack: [...HEAL, ...FLAME.filter(particle => particle.onHit)],
-	waterJet: PIERCE, wateryGust: ROAR, tidalWave: [...WAVE, ...QUAKE.filter(particle => particle.onHit)],
-	poisonousBite: [...BITE, ...POISON.filter(particle => particle.onHit)], breathTakingAttack: [...DRAIN, ...REST]
+	poisonousBite: [...BITE, ...POISON.filter(particle => particle.onHit)],
+	...FIGHT_ATTACK_SIGNATURES,
+	...FIGHT_SPELL_SIGNATURES
 };
 
-export function fightChoreography(cue: FightCue): FightChoreography {
-	if (cue.periodic) return PERIODIC;
-	if (cue.motion === FIGHT_MOTIONS.CHARGE) return CHARGE;
+const CRITICAL_HIGHLIGHTS = fightBurst("critical-rays", {radius: 46, size: 2, tint: Theme.colors.gold});
+
+function actionChoreography(cue: FightCue): FightChoreography {
+	if (cue.periodic) return FIGHT_PERIODIC_SIGNATURES[cue.actionId] ?? PERIODIC;
+	if (cue.motion === FIGHT_MOTIONS.CHARGE) return FIGHT_CHARGING_SIGNATURES[cue.actionId] ?? CHARGE;
 	return ACTION_CHOREOGRAPHIES[cue.actionId] ?? CHOREOGRAPHIES[cue.motion];
+}
+
+export function fightChoreography(cue: FightCue): FightChoreography {
+	return [...(FIGHT_CAST_PRELUDES[cue.sourceActionId] ?? []), ...actionChoreography(cue), ...(cue.critical ? CRITICAL_HIGHLIGHTS : [])];
 }
