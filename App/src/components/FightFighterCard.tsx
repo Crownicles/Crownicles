@@ -14,7 +14,7 @@ import {i18n} from "@/src/translations/i18n";
 import {useCompactFight} from "@/src/components/FightControls";
 import {FightGauge} from "@/src/components/FightGauge";
 import {FightAnimation} from "@/src/store/useFightAnimation";
-import {fighterMotionFrames, fighterScaleFrames} from "@/src/display/FightMotion";
+import {fighterMotionFrames, fighterScaleFrames} from "@/src/display/FightTrajectories";
 import {FIGHT_ANIMATION_FRAMES} from "@/src/components/FightEffects";
 
 const styles = StyleSheet.create({

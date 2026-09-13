@@ -5,7 +5,7 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {fightStore, FightSnapshot} from "@/src/store/FightStore";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {FightIntroductionRes} from "ws-packets/src/fromServer/fight/FightRes";
-import {FightLiveView} from "@/src/collectors/FightCollector";
+import {FightLiveView} from "@/src/components/FightBattle";
 import {FightFighter} from "ws-packets/src/objects/Fight";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
