@@ -955,6 +955,7 @@
     "errors": {"alreadyAlive": "Votre personnage est déjà en vie.", "noPlayer": "Ce joueur n'a pas été trouvé.", "notJailed": "Ce joueur n'est pas en prison.", "self": "Vous ne pouvez pas payer votre propre caution.", "cancelled": "L'action a été annulée.", "noGuild": "Vous devez appartenir à une guilde.", "tooManyRuns": "Vous avez atteint la limite de voyages vers l'île cette semaine.", "noMemberOnBoat": "Aucun membre de votre guilde n'est disponible sur un bateau.", "notTravelling": "Vous devez être en voyage pour rejoindre un bateau.", "noEnergy": "Votre énergie est insuffisante.", "noGems": "Vous n'avez pas assez de gemmes pour cette traversée."}
   },
   "battle": {
+    "speed": {"fast": "Accélérer les animations", "normalValue": "1×", "fastValue": "2×"},
     "actionResult": "{{fighter}} · {{result}}", "statChange": "{{stat}} {{value}} %", "feedback": {"damage": "{{sign}}{{value}} énergie", "energy": "{{sign}}{{value}} énergie", "breath": "{{sign}}{{value}} souffle"},
     "duel": "Combat · arène", "encounter": "Rencontre · combat", "yourTurn": "Votre tour", "opponentTurn": "Tour adverse", "resolving": "Action en cours", "finished": "Combat terminé",
     "versus": "VS", "level": "Niv. {{level}}", "shortTurn": "Tour {{turn}}", "seconds": "{{seconds}} s", "availableBreath": "Disponible",

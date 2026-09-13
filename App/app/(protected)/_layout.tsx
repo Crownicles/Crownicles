@@ -143,22 +143,24 @@ function ReconnectingOverlay(): React.ReactElement {
 	);
 }
 
+function AuthenticatedContent({ state }: { state: AuthStateEnum }): React.ReactElement {
+	return (
+		<View style={styles.authenticatedRoot}>
+			<Stack screenOptions={{headerShown: false}}>
+				<Stack.Screen name="(tabs)" options={{headerShown: false}} />
+			</Stack>
+			{state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && <ReconnectingOverlay />}
+			<OpenCollectors />
+		</View>
+	);
+}
+
 function AuthenticatedLayout({ state }: { state: AuthStateEnum }): React.ReactElement {
 	return (
 		<SafeAreaProvider>
 			<GameQueryProvider authState={state}>
 				<CollectorsProvider authState={state}>
-					<View style={styles.authenticatedRoot}>
-						<Stack screenOptions={{
-							headerShown: false,
-						}}>
-							<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-						</Stack>
-						{state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && (
-							<ReconnectingOverlay />
-						)}
-						<OpenCollectors />
-					</View>
+					<AuthenticatedContent state={state} />
 				</CollectorsProvider>
 			</GameQueryProvider>
 		</SafeAreaProvider>

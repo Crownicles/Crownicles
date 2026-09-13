@@ -14,8 +14,8 @@ import {i18n} from "@/src/translations/i18n";
 import {useCompactFight} from "@/src/components/FightControls";
 import {FightGauge} from "@/src/components/FightGauge";
 import {FightAnimation} from "@/src/store/useFightAnimation";
-import {fighterMotionFrames, fighterScaleFrames} from "@/src/display/FightTrajectories";
-import {FIGHT_ANIMATION_FRAMES} from "@/src/components/FightEffects";
+import {fighterMotionFrames, fighterScaleFrames, fighterTiltFrames} from "@/src/display/FightTrajectories";
+import {FIGHT_EFFECT_FRAMES} from "@/src/display/FightChoreography";
 
 const styles = StyleSheet.create({
 	participant: {flex: 1, minWidth: 0},
@@ -80,7 +80,7 @@ function FighterMotion({fighter, animation, children}: {fighter: FightFighter; a
 	const side = fighter.isSelf ? "self" : "opponent";
 	const {cue, progress, reducedMotion} = animation;
 	const scales = fighterScaleFrames(cue, side);
-	return <Animated.View style={[styles.participant, !reducedMotion && {transform: [{translateX: progress.interpolate({inputRange: FIGHT_ANIMATION_FRAMES, outputRange: fighterMotionFrames(cue, side)})}, {scale: progress.interpolate({inputRange: FIGHT_ANIMATION_FRAMES, outputRange: scales})}]}]} testID={`fight-fighter-${side}`}>{children}</Animated.View>;
+	return <Animated.View style={[styles.participant, !reducedMotion && {transform: [{translateX: progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: fighterMotionFrames(cue, side)})}, {scale: progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: scales})}, {rotate: progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: fighterTiltFrames(cue, side)})}]}]} testID={`fight-fighter-${side}`}>{children}</Animated.View>;
 }
 
 export function FightFighterCard({fighter, pet, animation}: {fighter: FightFighter; pet?: OwnedPet; animation: FightAnimation}): ReactNode {

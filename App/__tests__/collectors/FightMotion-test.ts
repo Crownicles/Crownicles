@@ -1,5 +1,7 @@
 import {FightLogEntry} from "ws-packets/src/objects/Fight";
 import {fightCue, FIGHT_ACTION_MOTIONS} from "@/src/display/FightMotion";
+import {fightChoreography} from "@/src/display/FightChoreography";
+import {fighterMotionFrames, fighterScaleFrames} from "@/src/display/FightTrajectories";
 
 declare const __dirname: string;
 const {readdirSync} = jest.requireActual<{readdirSync: (path: string) => string[]}>("node:fs");
@@ -11,6 +13,12 @@ describe("combat animation meaning", () => {
 		const actions = readdirSync(join(__dirname, "../../../Core/resources/fightActions")).filter(file => file.endsWith(".json")).map(file => file.slice(0, -5));
 		expect(actions.length).toBeGreaterThan(150);
 		expect(actions.filter(action => !FIGHT_ACTION_MOTIONS.has(action))).toEqual([]);
+		for (const actionId of actions) {
+			const choreography = fightChoreography(fightCue({...ENTRY, fightActionId: actionId}));
+			expect(choreography.length).toBeGreaterThanOrEqual(2);
+			expect(new Set(choreography.map(particle => particle.id)).size).toBe(choreography.length);
+			expect(choreography.every(particle => particle.opacity.at(-1) === 0)).toBe(true);
+		}
 	});
 	it.each([
 		["simpleAttack", "slash", "opponent"], ["quickAttack", "rapid", "opponent"], ["heavyAttack", "heavy", "opponent"],
@@ -31,11 +39,18 @@ describe("combat animation meaning", () => {
 	});
 	it("keeps exact drain, reflected damage and healing amounts on their actual recipients", () => {
 		expect(fightCue({...ENTRY, fightActionId: "energeticAttack", fightActionEffectDealt: {damages: 123, reflectedDamages: 7}, fightActionEffectReceived: {energy: 19}}).impacts).toEqual([
-			{side: "opponent", kind: "damage", amount: 123}, {side: "self", kind: "energy", amount: 19}, {side: "self", kind: "damage", amount: 7}
+			{side: "opponent", source: "dealt", kind: "damage", amount: 123}, {side: "self", source: "received", kind: "energy", amount: 19}, {side: "self", source: "reflected", kind: "damage", amount: 7}
 		]);
 	});
 	it("targets a self buff without shaking the opponent, while retaining damage for mixed attacks", () => {
 		expect(fightCue({...ENTRY, fightActionId: "roarAttack", fightActionEffectReceived: {attack: 20}})).toMatchObject({target: "self"});
 		expect(fightCue({...ENTRY, fightActionId: "crystallineArmorAttack", fightActionEffectDealt: {damages: 12}, fightActionEffectReceived: {defense: 10}})).toMatchObject({target: "opponent"});
+	});
+	it("gives melee attacks distinct anticipation and recovery without moving a buff's opponent", () => {
+		const attacks = ["simpleAttack", "quickAttack", "heavyAttack", "piercingAttack"].map(fightActionId => fightCue({...ENTRY, fightActionId}));
+		expect(new Set(attacks.map(cue => JSON.stringify(fighterMotionFrames(cue, "self")))).size).toBe(attacks.length);
+		const shield = fightCue({...ENTRY, fightActionId: "defenseBuff"});
+		expect(fighterMotionFrames(shield, "opponent").every(value => value === 0)).toBe(true);
+		expect(fighterScaleFrames(shield, "opponent")).toEqual([1, 1, 1, 1, 1, 1]);
 	});
 });

@@ -6,6 +6,8 @@ import type {FightLogRecord, FightSnapshot} from "@/src/store/FightStore";
 import type {FightPlayback} from "@/src/store/useFightPlayback";
 import {fightActionName, fightFeedback} from "@/src/display/Fight";
 import {i18n} from "@/src/translations/i18n";
+import {FightSpeedSetting} from "@/src/store/useFightSpeed";
+import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
 
 const styles = StyleSheet.create({
 	root: {position: "relative"},
@@ -24,7 +26,10 @@ const styles = StyleSheet.create({
 	activityTitle: {fontFamily: Theme.fonts.semiBold, fontSize: 12, lineHeight: 17, color: Theme.colors.ink},
 	activitySubtitle: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 15, color: Theme.colors.muted},
 	compactHeader: {paddingTop: 0, paddingBottom: 6},
-	compactActivity: {minHeight: 44, marginVertical: 8, paddingVertical: 0, paddingHorizontal: 9}
+	compactActivity: {minHeight: 44, marginVertical: 8, paddingVertical: 0, paddingHorizontal: 9},
+	speed: {fontFamily: Theme.fonts.bold, fontSize: 13, color: Theme.colors.muted},
+	fastSpeed: {color: Theme.colors.blue},
+	fastButton: {backgroundColor: Theme.colors.wash}
 });
 
 export function useCompactFight(): boolean {
@@ -43,13 +48,18 @@ export const FIGHT_PHASES = {FINISHED: "finished", ERROR: "unavailable", PLAYING
 export type FightPhase = typeof FIGHT_PHASES[keyof typeof FIGHT_PHASES];
 export type FightNavigation = {onClose: () => void; onJournal: () => void};
 
-export function FightHeader({fight, playback, phase, navigation}: {fight: FightSnapshot; playback: FightPlayback; phase: FightPhase; navigation: FightNavigation}): ReactNode {
+function FightSpeedControl({speed, setSpeed}: FightSpeedSetting): ReactNode {
+	const fast = speed === FIGHT_SPEEDS.FAST;
+	return <Pressable accessibilityRole="switch" accessibilityLabel={i18n.t("app:battle.speed.fast")} accessibilityState={{checked: fast}} aria-checked={fast} onPress={(): void => setSpeed(fast ? FIGHT_SPEEDS.NORMAL : FIGHT_SPEEDS.FAST)} style={({pressed}) => [styles.button, fast && styles.fastButton, pressed && styles.pressed]}><Text style={[styles.speed, fast && styles.fastSpeed]}>{i18n.t(fast ? "app:battle.speed.fastValue" : "app:battle.speed.normalValue")}</Text></Pressable>;
+}
+
+export function FightHeader({fight, playback, phase, navigation, speedSetting}: {fight: FightSnapshot; playback: FightPlayback; phase: FightPhase; navigation: FightNavigation; speedSetting: FightSpeedSetting}): ReactNode {
 	const compact = useCompactFight();
 	const status = playback.status;
 	const finished = phase === FIGHT_PHASES.FINISHED || phase === FIGHT_PHASES.ERROR;
 	return <View style={[styles.header, compact && styles.compactHeader]}>
 		<View style={styles.headerBody}><Text style={styles.eyebrow}>{i18n.t(fight.introduction?.opponent.monsterId ? "app:battle.encounter" : "app:battle.duel")}</Text><Text style={styles.title}>{i18n.t(`app:battle.${phase}`)}</Text></View>
-		<View><Text style={styles.turn}>{status ? i18n.t("app:arena.turn", {turn: status.numberOfTurn, max: status.maxNumberOfTurn}) : ""}</Text><View style={styles.headerActions}><FightIconButton icon={History} label={i18n.t("app:arena.log")} onPress={navigation.onJournal} /><FightIconButton icon={finished ? X : ChevronDown} label={i18n.t(finished ? "app:common.back" : "app:arena.minimize")} onPress={navigation.onClose} /></View></View>
+		<View><Text style={styles.turn}>{status ? i18n.t("app:arena.turn", {turn: status.numberOfTurn, max: status.maxNumberOfTurn}) : ""}</Text><View style={styles.headerActions}><FightSpeedControl {...speedSetting} /><FightIconButton icon={History} label={i18n.t("app:arena.log")} onPress={navigation.onJournal} /><FightIconButton icon={finished ? X : ChevronDown} label={i18n.t(finished ? "app:common.back" : "app:arena.minimize")} onPress={navigation.onClose} /></View></View>
 	</View>;
 }
 

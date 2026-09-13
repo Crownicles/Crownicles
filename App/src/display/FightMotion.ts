@@ -1,6 +1,9 @@
 import {FightEffect, FightLogEntry} from "ws-packets/src/objects/Fight";
 import {Theme} from "@/src/design/Theme";
 
+export const FIGHT_SPEEDS = {NORMAL: "normal", FAST: "fast"} as const;
+export type FightSpeed = typeof FIGHT_SPEEDS[keyof typeof FIGHT_SPEEDS];
+
 export const FIGHT_MOTIONS = {
 	SLASH: "slash", RAPID: "rapid", HEAVY: "heavy", PIERCE: "pierce", SHOT: "shot", RETURN: "return",
 	FLAME: "flame", FROST: "frost", LIGHTNING: "lightning", WAVE: "wave", POISON: "poison",
@@ -59,7 +62,9 @@ const MOTION_COLORS: Partial<Record<FightMotion, string>> = {
 	quake: Theme.colors.red, mimic: Theme.colors.blue
 };
 
-export type FightImpact = {side: FightSide; kind: "damage" | "energy" | "breath"; amount: number};
+export const FIGHT_IMPACT_SOURCES = {DEALT: "dealt", RECEIVED: "received", REFLECTED: "reflected"} as const;
+type FightImpactSource = typeof FIGHT_IMPACT_SOURCES[keyof typeof FIGHT_IMPACT_SOURCES];
+export type FightImpact = {side: FightSide; source: FightImpactSource; kind: "damage" | "energy" | "breath"; amount: number};
 export type FightCue = {
 	actionId: string; motion: FightMotion; color: string; actor: FightSide; target: FightSide;
 	missed: boolean; critical: boolean; periodic: boolean; impacts: FightImpact[];
@@ -69,12 +74,12 @@ export function fightMotionColor(motion: FightMotion): string {
 	return MOTION_COLORS[motion] ?? Theme.colors.red;
 }
 
-function effectImpacts(effect: FightEffect | undefined, side: FightSide): FightImpact[] {
+function effectImpacts(effect: FightEffect | undefined, side: FightSide, source: FightImpactSource): FightImpact[] {
 	if (!effect) return [];
 	const impacts: FightImpact[] = [];
-	if (effect.damages) impacts.push({side, kind: "damage", amount: effect.damages});
-	if (effect.energy) impacts.push({side, kind: "energy", amount: effect.energy});
-	if (effect.breath) impacts.push({side, kind: "breath", amount: effect.breath});
+	if (effect.damages) impacts.push({side, source, kind: "damage", amount: effect.damages});
+	if (effect.energy) impacts.push({side, source, kind: "energy", amount: effect.energy});
+	if (effect.breath) impacts.push({side, source, kind: "breath", amount: effect.breath});
 	return impacts;
 }
 
@@ -95,7 +100,7 @@ export function fightCue(entry: FightLogEntry): FightCue {
 	const opponent: FightSide = entry.fighter.isSelf ? "opponent" : "self";
 	const periodic = ALTERATION_STATUSES.has(entry.status ?? "");
 	const target = animationTarget(entry, motion, actor, periodic);
-	const impacts = [...effectImpacts(entry.fightActionEffectDealt, periodic ? actor : opponent), ...effectImpacts(entry.fightActionEffectReceived, actor)];
-	if (entry.fightActionEffectDealt?.reflectedDamages) impacts.push({side: actor, kind: "damage", amount: entry.fightActionEffectDealt.reflectedDamages});
+	const impacts = [...effectImpacts(entry.fightActionEffectDealt, periodic ? actor : opponent, FIGHT_IMPACT_SOURCES.DEALT), ...effectImpacts(entry.fightActionEffectReceived, actor, FIGHT_IMPACT_SOURCES.RECEIVED)];
+	if (entry.fightActionEffectDealt?.reflectedDamages) impacts.push({side: actor, source: FIGHT_IMPACT_SOURCES.REFLECTED, kind: "damage", amount: entry.fightActionEffectDealt.reflectedDamages});
 	return {actionId, motion, actor, target, impacts, periodic, color: fightMotionColor(motion), missed: MISSED_STATUSES.has(entry.status ?? ""), critical: entry.status === "critical"};
 }

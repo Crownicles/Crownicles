@@ -1,15 +1,21 @@
 import {FightCue, FightMotion, FightSide, FIGHT_MOTIONS, isHeavyMotion} from "@/src/display/FightMotion";
 
-const CONTACT_MOTIONS = new Set<FightMotion>([FIGHT_MOTIONS.SLASH, FIGHT_MOTIONS.RAPID, FIGHT_MOTIONS.HEAVY, FIGHT_MOTIONS.BITE, FIGHT_MOTIONS.CLAW, FIGHT_MOTIONS.PIERCE, FIGHT_MOTIONS.QUAKE]);
+const ACTOR_FRAMES: Partial<Record<FightMotion, number[]>> = {
+	slash: [0, -4, 12, 5, -2, 0], rapid: [0, -1, 10, -1, 8, 0], heavy: [0, -9, 15, 3, -3, 0],
+	pierce: [0, -3, 16, 3, 0, 0], bite: [0, -2, 11, 5, -1, 0], claw: [0, -4, 12, 4, 3, 0],
+	quake: [0, -3, 0, -3, 2, 0], dodge: [0, -4, -15, -10, -5, 0]
+};
 const STILL_FRAMES = [0, 0, 0, 0, 0, 0];
+const NORMAL_SCALE = [1, 1, 1, 1, 1, 1];
 
 function actionMotionFrames(cue: FightCue | undefined, side: FightSide): number[] {
 	if (!cue) return STILL_FRAMES;
 	if (side === cue.target && cue.target !== cue.actor) {
-		return cue.missed ? [0, 0, -10, -10, -3, 0] : [0, 0, -10, 6, -3, 0];
+		if (cue.missed) return [0, 0, -10, -10, -3, 0];
+		return isHeavyMotion(cue.motion) ? [0, 0, -16, 7, -3, 0] : [0, 0, -10, 6, -3, 0];
 	}
 	if (cue.periodic || side !== cue.actor) return STILL_FRAMES;
-	return CONTACT_MOTIONS.has(cue.motion) ? [0, -4, 12, 5, -2, 0] : STILL_FRAMES;
+	return ACTOR_FRAMES[cue.motion] ?? STILL_FRAMES;
 }
 
 export function fighterMotionFrames(cue: FightCue | undefined, side: FightSide): number[] {
@@ -18,6 +24,14 @@ export function fighterMotionFrames(cue: FightCue | undefined, side: FightSide):
 }
 
 export function fighterScaleFrames(cue: FightCue | undefined, side: FightSide): number[] {
-	if (!isHeavyMotion(cue?.motion)) return [1, 1, 1, 1, 1, 1];
-	return cue?.target === side ? [1, 1, 0.95, 1.03, 0.99, 1] : [1, 1, 1, 1, 1, 1];
+	if (!cue || cue.periodic) return NORMAL_SCALE;
+	if (cue.motion === FIGHT_MOTIONS.REST && cue.actor === side) return [1, 1.015, 1.03, 1.02, 1, 1];
+	if (isHeavyMotion(cue.motion) && cue.target === side && !cue.missed) return [1, 1, 0.95, 1.03, 0.99, 1];
+	return NORMAL_SCALE;
+}
+
+export function fighterTiltFrames(cue: FightCue | undefined, side: FightSide): string[] {
+	const direction = side === "self" ? 1 : -1;
+	const frames = cue && !cue.periodic && cue.actor === side && isHeavyMotion(cue.motion) ? [0, -3, 2, 1, 0, 0] : STILL_FRAMES;
+	return frames.map(angle => `${angle * direction}deg`);
 }

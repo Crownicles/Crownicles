@@ -8,6 +8,7 @@ import {useFightAnimation} from "@/src/store/useFightAnimation";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {useCompactFight} from "@/src/components/FightControls";
+import {FightSpeed} from "@/src/display/FightMotion";
 
 const styles = StyleSheet.create({
 	stage: {position: "relative"},
@@ -17,10 +18,10 @@ const styles = StyleSheet.create({
 	compactVersus: {top: 40}
 });
 
-export function FightStage({status, introduction, record, onImpact, onComplete, reducedMotion}: {status: FightStatus; introduction: FightIntroduction | null; record?: FightLogRecord; onImpact: () => void; onComplete: () => void; reducedMotion: boolean}): ReactNode {
+export function FightStage({status, introduction, record, onImpact, onComplete, reducedMotion, speed}: {status: FightStatus; introduction: FightIntroduction | null; record?: FightLogRecord; onImpact: () => void; onComplete: () => void; reducedMotion: boolean; speed: FightSpeed}): ReactNode {
 	const compact = useCompactFight();
 	const [width, setWidth] = useState(350);
-	const animation = useFightAnimation(record, {onImpact, onComplete}, reducedMotion);
+	const animation = useFightAnimation(record, {onImpact, onComplete}, reducedMotion, speed);
 	const self = status.activeFighter.isSelf ? status.activeFighter : status.defendingFighter;
 	const opponent = status.activeFighter.isSelf ? status.defendingFighter : status.activeFighter;
 	return <View style={styles.stage} onLayout={event => setWidth(event.nativeEvent.layout.width)}>

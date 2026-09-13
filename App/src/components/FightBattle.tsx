@@ -13,6 +13,8 @@ import {FightBreath} from "@/src/components/FightGauge";
 import {FIGHT_PHASES, FightActivity, FightHeader, FightNavigation, FightPhase, useCompactFight} from "@/src/components/FightControls";
 import {FightPlayback, useFightPlayback} from "@/src/store/useFightPlayback";
 import {i18n} from "@/src/translations/i18n";
+import {useFightSpeed} from "@/src/store/useFightSpeed";
+import {FightSpeed} from "@/src/display/FightMotion";
 
 const styles = StyleSheet.create({
 	content: {width: "100%", maxWidth: 600, alignSelf: "center", paddingHorizontal: Theme.spacing.xl, paddingBottom: 24},
@@ -24,7 +26,7 @@ const styles = StyleSheet.create({
 });
 
 type FightLiveProps = {fight: FightSnapshot; collector?: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean; onClose: () => void};
-type FightContentProps = FightLiveProps & {playback: FightPlayback; navigation: FightNavigation};
+type FightContentProps = FightLiveProps & {playback: FightPlayback; navigation: FightNavigation; speed: FightSpeed};
 
 function fightPhase(props: FightLiveProps, playback: FightPlayback): FightPhase {
 	if (props.fight.error) return FIGHT_PHASES.ERROR;
@@ -33,13 +35,13 @@ function fightPhase(props: FightLiveProps, playback: FightPlayback): FightPhase 
 	return props.collector ? FIGHT_PHASES.SELF : FIGHT_PHASES.OPPONENT;
 }
 
-function FightTurn({fight, playback, collector, onChoose, submitting, navigation}: FightContentProps): ReactNode {
+function FightTurn({fight, playback, collector, onChoose, submitting, navigation, speed}: FightContentProps): ReactNode {
 	const status = playback.status;
 	if (!status) return <View style={styles.loading}><ActivityIndicator color={Theme.colors.muted} /><Text style={styles.activitySubtitle}>{i18n.t("app:battle.preparing")}</Text></View>;
 	const self = status.activeFighter.isSelf ? status.activeFighter : status.defendingFighter;
 	const pending = submitting || Boolean(playback.record);
 	return <>
-		<FightStage status={status} introduction={fight.introduction} record={playback.record} onImpact={playback.impact} onComplete={playback.complete} reducedMotion={playback.reducedMotion} />
+		<FightStage status={status} introduction={fight.introduction} record={playback.record} onImpact={playback.impact} onComplete={playback.complete} reducedMotion={playback.reducedMotion} speed={speed} />
 		<FightBreath fighter={self} reducedMotion={playback.reducedMotion} />
 		<FightActivity latest={playback.record ?? playback.logs.at(-1)} ownTurn={Boolean(collector) && !pending} onJournal={navigation.onJournal} />
 		{collector ? <FightActions key={collector.id} collector={collector} onChoose={onChoose} submitting={pending} /> : <FightActionsWaiting actions={fight.introduction?.initiatorActions ?? []} />}
@@ -61,11 +63,12 @@ function FightJournal({entries, onClose}: {entries: FightLogRecord[]; onClose: (
 export function FightLiveView(props: FightLiveProps): ReactNode {
 	const compact = useCompactFight();
 	const playback = useFightPlayback(props.fight);
+	const speedSetting = useFightSpeed();
 	const [journal, setJournal] = useState(false);
 	const navigation = {onClose: props.onClose, onJournal: (): void => setJournal(true)};
 	return <ScrollView contentContainerStyle={[styles.content, compact && styles.compactContent]} showsVerticalScrollIndicator={false}>
-		<FightHeader fight={props.fight} playback={playback} phase={fightPhase(props, playback)} navigation={navigation} />
-		<FightContent {...props} playback={playback} navigation={navigation} />
+		<FightHeader fight={props.fight} playback={playback} phase={fightPhase(props, playback)} navigation={navigation} speedSetting={speedSetting} />
+		<FightContent {...props} playback={playback} navigation={navigation} speed={speedSetting.speed} />
 		{journal ? <FightJournal entries={playback.logs} onClose={(): void => setJournal(false)} /> : null}
 	</ScrollView>;
 }

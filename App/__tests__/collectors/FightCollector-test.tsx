@@ -1,5 +1,5 @@
 import {act, fireEvent, render, screen, within} from "@testing-library/react-native";
-import {AccessibilityInfo, Animated} from "react-native";
+import {AccessibilityInfo, Animated, StyleSheet} from "react-native";
 import {FightConfirmCollector, FightActions} from "@/src/collectors/FightActionCollector";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {fightStore, FightSnapshot} from "@/src/store/FightStore";
@@ -7,8 +7,12 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {FightIntroductionRes} from "ws-packets/src/fromServer/fight/FightRes";
 import {FightLiveView} from "@/src/components/FightBattle";
 import {FightFighter} from "ws-packets/src/objects/Fight";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {FightEffects} from "@/src/components/FightEffects";
+import {fightCue} from "@/src/display/FightMotion";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
+jest.mock("@react-native-async-storage/async-storage", () => ({getItem: jest.fn().mockResolvedValue(null), setItem: jest.fn().mockResolvedValue(undefined)}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
 
@@ -52,7 +56,20 @@ function battle(): FightSnapshot {
 }
 
 describe("live battle presentation", () => {
+	beforeEach(() => jest.mocked(AsyncStorage.getItem).mockResolvedValue(null));
 	afterEach(() => jest.restoreAllMocks());
+	it("starts at the slower speed and remembers the accelerated setting", async () => {
+		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(screen.getByRole("switch", {name: "app:battle.speed.fast", checked: false})).toBeTruthy();
+		await fireEvent.press(screen.getByRole("switch", {name: "app:battle.speed.fast"}));
+		expect(screen.getByRole("switch", {name: "app:battle.speed.fast", checked: true})).toBeTruthy();
+		expect(AsyncStorage.setItem).toHaveBeenCalledWith("combat-animation-speed", "fast");
+	});
+	it("restores the player's previously selected speed", async () => {
+		jest.mocked(AsyncStorage.getItem).mockResolvedValue("fast");
+		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(screen.getByRole("switch", {name: "app:battle.speed.fast", checked: true})).toBeTruthy();
+	});
 	it("shows a recoverable refusal without a fake waiting battle", async () => {
 		const close = jest.fn();
 		await render(<FightLiveView fight={{...battle(), introduction: null, status: null, error: "energy"}} onChoose={jest.fn()} submitting={false} onClose={close} />);
@@ -90,5 +107,50 @@ describe("live battle presentation", () => {
 		await act(async () => undefined);
 		await view.rerender(<FightLiveView fight={{...initial, logs: [{sequence: 1, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: true}, fightActionId: "fireAttack", status: "normal"}}]}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
 		expect(screen.queryByTestId("fight-effect-flame", {includeHiddenElements: true})).toBeNull();
+	});
+});
+
+describe("rendered attack trajectories", () => {
+	it.each([true, false])("lands a fireball on the defender at the impact frame (self: %s)", async isSelf => {
+		const progress = new Animated.Value(0);
+		const cue = fightCue({fightId: "trajectory", fighter: {isSelf}, fightActionId: "fireAttack", status: "normal"});
+		await render(<FightEffects cue={cue} progress={progress} width={400} />);
+		await act(() => progress.setValue(0.4));
+		const style = StyleSheet.flatten(screen.getByTestId("fight-particle-fireball", {includeHiddenElements: true}).props.style);
+		expect(style.transform).toEqual(expect.arrayContaining([{translateX: isSelf ? 306 : 94}]));
+		expect(style.opacity).toBe(1);
+	});
+	it("brings the boomerang back to its sender before disappearing", async () => {
+		const progress = new Animated.Value(0);
+		const cue = fightCue({fightId: "trajectory", fighter: {isSelf: true}, fightActionId: "boomerangAttack", status: "normal"});
+		await render(<FightEffects cue={cue} progress={progress} width={400} />);
+		await act(() => progress.setValue(0.4));
+		expect(StyleSheet.flatten(screen.getByTestId("fight-particle-boomerang", {includeHiddenElements: true}).props.style).transform).toEqual(expect.arrayContaining([{translateX: 306}]));
+		await act(() => progress.setValue(1));
+		const style = StyleSheet.flatten(screen.getByTestId("fight-particle-boomerang", {includeHiddenElements: true}).props.style);
+		expect(style.transform).toEqual(expect.arrayContaining([{translateX: 94}]));
+		expect(style.opacity).toBe(0);
+	});
+	it("retains the swing but omits contact effects when a heavy attack misses", async () => {
+		const cue = fightCue({fightId: "trajectory", fighter: {isSelf: true}, fightActionId: "heavyAttack", status: "missed"});
+		await render(<FightEffects cue={cue} progress={new Animated.Value(0.4)} width={400} />);
+		expect(screen.getByTestId("fight-particle-raised-weapon", {includeHiddenElements: true})).toBeTruthy();
+		expect(screen.queryByTestId("fight-particle-shockwave", {includeHiddenElements: true})).toBeNull();
+		expect(screen.queryByTestId("fight-particle-impact-core", {includeHiddenElements: true})).toBeNull();
+		expect(screen.getByText("app:battle.missed", {includeHiddenElements: true})).toBeTruthy();
+	});
+	it("sends a missed projectile past the target without a heat impact", async () => {
+		const cue = fightCue({fightId: "trajectory", fighter: {isSelf: true}, fightActionId: "fireAttack", status: "missed"});
+		await render(<FightEffects cue={cue} progress={new Animated.Value(0.4)} width={400} />);
+		const style = StyleSheet.flatten(screen.getByTestId("fight-particle-fireball", {includeHiddenElements: true}).props.style);
+		expect(style.transform).toEqual(expect.arrayContaining([{translateX: 334}]));
+		expect(screen.queryByTestId("fight-particle-heat-ripple", {includeHiddenElements: true})).toBeNull();
+	});
+	it("shows poison damage on the affected fighter without launching another projectile", async () => {
+		const cue = fightCue({fightId: "trajectory", fighter: {isSelf: true}, fightActionId: "poisoned", status: "active", fightActionEffectDealt: {damages: 17}});
+		await render(<FightEffects cue={cue} progress={new Animated.Value(0.4)} width={400} />);
+		const style = StyleSheet.flatten(screen.getByTestId("fight-particle-periodic-mark", {includeHiddenElements: true}).props.style);
+		expect(style.transform).toEqual(expect.arrayContaining([{translateX: 94}]));
+		expect(screen.queryByTestId("fight-particle-venom-drop", {includeHiddenElements: true})).toBeNull();
 	});
 });
