@@ -43,7 +43,6 @@ import {
 	RecipeIngredients
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
-import { PacketUtils } from "../../../../../utils/PacketUtils";
 import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
 import { buildCustomId } from "../../../../../utils/CustomIdUtils";
 import { buildRecipeDiscoveryMessage } from "../../../../../utils/CookingDisplayUtils";
@@ -859,10 +858,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		if (!accepted) {
-			// Fire-and-forget: Core returns no response on cancel, no callback needed
-			PacketUtils.sendPacketToBackend(ctx.context, makePacket(CommandReportCookingWoodConfirmRes, { accepted: false }));
-			this.registerFromCurrentState(ctx, nestedMenus);
-			await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+			await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+				ctx.context,
+				makePacket(CommandReportCookingWoodConfirmRes, { accepted: false }),
+				async () => {
+					this.registerFromCurrentState(ctx, nestedMenus);
+					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+				}
+			);
 			return;
 		}
 

@@ -57,7 +57,8 @@ export default class HomeClientTranslator {
 			throw new InvalidClientPacketError("Invalid plant transfer");
 		}
 		const plantId = packet.action === HomeConstants.PLANT_TRANSFER_ACTIONS.DEPOSIT ? 0 : packet.plantId;
-		if (plantId !== 0 && (!Number.isSafeInteger(plantId) || !Object.values(PlantId).includes(plantId))) {
+		validateSlot(plantId);
+		if (plantId !== 0 && !Object.values(PlantId).includes(plantId)) {
 			throw new InvalidClientPacketError("Invalid plant type");
 		}
 		return asyncMakePacket(CommandReportPlantTransferReq, {

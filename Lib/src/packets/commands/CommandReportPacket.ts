@@ -667,6 +667,9 @@ export class CommandReportCookingIgniteRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingNoWoodRes extends CrowniclesPacket {}
 
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingUnavailableRes extends CrowniclesPacket {}
+
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingReviveReq extends CrowniclesPacket {}
 

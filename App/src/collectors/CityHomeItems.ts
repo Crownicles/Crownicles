@@ -58,21 +58,3 @@ export function gardenPlotItems(snapshot: CityMobileSnapshot | undefined): CityL
 		? {kind: "info" as const, key: `garden-plot-${plot.slot}`, iconPath: "city.gardenStatus.empty", title: i18n.t("app:city.garden.plot", {slot: plot.slot + 1}), subtitle: i18n.t("app:city.garden.empty")}
 		: {kind: "info" as const, key: `garden-plot-${plot.slot}`, iconPath: `plants.${plot.plantId}`, title: i18n.t("app:city.garden.plotPlant", {slot: plot.slot + 1, plant: i18n.t(`models:plants.${plot.plantId}`)}), subtitle: plot.isReady ? i18n.t("app:city.garden.ready") : i18n.t("app:city.garden.growing", {progress: Math.round(plot.growthProgress * 100)})});
 }
-
-export function homeChestItems(snapshot: CityMobileSnapshot | undefined): CityListItem[] {
-	const home = snapshot?.home?.owned;
-	if (!home) return [];
-	return [
-		{kind: "info", key: "home-chest-stored", iconPath: "city.homeUpgrades.chest", title: i18n.t("app:city.chest.stored"), subtitle: i18n.t("app:city.chest.storedDetails", {count: home.chestItemCount ?? 0})},
-		{kind: "info", key: "home-chest-depositable", iconPath: "city.chestActions.inventory", title: i18n.t("app:city.chest.depositable"), subtitle: i18n.t("app:city.chest.depositableDetails", {count: home.depositableItemCount ?? 0})}
-	];
-}
-
-export function homeCookingItems(snapshot: CityMobileSnapshot | undefined): CityListItem[] {
-	const home = snapshot?.home?.owned;
-	if (!home) return [];
-	return [
-		{kind: "info", key: "home-cooking-level", iconPath: "city.homeUpgrades.cooking", title: i18n.t("app:city.labels.cooking"), subtitle: i18n.t("app:city.subtitles.cooking", {level: home.cookingLevel ?? 0})},
-		{kind: "info", key: "home-cooking-slots", iconPath: "city.homeUpgrades.cooking", title: i18n.t("app:city.summary.cookingSlots"), subtitle: i18n.t("app:city.summary.cookingSlotsDetails", {count: home.cookingSlots ?? 0})}
-	];
-}

@@ -30,6 +30,9 @@ import {Effect} from "../../../Lib/src/types/Effect";
 import {PLAYER_EFFECTS} from "../../../WsPackets/src/objects/PlayerUtility";
 import {HomeConstants} from "../../../Lib/src/constants/HomeConstants";
 import {CHEST_ACTIONS, CHEST_ERRORS, PLANT_TRANSFER_ACTIONS, PLANT_TRANSFER_ERRORS} from "../../../WsPackets/src/objects/HomeChest";
+import {RecipeType as CoreRecipeType, CookingOutputType as CoreCookingOutputType} from "../../../Lib/src/constants/CookingConstants";
+import {CookingCraftErrors as CoreCookingCraftErrors} from "../../../Lib/src/types/CookingTypes";
+import {RecipeType, CookingOutputType, CookingCraftErrors} from "../../../WsPackets/src/objects/Cooking";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -39,6 +42,9 @@ import {CHEST_ACTIONS, CHEST_ERRORS, PLANT_TRANSFER_ACTIONS, PLANT_TRANSFER_ERRO
  */
 describe("wire enums mirror their back-end counterpart", () => {
 	it.each([
+		["RecipeType", RecipeType, CoreRecipeType],
+		["CookingOutputType", CookingOutputType, CoreCookingOutputType],
+		["CookingCraftErrors", CookingCraftErrors, CoreCookingCraftErrors],
 		["ChestActions", CHEST_ACTIONS, HomeConstants.CHEST_ACTIONS],
 		["ChestErrors", CHEST_ERRORS, HomeConstants.CHEST_ERRORS],
 		["PlantTransferActions", PLANT_TRANSFER_ACTIONS, HomeConstants.PLANT_TRANSFER_ACTIONS],

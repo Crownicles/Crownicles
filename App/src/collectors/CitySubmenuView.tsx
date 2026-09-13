@@ -5,7 +5,7 @@ import type {CitySubmenu, CityEntry, CityNavigationItem} from "@/src/collectors/
 import {AppIcons} from "@/src/AppIcons";
 import {CitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
 import {citySnapshotNote} from "@/src/collectors/CitySnapshotNote";
-import {gardenPlotItems, homeChestItems, homeCookingItems, homeFeatureItems, homeIconPath} from "@/src/collectors/CityHomeItems";
+import {gardenPlotItems, homeFeatureItems, homeIconPath} from "@/src/collectors/CityHomeItems";
 import {enchantmentCatalogItems} from "@/src/collectors/CityGuildItems";
 import {cityRowEnd, cityRowSubtitle} from "@/src/collectors/CityRowDetails";
 import {cityReactionAvailable, cityRowIcon, cityRowTitle, iconForPath} from "@/src/collectors/CityRowPresentation";
@@ -15,6 +15,7 @@ import {submenuSections} from "@/src/collectors/CitySubmenuSections";
 import {Button, ButtonRow, Hero, Note, Screen} from "@/src/design/Primitives";
 import {GuildDomain} from "@/src/components/GuildDomain";
 import {HomeChest} from "@/src/components/HomeChest";
+import {HomeCooking} from "@/src/components/HomeCooking";
 import {i18n} from "@/src/translations/i18n";
 
 type SubmenuProps = {
@@ -28,15 +29,18 @@ function submenuIcon(view: CitySubmenu, snapshot?: CityMobileSnapshot): string |
 	return AppIcons.getIconOrNull(cityNavigationMeta(view).iconPath);
 }
 
+const INTERACTIVE_SUBMENUS: Partial<Record<CitySubmenu, () => ReactNode>> = {guild: GuildDomain, homeChest: HomeChest, homeCooking: HomeCooking};
+
 export function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, onNavigate, onBack, locked, backLabel}: SubmenuProps): ReactNode {
 	const details = submenuTitle(view, innId);
-	if (view === "guild" || view === "homeChest") return <Screen>
+	const InteractiveSubmenu = INTERACTIVE_SUBMENUS[view];
+	if (InteractiveSubmenu) return <Screen>
 		<Hero eyebrow={details.eyebrow} title={details.title} />
-		{view === "guild" ? <GuildDomain /> : <HomeChest />}
+		<InteractiveSubmenu />
 		<ButtonRow><Button onPress={onBack}>{i18n.t("app:city.actions.back")}</Button></ButtonRow>
 	</Screen>;
 	const icon = submenuIcon(view, snapshot);
-	const sections = submenuSections(view, entries, snapshot, {homeFeatureItems, gardenPlotItems, homeChestItems, homeCookingItems, enchantmentCatalogItems});
+	const sections = submenuSections(view, entries, snapshot, {homeFeatureItems, gardenPlotItems, enchantmentCatalogItems});
 	const visibleSections = sections.filter(section => section.items.length > 0);
 	return <Screen>
 		<Hero eyebrow={details.eyebrow} title={`${icon ? `${icon} ` : ""}${details.title}`} subtitle={details.subtitle} />

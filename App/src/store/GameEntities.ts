@@ -15,6 +15,7 @@ export const GAME_ENTITIES = {
 	SHELTER: "shelter",
 	INVENTORY: "inventory",
 	HOME_CHEST: "homeChest",
+	COOKING: "cooking",
 	GUILD: "guild",
 	GUILD_STORAGE: "guildStorage",
 	GUILD_DOMAIN: "guildDomain",
