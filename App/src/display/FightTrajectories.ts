@@ -7,6 +7,7 @@ const ACTOR_FRAMES: Partial<Record<FightMotion, number[]>> = {
 };
 const STILL_FRAMES = [0, 0, 0, 0, 0, 0];
 const NORMAL_SCALE = [1, 1, 1, 1, 1, 1];
+const STILL_TILT = STILL_FRAMES.map(angle => `${angle}deg`);
 
 function actionMotionFrames(cue: FightCue | undefined, side: FightSide): number[] {
 	if (!cue) return STILL_FRAMES;
@@ -26,12 +27,13 @@ export function fighterMotionFrames(cue: FightCue | undefined, side: FightSide):
 export function fighterScaleFrames(cue: FightCue | undefined, side: FightSide): number[] {
 	if (!cue || cue.periodic) return NORMAL_SCALE;
 	if (cue.motion === FIGHT_MOTIONS.REST && cue.actor === side) return [1, 1.015, 1.03, 1.02, 1, 1];
-	if (isHeavyMotion(cue.motion) && cue.target === side && !cue.missed) return [1, 1, 0.95, 1.03, 0.99, 1];
-	return NORMAL_SCALE;
+	if (cue.target !== side || cue.missed) return NORMAL_SCALE;
+	return isHeavyMotion(cue.motion) ? [1, 1, 0.95, 1.03, 0.99, 1] : NORMAL_SCALE;
 }
 
 export function fighterTiltFrames(cue: FightCue | undefined, side: FightSide): string[] {
+	if (!cue || cue.periodic) return STILL_TILT;
 	const direction = side === "self" ? 1 : -1;
-	const frames = cue && !cue.periodic && cue.actor === side && isHeavyMotion(cue.motion) ? [0, -3, 2, 1, 0, 0] : STILL_FRAMES;
+	const frames = cue.actor === side && isHeavyMotion(cue.motion) ? [0, -3, 2, 1, 0, 0] : STILL_FRAMES;
 	return frames.map(angle => `${angle * direction}deg`);
 }

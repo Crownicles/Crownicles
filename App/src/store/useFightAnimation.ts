@@ -48,8 +48,7 @@ export function useFightAnimation(record: FightLogRecord | undefined, callbacks:
 			cursor.current = {sequence, impacted: false};
 			progress.setValue(0);
 		}
-		if (sequence === undefined) return;
-		return playAnimationSegment(progress, {duration, onImpact: hit, onComplete: finish}, cursor.current);
+		return sequence === undefined ? undefined : playAnimationSegment(progress, {duration, onImpact: hit, onComplete: finish}, cursor.current);
 	}, [sequence, duration, progress]);
 	return {progress, ...(cue ? {cue} : {}), reducedMotion};
 }

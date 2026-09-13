@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {Animated, StyleSheet} from "react-native";
+import {Animated, StyleProp, StyleSheet, ViewStyle} from "react-native";
 import {FightCue} from "@/src/display/FightMotion";
 import {FIGHT_EFFECT_FRAMES, FIGHT_EFFECT_LAYOUT, FIGHT_PARTICLE_FORMS, FightChoreography, FightFrames, FightParticle} from "@/src/display/FightChoreography";
 import {AppIcons} from "@/src/AppIcons";
@@ -10,6 +10,7 @@ import {Theme} from "@/src/design/Theme";
 const REST_FRAMES: FightFrames = [0, 0, 0, 0, 0, 0];
 const SCALE_FRAMES: FightFrames = [1, 1, 1, 1, 1, 1];
 const MISS_OFFSET = 28;
+const FILLED_PARTICLE_FORMS = new Set<FightParticle["form"]>([FIGHT_PARTICLE_FORMS.STREAK, FIGHT_PARTICLE_FORMS.SHARD, FIGHT_PARTICLE_FORMS.MOTE]);
 const EFFECT_ICONS = {
 	flame: Flame, frost: Snowflake, lightning: Zap, wave: Waves, poison: Droplets, shield: Shield,
 	blessing: Sparkles, heal: HeartPulse, rest: Wind, charge: Crosshair, curse: Skull, drain: HeartPulse,
@@ -40,20 +41,29 @@ function ParticleImage({particle, cue, color}: {particle: FightParticle; cue: Fi
 	return emoji ? <TwemojiIcon emoji={emoji} size={size} /> : <Icon size={size} color={color} />;
 }
 
-function AnimatedParticle({particle, cue, progress, width}: EffectProps & {particle: FightParticle}): ReactNode {
+function particleHorizontalFrames(particle: FightParticle, cue: FightCue, width: number): number[] {
 	const direction = cue.actor === "self" ? 1 : -1;
 	const miss = cue.missed && !cue.periodic ? direction * MISS_OFFSET : 0;
 	const source = width * FIGHT_EFFECT_LAYOUT.anchors[cue.actor];
 	const target = width * FIGHT_EFFECT_LAYOUT.anchors[cue.target] + miss;
 	const origin = particle.anchor === "actor" ? source : target;
-	const horizontal = (particle.x ?? REST_FRAMES).map((offset, index) => origin + direction * offset + (target - source) * (particle.travel?.[index] ?? 0));
-	const color = particle.light ? Theme.colors.paper : cue.color;
-	const filled = particle.form === FIGHT_PARTICLE_FORMS.STREAK || particle.form === FIGHT_PARTICLE_FORMS.SHARD || particle.form === FIGHT_PARTICLE_FORMS.MOTE;
+	return (particle.x ?? REST_FRAMES).map((offset, index) => origin + direction * offset + (target - source) * (particle.travel?.[index] ?? 0));
+}
+
+function particleAppearance(particle: FightParticle, color: string): StyleProp<ViewStyle> {
 	const shape = particle.form === FIGHT_PARTICLE_FORMS.GLYPH || particle.form === FIGHT_PARTICLE_FORMS.SPARK ? null : styles[particle.form];
-	return <Animated.View testID={`fight-particle-${particle.id}`} style={[styles.particle, shape, {
+	return [styles.particle, shape, {
 		width: particle.width, height: particle.height, top: FIGHT_EFFECT_LAYOUT.centerY - particle.height / 2, left: -particle.width / 2,
-		borderColor: color, ...(filled ? {backgroundColor: color} : {}), opacity: interpolate(progress, particle.opacity),
-		transform: [{translateX: interpolate(progress, horizontal)}, {translateY: interpolate(progress, particle.y ?? REST_FRAMES)}, {rotate: progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: (particle.rotation ?? REST_FRAMES).map(angle => `${angle * direction}deg`)})}, {scale: interpolate(progress, particle.scale ?? SCALE_FRAMES)}]
+		borderColor: color, ...(FILLED_PARTICLE_FORMS.has(particle.form) ? {backgroundColor: color} : {})
+	}];
+}
+
+function AnimatedParticle({particle, cue, progress, width}: EffectProps & {particle: FightParticle}): ReactNode {
+	const direction = cue.actor === "self" ? 1 : -1;
+	const color = particle.light ? Theme.colors.paper : cue.color;
+	return <Animated.View testID={`fight-particle-${particle.id}`} style={[particleAppearance(particle, color), {
+		opacity: interpolate(progress, particle.opacity),
+		transform: [{translateX: interpolate(progress, particleHorizontalFrames(particle, cue, width))}, {translateY: interpolate(progress, particle.y ?? REST_FRAMES)}, {rotate: progress.interpolate({inputRange: FIGHT_EFFECT_FRAMES, outputRange: (particle.rotation ?? REST_FRAMES).map(angle => `${angle * direction}deg`)})}, {scale: interpolate(progress, particle.scale ?? SCALE_FRAMES)}]
 	}]}><ParticleImage particle={particle} cue={cue} color={color} /></Animated.View>;
 }
 
