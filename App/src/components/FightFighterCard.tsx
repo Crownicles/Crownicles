@@ -7,14 +7,14 @@ import {Theme} from "@/src/design/Theme";
 import {AppIcons} from "@/src/AppIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Button, ButtonRow, Confirmation, KeyValue} from "@/src/design/Primitives";
-import {fighterName, fightActionName} from "@/src/display/Fight";
+import {fighterDisplayName, fighterSubtitle, fightActionName} from "@/src/display/Fight";
 import {petIcon, petName} from "@/src/display/PetDisplay";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 import {useCompactFight} from "@/src/components/FightControls";
 import {FightGauge} from "@/src/components/FightGauge";
 import {FightAnimation} from "@/src/store/useFightAnimation";
-import {fighterMotionFrames, isHeavyMotion} from "@/src/display/FightMotion";
+import {fighterMotionFrames, fighterScaleFrames} from "@/src/display/FightMotion";
 import {FIGHT_ANIMATION_FRAMES} from "@/src/components/FightEffects";
 
 const styles = StyleSheet.create({
@@ -48,20 +48,19 @@ function fighterIcon(fighter: FightFighter): string | null {
 
 function FighterPortrait({fighter, pet, compact}: {fighter: FightFighter; pet?: OwnedPet; compact: boolean}): ReactNode {
 	const icon = fighterIcon(fighter);
+	const sizes = compact ? {fighter: 36, pet: 14} : {fighter: 55, pet: 20};
 	return <View style={[styles.portrait, compact && styles.compactPortrait]}><View style={styles.portraitBase} />
-		{icon ? <TwemojiIcon emoji={icon} size={compact ? 36 : 55} /> : <Swords size={compact ? 30 : 44} color={fighter.isSelf ? Theme.colors.blue : Theme.colors.red} />}
-		{pet ? <View style={styles.pet}><TwemojiIcon emoji={petIcon(pet)} size={compact ? 14 : 20} /></View> : null}
+		{icon ? <TwemojiIcon emoji={icon} size={sizes.fighter} /> : <Swords size={sizes.fighter} color={Theme.colors.muted} />}
+		{pet ? <View style={styles.pet}><TwemojiIcon emoji={petIcon(pet)} size={sizes.pet} /></View> : null}
 	</View>;
 }
 
 function FighterIdentity({fighter, compact}: {fighter: FightFighter; compact: boolean}): ReactNode {
-	const classLabel = fighter.classId === undefined ? "" : i18n.t(`models:classes.${fighter.classId}`);
-	const level = fighter.level === undefined ? "" : i18n.t("app:battle.level", {level: fighter.level});
-	return <><Text style={[styles.name, compact && styles.compactName]} numberOfLines={2}>{fighter.name ?? fighterName(fighter)}</Text><Text style={[styles.classLabel, compact && styles.compactClass]} numberOfLines={2}>{[classLabel, level].filter(Boolean).join(" · ")}</Text></>;
+	return <><Text style={[styles.name, compact && styles.compactName]} numberOfLines={2}>{fighterDisplayName(fighter)}</Text><Text style={[styles.classLabel, compact && styles.compactClass]} numberOfLines={2}>{fighterSubtitle(fighter)}</Text></>;
 }
 
 function FighterStats({fighter, pet, onClose}: {fighter: FightFighter; pet?: OwnedPet; onClose: () => void}): ReactNode {
-	return <Confirmation title={fighter.name ?? fighterName(fighter)} message={i18n.t("app:arena.details")} onRequestClose={onClose}>
+	return <Confirmation title={fighterDisplayName(fighter)} message={i18n.t("app:arena.details")} onRequestClose={onClose}>
 		<View style={styles.statRow}>{([{key: "attack", Icon: Swords}, {key: "defense", Icon: Shield}, {key: "speed", Icon: Wind}] as const).map(({key, Icon}) => <View key={key} style={styles.stat}><Icon size={22} color={Theme.colors.muted} /><Text style={styles.statValue}>{formatNumber(fighter.stats[key])}</Text><Text style={styles.statLabel}>{i18n.t(`app:arena.stats.${key}`)}</Text></View>)}</View>
 		<KeyValue label={i18n.t("app:arena.breath")} value={i18n.t("app:profile.formats.progress", {value: fighter.stats.breath, max: fighter.stats.maxBreath})} />
 		<KeyValue label={i18n.t("app:arena.stats.breathRegen")} value={formatNumber(fighter.stats.breathRegen)} />
@@ -80,7 +79,7 @@ function FighterRole({fighter, compact}: {fighter: FightFighter; compact: boolea
 function FighterMotion({fighter, animation, children}: {fighter: FightFighter; animation: FightAnimation; children: ReactNode}): ReactNode {
 	const side = fighter.isSelf ? "self" : "opponent";
 	const {cue, progress, reducedMotion} = animation;
-	const scales = isHeavyMotion(cue?.motion) && cue?.target === side ? [1, 1, 0.95, 1.03, 0.99, 1] : [1, 1, 1, 1, 1, 1];
+	const scales = fighterScaleFrames(cue, side);
 	return <Animated.View style={[styles.participant, !reducedMotion && {transform: [{translateX: progress.interpolate({inputRange: FIGHT_ANIMATION_FRAMES, outputRange: fighterMotionFrames(cue, side)})}, {scale: progress.interpolate({inputRange: FIGHT_ANIMATION_FRAMES, outputRange: scales})}]}]} testID={`fight-fighter-${side}`}>{children}</Animated.View>;
 }
 
@@ -88,7 +87,7 @@ export function FightFighterCard({fighter, pet, animation}: {fighter: FightFight
 	const [expanded, setExpanded] = useState(false);
 	const compact = useCompactFight();
 	return <FighterMotion fighter={fighter} animation={animation}>
-		<Pressable accessibilityRole="button" accessibilityLabel={`${i18n.t("app:arena.details")} : ${fighter.name ?? fighterName(fighter)}`} onPress={(): void => setExpanded(true)} style={[styles.card, fighter.isSelf ? styles.selfCard : styles.foeCard, compact && styles.compactCard]}>
+		<Pressable accessibilityRole="button" accessibilityLabel={`${i18n.t("app:arena.details")} : ${fighterDisplayName(fighter)}`} onPress={(): void => setExpanded(true)} style={[styles.card, fighter.isSelf ? styles.selfCard : styles.foeCard, compact && styles.compactCard]}>
 			<FighterRole fighter={fighter} compact={compact} />
 			<FighterPortrait fighter={fighter} pet={pet} compact={compact} />
 			<FighterIdentity fighter={fighter} compact={compact} />

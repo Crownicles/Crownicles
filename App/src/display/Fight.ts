@@ -3,10 +3,20 @@ import {i18n} from "@/src/translations/i18n";
 import {FightImpact, fightCue} from "@/src/display/FightMotion";
 import {formatNumber} from "@/src/display/Amounts";
 
+export function fighterSubtitle(fighter: FightParticipant): string {
+	const classLabel = fighter.classId === undefined ? "" : i18n.t(`models:classes.${fighter.classId}`);
+	const level = fighter.level === undefined ? "" : i18n.t("app:battle.level", {level: fighter.level});
+	return [classLabel, level].filter(Boolean).join(" · ");
+}
+
 export function fighterName(fighter: FightParticipant): string {
 	if (fighter.isSelf) return i18n.t("app:arena.you");
 	if (fighter.monsterId) return i18n.t(`models:monsters.${fighter.monsterId}.name`, {defaultValue: i18n.t("app:arena.opponent")});
 	return fighter.name ?? i18n.t("app:arena.opponent");
+}
+
+export function fighterDisplayName(fighter: FightParticipant): string {
+	return fighter.name ?? fighterName(fighter);
 }
 
 export function fightActionName(actionId: string): string {
