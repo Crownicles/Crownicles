@@ -33,6 +33,11 @@ import {CHEST_ACTIONS, CHEST_ERRORS, PLANT_TRANSFER_ACTIONS, PLANT_TRANSFER_ERRO
 import {RecipeType as CoreRecipeType, CookingOutputType as CoreCookingOutputType} from "../../../Lib/src/constants/CookingConstants";
 import {CookingCraftErrors as CoreCookingCraftErrors} from "../../../Lib/src/types/CookingTypes";
 import {RecipeType, CookingOutputType, CookingCraftErrors} from "../../../WsPackets/src/objects/Cooking";
+import {GardenConstants} from "../../../Lib/src/constants/GardenConstants";
+import {GardenNoAccessReason} from "../../../Lib/src/packets/commands/CommandGardenPacket";
+import {GardenAccessMode} from "../../../Lib/src/types/GardenAccessMode";
+import {GARDEN_OPERATIONS as CoreGardenOperations} from "../../../Lib/src/types/Garden";
+import {GARDEN_OPERATIONS, GARDEN_ACCESS, GARDEN_NO_ACCESS, GARDEN_ERRORS} from "../../../WsPackets/src/objects/Garden";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -42,6 +47,10 @@ import {RecipeType, CookingOutputType, CookingCraftErrors} from "../../../WsPack
  */
 describe("wire enums mirror their back-end counterpart", () => {
 	it.each([
+		["GardenOperations", GARDEN_OPERATIONS, CoreGardenOperations],
+		["GardenAccess", GARDEN_ACCESS, GardenAccessMode],
+		["GardenNoAccess", GARDEN_NO_ACCESS, GardenNoAccessReason],
+		["GardenErrors", GARDEN_ERRORS, GardenConstants.GARDEN_ERRORS],
 		["RecipeType", RecipeType, CoreRecipeType],
 		["CookingOutputType", CookingOutputType, CoreCookingOutputType],
 		["CookingCraftErrors", CookingCraftErrors, CoreCookingCraftErrors],

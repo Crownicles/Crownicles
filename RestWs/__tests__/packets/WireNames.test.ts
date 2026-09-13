@@ -13,6 +13,7 @@ import { join } from "path";
  * app. This list is the protocol; a diff on it has to be a deliberate decision.
  */
 const WIRE_NAMES = [
+	"GardenInfoReq", "GardenActionReq", "GardenRes",
 	"CookingMenuReq", "CookingIgniteReq", "CookingReviveReq", "CookingWoodConfirmReq", "CookingCraftReq", "CookingPinReq", "CookingUnpinReq", "CookingRes",
 	"HomeChestInfoReq", "HomeChestActionReq", "HomePlantTransferReq", "HomeChestRes", "HomePlantTransferRes",
 	"RespawnReq", "UnlockReq", "JoinBoatReq", "VersionReq", "PlayerUtilityRes", "VersionRes",

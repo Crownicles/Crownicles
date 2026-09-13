@@ -1,4 +1,28 @@
 {
+  "garden": {
+    "plots": "Parcelles",
+    "plant": "Planter",
+    "water": "Arroser",
+    "harvest": "Récolter",
+    "compost": "Composter",
+    "storage": "Réserve de plantes",
+    "refresh": "Actualiser le jardin",
+    "remote": "Récolte à distance. Les autres actions nécessitent de rentrer chez vous.",
+    "quantity_one": "×{{count}}",
+    "quantity_other": "×{{count}}",
+    "confirmPlant": "Planter {{plant}} dans la parcelle {{slot}} ?",
+    "confirmCompost_one": "Transformer {{count}} {{plant}} en matériau ?",
+    "confirmCompost_other": "Transformer {{count}} {{plant}} en matériaux ?",
+    "planted": "{{plant}} a été planté dans la parcelle {{slot}}.",
+    "watered_one": "{{count}} parcelle arrosée, {{ready}} devenue prête à récolter.",
+    "watered_other": "{{count}} parcelles arrosées, {{ready}} devenues prêtes à récolter.",
+    "harvested": "Plantes stockées : {{stored}}. Plantes compostées faute de place : {{composted}}.",
+    "composted_one": "{{count}} plante compostée.",
+    "composted_other": "{{count}} plantes compostées.",
+    "notEnoughPlants": "Il n'y a plus assez de plantes en réserve pour ce compostage.",
+    "noAccess": {"noHome": "Vous ne possédez pas de maison.", "noGarden": "Votre maison ne possède pas encore de jardin.", "noTalisman": "Rentrez chez vous ou obtenez le Cœur Sylvestre pour consulter votre jardin."},
+    "errors": {"notAtHome": "Cette action nécessite d'être chez vous.", "invalidAction": "Cette action n'est plus disponible.", "noReadyPlants": "Aucune plante n'est prête à être récoltée.", "noSeed": "Vous ne transportez pas de graine à planter.", "noEmptyPlot": "Aucune parcelle libre n'est disponible.", "seedAlreadyPlanted": "Cette plante pousse déjà dans votre jardin.", "wateringOnCooldown": "Le prochain arrosage n'est pas encore disponible.", "noPlantsToWater": "Aucune plante n'a besoin d'être arrosée."}
+  },
   "cooking": {
     "level": "Niveau de cuisine",
     "grade": "Grade",
