@@ -26,6 +26,8 @@ import {TopDataType as CoreTopDataType} from "../../../Lib/src/types/TopDataType
 import {TopTiming as CoreTopTiming} from "../../../Lib/src/types/TopTimings";
 import {EloGameResult as CoreEloGameResult} from "../../../Lib/src/types/EloGameResult";
 import {TopDataType, TopTiming, EloGameResult} from "../../../WsPackets/src/objects/Rankings";
+import {Effect} from "../../../Lib/src/types/Effect";
+import {PLAYER_EFFECTS} from "../../../WsPackets/src/objects/PlayerUtility";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -35,6 +37,7 @@ import {TopDataType, TopTiming, EloGameResult} from "../../../WsPackets/src/obje
  */
 describe("wire enums mirror their back-end counterpart", () => {
 	it.each([
+		["DeathEffect", PLAYER_EFFECTS, {DEAD: Effect.DEAD.id}],
 		["TopDataType", TopDataType, CoreTopDataType],
 		["TopTiming", TopTiming, CoreTopTiming],
 		["EloGameResult", EloGameResult, CoreEloGameResult],

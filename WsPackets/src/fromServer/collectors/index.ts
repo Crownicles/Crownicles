@@ -1,4 +1,5 @@
 export * from "./families/FightCollector";
+export * from "./families/PlayerUtilityCollector";
 
 /**
  * Entry point of the reaction collector contract: import from here, never from `ReactionCollectorProtocol`

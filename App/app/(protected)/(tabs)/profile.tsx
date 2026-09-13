@@ -29,6 +29,7 @@ import {
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {Utilities} from "@/src/components/Utilities";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 const MINUTES_PER_HOUR = 60;
@@ -36,14 +37,15 @@ const MINIMUM_RATIO = 0;
 const MAXIMUM_RATIO = 1;
 const PET_RARITY_MIN = 0;
 const PET_RARITY_MAX = 8;
-type ProfilePage = "profile" | "inventory" | "missions" | "classes" | "badges" | "rarity" | "blessing";
+type ProfilePage = "profile" | "inventory" | "missions" | "classes" | "badges" | "rarity" | "blessing" | "utilities";
 const PROFILE_PAGES: {page: Exclude<ProfilePage, "profile">; icon: string}[] = [
 	{page: "inventory", icon: "inventory.stock"},
 	{page: "missions", icon: "missions.campaign"},
 	{page: "classes", icon: "commands.classes"},
 	{page: "badges", icon: "commands.badges"},
 	{page: "rarity", icon: "commands.rarity"},
-	{page: "blessing", icon: "smallEvents.altar"}
+	{page: "blessing", icon: "smallEvents.altar"},
+	{page: "utilities", icon: "commands.map"}
 ];
 
 const styles = StyleSheet.create({
@@ -339,6 +341,7 @@ function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNo
 
 function ProfilePageContent({page, inventory}: {page: Exclude<ProfilePage, "profile">; inventory: RequestState<InventoryRes>}): ReactNode {
 	switch (page) {
+		case "utilities": return <Utilities />;
 		case "inventory": return <InventorySection state={inventory} />;
 		case "missions": return <MissionsScreen />;
 		case "classes": return <Classes />;

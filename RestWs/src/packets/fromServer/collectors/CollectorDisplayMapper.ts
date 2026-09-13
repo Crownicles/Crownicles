@@ -7,13 +7,14 @@ import { ReactionCollectorGuildElderRemoveData } from "../../../../../Lib/src/pa
 import { ReactionCollectorGuildLeaveData } from "../../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
 import { ReactionCollectorCreation } from "../../../../../WsPackets/src/fromServer/common/ReactionCollectorCreation";
 import {
-	GUILD_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, ReactionCollectorDataOf
+	GUILD_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, PLAYER_UTILITY_DATA_KINDS, ReactionCollectorDataOf
 } from "../../../../../WsPackets/src/fromServer/collectors";
 import {
 	PET_SALE_ROLES, PetSaleRole
 } from "../../../../../WsPackets/src/objects/PetManagement";
 import { mapCollectorCreation } from "./ReactionCollectorMapper";
 import { resolvePlayerName } from "../PlayerDisplay";
+import { ReactionCollectorUnlockData } from "../../../../../Lib/src/packets/interaction/ReactionCollectorUnlock";
 
 const MEMBER_FIELDS = new Map([
 	[ReactionCollectorGuildKickData.name, "kickedKeycloakId"],
@@ -59,6 +60,14 @@ async function memberDisplay(data: ReactionCollectorDataOf<typeof GUILD_DATA_KIN
 export async function mapCollectorDisplay(packet: ReactionCollectorCreationPacket, context?: PacketContext): Promise<ReactionCollectorCreation> {
 	const mapped = mapCollectorCreation(packet);
 	switch (mapped.data.type) {
+		case PLAYER_UTILITY_DATA_KINDS.UNLOCK: {
+			const source = packet.data.data as ReactionCollectorUnlockData;
+			const playerName = await resolvePlayerName(source.unlockedKeycloakId);
+			if (playerName) {
+				mapped.data.data.playerName = playerName;
+			}
+			break;
+		}
 		case PET_MANAGEMENT_DATA_KINDS.SELL:
 			await saleDisplay(mapped.data, packet.data.data as ReactionCollectorPetSellData, context);
 			break;

@@ -16,6 +16,9 @@ import {
 } from "../../../../../WsPackets/src/objects/Rankings";
 import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePackets";
 import { resolvePlayerName } from "../PlayerDisplay";
+import {
+	TopElementScore, TopElementGlory
+} from "../../../../../Lib/src/types/TopElement";
 
 type TopPacket = CommandTopPacketResScore | CommandTopPacketResGlory | CommandTopPacketResGuild;
 
@@ -31,6 +34,17 @@ function topPage(packet: TopPacket, dataType: TopDataType, elements: RankingEntr
 		...packet.contextRank === undefined ? {} : { contextRank: packet.contextRank },
 		...needFight === undefined ? {} : { needFight }
 	});
+}
+
+async function playerRankingEntry(entry: TopElementScore | TopElementGlory): Promise<RankingEntry> {
+	return {
+		rank: entry.rank,
+		sameContext: entry.sameContext,
+		name: await resolvePlayerName(entry.text) ?? "",
+		value: entry.attributes[2],
+		level: entry.attributes[3],
+		...typeof entry.attributes[1] === "number" ? { leagueId: entry.attributes[1] } : entry.attributes[1]
+	};
 }
 
 export default class RankingsServerTranslator {
@@ -78,27 +92,13 @@ export default class RankingsServerTranslator {
 
 	@fromServerTranslator(CommandTopPacketResScore, TopRes)
 	public static async score(_context: PacketContext, packet: CommandTopPacketResScore): Promise<TopRes> {
-		const elements = await Promise.all(packet.elements.map(async entry => ({
-			rank: entry.rank,
-			sameContext: entry.sameContext,
-			name: await resolvePlayerName(entry.text) ?? "",
-			value: entry.attributes[2],
-			level: entry.attributes[3],
-			...entry.attributes[1]
-		})));
+		const elements = await Promise.all(packet.elements.map(playerRankingEntry));
 		return topPage(packet, TopDataType.SCORE, elements);
 	}
 
 	@fromServerTranslator(CommandTopPacketResGlory, TopRes)
 	public static async glory(_context: PacketContext, packet: CommandTopPacketResGlory): Promise<TopRes> {
-		const elements = await Promise.all(packet.elements.map(async entry => ({
-			rank: entry.rank,
-			sameContext: entry.sameContext,
-			name: await resolvePlayerName(entry.text) ?? "",
-			value: entry.attributes[2],
-			level: entry.attributes[3],
-			leagueId: entry.attributes[1]
-		})));
+		const elements = await Promise.all(packet.elements.map(playerRankingEntry));
 		return topPage(packet, TopDataType.GLORY, elements, packet.needFight);
 	}
 

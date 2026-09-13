@@ -55,12 +55,18 @@ import {SmallEventChoiceOutcome as SmallEventChoiceOutcomeScreen} from "@/src/co
 import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/src/collectors/AutomaticSmallEventOutcome";
 import {
   EmptyState, Hero, KeyValue, Note, Panel, QuickAction, QuickActions, Screen, SectionHeader
-} from "@/src/design/Primitives";
+,Button} from "@/src/design/Primitives";
 import {PlayerVitals} from "@/src/components/PlayerVitals";
 import {formatMoney} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
+import {WorldMap} from "@/src/components/WorldMap";
+import {DetailScreen} from "@/src/design/DetailScreen";
+import {RespawnAction} from "@/src/components/Utilities";
+import {GameQueryContent} from "@/src/components/GameQueryContent";
+import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
+import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
 
 const MILLISECONDS_PER_SECOND = 1_000;
 const SECONDS_PER_MINUTE = 60;
@@ -414,6 +420,15 @@ function CollectorOutcomeView({
 	return null;
 }
 
+function ReportFailure({state}: {state: Extract<RequestState<ReportTravelSummaryRes>, {status: "failed"}>}): ReactNode {
+	const rejection = state.rejection;
+	if (rejection?.type === COMMAND_REJECTIONS.EFFECT && rejection.currentEffectId === PLAYER_EFFECTS.DEAD) return <Screen>
+		<Hero eyebrow={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:utilities.respawn")} subtitle={i18n.t("app:utilities.respawnWarning")} />
+		<RespawnAction />
+	</Screen>;
+	return <Screen><GameQueryContent state={state} entity={GAME_ENTITIES.REPORT}>{() => null}</GameQueryContent></Screen>;
+}
+
 function ReportStatusView({
 	reportState,
 	waitingForCollector
@@ -434,7 +449,7 @@ function ReportStatusView({
 		case "empty":
 			return <Centered><EmptyState>{i18n.t("app:adventure.empty")}</EmptyState></Centered>;
 		case "failed":
-			return <Centered><Text style={styles.message}>{i18n.t("app:common.error")}</Text></Centered>;
+			return <ReportFailure state={reportState} />;
 		case "ready":
 			return null;
 		default:
@@ -770,9 +785,12 @@ function AdventureBody(): ReactNode {
 }
 
 export default function Index(): ReactNode {
+	const [mapOpen, setMapOpen] = useState(false);
+	if (mapOpen) return <DetailScreen title={i18n.t("app:map.title")} eyebrow={i18n.t("app:adventure.eyebrow")} onClose={(): void => setMapOpen(false)}><WorldMap /></DetailScreen>;
 	return (
 		<View style={styles.adventureRoot}>
 			<PlayerVitals />
+			<Button onPress={(): void => setMapOpen(true)}>{i18n.t("app:map.title")}</Button>
 			<AdventureBody />
 		</View>
 	);

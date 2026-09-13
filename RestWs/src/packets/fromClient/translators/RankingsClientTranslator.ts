@@ -14,6 +14,15 @@ import {
 	FightHistoryReq, LeagueRewardReq, LeagueInfoReq, TopReq
 } from "../../../../../WsPackets/src/fromClient/RankingsReq";
 
+function validateRankingPage(page: number | undefined): void {
+	if (page === undefined) {
+		return;
+	}
+	if (!Number.isSafeInteger(page) || page < 1) {
+		throw new InvalidClientPacketError("Invalid ranking page");
+	}
+}
+
 export default class RankingsClientTranslator {
 	@fromClientTranslator(FightHistoryReq)
 	public static history(_context: PacketContext, _packet: FightHistoryReq): Promise<CommandFightHistoryPacketReq> {
@@ -37,9 +46,7 @@ export default class RankingsClientTranslator {
 		if (!dataType || !timing) {
 			throw new InvalidClientPacketError("Invalid ranking type");
 		}
-		if (packet.page !== undefined && (!Number.isSafeInteger(packet.page) || packet.page < 1)) {
-			throw new InvalidClientPacketError("Invalid ranking page");
-		}
+		validateRankingPage(packet.page);
 		return asyncMakePacket(CommandTopPacketReq, {
 			dataType, timing, ...packet.page === undefined ? {} : { page: packet.page }
 		});

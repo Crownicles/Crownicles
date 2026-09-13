@@ -10,6 +10,7 @@ import {
 	PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTION_KINDS,
 	GUILD_DATA_KINDS,
 	FIGHT_DATA_KINDS, FIGHT_REACTION_KINDS,
+	PLAYER_UTILITY_DATA_KINDS,
 	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
@@ -231,6 +232,8 @@ function makeChoosableHandler<Kind extends ReactionCollectorReaction["type"]>(
 }
 
 const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => string> = {
+	[PLAYER_UTILITY_DATA_KINDS.UNLOCK]: () => i18n.t("app:utilities.unlock"),
+	[PLAYER_UTILITY_DATA_KINDS.BOAT]: () => i18n.t("app:utilities.boat"),
 	[FIGHT_DATA_KINDS.CONFIRM]: () => i18n.t("app:arena.confirm"),
 	[FIGHT_DATA_KINDS.ACTION]: () => i18n.t("app:arena.action"),
 	[GUILD_DATA_KINDS.INVITE]: () => i18n.t("app:guild.invitation"),
@@ -281,6 +284,8 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 };
 
 const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], DataHandler> = {
+	[PLAYER_UTILITY_DATA_KINDS.UNLOCK]: () => undefined,
+	[PLAYER_UTILITY_DATA_KINDS.BOAT]: () => undefined,
 	[FIGHT_DATA_KINDS.CONFIRM]: () => undefined,
 	[FIGHT_DATA_KINDS.ACTION]: () => undefined,
 	[GUILD_DATA_KINDS.INVITE]: () => undefined,

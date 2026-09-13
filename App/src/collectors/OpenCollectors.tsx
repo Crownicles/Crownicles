@@ -4,7 +4,7 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
 import {Theme} from "@/src/design/Theme";
-import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, SELL_DATA_KINDS, GUILD_DATA_KINDS, FIGHT_DATA_KINDS, ReactionCollectorDataKind} from "ws-packets/src/fromServer/collectors";
+import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, SELL_DATA_KINDS, GUILD_DATA_KINDS, FIGHT_DATA_KINDS, ReactionCollectorDataKind,PLAYER_UTILITY_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {EquipCollector} from "@/src/collectors/EquipCollector";
 import {SellCollector} from "@/src/collectors/SellCollector";
 import {useInventoryOutcome} from "@/src/store/useInventoryOutcome";
@@ -33,6 +33,8 @@ import {FightSession} from "@/src/collectors/FightCollector";
 import {FightConfirmCollector} from "@/src/collectors/FightActionCollector";
 import {useLeagueRewardOutcome} from "@/src/store/useLeagueRewardOutcome";
 import {LeagueRewardOutcome} from "@/src/collectors/LeagueRewardOutcome";
+import {PlayerUtilityCollector, PlayerUtilityOutcome} from "@/src/collectors/PlayerUtilityCollector";
+import {usePlayerUtilityOutcome} from "@/src/store/usePlayerUtilityOutcome";
 
 const styles = StyleSheet.create({
 	container: {
@@ -45,6 +47,8 @@ type ActiveCollectorProps = {
 };
 
 const COLLECTOR_COMPONENTS: Partial<Record<ReactionCollectorDataKind, (props: ActiveCollectorProps) => ReactNode>> = {
+	[PLAYER_UTILITY_DATA_KINDS.UNLOCK]: PlayerUtilityCollector,
+	[PLAYER_UTILITY_DATA_KINDS.BOAT]: PlayerUtilityCollector,
 	[FIGHT_DATA_KINDS.CONFIRM]: FightConfirmCollector,
 	[GUILD_DATA_KINDS.REIMBURSE]: GuildCreateCollector,
 	[GUILD_DATA_KINDS.INVITE]: GuildCreateCollector,
@@ -79,8 +83,12 @@ function InventoryCollector({collector, onChoose, submitting}: ActiveCollectorPr
  * A collector is not tied to the screen that opened it, and the server may open one on its own, so
  * it is rendered above the tabs rather than inside a screen.
  */
+function PendingOutcome<Outcome>({state, Content}: {state: {outcome: Outcome | null; clear: () => void}; Content: (props: {outcome: Outcome; onContinue: () => void}) => ReactNode}): ReactNode {
+	return state.outcome === null ? null : <Content outcome={state.outcome} onContinue={state.clear} />;
+}
+
 function PendingOutcomes(): ReactNode {
-	const {outcome, clear} = useInventoryOutcome();
+	const inventoryOutcome = useInventoryOutcome();
 	const classOutcome = useClassOutcome();
 	const feedOutcome = usePetFeedOutcome();
 	const expeditionOutcome = useExpeditionOutcome();
@@ -88,15 +96,17 @@ function PendingOutcomes(): ReactNode {
 	const guildOutcome = useGuildOutcome();
 	const domainOutcome = useGuildDomainOutcome();
 	const leagueOutcome = useLeagueRewardOutcome();
+	const utilityOutcome = usePlayerUtilityOutcome();
 	return <>
-			{leagueOutcome.outcome ? <LeagueRewardOutcome outcome={leagueOutcome.outcome} onContinue={leagueOutcome.clear} /> : null}
-			{domainOutcome.outcome ? <GuildDomainOutcome outcome={domainOutcome.outcome} onContinue={domainOutcome.clear} /> : null}
-			{guildOutcome.outcome ? <GuildOutcome outcome={guildOutcome.outcome} onContinue={guildOutcome.clear} /> : null}
-			{managementOutcome.outcome ? <PetManagementOutcome outcome={managementOutcome.outcome} onContinue={managementOutcome.clear} /> : null}
-			{expeditionOutcome.outcome ? <PetExpeditionOutcome outcome={expeditionOutcome.outcome} onContinue={expeditionOutcome.clear} /> : null}
-			{feedOutcome.outcome ? <PetFeedOutcome outcome={feedOutcome.outcome} onContinue={feedOutcome.clear} /> : null}
-			{classOutcome.outcome ? <ClassOutcome outcome={classOutcome.outcome} onContinue={classOutcome.clear} /> : null}
-			{outcome ? <InventoryOutcome outcome={outcome} onContinue={clear} /> : null}
+		<PendingOutcome state={utilityOutcome} Content={PlayerUtilityOutcome} />
+		<PendingOutcome state={leagueOutcome} Content={LeagueRewardOutcome} />
+		<PendingOutcome state={domainOutcome} Content={GuildDomainOutcome} />
+		<PendingOutcome state={guildOutcome} Content={GuildOutcome} />
+		<PendingOutcome state={managementOutcome} Content={PetManagementOutcome} />
+		<PendingOutcome state={expeditionOutcome} Content={PetExpeditionOutcome} />
+		<PendingOutcome state={feedOutcome} Content={PetFeedOutcome} />
+		<PendingOutcome state={classOutcome} Content={ClassOutcome} />
+		<PendingOutcome state={inventoryOutcome} Content={InventoryOutcome} />
 	</>;
 }
 

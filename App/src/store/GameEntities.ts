@@ -7,6 +7,9 @@
 export const GAME_ENTITIES = {
 	PROFILE: "profile",
 	REPORT: "report",
+	MAP: "map",
+	VERSION: "version",
+	PING: "ping",
 	PET: "pet",
 	PET_POWERS: "petPowers",
 	SHELTER: "shelter",

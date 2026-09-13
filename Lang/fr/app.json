@@ -887,6 +887,15 @@
       "mood": "Mentalité"
     }
   },
+  "map": {"title": "Carte", "image": "Carte du monde et position du personnage", "expand": "Agrandir la carte", "zoomIn": "Zoom avant", "zoomOut": "Zoom arrière", "imageError": "La carte n'a pas pu être chargée.", "cities": "Villes et services", "position": "Position", "destination": "Destination", "service": "Service de ville"},
+  "utilities": {
+    "title": "Services utilitaires", "unlock": "Libérer un joueur", "prisoner": "Joueur à libérer", "prisonerRank": "Classement du joueur à libérer",
+    "boat": "Rejoindre le bateau", "respawn": "Réapparaître", "respawnWarning": "La réapparition vous rend le contrôle du personnage, mais retire une partie de votre score.",
+    "result": "Résultat de l'action", "moneyError": "Votre solde de {{money}} ne suffit pas pour payer cette caution.",
+    "respawned": "Vous êtes de nouveau en vie. La réapparition a retiré {{lostScore}} points de score.", "boatJoined": "Vous avez rejoint le bateau. Votre trajet a rapporté {{score}} points.", "unlocked": "{{name}} a été libéré.",
+    "connection": "Connexion", "coreVersion": "Version du moteur", "latency": "Temps de réponse", "latencyValue": "{{time}} ms",
+    "errors": {"alreadyAlive": "Votre personnage est déjà en vie.", "noPlayer": "Ce joueur n'a pas été trouvé.", "notJailed": "Ce joueur n'est pas en prison.", "self": "Vous ne pouvez pas payer votre propre caution.", "cancelled": "L'action a été annulée.", "noGuild": "Vous devez appartenir à une guilde.", "tooManyRuns": "Vous avez atteint la limite de voyages vers l'île cette semaine.", "noMemberOnBoat": "Aucun membre de votre guilde n'est disponible sur un bateau.", "notTravelling": "Vous devez être en voyage pour rejoindre un bateau.", "noEnergy": "Votre énergie est insuffisante.", "noGems": "Vous n'avez pas assez de gemmes pour cette traversée."}
+  },
   "arena": {
     "unknownPlayer": "Joueur inconnu",
     "pages": {"history": "Historique des combats", "leagues": "Ligues", "rankings": "Classements"},
@@ -1143,6 +1152,7 @@
       "badges": "Badges",
       "rarity": "Raretés",
       "blessing": "Bénédictions",
+      "utilities": "Services utilitaires",
       "gloryAndLeague": "Gloire et ligue",
       "status": "Temps restant",
       "cooking": "Cuisine",

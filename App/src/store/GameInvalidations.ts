@@ -1,6 +1,6 @@
 import {useCallback} from "react";
 import {useQueryClient} from "@tanstack/react-query";
-import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, GUILD_DATA_KINDS, ITEM_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, ReactionCollectorDataKind, SELL_DATA_KINDS,FIGHT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, GUILD_DATA_KINDS, ITEM_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, PLAYER_UTILITY_DATA_KINDS, ReactionCollectorDataKind, SELL_DATA_KINDS,FIGHT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {GAME_ENTITIES, gameKey, GameEntity} from "@/src/store/GameEntities";
 
 /**
@@ -18,6 +18,7 @@ const COLLECTOR_INVALIDATES: Partial<Record<ReactionCollectorDataKind, readonly 
 };
 
 const RESULT_OWNED_COLLECTORS = new Set<ReactionCollectorDataKind>([
+	...Object.values(PLAYER_UTILITY_DATA_KINDS),
 	...Object.values(FIGHT_DATA_KINDS),
 	...Object.values(GUILD_DATA_KINDS),
 	...Object.values(PET_MANAGEMENT_DATA_KINDS),
@@ -42,6 +43,7 @@ export function useGameInvalidations(): { afterCollector: (kind: ReactionCollect
 		if (RESULT_OWNED_COLLECTORS.has(kind)) return;
 		const entities = new Set<GameEntity>([
 			GAME_ENTITIES.PROFILE,
+			GAME_ENTITIES.MAP,
 				GAME_ENTITIES.REPORT,
 			...(COLLECTOR_INVALIDATES[kind] ?? [])
 		]);
