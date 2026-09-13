@@ -33,6 +33,14 @@ import { PetAssistance } from "../../data/PetAssistance";
 import { getAiPetBehavior } from "./PetAssistManager";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
+import type { TournamentFightContext } from "../tournaments/TournamentTypes";
+
+type FightControllerOptions = {
+	overtimeBehavior: FightOvertimeBehavior;
+	context: PacketContext;
+	silentMode?: boolean;
+	tournamentContext?: TournamentFightContext;
+};
 
 export class FightController {
 	turn: number;
@@ -53,6 +61,8 @@ export class FightController {
 
 	private readonly silentMode: boolean;
 
+	public readonly tournamentContext?: TournamentFightContext;
+
 	public petReactionData?: {
 		keycloakId: string;
 		reactionType: PostFightPetReactionType;
@@ -67,18 +77,17 @@ export class FightController {
 			fighter1: PlayerFighter | AiPlayerFighter;
 			fighter2: MonsterFighter | AiPlayerFighter;
 		},
-		overtimeBehavior: FightOvertimeBehavior,
-		context: PacketContext,
-		silentMode = false
+		options: FightControllerOptions
 	) {
 		this.id = FightsManager.registerFight(this);
 		this.fighters = [fighters.fighter1, fighters.fighter2];
 		this.fightInitiator = fighters.fighter1;
 		this.state = FightState.NOT_STARTED;
 		this.turn = 1;
-		this._fightView = new FightView(context, this);
-		this.overtimeBehavior = overtimeBehavior;
-		this.silentMode = silentMode;
+		this._fightView = new FightView(options.context, this);
+		this.overtimeBehavior = options.overtimeBehavior;
+		this.silentMode = options.silentMode ?? false;
+		this.tournamentContext = options.tournamentContext;
 	}
 
 	/**
@@ -119,6 +128,13 @@ export class FightController {
 		}
 		this._fightView.introduceFight(response, this.fightInitiator, opponent);
 		this._fightView.displayFightStatus(response);
+	}
+
+	/**
+	 * Check whether this fight was cancelled because its Discord interaction failed.
+	 */
+	public isBugged(): boolean {
+		return this.state === FightState.BUG;
 	}
 
 	/**

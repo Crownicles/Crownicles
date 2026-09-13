@@ -37,8 +37,12 @@ export interface PacketContext {
 		buttonInteraction?: string;
 		stringSelectMenuInteraction?: string;
 		channel: string;
+		parentChannel?: string;
 		language: Language;
 		shardId: number;
+		guildMemberCount?: number;
+		isGuildAdministrator?: boolean;
+		isBotOwner?: boolean;
 	};
 
 	webSocket?: Record<string, never>;

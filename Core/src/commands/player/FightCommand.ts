@@ -45,39 +45,17 @@ import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 import { PacketUtils } from "../../core/utils/PacketUtils";
 import { PlayerWasAttackedNotificationPacket } from "../../../../Lib/src/packets/notifications/PlayerWasAttackedNotificationPacket";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
-import { PetUtils } from "../../core/utils/PetUtils";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
 import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "../../core/fights/FightsManager";
-
-type PlayerStats = {
-	pet?: {
-		petTypeId: number;
-		petSex: SexTypeShort;
-		petNickname: string;
-		isOnExpedition: boolean;
-	};
-	classId: number;
-	fightRanking: { glory: number };
-	energy: {
-		value: number;
-		max: number;
-	};
-	attack: number;
-	defense: number;
-	speed: number;
-	breath: {
-		base: number;
-		max: number;
-		regen: number;
-	};
-};
+import { findTournamentForContext } from "../../core/tournaments/TournamentQueries";
+import { resolveTournamentFight } from "../../core/tournaments/TournamentFightResolver";
+import { getPlayerStats } from "./FightPlayerStats";
+import { executeTournamentFightCommand } from "./TournamentFightCommand";
 
 type FightInitiatorInformation = {
 	playerDailyFightSummary: PersonalFightDailySummary;
@@ -91,38 +69,6 @@ type FightInitiatorInformation = {
  * Fights are logged at the end of the fight
  */
 export const fightsDefenderCooldowns = new Map<string, number>();
-
-async function getPlayerStats(player: Player): Promise<PlayerStats> {
-	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
-	const petEntity = await PetEntities.getById(player.petId);
-
-	return {
-		pet: petEntity
-			? {
-				petTypeId: petEntity.typeId!,
-				petSex: petEntity.sex as SexTypeShort,
-				petNickname: petEntity.nickname,
-				isOnExpedition: await PetUtils.isPetOnExpedition(player.id)
-			}
-			: undefined,
-		classId: player.class,
-		fightRanking: {
-			glory: player.getGloryPoints()
-		},
-		energy: {
-			value: player.getCumulativeEnergy(playerActiveObjects),
-			max: player.getMaxCumulativeEnergy(playerActiveObjects)
-		},
-		attack: player.getCumulativeAttack(playerActiveObjects),
-		defense: player.getCumulativeDefense(playerActiveObjects),
-		speed: player.getCumulativeSpeed(playerActiveObjects),
-		breath: {
-			base: player.getBaseBreath(playerActiveObjects),
-			max: player.getMaxBreath(playerActiveObjects),
-			regen: player.getBreathRegen()
-		}
-	};
-}
 
 /**
  * Calculate the money reward for the initiator of the fight
@@ -369,6 +315,14 @@ function buildPlayerGloryInfo(player: Player, oldGlory: number): FightRewardPack
  * @param response
  */
 async function fightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
+	if (fight.tournamentContext) {
+		await resolveTournamentFight(fight, response);
+		return;
+	}
+	await regularFightEndCallback(fight, response);
+}
+
+async function regularFightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
 	notifyDefenderOfAttack(fight);
 
 	const fightLogId = await crowniclesInstance?.logsDatabase.logFight(fight) ?? null;
@@ -572,8 +526,10 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 				{
 					fighter1: askingFighter, fighter2: incomingFighter
 				},
-				FightOvertimeBehavior.END_FIGHT_DRAW,
-				context
+				{
+					overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+					context
+				}
 			);
 			fightController.setEndCallback(fightEndCallback);
 			fightsDefenderCooldowns.set(opponent.keycloakId, Date.now() + minutesToMilliseconds(FightConstants.DEFENDER_COOLDOWN_MINUTES));
@@ -600,9 +556,21 @@ export default class FightCommand {
 		notBlocked: true,
 		whereAllowed: [WhereAllowed.CONTINENT],
 		allowedEffects: CommandUtils.ALLOWED_EFFECTS.NO_EFFECT,
-		level: FightConstants.REQUIRED_LEVEL
+		level: FightConstants.REQUIRED_LEVEL,
+		tournamentAccess: "fight"
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
+		const tournament = await findTournamentForContext(context, true);
+		if (tournament) {
+			await executeTournamentFightCommand({
+				response,
+				player,
+				context,
+				tournament,
+				fightEndCallback
+			});
+			return;
+		}
 		const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
 		if (!player.hasEnoughEnergyToFight(playerActiveObjects)) {
 			response.push(makePacket(CommandFightNotEnoughEnergyPacketRes, {}));

@@ -65,6 +65,7 @@ import {
 import {
 	CHANNEL_PERMISSION_ERRORS, getThreadSendAccessError
 } from "./ChannelPermissionUtils";
+import { checkTournamentCommandAccess } from "./tournament/TournamentCommandGuard";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -629,6 +630,10 @@ export class CommandsManager {
 		}
 
 		DiscordCache.cacheInteraction(interaction);
+		const packetContext = await PacketUtils.createPacketContext(interaction, user);
+		if (!await checkTournamentCommandAccess(interaction, packetContext)) {
+			return;
+		}
 		const packet = await commandInfo.getPacket(interaction, user);
 		if (packet) {
 			const context = await PacketUtils.createPacketContext(interaction, user);

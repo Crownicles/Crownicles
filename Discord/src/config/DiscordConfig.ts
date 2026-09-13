@@ -14,6 +14,7 @@ export interface CrowniclesConfig {
 	CONTRIBUTOR_ROLE: string;
 	CONTRIBUTORS_CHANNEL: string;
 	MAIN_SERVER_ID: string;
+	OWNER_ID: string;
 	CONSOLE_CHANNEL_ID: string;
 	FRENCH_ANNOUNCEMENT_CHANNEL_ID: string;
 	ENGLISH_ANNOUNCEMENT_CHANNEL_ID: string;
@@ -103,6 +104,7 @@ export function loadConfig(): CrowniclesConfig {
 		CONTRIBUTOR_ROLE: config.roles.contributor_role_id,
 		DISCORD_CLIENT_TOKEN: config.general.token,
 		DM_MANAGER_ID: config.users.dm_manager_id,
+		OWNER_ID: config.users.owner_id,
 		ENGLISH_ANNOUNCEMENT_CHANNEL_ID: config.channels.english_announcements_channel_id,
 		FRENCH_ANNOUNCEMENT_CHANNEL_ID: config.channels.french_announcements_channel_id,
 		MAIN_SERVER_ID: config.general.main_server_id,

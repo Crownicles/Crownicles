@@ -1,0 +1,195 @@
+import { TournamentConstants } from "../../../../Lib/src/constants/TournamentConstants";
+import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	TournamentCategories, TournamentCategory, TournamentLevelLimitModes, TournamentLevelSettings,
+	TournamentNotificationEvent, TournamentRewardSummary, TournamentStatus, TournamentStatuses, TournamentTopCategory
+} from "../../../../Lib/src/types/Tournament";
+import {
+	asHours, hoursToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
+import type Tournament from "../database/game/models/Tournament";
+import type TournamentParticipant from "../database/game/models/TournamentParticipant";
+import type Player from "../database/game/models/Player";
+import type { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
+import type {
+	TournamentRewardAmounts, TournamentRewardRank
+} from "./TournamentTypes";
+
+export type TournamentStatusData = {
+	tournamentId: number;
+	status: TournamentStatus;
+	levelLimitMode: TournamentLevelSettings["levelLimitMode"];
+	levelCap: number | null;
+	discordGuildId: string;
+	discordChannelId: string;
+	registrationEndsAt: number;
+	combatEndsAt: number;
+	participantCount: number;
+	categoryCounts: Record<TournamentCategory, number>;
+	category?: TournamentCategory;
+	attackGloryPoints?: number;
+	defenseGloryPoints?: number;
+	rank?: number;
+	reward?: TournamentRewardSummary;
+};
+
+export type TournamentTopData = {
+	tournamentId: number;
+	categories: TournamentTopCategory[];
+	pageNumber: number;
+	totalPages: number;
+	elementsPerPage: number;
+};
+
+export type TournamentEventData = {
+	event: TournamentNotificationEvent;
+	cancellationReason?: string;
+};
+
+export const ACTIVE_STATUSES = [
+	TournamentStatuses.REGISTRATION,
+	TournamentStatuses.COMBAT,
+	TournamentStatuses.PAUSED
+];
+
+export const CONTEXT_STATUSES = [
+	...ACTIVE_STATUSES,
+	TournamentStatuses.COMPLETED,
+	TournamentStatuses.CANCELLED
+];
+
+export const PROCESSABLE_STATUSES = [
+	TournamentStatuses.REGISTRATION,
+	TournamentStatuses.COMBAT,
+	TournamentStatuses.COMPLETED,
+	TournamentStatuses.CANCELLED
+];
+
+export function getCategoryForLevel(level: number): TournamentCategory {
+	return level >= 100 ? TournamentCategories.LEVEL_100 : TournamentCategories.LEVEL_50;
+}
+
+export function getEffectiveLevel(
+	category: TournamentCategory,
+	level: number,
+	levelSettings?: TournamentLevelSettings
+): number {
+	const categoryCap = category === TournamentCategories.LEVEL_50 ? 50 : 100;
+	if (!levelSettings || levelSettings.levelLimitMode === TournamentLevelLimitModes.CATEGORY) {
+		return Math.min(level, categoryCap);
+	}
+	if (levelSettings.levelLimitMode === TournamentLevelLimitModes.UNLIMITED) {
+		return level;
+	}
+	return Math.min(level, levelSettings.levelCap ?? categoryCap);
+}
+
+export function getCategoryCounts(participants: TournamentParticipant[]): Record<TournamentCategory, number> {
+	return {
+		[TournamentCategories.LEVEL_50]: participants.filter(participant => participant.category === TournamentCategories.LEVEL_50).length,
+		[TournamentCategories.LEVEL_100]: participants.filter(participant => participant.category === TournamentCategories.LEVEL_100).length
+	};
+}
+
+function getBaseRewardMultiplier(participantCount: number, category: TournamentCategory): number {
+	const baseMultiplier = TournamentConstants.MINIMUM_REWARD_MULTIPLIER
+		+ Math.floor((participantCount - TournamentConstants.MINIMUM_TOTAL_PARTICIPANTS) / TournamentConstants.REWARD_MULTIPLIER_PARTICIPANT_STEP);
+	return category === TournamentCategories.LEVEL_50
+		? baseMultiplier / TournamentConstants.LEVEL_50_REWARD_DIVISOR
+		: baseMultiplier;
+}
+
+export function getRankRewardFactor({
+	rank,
+	categoryParticipantCount
+}: TournamentRewardRank): number {
+	const maximumRankOffset = Math.max(categoryParticipantCount - 1, 1);
+	const effectiveRank = Math.min(Math.max(rank, 1), Math.max(categoryParticipantCount, 1));
+	const rankOffset = effectiveRank - 1;
+	if (categoryParticipantCount <= TournamentConstants.RANK_REWARD_TARGET_RANK) {
+		const rewardPercent = TournamentConstants.RANK_REWARD_MAX_PERCENT
+			- Math.round(TournamentConstants.RANK_REWARD_PERCENT_RANGE * rankOffset / maximumRankOffset);
+		return rewardPercent / TournamentConstants.REWARD_PERCENTAGE_DIVISOR;
+	}
+	if (effectiveRank === TournamentConstants.RANK_REWARD_TARGET_RANK) {
+		return TournamentConstants.RANK_REWARD_TARGET_PERCENT / TournamentConstants.REWARD_PERCENTAGE_DIVISOR;
+	}
+	const targetRankPosition = (categoryParticipantCount - TournamentConstants.RANK_REWARD_TARGET_RANK) / maximumRankOffset;
+	const targetRewardPosition = TournamentConstants.RANK_REWARD_TARGET_PERCENT_OFFSET / TournamentConstants.RANK_REWARD_PERCENT_RANGE;
+	const exponent = Math.log(targetRewardPosition) / Math.log(targetRankPosition);
+	const rankPosition = (categoryParticipantCount - effectiveRank) / maximumRankOffset;
+	const rewardPercent = TournamentConstants.RANK_REWARD_MIN_PERCENT
+		+ TournamentConstants.RANK_REWARD_PERCENT_RANGE * Math.pow(rankPosition, exponent);
+	return rewardPercent / TournamentConstants.REWARD_PERCENTAGE_DIVISOR;
+}
+
+export function getRewardMultiplier(
+	participantCount: number,
+	category: TournamentCategory,
+	rankData: TournamentRewardRank
+): number {
+	return getBaseRewardMultiplier(participantCount, category) * getRankRewardFactor(rankData);
+}
+
+export function getTournamentRewardAmounts(
+	participantCount: number,
+	category: TournamentCategory,
+	rankData: TournamentRewardRank
+): TournamentRewardAmounts {
+	const rewardMultiplier = getRewardMultiplier(participantCount, category, rankData);
+	return {
+		experience: Math.round(TournamentConstants.BASE_XP_REWARD * rewardMultiplier),
+		money: Math.round(TournamentConstants.BASE_MONEY_REWARD * rewardMultiplier),
+		itemCount: TournamentConstants.REWARD_ITEM_COUNT
+	};
+}
+
+export function getTournamentRewardItemMinimumRarity(rank: number): ItemRarity {
+	const rankOffset = Math.min(
+		Math.max(rank - 1, 0),
+		TournamentConstants.REWARD_ITEM_TOP_RANK_RARITY_STEPS
+	);
+	const rarityReduction = Math.ceil(
+		TournamentConstants.REWARD_ITEM_MIN_RARITY_RANGE * rankOffset
+		/ TournamentConstants.REWARD_ITEM_TOP_RANK_RARITY_STEPS
+	);
+	return (TournamentConstants.REWARD_ITEM_MIN_RARITY_FIRST_RANK - rarityReduction) as ItemRarity;
+}
+
+export function getTournamentPhaseEnd(tournament: Tournament): Date {
+	return tournament.status === TournamentStatuses.REGISTRATION
+		? tournament.registrationEndsAt
+		: tournament.combatEndsAt;
+}
+
+export function getEndingNotificationDate(tournament: Tournament): Date {
+	const combatDuration = tournament.combatEndsAt.getTime() - tournament.registrationEndsAt.getTime();
+	const configuredLead = hoursToMilliseconds(asHours(TournamentConstants.ENDING_NOTIFICATION_LEAD_HOURS));
+	const lead = combatDuration < configuredLead
+		? Math.floor(combatDuration / 2)
+		: configuredLead;
+	return new Date(tournament.combatEndsAt.getTime() - lead);
+}
+
+export function getGameResult(isWinner: boolean, isDraw: boolean): EloGameResult {
+	if (isDraw) {
+		return 0.5;
+	}
+	return isWinner ? 1 : 0;
+}
+
+export function sortParticipants(
+	participants: TournamentParticipant[],
+	playersById: Map<number, Player>,
+	levelSettings?: TournamentLevelSettings
+): TournamentParticipant[] {
+	return [...participants].sort((left, right) => {
+		const gloryDifference = right.getTotalGloryPoints() - left.getTotalGloryPoints();
+		if (gloryDifference !== 0) {
+			return gloryDifference;
+		}
+		const leftLevel = getEffectiveLevel(left.category, playersById.get(left.playerId)?.level ?? 0, levelSettings);
+		const rightLevel = getEffectiveLevel(right.category, playersById.get(right.playerId)?.level ?? 0, levelSettings);
+		return rightLevel - leftLevel || left.playerId - right.playerId;
+	});
+}

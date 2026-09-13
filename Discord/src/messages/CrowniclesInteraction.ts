@@ -370,6 +370,8 @@ export class CrowniclesChannel extends ChannelTypeWithoutSend {
 	// @ts-expect-error - Property 'language' starts undefined and is initialized if we are sure the channel is a valid channel
 	public language: Language;
 
+	public readonly parentId!: string | null;
+
 	/**
 	 * Cast a GuildTextBasedChannel to a CrowniclesChannel
 	 * @param channel

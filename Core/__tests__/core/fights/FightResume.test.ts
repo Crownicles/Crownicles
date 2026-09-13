@@ -20,7 +20,11 @@ function createFight(silent = false): FightController {
 	const fighter2 = new AiPlayerFighter(opponent, playerClass);
 	fighter1.setBaseEnergy(100);
 	fighter2.setBaseEnergy(100);
-	const fight = new FightController({fighter1, fighter2}, FightOvertimeBehavior.END_FIGHT_DRAW, {keycloakId: player.keycloakId, frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {}}, silent);
+	const fight = new FightController({fighter1, fighter2}, {
+		overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+		context: {keycloakId: player.keycloakId, frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {}},
+		silentMode: silent
+	});
 	Reflect.set(fight, "state", FightState.RUNNING);
 	active.push(fight);
 	return fight;
