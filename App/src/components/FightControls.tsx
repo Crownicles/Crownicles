@@ -55,6 +55,13 @@ export function FightHeader({fight, playback, phase, navigation}: {fight: FightS
 	</View>;
 }
 
+function FightActivityHeader({paused, onToggle, onJournal}: {paused: boolean; onToggle: () => void; onJournal: () => void}): ReactNode {
+	return <View style={styles.activityHead}>
+		<Text style={styles.activityTitle}>{i18n.t(paused ? "app:battle.story.paused" : "app:battle.story.live")}</Text>
+		<View style={styles.headerActions}><FightIconButton icon={paused ? Play : Pause} label={i18n.t(paused ? "app:battle.story.resume" : "app:battle.story.pause")} onPress={onToggle} /><FightIconButton icon={History} label={i18n.t("app:battle.showHistory")} onPress={onJournal} /></View>
+	</View>;
+}
+
 export function FightActivity({entries, pendingSequence, ownTurn, onJournal, readingControls}: {entries: FightLogRecord[]; pendingSequence?: number; ownTurn: boolean; onJournal: () => void; readingControls: FightReadingControls}): ReactNode {
 	const compact = useCompactFight();
 	const feed = useRef<ScrollView>(null);
@@ -68,10 +75,7 @@ export function FightActivity({entries, pendingSequence, ownTurn, onJournal, rea
 		readingControls.toggle();
 	};
 	return <View style={styles.activity}>
-		<View style={styles.activityHead}>
-			<Text style={styles.activityTitle}>{i18n.t(readingControls.paused ? "app:battle.story.paused" : "app:battle.story.live")}</Text>
-			<View style={styles.headerActions}><FightIconButton icon={readingControls.paused ? Play : Pause} label={i18n.t(readingControls.paused ? "app:battle.story.resume" : "app:battle.story.pause")} onPress={toggleReading} /><FightIconButton icon={History} label={i18n.t("app:battle.showHistory")} onPress={onJournal} /></View>
-		</View>
+		<FightActivityHeader paused={readingControls.paused} onToggle={toggleReading} onJournal={onJournal} />
 		<ScrollView ref={feed} style={[styles.feed, compact && styles.compactFeed]} nestedScrollEnabled onScrollBeginDrag={readingControls.pause} accessibilityLiveRegion="polite">
 			{entries.length ? <FightLog entries={entries} compact {...pendingSequence === undefined ? {} : {pendingSequence}} onLatestLayout={followLatest} /> : <Text style={styles.activitySubtitle}>{i18n.t(ownTurn ? "app:battle.ready" : "app:arena.waiting")}</Text>}
 		</ScrollView>
