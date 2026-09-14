@@ -1,11 +1,15 @@
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useEffectEvent, useState} from "react";
 import {AccessibilityInfo} from "react-native";
 import {FightStatus} from "ws-packets/src/objects/Fight";
 import {FightLogRecord, FightSnapshot, fightStore} from "@/src/store/FightStore";
+import {FIGHT_SPEEDS, FightSpeed} from "@/src/display/FightMotion";
+import {fightNarrative, fightConsequences} from "@/src/display/Fight";
 
-type PlaybackCursor = {fightId: string | undefined; sequence: number; impactSequence?: number};
-export type FightPlayback = {record: FightLogRecord | undefined; status: FightStatus | null; logs: FightLogRecord[]; impact: () => void; complete: () => void; reducedMotion: boolean; impacted: boolean};
+type PlaybackCursor = {fightId: string | undefined; sequence: number; impactSequence?: number; finishedSequence?: number};
+type PlaybackControls = {speed: FightSpeed; paused: boolean};
+export type FightPlayback = {record: FightLogRecord | undefined; status: FightStatus | null; logs: FightLogRecord[]; impact: () => void; complete: () => void; finishMotion: () => void; reducedMotion: boolean; impacted: boolean; reading: boolean};
 type CursorState = [PlaybackCursor, Dispatch<SetStateAction<PlaybackCursor>>];
+const READING_TIME = {MINIMUM_MS: 2200, MAXIMUM_MS: 6500, MS_PER_CHARACTER: 26, FAST_DIVISOR: 2};
 
 export function useFightReducedMotion(): boolean {
 	const [reduced, setReduced] = useState(false);
@@ -33,7 +37,27 @@ function playbackStatus(current: FightStatus | null, record: FightLogRecord | un
 	return record.after ?? record.before ?? current;
 }
 
-export function useFightPlayback(fight: FightSnapshot): FightPlayback {
+function readingDuration(record: FightLogRecord | undefined, speed: FightSpeed): number {
+	if (!record) return 0;
+	const length = fightNarrative(record.entry).length + fightConsequences(record.entry, record.after ?? record.before).join("").length;
+	const duration = Math.max(READING_TIME.MINIMUM_MS, Math.min(READING_TIME.MAXIMUM_MS, length * READING_TIME.MS_PER_CHARACTER));
+	return speed === FIGHT_SPEEDS.FAST ? duration / READING_TIME.FAST_DIVISOR : duration;
+}
+
+function useReadingTime(record: FightLogRecord | undefined, reading: boolean, controls: PlaybackControls, onComplete: () => void): void {
+	const finish = useEffectEvent((sequence: number | undefined): void => {
+		if (sequence === record?.sequence) onComplete();
+	});
+	const duration = readingDuration(record, controls.speed);
+	const sequence = record?.sequence;
+	useEffect(() => {
+		if (!reading || controls.paused) return undefined;
+		const timer = setTimeout(() => finish(sequence), duration);
+		return (): void => clearTimeout(timer);
+	}, [reading, controls.paused, sequence, duration]);
+}
+
+export function useFightPlayback(fight: FightSnapshot, controls: PlaybackControls = {speed: FIGHT_SPEEDS.NORMAL, paused: false}): FightPlayback {
 	const reducedMotion = useFightReducedMotion();
 	const [cursor, setCursor] = usePlaybackCursor(fight);
 	const record = fight.visible ? fight.logs.find(entry => entry.sequence > cursor.sequence) : undefined;
@@ -45,5 +69,10 @@ export function useFightPlayback(fight: FightSnapshot): FightPlayback {
 		setCursor(previous => ({fightId: previous.fightId, sequence: record.sequence}));
 		if (fight.introduction) fightStore.markPlayed(fight.introduction.fightId, record.sequence);
 	};
-	return {record, status: playbackStatus(fight.status, record, cursor.impactSequence), logs: fight.logs.filter(entry => entry.sequence <= (record?.sequence ?? cursor.sequence)), impact, complete, reducedMotion, impacted: record?.sequence === cursor.impactSequence};
+	const finishMotion = (): void => {
+		if (record) setCursor(previous => ({...previous, impactSequence: record.sequence, finishedSequence: record.sequence}));
+	};
+	const reading = Boolean(record && record.sequence === cursor.finishedSequence);
+	useReadingTime(record, reading, controls, complete);
+	return {record, status: playbackStatus(fight.status, record, cursor.impactSequence), logs: fight.logs.filter(entry => entry.sequence <= (record?.sequence ?? cursor.sequence)), impact, complete, finishMotion, reducedMotion, impacted: record?.sequence === cursor.impactSequence, reading};
 }

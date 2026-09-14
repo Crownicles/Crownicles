@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {Pressable, StyleSheet, Text, View} from "react-native";
+import {LayoutChangeEvent, Pressable, StyleSheet, Text, View} from "react-native";
 import {ChevronDown, Swords} from "@/src/design/FightIcons";
 import {FightEffect, FightLogEntry} from "ws-packets/src/objects/Fight";
 import {FightLogRecord} from "@/src/store/FightStore";
@@ -16,15 +16,16 @@ import {FightNarrative} from "@/src/components/FightNarrative";
 
 const styles = StyleSheet.create({
 	entry: {borderBottomWidth: 1, borderBottomColor: Theme.colors.line, paddingVertical: Theme.spacing.md},
+	current: {borderLeftWidth: 3, borderLeftColor: Theme.colors.blue, paddingLeft: 10},
 	entryHead: {flexDirection: "row", alignItems: "center", gap: 10},
 	entryBody: {flex: 1, minWidth: 0},
-	action: {fontFamily: Theme.fonts.semiBold, fontSize: 12, lineHeight: 17, color: Theme.colors.ink},
+	action: {fontFamily: Theme.fonts.bold, fontSize: 12, lineHeight: 17, color: Theme.colors.ink},
 	actor: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 15, color: Theme.colors.muted},
 	status: {fontFamily: Theme.fonts.bold, fontSize: 10},
 	compact: {paddingVertical: 8},
 	impact: {fontFamily: Theme.fonts.bold, fontSize: 12, color: Theme.colors.red},
-	story: {fontFamily: Theme.fonts.regular, fontSize: 12, lineHeight: 18, color: Theme.colors.ink, marginTop: 6},
-	consequence: {fontFamily: Theme.fonts.medium, fontSize: 10, lineHeight: 15, color: Theme.colors.muted, marginTop: 3},
+	story: {fontFamily: Theme.fonts.regular, fontSize: 13, lineHeight: 20, color: Theme.colors.ink, marginTop: 6},
+	consequence: {fontFamily: Theme.fonts.regular, fontSize: 12, lineHeight: 19, color: Theme.colors.muted, marginTop: 4},
 	pending: {color: Theme.colors.muted}
 });
 
@@ -51,7 +52,7 @@ export function FightEventIcon({entry, size = 23}: {entry: FightLogEntry; size?:
 export function FightEventStory({record, pending = false}: {record: FightLogRecord; pending?: boolean}): ReactNode {
 	return <>
 		<FightNarrative style={[styles.story, pending && styles.pending]}>{fightNarrative(record.entry, pending)}</FightNarrative>
-		{!pending ? fightConsequences(record.entry, record.after ?? record.before).map(text => <Text key={text} style={styles.consequence}>{text}</Text>) : null}
+		{!pending ? fightConsequences(record.entry, record.after ?? record.before).map(text => <FightNarrative key={text} style={styles.consequence}>{text}</FightNarrative>) : null}
 	</>;
 }
 
@@ -74,10 +75,12 @@ function FightLogEffects({entry, cue}: {entry: FightLogEntry; cue: FightCue}): R
 	</>;
 }
 
-function FightLogLine({record, compact, pending}: {record: FightLogRecord; compact: boolean; pending: boolean}): ReactNode {
+type FightLogLineProps = {record: FightLogRecord; compact: boolean; pending: boolean; current: boolean; onLayout?: (event: LayoutChangeEvent) => void};
+
+function FightLogLine({record, compact, pending, current, onLayout}: FightLogLineProps): ReactNode {
 	const [expanded, setExpanded] = useState(false);
 	const cue = fightCue(record.entry);
-	return <View style={[styles.entry, compact && styles.compact]}>
+	return <View style={[styles.entry, compact && styles.compact, current && styles.current]} onLayout={onLayout}>
 		<Pressable accessibilityRole="button" accessibilityState={{expanded, disabled: pending}} disabled={pending} onPress={(): void => setExpanded(!expanded)} style={styles.entryHead}>
 			<FightLogSummary record={record} compact={compact} cue={cue} pending={pending} />
 		</Pressable>
@@ -86,8 +89,10 @@ function FightLogLine({record, compact, pending}: {record: FightLogRecord; compa
 	</View>;
 }
 
-export function FightLog({entries, compact = false, pendingSequence}: {entries: FightLogRecord[]; compact?: boolean; pendingSequence?: number}): ReactNode {
-	const visible = compact ? entries.slice(-2) : [...entries].reverse();
-	if (!visible.length) return <Note>{i18n.t("app:battle.opening")}</Note>;
-	return visible.map(record => <FightLogLine key={record.sequence} record={record} compact={compact} pending={record.sequence === pendingSequence} />);
+type FightLogProps = {entries: FightLogRecord[]; compact?: boolean; pendingSequence?: number; onLatestLayout?: (event: LayoutChangeEvent) => void};
+
+export function FightLog({entries, compact = false, pendingSequence, onLatestLayout}: FightLogProps): ReactNode {
+	if (!entries.length) return <Note>{i18n.t("app:battle.opening")}</Note>;
+	const latestSequence = entries.at(-1)!.sequence;
+	return entries.map(record => <FightLogLine key={record.sequence} record={record} compact={compact} pending={record.sequence === pendingSequence} current={record.sequence === latestSequence} {...record.sequence === latestSequence && onLatestLayout ? {onLayout: onLatestLayout} : {}} />);
 }

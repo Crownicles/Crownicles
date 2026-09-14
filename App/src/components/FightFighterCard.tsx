@@ -16,6 +16,7 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {FightAnimation} from "@/src/store/useFightAnimation";
 import {FightPortrait} from "@/src/components/FightPortrait";
 
+const COMBAT_STATS = [{key: "attack", Icon: Swords}, {key: "defense", Icon: Shield}, {key: "speed", Icon: Wind}] as const;
 const styles = StyleSheet.create({
 	participant: {flex: 1, minWidth: 0},
 	card: {minHeight: 226, borderWidth: 1, borderColor: Theme.colors.line, borderRadius: Theme.radius, backgroundColor: Theme.colors.paper, padding: Theme.spacing.md},
@@ -30,6 +31,12 @@ const styles = StyleSheet.create({
 	stat: {alignItems: "center", gap: 7},
 	statValue: {fontFamily: Theme.fonts.bold, fontSize: 18, color: Theme.colors.ink},
 	statLabel: {fontFamily: Theme.fonts.regular, fontSize: 11, color: Theme.colors.muted},
+	liveStats: {flexDirection: "row", gap: 4, paddingVertical: 8, marginTop: 7, borderTopWidth: 1, borderTopColor: Theme.colors.line},
+	liveStat: {flex: 1, minWidth: 0, alignItems: "center", gap: 3},
+	liveValue: {fontFamily: Theme.fonts.bold, fontSize: 12, lineHeight: 16, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
+	liveLabel: {fontFamily: Theme.fonts.regular, fontSize: 9, lineHeight: 12, color: Theme.colors.muted},
+	breath: {flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", columnGap: 4, rowGap: 2},
+	breathValue: {fontFamily: Theme.fonts.semiBold, fontSize: 10, lineHeight: 14, color: Theme.colors.blue, fontVariant: ["tabular-nums"]},
 	compactCard: {minHeight: 148, padding: 8},
 	compactRole: {minHeight: 14},
 	compactName: {minHeight: 17},
@@ -40,9 +47,22 @@ function FighterIdentity({fighter, compact}: {fighter: FightFighter; compact: bo
 	return <><Text style={[styles.name, compact && styles.compactName]} numberOfLines={2}>{fighterDisplayName(fighter)}</Text><Text style={[styles.classLabel, compact && styles.compactClass]} numberOfLines={2}>{fighterSubtitle(fighter)}</Text></>;
 }
 
+function FighterCombatStats({fighter}: {fighter: FightFighter}): ReactNode {
+	const side = fighter.isSelf ? "self" : "opponent";
+	return <>
+		<View style={styles.liveStats}>{COMBAT_STATS.map(({key, Icon}) => <View key={key} style={styles.liveStat} testID={`fight-stat-${key}-${side}`}>
+			<Icon size={13} color={Theme.colors.muted} />
+			<Text style={styles.liveValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{formatNumber(fighter.stats[key])}</Text>
+			<Text style={styles.liveLabel} numberOfLines={1} adjustsFontSizeToFit>{i18n.t(`app:arena.stats.${key}`)}</Text>
+		</View>)}</View>
+		<View style={styles.breath} testID={`fight-stat-breath-${side}`}><Text style={styles.liveLabel}>{i18n.t("app:arena.breath")}</Text><Text style={styles.breathValue}>{i18n.t("app:profile.formats.progress", {value: fighter.stats.breath, max: fighter.stats.maxBreath})}</Text></View>
+		<Text style={styles.liveLabel}>{i18n.t("app:battle.breathRegen", {count: fighter.stats.breathRegen})}</Text>
+	</>;
+}
+
 function FighterStats({fighter, pet, onClose}: {fighter: FightFighter; pet?: OwnedPet; onClose: () => void}): ReactNode {
 	return <Confirmation title={fighterDisplayName(fighter)} message={i18n.t("app:arena.details")} onRequestClose={onClose}>
-		<View style={styles.statRow}>{([{key: "attack", Icon: Swords}, {key: "defense", Icon: Shield}, {key: "speed", Icon: Wind}] as const).map(({key, Icon}) => <View key={key} style={styles.stat}><Icon size={22} color={Theme.colors.muted} /><Text style={styles.statValue}>{formatNumber(fighter.stats[key])}</Text><Text style={styles.statLabel}>{i18n.t(`app:arena.stats.${key}`)}</Text></View>)}</View>
+		<View style={styles.statRow}>{COMBAT_STATS.map(({key, Icon}) => <View key={key} style={styles.stat}><Icon size={22} color={Theme.colors.muted} /><Text style={styles.statValue}>{formatNumber(fighter.stats[key])}</Text><Text style={styles.statLabel}>{i18n.t(`app:arena.stats.${key}`)}</Text></View>)}</View>
 		<KeyValue label={i18n.t("app:arena.breath")} value={i18n.t("app:profile.formats.progress", {value: fighter.stats.breath, max: fighter.stats.maxBreath})} />
 		<KeyValue label={i18n.t("app:arena.stats.breathRegen")} value={formatNumber(fighter.stats.breathRegen)} />
 		{fighter.alteration ? <KeyValue label={i18n.t("app:arena.effects.newAlteration")} value={fightActionName(fighter.alteration)} /> : null}
@@ -66,6 +86,7 @@ export function FightFighterCard({fighter, pet, animation}: {fighter: FightFight
 			<FightPortrait fighter={fighter} pet={pet} animation={animation} />
 			<FighterIdentity fighter={fighter} compact={compact} />
 			<View style={styles.energy}><FightGauge label={i18n.t("app:arena.energy")} value={fighter.stats.power} max={fighter.stats.maxEnergy} color={fighter.isSelf ? Theme.colors.green : Theme.colors.red} reducedMotion={animation.reducedMotion} /></View>
+			<FighterCombatStats fighter={fighter} />
 		</Pressable>
 		{expanded ? <FighterStats fighter={fighter} pet={pet} onClose={(): void => setExpanded(false)} /> : null}
 	</View>;

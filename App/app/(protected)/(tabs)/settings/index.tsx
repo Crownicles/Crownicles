@@ -1,3 +1,6 @@
+import {SegmentedControl} from "@/src/design/SegmentedControl";
+import {useFightSpeed} from "@/src/store/useFightSpeed";
+import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
 import React, {PropsWithChildren} from "react";
 import {ActivityIndicator, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
@@ -12,6 +15,8 @@ import {Button as DesignButton} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 
 const styles = StyleSheet.create({
+	combatPreference: {marginBottom: Theme.spacing.lg},
+	preferenceLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body, color: Theme.colors.ink},
 	container: {
 		flex: 1,
 		padding: Theme.spacing.xl,
@@ -63,6 +68,7 @@ const ListItem = ({ children }: PropsWithChildren) => (
 export default function Index() {
 	const preferences = React.useContext(PreferencesContext);
 	const authState = React.useContext(AuthContext);
+	const {speed, setSpeed} = useFightSpeed();
 	const [pingLoading, setPingLoading] = React.useState(false);
 	const [pingTime, setPingTime] = React.useState<number | null>(null);
 
@@ -82,6 +88,13 @@ export default function Index() {
 	return (
 		<View style={styles.container}>
 			<ScrollView>
+				<View style={styles.combatPreference}>
+					<Text style={styles.preferenceLabel}>{i18n.t("app:battle.speed.label")}</Text>
+					<SegmentedControl label={i18n.t("app:battle.speed.label")} value={speed} onChange={setSpeed} options={[
+						{value: FIGHT_SPEEDS.NORMAL, label: i18n.t("app:battle.speed.normal")},
+						{value: FIGHT_SPEEDS.FAST, label: i18n.t("app:battle.speed.fast")}
+					]} />
+				</View>
 				<ListItem>
 					<Text style={styles.label}>{i18n.t("app:settings.developerMode")}</Text>
 					<Switch value={preferences.getDevMode()} onValueChange={preferences.setDevMode} />

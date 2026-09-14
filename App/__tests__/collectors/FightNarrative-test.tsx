@@ -1,5 +1,5 @@
-import {render, screen} from "@testing-library/react-native";
-import {FightEventStory} from "@/src/components/FightDetails";
+import {render, screen, within} from "@testing-library/react-native";
+import {FightEventStory, FightLog} from "@/src/components/FightDetails";
 import {FightLogRecord} from "@/src/store/FightStore";
 import {reloadI18n} from "@/src/translations/i18nLoader";
 import french from "../../../Lang/fr/app.json";
@@ -19,6 +19,19 @@ describe("live combat narrative", () => {
 		await render(<FightEventStory record={PET_ACTION} />);
 		expect(screen.getByText(/Drapht demande l'aide de Milo qui s'élance/)).toBeTruthy();
 		expect(screen.queryByText(/\*\*|\{\{petNickname\}\}/)).toBeNull();
+	});
+	it.each([true, false])("keeps chronological order in compact and expanded history (compact: %s)", async compact => {
+		const defense: FightLogRecord = {sequence: 2, entry: {fightId: "story", fighter: {isSelf: true, name: "Drapht"}, fightActionId: "defenseBuff", status: "normal", customMessage: true}};
+		await render(<FightLog entries={[PET_ACTION, defense]} compact={compact} />);
+		const headings = screen.getAllByRole("button");
+		expect(within(headings[0]).getByText("Intervention de Milo")).toBeTruthy();
+		expect(within(headings[1]).getByText("Boost de la défense")).toBeTruthy();
+	});
+	it("retains older actions in the live history instead of dropping them", async () => {
+		const entries = [1, 2, 3, 4, 5].map(sequence => ({...PET_ACTION, sequence}));
+		await render(<FightLog entries={entries} compact />);
+		expect(screen.getAllByRole("button")).toHaveLength(5);
+		expect(screen.getAllByText(/Drapht demande l'aide de Milo qui s'élance/)).toHaveLength(5);
 	});
 	it("does not reveal the result or its consequences before impact", async () => {
 		await render(<FightEventStory record={PET_ACTION} pending />);

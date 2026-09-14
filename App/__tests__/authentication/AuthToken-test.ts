@@ -35,6 +35,21 @@ describe("AuthToken", () => {
 		expect(AuthToken.fromJsonString(token.toJsonString()).getAccessToken()).toBe("access-token");
 	});
 
+	it("restores offline Keycloak tokens from secure storage and can still refresh them", async () => {
+		const offlineToken = refreshedToken();
+		offlineToken.expires_in = 0;
+		offlineToken.refresh_expires_in = 0;
+		offlineToken.scope = "openid offline_access";
+		const refresh = jest.spyOn(KeycloakAuth, "refresh").mockResolvedValue(refreshedToken());
+		const token = AuthToken.fromKeycloakOAuth2Token(offlineToken);
+		const restoredToken = AuthToken.fromJsonString(token.toJsonString());
+
+		expect(restoredToken.getAccessToken()).toBeNull();
+		await expect(restoredToken.refreshIfNeeded()).resolves.toBe(true);
+		expect(refresh).toHaveBeenCalledWith(offlineToken.refresh_token);
+		expect(restoredToken.getAccessToken()).toBe("new-access-token");
+	});
+
 	it("refreshes an expired access token while the refresh token is valid", async () => {
 		const refresh = jest.spyOn(KeycloakAuth, "refresh").mockResolvedValue(refreshedToken());
 		const token = new AuthToken(tokenData({

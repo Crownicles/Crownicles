@@ -4,6 +4,7 @@ import {FightIntroductionRes, FightLogRes, FightEndRes, FightRewardRes, FightSta
 import {FightIntroduction, FightEnd, FightStatus} from "ws-packets/src/objects/Fight";
 import {act, renderHook, waitFor} from "@testing-library/react-native";
 import {useFightPlayback} from "@/src/store/useFightPlayback";
+import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
 
 const INTRO: FightIntroduction = {fightId: "duel", initiator: {isSelf: true}, opponent: {isSelf: false, name: "Adversaire"}, initiatorActions: [["rest", 0]], opponentActions: [["simpleAttack", 2]]};
 const END: FightEnd = {winner: {isSelf: true, finalEnergy: 123, maxEnergy: 300}, loser: {isSelf: false, finalEnergy: 0, maxEnergy: 200}, draw: false, turns: 4, maxTurns: 30};
@@ -15,6 +16,29 @@ function status(power: number): FightStatus {
 
 describe("fight session", () => {
 	beforeEach(() => fightStore.reset());
+	afterEach(() => jest.useRealTimers());
+	it("keeps the result readable and does not advance while the journal is open", async () => {
+		jest.useFakeTimers();
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
+		registry.dispatch(FightStatusRes.wireName, {status: status(300)});
+		registry.dispatch(FightLogRes.wireName, {entry: {fightId: "duel", fighter: {isSelf: true}, fightActionId: "simpleAttack", stateAfter: status(240)}});
+		const fight = fightStore.getSnapshot();
+		const {result, rerender} = await renderHook((paused: boolean) => useFightPlayback(fight, {speed: FIGHT_SPEEDS.NORMAL, paused}), {initialProps: false});
+		await act(() => result.current.impact());
+		expect(result.current.status?.activeFighter.stats.power).toBe(240);
+		await act(() => result.current.finishMotion());
+		expect(result.current.reading).toBe(true);
+		await act(() => jest.advanceTimersByTime(1000));
+		expect(result.current.record?.entry.fightActionId).toBe("simpleAttack");
+		await rerender(true);
+		await act(() => jest.advanceTimersByTime(10_000));
+		expect(result.current.record).toBeDefined();
+		await rerender(false);
+		await act(() => jest.advanceTimersByTime(6500));
+		expect(result.current.record).toBeUndefined();
+		expect(result.current.logs).toHaveLength(1);
+	});
 	it("plays the opening pet action received before mounting and does not replay it after reopening", async () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});

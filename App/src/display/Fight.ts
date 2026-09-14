@@ -62,7 +62,8 @@ function narrativeActor(entry: FightLogEntry): string {
 }
 
 function narrativeAction(entry: FightLogEntry): string {
-	const fallback = i18n.t(`commands:fight.actions.attacksResults.${entry.status ?? "normal"}.0`, {attack: fightActionName(entry.fightActionId), defaultValue: i18n.t("app:battle.story.generic", {attack: fightActionName(entry.fightActionId)})});
+	const attack = i18n.t("app:battle.story.attack", {attack: fightActionName(entry.fightActionId)});
+	const fallback = i18n.t(`commands:fight.actions.attacksResults.${entry.status ?? "normal"}.0`, {attack, defaultValue: i18n.t("app:battle.story.generic", {attack})});
 	if (DESCRIPTIVE_STATUSES.has(entry.status ?? "")) return i18n.t(`models:fight_actions.${entry.fightActionId}.${entry.status}`, {petNickname: entry.pet ? petName(entry.pet) : "", defaultValue: fallback});
 	if (entry.customMessageFail) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessageFail`, {defaultValue: fallback});
 	if (entry.customMessage) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessage`, {defaultValue: fallback});

@@ -57,18 +57,10 @@ function battle(): FightSnapshot {
 
 describe("live battle presentation", () => {
 	beforeEach(() => jest.mocked(AsyncStorage.getItem).mockResolvedValue(null));
-	afterEach(() => jest.restoreAllMocks());
-	it("starts at the slower speed and remembers the accelerated setting", async () => {
+	afterEach(() => {jest.restoreAllMocks(); jest.useRealTimers();});
+	it("leaves animation speed in the app settings", async () => {
 		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
-		expect(screen.getByRole("switch", {name: "app:battle.speed.fast", checked: false})).toBeTruthy();
-		await fireEvent.press(screen.getByRole("switch", {name: "app:battle.speed.fast"}));
-		expect(screen.getByRole("switch", {name: "app:battle.speed.fast", checked: true})).toBeTruthy();
-		expect(AsyncStorage.setItem).toHaveBeenCalledWith("combat-animation-speed", "fast");
-	});
-	it("restores the player's previously selected speed", async () => {
-		jest.mocked(AsyncStorage.getItem).mockResolvedValue("fast");
-		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
-		expect(screen.getByRole("switch", {name: "app:battle.speed.fast", checked: true})).toBeTruthy();
+		expect(screen.queryByRole("switch", {name: "app:battle.speed.fast"})).toBeNull();
 	});
 	it("shows a recoverable refusal without a fake waiting battle", async () => {
 		const close = jest.fn();
@@ -78,15 +70,32 @@ describe("live battle presentation", () => {
 		await fireEvent.press(screen.getByText("app:battle.returnToArena"));
 		expect(close).toHaveBeenCalledTimes(1);
 	});
+	it("offers a single history button during combat", async () => {
+		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(screen.getAllByRole("button", {name: "app:battle.showHistory"})).toHaveLength(1);
+		expect(screen.queryByRole("button", {name: "app:arena.log"})).toBeNull();
+	});
 	it("keeps the player on the left during an opponent turn and exposes fighter details", async () => {
 		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
 		expect(within(screen.getByTestId("fight-fighter-self")).getByText("Aster")).toBeTruthy();
 		expect(within(screen.getByTestId("fight-fighter-opponent")).getByText("Arsene")).toBeTruthy();
 		await fireEvent.press(screen.getByRole("button", {name: "app:arena.details : Aster"}));
-		expect(screen.getByText("app:arena.stats.attack")).toBeTruthy();
-		expect(screen.getByText("15")).toBeTruthy();
+		expect(screen.getAllByText("app:arena.stats.attack").length).toBeGreaterThan(0);
+		expect(screen.getAllByText("15").length).toBeGreaterThan(0);
+	});
+	it("shows both fighters' current statistics without opening their details", async () => {
+		const initial = battle();
+		const view = await render(<FightLiveView fight={initial} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(within(screen.getByTestId("fight-stat-attack-self")).getByText("15")).toBeTruthy();
+		expect(within(screen.getByTestId("fight-stat-defense-opponent")).getByText("12")).toBeTruthy();
+		expect(within(screen.getByTestId("fight-stat-speed-opponent")).getByText("20")).toBeTruthy();
+		const status = initial.status!;
+		await view.rerender(<FightLiveView fight={{...initial, status: {...status, defendingFighter: {...status.defendingFighter, stats: {...status.defendingFighter.stats, attack: 31, defense: 25}}}}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(within(screen.getByTestId("fight-stat-attack-self")).getByText("31")).toBeTruthy();
+		expect(within(screen.getByTestId("fight-stat-defense-self")).getByText("25")).toBeTruthy();
 	});
 	it("waits for the final animation before revealing victory and retains the full journal", async () => {
+		jest.useFakeTimers();
 		let finish: ((result: {finished: boolean}) => void) | undefined;
 		jest.spyOn(Animated, "timing").mockImplementation((_value, config) => ({start: callback => {if (config.useNativeDriver) finish = callback;}, stop: jest.fn(), reset: jest.fn()}));
 		const initial = battle();
@@ -96,6 +105,8 @@ describe("live battle presentation", () => {
 		expect(screen.queryByText("app:arena.victory")).toBeNull();
 		expect(screen.getByTestId("fight-effect-heavy", {includeHiddenElements: true})).toBeTruthy();
 		await act(() => finish?.({finished: true}));
+		expect(screen.queryByText("app:arena.victory")).toBeNull();
+		await act(() => jest.advanceTimersByTime(6500));
 		expect(screen.getByText("app:arena.victory")).toBeTruthy();
 		await fireEvent.press(screen.getAllByRole("button", {name: "app:arena.log"})[0]);
 		expect(screen.getByText("models:fight_actions.heavyAttack.name")).toBeTruthy();
