@@ -99,15 +99,19 @@ function animationTarget(entry: FightLogEntry, motion: FightMotion, actor: Fight
 	return affectsActor && !affectsOpponent ? actor : opponent;
 }
 
+function actionImpacts(entry: FightLogEntry, actor: FightSide, periodic: boolean): FightImpact[] {
+	const opponent = actor === "self" ? "opponent" : "self";
+	const impacts = [...effectImpacts(entry.fightActionEffectDealt, periodic ? actor : opponent, FIGHT_IMPACT_SOURCES.DEALT), ...effectImpacts(entry.fightActionEffectReceived, actor, FIGHT_IMPACT_SOURCES.RECEIVED)];
+	if (entry.fightActionEffectDealt?.reflectedDamages) impacts.push({side: actor, source: FIGHT_IMPACT_SOURCES.REFLECTED, kind: "damage", amount: entry.fightActionEffectDealt.reflectedDamages});
+	return impacts;
+}
+
 export function fightCue(entry: FightLogEntry): FightCue {
 	const actionId = entry.usedFightActionId ?? entry.fightActionId;
 	const motion = entry.status === "charging" ? FIGHT_MOTIONS.CHARGE : FIGHT_ACTION_MOTIONS.get(actionId) ?? FIGHT_MOTIONS.SLASH;
 	const actor: FightSide = entry.fighter.isSelf ? "self" : "opponent";
-	const opponent: FightSide = entry.fighter.isSelf ? "opponent" : "self";
 	const periodic = ALTERATION_STATUSES.has(entry.status ?? "");
 	const target = animationTarget(entry, motion, actor, periodic);
 	const outcome = STATUS_OUTCOMES[entry.status ?? ""] ?? FIGHT_OUTCOMES.HIT;
-	const impacts = [...effectImpacts(entry.fightActionEffectDealt, periodic ? actor : opponent, FIGHT_IMPACT_SOURCES.DEALT), ...effectImpacts(entry.fightActionEffectReceived, actor, FIGHT_IMPACT_SOURCES.RECEIVED)];
-	if (entry.fightActionEffectDealt?.reflectedDamages) impacts.push({side: actor, source: FIGHT_IMPACT_SOURCES.REFLECTED, kind: "damage", amount: entry.fightActionEffectDealt.reflectedDamages});
-	return {actionId, sourceActionId: entry.fightActionId, motion, actor, target, impacts, periodic, outcome, color: fightMotionColor(motion), missed: outcome === FIGHT_OUTCOMES.MISSED || outcome === FIGHT_OUTCOMES.FIZZLED, critical: outcome === FIGHT_OUTCOMES.CRITICAL, ...(entry.pet ? {pet: entry.pet} : {})};
+	return {actionId, sourceActionId: entry.fightActionId, motion, actor, target, impacts: actionImpacts(entry, actor, periodic), periodic, outcome, color: fightMotionColor(motion), missed: outcome === FIGHT_OUTCOMES.MISSED || outcome === FIGHT_OUTCOMES.FIZZLED, critical: outcome === FIGHT_OUTCOMES.CRITICAL, ...(entry.pet ? {pet: entry.pet} : {})};
 }
