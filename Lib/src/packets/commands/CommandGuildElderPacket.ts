@@ -17,6 +17,8 @@ export class CommandGuildElderRefusePacketRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandGuildElderPacketReq extends CrowniclesPacket {
 	askedPlayerKeycloakId!: string;
+
+	askedPlayerRank?: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

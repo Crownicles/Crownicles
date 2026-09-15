@@ -14,6 +14,7 @@ import {
 import { Maps } from "../../core/maps/Maps";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
+import { CityDataController } from "../../data/City";
 
 /**
  * Get the map information for the player
@@ -84,6 +85,10 @@ export class MapCommand {
 		const mapInformation = getMapInformation(player, destinationMap, hasArrived, packet.language);
 
 		response.push(makePacket(CommandMapDisplayRes, {
+			cities: CityDataController.instance.getAllValues().filter(city => city.maps.length > 0)
+				.map(city => ({
+					id: city.id, mapLocationId: city.maps[0], services: city.services, shops: city.shops ?? []
+				})),
 			mapId: destinationMap.id,
 			mapLink: mapInformation,
 			mapType: destinationMap.type,

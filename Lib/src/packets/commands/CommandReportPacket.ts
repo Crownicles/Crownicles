@@ -471,6 +471,9 @@ export class CommandReportApartmentRequiresHomeRes extends CrowniclesPacket impl
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportHomeChestInfoReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportHomeChestActionReq extends CrowniclesPacket {
 	action!: ChestAction;
 
@@ -502,6 +505,12 @@ export class CommandReportHomeChestActionRes extends CrowniclesPacket {
 
 	/** Max backup slots per category in the player's inventory */
 	inventoryCapacity!: ChestSlotsPerCategory;
+
+	plantStorage?: PlantStorageEntry[];
+
+	playerPlantSlots?: PlayerPlantSlotEntry[];
+
+	plantMaxCapacity?: number;
 
 	/** Refreshed home upgrade station after inventory mutations */
 	upgradeStation?: HomeUpgradeStationData;
@@ -657,6 +666,9 @@ export class CommandReportCookingIgniteRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingNoWoodRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingUnavailableRes extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingReviveReq extends CrowniclesPacket {}
@@ -816,6 +828,8 @@ export class CommandReportGuildDomainNotEnoughTreasuryRes extends CrowniclesPack
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainUpgradeReq extends CrowniclesPacket {
 	building!: GuildBuilding;
+
+	expectedLevel?: number;
 }
 
 @sendablePacket(PacketDirection.NONE)
@@ -868,6 +882,8 @@ export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainDepositTreasuryReq extends CrowniclesPacket {
 	amount!: number;
+
+	expectedGuildId?: number;
 
 	/** When true, the deposit is treated as a refund of a previous treasury withdrawal: no commission is taken. */
 	isReimburse?: boolean;

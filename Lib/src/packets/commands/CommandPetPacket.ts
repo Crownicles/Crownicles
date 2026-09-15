@@ -3,6 +3,7 @@ import {
 } from "../CrowniclesPacket";
 import { OwnedPet } from "../../types/OwnedPet";
 import { ExpeditionLocationType } from "../../constants/ExpeditionConstants";
+import { PetPower } from "../../types/PetPower";
 
 /**
  * Data for an expedition in progress, used in /pet display
@@ -16,6 +17,14 @@ export interface PetExpeditionInfo {
 	mapLocationId: number;
 	foodConsumed: number;
 	isDistantExpedition?: boolean;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandPetPowersPacketReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandPetPowersPacketRes extends CrowniclesPacket {
+	powers!: PetPower[];
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
@@ -49,4 +58,8 @@ export class CommandPetPetNotFound extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandPetCaressPacketReq extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandPetCaressPacketRes extends CrowniclesPacket {
 }

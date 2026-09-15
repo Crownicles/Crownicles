@@ -92,6 +92,11 @@ function buildPlantsData(
 	};
 }
 
+/**
+ * This command can return the following packets:
+ * - CommandInventoryPacketRes
+ * - CommandInventoryPlayerNotFound
+ */
 export default class InventoryCommand {
 	@commandRequires(CommandInventoryPacketReq, {
 		notBlocked: false,

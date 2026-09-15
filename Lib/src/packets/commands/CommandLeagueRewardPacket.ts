@@ -1,6 +1,19 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import { LeagueInfo } from "../../types/LeagueInfo";
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandLeagueInfoReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandLeagueInfoRes extends CrowniclesPacket {
+	leagues!: LeagueInfo[];
+
+	currentLeagueId!: number;
+
+	glory!: number;
+}
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandLeagueRewardPacketReq extends CrowniclesPacket {

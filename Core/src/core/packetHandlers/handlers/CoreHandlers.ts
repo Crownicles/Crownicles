@@ -11,6 +11,7 @@ import {
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import {
 	CommandReportHomeChestActionReq,
+	CommandReportHomeChestInfoReq,
 	CommandReportGardenHarvestReq,
 	CommandReportGardenPlantReq,
 	CommandReportGardenWaterReq,
@@ -45,6 +46,7 @@ import {
 } from "../../report/ReportCityGuildDomainService";
 import { handleFoodShopBuy } from "../../report/ReportCityFoodShopService";
 import { handleGuildDomainDepositTreasury } from "../../report/ReportCityGuildDomainShopService";
+import { handleHomeChestInfo } from "../../report/ReportCityChestService";
 import {
 	CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
@@ -53,6 +55,12 @@ import { LogsPveBossRecordsRequests } from "../../database/logs/requests/LogsPve
 import Player, { Players } from "../../database/game/models/Player";
 import { CityDataController } from "../../../data/City";
 import { CITY_SERVICES } from "../../../../../Lib/src/constants/CityServiceConstants";
+import {
+	CommandGuildDomainInfoReq, CommandGuildDomainInfoRes
+} from "../../../../../Lib/src/packets/commands/CommandGuildDomainPacket";
+import { Guilds } from "../../database/game/models/Guild";
+import { buildGuildDomainSnapshot } from "../../report/ReportGuildDomainData";
+import { offerGuildFoodReimbursement } from "../../report/ReportGuildFoodReimbursement";
 
 async function getPlayerAtBossArchivist(keycloakId: string): Promise<Player | null> {
 	const player = await Players.getOrRegister(keycloakId);
@@ -75,6 +83,11 @@ export default class CoreHandlers {
 	@packetHandler(ReactionCollectorResetTimerPacketReq)
 	reactionCollectorResetTimer(response: CrowniclesPacket[], _context: PacketContext, packet: ReactionCollectorResetTimerPacketReq): void {
 		ReactionCollectorController.resetTimer(response, packet);
+	}
+
+	@packetHandler(CommandReportHomeChestInfoReq)
+	async homeChestInfo(response: CrowniclesPacket[], context: PacketContext, _packet: CommandReportHomeChestInfoReq): Promise<void> {
+		await handleHomeChestInfo(context.keycloakId!, response);
 	}
 
 	@packetHandler(CommandReportHomeChestActionReq)
@@ -162,6 +175,13 @@ export default class CoreHandlers {
 		}));
 	}
 
+	@packetHandler(CommandGuildDomainInfoReq)
+	async guildDomainInfo(response: CrowniclesPacket[], context: PacketContext, _packet: CommandGuildDomainInfoReq): Promise<void> {
+		const player = await Players.getByKeycloakId(context.keycloakId!);
+		const guild = player?.guildId ? await Guilds.getById(player.guildId) : null;
+		response.push(makePacket(CommandGuildDomainInfoRes, player && guild ? { data: await buildGuildDomainSnapshot(player, guild) } : {}));
+	}
+
 	@packetHandler(CommandReportGuildDomainUpgradeReq)
 	async guildDomainUpgrade(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainUpgradeReq): Promise<void> {
 		await handleGuildDomainUpgrade(context.keycloakId!, packet, response);
@@ -169,7 +189,10 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportFoodShopBuyReq)
 	async foodShopBuy(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportFoodShopBuyReq): Promise<void> {
-		await handleFoodShopBuy(context.keycloakId!, packet, response);
+		const purchase = await handleFoodShopBuy(context.keycloakId!, packet, response);
+		if (purchase && context.webSocket) {
+			offerGuildFoodReimbursement(purchase, context, response);
+		}
 	}
 
 	@packetHandler(CommandReportGuildDomainDepositTreasuryReq)

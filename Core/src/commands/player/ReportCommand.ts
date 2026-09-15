@@ -64,15 +64,11 @@ import {
 	ReactionCollectorApartmentBuyReaction,
 	ReactionCollectorApartmentClaimRentReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { Guilds } from "../../core/database/game/models/Guild";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import {
-	Guild, Guilds
-} from "../../core/database/game/models/Guild";
-import {
-	GuildBuilding, GuildDomainConstants
-} from "../../../../Lib/src/constants/GuildDomainConstants";
-import { BuildingUpgradeEligibilityMap } from "../../../../Lib/src/types/GuildDomainEligibility";
-import { GuildPets } from "../../core/database/game/models/GuildPet";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
+	buildGuildDomainSnapshot, buildGuildFoodShopSnapshot
+} from "../../core/report/ReportGuildDomainData";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { Homes } from "../../core/database/game/models/Home";
 import { Materials } from "../../core/database/game/models/Material";
@@ -392,29 +388,33 @@ type CityReactionParams = {
 	response: CrowniclesPacket[];
 	reactionData: unknown;
 	collectorData: unknown;
-	collectorId: string;
+	collectorId?: string;
+	onReturnToCity?: (response: CrowniclesPacket[]) => Promise<void>;
 };
 
 async function handleCityShopReactionWithDeferredStop(params: CityReactionParams): Promise<void> {
-	await runWithDeferredCollectorStop(params.response, params.collectorId, async () => {
-		await handleCityShopReaction({
-			player: params.player,
-			city: params.city,
-			shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
-			context: params.context,
-			response: params.response,
-			onClose: async (closeResponse): Promise<void> => {
-				await params.player.reload();
-				await sendCityCollector(
-					params.context,
-					closeResponse,
-					params.player,
-					params.city,
-					{ forceSpecificEvent: params.forceSpecificEvent }
-				);
-			}
-		});
+	const openShop = (): Promise<void> => handleCityShopReaction({
+		player: params.player,
+		city: params.city,
+		shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
+		context: params.context,
+		response: params.response,
+		onClose: params.onReturnToCity ?? (async (closeResponse): Promise<void> => {
+			await params.player.reload();
+			await sendCityCollector(
+				params.context,
+				closeResponse,
+				params.player,
+				params.city,
+				{ forceSpecificEvent: params.forceSpecificEvent }
+			);
+		})
 	});
+	if (params.collectorId) {
+		await runWithDeferredCollectorStop(params.response, params.collectorId, openShop);
+		return;
+	}
+	await openShop();
 }
 
 const NOOP_REACTION = (): Promise<void> => Promise.resolve();
@@ -557,7 +557,7 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 	]
 ]);
 
-async function handleCityReaction(reactionType: string, params: CityReactionParams): Promise<void> {
+export async function handleCityReaction(reactionType: string, params: CityReactionParams): Promise<void> {
 	const handler = CITY_REACTION_HANDLERS.get(reactionType);
 	if (!handler) {
 		CrowniclesLogger.error(`Unknown city reaction: ${reactionType}`);
@@ -566,40 +566,54 @@ async function handleCityReaction(reactionType: string, params: CityReactionPara
 	await handler(params);
 }
 
-const GUILD_BUILDING_LEVEL_FIELDS: Record<GuildBuilding, "shopLevel" | "shelterLevel" | "pantryLevel" | "trainingGroundLevel"> = {
-	[GuildBuilding.SHOP]: "shopLevel",
-	[GuildBuilding.SHELTER]: "shelterLevel",
-	[GuildBuilding.PANTRY]: "pantryLevel",
-	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
-};
+function buildOtherCityServices(currentCity: City): ReactionCollectorCityData["otherCityServices"] {
+	const currentCityServices = new Set([...currentCity.services, ...currentCity.shops ?? []]);
+	const services = new Map<string, {
+		mapLocationIds: number[];
+		serviceKey: string;
+		kind: "service" | "shop";
+	}>();
 
-function buildCanUpgradeBuildings(guild: Guild): BuildingUpgradeEligibilityMap {
-	const result = {} as BuildingUpgradeEligibilityMap;
-	for (const building of Object.values(GuildBuilding)) {
-		const currentLevel = guild[GUILD_BUILDING_LEVEL_FIELDS[building]];
-		const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
-		if (upgradeCost === null) {
-			result[building] = null;
+	for (const otherCity of CityDataController.instance.getAllValues()) {
+		if (otherCity.id === currentCity.id || otherCity.maps.length === 0) {
 			continue;
 		}
-		const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel);
-		result[building] = {
-			canAfford: guild.treasury >= upgradeCost,
-			meetsLevel: requiredGuildLevel === null || guild.level >= requiredGuildLevel
-		};
+		const cityServices = [
+			...otherCity.services.map(serviceKey => ({
+				serviceKey, kind: "service" as const
+			})),
+			...(otherCity.shops ?? []).map(serviceKey => ({
+				serviceKey, kind: "shop" as const
+			}))
+		];
+		for (const service of cityServices) {
+			if (currentCityServices.has(service.serviceKey)) {
+				continue;
+			}
+			const key = `${service.kind}:${service.serviceKey}`;
+			const existing = services.get(key);
+			if (existing) {
+				existing.mapLocationIds.push(otherCity.maps[0]);
+			}
+			else {
+				services.set(key, {
+					mapLocationIds: [otherCity.maps[0]],
+					...service
+				});
+			}
+		}
 	}
-	return result;
+
+	return [...services.values()].map(service => ({
+		...service,
+		mapLocationId: service.mapLocationIds[0]
+	}));
 }
 
-async function sendCityCollector(
-	context: PacketContext,
-	response: CrowniclesPacket[],
+export async function buildCitySnapshot(
 	player: Player,
-	city: City,
-	options: {
-		forceSpecificEvent: number; initialMenu?: string;
-	} = { forceSpecificEvent: 0 }
-): Promise<void> {
+	city: City
+): Promise<ReactionCollectorCityData> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
 	const enchanter = await buildAvailableEnchanterData({
@@ -625,57 +639,8 @@ async function sendCityCollector(
 		: undefined;
 
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
-	let shelterPets: Awaited<ReturnType<typeof PetEntities.getById>>[] = [];
-	if (guild?.domainCityId === city.id) {
-		const guildPetEntries = await GuildPets.getOfGuild(guild.id);
-		shelterPets = await Promise.all(guildPetEntries.map(gp => PetEntities.getById(gp.petEntityId)));
-	}
-	const guildFoodSnapshot = guild
-		? {
-			food: {
-				common: guild.commonFood,
-				carnivorous: guild.carnivorousFood,
-				herbivorous: guild.herbivorousFood,
-				ultimate: guild.ultimateFood
-			},
-			foodArray: [
-				guild.commonFood,
-				guild.herbivorousFood,
-				guild.carnivorousFood,
-				guild.ultimateFood
-			] as const,
-			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel)
-		}
-		: null;
-	const guildMaxBuyableFood = guild && guildFoodSnapshot
-		? GuildDomainConstants.getMaxBuyableFood(guild.treasury, guildFoodSnapshot.foodArray, guildFoodSnapshot.foodCaps)
-		: null;
-
 	const guildDomain = guild?.domainCityId === city.id
-		? {
-			isInCity: true,
-			guildName: guild.name,
-			shopLevel: guild.shopLevel,
-			shelterLevel: guild.shelterLevel,
-			pantryLevel: guild.pantryLevel,
-			trainingGroundLevel: guild.trainingGroundLevel,
-			guildLevel: guild.level,
-			treasury: guild.treasury,
-			playerMoney: player.money,
-			isChief: guild.chiefId === player.id,
-			isElder: guild.elderId === player.id,
-			food: guildFoodSnapshot!.food,
-			foodCaps: guildFoodSnapshot!.foodCaps,
-			maxBuyableFood: guildMaxBuyableFood!,
-			shelterPets: shelterPets.filter(pe => pe !== null).map(pe => pe!.asOwnedPet()),
-			shelterMaxCount: GuildDomainConstants.getShelterSlots(guild.shelterLevel),
-			canUpgradeBuildings: buildCanUpgradeBuildings(guild),
-			canDeposit: {
-				small: player.money >= GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT,
-				big: player.money >= GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT,
-				huge: player.money >= GuildDomainConstants.SHOP_PRICES.HUGE_DEPOSIT
-			}
-		}
+		? await buildGuildDomainSnapshot(player, guild)
 		: undefined;
 
 	const isGuildChief = guild !== null && guild.chiefId === player.id;
@@ -701,17 +666,10 @@ async function sendCityCollector(
 
 	// Guild food shop: available when the guild has a shop but is NOT in the domain city (where the full shop is available via the domain entrance).
 	const guildFoodShop = guild && guild.shopLevel >= 1 && guild.domainCityId !== city.id
-		? {
-			guildName: guild.name,
-			food: guildFoodSnapshot!.food,
-			foodCaps: guildFoodSnapshot!.foodCaps,
-			maxBuyableFood: guildMaxBuyableFood!,
-			playerMoney: player.money,
-			treasury: guild.treasury
-		}
+		? buildGuildFoodShopSnapshot(player, guild)
 		: undefined;
 
-	const collectorData: ReactionCollectorCityData = {
+	return {
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
 		mapLocationId: player.getDestinationId()!,
 		availableServices: getAvailableCityServices({
@@ -721,6 +679,7 @@ async function sendCityCollector(
 			[CITY_SERVICES.ENCHANTER]: enchanter !== undefined,
 			[CITY_SERVICES.BOSS_ARCHIVIST]: city.hasService(CITY_SERVICES.BOSS_ARCHIVIST)
 		}),
+		otherCityServices: buildOtherCityServices(city),
 		inns: city.inns.map(inn => ({
 			innId: inn.id,
 			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
@@ -762,10 +721,23 @@ async function sendCityCollector(
 		guildDomain,
 		guildFoodShop,
 		guildDomainNotary,
-		apartmentNotary,
+		apartmentNotary
+	};
+}
+
+async function sendCityCollector(
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	player: Player,
+	city: City,
+	options: {
+		forceSpecificEvent: number; initialMenu?: string;
+	} = { forceSpecificEvent: 0 }
+): Promise<void> {
+	const collectorData = {
+		...await buildCitySnapshot(player, city),
 		initialMenu: options.initialMenu
 	};
-
 	const collector = new ReactionCollectorCity(collectorData);
 
 	const collectorPacket = new ReactionCollectorInstance(
