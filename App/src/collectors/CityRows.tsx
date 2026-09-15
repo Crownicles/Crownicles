@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import type {CityMenuData} from "@/src/collectors/CityCollector";
 import {
 	CITY_DATA_KINDS,
 	CITY_REACTION_KINDS,
@@ -18,24 +18,24 @@ type CityListItem = CityNavigationItem | CityInfoItem | CityReactionItem;
 
 type CityRowsProps = {
 	items: CityListItem[];
-	collector: ReactionCollectorCreation;
+	collector: CityMenuData;
 	onChoose: (reactionIndex: number) => void;
 	onNavigate: (item: CityNavigationItem) => void;
 	locked: boolean;
 	iconForPath: (iconPath: string) => ReactNode | undefined;
 	rowIcon: (reaction: ReactionCollectorReaction, snapshot?: CityMobileSnapshot) => ReactNode | undefined;
-	rowTitle: (reaction: ReactionCollectorReaction, collectorData: ReactionCollectorCreation["data"], snapshot?: CityMobileSnapshot) => string;
+	rowTitle: (reaction: ReactionCollectorReaction, collectorData: CityMenuData["data"], snapshot?: CityMobileSnapshot) => string;
 	rowSubtitle: (reaction: ReactionCollectorReaction, snapshot?: CityMobileSnapshot) => string | undefined;
 	rowEnd: (reaction: ReactionCollectorReaction, snapshot?: CityMobileSnapshot) => string | undefined;
 	reactionAvailable: (reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined) => boolean;
 };
 
-function navigationRow(item: CityNavigationItem, collector: ReactionCollectorCreation, locked: boolean, iconForPath: CityRowsProps["iconForPath"], onNavigate: CityRowsProps["onNavigate"]): ReactNode {
-	return <Row key={`${collector.id}-${item.key}`} disabled={locked} onPress={locked ? undefined : (): void => onNavigate(item)} icon={iconForPath(item.iconPath)} title={item.title} subtitle={item.subtitle} chevron={!locked} />;
+function navigationRow(item: CityNavigationItem, locked: boolean, iconForPath: CityRowsProps["iconForPath"], onNavigate: CityRowsProps["onNavigate"]): ReactNode {
+	return <Row key={item.key} disabled={locked} onPress={locked ? undefined : (): void => onNavigate(item)} icon={iconForPath(item.iconPath)} title={item.title} subtitle={item.subtitle} chevron={!locked} />;
 }
 
-function infoRow(item: CityInfoItem, collector: ReactionCollectorCreation, iconForPath: CityRowsProps["iconForPath"]): ReactNode {
-	return <Row key={`${collector.id}-${item.key}`} disabled icon={iconForPath(item.iconPath)} title={item.title} subtitle={item.subtitle} />;
+function infoRow(item: CityInfoItem, iconForPath: CityRowsProps["iconForPath"]): ReactNode {
+	return <Row key={item.key} disabled icon={iconForPath(item.iconPath)} title={item.title} subtitle={item.subtitle} />;
 }
 
 function reactionRow(item: CityReactionItem, props: CityRowsProps): ReactNode {
@@ -44,12 +44,12 @@ function reactionRow(item: CityReactionItem, props: CityRowsProps): ReactNode {
 	const snapshot = collector.data.type === CITY_DATA_KINDS.CITY ? collector.data.data.snapshot : undefined;
 	const choosable = isChoosable(reaction, collector.data) && reactionAvailable(reaction, snapshot);
 	const disabled = locked || !choosable;
-	return <Row key={`${collector.id}-${index}`} disabled={disabled} onPress={disabled ? undefined : (): void => onChoose(index)} icon={rowIcon(reaction, snapshot)} title={rowTitle(reaction, collector.data, snapshot)} subtitle={rowSubtitle(reaction, snapshot)} end={rowEnd(reaction, snapshot)} tone={reaction.type === CITY_REACTION_KINDS.EXIT ? "danger" : undefined} chevron={choosable && !locked} />;
+	return <Row key={JSON.stringify(reaction)} disabled={disabled} onPress={disabled ? undefined : (): void => onChoose(index)} icon={rowIcon(reaction, snapshot)} title={rowTitle(reaction, collector.data, snapshot)} subtitle={rowSubtitle(reaction, snapshot)} end={rowEnd(reaction, snapshot)} tone={reaction.type === CITY_REACTION_KINDS.EXIT ? "danger" : undefined} chevron={choosable && !locked} />;
 }
 
 function cityRow(item: CityListItem, props: CityRowsProps): ReactNode {
-	if (item.kind === "navigation") return navigationRow(item, props.collector, props.locked, props.iconForPath, props.onNavigate);
-	if (item.kind === "info") return infoRow(item, props.collector, props.iconForPath);
+	if (item.kind === "navigation") return navigationRow(item, props.locked, props.iconForPath, props.onNavigate);
+	if (item.kind === "info") return infoRow(item, props.iconForPath);
 	return reactionRow(item, props);
 }
 

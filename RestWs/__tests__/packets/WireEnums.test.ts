@@ -38,6 +38,8 @@ import {GardenNoAccessReason} from "../../../Lib/src/packets/commands/CommandGar
 import {GardenAccessMode} from "../../../Lib/src/types/GardenAccessMode";
 import {GARDEN_OPERATIONS as CoreGardenOperations} from "../../../Lib/src/types/Garden";
 import {GARDEN_OPERATIONS, GARDEN_ACCESS, GARDEN_NO_ACCESS, GARDEN_ERRORS} from "../../../WsPackets/src/objects/Garden";
+import {REPORT_CITY_ACTION_RESULTS as CoreCityActionResults} from "../../../Lib/src/types/ReportView";
+import {REPORT_CITY_ACTION_RESULTS} from "../../../WsPackets/src/objects/ReportView";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -47,6 +49,7 @@ import {GARDEN_OPERATIONS, GARDEN_ACCESS, GARDEN_NO_ACCESS, GARDEN_ERRORS} from 
  */
 describe("wire enums mirror their back-end counterpart", () => {
 	it.each([
+		["ReportCityActionResults", REPORT_CITY_ACTION_RESULTS, CoreCityActionResults],
 		["GardenOperations", GARDEN_OPERATIONS, CoreGardenOperations],
 		["GardenAccess", GARDEN_ACCESS, GardenAccessMode],
 		["GardenNoAccess", GARDEN_NO_ACCESS, GardenNoAccessReason],

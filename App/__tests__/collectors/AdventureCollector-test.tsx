@@ -14,6 +14,7 @@ import {
 import {
 	AdventureCollector, BigEventOutcome, HealOutcome, LotteryOutcome, TokenOutcome, WitchOutcome
 } from "@/src/collectors/AdventureCollector";
+import {CityMenu} from "@/src/collectors/CityCollector";
 
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: () => ({push: mockPush})}));
@@ -154,6 +155,21 @@ function cityCollector(): ReactionCollectorCreation {
 			{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
 		]
 	};
+}
+
+function cityHomePurchase(price = 950): ReactionCollectorCreation {
+	const collector = cityCollector();
+	if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected a city collector fixture");
+	const cityData = collector.data.data;
+	collector.data = {
+		type: CITY_DATA_KINDS.CITY,
+		data: {
+			...cityData,
+			snapshot: {...cityData.snapshot, home: {manage: {newPrice: price, currentMoney: 2_000, canBuy: true}}}
+		}
+	};
+	collector.reactions.splice(1, 0, {type: CITY_REACTION_KINDS.BUY_HOME, data: {}});
+	return collector;
 }
 
 function merchantCollector(): ReactionCollectorCreation {
@@ -434,19 +450,7 @@ describe("AdventureCollector", () => {
 
 	it("confirms a paid city action before submitting its original index", async () => {
 		const onChoose = jest.fn();
-		const collector = cityCollector();
-		if (collector.data.type !== CITY_DATA_KINDS.CITY) {
-			throw new Error("Expected a city collector fixture");
-		}
-		const cityData = collector.data.data;
-		collector.data = {
-			type: CITY_DATA_KINDS.CITY,
-			data: {
-				...cityData,
-				snapshot: {...cityData.snapshot, home: {manage: {newPrice: 950, currentMoney: 2_000, canBuy: true}}}
-			}
-		};
-		collector.reactions.splice(1, 0, {type: CITY_REACTION_KINDS.BUY_HOME, data: {}});
+		const collector = cityHomePurchase();
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
 		await fireEvent.press(screen.getByText("app:city.actions.notary"));
@@ -456,6 +460,19 @@ describe("AdventureCollector", () => {
 
 		await fireEvent.press(screen.getByText("app:collector.accept"));
 		expect(onChoose).toHaveBeenCalledWith(1);
+	});
+
+	it("keeps the confirmed city offer bound to its original snapshot across refreshes", async () => {
+		const originalChoice = jest.fn();
+		const refreshedChoice = jest.fn();
+		await render(<CityMenu collector={cityHomePurchase()} onChoose={originalChoice} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:city.actions.notary"));
+		await fireEvent.press(screen.getByText(CITY_REACTION_KINDS.BUY_HOME));
+		await screen.rerender(<CityMenu collector={cityHomePurchase(1_500)} onChoose={refreshedChoice} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:collector.accept"));
+		expect(originalChoice).toHaveBeenCalledWith(1);
+		expect(refreshedChoice).not.toHaveBeenCalled();
+		expect(screen.getByText("app:city.actions.notary")).toBeTruthy();
 	});
 
 	it("does not submit a shop item which costs more than the available currency", async () => {

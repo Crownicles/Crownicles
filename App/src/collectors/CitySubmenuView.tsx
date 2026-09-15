@@ -1,7 +1,6 @@
 import {ReactNode} from "react";
-import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
-import type {CitySubmenu, CityEntry, CityNavigationItem} from "@/src/collectors/CityCollector";
+import type {CitySubmenu, CityEntry, CityNavigationItem, CityMenuData} from "@/src/collectors/CityCollector";
 import {AppIcons} from "@/src/AppIcons";
 import {CitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
 import {citySnapshotNote} from "@/src/collectors/CitySnapshotNote";
@@ -17,7 +16,7 @@ import {GuildDomain} from "@/src/components/GuildDomain";
 import {i18n} from "@/src/translations/i18n";
 
 type SubmenuProps = {
-	view: CitySubmenu; innId?: string; entries: CityEntry[]; collector: ReactionCollectorCreation; snapshot?: CityMobileSnapshot;
+	view: CitySubmenu; innId?: string; entries: CityEntry[]; collector: CityMenuData; snapshot?: CityMobileSnapshot;
 	onChoose: (index: number) => void; onNavigate: (item: CityNavigationItem) => void; onBack: () => void; locked: boolean; backLabel?: string;
 };
 

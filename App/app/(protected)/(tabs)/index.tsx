@@ -2,10 +2,10 @@ import {ReactNode, useEffect, useState} from "react";
 import {ActivityIndicator, StyleSheet, Text, View} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {ReportReq} from "ws-packets/src/fromClient/ReportReq";
 import {ReportBuyHealReq} from "ws-packets/src/fromClient/ReportBuyHealReq";
 import {ReportUseTokensReq} from "ws-packets/src/fromClient/ReportUseTokensReq";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
+import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {
 	ReportTokenMerchantBoughtRes,
@@ -26,10 +26,9 @@ import {
 } from "ws-packets/src/fromServer/report/ReportHealRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {Blocked} from "ws-packets/src/fromServer/common/Blocked";
-import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
 import {AppIcons} from "@/src/AppIcons";
 import {GameAnswer, GameClient} from "@/src/networking/GameClient";
-import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
+import {RequestState} from "@/src/store/useGameQuery";
 import {gameKey, GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {
@@ -67,12 +66,13 @@ import {RespawnAction} from "@/src/components/Utilities";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
+import {useReportView, useReportAdvance} from "@/src/store/useReportActions";
+import {GameMutation} from "@/src/store/useGameMutation";
+import {ReportCity} from "@/src/components/ReportCity";
 
 const MILLISECONDS_PER_SECOND = 1_000;
 const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
-const SMALL_EVENT_REPORT_RETRY_DELAY = 100;
-const MAX_SMALL_EVENT_REPORT_RETRIES = 3;
 const MILLISECONDS_PER_MINUTE = MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE;
 const FULL_PROGRESS = 1;
 const NO_PROGRESS = 0;
@@ -150,25 +150,6 @@ function useCurrentTime(): number {
   }, []);
 
   return currentTime;
-}
-
-function shouldRetryReport(answer: GameAnswer<ReportTravelSummaryRes>, retriesLeft: number): boolean {
-	return retriesLeft > 0
-		&& answer.kind === "alternative"
-		&& answer.packetName === SmallEventResultRes.wireName;
-}
-
-export async function requestReport(retriesLeft = MAX_SMALL_EVENT_REPORT_RETRIES): Promise<GameAnswer<ReportTravelSummaryRes>> {
-	const result = await GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes, [
-		ReactionCollectorCreation,
-		SmallEventResultRes,
-		Blocked
-	]);
-	if (!shouldRetryReport(result, retriesLeft)) {
-		return result;
-	}
-	await new Promise(resolve => setTimeout(resolve, SMALL_EVENT_REPORT_RETRY_DELAY));
-	return requestReport(retriesLeft - 1);
 }
 
 function requestTokenAdvance(): Promise<GameAnswer<ReactionCollectorCreation>> {
@@ -306,10 +287,8 @@ function travelAdvice(stopTime: number): string {
 }
 
 export function reportRefreshDelay(packet: ReportTravelSummaryRes, now = Date.now()): number | null {
-	if (packet.nextStopTime > packet.arriveTime) {
-		return null;
-	}
-	return Math.max(0, packet.nextStopTime - now);
+	const nextRefresh = packet.isInCity ? packet.effectEndTime : Math.min(packet.nextStopTime, packet.arriveTime);
+	return nextRefresh !== undefined && nextRefresh > now ? nextRefresh - now : null;
 }
 
 function useReportRefreshAtNextStop(packet: ReportTravelSummaryRes | null): void {
@@ -420,7 +399,7 @@ function CollectorOutcomeView({
 	return null;
 }
 
-function ReportFailure({state}: {state: Extract<RequestState<ReportTravelSummaryRes>, {status: "failed"}>}): ReactNode {
+function ReportFailure({state}: {state: Extract<RequestState<ReportViewRes>, {status: "failed"}>}): ReactNode {
 	const rejection = state.rejection;
 	if (rejection?.type === COMMAND_REJECTIONS.EFFECT && rejection.currentEffectId === PLAYER_EFFECTS.DEAD) return <Screen>
 		<Hero eyebrow={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:utilities.respawn")} subtitle={i18n.t("app:utilities.respawnWarning")} />
@@ -433,7 +412,7 @@ function ReportStatusView({
 	reportState,
 	waitingForCollector
 }: {
-	reportState: RequestState<ReportTravelSummaryRes>;
+	reportState: RequestState<ReportViewRes>;
 	waitingForCollector: boolean;
 }): ReactNode {
 	if (waitingForCollector) {
@@ -603,13 +582,22 @@ function adventureSubtitle({packet, currentTime, metrics, destination}: Adventur
 	});
 }
 
-function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending, healPending}: {
+function ReportAdvance({reportReady, reportAction}: {reportReady: boolean; reportAction: GameMutation<void>}): ReactNode {
+	return <>
+		{reportAction.message ? <Note>{reportAction.message}</Note> : null}
+		<Button variant="primary" disabled={!reportReady || reportAction.pending} onPress={(): Promise<void> => reportAction.submit(undefined)}>{i18n.t(reportAction.pending ? "app:common.loading" : "app:adventure.continueReport")}</Button>
+	</>;
+}
+
+function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending, healPending, reportReady, reportAction}: {
 	packet: ReportTravelSummaryRes;
 	currentTime: number;
 	onAdvance: () => void;
 	onHeal: () => void;
 	advancePending: boolean;
 	healPending: boolean;
+	reportReady: boolean;
+	reportAction: GameMutation<void>;
 }): ReactNode {
   const metrics = getTravelMetrics(packet, currentTime);
   const destination = mapName(packet.endMap);
@@ -627,6 +615,7 @@ function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending,
         subtitle={subtitle}
       />
 
+		<ReportAdvance reportReady={reportReady} reportAction={reportAction} />
       {altered && packet.isInCity ? <AlterationPanel packet={packet} metrics={metrics} currentTime={currentTime} /> : <RoutePanel packet={packet} metrics={metrics} />}
 		{(!packet.isInCity || altered) ? (
 			<TravelQuickActions
@@ -648,8 +637,10 @@ function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending,
 }
 
 function AdventureBody(): ReactNode {
-	const reportState = useGameQuery<ReportTravelSummaryRes>(GAME_ENTITIES.REPORT, requestReport);
-	useReportRefreshAtNextStop(reportState.status === "ready" ? reportState.data : null);
+	const reportState = useReportView();
+	const travel = reportState.status === "ready" ? reportState.data.travel : undefined;
+	const reportAction = useReportAdvance();
+	useReportRefreshAtNextStop(travel ?? null);
 	const queryClient = useQueryClient();
 	const [advancePending, setAdvancePending] = useState(false);
 	const [healPending, setHealPending] = useState(false);
@@ -730,15 +721,12 @@ function AdventureBody(): ReactNode {
 		return collectorOutcome;
 	}
 	const pendingReportCollector = tokenUseCollector ?? buyHealCollector;
+	const pendingReportConfirmation = pendingReportCollector ? collectorScreen(pendingReportCollector, reactToCollector, isAnswerPending) : null;
 	if (pendingReportCollector && reportState.status !== "ready") {
 		return (
 			<>
 				<Centered><ActivityIndicator /></Centered>
-				<AdventureCollector
-					collector={pendingReportCollector}
-					onChoose={(reactionIndex): void => reactToCollector(pendingReportCollector.id, reactionIndex)}
-					submitting={isAnswerPending(pendingReportCollector.id)}
-				/>
+				{pendingReportConfirmation}
 			</>
 		);
 	}
@@ -755,31 +743,32 @@ function AdventureBody(): ReactNode {
 	if (reportState.status !== "ready") {
 		return null;
 	}
+	if (reportState.data.city) {
+		return <><ReportCity city={reportState.data.city} />{pendingReportConfirmation}</>;
+	}
+	if (!travel) {
+		return <>
+			<Screen>
+				<Hero eyebrow={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:adventure.startReport")} />
+				<ReportAdvance reportReady={reportState.data.reportReady} reportAction={reportAction} />
+			</Screen>
+			{pendingReportConfirmation}
+		</>;
+	}
 
 	return (
 		<>
 			<AdventureSheet
-				packet={reportState.data}
+				packet={travel}
 				currentTime={currentTime}
 				onAdvance={advanceWithTokens}
 				onHeal={buyHeal}
 				advancePending={advancePending}
 				healPending={healPending}
+				reportReady={reportState.data.reportReady}
+				reportAction={reportAction}
 			/>
-			{tokenUseCollector ? (
-				<AdventureCollector
-					collector={tokenUseCollector}
-					onChoose={(reactionIndex): void => reactToCollector(tokenUseCollector.id, reactionIndex)}
-					submitting={isAnswerPending(tokenUseCollector.id)}
-				/>
-			) : null}
-			{buyHealCollector ? (
-				<AdventureCollector
-					collector={buyHealCollector}
-					onChoose={(reactionIndex): void => reactToCollector(buyHealCollector.id, reactionIndex)}
-					submitting={isAnswerPending(buyHealCollector.id)}
-				/>
-			) : null}
+			{pendingReportConfirmation}
 		</>
 	);
 }

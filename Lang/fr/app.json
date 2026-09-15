@@ -286,6 +286,8 @@
     "pet": "Familier"
   },
   "adventure": {
+    "startReport": "Commencer l'aventure",
+    "continueReport": "Continuer l'aventure",
     "eyebrow": "Votre aventure",
     "cityTitle": "Arrivée en ville",
     "citySubtitle": "Position actuelle : {{location}}",
@@ -617,6 +619,7 @@
     "empty": "Aucun rapport de voyage disponible"
   },
   "city": {
+    "staleAction": "La situation a changé. Les actions de la ville ont été actualisées.",
     "confirmation": {
       "title": "Confirmer cette action"
     },

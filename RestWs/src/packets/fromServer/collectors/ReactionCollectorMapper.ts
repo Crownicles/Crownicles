@@ -141,6 +141,13 @@ function translate<LibPayload, Translated>(
  * Converts a collector opened by the back end into its protocol form.
  * @param packet
  */
+export function mapCollectorContent(packet: Pick<ReactionCollectorCreationPacket, "data" | "reactions">): Pick<ReactionCollectorCreation, "data" | "reactions"> {
+	return {
+		data: translate(dataMappings, packet.data) ?? toUnknownTag(packet.data.type),
+		reactions: packet.reactions.map(reaction => translate(reactionMappings, reaction) ?? toUnknownTag(reaction.type))
+	};
+}
+
 export function mapCollectorCreation(packet: ReactionCollectorCreationPacket): ReactionCollectorCreation {
 	return makeFromServerPacket(ReactionCollectorCreation, {
 		id: packet.id,
@@ -148,7 +155,6 @@ export function mapCollectorCreation(packet: ReactionCollectorCreationPacket): R
 
 		// Spread rather than assign: passing undefined would overwrite the default of the packet class
 		...packet.mainPacket === undefined ? {} : { mainPacket: packet.mainPacket },
-		data: translate(dataMappings, packet.data) ?? toUnknownTag(packet.data.type),
-		reactions: packet.reactions.map(reaction => translate(reactionMappings, reaction) ?? toUnknownTag(reaction.type))
+		...mapCollectorContent(packet)
 	});
 }

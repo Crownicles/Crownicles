@@ -388,29 +388,33 @@ type CityReactionParams = {
 	response: CrowniclesPacket[];
 	reactionData: unknown;
 	collectorData: unknown;
-	collectorId: string;
+	collectorId?: string;
+	onReturnToCity?: (response: CrowniclesPacket[]) => Promise<void>;
 };
 
 async function handleCityShopReactionWithDeferredStop(params: CityReactionParams): Promise<void> {
-	await runWithDeferredCollectorStop(params.response, params.collectorId, async () => {
-		await handleCityShopReaction({
-			player: params.player,
-			city: params.city,
-			shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
-			context: params.context,
-			response: params.response,
-			onClose: async (closeResponse): Promise<void> => {
-				await params.player.reload();
-				await sendCityCollector(
-					params.context,
-					closeResponse,
-					params.player,
-					params.city,
-					{ forceSpecificEvent: params.forceSpecificEvent }
-				);
-			}
-		});
+	const openShop = (): Promise<void> => handleCityShopReaction({
+		player: params.player,
+		city: params.city,
+		shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
+		context: params.context,
+		response: params.response,
+		onClose: params.onReturnToCity ?? (async (closeResponse): Promise<void> => {
+			await params.player.reload();
+			await sendCityCollector(
+				params.context,
+				closeResponse,
+				params.player,
+				params.city,
+				{ forceSpecificEvent: params.forceSpecificEvent }
+			);
+		})
 	});
+	if (params.collectorId) {
+		await runWithDeferredCollectorStop(params.response, params.collectorId, openShop);
+		return;
+	}
+	await openShop();
 }
 
 const NOOP_REACTION = (): Promise<void> => Promise.resolve();
@@ -553,7 +557,7 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 	]
 ]);
 
-async function handleCityReaction(reactionType: string, params: CityReactionParams): Promise<void> {
+export async function handleCityReaction(reactionType: string, params: CityReactionParams): Promise<void> {
 	const handler = CITY_REACTION_HANDLERS.get(reactionType);
 	if (!handler) {
 		CrowniclesLogger.error(`Unknown city reaction: ${reactionType}`);
@@ -606,15 +610,10 @@ function buildOtherCityServices(currentCity: City): ReactionCollectorCityData["o
 	}));
 }
 
-async function sendCityCollector(
-	context: PacketContext,
-	response: CrowniclesPacket[],
+export async function buildCitySnapshot(
 	player: Player,
-	city: City,
-	options: {
-		forceSpecificEvent: number; initialMenu?: string;
-	} = { forceSpecificEvent: 0 }
-): Promise<void> {
+	city: City
+): Promise<ReactionCollectorCityData> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
 	const enchanter = await buildAvailableEnchanterData({
@@ -670,7 +669,7 @@ async function sendCityCollector(
 		? buildGuildFoodShopSnapshot(player, guild)
 		: undefined;
 
-	const collectorData: ReactionCollectorCityData = {
+	return {
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
 		mapLocationId: player.getDestinationId()!,
 		availableServices: getAvailableCityServices({
@@ -722,10 +721,23 @@ async function sendCityCollector(
 		guildDomain,
 		guildFoodShop,
 		guildDomainNotary,
-		apartmentNotary,
+		apartmentNotary
+	};
+}
+
+async function sendCityCollector(
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	player: Player,
+	city: City,
+	options: {
+		forceSpecificEvent: number; initialMenu?: string;
+	} = { forceSpecificEvent: 0 }
+): Promise<void> {
+	const collectorData = {
+		...await buildCitySnapshot(player, city),
 		initialMenu: options.initialMenu
 	};
-
 	const collector = new ReactionCollectorCity(collectorData);
 
 	const collectorPacket = new ReactionCollectorInstance(

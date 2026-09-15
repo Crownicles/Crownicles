@@ -838,8 +838,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 		return reactions;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
-		const reactions = this.data.gardenOnly
+	getReactions(): ReactionCollectorCityPacket["reactions"] {
+		return this.data.gardenOnly
 			? [
 				this.buildReaction(ReactionCollectorRefuseReaction, {}),
 				...this.buildHomeFeatureReactions()
@@ -858,10 +858,13 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...this.buildGuildDomainReactions(),
 				...this.buildApartmentNotaryReactions()
 			];
+	}
+
+	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
 		return {
 			id,
 			endTime,
-			reactions,
+			reactions: this.getReactions(),
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data
 			})

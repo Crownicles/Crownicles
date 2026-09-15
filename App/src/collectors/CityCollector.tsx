@@ -29,9 +29,13 @@ type CityCollectorProps = {
 	submitting: boolean;
 };
 
+export type CityMenuData = Pick<ReactionCollectorCreation, "data" | "reactions">;
+type CityMenuProps = Omit<CityCollectorProps, "collector"> & {collector: CityMenuData};
+
 type CityCollectorData = Extract<ReactionCollectorCreation["data"], {type: typeof CITY_DATA_KINDS.CITY}>;
 
 export type CityEntry = {reaction: ReactionCollectorReaction; index: number};
+type PendingCityChoice = {entry: CityEntry; collector: CityMenuData; onChoose: CityMenuProps["onChoose"]};
 export type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
 
 export type CityNavigationItem = {
@@ -91,13 +95,13 @@ const CITY_REACTIONS_REQUIRING_CONFIRMATION = new Set<ReactionCollectorReaction[
 	CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY
 ]);
 
-function CityActionConfirmation({entry, collector, snapshot, onConfirm, onCancel}: {
+function CityActionConfirmation({entry, collector, onConfirm, onCancel}: {
 	entry: CityEntry;
-	collector: ReactionCollectorCreation;
-	snapshot: CityMobileSnapshot | undefined;
+	collector: CityMenuData;
 	onConfirm: () => void;
 	onCancel: () => void;
 }): ReactNode {
+	const snapshot = collector.data.type === CITY_DATA_KINDS.CITY ? collector.data.data.snapshot : undefined;
 	const item = itemSnapshotForReaction(snapshot, entry.reaction);
 	const subtitle = renderCityRowSubtitle(entry.reaction, snapshot, item);
 	const end = renderCityRowEnd(entry.reaction, snapshot, item);
@@ -125,7 +129,7 @@ function citySectionDefinitions(): {key: CityGroup; title: string; hint?: string
 }
 
 function cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting}: {
-	collector: ReactionCollectorCreation;
+	collector: CityMenuData;
 	model: CityMenuModel;
 	locationName: string;
 	locationDescription: string;
@@ -163,7 +167,7 @@ function cityGroupingOptions(data: CityCollectorData): Parameters<typeof groupCi
 }
 
 function renderGardenView({collector, model, snapshot, choose, gardenCloseIndex, locked}: {
-	collector: ReactionCollectorCreation;
+	collector: CityMenuData;
 	model: CityMenuModel;
 	snapshot: CityMobileSnapshot | undefined;
 	choose: (index: number) => void;
@@ -187,7 +191,7 @@ function renderSubmenuView({submenu, innId, model, collector, snapshot, choose, 
 	submenu: CitySubmenu;
 	innId: string | undefined;
 	model: CityMenuModel;
-	collector: ReactionCollectorCreation;
+	collector: CityMenuData;
 	snapshot: CityMobileSnapshot | undefined;
 	choose: (index: number) => void;
 	navigate: (item: CityNavigationItem) => void;
@@ -211,7 +215,7 @@ function renderSubmenuView({submenu, innId, model, collector, snapshot, choose, 
 }
 
 function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting}: {
-	collector: ReactionCollectorCreation;
+	collector: CityMenuData;
 	model: CityMenuModel;
 	snapshot: CityMobileSnapshot | undefined;
 	gardenOnly: boolean;
@@ -232,14 +236,13 @@ function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseI
 	return cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting});
 }
 
-export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {
+export function CityMenu({collector, onChoose, submitting}: CityMenuProps): ReactNode {
 	const router = useRouter();
-	const [answered, setAnswered] = useState(false);
-	const [pendingEntry, setPendingEntry] = useState<CityEntry | null>(null);
+	const [pendingChoice, setPendingChoice] = useState<PendingCityChoice | null>(null);
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);
 	const [innId, setInnId] = useState<string>();
 	if (collector.data.type !== CITY_DATA_KINDS.CITY) return null;
-	const locked = answered || submitting;
+	const locked = submitting;
 	const entries = collector.reactions.map((reaction, index) => ({reaction, index}));
 	const data = collector.data;
 	const snapshot = data.data.snapshot;
@@ -249,13 +252,13 @@ export function CityCollector({collector, onChoose, submitting}: CityCollectorPr
 	const mapIcon = AppIcons.getIconOrNull(`mapTypes.${data.data.mapTypeId}`);
 	const choose = (index: number): void => {
 		if (locked) return;
-		setAnswered(true);
 		onChoose(index);
 	};
 	const requestChoice = (index: number): void => {
+		if (locked) return;
 		const entry = entries[index];
 		if (entry && CITY_REACTIONS_REQUIRING_CONFIRMATION.has(entry.reaction.type)) {
-			setPendingEntry(entry);
+			setPendingChoice({entry, collector, onChoose});
 			return;
 		}
 		choose(index);
@@ -273,15 +276,25 @@ export function CityCollector({collector, onChoose, submitting}: CityCollectorPr
 	const gardenCloseIndex = gardenOnly ? collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE) : -1;
 	return <>
 		{cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose: requestChoice, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting})}
-		{pendingEntry ? <CityActionConfirmation
-			entry={pendingEntry}
-			collector={collector}
-			snapshot={snapshot}
+		{pendingChoice ? <CityActionConfirmation
+			entry={pendingChoice.entry}
+			collector={pendingChoice.collector}
 			onConfirm={(): void => {
-				setPendingEntry(null);
-				choose(pendingEntry.index);
+				if (locked) return;
+				setPendingChoice(null);
+				pendingChoice.onChoose(pendingChoice.entry.index);
 			}}
-			onCancel={(): void => setPendingEntry(null)}
+			onCancel={(): void => setPendingChoice(null)}
 		/> : null}
 	</>;
+}
+
+export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {
+	const [answered, setAnswered] = useState(false);
+	const choose = (index: number): void => {
+		if (answered || submitting) return;
+		setAnswered(true);
+		onChoose(index);
+	};
+	return <CityMenu collector={collector} onChoose={choose} submitting={answered || submitting} />;
 }
