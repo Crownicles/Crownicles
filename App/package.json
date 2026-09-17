@@ -43,7 +43,7 @@
     "@twemoji/api": "17.0.3",
     "@twemoji/parser": "17.0.2",
     "buffer": "^6.0.3",
-    "expo": "^57.0.13",
+    "expo": "^57.0.23",
     "expo-auth-session": "~57.0.7",
     "expo-blur": "~57.0.2",
     "expo-constants": "~57.0.11",
