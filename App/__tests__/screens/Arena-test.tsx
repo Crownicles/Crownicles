@@ -1,7 +1,7 @@
 import {fireEvent, render, screen, waitFor, within} from "@testing-library/react-native";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {FightHistoryContent, LeaguesContent} from "@/src/components/ArenaReferences";
-import {Rankings} from "@/src/components/Rankings";
+import {Rankings, RankingsContent} from "@/src/components/Rankings";
 import {GameClient} from "@/src/networking/GameClient";
 import {TopReq, LeagueRewardReq} from "ws-packets/src/fromClient/RankingsReq";
 import {TopRes, LeagueInfoRes} from "ws-packets/src/fromServer/fight/RankingsRes";
@@ -30,8 +30,8 @@ describe("arena references", () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: page});
 		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
 		await render(<QueryClientProvider client={client}><Rankings /></QueryClientProvider>);
-		await screen.findByText("app:arena.rankings.next");
-		await fireEvent.press(screen.getByText("app:arena.rankings.next"));
+		await screen.findByLabelText("app:arena.rankings.next");
+		await fireEvent.press(screen.getByLabelText("app:arena.rankings.next"));
 		await waitFor(() => expect(GameClient.request).toHaveBeenLastCalledWith(expect.objectContaining({page: 5, dataType: TopDataType.SCORE}), TopRes, expect.any(Array)));
 		await fireEvent.press(screen.getByText("app:arena.rankings.types.Guild"));
 		await waitFor(() => expect(GameClient.request).toHaveBeenLastCalledWith(expect.objectContaining({dataType: TopDataType.GUILD, timing: TopTiming.ALL_TIME}), TopRes, expect.any(Array)));
@@ -106,5 +106,31 @@ describe("arena references", () => {
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalledTimes(2));
 		expect(screen.queryByText("app:common.connectionError")).toBeNull();
 		expect(screen.getByRole("button", {name: "app:arena.leagues.claim", disabled: false})).toBeTruthy();
+	});
+	it("answers where the player stands before listing the others, and hides paging on a single page", async () => {
+		const page = Object.assign(new TopRes(), {
+			dataType: TopDataType.GLORY, timing: TopTiming.WEEK, contextRank: 2, canBeRanked: true, totalElements: 2, elementsPerPage: 10, pageNumber: 1,
+			elements: [
+				{rank: 1, sameContext: false, name: "Kyusaor", value: 1200, level: 60, leagueId: 3},
+				{rank: 2, sameContext: true, name: "Aventurier", value: 900, level: 42, leagueId: 2}
+			]
+		});
+		await render(<RankingsContent data={page} onPage={jest.fn()} />);
+		expect(within(screen.getByTestId("ranking-standing")).getByText("2")).toBeTruthy();
+		expect(screen.getByText("app:arena.you")).toBeTruthy();
+		expect(screen.getByText(/models:leagues\.3/)).toBeTruthy();
+		expect(screen.queryByLabelText("app:arena.rankings.next")).toBeNull();
+	});
+	it("reaches the player's own page and the first one without scrolling the list", async () => {
+		const onPage = jest.fn();
+		const page = Object.assign(new TopRes(), {
+			dataType: TopDataType.SCORE, timing: TopTiming.ALL_TIME, contextRank: 36, canBeRanked: true, totalElements: 60, elementsPerPage: 10, pageNumber: 2,
+			elements: [{rank: 11, sameContext: false, name: "Kyusaor", value: 1200, level: 60}]
+		});
+		await render(<RankingsContent data={page} onPage={onPage} />);
+		await fireEvent.press(screen.getByLabelText("app:arena.rankings.goToMyPage"));
+		expect(onPage).toHaveBeenLastCalledWith(4);
+		await fireEvent.press(screen.getByLabelText("app:arena.rankings.backToFirst"));
+		expect(onPage).toHaveBeenLastCalledWith(1);
 	});
 });

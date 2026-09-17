@@ -11,6 +11,7 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {GameClient} from "@/src/networking/GameClient";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
+import {UnitIcon} from "@/src/components/UnitIcon";
 import {Note, Panel, SectionHeader} from "@/src/design/Primitives";
 import {ArrowRight, ChevronDown, Clock3, Medal, Shield, Swords, Trophy} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
@@ -135,12 +136,6 @@ export function FightHistory(): ReactNode {
 function LeagueEmblem({leagueId, size}: {leagueId: number; size: number}): ReactNode {
 	const icon = AppIcons.getIconOrNull(`leagues.${leagueId}`);
 	return icon ? <TwemojiIcon emoji={icon} size={size} /> : <Medal size={size} color={Theme.colors.gold} />;
-}
-
-/** The arena speaks the game's own vocabulary: its units wear the emojis the rest of the game uses. */
-function UnitIcon({unit, size}: {unit: string; size: number}): ReactNode {
-	const icon = AppIcons.getIconOrNull(`unitValues.${unit}`);
-	return icon ? <TwemojiIcon emoji={icon} size={size} /> : null;
 }
 
 function LeagueStanding({data, next}: {data: LeagueInfoRes; next?: LeagueInfo}): ReactNode {
