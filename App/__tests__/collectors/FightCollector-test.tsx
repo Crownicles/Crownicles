@@ -6,6 +6,7 @@ import {fightStore, FightSnapshot} from "@/src/store/FightStore";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {FightIntroductionRes} from "ws-packets/src/fromServer/fight/FightRes";
 import {FightLiveView} from "@/src/components/FightBattle";
+import {FightSession} from "@/src/collectors/FightCollector";
 import {FightFighter} from "ws-packets/src/objects/Fight";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {FightEffects} from "@/src/components/FightEffects";
@@ -14,7 +15,10 @@ import {fightCue} from "@/src/display/FightMotion";
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
 jest.mock("@react-native-async-storage/async-storage", () => ({getItem: jest.fn().mockResolvedValue(null), setItem: jest.fn().mockResolvedValue(undefined)}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
-jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
+jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key, tArray: (key: string): string[] => [key]}}));
+jest.mock("react-native-safe-area-context", () => ({useSafeAreaInsets: (): {top: number; bottom: number; left: number; right: number} => ({top: 59, bottom: 34, left: 0, right: 0})}));
+jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: (): {open: never[]; react: jest.Mock; isAnswerPending: () => boolean} => ({open: [], react: jest.fn(), isAnswerPending: (): boolean => false})}));
+jest.mock("@tanstack/react-query", () => ({useQueryClient: (): {invalidateQueries: jest.Mock} => ({invalidateQueries: jest.fn().mockResolvedValue(undefined)})}));
 
 describe("fight collectors", () => {
 	afterEach(() => fightStore.reset());
@@ -75,6 +79,21 @@ describe("live battle presentation", () => {
 		expect(screen.getAllByRole("button", {name: "app:battle.showHistory"})).toHaveLength(1);
 		expect(screen.queryByRole("button", {name: "app:arena.log"})).toBeNull();
 	});
+	it("keeps only the latest action in the feed and fits the screen without scrolling", async () => {
+		const initial = battle();
+		const logs = [
+			{sequence: 1, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: true}, fightActionId: "fireAttack", status: "normal"}},
+			{sequence: 2, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: false}, fightActionId: "heavyAttack", status: "normal"}}
+		];
+		const view = await render(<FightLiveView fight={{...initial, logs, playedSequence: 2}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(screen.getByText("models:fight_actions.heavyAttack.name")).toBeTruthy();
+		expect(screen.queryByText("models:fight_actions.fireAttack.name")).toBeNull();
+		expect(screen.queryByRole("button", {name: "app:battle.story.pause"})).toBeNull();
+		const scrolls = (): number => JSON.stringify(view.toJSON()).split("RCTScrollView").length - 1;
+		expect(scrolls()).toBe(0);
+		await fireEvent.press(screen.getByRole("button", {name: "app:battle.showHistory"}));
+		expect(scrolls()).toBeGreaterThan(0);
+	});
 	it("keeps the player on the left during an opponent turn and exposes fighter details", async () => {
 		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
 		expect(within(screen.getByTestId("fight-fighter-self")).getByText("Aster")).toBeTruthy();
@@ -127,6 +146,24 @@ describe("live battle presentation", () => {
 		await render(<FightLiveView fight={{...initial, logs: [{sequence: 1, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: true, name: "Aster"}, fightActionId: "stealWeapon", status: "success", pet}}]}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
 		expect(screen.getByTestId("fight-active-pet").props.accessibilityLabel).toBe("Milo");
 		expect(screen.getByTestId("fight-particle-stolen-weapon", {includeHiddenElements: true})).toBeTruthy();
+	});
+});
+
+describe("battle screen layout", () => {
+	afterEach(() => fightStore.reset());
+	it("switches to the dense layout when the measured room is too small", async () => {
+		const view = await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(JSON.stringify(view.toJSON())).not.toContain("\"minHeight\":148");
+		await fireEvent(screen.getByTestId("fight-frame"), "layout", {nativeEvent: {layout: {height: 700, width: 390}}});
+		expect(JSON.stringify(view.toJSON())).toContain("\"minHeight\":148");
+	});
+	it("keeps the battle clear of the status bar now that it no longer scrolls", async () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightIntroductionRes.wireName, {introduction: {fightId: "safe-area", initiator: {isSelf: true}, opponent: {isSelf: false}, initiatorActions: [["simpleAttack", 2]], opponentActions: []}});
+		const view = await render(<FightSession />);
+		const rendered = JSON.stringify(view.toJSON());
+		expect(rendered).toContain("\"paddingTop\":59");
+		expect(rendered).toContain("\"paddingBottom\":34");
 	});
 });
 

@@ -19,7 +19,7 @@ import {FightPortrait} from "@/src/components/FightPortrait";
 const COMBAT_STATS = [{key: "attack", Icon: Swords}, {key: "defense", Icon: Shield}, {key: "speed", Icon: Wind}] as const;
 const styles = StyleSheet.create({
 	participant: {flex: 1, minWidth: 0},
-	card: {minHeight: 226, borderWidth: 1, borderColor: Theme.colors.line, borderRadius: Theme.radius, backgroundColor: Theme.colors.paper, padding: Theme.spacing.md},
+	card: {flex: 1, minHeight: 226, borderWidth: 1, borderColor: Theme.colors.line, borderRadius: Theme.radius, backgroundColor: Theme.colors.paper, padding: Theme.spacing.md},
 	selfCard: {borderTopWidth: 3, borderTopColor: Theme.colors.blue},
 	foeCard: {borderTopWidth: 3, borderTopColor: Theme.colors.red},
 	roleRow: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 18},

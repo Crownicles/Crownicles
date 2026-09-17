@@ -1,6 +1,6 @@
 import {ReactNode, useEffect} from "react";
-import {Modal, StyleSheet} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {Modal, StyleSheet, View} from "react-native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useQueryClient} from "@tanstack/react-query";
 import {FIGHT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {Theme} from "@/src/design/Theme";
@@ -28,12 +28,14 @@ export function FightSession(): ReactNode {
 	const fight = useFight();
 	const {open, react, isAnswerPending} = useCollectors();
 	const completed = useFightCompletion(fight);
+	// The battle screen does not scroll, so nothing else keeps it clear of the status bar and home indicator.
+	const insets = useSafeAreaInsets();
 	const collector = open.find(entry => entry.data.type === FIGHT_DATA_KINDS.ACTION && entry.data.data.fightId === fight.introduction?.fightId);
 	if (!fight.visible) return null;
 	const close = completed || fight.error ? fightStore.reset : fightStore.minimize;
 	return <Modal visible animationType="slide" onRequestClose={close}>
-		<SafeAreaView style={styles.root}>
+		<View style={[styles.root, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
 			<FightLiveView key={fight.introduction?.fightId} fight={fight} collector={collector} onChoose={(index): void => {if (collector) react(collector.id, index);}} submitting={collector ? isAnswerPending(collector.id) : false} onClose={close} />
-		</SafeAreaView>
+		</View>
 	</Modal>;
 }

@@ -28,7 +28,6 @@ describe("fight session", () => {
 		await act(() => result.current.impact());
 		expect(result.current.status?.activeFighter.stats.power).toBe(240);
 		await act(() => result.current.finishMotion());
-		expect(result.current.reading).toBe(true);
 		await act(() => jest.advanceTimersByTime(1000));
 		expect(result.current.record?.entry.fightActionId).toBe("simpleAttack");
 		await rerender(true);
@@ -38,6 +37,19 @@ describe("fight session", () => {
 		await act(() => jest.advanceTimersByTime(6500));
 		expect(result.current.record).toBeUndefined();
 		expect(result.current.logs).toHaveLength(1);
+	});
+	it("reads the outcome while the animation plays instead of waiting for it to end", async () => {
+		jest.useFakeTimers();
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
+		registry.dispatch(FightStatusRes.wireName, {status: status(300)});
+		registry.dispatch(FightLogRes.wireName, {entry: {fightId: "duel", fighter: {isSelf: true}, fightActionId: "simpleAttack", stateAfter: status(240)}});
+		const fight = fightStore.getSnapshot();
+		const {result} = await renderHook(() => useFightPlayback(fight, {speed: FIGHT_SPEEDS.NORMAL, paused: false}));
+		await act(() => jest.advanceTimersByTime(6500));
+		expect(result.current.record?.entry.fightActionId).toBe("simpleAttack");
+		await act(() => result.current.finishMotion());
+		expect(result.current.record).toBeUndefined();
 	});
 	it("plays the opening pet action received before mounting and does not replay it after reopening", async () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");

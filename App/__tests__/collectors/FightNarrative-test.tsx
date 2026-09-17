@@ -1,7 +1,8 @@
-import {render, screen, within} from "@testing-library/react-native";
+import {render, screen} from "@testing-library/react-native";
 import {FightEventStory, FightLog} from "@/src/components/FightDetails";
 import {FightLogRecord} from "@/src/store/FightStore";
 import {reloadI18n} from "@/src/translations/i18nLoader";
+import {AppIcons} from "@/src/AppIcons";
 import french from "../../../Lang/fr/app.json";
 import commands from "../../../Lang/fr/commands.json";
 import models from "../../../Lang/fr/models.json";
@@ -22,31 +23,49 @@ describe("live combat narrative", () => {
 	});
 	it.each([true, false])("keeps chronological order in compact and expanded history (compact: %s)", async compact => {
 		const defense: FightLogRecord = {sequence: 2, entry: {fightId: "story", fighter: {isSelf: true, name: "Drapht"}, fightActionId: "defenseBuff", status: "normal", customMessage: true}};
-		await render(<FightLog entries={[PET_ACTION, defense]} compact={compact} />);
-		const headings = screen.getAllByRole("button");
-		expect(within(headings[0]).getByText("Intervention de Milo")).toBeTruthy();
-		expect(within(headings[1]).getByText("Boost de la défense")).toBeTruthy();
+		const view = await render(<FightLog entries={[PET_ACTION, defense]} compact={compact} />);
+		const rendered = JSON.stringify(view.toJSON());
+		expect(rendered.indexOf("Intervention de Milo")).toBeLessThan(rendered.indexOf("Boost de la défense"));
 	});
 	it("retains older actions in the live history instead of dropping them", async () => {
 		const entries = [1, 2, 3, 4, 5].map(sequence => ({...PET_ACTION, sequence}));
 		await render(<FightLog entries={entries} compact />);
-		expect(screen.getAllByRole("button")).toHaveLength(5);
+		expect(screen.getAllByText("Intervention de Milo")).toHaveLength(5);
 		expect(screen.getAllByText(/Drapht demande l'aide de Milo qui s'élance/)).toHaveLength(5);
 	});
-	it("does not reveal the result or its consequences before impact", async () => {
-		await render(<FightEventStory record={PET_ACTION} pending />);
-		expect(screen.getByText("Milo s'apprête à intervenir pour Drapht.")).toBeTruthy();
-		expect(screen.queryByText(/s'empare de l'arme ennemie/)).toBeNull();
+	it("does not turn journal entries into controls", async () => {
+		await render(<FightLog entries={[PET_ACTION]} />);
+		expect(screen.queryAllByRole("button")).toHaveLength(0);
 	});
-	it("names the correct recipients of damage, healing and reflected damage", async () => {
+	it("tells the outcome right away instead of announcing the action first", async () => {
+		await render(<FightEventStory record={PET_ACTION} />);
+		expect(screen.getByText(/s'empare de l'arme ennemie/)).toBeTruthy();
+		expect(screen.queryByText(/s'apprête/)).toBeNull();
+	});
+	it("labels effects exactly like the Discord history does", async () => {
 		const stats = {power: 73, maxEnergy: 100, attack: 10, defense: 10, speed: 10, breath: 5, maxBreath: 10, breathRegen: 2};
 		const record: FightLogRecord = {sequence: 2, entry: {
 			fightId: "story", fighter: {isSelf: true, name: "Drapht"}, fightActionId: "energeticAttack", status: "normal",
 			fightActionEffectDealt: {damages: 27, reflectedDamages: 3}, fightActionEffectReceived: {energy: 8}
 		}, after: {fightId: "story", numberOfTurn: 2, maxNumberOfTurn: 30, activeFighter: {isSelf: true, stats}, defendingFighter: {isSelf: false, name: "Arsene", stats}}};
 		await render(<FightEventStory record={record} />);
-		expect(screen.getByText("Arsene : -27 énergie")).toBeTruthy();
-		expect(screen.getByText("Vous : +8 énergie · -3 énergie")).toBeTruthy();
+		expect(screen.getByText(/Énergie récupérée : 8/)).toBeTruthy();
+		expect(screen.getByText(/Dégâts infligés : 27/)).toBeTruthy();
+		expect(screen.getByText(/Dégâts reçus : 3/)).toBeTruthy();
+		expect(screen.queryByText(/`/)).toBeNull();
+	});
+	it("shows the matching game icon next to each effect", async () => {
+		jest.spyOn(AppIcons, "getIconOrNull").mockImplementation((path: string) => path === "unitValues.lostHealth" ? "\u{1F494}" : null);
+		try {
+			const record: FightLogRecord = {sequence: 4, entry: {
+				fightId: "story", fighter: {isSelf: true, name: "Drapht"}, fightActionId: "energeticAttack", status: "normal", fightActionEffectDealt: {damages: 27}
+			}};
+			await render(<FightEventStory record={record} />);
+			expect(screen.getByLabelText("\u{1F494}")).toBeTruthy();
+		}
+		finally {
+			jest.restoreAllMocks();
+		}
 	});
 	it("uses the custom defensive action description instead of a generic successful attack", async () => {
 		await render(<FightEventStory record={{sequence: 3, entry: {fightId: "story", fighter: {isSelf: true, name: "Drapht"}, fightActionId: "defenseBuff", status: "normal", customMessage: true}}} />);

@@ -1,6 +1,7 @@
-import {FightParticipant, FightLogEntry, FightEffect, FightStatus} from "ws-packets/src/objects/Fight";
+import {FightParticipant, FightLogEntry, FightEffect} from "ws-packets/src/objects/Fight";
 import {i18n} from "@/src/translations/i18n";
-import {FightImpact, FightSide, fightCue} from "@/src/display/FightMotion";
+import {FightImpact} from "@/src/display/FightMotion";
+import type {FightEffectTone} from "@/src/components/FightNarrative";
 import {formatNumber} from "@/src/display/Amounts";
 import {petName} from "@/src/display/PetDisplay";
 
@@ -31,29 +32,35 @@ export function fightImpactLabel(impact: FightImpact): string {
 	return `${delta >= 0 ? "+" : "-"}${formatNumber(Math.abs(impact.amount))}`;
 }
 
-function statFeedback(effect: FightEffect | undefined): string[] {
+const EFFECT_TONES: Readonly<Record<string, FightEffectTone>> = {
+	damages: "damage", reflectedDamages: "damage", energy: "gain", breath: "breath"
+};
+
+const EFFECT_ICONS: Readonly<Record<string, string>> = {
+	damages: "unitValues.lostHealth", reflectedDamages: "unitValues.lostHealth", energy: "unitValues.energy", breath: "unitValues.breath",
+	attack: "unitValues.attack", defense: "unitValues.defense", speed: "unitValues.speed"
+};
+
+export type FightConsequence = {id: string; tone: FightEffectTone; text: string; iconPath?: string};
+
+function effectLines(effect: FightEffect | undefined, side: "self" | "opponent"): FightConsequence[] {
 	if (!effect) return [];
-	const stats = (["attack", "defense", "speed"] as const).flatMap(stat => effect[stat] ? [i18n.t("app:battle.statChange", {stat: i18n.t(`app:arena.stats.${stat}`), value: `${effect[stat]! > 0 ? "+" : ""}${formatNumber(effect[stat]!)}`})] : []);
-	if (effect.newAlteration) stats.push(i18n.t("app:battle.story.alteration", {effect: fightActionName(effect.newAlteration)}));
-	return stats;
+	return Object.entries(effect).flatMap(([key, value]): FightConsequence[] => {
+		const common = {id: `${side}-${key}`, tone: EFFECT_TONES[key] ?? "neutral", ...EFFECT_ICONS[key] ? {iconPath: EFFECT_ICONS[key]} : {}};
+		if (typeof value === "number") {
+			const text = i18n.t(`commands:fight.actions.fightActionEffects.${side}.${key}`, {operator: value >= 0 ? "+" : "-", amount: Math.abs(value), defaultValue: ""});
+			return text ? [{...common, text}] : [];
+		}
+		if (!value) return [];
+		const text = i18n.t(`commands:fight.actions.fightActionEffects.${side}.${key}`, {effect: fightActionName(value), defaultValue: ""});
+		// An alteration is better recognised by its own icon than by a generic one.
+		return text ? [{...common, text, iconPath: `fightActions.${value}`}] : [];
+	});
 }
 
-function feedbackTarget(side: FightSide, entry: FightLogEntry, status?: FightStatus): string {
-	const fighter = [status?.activeFighter, status?.defendingFighter, entry.fighter].find(candidate => candidate && candidate.isSelf === (side === "self"));
-	return fighterName(fighter ?? {isSelf: side === "self"});
-}
-
-export function fightConsequences(entry: FightLogEntry, status?: FightStatus): string[] {
-	const cue = fightCue(entry);
-	const consequences: Record<FightSide, string[]> = {self: [], opponent: []};
-	for (const impact of cue.impacts) {
-		const delta = impact.kind === "damage" ? -impact.amount : impact.amount;
-		consequences[impact.side].push(i18n.t(`app:battle.feedback.${impact.kind}`, {value: formatNumber(Math.abs(impact.amount)), sign: delta >= 0 ? "+" : "-"}));
-	}
-	const opponent = cue.actor === "self" ? "opponent" : "self";
-	consequences[cue.actor].push(...statFeedback(entry.fightActionEffectReceived));
-	consequences[cue.periodic ? cue.actor : opponent].push(...statFeedback(entry.fightActionEffectDealt));
-	return (["self", "opponent"] as const).flatMap(side => consequences[side].length ? [i18n.t("app:battle.story.consequences", {target: feedbackTarget(side, entry, status), effects: consequences[side].join(i18n.t("app:battle.story.separator"))})] : []);
+/** Same wording as the Discord history: effects received by the actor, then effects dealt to its target. */
+export function fightConsequences(entry: FightLogEntry): FightConsequence[] {
+	return [...effectLines(entry.fightActionEffectReceived, "self"), ...effectLines(entry.fightActionEffectDealt, "opponent")];
 }
 
 function narrativeActor(entry: FightLogEntry): string {
@@ -61,21 +68,28 @@ function narrativeActor(entry: FightLogEntry): string {
 	return i18n.t(entry.fighter.isSelf ? "app:battle.story.self" : "app:battle.story.opponent");
 }
 
-function narrativeAction(entry: FightLogEntry): string {
-	const attack = i18n.t("app:battle.story.attack", {attack: fightActionName(entry.fightActionId)});
-	const fallback = i18n.t(`commands:fight.actions.attacksResults.${entry.status ?? "normal"}.0`, {attack, defaultValue: i18n.t("app:battle.story.generic", {attack})});
-	if (DESCRIPTIVE_STATUSES.has(entry.status ?? "")) return i18n.t(`models:fight_actions.${entry.fightActionId}.${entry.status}`, {petNickname: entry.pet ? petName(entry.pet) : "", defaultValue: fallback});
-	if (entry.customMessageFail) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessageFail`, {defaultValue: fallback});
-	if (entry.customMessage) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessage`, {defaultValue: fallback});
-	return fallback;
+/** Discord picks a random variant; the app keeps the one drawn for a given action so it never changes while read. */
+function attackResult(entry: FightLogEntry, seed: number, attack: string): string {
+	const status = entry.status ?? "normal";
+	const variants = i18n.tArray(`commands:fight.actions.attacksResults.${status}`);
+	if (!variants.length) return i18n.t("app:battle.story.generic", {attack});
+	return i18n.t(`commands:fight.actions.attacksResults.${status}.${Math.abs(seed) % variants.length}`, {attack});
+}
+
+function narrativeAction(entry: FightLogEntry, seed: number): string {
+	const attack = fightActionName(entry.fightActionId);
+	const petNickname = entry.pet ? petName(entry.pet) : "";
+	// Same order as the Discord history, so both frontends tell the same thing about an action.
+	if (DESCRIPTIVE_STATUSES.has(entry.status ?? "")) return i18n.t(`models:fight_actions.${entry.fightActionId}.${entry.status}`, {petNickname, defaultValue: ""}) || attackResult(entry, seed, attack);
+	if (entry.customMessage) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessage`, {defaultValue: ""}) || attackResult(entry, seed, attack);
+	if (entry.customMessageFail) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessageFail`, {defaultValue: ""}) || attackResult(entry, seed, attack);
+	return attackResult(entry, seed, attack);
 }
 
 export function fightEntryTitle(entry: FightLogEntry): string {
 	return entry.pet ? i18n.t("app:battle.story.petAction", {pet: petName(entry.pet)}) : fightActionName(entry.usedFightActionId ?? entry.fightActionId);
 }
 
-export function fightNarrative(entry: FightLogEntry, pending = false): string {
-	const fighter = narrativeActor(entry);
-	if (pending) return i18n.t(entry.pet ? "app:battle.story.preparingPet" : "app:battle.story.preparingAttack", {fighter, pet: entry.pet ? petName(entry.pet) : "", attack: fightActionName(entry.fightActionId)});
-	return i18n.t("app:battle.story.sentence", {fighter, action: narrativeAction(entry)});
+export function fightNarrative(entry: FightLogEntry, seed = 0): string {
+	return i18n.t("app:battle.story.sentence", {fighter: narrativeActor(entry), action: narrativeAction(entry, seed)});
 }

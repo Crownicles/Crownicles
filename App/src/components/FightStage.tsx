@@ -11,8 +11,8 @@ import {useCompactFight} from "@/src/components/FightControls";
 import {FightSpeed} from "@/src/display/FightMotion";
 
 const styles = StyleSheet.create({
-	stage: {position: "relative"},
-	participants: {flexDirection: "row", gap: Theme.spacing.md},
+	stage: {flex: 1, minHeight: 0, position: "relative"},
+	participants: {flex: 1, flexDirection: "row", gap: Theme.spacing.md},
 	versus: {position: "absolute", top: 66, left: "50%", marginLeft: -16, width: 32, height: 32, borderRadius: 16, backgroundColor: Theme.colors.paper, borderWidth: 1, borderColor: Theme.colors.line, alignItems: "center", justifyContent: "center", zIndex: 2},
 	versusText: {fontFamily: Theme.fonts.extraBold, fontSize: 10, color: Theme.colors.faint},
 	compactVersus: {top: 40}

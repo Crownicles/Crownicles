@@ -982,26 +982,15 @@
     "errors": {"alreadyAlive": "Votre personnage est déjà en vie.", "noPlayer": "Ce joueur n'a pas été trouvé.", "notJailed": "Ce joueur n'est pas en prison.", "self": "Vous ne pouvez pas payer votre propre caution.", "cancelled": "L'action a été annulée.", "noGuild": "Vous devez appartenir à une guilde.", "tooManyRuns": "Vous avez atteint la limite de voyages vers l'île cette semaine.", "noMemberOnBoat": "Aucun membre de votre guilde n'est disponible sur un bateau.", "notTravelling": "Vous devez être en voyage pour rejoindre un bateau.", "noEnergy": "Votre énergie est insuffisante.", "noGems": "Vous n'avez pas assez de gemmes pour cette traversée."}
   },
   "battle": {
-    "reading": "Résultat de l'action",
     "story": {
       "live": "Fil du combat",
-      "paused": "Lecture en pause",
-      "pause": "Mettre la lecture en pause",
-      "resume": "Reprendre la lecture",
       "self": "Votre personnage",
       "opponent": "L'adversaire",
       "sentence": "**{{fighter}}** {{action}}",
-      "attack": "**{{attack}}**",
       "generic": "utilise {{attack}}.",
-      "preparingAttack": "**{{fighter}}** prépare **{{attack}}**.",
-      "preparingPet": "**{{pet}}** s'apprête à intervenir pour **{{fighter}}**.",
-      "petAction": "Intervention de {{pet}}",
-      "consequences": "**{{target}}** : {{effects}}",
-      "alteration": "Altération : {{effect}}",
-      "separator": " · "
+      "petAction": "Intervention de {{pet}}"
     },
     "speed": {"label": "Vitesse des animations de combat", "normal": "Normale (1×)", "fast": "Rapide (2×)"},
-    "statChange": "{{stat}} `{{value}} %`", "feedback": {"damage": "`{{sign}}{{value}} énergie`", "energy": "`{{sign}}{{value}} énergie`", "breath": "`{{sign}}{{value}} souffle`"},
     "duel": "Combat · arène", "encounter": "Rencontre · combat", "yourTurn": "Votre tour", "opponentTurn": "Tour adverse", "resolving": "Action en cours", "finished": "Combat terminé",
     "versus": "VS", "level": "Niv. {{level}}", "shortTurn": "Tour {{turn}}", "seconds": "{{seconds}} s", "availableBreath": "Disponible",
     "breathRegen_one": "+{{count}} au prochain tour", "breathRegen_other": "+{{count}} au prochain tour",
@@ -1016,7 +1005,7 @@
     "leagues": {"reward": "Récompense de ligue", "claim": "Réclamer la récompense", "catalog": "Les ligues", "threshold": "Gloire minimale", "seasonMoney": "Argent de fin de saison", "seasonXp": "Expérience de fin de saison", "winMoney": "Base d'une victoire", "nextClaim": "La récompense pourra être réclamée le {{date}}.", "noPoints": "Aucune gloire n'a été obtenue pendant la saison précédente.", "alreadyClaimed": "La récompense de cette saison a déjà été réclamée."},
     "rankings": {"title": "Classements", "types": {"Score": "Score", "Glory": "Gloire", "Guild": "Guildes"}, "period": "Période", "timings": {"AllTime": "Général", "Week": "Semaine"}, "positions": "Classement", "yourRank": "Votre place : {{rank}}", "unavailable": "Vous ne pouvez pas figurer dans ce classement pour le moment.", "needFight_one": "Encore un combat avant d'entrer au classement.", "needFight_other": "Encore {{count}} combats avant d'entrer au classement.", "entry": "{{rank}}. {{name}}", "selfValue": "{{value}} · Vous", "value": "{{value}}", "page": "Page {{page}} / {{total}}", "previous": "Précédent", "next": "Suivant", "inactive": "Inactif"},
     "details": "Statistiques", "currentTurn": "Tour en cours",
-    "eyebrow": "COMBAT", "title": "Arène", "confirm": "Préparer le duel", "start": "Chercher un adversaire", "resume": "Reprendre le combat", "minimize": "Réduire",
+    "eyebrow": "COMBAT", "title": "Arène", "confirm": "Préparer le duel", "start": "Chercher un adversaire", "resume": "Reprendre le combat",
     "you": "Vous", "opponent": "Adversaire", "energy": "Énergie", "breath": "Souffle", "glory": "Gloire", "league": "Ligue", "class": "Classe", "pet": "Familier",
     "turn": "Tour {{turn}} / {{max}}", "turns": "Tours joués", "waiting": "L'adversaire choisit son action…", "action": "Action de combat", "actionBreath": "{{value}} souffle",
     "log": "Journal du combat", "logAction": "{{fighter}} · {{action}}", "effectLabel": "{{target}} · {{stat}}", "target": "Cible", "actor": "Lanceur",
