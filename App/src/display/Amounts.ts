@@ -19,6 +19,11 @@ export function formatNumber(value: number): string {
 	return value.toLocaleString(i18n.language);
 }
 
+/** Keeps a gain explicitly signed, so it never reads like a loss at a glance. */
+export function formatSignedNumber(value: number): string {
+	return value > 0 ? `+${formatNumber(value)}` : formatNumber(value);
+}
+
 export function formatAmount(value: number, unit: AmountUnit): string {
 	return `${formatNumber(value)} ${AppIcons.getIcon(`unitValues.${unit}`)}`;
 }

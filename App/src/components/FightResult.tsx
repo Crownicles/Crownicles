@@ -4,7 +4,7 @@ import {Coins, Flag, Medal, Trophy, Swords} from "@/src/design/FightIcons";
 import {FightEnd, FightReward} from "ws-packets/src/objects/Fight";
 import {KeyValue, Note, Panel} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
-import {formatNumber} from "@/src/display/Amounts";
+import {formatNumber, formatSignedNumber} from "@/src/display/Amounts";
 import {fighterName} from "@/src/display/Fight";
 import {i18n} from "@/src/translations/i18n";
 
@@ -25,7 +25,7 @@ function FightRewards({reward}: {reward: FightReward}): ReactNode {
 	const gloryChange = ranking.newGlory - ranking.oldGlory;
 	return <>
 		<View style={styles.rewards}>
-			<View style={styles.reward}><Medal size={23} color={Theme.colors.gold} /><Text style={[styles.rewardValue, {color: gloryChange < 0 ? Theme.colors.red : Theme.colors.green}]}>{gloryChange > 0 ? "+" : ""}{formatNumber(gloryChange)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:arena.glory")}</Text></View>
+			<View style={styles.reward}><Medal size={23} color={Theme.colors.gold} /><Text style={[styles.rewardValue, {color: gloryChange < 0 ? Theme.colors.red : Theme.colors.green}]}>{formatSignedNumber(gloryChange)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:arena.glory")}</Text></View>
 			<View style={styles.reward}><Coins size={23} color={Theme.colors.gold} /><Text style={styles.rewardValue}>{formatNumber(reward.money)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:profile.fields.money")}</Text></View>
 			<View style={styles.reward}><Flag size={23} color={Theme.colors.blue} /><Text style={styles.rewardValue}>{formatNumber(reward.points)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:profile.fields.score")}</Text></View>
 		</View>
