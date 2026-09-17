@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor} from "@testing-library/react-native";
+import {fireEvent, render, screen, waitFor, within} from "@testing-library/react-native";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {FightHistoryContent, LeaguesContent} from "@/src/components/ArenaReferences";
 import {Rankings} from "@/src/components/Rankings";
@@ -12,6 +12,16 @@ jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: jest.fn()})}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
+
+const LEAGUES = Object.assign(new LeagueInfoRes(), {
+	currentLeagueId: 0,
+	glory: 123,
+	rewardAvailability: null,
+	leagues: [
+		{id: 0, minGloryPoints: 0, maxGloryPoints: 299, money: 250, xp: 200, winMoney: 200},
+		{id: 1, minGloryPoints: 300, maxGloryPoints: 599, money: 300, xp: 350, winMoney: 250}
+	]
+});
 
 describe("arena references", () => {
 	beforeEach(() => jest.clearAllMocks());
@@ -44,12 +54,57 @@ describe("arena references", () => {
 	});
 	it("selects another league without claiming a reward until explicitly requested", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "LeagueRewardRes"});
-		const data = Object.assign(new LeagueInfoRes(), {currentLeagueId: 0, glory: 123, leagues: [{id: 0, minGloryPoints: 0, maxGloryPoints: 299, money: 250, xp: 200, winMoney: 200}, {id: 1, minGloryPoints: 300, maxGloryPoints: 599, money: 300, xp: 350, winMoney: 250}]});
-		await render(<LeaguesContent data={data} />);
-		await fireEvent.press(screen.getByText("models:leagues.1"));
+		await render(<LeaguesContent data={LEAGUES} />);
+		expect(within(screen.getByTestId("league-standing")).getByLabelText("models:leagues.1")).toHaveProp("accessibilityValue", {now: 123, max: 300});
+		expect(screen.getByTestId("league-rewards-0")).toBeTruthy();
+		await fireEvent.press(screen.getByRole("button", {name: "models:leagues.1"}));
+		expect(screen.getByRole("button", {name: "models:leagues.1", selected: true})).toBeTruthy();
+		expect(screen.queryByTestId("league-rewards-0")).toBeNull();
+		const rewards = within(screen.getByTestId("league-rewards-1"));
+		expect(rewards.getByText("300")).toBeTruthy();
+		expect(rewards.getByText("350")).toBeTruthy();
+		expect(rewards.getByText("250")).toBeTruthy();
+		const standing = within(screen.getByTestId("league-standing"));
+		expect(standing.getByText("models:leagues.0")).toBeTruthy();
+		expect(standing.getByText("123")).toBeTruthy();
+		await fireEvent.press(screen.getByRole("button", {name: "models:leagues.1"}));
+		expect(screen.queryByTestId("league-rewards-1")).toBeNull();
+		expect(screen.getByRole("button", {name: "models:leagues.1", selected: false})).toHaveProp("accessibilityState", {selected: false, expanded: false});
 		expect(GameClient.request).not.toHaveBeenCalled();
 		await fireEvent.press(screen.getByText("app:arena.leagues.claim"));
-		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalledTimes(1));
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(LeagueRewardReq);
+	});
+	it("announces when the reward cannot be claimed yet instead of waiting for the tap", async () => {
+		await render(<LeaguesContent data={{...LEAGUES, rewardAvailability: {type: "notSunday", nextSunday: 1_900_000_000_000}}} />);
+		expect(screen.getByTestId("league-reward-unavailable")).toBeTruthy();
+		expect(screen.getByText("app:arena.leagues.nextClaim")).toBeTruthy();
+		const claim = screen.getByRole("button", {name: "app:arena.leagues.claim"});
+		expect(claim).toHaveProp("accessibilityState", {disabled: true, busy: false});
+		await fireEvent.press(claim);
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+	it("keeps the highest league visible without inventing another threshold", async () => {
+		await render(<LeaguesContent data={{...LEAGUES, currentLeagueId: 1, glory: 900}} />);
+		const standing = within(screen.getByTestId("league-standing"));
+		expect(standing.getByText("models:leagues.1")).toBeTruthy();
+		expect(standing.getByText("900")).toBeTruthy();
+		expect(standing.queryByTestId("fight-gauge-fill")).toBeNull();
+		await fireEvent.press(screen.getByRole("button", {name: "models:leagues.0"}));
+		expect(standing.getByText("models:leagues.1")).toBeTruthy();
+		expect(screen.getByTestId("league-rewards-0")).toBeTruthy();
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+	it("allows an explicit retry after a failed reward request", async () => {
+		jest.mocked(GameClient.request).mockRejectedValueOnce(new Error("Offline"))
+			.mockResolvedValueOnce({kind: "alternative", packetName: "LeagueRewardRes"});
+		await render(<LeaguesContent data={LEAGUES} />);
+		await fireEvent.press(screen.getByRole("button", {name: "app:arena.leagues.claim"}));
+		await screen.findByText("app:common.connectionError");
+		expect(GameClient.request).toHaveBeenCalledTimes(1);
+		await fireEvent.press(screen.getByRole("button", {name: "app:arena.leagues.claim", disabled: false}));
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalledTimes(2));
+		expect(screen.queryByText("app:common.connectionError")).toBeNull();
+		expect(screen.getByRole("button", {name: "app:arena.leagues.claim", disabled: false})).toBeTruthy();
 	});
 });

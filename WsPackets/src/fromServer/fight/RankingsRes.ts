@@ -1,6 +1,6 @@
 import { FromServerPacket } from "../FromServerPacket";
 import {
-	FightHistoryEntry, LeagueRewardOutcome, RankingEntry, TopDataType, TopTiming, LeagueInfo
+	FightHistoryEntry, LeagueRewardAvailability, LeagueRewardOutcome, RankingEntry, TopDataType, TopTiming, LeagueInfo
 } from "../../objects/Rankings";
 
 export class FightHistoryRes extends FromServerPacket {
@@ -21,6 +21,8 @@ export class LeagueInfoRes extends FromServerPacket {
 	currentLeagueId!: number;
 
 	glory!: number;
+
+	rewardAvailability!: LeagueRewardAvailability;
 }
 export class TopRes extends FromServerPacket {
 	public static readonly wireName = "TopRes";

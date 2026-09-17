@@ -14,10 +14,11 @@ export default class LeagueInfoCommand {
 	@commandRequires(CommandLeagueInfoReq, {
 		notBlocked: false, whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	public execute(response: CrowniclesPacket[], player: Player): void {
+	public async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
 		response.push(makePacket(CommandLeagueInfoRes, {
 			currentLeagueId: player.getLeague().id,
 			glory: player.getGloryPoints(),
+			rewardAvailability: await player.getLeagueRewardAvailability(),
 			leagues: LeagueDataController.instance.getAllValues().sort((first, second) => first.minGloryPoints - second.minGloryPoints)
 				.map(league => ({
 					id: league.id,

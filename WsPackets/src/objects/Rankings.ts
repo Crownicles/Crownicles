@@ -44,6 +44,18 @@ export type RankingEntry = {
 export type LeagueInfo = {
 	id: number; minGloryPoints: number; maxGloryPoints: number; money: number; xp: number; winMoney: number;
 };
+
+/**
+ * Why the season reward cannot be claimed yet, so the app can say so before the player asks.
+ * `null` means it is claimable right now.
+ */
+export type LeagueRewardAvailability =
+	| {
+		type: "notSunday"; nextSunday: number;
+	}
+	| { type: "noPoints" }
+	| { type: "alreadyClaimed" }
+	| null;
 export type LeagueRewardOutcome =
 	| {
 		type: "success"; score: number; money: number; xp: number; gloryPoints: number; oldLeagueId: number; rank: number;
