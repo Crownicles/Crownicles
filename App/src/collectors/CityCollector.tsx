@@ -236,33 +236,17 @@ function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseI
 	return cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting});
 }
 
-export function CityMenu({collector, onChoose, submitting}: CityMenuProps): ReactNode {
+type CityNavigation = {
+	submenu: CitySubmenu | null;
+	setSubmenu: (submenu: CitySubmenu | null) => void;
+	innId: string | undefined;
+	navigate: (item: CityNavigationItem) => void;
+};
+
+function useCityNavigation(): CityNavigation {
 	const router = useRouter();
-	const [pendingChoice, setPendingChoice] = useState<PendingCityChoice | null>(null);
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);
 	const [innId, setInnId] = useState<string>();
-	if (collector.data.type !== CITY_DATA_KINDS.CITY) return null;
-	const locked = submitting;
-	const entries = collector.reactions.map((reaction, index) => ({reaction, index}));
-	const data = collector.data;
-	const snapshot = data.data.snapshot;
-	const model = groupCityEntries(entries, cityGroupingOptions(data));
-	const locationName = i18n.t(`models:map_locations.${data.data.mapLocationId}.name`);
-	const locationDescription = i18n.t(`models:map_locations.${data.data.mapLocationId}.description`);
-	const mapIcon = AppIcons.getIconOrNull(`mapTypes.${data.data.mapTypeId}`);
-	const choose = (index: number): void => {
-		if (locked) return;
-		onChoose(index);
-	};
-	const requestChoice = (index: number): void => {
-		if (locked) return;
-		const entry = entries[index];
-		if (entry && CITY_REACTIONS_REQUIRING_CONFIRMATION.has(entry.reaction.type)) {
-			setPendingChoice({entry, collector, onChoose});
-			return;
-		}
-		choose(index);
-	};
 	const navigate = (item: CityNavigationItem): void => {
 		if (item.view in HOME_SERVICE_DESTINATIONS) {
 			const service = HOME_SERVICE_DESTINATIONS[item.view as keyof typeof HOME_SERVICE_DESTINATIONS];
@@ -272,20 +256,64 @@ export function CityMenu({collector, onChoose, submitting}: CityMenuProps): Reac
 		setInnId(item.innId);
 		setSubmenu(item.view);
 	};
+	return {submenu, setSubmenu, innId, navigate};
+}
+
+type CityChoice = {choose: (index: number) => void; pending: PendingCityChoice | null; clearPending: () => void};
+
+function useCityChoice({collector, onChoose, entries, locked}: {
+	collector: CityMenuData;
+	onChoose: CityMenuProps["onChoose"];
+	entries: CityEntry[];
+	locked: boolean;
+}): CityChoice {
+	const [pending, setPending] = useState<PendingCityChoice | null>(null);
+	const choose = (index: number): void => {
+		if (locked) return;
+		const entry = entries[index];
+		if (entry && CITY_REACTIONS_REQUIRING_CONFIRMATION.has(entry.reaction.type)) {
+			setPending({entry, collector, onChoose});
+			return;
+		}
+		onChoose(index);
+	};
+	return {choose, pending, clearPending: (): void => setPending(null)};
+}
+
+function PendingCityConfirmation({pending, locked, onClose}: {pending: PendingCityChoice; locked: boolean; onClose: () => void}): ReactNode {
+	return <CityActionConfirmation
+		entry={pending.entry}
+		collector={pending.collector}
+		onConfirm={(): void => {
+			if (locked) return;
+			onClose();
+			pending.onChoose(pending.entry.index);
+		}}
+		onCancel={onClose}
+	/>;
+}
+
+export function CityMenu({collector, onChoose, submitting}: CityMenuProps): ReactNode {
+	const {
+		submenu, setSubmenu, innId, navigate
+	} = useCityNavigation();
+	const locked = submitting;
+	const entries = collector.reactions.map((reaction, index) => ({reaction, index}));
+	const {
+		choose, pending, clearPending
+	} = useCityChoice({collector, onChoose, entries, locked});
+	if (collector.data.type !== CITY_DATA_KINDS.CITY) return null;
+	const data = collector.data;
+	const snapshot = data.data.snapshot;
+	const model = groupCityEntries(entries, cityGroupingOptions(data));
+	const locationName = i18n.t(`models:map_locations.${data.data.mapLocationId}.name`);
+	const locationDescription = i18n.t(`models:map_locations.${data.data.mapLocationId}.description`);
+	const mapIcon = AppIcons.getIconOrNull(`mapTypes.${data.data.mapTypeId}`);
 	const gardenOnly = data.data.gardenOnly === true;
 	const gardenCloseIndex = gardenOnly ? collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE) : -1;
 	return <>
-		{cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose: requestChoice, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting})}
-		{pendingChoice ? <CityActionConfirmation
-			entry={pendingChoice.entry}
-			collector={pendingChoice.collector}
-			onConfirm={(): void => {
-				if (locked) return;
-				setPendingChoice(null);
-				pendingChoice.onChoose(pendingChoice.entry.index);
-			}}
-			onCancel={(): void => setPendingChoice(null)}
-		/> : null}
+		{cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting})}
+		{pending ? <PendingCityConfirmation pending={pending} locked={locked} onClose={clearPending} /> : null}
 	</>;
 }
 

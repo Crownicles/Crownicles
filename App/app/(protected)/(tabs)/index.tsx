@@ -585,7 +585,7 @@ function adventureSubtitle({packet, currentTime, metrics, destination}: Adventur
 function ReportAdvance({reportReady, reportAction}: {reportReady: boolean; reportAction: GameMutation<void>}): ReactNode {
 	return <>
 		{reportAction.message ? <Note>{reportAction.message}</Note> : null}
-		<Button variant="primary" disabled={!reportReady || reportAction.pending} onPress={(): Promise<void> => reportAction.submit(undefined)}>{i18n.t(reportAction.pending ? "app:common.loading" : "app:adventure.continueReport")}</Button>
+		<Button variant="primary" disabled={!reportReady || reportAction.pending} onPress={(): Promise<void> => reportAction.submit()}>{i18n.t(reportAction.pending ? "app:common.loading" : "app:adventure.continueReport")}</Button>
 	</>;
 }
 

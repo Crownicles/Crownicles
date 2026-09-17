@@ -184,6 +184,13 @@ function LeagueRewards({league}: {league: LeagueInfo}): ReactNode {
 
 type LeagueChoiceProps = {league: LeagueInfo; current: boolean; locked: boolean; selected: boolean; onSelect: (id: number) => void};
 
+function LeagueThreshold({league, current}: {league: LeagueInfo; current: boolean}): ReactNode {
+	return <View style={styles.leagueThreshold}>
+		<View style={styles.glory}><Text style={styles.leagueThresholdValue}>{formatNumber(league.minGloryPoints)}</Text><UnitIcon unit="glory" size={12} /></View>
+		{current ? <Text style={styles.leagueYou}>{i18n.t("app:arena.you")}</Text> : null}
+	</View>;
+}
+
 function LeagueChoice({league, current, locked, selected, onSelect}: LeagueChoiceProps): ReactNode {
 	return <View style={styles.leagueEntry}>
 		<Pressable accessibilityRole="button" accessibilityLabel={i18n.t(`models:leagues.${league.id}`)} accessibilityState={{selected, expanded: selected}} onPress={(): void => onSelect(league.id)} style={({pressed}) => [styles.leagueChoice, selected && styles.leagueSelected, current && styles.leagueCurrent, locked && !selected && styles.leagueLocked, pressed && styles.leaguePressed]}>
@@ -192,10 +199,7 @@ function LeagueChoice({league, current, locked, selected, onSelect}: LeagueChoic
 				<Text style={styles.leagueName}>{i18n.t(`models:leagues.${league.id}`)}</Text>
 				<Text style={styles.leagueCaption}>{i18n.t("app:arena.leagues.threshold")}</Text>
 			</View>
-			<View style={styles.leagueThreshold}>
-				<View style={styles.glory}><Text style={styles.leagueThresholdValue}>{formatNumber(league.minGloryPoints)}</Text><UnitIcon unit="glory" size={12} /></View>
-				{current ? <Text style={styles.leagueYou}>{i18n.t("app:arena.you")}</Text> : null}
-			</View>
+			<LeagueThreshold league={league} current={current} />
 			<View style={selected && styles.leagueChevronOpen}><ChevronDown size={16} color={Theme.colors.muted} /></View>
 		</Pressable>
 		{selected ? <LeagueRewards league={league} /> : null}

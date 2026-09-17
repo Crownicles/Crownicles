@@ -64,12 +64,16 @@ import {
 	ReactionCollectorApartmentBuyReaction,
 	ReactionCollectorApartmentClaimRentReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
-import { Guilds } from "../../core/database/game/models/Guild";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import {
 	buildGuildDomainSnapshot, buildGuildFoodShopSnapshot
 } from "../../core/report/ReportGuildDomainData";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import {
+	InventorySlot, InventorySlots
+} from "../../core/database/game/models/InventorySlot";
 import { Homes } from "../../core/database/game/models/Home";
 import { Materials } from "../../core/database/game/models/Material";
 import {
@@ -610,6 +614,65 @@ function buildOtherCityServices(currentCity: City): ReactionCollectorCityData["o
 	}));
 }
 
+type CitySnapshotPlayerData = {
+	player: Player; inventory: InventorySlot[]; materialMap: Map<number, number>;
+};
+
+type CityCraftServices = Pick<ReactionCollectorCityData, "blacksmith" | "scrapDealer" | "royalBlacksmith">;
+
+async function buildCityCraftServices(playerData: CitySnapshotPlayerData, city: City): Promise<CityCraftServices> {
+	const {
+		player, inventory, materialMap
+	} = playerData;
+	return {
+		blacksmith: city.hasService(CITY_SERVICES.BLACKSMITH)
+			? buildBlacksmithData(inventory, materialMap, player)
+			: undefined,
+		scrapDealer: city.hasService(CITY_SERVICES.SCRAP_DEALER)
+			? buildScrapDealerData(inventory, player)
+			: undefined,
+		royalBlacksmith: city.hasService(CITY_SERVICES.ROYAL_BLACKSMITH)
+			? await buildRoyalBlacksmithData(inventory, materialMap, player)
+			: undefined
+	};
+}
+
+/**
+ * The domain notary only shows up for a chief standing outside of their own domain city,
+ * to buy a first domain or to relocate the existing one.
+ */
+function buildGuildDomainNotaryData(player: Player, guild: Guild | null, city: City): ReactionCollectorCityData["guildDomainNotary"] {
+	if (!guild || guild.chiefId !== player.id || guild.domainCityId === city.id) {
+		return undefined;
+	}
+	const cost = guild.domainCityId
+		? GuildDomainConstants.DOMAIN_RELOCATION_COST
+		: GuildDomainConstants.DOMAIN_PURCHASE_COST;
+	return {
+		hasDomain: guild.domainCityId !== null,
+		cost,
+		treasury: guild.treasury,
+		isChief: true,
+		canAfford: guild.treasury >= cost
+	};
+}
+
+function buildCityInns(city: City): ReactionCollectorCityData["inns"] {
+	return city.inns.map(inn => ({
+		innId: inn.id,
+		meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
+			mealId: meal.id,
+			price: meal.price,
+			energy: meal.energy
+		})),
+		rooms: inn.rooms.map(room => ({
+			roomId: room.id,
+			price: room.price,
+			health: room.health
+		}))
+	}));
+}
+
 export async function buildCitySnapshot(
 	player: Player,
 	city: City
@@ -624,39 +687,14 @@ export async function buildCitySnapshot(
 	const playerMaterials = await Materials.getPlayerMaterials(player.id);
 	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
 
-	// Build blacksmith data if city has a blacksmith
-	const blacksmith = city.hasService(CITY_SERVICES.BLACKSMITH)
-		? buildBlacksmithData(playerInventory, playerMaterialMap, player)
-		: undefined;
-
-	const scrapDealer = city.hasService(CITY_SERVICES.SCRAP_DEALER)
-		? buildScrapDealerData(playerInventory, player)
-		: undefined;
-
-	// Build royal blacksmith data if city has a royal blacksmith (e.g. royal castle)
-	const royalBlacksmith = city.hasService(CITY_SERVICES.ROYAL_BLACKSMITH)
-		? await buildRoyalBlacksmithData(playerInventory, playerMaterialMap, player)
-		: undefined;
+	const craftServices = await buildCityCraftServices({
+		player, inventory: playerInventory, materialMap: playerMaterialMap
+	}, city);
 
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
 	const guildDomain = guild?.domainCityId === city.id
 		? await buildGuildDomainSnapshot(player, guild)
 		: undefined;
-
-	const isGuildChief = guild !== null && guild.chiefId === player.id;
-	let guildDomainNotary: ReactionCollectorCityData["guildDomainNotary"];
-	if (isGuildChief && guild.domainCityId !== city.id) {
-		const cost = guild.domainCityId
-			? GuildDomainConstants.DOMAIN_RELOCATION_COST
-			: GuildDomainConstants.DOMAIN_PURCHASE_COST;
-		guildDomainNotary = {
-			hasDomain: guild.domainCityId !== null,
-			cost,
-			treasury: guild.treasury,
-			isChief: true,
-			canAfford: guild.treasury >= cost
-		};
-	}
 
 	/*
 	 * Apartment notary: present in every city. Lets the player buy an apartment
@@ -673,26 +711,14 @@ export async function buildCitySnapshot(
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
 		mapLocationId: player.getDestinationId()!,
 		availableServices: getAvailableCityServices({
-			[CITY_SERVICES.BLACKSMITH]: blacksmith !== undefined,
-			[CITY_SERVICES.SCRAP_DEALER]: scrapDealer !== undefined,
-			[CITY_SERVICES.ROYAL_BLACKSMITH]: royalBlacksmith !== undefined,
+			[CITY_SERVICES.BLACKSMITH]: craftServices.blacksmith !== undefined,
+			[CITY_SERVICES.SCRAP_DEALER]: craftServices.scrapDealer !== undefined,
+			[CITY_SERVICES.ROYAL_BLACKSMITH]: craftServices.royalBlacksmith !== undefined,
 			[CITY_SERVICES.ENCHANTER]: enchanter !== undefined,
 			[CITY_SERVICES.BOSS_ARCHIVIST]: city.hasService(CITY_SERVICES.BOSS_ARCHIVIST)
 		}),
 		otherCityServices: buildOtherCityServices(city),
-		inns: city.inns.map(inn => ({
-			innId: inn.id,
-			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
-				mealId: meal.id,
-				price: meal.price,
-				energy: meal.energy
-			})),
-			rooms: inn.rooms.map(room => ({
-				roomId: room.id,
-				price: room.price,
-				health: room.health
-			}))
-		})),
+		inns: buildCityInns(city),
 		shops: await Promise.all((city.shops || []).map(async shopId => ({
 			shopId,
 			isEmpty: await isCityShopEmpty(player, shopId)
@@ -715,12 +741,10 @@ export async function buildCitySnapshot(
 			},
 			city
 		),
-		blacksmith,
-		scrapDealer,
-		royalBlacksmith,
+		...craftServices,
 		guildDomain,
 		guildFoodShop,
-		guildDomainNotary,
+		guildDomainNotary: buildGuildDomainNotaryData(player, guild, city),
 		apartmentNotary
 	};
 }
