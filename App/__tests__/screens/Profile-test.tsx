@@ -83,15 +83,14 @@ describe("Profile screen", () => {
 	it("opens the inventory and returns to the profile", async () => {
 		const view = await render(<Profile />);
 		await fireEvent.press(view.getByRole("button", {name: /app:profile.titles.inventory/}));
-		expect(view.getByText("app:common.back")).toBeTruthy();
-		await fireEvent.press(view.getByText("app:common.back"));
-		expect(view.queryByText("app:common.back")).toBeNull();
+		await fireEvent.press(view.getByLabelText("app:common.back"));
+		expect(view.queryByLabelText("app:common.back")).toBeNull();
 	});
 
 	it("opens missions without keeping the profile behind a modal", async () => {
 		const view = await render(<Profile />);
 		await fireEvent.press(view.getByRole("button", {name: /app:profile.titles.missions/}));
-		expect(view.getByText("app:common.back")).toBeTruthy();
+		expect(view.getByLabelText("app:common.back")).toBeTruthy();
 		expect(view.queryByText("app:profile.titles.statistics")).toBeNull();
 	});
 });

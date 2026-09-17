@@ -253,6 +253,7 @@ export const CrowniclesIcons: {
 		won: string;
 		lost: string;
 		draw: string;
+		menu: string;
 	};
 	items: {
 		drinkPotion: string;
@@ -2714,7 +2715,8 @@ export const CrowniclesIcons: {
 	fightHistory: {
 		won: "🟢",
 		lost: "🔴",
-		draw: "🟡"
+		draw: "🟡",
+		menu: "📜"
 	},
 	items: { drinkPotion: "🥤" },
 	city: {

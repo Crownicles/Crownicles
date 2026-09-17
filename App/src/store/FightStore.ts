@@ -2,7 +2,7 @@ import {useSyncExternalStore} from "react";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {FightResumeReq} from "ws-packets/src/fromClient/FightReq";
 import {FightIntroductionRes, FightStatusRes, FightLogRes, FightEndRes, FightRewardRes, FightWaitRes, FightErrorRes, FightResumeRes} from "ws-packets/src/fromServer/fight/FightRes";
-import {FightIntroduction, FightStatus, FightLogEntry, FightEnd, FightReward, FightError} from "ws-packets/src/objects/Fight";
+import {FightIntroduction, FightStatus, FightLogEntry, FightEnd, FightReward, FightError, FIGHT_ERRORS} from "ws-packets/src/objects/Fight";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 type Listener = () => void;
@@ -27,7 +27,19 @@ class FightStore {
 		client.registerPushedPacketHandler<FightWaitRes>(FightWaitRes.wireName, () => this.update({waiting: true}));
 		client.registerPushedPacketHandler<FightEndRes>(FightEndRes.wireName, packet => this.update({result: packet.result, waiting: false, visible: true}));
 		client.registerPushedPacketHandler<FightRewardRes>(FightRewardRes.wireName, packet => this.update({reward: packet.reward, waiting: false, visible: true}));
-		client.registerPushedPacketHandler<FightErrorRes>(FightErrorRes.wireName, packet => this.update({error: packet.error, waiting: false, visible: true}));
+		client.registerPushedPacketHandler<FightErrorRes>(FightErrorRes.wireName, packet => this.fail(packet.error));
+	}
+
+	/**
+	 * Only a fight that already started deserves the battle screen: declining is the player's own
+	 * doing, and a refused launch belongs to the arena that asked for it.
+	 */
+	private fail(error: FightError): void {
+		if (error === FIGHT_ERRORS.REFUSED) {
+			this.reset();
+			return;
+		}
+		this.update({error, waiting: false, visible: error === FIGHT_ERRORS.BUGGED});
 	}
 
 	private introduce(introduction: FightIntroduction): void {

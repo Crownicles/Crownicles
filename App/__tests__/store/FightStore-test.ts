@@ -1,7 +1,7 @@
 import {fightStore} from "@/src/store/FightStore";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
-import {FightIntroductionRes, FightLogRes, FightEndRes, FightRewardRes, FightStatusRes} from "ws-packets/src/fromServer/fight/FightRes";
-import {FightIntroduction, FightEnd, FightStatus} from "ws-packets/src/objects/Fight";
+import {FightIntroductionRes, FightLogRes, FightEndRes, FightRewardRes, FightStatusRes, FightErrorRes} from "ws-packets/src/fromServer/fight/FightRes";
+import {FightIntroduction, FightEnd, FightStatus, FIGHT_ERRORS} from "ws-packets/src/objects/Fight";
 import {act, renderHook, waitFor} from "@testing-library/react-native";
 import {useFightPlayback} from "@/src/store/useFightPlayback";
 import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
@@ -119,6 +119,20 @@ describe("fight session", () => {
 		registry.dispatch(FightStatusRes.wireName, {status: {...status(1), fightId: "other"}});
 		registry.dispatch(FightLogRes.wireName, {entry: {fightId: "other", fighter: {isSelf: false}, fightActionId: "heavyAttack"}});
 		expect(fightStore.getSnapshot()).toMatchObject({status: null, logs: []});
+	});
+	it("says nothing when the player declines the duel but still reports real failures", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightErrorRes.wireName, {error: FIGHT_ERRORS.REFUSED});
+		expect(fightStore.getSnapshot()).toMatchObject({error: null, visible: false});
+		registry.dispatch(FightErrorRes.wireName, {error: FIGHT_ERRORS.NO_OPPONENT});
+		expect(fightStore.getSnapshot()).toMatchObject({error: FIGHT_ERRORS.NO_OPPONENT, visible: false});
+	});
+	it("opens the battle screen only for a fight that was actually interrupted", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightErrorRes.wireName, {error: FIGHT_ERRORS.ENERGY});
+		expect(fightStore.getSnapshot()).toMatchObject({error: FIGHT_ERRORS.ENERGY, visible: false});
+		registry.dispatch(FightErrorRes.wireName, {error: FIGHT_ERRORS.BUGGED});
+		expect(fightStore.getSnapshot()).toMatchObject({error: FIGHT_ERRORS.BUGGED, visible: true});
 	});
 	it("preserves its journal when a resumed introduction arrives for the same duel", () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");

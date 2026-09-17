@@ -4,7 +4,8 @@ import {Coins, Flag, Medal, Trophy, Swords} from "@/src/design/FightIcons";
 import {FightEnd, FightReward} from "ws-packets/src/objects/Fight";
 import {KeyValue, Note, Panel} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
-import {formatNumber, formatSignedNumber} from "@/src/display/Amounts";
+import {formatGlory, formatNumber, formatSignedNumber} from "@/src/display/Amounts";
+import {leagueName} from "@/src/display/Leagues";
 import {fighterName} from "@/src/display/Fight";
 import {i18n} from "@/src/translations/i18n";
 
@@ -30,8 +31,8 @@ function FightRewards({reward}: {reward: FightReward}): ReactNode {
 			<View style={styles.reward}><Flag size={23} color={Theme.colors.blue} /><Text style={styles.rewardValue}>{formatNumber(reward.points)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:profile.fields.score")}</Text></View>
 		</View>
 		<View style={styles.resultDetails}>
-			<KeyValue label={i18n.t("app:arena.glory")} value={i18n.t("app:arena.gloryChange", {before: ranking.oldGlory, after: ranking.newGlory})} />
-			<KeyValue label={i18n.t("app:arena.league")} value={i18n.t(`models:leagues.${ranking.newLeagueId}`)} />
+			<KeyValue label={i18n.t("app:arena.glory")} value={i18n.t("app:arena.gloryChange", {before: ranking.oldGlory, after: formatGlory(ranking.newGlory)})} />
+			<KeyValue label={i18n.t("app:arena.league")} value={leagueName(ranking.newLeagueId)} />
 		</View>
 		{reward.petLoveChange ? <Note>{i18n.t("app:arena.petLove", {count: reward.petLoveChange.loveChange})}</Note> : null}
 	</>;

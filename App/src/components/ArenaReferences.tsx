@@ -12,7 +12,7 @@ import {GameClient} from "@/src/networking/GameClient";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
 import {Note, Panel, SectionHeader} from "@/src/design/Primitives";
-import {ArrowRight, ChevronDown, Clock3, Coins, Medal, Shield, Sparkles, Swords, Trophy} from "@/src/design/FightIcons";
+import {ArrowRight, ChevronDown, Clock3, Medal, Shield, Swords, Trophy} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
 	leagueChoice: {minHeight: 76, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"},
 	leagueSelected: {backgroundColor: Theme.colors.wash},
 	leagueCurrent: {borderLeftColor: Theme.colors.green},
+	leagueLocked: {opacity: 0.45},
 	leagueChoiceEmblem: {width: 32, height: 32, flexShrink: 0, alignItems: "center", justifyContent: "center"},
 	leagueName: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink},
 	leagueThreshold: {alignItems: "flex-end", maxWidth: "35%", gap: 3, flexShrink: 1},
@@ -136,6 +137,12 @@ function LeagueEmblem({leagueId, size}: {leagueId: number; size: number}): React
 	return icon ? <TwemojiIcon emoji={icon} size={size} /> : <Medal size={size} color={Theme.colors.gold} />;
 }
 
+/** The arena speaks the game's own vocabulary: its units wear the emojis the rest of the game uses. */
+function UnitIcon({unit, size}: {unit: string; size: number}): ReactNode {
+	const icon = AppIcons.getIconOrNull(`unitValues.${unit}`);
+	return icon ? <TwemojiIcon emoji={icon} size={size} /> : null;
+}
+
 function LeagueStanding({data, next}: {data: LeagueInfoRes; next?: LeagueInfo}): ReactNode {
 	return <View style={styles.leagueStanding} testID="league-standing">
 		<View style={styles.leagueIdentity}>
@@ -147,7 +154,7 @@ function LeagueStanding({data, next}: {data: LeagueInfoRes; next?: LeagueInfo}):
 		</View>
 		<View style={styles.leagueGlory}>
 			<Text style={styles.leagueCaption}>{i18n.t("app:arena.glory")}</Text>
-			<View style={styles.glory}><Text style={styles.leagueGloryAmount}>{formatNumber(data.glory)}</Text><Sparkles size={22} color={Theme.colors.gold} /></View>
+			<View style={styles.glory}><Text style={styles.leagueGloryAmount}>{formatNumber(data.glory)}</Text><UnitIcon unit="glory" size={20} /></View>
 		</View>
 		{next ? <FightGauge label={i18n.t(`models:leagues.${next.id}`)} value={data.glory} max={next.minGloryPoints} color={Theme.colors.green} /> : null}
 	</View>;
@@ -157,36 +164,36 @@ function LeagueRewards({league}: {league: LeagueInfo}): ReactNode {
 	return <View style={styles.leagueRewards} testID={`league-rewards-${league.id}`}>
 		<View style={styles.leagueSeasonRewards}>
 			<View style={styles.leagueReward}>
-				<Coins size={20} color={Theme.colors.gold} />
+				<UnitIcon unit="money" size={19} />
 				<Text style={styles.leagueRewardAmount}>{formatNumber(league.money)}</Text>
 				<Text style={styles.leagueCaption}>{i18n.t("app:arena.leagues.seasonMoney")}</Text>
 			</View>
 			<View style={styles.leagueReward}>
-				<Sparkles size={20} color={Theme.colors.blue} />
+				<UnitIcon unit="xp" size={19} />
 				<Text style={styles.leagueRewardAmount}>{formatNumber(league.xp)}</Text>
 				<Text style={styles.leagueCaption}>{i18n.t("app:arena.leagues.seasonXp")}</Text>
 			</View>
 		</View>
 		<View style={styles.leagueWinReward}>
-			<Swords size={17} color={Theme.colors.muted} />
+			<UnitIcon unit="attack" size={15} />
 			<Text style={styles.leagueWinLabel}>{i18n.t("app:arena.leagues.winMoney")}</Text>
-			<View style={styles.glory}><Text style={styles.leagueThresholdValue}>{formatNumber(league.winMoney)}</Text><Coins size={15} color={Theme.colors.gold} /></View>
+			<View style={styles.glory}><Text style={styles.leagueThresholdValue}>{formatNumber(league.winMoney)}</Text><UnitIcon unit="money" size={14} /></View>
 		</View>
 	</View>;
 }
 
-type LeagueChoiceProps = {league: LeagueInfo; current: boolean; selected: boolean; onSelect: (id: number) => void};
+type LeagueChoiceProps = {league: LeagueInfo; current: boolean; locked: boolean; selected: boolean; onSelect: (id: number) => void};
 
-function LeagueChoice({league, current, selected, onSelect}: LeagueChoiceProps): ReactNode {
+function LeagueChoice({league, current, locked, selected, onSelect}: LeagueChoiceProps): ReactNode {
 	return <View style={styles.leagueEntry}>
-		<Pressable accessibilityRole="button" accessibilityLabel={i18n.t(`models:leagues.${league.id}`)} accessibilityState={{selected, expanded: selected}} onPress={(): void => onSelect(league.id)} style={({pressed}) => [styles.leagueChoice, selected && styles.leagueSelected, current && styles.leagueCurrent, pressed && styles.leaguePressed]}>
+		<Pressable accessibilityRole="button" accessibilityLabel={i18n.t(`models:leagues.${league.id}`)} accessibilityState={{selected, expanded: selected}} onPress={(): void => onSelect(league.id)} style={({pressed}) => [styles.leagueChoice, selected && styles.leagueSelected, current && styles.leagueCurrent, locked && !selected && styles.leagueLocked, pressed && styles.leaguePressed]}>
 			<View style={styles.leagueChoiceEmblem}><LeagueEmblem leagueId={league.id} size={26} /></View>
 			<View style={styles.body}>
 				<Text style={styles.leagueName}>{i18n.t(`models:leagues.${league.id}`)}</Text>
 				<Text style={styles.leagueCaption}>{i18n.t("app:arena.leagues.threshold")}</Text>
 			</View>
 			<View style={styles.leagueThreshold}>
-				<View style={styles.glory}><Text style={styles.leagueThresholdValue}>{formatNumber(league.minGloryPoints)}</Text><Sparkles size={12} color={Theme.colors.gold} /></View>
+				<View style={styles.glory}><Text style={styles.leagueThresholdValue}>{formatNumber(league.minGloryPoints)}</Text><UnitIcon unit="glory" size={12} /></View>
 				{current ? <Text style={styles.leagueYou}>{i18n.t("app:arena.you")}</Text> : null}
 			</View>
 			<View style={selected && styles.leagueChevronOpen}><ChevronDown size={16} color={Theme.colors.muted} /></View>
@@ -228,7 +235,7 @@ export function LeaguesContent({data}: {data: LeagueInfoRes}): ReactNode {
 		<LeagueClaimButton pending={pending} availability={data.rewardAvailability} onClaim={(): Promise<void> => open(REWARD_MENU)} />
 		{message ? <Note>{message}</Note> : null}
 		<SectionHeader>{i18n.t("app:arena.leagues.catalog")}</SectionHeader>
-		<View style={styles.leagueList}>{leagues.map(league => <LeagueChoice key={league.id} league={league} current={league.id === data.currentLeagueId} selected={league.id === selected} onSelect={selectLeague} />)}</View>
+		<View style={styles.leagueList}>{leagues.map(league => <LeagueChoice key={league.id} league={league} current={league.id === data.currentLeagueId} locked={league.minGloryPoints > data.glory} selected={league.id === selected} onSelect={selectLeague} />)}</View>
 	</>;
 }
 

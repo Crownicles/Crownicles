@@ -7,7 +7,8 @@ import {i18n} from "@/src/translations/i18n";
 export const AMOUNT_UNITS = {
 	MONEY: "money",
 	GEM: "gem",
-	TOKEN: "token"
+	TOKEN: "token",
+	GLORY: "glory"
 } as const;
 
 export type AmountUnit = typeof AMOUNT_UNITS[keyof typeof AMOUNT_UNITS];
@@ -30,4 +31,8 @@ export function formatAmount(value: number, unit: AmountUnit): string {
 
 export function formatMoney(value: number): string {
 	return formatAmount(value, AMOUNT_UNITS.MONEY);
+}
+
+export function formatGlory(value: number): string {
+	return formatAmount(value, AMOUNT_UNITS.GLORY);
 }

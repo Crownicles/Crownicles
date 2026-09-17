@@ -8,11 +8,12 @@ import {Button, ButtonRow, Note, Panel, Row, SectionHeader} from "@/src/design/P
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
+import {leagueName} from "@/src/display/Leagues";
 import {i18n} from "@/src/translations/i18n";
 
 function rankingSubtitle(entry: RankingEntry): string {
 	const labels = [i18n.t("app:guild.level", {level: entry.level})];
-	if (entry.leagueId !== undefined) labels.push(i18n.t(`models:leagues.${entry.leagueId}`));
+	if (entry.leagueId !== undefined) labels.push(leagueName(entry.leagueId));
 	if (entry.afk) labels.push(i18n.t("app:arena.rankings.inactive"));
 	if (entry.mapType) labels.push(AppIcons.getIcon(`mapTypes.${entry.mapType}`));
 	if (entry.effectId) labels.push(AppIcons.getIcon(`effects.${entry.effectId}`));
