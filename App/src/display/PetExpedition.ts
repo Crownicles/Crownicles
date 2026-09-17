@@ -6,6 +6,10 @@ export function expeditionPetName(pet: PetBasicInfo): string {
 	return pet.petNickname || i18n.t(`models:pets.${pet.petTypeId}`, {context: pet.petSex === "f" ? "female" : "male"});
 }
 
+export function expeditionPetLabel(pet: PetBasicInfo): string {
+	return i18n.t("app:pet.name", {icon: AppIcons.getIcon(`pets.${pet.petTypeId}.${pet.petSex === "f" ? "emoteFemale" : "emoteMale"}`), name: expeditionPetName(pet)});
+}
+
 export function expeditionLocationName(location: ExpeditionLocation): string {
 	const name = location.mapLocationId === undefined
 		? i18n.t(`models:map_types.${location.locationType}.name`)

@@ -1,6 +1,6 @@
 import {ReactNode, useState} from "react";
 import {Pressable, StyleSheet, Text, View} from "react-native";
-import {Clock3, Info, Wind, Swords, Shield, Zap} from "@/src/design/FightIcons";
+import {Clock3, Info, Wind, Swords} from "@/src/design/FightIcons";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {FIGHT_DATA_KINDS, FIGHT_REACTION_KINDS, GENERIC_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {Button, ButtonRow, Confirmation, KeyValue, Note} from "@/src/design/Primitives";
@@ -13,8 +13,8 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {useFight} from "@/src/store/FightStore";
 import {fightActionName} from "@/src/display/Fight";
-import {expeditionPetName} from "@/src/display/PetExpedition";
-import {formatNumber} from "@/src/display/Amounts";
+import {expeditionPetLabel} from "@/src/display/PetExpedition";
+import {formatGlory, formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
 type CollectorProps = {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean};
@@ -73,12 +73,12 @@ export function FightConfirmCollector({collector, onChoose, submitting}: Collect
 	const refuse = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE);
 	return <Confirmation title={i18n.t("app:arena.confirm")} onRequestClose={(): void => answer(refuse)}>
 		<View style={styles.preparation}>{classIcon ? <TwemojiIcon emoji={classIcon} size={44} /> : <Swords size={36} color={Theme.colors.muted} />}<Text style={styles.preparationName}>{i18n.t(`models:classes.${stats.classId}`)}</Text></View>
-		<FightGauge icon={Zap} label={i18n.t("app:arena.energy")} value={stats.energy.value} max={stats.energy.max} color={Theme.colors.green} reducedMotion />
-		<View style={styles.preparationStats}>{([{key: "attack", Icon: Swords}, {key: "defense", Icon: Shield}, {key: "speed", Icon: Wind}] as const).map(({key, Icon}) => <View key={key} style={styles.preparationStat}><Icon size={18} color={Theme.colors.muted} /><Text style={styles.statValue}>{formatNumber(stats[key])}</Text><Text style={styles.statLabel}>{i18n.t(`app:arena.stats.${key}`)}</Text></View>)}</View>
-			<KeyValue label={i18n.t("app:arena.glory")} value={formatNumber(stats.fightRanking.glory)} />
-			{stats.pet ? <KeyValue label={i18n.t("app:arena.pet")} value={expeditionPetName(stats.pet)} /> : null}
+		<FightGauge emoji={AppIcons.getIcon("unitValues.energy")} label={i18n.t("app:arena.energy")} value={stats.energy.value} max={stats.energy.max} color={Theme.colors.green} reducedMotion />
+		<View style={styles.preparationStats}>{(["attack", "defense", "speed"] as const).map(key => <View key={key} style={styles.preparationStat}><TwemojiIcon emoji={AppIcons.getIcon(`unitValues.${key}`)} size={18} /><Text style={styles.statValue}>{formatNumber(stats[key])}</Text><Text style={styles.statLabel}>{i18n.t(`app:arena.stats.${key}`)}</Text></View>)}</View>
+			<KeyValue label={i18n.t("app:arena.glory")} value={formatGlory(stats.fightRanking.glory)} />
+			{stats.pet ? <KeyValue label={i18n.t("app:arena.pet")} value={expeditionPetLabel(stats.pet)} /> : null}
 		{stats.pet?.isOnExpedition ? <Note>{i18n.t("app:pet.powers.expedition")}</Note> : null}
-		<ButtonRow><Button variant="primary" disabled={locked || accept < 0} onPress={(): void => answer(accept)}>{i18n.t("app:arena.start")}</Button><Button disabled={locked || refuse < 0} onPress={(): void => answer(refuse)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
+		<ButtonRow><Button variant="primary" icon={Swords} disabled={locked || accept < 0} onPress={(): void => answer(accept)}>{i18n.t("app:arena.start")}</Button><Button disabled={locked || refuse < 0} onPress={(): void => answer(refuse)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
 	</Confirmation>;
 }
 

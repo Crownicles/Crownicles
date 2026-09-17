@@ -11,6 +11,7 @@ import {
 	type ViewStyle
 } from "react-native";
 import {Theme} from "@/src/design/Theme";
+import {LucideIcon} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 
@@ -185,6 +186,7 @@ const actionStyles = StyleSheet.create({
 	buttonRow: {
 		flexDirection: "row",
 		flexWrap: "wrap",
+		justifyContent: "center",
 		gap: 9,
 		marginTop: 14
 	},
@@ -214,6 +216,11 @@ const actionStyles = StyleSheet.create({
 		color: Theme.colors.ink,
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.button,
+	},
+	buttonLabel: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: Theme.spacing.sm
 	},
 	buttonPrimaryText: {
 		color: Theme.colors.paper
@@ -379,6 +386,7 @@ type ButtonProps = {
 	onPress?: () => void;
 	variant?: ButtonVariant;
 	disabled?: boolean;
+	icon?: LucideIcon;
 };
 
 type QuickActionProps = {
@@ -549,11 +557,14 @@ function getButtonStyle(variant: ButtonVariant, disabled: boolean, pressed = fal
 	];
 }
 
-export function Button({children, onPress, variant = "secondary", disabled = false}: ButtonProps): ReactNode {
+export function Button({children, onPress, variant = "secondary", disabled = false, icon: Icon}: ButtonProps): ReactNode {
 	const button = (
-		<Text style={[styles.buttonText, buttonVariantStyles[variant].text]}>
-			{children}
-		</Text>
+		<View style={styles.buttonLabel}>
+			{Icon ? <Icon size={16} color={variant === "primary" ? Theme.colors.paper : Theme.colors.ink} /> : null}
+			<Text style={[styles.buttonText, buttonVariantStyles[variant].text]}>
+				{children}
+			</Text>
+		</View>
 	);
 
 	if (!onPress) {

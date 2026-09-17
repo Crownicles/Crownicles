@@ -826,6 +826,7 @@
     }
   },
   "pet": {
+    "name": "{{icon}} {{name}}",
     "management": {
       "title": "Gestion du familier",
       "transfer": "Transférer",

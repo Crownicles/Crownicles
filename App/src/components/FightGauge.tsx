@@ -2,6 +2,7 @@ import {ReactNode, useEffect, useState} from "react";
 import {Animated, Easing, StyleSheet, Text, View} from "react-native";
 import {LucideIcon} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
@@ -17,7 +18,7 @@ const styles = StyleSheet.create({
 	meterLabel: {flexDirection: "row", alignItems: "center", gap: 5}
 });
 
-export function FightGauge({label, value, max, color, reducedMotion = false, icon: Icon}: {label: string; value: number; max?: number; color: string; reducedMotion?: boolean; icon?: LucideIcon}): ReactNode {
+export function FightGauge({label, value, max, color, reducedMotion = false, icon: Icon, emoji}: {label: string; value: number; max?: number; color: string; reducedMotion?: boolean; icon?: LucideIcon; emoji?: string}): ReactNode {
 	const ratio = max ? Math.max(0, Math.min(1, value / max)) : 1;
 	const [fill] = useState(() => new Animated.Value(ratio));
 	useEffect(() => {
@@ -26,7 +27,7 @@ export function FightGauge({label, value, max, color, reducedMotion = false, ico
 		return (): void => animation.stop();
 	}, [fill, ratio, reducedMotion]);
 	return <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{now: value, ...(max === undefined ? {} : {max})}}>
-		<View style={styles.top}><View style={styles.meterLabel}>{Icon ? <Icon size={15} color={color} /> : null}<Text style={Icon ? styles.resourceTitle : styles.label}>{label}</Text></View><Text style={styles.value} adjustsFontSizeToFit minimumFontScale={0.8} numberOfLines={1}>{max === undefined ? formatNumber(value) : i18n.t("app:profile.formats.progress", {value, max})}</Text></View>
+		<View style={styles.top}><View style={styles.meterLabel}>{Icon ? <Icon size={15} color={color} /> : null}{emoji ? <TwemojiIcon emoji={emoji} size={15} /> : null}<Text style={Icon ?? emoji ? styles.resourceTitle : styles.label}>{label}</Text></View><Text style={styles.value} adjustsFontSizeToFit minimumFontScale={0.8} numberOfLines={1}>{max === undefined ? formatNumber(value) : i18n.t("app:profile.formats.progress", {value, max})}</Text></View>
 		<View style={styles.track}>
 			<Animated.View style={[styles.fill, styles.lossTrail, {backgroundColor: color, width: fill.interpolate({inputRange: [0, 1], outputRange: ["0%", "100%"]})}]} />
 			<View testID="fight-gauge-fill" style={[styles.fill, {backgroundColor: color, width: `${ratio * 100}%`}]} />
