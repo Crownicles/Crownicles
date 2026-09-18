@@ -13,7 +13,7 @@
     "If you want to equip an object, use the {command:switch} command.",
     "To get more information about a specific command, use the {command:help} command followed by the one you want to know more about.",
     "The {command:guilddailybonus} command allows you to receive a reward every 22 hours if you are in a guild.",
-    "Les alias de commande tels que `glouglou` qui existaient dans le bot ont été supprimés lors de l'arrivée des commande slash.",
+    "Commands like 'glouglou' no longer exist. They've been deleted when slash commands arrived.",
     "Use the {command:update} command to get information on the bot's latest update.",
     "Crownicles is also available in other languages! Use the {command:language} command to change this setting.",
     "Crownicles is available in other languages! Use the {command:language} command to change this setting.",
