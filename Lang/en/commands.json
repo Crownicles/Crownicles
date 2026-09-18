@@ -1204,7 +1204,7 @@
           "buyRequiresHome": "The notary politely explains to you that a house is only designed for people who already have an official residence. Purchase a home first before coming back to $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)**.",
           "claimTitle": "{{pseudo}}, rent pierced u!",
           "claimDescription": "The notary gives you **{{rent}} {emote:unitValues.money}** of rent for your home $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)**.",
-          "claimTooLow": "The rent accumulated from your $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)** only takes **{{current}} {emote:unitValues.money}** — it needs at least **{{min}} {emote:unitValues.money}** before you can remove it."
+          "claimTooLow": "The rent accumulated from your accomodation $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)** only takes **{{current}} {emote:unitValues.money}** — it needs at least **{{min}} {emote:unitValues.money}** before you can remove it."
         },
         "upgradeItemTitle": "{{pseudo}}, Equipment Improvement Successful!",
         "upgradeItemDescription": "Your equipment has been upgraded to **Level {{newLevel}}**! The required materials have been consumed.",
