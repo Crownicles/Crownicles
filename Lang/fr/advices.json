@@ -27,7 +27,7 @@
     "Même dressé, un familier peut perdre de l'affection au fil du temps s'il n'est pas nourri régulièrement.",
     "Les échanges d'animaux via le refuge de la guilde ({command:pettransfer}) ne leur font pas perdre d'affection.",
     "Un familier dressé pourra vous apporter des bonus durant votre aventure.",
-    "Vous pouvez donner un surnom à votre familier à l'aide de la commande {command:petnickname}.",
+    "Vous pouvez donner un surnom à votre familier à l'aide de la commande {command:petnick}.",
     "Vous pouvez libérer un familier à l'aide de la commande {command:petfree}.",
     "Les soupes ne sont pas la source de nourriture la plus rentable, mais elles permettent d'augmenter rapidement l'affection d'un familier.",
     "Plus d'informations sur les familiers sont disponibles sur la page du guide qui leur est dédiée: https://guide.crownicles.com/notions-principale/familiers/",

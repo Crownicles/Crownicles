@@ -27,7 +27,7 @@
     "Mesmo que esteja bem treinado, um animal de estimação pode perder o carinho com o passar do tempo se não for alimentado regularmente.",
     "A troca de animais através do refúgio do grémio ({command:pettransfer}) não faz com que percam o afeto.",
     "Um animal de estimação treinado pode trazer-lhe bónus durante a sua aventura.",
-    "Pode dar uma alcunha ao seu animal de estimação utilizando o comando {command:petnickname}.",
+    "Pode dar uma alcunha ao seu animal de estimação utilizando o comando {command:petnick}.",
     "É possível libertar um animal de estimação utilizando o comando {command:petfree}.",
     "As sopas não são a fonte de alimentação mais rentável, mas podem aumentar rapidamente o afeto de um animal de estimação.",
     "Para mais informações sobre os animais de estimação, consultar a página do guia que lhes é dedicada: https://guide.draftbot.com/notions-principale/familiers/",

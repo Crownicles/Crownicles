@@ -27,7 +27,7 @@
     "A pet may lose affection over time if it is not regularly nourished.",
     "Animal exchanges via the guild shelter ({command:pettransfer}) do not cause them to lose affection.",
     "A trained pet can bring you bonuses during your adventure.",
-    "You can give your pet a nickname using the {command:petnickname} command.",
+    "You can give your pet a nickname using the {command:petnick} command.",
     "You can release a pet with the {command:petfree} command.",
     "Soups are not the most cost-effective source of food, but they can quickly increase a pet's affection.",
     "More information on pets can be found on the page of the guide dedicated to them: https://guide.crownicles.com/notions-principale/familiers/",

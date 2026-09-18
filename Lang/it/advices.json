@@ -27,7 +27,7 @@
     "Anche se ben addestrato, un animale domestico può perdere l'affetto nel corso del tempo se non viene nutrito regolarmente.",
     "Lo scambio di animali tramite il rifugio della gilda ({command:pettransfer}) non fa perdere loro l'affetto.",
     "Un animale domestico addestrato può portarvi dei bonus durante la vostra avventura.",
-    "Potete dare un soprannome al vostro animale domestico usando il comando {command:petnickname}.",
+    "Potete dare un soprannome al vostro animale domestico usando il comando {command:petnick}.",
     "È possibile liberare un animale domestico utilizzando il comando {command:petfree}.",
     "Le zuppe non sono la fonte di cibo più economica, ma possono aumentare rapidamente l'affetto dell'animale.",
     "Ulteriori informazioni sugli animali domestici sono disponibili nella pagina della guida a loro dedicata: https://guide.draftbot.com/notions-principale/familiers/.",

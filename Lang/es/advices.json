@@ -27,7 +27,7 @@
     "Incluso si está bien adiestrado, una mascota puede perder su cariño con el paso del tiempo si no se le alimenta con regularidad.",
     "El intercambio de animales a través del refugio del gremio ({command:pettransfer}) no les hace perder afecto.",
     "Una mascota entrenada puede aportarte bonificaciones durante tu aventura.",
-    "Puedes ponerle un apodo a tu mascota utilizando el comando {command:petnickname}.",
+    "Puedes ponerle un apodo a tu mascota utilizando el comando {command:petnick}.",
     "Puedes liberar a una mascota utilizando el comando {command:petfree}.",
     "Las sopas no son la fuente de alimento más rentable, pero pueden aumentar rápidamente el afecto de una mascota.",
     "Más información sobre los animales domésticos en la página de la guía dedicada a ellos: https://guide.draftbot.com/notions-principale/familiers/",

@@ -27,7 +27,7 @@
     "Selbst ein gut erzogenes Haustier kann mit der Zeit an Zuneigung verlieren, wenn es nicht regelmäßig gefüttert wird.",
     "Durch den Austausch von Tieren über das Tierheim der Gilde ({command:pettransfer}) verlieren sie nicht an Zuneigung.",
     "Ein abgerichteter Vertrauter kann dir während deines Abenteuers Boni verleihen.",
-    "Sie können Ihrem Vertrauten mit dem Befehl {command:petnickname}einen Spitznamen geben.",
+    "Sie können Ihrem Vertrauten mit dem Befehl {command:petnick}einen Spitznamen geben.",
     "Sie können einen Vertrauten mit dem Befehl {command:petfree}befreien.",
     "Suppen sind nicht die ertragreichste Nahrungsquelle, aber sie erhöhen schnell die Zuneigung eines Begleiters.",
     "Weitere Informationen zu Vertrauten finden Sie auf der Vertrautenseite des Leitfadens: https://guide.draftbot.com/notions-principale/familiers/",
