@@ -458,7 +458,7 @@
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
-        "description": "Zeigt die ruhmige Rangfolge des Spiels pro Schicht von 15 Spielern an. Die Liga der Spieler wird ebenfalls angezeigt. Spieler auf dem gleichen Server, die Sie mit einem blauen Pellet markiert haben."
+        "description": "Zeigt die ruhigeangezeigt. Spieler auf dem gleichen Server, die Sie mit einem blauen Pellet markiert haben."
       },
       "GUILD": {
         "description": "Zeigt Informationen zu einer Gilde an."
@@ -653,7 +653,7 @@
       "it": "Italienisch",
       "pt": "Portugiesisch"
     },
-    "newLanguageSetDescription": "DraftBot wird ab sofort auf Deutsch mit Ihnen sprechen! {emote:languageFlavors.de}",
+    "newLanguageSetDescription": "Crownicles wird ab sofort auf Deutsch mit Ihnen sprechen! {emote:languageFlavors.de}",
     "newLanguageSetTitle": "Sprache geändert",
     "selectLanguage": "Wählen Sie eine Sprache",
     "title": "{emote:commands.language} Auswahl der Sprache"
@@ -1165,7 +1165,7 @@
         "manageHomeDescriptionLevelRequired": "Niveau {{level}} für die nächste Verbesserung erforderlich.",
         "manageHomeDescriptionMaxLevel": "Ihr Haus befindet sich bereits auf der höchsten Stufe.",
         "manageHomeDescriptionUnavailable": "Der Notar hat Ihnen derzeit nichts anzubieten.",
-        "notaryTitle": "{{pseudo}}Sie treffen sich mit dem Notar",
+        "notaryTitle": "{{pseudo}} Sie treffen sich mit dem Notar",
         "notaryIntroduction": "{emote:city.manageHome} Sie betreten das Büro eines Notars, einer Person, die für die Abwicklung von Immobiliengeschäften zuständig ist. Er begrüßt Sie herzlich und prüft Ihre Unterlagen, bevor er Ihnen seine Dienste anbietet.",
         "notaryNewHomeNoMoney": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass Sie nicht genug Geld haben, um ein Haus zu kaufen. Ein neues Haus kostet nämlich **{{cost}} {emote:unitValues.money}** und daher fehlt Ihnen **{{missingMoney}} {emote:unitValues.money}**, um ein Haus kaufen zu können. Er erklärt Ihnen die verschiedenen Optionen, die Ihnen zur Verfügung stehen, und ermutigt Sie, wiederzukommen, wenn Sie genug gespart haben.",
         "notaryNewHomeEnoughMoney": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass Sie genug Geld haben, um ein Haus zu kaufen, das heute **{{cost}} {emote:unitValues.money}** kostet. Er gibt Ihnen Zeit, über Ihre Entscheidung nachzudenken, und wartet auf Ihre Antwort.\n\nMöchten Sie ein Haus kaufen?",
