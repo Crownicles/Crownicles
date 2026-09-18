@@ -25,5 +25,8 @@ export class CommandClassesInfoPacketRes extends CrowniclesPacket {
 				cost: number;
 			}[];
 		}[];
+
+		/** Absent as soon as the player may change class again. */
+		nextChangeTimestamp?: number;
 	};
 }

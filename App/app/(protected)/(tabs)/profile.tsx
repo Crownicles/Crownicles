@@ -11,7 +11,6 @@ import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {Missions as MissionsScreen} from "@/src/components/Missions";
-import {Classes} from "@/src/components/Classes";
 import {Badges, Blessing, Rarity} from "@/src/components/CharacterReference";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {AppIcons} from "@/src/AppIcons";
@@ -37,11 +36,10 @@ const MINIMUM_RATIO = 0;
 const MAXIMUM_RATIO = 1;
 const PET_RARITY_MIN = 0;
 const PET_RARITY_MAX = 8;
-type ProfilePage = "profile" | "inventory" | "missions" | "classes" | "badges" | "rarity" | "blessing" | "utilities";
+type ProfilePage = "profile" | "inventory" | "missions" | "badges" | "rarity" | "blessing" | "utilities";
 const PROFILE_PAGES: {page: Exclude<ProfilePage, "profile">; icon: string}[] = [
 	{page: "inventory", icon: "inventory.stock"},
 	{page: "missions", icon: "missions.campaign"},
-	{page: "classes", icon: "commands.classes"},
 	{page: "badges", icon: "commands.badges"},
 	{page: "rarity", icon: "commands.rarity"},
 	{page: "blessing", icon: "smallEvents.altar"},
@@ -344,7 +342,6 @@ function ProfilePageContent({page, inventory}: {page: Exclude<ProfilePage, "prof
 		case "utilities": return <Utilities />;
 		case "inventory": return <InventorySection state={inventory} />;
 		case "missions": return <MissionsScreen />;
-		case "classes": return <Classes />;
 		case "badges": return <Badges />;
 		case "rarity": return <Rarity />;
 		default: return <Blessing />;

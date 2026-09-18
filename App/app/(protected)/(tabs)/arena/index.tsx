@@ -23,9 +23,9 @@ import {leagueName} from "@/src/display/Leagues";
 import {i18n} from "@/src/translations/i18n";
 
 const FIGHT_MENU: CommandMenu = {request: FightReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [FightErrorRes]};
-const ARENA_PAGES = ["history", "leagues", "rankings"] as const;
+const ARENA_PAGES = ["classes", "history", "leagues", "rankings"] as const;
 type ArenaPage = typeof ARENA_PAGES[number];
-const ARENA_ICONS = {history: "fightHistory.menu", leagues: "unitValues.score", rankings: "top.congrats"} as const;
+const ARENA_ICONS = {classes: "commands.classes", history: "fightHistory.menu", leagues: "unitValues.score", rankings: "top.congrats"} as const;
 const styles = StyleSheet.create({
 	header: {paddingTop: 8, paddingBottom: 26, flexDirection: "row", gap: 14, alignItems: "center"},
 	emblem: {width: 52, height: 52, backgroundColor: Theme.colors.wash, borderRadius: 14, alignItems: "center", justifyContent: "center"},
@@ -69,11 +69,13 @@ function ArenaStartError({error}: {error: FightError}): ReactNode {
 	</View>;
 }
 
-/** The league tile wears the player's own league, as the mockup does. */
-function ArenaLinks({leagueId, onSelect}: {leagueId?: number; onSelect: (page: ArenaPage) => void}): ReactNode {
-	const icon = (page: ArenaPage): string => page === "leagues" && leagueId !== undefined
-		? AppIcons.getIcon(`leagues.${leagueId}`)
-		: AppIcons.getIcon(ARENA_ICONS[page]);
+/** The league and class tiles wear the player's own league and class, as the mockup does. */
+function ArenaLinks({onSelect, leagueId, classId}: {onSelect: (page: ArenaPage) => void; leagueId?: number; classId?: number}): ReactNode {
+	const icon = (page: ArenaPage): string => {
+		if (page === "leagues" && leagueId !== undefined) return AppIcons.getIcon(`leagues.${leagueId}`);
+		if (page === "classes" && classId !== undefined) return AppIcons.getIcon(`classes.${classId}`);
+		return AppIcons.getIcon(ARENA_ICONS[page]);
+	};
 	return <View style={styles.links}><QuickActions>
 		{ARENA_PAGES.map(page => <QuickAction key={page} icon={icon(page)} onPress={(): void => onSelect(page)}>{i18n.t(`app:arena.pages.${page}`)}</QuickAction>)}
 	</QuickActions></View>;
@@ -92,6 +94,10 @@ export default function Arena(): ReactNode {
 		{message ? <Note>{message}</Note> : null}
 		<ArenaStart pending={pending} ongoing={ongoing} onStart={start} />
 		{fight.error && !fight.visible ? <ArenaStartError error={fight.error} /> : null}
-		<ArenaLinks {...state.status === "ready" && state.data.fightRanking ? {leagueId: state.data.fightRanking.league} : {}} onSelect={(page): void => router.push(`/arena/${page}`)} />
+		<ArenaLinks
+			onSelect={(page): void => router.push(`/arena/${page}`)}
+			{...state.status === "ready" && state.data.fightRanking ? {leagueId: state.data.fightRanking.league} : {}}
+			{...state.status === "ready" && state.data.classId !== undefined ? {classId: state.data.classId} : {}}
+		/>
 	</Screen>;
 }

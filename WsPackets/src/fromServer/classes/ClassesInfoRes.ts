@@ -6,5 +6,8 @@ export class ClassesInfoRes extends FromServerPacket {
 
 	public data?: {
 		classesStats: ClassDetails[];
+
+		/** Absent as soon as the player may change class again. */
+		nextChangeTimestamp?: number;
 	};
 }
