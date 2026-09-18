@@ -206,6 +206,13 @@ export const CrowniclesIcons: {
 		switch: string;
 		withdraw: string;
 	};
+	navigation: {
+		adventure: string;
+		profile: string;
+		pet: string;
+		guild: string;
+		fight: string;
+	};
 	other: { [otherId: string]: string };
 	guild: {
 		icon: string;
@@ -246,6 +253,7 @@ export const CrowniclesIcons: {
 		won: string;
 		lost: string;
 		draw: string;
+		menu: string;
 	};
 	items: {
 		drinkPotion: string;
@@ -2582,6 +2590,13 @@ export const CrowniclesIcons: {
 		switch: "🔄",
 		withdraw: "📤"
 	},
+	navigation: {
+		adventure: "🧭",
+		profile: "👤",
+		pet: "🐾",
+		guild: "🏰",
+		fight: "⚔️"
+	},
 	other: {
 		trash: "🗑️",
 		tada: "🎉",
@@ -2700,7 +2715,8 @@ export const CrowniclesIcons: {
 	fightHistory: {
 		won: "🟢",
 		lost: "🔴",
-		draw: "🟡"
+		draw: "🟡",
+		menu: "📜"
 	},
 	items: { drinkPotion: "🥤" },
 	city: {
@@ -2718,10 +2734,12 @@ export const CrowniclesIcons: {
 		shops: {
 			royalMarket: "💎",
 			generalShop: "🛒",
+			materialMerchant: "📦",
 			stockExchange: "💎",
 			tanner: "🧳",
 			herbalist: "🌿",
-			lumberjack: "🪵"
+			lumberjack: "🪵",
+			veterinarian: "🧑‍⚕️"
 		},
 		home: {
 			1: "🏕️",

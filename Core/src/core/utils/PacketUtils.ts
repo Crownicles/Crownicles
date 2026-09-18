@@ -26,6 +26,12 @@ export type InternalErrorDetails = {
 };
 
 export abstract class PacketUtils {
+	static webSocketContextForPlayer(context: PacketContext, keycloakId: string): PacketContext {
+		return {
+			frontEndOrigin: context.frontEndOrigin, frontEndSubOrigin: context.frontEndSubOrigin, keycloakId, webSocket: {}
+		};
+	}
+
 	/**
 	 * Report a failure the player can do nothing about. The reason describes what went wrong and is shown to the
 	 * player so they can write a useful bug report, while the caught exception is only logged server-side (CWE-209).

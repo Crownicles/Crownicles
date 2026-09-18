@@ -13,6 +13,7 @@ import type { InventoryInfo as InventoryInfoType } from "../../src/core/database
 import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
 import { HomeConstants } from "../../../Lib/src/constants/HomeConstants";
 import { CommandReportHomeChestActionReq } from "../../../Lib/src/packets/commands/CommandReportPacket";
+import type { CrowniclesPacket } from "../../../Lib/src/packets/CrowniclesPacket";
 
 type ReportCityChestServiceModule = typeof import("../../src/core/report/ReportCityChestService");
 type InventorySlotIntegrityMigrationModule = typeof import("../../src/core/database/game/migrations/067-inventory-slot-integrity");
@@ -79,6 +80,24 @@ describe("ReportCityChestService.handleChestAction deposit race", () => {
 		finally {
 			await env.crownicles.gameDatabase.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
 		}
+	});
+
+	it("reads only the authenticated owner's chest and rejects an unknown player", async () => {
+		const player = await Player.create({keycloakId: `${KEYCLOAK_ID}-reader`});
+		const otherPlayer = await Player.create({keycloakId: `${KEYCLOAK_ID}-other`});
+		const home = await Home.create({ownerId: player.id, cityId: "reader-city", level: HOME_LEVEL_WITH_MULTIPLE_CHEST_SLOTS});
+		const otherHome = await Home.create({ownerId: otherPlayer.id, cityId: "other-city", level: HOME_LEVEL_WITH_MULTIPLE_CHEST_SLOTS});
+		await HomeChestSlot.bulkCreate([
+			{homeId: home.id, slot: 1, itemCategory: ItemCategory.OBJECT, itemId: 2, itemLevel: 0},
+			{homeId: otherHome.id, slot: 1, itemCategory: ItemCategory.OBJECT, itemId: 3, itemLevel: 0}
+		]);
+		const response: CrowniclesPacket[] = [];
+		await chestService.handleHomeChestInfo(player.keycloakId, response);
+		expect(response).toHaveLength(1);
+		expect(response[0]).toMatchObject({success: true, chestItems: [{slot: 1, category: ItemCategory.OBJECT, details: {id: 2}}], depositableItems: []});
+		const missing: CrowniclesPacket[] = [];
+		await chestService.handleHomeChestInfo("unknown-chest-owner", missing);
+		expect(missing[0]).toMatchObject({success: false, error: HomeConstants.CHEST_ERRORS.INVALID, chestItems: []});
 	});
 
 	it(`moves the item exactly once under N=${N_CONCURRENT} concurrent deposits`, async () => {

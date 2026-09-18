@@ -192,6 +192,7 @@ export async function buildRoyalBlacksmithData(
 		return {
 			status: "not_worthy",
 			playerLevel,
+			requiredPlayerLevel: RoyalBlacksmithConstants.MIN_PLAYER_LEVEL,
 			upgradeableItems: [],
 			playerMoney: player.money,
 			playerGems
@@ -207,6 +208,7 @@ export async function buildRoyalBlacksmithData(
 			return {
 				status: "all_maxed",
 				playerLevel,
+				requiredPlayerLevel: RoyalBlacksmithConstants.MIN_PLAYER_LEVEL,
 				upgradeableItems: [],
 				playerMoney: player.money,
 				playerGems
@@ -215,6 +217,7 @@ export async function buildRoyalBlacksmithData(
 		return {
 			status: "items_too_low",
 			playerLevel,
+			requiredPlayerLevel: RoyalBlacksmithConstants.MIN_PLAYER_LEVEL,
 			upgradeableItems: [],
 			playerMoney: player.money,
 			playerGems
@@ -224,6 +227,7 @@ export async function buildRoyalBlacksmithData(
 	return {
 		status: "ready",
 		playerLevel,
+		requiredPlayerLevel: RoyalBlacksmithConstants.MIN_PLAYER_LEVEL,
 		upgradeableItems,
 		playerMoney: player.money,
 		playerGems

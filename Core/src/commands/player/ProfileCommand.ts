@@ -296,6 +296,11 @@ async function buildProfilePacket(
 	});
 }
 
+/**
+ * This command can return the following packets:
+ * - CommandProfilePacketRes
+ * - CommandProfilePlayerNotFound
+ */
 export default class ProfileCommand {
 	@commandRequires(CommandProfilePacketReq, {
 		notBlocked: false,

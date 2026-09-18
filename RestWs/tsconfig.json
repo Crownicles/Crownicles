@@ -27,7 +27,8 @@
 	"include": [
 		"src/**/*",
 		"test/**/*",
-		"../Lib/src/types/**/*.d.ts"
+		"../Lib/src/types/**/*.d.ts",
+		"../Lang/**/*.json"
 	],
 	"exclude": [
 		"node_modules",
