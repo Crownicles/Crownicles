@@ -776,7 +776,7 @@ export abstract class HelpConstants {
 		PET_NICKNAME:
 			{
 				EMOTE: ":abcd:",
-				NAME: "petnickname",
+				NAME: "petnick",
 				CATEGORY: "pet"
 			},
 		PET_FREE:
