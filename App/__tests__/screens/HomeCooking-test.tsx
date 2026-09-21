@@ -37,9 +37,9 @@ describe("cooking screen", () => {
 		const initial = menu();
 		initial.currentSlots[0].recipe!.canCraft = false;
 		await render(<HomeCooking />, {wrapper: provider(initial)});
+		await fireEvent.press(screen.getByText("models:cooking.recipes.potion_health_1"));
 		expect(screen.getByText("4/2")).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:cooking.craft"));
-		expect(screen.queryByText("app:cooking.confirmCraft")).toBeNull();
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 	it("binds confirmation to the displayed recipe and updates stale menus after a refusal", async () => {
@@ -47,9 +47,9 @@ describe("cooking screen", () => {
 		updated.currentSlots[0].recipe!.id = "potion_energy_1";
 		jest.mocked(GameClient.request).mockResolvedValue(answer({kind: "crafted", result: {success: false, recipeId: "potion_energy_1", wasSecret: false, outputType: CookingOutputType.POTION, error: "craftUnavailable", cookingXpGained: 0, cookingLevelUp: false, menu: updated}}));
 		await render(<HomeCooking />, {wrapper: provider(menu())});
-		await fireEvent.press(screen.getByText("app:cooking.craft"));
+		await fireEvent.press(screen.getByText("models:cooking.recipes.potion_health_1"));
 		expect(GameClient.request).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:cooking.craft"));
 		await waitFor(() => expect(screen.getByText("app:cooking.errors.craftUnavailable")).toBeTruthy());
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({slotIndex: 2, recipeId: "potion_health_1"});
 		expect(screen.getByText("models:cooking.recipes.potion_energy_1")).toBeTruthy();
@@ -69,8 +69,8 @@ describe("cooking screen", () => {
 	it("keeps the furnace state after a no-wood refusal", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue(answer({kind: "noWood"}));
 		await render(<HomeCooking />, {wrapper: provider(menu())});
-		await fireEvent.press(screen.getByText("app:cooking.revive"));
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:cooking.confirmRevive"));
+		await fireEvent.press(screen.getAllByText("app:cooking.revive").at(-1)!);
 		await waitFor(() => expect(screen.getByText("app:cooking.noWood")).toBeTruthy());
 		expect(screen.getByText("models:cooking.recipes.potion_health_1")).toBeTruthy();
 		expect(screen.getByText("app:cooking.lit")).toBeTruthy();
@@ -78,8 +78,8 @@ describe("cooking screen", () => {
 	it("displays the actual material output and granted cooking experience", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue(answer({kind: "crafted", result: {success: true, recipeId: "material_1", wasSecret: false, outputType: CookingOutputType.MATERIAL, material: {materialId: 9, quantity: 5}, cookingXpGained: 17, cookingLevelUp: true, menu: menu()}}));
 		await render(<HomeCooking />, {wrapper: provider(menu())});
+		await fireEvent.press(screen.getByText("models:cooking.recipes.potion_health_1"));
 		await fireEvent.press(screen.getByText("app:cooking.craft"));
-		await fireEvent.press(screen.getByText("app:collector.accept"));
 		await waitFor(() => expect(screen.getByText("app:cooking.success")).toBeTruthy());
 		expect(screen.getByText("models:materials.9")).toBeTruthy();
 		expect(screen.getByText("5")).toBeTruthy();

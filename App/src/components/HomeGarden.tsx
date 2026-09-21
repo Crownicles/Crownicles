@@ -1,4 +1,5 @@
 import {ReactNode, useState} from "react";
+import {Text} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {GardenInfoReq} from "ws-packets/src/fromClient/GardenReq";
@@ -9,28 +10,93 @@ import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {useGardenActions} from "@/src/store/useGardenActions";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {Button, ButtonRow, Confirmation, Note, SectionHeader} from "@/src/design/Primitives";
+import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
+import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, Gauge, sectionStyles} from "@/src/design/Sections";
+import {Check} from "@/src/design/FightIcons";
 import {materialName, plantName} from "@/src/display/Resources";
 import {i18n} from "@/src/translations/i18n";
-import {EntryRow, ExpandableList, Fact, Gauge} from "@/src/design/Sections";
 
 const PERCENTAGE_SCALE = 100;
-type GardenSelection = {operation: GardenOperation; message: string};
-type GardenActions = {pending: boolean; select: (selection: GardenSelection) => void; submit: (operation: GardenOperation) => Promise<void>};
+type GardenActions = {
+	pending: boolean;
+	openKey: string | undefined;
+	onOpen: (key: string | undefined) => void;
+	submit: (operation: GardenOperation) => Promise<void>;
+};
 type GardenPlot = GardenSnapshot["plots"][number];
 
+/** An operation is confirmed inside the row it belongs to, so the player never loses sight of it. */
+function GardenChoice({entryKey, label, caption, end, operation, actions, action}: {
+	entryKey: string;
+	label: string;
+	caption?: string;
+	end?: string;
+	operation: GardenOperation;
+	actions: GardenActions;
+	action: string;
+}): ReactNode {
+	return <ExpandableEntry
+		label={label}
+		{...caption ? {caption} : {}}
+		{...end ? {end: <Text style={sectionStyles.caption}>{end}</Text>} : {}}
+		dimmed={actions.pending}
+		expanded={actions.openKey === entryKey}
+		onToggle={(): void => actions.onOpen(actions.openKey === entryKey ? undefined : entryKey)}
+	>
+		<ActionBanner
+			icon={Check}
+			label={action}
+			pending={actions.pending}
+			onPress={(): void => {
+				actions.onOpen(undefined);
+				actions.submit(operation).catch(console.error);
+			}}
+		/>
+	</ExpandableEntry>;
+}
+
 function GardenPlotRow({plot, garden, actions}: {plot: GardenPlot; garden: GardenSnapshot; actions: GardenActions}): ReactNode {
-	if (plot.plantId === 0) return <EntryRow title={i18n.t("app:city.garden.plot", {slot: plot.slot + 1})} subtitle={i18n.t("app:city.garden.empty")} end={i18n.t("app:garden.plant")} disabled={actions.pending || !garden.eligibility.canPlantSeed} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.PLANT, gardenSlot: plot.slot}, message: i18n.t("app:garden.confirmPlant", {plant: plantName(garden.seedPlantId), slot: plot.slot + 1})})} />;
-	const name = plantName(plot.plantId);
-	return <Gauge label={i18n.t("app:city.garden.plotPlant", {slot: plot.slot + 1, plant: name})} value={i18n.t(plot.isReady ? "app:city.garden.ready" : "app:city.garden.growing", {progress: Math.round(plot.growthProgress * PERCENTAGE_SCALE)})} ratio={plot.growthProgress} color={Theme.colors.green} />;
+	if (plot.plantId !== 0) {
+		return <Gauge
+			label={i18n.t("app:city.garden.plotPlant", {slot: plot.slot + 1, plant: plantName(plot.plantId)})}
+			value={i18n.t(plot.isReady ? "app:city.garden.ready" : "app:city.garden.growing", {progress: Math.round(plot.growthProgress * PERCENTAGE_SCALE)})}
+			ratio={plot.growthProgress}
+			color={Theme.colors.green}
+		/>;
+	}
+	if (!garden.eligibility.canPlantSeed) {
+		return <EntryRow
+			title={i18n.t("app:city.garden.plot", {slot: plot.slot + 1})}
+			subtitle={i18n.t("app:garden.errors.noSeed")}
+			end={i18n.t("app:city.garden.empty")}
+		/>;
+	}
+	return <GardenChoice
+		entryKey={`plot-${plot.slot}`}
+		label={i18n.t("app:city.garden.plot", {slot: plot.slot + 1})}
+		caption={i18n.t("app:garden.confirmPlant", {plant: plantName(garden.seedPlantId), slot: plot.slot + 1})}
+		end={i18n.t("app:city.garden.empty")}
+		operation={{type: GARDEN_OPERATIONS.PLANT, gardenSlot: plot.slot}}
+		actions={actions}
+		action={i18n.t("app:garden.plant")}
+	/>;
 }
 
 function CompostOffers({offers, actions}: {offers: GardenCompostOffer[]; actions: GardenActions}): ReactNode {
 	if (!offers.length) return null;
 	return <>
 		<SectionHeader>{i18n.t("app:garden.compost")}</SectionHeader>
-		<ExpandableList>{offers.map(offer => <EntryRow key={`${offer.plantId}-${offer.quantity}`} title={plantName(offer.plantId)} end={i18n.t("app:garden.quantity", {count: offer.quantity})} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.COMPOST, ...offer}, message: i18n.t("app:garden.confirmCompost", {plant: plantName(offer.plantId), count: offer.quantity})})} disabled={actions.pending}  />)}</ExpandableList>
+		<ExpandableList>{offers.map(offer => <GardenChoice
+			key={`${offer.plantId}-${offer.quantity}`}
+			entryKey={`compost-${offer.plantId}-${offer.quantity}`}
+			label={plantName(offer.plantId)}
+			caption={i18n.t("app:garden.confirmCompost", {plant: plantName(offer.plantId), count: offer.quantity})}
+			end={i18n.t("app:garden.quantity", {count: offer.quantity})}
+			operation={{type: GARDEN_OPERATIONS.COMPOST, ...offer}}
+			actions={actions}
+			action={i18n.t("app:garden.compost")}
+		/>)}</ExpandableList>
 	</>;
 }
 
@@ -73,19 +139,10 @@ function GardenStorage({plants}: {plants: GardenSnapshot["plantStorage"]}): Reac
 	</>;
 }
 
-function GardenConfirmation({selection, pending, onConfirm, onClose}: {selection: GardenSelection; pending: boolean; onConfirm: () => void; onClose: () => void}): ReactNode {
-	return <Confirmation title={i18n.t(`app:garden.${selection.operation.type}`)} message={selection.message} onRequestClose={onClose}><ButtonRow><Button variant="primary" disabled={pending} onPress={onConfirm}>{i18n.t("app:collector.accept")}</Button><Button onPress={onClose}>{i18n.t("app:collector.refuse")}</Button></ButtonRow></Confirmation>;
-}
-
 function GardenContent({garden, offers}: {garden: GardenSnapshot; offers: GardenCompostOffer[]}): ReactNode {
 	const {pending, message, submit, outcome} = useGardenActions();
-	const [selection, setSelection] = useState<GardenSelection | null>(null);
-	const actions = {pending, select: setSelection, submit};
-	const confirm = (): void => {
-		if (!selection) return;
-		setSelection(null);
-		submit(selection.operation).catch(console.error);
-	};
+	const [openKey, setOpenKey] = useState<string>();
+	const actions = {pending, openKey, onOpen: setOpenKey, submit};
 	return <>
 		{garden.accessMode === GARDEN_ACCESS.READ_ONLY ? <Note>{i18n.t("app:garden.remote")}</Note> : null}
 		{message ? <Note>{message}</Note> : null}
@@ -93,7 +150,6 @@ function GardenContent({garden, offers}: {garden: GardenSnapshot; offers: Garden
 		<GardenPlots garden={garden} actions={actions} />
 		<GardenStorage plants={garden.plantStorage} />
 		<CompostOffers offers={offers} actions={actions} />
-		{selection ? <GardenConfirmation selection={selection} pending={pending} onConfirm={confirm} onClose={(): void => setSelection(null)} /> : null}
 	</>;
 }
 

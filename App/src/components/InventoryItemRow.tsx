@@ -22,7 +22,7 @@ function mainItemStats(item: MainItem): string {
 	].join(" · ");
 }
 
-function inventoryItemDetails(item: ItemWithDetails): string {
+export function inventoryItemDetails(item: ItemWithDetails): string {
 	const rarity = i18n.t(`items:raritiesWithoutEmote.${item.rarity}`);
 	if ("nature" in item) return i18n.t("app:inventory.itemSummary", {rarity, details: consumableDescription(item)});
 	const level = i18n.t("app:inventory.level", {level: item.itemLevel});
@@ -30,16 +30,20 @@ function inventoryItemDetails(item: ItemWithDetails): string {
 	return i18n.t("app:inventory.itemSummary", {rarity, details: [level, mainItemStats(item), enchantment].filter(Boolean).join(" · ")});
 }
 
-export function InventoryItemRow({item, location, onPress, disabled}: {item: ItemWithDetails; location: string; onPress?: () => void; disabled?: boolean}): ReactNode {
-	if (item.id === 0) return <EntryRow title={i18n.t("app:profile.inventory.emptySlot")} end={location} />;
+export function inventoryItemEmblem(item: ItemWithDetails): ReactNode {
 	const path = itemIconPath(item);
 	const icon = path ? AppIcons.getIconOrNull(path) : null;
+	return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : undefined;
+}
+
+export function InventoryItemRow({item, location, onPress, disabled}: {item: ItemWithDetails; location: string; onPress?: () => void; disabled?: boolean}): ReactNode {
+	if (item.id === 0) return <EntryRow title={i18n.t("app:profile.inventory.emptySlot")} end={location} />;
 	return <EntryRow
-		{...(icon ? {icon: <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} />} : {})}
+		emblem={inventoryItemEmblem(item)}
 		title={itemDisplayName(item)}
 		subtitle={inventoryItemDetails(item)}
 		end={location}
 		onPress={onPress}
-		disabled={disabled} 
+		disabled={disabled}
 	/>;
 }

@@ -65,7 +65,7 @@ describe("home chest actions", () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: fixture()});
 		await render(<HomeChest />, {wrapper: provider(fixture())});
 		await fireEvent.press(screen.getByText("models:potions.43"));
-		await fireEvent.press(screen.getAllByText("models:potions.44").at(-1)!);
+		await fireEvent.press(screen.getByText("app:homeChest.actions.swap"));
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({action: "swap", slot: 2, chestSlot: 3, itemCategory: 2});
 	});
@@ -75,7 +75,7 @@ describe("home chest actions", () => {
 		await render(<HomeChest />, {wrapper: provider(fixture())});
 		await fireEvent.press(screen.getByRole("tab", {name: "app:homeChest.views.plants"}));
 		await fireEvent.press(screen.getByText(/models:plants.3/));
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getAllByText("app:homeChest.actions.plantDeposit").at(-1)!);
 		await waitFor(() => expect(screen.getByText("3/5")).toBeTruthy());
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({action: "plantDeposit", plantId: 0, playerSlot: 2});
 		await fireEvent.press(screen.getByRole("tab", {name: "app:homeChest.views.equipment"}));

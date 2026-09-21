@@ -45,7 +45,7 @@ describe("garden screen", () => {
 		await render(<HomeGarden />, {wrapper: provider(initial)});
 		await fireEvent.press(screen.getByText("plot 5"));
 		expect(GameClient.request).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:garden.plant"));
 		await waitFor(() => expect(screen.getByText("planted models:plants.3 5")).toBeTruthy());
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({operation: {type: "plant", gardenSlot: 4}});
 		expect(screen.queryByText("plot 5")).toBeNull();
@@ -65,7 +65,7 @@ describe("garden screen", () => {
 		jest.mocked(GameClient.request).mockResolvedValueOnce(answer({kind: "compost", plantId: 1, quantity: 5, materials: [7, 7, 7, 9, 9]})).mockResolvedValueOnce(answer(snapshot()));
 		await render(<HomeGarden />, {wrapper: provider(snapshot())});
 		await fireEvent.press(screen.getByText("quantity 5"));
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getAllByText("app:garden.compost").at(-1)!);
 		await waitFor(() => expect(screen.getByText("quantity 3")).toBeTruthy());
 		expect(screen.getByText("quantity 2")).toBeTruthy();
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({operation: {type: "compost", plantId: 1, quantity: 5}});

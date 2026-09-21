@@ -30,13 +30,13 @@ async function openMenu(): Promise<void> {
 describe("equipment menu", () => {
 	afterEach(() => jest.restoreAllMocks());
 
-	it("does not send an action before confirmation or after cancelling", async () => {
+	it("does not send an action before confirmation or after folding the entry back", async () => {
 		const request = jest.spyOn(GameClient, "request").mockImplementation();
 		await openMenu();
 		await fireEvent.press(screen.getByText("models:weapons.7"));
 		expect(screen.getByText("app:equipment.confirm.equip")).toBeTruthy();
 		expect(request).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("app:collector.refuse"));
+		await fireEvent.press(screen.getByText("models:weapons.7"));
 		expect(screen.queryByText("app:equipment.confirm.equip")).toBeNull();
 		expect(request).not.toHaveBeenCalled();
 	});
@@ -46,7 +46,7 @@ describe("equipment menu", () => {
 		const request = jest.spyOn(GameClient, "request").mockResolvedValue({kind: "answer", packet});
 		await openMenu();
 		await fireEvent.press(screen.getByText("models:weapons.7"));
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:equipment.confirm.equip"));
 		await waitFor(() => expect(screen.getByText("app:equipment.equipped")).toBeTruthy());
 		expect(screen.getByText("app:equipment.emptyReserve")).toBeTruthy();
 		expect(request).toHaveBeenCalledTimes(1);
@@ -58,7 +58,7 @@ describe("equipment menu", () => {
 		jest.spyOn(GameClient, "request").mockResolvedValue({kind: "answer", packet});
 		await openMenu();
 		await fireEvent.press(screen.getByText("models:weapons.7"));
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:equipment.confirm.equip"));
 		await waitFor(() => expect(screen.getByText("app:equipment.errors.reserveFull")).toBeTruthy());
 		expect(screen.getByText("models:weapons.7")).toBeTruthy();
 	});
