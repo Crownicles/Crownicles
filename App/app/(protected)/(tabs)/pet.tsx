@@ -92,7 +92,7 @@ function PetSheet({packet, onPage}: {packet: PetRes; onPage: (page: PetPage) => 
 			<Panel>
 				<Row title={i18n.t("app:pet.powers.title")} onPress={(): void => onPage(PET_PAGES.POWERS)} chevron />
 				<Row title={i18n.t("app:pet.management.shelter")} onPress={(): void => onPage(PET_PAGES.SHELTER)} chevron />
-				<Row title={i18n.t("app:pet.management.transfer")} disabled={menus.pending} onPress={(): Promise<void> => menus.open(PET_MANAGEMENT_MENUS.TRANSFER)} chevron />
+
 				<Row title={i18n.t("app:pet.sale.title")} onPress={(): void => onPage(PET_PAGES.SELL)} chevron />
 				<Row title={i18n.t("app:pet.management.free")} tone="danger" disabled={menus.pending} onPress={(): Promise<void> => menus.open(PET_MANAGEMENT_MENUS.FREE)} chevron />
 			</Panel>

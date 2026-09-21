@@ -31,10 +31,13 @@ export const INVENTORY_MENUS = {
 	DAILY: {request: DailyBonusReq, emptyPacket: DailyBonusNoObjectRes, emptyMessage: "app:dailyBonus.noObject", outcomePackets: [DailyBonusRes, DailyBonusCooldownRes]}
 } satisfies Record<string, CommandMenu>;
 
+/** Picks the reaction the screen already knows the player chose, or nothing to let them choose. */
+type MenuResolver = (collector: ReactionCollectorCreation) => number | null;
+
 type CommandMenuState = {
 	message: string | null;
 	pending: boolean;
-	open: (menu: CommandMenu, request?: FromClientPacket) => Promise<void>;
+	open: (menu: CommandMenu, request?: FromClientPacket, resolve?: MenuResolver) => Promise<void>;
 };
 
 function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: CommandMenu): string | null {
@@ -46,7 +49,7 @@ function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: Com
 }
 
 export function useCommandMenus(): CommandMenuState {
-	const {track} = useCollectors();
+	const {track, answerWithoutShowing} = useCollectors();
 	const [message, setMessage] = useState<string | null>(null);
 	const [pending, setPending] = useState(false);
 	const inFlight = useRef(false);
@@ -57,7 +60,7 @@ export function useCommandMenus(): CommandMenuState {
 		return (): void => { active.current = false; };
 	}, []);
 
-	const open = async (menu: CommandMenu, request?: FromClientPacket): Promise<void> => {
+	const open = async (menu: CommandMenu, request?: FromClientPacket, resolve?: MenuResolver): Promise<void> => {
 		if (inFlight.current) return;
 		inFlight.current = true;
 		setPending(true);
@@ -65,8 +68,13 @@ export function useCommandMenus(): CommandMenuState {
 		try {
 			const answer = await GameClient.request(request ?? makeFromClientPacket(menu.request, {}), ReactionCollectorCreation, [menu.emptyPacket, Blocked, ...menu.outcomePackets ?? []]);
 			if (!active.current) return;
-			if (answer.kind === "answer") track(answer.packet);
-			else setMessage(commandMessage(answer, menu));
+			if (answer.kind !== "answer") {
+				setMessage(commandMessage(answer, menu));
+				return;
+			}
+			const reactionIndex = resolve?.(answer.packet) ?? null;
+			if (reactionIndex === null) track(answer.packet);
+			else answerWithoutShowing(answer.packet.id, reactionIndex);
 		}
 		catch {
 			if (active.current) setMessage(i18n.t("app:common.connectionError"));

@@ -108,7 +108,7 @@ describe("Adventure screen", () => {
 	beforeEach((): void => {
 		jest.clearAllMocks();
 		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: profile()});
-		mockedUseCollectors.mockReturnValue({open: [], track: jest.fn(), react: jest.fn(), isAnswerPending: jest.fn(() => false)});
+		mockedUseCollectors.mockReturnValue({open: [], track: jest.fn(), react: jest.fn(), isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()});
 	});
 
 	it("matches the travel report composition from the mobile mockup", async () => {
@@ -157,7 +157,7 @@ describe("Adventure screen", () => {
 				data: {type: REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS, data: {cost: 1, playerTokens: 5}},
 				reactions: [{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}}, {type: GENERIC_REACTION_KINDS.REFUSE, data: {}}]
 			}],
-			track: jest.fn(), react, isAnswerPending: jest.fn(() => false)
+			track: jest.fn(), react, isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()
 		});
 		await render(<Adventure />);
 		expect(screen.getByText("app:city.titles.eyebrow")).toBeTruthy();
@@ -236,7 +236,7 @@ describe("Adventure screen", () => {
 			}],
 			track: jest.fn(),
 			react: jest.fn(),
-			isAnswerPending: jest.fn(() => false)
+			isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()
 		});
 
 		await render(<Adventure />);
@@ -259,7 +259,7 @@ describe("Adventure screen", () => {
 			}],
 			track: jest.fn(),
 			react: jest.fn(),
-			isAnswerPending: jest.fn(() => false)
+			isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()
 		});
 
 		await render(<Adventure />);
@@ -282,7 +282,7 @@ describe("Adventure screen", () => {
 			}],
 			track: jest.fn(),
 			react: jest.fn(),
-			isAnswerPending: jest.fn(() => false)
+			isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()
 		});
 
 		await render(<Adventure />);
@@ -330,7 +330,7 @@ describe("Adventure screen", () => {
 			}],
 			track: jest.fn(),
 			react: jest.fn(),
-			isAnswerPending: jest.fn(() => false)
+			isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()
 		});
 
 		await render(<Adventure />);
@@ -402,7 +402,7 @@ describe("Adventure screen", () => {
 			}],
 			track: jest.fn(),
 			react: jest.fn(),
-			isAnswerPending: jest.fn(() => false)
+			isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()
 		});
 
 		await render(<Adventure />);

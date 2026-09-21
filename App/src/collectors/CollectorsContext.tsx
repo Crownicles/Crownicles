@@ -22,6 +22,9 @@ type CollectorsState = {
 	 */
 	react: (collectorId: string, reactionIndex: number) => void;
 
+	/** Answers a collector the screen resolved on its own, without ever showing it to the player. */
+	answerWithoutShowing: (collectorId: string, reactionIndex: number) => void;
+
 	/** True after a reaction has been sent and until the server closes the collector. */
 	isAnswerPending: (collectorId: string) => boolean;
 };
@@ -77,6 +80,7 @@ export function CollectorsProvider({ children, authState }: { children: ReactNod
 		open,
 		track: collectorsStore.track,
 		react: collectorsStore.react,
+		answerWithoutShowing: collectorsStore.answerWithoutShowing,
 		isAnswerPending: collectorsStore.isAnswerPending
 	}), [open]);
 

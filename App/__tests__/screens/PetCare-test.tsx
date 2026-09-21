@@ -5,19 +5,26 @@ import {PetFeedCollector} from "@/src/collectors/PetFeedCollector";
 import {PetSellCollector} from "@/src/collectors/PetSellCollector";
 import {PetSale} from "@/src/components/PetSale";
 import {PetPowersContent} from "@/src/components/PetPowers";
+import {GuildShelter} from "@/src/components/PetManagement";
 import {PetSellReq} from "ws-packets/src/fromClient/PetManagementReq";
+import {GuildShelterReq} from "ws-packets/src/fromClient/PetManagementReq";
+import {GuildShelterRes} from "ws-packets/src/fromServer/pet/PetManagementRes";
+import {PetReq} from "ws-packets/src/fromClient/PetReq";
+import {PetRes} from "ws-packets/src/fromServer/pet/PetRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {PetNickReq} from "ws-packets/src/fromClient/PetCareReq";
 import {PetNickRes} from "ws-packets/src/fromServer/pet/PetCareRes";
 import {GameClient} from "@/src/networking/GameClient";
 
+const mockAnswerWithoutShowing = jest.fn();
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
-jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: jest.fn()})}));
+jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: jest.fn(), answerWithoutShowing: mockAnswerWithoutShowing})}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
 
 const PET = {typeId: 1, nickname: "Aster", rarity: 1, sex: "m" as const, loveLevel: 3, force: 10, feedDelay: 2};
+const BOARDER = {typeId: 8, nickname: null, rarity: 2, sex: "f" as const, loveLevel: 1, force: 20, feedDelay: 2};
 
 describe("pet care screens", () => {
 	beforeEach(() => jest.clearAllMocks());
@@ -81,5 +88,25 @@ describe("pet care screens", () => {
 		await render(<PetFeedCollector collector={collector} onChoose={onChoose} submitting={false} />);
 		await fireEvent.press(screen.getByText("app:collector.accept"));
 		expect(onChoose).toHaveBeenCalledWith(1);
+	});
+
+	it("swaps a boarder from the shelter itself, on the reaction the server attached to it", async () => {
+		const transfer = Object.assign(new ReactionCollectorCreation(), {
+			id: "transfer",
+			endTime: Date.now() + 60_000,
+			data: {type: "petTransfer", data: {ownPet: PET, shelterPets: [{petEntityId: 4, pet: BOARDER}]}},
+			reactions: [{type: "petDeposit", data: {}}, {type: "petSwitch", data: {petEntityId: 4}}, {type: "refuse", data: {}}]
+		});
+		jest.mocked(GameClient.request).mockImplementation(async request => request instanceof GuildShelterReq
+			? {kind: "answer", packet: Object.assign(new GuildShelterRes(), {guildName: "Les Veilleurs", pets: [BOARDER], maxCount: 6})}
+			: request instanceof PetReq
+				? {kind: "answer", packet: Object.assign(new PetRes(), {pet: PET, hasTalisman: false})}
+				: {kind: "answer", packet: transfer});
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><GuildShelter /></QueryClientProvider>);
+		await waitFor(() => expect(screen.getByText("models:pets:8")).toBeTruthy());
+		await fireEvent.press(screen.getByText("models:pets:8"));
+		await fireEvent.press(screen.getByText("app:pet.management.switch"));
+		await waitFor(() => expect(mockAnswerWithoutShowing).toHaveBeenCalledWith("transfer", 1));
 	});
 });

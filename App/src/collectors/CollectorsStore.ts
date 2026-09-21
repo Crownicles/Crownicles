@@ -115,6 +115,16 @@ class CollectorsStore {
 		this.answeredKinds.set(collectorId, collector.data.type);
 		this.snapshot = [...this.open.values()];
 		this.notifyListeners();
+		this.send(collectorId, reactionIndex);
+	};
+
+	/**
+	 * Answers a collector the screen opened on the player's behalf, so it is never shown. The command
+	 * result packet carries the refresh, exactly as it would after a visible answer.
+	 */
+	public readonly answerWithoutShowing = (collectorId: string, reactionIndex: number): void => this.send(collectorId, reactionIndex);
+
+	private readonly send = (collectorId: string, reactionIndex: number): void => {
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(ReactionCollectorReactReq, {
 			collectorId,
 			reactionIndex
