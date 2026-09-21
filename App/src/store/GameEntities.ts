@@ -11,7 +11,6 @@ export const GAME_ENTITIES = {
 	VERSION: "version",
 	PING: "ping",
 	PET: "pet",
-	PET_POWERS: "petPowers",
 	SHELTER: "shelter",
 	INVENTORY: "inventory",
 	HOME_CHEST: "homeChest",

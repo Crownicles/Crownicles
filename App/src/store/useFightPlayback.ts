@@ -1,7 +1,7 @@
 import {Dispatch, SetStateAction, useEffect, useEffectEvent, useState} from "react";
-import {AccessibilityInfo} from "react-native";
 import {FightStatus} from "ws-packets/src/objects/Fight";
 import {FightLogRecord, FightSnapshot, fightStore} from "@/src/store/FightStore";
+import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {FIGHT_SPEEDS, FightSpeed} from "@/src/display/FightMotion";
 import {fightNarrative, fightConsequences} from "@/src/display/Fight";
 
@@ -10,17 +10,6 @@ type PlaybackControls = {speed: FightSpeed; paused: boolean};
 export type FightPlayback = {record: FightLogRecord | undefined; status: FightStatus | null; logs: FightLogRecord[]; impact: () => void; complete: () => void; finishMotion: () => void; reducedMotion: boolean};
 type CursorState = [PlaybackCursor, Dispatch<SetStateAction<PlaybackCursor>>];
 const READING_TIME = {MINIMUM_MS: 2200, MAXIMUM_MS: 6500, MS_PER_CHARACTER: 26, FAST_DIVISOR: 2};
-
-export function useFightReducedMotion(): boolean {
-	const [reduced, setReduced] = useState(false);
-	useEffect(() => {
-		let active = true;
-		AccessibilityInfo.isReduceMotionEnabled().then(value => {if (active) setReduced(value);}).catch(() => undefined);
-		const subscription = AccessibilityInfo.addEventListener("reduceMotionChanged", setReduced);
-		return (): void => {active = false; subscription.remove();};
-	}, []);
-	return reduced;
-}
 
 function usePlaybackCursor(fight: FightSnapshot): CursorState {
 	const fightId = fight.introduction?.fightId;
@@ -58,7 +47,7 @@ function useReadingTime(record: FightLogRecord | undefined, controls: PlaybackCo
 }
 
 export function useFightPlayback(fight: FightSnapshot, controls: PlaybackControls = {speed: FIGHT_SPEEDS.NORMAL, paused: false}): FightPlayback {
-	const reducedMotion = useFightReducedMotion();
+	const reducedMotion = useReducedMotion();
 	const [cursor, setCursor] = usePlaybackCursor(fight);
 	const record = fight.visible ? fight.logs.find(entry => entry.sequence > cursor.sequence) : undefined;
 	const impact = (): void => {

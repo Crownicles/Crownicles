@@ -4,16 +4,23 @@ import {PetNickname} from "@/src/components/PetNickname";
 import {PetFeedCollector} from "@/src/collectors/PetFeedCollector";
 import {PetSellCollector} from "@/src/collectors/PetSellCollector";
 import {PetSale} from "@/src/components/PetSale";
-import {PetPowersContent} from "@/src/components/PetPowers";
+import {PetOverview} from "@/src/components/PetCare";
+import {PetCaress} from "@/src/components/PetReaction";
+import {PetFeedOutcome} from "@/src/collectors/PetFeedOutcome";
 import {GuildShelter} from "@/src/components/PetManagement";
+import {PET_DANCES, caressDance, caressFrames, feastDance, feastFrames} from "@/src/display/PetDance";
+import {PET_PATIENCE} from "@/src/store/usePetPatience";
+import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
+import {PET_FEED_ERRORS, PET_FEED_RESULTS} from "ws-packets/src/objects/PetFood";
 import {PetSellReq} from "ws-packets/src/fromClient/PetManagementReq";
 import {GuildShelterReq} from "ws-packets/src/fromClient/PetManagementReq";
 import {GuildShelterRes} from "ws-packets/src/fromServer/pet/PetManagementRes";
+import {PetExpeditionReq} from "ws-packets/src/fromClient/PetExpeditionReq";
 import {PetReq} from "ws-packets/src/fromClient/PetReq";
 import {PetRes} from "ws-packets/src/fromServer/pet/PetRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {PetNickReq} from "ws-packets/src/fromClient/PetCareReq";
-import {PetNickRes} from "ws-packets/src/fromServer/pet/PetCareRes";
+import {PetCaressRes, PetNickRes} from "ws-packets/src/fromServer/pet/PetCareRes";
 import {GameClient} from "@/src/networking/GameClient";
 
 const mockAnswerWithoutShowing = jest.fn();
@@ -29,12 +36,30 @@ const BOARDER = {typeId: 8, nickname: null, rarity: 2, sex: "f" as const, loveLe
 describe("pet care screens", () => {
 	beforeEach(() => jest.clearAllMocks());
 
-	it("filters the catalog by species and displays server-linked powers", async () => {
-		await render(<PetPowersContent powers={[{petTypeId: 1, rarity: 1, assistanceId: "bite"}, {petTypeId: 85, rarity: 1, assistanceId: "isUseless"}]} />);
-		expect(screen.getByText("app:pet.powers.effects.isUseless")).toBeTruthy();
-		await fireEvent.changeText(screen.getByLabelText("app:pet.powers.search"), "pets.85");
-		expect(screen.getByText("models:pets.85")).toBeTruthy();
-		expect(screen.queryByText("models:pets.1")).toBeNull();
+	it("refuses an expedition without the talisman and says why", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: false})} onPage={jest.fn()} /></QueryClientProvider>);
+		expect(screen.getByTestId("pet-expedition-lock")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:expedition.open"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+
+	it("opens the expedition once the talisman is owned", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: true})} onPage={jest.fn()} /></QueryClientProvider>);
+		expect(screen.queryByTestId("pet-expedition-lock")).toBeNull();
+		await fireEvent.press(screen.getByText("app:expedition.open"));
+		await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(PetExpeditionReq));
+	});
+
+	it("replaces the meal with the expedition while the pet is away", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		const expedition = {startTime: Date.now(), endTime: Date.now() + 60_000, riskRate: 1, difficulty: 1, locationType: "forest" as const, mapLocationId: 3, foodConsumed: 6};
+		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: true, expeditionInProgress: expedition})} onPage={jest.fn()} /></QueryClientProvider>);
+		expect(screen.getByText("app:expedition.titles.expeditionProgress")).toBeTruthy();
+		expect(screen.queryByText("app:pet.care.feedPet")).toBeNull();
+		expect(screen.queryByText("app:pet.care.caress")).toBeNull();
 	});
 
 	it("offers a pet to the chosen rank without changing the price", async () => {
@@ -88,6 +113,53 @@ describe("pet care screens", () => {
 		await render(<PetFeedCollector collector={collector} onChoose={onChoose} submitting={false} />);
 		await fireEvent.press(screen.getByText("app:collector.accept"));
 		expect(onChoose).toHaveBeenCalledWith(1);
+	});
+
+	it("gives a species the same dance whatever it ate, and turns away from a meal it disliked", () => {
+		expect(feastDance(PET, PET_FEED_RESULTS.HAPPY)).toBe(feastDance({...PET, nickname: "Autre", loveLevel: 5}, PET_FEED_RESULTS.VERY_VERY_HAPPY));
+		expect(feastDance(PET, PET_FEED_RESULTS.DISLIKE)).toBe(PET_DANCES.HUFF);
+	});
+
+	it("answers a stroke with another move than a meal, and refuses both the same way", () => {
+		expect(caressDance(PET)).toBe(caressDance({...PET, nickname: "Autre"}));
+		expect(caressFrames(PET)).not.toEqual(feastFrames(PET, PET_FEED_RESULTS.HAPPY));
+		expect(caressFrames(PET, true)).toEqual(feastFrames(PET, PET_FEED_RESULTS.DISLIKE));
+	});
+
+	it.each([
+		{case: "on a stroke", hadEnough: false, hearts: true},
+		{case: "once the pet has had enough", hadEnough: true, hearts: false}
+	])("floats hearts $case", async scenario => {
+		await render(<PetCaress pet={PET} size={40} strokes={1} hadEnough={scenario.hadEnough} />);
+		expect(screen.queryByTestId("pet-motes", {includeHiddenElements: true}) !== null).toBe(scenario.hearts);
+	});
+
+	it("walks the pet off after one stroke too many", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: new PetCaressRes()});
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: true})} onPage={jest.fn()} /></QueryClientProvider>);
+		for (let stroke = 0; stroke < PET_PATIENCE.STROKES; stroke++) {
+			await fireEvent.press(screen.getByText("app:pet.care.caress"));
+		}
+		await waitFor(() => expect(screen.getByTestId("pet-caress-lock")).toBeTruthy());
+		const strokesSent = jest.mocked(GameClient.request).mock.calls.length;
+		await fireEvent.press(screen.getByText("app:pet.care.caress"));
+		expect(jest.mocked(GameClient.request).mock.calls).toHaveLength(strokesSent);
+	});
+
+	it("dances the pet the client already knows once the meal succeeds", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		client.setQueryData(gameKey(GAME_ENTITIES.PET), {kind: "answer", packet: Object.assign(new PetRes(), {pet: PET})});
+		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: true, result: PET_FEED_RESULTS.VERY_HAPPY}} onContinue={jest.fn()} /></QueryClientProvider>);
+		expect(screen.getByTestId("pet-feast", {includeHiddenElements: true})).toBeTruthy();
+	});
+
+	it("leaves a refused meal without a celebration", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		client.setQueryData(gameKey(GAME_ENTITIES.PET), {kind: "answer", packet: Object.assign(new PetRes(), {pet: PET})});
+		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: false, error: PET_FEED_ERRORS.NO_MONEY}} onContinue={jest.fn()} /></QueryClientProvider>);
+		expect(screen.queryByTestId("pet-feast", {includeHiddenElements: true})).toBeNull();
+		expect(screen.getByText("app:pet.feed.errors.noMoney")).toBeTruthy();
 	});
 
 	it("swaps a boarder from the shelter itself, on the reaction the server attached to it", async () => {

@@ -11,7 +11,6 @@ import {i18n} from "@/src/translations/i18n";
 
 type PetCareAction = {type: "caress"} | {type: "rename"; nickname: string};
 type PetActions = {pending: boolean; message: string | null; care: (action: PetCareAction) => Promise<boolean>};
-
 function requestCare(action: PetCareAction): Promise<GameAnswer<PetCaressRes | PetNickRes>> {
 	if (action.type === "caress") return GameClient.request(makeFromClientPacket(PetCaressReq, {}), PetCaressRes, [Blocked]);
 	return GameClient.request(makeFromClientPacket(PetNickReq, {newNickname: action.nickname}), PetNickRes, [Blocked]);
@@ -22,8 +21,9 @@ function careFailure(answer: Exclude<GameAnswer<PetCaressRes | PetNickRes>, {kin
 	return i18n.t(answer.kind === "alternative" ? "app:collector.pending" : "app:common.connectionError");
 }
 
-function careResult(packet: PetCaressRes | PetNickRes): string {
-	if (!("foundPet" in packet)) return i18n.t("app:pet.care.caressed");
+/** A caress says itself through the pet's own reaction, so it leaves no line of text behind. */
+function careResult(packet: PetCaressRes | PetNickRes): string | null {
+	if (!("foundPet" in packet)) return null;
 	if (!packet.foundPet) return i18n.t("app:pet.noPet");
 	if (!packet.nickNameIsAcceptable) return i18n.t("app:pet.care.invalidNickname");
 	return packet.newNickname ? i18n.t("app:pet.care.renamed", {nickname: packet.newNickname}) : i18n.t("app:pet.care.cleared");
@@ -48,7 +48,6 @@ export function usePetActions(): PetActions {
 		if (inFlight.current) return false;
 		inFlight.current = true;
 		setPending(true);
-		setMessage(null);
 		try {
 			const answer = await requestCare(action);
 			if (answer.kind !== "answer") {
