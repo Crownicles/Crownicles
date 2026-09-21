@@ -2,7 +2,7 @@ import {useRef, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {useSecondsLeft} from "@/src/collectors/CollectorPrompt";
 
-type CollectorAnswer = {locked: boolean; secondsLeft: number; answer: (index: number) => void};
+type CollectorAnswer = {locked: boolean; answered: boolean; secondsLeft: number; answer: (index: number) => void};
 
 export function useCollectorAnswer(collector: ReactionCollectorCreation, onChoose: (index: number) => void, submitting: boolean): CollectorAnswer {
 	const [answered, setAnswered] = useState(false);
@@ -16,5 +16,5 @@ export function useCollectorAnswer(collector: ReactionCollectorCreation, onChoos
 		setAnswered(true);
 		onChoose(index);
 	};
-	return {locked, secondsLeft, answer};
+	return {locked, answered, secondsLeft, answer};
 }

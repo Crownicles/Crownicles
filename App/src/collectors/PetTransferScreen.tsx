@@ -80,6 +80,6 @@ export function PetTransferScreen({collector, locked, onChoose, onClose}: {
 			onConfirm={onChoose}
 		/>)}</ExpandableList> : <View><EmptyState>{i18n.t("app:pet.management.emptyShelter")}</EmptyState></View>}
 		<Note>{i18n.t("app:pet.management.transferHint")}</Note>
-		<ButtonRow><Button disabled={locked} onPress={onClose}>{i18n.t("app:common.back")}</Button></ButtonRow>
+		<ButtonRow><Button onPress={onClose}>{i18n.t("app:common.back")}</Button></ButtonRow>
 	</Screen>;
 }

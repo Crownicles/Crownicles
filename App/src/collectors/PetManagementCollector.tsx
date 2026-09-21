@@ -36,9 +36,15 @@ function ManagementMenu(props: ManagementProps): ReactNode {
 }
 
 export function PetManagementCollector({collector, onChoose, submitting}: ManagementProps): ReactNode {
-	const {answer, locked} = useCollectorAnswer(collector, onChoose, submitting);
+	const {answer, answered, locked} = useCollectorAnswer(collector, onChoose, submitting);
 	const close = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
-	return <Modal visible animationType="slide" onRequestClose={close}>
+
+	/*
+	 * The question is settled the moment the answer leaves: the window closes on its own instead of
+	 * waiting for the server to stop the collector. Waiting would leave the player behind a locked
+	 * screen if that packet never arrived, and would put the result window on top of this one.
+	 */
+	return <Modal visible={!answered} animationType="slide" onRequestClose={close}>
 		<ModalSurface>
 			{collector.data.type === PET_MANAGEMENT_DATA_KINDS.TRANSFER
 				? <PetTransferScreen collector={collector} locked={locked} onChoose={answer} onClose={close} />

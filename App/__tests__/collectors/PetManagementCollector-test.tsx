@@ -22,6 +22,13 @@ describe("pet management confirmation", () => {
 		await fireEvent.press(screen.getByText("app:common.back"));
 		expect(onChoose).toHaveBeenCalledWith(0);
 	});
+	it("closes the transfer window as soon as the answer leaves, without waiting for the server", async () => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {id: "transfer", endTime: Date.now() + 60_000, data: {type: "petTransfer", data: {ownPet: PET, shelterPets: []}}, reactions: [{type: "refuse", data: {}}, {type: "petDeposit", data: {}}]});
+		await render(<PetManagementCollector collector={collector} onChoose={jest.fn()} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:pet.management.deposit"));
+		await fireEvent.press(screen.getByText("app:pet.management.confirmTransfer"));
+		expect(screen.queryByText("app:pet.management.confirmTransfer")).toBeNull();
+	});
 	it("shows the irreversible warning and exact server price before freeing", async () => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {id: "free", endTime: Date.now() + 60_000, data: {type: "petFreeConfirm", data: {pet: {petTypeId: 1, petSex: "m", petNickname: "Aster"}, freeCost: 1000, isFromShelter: true}}, reactions: [{type: "accept", data: {}}, {type: "refuse", data: {}}]});
 		const onChoose = jest.fn();
