@@ -2,6 +2,7 @@ import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {useFightSpeed} from "@/src/store/useFightSpeed";
 import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
 import React, {PropsWithChildren} from "react";
+import {useRouter} from "expo-router";
 import {ActivityIndicator, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
@@ -16,6 +17,7 @@ import {GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {Theme} from "@/src/design/Theme";
+import {BackButton} from "@/src/design/Sections";
 import {Button as DesignButton} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 
@@ -71,6 +73,7 @@ const ListItem = ({ children }: PropsWithChildren) => (
 );
 
 export default function Index() {
+	const router = useRouter();
 	const preferences = React.useContext(PreferencesContext);
 	const authState = React.useContext(AuthContext);
 	const {speed, setSpeed} = useFightSpeed();
@@ -94,6 +97,7 @@ export default function Index() {
 	return (
 		<View style={styles.container}>
 			<ScrollView>
+				<BackButton label={i18n.t("app:common.back")} onClose={router.back} />
 				<View style={styles.combatPreference}>
 					<Text style={styles.preferenceLabel}>{i18n.t("app:battle.speed.label")}</Text>
 					<SegmentedControl label={i18n.t("app:battle.speed.label")} value={speed} onChange={setSpeed} options={[

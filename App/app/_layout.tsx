@@ -2,6 +2,7 @@ import {Stack} from "expo-router";
 import {StatusBar} from "expo-status-bar";
 import React from "react";
 import {useFonts} from "expo-font";
+import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {AuthProvider} from "@/src/authentication/AuthContext";
 import {PreferencesProvider} from "@/src/preferences/PreferencesContext";
 import {AppFontAssets} from "@/src/design/Fonts";
@@ -14,7 +15,8 @@ export default function RootLayout() {
 		return null;
 	}
 
-	return <AuthProvider>
+	return <GestureHandlerRootView style={{ flex: 1 }}>
+		<AuthProvider>
 		<PreferencesProvider>
 			<StatusBar hidden />
 			<Stack
@@ -32,5 +34,6 @@ export default function RootLayout() {
 				}}/>
 			</Stack>
 		</PreferencesProvider>
-	</AuthProvider>;
+	</AuthProvider>
+	</GestureHandlerRootView>;
 }
