@@ -1,9 +1,9 @@
 import {ReactNode} from "react";
 import {GuildDomainOutcome as Outcome} from "ws-packets/src/objects/GuildDomain";
-import {Button, ButtonRow, Confirmation, Note} from "@/src/design/Primitives";
+import {Note} from "@/src/design/Primitives";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
-import {Fact} from "@/src/design/Sections";
+import {ExpandableList, Fact, Sheet} from "@/src/design/Sections";
 
 function DomainResult({outcome}: {outcome: Outcome}): ReactNode {
 	if (outcome.type === "notary") return <>
@@ -32,8 +32,12 @@ function DomainResult({outcome}: {outcome: Outcome}): ReactNode {
 }
 
 export function GuildDomainOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
-	return <Confirmation title={i18n.t(`app:guildDomain.outcomes.${outcome.type}`)} onRequestClose={onContinue}>
-		<DomainResult outcome={outcome} />
-		<ButtonRow><Button onPress={onContinue}>{i18n.t("app:common.back")}</Button></ButtonRow>
-	</Confirmation>;
+	return <Sheet
+		caption={i18n.t("app:guild.pages.domain")}
+		title={i18n.t(`app:guildDomain.outcomes.${outcome.type}`)}
+		closeLabel={i18n.t("app:common.back")}
+		onClose={onContinue}
+	>
+		<ExpandableList><DomainResult outcome={outcome} /></ExpandableList>
+	</Sheet>;
 }

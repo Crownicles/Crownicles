@@ -1,6 +1,5 @@
 import {ReactNode} from "react";
 import {
-	Modal,
 	Pressable,
 	ScrollView,
 	StyleSheet,
@@ -10,7 +9,6 @@ import {
 	type TextStyle,
 	type ViewStyle
 } from "react-native";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Theme} from "@/src/design/Theme";
 import {LucideIcon} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -216,59 +214,11 @@ const quickActionStyles = StyleSheet.create({
 	}
 });
 
-const confirmationStyles = StyleSheet.create({
-	overlay: {
-		flex: 1,
-		alignItems: "center",
-		justifyContent: "center",
-		paddingHorizontal: Theme.spacing.xl,
-		backgroundColor: Theme.colors.overlay
-	},
-	card: {
-		width: "100%",
-		maxWidth: 420,
-		flexGrow: 0,
-		flexShrink: 1,
-		borderRadius: Theme.radius,
-		backgroundColor: Theme.colors.paper,
-		elevation: 4
-	},
-	cardContent: {
-		padding: Theme.spacing.xl
-	},
-	icon: {
-		alignItems: "center",
-		marginBottom: Theme.spacing.md
-	},
-	titleContainer: {
-		justifyContent: "center"
-	},
-	title: {
-		color: Theme.colors.ink,
-		fontFamily: Theme.fonts.bold,
-		fontSize: Theme.fontSize.title,
-		lineHeight: Theme.lineHeight.hero,
-		textAlign: "center"
-	},
-	message: {
-		marginTop: Theme.spacing.sm,
-		color: Theme.colors.muted,
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.body,
-		lineHeight: Theme.lineHeight.body,
-		textAlign: "center"
-	},
-	content: {
-		marginTop: Theme.spacing.lg
-	}
-});
-
 const styles = {
 	...screenStyles,
 	...fieldStyles,
 	...actionStyles,
-	...quickActionStyles,
-	...confirmationStyles
+	...quickActionStyles
 };
 
 type ButtonVariant = "secondary" | "primary" | "danger";
@@ -392,37 +342,6 @@ export function QuickAction({icon, children, onPress, disabled = false}: QuickAc
 		>
 			{content}
 		</Pressable>
-	);
-}
-
-/** A compact confirmation layer for quick, binary decisions made from an existing screen. */
-export function Confirmation({icon, title, message, children, onRequestClose, onShow}: {
-	icon?: ReactNode;
-	title: string;
-	message?: string;
-	children: ReactNode;
-	onRequestClose?: () => void;
-	onShow?: () => void;
-}): ReactNode {
-	const insets = useSafeAreaInsets();
-	return (
-		<Modal visible transparent animationType="fade" onRequestClose={onRequestClose} onShow={onShow}>
-			<View style={[styles.overlay, {paddingTop: insets.top + Theme.spacing.xl, paddingBottom: insets.bottom + Theme.spacing.xl}]}>
-				<ScrollView style={styles.card} contentContainerStyle={styles.cardContent} bounces={false}>
-					{icon ? <View style={styles.icon}>{icon}</View> : null}
-					<TwemojiText
-						containerStyle={styles.titleContainer}
-						textStyle={styles.title}
-						emojiSize={Theme.fontSize.title}
-						iosEmojiVerticalOffset={Theme.emoji.iosHeroOffset}
-					>
-						{title}
-					</TwemojiText>
-					{message ? <TwemojiText textStyle={styles.message} emojiSize={Theme.fontSize.body}>{message}</TwemojiText> : null}
-					<View style={styles.content}>{children}</View>
-				</ScrollView>
-			</View>
-		</Modal>
 	);
 }
 

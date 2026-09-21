@@ -43,7 +43,7 @@ describe("daily bonus and potion outcomes", () => {
 		const close = jest.fn();
 		await render(<InventoryOutcome outcome={{kind: "daily", packet: {itemNature: ItemNature.HEALTH, value: 25}}} onContinue={close} />);
 		expect(screen.getByText(/potionsNaturesWithoutEmote.1.*25/)).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:sale.continue"));
+		await fireEvent.press(screen.getByLabelText("app:sale.continue"));
 		expect(close).toHaveBeenCalledTimes(1);
 	});
 });

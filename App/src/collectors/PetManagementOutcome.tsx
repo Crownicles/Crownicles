@@ -1,12 +1,12 @@
 import {ReactNode} from "react";
 import {PetFreeStatus, PetManagementOutcome as Outcome} from "ws-packets/src/objects/PetManagement";
-import {Button, ButtonRow, Confirmation, Note} from "@/src/design/Primitives";
+import {Note} from "@/src/design/Primitives";
 import {formatMoney} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {petName} from "@/src/display/PetDisplay";
 import {expeditionPetName} from "@/src/display/PetExpedition";
 import {i18n} from "@/src/translations/i18n";
-import {Fact} from "@/src/design/Sections";
+import {ExpandableList, Fact, Sheet} from "@/src/design/Sections";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 function statusMessage(status: PetFreeStatus): string {
@@ -42,8 +42,12 @@ function ManagementResult({outcome}: {outcome: Outcome}): ReactNode {
 }
 
 export function PetManagementOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
-	return <Confirmation title={i18n.t(`app:pet.management.outcomes.${outcome.type}`)} onRequestClose={onContinue}>
-		<ManagementResult outcome={outcome} />
-		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:common.back")}</Button></ButtonRow>
-	</Confirmation>;
+	return <Sheet
+		caption={i18n.t("app:pet.eyebrow")}
+		title={i18n.t(`app:pet.management.outcomes.${outcome.type}`)}
+		closeLabel={i18n.t("app:common.back")}
+		onClose={onContinue}
+	>
+		<ExpandableList><ManagementResult outcome={outcome} /></ExpandableList>
+	</Sheet>;
 }

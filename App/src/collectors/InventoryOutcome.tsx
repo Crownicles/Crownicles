@@ -1,6 +1,6 @@
 import {ReactNode, useEffect, useState} from "react";
 import {InventoryOutcome as Outcome} from "@/src/store/useInventoryOutcome";
-import {Button, ButtonRow, Confirmation} from "@/src/design/Primitives";
+import {Sheet} from "@/src/design/Sections";
 import {SaleOutcome} from "@/src/collectors/SellCollector";
 import {formatDurationMinutes, itemEffect} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
@@ -19,7 +19,11 @@ export function InventoryOutcome({outcome, onContinue}: {outcome: Outcome; onCon
 	const message = outcome.kind === "cooldown"
 		? i18n.t("app:dailyBonus.availableIn", {time: formatDurationMinutes((outcome.packet.lastDailyTimestamp + outcome.packet.cooldownHours * MILLISECONDS_PER_HOUR - now) / MILLISECONDS_PER_MINUTE)})
 		: itemEffect(outcome.packet.itemNature, outcome.packet.value);
-	return <Confirmation title={i18n.t(title)} message={message} onRequestClose={onContinue}>
-		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:sale.continue")}</Button></ButtonRow>
-	</Confirmation>;
+	return <Sheet
+		caption={i18n.t("app:inventoryActions.drinkTitle")}
+		title={i18n.t(title)}
+		subtitle={message}
+		closeLabel={i18n.t("app:sale.continue")}
+		onClose={onContinue}
+	>{null}</Sheet>;
 }

@@ -3,7 +3,7 @@ import {PetFeedOutcome as Outcome} from "ws-packets/src/fromServer/pet/PetCareRe
 import {PET_FEED_ERRORS} from "ws-packets/src/objects/PetFood";
 import {PetFeast} from "@/src/components/PetReaction";
 import {useKnownPet} from "@/src/store/useKnownPet";
-import {Button, ButtonRow, Confirmation} from "@/src/design/Primitives";
+import {Sheet} from "@/src/design/Sections";
 import {petName} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
 
@@ -18,13 +18,13 @@ export function PetFeedOutcome({outcome, onContinue}: {outcome: Outcome; onConti
 	/** The layer opens over the feeding menu, so the dance waits to be on screen rather than play behind the transition. */
 	const [play, setPlay] = useState(0);
 	const feast = outcome.success && pet ? <PetFeast pet={pet} result={outcome.result} play={play} /> : null;
-	return <Confirmation
-		{...feast ? {icon: feast} : {}}
+	return <Sheet
+		{...feast ? {emblem: feast} : {}}
+		caption={i18n.t("app:pet.eyebrow")}
 		title={i18n.t(outcome.success ? "app:pet.feed.success" : "app:pet.feed.unavailable")}
-		message={feedMessage(outcome)}
+		subtitle={feedMessage(outcome)}
+		closeLabel={i18n.t("app:common.back")}
 		onShow={(): void => setPlay(1)}
-		onRequestClose={onContinue}
-	>
-		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:common.back")}</Button></ButtonRow>
-	</Confirmation>;
+		onClose={onContinue}
+	>{null}</Sheet>;
 }

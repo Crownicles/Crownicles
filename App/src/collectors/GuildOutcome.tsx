@@ -1,10 +1,10 @@
 import {ReactNode} from "react";
 import {GuildCommandOutcome, GuildCreationStatus, GuildDailyReward} from "ws-packets/src/objects/Guild";
-import {Button, ButtonRow, Confirmation, Note} from "@/src/design/Primitives";
+import {Note} from "@/src/design/Primitives";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
-import {Fact} from "@/src/design/Sections";
+import {Fact, Sheet} from "@/src/design/Sections";
 
 const MS_PER_MINUTE = 60_000;
 const MINUTES_PER_HOUR = 60;
@@ -64,8 +64,12 @@ function GuildResult({outcome}: {outcome: GuildCommandOutcome}): ReactNode {
 }
 
 export function GuildOutcome({outcome, onContinue}: {outcome: GuildCommandOutcome; onContinue: () => void}): ReactNode {
-	return <Confirmation title={i18n.t("app:guild.eyebrow")} onRequestClose={onContinue}>
+	return <Sheet
+		caption={i18n.t("app:guild.eyebrow")}
+		title={i18n.t("app:guild.pages.manage")}
+		closeLabel={i18n.t("app:common.back")}
+		onClose={onContinue}
+	>
 		<GuildResult outcome={outcome} />
-		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:common.back")}</Button></ButtonRow>
-	</Confirmation>;
+	</Sheet>;
 }

@@ -112,16 +112,17 @@ export function Standing({emblem, caption, title, subtitle, children, onPress, a
 }
 
 /** A window the server opens over a screen: an answer to read, or a question only Core can settle. */
-export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, children}: {
+export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, onShow, children}: {
 	caption: string;
 	title: string;
 	subtitle?: string;
 	emblem?: ReactNode;
 	closeLabel: string;
 	onClose: () => void;
+	onShow?: () => void;
 	children: ReactNode;
 }): ReactNode {
-	return <Modal visible animationType="slide" onRequestClose={onClose}>
+	return <Modal visible animationType="slide" onRequestClose={onClose} {...onShow ? {onShow} : {}}>
 		<ModalSurface>
 			<Screen>
 				<BackButton label={closeLabel} onClose={onClose} />
