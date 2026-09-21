@@ -1,6 +1,7 @@
-import {act, render, screen, waitFor} from "@testing-library/react-native";
+import {act, fireEvent, render, screen, waitFor} from "@testing-library/react-native";
+import {Linking} from "react-native";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {BadgesContent, Blessing, BlessingContent, RarityContent} from "@/src/components/CharacterReference";
+import {BadgesContent, Blessing, BlessingContent, Guide, RarityContent} from "@/src/components/CharacterReference";
 import {BlessingRes} from "ws-packets/src/fromServer/character/BlessingRes";
 import {GameClient} from "@/src/networking/GameClient";
 
@@ -44,6 +45,24 @@ describe("character reference screens", () => {
 		expect(screen.getByText("app:reference.badges.names.technical_team")).toBeTruthy();
 		expect(screen.queryByText("app:reference.badges.names.donor")).toBeNull();
 		expect(screen.queryByText("app:reference.badges.names.voter")).toBeNull();
+	});
+
+	it("brings the earned badges to the top and dims the missing ones", async () => {
+		await render(<BadgesContent badges={["top_week"]} />);
+		const names = screen.getAllByText(/app:reference\.badges\.names\./);
+		expect(names[0]).toHaveTextContent("app:reference.badges.names.top_week");
+		expect(screen.getAllByText(/app:inventory\./)[0]).toHaveTextContent("app:inventory.owned");
+	});
+
+	it("gathers the badges and the rarities behind one way out to the online guide", async () => {
+		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: {badges: ["technical_team"], rarities: [0, 43.768]}} as never);
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><Guide /></QueryClientProvider>);
+		await waitFor(() => expect(screen.getByText("app:reference.badges.names.technical_team")).toBeTruthy());
+		expect(screen.getByText("43.768 %")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:reference.guide"));
+		expect(openURL).toHaveBeenCalledWith("https://guide.crownicles.com");
 	});
 
 	it("replaces an expired blessing with the new server pool", async () => {

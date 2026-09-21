@@ -82,7 +82,7 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 					if (petted) patience.stroke();
 				}).catch(console.error);
 			}}>{i18n.t("app:pet.care.caress")}</QuickAction>}
-			{expedition ? null : <QuickAction icon={AppIcons.getIcon("commands.map")} disabled={menus.pending || Boolean(noTalisman)} onPress={openExpedition}>{i18n.t("app:expedition.open")}</QuickAction>}
+			{expedition ? null : <QuickAction icon={AppIcons.getIcon("expedition.map")} disabled={menus.pending || Boolean(noTalisman)} onPress={openExpedition}>{i18n.t("app:expedition.open")}</QuickAction>}
 			<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={(): void => onPage("rename")}>{i18n.t("app:pet.care.rename")}</QuickAction>
 			<QuickAction icon={AppIcons.getIcon("unitValues.money")} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>
 		</QuickActions>

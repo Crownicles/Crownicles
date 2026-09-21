@@ -10,6 +10,11 @@ import {PreferencesContext} from "@/src/preferences/PreferencesContext";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {PingReq} from "ws-packets/src/fromClient/PingReq";
 import {PingRes} from "ws-packets/src/fromServer/ping/PingRes";
+import {VersionReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
+import {VersionRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
+import {GameClient} from "@/src/networking/GameClient";
+import {useGameQuery} from "@/src/store/useGameQuery";
+import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {Theme} from "@/src/design/Theme";
 import {Button as DesignButton} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
@@ -71,6 +76,7 @@ export default function Index() {
 	const {speed, setSpeed} = useFightSpeed();
 	const [pingLoading, setPingLoading] = React.useState(false);
 	const [pingTime, setPingTime] = React.useState<number | null>(null);
+	const version = useGameQuery(GAME_ENTITIES.VERSION, () => GameClient.request(makeFromClientPacket(VersionReq, {}), VersionRes));
 
 	const handlePing = () => {
 		setPingLoading(true);
@@ -95,6 +101,10 @@ export default function Index() {
 						{value: FIGHT_SPEEDS.FAST, label: i18n.t("app:battle.speed.fast")}
 					]} />
 				</View>
+				<ListItem>
+					<Text style={styles.label}>{i18n.t("app:settings.coreVersion")}</Text>
+					<Text style={styles.pingValue}>{version.status === "ready" ? version.data.coreVersion : i18n.t("app:common.loading")}</Text>
+				</ListItem>
 				<ListItem>
 					<Text style={styles.label}>{i18n.t("app:settings.developerMode")}</Text>
 					<Switch value={preferences.getDevMode()} onValueChange={preferences.setDevMode} />

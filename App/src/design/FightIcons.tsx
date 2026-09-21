@@ -4,6 +4,7 @@ import {Theme} from "@/src/design/Theme";
 import cannonAsset from "@/assets/images/fight/cannon.svg";
 import arrowRightAsset from "lucide-static/icons/arrow-right.svg";
 import audioLinesAsset from "lucide-static/icons/audio-lines.svg";
+import bookOpenAsset from "lucide-static/icons/book-open.svg";
 import chevronDownAsset from "lucide-static/icons/chevron-down.svg";
 import checkAsset from "lucide-static/icons/check.svg";
 import circleAlertAsset from "lucide-static/icons/circle-alert.svg";
@@ -52,6 +53,7 @@ function iconAsset(source: number | ImageSource): LucideIcon {
 export const ArrowRight = iconAsset(arrowRightAsset);
 export const Cannon = iconAsset(cannonAsset);
 export const AudioLines = iconAsset(audioLinesAsset);
+export const BookOpen = iconAsset(bookOpenAsset);
 export const ChevronDown = iconAsset(chevronDownAsset);
 export const Check = iconAsset(checkAsset);
 export const CircleAlert = iconAsset(circleAlertAsset);

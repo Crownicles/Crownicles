@@ -1,4 +1,5 @@
 import {ReactNode} from "react";
+import {Linking} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {RarityReq} from "ws-packets/src/fromClient/RarityReq";
 import {BlessingReq} from "ws-packets/src/fromClient/BlessingReq";
@@ -14,6 +15,8 @@ import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {KeyValue, Note, Panel, Row, SectionHeader, StatBar} from "@/src/design/Primitives";
+import {ActionBanner} from "@/src/design/Sections";
+import {BookOpen} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
@@ -24,6 +27,7 @@ import {i18n} from "@/src/translations/i18n";
 const HIDDEN_BADGES = new Set<Badge>([BADGE_CODES.DONOR, BADGE_CODES.VOTER]);
 const VISIBLE_BADGES = Object.values(BADGE_CODES).filter(badge => !HIDDEN_BADGES.has(badge));
 const BLESSING_TYPES = Object.values(BlessingType).filter((value): value is BlessingType => typeof value === "number" && value !== BlessingType.NONE);
+const GUIDE_URL = "https://guide.crownicles.com";
 
 export function RarityContent({rarities}: {rarities: number[]}): ReactNode {
 	if (rarities.length === 0) return <Note>{i18n.t("app:reference.empty")}</Note>;
@@ -83,9 +87,12 @@ export function Blessing(): ReactNode {
 
 export function BadgesContent({badges}: {badges: string[]}): ReactNode {
 	const owned = new Set(badges);
+	// The ones earned come first, so a handful of badges is not lost among the thirty that remain to be won.
+	const ordered = [...VISIBLE_BADGES].sort((first, second) => Number(owned.has(second)) - Number(owned.has(first)));
 	return <>
 		<Note>{i18n.t("app:reference.badges.total", {count: VISIBLE_BADGES.filter(badge => owned.has(badge)).length, total: VISIBLE_BADGES.length})}</Note>
-		<Panel>{VISIBLE_BADGES.map(badge => <Row key={badge}
+		<Panel>{ordered.map(badge => <Row key={badge}
+			disabled={!owned.has(badge)}
 			icon={<TwemojiIcon emoji={AppIcons.getIcon(`badges.${badge}`)} size={Theme.dimensions.headerIcon} />}
 			title={i18n.t(`app:reference.badges.names.${badge}`)} end={i18n.t(owned.has(badge) ? "app:inventory.owned" : "app:inventory.absent")}
 		/>)}</Panel>
@@ -95,4 +102,17 @@ export function BadgesContent({badges}: {badges: string[]}): ReactNode {
 export function Badges(): ReactNode {
 	const state = usePlayerProfile();
 	return <GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{data => <BadgesContent badges={data.badges} />}</GameQueryContent>;
+}
+
+/** Everything a player may want to look up: the online guide first, then the tables the game never explains by itself. */
+export function Guide(): ReactNode {
+	return <>
+		<ActionBanner icon={BookOpen} label={i18n.t("app:reference.guide")} onPress={(): void => {
+			Linking.openURL(GUIDE_URL).catch(console.error);
+		}} />
+		<SectionHeader>{i18n.t("app:profile.titles.badges")}</SectionHeader>
+		<Badges />
+		<SectionHeader>{i18n.t("app:profile.titles.rarity")}</SectionHeader>
+		<Rarity />
+	</>;
 }

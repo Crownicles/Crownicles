@@ -11,7 +11,7 @@ import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {Missions as MissionsScreen} from "@/src/components/Missions";
-import {Badges, Blessing, Rarity} from "@/src/components/CharacterReference";
+import {Blessing, Guide} from "@/src/components/CharacterReference";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {AppIcons} from "@/src/AppIcons";
 import {
@@ -28,7 +28,6 @@ import {
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
-import {Utilities} from "@/src/components/Utilities";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 const MINUTES_PER_HOUR = 60;
@@ -36,14 +35,12 @@ const MINIMUM_RATIO = 0;
 const MAXIMUM_RATIO = 1;
 const PET_RARITY_MIN = 0;
 const PET_RARITY_MAX = 8;
-type ProfilePage = "profile" | "inventory" | "missions" | "badges" | "rarity" | "blessing" | "utilities";
+type ProfilePage = "profile" | "inventory" | "missions" | "guide" | "blessing";
 const PROFILE_PAGES: {page: Exclude<ProfilePage, "profile">; icon: string}[] = [
 	{page: "inventory", icon: "inventory.stock"},
 	{page: "missions", icon: "missions.campaign"},
-	{page: "badges", icon: "commands.badges"},
-	{page: "rarity", icon: "commands.rarity"},
-	{page: "blessing", icon: "smallEvents.altar"},
-	{page: "utilities", icon: "commands.map"}
+	{page: "guide", icon: "missions.book"},
+	{page: "blessing", icon: "smallEvents.altar"}
 ];
 
 const styles = StyleSheet.create({
@@ -339,11 +336,9 @@ function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNo
 
 function ProfilePageContent({page, inventory}: {page: Exclude<ProfilePage, "profile">; inventory: RequestState<InventoryRes>}): ReactNode {
 	switch (page) {
-		case "utilities": return <Utilities />;
 		case "inventory": return <InventorySection state={inventory} />;
 		case "missions": return <MissionsScreen />;
-		case "badges": return <Badges />;
-		case "rarity": return <Rarity />;
+		case "guide": return <Guide />;
 		default: return <Blessing />;
 	}
 }

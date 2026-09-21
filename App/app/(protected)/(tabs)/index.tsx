@@ -54,7 +54,7 @@ import {SmallEventChoiceOutcome as SmallEventChoiceOutcomeScreen} from "@/src/co
 import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/src/collectors/AutomaticSmallEventOutcome";
 import {
   EmptyState, Hero, KeyValue, Note, Panel, QuickAction, QuickActions, Screen, SectionHeader
-,Button} from "@/src/design/Primitives";
+,Button, ButtonRow} from "@/src/design/Primitives";
 import {PlayerVitals} from "@/src/components/PlayerVitals";
 import {formatMoney} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
@@ -62,7 +62,7 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
 import {WorldMap} from "@/src/components/WorldMap";
 import {DetailScreen} from "@/src/design/DetailScreen";
-import {RespawnAction} from "@/src/components/Utilities";
+import {RespawnAction, PrisonerRelease} from "@/src/components/Utilities";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
@@ -773,13 +773,25 @@ function AdventureBody(): ReactNode {
 	);
 }
 
+const ADVENTURE_TOOLS = {
+	MAP: {title: "app:map.title", content: WorldMap},
+	UNLOCK: {title: "app:utilities.unlock", content: PrisonerRelease}
+} as const;
+type AdventureTool = keyof typeof ADVENTURE_TOOLS;
+
 export default function Index(): ReactNode {
-	const [mapOpen, setMapOpen] = useState(false);
-	if (mapOpen) return <DetailScreen title={i18n.t("app:map.title")} eyebrow={i18n.t("app:adventure.eyebrow")} onClose={(): void => setMapOpen(false)}><WorldMap /></DetailScreen>;
+	const [tool, setTool] = useState<AdventureTool | null>(null);
+	if (tool) {
+		const {title, content: Content} = ADVENTURE_TOOLS[tool];
+		return <DetailScreen title={i18n.t(title)} eyebrow={i18n.t("app:adventure.eyebrow")} onClose={(): void => setTool(null)}><Content /></DetailScreen>;
+	}
 	return (
 		<View style={styles.adventureRoot}>
 			<PlayerVitals />
-			<Button onPress={(): void => setMapOpen(true)}>{i18n.t("app:map.title")}</Button>
+			<ButtonRow>
+				<Button onPress={(): void => setTool("MAP")}>{i18n.t("app:map.title")}</Button>
+				<Button onPress={(): void => setTool("UNLOCK")}>{i18n.t("app:utilities.unlock")}</Button>
+			</ButtonRow>
 			<AdventureBody />
 		</View>
 	);
