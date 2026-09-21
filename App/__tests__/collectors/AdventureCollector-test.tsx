@@ -172,6 +172,20 @@ function cityHomePurchase(price = 950): ReactionCollectorCreation {
 	return collector;
 }
 
+function unaffordableHomePurchase(): ReactionCollectorCreation {
+	const collector = cityHomePurchase(5_000);
+	if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected a city collector fixture");
+	const cityData = collector.data.data;
+	collector.data = {
+		type: CITY_DATA_KINDS.CITY,
+		data: {
+			...cityData,
+			snapshot: {...cityData.snapshot, home: {manage: {newPrice: 5_000, currentMoney: 2_000, canBuy: false}}}
+		}
+	};
+	return collector;
+}
+
 function merchantCollector(): ReactionCollectorCreation {
 	return {
 		id: "merchant",
@@ -448,7 +462,7 @@ describe("AdventureCollector", () => {
 		expect(onChoose).not.toHaveBeenCalled();
 	});
 
-	it("confirms a paid city action before submitting its original index", async () => {
+	it("confirms a paid city action inside its own row", async () => {
 		const onChoose = jest.fn();
 		const collector = cityHomePurchase();
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
@@ -456,23 +470,79 @@ describe("AdventureCollector", () => {
 		await fireEvent.press(screen.getByText("app:city.actions.notary"));
 		await fireEvent.press(screen.getByText(CITY_REACTION_KINDS.BUY_HOME));
 		expect(onChoose).not.toHaveBeenCalled();
-		expect(screen.getByText("app:city.confirmation.title")).toBeTruthy();
 
 		await fireEvent.press(screen.getByText("app:collector.accept"));
 		expect(onChoose).toHaveBeenCalledWith(1);
 	});
 
-	it("keeps the confirmed city offer bound to its original snapshot across refreshes", async () => {
-		const originalChoice = jest.fn();
+	it("submits the offer the unfolded row is showing after a refresh", async () => {
+		const staleChoice = jest.fn();
 		const refreshedChoice = jest.fn();
-		await render(<CityMenu collector={cityHomePurchase()} onChoose={originalChoice} submitting={false} />);
+		await render(<CityMenu collector={cityHomePurchase()} onChoose={staleChoice} submitting={false} />);
 		await fireEvent.press(screen.getByText("app:city.actions.notary"));
 		await fireEvent.press(screen.getByText(CITY_REACTION_KINDS.BUY_HOME));
 		await screen.rerender(<CityMenu collector={cityHomePurchase(1_500)} onChoose={refreshedChoice} submitting={false} />);
 		await fireEvent.press(screen.getByText("app:collector.accept"));
-		expect(originalChoice).toHaveBeenCalledWith(1);
-		expect(refreshedChoice).not.toHaveBeenCalled();
-		expect(screen.getByText("app:city.actions.notary")).toBeTruthy();
+		expect(refreshedChoice).toHaveBeenCalledWith(1);
+		expect(staleChoice).not.toHaveBeenCalled();
+	});
+
+	it("says on the row why an unaffordable home cannot be bought", async () => {
+		const onChoose = jest.fn();
+		const collector = unaffordableHomePurchase();
+		await render(<CityMenu collector={collector} onChoose={onChoose} submitting={false} />);
+
+		await fireEvent.press(screen.getByText("app:city.actions.notary"));
+		expect(screen.getByText("app:city.locks.missingMoney")).toBeTruthy();
+
+		await fireEvent.press(screen.getByText(CITY_REACTION_KINDS.BUY_HOME));
+		expect(onChoose).not.toHaveBeenCalled();
+	});
+
+	it("titles a commerce after itself and says what the purchase does", async () => {
+		const collector: ReactionCollectorCreation = {
+			id: "veterinarian",
+			endTime: Date.now() + 60_000,
+			data: {
+				type: SHOP_DATA_KINDS.COLLECTOR,
+				data: {currency: "gem", availableCurrency: 51, shopId: "veterinarian"}
+			},
+			reactions: [
+				{
+					type: SHOP_REACTION_KINDS.ITEM,
+					data: {shopItemId: 14, shopCategoryId: "services", amount: 1, price: 3}
+				},
+				{type: SHOP_REACTION_KINDS.CLOSE, data: {}}
+			]
+		};
+		await render(<AdventureCollector collector={collector} onChoose={jest.fn()} submitting={false} />);
+
+		expect(screen.getByText("commands:report.city.shops.veterinarian.label")).toBeTruthy();
+		expect(screen.queryByText("app:city.shop.title")).toBeNull();
+		expect(screen.queryByText("app:city.shop.quantity")).toBeNull();
+
+		await fireEvent.press(screen.getByText("commands:shop.shopItems.lovePointsValue.name"));
+		expect(screen.getByText("commands:shop.shopItems.lovePointsValue.info")).toBeTruthy();
+	});
+
+	it("leaves a commerce through the back chevron", async () => {
+		const onChoose = jest.fn();
+		const collector: ReactionCollectorCreation = {
+			id: "leaving-shop",
+			endTime: Date.now() + 60_000,
+			data: {
+				type: SHOP_DATA_KINDS.COLLECTOR,
+				data: {currency: "gem", availableCurrency: 51, shopId: "veterinarian"}
+			},
+			reactions: [
+				{type: SHOP_REACTION_KINDS.ITEM, data: {shopItemId: 14, shopCategoryId: "services", amount: 1, price: 3}},
+				{type: SHOP_REACTION_KINDS.CLOSE, data: {}}
+			]
+		};
+		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
+
+		await fireEvent.press(screen.getByLabelText("app:city.shop.close"));
+		expect(onChoose).toHaveBeenCalledWith(1);
 	});
 
 	it("does not submit a shop item which costs more than the available currency", async () => {
@@ -484,16 +554,19 @@ describe("AdventureCollector", () => {
 				type: SHOP_DATA_KINDS.COLLECTOR,
 				data: {currency: "gem", availableCurrency: 2}
 			},
-			reactions: [{
-				type: SHOP_REACTION_KINDS.ITEM,
-				data: {shopItemId: 4, shopCategoryId: "slots", amount: 1, price: 3}
-			}]
+			reactions: [
+				{
+					type: SHOP_REACTION_KINDS.ITEM,
+					data: {shopItemId: 4, shopCategoryId: "slots", amount: 1, price: 3}
+				},
+				{type: SHOP_REACTION_KINDS.CLOSE, data: {}}
+			]
 		};
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
 		await fireEvent.press(screen.getByText("commands:shop.shopItems.slotExtension.name"));
 		expect(onChoose).not.toHaveBeenCalled();
-		expect(screen.queryByText("app:city.shop.confirmTitle")).toBeNull();
+		expect(screen.getByText("app:city.locks.missingMoney")).toBeTruthy();
 	});
 
 	it.each(outcomeScenarios)("$name", async scenario => {

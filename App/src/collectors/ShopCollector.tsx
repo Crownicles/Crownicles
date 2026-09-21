@@ -1,14 +1,23 @@
 import {Fragment, ReactNode, useState} from "react";
+import {Text} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {SHOP_DATA_KINDS, SHOP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
-import {AmountUnit, formatAmount} from "@/src/display/Amounts";
+import {AmountUnit, formatAmount, formatNumber} from "@/src/display/Amounts";
+import {plainStory} from "@/src/display/Markdown";
 import {isChoosable} from "@/src/collectors/CollectorLabels";
-import {shopItemName} from "@/src/collectors/ShopLabels";
+import {compactCityDescription} from "@/src/collectors/CityText";
+import {shopItemKey, shopItemName} from "@/src/collectors/ShopLabels";
+import {Note, Screen, SectionHeader} from "@/src/design/Primitives";
+import {Check, Coins} from "@/src/design/FightIcons";
 import {
-	Button, ButtonRow, Confirmation, Hero, KeyValue, Note, Panel, Row, Screen, SectionHeader
-} from "@/src/design/Primitives";
+	ActionBanner, BackButton, ExpandableEntry, ExpandableList, Figures, Lock, LockHint, sectionStyles, Standing
+} from "@/src/design/Sections";
+import {SwipeBack} from "@/src/design/SwipeBack";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
+
+const SHOP_EMBLEM_SIZE = 34;
 
 type ShopCollectorProps = {
 	collector: ReactionCollectorCreation;
@@ -17,28 +26,36 @@ type ShopCollectorProps = {
 };
 
 type ShopItemReaction = Extract<ReactionCollectorCreation["reactions"][number], {type: typeof SHOP_REACTION_KINDS.ITEM}>;
-
-function currencyIcon(currency: AmountUnit): string {
-	return AppIcons.getIcon(`unitValues.${currency}`);
-}
+type ShopGroup = {reaction: ShopItemReaction; index: number};
+type AdditionalShopData = {remainingPotions?: number; remainingTokens?: number; gemToMoneyRatio?: number; thousandPoints?: number};
 
 function currencyLabel(value: number, currency: AmountUnit): string {
 	return formatAmount(value, currency);
 }
 
 function categoryLabel(categoryId: string, count: number): string {
-	return i18n.t(`commands:shop.shopCategories.${categoryId}`, {count});
+	return plainStory(i18n.t(`commands:shop.shopCategories.${categoryId}`, {count}));
 }
 
-function shopItemSubtitle(amount: number, price: number, currency: "money" | "gem"): string {
-	return i18n.t("app:city.shop.itemDetails", {
-		amount,
-		price: currencyLabel(price, currency)
-	});
+/** A commerce is named after itself when the server says which one the player walked into. */
+function shopHeading(shopId: string | undefined): {emblem: string | null; title: string; subtitle: string} {
+	if (!shopId) {
+		return {emblem: null, title: i18n.t("app:city.shop.title"), subtitle: i18n.t("app:city.shop.description")};
+	}
+	return {
+		emblem: AppIcons.getIconOrNull(`city.shops.${shopId}`),
+		title: plainStory(i18n.t(`commands:report.city.shops.${shopId}.label`)),
+		subtitle: compactCityDescription(plainStory(i18n.t(`commands:report.city.shops.${shopId}.description`)))
+	};
 }
 
-type ShopGroup = {reaction: ShopItemReaction; index: number};
-type AdditionalShopData = {remainingPotions?: number; remainingTokens?: number};
+/** What the purchase actually does, written the way the confirmation screen says it elsewhere. */
+function shopItemInfo(shopItemId: number, additionalShopData: AdditionalShopData | undefined): string {
+	return plainStory(i18n.t(`commands:shop.shopItems.${shopItemKey({shopItemId})}.info`, {
+		kingsMoneyAmount: additionalShopData?.gemToMoneyRatio ?? 0,
+		thousandPoints: additionalShopData?.thousandPoints ?? 0
+	}));
+}
 
 function groupShopReactions(collector: ReactionCollectorCreation): Map<string, ShopGroup[]> {
 	const groups = new Map<string, ShopGroup[]>();
@@ -56,77 +73,68 @@ function stockNote(additionalShopData: AdditionalShopData | undefined): string |
 	return additionalShopData?.remainingTokens !== undefined ? i18n.t("app:city.shop.remainingTokens", {count: additionalShopData.remainingTokens}) : undefined;
 }
 
-function ShopGroups({groups, collector, currency, availableCurrency, locked, choose}: {
+type ShopListProps = {
 	groups: Map<string, ShopGroup[]>;
 	collector: ReactionCollectorCreation;
-	currency: "money" | "gem";
+	currency: AmountUnit;
 	availableCurrency: number;
+	additionalShopData: AdditionalShopData | undefined;
 	locked: boolean;
 	choose: (index: number) => void;
-}): ReactNode {
-	return [...groups.entries()].map(([categoryId, entries], index) => (
+};
+
+function ShopItem({entry, props, expansion}: {entry: ShopGroup; props: ShopListProps; expansion: {openKey: number | undefined; onOpen: (key: number | undefined) => void}}): ReactNode {
+	const {collector, currency, availableCurrency, additionalShopData, locked, choose} = props;
+	const {reaction, index} = entry;
+	const tooExpensive = reaction.data.price > availableCurrency;
+	const lock: Lock | undefined = tooExpensive
+		? {reason: i18n.t("app:city.locks.missingMoney", {amount: currencyLabel(reaction.data.price - availableCurrency, currency)}), icon: Coins}
+		: undefined;
+	const choosable = isChoosable(reaction, collector.data) && !tooExpensive;
+	const expanded = expansion.openKey === index;
+	const quantity = reaction.data.amount > 1 ? i18n.t("app:city.shop.quantity", {amount: reaction.data.amount}) : undefined;
+	return <ExpandableEntry
+		label={shopItemName({shopItemId: reaction.data.shopItemId})}
+		caption={lock && !expanded ? <LockHint lock={lock} /> : quantity}
+		end={<Text style={sectionStyles.caption}>{currencyLabel(reaction.data.price, currency)}</Text>}
+		dimmed={locked || !choosable}
+		expanded={expanded}
+		onToggle={(): void => expansion.onOpen(expanded ? undefined : index)}
+	>
+		<Text style={sectionStyles.caption}>{shopItemInfo(reaction.data.shopItemId, additionalShopData)}</Text>
+		<ActionBanner
+			icon={Check}
+			label={i18n.t("app:collector.accept")}
+			pending={locked}
+			onPress={(): void => choose(index)}
+			{...lock ? {lock} : {}}
+		/>
+	</ExpandableEntry>;
+}
+
+function ShopGroups(props: ShopListProps): ReactNode {
+	const [openKey, onOpen] = useState<number>();
+	return [...props.groups.entries()].map(([categoryId, entries], index) => (
 		<Fragment key={categoryId}>
 			<SectionHeader first={index === 0}>{categoryLabel(categoryId, entries.length)}</SectionHeader>
-			<Panel>{entries.map(({reaction, index: reactionIndex}) => {
-				const choosable = isChoosable(reaction, collector.data);
-				const disabled = locked || !choosable || reaction.data.price > availableCurrency;
-				return <Row key={`${collector.id}-${reactionIndex}`} disabled={disabled} onPress={disabled ? undefined : (): void => choose(reactionIndex)} title={shopItemName({shopItemId: reaction.data.shopItemId})} subtitle={shopItemSubtitle(reaction.data.amount, reaction.data.price, currency)} end={currencyLabel(reaction.data.price, currency)} chevron={!disabled} />;
-			})}</Panel>
+			<ExpandableList>{entries.map(entry => <ShopItem key={entry.index} entry={entry} props={props} expansion={{openKey, onOpen}} />)}</ExpandableList>
 		</Fragment>
 	));
 }
 
-function ShopClose({index, locked, choose}: {index: number; locked: boolean; choose: (index: number) => void}): ReactNode {
-	if (index < 0) return null;
-	return (
-		<Panel>
-			<Row
-				disabled={locked}
-				onPress={locked ? undefined : (): void => choose(index)}
-				title={i18n.t("app:city.shop.close")}
-				tone="danger"
-				chevron={!locked}
-			/>
-		</Panel>
-	);
-}
-
-function PurchaseConfirmation({purchase, currency, onConfirm, onCancel}: {
-	purchase: ShopGroup | null;
-	currency: "money" | "gem";
-	onConfirm: (index: number) => void;
-	onCancel: () => void;
-}): ReactNode {
-	if (!purchase) return null;
-	return (
-		<Confirmation
-			title={i18n.t("app:city.shop.confirmTitle")}
-			message={shopItemName({shopItemId: purchase.reaction.data.shopItemId})}
-			onRequestClose={onCancel}
-		>
-			<Panel>
-				<KeyValue label={i18n.t("app:city.shop.quantity")} value={String(purchase.reaction.data.amount)} />
-				<KeyValue label={i18n.t("app:city.shop.price")} value={currencyLabel(purchase.reaction.data.price, currency)} />
-			</Panel>
-			<ButtonRow>
-				<Button variant="primary" onPress={(): void => onConfirm(purchase.index)}>{i18n.t("app:collector.accept")}</Button>
-				<Button onPress={onCancel}>{i18n.t("app:collector.refuse")}</Button>
-			</ButtonRow>
-		</Confirmation>
-	);
-}
-
 export function ShopCollector({collector, onChoose, submitting}: ShopCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
-	const [pendingPurchase, setPendingPurchase] = useState<ShopGroup | null>(null);
 	if (collector.data.type !== SHOP_DATA_KINDS.COLLECTOR) {
 		return null;
 	}
 
-	const {currency, availableCurrency, additionalShopData} = collector.data.data;
+	const {
+		currency, availableCurrency, additionalShopData, shopId
+	} = collector.data.data;
 	const locked = answered || submitting;
-	const groups = groupShopReactions(collector);
-
+	const note = stockNote(additionalShopData);
+	const heading = shopHeading(shopId);
+	const closeIndex = collector.reactions.findIndex(reaction => reaction.type === SHOP_REACTION_KINDS.CLOSE);
 	const choose = (index: number): void => {
 		if (locked) {
 			return;
@@ -134,42 +142,32 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 		setAnswered(true);
 		onChoose(index);
 	};
-
-	const note = stockNote(additionalShopData);
-	const closeIndex = collector.reactions.findIndex(reaction => reaction.type === SHOP_REACTION_KINDS.CLOSE);
+	/** Walking out of a commerce is the same gesture as leaving any other screen. */
+	const leave = (): void => choose(closeIndex);
 
 	return (
-		<Screen>
-			<Hero
-				eyebrow={i18n.t("app:city.shop.eyebrow")}
-				title={`${currencyIcon(currency)} ${i18n.t("app:city.shop.title")}`}
-				subtitle={i18n.t("app:city.shop.description")}
-			/>
-			<Panel>
-				<KeyValue label={i18n.t("app:city.shop.availableCurrency")} value={currencyLabel(availableCurrency, currency)} />
-			</Panel>
-			{note ? <Note>{note}</Note> : null}
-			<ShopGroups
-				groups={groups}
-				collector={collector}
-				currency={currency}
-				availableCurrency={availableCurrency}
-				locked={locked}
-				choose={(index): void => {
-					const reaction = collector.reactions[index];
-					if (reaction.type === SHOP_REACTION_KINDS.ITEM) {
-						setPendingPurchase({reaction, index});
-					}
-				}}
-			/>
-			<ShopClose index={closeIndex} locked={locked} choose={choose} />
-			{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
-			<PurchaseConfirmation
-				purchase={pendingPurchase}
-				currency={currency}
-				onConfirm={choose}
-				onCancel={(): void => setPendingPurchase(null)}
-			/>
-		</Screen>
+		<SwipeBack onClose={leave}>
+			<Screen>
+				<BackButton label={i18n.t("app:city.shop.close")} onClose={leave} />
+				<Standing
+					emblem={<TwemojiIcon emoji={heading.emblem ?? AppIcons.getIcon(`unitValues.${currency}`)} size={SHOP_EMBLEM_SIZE} />}
+					caption={i18n.t("app:city.shop.eyebrow")}
+					title={heading.title}
+					subtitle={heading.subtitle}
+				/>
+				<Figures items={[{caption: i18n.t("app:city.shop.availableCurrency"), value: formatNumber(availableCurrency), unit: currency}]} />
+				{note ? <Note>{note}</Note> : null}
+				<ShopGroups
+					groups={groupShopReactions(collector)}
+					collector={collector}
+					currency={currency}
+					availableCurrency={availableCurrency}
+					additionalShopData={additionalShopData}
+					locked={locked}
+					choose={choose}
+				/>
+				{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
+			</Screen>
+		</SwipeBack>
 	);
 }

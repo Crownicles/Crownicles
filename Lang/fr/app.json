@@ -299,7 +299,7 @@
       "subtitle": "Prochain arrêt prévu dans {{nextStop}}. Le trajet vers {{destination}} durera encore {{remaining}}.",
       "subtitleArrivingSoon": "Plus aucun arrêt n'est prévu : vous arriverez à {{destination}} dans {{remaining}}."
     },
-    "advice": "Conseil",
+    "notReady": "Le prochain rapport sera disponible dans {{time}}.",
     "alteration": {
       "eyebrow": "Rapport · altération",
       "title": "Altération d'état",
@@ -600,6 +600,7 @@
       "departure": "Départ",
       "arrival": "Arrivée",
       "timeRemaining": "Temps restant",
+      "nextStop": "Prochain arrêt",
       "points": "Points récoltés"
     },
     "duration": {
@@ -613,7 +614,7 @@
       "advanceWithCost_other": "Avancer · {{count}} jetons",
       "getTokens": "Obtenir des jetons",
       "heal": "Se soigner",
-      "healNotEnough": "Argent insuffisant"
+      "healNotEnough": "Il vous faut {{price}} pour acheter ce soin."
     },
     "onTheRoad": "Progression sur la route",
     "unknownLocation": "Lieu inconnu",
@@ -621,16 +622,12 @@
   },
   "city": {
     "staleAction": "La situation a changé. Les actions de la ville ont été actualisées.",
-    "confirmation": {
-      "title": "Confirmer cette action"
-    },
     "titles": {
       "eyebrow": "Vous êtes en ville",
       "housing": "Votre logement",
       "services": "Services",
       "shops": "Commerces",
       "guild": "Guilde",
-      "otherCities": "Ailleurs sur la carte",
       "quit": "Quitter",
       "meals": "Repas",
       "rooms": "Chambres",
@@ -660,7 +657,6 @@
       "mealDetails": "Énergie +{{energy}} {emote:unitValues.energy}",
       "roomDetails": "Vie +{{health}} {emote:unitValues.health}",
       "notary": "Acheter, améliorer ou déplacer un logement",
-      "otherCities": "Services propres à d'autres villes",
       "noActions": "Aucune action disponible pour le moment.",
       "upgradeDetails": "Niveau {{from}} → {{to}} · {{materials}}{{missingMaterials}}",
       "disenchantDetails": "{{enchantment}} · retirer l'enchantement",
@@ -724,16 +720,10 @@
       "chest": "coffre",
       "garden": "jardin",
       "forge": "forge",
-      "available": "Disponible",
-      "fullHealth": "Vie au maximum",
       "storedItems": "Objets dans le coffre",
       "depositableItems": "Objets de la réserve",
-      "cookingStatus": "Préparations",
-      "cookingStatusUnavailable": "Les recettes en cours seront synchronisées ici",
-      "upgradePrice": "Amélioration",
-      "purchasePrice": "Achat",
-      "movePrice": "Déménagement",
       "apartmentPrice": "Logis ici",
+      "apartments": "Logis possédés",
       "rents": "Rentes",
       "enchantment": "Enchantement du jour",
       "compatibleWith": "Compatible avec",
@@ -748,7 +738,6 @@
       "disenchantable": "Équipements désenchantables",
       "recyclableItems": "Équipements recyclables",
       "status": "État",
-      "requiredPlayerLevel": "Niveau requis",
       "playerLevel": "Votre niveau",
       "gems": "Gemmes",
       "guild": "Guilde",
@@ -767,6 +756,16 @@
       "items_too_low": "Aucun équipement éligible",
       "all_maxed": "Équipements déjà au maximum",
       "ready": "Amélioration disponible"
+    },
+    "locks": {
+      "missingMoney": "Il vous manque {{amount}}.",
+      "guildTreasury": "La trésorerie de la guilde ne couvre pas les {{amount}} demandés.",
+      "missingMaterials": "Il vous manque des matériaux pour cette amélioration.",
+      "nothingToHarvest": "Aucune plante n'est prête à être récoltée.",
+      "alreadyWatered": "Le jardin a déjà été arrosé récemment.",
+      "nothingToCompost": "Aucune plante à composter.",
+      "noRent": "Aucune rente n'a encore été accumulée.",
+      "unavailable": "Cette action n'est pas disponible pour le moment."
     },
     "notes": {
       "blacksmithMissingMaterials": "Le forgeron peut vendre les matériaux manquants avant l'amélioration.",
@@ -814,9 +813,7 @@
       "eyebrow": "Commerce de la ville",
       "title": "Boutique",
       "description": "Choisissez un article. Le prix et la quantité sont affichés avant confirmation.",
-      "confirmTitle": "Confirmer cet achat",
-      "quantity": "Quantité",
-      "price": "Prix",
+      "quantity": "Lot de {{amount}}",
       "availableCurrency": "Votre solde",
       "item": "Acheter {{amount}} × {{item}} pour {{price}}",
       "itemDetails": "Quantité : {{amount}} · Prix : {{price}}",

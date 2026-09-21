@@ -117,8 +117,8 @@ describe("Adventure screen", () => {
 		await render(<Adventure />);
 
 		expect(screen.getByText("app:adventure.travel.title")).toBeTruthy();
-		expect(screen.getByText("models:map_locations.2.name")).toBeTruthy();
 		expect(screen.getByText("app:adventure.fields.timeRemaining")).toBeTruthy();
+		expect(screen.getByText("app:adventure.fields.nextStop")).toBeTruthy();
 		expect(screen.getByText("app:adventure.quick.advanceWithCost")).toBeTruthy();
 		expect(screen.queryByText("app:adventure.sections.status")).toBeNull();
 	});
@@ -170,7 +170,6 @@ describe("Adventure screen", () => {
 
 		await render(<Adventure />);
 
-		expect(screen.getByText("app:adventure.advice")).toBeTruthy();
 		expect(screen.getByText("advices:advices:only")).toBeTruthy();
 	});
 

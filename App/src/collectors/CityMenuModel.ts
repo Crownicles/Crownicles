@@ -128,7 +128,7 @@ function sortCityItems(left: CityListItem, right: CityListItem): number {
 }
 
 function emptyCityGroups(): Record<CityGroup, CityListItem[]> {
-	return {housing: [], services: [], shops: [], guild: [], elsewhere: [], quit: []};
+	return {housing: [], services: [], shops: [], guild: [], quit: []};
 }
 
 function emptyCitySubmenus(): Record<CitySubmenu, CityEntry[]> {
@@ -246,15 +246,6 @@ function addGuildFoodShop(state: CityGroupingState, foodShop: CityGroupingOption
 	state.groups.guild.push({kind: "navigation", view: "guild", key: "guild-food-shop", iconPath: "expedition.food", title: i18n.t("commands:report.city.guildFoodShop.label"), subtitle: i18n.t("app:guildDomain.foodShopDescription", {guild: foodShop.guildName})});
 }
 
-function addOtherCityServices(state: CityGroupingState, services: CityGroupingOptions["otherCityServices"]): void {
-	for (const service of services ?? []) {
-		const locationName = (service.mapLocationIds ?? [service.mapLocationId]).map(mapLocationId => i18n.t(`models:map_locations.${mapLocationId}.name`)).join(" · ");
-		const titleKey = service.kind === "shop" ? `commands:report.city.shops.${service.serviceKey}.label` : service.serviceKey === "bossArchivist" ? "commands:report.city.bossArchivist.serviceTitle" : `commands:report.city.${service.serviceKey}.menuLabel`;
-		const descriptionKey = service.kind === "shop" ? `commands:report.city.shops.${service.serviceKey}.description` : service.serviceKey === "bossArchivist" ? "commands:report.city.bossArchivist.serviceDescription" : `commands:report.city.${service.serviceKey}.menuDescription`;
-		state.groups.elsewhere.push({kind: "info", key: `${service.kind}-${service.mapLocationId}-${service.serviceKey}`, iconPath: service.kind === "shop" ? `city.shops.${service.serviceKey}` : `city.services.${service.serviceKey}`, title: i18n.t(titleKey), subtitle: `${locationName} · ${compactCityDescription(i18n.t(descriptionKey))}`});
-	}
-}
-
 function decorateHomeNavigation(state: CityGroupingState, home: CityGroupingOptions["homeOwned"]): void {
 	if (!home) return;
 	state.groups.housing = state.groups.housing.map(item => item.kind === "navigation" && item.view === "home" ? {...item, iconPath: homeIconPath(home.level), subtitle: i18n.t("app:city.subtitles.homeDetails", {level: home.level, services: [home.hasBed ? i18n.t("app:city.summary.bed") : null, home.hasChest ? i18n.t("app:city.summary.chest") : null, home.hasGarden ? i18n.t("app:city.summary.garden") : null, home.hasCooking ? i18n.t("app:city.summary.cooking") : null, home.hasUpgradeStation ? i18n.t("app:city.summary.forge") : null].filter(Boolean).join(", ")})} : item);
@@ -273,7 +264,6 @@ export function groupCityEntries(entries: CityEntry[], options: CityGroupingOpti
 	addInnServices(state, options.innIds);
 	addEmptyShops(state, options.shops);
 	addGuildFoodShop(state, options.guildFoodShop);
-	addOtherCityServices(state, options.otherCityServices);
 	decorateHomeNavigation(state, options.homeOwned);
 	return sortCityModel(state);
 }

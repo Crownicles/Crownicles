@@ -1,8 +1,9 @@
 import {ReactNode} from "react";
 import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
-import {formatMoney} from "@/src/display/Amounts";
+import {AMOUNT_UNITS, formatMoney, formatNumber} from "@/src/display/Amounts";
 import {KeyValue, Panel, StatBar} from "@/src/design/Primitives";
+import {Figures} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {renderCityNotarySummary} from "@/src/collectors/CityNotarySummary";
@@ -47,15 +48,17 @@ function renderHomeSummary(snapshot: CityMobileSnapshot): ReactNode {
 	if (!home) {
 		return null;
 	}
-	return <Panel>
-		<KeyValue label={i18n.t("app:city.summary.homeType")} value={home.isApartment ? i18n.t("app:city.summary.apartment") : i18n.t("app:city.summary.mainHome")} />
-		<KeyValue label={i18n.t("app:city.summary.level")} value={String(home.level)} />
-		<KeyValue label={i18n.t("app:city.summary.cooking")} value={home.cookingLevel === undefined ? "—" : String(home.cookingLevel)} />
-		<KeyValue label={i18n.t("app:city.summary.bedRegeneration")} value={`+${home.bedHealthRegeneration} ${AppIcons.getIcon("unitValues.health")}`} />
-		<KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={String(home.gardenPlots)} />
-		<KeyValue label={i18n.t("app:city.summary.upgradeableItems")} value={String(home.upgradeableItemCount)} />
-		<KeyValue label={i18n.t("app:city.summary.services")} value={homeServices(home)} />
-	</Panel>;
+	return <>
+		<Figures items={[
+			{caption: i18n.t("app:city.summary.level"), value: formatNumber(home.level)},
+			{caption: i18n.t("app:city.summary.bedRegeneration"), value: `+${formatNumber(home.bedHealthRegeneration)}`, unit: "health"},
+			{caption: i18n.t("app:city.summary.gardenPlots"), value: formatNumber(home.gardenPlots)}
+		]} />
+		<Panel>
+			<KeyValue label={i18n.t("app:city.summary.homeType")} value={home.isApartment ? i18n.t("app:city.summary.apartment") : i18n.t("app:city.summary.mainHome")} />
+			<KeyValue label={i18n.t("app:city.summary.services")} value={homeServices(home)} />
+		</Panel>
+	</>;
 }
 
 function renderHomeBedSummary(snapshot: CityMobileSnapshot): ReactNode {
@@ -63,49 +66,52 @@ function renderHomeBedSummary(snapshot: CityMobileSnapshot): ReactNode {
 	if (!home || !snapshot.health) {
 		return null;
 	}
-	return <Panel>
-		<StatBar
-			label={i18n.t("app:city.summary.health")}
-			value={`${snapshot.health.current} / ${snapshot.health.max} ${AppIcons.getIcon("unitValues.health")}`}
-			ratio={snapshot.health.max > 0 ? snapshot.health.current / snapshot.health.max : 0}
-			color={Theme.colors.red}
-		/>
-		<KeyValue label={i18n.t("app:city.summary.bedRegeneration")} value={`+${home.bedHealthRegeneration} ${AppIcons.getIcon("unitValues.health")}`} />
-		<KeyValue label={i18n.t("app:city.summary.available")} value={snapshot.health.current < snapshot.health.max ? i18n.t("app:common.yes") : i18n.t("app:city.summary.fullHealth")} />
-	</Panel>;
+	return <>
+		<Figures items={[
+			{caption: i18n.t("app:city.summary.health"), value: `${formatNumber(snapshot.health.current)} / ${formatNumber(snapshot.health.max)}`, unit: "health"},
+			{caption: i18n.t("app:city.summary.bedRegeneration"), value: `+${formatNumber(home.bedHealthRegeneration)}`, unit: "health"}
+		]} />
+		<Panel>
+			<StatBar
+				label={i18n.t("app:city.summary.health")}
+				value={`${snapshot.health.current} / ${snapshot.health.max} ${AppIcons.getIcon("unitValues.health")}`}
+				ratio={snapshot.health.max > 0 ? snapshot.health.current / snapshot.health.max : 0}
+				color={Theme.colors.red}
+			/>
+		</Panel>
+	</>;
 }
 
 function renderHomeChestSummary(snapshot: CityMobileSnapshot): ReactNode {
 	const home = snapshot.home?.owned;
-	return home ? <Panel>
-		<KeyValue label={i18n.t("app:city.summary.storedItems")} value={String(home.chestItemCount ?? 0)} />
-		<KeyValue label={i18n.t("app:city.summary.depositableItems")} value={String(home.depositableItemCount ?? 0)} />
-	</Panel> : null;
+	return home ? <Figures items={[
+		{caption: i18n.t("app:city.summary.storedItems"), value: formatNumber(home.chestItemCount ?? 0)},
+		{caption: i18n.t("app:city.summary.depositableItems"), value: formatNumber(home.depositableItemCount ?? 0)}
+	]} /> : null;
 }
 
 function renderHomeCookingSummary(snapshot: CityMobileSnapshot): ReactNode {
 	const home = snapshot.home?.owned;
-	return home ? <Panel>
-		<KeyValue label={i18n.t("app:city.summary.cooking")} value={String(home.cookingLevel ?? 0)} />
-		<KeyValue label={i18n.t("app:city.summary.cookingSlots")} value={String(home.cookingSlots ?? 0)} />
-		<KeyValue label={i18n.t("app:city.summary.cookingStatus")} value={i18n.t("app:city.summary.cookingStatusUnavailable")} />
-	</Panel> : null;
+	return home ? <Figures items={[
+		{caption: i18n.t("app:city.summary.cooking"), value: formatNumber(home.cookingLevel ?? 0)},
+		{caption: i18n.t("app:city.summary.cookingSlots"), value: formatNumber(home.cookingSlots ?? 0)}
+	]} /> : null;
 }
 
 function renderHomeGardenSummary(snapshot: CityMobileSnapshot): ReactNode {
 	const home = snapshot.home?.owned;
-	return home ? <Panel>
-		<KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={`${home.gardenReadyPlots ?? 0} / ${home.gardenTotalPlots ?? home.gardenPlots}`} />
-		<KeyValue label={i18n.t("app:city.summary.upgradeableItems")} value={String(home.upgradeableItemCount)} />
-	</Panel> : null;
+	return home ? <Figures items={[
+		{caption: i18n.t("app:city.summary.gardenPlots"), value: `${home.gardenReadyPlots ?? 0} / ${home.gardenTotalPlots ?? home.gardenPlots}`},
+		{caption: i18n.t("app:city.summary.upgradeableItems"), value: formatNumber(home.upgradeableItemCount)}
+	]} /> : null;
 }
 
 function renderHomeUpgradeSummary(snapshot: CityMobileSnapshot): ReactNode {
 	const home = snapshot.home?.owned;
-	return home ? <Panel>
-		<KeyValue label={i18n.t("app:city.summary.level")} value={String(home.level)} />
-		<KeyValue label={i18n.t("app:city.summary.upgradeableItems")} value={String(home.upgradeableItemCount)} />
-	</Panel> : null;
+	return home ? <Figures items={[
+		{caption: i18n.t("app:city.summary.level"), value: formatNumber(home.level)},
+		{caption: i18n.t("app:city.summary.upgradeableItems"), value: formatNumber(home.upgradeableItemCount)}
+	]} /> : null;
 }
 
 function renderEnchanterSummary(snapshot: CityMobileSnapshot): ReactNode {
@@ -116,28 +122,33 @@ function renderEnchanterSummary(snapshot: CityMobileSnapshot): ReactNode {
 	const compatibleItemType = data.enchantmentSlot === 0
 		? i18n.t("items:weapon", {count: 1})
 		: i18n.t("items:armor", {count: 1});
-	return <Panel>
-		<KeyValue label={i18n.t("app:city.summary.enchantment")} value={`${AppIcons.getIcon(`enchantmentTypes.${data.enchantmentType}`)} ${i18n.t(`items:enchantments.${data.enchantmentId}`)}`} />
-		<KeyValue label={i18n.t("app:city.summary.compatibleWith")} value={compatibleItemType} />
-		<KeyValue label={i18n.t("app:city.summary.price")} value={`${formatMoney(data.enchantmentCost.money)} · ${data.enchantmentCost.gems} ${AppIcons.getIcon("unitValues.gem")}`} />
-		<KeyValue label={i18n.t("app:city.summary.money")} value={`${formatMoney(data.playerMoney)} · ${data.playerGems} ${AppIcons.getIcon("unitValues.gem")}`} />
-		<KeyValue label={i18n.t("app:city.summary.discount")} value={data.mageReduction ? i18n.t("app:common.yes") : i18n.t("app:common.no")} />
-		<KeyValue label={i18n.t("app:city.summary.eligibleItems")} value={String(data.enchantableItems.length)} />
-	</Panel>;
+	return <>
+		<Figures items={[
+			{caption: i18n.t("app:city.summary.price"), value: formatNumber(data.enchantmentCost.money), unit: AMOUNT_UNITS.MONEY},
+			{caption: i18n.t("app:city.summary.gems"), value: formatNumber(data.enchantmentCost.gems), unit: AMOUNT_UNITS.GEM},
+			{caption: i18n.t("app:city.summary.eligibleItems"), value: formatNumber(data.enchantableItems.length)}
+		]} />
+		<Panel>
+			<KeyValue label={i18n.t("app:city.summary.enchantment")} value={`${AppIcons.getIcon(`enchantmentTypes.${data.enchantmentType}`)} ${i18n.t(`items:enchantments.${data.enchantmentId}`)}`} />
+			<KeyValue label={i18n.t("app:city.summary.compatibleWith")} value={compatibleItemType} />
+			<KeyValue label={i18n.t("app:city.summary.money")} value={`${formatMoney(data.playerMoney)} · ${data.playerGems} ${AppIcons.getIcon("unitValues.gem")}`} />
+			{data.mageReduction ? <KeyValue label={i18n.t("app:city.summary.discount")} value={i18n.t("app:common.yes")} /> : null}
+		</Panel>
+	</>;
 }
 
 function renderBlacksmithSummary(snapshot: CityMobileSnapshot): ReactNode {
 	const data = snapshot.blacksmith;
-	return data ? <Panel>
-		<KeyValue label={i18n.t("app:city.summary.money")} value={formatMoney(data.playerMoney)} />
-		<KeyValue label={i18n.t("app:city.summary.upgrades")} value={String(data.upgradeableItems.length)} />
-		<KeyValue label={i18n.t("app:city.summary.disenchantable")} value={String(data.disenchantableItems.length)} />
-	</Panel> : null;
+	return data ? <Figures items={[
+		{caption: i18n.t("app:city.summary.money"), value: formatNumber(data.playerMoney), unit: AMOUNT_UNITS.MONEY},
+		{caption: i18n.t("app:city.summary.upgrades"), value: formatNumber(data.upgradeableItems.length)},
+		{caption: i18n.t("app:city.summary.disenchantable"), value: formatNumber(data.disenchantableItems.length)}
+	]} /> : null;
 }
 
 function renderScrapDealerSummary(snapshot: CityMobileSnapshot): ReactNode {
 	const data = snapshot.scrapDealer;
-	return data ? <Panel><KeyValue label={i18n.t("app:city.summary.recyclableItems")} value={String(data.recyclableItems.length)} /></Panel> : null;
+	return data ? <Figures items={[{caption: i18n.t("app:city.summary.recyclableItems"), value: formatNumber(data.recyclableItems.length)}]} /> : null;
 }
 
 function renderRoyalBlacksmithSummary(snapshot: CityMobileSnapshot): ReactNode {
@@ -145,38 +156,45 @@ function renderRoyalBlacksmithSummary(snapshot: CityMobileSnapshot): ReactNode {
 	if (!data) {
 		return null;
 	}
-	return <Panel>
-		<KeyValue label={i18n.t("app:city.summary.status")} value={i18n.t(`app:city.status.${data.status}`)} />
-		<KeyValue label={i18n.t("app:city.summary.requiredPlayerLevel")} value={String(data.requiredPlayerLevel)} />
-		<KeyValue label={i18n.t("app:city.summary.playerLevel")} value={String(data.playerLevel)} />
-		<KeyValue label={i18n.t("app:city.summary.money")} value={formatMoney(data.playerMoney)} />
-		<KeyValue label={i18n.t("app:city.summary.gems")} value={`${data.playerGems} ${AppIcons.getIcon("unitValues.gem")}`} />
-	</Panel>;
+	return <>
+		<Figures items={[
+			{caption: i18n.t("app:city.summary.playerLevel"), value: `${formatNumber(data.playerLevel)} / ${formatNumber(data.requiredPlayerLevel)}`},
+			{caption: i18n.t("app:city.summary.money"), value: formatNumber(data.playerMoney), unit: AMOUNT_UNITS.MONEY},
+			{caption: i18n.t("app:city.summary.gems"), value: formatNumber(data.playerGems), unit: AMOUNT_UNITS.GEM}
+		]} />
+		<Panel><KeyValue label={i18n.t("app:city.summary.status")} value={i18n.t(`app:city.status.${data.status}`)} /></Panel>
+	</>;
 }
 
 function renderGuildSummary(snapshot: CityMobileSnapshot): ReactNode {
 	if (snapshot.guildDomain) {
 		const guild = snapshot.guildDomain;
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.guild")} value={guild.guildName} />
-			<KeyValue label={i18n.t("app:city.summary.guildLevel")} value={String(guild.guildLevel)} />
-			<KeyValue label={i18n.t("app:city.summary.treasury")} value={formatMoney(guild.treasury)} />
-			<KeyValue label={i18n.t("app:city.summary.money")} value={formatMoney(guild.playerMoney)} />
-			<KeyValue label={i18n.t("app:city.summary.buildings")} value={i18n.t("app:city.summary.buildingLevels", {
-				shop: guild.shopLevel,
-				shelter: guild.shelterLevel,
-				pantry: guild.pantryLevel,
-				training: guild.trainingGroundLevel
-			})} />
-			<KeyValue label={i18n.t("app:city.summary.foodStock")} value={i18n.t("app:city.summary.foodStockDetails", guild.food)} />
-		</Panel>;
+		return <>
+			<Figures items={[
+				{caption: i18n.t("app:city.summary.guildLevel"), value: formatNumber(guild.guildLevel)},
+				{caption: i18n.t("app:city.summary.treasury"), value: formatNumber(guild.treasury), unit: AMOUNT_UNITS.MONEY},
+				{caption: i18n.t("app:city.summary.money"), value: formatNumber(guild.playerMoney), unit: AMOUNT_UNITS.MONEY}
+			]} />
+			<Panel>
+				<KeyValue label={i18n.t("app:city.summary.guild")} value={guild.guildName} />
+				<KeyValue label={i18n.t("app:city.summary.buildings")} value={i18n.t("app:city.summary.buildingLevels", {
+					shop: guild.shopLevel,
+					shelter: guild.shelterLevel,
+					pantry: guild.pantryLevel,
+					training: guild.trainingGroundLevel
+				})} />
+				<KeyValue label={i18n.t("app:city.summary.foodStock")} value={i18n.t("app:city.summary.foodStockDetails", guild.food)} />
+			</Panel>
+		</>;
 	}
 	const notary = snapshot.guildDomainNotary;
-	return notary ? <Panel>
-		<KeyValue label={i18n.t("app:city.summary.domain")} value={notary.hasDomain ? i18n.t("app:common.yes") : i18n.t("app:common.no")} />
-		<KeyValue label={i18n.t("app:city.summary.domainCost")} value={formatMoney(notary.cost)} />
-		<KeyValue label={i18n.t("app:city.summary.treasury")} value={formatMoney(notary.treasury)} />
-	</Panel> : null;
+	return notary ? <>
+		<Figures items={[
+			{caption: i18n.t("app:city.summary.domainCost"), value: formatNumber(notary.cost), unit: AMOUNT_UNITS.MONEY},
+			{caption: i18n.t("app:city.summary.treasury"), value: formatNumber(notary.treasury), unit: AMOUNT_UNITS.MONEY}
+		]} />
+		<Panel><KeyValue label={i18n.t("app:city.summary.domain")} value={notary.hasDomain ? i18n.t("app:common.yes") : i18n.t("app:common.no")} /></Panel>
+	</> : null;
 }
 
 const SUMMARY_RENDERERS: Partial<Record<CitySubmenu, SummaryRenderer>> = {

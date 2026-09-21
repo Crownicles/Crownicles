@@ -11,7 +11,7 @@ const SHOP_ITEM_KEYS = [
 
 type ShopItemReference = {shopItemId: number};
 
-function shopItemKey({shopItemId}: ShopItemReference): string {
+export function shopItemKey({shopItemId}: ShopItemReference): string {
 	return SHOP_ITEM_KEYS[shopItemId] ?? `item-${shopItemId}`;
 }
 

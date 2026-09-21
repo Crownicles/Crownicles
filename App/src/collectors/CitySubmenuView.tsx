@@ -11,13 +11,19 @@ import {cityReactionAvailable, cityRowIcon, cityRowTitle, iconForPath} from "@/s
 import {cityNavigationMeta, submenuTitle} from "@/src/collectors/CityMenuModel";
 import {CitySection} from "@/src/collectors/CityRows";
 import {submenuSections} from "@/src/collectors/CitySubmenuSections";
-import {Button, ButtonRow, Hero, Note, Screen} from "@/src/design/Primitives";
+import {plainStory} from "@/src/display/Markdown";
+import {Note, Screen} from "@/src/design/Primitives";
+import {BackButton, Standing} from "@/src/design/Sections";
+import {SwipeBack} from "@/src/design/SwipeBack";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {GuildDomain} from "@/src/components/GuildDomain";
 import {i18n} from "@/src/translations/i18n";
 
+const SUBMENU_EMBLEM_SIZE = 34;
+
 type SubmenuProps = {
 	view: CitySubmenu; innId?: string; entries: CityEntry[]; collector: CityMenuData; snapshot?: CityMobileSnapshot;
-	onChoose: (index: number) => void; onNavigate: (item: CityNavigationItem) => void; onBack: () => void; locked: boolean; backLabel?: string;
+	onChoose: (index: number) => void; onNavigate: (item: CityNavigationItem) => void; onBack: () => void; locked: boolean; backLabel?: string; overlay?: boolean;
 };
 
 function submenuIcon(view: CitySubmenu, snapshot?: CityMobileSnapshot): string | null {
@@ -28,23 +34,40 @@ function submenuIcon(view: CitySubmenu, snapshot?: CityMobileSnapshot): string |
 
 const INTERACTIVE_SUBMENUS: Partial<Record<CitySubmenu, () => ReactNode>> = {guild: GuildDomain};
 
-export function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, onNavigate, onBack, locked, backLabel}: SubmenuProps): ReactNode {
+function SubmenuHeading({view, snapshot, innId}: {view: CitySubmenu; snapshot?: CityMobileSnapshot; innId?: string}): ReactNode {
 	const details = submenuTitle(view, innId);
-	const InteractiveSubmenu = INTERACTIVE_SUBMENUS[view];
-	if (InteractiveSubmenu) return <Screen>
-		<Hero eyebrow={details.eyebrow} title={details.title} />
-		<InteractiveSubmenu />
-		<ButtonRow><Button onPress={onBack}>{i18n.t("app:city.actions.back")}</Button></ButtonRow>
-	</Screen>;
 	const icon = submenuIcon(view, snapshot);
+	return <Standing
+		{...icon ? {emblem: <TwemojiIcon emoji={icon} size={SUBMENU_EMBLEM_SIZE} />} : {}}
+		caption={details.eyebrow}
+		title={plainStory(details.title)}
+		{...details.subtitle ? {subtitle: plainStory(details.subtitle)} : {}}
+	/>;
+}
+
+export function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, onNavigate, onBack, locked, backLabel, overlay}: SubmenuProps): ReactNode {
+	const leave = (): void => {
+		if (!locked) onBack();
+	};
+	const swipe = {
+		onClose: leave,
+		...overlay ? {overlay} : {}
+	};
+	const heading = <>
+		<BackButton label={backLabel ?? i18n.t("app:city.actions.back")} onClose={leave} />
+		<SubmenuHeading view={view} snapshot={snapshot} innId={innId} />
+	</>;
+	const InteractiveSubmenu = INTERACTIVE_SUBMENUS[view];
+	if (InteractiveSubmenu) return <SwipeBack {...swipe}><Screen>{heading}<InteractiveSubmenu /></Screen></SwipeBack>;
 	const sections = submenuSections(view, entries, snapshot, {homeFeatureItems, gardenPlotItems, enchantmentCatalogItems});
 	const visibleSections = sections.filter(section => section.items.length > 0);
-	return <Screen>
-		<Hero eyebrow={details.eyebrow} title={`${icon ? `${icon} ` : ""}${details.title}`} subtitle={details.subtitle} />
-		<CitySnapshotSummary view={view} snapshot={snapshot} />
-		{visibleSections.map((section, index) => <CitySection key={section.title} title={section.title} items={section.items} collector={collector} onChoose={onChoose} onNavigate={onNavigate} locked={locked} first={index === 0} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={cityRowSubtitle} rowEnd={cityRowEnd} reactionAvailable={cityReactionAvailable} />)}
-		{citySnapshotNote(view, snapshot)}
-		{visibleSections.length === 0 ? <Note>{i18n.t("app:city.subtitles.noActions")}</Note> : null}
-		<ButtonRow><Button disabled={locked} onPress={locked ? undefined : onBack}>{backLabel ?? i18n.t("app:city.actions.back")}</Button></ButtonRow>
-	</Screen>;
+	return <SwipeBack {...swipe}>
+		<Screen>
+			{heading}
+			<CitySnapshotSummary view={view} snapshot={snapshot} />
+			{visibleSections.map((section, index) => <CitySection key={section.title} title={section.title} items={section.items} collector={collector} onChoose={onChoose} onNavigate={onNavigate} locked={locked} first={index === 0} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={cityRowSubtitle} rowEnd={cityRowEnd} reactionAvailable={cityReactionAvailable} />)}
+			{citySnapshotNote(view, snapshot)}
+			{visibleSections.length === 0 ? <Note>{i18n.t("app:city.subtitles.noActions")}</Note> : null}
+		</Screen>
+	</SwipeBack>;
 }

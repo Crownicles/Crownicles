@@ -53,8 +53,10 @@ import {
 import {SmallEventChoiceOutcome as SmallEventChoiceOutcomeScreen} from "@/src/collectors/SmallEventChoiceOutcome";
 import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/src/collectors/AutomaticSmallEventOutcome";
 import {
-  EmptyState, Hero, KeyValue, Note, Panel, QuickAction, QuickActions, Screen, SectionHeader
-,Button, ButtonRow} from "@/src/design/Primitives";
+  EmptyState, Hero, Note, QuickAction, QuickActions, Screen
+} from "@/src/design/Primitives";
+import {ActionBanner, Figure, Figures, LockHint, Standing} from "@/src/design/Sections";
+import {BookOpen, CircleAlert, Clock3} from "@/src/design/FightIcons";
 import {PlayerVitals} from "@/src/components/PlayerVitals";
 import {formatMoney} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
@@ -231,12 +233,6 @@ function mapName(map: MapPoint): string {
 function mapIcon(map: MapPoint): ReactNode {
   const icon = AppIcons.getIconOrNull(`mapTypes.${map.type}`);
   return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : null;
-}
-
-function mapLabel(map: MapPoint): string {
-  const icon = AppIcons.getIconOrNull(`mapTypes.${map.type}`);
-  const name = mapName(map);
-  return icon ? `${icon} ${name}` : name;
 }
 
 function runnerIcon(packet: ReportTravelSummaryRes): string {
@@ -440,25 +436,7 @@ function RoutePanel({packet, metrics}: {
   packet: ReportTravelSummaryRes;
   metrics: TravelMetrics;
 }): ReactNode {
-  return (
-    <Panel>
-      <TravelPath packet={packet} progress={metrics.progress} />
-      <KeyValue label={i18n.t("app:adventure.fields.departure")} value={mapLabel(packet.startMap)} />
-      <KeyValue label={i18n.t("app:adventure.fields.arrival")} value={mapLabel(packet.endMap)} />
-      {!packet.isInCity && (
-        <KeyValue
-          label={i18n.t("app:adventure.fields.timeRemaining")}
-          value={formatDuration(metrics.remainingMilliseconds)}
-        />
-      )}
-      {packet.points.show && (
-        <KeyValue
-          label={`${AppIcons.getIcon("unitValues.score")} ${i18n.t("app:adventure.fields.points")}`}
-          value={String(packet.points.cumulated)}
-        />
-      )}
-    </Panel>
-  );
+  return <TravelPath packet={packet} progress={metrics.progress} />;
 }
 
 function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPending}: {
@@ -468,15 +446,16 @@ function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPend
 	advancePending: boolean;
 	healPending: boolean;
 }): ReactNode {
-	return (
+	const cannotAffordHeal = packet.heal !== undefined && !packet.heal.canAfford;
+	return <>
 		<QuickActions>
 			{packet.heal ? (
 				<QuickAction
 					icon={AppIcons.getIcon("shopItems.healAlteration")}
-					disabled={!packet.heal.canAfford || healPending}
+					disabled={cannotAffordHeal || healPending}
 					onPress={packet.heal.canAfford ? onHeal : undefined}
 				>
-					{packet.heal.canAfford ? i18n.t("app:adventure.quick.heal") : i18n.t("app:adventure.quick.healNotEnough")}
+					{i18n.t("app:adventure.quick.heal")}
 				</QuickAction>
 			) : null}
 			{packet.tokens ? (
@@ -487,7 +466,8 @@ function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPend
 				</QuickAction>
 			) : null}
 		</QuickActions>
-	);
+		{cannotAffordHeal ? <LockHint lock={{reason: i18n.t("app:adventure.quick.healNotEnough", {price: formatMoney(packet.heal?.price ?? 0)}), icon: CircleAlert}} /> : null}
+	</>;
 }
 
 function isAlterationReport(packet: ReportTravelSummaryRes): boolean {
@@ -500,9 +480,9 @@ function alterationTitle(packet: ReportTravelSummaryRes): string {
 	return icon ? `${icon} ${title}` : title;
 }
 
-function alterationRemainingMilliseconds(packet: ReportTravelSummaryRes, currentTime: number, fallback: number): number {
+function alterationRemainingMilliseconds(packet: ReportTravelSummaryRes, metrics: TravelMetrics, currentTime: number): number {
 	if (packet.effectEndTime === undefined) {
-		return fallback;
+		return metrics.remainingMilliseconds;
 	}
 	return Math.max(0, packet.effectEndTime - currentTime);
 }
@@ -512,24 +492,11 @@ function AlterationPanel({packet, metrics, currentTime}: {
 	metrics: TravelMetrics;
 	currentTime: number;
 }): ReactNode {
-	const remainingMilliseconds = alterationRemainingMilliseconds(packet, currentTime, metrics.remainingMilliseconds);
-	return (
-		<Panel>
-			{packet.effect ? (
-				<KeyValue label={i18n.t("app:adventure.alteration.fields.status")} value={alterationTitle(packet)} />
-			) : null}
-			<KeyValue
-				label={i18n.t("app:adventure.alteration.fields.timeRemaining")}
-				value={formatDuration(remainingMilliseconds)}
-			/>
-			{packet.heal ? (
-				<KeyValue
-					label={i18n.t("app:adventure.alteration.fields.price")}
-					value={formatMoney(packet.heal.price)}
-				/>
-			) : null}
-		</Panel>
-	);
+	const remainingMilliseconds = alterationRemainingMilliseconds(packet, metrics, currentTime);
+	return <Figures items={[
+		{caption: i18n.t("app:adventure.alteration.fields.timeRemaining"), value: formatDuration(remainingMilliseconds)},
+		...packet.heal ? [{caption: i18n.t("app:adventure.alteration.fields.price"), value: String(packet.heal.price), unit: "money"}] : []
+	]} />;
 }
 
 type AdventureContext = {
@@ -561,7 +528,7 @@ function adventureTitle({packet}: AdventureContext): string {
 function adventureSubtitle({packet, currentTime, metrics, destination}: AdventureContext): string {
 	const altered = isAlterationReport(packet);
 	const remainingMilliseconds = altered
-		? alterationRemainingMilliseconds(packet, currentTime, metrics.remainingMilliseconds)
+		? alterationRemainingMilliseconds(packet, metrics, currentTime)
 		: metrics.remainingMilliseconds;
 	if (altered) {
 		return i18n.t("app:adventure.alteration.description", {time: formatDuration(remainingMilliseconds)});
@@ -582,14 +549,54 @@ function adventureSubtitle({packet, currentTime, metrics, destination}: Adventur
 	});
 }
 
-function ReportAdvance({reportReady, reportAction}: {reportReady: boolean; reportAction: GameMutation<void>}): ReactNode {
+/** The emblem says where the journey is heading, or what is holding the player back. */
+function adventureEmblem(packet: ReportTravelSummaryRes): ReactNode {
+	const icon = isAlterationReport(packet) && packet.effect
+		? AppIcons.getIconOrNull(`effects.${packet.effect}`)
+		: AppIcons.getIconOrNull(`mapTypes.${packet.endMap.type}`);
+	return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : null;
+}
+
+function travelFigures(packet: ReportTravelSummaryRes, metrics: TravelMetrics, currentTime: number): Figure[] {
+	return [
+		{caption: i18n.t("app:adventure.fields.timeRemaining"), value: formatDuration(metrics.remainingMilliseconds)},
+		...hasNextStop(packet) ? [{caption: i18n.t("app:adventure.fields.nextStop"), value: nextStopDuration(packet, currentTime)}] : [],
+		...packet.points.show ? [{caption: i18n.t("app:adventure.fields.points"), value: String(packet.points.cumulated), unit: "score"}] : []
+	];
+}
+
+/** The report is the one thing to do here, so it says by itself why it is not ready yet. */
+function ReportAdvance({reportReady, reportAction, waitFor}: {reportReady: boolean; reportAction: GameMutation<void>; waitFor?: string}): ReactNode {
+	const lock = reportReady ? undefined : {reason: i18n.t("app:adventure.notReady", {time: waitFor ?? i18n.t("app:adventure.now")}), icon: Clock3};
 	return <>
 		{reportAction.message ? <Note>{reportAction.message}</Note> : null}
-		<Button variant="primary" disabled={!reportReady || reportAction.pending} onPress={(): Promise<void> => reportAction.submit()}>{i18n.t(reportAction.pending ? "app:common.loading" : "app:adventure.continueReport")}</Button>
+		<ActionBanner
+			icon={BookOpen}
+			label={i18n.t("app:adventure.continueReport")}
+			pending={reportAction.pending}
+			onPress={(): void => {
+				reportAction.submit().catch(console.error);
+			}}
+			{...lock ? {lock} : {}}
+		/>
 	</>;
 }
 
-function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending, healPending, reportReady, reportAction}: {
+const ADVENTURE_TOOLS = {
+	MAP: {title: "app:map.title", content: WorldMap},
+	UNLOCK: {title: "app:utilities.unlock", content: PrisonerRelease}
+} as const;
+type AdventureTool = keyof typeof ADVENTURE_TOOLS;
+
+/** Side trips that belong to the journey screen itself, never on top of an open menu. */
+function AdventureTools({onOpen}: {onOpen: (tool: AdventureTool) => void}): ReactNode {
+	return <QuickActions>
+		<QuickAction icon={AppIcons.getIcon("expedition.map")} onPress={(): void => onOpen("MAP")}>{i18n.t("app:map.title")}</QuickAction>
+		<QuickAction icon={AppIcons.getIcon("notifications.types.playerFreedFromJail")} onPress={(): void => onOpen("UNLOCK")}>{i18n.t("app:utilities.unlock")}</QuickAction>
+	</QuickActions>;
+}
+
+function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending, healPending, reportReady, reportAction, tools}: {
 	packet: ReportTravelSummaryRes;
 	currentTime: number;
 	onAdvance: () => void;
@@ -598,25 +605,28 @@ function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending,
 	healPending: boolean;
 	reportReady: boolean;
 	reportAction: GameMutation<void>;
+	tools: ReactNode;
 }): ReactNode {
   const metrics = getTravelMetrics(packet, currentTime);
   const destination = mapName(packet.endMap);
   const altered = isAlterationReport(packet);
   const context: AdventureContext = {packet, currentTime, metrics, destination};
-  const title = adventureTitle(context);
-  const subtitle = adventureSubtitle(context);
   const advice = travelAdvice(packet.nextStopTime);
 
   return (
     <Screen>
-      <Hero
-        eyebrow={altered ? i18n.t("app:adventure.alteration.eyebrow") : packet.isInCity ? i18n.t("app:adventure.eyebrow") : i18n.t("app:adventure.travel.eyebrow")}
-        title={title}
-        subtitle={subtitle}
-      />
-
-		<ReportAdvance reportReady={reportReady} reportAction={reportAction} />
-      {altered && packet.isInCity ? <AlterationPanel packet={packet} metrics={metrics} currentTime={currentTime} /> : <RoutePanel packet={packet} metrics={metrics} />}
+      <Standing
+        emblem={adventureEmblem(packet)}
+        caption={altered ? i18n.t("app:adventure.alteration.eyebrow") : packet.isInCity ? i18n.t("app:adventure.eyebrow") : i18n.t("app:adventure.travel.eyebrow")}
+        title={adventureTitle(context)}
+        subtitle={adventureSubtitle(context)}
+      >
+        {altered && packet.isInCity ? null : <RoutePanel packet={packet} metrics={metrics} />}
+      </Standing>
+      {altered && packet.isInCity
+        ? <AlterationPanel packet={packet} metrics={metrics} currentTime={currentTime} />
+        : <Figures items={travelFigures(packet, metrics, currentTime)} />}
+      <ReportAdvance reportReady={reportReady} reportAction={reportAction} waitFor={nextStopDuration(packet, currentTime)} />
 		{(!packet.isInCity || altered) ? (
 			<TravelQuickActions
 				packet={packet}
@@ -626,17 +636,13 @@ function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending,
 				healPending={healPending}
 			/>
 		) : null}
-		{advice ? (
-			<>
-				<SectionHeader>{i18n.t("app:adventure.advice")}</SectionHeader>
-				<Note>{advice}</Note>
-			</>
-		) : null}
+		{advice ? <Note>{advice}</Note> : null}
+		{tools}
     </Screen>
   );
 }
 
-function AdventureBody(): ReactNode {
+function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	const reportState = useReportView();
 	const travel = reportState.status === "ready" ? reportState.data.travel : undefined;
 	const reportAction = useReportAdvance();
@@ -751,6 +757,7 @@ function AdventureBody(): ReactNode {
 			<Screen>
 				<Hero eyebrow={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:adventure.startReport")} />
 				<ReportAdvance reportReady={reportState.data.reportReady} reportAction={reportAction} />
+				{tools}
 			</Screen>
 			{pendingReportConfirmation}
 		</>;
@@ -767,32 +774,25 @@ function AdventureBody(): ReactNode {
 				healPending={healPending}
 				reportReady={reportState.data.reportReady}
 				reportAction={reportAction}
+				tools={tools}
 			/>
 			{pendingReportConfirmation}
 		</>
 	);
 }
 
-const ADVENTURE_TOOLS = {
-	MAP: {title: "app:map.title", content: WorldMap},
-	UNLOCK: {title: "app:utilities.unlock", content: PrisonerRelease}
-} as const;
-type AdventureTool = keyof typeof ADVENTURE_TOOLS;
+function AdventureToolScreen({tool, onClose}: {tool: AdventureTool; onClose: () => void}): ReactNode {
+	const {title, content: Content} = ADVENTURE_TOOLS[tool];
+	return <DetailScreen overlay title={i18n.t(title)} eyebrow={i18n.t("app:adventure.eyebrow")} onClose={onClose}><Content /></DetailScreen>;
+}
 
 export default function Index(): ReactNode {
 	const [tool, setTool] = useState<AdventureTool | null>(null);
-	if (tool) {
-		const {title, content: Content} = ADVENTURE_TOOLS[tool];
-		return <DetailScreen title={i18n.t(title)} eyebrow={i18n.t("app:adventure.eyebrow")} onClose={(): void => setTool(null)}><Content /></DetailScreen>;
-	}
 	return (
 		<View style={styles.adventureRoot}>
 			<PlayerVitals />
-			<ButtonRow>
-				<Button onPress={(): void => setTool("MAP")}>{i18n.t("app:map.title")}</Button>
-				<Button onPress={(): void => setTool("UNLOCK")}>{i18n.t("app:utilities.unlock")}</Button>
-			</ButtonRow>
-			<AdventureBody />
+			<AdventureBody tools={<AdventureTools onOpen={setTool} />} />
+			{tool ? <AdventureToolScreen tool={tool} onClose={(): void => setTool(null)} /> : null}
 		</View>
 	);
 }
