@@ -52,4 +52,10 @@ describe("sale confirmation", () => {
 		await fireEvent.press(screen.getByText("app:sale.continue"));
 		expect(onContinue).toHaveBeenCalledTimes(1);
 	});
+
+	it("can be left with the edge gesture, like any other page of the app", async () => {
+		const choose = jest.fn();
+		await render(<SellCollector collector={collector()} onChoose={choose} submitting={false} />);
+		expect(screen.getByTestId("swipe-back")).toBeTruthy();
+	});
 });

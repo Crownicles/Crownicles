@@ -1,10 +1,10 @@
 import {ReactNode, useRef, useState} from "react";
-import {Modal, Text} from "react-native";
+import {Text} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, ReactionCollectorReaction, SELL_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {SellRes} from "ws-packets/src/fromServer/inventory/SellRes";
-import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, Figures, ModalSurface, sectionStyles, Standing} from "@/src/design/Sections";
+import {Button, ButtonRow, Note} from "@/src/design/Primitives";
+import {ActionBanner, ExpandableEntry, ExpandableList, Figures, sectionStyles, Sheet} from "@/src/design/Sections";
 import {Check, X} from "@/src/design/FightIcons";
 import {itemCategoryLabel, itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
@@ -17,23 +17,20 @@ function saleChoices(collector: ReactionCollectorCreation): SaleChoice[] {
 }
 
 export function SaleOutcome({outcome, onContinue}: {outcome: SellRes; onContinue: () => void}): ReactNode {
-	return <Modal visible animationType="slide" onRequestClose={onContinue}>
-		<ModalSurface>
-			<Screen>
-				<Standing
-					caption={i18n.t("app:sale.eyebrow")}
-					title={i18n.t(outcome.price === 0 ? "app:sale.discarded" : "app:sale.sold")}
-					subtitle={itemDisplayName(outcome.item)}
-				/>
-				{outcome.price > 0
-					? <Figures items={[{
-						caption: i18n.t("app:sale.received"), value: formatNumber(outcome.price), unit: "money"
-					}]} />
-					: null}
-				<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:sale.continue")}</Button></ButtonRow>
-			</Screen>
-		</ModalSurface>
-	</Modal>;
+	return <Sheet
+		caption={i18n.t("app:sale.eyebrow")}
+		title={i18n.t(outcome.price === 0 ? "app:sale.discarded" : "app:sale.sold")}
+		subtitle={itemDisplayName(outcome.item)}
+		closeLabel={i18n.t("app:sale.continue")}
+		onClose={onContinue}
+	>
+		{outcome.price > 0
+			? <Figures items={[{
+				caption: i18n.t("app:sale.received"), value: formatNumber(outcome.price), unit: "money"
+			}]} />
+			: null}
+		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:sale.continue")}</Button></ButtonRow>
+	</Sheet>;
 }
 
 /** Confirming a sale happens inside its own row: a second window over the list would be a dead end. */
@@ -80,23 +77,22 @@ export function SellCollector({collector, onChoose, submitting}: {
 	};
 	const close = (): void => choose(refuseIndex);
 
-	return <Modal visible animationType="slide" onRequestClose={close}>
-		<ModalSurface>
-			<Screen>
-				<BackButton label={i18n.t("app:common.back")} onClose={close} />
-				<Standing caption={i18n.t("app:sale.eyebrow")} title={i18n.t("app:sale.title")} />
-				<ExpandableList>
-					{saleChoices(collector).map(choice => <SaleEntry
-						key={choice.index}
-						choice={choice}
-						locked={locked}
-						expanded={openIndex === choice.index}
-						onToggle={(): void => setOpenIndex(openIndex === choice.index ? undefined : choice.index)}
-						onChoose={choose}
-					/>)}
-				</ExpandableList>
-				{locked ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
-			</Screen>
-		</ModalSurface>
-	</Modal>;
+	return <Sheet
+		caption={i18n.t("app:sale.eyebrow")}
+		title={i18n.t("app:sale.title")}
+		closeLabel={i18n.t("app:common.back")}
+		onClose={close}
+	>
+		<ExpandableList>
+			{saleChoices(collector).map(choice => <SaleEntry
+				key={choice.index}
+				choice={choice}
+				locked={locked}
+				expanded={openIndex === choice.index}
+				onToggle={(): void => setOpenIndex(openIndex === choice.index ? undefined : choice.index)}
+				onChoose={choose}
+			/>)}
+		</ExpandableList>
+		{locked ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
+	</Sheet>;
 }

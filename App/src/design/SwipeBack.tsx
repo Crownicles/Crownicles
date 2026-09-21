@@ -108,5 +108,5 @@ export function SwipeBack({onClose, overlay, children}: {onClose: () => void; ov
 			onPanResponderTerminate: settle
 		});
 	}, [onClose, translateX, width]);
-	return <Animated.View style={[overlay ? styles.overlay : styles.sheet, {transform: [{translateX}]}]} {...responder.panHandlers}>{children}</Animated.View>;
+	return <Animated.View testID="swipe-back" style={[overlay ? styles.overlay : styles.sheet, {transform: [{translateX}]}]} {...responder.panHandlers}>{children}</Animated.View>;
 }

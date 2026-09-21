@@ -1,5 +1,4 @@
 import {ReactNode, useState} from "react";
-import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {DAILY_BONUS_DATA_KINDS, DAILY_BONUS_REACTION_KINDS, DRINK_REACTION_KINDS, GENERIC_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
@@ -7,8 +6,8 @@ import {countdownLabel, useSecondsLeft} from "@/src/collectors/CollectorPrompt";
 import {itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
 import {consumableDescription} from "@/src/display/ItemEffects";
 import {Clock3, Droplets, Gift} from "@/src/design/FightIcons";
-import {Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, ModalSurface, Standing} from "@/src/design/Sections";
+import {Note} from "@/src/design/Primitives";
+import {ActionBanner, ExpandableEntry, ExpandableList, Sheet} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
@@ -44,9 +43,12 @@ function ConsumableMenu({collector, onChoose, submitting, onClose}: ConsumableCo
 		setAnswered(true);
 		onChoose(index);
 	};
-	return <Screen>
-		<BackButton label={i18n.t("app:common.back")} onClose={onClose} />
-		<Standing caption={i18n.t("app:equipment.eyebrow")} title={i18n.t(dailyBonus ? "app:dailyBonus.title" : "app:inventoryActions.drinkTitle")} />
+	return <Sheet
+		caption={i18n.t("app:equipment.eyebrow")}
+		title={i18n.t(dailyBonus ? "app:dailyBonus.title" : "app:inventoryActions.drinkTitle")}
+		closeLabel={i18n.t("app:common.back")}
+		onClose={onClose}
+	>
 		<ExpandableList>{options.map(option => <ExpandableEntry
 			key={option.index}
 			emblem={<ConsumableEmblem item={option.item} />}
@@ -64,7 +66,7 @@ function ConsumableMenu({collector, onChoose, submitting, onClose}: ConsumableCo
 			/>
 		</ExpandableEntry>)}</ExpandableList>
 		<Note>{countdownLabel(secondsLeft, pending)}</Note>
-	</Screen>;
+	</Sheet>;
 }
 
 export function ConsumableCollector(props: ConsumableCollectorProps): ReactNode {
@@ -73,7 +75,5 @@ export function ConsumableCollector(props: ConsumableCollectorProps): ReactNode 
 		if (props.submitting) return;
 		if (refuseIndex >= 0) props.onChoose(refuseIndex);
 	};
-	return <Modal visible animationType="slide" onRequestClose={close}>
-		<ModalSurface><ConsumableMenu {...props} onClose={close} /></ModalSurface>
-	</Modal>;
+	return <ConsumableMenu {...props} onClose={close} />;
 }

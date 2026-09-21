@@ -4,6 +4,7 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
 import {Screen} from "@/src/design/Primitives";
+import {SwipeBack} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
 
@@ -124,11 +125,14 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 }): ReactNode {
 	return <Modal visible animationType="slide" onRequestClose={onClose} {...onShow ? {onShow} : {}}>
 		<ModalSurface>
-			<Screen>
-				<BackButton label={closeLabel} onClose={onClose} />
-				<Standing caption={caption} title={title} {...subtitle ? {subtitle} : {}} {...emblem ? {emblem} : {}} />
-				{children}
-			</Screen>
+			{/* A window is left the same way a pushed page is: the button, the hardware back, or the edge gesture. */}
+			<SwipeBack onClose={onClose}>
+				<Screen>
+					<BackButton label={closeLabel} onClose={onClose} />
+					<Standing caption={caption} title={title} {...subtitle ? {subtitle} : {}} {...emblem ? {emblem} : {}} />
+					{children}
+				</Screen>
+			</SwipeBack>
 		</ModalSurface>
 	</Modal>;
 }

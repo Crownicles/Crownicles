@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {Modal, Text} from "react-native";
+import {Text} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {EQUIP_DATA_KINDS, EQUIP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {EQUIP_ACTIONS, EquipCategoryData} from "ws-packets/src/objects/EquipCategoryData";
@@ -7,11 +7,11 @@ import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {EquipActionReq} from "ws-packets/src/fromClient/EquipActionReq";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {useEquipmentActions} from "@/src/store/useEquipmentActions";
-import {Note, Screen, SectionHeader} from "@/src/design/Primitives";
+import {Note, SectionHeader} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {
-	ActionBanner, EntryRow, ExpandableEntry, ExpandableList, ModalSurface, sectionStyles, Standing
+	ActionBanner, EntryRow, ExpandableEntry, ExpandableList, sectionStyles, Sheet
 } from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {AppIcons} from "@/src/AppIcons";
@@ -123,21 +123,21 @@ export function EquipCollector({collector, onChoose, submitting}: {
 		setOpenKey(undefined);
 		submit(selection.request).catch(console.error);
 	};
-	return <Modal visible animationType="slide" onRequestClose={close}>
-		<ModalSurface>
-			<Screen>
-				<Standing caption={i18n.t("app:equipment.eyebrow")} title={i18n.t("app:equipment.title")} />
-				{error ? <Note>{i18n.t(error)}</Note> : null}
-				{categories.map(category => <EquipmentCategory
-					key={category.category}
-					category={category}
-					locked={locked}
-					openKey={openKey}
-					onOpen={setOpenKey}
-					onConfirm={confirm}
-				/>)}
-				<CollectorChoices collector={collector} onChoose={onChoose} submitting={locked} />
-			</Screen>
-		</ModalSurface>
-	</Modal>;
+	return <Sheet
+		caption={i18n.t("app:equipment.eyebrow")}
+		title={i18n.t("app:equipment.title")}
+		closeLabel={i18n.t("app:common.back")}
+		onClose={close}
+	>
+		{error ? <Note>{i18n.t(error)}</Note> : null}
+		{categories.map(category => <EquipmentCategory
+			key={category.category}
+			category={category}
+			locked={locked}
+			openKey={openKey}
+			onOpen={setOpenKey}
+			onConfirm={confirm}
+		/>)}
+		<CollectorChoices collector={collector} onChoose={onChoose} submitting={locked} />
+	</Sheet>;
 }
