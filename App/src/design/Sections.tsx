@@ -2,8 +2,9 @@ import {ReactNode} from "react";
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {UnitIcon} from "@/src/components/UnitIcon";
-import {ArrowRight, ChevronDown, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
+import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
+import {TwemojiText} from "@/src/design/TwemojiText";
 
 /**
  * The grammar every detail screen is written in: an identity banner, a row of figures, a dark
@@ -142,13 +143,28 @@ export function ExpandableList({children}: {children: ReactNode}): ReactNode {
 	return <View style={styles.list}>{children}</View>;
 }
 
-export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle, highlighted = false, dimmed = false, children, testID}: {
+/** Whether pressing an entry unfolds it, takes the player elsewhere, or does nothing at all. */
+export const ENTRY_CHEVRONS = {
+	EXPAND: "expand",
+	FORWARD: "forward",
+	NONE: "none"
+} as const;
+export type EntryChevron = typeof ENTRY_CHEVRONS[keyof typeof ENTRY_CHEVRONS];
+
+function EntryChevronIcon({chevron, expanded}: {chevron: EntryChevron; expanded: boolean}): ReactNode {
+	if (chevron === ENTRY_CHEVRONS.NONE) return null;
+	if (chevron === ENTRY_CHEVRONS.FORWARD) return <ChevronRight size={16} color={Theme.colors.faint} />;
+	return <View style={expanded && styles.chevronOpen}><ChevronDown size={16} color={Theme.colors.muted} /></View>;
+}
+
+export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle, chevron = ENTRY_CHEVRONS.EXPAND, highlighted = false, dimmed = false, children, testID}: {
 	emblem?: ReactNode;
 	label: string;
 	caption?: ReactNode;
 	end?: ReactNode;
 	expanded: boolean;
 	onToggle: () => void;
+	chevron?: EntryChevron;
 	highlighted?: boolean;
 	dimmed?: boolean;
 	children?: ReactNode;
@@ -164,11 +180,11 @@ export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle
 		>
 			{emblem ? <View style={styles.entryEmblem}>{emblem}</View> : null}
 			<View style={styles.body}>
-				<Text style={styles.entryLabel} numberOfLines={1}>{label}</Text>
-				{typeof caption === "string" ? <Text style={styles.caption} numberOfLines={1}>{caption}</Text> : caption}
+				<TwemojiText textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
+				{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{caption}</TwemojiText> : caption}
 			</View>
 			{end}
-			<View style={expanded && styles.chevronOpen}><ChevronDown size={16} color={Theme.colors.muted} /></View>
+			<EntryChevronIcon chevron={chevron} expanded={expanded} />
 		</Pressable>
 		{expanded ? <View style={styles.details} testID={testID}>{children}</View> : null}
 	</View>;

@@ -8,6 +8,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
 import {navigationStyles, tabBarOptions} from "@/src/design/Navigation";
+import {SwipeBackBoundary, useSwipeBackOpen} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 
@@ -54,24 +55,32 @@ function TabsHeader(): ReactNode {
 	);
 }
 
-export default function TabLayout(): ReactNode {
+function TabPager(): ReactNode {
 	const insets = useSafeAreaInsets();
+	const detailOpen = useSwipeBackOpen();
+	return (
+		<TopTabs
+			tabBarPosition="bottom"
+			screenOptions={{
+				...tabBarOptions,
+				swipeEnabled: !detailOpen,
+				tabBarStyle: {...tabBarOptions.tabBarStyle, paddingBottom: insets.bottom + Theme.spacing.tabBarVertical}
+			}}
+		>
+			<TopTabs.Screen name="index" options={{title: i18n.t("app:tabs.adventure"), tabBarIcon: tabIcon("navigation.adventure")}} />
+			<TopTabs.Screen name="profile" options={{title: i18n.t("app:tabs.profile"), tabBarIcon: tabIcon("navigation.profile")}} />
+			<TopTabs.Screen name="pet" options={{title: i18n.t("app:tabs.pet"), tabBarIcon: tabIcon("navigation.pet")}} />
+			<TopTabs.Screen name="guild" options={{title: i18n.t("app:tabs.guild"), tabBarIcon: tabIcon("navigation.guild")}} />
+			<TopTabs.Screen name="arena" options={{title: i18n.t("app:tabs.arena"), tabBarIcon: tabIcon("navigation.fight")}} />
+		</TopTabs>
+	);
+}
+
+export default function TabLayout(): ReactNode {
 	return (
 		<View style={screenStyles}>
 			<TabsHeader />
-			<TopTabs
-				tabBarPosition="bottom"
-				screenOptions={{
-					...tabBarOptions,
-					tabBarStyle: {...tabBarOptions.tabBarStyle, paddingBottom: insets.bottom + Theme.spacing.tabBarVertical}
-				}}
-			>
-				<TopTabs.Screen name="index" options={{title: i18n.t("app:tabs.adventure"), tabBarIcon: tabIcon("navigation.adventure")}} />
-				<TopTabs.Screen name="profile" options={{title: i18n.t("app:tabs.profile"), tabBarIcon: tabIcon("navigation.profile")}} />
-				<TopTabs.Screen name="pet" options={{title: i18n.t("app:tabs.pet"), tabBarIcon: tabIcon("navigation.pet")}} />
-				<TopTabs.Screen name="guild" options={{title: i18n.t("app:tabs.guild"), tabBarIcon: tabIcon("navigation.guild")}} />
-				<TopTabs.Screen name="arena" options={{title: i18n.t("app:tabs.arena"), tabBarIcon: tabIcon("navigation.fight")}} />
-			</TopTabs>
+			<SwipeBackBoundary><TabPager /></SwipeBackBoundary>
 		</View>
 	);
 }
