@@ -161,11 +161,19 @@
     "eyebrow": "Inventaire",
     "title": "Gestion de l'équipement",
     "equipped": "Porté",
+    "worn": "Équipement porté",
+    "reserve": "Réserve",
     "slot": "Réserve {{slot}}",
+    "stats": {
+      "attack": "Attaque",
+      "defense": "Défense",
+      "speed": "Vitesse",
+      "effect": "Effet",
+      "change": "{{value}} ({{difference}})"
+    },
     "noEquippedItem": "Aucun objet porté dans cette catégorie.",
     "emptyReserve": "Aucun objet en réserve.",
     "capacity": "Réserve : {{count}} / {{max}}",
-    "deposit": "Déposer dans la réserve",
     "close": "Terminer",
     "noItems": "Votre inventaire ne contient aucun équipement.",
     "confirm": {

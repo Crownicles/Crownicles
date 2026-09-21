@@ -62,4 +62,30 @@ describe("equipment menu", () => {
 		await waitFor(() => expect(screen.getByText("app:equipment.errors.reserveFull")).toBeTruthy());
 		expect(screen.getByText("models:weapons.7")).toBeTruthy();
 	});
+
+	it("tells what the swap would change instead of leaving the numbers to be compared", async () => {
+		const worn = {id: 9, itemCategory: 0, rarity: 1, itemLevel: 1, attack: {baseValue: 3, upgradeValue: 0, maxValue: 30}, defense: {baseValue: 0, upgradeValue: 0, maxValue: 0}, speed: {baseValue: 0, upgradeValue: 0, maxValue: 0}};
+		const withEquipped = {...CATEGORY, equippedItem: {details: worn}};
+		await render(<QueryClientProvider client={createGameQueryClient()}><EquipCollector
+			collector={{...collector(), data: {type: EQUIP_DATA_KINDS.COLLECTOR, data: {categories: [withEquipped]}}}}
+			onChoose={jest.fn()}
+			submitting={false}
+		/></QueryClientProvider>);
+		await fireEvent.press(screen.getByText("models:weapons.7"));
+		expect(screen.getAllByText("app:equipment.stats.change").length).toBeGreaterThan(0);
+	});
+
+	it("shows one category at a time rather than the whole inventory at once", async () => {
+		const second: EquipCategoryData = {...CATEGORY, category: 1, reserveItems: [{slot: 1, details: {id: 11, itemCategory: 1, rarity: 1, itemLevel: 1, attack: {baseValue: 0, upgradeValue: 0, maxValue: 0}, defense: {baseValue: 4, upgradeValue: 0, maxValue: 20}, speed: {baseValue: 0, upgradeValue: 0, maxValue: 0}}}]};
+		await render(<QueryClientProvider client={createGameQueryClient()}><EquipCollector
+			collector={{...collector(), data: {type: EQUIP_DATA_KINDS.COLLECTOR, data: {categories: [CATEGORY, second]}}}}
+			onChoose={jest.fn()}
+			submitting={false}
+		/></QueryClientProvider>);
+		expect(screen.getByText("models:weapons.7")).toBeTruthy();
+		expect(screen.queryByText("models:armors.11")).toBeNull();
+		await fireEvent.press(screen.getAllByRole("tab")[1]);
+		expect(screen.getByText("models:armors.11")).toBeTruthy();
+		expect(screen.queryByText("models:weapons.7")).toBeNull();
+	});
 });
