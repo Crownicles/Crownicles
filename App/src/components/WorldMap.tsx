@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions} from "react-native";
+import {Image, Modal, Pressable, StyleSheet} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {MapReq} from "ws-packets/src/fromClient/MapReq";
 import {MapRes} from "ws-packets/src/fromServer/report/MapRes";
@@ -7,37 +7,20 @@ import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
+import {MapViewer} from "@/src/components/MapViewer";
 import {Button, Note} from "@/src/design/Primitives";
-import {LockHint, ModalSurface, Standing} from "@/src/design/Sections";
+import {LockHint, Standing} from "@/src/design/Sections";
 import {Maximize2} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
 
-const MAX_MAP_ZOOM = 4;
 const DEFAULT_MAP_RATIO = 4 / 3;
 const styles = StyleSheet.create({
 	map: {width: "100%", backgroundColor: Theme.colors.wash},
-	frame: {borderRadius: 12, borderWidth: 1, borderColor: Theme.colors.line, overflow: "hidden", backgroundColor: Theme.colors.wash},
-	toolbar: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, padding: Theme.spacing.md},
-	zoom: {minWidth: Theme.dimensions.actionButtonMinWidth, minHeight: Theme.dimensions.actionButtonMinWidth, alignItems: "center", justifyContent: "center"},
-	symbol: {fontSize: Theme.fontSize.title, color: Theme.colors.ink},
-	pan: {flex: 1}
+	frame: {borderRadius: 12, borderWidth: 1, borderColor: Theme.colors.line, overflow: "hidden", backgroundColor: Theme.colors.wash}
 });
-
-function MapZoom({uri, ratio, onClose, onError}: {uri: string; ratio: number; onClose: () => void; onError: () => void}): ReactNode {
-	const [zoom, setZoom] = useState(1);
-	const {width} = useWindowDimensions();
-	return <ModalSurface tone="wash">
-		<View style={styles.toolbar}>
-			<Button onPress={onClose}>{i18n.t("app:common.back")}</Button>
-			<Pressable style={styles.zoom} accessibilityRole="button" accessibilityLabel={i18n.t("app:map.zoomOut")} disabled={zoom <= 1} onPress={(): void => setZoom(zoom - 1)}><Text style={styles.symbol}>-</Text></Pressable>
-			<Pressable style={styles.zoom} accessibilityRole="button" accessibilityLabel={i18n.t("app:map.zoomIn")} disabled={zoom >= MAX_MAP_ZOOM} onPress={(): void => setZoom(zoom + 1)}><Text style={styles.symbol}>+</Text></Pressable>
-		</View>
-		<ScrollView style={styles.pan}><ScrollView horizontal><Image source={{uri}} accessibilityLabel={i18n.t("app:map.image")} style={{width: width * zoom, height: width * zoom / ratio}} resizeMode="contain" onError={onError} /></ScrollView></ScrollView>
-	</ModalSurface>;
-}
 
 export function MapImage({packet}: {packet: MapRes}): ReactNode {
 	const [uri, setUri] = useState(packet.imageUrl);
@@ -67,7 +50,7 @@ export function MapImage({packet}: {packet: MapRes}): ReactNode {
 		</Pressable>
 		<LockHint lock={{reason: i18n.t("app:map.expandHint"), icon: Maximize2}} />
 		<Modal visible={expanded} animationType="slide" onRequestClose={(): void => setExpanded(false)}>
-			<MapZoom uri={uri} ratio={ratio} onClose={(): void => setExpanded(false)} onError={fail} />
+			<MapViewer uri={uri} ratio={ratio} onClose={(): void => setExpanded(false)} onError={fail} />
 		</Modal>
 	</>;
 }

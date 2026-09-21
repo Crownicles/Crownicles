@@ -9,6 +9,21 @@ jest.mock("expo-router", () => ({
 	useFocusEffect: (effect: () => void | (() => void)): void => require("react").useEffect(effect, [effect])
 }));
 
+// Reanimated drives its values from a native worklet runtime the test environment does not have.
+jest.mock("react-native-reanimated", () => {
+	const {View} = require("react-native");
+	return {
+		__esModule: true,
+		default: {
+			View,
+			createAnimatedComponent: (component: unknown) => component
+		},
+		useSharedValue: (value: unknown) => ({value}),
+		useAnimatedStyle: (style: () => object) => style(),
+		withTiming: (value: unknown) => value
+	};
+});
+
 afterEach((): void => {
 	clearTestQueryClients();
 });

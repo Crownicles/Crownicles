@@ -12,6 +12,7 @@ const DOUBLE_TAP_ZOOM = 2.5;
 const SETTLE_DURATION = 180;
 
 const styles = StyleSheet.create({
+	root: {flex: 1},
 	toolbar: {paddingHorizontal: Theme.spacing.xl, paddingTop: Theme.spacing.md},
 	stage: {flex: 1, alignItems: "center", justifyContent: "center", overflow: "hidden"},
 	image: {backgroundColor: Theme.colors.wash}
@@ -92,7 +93,7 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 	}));
 
 	return <ModalSurface tone="wash">
-		<GestureHandlerRootView style={styles.stage}>
+		<GestureHandlerRootView style={styles.root}>
 			<View style={styles.toolbar}>
 				<BackButton label={i18n.t("app:common.back")} onClose={onClose} />
 			</View>

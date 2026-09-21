@@ -958,7 +958,7 @@
       "mood": "Mentalité"
     }
   },
-  "map": {"title": "Carte", "image": "Carte du monde et position du personnage", "expand": "Agrandir la carte", "expandHint": "Touchez la carte pour l'agrandir et vous y déplacer.", "zoomIn": "Zoom avant", "zoomOut": "Zoom arrière", "imageError": "La carte n'a pas pu être chargée.", "position": "Position", "destination": "Destination"},
+  "map": {"title": "Carte", "image": "Carte du monde et position du personnage", "expand": "Agrandir la carte", "expandHint": "Touchez la carte pour l'ouvrir, puis pincez pour zoomer.", "imageError": "La carte n'a pas pu être chargée.", "position": "Position", "destination": "Destination"},
   "utilities": {
     "title": "Services au joueur",
     "unlock": "Libérer un joueur", "prisoner": "Joueur à libérer", "prisonerRank": "Classement du joueur à libérer",
