@@ -1,17 +1,19 @@
 import {fireEvent, render, screen, waitFor} from "@testing-library/react-native";
 import {GuildOverview, GuildCreation} from "@/src/components/Guild";
-import {GuildData} from "ws-packets/src/objects/Guild";
+import {GuildData, GuildMember, GuildMembership} from "ws-packets/src/objects/Guild";
 import {GameClient} from "@/src/networking/GameClient";
 import {GuildCreateReq} from "ws-packets/src/fromClient/GuildReq";
 import {GuildCreateCollector} from "@/src/collectors/GuildCreateCollector";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {GuildMembers} from "@/src/components/GuildMembers";
+import {GuildInvitation} from "@/src/components/GuildMembers";
 import {GuildInviteReq} from "ws-packets/src/fromClient/GuildManagementReq";
+import {JoinBoatReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
 import {GuildDomainContent} from "@/src/components/GuildDomain";
 import {GuildDomainSnapshot} from "ws-packets/src/objects/GuildDomain";
 import {GuildDomainDepositReq, GuildDomainUpgradeReq} from "ws-packets/src/fromClient/GuildDomainReq";
+import {formatNumber} from "@/src/display/Amounts";
 
-jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: (): {push: jest.Mock} => ({push: jest.fn()})}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
 const mockTrack = jest.fn();
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: mockTrack})}));
@@ -29,6 +31,17 @@ const DOMAIN: GuildDomainSnapshot = {
 	canDeposit: {small: true, big: false, huge: false}, depositOffers: [{amount: 1000, treasuryDeposited: 950, canAfford: true}],
 	dailyFoodProduction: [0, 0, 0, 0], dailyLovePoints: 0
 };
+
+const SELF: GuildMember = {id: 7, name: "Aventurier", isSelf: true, rank: 12, score: 42, islandStatus: {isOnPveIsland: false, isOnBoat: false, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}};
+const MEMBERSHIP: GuildMembership = {treasury: 12_000, daily: {availableAt: 0, blockedByIsland: false}, domain: {established: true, isInCity: true, mapLocationId: 3}};
+
+function guildData(overrides: Partial<GuildData> = {}): GuildData {
+	return {
+		name: "Aurore", chiefId: 7, elderId: null, level: 3, isMaxLevel: false,
+		experience: {value: 3, max: 10}, rank: {unranked: false, rank: 1, numberOfGuilds: 3, score: 42},
+		members: [SELF], membership: MEMBERSHIP, ...overrides
+	};
+}
 
 describe("guild screens", () => {
 	beforeEach(() => jest.clearAllMocks());
@@ -61,23 +74,59 @@ describe("guild screens", () => {
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject(scenario.expected);
 	});
 	it("sends an invitation using the entered rank without selecting another identity", async () => {
-		const guild: GuildData = {name: "Aurore", chiefId: 7, elderId: null, level: 1, isMaxLevel: false, experience: {value: 0, max: 150}, rank: {unranked: true, rank: -1, numberOfGuilds: 3, score: 0}, members: [{id: 7, name: "Aventurier", isSelf: true, rank: 1, score: 0, islandStatus: {isOnPveIsland: false, isOnBoat: false, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}}]};
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
-		await render(<GuildMembers guild={guild} />);
+		await render(<GuildInvitation />);
 		await fireEvent.changeText(screen.getByLabelText("app:guild.inviteRank"), "42");
-		await fireEvent.press(screen.getByRole("button", {name: "app:guild.invite"}));
+		await fireEvent.press(screen.getByRole("button", {name: "app:guild.sendInvitation"}));
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(GuildInviteReq);
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({rank: 42});
 	});
+	it("shows the guild treasury to a plain member", async () => {
+		await render(<GuildOverview guild={guildData({chiefId: 99})} onPage={jest.fn()} />);
+		expect(screen.getByText(formatNumber(MEMBERSHIP.treasury))).toBeTruthy();
+	});
 	it("shows the real guild and routes to the storage", async () => {
-		const data: GuildData = {name: "Aurore", description: "Notre guilde", chiefId: 7, elderId: null, level: 3, isMaxLevel: false, experience: {value: 3, max: 10}, rank: {unranked: false, rank: 1, numberOfGuilds: 3, score: 42}, members: [{id: 7, name: "Aventurier", isSelf: true, rank: 12, score: 42, islandStatus: {isOnPveIsland: false, isOnBoat: false, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}}]};
 		const onPage = jest.fn();
-		await render(<GuildOverview guild={data} onPage={onPage} />);
+		await render(<GuildOverview guild={guildData({description: "Notre guilde"})} onPage={onPage} />);
 		expect(screen.getByText("Aurore")).toBeTruthy();
 		expect(screen.getByText("Aventurier")).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:guild.pages.storage"));
 		expect(onPage).toHaveBeenCalledWith("storage");
+	});
+	it.each([
+		{case: "no domain", domain: {established: false, isInCity: false}, chiefId: 7, lock: "app:guild.domainLocks.none"},
+		{case: "not the chief", domain: {established: true, isInCity: true}, chiefId: 99, lock: "app:guild.domainLocks.chiefOnly"},
+		{case: "away from the city", domain: {established: true, isInCity: false, mapLocationId: 3}, chiefId: 7, lock: "app:guild.domainLocks.away"}
+	])("locks the domain and says why when $case", async scenario => {
+		const onPage = jest.fn();
+		await render(<GuildOverview guild={guildData({chiefId: scenario.chiefId, membership: {...MEMBERSHIP, domain: scenario.domain}})} onPage={onPage} />);
+		expect(screen.getByText(scenario.lock)).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:guild.pages.domain"));
+		expect(onPage).not.toHaveBeenCalled();
+	});
+	it("opens the domain once the chief stands in its city", async () => {
+		const onPage = jest.fn();
+		await render(<GuildOverview guild={guildData()} onPage={onPage} />);
+		expect(screen.queryByTestId("guild-domain-lock")).toBeNull();
+		await fireEvent.press(screen.getByText("app:guild.pages.domain"));
+		expect(onPage).toHaveBeenCalledWith("domain");
+	});
+	it.each([
+		{case: "the cooldown is running", daily: {availableAt: Date.now() + 3_600_000, blockedByIsland: false}, lock: "app:guild.dailyLocks.cooldown"},
+		{case: "a member explores the island", daily: {availableAt: 0, blockedByIsland: true}, lock: "app:guild.dailyLocks.island"}
+	])("refuses the daily reward and says why when $case", async scenario => {
+		await render(<GuildOverview guild={guildData({membership: {...MEMBERSHIP, daily: scenario.daily}})} onPage={jest.fn()} />);
+		expect(screen.getByText(scenario.lock)).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:guild.daily"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+	it("claims the daily reward once it is available", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		await render(<GuildOverview guild={guildData()} onPage={jest.fn()} />);
+		expect(screen.queryByTestId("guild-daily-lock")).toBeNull();
+		await fireEvent.press(screen.getByText("app:guild.daily"));
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
 	});
 	it("sends the entered guild name without a client identity", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
@@ -89,5 +138,22 @@ describe("guild screens", () => {
 		expect(request).toBeInstanceOf(GuildCreateReq);
 		expect(request).toMatchObject({askedGuildName: "Aurore"});
 		expect(request).not.toHaveProperty("keycloakId");
+	});
+	it.each([
+		{case: "sailing", cannotBeJoinedOnBoat: false, requested: true},
+		{case: "sailing for too long", cannotBeJoinedOnBoat: true, requested: false}
+	])("offers the crossing from a member $case", async scenario => {
+		const sailor: GuildMember = {id: 9, name: "Marin", isSelf: false, rank: 30, score: 12, islandStatus: {isOnPveIsland: false, isOnBoat: true, isPveIslandAlly: false, cannotBeJoinedOnBoat: scenario.cannotBeJoinedOnBoat}};
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		await render(<GuildOverview guild={guildData({members: [SELF, sailor]})} onPage={jest.fn()} />);
+		await fireEvent.press(screen.getByText("Marin"));
+		await fireEvent.press(screen.getByText("app:utilities.boat"));
+		if (scenario.requested) await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(JoinBoatReq));
+		else expect(GameClient.request).not.toHaveBeenCalled();
+	});
+	it("keeps the crossing out of a member who is not on a boat", async () => {
+		await render(<GuildOverview guild={guildData()} onPage={jest.fn()} />);
+		await fireEvent.press(screen.getByText("Aventurier"));
+		expect(screen.queryByText("app:utilities.boat")).toBeNull();
 	});
 });

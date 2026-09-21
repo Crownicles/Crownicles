@@ -1,6 +1,6 @@
 import {ReactNode, useState} from "react";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {RespawnReq, UnlockReq, JoinBoatReq, VersionReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
+import {RespawnReq, UnlockReq, VersionReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
 import {PlayerUtilityRes, VersionRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {PingReq} from "ws-packets/src/fromClient/PingReq";
@@ -16,8 +16,7 @@ import {i18n} from "@/src/translations/i18n";
 
 const UTILITY_MENUS = {
 	respawn: {request: RespawnReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [PlayerUtilityRes]},
-	unlock: {request: UnlockReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [PlayerUtilityRes]},
-	boat: {request: JoinBoatReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [PlayerUtilityRes]}
+	unlock: {request: UnlockReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [PlayerUtilityRes]}
 } satisfies Record<string, CommandMenu>;
 
 export function RespawnAction(): ReactNode {
@@ -58,12 +57,8 @@ function ConnectionInformation(): ReactNode {
 }
 
 export function Utilities(): ReactNode {
-	const {pending, message, open} = useCommandMenus();
 	return <>
 		<PrisonerRelease />
-		<SectionHeader>{i18n.t("app:utilities.boat")}</SectionHeader>
-		<ButtonRow><Button disabled={pending} onPress={(): Promise<void> => open(UTILITY_MENUS.boat)}>{i18n.t("app:utilities.boat")}</Button></ButtonRow>
-		{message ? <Note>{message}</Note> : null}
 		<SectionHeader>{i18n.t("app:utilities.respawn")}</SectionHeader>
 		<RespawnAction />
 		<ConnectionInformation />

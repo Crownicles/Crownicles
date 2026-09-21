@@ -10,6 +10,24 @@ export type GuildMember = {
 		isOnPveIsland: boolean; isOnBoat: boolean; isPveIslandAlly: boolean; cannotBeJoinedOnBoat: boolean;
 	};
 };
+export type GuildDomainStanding = {
+	established: boolean;
+	isInCity: boolean;
+	mapLocationId?: number;
+};
+export type GuildDailyStanding = {
+
+	/** Absolute timestamp, so a countdown needs no clock shared with the server. */
+	availableAt: number;
+
+	/** A member exploring the mysterious island freezes the reward for the whole guild. */
+	blockedByIsland: boolean;
+};
+export type GuildMembership = {
+	treasury: number;
+	daily: GuildDailyStanding;
+	domain: GuildDomainStanding;
+};
 export type GuildData = {
 	name: string;
 	description?: string;
@@ -22,6 +40,9 @@ export type GuildData = {
 		unranked: boolean; rank: number; numberOfGuilds: number; score: number;
 	};
 	members: GuildMember[];
+
+	/** Absent when the player asks about a guild that is not theirs. */
+	membership?: GuildMembership;
 };
 export type GuildCreationStatus = {
 	foundGuild: boolean; guildNameIsAvailable?: boolean; guildNameIsAcceptable?: boolean; missingMoney?: number;

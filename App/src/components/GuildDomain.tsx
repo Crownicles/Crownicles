@@ -1,4 +1,6 @@
 import {ReactNode, useState} from "react";
+import {Text, View} from "react-native";
+import {useRouter} from "expo-router";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {GuildDomainInfoReq, GuildDomainUpgradeReq, GuildDomainFoodReq, GuildDomainDepositReq} from "ws-packets/src/fromClient/GuildDomainReq";
@@ -11,8 +13,12 @@ import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {PET_MANAGEMENT_MENUS} from "@/src/components/PetManagement";
+import {FightGauge} from "@/src/components/FightGauge";
+import {gaugeEmoji} from "@/src/components/Guild";
 import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
+import {ExpandableEntry, ExpandableList, Figures, sectionStyles, Standing} from "@/src/design/Sections";
+import {Theme} from "@/src/design/Theme";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {petName, petMood, petIcon} from "@/src/display/PetDisplay";
@@ -75,38 +81,68 @@ function DomainDeposits({domain, actions}: {domain: GuildDomainSnapshot; actions
 function BuildingContents({domain, building, actions}: {domain: GuildDomainSnapshot; building: GuildBuilding; actions: DomainActions}): ReactNode {
 	switch (building) {
 		case GuildBuilding.SHOP:
-			return <>{Object.values(PetFood).map((foodType, index) => <GuildFoodLine key={foodType} data={domain} foodType={foodType} index={index} actions={actions} />)}<DomainDeposits domain={domain} actions={actions} /></>;
+			return <>{Object.values(PetFood).map((foodType, index) => <GuildFoodLine key={foodType} data={domain} foodType={foodType} index={index} actions={actions} />)}</>;
 		case GuildBuilding.SHELTER:
 			return <Panel>
 				<KeyValue label={i18n.t("app:guildDomain.capacity")} value={i18n.t("app:profile.formats.progress", {value: domain.shelterPets.length, max: domain.shelterMaxCount})} />
 				{domain.shelterPets.map(pet => <Row key={pet.petEntityId} title={`${petIcon(pet)} ${petName(pet)}`} subtitle={petMood(pet)} />)}
 			</Panel>;
 		case GuildBuilding.PANTRY:
-			return <>{Object.values(PetFood).map((foodType, index) => <Panel key={foodType}>
-				<KeyValue label={i18n.t(`models:foods.${foodType}`, {count: domain.food[FOOD_FIELDS[foodType]], context: "capitalized"})} value={i18n.t("app:profile.formats.progress", {value: domain.food[FOOD_FIELDS[foodType]], max: domain.foodCaps[index]})} />
-				<KeyValue label={i18n.t("app:guildDomain.dailyProduction")} value={i18n.t("app:guildDomain.production", {count: domain.dailyFoodProduction[index]})} />
-			</Panel>)}</>;
+			return <>{Object.values(PetFood).map((foodType, index) => <View key={foodType} style={sectionStyles.gauge}>
+				<FightGauge
+					label={i18n.t(`models:foods.${foodType}`, {count: domain.food[FOOD_FIELDS[foodType]], context: "capitalized"})}
+					value={domain.food[FOOD_FIELDS[foodType]]}
+					max={domain.foodCaps[index]}
+					color={Theme.colors.gold}
+					{...gaugeEmoji(`foods.${foodType}`)}
+				/>
+				<Note>{i18n.t("app:guildDomain.production", {count: domain.dailyFoodProduction[index]})}</Note>
+			</View>)}</>;
 		default:
 			return <Note>{i18n.t("app:guildDomain.training", {count: domain.dailyLovePoints})}</Note>;
 	}
 }
 
-function DomainSummary({domain}: {domain: GuildDomainSnapshot}): ReactNode {
-	return <>
-		<Panel>
-			<KeyValue label={i18n.t("app:city.summary.guild")} value={domain.guildName} />
-			<KeyValue label={i18n.t("app:city.summary.treasury")} value={formatMoney(domain.treasury)} />
-			{domain.domainMapLocationId ? <KeyValue label={i18n.t("app:guildDomain.location")} value={i18n.t(`models:map_locations.${domain.domainMapLocationId}.name`)} /> : null}
-		</Panel>
-		{!domain.domainCityId ? <Note>{i18n.t("app:guildDomain.noDomain")}</Note> : null}
-		{!domain.isInCity ? <Note>{i18n.t("app:guildDomain.remote")}</Note> : null}
-	</>;
+type BuildingEntryProps = {domain: GuildDomainSnapshot; building: GuildBuilding; actions: DomainActions; expanded: boolean; onSelect: (building: GuildBuilding) => void; onTransfer: () => void};
+
+function BuildingEntry({domain, building, actions, expanded, onSelect, onTransfer}: BuildingEntryProps): ReactNode {
+	const icon = AppIcons.getIconOrNull(`city.guildDomain.${building}`);
+	return <ExpandableEntry
+		emblem={icon ? <TwemojiIcon emoji={icon} size={22} /> : null}
+		label={i18n.t(`commands:report.city.guildDomain.buildings.${building}`)}
+		end={<Text style={sectionStyles.caption}>{i18n.t("app:guild.level", {level: domain[BUILDING_LEVEL_FIELDS[building]]})}</Text>}
+		expanded={expanded}
+		onToggle={(): void => onSelect(building)}
+	>
+		<BuildingContents domain={domain} building={building} actions={actions} />
+		{building === GuildBuilding.SHELTER ? <ButtonRow><Button onPress={onTransfer}>{i18n.t("app:pet.management.shelter")}</Button></ButtonRow> : null}
+		<BuildingUpgrade domain={domain} building={building} actions={actions} />
+	</ExpandableEntry>;
+}
+
+function DomainStanding({domain}: {domain: GuildDomainSnapshot}): ReactNode {
+	const icon = AppIcons.getIconOrNull("city.guildDomain.menu");
+	return <Standing
+		testID="domain-standing"
+		emblem={icon ? <TwemojiIcon emoji={icon} size={40} /> : null}
+		caption={i18n.t("app:guild.pages.domain")}
+		title={domain.guildName}
+		subtitle={domain.domainMapLocationId === undefined
+			? i18n.t("app:guild.level", {level: domain.guildLevel})
+			: i18n.t(`models:map_locations.${domain.domainMapLocationId}.name`)}
+	>
+		<Figures items={[
+			{caption: i18n.t("app:city.summary.treasury"), value: formatNumber(domain.treasury), unit: "money"},
+			{caption: i18n.t("app:guild.yourMoney"), value: formatNumber(domain.playerMoney), unit: "money"}
+		]} />
+	</Standing>;
 }
 
 export function GuildDomainContent({domain}: {domain: GuildDomainSnapshot}): ReactNode {
 	const [building, setBuilding] = useState<GuildBuilding | null>(null);
 	const [selection, setSelection] = useState<DomainSelection | null>(null);
 	const {pending, message, open} = useCommandMenus();
+	const router = useRouter();
 	const actions = {pending, select: setSelection};
 	const confirm = (): void => {
 		if (!selection || pending) return;
@@ -114,20 +150,19 @@ export function GuildDomainContent({domain}: {domain: GuildDomainSnapshot}): Rea
 		open(DOMAIN_MENUS[selection.kind], selection.request).catch(console.error);
 	};
 	return <>
-		<DomainSummary domain={domain} />
+		<DomainStanding domain={domain} />
 		{message ? <Note>{message}</Note> : null}
-		{building ? <>
-			<SectionHeader>{i18n.t(`commands:report.city.guildDomain.buildings.${building}`)}</SectionHeader>
-			<Note>{i18n.t("app:guild.level", {level: domain[BUILDING_LEVEL_FIELDS[building]]})}</Note>
-			<BuildingContents domain={domain} building={building} actions={actions} />
-			{building === GuildBuilding.SHELTER ? <ButtonRow><Button disabled={pending} onPress={(): Promise<void> => open(PET_MANAGEMENT_MENUS.TRANSFER)}>{i18n.t("app:pet.management.transfer")}</Button></ButtonRow> : null}
-			<BuildingUpgrade domain={domain} building={building} actions={actions} />
-			<ButtonRow><Button onPress={(): void => setBuilding(null)}>{i18n.t("app:guildDomain.backToBuildings")}</Button></ButtonRow>
-		</> : <>
-			<SectionHeader>{i18n.t("app:guildDomain.buildings")}</SectionHeader>
-			<Panel>{Object.values(GuildBuilding).map(value => <Row key={value} title={`${AppIcons.getIcon(`city.guildDomain.${value}`)} ${i18n.t(`commands:report.city.guildDomain.buildings.${value}`)}`} end={i18n.t("app:guild.level", {level: domain[BUILDING_LEVEL_FIELDS[value]]})} onPress={(): void => setBuilding(value)} chevron />)}</Panel>
-			<DomainDeposits domain={domain} actions={actions} />
-		</>}
+		<SectionHeader>{i18n.t("app:guildDomain.buildings")}</SectionHeader>
+		<ExpandableList>{Object.values(GuildBuilding).map(value => <BuildingEntry
+			key={value}
+			domain={domain}
+			building={value}
+			actions={actions}
+			expanded={building === value}
+			onSelect={(selected): void => setBuilding(current => current === selected ? null : selected)}
+			onTransfer={(): void => router.push("/guild/shelter")}
+		/>)}</ExpandableList>
+		<DomainDeposits domain={domain} actions={actions} />
 		{selection ? <Confirmation title={selection.title} message={selection.message} onRequestClose={(): void => setSelection(null)}>
 			<ButtonRow><Button variant="primary" disabled={pending} onPress={confirm}>{i18n.t("app:collector.accept")}</Button><Button onPress={(): void => setSelection(null)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
 		</Confirmation> : null}

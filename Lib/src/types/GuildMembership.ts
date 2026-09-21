@@ -11,6 +11,7 @@ export type GuildDomainStanding = {
  * Where the shared daily reward stands, so a front-end can lock its button and say why.
  */
 export type GuildDailyStanding = {
+
 	/** Absolute timestamp, so a countdown needs no clock shared with the server. */
 	availableAt: number;
 

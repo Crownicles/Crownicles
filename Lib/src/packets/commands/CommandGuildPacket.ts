@@ -2,6 +2,7 @@ import {
 	CrowniclesPacket, sendablePacket, PacketDirection
 } from "../CrowniclesPacket";
 import { GuildMember } from "../../types/GuildMember";
+import { GuildMembership } from "../../types/GuildMembership";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandGuildPacketReq extends CrowniclesPacket {
@@ -37,5 +38,8 @@ export class CommandGuildPacketRes extends CrowniclesPacket {
 			score: number;
 		};
 		members: GuildMember[];
+
+		/** Only sent when the asking player belongs to this guild, since it describes their own standing in it. */
+		membership?: GuildMembership;
 	};
 }
