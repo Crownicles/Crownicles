@@ -27,15 +27,15 @@
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
   "sslRequired": "none",
-  "registrationAllowed": false,
+  "registrationAllowed": true,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
-  "verifyEmail": false,
+  "verifyEmail": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
-  "resetPasswordAllowed": false,
+  "resetPasswordAllowed": true,
   "editUsernameAllowed": false,
-  "bruteForceProtected": false,
+  "bruteForceProtected": true,
   "permanentLockout": false,
   "maxFailureWaitSeconds": 900,
   "minimumQuickLoginWaitSeconds": 60,
@@ -1493,7 +1493,20 @@
     "xXSSProtection": "1; mode=block",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
-  "smtpServer": {},
+  "smtpServer": {
+    "host": "smtp-relay.brevo.com",
+    "port": "587",
+    "starttls": "true",
+    "ssl": "false",
+    "auth": "true",
+    "user": "TO_REPLACE_WITH_YOUR_BREVO_SMTP_LOGIN",
+    "password": "TO_REPLACE_WITH_YOUR_BREVO_SMTP_KEY",
+    "from": "TO_REPLACE_WITH_YOUR_SENDER_ADDRESS",
+    "fromDisplayName": "Crownicles",
+    "replyTo": "",
+    "replyToDisplayName": "",
+    "envelopeFrom": ""
+  },
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
@@ -1508,7 +1521,7 @@
       "providerId": "oauth2",
       "enabled": true,
       "trustEmail": true,
-      "firstBrokerLoginFlowAlias": "auto link first login",
+      "firstBrokerLoginFlowAlias": "first broker login",
       "config": {
         "userInfoUrl": "https://discord.com/api/users/@me",
         "clientId": "TO_REPLACE_WITH_YOUR_DISCORD_CLIENT_ID",
@@ -1729,7 +1742,7 @@
     {
       "id": "14b1dc80-0385-40f5-a6c9-800c71942343",
       "alias": "Account verification options",
-      "description": "Method with which to verity the existing account",
+      "description": "Comment prouver la possession du compte existant. Dernier recours idp-auto-link : un compte cree par le bot Discord n'a ni adresse ni mot de passe, il n'a donc rien a prouver et rien a voler.",
       "providerId": "basic-flow",
       "topLevel": false,
       "builtIn": true,
@@ -1744,10 +1757,18 @@
         },
         {
           "authenticatorFlow": true,
-          "requirement": "ALTERNATIVE",
+          "requirement": "CONDITIONAL",
           "priority": 20,
           "autheticatorFlow": true,
           "flowAlias": "Verify Existing Account by Re-authentication",
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "idp-auto-link",
+          "authenticatorFlow": false,
+          "requirement": "ALTERNATIVE",
+          "priority": 30,
+          "autheticatorFlow": false,
           "userSetupAllowed": false
         }
       ]
@@ -1912,11 +1933,19 @@
     {
       "id": "7c7df4a1-b03d-4253-bb63-bc28f5e07d15",
       "alias": "Verify Existing Account by Re-authentication",
-      "description": "Reauthentication of existing account",
+      "description": "Reauthentication of existing account, ignoree si le compte n'a pas de mot de passe a ressaisir",
       "providerId": "basic-flow",
       "topLevel": false,
       "builtIn": true,
       "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-configured",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 5,
+          "autheticatorFlow": false,
+          "userSetupAllowed": false
+        },
         {
           "authenticator": "idp-username-password-form",
           "authenticatorFlow": false,
@@ -2244,29 +2273,6 @@
           "userSetupAllowed": false
         }
       ]
-    },
-    {
-      "alias": "auto link first login",
-      "description": "Links a brokered login to the existing account bearing the same username",
-      "providerId": "basic-flow",
-      "topLevel": true,
-      "builtIn": false,
-      "authenticationExecutions": [
-        {
-          "authenticator": "idp-create-user-if-unique",
-          "authenticatorFlow": false,
-          "requirement": "ALTERNATIVE",
-          "priority": 0,
-          "userSetupAllowed": false
-        },
-        {
-          "authenticator": "idp-auto-link",
-          "authenticatorFlow": false,
-          "requirement": "ALTERNATIVE",
-          "priority": 1,
-          "userSetupAllowed": false
-        }
-      ]
     }
   ],
   "authenticatorConfig": [
@@ -2281,7 +2287,7 @@
       "id": "b48077a3-8907-430d-a3c0-72a47c077b73",
       "alias": "review profile config",
       "config": {
-        "update.profile.on.first.login": "missing"
+        "update.profile.on.first.login": "off"
       }
     }
   ],

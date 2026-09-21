@@ -105,6 +105,61 @@ returns opaque tokens, so Keycloak reads the profile from `https://discord.com/a
 ### Account matching
 
 Accounts created by the Discord bot are named `discord-<discord id>`. The provider reproduces that
-name through its *username* mapper, and its first login flow (`auto link first login`) links the
-brokered login to that existing account instead of creating a second one. Changing either the mapper
-template or the flow would cut existing players from their progress.
+name through its *username* mapper, so a returning player is matched to the account that already
+holds their progress instead of getting a second one. Changing the mapper template would cut
+existing players from their progress.
+
+The first login flow is the built-in `first broker login`. When the username already exists it asks
+the player to confirm the link, then requires a proof of ownership through *Account verification
+options*, which reads in priority order:
+
+1. `idp-email-verification` — a mail is sent to the address already on the account;
+2. *Verify Existing Account by Re-authentication* — **conditional**: `conditional-user-configured`
+   skips it when the account carries no password to re-enter;
+3. `idp-auto-link` — last resort.
+
+The third step is what keeps the migration working. An account created by the bot has **neither an
+address nor a password**: it has nothing to prove, and nothing an attacker could be given. Step 1
+fails for lack of an address, step 2 is skipped for lack of a password, and the brokered identity is
+attached. The Discord address then lands on the account through `emailClaim`, and from that point on
+step 1 guards it.
+
+Conversely an account that does carry credentials never reaches step 3, because a satisfied
+conditional sub-flow is treated as required and takes precedence over the alternatives. This is what
+closes the takeover path described in
+[#4767](https://github.com/Crownicles/Crownicles/issues/4767): registering under someone else's
+address no longer captures their Discord identity.
+
+> The precedence of a satisfied `CONDITIONAL` sub-flow over its sibling `ALTERNATIVE` executions is
+> the load-bearing assumption here. Replay both cases against a real Keycloak before deploying: a
+> legacy `discord-<id>` account, and an account holding a password.
+
+## Sending mail
+
+Opening the Crownicles account ([#4768](https://github.com/Crownicles/Crownicles/issues/4768)) makes
+SMTP a production dependency: without it there is neither address verification nor password reset,
+so nobody can finish signing up.
+
+The realm ships **Brevo** on its free tier: **300 mails a day**, no card, no expiry, and an SMTP
+relay included. It was picked over Mailjet (200/day), SMTP2GO (1 000/month), Resend (3 000/month),
+MailerSend and Scaleway (both ask for a card). Fastmail was ruled out on purpose — its terms forbid
+transactional mail and allow immediate suspension.
+
+Three values in `smtpServer` are environment specific and are left as placeholders:
+
+| Placeholder | Where to find it |
+| --- | --- |
+| `TO_REPLACE_WITH_YOUR_BREVO_SMTP_LOGIN` | the *SMTP & API* page — either the account address or `<id>@smtp-brevo.com` |
+| `TO_REPLACE_WITH_YOUR_BREVO_SMTP_KEY` | an **SMTP key** generated on that same page |
+| `TO_REPLACE_WITH_YOUR_SENDER_ADDRESS` | the sender, on a domain authenticated at Brevo |
+
+Set them in *Realm settings → Email*, never in the versioned file. Watch out for two traps:
+
+- the password is an **SMTP key**, not an API key — the two look alike and only one authenticates the
+  relay;
+- a Brevo account must be **approved for sending** before the first mail leaves, and approval is
+  manual. Do it well before opening registration, not on launch day.
+
+Brevo **blocks** at the daily quota, it does not overflow into paid usage. The app has to cope with a
+mail that will not arrive, and an alert on the daily count gives the warning needed to switch relays
+by hand — Scaleway Transactional Email being the fallback, at €0.25 per 1 000 after the first 300.
