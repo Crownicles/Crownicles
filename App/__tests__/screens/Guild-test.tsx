@@ -57,18 +57,15 @@ describe("guild screens", () => {
 		expect(choose).toHaveBeenCalledWith(1);
 	});
 	it.each([
-		{kind: "deposit", Packet: GuildDomainDepositReq, expected: {amount: 1000}},
-		{kind: "upgrade", Packet: GuildDomainUpgradeReq, expected: {building: "pantry", expectedLevel: 0}}
-	])("waits for confirmation and submits the server $kind offer", async scenario => {
+		{kind: "deposit", Packet: GuildDomainDepositReq, expected: {amount: 1000}, confirm: "app:guildDomain.confirmDeposit"},
+		{kind: "upgrade", Packet: GuildDomainUpgradeReq, expected: {building: "pantry", expectedLevel: 0}, confirm: "app:guildDomain.confirmUpgrade"}
+	])("unfolds the row before submitting the server $kind offer", async scenario => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "GuildDomainRes"});
 		await render(<GuildDomainContent domain={DOMAIN} />);
-		if (scenario.kind === "upgrade") {
-			await fireEvent.press(screen.getByText(/commands:report.city.guildDomain.buildings.pantry/));
-			await fireEvent.press(screen.getByRole("button", {name: "app:guildDomain.upgrade"}));
-		}
+		if (scenario.kind === "upgrade") await fireEvent.press(screen.getByText(/commands:report.city.guildDomain.buildings.pantry/));
 		else await fireEvent.press(screen.getByText("app:guildDomain.depositNet"));
 		expect(GameClient.request).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText(scenario.confirm));
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(scenario.Packet);
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject(scenario.expected);

@@ -18,7 +18,7 @@ describe("expedition collectors", () => {
 		await fireEvent.press(screen.getByText("commands:petExpedition.mapLocationExpeditions.12"));
 		expect(onChoose).not.toHaveBeenCalled();
 		expect(screen.getByText("app:expedition.confirmStart")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:expedition.confirmStart"));
 		expect(onChoose).toHaveBeenCalledTimes(1);
 		expect(onChoose).toHaveBeenCalledWith(1);
 	});
@@ -29,10 +29,11 @@ describe("expedition collectors", () => {
 		await render(<PetExpeditionCollector collector={collector} onChoose={onChoose} submitting={false} />);
 		await fireEvent.press(screen.getByText("app:expedition.recall"));
 		expect(onChoose).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("app:collector.refuse"));
+		await fireEvent.press(screen.getByText("app:expedition.recall"));
+		expect(screen.queryByText("app:expedition.confirmRecall")).toBeNull();
 		await fireEvent.press(screen.getByText("app:expedition.recall"));
 		expect(onChoose).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:expedition.confirmRecall"));
 		expect(onChoose).toHaveBeenCalledWith(0);
 	});
 

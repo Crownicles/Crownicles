@@ -15,8 +15,9 @@ import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
 import {gaugeEmoji} from "@/src/components/Guild";
-import {Button, ButtonRow, Confirmation, Note, SectionHeader} from "@/src/design/Primitives";
-import {EntryRow, ExpandableEntry, ExpandableList, Fact, Figures, sectionStyles, Standing} from "@/src/design/Sections";
+import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
+import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, Figures, Lock, sectionStyles, Standing} from "@/src/design/Sections";
+import {Check} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
@@ -29,8 +30,8 @@ const DOMAIN_MENUS = {
 	food: {request: GuildDomainFoodReq, emptyPacket: PlayerNotFound, emptyMessage: "app:guild.noGuild", outcomePackets: [GuildDomainRes]},
 	deposit: {request: GuildDomainDepositReq, emptyPacket: PlayerNotFound, emptyMessage: "app:guild.noGuild", outcomePackets: [GuildDomainRes]}
 } satisfies Record<string, CommandMenu>;
-type DomainSelection = {kind: keyof typeof DOMAIN_MENUS; request: FromClientPacket; title: string; message: string};
-type DomainActions = {pending: boolean; select: (selection: DomainSelection) => void};
+type DomainRequest = {kind: keyof typeof DOMAIN_MENUS; request: FromClientPacket};
+type DomainActions = {pending: boolean; run: (action: DomainRequest) => void};
 const BUILDING_LEVEL_FIELDS = {
 	[GuildBuilding.SHOP]: "shopLevel", [GuildBuilding.SHELTER]: "shelterLevel",
 	[GuildBuilding.PANTRY]: "pantryLevel", [GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
@@ -39,42 +40,105 @@ const FOOD_FIELDS = {
 	[PetFood.CANDY]: "common", [PetFood.SALAD]: "herbivorous", [PetFood.MEAT]: "carnivorous", [PetFood.ULTIMATE]: "ultimate"
 } as const;
 
+/** The first reason that stands in the way, so a greyed action always says why. */
+function firstLock(reasons: {blocked: boolean; key: string}[]): Lock | undefined {
+	const reason = reasons.find(entry => entry.blocked);
+	return reason ? {reason: i18n.t(`app:guildDomain.errors.${reason.key}`)} : undefined;
+}
+
 function BuildingUpgrade({domain, building, actions}: {domain: GuildDomainSnapshot; building: GuildBuilding; actions: DomainActions}): ReactNode {
 	const upgrade = domain.canUpgradeBuildings[building];
 	if (!upgrade) return <Note>{i18n.t("app:guildDomain.maxLevel")}</Note>;
-	const restrictions = [!domain.isInCity, !domain.isChief, !upgrade.meetsLevel, !upgrade.canAfford];
+	const lock = firstLock([
+		{blocked: !domain.isInCity, key: "notInCity"},
+		{blocked: !domain.isChief, key: "notAuthorized"},
+		{blocked: !upgrade.meetsLevel, key: "guildLevelTooLow"},
+		{blocked: !upgrade.canAfford, key: "notEnoughTreasury"}
+	]);
 	return <>
 		<SectionHeader>{i18n.t("app:guildDomain.upgrade")}</SectionHeader>
 		<ExpandableList>
 			<Fact label={i18n.t("app:guildDomain.cost")} value={formatMoney(upgrade.cost)} />
 			<Fact label={i18n.t("app:guildDomain.requiredLevel")} value={formatNumber(upgrade.requiredGuildLevel)} />
 		</ExpandableList>
-		<ButtonRow><Button disabled={actions.pending || restrictions.some(Boolean)} onPress={(): void => actions.select({kind: "upgrade", request: makeFromClientPacket(GuildDomainUpgradeReq, {building, expectedLevel: domain[BUILDING_LEVEL_FIELDS[building]]}), title: i18n.t("app:guildDomain.upgrade"), message: i18n.t("app:guildDomain.confirmUpgrade", {building: i18n.t(`commands:report.city.guildDomain.buildings.${building}`), cost: formatMoney(upgrade.cost)})})}>{i18n.t("app:guildDomain.upgrade")}</Button></ButtonRow>
+		<ActionBanner
+			icon={Check}
+			label={i18n.t("app:guildDomain.confirmUpgrade", {building: i18n.t(`commands:report.city.guildDomain.buildings.${building}`), cost: formatMoney(upgrade.cost)})}
+			pending={actions.pending}
+			{...lock ? {lock} : {}}
+			onPress={(): void => actions.run({kind: "upgrade", request: makeFromClientPacket(GuildDomainUpgradeReq, {building, expectedLevel: domain[BUILDING_LEVEL_FIELDS[building]]})})}
+		/>
 	</>;
 }
 
+/** Buying food states its price on the banner itself, so no window has to ask again. */
 function GuildFoodLine({data, foodType, index, actions}: {data: GuildFoodShop; foodType: PetFood; index: number; actions: DomainActions}): ReactNode {
 	const name = i18n.t(`models:foods.${foodType}`, {count: 1, context: "capitalized"});
-	const buy = (amount: number, cost: number): void => actions.select({kind: "food", request: makeFromClientPacket(GuildDomainFoodReq, {foodType, amount}), title: name, message: i18n.t("app:guildDomain.confirmFood", {count: amount, cost: formatMoney(cost)})});
-	const disabled = actions.pending || !data.canUseShop || data.maxBuyableFood[index] < 1;
+	const lock = firstLock([
+		{blocked: !data.canUseShop, key: "noShop"},
+		{blocked: data.maxBuyableFood[index] < 1, key: "cannotBuy"}
+	]);
+	const buy = (amount: number): void => actions.run({kind: "food", request: makeFromClientPacket(GuildDomainFoodReq, {foodType, amount})});
 	return <>
 		<SectionHeader>{name}</SectionHeader>
 		<ExpandableList>
 			<Fact label={i18n.t("app:guildDomain.stock")} value={i18n.t("app:profile.formats.progress", {value: data.food[FOOD_FIELDS[foodType]], max: data.foodCaps[index]})} />
 			<Fact label={i18n.t("app:pet.care.price")} value={formatMoney(data.foodPrices[index])} />
 		</ExpandableList>
-		<ButtonRow>
-			<Button disabled={disabled} onPress={(): void => buy(1, data.foodPrices[index])}>{i18n.t("app:guildDomain.buyOne")}</Button>
-			<Button disabled={disabled} onPress={(): void => buy(data.maxBuyableFood[index], data.maxFoodCosts[index])}>{i18n.t("app:guildDomain.buyMax", {count: data.maxBuyableFood[index]})}</Button>
-		</ButtonRow>
+		<ActionBanner
+			icon={Check}
+			label={i18n.t("app:guildDomain.confirmFood", {count: 1, cost: formatMoney(data.foodPrices[index])})}
+			pending={actions.pending}
+			{...lock ? {lock} : {}}
+			onPress={(): void => buy(1)}
+		/>
+		{data.maxBuyableFood[index] > 1 ? <ActionBanner
+			icon={Check}
+			label={i18n.t("app:guildDomain.confirmFood", {count: data.maxBuyableFood[index], cost: formatMoney(data.maxFoodCosts[index])})}
+			pending={actions.pending}
+			{...lock ? {lock} : {}}
+			onPress={(): void => buy(data.maxBuyableFood[index])}
+		/> : null}
 	</>;
 }
 
-function DomainDeposits({domain, actions}: {domain: GuildDomainSnapshot; actions: DomainActions}): ReactNode {
-	const deposit = (offer: GuildDepositOffer): void => actions.select({kind: "deposit", request: makeFromClientPacket(GuildDomainDepositReq, {amount: offer.amount}), title: i18n.t("app:guildDomain.deposit"), message: i18n.t("app:guildDomain.confirmDeposit", {amount: formatMoney(offer.amount), net: formatMoney(offer.treasuryDeposited)})});
+function DepositOffer({offer, domain, actions, expanded, onToggle}: {
+	offer: GuildDepositOffer; domain: GuildDomainSnapshot; actions: DomainActions; expanded: boolean; onToggle: () => void;
+}): ReactNode {
+	const lock = firstLock([{blocked: !domain.isInCity, key: "notInCity"}, {blocked: !offer.canAfford, key: "notEnoughMoney"}]);
+	return <ExpandableEntry
+		label={formatMoney(offer.amount)}
+		caption={lock?.reason ?? i18n.t("app:guildDomain.depositNet", {net: formatMoney(offer.treasuryDeposited)})}
+		dimmed={actions.pending || Boolean(lock)}
+		expanded={expanded}
+		onToggle={onToggle}
+	>
+		<ActionBanner
+			icon={Check}
+			label={i18n.t("app:guildDomain.confirmDeposit", {amount: formatMoney(offer.amount), net: formatMoney(offer.treasuryDeposited)})}
+			pending={actions.pending}
+			{...lock ? {lock} : {}}
+			onPress={(): void => {
+				onToggle();
+				actions.run({kind: "deposit", request: makeFromClientPacket(GuildDomainDepositReq, {amount: offer.amount})});
+			}}
+		/>
+	</ExpandableEntry>;
+}
+
+function DomainDeposits({domain, actions, openAmount, onOpen}: {
+	domain: GuildDomainSnapshot; actions: DomainActions; openAmount: number | undefined; onOpen: (amount: number | undefined) => void;
+}): ReactNode {
 	return <>
 		<SectionHeader>{i18n.t("app:guildDomain.deposit")}</SectionHeader>
-		<ExpandableList>{domain.depositOffers.map(offer => <EntryRow key={offer.amount} title={formatMoney(offer.amount)} subtitle={i18n.t("app:guildDomain.depositNet", {net: formatMoney(offer.treasuryDeposited)})} disabled={actions.pending || !offer.canAfford || !domain.isInCity} onPress={(): void => deposit(offer)}  />)}</ExpandableList>
+		<ExpandableList>{domain.depositOffers.map(offer => <DepositOffer
+			key={offer.amount}
+			offer={offer}
+			domain={domain}
+			actions={actions}
+			expanded={openAmount === offer.amount}
+			onToggle={(): void => onOpen(openAmount === offer.amount ? undefined : offer.amount)}
+		/>)}</ExpandableList>
 	</>;
 }
 
@@ -140,14 +204,15 @@ function DomainStanding({domain}: {domain: GuildDomainSnapshot}): ReactNode {
 
 export function GuildDomainContent({domain}: {domain: GuildDomainSnapshot}): ReactNode {
 	const [building, setBuilding] = useState<GuildBuilding | null>(null);
-	const [selection, setSelection] = useState<DomainSelection | null>(null);
+	const [openAmount, setOpenAmount] = useState<number>();
 	const {pending, message, open} = useCommandMenus();
 	const router = useRouter();
-	const actions = {pending, select: setSelection};
-	const confirm = (): void => {
-		if (!selection || pending) return;
-		setSelection(null);
-		open(DOMAIN_MENUS[selection.kind], selection.request).catch(console.error);
+	const actions = {
+		pending,
+		run: (action: DomainRequest): void => {
+			if (pending) return;
+			open(DOMAIN_MENUS[action.kind], action.request).catch(console.error);
+		}
 	};
 	return <>
 		<DomainStanding domain={domain} />
@@ -162,10 +227,7 @@ export function GuildDomainContent({domain}: {domain: GuildDomainSnapshot}): Rea
 			onSelect={(selected): void => setBuilding(current => current === selected ? null : selected)}
 			onTransfer={(): void => router.push("/guild/shelter")}
 		/>)}</ExpandableList>
-		<DomainDeposits domain={domain} actions={actions} />
-		{selection ? <Confirmation title={selection.title} message={selection.message} onRequestClose={(): void => setSelection(null)}>
-			<ButtonRow><Button variant="primary" disabled={pending} onPress={confirm}>{i18n.t("app:collector.accept")}</Button><Button onPress={(): void => setSelection(null)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
-		</Confirmation> : null}
+		<DomainDeposits domain={domain} actions={actions} openAmount={openAmount} onOpen={setOpenAmount} />
 	</>;
 }
 

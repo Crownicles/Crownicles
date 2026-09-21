@@ -2,8 +2,9 @@ import {ReactNode, useState} from "react";
 import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
-import {Button, ButtonRow, Confirmation, Note, Screen} from "@/src/design/Primitives";
-import {EntryRow, ExpandableList, Fact, ModalSurface, Standing} from "@/src/design/Sections";
+import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
+import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, ModalSurface, Standing} from "@/src/design/Sections";
+import {Check} from "@/src/design/FightIcons";
 import {ExpeditionOptionDetails, ExpeditionProgressDetails} from "@/src/components/ExpeditionDetails";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {isChoosable, reactionLabel} from "@/src/collectors/CollectorLabels";
@@ -15,7 +16,14 @@ import {i18n} from "@/src/translations/i18n";
 
 type ExpeditionData = Extract<ReactionCollectorData, {type: typeof EXPEDITION_DATA_KINDS[keyof typeof EXPEDITION_DATA_KINDS]}>;
 const EXPEDITION_KINDS = new Set<ReactionCollectorData["type"]>(Object.values(EXPEDITION_DATA_KINDS));
-type MenuProps = {collector: ReactionCollectorCreation; data: ExpeditionData; locked: boolean; onChoose: (index: number) => void};
+type Unfolding = {openIndex: number | undefined; onOpen: (index: number | undefined) => void};
+type MenuProps = {
+	collector: ReactionCollectorCreation;
+	data: ExpeditionData;
+	locked: boolean;
+	onChoose: (index: number) => void;
+	unfolding: Unfolding;
+};
 
 export function isExpeditionCollector(data: ReactionCollectorData): data is ExpeditionData {
 	return EXPEDITION_KINDS.has(data.type);
@@ -31,21 +39,65 @@ function ExpeditionDataDetails({data}: {data: ExpeditionData}): ReactNode {
 	return <Note>{i18n.t(data.data.hasGuild ? "app:expedition.guildFood" : "app:expedition.noGuildFood", {amount: data.data.guildFoodAmount ?? 0})}</Note>;
 }
 
-function RecallChoices({collector, locked, onChoose}: Omit<MenuProps, "data">): ReactNode {
-	return <ExpandableList>{collector.reactions.map((reaction, index) => ({reaction, index})).map(choice => <EntryRow
-		key={choice.index} title={reactionLabel(choice.reaction, collector.data)} disabled={locked || !isChoosable(choice.reaction, collector.data)}
-		onPress={(): void => onChoose(choice.index)} 
-	/>)}</ExpandableList>;
+/** A choice is confirmed where it was made: recalling states its price on the row itself. */
+function ExpeditionChoice({label, index, locked, unfolding, onChoose, confirmLabel, children}: {
+	label: string;
+	index: number;
+	locked: boolean;
+	unfolding: Unfolding;
+	onChoose: (index: number) => void;
+	confirmLabel: string;
+	children: ReactNode;
+}): ReactNode {
+	return <ExpandableEntry
+		label={label}
+		dimmed={locked}
+		expanded={unfolding.openIndex === index}
+		onToggle={(): void => unfolding.onOpen(unfolding.openIndex === index ? undefined : index)}
+	>
+		{children}
+		<ActionBanner icon={Check} label={confirmLabel} pending={locked} onPress={(): void => onChoose(index)} />
+	</ExpandableEntry>;
 }
 
-function ExpeditionOptions({collector, data, locked, onChoose}: MenuProps): ReactNode {
-	if (data.type === EXPEDITION_DATA_KINDS.PROGRESS) return <RecallChoices collector={collector} locked={locked} onChoose={onChoose} />;
+function RecallChoices({collector, locked, onChoose, unfolding}: Omit<MenuProps, "data">): ReactNode {
+	return <ExpandableList>{collector.reactions.map((reaction, index) => reaction.type === EXPEDITION_REACTION_KINDS.RECALL
+		? <ExpeditionChoice
+			key={index}
+			label={reactionLabel(reaction, collector.data)}
+			index={index}
+			locked={locked}
+			unfolding={unfolding}
+			onChoose={onChoose}
+			confirmLabel={i18n.t("app:expedition.confirmRecall")}
+		><Note>{i18n.t("app:expedition.recallWarning")}</Note></ExpeditionChoice>
+		: <EntryRow
+			key={index}
+			title={reactionLabel(reaction, collector.data)}
+			disabled={locked || !isChoosable(reaction, collector.data)}
+			onPress={(): void => onChoose(index)}
+		/>)}</ExpandableList>;
+}
+
+function ExpeditionOptions({collector, data, locked, onChoose, unfolding}: MenuProps): ReactNode {
+	if (data.type === EXPEDITION_DATA_KINDS.PROGRESS) return <RecallChoices collector={collector} locked={locked} onChoose={onChoose} unfolding={unfolding} />;
 	if (data.type !== EXPEDITION_DATA_KINDS.CHOICE) return <CollectorChoices collector={collector} onChoose={onChoose} submitting={locked} />;
 	return <>
-		<ExpandableList>{data.data.expeditions.map(option => <EntryRow key={option.id} title={expeditionLocationName(option)}
-			subtitle={i18n.t("app:expedition.optionSummary", {duration: formatDurationMinutes(option.displayDurationMinutes), risk: expeditionRisk(option.riskCategory), count: option.foodCost})}
-			disabled={locked} onPress={(): void => onChoose(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.SELECT && reaction.data.expeditionId === option.id))} 
-		/>)}</ExpandableList>
+		<ExpandableList>{data.data.expeditions.map(option => {
+			const index = collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.SELECT && reaction.data.expeditionId === option.id);
+			return <ExpeditionChoice
+				key={option.id}
+				label={expeditionLocationName(option)}
+				index={index}
+				locked={locked}
+				unfolding={unfolding}
+				onChoose={onChoose}
+				confirmLabel={i18n.t("app:expedition.confirmStart")}
+			>
+				<Note>{i18n.t("app:expedition.optionSummary", {duration: formatDurationMinutes(option.displayDurationMinutes), risk: expeditionRisk(option.riskCategory), count: option.foodCost})}</Note>
+				<ExpeditionOptionDetails option={option} />
+			</ExpeditionChoice>;
+		})}</ExpandableList>
 		<ButtonRow><Button disabled={locked} onPress={(): void => onChoose(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CANCEL))}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
 	</>;
 }
@@ -59,34 +111,26 @@ function ExpeditionMenu({secondsLeft, ...props}: MenuProps & {secondsLeft: numbe
 	</Screen>;
 }
 
-function ExpeditionConfirmation({collector, selection, onConfirm, onCancel, locked}: {collector: ReactionCollectorCreation; selection: number; onConfirm: () => void; onCancel: () => void; locked: boolean}): ReactNode {
-	const reaction = collector.reactions[selection];
-	const option = collector.data.type === EXPEDITION_DATA_KINDS.CHOICE && reaction?.type === EXPEDITION_REACTION_KINDS.SELECT
-		? collector.data.data.expeditions.find(entry => entry.id === reaction.data.expeditionId) : null;
-	return <Confirmation title={i18n.t(option ? "app:expedition.confirmStart" : "app:expedition.confirmRecall")} onRequestClose={onCancel}>
-		{option ? <ExpeditionOptionDetails option={option} /> : <Note>{i18n.t("app:expedition.recallWarning")}</Note>}
-		<ButtonRow>
-			<Button variant="primary" disabled={locked} onPress={onConfirm}>{i18n.t("app:collector.accept")}</Button>
-			<Button disabled={locked} onPress={onCancel}>{i18n.t("app:collector.refuse")}</Button>
-		</ButtonRow>
-	</Confirmation>;
-}
-
 export function PetExpeditionCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
-	const [selection, setSelection] = useState<number | null>(null);
+	const [openIndex, setOpenIndex] = useState<number>();
 	const {answer, locked, secondsLeft} = useCollectorAnswer(collector, onChoose, submitting);
 	const choose = (index: number): void => {
 		if (locked || index < 0) return;
-		const type = collector.reactions[index]?.type;
-		if (type === EXPEDITION_REACTION_KINDS.SELECT || type === EXPEDITION_REACTION_KINDS.RECALL) setSelection(index);
-		else answer(index);
+		setOpenIndex(undefined);
+		answer(index);
 	};
 	const close = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CANCEL || reaction.type === EXPEDITION_REACTION_KINDS.CLOSE));
 	if (!isExpeditionCollector(collector.data)) return null;
 	return <Modal visible animationType="slide" onRequestClose={close}>
 		<ModalSurface>
-			<ExpeditionMenu collector={collector} data={collector.data} locked={locked} onChoose={choose} secondsLeft={secondsLeft} />
-			{selection !== null ? <ExpeditionConfirmation collector={collector} selection={selection} locked={locked} onConfirm={(): void => {answer(selection); setSelection(null);}} onCancel={(): void => setSelection(null)} /> : null}
+			<ExpeditionMenu
+				collector={collector}
+				data={collector.data}
+				locked={locked}
+				onChoose={choose}
+				unfolding={{openIndex, onOpen: setOpenIndex}}
+				secondsLeft={secondsLeft}
+			/>
 		</ModalSurface>
 	</Modal>;
 }

@@ -1012,7 +1012,7 @@
     "training": "Les familiers du refuge gagnent {{count}} points d'amour par jour.",
     "outcomes": {"upgrade": "Bâtiment amélioré", "food": "Nourriture achetée", "deposit": "Dépôt effectué", "error": "Action impossible", "notary": "Domaine de guilde", "treasuryMissing": "Trésorerie insuffisante"},
     "errors": {
-      "noGuild": "Vous n'appartenez plus à une guilde.", "noDomain": "La guilde n'a pas de domaine.", "noShop": "La boutique n'est pas construite.",
+      "noGuild": "Vous n'appartenez plus à une guilde.", "noDomain": "La guilde n'a pas de domaine.", "notInCity": "Rendez-vous sur le domaine de la guilde pour agir ici.", "noShop": "La boutique n'est pas construite.",
       "notAuthorized": "Cette action est réservée au chef de guilde.", "invalidBuilding": "Ce bâtiment n'est pas disponible.", "maxLevel": "Le bâtiment a atteint son niveau maximal.",
       "guildLevelTooLow": "Le niveau de la guilde est insuffisant.", "notEnoughTreasury": "La trésorerie est insuffisante.", "notEnoughMoney": "Votre solde est insuffisant.",
       "invalidTier": "Ce palier n'est pas disponible.", "invalidAmount": "La quantité demandée n'est pas valide.", "invalidFood": "Cette nourriture n'est pas disponible.",
