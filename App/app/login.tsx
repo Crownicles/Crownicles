@@ -1,36 +1,72 @@
-import {ActivityIndicator, Alert, StyleSheet, Text, View} from "react-native";
+import {
+	Alert, StyleSheet, View
+} from "react-native";
+import {Image} from "expo-image";
 import React from "react";
+import crowniclesLogo from "@/assets/images/icon.png";
 import {AuthContext} from "@/src/authentication/AuthContext";
-import {KeycloakAuth} from "@/src/authentication/KeycloakAuth";
+import {
+	IDENTITY_PROVIDERS, KeycloakAuth, type IdentityProvider
+} from "@/src/authentication/KeycloakAuth";
+import {
+	AUTH_FAILURES, reasonOfUnknownError
+} from "@/src/authentication/AuthFailure";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
-import {useRouter} from "expo-router";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
+import {AssetsManager} from "@/src/assets/AssetsManager";
 import {Theme} from "@/src/design/Theme";
-import {Button as DesignButton} from "@/src/design/Primitives";
+import {Screen} from "@/src/design/Primitives";
+import {
+	ActionBanner, Standing
+} from "@/src/design/Sections";
+import {
+	AtSign, MessageCircle
+} from "@/src/design/FightIcons";
 import {i18n} from "@/src/translations/i18n";
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
+	screen: {
+		flexGrow: 1,
+		justifyContent: "center"
 	},
-	text: {
-		fontFamily: Theme.fonts.bold,
-		fontSize: Theme.fontSize.hero,
-		color: Theme.colors.ink,
+	emblem: {
+		width: 64,
+		height: 64,
+		borderRadius: 8
 	},
-	loginIndicator: {
-		marginBottom: Theme.spacing.xxl
-	},
-	loginGap: {
-		height: Theme.spacing.xxl
-	},
+	choices: {
+		gap: Theme.spacing.md,
+		marginTop: Theme.spacing.xl
+	}
 });
 
 type LoginAuthState = React.ContextType<typeof AuthContext>;
-type LoginRouter = ReturnType<typeof useRouter>;
+
+/**
+ * This screen lives outside the protected group, which is where assets are normally fetched, so it
+ * would otherwise render its keys raw. Failing to fetch must not lock the player out: the buttons
+ * stay usable, only their wording suffers.
+ */
+function useTranslationsReady(): boolean {
+	const [ready, setReady] = React.useState(AssetsManager.areAssetsReady());
+
+	React.useEffect((): void => {
+		if (ready) {
+			return;
+		}
+
+		AssetsManager.updateAssets()
+			.then((): void => {
+				setReady(true);
+			})
+			.catch((error: unknown) => {
+				console.error("Failed to update assets on the login screen:", error);
+			});
+	}, [ready]);
+
+	return ready;
+}
 
 function handleExpiredSession(authState: LoginAuthState): void {
 	if (authState.state !== AuthStateEnum.TOKEN_INVALID_OR_EXPIRED) {
@@ -39,28 +75,22 @@ function handleExpiredSession(authState: LoginAuthState): void {
 
 	Alert.alert(i18n.t("app:auth.sessionExpired"));
 	authState.setState(AuthStateEnum.NO_TOKEN);
-	authState.clearToken().then().catch((err) => {
-		console.error("Failed to clear token:", err);
+	authState.clearToken().catch((error: unknown) => {
+		console.error("Failed to clear token:", error);
 	});
 }
 
-async function handleLogin(authState: LoginAuthState, router: LoginRouter): Promise<void> {
+async function handleLogin(authState: LoginAuthState, identityProvider?: IdentityProvider): Promise<void> {
 	try {
-		const keycloakToken = await KeycloakAuth.login();
-		const authToken = AuthToken.fromKeycloakOAuth2Token(keycloakToken);
+		const authToken = AuthToken.fromKeycloakOAuth2Token(await KeycloakAuth.login(identityProvider));
 
-		if (!authToken.getAccessToken()) {
-			Alert.alert(i18n.t("app:auth.invalidToken"));
-			return;
-		}
-
-		authState.saveToken(authToken).then().catch((err) => {
-			console.error("Failed to save token:", err);
+		authState.saveToken(authToken).catch((error: unknown) => {
+			console.error("Failed to save token:", error);
 		});
 
 		await WebSocketClient.getInstance()
 			.init(authToken, authState.setState, authState.saveToken)
-			.catch((error) => {
+			.catch((error: unknown) => {
 				console.error("Failed to initialize WebSocketClient:", error);
 				if (authState.state === AuthStateEnum.CONNECTING) {
 					authState.setState(AuthStateEnum.CONNECTION_ERROR);
@@ -68,29 +98,58 @@ async function handleLogin(authState: LoginAuthState, router: LoginRouter): Prom
 			});
 	}
 	catch (error) {
+		const reason = reasonOfUnknownError(error);
+
+		// Backing out of the browser is a decision the player already knows they made.
+		if (reason === AUTH_FAILURES.CANCELLED) {
+			return;
+		}
+
 		console.error("Login error:", error);
-		const message = error instanceof Error ? error.message : i18n.t("app:auth.unknownError");
-		Alert.alert(i18n.t("app:auth.loginFailed"), message);
-		router.replace("/login");
+		Alert.alert(i18n.t("app:auth.loginFailed"), i18n.t(`app:auth.failures.${reason}`));
 	}
 }
 
 export default function LoginScreen(): React.ReactElement {
 	const authState = React.useContext(AuthContext);
-	const router = useRouter();
+	const connecting = authState.state === AuthStateEnum.CONNECTING;
 
+	useTranslationsReady();
 	handleExpiredSession(authState);
 
+	const start = (identityProvider?: IdentityProvider): void => {
+		handleLogin(authState, identityProvider).catch((error: unknown) => {
+			console.error("Login error:", error);
+		});
+	};
+
 	return (
-		<View style={styles.container}>
-			{authState.state === AuthStateEnum.CONNECTING && (
-					<ActivityIndicator size="large" color={Theme.colors.ink} style={styles.loginIndicator} />
-			)}
-			<Text style={styles.text}>{i18n.t("app:auth.loginTitle")}</Text>
-			<View style={styles.loginGap} />
-			<DesignButton variant="primary" onPress={() => {
-				handleLogin(authState, router).then();
-			}}>{i18n.t("app:auth.loginAction")}</DesignButton>
-		</View>
+		<Screen contentContainerStyle={styles.screen}>
+			<Standing
+				emblem={<Image source={crowniclesLogo} style={styles.emblem} contentFit="cover" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />}
+				caption={i18n.t("app:auth.caption")}
+				title={i18n.t("app:auth.title")}
+			/>
+			<View style={styles.choices}>
+				<ActionBanner
+					icon={MessageCircle}
+					label={connecting ? i18n.t("app:auth.connecting") : i18n.t("app:auth.withDiscord")}
+					pending={connecting}
+					onPress={(): void => {
+						start(IDENTITY_PROVIDERS.DISCORD);
+					}}
+					testID="login-discord"
+				/>
+				<ActionBanner
+					icon={AtSign}
+					label={i18n.t("app:auth.withAccount")}
+					pending={connecting}
+					onPress={(): void => {
+						start();
+					}}
+					testID="login-account"
+				/>
+			</View>
+		</Screen>
 	);
 }

@@ -2,10 +2,24 @@ import {
 	AuthRequest,
 	makeRedirectUri,
 	ResponseType,
-	type AuthSessionResult,
 	type DiscoveryDocument
 } from "expo-auth-session";
 import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
+import {
+	AUTH_FAILURES, AuthFailure, failureOfAuthResult
+} from "@/src/authentication/AuthFailure";
+
+/**
+ * Aliases of the identity providers declared in the realm.
+ *
+ * Naming one lets the app skip the Keycloak provider picker, which is the only reason it has to
+ * know them at all: adding a provider to the realm still requires no change here.
+ */
+export const IDENTITY_PROVIDERS = {
+	DISCORD: "discord"
+} as const;
+
+export type IdentityProvider = typeof IDENTITY_PROVIDERS[keyof typeof IDENTITY_PROVIDERS];
 
 // Expo inlines the EXPO_PUBLIC_ variables at build time, so each one has to be read literally.
 function requireEnv(value: string | undefined, name: string): string {
@@ -49,39 +63,28 @@ function hasCompleteToken(token: KeycloakOAuth2Token): boolean {
 		&& token.refresh_expires_in >= 0;
 }
 
-function describeAuthResult(result: AuthSessionResult): string {
-	if (result.type !== "error") {
-		return result.type;
-	}
-
-	const error = result.error?.message
-		?? result.params.error_description
-		?? result.params.error
-		?? result.errorCode;
-	return error ? `${result.type}: ${error}` : result.type;
-}
-
 /**
  * Authenticates against Keycloak with Authorization Code + PKCE.
  *
  * Keycloak brokers the actual identity providers (Discord today, others later), so this flow stays
- * the same whichever provider the player picks on the Keycloak login page.
+ * the same whichever provider the player picks. Naming one sends them straight to it.
  */
 export class KeycloakAuth {
-	public static async login(): Promise<KeycloakOAuth2Token> {
+	public static async login(identityProvider?: IdentityProvider): Promise<KeycloakOAuth2Token> {
 		const redirectUri = getRedirectUri();
 		const request = new AuthRequest({
 			clientId: getClientId(),
 			redirectUri,
 			scopes: ["openid", "offline_access"],
 			responseType: ResponseType.Code,
-			usePKCE: true
+			usePKCE: true,
+			...identityProvider ? {extraParams: {kc_idp_hint: identityProvider}} : {}
 		});
 
 		const result = await request.promptAsync(getDiscovery());
 
 		if (result.type !== "success") {
-			throw new Error(`Login was not completed: ${describeAuthResult(result)}`);
+			throw failureOfAuthResult(result);
 		}
 
 		return KeycloakAuth.requestToken({
@@ -114,13 +117,13 @@ export class KeycloakAuth {
 		});
 
 		if (!response.ok) {
-			throw new Error(`Keycloak token request failed with status ${response.status}`);
+			throw new AuthFailure(AUTH_FAILURES.UNREACHABLE, `Keycloak token request failed with status ${response.status}`);
 		}
 
 		const token = await response.json() as KeycloakOAuth2Token;
 
 		if (!hasCompleteToken(token)) {
-			throw new Error("Keycloak returned an incomplete token.");
+			throw new AuthFailure(AUTH_FAILURES.INVALID_TOKEN, "Keycloak returned an incomplete token.");
 		}
 
 		return token;

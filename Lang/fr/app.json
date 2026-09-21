@@ -94,12 +94,19 @@
     "assetsUpdating": "Mise à jour de l'application…"
   },
   "auth": {
-    "loginTitle": "Connexion",
-    "loginAction": "Se connecter",
-    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
-    "invalidToken": "La connexion a échoué : le jeton reçu est invalide.",
-    "loginFailed": "Échec de la connexion",
-    "unknownError": "Une erreur inconnue est survenue."
+    "caption": "Crownicles",
+    "title": "Le royaume vous attend",
+    "withDiscord": "Continuer avec Discord",
+    "withAccount": "Utiliser un compte Crownicles",
+    "connecting": "Connexion en cours",
+    "sessionExpired": "Votre session a expiré. Reconnectez-vous pour reprendre votre aventure.",
+    "loginFailed": "Connexion impossible",
+    "failures": {
+      "denied": "L'autorisation a été refusée. Acceptez de partager votre identité pour rejoindre le royaume.",
+      "unreachable": "Le royaume est injoignable. Vérifiez votre connexion, puis réessayez.",
+      "invalidToken": "La réponse reçue est inexploitable. Réessayez dans un instant.",
+      "unknown": "La connexion n'a pas abouti. Réessayez dans un instant."
+    }
   },
   "requirements": {
     "guildRole": "Cette action nécessite le rôle {{role}} dans la guilde.",

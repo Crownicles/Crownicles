@@ -3,6 +3,7 @@ import {Image, ImageSource} from "expo-image";
 import {Theme} from "@/src/design/Theme";
 import cannonAsset from "@/assets/images/fight/cannon.svg";
 import arrowRightAsset from "lucide-static/icons/arrow-right.svg";
+import atSignAsset from "lucide-static/icons/at-sign.svg";
 import audioLinesAsset from "lucide-static/icons/audio-lines.svg";
 import bookOpenAsset from "lucide-static/icons/book-open.svg";
 import chevronDownAsset from "lucide-static/icons/chevron-down.svg";
@@ -24,6 +25,7 @@ import historyAsset from "lucide-static/icons/history.svg";
 import infoAsset from "lucide-static/icons/info.svg";
 import logOutAsset from "lucide-static/icons/log-out.svg";
 import medalAsset from "lucide-static/icons/medal.svg";
+import messageCircleAsset from "lucide-static/icons/message-circle.svg";
 import pawPrintAsset from "lucide-static/icons/paw-print.svg";
 import pauseAsset from "lucide-static/icons/pause.svg";
 import playAsset from "lucide-static/icons/play.svg";
@@ -52,6 +54,7 @@ function iconAsset(source: number | ImageSource): LucideIcon {
 }
 
 export const ArrowRight = iconAsset(arrowRightAsset);
+export const AtSign = iconAsset(atSignAsset);
 export const Cannon = iconAsset(cannonAsset);
 export const AudioLines = iconAsset(audioLinesAsset);
 export const BookOpen = iconAsset(bookOpenAsset);
@@ -74,6 +77,7 @@ export const History = iconAsset(historyAsset);
 export const Info = iconAsset(infoAsset);
 export const LogOut = iconAsset(logOutAsset);
 export const Medal = iconAsset(medalAsset);
+export const MessageCircle = iconAsset(messageCircleAsset);
 export const PawPrint = iconAsset(pawPrintAsset);
 export const Pause = iconAsset(pauseAsset);
 export const Play = iconAsset(playAsset);
