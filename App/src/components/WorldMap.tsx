@@ -8,8 +8,8 @@ import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {Button, KeyValue, Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
-import {ModalSurface} from "@/src/design/Sections";
+import {Button, Note, SectionHeader} from "@/src/design/Primitives";
+import {EntryRow, ExpandableList, Fact, ModalSurface} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
@@ -78,10 +78,10 @@ function cityServices(city: MapCity): string {
 export function WorldMapContent({packet}: {packet: MapRes}): ReactNode {
 	return <>
 		<MapImage key={packet.imageUrl} packet={packet} />
-		<Panel><KeyValue label={i18n.t(packet.hasArrived ? "app:map.position" : "app:map.destination")} value={`${AppIcons.getIcon(`mapTypes.${packet.mapType}`)} ${i18n.t(`models:map_locations.${packet.mapId}.name`)}`} /></Panel>
+		<ExpandableList><Fact label={i18n.t(packet.hasArrived ? "app:map.position" : "app:map.destination")} value={`${AppIcons.getIcon(`mapTypes.${packet.mapType}`)} ${i18n.t(`models:map_locations.${packet.mapId}.name`)}`} /></ExpandableList>
 		<Note>{i18n.t(`models:map_locations.${packet.mapId}.description`)}</Note>
 		<SectionHeader>{i18n.t("app:map.cities")}</SectionHeader>
-		<Panel>{packet.cities.map(city => <Row key={city.id} title={i18n.t(`models:map_locations.${city.mapLocationId}.name`)} subtitle={cityServices(city)} />)}</Panel>
+		<ExpandableList>{packet.cities.map(city => <EntryRow key={city.id} title={i18n.t(`models:map_locations.${city.mapLocationId}.name`)} subtitle={cityServices(city)} />)}</ExpandableList>
 	</>;
 }
 

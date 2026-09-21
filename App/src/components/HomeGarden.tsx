@@ -9,10 +9,11 @@ import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {useGardenActions} from "@/src/store/useGardenActions";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel, Row, SectionHeader, StatBar} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, Note, SectionHeader} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {materialName, plantName} from "@/src/display/Resources";
 import {i18n} from "@/src/translations/i18n";
+import {EntryRow, ExpandableList, Fact, Gauge} from "@/src/design/Sections";
 
 const PERCENTAGE_SCALE = 100;
 type GardenSelection = {operation: GardenOperation; message: string};
@@ -20,23 +21,23 @@ type GardenActions = {pending: boolean; select: (selection: GardenSelection) => 
 type GardenPlot = GardenSnapshot["plots"][number];
 
 function GardenPlotRow({plot, garden, actions}: {plot: GardenPlot; garden: GardenSnapshot; actions: GardenActions}): ReactNode {
-	if (plot.plantId === 0) return <Row title={i18n.t("app:city.garden.plot", {slot: plot.slot + 1})} subtitle={i18n.t("app:city.garden.empty")} end={i18n.t("app:garden.plant")} disabled={actions.pending || !garden.eligibility.canPlantSeed} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.PLANT, gardenSlot: plot.slot}, message: i18n.t("app:garden.confirmPlant", {plant: plantName(garden.seedPlantId), slot: plot.slot + 1})})} />;
+	if (plot.plantId === 0) return <EntryRow title={i18n.t("app:city.garden.plot", {slot: plot.slot + 1})} subtitle={i18n.t("app:city.garden.empty")} end={i18n.t("app:garden.plant")} disabled={actions.pending || !garden.eligibility.canPlantSeed} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.PLANT, gardenSlot: plot.slot}, message: i18n.t("app:garden.confirmPlant", {plant: plantName(garden.seedPlantId), slot: plot.slot + 1})})} />;
 	const name = plantName(plot.plantId);
-	return <StatBar label={i18n.t("app:city.garden.plotPlant", {slot: plot.slot + 1, plant: name})} value={i18n.t(plot.isReady ? "app:city.garden.ready" : "app:city.garden.growing", {progress: Math.round(plot.growthProgress * PERCENTAGE_SCALE)})} ratio={plot.growthProgress} color={Theme.colors.green} />;
+	return <Gauge label={i18n.t("app:city.garden.plotPlant", {slot: plot.slot + 1, plant: name})} value={i18n.t(plot.isReady ? "app:city.garden.ready" : "app:city.garden.growing", {progress: Math.round(plot.growthProgress * PERCENTAGE_SCALE)})} ratio={plot.growthProgress} color={Theme.colors.green} />;
 }
 
 function CompostOffers({offers, actions}: {offers: GardenCompostOffer[]; actions: GardenActions}): ReactNode {
 	if (!offers.length) return null;
 	return <>
 		<SectionHeader>{i18n.t("app:garden.compost")}</SectionHeader>
-		<Panel>{offers.map(offer => <Row key={`${offer.plantId}-${offer.quantity}`} title={plantName(offer.plantId)} end={i18n.t("app:garden.quantity", {count: offer.quantity})} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.COMPOST, ...offer}, message: i18n.t("app:garden.confirmCompost", {plant: plantName(offer.plantId), count: offer.quantity})})} disabled={actions.pending} chevron />)}</Panel>
+		<ExpandableList>{offers.map(offer => <EntryRow key={`${offer.plantId}-${offer.quantity}`} title={plantName(offer.plantId)} end={i18n.t("app:garden.quantity", {count: offer.quantity})} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.COMPOST, ...offer}, message: i18n.t("app:garden.confirmCompost", {plant: plantName(offer.plantId), count: offer.quantity})})} disabled={actions.pending}  />)}</ExpandableList>
 	</>;
 }
 
 function ReceivedMaterials({materials}: {materials: number[]}): ReactNode {
 	const counts = new Map<number, number>();
 	for (const materialId of materials) counts.set(materialId, (counts.get(materialId) ?? 0) + 1);
-	return <Panel>{[...counts].map(([materialId, quantity]) => <KeyValue key={materialId} label={materialName(materialId)} value={i18n.t("app:garden.quantity", {count: quantity})} />)}</Panel>;
+	return <ExpandableList>{[...counts].map(([materialId, quantity]) => <Fact key={materialId} label={materialName(materialId)} value={i18n.t("app:garden.quantity", {count: quantity})} />)}</ExpandableList>;
 }
 
 function GardenResult({outcome}: {outcome: GardenOutcome | null}): ReactNode {
@@ -55,9 +56,9 @@ function GardenResult({outcome}: {outcome: GardenOutcome | null}): ReactNode {
 
 function GardenPlots({garden, actions}: {garden: GardenSnapshot; actions: GardenActions}): ReactNode {
 	return <>
-		<Panel><KeyValue label={i18n.t("app:inventory.seed")} value={garden.hasSeed ? plantName(garden.seedPlantId) : i18n.t("app:profile.values.none")} /><KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={String(garden.totalPlots)} /></Panel>
+		<ExpandableList><Fact label={i18n.t("app:inventory.seed")} value={garden.hasSeed ? plantName(garden.seedPlantId) : i18n.t("app:profile.values.none")} /><Fact label={i18n.t("app:city.summary.gardenPlots")} value={String(garden.totalPlots)} /></ExpandableList>
 		<SectionHeader>{i18n.t("app:garden.plots")}</SectionHeader>
-		<Panel>{garden.plots.map(plot => <GardenPlotRow key={plot.slot} plot={plot} garden={garden} actions={actions} />)}</Panel>
+		<ExpandableList>{garden.plots.map(plot => <GardenPlotRow key={plot.slot} plot={plot} garden={garden} actions={actions} />)}</ExpandableList>
 		<ButtonRow>
 			<Button variant="primary" disabled={actions.pending || !garden.eligibility.canHarvest} onPress={(): Promise<void> => actions.submit({type: GARDEN_OPERATIONS.HARVEST})}>{i18n.t("app:garden.harvest")}</Button>
 			{garden.accessMode === GARDEN_ACCESS.FULL ? <Button disabled={actions.pending || !garden.eligibility.canWaterGarden} onPress={(): Promise<void> => actions.submit({type: GARDEN_OPERATIONS.WATER})}>{i18n.t("app:garden.water")}</Button> : null}
@@ -68,7 +69,7 @@ function GardenPlots({garden, actions}: {garden: GardenSnapshot; actions: Garden
 function GardenStorage({plants}: {plants: GardenSnapshot["plantStorage"]}): ReactNode {
 	return <>
 		<SectionHeader>{i18n.t("app:garden.storage")}</SectionHeader>
-		<Panel>{plants.map(plant => <KeyValue key={plant.plantId} label={plantName(plant.plantId)} value={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} />)}{!plants.length ? <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note> : null}</Panel>
+		<ExpandableList>{plants.map(plant => <Fact key={plant.plantId} label={plantName(plant.plantId)} value={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} />)}{!plants.length ? <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note> : null}</ExpandableList>
 	</>;
 }
 

@@ -4,11 +4,12 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {
 	BIG_EVENT_DATA_KINDS, BIG_EVENT_END_POSSIBILITY_ID, BIG_EVENT_REACTION_KINDS, GENERIC_REACTION_KINDS
 } from "ws-packets/src/fromServer/collectors";
-import {Button, ButtonRow, Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
+import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 import {
 	collectorDescription, collectorTitle, isChoosable, reactionLabel
 } from "@/src/collectors/CollectorLabels";
+import {EntryRow, ExpandableList} from "@/src/design/Sections";
 
 export function useSecondsLeft(endTime: number): number {
 	const [secondsLeft, setSecondsLeft] = useState(() => Math.max(0, Math.ceil((endTime - Date.now()) / 1000)));
@@ -70,12 +71,11 @@ function CollectorChoiceRow({choice, collector, locked, onChoose}: {
 }): ReactNode {
 	const choosable = isChoosable(choice.reaction, collector.data);
 	const disabled = locked || !choosable;
-	return <Row
+	return <EntryRow
 		key={choice.key}
 		disabled={disabled}
 		onPress={disabled ? undefined : (): void => onChoose(choice)}
-		title={reactionLabel(choice.reaction, collector.data)}
-		chevron={choosable && !locked}
+		title={reactionLabel(choice.reaction, collector.data)} 
 	/>;
 }
 
@@ -100,7 +100,7 @@ export function CollectorChoices({collector, onChoose, submitting = false}: {
 	};
 
 	return (
-		<Panel>
+		<ExpandableList>
 			{visibleChoices(collector).map(choice => <CollectorChoiceRow
 				key={choice.key}
 				choice={choice}
@@ -109,7 +109,7 @@ export function CollectorChoices({collector, onChoose, submitting = false}: {
 				onChoose={choose}
 			/>)}
 			<Note>{countdownLabel(secondsLeft, submitting)}</Note>
-		</Panel>
+		</ExpandableList>
 	);
 }
 

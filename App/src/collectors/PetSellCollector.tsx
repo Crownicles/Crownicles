@@ -2,17 +2,18 @@ import {ReactNode} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PET_MANAGEMENT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {PET_SALE_ROLES, PetSaleOffer} from "ws-packets/src/objects/PetManagement";
-import {Button, ButtonRow, Confirmation, KeyValue, Note} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, Note} from "@/src/design/Primitives";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {petIcon, petName} from "@/src/display/PetDisplay";
 import {formatMoney} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
+import {Fact} from "@/src/design/Sections";
 
 function SaleParties({offer}: {offer: PetSaleOffer}): ReactNode {
 	return <>
-		<KeyValue label={i18n.t("app:pet.sale.seller")} value={offer.sellerName ?? i18n.t("app:profile.values.unknown")} />
-		<KeyValue label={i18n.t("app:pet.sale.buyer")} value={offer.buyerName ?? i18n.t("app:profile.values.unknown")} />
-		<KeyValue label={i18n.t("app:pet.sale.price")} value={formatMoney(offer.price)} />
+		<Fact label={i18n.t("app:pet.sale.seller")} value={offer.sellerName ?? i18n.t("app:profile.values.unknown")} />
+		<Fact label={i18n.t("app:pet.sale.buyer")} value={offer.buyerName ?? i18n.t("app:profile.values.unknown")} />
+		<Fact label={i18n.t("app:pet.sale.price")} value={formatMoney(offer.price)} />
 	</>;
 }
 

@@ -10,11 +10,12 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {HomeMutation, useHomeActions} from "@/src/store/useHomeActions";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {InventoryItemRow} from "@/src/components/InventoryItemRow";
-import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, Note, SectionHeader} from "@/src/design/Primitives";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {plantName} from "@/src/display/Resources";
 import {i18n} from "@/src/translations/i18n";
+import {EntryRow, ExpandableList, Fact} from "@/src/design/Sections";
 
 const CHEST_VIEWS = ["equipment", "plants"] as const;
 type ChestView = typeof CHEST_VIEWS[number];
@@ -50,11 +51,11 @@ function ChestEquipment({data, actions}: {data: HomeChestData; actions: ChestAct
 	const [selection, setSelection] = useState<ChestSelection | null>(null);
 	return <>
 		<SectionHeader>{i18n.t("app:homeChest.chest")}</SectionHeader>
-		<Panel>{data.chestItems.length ? data.chestItems.map(item => <InventoryItemRow key={`${item.category}-${item.slot}`} item={item.details} location={i18n.t("app:homeChest.slot", {slot: item.slot})} onPress={(): void => setSelection({source: "chest", item})} disabled={actions.pending} />) : <Note>{i18n.t("app:homeChest.emptyChest")}</Note>}</Panel>
+		<ExpandableList>{data.chestItems.length ? data.chestItems.map(item => <InventoryItemRow key={`${item.category}-${item.slot}`} item={item.details} location={i18n.t("app:homeChest.slot", {slot: item.slot})} onPress={(): void => setSelection({source: "chest", item})} disabled={actions.pending} />) : <Note>{i18n.t("app:homeChest.emptyChest")}</Note>}</ExpandableList>
 		<SectionHeader>{i18n.t("app:homeChest.inventory")}</SectionHeader>
-		<Panel>{data.depositableItems.length ? data.depositableItems.map(item => <InventoryItemRow key={`${item.category}-${item.slot}`} item={item.details} location={i18n.t(item.slot === 0 ? "app:equipment.equipped" : "app:equipment.slot", {slot: item.slot})} onPress={(): void => setSelection({source: "inventory", item})} disabled={actions.pending} />) : <Note>{i18n.t("app:homeChest.emptyInventory")}</Note>}</Panel>
+		<ExpandableList>{data.depositableItems.length ? data.depositableItems.map(item => <InventoryItemRow key={`${item.category}-${item.slot}`} item={item.details} location={i18n.t(item.slot === 0 ? "app:equipment.equipped" : "app:equipment.slot", {slot: item.slot})} onPress={(): void => setSelection({source: "inventory", item})} disabled={actions.pending} />) : <Note>{i18n.t("app:homeChest.emptyInventory")}</Note>}</ExpandableList>
 		<SectionHeader>{i18n.t("app:homeChest.capacity")}</SectionHeader>
-		<Panel>{Object.entries(data.slotsPerCategory).map(([category, capacity]) => <KeyValue key={category} label={i18n.t(`items:${category}`, {count: capacity})} value={i18n.t("app:homeChest.capacities", {chest: capacity, inventory: data.inventoryCapacity[category as keyof HomeChestData["inventoryCapacity"]]})} />)}</Panel>
+		<ExpandableList>{Object.entries(data.slotsPerCategory).map(([category, capacity]) => <Fact key={category} label={i18n.t(`items:${category}`, {count: capacity})} value={i18n.t("app:homeChest.capacities", {chest: capacity, inventory: data.inventoryCapacity[category as keyof HomeChestData["inventoryCapacity"]]})} />)}</ExpandableList>
 		{selection ? <ItemTransfer selection={selection} data={data} actions={actions} onClose={(): void => setSelection(null)} /> : null}
 	</>;
 }
@@ -70,9 +71,9 @@ function ChestPlants({data, actions}: {data: HomeChestData; actions: ChestAction
 	};
 	return <>
 		<SectionHeader>{i18n.t("app:homeChest.chest")}</SectionHeader>
-		<Panel>{stored.length ? stored.map(plant => <Row key={plant.plantId} title={plantName(plant.plantId)} subtitle={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} end={i18n.t("app:homeChest.actions.plantWithdraw")} disabled={actions.pending} onPress={(): void => setSelection({plantId: plant.plantId, request: makeFromClientPacket(HomePlantTransferReq, {action: PLANT_TRANSFER_ACTIONS.WITHDRAW, plantId: plant.plantId, playerSlot: 0})})} />) : <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note>}</Panel>
+		<ExpandableList>{stored.length ? stored.map(plant => <EntryRow key={plant.plantId} title={plantName(plant.plantId)} subtitle={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} end={i18n.t("app:homeChest.actions.plantWithdraw")} disabled={actions.pending} onPress={(): void => setSelection({plantId: plant.plantId, request: makeFromClientPacket(HomePlantTransferReq, {action: PLANT_TRANSFER_ACTIONS.WITHDRAW, plantId: plant.plantId, playerSlot: 0})})} />) : <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note>}</ExpandableList>
 		<SectionHeader>{i18n.t("app:homeChest.inventory")}</SectionHeader>
-		<Panel>{carried.length ? carried.map(plant => <Row key={plant.slot} title={plantName(plant.plantId)} subtitle={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} end={i18n.t("app:homeChest.actions.plantDeposit")} disabled={actions.pending} onPress={(): void => setSelection({plantId: plant.plantId, request: makeFromClientPacket(HomePlantTransferReq, {action: PLANT_TRANSFER_ACTIONS.DEPOSIT, plantId: 0, playerSlot: plant.slot})})} />) : <Note>{i18n.t("app:inventory.noPlants")}</Note>}</Panel>
+		<ExpandableList>{carried.length ? carried.map(plant => <EntryRow key={plant.slot} title={plantName(plant.plantId)} subtitle={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} end={i18n.t("app:homeChest.actions.plantDeposit")} disabled={actions.pending} onPress={(): void => setSelection({plantId: plant.plantId, request: makeFromClientPacket(HomePlantTransferReq, {action: PLANT_TRANSFER_ACTIONS.DEPOSIT, plantId: 0, playerSlot: plant.slot})})} />) : <Note>{i18n.t("app:inventory.noPlants")}</Note>}</ExpandableList>
 		{data.plantMaxCapacity === undefined ? null : <Note>{i18n.t("app:homeChest.plantCapacity", {count: data.plantMaxCapacity})}</Note>}
 		{selection ? <Confirmation title={i18n.t(`app:homeChest.actions.${selection.request.action}`)} message={plantName(selection.plantId)} onRequestClose={(): void => setSelection(null)}><ButtonRow><Button variant="primary" disabled={actions.pending} onPress={confirm}>{i18n.t("app:collector.accept")}</Button><Button onPress={(): void => setSelection(null)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow></Confirmation> : null}
 	</>;

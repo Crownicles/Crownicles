@@ -12,9 +12,7 @@ import {cityReactionLock} from "@/src/collectors/CityReactionLocks";
 import {plainStory} from "@/src/display/Markdown";
 import {SectionHeader} from "@/src/design/Primitives";
 import {Check} from "@/src/design/FightIcons";
-import {
-	ActionBanner, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Lock, LockHint, sectionStyles
-} from "@/src/design/Sections";
+import {ActionBanner, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Lock, LockHint, sectionStyles} from "@/src/design/Sections";
 import {i18n} from "@/src/translations/i18n";
 
 type CityEntry = {reaction: ReactionCollectorReaction; index: number};

@@ -5,10 +5,11 @@ import {PetManagementRes} from "ws-packets/src/fromServer/pet/PetManagementRes";
 import {PetNotFound} from "ws-packets/src/fromServer/pet/PetNotFound";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
-import {Button, ButtonRow, Note, Panel, Row} from "@/src/design/Primitives";
+import {Button, ButtonRow, Note} from "@/src/design/Primitives";
 import {TextField} from "@/src/design/Inputs";
 import {petIcon, petName} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
+import {EntryRow, ExpandableList} from "@/src/design/Sections";
 
 const SALE_MENU: CommandMenu = {request: PetSellReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetManagementRes]};
 
@@ -20,7 +21,7 @@ export function PetSale({pet}: {pet: OwnedPet}): ReactNode {
 	const priceValue = Number(price);
 	const valid = Number.isSafeInteger(rankValue) && rankValue > 0 && price.trim() !== "" && Number.isSafeInteger(priceValue);
 	return <>
-		<Panel><Row title={`${petIcon(pet)} ${petName(pet)}`} /></Panel>
+		<ExpandableList><EntryRow title={`${petIcon(pet)} ${petName(pet)}`} /></ExpandableList>
 		<TextField label={i18n.t("app:pet.sale.rank")} value={rank} onChangeText={setRank} keyboardType="number-pad" editable={!pending} />
 		<TextField label={i18n.t("app:pet.sale.price")} value={price} onChangeText={setPrice} keyboardType="number-pad" editable={!pending} />
 		{message ? <Note>{message}</Note> : null}

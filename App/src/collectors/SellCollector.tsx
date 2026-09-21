@@ -1,98 +1,102 @@
 import {ReactNode, useRef, useState} from "react";
-import {Modal} from "react-native";
+import {Modal, Text} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, ReactionCollectorReaction, SELL_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {SellRes} from "ws-packets/src/fromServer/inventory/SellRes";
-import {Button, ButtonRow, Confirmation, Hero, KeyValue, Note, Panel, Row, Screen} from "@/src/design/Primitives";
-import {ModalSurface} from "@/src/design/Sections";
+import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
+import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, Figures, ModalSurface, sectionStyles, Standing} from "@/src/design/Sections";
+import {Check, X} from "@/src/design/FightIcons";
 import {itemCategoryLabel, itemDisplayName} from "@/src/collectors/CollectorLabels";
-import {formatMoney} from "@/src/display/Amounts";
+import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
 type SaleChoice = {reaction: Extract<ReactionCollectorReaction, {type: typeof SELL_REACTION_KINDS.ITEM}>; index: number};
-
 
 function saleChoices(collector: ReactionCollectorCreation): SaleChoice[] {
 	return collector.reactions.flatMap((reaction, index) => reaction.type === SELL_REACTION_KINDS.ITEM ? [{reaction, index}] : []);
 }
 
 export function SaleOutcome({outcome, onContinue}: {outcome: SellRes; onContinue: () => void}): ReactNode {
-	return <Confirmation
-		title={i18n.t(outcome.price === 0 ? "app:sale.discarded" : "app:sale.sold")}
-		message={itemDisplayName(outcome.item)}
-		onRequestClose={onContinue}
-	>
-		{outcome.price > 0 ? <Panel><KeyValue label={i18n.t("app:sale.received")} value={formatMoney(outcome.price)} /></Panel> : null}
-		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:sale.continue")}</Button></ButtonRow>
-	</Confirmation>;
+	return <Modal visible animationType="slide" onRequestClose={onContinue}>
+		<ModalSurface>
+			<Screen>
+				<Standing
+					caption={i18n.t("app:sale.eyebrow")}
+					title={i18n.t(outcome.price === 0 ? "app:sale.discarded" : "app:sale.sold")}
+					subtitle={itemDisplayName(outcome.item)}
+				/>
+				{outcome.price > 0
+					? <Figures items={[{
+						caption: i18n.t("app:sale.received"), value: formatNumber(outcome.price), unit: "money"
+					}]} />
+					: null}
+				<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:sale.continue")}</Button></ButtonRow>
+			</Screen>
+		</ModalSurface>
+	</Modal>;
 }
 
-function SaleRow({choice, locked, onSelect}: {choice: SaleChoice; locked: boolean; onSelect: (choice: SaleChoice) => void}): ReactNode {
-	const {item, slot, price} = choice.reaction.data;
-	return <Row
-		title={itemDisplayName(item)}
-		subtitle={i18n.t("app:sale.itemSlot", {category: itemCategoryLabel(item.category), slot})}
-		end={price === 0 ? i18n.t("app:sale.discard") : formatMoney(price)}
-		disabled={locked}
-		onPress={(): void => onSelect(choice)}
-		chevron
-	/>;
-}
-
-function SaleMenu({collector, locked, onSelect, onClose}: {
-	collector: ReactionCollectorCreation;
+/** Confirming a sale happens inside its own row: a second window over the list would be a dead end. */
+function SaleEntry({choice, locked, expanded, onToggle, onChoose}: {
+	choice: SaleChoice;
 	locked: boolean;
-	onSelect: (choice: SaleChoice) => void;
-	onClose: () => void;
-}): ReactNode {
-	return <Screen>
-		<Hero eyebrow={i18n.t("app:sale.eyebrow")} title={i18n.t("app:sale.title")} />
-		<Panel>{saleChoices(collector).map(choice => <SaleRow key={choice.index} choice={choice} locked={locked} onSelect={onSelect} />)}</Panel>
-		{locked ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
-		<ButtonRow><Button disabled={locked} onPress={onClose}>{i18n.t("app:sale.continue")}</Button></ButtonRow>
-	</Screen>;
-}
-
-function SaleConfirmation({selection, locked, onChoose, onCancel}: {
-	selection: SaleChoice;
-	locked: boolean;
+	expanded: boolean;
+	onToggle: () => void;
 	onChoose: (index: number) => void;
-	onCancel: () => void;
 }): ReactNode {
-	return <Confirmation
-		title={i18n.t(selection.reaction.data.price === 0 ? "app:sale.confirmDiscard" : "app:sale.confirmSell")}
-		message={itemDisplayName(selection.reaction.data.item)}
-		onRequestClose={onCancel}
+	const {item, slot, price} = choice.reaction.data;
+	const discarded = price === 0;
+	return <ExpandableEntry
+		label={itemDisplayName(item)}
+		caption={i18n.t("app:sale.itemSlot", {category: itemCategoryLabel(item.category), slot})}
+		end={<Text style={sectionStyles.caption}>{discarded ? i18n.t("app:sale.discard") : formatMoney(price)}</Text>}
+		dimmed={locked}
+		expanded={expanded}
+		onToggle={onToggle}
 	>
-		<Panel><KeyValue label={i18n.t("app:sale.price")} value={formatMoney(selection.reaction.data.price)} /></Panel>
-		<ButtonRow>
-			<Button variant="primary" disabled={locked} onPress={(): void => onChoose(selection.index)}>{i18n.t("app:collector.accept")}</Button>
-			<Button disabled={locked} onPress={onCancel}>{i18n.t("app:collector.refuse")}</Button>
-		</ButtonRow>
-	</Confirmation>;
+		<ActionBanner
+			icon={discarded ? X : Check}
+			label={i18n.t(discarded ? "app:sale.confirmDiscard" : "app:sale.confirmSell")}
+			pending={locked}
+			onPress={(): void => onChoose(choice.index)}
+		/>
+	</ExpandableEntry>;
 }
 
 export function SellCollector({collector, onChoose, submitting}: {
 	collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean;
 }): ReactNode {
-	const [selection, setSelection] = useState<SaleChoice | null>(null);
+	const [openIndex, setOpenIndex] = useState<number>();
 	const [answered, setAnswered] = useState(false);
 	const sent = useRef(false);
 	const locked = submitting || answered;
 	const refuseIndex = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE);
 	const choose = (index: number): void => {
-		if (index < 0) return;
-		if (sent.current || locked) return;
+		if (index < 0 || sent.current || locked) return;
 		sent.current = true;
 		setAnswered(true);
-		setSelection(null);
+		setOpenIndex(undefined);
 		onChoose(index);
 	};
 	const close = (): void => choose(refuseIndex);
+
 	return <Modal visible animationType="slide" onRequestClose={close}>
 		<ModalSurface>
-			<SaleMenu collector={collector} locked={locked} onSelect={setSelection} onClose={close} />
-			{selection ? <SaleConfirmation selection={selection} locked={locked} onChoose={choose} onCancel={(): void => setSelection(null)} /> : null}
+			<Screen>
+				<BackButton label={i18n.t("app:common.back")} onClose={close} />
+				<Standing caption={i18n.t("app:sale.eyebrow")} title={i18n.t("app:sale.title")} />
+				<ExpandableList>
+					{saleChoices(collector).map(choice => <SaleEntry
+						key={choice.index}
+						choice={choice}
+						locked={locked}
+						expanded={openIndex === choice.index}
+						onToggle={(): void => setOpenIndex(openIndex === choice.index ? undefined : choice.index)}
+						onChoose={choose}
+					/>)}
+				</ExpandableList>
+				{locked ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
+			</Screen>
 		</ModalSurface>
 	</Modal>;
 }

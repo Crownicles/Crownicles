@@ -2,13 +2,13 @@ import {ReactNode} from "react";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {MainItem} from "ws-packets/src/objects/MainItem";
 import {MainItemStat} from "ws-packets/src/objects/MainItemStat";
-import {Row} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
 import {consumableDescription} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
+import {EntryRow} from "@/src/design/Sections";
 
 function statValue(stat: MainItemStat): number {
 	return Math.min(stat.baseValue + stat.upgradeValue, stat.maxValue);
@@ -31,16 +31,15 @@ function inventoryItemDetails(item: ItemWithDetails): string {
 }
 
 export function InventoryItemRow({item, location, onPress, disabled}: {item: ItemWithDetails; location: string; onPress?: () => void; disabled?: boolean}): ReactNode {
-	if (item.id === 0) return <Row title={i18n.t("app:profile.inventory.emptySlot")} end={location} />;
+	if (item.id === 0) return <EntryRow title={i18n.t("app:profile.inventory.emptySlot")} end={location} />;
 	const path = itemIconPath(item);
 	const icon = path ? AppIcons.getIconOrNull(path) : null;
-	return <Row
+	return <EntryRow
 		{...(icon ? {icon: <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} />} : {})}
 		title={itemDisplayName(item)}
 		subtitle={inventoryItemDetails(item)}
 		end={location}
 		onPress={onPress}
-		disabled={disabled}
-		chevron={Boolean(onPress)}
+		disabled={disabled} 
 	/>;
 }

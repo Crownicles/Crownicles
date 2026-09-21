@@ -53,9 +53,7 @@ import {
 import {SmallEventChoiceOutcome as SmallEventChoiceOutcomeScreen} from "@/src/collectors/SmallEventChoiceOutcome";
 import {ShopResultScreen} from "@/src/collectors/ShopResultScreen";
 import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/src/collectors/AutomaticSmallEventOutcome";
-import {
-  EmptyState, Hero, Note, QuickAction, QuickActions, Screen
-} from "@/src/design/Primitives";
+import {EmptyState, Note, QuickAction, QuickActions, Screen} from "@/src/design/Primitives";
 import {ActionBanner, Figure, Figures, LockHint, Standing} from "@/src/design/Sections";
 import {BookOpen, CircleAlert, Clock3} from "@/src/design/FightIcons";
 import {PlayerVitals} from "@/src/components/PlayerVitals";
@@ -402,7 +400,7 @@ function CollectorOutcomeView({
 function ReportFailure({state}: {state: Extract<RequestState<ReportViewRes>, {status: "failed"}>}): ReactNode {
 	const rejection = state.rejection;
 	if (rejection?.type === COMMAND_REJECTIONS.EFFECT && rejection.currentEffectId === PLAYER_EFFECTS.DEAD) return <Screen>
-		<Hero eyebrow={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:utilities.respawn")} subtitle={i18n.t("app:utilities.respawnWarning")} />
+		<Standing caption={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:utilities.respawn")} subtitle={i18n.t("app:utilities.respawnWarning")} />
 		<RespawnAction />
 	</Screen>;
 	return <Screen><GameQueryContent state={state} entity={GAME_ENTITIES.REPORT}>{() => null}</GameQueryContent></Screen>;
@@ -761,7 +759,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	if (!travel) {
 		return <>
 			<Screen>
-				<Hero eyebrow={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:adventure.startReport")} />
+				<Standing caption={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:adventure.startReport")} />
 				<ReportAdvance reportReady={reportState.data.reportReady} reportAction={reportAction} />
 				{tools}
 			</Screen>

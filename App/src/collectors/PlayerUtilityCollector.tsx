@@ -2,21 +2,22 @@ import {ReactNode} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PLAYER_UTILITY_DATA_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
 import {PlayerUtilityOutcome as Outcome} from "ws-packets/src/objects/PlayerUtility";
-import {Button, ButtonRow, Confirmation, KeyValue, Note} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, Note} from "@/src/design/Primitives";
 import {CollectorDecision} from "@/src/collectors/CollectorPrompt";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
+import {Fact} from "@/src/design/Sections";
 
 function UtilityDetails({data}: {data: ReactionCollectorData}): ReactNode {
 	if (data.type === PLAYER_UTILITY_DATA_KINDS.UNLOCK) return <>
-		<KeyValue label={i18n.t("app:utilities.prisoner")} value={data.data.playerName ?? i18n.t("app:arena.unknownPlayer")} />
-		<KeyValue label={i18n.t("app:pet.care.price")} value={formatMoney(data.data.price)} />
+		<Fact label={i18n.t("app:utilities.prisoner")} value={data.data.playerName ?? i18n.t("app:arena.unknownPlayer")} />
+		<Fact label={i18n.t("app:pet.care.price")} value={formatMoney(data.data.price)} />
 	</>;
 	if (data.type === PLAYER_UTILITY_DATA_KINDS.BOAT) return <>
-		<KeyValue label={i18n.t("app:pet.care.price")} value={`${formatNumber(data.data.price)} ${AppIcons.getIcon("unitValues.gem")}`} />
-		<KeyValue label={i18n.t("app:arena.energy")} value={i18n.t("app:profile.formats.progress", {value: data.data.energy.current, max: data.data.energy.max})} />
+		<Fact label={i18n.t("app:pet.care.price")} value={`${formatNumber(data.data.price)} ${AppIcons.getIcon("unitValues.gem")}`} />
+		<Fact label={i18n.t("app:arena.energy")} value={i18n.t("app:profile.formats.progress", {value: data.data.energy.current, max: data.data.energy.max})} />
 	</>;
 	return null;
 }

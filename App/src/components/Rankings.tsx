@@ -6,8 +6,8 @@ import {RankingSelection, useRankings} from "@/src/store/useRankings";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {UnitIcon} from "@/src/components/UnitIcon";
-import {EmptyState, Note, Panel, SectionHeader} from "@/src/design/Primitives";
-import {Standing} from "@/src/design/Sections";
+import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
+import {ExpandableList, Standing} from "@/src/design/Sections";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {ChevronDown} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
@@ -144,8 +144,8 @@ export function RankingsContent({data, onPage}: {data: TopRes; onPage: (page: nu
 		<SectionHeader first>{i18n.t("app:arena.rankings.positions")}</SectionHeader>
 		{lastPage > 1 ? <RankingPagination page={data.pageNumber} lastPage={lastPage} onPage={onPage} /> : null}
 		{data.elements.length
-			? <Panel>{data.elements.map(entry => <RankingRow key={entry.rank} entry={entry} unit={unit} />)}</Panel>
-			: <Panel><EmptyState>{i18n.t("app:arena.rankings.empty")}</EmptyState></Panel>}
+			? <ExpandableList>{data.elements.map(entry => <RankingRow key={entry.rank} entry={entry} unit={unit} />)}</ExpandableList>
+			: <ExpandableList><EmptyState>{i18n.t("app:arena.rankings.empty")}</EmptyState></ExpandableList>}
 	</>;
 }
 

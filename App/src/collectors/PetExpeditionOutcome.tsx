@@ -2,8 +2,8 @@ import {ReactNode} from "react";
 import {Modal} from "react-native";
 import {PetExpeditionResolveRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
 import {ExpeditionOutcome} from "@/src/store/useExpeditionOutcome";
-import {Button, ButtonRow, Hero, KeyValue, Note, Panel, Screen} from "@/src/design/Primitives";
-import {ModalSurface} from "@/src/design/Sections";
+import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
+import {Figures, ModalSurface, Standing} from "@/src/design/Sections";
 import {ExpeditionRewardDetails} from "@/src/components/ExpeditionDetails";
 import {ExpeditionStarted, ExpeditionStatus} from "@/src/components/ExpeditionJourney";
 import {expeditionLocationName, expeditionPetName} from "@/src/display/PetExpedition";
@@ -18,7 +18,7 @@ function ExpeditionResolved({packet}: {packet: PetExpeditionResolveRes}): ReactN
 		<Note>{expeditionLocationName(packet.expedition)}</Note>
 		<Note>{i18n.t(`app:expedition.resolved.${result}`)}</Note>
 		{packet.rewards ? <ExpeditionRewardDetails rewards={packet.rewards} /> : null}
-		<Panel><KeyValue label={i18n.t("app:expedition.loveChange")} value={formatNumber(packet.loveChange)} /></Panel>
+		<Figures items={[{caption: i18n.t("app:expedition.loveChange"), value: formatNumber(packet.loveChange)}]} />
 		{packet.petLikedExpedition ? <Note>{i18n.t("app:expedition.liked")}</Note> : null}
 		{packet.badgeEarned ? <Note>{i18n.t("app:expedition.badge", {badge: i18n.t(`app:reference.badges.names.${packet.badgeEarned}`)})}</Note> : null}
 	</>;
@@ -40,7 +40,7 @@ function OutcomeContent({outcome}: {outcome: ExpeditionOutcome}): ReactNode {
 
 function OutcomeMenu({outcome, onContinue}: {outcome: ExpeditionOutcome; onContinue: () => void}): ReactNode {
 	return <Screen>
-		<Hero eyebrow={i18n.t("app:pet.eyebrow")} title={i18n.t(`app:expedition.outcomes.${outcome.kind}`)} />
+		<Standing caption={i18n.t("app:pet.eyebrow")} title={i18n.t(`app:expedition.outcomes.${outcome.kind}`)} />
 		<OutcomeContent outcome={outcome} />
 		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:common.back")}</Button></ButtonRow>
 	</Screen>;

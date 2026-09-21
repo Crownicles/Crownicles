@@ -44,7 +44,16 @@ const styles = StyleSheet.create({
 	details: {backgroundColor: Theme.colors.wash, paddingHorizontal: Theme.spacing.lg, paddingBottom: Theme.spacing.lg, gap: Theme.spacing.md},
 	back: {width: 34, height: 34, borderRadius: 17, backgroundColor: Theme.colors.wash, alignItems: "center", justifyContent: "center", marginBottom: Theme.spacing.lg},
 	/** The icon set only ships a downward chevron; a quarter turn points it back. */
-	backChevron: {transform: [{rotate: "90deg"}]}
+	backChevron: {transform: [{rotate: "90deg"}]},
+	fact: {minHeight: 44, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderBottomWidth: 1, borderColor: Theme.colors.line},
+	factLabel: {flex: 1, minWidth: 0, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	factValue: {flexShrink: 0, flexDirection: "row", alignItems: "center", gap: 4},
+	factAmount: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink, fontVariant: ["tabular-nums"], textAlign: "right"},
+	gauge: {paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, gap: 6, borderBottomWidth: 1, borderColor: Theme.colors.line},
+	gaugeTop: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md},
+	gaugeValue: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
+	gaugeTrack: {height: 5, borderRadius: 999, backgroundColor: Theme.colors.line, overflow: "hidden"},
+	gaugeFill: {height: "100%", borderRadius: 999}
 });
 
 /** Why an action cannot be taken, so the screen can say it instead of letting the player find out. */
@@ -187,6 +196,71 @@ export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle
 			<EntryChevronIcon chevron={chevron} expanded={expanded} />
 		</Pressable>
 		{expanded ? <View style={styles.details} testID={testID}>{children}</View> : null}
+	</View>;
+}
+
+/** A plain statement of fact: what it is on the left, what it is worth on the right. */
+export function Fact({label, value, unit, end}: {
+	label: string;
+	value?: string;
+	unit?: string;
+	end?: ReactNode;
+}): ReactNode {
+	return <View style={styles.fact}>
+		<TwemojiText textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
+		{end !== undefined && typeof end !== "string"
+			? end
+			: <View style={styles.factValue}>
+				<TwemojiText textStyle={styles.factAmount} emojiSize={Theme.fontSize.rowTitle}>{typeof end === "string" ? end : value ?? ""}</TwemojiText>
+				{unit ? <UnitIcon unit={unit} size={15} /> : null}
+			</View>}
+	</View>;
+}
+
+/** A row that leads somewhere rather than unfolding, written in the same hand as the entries. */
+export function EntryRow({title, subtitle, end, emblem, onPress, disabled = false, danger = false, testID}: {
+	title: string;
+	subtitle?: string;
+	end?: ReactNode;
+	emblem?: ReactNode;
+	onPress?: () => void;
+	disabled?: boolean;
+	danger?: boolean;
+	testID?: string;
+}): ReactNode {
+	const trailing = typeof end === "string"
+		? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{end}</TwemojiText>
+		: end;
+	return <ExpandableEntry
+		{...emblem ? {emblem} : {}}
+		label={title}
+		{...subtitle === undefined ? {} : {caption: subtitle}}
+		{...trailing === undefined ? {} : {end: trailing}}
+		{...testID === undefined ? {} : {testID}}
+		dimmed={disabled || danger}
+		expanded={false}
+		onToggle={(): void => {
+			if (!disabled) onPress?.();
+		}}
+		chevron={onPress && !disabled ? ENTRY_CHEVRONS.FORWARD : ENTRY_CHEVRONS.NONE}
+	/>;
+}
+
+/** A bounded value, told as a sentence and drawn as a bar. */
+export function Gauge({label, value, ratio, color}: {
+	label: string;
+	value: string;
+	ratio: number;
+	color: string;
+}): ReactNode {
+	return <View style={styles.gauge}>
+		<View style={styles.gaugeTop}>
+			<TwemojiText textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
+			<TwemojiText textStyle={styles.gaugeValue} emojiSize={Theme.fontSize.caption}>{value}</TwemojiText>
+		</View>
+		<View style={styles.gaugeTrack}>
+			<View style={[styles.gaugeFill, {width: `${Math.min(100, Math.max(0, ratio * 100))}%`, backgroundColor: color}]} />
+		</View>
 	</View>;
 }
 

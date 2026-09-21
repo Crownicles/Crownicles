@@ -1,11 +1,12 @@
 import {ReactNode} from "react";
 import {PetFreeStatus, PetManagementOutcome as Outcome} from "ws-packets/src/objects/PetManagement";
-import {Button, ButtonRow, Confirmation, KeyValue, Note} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, Note} from "@/src/design/Primitives";
 import {formatMoney} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {petName} from "@/src/display/PetDisplay";
 import {expeditionPetName} from "@/src/display/PetExpedition";
 import {i18n} from "@/src/translations/i18n";
+import {Fact} from "@/src/design/Sections";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 function statusMessage(status: PetFreeStatus): string {
@@ -19,7 +20,7 @@ function statusMessage(status: PetFreeStatus): string {
 function FreedPetResult({outcome}: {outcome: Extract<Outcome, {type: "freed"}>}): ReactNode {
 	return <>
 		<Note>{i18n.t(outcome.isFromShelter ? "app:pet.management.freedShelter" : "app:pet.management.freed", {pet: expeditionPetName(outcome.pet)})}</Note>
-		<KeyValue label={i18n.t("app:pet.care.price")} value={formatMoney(outcome.freeCost)} />
+		<Fact label={i18n.t("app:pet.care.price")} value={formatMoney(outcome.freeCost)} />
 		{outcome.luckyMeat ? <Note>{i18n.t("app:pet.management.meat")}</Note> : null}
 	</>;
 }
@@ -31,11 +32,11 @@ function ManagementResult({outcome}: {outcome: Outcome}): ReactNode {
 	if (outcome.type === "saleFunds") return <Note>{i18n.t("app:pet.sale.missingMoney", {money: formatMoney(outcome.missingMoney)})}</Note>;
 	if (outcome.type === "sold") return <>
 		<Note>{i18n.t("app:pet.sale.sold", {pet: petName(outcome.pet)})}</Note>
-		<KeyValue label={i18n.t("app:pet.sale.treasury", {guild: outcome.guildName})} value={formatMoney(outcome.treasuryEarned)} />
+		<Fact label={i18n.t("app:pet.sale.treasury", {guild: outcome.guildName})} value={formatMoney(outcome.treasuryEarned)} />
 	</>;
 	if (outcome.type === "transfer") return <>
-		{outcome.oldPet ? <KeyValue label={i18n.t("app:pet.management.deposited")} value={petName(outcome.oldPet)} /> : null}
-		{outcome.newPet ? <KeyValue label={i18n.t("app:pet.management.withdrawn")} value={petName(outcome.newPet)} /> : null}
+		{outcome.oldPet ? <Fact label={i18n.t("app:pet.management.deposited")} value={petName(outcome.oldPet)} /> : null}
+		{outcome.newPet ? <Fact label={i18n.t("app:pet.management.withdrawn")} value={petName(outcome.newPet)} /> : null}
 	</>;
 	return <FreedPetResult outcome={outcome} />;
 }

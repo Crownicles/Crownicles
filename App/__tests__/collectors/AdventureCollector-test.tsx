@@ -242,7 +242,7 @@ const collectorScenarios: CollectorScenario[] = [
 			expect(screen.getByText("app:collector.pveIsland.energy")).toBeTruthy();
 			expect(screen.getByText("app:collector.pveIsland.crossing")).toBeTruthy();
 			expect(screen.getByText("app:collector.pveIsland.free")).toBeTruthy();
-			expect(screen.getByText("app:collector.pveIsland.warningTitle")).toBeTruthy();
+			expect(screen.getByText("app:collector.pveIsland.warning")).toBeTruthy();
 		}
 	},
 	{
@@ -279,9 +279,9 @@ const collectorScenarios: CollectorScenario[] = [
 				price: 200
 			}
 		}),
-		choiceText: GENERIC_REACTION_KINDS.ACCEPT,
+		choiceText: "app:city.shop.buy",
 		assertView: () => {
-			expect(screen.getByText("app:collector.shop.fields.item")).toBeTruthy();
+			expect(screen.getByText("app:collector.shop.fields.rarity")).toBeTruthy();
 			expect(screen.getByText("app:collector.shop.fields.price")).toBeTruthy();
 		}
 	},
@@ -295,9 +295,9 @@ const collectorScenarios: CollectorScenario[] = [
 				recipeCost: 300
 			}
 		}),
-		choiceText: GENERIC_REACTION_KINDS.ACCEPT,
+		choiceText: "app:city.shop.buy",
 		assertView: () => {
-			expect(screen.getByText("app:collector.recipeShop.fields.recipe")).toBeTruthy();
+			expect(screen.getByText("models:cooking.recipeDisplay")).toBeTruthy();
 			expect(screen.getByText("app:collector.recipeShop.fields.price")).toBeTruthy();
 		}
 	},

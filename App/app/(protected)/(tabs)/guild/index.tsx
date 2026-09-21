@@ -8,8 +8,9 @@ import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {GuildCreation, GuildOverview} from "@/src/components/Guild";
-import {Button, ButtonRow, Hero, Note, Screen} from "@/src/design/Primitives";
+import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
+import {Standing} from "@/src/design/Sections";
 
 export default function Guild(): ReactNode {
 	const router = useRouter();
@@ -18,7 +19,7 @@ export default function Guild(): ReactNode {
 	return <Screen><GameQueryContent state={state} entity={GAME_ENTITIES.GUILD}>{data => {
 		if (data.foundGuild && data.data) return <GuildOverview guild={data.data} onPage={(page): void => router.push(`/guild/${page}`)} />;
 		return <>
-			<Hero eyebrow={i18n.t("app:guild.eyebrow")} title={i18n.t("app:guild.noGuild")} />
+			<Standing caption={i18n.t("app:guild.eyebrow")} title={i18n.t("app:guild.noGuild")} />
 			<Note>{i18n.t("app:guild.joinHint")}</Note>
 			{creating ? <GuildCreation /> : <ButtonRow><Button variant="primary" onPress={(): void => setCreating(true)}>{i18n.t("app:guild.create")}</Button></ButtonRow>}
 		</>;

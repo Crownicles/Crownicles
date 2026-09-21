@@ -1,11 +1,12 @@
 import {ReactNode} from "react";
 import {PetExpeditionRes, PetExpeditionStartedRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
 import {EXPEDITION_ERRORS} from "ws-packets/src/objects/PetExpedition";
-import {Note, Panel} from "@/src/design/Primitives";
+import {Note} from "@/src/design/Primitives";
 import {ExpeditionFoodDetails, ExpeditionProgressDetails} from "@/src/components/ExpeditionDetails";
 import {expeditionPetName} from "@/src/display/PetExpedition";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
+import {ExpandableList} from "@/src/design/Sections";
 
 export function ExpeditionStatus({packet}: {packet: PetExpeditionRes}): ReactNode {
 	if (packet.hasExpeditionInProgress && packet.expeditionInProgress) return <ExpeditionProgressDetails data={packet.expeditionInProgress} />;
@@ -19,7 +20,7 @@ export function ExpeditionStatus({packet}: {packet: PetExpeditionRes}): ReactNod
 export function ExpeditionStarted({packet}: {packet: PetExpeditionStartedRes}): ReactNode {
 	if (!packet.success) return <Note>{i18n.t(`app:expedition.errors.${packet.failureReason ?? EXPEDITION_ERRORS.INVALID_STATE}`)}</Note>;
 	return <>
-		{packet.expedition ? <ExpeditionProgressDetails data={{...packet.expedition, ...(packet.foodConsumed === undefined ? {} : {foodConsumed: packet.foodConsumed}), ...(packet.foodConsumedDetails ? {foodConsumedDetails: packet.foodConsumedDetails} : {})}} /> : <Panel><ExpeditionFoodDetails amount={packet.foodConsumed} details={packet.foodConsumedDetails} /></Panel>}
+		{packet.expedition ? <ExpeditionProgressDetails data={{...packet.expedition, ...(packet.foodConsumed === undefined ? {} : {foodConsumed: packet.foodConsumed}), ...(packet.foodConsumedDetails ? {foodConsumedDetails: packet.foodConsumedDetails} : {})}} /> : <ExpandableList><ExpeditionFoodDetails amount={packet.foodConsumed} details={packet.foodConsumedDetails} /></ExpandableList>}
 		{packet.originalDisplayDurationMinutes !== undefined ? <Note>{i18n.t("app:expedition.plannedDuration", {duration: formatDurationMinutes(packet.originalDisplayDurationMinutes)})}</Note> : null}
 		{packet.insufficientFood ? <Note>{i18n.t(`app:expedition.insufficientFood.${packet.insufficientFoodCause ?? "noGuild"}`)}</Note> : null}
 	</>;

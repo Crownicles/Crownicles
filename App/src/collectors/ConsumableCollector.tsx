@@ -7,8 +7,8 @@ import {countdownLabel, useSecondsLeft} from "@/src/collectors/CollectorPrompt";
 import {itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
 import {consumableDescription} from "@/src/display/ItemEffects";
 import {Clock3, Droplets, Gift} from "@/src/design/FightIcons";
-import {Hero, Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, ModalSurface} from "@/src/design/Sections";
+import {Note, Screen} from "@/src/design/Primitives";
+import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, ModalSurface, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
@@ -46,7 +46,7 @@ function ConsumableMenu({collector, onChoose, submitting, onClose}: ConsumableCo
 	};
 	return <Screen>
 		<BackButton label={i18n.t("app:common.back")} onClose={onClose} />
-		<Hero eyebrow={i18n.t("app:equipment.eyebrow")} title={i18n.t(dailyBonus ? "app:dailyBonus.title" : "app:inventoryActions.drinkTitle")} />
+		<Standing caption={i18n.t("app:equipment.eyebrow")} title={i18n.t(dailyBonus ? "app:dailyBonus.title" : "app:inventoryActions.drinkTitle")} />
 		<ExpandableList>{options.map(option => <ExpandableEntry
 			key={option.index}
 			emblem={<ConsumableEmblem item={option.item} />}

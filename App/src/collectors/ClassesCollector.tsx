@@ -3,8 +3,9 @@ import {Modal} from "react-native";
 import {AvailableClass} from "ws-packets/src/objects/ClassDetails";
 import {CLASSES_DATA_KINDS, CLASSES_REACTION_KINDS, GENERIC_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {Button, ButtonRow, Confirmation, Hero, Note, Panel, Row, Screen} from "@/src/design/Primitives";
-import {ModalSurface} from "@/src/design/Sections";
+import {Note, Screen} from "@/src/design/Primitives";
+import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, ModalSurface, Standing} from "@/src/design/Sections";
+import {Check} from "@/src/design/FightIcons";
 import {ClassStatistics} from "@/src/components/ClassStatistics";
 import {className} from "@/src/display/Classes";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
@@ -24,46 +25,61 @@ function classChoices(collector: ReactionCollectorCreation): ClassChoice[] {
 	});
 }
 
-function ClassConfirmation({selection, locked, onConfirm, onCancel}: {selection: ClassChoice; locked: boolean; onConfirm: () => void; onCancel: () => void}): ReactNode {
-	return <Confirmation title={i18n.t("app:classes.confirm", {name: i18n.t(`models:classes.${selection.details.id}`)})} onRequestClose={onCancel}>
-		<ClassStatistics stats={{...selection.details, fightPoint: selection.details.energy, baseBreath: selection.details.initialBreath}} />
-		<ButtonRow>
-			<Button variant="primary" disabled={locked} onPress={onConfirm}>{i18n.t("app:collector.accept")}</Button>
-			<Button disabled={locked} onPress={onCancel}>{i18n.t("app:collector.refuse")}</Button>
-		</ButtonRow>
-	</Confirmation>;
-}
-
-function ClassMenu({collector, locked, secondsLeft, onSelect, onClose}: {
-	collector: ReactionCollectorCreation; locked: boolean; secondsLeft: number; onSelect: (choice: ClassChoice) => void; onClose: () => void;
+/** A class shows its statistics where it stands, and is confirmed there too. */
+function ClassEntry({choice, locked, expanded, onToggle, onConfirm}: {
+	choice: ClassChoice;
+	locked: boolean;
+	expanded: boolean;
+	onToggle: () => void;
+	onConfirm: () => void;
 }): ReactNode {
-	if (collector.data.type !== CLASSES_DATA_KINDS.COLLECTOR) return null;
-	return <Screen>
-		<Hero eyebrow={i18n.t("app:profile.eyebrow")} title={i18n.t("app:classes.change")} />
-		<Note>{i18n.t("app:classes.cooldownAfter", {duration: formatDurationMinutes(collector.data.data.cooldownSeconds / SECONDS_PER_MINUTE)})}</Note>
-		<Panel>{classChoices(collector).map(choice => <Row key={choice.index} title={className(choice.details.id)} disabled={locked} onPress={(): void => onSelect(choice)} chevron />)}</Panel>
-		<Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note>
-		<ButtonRow><Button disabled={locked} onPress={onClose}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
-	</Screen>;
+	return <ExpandableEntry
+		label={className(choice.details.id)}
+		dimmed={locked}
+		expanded={expanded}
+		onToggle={onToggle}
+	>
+		<ClassStatistics stats={{...choice.details, fightPoint: choice.details.energy, baseBreath: choice.details.initialBreath}} />
+		<ActionBanner
+			icon={Check}
+			label={i18n.t("app:classes.confirm", {name: i18n.t(`models:classes.${choice.details.id}`)})}
+			pending={locked}
+			onPress={onConfirm}
+		/>
+	</ExpandableEntry>;
 }
 
 export function ClassesCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
-	const [selection, setSelection] = useState<ClassChoice | null>(null);
+	const [openIndex, setOpenIndex] = useState<number>();
 	const {locked, secondsLeft, answer} = useCollectorAnswer(collector, onChoose, submitting);
-	const select = (choice: ClassChoice): void => {
-		if (locked) return;
-		setSelection(choice);
-	};
 	const choose = (index: number): void => {
-		setSelection(null);
+		setOpenIndex(undefined);
 		answer(index);
 	};
 	if (collector.data.type !== CLASSES_DATA_KINDS.COLLECTOR) return null;
 	const close = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
+
 	return <Modal visible animationType="slide" onRequestClose={close}>
 		<ModalSurface>
-			<ClassMenu collector={collector} locked={locked} secondsLeft={secondsLeft} onSelect={select} onClose={close} />
-			{selection ? <ClassConfirmation selection={selection} locked={locked} onConfirm={(): void => choose(selection.index)} onCancel={(): void => setSelection(null)} /> : null}
+			<Screen>
+				<BackButton label={i18n.t("app:collector.refuse")} onClose={close} />
+				<Standing
+					caption={i18n.t("app:profile.eyebrow")}
+					title={i18n.t("app:classes.change")}
+					subtitle={i18n.t("app:classes.cooldownAfter", {duration: formatDurationMinutes(collector.data.data.cooldownSeconds / SECONDS_PER_MINUTE)})}
+				/>
+				<ExpandableList>
+					{classChoices(collector).map(choice => <ClassEntry
+						key={choice.index}
+						choice={choice}
+						locked={locked}
+						expanded={openIndex === choice.index}
+						onToggle={(): void => setOpenIndex(openIndex === choice.index ? undefined : choice.index)}
+						onConfirm={(): void => choose(choice.index)}
+					/>)}
+				</ExpandableList>
+				<Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note>
+			</Screen>
 		</ModalSurface>
 	</Modal>;
 }

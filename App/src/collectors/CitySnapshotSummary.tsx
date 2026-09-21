@@ -2,8 +2,7 @@ import {ReactNode} from "react";
 import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
 import {AMOUNT_UNITS, formatMoney, formatNumber} from "@/src/display/Amounts";
-import {KeyValue, Panel, StatBar} from "@/src/design/Primitives";
-import {Figures} from "@/src/design/Sections";
+import {ExpandableList, Fact, Figures, Gauge} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {renderCityNotarySummary} from "@/src/collectors/CityNotarySummary";
@@ -27,20 +26,20 @@ function renderInnSummary(snapshot: CityMobileSnapshot): ReactNode {
 	if (!snapshot.energy || !snapshot.health) {
 		return null;
 	}
-	return <Panel>
-		<StatBar
+	return <ExpandableList>
+		<Gauge
 			label={i18n.t("app:city.summary.energy")}
 			value={`${snapshot.energy.current} / ${snapshot.energy.max} ${AppIcons.getIcon("unitValues.energy")}`}
 			ratio={snapshot.energy.max > 0 ? snapshot.energy.current / snapshot.energy.max : 0}
 			color={Theme.colors.green}
 		/>
-		<StatBar
+		<Gauge
 			label={i18n.t("app:city.summary.health")}
 			value={`${snapshot.health.current} / ${snapshot.health.max} ${AppIcons.getIcon("unitValues.health")}`}
 			ratio={snapshot.health.max > 0 ? snapshot.health.current / snapshot.health.max : 0}
 			color={Theme.colors.red}
 		/>
-	</Panel>;
+	</ExpandableList>;
 }
 
 function renderHomeSummary(snapshot: CityMobileSnapshot): ReactNode {
@@ -54,10 +53,10 @@ function renderHomeSummary(snapshot: CityMobileSnapshot): ReactNode {
 			{caption: i18n.t("app:city.summary.bedRegeneration"), value: `+${formatNumber(home.bedHealthRegeneration)}`, unit: "health"},
 			{caption: i18n.t("app:city.summary.gardenPlots"), value: formatNumber(home.gardenPlots)}
 		]} />
-		<Panel>
-			<KeyValue label={i18n.t("app:city.summary.homeType")} value={home.isApartment ? i18n.t("app:city.summary.apartment") : i18n.t("app:city.summary.mainHome")} />
-			<KeyValue label={i18n.t("app:city.summary.services")} value={homeServices(home)} />
-		</Panel>
+		<ExpandableList>
+			<Fact label={i18n.t("app:city.summary.homeType")} value={home.isApartment ? i18n.t("app:city.summary.apartment") : i18n.t("app:city.summary.mainHome")} />
+			<Fact label={i18n.t("app:city.summary.services")} value={homeServices(home)} />
+		</ExpandableList>
 	</>;
 }
 
@@ -71,14 +70,14 @@ function renderHomeBedSummary(snapshot: CityMobileSnapshot): ReactNode {
 			{caption: i18n.t("app:city.summary.health"), value: `${formatNumber(snapshot.health.current)} / ${formatNumber(snapshot.health.max)}`, unit: "health"},
 			{caption: i18n.t("app:city.summary.bedRegeneration"), value: `+${formatNumber(home.bedHealthRegeneration)}`, unit: "health"}
 		]} />
-		<Panel>
-			<StatBar
+		<ExpandableList>
+			<Gauge
 				label={i18n.t("app:city.summary.health")}
 				value={`${snapshot.health.current} / ${snapshot.health.max} ${AppIcons.getIcon("unitValues.health")}`}
 				ratio={snapshot.health.max > 0 ? snapshot.health.current / snapshot.health.max : 0}
 				color={Theme.colors.red}
 			/>
-		</Panel>
+		</ExpandableList>
 	</>;
 }
 
@@ -128,12 +127,12 @@ function renderEnchanterSummary(snapshot: CityMobileSnapshot): ReactNode {
 			{caption: i18n.t("app:city.summary.gems"), value: formatNumber(data.enchantmentCost.gems), unit: AMOUNT_UNITS.GEM},
 			{caption: i18n.t("app:city.summary.eligibleItems"), value: formatNumber(data.enchantableItems.length)}
 		]} />
-		<Panel>
-			<KeyValue label={i18n.t("app:city.summary.enchantment")} value={`${AppIcons.getIcon(`enchantmentTypes.${data.enchantmentType}`)} ${i18n.t(`items:enchantments.${data.enchantmentId}`)}`} />
-			<KeyValue label={i18n.t("app:city.summary.compatibleWith")} value={compatibleItemType} />
-			<KeyValue label={i18n.t("app:city.summary.money")} value={`${formatMoney(data.playerMoney)} · ${data.playerGems} ${AppIcons.getIcon("unitValues.gem")}`} />
-			{data.mageReduction ? <KeyValue label={i18n.t("app:city.summary.discount")} value={i18n.t("app:common.yes")} /> : null}
-		</Panel>
+		<ExpandableList>
+			<Fact label={i18n.t("app:city.summary.enchantment")} value={`${AppIcons.getIcon(`enchantmentTypes.${data.enchantmentType}`)} ${i18n.t(`items:enchantments.${data.enchantmentId}`)}`} />
+			<Fact label={i18n.t("app:city.summary.compatibleWith")} value={compatibleItemType} />
+			<Fact label={i18n.t("app:city.summary.money")} value={`${formatMoney(data.playerMoney)} · ${data.playerGems} ${AppIcons.getIcon("unitValues.gem")}`} />
+			{data.mageReduction ? <Fact label={i18n.t("app:city.summary.discount")} value={i18n.t("app:common.yes")} /> : null}
+		</ExpandableList>
 	</>;
 }
 
@@ -162,7 +161,7 @@ function renderRoyalBlacksmithSummary(snapshot: CityMobileSnapshot): ReactNode {
 			{caption: i18n.t("app:city.summary.money"), value: formatNumber(data.playerMoney), unit: AMOUNT_UNITS.MONEY},
 			{caption: i18n.t("app:city.summary.gems"), value: formatNumber(data.playerGems), unit: AMOUNT_UNITS.GEM}
 		]} />
-		<Panel><KeyValue label={i18n.t("app:city.summary.status")} value={i18n.t(`app:city.status.${data.status}`)} /></Panel>
+		<ExpandableList><Fact label={i18n.t("app:city.summary.status")} value={i18n.t(`app:city.status.${data.status}`)} /></ExpandableList>
 	</>;
 }
 
@@ -175,16 +174,16 @@ function renderGuildSummary(snapshot: CityMobileSnapshot): ReactNode {
 				{caption: i18n.t("app:city.summary.treasury"), value: formatNumber(guild.treasury), unit: AMOUNT_UNITS.MONEY},
 				{caption: i18n.t("app:city.summary.money"), value: formatNumber(guild.playerMoney), unit: AMOUNT_UNITS.MONEY}
 			]} />
-			<Panel>
-				<KeyValue label={i18n.t("app:city.summary.guild")} value={guild.guildName} />
-				<KeyValue label={i18n.t("app:city.summary.buildings")} value={i18n.t("app:city.summary.buildingLevels", {
+			<ExpandableList>
+				<Fact label={i18n.t("app:city.summary.guild")} value={guild.guildName} />
+				<Fact label={i18n.t("app:city.summary.buildings")} value={i18n.t("app:city.summary.buildingLevels", {
 					shop: guild.shopLevel,
 					shelter: guild.shelterLevel,
 					pantry: guild.pantryLevel,
 					training: guild.trainingGroundLevel
 				})} />
-				<KeyValue label={i18n.t("app:city.summary.foodStock")} value={i18n.t("app:city.summary.foodStockDetails", guild.food)} />
-			</Panel>
+				<Fact label={i18n.t("app:city.summary.foodStock")} value={i18n.t("app:city.summary.foodStockDetails", guild.food)} />
+			</ExpandableList>
 		</>;
 	}
 	const notary = snapshot.guildDomainNotary;
@@ -193,7 +192,7 @@ function renderGuildSummary(snapshot: CityMobileSnapshot): ReactNode {
 			{caption: i18n.t("app:city.summary.domainCost"), value: formatNumber(notary.cost), unit: AMOUNT_UNITS.MONEY},
 			{caption: i18n.t("app:city.summary.treasury"), value: formatNumber(notary.treasury), unit: AMOUNT_UNITS.MONEY}
 		]} />
-		<Panel><KeyValue label={i18n.t("app:city.summary.domain")} value={notary.hasDomain ? i18n.t("app:common.yes") : i18n.t("app:common.no")} /></Panel>
+		<ExpandableList><Fact label={i18n.t("app:city.summary.domain")} value={notary.hasDomain ? i18n.t("app:common.yes") : i18n.t("app:common.no")} /></ExpandableList>
 	</> : null;
 }
 

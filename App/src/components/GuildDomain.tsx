@@ -15,8 +15,8 @@ import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
 import {gaugeEmoji} from "@/src/components/Guild";
-import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
-import {ExpandableEntry, ExpandableList, Figures, sectionStyles, Standing} from "@/src/design/Sections";
+import {Button, ButtonRow, Confirmation, Note, SectionHeader} from "@/src/design/Primitives";
+import {EntryRow, ExpandableEntry, ExpandableList, Fact, Figures, sectionStyles, Standing} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
@@ -45,10 +45,10 @@ function BuildingUpgrade({domain, building, actions}: {domain: GuildDomainSnapsh
 	const restrictions = [!domain.isInCity, !domain.isChief, !upgrade.meetsLevel, !upgrade.canAfford];
 	return <>
 		<SectionHeader>{i18n.t("app:guildDomain.upgrade")}</SectionHeader>
-		<Panel>
-			<KeyValue label={i18n.t("app:guildDomain.cost")} value={formatMoney(upgrade.cost)} />
-			<KeyValue label={i18n.t("app:guildDomain.requiredLevel")} value={formatNumber(upgrade.requiredGuildLevel)} />
-		</Panel>
+		<ExpandableList>
+			<Fact label={i18n.t("app:guildDomain.cost")} value={formatMoney(upgrade.cost)} />
+			<Fact label={i18n.t("app:guildDomain.requiredLevel")} value={formatNumber(upgrade.requiredGuildLevel)} />
+		</ExpandableList>
 		<ButtonRow><Button disabled={actions.pending || restrictions.some(Boolean)} onPress={(): void => actions.select({kind: "upgrade", request: makeFromClientPacket(GuildDomainUpgradeReq, {building, expectedLevel: domain[BUILDING_LEVEL_FIELDS[building]]}), title: i18n.t("app:guildDomain.upgrade"), message: i18n.t("app:guildDomain.confirmUpgrade", {building: i18n.t(`commands:report.city.guildDomain.buildings.${building}`), cost: formatMoney(upgrade.cost)})})}>{i18n.t("app:guildDomain.upgrade")}</Button></ButtonRow>
 	</>;
 }
@@ -59,10 +59,10 @@ function GuildFoodLine({data, foodType, index, actions}: {data: GuildFoodShop; f
 	const disabled = actions.pending || !data.canUseShop || data.maxBuyableFood[index] < 1;
 	return <>
 		<SectionHeader>{name}</SectionHeader>
-		<Panel>
-			<KeyValue label={i18n.t("app:guildDomain.stock")} value={i18n.t("app:profile.formats.progress", {value: data.food[FOOD_FIELDS[foodType]], max: data.foodCaps[index]})} />
-			<KeyValue label={i18n.t("app:pet.care.price")} value={formatMoney(data.foodPrices[index])} />
-		</Panel>
+		<ExpandableList>
+			<Fact label={i18n.t("app:guildDomain.stock")} value={i18n.t("app:profile.formats.progress", {value: data.food[FOOD_FIELDS[foodType]], max: data.foodCaps[index]})} />
+			<Fact label={i18n.t("app:pet.care.price")} value={formatMoney(data.foodPrices[index])} />
+		</ExpandableList>
 		<ButtonRow>
 			<Button disabled={disabled} onPress={(): void => buy(1, data.foodPrices[index])}>{i18n.t("app:guildDomain.buyOne")}</Button>
 			<Button disabled={disabled} onPress={(): void => buy(data.maxBuyableFood[index], data.maxFoodCosts[index])}>{i18n.t("app:guildDomain.buyMax", {count: data.maxBuyableFood[index]})}</Button>
@@ -74,7 +74,7 @@ function DomainDeposits({domain, actions}: {domain: GuildDomainSnapshot; actions
 	const deposit = (offer: GuildDepositOffer): void => actions.select({kind: "deposit", request: makeFromClientPacket(GuildDomainDepositReq, {amount: offer.amount}), title: i18n.t("app:guildDomain.deposit"), message: i18n.t("app:guildDomain.confirmDeposit", {amount: formatMoney(offer.amount), net: formatMoney(offer.treasuryDeposited)})});
 	return <>
 		<SectionHeader>{i18n.t("app:guildDomain.deposit")}</SectionHeader>
-		<Panel>{domain.depositOffers.map(offer => <Row key={offer.amount} title={formatMoney(offer.amount)} subtitle={i18n.t("app:guildDomain.depositNet", {net: formatMoney(offer.treasuryDeposited)})} disabled={actions.pending || !offer.canAfford || !domain.isInCity} onPress={(): void => deposit(offer)} chevron />)}</Panel>
+		<ExpandableList>{domain.depositOffers.map(offer => <EntryRow key={offer.amount} title={formatMoney(offer.amount)} subtitle={i18n.t("app:guildDomain.depositNet", {net: formatMoney(offer.treasuryDeposited)})} disabled={actions.pending || !offer.canAfford || !domain.isInCity} onPress={(): void => deposit(offer)}  />)}</ExpandableList>
 	</>;
 }
 
@@ -83,10 +83,10 @@ function BuildingContents({domain, building, actions}: {domain: GuildDomainSnaps
 		case GuildBuilding.SHOP:
 			return <>{Object.values(PetFood).map((foodType, index) => <GuildFoodLine key={foodType} data={domain} foodType={foodType} index={index} actions={actions} />)}</>;
 		case GuildBuilding.SHELTER:
-			return <Panel>
-				<KeyValue label={i18n.t("app:guildDomain.capacity")} value={i18n.t("app:profile.formats.progress", {value: domain.shelterPets.length, max: domain.shelterMaxCount})} />
-				{domain.shelterPets.map(pet => <Row key={pet.petEntityId} title={`${petIcon(pet)} ${petName(pet)}`} subtitle={petMood(pet)} />)}
-			</Panel>;
+			return <ExpandableList>
+				<Fact label={i18n.t("app:guildDomain.capacity")} value={i18n.t("app:profile.formats.progress", {value: domain.shelterPets.length, max: domain.shelterMaxCount})} />
+				{domain.shelterPets.map(pet => <EntryRow key={pet.petEntityId} title={`${petIcon(pet)} ${petName(pet)}`} subtitle={petMood(pet)} />)}
+			</ExpandableList>;
 		case GuildBuilding.PANTRY:
 			return <>{Object.values(PetFood).map((foodType, index) => <View key={foodType} style={sectionStyles.gauge}>
 				<FightGauge

@@ -1,6 +1,6 @@
 import {ReactNode} from "react";
-import {Hero, Screen} from "@/src/design/Primitives";
-import {BackButton} from "@/src/design/Sections";
+import {Screen} from "@/src/design/Primitives";
+import {BackButton, Standing} from "@/src/design/Sections";
 import {SwipeBack} from "@/src/design/SwipeBack";
 import {i18n} from "@/src/translations/i18n";
 
@@ -8,7 +8,7 @@ export function DetailScreen({title, eyebrow, onClose, overlay, children}: {titl
 	return <SwipeBack onClose={onClose} {...overlay ? {overlay} : {}}>
 		<Screen>
 			<BackButton label={i18n.t("app:common.back")} onClose={onClose} />
-			<Hero eyebrow={eyebrow} title={title} />
+			<Standing caption={eyebrow} title={title} />
 			{children}
 		</Screen>
 	</SwipeBack>;

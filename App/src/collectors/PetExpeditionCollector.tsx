@@ -2,8 +2,8 @@ import {ReactNode, useState} from "react";
 import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
-import {Button, ButtonRow, Confirmation, Hero, KeyValue, Note, Panel, Row, Screen} from "@/src/design/Primitives";
-import {ModalSurface} from "@/src/design/Sections";
+import {Button, ButtonRow, Confirmation, Note, Screen} from "@/src/design/Primitives";
+import {EntryRow, ExpandableList, Fact, ModalSurface, Standing} from "@/src/design/Sections";
 import {ExpeditionOptionDetails, ExpeditionProgressDetails} from "@/src/components/ExpeditionDetails";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {isChoosable, reactionLabel} from "@/src/collectors/CollectorLabels";
@@ -23,36 +23,36 @@ export function isExpeditionCollector(data: ReactionCollectorData): data is Expe
 
 function ExpeditionDataDetails({data}: {data: ExpeditionData}): ReactNode {
 	if (data.type === EXPEDITION_DATA_KINDS.PROGRESS) return <ExpeditionProgressDetails data={data.data} />;
-	if (data.type === EXPEDITION_DATA_KINDS.FINISHED) return <Panel>
-		<KeyValue label={i18n.t("app:expedition.destination")} value={expeditionLocationName(data.data)} />
-		<KeyValue label={i18n.t("app:expedition.risk")} value={expeditionRisk(data.data.riskCategory)} />
-		{data.data.foodConsumed !== undefined ? <KeyValue label={i18n.t("app:expedition.foodConsumed")} value={formatNumber(data.data.foodConsumed)} /> : null}
-	</Panel>;
+	if (data.type === EXPEDITION_DATA_KINDS.FINISHED) return <ExpandableList>
+		<Fact label={i18n.t("app:expedition.destination")} value={expeditionLocationName(data.data)} />
+		<Fact label={i18n.t("app:expedition.risk")} value={expeditionRisk(data.data.riskCategory)} />
+		{data.data.foodConsumed !== undefined ? <Fact label={i18n.t("app:expedition.foodConsumed")} value={formatNumber(data.data.foodConsumed)} /> : null}
+	</ExpandableList>;
 	return <Note>{i18n.t(data.data.hasGuild ? "app:expedition.guildFood" : "app:expedition.noGuildFood", {amount: data.data.guildFoodAmount ?? 0})}</Note>;
 }
 
 function RecallChoices({collector, locked, onChoose}: Omit<MenuProps, "data">): ReactNode {
-	return <Panel>{collector.reactions.map((reaction, index) => ({reaction, index})).map(choice => <Row
+	return <ExpandableList>{collector.reactions.map((reaction, index) => ({reaction, index})).map(choice => <EntryRow
 		key={choice.index} title={reactionLabel(choice.reaction, collector.data)} disabled={locked || !isChoosable(choice.reaction, collector.data)}
-		onPress={(): void => onChoose(choice.index)} chevron
-	/>)}</Panel>;
+		onPress={(): void => onChoose(choice.index)} 
+	/>)}</ExpandableList>;
 }
 
 function ExpeditionOptions({collector, data, locked, onChoose}: MenuProps): ReactNode {
 	if (data.type === EXPEDITION_DATA_KINDS.PROGRESS) return <RecallChoices collector={collector} locked={locked} onChoose={onChoose} />;
 	if (data.type !== EXPEDITION_DATA_KINDS.CHOICE) return <CollectorChoices collector={collector} onChoose={onChoose} submitting={locked} />;
 	return <>
-		<Panel>{data.data.expeditions.map(option => <Row key={option.id} title={expeditionLocationName(option)}
+		<ExpandableList>{data.data.expeditions.map(option => <EntryRow key={option.id} title={expeditionLocationName(option)}
 			subtitle={i18n.t("app:expedition.optionSummary", {duration: formatDurationMinutes(option.displayDurationMinutes), risk: expeditionRisk(option.riskCategory), count: option.foodCost})}
-			disabled={locked} onPress={(): void => onChoose(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.SELECT && reaction.data.expeditionId === option.id))} chevron
-		/>)}</Panel>
+			disabled={locked} onPress={(): void => onChoose(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.SELECT && reaction.data.expeditionId === option.id))} 
+		/>)}</ExpandableList>
 		<ButtonRow><Button disabled={locked} onPress={(): void => onChoose(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CANCEL))}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
 	</>;
 }
 
 function ExpeditionMenu({secondsLeft, ...props}: MenuProps & {secondsLeft: number}): ReactNode {
 	return <Screen>
-		<Hero eyebrow={i18n.t("app:pet.eyebrow")} title={i18n.t(`app:expedition.titles.${props.data.type}`)} subtitle={expeditionPetName(props.data.data.pet)} />
+		<Standing caption={i18n.t("app:pet.eyebrow")} title={i18n.t(`app:expedition.titles.${props.data.type}`)} subtitle={expeditionPetName(props.data.data.pet)} />
 		<ExpeditionDataDetails data={props.data} />
 		<ExpeditionOptions {...props} />
 		{props.data.type !== EXPEDITION_DATA_KINDS.FINISHED ? <Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note> : null}

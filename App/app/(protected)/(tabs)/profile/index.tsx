@@ -6,17 +6,8 @@ import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {FightGauge} from "@/src/components/FightGauge";
 import {gaugeEmoji} from "@/src/components/Guild";
 import {AppIcons} from "@/src/AppIcons";
-import {
-	EmptyState,
-	KeyValue,
-	Note,
-	Panel,
-	QuickAction,
-	QuickActions,
-	Screen,
-	SectionHeader
-} from "@/src/design/Primitives";
-import {ExpandableEntry, ExpandableList, Figure, Figures, Standing} from "@/src/design/Sections";
+import {EmptyState, Note, QuickAction, QuickActions, Screen, SectionHeader} from "@/src/design/Primitives";
+import {ExpandableEntry, ExpandableList, Fact, Figure, Figures, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {formatNumber} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
@@ -210,8 +201,8 @@ function rankingSection(profile: ProfileRes): ProfileSection {
 				...fight ? [{caption: i18n.t("app:profile.fields.glory"), value: formatNumber(fight.glory), unit: "glory"}] : []
 			]} />
 			{fight ? <>
-				<KeyValue label={i18n.t("app:profile.fields.gloryRank")} value={gloryRank} />
-				<KeyValue label={i18n.t("app:profile.fields.league")} value={leagueLabel(fight.league)} />
+				<Fact label={i18n.t("app:profile.fields.gloryRank")} value={gloryRank} />
+				<Fact label={i18n.t("app:profile.fields.league")} value={leagueLabel(fight.league)} />
 			</> : null}
 		</>
 	};
@@ -283,10 +274,10 @@ function Belongings({profile}: {profile: ProfileRes}): ReactNode {
 	return (
 		<>
 			<SectionHeader>{i18n.t("app:profile.titles.information")}</SectionHeader>
-			<Panel>
-				{profile.guild ? <KeyValue label={iconLabel("guild.icon", i18n.t("app:profile.fields.guild"))} value={profile.guild} /> : null}
-				{profile.pet ? <KeyValue label={iconLabel("other.pet", i18n.t("app:profile.fields.pet"))} value={petLabel(profile)} /> : null}
-			</Panel>
+			<ExpandableList>
+				{profile.guild ? <Fact label={iconLabel("guild.icon", i18n.t("app:profile.fields.guild"))} value={profile.guild} /> : null}
+				{profile.pet ? <Fact label={iconLabel("other.pet", i18n.t("app:profile.fields.pet"))} value={petLabel(profile)} /> : null}
+			</ExpandableList>
 		</>
 	);
 }

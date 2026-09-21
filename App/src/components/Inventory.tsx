@@ -5,12 +5,13 @@ import {InventoryItemRow} from "@/src/components/InventoryItemRow";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
 import {INVENTORY_MENUS, useCommandMenus} from "@/src/store/useInventoryMenus";
-import {KeyValue, Note, Panel, QuickAction, QuickActions, Row, SectionHeader} from "@/src/design/Primitives";
+import {Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {formatNumber} from "@/src/display/Amounts";
 import {materialName, plantName} from "@/src/display/Resources";
+import {EntryRow, ExpandableList, Fact} from "@/src/design/Sections";
 
 export type InventoryData = NonNullable<InventoryRes["data"]>;
 type InventoryArtifacts = Pick<InventoryRes, "hasTalisman" | "hasCloneTalisman" | "hasRemoteHarvestTalisman">;
@@ -27,7 +28,7 @@ const CATEGORIES: InventoryCategory[] = [
 ];
 
 function InventoryEquipment({data}: {data: InventoryData}): ReactNode {
-	return <Panel>{CATEGORIES.map(category => <InventoryItemRow key={category.equipped} item={data[category.equipped]} location={i18n.t(`items:${category.equipped}`, {count: 1})} />)}</Panel>;
+	return <ExpandableList>{CATEGORIES.map(category => <InventoryItemRow key={category.equipped} item={data[category.equipped]} location={i18n.t(`items:${category.equipped}`, {count: 1})} />)}</ExpandableList>;
 }
 
 function InventoryReserve({data}: {data: InventoryData}): ReactNode {
@@ -36,10 +37,10 @@ function InventoryReserve({data}: {data: InventoryData}): ReactNode {
 		const maximum = Math.max(0, data.slots[category.slots] - EQUIPPED_SLOT_COUNT);
 		return <Fragment key={category.equipped}>
 			<SectionHeader>{i18n.t(`items:${category.equipped}`, {count: maximum})}</SectionHeader>
-			<Panel>{items.length > 0
+			<ExpandableList>{items.length > 0
 				? items.map(item => <InventoryItemRow key={item.slot} item={item.display} location={i18n.t("app:equipment.slot", {slot: item.slot})} />)
 				: <Note>{i18n.t("app:equipment.emptyReserve")}</Note>}
-			</Panel>
+			</ExpandableList>
 			<Note>{i18n.t("app:equipment.capacity", {count: items.length, max: maximum})}</Note>
 		</Fragment>;
 	});
@@ -47,16 +48,16 @@ function InventoryReserve({data}: {data: InventoryData}): ReactNode {
 
 function InventoryMaterials({materials}: {materials: MaterialQuantity[]}): ReactNode {
 	if (materials.length === 0) return <Note>{i18n.t("app:inventory.noMaterials")}</Note>;
-	return <Panel>{materials.map(material => <KeyValue key={material.materialId} label={materialName(material.materialId)} value={formatNumber(material.quantity)} />)}</Panel>;
+	return <ExpandableList>{materials.map(material => <Fact key={material.materialId} label={materialName(material.materialId)} value={formatNumber(material.quantity)} />)}</ExpandableList>;
 }
 
 function InventoryPlants({plants}: {plants: InventoryData["plants"]}): ReactNode {
 	if (!plants) return <Note>{i18n.t("app:inventory.noPlants")}</Note>;
 	return <>
-		<Panel>
-			<KeyValue label={i18n.t("app:inventory.seed")} value={plants.seed ? plantName(plants.seed) : i18n.t("app:profile.values.none")} />
-			{plants.plantSlots.map(plant => <KeyValue key={plant.slot} label={plantName(plant.plantId)} value={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} />)}
-		</Panel>
+		<ExpandableList>
+			<Fact label={i18n.t("app:inventory.seed")} value={plants.seed ? plantName(plants.seed) : i18n.t("app:profile.values.none")} />
+			{plants.plantSlots.map(plant => <Fact key={plant.slot} label={plantName(plant.plantId)} value={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} />)}
+		</ExpandableList>
 		<Note>{i18n.t("app:equipment.capacity", {count: plants.plantSlots.length, max: plants.maxPlantSlots})}</Note>
 	</>;
 }
@@ -70,13 +71,13 @@ const ARTIFACTS = [
 function InventoryArtifactList({artifacts}: {artifacts: InventoryArtifacts}): ReactNode {
 	return <>
 		<SectionHeader>{i18n.t("app:inventory.artifacts.title")}</SectionHeader>
-		<Panel>{ARTIFACTS.map(artifact => <Row
+		<ExpandableList>{ARTIFACTS.map(artifact => <EntryRow
 			key={artifact.field}
 			disabled={!artifacts[artifact.field]}
-			icon={<TwemojiIcon emoji={AppIcons.getIcon(artifact.icon)} size={Theme.dimensions.headerIcon} />}
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon(artifact.icon)} size={Theme.dimensions.headerIcon} />}
 			title={i18n.t(`app:inventory.artifacts.${artifact.name}`)}
 			end={i18n.t(artifacts[artifact.field] ? "app:inventory.owned" : "app:inventory.absent")}
-		/>)}</Panel>
+		/>)}</ExpandableList>
 	</>;
 }
 

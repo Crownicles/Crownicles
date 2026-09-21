@@ -1,6 +1,6 @@
 import {ShopOutcome, MARKET_TRENDS} from "ws-packets/src/fromServer/shop/ShopRes";
 import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
-import {isShopRefusal, shopOutcomeReport} from "@/src/display/ShopReport";
+import {isShopRefusal, marketReport, shopOutcomeReport} from "@/src/display/ShopReport";
 
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (path: string): string => path}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {
@@ -33,20 +33,19 @@ describe("shop outcome report", () => {
 	});
 
 	it("tells the forecast of every horizon a trend is known for", () => {
-		const report = shopOutcomeReport({
+		const report = marketReport({
 			kind: "marketAnalysis",
 			kingsMoneyTrends: [MARKET_TRENDS.RISE, MARKET_TRENDS.DROP, MARKET_TRENDS.STABLE],
 			plantTrends: [
 				{plantId: 1, trends: [MARKET_TRENDS.BIG_RISE, MARKET_TRENDS.NON_APPLICABLE, MARKET_TRENDS.DROP]},
 				{plantId: 2, trends: [MARKET_TRENDS.NON_APPLICABLE, MARKET_TRENDS.NON_APPLICABLE, MARKET_TRENDS.NON_APPLICABLE]}
 			]
-		}, NOW);
-		expect(report).toContain("marketAnalysis.kingsMoney.tomorrow.rise");
-		expect(report).toContain("marketAnalysis.kingsMoney.threeDays.drop");
-		expect(report).toContain("marketAnalysis.plants.tomorrow.bigRise");
-		expect(report).not.toContain("marketAnalysis.plants.oneWeek.drop");
-		expect(report).not.toContain("\"plantId\":2");
-		expect(report).toContain("marketAnalysis.outro");
+		});
+		expect(report.kingsMoney[0]).toContain("marketAnalysis.kingsMoney.tomorrow.rise");
+		expect(report.kingsMoney[1]).toContain("marketAnalysis.kingsMoney.threeDays.drop");
+		expect(report.plants).toHaveLength(1);
+		expect(report.plants[0].lines).toEqual([expect.stringContaining("marketAnalysis.plants.tomorrow.bigRise")]);
+		expect(report.outro).toContain("marketAnalysis.outro");
 	});
 
 	it("describes both the dropped mission and the one taking its place", () => {

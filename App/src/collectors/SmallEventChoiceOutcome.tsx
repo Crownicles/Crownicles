@@ -2,15 +2,18 @@ import {ReactNode} from "react";
 import {
 	SmallEventChoiceResult, SmallEventChoiceResultRes
 } from "ws-packets/src/fromServer/smallEvents/SmallEventChoiceResultRes";
-import {formatAmount, formatMoney, formatNumber, AMOUNT_UNITS} from "@/src/display/Amounts";
-import {Button, ButtonRow, Hero, KeyValue, Notice, Panel, Screen} from "@/src/design/Primitives";
+import {formatNumber, AMOUNT_UNITS} from "@/src/display/Amounts";
+import {Button, ButtonRow, Screen} from "@/src/design/Primitives";
+import {Figures, Standing} from "@/src/design/Sections";
 import {i18n} from "@/src/translations/i18n";
 
-type OutcomeField = {label: string; value: string};
+type OutcomeField = {label: string; value: string; unit?: string};
 type OutcomeDetails = {title: string; description: string; fields: OutcomeField[]};
 
-function field(labelKey: string, value: string): OutcomeField {
-	return {label: i18n.t(labelKey), value};
+function field(labelKey: string, value: string, unit?: string): OutcomeField {
+	return {
+		label: i18n.t(labelKey), value, ...unit ? {unit} : {}
+	};
 }
 
 function visibleFields(fields: {show: boolean; field: OutcomeField}[]): OutcomeField[] {
@@ -19,7 +22,7 @@ function visibleFields(fields: {show: boolean; field: OutcomeField}[]): OutcomeF
 
 function altarRewardFields(result: Extract<SmallEventChoiceResult, {event: "altar"; outcome: "contributed"}>): OutcomeField[] {
 	return visibleFields([
-		{show: result.bonusGems > 0, field: field("app:adventure.choiceResults.fields.gems", `+${formatAmount(result.bonusGems, AMOUNT_UNITS.GEM)}`)},
+		{show: result.bonusGems > 0, field: field("app:adventure.choiceResults.fields.gems", `+${formatNumber(result.bonusGems)}`, AMOUNT_UNITS.GEM)},
 		{show: result.blessingTriggered, field: field("app:adventure.choiceResults.fields.blessing", i18n.t(`bot:blessingNames.${result.blessingType}`))},
 		{show: result.bonusItemGiven, field: field("app:adventure.choiceResults.fields.bonusItem", i18n.t("app:common.yes"))},
 		{show: result.badgeAwarded, field: field("app:adventure.choiceResults.fields.badge", i18n.t("app:common.yes"))}
@@ -30,8 +33,8 @@ function altarDetails(result: Extract<SmallEventChoiceResult, {event: "altar"}>)
 	const description = result.outcome === "contributed"
 		? i18n.t(result.blessingTriggered ? "app:adventure.choiceResults.altar.blessing" : "app:adventure.choiceResults.altar.contributed")
 		: i18n.t(result.canAfford ? "app:adventure.choiceResults.altar.refused" : "app:adventure.choiceResults.altar.cannotAfford");
-	const fields = [field("app:adventure.choiceResults.fields.pool", `${formatMoney(result.current)} / ${formatMoney(result.threshold)}`)];
-	if (result.amount > 0) fields.unshift(field("app:adventure.choiceResults.fields.contribution", formatMoney(result.amount)));
+	const fields = [field("app:adventure.choiceResults.fields.pool", `${formatNumber(result.current)} / ${formatNumber(result.threshold)}`, AMOUNT_UNITS.MONEY)];
+	if (result.amount > 0) fields.unshift(field("app:adventure.choiceResults.fields.contribution", formatNumber(result.amount), AMOUNT_UNITS.MONEY));
 	if (result.outcome === "contributed") fields.push(...altarRewardFields(result));
 	return {title: i18n.t("app:adventure.choiceResults.titles.altar"), description, fields};
 }
@@ -55,7 +58,7 @@ function cartDetails(result: Extract<SmallEventChoiceResult, {event: "cart"}>): 
 	return {
 		title: i18n.t("app:adventure.choiceResults.titles.cart"),
 		description,
-		fields: result.pointsWon > 0 ? [field("app:adventure.event.fields.points", `+${formatNumber(result.pointsWon)}`)] : []
+		fields: result.pointsWon > 0 ? [field("app:adventure.event.fields.points", `+${formatNumber(result.pointsWon)}`, "score")] : []
 	};
 }
 
@@ -71,7 +74,7 @@ function gardenerDetails(result: Extract<SmallEventChoiceResult, {event: "garden
 	const fields: OutcomeField[] = [];
 	if (result.plantId > 0) fields.push(field("app:adventure.choiceResults.fields.plant", i18n.t(`models:plants.${result.plantId}`)));
 	if (result.materialId > 0) fields.push(field("app:adventure.choiceResults.fields.material", i18n.t(`models:materials.${result.materialId}`)));
-	if (result.cost > 0) fields.push(field("app:adventure.choiceResults.fields.cost", formatMoney(result.cost)));
+	if (result.cost > 0) fields.push(field("app:adventure.choiceResults.fields.cost", formatNumber(result.cost), AMOUNT_UNITS.MONEY));
 	return {
 		title: i18n.t("app:adventure.choiceResults.titles.gardener"),
 		description: i18n.t(`app:adventure.choiceResults.gardener.${result.interactionName}`, {defaultValue: i18n.t("app:adventure.choiceResults.gardener.default")}),
@@ -84,7 +87,7 @@ function pveIslandDetails(result: Extract<SmallEventChoiceResult, {event: "pveIs
 		? {
 			title: i18n.t("app:adventure.choiceResults.titles.pveIsland"),
 			description: i18n.t(result.alone ? "app:adventure.choiceResults.pveIsland.acceptedAlone" : "app:adventure.choiceResults.pveIsland.acceptedWithGuild"),
-			fields: result.pointsWon > 0 ? [field("app:adventure.event.fields.points", `+${formatNumber(result.pointsWon)}`)] : []
+			fields: result.pointsWon > 0 ? [field("app:adventure.event.fields.points", `+${formatNumber(result.pointsWon)}`, "score")] : []
 		}
 		: {title: i18n.t("app:adventure.choiceResults.titles.pveIsland"), description: i18n.t("app:adventure.choiceResults.pveIsland.notEnoughGems"), fields: []};
 }
@@ -103,8 +106,8 @@ function gobletsDetails(result: Extract<SmallEventChoiceResult, {event: "goblets
 function limogesDetails(result: Extract<SmallEventChoiceResult, {event: "limoges"}>): OutcomeDetails {
 	const fields: OutcomeField[] = [];
 	if (result.reward) {
-		fields.push(field("app:adventure.event.fields.experience", `+${formatNumber(result.reward.experience)}`));
-		fields.push(field("app:adventure.event.fields.points", `+${formatNumber(result.reward.score)}`));
+		fields.push(field("app:adventure.event.fields.experience", `+${formatNumber(result.reward.experience)}`, "xp"));
+		fields.push(field("app:adventure.event.fields.points", `+${formatNumber(result.reward.score)}`, "score"));
 	}
 	if (result.penalty) fields.push(field(`app:adventure.choiceResults.fields.${result.penalty.type}`, `-${formatNumber(result.penalty.amount)}`));
 	return {title: i18n.t("app:adventure.choiceResults.titles.limoges"), description: i18n.t(`app:adventure.choiceResults.limoges.${result.outcome}`), fields};
@@ -119,7 +122,7 @@ function petFoodDetails(result: Extract<SmallEventChoiceResult, {event: "petFood
 
 function recipeShopDetails(result: Extract<SmallEventChoiceResult, {event: "recipeShop"}>): OutcomeDetails {
 	const fields = result.outcome === "accepted"
-		? [field("app:adventure.choiceResults.fields.recipe", i18n.t("models:cooking.recipeDisplay", result.recipe)), field("app:adventure.choiceResults.fields.cost", formatMoney(result.recipeCost))]
+		? [field("app:adventure.choiceResults.fields.recipe", i18n.t("models:cooking.recipeDisplay", result.recipe)), field("app:adventure.choiceResults.fields.cost", formatNumber(result.recipeCost), AMOUNT_UNITS.MONEY)]
 		: [];
 	return {title: i18n.t("app:adventure.choiceResults.titles.recipeShop"), description: i18n.t(`app:adventure.choiceResults.recipeShop.${result.outcome}`), fields};
 }
@@ -183,9 +186,10 @@ export function SmallEventChoiceOutcome({outcome, onContinue}: {
 	const details = resultDetails(outcome.result);
 	return (
 		<Screen>
-			<Hero eyebrow={i18n.t("app:adventure.smallEvent.eyebrow")} title={details.title} />
-			<Notice title={details.description} />
-			{details.fields.length > 0 ? <Panel>{details.fields.map(item => <KeyValue key={item.label} {...item} />)}</Panel> : null}
+			<Standing caption={i18n.t("app:adventure.smallEvent.eyebrow")} title={details.title} subtitle={details.description} />
+			{details.fields.length > 0 ? <Figures items={details.fields.map(item => ({
+				caption: item.label, value: item.value, ...item.unit ? {unit: item.unit} : {}
+			}))} /> : null}
 			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.smallEvent.continue")}</Button></ButtonRow>
 		</Screen>
 	);

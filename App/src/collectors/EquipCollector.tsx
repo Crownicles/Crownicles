@@ -7,10 +7,10 @@ import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {EquipActionReq} from "ws-packets/src/fromClient/EquipActionReq";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {useEquipmentActions} from "@/src/store/useEquipmentActions";
-import {Button, ButtonRow, Confirmation, Hero, Note, Panel, Row, Screen, SectionHeader} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {ModalSurface} from "@/src/design/Sections";
+import {EntryRow, ExpandableList, ModalSurface, Standing} from "@/src/design/Sections";
 import {AppIcons} from "@/src/AppIcons";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {itemDisplayName, itemIconPath, itemCategoryLabel} from "@/src/collectors/CollectorLabels";
@@ -26,14 +26,13 @@ function EquipmentItem({item, end, onPress, disabled}: {
 }): ReactNode {
 	const path = itemIconPath(item);
 	const icon = path ? AppIcons.getIconOrNull(path) : null;
-	return <Row
+	return <EntryRow
 		title={itemDisplayName(item)}
 		subtitle={i18n.t(`items:raritiesWithoutEmote.${item.rarity}`)}
-		icon={icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : undefined}
+		emblem={icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : undefined}
 		end={end}
 		onPress={onPress}
-		disabled={disabled}
-		chevron={Boolean(onPress)}
+		disabled={disabled} 
 	/>;
 }
 
@@ -41,7 +40,7 @@ function EquipmentCategory({category, locked, onSelect}: EquipmentCategoryProps)
 	const {equippedItem, reserveItems, canDeposit} = category;
 	return <>
 		<SectionHeader>{itemCategoryLabel(category.category)}</SectionHeader>
-		<Panel>
+		<ExpandableList>
 			{equippedItem ? <EquipmentItem item={equippedItem.details} end={i18n.t("app:equipment.equipped")} /> : <Note>{i18n.t("app:equipment.noEquippedItem")}</Note>}
 			{reserveItems.map(item => <EquipmentItem
 				key={item.slot}
@@ -51,7 +50,7 @@ function EquipmentCategory({category, locked, onSelect}: EquipmentCategoryProps)
 				onPress={(): void => onSelect({request: makeFromClientPacket(EquipActionReq, {action: EQUIP_ACTIONS.EQUIP, itemCategory: category.category, slot: item.slot}), item: item.details})}
 			/>)}
 			{reserveItems.length === 0 ? <Note>{i18n.t("app:equipment.emptyReserve")}</Note> : null}
-		</Panel>
+		</ExpandableList>
 		<Note>{i18n.t("app:equipment.capacity", {count: reserveItems.length, max: category.maxReserveSlots})}</Note>
 		{equippedItem ? <ButtonRow><Button
 			disabled={locked || !canDeposit}
@@ -77,7 +76,7 @@ export function EquipCollector({collector, onChoose, submitting}: {
 	return <Modal visible animationType="slide" onRequestClose={close}>
 		<ModalSurface>
 			<Screen>
-				<Hero eyebrow={i18n.t("app:equipment.eyebrow")} title={i18n.t("app:equipment.title")} />
+				<Standing caption={i18n.t("app:equipment.eyebrow")} title={i18n.t("app:equipment.title")} />
 				{error ? <Note>{i18n.t(error)}</Note> : null}
 				{categories.map(category => <EquipmentCategory key={category.category} category={category} locked={locked} onSelect={setSelection} />)}
 				<CollectorChoices collector={collector} onChoose={onChoose} submitting={locked} />

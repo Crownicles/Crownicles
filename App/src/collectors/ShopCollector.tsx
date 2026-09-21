@@ -11,9 +11,7 @@ import {shopItemKey, shopItemName} from "@/src/collectors/ShopLabels";
 import {missionDescription} from "@/src/display/Missions";
 import {Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {Check, Coins} from "@/src/design/FightIcons";
-import {
-	ActionBanner, BackButton, ExpandableEntry, ExpandableList, Figures, Lock, LockHint, sectionStyles, Standing
-} from "@/src/design/Sections";
+import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, Figures, Lock, LockHint, sectionStyles, Standing} from "@/src/design/Sections";
 import {SwipeBack} from "@/src/design/SwipeBack";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";

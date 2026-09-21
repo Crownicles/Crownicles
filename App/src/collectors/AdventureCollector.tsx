@@ -22,12 +22,11 @@ import type {
 	HealOutcome as HealOutcomeData, LotteryOutcome as LotteryOutcomeData,
 	TokenOutcomeRequiringAcknowledgement
 } from "@/src/collectors/ReportEventStore";
-import {
-	Button, ButtonRow, Confirmation, Hero, KeyValue, Notice, Panel, Screen, StatBar
-} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, Note, Screen} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
+import {ExpandableList, Fact, Gauge, Standing} from "@/src/design/Sections";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 
@@ -77,11 +76,6 @@ function outcomeIcon(outcome: ReportBigEventResultRes): string | undefined {
 		?? undefined;
 }
 
-function lotteryIcon(): ReactNode | undefined {
-	const icon = AppIcons.getIconOrNull("smallEvents.lottery");
-	return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : undefined;
-}
-
 function lotteryOutcomeText(outcome: LotteryOutcomeData): string {
 	switch (outcome.kind) {
 		case "win":
@@ -120,16 +114,16 @@ function merchantPurchaseLabel(amount: number, pricePerToken: number): string {
 function TokenMerchantSummary({data}: {data: TokenMerchantData}): ReactNode {
 	const {maxTokens, playerMoney, playerTokens, pricePerToken} = data.data;
 	return (
-		<Panel>
-			<StatBar
+		<ExpandableList>
+			<Gauge
 				label={i18n.t("app:adventure.tokens.fields.balance")}
 				value={`${formatNumber(playerTokens)} / ${formatTokens(maxTokens)}`}
 				ratio={tokenRatio(data)}
 				color={Theme.colors.gold}
 			/>
-			<KeyValue label={i18n.t("app:adventure.tokens.fields.price")} value={formatMoney(pricePerToken)} />
-			<KeyValue label={i18n.t("app:adventure.tokens.fields.money")} value={formatMoney(playerMoney)} />
-		</Panel>
+			<Fact label={i18n.t("app:adventure.tokens.fields.price")} value={formatMoney(pricePerToken)} />
+			<Fact label={i18n.t("app:adventure.tokens.fields.money")} value={formatMoney(playerMoney)} />
+		</ExpandableList>
 	);
 }
 
@@ -254,10 +248,10 @@ function BuyHealCollector({collector, onChoose, submitting}: {
 			})}
 			onRequestClose={canRefuse ? (): void => onChoose(refuseIndex) : undefined}
 		>
-			<Panel>
-				<KeyValue label={i18n.t("app:adventure.heal.fields.cost")} value={formatMoney(data.data.healPrice)} />
-				<KeyValue label={i18n.t("app:adventure.heal.fields.balance")} value={formatMoney(data.data.playerMoney)} />
-			</Panel>
+			<ExpandableList>
+				<Fact label={i18n.t("app:adventure.heal.fields.cost")} value={formatMoney(data.data.healPrice)} />
+				<Fact label={i18n.t("app:adventure.heal.fields.balance")} value={formatMoney(data.data.playerMoney)} />
+			</ExpandableList>
 			<ButtonRow>
 				<Button variant="primary" disabled={!canConfirm} onPress={canConfirm ? (): void => onChoose(acceptIndex) : undefined}>
 					{i18n.t("app:adventure.heal.use.confirm", {price: data.data.healPrice})}
@@ -284,16 +278,13 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 
 	return (
 		<Screen>
-			<Hero
-				eyebrow={i18n.t("app:adventure.tokens.merchant.eyebrow")}
+			<Standing
+				caption={i18n.t("app:adventure.tokens.merchant.eyebrow")}
 				title={i18n.t("app:adventure.tokens.merchant.title")}
 				subtitle={i18n.t("app:adventure.tokens.merchant.description")}
 			/>
 			<TokenMerchantSummary data={collector.data} />
-			<Notice
-				icon={AppIcons.getIconOrNull("collectors.warning") ? <TwemojiIcon emoji={AppIcons.getIcon("collectors.warning")} size={Theme.dimensions.headerIcon} /> : undefined}
-				title={i18n.t("app:adventure.tokens.merchant.limits", {maxDaily, maxWeekly})}
-			/>
+			<Note>{i18n.t("app:adventure.tokens.merchant.limits", {maxDaily, maxWeekly})}</Note>
 			<MerchantPurchaseActions
 				collector={collector}
 				onPurchase={(reactionIndex, amount): void => setPendingPurchase({reactionIndex, amount})}
@@ -307,11 +298,11 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 					message={i18n.t("app:adventure.tokens.merchant.confirmDescription")}
 					onRequestClose={() => setPendingPurchase(null)}
 				>
-					<Panel>
-						<KeyValue label={i18n.t("app:adventure.tokens.fields.received")} value={`+${formatTokens(pendingPurchase.amount)}`} />
-						<KeyValue label={i18n.t("app:adventure.tokens.fields.costMoney")} value={`-${formatMoney(purchasePrice)}`} />
-						<KeyValue label={i18n.t("app:adventure.tokens.fields.remainingMoney")} value={formatMoney(playerMoney - purchasePrice)} />
-					</Panel>
+					<ExpandableList>
+						<Fact label={i18n.t("app:adventure.tokens.fields.received")} value={`+${formatTokens(pendingPurchase.amount)}`} />
+						<Fact label={i18n.t("app:adventure.tokens.fields.costMoney")} value={`-${formatMoney(purchasePrice)}`} />
+						<Fact label={i18n.t("app:adventure.tokens.fields.remainingMoney")} value={formatMoney(playerMoney - purchasePrice)} />
+					</ExpandableList>
 					<ButtonRow>
 						<Button variant="primary" disabled={submitting} onPress={submitting ? undefined : (): void => onChoose(pendingPurchase.reactionIndex)}>
 							{i18n.t("app:adventure.tokens.merchant.confirm")}
@@ -354,8 +345,8 @@ export function AdventureCollector(props: AdventureCollectorProps): ReactNode {
 	const description = collectorDescription(props.collector.data);
 	return (
 		<Screen>
-			<Hero
-				eyebrow={eventEyebrow(props.collector)}
+			<Standing
+				caption={eventEyebrow(props.collector)}
 				title={collectorTitle(props.collector.data)}
 				subtitle={description}
 			/>
@@ -407,9 +398,9 @@ export function TokenOutcome({outcome, onContinue}: {
 	const details = tokenOutcomeDetails(outcome);
 	return (
 		<Screen>
-			<Hero eyebrow={details.eyebrow} title={details.title} subtitle={details.description} />
+			<Standing caption={details.eyebrow} title={details.title} subtitle={details.description} />
 			{details.fields.length > 0 ? (
-				<Panel>{details.fields.map(field => <KeyValue key={field.label} label={field.label} value={field.value} />)}</Panel>
+				<ExpandableList>{details.fields.map(field => <Fact key={field.label} label={field.label} value={field.value} />)}</ExpandableList>
 			) : null}
 			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.tokens.continue")}</Button></ButtonRow>
 		</Screen>
@@ -456,15 +447,15 @@ export function HealOutcome({outcome, onContinue}: {
 	const details = healOutcomeDetails(outcome);
 	return (
 		<Screen>
-			<Hero
-				eyebrow={i18n.t("app:adventure.heal.use.eyebrow")}
+			<Standing
+				caption={i18n.t("app:adventure.heal.use.eyebrow")}
 				title={details.title}
 				subtitle={details.description}
 			/>
 			{outcome.kind === "accepted" ? (
-				<Panel>
-					<KeyValue label={i18n.t("app:adventure.heal.fields.spent")} value={`-${formatMoney(outcome.packet.healPrice)}`} />
-				</Panel>
+				<ExpandableList>
+					<Fact label={i18n.t("app:adventure.heal.fields.spent")} value={`-${formatMoney(outcome.packet.healPrice)}`} />
+				</ExpandableList>
 			) : null}
 			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.heal.continue")}</Button></ButtonRow>
 		</Screen>
@@ -495,18 +486,19 @@ export function BigEventOutcome({outcome, onContinue}: {
 
 	return (
 		<Screen>
-			<Hero eyebrow={i18n.t("app:adventure.event.eyebrow")} title={i18n.t("app:adventure.event.resultTitle")} />
-			<Notice
-				icon={icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : undefined}
-				title={outcomeText}
-				text={i18n.t("app:adventure.event.resultDescription")}
+			<Standing
+				{...icon ? {emblem: <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} />} : {}}
+				caption={i18n.t("app:adventure.event.eyebrow")}
+				title={i18n.t("app:adventure.event.resultTitle")}
+				subtitle={outcomeText}
 			/>
+			<Note>{i18n.t("app:adventure.event.resultDescription")}</Note>
 			{changes.some(change => change.show) ? (
-				<Panel>
+				<ExpandableList>
 					{changes.filter(change => change.show).map(change => (
-						<KeyValue key={change.label} label={change.label} value={change.value} />
+						<Fact key={change.label} label={change.label} value={change.value} />
 					))}
-				</Panel>
+				</ExpandableList>
 			) : null}
 			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.event.continue")}</Button></ButtonRow>
 		</Screen>
@@ -544,12 +536,11 @@ export function LotteryOutcome({outcome, onContinue}: {
 
 	return (
 		<Screen>
-			<Hero eyebrow={i18n.t("app:adventure.smallEvent.eyebrow")} title={i18n.t("app:adventure.lottery.resultTitle")} />
-			<Notice icon={lotteryIcon()} title={lotteryOutcomeText(outcome)} />
+			<Standing caption={i18n.t("app:adventure.smallEvent.eyebrow")} title={i18n.t("app:adventure.lottery.resultTitle")} subtitle={lotteryOutcomeText(outcome)} />
 			{fields.length > 0 ? (
-				<Panel>
-					{fields.map(field => <KeyValue key={field.label} label={field.label} value={field.value} />)}
-				</Panel>
+				<ExpandableList>
+					{fields.map(field => <Fact key={field.label} label={field.label} value={field.value} />)}
+				</ExpandableList>
 			) : null}
 			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.smallEvent.continue")}</Button></ButtonRow>
 		</Screen>
@@ -589,25 +580,25 @@ export function WitchOutcome({outcome, onContinue}: {
 	const effect = witchEffect(outcome);
 	return (
 		<Screen>
-			<Hero
-				eyebrow={i18n.t("app:adventure.smallEvent.eyebrow")}
+			<Standing
+				caption={i18n.t("app:adventure.smallEvent.eyebrow")}
 				title={i18n.t("app:adventure.witch.resultTitle")}
 				subtitle={witchOutcomeDescription(outcome)}
 			/>
-			<Panel>
-				<KeyValue label={i18n.t(outcome.isIngredient ? "app:adventure.witch.fields.ingredient" : "app:adventure.witch.fields.advice")} value={ingredientIcon ? `${ingredientIcon} ${ingredient}` : ingredient} />
-				{effect ? <KeyValue label={i18n.t("app:adventure.witch.fields.effect")} value={effect} /> : null}
+			<ExpandableList>
+				<Fact label={i18n.t(outcome.isIngredient ? "app:adventure.witch.fields.ingredient" : "app:adventure.witch.fields.advice")} value={ingredientIcon ? `${ingredientIcon} ${ingredient}` : ingredient} />
+				{effect ? <Fact label={i18n.t("app:adventure.witch.fields.effect")} value={effect} /> : null}
 				{outcome.outcome === WITCH_OUTCOMES.LIFE_LOSS
-					? <KeyValue label={i18n.t("app:adventure.event.fields.health")} value={`-${formatNumber(outcome.lifeLoss)}`} />
+					? <Fact label={i18n.t("app:adventure.event.fields.health")} value={`-${formatNumber(outcome.lifeLoss)}`} />
 					: null}
 				{outcome.timeLostMinutes > 0
-					? <KeyValue label={i18n.t("app:adventure.event.fields.timeLost")} value={i18n.t("app:adventure.duration.minutes", {count: outcome.timeLostMinutes})} />
+					? <Fact label={i18n.t("app:adventure.event.fields.timeLost")} value={i18n.t("app:adventure.duration.minutes", {count: outcome.timeLostMinutes})} />
 					: null}
-				{outcome.discoveredRecipe ? <KeyValue
+				{outcome.discoveredRecipe ? <Fact
 					label={i18n.t("app:adventure.witch.fields.recipe")}
 					value={i18n.t("models:cooking.recipeDisplay", outcome.discoveredRecipe)}
 				/> : null}
-			</Panel>
+			</ExpandableList>
 			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.smallEvent.continue")}</Button></ButtonRow>
 		</Screen>
 	);

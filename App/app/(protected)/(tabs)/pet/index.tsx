@@ -9,8 +9,9 @@ import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {PetOverview} from "@/src/components/PetCare";
-import {EmptyState, Panel, Screen} from "@/src/design/Primitives";
+import {EmptyState, Screen} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
+import {ExpandableList} from "@/src/design/Sections";
 
 export default function Pet(): ReactNode {
 	const router = useRouter();
@@ -18,7 +19,7 @@ export default function Pet(): ReactNode {
 		GAME_ENTITIES.PET,
 		() => GameClient.request(makeFromClientPacket(PetReq, {askedPlayer: {}}), PetRes, [PetNotFound])
 	);
-	if (state.status === "empty") return <Screen><Panel><EmptyState>{i18n.t("app:pet.noPet")}</EmptyState></Panel></Screen>;
+	if (state.status === "empty") return <Screen><ExpandableList><EmptyState>{i18n.t("app:pet.noPet")}</EmptyState></ExpandableList></Screen>;
 	return <Screen><GameQueryContent state={state} entity={GAME_ENTITIES.PET}>{data => <PetOverview
 		packet={data}
 		onPage={(page): void => router.push(`/pet/${page}`)}

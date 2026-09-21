@@ -21,8 +21,7 @@ describe("sale confirmation", () => {
 		await render(<SellCollector collector={collector()} onChoose={choose} submitting={false} />);
 		await fireEvent.press(screen.getByText("models:weapons.7"));
 		expect(choose).not.toHaveBeenCalled();
-		expect(screen.getByText("app:sale.confirmSell")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:sale.confirmSell"));
 		expect(choose).toHaveBeenCalledTimes(1);
 		expect(choose).toHaveBeenCalledWith(1);
 	});
@@ -32,14 +31,15 @@ describe("sale confirmation", () => {
 		await render(<SellCollector collector={collector()} onChoose={choose} submitting={false} />);
 		await fireEvent.press(screen.getByText("models:potions.43"));
 		expect(screen.getByText("app:sale.confirmDiscard")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:collector.refuse"));
+		await fireEvent.press(screen.getByText("models:potions.43"));
+		expect(screen.queryByText("app:sale.confirmDiscard")).toBeNull();
 		expect(choose).not.toHaveBeenCalled();
 	});
 
 	it("closes without a sale using the original refusal index", async () => {
 		const choose = jest.fn();
 		await render(<SellCollector collector={collector()} onChoose={choose} submitting={false} />);
-		await fireEvent.press(screen.getByText("app:sale.continue"));
+		await fireEvent.press(screen.getByLabelText("app:common.back"));
 		expect(choose).toHaveBeenCalledTimes(1);
 		expect(choose).toHaveBeenCalledWith(3);
 	});

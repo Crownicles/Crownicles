@@ -34,3 +34,8 @@ export function storySpans(text: string): StorySpan[] {
 export function plainStory(text: string): string {
 	return storySpans(text).map(span => span.text).join("");
 }
+
+/** Markdown parsing folds line breaks into spaces, which a multi-line report cannot afford. */
+export function plainLines(text: string): string {
+	return text.split("\n").map(plainStory).join("\n");
+}

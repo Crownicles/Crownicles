@@ -16,8 +16,8 @@ import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
 import {gaugeEmoji} from "@/src/components/Guild";
-import {KeyValue, Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
+import {Note, SectionHeader} from "@/src/design/Primitives";
+import {ActionBanner, EntryRow, ExpandableList, Fact, Figure, Figures, Standing} from "@/src/design/Sections";
 import {BookOpen} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -33,10 +33,10 @@ const GUIDE_URL = "https://guide.crownicles.com";
 
 export function RarityContent({rarities}: {rarities: number[]}): ReactNode {
 	if (rarities.length === 0) return <Note>{i18n.t("app:reference.empty")}</Note>;
-	return <Panel>{Object.entries(rarities).map(([rarity, percentage]) => <Row key={rarity}
+	return <ExpandableList>{Object.entries(rarities).map(([rarity, percentage]) => <EntryRow key={rarity}
 		title={i18n.t(`items:rarities.${rarity}`)}
 		end={Number(rarity) === ItemRarity.BASIC ? i18n.t("commands:rarity.earlyAvailable") : i18n.t("app:reference.percentage", {value: percentage})}
-	/>)}</Panel>;
+	/>)}</ExpandableList>;
 }
 
 export function Rarity(): ReactNode {
@@ -80,7 +80,7 @@ export function BlessingContent({data}: {data: BlessingRes}): ReactNode {
 			/>}
 			<Figures items={blessingFigures(data)} />
 		</Standing>
-		{details.length > 0 ? <Panel>{details.map(detail => <KeyValue key={detail.label} label={detail.label} value={detail.value} />)}</Panel> : null}
+		{details.length > 0 ? <ExpandableList>{details.map(detail => <Fact key={detail.label} label={detail.label} value={detail.value} />)}</ExpandableList> : null}
 	</>;
 }
 
@@ -97,11 +97,11 @@ export function BadgesContent({badges}: {badges: string[]}): ReactNode {
 	const ordered = [...VISIBLE_BADGES].sort((first, second) => Number(owned.has(second)) - Number(owned.has(first)));
 	return <>
 		<Note>{i18n.t("app:reference.badges.total", {count: VISIBLE_BADGES.filter(badge => owned.has(badge)).length, total: VISIBLE_BADGES.length})}</Note>
-		<Panel>{ordered.map(badge => <Row key={badge}
+		<ExpandableList>{ordered.map(badge => <EntryRow key={badge}
 			disabled={!owned.has(badge)}
-			icon={<TwemojiIcon emoji={AppIcons.getIcon(`badges.${badge}`)} size={Theme.dimensions.headerIcon} />}
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon(`badges.${badge}`)} size={Theme.dimensions.headerIcon} />}
 			title={i18n.t(`app:reference.badges.names.${badge}`)} end={i18n.t(owned.has(badge) ? "app:inventory.owned" : "app:inventory.absent")}
-		/>)}</Panel>
+		/>)}</ExpandableList>
 	</>;
 }
 

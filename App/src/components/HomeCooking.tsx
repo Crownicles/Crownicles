@@ -9,18 +9,19 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {CookingRequest, cookingMenuFromOutcome, useCookingActions} from "@/src/store/useCookingActions";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {HomeCookingResults} from "@/src/components/HomeCookingResults";
-import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel, SectionHeader} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, Note, SectionHeader} from "@/src/design/Primitives";
 import {formatNumber} from "@/src/display/Amounts";
 import {materialName, plantName} from "@/src/display/Resources";
 import {i18n} from "@/src/translations/i18n";
+import {ExpandableList, Fact} from "@/src/design/Sections";
 
 type CookingActions = {pending: boolean; submit: (request: CookingRequest) => Promise<void>};
 type RecipeSelection = {slotIndex: number; recipe: NonNullable<CookingSlot["recipe"]>};
 
 function Ingredients({ingredients}: {ingredients: RecipeIngredients}): ReactNode {
 	return <>
-		{ingredients.plants.map(plant => <KeyValue key={plant.plantId} label={plantName(plant.plantId)} value={i18n.t("app:cooking.ingredientQuantity", {owned: plant.playerHas, required: plant.quantity})} />)}
-		{ingredients.materials.map(material => <KeyValue key={material.materialId} label={materialName(material.materialId)} value={i18n.t("app:cooking.ingredientQuantity", {owned: material.playerHas, required: material.quantity})} />)}
+		{ingredients.plants.map(plant => <Fact key={plant.plantId} label={plantName(plant.plantId)} value={i18n.t("app:cooking.ingredientQuantity", {owned: plant.playerHas, required: plant.quantity})} />)}
+		{ingredients.materials.map(material => <Fact key={material.materialId} label={materialName(material.materialId)} value={i18n.t("app:cooking.ingredientQuantity", {owned: material.playerHas, required: material.quantity})} />)}
 	</>;
 }
 
@@ -33,7 +34,7 @@ function RecipeSlot({slot, actions, onSelect}: {slot: CookingSlot; actions: Cook
 	if (!recipe) return <Note>{i18n.t("app:cooking.emptySlot", {slot: slotIndex + 1})}</Note>;
 	return <>
 		<SectionHeader>{recipeName(recipe)}</SectionHeader>
-		<Panel><KeyValue label={i18n.t("app:cooking.recipeLevel")} value={formatNumber(recipe.level)} /><Ingredients ingredients={recipe.ingredients} /></Panel>
+		<ExpandableList><Fact label={i18n.t("app:cooking.recipeLevel")} value={formatNumber(recipe.level)} /><Ingredients ingredients={recipe.ingredients} /></ExpandableList>
 		{!recipe.canCraft ? <Note>{i18n.t("app:cooking.notReady")}</Note> : null}
 		<ButtonRow>
 			<Button variant="primary" disabled={actions.pending || !recipe.canCraft} onPress={(): void => onSelect({slotIndex, recipe})}>{i18n.t("app:cooking.craft")}</Button>
@@ -47,7 +48,7 @@ function PinnedRecipe({menu, actions}: {menu: CookingMenu; actions: CookingActio
 	const {pinnedRecipe} = menu;
 	return <>
 		<SectionHeader>{i18n.t("app:cooking.pinned")}</SectionHeader>
-		<Panel><KeyValue label={i18n.t(`models:cooking.recipes.${pinnedRecipe.recipeId}`)} value={formatNumber(pinnedRecipe.level)} /><Ingredients ingredients={pinnedRecipe.ingredients} /></Panel>
+		<ExpandableList><Fact label={i18n.t(`models:cooking.recipes.${pinnedRecipe.recipeId}`)} value={formatNumber(pinnedRecipe.level)} /><Ingredients ingredients={pinnedRecipe.ingredients} /></ExpandableList>
 		<ButtonRow><Button disabled={actions.pending} onPress={(): Promise<void> => actions.submit(makeFromClientPacket(CookingUnpinReq, {fromIgnitedView: menu.isIgnited}))}>{i18n.t("app:cooking.unpin")}</Button></ButtonRow>
 	</>;
 }
@@ -81,7 +82,7 @@ function CookingContent({menu}: {menu: CookingMenu}): ReactNode {
 		actions.submit(makeFromClientPacket(CookingCraftReq, {slotIndex: selection.slotIndex, recipeId: selection.recipe.id})).catch(console.error);
 	};
 	return <>
-		<Panel><KeyValue label={i18n.t("app:cooking.level")} value={formatNumber(menu.cookingLevel)} /><KeyValue label={i18n.t("app:cooking.grade")} value={i18n.t(`models:cooking.grades.${menu.cookingGrade}`)} /><KeyValue label={i18n.t("app:cooking.furnace")} value={i18n.t(menu.isIgnited ? "app:cooking.lit" : "app:cooking.unlit")} /></Panel>
+		<ExpandableList><Fact label={i18n.t("app:cooking.level")} value={formatNumber(menu.cookingLevel)} /><Fact label={i18n.t("app:cooking.grade")} value={i18n.t(`models:cooking.grades.${menu.cookingGrade}`)} /><Fact label={i18n.t("app:cooking.furnace")} value={i18n.t(menu.isIgnited ? "app:cooking.lit" : "app:cooking.unlit")} /></ExpandableList>
 		{actions.message ? <Note>{actions.message}</Note> : null}
 		<HomeCookingResults outcome={actions.outcome} />
 		<PinnedRecipe menu={menu} actions={actions} />

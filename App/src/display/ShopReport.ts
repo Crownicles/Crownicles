@@ -11,8 +11,21 @@ function plantHeader(plantId: number, bold: boolean): string {
 	});
 }
 
-function plantForecast(forecast: PlantForecast, prefix: string, stopAtUnknown: boolean): string {
-	let text = `\n\n${plantHeader(forecast.plantId, true)}`;
+/** One thing the advisor forecasts, and what it says at each horizon it can see. */
+export type MarketForecast = {id: string; heading: string; lines: string[]};
+
+export type MarketReport = {
+	intro: string;
+	kingsMoneyTitle: string;
+	kingsMoney: string[];
+	plantsTitle: string;
+	plants: MarketForecast[];
+	rotation?: {notice: string; plants: MarketForecast[]};
+	outro: string;
+};
+
+function forecastLines(forecast: PlantForecast, prefix: string, stopAtUnknown: boolean): string[] {
+	const lines: string[] = [];
 	for (let i = 0; i < TIME_HORIZONS.length; i++) {
 		if (forecast.trends[i] === MARKET_TRENDS.NON_APPLICABLE) {
 			if (stopAtUnknown) {
@@ -20,44 +33,47 @@ function plantForecast(forecast: PlantForecast, prefix: string, stopAtUnknown: b
 			}
 			continue;
 		}
-		text += `\n${i18n.t(`commands:shop.shopItems.marketAnalysis.${prefix}.${TIME_HORIZONS[i]}.${forecast.trends[i]}`, {plantId: forecast.plantId})}`;
+		lines.push(i18n.t(`commands:shop.shopItems.marketAnalysis.${prefix}.${TIME_HORIZONS[i]}.${forecast.trends[i]}`, {plantId: forecast.plantId}));
 	}
-	return text;
+	return lines;
 }
 
-function rotationSection(rotation: {daysUntilRotation: number; newPlantIds: number[]; newPlantForecasts: PlantForecast[]} | undefined): string {
-	if (!rotation) {
-		return "";
-	}
-	let text = `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.rotation", {
-		horizon: i18n.t("commands:shop.shopItems.marketAnalysis.rotationHorizon", {count: rotation.daysUntilRotation}),
-		newPlants: rotation.newPlantIds.map(plantId => plantHeader(plantId, false)).join(", ")
-	})}`;
-	for (const forecast of rotation.newPlantForecasts) {
-		text += plantForecast(forecast, "newPlants", false);
-	}
-	return text;
+function plantForecasts(forecasts: PlantForecast[], prefix: string, stopAtUnknown: boolean): MarketForecast[] {
+	return forecasts
+		.filter(forecast => !forecast.trends.every(trend => trend === MARKET_TRENDS.NON_APPLICABLE))
+		.map(forecast => ({
+			id: `${prefix}-${forecast.plantId}`,
+			heading: plantHeader(forecast.plantId, false),
+			lines: forecastLines(forecast, prefix, stopAtUnknown)
+		}));
 }
 
-function marketAnalysisReport(outcome: Extract<ShopOutcome, {kind: "marketAnalysis"}>): string {
-	let text = i18n.t("commands:shop.shopItems.marketAnalysis.intro");
-
-	text += `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.kingsMoneyTitle")}`;
-	for (let i = 0; i < TIME_HORIZONS.length; i++) {
-		const trend: MarketTrendKind = outcome.kingsMoneyTrends[i] ?? MARKET_TRENDS.STABLE;
-		text += `\n${i18n.t(`commands:shop.shopItems.marketAnalysis.kingsMoney.${TIME_HORIZONS[i]}.${trend === MARKET_TRENDS.NON_APPLICABLE ? MARKET_TRENDS.STABLE : trend}`)}`;
-	}
-
-	text += `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.plantsTitle")}`;
-	for (const forecast of outcome.plantTrends) {
-		if (forecast.trends.every(trend => trend === MARKET_TRENDS.NON_APPLICABLE)) {
-			continue;
-		}
-		text += plantForecast(forecast, "plants", true);
-	}
-
-	return `${text}${rotationSection(outcome.plantRotation)}\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.outro")}`;
+function rotationReport(rotation: {daysUntilRotation: number; newPlantIds: number[]; newPlantForecasts: PlantForecast[]}): MarketReport["rotation"] {
+	return {
+		notice: i18n.t("commands:shop.shopItems.marketAnalysis.rotation", {
+			horizon: i18n.t("commands:shop.shopItems.marketAnalysis.rotationHorizon", {count: rotation.daysUntilRotation}),
+			newPlants: rotation.newPlantIds.map(plantId => plantHeader(plantId, false)).join(", ")
+		}),
+		plants: plantForecasts(rotation.newPlantForecasts, "newPlants", false)
+	};
 }
+
+/** The advisor's report kept in pieces, because a wall of prose is unreadable on a phone. */
+export function marketReport(outcome: Extract<ShopOutcome, {kind: "marketAnalysis"}>): MarketReport {
+	return {
+		intro: i18n.t("commands:shop.shopItems.marketAnalysis.intro"),
+		kingsMoneyTitle: i18n.t("commands:shop.shopItems.marketAnalysis.kingsMoneyTitle"),
+		kingsMoney: TIME_HORIZONS.map((horizon, index) => {
+			const trend: MarketTrendKind = outcome.kingsMoneyTrends[index] ?? MARKET_TRENDS.STABLE;
+			return i18n.t(`commands:shop.shopItems.marketAnalysis.kingsMoney.${horizon}.${trend === MARKET_TRENDS.NON_APPLICABLE ? MARKET_TRENDS.STABLE : trend}`);
+		}),
+		plantsTitle: i18n.t("commands:shop.shopItems.marketAnalysis.plantsTitle"),
+		plants: plantForecasts(outcome.plantTrends, "plants", true),
+		...outcome.plantRotation ? {rotation: rotationReport(outcome.plantRotation)} : {},
+		outro: i18n.t("commands:shop.shopItems.marketAnalysis.outro")
+	};
+}
+
 
 function purchaseReport(outcome: Extract<ShopOutcome, {kind: "purchase"}>): string {
 	let text = i18n.t("commands:shop.genericPurchase", {
@@ -74,8 +90,8 @@ function purchaseReport(outcome: Extract<ShopOutcome, {kind: "purchase"}>): stri
 	return text;
 }
 
-/** Tells, word for word like Discord does, what the commerce just answered. */
-export function shopOutcomeReport(outcome: ShopOutcome, now: number): string {
+/** Tells, word for word like Discord does, what the commerce just answered. The market report has its own screen. */
+export function shopOutcomeReport(outcome: Exclude<ShopOutcome, {kind: "marketAnalysis"}>, now: number): string {
 	switch (outcome.kind) {
 		case "purchase":
 			return purchaseReport(outcome);
@@ -90,8 +106,6 @@ export function shopOutcomeReport(outcome: ShopOutcome, now: number): string {
 		case "missionSkipped":
 			return `${i18n.t("commands:shop.shopItems.skipMission.successDescription", {mission: missionDescription(outcome.oldMission, now)})}\n${
 				i18n.t("commands:shop.shopItems.skipMission.getNewMission", {mission: missionDescription(outcome.newMission, now)})}`;
-		case "marketAnalysis":
-			return marketAnalysisReport(outcome);
 		case "badge":
 			return i18n.t("commands:shop.badgeBought", {badgeName: outcome.badgeId});
 		case "slotBought":

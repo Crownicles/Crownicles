@@ -12,7 +12,7 @@ import {GameClient} from "@/src/networking/GameClient";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
 import {UnitIcon} from "@/src/components/UnitIcon";
-import {Note, Panel, SectionHeader} from "@/src/design/Primitives";
+import {Note, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, ExpandableList, Lock, sectionStyles, Standing} from "@/src/design/Sections";
 import {Clock3, Medal, Shield, Swords, Trophy} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
@@ -107,7 +107,7 @@ export function FightHistoryContent({history}: {history: FightHistoryEntry[]}): 
 	if (!history.length) return <Note>{i18n.t("app:arena.history.empty")}</Note>;
 	return <>{groupHistoryByMonth(history).map((group, index) => <View key={group.label}>
 		<SectionHeader first={index === 0}>{group.label}</SectionHeader>
-		<Panel>{group.entries.map(entry => <HistoryEntry key={entry.id} entry={entry} />)}</Panel>
+		<ExpandableList>{group.entries.map(entry => <HistoryEntry key={entry.id} entry={entry} />)}</ExpandableList>
 	</View>)}</>;
 }
 

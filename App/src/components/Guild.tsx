@@ -14,7 +14,7 @@ import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
 import {GuildBoatBoarding, GuildInvitation, GuildMemberControls} from "@/src/components/GuildMembers";
 import {UnitIcon} from "@/src/components/UnitIcon";
-import {Button, ButtonRow, EmptyState, Note, Panel, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
+import {Button, ButtonRow, EmptyState, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, ExpandableList, Figure, Figures, Lock, LockHint, sectionStyles, Standing} from "@/src/design/Sections";
 import {TextField} from "@/src/design/Inputs";
 import {Check, Clock3, Gift, LogOut, Star} from "@/src/design/FightIcons";
@@ -271,6 +271,6 @@ export function GuildOverview({guild, onPage}: {guild: GuildData; onPage: (page:
 		{guild.description ? <Note>{guild.description}</Note> : null}
 		{guild.membership ? <GuildMemberTools guild={guild} membership={guild.membership} onPage={onPage} /> : null}
 		<SectionHeader action={{hint: formatNumber(guild.members.length)}}>{i18n.t("app:guild.members")}</SectionHeader>
-		{guild.members.length ? <GuildMemberList guild={guild} /> : <Panel><EmptyState>{i18n.t("app:guild.noMembers")}</EmptyState></Panel>}
+		{guild.members.length ? <GuildMemberList guild={guild} /> : <ExpandableList><EmptyState>{i18n.t("app:guild.noMembers")}</EmptyState></ExpandableList>}
 	</>;
 }

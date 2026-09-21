@@ -14,7 +14,7 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {EmptyState, Note, Panel, SectionHeader} from "@/src/design/Primitives";
+import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, ExpandableList, Lock, sectionStyles, Standing} from "@/src/design/Sections";
 import {ArrowRight} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -112,7 +112,7 @@ function ShelterContent({ownPet, boarders, guildName, maxCount}: ShelterProps): 
 					testID="shelter-deposit"
 				/>}
 			/></ExpandableList>
-			: <Panel><EmptyState>{i18n.t("app:pet.management.noOwnPet")}</EmptyState></Panel>}
+			: <ExpandableList><EmptyState>{i18n.t("app:pet.management.noOwnPet")}</EmptyState></ExpandableList>}
 		<SectionHeader action={{hint: occupancy}}>{i18n.t("app:pet.management.boardersTitle")}</SectionHeader>
 		{boarders.length
 			? <ExpandableList>{boarders.map((pet, slot) => <PetEntry
@@ -129,7 +129,7 @@ function ShelterContent({ownPet, boarders, guildName, maxCount}: ShelterProps): 
 					testID={`shelter-take-${slot}`}
 				/>}
 			/>)}</ExpandableList>
-			: <Panel><EmptyState>{i18n.t("app:pet.management.emptyShelter")}</EmptyState></Panel>}
+			: <ExpandableList><EmptyState>{i18n.t("app:pet.management.emptyShelter")}</EmptyState></ExpandableList>}
 		<Text style={sectionStyles.caption}>{i18n.t("app:pet.management.transferHint")}</Text>
 	</>;
 }

@@ -21,7 +21,7 @@ describe("class selection", () => {
 		await fireEvent.press(screen.getByText("models:classes.7"));
 		expect(onChoose).not.toHaveBeenCalled();
 		expect(screen.getByText("333")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:classes.confirm"));
 		expect(onChoose).toHaveBeenCalledTimes(1);
 		expect(onChoose).toHaveBeenCalledWith(1);
 	});
@@ -29,7 +29,7 @@ describe("class selection", () => {
 	it("refuses using the server index without choosing a class", async () => {
 		const onChoose = jest.fn();
 		await render(<ClassesCollector collector={collector()} onChoose={onChoose} submitting={false} />);
-		await fireEvent.press(screen.getByText("app:collector.refuse"));
+		await fireEvent.press(screen.getByLabelText("app:collector.refuse"));
 		expect(onChoose).toHaveBeenCalledWith(2);
 	});
 
@@ -39,7 +39,7 @@ describe("class selection", () => {
 		const onChoose = jest.fn();
 		await render(<ClassesCollector collector={expired} onChoose={onChoose} submitting={false} />);
 		await fireEvent.press(screen.getByText("models:classes.7"));
-		expect(screen.queryByText("app:collector.accept")).toBeNull();
+		await fireEvent.press(screen.getByText("app:classes.confirm"));
 		expect(onChoose).not.toHaveBeenCalled();
 	});
 });
