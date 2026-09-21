@@ -53,7 +53,7 @@ function visibleChoices(collector: ReactionCollectorCreation): IndexedChoice[] {
 		.filter(choice => !isServerOnlyChoice(collector, choice));
 }
 
-function countdownLabel(secondsLeft: number, submitting: boolean): string {
+export function countdownLabel(secondsLeft: number, submitting: boolean): string {
 	if (submitting) {
 		return i18n.t("app:collector.answering");
 	}

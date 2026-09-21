@@ -13,7 +13,7 @@ import {InventoryItemRow} from "@/src/components/InventoryItemRow";
 import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {itemDisplayName} from "@/src/collectors/CollectorLabels";
-import {AppIcons} from "@/src/AppIcons";
+import {plantName} from "@/src/display/Resources";
 import {i18n} from "@/src/translations/i18n";
 
 const CHEST_VIEWS = ["equipment", "plants"] as const;
@@ -70,11 +70,11 @@ function ChestPlants({data, actions}: {data: HomeChestData; actions: ChestAction
 	};
 	return <>
 		<SectionHeader>{i18n.t("app:homeChest.chest")}</SectionHeader>
-		<Panel>{stored.length ? stored.map(plant => <Row key={plant.plantId} title={`${AppIcons.getIcon(`plants.${plant.plantId}`)} ${i18n.t(`models:plants.${plant.plantId}`)}`} subtitle={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} end={i18n.t("app:homeChest.actions.plantWithdraw")} disabled={actions.pending} onPress={(): void => setSelection({plantId: plant.plantId, request: makeFromClientPacket(HomePlantTransferReq, {action: PLANT_TRANSFER_ACTIONS.WITHDRAW, plantId: plant.plantId, playerSlot: 0})})} />) : <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note>}</Panel>
+		<Panel>{stored.length ? stored.map(plant => <Row key={plant.plantId} title={plantName(plant.plantId)} subtitle={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} end={i18n.t("app:homeChest.actions.plantWithdraw")} disabled={actions.pending} onPress={(): void => setSelection({plantId: plant.plantId, request: makeFromClientPacket(HomePlantTransferReq, {action: PLANT_TRANSFER_ACTIONS.WITHDRAW, plantId: plant.plantId, playerSlot: 0})})} />) : <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note>}</Panel>
 		<SectionHeader>{i18n.t("app:homeChest.inventory")}</SectionHeader>
-		<Panel>{carried.length ? carried.map(plant => <Row key={plant.slot} title={`${AppIcons.getIcon(`plants.${plant.plantId}`)} ${i18n.t(`models:plants.${plant.plantId}`)}`} subtitle={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} end={i18n.t("app:homeChest.actions.plantDeposit")} disabled={actions.pending} onPress={(): void => setSelection({plantId: plant.plantId, request: makeFromClientPacket(HomePlantTransferReq, {action: PLANT_TRANSFER_ACTIONS.DEPOSIT, plantId: 0, playerSlot: plant.slot})})} />) : <Note>{i18n.t("app:inventory.noPlants")}</Note>}</Panel>
+		<Panel>{carried.length ? carried.map(plant => <Row key={plant.slot} title={plantName(plant.plantId)} subtitle={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} end={i18n.t("app:homeChest.actions.plantDeposit")} disabled={actions.pending} onPress={(): void => setSelection({plantId: plant.plantId, request: makeFromClientPacket(HomePlantTransferReq, {action: PLANT_TRANSFER_ACTIONS.DEPOSIT, plantId: 0, playerSlot: plant.slot})})} />) : <Note>{i18n.t("app:inventory.noPlants")}</Note>}</Panel>
 		{data.plantMaxCapacity === undefined ? null : <Note>{i18n.t("app:homeChest.plantCapacity", {count: data.plantMaxCapacity})}</Note>}
-		{selection ? <Confirmation title={i18n.t(`app:homeChest.actions.${selection.request.action}`)} message={i18n.t(`models:plants.${selection.plantId}`)} onRequestClose={(): void => setSelection(null)}><ButtonRow><Button variant="primary" disabled={actions.pending} onPress={confirm}>{i18n.t("app:collector.accept")}</Button><Button onPress={(): void => setSelection(null)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow></Confirmation> : null}
+		{selection ? <Confirmation title={i18n.t(`app:homeChest.actions.${selection.request.action}`)} message={plantName(selection.plantId)} onRequestClose={(): void => setSelection(null)}><ButtonRow><Button variant="primary" disabled={actions.pending} onPress={confirm}>{i18n.t("app:collector.accept")}</Button><Button onPress={(): void => setSelection(null)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow></Confirmation> : null}
 	</>;
 }
 

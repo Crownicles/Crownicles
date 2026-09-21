@@ -10,8 +10,8 @@ import {CookingRequest, cookingMenuFromOutcome, useCookingActions} from "@/src/s
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {HomeCookingResults} from "@/src/components/HomeCookingResults";
 import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel, SectionHeader} from "@/src/design/Primitives";
-import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
+import {materialName, plantName} from "@/src/display/Resources";
 import {i18n} from "@/src/translations/i18n";
 
 type CookingActions = {pending: boolean; submit: (request: CookingRequest) => Promise<void>};
@@ -19,8 +19,8 @@ type RecipeSelection = {slotIndex: number; recipe: NonNullable<CookingSlot["reci
 
 function Ingredients({ingredients}: {ingredients: RecipeIngredients}): ReactNode {
 	return <>
-		{ingredients.plants.map(plant => <KeyValue key={plant.plantId} label={`${AppIcons.getIcon(`plants.${plant.plantId}`)} ${i18n.t(`models:plants.${plant.plantId}`)}`} value={i18n.t("app:cooking.ingredientQuantity", {owned: plant.playerHas, required: plant.quantity})} />)}
-		{ingredients.materials.map(material => <KeyValue key={material.materialId} label={i18n.t(`models:materials.${material.materialId}`)} value={i18n.t("app:cooking.ingredientQuantity", {owned: material.playerHas, required: material.quantity})} />)}
+		{ingredients.plants.map(plant => <KeyValue key={plant.plantId} label={plantName(plant.plantId)} value={i18n.t("app:cooking.ingredientQuantity", {owned: plant.playerHas, required: plant.quantity})} />)}
+		{ingredients.materials.map(material => <KeyValue key={material.materialId} label={materialName(material.materialId)} value={i18n.t("app:cooking.ingredientQuantity", {owned: material.playerHas, required: material.quantity})} />)}
 	</>;
 }
 

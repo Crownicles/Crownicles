@@ -1152,8 +1152,7 @@
       "topAmount": "Contribution",
       "endsAt": "Fin de la bénédiction",
       "expiresAt": "Expiration de la cagnotte",
-      "pool": "Cagnotte de l'Oracle",
-      "all": "Toutes les bénédictions"
+      "pool": "Cagnotte de l'Oracle"
     },
     "badges": {
       "total": "Badges obtenus : {{count}} / {{total}}",

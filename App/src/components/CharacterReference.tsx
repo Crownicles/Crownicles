@@ -14,19 +14,21 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {KeyValue, Note, Panel, Row, SectionHeader, StatBar} from "@/src/design/Primitives";
-import {ActionBanner} from "@/src/design/Sections";
+import {FightGauge} from "@/src/components/FightGauge";
+import {gaugeEmoji} from "@/src/components/Guild";
+import {KeyValue, Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
+import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
 import {BookOpen} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
-import {formatMoney, formatNumber} from "@/src/display/Amounts";
+import {formatNumber} from "@/src/display/Amounts";
 import {missionDate} from "@/src/display/Missions";
 import {i18n} from "@/src/translations/i18n";
 
 const HIDDEN_BADGES = new Set<Badge>([BADGE_CODES.DONOR, BADGE_CODES.VOTER]);
 const VISIBLE_BADGES = Object.values(BADGE_CODES).filter(badge => !HIDDEN_BADGES.has(badge));
-const BLESSING_TYPES = Object.values(BlessingType).filter((value): value is BlessingType => typeof value === "number" && value !== BlessingType.NONE);
+const BLESSING_EMBLEM_SIZE = 40;
 const GUIDE_URL = "https://guide.crownicles.com";
 
 export function RarityContent({rarities}: {rarities: number[]}): ReactNode {
@@ -42,39 +44,43 @@ export function Rarity(): ReactNode {
 	return <GameQueryContent state={state} entity={GAME_ENTITIES.RARITY}>{data => <RarityContent rarities={data.rarities} />}</GameQueryContent>;
 }
 
-function BlessingContributors({data}: {data: BlessingRes}): ReactNode {
-	return <>
-		<SectionHeader>{i18n.t("app:reference.blessing.contributors")}</SectionHeader>
-		<Panel>
-			<KeyValue label={i18n.t("app:reference.blessing.contributors")} value={formatNumber(data.totalContributors)} />
-			{data.lastTriggeredBy ? <KeyValue label={i18n.t("app:reference.blessing.triggeredBy")} value={data.lastTriggeredBy} /> : null}
-			{data.topContributor ? <KeyValue label={i18n.t("app:reference.blessing.topContributor")} value={data.topContributor} /> : null}
-			{data.topContributorAmount !== undefined ? <KeyValue label={i18n.t("app:reference.blessing.topAmount")} value={formatMoney(data.topContributorAmount)} /> : null}
-		</Panel>
-	</>;
+/** The people and dates behind a blessing, each shown only when the server sent it. */
+function blessingDetails(data: BlessingRes, active: boolean): {label: string; value: string}[] {
+	return [
+		...active && data.blessingEndAt ? [{label: i18n.t("app:reference.blessing.endsAt"), value: missionDate(data.blessingEndAt)}] : [],
+		...!active && data.poolExpiresAt > 0 ? [{label: i18n.t("app:reference.blessing.expiresAt"), value: missionDate(data.poolExpiresAt)}] : [],
+		...data.lastTriggeredBy ? [{label: i18n.t("app:reference.blessing.triggeredBy"), value: data.lastTriggeredBy}] : [],
+		...data.topContributor ? [{label: i18n.t("app:reference.blessing.topContributor"), value: data.topContributor}] : []
+	];
 }
 
-function BlessingState({data}: {data: BlessingRes}): ReactNode {
-	if (data.activeBlessingType !== BlessingType.NONE) return <>
-		<SectionHeader first>{i18n.t(`bot:blessingNames.${data.activeBlessingType}`)}</SectionHeader>
-		<Note>{i18n.t(`bot:blessingEffects.${data.activeBlessingType}`)}</Note>
-		{data.blessingEndAt ? <Panel><KeyValue label={i18n.t("app:reference.blessing.endsAt")} value={missionDate(data.blessingEndAt)} /></Panel> : null}
-	</>;
-	return <>
-		<SectionHeader first>{i18n.t("app:reference.blessing.pool")}</SectionHeader>
-		<Panel>
-			<StatBar label={i18n.t("app:missions.progress")} value={i18n.t("app:profile.formats.progress", {value: data.poolAmount, max: data.poolThreshold})} ratio={data.poolThreshold > 0 ? data.poolAmount / data.poolThreshold : 0} color={Theme.colors.gold} />
-			{data.poolExpiresAt > 0 ? <KeyValue label={i18n.t("app:reference.blessing.expiresAt")} value={missionDate(data.poolExpiresAt)} /> : null}
-		</Panel>
-	</>;
+function blessingFigures(data: BlessingRes): Figure[] {
+	return [
+		{caption: i18n.t("app:reference.blessing.contributors"), value: formatNumber(data.totalContributors)},
+		...data.topContributorAmount === undefined ? [] : [{caption: i18n.t("app:reference.blessing.topAmount"), value: formatNumber(data.topContributorAmount), unit: "money"}]
+	];
 }
 
 export function BlessingContent({data}: {data: BlessingRes}): ReactNode {
+	const active = data.activeBlessingType !== BlessingType.NONE;
+	const details = blessingDetails(data, active);
 	return <>
-		<BlessingState data={data} />
-		<BlessingContributors data={data} />
-		<SectionHeader>{i18n.t("app:reference.blessing.all")}</SectionHeader>
-		<Panel>{BLESSING_TYPES.map(type => <Row key={type} title={i18n.t(`bot:blessingNames.${type}`)} subtitle={i18n.t(`bot:blessingEffects.${type}`)} />)}</Panel>
+		<Standing
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon("smallEvents.altar")} size={BLESSING_EMBLEM_SIZE} />}
+			caption={i18n.t("app:profile.titles.blessing")}
+			title={active ? i18n.t(`bot:blessingNames.${data.activeBlessingType}`) : i18n.t("app:reference.blessing.pool")}
+			{...active ? {subtitle: i18n.t(`bot:blessingEffects.${data.activeBlessingType}`)} : {}}
+		>
+			{active ? null : <FightGauge
+				label={i18n.t("app:missions.progress")}
+				value={data.poolAmount}
+				max={data.poolThreshold}
+				color={Theme.colors.gold}
+				{...gaugeEmoji("unitValues.money")}
+			/>}
+			<Figures items={blessingFigures(data)} />
+		</Standing>
+		{details.length > 0 ? <Panel>{details.map(detail => <KeyValue key={detail.label} label={detail.label} value={detail.value} />)}</Panel> : null}
 	</>;
 }
 

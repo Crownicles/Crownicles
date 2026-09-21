@@ -7,7 +7,10 @@ import {AppIcons} from "@/src/AppIcons";
 import {INVENTORY_MENUS, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {KeyValue, Note, Panel, QuickAction, QuickActions, Row, SectionHeader} from "@/src/design/Primitives";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
+import {Theme} from "@/src/design/Theme";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {formatNumber} from "@/src/display/Amounts";
+import {materialName, plantName} from "@/src/display/Resources";
 
 export type InventoryData = NonNullable<InventoryRes["data"]>;
 type InventoryArtifacts = Pick<InventoryRes, "hasTalisman" | "hasCloneTalisman" | "hasRemoteHarvestTalisman">;
@@ -44,24 +47,24 @@ function InventoryReserve({data}: {data: InventoryData}): ReactNode {
 
 function InventoryMaterials({materials}: {materials: MaterialQuantity[]}): ReactNode {
 	if (materials.length === 0) return <Note>{i18n.t("app:inventory.noMaterials")}</Note>;
-	return <Panel>{materials.map(material => <KeyValue key={material.materialId} label={i18n.t(`models:materials.${material.materialId}`)} value={formatNumber(material.quantity)} />)}</Panel>;
+	return <Panel>{materials.map(material => <KeyValue key={material.materialId} label={materialName(material.materialId)} value={formatNumber(material.quantity)} />)}</Panel>;
 }
 
 function InventoryPlants({plants}: {plants: InventoryData["plants"]}): ReactNode {
 	if (!plants) return <Note>{i18n.t("app:inventory.noPlants")}</Note>;
 	return <>
 		<Panel>
-			<KeyValue label={i18n.t("app:inventory.seed")} value={plants.seed ? i18n.t(`models:plants.${plants.seed}`) : i18n.t("app:profile.values.none")} />
-			{plants.plantSlots.map(plant => <KeyValue key={plant.slot} label={i18n.t(`models:plants.${plant.plantId}`)} value={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} />)}
+			<KeyValue label={i18n.t("app:inventory.seed")} value={plants.seed ? plantName(plants.seed) : i18n.t("app:profile.values.none")} />
+			{plants.plantSlots.map(plant => <KeyValue key={plant.slot} label={plantName(plant.plantId)} value={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} />)}
 		</Panel>
 		<Note>{i18n.t("app:equipment.capacity", {count: plants.plantSlots.length, max: plants.maxPlantSlots})}</Note>
 	</>;
 }
 
 const ARTIFACTS = [
-	{field: "hasTalisman", name: "expedition"},
-	{field: "hasCloneTalisman", name: "clone"},
-	{field: "hasRemoteHarvestTalisman", name: "harvest"}
+	{field: "hasTalisman", name: "expedition", icon: "expedition.talisman"},
+	{field: "hasCloneTalisman", name: "clone", icon: "expedition.cloneTalisman"},
+	{field: "hasRemoteHarvestTalisman", name: "harvest", icon: "city.gardenStatus.remoteHarvestTalisman"}
 ] as const;
 
 function InventoryArtifactList({artifacts}: {artifacts: InventoryArtifacts}): ReactNode {
@@ -70,6 +73,7 @@ function InventoryArtifactList({artifacts}: {artifacts: InventoryArtifacts}): Re
 		<Panel>{ARTIFACTS.map(artifact => <Row
 			key={artifact.field}
 			disabled={!artifacts[artifact.field]}
+			icon={<TwemojiIcon emoji={AppIcons.getIcon(artifact.icon)} size={Theme.dimensions.headerIcon} />}
 			title={i18n.t(`app:inventory.artifacts.${artifact.name}`)}
 			end={i18n.t(artifacts[artifact.field] ? "app:inventory.owned" : "app:inventory.absent")}
 		/>)}</Panel>

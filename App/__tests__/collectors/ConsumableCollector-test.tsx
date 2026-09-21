@@ -18,8 +18,9 @@ describe("daily bonus and potion outcomes", () => {
 		]};
 		const choose = jest.fn();
 		await render(<ConsumableCollector collector={collector} onChoose={choose} submitting={false} />);
-		expect(screen.getAllByText("models:objects.3")).toHaveLength(3);
-		await fireEvent.press(screen.getAllByRole("button", {name: /models:objects.3/})[1]);
+		expect(screen.getAllByText("models:objects.3")).toHaveLength(2);
+		await fireEvent.press(screen.getAllByRole("button", {name: "models:objects.3"})[1]);
+		await fireEvent.press(screen.getByRole("button", {name: "app:dailyBonus.claim"}));
 		expect(choose).toHaveBeenCalledTimes(1);
 		expect(choose).toHaveBeenCalledWith(2);
 	});

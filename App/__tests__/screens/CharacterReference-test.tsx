@@ -7,7 +7,7 @@ import {GameClient} from "@/src/networking/GameClient";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
-jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => ""}}));
+jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {language: "fr", t: (key: string, options?: Record<string, unknown>): string => {
 	if (key === "app:reference.percentage") return `${options?.value} %`;
 	if (key === "app:profile.formats.progress") return `${options?.value} / ${options?.max}`;

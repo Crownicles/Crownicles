@@ -4,8 +4,11 @@ import Profile from "@/app/(protected)/(tabs)/profile";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 
+const mockPush = jest.fn();
+
 jest.mock("expo-router", () => ({
 	useNavigation: (): {setOptions: jest.Mock} => ({setOptions: jest.fn()}),
+	useRouter: (): {push: jest.Mock} => ({push: mockPush}),
 	useFocusEffect: jest.fn()
 }));
 
@@ -86,17 +89,11 @@ describe("Profile screen", () => {
 		expect(view.getByText("app:profile.fields.attack")).toBeTruthy();
 	});
 
-	it("opens the inventory and returns to the profile", async () => {
+	it("hands the sub-pages over to the navigation stack, so the back gesture works", async () => {
 		const view = await render(<Profile />);
 		await fireEvent.press(view.getByRole("button", {name: /app:profile.titles.inventory/}));
-		await fireEvent.press(view.getByLabelText("app:common.back"));
-		expect(view.queryByLabelText("app:common.back")).toBeNull();
-	});
-
-	it("opens missions without keeping the profile behind a modal", async () => {
-		const view = await render(<Profile />);
+		expect(mockPush).toHaveBeenCalledWith("/profile/inventory");
 		await fireEvent.press(view.getByRole("button", {name: /app:profile.titles.missions/}));
-		expect(view.getByLabelText("app:common.back")).toBeTruthy();
-		expect(view.queryByText("app:profile.titles.statistics")).toBeNull();
+		expect(mockPush).toHaveBeenCalledWith("/profile/missions");
 	});
 });

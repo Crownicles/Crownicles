@@ -11,7 +11,7 @@ import {useGardenActions} from "@/src/store/useGardenActions";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel, Row, SectionHeader, StatBar} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
-import {AppIcons} from "@/src/AppIcons";
+import {materialName, plantName} from "@/src/display/Resources";
 import {i18n} from "@/src/translations/i18n";
 
 const PERCENTAGE_SCALE = 100;
@@ -20,8 +20,8 @@ type GardenActions = {pending: boolean; select: (selection: GardenSelection) => 
 type GardenPlot = GardenSnapshot["plots"][number];
 
 function GardenPlotRow({plot, garden, actions}: {plot: GardenPlot; garden: GardenSnapshot; actions: GardenActions}): ReactNode {
-	if (plot.plantId === 0) return <Row title={i18n.t("app:city.garden.plot", {slot: plot.slot + 1})} subtitle={i18n.t("app:city.garden.empty")} end={i18n.t("app:garden.plant")} disabled={actions.pending || !garden.eligibility.canPlantSeed} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.PLANT, gardenSlot: plot.slot}, message: i18n.t("app:garden.confirmPlant", {plant: i18n.t(`models:plants.${garden.seedPlantId}`), slot: plot.slot + 1})})} />;
-	const name = `${AppIcons.getIcon(`plants.${plot.plantId}`)} ${i18n.t(`models:plants.${plot.plantId}`)}`;
+	if (plot.plantId === 0) return <Row title={i18n.t("app:city.garden.plot", {slot: plot.slot + 1})} subtitle={i18n.t("app:city.garden.empty")} end={i18n.t("app:garden.plant")} disabled={actions.pending || !garden.eligibility.canPlantSeed} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.PLANT, gardenSlot: plot.slot}, message: i18n.t("app:garden.confirmPlant", {plant: plantName(garden.seedPlantId), slot: plot.slot + 1})})} />;
+	const name = plantName(plot.plantId);
 	return <StatBar label={i18n.t("app:city.garden.plotPlant", {slot: plot.slot + 1, plant: name})} value={i18n.t(plot.isReady ? "app:city.garden.ready" : "app:city.garden.growing", {progress: Math.round(plot.growthProgress * PERCENTAGE_SCALE)})} ratio={plot.growthProgress} color={Theme.colors.green} />;
 }
 
@@ -29,20 +29,20 @@ function CompostOffers({offers, actions}: {offers: GardenCompostOffer[]; actions
 	if (!offers.length) return null;
 	return <>
 		<SectionHeader>{i18n.t("app:garden.compost")}</SectionHeader>
-		<Panel>{offers.map(offer => <Row key={`${offer.plantId}-${offer.quantity}`} title={`${AppIcons.getIcon(`plants.${offer.plantId}`)} ${i18n.t(`models:plants.${offer.plantId}`)}`} end={i18n.t("app:garden.quantity", {count: offer.quantity})} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.COMPOST, ...offer}, message: i18n.t("app:garden.confirmCompost", {plant: i18n.t(`models:plants.${offer.plantId}`), count: offer.quantity})})} disabled={actions.pending} chevron />)}</Panel>
+		<Panel>{offers.map(offer => <Row key={`${offer.plantId}-${offer.quantity}`} title={plantName(offer.plantId)} end={i18n.t("app:garden.quantity", {count: offer.quantity})} onPress={(): void => actions.select({operation: {type: GARDEN_OPERATIONS.COMPOST, ...offer}, message: i18n.t("app:garden.confirmCompost", {plant: plantName(offer.plantId), count: offer.quantity})})} disabled={actions.pending} chevron />)}</Panel>
 	</>;
 }
 
 function ReceivedMaterials({materials}: {materials: number[]}): ReactNode {
 	const counts = new Map<number, number>();
 	for (const materialId of materials) counts.set(materialId, (counts.get(materialId) ?? 0) + 1);
-	return <Panel>{[...counts].map(([materialId, quantity]) => <KeyValue key={materialId} label={i18n.t(`models:materials.${materialId}`)} value={i18n.t("app:garden.quantity", {count: quantity})} />)}</Panel>;
+	return <Panel>{[...counts].map(([materialId, quantity]) => <KeyValue key={materialId} label={materialName(materialId)} value={i18n.t("app:garden.quantity", {count: quantity})} />)}</Panel>;
 }
 
 function GardenResult({outcome}: {outcome: GardenOutcome | null}): ReactNode {
 	if (!outcome) return null;
 	switch (outcome.kind) {
-		case "plant": return <Note>{i18n.t("app:garden.planted", {plant: i18n.t(`models:plants.${outcome.plantId}`), slot: outcome.gardenSlot + 1})}</Note>;
+		case "plant": return <Note>{i18n.t("app:garden.planted", {plant: plantName(outcome.plantId), slot: outcome.gardenSlot + 1})}</Note>;
 		case "water": return <Note>{i18n.t("app:garden.watered", {count: outcome.slotsWatered, ready: outcome.slotsBecameReady})}</Note>;
 		case "harvest": return <><Note>{i18n.t("app:garden.harvested", {stored: outcome.plantsHarvested, composted: outcome.plantsComposted})}</Note><ReceivedMaterials materials={outcome.compostResults.map(result => result.materialId)} /></>;
 		case "compost": return <><Note>{i18n.t("app:garden.composted", {count: outcome.quantity})}</Note><ReceivedMaterials materials={outcome.materials} /></>;
@@ -55,7 +55,7 @@ function GardenResult({outcome}: {outcome: GardenOutcome | null}): ReactNode {
 
 function GardenPlots({garden, actions}: {garden: GardenSnapshot; actions: GardenActions}): ReactNode {
 	return <>
-		<Panel><KeyValue label={i18n.t("app:inventory.seed")} value={garden.hasSeed ? i18n.t(`models:plants.${garden.seedPlantId}`) : i18n.t("app:profile.values.none")} /><KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={String(garden.totalPlots)} /></Panel>
+		<Panel><KeyValue label={i18n.t("app:inventory.seed")} value={garden.hasSeed ? plantName(garden.seedPlantId) : i18n.t("app:profile.values.none")} /><KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={String(garden.totalPlots)} /></Panel>
 		<SectionHeader>{i18n.t("app:garden.plots")}</SectionHeader>
 		<Panel>{garden.plots.map(plot => <GardenPlotRow key={plot.slot} plot={plot} garden={garden} actions={actions} />)}</Panel>
 		<ButtonRow>
@@ -68,7 +68,7 @@ function GardenPlots({garden, actions}: {garden: GardenSnapshot; actions: Garden
 function GardenStorage({plants}: {plants: GardenSnapshot["plantStorage"]}): ReactNode {
 	return <>
 		<SectionHeader>{i18n.t("app:garden.storage")}</SectionHeader>
-		<Panel>{plants.map(plant => <KeyValue key={plant.plantId} label={i18n.t(`models:plants.${plant.plantId}`)} value={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} />)}{!plants.length ? <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note> : null}</Panel>
+		<Panel>{plants.map(plant => <KeyValue key={plant.plantId} label={plantName(plant.plantId)} value={i18n.t("app:equipment.capacity", {count: plant.quantity, max: plant.maxCapacity})} />)}{!plants.length ? <Note>{i18n.t("app:homeChest.noStoredPlants")}</Note> : null}</Panel>
 	</>;
 }
 

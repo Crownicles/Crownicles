@@ -5,6 +5,7 @@ import {Theme} from "@/src/design/Theme";
 import {expeditionLocationName, expeditionPetName, expeditionRisk} from "@/src/display/PetExpedition";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
+import {materialName} from "@/src/display/Resources";
 import {missionDate} from "@/src/display/Missions";
 import {useSecondsLeft} from "@/src/collectors/CollectorPrompt";
 import {i18n} from "@/src/translations/i18n";
@@ -53,7 +54,7 @@ export function ExpeditionRewardDetails({rewards}: {rewards: ExpeditionRewards})
 			<KeyValue label={i18n.t("app:profile.fields.experience")} value={formatNumber(rewards.experience)} />
 			<KeyValue label={i18n.t("app:profile.fields.score")} value={formatNumber(rewards.points)} />
 			{rewards.tokens !== undefined ? <KeyValue label={i18n.t("app:profile.fields.tokens")} value={formatNumber(rewards.tokens)} /> : null}
-			{rewards.materialLoot?.map(material => <KeyValue key={material.materialId} label={i18n.t(`models:materials.${material.materialId}`)} value={formatNumber(material.quantity)} />)}
+			{rewards.materialLoot?.map(material => <KeyValue key={material.materialId} label={materialName(material.materialId)} value={formatNumber(material.quantity)} />)}
 		</Panel>
 		{rewards.cloneTalismanFound ? <Row title={i18n.t("app:expedition.cloneFound")} /> : null}
 		{rewards.itemGiven ? <Row title={i18n.t("app:expedition.itemFound")} /> : null}

@@ -40,7 +40,10 @@ const styles = StyleSheet.create({
 	entryEmblem: {width: 32, height: 32, flexShrink: 0, alignItems: "center", justifyContent: "center"},
 	entryLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink},
 	chevronOpen: {transform: [{rotate: "180deg"}]},
-	details: {backgroundColor: Theme.colors.wash, paddingHorizontal: Theme.spacing.lg, paddingBottom: Theme.spacing.lg, gap: Theme.spacing.md}
+	details: {backgroundColor: Theme.colors.wash, paddingHorizontal: Theme.spacing.lg, paddingBottom: Theme.spacing.lg, gap: Theme.spacing.md},
+	back: {width: 34, height: 34, borderRadius: 17, backgroundColor: Theme.colors.wash, alignItems: "center", justifyContent: "center", marginBottom: Theme.spacing.lg},
+	/** The icon set only ships a downward chevron; a quarter turn points it back. */
+	backChevron: {transform: [{rotate: "90deg"}]}
 });
 
 /** Why an action cannot be taken, so the screen can say it instead of letting the player find out. */
@@ -58,6 +61,12 @@ export function LockHint({lock, testID}: {lock: Lock; testID?: string}): ReactNo
 		<Icon size={15} color={Theme.colors.muted} />
 		<Text style={styles.lockText}>{lock.reason}</Text>
 	</View>;
+}
+
+export function BackButton({label, onClose}: {label: string; onClose: () => void}): ReactNode {
+	return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onClose} style={({pressed}): object[] => [styles.back, pressed && styles.pressed].filter(Boolean) as object[]}>
+		<View style={styles.backChevron}><ChevronDown size={18} color={Theme.colors.ink} /></View>
+	</Pressable>;
 }
 
 export function Standing({emblem, caption, title, subtitle, children, onPress, accessibilityLabel, testID}: {

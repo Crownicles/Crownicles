@@ -1,20 +1,10 @@
-import {useNavigation} from "expo-router";
+import {useNavigation, useRouter} from "expo-router";
 import {ReactNode, useEffect, useState} from "react";
 import {ActivityIndicator, StyleSheet, View} from "react-native";
-import {GameClient} from "@/src/networking/GameClient";
-import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
-import {GAME_ENTITIES} from "@/src/store/GameEntities";
+import {RequestState} from "@/src/store/useGameQuery";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
-import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
-import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
-import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
-import {Inventory, InventoryData} from "@/src/components/Inventory";
-import {Missions as MissionsScreen} from "@/src/components/Missions";
-import {Blessing, Guide} from "@/src/components/CharacterReference";
 import {FightGauge} from "@/src/components/FightGauge";
 import {gaugeEmoji} from "@/src/components/Guild";
-import {DetailScreen} from "@/src/design/DetailScreen";
 import {AppIcons} from "@/src/AppIcons";
 import {
 	EmptyState,
@@ -42,8 +32,8 @@ const CAMPAIGN_COMPLETE = 100;
 const UNRANKED_GLORY = -1;
 const SECTION_EMBLEM_SIZE = 26;
 const STANDING_EMBLEM_SIZE = 40;
-type ProfilePage = "profile" | "inventory" | "missions" | "guide" | "blessing";
-const PROFILE_PAGES: {page: Exclude<ProfilePage, "profile">; icon: string}[] = [
+type ProfilePage = "inventory" | "missions" | "guide" | "blessing";
+const PROFILE_PAGES: {page: ProfilePage; icon: string}[] = [
 	{page: "inventory", icon: "inventory.stock"},
 	{page: "missions", icon: "missions.campaign"},
 	{page: "guide", icon: "missions.book"},
@@ -55,9 +45,6 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		paddingVertical: Theme.spacing.xxl
-	},
-	inventory: {
-		marginTop: Theme.spacing.sectionGap
 	}
 });
 
@@ -333,37 +320,10 @@ function ProfileState({state, onPage}: {state: RequestState<ProfileRes>; onPage:
 	return <ProfileDetails profile={state.data} onPage={onPage} />;
 }
 
-function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNode {
-	const inventoryData: InventoryData | null = state.status === "ready" ? state.data.data ?? null : null;
-	const emptyMessage = state.status === "failed"
-		? i18n.t("app:common.error")
-		: state.status === "ready"
-			? i18n.t("app:profile.inventory.empty")
-			: i18n.t("app:common.loading");
-	return (
-		<View style={styles.inventory}>
-			{inventoryData ? <Inventory inventoryData={inventoryData} artifacts={state.status === "ready" ? state.data : {}} /> : <EmptyState>{emptyMessage}</EmptyState>}
-		</View>
-	);
-}
-
-function ProfilePageContent({page, inventory}: {page: Exclude<ProfilePage, "profile">; inventory: RequestState<InventoryRes>}): ReactNode {
-	switch (page) {
-		case "inventory": return <InventorySection state={inventory} />;
-		case "missions": return <MissionsScreen />;
-		case "guide": return <Guide />;
-		default: return <Blessing />;
-	}
-}
-
 export default function Profile(): ReactNode {
-	const [page, setPage] = useState<ProfilePage>("profile");
 	const profileState = usePlayerProfile();
-	const inventoryState = useGameQuery<InventoryRes>(
-		GAME_ENTITIES.INVENTORY,
-		() => GameClient.request(makeFromClientPacket(InventoryReq, {askedPlayer: {}}), InventoryRes, [PlayerNotFound])
-	);
 	const navigation = useNavigation();
+	const router = useRouter();
 	const profile = profileState.status === "ready" ? profileState.data : null;
 
 	useEffect(() => {
@@ -372,8 +332,5 @@ export default function Profile(): ReactNode {
 		}
 	}, [profile, navigation]);
 
-	if (page !== "profile") return <DetailScreen title={i18n.t(`app:profile.titles.${page}`)} eyebrow={i18n.t("app:profile.eyebrow")} onClose={(): void => setPage("profile")}>
-		<ProfilePageContent page={page} inventory={inventoryState} />
-	</DetailScreen>;
-	return <Screen><ProfileState state={profileState} onPage={setPage} /></Screen>;
+	return <Screen><ProfileState state={profileState} onPage={(page): void => router.push(`/profile/${page}`)} /></Screen>;
 }
