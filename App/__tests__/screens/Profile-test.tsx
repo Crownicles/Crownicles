@@ -73,11 +73,17 @@ describe("Profile screen", () => {
 		const view = await render(<Profile />);
 
 		expect(view.getByText("app:profile.eyebrow")).toBeTruthy();
-		expect(view.getByText("app:profile.titles.information")).toBeTruthy();
+		expect(view.getByTestId("profile-standing")).toBeTruthy();
 		expect(view.getByText("app:profile.titles.statistics")).toBeTruthy();
-		expect(view.getAllByText("app:profile.titles.missions")).toHaveLength(2);
 		expect(view.getByText("app:profile.titles.scoreAndRank")).toBeTruthy();
 		expect(view.queryByText("app:profile.tooltips.money")).toBeNull();
+	});
+
+	it("keeps the fighting statistics folded until they are asked for", async () => {
+		const view = await render(<Profile />);
+		expect(view.queryByText("app:profile.fields.attack")).toBeNull();
+		await fireEvent.press(view.getByText("app:profile.titles.statistics"));
+		expect(view.getByText("app:profile.fields.attack")).toBeTruthy();
 	});
 
 	it("opens the inventory and returns to the profile", async () => {
