@@ -35,14 +35,6 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 	availableServices!: CityService[];
 
-	/** Services hosted by other cities, shown as an informational catalogue in mobile. */
-	otherCityServices?: {
-		mapLocationId: number;
-		mapLocationIds?: number[];
-		serviceKey: string;
-		kind: "service" | "shop";
-	}[];
-
 	/**
 	 * If set, the Discord side should auto-navigate to this menu after rendering.
 	 * Used to keep the player in the chest menu after a deposit/withdraw action.

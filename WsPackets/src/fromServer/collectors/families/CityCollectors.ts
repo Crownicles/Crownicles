@@ -22,9 +22,6 @@ export type CityMobileSnapshot = {
 	shops?: {
 		shopId: string; isEmpty: boolean;
 	}[];
-	otherCityServices?: {
-		mapLocationId: number; mapLocationIds?: number[]; serviceKey: string; kind: "service" | "shop";
-	}[];
 	home?: {
 		owned?: {
 			level: number;

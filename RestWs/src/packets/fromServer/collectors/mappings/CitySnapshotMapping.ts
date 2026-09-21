@@ -189,7 +189,6 @@ export function mapCitySnapshot(data: ReactionCollectorCityData): CityMobileSnap
 		shops: data.shops?.map(shop => ({
 			shopId: shop.shopId, isEmpty: Boolean(shop.isEmpty)
 		})),
-		otherCityServices: data.otherCityServices?.map(service => ({ ...service })),
 		home: {
 			owned: data.home.owned ? mapOwnedHome(data.home.owned) : undefined, manage: data.home.manage ? mapHomeManage(data.home.manage) : undefined
 		},
