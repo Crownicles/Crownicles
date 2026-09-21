@@ -196,6 +196,14 @@ export abstract class KeycloakUtils {
 				username: registerParams.keycloakUsername,
 				attributes,
 				enabled: true,
+
+				// Left unverified on purpose: the realm's verifyEmail asks for the proof at first login
+				...registerParams.email
+					? {
+						email: registerParams.email,
+						emailVerified: false
+					}
+					: {},
 				credentials: registerParams.password
 					? [
 						{
@@ -219,6 +227,35 @@ export abstract class KeycloakUtils {
 		}
 
 		return formatApiCallOk(res, { user: getUser.payload.user! });
+	}
+
+	/**
+	 * Ask Keycloak to send the address verification mail.
+	 *
+	 * Failing here is expected when the mail relay is out of quota, so callers must treat it as a
+	 * failed registration: an account nobody can verify still holds the address hostage.
+	 * @param keycloakConfig
+	 * @param keycloakId
+	 */
+	public static async sendVerificationEmail(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<ApiCallReturnType<Record<string, never>>> {
+		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
+		if (checkAndQueryToken.isError) {
+			return checkAndQueryToken;
+		}
+
+		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${keycloakId}/send-verify-email`, {
+			method: "PUT",
+			headers: {
+				"Authorization": `Bearer ${this.keycloakToken}`,
+				"Content-Type": "application/json"
+			}
+		});
+
+		if (!res.ok) {
+			return formatApiCallError(res);
+		}
+
+		return formatApiCallOk(res, {});
 	}
 
 	/**

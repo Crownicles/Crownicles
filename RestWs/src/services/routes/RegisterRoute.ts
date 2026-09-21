@@ -3,7 +3,7 @@ import { RegisteringConstants } from "../../constants/RegisteringConstants";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import { LANGUAGE } from "../../../../Lib/src/Language";
 import {
-	FastifyInstance, FastifyReply
+	FastifyInstance, FastifyReply, FastifyRequest
 } from "fastify";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { getRequestLoggerMetadata } from "../RestApi";
@@ -17,6 +17,20 @@ function verifyUsername(username: string, reply: FastifyReply): boolean {
 	// Check if the username starts with a disallowed prefix
 	if (RegisteringConstants.DISALLOWED_USERNAME_PREFIXES.some(prefix => username.startsWith(prefix))) {
 		reply.status(400).send({ error: "Username cannot start with a disallowed prefix" });
+		return false;
+	}
+
+	return true;
+}
+
+/**
+ * Verifies if the email address is valid.
+ * @param email
+ * @param reply
+ */
+function verifyEmail(email: string, reply: FastifyReply): boolean {
+	if (!RegisteringConstants.EMAIL_PATTERN.test(email)) {
+		reply.status(400).send({ error: "Invalid email address" });
 		return false;
 	}
 
@@ -60,19 +74,31 @@ async function verifyUserDoesNotExist(username: string, reply: FastifyReply): Pr
 }
 
 async function checkProvidedInformation(
-	username: string | undefined,
-	password: string | undefined,
+	credentials: {
+		username: string | undefined;
+		password: string | undefined;
+		email: string | undefined;
+	},
 	language: string | undefined,
 	reply: FastifyReply
 ): Promise<boolean> {
+	const {
+		username, password, email
+	} = credentials;
+
 	// Check if the user data is provided
-	if (!username || !password) {
-		reply.status(400).send({ error: "Username and password are required" });
+	if (!username || !password || !email) {
+		reply.status(400).send({ error: "Username, password and email are required" });
 		return false;
 	}
 
 	// Check if the username is valid
 	if (!verifyUsername(username, reply)) {
+		return false;
+	}
+
+	// Check if the email is valid
+	if (!verifyEmail(email, reply)) {
 		return false;
 	}
 
@@ -83,6 +109,40 @@ async function checkProvidedInformation(
 
 	// Check if the user already exists
 	return await verifyUserDoesNotExist(username, reply);
+}
+
+/**
+ * Sends the address verification mail, and undoes the registration when it cannot be sent.
+ *
+ * The mail relay has a daily quota. Keeping an account that can never be verified would hold its
+ * address hostage, so the player is told to come back later instead.
+ * @param keycloakId
+ * @param request
+ * @param reply
+ */
+async function sendVerificationOrRollBack(keycloakId: string, request: FastifyRequest, reply: FastifyReply): Promise<boolean> {
+	const verification = await KeycloakUtils.sendVerificationEmail(keycloakConfig, keycloakId);
+	if (!verification.isError) {
+		return true;
+	}
+
+	CrowniclesLogger.error("Could not send the verification email, rolling the registration back", {
+		apiReturn: verification,
+		keycloakId,
+		...getRequestLoggerMetadata(request)
+	});
+
+	const rollback = await KeycloakUtils.deleteUser(keycloakConfig, keycloakId);
+	if (rollback.isError) {
+		CrowniclesLogger.error("Rollback of an unverifiable registration failed, the address stays taken", {
+			apiReturn: rollback,
+			keycloakId,
+			...getRequestLoggerMetadata(request)
+		});
+	}
+
+	reply.status(503).send({ error: "Verification email could not be sent" });
+	return false;
 }
 
 /**
@@ -105,15 +165,18 @@ export function setupRegisterRoute(server: FastifyInstance, allowNewUsersRegiste
 
 			// Extract user data from the request body
 			const {
-				username, password, language
+				username, password, email, language
 			} = request.body as {
 				username?: string;
 				password?: string;
+				email?: string;
 				language?: string;
 			};
 
 			// Check if information provided is valid
-			if (!await checkProvidedInformation(username, password, language, reply)) {
+			if (!await checkProvidedInformation({
+				username, password, email
+			}, language, reply)) {
 				return;
 			}
 
@@ -122,6 +185,7 @@ export function setupRegisterRoute(server: FastifyInstance, allowNewUsersRegiste
 				keycloakUsername: username!,
 				gameUsername: username!,
 				language: language ?? LANGUAGE.DEFAULT_LANGUAGE,
+				email,
 				password
 			});
 
@@ -136,6 +200,10 @@ export function setupRegisterRoute(server: FastifyInstance, allowNewUsersRegiste
 					});
 				}
 				reply.status(user.status).send(user.payload);
+				return;
+			}
+
+			if (!await sendVerificationOrRollBack(user.payload.user.id, request, reply)) {
 				return;
 			}
 
