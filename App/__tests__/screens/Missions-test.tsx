@@ -50,6 +50,13 @@ describe("missions screen", () => {
 		expect(screen.getByText("1 / 2")).toBeTruthy();
 	});
 
+	it("keeps a mission's gauge folded until its line is opened", async () => {
+		await render(<MissionsContent data={packet()} now={NOW} />);
+		expect(screen.queryByText("app:missions.progress")).toBeNull();
+		await fireEvent.press(screen.getAllByRole("button")[0]);
+		expect(screen.getByText("app:missions.progress")).toBeTruthy();
+	});
+
 	it("renders a completed campaign and no secondary mission", async () => {
 		const data = packet();
 		data.campaignProgression = 0;

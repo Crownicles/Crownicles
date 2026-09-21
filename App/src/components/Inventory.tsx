@@ -69,6 +69,7 @@ function InventoryArtifactList({artifacts}: {artifacts: InventoryArtifacts}): Re
 		<SectionHeader>{i18n.t("app:inventory.artifacts.title")}</SectionHeader>
 		<Panel>{ARTIFACTS.map(artifact => <Row
 			key={artifact.field}
+			disabled={!artifacts[artifact.field]}
 			title={i18n.t(`app:inventory.artifacts.${artifact.name}`)}
 			end={i18n.t(artifacts[artifact.field] ? "app:inventory.owned" : "app:inventory.absent")}
 		/>)}</Panel>
@@ -96,10 +97,9 @@ export function Inventory({inventoryData, artifacts}: {inventoryData: InventoryD
 	const {message, pending, open} = useCommandMenus();
 	if (!inventoryData) return <Note>{i18n.t("app:common.loading")}</Note>;
 	return <>
-		<SegmentedControl options={INVENTORY_VIEWS.map(value => ({value, label: i18n.t(`app:inventory.views.${value}`)}))} value={view} onChange={setView} label={i18n.t("app:profile.titles.inventory")} />
-		{message ? <Note>{message}</Note> : null}
-		<InventoryContent view={view} data={inventoryData} artifacts={artifacts} />
-		<SectionHeader>{i18n.t("app:inventory.actions.title")}</SectionHeader>
 		<QuickActions>{ACTIONS.map(action => <QuickAction key={action.label} icon={AppIcons.getIcon(action.icon)} disabled={pending} onPress={(): Promise<void> => open(action.menu)}>{i18n.t(`app:inventory.actions.${action.label}`)}</QuickAction>)}</QuickActions>
+		{message ? <Note>{message}</Note> : null}
+		<SegmentedControl options={INVENTORY_VIEWS.map(value => ({value, label: i18n.t(`app:inventory.views.${value}`)}))} value={view} onChange={setView} label={i18n.t("app:profile.titles.inventory")} />
+		<InventoryContent view={view} data={inventoryData} artifacts={artifacts} />
 	</>;
 }

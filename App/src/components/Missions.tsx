@@ -1,4 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
+import {Text} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {MissionsReq} from "ws-packets/src/fromClient/MissionsReq";
@@ -9,55 +10,102 @@ import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
-import {Button, ButtonRow, EmptyState, Note, Panel, Row, SectionHeader, StatBar} from "@/src/design/Primitives";
+import {FightGauge} from "@/src/components/FightGauge";
+import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
+import {ExpandableEntry, ExpandableList, sectionStyles} from "@/src/design/Sections";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {AppIcons} from "@/src/AppIcons";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {missionDate, missionDescription} from "@/src/display/Missions";
 
 const CLOCK_INTERVAL = 60_000;
+const MISSION_EMBLEM_SIZE = 26;
 
-function MissionProgress({mission, now, completed = false}: {mission: Mission; now: number; completed?: boolean}): ReactNode {
-	return <Panel>
-		<Row title={missionDescription(mission, now)} end={i18n.t(completed ? "app:missions.completed" : "app:missions.inProgress")} />
-		<StatBar label={i18n.t("app:missions.progress")} value={i18n.t("app:profile.formats.progress", {value: mission.numberDone, max: mission.missionObjective})} ratio={mission.missionObjective > 0 ? mission.numberDone / mission.missionObjective : 0} color={Theme.colors.gold} />
-	</Panel>;
+/** A mission and the two things only it knows: whether the server calls it done, and when it lapses. */
+type MissionEntryData = {key: string; mission: Mission; completed: boolean; deadline?: string};
+type MissionListProps = {entries: MissionEntryData[]; now: number; expanded?: string; onToggle: (key: string) => void};
+
+function MissionList({entries, now, expanded, onToggle}: MissionListProps): ReactNode {
+	return <ExpandableList>
+		{entries.map(entry => <ExpandableEntry
+			key={entry.key}
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon(`missions.${entry.mission.missionType}`)} size={MISSION_EMBLEM_SIZE} />}
+			label={missionDescription(entry.mission, now)}
+			caption={i18n.t(entry.completed ? "app:missions.completed" : "app:missions.inProgress")}
+			end={<Text style={sectionStyles.amount}>{i18n.t("app:profile.formats.progress", {value: entry.mission.numberDone, max: entry.mission.missionObjective})}</Text>}
+			expanded={expanded === entry.key}
+			onToggle={(): void => onToggle(entry.key)}
+			testID={`mission-${entry.key}`}
+		>
+			<FightGauge
+				label={i18n.t("app:missions.progress")}
+				value={entry.mission.numberDone}
+				max={entry.mission.missionObjective}
+				color={Theme.colors.gold}
+			/>
+			{entry.deadline ? <Text style={sectionStyles.caption}>{entry.deadline}</Text> : null}
+		</ExpandableEntry>)}
+	</ExpandableList>;
 }
 
-function CampaignMissions({data, now}: {data: MissionsRes; now: number}): ReactNode {
+function CampaignMissions({data, now, expanded, onToggle}: {data: MissionsRes} & Omit<MissionListProps, "entries">): ReactNode {
 	const mission = data.missions.find(entry => entry.missionType === MISSION_TYPES.CAMPAIGN);
 	return <>
 		<SectionHeader first action={{hint: i18n.t("app:profile.formats.progress", {value: data.campaignProgression || data.maxCampaignNumber, max: data.maxCampaignNumber})}}>{i18n.t("app:missions.campaign")}</SectionHeader>
-		{data.campaignProgression === 0 ? <Note>{i18n.t("app:missions.campaignCompleted")}</Note> : mission ? <MissionProgress mission={mission} now={now} /> : <Note>{i18n.t("app:missions.empty")}</Note>}
+		{data.campaignProgression === 0
+			? <Note>{i18n.t("app:missions.campaignCompleted")}</Note>
+			: mission
+				? <MissionList entries={[{key: "campaign", mission, completed: false}]} now={now} expanded={expanded} onToggle={onToggle} />
+				: <Note>{i18n.t("app:missions.empty")}</Note>}
 	</>;
 }
 
-function DailyMission({data, now}: {data: MissionsRes; now: number}): ReactNode {
+function DailyMission({data, now, expanded, onToggle}: {data: MissionsRes} & Omit<MissionListProps, "entries">): ReactNode {
 	const mission = data.missions.find(entry => entry.missionType === MISSION_TYPES.DAILY);
 	return <>
 		<SectionHeader>{i18n.t("app:missions.daily")}</SectionHeader>
-		{mission ? <MissionProgress mission={mission} now={now} completed={data.dailyMission.completed} /> : <Note>{i18n.t("app:missions.empty")}</Note>}
-		<Note>{i18n.t("app:missions.resetsAt", {date: missionDate(data.dailyMission.resetsAt)})}</Note>
+		{mission
+			? <MissionList
+				entries={[{key: "daily", mission, completed: data.dailyMission.completed, deadline: i18n.t("app:missions.resetsAt", {date: missionDate(data.dailyMission.resetsAt)})}]}
+				now={now}
+				expanded={expanded}
+				onToggle={onToggle}
+			/>
+			: <Note>{i18n.t("app:missions.empty")}</Note>}
 	</>;
 }
 
-function MissionEntry({mission, now}: {mission: Mission; now: number}): ReactNode {
-	return <>
-		<MissionProgress mission={mission} now={now} />
-		{mission.expiresAt ? <Note>{i18n.t("app:missions.expiresAt", {date: missionDate(Date.parse(mission.expiresAt))})}</Note> : null}
-	</>;
-}
-
-function SideMissions({data, now}: {data: MissionsRes; now: number}): ReactNode {
+function SideMissions({data, now, expanded, onToggle}: {data: MissionsRes} & Omit<MissionListProps, "entries">): ReactNode {
 	const missions = data.missions.filter(entry => entry.missionType === MISSION_TYPES.NORMAL);
 	return <>
 		<SectionHeader action={{hint: i18n.t("app:profile.formats.progress", {value: missions.length, max: data.maxSideMissionSlots})}}>{i18n.t("app:missions.side")}</SectionHeader>
-		{missions.length === 0 ? <Note>{i18n.t("app:missions.noSideMissions")}</Note> : missions.map(mission => <MissionEntry key={`${mission.missionId}:${mission.missionVariant}:${mission.expiresAt}`} mission={mission} now={now} />)}
+		{missions.length === 0
+			? <Note>{i18n.t("app:missions.noSideMissions")}</Note>
+			: <MissionList
+				entries={missions.map(mission => ({
+					key: `${mission.missionId}:${mission.missionVariant}:${mission.expiresAt}`,
+					mission,
+					completed: false,
+					...mission.expiresAt ? {deadline: i18n.t("app:missions.expiresAt", {date: missionDate(Date.parse(mission.expiresAt))})} : {}
+				}))}
+				now={now}
+				expanded={expanded}
+				onToggle={onToggle}
+			/>}
 	</>;
 }
 
 export function MissionsContent({data, now}: {data: MissionsRes; now: number}): ReactNode {
+	const [expanded, setExpanded] = useState<string | undefined>(undefined);
+	const toggle = (key: string): void => setExpanded(previous => previous === key ? undefined : key);
 	if (data.missions.length === 0) return <EmptyState>{i18n.t("app:missions.empty")}</EmptyState>;
-	return <><CampaignMissions data={data} now={now} /><DailyMission data={data} now={now} /><SideMissions data={data} now={now} /></>;
+	const sections = {now, ...expanded === undefined ? {} : {expanded}, onToggle: toggle};
+	return <>
+		<CampaignMissions data={data} {...sections} />
+		<DailyMission data={data} {...sections} />
+		<SideMissions data={data} {...sections} />
+	</>;
 }
 
 export function Missions(): ReactNode {
