@@ -2,13 +2,13 @@ import {ReactNode} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PLAYER_UTILITY_DATA_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
 import {PlayerUtilityOutcome as Outcome} from "ws-packets/src/objects/PlayerUtility";
-import {Button, ButtonRow, Confirmation, Note} from "@/src/design/Primitives";
+import {Note} from "@/src/design/Primitives";
+import {ExpandableList, Fact, Sheet} from "@/src/design/Sections";
 import {CollectorDecision} from "@/src/collectors/CollectorPrompt";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
-import {Fact} from "@/src/design/Sections";
 
 function UtilityDetails({data}: {data: ReactionCollectorData}): ReactNode {
 	if (data.type === PLAYER_UTILITY_DATA_KINDS.UNLOCK) return <>
@@ -24,10 +24,16 @@ function UtilityDetails({data}: {data: ReactionCollectorData}): ReactNode {
 
 export function PlayerUtilityCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
 	const {answer, locked} = useCollectorAnswer(collector, onChoose, submitting);
-	return <Confirmation title={i18n.t(collector.data.type === PLAYER_UTILITY_DATA_KINDS.UNLOCK ? "app:utilities.unlock" : "app:utilities.boat")} onRequestClose={(): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE))}>
-		<UtilityDetails data={collector.data} />
+	const refuse = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
+	return <Sheet
+		caption={i18n.t("app:utilities.title")}
+		title={i18n.t(collector.data.type === PLAYER_UTILITY_DATA_KINDS.UNLOCK ? "app:utilities.unlock" : "app:utilities.boat")}
+		closeLabel={i18n.t("app:collector.refuse")}
+		onClose={refuse}
+	>
+		<ExpandableList><UtilityDetails data={collector.data} /></ExpandableList>
 		<CollectorDecision collector={collector} onChoose={answer} submitting={locked} />
-	</Confirmation>;
+	</Sheet>;
 }
 
 function UtilityResult({outcome}: {outcome: Outcome}): ReactNode {
@@ -41,8 +47,12 @@ function UtilityResult({outcome}: {outcome: Outcome}): ReactNode {
 }
 
 export function PlayerUtilityOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
-	return <Confirmation title={i18n.t("app:utilities.result")} onRequestClose={onContinue}>
+	return <Sheet
+		caption={i18n.t("app:utilities.title")}
+		title={i18n.t("app:utilities.result")}
+		closeLabel={i18n.t("app:common.back")}
+		onClose={onContinue}
+	>
 		<UtilityResult outcome={outcome} />
-		<ButtonRow><Button onPress={onContinue}>{i18n.t("app:common.back")}</Button></ButtonRow>
-	</Confirmation>;
+	</Sheet>;
 }

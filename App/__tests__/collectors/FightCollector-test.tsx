@@ -32,7 +32,7 @@ describe("fight collectors", () => {
 		await fireEvent.press(screen.getAllByRole("button", {name: "app:battle.actionDetails"})[0]);
 		expect(screen.getByText("models:fight_actions.heavyAttack.description")).toBeTruthy();
 		expect(choose).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("app:common.back"));
+		await fireEvent.press(screen.getByLabelText("app:common.back"));
 		await fireEvent.press(screen.getByText("models:fight_actions.simpleAttack.name"));
 		expect(choose).toHaveBeenCalledWith(1);
 	});

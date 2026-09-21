@@ -6,7 +6,7 @@ import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {Theme} from "@/src/design/Theme";
 import {AppIcons} from "@/src/AppIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {Button, ButtonRow, Confirmation} from "@/src/design/Primitives";
+import {ExpandableList, Fact, Sheet} from "@/src/design/Sections";
 import {fighterDisplayName, fighterSubtitle, fightActionName} from "@/src/display/Fight";
 import {petName} from "@/src/display/PetDisplay";
 import {formatNumber} from "@/src/display/Amounts";
@@ -15,7 +15,6 @@ import {useCompactFight} from "@/src/components/FightControls";
 import {FightGauge} from "@/src/components/FightGauge";
 import {FightAnimation} from "@/src/store/useFightAnimation";
 import {FightPortrait} from "@/src/components/FightPortrait";
-import {Fact} from "@/src/design/Sections";
 
 const COMBAT_STATS = [{key: "attack", Icon: Swords}, {key: "defense", Icon: Shield}, {key: "speed", Icon: Wind}] as const;
 const styles = StyleSheet.create({
@@ -62,15 +61,21 @@ function FighterCombatStats({fighter}: {fighter: FightFighter}): ReactNode {
 }
 
 function FighterStats({fighter, pet, onClose}: {fighter: FightFighter; pet?: OwnedPet; onClose: () => void}): ReactNode {
-	return <Confirmation title={fighterDisplayName(fighter)} message={i18n.t("app:arena.details")} onRequestClose={onClose}>
+	return <Sheet
+		caption={i18n.t("app:arena.details")}
+		title={fighterDisplayName(fighter)}
+		closeLabel={i18n.t("app:common.back")}
+		onClose={onClose}
+	>
 		<View style={styles.statRow}>{COMBAT_STATS.map(({key, Icon}) => <View key={key} style={styles.stat}><Icon size={22} color={Theme.colors.muted} /><Text style={styles.statValue}>{formatNumber(fighter.stats[key])}</Text><Text style={styles.statLabel}>{i18n.t(`app:arena.stats.${key}`)}</Text></View>)}</View>
-		<Fact label={i18n.t("app:arena.breath")} value={i18n.t("app:profile.formats.progress", {value: fighter.stats.breath, max: fighter.stats.maxBreath})} />
-		<Fact label={i18n.t("app:arena.stats.breathRegen")} value={formatNumber(fighter.stats.breathRegen)} />
-		{fighter.alteration ? <Fact label={i18n.t("app:arena.effects.newAlteration")} value={fightActionName(fighter.alteration)} /> : null}
-		{fighter.glory === undefined ? null : <Fact label={i18n.t("app:arena.glory")} value={formatNumber(fighter.glory)} />}
-		{pet ? <Fact label={i18n.t("app:arena.pet")} value={petName(pet)} /> : null}
-		<ButtonRow><Button onPress={onClose}>{i18n.t("app:common.back")}</Button></ButtonRow>
-	</Confirmation>;
+		<ExpandableList>
+			<Fact label={i18n.t("app:arena.breath")} value={i18n.t("app:profile.formats.progress", {value: fighter.stats.breath, max: fighter.stats.maxBreath})} />
+			<Fact label={i18n.t("app:arena.stats.breathRegen")} value={formatNumber(fighter.stats.breathRegen)} />
+			{fighter.alteration ? <Fact label={i18n.t("app:arena.effects.newAlteration")} value={fightActionName(fighter.alteration)} /> : null}
+			{fighter.glory === undefined ? null : <Fact label={i18n.t("app:arena.glory")} value={formatNumber(fighter.glory)} />}
+			{pet ? <Fact label={i18n.t("app:arena.pet")} value={petName(pet)} /> : null}
+		</ExpandableList>
+	</Sheet>;
 }
 
 function FighterRole({fighter, compact}: {fighter: FightFighter; compact: boolean}): ReactNode {

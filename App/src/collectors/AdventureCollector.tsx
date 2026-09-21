@@ -22,11 +22,12 @@ import type {
 	HealOutcome as HealOutcomeData, LotteryOutcome as LotteryOutcomeData,
 	TokenOutcomeRequiringAcknowledgement
 } from "@/src/collectors/ReportEventStore";
-import {Button, ButtonRow, Confirmation, Note, Screen} from "@/src/design/Primitives";
+import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
-import {ExpandableList, Fact, Gauge, Standing} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, ExpandableList, Fact, Gauge, Sheet, Standing} from "@/src/design/Sections";
+import {Check} from "@/src/design/FightIcons";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 
@@ -127,67 +128,38 @@ function TokenMerchantSummary({data}: {data: TokenMerchantData}): ReactNode {
 	);
 }
 
-function MerchantPurchaseButton({
-	amount,
-	firstAmount,
-	pricePerToken,
-	index,
-	playerMoney,
-	onChoose,
-	submitting
-}: {
+/** Each bundle is bought from its own row, where its price and the money left are already written. */
+function MerchantPurchase({amount, data, index, expanded, onToggle, onChoose, submitting}: {
 	amount: number;
-	firstAmount: number;
-	pricePerToken: number;
+	data: TokenMerchantData["data"];
 	index: number;
-	playerMoney: number;
-	onChoose: (reactionIndex: number, amount: number) => void;
+	expanded: boolean;
+	onToggle: () => void;
+	onChoose: (reactionIndex: number) => void;
 	submitting: boolean;
 }): ReactNode {
-	const canBuy = index >= 0 && amount * pricePerToken <= playerMoney && !submitting;
-	return (
-		<Button
-			variant={amount === firstAmount ? "primary" : "secondary"}
-			disabled={!canBuy}
-			onPress={canBuy ? (): void => onChoose(index, amount) : undefined}
-		>
-			{merchantPurchaseLabel(amount, pricePerToken)}
-		</Button>
-	);
-}
-
-function MerchantPurchaseActions({collector, onPurchase, onRefuse, submitting}: {
-	collector: ReactionCollectorCreation;
-	onPurchase: (reactionIndex: number, amount: number) => void;
-	onRefuse: (reactionIndex: number) => void;
-	submitting: boolean;
-}): ReactNode {
-	if (collector.data.type !== REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT) {
-		return null;
-	}
-	const {amounts, playerMoney, pricePerToken} = collector.data.data;
-	const refuseIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.REFUSE);
-	return (
-		<ButtonRow>
-			{amounts.map(amount => (
-				<MerchantPurchaseButton
-					key={amount}
-					amount={amount}
-					firstAmount={amounts[0]}
-					pricePerToken={pricePerToken}
-					index={merchantReactionIndex(collector.reactions, amount)}
-					playerMoney={playerMoney}
-					onChoose={onPurchase}
-					submitting={submitting}
-				/>
-			))}
-			{refuseIndex >= 0 ? (
-				<Button disabled={submitting} onPress={submitting ? undefined : (): void => onRefuse(refuseIndex)}>
-					{i18n.t("app:adventure.tokens.merchant.cancel")}
-				</Button>
-			) : null}
-		</ButtonRow>
-	);
+	const price = amount * data.pricePerToken;
+	const affordable = index >= 0 && price <= data.playerMoney;
+	return <ExpandableEntry
+		label={merchantPurchaseLabel(amount, data.pricePerToken)}
+		{...affordable ? {} : {caption: i18n.t("app:city.locks.missingMoney", {amount: formatMoney(price - data.playerMoney)})}}
+		dimmed={submitting || !affordable}
+		expanded={expanded}
+		onToggle={onToggle}
+	>
+		<ExpandableList>
+			<Fact label={i18n.t("app:adventure.tokens.fields.received")} value={`+${formatTokens(amount)}`} />
+			<Fact label={i18n.t("app:adventure.tokens.fields.costMoney")} value={`-${formatMoney(price)}`} />
+			<Fact label={i18n.t("app:adventure.tokens.fields.remainingMoney")} value={formatMoney(data.playerMoney - price)} />
+		</ExpandableList>
+		<ActionBanner
+			icon={Check}
+			label={i18n.t("app:adventure.tokens.merchant.confirm")}
+			pending={submitting}
+			{...affordable ? {} : {lock: {reason: i18n.t("app:city.locks.missingMoney", {amount: formatMoney(price - data.playerMoney)})}}}
+			onPress={(): void => onChoose(index)}
+		/>
+	</ExpandableEntry>;
 }
 
 function TokenUseCollector({collector, onChoose, submitting}: {
@@ -206,21 +178,27 @@ function TokenUseCollector({collector, onChoose, submitting}: {
 	const canRefuse = refuseIndex >= 0 && !submitting;
 
 	return (
-		<Confirmation
-			icon={<TwemojiIcon emoji={AppIcons.getIcon("unitValues.token")} size={Theme.dimensions.headerIcon} />}
+		<Sheet
+			caption={i18n.t("app:adventure.tokens.merchant.eyebrow")}
 			title={i18n.t("app:adventure.tokens.use.title")}
-			message={i18n.t("app:adventure.tokens.use.description", {count: collector.data.data.cost})}
-			onRequestClose={canRefuse ? (): void => onChoose(refuseIndex) : undefined}
+			subtitle={i18n.t("app:adventure.tokens.use.description", {count: collector.data.data.cost})}
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon("unitValues.token")} size={Theme.dimensions.headerIcon} />}
+			closeLabel={i18n.t("app:adventure.tokens.use.cancel")}
+			onClose={canRefuse ? (): void => onChoose(refuseIndex) : (): void => undefined}
 		>
+			<ActionBanner
+				icon={Check}
+				label={i18n.t("app:adventure.tokens.use.confirm", {count: collector.data.data.cost})}
+				pending={submitting}
+				{...canConfirm ? {} : {lock: {reason: i18n.t("app:adventure.tokens.use.description", {count: collector.data.data.cost})}}}
+				onPress={(): void => onChoose(acceptIndex)}
+			/>
 			<ButtonRow>
-				<Button variant="primary" disabled={!canConfirm} onPress={canConfirm ? (): void => onChoose(acceptIndex) : undefined}>
-					{i18n.t("app:adventure.tokens.use.confirm", {count: collector.data.data.cost})}
-				</Button>
 				<Button disabled={!canRefuse} onPress={canRefuse ? (): void => onChoose(refuseIndex) : undefined}>
 					{i18n.t("app:adventure.tokens.use.cancel")}
 				</Button>
 			</ButtonRow>
-		</Confirmation>
+		</Sheet>
 	);
 }
 
@@ -239,28 +217,30 @@ function BuyHealCollector({collector, onChoose, submitting}: {
 	const canRefuse = refuseIndex >= 0 && !submitting;
 
 	return (
-		<Confirmation
-			icon={<TwemojiIcon emoji={AppIcons.getIcon("shopItems.healAlteration")} size={Theme.dimensions.headerIcon} />}
+		<Sheet
+			caption={i18n.t("app:adventure.heal.use.eyebrow")}
 			title={i18n.t("app:adventure.heal.use.title")}
-			message={i18n.t("app:adventure.heal.use.description", {
-				price: data.data.healPrice,
-				money: data.data.playerMoney
-			})}
-			onRequestClose={canRefuse ? (): void => onChoose(refuseIndex) : undefined}
+			subtitle={i18n.t("app:adventure.heal.use.description", {price: data.data.healPrice, money: data.data.playerMoney})}
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon("shopItems.healAlteration")} size={Theme.dimensions.headerIcon} />}
+			closeLabel={i18n.t("app:adventure.heal.use.cancel")}
+			onClose={canRefuse ? (): void => onChoose(refuseIndex) : (): void => undefined}
 		>
 			<ExpandableList>
 				<Fact label={i18n.t("app:adventure.heal.fields.cost")} value={formatMoney(data.data.healPrice)} />
 				<Fact label={i18n.t("app:adventure.heal.fields.balance")} value={formatMoney(data.data.playerMoney)} />
 			</ExpandableList>
+			<ActionBanner
+				icon={Check}
+				label={i18n.t("app:adventure.heal.use.confirm", {price: data.data.healPrice})}
+				pending={!canConfirm}
+				onPress={(): void => onChoose(acceptIndex)}
+			/>
 			<ButtonRow>
-				<Button variant="primary" disabled={!canConfirm} onPress={canConfirm ? (): void => onChoose(acceptIndex) : undefined}>
-					{i18n.t("app:adventure.heal.use.confirm", {price: data.data.healPrice})}
-				</Button>
 				<Button disabled={!canRefuse} onPress={canRefuse ? (): void => onChoose(refuseIndex) : undefined}>
 					{i18n.t("app:adventure.heal.use.cancel")}
 				</Button>
 			</ButtonRow>
-		</Confirmation>
+		</Sheet>
 	);
 }
 
@@ -269,12 +249,13 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 	onChoose: (reactionIndex: number) => void;
 	submitting: boolean;
 }): ReactNode {
-	const [pendingPurchase, setPendingPurchase] = useState<{reactionIndex: number; amount: number} | null>(null);
+	const [openAmount, setOpenAmount] = useState<number>();
 	if (collector.data.type !== REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT) {
 		return null;
 	}
-	const {maxDaily, maxWeekly, playerMoney, pricePerToken} = collector.data.data;
-	const purchasePrice = (pendingPurchase?.amount ?? 0) * pricePerToken;
+	const {amounts, maxDaily, maxWeekly} = collector.data.data;
+	const data = collector.data.data;
+	const refuseIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.REFUSE);
 
 	return (
 		<Screen>
@@ -285,34 +266,21 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 			/>
 			<TokenMerchantSummary data={collector.data} />
 			<Note>{i18n.t("app:adventure.tokens.merchant.limits", {maxDaily, maxWeekly})}</Note>
-			<MerchantPurchaseActions
-				collector={collector}
-				onPurchase={(reactionIndex, amount): void => setPendingPurchase({reactionIndex, amount})}
-				onRefuse={onChoose}
+			<ExpandableList>{amounts.map(amount => <MerchantPurchase
+				key={amount}
+				amount={amount}
+				data={data}
+				index={merchantReactionIndex(collector.reactions, amount)}
+				expanded={openAmount === amount}
+				onToggle={(): void => setOpenAmount(openAmount === amount ? undefined : amount)}
+				onChoose={onChoose}
 				submitting={submitting}
-			/>
-			{pendingPurchase ? (
-				<Confirmation
-					icon={<TwemojiIcon emoji={AppIcons.getIcon("unitValues.token")} size={Theme.dimensions.headerIcon} />}
-					title={i18n.t("app:adventure.tokens.merchant.confirmTitle", {count: pendingPurchase.amount})}
-					message={i18n.t("app:adventure.tokens.merchant.confirmDescription")}
-					onRequestClose={() => setPendingPurchase(null)}
-				>
-					<ExpandableList>
-						<Fact label={i18n.t("app:adventure.tokens.fields.received")} value={`+${formatTokens(pendingPurchase.amount)}`} />
-						<Fact label={i18n.t("app:adventure.tokens.fields.costMoney")} value={`-${formatMoney(purchasePrice)}`} />
-						<Fact label={i18n.t("app:adventure.tokens.fields.remainingMoney")} value={formatMoney(playerMoney - purchasePrice)} />
-					</ExpandableList>
-					<ButtonRow>
-						<Button variant="primary" disabled={submitting} onPress={submitting ? undefined : (): void => onChoose(pendingPurchase.reactionIndex)}>
-							{i18n.t("app:adventure.tokens.merchant.confirm")}
-						</Button>
-						<Button disabled={submitting} onPress={submitting ? undefined : (): void => setPendingPurchase(null)}>
-							{i18n.t("app:adventure.tokens.merchant.keepMoney")}
-						</Button>
-					</ButtonRow>
-				</Confirmation>
-			) : null}
+			/>)}</ExpandableList>
+			{refuseIndex >= 0 ? <ButtonRow>
+				<Button disabled={submitting} onPress={submitting ? undefined : (): void => onChoose(refuseIndex)}>
+					{i18n.t("app:adventure.tokens.merchant.cancel")}
+				</Button>
+			</ButtonRow> : null}
 		</Screen>
 	);
 }

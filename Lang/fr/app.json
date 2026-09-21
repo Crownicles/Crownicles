@@ -945,6 +945,7 @@
   },
   "map": {"title": "Carte", "image": "Carte du monde et position du personnage", "expand": "Agrandir la carte", "zoomIn": "Zoom avant", "zoomOut": "Zoom arrière", "imageError": "La carte n'a pas pu être chargée.", "cities": "Villes et services", "position": "Position", "destination": "Destination", "service": "Service de ville"},
   "utilities": {
+    "title": "Services au joueur",
     "unlock": "Libérer un joueur", "prisoner": "Joueur à libérer", "prisonerRank": "Classement du joueur à libérer",
     "boat": "Rejoindre le bateau", "respawn": "Réapparaître", "respawnWarning": "La réapparition vous rend le contrôle du personnage, mais retire une partie de votre score.",
     "result": "Résultat de l'action", "moneyError": "Votre solde de {{money}} ne suffit pas pour payer cette caution.",

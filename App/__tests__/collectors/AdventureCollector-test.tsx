@@ -418,7 +418,6 @@ describe("AdventureCollector", () => {
 		expect(screen.getByText("app:adventure.tokens.merchant.title")).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:adventure.tokens.merchant.buyOne"));
 		expect(onChoose).not.toHaveBeenCalled();
-		expect(screen.getByText("app:adventure.tokens.merchant.confirmTitle")).toBeTruthy();
 		expect(screen.getByText("app:adventure.tokens.fields.remainingMoney")).toBeTruthy();
 
 		await fireEvent.press(screen.getByText("app:adventure.tokens.merchant.confirm"));

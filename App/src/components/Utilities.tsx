@@ -4,7 +4,9 @@ import {RespawnReq, UnlockReq} from "ws-packets/src/fromClient/PlayerUtilityReq"
 import {PlayerUtilityRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
-import {Button, ButtonRow, Confirmation, Note} from "@/src/design/Primitives";
+import {Button, ButtonRow, Note} from "@/src/design/Primitives";
+import {ActionBanner, ExpandableEntry, ExpandableList} from "@/src/design/Sections";
+import {Check} from "@/src/design/FightIcons";
 import {TextField} from "@/src/design/Inputs";
 import {i18n} from "@/src/translations/i18n";
 
@@ -13,18 +15,29 @@ const UTILITY_MENUS = {
 	unlock: {request: UnlockReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [PlayerUtilityRes]}
 } satisfies Record<string, CommandMenu>;
 
+/** Respawning costs health, so the row says it before it is pressed rather than after. */
 export function RespawnAction(): ReactNode {
 	const [confirming, setConfirming] = useState(false);
 	const {pending, message, open} = useCommandMenus();
 	return <>
-		<ButtonRow><Button disabled={pending} onPress={(): void => setConfirming(true)}>{i18n.t("app:utilities.respawn")}</Button></ButtonRow>
+		<ExpandableList><ExpandableEntry
+			label={i18n.t("app:utilities.respawn")}
+			caption={i18n.t("app:utilities.respawnWarning")}
+			dimmed={pending}
+			expanded={confirming}
+			onToggle={(): void => setConfirming(!confirming)}
+		>
+			<ActionBanner
+				icon={Check}
+				label={i18n.t("app:utilities.respawn")}
+				pending={pending}
+				onPress={(): void => {
+					setConfirming(false);
+					open(UTILITY_MENUS.respawn).catch(console.error);
+				}}
+			/>
+		</ExpandableEntry></ExpandableList>
 		{message ? <Note>{message}</Note> : null}
-		{confirming ? <Confirmation title={i18n.t("app:utilities.respawn")} message={i18n.t("app:utilities.respawnWarning")} onRequestClose={(): void => setConfirming(false)}>
-			<ButtonRow>
-				<Button variant="primary" disabled={pending} onPress={(): void => {setConfirming(false); open(UTILITY_MENUS.respawn).catch(console.error);}}>{i18n.t("app:collector.accept")}</Button>
-				<Button onPress={(): void => setConfirming(false)}>{i18n.t("app:collector.refuse")}</Button>
-			</ButtonRow>
-		</Confirmation> : null}
 	</>;
 }
 

@@ -13,18 +13,18 @@ jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => 
 
 describe("player utilities", () => {
 	beforeEach(() => jest.clearAllMocks());
-	it("does not request respawn when its warning is cancelled", async () => {
+	it("states the respawn penalty on the row and sends nothing while folded back", async () => {
 		await render(<RespawnAction />);
-		await fireEvent.press(screen.getByText("app:utilities.respawn"));
 		expect(screen.getByText("app:utilities.respawnWarning")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:collector.refuse"));
+		await fireEvent.press(screen.getByText("app:utilities.respawn"));
+		await fireEvent.press(screen.getAllByText("app:utilities.respawn")[0]);
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 	it("requests respawn only after the player confirms the penalty", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "PlayerUtilityRes"});
 		await render(<RespawnAction />);
 		await fireEvent.press(screen.getByText("app:utilities.respawn"));
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getAllByText("app:utilities.respawn").at(-1)!);
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(RespawnReq);
 	});

@@ -1,8 +1,9 @@
 import {ReactNode} from "react";
-import {ActivityIndicator, Pressable, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Modal, Pressable, StyleSheet, Text, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
+import {Screen} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
 
@@ -108,6 +109,27 @@ export function Standing({emblem, caption, title, subtitle, children, onPress, a
 			: <View style={styles.identity}>{identity}</View>}
 		{children}
 	</View>;
+}
+
+/** A window the server opens over a screen: an answer to read, or a question only Core can settle. */
+export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, children}: {
+	caption: string;
+	title: string;
+	subtitle?: string;
+	emblem?: ReactNode;
+	closeLabel: string;
+	onClose: () => void;
+	children: ReactNode;
+}): ReactNode {
+	return <Modal visible animationType="slide" onRequestClose={onClose}>
+		<ModalSurface>
+			<Screen>
+				<BackButton label={closeLabel} onClose={onClose} />
+				<Standing caption={caption} title={title} {...subtitle ? {subtitle} : {}} {...emblem ? {emblem} : {}} />
+				{children}
+			</Screen>
+		</ModalSurface>
+	</Modal>;
 }
 
 /** One headline number, with the game emoji of its unit when it has one. */

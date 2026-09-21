@@ -1,12 +1,12 @@
 import {ReactNode} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, GUILD_DATA_KINDS, ReactionCollectorData, ReactionCollectorDataOf} from "ws-packets/src/fromServer/collectors";
-import {Confirmation, Note} from "@/src/design/Primitives";
+import {Note} from "@/src/design/Primitives";
+import {Fact, Sheet} from "@/src/design/Sections";
 import {CollectorDecision} from "@/src/collectors/CollectorPrompt";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {formatMoney} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
-import {Fact} from "@/src/design/Sections";
 
 function guildConfirmationTitle(data: ReactionCollectorData): string {
 	if (data.type === GUILD_DATA_KINDS.REIMBURSE) return i18n.t("app:guildDomain.reimburse");
@@ -35,8 +35,14 @@ function GuildConfirmationDetails({data}: {data: ReactionCollectorData}): ReactN
 
 export function GuildCreateCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
 	const {answer, locked} = useCollectorAnswer(collector, onChoose, submitting);
-	return <Confirmation title={guildConfirmationTitle(collector.data)} onRequestClose={(): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE))}>
+	const refuse = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
+	return <Sheet
+		caption={i18n.t("app:guild.eyebrow")}
+		title={guildConfirmationTitle(collector.data)}
+		closeLabel={i18n.t("app:collector.refuse")}
+		onClose={refuse}
+	>
 		<GuildConfirmationDetails data={collector.data} />
 		<CollectorDecision collector={collector} onChoose={answer} submitting={locked} />
-	</Confirmation>;
+	</Sheet>;
 }
