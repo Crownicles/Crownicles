@@ -59,6 +59,12 @@ const screenStyles = StyleSheet.create({
 	sectionHeadFirst: {
 		marginTop: 0
 	},
+	sectionTitle: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: Theme.spacing.sm,
+		flexShrink: 1
+	},
 	sectionHeader: {
 		color: Theme.colors.ink,
 		fontFamily: Theme.fonts.bold,
@@ -256,14 +262,20 @@ export function Screen({ children, contentContainerStyle }: {
 	return <ScrollView contentContainerStyle={[styles.screenContent, contentContainerStyle]}>{children}</ScrollView>;
 }
 
-export function SectionHeader({ children, action, first = false }: {
+export function SectionHeader({ children, action, icon, first = false }: {
 	children: string;
+
+	/** The game emoji of what the section holds, when it has one. */
+	icon?: string;
 	action?: { label?: string; hint?: string; onPress?: () => void };
 	first?: boolean;
 }): ReactNode {
 	return (
 		<View style={[styles.sectionHead, first && styles.sectionHeadFirst]}>
-			<Text style={styles.sectionHeader}>{children}</Text>
+			<View style={styles.sectionTitle}>
+				{icon ? <TwemojiIcon emoji={icon} size={Theme.fontSize.note} /> : null}
+				<Text style={styles.sectionHeader}>{children}</Text>
+			</View>
 			{action?.hint ? <Text style={styles.sectionHint}>{action.hint}</Text> : null}
 			{action?.label && action.onPress ? (
 				<Pressable accessibilityRole="button" onPress={action.onPress} style={styles.sectionAction}>

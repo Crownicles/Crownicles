@@ -18,20 +18,36 @@ import {EntryRow, ExpandableList, Fact, Lock, LockHint} from "@/src/design/Secti
 export type InventoryData = NonNullable<InventoryRes["data"]>;
 type InventoryArtifacts = Pick<InventoryRes, "hasTalisman" | "hasCloneTalisman" | "hasRemoteHarvestTalisman">;
 type InventoryView = "equipped" | "reserve" | "materials" | "plants";
-type InventoryCategory = {equipped: "weapon" | "armor" | "potion" | "object"; reserve: "backupWeapons" | "backupArmors" | "backupPotions" | "backupObjects"; slots: keyof InventoryData["slots"]};
+type InventoryCategory = {equipped: "weapon" | "armor" | "potion" | "object"; reserve: "backupWeapons" | "backupArmors" | "backupPotions" | "backupObjects"; slots: keyof InventoryData["slots"]; icon: string};
 
 const EQUIPPED_SLOT_COUNT = 1;
 const MILLISECONDS_PER_MINUTE = 60_000;
+
+/** The same emoji the Discord inventory uses, so the two front ends name a category the same way. */
+const VIEW_ICONS: Record<InventoryView, string> = {
+	equipped: "itemCategories.0",
+	reserve: "inventory.stock",
+	materials: "inventory.materials",
+	plants: "city.homeUpgrades.garden"
+};
 const INVENTORY_VIEWS: InventoryView[] = ["equipped", "reserve", "materials", "plants"];
 const CATEGORIES: InventoryCategory[] = [
-	{equipped: "weapon", reserve: "backupWeapons", slots: "weapons"},
-	{equipped: "armor", reserve: "backupArmors", slots: "armors"},
-	{equipped: "potion", reserve: "backupPotions", slots: "potions"},
-	{equipped: "object", reserve: "backupObjects", slots: "objects"}
+	{equipped: "weapon", reserve: "backupWeapons", slots: "weapons", icon: "itemCategories.0"},
+	{equipped: "armor", reserve: "backupArmors", slots: "armors", icon: "itemCategories.1"},
+	{equipped: "potion", reserve: "backupPotions", slots: "potions", icon: "itemCategories.2"},
+	{equipped: "object", reserve: "backupObjects", slots: "objects", icon: "itemCategories.3"}
 ];
 
+/** A section title wearing the emoji of what it holds, the way the Discord inventory does. */
+function CategoryHeader({category, count}: {category: InventoryCategory; count: number}): ReactNode {
+	return <SectionHeader icon={AppIcons.getIconOrNull(category.icon) ?? undefined}>{i18n.t(`items:${category.equipped}`, {count})}</SectionHeader>;
+}
+
 function InventoryEquipment({data}: {data: InventoryData}): ReactNode {
-	return <ExpandableList>{CATEGORIES.map(category => <InventoryItemRow key={category.equipped} item={data[category.equipped]} location={i18n.t(`items:${category.equipped}`, {count: 1})} />)}</ExpandableList>;
+	return CATEGORIES.map(category => <Fragment key={category.equipped}>
+		<CategoryHeader category={category} count={1} />
+		<ExpandableList><InventoryItemRow item={data[category.equipped]} location={i18n.t(`items:${category.equipped}`, {count: 1})} /></ExpandableList>
+	</Fragment>);
 }
 
 function InventoryReserve({data}: {data: InventoryData}): ReactNode {
@@ -39,7 +55,7 @@ function InventoryReserve({data}: {data: InventoryData}): ReactNode {
 		const items = [...data[category.reserve]].sort((first, second) => first.slot - second.slot);
 		const maximum = Math.max(0, data.slots[category.slots] - EQUIPPED_SLOT_COUNT);
 		return <Fragment key={category.equipped}>
-			<SectionHeader>{i18n.t(`items:${category.equipped}`, {count: maximum})}</SectionHeader>
+			<CategoryHeader category={category} count={maximum} />
 			<ExpandableList>{items.length > 0
 				? items.map(item => <InventoryItemRow key={item.slot} item={item.display} location={i18n.t("app:equipment.slot", {slot: item.slot})} />)
 				: <Note>{i18n.t("app:equipment.emptyReserve")}</Note>}
@@ -131,7 +147,7 @@ export function Inventory({inventoryData, artifacts, dailyBonusAvailableAt}: {
 		})}</QuickActions>
 		{dailyLock ? <LockHint lock={dailyLock} /> : null}
 		{message ? <Note>{message}</Note> : null}
-		<SegmentedControl options={INVENTORY_VIEWS.map(value => ({value, label: i18n.t(`app:inventory.views.${value}`)}))} value={view} onChange={setView} label={i18n.t("app:profile.titles.inventory")} />
+		<SegmentedControl options={INVENTORY_VIEWS.map(value => ({value, label: i18n.t(`app:inventory.views.${value}`), ...AppIcons.getIconOrNull(VIEW_ICONS[value]) === null ? {} : {icon: AppIcons.getIcon(VIEW_ICONS[value])}}))} value={view} onChange={setView} label={i18n.t("app:profile.titles.inventory")} />
 		<InventoryContent view={view} data={inventoryData} artifacts={artifacts} />
 	</>;
 }
