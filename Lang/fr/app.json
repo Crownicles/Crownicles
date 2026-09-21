@@ -140,7 +140,8 @@
     "received": "Bonus journalier activé",
     "noObject": "Vous ne possédez aucun objet à effet journalier.",
     "cooldown": "Bonus déjà utilisé",
-    "availableIn": "Le prochain bonus sera disponible dans {{time}}."
+    "availableIn": "Le prochain bonus sera disponible dans {{time}}.",
+    "locked": "Bonus journalier déjà utilisé : de nouveau disponible dans {{time}}."
   },
   "sale": {
     "eyebrow": "Inventaire · réserve",

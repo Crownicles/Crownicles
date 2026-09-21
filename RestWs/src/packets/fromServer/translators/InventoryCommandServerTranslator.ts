@@ -28,7 +28,8 @@ export default class InventoryCommandServerTranslator {
 				: {},
 			...packet.hasTalisman === undefined ? {} : { hasTalisman: packet.hasTalisman },
 			...packet.hasCloneTalisman === undefined ? {} : { hasCloneTalisman: packet.hasCloneTalisman },
-			...packet.hasRemoteHarvestTalisman === undefined ? {} : { hasRemoteHarvestTalisman: packet.hasRemoteHarvestTalisman }
+			...packet.hasRemoteHarvestTalisman === undefined ? {} : { hasRemoteHarvestTalisman: packet.hasRemoteHarvestTalisman },
+			...packet.dailyBonusAvailableAt === undefined ? {} : { dailyBonusAvailableAt: packet.dailyBonusAvailableAt }
 		});
 	}
 }

@@ -52,4 +52,7 @@ export class InventoryRes extends FromServerPacket {
 	hasCloneTalisman?: boolean;
 
 	hasRemoteHarvestTalisman?: boolean;
+
+	/** When the daily bonus may be claimed again, absent while it is ready. */
+	dailyBonusAvailableAt?: number;
 }

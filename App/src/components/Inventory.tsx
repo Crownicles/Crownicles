@@ -9,9 +9,11 @@ import {Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primi
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {Clock3} from "@/src/design/FightIcons";
 import {formatNumber} from "@/src/display/Amounts";
+import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {materialName, plantName} from "@/src/display/Resources";
-import {EntryRow, ExpandableList, Fact} from "@/src/design/Sections";
+import {EntryRow, ExpandableList, Fact, Lock, LockHint} from "@/src/design/Sections";
 
 export type InventoryData = NonNullable<InventoryRes["data"]>;
 type InventoryArtifacts = Pick<InventoryRes, "hasTalisman" | "hasCloneTalisman" | "hasRemoteHarvestTalisman">;
@@ -19,6 +21,7 @@ type InventoryView = "equipped" | "reserve" | "materials" | "plants";
 type InventoryCategory = {equipped: "weapon" | "armor" | "potion" | "object"; reserve: "backupWeapons" | "backupArmors" | "backupPotions" | "backupObjects"; slots: keyof InventoryData["slots"]};
 
 const EQUIPPED_SLOT_COUNT = 1;
+const MILLISECONDS_PER_MINUTE = 60_000;
 const INVENTORY_VIEWS: InventoryView[] = ["equipped", "reserve", "materials", "plants"];
 const CATEGORIES: InventoryCategory[] = [
 	{equipped: "weapon", reserve: "backupWeapons", slots: "weapons"},
@@ -97,12 +100,36 @@ const ACTIONS = [
 	{menu: INVENTORY_MENUS.DAILY, label: "daily", icon: "unitValues.xp"}
 ];
 
-export function Inventory({inventoryData, artifacts}: {inventoryData: InventoryData | null; artifacts?: InventoryArtifacts}): ReactNode {
+/** The daily bonus is the one action with a delay, so the screen says how long it still has to run. */
+function dailyBonusLock(availableAt: number | undefined): Lock | undefined {
+	const remaining = availableAt === undefined ? 0 : availableAt - Date.now();
+	if (remaining <= 0) return undefined;
+	return {
+		reason: i18n.t("app:dailyBonus.locked", {time: formatDurationMinutes(remaining / MILLISECONDS_PER_MINUTE)}),
+		icon: Clock3
+	};
+}
+
+export function Inventory({inventoryData, artifacts, dailyBonusAvailableAt}: {
+	inventoryData: InventoryData | null;
+	artifacts?: InventoryArtifacts;
+	dailyBonusAvailableAt?: number;
+}): ReactNode {
 	const [view, setView] = useState<InventoryView>("equipped");
 	const {message, pending, open} = useCommandMenus();
+	const dailyLock = dailyBonusLock(dailyBonusAvailableAt);
 	if (!inventoryData) return <Note>{i18n.t("app:common.loading")}</Note>;
 	return <>
-		<QuickActions>{ACTIONS.map(action => <QuickAction key={action.label} icon={AppIcons.getIcon(action.icon)} disabled={pending} onPress={(): Promise<void> => open(action.menu)}>{i18n.t(`app:inventory.actions.${action.label}`)}</QuickAction>)}</QuickActions>
+		<QuickActions>{ACTIONS.map(action => {
+			const locked = action.menu === INVENTORY_MENUS.DAILY && dailyLock !== undefined;
+			return <QuickAction
+				key={action.label}
+				icon={AppIcons.getIcon(action.icon)}
+				disabled={pending || locked}
+				{...locked ? {} : {onPress: (): Promise<void> => open(action.menu)}}
+			>{i18n.t(`app:inventory.actions.${action.label}`)}</QuickAction>;
+		})}</QuickActions>
+		{dailyLock ? <LockHint lock={dailyLock} /> : null}
 		{message ? <Note>{message}</Note> : null}
 		<SegmentedControl options={INVENTORY_VIEWS.map(value => ({value, label: i18n.t(`app:inventory.views.${value}`)}))} value={view} onChange={setView} label={i18n.t("app:profile.titles.inventory")} />
 		<InventoryContent view={view} data={inventoryData} artifacts={artifacts} />

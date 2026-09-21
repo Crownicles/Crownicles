@@ -72,4 +72,15 @@ describe("inventory views", () => {
 		await waitFor(() => expect(screen.getByText("app:common.connectionError")).toBeTruthy());
 		expect(request.mock.calls[0][0]).toBeInstanceOf(EquipReq);
 	});
+
+	it("says the daily bonus is on cooldown instead of letting the player ask for it", async () => {
+		await render(<Inventory inventoryData={inventory()} dailyBonusAvailableAt={Date.now() + 3_600_000} />);
+		expect(screen.getByText("app:dailyBonus.locked")).toBeTruthy();
+		expect(screen.queryByRole("button", {name: "app:inventory.actions.daily"})).toBeNull();
+	});
+
+	it("leaves the daily bonus open once its delay has run out", async () => {
+		await render(<Inventory inventoryData={inventory()} dailyBonusAvailableAt={Date.now() - 1} />);
+		expect(screen.queryByText("app:dailyBonus.locked")).toBeNull();
+	});
 });

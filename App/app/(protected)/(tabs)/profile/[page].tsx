@@ -30,7 +30,8 @@ function isProfilePage(page: string | string[] | undefined): page is ProfilePage
 }
 
 function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNode {
-	const inventoryData: InventoryData | null = state.status === "ready" ? state.data.data ?? null : null;
+	const inventory = state.status === "ready" ? state.data : null;
+	const inventoryData: InventoryData | null = inventory?.data ?? null;
 	const emptyMessage = state.status === "failed"
 		? i18n.t("app:common.error")
 		: state.status === "ready"
@@ -38,7 +39,11 @@ function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNo
 			: i18n.t("app:common.loading");
 	return (
 		<View style={styles.inventory}>
-			{inventoryData ? <Inventory inventoryData={inventoryData} artifacts={state.status === "ready" ? state.data : {}} /> : <EmptyState>{emptyMessage}</EmptyState>}
+			{inventoryData ? <Inventory
+				inventoryData={inventoryData}
+				artifacts={inventory ?? {}}
+				{...inventory?.dailyBonusAvailableAt === undefined ? {} : {dailyBonusAvailableAt: inventory.dailyBonusAvailableAt}}
+			/> : <EmptyState>{emptyMessage}</EmptyState>}
 		</View>
 	);
 }
