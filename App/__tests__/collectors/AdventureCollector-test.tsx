@@ -364,6 +364,7 @@ const outcomeScenarios: OutcomeScenario[] = [
 		continueText: "app:adventure.event.continue",
 		assertView: () => {
 			expect(screen.getByText("events:19.possibilities.cook.outcomes.success")).toBeTruthy();
+			expect(screen.getByText("events:19.possibilities.cook.text")).toBeTruthy();
 			expect(screen.getByText("app:adventure.event.fields.money")).toBeTruthy();
 			expect(screen.getByText("+20")).toBeTruthy();
 			expect(screen.getByText("app:adventure.event.fields.timeLost")).toBeTruthy();

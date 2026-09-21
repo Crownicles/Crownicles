@@ -11,14 +11,20 @@ const styles = StyleSheet.create({
 	}
 });
 
-export function TwemojiText({children, textStyle, containerStyle, emojiSize, iosEmojiVerticalOffset}: {
-	children: string;
+/**
+ * The text split into words and emojis, ready to be laid out on a wrapping line.
+ *
+ * Exposed so prose that also carries emphasis can style each piece without re-implementing the
+ * emoji substitution.
+ */
+export function twemojiParts({text, textStyle, emojiSize, iosEmojiVerticalOffset, keyPrefix = ""}: {
+	text: string;
 	textStyle?: StyleProp<TextStyle>;
-	containerStyle?: StyleProp<ViewStyle>;
 	emojiSize: number;
 	iosEmojiVerticalOffset?: number;
-}): ReactNode {
-	const entities = parse(children);
+	keyPrefix?: string;
+}): ReactNode[] {
+	const entities = parse(text);
 	const emojiVerticalOffset = Platform.OS === "ios" ? iosEmojiVerticalOffset ?? 0 : 0;
 
 	const parts: ReactNode[] = [];
@@ -28,14 +34,14 @@ export function TwemojiText({children, textStyle, containerStyle, emojiSize, ios
 		const [startIndex, endIndex] = entity.indices;
 		if (startIndex > lastIndex) {
 			parts.push(
-				<Text key={`text-${lastIndex}-${startIndex}`} style={textStyle}>
-					{children.slice(lastIndex, startIndex)}
+				<Text key={`${keyPrefix}text-${lastIndex}-${startIndex}`} style={textStyle}>
+					{text.slice(lastIndex, startIndex)}
 				</Text>
 			);
 		}
 		parts.push(
 			<TwemojiIcon
-				key={`emoji-${startIndex}-${endIndex}`}
+				key={`${keyPrefix}emoji-${startIndex}-${endIndex}`}
 				emoji={entity.text}
 				size={emojiSize}
 				verticalOffset={emojiVerticalOffset}
@@ -44,13 +50,25 @@ export function TwemojiText({children, textStyle, containerStyle, emojiSize, ios
 		lastIndex = endIndex;
 	});
 
-	if (lastIndex < children.length) {
+	if (lastIndex < text.length) {
 		parts.push(
-			<Text key="text-last" style={textStyle}>
-				{children.slice(lastIndex)}
+			<Text key={`${keyPrefix}text-last`} style={textStyle}>
+				{text.slice(lastIndex)}
 			</Text>
 		);
 	}
 
-	return <View style={[styles.line, containerStyle]}>{parts}</View>;
+	return parts;
+}
+
+export function TwemojiText({children, textStyle, containerStyle, emojiSize, iosEmojiVerticalOffset}: {
+	children: string;
+	textStyle?: StyleProp<TextStyle>;
+	containerStyle?: StyleProp<ViewStyle>;
+	emojiSize: number;
+	iosEmojiVerticalOffset?: number;
+}): ReactNode {
+	return <View style={[styles.line, containerStyle]}>{twemojiParts({
+		text: children, textStyle, emojiSize, iosEmojiVerticalOffset
+	})}</View>;
 }

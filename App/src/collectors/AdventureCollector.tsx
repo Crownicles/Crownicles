@@ -23,11 +23,12 @@ import type {
 	TokenOutcomeRequiringAcknowledgement
 } from "@/src/collectors/ReportEventStore";
 import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
+import {Story} from "@/src/design/Story";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
 import {ActionBanner, ExpandableEntry, ExpandableList, Fact, Gauge, Sheet, Standing} from "@/src/design/Sections";
-import {Check} from "@/src/design/FightIcons";
+import {BookOpen, Check} from "@/src/design/FightIcons";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 
@@ -430,45 +431,76 @@ export function HealOutcome({outcome, onContinue}: {
 	);
 }
 
-/** Presents the outcome before allowing the player to continue to any following destination choice. */
+/** Every unit a big event may hand out or take away, with the emoji the game uses for it. */
+const OUTCOME_UNITS = {
+	score: "score",
+	money: "money",
+	lostMoney: "lostMoney",
+	health: "health",
+	lostHealth: "lostHealth",
+	energy: "energy",
+	gem: "gem",
+	token: "token",
+	xp: "xp",
+	time: "time"
+} as const;
+
+type OutcomeChange = {label: string; value: string; unit: string};
+
+/** A gain and a loss are not the same thing, and the game already has an emoji for each. */
+function changeUnit(amount: number, gain: string, loss: string): string {
+	return amount < 0 ? loss : gain;
+}
+
+function outcomeChanges(outcome: ReportBigEventResultRes): OutcomeChange[] {
+	const changes: OutcomeChange[] = [];
+	const add = (amount: number, label: string, unit: string): void => {
+		if (amount !== 0) changes.push({label: i18n.t(label), value: signed(amount), unit});
+	};
+	add(outcome.score, "app:adventure.event.fields.points", OUTCOME_UNITS.score);
+	add(outcome.experience, "app:adventure.event.fields.experience", OUTCOME_UNITS.xp);
+	add(outcome.money, "app:adventure.event.fields.money", changeUnit(outcome.money, OUTCOME_UNITS.money, OUTCOME_UNITS.lostMoney));
+	add(outcome.health, "app:adventure.event.fields.health", changeUnit(outcome.health, OUTCOME_UNITS.health, OUTCOME_UNITS.lostHealth));
+	add(outcome.energy, "app:adventure.event.fields.energy", OUTCOME_UNITS.energy);
+	add(outcome.gems, "app:adventure.event.fields.gems", OUTCOME_UNITS.gem);
+	add(outcome.tokens, "app:adventure.event.fields.tokens", OUTCOME_UNITS.token);
+	if (outcome.effect !== undefined) {
+		changes.push({
+			label: i18n.t("app:adventure.event.fields.timeLost"),
+			value: duration(outcome.effect.time),
+			unit: OUTCOME_UNITS.time
+		});
+	}
+	return changes;
+}
+
+/**
+ * The end of the story the player just took part in.
+ *
+ * This is not a report about a choice, it is the next paragraph of the adventure: the prose the
+ * game wrote comes first, and what it cost or brought follows, each amount wearing its own emoji.
+ */
 export function BigEventOutcome({outcome, onContinue}: {
 	outcome: ReportBigEventResultRes;
 	onContinue: () => void;
 }): ReactNode {
-	const outcomeText = i18n.t(`events:${outcome.eventId}.possibilities.${outcome.possibilityId}.outcomes.${outcome.outcomeId}`);
 	const icon = outcomeIcon(outcome);
-	const changes = [
-		{label: i18n.t("app:adventure.event.fields.points"), value: signed(outcome.score), show: outcome.score !== 0},
-		{label: i18n.t("app:adventure.event.fields.money"), value: signed(outcome.money), show: outcome.money !== 0},
-		{label: i18n.t("app:adventure.event.fields.health"), value: signed(outcome.health), show: outcome.health !== 0},
-		{label: i18n.t("app:adventure.event.fields.energy"), value: signed(outcome.energy), show: outcome.energy !== 0},
-		{label: i18n.t("app:adventure.event.fields.gems"), value: signed(outcome.gems), show: outcome.gems !== 0},
-		{label: i18n.t("app:adventure.event.fields.tokens"), value: signed(outcome.tokens), show: outcome.tokens !== 0},
-		{label: i18n.t("app:adventure.event.fields.experience"), value: signed(outcome.experience), show: outcome.experience !== 0},
-		{
-			label: i18n.t("app:adventure.event.fields.timeLost"),
-			value: duration(outcome.effect?.time ?? 0),
-			show: outcome.effect !== undefined
-		}
-	];
-
+	const changes = outcomeChanges(outcome);
 	return (
 		<Screen>
 			<Standing
 				{...icon ? {emblem: <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} />} : {}}
 				caption={i18n.t("app:adventure.event.eyebrow")}
-				title={i18n.t("app:adventure.event.resultTitle")}
-				subtitle={outcomeText}
-			/>
-			<Note>{i18n.t("app:adventure.event.resultDescription")}</Note>
-			{changes.some(change => change.show) ? (
+				title={i18n.t(`events:${outcome.eventId}.possibilities.${outcome.possibilityId}.text`)}
+			>
+				<Story>{i18n.t(`events:${outcome.eventId}.possibilities.${outcome.possibilityId}.outcomes.${outcome.outcomeId}`)}</Story>
+			</Standing>
+			{changes.length > 0 ? (
 				<ExpandableList>
-					{changes.filter(change => change.show).map(change => (
-						<Fact key={change.label} label={change.label} value={change.value} />
-					))}
+					{changes.map(change => <Fact key={change.label} label={change.label} value={change.value} unit={change.unit} />)}
 				</ExpandableList>
 			) : null}
-			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.event.continue")}</Button></ButtonRow>
+			<ActionBanner icon={BookOpen} label={i18n.t("app:adventure.event.continue")} onPress={onContinue} />
 		</Screen>
 	);
 }

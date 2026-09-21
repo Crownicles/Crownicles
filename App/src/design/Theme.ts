@@ -70,6 +70,9 @@ export const Theme = {
 		note: 12.5,
 		body: 13.5,
 		bodySmall: 13,
+
+		/** The one long-form text of the app: the game's own prose, which needs more room than a label. */
+		story: 14.5,
 		caption: 12,
 		sectionHeader: 15.5,
 		title: 18,
@@ -86,6 +89,7 @@ export const Theme = {
 		note: 18,
 		body: 20,
 		bodySmall: 18,
+		story: 22,
 		hero: 29,
 		heroSubtitle: 20,
 		rowSubtitle: 17,

@@ -331,10 +331,8 @@
       "continue": "Continuer"
     },
     "event": {
-      "eyebrow": "Rapport · événement",
-      "resultTitle": "Conséquences de votre choix",
-      "resultDescription": "Les conséquences ont été appliquées à votre aventure.",
-      "continue": "Continuer",
+      "eyebrow": "Votre aventure",
+      "continue": "Poursuivre l'aventure",
       "fields": {
         "points": "Points",
         "money": "Argent",
