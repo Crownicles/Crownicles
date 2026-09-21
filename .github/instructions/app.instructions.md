@@ -102,6 +102,35 @@ Rules that make this safe, do not work around them:
 - `App/.env` is gitignored and machine-specific. On a physical device, use the LAN IP, not
   `localhost` — including in the Keycloak URL, since the login page opens on the device.
 
+## The design grammar
+
+Every screen is written with the blocks of `App/src/design/Sections.tsx`. Do not re-implement them
+locally: a screen that declares its own `standing`, `entry` or dark-banner styles is a bug.
+
+| Block | Use |
+| --- | --- |
+| `Standing` | the identity banner opening a screen: emblem, caption, title, subtitle |
+| `Figures` | a bordered row of headline numbers, unit emoji included |
+| `ActionBanner` | the one main action, as a dark pressable bar |
+| `LockHint` | the single line saying why something is closed |
+| `ExpandableList` / `ExpandableEntry` | any list whose items have details |
+
+Rules that decide the rest:
+
+- **A disabled control says why, before being pressed.** `ActionBanner` takes a `Lock`, not a
+  boolean, so greying out without explaining is impossible. Quick-action tiles get a `LockHint`
+  underneath. Never make the player tap to discover a refusal the screen already knew about.
+- **No modal on top of a modal.** A choice that needs confirming is confirmed *in place* — expand the
+  row and put the confirm button inside it. A second window to validate the first one is a reject.
+- **Cancelling is not an event.** Backing out of a menu closes it, silently. No confirmation before,
+  no acknowledgement after: the player knows what they just did. Drop the server's `cancelled`
+  outcome rather than rendering it.
+- **Game emojis for the things of the game** (`AppIcons`, `TwemojiIcon`, `UnitIcon`), **line icons
+  for interface actions and states** (`FightIcons`: chevron, arrow, alert, clock). A gauge label is
+  interface, so it wears a line icon; a food stock is a thing, so it wears its emoji.
+- **Numbers are `tabular-nums`**, bounded values are `FightGauge`, and a screen declares no colour or
+  spacing of its own: it composes `Theme`.
+
 ## Before opening a pull request
 
 ```bash

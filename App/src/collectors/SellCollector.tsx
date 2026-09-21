@@ -1,18 +1,16 @@
 import {ReactNode, useRef, useState} from "react";
-import {Modal, StyleSheet} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, ReactionCollectorReaction, SELL_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {SellRes} from "ws-packets/src/fromServer/inventory/SellRes";
 import {Button, ButtonRow, Confirmation, Hero, KeyValue, Note, Panel, Row, Screen} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
+import {ModalSurface} from "@/src/design/Sections";
 import {itemCategoryLabel, itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {formatMoney} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
 type SaleChoice = {reaction: Extract<ReactionCollectorReaction, {type: typeof SELL_REACTION_KINDS.ITEM}>; index: number};
 
-const styles = StyleSheet.create({root: {flex: 1, backgroundColor: Theme.colors.paper}});
 
 function saleChoices(collector: ReactionCollectorCreation): SaleChoice[] {
 	return collector.reactions.flatMap((reaction, index) => reaction.type === SELL_REACTION_KINDS.ITEM ? [{reaction, index}] : []);
@@ -92,9 +90,9 @@ export function SellCollector({collector, onChoose, submitting}: {
 	};
 	const close = (): void => choose(refuseIndex);
 	return <Modal visible animationType="slide" onRequestClose={close}>
-		<SafeAreaView style={styles.root}>
+		<ModalSurface>
 			<SaleMenu collector={collector} locked={locked} onSelect={setSelection} onClose={close} />
 			{selection ? <SaleConfirmation selection={selection} locked={locked} onChoose={choose} onCancel={(): void => setSelection(null)} /> : null}
-		</SafeAreaView>
+		</ModalSurface>
 	</Modal>;
 }

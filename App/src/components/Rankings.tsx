@@ -7,6 +7,7 @@ import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {EmptyState, Note, Panel, SectionHeader} from "@/src/design/Primitives";
+import {Standing} from "@/src/design/Sections";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {ChevronDown} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
@@ -24,12 +25,6 @@ const RANKING_UNITS: Record<TopDataType, string> = {
 const PODIUM_LAST_RANK = 3;
 
 const styles = StyleSheet.create({
-	standing: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.lg, paddingBottom: Theme.spacing.lg},
-	standingEmblem: {width: 56, height: 56, flexShrink: 0, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.wash, borderRadius: 8},
-	standingBody: {flex: 1, minWidth: 0},
-	standingChevron: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.chevron, color: Theme.colors.faint},
-	caption: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
-	standingRank: {fontFamily: Theme.fonts.extraBold, fontSize: 28, lineHeight: 34, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
 	entry: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, minHeight: 64, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"},
 	entrySelf: {backgroundColor: Theme.colors.wash, borderLeftColor: Theme.colors.green},
 	rankBadge: {minWidth: 38, height: 30, flexShrink: 0, alignItems: "center", justifyContent: "center", paddingHorizontal: Theme.spacing.sm, backgroundColor: Theme.colors.wash, borderRadius: 10},
@@ -76,29 +71,17 @@ function playerPage(data: TopRes): number | undefined {
 	return data.contextRank ? Math.ceil(data.contextRank / data.elementsPerPage) : undefined;
 }
 
-function StandingSummary({data}: {data: TopRes}): ReactNode {
-	return <>
-		<View style={styles.standingEmblem}><UnitIcon unit={RANKING_UNITS[data.dataType]} size={30} /></View>
-		<View style={styles.standingBody}>
-			<Text style={styles.caption}>{i18n.t("app:arena.rankings.yourPlace")}</Text>
-			<Text style={styles.standingRank}>{data.contextRank ? formatNumber(data.contextRank) : i18n.t("app:profile.values.unranked")}</Text>
-			<Text style={styles.caption}>{i18n.t("app:arena.rankings.ofTotal", {total: formatNumber(data.totalElements)})}</Text>
-		</View>
-	</>;
-}
-
 function RankingStanding({data, onPage}: {data: TopRes; onPage: (page: number) => void}): ReactNode {
 	const target = playerPage(data);
-	if (target === undefined || target === data.pageNumber) {
-		return <View style={styles.standing} testID="ranking-standing"><StandingSummary data={data} /></View>;
-	}
-	return <Pressable
-		accessibilityRole="button"
-		accessibilityLabel={i18n.t("app:arena.rankings.goToMyPage")}
-		onPress={(): void => onPage(target)}
-		style={({pressed}) => [styles.standing, pressed && styles.pressed]}
+	const reachable = target !== undefined && target !== data.pageNumber;
+	return <Standing
 		testID="ranking-standing"
-	><StandingSummary data={data} /><Text style={styles.standingChevron}>›</Text></Pressable>;
+		emblem={<UnitIcon unit={RANKING_UNITS[data.dataType]} size={30} />}
+		caption={i18n.t("app:arena.rankings.yourPlace")}
+		title={data.contextRank ? formatNumber(data.contextRank) : i18n.t("app:profile.values.unranked")}
+		subtitle={i18n.t("app:arena.rankings.ofTotal", {total: formatNumber(data.totalElements)})}
+		{...reachable ? {onPress: (): void => onPage(target), accessibilityLabel: i18n.t("app:arena.rankings.goToMyPage")} : {}}
+	/>;
 }
 
 function RankingRow({entry, unit}: {entry: RankingEntry; unit: string}): ReactNode {

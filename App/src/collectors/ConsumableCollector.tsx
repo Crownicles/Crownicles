@@ -1,18 +1,16 @@
 import {ReactNode} from "react";
-import {Modal, StyleSheet} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {DAILY_BONUS_DATA_KINDS, DAILY_BONUS_REACTION_KINDS, DRINK_REACTION_KINDS, GENERIC_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {Hero, KeyValue, Panel, Screen} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
+import {ModalSurface} from "@/src/design/Sections";
 import {itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {consumableDescription} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
 
 type ConsumableCollectorProps = {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean};
 
-const styles = StyleSheet.create({root: {flex: 1, backgroundColor: Theme.colors.paper}});
 
 function ConsumableMenu({collector, onChoose, submitting}: ConsumableCollectorProps): ReactNode {
 	const items = collector.reactions.flatMap(reaction => {
@@ -35,6 +33,6 @@ export function ConsumableCollector(props: ConsumableCollectorProps): ReactNode 
 		if (refuseIndex >= 0) props.onChoose(refuseIndex);
 	};
 	return <Modal visible animationType="slide" onRequestClose={close}>
-		<SafeAreaView style={styles.root}><ConsumableMenu {...props} /></SafeAreaView>
+		<ModalSurface><ConsumableMenu {...props} /></ModalSurface>
 	</Modal>;
 }

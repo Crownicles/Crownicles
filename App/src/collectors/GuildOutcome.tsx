@@ -1,6 +1,6 @@
 import {ReactNode} from "react";
 import {GuildCommandOutcome, GuildCreationStatus, GuildDailyReward} from "ws-packets/src/objects/Guild";
-import {Button, ButtonRow, Confirmation, KeyValue, Note, Panel} from "@/src/design/Primitives";
+import {Button, ButtonRow, Confirmation, KeyValue, Note} from "@/src/design/Primitives";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
@@ -20,7 +20,7 @@ function creationMessage(status: GuildCreationStatus): string {
 function DailyReward({reward}: {reward: GuildDailyReward}): ReactNode {
 	return <>
 		<Note>{reward.guildName}</Note>
-		<Panel>{DAILY_NUMBERS.filter(key => reward[key] !== undefined).map(key => <KeyValue key={key} label={i18n.t(`app:guild.rewards.${key}`)} value={formatNumber(reward[key]!)} />)}</Panel>
+		{DAILY_NUMBERS.filter(key => reward[key] !== undefined).map(key => <KeyValue key={key} label={i18n.t(`app:guild.rewards.${key}`)} value={formatNumber(reward[key]!)} />)}
 		{DAILY_FLAGS.filter(key => reward[key]).map(key => <Note key={key}>{i18n.t(`app:guild.rewards.${key}`)}</Note>)}
 		{reward.advanceTime !== undefined ? <Note>{i18n.t("app:guild.rewards.advanceTime", {duration: formatDurationMinutes(reward.advanceTime * MINUTES_PER_HOUR)})}</Note> : null}
 		{reward.alteration ? <Note>{i18n.t("app:guild.rewards.alteration", {health: reward.alteration.healAmount ?? 0})}</Note> : null}
@@ -38,7 +38,7 @@ function GuildManagementResult({outcome}: {outcome: GuildCommandOutcome}): React
 			<Note>{i18n.t(outcome.isGuildDestroyed ? "app:guild.dissolved" : "app:guild.left", {name: outcome.guildName})}</Note>
 			{outcome.newChiefName ? <Note>{i18n.t("app:guild.newChief", {name: outcome.newChiefName})}</Note> : null}
 		</>;
-		default: return <Note>{i18n.t("app:guild.cancelled")}</Note>;
+		default: return null;
 	}
 }
 

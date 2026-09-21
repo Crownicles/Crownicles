@@ -7,8 +7,7 @@ import {i18n} from "@/src/translations/i18n";
 
 function outcomeMessage(outcome: Outcome): string {
 	if (outcome.kind === "success") return className(outcome.classId);
-	if (outcome.kind === "cooldown") return i18n.t("app:classes.availableAt", {date: missionDate(outcome.timestamp)});
-	return i18n.t("app:classes.unchanged");
+	return i18n.t("app:classes.availableAt", {date: missionDate(outcome.timestamp)});
 }
 
 export function ClassOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {

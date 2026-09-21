@@ -10,6 +10,7 @@ import {
 	type TextStyle,
 	type ViewStyle
 } from "react-native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Theme} from "@/src/design/Theme";
 import {LucideIcon} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -326,10 +327,14 @@ const confirmationStyles = StyleSheet.create({
 	card: {
 		width: "100%",
 		maxWidth: 420,
-		padding: Theme.spacing.xl,
+		flexGrow: 0,
+		flexShrink: 1,
 		borderRadius: Theme.radius,
 		backgroundColor: Theme.colors.paper,
 		elevation: 4
+	},
+	cardContent: {
+		padding: Theme.spacing.xl
 	},
 	icon: {
 		alignItems: "center",
@@ -645,10 +650,11 @@ export function Confirmation({icon, title, message, children, onRequestClose}: {
 	children: ReactNode;
 	onRequestClose?: () => void;
 }): ReactNode {
+	const insets = useSafeAreaInsets();
 	return (
 		<Modal visible transparent animationType="fade" onRequestClose={onRequestClose}>
-			<View style={styles.overlay}>
-				<View style={styles.card}>
+			<View style={[styles.overlay, {paddingTop: insets.top + Theme.spacing.xl, paddingBottom: insets.bottom + Theme.spacing.xl}]}>
+				<ScrollView style={styles.card} contentContainerStyle={styles.cardContent} bounces={false}>
 					{icon ? <View style={styles.icon}>{icon}</View> : null}
 					<TwemojiText
 						containerStyle={styles.titleContainer}
@@ -660,7 +666,7 @@ export function Confirmation({icon, title, message, children, onRequestClose}: {
 					</TwemojiText>
 					{message ? <TwemojiText textStyle={styles.message} emojiSize={Theme.fontSize.body}>{message}</TwemojiText> : null}
 					<View style={styles.content}>{children}</View>
-				</View>
+				</ScrollView>
 			</View>
 		</Modal>
 	);

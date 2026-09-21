@@ -1,6 +1,5 @@
 import {ReactNode, useState} from "react";
-import {Modal, StyleSheet} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {EQUIP_DATA_KINDS, EQUIP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {EQUIP_ACTIONS, EquipCategoryData} from "ws-packets/src/objects/EquipCategoryData";
@@ -11,6 +10,7 @@ import {useEquipmentActions} from "@/src/store/useEquipmentActions";
 import {Button, ButtonRow, Confirmation, Hero, Note, Panel, Row, Screen, SectionHeader} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {ModalSurface} from "@/src/design/Sections";
 import {AppIcons} from "@/src/AppIcons";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {itemDisplayName, itemIconPath, itemCategoryLabel} from "@/src/collectors/CollectorLabels";
@@ -20,7 +20,6 @@ type EquipCollectorPacket = ReactionCollectorCreation & {data: Extract<ReactionC
 type EquipmentSelection = {request: EquipActionReq; item: ItemWithDetails};
 type EquipmentCategoryProps = {category: EquipCategoryData; locked: boolean; onSelect: (selection: EquipmentSelection) => void};
 
-const styles = StyleSheet.create({root: {flex: 1, backgroundColor: Theme.colors.paper}});
 
 function EquipmentItem({item, end, onPress, disabled}: {
 	item: ItemWithDetails; end: string; onPress?: () => void; disabled?: boolean;
@@ -76,7 +75,7 @@ export function EquipCollector({collector, onChoose, submitting}: {
 		await submit(request);
 	};
 	return <Modal visible animationType="slide" onRequestClose={close}>
-		<SafeAreaView style={styles.root}>
+		<ModalSurface>
 			<Screen>
 				<Hero eyebrow={i18n.t("app:equipment.eyebrow")} title={i18n.t("app:equipment.title")} />
 				{error ? <Note>{i18n.t(error)}</Note> : null}
@@ -91,6 +90,6 @@ export function EquipCollector({collector, onChoose, submitting}: {
 				<Button variant="primary" disabled={locked} onPress={confirm}>{i18n.t("app:collector.accept")}</Button>
 				<Button disabled={locked} onPress={(): void => setSelection(null)}>{i18n.t("app:collector.refuse")}</Button>
 			</ButtonRow></Confirmation> : null}
-		</SafeAreaView>
+		</ModalSurface>
 	</Modal>;
 }

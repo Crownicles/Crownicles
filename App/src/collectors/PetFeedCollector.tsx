@@ -1,17 +1,15 @@
 import {ReactNode} from "react";
-import {Modal, StyleSheet} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PET_FEED_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {Hero, KeyValue, Panel, Screen} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
+import {ModalSurface} from "@/src/design/Sections";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {formatMoney} from "@/src/display/Amounts";
 import {petName} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
 
-const styles = StyleSheet.create({root: {flex: 1, backgroundColor: Theme.colors.paper}});
 type PetFeedProps = {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean};
 
 function FeedMenu({collector, onChoose, submitting}: PetFeedProps): ReactNode {
@@ -33,6 +31,6 @@ export function PetFeedCollector(props: PetFeedProps): ReactNode {
 		answer(index);
 	};
 	return <Modal visible animationType="slide" onRequestClose={close}>
-		<SafeAreaView style={styles.root}><FeedMenu collector={props.collector} onChoose={answer} submitting={locked} /></SafeAreaView>
+		<ModalSurface><FeedMenu collector={props.collector} onChoose={answer} submitting={locked} /></ModalSurface>
 	</Modal>;
 }

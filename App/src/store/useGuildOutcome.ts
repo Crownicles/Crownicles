@@ -10,7 +10,8 @@ export function useGuildOutcome(): GuildOutcomeState {
 	const [outcome, setOutcome] = useState<GuildCommandOutcome | null>(null);
 	const queryClient = useQueryClient();
 	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<GuildCommandRes>(GuildCommandRes.wireName, packet => {
-		setOutcome(packet.outcome);
+		// Backing out of a menu is not an event: the player already knows they cancelled.
+		setOutcome(packet.outcome.type === "cancelled" ? null : packet.outcome);
 		for (const entity of [GAME_ENTITIES.GUILD, GAME_ENTITIES.GUILD_STORAGE, GAME_ENTITIES.SHELTER, GAME_ENTITIES.PROFILE, GAME_ENTITIES.MISSIONS, GAME_ENTITIES.PET, GAME_ENTITIES.REPORT]) queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(console.error);
 	}), [queryClient]);
 	return {outcome, clear: (): void => setOutcome(null)};

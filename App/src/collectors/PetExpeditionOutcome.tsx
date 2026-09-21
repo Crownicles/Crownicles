@@ -1,17 +1,15 @@
 import {ReactNode} from "react";
-import {Modal, StyleSheet} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {Modal} from "react-native";
 import {PetExpeditionResolveRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
 import {ExpeditionOutcome} from "@/src/store/useExpeditionOutcome";
 import {Button, ButtonRow, Hero, KeyValue, Note, Panel, Screen} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
+import {ModalSurface} from "@/src/design/Sections";
 import {ExpeditionRewardDetails} from "@/src/components/ExpeditionDetails";
 import {ExpeditionStarted, ExpeditionStatus} from "@/src/components/ExpeditionJourney";
 import {expeditionLocationName, expeditionPetName} from "@/src/display/PetExpedition";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
-const styles = StyleSheet.create({root: {flex: 1, backgroundColor: Theme.colors.paper}});
 
 function ExpeditionResolved({packet}: {packet: PetExpeditionResolveRes}): ReactNode {
 	const result = packet.totalFailure ? "failure" : packet.partialSuccess ? "partial" : packet.success ? "success" : "failure";
@@ -50,6 +48,6 @@ function OutcomeMenu({outcome, onContinue}: {outcome: ExpeditionOutcome; onConti
 
 export function PetExpeditionOutcome({outcome, onContinue}: {outcome: ExpeditionOutcome; onContinue: () => void}): ReactNode {
 	return <Modal visible animationType="slide" onRequestClose={onContinue}>
-		<SafeAreaView style={styles.root}><OutcomeMenu outcome={outcome} onContinue={onContinue} /></SafeAreaView>
+		<ModalSurface><OutcomeMenu outcome={outcome} onContinue={onContinue} /></ModalSurface>
 	</Modal>;
 }

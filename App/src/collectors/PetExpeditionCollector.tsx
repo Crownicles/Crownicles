@@ -1,10 +1,9 @@
 import {ReactNode, useState} from "react";
-import {Modal, StyleSheet} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
 import {Button, ButtonRow, Confirmation, Hero, KeyValue, Note, Panel, Row, Screen} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
+import {ModalSurface} from "@/src/design/Sections";
 import {ExpeditionOptionDetails, ExpeditionProgressDetails} from "@/src/components/ExpeditionDetails";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {isChoosable, reactionLabel} from "@/src/collectors/CollectorLabels";
@@ -16,7 +15,6 @@ import {i18n} from "@/src/translations/i18n";
 
 type ExpeditionData = Extract<ReactionCollectorData, {type: typeof EXPEDITION_DATA_KINDS[keyof typeof EXPEDITION_DATA_KINDS]}>;
 const EXPEDITION_KINDS = new Set<ReactionCollectorData["type"]>(Object.values(EXPEDITION_DATA_KINDS));
-const styles = StyleSheet.create({root: {flex: 1, backgroundColor: Theme.colors.paper}});
 type MenuProps = {collector: ReactionCollectorCreation; data: ExpeditionData; locked: boolean; onChoose: (index: number) => void};
 
 export function isExpeditionCollector(data: ReactionCollectorData): data is ExpeditionData {
@@ -86,9 +84,9 @@ export function PetExpeditionCollector({collector, onChoose, submitting}: {colle
 	const close = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CANCEL || reaction.type === EXPEDITION_REACTION_KINDS.CLOSE));
 	if (!isExpeditionCollector(collector.data)) return null;
 	return <Modal visible animationType="slide" onRequestClose={close}>
-		<SafeAreaView style={styles.root}>
+		<ModalSurface>
 			<ExpeditionMenu collector={collector} data={collector.data} locked={locked} onChoose={choose} secondsLeft={secondsLeft} />
 			{selection !== null ? <ExpeditionConfirmation collector={collector} selection={selection} locked={locked} onConfirm={(): void => {answer(selection); setSelection(null);}} onCancel={(): void => setSelection(null)} /> : null}
-		</SafeAreaView>
+		</ModalSurface>
 	</Modal>;
 }

@@ -6,14 +6,21 @@ jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIco
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
 const PET = {typeId: 1, nickname: "Aster", sex: "m", rarity: 1, loveLevel: 3, force: 10, feedDelay: 2};
 describe("pet management confirmation", () => {
-	it("requires confirmation to deposit and preserves the original index", async () => {
+	it("confirms the transfer inside the row and preserves the original index", async () => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {id: "transfer", endTime: Date.now() + 60_000, data: {type: "petTransfer", data: {ownPet: PET, shelterPets: []}}, reactions: [{type: "refuse", data: {}}, {type: "petDeposit", data: {}}]});
 		const onChoose = jest.fn();
 		await render(<PetManagementCollector collector={collector} onChoose={onChoose} submitting={false} />);
 		await fireEvent.press(screen.getByText("app:pet.management.deposit"));
 		expect(onChoose).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:pet.management.confirmTransfer"));
 		expect(onChoose).toHaveBeenCalledWith(1);
+	});
+	it("leaves the transfer without asking anything when backing out", async () => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {id: "transfer", endTime: Date.now() + 60_000, data: {type: "petTransfer", data: {ownPet: PET, shelterPets: []}}, reactions: [{type: "refuse", data: {}}, {type: "petDeposit", data: {}}]});
+		const onChoose = jest.fn();
+		await render(<PetManagementCollector collector={collector} onChoose={onChoose} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:common.back"));
+		expect(onChoose).toHaveBeenCalledWith(0);
 	});
 	it("shows the irreversible warning and exact server price before freeing", async () => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {id: "free", endTime: Date.now() + 60_000, data: {type: "petFreeConfirm", data: {pet: {petTypeId: 1, petSex: "m", petNickname: "Aster"}, freeCost: 1000, isFromShelter: true}}, reactions: [{type: "accept", data: {}}, {type: "refuse", data: {}}]});

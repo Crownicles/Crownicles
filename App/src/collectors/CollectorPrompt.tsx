@@ -2,9 +2,9 @@ import {ReactNode, useEffect, useState} from "react";
 import {View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
-	BIG_EVENT_DATA_KINDS, BIG_EVENT_END_POSSIBILITY_ID, BIG_EVENT_REACTION_KINDS
+	BIG_EVENT_DATA_KINDS, BIG_EVENT_END_POSSIBILITY_ID, BIG_EVENT_REACTION_KINDS, GENERIC_REACTION_KINDS
 } from "ws-packets/src/fromServer/collectors";
-import {Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
+import {Button, ButtonRow, Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 import {
 	collectorDescription, collectorTitle, isChoosable, reactionLabel
@@ -26,6 +26,20 @@ type IndexedChoice = {
 	index: number;
 	key: string;
 };
+
+/** The two buttons a yes-or-no collector takes inside a popup, where a list of rows would be heavy. */
+export function CollectorDecision({collector, onChoose, submitting}: {
+	collector: ReactionCollectorCreation;
+	onChoose: (reactionIndex: number) => void;
+	submitting: boolean;
+}): ReactNode {
+	const accept = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT);
+	const refuse = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE);
+	return <ButtonRow>
+		<Button variant="primary" disabled={submitting} onPress={(): void => onChoose(accept)}>{i18n.t("app:collector.accept")}</Button>
+		<Button disabled={submitting} onPress={(): void => onChoose(refuse)}>{i18n.t("app:collector.refuse")}</Button>
+	</ButtonRow>;
+}
 
 function isServerOnlyChoice(collector: ReactionCollectorCreation, choice: IndexedChoice): boolean {
 	return collector.data.type === BIG_EVENT_DATA_KINDS.COLLECTOR

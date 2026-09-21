@@ -1,8 +1,8 @@
 import {ReactNode} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, GUILD_DATA_KINDS, ReactionCollectorData, ReactionCollectorDataOf} from "ws-packets/src/fromServer/collectors";
-import {Confirmation, KeyValue, Note, Panel} from "@/src/design/Primitives";
-import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
+import {Confirmation, KeyValue, Note} from "@/src/design/Primitives";
+import {CollectorDecision} from "@/src/collectors/CollectorPrompt";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {formatMoney} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
@@ -26,7 +26,7 @@ function GuildConfirmationDetails({data}: {data: ReactionCollectorData}): ReactN
 	if (data.type === GUILD_DATA_KINDS.REIMBURSE) return <Note>{i18n.t("app:guildDomain.confirmReimburse", {amount: formatMoney(data.data.amount)})}</Note>;
 	if (data.type === GUILD_DATA_KINDS.INVITE) return <Note>{i18n.t("app:guild.confirmInvitation", {guild: data.data.guildName})}</Note>;
 	if (data.type === GUILD_DATA_KINDS.MEMBER) return <Note>{i18n.t("app:guild.confirmMember", {member: data.data.memberName ?? i18n.t("app:profile.values.unknown"), guild: data.data.guildName})}</Note>;
-	if (data.type === GUILD_DATA_KINDS.CREATE) return <Panel><KeyValue label={i18n.t("app:pet.care.price")} value={formatMoney(data.data.price)} /></Panel>;
+	if (data.type === GUILD_DATA_KINDS.CREATE) return <KeyValue label={i18n.t("app:pet.care.price")} value={formatMoney(data.data.price)} />;
 	if (data.type === GUILD_DATA_KINDS.DESCRIPTION) return <Note>{data.data.description}</Note>;
 	if (data.type === GUILD_DATA_KINDS.LEAVE) return <GuildDepartureDetails data={data} />;
 	return null;
@@ -36,6 +36,6 @@ export function GuildCreateCollector({collector, onChoose, submitting}: {collect
 	const {answer, locked} = useCollectorAnswer(collector, onChoose, submitting);
 	return <Confirmation title={guildConfirmationTitle(collector.data)} onRequestClose={(): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE))}>
 		<GuildConfirmationDetails data={collector.data} />
-		<CollectorChoices collector={collector} onChoose={answer} submitting={locked} />
+		<CollectorDecision collector={collector} onChoose={answer} submitting={locked} />
 	</Confirmation>;
 }

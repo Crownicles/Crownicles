@@ -1,11 +1,10 @@
 import {ReactNode, useState} from "react";
-import {Modal, StyleSheet} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {Modal} from "react-native";
 import {AvailableClass} from "ws-packets/src/objects/ClassDetails";
 import {CLASSES_DATA_KINDS, CLASSES_REACTION_KINDS, GENERIC_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {Button, ButtonRow, Confirmation, Hero, Note, Panel, Row, Screen} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
+import {ModalSurface} from "@/src/design/Sections";
 import {ClassStatistics} from "@/src/components/ClassStatistics";
 import {className} from "@/src/display/Classes";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
@@ -14,7 +13,6 @@ import {i18n} from "@/src/translations/i18n";
 
 type ClassChoice = {details: AvailableClass; index: number};
 const SECONDS_PER_MINUTE = 60;
-const styles = StyleSheet.create({root: {flex: 1, backgroundColor: Theme.colors.paper}});
 
 function classChoices(collector: ReactionCollectorCreation): ClassChoice[] {
 	if (collector.data.type !== CLASSES_DATA_KINDS.COLLECTOR) return [];
@@ -63,9 +61,9 @@ export function ClassesCollector({collector, onChoose, submitting}: {collector: 
 	if (collector.data.type !== CLASSES_DATA_KINDS.COLLECTOR) return null;
 	const close = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
 	return <Modal visible animationType="slide" onRequestClose={close}>
-		<SafeAreaView style={styles.root}>
+		<ModalSurface>
 			<ClassMenu collector={collector} locked={locked} secondsLeft={secondsLeft} onSelect={select} onClose={close} />
 			{selection ? <ClassConfirmation selection={selection} locked={locked} onConfirm={(): void => choose(selection.index)} onCancel={(): void => setSelection(null)} /> : null}
-		</SafeAreaView>
+		</ModalSurface>
 	</Modal>;
 }

@@ -1,18 +1,13 @@
 import {ReactNode, useEffect} from "react";
-import {Modal, StyleSheet, View} from "react-native";
-import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {Modal} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {FIGHT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
-import {Theme} from "@/src/design/Theme";
+import {ModalSurface} from "@/src/design/Sections";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {fightStore, useFight, FightSnapshot} from "@/src/store/FightStore";
 import {FIGHT_ERRORS} from "ws-packets/src/objects/Fight";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {FightLiveView} from "@/src/components/FightBattle";
-
-const styles = StyleSheet.create({
-	root: {flex: 1, backgroundColor: Theme.colors.paper}
-});
 
 function useFightCompletion(fight: FightSnapshot): boolean {
 	const queryClient = useQueryClient();
@@ -28,14 +23,12 @@ export function FightSession(): ReactNode {
 	const fight = useFight();
 	const {open, react, isAnswerPending} = useCollectors();
 	const completed = useFightCompletion(fight);
-	// The battle screen does not scroll, so nothing else keeps it clear of the status bar and home indicator.
-	const insets = useSafeAreaInsets();
 	const collector = open.find(entry => entry.data.type === FIGHT_DATA_KINDS.ACTION && entry.data.data.fightId === fight.introduction?.fightId);
 	if (!fight.visible) return null;
 	const close = completed || fight.error ? fightStore.reset : fightStore.minimize;
 	return <Modal visible animationType="slide" onRequestClose={close}>
-		<View style={[styles.root, {paddingTop: insets.top, paddingBottom: insets.bottom}]}>
+		<ModalSurface>
 			<FightLiveView key={fight.introduction?.fightId} fight={fight} collector={collector} onChoose={(index): void => {if (collector) react(collector.id, index);}} submitting={collector ? isAnswerPending(collector.id) : false} onClose={close} />
-		</View>
+		</ModalSurface>
 	</Modal>;
 }

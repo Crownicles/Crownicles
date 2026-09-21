@@ -4,7 +4,7 @@ import {ClassesCancelRes, ClassesCooldownRes, ClassesRes} from "ws-packets/src/f
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 
-export type ClassOutcome = {kind: "success"; classId: number} | {kind: "cooldown"; timestamp: number} | {kind: "cancelled"};
+export type ClassOutcome = {kind: "success"; classId: number} | {kind: "cooldown"; timestamp: number};
 type ClassOutcomeState = {outcome: ClassOutcome | null; clear: () => void};
 
 export function useClassOutcome(): ClassOutcomeState {
@@ -15,13 +15,13 @@ export function useClassOutcome(): ClassOutcomeState {
 		const receive = (result: ClassOutcome): void => {
 			setOutcome(result);
 			if (result.kind === "cooldown") return;
-			const entities = result.kind === "success" ? [GAME_ENTITIES.PROFILE, GAME_ENTITIES.MISSIONS, GAME_ENTITIES.CLASSES, GAME_ENTITIES.INVENTORY, GAME_ENTITIES.REPORT] : [GAME_ENTITIES.REPORT];
-			for (const entity of entities) queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(console.error);
+			for (const entity of [GAME_ENTITIES.PROFILE, GAME_ENTITIES.MISSIONS, GAME_ENTITIES.CLASSES, GAME_ENTITIES.INVENTORY, GAME_ENTITIES.REPORT]) queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(console.error);
 		};
 		const unregister = [
 			client.registerPushedPacketHandler<ClassesRes>(ClassesRes.wireName, packet => receive({kind: "success", classId: packet.classId})),
 			client.registerPushedPacketHandler<ClassesCooldownRes>(ClassesCooldownRes.wireName, packet => receive({kind: "cooldown", timestamp: packet.timestamp})),
-			client.registerPushedPacketHandler(ClassesCancelRes.wireName, () => receive({kind: "cancelled"}))
+			// Backing out of the menu is not an event: only the report needs to catch up.
+			client.registerPushedPacketHandler(ClassesCancelRes.wireName, () => queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.REPORT)}).catch(console.error))
 		];
 		return (): void => {unregister.forEach(stop => stop());};
 	}, [queryClient]);

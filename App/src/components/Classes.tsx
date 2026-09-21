@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {Pressable, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ClassesInfoReq} from "ws-packets/src/fromClient/ClassesInfoReq";
@@ -13,7 +13,8 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
-import {ChevronDown, Swords} from "@/src/design/FightIcons";
+import {ExpandableEntry, ExpandableList, sectionStyles, Standing} from "@/src/design/Sections";
+import {Swords} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
@@ -37,23 +38,6 @@ function changeCountdown(timestamp?: number): string | null {
 }
 
 const styles = StyleSheet.create({
-	standing: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.lg, paddingBottom: Theme.spacing.lg},
-	standingEmblem: {width: 64, height: 64, flexShrink: 0, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.wash, borderRadius: 8},
-	standingBody: {flex: 1, minWidth: 0},
-	caption: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
-	standingName: {fontFamily: Theme.fonts.extraBold, fontSize: 23, lineHeight: 29, color: Theme.colors.ink},
-	list: {borderTopWidth: 1, borderColor: Theme.colors.line},
-	entry: {borderBottomWidth: 1, borderColor: Theme.colors.line},
-	choice: {minHeight: 72, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"},
-	selected: {backgroundColor: Theme.colors.wash},
-	current: {borderLeftColor: Theme.colors.green},
-	pressed: {opacity: 0.7},
-	emblem: {width: 32, height: 32, flexShrink: 0, alignItems: "center", justifyContent: "center"},
-	body: {flex: 1, minWidth: 0, gap: 3},
-	name: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink},
-	you: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: Theme.colors.green},
-	chevronOpen: {transform: [{rotate: "180deg"}]},
-	details: {backgroundColor: Theme.colors.wash, paddingHorizontal: Theme.spacing.lg, paddingBottom: Theme.spacing.lg, gap: Theme.spacing.md},
 	description: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.note, lineHeight: Theme.lineHeight.note, color: Theme.colors.muted, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: Theme.colors.line},
 	attacksLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: Theme.colors.muted, paddingTop: Theme.spacing.sm},
 	attack: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.sm},
@@ -73,14 +57,13 @@ function classTier(details: ClassDetails): string {
 }
 
 function ClassStanding({details}: {details: ClassDetails}): ReactNode {
-	return <View style={styles.standing} testID="class-standing">
-		<View style={styles.standingEmblem}><ClassEmblem classId={details.id} size={40} /></View>
-		<View style={styles.standingBody}>
-			<Text style={styles.caption}>{i18n.t("app:classes.yours")}</Text>
-			<Text style={styles.standingName}>{i18n.t(`models:classes.${details.id}`)}</Text>
-			<Text style={styles.caption}>{classTier(details)}</Text>
-		</View>
-	</View>;
+	return <Standing
+		testID="class-standing"
+		emblem={<ClassEmblem classId={details.id} size={40} />}
+		caption={i18n.t("app:classes.yours")}
+		title={i18n.t(`models:classes.${details.id}`)}
+		subtitle={classTier(details)}
+	/>;
 }
 
 function ClassAttack({attack}: {attack: ClassDetails["attacks"][number]}): ReactNode {
@@ -96,7 +79,7 @@ function ClassAttack({attack}: {attack: ClassDetails["attacks"][number]}): React
 }
 
 function ClassDetailsPanel({details}: {details: ClassDetails}): ReactNode {
-	return <View style={styles.details} testID={`class-details-${details.id}`}>
+	return <View testID={`class-details-${details.id}`}>
 		<Text style={styles.description}>{i18n.t(`models:class_descriptions.${details.id}`)}</Text>
 		<ClassStatistics stats={details.stats} />
 		<Text style={styles.attacksLabel}>{i18n.t("app:classes.attacks")}</Text>
@@ -107,23 +90,17 @@ function ClassDetailsPanel({details}: {details: ClassDetails}): ReactNode {
 type ClassChoiceProps = {details: ClassDetails; current: boolean; selected: boolean; onSelect: (id: number) => void};
 
 function ClassChoice({details, current, selected, onSelect}: ClassChoiceProps): ReactNode {
-	return <View style={styles.entry}>
-		<Pressable
-			accessibilityRole="button"
-			accessibilityState={{selected, expanded: selected}}
-			onPress={(): void => onSelect(details.id)}
-			style={({pressed}) => [styles.choice, selected && styles.selected, current && styles.current, pressed && styles.pressed]}
-		>
-			<View style={styles.emblem}><ClassEmblem classId={details.id} size={26} /></View>
-			<View style={styles.body}>
-				<Text style={styles.name} numberOfLines={1}>{i18n.t(`models:classes.${details.id}`)}</Text>
-				<Text style={styles.caption} numberOfLines={1}>{classTier(details)}</Text>
-			</View>
-			{current ? <Text style={styles.you}>{i18n.t("app:classes.current")}</Text> : null}
-			<View style={selected && styles.chevronOpen}><ChevronDown size={16} color={Theme.colors.muted} /></View>
-		</Pressable>
-		{selected ? <ClassDetailsPanel details={details} /> : null}
-	</View>;
+	return <ExpandableEntry
+		emblem={<ClassEmblem classId={details.id} size={26} />}
+		label={i18n.t(`models:classes.${details.id}`)}
+		caption={classTier(details)}
+		{...current ? {end: <Text style={sectionStyles.you}>{i18n.t("app:classes.current")}</Text>} : {}}
+		expanded={selected}
+		highlighted={current}
+		onToggle={(): void => onSelect(details.id)}
+	>
+		<ClassDetailsPanel details={details} />
+	</ExpandableEntry>;
 }
 
 export function ClassesContent({classes, currentClass}: {classes: ClassDetails[]; currentClass?: number}): ReactNode {
@@ -134,7 +111,7 @@ export function ClassesContent({classes, currentClass}: {classes: ClassDetails[]
 	return <>
 		{current ? <ClassStanding details={current} /> : null}
 		<SectionHeader first={!current}>{i18n.t("app:classes.comparison")}</SectionHeader>
-		<View style={styles.list}>{classes.map(entry => <ClassChoice key={entry.id} details={entry} current={entry.id === currentClass} selected={entry.id === selected} onSelect={select} />)}</View>
+		<ExpandableList>{classes.map(entry => <ClassChoice key={entry.id} details={entry} current={entry.id === currentClass} selected={entry.id === selected} onSelect={select} />)}</ExpandableList>
 	</>;
 }
 
