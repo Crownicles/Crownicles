@@ -37,6 +37,7 @@ export type ShopInformations = {
 	additionalShopData?: additionalShopData & { currency?: ShopCurrency };
 	logger?: (keycloakId: string, shopItemName: ShopItemType, amount?: number, cityId?: string) => Promise<void>;
 	cityId?: string;
+	shopId?: string;
 
 	/*
 	 * Optional hook invoked when the shop is closed by the player (close
@@ -63,13 +64,14 @@ export abstract class ShopUtils {
 			additionalShopData = {},
 			logger,
 			cityId,
+			shopId,
 			onClose
 		}: ShopInformations
 	): Promise<void> {
 		additionalShopData.currency ??= ShopCurrency.MONEY;
 		const interestingPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 		const availableCurrency = interestingPlayerInfo instanceof Player ? interestingPlayerInfo.money : interestingPlayerInfo.gems;
-		const collectorShop = new ReactionCollectorShop(shopCategories, availableCurrency, additionalShopData);
+		const collectorShop = new ReactionCollectorShop(shopCategories, availableCurrency, additionalShopData, shopId);
 		const endCallback: EndCallback = async (collector, response) => {
 			const reaction = collector.getFirstReaction();
 

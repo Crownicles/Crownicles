@@ -24,6 +24,7 @@ export const shopDataMappings: DataMapping[] = [
 	defineDataMapping(ReactionCollectorShopData, SHOP_DATA_KINDS.COLLECTOR, data => ({
 		availableCurrency: data.availableCurrency,
 		currency: data.currency,
+		...data.shopId === undefined ? {} : { shopId: data.shopId },
 		...data.additionalShopData === undefined
 			? {}
 			: {
@@ -32,7 +33,8 @@ export const shopDataMappings: DataMapping[] = [
 					...data.additionalShopData.dailyPotion === undefined ? {} : { dailyPotion: data.additionalShopData.dailyPotion },
 					...data.additionalShopData.gemToMoneyRatio === undefined ? {} : { gemToMoneyRatio: data.additionalShopData.gemToMoneyRatio },
 					...data.additionalShopData.remainingTokens === undefined ? {} : { remainingTokens: data.additionalShopData.remainingTokens },
-					...data.additionalShopData.weeklyPlants === undefined ? {} : { weeklyPlants: [...data.additionalShopData.weeklyPlants] }
+					...data.additionalShopData.weeklyPlants === undefined ? {} : { weeklyPlants: [...data.additionalShopData.weeklyPlants] },
+					...data.additionalShopData.thousandPoints === undefined ? {} : { thousandPoints: data.additionalShopData.thousandPoints }
 				}
 			}
 	}))

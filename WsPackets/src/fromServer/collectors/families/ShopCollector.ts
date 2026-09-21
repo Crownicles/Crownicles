@@ -13,12 +13,14 @@ declare module "../ReactionCollectorProtocol" {
 		shop: {
 			availableCurrency: number;
 			currency: "money" | "gem";
+			shopId?: string;
 			additionalShopData?: {
 				remainingPotions?: number;
 				dailyPotion?: ItemWithDetails;
 				gemToMoneyRatio?: number;
 				remainingTokens?: number;
 				weeklyPlants?: number[];
+				thousandPoints?: number;
 			};
 		};
 	}
