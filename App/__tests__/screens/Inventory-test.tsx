@@ -9,7 +9,7 @@ const mockTrack = jest.fn();
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: mockTrack})}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: {count?: number; max?: number; slot?: number; value?: number; details?: string}): string => {
-	if (key === "app:equipment.capacity") return `${options?.count} / ${options?.max}`;
+	if (key === "app:profile.formats.progress") return `${options?.value} / ${options?.max}`;
 	if (key === "app:equipment.slot") return `reserve ${options?.slot}`;
 	if (key === "items:attack") return `attack ${Number(options?.value)}`;
 	if (key === "app:inventory.itemSummary") return options?.details ?? key;
@@ -46,7 +46,6 @@ describe("inventory views", () => {
 		expect(screen.getByText("1 / 2")).toBeTruthy();
 		expect(screen.getAllByText("0 / 0")).toHaveLength(3);
 	});
-
 	it("formats large capped statistics only once", async () => {
 		const data = inventory();
 		data.weapon.attack = {baseValue: 1400, upgradeValue: 100, maxValue: 1250};

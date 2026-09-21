@@ -70,11 +70,11 @@ function ComparedStats({candidate, equipped}: {candidate: ItemWithDetails; equip
 	const worn = equipped && isMainItem(equipped) ? equipped : null;
 	return <>{MAIN_STATS.map(stat => {
 		const value = statValue(candidate[stat]);
-		const difference = worn ? value - statValue(worn[stat]) : null;
+		const difference = worn ? value - statValue(worn[stat]) : 0;
 		return <Fact
 			key={stat}
 			label={i18n.t(`app:equipment.stats.${stat}`)}
-			value={difference === null ? String(value) : i18n.t("app:equipment.stats.change", {value, difference: formatDifference(difference)})}
+			value={difference === 0 ? String(value) : i18n.t("app:equipment.stats.change", {value, difference: formatDifference(difference)})}
 			unit={stat}
 		/>;
 	})}</>;

@@ -5,7 +5,7 @@ import {InventoryItemRow} from "@/src/components/InventoryItemRow";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
 import {INVENTORY_MENUS, useCommandMenus} from "@/src/store/useInventoryMenus";
-import {Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
+import {EmptyState, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -39,45 +39,68 @@ const CATEGORIES: InventoryCategory[] = [
 ];
 
 /** A section title wearing the emoji of what it holds, the way the Discord inventory does. */
-function CategoryHeader({category, count}: {category: InventoryCategory; count: number}): ReactNode {
-	return <SectionHeader icon={AppIcons.getIconOrNull(category.icon) ?? undefined}>{i18n.t(`items:${category.equipped}`, {count})}</SectionHeader>;
+function CategoryHeader({category, count, first, hint}: {
+	category: InventoryCategory;
+	count: number;
+	first: boolean;
+	hint?: string;
+}): ReactNode {
+	return <SectionHeader
+		icon={AppIcons.getIconOrNull(category.icon) ?? undefined}
+		first={first}
+		{...hint === undefined ? {} : {action: {hint}}}
+	>{i18n.t(`items:${category.equipped}`, {count})}</SectionHeader>;
 }
 
 function InventoryEquipment({data}: {data: InventoryData}): ReactNode {
-	return CATEGORIES.map(category => <Fragment key={category.equipped}>
-		<CategoryHeader category={category} count={1} />
+	return CATEGORIES.map((category, index) => <Fragment key={category.equipped}>
+		<CategoryHeader category={category} count={1} first={index === 0} />
 		<ExpandableList><InventoryItemRow item={data[category.equipped]} location={i18n.t(`items:${category.equipped}`, {count: 1})} /></ExpandableList>
 	</Fragment>);
 }
 
 function InventoryReserve({data}: {data: InventoryData}): ReactNode {
-	return CATEGORIES.map(category => {
+	return CATEGORIES.map((category, index) => {
 		const items = [...data[category.reserve]].sort((first, second) => first.slot - second.slot);
 		const maximum = Math.max(0, data.slots[category.slots] - EQUIPPED_SLOT_COUNT);
 		return <Fragment key={category.equipped}>
-			<CategoryHeader category={category} count={maximum} />
+			<CategoryHeader
+				category={category}
+				count={maximum}
+				first={index === 0}
+				hint={i18n.t("app:profile.formats.progress", {value: items.length, max: maximum})}
+			/>
 			<ExpandableList>{items.length > 0
 				? items.map(item => <InventoryItemRow key={item.slot} item={item.display} location={i18n.t("app:equipment.slot", {slot: item.slot})} />)
-				: <Note>{i18n.t("app:equipment.emptyReserve")}</Note>}
+				: <EmptyState>{i18n.t("app:equipment.emptyReserve")}</EmptyState>}
 			</ExpandableList>
-			<Note>{i18n.t("app:equipment.capacity", {count: items.length, max: maximum})}</Note>
 		</Fragment>;
 	});
 }
 
 function InventoryMaterials({materials}: {materials: MaterialQuantity[]}): ReactNode {
-	if (materials.length === 0) return <Note>{i18n.t("app:inventory.noMaterials")}</Note>;
-	return <ExpandableList>{materials.map(material => <Fact key={material.materialId} label={materialName(material.materialId)} value={formatNumber(material.quantity)} />)}</ExpandableList>;
+	return <>
+		<SectionHeader first action={{hint: formatNumber(materials.length)}}>{i18n.t("app:inventory.views.materials")}</SectionHeader>
+		<ExpandableList>{materials.length > 0
+			? materials.map(material => <Fact key={material.materialId} label={materialName(material.materialId)} value={formatNumber(material.quantity)} />)
+			: <EmptyState>{i18n.t("app:inventory.noMaterials")}</EmptyState>}
+		</ExpandableList>
+	</>;
 }
 
 function InventoryPlants({plants}: {plants: InventoryData["plants"]}): ReactNode {
-	if (!plants) return <Note>{i18n.t("app:inventory.noPlants")}</Note>;
 	return <>
-		<ExpandableList>
-			<Fact label={i18n.t("app:inventory.seed")} value={plants.seed ? plantName(plants.seed) : i18n.t("app:profile.values.none")} />
-			{plants.plantSlots.map(plant => <Fact key={plant.slot} label={plantName(plant.plantId)} value={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} />)}
+		<SectionHeader
+			first
+			{...plants ? {action: {hint: i18n.t("app:profile.formats.progress", {value: plants.plantSlots.length, max: plants.maxPlantSlots})}} : {}}
+		>{i18n.t("app:inventory.views.plants")}</SectionHeader>
+		<ExpandableList>{plants
+			? <>
+				<Fact label={i18n.t("app:inventory.seed")} value={plants.seed ? plantName(plants.seed) : i18n.t("app:profile.values.none")} />
+				{plants.plantSlots.map(plant => <Fact key={plant.slot} label={plantName(plant.plantId)} value={i18n.t("app:inventory.plantSlot", {slot: plant.slot})} />)}
+			</>
+			: <EmptyState>{i18n.t("app:inventory.noPlants")}</EmptyState>}
 		</ExpandableList>
-		<Note>{i18n.t("app:equipment.capacity", {count: plants.plantSlots.length, max: plants.maxPlantSlots})}</Note>
 	</>;
 }
 

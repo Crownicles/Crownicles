@@ -1,6 +1,5 @@
 import {ReactNode} from "react";
 import {useLocalSearchParams, useRouter} from "expo-router";
-import {View, StyleSheet} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
@@ -13,17 +12,10 @@ import {Missions} from "@/src/components/Missions";
 import {Blessing, Guide} from "@/src/components/CharacterReference";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {EmptyState, Note} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 
 const PROFILE_PAGES = ["inventory", "missions", "guide", "blessing"] as const;
 type ProfilePageName = typeof PROFILE_PAGES[number];
-
-const styles = StyleSheet.create({
-	inventory: {
-		marginTop: Theme.spacing.sectionGap
-	}
-});
 
 function isProfilePage(page: string | string[] | undefined): page is ProfilePageName {
 	return typeof page === "string" && (PROFILE_PAGES as readonly string[]).includes(page);
@@ -37,15 +29,11 @@ function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNo
 		: state.status === "ready"
 			? i18n.t("app:profile.inventory.empty")
 			: i18n.t("app:common.loading");
-	return (
-		<View style={styles.inventory}>
-			{inventoryData ? <Inventory
-				inventoryData={inventoryData}
-				artifacts={inventory ?? {}}
-				{...inventory?.dailyBonusAvailableAt === undefined ? {} : {dailyBonusAvailableAt: inventory.dailyBonusAvailableAt}}
-			/> : <EmptyState>{emptyMessage}</EmptyState>}
-		</View>
-	);
+	return inventoryData ? <Inventory
+		inventoryData={inventoryData}
+		artifacts={inventory ?? {}}
+		{...inventory?.dailyBonusAvailableAt === undefined ? {} : {dailyBonusAvailableAt: inventory.dailyBonusAvailableAt}}
+	/> : <EmptyState>{emptyMessage}</EmptyState>;
 }
 
 function ProfileInventory(): ReactNode {

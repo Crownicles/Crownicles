@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
 	backChevron: {transform: [{rotate: "90deg"}]},
 	fact: {minHeight: 44, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderBottomWidth: 1, borderColor: Theme.colors.line},
 	factLabel: {flex: 1, minWidth: 0, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
-	factValue: {flexShrink: 0, flexDirection: "row", alignItems: "center", gap: 4},
+	factValue: {flexShrink: 1, minWidth: 0, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 4},
 	factAmount: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink, fontVariant: ["tabular-nums"], textAlign: "right"},
 	gauge: {paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, gap: 6, borderBottomWidth: 1, borderColor: Theme.colors.line},
 	gaugeTop: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md},
