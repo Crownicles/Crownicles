@@ -16,7 +16,6 @@ export default class MapServerTranslator {
 			mapId: packet.mapId,
 			mapType: packet.mapType,
 			hasArrived: packet.hasArrived,
-			cities: packet.cities,
 			imageUrl: mapImageUrl(packet.mapLink.name, packet.mapLink.forced),
 			...packet.mapLink.fallback ? { fallbackImageUrl: mapImageUrl(packet.mapLink.fallback, packet.mapLink.forced) } : {}
 		});

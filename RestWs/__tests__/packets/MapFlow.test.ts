@@ -16,7 +16,7 @@ describe("world map protocol", () => {
 		const packet = await MapServerTranslator.map(CONTEXT, makePacket(CommandMapDisplayRes, {mapId: 10, mapType: "ci", hasArrived: false, cities: [{id: "ville_forte", mapLocationId: 10, services: [], shops: []}], mapLink: {name: "fr_10_11_", fallback: "en_10_11_", forced: false}}));
 		expect(packet.imageUrl).toBe("https://crownicles.com/public/ressources/mapsCursed/fr_10_11_map.jpg");
 		expect(packet.fallbackImageUrl).toBe("https://crownicles.com/public/ressources/mapsCursed/en_10_11_map.jpg");
-		expect(packet.cities[0]).toMatchObject({id: "ville_forte", mapLocationId: 10});
+		expect(JSON.parse(JSON.stringify(packet))).not.toHaveProperty("cities");
 	});
 	it("preserves special map images selected by Core", async () => {
 		const packet = await MapServerTranslator.map(CONTEXT, makePacket(CommandMapDisplayRes, {mapId: 10, mapType: "ci", hasArrived: false, cities: [], mapLink: {name: "boat", forced: true}}));

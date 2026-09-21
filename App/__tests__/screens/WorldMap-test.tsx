@@ -22,11 +22,12 @@ describe("world map", () => {
 		expect(Image.getSize).toHaveBeenCalledWith(MAP.imageUrl, expect.any(Function), expect.any(Function));
 		expect(StyleSheet.flatten(screen.getByLabelText("app:map.image").props.style).aspectRatio).toBe(4096 / 2744);
 	});
-	it("renders the server map and actual city services", async () => {
+	it("renders the server map and names the place, without listing cities", async () => {
 		await render(<WorldMapContent packet={MAP} />);
 		expect(screen.getByLabelText("app:map.image").props.source).toEqual({uri: MAP.imageUrl});
-		expect(screen.getByText(/commands:report.city.blacksmith.menuLabel/)).toBeTruthy();
+		expect(screen.getByText("models:map_locations.10.name")).toBeTruthy();
 		expect(screen.getByText("app:map.destination")).toBeTruthy();
+		expect(screen.queryByText(/commands:report.city/)).toBeNull();
 	});
 	it("tries the server fallback then offers retry when both images fail", async () => {
 		await render(<WorldMapContent packet={MAP} />);

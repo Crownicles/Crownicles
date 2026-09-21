@@ -1,5 +1,4 @@
 import { FromServerPacket } from "../FromServerPacket";
-import { MapCity } from "../../objects/MapCity";
 
 export class MapRes extends FromServerPacket {
 	public static readonly wireName = "MapRes";
@@ -13,6 +12,4 @@ export class MapRes extends FromServerPacket {
 	imageUrl!: string;
 
 	fallbackImageUrl?: string;
-
-	cities!: MapCity[];
 }

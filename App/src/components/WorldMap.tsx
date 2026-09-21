@@ -3,13 +3,14 @@ import {Image, Modal, Pressable, ScrollView, StyleSheet, Text, View, useWindowDi
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {MapReq} from "ws-packets/src/fromClient/MapReq";
 import {MapRes} from "ws-packets/src/fromServer/report/MapRes";
-import {MapCity} from "ws-packets/src/objects/MapCity";
 import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {Button, Note, SectionHeader} from "@/src/design/Primitives";
-import {EntryRow, ExpandableList, Fact, ModalSurface} from "@/src/design/Sections";
+import {Button, Note} from "@/src/design/Primitives";
+import {LockHint, ModalSurface, Standing} from "@/src/design/Sections";
+import {Maximize2} from "@/src/design/FightIcons";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
@@ -17,7 +18,8 @@ import {AppIcons} from "@/src/AppIcons";
 const MAX_MAP_ZOOM = 4;
 const DEFAULT_MAP_RATIO = 4 / 3;
 const styles = StyleSheet.create({
-	map: {width: "100%", backgroundColor: Theme.colors.paper},
+	map: {width: "100%", backgroundColor: Theme.colors.wash},
+	frame: {borderRadius: 12, borderWidth: 1, borderColor: Theme.colors.line, overflow: "hidden", backgroundColor: Theme.colors.wash},
 	toolbar: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, padding: Theme.spacing.md},
 	zoom: {minWidth: Theme.dimensions.actionButtonMinWidth, minHeight: Theme.dimensions.actionButtonMinWidth, alignItems: "center", justifyContent: "center"},
 	symbol: {fontSize: Theme.fontSize.title, color: Theme.colors.ink},
@@ -60,29 +62,27 @@ export function MapImage({packet}: {packet: MapRes}): ReactNode {
 		<Button onPress={(): void => {setFailed(false); setUri(packet.imageUrl);}}>{i18n.t("app:common.retry")}</Button>
 	</>;
 	return <>
-		<Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:map.expand")} onPress={(): void => setExpanded(true)}>
+		<Pressable style={styles.frame} accessibilityRole="button" accessibilityLabel={i18n.t("app:map.expand")} onPress={(): void => setExpanded(true)}>
 			<Image accessibilityLabel={i18n.t("app:map.image")} source={{uri}} style={[styles.map, {aspectRatio: ratio}]} resizeMode="contain" onError={fail} />
 		</Pressable>
+		<LockHint lock={{reason: i18n.t("app:map.expandHint"), icon: Maximize2}} />
 		<Modal visible={expanded} animationType="slide" onRequestClose={(): void => setExpanded(false)}>
 			<MapZoom uri={uri} ratio={ratio} onClose={(): void => setExpanded(false)} onError={fail} />
 		</Modal>
 	</>;
 }
 
-function cityServices(city: MapCity): string {
-	const services = city.services.map(service => i18n.t(service === "bossArchivist" ? "commands:report.city.bossArchivist.serviceTitle" : `commands:report.city.${service}.menuLabel`, {defaultValue: i18n.t("app:map.service")}));
-	const shops = city.shops.map(shop => i18n.t(`commands:report.city.shops.${shop}.label`));
-	return [...services, ...shops].join(" · ");
-}
-
+/** The map is one picture of one place: the banner names it, the picture shows it, nothing else. */
 export function WorldMapContent({packet}: {packet: MapRes}): ReactNode {
-	return <>
+	const emblem = AppIcons.getIconOrNull(`mapTypes.${packet.mapType}`);
+	return <Standing
+		{...emblem ? {emblem: <TwemojiIcon emoji={emblem} size={Theme.dimensions.headerIcon} />} : {}}
+		caption={i18n.t(packet.hasArrived ? "app:map.position" : "app:map.destination")}
+		title={i18n.t(`models:map_locations.${packet.mapId}.name`)}
+		subtitle={i18n.t(`models:map_locations.${packet.mapId}.description`)}
+	>
 		<MapImage key={packet.imageUrl} packet={packet} />
-		<ExpandableList><Fact label={i18n.t(packet.hasArrived ? "app:map.position" : "app:map.destination")} value={`${AppIcons.getIcon(`mapTypes.${packet.mapType}`)} ${i18n.t(`models:map_locations.${packet.mapId}.name`)}`} /></ExpandableList>
-		<Note>{i18n.t(`models:map_locations.${packet.mapId}.description`)}</Note>
-		<SectionHeader>{i18n.t("app:map.cities")}</SectionHeader>
-		<ExpandableList>{packet.cities.map(city => <EntryRow key={city.id} title={i18n.t(`models:map_locations.${city.mapLocationId}.name`)} subtitle={cityServices(city)} />)}</ExpandableList>
-	</>;
+	</Standing>;
 }
 
 export function WorldMap(): ReactNode {
