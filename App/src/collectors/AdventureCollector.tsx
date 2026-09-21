@@ -13,7 +13,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {AMOUNT_UNITS, formatAmount, formatMoney, formatNumber} from "@/src/display/Amounts";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {CityCollector} from "@/src/collectors/CityCollector";
-import {ShopCollector} from "@/src/collectors/ShopCollector";
+import {BuyCategorySlotCollector, ShopCollector, SkipMissionCollector} from "@/src/collectors/ShopCollector";
 import {SmallEventShopCollector} from "@/src/collectors/SmallEventShopCollector";
 import {RecipeShopCollector} from "@/src/collectors/RecipeShopCollector";
 import {PveIslandInvitationCollector} from "@/src/collectors/PveIslandInvitationCollector";
@@ -337,6 +337,8 @@ const SPECIALIZED_COLLECTORS: Partial<Record<ReactionCollectorData["type"], Comp
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: TokenMerchantCollector,
 	[CITY_DATA_KINDS.CITY]: CityCollector,
 	[SHOP_DATA_KINDS.COLLECTOR]: ShopCollector,
+	[SHOP_DATA_KINDS.SKIP_MISSION]: SkipMissionCollector,
+	[SHOP_DATA_KINDS.BUY_SLOT]: BuyCategorySlotCollector,
 	[SMALL_EVENT_DATA_KINDS.SHOP]: SmallEventShopCollector,
 	[SMALL_EVENT_DATA_KINDS.EPIC_SHOP]: SmallEventShopCollector,
 	[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP]: RecipeShopCollector,

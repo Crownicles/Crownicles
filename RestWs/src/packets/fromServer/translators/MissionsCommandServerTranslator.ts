@@ -13,7 +13,7 @@ import { MissionsRes } from "../../../../../WsPackets/src/fromServer/missions/Mi
 import { PlayerNotFound } from "../../../../../WsPackets/src/fromServer/common/PlayerNotFound";
 import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePackets";
 
-function missionData(mission: BaseMission): Mission {
+export function missionData(mission: BaseMission): Mission {
 	const {
 		saveBlob, ...data
 	} = mission;

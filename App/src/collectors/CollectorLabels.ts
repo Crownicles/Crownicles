@@ -25,11 +25,13 @@ import {Item} from "ws-packets/src/objects/Item";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {PetSex} from "ws-packets/src/objects/OwnedPet";
 import {i18n} from "@/src/translations/i18n";
+import {randomTranslation} from "@/src/translations/RandomTranslation";
 import {AppIcons} from "@/src/AppIcons";
 import {shopItemName} from "@/src/collectors/ShopLabels";
+import {plainStory} from "@/src/display/Markdown";
+import {missionDescription} from "@/src/display/Missions";
 import {petName} from "@/src/display/PetDisplay";
 import {fightActionName} from "@/src/display/Fight";
-import type {TOptions} from "i18next";
 
 const SEX_CONTEXTS = {
 	MALE: "male",
@@ -103,23 +105,6 @@ function withIcon(iconPath: string, label: string): string {
 
 function smallEventTitle(titleKey: string, iconPath: string): string {
 	return withIcon(iconPath, i18n.t(titleKey));
-}
-
-function stableStringHash(value: string): number {
-	let hash = 0;
-	for (const character of value) {
-		hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
-	}
-	return hash;
-}
-
-function randomTranslation(key: string, options: TOptions = {}): string {
-	const translations = i18n.tArray(key, options);
-	if (translations.length === 0) {
-		return i18n.t(key, options);
-	}
-	const variant = stableStringHash(`${key}:${JSON.stringify(options)}`) % translations.length;
-	return translations[variant];
 }
 
 function badPetActionTranslationKey(actionId: SmallEventBadPetActionId, sex: PetSex): string {
@@ -280,6 +265,8 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.title"),
 	[CITY_DATA_KINDS.CITY]: () => i18n.t("app:collector.titles.city"),
 	[SHOP_DATA_KINDS.COLLECTOR]: () => i18n.t("app:city.shop.title"),
+	[SHOP_DATA_KINDS.SKIP_MISSION]: () => plainStory(i18n.t("commands:shop.shopItems.skipMission.name")),
+	[SHOP_DATA_KINDS.BUY_SLOT]: () => plainStory(i18n.t("commands:shop.shopItems.slotExtension.name")),
 	[UNKNOWN_COLLECTOR_KIND]: () => i18n.t("app:collector.titles.unknown")
 };
 
@@ -359,6 +346,8 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.description"),
 	[CITY_DATA_KINDS.CITY]: () => undefined,
 	[SHOP_DATA_KINDS.COLLECTOR]: () => i18n.t("app:city.shop.description"),
+	[SHOP_DATA_KINDS.SKIP_MISSION]: () => plainStory(i18n.t("commands:shop.shopItems.skipMission.giveDesc")),
+	[SHOP_DATA_KINDS.BUY_SLOT]: () => plainStory(i18n.t("commands:shop.chooseSlotIndication")),
 	[UNKNOWN_COLLECTOR_KIND]: () => undefined
 };
 
@@ -471,6 +460,10 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 		});
 	}),
 	[SHOP_REACTION_KINDS.CLOSE]: () => withIcon("collectors.refuse", i18n.t("app:city.shop.close")),
+	[SHOP_REACTION_KINDS.SKIP_MISSION_ENTRY]: makeReactionHandler(SHOP_REACTION_KINDS.SKIP_MISSION_ENTRY, reaction =>
+		plainStory(missionDescription(reaction.data.mission, Date.now()))),
+	[SHOP_REACTION_KINDS.BUY_SLOT_CATEGORY]: makeReactionHandler(SHOP_REACTION_KINDS.BUY_SLOT_CATEGORY, reaction =>
+		withIcon(`itemKinds.${reaction.data.categoryId}`, plainStory(i18n.t(`commands:shop.slotCategoriesKind.${reaction.data.categoryId}`)))),
 	[CITY_REACTION_KINDS.EXIT]: makeReactionHandler(CITY_REACTION_KINDS.EXIT, () => withIcon("other.walking", i18n.t("commands:report.city.reactions.exit.label"))),
 	[CITY_REACTION_KINDS.INN_MEAL]: makeReactionHandler(CITY_REACTION_KINDS.INN_MEAL, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.inns.meals.${reaction.data.mealId}`))} · ${i18n.t("commands:report.city.inns.mealDescription", reaction.data)}`),
 	[CITY_REACTION_KINDS.INN_ROOM]: makeReactionHandler(CITY_REACTION_KINDS.INN_ROOM, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.inns.rooms.${reaction.data.roomId}`))} · ${i18n.t("commands:report.city.inns.roomDescription", reaction.data)}`),
@@ -541,7 +534,9 @@ const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHan
 	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.DESTINATION)),
 	[REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT)),
 	[SHOP_REACTION_KINDS.ITEM]: makeChoosableHandler(SHOP_REACTION_KINDS.ITEM, (_reaction, data) => isDataOfType(data, SHOP_DATA_KINDS.COLLECTOR)),
-	[SHOP_REACTION_KINDS.CLOSE]: makeChoosableHandler(SHOP_REACTION_KINDS.CLOSE, (_reaction, data) => isDataOfType(data, SHOP_DATA_KINDS.COLLECTOR)),
+	[SHOP_REACTION_KINDS.CLOSE]: () => true,
+	[SHOP_REACTION_KINDS.SKIP_MISSION_ENTRY]: makeChoosableHandler(SHOP_REACTION_KINDS.SKIP_MISSION_ENTRY, (_reaction, data) => isDataOfType(data, SHOP_DATA_KINDS.SKIP_MISSION)),
+	[SHOP_REACTION_KINDS.BUY_SLOT_CATEGORY]: makeChoosableHandler(SHOP_REACTION_KINDS.BUY_SLOT_CATEGORY, (_reaction, data) => isDataOfType(data, SHOP_DATA_KINDS.BUY_SLOT)),
 	[CITY_REACTION_KINDS.EXIT]: makeChoosableHandler(CITY_REACTION_KINDS.EXIT, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
 	[CITY_REACTION_KINDS.INN_MEAL]: makeChoosableHandler(CITY_REACTION_KINDS.INN_MEAL, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
 	[CITY_REACTION_KINDS.INN_ROOM]: makeChoosableHandler(CITY_REACTION_KINDS.INN_ROOM, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),

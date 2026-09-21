@@ -47,10 +47,11 @@ import {
 	isAdventureScreenCollector, isBigEventCollector, isBuyHealCollector, isTokenUseCollector
 } from "@/src/collectors/CollectorRouting";
 import {
-	reportEventStore, TokenOutcomeRequiringAcknowledgement, useBigEventOutcome, useHealOutcome,
+	reportEventStore, TokenOutcomeRequiringAcknowledgement, useBigEventOutcome, useHealOutcome, useShopResult,
 	useAutomaticSmallEventOutcome, useLotteryOutcome, useSmallEventChoiceOutcome, useTokenOutcome, useWitchOutcome
 } from "@/src/collectors/ReportEventStore";
 import {SmallEventChoiceOutcome as SmallEventChoiceOutcomeScreen} from "@/src/collectors/SmallEventChoiceOutcome";
+import {ShopResultScreen} from "@/src/collectors/ShopResultScreen";
 import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/src/collectors/AutomaticSmallEventOutcome";
 import {
   EmptyState, Hero, Note, QuickAction, QuickActions, Screen
@@ -320,6 +321,7 @@ type CollectorOutcomeViewProps = {
 	automaticOutcome: ReturnType<typeof useAutomaticSmallEventOutcome>;
 	tokenOutcome: TokenOutcomeData | null;
 	healOutcome: ReturnType<typeof useHealOutcome>;
+	shopResult: ReturnType<typeof useShopResult>;
 	reactToCollector: (collectorId: string, reactionIndex: number) => void;
 	isAnswerPending: (collectorId: string) => boolean;
 	continueAfterTokenOutcome: () => void;
@@ -356,14 +358,15 @@ function storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choi
 	return null;
 }
 
-function storedRecoveryOutcome({tokenOutcome, healOutcome, continueAfterTokenOutcome, continueAfterHealOutcome}: Pick<
+function storedRecoveryOutcome({tokenOutcome, healOutcome, shopResult, continueAfterTokenOutcome, continueAfterHealOutcome}: Pick<
 	CollectorOutcomeViewProps,
-	"tokenOutcome" | "healOutcome" | "continueAfterTokenOutcome" | "continueAfterHealOutcome"
+	"tokenOutcome" | "healOutcome" | "shopResult" | "continueAfterTokenOutcome" | "continueAfterHealOutcome"
 >): ReactNode {
 	if (tokenOutcome && tokenOutcomeNeedsAcknowledgement(tokenOutcome)) {
 		return <TokenOutcomeScreen outcome={tokenOutcome} onContinue={continueAfterTokenOutcome} />;
 	}
 	if (healOutcome) return <HealOutcomeScreen outcome={healOutcome} onContinue={continueAfterHealOutcome} />;
+	if (shopResult) return <ShopResultScreen result={shopResult} onContinue={reportEventStore.clearShopResult} />;
 	return null;
 }
 
@@ -377,6 +380,7 @@ function CollectorOutcomeView({
 	automaticOutcome,
 	tokenOutcome,
 	healOutcome,
+	shopResult,
 	reactToCollector,
 	isAnswerPending,
 	continueAfterTokenOutcome,
@@ -387,7 +391,7 @@ function CollectorOutcomeView({
 	}
 	const eventOutcome = storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome});
 	if (eventOutcome) return eventOutcome;
-	const recoveryOutcome = storedRecoveryOutcome({tokenOutcome, healOutcome, continueAfterTokenOutcome, continueAfterHealOutcome});
+	const recoveryOutcome = storedRecoveryOutcome({tokenOutcome, healOutcome, shopResult, continueAfterTokenOutcome, continueAfterHealOutcome});
 	if (recoveryOutcome) return recoveryOutcome;
 	if (adventureCollector) {
 		return collectorScreen(adventureCollector, reactToCollector, isAnswerPending);
@@ -664,6 +668,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	const automaticOutcome = useAutomaticSmallEventOutcome();
 	const tokenOutcome = useTokenOutcome();
 	const healOutcome = useHealOutcome();
+	const shopResult = useShopResult();
 	const currentTime = useCurrentTime();
 
 	useEffect(() => {
@@ -718,6 +723,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 		automaticOutcome,
 		tokenOutcome,
 		healOutcome,
+		shopResult,
 		reactToCollector,
 		isAnswerPending,
 		continueAfterTokenOutcome,

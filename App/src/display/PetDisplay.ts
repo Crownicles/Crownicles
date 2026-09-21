@@ -15,11 +15,11 @@ function sexContext(sex: PetSex): string {
 	return sex === "f" ? "female" : "male";
 }
 
-export function petIcon(pet: OwnedPet): string {
+export function petIcon(pet: Pick<OwnedPet, "typeId" | "sex">): string {
 	return AppIcons.getIcon(`pets.${pet.typeId}.${pet.sex === "f" ? "emoteFemale" : "emoteMale"}`);
 }
 
-export function petTypeName(pet: OwnedPet): string {
+export function petTypeName(pet: Pick<OwnedPet, "typeId" | "sex">): string {
 	return i18n.t(`models:pets:${pet.typeId}`, { context: sexContext(pet.sex) });
 }
 
@@ -27,7 +27,7 @@ export function petNickname(pet: OwnedPet): string {
 	return pet.nickname ? pet.nickname : i18n.t("commands:pet.noNickname");
 }
 
-export function petName(pet: OwnedPet): string {
+export function petName(pet: Pick<OwnedPet, "typeId" | "sex"> & {nickname?: string}): string {
 	return pet.nickname || petTypeName(pet);
 }
 

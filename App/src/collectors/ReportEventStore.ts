@@ -26,6 +26,7 @@ import {
 	ReportBuyHealNoAlterationRes,
 	ReportBuyHealRefusedRes
 } from "ws-packets/src/fromServer/report/ReportHealRes";
+import {ShopNoPetRes, ShopOutcome, ShopOutcomeRes, ShopPetCheckupRes} from "ws-packets/src/fromServer/shop/ShopRes";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 type Listener = () => void;
@@ -64,6 +65,11 @@ export type HealOutcome =
 	| {kind: "noAlteration"; packet: ReportBuyHealNoAlterationRes}
 	| {kind: "cannotHealOccupied"; packet: ReportBuyHealCannotHealOccupiedRes};
 
+export type ShopResult =
+	| {kind: "checkup"; packet: ShopPetCheckupRes}
+	| {kind: "noPet"}
+	| {kind: "outcome"; outcome: ShopOutcome};
+
 /**
  * Keeps the last big-event outcome until the player has read it. The result follows the collector
  * stop packet, so it cannot live in the collector itself.
@@ -82,6 +88,8 @@ class ReportEventStore {
 	private tokenOutcome: TokenOutcome | null = null;
 
 	private healOutcome: HealOutcome | null = null;
+
+	private shopResult: ShopResult | null = null;
 
 	private readonly listeners = new Set<Listener>();
 
@@ -108,6 +116,9 @@ class ReportEventStore {
 		client.registerPushedPacketHandler<ReportBuyHealRefusedRes>(ReportBuyHealRefusedRes.wireName, packet => this.setHealOutcome({kind: "refused", packet}));
 		client.registerPushedPacketHandler<ReportBuyHealNoAlterationRes>(ReportBuyHealNoAlterationRes.wireName, packet => this.setHealOutcome({kind: "noAlteration", packet}));
 		client.registerPushedPacketHandler<ReportBuyHealCannotHealOccupiedRes>(ReportBuyHealCannotHealOccupiedRes.wireName, packet => this.setHealOutcome({kind: "cannotHealOccupied", packet}));
+		client.registerPushedPacketHandler<ShopPetCheckupRes>(ShopPetCheckupRes.wireName, packet => this.setShopResult({kind: "checkup", packet}));
+		client.registerPushedPacketHandler<ShopNoPetRes>(ShopNoPetRes.wireName, () => this.setShopResult({kind: "noPet"}));
+		client.registerPushedPacketHandler<ShopOutcomeRes>(ShopOutcomeRes.wireName, packet => this.setShopResult({kind: "outcome", outcome: packet.outcome}));
 	}
 
 	public readonly subscribe = (listener: Listener): (() => void) => {
@@ -131,6 +142,8 @@ class ReportEventStore {
 
 	public readonly getHealSnapshot = (): HealOutcome | null => this.healOutcome;
 
+	public readonly getShopResultSnapshot = (): ShopResult | null => this.shopResult;
+
 	public readonly reset = (): void => {
 		this.outcome = null;
 		this.lotteryOutcome = null;
@@ -139,6 +152,7 @@ class ReportEventStore {
 		this.automaticOutcome = null;
 		this.tokenOutcome = null;
 		this.healOutcome = null;
+		this.shopResult = null;
 		this.notify();
 	};
 
@@ -198,6 +212,14 @@ class ReportEventStore {
 		this.notify();
 	};
 
+	public readonly clearShopResult = (): void => {
+		if (this.shopResult === null) {
+			return;
+		}
+		this.shopResult = null;
+		this.notify();
+	};
+
 	private readonly setOutcome = (outcome: ReportBigEventResultRes): void => {
 		this.outcome = outcome;
 		this.notify();
@@ -236,6 +258,11 @@ class ReportEventStore {
 		this.notify();
 	};
 
+	private readonly setShopResult = (result: ShopResult): void => {
+		this.shopResult = result;
+		this.notify();
+	};
+
 	private notify(): void {
 		for (const listener of this.listeners) {
 			listener();
@@ -271,4 +298,8 @@ export function useTokenOutcome(): TokenOutcome | null {
 
 export function useHealOutcome(): HealOutcome | null {
 	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getHealSnapshot, reportEventStore.getHealSnapshot);
+}
+
+export function useShopResult(): ShopResult | null {
+	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getShopResultSnapshot, reportEventStore.getShopResultSnapshot);
 }

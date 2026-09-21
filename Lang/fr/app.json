@@ -818,9 +818,28 @@
       "item": "Acheter {{amount}} × {{item}} pour {{price}}",
       "itemDetails": "Quantité : {{amount}} · Prix : {{price}}",
       "dailyPotion": "Potion du jour",
+      "buy": "{{item}} pour {{price}}",
       "close": "Fermer la boutique",
       "remainingPotions": "Potions restantes aujourd'hui : {{count}}",
-      "remainingTokens": "Jetons restants à l'achat : {{count}}"
+      "remainingTokens": "Jetons restants à l'achat : {{count}}",
+      "slotsLeft": "Encore {{count}} emplacement disponible sur {{limit}}",
+      "slotsLeft_other": "Encore {{count}} emplacements disponibles sur {{limit}}",
+      "result": {
+        "eyebrow": "Au comptoir",
+        "done": "Transaction réussie",
+        "refused": "Transaction refusée"
+      }
+    },
+    "checkup": {
+      "eyebrow": "Consultation du vétérinaire",
+      "love": "Amour",
+      "force": "Force",
+      "speed": "Vitesse",
+      "cared": "Le vétérinaire a soigné votre familier, qui regagne {{count}} point d'amour.",
+      "cared_other": "Le vétérinaire a soigné votre familier, qui regagne {{count}} points d'amour.",
+      "noPet": "Aucun familier à ausculter",
+      "noPetDescription": "Le vétérinaire referme sa trousse : vous n'avez aucun compagnon à lui présenter.",
+      "continue": "Continuer"
     }
   },
   "pet": {

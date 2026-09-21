@@ -2,6 +2,7 @@ import {
 	ReactionCollectorDataKind, ReactionCollectorReactionKind
 } from "../ReactionCollectorProtocol";
 import { ItemWithDetails } from "../../../objects/ItemWithDetails";
+import { Mission } from "../../../objects/Mission";
 
 /**
  * The city shop is a collector in its own right.  Keeping its payload in the collector contract
@@ -23,6 +24,12 @@ declare module "../ReactionCollectorProtocol" {
 				thousandPoints?: number;
 			};
 		};
+
+		/** Asks which of the running missions the player wants to trade away. */
+		shopSkipMission: Record<string, never>;
+
+		/** Asks which inventory category the bought slot belongs to. */
+		shopBuySlot: Record<string, never>;
 	}
 
 	interface ReactionCollectorReactionPayloads {
@@ -33,14 +40,27 @@ declare module "../ReactionCollectorProtocol" {
 			amount: number;
 		};
 		shopClose: Record<string, never>;
+		shopSkipMissionEntry: {
+			missionIndex: number;
+			mission: Mission;
+		};
+		shopBuySlotCategory: {
+			categoryId: number;
+			maxSlots: number;
+			remaining: number;
+		};
 	}
 }
 
 export const SHOP_DATA_KINDS = {
-	COLLECTOR: "shop"
+	COLLECTOR: "shop",
+	SKIP_MISSION: "shopSkipMission",
+	BUY_SLOT: "shopBuySlot"
 } as const satisfies Record<string, ReactionCollectorDataKind>;
 
 export const SHOP_REACTION_KINDS = {
 	ITEM: "shopItem",
-	CLOSE: "shopClose"
+	CLOSE: "shopClose",
+	SKIP_MISSION_ENTRY: "shopSkipMissionEntry",
+	BUY_SLOT_CATEGORY: "shopBuySlotCategory"
 } as const satisfies Record<string, ReactionCollectorReactionKind>;

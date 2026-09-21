@@ -519,10 +519,8 @@ describe("AdventureCollector", () => {
 
 		expect(screen.getByText("commands:report.city.shops.veterinarian.label")).toBeTruthy();
 		expect(screen.queryByText("app:city.shop.title")).toBeNull();
-		expect(screen.queryByText("app:city.shop.quantity")).toBeNull();
-
-		await fireEvent.press(screen.getByText("commands:shop.shopItems.lovePointsValue.name"));
 		expect(screen.getByText("commands:shop.shopItems.lovePointsValue.info")).toBeTruthy();
+		expect(screen.getByText("app:city.shop.buy")).toBeTruthy();
 	});
 
 	it("leaves a commerce through the back chevron", async () => {
@@ -564,7 +562,7 @@ describe("AdventureCollector", () => {
 		};
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
-		await fireEvent.press(screen.getByText("commands:shop.shopItems.slotExtension.name"));
+		await fireEvent.press(screen.getByText("app:city.shop.buy"));
 		expect(onChoose).not.toHaveBeenCalled();
 		expect(screen.getByText("app:city.locks.missingMoney")).toBeTruthy();
 	});
