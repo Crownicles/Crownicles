@@ -643,16 +643,17 @@ export function Notice({ icon, title, text, action }: {
 }
 
 /** A compact confirmation layer for quick, binary decisions made from an existing screen. */
-export function Confirmation({icon, title, message, children, onRequestClose}: {
+export function Confirmation({icon, title, message, children, onRequestClose, onShow}: {
 	icon?: ReactNode;
 	title: string;
 	message?: string;
 	children: ReactNode;
 	onRequestClose?: () => void;
+	onShow?: () => void;
 }): ReactNode {
 	const insets = useSafeAreaInsets();
 	return (
-		<Modal visible transparent animationType="fade" onRequestClose={onRequestClose}>
+		<Modal visible transparent animationType="fade" onRequestClose={onRequestClose} onShow={onShow}>
 			<View style={[styles.overlay, {paddingTop: insets.top + Theme.spacing.xl, paddingBottom: insets.bottom + Theme.spacing.xl}]}>
 				<ScrollView style={styles.card} contentContainerStyle={styles.cardContent} bounces={false}>
 					{icon ? <View style={styles.icon}>{icon}</View> : null}

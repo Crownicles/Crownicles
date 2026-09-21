@@ -91,10 +91,13 @@ export default class PetCommand {
 			? (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman
 			: undefined;
 
+		const feedCooldown = isOwnerViewingOwnPet ? pet.getFeedCooldown(PetDataController.instance.getById(pet.typeId)!) : 0;
+
 		response.push(makePacket(CommandPetPacketRes, {
 			askedKeycloakId: toCheckPlayer?.keycloakId,
 			pet: pet.asOwnedPet(),
 			hasTalisman,
+			...feedCooldown > 0 ? { feedAvailableAt: Date.now() + feedCooldown } : {},
 			expeditionInProgress: expeditionInfo
 		}));
 	}

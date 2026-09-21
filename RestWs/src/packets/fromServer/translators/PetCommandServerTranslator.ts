@@ -20,6 +20,7 @@ export default class PetCommandServerTranslator {
 		return asyncMakeFromServerPacket(PetRes, {
 			pet: packet.pet,
 			...packet.hasTalisman === undefined ? {} : { hasTalisman: packet.hasTalisman },
+			...packet.feedAvailableAt === undefined ? {} : { feedAvailableAt: packet.feedAvailableAt },
 			...packet.expeditionInProgress === undefined ? {} : { expeditionInProgress: packet.expeditionInProgress }
 		});
 	}

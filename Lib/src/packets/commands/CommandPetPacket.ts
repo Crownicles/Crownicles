@@ -47,6 +47,11 @@ export class CommandPetPacketRes extends CrowniclesPacket {
 	hasTalisman?: boolean;
 
 	/**
+	 * When the pet is hungry again, as an absolute timestamp, so the front can refuse a meal before it is asked for.
+	 */
+	feedAvailableAt?: number;
+
+	/**
 	 * Current expedition in progress, if any
 	 */
 	expeditionInProgress?: PetExpeditionInfo;

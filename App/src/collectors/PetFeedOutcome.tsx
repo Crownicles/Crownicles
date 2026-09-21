@@ -1,4 +1,4 @@
-import {ReactNode} from "react";
+import {ReactNode, useState} from "react";
 import {PetFeedOutcome as Outcome} from "ws-packets/src/fromServer/pet/PetCareRes";
 import {PET_FEED_ERRORS} from "ws-packets/src/objects/PetFood";
 import {PetFeast} from "@/src/components/PetReaction";
@@ -15,11 +15,14 @@ function feedMessage(outcome: Outcome): string {
 
 export function PetFeedOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
 	const pet = useKnownPet();
-	const feast = outcome.success && pet ? <PetFeast pet={pet} result={outcome.result} /> : null;
+	/** The layer opens over the feeding menu, so the dance waits to be on screen rather than play behind the transition. */
+	const [play, setPlay] = useState(0);
+	const feast = outcome.success && pet ? <PetFeast pet={pet} result={outcome.result} play={play} /> : null;
 	return <Confirmation
 		{...feast ? {icon: feast} : {}}
 		title={i18n.t(outcome.success ? "app:pet.feed.success" : "app:pet.feed.unavailable")}
 		message={feedMessage(outcome)}
+		onShow={(): void => setPlay(1)}
 		onRequestClose={onContinue}
 	>
 		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:common.back")}</Button></ButtonRow>

@@ -881,6 +881,7 @@
       "feed": "Nourrir",
       "rename": "Renommer",
       "feedPet": "Nourrir {{pet}}",
+      "notHungryUntil": "{{pet}} n'a pas encore faim, son prochain repas sera possible le {{date}}.",
       "food": "Nourriture",
       "price": "Prix",
       "enough": "{{pet}} en a assez des câlins et s'éloigne un instant.",
@@ -893,6 +894,7 @@
     },
     "feed": {
       "food": "{{food}} · Entrepôt : {{amount}} / {{max}}",
+      "storage": "Entrepôt de la guilde : {{amount}} / {{max}}",
       "success": "Repas terminé",
       "unavailable": "Nourrissage interrompu",
       "results": {

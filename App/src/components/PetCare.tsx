@@ -53,6 +53,9 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 	const patience = usePetPatience();
 	useGameDeadline(GAME_ENTITIES.PET, expedition?.endTime ?? null);
 	const noTalisman: Lock | undefined = packet.hasTalisman ? undefined : {reason: i18n.t("app:expedition.errors.noTalisman")};
+	const notHungry: Lock | undefined = packet.feedAvailableAt
+		? {reason: i18n.t("app:pet.care.notHungryUntil", {pet: petName(pet), date: missionDate(packet.feedAvailableAt)}), icon: Clock3}
+		: undefined;
 	const openExpedition = (): void => {
 		menus.open(EXPEDITION_MENU).catch(console.error);
 	};
@@ -74,6 +77,7 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 				onPress={(): void => {
 					menus.open(FEED_MENU).catch(console.error);
 				}}
+				{...notHungry ? {lock: notHungry} : {}}
 			/>}
 		{expedition ? <Note>{i18n.t("app:expedition.overview", {date: missionDate(expedition.endTime)})}</Note> : null}
 		<QuickActions>

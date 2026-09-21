@@ -71,9 +71,9 @@ function DanceMotes({count, icon: Icon, color, progress}: {count: number; icon: 
 }
 
 /** The pet acts out its meal, in the manners of its species and with the appetite the server reported. */
-export function PetFeast({pet, result}: {pet: OwnedPet; result: PetFeedResult}): ReactNode {
+export function PetFeast({pet, result, play}: {pet: OwnedPet; result: PetFeedResult; play: number}): ReactNode {
 	const {repeats, sparkles} = feedEncore(result);
-	const progress = useDance(repeats, 1);
+	const progress = useDance(repeats, play);
 	return <View style={styles.feast} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="pet-feast">
 		<View style={styles.stage}>
 			<DanceMotes count={sparkles} icon={Sparkles} color={Theme.colors.gold} progress={progress} />

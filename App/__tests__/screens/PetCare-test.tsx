@@ -111,7 +111,7 @@ describe("pet care screens", () => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {id: "feed", endTime: Date.now() + 60_000, data: {type: "petFeedPersonal", data: {pet: PET, food: "commonFood", price: 42}}, reactions: [{type: "unknown", data: {serverType: "future"}}, {type: "accept", data: {}}, {type: "refuse", data: {}}]});
 		const onChoose = jest.fn();
 		await render(<PetFeedCollector collector={collector} onChoose={onChoose} submitting={false} />);
-		await fireEvent.press(screen.getByText("app:collector.accept"));
+		await fireEvent.press(screen.getByText("app:pet.care.feed"));
 		expect(onChoose).toHaveBeenCalledWith(1);
 	});
 

@@ -46,5 +46,10 @@ export class PetRes extends FromServerPacket {
 	 */
 	hasTalisman?: boolean;
 
+	/**
+	 * When the pet is hungry again, as an absolute timestamp, so a meal can be refused before it is asked for.
+	 */
+	feedAvailableAt?: number;
+
 	expeditionInProgress?: PetExpedition;
 }
