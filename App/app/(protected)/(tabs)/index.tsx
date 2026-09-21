@@ -441,14 +441,18 @@ function RoutePanel({packet, metrics}: {
   return <TravelPath packet={packet} progress={metrics.progress} />;
 }
 
-function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPending}: {
+function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPending, reportReady}: {
 	packet: ReportTravelSummaryRes;
 	onAdvance: () => void;
 	onHeal: () => void;
 	advancePending: boolean;
 	healPending: boolean;
+	reportReady: boolean;
 }): ReactNode {
 	const cannotAffordHeal = packet.heal !== undefined && !packet.heal.canAfford;
+
+	// Spending a token to gain time the report already grants for free would simply waste it.
+	const advanceWouldWasteToken = reportReady;
 	return <>
 		<QuickActions>
 			{packet.heal ? (
@@ -461,13 +465,18 @@ function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPend
 				</QuickAction>
 			) : null}
 			{packet.tokens ? (
-				<QuickAction icon={AppIcons.getIcon("unitValues.token")} disabled={advancePending} onPress={onAdvance}>
+				<QuickAction
+					icon={AppIcons.getIcon("unitValues.token")}
+					disabled={advanceWouldWasteToken || advancePending}
+					onPress={advanceWouldWasteToken ? undefined : onAdvance}
+				>
 					{packet.tokens.canAfford
 						? i18n.t("app:adventure.quick.advanceWithCost", {count: packet.tokens.cost})
 						: i18n.t("app:adventure.quick.getTokens")}
 				</QuickAction>
 			) : null}
 		</QuickActions>
+		{packet.tokens && advanceWouldWasteToken ? <LockHint lock={{reason: i18n.t("app:adventure.quick.advanceUseless"), icon: BookOpen}} /> : null}
 		{cannotAffordHeal ? <LockHint lock={{reason: i18n.t("app:adventure.quick.healNotEnough", {price: formatMoney(packet.heal?.price ?? 0)}), icon: CircleAlert}} /> : null}
 	</>;
 }
@@ -636,6 +645,7 @@ function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending,
 				onHeal={onHeal}
 				advancePending={advancePending}
 				healPending={healPending}
+				reportReady={reportReady}
 			/>
 		) : null}
 		{advice ? <Note>{advice}</Note> : null}

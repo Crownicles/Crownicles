@@ -619,6 +619,7 @@
     "quick": {
       "advanceWithCost_one": "Avancer · {{count}} jeton",
       "advanceWithCost_other": "Avancer · {{count}} jetons",
+      "advanceUseless": "Votre rapport est déjà prêt : gardez vos jetons pour un autre moment.",
       "getTokens": "Obtenir des jetons",
       "heal": "Se soigner",
       "healNotEnough": "Il vous faut {{price}} pour acheter ce soin."

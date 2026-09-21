@@ -209,6 +209,17 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:adventure.quick.advanceWithCost")).toBeNull();
 	});
 
+	it("refuses to spend a token when the report is already waiting to be read", async () => {
+		const request = jest.spyOn(GameClient, "request");
+		mockReport(report(), true);
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("app:adventure.quick.advanceUseless")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:adventure.quick.advanceWithCost"));
+		expect(request).not.toHaveBeenCalled();
+	});
+
 	it("keeps the vitals band above the report like the mobile mockup", async () => {
 		mockReport();
 
