@@ -117,9 +117,12 @@ locally: a screen that declares its own `standing`, `entry` or dark-banner style
 
 Rules that decide the rest:
 
-- **A disabled control says why, before being pressed.** `ActionBanner` takes a `Lock`, not a
-  boolean, so greying out without explaining is impossible. Quick-action tiles get a `LockHint`
-  underneath. Never make the player tap to discover a refusal the screen already knew about.
+- **A disabled control says why, before being pressed — and the reason is never folded away.**
+  `ActionBanner` takes a `Lock`, not a boolean, so greying out without explaining is impossible.
+  Quick-action tiles get a `LockHint` underneath. When the action sits inside a collapsed
+  `ExpandableEntry`, the refusal belongs on the **closed row**, as its `caption`: a reason the player
+  must expand to read does not exist. Dimming a row without writing why on that row is the same bug.
+  Never make the player tap to discover a refusal the screen already knew about.
 - **No modal on top of a modal.** A choice that needs confirming is confirmed *in place* — expand the
   row and put the confirm button inside it. A second window to validate the first one is a reject.
 - **Cancelling is not an event.** Backing out of a menu closes it, silently. No confirmation before,
