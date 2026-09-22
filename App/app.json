@@ -2,7 +2,7 @@
   "expo": {
     "name": "Crownicles",
     "slug": "Crownicles",
-    "version": "1.0.0",
+    "version": "6.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "crownicles",
@@ -14,6 +14,7 @@
         "usesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.crownicles.app",
+      "buildNumber": "1",
       "infoPlist": {
         "UIApplicationSceneManifest": {
           "UIApplicationSupportsMultipleScenes": false,
@@ -33,7 +34,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#B95E4B"
       },
-      "package": "com.crownicles.app"
+      "package": "com.crownicles.app",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
@@ -61,7 +63,8 @@
       "expo-font",
       "expo-image",
       "expo-status-bar",
-      "./plugins/withSceneLifecycle"
+      "./plugins/withSceneLifecycle",
+      "./plugins/withAndroidReleaseSigning"
     ],
     "experiments": {
       "typedRoutes": true
