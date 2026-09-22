@@ -50,7 +50,8 @@ async function main(): Promise<void> {
 	// Initialize and start the Rest API server
 	await new RestApi({
 		allowNewUsersRegistering: restWsConfig.REST_API_ALLOW_NEW_USERS_REGISTERING,
-		debugMode: restWsConfig.DEBUG
+		debugMode: restWsConfig.DEBUG,
+		accountDeletion: restWsConfig.ACCOUNT_DELETION
 	}).start(restWsConfig.REST_API_PORT);
 
 	// Initialize and start the WebSocket server

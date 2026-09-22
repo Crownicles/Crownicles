@@ -23,6 +23,23 @@ export interface RestWsConfig {
 	WEB_SOCKET_PORT: number;
 	PREFIX: MqttPrefix;
 	DEBUG: boolean;
+	ACCOUNT_DELETION: AccountDeletionConfig;
+}
+
+/**
+ * How a deletion request is authenticated, and who gets warned about it
+ */
+export interface AccountDeletionConfig {
+	SECRET: string;
+	WEBHOOK_URL: string;
+	SMTP: {
+		HOST: string;
+		PORT: number;
+		USERNAME: string;
+		PASSWORD: string;
+		FROM: string;
+		TO: string;
+	};
 }
 
 /**
@@ -45,6 +62,18 @@ type ConfigStructure = {
 		clientSecret: string;
 	};
 	mqtt: { host: string };
+	accountDeletion?: {
+		secret?: string;
+		webhookUrl?: string;
+		smtp?: {
+			host?: string;
+			port?: number;
+			username?: string;
+			password?: string;
+			from?: string;
+			to?: string;
+		};
+	};
 	logs: {
 		level: string;
 		locations: string[];
@@ -77,7 +106,19 @@ export function loadConfig(): RestWsConfig {
 		REST_API_PORT: config.restApi.port,
 		WEB_SOCKET_PORT: config.webSocket.port,
 		PREFIX: createMqttPrefix(config.global.prefix),
-		DEBUG: config.global.debug
+		DEBUG: config.global.debug,
+		ACCOUNT_DELETION: {
+			SECRET: config.accountDeletion?.secret ?? "",
+			WEBHOOK_URL: config.accountDeletion?.webhookUrl ?? "",
+			SMTP: {
+				HOST: config.accountDeletion?.smtp?.host ?? "",
+				PORT: config.accountDeletion?.smtp?.port ?? 587,
+				USERNAME: config.accountDeletion?.smtp?.username ?? "",
+				PASSWORD: config.accountDeletion?.smtp?.password ?? "",
+				FROM: config.accountDeletion?.smtp?.from ?? "",
+				TO: config.accountDeletion?.smtp?.to ?? ""
+			}
+		}
 	};
 }
 

@@ -28,6 +28,23 @@ clientId = "restWs"
 # Keycloak client secret
 clientSecret = ""
 
+[accountDeletion]
+# Shared secret used to derive the deletion codes. Must be the same as the one of the Discord bot,
+# otherwise a code generated with /deletecode is rejected by the app. Generate with: openssl rand -hex 32
+secret = ""
+# Discord webhook called when a player asks for the deletion of their account. Leave empty to disable.
+webhookUrl = ""
+
+[accountDeletion.smtp]
+# Mail server used to warn about a deletion request. Leave the host empty to disable the mails.
+host = ""
+port = 587
+username = ""
+password = ""
+# Sender and recipient of the warning mails
+from = ""
+to = ""
+
 [logs]
 # The log level of the bot. It can be one of: "error", "warn", "info", "debug"
 level = "info"

@@ -253,4 +253,21 @@ export class WebSocketServer {
 			CrowniclesLogger.warn("Client not found", { keycloakId });
 		}
 	}
+
+	/**
+	 * Close the connection of a user, if any is currently open
+	 * @param keycloakId
+	 * @param reason
+	 */
+	static closeConnection(keycloakId: string, reason: string): void {
+		const client = WebSocketServer.keycloakIdToClients.get(keycloakId);
+		if (!client) {
+			return;
+		}
+
+		if (client.readyState !== WebSocket.CLOSED) {
+			client.close(1008, reason);
+		}
+		WebSocketServer.keycloakIdToClients.delete(keycloakId);
+	}
 }
