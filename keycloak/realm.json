@@ -1540,42 +1540,41 @@
       "types": [
         "USER_AUTHENTICATION",
         "EXCHANGE_EXTERNAL_TOKEN"
-      ],
-      "mappers": [
-        {
-          "name": "discordId",
-          "identityProviderAlias": "discord",
-          "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-          "config": {
-            "syncMode": "INHERIT",
-            "claim": "id",
-            "user.attribute": "discordId"
-          }
-        },
-        {
-          "name": "gameUsername",
-          "identityProviderAlias": "discord",
-          "identityProviderMapper": "oidc-user-attribute-idp-mapper",
-          "config": {
-            "syncMode": "FORCE",
-            "claim": "global_name",
-            "user.attribute": "gameUsername"
-          }
-        },
-        {
-          "name": "username",
-          "identityProviderAlias": "discord",
-          "identityProviderMapper": "oidc-username-idp-mapper",
-          "config": {
-            "template": "discord-${CLAIM.id}",
-            "syncMode": "INHERIT",
-            "target": "LOCAL"
-          }
-        }
       ]
     }
   ],
-  "identityProviderMappers": [],
+  "identityProviderMappers": [
+    {
+      "name": "discordId",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "claim": "id",
+        "user.attribute": "discordId"
+      }
+    },
+    {
+      "name": "gameUsername",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claim": "global_name",
+        "user.attribute": "gameUsername"
+      }
+    },
+    {
+      "name": "username",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-username-idp-mapper",
+      "config": {
+        "template": "discord-${CLAIM.id}",
+        "syncMode": "INHERIT",
+        "target": "LOCAL"
+      }
+    }
+  ],
   "components": {
     "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
       {
