@@ -8,8 +8,6 @@ import {
 	CommandPetPacketReq,
 	CommandPetPacketRes,
 	CommandPetPetNotFound,
-	CommandPetPowersPacketReq,
-	CommandPetPowersPacketRes,
 	PetExpeditionInfo
 } from "../../../../Lib/src/packets/commands/CommandPetPacket";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
@@ -19,30 +17,11 @@ import {
 import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
 import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import { PetDataController } from "../../data/Pet";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 
 export default class PetCommand {
-	@commandRequires(CommandPetPowersPacketReq, {
-		notBlocked: false,
-		whereAllowed: CommandUtils.WHERE.EVERYWHERE
-	})
-	public powers(response: CrowniclesPacket[]): void {
-		const powers = PetConstants.PET_BEHAVIORS.flatMap(behavior => behavior.petIds.flatMap(petTypeId => {
-			const pet = PetDataController.instance.getById(petTypeId);
-			return pet
-				? [
-					{
-						petTypeId, rarity: pet.rarity, assistanceId: behavior.behaviorId
-					}
-				]
-				: [];
-		}));
-		response.push(makePacket(CommandPetPowersPacketRes, { powers }));
-	}
-
 	@commandRequires(CommandPetPacketReq, {
 		notBlocked: false,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,

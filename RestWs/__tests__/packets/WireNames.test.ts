@@ -22,7 +22,6 @@ const WIRE_NAMES = [
 	"FightHistoryReq", "FightHistoryRes", "LeagueRewardReq", "LeagueRewardRes", "LeagueInfoReq", "LeagueInfoRes", "TopReq", "TopRes", "TopEmptyRes",
 	"FightReq", "FightResumeReq", "FightResumeRes", "FightIntroductionRes", "FightStatusRes", "FightLogRes", "FightEndRes", "FightRewardRes", "FightWaitRes", "FightErrorRes",
 	"GuildDomainInfoReq", "GuildDomainInfoRes", "GuildDomainUpgradeReq", "GuildDomainFoodReq", "GuildDomainDepositReq", "GuildDomainRes",
-	"PetPowersReq", "PetPowersRes",
 	"GuildInviteReq", "GuildPromoteReq", "GuildDemoteReq", "GuildKickReq",
 	"GuildDescriptionReq", "GuildLeaveReq",
 	"GuildReq", "GuildCreateReq", "GuildStorageReq", "GuildDailyReq", "GuildRes", "GuildStorageRes", "GuildCommandRes",

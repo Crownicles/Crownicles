@@ -1,6 +1,5 @@
 import { FromServerPacket } from "../FromServerPacket";
 import { OwnedPet } from "../../objects/OwnedPet";
-import { PetPower } from "../../objects/PetPower";
 
 export const EXPEDITION_LOCATION_TYPES = {
 	FOREST: "forest",
@@ -29,12 +28,6 @@ export type PetExpedition = {
 	foodConsumed: number;
 	isDistantExpedition?: boolean;
 };
-
-export class PetPowersRes extends FromServerPacket {
-	public static readonly wireName = "PetPowersRes";
-
-	powers!: PetPower[];
-}
 
 export class PetRes extends FromServerPacket {
 	public static readonly wireName = "PetRes";
