@@ -104,7 +104,7 @@ export abstract class NotificationsHandler {
 			throw `Keycloak user with id ${keycloakId} not found or missing discordId`;
 		}
 		const discordId = getUser.payload.user.attributes.discordId[0];
-		const lng = getUser.payload.user.attributes.language[0] as Language;
+		const lng = KeycloakUtils.getUserLanguage(getUser.payload.user);
 
 		let notificationContent: string;
 		let notificationType: NotificationType;

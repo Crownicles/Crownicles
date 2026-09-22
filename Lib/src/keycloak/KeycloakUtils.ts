@@ -1,7 +1,9 @@
 import { KeycloakConfig } from "./KeycloakConfig";
 import { KeycloakUserToRegister } from "./KeycloakUserToRegister";
 import { KeycloakUser } from "./KeycloakUser";
-import { Language } from "../Language";
+import {
+	Language, LANGUAGE
+} from "../Language";
 
 /**
  * Return type of keycloak API call
@@ -415,10 +417,13 @@ export abstract class KeycloakUtils {
 
 	/**
 	 * Get the language of a user from its attributes
+	 *
+	 * Accounts created through the Discord identity provider have no language attribute:
+	 * only discordId and gameUsername are mapped when the account is federated.
 	 * @param user
 	 */
 	public static getUserLanguage(user: KeycloakUser): Language {
-		return user.attributes.language[0];
+		return user.attributes.language?.[0] ?? LANGUAGE.DEFAULT_LANGUAGE;
 	}
 
 	/**
