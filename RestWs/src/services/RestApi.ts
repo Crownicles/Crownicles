@@ -3,8 +3,6 @@ import fastify, {
 } from "fastify";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { setupRegisterRoute } from "./routes/RegisterRoute";
-import { setupLoginRoute } from "./routes/LoginRoute";
-import { setupRefreshTokenRoute } from "./routes/RefreshTokenRoute";
 import { setupAssetsRoutes } from "./routes/AssetsRoute";
 
 // todo add anti spam mechanism and registering with a captcha
@@ -48,11 +46,6 @@ export class RestApi {
 	private readonly allowNewUsersRegistering: boolean;
 
 	/**
-	 * Flag to enable beta login.
-	 */
-	private readonly betaLogin: boolean;
-
-	/**
 	 * Debug mode for the server.
 	 */
 	private readonly debugMode: boolean;
@@ -63,12 +56,10 @@ export class RestApi {
 	 */
 	constructor(options: {
 		allowNewUsersRegistering: boolean;
-		betaLogin: boolean;
 		debugMode: boolean;
 	}) {
 		this.server = fastify();
 		this.allowNewUsersRegistering = options.allowNewUsersRegistering;
-		this.betaLogin = options.betaLogin;
 		this.debugMode = options.debugMode;
 	}
 
@@ -84,8 +75,6 @@ export class RestApi {
 		});
 
 		setupRegisterRoute(this.server, this.allowNewUsersRegistering);
-		setupLoginRoute(this.server, this.betaLogin);
-		setupRefreshTokenRoute(this.server);
 		await setupAssetsRoutes(this.server, this.debugMode);
 	}
 

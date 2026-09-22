@@ -20,7 +20,6 @@ export interface RestWsConfig {
 	LOKI_PASSWORD?: string;
 	REST_API_ALLOW_NEW_USERS_REGISTERING: boolean;
 	REST_API_PORT: number;
-	REST_API_BETA_LOGIN: boolean;
 	WEB_SOCKET_PORT: number;
 	PREFIX: MqttPrefix;
 	DEBUG: boolean;
@@ -37,7 +36,6 @@ type ConfigStructure = {
 	restApi: {
 		allowRegister: boolean;
 		port: number;
-		betaLogin: boolean;
 	};
 	webSocket: { port: number };
 	keycloak: {
@@ -77,7 +75,6 @@ export function loadConfig(): RestWsConfig {
 		LOKI_PASSWORD: config.logs.loki?.password,
 		REST_API_ALLOW_NEW_USERS_REGISTERING: config.restApi.allowRegister,
 		REST_API_PORT: config.restApi.port,
-		REST_API_BETA_LOGIN: config.restApi.betaLogin,
 		WEB_SOCKET_PORT: config.webSocket.port,
 		PREFIX: createMqttPrefix(config.global.prefix),
 		DEBUG: config.global.debug

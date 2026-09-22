@@ -2,7 +2,6 @@ import { KeycloakConfig } from "./KeycloakConfig";
 import { KeycloakUserToRegister } from "./KeycloakUserToRegister";
 import { KeycloakUser } from "./KeycloakUser";
 import { Language } from "../Language";
-import { KeycloakOAuth2Token } from "./KeycloakOAuth2Token";
 
 /**
  * Return type of keycloak API call
@@ -477,66 +476,6 @@ export abstract class KeycloakUtils {
 	}
 
 	/**
-	 * Login a user with the Keycloak API
-	 * @param keycloakConfig
-	 * @param username
-	 * @param password
-	 */
-	public static async loginUser(keycloakConfig: KeycloakConfig, username: string, password: string): Promise<ApiCallReturnType<KeycloakOAuth2Token>> {
-		const res = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: new URLSearchParams({
-				// Keycloak api naming conventions
-				/* eslint-disable camelcase */
-				client_id: keycloakConfig.clientId,
-				client_secret: keycloakConfig.clientSecret,
-				username,
-				password,
-				grant_type: "password",
-				scope: "openid"
-				/* eslint-enable camelcase */
-			})
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		return formatApiCallOk(res, await res.json() as KeycloakOAuth2Token);
-	}
-
-	/**
-	 * Check if a user has a valid access token
-	 * @param keycloakConfig
-	 * @param accessToken
-	 */
-	public static async checkUserAccessToken(keycloakConfig: KeycloakConfig, accessToken: string): Promise<ApiCallReturnType<{ valid: boolean }>> {
-		const res = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/token/introspect`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: new URLSearchParams({
-				// Keycloak api naming conventions
-				/* eslint-disable camelcase */
-				client_id: keycloakConfig.clientId,
-				client_secret: keycloakConfig.clientSecret,
-				token: accessToken
-				/* eslint-enable camelcase */
-			})
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		return formatApiCallOk(res, { valid: true });
-	}
-
-	/**
 	 * Check if a token is valid and get the keycloak ID from it
 	 * @param keycloakConfig
 	 * @param accessToken
@@ -555,35 +494,6 @@ export abstract class KeycloakUtils {
 		}
 
 		return formatApiCallOk(res, { keycloakId: (await res.json() as { sub: string }).sub });
-	}
-
-	/**
-	 * Refresh the user token
-	 * @param keycloakConfig
-	 * @param refreshToken
-	 */
-	public static async refreshUserToken(keycloakConfig: KeycloakConfig, refreshToken: string): Promise<ApiCallReturnType<KeycloakOAuth2Token>> {
-		const res = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: new URLSearchParams({
-				// Keycloak api naming conventions
-				/* eslint-disable camelcase */
-				client_id: keycloakConfig.clientId,
-				client_secret: keycloakConfig.clientSecret,
-				refresh_token: refreshToken,
-				grant_type: "refresh_token"
-				/* eslint-enable camelcase */
-			})
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		return formatApiCallOk(res, await res.json() as KeycloakOAuth2Token);
 	}
 
 	private static async checkAndQueryToken(keycloakConfig: KeycloakConfig): Promise<ApiCallReturnType<Record<string, never>>> {

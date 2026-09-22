@@ -9,8 +9,6 @@ debug = false
 allowRegister = true
 # Port to run the REST API on
 port = 10500
-# Beta authentication. If true, only keycloak users with the "beta" role can log in to the API
-betaLogin = false
 
 [webSocket]
 # Port to run the WebSocket server on
