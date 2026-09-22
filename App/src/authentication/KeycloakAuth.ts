@@ -2,12 +2,15 @@ import {
 	AuthRequest,
 	makeRedirectUri,
 	ResponseType,
+	type AuthRequestPromptOptions,
 	type DiscoveryDocument
 } from "expo-auth-session";
 import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 import {
 	AUTH_FAILURES, AuthFailure, failureOfAuthResult
 } from "@/src/authentication/AuthFailure";
+import {Theme} from "@/src/design/Theme";
+import {currentLanguage} from "@/src/translations/i18nLoader";
 
 /**
  * Aliases of the identity providers declared in the realm.
@@ -20,6 +23,19 @@ export const IDENTITY_PROVIDERS = {
 } as const;
 
 export type IdentityProvider = typeof IDENTITY_PROVIDERS[keyof typeof IDENTITY_PROVIDERS];
+
+/**
+ * Dressing of the in-app browser that shows the Keycloak pages.
+ *
+ * iOS ignores every one of these: its auth session is an `ASWebAuthenticationSession`, already
+ * presented as a sheet and offering no styling. They shape the Android custom tab, whose default
+ * chrome would otherwise announce a website in the middle of the game.
+ */
+const BROWSER_PRESENTATION: AuthRequestPromptOptions = {
+	toolbarColor: Theme.colors.paper,
+	controlsColor: Theme.colors.ink,
+	showTitle: false
+};
 
 // Expo inlines the EXPO_PUBLIC_ variables at build time, so each one has to be read literally.
 function requireEnv(value: string | undefined, name: string): string {
@@ -72,16 +88,24 @@ function hasCompleteToken(token: KeycloakOAuth2Token): boolean {
 export class KeycloakAuth {
 	public static async login(identityProvider?: IdentityProvider): Promise<KeycloakOAuth2Token> {
 		const redirectUri = getRedirectUri();
+		// Typed as a string, but i18next answers nothing until it has loaded its resources, and
+		// login is reachable before that.
+		const language = currentLanguage() as string | undefined;
 		const request = new AuthRequest({
 			clientId: getClientId(),
 			redirectUri,
 			scopes: ["openid", "offline_access"],
 			responseType: ResponseType.Code,
 			usePKCE: true,
-			...identityProvider ? {extraParams: {kc_idp_hint: identityProvider}} : {}
+			extraParams: {
+				// Keycloak falls back to the realm default without this, so its pages would ignore
+				// the language the player already chose in the app.
+				...language ? {ui_locales: language} : {},
+				...identityProvider ? {kc_idp_hint: identityProvider} : {}
+			}
 		});
 
-		const result = await request.promptAsync(getDiscovery());
+		const result = await request.promptAsync(getDiscovery(), BROWSER_PRESENTATION);
 
 		if (result.type !== "success") {
 			throw failureOfAuthResult(result);

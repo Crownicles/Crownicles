@@ -21,6 +21,10 @@ jest.mock("expo-auth-session", () => ({
 	ResponseType: {Code: "code"}
 }));
 
+jest.mock("@/src/translations/i18nLoader", () => ({
+	currentLanguage: (): string => "fr"
+}));
+
 function offlineToken(): KeycloakOAuth2Token {
 	return {
 		access_token: "access-token",
@@ -79,7 +83,19 @@ describe("KeycloakAuth", () => {
 
 		await KeycloakAuth.login();
 
-		expect(mockAuthRequestConfigs.at(-1)).not.toHaveProperty("extraParams");
+		expect(mockAuthRequestConfigs.at(-1)?.extraParams).not.toHaveProperty("kc_idp_hint");
+	});
+
+	it("asks Keycloak for the pages in the language of the app", async () => {
+		mockPromptAsync.mockResolvedValue({
+			type: "success",
+			params: {code: "authorization-code"}
+		});
+		jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(offlineToken()), {status: 200}));
+
+		await KeycloakAuth.login();
+
+		expect(mockAuthRequestConfigs.at(-1)).toMatchObject({extraParams: {ui_locales: "fr"}});
 	});
 
 	it("reports a cancellation as such rather than as a failure", async () => {
