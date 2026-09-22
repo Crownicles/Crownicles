@@ -145,21 +145,103 @@ relay included. It was picked over Mailjet (200/day), SMTP2GO (1 000/month), Res
 MailerSend and Scaleway (both ask for a card). Fastmail was ruled out on purpose — its terms forbid
 transactional mail and allow immediate suspension.
 
-Three values in `smtpServer` are environment specific and are left as placeholders:
+The sender is `contact@crownicles.com`, on the `crownicles.com` domain authenticated at Brevo, so
+SPF and DKIM are signed and the verification mails are not treated as spam. It is already set in
+`realm.json`. Two values remain environment specific and are left as placeholders:
 
 | Placeholder | Where to find it |
 | --- | --- |
 | `TO_REPLACE_WITH_YOUR_BREVO_SMTP_LOGIN` | the *SMTP & API* page — either the account address or `<id>@smtp-brevo.com` |
 | `TO_REPLACE_WITH_YOUR_BREVO_SMTP_KEY` | an **SMTP key** generated on that same page |
-| `TO_REPLACE_WITH_YOUR_SENDER_ADDRESS` | the sender, on a domain authenticated at Brevo |
 
-Set them in *Realm settings → Email*, never in the versioned file. Watch out for two traps:
+Set them in *Realm settings → Email*, never in the versioned file. Watch out for three traps:
 
 - the password is an **SMTP key**, not an API key — the two look alike and only one authenticates the
   relay;
+- the account filters on **[authorised IPs](https://app.brevo.com/security/authorised_ips)**. Every
+  machine that sends — a developer laptop as much as the production host — has to be listed there,
+  otherwise Brevo answers `401 unauthorized` with an `unrecognised IP address` message and no mail
+  leaves. Home connections usually have a rotating address, so expect to add it again;
 - a Brevo account must be **approved for sending** before the first mail leaves, and approval is
   manual. Do it well before opening registration, not on launch day.
 
 Brevo **blocks** at the daily quota, it does not overflow into paid usage. The app has to cope with a
 mail that will not arrive, and an alert on the daily count gives the warning needed to switch relays
 by hand — Scaleway Transactional Email being the fallback, at €0.25 per 1 000 after the first 300.
+
+## Looking like the game
+
+The player leaves the app to sign in, so the pages and the mails they land on are part of the game's
+surface, not a separate website. The realm points `loginTheme` and `emailTheme` at **`crownicles`**,
+a theme living in `keycloak/theme` and mounted into the container as a single theme — mounting over
+`/opt/keycloak/themes` would hide the built-in ones it inherits from.
+
+It carries no template of its own. `login` inherits from `keycloak` and adds one stylesheet that
+restates the tokens of `App/src/design/Theme.ts`: white paper, ink text, pill buttons, no relief.
+`email` inherits from `base` and replaces the layout and the wordings, in French and in English.
+
+Three things to know before editing it:
+
+- **PatternFly draws borders in `::before` and `::after` layers.** Overriding `border` on the element
+  leaves a second, misaligned frame that no amount of specificity removes. The pseudo-elements have
+  to be hidden.
+- **Mail styling has to be inline.** Clients strip `<style>` blocks, so a stylesheet would leave the
+  message unstyled exactly where it matters.
+- **`start-dev` reloads the theme on every request, but the browser does not.** Keycloak serves its
+  resources with a long `Cache-Control`, so a plain reload keeps the old CSS. Force it, or check what
+  is actually served with `curl`.
+
+Pages and mails follow the player's language: the realm declares the game's six locales and defaults
+to French, and the app passes `ui_locales` on every authorisation request. Mails are the exception —
+they are sent outside of any request, so Keycloak reads the user's `locale` attribute. Accounts
+created by the Discord bot carry `language` instead, so their mails fall back to French until the
+two are reconciled.
+
+Inter is served by the theme itself, in `login/resources/fonts`. A remote stylesheet on a sign-in
+page would hand a third party the address of every player who signs in, and would turn any
+compromise of that host into arbitrary CSS on the page where passwords are typed — CSS is enough to
+exfiltrate what is being typed, through attribute selectors and background images.
+
+## Hardening
+
+A few settings in `realm.json` are deliberate and easy to undo by accident:
+
+- **`sslRequired` is `external`**, which is what production needs. Locally Keycloak sometimes sees a
+  public client address — a VPN, or Docker's own NAT — and then answers `HTTPS required` to
+  everything. The fix is to lower the *running* realm, never the file:
+  `kcadm.sh update realms/Crownicles -s sslRequired=NONE`.
+- **`registrationAllowed` is `false`, and `verifyEmail` is `true`.** Sign-up goes through the app's
+  own screen, which posts to `RegisterRoute` — the only path that enforces
+  `DISALLOWED_USERNAME_PREFIXES` and therefore stops anyone from claiming the `discord-<id>` name of
+  an existing player. Keycloak's own form does not, so it stays closed.
+  `registrationEmailAsUsername` would have removed the problem at the root, since a `discord-` name
+  could not be typed at all — but Keycloak then requires an address **through the Admin API too**,
+  and the Discord bot creates its accounts without one. It fails with `error-user-attribute-required`.
+  ⚠️ That form is also broken in this realm: it renders no password field at all. Cause unknown, a
+  blank realm renders it correctly, and neither the flow, the theme, the password policy nor the
+  user profile explains it. It matters only if the form is ever reopened.
+- **`passwordPolicy` requires 10 characters** and refuses the username or the address as a password.
+  Without it any password is accepted, including a single letter, which matters as soon as accounts
+  are not brokered any more.
+- **`failureFactor` is 10**, down from the Keycloak default of 30.
+- **No client accepts direct access grants.** The password grant is gone from OAuth 2.1, and it was
+  only ever used by two RestWs routes, `/login` and `/refreshToken`, that the app never called — it
+  talks to Keycloak directly with PKCE. Both routes are removed, along with `KeycloakUtils.loginUser`
+  and `refreshUserToken`. The admin API keeps working: it was already using `client_credentials`
+  through the service accounts of `discord` and `restWs`.
+- **`crownicles-app` only accepts its own redirect URI.** A custom scheme is not exclusive — another
+  application can register `crownicles://` and catch the code — so the wildcard was narrowed to the
+  `auth` path. PKCE already makes a stolen code useless, but there is no reason to hand it out.
+- **The image is pinned** to an exact version. An authentication server on `latest` upgrades
+  silently, and nothing tells which advisories apply to what is actually running.
+
+Two traps met while upgrading:
+
+- **Commands other than `start` refuse to migrate the schema.** `export` fails with `Database not
+  up-to-date` after an image bump; start the server once, then export.
+- **`registration-profile-action` no longer exists** since the declarative User Profile replaced it.
+  A realm still declaring it breaks registration with a `NullPointerException`, and the flow becomes
+  unreadable through the API — `GET authentication/flows/registration/executions` answers 404 while
+  the same call works for `browser`. Only a re-import fixes it.
+
+

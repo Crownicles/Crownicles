@@ -26,8 +26,8 @@
   "oauth2DeviceCodeLifespan": 600,
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
-  "sslRequired": "none",
-  "registrationAllowed": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
   "verifyEmail": true,
@@ -42,7 +42,8 @@
   "waitIncrementSeconds": 60,
   "quickLoginCheckMilliSeconds": 1000,
   "maxDeltaTimeSeconds": 43200,
-  "failureFactor": 30,
+  "failureFactor": 10,
+  "passwordPolicy": "length(10) and notUsername(undefined) and notEmail(undefined)",
   "roles": {
     "realm": [
       {
@@ -649,7 +650,7 @@
       "consentRequired": false,
       "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "publicClient": true,
       "frontchannelLogout": false,
@@ -734,7 +735,7 @@
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": true,
       "authorizationServicesEnabled": true,
       "publicClient": false,
@@ -926,9 +927,9 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "http://localhost:8081/*",
-        "crownicles://*",
-        "exp://*"
+        "http://localhost:8081/auth*",
+        "crownicles://auth*",
+        "exp://*/--/auth*"
       ],
       "webOrigins": [
         "+"
@@ -1501,10 +1502,10 @@
     "auth": "true",
     "user": "TO_REPLACE_WITH_YOUR_BREVO_SMTP_LOGIN",
     "password": "TO_REPLACE_WITH_YOUR_BREVO_SMTP_KEY",
-    "from": "TO_REPLACE_WITH_YOUR_SENDER_ADDRESS",
+    "from": "contact@crownicles.com",
     "fromDisplayName": "Crownicles",
-    "replyTo": "",
-    "replyToDisplayName": "",
+    "replyTo": "contact@crownicles.com",
+    "replyToDisplayName": "Crownicles",
     "envelopeFrom": ""
   },
   "eventsEnabled": false,
@@ -1736,8 +1737,18 @@
       }
     ]
   },
-  "internationalizationEnabled": false,
-  "supportedLocales": [],
+  "loginTheme": "crownicles",
+  "emailTheme": "crownicles",
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "de",
+    "en",
+    "es",
+    "fr",
+    "it",
+    "pt"
+  ],
+  "defaultLocale": "fr",
   "authenticationFlows": [
     {
       "id": "14b1dc80-0385-40f5-a6c9-800c71942343",
@@ -2185,14 +2196,6 @@
           "authenticatorFlow": false,
           "requirement": "REQUIRED",
           "priority": 20,
-          "autheticatorFlow": false,
-          "userSetupAllowed": false
-        },
-        {
-          "authenticator": "registration-profile-action",
-          "authenticatorFlow": false,
-          "requirement": "REQUIRED",
-          "priority": 40,
           "autheticatorFlow": false,
           "userSetupAllowed": false
         },
