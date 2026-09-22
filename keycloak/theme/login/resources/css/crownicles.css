@@ -1,0 +1,358 @@
+/*
+ * Crownicles login theme.
+ *
+ * The tokens below are the ones from `App/src/design/Theme.ts`, so the page the player is sent to
+ * reads as a screen of the app rather than as a website: white paper, ink text, pill buttons,
+ * no relief and no gradient.
+ */
+
+/*
+ * Inter is served by the theme, never by Google Fonts: a remote stylesheet on a sign-in page hands
+ * a third party the address of every player who signs in, and turns any compromise of that host
+ * into arbitrary CSS on the page where passwords are typed.
+ * Variable font, hence the single file for every weight. SIL Open Font License 1.1, see LICENSE.
+ */
+@font-face {
+	font-family: "Inter";
+	font-style: normal;
+	font-weight: 100 900;
+	font-display: swap;
+	src: url("../fonts/inter-latin.woff2") format("woff2");
+}
+
+:root {
+	--crownicles-ink: #0B0B0C;
+	--crownicles-muted: #6E6E73;
+	--crownicles-faint: #8A8A90;
+	--crownicles-paper: #FFFFFF;
+	--crownicles-wash: #F4F4F5;
+	--crownicles-line: #E6E6E8;
+	--crownicles-gold: #C8963C;
+	--crownicles-red: #D2504B;
+	--crownicles-green: #3F9A5C;
+	--crownicles-radius: 14px;
+	--crownicles-pill: 999px;
+	--crownicles-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* PatternFly paints a photo background and a dark page: both are replaced by plain paper. */
+html,
+body.login-pf,
+.login-pf-page,
+#kc-container,
+#kc-container-wrapper {
+	background: var(--crownicles-paper) !important;
+	color: var(--crownicles-ink);
+	font-family: var(--crownicles-font);
+}
+
+body.login-pf {
+	-webkit-font-smoothing: antialiased;
+}
+
+.login-pf-page {
+	padding-top: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	min-height: 100vh;
+	max-width: 420px;
+	margin: 0 auto;
+	padding-left: 24px;
+	padding-right: 24px;
+}
+
+/* Realm name, shown above the card. */
+#kc-header,
+.login-pf-page-header {
+	margin-bottom: 18px;
+}
+
+#kc-header-wrapper {
+	font-family: var(--crownicles-font);
+	font-size: 25px;
+	font-weight: 800;
+	letter-spacing: -0.6px;
+	line-height: 1.15;
+	color: var(--crownicles-ink);
+	text-transform: none;
+	opacity: 1;
+	padding: 0;
+	border: none;
+	white-space: normal;
+}
+
+/* The card is the app's sheet: flat, thin line, generous radius. */
+.card-pf,
+.login-pf-page .card-pf {
+	background: var(--crownicles-paper);
+	border: 1px solid var(--crownicles-line);
+	border-radius: var(--crownicles-radius);
+	box-shadow: none;
+	padding: 22px;
+	margin-bottom: 0;
+	max-width: none;
+}
+
+#kc-page-title {
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: -0.3px;
+	color: var(--crownicles-ink);
+	margin: 0 0 6px;
+}
+
+#kc-info-message p,
+#kc-username,
+.instruction,
+.pf-c-form__helper-text {
+	font-size: 13.5px;
+	color: var(--crownicles-muted);
+}
+
+/* Fields */
+.pf-c-form__label,
+.pf-c-form__label-text,
+label {
+	font-family: var(--crownicles-font);
+	font-size: 11.5px;
+	font-weight: 600;
+	letter-spacing: 0.4px;
+	text-transform: uppercase;
+	color: var(--crownicles-faint);
+}
+
+input.pf-c-form-control,
+select.pf-c-form-control,
+textarea.pf-c-form-control {
+	font-family: var(--crownicles-font);
+	font-size: 15px;
+	color: var(--crownicles-ink);
+	background: var(--crownicles-wash);
+	border: 1px solid var(--crownicles-line);
+	border-radius: 10px;
+	padding: 12px 14px;
+	height: auto;
+	box-shadow: none;
+	transition: border-color 0.15s ease;
+}
+
+input.pf-c-form-control:focus,
+select.pf-c-form-control:focus,
+textarea.pf-c-form-control:focus {
+	border-color: var(--crownicles-ink);
+	outline: none;
+	box-shadow: none;
+}
+
+/*
+ * PatternFly marks an invalid field with a repeated icon in `background-image`, framed by
+ * `background-repeat` and `background-size`. The `background` shorthand above resets those, so the
+ * icon would tile across the whole field. The red border carries the state instead.
+ */
+.pf-c-form-control[aria-invalid="true"] {
+	border-color: var(--crownicles-red);
+	background-image: none;
+}
+
+.pf-c-form__helper-text.pf-m-error,
+.pf-c-form-control-error-text,
+span[id^="input-error"] {
+	display: block;
+	margin-top: 6px;
+	font-size: 12.5px;
+	color: var(--crownicles-red);
+}
+
+/* Primary action: solid ink pill, the app's main button. */
+.pf-c-button.pf-m-primary,
+input[type="submit"].pf-c-button,
+#kc-login {
+	font-family: var(--crownicles-font);
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: -0.1px;
+	color: var(--crownicles-paper);
+	background: var(--crownicles-ink);
+	border: 1px solid var(--crownicles-ink);
+	border-radius: var(--crownicles-pill);
+	padding: 13px 20px;
+	box-shadow: none;
+	transition: opacity 0.15s ease;
+}
+
+.pf-c-button.pf-m-primary:hover,
+.pf-c-button.pf-m-primary:focus,
+#kc-login:hover {
+	background: var(--crownicles-ink);
+	color: var(--crownicles-paper);
+	opacity: 0.85;
+}
+
+/* Secondary actions, including the identity providers: outlined pill. */
+.pf-c-button.pf-m-control,
+.pf-c-button.pf-m-secondary,
+.kc-social-links .pf-c-button {
+	font-family: var(--crownicles-font);
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--crownicles-ink);
+	background: var(--crownicles-paper);
+	border: 1px solid var(--crownicles-line);
+	border-radius: var(--crownicles-pill);
+	padding: 13px 20px;
+	box-shadow: none;
+}
+
+.kc-social-links .pf-c-button {
+	text-decoration: none;
+}
+
+/* PatternFly draws the border of `pf-m-control` in an ::after layer, which survives any
+   border override on the element itself and shows up as a second, misaligned frame. */
+.pf-c-button.pf-m-control::before,
+.pf-c-button.pf-m-control::after {
+	display: none;
+}
+
+.kc-social-links .pf-c-button:hover {
+	border-color: var(--crownicles-ink);
+	background: var(--crownicles-paper);
+}
+
+/*
+ * Reveal-password button. Declared after the secondary rule above, which also matches
+ * `.pf-m-control` and would otherwise frame it like a standalone pill inside the field.
+ */
+.pf-c-input-group {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.pf-c-input-group .pf-c-form-control {
+	flex: 1 1 auto;
+}
+
+.pf-c-input-group > .pf-c-button.pf-m-control {
+	flex: 0 0 auto;
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	color: var(--crownicles-faint);
+	border-radius: var(--crownicles-pill);
+	padding: 10px;
+	min-width: 0;
+}
+
+.pf-c-input-group > .pf-c-button.pf-m-control:hover {
+	background: var(--crownicles-wash);
+	color: var(--crownicles-ink);
+}
+
+#kc-social-providers {
+	margin-top: 18px;
+	padding-top: 18px;
+	border-top: 1px solid var(--crownicles-line);
+}
+
+#kc-social-providers h2,
+#kc-social-providers hr {
+	display: none;
+}
+
+.kc-social-links {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+.kc-social-provider-name {
+	font-weight: 600;
+}
+
+/* Links */
+a,
+#kc-registration a,
+#kc-form-options a {
+	color: var(--crownicles-ink);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+a:hover {
+	color: var(--crownicles-muted);
+}
+
+#kc-form-options,
+#kc-registration-container,
+#kc-registration {
+	font-size: 13px;
+	color: var(--crownicles-muted);
+}
+
+#kc-form-buttons {
+	margin-top: 18px;
+}
+
+/* Feedback: a thin coloured rule instead of PatternFly's filled banner. */
+.pf-c-alert,
+.alert {
+	background: var(--crownicles-wash);
+	border: 1px solid var(--crownicles-line);
+	border-left: 3px solid var(--crownicles-muted);
+	border-radius: 10px;
+	box-shadow: none;
+	padding: 12px 14px;
+	color: var(--crownicles-ink);
+}
+
+.pf-c-alert.pf-m-danger,
+.alert-error {
+	border-left-color: var(--crownicles-red);
+}
+
+.pf-c-alert.pf-m-warning,
+.alert-warning {
+	border-left-color: var(--crownicles-gold);
+}
+
+.pf-c-alert.pf-m-success,
+.alert-success {
+	border-left-color: var(--crownicles-green);
+}
+
+.pf-c-alert__title,
+.kc-feedback-text {
+	font-family: var(--crownicles-font);
+	font-size: 13.5px;
+	font-weight: 500;
+	color: var(--crownicles-ink);
+}
+
+.pf-c-alert .pf-c-alert__icon {
+	display: none;
+}
+
+/* Language picker, top right. */
+#kc-locale .pf-c-dropdown__toggle {
+	font-family: var(--crownicles-font);
+	font-size: 12.5px;
+	color: var(--crownicles-muted);
+}
+
+#kc-locale .pf-c-dropdown__menu {
+	border: 1px solid var(--crownicles-line);
+	border-radius: 10px;
+	box-shadow: none;
+}
+
+/* Keycloak's own footer branding has no place in the game's flow. */
+#kc-info-wrapper .kc-info-brand,
+.login-pf-brand {
+	display: none;
+}
