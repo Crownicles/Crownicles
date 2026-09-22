@@ -131,6 +131,11 @@ export default function Index() {
 						});
 					}}>{i18n.t("app:settings.logout")}</DesignButton>
 				</ListItem>
+				<ListItem>
+					<DesignButton variant="danger" onPress={() => router.push("/settings/delete-account")}>
+						{i18n.t("app:settings.deleteAccount.entry")}
+					</DesignButton>
+				</ListItem>
 			</ScrollView>
 		</View>
 	);

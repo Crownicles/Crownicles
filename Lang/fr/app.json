@@ -223,7 +223,24 @@
     "developerMode": "Mode développeur",
     "coreVersion": "Version du moteur",
     "ping": "Ping",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "deleteAccount": {
+      "entry": "Supprimer mon compte",
+      "title": "Supprimer mon compte",
+      "warning": "Cette action est définitive et ne peut pas être annulée.",
+      "removed": "Votre compte et vos identifiants sont supprimés. Vous ne pourrez plus vous connecter, ni depuis l'application, ni depuis Discord.",
+      "kept": "Votre personnage reste visible dans les classements sous un nom anonyme. Les noms que vous avez choisis pour vos familiers et pour votre guilde sont conservés.",
+      "requestStep": "Étape 1 : demander la suppression",
+      "requestExplanation": "Votre demande est transmise à l'équipe, qui vérifie qu'elle vient bien de vous. Un code de confirmation vous est ensuite envoyé à l'adresse rattachée à votre compte, sous quelques jours.",
+      "ask": "Demander la suppression",
+      "requested": "Votre demande est enregistrée. Le code de confirmation vous parviendra par courrier électronique.",
+      "requestError": "La demande n'a pas pu être transmise. Réessayez dans un instant.",
+      "confirmStep": "Étape 2 : confirmer avec le code",
+      "confirmExplanation": "Une fois le code reçu, saisissez-le ci-dessous pour effacer définitivement votre compte.",
+      "codeLabel": "Code de confirmation",
+      "confirm": "Supprimer définitivement mon compte",
+      "codeError": "Ce code n'est pas valide. Vérifiez-le, ou demandez-en un nouveau."
+    }
   },
   "navigation": {
     "classInfo": "Informations de classe",

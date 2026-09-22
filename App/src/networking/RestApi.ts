@@ -72,4 +72,31 @@ export class RestApi {
 
 		return response.status;
 	}
+
+	/** The account removed is the one the token belongs to: nothing identifies it in the request. */
+	public static async deleteAccount(accessToken: string, code: string): Promise<boolean> {
+		const response = await fetch(`${RestApi.getBaseUrl()}/account`, {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${accessToken}`
+			},
+			body: JSON.stringify({ code })
+		});
+
+		return response.ok;
+	}
+
+	/** Asks an administrator for a deletion code; the account is only removed once it is confirmed. */
+	public static async requestAccountDeletion(accessToken: string): Promise<boolean> {
+		const response = await fetch(`${RestApi.getBaseUrl()}/account/deletion-request`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${accessToken}`
+			}
+		});
+
+		return response.ok;
+	}
 }

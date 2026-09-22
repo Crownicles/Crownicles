@@ -1,6 +1,6 @@
 import React, {PropsWithChildren, useEffect} from "react";
 import {SplashScreen, useRouter} from "expo-router";
-import {deleteStoredToken, readStoredToken, writeStoredToken} from "@/src/authentication/TokenStorage";
+import {deleteStoredToken, readFullStoredToken, readStoredToken, writeStoredToken} from "@/src/authentication/TokenStorage";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
@@ -106,24 +106,10 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 	}
 
 	const startAuthenticationFlow = async (onStateChange: (newState: AuthStateEnum) => void): Promise<void> => {
-		// The token is stored in multiple parts because the Expo SecureStore has a limit on the size of the stored item.
-		let shouldContinue = true;
-		let count = 1;
-		let token = "";
-		while (shouldContinue) {
-			const tokenStorageKey = `${tokenStorageKeyTemplate}${count}`;
-			count++;
-			const result = await readStoredToken(tokenStorageKey).catch((error) => {
-				console.error("Failed to load token:", error);
-				onStateChange(AuthStateEnum.NO_TOKEN);
-			});
-			if (result) {
-				token += result; // Append the token part to the full token
-			}
-			else {
-				shouldContinue = false; // Stop if no more token parts are found
-			}
-		}
+		const token = await readFullStoredToken().catch((error) => {
+			console.error("Failed to load token:", error);
+			return "";
+		});
 
 		console.debug("Loaded token:", token);
 
