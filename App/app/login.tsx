@@ -14,14 +14,15 @@ import {
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
-import {AssetsManager} from "@/src/assets/AssetsManager";
+import {useRouter} from "expo-router";
+import {useTranslationsReady} from "@/src/translations/useTranslationsReady";
 import {Theme} from "@/src/design/Theme";
 import {Screen} from "@/src/design/Primitives";
 import {
 	ActionBanner, Standing
 } from "@/src/design/Sections";
 import {
-	AtSign, MessageCircle
+	AtSign, MessageCircle, UserPlus
 } from "@/src/design/FightIcons";
 import {i18n} from "@/src/translations/i18n";
 
@@ -42,31 +43,6 @@ const styles = StyleSheet.create({
 });
 
 type LoginAuthState = React.ContextType<typeof AuthContext>;
-
-/**
- * This screen lives outside the protected group, which is where assets are normally fetched, so it
- * would otherwise render its keys raw. Failing to fetch must not lock the player out: the buttons
- * stay usable, only their wording suffers.
- */
-function useTranslationsReady(): boolean {
-	const [ready, setReady] = React.useState(AssetsManager.areAssetsReady());
-
-	React.useEffect((): void => {
-		if (ready) {
-			return;
-		}
-
-		AssetsManager.updateAssets()
-			.then((): void => {
-				setReady(true);
-			})
-			.catch((error: unknown) => {
-				console.error("Failed to update assets on the login screen:", error);
-			});
-	}, [ready]);
-
-	return ready;
-}
 
 function handleExpiredSession(authState: LoginAuthState): void {
 	if (authState.state !== AuthStateEnum.TOKEN_INVALID_OR_EXPIRED) {
@@ -113,6 +89,7 @@ async function handleLogin(authState: LoginAuthState, identityProvider?: Identit
 export default function LoginScreen(): React.ReactElement {
 	const authState = React.useContext(AuthContext);
 	const connecting = authState.state === AuthStateEnum.CONNECTING;
+	const router = useRouter();
 
 	useTranslationsReady();
 	handleExpiredSession(authState);
@@ -148,6 +125,15 @@ export default function LoginScreen(): React.ReactElement {
 						start();
 					}}
 					testID="login-account"
+				/>
+				<ActionBanner
+					icon={UserPlus}
+					label={i18n.t("app:auth.createAccount")}
+					pending={connecting}
+					onPress={(): void => {
+						router.push("/register");
+					}}
+					testID="login-register"
 				/>
 			</View>
 		</Screen>

@@ -54,4 +54,22 @@ export class RestApi {
 
 		return await response.text();
 	}
+
+	/** Returns the status rather than throwing: every code the route answers means something to say. */
+	public static async register(account: {
+		username: string;
+		email: string;
+		password: string;
+		language: string;
+	}): Promise<number> {
+		const response = await fetch(`${RestApi.getBaseUrl()}/register`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(account)
+		});
+
+		return response.status;
+	}
 }
