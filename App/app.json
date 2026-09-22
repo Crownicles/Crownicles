@@ -13,7 +13,7 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.anonymous.Crownicles",
+      "bundleIdentifier": "com.crownicles.app",
       "infoPlist": {
         "UIApplicationSceneManifest": {
           "UIApplicationSupportsMultipleScenes": false,
@@ -33,7 +33,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#B95E4B"
       },
-      "package": "com.anonymous.Crownicles"
+      "package": "com.crownicles.app"
     },
     "web": {
       "bundler": "metro",
