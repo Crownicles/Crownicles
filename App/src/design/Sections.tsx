@@ -31,7 +31,8 @@ const styles = StyleSheet.create({
 	figureAmount: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
 	banner: {minHeight: 52, paddingHorizontal: Theme.spacing.xl, paddingVertical: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: Theme.colors.ink, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
 	bannerIcon: {width: 24, height: 24, alignItems: "center", justifyContent: "center"},
-	bannerLabel: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.button, lineHeight: Theme.lineHeight.body, color: Theme.colors.paper},
+	bannerLabelBox: {flex: 1},
+	bannerLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.button, lineHeight: Theme.lineHeight.body, color: Theme.colors.paper},
 	lock: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.sm, paddingTop: Theme.spacing.md},
 	lockText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
 	disabled: {opacity: 0.5},
@@ -363,7 +364,7 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 				<View style={styles.bannerIcon}>
 					{pending ? <PendingMotion>{glyph}</PendingMotion> : <Animated.View style={{transform: [{scale: iconScale}]}}>{glyph}</Animated.View>}
 				</View>
-				<Text style={styles.bannerLabel}>{label}</Text>
+				<TwemojiText containerStyle={styles.bannerLabelBox} textStyle={styles.bannerLabel} emojiSize={Theme.fontSize.button}>{label}</TwemojiText>
 				<ArrowRight size={18} color={Theme.colors.paper} />
 			</Animated.View>}
 		</Pressable>

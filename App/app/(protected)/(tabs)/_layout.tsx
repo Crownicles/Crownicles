@@ -30,9 +30,10 @@ const ProfileHeader = (): ReactNode => {
 	const showClassInfo = (): void => {
 		Alert.alert(i18n.t("app:navigation.classInfo"), i18n.t("app:navigation.featureNotAvailable"));
 	};
+	const classIcon = profile ? AppIcons.getIconOrNull(`classes.${profile.classId}`) : null;
 	return (
 		<TouchableOpacity onPress={showClassInfo} style={navigationStyles.profileHeader}>
-			<Text style={navigationStyles.profileClassIcon}>{profile ? AppIcons.getIconOrNull(`classes.${profile.classId}`) ?? "" : ""}</Text>
+			{classIcon ? <View style={navigationStyles.profileClassIcon}><TwemojiIcon emoji={classIcon} size={Theme.fontSize.hero} /></View> : null}
 			<View style={navigationStyles.profileIdentity}>
 				<Text style={navigationStyles.profileName}>{profile?.pseudo}</Text>
 				{profile ? <Text style={navigationStyles.profileLevel}>{i18n.t("app:profile.level", {level: profile.level})}</Text> : null}
@@ -49,7 +50,7 @@ function TabsHeader(): ReactNode {
 			<View style={navigationStyles.headerSpacer} />
 			<ProfileHeader />
 			<TouchableOpacity style={navigationStyles.settingsButton} onPress={(): void => router.push("/settings")}>
-				<Text style={navigationStyles.settingsIcon}>{AppIcons.getIcon("other.gear")}</Text>
+				<TwemojiIcon emoji={AppIcons.getIcon("other.gear")} size={Theme.dimensions.headerIcon} />
 			</TouchableOpacity>
 		</View>
 	);

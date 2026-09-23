@@ -66,8 +66,6 @@ export const navigationStyles = StyleSheet.create({
 		alignItems: "center"
 	},
 	profileClassIcon: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.hero,
 		marginRight: Theme.spacing.sm
 	},
 	profileIdentity: {
@@ -87,10 +85,5 @@ export const navigationStyles = StyleSheet.create({
 	},
 	settingsButton: {
 		marginRight: Theme.spacing.lg
-	},
-	settingsIcon: {
-		fontSize: Theme.dimensions.headerIcon,
-		lineHeight: Theme.dimensions.headerIcon,
-		textAlign: "center"
 	}
 });
