@@ -27,12 +27,10 @@ export const itemReactionMappings: ReactionMapping[] = [
 
 export const itemDataMappings: DataMapping[] = [
 	defineDataMapping(ReactionCollectorItemChoiceData, ITEM_DATA_KINDS.CHOICE, data => ({
-		item: {
-			id: data.item.id,
-			category: data.item.category
-		}
+		foundItem: data.foundItem
 	})),
 	defineDataMapping(ReactionCollectorItemAcceptData, ITEM_DATA_KINDS.ACCEPT, data => ({
-		itemWithDetails: data.itemWithDetails
+		itemWithDetails: data.itemWithDetails,
+		foundItem: data.foundItem
 	}))
 ];

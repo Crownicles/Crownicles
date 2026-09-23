@@ -1,15 +1,8 @@
 import {parse} from "@twemoji/parser";
 import {ReactNode} from "react";
-import {Platform, StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle} from "react-native";
+import {Platform, StyleProp, Text, TextStyle, View, ViewStyle} from "react-native";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-
-const styles = StyleSheet.create({
-	line: {
-		flexDirection: "row",
-		flexWrap: "wrap",
-		alignItems: "center"
-	}
-});
+import {Theme} from "@/src/design/Theme";
 
 /**
  * The text split into words and emojis, ready to be laid out on a wrapping line.
@@ -61,14 +54,15 @@ export function twemojiParts({text, textStyle, emojiSize, iosEmojiVerticalOffset
 	return parts;
 }
 
-export function TwemojiText({children, textStyle, containerStyle, emojiSize, iosEmojiVerticalOffset}: {
+/** Laid out as one paragraph, so a long label wraps its words after the emoji instead of pushing the text below it. */
+export function TwemojiText({children, textStyle, containerStyle, emojiSize, iosEmojiVerticalOffset = Theme.emoji.iosFieldOffset}: {
 	children: string;
 	textStyle?: StyleProp<TextStyle>;
 	containerStyle?: StyleProp<ViewStyle>;
 	emojiSize: number;
 	iosEmojiVerticalOffset?: number;
 }): ReactNode {
-	return <View style={[styles.line, containerStyle]}>{twemojiParts({
-		text: children, textStyle, emojiSize, iosEmojiVerticalOffset
-	})}</View>;
+	return <View style={containerStyle}><Text style={textStyle}>{twemojiParts({
+		text: children, emojiSize, iosEmojiVerticalOffset
+	})}</Text></View>;
 }

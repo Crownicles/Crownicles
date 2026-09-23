@@ -3,6 +3,7 @@ import {createElement} from "react";
 import {Platform} from "react-native";
 import {twemojiAssetUrl} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
+import {Theme} from "@/src/design/Theme";
 
 describe("twemojiAssetUrl", () => {
 	it("keeps the variation selector in the source while using the canonical asset filename", () => {
@@ -31,15 +32,18 @@ describe("twemojiAssetUrl", () => {
 		expect(image).toBeTruthy();
 		expect(toJSON()).toEqual(
 			expect.objectContaining({
-				props: expect.objectContaining({
-					style: expect.arrayContaining([expect.objectContaining({alignItems: "center"})])
-				})
+				children: [expect.objectContaining({
+					type: "Text",
+					children: expect.arrayContaining([expect.objectContaining({
+						props: expect.objectContaining({accessibilityLabel: femaleSymbol})
+					})])
+				})]
 			})
 		);
 		expect(queryByText(femaleSymbol)).toBeNull();
 		expect(image.props.style).toEqual(
 			expect.objectContaining({
-				transform: [{translateY: 0}]
+				transform: [{translateY: Platform.OS === "ios" ? Theme.emoji.iosFieldOffset : 0}]
 			})
 		);
 	});
@@ -50,13 +54,13 @@ describe("twemojiAssetUrl", () => {
 			createElement(TwemojiText, {
 				children: femaleSymbol,
 				emojiSize: 14,
-				iosEmojiVerticalOffset: -2
+				iosEmojiVerticalOffset: -4
 			})
 		);
 
 		expect(getByLabelText(femaleSymbol).props.style).toEqual(
 			expect.objectContaining({
-				transform: [{translateY: Platform.OS === "ios" ? -2 : 0}]
+				transform: [{translateY: Platform.OS === "ios" ? -4 : 0}]
 			})
 		);
 	});

@@ -291,11 +291,16 @@
         "price": "Prix"
       }
     },
+    "item": {
+      "replaceWith": "Remplacer par {{item}}",
+      "sellFound": "Vendre l'objet trouvé",
+      "throwFound": "Jeter la potion trouvée"
+    },
     "choices": {
       "altarContribute": "Offrir {{amount}} {emote:unitValues.money}",
       "replaceItem": "Remplacer {{item}}",
       "replaceItemInSlot": "Remplacer {{item}} (emplacement {{slot}})",
-      "drinkPotion": "Boire la potion",
+      "drinkPotion": "Boire la potion trouvée",
       "lotteryEasy": "Petite récompense",
       "lotteryMedium": "Récompense moyenne",
       "lotteryHard": "Grande récompense",
@@ -406,9 +411,6 @@
     "tokens": {
       "continue": "Continuer",
       "fields": {
-        "balance": "Vos jetons",
-        "price": "Prix unitaire",
-        "money": "Votre argent",
         "costMoney": "Coût total",
         "remainingMoney": "Argent restant",
         "received": "Jetons reçus"
@@ -424,19 +426,9 @@
         "eyebrow": "Rapport · marchand de jetons",
         "title": "{emote:unitValues.token} Le marchand de jetons",
         "description": "Les jetons permettent d'avancer jusqu'au prochain arrêt. Le marchand vous propose les lots actuellement accessibles.",
-        "limits": "Limite d'achat : {{maxDaily}} par jour et {{maxWeekly}} par semaine.",
         "buyOne": "Acheter {{amount}} jeton — {{price}} {emote:unitValues.money}",
         "buyMany": "Acheter {{amount}} jetons — {{price}} {emote:unitValues.money}",
-        "cancel": "Quitter le marchand",
         "confirm": "Confirmer l'achat"
-      },
-      "outcomes": {
-        "bought": "Achat conclu",
-        "tooMuch": "Le marchand ne peut plus vous vendre de jetons pour le moment.",
-        "full": "Votre bourse de jetons est déjà pleine.",
-        "cannotAfford": "Vous n'avez pas assez d'argent pour acheter un jeton.",
-        "charity": "Le marchand vous offre quelques jetons pour reprendre la route.",
-        "charityAlreadyUsed": "Le marchand vous a déjà aidé cette semaine."
       }
     },
     "heal": {
@@ -449,19 +441,7 @@
       },
       "fields": {
         "cost": "Prix du soin",
-        "balance": "Votre argent",
-        "spent": "Argent dépensé"
-      },
-      "outcomes": {
-        "accepted": "Soin acheté",
-        "arrived": "L'altération a été soignée à votre arrivée.",
-        "nextStop": "L'altération a été soignée. Vous pouvez reprendre votre aventure.",
-        "refused": "Soin annulé",
-        "refusedDescription": "Vous avez conservé votre argent et votre altération.",
-        "noAlteration": "Aucune altération à soigner",
-        "noAlterationDescription": "L'altération a déjà pris fin.",
-        "cannotHealOccupied": "Cette altération ne peut pas être soignée ici",
-        "cannotHealOccupiedDescription": "Utilisez des jetons pour avancer malgré cette situation."
+        "balance": "Votre argent"
       },
       "continue": "Continuer"
     },
@@ -479,9 +459,8 @@
     "quick": {
       "advanceWithCost_one": "Avancer · {{count}} jeton",
       "advanceWithCost_other": "Avancer · {{count}} jetons",
-      "advanceUseless": "Votre rapport est déjà prêt : gardez vos jetons pour un autre moment.",
       "getTokens": "Obtenir des jetons",
-      "heal": "Se soigner",
+      "healWithCost": "Se soigner · {{price}}",
       "healNotEnough": "Il vous faut {{price}} pour acheter ce soin."
     },
     "onTheRoad": "Progression sur la route",
@@ -669,17 +648,12 @@
       "close": "Fermer"
     },
     "shop": {
-      "eyebrow": "Commerce de la ville",
       "title": "Boutique",
       "description": "Choisissez un article. Le prix et la quantité sont affichés avant confirmation.",
-      "quantity": "Lot de {{amount}}",
-      "availableCurrency": "Votre solde",
       "item": "Acheter {{amount}} × {{item}} pour {{price}}",
       "dailyPotion": "Potion du jour",
       "buy": "{{item}} pour {{price}}",
       "close": "Fermer la boutique",
-      "remainingPotions": "Potions restantes aujourd'hui : {{count}}",
-      "remainingTokens": "Jetons restants à l'achat : {{count}}",
       "slotsLeft": "Encore {{count}} emplacement disponible sur {{limit}}",
       "slotsLeft_other": "Encore {{count}} emplacements disponibles sur {{limit}}",
       "result": {

@@ -1,16 +1,16 @@
 import {
 	ReactionCollectorDataKind, ReactionCollectorReactionKind
 } from "../ReactionCollectorProtocol";
-import { Item } from "../../../objects/Item";
 import { ItemWithDetails } from "../../../objects/ItemWithDetails";
 
 declare module "../ReactionCollectorProtocol" {
 	interface ReactionCollectorDataPayloads {
 		itemChoice: {
-			item: Item;
+			foundItem: ItemWithDetails;
 		};
 		itemAccept: {
 			itemWithDetails: ItemWithDetails;
+			foundItem: ItemWithDetails;
 		};
 	}
 

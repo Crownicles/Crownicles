@@ -327,6 +327,7 @@ function getMoreThan2ItemsSwitchingEndCallback(
 
 type ItemsToManage = {
 	itemToGive: ItemToGive;
+	foundItem: ItemWithDetails;
 	tradableItems: InventorySlot[];
 };
 
@@ -347,6 +348,7 @@ function manageMoreThan2ItemsSwitching(
 	whoIsConcerned: WhoIsConcerned,
 	{
 		itemToGive,
+		foundItem,
 		tradableItems
 	}: ItemsToManage,
 	sellKeepOptions: SellKeepItemOptions,
@@ -356,10 +358,7 @@ function manageMoreThan2ItemsSwitching(
 	tradableItems.sort((a: InventorySlot, b: InventorySlot) => a.slot > b.slot ? 1 : b.slot > a.slot ? -1 : 0);
 
 	const collector = new ReactionCollectorItemChoice({
-		item: {
-			id: itemToGive.item.id,
-			category: itemToGive.item.getCategory()
-		}
+		foundItem
 	},
 	tradableItems.map(i => ({
 		slot: i.slot,
@@ -489,14 +488,15 @@ export async function giveItemToPlayer(
 		inventorySlots
 	};
 
+	const foundItem = toItemWithDetails(
+		player,
+		item,
+		slotData.itemLevel,
+		slotData.itemEnchantmentId,
+		slotData.remainingPotionUsages
+	);
 	response.push(makePacket(ItemFoundPacket, {
-		itemWithDetails: toItemWithDetails(
-			player,
-			item,
-			slotData.itemLevel,
-			slotData.itemEnchantmentId,
-			slotData.remainingPotionUsages
-		)
+		itemWithDetails: foundItem
 	}));
 
 	if (await player.giveItem(item, slotData.itemLevel, slotData.itemEnchantmentId)) {
@@ -530,6 +530,7 @@ export async function giveItemToPlayer(
 	if (maxSlots >= 2) {
 		manageMoreThan2ItemsSwitching(response, context, whoIsConcerned, {
 			itemToGive,
+			foundItem,
 			tradableItems: items
 		}, { resaleMultiplier }, canDrinkThisPotion);
 		return;
@@ -539,13 +540,16 @@ export async function giveItemToPlayer(
 
 	response.push(new ReactionCollectorInstance(
 		new ReactionCollectorItemAccept(
-			toItemWithDetails(
-				player,
-				itemToReplaceInstance,
-				itemToReplace.itemLevel,
-				itemToReplace.itemEnchantmentId,
-				itemToReplace.remainingPotionUsages
-			),
+			{
+				itemWithDetails: toItemWithDetails(
+					player,
+					itemToReplaceInstance,
+					itemToReplace.itemLevel,
+					itemToReplace.itemEnchantmentId,
+					itemToReplace.remainingPotionUsages
+				),
+				foundItem
+			},
 			canDrinkThisPotion
 		),
 		context,

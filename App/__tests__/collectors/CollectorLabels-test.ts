@@ -143,7 +143,7 @@ describe("CollectorLabels", () => {
 		};
 		const data = {
 			type: ITEM_DATA_KINDS.CHOICE,
-			data: {item: {id: 8, category: 0}}
+			data: {foundItem: {...itemDetails, id: 8}}
 		} as const;
 		const reaction = {
 			type: ITEM_REACTION_KINDS.CHOICE_ITEM,

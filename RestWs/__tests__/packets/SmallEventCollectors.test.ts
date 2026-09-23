@@ -5,7 +5,8 @@ import {
 	ReactionCollectorCreationPacket
 } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
-	ReactionCollectorItemAccept
+	ReactionCollectorItemAccept,
+	ReactionCollectorItemAcceptData
 } from "../../../Lib/src/packets/interaction/ReactionCollectorItemAccept";
 import {
 	ReactionCollectorItemChoice,
@@ -147,8 +148,9 @@ describe("small-event collector mappings", () => {
 			defense: {baseValue: 1, upgradeValue: 2, maxValue: 3},
 			speed: {baseValue: 1, upgradeValue: 2, maxValue: 3}
 		};
+		const foundItem = {...itemDetails, id: 8};
 		const itemChoiceData = new ReactionCollectorItemChoiceData();
-		itemChoiceData.item = {id: 8, category: 0};
+		itemChoiceData.foundItem = foundItem;
 		const itemReaction = new ReactionCollectorItemChoiceItemReaction();
 		itemReaction.slot = 2;
 		itemReaction.itemWithDetails = itemDetails;
@@ -158,11 +160,14 @@ describe("small-event collector mappings", () => {
 			[itemReaction],
 			true
 		).creationPacket("item-choice", END_TIME));
-		const accept = map(new ReactionCollectorItemAccept(itemDetails, true).creationPacket("item-accept", END_TIME));
+		const acceptData = new ReactionCollectorItemAcceptData();
+		acceptData.itemWithDetails = itemDetails;
+		acceptData.foundItem = foundItem;
+		const accept = map(new ReactionCollectorItemAccept(acceptData, true).creationPacket("item-accept", END_TIME));
 
 		expect(choice.data).toStrictEqual({
 			type: ITEM_DATA_KINDS.CHOICE,
-			data: {item: {id: 8, category: 0}}
+			data: {foundItem}
 		});
 		expect(choice.reactions.map(reaction => reaction.type)).toStrictEqual([
 			ITEM_REACTION_KINDS.CHOICE_ITEM,
@@ -175,7 +180,7 @@ describe("small-event collector mappings", () => {
 		});
 		expect(accept.data).toStrictEqual({
 			type: ITEM_DATA_KINDS.ACCEPT,
-			data: {itemWithDetails: itemDetails}
+			data: {itemWithDetails: itemDetails, foundItem}
 		});
 		expect(accept.reactions.map(reaction => reaction.type)).toStrictEqual([
 			GENERIC_REACTION_KINDS.ACCEPT,

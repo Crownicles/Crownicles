@@ -336,7 +336,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 	[SMALL_EVENT_DATA_KINDS.WITCH]: makeDataHandler(SMALL_EVENT_DATA_KINDS.WITCH, data => promptIntro(data)
 		+ randomTranslation("smallEvents:witch.intro") + randomTranslation("smallEvents:witch.description") + randomTranslation("smallEvents:witch.situation")),
 	[ITEM_DATA_KINDS.CHOICE]: makeDataHandler(ITEM_DATA_KINDS.CHOICE, data => i18n.t("app:collector.descriptions.itemChoice", {
-		item: itemDisplayName(data.data.item)
+		item: itemDisplayName(data.data.foundItem)
 	})),
 	[ITEM_DATA_KINDS.ACCEPT]: makeDataHandler(ITEM_DATA_KINDS.ACCEPT, data => i18n.t("app:collector.descriptions.itemAccept", {
 		item: itemDisplayName(data.data.itemWithDetails)

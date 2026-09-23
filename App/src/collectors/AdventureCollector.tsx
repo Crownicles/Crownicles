@@ -5,12 +5,12 @@ import {
 	SmallEventWitchResultRes, WITCH_OUTCOMES
 } from "ws-packets/src/fromServer/smallEvents/SmallEventWitchResultRes";
 import {
-	BIG_EVENT_DATA_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS,
+	BIG_EVENT_DATA_KINDS, GENERIC_REACTION_KINDS, ITEM_DATA_KINDS, REPORT_COLLECTOR_DATA_KINDS,
 	REPORT_COLLECTOR_REACTION_KINDS, CITY_DATA_KINDS, SHOP_DATA_KINDS, SMALL_EVENT_DATA_KINDS,
 	ReactionCollectorData, ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
-import {AMOUNT_UNITS, formatAmount, formatMoney, formatNumber} from "@/src/display/Amounts";
+import {AMOUNT_UNITS, formatAmount, formatMoney} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {CityCollector} from "@/src/collectors/CityCollector";
@@ -18,18 +18,20 @@ import {BuyCategorySlotCollector, ShopCollector, SkipMissionCollector} from "@/s
 import {SmallEventShopCollector} from "@/src/collectors/SmallEventShopCollector";
 import {RecipeShopCollector} from "@/src/collectors/RecipeShopCollector";
 import {PveIslandInvitationCollector} from "@/src/collectors/PveIslandInvitationCollector";
+import {ItemAcceptCollector, ItemChoiceCollector} from "@/src/collectors/ItemRewardCollector";
 import {collectorDescription, collectorTitle, eventPromptIcon, isEventPrompt} from "@/src/collectors/CollectorLabels";
 import type {
 	HealOutcome as HealOutcomeData, LotteryOutcome as LotteryOutcomeData,
 	TokenOutcomeRequiringAcknowledgement
 } from "@/src/collectors/ReportEventStore";
-import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
+import {Button, ButtonRow, Screen} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
-import {ActionBanner, Effect, ExpandableEntry, ExpandableList, Fact, Gauge, Sheet, Standing} from "@/src/design/Sections";
+import {ActionBanner, Card, Effect, ExpandableEntry, ExpandableList, Fact, Sheet, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
-import {EventJournal, EventOutcomeScreen} from "@/src/collectors/EventOutcomeScreen";
+import {EventJournal, EventOutcomeScreen, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
+import {plainStory} from "@/src/display/Markdown";
 import {
 	amountEffect, gainEffect, lossEffect, lostAmountEffect, presentEffects
 } from "@/src/display/OutcomeEffects";
@@ -96,35 +98,9 @@ function lotteryOutcomeText(outcome: LotteryOutcomeData): string {
 type TokenMerchantData = Extract<ReactionCollectorData, {type: typeof REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT}>;
 type BuyHealData = Extract<ReactionCollectorData, {type: typeof REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL}>;
 
-function tokenRatio(data: TokenMerchantData): number {
-	return data.data.maxTokens === 0 ? 0 : data.data.playerTokens / data.data.maxTokens;
-}
-
 function merchantReactionIndex(reactions: ReactionCollectorReaction[], amount: number): number {
 	return reactions.findIndex(reaction => reaction.type === REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY
 		&& reaction.data.amount === amount);
-}
-
-function merchantPurchaseLabel(amount: number, pricePerToken: number): string {
-	return amount === 1
-		? i18n.t("app:adventure.tokens.merchant.buyOne", {amount, price: amount * pricePerToken})
-		: i18n.t("app:adventure.tokens.merchant.buyMany", {amount, price: amount * pricePerToken});
-}
-
-function TokenMerchantSummary({data}: {data: TokenMerchantData}): ReactNode {
-	const {maxTokens, playerMoney, playerTokens, pricePerToken} = data.data;
-	return (
-		<ExpandableList>
-			<Gauge
-				label={i18n.t("app:adventure.tokens.fields.balance")}
-				value={`${formatNumber(playerTokens)} / ${formatTokens(maxTokens)}`}
-				ratio={tokenRatio(data)}
-				color={Theme.colors.gold}
-			/>
-			<Fact label={i18n.t("app:adventure.tokens.fields.price")} value={formatMoney(pricePerToken)} />
-			<Fact label={i18n.t("app:adventure.tokens.fields.money")} value={formatMoney(playerMoney)} />
-		</ExpandableList>
-	);
 }
 
 /** Each bundle is bought from its own row, where its price and the money left are already written. */
@@ -140,7 +116,7 @@ function MerchantPurchase({amount, data, index, expanded, onToggle, onChoose, su
 	const price = amount * data.pricePerToken;
 	const affordable = index >= 0 && price <= data.playerMoney;
 	return <ExpandableEntry
-		label={merchantPurchaseLabel(amount, data.pricePerToken)}
+		label={plainStory(i18n.t("commands:report.tokenMerchant.buyButton", {count: amount, price}))}
 		{...affordable ? {} : {caption: i18n.t("app:city.locks.missingMoney", {amount: formatMoney(price - data.playerMoney)})}}
 		dimmed={submitting || !affordable}
 		expanded={expanded}
@@ -249,23 +225,22 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 	submitting: boolean;
 }): ReactNode {
 	const [openAmount, setOpenAmount] = useState<number>();
+	const pseudo = usePlayerPseudo();
 	if (collector.data.type !== REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT) {
 		return null;
 	}
-	const {amounts, maxDaily, maxWeekly} = collector.data.data;
+	const {amounts} = collector.data.data;
 	const data = collector.data.data;
 	const refuseIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.REFUSE);
 
 	return (
 		<Screen>
-			<Standing
-				caption={i18n.t("app:adventure.tokens.merchant.eyebrow")}
-				title={i18n.t("app:adventure.tokens.merchant.title")}
-				subtitle={i18n.t("app:adventure.tokens.merchant.description")}
+			<EventJournal
+				emoji={AppIcons.getIconOrNull("unitValues.token") ?? undefined}
+				title={plainStory(i18n.t("commands:report.tokenMerchant.title", {pseudo}))}
+				story={i18n.t("commands:report.tokenMerchant.description", data)}
 			/>
-			<TokenMerchantSummary data={collector.data} />
-			<Note>{i18n.t("app:adventure.tokens.merchant.limits", {maxDaily, maxWeekly})}</Note>
-			<ExpandableList>{amounts.map(amount => <MerchantPurchase
+			<Card>{amounts.map(amount => <MerchantPurchase
 				key={amount}
 				amount={amount}
 				data={data}
@@ -274,10 +249,10 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 				onToggle={(): void => setOpenAmount(openAmount === amount ? undefined : amount)}
 				onChoose={onChoose}
 				submitting={submitting}
-			/>)}</ExpandableList>
+			/>)}</Card>
 			{refuseIndex >= 0 ? <ButtonRow>
 				<Button disabled={submitting} onPress={submitting ? undefined : (): void => onChoose(refuseIndex)}>
-					{i18n.t("app:adventure.tokens.merchant.cancel")}
+					{plainStory(i18n.t("commands:report.tokenMerchant.refuseButton"))}
 				</Button>
 			</ButtonRow> : null}
 		</Screen>
@@ -300,7 +275,9 @@ const SPECIALIZED_COLLECTORS: Partial<Record<ReactionCollectorData["type"], Comp
 	[SMALL_EVENT_DATA_KINDS.SHOP]: SmallEventShopCollector,
 	[SMALL_EVENT_DATA_KINDS.EPIC_SHOP]: SmallEventShopCollector,
 	[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP]: RecipeShopCollector,
-	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: PveIslandInvitationCollector
+	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: PveIslandInvitationCollector,
+	[ITEM_DATA_KINDS.CHOICE]: ItemChoiceCollector,
+	[ITEM_DATA_KINDS.ACCEPT]: ItemAcceptCollector
 };
 
 /** The report-owned collector is rendered in the same screen hierarchy as the mobile mockup. */
@@ -329,114 +306,6 @@ export function AdventureCollector(props: AdventureCollectorProps): ReactNode {
 		</Screen>
 	);
 }
-function tokenOutcomeDetails(outcome: TokenOutcomeRequiringAcknowledgement): {
-	eyebrow: string;
-	title: string;
-	description?: string;
-	fields: {label: string; value: string}[];
-} {
-	switch (outcome.kind) {
-		case "bought":
-			return {
-				eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"),
-				title: i18n.t("app:adventure.tokens.outcomes.bought"),
-				fields: [{label: i18n.t("app:adventure.tokens.fields.received"), value: `+${formatTokens(outcome.packet.amount)}`}]
-			};
-		case "tooMuch":
-			return {eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.tooMuch"), fields: []};
-		case "full":
-			return {eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.full"), fields: []};
-		case "cannotAfford":
-			return {eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.cannotAfford"), fields: []};
-		case "charity":
-			return {
-				eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"),
-				title: i18n.t("app:adventure.tokens.outcomes.charity"),
-				fields: [{label: i18n.t("app:adventure.tokens.fields.received"), value: `+${formatTokens(outcome.packet.amount)}`}]
-			};
-		case "charityAlreadyUsed":
-			return {eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.charityAlreadyUsed"), fields: []};
-		default:
-			return {
-				eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"),
-				title: i18n.t("app:common.error"),
-				fields: []
-			};
-	}
-}
-
-/** Keeps the player on a clear terminal screen after any token-flow action. */
-export function TokenOutcome({outcome, onContinue}: {
-	outcome: TokenOutcomeRequiringAcknowledgement;
-	onContinue: () => void;
-}): ReactNode {
-	const details = tokenOutcomeDetails(outcome);
-	return (
-		<Screen>
-			<Standing caption={details.eyebrow} title={details.title} subtitle={details.description} />
-			{details.fields.length > 0 ? (
-				<ExpandableList>{details.fields.map(field => <Fact key={field.label} label={field.label} value={field.value} />)}</ExpandableList>
-			) : null}
-			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.tokens.continue")}</Button></ButtonRow>
-		</Screen>
-	);
-}
-
-function healOutcomeDetails(outcome: HealOutcomeData): {title: string; description: string} {
-	switch (outcome.kind) {
-		case "accepted":
-			return {
-				title: i18n.t("app:adventure.heal.outcomes.accepted"),
-				description: i18n.t(outcome.packet.isArrived
-					? "app:adventure.heal.outcomes.arrived"
-					: "app:adventure.heal.outcomes.nextStop", {price: outcome.packet.healPrice})
-			};
-		case "refused":
-			return {
-				title: i18n.t("app:adventure.heal.outcomes.refused"),
-				description: i18n.t("app:adventure.heal.outcomes.refusedDescription")
-			};
-		case "noAlteration":
-			return {
-				title: i18n.t("app:adventure.heal.outcomes.noAlteration"),
-				description: i18n.t("app:adventure.heal.outcomes.noAlterationDescription")
-			};
-		case "cannotHealOccupied":
-			return {
-				title: i18n.t("app:adventure.heal.outcomes.cannotHealOccupied"),
-				description: i18n.t("app:adventure.heal.outcomes.cannotHealOccupiedDescription")
-			};
-		default:
-			return {
-				title: i18n.t("app:common.error"),
-				description: i18n.t("app:common.error")
-			};
-	}
-}
-
-/** Shows the result of buying an alteration cure before refreshing the adventure report. */
-export function HealOutcome({outcome, onContinue}: {
-	outcome: HealOutcomeData;
-	onContinue: () => void;
-}): ReactNode {
-	const details = healOutcomeDetails(outcome);
-	return (
-		<Screen>
-			<Standing
-				caption={i18n.t("app:adventure.heal.use.eyebrow")}
-				title={details.title}
-				subtitle={details.description}
-			/>
-			{outcome.kind === "accepted" ? (
-				<ExpandableList>
-					<Fact label={i18n.t("app:adventure.heal.fields.spent")} value={`-${formatMoney(outcome.packet.healPrice)}`} />
-				</ExpandableList>
-			) : null}
-			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.heal.continue")}</Button></ButtonRow>
-		</Screen>
-	);
-}
-
 /** Every unit a big event may hand out or take away, with the emoji the game uses for it. */
 const OUTCOME_UNITS = {
 	score: "score",
@@ -450,6 +319,77 @@ const OUTCOME_UNITS = {
 	xp: "xp",
 	time: "time"
 } as const;
+
+/** The Discord keys of each merchant answer: `${key}Title` names the page, `${key}Description` tells it. */
+const TOKEN_OUTCOME_KEYS: Record<TokenOutcomeRequiringAcknowledgement["kind"], string> = {
+	bought: "bought",
+	tooMuch: "tooMuch",
+	full: "full",
+	cannotAfford: "cannotAfford",
+	charity: "charity",
+	charityAlreadyUsed: "charityAlreadyUsed"
+};
+
+function tokensReceived(outcome: TokenOutcomeRequiringAcknowledgement): number | undefined {
+	return outcome.kind === "bought" || outcome.kind === "charity" ? outcome.packet.amount : undefined;
+}
+
+/** The token merchant's answer, told with the words Discord uses and the tokens it handed over. */
+export function TokenOutcome({outcome, onContinue}: {
+	outcome: TokenOutcomeRequiringAcknowledgement;
+	onContinue: () => void;
+}): ReactNode {
+	const pseudo = usePlayerPseudo();
+	const key = `commands:report.tokenMerchant.${TOKEN_OUTCOME_KEYS[outcome.kind]}`;
+	const received = tokensReceived(outcome);
+	return <EventOutcomeScreen
+		emoji={AppIcons.getIconOrNull("unitValues.token") ?? undefined}
+		title={plainStory(i18n.t(`${key}Title`, {pseudo}))}
+		story={i18n.t(`${key}Description`, received === undefined ? {} : {count: received})}
+		effects={presentEffects([received === undefined ? null : amountEffect(i18n.t("app:adventure.event.fields.tokens"), received, {gain: OUTCOME_UNITS.token})])}
+		continueLabel={i18n.t("app:adventure.tokens.continue")}
+		onContinue={onContinue}
+	/>;
+}
+
+function healStory(outcome: HealOutcomeData): string {
+	switch (outcome.kind) {
+		case "accepted":
+			return i18n.t("commands:report.healSuccessDescription", {
+				price: outcome.packet.healPrice,
+				nextStep: i18n.t(outcome.packet.isArrived ? "commands:report.healNextStepArrived" : "commands:report.healNextStepSmallEvent")
+			});
+		case "refused":
+			return i18n.t("commands:report.healRefusedDescription");
+		case "noAlteration":
+			return i18n.t("commands:report.healNoAlteration");
+		default:
+			return i18n.t("commands:report.healCannotHealOccupied");
+	}
+}
+
+/** Discord titles only the cure it performed or the one the player turned down; its plain refusals are journal lines. */
+const HEAL_TITLE_KEYS: Partial<Record<HealOutcomeData["kind"], string>> = {
+	accepted: "commands:report.healSuccessTitle",
+	refused: "commands:report.healRefusedTitle"
+};
+
+/** Shows the result of buying an alteration cure before refreshing the adventure report. */
+export function HealOutcome({outcome, onContinue}: {
+	outcome: HealOutcomeData;
+	onContinue: () => void;
+}): ReactNode {
+	const pseudo = usePlayerPseudo();
+	const titleKey = HEAL_TITLE_KEYS[outcome.kind];
+	return <EventOutcomeScreen
+		emoji={AppIcons.getIconOrNull("shopItems.healAlteration") ?? undefined}
+		{...titleKey ? {title: plainStory(i18n.t(titleKey, {pseudo}))} : {}}
+		story={healStory(outcome)}
+		effects={outcome.kind === "accepted" ? presentEffects([lostAmountEffect(i18n.t("app:adventure.event.fields.money"), outcome.packet.healPrice, OUTCOME_UNITS.lostMoney)]) : []}
+		continueLabel={i18n.t("app:adventure.heal.continue")}
+		onContinue={onContinue}
+	/>;
+}
 
 /** The alteration an event inflicts, worn by its own emoji when the asset pack has one. */
 function alterationEffect(effect: {name: string; time: number}): Effect {

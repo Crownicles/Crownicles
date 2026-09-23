@@ -1,9 +1,9 @@
 import {ReactNode, useEffect, useState} from "react";
-import {ActivityIndicator, Animated, Modal, Pressable, StyleSheet, Text, View} from "react-native";
+import {Animated, Modal, Pressable, StyleSheet, Text, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
-import {Screen} from "@/src/design/Primitives";
+import {PendingMotion, Screen, usePressMotion} from "@/src/design/Primitives";
 import {SwipeBack} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
 	figureValue: {flexDirection: "row", alignItems: "center", gap: 4},
 	figureAmount: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
 	banner: {minHeight: 52, paddingHorizontal: Theme.spacing.xl, paddingVertical: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: Theme.colors.ink, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
-	bannerIcon: {width: 20, height: 20, alignItems: "center", justifyContent: "center"},
+	bannerIcon: {width: 24, height: 24, alignItems: "center", justifyContent: "center"},
 	bannerLabel: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.button, lineHeight: Theme.lineHeight.body, color: Theme.colors.paper},
 	lock: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.sm, paddingTop: Theme.spacing.md},
 	lockText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
@@ -101,7 +101,19 @@ const styles = StyleSheet.create({
 		elevation: 2
 	},
 	journalEmblem: {width: 44, height: 44, flexShrink: 0, borderRadius: 22, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.wash},
-	journalTitle: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink}
+	journalTitle: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink},
+	card: {
+		marginBottom: Theme.spacing.xl,
+		borderRadius: Theme.radius,
+		backgroundColor: Theme.colors.paper,
+		shadowColor: Theme.colors.ink,
+		shadowOpacity: 0.06,
+		shadowRadius: 12,
+		shadowOffset: {width: 0, height: 4},
+		elevation: 2
+	},
+	// The shadow lives on the outer view: clipping it there would erase it.
+	cardClip: {borderRadius: Theme.radius, overflow: "hidden"}
 });
 
 /** Why an action cannot be taken, so the screen can say it instead of letting the player find out. */
@@ -155,10 +167,16 @@ export function JournalEntry({emblem, title, effects, children}: {
 	</View>;
 }
 
+/** A list lifted on the same white page as a journal entry, so the rows that follow it read as one piece. */
+export function Card({children}: {children: ReactNode}): ReactNode {
+	return <View style={styles.card}><View style={styles.cardClip}>{children}</View></View>;
+}
+
 const TOAST_DURATION_MS = 4_000;
 const TOAST_ENTRANCE_MS = 220;
 const TOAST_ENTRANCE_OFFSET = -24;
 const TOAST_UNIT_SIZE = 18;
+const BANNER_EMOJI_SIZE = 22;
 
 /** The gain a toast announces, as a number and the game emoji of its unit. */
 export type ToastValue = {amount: string; unit: string};
@@ -292,28 +310,40 @@ export function Figures({items}: {items: Figure[]}): ReactNode {
 	</View>)}</View>;
 }
 
-export function ActionBanner({icon: Icon, label, onPress, pending = false, lock, testID}: {
+export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false, lock, hint, testID}: {
 	icon: LucideIcon;
+
+	/** A game emoji drawn instead of `icon`, when the action spends or earns something the game draws. */
+	emoji?: string;
 	label: string;
 	onPress: () => void;
 	pending?: boolean;
 	lock?: Lock;
+
+	/** What the player should know before pressing, without preventing the press. */
+	hint?: Lock;
 	testID?: string;
 }): ReactNode {
 	const blocked = pending || Boolean(lock);
+	const {scale, iconScale, handlers} = usePressMotion(onPress);
+	const glyph = emoji ? <TwemojiIcon emoji={emoji} size={BANNER_EMOJI_SIZE} /> : <Icon size={20} color={Theme.colors.paper} />;
+	const notice = lock ?? hint;
 	return <View>
 		<Pressable
 			accessibilityRole="button"
 			accessibilityState={{disabled: blocked, busy: pending}}
 			disabled={blocked}
-			onPress={onPress}
-			style={({pressed}): object[] => [styles.banner, blocked && styles.disabled, pressed && styles.pressed].filter(Boolean) as object[]}
+			{...handlers}
 		>
-			<View style={styles.bannerIcon}>{pending ? <ActivityIndicator size="small" color={Theme.colors.paper} /> : <Icon size={20} color={Theme.colors.paper} />}</View>
-			<Text style={styles.bannerLabel}>{label}</Text>
-			<ArrowRight size={18} color={Theme.colors.paper} />
+			{({pressed}): ReactNode => <Animated.View style={[styles.banner, blocked && styles.disabled, pressed && styles.pressed, {transform: [{scale}]}]}>
+				<View style={styles.bannerIcon}>
+					{pending ? <PendingMotion>{glyph}</PendingMotion> : <Animated.View style={{transform: [{scale: iconScale}]}}>{glyph}</Animated.View>}
+				</View>
+				<Text style={styles.bannerLabel}>{label}</Text>
+				<ArrowRight size={18} color={Theme.colors.paper} />
+			</Animated.View>}
 		</Pressable>
-		{lock ? <LockHint lock={lock} testID={testID} /> : null}
+		{notice ? <LockHint lock={notice} testID={testID} /> : null}
 	</View>;
 }
 

@@ -1,22 +1,28 @@
-import {Fragment, ReactNode, useState} from "react";
-import {Text} from "react-native";
+import {ReactNode, useState} from "react";
+import {StyleSheet, View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {SHOP_DATA_KINDS, SHOP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
+import {ReactionCollectorDataOf, SHOP_DATA_KINDS, SHOP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
-import {AmountUnit, formatAmount, formatNumber} from "@/src/display/Amounts";
+import {AmountUnit, formatAmount} from "@/src/display/Amounts";
 import {plainStory} from "@/src/display/Markdown";
 import {isChoosable} from "@/src/collectors/CollectorLabels";
-import {compactCityDescription} from "@/src/collectors/CityText";
+import {EventJournal, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {shopItemKey, shopItemName} from "@/src/collectors/ShopLabels";
 import {missionDescription} from "@/src/display/Missions";
-import {Note, Screen, SectionHeader} from "@/src/design/Primitives";
+import {Button, Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {Check, Coins} from "@/src/design/FightIcons";
-import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, Figures, Lock, LockHint, sectionStyles, Standing} from "@/src/design/Sections";
+import {ActionBanner, BackButton, Card, ENTRY_CHEVRONS, ExpandableEntry, Lock, LockHint, sectionStyles} from "@/src/design/Sections";
 import {SwipeBack} from "@/src/design/SwipeBack";
+import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {TwemojiText} from "@/src/design/TwemojiText";
 import {i18n} from "@/src/translations/i18n";
 
-const SHOP_EMBLEM_SIZE = 34;
+const ROW_EMBLEM_SIZE = 26;
+
+const styles = StyleSheet.create({
+	confirmation: {gap: Theme.spacing.md}
+});
 
 type ShopCollectorProps = {
 	collector: ReactionCollectorCreation;
@@ -24,160 +30,199 @@ type ShopCollectorProps = {
 	submitting: boolean;
 };
 
+type ShopData = ReactionCollectorDataOf<typeof SHOP_DATA_KINDS.COLLECTOR>["data"];
 type ShopItemReaction = Extract<ReactionCollectorCreation["reactions"][number], {type: typeof SHOP_REACTION_KINDS.ITEM}>;
 type SkipMissionReaction = Extract<ReactionCollectorCreation["reactions"][number], {type: typeof SHOP_REACTION_KINDS.SKIP_MISSION_ENTRY}>;
 type BuySlotReaction = Extract<ReactionCollectorCreation["reactions"][number], {type: typeof SHOP_REACTION_KINDS.BUY_SLOT_CATEGORY}>;
-type ShopGroup = {reaction: ShopItemReaction; index: number};
-type AdditionalShopData = {remainingPotions?: number; remainingTokens?: number; gemToMoneyRatio?: number; thousandPoints?: number};
 
-function currencyLabel(value: number, currency: AmountUnit): string {
-	return formatAmount(value, currency);
-}
+/** One bundle of an item, with the position the server expects back when it is bought. */
+type ShopOffer = {reaction: ShopItemReaction; index: number};
 
-function categoryLabel(categoryId: string, count: number): string {
-	return plainStory(i18n.t(`commands:shop.shopCategories.${categoryId}`, {count}));
-}
+/** Every bundle of the same item: Discord lists the item once and asks for the quantity afterwards. */
+type ShopArticle = {shopItemId: number; offers: ShopOffer[]};
 
-/** A commerce is named after itself when the server says which one the player walked into. */
-function shopHeading(shopId: string | undefined): {emblem: string | null; title: string; subtitle: string} {
-	if (!shopId) {
-		return {emblem: null, title: i18n.t("app:city.shop.title"), subtitle: i18n.t("app:city.shop.description")};
-	}
+const WEEKLY_PLANT_TIERS = ["weeklyPlantTier1", "weeklyPlantTier2", "weeklyPlantTier3"];
+const COUNTED_CATEGORIES: Record<string, (data: ShopData) => number | undefined> = {
+	dailyPotion: data => data.additionalShopData?.remainingPotions,
+	token: data => data.additionalShopData?.remainingTokens
+};
+
+export function useChooseOnce(onChoose: (index: number) => void, submitting: boolean): {locked: boolean; choose: (index: number) => void} {
+	const [answered, setAnswered] = useState(false);
+	const locked = answered || submitting;
 	return {
-		emblem: AppIcons.getIconOrNull(`city.shops.${shopId}`),
-		title: plainStory(i18n.t(`commands:report.city.shops.${shopId}.label`)),
-		subtitle: compactCityDescription(plainStory(i18n.t(`commands:report.city.shops.${shopId}.description`)))
+		locked,
+		choose: (index: number): void => {
+			if (locked) return;
+			setAnswered(true);
+			onChoose(index);
+		}
 	};
 }
 
-/** What the purchase actually does, written the way the confirmation screen says it elsewhere. */
-function shopItemInfo(shopItemId: number, additionalShopData: AdditionalShopData | undefined): string {
-	return plainStory(i18n.t(`commands:shop.shopItems.${shopItemKey({shopItemId})}.info`, {
-		kingsMoneyAmount: additionalShopData?.gemToMoneyRatio ?? 0,
-		thousandPoints: additionalShopData?.thousandPoints ?? 0
-	}));
+function shopText(key: string, options: Record<string, unknown> = {}): string {
+	return plainStory(i18n.t(`commands:shop.${key}`, options));
 }
 
-function groupShopReactions(collector: ReactionCollectorCreation): Map<string, ShopGroup[]> {
-	const groups = new Map<string, ShopGroup[]>();
+/** Discord names the daily potion and the weekly plants after what is actually on the shelf this time. */
+function articleName(shopItemId: number, data: ShopData): string {
+	const key = shopItemKey({shopItemId});
+	const potion = data.additionalShopData?.dailyPotion;
+	if (key === "dailyPotion" && potion) {
+		return `${AppIcons.getIconOrNull(`potions.${potion.id}`) ?? ""} ${i18n.t(`models:potions.${potion.id}`)}`;
+	}
+	const tier = WEEKLY_PLANT_TIERS.indexOf(key);
+	const plantId = tier >= 0 ? data.additionalShopData?.weeklyPlants?.[tier] : undefined;
+	if (plantId !== undefined) {
+		return plainStory(i18n.t(`commands:shop.shopItems.${key}.name`, {plantId}));
+	}
+	return plainStory(shopItemName({shopItemId}));
+}
+
+function articlesByCategory(collector: ReactionCollectorCreation): Map<string, ShopArticle[]> {
+	const categories = new Map<string, ShopArticle[]>();
 	collector.reactions.forEach((reaction, index) => {
 		if (reaction.type !== SHOP_REACTION_KINDS.ITEM) return;
-		const current = groups.get(reaction.data.shopCategoryId) ?? [];
-		current.push({reaction, index});
-		groups.set(reaction.data.shopCategoryId, current);
+		const articles = categories.get(reaction.data.shopCategoryId) ?? [];
+		const article = articles.find(entry => entry.shopItemId === reaction.data.shopItemId);
+		if (article) article.offers.push({reaction, index});
+		else articles.push({shopItemId: reaction.data.shopItemId, offers: [{reaction, index}]});
+		categories.set(reaction.data.shopCategoryId, articles);
 	});
-	return groups;
+	return categories;
 }
 
-function stockNote(additionalShopData: AdditionalShopData | undefined): string | undefined {
-	if (additionalShopData?.remainingPotions !== undefined) return i18n.t("app:city.shop.remainingPotions", {count: additionalShopData.remainingPotions});
-	return additionalShopData?.remainingTokens !== undefined ? i18n.t("app:city.shop.remainingTokens", {count: additionalShopData.remainingTokens}) : undefined;
+function isSingleUnit(article: ShopArticle): boolean {
+	return article.offers.length === 1 && article.offers[0].reaction.data.amount === 1;
 }
 
-type ShopListProps = {
-	groups: Map<string, ShopGroup[]>;
-	collector: ReactionCollectorCreation;
-	currency: AmountUnit;
-	availableCurrency: number;
-	additionalShopData: AdditionalShopData | undefined;
-	locked: boolean;
-	choose: (index: number) => void;
-};
+/** The price line Discord writes under an article: the price itself, or the price of one unit when it comes in bundles. */
+function priceLine(article: ShopArticle, currency: AmountUnit): string {
+	if (isSingleUnit(article)) {
+		return shopText("itemPrice", {price: article.offers[0].reaction.data.price, currency});
+	}
+	const unit = article.offers.reduce((smallest, offer) => offer.reaction.data.amount < smallest.reaction.data.amount ? offer : smallest);
+	return shopText("itemPriceUnit", {price: Math.round(unit.reaction.data.price / unit.reaction.data.amount), currency});
+}
 
-function ShopItem({entry, props, expansion}: {entry: ShopGroup; props: ShopListProps; expansion: {openKey: number | undefined; onOpen: (key: number | undefined) => void}}): ReactNode {
-	const {collector, currency, availableCurrency, additionalShopData, locked, choose} = props;
-	const {reaction, index} = entry;
-	const tooExpensive = reaction.data.price > availableCurrency;
-	const lock: Lock | undefined = tooExpensive
-		? {reason: i18n.t("app:city.locks.missingMoney", {amount: currencyLabel(reaction.data.price - availableCurrency, currency)}), icon: Coins}
+function missingMoneyLock(price: number, available: number, currency: AmountUnit): Lock | undefined {
+	return price > available
+		? {reason: i18n.t("app:city.locks.missingMoney", {amount: formatAmount(price - available, currency)}), icon: Coins}
 		: undefined;
-	const choosable = isChoosable(reaction, collector.data) && !tooExpensive;
-	const expanded = expansion.openKey === index;
-	const quantity = reaction.data.amount > 1 ? i18n.t("app:city.shop.quantity", {amount: reaction.data.amount}) : undefined;
+}
+
+type ShelfContext = {collector: ReactionCollectorCreation; data: ShopData; locked: boolean; choose: (index: number) => void};
+
+/** Once "Acheter" is pressed the article opens in place on what Discord confirms: what it does, then the quantity. */
+function ArticleConfirmation({article, context, onCancel}: {article: ShopArticle; context: ShelfContext; onCancel: () => void}): ReactNode {
+	const {data, locked, choose} = context;
+	const info = shopText(`shopItems.${shopItemKey({shopItemId: article.shopItemId})}.info`, {
+		kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio ?? 0,
+		thousandPoints: data.additionalShopData?.thousandPoints ?? 0
+	});
+	return <View style={styles.confirmation}>
+		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption}>{`${AppIcons.getIconOrNull("collectors.warning") ?? ""} ${info}`}</TwemojiText>
+		{article.offers.map(offer => {
+			const lock = missingMoneyLock(offer.reaction.data.price, data.availableCurrency, data.currency)
+				?? (isChoosable(offer.reaction, context.collector.data) ? undefined : {reason: i18n.t("app:city.locks.unavailable")});
+			return <ActionBanner
+				key={offer.index}
+				icon={Check}
+				label={isSingleUnit(article)
+					? shopText("confirmButton")
+					: shopText("amountButton", {amount: offer.reaction.data.amount, price: offer.reaction.data.price, currency: data.currency})}
+				pending={locked}
+				onPress={(): void => choose(offer.index)}
+				{...lock ? {lock} : {}}
+			/>;
+		})}
+		<Button onPress={onCancel}>{shopText("cancelButton")}</Button>
+	</View>;
+}
+
+function ShopArticleRow({article, context, expanded, onToggle}: {article: ShopArticle; context: ShelfContext; expanded: boolean; onToggle: () => void}): ReactNode {
+	const {data, locked} = context;
+	const cheapest = Math.min(...article.offers.map(offer => offer.reaction.data.price));
+	const lock = missingMoneyLock(cheapest, data.availableCurrency, data.currency);
+	const price = <TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption}>{priceLine(article, data.currency)}</TwemojiText>;
 	return <ExpandableEntry
-		label={shopItemName({shopItemId: reaction.data.shopItemId})}
-		caption={lock && !expanded ? <LockHint lock={lock} /> : quantity}
-		end={<Text style={sectionStyles.caption}>{currencyLabel(reaction.data.price, currency)}</Text>}
-		dimmed={locked || !choosable}
+		label={articleName(article.shopItemId, data)}
+		caption={lock && !expanded ? <View>{price}<LockHint lock={lock} /></View> : price}
+		end={expanded ? undefined : <Button variant="primary">{shopText("buyButton")}</Button>}
+		chevron={ENTRY_CHEVRONS.NONE}
+		dimmed={locked || Boolean(lock)}
 		expanded={expanded}
-		onToggle={(): void => expansion.onOpen(expanded ? undefined : index)}
+		onToggle={onToggle}
 	>
-		<Text style={sectionStyles.caption}>{shopItemInfo(reaction.data.shopItemId, additionalShopData)}</Text>
-		<ActionBanner
-			icon={Check}
-			label={i18n.t("app:collector.accept")}
-			pending={locked}
-			onPress={(): void => choose(index)}
-			{...lock ? {lock} : {}}
-		/>
+		<ArticleConfirmation article={article} context={context} onCancel={onToggle} />
 	</ExpandableEntry>;
 }
 
-function ShopGroups(props: ShopListProps): ReactNode {
-	const [openKey, onOpen] = useState<number>();
-	return [...props.groups.entries()].map(([categoryId, entries], index) => (
-		<Fragment key={categoryId}>
-			<SectionHeader first={index === 0}>{categoryLabel(categoryId, entries.length)}</SectionHeader>
-			<ExpandableList>{entries.map(entry => <ShopItem key={entry.index} entry={entry} props={props} expansion={{openKey, onOpen}} />)}</ExpandableList>
-		</Fragment>
-	));
+function categoryTitle(categoryId: string, data: ShopData): string {
+	const count = COUNTED_CATEGORIES[categoryId]?.(data);
+	return shopText(`shopCategories.${categoryId}`, count === undefined ? {} : {count});
 }
 
-/** A commerce with a single thing to offer is that offer: no list to browse, no row to unfold. */
-function SoleOffer({entry, props}: {entry: ShopGroup; props: ShopListProps}): ReactNode {
-	const {collector, currency, availableCurrency, additionalShopData, locked, choose} = props;
-	const {reaction, index} = entry;
-	const missing = reaction.data.price - availableCurrency;
-	const lock: Lock | undefined = missing > 0
-		? {reason: i18n.t("app:city.locks.missingMoney", {amount: currencyLabel(missing, currency)}), icon: Coins}
-		: undefined;
-	return <>
-		<Note>{shopItemInfo(reaction.data.shopItemId, additionalShopData)}</Note>
-		<ActionBanner
-			icon={Check}
-			label={i18n.t("app:city.shop.buy", {item: shopItemName({shopItemId: reaction.data.shopItemId}), price: currencyLabel(reaction.data.price, currency)})}
-			pending={locked}
-			onPress={(): void => choose(index)}
-			{...lock || !isChoosable(reaction, collector.data) ? {lock: lock ?? {reason: i18n.t("app:city.locks.unavailable")}} : {}}
-		/>
-	</>;
+function ShopShelves({context}: {context: ShelfContext}): ReactNode {
+	const [openItem, setOpenItem] = useState<number>();
+	return [...articlesByCategory(context.collector).entries()].map(([categoryId, articles]) => <View key={categoryId}>
+		<SectionHeader>{categoryTitle(categoryId, context.data)}</SectionHeader>
+		<Card>{articles.map(article => <ShopArticleRow
+			key={article.shopItemId}
+			article={article}
+			context={context}
+			expanded={openItem === article.shopItemId}
+			onToggle={(): void => setOpenItem(openItem === article.shopItemId ? undefined : article.shopItemId)}
+		/>)}</Card>
+	</View>);
 }
 
-function ShopOffers(props: ShopListProps): ReactNode {
-	const entries = [...props.groups.values()].flat();
-	return entries.length === 1
-		? <SoleOffer entry={entries[0]} props={props} />
-		: <ShopGroups {...props} />;
-}
-
-/** Shared scaffolding of the two menus a commerce opens once an item is paid for. */
-function ShopSubMenu({collector, onChoose, submitting, heading, children}: ShopCollectorProps & {
-	heading: {emblem: string; caption: string; title: string; subtitle: string};
-	children: (choose: (index: number) => void, locked: boolean) => ReactNode;
-}): ReactNode {
-	const [answered, setAnswered] = useState(false);
-	const locked = answered || submitting;
-	const choose = (index: number): void => {
-		if (locked) {
-			return;
-		}
-		setAnswered(true);
-		onChoose(index);
-	};
-	const closeIndex = collector.reactions.findIndex(reaction => reaction.type === SHOP_REACTION_KINDS.CLOSE);
-	const leave = (): void => choose(closeIndex);
+/** Discord's shop window, told on the same journal page as the rest of the journey: who greets the player, the shelves, then the purse. */
+export function ShopCollector({collector, onChoose, submitting}: ShopCollectorProps): ReactNode {
+	const pseudo = usePlayerPseudo();
+	const {locked, choose} = useChooseOnce(onChoose, submitting);
+	if (collector.data.type !== SHOP_DATA_KINDS.COLLECTOR) {
+		return null;
+	}
+	const data = collector.data.data;
+	const leave = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === SHOP_REACTION_KINDS.CLOSE));
+	const place = data.shopId ? `commands:report.city.shops.${data.shopId}` : null;
+	const story = [
+		place ? plainStory(i18n.t(`${place}.description`)) : null,
+		i18n.t("commands:shop.greeting", {pseudo}),
+		i18n.t("commands:shop.currentMoney", {money: data.availableCurrency, currency: data.currency})
+	].filter(paragraph => paragraph !== null).join("\n\n");
 
 	return (
 		<SwipeBack onClose={leave}>
 			<Screen>
 				<BackButton label={i18n.t("app:city.shop.close")} onClose={leave} />
-				<Standing
-					emblem={<TwemojiIcon emoji={heading.emblem} size={SHOP_EMBLEM_SIZE} />}
-					caption={heading.caption}
-					title={heading.title}
-					subtitle={heading.subtitle}
+				<EventJournal
+					emoji={AppIcons.getIconOrNull(data.shopId ? `city.shops.${data.shopId}` : "commands.shop") ?? undefined}
+					title={place ? plainStory(i18n.t(`${place}.label`)) : shopText("title")}
+					story={story}
 				/>
-				{children(choose, locked)}
+				<ShopShelves context={{collector, data, locked, choose}} />
+				{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
+			</Screen>
+		</SwipeBack>
+	);
+}
+
+/** Shared scaffolding of the two menus a commerce opens once an item is paid for. */
+function ShopSubMenu({collector, onChoose, submitting, heading, children}: ShopCollectorProps & {
+	heading: {emblem: string; title: string; story: string};
+	children: (choose: (index: number) => void, locked: boolean) => ReactNode;
+}): ReactNode {
+	const {locked, choose} = useChooseOnce(onChoose, submitting);
+	const leave = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === SHOP_REACTION_KINDS.CLOSE));
+
+	return (
+		<SwipeBack onClose={leave}>
+			<Screen>
+				<BackButton label={i18n.t("app:city.shop.close")} onClose={leave} />
+				<EventJournal emoji={heading.emblem} title={heading.title} story={heading.story} />
+				<Card>{children(choose, locked)}</Card>
 				{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
 			</Screen>
 		</SwipeBack>
@@ -187,6 +232,7 @@ function ShopSubMenu({collector, onChoose, submitting, heading, children}: ShopC
 /** Which of the running missions the player trades away, once the change-mission item is bought. */
 export function SkipMissionCollector(props: ShopCollectorProps): ReactNode {
 	const [now] = useState(() => Date.now());
+	const pseudo = usePlayerPseudo();
 	if (props.collector.data.type !== SHOP_DATA_KINDS.SKIP_MISSION) {
 		return null;
 	}
@@ -198,25 +244,24 @@ export function SkipMissionCollector(props: ShopCollectorProps): ReactNode {
 		{...props}
 		heading={{
 			emblem: AppIcons.getIcon("missions.sideMission"),
-			caption: i18n.t("app:city.shop.eyebrow"),
-			title: plainStory(i18n.t("commands:shop.shopItems.skipMission.name")),
-			subtitle: plainStory(i18n.t("commands:shop.shopItems.skipMission.giveDesc"))
+			title: shopText("shopItems.skipMission.giveTitle", {pseudo}),
+			story: i18n.t("commands:shop.shopItems.skipMission.giveDesc")
 		}}
 	>
-		{(choose, locked): ReactNode => <ExpandableList>
-			{entries.map(entry => <ExpandableEntry
-				key={entry.index}
-				label={plainStory(missionDescription(entry.reaction.data.mission, now))}
-				dimmed={locked}
-				expanded={false}
-				onToggle={(): void => choose(entry.index)}
-			/>)}
-		</ExpandableList>}
+		{(choose, locked): ReactNode => entries.map(entry => <ExpandableEntry
+			key={entry.index}
+			label={plainStory(missionDescription(entry.reaction.data.mission, now))}
+			chevron={ENTRY_CHEVRONS.FORWARD}
+			dimmed={locked}
+			expanded={false}
+			onToggle={(): void => choose(entry.index)}
+		/>)}
 	</ShopSubMenu>;
 }
 
 /** Which inventory category gains the slot the player just paid for. */
 export function BuyCategorySlotCollector(props: ShopCollectorProps): ReactNode {
+	const pseudo = usePlayerPseudo();
 	if (props.collector.data.type !== SHOP_DATA_KINDS.BUY_SLOT) {
 		return null;
 	}
@@ -228,71 +273,19 @@ export function BuyCategorySlotCollector(props: ShopCollectorProps): ReactNode {
 		{...props}
 		heading={{
 			emblem: AppIcons.getIcon("shopItems.slotExtension"),
-			caption: i18n.t("app:city.shop.eyebrow"),
-			title: plainStory(i18n.t("commands:shop.shopItems.slotExtension.name")),
-			subtitle: plainStory(i18n.t("commands:shop.chooseSlotIndication"))
+			title: shopText("chooseSlotTitle", {pseudo}),
+			story: i18n.t("commands:shop.chooseSlotIndication")
 		}}
 	>
-		{(choose, locked): ReactNode => <ExpandableList>
-			{entries.map(entry => <ExpandableEntry
-				key={entry.index}
-				label={plainStory(i18n.t(`commands:shop.slotCategoriesKind.${entry.reaction.data.categoryId}`))}
-				caption={i18n.t("app:city.shop.slotsLeft", {count: entry.reaction.data.remaining, limit: entry.reaction.data.maxSlots})}
-				end={<TwemojiIcon emoji={AppIcons.getIcon(`itemKinds.${entry.reaction.data.categoryId}`)} size={SHOP_EMBLEM_SIZE} />}
-				dimmed={locked}
-				expanded={false}
-				onToggle={(): void => choose(entry.index)}
-			/>)}
-		</ExpandableList>}
+		{(choose, locked): ReactNode => entries.map(entry => <ExpandableEntry
+			key={entry.index}
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon(`itemKinds.${entry.reaction.data.categoryId}`)} size={ROW_EMBLEM_SIZE} />}
+			label={plainStory(i18n.t(`commands:shop.slotCategoriesKind.${entry.reaction.data.categoryId}`))}
+			caption={i18n.t("app:city.shop.slotsLeft", {count: entry.reaction.data.remaining, limit: entry.reaction.data.maxSlots})}
+			chevron={ENTRY_CHEVRONS.FORWARD}
+			dimmed={locked}
+			expanded={false}
+			onToggle={(): void => choose(entry.index)}
+		/>)}
 	</ShopSubMenu>;
-}
-
-export function ShopCollector({collector, onChoose, submitting}: ShopCollectorProps): ReactNode {
-	const [answered, setAnswered] = useState(false);
-	if (collector.data.type !== SHOP_DATA_KINDS.COLLECTOR) {
-		return null;
-	}
-
-	const {
-		currency, availableCurrency, additionalShopData, shopId
-	} = collector.data.data;
-	const locked = answered || submitting;
-	const note = stockNote(additionalShopData);
-	const heading = shopHeading(shopId);
-	const closeIndex = collector.reactions.findIndex(reaction => reaction.type === SHOP_REACTION_KINDS.CLOSE);
-	const choose = (index: number): void => {
-		if (locked) {
-			return;
-		}
-		setAnswered(true);
-		onChoose(index);
-	};
-	/** Walking out of a commerce is the same gesture as leaving any other screen. */
-	const leave = (): void => choose(closeIndex);
-
-	return (
-		<SwipeBack onClose={leave}>
-			<Screen>
-				<BackButton label={i18n.t("app:city.shop.close")} onClose={leave} />
-				<Standing
-					emblem={<TwemojiIcon emoji={heading.emblem ?? AppIcons.getIcon(`unitValues.${currency}`)} size={SHOP_EMBLEM_SIZE} />}
-					caption={i18n.t("app:city.shop.eyebrow")}
-					title={heading.title}
-					subtitle={heading.subtitle}
-				/>
-				<Figures items={[{caption: i18n.t("app:city.shop.availableCurrency"), value: formatNumber(availableCurrency), unit: currency}]} />
-				{note ? <Note>{note}</Note> : null}
-				<ShopOffers
-					groups={groupShopReactions(collector)}
-					collector={collector}
-					currency={currency}
-					availableCurrency={availableCurrency}
-					additionalShopData={additionalShopData}
-					locked={locked}
-					choose={choose}
-				/>
-				{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
-			</Screen>
-		</SwipeBack>
-	);
 }

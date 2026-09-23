@@ -1,4 +1,4 @@
-import {fireEvent, render, screen} from "@testing-library/react-native";
+import {act, fireEvent, render, screen, waitFor} from "@testing-library/react-native";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
@@ -7,6 +7,9 @@ import {ReportCityActionRes, ReportViewRes} from "ws-packets/src/fromServer/repo
 import {ReportCityActionReq, ReportViewReq} from "ws-packets/src/fromClient/ReportViewReq";
 import {REPORT_CITY_ACTION_RESULTS} from "ws-packets/src/objects/ReportView";
 import {ReportReq} from "ws-packets/src/fromClient/ReportReq";
+import {ReportUseTokensReq} from "ws-packets/src/fromClient/ReportUseTokensReq";
+import {ReportBuyHealReq} from "ws-packets/src/fromClient/ReportBuyHealReq";
+import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {GameClient} from "@/src/networking/GameClient";
 import {
@@ -16,6 +19,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
+import {HealOutcome, reportEventStore, TokenOutcome} from "@/src/collectors/ReportEventStore";
 
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined,
@@ -123,6 +127,56 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:adventure.sections.status")).toBeNull();
 	});
 
+	it("advances in a single tap: the token confirmation is answered without being shown", async () => {
+		mockReport();
+		const confirmation: ReactionCollectorCreation = {
+			id: "use-tokens",
+			endTime: Date.now() + 60_000,
+			data: {type: REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS, data: {cost: 1, playerTokens: 5}},
+			reactions: [{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}, {type: GENERIC_REACTION_KINDS.ACCEPT, data: {}}]
+		};
+		const request = jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "answer", packet: confirmation});
+
+		await render(<Adventure />);
+		await fireEvent.press(screen.getByText("app:adventure.quick.advanceWithCost"));
+
+		expect(request.mock.calls[0][0]).toBeInstanceOf(ReportUseTokensReq);
+		const collectors = mockedUseCollectors.mock.results[0].value;
+		expect(collectors.answerWithoutShowing).toHaveBeenCalledWith("use-tokens", 1);
+		expect(collectors.track).not.toHaveBeenCalled();
+		expect(screen.queryByText("app:adventure.tokens.use.title")).toBeNull();
+	});
+
+	it("dashes to the stop reached with the tokens, then opens it, instead of leaving the tile silent", async () => {
+		mockReport();
+		const confirmation: ReactionCollectorCreation = {
+			id: "use-tokens",
+			endTime: Date.now() + 60_000,
+			data: {type: REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS, data: {cost: 1, playerTokens: 5}},
+			reactions: [{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}}, {type: GENERIC_REACTION_KINDS.REFUSE, data: {}}]
+		};
+		const request = jest.spyOn(GameClient, "request")
+			.mockResolvedValueOnce({kind: "answer", packet: confirmation})
+			.mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName});
+		const listeners: (() => void)[] = [];
+		const subscribe = reportEventStore.subscribe;
+		jest.spyOn(reportEventStore, "subscribe").mockImplementation(listener => {
+			listeners.push(listener);
+			return subscribe(listener);
+		});
+
+		await render(<Adventure />);
+		await fireEvent.press(screen.getByText("app:adventure.quick.advanceWithCost"));
+		expect(request).toHaveBeenCalledTimes(1);
+
+		jest.spyOn(reportEventStore, "getTokenSnapshot").mockReturnValue({kind: "used", packet: {tokensSpent: 1, isArrived: false}} as TokenOutcome);
+		await act(async () => listeners[listeners.length - 1]());
+		expect(request).toHaveBeenCalledTimes(1);
+
+		await waitFor(() => expect(request).toHaveBeenCalledTimes(2), {timeout: 3_000});
+		expect(request.mock.calls[1][0]).toBeInstanceOf(ReportReq);
+	});
+
 	it("waits for an explicit action before starting the first journey", async () => {
 		mockedUseGameQuery.mockReturnValue({status: "ready", data: Object.assign(new ReportViewRes(), {reportReady: true})});
 		const request = jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName});
@@ -209,15 +263,23 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:adventure.quick.advanceWithCost")).toBeNull();
 	});
 
-	it("refuses to spend a token when the report is already waiting to be read", async () => {
-		const request = jest.spyOn(GameClient, "request");
+	it("offers only the free report once it is ready, so no token is wasted", async () => {
 		mockReport(report(), true);
 
 		await render(<Adventure />);
 
-		expect(screen.getByText("app:adventure.quick.advanceUseless")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.quick.advanceWithCost"));
-		expect(request).not.toHaveBeenCalled();
+		expect(screen.queryByText("app:adventure.quick.advanceWithCost")).toBeNull();
+		expect(screen.getByRole("button", {name: "app:adventure.continueReport"})).toBeTruthy();
+	});
+
+	it("merges the token advance into the single journey action while the report waits", async () => {
+		mockReport();
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("app:adventure.quick.advanceWithCost")).toBeTruthy();
+		expect(screen.getByText("app:adventure.notReady")).toBeTruthy();
+		expect(screen.queryByText("app:adventure.continueReport")).toBeNull();
 	});
 
 	it("keeps the vitals band above the report like the mobile mockup", async () => {
@@ -314,9 +376,63 @@ describe("Adventure screen", () => {
 		await render(<Adventure />);
 
 		expect(screen.getByText("app:adventure.alteration.eyebrow")).toBeTruthy();
-		expect(screen.getByText("app:adventure.quick.heal")).toBeTruthy();
+		expect(screen.getByText("app:adventure.quick.healWithCost")).toBeTruthy();
 		expect(screen.queryByText("app:adventure.quick.advanceWithCost")).toBeNull();
 		expect(screen.getByText("app:adventure.alteration.fields.timeRemaining")).toBeTruthy();
+	});
+
+	it("heals in a single tap: the priced confirmation is answered without being shown", async () => {
+		const altered = report();
+		altered.effect = "sick";
+		altered.effectDuration = 30 * 60_000;
+		altered.effectEndTime = Date.now() + altered.effectDuration;
+		altered.heal = {price: 410, canAfford: true};
+		mockReport(altered);
+		const confirmation: ReactionCollectorCreation = {
+			id: "buy-heal",
+			endTime: Date.now() + 60_000,
+			data: {type: REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data: {healPrice: 410, playerMoney: 1_000}},
+			reactions: [{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}, {type: GENERIC_REACTION_KINDS.ACCEPT, data: {}}]
+		};
+		const request = jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "answer", packet: confirmation});
+
+		await render(<Adventure />);
+		await fireEvent.press(screen.getByText("app:adventure.quick.healWithCost"));
+
+		expect(request.mock.calls[0][0]).toBeInstanceOf(ReportBuyHealReq);
+		expect(mockedUseCollectors.mock.results[0].value.answerWithoutShowing).toHaveBeenCalledWith("buy-heal", 1);
+		expect(screen.queryByText("app:adventure.heal.use.title")).toBeNull();
+	});
+
+	it("plays the cure on the emblem before opening the heal result", async () => {
+		const altered = report();
+		altered.effect = "sick";
+		altered.effectDuration = 30 * 60_000;
+		altered.effectEndTime = Date.now() + altered.effectDuration;
+		altered.heal = {price: 410, canAfford: true};
+		mockReport(altered);
+		mockedAppIcons.getIconOrNull.mockImplementation((path: string) => path.startsWith("effects.") ? "🤢" : null);
+		const confirmation: ReactionCollectorCreation = {
+			id: "buy-heal",
+			endTime: Date.now() + 60_000,
+			data: {type: REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data: {healPrice: 410, playerMoney: 1_000}},
+			reactions: [{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}}, {type: GENERIC_REACTION_KINDS.REFUSE, data: {}}]
+		};
+		jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "answer", packet: confirmation});
+		const listeners: (() => void)[] = [];
+		const subscribe = reportEventStore.subscribe;
+		jest.spyOn(reportEventStore, "subscribe").mockImplementation(listener => {
+			listeners.push(listener);
+			return subscribe(listener);
+		});
+
+		await render(<Adventure />);
+		await fireEvent.press(screen.getByText("app:adventure.quick.healWithCost"));
+		jest.spyOn(reportEventStore, "getHealSnapshot").mockReturnValue({kind: "accepted", packet: {healPrice: 410, isArrived: false}} as HealOutcome);
+		await act(async () => listeners[listeners.length - 1]());
+
+		expect(screen.getByText("app:adventure.alteration.eyebrow")).toBeTruthy();
+		await waitFor(() => expect(screen.queryByText("app:adventure.alteration.eyebrow")).toBeNull(), {timeout: 3_000});
 	});
 
 	it("keeps the alteration report visible behind the cure confirmation", async () => {
@@ -361,7 +477,7 @@ describe("Adventure screen", () => {
 		await render(<Adventure />);
 
 		expect(screen.getByText("app:adventure.quick.advanceWithCost")).toBeTruthy();
-		expect(screen.queryByText("app:adventure.quick.heal")).toBeNull();
+		expect(screen.queryByText("app:adventure.quick.healWithCost")).toBeNull();
 	});
 
 	it("resumes automatically after advancing, cancelling, or leaving the token merchant", () => {

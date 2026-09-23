@@ -392,8 +392,9 @@ const outcomeScenarios: OutcomeScenario[] = [
 		renderOutcome: onContinue => <TokenOutcome outcome={{kind: "bought", packet: {amount: 5}}} onContinue={onContinue} />,
 		continueText: "app:adventure.tokens.continue",
 		assertView: () => {
-			expect(screen.getAllByText("app:adventure.tokens.outcomes.bought")).toHaveLength(1);
-			expect(screen.getByText("app:adventure.tokens.fields.received")).toBeTruthy();
+			expect(screen.getByText("commands:report.tokenMerchant.boughtTitle")).toBeTruthy();
+			expect(screen.getByText("commands:report.tokenMerchant.boughtDescription")).toBeTruthy();
+			expect(screen.getByText("app:adventure.event.fields.tokens")).toBeTruthy();
 		}
 	},
 	{
@@ -401,8 +402,9 @@ const outcomeScenarios: OutcomeScenario[] = [
 		renderOutcome: onContinue => <HealOutcome outcome={{kind: "accepted", packet: {healPrice: 410, isArrived: false}}} onContinue={onContinue} />,
 		continueText: "app:adventure.heal.continue",
 		assertView: () => {
-			expect(screen.getByText("app:adventure.heal.outcomes.accepted")).toBeTruthy();
-			expect(screen.getByText("app:adventure.heal.fields.spent")).toBeTruthy();
+			expect(screen.getByText("commands:report.healSuccessTitle")).toBeTruthy();
+			expect(screen.getByText("commands:report.healSuccessDescription")).toBeTruthy();
+			expect(screen.getByText("app:adventure.event.fields.money")).toBeTruthy();
 		}
 	},
 	{
@@ -432,8 +434,9 @@ describe("AdventureCollector", () => {
 		const onChoose = jest.fn();
 		await render(<AdventureCollector collector={merchantCollector()} onChoose={onChoose} submitting={false} />);
 
-		expect(screen.getByText("app:adventure.tokens.merchant.title")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.tokens.merchant.buyOne"));
+		expect(screen.getByText("commands:report.tokenMerchant.title")).toBeTruthy();
+		expect(screen.getByText("commands:report.tokenMerchant.description")).toBeTruthy();
+		await fireEvent.press(screen.getAllByText("commands:report.tokenMerchant.buyButton")[0]);
 		expect(onChoose).not.toHaveBeenCalled();
 		expect(screen.getByText("app:adventure.tokens.fields.remainingMoney")).toBeTruthy();
 
@@ -515,14 +518,21 @@ describe("AdventureCollector", () => {
 		expect(onChoose).not.toHaveBeenCalled();
 	});
 
-	it("titles a commerce after itself and says what the purchase does", async () => {
+	it("tells a commerce on its own journal page and says what the purchase does before buying", async () => {
+		const onChoose = jest.fn();
 		const collector = shopCollector("veterinarian", {availableCurrency: 51, shopId: "veterinarian"}, VETERINARIAN_TREATMENT);
-		await render(<AdventureCollector collector={collector} onChoose={jest.fn()} submitting={false} />);
+		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
 		expect(screen.getByText("commands:report.city.shops.veterinarian.label")).toBeTruthy();
-		expect(screen.queryByText("app:city.shop.title")).toBeNull();
-		expect(screen.getByText("commands:shop.shopItems.lovePointsValue.info")).toBeTruthy();
-		expect(screen.getByText("app:city.shop.buy")).toBeTruthy();
+		expect(screen.getByText(/commands:shop\.greeting/)).toBeTruthy();
+		expect(screen.getByText("commands:shop.itemPrice")).toBeTruthy();
+
+		await fireEvent.press(screen.getByText("commands:shop.buyButton"));
+		expect(onChoose).not.toHaveBeenCalled();
+		expect(screen.getByText(/commands:shop\.shopItems\.lovePointsValue\.info/)).toBeTruthy();
+
+		await fireEvent.press(screen.getByText("commands:shop.confirmButton"));
+		expect(onChoose).toHaveBeenCalledWith(0);
 	});
 
 	it("leaves a commerce through the back chevron", async () => {
@@ -534,14 +544,15 @@ describe("AdventureCollector", () => {
 		expect(onChoose).toHaveBeenCalledWith(1);
 	});
 
-	it("does not submit a shop item which costs more than the available currency", async () => {
+	it("says on the row why an article costs more than the available currency, and does not buy it", async () => {
 		const onChoose = jest.fn();
 		const collector = shopCollector("unaffordable-shop", {availableCurrency: 2}, {shopItemId: 4, shopCategoryId: "slots"});
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
-		await fireEvent.press(screen.getByText("app:city.shop.buy"));
-		expect(onChoose).not.toHaveBeenCalled();
 		expect(screen.getByText("app:city.locks.missingMoney")).toBeTruthy();
+		await fireEvent.press(screen.getByText("commands:shop.buyButton"));
+		await fireEvent.press(screen.getByText("commands:shop.confirmButton"));
+		expect(onChoose).not.toHaveBeenCalled();
 	});
 
 	it.each(outcomeScenarios)("$name", async scenario => {
