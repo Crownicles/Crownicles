@@ -1,10 +1,10 @@
 import {ReactNode} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, TextStyle, View} from "react-native";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {AppIcons} from "@/src/AppIcons";
 import {AMOUNT_UNITS, AmountUnit, formatNumber} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
-import {TwemojiText} from "@/src/design/TwemojiText";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
 
@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
 	},
 	vitalHead: {
 		flexDirection: "row",
+		alignItems: "center",
 		justifyContent: "space-between",
 		gap: Theme.spacing.titleGap,
 		marginBottom: Theme.spacing.xs
@@ -76,11 +77,24 @@ const styles = StyleSheet.create({
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.caption,
 		letterSpacing: Theme.letterSpacing.chip
+	},
+	emojiLabel: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: Theme.spacing.xs
 	}
 });
 
 function ratioOf(current: number, max: number): number {
 	return max <= 0 ? FULL_RATIO : current / max;
+}
+
+/** These labels hold on one line: centring the emoji on it beats the baseline an inline image sits on. */
+function EmojiLabel({emoji, text, textStyle, size}: {emoji: string; text: string; textStyle: TextStyle; size: number}): ReactNode {
+	return <View style={styles.emojiLabel}>
+		<TwemojiIcon emoji={emoji} size={size} />
+		<Text style={textStyle} numberOfLines={1}>{text}</Text>
+	</View>;
 }
 
 function Vital({icon, label, current, max, color}: {
@@ -93,7 +107,7 @@ function Vital({icon, label, current, max, color}: {
 	return (
 		<View style={styles.vital}>
 			<View style={styles.vitalHead}>
-				<TwemojiText textStyle={styles.vitalLabel} emojiSize={Theme.fontSize.vitalLabel}>{`${icon} ${label}`}</TwemojiText>
+				<EmojiLabel emoji={icon} text={label} textStyle={styles.vitalLabel} size={Theme.fontSize.vitalLabel} />
 				<Text style={styles.vitalValue}>{`${formatNumber(current)} / ${formatNumber(max)}`}</Text>
 			</View>
 			<View style={styles.track}>
@@ -109,9 +123,7 @@ function Vital({icon, label, current, max, color}: {
 function Chip({unit, value}: { unit: AmountUnit; value: number }): ReactNode {
 	return (
 		<View style={styles.chip}>
-			<TwemojiText textStyle={styles.chipText} emojiSize={Theme.fontSize.caption}>
-				{`${AppIcons.getIcon(`unitValues.${unit}`)} ${formatNumber(value)}`}
-			</TwemojiText>
+			<EmojiLabel emoji={AppIcons.getIcon(`unitValues.${unit}`)} text={formatNumber(value)} textStyle={styles.chipText} size={Theme.fontSize.caption} />
 		</View>
 	);
 }

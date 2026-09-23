@@ -303,9 +303,11 @@ describe("Adventure screen", () => {
 
 		expect(screen.getByText("75 / 100")).toBeTruthy();
 		expect(screen.getByText("8 / 10")).toBeTruthy();
-		expect(screen.getByText("icon:unitValues.money 1,240")).toBeTruthy();
-		expect(screen.getByText("icon:unitValues.gem 3")).toBeTruthy();
-		expect(screen.getByText("icon:unitValues.token 2")).toBeTruthy();
+		expect(screen.getByLabelText("icon:unitValues.money")).toBeTruthy();
+		expect(screen.getByText("1,240")).toBeTruthy();
+		expect(screen.getByLabelText("icon:unitValues.gem")).toBeTruthy();
+		expect(screen.getByText("3")).toBeTruthy();
+		expect(screen.getByText("2")).toBeTruthy();
 	});
 
 	it("keeps the travel report visible behind the token confirmation", async () => {
