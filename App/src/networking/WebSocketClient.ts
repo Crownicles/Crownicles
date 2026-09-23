@@ -174,7 +174,7 @@ export class WebSocketClient {
 
 	private async getAccessToken(authToken: AuthToken): Promise<string | null> {
 		if (await authToken.refreshIfNeeded()) {
-			console.debug("Token refreshed successfully:", authToken);
+			console.debug("Token refreshed successfully");
 			await this.saveToken?.(authToken);
 		}
 

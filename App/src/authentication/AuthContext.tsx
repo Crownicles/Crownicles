@@ -80,7 +80,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 	}
 
 	const saveToken = async (token: AuthToken): Promise<void> => {
-		console.debug("Saving token:", token);
+		console.debug("Saving token");
 
 		if (!token) {
 			console.warn("Attempted to save an empty token.");
@@ -111,8 +111,6 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 			return "";
 		});
 
-		console.debug("Loaded token:", token);
-
 		if (!token || token.length === 0) {
 			console.log("No token found, setting state to NO_TOKEN");
 			onStateChange(AuthStateEnum.NO_TOKEN);
@@ -121,7 +119,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 
 		const authToken = AuthToken.fromJsonString(token);
 		if (await authToken.refreshIfNeeded()) {
-			console.debug("Token refreshed successfully:", authToken);
+			console.debug("Token refreshed successfully");
 			await saveToken(authToken); // Save the refreshed token
 		}
 
