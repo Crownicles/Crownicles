@@ -329,7 +329,11 @@
       "title": "Tout se passe bien dans votre aventure",
       "titleWithLastEvent": "Tout se passe bien depuis votre dernière aventure {{smallEvent}}",
       "subtitle": "Prochain arrêt prévu dans {{nextStop}}. Le trajet vers {{destination}} durera encore {{remaining}}.",
-      "subtitleArrivingSoon": "Plus aucun arrêt n'est prévu : vous arriverez à {{destination}} dans {{remaining}}."
+      "subtitleArrivingSoon": "Plus aucun arrêt n'est prévu : vous arriverez à {{destination}} dans {{remaining}}.",
+      "arrivedEyebrow": "Rapport · arrivée",
+      "arrivedTitle": "Vous êtes arrivé à destination",
+      "arrivedSubtitle": "{{destination}} est en vue : continuez l'aventure pour découvrir ce qui vous y attend.",
+      "stopDueSubtitle": "Un arrêt vous attend sur la route de {{destination}} : continuez l'aventure pour le découvrir."
     },
     "notReady": "Le prochain rapport sera disponible dans {{time}}.",
     "alteration": {

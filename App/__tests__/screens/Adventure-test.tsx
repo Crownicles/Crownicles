@@ -265,6 +265,18 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:adventure.quick.advanceWithCost")).toBeNull();
 	});
 
+	it("says the traveller has arrived instead of counting zero minutes", async () => {
+		const arrived = {...report(), startTime: Date.now() - 7_200_000, arriveTime: Date.now() - 60_000, nextStopTime: Date.now() - 60_000};
+		mockReport(arrived, true);
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("app:adventure.travel.arrivedTitle")).toBeTruthy();
+		expect(screen.getByText("app:adventure.travel.arrivedSubtitle")).toBeTruthy();
+		expect(screen.queryByText("app:adventure.fields.timeRemaining")).toBeNull();
+		expect(screen.queryByText("app:adventure.fields.nextStop")).toBeNull();
+	});
+
 	it("offers only the free report once it is ready, so no token is wasted", async () => {
 		mockReport(report(), true);
 

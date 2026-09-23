@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
 	chevron: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.chevron, color: Theme.colors.faint},
 	figures: {flexDirection: "row", borderTopWidth: 1, borderBottomWidth: 1, borderColor: Theme.colors.line, paddingVertical: Theme.spacing.xl},
 	figure: {flex: 1, minWidth: 0, gap: 6},
+	figureSingle: {alignItems: "center", justifyContent: "space-between"},
 	figureEnd: {alignItems: "flex-end"},
 	figureValue: {flexDirection: "row", alignItems: "center", gap: 4},
 	figureAmount: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
@@ -176,6 +177,7 @@ const TOAST_DURATION_MS = 4_000;
 const TOAST_ENTRANCE_MS = 220;
 const TOAST_ENTRANCE_OFFSET = -24;
 const TOAST_UNIT_SIZE = 18;
+const STANDING_TITLE_EMOJI_SIZE = 22;
 const BANNER_EMOJI_SIZE = 22;
 
 /** The gain a toast announces, as a number and the game emoji of its unit. */
@@ -261,8 +263,8 @@ export function Standing({emblem, caption, title, subtitle, children, onPress, a
 		{emblem ? <View style={styles.emblem}>{emblem}</View> : null}
 		<View style={styles.body}>
 			<Text style={styles.caption}>{caption}</Text>
-			<Text style={styles.title} numberOfLines={2}>{title}</Text>
-			{subtitle ? <Text style={styles.caption}>{subtitle}</Text> : null}
+			<TwemojiText textStyle={styles.title} emojiSize={STANDING_TITLE_EMOJI_SIZE}>{title}</TwemojiText>
+			{subtitle ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{subtitle}</TwemojiText> : null}
 		</View>
 	</>;
 	return <View style={styles.standing} testID={testID}>
@@ -306,13 +308,24 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 /** One headline number, with the game emoji of its unit when it has one. */
 export type Figure = {caption: string; value: string; unit?: string};
 
+function FigureValue({figure}: {figure: Figure}): ReactNode {
+	return <View style={styles.figureValue}>
+		<Text style={styles.figureAmount}>{figure.value}</Text>
+		{figure.unit ? <UnitIcon unit={figure.unit} size={15} /> : null}
+	</View>;
+}
+
+/** Side by side when there are several; a lone figure spans the line instead of sitting in a corner. */
 export function Figures({items}: {items: Figure[]}): ReactNode {
+	if (items.length === 1) {
+		return <View style={[styles.figures, styles.figureSingle]}>
+			<Text style={styles.caption}>{items[0].caption}</Text>
+			<FigureValue figure={items[0]} />
+		</View>;
+	}
 	return <View style={styles.figures}>{items.map((figure, index) => <View key={figure.caption} style={[styles.figure, index === items.length - 1 && index > 0 && styles.figureEnd]}>
 		<Text style={styles.caption}>{figure.caption}</Text>
-		<View style={styles.figureValue}>
-			<Text style={styles.figureAmount}>{figure.value}</Text>
-			{figure.unit ? <UnitIcon unit={figure.unit} size={15} /> : null}
-		</View>
+		<FigureValue figure={figure} />
 	</View>)}</View>;
 }
 

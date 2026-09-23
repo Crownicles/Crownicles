@@ -629,47 +629,53 @@ type AdventureContext = {
 	destination: string;
 };
 
-function travelTitle(packet: ReportTravelSummaryRes): string {
-	const lastSmallEvent = packet.lastSmallEventId
-		? AppIcons.getIconOrNull(`smallEvents.${packet.lastSmallEventId}`)
-		: null;
+/** Where the traveller stands: arrived, waiting at a stop the report will open, or still walking. */
+const JOURNEY_STAGES = {ARRIVED: "arrived", STOP_DUE: "stopDue", TRAVELLING: "travelling"} as const;
+type JourneyStage = typeof JOURNEY_STAGES[keyof typeof JOURNEY_STAGES];
+
+function journeyStage({packet, metrics, currentTime}: AdventureContext): JourneyStage {
+	if (metrics.remainingMilliseconds <= 0) return JOURNEY_STAGES.ARRIVED;
+	return packet.nextStopTime <= currentTime ? JOURNEY_STAGES.STOP_DUE : JOURNEY_STAGES.TRAVELLING;
+}
+
+function travelTitle(context: AdventureContext): string {
+	if (journeyStage(context) === JOURNEY_STAGES.ARRIVED) return i18n.t("app:adventure.travel.arrivedTitle");
+	const {lastSmallEventId} = context.packet;
+	const lastSmallEvent = lastSmallEventId ? AppIcons.getIconOrNull(`smallEvents.${lastSmallEventId}`) : null;
 	return lastSmallEvent
 		? i18n.t("app:adventure.travel.titleWithLastEvent", {smallEvent: lastSmallEvent})
 		: i18n.t("app:adventure.travel.title");
 }
 
-function adventureTitle({packet}: AdventureContext): string {
-	if (isAlterationReport(packet)) {
-		return alterationTitle(packet);
+function adventureTitle(context: AdventureContext): string {
+	if (isAlterationReport(context.packet)) {
+		return alterationTitle(context.packet);
 	}
-	if (packet.isInCity) {
+	if (context.packet.isInCity) {
 		return i18n.t("app:adventure.cityTitle");
 	}
-	return travelTitle(packet);
+	return travelTitle(context);
 }
 
-function adventureSubtitle({packet, currentTime, metrics, destination}: AdventureContext): string {
-	const altered = isAlterationReport(packet);
-	const remainingMilliseconds = altered
-		? alterationRemainingMilliseconds(packet, metrics, currentTime)
-		: metrics.remainingMilliseconds;
-	if (altered) {
-		return i18n.t("app:adventure.alteration.description", {time: formatDuration(remainingMilliseconds)});
+function travelSubtitle(context: AdventureContext): string {
+	const {packet, currentTime, metrics, destination} = context;
+	const stage = journeyStage(context);
+	if (stage !== JOURNEY_STAGES.TRAVELLING) return i18n.t(`app:adventure.travel.${stage}Subtitle`, {destination});
+	const remaining = formatDuration(metrics.remainingMilliseconds);
+	return hasNextStop(packet)
+		? i18n.t("app:adventure.travel.subtitle", {nextStop: nextStopDuration(packet, currentTime), destination, remaining})
+		: i18n.t("app:adventure.travel.subtitleArrivingSoon", {destination, remaining});
+}
+
+function adventureSubtitle(context: AdventureContext): string {
+	const {packet, currentTime, metrics, destination} = context;
+	if (isAlterationReport(packet)) {
+		return i18n.t("app:adventure.alteration.description", {time: formatDuration(alterationRemainingMilliseconds(packet, metrics, currentTime))});
 	}
 	if (packet.isInCity) {
 		return i18n.t("app:adventure.citySubtitle", {location: destination});
 	}
-	if (!hasNextStop(packet)) {
-		return i18n.t("app:adventure.travel.subtitleArrivingSoon", {
-			destination,
-			remaining: formatDuration(remainingMilliseconds)
-		});
-	}
-	return i18n.t("app:adventure.travel.subtitle", {
-		nextStop: nextStopDuration(packet, currentTime),
-		destination,
-		remaining: formatDuration(remainingMilliseconds)
-	});
+	return travelSubtitle(context);
 }
 
 /** The emblem says where the journey is heading, or what is holding the player back. */
@@ -681,10 +687,13 @@ function adventureEmblem(packet: ReportTravelSummaryRes, cure: Cure | null): Rea
 	return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : null;
 }
 
-function travelFigures(packet: ReportTravelSummaryRes, metrics: TravelMetrics, currentTime: number): Figure[] {
+/** Only what is still ahead is counted: an arrived traveller has no time left, a waiting stop no countdown. */
+function travelFigures(context: AdventureContext): Figure[] {
+	const {packet, metrics, currentTime} = context;
+	const stage = journeyStage(context);
 	return [
-		{caption: i18n.t("app:adventure.fields.timeRemaining"), value: formatDuration(metrics.remainingMilliseconds)},
-		...hasNextStop(packet) ? [{caption: i18n.t("app:adventure.fields.nextStop"), value: nextStopDuration(packet, currentTime)}] : [],
+		...stage === JOURNEY_STAGES.ARRIVED ? [] : [{caption: i18n.t("app:adventure.fields.timeRemaining"), value: formatDuration(metrics.remainingMilliseconds)}],
+		...stage === JOURNEY_STAGES.TRAVELLING && hasNextStop(packet) ? [{caption: i18n.t("app:adventure.fields.nextStop"), value: nextStopDuration(packet, currentTime)}] : [],
 		...packet.points.show ? [{caption: i18n.t("app:adventure.fields.points"), value: String(packet.points.cumulated), unit: "score"}] : []
 	];
 }
@@ -778,9 +787,11 @@ function showsAilmentOnly(packet: ReportTravelSummaryRes): boolean {
 	return isAlterationReport(packet) && packet.isInCity;
 }
 
-function adventureCaption(packet: ReportTravelSummaryRes): string {
+function adventureCaption(context: AdventureContext): string {
+	const {packet} = context;
 	if (isAlterationReport(packet)) return i18n.t("app:adventure.alteration.eyebrow");
-	return i18n.t(packet.isInCity ? "app:adventure.eyebrow" : "app:adventure.travel.eyebrow");
+	if (packet.isInCity) return i18n.t("app:adventure.eyebrow");
+	return i18n.t(journeyStage(context) === JOURNEY_STAGES.ARRIVED ? "app:adventure.travel.arrivedEyebrow" : "app:adventure.travel.eyebrow");
 }
 
 function AdventureHeader({context, dash, cure}: {context: AdventureContext; dash: TravelDash | null; cure: Cure | null}): ReactNode {
@@ -788,7 +799,7 @@ function AdventureHeader({context, dash, cure}: {context: AdventureContext; dash
 	return <>
 		<Standing
 			emblem={adventureEmblem(packet, cure)}
-			caption={adventureCaption(packet)}
+			caption={adventureCaption(context)}
 			title={adventureTitle(context)}
 			subtitle={adventureSubtitle(context)}
 		>
@@ -796,7 +807,7 @@ function AdventureHeader({context, dash, cure}: {context: AdventureContext; dash
 		</Standing>
 		{showsAilmentOnly(packet)
 			? <AlterationPanel packet={packet} metrics={metrics} currentTime={currentTime} />
-			: <Figures items={travelFigures(packet, metrics, currentTime)} />}
+			: <Figures items={travelFigures(context)} />}
 	</>;
 }
 
