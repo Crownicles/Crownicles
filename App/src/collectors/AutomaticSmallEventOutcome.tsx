@@ -1,156 +1,81 @@
-import {ReactNode} from "react";
-import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
-import {formatNumber} from "@/src/display/Amounts";
-import {Button, ButtonRow, Screen} from "@/src/design/Primitives";
-import {Figures, Standing} from "@/src/design/Sections";
-import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {ReactNode, useMemo} from "react";
+import {SmallEventResultData, SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
 import {AppIcons} from "@/src/AppIcons";
+import {EventOutcomeScreen} from "@/src/collectors/EventOutcomeScreen";
+import {formatNumber} from "@/src/display/Amounts";
+import {formatDurationMinutes} from "@/src/display/ItemEffects";
+import {
+	amountEffect, gainEffect, lossEffect, lostAmountEffect, presentEffects
+} from "@/src/display/OutcomeEffects";
+import {smallEventIcon, smallEventKey, smallEventStory} from "@/src/display/SmallEventStories";
+import type {Effect} from "@/src/design/Sections";
 import {i18n} from "@/src/translations/i18n";
 
-const EVENT_EMBLEM_SIZE = 34;
+type EffectsBuilder = (data: SmallEventResultData) => (Effect | null)[];
 
-type ResultField = {label: string; value: string; unit?: string};
-type ResultFieldResolver = (outcome: SmallEventResultRes) => ResultField | null;
-
-function eventKey(eventName: string): string {
-	return eventName
-		.replace(/^SmallEvent/, "")
-		.replace(/Packet$/, "")
-		.replace(/^[A-Z]/, first => first.toLowerCase());
+function num(data: SmallEventResultData, key: string): number {
+	const value = data[key];
+	return typeof value === "number" ? value : 0;
 }
 
-function numberValue(data: Record<string, unknown>, key: string): number | null {
-	return typeof data[key] === "number" ? data[key] : null;
+function field(key: string): string {
+	return i18n.t(`app:adventure.event.fields.${key}`);
 }
 
-function stringValue(data: Record<string, unknown>, key: string): string | null {
-	return typeof data[key] === "string" ? data[key] : null;
+function alteration(effectId: unknown): Effect | null {
+	if (typeof effectId !== "string") return null;
+	const emoji = AppIcons.getIconOrNull(`effects.${effectId}`);
+	return lossEffect(i18n.t("app:adventure.witch.fields.effect"), i18n.t(`error:effects.${effectId}.self`), emoji ? {emoji} : {});
 }
 
-function amountField(eventName: string, amount: number): ResultField {
-	if (eventName === "SmallEventAdvanceTimePacket") {
-		return {
-			label: i18n.t("app:adventure.automaticResults.fields.timeGained"), value: i18n.t("app:adventure.duration.minutes", {count: amount}), unit: "time"
-		};
-	}
-	if (eventName === "SmallEventWinHealthPacket") {
-		return {
-			label: i18n.t("app:adventure.event.fields.health"), value: `+${formatNumber(amount)}`, unit: "health"
-		};
-	}
-	if (eventName === "SmallEventWinPersonalXPPacket" || eventName === "SmallEventWinGuildXPPacket") {
-		return {
-			label: i18n.t("app:adventure.event.fields.experience"), value: `+${formatNumber(amount)}`, unit: "xp"
-		};
-	}
-	if (eventName === "SmallEventWinEnergyOnIslandPacket") {
-		return {
-			label: i18n.t("app:adventure.event.fields.energy"), value: `+${formatNumber(amount)}`, unit: "energy"
-		};
-	}
-	return {label: i18n.t("app:adventure.automaticResults.fields.amount"), value: formatNumber(amount)};
+function timeLost(minutes: number): Effect | null {
+	return minutes > 0 ? lossEffect(field("timeLost"), formatDurationMinutes(minutes), {unit: "time"}) : null;
 }
 
-function amountResultField(outcome: SmallEventResultRes): ResultField | null {
-	const amount = numberValue(outcome.data, "amount");
-	return amount === null || amount === 0 ? null : amountField(outcome.eventName, amount);
-}
+const BIG_BAD_EFFECTS: Record<string, EffectsBuilder> = {
+	LIFE_LOSS: data => [lostAmountEffect(field("health"), num(data, "lifeLost"), "lostHealth")],
+	ALTERATION: data => [alteration(data.effectId)],
+	MONEY_LOSS: data => [lostAmountEffect(field("money"), num(data, "moneyLost"), "lostMoney")]
+};
 
-function gainedMoneyField(outcome: SmallEventResultRes): ResultField | null {
-	const money = numberValue(outcome.data, "money");
-	return money === null || money === 0
-		? null
-		: {
-			label: i18n.t("app:adventure.event.fields.money"), value: `+${formatNumber(money)}`, unit: "money"
-		};
-}
+const SMALL_BAD_EFFECTS: Record<string, EffectsBuilder> = {
+	healthLost: data => [lostAmountEffect(field("health"), num(data, "amount"), "lostHealth")],
+	moneyLost: data => [lostAmountEffect(field("money"), num(data, "amount"), "lostMoney")],
+	timeLost: data => [timeLost(num(data, "amount"))]
+};
 
-function lostMoneyField(outcome: SmallEventResultRes): ResultField | null {
-	const moneyLost = numberValue(outcome.data, "moneyLost");
-	return moneyLost === null || moneyLost <= 0
-		? null
-		: {
-			label: i18n.t("app:adventure.event.fields.money"), value: `-${formatNumber(moneyLost)}`, unit: "lostMoney"
-		};
-}
-
-function lostHealthField(outcome: SmallEventResultRes): ResultField | null {
-	const lifeLost = numberValue(outcome.data, "lifeLost");
-	return lifeLost === null || lifeLost <= 0
-		? null
-		: {
-			label: i18n.t("app:adventure.event.fields.health"), value: `-${formatNumber(lifeLost)}`, unit: "lostHealth"
-		};
-}
-
-function quantityField(outcome: SmallEventResultRes): ResultField | null {
-	const quantity = numberValue(outcome.data, "quantity");
-	return quantity === null || quantity <= 0
-		? null
-		: {label: i18n.t("app:adventure.automaticResults.fields.quantity"), value: formatNumber(quantity)};
-}
-
-function experienceField(outcome: SmallEventResultRes): ResultField | null {
-	const xp = numberValue(outcome.data, "xp");
-	return xp === null || xp <= 0
-		? null
-		: {
-			label: i18n.t("app:adventure.event.fields.experience"), value: `+${formatNumber(xp)}`, unit: "xp"
-		};
-}
-
-function effectField(outcome: SmallEventResultRes): ResultField | null {
-	const effectId = stringValue(outcome.data, "effectId");
-	return effectId
-		? {label: i18n.t("app:adventure.witch.fields.effect"), value: i18n.t(`error:effects.${effectId}.self`)}
-		: null;
-}
-
-function materialField(outcome: SmallEventResultRes): ResultField | null {
-	const materialId = stringValue(outcome.data, "materialId");
-	return materialId
-		? {label: i18n.t("app:adventure.choiceResults.fields.material"), value: i18n.t(`models:materials.${materialId}`)}
-		: null;
-}
-
-const RESULT_FIELD_RESOLVERS: ResultFieldResolver[] = [
-	amountResultField,
-	gainedMoneyField,
-	lostMoneyField,
-	lostHealthField,
-	quantityField,
-	experienceField,
-	effectField,
-	materialField
-];
-
-function isResultField(field: ResultField | null): field is ResultField {
-	return field !== null;
-}
-
-function resultFields(outcome: SmallEventResultRes): ResultField[] {
-	return RESULT_FIELD_RESOLVERS.map(resolve => resolve(outcome)).filter(isResultField);
-}
+/** What each automatic small event did to the player, read from the fields its own packet defines. */
+const EFFECTS: Record<string, EffectsBuilder> = {
+	advanceTime: data => [gainEffect(i18n.t("app:adventure.automaticResults.fields.timeGained"), formatDurationMinutes(num(data, "amount")), {unit: "timeGain"})],
+	bigBad: data => BIG_BAD_EFFECTS[String(data.kind)]?.(data) ?? [],
+	smallBad: data => SMALL_BAD_EFFECTS[String(data.issue)]?.(data) ?? [],
+	dwarfPetFan: data => [amountEffect(field(data.isGemReward === true ? "gems" : "money"), num(data, "amount"), {gain: data.isGemReward === true ? "gem" : "money"})],
+	expeditionAdvice: data => [
+		amountEffect(field("points"), num(data, "bonusPoints"), {gain: "score"}),
+		amountEffect(field("money"), num(data, "bonusMoney"), {gain: "money"}),
+		data.consolationTokenGiven === true ? amountEffect(field("tokens"), num(data, "consolationTokensAmount"), {gain: "token"}) : null
+	],
+	findMaterial: data => [gainEffect(i18n.t("app:adventure.choiceResults.fields.material"), `${formatNumber(num(data, "quantity"))} × ${i18n.t(`models:materials.${num(data, "materialId")}`)}`)],
+	winHealth: data => [amountEffect(field("health"), num(data, "amount"), {gain: "health"})],
+	winPersonalXP: data => [amountEffect(field("experience"), num(data, "amount"), {gain: "xp"})],
+	winGuildXP: data => [amountEffect(field("experience"), num(data, "amount"), {gain: "xp"})],
+	winEnergyOnIsland: data => [amountEffect(field("energy"), num(data, "amount"), {gain: "energy"})]
+};
 
 export function AutomaticSmallEventOutcome({outcome, onContinue}: {
 	outcome: SmallEventResultRes;
 	onContinue: () => void;
 }): ReactNode {
-	const key = eventKey(outcome.eventName);
-	const fields = resultFields(outcome);
-	const emblem = AppIcons.getIconOrNull(`smallEvents.${key}`);
-	return (
-		<Screen>
-			<Standing
-				{...emblem ? {emblem: <TwemojiIcon emoji={emblem} size={EVENT_EMBLEM_SIZE} />} : {}}
-				caption={i18n.t("app:adventure.smallEvent.eyebrow")}
-				title={i18n.t(`app:adventure.automaticResults.titles.${key}`, {defaultValue: i18n.t("app:adventure.automaticResults.title")})}
-				subtitle={i18n.t(`app:adventure.automaticResults.descriptions.${key}`, {defaultValue: i18n.t("app:adventure.automaticResults.description")})}
-			/>
-			{fields.length > 0 ? <Figures items={fields.map(field => ({
-				caption: field.label, value: field.value, ...field.unit ? {unit: field.unit} : {}
-			}))} /> : null}
-			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.smallEvent.continue")}</Button></ButtonRow>
-		</Screen>
+	const key = smallEventKey(outcome.eventName);
+	const story = useMemo(
+		() => smallEventStory(key, outcome.data) ?? i18n.t("app:adventure.automaticResults.description"),
+		[key, outcome.data]
 	);
+	return <EventOutcomeScreen
+		emoji={smallEventIcon(key)}
+		story={story}
+		effects={presentEffects(EFFECTS[key]?.(outcome.data) ?? [])}
+		continueLabel={i18n.t("app:adventure.smallEvent.continue")}
+		onContinue={onContinue}
+	/>;
 }

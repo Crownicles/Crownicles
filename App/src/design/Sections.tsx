@@ -7,6 +7,7 @@ import {Screen} from "@/src/design/Primitives";
 import {SwipeBack} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 
 /**
  * The grammar every detail screen is written in: an identity banner, a row of figures, a dark
@@ -76,11 +77,83 @@ const styles = StyleSheet.create({
 	toastEmblem: {width: 40, height: 40, flexShrink: 0, borderRadius: 20, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.paper},
 	toastTitle: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.paper},
 	toastSubtitle: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.faint},
-	toastAmount: {fontFamily: Theme.fonts.extraBold, fontSize: Theme.fontSize.title, color: Theme.colors.paper, fontVariant: ["tabular-nums"]}
+	toastAmount: {fontFamily: Theme.fonts.extraBold, fontSize: Theme.fontSize.title, color: Theme.colors.paper, fontVariant: ["tabular-nums"]},
+	effects: {flexDirection: "row", flexWrap: "wrap", gap: Theme.spacing.sm},
+	effect: {flexDirection: "row", alignItems: "center", gap: 6, paddingVertical: 6, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius},
+	effectLabel: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	effectValue: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, fontVariant: ["tabular-nums"]},
+	effectGain: {color: Theme.colors.green},
+	effectLoss: {color: Theme.colors.red},
+	effectNeutral: {color: Theme.colors.ink},
+	effectGainChip: {backgroundColor: Theme.colors.greenWash},
+	effectLossChip: {backgroundColor: Theme.colors.redWash},
+	effectNeutralChip: {backgroundColor: Theme.colors.wash},
+	journal: {
+		marginBottom: Theme.spacing.xl,
+		padding: Theme.spacing.xl,
+		gap: Theme.spacing.lg,
+		borderRadius: Theme.radius,
+		backgroundColor: Theme.colors.paper,
+		shadowColor: Theme.colors.ink,
+		shadowOpacity: 0.06,
+		shadowRadius: 12,
+		shadowOffset: {width: 0, height: 4},
+		elevation: 2
+	},
+	journalEmblem: {width: 44, height: 44, flexShrink: 0, borderRadius: 22, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.wash},
+	journalTitle: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink}
 });
 
 /** Why an action cannot be taken, so the screen can say it instead of letting the player find out. */
 export type Lock = {reason: string; icon?: LucideIcon};
+
+/** Whether a consequence helps the player, hurts them, or only tells them something. */
+export const EFFECT_TONES = {GAIN: "gain", LOSS: "loss", NEUTRAL: "neutral"} as const;
+export type EffectTone = typeof EFFECT_TONES[keyof typeof EFFECT_TONES];
+
+/** One consequence on the player, drawn with the game emoji of what changed: a unit, or any emoji of the game. */
+export type Effect = {label: string; value: string; tone: EffectTone; unit?: string; emoji?: string};
+
+const EFFECT_EMBLEM_SIZE = 15;
+const EFFECT_TONE_STYLES = {
+	[EFFECT_TONES.GAIN]: {value: styles.effectGain, chip: styles.effectGainChip},
+	[EFFECT_TONES.LOSS]: {value: styles.effectLoss, chip: styles.effectLossChip},
+	[EFFECT_TONES.NEUTRAL]: {value: styles.effectNeutral, chip: styles.effectNeutralChip}
+};
+
+function EffectEmblem({effect}: {effect: Effect}): ReactNode {
+	if (effect.unit) return <UnitIcon unit={effect.unit} size={EFFECT_EMBLEM_SIZE} />;
+	return effect.emoji ? <TwemojiIcon emoji={effect.emoji} size={EFFECT_EMBLEM_SIZE} /> : null;
+}
+
+/** What an event did to the player, one tinted chip per change: green when it helps, red when it hurts. */
+export function Effects({items}: {items: Effect[]}): ReactNode {
+	return <View style={styles.effects}>{items.map(effect => <View key={effect.label} style={[styles.effect, EFFECT_TONE_STYLES[effect.tone].chip]} testID="event-effect">
+		<EffectEmblem effect={effect} />
+		<Text style={styles.effectLabel}>{effect.label}</Text>
+		<Text style={[styles.effectValue, EFFECT_TONE_STYLES[effect.tone].value]}>{effect.value}</Text>
+	</View>)}</View>;
+}
+
+/**
+ * An entry of the adventure journal, laid out in the order Discord posts it: whose journal it is
+ * with the event's emoji, what the event changed, then the game's own prose.
+ */
+export function JournalEntry({emblem, title, effects, children}: {
+	emblem?: ReactNode;
+	title: string;
+	effects: Effect[];
+	children: ReactNode;
+}): ReactNode {
+	return <View style={styles.journal}>
+		<View style={styles.identity}>
+			{emblem ? <View style={styles.journalEmblem}>{emblem}</View> : null}
+			<Text style={styles.journalTitle}>{title}</Text>
+		</View>
+		{effects.length > 0 ? <Effects items={effects} /> : null}
+		{children}
+	</View>;
+}
 
 const TOAST_DURATION_MS = 4_000;
 const TOAST_ENTRANCE_MS = 220;

@@ -22,7 +22,11 @@ export const Theme = {
 		red: "#D2504B",
 		green: "#3F9A5C",
 		blue: "#2F6FD0",
-		violet: "#6C56C8"
+		violet: "#6C56C8",
+
+		/** Tints behind a gain or a loss, light enough for the green or red text they carry. */
+		greenWash: "#EAF5EE",
+		redWash: "#FBEDEC"
 	},
 	spacing: {
 		xs: 4,

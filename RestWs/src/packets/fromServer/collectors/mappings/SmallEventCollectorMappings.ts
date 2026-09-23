@@ -63,7 +63,7 @@ function isFoodType(foodType: string): foodType is typeof SMALL_EVENT_FOOD_TYPES
 	return Object.values(SMALL_EVENT_FOOD_TYPES).includes(foodType as typeof SMALL_EVENT_FOOD_TYPES[keyof typeof SMALL_EVENT_FOOD_TYPES]);
 }
 
-function toRecipeShopSource(source: RecipeShopSource): SmallEventRecipeShopSource | null {
+export function toRecipeShopSource(source: RecipeShopSource): SmallEventRecipeShopSource | null {
 	switch (source) {
 		case RecipeShopSource.FARMER:
 			return SMALL_EVENT_RECIPE_SHOP_SOURCES.FARMER;

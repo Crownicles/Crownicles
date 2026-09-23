@@ -19,7 +19,7 @@ import {
 import {
 	DataMapping, defineDataMapping, defineReactionMapping, ReactionMapping
 } from "../CollectorMapping";
-import { missionData } from "../../translators/MissionsCommandServerTranslator";
+import { missionData } from "../../MissionDisplay";
 
 export const shopReactionMappings: ReactionMapping[] = [
 	defineReactionMapping(ReactionCollectorShopItemReaction, SHOP_REACTION_KINDS.ITEM, reaction => ({

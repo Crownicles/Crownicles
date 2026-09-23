@@ -7,8 +7,9 @@ import { ReactionCollectorGuildElderRemoveData } from "../../../../../Lib/src/pa
 import { ReactionCollectorGuildLeaveData } from "../../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
 import { ReactionCollectorCreation } from "../../../../../WsPackets/src/fromServer/common/ReactionCollectorCreation";
 import {
-	GUILD_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, PLAYER_UTILITY_DATA_KINDS, ReactionCollectorDataOf
+	GUILD_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, PLAYER_UTILITY_DATA_KINDS, ReactionCollectorDataOf, SMALL_EVENT_DATA_KINDS
 } from "../../../../../WsPackets/src/fromServer/collectors";
+import { ReactionCollectorInteractOtherPlayersPoorData } from "../../../../../Lib/src/packets/interaction/ReactionCollectorInteractOtherPlayers";
 import {
 	PET_SALE_ROLES, PetSaleRole
 } from "../../../../../WsPackets/src/objects/PetManagement";
@@ -75,6 +76,13 @@ export async function mapCollectorDisplay(packet: ReactionCollectorCreationPacke
 		case GUILD_DATA_KINDS.LEAVE:
 			await memberDisplay(mapped.data, packet);
 			break;
+		case SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS: {
+			const playerName = await resolvePlayerName((packet.data.data as ReactionCollectorInteractOtherPlayersPoorData).keycloakId);
+			if (playerName) {
+				mapped.data.data.playerName = playerName;
+			}
+			break;
+		}
 		default:
 			break;
 	}

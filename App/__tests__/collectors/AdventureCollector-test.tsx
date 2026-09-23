@@ -31,13 +31,20 @@ jest.mock("@/src/collectors/CollectorLabels", () => ({
 	collectorTitle: (): string => "small-event-title",
 	itemDisplayName: (): string => "offered-item",
 	isChoosable: (): boolean => true,
+	isEventPrompt: (data: {type: string}): boolean => data.type.startsWith("smallEvent") || data.type.startsWith("bigEvent"),
+	eventPromptIcon: (): undefined => undefined,
 	reactionLabel: (reaction: {type: string; data: {name?: string}}): string => reaction.data.name ?? reaction.type
 }));
 
 jest.mock("@/src/translations/i18n", () => ({
 	i18n: {
-		t: (key: string): string => key
+		t: (key: string): string => key,
+		tArray: (): string[] => []
 	}
+}));
+
+jest.mock("@/src/store/usePlayerProfile", () => ({
+	usePlayerProfile: (): object => ({status: "ready", data: {pseudo: "Drapht"}})
 }));
 
 function smallEvent(): ReactionCollectorCreation {
@@ -62,7 +69,7 @@ function bigEventOutcome(): ReportBigEventResultRes {
 		outcomeId: "success",
 		score: 15,
 		experience: 10,
-		effect: {name: "slowed", time: 15 * 60_000},
+		effect: {name: "slowed", time: 15},
 		health: -3,
 		money: 20,
 		energy: -2,
@@ -222,28 +229,25 @@ const collectorScenarios: CollectorScenario[] = [
 		}
 	},
 	{
-		name: "uses the Adventure tab composition for a mini-event and submits its indexed choice",
+		name: "tells a mini-event as a journal entry and submits its indexed choice",
 		collector: smallEvent,
 		choiceText: SMALL_EVENT_REACTION_KINDS.ALTAR_CONTRIBUTE,
 		assertView: () => {
-			expect(screen.getByText("app:adventure.smallEvent.eyebrow")).toBeTruthy();
-			expect(screen.getByText("small-event-title")).toBeTruthy();
+			expect(screen.getByText("commands:report.journal")).toBeTruthy();
 			expect(screen.getByText("small-event-description")).toBeTruthy();
+			expect(screen.queryByText("small-event-title")).toBeNull();
 		}
 	},
 	{
-		name: "renders the PVE island invitation with its cost and energy",
+		name: "tells the PVE island invitation with the Discord text before its choices",
 		collector: () => confirmationCollector("pve-island", {
 			type: SMALL_EVENT_DATA_KINDS.PVE_ISLAND,
 			data: {price: 0, energy: {current: 80, max: 100}}
 		}),
 		choiceText: GENERIC_REACTION_KINDS.ACCEPT,
 		assertView: () => {
-			expect(screen.getByText("app:collector.pveIsland.title")).toBeTruthy();
-			expect(screen.getByText("app:collector.pveIsland.energy")).toBeTruthy();
-			expect(screen.getByText("app:collector.pveIsland.crossing")).toBeTruthy();
-			expect(screen.getByText("app:collector.pveIsland.free")).toBeTruthy();
-			expect(screen.getByText("app:collector.pveIsland.warning")).toBeTruthy();
+			expect(screen.getByText("commands:report.journal")).toBeTruthy();
+			expect(screen.getByText("small-event-description")).toBeTruthy();
 		}
 	},
 	{
@@ -282,6 +286,7 @@ const collectorScenarios: CollectorScenario[] = [
 		}),
 		choiceText: "app:city.shop.buy",
 		assertView: () => {
+			expect(screen.getByText("small-event-description")).toBeTruthy();
 			expect(screen.getByText("app:collector.shop.fields.rarity")).toBeTruthy();
 			expect(screen.getByText("app:collector.shop.fields.price")).toBeTruthy();
 		}
@@ -298,8 +303,8 @@ const collectorScenarios: CollectorScenario[] = [
 		}),
 		choiceText: "app:city.shop.buy",
 		assertView: () => {
-			expect(screen.getByText("models:cooking.recipeDisplay")).toBeTruthy();
-			expect(screen.getByText("app:collector.recipeShop.fields.price")).toBeTruthy();
+			expect(screen.getByText("commands:report.journal")).toBeTruthy();
+			expect(screen.getByText("small-event-description")).toBeTruthy();
 		}
 	},
 	{
@@ -352,8 +357,8 @@ const outcomeScenarios: OutcomeScenario[] = [
 		/>,
 		continueText: "app:adventure.smallEvent.continue",
 		assertView: () => {
-			expect(screen.getByText("app:adventure.witch.resultTitle")).toBeTruthy();
-			expect(screen.getByText("app:adventure.witch.outcomes.potion")).toBeTruthy();
+			expect(screen.getByText(/smallEvents:witch\.witchEventResults\.ingredientIntros smallEvents:witch\.witchEventResults\.outcomes\.1/)).toBeTruthy();
+			expect(screen.getByText(/commands:report\.city\.homes\.cooking\.recipeDiscovered/)).toBeTruthy();
 			expect(screen.getByText("app:adventure.witch.fields.effect")).toBeTruthy();
 			expect(screen.getByText("app:adventure.witch.fields.recipe")).toBeTruthy();
 			expect(screen.getByText("app:adventure.event.fields.timeLost")).toBeTruthy();
@@ -364,11 +369,22 @@ const outcomeScenarios: OutcomeScenario[] = [
 		renderOutcome: onContinue => <BigEventOutcome outcome={bigEventOutcome()} onContinue={onContinue} />,
 		continueText: "app:adventure.event.continue",
 		assertView: () => {
+			expect(screen.getByText("commands:report.journal")).toBeTruthy();
 			expect(screen.getByText("events:19.possibilities.cook.outcomes.success")).toBeTruthy();
-			expect(screen.getByText("events:19.possibilities.cook.text")).toBeTruthy();
 			expect(screen.getByText("app:adventure.event.fields.money")).toBeTruthy();
 			expect(screen.getByText("+20")).toBeTruthy();
 			expect(screen.getByText("app:adventure.event.fields.timeLost")).toBeTruthy();
+		}
+	},
+	{
+		name: "leaves out the effects section when a big event changed nothing for the player",
+		renderOutcome: onContinue => <BigEventOutcome
+			outcome={{...bigEventOutcome(), score: 0, experience: 0, health: 0, money: 0, energy: 0, gems: 0, tokens: 0, effect: undefined}}
+			onContinue={onContinue}
+		/>,
+		continueText: "app:adventure.event.continue",
+		assertView: () => {
+			expect(screen.queryByTestId("event-effect")).toBeNull();
 		}
 	},
 	{
@@ -394,14 +410,13 @@ const outcomeScenarios: OutcomeScenario[] = [
 		renderOutcome: onContinue => <LotteryOutcome
 			outcome={{
 				kind: "win",
-				packet: {lostTime: 15 * 60_000, winAmount: 40, winReward: "money", level: "medium"}
+				packet: {lostTime: 15, winAmount: 40, winReward: "money", level: "medium"}
 			}}
 			onContinue={onContinue}
 		/>,
 		continueText: "app:adventure.smallEvent.continue",
 		assertView: () => {
-			expect(screen.getByText("app:adventure.lottery.resultTitle")).toBeTruthy();
-			expect(screen.getByText("app:adventure.lottery.win")).toBeTruthy();
+			expect(screen.getByText("smallEvents:lottery.medium.successsmallEvents:lottery.rewardTypeText.money")).toBeTruthy();
 			expect(screen.getByText("app:adventure.lottery.rewards.money")).toBeTruthy();
 			expect(screen.getByText("+40")).toBeTruthy();
 		}

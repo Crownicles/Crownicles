@@ -28,6 +28,14 @@ function convertEmoteFormat(str: string): string {
 }
 
 /**
+ * Discord renders "{command:...}" as a mention of the slash command; the app writes the same "/name".
+ * @param str
+ */
+function convertCommandFormat(str: string): string {
+	return str.replace(/{command:(.*?)}/g, (_match, command) => `/${command}`);
+}
+
+/**
  * Apply all the crownicles formatting to the given string
  * @param str
  */
@@ -35,7 +43,7 @@ function crowniclesFormat(value: unknown): string {
 	if (typeof value !== "string") {
 		return value == null ? "" : String(value);
 	}
-	return convertEmoteFormat(value);
+	return convertCommandFormat(convertEmoteFormat(value));
 }
 
 function fallbackTranslation(key: string | string[], options?: i18next.TOptions): string | string[] | Record<string, string> {
@@ -150,6 +158,12 @@ export class I18nCrownicles {
 			return [crowniclesFormat(value)];
 		}
 		return [];
+	}
+
+	/** Return a keyed translation object, as Discord's `tRecord` does. */
+	static tRecord(key: string, options?: i18next.TOptions): Record<string, string> {
+		const value: unknown = i18next.t(key, {...options, returnObjects: true});
+		return typeof value === "object" && value !== null && !Array.isArray(value) ? formatObjectTranslation(value) : {};
 	}
 
 	static async changeLanguage(language: Language): Promise<void> {

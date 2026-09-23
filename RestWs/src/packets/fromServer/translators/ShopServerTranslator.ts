@@ -27,7 +27,7 @@ import { ReactionCollectorBuyCategorySlotBuySuccess } from "../../../../../Lib/s
 import {
 	MARKET_TRENDS, MarketTrendKind, PlantForecast, ShopNoPetRes, ShopOutcome, ShopOutcomeRes, ShopPetCheckupRes
 } from "../../../../../WsPackets/src/fromServer/shop/ShopRes";
-import { missionData } from "./MissionsCommandServerTranslator";
+import { missionData } from "../MissionDisplay";
 import { PetSex } from "../../../../../WsPackets/src/objects/OwnedPet";
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { shopItemTypeToId } from "../../../../../Lib/src/utils/ShopUtils";

@@ -297,7 +297,7 @@ describe("Adventure screen", () => {
 
 		await render(<Adventure />);
 
-		expect(screen.getByText("app:collector.pveIsland.title")).toBeTruthy();
+		expect(screen.getByText(/smallEvents:goToPVEIsland\.stories:only/)).toBeTruthy();
 		expect(screen.queryByText("app:collector.pending")).toBeNull();
 	});
 

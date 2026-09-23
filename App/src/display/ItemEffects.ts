@@ -23,9 +23,11 @@ export function natureUnit(nature: ItemNature): string | undefined {
 export function formatDurationMinutes(totalMinutes: number): string {
 	const bounded = Math.max(0, Math.ceil(totalMinutes));
 	const hours = Math.floor(bounded / MINUTES_PER_HOUR);
-	return hours > 0
-		? i18n.t("app:adventure.duration.hoursMinutes", {hours, minutes: bounded % MINUTES_PER_HOUR})
-		: i18n.t("app:adventure.duration.minutes", {count: bounded});
+	const minutes = bounded % MINUTES_PER_HOUR;
+	if (hours === 0) return i18n.t("app:adventure.duration.minutes", {count: bounded});
+	return minutes === 0
+		? i18n.t("app:adventure.duration.hours", {count: hours})
+		: i18n.t("app:adventure.duration.hoursMinutes", {hours, minutes});
 }
 
 /** The power of an effect as a bare amount: a duration for time, a number otherwise. */

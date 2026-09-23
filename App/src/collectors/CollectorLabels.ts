@@ -17,7 +17,7 @@ import {
 	CITY_DATA_KINDS, CITY_REACTION_KINDS,
 	SHOP_DATA_KINDS, SHOP_REACTION_KINDS,
 	SMALL_EVENT_BAD_PET_ACTION_IDS, SMALL_EVENT_GOBLET_IDS, SMALL_EVENT_GOBLET_STRATEGIES,
-	UNKNOWN_COLLECTOR_KIND, GardenerConditionKey,
+	UNKNOWN_COLLECTOR_KIND,
 	SmallEventBadPetActionId, SmallEventGobletId, SmallEventGobletStrategy,
 	ReactionCollectorData, ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
@@ -25,12 +25,13 @@ import {Item} from "ws-packets/src/objects/Item";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {PetSex} from "ws-packets/src/objects/OwnedPet";
 import {i18n} from "@/src/translations/i18n";
+import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {randomTranslation} from "@/src/translations/RandomTranslation";
 import {AppIcons} from "@/src/AppIcons";
 import {shopItemName} from "@/src/collectors/ShopLabels";
 import {plainStory} from "@/src/display/Markdown";
 import {missionDescription} from "@/src/display/Missions";
-import {petName} from "@/src/display/PetDisplay";
+import {petName, petShortField} from "@/src/display/PetDisplay";
 import {fightActionName} from "@/src/display/Fight";
 
 const SEX_CONTEXTS = {
@@ -63,20 +64,6 @@ const GOBLET_STRATEGIES_BY_ID: Record<SmallEventGobletId, SmallEventGobletStrate
 	[SMALL_EVENT_GOBLET_IDS.SPARKLING]: SMALL_EVENT_GOBLET_STRATEGIES.RISKY,
 	[SMALL_EVENT_GOBLET_IDS.CRACKED]: SMALL_EVENT_GOBLET_STRATEGIES.GAMBLER
 };
-
-const GARDENER_REWARD_CONDITION_KEYS = new Set<GardenerConditionKey>([
-	"free",
-	"paid",
-	"paidAccepted",
-	"moon",
-	"night",
-	"herbivorePet",
-	"legendaryHerbivorePet",
-	"mage",
-	"firePet",
-	"fireItem",
-	"carnivorePet"
-]);
 
 type ShelterPetSelection = Extract<ReactionCollectorReaction, {data: {petEntityId: number}}>;
 
@@ -112,10 +99,6 @@ function badPetActionTranslationKey(actionId: SmallEventBadPetActionId, sex: Pet
 	return `smallEvents:badPet.choices.${actionId}${suffix}`;
 }
 
-function badPetDisplayName(petId: number, petNickname: string | undefined, sex: PetSex): string {
-	return petNickname ?? i18n.t(`models:pets:${petId}`, { context: sexContext(sex) });
-}
-
 function isKnownGoblet(id: SmallEventGobletId | undefined, strategy?: SmallEventGobletStrategy): boolean {
 	if (id === undefined || !Object.hasOwn(GOBLET_STRATEGIES_BY_ID, id)) {
 		return false;
@@ -123,18 +106,20 @@ function isKnownGoblet(id: SmallEventGobletId | undefined, strategy?: SmallEvent
 	return strategy === undefined || GOBLET_STRATEGIES_BY_ID[id] === strategy;
 }
 
-function gardenerRewardConditionKey(conditionKey: GardenerConditionKey): string {
-	return GARDENER_REWARD_CONDITION_KEYS.has(conditionKey) ? conditionKey : "paid";
+/** Discord opens most small events with a travel line; the offer seeds the pick so the prompt does not change as it re-renders. */
+function promptIntro(data: ReactionCollectorData): string {
+	return randomTranslation("smallEvents:intro", {offer: JSON.stringify(data.data)});
 }
 
-function gardenerSeedDisplay(seedId: number): string {
-	return withIcon(`plants.${seedId}`, i18n.t(`models:plants.${seedId}`));
-}
-
-function interactOtherPlayersDescription(rank: number | undefined): string {
-	return rank === undefined
-		? i18n.t("app:collector.descriptions.interactOtherPlayers")
-		: i18n.t("app:collector.descriptions.interactOtherPlayersRanked", { rank });
+function fightPetPrompt(petId: number, isFemale: boolean, intro: string): string {
+	const context = isFemale ? SEX_CONTEXTS.FEMALE : SEX_CONTEXTS.MALE;
+	const feralPet = i18n.t("smallEvents:fightPet.customPetDisplay", {
+		context,
+		petId,
+		petName: i18n.t(`models:pets.${petId}`, {context}),
+		adjective: randomTranslation("smallEvents:fightPet.adjectives", {context, petId})
+	});
+	return `${intro}${randomTranslation("smallEvents:fightPet.intro", {context, feralPet})} ${randomTranslation("smallEvents:fightPet.situation", {petId})}`;
 }
 
 function itemTypeFromCategory(category: number): typeof ITEM_TYPES_BY_CATEGORY[number] | null {
@@ -159,15 +144,27 @@ export function itemIconPath(item: ItemWithDetails): string | null {
 	return itemType ? `${itemType}s.${item.id}` : null;
 }
 
+function shopEnd(item: ItemWithDetails, price: number): string {
+	const iconPath = itemIconPath(item);
+	return randomTranslation("smallEvents:shop.end", {
+		item: `${iconPath ? AppIcons.getIconOrNull(iconPath) ?? "" : ""} ${itemDisplayName(item)}`,
+		price,
+		type: `${AppIcons.getIconOrNull(`itemCategories.${item.itemCategory}`) ?? ""}${i18n.tArray("smallEvents:shop.types")[item.itemCategory] ?? ""}`
+	});
+}
+
+/** The wandering merchant is a man or a woman, drawn once per offer like Discord draws it once per message. */
+function shopPrompt(item: ItemWithDetails, price: number): string {
+	const context = (item.id + price) % 2 === 0 ? "m" : "f";
+	const name = randomTranslation("smallEvents:shop.names", {context, price});
+	return randomTranslation("smallEvents:shop.intro", {context, name}) + shopEnd(item, price);
+}
+
 function destinationDuration(tripDurationMinutes: number | undefined): string {
 	if (tripDurationMinutes === undefined) {
 		return i18n.t("app:collector.descriptions.unknownDuration");
 	}
-	const minutes = Math.max(0, Math.ceil(tripDurationMinutes));
-	const hours = Math.floor(minutes / 60);
-	return hours > 0
-		? i18n.t("app:adventure.duration.hoursMinutes", {hours, minutes: minutes % 60})
-		: i18n.t("app:adventure.duration.minutes", {count: minutes});
+	return formatDurationMinutes(tripDurationMinutes);
 }
 
 function eventReactionIcon(eventId: number, possibilityName: string): string | null {
@@ -296,41 +293,48 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 	[EQUIP_DATA_KINDS.COLLECTOR]: () => undefined,
 	[BIG_EVENT_DATA_KINDS.COLLECTOR]: makeDataHandler(BIG_EVENT_DATA_KINDS.COLLECTOR, data => i18n.t(`events:${data.data.eventId}.text`)),
 	[DRINK_DATA_KINDS.COLLECTOR]: () => undefined,
-	[SMALL_EVENT_DATA_KINDS.ALTAR]: makeDataHandler(SMALL_EVENT_DATA_KINDS.ALTAR, data => randomTranslation("smallEvents:altar.intro", {
+	[SMALL_EVENT_DATA_KINDS.ALTAR]: makeDataHandler(SMALL_EVENT_DATA_KINDS.ALTAR, data => promptIntro(data) + randomTranslation("smallEvents:altar.intro", {
 		poolAmount: data.data.poolAmount,
 		poolThreshold: data.data.poolThreshold,
 		moneyEmote: AppIcons.getIcon("unitValues.money")
 	})),
 	[SMALL_EVENT_DATA_KINDS.BAD_PET]: makeDataHandler(SMALL_EVENT_DATA_KINDS.BAD_PET, data => randomTranslation("smallEvents:badPet.intro", {
 		context: sexContext(data.data.sex),
-		pet: badPetDisplayName(data.data.petId, data.data.petNickname, data.data.sex)
+		pet: petShortField({typeId: data.data.petId, sex: data.data.sex, ...data.data.petNickname ? {nickname: data.data.petNickname} : {}})
 	})),
-	[SMALL_EVENT_DATA_KINDS.CART]: makeDataHandler(SMALL_EVENT_DATA_KINDS.CART, data => data.data.displayedDestination.isDisplayed
-		? i18n.t("app:collector.descriptions.cartKnown", {
-			destination: i18n.t(`models:map_locations.${data.data.displayedDestination.id}.name`),
-			price: data.data.price
-		})
-		: i18n.t("app:collector.descriptions.cartUnknown", {price: data.data.price})),
-	[SMALL_EVENT_DATA_KINDS.FIGHT_PET]: makeDataHandler(SMALL_EVENT_DATA_KINDS.FIGHT_PET, data => i18n.t("app:collector.descriptions.fightPet", {
-		context: data.data.isFemale ? SEX_CONTEXTS.FEMALE : SEX_CONTEXTS.MALE,
-		pet: i18n.t(`models:pets.${data.data.petId}`, {context: data.data.isFemale ? SEX_CONTEXTS.FEMALE : SEX_CONTEXTS.MALE})
+	[SMALL_EVENT_DATA_KINDS.CART]: makeDataHandler(SMALL_EVENT_DATA_KINDS.CART, data => promptIntro(data) + randomTranslation(
+		`smallEvents:cart.${data.data.displayedDestination.isDisplayed ? "knownDestination" : "unknownDestination"}`,
+		{
+			price: data.data.price,
+			moneyEmote: AppIcons.getIcon("unitValues.money"),
+			destination: `${AppIcons.getIconOrNull(`mapTypes.${data.data.displayedDestination.type}`) ?? ""} ${i18n.t(`models:map_locations.${data.data.displayedDestination.id}.name`)}`
+		}
+	)),
+	[SMALL_EVENT_DATA_KINDS.FIGHT_PET]: makeDataHandler(SMALL_EVENT_DATA_KINDS.FIGHT_PET, data => fightPetPrompt(data.data.petId, data.data.isFemale, promptIntro(data))),
+	[SMALL_EVENT_DATA_KINDS.GARDENER]: makeDataHandler(SMALL_EVENT_DATA_KINDS.GARDENER, data => promptIntro(data)
+		+ randomTranslation(`smallEvents:gardener.stories.${data.data.isFirstEncounter === true ? "first" : "recurring"}`)
+		+ randomTranslation("smallEvents:gardener.rewards.seed.paid", {cost: data.data.cost})),
+	[SMALL_EVENT_DATA_KINDS.GOBLETS_GAME]: makeDataHandler(SMALL_EVENT_DATA_KINDS.GOBLETS_GAME, data => promptIntro(data) + i18n.t("smallEvents:gobletsGame.intro")),
+	[SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS]: makeDataHandler(SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS, data => randomTranslation("smallEvents:interactOtherPlayers.poor", {
+		playerDisplay: i18n.t(`smallEvents:interactOtherPlayers.playerDisplay${data.data.rank ? "Ranked" : "Unranked"}`, {pseudo: data.data.playerName ?? "", rank: data.data.rank})
 	})),
-	[SMALL_EVENT_DATA_KINDS.GARDENER]: makeDataHandler(SMALL_EVENT_DATA_KINDS.GARDENER, data => `${randomTranslation(`smallEvents:gardener.stories.${data.data.isFirstEncounter === true ? "first" : "recurring"}`)} ${randomTranslation(`smallEvents:gardener.rewards.seed.${gardenerRewardConditionKey(data.data.conditionKey)}`, {
-		cost: data.data.cost
-	})} ${i18n.t("app:collector.descriptions.gardenerSeed", {
-		seed: gardenerSeedDisplay(data.data.seedId)
-	})}`),
-	[SMALL_EVENT_DATA_KINDS.GOBLETS_GAME]: () => i18n.t("smallEvents:gobletsGame.intro"),
-	[SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS]: makeDataHandler(SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS, data => interactOtherPlayersDescription(data.data.rank)),
-	[SMALL_EVENT_DATA_KINDS.LIMOGES]: makeDataHandler(SMALL_EVENT_DATA_KINDS.LIMOGES, data => i18n.t(`smallEvents:limoges.questions.${data.data.questionId}`)),
+	[SMALL_EVENT_DATA_KINDS.LIMOGES]: makeDataHandler(SMALL_EVENT_DATA_KINDS.LIMOGES, data =>
+		`${promptIntro(data)}${randomTranslation("smallEvents:limoges.stories", {questionId: data.data.questionId})}\n\n${i18n.t(`smallEvents:limoges.questions.${data.data.questionId}`)}`),
 	[SMALL_EVENT_DATA_KINDS.LOTTERY]: () => i18n.t("smallEvents:lottery.intro"),
-	[SMALL_EVENT_DATA_KINDS.PET_FOOD]: makeDataHandler(SMALL_EVENT_DATA_KINDS.PET_FOOD, data => i18n.t(`smallEvents:petFood.intro.${data.data.foodType}_${data.data.petSex === "f" ? "female" : "male"}`)),
-	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: () => i18n.t("app:collector.pveIsland.description"),
-	[SMALL_EVENT_DATA_KINDS.SHOP]: () => i18n.t("app:collector.descriptions.shopSmallEvent"),
-	[SMALL_EVENT_DATA_KINDS.EPIC_SHOP]: () => i18n.t("app:collector.descriptions.epicShopSmallEvent"),
-	[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP]: makeDataHandler(SMALL_EVENT_DATA_KINDS.RECIPE_SHOP, data =>
-		i18n.t(`app:collector.descriptions.recipeShopSmallEvent.${data.data.source}`)),
-	[SMALL_EVENT_DATA_KINDS.WITCH]: () => `${randomTranslation("smallEvents:witch.intro")}${randomTranslation("smallEvents:witch.description")}${randomTranslation("smallEvents:witch.situation")}`,
+	[SMALL_EVENT_DATA_KINDS.PET_FOOD]: makeDataHandler(SMALL_EVENT_DATA_KINDS.PET_FOOD, data => i18n.t(`smallEvents:petFood.intro.${data.data.foodType}`, {context: sexContext(data.data.petSex)})),
+	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: makeDataHandler(SMALL_EVENT_DATA_KINDS.PVE_ISLAND, data => `${promptIntro(data)}${randomTranslation("smallEvents:goToPVEIsland.stories", {
+		priceText: i18n.t(`smallEvents:goToPVEIsland.price${data.data.price === 0 ? "Free" : "Money"}`, {price: data.data.price})
+	})}\n\n${i18n.t("smallEvents:goToPVEIsland.confirm", {energy: data.data.energy.current, energyMax: data.data.energy.max})}`),
+	[SMALL_EVENT_DATA_KINDS.SHOP]: makeDataHandler(SMALL_EVENT_DATA_KINDS.SHOP, data => shopPrompt(data.data.item, data.data.price)),
+	[SMALL_EVENT_DATA_KINDS.EPIC_SHOP]: makeDataHandler(SMALL_EVENT_DATA_KINDS.EPIC_SHOP, data => randomTranslation("smallEvents:epicItemShop.intro", {price: data.data.price})
+		+ (data.data.tip ? i18n.t("smallEvents:epicItemShop.reductionTip") : "")
+		+ shopEnd(data.data.item, data.data.price)),
+	[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP]: makeDataHandler(SMALL_EVENT_DATA_KINDS.RECIPE_SHOP, data => i18n.t(`smallEvents:recipeShop.offer.${data.data.source}`, {
+		recipe: i18n.t("models:cooking.recipeDisplay", data.data.recipe),
+		price: data.data.recipeCost
+	})),
+	[SMALL_EVENT_DATA_KINDS.WITCH]: makeDataHandler(SMALL_EVENT_DATA_KINDS.WITCH, data => promptIntro(data)
+		+ randomTranslation("smallEvents:witch.intro") + randomTranslation("smallEvents:witch.description") + randomTranslation("smallEvents:witch.situation")),
 	[ITEM_DATA_KINDS.CHOICE]: makeDataHandler(ITEM_DATA_KINDS.CHOICE, data => i18n.t("app:collector.descriptions.itemChoice", {
 		item: itemDisplayName(data.data.item)
 	})),
@@ -575,6 +579,38 @@ export function collectorTitle(data: ReactionCollectorData): string {
 
 export function collectorDescription(data: ReactionCollectorData): string | undefined {
 	return COLLECTOR_DESCRIPTION_HANDLERS[data.type](data);
+}
+
+/** The emoji heading each event's journal entry on Discord; the recipe seller lends the one of their own small event. */
+const EVENT_ICON_PATHS: Partial<Record<ReactionCollectorData["type"], (data: ReactionCollectorData) => string>> = {
+	[BIG_EVENT_DATA_KINDS.COLLECTOR]: () => "commands.report",
+	[SMALL_EVENT_DATA_KINDS.ALTAR]: () => "smallEvents.altar",
+	[SMALL_EVENT_DATA_KINDS.BAD_PET]: () => "smallEvents.badPet",
+	[SMALL_EVENT_DATA_KINDS.CART]: () => "smallEvents.cart",
+	[SMALL_EVENT_DATA_KINDS.FIGHT_PET]: () => "smallEvents.fightPet",
+	[SMALL_EVENT_DATA_KINDS.GARDENER]: () => "smallEvents.gardener",
+	[SMALL_EVENT_DATA_KINDS.GOBLETS_GAME]: () => "smallEvents.gobletsGame",
+	[SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS]: () => "smallEvents.interactOtherPlayers",
+	[SMALL_EVENT_DATA_KINDS.LIMOGES]: () => "smallEvents.limoges",
+	[SMALL_EVENT_DATA_KINDS.LOTTERY]: () => "smallEvents.lottery",
+	[SMALL_EVENT_DATA_KINDS.PET_FOOD]: () => "smallEvents.petFood",
+	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: () => "smallEvents.goToPVEIsland",
+	[SMALL_EVENT_DATA_KINDS.SHOP]: () => "smallEvents.shop",
+	[SMALL_EVENT_DATA_KINDS.EPIC_SHOP]: () => "smallEvents.epicItemShop",
+	[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP]: data => data.type === SMALL_EVENT_DATA_KINDS.RECIPE_SHOP && data.data.source === "gaspardJo"
+		? "smallEvents.ultimateFoodMerchant"
+		: "smallEvents.farmer",
+	[SMALL_EVENT_DATA_KINDS.WITCH]: () => "smallEvents.witch"
+};
+
+/** Whether the collector is an event of the journey, told as a journal entry rather than a menu. */
+export function isEventPrompt(data: ReactionCollectorData): boolean {
+	return EVENT_ICON_PATHS[data.type] !== undefined;
+}
+
+export function eventPromptIcon(data: ReactionCollectorData): string | undefined {
+	const path = EVENT_ICON_PATHS[data.type]?.(data);
+	return path ? AppIcons.getIconOrNull(path) ?? undefined : undefined;
 }
 
 export function reactionLabel(reaction: ReactionCollectorReaction, data: ReactionCollectorData): string {

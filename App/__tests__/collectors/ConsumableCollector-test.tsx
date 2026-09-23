@@ -30,7 +30,7 @@ describe("daily bonus and potion outcomes", () => {
 		try {
 			jest.setSystemTime(1_900_000_000_000);
 			await render(<InventoryOutcome outcome={{kind: "cooldown", packet: {cooldownHours: 2, lastDailyTimestamp: Date.now() - 3_600_000}}} onContinue={jest.fn()} />);
-			expect(screen.getByText(/hoursMinutes.*hours.*1.*minutes.*0/)).toBeTruthy();
+			expect(screen.getByText(/duration.hours .*count.*1/)).toBeTruthy();
 		}
 		finally {
 			jest.useRealTimers();

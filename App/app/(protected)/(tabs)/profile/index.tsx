@@ -13,11 +13,10 @@ import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {formatNumber} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
+import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
-const MINUTES_PER_HOUR = 60;
-const NO_MINUTES = 0;
 const PET_RARITY_MIN = 0;
 const PET_RARITY_MAX = 8;
 const CAMPAIGN_COMPLETE = 100;
@@ -53,15 +52,7 @@ function percentageValue(value: number): string {
 }
 
 function duration(milliseconds: number): string {
-	const totalMinutes = Math.max(Math.ceil(milliseconds / MILLISECONDS_PER_MINUTE), NO_MINUTES);
-	const hours = Math.floor(totalMinutes / MINUTES_PER_HOUR);
-	if (hours > 0) {
-		return i18n.t("app:adventure.duration.hoursMinutes", {
-			hours,
-			minutes: totalMinutes % MINUTES_PER_HOUR
-		});
-	}
-	return i18n.t("app:adventure.duration.minutes", {count: totalMinutes});
+	return formatDurationMinutes(milliseconds / MILLISECONDS_PER_MINUTE);
 }
 
 function iconLabel(path: string, label: string): string {

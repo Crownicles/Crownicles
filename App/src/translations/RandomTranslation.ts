@@ -18,3 +18,9 @@ export function randomTranslation(key: string, options: TOptions = {}): string {
 	const variant = stableStringHash(`${key}:${JSON.stringify(options)}`) % translations.length;
 	return translations[variant];
 }
+
+/** Picks any written variant, as Discord does for a message that is told only once. */
+export function anyTranslation(key: string, options: TOptions = {}): string {
+	const translations = i18n.tArray(key, options);
+	return translations.length === 0 ? i18n.t(key, options) : translations[Math.floor(Math.random() * translations.length)];
+}

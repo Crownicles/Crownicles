@@ -1,18 +1,18 @@
 import {ReactNode} from "react";
-import {StyleSheet, View} from "react-native";
-import {storySpans} from "@/src/display/Markdown";
-import {twemojiParts} from "@/src/design/TwemojiText";
+import {StyleSheet, Text} from "react-native";
+import {parse} from "@twemoji/parser";
+import {StorySpan, storySpans} from "@/src/display/Markdown";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Theme} from "@/src/design/Theme";
 
 /**
  * A piece of the game's own prose.
  *
- * Event texts are written once, for every front end: they carry Discord emphasis and game emojis.
- * Rendering them as a plain string leaves the asterisks visible and the emojis drawn by the system
- * instead of the game's own set, so both are unpacked here.
+ * Event texts are written once, for every front end: they carry Discord emphasis, line breaks and
+ * game emojis. Everything is laid out inside a single text so words, emojis and bold wrap together
+ * like a paragraph, instead of each piece becoming a block of its own.
  */
 const styles = StyleSheet.create({
-	story: {flexDirection: "row", flexWrap: "wrap", alignItems: "center"},
 	text: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.story,
@@ -23,11 +23,23 @@ const styles = StyleSheet.create({
 	emphasis: {fontStyle: "italic"}
 });
 
+function inlineSpan(span: StorySpan, key: string): ReactNode[] {
+	const style = [span.strong && styles.strong, span.emphasis && styles.emphasis];
+	const parts: ReactNode[] = [];
+	let lastIndex = 0;
+	for (const entity of parse(span.text)) {
+		const [start, end] = entity.indices;
+		if (start > lastIndex) parts.push(<Text key={`${key}-${lastIndex}`} style={style}>{span.text.slice(lastIndex, start)}</Text>);
+		parts.push(<TwemojiIcon key={`${key}-emoji-${start}`} emoji={entity.text} size={Theme.fontSize.story} verticalOffset={Theme.emoji.iosFieldOffset} />);
+		lastIndex = end;
+	}
+	if (lastIndex < span.text.length) parts.push(<Text key={`${key}-${lastIndex}`} style={style}>{span.text.slice(lastIndex)}</Text>);
+	return parts;
+}
+
 export function Story({children}: {children: string}): ReactNode {
-	return <View style={styles.story}>{storySpans(children).flatMap(span => twemojiParts({
-		text: span.text,
-		textStyle: [styles.text, span.strong && styles.strong, span.emphasis && styles.emphasis],
-		emojiSize: Theme.fontSize.story,
-		keyPrefix: `${span.id}-`
-	}))}</View>;
+	return <Text style={styles.text}>{children.split("\n").flatMap((line, lineIndex) => [
+		...lineIndex > 0 ? ["\n"] : [],
+		...storySpans(line).flatMap(span => inlineSpan(span, `${lineIndex}-${span.id}`))
+	])}</Text>;
 }

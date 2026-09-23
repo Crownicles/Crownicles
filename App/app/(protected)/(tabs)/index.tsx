@@ -61,6 +61,7 @@ import {formatMoney} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
+import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {WorldMap} from "@/src/components/WorldMap";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {RespawnAction, PrisonerRelease} from "@/src/components/Utilities";
@@ -73,7 +74,6 @@ import {ReportCity} from "@/src/components/ReportCity";
 
 const MILLISECONDS_PER_SECOND = 1_000;
 const SECONDS_PER_MINUTE = 60;
-const MINUTES_PER_HOUR = 60;
 const MILLISECONDS_PER_MINUTE = MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE;
 const FULL_PROGRESS = 1;
 const NO_PROGRESS = 0;
@@ -214,13 +214,7 @@ function getTravelMetrics(packet: ReportTravelSummaryRes, currentTime: number): 
 }
 
 function formatDuration(milliseconds: number): string {
-  const totalMinutes = Math.max(Math.ceil(milliseconds / MILLISECONDS_PER_MINUTE), NO_PROGRESS);
-  const hours = Math.floor(totalMinutes / MINUTES_PER_HOUR);
-  const minutes = totalMinutes % MINUTES_PER_HOUR;
-  const durationKey = hours > NO_PROGRESS
-    ? "app:adventure.duration.hoursMinutes"
-    : "app:adventure.duration.minutes";
-	return i18n.t(durationKey, hours > NO_PROGRESS ? {hours, minutes} : {count: totalMinutes});
+	return formatDurationMinutes(milliseconds / MILLISECONDS_PER_MINUTE);
 }
 
 function mapName(map: MapPoint): string {

@@ -31,6 +31,11 @@ export function petName(pet: Pick<OwnedPet, "typeId" | "sex"> & {nickname?: stri
 	return pet.nickname || petTypeName(pet);
 }
 
+/** The pet as game texts quote it: its emoji, then its nickname or its species. */
+export function petShortField(pet: Pick<OwnedPet, "typeId" | "sex"> & {nickname?: string}): string {
+	return i18n.t("commands:pet.shortPetField", {emote: petIcon(pet), name: petName(pet)});
+}
+
 export function petRarity(pet: OwnedPet): string {
 	return i18n.t(`items:rarities.${Math.max(RARITY_RANGE.MIN, Math.min(pet.rarity, RARITY_RANGE.MAX))}`);
 }

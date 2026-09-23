@@ -2,10 +2,10 @@ import {
 	BIG_EVENT_DATA_KINDS, BIG_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
 	REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
-	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS
+	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS, ReactionCollectorData
 } from "ws-packets/src/fromServer/collectors";
 import {
-	collectorDescription, collectorTitle, isChoosable, reactionLabel
+	collectorDescription, collectorTitle, isChoosable, isEventPrompt, reactionLabel
 } from "@/src/collectors/CollectorLabels";
 
 jest.mock("@/src/AppIcons", () => ({
@@ -66,7 +66,7 @@ describe("CollectorLabels", () => {
 		} as const;
 
 		expect(collectorTitle(altarData)).toBe("app:collector.titles.altar");
-		expect(collectorDescription(altarData)).toBe("smallEvents:altar.intro");
+		expect(collectorDescription(altarData)).toBe("smallEvents:introsmallEvents:altar.intro");
 		expect(reactionLabel(altarReaction, altarData)).toBe("app:collector.choices.altarContribute");
 	});
 
@@ -108,31 +108,27 @@ describe("CollectorLabels", () => {
 		expect(isChoosable(reaction, data)).toBe(false);
 	});
 
-	it("uses the gardener seed and condition in its narrative", () => {
+	it("tells the gardener's offer with the Discord story and seed price", () => {
 		const data = {
 			type: SMALL_EVENT_DATA_KINDS.GARDENER,
 			data: {seedId: 2, cost: 30, conditionKey: "paid", isFirstEncounter: true}
 		} as const;
 
-		expect(collectorDescription(data)).toBe("smallEvents:gardener.stories.first smallEvents:gardener.rewards.seed.paid app:collector.descriptions.gardenerSeed");
+		expect(collectorDescription(data)).toBe("smallEvents:introsmallEvents:gardener.stories.firstsmallEvents:gardener.rewards.seed.paid");
 	});
 
-	it("uses a safe ranked description for the other-player collector", () => {
+	it("names the other adventurer and their rank, as Discord does", () => {
 		const data = {
 			type: SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS,
-			data: {rank: 4}
+			data: {rank: 4, playerName: "Aventurier"}
 		} as const;
 
-		expect(collectorDescription(data)).toBe("app:collector.descriptions.interactOtherPlayersRanked");
+		expect(collectorDescription(data)).toBe("smallEvents:interactOtherPlayers.poor");
+		expect(isEventPrompt(data)).toBe(true);
 	});
 
-	it("does not invent a rank for an unranked player", () => {
-		const data = {
-			type: SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS,
-			data: {}
-		} as const;
-
-		expect(collectorDescription(data)).toBe("app:collector.descriptions.interactOtherPlayers");
+	it("tells a destination choice as a menu, not as a journal entry", () => {
+		expect(isEventPrompt({type: REPORT_COLLECTOR_DATA_KINDS.DESTINATION, data: {}} as ReactionCollectorData)).toBe(false);
 	});
 
 	it("renders the item that would be replaced", () => {
@@ -181,7 +177,7 @@ describe("CollectorLabels", () => {
 		} as const;
 
 		expect(collectorTitle(data)).toBe("app:collector.pveIsland.title");
-		expect(collectorDescription(data)).toBe("app:collector.pveIsland.description");
+		expect(collectorDescription(data)).toBe("smallEvents:introsmallEvents:goToPVEIsland.stories\n\nsmallEvents:goToPVEIsland.confirm");
 		expect(reactionLabel({type: "accept", data: {}}, data)).toContain("app:collector.pveIsland.embark");
 		expect(reactionLabel({type: "refuse", data: {}}, data)).toContain("app:collector.pveIsland.continueJourney");
 	});

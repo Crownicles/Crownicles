@@ -127,6 +127,9 @@ declare module "../ReactionCollectorProtocol" {
 		smallEventGobletsGame: Record<string, never>;
 		smallEventInteractOtherPlayers: {
 			rank?: number;
+
+			/** Resolved by RestWs: the player identifier never leaves the server. */
+			playerName?: string;
 		};
 		smallEventLimoges: {
 			questionId: string;

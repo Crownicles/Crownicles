@@ -25,6 +25,10 @@ import {
 import {SmallEventChoiceResultRes} from "../../../WsPackets/src/fromServer/smallEvents/SmallEventChoiceResultRes";
 import {getServerTranslator} from "../../src/packets/fromServer/FromServerTranslator";
 import "../../src/packets/fromServer/translators/SmallEventChoiceResultServerTranslator";
+import {PacketContext} from "../../../Lib/src/packets/CrowniclesPacket";
+import {
+	GARDENER_INTERACTIONS, PlantConstants, PlantId, SEED_CONDITION_FAILURE
+} from "../../../Lib/src/constants/PlantConstants";
 
 const INTERACTIVE_RESULT_PACKETS = [
 	SmallEventAltarContributedPacket,
@@ -50,5 +54,19 @@ const INTERACTIVE_RESULT_PACKETS = [
 describe("interactive small-event results", () => {
 	it.each(INTERACTIVE_RESULT_PACKETS)("maps $name to a structured result", packet => {
 		expect(getServerTranslator(packet.name)).toMatchObject({protoName: SmallEventChoiceResultRes.wireName});
+	});
+
+	it("quotes the level a gardener's advice asks for, and tells an answer from a first encounter", async () => {
+		const translate = getServerTranslator(SmallEventGardenerPacket.name)!.translatorFunc;
+		const advice = await translate({} as PacketContext, {
+			interactionName: GARDENER_INTERACTIONS.ADVICE, plantId: PlantId.CRYSTAL_FLOWER, materialId: 0, cost: 0, conditionKey: SEED_CONDITION_FAILURE.NEED_LEVEL
+		}) as SmallEventChoiceResultRes;
+		const firstEncounter = await translate({} as PacketContext, {
+			interactionName: GARDENER_INTERACTIONS.ADVICE, plantId: 0, materialId: 0, cost: 0, conditionKey: SEED_CONDITION_FAILURE.NEED_GARDEN, isFirstEncounter: true
+		}) as SmallEventChoiceResultRes;
+
+		expect(advice.result).toMatchObject({requiredLevel: PlantConstants.SEED_LEVEL_REQUIREMENTS[PlantId.CRYSTAL_FLOWER]});
+		expect(advice.result).not.toHaveProperty("isFirstEncounter");
+		expect(firstEncounter.result).toMatchObject({isFirstEncounter: true});
 	});
 });
