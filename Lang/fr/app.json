@@ -735,22 +735,11 @@
     "feed": {
       "food": "{{food}} · Entrepôt : {{amount}} / {{max}}",
       "storage": "Entrepôt de la guilde : {{amount}} / {{max}}",
-      "success": "Repas terminé",
       "unavailable": "Nourrissage interrompu",
-      "results": {
-        "happy": "Votre familier a apprécié son repas.",
-        "veryHappy": "Votre familier a beaucoup apprécié son repas.",
-        "veryVeryHappy": "Votre familier est comblé par son repas.",
-        "dislike": "Votre familier a mangé, mais cette nourriture n'est pas à son goût."
-      },
+      "continue": "Revenir à mon familier",
       "errors": {
-        "noPet": "Vous n'avez plus de familier à nourrir.",
-        "notHungry": "{{pet}} n'a pas encore faim.",
         "expedition": "Votre familier est actuellement en expédition.",
-        "noMoney": "Vous n'avez pas assez d'argent pour acheter cette nourriture.",
-        "emptyStorage": "Cette nourriture n'est plus disponible dans l'entrepôt de la guilde.",
-        "situationChanged": "Votre familier a changé depuis l'ouverture du menu.",
-        "cancelled": "Le repas a été annulé."
+        "emptyStorage": "Cette nourriture n'est plus disponible dans l'entrepôt de la guilde."
       }
     },
     "eyebrow": "Votre familier",

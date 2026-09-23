@@ -159,7 +159,15 @@ describe("pet care screens", () => {
 		client.setQueryData(gameKey(GAME_ENTITIES.PET), {kind: "answer", packet: Object.assign(new PetRes(), {pet: PET})});
 		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: false, error: PET_FEED_ERRORS.NO_MONEY}} onContinue={jest.fn()} /></QueryClientProvider>);
 		expect(screen.queryByTestId("pet-feast", {includeHiddenElements: true})).toBeNull();
-		expect(screen.getByText("app:pet.feed.errors.noMoney")).toBeTruthy();
+		expect(screen.getByText("commands:petFeed.noMoney")).toBeTruthy();
+	});
+
+	it("gives the meal result a way back to the game", async () => {
+		const onContinue = jest.fn();
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: true, result: PET_FEED_RESULTS.HAPPY}} onContinue={onContinue} /></QueryClientProvider>);
+		await fireEvent.press(screen.getByText("app:pet.feed.continue"));
+		expect(onContinue).toHaveBeenCalled();
 	});
 
 	it("swaps a boarder from the shelter itself, on the reaction the server attached to it", async () => {
