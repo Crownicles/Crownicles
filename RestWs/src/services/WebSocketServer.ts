@@ -9,7 +9,9 @@ import { IncomingMessage } from "http";
 import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../packets/fromClient/FromClientTranslator";
 import { InvalidClientPacketError } from "../packets/fromClient/InvalidClientPacketError";
-import { WEBSOCKET_SESSION_REPLACED_REASON } from "../../../WsPackets/src/WebSocketCloseReasons";
+import {
+	WEBSOCKET_SESSION_REPLACED_REASON, WebSocketCloseReason
+} from "../../../WsPackets/src/WebSocketCloseReasons";
 import { FromClientPacket } from "../../../WsPackets/src/fromClient/FromClientPacket";
 import {
 	Server, WebSocket
@@ -20,6 +22,9 @@ type ClientMessage = {
 	name: string;
 	data: FromClientPacket;
 };
+
+/** The Keycloak subject a socket is registered under. */
+type KeycloakId = string;
 
 /** Who a verified socket belongs to, and the rights Keycloak grants them. */
 type ConnectedPlayer = {
@@ -200,7 +205,7 @@ export class WebSocketServer {
 		});
 	}
 
-	private static replaceConnection(keycloakId: string, ws: WebSocket): void {
+	private static replaceConnection(keycloakId: KeycloakId, ws: WebSocket): void {
 		const currConnection = WebSocketServer.keycloakIdToClients.get(keycloakId);
 		if (currConnection && currConnection.readyState !== WebSocket.CLOSED) {
 			currConnection.close(1008, WEBSOCKET_SESSION_REPLACED_REASON);
@@ -208,7 +213,7 @@ export class WebSocketServer {
 		WebSocketServer.keycloakIdToClients.set(keycloakId, ws);
 	}
 
-	private static handleClose(ws: WebSocket, req: IncomingMessage, keycloakId: string): void {
+	private static handleClose(ws: WebSocket, req: IncomingMessage, keycloakId: KeycloakId): void {
 		CrowniclesLogger.info("Client disconnected", {
 			ip: req.socket.remoteAddress,
 			port: req.socket.remotePort,
@@ -301,7 +306,7 @@ export class WebSocketServer {
 	 * @param keycloakId
 	 * @param reason
 	 */
-	static closeConnection(keycloakId: string, reason: string): void {
+	static closeConnection(keycloakId: KeycloakId, reason: WebSocketCloseReason): void {
 		const client = WebSocketServer.keycloakIdToClients.get(keycloakId);
 		if (!client) {
 			return;

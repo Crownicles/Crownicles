@@ -480,14 +480,22 @@ function witchEffectApplied(outcome: SmallEventWitchResultRes): boolean {
 }
 
 /** Only the occupied effect costs time, and Discord says how much after the outcome. */
+function witchCostTime(outcome: SmallEventWitchResultRes): boolean {
+	return witchEffectApplied(outcome) && outcome.effectId === OCCUPIED_EFFECT && outcome.timeLostMinutes > 0;
+}
+
 function witchTimeOutro(outcome: SmallEventWitchResultRes): string {
-	if (!witchEffectApplied(outcome) || outcome.effectId !== OCCUPIED_EFFECT || outcome.timeLostMinutes <= 0) return "";
+	if (!witchCostTime(outcome)) return "";
 	return ` ${anyTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", {lostTime: outcome.timeLostMinutes, lostTimeDisplay: formatDurationMinutes(outcome.timeLostMinutes)})}`;
+}
+
+function witchForcedEffectUnnamed(outcome: SmallEventWitchResultRes): boolean {
+	return outcome.forceEffect && outcome.outcome !== WITCH_OUTCOMES.EFFECT && outcome.effectId !== OCCUPIED_EFFECT;
 }
 
 /** A forced effect the outcome text does not already name gets its emoji appended, as on Discord. */
 function witchForcedEmoji(outcome: SmallEventWitchResultRes): string {
-	if (!outcome.forceEffect || outcome.outcome === WITCH_OUTCOMES.EFFECT || outcome.effectId === OCCUPIED_EFFECT) return "";
+	if (!witchForcedEffectUnnamed(outcome)) return "";
 	return ` ${AppIcons.getIconOrNull(`effects.${outcome.effectId}`) ?? ""}`;
 }
 

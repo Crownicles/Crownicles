@@ -1,6 +1,6 @@
 import {DarkTheme, DefaultTheme, Stack, ThemeProvider} from "expo-router";
 import {StatusBar} from "expo-status-bar";
-import React from "react";
+import React, {ReactNode} from "react";
 import {useFonts} from "expo-font";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {AuthProvider} from "@/src/authentication/AuthContext";
@@ -25,6 +25,16 @@ const NAVIGATION_THEME = {
 	}
 };
 
+function AppProviders({children}: {children: ReactNode}): ReactNode {
+	return <GestureHandlerRootView style={{ flex: 1 }}>
+		<AuthProvider>
+			<PreferencesProvider>
+				<ThemeProvider value={NAVIGATION_THEME}>{children}</ThemeProvider>
+			</PreferencesProvider>
+		</AuthProvider>
+	</GestureHandlerRootView>;
+}
+
 export default function RootLayout() {
 	const [fontsLoaded, fontError] = useFonts(AppFontAssets);
 	useThemeFollower();
@@ -33,27 +43,21 @@ export default function RootLayout() {
 		return null;
 	}
 
-	return <GestureHandlerRootView style={{ flex: 1 }}>
-		<AuthProvider>
-		<PreferencesProvider>
-		<ThemeProvider value={NAVIGATION_THEME}>
-			<StatusBar hidden />
-			<Stack
-				screenOptions={{
-					headerShown: false,
-					contentStyle: { backgroundColor: Theme.colors.paper },
-				}}
-			>
-				<Stack.Screen name="(protected)" options={{
-					headerShown: false,
-					animation: "none"
-				}} />
-				<Stack.Screen name="login" options={{
-					animation: "none"
-				}}/>
-			</Stack>
-		</ThemeProvider>
-		</PreferencesProvider>
-	</AuthProvider>
-	</GestureHandlerRootView>;
+	return <AppProviders>
+		<StatusBar hidden />
+		<Stack
+			screenOptions={{
+				headerShown: false,
+				contentStyle: { backgroundColor: Theme.colors.paper },
+			}}
+		>
+			<Stack.Screen name="(protected)" options={{
+				headerShown: false,
+				animation: "none"
+			}} />
+			<Stack.Screen name="login" options={{
+				animation: "none"
+			}}/>
+		</Stack>
+	</AppProviders>;
 }

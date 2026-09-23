@@ -30,9 +30,11 @@ const SPARKLES = [
 /** Each sparkle brightens then fades over twice this share of the cycle, so a phase stays below 1 - 2 × span. */
 const SPARKLE_FLASH_SPAN = 0.14;
 
-const TIPS: {icon: LucideIcon; key: string}[] = [
-	{icon: Gift, key: "app:adventure.tokens.away.dailyGift"},
-	{icon: PawPrint, key: "app:adventure.tokens.away.expeditions"}
+type TipLine = {icon: LucideIcon; textKey: string};
+
+const TIPS: TipLine[] = [
+	{icon: Gift, textKey: "app:adventure.tokens.away.dailyGift"},
+	{icon: PawPrint, textKey: "app:adventure.tokens.away.expeditions"}
 ];
 
 const styles = StyleSheet.create({
@@ -128,6 +130,13 @@ function AwayEmblem(): ReactNode {
 	</View>;
 }
 
+function Tip({icon: Icon, textKey}: TipLine): ReactNode {
+	return <View style={styles.tip}>
+		<View style={styles.tipIcon}><Icon size={16} color={Theme.colors.green} /></View>
+		<Text style={styles.tipText}>{i18n.t(textKey)}</Text>
+	</View>;
+}
+
 /** The merchant has sold every token the limits allow: a light-hearted farewell rather than a refusal. */
 export function TokenMerchantAway({onContinue}: {onContinue: () => void}): ReactNode {
 	return <Screen>
@@ -139,10 +148,7 @@ export function TokenMerchantAway({onContinue}: {onContinue: () => void}): React
 		</View>
 		<View style={styles.tips}>
 			<Text style={styles.tipsTitle}>{i18n.t("app:adventure.tokens.away.meanwhile")}</Text>
-			{TIPS.map(({icon: Icon, key}) => <View key={key} style={styles.tip}>
-				<View style={styles.tipIcon}><Icon size={16} color={Theme.colors.green} /></View>
-				<Text style={styles.tipText}>{i18n.t(key)}</Text>
-			</View>)}
+			{TIPS.map(tip => <Tip key={tip.textKey} {...tip} />)}
 		</View>
 		<ActionBanner icon={Footprints} label={i18n.t("app:adventure.tokens.away.continue")} onPress={onContinue} />
 	</Screen>;

@@ -95,7 +95,7 @@ class CollectorsStore {
 	};
 
 	public readonly track = (collector: ReactionCollectorCreation): void => {
-		if (this.open.has(collector.id) || this.hidden.has(collector.id) || this.finished.has(collector.id)) {
+		if (this.isKnown(collector.id)) {
 			return;
 		}
 
@@ -108,6 +108,9 @@ class CollectorsStore {
 		}, Math.max(0, collector.endTime - Date.now()));
 		this.timers.set(collector.id, timer);
 	};
+
+	private readonly isKnown = (collectorId: CollectorId): boolean =>
+		this.open.has(collectorId) || this.hidden.has(collectorId) || this.finished.has(collectorId);
 
 	public readonly removeExpired = (now: number = Date.now()): void => {
 		for (const [collectorId, collector] of this.open) {
