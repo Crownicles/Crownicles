@@ -10,9 +10,56 @@ import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../packets/fromClient/FromClientTranslator";
 import { InvalidClientPacketError } from "../packets/fromClient/InvalidClientPacketError";
 import { WEBSOCKET_SESSION_REPLACED_REASON } from "../../../WsPackets/src/WebSocketCloseReasons";
+import { FromClientPacket } from "../../../WsPackets/src/fromClient/FromClientPacket";
 import {
 	Server, WebSocket
 } from "ws";
+
+type ClientMessage = {
+	id: string;
+	name: string;
+	data: FromClientPacket;
+};
+
+/**
+ * Parse a raw client message, or return null when it is not a packet
+ * @param message
+ */
+function parseClientMessage(message: string): ClientMessage | null {
+	let parsedMessage;
+	try {
+		parsedMessage = JSON.parse(message);
+	}
+	catch (_) {
+		// Ignore invalid JSON
+		return null;
+	}
+
+	if (!parsedMessage.name || !parsedMessage.data) {
+		CrowniclesLogger.debug("Invalid message format", { parsedMessage });
+		return null;
+	}
+	return parsedMessage;
+}
+
+/**
+ * Log why a client packet could not reach the back end
+ * @param error
+ * @param keycloakId
+ * @param packetName
+ */
+function logClientPacketFailure(error: unknown, keycloakId: string, packetName: string): void {
+	if (error instanceof InvalidClientPacketError) {
+		// Dropping the packet is enough: a client mistake must not show up as a server error
+		CrowniclesLogger.warn("Rejected client packet", {
+			keycloakId,
+			packetName,
+			reason: error.message
+		});
+		return;
+	}
+	CrowniclesLogger.errorWithObj("Error while sending MQTT message", error);
+}
 
 /**
  * Handle the message received from the client
@@ -22,18 +69,8 @@ import {
  */
 function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]): void {
 	ws.on("message", async (message: string) => {
-		// Parse the message as JSON
-		let parsedMessage;
-		try {
-			parsedMessage = JSON.parse(message);
-		}
-		catch (_) {
-			// Ignore invalid JSON
-			return;
-		}
-
-		if (!parsedMessage.name || !parsedMessage.data) {
-			CrowniclesLogger.debug("Invalid message format", { parsedMessage });
+		const parsedMessage = parseClientMessage(message);
+		if (!parsedMessage) {
 			return;
 		}
 
@@ -67,16 +104,7 @@ function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]
 			MqttManager.globalMqttClient.sendToBackEnd(context, await translator(context, parsedMessage.data));
 		}
 		catch (error) {
-			if (error instanceof InvalidClientPacketError) {
-				// Dropping the packet is enough: a client mistake must not show up as a server error
-				CrowniclesLogger.warn("Rejected client packet", {
-					keycloakId,
-					packetName: parsedMessage.name,
-					reason: error.message
-				});
-				return;
-			}
-			CrowniclesLogger.errorWithObj("Error while sending MQTT message", error);
+			logClientPacketFailure(error, keycloakId, parsedMessage.name);
 		}
 	});
 }
@@ -147,36 +175,42 @@ export class WebSocketServer {
 				} = connectionData;
 
 				// Close the previous connection if it exists and save the new one
-				const currConnection = WebSocketServer.keycloakIdToClients.get(keycloakId);
-				if (currConnection && currConnection.readyState !== WebSocket.CLOSED) {
-					currConnection.close(1008, WEBSOCKET_SESSION_REPLACED_REASON);
-				}
-				WebSocketServer.keycloakIdToClients.set(keycloakId, ws);
+				WebSocketServer.replaceConnection(keycloakId, ws);
 
 				// Handle the message received from the client
 				handleClientMessage(ws, keycloakId, groups);
 
 				// Handle the close event
-				ws.on("close", () => {
-					CrowniclesLogger.info("Client disconnected", {
-						ip: req.socket.remoteAddress,
-						port: req.socket.remotePort,
-						keycloakId
-					});
-
-					/*
-					 * A reconnect closes the previous socket after the new one has been registered. Do not
-					 * let that delayed close event remove the active connection.
-					 */
-					if (WebSocketServer.keycloakIdToClients.get(keycloakId) === ws) {
-						WebSocketServer.keycloakIdToClients.delete(keycloakId);
-					}
-				});
+				ws.on("close", () => WebSocketServer.handleClose(ws, req, keycloakId));
 			}
 			catch (error) {
 				CrowniclesLogger.errorWithObj("Error during WebSocket connection", error);
 			}
 		});
+	}
+
+	private static replaceConnection(keycloakId: string, ws: WebSocket): void {
+		const currConnection = WebSocketServer.keycloakIdToClients.get(keycloakId);
+		if (currConnection && currConnection.readyState !== WebSocket.CLOSED) {
+			currConnection.close(1008, WEBSOCKET_SESSION_REPLACED_REASON);
+		}
+		WebSocketServer.keycloakIdToClients.set(keycloakId, ws);
+	}
+
+	private static handleClose(ws: WebSocket, req: IncomingMessage, keycloakId: string): void {
+		CrowniclesLogger.info("Client disconnected", {
+			ip: req.socket.remoteAddress,
+			port: req.socket.remotePort,
+			keycloakId
+		});
+
+		/*
+		 * A reconnect closes the previous socket after the new one has been registered. Do not
+		 * let that delayed close event remove the active connection.
+		 */
+		if (WebSocketServer.keycloakIdToClients.get(keycloakId) === ws) {
+			WebSocketServer.keycloakIdToClients.delete(keycloakId);
+		}
 	}
 
 	/**

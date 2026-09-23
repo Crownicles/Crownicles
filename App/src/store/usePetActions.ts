@@ -10,7 +10,7 @@ import {commandRejectionMessage} from "@/src/display/CommandRejection";
 import {i18n} from "@/src/translations/i18n";
 
 type PetCareAction = {type: "caress"} | {type: "rename"; nickname: string};
-type PetActions = {pending: boolean; message: string | null; care: (action: PetCareAction) => Promise<boolean>};
+export type PetActions = {pending: boolean; message: string | null; care: (action: PetCareAction) => Promise<boolean>};
 function requestCare(action: PetCareAction): Promise<GameAnswer<PetCaressRes | PetNickRes>> {
 	if (action.type === "caress") return GameClient.request(makeFromClientPacket(PetCaressReq, {}), PetCaressRes, [Blocked]);
 	return GameClient.request(makeFromClientPacket(PetNickReq, {newNickname: action.nickname}), PetNickRes, [Blocked]);

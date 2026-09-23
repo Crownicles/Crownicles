@@ -629,6 +629,45 @@ function buildCityInns(city: City): ReactionCollectorCityData["inns"] {
 	}));
 }
 
+type CityGuildServices = Pick<ReactionCollectorCityData, "guildDomain" | "guildFoodShop" | "guildDomainNotary">;
+
+async function buildCityGuildServices(player: Player, city: City): Promise<CityGuildServices> {
+	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+	const inDomainCity = guild?.domainCityId === city.id;
+	return {
+		guildDomain: guild && inDomainCity
+			? await buildGuildDomainSnapshot(player, guild)
+			: undefined,
+
+		// Outside the domain city only: there, the full shop is reached through the domain entrance.
+		guildFoodShop: guild && guild.shopLevel >= 1 && !inDomainCity
+			? buildGuildFoodShopSnapshot(player, guild)
+			: undefined,
+		guildDomainNotary: buildGuildDomainNotaryData(player, guild, city)
+	};
+}
+
+function buildCityAvailableServices(
+	city: City,
+	craftServices: CityCraftServices,
+	enchanter: ReactionCollectorCityData["enchanter"]
+): ReactionCollectorCityData["availableServices"] {
+	return getAvailableCityServices({
+		[CITY_SERVICES.BLACKSMITH]: craftServices.blacksmith !== undefined,
+		[CITY_SERVICES.SCRAP_DEALER]: craftServices.scrapDealer !== undefined,
+		[CITY_SERVICES.ROYAL_BLACKSMITH]: craftServices.royalBlacksmith !== undefined,
+		[CITY_SERVICES.ENCHANTER]: enchanter !== undefined,
+		[CITY_SERVICES.BOSS_ARCHIVIST]: city.hasService(CITY_SERVICES.BOSS_ARCHIVIST)
+	});
+}
+
+function buildCityShops(player: Player, city: City): Promise<ReactionCollectorCityData["shops"]> {
+	return Promise.all((city.shops || []).map(async shopId => ({
+		shopId,
+		isEmpty: await isCityShopEmpty(player, shopId)
+	})));
+}
+
 export async function buildCitySnapshot(
 	player: Player,
 	city: City
@@ -647,37 +686,18 @@ export async function buildCitySnapshot(
 		player, inventory: playerInventory, materialMap: playerMaterialMap
 	}, city);
 
-	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
-	const guildDomain = guild?.domainCityId === city.id
-		? await buildGuildDomainSnapshot(player, guild)
-		: undefined;
-
 	/*
 	 * Apartment notary: present in every city. Lets the player buy an apartment
 	 * here (if none yet) and/or claim rent from apartments owned in other cities.
 	 */
 	const apartmentNotary = await buildApartmentNotaryData(player, city, home, new Date());
 
-	// Guild food shop: available when the guild has a shop but is NOT in the domain city (where the full shop is available via the domain entrance).
-	const guildFoodShop = guild && guild.shopLevel >= 1 && guild.domainCityId !== city.id
-		? buildGuildFoodShopSnapshot(player, guild)
-		: undefined;
-
 	return {
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
 		mapLocationId: player.getDestinationId()!,
-		availableServices: getAvailableCityServices({
-			[CITY_SERVICES.BLACKSMITH]: craftServices.blacksmith !== undefined,
-			[CITY_SERVICES.SCRAP_DEALER]: craftServices.scrapDealer !== undefined,
-			[CITY_SERVICES.ROYAL_BLACKSMITH]: craftServices.royalBlacksmith !== undefined,
-			[CITY_SERVICES.ENCHANTER]: enchanter !== undefined,
-			[CITY_SERVICES.BOSS_ARCHIVIST]: city.hasService(CITY_SERVICES.BOSS_ARCHIVIST)
-		}),
+		availableServices: buildCityAvailableServices(city, craftServices, enchanter),
 		inns: buildCityInns(city),
-		shops: await Promise.all((city.shops || []).map(async shopId => ({
-			shopId,
-			isEmpty: await isCityShopEmpty(player, shopId)
-		}))),
+		shops: await buildCityShops(player, city),
 		energy: {
 			current: player.getCumulativeEnergy(playerActiveObjects),
 			max: player.getMaxCumulativeEnergy(playerActiveObjects)
@@ -697,9 +717,7 @@ export async function buildCitySnapshot(
 			city
 		),
 		...craftServices,
-		guildDomain,
-		guildFoodShop,
-		guildDomainNotary: buildGuildDomainNotaryData(player, guild, city),
+		...await buildCityGuildServices(player, city),
 		apartmentNotary
 	};
 }

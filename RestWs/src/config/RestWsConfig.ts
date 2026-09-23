@@ -85,6 +85,27 @@ type ConfigStructure = {
 	};
 };
 
+const DEFAULT_SMTP_PORT = 587;
+
+/**
+ * The account deletion section is optional: a missing value leaves the matching warning channel off
+ */
+function loadAccountDeletionConfig(section: ConfigStructure["accountDeletion"] = {}): AccountDeletionConfig {
+	const smtp = section.smtp ?? {};
+	return {
+		SECRET: section.secret ?? "",
+		WEBHOOK_URL: section.webhookUrl ?? "",
+		SMTP: {
+			HOST: smtp.host ?? "",
+			PORT: smtp.port ?? DEFAULT_SMTP_PORT,
+			USERNAME: smtp.username ?? "",
+			PASSWORD: smtp.password ?? "",
+			FROM: smtp.from ?? "",
+			TO: smtp.to ?? ""
+		}
+	};
+}
+
 /**
  * Loads the config from the config file
  */
@@ -107,18 +128,7 @@ export function loadConfig(): RestWsConfig {
 		WEB_SOCKET_PORT: config.webSocket.port,
 		PREFIX: createMqttPrefix(config.global.prefix),
 		DEBUG: config.global.debug,
-		ACCOUNT_DELETION: {
-			SECRET: config.accountDeletion?.secret ?? "",
-			WEBHOOK_URL: config.accountDeletion?.webhookUrl ?? "",
-			SMTP: {
-				HOST: config.accountDeletion?.smtp?.host ?? "",
-				PORT: config.accountDeletion?.smtp?.port ?? 587,
-				USERNAME: config.accountDeletion?.smtp?.username ?? "",
-				PASSWORD: config.accountDeletion?.smtp?.password ?? "",
-				FROM: config.accountDeletion?.smtp?.from ?? "",
-				TO: config.accountDeletion?.smtp?.to ?? ""
-			}
-		}
+		ACCOUNT_DELETION: loadAccountDeletionConfig(config.accountDeletion)
 	};
 }
 

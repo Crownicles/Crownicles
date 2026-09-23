@@ -1,4 +1,4 @@
-import {ReactNode, useState} from "react";
+import {ReactNode} from "react";
 import {Text, View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTION_KINDS, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
@@ -7,6 +7,7 @@ import {ShelterChoices} from "ws-packets/src/objects/PetManagement";
 import {Button, ButtonRow, EmptyState, Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {ExpandableEntry, ExpandableList, sectionStyles, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
 import {petIcon, petMood, petName, petRarity} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
@@ -55,7 +56,7 @@ export function PetTransferScreen({collector, locked, onChoose, onClose}: {
 	onChoose: (index: number) => void;
 	onClose: () => void;
 }): ReactNode {
-	const [expanded, setExpanded] = useState<number | undefined>(undefined);
+	const {isExpanded, toggle} = useExpandedEntry<number>();
 	if (collector.data.type !== PET_MANAGEMENT_DATA_KINDS.TRANSFER) return null;
 	const shelter = collector.data.data;
 	const choices = transferChoices(collector, shelter);
@@ -74,9 +75,9 @@ export function PetTransferScreen({collector, locked, onChoose, onClose}: {
 		{choices.length ? <ExpandableList>{choices.map(choice => <ChoiceEntry
 			key={choice.index}
 			choice={choice}
-			expanded={choice.index === expanded}
+			expanded={isExpanded(choice.index)}
 			locked={locked}
-			onToggle={(index): void => setExpanded(previous => previous === index ? undefined : index)}
+			onToggle={toggle}
 			onConfirm={onChoose}
 		/>)}</ExpandableList> : <View><EmptyState>{i18n.t("app:pet.management.emptyShelter")}</EmptyState></View>}
 		<Note>{i18n.t("app:pet.management.transferHint")}</Note>

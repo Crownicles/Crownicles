@@ -6,6 +6,7 @@ import {SellRes} from "ws-packets/src/fromServer/inventory/SellRes";
 import {Button, ButtonRow, Note} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, ExpandableList, Figures, sectionStyles, Sheet} from "@/src/design/Sections";
 import {Check, X} from "@/src/design/FightIcons";
+import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {itemCategoryLabel, itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
@@ -63,16 +64,17 @@ function SaleEntry({choice, locked, expanded, onToggle, onChoose}: {
 export function SellCollector({collector, onChoose, submitting}: {
 	collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean;
 }): ReactNode {
-	const [openIndex, setOpenIndex] = useState<number>();
+	const {isExpanded, toggle, collapse} = useExpandedEntry<number>();
 	const [answered, setAnswered] = useState(false);
 	const sent = useRef(false);
 	const locked = submitting || answered;
 	const refuseIndex = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE);
+	const canAnswer = (index: number): boolean => index >= 0 && !sent.current && !locked;
 	const choose = (index: number): void => {
-		if (index < 0 || sent.current || locked) return;
+		if (!canAnswer(index)) return;
 		sent.current = true;
 		setAnswered(true);
-		setOpenIndex(undefined);
+		collapse();
 		onChoose(index);
 	};
 	const close = (): void => choose(refuseIndex);
@@ -88,8 +90,8 @@ export function SellCollector({collector, onChoose, submitting}: {
 				key={choice.index}
 				choice={choice}
 				locked={locked}
-				expanded={openIndex === choice.index}
-				onToggle={(): void => setOpenIndex(openIndex === choice.index ? undefined : choice.index)}
+				expanded={isExpanded(choice.index)}
+				onToggle={(): void => toggle(choice.index)}
 				onChoose={choose}
 			/>)}
 		</ExpandableList>

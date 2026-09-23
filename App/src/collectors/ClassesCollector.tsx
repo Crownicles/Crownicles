@@ -1,4 +1,4 @@
-import {ReactNode, useState} from "react";
+import {ReactNode} from "react";
 import {Modal} from "react-native";
 import {AvailableClass} from "ws-packets/src/objects/ClassDetails";
 import {CLASSES_DATA_KINDS, CLASSES_REACTION_KINDS, GENERIC_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
@@ -6,6 +6,7 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {Note, Screen} from "@/src/design/Primitives";
 import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, ModalSurface, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
+import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {ClassStatistics} from "@/src/components/ClassStatistics";
 import {className} from "@/src/display/Classes";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
@@ -50,10 +51,10 @@ function ClassEntry({choice, locked, expanded, onToggle, onConfirm}: {
 }
 
 export function ClassesCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
-	const [openIndex, setOpenIndex] = useState<number>();
+	const {isExpanded, toggle, collapse} = useExpandedEntry<number>();
 	const {locked, secondsLeft, answer} = useCollectorAnswer(collector, onChoose, submitting);
 	const choose = (index: number): void => {
-		setOpenIndex(undefined);
+		collapse();
 		answer(index);
 	};
 	if (collector.data.type !== CLASSES_DATA_KINDS.COLLECTOR) return null;
@@ -73,8 +74,8 @@ export function ClassesCollector({collector, onChoose, submitting}: {collector: 
 						key={choice.index}
 						choice={choice}
 						locked={locked}
-						expanded={openIndex === choice.index}
-						onToggle={(): void => setOpenIndex(openIndex === choice.index ? undefined : choice.index)}
+						expanded={isExpanded(choice.index)}
+						onToggle={(): void => toggle(choice.index)}
 						onConfirm={(): void => choose(choice.index)}
 					/>)}
 				</ExpandableList>

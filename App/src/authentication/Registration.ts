@@ -39,19 +39,21 @@ export type AccountDraft = {
 
 /** Why the draft cannot be sent yet, so the screen can say it before the button is pressed. */
 export function draftRejection(draft: AccountDraft): RegistrationFailureReason | null {
-	if (draft.username.trim().length === 0 || draft.email.trim().length === 0 || draft.password.length === 0) {
+	const username = draft.username.trim();
+	const email = draft.email.trim();
+	if ([username, email, draft.password].some(field => field.length === 0)) {
 		return REGISTRATION_FAILURES.INVALID;
 	}
 
-	if (RESERVED_USERNAME_PREFIXES.some(prefix => draft.username.trim().toLowerCase().startsWith(prefix))) {
+	if (RESERVED_USERNAME_PREFIXES.some(prefix => username.toLowerCase().startsWith(prefix))) {
 		return REGISTRATION_FAILURES.TAKEN;
 	}
 
-	if (!EMAIL_PATTERN.test(draft.email.trim()) || draft.password.length < MINIMUM_PASSWORD_LENGTH) {
+	if (!EMAIL_PATTERN.test(email)) {
 		return REGISTRATION_FAILURES.INVALID;
 	}
 
-	return null;
+	return draft.password.length < MINIMUM_PASSWORD_LENGTH ? REGISTRATION_FAILURES.INVALID : null;
 }
 
 function reasonOfStatus(status: number): RegistrationFailureReason {

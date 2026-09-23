@@ -72,6 +72,19 @@ function setupDeletionRequestRoute(server: FastifyInstance, config: AccountDelet
 }
 
 /**
+ * Without a configured secret no code can be valid, so deletion stays closed.
+ * @param keycloakId
+ * @param code
+ * @param secret
+ */
+function isValidDeletionCode(keycloakId: string, code: string | undefined, secret: string): boolean {
+	if (!secret || !code) {
+		return false;
+	}
+	return verifyDeletionCode(keycloakId, code, secret);
+}
+
+/**
  * Deletes the account once the player gives back the code they received.
  * @param server
  * @param config
@@ -84,7 +97,7 @@ function setupDeletionRoute(server: FastifyInstance, config: AccountDeletionConf
 		}
 
 		const { code } = (request.body ?? {}) as { code?: string };
-		if (!config.SECRET || !code || !verifyDeletionCode(keycloakId, code, config.SECRET)) {
+		if (!isValidDeletionCode(keycloakId, code, config.SECRET)) {
 			reply.status(403).send({ error: "Invalid deletion code" });
 			return;
 		}

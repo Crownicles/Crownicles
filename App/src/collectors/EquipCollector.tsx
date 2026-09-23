@@ -10,13 +10,14 @@ import {EquipActionReq} from "ws-packets/src/fromClient/EquipActionReq";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {useEquipmentActions} from "@/src/store/useEquipmentActions";
 import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
-import {SegmentedControl} from "@/src/design/SegmentedControl";
+import {Segment, SegmentedControl} from "@/src/design/SegmentedControl";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {
 	ActionBanner, ExpandableEntry, ExpandableList, Fact, Figure, Figures, sectionStyles, Sheet
 } from "@/src/design/Sections";
 import {ArrowRight, Check} from "@/src/design/FightIcons";
+import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
 import {itemDisplayName, itemIconPath, itemCategoryLabel} from "@/src/collectors/CollectorLabels";
 import {consumableDescription} from "@/src/display/ItemEffects";
@@ -153,21 +154,20 @@ function EquippedSection({category, locked, expanded, onToggle, onConfirm}: {
 	</>;
 }
 
-function CategoryContent({category, locked, openKey, onOpen, onConfirm}: {
+function CategoryContent({category, locked, unfolding, onConfirm}: {
 	category: EquipCategoryData;
 	locked: boolean;
-	openKey: string | undefined;
-	onOpen: (key: string | undefined) => void;
+	unfolding: ExpandedEntry<string>;
 	onConfirm: (selection: EquipmentSelection) => void;
 }): ReactNode {
 	const key = (suffix: string): string => `${category.category}-${suffix}`;
-	const toggle = (suffix: string) => (): void => onOpen(openKey === key(suffix) ? undefined : key(suffix));
+	const toggle = (suffix: string) => (): void => unfolding.toggle(key(suffix));
 	return <>
 		<SectionHeader first>{i18n.t("app:equipment.worn")}</SectionHeader>
 		<EquippedSection
 			category={category}
 			locked={locked}
-			expanded={openKey === key("equipped")}
+			expanded={unfolding.isExpanded(key("equipped"))}
 			onToggle={toggle("equipped")}
 			onConfirm={onConfirm}
 		/>
@@ -182,7 +182,7 @@ function CategoryContent({category, locked, openKey, onOpen, onConfirm}: {
 					slot={entry.slot}
 					equipped={category.equippedItem?.details ?? null}
 					locked={locked}
-					expanded={openKey === key(String(entry.slot))}
+					expanded={unfolding.isExpanded(key(String(entry.slot)))}
 					category={category.category}
 					onToggle={toggle(String(entry.slot))}
 					onConfirm={onConfirm}
@@ -190,6 +190,17 @@ function CategoryContent({category, locked, openKey, onOpen, onConfirm}: {
 				: <EmptyState>{i18n.t("app:equipment.emptyReserve")}</EmptyState>}
 		</ExpandableList>
 	</>;
+}
+
+function categoryOptions(categories: EquipCategoryData[]): Segment<string>[] {
+	return categories.map(entry => {
+		const icon = AppIcons.getIconOrNull(`itemCategories.${entry.category}`);
+		return {
+			value: String(entry.category),
+			label: itemCategoryLabel(entry.category),
+			...icon === null ? {} : {icon}
+		};
+	});
 }
 
 /**
@@ -203,7 +214,7 @@ export function EquipCollector({collector, onChoose, submitting}: {
 }): ReactNode {
 	const {categories, pending, error, submit} = useEquipmentActions(collector.data.data.categories);
 	const [selected, setSelected] = useState<string>();
-	const [openKey, setOpenKey] = useState<string>();
+	const unfolding = useExpandedEntry<string>();
 	const locked = pending || submitting;
 	const category = categories.find(entry => String(entry.category) === selected) ?? categories[0];
 	const closeIndex = collector.reactions.findIndex(reaction => reaction.type === EQUIP_REACTION_KINDS.CLOSE);
@@ -212,7 +223,7 @@ export function EquipCollector({collector, onChoose, submitting}: {
 	};
 	const confirm = (selection: EquipmentSelection): void => {
 		if (locked) return;
-		setOpenKey(undefined);
+		unfolding.collapse();
 		submit(selection.request).catch(console.error);
 	};
 	return <Sheet
@@ -227,21 +238,14 @@ export function EquipCollector({collector, onChoose, submitting}: {
 			value={String(category?.category)}
 			onChange={(value): void => {
 				setSelected(value);
-				setOpenKey(undefined);
+				unfolding.collapse();
 			}}
-			options={categories.map(entry => ({
-				value: String(entry.category),
-				label: itemCategoryLabel(entry.category),
-				...AppIcons.getIconOrNull(`itemCategories.${entry.category}`) === null
-					? {}
-					: {icon: AppIcons.getIcon(`itemCategories.${entry.category}`)}
-			}))}
+			options={categoryOptions(categories)}
 		/>
 		{category ? <CategoryContent
 			category={category}
 			locked={locked}
-			openKey={openKey}
-			onOpen={setOpenKey}
+			unfolding={unfolding}
 			onConfirm={confirm}
 		/> : null}
 	</Sheet>;

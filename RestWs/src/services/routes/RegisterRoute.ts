@@ -73,6 +73,20 @@ async function verifyUserDoesNotExist(username: string, reply: FastifyReply): Pr
 	return true;
 }
 
+type RegisterCredentials = {
+	username: string;
+	password: string;
+	email: string;
+};
+
+function hasAllCredentials(credentials: Partial<RegisterCredentials>): credentials is RegisterCredentials {
+	return [
+		credentials.username,
+		credentials.password,
+		credentials.email
+	].every(value => Boolean(value));
+}
+
 async function checkProvidedInformation(
 	credentials: {
 		username: string | undefined;
@@ -82,15 +96,14 @@ async function checkProvidedInformation(
 	language: string | undefined,
 	reply: FastifyReply
 ): Promise<boolean> {
-	const {
-		username, password, email
-	} = credentials;
-
 	// Check if the user data is provided
-	if (!username || !password || !email) {
+	if (!hasAllCredentials(credentials)) {
 		reply.status(400).send({ error: "Username, password and email are required" });
 		return false;
 	}
+	const {
+		username, email
+	} = credentials;
 
 	// Check if the username is valid
 	if (!verifyUsername(username, reply)) {

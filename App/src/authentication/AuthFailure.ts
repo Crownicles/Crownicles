@@ -12,6 +12,10 @@ export const AUTH_FAILURES = {
 
 export type AuthFailureReason = typeof AUTH_FAILURES[keyof typeof AUTH_FAILURES];
 
+/** The OAuth errors that mean the player, not the network, said no. */
+const DENIED_ERROR_CODES: ReadonlySet<string> = new Set(["access_denied", "consent_required", "login_required"]);
+const CANCELLED_RESULT_TYPES: ReadonlySet<AuthSessionResult["type"]> = new Set(["dismiss", "cancel"]);
+
 export class AuthFailure extends Error {
 	public readonly reason: AuthFailureReason;
 
@@ -24,7 +28,7 @@ export class AuthFailure extends Error {
 
 /** The one place that turns an unsuccessful authorization round-trip into something sayable. */
 export function failureOfAuthResult(result: AuthSessionResult): AuthFailure {
-	if (result.type === "dismiss" || result.type === "cancel") {
+	if (CANCELLED_RESULT_TYPES.has(result.type)) {
 		return new AuthFailure(AUTH_FAILURES.CANCELLED, result.type);
 	}
 
@@ -35,7 +39,7 @@ export function failureOfAuthResult(result: AuthSessionResult): AuthFailure {
 	const code = result.params.error ?? result.errorCode ?? "";
 	const detail = result.error?.message ?? result.params.error_description ?? code ?? result.type;
 
-	if (code === "access_denied" || code === "consent_required" || code === "login_required") {
+	if (DENIED_ERROR_CODES.has(code)) {
 		return new AuthFailure(AUTH_FAILURES.DENIED, detail);
 	}
 

@@ -90,8 +90,28 @@ function purchaseReport(outcome: Extract<ShopOutcome, {kind: "purchase"}>): stri
 	return text;
 }
 
+type ReportedOutcome = Exclude<ShopOutcome, {kind: "marketAnalysis"}>;
+
+/** The answers that are a sentence and nothing more. */
+const FIXED_REPORTS = {
+	slotBought: "commands:shop.buyCategorySlotSuccess",
+	tooManyDailyPotions: "commands:shop.boughtTooMuchDailyPotions",
+	noPlantSlot: "commands:shop.noPlantSlotAvailable",
+	noGardenForTalisman: "commands:shop.noGardenForRemoteHarvestTalisman",
+	alreadyHasBadge: "commands:shop.alreadyHaveBadge",
+	alreadyBoughtPointsThisWeek: "commands:missionsshop.alreadyBoughtPointsThisWeek",
+	noMissionToSkip: "commands:missionsshop.noMissionToSkip"
+} as const satisfies Partial<Record<ReportedOutcome["kind"], string>>;
+
+function isFixedReport(outcome: ReportedOutcome): outcome is Extract<ReportedOutcome, {kind: keyof typeof FIXED_REPORTS}> {
+	return outcome.kind in FIXED_REPORTS;
+}
+
 /** Tells, word for word like Discord does, what the commerce just answered. The market report has its own screen. */
-export function shopOutcomeReport(outcome: Exclude<ShopOutcome, {kind: "marketAnalysis"}>, now: number): string {
+export function shopOutcomeReport(outcome: ReportedOutcome, now: number): string {
+	if (isFixedReport(outcome)) {
+		return i18n.t(FIXED_REPORTS[outcome.kind]);
+	}
 	switch (outcome.kind) {
 		case "purchase":
 			return purchaseReport(outcome);
@@ -108,20 +128,6 @@ export function shopOutcomeReport(outcome: Exclude<ShopOutcome, {kind: "marketAn
 				i18n.t("commands:shop.shopItems.skipMission.getNewMission", {mission: missionDescription(outcome.newMission, now)})}`;
 		case "badge":
 			return i18n.t("commands:shop.badgeBought", {badgeName: outcome.badgeId});
-		case "slotBought":
-			return i18n.t("commands:shop.buyCategorySlotSuccess");
-		case "tooManyDailyPotions":
-			return i18n.t("commands:shop.boughtTooMuchDailyPotions");
-		case "noPlantSlot":
-			return i18n.t("commands:shop.noPlantSlotAvailable");
-		case "noGardenForTalisman":
-			return i18n.t("commands:shop.noGardenForRemoteHarvestTalisman");
-		case "alreadyHasBadge":
-			return i18n.t("commands:shop.alreadyHaveBadge");
-		case "alreadyBoughtPointsThisWeek":
-			return i18n.t("commands:missionsshop.alreadyBoughtPointsThisWeek");
-		case "noMissionToSkip":
-			return i18n.t("commands:missionsshop.noMissionToSkip");
 		default:
 			return "";
 	}

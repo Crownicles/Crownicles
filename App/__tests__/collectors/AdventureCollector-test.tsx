@@ -157,7 +157,7 @@ function cityCollector(): ReactionCollectorCreation {
 	};
 }
 
-function cityHomePurchase(price = 950): ReactionCollectorCreation {
+function cityHomePurchase(price = 950, canBuy = true): ReactionCollectorCreation {
 	const collector = cityCollector();
 	if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected a city collector fixture");
 	const cityData = collector.data.data;
@@ -165,26 +165,27 @@ function cityHomePurchase(price = 950): ReactionCollectorCreation {
 		type: CITY_DATA_KINDS.CITY,
 		data: {
 			...cityData,
-			snapshot: {...cityData.snapshot, home: {manage: {newPrice: price, currentMoney: 2_000, canBuy: true}}}
+			snapshot: {...cityData.snapshot, home: {manage: {newPrice: price, currentMoney: 2_000, canBuy}}}
 		}
 	};
 	collector.reactions.splice(1, 0, {type: CITY_REACTION_KINDS.BUY_HOME, data: {}});
 	return collector;
 }
 
-function unaffordableHomePurchase(): ReactionCollectorCreation {
-	const collector = cityHomePurchase(5_000);
-	if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected a city collector fixture");
-	const cityData = collector.data.data;
-	collector.data = {
-		type: CITY_DATA_KINDS.CITY,
-		data: {
-			...cityData,
-			snapshot: {...cityData.snapshot, home: {manage: {newPrice: 5_000, currentMoney: 2_000, canBuy: false}}}
-		}
+/** A shop selling one item, closed by the reaction right after it. */
+function shopCollector(id: string, data: {availableCurrency: number; shopId?: string}, item: {shopItemId: number; shopCategoryId: string}): ReactionCollectorCreation {
+	return {
+		id,
+		endTime: Date.now() + 60_000,
+		data: {type: SHOP_DATA_KINDS.COLLECTOR, data: {currency: "gem", ...data}},
+		reactions: [
+			{type: SHOP_REACTION_KINDS.ITEM, data: {...item, amount: 1, price: 3}},
+			{type: SHOP_REACTION_KINDS.CLOSE, data: {}}
+		]
 	};
-	return collector;
 }
+
+const VETERINARIAN_TREATMENT = {shopItemId: 14, shopCategoryId: "services"};
 
 function merchantCollector(): ReactionCollectorCreation {
 	return {
@@ -489,7 +490,7 @@ describe("AdventureCollector", () => {
 
 	it("says on the row why an unaffordable home cannot be bought", async () => {
 		const onChoose = jest.fn();
-		const collector = unaffordableHomePurchase();
+		const collector = cityHomePurchase(5_000, false);
 		await render(<CityMenu collector={collector} onChoose={onChoose} submitting={false} />);
 
 		await fireEvent.press(screen.getByText("app:city.actions.notary"));
@@ -500,21 +501,7 @@ describe("AdventureCollector", () => {
 	});
 
 	it("titles a commerce after itself and says what the purchase does", async () => {
-		const collector: ReactionCollectorCreation = {
-			id: "veterinarian",
-			endTime: Date.now() + 60_000,
-			data: {
-				type: SHOP_DATA_KINDS.COLLECTOR,
-				data: {currency: "gem", availableCurrency: 51, shopId: "veterinarian"}
-			},
-			reactions: [
-				{
-					type: SHOP_REACTION_KINDS.ITEM,
-					data: {shopItemId: 14, shopCategoryId: "services", amount: 1, price: 3}
-				},
-				{type: SHOP_REACTION_KINDS.CLOSE, data: {}}
-			]
-		};
+		const collector = shopCollector("veterinarian", {availableCurrency: 51, shopId: "veterinarian"}, VETERINARIAN_TREATMENT);
 		await render(<AdventureCollector collector={collector} onChoose={jest.fn()} submitting={false} />);
 
 		expect(screen.getByText("commands:report.city.shops.veterinarian.label")).toBeTruthy();
@@ -525,18 +512,7 @@ describe("AdventureCollector", () => {
 
 	it("leaves a commerce through the back chevron", async () => {
 		const onChoose = jest.fn();
-		const collector: ReactionCollectorCreation = {
-			id: "leaving-shop",
-			endTime: Date.now() + 60_000,
-			data: {
-				type: SHOP_DATA_KINDS.COLLECTOR,
-				data: {currency: "gem", availableCurrency: 51, shopId: "veterinarian"}
-			},
-			reactions: [
-				{type: SHOP_REACTION_KINDS.ITEM, data: {shopItemId: 14, shopCategoryId: "services", amount: 1, price: 3}},
-				{type: SHOP_REACTION_KINDS.CLOSE, data: {}}
-			]
-		};
+		const collector = shopCollector("leaving-shop", {availableCurrency: 51, shopId: "veterinarian"}, VETERINARIAN_TREATMENT);
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
 		await fireEvent.press(screen.getByLabelText("app:city.shop.close"));
@@ -545,21 +521,7 @@ describe("AdventureCollector", () => {
 
 	it("does not submit a shop item which costs more than the available currency", async () => {
 		const onChoose = jest.fn();
-		const collector: ReactionCollectorCreation = {
-			id: "unaffordable-shop",
-			endTime: Date.now() + 60_000,
-			data: {
-				type: SHOP_DATA_KINDS.COLLECTOR,
-				data: {currency: "gem", availableCurrency: 2}
-			},
-			reactions: [
-				{
-					type: SHOP_REACTION_KINDS.ITEM,
-					data: {shopItemId: 4, shopCategoryId: "slots", amount: 1, price: 3}
-				},
-				{type: SHOP_REACTION_KINDS.CLOSE, data: {}}
-			]
-		};
+		const collector = shopCollector("unaffordable-shop", {availableCurrency: 2}, {shopItemId: 4, shopCategoryId: "slots"});
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
 		await fireEvent.press(screen.getByText("app:city.shop.buy"));

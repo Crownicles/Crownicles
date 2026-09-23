@@ -8,9 +8,9 @@ import {PetExpeditionReq} from "ws-packets/src/fromClient/PetExpeditionReq";
 import {PetExpeditionErrorRes, PetExpeditionRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
-import {usePetActions} from "@/src/store/usePetActions";
-import {usePetPatience} from "@/src/store/usePetPatience";
-import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
+import {PetActions, usePetActions} from "@/src/store/usePetActions";
+import {PetPatience, usePetPatience} from "@/src/store/usePetPatience";
+import {CommandMenu, CommandMenuState, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {FightGauge} from "@/src/components/FightGauge";
 import {PetCaress} from "@/src/components/PetReaction";
 import {PET_MANAGEMENT_MENUS} from "@/src/components/PetManagement";
@@ -44,53 +44,79 @@ function PetStanding({pet, strokes, hadEnough}: {pet: OwnedPet; strokes: number;
 	</Standing>;
 }
 
+function feedLock(packet: PetRes): Lock | undefined {
+	return packet.feedAvailableAt
+		? {reason: i18n.t("app:pet.care.notHungryUntil", {pet: petName(packet.pet), date: missionDate(packet.feedAvailableAt)}), icon: Clock3}
+		: undefined;
+}
+
+/** The single thing to do with the pet: follow its expedition, or else feed it. */
+function PetMainAction({packet, menus, onExpedition}: {packet: PetRes; menus: CommandMenuState; onExpedition: () => void}): ReactNode {
+	const expedition = packet.expeditionInProgress;
+	if (expedition) {
+		return <>
+			<ActionBanner
+				icon={Flag}
+				label={i18n.t("app:expedition.titles.expeditionProgress")}
+				pending={menus.pending}
+				onPress={onExpedition}
+			/>
+			<Note>{i18n.t("app:expedition.overview", {date: missionDate(expedition.endTime)})}</Note>
+		</>;
+	}
+	const notHungry = feedLock(packet);
+	return <ActionBanner
+		icon={Utensils}
+		label={i18n.t("app:pet.care.feedPet", {pet: petName(packet.pet)})}
+		pending={menus.pending}
+		onPress={(): void => {
+			menus.open(FEED_MENU).catch(console.error);
+		}}
+		{...notHungry ? {lock: notHungry} : {}}
+	/>;
+}
+
+/** What can be done with a pet at home: caress it or send it away. On expedition, it is out of reach. */
+function PetHomeActions({actions, patience, noTalisman, menus, onExpedition}: {
+	actions: PetActions;
+	patience: PetPatience;
+	noTalisman: Lock | undefined;
+	menus: CommandMenuState;
+	onExpedition: () => void;
+}): ReactNode {
+	return <>
+		<QuickAction icon={AppIcons.getIcon("petCommand.pet")} disabled={actions.pending || patience.hadEnough} onPress={(): void => {
+			actions.care({type: "caress"}).then(petted => {
+				if (petted) patience.stroke();
+			}).catch(console.error);
+		}}>{i18n.t("app:pet.care.caress")}</QuickAction>
+		<QuickAction icon={AppIcons.getIcon("expedition.map")} disabled={menus.pending || Boolean(noTalisman)} onPress={onExpedition}>{i18n.t("app:expedition.open")}</QuickAction>
+	</>;
+}
+
 /** The pet screen in one glance: who it is, the single thing to do with it, then everything else. */
 export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: PetPage) => void}): ReactNode {
 	const pet = packet.pet;
 	const expedition = packet.expeditionInProgress;
-	const {pending, message, care} = usePetActions();
+	const actions = usePetActions();
 	const menus = useCommandMenus();
 	const patience = usePetPatience();
 	useGameDeadline(GAME_ENTITIES.PET, expedition?.endTime ?? null);
-	const noTalisman: Lock | undefined = packet.hasTalisman ? undefined : {reason: i18n.t("app:expedition.errors.noTalisman")};
-	const notHungry: Lock | undefined = packet.feedAvailableAt
-		? {reason: i18n.t("app:pet.care.notHungryUntil", {pet: petName(pet), date: missionDate(packet.feedAvailableAt)}), icon: Clock3}
-		: undefined;
+	const noTalisman: Lock | undefined = packet.hasTalisman || expedition ? undefined : {reason: i18n.t("app:expedition.errors.noTalisman")};
 	const openExpedition = (): void => {
 		menus.open(EXPEDITION_MENU).catch(console.error);
 	};
 	return <>
 		<PetStanding pet={pet} strokes={patience.strokes} hadEnough={patience.hadEnough} />
-		{message ? <Note>{message}</Note> : null}
+		{actions.message ? <Note>{actions.message}</Note> : null}
 		{menus.message ? <Note>{menus.message}</Note> : null}
-		{expedition
-			? <ActionBanner
-				icon={Flag}
-				label={i18n.t("app:expedition.titles.expeditionProgress")}
-				pending={menus.pending}
-				onPress={openExpedition}
-			/>
-			: <ActionBanner
-				icon={Utensils}
-				label={i18n.t("app:pet.care.feedPet", {pet: petName(pet)})}
-				pending={menus.pending}
-				onPress={(): void => {
-					menus.open(FEED_MENU).catch(console.error);
-				}}
-				{...notHungry ? {lock: notHungry} : {}}
-			/>}
-		{expedition ? <Note>{i18n.t("app:expedition.overview", {date: missionDate(expedition.endTime)})}</Note> : null}
+		<PetMainAction packet={packet} menus={menus} onExpedition={openExpedition} />
 		<QuickActions>
-			{expedition ? null : <QuickAction icon={AppIcons.getIcon("petCommand.pet")} disabled={pending || patience.hadEnough} onPress={(): void => {
-				care({type: "caress"}).then(petted => {
-					if (petted) patience.stroke();
-				}).catch(console.error);
-			}}>{i18n.t("app:pet.care.caress")}</QuickAction>}
-			{expedition ? null : <QuickAction icon={AppIcons.getIcon("expedition.map")} disabled={menus.pending || Boolean(noTalisman)} onPress={openExpedition}>{i18n.t("app:expedition.open")}</QuickAction>}
+			{expedition ? null : <PetHomeActions actions={actions} patience={patience} noTalisman={noTalisman} menus={menus} onExpedition={openExpedition} />}
 			<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={(): void => onPage("rename")}>{i18n.t("app:pet.care.rename")}</QuickAction>
 			<QuickAction icon={AppIcons.getIcon("unitValues.money")} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>
 		</QuickActions>
-		{noTalisman && !expedition ? <LockHint lock={noTalisman} testID="pet-expedition-lock" /> : null}
+		{noTalisman ? <LockHint lock={noTalisman} testID="pet-expedition-lock" /> : null}
 		{patience.hadEnough ? <LockHint lock={{reason: i18n.t("app:pet.care.enough", {pet: petName(pet)}), icon: Clock3}} testID="pet-caress-lock" /> : null}
 		<SectionHeader>{i18n.t("app:pet.management.title")}</SectionHeader>
 		<Note>{i18n.t("app:pet.management.irreversible")}</Note>

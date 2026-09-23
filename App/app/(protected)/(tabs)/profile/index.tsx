@@ -1,5 +1,5 @@
 import {useNavigation, useRouter} from "expo-router";
-import {ReactNode, useEffect, useState} from "react";
+import {ReactNode, useEffect} from "react";
 import {ActivityIndicator, StyleSheet, View} from "react-native";
 import {RequestState} from "@/src/store/useGameQuery";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
@@ -9,6 +9,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {EmptyState, Note, QuickAction, QuickActions, Screen, SectionHeader} from "@/src/design/Primitives";
 import {ExpandableEntry, ExpandableList, Fact, Figure, Figures, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {formatNumber} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
@@ -248,7 +249,7 @@ function cookingSection(profile: ProfileRes): ProfileSection | null {
 }
 
 function ProfileSections({profile}: {profile: ProfileRes}): ReactNode {
-	const [expanded, setExpanded] = useState<string | undefined>(undefined);
+	const {isExpanded, toggle} = useExpandedEntry<string>();
 	const sections = [statisticsSection(profile), rankingSection(profile), campaignSection(profile), cookingSection(profile)]
 		.filter((section): section is ProfileSection => section !== null);
 	return (
@@ -258,8 +259,8 @@ function ProfileSections({profile}: {profile: ProfileRes}): ReactNode {
 				emblem={<TwemojiIcon emoji={AppIcons.getIcon(section.icon)} size={SECTION_EMBLEM_SIZE} />}
 				label={section.label}
 				caption={section.caption}
-				expanded={expanded === section.id}
-				onToggle={(): void => setExpanded(previous => previous === section.id ? undefined : section.id)}
+				expanded={isExpanded(section.id)}
+				onToggle={(): void => toggle(section.id)}
 				testID={`profile-${section.id}`}
 			>{section.content}</ExpandableEntry>)}
 		</ExpandableList>

@@ -48,7 +48,9 @@ const styles = StyleSheet.create({
 	/** The icon set only ships a downward chevron; a quarter turn points it back. */
 	backChevron: {transform: [{rotate: "90deg"}]},
 	fact: {minHeight: 44, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderBottomWidth: 1, borderColor: Theme.colors.line},
-	factLabel: {flex: 1, minWidth: 0, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	// TwemojiText applies textStyle to its inner Text: a flex there would stretch the line to the full row.
+	factLabelBox: {flex: 1, minWidth: 0},
+	factLabel: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
 	factValue: {flexShrink: 1, minWidth: 0, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 4},
 	factAmount: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink, fontVariant: ["tabular-nums"], textAlign: "right"},
 	gauge: {paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, gap: 6, borderBottomWidth: 1, borderColor: Theme.colors.line},
@@ -234,7 +236,7 @@ export function Fact({label, value, unit, end}: {
 	end?: ReactNode;
 }): ReactNode {
 	return <View style={styles.fact}>
-		<TwemojiText textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
+		<TwemojiText containerStyle={styles.factLabelBox} textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
 		{end !== undefined && typeof end !== "string"
 			? end
 			: <View style={styles.factValue}>
@@ -242,6 +244,12 @@ export function Fact({label, value, unit, end}: {
 				{unit ? <UnitIcon unit={unit} size={15} /> : null}
 			</View>}
 	</View>;
+}
+
+function rowTrailing(end: ReactNode): ReactNode {
+	return typeof end === "string"
+		? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{end}</TwemojiText>
+		: end;
 }
 
 /** A row that leads somewhere rather than unfolding, written in the same hand as the entries. */
@@ -255,9 +263,8 @@ export function EntryRow({title, subtitle, end, emblem, onPress, disabled = fals
 	danger?: boolean;
 	testID?: string;
 }): ReactNode {
-	const trailing = typeof end === "string"
-		? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{end}</TwemojiText>
-		: end;
+	const trailing = rowTrailing(end);
+	const action = disabled ? undefined : onPress;
 	return <ExpandableEntry
 		{...emblem ? {emblem} : {}}
 		label={title}
@@ -266,10 +273,8 @@ export function EntryRow({title, subtitle, end, emblem, onPress, disabled = fals
 		{...testID === undefined ? {} : {testID}}
 		dimmed={disabled || danger}
 		expanded={false}
-		onToggle={(): void => {
-			if (!disabled) onPress?.();
-		}}
-		chevron={onPress && !disabled ? ENTRY_CHEVRONS.FORWARD : ENTRY_CHEVRONS.NONE}
+		onToggle={(): void => action?.()}
+		chevron={action ? ENTRY_CHEVRONS.FORWARD : ENTRY_CHEVRONS.NONE}
 	/>;
 }
 
@@ -282,7 +287,7 @@ export function Gauge({label, value, ratio, color}: {
 }): ReactNode {
 	return <View style={styles.gauge}>
 		<View style={styles.gaugeTop}>
-			<TwemojiText textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
+			<TwemojiText containerStyle={styles.factLabelBox} textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
 			<TwemojiText textStyle={styles.gaugeValue} emojiSize={Theme.fontSize.caption}>{value}</TwemojiText>
 		</View>
 		<View style={styles.gaugeTrack}>

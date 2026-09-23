@@ -1,17 +1,18 @@
+import type {EffectCallback} from "react";
 import {clearTestQueryClients} from "./src/testing/testUtils";
 
 // Tests render screens outside the app shell, where the real provider would have no window to measure.
-jest.mock("react-native-safe-area-context", () => require("react-native-safe-area-context/jest/mock").default);
+jest.mock("react-native-safe-area-context", () => jest.requireActual("react-native-safe-area-context/jest/mock").default);
 
 // Screens are also rendered outside the router, where focus has no meaning: run the effect once.
 jest.mock("expo-router", () => ({
 	...jest.requireActual("expo-router"),
-	useFocusEffect: (effect: () => void | (() => void)): void => require("react").useEffect(effect, [effect])
+	useFocusEffect: (effect: EffectCallback): void => jest.requireActual("react").useEffect(effect, [effect])
 }));
 
 // Reanimated drives its values from a native worklet runtime the test environment does not have.
 jest.mock("react-native-reanimated", () => {
-	const {View} = require("react-native");
+	const {View} = jest.requireActual("react-native");
 	return {
 		__esModule: true,
 		default: {

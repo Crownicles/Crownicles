@@ -20,6 +20,7 @@ import {TextField} from "@/src/design/Inputs";
 import {Check, Clock3, Gift, LogOut, Star} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
@@ -122,10 +123,9 @@ function MemberEntry({member, guild, expanded, onToggle}: MemberEntryProps): Rea
 }
 
 function GuildMemberList({guild}: {guild: GuildData}): ReactNode {
-	const [expanded, setExpanded] = useState<number | undefined>(undefined);
-	const toggle = (id: number): void => setExpanded(previous => previous === id ? undefined : id);
+	const {isExpanded, toggle} = useExpandedEntry<number>();
 	return <ExpandableList>
-		{guild.members.map(member => <MemberEntry key={member.id} member={member} guild={guild} expanded={member.id === expanded} onToggle={toggle} />)}
+		{guild.members.map(member => <MemberEntry key={member.id} member={member} guild={guild} expanded={isExpanded(member.id)} onToggle={toggle} />)}
 	</ExpandableList>;
 }
 

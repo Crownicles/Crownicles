@@ -441,6 +441,33 @@ function RoutePanel({packet, metrics}: {
   return <TravelPath packet={packet} progress={metrics.progress} />;
 }
 
+function HealQuickAction({heal, pending, onHeal}: {heal: NonNullable<ReportTravelSummaryRes["heal"]>; pending: boolean; onHeal: () => void}): ReactNode {
+	return <QuickAction
+		icon={AppIcons.getIcon("shopItems.healAlteration")}
+		disabled={!heal.canAfford || pending}
+		onPress={heal.canAfford ? onHeal : undefined}
+	>
+		{i18n.t("app:adventure.quick.heal")}
+	</QuickAction>;
+}
+
+function AdvanceQuickAction({tokens, wouldWasteToken, pending, onAdvance}: {
+	tokens: NonNullable<ReportTravelSummaryRes["tokens"]>;
+	wouldWasteToken: boolean;
+	pending: boolean;
+	onAdvance: () => void;
+}): ReactNode {
+	return <QuickAction
+		icon={AppIcons.getIcon("unitValues.token")}
+		disabled={wouldWasteToken || pending}
+		onPress={wouldWasteToken ? undefined : onAdvance}
+	>
+		{tokens.canAfford
+			? i18n.t("app:adventure.quick.advanceWithCost", {count: tokens.cost})
+			: i18n.t("app:adventure.quick.getTokens")}
+	</QuickAction>;
+}
+
 function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPending, reportReady}: {
 	packet: ReportTravelSummaryRes;
 	onAdvance: () => void;
@@ -449,35 +476,17 @@ function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPend
 	healPending: boolean;
 	reportReady: boolean;
 }): ReactNode {
-	const cannotAffordHeal = packet.heal !== undefined && !packet.heal.canAfford;
+	const {heal, tokens} = packet;
 
 	// Spending a token to gain time the report already grants for free would simply waste it.
 	const advanceWouldWasteToken = reportReady;
 	return <>
 		<QuickActions>
-			{packet.heal ? (
-				<QuickAction
-					icon={AppIcons.getIcon("shopItems.healAlteration")}
-					disabled={cannotAffordHeal || healPending}
-					onPress={packet.heal.canAfford ? onHeal : undefined}
-				>
-					{i18n.t("app:adventure.quick.heal")}
-				</QuickAction>
-			) : null}
-			{packet.tokens ? (
-				<QuickAction
-					icon={AppIcons.getIcon("unitValues.token")}
-					disabled={advanceWouldWasteToken || advancePending}
-					onPress={advanceWouldWasteToken ? undefined : onAdvance}
-				>
-					{packet.tokens.canAfford
-						? i18n.t("app:adventure.quick.advanceWithCost", {count: packet.tokens.cost})
-						: i18n.t("app:adventure.quick.getTokens")}
-				</QuickAction>
-			) : null}
+			{heal ? <HealQuickAction heal={heal} pending={healPending} onHeal={onHeal} /> : null}
+			{tokens ? <AdvanceQuickAction tokens={tokens} wouldWasteToken={advanceWouldWasteToken} pending={advancePending} onAdvance={onAdvance} /> : null}
 		</QuickActions>
-		{packet.tokens && advanceWouldWasteToken ? <LockHint lock={{reason: i18n.t("app:adventure.quick.advanceUseless"), icon: BookOpen}} /> : null}
-		{cannotAffordHeal ? <LockHint lock={{reason: i18n.t("app:adventure.quick.healNotEnough", {price: formatMoney(packet.heal?.price ?? 0)}), icon: CircleAlert}} /> : null}
+		{tokens && advanceWouldWasteToken ? <LockHint lock={{reason: i18n.t("app:adventure.quick.advanceUseless"), icon: BookOpen}} /> : null}
+		{heal && !heal.canAfford ? <LockHint lock={{reason: i18n.t("app:adventure.quick.healNotEnough", {price: formatMoney(heal.price)}), icon: CircleAlert}} /> : null}
 	</>;
 }
 

@@ -1,4 +1,4 @@
-import {ReactNode, useState} from "react";
+import {ReactNode} from "react";
 import {Text} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
@@ -14,14 +14,14 @@ import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, Gauge, sectionStyles} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
+import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {materialName, plantName} from "@/src/display/Resources";
 import {i18n} from "@/src/translations/i18n";
 
 const PERCENTAGE_SCALE = 100;
 type GardenActions = {
 	pending: boolean;
-	openKey: string | undefined;
-	onOpen: (key: string | undefined) => void;
+	unfolding: ExpandedEntry<string>;
 	submit: (operation: GardenOperation) => Promise<void>;
 };
 type GardenPlot = GardenSnapshot["plots"][number];
@@ -41,15 +41,15 @@ function GardenChoice({entryKey, label, caption, end, operation, actions, action
 		{...caption ? {caption} : {}}
 		{...end ? {end: <Text style={sectionStyles.caption}>{end}</Text>} : {}}
 		dimmed={actions.pending}
-		expanded={actions.openKey === entryKey}
-		onToggle={(): void => actions.onOpen(actions.openKey === entryKey ? undefined : entryKey)}
+		expanded={actions.unfolding.isExpanded(entryKey)}
+		onToggle={(): void => actions.unfolding.toggle(entryKey)}
 	>
 		<ActionBanner
 			icon={Check}
 			label={action}
 			pending={actions.pending}
 			onPress={(): void => {
-				actions.onOpen(undefined);
+				actions.unfolding.collapse();
 				actions.submit(operation).catch(console.error);
 			}}
 		/>
@@ -141,8 +141,8 @@ function GardenStorage({plants}: {plants: GardenSnapshot["plantStorage"]}): Reac
 
 function GardenContent({garden, offers}: {garden: GardenSnapshot; offers: GardenCompostOffer[]}): ReactNode {
 	const {pending, message, submit, outcome} = useGardenActions();
-	const [openKey, setOpenKey] = useState<string>();
-	const actions = {pending, openKey, onOpen: setOpenKey, submit};
+	const unfolding = useExpandedEntry<string>();
+	const actions = {pending, unfolding, submit};
 	return <>
 		{garden.accessMode === GARDEN_ACCESS.READ_ONLY ? <Note>{i18n.t("app:garden.remote")}</Note> : null}
 		{message ? <Note>{message}</Note> : null}

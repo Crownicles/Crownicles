@@ -26,6 +26,17 @@ function drawnSize(frame: {width: number; height: number}, ratio: number): {widt
 		: {width: frame.width, height: frame.width / ratio};
 }
 
+function MapFrame({onClose, children}: {onClose: () => void; children: ReactNode}): ReactNode {
+	return <ModalSurface tone="wash">
+		<GestureHandlerRootView style={styles.root}>
+			<View style={styles.toolbar}>
+				<BackButton label={i18n.t("app:common.back")} onClose={onClose} />
+			</View>
+			{children}
+		</GestureHandlerRootView>
+	</ModalSurface>;
+}
+
 /**
  * The world map, examined the way a map is examined on a phone: pinch to zoom, drag to move,
  * double tap to go back and forth. Panning stops at the edges rather than losing the map offscreen.
@@ -92,27 +103,22 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 		transform: [{translateX: offsetX.value}, {translateY: offsetY.value}, {scale: scale.value}]
 	}));
 
-	return <ModalSurface tone="wash">
-		<GestureHandlerRootView style={styles.root}>
-			<View style={styles.toolbar}>
-				<BackButton label={i18n.t("app:common.back")} onClose={onClose} />
+	return <MapFrame onClose={onClose}>
+		<GestureDetector gesture={Gesture.Exclusive(doubleTap, Gesture.Simultaneous(pinch, pan))}>
+			<View
+				style={styles.stage}
+				onLayout={(event: LayoutChangeEvent): void => setFrame(event.nativeEvent.layout)}
+			>
+				<Animated.View style={transform}>
+					<Image
+						accessibilityLabel={i18n.t("app:map.image")}
+						source={{uri}}
+						style={[styles.image, size]}
+						resizeMode="contain"
+						onError={onError}
+					/>
+				</Animated.View>
 			</View>
-			<GestureDetector gesture={Gesture.Exclusive(doubleTap, Gesture.Simultaneous(pinch, pan))}>
-				<View
-					style={styles.stage}
-					onLayout={(event: LayoutChangeEvent): void => setFrame(event.nativeEvent.layout)}
-				>
-					<Animated.View style={transform}>
-						<Image
-							accessibilityLabel={i18n.t("app:map.image")}
-							source={{uri}}
-							style={[styles.image, size]}
-							resizeMode="contain"
-							onError={onError}
-						/>
-					</Animated.View>
-				</View>
-			</GestureDetector>
-		</GestureHandlerRootView>
-	</ModalSurface>;
+		</GestureDetector>
+	</MapFrame>;
 }

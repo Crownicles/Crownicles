@@ -34,7 +34,7 @@ export const INVENTORY_MENUS = {
 /** Picks the reaction the screen already knows the player chose, or nothing to let them choose. */
 type MenuResolver = (collector: ReactionCollectorCreation) => number | null;
 
-type CommandMenuState = {
+export type CommandMenuState = {
 	message: string | null;
 	pending: boolean;
 	open: (menu: CommandMenu, request?: FromClientPacket, resolve?: MenuResolver) => Promise<void>;

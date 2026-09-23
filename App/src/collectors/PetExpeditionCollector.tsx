@@ -1,10 +1,11 @@
-import {ReactNode, useState} from "react";
+import {ReactNode} from "react";
 import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
 import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
 import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, ModalSurface, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
+import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {ExpeditionOptionDetails, ExpeditionProgressDetails} from "@/src/components/ExpeditionDetails";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {isChoosable, reactionLabel} from "@/src/collectors/CollectorLabels";
@@ -16,7 +17,7 @@ import {i18n} from "@/src/translations/i18n";
 
 type ExpeditionData = Extract<ReactionCollectorData, {type: typeof EXPEDITION_DATA_KINDS[keyof typeof EXPEDITION_DATA_KINDS]}>;
 const EXPEDITION_KINDS = new Set<ReactionCollectorData["type"]>(Object.values(EXPEDITION_DATA_KINDS));
-type Unfolding = {openIndex: number | undefined; onOpen: (index: number | undefined) => void};
+type Unfolding = ExpandedEntry<number>;
 type MenuProps = {
 	collector: ReactionCollectorCreation;
 	data: ExpeditionData;
@@ -52,8 +53,8 @@ function ExpeditionChoice({label, index, locked, unfolding, onChoose, confirmLab
 	return <ExpandableEntry
 		label={label}
 		dimmed={locked}
-		expanded={unfolding.openIndex === index}
-		onToggle={(): void => unfolding.onOpen(unfolding.openIndex === index ? undefined : index)}
+		expanded={unfolding.isExpanded(index)}
+		onToggle={(): void => unfolding.toggle(index)}
 	>
 		{children}
 		<ActionBanner icon={Check} label={confirmLabel} pending={locked} onPress={(): void => onChoose(index)} />
@@ -61,7 +62,9 @@ function ExpeditionChoice({label, index, locked, unfolding, onChoose, confirmLab
 }
 
 function RecallChoices({collector, locked, onChoose, unfolding}: Omit<MenuProps, "data">): ReactNode {
-	return <ExpandableList>{collector.reactions.map((reaction, index) => reaction.type === EXPEDITION_REACTION_KINDS.RECALL
+	// A reaction is known by its index: that is what the answer sends back.
+	const choices = collector.reactions.map((reaction, index) => ({reaction, index}));
+	return <ExpandableList>{choices.map(({reaction, index}) => reaction.type === EXPEDITION_REACTION_KINDS.RECALL
 		? <ExpeditionChoice
 			key={index}
 			label={reactionLabel(reaction, collector.data)}
@@ -112,11 +115,11 @@ function ExpeditionMenu({secondsLeft, ...props}: MenuProps & {secondsLeft: numbe
 }
 
 export function PetExpeditionCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
-	const [openIndex, setOpenIndex] = useState<number>();
+	const unfolding = useExpandedEntry<number>();
 	const {answer, locked, secondsLeft} = useCollectorAnswer(collector, onChoose, submitting);
 	const choose = (index: number): void => {
 		if (locked || index < 0) return;
-		setOpenIndex(undefined);
+		unfolding.collapse();
 		answer(index);
 	};
 	const close = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CANCEL || reaction.type === EXPEDITION_REACTION_KINDS.CLOSE));
@@ -128,7 +131,7 @@ export function PetExpeditionCollector({collector, onChoose, submitting}: {colle
 				data={collector.data}
 				locked={locked}
 				onChoose={choose}
-				unfolding={{openIndex, onOpen: setOpenIndex}}
+				unfolding={unfolding}
 				secondsLeft={secondsLeft}
 			/>
 		</ModalSurface>

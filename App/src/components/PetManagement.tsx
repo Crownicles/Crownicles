@@ -1,4 +1,4 @@
-import {ReactNode, useState} from "react";
+import {ReactNode} from "react";
 import {Text} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {GuildShelterReq, PetTransferReq, PetFreeReq} from "ws-packets/src/fromClient/PetManagementReq";
@@ -18,6 +18,7 @@ import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, ExpandableList, Lock, sectionStyles, Standing} from "@/src/design/Sections";
 import {ArrowRight} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
 import {petIcon, petMood, petName, petRarity} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
@@ -72,20 +73,69 @@ function PetEntry({pet, action, expanded, onToggle, testID}: {
 
 type ShelterProps = {ownPet?: OwnedPet; boarders: OwnedPet[]; guildName?: string; maxCount?: number};
 
+/** What the shelter rows share: which one is unfolded, and how a pet is moved from there. */
+type ShelterActions = {unfolding: ExpandedEntry<string>; pending: boolean; transfer: (target: Transfer) => void};
+
+function shelterLock({boarders, maxCount}: ShelterProps): Lock | undefined {
+	return maxCount !== undefined && boarders.length >= maxCount
+		? {reason: i18n.t("app:pet.management.shelterFull")}
+		: undefined;
+}
+
+function OwnPetSection({ownPet, full, actions}: {ownPet?: OwnedPet; full?: Lock; actions: ShelterActions}): ReactNode {
+	if (!ownPet) return <ExpandableList><EmptyState>{i18n.t("app:pet.management.noOwnPet")}</EmptyState></ExpandableList>;
+	return <ExpandableList><PetEntry
+		pet={ownPet}
+		expanded={actions.unfolding.isExpanded("own")}
+		onToggle={(): void => actions.unfolding.toggle("own")}
+		testID="shelter-own-pet"
+		action={<ActionBanner
+			icon={ArrowRight}
+			label={i18n.t("app:pet.management.deposit", {pet: petName(ownPet)})}
+			pending={actions.pending}
+			{...full ? {lock: full} : {}}
+			onPress={(): void => actions.transfer({kind: "deposit"})}
+			testID="shelter-deposit"
+		/>}
+	/></ExpandableList>;
+}
+
+function BoardersSection({boarders, hasOwnPet, actions}: {boarders: OwnedPet[]; hasOwnPet: boolean; actions: ShelterActions}): ReactNode {
+	if (!boarders.length) return <ExpandableList><EmptyState>{i18n.t("app:pet.management.emptyShelter")}</EmptyState></ExpandableList>;
+	// The shelter list carries no identifier: a boarder is known by its slot.
+	const slots = boarders.map((pet, slot) => ({pet, slot}));
+	return <ExpandableList>{slots.map(({pet, slot}) => <PetEntry
+		key={slot}
+		pet={pet}
+		expanded={actions.unfolding.isExpanded(`boarder-${slot}`)}
+		onToggle={(): void => actions.unfolding.toggle(`boarder-${slot}`)}
+		testID={`shelter-boarder-${slot}`}
+		action={<ActionBanner
+			icon={ArrowRight}
+			label={i18n.t(hasOwnPet ? "app:pet.management.switch" : "app:pet.management.withdraw", {pet: petName(pet)})}
+			pending={actions.pending}
+			onPress={(): void => actions.transfer({kind: "boarder", slot, pet})}
+			testID={`shelter-take-${slot}`}
+		/>}
+	/>)}</ExpandableList>;
+}
+
 /** The shelter and the transfers it allows on one screen: a pet is moved from where it is shown. */
-function ShelterContent({ownPet, boarders, guildName, maxCount}: ShelterProps): ReactNode {
-	const [expanded, setExpanded] = useState<string | undefined>(undefined);
+function ShelterContent(props: ShelterProps): ReactNode {
+	const {ownPet, boarders, guildName, maxCount} = props;
+	const unfolding = useExpandedEntry<string>();
 	const {pending, message, open} = useCommandMenus();
 	const shelterIcon = AppIcons.getIconOrNull("city.guildDomain.shelter");
 	const occupancy = maxCount === undefined
 		? String(boarders.length)
 		: i18n.t("app:profile.formats.progress", {value: boarders.length, max: maxCount});
-	const full: Lock | undefined = maxCount !== undefined && boarders.length >= maxCount
-		? {reason: i18n.t("app:pet.management.shelterFull")}
-		: undefined;
-	const toggle = (key: string): void => setExpanded(previous => previous === key ? undefined : key);
-	const transfer = (target: Transfer): void => {
-		open(PET_MANAGEMENT_MENUS.TRANSFER, undefined, collector => transferReaction(collector, target)).catch(console.error);
+	const full = shelterLock(props);
+	const actions: ShelterActions = {
+		unfolding,
+		pending,
+		transfer: (target: Transfer): void => {
+			open(PET_MANAGEMENT_MENUS.TRANSFER, undefined, collector => transferReaction(collector, target)).catch(console.error);
+		}
 	};
 	return <>
 		<Standing
@@ -97,39 +147,9 @@ function ShelterContent({ownPet, boarders, guildName, maxCount}: ShelterProps): 
 		/>
 		{message ? <Note>{message}</Note> : null}
 		<SectionHeader first>{i18n.t("app:pet.management.ownPet")}</SectionHeader>
-		{ownPet
-			? <ExpandableList><PetEntry
-				pet={ownPet}
-				expanded={expanded === "own"}
-				onToggle={(): void => toggle("own")}
-				testID="shelter-own-pet"
-				action={<ActionBanner
-					icon={ArrowRight}
-					label={i18n.t("app:pet.management.deposit", {pet: petName(ownPet)})}
-					pending={pending}
-					{...full ? {lock: full} : {}}
-					onPress={(): void => transfer({kind: "deposit"})}
-					testID="shelter-deposit"
-				/>}
-			/></ExpandableList>
-			: <ExpandableList><EmptyState>{i18n.t("app:pet.management.noOwnPet")}</EmptyState></ExpandableList>}
+		<OwnPetSection {...ownPet ? {ownPet} : {}} {...full ? {full} : {}} actions={actions} />
 		<SectionHeader action={{hint: occupancy}}>{i18n.t("app:pet.management.boardersTitle")}</SectionHeader>
-		{boarders.length
-			? <ExpandableList>{boarders.map((pet, slot) => <PetEntry
-				key={slot}
-				pet={pet}
-				expanded={expanded === `boarder-${slot}`}
-				onToggle={(): void => toggle(`boarder-${slot}`)}
-				testID={`shelter-boarder-${slot}`}
-				action={<ActionBanner
-					icon={ArrowRight}
-					label={i18n.t(ownPet ? "app:pet.management.switch" : "app:pet.management.withdraw", {pet: petName(pet)})}
-					pending={pending}
-					onPress={(): void => transfer({kind: "boarder", slot, pet})}
-					testID={`shelter-take-${slot}`}
-				/>}
-			/>)}</ExpandableList>
-			: <ExpandableList><EmptyState>{i18n.t("app:pet.management.emptyShelter")}</EmptyState></ExpandableList>}
+		<BoardersSection boarders={boarders} hasOwnPet={ownPet !== undefined} actions={actions} />
 		<Text style={sectionStyles.caption}>{i18n.t("app:pet.management.transferHint")}</Text>
 	</>;
 }

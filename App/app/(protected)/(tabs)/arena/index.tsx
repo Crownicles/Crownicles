@@ -9,6 +9,7 @@ import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {RequestState} from "@/src/store/useGameQuery";
 import {fightStore, useFight} from "@/src/store/FightStore";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
@@ -81,6 +82,20 @@ function ArenaLinks({onSelect, leagueId, classId}: {onSelect: (page: ArenaPage) 
 	</QuickActions></View>;
 }
 
+/** The player's own league and class, once the profile is known. */
+function playerEmblems(state: RequestState<ProfileRes>): {leagueId?: number; classId?: number} {
+	if (state.status !== "ready") return {};
+	const {fightRanking, classId} = state.data;
+	return {
+		...fightRanking ? {leagueId: fightRanking.league} : {},
+		...classId === undefined ? {} : {classId}
+	};
+}
+
+function ArenaHeader(): ReactNode {
+	return <View style={styles.header}><View style={styles.emblem}><Swords size={27} color={Theme.colors.ink} /></View><View><Text style={styles.eyebrow}>{i18n.t("app:arena.eyebrow")}</Text><Text style={styles.title}>{i18n.t("app:arena.title")}</Text></View></View>;
+}
+
 export default function Arena(): ReactNode {
 	const router = useRouter();
 	const state = usePlayerProfile();
@@ -88,16 +103,13 @@ export default function Arena(): ReactNode {
 	const {pending, message, open} = useCommandMenus();
 	const ongoing = Boolean(fight.introduction && !fight.result && !fight.error);
 	const start = (): Promise<void> => {fightStore.reset(); return open(FIGHT_MENU);};
+	const startError = fight.visible ? null : fight.error;
 	return <Screen>
-		<View style={styles.header}><View style={styles.emblem}><Swords size={27} color={Theme.colors.ink} /></View><View><Text style={styles.eyebrow}>{i18n.t("app:arena.eyebrow")}</Text><Text style={styles.title}>{i18n.t("app:arena.title")}</Text></View></View>
+		<ArenaHeader />
 		<GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{profile => <ArenaProfile profile={profile} />}</GameQueryContent>
 		{message ? <Note>{message}</Note> : null}
 		<ArenaStart pending={pending} ongoing={ongoing} onStart={start} />
-		{fight.error && !fight.visible ? <ArenaStartError error={fight.error} /> : null}
-		<ArenaLinks
-			onSelect={(page): void => router.push(`/arena/${page}`)}
-			{...state.status === "ready" && state.data.fightRanking ? {leagueId: state.data.fightRanking.league} : {}}
-			{...state.status === "ready" && state.data.classId !== undefined ? {classId: state.data.classId} : {}}
-		/>
+		{startError ? <ArenaStartError error={startError} /> : null}
+		<ArenaLinks onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
 	</Screen>;
 }

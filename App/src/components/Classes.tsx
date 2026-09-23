@@ -1,6 +1,5 @@
 import {ReactNode, useState} from "react";
 import {StyleSheet, Text, View} from "react-native";
-import {useQueryClient} from "@tanstack/react-query";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ClassesInfoReq} from "ws-packets/src/fromClient/ClassesInfoReq";
 import {ClassesReq} from "ws-packets/src/fromClient/ClassesReq";
@@ -8,10 +7,10 @@ import {ClassesInfoRes} from "ws-packets/src/fromServer/classes/ClassesInfoRes";
 import {ClassesCancelRes, ClassesCooldownRes} from "ws-packets/src/fromServer/classes/ClassesRes";
 import {ClassDetails} from "ws-packets/src/objects/ClassDetails";
 import {GameClient} from "@/src/networking/GameClient";
-import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
+import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
-import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
+import {CommandMenu, CommandMenuState, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
 import {ExpandableEntry, ExpandableList, sectionStyles, Standing} from "@/src/design/Sections";
 import {Swords} from "@/src/design/FightIcons";
@@ -19,7 +18,7 @@ import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {ClassStatistics} from "@/src/components/ClassStatistics";
-import {commandRejectionMessage} from "@/src/display/CommandRejection";
+import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
 
@@ -115,21 +114,20 @@ export function ClassesContent({classes, currentClass}: {classes: ClassDetails[]
 	</>;
 }
 
+function ClassesReady({info, currentClass, menus}: {info: ClassesInfoRes; currentClass: number | undefined; menus: CommandMenuState}): ReactNode {
+	if (!info.data) return <EmptyState>{i18n.t("app:classes.empty")}</EmptyState>;
+	const countdown = changeCountdown(info.data.nextChangeTimestamp);
+	return <>
+		<ClassesContent classes={info.data.classesStats} {...(currentClass === undefined ? {} : {currentClass})} />
+		<ButtonRow><Button variant="primary" icon={Swords} disabled={menus.pending || countdown !== null} onPress={(): Promise<void> => menus.open(CHANGE_CLASS_MENU)}>{countdown ?? i18n.t("app:classes.change")}</Button></ButtonRow>
+		{menus.message ? <Note>{menus.message}</Note> : null}
+	</>;
+}
+
 export function Classes(): ReactNode {
-	const queryClient = useQueryClient();
 	const profile = usePlayerProfile();
 	const state = useGameQuery(GAME_ENTITIES.CLASSES, () => GameClient.request(makeFromClientPacket(ClassesInfoReq, {}), ClassesInfoRes));
-	const {message, pending, open} = useCommandMenus();
-	if (state.status === "loading") return <EmptyState>{i18n.t("app:common.loading")}</EmptyState>;
-	if (state.status === "failed") return <>
-		<Note>{state.rejection ? commandRejectionMessage(state.rejection) : i18n.t("app:common.error")}</Note>
-		<ButtonRow><Button onPress={(): void => {queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.CLASSES)}).catch(console.error);}}>{i18n.t("app:common.retry")}</Button></ButtonRow>
-	</>;
-	if (state.status !== "ready" || !state.data.data) return <EmptyState>{i18n.t("app:classes.empty")}</EmptyState>;
-	const countdown = changeCountdown(state.data.data.nextChangeTimestamp);
-	return <>
-		<ClassesContent classes={state.data.data.classesStats} {...(profile.status === "ready" ? {currentClass: profile.data.classId} : {})} />
-		<ButtonRow><Button variant="primary" icon={Swords} disabled={pending || countdown !== null} onPress={(): Promise<void> => open(CHANGE_CLASS_MENU)}>{countdown ?? i18n.t("app:classes.change")}</Button></ButtonRow>
-		{message ? <Note>{message}</Note> : null}
-	</>;
+	const menus = useCommandMenus();
+	const currentClass = profile.status === "ready" ? profile.data.classId : undefined;
+	return <GameQueryContent state={state} entity={GAME_ENTITIES.CLASSES}>{info => <ClassesReady info={info} currentClass={currentClass} menus={menus} />}</GameQueryContent>;
 }

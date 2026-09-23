@@ -65,12 +65,15 @@ export function GuildInvitation({lock}: {lock?: Lock}): ReactNode {
 	</>;
 }
 
+function playerIsChief(guild: GuildData): boolean {
+	return guild.members.some(entry => entry.isSelf && entry.id === guild.chiefId);
+}
+
 /** The chief's levers on one member, shown inside that member's own row rather than behind a separate screen. */
 export function GuildMemberControls({member, guild}: {member: GuildMember; guild: GuildData}): ReactNode {
 	const {pending, message, open} = useCommandMenus();
-	const self = guild.members.find(entry => entry.isSelf);
 	const isElder = member.id === guild.elderId;
-	if (!self || self.id !== guild.chiefId || member.isSelf) return null;
+	if (member.isSelf || !playerIsChief(guild)) return null;
 	return <>
 		{message ? <Note>{message}</Note> : null}
 		<ButtonRow>

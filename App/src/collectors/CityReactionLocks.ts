@@ -41,17 +41,25 @@ function upgradeLock(upgrade: CityMobileUpgradeItem | undefined, playerMoney: nu
 	return missingMoney(upgrade.upgradeCost + upgrade.missingMaterialsCost - (playerMoney ?? 0));
 }
 
+type ItemMatcher = (candidate: {slot: number; itemCategory: number}) => boolean;
+type EquipmentLockResolver = (snapshot: CityMobileSnapshot | undefined, sameItem: ItemMatcher) => Lock | undefined;
+
+function disenchantLock(blacksmith: CityMobileSnapshot["blacksmith"], sameItem: ItemMatcher): Lock | undefined {
+	const disenchant = blacksmith?.disenchantableItems.find(sameItem);
+	return disenchant ? missingMoney(disenchant.disenchantCost - (blacksmith?.playerMoney ?? 0)) : blocked("app:city.locks.unavailable");
+}
+
+const EQUIPMENT_LOCKS: Partial<Record<ReactionCollectorReaction["type"], EquipmentLockResolver>> = {
+	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: (snapshot, sameItem) => upgradeLock(snapshot?.blacksmith?.upgradeableItems.find(sameItem), snapshot?.blacksmith?.playerMoney),
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: (snapshot, sameItem) => upgradeLock(snapshot?.royalBlacksmith?.upgradeableItems.find(sameItem), snapshot?.royalBlacksmith?.playerMoney),
+	[CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT]: (snapshot, sameItem) => disenchantLock(snapshot?.blacksmith, sameItem)
+};
+
 function equipmentLock(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): Lock | undefined {
 	const item = itemSnapshotForReaction(snapshot, reaction);
-	if (!item) return blocked("app:city.locks.unavailable");
-	const sameItem = <T extends {slot: number; itemCategory: number}>(candidate: T): boolean => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory;
-	if (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE) return upgradeLock(snapshot?.blacksmith?.upgradeableItems.find(sameItem), snapshot?.blacksmith?.playerMoney);
-	if (reaction.type === CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE) return upgradeLock(snapshot?.royalBlacksmith?.upgradeableItems.find(sameItem), snapshot?.royalBlacksmith?.playerMoney);
-	if (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT) {
-		const disenchant = snapshot?.blacksmith?.disenchantableItems.find(sameItem);
-		return disenchant ? missingMoney(disenchant.disenchantCost - (snapshot?.blacksmith?.playerMoney ?? 0)) : blocked("app:city.locks.unavailable");
-	}
-	return blocked("app:city.locks.unavailable");
+	const resolver = EQUIPMENT_LOCKS[reaction.type];
+	if (!item || !resolver) return blocked("app:city.locks.unavailable");
+	return resolver(snapshot, candidate => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory);
 }
 
 /** Why a row the player can see cannot be pressed, so the refusal is readable before the tap. */
