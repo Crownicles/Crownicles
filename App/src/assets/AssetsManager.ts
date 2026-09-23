@@ -34,7 +34,6 @@ export class AssetsManager {
 					if (hash.exists) {
 						const assetName = filePath.split("/").slice(documentDirectory!.split("/").length).join("/");
 						assetsWithHashes.push({file: assetName, hash: hash.md5!});
-						console.log(`Asset: ${assetName}, Hash: ${hash.md5}`);
 					}
 				}
 			}
@@ -89,7 +88,7 @@ export class AssetsManager {
 			return !localAsset || localAsset.hash !== remoteAsset.hash;
 		});
 
-		console.log("Assets to update:", assetsToUpdate);
+		console.log(`Assets to update: ${assetsToUpdate.length}`);
 
 		for (const assetToUpdate of assetsToUpdate) {
 			const assetContent = await RestApi.downloadAsset(assetToUpdate.file);
@@ -100,7 +99,6 @@ export class AssetsManager {
 				const dirInfo = await getInfoAsync(dirPath);
 				if (!dirInfo.exists) {
 					await makeDirectoryAsync(dirPath, { intermediates: true });
-					console.log(`Created directory: ${dirPath}`);
 				}
 			}
 			await writeAsStringAsync(assetPath, assetContent, {
@@ -113,7 +111,6 @@ export class AssetsManager {
 			if (assetHash.md5 !== assetToUpdate.hash) {
 				throw new Error(`Asset ${assetToUpdate.file} hash mismatch: expected ${assetToUpdate.hash}, got ${assetHash.md5}`);
 			}
-			console.log(`Updated asset: ${assetToUpdate.file}`);
 		}
 
 		const assets = new Map<string, string>();

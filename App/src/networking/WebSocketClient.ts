@@ -105,7 +105,7 @@ export class WebSocketClient {
 	public sendPacket(packet: FromClientPacket, responseHandlers: {
 		[packetName: string]: WebSocketPacketResponseHandler<never>;
 	}, timeout?: PacketTimeout): void {
-		console.debug("Sending packet:", packet);
+		if (__DEV__) console.debug("Sending packet:", packet);
 		/*
 		 * A screen may make its initial request while the socket is reconnecting. Register the
 		 * response before queuing it, otherwise the request is eventually sent without an id and
@@ -277,7 +277,7 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 			return;
 		}
 
-		console.debug("Received packet:", JSON.stringify(packet));
+		if (__DEV__) console.debug("Received packet:", JSON.stringify(packet));
 		const packetId = packet.id;
 		const packetName = packet.name;
 		const packetData = packet.packet;

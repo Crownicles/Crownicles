@@ -22,6 +22,7 @@ type ClientTranslatorFunction<T extends FromClientPacket, U extends CrowniclesPa
  */
 export const fromClientTranslator = <T extends FromClientPacket, U extends CrowniclesPacket>(packet: FromClientPacketLike<T>) =>
 	<V>(_target: V, _prop: string, descriptor: TypedPropertyDescriptor<ClientTranslatorFunction<T, U>>): void => {
+		// A translator only accepts its own packet type: the map cannot express the pairing between the wire name and T
 		clientTranslators.set(packet.wireName, descriptor.value! as unknown as ClientTranslatorFunction<FromClientPacket, CrowniclesPacket>);
 		CrowniclesLogger.info(`[ClientTranslator] Registered ${packet.wireName}`);
 	};

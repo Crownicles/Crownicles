@@ -479,13 +479,12 @@ function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPend
 	const {heal, tokens} = packet;
 
 	// Spending a token to gain time the report already grants for free would simply waste it.
-	const advanceWouldWasteToken = reportReady;
 	return <>
 		<QuickActions>
 			{heal ? <HealQuickAction heal={heal} pending={healPending} onHeal={onHeal} /> : null}
-			{tokens ? <AdvanceQuickAction tokens={tokens} wouldWasteToken={advanceWouldWasteToken} pending={advancePending} onAdvance={onAdvance} /> : null}
+			{tokens ? <AdvanceQuickAction tokens={tokens} wouldWasteToken={reportReady} pending={advancePending} onAdvance={onAdvance} /> : null}
 		</QuickActions>
-		{tokens && advanceWouldWasteToken ? <LockHint lock={{reason: i18n.t("app:adventure.quick.advanceUseless"), icon: BookOpen}} /> : null}
+		{tokens && reportReady ? <LockHint lock={{reason: i18n.t("app:adventure.quick.advanceUseless"), icon: BookOpen}} /> : null}
 		{heal && !heal.canAfford ? <LockHint lock={{reason: i18n.t("app:adventure.quick.healNotEnough", {price: formatMoney(heal.price)}), icon: CircleAlert}} /> : null}
 	</>;
 }

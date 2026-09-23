@@ -74,7 +74,6 @@
     "capacities": "Coffre : {{chest}} · Réserve : {{inventory}}",
     "plantCapacity_one": "Capacité par plante : {{count}}",
     "plantCapacity_other": "Capacité par plante : {{count}}",
-    "itemActions": "Déplacer un équipement",
     "swapWith": "Échanger avec",
     "unavailable": "Vous ne disposez pas d'un coffre accessible.",
     "actions": {"deposit": "Déposer", "withdraw": "Retirer", "swap": "Échanger", "plantDeposit": "Déposer une plante", "plantWithdraw": "Retirer une plante"},
@@ -183,7 +182,6 @@
     "discard": "Jeter",
     "confirmSell": "Vendre cet objet ?",
     "confirmDiscard": "Jeter cet objet ?",
-    "price": "Prix de base",
     "sold": "Objet vendu",
     "discarded": "Objet jeté",
     "received": "Argent reçu",
@@ -219,7 +217,6 @@
     }
   },
   "settings": {
-    "title": "Paramètres",
     "developerMode": "Mode développeur",
     "coreVersion": "Version du moteur",
     "ping": "Ping",
@@ -284,7 +281,6 @@
     "descriptions": {
       "interactOtherPlayers": "Vous croisez un aventurier sur la route. Il semble avoir besoin d'une pièce.",
       "interactOtherPlayersRanked": "Vous croisez un aventurier classé au rang {{rank}}. Il semble avoir besoin d'une pièce.",
-      "unknownPlayer": "Une rencontre vous attend sur la route.",
       "cartKnown": "Le conducteur propose de vous déposer à {{destination}} pour {{price}} {emote:unitValues.money}.",
       "cartUnknown": "Le conducteur propose un trajet vers une destination inconnue pour {{price}} {emote:unitValues.money}.",
       "fightPet": "Un {{pet}} sauvage vous barre la route. Choisissez comment réagir.",
@@ -292,7 +288,6 @@
       "itemChoice": "Votre inventaire est plein. Choisissez l'objet à remplacer par {{item}}.",
       "itemAccept": "Votre inventaire est plein. Choisissez quoi faire de {{item}} pour accueillir l'objet reçu.",
       "unknownItem": "cet objet",
-      "unknownPet": "votre familier",
       "destination": "Choisissez la prochaine étape de votre aventure.",
       "unknownDuration": "durée inconnue",
       "shopSmallEvent": "Un marchand rencontré sur la route vous propose un objet. Vérifiez bien son offre avant de décider.",
@@ -304,7 +299,6 @@
     },
     "shop": {
       "fields": {
-        "item": "Objet proposé",
         "rarity": "Rareté",
         "level": "Niveau",
         "price": "Prix"
@@ -313,7 +307,6 @@
     },
     "recipeShop": {
       "fields": {
-        "recipe": "Recette proposée",
         "price": "Prix d'apprentissage"
       }
     },
@@ -334,7 +327,6 @@
       "energy": "Énergie disponible",
       "crossing": "Prix de la traversée",
       "free": "Gratuite",
-      "warningTitle": "Préparez votre expédition",
       "warning": "Sur l'île, l'énergie ne se régénère pas. Les monstres deviennent plus redoutables à mesure que vous progressez.",
       "embark": "Embarquer",
       "continueJourney": "Continuer mon voyage"
@@ -370,7 +362,6 @@
       "title": "Altération d'état",
       "description": "Cette altération vous affecte encore pendant {{time}}.",
       "fields": {
-        "status": "État",
         "timeRemaining": "Temps restant",
         "price": "Prix du soin"
       }
@@ -595,7 +586,6 @@
     "tokens": {
       "continue": "Continuer",
       "fields": {
-        "cost": "Jetons à dépenser",
         "balance": "Vos jetons",
         "price": "Prix unitaire",
         "money": "Votre argent",
@@ -618,11 +608,7 @@
         "buyOne": "Acheter {{amount}} jeton — {{price}} {emote:unitValues.money}",
         "buyMany": "Acheter {{amount}} jetons — {{price}} {emote:unitValues.money}",
         "cancel": "Quitter le marchand",
-        "confirmTitle_one": "Acheter {{count}} jeton ?",
-        "confirmTitle_other": "Acheter {{count}} jetons ?",
-        "confirmDescription": "Vérifiez le coût et votre solde avant de confirmer.",
-        "confirm": "Confirmer l'achat",
-        "keepMoney": "Annuler"
+        "confirm": "Confirmer l'achat"
       },
       "outcomes": {
         "bought": "Achat conclu",
@@ -660,8 +646,6 @@
       "continue": "Continuer"
     },
     "fields": {
-      "departure": "Départ",
-      "arrival": "Arrivée",
       "timeRemaining": "Temps restant",
       "nextStop": "Prochain arrêt",
       "points": "Points récoltés"
@@ -699,8 +683,6 @@
       "yourHome": "Votre maison",
       "apartments": "Les logis",
       "homeServices": "Services chez vous",
-      "storage": "Stockage",
-      "cooking": "Cuisine",
       "garden": "Jardin",
       "equipment": "Améliorer un équipement",
       "disenchant": "Désenchanter",
@@ -708,7 +690,6 @@
       "eligibleEquipment": "Vos équipements éligibles"
     },
     "subtitles": {
-      "home": "Retrouver votre maison et ses services",
       "homeScreen": "Un havre de paix pour préparer vos prochaines aventures",
       "bed": "Récupérez votre vie gratuitement dans votre lit",
       "chest": "Stocker vos équipements et vos plantes",
@@ -717,7 +698,6 @@
       "cookingScreen": "Préparer des recettes et gérer vos fourneaux",
       "cooking": "Fourneau de niveau {{level}}",
       "homeDetails": "Maison de niveau {{level}} · {{services}}",
-      "bedDetails": "Récupère {{health}} points de vie",
       "mealDetails": "Énergie +{{energy}} {emote:unitValues.energy}",
       "roomDetails": "Vie +{{health}} {emote:unitValues.health}",
       "notary": "Acheter, améliorer ou déplacer un logement",
@@ -775,7 +755,6 @@
       "mainHome": "Maison principale",
       "cooking": "Cuisine",
       "cookingSlots": "Emplacements de cuisine",
-      "cookingSlotsDetails": "Nombre d'emplacements : {{count}}",
       "bedRegeneration": "Régénération du lit",
       "gardenPlots": "Parcelles du jardin",
       "upgradeableItems": "Équipements améliorables",
@@ -786,15 +765,12 @@
       "forge": "forge",
       "storedItems": "Objets dans le coffre",
       "depositableItems": "Objets de la réserve",
-      "apartmentPrice": "Logis ici",
       "apartments": "Logis possédés",
       "rents": "Rentes",
       "enchantment": "Enchantement du jour",
       "compatibleWith": "Compatible avec",
       "price": "Coût",
       "missingMaterials": " · matériaux manquants achetés pour {{price}}",
-      "missingMoney": "Il manque {{amount}}",
-      "unaffordable": "Fonds insuffisants",
       "discount": "Réduction mage",
       "eligibleItems": "Équipements éligibles",
       "money": "Votre argent",
@@ -808,7 +784,6 @@
       "guildLevel": "Niveau de guilde",
       "treasury": "Trésorerie",
       "buildings": "Bâtiments",
-      "buildingLevel": "{{building}} · niv. {{level}}",
       "buildingLevels": "Boutique {{shop}} · refuge {{shelter}} · garde-manger {{pantry}} · terrain {{training}}",
       "foodStock": "Nourriture en stock",
       "foodStockDetails": "Friandises {{common}} · viande {{carnivorous}} · salade {{herbivorous}} · soupe ultime {{ultimate}}",
@@ -880,7 +855,6 @@
       "quantity": "Lot de {{amount}}",
       "availableCurrency": "Votre solde",
       "item": "Acheter {{amount}} × {{item}} pour {{price}}",
-      "itemDetails": "Quantité : {{amount}} · Prix : {{price}}",
       "dailyPotion": "Potion du jour",
       "buy": "{{item}} pour {{price}}",
       "close": "Fermer la boutique",
@@ -896,11 +870,6 @@
     },
     "checkup": {
       "eyebrow": "Consultation du vétérinaire",
-      "love": "Amour",
-      "force": "Force",
-      "speed": "Vitesse",
-      "cared": "Le vétérinaire a soigné votre familier, qui regagne {{count}} point d'amour.",
-      "cared_other": "Le vétérinaire a soigné votre familier, qui regagne {{count}} points d'amour.",
       "noPet": "Aucun familier à ausculter",
       "noPetDescription": "Le vétérinaire referme sa trousse : vous n'avez aucun compagnon à lui présenter.",
       "continue": "Continuer"
@@ -962,7 +931,6 @@
       "rename": "Renommer",
       "feedPet": "Nourrir {{pet}}",
       "notHungryUntil": "{{pet}} n'a pas encore faim, son prochain repas sera possible le {{date}}.",
-      "food": "Nourriture",
       "price": "Prix",
       "enough": "{{pet}} en a assez des câlins et s'éloigne un instant.",
       "newNickname": "Nouveau surnom",
@@ -995,16 +963,8 @@
     },
     "eyebrow": "Votre familier",
     "noPet": "Aucun familier ne vous accompagne pour le moment",
-    "titles": {
-      "sheet": "Fiche",
-      "mood": "Moral"
-    },
     "fields": {
-      "type": "Type",
-      "nickname": "Surnom",
-      "rarity": "Rareté",
-      "sex": "Sexe",
-      "mood": "Mentalité"
+      "nickname": "Surnom"
     }
   },
   "map": {"title": "Carte", "image": "Carte du monde et position du personnage", "expand": "Agrandir la carte", "expandHint": "Touchez la carte pour l'ouvrir, puis pincez pour zoomer.", "imageError": "La carte n'a pas pu être chargée.", "position": "Position", "destination": "Destination"},
@@ -1039,15 +999,12 @@
     "history": {"empty": "Aucun combat n'est encore enregistré."},
     "leagues": {"name": "{{icon}} {{name}}", "reward": "Récompense de ligue", "claim": "Réclamer la récompense", "catalog": "Les ligues", "threshold": "Gloire minimale", "seasonMoney": "Argent de fin de saison", "seasonXp": "Expérience de fin de saison", "winMoney": "Argent gagné par combat remporté", "nextClaim": "La récompense pourra être réclamée le {{date}}.", "noPoints": "Aucune gloire n'a été obtenue pendant la saison précédente.", "alreadyClaimed": "La récompense de cette saison a déjà été réclamée."},
     "rankings": {"title": "Classements", "types": {"Score": "Score", "Glory": "Gloire", "Guild": "Guildes"}, "period": "Période", "timings": {"AllTime": "Général", "Week": "Semaine"}, "positions": "Classement", "yourPlace": "Votre place", "ofTotal": "sur {{total}} classés", "unavailable": "Vous ne pouvez pas figurer dans ce classement pour le moment.", "needFight_one": "Encore un combat avant d'entrer au classement.", "needFight_other": "Encore {{count}} combats avant d'entrer au classement.", "empty": "Ce classement est encore vide.", "page": "Page {{page}} / {{total}}", "pageWithReset": "Page {{page}} / {{total}} · Début", "backToFirst": "Revenir à la première page", "goToMyPage": "Aller à la page où vous êtes classé", "previous": "Précédent", "next": "Suivant", "inactive": "Inactif"},
-    "details": "Statistiques", "currentTurn": "Tour en cours",
-    "eyebrow": "COMBAT", "title": "Arène", "confirm": "Préparer le duel", "start": "Chercher un adversaire", "resume": "Reprendre le combat",
+    "details": "Statistiques", "eyebrow": "COMBAT", "title": "Arène", "confirm": "Préparer le duel", "start": "Chercher un adversaire", "resume": "Reprendre le combat",
     "you": "Vous", "opponent": "Adversaire", "energy": "Énergie", "breath": "Souffle", "glory": "Gloire", "league": "Ligue", "pet": "Familier",
     "turn": "Tour {{turn}} / {{max}}", "turns": "Tours joués", "waiting": "L'adversaire choisit son action…", "action": "Action de combat", "actionBreath": "{{value}} souffle",
-    "log": "Journal du combat", "logAction": "{{fighter}} · {{action}}", "effectLabel": "{{target}} · {{stat}}", "target": "Cible", "actor": "Lanceur",
-    "victory": "Victoire", "defeat": "Défaite", "draw": "Match nul", "gloryChange": "{{before}} → {{after}}", "petLove": "Votre familier gagne {{count}} points d'amour.",
+    "log": "Journal du combat", "victory": "Victoire", "defeat": "Défaite", "draw": "Match nul", "gloryChange": "{{before}} → {{after}}", "petLove": "Votre familier gagne {{count}} points d'amour.",
     "stats": {"attack": "Attaque", "defense": "Défense", "speed": "Vitesse", "breathRegen": "Souffle récupéré"},
-    "effects": {"damages": "Dégâts", "reflectedDamages": "Dégâts renvoyés", "attack": "Attaque (%)", "defense": "Défense (%)", "speed": "Vitesse (%)", "breath": "Souffle", "energy": "Énergie", "newAlteration": "Altération"},
-    "status": {"critical": "Coup critique", "missed": "Échec", "normal": "Action réussie", "maxUses": "Utilisations épuisées", "charging": "Préparation", "new": "Nouvelle altération", "randomAction": "Action imposée", "noAction": "Action impossible", "active": "Altération active", "stop": "Fin de l'altération", "generalEffect": "Intervention du familier", "success": "Intervention réussie", "afraid": "Familier effrayé", "failure": "Intervention sans effet", "other": "Effet de combat"},
+    "effects": {"newAlteration": "Altération"},
     "errors": {"energy": "Votre énergie est insuffisante pour lancer un duel.", "noOpponent": "Aucun adversaire n'est disponible pour le moment.", "bugged": "Le combat a été interrompu par une erreur. Votre état est en cours de rafraîchissement."}
   },
   "guildDomain": {
@@ -1061,8 +1018,6 @@
     "relocated": "Le domaine a été déplacé dans cette ville.",
     "missingTreasury": "Il manque {{amount}} à la trésorerie de guilde.",
     "stock": "Stock",
-    "buyOne": "Acheter une unité",
-    "buyMax": "Acheter jusqu'à {{count}}",
     "deposit": "Déposer de l'argent",
     "depositNet": "{{net}} versés à la guilde",
     "credited": "Somme versée à la guilde",
