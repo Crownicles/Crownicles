@@ -149,7 +149,7 @@ const EXPEDITION_STORIES: Record<string, StoryBuilder> = {
 };
 
 function findMaterialStory(data: Data): string {
-	const materialId = num(data, "materialId");
+	const materialId = str(data, "materialId");
 	const rarity = num(data, "materialRarity") ?? 1;
 	return `${smallEventIntro()}${t(`findMaterial.typesStories.${str(data, "materialType")}`)}\n\n${t(`findMaterial.foundStories.${rarity}`, {
 		materialId, materialEmote: icon(`materials.${materialId}`), rarityEmote: icon(`rarity.${rarity - 1}`), quantity: num(data, "quantity")

@@ -38,6 +38,13 @@ describe("small-event stories told as on Discord", () => {
 			.toContain("smallEvents:smallBad.timeLost.occupied.stories");
 	});
 
+	it("names the material found, whose id Core sends as a string", () => {
+		const story = smallEventStory("findMaterial", {materialId: "12", materialRarity: 1, materialType: "alloy", quantity: 4});
+
+		expect(story).toContain("smallEvents:findMaterial.foundStories.1");
+		expect(story).toContain("\"materialId\":\"12\"");
+	});
+
 	it("leaves an event Discord does not narrate to the caller", () => {
 		expect(smallEventStory("unknownEvent", {})).toBeNull();
 	});

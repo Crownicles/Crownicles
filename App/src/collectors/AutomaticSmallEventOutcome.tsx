@@ -4,6 +4,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {EventOutcomeScreen} from "@/src/collectors/EventOutcomeScreen";
 import {formatNumber} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
+import {materialName} from "@/src/display/Resources";
 import {
 	amountEffect, gainEffect, lossEffect, lostAmountEffect, presentEffects
 } from "@/src/display/OutcomeEffects";
@@ -55,7 +56,7 @@ const EFFECTS: Record<string, EffectsBuilder> = {
 		amountEffect(field("money"), num(data, "bonusMoney"), {gain: "money"}),
 		data.consolationTokenGiven === true ? amountEffect(field("tokens"), num(data, "consolationTokensAmount"), {gain: "token"}) : null
 	],
-	findMaterial: data => [gainEffect(i18n.t("app:adventure.choiceResults.fields.material"), `${formatNumber(num(data, "quantity"))} × ${i18n.t(`models:materials.${num(data, "materialId")}`)}`)],
+	findMaterial: data => [gainEffect(i18n.t("app:adventure.choiceResults.fields.material"), `${formatNumber(num(data, "quantity"))} × ${materialName(Number(data.materialId))}`)],
 	winHealth: data => [amountEffect(field("health"), num(data, "amount"), {gain: "health"})],
 	winPersonalXP: data => [amountEffect(field("experience"), num(data, "amount"), {gain: "xp"})],
 	winGuildXP: data => [amountEffect(field("experience"), num(data, "amount"), {gain: "xp"})],
