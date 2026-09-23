@@ -1,7 +1,7 @@
 import {ReactNode, useEffect, useRef, useState} from "react";
 import {ActivityIndicator, Animated, Easing, StyleSheet, Text, View} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
-import * as Haptics from "expo-haptics";
+import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ReportBuyHealReq} from "ws-packets/src/fromClient/ReportBuyHealReq";
 import {ReportUseTokensReq} from "ws-packets/src/fromClient/ReportUseTokensReq";
@@ -60,6 +60,7 @@ import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
 import {Entrance} from "@/src/design/Entrance";
 import {plainStory} from "@/src/display/Markdown";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
+import {SilentAnswer, useReportShortcut} from "@/src/store/useReportShortcut";
 import {BookOpen, CircleAlert, Clock3} from "@/src/design/FightIcons";
 import {PlayerVitals} from "@/src/components/PlayerVitals";
 import {formatMoney} from "@/src/display/Amounts";
@@ -86,9 +87,6 @@ const PERCENTAGE_SCALE = 100;
 
 /** The run to the next stop once tokens are spent: long enough to be seen, short enough not to be waited for. */
 const TRAVEL_DASH = {durationMs: 1_100, strideMs: 110, hop: -7, lean: "10deg"} as const;
-
-/** Twemoji draws the walker and the ferry heading left, while the journey runs to the right. */
-const FACING_DESTINATION = {transform: [{scaleX: -1}]};
 
 /** Where the runner dashes to, and what happens once it is there. */
 type TravelDash = {to: number; onDone: () => void};
@@ -184,23 +182,27 @@ function requestTokenAdvance(): Promise<GameAnswer<ReactionCollectorCreation>> {
 	]);
 }
 
-function acceptIndex(collector: ReactionCollectorCreation): number | null {
-	const accept = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT);
-	return accept >= 0 ? accept : null;
+function acceptAnswer(collector: ReactionCollectorCreation): SilentAnswer | null {
+	const reactionIndex = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT);
+	return reactionIndex >= 0 ? {collectorId: collector.id, reactionIndex} : null;
 }
 
-/** The quick action already names the token cost, so pressing it answers Core's confirmation: the index to send, if it can be sent. */
-function tokenAdvanceConfirmation(answer: GameAnswer<ReactionCollectorCreation>): number | null {
+/** The button already names the token cost, so pressing it answers Core's confirmation, if it can be answered. */
+function tokenAdvanceConfirmation(answer: GameAnswer<ReactionCollectorCreation>): SilentAnswer | null {
 	if (answer.kind !== "answer") return null;
 	const {data} = answer.packet;
 	if (data.type !== REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS || data.data.playerTokens < data.data.cost) return null;
-	return acceptIndex(answer.packet);
+	return acceptAnswer(answer.packet);
 }
 
 /** The heal button already names its price, so pressing it answers Core's confirmation the same way. */
-function healConfirmation(answer: GameAnswer<ReactionCollectorCreation>): number | null {
+function healConfirmation(answer: GameAnswer<ReactionCollectorCreation>): SilentAnswer | null {
 	if (answer.kind !== "answer" || answer.packet.data.type !== REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL) return null;
-	return acceptIndex(answer.packet);
+	return acceptAnswer(answer.packet);
+}
+
+function celebrate(): void {
+	notificationAsync(NotificationFeedbackType.Success).catch(() => undefined);
 }
 
 function requestBuyHeal(): Promise<GameAnswer<ReactionCollectorCreation>> {
@@ -270,6 +272,19 @@ function runnerIcon(packet: ReportTravelSummaryRes): string {
     : AppIcons.getIcon("other.walking");
 }
 
+/** Twemoji draws the walker and the ferry heading left, so it is mirrored to face the destination on the right. */
+function TravelRunner({packet, position, stride}: {packet: ReportTravelSummaryRes; position: Animated.AnimatedInterpolation<string>; stride: Animated.Value}): ReactNode {
+  return <Animated.View style={[styles.runner, {left: position}]}>
+    <Animated.View style={{transform: [
+      {translateY: stride.interpolate({inputRange: [0, 1], outputRange: [0, TRAVEL_DASH.hop]})},
+      {rotate: stride.interpolate({inputRange: [0, 1], outputRange: ["0deg", TRAVEL_DASH.lean]})},
+      {scaleX: -1}
+    ]}}>
+      <TwemojiIcon emoji={runnerIcon(packet)} size={Theme.dimensions.quickActionIcon} />
+    </Animated.View>
+  </Animated.View>;
+}
+
 function TravelPath({packet, progress, dash}: { packet: ReportTravelSummaryRes; progress: number; dash: TravelDash | null }): ReactNode {
   const progressLabel = i18n.t("app:adventure.onTheRoad");
   const reducedMotion = useReducedMotion();
@@ -317,21 +332,13 @@ function TravelPath({packet, progress, dash}: { packet: ReportTravelSummaryRes; 
       <View style={styles.mapNode}>{mapIcon(packet.startMap)}</View>
       <View style={styles.travelTrack}>
         <Animated.View style={[styles.travelFill, {width: position}]} />
-        <Animated.View style={[styles.runner, {left: position}]}>
-          <Animated.View style={{transform: [
-            {translateY: stride.interpolate({inputRange: [0, 1], outputRange: [0, TRAVEL_DASH.hop]})},
-            {rotate: stride.interpolate({inputRange: [0, 1], outputRange: ["0deg", TRAVEL_DASH.lean]})}
-          ]}}>
-            <View style={FACING_DESTINATION}>
-              <TwemojiIcon emoji={runnerIcon(packet)} size={Theme.dimensions.quickActionIcon} />
-            </View>
-          </Animated.View>
-        </Animated.View>
+        <TravelRunner packet={packet} position={position} stride={stride} />
       </View>
       <View style={styles.mapNode}>{mapIcon(packet.endMap)}</View>
     </View>
   );
 }
+
 
 function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): string {
   if (packet.nextStopTime <= currentTime) {
@@ -535,6 +542,18 @@ type Cure = {from: string; onDone: () => void};
 /** The ailment spins away and the healthy face pops in, before the heal result opens. */
 const CURE_MOTION = {leaveMs: 320, holdMs: 450, safetyMs: 2_500} as const;
 
+/** Ends the cure once: when the emblem finishes it, or later if the report refreshes into a layout without the emblem. */
+function once(finish: () => void): () => void {
+	let finished = false;
+	const end = (): void => {
+		if (finished) return;
+		finished = true;
+		finish();
+	};
+	setTimeout(end, CURE_MOTION.safetyMs);
+	return end;
+}
+
 function CureEmblem({cure}: {cure: Cure}): ReactNode {
 	const reducedMotion = useReducedMotion();
 	const [leaving] = useState(() => new Animated.Value(1));
@@ -687,20 +706,13 @@ function ReportAdvance({reportReady, reportAction, waitFor}: {reportReady: boole
 	</>;
 }
 
-/** A single way on: the free report once it is ready, otherwise tokens to reach the stop now, the wait written under it. */
-function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
-	packet: ReportTravelSummaryRes;
-	reportReady: boolean;
+/** Tokens reach the stop now; the wait the report would otherwise need is written under the button. */
+function TokenAdvance({tokens, reportAction, waitFor, advance}: {
+	tokens: NonNullable<ReportTravelSummaryRes["tokens"]>;
 	reportAction: GameMutation<void>;
 	waitFor: string;
 	advance: PendingAction;
 }): ReactNode {
-	const {tokens} = packet;
-	if (reportReady || !tokens || !offersTokens(packet)) {
-		// A greyed report says nothing the figures do not: the cure, when there is one, is the thing to do.
-		if (!reportReady && packet.heal && canCure(packet)) return null;
-		return <ReportAdvance reportReady={reportReady} reportAction={reportAction} waitFor={waitFor} />;
-	}
 	return <>
 		{reportAction.message ? <Note>{reportAction.message}</Note> : null}
 		<ActionBanner
@@ -714,6 +726,30 @@ function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 			onPress={advance.onPress}
 		/>
 	</>;
+}
+
+/** Tokens are only worth spending while the report is not ready yet. */
+function tokenOffer(packet: ReportTravelSummaryRes, reportReady: boolean): NonNullable<ReportTravelSummaryRes["tokens"]> | null {
+	return reportReady || !offersTokens(packet) ? null : packet.tokens ?? null;
+}
+
+/** A greyed report says nothing the figures do not: the cure, when there is one, is the thing to do. */
+function cureReplacesReport(packet: ReportTravelSummaryRes, reportReady: boolean): boolean {
+	return !reportReady && packet.heal !== undefined && canCure(packet);
+}
+
+/** A single way on: the free report once it is ready, otherwise tokens to reach the stop now. */
+function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
+	packet: ReportTravelSummaryRes;
+	reportReady: boolean;
+	reportAction: GameMutation<void>;
+	waitFor: string;
+	advance: PendingAction;
+}): ReactNode {
+	const tokens = tokenOffer(packet, reportReady);
+	if (tokens) return <TokenAdvance tokens={tokens} reportAction={reportAction} waitFor={waitFor} advance={advance} />;
+	if (cureReplacesReport(packet, reportReady)) return null;
+	return <ReportAdvance reportReady={reportReady} reportAction={reportAction} waitFor={waitFor} />;
 }
 
 const ADVENTURE_TOOLS = {
@@ -730,44 +766,73 @@ function AdventureTools({onOpen}: {onOpen: (tool: AdventureTool) => void}): Reac
 	</QuickActions>;
 }
 
-function AdventureSheet({packet, currentTime, advance, heal, reportReady, reportAction, tools, dash, cure}: {
-	packet: ReportTravelSummaryRes;
-	currentTime: number;
+type SheetActions = {
 	advance: PendingAction;
 	heal: PendingAction;
 	reportReady: boolean;
 	reportAction: GameMutation<void>;
+};
+
+/** In a city with an ailment there is no road to draw: only the ailment and what curing it costs. */
+function showsAilmentOnly(packet: ReportTravelSummaryRes): boolean {
+	return isAlterationReport(packet) && packet.isInCity;
+}
+
+function adventureCaption(packet: ReportTravelSummaryRes): string {
+	if (isAlterationReport(packet)) return i18n.t("app:adventure.alteration.eyebrow");
+	return i18n.t(packet.isInCity ? "app:adventure.eyebrow" : "app:adventure.travel.eyebrow");
+}
+
+function AdventureHeader({context, dash, cure}: {context: AdventureContext; dash: TravelDash | null; cure: Cure | null}): ReactNode {
+	const {packet, metrics, currentTime} = context;
+	return <>
+		<Standing
+			emblem={adventureEmblem(packet, cure)}
+			caption={adventureCaption(packet)}
+			title={adventureTitle(context)}
+			subtitle={adventureSubtitle(context)}
+		>
+			{showsAilmentOnly(packet) ? null : <RoutePanel packet={packet} metrics={metrics} dash={dash} />}
+		</Standing>
+		{showsAilmentOnly(packet)
+			? <AlterationPanel packet={packet} metrics={metrics} currentTime={currentTime} />
+			: <Figures items={travelFigures(packet, metrics, currentTime)} />}
+	</>;
+}
+
+function AdventureActions({packet, currentTime, actions}: {packet: ReportTravelSummaryRes; currentTime: number; actions: SheetActions}): ReactNode {
+	return <View style={styles.actions}>
+		<JourneyAction
+			packet={packet}
+			reportReady={actions.reportReady}
+			reportAction={actions.reportAction}
+			waitFor={nextStopDuration(packet, currentTime)}
+			advance={actions.advance}
+		/>
+		{packet.heal && canCure(packet) ? <HealAction heal={packet.heal} action={actions.heal} /> : null}
+	</View>;
+}
+
+function AdventureSheet({packet, currentTime, actions, tools, dash, cure}: {
+	packet: ReportTravelSummaryRes;
+	currentTime: number;
+	actions: SheetActions;
 	tools: ReactNode;
 	dash: TravelDash | null;
 	cure: Cure | null;
 }): ReactNode {
-  const metrics = getTravelMetrics(packet, currentTime);
-  const destination = mapName(packet.endMap);
-  const altered = isAlterationReport(packet);
-  const context: AdventureContext = {packet, currentTime, metrics, destination};
-  const advice = travelAdvice(packet.nextStopTime);
+	const metrics = getTravelMetrics(packet, currentTime);
+	const context: AdventureContext = {packet, currentTime, metrics, destination: mapName(packet.endMap)};
+	const advice = travelAdvice(packet.nextStopTime);
 
-  return (
-    <Screen>
-      <Standing
-        emblem={adventureEmblem(packet, cure)}
-        caption={altered ? i18n.t("app:adventure.alteration.eyebrow") : packet.isInCity ? i18n.t("app:adventure.eyebrow") : i18n.t("app:adventure.travel.eyebrow")}
-        title={adventureTitle(context)}
-        subtitle={adventureSubtitle(context)}
-      >
-        {altered && packet.isInCity ? null : <RoutePanel packet={packet} metrics={metrics} dash={dash} />}
-      </Standing>
-      {altered && packet.isInCity
-        ? <AlterationPanel packet={packet} metrics={metrics} currentTime={currentTime} />
-        : <Figures items={travelFigures(packet, metrics, currentTime)} />}
-      <View style={styles.actions}>
-        <JourneyAction packet={packet} reportReady={reportReady} reportAction={reportAction} waitFor={nextStopDuration(packet, currentTime)} advance={advance} />
-        {packet.heal && canCure(packet) ? <HealAction heal={packet.heal} action={heal} /> : null}
-      </View>
-		{advice ? <Note>{advice}</Note> : null}
-		{tools}
-    </Screen>
-  );
+	return (
+		<Screen>
+			<AdventureHeader context={context} dash={dash} cure={cure} />
+			<AdventureActions packet={packet} currentTime={currentTime} actions={actions} />
+			{advice ? <Note>{advice}</Note> : null}
+			{tools}
+		</Screen>
+	);
 }
 
 function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
@@ -776,12 +841,12 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	const reportAction = useReportAdvance();
 	useReportRefreshAtNextStop(travel ?? null);
 	const queryClient = useQueryClient();
-	const [advancePending, setAdvancePending] = useState(false);
-	const [healPending, setHealPending] = useState(false);
+	const advance = useReportShortcut({request: requestTokenAdvance, confirm: tokenAdvanceConfirmation, outcome: reportEventStore.getTokenSnapshot});
+	const heal = useReportShortcut({request: requestBuyHeal, confirm: healConfirmation, outcome: reportEventStore.getHealSnapshot});
 	const [dash, setDash] = useState<TravelDash | null>(null);
 	const [cure, setCure] = useState<Cure | null>(null);
 	const {
-		open: openCollectors, react: reactToCollector, isAnswerPending, answerWithoutShowing
+		open: openCollectors, react: reactToCollector, isAnswerPending
 	} = useCollectors();
 	const bigEventCollector = openCollectors.find(isBigEventCollector);
 	const tokenUseCollector = openCollectors.find(isTokenUseCollector);
@@ -806,84 +871,38 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	}, [tokenOutcome]);
 
 	const advanceWithTokens = (): void => {
-		if (advancePending) {
-			return;
-		}
-		setAdvancePending(true);
-		const nextStop = travel && !(isAlterationReport(travel) && travel.isInCity)
-			? getTravelMetrics(travel, travel.nextStopTime).progress
-			: null;
-		requestTokenAdvance()
-			.then(answer => {
-				const accept = tokenAdvanceConfirmation(answer);
-				if (accept === null || answer.kind !== "answer") {
-					setAdvancePending(false);
-					return;
-				}
-				// Stays pending until Core reports the tokens spent, so the tile never looks idle in between.
-				const unsubscribe = reportEventStore.subscribe(() => {
-					const outcome = reportEventStore.getTokenSnapshot();
-					if (!outcome) return;
-					unsubscribe();
-					if (outcome.kind !== "used") {
-						setAdvancePending(false);
-						return;
-					}
-					// Discord then asks for a report; here the runner dashes to the stop, which then opens.
-					Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
-					const openStop = (): void => {
-						reportAction.submit()
-							.catch(console.error)
-							.finally(() => {
-								setDash(null);
-								setAdvancePending(false);
-							});
-					};
-					if (nextStop === null) openStop();
-					else setDash({to: nextStop, onDone: openStop});
+		const nextStop = travel && !showsAilmentOnly(travel) ? getTravelMetrics(travel, travel.nextStopTime).progress : null;
+		advance.run((outcome, done) => {
+			if (outcome.kind !== "used") {
+				done();
+				return;
+			}
+			// Discord then asks for a report; here the runner dashes to the stop, which then opens.
+			celebrate();
+			const openStop = (): void => {
+				reportAction.submit().catch(console.error).finally(() => {
+					setDash(null);
+					done();
 				});
-				answerWithoutShowing(answer.packet.id, accept);
-			})
-			.catch(() => setAdvancePending(false));
+			};
+			if (nextStop === null) openStop();
+			else setDash({to: nextStop, onDone: openStop});
+		});
 	};
 
 	const buyHeal = (): void => {
-		if (healPending) {
-			return;
-		}
-		setHealPending(true);
 		const ailment = travel?.effect ? AppIcons.getIconOrNull(`effects.${travel.effect}`) : null;
-		requestBuyHeal()
-			.then(answer => {
-				const accept = healConfirmation(answer);
-				if (accept === null || answer.kind !== "answer") {
-					setHealPending(false);
-					return;
-				}
-				// Stays pending until Core reports the heal; a cure first plays on the emblem, then its result opens.
-				const unsubscribe = reportEventStore.subscribe(() => {
-					const outcome = reportEventStore.getHealSnapshot();
-					if (!outcome) return;
-					unsubscribe();
-					if (outcome.kind !== "accepted" || !ailment) {
-						setHealPending(false);
-						return;
-					}
-					Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined);
-					let finished = false;
-					const finish = (): void => {
-						if (finished) return;
-						finished = true;
-						setCure(null);
-						setHealPending(false);
-					};
-					// The emblem may leave the screen if the report refreshes into another layout.
-					setTimeout(finish, CURE_MOTION.safetyMs);
-					setCure({from: ailment, onDone: finish});
-				});
-				answerWithoutShowing(answer.packet.id, accept);
-			})
-			.catch(() => setHealPending(false));
+		heal.run((outcome, done) => {
+			if (outcome.kind !== "accepted" || !ailment) {
+				done();
+				return;
+			}
+			celebrate();
+			setCure({from: ailment, onDone: once(() => {
+				setCure(null);
+				done();
+			})});
+		});
 	};
 
 	const continueAfterTokenOutcome = (): void => {
@@ -965,10 +984,12 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 			<AdventureSheet
 				packet={travel}
 				currentTime={currentTime}
-				advance={{pending: advancePending, onPress: advanceWithTokens}}
-				heal={{pending: healPending, onPress: buyHeal}}
-				reportReady={reportState.data.reportReady}
-				reportAction={reportAction}
+				actions={{
+					advance: {pending: advance.pending, onPress: advanceWithTokens},
+					heal: {pending: heal.pending, onPress: buyHeal},
+					reportReady: reportState.data.reportReady,
+					reportAction
+				}}
 				tools={tools}
 				dash={dash}
 				cure={cure}

@@ -92,6 +92,37 @@ function actionLabel(action: ItemAction, confirming: boolean): string {
 	return i18n.t(confirming ? "app:inventory.actions.confirm" : `app:inventory.actions.${action}`);
 }
 
+type ActionPress = {confirming: ItemAction | null; pending: boolean; press: (action: ItemAction) => void};
+
+function MainItemAction({choice, pending, press}: {choice: ItemActionChoice; pending: boolean; press: (action: ItemAction) => void}): ReactNode {
+	return <ActionBanner
+		icon={ACTION_ICONS[choice.action]}
+		label={actionLabel(choice.action, false)}
+		pending={pending}
+		{...choice.lock ? {lock: choice.lock} : {}}
+		onPress={(): void => press(choice.action)}
+	/>;
+}
+
+function OtherItemAction({choice, state}: {choice: ItemActionChoice; state: ActionPress}): ReactNode {
+	const confirming = state.confirming === choice.action;
+	return <Button
+		icon={ACTION_ICONS[choice.action]}
+		variant={confirming ? "danger" : "secondary"}
+		disabled={state.pending || Boolean(choice.lock)}
+		onPress={(): void => state.press(choice.action)}
+	>{actionLabel(choice.action, confirming)}</Button>;
+}
+
+function OtherItemActions({choices, state}: {choices: ItemActionChoice[]; state: ActionPress}): ReactNode {
+	const confirmation = state.confirming ? CONFIRMATIONS[state.confirming] : undefined;
+	return <>
+		{choices.length > 0 ? <ButtonRow>{choices.map(choice => <OtherItemAction key={choice.action} choice={choice} state={state} />)}</ButtonRow> : null}
+		{confirmation ? <Note>{i18n.t(confirmation)}</Note> : null}
+		{choices.flatMap(choice => choice.lock ? [<LockHint key={choice.action} lock={choice.lock} />] : [])}
+	</>;
+}
+
 /** The most likely action as the dark bar, the others as buttons under it; parting with the item asks twice. */
 function ItemActions({entry, choices, actions, onDone}: {
 	entry: InventoryItem;
@@ -109,25 +140,9 @@ function ItemActions({entry, choices, actions, onDone}: {
 		actions.run(action, entry).then(onDone).catch(console.error);
 	};
 	const main = isIrreversible(choices[0].action) ? undefined : choices[0];
-	const others = main ? choices.slice(1) : choices;
-	const confirmation = confirming ? CONFIRMATIONS[confirming] : undefined;
 	return <>
-		{main ? <ActionBanner
-			icon={ACTION_ICONS[main.action]}
-			label={actionLabel(main.action, false)}
-			pending={actions.pending}
-			{...main.lock ? {lock: main.lock} : {}}
-			onPress={(): void => press(main.action)}
-		/> : null}
-		{others.length > 0 ? <ButtonRow>{others.map(choice => <Button
-			key={choice.action}
-			icon={ACTION_ICONS[choice.action]}
-			variant={confirming === choice.action ? "danger" : "secondary"}
-			disabled={actions.pending || Boolean(choice.lock)}
-			onPress={(): void => press(choice.action)}
-		>{actionLabel(choice.action, confirming === choice.action)}</Button>)}</ButtonRow> : null}
-		{confirmation ? <Note>{i18n.t(confirmation)}</Note> : null}
-		{others.flatMap(choice => choice.lock ? [<LockHint key={choice.action} lock={choice.lock} />] : [])}
+		{main ? <MainItemAction choice={main} pending={actions.pending} press={press} /> : null}
+		<OtherItemActions choices={main ? choices.slice(1) : choices} state={{confirming, pending: actions.pending, press}} />
 	</>;
 }
 

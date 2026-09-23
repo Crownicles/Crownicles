@@ -19,7 +19,15 @@ import {AppIcons} from "@/src/AppIcons";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
-import {HealOutcome, reportEventStore, TokenOutcome} from "@/src/collectors/ReportEventStore";
+import {reportEventStore} from "@/src/collectors/ReportEventStore";
+import {WebSocketClient} from "@/src/networking/WebSocketClient";
+import {ReportUseTokensAcceptedRes} from "ws-packets/src/fromServer/report/ReportTokenRes";
+import {ReportBuyHealAcceptedRes} from "ws-packets/src/fromServer/report/ReportHealRes";
+
+/** Delivers a packet exactly as Core pushes it through the socket. */
+function pushFromCore(wireName: string, packet: object): void {
+	Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry").dispatch(wireName, packet);
+}
 
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined,
@@ -158,23 +166,17 @@ describe("Adventure screen", () => {
 		const request = jest.spyOn(GameClient, "request")
 			.mockResolvedValueOnce({kind: "answer", packet: confirmation})
 			.mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName});
-		const listeners: (() => void)[] = [];
-		const subscribe = reportEventStore.subscribe;
-		jest.spyOn(reportEventStore, "subscribe").mockImplementation(listener => {
-			listeners.push(listener);
-			return subscribe(listener);
-		});
 
 		await render(<Adventure />);
 		await fireEvent.press(screen.getByText("app:adventure.quick.advanceWithCost"));
 		expect(request).toHaveBeenCalledTimes(1);
 
-		jest.spyOn(reportEventStore, "getTokenSnapshot").mockReturnValue({kind: "used", packet: {tokensSpent: 1, isArrived: false}} as TokenOutcome);
-		await act(async () => listeners[listeners.length - 1]());
+		await act(async () => pushFromCore(ReportUseTokensAcceptedRes.wireName, {tokensSpent: 1, isArrived: false}));
 		expect(request).toHaveBeenCalledTimes(1);
 
 		await waitFor(() => expect(request).toHaveBeenCalledTimes(2), {timeout: 3_000});
 		expect(request.mock.calls[1][0]).toBeInstanceOf(ReportReq);
+		reportEventStore.clearTokens();
 	});
 
 	it("waits for an explicit action before starting the first journey", async () => {
@@ -419,20 +421,14 @@ describe("Adventure screen", () => {
 			reactions: [{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}}, {type: GENERIC_REACTION_KINDS.REFUSE, data: {}}]
 		};
 		jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "answer", packet: confirmation});
-		const listeners: (() => void)[] = [];
-		const subscribe = reportEventStore.subscribe;
-		jest.spyOn(reportEventStore, "subscribe").mockImplementation(listener => {
-			listeners.push(listener);
-			return subscribe(listener);
-		});
 
 		await render(<Adventure />);
 		await fireEvent.press(screen.getByText("app:adventure.quick.healWithCost"));
-		jest.spyOn(reportEventStore, "getHealSnapshot").mockReturnValue({kind: "accepted", packet: {healPrice: 410, isArrived: false}} as HealOutcome);
-		await act(async () => listeners[listeners.length - 1]());
+		await act(async () => pushFromCore(ReportBuyHealAcceptedRes.wireName, {healPrice: 410, isArrived: false}));
 
 		expect(screen.getByText("app:adventure.alteration.eyebrow")).toBeTruthy();
 		await waitFor(() => expect(screen.queryByText("app:adventure.alteration.eyebrow")).toBeNull(), {timeout: 3_000});
+		reportEventStore.clearHeal();
 	});
 
 	it("keeps the alteration report visible behind the cure confirmation", async () => {

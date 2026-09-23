@@ -31,8 +31,18 @@ const OBJECT_FIELDS: Record<string, Record<string, (value: Record<string, unknow
 	SmallEventFindMissionPacket: { mission: value => missionData(value as BaseMission) }
 };
 
+const SCALAR_TYPES = new Set([
+	"string",
+	"number",
+	"boolean"
+]);
+
+function isScalar(value: unknown): value is string | number | boolean | null {
+	return value === null || SCALAR_TYPES.has(typeof value);
+}
+
 function wireValue(value: unknown): SmallEventResultValue | undefined {
-	if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+	if (isScalar(value)) {
 		return value;
 	}
 	if (Array.isArray(value)) {

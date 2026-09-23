@@ -471,22 +471,34 @@ export function LotteryOutcome({outcome, onContinue}: {
 	/>;
 }
 
-/** The Discord account of the witch's brew: the ingredient or advice, what it did, and what it cost. */
-function witchOutcomeDescription(outcome: SmallEventWitchResultRes): string {
-	const effectApplied = outcome.forceEffect || outcome.outcome === WITCH_OUTCOMES.EFFECT;
-	const outcomeKey = outcome.outcome === WITCH_OUTCOMES.EFFECT ? `2.${outcome.effectId}` : String(outcome.outcome + 1);
-	const witchEvent = `${i18n.t(`smallEvents:witch.witchEventNames.${outcome.ingredientId}`)} ${AppIcons.getIconOrNull(`witchSmallEvent.${outcome.ingredientId}`) ?? ""}`.toLowerCase();
-	const timeOutro = effectApplied && outcome.effectId === OCCUPIED_EFFECT && outcome.timeLostMinutes > 0
-		? ` ${anyTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", {lostTime: outcome.timeLostMinutes, lostTimeDisplay: formatDurationMinutes(outcome.timeLostMinutes)})}`
-		: "";
-	const forcedEmoji = outcome.forceEffect && outcome.outcome !== WITCH_OUTCOMES.EFFECT && outcome.effectId !== OCCUPIED_EFFECT
-		? ` ${AppIcons.getIconOrNull(`effects.${outcome.effectId}`) ?? ""}`
-		: "";
-	const recipe = outcome.discoveredRecipe
+function witchEffectApplied(outcome: SmallEventWitchResultRes): boolean {
+	return outcome.forceEffect || outcome.outcome === WITCH_OUTCOMES.EFFECT;
+}
+
+/** Only the occupied effect costs time, and Discord says how much after the outcome. */
+function witchTimeOutro(outcome: SmallEventWitchResultRes): string {
+	if (!witchEffectApplied(outcome) || outcome.effectId !== OCCUPIED_EFFECT || outcome.timeLostMinutes <= 0) return "";
+	return ` ${anyTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", {lostTime: outcome.timeLostMinutes, lostTimeDisplay: formatDurationMinutes(outcome.timeLostMinutes)})}`;
+}
+
+/** A forced effect the outcome text does not already name gets its emoji appended, as on Discord. */
+function witchForcedEmoji(outcome: SmallEventWitchResultRes): string {
+	if (!outcome.forceEffect || outcome.outcome === WITCH_OUTCOMES.EFFECT || outcome.effectId === OCCUPIED_EFFECT) return "";
+	return ` ${AppIcons.getIconOrNull(`effects.${outcome.effectId}`) ?? ""}`;
+}
+
+function witchRecipe(outcome: SmallEventWitchResultRes): string {
+	return outcome.discoveredRecipe
 		? `\n\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {recipe: i18n.t("models:cooking.recipeDisplay", outcome.discoveredRecipe)})}`
 		: "";
+}
+
+/** The Discord account of the witch's brew: the ingredient or advice, what it did, and what it cost. */
+function witchOutcomeDescription(outcome: SmallEventWitchResultRes): string {
+	const outcomeKey = outcome.outcome === WITCH_OUTCOMES.EFFECT ? `2.${outcome.effectId}` : String(outcome.outcome + 1);
+	const witchEvent = `${i18n.t(`smallEvents:witch.witchEventNames.${outcome.ingredientId}`)} ${AppIcons.getIconOrNull(`witchSmallEvent.${outcome.ingredientId}`) ?? ""}`.toLowerCase();
 	return `${anyTranslation(`smallEvents:witch.witchEventResults.${outcome.isIngredient ? "ingredientIntros" : "adviceIntros"}`, {witchEvent})} ${
-		anyTranslation(`smallEvents:witch.witchEventResults.outcomes.${outcomeKey}`, {lifeLoss: outcome.lifeLoss})}${timeOutro}${forcedEmoji}${recipe}`;
+		anyTranslation(`smallEvents:witch.witchEventResults.outcomes.${outcomeKey}`, {lifeLoss: outcome.lifeLoss})}${witchTimeOutro(outcome)}${witchForcedEmoji(outcome)}${witchRecipe(outcome)}`;
 }
 
 function witchEffect(outcome: SmallEventWitchResultRes): Effect | null {

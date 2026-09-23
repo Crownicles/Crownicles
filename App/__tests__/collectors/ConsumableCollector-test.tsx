@@ -6,6 +6,7 @@ import {ConsumableCollector} from "@/src/collectors/ConsumableCollector";
 import {InventoryOutcome} from "@/src/collectors/InventoryOutcome";
 
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));
+jest.mock("@/src/store/usePlayerProfile", () => ({usePlayerProfile: (): object => ({status: "ready", data: {pseudo: "Drapht"}})}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: object): string => `${key}${options ? ` ${JSON.stringify(options)}` : ""}`}}));
 
 describe("daily bonus and potion outcomes", () => {

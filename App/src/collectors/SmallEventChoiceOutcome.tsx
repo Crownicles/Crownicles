@@ -261,27 +261,28 @@ function shopDetails(result: Result<"shop" | "epicShop">): OutcomeDetails {
 	return {story: any(`${SHOP_NAMESPACES[result.event]}.${SHOP_STORY_KEYS[result.outcome]}`), effects: []};
 }
 
-function assertUnhandledResult(result: never): never {
-	throw new Error(`Unhandled small event result: ${JSON.stringify(result)}`);
-}
+type DetailsBuilders = {[Event in SmallEventChoiceResult["event"]]: (result: Result<Event>) => OutcomeDetails};
+
+const RESULT_DETAILS: DetailsBuilders = {
+	altar: result => ({story: altarStory(result), effects: altarEffects(result)}),
+	badPet: badPetDetails,
+	cart: cartDetails,
+	fightPet: fightPetDetails,
+	gardener: gardenerDetails,
+	pveIsland: pveIslandDetails,
+	goblets: gobletsDetails,
+	interactPoor: () => ({story: any("interactOtherPlayers.poor_give_money"), effects: []}),
+	limoges: limogesDetails,
+	petFood: petFoodDetails,
+	recipeShop: recipeShopDetails,
+	shop: shopDetails,
+	epicShop: shopDetails
+};
 
 function resultDetails(result: SmallEventChoiceResult): OutcomeDetails {
-	switch (result.event) {
-		case "altar": return {story: altarStory(result), effects: altarEffects(result)};
-		case "badPet": return badPetDetails(result);
-		case "cart": return cartDetails(result);
-		case "fightPet": return fightPetDetails(result);
-		case "gardener": return gardenerDetails(result);
-		case "pveIsland": return pveIslandDetails(result);
-		case "goblets": return gobletsDetails(result);
-		case "interactPoor": return {story: any("interactOtherPlayers.poor_give_money"), effects: []};
-		case "limoges": return limogesDetails(result);
-		case "petFood": return petFoodDetails(result);
-		case "recipeShop": return recipeShopDetails(result);
-		case "shop":
-		case "epicShop": return shopDetails(result);
-		default: return assertUnhandledResult(result);
-	}
+	// TypeScript cannot tie the looked-up builder to the narrowed result of the same event.
+	const build = RESULT_DETAILS[result.event] as (result: SmallEventChoiceResult) => OutcomeDetails;
+	return build(result);
 }
 
 export function SmallEventChoiceOutcome({outcome, onContinue}: {

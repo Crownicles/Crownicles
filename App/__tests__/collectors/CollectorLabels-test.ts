@@ -150,8 +150,8 @@ describe("CollectorLabels", () => {
 			data: {slot: 2, itemWithDetails: itemDetails}
 		} as const;
 
-		expect(collectorDescription(data)).toBe("app:collector.descriptions.itemChoice");
-		expect(reactionLabel(reaction, data)).toBe("app:collector.choices.replaceItemInSlot");
+		expect(collectorDescription(data)).toBeUndefined();
+		expect(reactionLabel(reaction, data)).toBe("models:weapons.7");
 	});
 
 	it("renders and enables the destination choice which follows a report event", () => {

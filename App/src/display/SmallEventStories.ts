@@ -66,12 +66,26 @@ function pet(data: Data, fields: {type: string; sex: string; nickname?: string})
 
 const OWN_PET = {type: "petTypeId", sex: "petSex", nickname: "petNickname"};
 
-function classDisplay(classId: number, plural = false): string {
-	return i18n.t(plural ? "models:classPluralFormat" : "models:classFormat", {id: classId});
+/** The other player's class, in the singular and plural forms the interaction texts use. */
+function classDisplays(details: Data): {class: string; classPlural: string} {
+	const id = num(details, "classId") ?? 0;
+	return {class: i18n.t("models:classFormat", {id}), classPlural: i18n.t("models:classPluralFormat", {id})};
 }
 
-function itemDisplay(category: string, id: number | undefined): string {
-	return `${icon(`${category}.${id}`)} ${i18n.t(`models:${category}.${id}`)}`;
+/** Where each piece of the other player's equipment is named, keyed by the text parameter that shows it. */
+const EQUIPMENT_FIELDS = {
+	weapon: ["weapons", "weaponId"],
+	armor: ["armors", "armorId"],
+	object: ["objects", "objectId"],
+	potion: ["potions", "potionId"]
+} as const;
+
+function equipmentDisplays(details: Data): Record<keyof typeof EQUIPMENT_FIELDS, string> {
+	const entries = Object.entries(EQUIPMENT_FIELDS).map(([slot, [category, field]]) => {
+		const id = num(details, field);
+		return [slot, `${icon(`${category}.${id}`)} ${i18n.t(`models:${category}.${id}`)}`];
+	});
+	return Object.fromEntries(entries) as Record<keyof typeof EQUIPMENT_FIELDS, string>;
 }
 
 const MINUTE_MS = 60_000;
@@ -158,19 +172,14 @@ function otherPlayerDetails(details: Data): Record<string, unknown> {
 	const hasPet = Boolean(petId) && Boolean(details.petSex);
 	const leagueId = num(details, "leagueId");
 	const bossId = str(details, "bossId");
-	const classId = num(details, "classId") ?? 0;
 	return {
 		level: num(details, "level"),
-		class: classDisplay(classId),
-		classPlural: classDisplay(classId, true),
+		...classDisplays(details),
 		advice: anyTranslation("advices:advices"),
 		petEmote: hasPet ? petIcon({typeId: petId!, sex: sex(details.petSex)}) : "",
 		petName: hasPet ? petName({typeId: petId!, sex: sex(details.petSex), ...str(details, "petName") ? {nickname: str(details, "petName")} : {}}) : "",
 		guildName: str(details, "guildName"),
-		weapon: itemDisplay("weapons", num(details, "weaponId")),
-		armor: itemDisplay("armors", num(details, "armorId")),
-		object: itemDisplay("objects", num(details, "objectId")),
-		potion: itemDisplay("potions", num(details, "potionId")),
+		...equipmentDisplays(details),
 		leagueEmoji: leagueId === undefined ? "" : icon(`leagues.${leagueId}`),
 		leagueName: leagueId === undefined ? "" : i18n.t(`models:leagues.${leagueId}`),
 		gloryRank: num(details, "gloryRank"),
@@ -236,8 +245,10 @@ function smallBadStory(data: Data): string {
 	return smallEventIntro() + any(key, {amount: issue === "timeLost" ? duration(amount) : amount});
 }
 
-function spaceSpecificValue(event: string | undefined, mainValue: number): unknown {
-	return event === "moonPhase" ? i18n.tArray("smallEvents:space.moonPhases")[mainValue] : mainValue;
+/** The moon phase is named; every other sky event shows its number as is. */
+function spaceSpecificValue(data: Data): unknown {
+	const mainValue = num(record(data, "values") ?? {}, "mainValue") ?? 0;
+	return str(data, "chosenEvent") === "moonPhase" ? i18n.tArray("smallEvents:space.moonPhases")[mainValue] : mainValue;
 }
 
 /** Discord posts the sky watching first and completes the same message once the result is known. */
@@ -256,7 +267,7 @@ function spaceResultStory(data: Data): string {
 		actionIntro: any("space.actionIntro"),
 		action: any("space.action"),
 		specific: any(`space.specific.${event}`, {
-			mainValue: spaceSpecificValue(event, mainValue),
+			mainValue: spaceSpecificValue(data),
 			objectWhichWillCrossTheSky: t("space.nObjectsCrossTheSky", {count: mainValue}),
 			days: t(mainValue > 1 ? "space.days_other" : "space.days_one"),
 			randomObjectName: str(values, "randomObjectName"),
@@ -273,8 +284,8 @@ function staffMemberStory(): string {
 	return any("staffMember.context", {pseudo: member, sentence: t(`staffMember.members.${member}`)});
 }
 
-function withIntro(key: string, options: (data: Data) => Record<string, unknown> = (): Record<string, unknown> => ({})): StoryBuilder {
-	return data => smallEventIntro() + any(key, options(data));
+function withIntro(key: string, options?: (data: Data) => Record<string, unknown>): StoryBuilder {
+	return data => smallEventIntro() + any(key, options ? options(data) : {});
 }
 
 const STORIES: Record<string, StoryBuilder> = {
@@ -286,7 +297,7 @@ const STORIES: Record<string, StoryBuilder> = {
 		t(`bonusGuildPVEIsland.events.${num(data, "event")}.${str(data, "result")}.${str(data, "surrounding")}`, {amount: num(data, "amount"), emoteKey: str(data, "emoteKey")})}`,
 	botFacts: withIntro("botFacts.stories", data => ({
 		botFact: t(`botFacts.possibleInfo.${str(data, "information")}`, {
-			count: num(data, "infoNumber"), infoNumber: num(data, "infoNumber"), infoComplement: classDisplay(num(data, "infoComplement") ?? 0)
+			count: num(data, "infoNumber"), infoNumber: num(data, "infoNumber"), infoComplement: i18n.t("models:classFormat", {id: num(data, "infoComplement") ?? 0})
 		})
 	})),
 	class: data => smallEventIntro() + any(`class.${str(data, "classKind")}.${str(data, "interactionName")}`, {amount: num(data, "amount")}),

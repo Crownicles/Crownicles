@@ -9,6 +9,9 @@ import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {AppConstants} from "@/src/AppConstants";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
+/** The server-issued identifier a collector is answered and stopped by. */
+type CollectorId = ReactionCollectorCreation["id"];
+
 type StoreListener = () => void;
 type ResolutionListener = (kind: ReactionCollectorDataKind) => void;
 
@@ -23,6 +26,9 @@ class CollectorsStore {
 
 	/** Collectors a screen answered on the player's behalf: they must never reach the screen. */
 	private readonly hidden = new Set<string>();
+
+	/** Collectors the server already stopped: a deferred track landing after the stop must not bring them back. */
+	private readonly finished = new Set<string>();
 
 	private readonly listeners = new Set<StoreListener>();
 
@@ -53,7 +59,7 @@ class CollectorsStore {
 		};
 	};
 
-	public readonly isAnswerPending = (collectorId: string): boolean => this.answering.has(collectorId);
+	public readonly isAnswerPending = (collectorId: CollectorId): boolean => this.answering.has(collectorId);
 
 	public readonly reset = (): void => {
 		for (const timer of this.timers.values()) {
@@ -64,6 +70,7 @@ class CollectorsStore {
 		this.answeredKinds.clear();
 		this.answering.clear();
 		this.hidden.clear();
+		this.finished.clear();
 		this.snapshot = [];
 		this.notifyListeners();
 	};
@@ -88,7 +95,7 @@ class CollectorsStore {
 	};
 
 	public readonly track = (collector: ReactionCollectorCreation): void => {
-		if (this.open.has(collector.id) || this.hidden.has(collector.id)) {
+		if (this.open.has(collector.id) || this.hidden.has(collector.id) || this.finished.has(collector.id)) {
 			return;
 		}
 
@@ -110,7 +117,7 @@ class CollectorsStore {
 		}
 	};
 
-	public readonly react = (collectorId: string, reactionIndex: number): void => {
+	public readonly react = (collectorId: CollectorId, reactionIndex: number): void => {
 		const collector = this.open.get(collectorId);
 		if (!collector || this.answering.has(collectorId)) {
 			return;
@@ -126,7 +133,7 @@ class CollectorsStore {
 	 * Answers a collector the screen opened on the player's behalf, so it is never shown. The command
 	 * result packet carries the refresh, exactly as it would after a visible answer.
 	 */
-	public readonly answerWithoutShowing = (collectorId: string, reactionIndex: number): void => {
+	public readonly answerWithoutShowing = (collectorId: CollectorId, reactionIndex: number): void => {
 		this.hidden.add(collectorId);
 		this.forget(collectorId);
 		this.send(collectorId, reactionIndex);
@@ -140,7 +147,7 @@ class CollectorsStore {
 		setTimeout(() => this.track(collector), 0);
 	};
 
-	private readonly send = (collectorId: string, reactionIndex: number): void => {
+	private readonly send = (collectorId: CollectorId, reactionIndex: number): void => {
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(ReactionCollectorReactReq, {
 			collectorId,
 			reactionIndex
@@ -148,6 +155,7 @@ class CollectorsStore {
 	};
 
 	private readonly stop = (packet: ReactionCollectorStop): void => {
+		this.finished.add(packet.collectorId);
 		this.forget(packet.collectorId);
 		this.hidden.delete(packet.collectorId);
 		const answeredKind = this.answeredKinds.get(packet.collectorId);
@@ -167,12 +175,12 @@ class CollectorsStore {
 	};
 
 	// The server stop packet owns refresh; focus refetch covers background expiration.
-	private readonly expireLocally = (collectorId: string): void => {
+	private readonly expireLocally = (collectorId: CollectorId): void => {
 		this.answeredKinds.delete(collectorId);
 		this.forget(collectorId);
 	};
 
-	private readonly forget = (collectorId: string): void => {
+	private readonly forget = (collectorId: CollectorId): void => {
 		this.answering.delete(collectorId);
 		const timer = this.timers.get(collectorId);
 		if (timer) {

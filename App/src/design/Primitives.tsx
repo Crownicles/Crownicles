@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
-import * as Haptics from "expo-haptics";
+import {impactAsync, ImpactFeedbackStyle} from "expo-haptics";
 import {
 	Animated,
 	Easing,
@@ -251,9 +251,6 @@ type QuickActionProps = {
 	children: string;
 	onPress?: () => void;
 	disabled?: boolean;
-
-	/** The action is on its way to the server: it spins instead of looking unavailable. */
-	pending?: boolean;
 };
 
 const buttonVariantStyles = {
@@ -369,7 +366,7 @@ export function usePressMotion(onPress: () => void): {scale: Animated.Value; ico
 				if (!reducedMotion) spring(scale, 1, 14);
 			},
 			onPress: (): void => {
-				Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => undefined);
+				impactAsync(ImpactFeedbackStyle.Medium).catch(() => undefined);
 				if (!reducedMotion) {
 					iconScale.setValue(QUICK_ACTION_MOTION.iconPop);
 					spring(iconScale, 1, 18);
@@ -401,46 +398,44 @@ export function PendingMotion({children}: {children: ReactNode}): ReactNode {
 	return <Animated.View style={style} testID="pending-motion">{children}</Animated.View>;
 }
 
-function QuickActionContent({icon, label, pending, iconScale}: {icon: string; label: string; pending: boolean; iconScale?: Animated.Value}): ReactNode {
+function QuickActionContent({icon, label, iconScale}: {icon: string; label: string; iconScale?: Animated.Value}): ReactNode {
 	return <>
-		{pending
-			? <PendingMotion><TwemojiIcon emoji={icon} size={Theme.dimensions.quickActionIcon} /></PendingMotion>
-			: <Animated.View style={iconScale ? {transform: [{scale: iconScale}]} : undefined}>
-				<TwemojiIcon emoji={icon} size={Theme.dimensions.quickActionIcon} />
-			</Animated.View>}
+		<Animated.View style={iconScale ? {transform: [{scale: iconScale}]} : undefined}>
+			<TwemojiIcon emoji={icon} size={Theme.dimensions.quickActionIcon} />
+		</Animated.View>
 		<Text style={styles.quickActionLabel}>{label}</Text>
 	</>;
 }
 
-function PressableQuickAction({icon, children, onPress, disabled, pending}: Required<QuickActionProps>): ReactNode {
+function PressableQuickAction({icon, children, onPress, disabled}: Required<QuickActionProps>): ReactNode {
 	const {scale, iconScale, handlers} = usePressMotion(onPress);
 	return (
 		<Pressable
 			accessibilityRole="button"
-			accessibilityState={{disabled: disabled || pending, busy: pending}}
-			disabled={disabled || pending}
+			accessibilityState={{disabled}}
+			disabled={disabled}
 			{...handlers}
 			style={styles.quickActionSlot}
 		>
 			{({pressed}): ReactNode => <Animated.View style={[
 				styles.quickAction,
 				pressed && styles.quickActionPressed,
-				disabled && !pending && styles.rowDisabled,
+				disabled && styles.rowDisabled,
 				{transform: [{scale}]}
 			]}>
-				<QuickActionContent icon={icon} label={children} pending={pending} iconScale={iconScale} />
+				<QuickActionContent icon={icon} label={children} iconScale={iconScale} />
 			</Animated.View>}
 		</Pressable>
 	);
 }
 
-export function QuickAction({icon, children, onPress, disabled = false, pending = false}: QuickActionProps): ReactNode {
+export function QuickAction({icon, children, onPress, disabled = false}: QuickActionProps): ReactNode {
 	if (!onPress) {
-		return <View style={[styles.quickAction, disabled && !pending && styles.rowDisabled]}>
-			<QuickActionContent icon={icon} label={children} pending={pending} />
+		return <View style={[styles.quickAction, disabled && styles.rowDisabled]}>
+			<QuickActionContent icon={icon} label={children} />
 		</View>;
 	}
-	return <PressableQuickAction icon={icon} onPress={onPress} disabled={disabled} pending={pending}>{children}</PressableQuickAction>;
+	return <PressableQuickAction icon={icon} onPress={onPress} disabled={disabled}>{children}</PressableQuickAction>;
 }
 
 export function EmptyState({ children }: { children: string }): ReactNode {

@@ -94,6 +94,26 @@ function PetHomeActions({actions, patience, noTalisman, menus, onExpedition}: {
 	</>;
 }
 
+/** Only a pet at home without an anchor talisman is kept from leaving on an expedition. */
+function talismanLock(packet: PetRes): Lock | undefined {
+	return packet.hasTalisman || packet.expeditionInProgress ? undefined : {reason: i18n.t("app:expedition.errors.noTalisman")};
+}
+
+function PetLocks({noTalisman, hadEnough, pet}: {noTalisman: Lock | undefined; hadEnough: boolean; pet: PetRes["pet"]}): ReactNode {
+	return <>
+		{noTalisman ? <LockHint lock={noTalisman} testID="pet-expedition-lock" /> : null}
+		{hadEnough ? <LockHint lock={{reason: i18n.t("app:pet.care.enough", {pet: petName(pet)}), icon: Clock3}} testID="pet-caress-lock" /> : null}
+	</>;
+}
+
+function PetRelease({menus}: {menus: CommandMenuState}): ReactNode {
+	return <>
+		<SectionHeader>{i18n.t("app:pet.management.title")}</SectionHeader>
+		<Note>{i18n.t("app:pet.management.irreversible")}</Note>
+		<ButtonRow><Button variant="danger" icon={LogOut} disabled={menus.pending} onPress={(): Promise<void> => menus.open(PET_MANAGEMENT_MENUS.FREE)}>{i18n.t("app:pet.management.free")}</Button></ButtonRow>
+	</>;
+}
+
 /** The pet screen in one glance: who it is, the single thing to do with it, then everything else. */
 export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: PetPage) => void}): ReactNode {
 	const pet = packet.pet;
@@ -102,24 +122,21 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 	const menus = useCommandMenus();
 	const patience = usePetPatience();
 	useGameDeadline(GAME_ENTITIES.PET, expedition?.endTime ?? null);
-	const noTalisman: Lock | undefined = packet.hasTalisman || expedition ? undefined : {reason: i18n.t("app:expedition.errors.noTalisman")};
+	const noTalisman = talismanLock(packet);
 	const openExpedition = (): void => {
 		menus.open(EXPEDITION_MENU).catch(console.error);
 	};
+	const message = actions.message ?? menus.message;
 	return <>
 		<PetStanding pet={pet} strokes={patience.strokes} hadEnough={patience.hadEnough} />
-		{actions.message ? <Note>{actions.message}</Note> : null}
-		{menus.message ? <Note>{menus.message}</Note> : null}
+		{message ? <Note>{message}</Note> : null}
 		<PetMainAction packet={packet} menus={menus} onExpedition={openExpedition} />
 		<QuickActions>
 			{expedition ? null : <PetHomeActions actions={actions} patience={patience} noTalisman={noTalisman} menus={menus} onExpedition={openExpedition} />}
 			<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={(): void => onPage("rename")}>{i18n.t("app:pet.care.rename")}</QuickAction>
 			<QuickAction icon={AppIcons.getIcon("unitValues.money")} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>
 		</QuickActions>
-		{noTalisman ? <LockHint lock={noTalisman} testID="pet-expedition-lock" /> : null}
-		{patience.hadEnough ? <LockHint lock={{reason: i18n.t("app:pet.care.enough", {pet: petName(pet)}), icon: Clock3}} testID="pet-caress-lock" /> : null}
-		<SectionHeader>{i18n.t("app:pet.management.title")}</SectionHeader>
-		<Note>{i18n.t("app:pet.management.irreversible")}</Note>
-		<ButtonRow><Button variant="danger" icon={LogOut} disabled={menus.pending} onPress={(): Promise<void> => menus.open(PET_MANAGEMENT_MENUS.FREE)}>{i18n.t("app:pet.management.free")}</Button></ButtonRow>
+		<PetLocks noTalisman={noTalisman} hadEnough={patience.hadEnough} pet={pet} />
+		<PetRelease menus={menus} />
 	</>;
 }

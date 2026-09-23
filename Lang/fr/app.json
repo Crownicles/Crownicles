@@ -183,9 +183,7 @@
     "itemSlot": "{{category}} · réserve {{slot}}",
     "discard": "Jeter",
     "confirmSell": "Vendre cet objet ?",
-    "confirmDiscard": "Jeter cet objet ?",
-    "sold": "Objet vendu",
-    "discarded": "Objet jeté"
+    "confirmDiscard": "Jeter cet objet ?"
   },
   "equipment": {
     "eyebrow": "Inventaire",
@@ -278,8 +276,6 @@
       "unknown": "Une action est en attente"
     },
     "descriptions": {
-      "itemChoice": "Votre inventaire est plein. Choisissez l'objet à remplacer par {{item}}.",
-      "itemAccept": "Votre inventaire est plein. Choisissez quoi faire de {{item}} pour accueillir l'objet reçu.",
       "unknownItem": "cet objet",
       "destination": "Choisissez la prochaine étape de votre aventure.",
       "unknownDuration": "durée inconnue"
@@ -298,8 +294,6 @@
     },
     "choices": {
       "altarContribute": "Offrir {{amount}} {emote:unitValues.money}",
-      "replaceItem": "Remplacer {{item}}",
-      "replaceItemInSlot": "Remplacer {{item}} (emplacement {{slot}})",
       "drinkPotion": "Boire la potion trouvée",
       "lotteryEasy": "Petite récompense",
       "lotteryMedium": "Récompense moyenne",

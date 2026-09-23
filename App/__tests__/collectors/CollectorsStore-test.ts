@@ -95,6 +95,23 @@ describe("CollectorsStore", () => {
 		jest.useRealTimers();
 	});
 
+	it("never resurrects an answered collector whose deferred tracking lands after its stop", () => {
+		jest.useFakeTimers();
+		jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();
+		const registeredHandler = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		const item = collector("collector-stopped-before-track");
+
+		registeredHandler.dispatch(ReactionCollectorCreation.wireName, item);
+		collectorsStore.answerWithoutShowing(item.id, 0);
+		const stop = new ReactionCollectorStop();
+		Object.assign(stop, {collectorId: item.id, reason: COLLECTOR_STOP_REASONS.RESOLVED});
+		registeredHandler.dispatch(ReactionCollectorStop.wireName, stop);
+		jest.runOnlyPendingTimers();
+
+		expect(collectorsStore.getSnapshot()).toHaveLength(0);
+		jest.useRealTimers();
+	});
+
 	it("still shows a pushed collector nobody answered", () => {
 		jest.useFakeTimers();
 		const registeredHandler = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");

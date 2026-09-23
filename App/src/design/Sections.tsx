@@ -181,6 +181,20 @@ const BANNER_EMOJI_SIZE = 22;
 /** The gain a toast announces, as a number and the game emoji of its unit. */
 export type ToastValue = {amount: string; unit: string};
 
+function ToastContent({emblem, title, subtitle, value}: {emblem?: ReactNode; title: string; subtitle?: string; value?: ToastValue}): ReactNode {
+	return <>
+		{emblem ? <View style={styles.toastEmblem}>{emblem}</View> : null}
+		<View style={styles.body}>
+			<Text style={styles.toastTitle} numberOfLines={1}>{title}</Text>
+			{subtitle ? <Text style={styles.toastSubtitle} numberOfLines={2}>{subtitle}</Text> : null}
+		</View>
+		{value ? <View style={styles.figureValue}>
+			<Text style={styles.toastAmount} numberOfLines={1}>{value.amount}</Text>
+			<UnitIcon unit={value.unit} size={TOAST_UNIT_SIZE} />
+		</View> : null}
+	</>;
+}
+
 /**
  * A short acknowledgement floating over the screen, which leaves by itself; a tap sends it away sooner.
  * `onDismiss` must keep its identity across renders, or the countdown restarts.
@@ -207,15 +221,7 @@ export function Toast({emblem, title, subtitle, value, onDismiss}: {
 				onPress={onDismiss}
 				style={styles.toast}
 			>
-				{emblem ? <View style={styles.toastEmblem}>{emblem}</View> : null}
-				<View style={styles.body}>
-					<Text style={styles.toastTitle} numberOfLines={1}>{title}</Text>
-					{subtitle ? <Text style={styles.toastSubtitle} numberOfLines={2}>{subtitle}</Text> : null}
-				</View>
-				{value ? <View style={styles.figureValue}>
-					<Text style={styles.toastAmount} numberOfLines={1}>{value.amount}</Text>
-					<UnitIcon unit={value.unit} size={TOAST_UNIT_SIZE} />
-				</View> : null}
+				<ToastContent emblem={emblem} title={title} {...subtitle ? {subtitle} : {}} {...value ? {value} : {}} />
 			</Pressable>
 		</Animated.View>
 	</View>;

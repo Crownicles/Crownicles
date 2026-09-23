@@ -82,7 +82,7 @@ export function ItemChoiceCollector({collector, onChoose, submitting}: ItemRewar
 				if (reaction.type !== ITEM_REACTION_KINDS.CHOICE_ITEM) return null;
 				const item = reaction.data.itemWithDetails;
 				return <ExpandableEntry
-					key={index}
+					key={reaction.data.slot}
 					emblem={inventoryItemEmblem(item)}
 					label={itemDisplayName(item)}
 					caption={inventoryItemDetails(item)}

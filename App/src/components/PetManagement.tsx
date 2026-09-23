@@ -7,7 +7,7 @@ import {GuildShelterRes, GuildShelterEmptyRes, PetManagementRes} from "ws-packet
 import {PetRes} from "ws-packets/src/fromServer/pet/PetRes";
 import {PetNotFound} from "ws-packets/src/fromServer/pet/PetNotFound";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
+import {PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTION_KINDS, ReactionCollectorDataOf} from "ws-packets/src/fromServer/collectors";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
@@ -31,27 +31,34 @@ export const PET_MANAGEMENT_MENUS = {
 /** What the player pressed, before the server says which reaction carries it out. */
 type Transfer = {kind: "deposit"} | {kind: "boarder"; slot: number; pet: OwnedPet};
 
+type TransferData = ReactionCollectorDataOf<typeof PET_MANAGEMENT_DATA_KINDS.TRANSFER>["data"];
+
 /** The shelter list carries no identifier, so a boarder is only acted upon while it still matches. */
-function samePet(displayed: OwnedPet, fresh: OwnedPet): boolean {
-	return displayed.typeId === fresh.typeId
-		&& displayed.rarity === fresh.rarity
-		&& displayed.sex === fresh.sex
-		&& displayed.nickname === fresh.nickname;
+function petSignature(pet: OwnedPet): string {
+	return JSON.stringify([pet.typeId, pet.rarity, pet.sex, pet.nickname]);
+}
+
+function reactionOrNull(index: number): number | null {
+	return index < 0 ? null : index;
+}
+
+function takesBoarder(reaction: ReactionCollectorCreation["reactions"][number], petEntityId: number): boolean {
+	return (reaction.type === PET_MANAGEMENT_REACTION_KINDS.WITHDRAW || reaction.type === PET_MANAGEMENT_REACTION_KINDS.SWITCH)
+		&& reaction.data.petEntityId === petEntityId;
+}
+
+function boarderReaction(collector: ReactionCollectorCreation, shelter: TransferData, transfer: Extract<Transfer, {kind: "boarder"}>): number | null {
+	const boarder = shelter.shelterPets[transfer.slot];
+	if (!boarder || petSignature(transfer.pet) !== petSignature(boarder.pet)) return null;
+	return reactionOrNull(collector.reactions.findIndex(reaction => takesBoarder(reaction, boarder.petEntityId)));
 }
 
 /** The reaction to answer with, or nothing when the shelter moved and the player must choose again. */
 function transferReaction(collector: ReactionCollectorCreation, transfer: Transfer): number | null {
 	if (collector.data.type !== PET_MANAGEMENT_DATA_KINDS.TRANSFER) return null;
-	if (transfer.kind === "deposit") {
-		const deposit = collector.reactions.findIndex(reaction => reaction.type === PET_MANAGEMENT_REACTION_KINDS.DEPOSIT);
-		return deposit < 0 ? null : deposit;
-	}
-	const boarder = collector.data.data.shelterPets[transfer.slot];
-	if (!boarder || !samePet(transfer.pet, boarder.pet)) return null;
-	const taken = collector.reactions.findIndex(reaction =>
-		(reaction.type === PET_MANAGEMENT_REACTION_KINDS.WITHDRAW || reaction.type === PET_MANAGEMENT_REACTION_KINDS.SWITCH)
-		&& reaction.data.petEntityId === boarder.petEntityId);
-	return taken < 0 ? null : taken;
+	return transfer.kind === "deposit"
+		? reactionOrNull(collector.reactions.findIndex(reaction => reaction.type === PET_MANAGEMENT_REACTION_KINDS.DEPOSIT))
+		: boarderReaction(collector, collector.data.data, transfer);
 }
 
 function PetEntry({pet, action, expanded, onToggle, testID}: {

@@ -2,6 +2,8 @@ import {ReactNode} from "react";
 import {InventoryOutcome as Outcome} from "@/src/store/useInventoryOutcome";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {itemDisplayName} from "@/src/collectors/CollectorLabels";
+import {usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
+import {plainStory} from "@/src/display/Markdown";
 import {Toast, ToastValue} from "@/src/design/Sections";
 import {formatNumber} from "@/src/display/Amounts";
 import {effectAmount, formatDurationMinutes, itemEffect, natureUnit} from "@/src/display/ItemEffects";
@@ -21,13 +23,13 @@ function gain(amount: string, unit: string): ToastValue {
 	return {amount: i18n.t("app:inventoryActions.gain", {amount}), unit};
 }
 
-function outcomeToast(outcome: Outcome): OutcomeToast {
+function outcomeToast(outcome: Outcome, pseudo: string): OutcomeToast {
 	switch (outcome.kind) {
 		case "sale": {
 			const {price, item} = outcome.packet;
 			return price > 0
-				? {unit: "money", title: i18n.t("app:sale.sold"), subtitle: itemDisplayName(item), value: gain(formatNumber(price), "money")}
-				: {unit: NO_GAIN_UNIT, title: i18n.t("app:sale.discarded"), subtitle: itemDisplayName(item)};
+				? {unit: "money", title: plainStory(i18n.t("commands:sell.soldMessageTitle", {pseudo})), subtitle: itemDisplayName(item), value: gain(formatNumber(price), "money")}
+				: {unit: NO_GAIN_UNIT, title: plainStory(i18n.t("commands:sell.potionDestroyedTitle")), subtitle: itemDisplayName(item)};
 		}
 		case "cooldown": {
 			const availableAt = outcome.packet.lastDailyTimestamp + outcome.packet.cooldownHours * MILLISECONDS_PER_HOUR;
@@ -52,7 +54,7 @@ function outcomeToast(outcome: Outcome): OutcomeToast {
 
 /** What an inventory action just did, said in passing rather than in a window the player must close. */
 export function InventoryOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
-	const toast = outcomeToast(outcome);
+	const toast = outcomeToast(outcome, usePlayerPseudo());
 	return <Toast
 		emblem={<UnitIcon unit={toast.unit} size={EMBLEM_SIZE} />}
 		title={toast.title}

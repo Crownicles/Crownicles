@@ -21,6 +21,18 @@ type ClientMessage = {
 	data: FromClientPacket;
 };
 
+/** Who a verified socket belongs to, and the rights Keycloak grants them. */
+type ConnectedPlayer = {
+	keycloakId: string;
+	groups: string[];
+};
+
+/** The packet a player sent that could not reach the back end. */
+type FailedClientPacket = {
+	keycloakId: string;
+	packetName: string;
+};
+
 /**
  * Parse a raw client message, or return null when it is not a packet
  * @param message
@@ -45,15 +57,13 @@ function parseClientMessage(message: string): ClientMessage | null {
 /**
  * Log why a client packet could not reach the back end
  * @param error
- * @param keycloakId
- * @param packetName
+ * @param packet
  */
-function logClientPacketFailure(error: unknown, keycloakId: string, packetName: string): void {
+function logClientPacketFailure(error: unknown, packet: FailedClientPacket): void {
 	if (error instanceof InvalidClientPacketError) {
 		// Dropping the packet is enough: a client mistake must not show up as a server error
 		CrowniclesLogger.warn("Rejected client packet", {
-			keycloakId,
-			packetName,
+			...packet,
 			reason: error.message
 		});
 		return;
@@ -64,10 +74,11 @@ function logClientPacketFailure(error: unknown, keycloakId: string, packetName: 
 /**
  * Handle the message received from the client
  * @param ws
- * @param keycloakId
- * @param groups
+ * @param player
  */
-function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]): void {
+function handleClientMessage(ws: WebSocket, {
+	keycloakId, groups
+}: ConnectedPlayer): void {
 	ws.on("message", async (message: string) => {
 		const parsedMessage = parseClientMessage(message);
 		if (!parsedMessage) {
@@ -104,7 +115,10 @@ function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]
 			MqttManager.globalMqttClient.sendToBackEnd(context, await translator(context, parsedMessage.data));
 		}
 		catch (error) {
-			logClientPacketFailure(error, keycloakId, parsedMessage.name);
+			logClientPacketFailure(error, {
+				keycloakId,
+				packetName: parsedMessage.name
+			});
 		}
 	});
 }
@@ -169,16 +183,13 @@ export class WebSocketServer {
 				if (!connectionData) {
 					return;
 				}
-				const {
-					keycloakId,
-					groups
-				} = connectionData;
+				const { keycloakId } = connectionData;
 
 				// Close the previous connection if it exists and save the new one
 				WebSocketServer.replaceConnection(keycloakId, ws);
 
 				// Handle the message received from the client
-				handleClientMessage(ws, keycloakId, groups);
+				handleClientMessage(ws, connectionData);
 
 				// Handle the close event
 				ws.on("close", () => WebSocketServer.handleClose(ws, req, keycloakId));
@@ -218,10 +229,7 @@ export class WebSocketServer {
 	 * @param ws
 	 * @param req
 	 */
-	static async verifyClientConnection(ws: WebSocket, req: IncomingMessage): Promise<{
-		keycloakId: string;
-		groups: string[];
-	} | null> {
+	static async verifyClientConnection(ws: WebSocket, req: IncomingMessage): Promise<ConnectedPlayer | null> {
 		// Check if the request has a token
 		const urlSplit = req.url?.split("token=");
 		if (!urlSplit || urlSplit.length < 2) {

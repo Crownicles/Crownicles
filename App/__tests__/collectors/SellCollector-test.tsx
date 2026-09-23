@@ -6,6 +6,7 @@ import {InventoryOutcome} from "@/src/collectors/InventoryOutcome";
 
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));
+jest.mock("@/src/store/usePlayerProfile", () => ({usePlayerProfile: (): object => ({status: "ready", data: {pseudo: "Drapht"}})}));
 
 function collector(): ReactionCollectorCreation {
 	return {id: "sale", endTime: Date.now() + 60_000, data: {type: SELL_DATA_KINDS.COLLECTOR, data: {}}, reactions: [
@@ -48,7 +49,7 @@ describe("sale confirmation", () => {
 	it("announces the actual credited amount in a toast", async () => {
 		const onContinue = jest.fn();
 		await render(<InventoryOutcome outcome={{kind: "sale", packet: {item: {id: 7, category: 0}, price: 132}}} onContinue={onContinue} />);
-		expect(screen.getByText("app:sale.sold")).toBeTruthy();
+		expect(screen.getByText("commands:sell.soldMessageTitle")).toBeTruthy();
 		await fireEvent.press(screen.getByRole("alert"));
 		expect(onContinue).toHaveBeenCalledTimes(1);
 	});
