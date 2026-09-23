@@ -4,7 +4,7 @@ import {GENERIC_REACTION_KINDS, SMALL_EVENT_DATA_KINDS} from "ws-packets/src/fro
 import {formatMoney} from "@/src/display/Amounts";
 import {collectorDescription, eventPromptIcon} from "@/src/collectors/CollectorLabels";
 import {EventJournal} from "@/src/collectors/EventOutcomeScreen";
-import {Screen} from "@/src/design/Primitives";
+import {Button, Screen} from "@/src/design/Primitives";
 import {ActionBanner, BackButton} from "@/src/design/Sections";
 import {SwipeBack} from "@/src/design/SwipeBack";
 import {Check} from "@/src/design/FightIcons";
@@ -44,6 +44,7 @@ export function RecipeShopCollector({collector, onChoose, submitting}: {
 					pending={locked}
 					onPress={(): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT))}
 				/>
+				<Button disabled={locked} onPress={leave}>{i18n.t("app:collector.shop.refuse")}</Button>
 			</Screen>
 		</SwipeBack>
 	);

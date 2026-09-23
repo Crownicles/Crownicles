@@ -3,10 +3,10 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {
 	GENERIC_REACTION_KINDS, ReactionCollectorData, SMALL_EVENT_DATA_KINDS
 } from "ws-packets/src/fromServer/collectors";
-import {formatMoney} from "@/src/display/Amounts";
+import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {collectorDescription, eventPromptIcon, itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {EventJournal} from "@/src/collectors/EventOutcomeScreen";
-import {Screen} from "@/src/design/Primitives";
+import {Button, Screen} from "@/src/design/Primitives";
 import {ActionBanner, BackButton, Figures} from "@/src/design/Sections";
 import {SwipeBack} from "@/src/design/SwipeBack";
 import {Check} from "@/src/design/FightIcons";
@@ -20,7 +20,7 @@ function itemFigures(data: ShopSmallEventData): {caption: string; value: string;
 	return [
 		{caption: i18n.t("app:collector.shop.fields.rarity"), value: i18n.t(`items:raritiesWithoutEmote.${data.data.item.rarity}`)},
 		...("itemLevel" in data.data.item ? [{caption: i18n.t("app:collector.shop.fields.level"), value: String(data.data.item.itemLevel)}] : []),
-		{caption: i18n.t("app:collector.shop.fields.price"), value: formatMoney(data.data.price), unit: "money"}
+		{caption: i18n.t("app:collector.shop.fields.price"), value: formatNumber(data.data.price), unit: "money"}
 	];
 }
 
@@ -58,6 +58,7 @@ export function SmallEventShopCollector({collector, onChoose, submitting}: {
 					pending={locked}
 					onPress={(): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT))}
 				/>
+				<Button disabled={locked} onPress={leave}>{i18n.t("app:collector.shop.refuse")}</Button>
 			</Screen>
 		</SwipeBack>
 	);

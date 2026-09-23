@@ -292,6 +292,22 @@ const collectorScenarios: CollectorScenario[] = [
 		}
 	},
 	{
+		name: "lets the player walk past a travelling merchant without buying",
+		collector: () => confirmationCollector("recipe-shop-refused", {
+			type: SMALL_EVENT_DATA_KINDS.RECIPE_SHOP,
+			data: {
+				source: "farmer",
+				recipe: {recipeId: "healthPotion", level: 2, recipeType: "POTION_HEALTH"},
+				recipeCost: 300
+			}
+		}),
+		choiceText: "app:collector.shop.refuse",
+		expectedIndex: 1,
+		assertView: () => {
+			expect(screen.getByText("app:city.shop.buy")).toBeTruthy();
+		}
+	},
+	{
 		name: "shows the recipe and price offered during travel",
 		collector: () => confirmationCollector("recipe-shop", {
 			type: SMALL_EVENT_DATA_KINDS.RECIPE_SHOP,

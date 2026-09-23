@@ -287,6 +287,7 @@
       "unknownDuration": "durée inconnue"
     },
     "shop": {
+      "refuse": "Passer son chemin",
       "fields": {
         "rarity": "Rareté",
         "level": "Niveau",
