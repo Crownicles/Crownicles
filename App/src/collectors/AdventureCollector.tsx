@@ -32,6 +32,7 @@ import {ActionBanner, Card, Effect, ExpandableEntry, ExpandableList, Fact, Sheet
 import {Check} from "@/src/design/FightIcons";
 import {EventJournal, EventOutcomeScreen, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {plainStory} from "@/src/display/Markdown";
+import {TokenMerchantAway} from "@/src/components/TokenMerchantAway";
 import {
 	amountEffect, gainEffect, lossEffect, lostAmountEffect, presentEffects
 } from "@/src/display/OutcomeEffects";
@@ -340,6 +341,9 @@ export function TokenOutcome({outcome, onContinue}: {
 	onContinue: () => void;
 }): ReactNode {
 	const pseudo = usePlayerPseudo();
+	if (outcome.kind === "tooMuch") {
+		return <TokenMerchantAway onContinue={onContinue} />;
+	}
 	const key = `commands:report.tokenMerchant.${TOKEN_OUTCOME_KEYS[outcome.kind]}`;
 	const received = tokensReceived(outcome);
 	return <EventOutcomeScreen

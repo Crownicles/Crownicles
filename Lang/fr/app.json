@@ -415,6 +415,15 @@
     },
     "tokens": {
       "continue": "Continuer",
+      "away": {
+        "eyebrow": "Marchand de jetons",
+        "title": "Vous avez raflé tout son stock !",
+        "description": "Le marchand ne peut plus rien vous céder pour l'instant. Il repart remplir ses sacoches, le sourire aux lèvres : vos routes se recroiseront bientôt.",
+        "meanwhile": "En attendant",
+        "dailyGift": "De nouveaux jetons vous sont offerts chaque jour.",
+        "expeditions": "Les expéditions de votre familier en rapportent aussi.",
+        "continue": "Reprendre la route"
+      },
       "fields": {
         "costMoney": "Coût total",
         "remainingMoney": "Argent restant",

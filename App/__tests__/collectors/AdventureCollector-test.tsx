@@ -414,6 +414,16 @@ const outcomeScenarios: OutcomeScenario[] = [
 		}
 	},
 	{
+		name: "sends the player back on the road with ways to earn tokens once the merchant has sold out",
+		renderOutcome: onContinue => <TokenOutcome outcome={{kind: "tooMuch", packet: {}}} onContinue={onContinue} />,
+		continueText: "app:adventure.tokens.away.continue",
+		assertView: () => {
+			expect(screen.getByText("app:adventure.tokens.away.title")).toBeTruthy();
+			expect(screen.getByText("app:adventure.tokens.away.dailyGift")).toBeTruthy();
+			expect(screen.getByText("app:adventure.tokens.away.expeditions")).toBeTruthy();
+		}
+	},
+	{
 		name: "shows the cure result before returning to the journey",
 		renderOutcome: onContinue => <HealOutcome outcome={{kind: "accepted", packet: {healPrice: 410, isArrived: false}}} onContinue={onContinue} />,
 		continueText: "app:adventure.heal.continue",
