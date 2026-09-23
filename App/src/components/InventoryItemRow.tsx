@@ -10,8 +10,12 @@ import {consumableDescription} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
 import {EntryRow} from "@/src/design/Sections";
 
-function statValue(stat: MainItemStat): number {
+export function statValue(stat: MainItemStat): number {
 	return Math.min(stat.baseValue + stat.upgradeValue, stat.maxValue);
+}
+
+export function isMainItem(item: ItemWithDetails): item is MainItem {
+	return !("nature" in item);
 }
 
 function mainItemStats(item: MainItem): string {
@@ -36,8 +40,8 @@ export function inventoryItemEmblem(item: ItemWithDetails): ReactNode {
 	return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : undefined;
 }
 
-export function InventoryItemRow({item, location, onPress, disabled}: {item: ItemWithDetails; location: string; onPress?: () => void; disabled?: boolean}): ReactNode {
-	if (item.id === 0) return <EntryRow title={i18n.t("app:profile.inventory.emptySlot")} end={location} />;
+export function InventoryItemRow({item, location, onPress, disabled}: {item: ItemWithDetails; location?: string; onPress?: () => void; disabled?: boolean}): ReactNode {
+	if (item.id === 0) return <EntryRow title={i18n.t("app:profile.inventory.emptySlot")} {...location === undefined ? {} : {end: location}} />;
 	return <EntryRow
 		emblem={inventoryItemEmblem(item)}
 		title={itemDisplayName(item)}

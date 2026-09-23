@@ -1,5 +1,5 @@
-import {ReactNode} from "react";
-import {ActivityIndicator, Modal, Pressable, StyleSheet, Text, View} from "react-native";
+import {ReactNode, useEffect, useState} from "react";
+import {ActivityIndicator, Animated, Modal, Pressable, StyleSheet, Text, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
@@ -57,11 +57,78 @@ const styles = StyleSheet.create({
 	gaugeTop: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md},
 	gaugeValue: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
 	gaugeTrack: {height: 5, borderRadius: 999, backgroundColor: Theme.colors.line, overflow: "hidden"},
-	gaugeFill: {height: "100%", borderRadius: 999}
+	gaugeFill: {height: "100%", borderRadius: 999},
+	toastLayer: {...StyleSheet.absoluteFill, paddingHorizontal: Theme.spacing.lg},
+	toast: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: Theme.spacing.md,
+		paddingVertical: Theme.spacing.md,
+		paddingHorizontal: Theme.spacing.lg,
+		borderRadius: Theme.radius,
+		backgroundColor: Theme.colors.ink,
+		shadowColor: Theme.colors.ink,
+		shadowOpacity: 0.25,
+		shadowRadius: 14,
+		shadowOffset: {width: 0, height: 6},
+		elevation: 8
+	},
+	toastEmblem: {width: 40, height: 40, flexShrink: 0, borderRadius: 20, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.paper},
+	toastTitle: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.paper},
+	toastSubtitle: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.faint},
+	toastAmount: {fontFamily: Theme.fonts.extraBold, fontSize: Theme.fontSize.title, color: Theme.colors.paper, fontVariant: ["tabular-nums"]}
 });
 
 /** Why an action cannot be taken, so the screen can say it instead of letting the player find out. */
 export type Lock = {reason: string; icon?: LucideIcon};
+
+const TOAST_DURATION_MS = 4_000;
+const TOAST_ENTRANCE_MS = 220;
+const TOAST_ENTRANCE_OFFSET = -24;
+const TOAST_UNIT_SIZE = 18;
+
+/** The gain a toast announces, as a number and the game emoji of its unit. */
+export type ToastValue = {amount: string; unit: string};
+
+/**
+ * A short acknowledgement floating over the screen, which leaves by itself; a tap sends it away sooner.
+ * `onDismiss` must keep its identity across renders, or the countdown restarts.
+ */
+export function Toast({emblem, title, subtitle, value, onDismiss}: {
+	emblem?: ReactNode;
+	title: string;
+	subtitle?: string;
+	value?: ToastValue;
+	onDismiss: () => void;
+}): ReactNode {
+	const insets = useSafeAreaInsets();
+	const [entrance] = useState(() => new Animated.Value(0));
+	useEffect(() => {
+		Animated.timing(entrance, {toValue: 1, duration: TOAST_ENTRANCE_MS, useNativeDriver: true}).start();
+		const timer = setTimeout(onDismiss, TOAST_DURATION_MS);
+		return (): void => clearTimeout(timer);
+	}, [entrance, onDismiss]);
+	return <View pointerEvents="box-none" style={[styles.toastLayer, {paddingTop: insets.top + Theme.spacing.sm}]}>
+		<Animated.View style={{opacity: entrance, transform: [{translateY: entrance.interpolate({inputRange: [0, 1], outputRange: [TOAST_ENTRANCE_OFFSET, 0]})}]}}>
+			<Pressable
+				accessibilityRole="alert"
+				accessibilityLiveRegion="polite"
+				onPress={onDismiss}
+				style={styles.toast}
+			>
+				{emblem ? <View style={styles.toastEmblem}>{emblem}</View> : null}
+				<View style={styles.body}>
+					<Text style={styles.toastTitle} numberOfLines={1}>{title}</Text>
+					{subtitle ? <Text style={styles.toastSubtitle} numberOfLines={2}>{subtitle}</Text> : null}
+				</View>
+				{value ? <View style={styles.figureValue}>
+					<Text style={styles.toastAmount} numberOfLines={1}>{value.amount}</Text>
+					<UnitIcon unit={value.unit} size={TOAST_UNIT_SIZE} />
+				</View> : null}
+			</Pressable>
+		</Animated.View>
+	</View>;
+}
 
 /** A full-screen modal is its own window on iOS, where `SafeAreaView` measures nothing: apply the insets here. */
 export function ModalSurface({children, tone = "paper"}: {children: ReactNode; tone?: "paper" | "wash"}): ReactNode {

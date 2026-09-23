@@ -25,25 +25,38 @@ describe("daily bonus and potion outcomes", () => {
 		expect(choose).toHaveBeenCalledWith(2);
 	});
 
-	it("uses the server cooldown in hours and updates the remaining duration", async () => {
+	it("says how long the daily bonus still recharges", async () => {
 		jest.useFakeTimers();
 		try {
 			jest.setSystemTime(1_900_000_000_000);
 			await render(<InventoryOutcome outcome={{kind: "cooldown", packet: {cooldownHours: 2, lastDailyTimestamp: Date.now() - 3_600_000}}} onContinue={jest.fn()} />);
 			expect(screen.getByText(/hoursMinutes.*hours.*1.*minutes.*0/)).toBeTruthy();
-			await act(async () => { await jest.advanceTimersByTimeAsync(60_000); });
-			expect(screen.getByText(/duration.minutes.*count.*59/)).toBeTruthy();
 		}
 		finally {
 			jest.useRealTimers();
 		}
 	});
 
-	it("shows the effect returned by Core and acknowledges it", async () => {
+	it("announces the gained effect in a toast the player can send away", async () => {
 		const close = jest.fn();
 		await render(<InventoryOutcome outcome={{kind: "daily", packet: {itemNature: ItemNature.HEALTH, value: 25}}} onContinue={close} />);
 		expect(screen.getByText(/potionsNaturesWithoutEmote.1.*25/)).toBeTruthy();
-		await fireEvent.press(screen.getByLabelText("app:sale.continue"));
+		expect(screen.getByText(/inventoryActions.gain.*25/)).toBeTruthy();
+		await fireEvent.press(screen.getByRole("alert"));
 		expect(close).toHaveBeenCalledTimes(1);
+	});
+
+	it("lets the toast leave by itself", async () => {
+		jest.useFakeTimers();
+		try {
+			const close = jest.fn();
+			await render(<InventoryOutcome outcome={{kind: "drink", packet: {itemNature: ItemNature.ENERGY, value: 40}}} onContinue={close} />);
+			expect(close).not.toHaveBeenCalled();
+			await act(async () => { await jest.advanceTimersByTimeAsync(4_000); });
+			expect(close).toHaveBeenCalledTimes(1);
+		}
+		finally {
+			jest.useRealTimers();
+		}
 	});
 });

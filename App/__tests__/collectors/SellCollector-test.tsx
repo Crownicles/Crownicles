@@ -1,7 +1,8 @@
 import {fireEvent, render, screen} from "@testing-library/react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, SELL_DATA_KINDS, SELL_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
-import {SaleOutcome, SellCollector} from "@/src/collectors/SellCollector";
+import {SellCollector} from "@/src/collectors/SellCollector";
+import {InventoryOutcome} from "@/src/collectors/InventoryOutcome";
 
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));
@@ -44,12 +45,11 @@ describe("sale confirmation", () => {
 		expect(choose).toHaveBeenCalledWith(3);
 	});
 
-	it("renders the actual credited amount and dismisses the receipt", async () => {
+	it("announces the actual credited amount in a toast", async () => {
 		const onContinue = jest.fn();
-		await render(<SaleOutcome outcome={{item: {id: 7, category: 0}, price: 132}} onContinue={onContinue} />);
-		expect(screen.getByText("app:sale.received")).toBeTruthy();
-		expect(screen.getByText(/132/)).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:sale.continue"));
+		await render(<InventoryOutcome outcome={{kind: "sale", packet: {item: {id: 7, category: 0}, price: 132}}} onContinue={onContinue} />);
+		expect(screen.getByText("app:sale.sold")).toBeTruthy();
+		await fireEvent.press(screen.getByRole("alert"));
 		expect(onContinue).toHaveBeenCalledTimes(1);
 	});
 

@@ -149,9 +149,10 @@
   },
   "inventory": {
     "views": {"equipped": "Équipement", "reserve": "Réserve", "materials": "Matériaux", "plants": "Plantes"},
-    "actions": {"title": "Actions", "equip": "Équiper", "sell": "Vendre", "drink": "Boire", "daily": "Bonus journalier"},
+    "actions": {"equip": "Équiper", "deposit": "Ranger", "drink": "Boire", "daily": "Bonus journalier", "sell": "Vendre", "discard": "Jeter", "confirm": "Confirmer"},
     "itemSummary": "{{rarity}} · {{details}}",
     "level": "Niveau {{level}}",
+    "enchantment": "Enchantement",
     "noMaterials": "Vous ne transportez aucun matériau.",
     "noPlants": "Vous ne transportez aucune plante ni graine.",
     "seed": "Graine",
@@ -161,6 +162,7 @@
     "artifacts": {"title": "Artefacts", "expedition": "Talisman d'ancrage", "clone": "Talisman de clonage", "harvest": "Cœur sylvestre"}
   },
   "inventoryActions": {
+    "gain": "+{{amount}}",
     "noPotion": "Vous ne possédez aucune potion utilisable hors combat.",
     "drinkTitle": "Boire une potion",
     "drunk": "Potion consommée"
@@ -183,9 +185,7 @@
     "confirmSell": "Vendre cet objet ?",
     "confirmDiscard": "Jeter cet objet ?",
     "sold": "Objet vendu",
-    "discarded": "Objet jeté",
-    "received": "Argent reçu",
-    "continue": "Retour à l'inventaire"
+    "discarded": "Objet jeté"
   },
   "equipment": {
     "eyebrow": "Inventaire",
@@ -205,7 +205,6 @@
     "emptyReserve": "Aucun objet en réserve.",
     "capacity": "Réserve : {{count}} / {{max}}",
     "close": "Terminer",
-    "noItems": "Votre inventaire ne contient aucun équipement.",
     "confirm": {
       "equip": "Équiper cet objet ?",
       "deposit": "Déposer cet objet ?"

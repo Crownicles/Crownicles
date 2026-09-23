@@ -21,6 +21,9 @@ class CollectorsStore {
 
 	private readonly answering = new Set<string>();
 
+	/** Collectors a screen answered on the player's behalf: they must never reach the screen. */
+	private readonly hidden = new Set<string>();
+
 	private readonly listeners = new Set<StoreListener>();
 
 	private readonly resolutionListeners = new Set<ResolutionListener>();
@@ -29,7 +32,7 @@ class CollectorsStore {
 
 	public constructor() {
 		const client = WebSocketClient.getInstance();
-		client.registerPushedPacketHandler(ReactionCollectorCreation.wireName, this.track);
+		client.registerPushedPacketHandler(ReactionCollectorCreation.wireName, this.trackPushed);
 		client.registerPushedPacketHandler(ReactionCollectorStop.wireName, this.stop);
 		client.registerPushedPacketHandler(ReportStayInCity.wireName, this.stayInCity);
 	}
@@ -60,6 +63,7 @@ class CollectorsStore {
 		this.timers.clear();
 		this.answeredKinds.clear();
 		this.answering.clear();
+		this.hidden.clear();
 		this.snapshot = [];
 		this.notifyListeners();
 	};
@@ -84,7 +88,7 @@ class CollectorsStore {
 	};
 
 	public readonly track = (collector: ReactionCollectorCreation): void => {
-		if (this.open.has(collector.id)) {
+		if (this.open.has(collector.id) || this.hidden.has(collector.id)) {
 			return;
 		}
 
@@ -122,7 +126,19 @@ class CollectorsStore {
 	 * Answers a collector the screen opened on the player's behalf, so it is never shown. The command
 	 * result packet carries the refresh, exactly as it would after a visible answer.
 	 */
-	public readonly answerWithoutShowing = (collectorId: string, reactionIndex: number): void => this.send(collectorId, reactionIndex);
+	public readonly answerWithoutShowing = (collectorId: string, reactionIndex: number): void => {
+		this.hidden.add(collectorId);
+		this.forget(collectorId);
+		this.send(collectorId, reactionIndex);
+	};
+
+	/**
+	 * A collector answering a request is pushed too, before the requesting screen had a chance to
+	 * answer it itself: waiting one tick lets that answer hide it instead of flashing its window.
+	 */
+	private readonly trackPushed = (collector: ReactionCollectorCreation): void => {
+		setTimeout(() => this.track(collector), 0);
+	};
 
 	private readonly send = (collectorId: string, reactionIndex: number): void => {
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(ReactionCollectorReactReq, {
@@ -133,6 +149,7 @@ class CollectorsStore {
 
 	private readonly stop = (packet: ReactionCollectorStop): void => {
 		this.forget(packet.collectorId);
+		this.hidden.delete(packet.collectorId);
 		const answeredKind = this.answeredKinds.get(packet.collectorId);
 		this.answeredKinds.delete(packet.collectorId);
 		if (answeredKind && packet.reason === COLLECTOR_STOP_REASONS.RESOLVED) {

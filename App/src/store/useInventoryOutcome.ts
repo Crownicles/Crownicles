@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {SellCancelRes, SellRes} from "ws-packets/src/fromServer/inventory/SellRes";
 import {DailyBonusCancelRes, DailyBonusCooldownRes, DailyBonusRes} from "ws-packets/src/fromServer/inventory/DailyBonusRes";
@@ -17,6 +17,7 @@ type InventoryOutcomeState = {outcome: InventoryOutcome | null; clear: () => voi
 
 export function useInventoryOutcome(): InventoryOutcomeState {
 	const [outcome, setOutcome] = useState<InventoryOutcome | null>(null);
+	const clear = useCallback((): void => setOutcome(null), []);
 	const queryClient = useQueryClient();
 	useEffect(() => {
 		const client = WebSocketClient.getInstance();
@@ -41,5 +42,5 @@ export function useInventoryOutcome(): InventoryOutcomeState {
 		];
 		return (): void => { unregister.forEach(stop => stop()); };
 	}, [queryClient]);
-	return {outcome, clear: (): void => setOutcome(null)};
+	return {outcome, clear};
 }

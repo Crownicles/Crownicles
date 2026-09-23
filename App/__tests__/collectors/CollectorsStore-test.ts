@@ -77,6 +77,36 @@ describe("CollectorsStore", () => {
 		unsubscribe();
 	});
 
+	it("never shows a pushed collector the requesting screen answered itself", () => {
+		jest.useFakeTimers();
+		jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();
+		const listener = jest.fn();
+		const unsubscribe = collectorsStore.subscribe(listener);
+		const registeredHandler = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		const item = collector("collector-answered-by-screen");
+
+		registeredHandler.dispatch(ReactionCollectorCreation.wireName, item);
+		collectorsStore.answerWithoutShowing(item.id, 0);
+		jest.runOnlyPendingTimers();
+
+		expect(collectorsStore.getSnapshot()).toHaveLength(0);
+		expect(listener).not.toHaveBeenCalled();
+		unsubscribe();
+		jest.useRealTimers();
+	});
+
+	it("still shows a pushed collector nobody answered", () => {
+		jest.useFakeTimers();
+		const registeredHandler = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+
+		registeredHandler.dispatch(ReactionCollectorCreation.wireName, collector("collector-pushed"));
+		expect(collectorsStore.getSnapshot()).toHaveLength(0);
+		jest.runOnlyPendingTimers();
+
+		expect(collectorsStore.getSnapshot()).toHaveLength(1);
+		jest.useRealTimers();
+	});
+
 	it("refreshes the report when the server confirms an automatic city stay", () => {
 		const resolution = jest.fn();
 		const unsubscribe = collectorsStore.subscribeToResolution(resolution);
