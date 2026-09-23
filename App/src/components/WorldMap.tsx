@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Image, Modal, Pressable, StyleSheet} from "react-native";
+import {Image, Pressable, StyleSheet} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {MapReq} from "ws-packets/src/fromClient/MapReq";
 import {MapRes} from "ws-packets/src/fromServer/report/MapRes";
@@ -9,7 +9,7 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {MapViewer} from "@/src/components/MapViewer";
 import {Button, Note} from "@/src/design/Primitives";
-import {LockHint, Standing} from "@/src/design/Sections";
+import {LockHint, SheetModal, Standing} from "@/src/design/Sections";
 import {Maximize2} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Theme} from "@/src/design/Theme";
@@ -49,9 +49,9 @@ export function MapImage({packet}: {packet: MapRes}): ReactNode {
 			<Image accessibilityLabel={i18n.t("app:map.image")} source={{uri}} style={[styles.map, {aspectRatio: ratio}]} resizeMode="contain" onError={fail} />
 		</Pressable>
 		<LockHint lock={{reason: i18n.t("app:map.expandHint"), icon: Maximize2}} />
-		<Modal visible={expanded} animationType="slide" onRequestClose={(): void => setExpanded(false)}>
+		<SheetModal visible={expanded} onRequestClose={(): void => setExpanded(false)}>
 			<MapViewer uri={uri} ratio={ratio} onClose={(): void => setExpanded(false)} onError={fail} />
-		</Modal>
+		</SheetModal>
 	</>;
 }
 

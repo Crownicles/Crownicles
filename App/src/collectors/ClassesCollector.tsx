@@ -1,10 +1,9 @@
 import {ReactNode} from "react";
-import {Modal} from "react-native";
 import {AvailableClass} from "ws-packets/src/objects/ClassDetails";
 import {CLASSES_DATA_KINDS, CLASSES_REACTION_KINDS, GENERIC_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, ModalSurface, Standing} from "@/src/design/Sections";
+import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {ClassStatistics} from "@/src/components/ClassStatistics";
@@ -60,7 +59,7 @@ export function ClassesCollector({collector, onChoose, submitting}: {collector: 
 	if (collector.data.type !== CLASSES_DATA_KINDS.COLLECTOR) return null;
 	const close = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
 
-	return <Modal visible animationType="slide" onRequestClose={close}>
+	return <SheetModal visible onRequestClose={close}>
 		<ModalSurface>
 			<Screen>
 				<BackButton label={i18n.t("app:collector.refuse")} onClose={close} />
@@ -82,5 +81,5 @@ export function ClassesCollector({collector, onChoose, submitting}: {collector: 
 				<Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note>
 			</Screen>
 		</ModalSurface>
-	</Modal>;
+	</SheetModal>;
 }

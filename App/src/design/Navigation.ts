@@ -76,6 +76,7 @@ export const navigationStyles = StyleSheet.create({
 	profileName: {
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.title,
+		color: Theme.colors.ink,
 		textAlign: "center"
 	},
 	profileLevel: {

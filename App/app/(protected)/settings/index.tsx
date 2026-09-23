@@ -17,6 +17,8 @@ import {GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {Theme} from "@/src/design/Theme";
+import {storedThemePreference, THEME_PREFERENCES, ThemePreference} from "@/src/design/ThemePreference";
+import {applyThemePreference} from "@/src/design/useThemeFollower";
 import {BackButton} from "@/src/design/Sections";
 import {Button as DesignButton} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
@@ -33,6 +35,7 @@ const styles = StyleSheet.create({
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.hero,
 		marginBottom: Theme.spacing.xl,
+		color: Theme.colors.ink,
 	},
 	item: {
 		flexDirection: 'row',
@@ -77,6 +80,7 @@ export default function Index() {
 	const preferences = React.useContext(PreferencesContext);
 	const authState = React.useContext(AuthContext);
 	const {speed, setSpeed} = useFightSpeed();
+	const [themePreference, setThemePreference] = React.useState<ThemePreference>(storedThemePreference);
 	const [pingLoading, setPingLoading] = React.useState(false);
 	const [pingTime, setPingTime] = React.useState<number | null>(null);
 	const version = useGameQuery(GAME_ENTITIES.VERSION, () => GameClient.request(makeFromClientPacket(VersionReq, {}), VersionRes));
@@ -103,6 +107,17 @@ export default function Index() {
 					<SegmentedControl label={i18n.t("app:battle.speed.label")} value={speed} onChange={setSpeed} options={[
 						{value: FIGHT_SPEEDS.NORMAL, label: i18n.t("app:battle.speed.normal")},
 						{value: FIGHT_SPEEDS.FAST, label: i18n.t("app:battle.speed.fast")}
+					]} />
+				</View>
+				<View style={styles.combatPreference}>
+					<Text style={styles.preferenceLabel}>{i18n.t("app:settings.theme.label")}</Text>
+					<SegmentedControl label={i18n.t("app:settings.theme.label")} value={themePreference} onChange={(preference): void => {
+						setThemePreference(preference);
+						applyThemePreference(preference);
+					}} options={[
+						{value: THEME_PREFERENCES.SYSTEM, label: i18n.t("app:settings.theme.system")},
+						{value: THEME_PREFERENCES.LIGHT, label: i18n.t("app:settings.theme.light")},
+						{value: THEME_PREFERENCES.DARK, label: i18n.t("app:settings.theme.dark")}
 					]} />
 				</View>
 				<ListItem>

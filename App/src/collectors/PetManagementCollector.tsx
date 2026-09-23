@@ -1,9 +1,8 @@
 import {ReactNode} from "react";
-import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PET_MANAGEMENT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {Note, Screen} from "@/src/design/Primitives";
-import {Figures, ModalSurface, Standing} from "@/src/design/Sections";
+import {Figures, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {PetTransferScreen} from "@/src/collectors/PetTransferScreen";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
@@ -44,11 +43,11 @@ export function PetManagementCollector({collector, onChoose, submitting}: Manage
 	 * waiting for the server to stop the collector. Waiting would leave the player behind a locked
 	 * screen if that packet never arrived, and would put the result window on top of this one.
 	 */
-	return <Modal visible={!answered} animationType="slide" onRequestClose={close}>
+	return <SheetModal visible={!answered} onRequestClose={close}>
 		<ModalSurface>
 			{collector.data.type === PET_MANAGEMENT_DATA_KINDS.TRANSFER
 				? <PetTransferScreen collector={collector} locked={locked} onChoose={answer} onClose={close} />
 				: <ManagementMenu collector={collector} onChoose={answer} submitting={locked} />}
 		</ModalSurface>
-	</Modal>;
+	</SheetModal>;
 }

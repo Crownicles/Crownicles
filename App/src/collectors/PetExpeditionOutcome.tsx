@@ -1,9 +1,8 @@
 import {ReactNode} from "react";
-import {Modal} from "react-native";
 import {PetExpeditionResolveRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
 import {ExpeditionOutcome} from "@/src/store/useExpeditionOutcome";
 import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
-import {Figures, ModalSurface, Standing} from "@/src/design/Sections";
+import {Figures, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
 import {ExpeditionRewardDetails} from "@/src/components/ExpeditionDetails";
 import {ExpeditionStarted, ExpeditionStatus} from "@/src/components/ExpeditionJourney";
 import {expeditionLocationName, expeditionPetName} from "@/src/display/PetExpedition";
@@ -47,7 +46,7 @@ function OutcomeMenu({outcome, onContinue}: {outcome: ExpeditionOutcome; onConti
 }
 
 export function PetExpeditionOutcome({outcome, onContinue}: {outcome: ExpeditionOutcome; onContinue: () => void}): ReactNode {
-	return <Modal visible animationType="slide" onRequestClose={onContinue}>
+	return <SheetModal visible onRequestClose={onContinue}>
 		<ModalSurface><OutcomeMenu outcome={outcome} onContinue={onContinue} /></ModalSurface>
-	</Modal>;
+	</SheetModal>;
 }

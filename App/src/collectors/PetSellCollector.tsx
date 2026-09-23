@@ -1,10 +1,9 @@
 import {ReactNode} from "react";
-import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PET_MANAGEMENT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {PET_SALE_ROLES, PetSaleOffer} from "ws-packets/src/objects/PetManagement";
 import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, ExpandableList, Fact, Figures, ModalSurface, Standing} from "@/src/design/Sections";
+import {ActionBanner, BackButton, ExpandableList, Fact, Figures, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {petIcon, petName} from "@/src/display/PetDisplay";
@@ -55,7 +54,7 @@ export function PetSellCollector({collector, onChoose, submitting}: {collector: 
 	const close = (): void => {
 		if (!observer) answer(refuseIndex);
 	};
-	return <Modal visible animationType="slide" onRequestClose={close}>
+	return <SheetModal visible onRequestClose={close}>
 		<ModalSurface>
 			<Screen>
 				{observer ? null : <BackButton label={i18n.t(offer.role === PET_SALE_ROLES.SELLER ? "app:pet.sale.cancel" : "app:pet.sale.refuse")} onClose={close} />}
@@ -77,5 +76,5 @@ export function PetSellCollector({collector, onChoose, submitting}: {collector: 
 				<Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note>
 			</Screen>
 		</ModalSurface>
-	</Modal>;
+	</SheetModal>;
 }

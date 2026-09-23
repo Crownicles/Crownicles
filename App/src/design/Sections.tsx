@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Animated, Modal, Pressable, StyleSheet, Text, View} from "react-native";
+import {Animated, Modal, ModalProps, Pressable, StyleSheet, Text, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
 		paddingHorizontal: Theme.spacing.lg,
 		borderRadius: Theme.radius,
 		backgroundColor: Theme.colors.ink,
-		shadowColor: Theme.colors.ink,
+		shadowColor: Theme.colors.shadow,
 		shadowOpacity: 0.25,
 		shadowRadius: 14,
 		shadowOffset: {width: 0, height: 6},
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
 		gap: Theme.spacing.lg,
 		borderRadius: Theme.radius,
 		backgroundColor: Theme.colors.paper,
-		shadowColor: Theme.colors.ink,
+		shadowColor: Theme.colors.shadow,
 		shadowOpacity: 0.06,
 		shadowRadius: 12,
 		shadowOffset: {width: 0, height: 4},
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
 		marginBottom: Theme.spacing.xl,
 		borderRadius: Theme.radius,
 		backgroundColor: Theme.colors.paper,
-		shadowColor: Theme.colors.ink,
+		shadowColor: Theme.colors.shadow,
 		shadowOpacity: 0.06,
 		shadowRadius: 12,
 		shadowOffset: {width: 0, height: 4},
@@ -229,6 +229,11 @@ export function Toast({emblem, title, subtitle, value, onDismiss}: {
 	</View>;
 }
 
+/** React Native paints a full-screen modal white until its content lays out: the palette avoids a flash in dark mode. */
+export function SheetModal(props: Omit<ModalProps, "animationType" | "backdropColor">): ReactNode {
+	return <Modal animationType="slide" backdropColor={Theme.colors.paper} {...props} />;
+}
+
 /** A full-screen modal is its own window on iOS, where `SafeAreaView` measures nothing: apply the insets here. */
 export function ModalSurface({children, tone = "paper"}: {children: ReactNode; tone?: "paper" | "wash"}): ReactNode {
 	const insets = useSafeAreaInsets();
@@ -291,7 +296,7 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 	onShow?: () => void;
 	children: ReactNode;
 }): ReactNode {
-	return <Modal visible animationType="slide" onRequestClose={onClose} {...onShow ? {onShow} : {}}>
+	return <SheetModal visible onRequestClose={onClose} {...onShow ? {onShow} : {}}>
 		<ModalSurface>
 			{/* A window is left the same way a pushed page is: the button, the hardware back, or the edge gesture. */}
 			<SwipeBack onClose={onClose}>
@@ -302,7 +307,7 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 				</Screen>
 			</SwipeBack>
 		</ModalSurface>
-	</Modal>;
+	</SheetModal>;
 }
 
 /** One headline number, with the game emoji of its unit when it has one. */

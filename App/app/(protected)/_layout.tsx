@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
 	},
 	blockingText: {
 		fontFamily: Theme.fonts.regular,
+		color: Theme.colors.ink,
 		marginBottom: Theme.spacing.md,
 		textAlign: "center"
 	},

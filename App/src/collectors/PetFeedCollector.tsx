@@ -1,5 +1,4 @@
 import {ReactNode, useState} from "react";
-import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PET_FEED_DATA_KINDS, PET_FEED_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
@@ -10,7 +9,7 @@ import {formatMoney} from "@/src/display/Amounts";
 import {petIcon, petName} from "@/src/display/PetDisplay";
 import {CircleAlert, Clock3, Utensils} from "@/src/design/FightIcons";
 import {Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, Lock, LockHint, ModalSurface, Standing} from "@/src/design/Sections";
+import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, Lock, LockHint, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
@@ -102,7 +101,7 @@ export function PetFeedCollector(props: PetFeedProps): ReactNode {
 	};
 	const data = props.collector.data;
 	if (data.type !== PET_FEED_DATA_KINDS.GUILD && data.type !== PET_FEED_DATA_KINDS.PERSONAL) return null;
-	return <Modal visible animationType="slide" onRequestClose={close}>
+	return <SheetModal visible onRequestClose={close}>
 		<ModalSurface><FeedMenu {...props} pet={data.data.pet} onChoose={answer} submitting={locked} onClose={close} /></ModalSurface>
-	</Modal>;
+	</SheetModal>;
 }

@@ -26,7 +26,7 @@ export function edgeSwipeCloses(gesture: Pick<Gesture, "dx" | "vx">, width: numb
 
 const sheetStyle = {
 	backgroundColor: Theme.colors.wash,
-	shadowColor: Theme.colors.ink,
+	shadowColor: Theme.colors.shadow,
 	shadowOpacity: 0.16,
 	shadowRadius: 12,
 	shadowOffset: {

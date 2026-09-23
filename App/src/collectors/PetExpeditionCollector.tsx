@@ -1,9 +1,8 @@
 import {ReactNode} from "react";
-import {Modal} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
 import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, ModalSurface, Standing} from "@/src/design/Sections";
+import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {ExpeditionOptionDetails, ExpeditionProgressDetails} from "@/src/components/ExpeditionDetails";
@@ -124,7 +123,7 @@ export function PetExpeditionCollector({collector, onChoose, submitting}: {colle
 	};
 	const close = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CANCEL || reaction.type === EXPEDITION_REACTION_KINDS.CLOSE));
 	if (!isExpeditionCollector(collector.data)) return null;
-	return <Modal visible animationType="slide" onRequestClose={close}>
+	return <SheetModal visible onRequestClose={close}>
 		<ModalSurface>
 			<ExpeditionMenu
 				collector={collector}
@@ -135,5 +134,5 @@ export function PetExpeditionCollector({collector, onChoose, submitting}: {colle
 				secondsLeft={secondsLeft}
 			/>
 		</ModalSurface>
-	</Modal>;
+	</SheetModal>;
 }
