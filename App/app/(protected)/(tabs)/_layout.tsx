@@ -11,6 +11,8 @@ import {navigationStyles, tabBarOptions} from "@/src/design/Navigation";
 import {SwipeBackBoundary, useSwipeBackOpen} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {DeathScreen} from "@/src/components/DeathScreen";
+import {usePlayerIsDead} from "@/src/store/usePlayerIsDead";
 
 const screenStyles = {flex: 1, backgroundColor: Theme.colors.paper};
 
@@ -78,6 +80,9 @@ function TabPager(): ReactNode {
 }
 
 export default function TabLayout(): ReactNode {
+	if (usePlayerIsDead()) {
+		return <DeathScreen />;
+	}
 	return (
 		<View style={screenStyles}>
 			<TabsHeader />

@@ -70,7 +70,8 @@ import {i18n} from "@/src/translations/i18n";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {WorldMap} from "@/src/components/WorldMap";
 import {DetailScreen} from "@/src/design/DetailScreen";
-import {RespawnAction, PrisonerRelease} from "@/src/components/Utilities";
+import {PrisonerRelease} from "@/src/components/Utilities";
+import {DeathScreen} from "@/src/components/DeathScreen";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
@@ -479,10 +480,7 @@ function CollectorOutcomeView({
 
 function ReportFailure({state}: {state: Extract<RequestState<ReportViewRes>, {status: "failed"}>}): ReactNode {
 	const rejection = state.rejection;
-	if (rejection?.type === COMMAND_REJECTIONS.EFFECT && rejection.currentEffectId === PLAYER_EFFECTS.DEAD) return <Screen>
-		<Standing caption={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:utilities.respawn")} subtitle={i18n.t("app:utilities.respawnWarning")} />
-		<RespawnAction />
-	</Screen>;
+	if (rejection?.type === COMMAND_REJECTIONS.EFFECT && rejection.currentEffectId === PLAYER_EFFECTS.DEAD) return <DeathScreen />;
 	return <Screen><GameQueryContent state={state} entity={GAME_ENTITIES.REPORT}>{() => null}</GameQueryContent></Screen>;
 }
 

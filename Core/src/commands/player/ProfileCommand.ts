@@ -32,6 +32,7 @@ import {
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import { RespawnConstants } from "../../../../Lib/src/constants/RespawnConstants";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 import { getCookingGrade } from "../../../../Lib/src/constants/CookingConstants";
@@ -104,17 +105,13 @@ function resolveMapTypeId(destinationId: number | null): string | undefined {
 /**
  * Build effect data for profile
  */
-function buildEffectData(player: Player): {
-	effect: string;
-	timeLeft: number;
-	healed: boolean;
-	hasTimeDisplay: boolean;
-} {
+function buildEffectData(player: Player): CommandProfilePacketRes["playerData"]["effect"] {
 	return {
 		effect: player.effectId,
 		timeLeft: player.effectEndDate.valueOf() - Date.now(),
 		healed: (new Date() >= player.effectEndDate) && player.effectId !== Effect.NO_EFFECT.id,
-		hasTimeDisplay: player.isUnderEffect()
+		hasTimeDisplay: player.isUnderEffect(),
+		...player.effectId === Effect.DEAD.id ? { respawnScoreLoss: RespawnConstants.getLostScore(player.score) } : {}
 	};
 }
 

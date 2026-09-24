@@ -34,7 +34,7 @@ export default class RespawnCommand {
 			response.push(makePacket(CommandRespawnErrorAlreadyAlive, {}));
 			return;
 		}
-		const lostScore = Math.round(player.score * RespawnConstants.SCORE_REMOVAL_MULTIPLIER);
+		const lostScore = RespawnConstants.getLostScore(player.score);
 		await player.addHealth({
 			amount: player.getMaxHealth() - player.getHealthValue(),
 			response,

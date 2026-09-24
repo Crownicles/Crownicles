@@ -765,12 +765,20 @@
     }
   },
   "map": {"title": "Carte", "image": "Carte du monde et position du personnage", "expand": "Agrandir la carte", "expandHint": "Touchez la carte pour l'ouvrir, puis pincez pour zoomer.", "imageError": "La carte n'a pas pu être chargée.", "position": "Position", "destination": "Destination"},
+  "death": {
+    "eyebrow": "Aventure interrompue",
+    "description": "Vous pouvez revivre pour pouvoir continuer à jouer et reprendre l'aventure après ce petit… accident.",
+    "comeback": "En revivant",
+    "scoreLossCaption": "Score retiré durant l'opération",
+    "health": "Vos points de vie sont entièrement restaurés.",
+    "journey": "Votre voyage repart de votre dernière étape."
+  },
   "utilities": {
     "title": "Services au joueur",
     "unlock": "Libérer un joueur", "prisoner": "Joueur à libérer", "prisonerRank": "Classement du joueur à libérer",
-    "boat": "Rejoindre le bateau", "respawn": "Réapparaître", "respawnWarning": "La réapparition vous rend le contrôle du personnage, mais retire une partie de votre score.",
+    "boat": "Rejoindre le bateau", "respawn": "Revivre", "respawnWarning": "Une partie de votre score est retirée durant l'opération.",
     "result": "Résultat de l'action", "moneyError": "Votre solde de {{money}} ne suffit pas pour payer cette caution.",
-    "respawned": "Vous êtes de nouveau en vie. La réapparition a retiré {{lostScore}} points de score.", "boatJoined": "Vous avez rejoint le bateau. Votre trajet a rapporté {{score}} points.", "unlocked": "{{name}} a été libéré.",
+    "respawned": "Vous avez été ressuscité avec succès ! Cependant, {{lostScore}} points ont été retirés de votre score durant l'opération.", "boatJoined": "Vous avez rejoint le bateau. Votre trajet a rapporté {{score}} points.", "unlocked": "{{name}} a été libéré.",
     "errors": {"alreadyAlive": "Votre personnage est déjà en vie.", "noPlayer": "Ce joueur n'a pas été trouvé.", "notJailed": "Ce joueur n'est pas en prison.", "self": "Vous ne pouvez pas payer votre propre caution.", "cancelled": "L'action a été annulée.", "noGuild": "Vous devez appartenir à une guilde.", "tooManyRuns": "Vous avez atteint la limite de voyages vers l'île cette semaine.", "noMemberOnBoat": "Aucun membre de votre guilde n'est disponible sur un bateau.", "notTravelling": "Vous devez être en voyage pour rejoindre un bateau.", "noEnergy": "Votre énergie est insuffisante.", "noGems": "Vous n'avez pas assez de gemmes pour cette traversée."}
   },
   "battle": {

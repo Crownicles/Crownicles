@@ -10,8 +10,12 @@ export function usePlayerUtilityOutcome(): UtilityOutcomeState {
 	const [outcome, setOutcome] = useState<PlayerUtilityOutcome | null>(null);
 	const queryClient = useQueryClient();
 	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<PlayerUtilityRes>(PlayerUtilityRes.wireName, packet => {
-		setOutcome(packet.outcome);
-		if (packet.outcome.type === "error" || packet.outcome.type === "money") return;
+		if (packet.outcome.type === "error" || packet.outcome.type === "money") {
+			setOutcome(packet.outcome);
+			return;
+		}
+		// The death screen already announced the cost and played the resurrection: leaving it is the result.
+		if (packet.outcome.type !== "respawn") setOutcome(packet.outcome);
 		for (const entity of [GAME_ENTITIES.PROFILE, GAME_ENTITIES.REPORT, GAME_ENTITIES.MISSIONS, GAME_ENTITIES.MAP, GAME_ENTITIES.GUILD]) queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(console.error);
 	}), [queryClient]);
 	return {outcome, clear: (): void => setOutcome(null)};

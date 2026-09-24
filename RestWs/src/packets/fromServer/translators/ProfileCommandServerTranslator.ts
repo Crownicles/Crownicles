@@ -92,7 +92,8 @@ export function translateProfileData(pseudo: string, playerData: ProfilePlayerDa
 			effect: playerData.effect.effect,
 			healed: playerData.effect.healed,
 			timeLeft: playerData.effect.timeLeft,
-			hasTimeDisplay: playerData.effect.hasTimeDisplay
+			hasTimeDisplay: playerData.effect.hasTimeDisplay,
+			...playerData.effect.respawnScoreLoss === undefined ? {} : { respawnScoreLoss: playerData.effect.respawnScoreLoss }
 		},
 		missions: {
 			gems: playerData.missions.gems,

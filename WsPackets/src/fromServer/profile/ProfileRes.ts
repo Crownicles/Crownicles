@@ -46,6 +46,9 @@ type Effect = {
 	effect: string;
 
 	hasTimeDisplay: boolean;
+
+	/** Score a respawn would take away, sent only while the player is dead. */
+	respawnScoreLoss?: number;
 };
 
 type Pet = {
