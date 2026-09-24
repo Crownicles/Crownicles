@@ -71,4 +71,12 @@ describe("live combat narrative", () => {
 		await render(<FightEventStory record={{sequence: 3, entry: {fightId: "story", fighter: {isSelf: true, name: "Drapht"}, fightActionId: "defenseBuff", status: "normal", customMessage: true}}} />);
 		expect(screen.getByText("Drapht se prépare à se défendre...")).toBeTruthy();
 	});
+	it("names the substituted action in both the title and the story", async () => {
+		const record: FightLogRecord = {sequence: 4, entry: {fightId: "story", fighter: {isSelf: true, name: "Drapht"}, fightActionId: "counterAttack", usedFightActionId: "fireAttack", status: "normal"}};
+		await render(<FightLog entries={[record]} />);
+		expect(screen.getByText("Attaque riposte → Attaque feu")).toBeTruthy();
+		await render(<FightEventStory record={record} />);
+		expect(screen.getByText(/attaque feu/i)).toBeTruthy();
+		expect(screen.queryByText(/riposte/i)).toBeNull();
+	});
 });

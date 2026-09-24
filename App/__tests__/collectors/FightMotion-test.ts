@@ -7,6 +7,7 @@ declare const __dirname: string;
 const {readdirSync} = jest.requireActual<{readdirSync: (path: string) => string[]}>("node:fs");
 const {join} = jest.requireActual<{join: (...paths: string[]) => string}>("node:path");
 const ENTRY: FightLogEntry = {fightId: "duel", fighter: {isSelf: true}, fightActionId: "simpleAttack", status: "normal"};
+const PET: NonNullable<FightLogEntry["pet"]> = {typeId: 1, nickname: "Milo", rarity: 1, sex: "m", loveLevel: 5, force: 10, feedDelay: 0};
 
 describe("combat animation meaning", () => {
 	it("assigns a visual to every action in the game's catalogue", () => {
@@ -52,5 +53,26 @@ describe("combat animation meaning", () => {
 		const shield = fightCue({...ENTRY, fightActionId: "defenseBuff"});
 		expect(fighterMotionFrames(shield, "opponent").every(value => value === 0)).toBe(true);
 		expect(fighterScaleFrames(shield, "opponent")).toEqual([1, 1, 1, 1, 1, 1]);
+	});
+	it("shows a pet's preparatory general effect as a preparation on its own side, not a landed hit", () => {
+		const warning = fightCue({...ENTRY, fightActionId: "horn", status: "generalEffect", pet: PET});
+		expect(warning).toMatchObject({outcome: "prepared", target: "self", missed: false, impacts: []});
+		expect(fighterMotionFrames(warning, "opponent").every(value => value === 0)).toBe(true);
+		expect(fighterMotionFrames(warning, "self").every(value => value === 0)).toBe(true);
+	});
+	it("keeps a general effect that transmits an effect as a landed action", () => {
+		expect(fightCue({...ENTRY, fightActionId: "healEveryone", status: "generalEffect", pet: PET, fightActionEffectReceived: {energy: 20}})).toMatchObject({outcome: "hit"});
+	});
+	it("shows a pet failure as a reduced hit when damage is dealt, and as a miss otherwise", () => {
+		expect(fightCue({...ENTRY, fightActionId: "crush", status: "failure", pet: PET, fightActionEffectDealt: {damages: 12}})).toMatchObject({outcome: "hit", missed: false, target: "opponent"});
+		expect(fightCue({...ENTRY, fightActionId: "spit", status: "failure", pet: PET})).toMatchObject({outcome: "missed", missed: true});
+	});
+	it("lunges with a pet only for melee attacks, never for a heal or an intimidation", () => {
+		const lunge = fighterMotionFrames(fightCue({...ENTRY, fightActionId: "horn", status: "success", pet: PET, fightActionEffectDealt: {damages: 30}}), "self");
+		const heal = fighterMotionFrames(fightCue({...ENTRY, fightActionId: "healEveryone", status: "success", pet: PET, fightActionEffectReceived: {energy: 20}}), "self");
+		const roar = fighterMotionFrames(fightCue({...ENTRY, fightActionId: "scareFish", status: "success", pet: PET}), "self");
+		expect(Math.max(...lunge)).toBeGreaterThan(20);
+		expect(Math.max(...heal)).toBeLessThan(10);
+		expect(Math.max(...roar)).toBeLessThan(10);
 	});
 });

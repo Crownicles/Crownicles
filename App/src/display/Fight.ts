@@ -76,18 +76,28 @@ function attackResult(entry: FightLogEntry, seed: number, attack: string): strin
 	return i18n.t(`commands:fight.actions.attacksResults.${status}.${Math.abs(seed) % variants.length}`, {attack});
 }
 
+/** The Core reports the effects of the substituted action, so its name is the one the story must use. */
+function executedActionId(entry: FightLogEntry): string {
+	return entry.usedFightActionId ?? entry.fightActionId;
+}
+
 function narrativeAction(entry: FightLogEntry, seed: number): string {
-	const attack = fightActionName(entry.fightActionId);
+	const actionId = executedActionId(entry);
+	const attack = fightActionName(actionId);
 	const petNickname = entry.pet ? petName(entry.pet) : "";
 	// Same order as the Discord history, so both frontends tell the same thing about an action.
-	if (DESCRIPTIVE_STATUSES.has(entry.status ?? "")) return i18n.t(`models:fight_actions.${entry.fightActionId}.${entry.status}`, {petNickname, defaultValue: ""}) || attackResult(entry, seed, attack);
-	if (entry.customMessage) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessage`, {defaultValue: ""}) || attackResult(entry, seed, attack);
-	if (entry.customMessageFail) return i18n.t(`models:fight_actions.${entry.fightActionId}.customMessageFail`, {defaultValue: ""}) || attackResult(entry, seed, attack);
+	if (DESCRIPTIVE_STATUSES.has(entry.status ?? "")) return i18n.t(`models:fight_actions.${actionId}.${entry.status}`, {petNickname, defaultValue: ""}) || attackResult(entry, seed, attack);
+	if (entry.customMessage) return i18n.t(`models:fight_actions.${actionId}.customMessage`, {defaultValue: ""}) || attackResult(entry, seed, attack);
+	if (entry.customMessageFail) return i18n.t(`models:fight_actions.${actionId}.customMessageFail`, {defaultValue: ""}) || attackResult(entry, seed, attack);
 	return attackResult(entry, seed, attack);
 }
 
 export function fightEntryTitle(entry: FightLogEntry): string {
-	return entry.pet ? i18n.t("app:battle.story.petAction", {pet: petName(entry.pet)}) : fightActionName(entry.usedFightActionId ?? entry.fightActionId);
+	if (entry.pet) return i18n.t("app:battle.story.petAction", {pet: petName(entry.pet)});
+	const actionId = executedActionId(entry);
+	return actionId === entry.fightActionId
+		? fightActionName(actionId)
+		: i18n.t("app:battle.story.substitution", {selected: fightActionName(entry.fightActionId), used: fightActionName(actionId)});
 }
 
 export function fightNarrative(entry: FightLogEntry, seed = 0): string {

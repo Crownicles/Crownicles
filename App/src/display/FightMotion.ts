@@ -53,11 +53,17 @@ export const FIGHT_ACTION_MOTIONS = new Map<string, FightMotion>(
 );
 
 const SELF_MOTIONS = new Set<FightMotion>([FIGHT_MOTIONS.SHIELD, FIGHT_MOTIONS.BLESSING, FIGHT_MOTIONS.HEAL, FIGHT_MOTIONS.REST, FIGHT_MOTIONS.CHARGE, FIGHT_MOTIONS.DODGE]);
-export const FIGHT_OUTCOMES = {HIT: "hit", CRITICAL: "critical", MISSED: "missed", FIZZLED: "fizzled", CHARGING: "charging"} as const;
+export const FIGHT_OUTCOMES = {HIT: "hit", CRITICAL: "critical", MISSED: "missed", FIZZLED: "fizzled", CHARGING: "charging", PREPARED: "prepared"} as const;
 export type FightOutcome = typeof FIGHT_OUTCOMES[keyof typeof FIGHT_OUTCOMES];
 const STATUS_OUTCOMES: Readonly<Partial<Record<string, FightOutcome>>> = {
 	critical: FIGHT_OUTCOMES.CRITICAL, missed: FIGHT_OUTCOMES.MISSED, charging: FIGHT_OUTCOMES.CHARGING,
-	maxUses: FIGHT_OUTCOMES.FIZZLED, failure: FIGHT_OUTCOMES.FIZZLED, afraid: FIGHT_OUTCOMES.FIZZLED, noAction: FIGHT_OUTCOMES.FIZZLED
+	maxUses: FIGHT_OUTCOMES.FIZZLED, afraid: FIGHT_OUTCOMES.FIZZLED, noAction: FIGHT_OUTCOMES.FIZZLED
+};
+
+/** Pet statuses whose look depends on what the Core actually applied rather than on the status alone. */
+const EFFECT_DEPENDENT_OUTCOMES: Readonly<Record<string, FightOutcome>> = {
+	failure: FIGHT_OUTCOMES.MISSED,
+	generalEffect: FIGHT_OUTCOMES.PREPARED
 };
 const ALTERATION_STATUSES = new Set(["new", "active", "stop", "randomAction", "noAction"]);
 const MOTION_COLORS: Partial<Record<FightMotion, string>> = {
@@ -89,13 +95,25 @@ function effectImpacts(effect: FightEffect | undefined, side: FightSide, source:
 	return impacts;
 }
 
+function hasEffect(effect: FightEffect | undefined): boolean {
+	return Object.values(effect ?? {}).some(Boolean);
+}
+
+/** A failed or general pet action still lands when the Core transmits an effect: only an empty one is a miss or a preparation. */
+function entryOutcome(entry: FightLogEntry): FightOutcome {
+	const status = entry.status ?? "";
+	const dependent = EFFECT_DEPENDENT_OUTCOMES[status];
+	if (dependent) return hasEffect(entry.fightActionEffectDealt) || hasEffect(entry.fightActionEffectReceived) ? FIGHT_OUTCOMES.HIT : dependent;
+	return STATUS_OUTCOMES[status] ?? FIGHT_OUTCOMES.HIT;
+}
+
 function animationTarget(entry: FightLogEntry, motion: FightMotion, actor: FightSide, periodic: boolean): FightSide {
 	const opponent = actor === "self" ? "opponent" : "self";
 	if (periodic) return actor;
 	if (entry.fightActionEffectDealt?.damages) return opponent;
 	if (SELF_MOTIONS.has(motion)) return actor;
-	const affectsOpponent = Object.values(entry.fightActionEffectDealt ?? {}).some(Boolean);
-	const affectsActor = Object.values(entry.fightActionEffectReceived ?? {}).some(Boolean);
+	const affectsOpponent = hasEffect(entry.fightActionEffectDealt);
+	const affectsActor = hasEffect(entry.fightActionEffectReceived);
 	return affectsActor && !affectsOpponent ? actor : opponent;
 }
 
@@ -111,7 +129,7 @@ export function fightCue(entry: FightLogEntry): FightCue {
 	const motion = entry.status === "charging" ? FIGHT_MOTIONS.CHARGE : FIGHT_ACTION_MOTIONS.get(actionId) ?? FIGHT_MOTIONS.SLASH;
 	const actor: FightSide = entry.fighter.isSelf ? "self" : "opponent";
 	const periodic = ALTERATION_STATUSES.has(entry.status ?? "");
-	const target = animationTarget(entry, motion, actor, periodic);
-	const outcome = STATUS_OUTCOMES[entry.status ?? ""] ?? FIGHT_OUTCOMES.HIT;
+	const outcome = entryOutcome(entry);
+	const target = outcome === FIGHT_OUTCOMES.PREPARED ? actor : animationTarget(entry, motion, actor, periodic);
 	return {actionId, sourceActionId: entry.fightActionId, motion, actor, target, impacts: actionImpacts(entry, actor, periodic), periodic, outcome, color: fightMotionColor(motion), missed: outcome === FIGHT_OUTCOMES.MISSED || outcome === FIGHT_OUTCOMES.FIZZLED, critical: outcome === FIGHT_OUTCOMES.CRITICAL, ...(entry.pet ? {pet: entry.pet} : {})};
 }

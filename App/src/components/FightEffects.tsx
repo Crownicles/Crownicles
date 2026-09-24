@@ -37,11 +37,11 @@ export function FightEffects({cue, progress, width}: EffectProps): ReactNode {
 	const impacts = cue.impacts;
 	const compact = useCompactFight();
 	const failedAtSource = cue.outcome === FIGHT_OUTCOMES.FIZZLED;
+	const lands = cue.outcome !== FIGHT_OUTCOMES.PREPARED;
 	return <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.layer, compact && {transform: [{translateY: -24}]}]} testID={`fight-effect-${cue.motion}`}>
 		<FightActionEffects cue={cue} progress={progress} width={width} choreography={fightChoreography(cue)} />
-		{!cue.missed ?
-			<Animated.View style={[styles.flash, {left: cue.target === "self" ? "0%" : "57%", backgroundColor: cue.color, opacity: progress.interpolate({inputRange: [0, 0.28, 0.4, 0.64, 1], outputRange: [0, 0, 0.13, 0.04, 0]})}]} />
-			: <Animated.Text style={[styles.miss, {left: width * FIGHT_EFFECT_LAYOUT.anchors[failedAtSource ? cue.actor : cue.target] - 56, opacity: effectOpacity(progress)}]}>{i18n.t(failedAtSource ? "app:battle.noEffect" : "app:battle.missed")}</Animated.Text>}
+		{!cue.missed && lands ? <Animated.View style={[styles.flash, {left: cue.target === "self" ? "0%" : "57%", backgroundColor: cue.color, opacity: progress.interpolate({inputRange: [0, 0.28, 0.4, 0.64, 1], outputRange: [0, 0, 0.13, 0.04, 0]})}]} /> : null}
+		{cue.missed ? <Animated.Text style={[styles.miss, {left: width * FIGHT_EFFECT_LAYOUT.anchors[failedAtSource ? cue.actor : cue.target] - 56, opacity: effectOpacity(progress)}]}>{i18n.t(failedAtSource ? "app:battle.noEffect" : "app:battle.missed")}</Animated.Text> : null}
 		{impacts.map((impact, index) => <ImpactNumber key={`${impact.source}:${impact.kind}`} impact={impact} cue={cue} progress={progress} width={width} position={impacts.slice(0, index).filter(previous => previous.side === impact.side).length} />)}
 	</View>;
 }

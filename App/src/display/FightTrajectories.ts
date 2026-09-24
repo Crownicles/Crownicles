@@ -1,4 +1,4 @@
-import {FightCue, FightMotion, FightSide, FIGHT_OUTCOMES} from "@/src/display/FightMotion";
+import {FightCue, FightMotion, FightSide, FIGHT_MOTIONS, FIGHT_OUTCOMES} from "@/src/display/FightMotion";
 import {FIGHT_TIMING, FightFrames, multiplyFrames, stillFrames} from "@/src/display/FightEffectPrimitives";
 
 type FighterPose = {horizontal: FightFrames; vertical: FightFrames; scale: FightFrames; rotation: FightFrames; timing: FightFrames};
@@ -13,6 +13,13 @@ const HEAVY_HIT: FighterPose = {...HIT_POSE, horizontal: [0, 0, -22, 8, -3, 0], 
 const MISSED_POSE: FighterPose = {...STILL_POSE, timing: [0, 0.24, 0.34, 0.4, 0.65, 1], horizontal: [0, 0, -16, -20, -10, 0], rotation: [0, 0, -10, -12, -4, 0]};
 const FIZZLE_POSE: FighterPose = {...STILL_POSE, horizontal: [0, 2, 1, -4, -2, 0], rotation: [0, 2, -2, -4, -2, 0]};
 const PET_POSE: FighterPose = {...MELEE_POSE, horizontal: [0, 2, 10, 28, 10, 0], vertical: [0, -6, -14, -4, -2, 0]};
+/** A pet that roars, casts or throws stays in place and puffs up instead of lunging. */
+const PET_CAST_POSE: FighterPose = {...STILL_POSE, horizontal: [0, -2, -3, 4, 1, 0], vertical: [0, -4, -8, -2, 0, 0], scale: [1, 1.04, 1.1, 1.06, 1.02, 1]};
+/** A pet getting ready crouches then hops on the spot. */
+const PET_PREPARE_POSE: FighterPose = {...STILL_POSE, vertical: [0, 3, 5, -10, -3, 0], scale: [1, 0.97, 0.94, 1.04, 1.01, 1]};
+const PET_MELEE_MOTIONS = new Set<FightMotion>([
+	FIGHT_MOTIONS.SLASH, FIGHT_MOTIONS.RAPID, FIGHT_MOTIONS.HEAVY, FIGHT_MOTIONS.PIERCE, FIGHT_MOTIONS.BITE, FIGHT_MOTIONS.CLAW, FIGHT_MOTIONS.RETURN
+]);
 const CRITICAL_RECOIL = 1.25;
 
 const ACTOR_POSES: Partial<Record<FightMotion, FighterPose>> = {
@@ -60,9 +67,15 @@ function impactPose(cue: FightCue): FighterPose {
 	return cue.critical ? {...pose, horizontal: multiplyFrames(pose.horizontal, CRITICAL_RECOIL), rotation: multiplyFrames(pose.rotation, CRITICAL_RECOIL)} : pose;
 }
 
+function petPose(cue: FightCue): FighterPose {
+	if (cue.outcome === FIGHT_OUTCOMES.PREPARED) return PET_PREPARE_POSE;
+	if (PET_MELEE_MOTIONS.has(cue.motion)) return PET_POSE;
+	return ACTOR_POSES[cue.motion] ?? PET_CAST_POSE;
+}
+
 function actorPose(cue: FightCue): FighterPose {
 	if (cue.outcome === FIGHT_OUTCOMES.FIZZLED) return FIZZLE_POSE;
-	if (cue.pet) return PET_POSE;
+	if (cue.pet) return petPose(cue);
 	return ACTION_POSES[cue.actionId] ?? ACTOR_POSES[cue.motion] ?? STILL_POSE;
 }
 

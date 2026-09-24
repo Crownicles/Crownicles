@@ -10,6 +10,10 @@ const PET_REFUSAL: FightChoreography = [
 	{id: "pet-hesitation", form: FIGHT_PARTICLE_FORMS.ARC, anchor: "actor", width: 24, height: 16, opacity: [0, 0.4, 0.6, 0.3, 0, 0], x: [14, 16, 18, 20, 22, 24], y: [-18, -20, -22, -24, -26, -28], rotation: stillFrames(-25), tint: Theme.colors.faint},
 	{id: "pet-step-back", form: FIGHT_PARTICLE_FORMS.STREAK, anchor: "actor", width: 20, height: 2, timing: FIGHT_TIMING.ECHO, opacity: [0, 0, 0.5, 0.3, 0, 0], x: [0, 0, 8, 14, 18, 20], y: stillFrames(24), tint: Theme.colors.faint}
 ];
+const PREPARATION: FightChoreography = [
+	{id: "gathering-ring", form: FIGHT_PARTICLE_FORMS.RING, anchor: "actor", width: 70, height: 70, opacity: [0, 0.5, 0.7, 0.4, 0.1, 0], scale: [1.3, 1.1, 0.9, 0.75, 0.6, 0.5], tint: Theme.colors.gold},
+	{id: "gathering-spark", form: FIGHT_PARTICLE_FORMS.SPARK, anchor: "actor", width: 20, height: 20, timing: FIGHT_TIMING.SWING, opacity: [0, 0, 0.5, 0.8, 0.3, 0], y: [0, -6, -14, -22, -28, -32], tint: Theme.colors.gold}
+];
 const CRITICAL_GLINT: FightChoreography = [
 	{id: "critical-cut", form: FIGHT_PARTICLE_FORMS.STREAK, width: 3, height: 86, timing: FIGHT_TIMING.GLIMMER, opacity: [0, 0, 1, 0.7, 0, 0], rotation: stillFrames(35), stretch: {horizontal: [0.3, 0.3, 1, 0.5, 0.1, 0], vertical: [0, 0, 0.6, 1.15, 1.25, 1.3]}, tint: Theme.colors.gold, onHit: true},
 	...fightBurst("critical-rays", {radius: 44, size: 2, tint: Theme.colors.gold})
@@ -42,6 +46,7 @@ function missedParticle(particle: FightParticle): FightParticle {
 
 export function fightOutcomeEffects(cue: FightCue, choreography: FightChoreography): FightChoreography {
 	if (cue.outcome === FIGHT_OUTCOMES.FIZZLED) return cue.pet ? PET_REFUSAL : FIZZLE;
+	if (cue.outcome === FIGHT_OUTCOMES.PREPARED) return PREPARATION;
 	if (cue.outcome === FIGHT_OUTCOMES.MISSED) return choreography.filter(particle => !particle.onHit).map(missedParticle);
 	if (cue.critical) return [...choreography, ...CRITICAL_GLINT, ...(CRITICAL_SIGNATURES[cue.actionId] ?? [])];
 	return choreography;

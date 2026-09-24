@@ -788,7 +788,8 @@
       "opponent": "L'adversaire",
       "sentence": "**{{fighter}}** {{action}}",
       "generic": "utilise {{attack}}.",
-      "petAction": "Intervention de {{pet}}"
+      "petAction": "Intervention de {{pet}}",
+      "substitution": "{{selected}} → {{used}}"
     },
     "speed": {"label": "Vitesse des animations de combat", "normal": "Normale (1×)", "fast": "Rapide (2×)"},
     "duel": "Combat · arène", "encounter": "Rencontre · combat", "yourTurn": "Votre tour", "opponentTurn": "Tour adverse", "resolving": "Action en cours", "finished": "Combat terminé",
