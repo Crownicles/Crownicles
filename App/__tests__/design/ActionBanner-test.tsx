@@ -7,6 +7,8 @@ describe("ActionBanner", () => {
 		const label = "Acheter Potion méga incroyable de vitesse et de la foudre éternelle";
 		await render(<ActionBanner icon={Check} label={label} onPress={jest.fn()} />);
 
-		expect(screen.getByText(label).props.numberOfLines).toBe(2);
+		let text = screen.getByText(label);
+		while (text.props.numberOfLines === undefined && text.parent) text = text.parent;
+		expect(text.props.numberOfLines).toBe(2);
 	});
 });

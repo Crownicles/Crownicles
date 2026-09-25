@@ -1,13 +1,12 @@
 import {ReactNode, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, SMALL_EVENT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
-import {formatMoney} from "@/src/display/Amounts";
 import {collectorDescription, eventPromptIcon} from "@/src/collectors/CollectorLabels";
 import {EventJournal} from "@/src/collectors/EventOutcomeScreen";
-import {Button, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton} from "@/src/design/Sections";
+import {MerchantOfferActions} from "@/src/collectors/SmallEventShopCollector";
+import {Screen} from "@/src/design/Primitives";
+import {BackButton} from "@/src/design/Sections";
 import {SwipeBack} from "@/src/design/SwipeBack";
-import {Check} from "@/src/design/FightIcons";
 import {plainStory} from "@/src/display/Markdown";
 import {i18n} from "@/src/translations/i18n";
 
@@ -21,7 +20,7 @@ export function RecipeShopCollector({collector, onChoose, submitting}: {
 	if (collector.data.type !== SMALL_EVENT_DATA_KINDS.RECIPE_SHOP) {
 		return null;
 	}
-	const {recipe, recipeCost} = collector.data.data;
+	const {recipe} = collector.data.data;
 	const recipeName = plainStory(i18n.t("models:cooking.recipeDisplay", recipe));
 	const locked = answered || submitting;
 	const choose = (index: number): void => {
@@ -38,13 +37,12 @@ export function RecipeShopCollector({collector, onChoose, submitting}: {
 			<Screen>
 				<BackButton label={i18n.t("app:collector.refuse")} onClose={leave} />
 				<EventJournal emoji={eventPromptIcon(collector.data)} story={collectorDescription(collector.data) ?? ""} />
-				<ActionBanner
-					icon={Check}
-					label={i18n.t("app:city.shop.buy", {item: recipeName, price: formatMoney(recipeCost)})}
-					pending={locked}
-					onPress={(): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT))}
+				<MerchantOfferActions
+					item={recipeName}
+					locked={locked}
+					onBuy={(): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT))}
+					onLeave={leave}
 				/>
-				<Button disabled={locked} onPress={leave}>{i18n.t("app:collector.shop.refuse")}</Button>
 			</Screen>
 		</SwipeBack>
 	);

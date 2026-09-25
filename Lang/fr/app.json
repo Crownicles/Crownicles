@@ -667,7 +667,7 @@
       "description": "Choisissez un article. Le prix et la quantité sont affichés avant confirmation.",
       "item": "Acheter {{amount}} × {{item}} pour {{price}}",
       "dailyPotion": "Potion du jour",
-      "buy": "{{item}} pour {{price}}",
+      "buyItem": "Acheter {{item}}",
       "close": "Fermer la boutique",
       "slotsLeft": "Encore {{count}} emplacement disponible sur {{limit}}",
       "slotsLeft_other": "Encore {{count}} emplacements disponibles sur {{limit}}",

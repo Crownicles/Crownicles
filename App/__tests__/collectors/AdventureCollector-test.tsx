@@ -284,7 +284,7 @@ const collectorScenarios: CollectorScenario[] = [
 				price: 200
 			}
 		}),
-		choiceText: "app:city.shop.buy",
+		choiceText: "app:city.shop.buyItem",
 		assertView: () => {
 			expect(screen.getByText("small-event-description")).toBeTruthy();
 			expect(screen.getByText("app:collector.shop.fields.rarity")).toBeTruthy();
@@ -304,7 +304,7 @@ const collectorScenarios: CollectorScenario[] = [
 		choiceText: "app:collector.shop.refuse",
 		expectedIndex: 1,
 		assertView: () => {
-			expect(screen.getByText("app:city.shop.buy")).toBeTruthy();
+			expect(screen.getByText("app:city.shop.buyItem")).toBeTruthy();
 		}
 	},
 	{
@@ -317,7 +317,7 @@ const collectorScenarios: CollectorScenario[] = [
 				recipeCost: 300
 			}
 		}),
-		choiceText: "app:city.shop.buy",
+		choiceText: "app:city.shop.buyItem",
 		assertView: () => {
 			expect(screen.getByText("commands:report.journal")).toBeTruthy();
 			expect(screen.getByText("small-event-description")).toBeTruthy();

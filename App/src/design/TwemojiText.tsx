@@ -55,14 +55,15 @@ export function twemojiParts({text, textStyle, emojiSize, iosEmojiVerticalOffset
 }
 
 /** Laid out as one paragraph, so a long label wraps its words after the emoji instead of pushing the text below it. */
-export function TwemojiText({children, textStyle, containerStyle, emojiSize, iosEmojiVerticalOffset = Theme.emoji.iosFieldOffset}: {
+export function TwemojiText({children, textStyle, containerStyle, emojiSize, iosEmojiVerticalOffset = Theme.emoji.iosFieldOffset, numberOfLines}: {
 	children: string;
 	textStyle?: StyleProp<TextStyle>;
 	containerStyle?: StyleProp<ViewStyle>;
 	emojiSize: number;
 	iosEmojiVerticalOffset?: number;
+	numberOfLines?: number;
 }): ReactNode {
-	return <View style={containerStyle}><Text style={textStyle}>{twemojiParts({
+	return <View style={containerStyle}><Text style={textStyle} numberOfLines={numberOfLines}>{twemojiParts({
 		text: children, emojiSize, iosEmojiVerticalOffset
 	})}</Text></View>;
 }

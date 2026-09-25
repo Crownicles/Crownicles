@@ -180,6 +180,7 @@ const TOAST_ENTRANCE_OFFSET = -24;
 const TOAST_UNIT_SIZE = 18;
 const STANDING_TITLE_EMOJI_SIZE = 22;
 const BANNER_EMOJI_SIZE = 22;
+const BANNER_LABEL_LINES = 2;
 
 /** The gain a toast announces, as a number and the game emoji of its unit. */
 export type ToastValue = {amount: string; unit: string};
@@ -365,7 +366,7 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 				<View style={styles.bannerIcon}>
 					{pending ? <PendingMotion>{glyph}</PendingMotion> : <Animated.View style={{transform: [{scale: iconScale}]}}>{glyph}</Animated.View>}
 				</View>
-				<TwemojiText containerStyle={styles.bannerLabelBox} textStyle={styles.bannerLabel} emojiSize={Theme.fontSize.button}>{label}</TwemojiText>
+				<TwemojiText containerStyle={styles.bannerLabelBox} textStyle={styles.bannerLabel} emojiSize={Theme.fontSize.button} numberOfLines={BANNER_LABEL_LINES}>{label}</TwemojiText>
 				<ArrowRight size={18} color={Theme.colors.paper} />
 			</Animated.View>}
 		</Pressable>
