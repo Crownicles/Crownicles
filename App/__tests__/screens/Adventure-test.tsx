@@ -2,7 +2,7 @@ import {act, fireEvent, render, screen, waitFor} from "@testing-library/react-na
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
-import Adventure, {reportRefreshDelay, tokenOutcomeNeedsAcknowledgement} from "@/app/(protected)/(tabs)/index";
+import Adventure, {reportRefreshDelay, reportWait, tokenOutcomeNeedsAcknowledgement} from "@/app/(protected)/(tabs)/index";
 import {ReportCityActionRes, ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 import {ReportCityActionReq, ReportViewReq} from "ws-packets/src/fromClient/ReportViewReq";
 import {REPORT_CITY_ACTION_RESULTS} from "ws-packets/src/objects/ReportView";
@@ -539,6 +539,14 @@ describe("Adventure screen", () => {
 
 		expect(screen.getByText("app:adventure.quick.advanceWithCost")).toBeTruthy();
 		expect(screen.queryByText("app:adventure.quick.healWithCost")).toBeNull();
+	});
+
+	it("waits for the end of the alteration before announcing the next report", () => {
+		const now = 1_700_000_000_000;
+		const occupied = {...report(), effect: "occupied", isInCity: true, arriveTime: now - 60_000, nextStopTime: now - 60_000, effectEndTime: now + 39 * 60_000};
+
+		expect(reportWait(occupied, now)).toBe("app:adventure.duration.minutes");
+		expect(reportWait({...occupied, effect: "none"}, now)).toBe("app:adventure.now");
 	});
 
 	it("resumes automatically after advancing, cancelling, or leaving the token merchant", () => {

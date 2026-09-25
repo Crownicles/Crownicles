@@ -351,9 +351,14 @@ function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): 
   return formatDuration(packet.nextStopTime - currentTime);
 }
 
-/** Arriving opens the report too, so a stop planned after the arrival never delays it. */
-function reportWait(packet: ReportTravelSummaryRes, currentTime: number): string {
-	const opensAt = Math.min(packet.nextStopTime, packet.arriveTime);
+function isAlterationReport(packet: ReportTravelSummaryRes): boolean {
+	return packet.effect !== undefined && packet.effect !== "none";
+}
+
+/** Arriving opens the report too, so a stop planned after the arrival never delays it; an alteration holds it until it ends. */
+export function reportWait(packet: ReportTravelSummaryRes, currentTime: number): string {
+	const alterationEnd = isAlterationReport(packet) ? packet.effectEndTime ?? 0 : 0;
+	const opensAt = Math.max(Math.min(packet.nextStopTime, packet.arriveTime), alterationEnd);
 	return opensAt <= currentTime ? i18n.t("app:adventure.now") : formatDuration(opensAt - currentTime);
 }
 
@@ -591,10 +596,6 @@ function CureEmblem({cure}: {cure: Cure}): ReactNode {
 	]}}>
 		<TwemojiIcon emoji={cure.from} size={Theme.dimensions.headerIcon} />
 	</Animated.View>;
-}
-
-function isAlterationReport(packet: ReportTravelSummaryRes): boolean {
-	return packet.effect !== undefined && packet.effect !== "none";
 }
 
 function offersTokens(packet: ReportTravelSummaryRes): boolean {
