@@ -3,6 +3,8 @@ import { makePacket, PacketContext } from "../../../Lib/src/packets/CrowniclesPa
 import { CommandBlessingPacketRes, RequirementOracleNotMetPacket } from "../../../Lib/src/packets/commands/CommandBlessingPacket";
 import { CommandRarityPacketRes } from "../../../Lib/src/packets/commands/CommandRarityPacket";
 import CharacterCommandServerTranslator from "../../src/packets/fromServer/translators/CharacterCommandServerTranslator";
+import { BlessingAnnouncementPacket } from "../../../Lib/src/packets/announcements/BlessingAnnouncementPacket";
+import { translateBlessingAnnouncement } from "../../src/packets/fromServer/BlessingAnnouncement";
 
 vi.mock("../../src/index", () => ({keycloakConfig: {}}));
 vi.mock("../../../Lib/src/keycloak/KeycloakUtils", () => ({KeycloakUtils: {getUserByKeycloakId: vi.fn(async (_config, id) => ({isError: id === "missing", payload: {user: {username: "fallback", attributes: {gameUsername: ["Aventurier"]}}}}))}}));
@@ -30,5 +32,10 @@ describe("character reference commands", () => {
 
 	it("exposes the Oracle encounter requirement", async () => {
 		expect(await CharacterCommandServerTranslator.oracle(CONTEXT, makePacket(RequirementOracleNotMetPacket, {}))).toMatchObject({rejection: {type: "oracle"}});
+	});
+
+	it("tells connected players which blessing started without exposing identity IDs", () => {
+		const result = translateBlessingAnnouncement(makePacket(BlessingAnnouncementPacket, {blessingType: 4, durationHours: 12, triggeredByKeycloakId: "trigger", topContributorKeycloakId: "contributor", topContributorAmount: 40, totalContributors: 2}));
+		expect(JSON.parse(JSON.stringify(result))).toEqual({blessingType: 4, durationHours: 12});
 	});
 });

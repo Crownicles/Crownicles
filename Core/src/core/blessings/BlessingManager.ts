@@ -255,17 +255,14 @@ export class BlessingManager {
 		this.contributionsTracker.clear();
 
 		// Send announcement
-		PacketUtils.announce(
-			makePacket(BlessingAnnouncementPacket, {
-				blessingType,
-				triggeredByKeycloakId,
-				durationHours,
-				topContributorKeycloakId: topContributor?.keycloakId ?? "",
-				topContributorAmount: topContributor?.amount ?? 0,
-				totalContributors
-			}),
-			MqttTopicUtils.getDiscordBlessingAnnouncementTopic(botConfig.PREFIX)
-		);
+		this.announceBlessing(makePacket(BlessingAnnouncementPacket, {
+			blessingType,
+			triggeredByKeycloakId,
+			durationHours,
+			topContributorKeycloakId: topContributor?.keycloakId ?? "",
+			topContributorAmount: topContributor?.amount ?? 0,
+			totalContributors
+		}));
 
 		// Log activation
 		crowniclesInstance.logsDatabase.logBlessingActivation({
@@ -523,6 +520,14 @@ export class BlessingManager {
 		return this.contributionsTracker.size;
 	}
 
+	/**
+	 * Discord posts the announcement in its channels; app players connected right now see it live.
+	 */
+	private announceBlessing(packet: BlessingAnnouncementPacket): void {
+		PacketUtils.announce(packet, MqttTopicUtils.getDiscordBlessingAnnouncementTopic(botConfig.PREFIX));
+		PacketUtils.broadcast(packet, MqttTopicUtils.getWebSocketBlessingAnnouncementTopic(botConfig.PREFIX));
+	}
+
 	// ==================== TEST COMMANDS ====================
 
 	/**
@@ -544,17 +549,14 @@ export class BlessingManager {
 		this.cachedBlessing.poolStartedAt = blessingEnd;
 		await this.cachedBlessing.save();
 
-		PacketUtils.announce(
-			makePacket(BlessingAnnouncementPacket, {
-				blessingType: type,
-				triggeredByKeycloakId: keycloakId,
-				durationHours: FORCED_BLESSING_DURATION_HOURS,
-				topContributorKeycloakId: keycloakId,
-				topContributorAmount: 0,
-				totalContributors: 0
-			}),
-			MqttTopicUtils.getDiscordBlessingAnnouncementTopic(botConfig.PREFIX)
-		);
+		this.announceBlessing(makePacket(BlessingAnnouncementPacket, {
+			blessingType: type,
+			triggeredByKeycloakId: keycloakId,
+			durationHours: FORCED_BLESSING_DURATION_HOURS,
+			topContributorKeycloakId: keycloakId,
+			topContributorAmount: 0,
+			totalContributors: 0
+		}));
 
 		// Apply one-time effects
 		if (type === BlessingType.DAILY_MISSION) {

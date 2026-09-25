@@ -2,6 +2,7 @@ import {
 	describe, it, expect, vi, beforeEach
 } from "vitest";
 import { BlessingManager } from "../../../src/core/blessings/BlessingManager";
+import { PacketUtils } from "../../../src/core/utils/PacketUtils";
 import {
 	BlessingConstants, BlessingType
 } from "../../../../Lib/src/constants/BlessingConstants";
@@ -13,11 +14,17 @@ vi.mock("../../../src/core/database/game/models/GlobalBlessing", () => ({
 }));
 
 vi.mock("../../../src/core/utils/PacketUtils", () => ({
-	PacketUtils: { announce: vi.fn() }
+	PacketUtils: {
+		announce: vi.fn(),
+		broadcast: vi.fn()
+	}
 }));
 
 vi.mock("../../../../Lib/src/utils/MqttTopicUtils", () => ({
-	MqttTopicUtils: { getDiscordBlessingAnnouncementTopic: vi.fn().mockReturnValue("test/topic") },
+	MqttTopicUtils: {
+		getDiscordBlessingAnnouncementTopic: vi.fn().mockReturnValue("test/topic"),
+		getWebSocketBlessingAnnouncementTopic: vi.fn().mockReturnValue("test/websocket-topic")
+	},
 	createMqttPrefix: vi.fn().mockImplementation((prefix: string) => prefix)
 }));
 
@@ -364,6 +371,9 @@ describe("BlessingManager", () => {
 			expect(mockBlessing.activeBlessingType).not.toBe(BlessingType.NONE);
 			expect(mockBlessing.poolAmount).toBe(0);
 			expect(mockBlessing.lastTriggeredByKeycloakId).toBe("test-keycloak");
+			const announcement = vi.mocked(PacketUtils.announce).mock.lastCall?.[0];
+			expect(PacketUtils.announce).toHaveBeenLastCalledWith(announcement, "test/topic");
+			expect(PacketUtils.broadcast).toHaveBeenLastCalledWith(announcement, "test/websocket-topic");
 		});
 	});
 

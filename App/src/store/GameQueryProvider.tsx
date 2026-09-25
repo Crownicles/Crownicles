@@ -1,6 +1,7 @@
 import {ReactNode, useEffect, useRef, useState} from "react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {MissionsCompletedRes} from "ws-packets/src/fromServer/missions/MissionsCompletedRes";
+import {BlessingActivatedRes} from "ws-packets/src/fromServer/character/BlessingActivatedRes";
 import {AppConstants} from "@/src/AppConstants";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
@@ -42,6 +43,12 @@ export function GameQueryProvider({ children, client, authState }: {
 		if (packet.missions.length === 0) return;
 		queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.MISSIONS)}).catch(error => {
 			console.error("Failed to refresh missions after completion:", error);
+		});
+	}), [queryClient]);
+
+	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler(BlessingActivatedRes.wireName, () => {
+		queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.BLESSING)}).catch(error => {
+			console.error("Failed to refresh the blessing after its activation:", error);
 		});
 	}), [queryClient]);
 

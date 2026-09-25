@@ -302,6 +302,22 @@ export class WebSocketServer {
 	}
 
 	/**
+	 * Send packets to every connected client
+	 * @param packets
+	 */
+	static broadcastPackets(packets: {
+		name: string;
+		packet: object;
+	}[]): void {
+		const message = JSON.stringify(packets);
+		WebSocketServer.keycloakIdToClients.forEach(client => {
+			if (client.readyState === client.OPEN) {
+				client.send(message);
+			}
+		});
+	}
+
+	/**
 	 * Close the connection of a user, if any is currently open
 	 * @param keycloakId
 	 * @param reason

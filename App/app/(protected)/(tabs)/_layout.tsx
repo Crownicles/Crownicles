@@ -17,6 +17,7 @@ import {usePlayerIsDead} from "@/src/store/usePlayerIsDead";
 import {isJourneyTab, JOURNEY_TABS, JourneyTab} from "@/src/journey/Journey";
 import {Journey, useJourney} from "@/src/journey/useJourney";
 import {MissionCompletedToast} from "@/src/components/MissionRewards";
+import {BlessingActivatedToast} from "@/src/components/BlessingActivatedToast";
 import {useMissionRewards, useMissionRewardsAccount} from "@/src/store/MissionRewardsStore";
 
 const screenStyles = {flex: 1, backgroundColor: Theme.colors.paper};
@@ -182,6 +183,7 @@ export default function TabLayout(): ReactNode {
 			<SwipeBackBoundary><TabPager journey={journey} /></SwipeBackBoundary>
 			<JourneyCelebration journey={journey} />
 			<MissionCompletedToast />
+			<BlessingActivatedToast />
 		</View>
 	);
 }

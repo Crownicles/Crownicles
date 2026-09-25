@@ -35,6 +35,8 @@ export abstract class MqttTopicUtils {
 
 	private static readonly WEB_SOCKET_TOPIC = "crownicles_websocket";
 
+	private static readonly WEB_SOCKET_BLESSING_ANNOUNCEMENT_TOPIC = "crownicles_websocket_blessing_announcement";
+
 
 	static getCoreTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.CORE_TOPIC}`;
@@ -78,5 +80,9 @@ export abstract class MqttTopicUtils {
 
 	static getWebSocketTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.WEB_SOCKET_TOPIC}`;
+	}
+
+	static getWebSocketBlessingAnnouncementTopic(prefix: MqttPrefix): string {
+		return `${prefix}/${MqttTopicUtils.WEB_SOCKET_BLESSING_ANNOUNCEMENT_TOPIC}`;
 	}
 }

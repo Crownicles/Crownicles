@@ -105,6 +105,15 @@ export abstract class PacketUtils {
 		CrowniclesLogger.debug("Sent Discord announcement", { json });
 	}
 
+	/**
+	 * Publish an announcement only to the fronts listening right now: a live notification must not be replayed when a front restarts.
+	 */
+	static broadcast(announcement: AnnouncementPacket, topic: string): void {
+		const json = JSON.stringify(announcement);
+		mqttClient.publish(topic, json);
+		CrowniclesLogger.debug("Sent live announcement", { json });
+	}
+
 	static isMqttConnected(): boolean {
 		return mqttClient.connected;
 	}

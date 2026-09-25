@@ -1048,6 +1048,7 @@
     "percentage": "{{value, number}} %",
     "guide": "Ouvrir le guide en ligne",
     "blessing": {
+      "activated": "Bénédiction activée : {{name}}",
       "contributors": "Contributeurs",
       "triggeredBy": "Déclenchée par",
       "topContributor": "Plus gros contributeur",

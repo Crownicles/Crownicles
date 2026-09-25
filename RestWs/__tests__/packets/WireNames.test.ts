@@ -44,6 +44,7 @@ const WIRE_NAMES = [
 	"RarityRes",
 	"BlessingReq",
 	"BlessingRes",
+	"BlessingActivatedRes",
 	"ClassesReq",
 	"ClassesInfoReq",
 	"ClassesInfoRes",
