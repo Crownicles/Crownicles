@@ -1,7 +1,10 @@
 import {ReactNode, useEffect, useRef, useState} from "react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {MissionsCompletedRes} from "ws-packets/src/fromServer/missions/MissionsCompletedRes";
 import {AppConstants} from "@/src/AppConstants";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
+import {WebSocketClient} from "@/src/networking/WebSocketClient";
+import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 
 /**
  * Builds the cache holding the game state.
@@ -34,6 +37,13 @@ export function GameQueryProvider({ children, client, authState }: {
 }): ReactNode {
 	const [queryClient] = useState(() => client ?? createGameQueryClient());
 	const previousAuthState = useRef<AuthStateEnum>(AuthStateEnum.NOT_READY);
+
+	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<MissionsCompletedRes>(MissionsCompletedRes.wireName, packet => {
+		if (packet.missions.length === 0) return;
+		queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.MISSIONS)}).catch(error => {
+			console.error("Failed to refresh missions after completion:", error);
+		});
+	}), [queryClient]);
 
 	useEffect(() => {
 		const hasReconnected = authState === AuthStateEnum.LOGGED_IN
