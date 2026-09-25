@@ -637,13 +637,10 @@ function adventureTitle(context: AdventureContext): string {
 }
 
 function travelSubtitle(context: AdventureContext): string {
-	const {packet, currentTime, metrics, destination} = context;
-	const stage = journeyStage(context);
-	if (stage !== JOURNEY_STAGES.TRAVELLING) return i18n.t(`app:adventure.travel.${stage}Subtitle`, {destination});
-	const remaining = formatDuration(metrics.remainingMilliseconds);
-	return hasNextStop(packet)
-		? i18n.t("app:adventure.travel.subtitle", {nextStop: nextStopDuration(packet, currentTime), destination, remaining})
-		: i18n.t("app:adventure.travel.subtitleArrivingSoon", {destination, remaining});
+	const {destination} = context;
+	return journeyStage(context) === JOURNEY_STAGES.ARRIVED
+		? i18n.t("app:adventure.travel.arrivedSubtitle", {destination})
+		: i18n.t("app:adventure.travel.heading", {destination});
 }
 
 function adventureSubtitle(context: AdventureContext): string {

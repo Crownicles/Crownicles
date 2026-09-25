@@ -292,15 +292,12 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:adventure.travel.title")).toBeNull();
 	});
 
-	it("announces the arrival instead of a next stop once the journey has none left", async () => {
-		const arriving = report();
-		arriving.nextStopTime = arriving.arriveTime + 60_000;
-		mockReport(arriving);
+	it("only names the destination under the travel title", async () => {
+		mockReport();
 
 		await render(<Adventure />);
 
-		expect(screen.getByText("app:adventure.travel.subtitleArrivingSoon")).toBeTruthy();
-		expect(screen.queryByText("app:adventure.travel.subtitle")).toBeNull();
+		expect(screen.getByText("app:adventure.travel.heading")).toBeTruthy();
 	});
 
 	it("offers to buy tokens instead of advancing when the player cannot afford it", async () => {
