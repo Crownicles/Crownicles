@@ -251,17 +251,20 @@ function spaceSpecificValue(data: Data): unknown {
 	return str(data, "chosenEvent") === "moonPhase" ? i18n.tArray("smallEvents:space.moonPhases")[mainValue] : mainValue;
 }
 
-/** Discord posts the sky watching first and completes the same message once the result is known. */
-function spaceResultStory(data: Data): string {
-	const values = record(data, "values") ?? {};
-	const mainValue = num(values, "mainValue") ?? 0;
-	const event = str(data, "chosenEvent");
-	const before = t("space.before_search_format", {
+export function spaceSkyWatchingStory(): string {
+	return t("space.before_search_format", {
 		seIntro: smallEventIntro(),
 		intro: any("space.intro", {name: any("space.names")}),
 		searchAction: any("space.searchAction"),
 		search: any("space.search")
 	});
+}
+
+/** Discord posts the sky watching first and completes the same message once the result is known. */
+export function spaceResultStory(data: Data, before = spaceSkyWatchingStory()): string {
+	const values = record(data, "values") ?? {};
+	const mainValue = num(values, "mainValue") ?? 0;
+	const event = str(data, "chosenEvent");
 	return t("space.after_search_format", {
 		oldMessage: before,
 		actionIntro: any("space.actionIntro"),
@@ -321,6 +324,7 @@ const STORIES: Record<string, StoryBuilder> = {
 	pet: petStory,
 	petDropToken: withIntro("petDropToken.stories", data => ({pet: pet(data, OWN_PET), owner: str(data, "ownerName")})),
 	smallBad: smallBadStory,
+	spaceInitial: spaceSkyWatchingStory,
 	spaceResult: spaceResultStory,
 	staffMember: staffMemberStory,
 	ultimateFoodMerchant: data => smallEventIntro() + any("ultimateFoodMerchant.stories")
@@ -335,6 +339,7 @@ const STORIES: Record<string, StoryBuilder> = {
 /** Some small events send a packet whose name is not the one their emoji is filed under. */
 const ICON_KEYS: Record<string, string> = {
 	altarFirstEncounter: "altar",
+	spaceInitial: "space",
 	spaceResult: "space"
 };
 

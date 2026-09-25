@@ -31,4 +31,20 @@ describe("AutomaticSmallEventOutcome", () => {
 		expect(screen.getByText("smallEvents:doNothing.stories")).toBeTruthy();
 		expect(screen.queryByTestId("event-effect")).toBeNull();
 	});
+
+	it("shows the astronomer searching, then completes the same story once the sky answers", async () => {
+		const onContinue = jest.fn();
+		const searching = {eventName: "SmallEventSpaceInitialPacket", data: {}} as SmallEventResultRes;
+		const found = {eventName: "SmallEventSpaceResultPacket", data: {chosenEvent: "neoWS", values: {mainValue: 3}}} as SmallEventResultRes;
+		const view = await render(<AutomaticSmallEventOutcome outcome={searching} onContinue={onContinue} />);
+
+		expect(screen.getByText("smallEvents:space.before_search_format")).toBeTruthy();
+		expect(screen.getByRole("button", {disabled: true})).toBeTruthy();
+
+		await view.rerender(<AutomaticSmallEventOutcome outcome={found} onContinue={onContinue} />);
+
+		expect(screen.getByText("smallEvents:space.after_search_format")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:adventure.smallEvent.continue"));
+		expect(onContinue).toHaveBeenCalledTimes(1);
+	});
 });

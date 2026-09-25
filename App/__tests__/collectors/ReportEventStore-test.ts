@@ -86,6 +86,17 @@ describe("ReportEventStore", () => {
 		unsubscribe();
 	});
 
+	it("shows the astronomer at once instead of waiting for his result in silence", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		const searching = {eventName: "SmallEventSpaceInitialPacket", data: {}} as SmallEventResultRes;
+		const found = {eventName: "SmallEventSpaceResultPacket", data: {chosenEvent: "neoWS", values: {mainValue: 3}}} as SmallEventResultRes;
+
+		registry.dispatch(SmallEventResultRes.wireName, searching);
+		expect(reportEventStore.getAutomaticSnapshot()).toBe(searching);
+		registry.dispatch(SmallEventResultRes.wireName, found);
+		expect(reportEventStore.getAutomaticSnapshot()).toBe(found);
+	});
+
 	it("keeps an automatic mini-event result until the player continues", () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 		const result = {eventName: "SmallEventWinHealthPacket", data: {amount: 12}} as SmallEventResultRes;

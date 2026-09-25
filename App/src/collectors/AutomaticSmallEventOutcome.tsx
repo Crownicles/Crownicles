@@ -1,4 +1,4 @@
-import {ReactNode, useMemo} from "react";
+import {ReactNode, useMemo, useState} from "react";
 import {SmallEventResultData, SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
 import {AppIcons} from "@/src/AppIcons";
 import {EventOutcomeScreen} from "@/src/collectors/EventOutcomeScreen";
@@ -8,7 +8,9 @@ import {materialName} from "@/src/display/Resources";
 import {
 	amountEffect, gainEffect, lossEffect, lostAmountEffect, presentEffects
 } from "@/src/display/OutcomeEffects";
-import {smallEventIcon, smallEventKey, smallEventStory} from "@/src/display/SmallEventStories";
+import {
+	smallEventIcon, smallEventKey, smallEventStory, spaceResultStory, spaceSkyWatchingStory
+} from "@/src/display/SmallEventStories";
 import type {Effect} from "@/src/design/Sections";
 import {i18n} from "@/src/translations/i18n";
 
@@ -63,10 +65,32 @@ const EFFECTS: Record<string, EffectsBuilder> = {
 	winEnergyOnIsland: data => [amountEffect(field("energy"), num(data, "amount"), {gain: "energy"})]
 };
 
-export function AutomaticSmallEventOutcome({outcome, onContinue}: {
+type OutcomeProps = {
 	outcome: SmallEventResultRes;
 	onContinue: () => void;
-}): ReactNode {
+};
+
+const SPACE_EVENTS = {INITIAL: "SmallEventSpaceInitialPacket", RESULT: "SmallEventSpaceResultPacket"} as const;
+
+/** Core looks at the sky for a few seconds before answering: the search is shown meanwhile, then completed in place. */
+function SkyWatchingOutcome({outcome, onContinue}: OutcomeProps): ReactNode {
+	const [skyWatching] = useState(spaceSkyWatchingStory);
+	const searching = outcome.eventName === SPACE_EVENTS.INITIAL;
+	const story = useMemo(
+		() => (searching ? skyWatching : spaceResultStory(outcome.data, skyWatching)),
+		[searching, skyWatching, outcome.data]
+	);
+	return <EventOutcomeScreen
+		emoji={smallEventIcon(smallEventKey(outcome.eventName))}
+		story={story}
+		effects={[]}
+		continueLabel={i18n.t("app:adventure.smallEvent.continue")}
+		onContinue={onContinue}
+		pending={searching}
+	/>;
+}
+
+function ToldSmallEventOutcome({outcome, onContinue}: OutcomeProps): ReactNode {
 	const key = smallEventKey(outcome.eventName);
 	const story = useMemo(
 		() => smallEventStory(key, outcome.data) ?? i18n.t("app:adventure.automaticResults.description"),
@@ -79,4 +103,10 @@ export function AutomaticSmallEventOutcome({outcome, onContinue}: {
 		continueLabel={i18n.t("app:adventure.smallEvent.continue")}
 		onContinue={onContinue}
 	/>;
+}
+
+export function AutomaticSmallEventOutcome({outcome, onContinue}: OutcomeProps): ReactNode {
+	return outcome.eventName === SPACE_EVENTS.INITIAL || outcome.eventName === SPACE_EVENTS.RESULT
+		? <SkyWatchingOutcome outcome={outcome} onContinue={onContinue} />
+		: <ToldSmallEventOutcome outcome={outcome} onContinue={onContinue} />;
 }

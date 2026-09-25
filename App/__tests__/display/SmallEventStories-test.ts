@@ -1,4 +1,4 @@
-import {smallEventKey, smallEventStory} from "@/src/display/SmallEventStories";
+import {smallEventKey, smallEventStory, spaceResultStory} from "@/src/display/SmallEventStories";
 
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));
 jest.mock("@/src/translations/i18n", () => ({
@@ -31,6 +31,12 @@ describe("small-event stories told as on Discord", () => {
 		expect(story).toMatch(/^smallEvents:space\.after_search_format/);
 		expect(story).toContain("smallEvents:space.before_search_format");
 		expect(story).toContain("smallEvents:space.specific.neoWS");
+	});
+
+	it("keeps the sky watching already on screen when the result completes it", () => {
+		const story = spaceResultStory({chosenEvent: "neoWS", values: {mainValue: 3}}, "déjà affiché");
+
+		expect(story).toContain("\"oldMessage\":\"déjà affiché\"");
 	});
 
 	it("chooses the time story of the alteration the small bad luck inflicted", () => {

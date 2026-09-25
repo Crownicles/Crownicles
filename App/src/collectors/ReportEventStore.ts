@@ -31,12 +31,10 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 type Listener = () => void;
 
-const SILENT_SMALL_EVENT_RESULTS = new Set(["SmallEventSpaceInitialPacket"]);
 const SILENT_SMALL_EVENT_SUFFIXES = ["RefusePacket", "RefusedPacket", "NoAnswerPacket"];
 
 function shouldPresentAutomaticSmallEvent(outcome: SmallEventResultRes): boolean {
-	return !SILENT_SMALL_EVENT_RESULTS.has(outcome.eventName)
-		&& !SILENT_SMALL_EVENT_SUFFIXES.some(suffix => outcome.eventName.endsWith(suffix));
+	return !SILENT_SMALL_EVENT_SUFFIXES.some(suffix => outcome.eventName.endsWith(suffix));
 }
 
 export type LotteryOutcome =

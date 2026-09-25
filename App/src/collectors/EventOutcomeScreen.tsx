@@ -42,16 +42,17 @@ export function EventJournal({emoji, title, story, effects = []}: {
 }
 
 /** How every event of the journey ends: its journal entry, then a single way on. */
-export function EventOutcomeScreen({emoji, title, story, effects, continueLabel, onContinue}: {
+export function EventOutcomeScreen({emoji, title, story, effects, continueLabel, onContinue, pending = false}: {
 	emoji?: string | undefined;
 	title?: string;
 	story: string;
 	effects: Effect[];
 	continueLabel: string;
 	onContinue: () => void;
+	pending?: boolean;
 }): ReactNode {
 	return <Screen>
 		<EventJournal emoji={emoji} {...title ? {title} : {}} story={story} effects={effects} />
-		<ActionBanner icon={BookOpen} label={continueLabel} onPress={onContinue} />
+		<ActionBanner icon={BookOpen} label={continueLabel} onPress={onContinue} pending={pending} />
 	</Screen>;
 }
