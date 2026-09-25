@@ -730,17 +730,17 @@ function ReportReadyPulse({ready, children}: {ready: boolean; children: ReactNod
 	const wasReady = useRef(ready);
 
 	useEffect(() => {
-		if (!wasReady.current && ready && !reducedMotion) {
-			scale.setValue(REPORT_READY_PULSE.fromScale);
-			Animated.spring(scale, {
-				toValue: 1,
-				damping: REPORT_READY_PULSE.damping,
-				stiffness: REPORT_READY_PULSE.stiffness,
-				mass: REPORT_READY_PULSE.mass,
-				useNativeDriver: true
-			}).start();
-		}
+		const justBecameReady = ready && !wasReady.current;
 		wasReady.current = ready;
+		if (!justBecameReady || reducedMotion) return;
+		scale.setValue(REPORT_READY_PULSE.fromScale);
+		Animated.spring(scale, {
+			toValue: 1,
+			damping: REPORT_READY_PULSE.damping,
+			stiffness: REPORT_READY_PULSE.stiffness,
+			mass: REPORT_READY_PULSE.mass,
+			useNativeDriver: true
+		}).start();
 	}, [ready, reducedMotion, scale]);
 
 	return <Animated.View style={{transform: [{scale}]}}>{children}</Animated.View>;

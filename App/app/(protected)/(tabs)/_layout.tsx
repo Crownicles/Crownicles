@@ -156,7 +156,8 @@ function JourneyCelebration({journey}: {journey: Journey}): ReactNode {
 	const router = useRouter();
 	const busy = useAdventureBusy();
 	const step = journey.unannounced;
-	if (!step || !journey.progress || busy) return null;
+	if (busy || !journey.progress) return null;
+	if (!step) return null;
 	return <UnlockCelebration
 		key={step.feature}
 		step={step}

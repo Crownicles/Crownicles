@@ -111,6 +111,55 @@ function shakeOff(shake: Animated.Value): Animated.CompositeAnimation {
 	return Animated.sequence([...steps, timing(shake, 0, CURE_MOTION.shakeStepMs)]);
 }
 
+/** The first emoji trembles; each next one spins in over the previous, then flourishes. */
+function stageAnimation(values: CureValues, stage: number, last: number): Animated.CompositeAnimation {
+	if (stage === 0) return shakeOff(values.shake);
+	values.swap.setValue(0);
+	values.ring.setValue(0);
+	values.burst.setValue(0);
+	return Animated.sequence([
+		timing(values.swap, 1, CURE_MOTION.swapMs, Easing.out(Easing.back(1.6))),
+		flourish(values, stage === last),
+		Animated.delay(CURE_MOTION.holdMs)
+	]);
+}
+
+function CureRing({ring, healed}: {ring: Animated.Value; healed: boolean}): ReactNode {
+	return <Animated.View pointerEvents="none" style={[styles.ring, {
+		borderColor: healed ? Theme.colors.green : Theme.colors.red,
+		opacity: fade(ring, [0, 1], [CURE_MOTION.ringOpacity, 0]),
+		transform: [{scale: ring.interpolate({inputRange: [0, 1], outputRange: [CURE_MOTION.ringFrom, CURE_MOTION.ringTo]})}]
+	}]} />;
+}
+
+function LeavingEmoji({emoji, swap}: {emoji: string; swap: Animated.Value}): ReactNode {
+	return <Animated.View style={[styles.layer, {
+		opacity: fade(swap, [0, 1], [1, 0]),
+		transform: [
+			{scale: fade(swap, [0, 1], [1, CURE_MOTION.leaveScale])},
+			{rotate: swap.interpolate({inputRange: [0, 1], outputRange: ["0deg", CURE_MOTION.leaveSpin]})}
+		]
+	}]}>
+		<TwemojiIcon emoji={emoji} size={Theme.dimensions.headerIcon} />
+	</Animated.View>;
+}
+
+function ArrivingEmoji({emoji, values, wiggle}: {emoji: string; values: CureValues; wiggle: Animated.Value}): ReactNode {
+	return <Animated.View style={[styles.layer, {
+		opacity: fade(values.swap, [0, 0.3], [0, 1]),
+		transform: [
+			{scale: values.swap},
+			{rotate: values.swap.interpolate({inputRange: [0, 1], outputRange: [CURE_MOTION.arriveSpin, "0deg"]})},
+			{rotate: values.shake.interpolate({inputRange: [-1, 1], outputRange: [`-${CURE_MOTION.shakeTilt}`, CURE_MOTION.shakeTilt]})},
+			{scale: values.pulse.interpolate({inputRange: [0, 1], outputRange: [1, CURE_MOTION.pulseScale]})}
+		]
+	}]}>
+		<DanceMotion wiggle={wiggle}>
+			<TwemojiIcon emoji={emoji} size={Theme.dimensions.headerIcon} />
+		</DanceMotion>
+	</Animated.View>;
+}
+
 /** The ailment trembles and spins away as the hospital takes its place, which then gives way to the healthy face. */
 export function CureEmblem({cure}: {cure: Cure}): ReactNode {
 	const reducedMotion = useReducedMotion();
@@ -134,17 +183,7 @@ export function CureEmblem({cure}: {cure: Cure}): ReactNode {
 			cure.onDone();
 			return undefined;
 		}
-		let animation = shakeOff(values.shake);
-		if (stage > 0) {
-			values.swap.setValue(0);
-			values.ring.setValue(0);
-			values.burst.setValue(0);
-			animation = Animated.sequence([
-				timing(values.swap, 1, CURE_MOTION.swapMs, Easing.out(Easing.back(1.6))),
-				flourish(values, stage === last),
-				Animated.delay(CURE_MOTION.holdMs)
-			]);
-		}
+		const animation = stageAnimation(values, stage, last);
 		animation.start(({finished}) => {
 			if (!finished) return;
 			if (stage < last) setStage(stage + 1);
@@ -155,34 +194,10 @@ export function CureEmblem({cure}: {cure: Cure}): ReactNode {
 
 	const leaving = stage > 0 ? stages[stage - 1] : null;
 	return <Animated.View style={styles.box}>
-		<Animated.View pointerEvents="none" style={[styles.ring, {
-			borderColor: healed ? Theme.colors.green : Theme.colors.red,
-			opacity: fade(values.ring, [0, 1], [CURE_MOTION.ringOpacity, 0]),
-			transform: [{scale: values.ring.interpolate({inputRange: [0, 1], outputRange: [CURE_MOTION.ringFrom, CURE_MOTION.ringTo]})}]
-		}]} />
+		<CureRing ring={values.ring} healed={healed} />
 		{healed ? <Sparks burst={values.burst} /> : null}
-		{leaving ? <Animated.View style={[styles.layer, {
-			opacity: fade(values.swap, [0, 1], [1, 0]),
-			transform: [
-				{scale: fade(values.swap, [0, 1], [1, CURE_MOTION.leaveScale])},
-				{rotate: values.swap.interpolate({inputRange: [0, 1], outputRange: ["0deg", CURE_MOTION.leaveSpin]})}
-			]
-		}]}>
-			<TwemojiIcon emoji={leaving} size={Theme.dimensions.headerIcon} />
-		</Animated.View> : null}
-		<Animated.View style={[styles.layer, {
-			opacity: fade(values.swap, [0, 0.3], [0, 1]),
-			transform: [
-				{scale: values.swap},
-				{rotate: values.swap.interpolate({inputRange: [0, 1], outputRange: [CURE_MOTION.arriveSpin, "0deg"]})},
-				{rotate: values.shake.interpolate({inputRange: [-1, 1], outputRange: [`-${CURE_MOTION.shakeTilt}`, CURE_MOTION.shakeTilt]})},
-				{scale: values.pulse.interpolate({inputRange: [0, 1], outputRange: [1, CURE_MOTION.pulseScale]})}
-			]
-		}]}>
-			<DanceMotion wiggle={wiggle}>
-				<TwemojiIcon emoji={stages[stage]} size={Theme.dimensions.headerIcon} />
-			</DanceMotion>
-		</Animated.View>
+		{leaving ? <LeavingEmoji emoji={leaving} swap={values.swap} /> : null}
+		<ArrivingEmoji emoji={stages[stage]} values={values} wiggle={wiggle} />
 	</Animated.View>;
 }
 

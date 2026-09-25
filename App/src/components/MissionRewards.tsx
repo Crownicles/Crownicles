@@ -9,11 +9,11 @@ import {ActionBanner, Card, Effect, Effects, EntryRow, Toast} from "@/src/design
 import {Check, Gift} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {Celebration, useAdventureBusy} from "@/src/components/UnlockCelebration";
+import {Celebration} from "@/src/components/UnlockCelebration";
+import {useToastTurn} from "@/src/components/useToastTurn";
 import {amountEffect, gainEffect, presentEffects} from "@/src/display/OutcomeEffects";
-import {missionDescription, missionRewardTotal} from "@/src/display/Missions";
+import {missionDescription, missionRewardTotal, missionRows} from "@/src/display/Missions";
 import {MissionRewards, missionRewardsStore, useMissionRewards} from "@/src/store/MissionRewardsStore";
-import {useJourney} from "@/src/journey/useJourney";
 import {i18n} from "@/src/translations/i18n";
 
 const MISSIONS_ROUTE = "/profile/missions";
@@ -90,7 +90,7 @@ export function UnclaimedMissions(): ReactNode {
 		{count > 0 ? <>
 			<SectionHeader first>{i18n.t("app:missions.rewards.section")}</SectionHeader>
 			<Card>
-				{rewards.missions.map((completed, index) => <UnclaimedMissionRow key={`${completed.mission.missionId}:${index}`} completed={completed} now={now} />)}
+				{missionRows(rewards.missions).map(row => <UnclaimedMissionRow key={row.key} completed={row.completed} now={now} />)}
 			</Card>
 			<ActionBanner
 				icon={Gift}
@@ -125,11 +125,11 @@ export function MissionRewardsBanner(): ReactNode {
 export function MissionCompletedToast(): ReactNode {
 	const router = useRouter();
 	const {rewards, unannounced} = useMissionRewards();
-	const busy = useAdventureBusy();
-	const journey = useJourney();
+	const myTurn = useToastTurn();
 	const dismiss = useCallback((): void => missionRewardsStore.announced(), []);
 	const latest = rewards.missions.at(-1);
-	if (unannounced === 0 || !latest || busy || journey.unannounced) return null;
+	if (!myTurn) return null;
+	if (unannounced === 0 || !latest) return null;
 	return <Toast
 		emblem={<TwemojiIcon emoji={missionIcon(latest.mission.missionType)} size={TOAST_EMBLEM_SIZE} />}
 		title={i18n.t("app:missions.rewards.completed", {count: unannounced})}

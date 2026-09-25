@@ -44,6 +44,18 @@ export function missionDescription(mission: Mission, now: number): string {
 	return i18n.t(`models:missions.${mission.missionId}`, {count: mission.missionObjective, variantText: missionVariant(mission, now), context: "app"});
 }
 
+/** The same mission can be completed twice before it is claimed: each occurrence is numbered. */
+export function missionRows(missions: readonly CompletedMission[]): {key: string; completed: CompletedMission}[] {
+	const seen = new Map<string, number>();
+	return missions.map(completed => {
+		const {missionType, missionId, missionVariant, missionObjective} = completed.mission;
+		const identity = `${missionType}:${missionId}:${missionVariant}:${missionObjective}`;
+		const occurrence = (seen.get(identity) ?? 0) + 1;
+		seen.set(identity, occurrence);
+		return {key: `${identity}#${occurrence}`, completed};
+	});
+}
+
 export function missionRewardTotal(missions: readonly CompletedMission[]): MissionReward {
 	return missions.reduce((total, {reward}) => ({
 		points: total.points + reward.points,
