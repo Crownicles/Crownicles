@@ -5,7 +5,7 @@ import Animated, {cancelAnimation, useAnimatedStyle, useSharedValue, withDecay, 
 import {BackButton, ModalSurface} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {
-	clampTo, drawnSize, MAP_ZOOM, panLimit, resisted, resistedScale, settledView, zoomAround
+	clampPoint, drawnSize, MAP_ZOOM, MapLayout, panLimits, resistedMove, resistedScale, settledView, zoomAround
 } from "@/src/display/MapZoom";
 import {i18n} from "@/src/translations/i18n";
 
@@ -49,6 +49,7 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 	const y = useSharedValue(0);
 	const focal = useSharedValue({x: 0, y: 0});
 	const image = drawnSize(frame, ratio);
+	const layout: MapLayout = {image, frame};
 
 	const stop = (): void => {
 		"worklet";
@@ -56,12 +57,15 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 		cancelAnimation(x);
 		cancelAnimation(y);
 	};
-	const settle = (): void => {
+	const springTo = (target: {scale: number; x: number; y: number}): void => {
 		"worklet";
-		const target = settledView({scale: scale.value, x: x.value, y: y.value}, image, frame);
 		scale.value = withSpring(target.scale, SETTLE_SPRING);
 		x.value = withSpring(target.x, SETTLE_SPRING);
 		y.value = withSpring(target.y, SETTLE_SPRING);
+	};
+	const settle = (): void => {
+		"worklet";
+		springTo(settledView({scale: scale.value, x: x.value, y: y.value}, layout));
 	};
 	const fromCentre = (pointX: number, pointY: number): {x: number; y: number} => {
 		"worklet";
@@ -88,14 +92,14 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 		.maxPointers(1)
 		.onStart(stop)
 		.onChange(event => {
-			x.value = resisted(x.value, event.changeX, panLimit(image.width, frame.width, scale.value));
-			y.value = resisted(y.value, event.changeY, panLimit(image.height, frame.height, scale.value));
+			const moved = resistedMove({x: x.value, y: y.value}, {x: event.changeX, y: event.changeY}, panLimits(layout, scale.value));
+			x.value = moved.x;
+			y.value = moved.y;
 		})
 		.onEnd(event => {
-			const limitX = panLimit(image.width, frame.width, scale.value);
-			const limitY = panLimit(image.height, frame.height, scale.value);
-			x.value = withDecay({velocity: event.velocityX, deceleration: DECAY_DECELERATION, clamp: [-limitX, limitX], rubberBandEffect: true});
-			y.value = withDecay({velocity: event.velocityY, deceleration: DECAY_DECELERATION, clamp: [-limitY, limitY], rubberBandEffect: true});
+			const limits = panLimits(layout, scale.value);
+			x.value = withDecay({velocity: event.velocityX, deceleration: DECAY_DECELERATION, clamp: [-limits.x, limits.x], rubberBandEffect: true});
+			y.value = withDecay({velocity: event.velocityY, deceleration: DECAY_DECELERATION, clamp: [-limits.y, limits.y], rubberBandEffect: true});
 		});
 
 	const doubleTap = Gesture.Tap()
@@ -106,9 +110,7 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 			const target = scale.value > MAP_ZOOM.min
 				? {scale: MAP_ZOOM.min, x: 0, y: 0}
 				: zoomAround({scale: scale.value, x: x.value, y: y.value}, fromCentre(event.x, event.y), MAP_ZOOM.doubleTap);
-			scale.value = withSpring(target.scale, SETTLE_SPRING);
-			x.value = withSpring(clampTo(target.x, panLimit(image.width, frame.width, target.scale)), SETTLE_SPRING);
-			y.value = withSpring(clampTo(target.y, panLimit(image.height, frame.height, target.scale)), SETTLE_SPRING);
+			springTo({scale: target.scale, ...clampPoint(target, panLimits(layout, target.scale))});
 		});
 
 	const transform = useAnimatedStyle(() => ({

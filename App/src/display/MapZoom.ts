@@ -4,6 +4,9 @@ export type Size = {width: number; height: number};
 export type Point = {x: number; y: number};
 export type View = {scale: number; x: number; y: number};
 
+/** The drawn image and the frame it is examined in. */
+export type MapLayout = {image: Size; frame: Size};
+
 export const MAP_ZOOM = {min: 1, max: 6, doubleTap: 2.5, resistance: 0.3} as const;
 
 /** The image is laid out at its exact drawn size, so panning knows where its edges are. */
@@ -15,24 +18,35 @@ export function drawnSize(frame: Size, ratio: number): Size {
 		: {width: frame.width, height: frame.width / ratio};
 }
 
-/** How far the zoomed image may move from the centre before its edge leaves the frame's edge. */
-export function panLimit(image: number, frame: number, scale: number): number {
+/** How far the zoomed image may move from the centre on each axis before its edge leaves the frame's edge. */
+export function panLimits({image, frame}: MapLayout, scale: number): Point {
 	"worklet";
-	return Math.max(0, (image * scale - frame) / 2);
+	return {
+		x: Math.max(0, (image.width * scale - frame.width) / 2),
+		y: Math.max(0, (image.height * scale - frame.height) / 2)
+	};
 }
 
-export function clampTo(value: number, limit: number): number {
+export function clampPoint(point: Point, limits: Point): Point {
 	"worklet";
-	return Math.min(limit, Math.max(-limit, value));
+	return {
+		x: Math.min(limits.x, Math.max(-limits.x, point.x)),
+		y: Math.min(limits.y, Math.max(-limits.y, point.y))
+	};
 }
 
-/** Past a limit, a drag only moves a fraction of the finger's travel, like stretching a rubber band. */
-export function resisted(value: number, delta: number, limit: number): number {
+function resistAxis(value: number, delta: number, limit: number): number {
 	"worklet";
 	const next = value + delta;
 	if (Math.abs(next) <= limit) return next;
 	const outward = Math.sign(delta) === Math.sign(next);
 	return outward ? value + delta * MAP_ZOOM.resistance : next;
+}
+
+/** Past a limit, a drag only moves a fraction of the finger's travel, like stretching a rubber band. */
+export function resistedMove(position: Point, delta: Point, limits: Point): Point {
+	"worklet";
+	return {x: resistAxis(position.x, delta.x, limits.x), y: resistAxis(position.y, delta.y, limits.y)};
 }
 
 /** A pinch past the zoom limits is damped the same way. */
@@ -51,13 +65,9 @@ export function zoomAround(view: View, focal: Point, scale: number): View {
 }
 
 /** The closest allowed view: zoom within its limits, image edges no further than the frame's. */
-export function settledView(view: View, image: Size, frame: Size): View {
+export function settledView(view: View, layout: MapLayout): View {
 	"worklet";
 	const scale = Math.min(MAP_ZOOM.max, Math.max(MAP_ZOOM.min, view.scale));
 	const ratio = scale / view.scale;
-	return {
-		scale,
-		x: clampTo(view.x * ratio, panLimit(image.width, frame.width, scale)),
-		y: clampTo(view.y * ratio, panLimit(image.height, frame.height, scale))
-	};
+	return {scale, ...clampPoint({x: view.x * ratio, y: view.y * ratio}, panLimits(layout, scale))};
 }
