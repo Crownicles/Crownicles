@@ -51,7 +51,8 @@ jest.mock("@/src/collectors/CollectorsContext", () => ({
 }));
 
 jest.mock("@/src/components/Missions", () => ({
-	useMissions: jest.fn((): object => ({status: "loading"}))
+	useMissions: jest.fn((): object => ({status: "loading"})),
+	Missions: (): null => null
 }));
 
 jest.mock("expo-secure-store", () => ({getItem: (): null => null, setItem: jest.fn()}));
@@ -210,6 +211,7 @@ describe("Adventure screen", () => {
 		await render(<Adventure />);
 		expect(screen.queryByText(/app:journey\.features/)).toBeNull();
 		expect(screen.queryByText("app:utilities.unlock")).toBeNull();
+		expect(screen.getByText("app:profile.titles.missions")).toBeTruthy();
 	});
 
 	it("guides a newcomer with the one campaign step to do now", async () => {
@@ -224,11 +226,13 @@ describe("Adventure screen", () => {
 		expect(screen.getByText("models:missions.commandReport")).toBeTruthy();
 	});
 
-	it("leaves the guide out once every part of the game is open", async () => {
+	it("leaves the guide out once every part of the game is open, the missions one tap away", async () => {
 		mockReport();
 		await render(<Adventure />);
 		expect(screen.queryByText("app:journey.title")).toBeNull();
-		expect(screen.getByText("app:utilities.unlock")).toBeTruthy();
+		expect(screen.queryByText("app:utilities.unlock")).toBeNull();
+		await fireEvent.press(screen.getByText("app:profile.titles.missions"));
+		expect(screen.getAllByText("app:profile.titles.missions").length).toBeGreaterThan(1);
 	});
 
 	it("shows a passive city and sends a city action only when the player chooses to leave", async () => {

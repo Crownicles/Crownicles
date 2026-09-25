@@ -1122,6 +1122,7 @@
       "scoreAndRank": "Score et Rang",
       "statistics": "Statistiques",
       "missions": "Missions",
+      "unlock": "$t(app:utilities.unlock)",
       "classes": "Classes",
       "badges": "Badges",
       "rarity": "Raretés",

@@ -16,6 +16,7 @@ import {i18n} from "@/src/translations/i18n";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {MissionRewardsBanner} from "@/src/components/MissionRewards";
+import {useJourney} from "@/src/journey/useJourney";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 const PET_RARITY_MIN = 0;
@@ -24,10 +25,10 @@ const CAMPAIGN_COMPLETE = 100;
 const UNRANKED_GLORY = -1;
 const SECTION_EMBLEM_SIZE = 26;
 const STANDING_EMBLEM_SIZE = 40;
-type ProfilePage = "inventory" | "missions" | "guide" | "blessing";
+type ProfilePage = "inventory" | "unlock" | "guide" | "blessing";
 const PROFILE_PAGES: {page: ProfilePage; icon: string}[] = [
 	{page: "inventory", icon: "inventory.stock"},
-	{page: "missions", icon: "missions.campaign"},
+	{page: "unlock", icon: "notifications.types.playerFreedFromJail"},
 	{page: "guide", icon: "missions.book"},
 	{page: "blessing", icon: "smallEvents.altar"}
 ];
@@ -276,13 +277,16 @@ function Belongings({profile}: {profile: ProfileRes}): ReactNode {
 }
 
 function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: ProfilePage) => void}): ReactNode {
+	// Bailing other players out means nothing yet to someone still discovering the game.
+	const beginner = useJourney().nextStep !== null;
+	const pages = beginner ? PROFILE_PAGES.filter(entry => entry.page !== "unlock") : PROFILE_PAGES;
 	return (
 		<>
 			<ProfileStanding profile={profile} />
 			{shouldDisplayEffectTime(profile) ? <Note>{effectLabel(profile)}</Note> : null}
 			<MissionRewardsBanner />
 			<QuickActions>
-				{PROFILE_PAGES.map(entry => <QuickAction key={entry.page} icon={AppIcons.getIcon(entry.icon)} onPress={(): void => onPage(entry.page)}>{i18n.t(`app:profile.titles.${entry.page}`)}</QuickAction>)}
+				{pages.map(entry => <QuickAction key={entry.page} icon={AppIcons.getIcon(entry.icon)} onPress={(): void => onPage(entry.page)}>{i18n.t(`app:profile.titles.${entry.page}`)}</QuickAction>)}
 			</QuickActions>
 			<ProfileSections profile={profile} />
 			<Belongings profile={profile} />

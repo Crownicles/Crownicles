@@ -71,12 +71,11 @@ import {i18n} from "@/src/translations/i18n";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {WorldMap} from "@/src/components/WorldMap";
 import {DetailScreen} from "@/src/design/DetailScreen";
-import {PrisonerRelease} from "@/src/components/Utilities";
+import {Missions} from "@/src/components/Missions";
 import {DeathScreen} from "@/src/components/DeathScreen";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {AdventureWelcome} from "@/src/components/AdventureWelcome";
 import {JourneyGuide} from "@/src/components/JourneyGuide";
-import {useJourney} from "@/src/journey/useJourney";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
 import {useReportView, useReportAdvance} from "@/src/store/useReportActions";
@@ -766,17 +765,15 @@ function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 
 const ADVENTURE_TOOLS = {
 	MAP: {title: "app:map.title", content: WorldMap},
-	UNLOCK: {title: "app:utilities.unlock", content: PrisonerRelease}
+	MISSIONS: {title: "app:profile.titles.missions", content: Missions}
 } as const;
 type AdventureTool = keyof typeof ADVENTURE_TOOLS;
 
 /** Side trips that belong to the journey screen itself, never on top of an open menu. */
 function AdventureTools({onOpen}: {onOpen: (tool: AdventureTool) => void}): ReactNode {
-	// Bailing other players out means nothing yet to someone still discovering the game.
-	const beginner = useJourney().nextStep !== null;
 	return <QuickActions>
 		<QuickAction icon={AppIcons.getIcon("expedition.map")} onPress={(): void => onOpen("MAP")}>{i18n.t("app:map.title")}</QuickAction>
-		{beginner ? null : <QuickAction icon={AppIcons.getIcon("notifications.types.playerFreedFromJail")} onPress={(): void => onOpen("UNLOCK")}>{i18n.t("app:utilities.unlock")}</QuickAction>}
+		<QuickAction icon={AppIcons.getIcon("missions.campaign")} onPress={(): void => onOpen("MISSIONS")}>{i18n.t("app:profile.titles.missions")}</QuickAction>
 	</QuickActions>;
 }
 
