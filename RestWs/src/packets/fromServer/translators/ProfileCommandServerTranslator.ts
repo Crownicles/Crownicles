@@ -4,8 +4,7 @@ import {
 	CommandProfilePacketRes,
 	CommandProfilePlayerNotFound
 } from "../../../../../Lib/src/packets/commands/CommandProfilePacket";
-import { KeycloakUtils } from "../../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../../index";
+import { resolvePlayerName } from "../PlayerDisplay";
 import { escapeUsername } from "../../../../../Lib/src/utils/StringUtils";
 import { ProfileRes } from "../../../../../WsPackets/src/fromServer/profile/ProfileRes";
 import {
@@ -110,12 +109,12 @@ export function translateProfileData(pseudo: string, playerData: ProfilePlayerDa
 export default class ProfileCommandServerTranslator {
 	@fromServerTranslator(CommandProfilePacketRes, ProfileRes)
 	public static async translate(_context: PacketContext, packet: CommandProfilePacketRes): Promise<ProfileRes> {
-		const user = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId);
-		if (user.isError) {
+		const name = await resolvePlayerName(packet.keycloakId);
+		if (name === null) {
 			throw "Error when retrieving the player";
 		}
 
-		return translateProfileData(escapeUsername(user.payload.user.attributes.gameUsername[0]), packet.playerData);
+		return translateProfileData(escapeUsername(name), packet.playerData);
 	}
 
 	@fromServerTranslator(CommandProfilePlayerNotFound, PlayerNotFound)

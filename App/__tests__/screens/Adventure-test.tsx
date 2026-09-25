@@ -23,6 +23,10 @@ import {reportEventStore} from "@/src/collectors/ReportEventStore";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {ReportUseTokensAcceptedRes} from "ws-packets/src/fromServer/report/ReportTokenRes";
 import {ReportBuyHealAcceptedRes} from "ws-packets/src/fromServer/report/ReportHealRes";
+import {MissionsRes} from "ws-packets/src/fromServer/missions/MissionsRes";
+import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
+import {useMissions} from "@/src/components/Missions";
+import {i18n} from "@/src/translations/i18n";
 
 /** Delivers a packet exactly as Core pushes it through the socket. */
 function pushFromCore(wireName: string, packet: object): void {
@@ -46,6 +50,12 @@ jest.mock("@/src/collectors/CollectorsContext", () => ({
 	useCollectors: jest.fn()
 }));
 
+jest.mock("@/src/components/Missions", () => ({
+	useMissions: jest.fn((): object => ({status: "loading"}))
+}));
+
+jest.mock("expo-secure-store", () => ({getItem: (): null => null, setItem: jest.fn()}));
+
 jest.mock("@tanstack/react-query", () => ({
 	useQueryClient: (): {invalidateQueries: jest.Mock} => ({invalidateQueries: jest.fn(() => Promise.resolve())})
 }));
@@ -60,7 +70,7 @@ jest.mock("@/src/AppIcons", () => ({
 jest.mock("@/src/translations/i18n", () => ({
 	i18n: {
 		t: (key: string): string => key,
-		tArray: (key: string): string[] => [`${key}:only`]
+		tArray: jest.fn((key: string): string[] => [`${key}:only`])
 	}
 }));
 
@@ -110,6 +120,9 @@ function profile(): ProfileRes {
 			breath: {base: 3, max: 8, regen: 1}
 		},
 		missions: {gems: 3, campaignProgression: 4},
+		level: 12,
+		experience: {value: 100, max: 900},
+		pseudo: "Aster",
 		money: 1_240,
 		tokens: {value: 2, max: 5}
 	} as ProfileRes;
@@ -119,6 +132,7 @@ describe("Adventure screen", () => {
 	afterEach(() => jest.restoreAllMocks());
 	beforeEach((): void => {
 		jest.clearAllMocks();
+		jest.mocked(i18n.tArray).mockImplementation((key: string): string[] => [`${key}:only`]);
 		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: profile()});
 		mockedUseCollectors.mockReturnValue({open: [], track: jest.fn(), react: jest.fn(), isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()});
 	});
@@ -179,15 +193,42 @@ describe("Adventure screen", () => {
 		reportEventStore.clearTokens();
 	});
 
-	it("waits for an explicit action before starting the first journey", async () => {
+	it("welcomes the character who has not set off, and waits for them to leave", async () => {
 		mockedUseGameQuery.mockReturnValue({status: "ready", data: Object.assign(new ReportViewRes(), {reportReady: true})});
 		const request = jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName});
 		await render(<Adventure />);
-		expect(screen.getByText("app:adventure.startReport")).toBeTruthy();
+		expect(screen.getByText("app:welcome.title")).toBeTruthy();
 		expect(request).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByRole("button", {name: "app:adventure.continueReport"}));
-		expect(request).toHaveBeenCalledTimes(1);
+		await fireEvent.press(screen.getByText("app:welcome.depart"));
+		await waitFor(() => expect(request).toHaveBeenCalledTimes(1), {timeout: 4_000});
 		expect(request.mock.calls[0][0]).toBeInstanceOf(ReportReq);
+	});
+
+	it("keeps a newcomer's screen free of what their next levels will open", async () => {
+		mockReport();
+		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: {...profile(), level: 5, experience: {value: 40, max: 250}} as ProfileRes});
+		await render(<Adventure />);
+		expect(screen.queryByText(/app:journey\.features/)).toBeNull();
+		expect(screen.queryByText("app:utilities.unlock")).toBeNull();
+	});
+
+	it("guides a newcomer with the one campaign step to do now", async () => {
+		mockReport();
+		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: {...profile(), level: 2} as ProfileRes});
+		jest.mocked(useMissions).mockReturnValue({status: "ready", data: {
+			campaignProgression: 2,
+			missions: [{missionId: "commandReport", missionType: MISSION_TYPES.CAMPAIGN, missionVariant: 0, missionObjective: 1, numberDone: 0}]
+		} as unknown as MissionsRes});
+		await render(<Adventure />);
+		expect(screen.getByText("app:journey.title")).toBeTruthy();
+		expect(screen.getByText("models:missions.commandReport")).toBeTruthy();
+	});
+
+	it("leaves the guide out once every part of the game is open", async () => {
+		mockReport();
+		await render(<Adventure />);
+		expect(screen.queryByText("app:journey.title")).toBeNull();
+		expect(screen.getByText("app:utilities.unlock")).toBeTruthy();
 	});
 
 	it("shows a passive city and sends a city action only when the player chooses to leave", async () => {
@@ -227,6 +268,16 @@ describe("Adventure screen", () => {
 		await render(<Adventure />);
 
 		expect(screen.getByText("advices:advices:only")).toBeTruthy();
+	});
+
+	it("does not suggest Discord commands in the travel advice", async () => {
+		jest.mocked(i18n.tArray).mockReturnValue(["Utilisez la commande /idea !", "Garder de l'argent de côté est judicieux."]);
+		mockReport();
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("Garder de l'argent de côté est judicieux.")).toBeTruthy();
+		expect(screen.queryByText("Utilisez la commande /idea !")).toBeNull();
 	});
 
 	it("names the last mini-event in the title, like the Discord report does", async () => {

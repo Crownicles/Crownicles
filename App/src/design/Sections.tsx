@@ -199,15 +199,16 @@ function ToastContent({emblem, title, subtitle, value}: {emblem?: ReactNode; tit
 }
 
 /**
- * A short acknowledgement floating over the screen, which leaves by itself; a tap sends it away sooner.
- * `onDismiss` must keep its identity across renders, or the countdown restarts.
+ * A short acknowledgement floating over the screen, which leaves by itself; a tap sends it away sooner,
+ * or where `onPress` leads. `onDismiss` must keep its identity across renders, or the countdown restarts.
  */
-export function Toast({emblem, title, subtitle, value, onDismiss}: {
+export function Toast({emblem, title, subtitle, value, onDismiss, onPress}: {
 	emblem?: ReactNode;
 	title: string;
 	subtitle?: string;
 	value?: ToastValue;
 	onDismiss: () => void;
+	onPress?: () => void;
 }): ReactNode {
 	const insets = useSafeAreaInsets();
 	const [entrance] = useState(() => new Animated.Value(0));
@@ -221,7 +222,7 @@ export function Toast({emblem, title, subtitle, value, onDismiss}: {
 			<Pressable
 				accessibilityRole="alert"
 				accessibilityLiveRegion="polite"
-				onPress={onDismiss}
+				onPress={onPress ?? onDismiss}
 				style={styles.toast}
 			>
 				<ToastContent emblem={emblem} title={title} {...subtitle ? {subtitle} : {}} {...value ? {value} : {}} />

@@ -8,6 +8,7 @@ import {missionDescription} from "@/src/display/Missions";
 import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 
+jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (path: string): string => path}}));

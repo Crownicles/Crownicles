@@ -17,7 +17,8 @@ const LIGHT_COLORS = {
 
 	/** Tints behind a gain or a loss, light enough for the green or red text they carry. */
 	greenWash: "#EAF5EE",
-	redWash: "#FBEDEC"
+	redWash: "#FBEDEC",
+	goldWash: "#F8EFDD"
 };
 
 type Palette = typeof LIGHT_COLORS;
@@ -38,7 +39,8 @@ const DARK_COLORS: Palette = {
 	blue: "#6A9BEA",
 	violet: "#9A87EA",
 	greenWash: "#17291E",
-	redWash: "#321B1A"
+	redWash: "#321B1A",
+	goldWash: "#2D2414"
 };
 
 /** Decided once per launch: changing it reloads the app so every style is built again. */

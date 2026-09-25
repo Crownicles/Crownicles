@@ -8,7 +8,7 @@ import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {Mission, MISSION_TYPES} from "ws-packets/src/objects/Mission";
 import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
-import {useGameQuery} from "@/src/store/useGameQuery";
+import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {FightGauge} from "@/src/components/FightGauge";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
@@ -19,6 +19,8 @@ import {AppIcons} from "@/src/AppIcons";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {missionDate, missionDescription} from "@/src/display/Missions";
+import {UnclaimedMissions} from "@/src/components/MissionRewards";
+import {useMissionRewards} from "@/src/store/MissionRewardsStore";
 
 const CLOCK_INTERVAL = 60_000;
 const MISSION_EMBLEM_SIZE = 26;
@@ -50,10 +52,10 @@ function MissionList({entries, now, unfolding}: MissionListProps): ReactNode {
 	</ExpandableList>;
 }
 
-function CampaignMissions({data, now, unfolding}: {data: MissionsRes} & Omit<MissionListProps, "entries">): ReactNode {
+function CampaignMissions({data, now, unfolding, first}: {data: MissionsRes; first: boolean} & Omit<MissionListProps, "entries">): ReactNode {
 	const mission = data.missions.find(entry => entry.missionType === MISSION_TYPES.CAMPAIGN);
 	return <>
-		<SectionHeader first action={{hint: i18n.t("app:profile.formats.progress", {value: data.campaignProgression || data.maxCampaignNumber, max: data.maxCampaignNumber})}}>{i18n.t("app:missions.campaign")}</SectionHeader>
+		<SectionHeader first={first} action={{hint: i18n.t("app:profile.formats.progress", {value: data.campaignProgression || data.maxCampaignNumber, max: data.maxCampaignNumber})}}>{i18n.t("app:missions.campaign")}</SectionHeader>
 		{data.campaignProgression === 0
 			? <Note>{i18n.t("app:missions.campaignCompleted")}</Note>
 			: mission
@@ -97,23 +99,30 @@ function SideMissions({data, now, unfolding}: {data: MissionsRes} & Omit<Mission
 
 export function MissionsContent({data, now}: {data: MissionsRes; now: number}): ReactNode {
 	const unfolding = useExpandedEntry<string>();
+	const rewardsFirst = useMissionRewards().rewards.missions.length > 0;
 	if (data.missions.length === 0) return <EmptyState>{i18n.t("app:missions.empty")}</EmptyState>;
 	const sections = {now, unfolding};
 	return <>
-		<CampaignMissions data={data} {...sections} />
+		<CampaignMissions data={data} first={!rewardsFirst} {...sections} />
 		<DailyMission data={data} {...sections} />
 		<SideMissions data={data} {...sections} />
 	</>;
 }
 
-export function Missions(): ReactNode {
+/** The player's missions, read through the shared cache; an answer also refreshes the profile Core rewarded. */
+export function useMissions(): RequestState<MissionsRes> {
 	const queryClient = useQueryClient();
-	const [now, setNow] = useState(Date.now);
-	const state = useGameQuery(GAME_ENTITIES.MISSIONS, async () => {
+	return useGameQuery(GAME_ENTITIES.MISSIONS, async () => {
 		const answer = await GameClient.request(makeFromClientPacket(MissionsReq, {askedPlayer: {}}), MissionsRes, [PlayerNotFound]);
 		if (answer.kind === "answer") await queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.PROFILE)});
 		return answer;
 	});
+}
+
+export function Missions(): ReactNode {
+	const queryClient = useQueryClient();
+	const [now, setNow] = useState(Date.now);
+	const state = useMissions();
 	const resetsAt = state.status === "ready" ? state.data.dailyMission.resetsAt : null;
 	useGameDeadline(GAME_ENTITIES.MISSIONS, resetsAt);
 	useEffect(() => {
@@ -126,5 +135,8 @@ export function Missions(): ReactNode {
 		<ButtonRow><Button onPress={(): void => { queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.MISSIONS)}).catch(console.error); }}>{i18n.t("app:common.retry")}</Button></ButtonRow>
 	</>;
 	if (state.status === "empty") return <EmptyState>{i18n.t("app:profile.notFound")}</EmptyState>;
-	return <MissionsContent data={state.data} now={now} />;
+	return <>
+		<UnclaimedMissions />
+		<MissionsContent data={state.data} now={now} />
+	</>;
 }

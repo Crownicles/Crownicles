@@ -15,6 +15,7 @@ import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {MissionRewardsBanner} from "@/src/components/MissionRewards";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 const PET_RARITY_MIN = 0;
@@ -279,6 +280,7 @@ function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: 
 		<>
 			<ProfileStanding profile={profile} />
 			{shouldDisplayEffectTime(profile) ? <Note>{effectLabel(profile)}</Note> : null}
+			<MissionRewardsBanner />
 			<QuickActions>
 				{PROFILE_PAGES.map(entry => <QuickAction key={entry.page} icon={AppIcons.getIcon(entry.icon)} onPress={(): void => onPage(entry.page)}>{i18n.t(`app:profile.titles.${entry.page}`)}</QuickAction>)}
 			</QuickActions>

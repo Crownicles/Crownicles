@@ -44,3 +44,17 @@ export type DailyMissionStatus = {
 	completed: boolean;
 	resetsAt: number;
 };
+
+/** What Core credited the player with when the mission was completed. */
+export type MissionReward = {
+	points: number;
+	experience: number;
+	gems: number;
+	money: number;
+	petRewardTypeId?: number;
+};
+
+export type CompletedMission = {
+	mission: Mission;
+	reward: MissionReward;
+};

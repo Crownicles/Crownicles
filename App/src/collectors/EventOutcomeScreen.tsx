@@ -14,6 +14,11 @@ export function usePlayerPseudo(): string {
 	return profile.status === "ready" ? profile.data.pseudo : "";
 }
 
+/** Whose journal an entry belongs to; before the first report the profile cannot name the player yet. */
+function journalTitle(pseudo: string): string {
+	return pseudo ? i18n.t("commands:report.journal", {pseudo}) : i18n.t("app:adventure.ownJournal");
+}
+
 /**
  * An entry of the player's journal, laid out the way Discord posts one: whose journal it is with the
  * event's emoji, what the event changed if anything, then the game's prose. Prompts and results
@@ -29,7 +34,7 @@ export function EventJournal({emoji, title, story, effects = []}: {
 	const pseudo = usePlayerPseudo();
 	return <JournalEntry
 		{...emoji ? {emblem: <TwemojiIcon emoji={emoji} size={Theme.dimensions.headerIcon} />} : {}}
-		title={title ?? i18n.t("commands:report.journal", {pseudo}).trim()}
+		title={title ?? journalTitle(pseudo)}
 		effects={effects}
 	>
 		<Story>{story}</Story>

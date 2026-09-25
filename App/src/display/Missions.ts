@@ -1,4 +1,4 @@
-import {Mission, MissionTravel, MISSION_VARIANTS} from "ws-packets/src/objects/Mission";
+import {CompletedMission, Mission, MissionReward, MissionTravel, MISSION_VARIANTS} from "ws-packets/src/objects/Mission";
 import {i18n} from "@/src/translations/i18n";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {AppIcons} from "@/src/AppIcons";
@@ -42,4 +42,13 @@ function missionVariant(mission: Mission, now: number): string {
 
 export function missionDescription(mission: Mission, now: number): string {
 	return i18n.t(`models:missions.${mission.missionId}`, {count: mission.missionObjective, variantText: missionVariant(mission, now), context: "app"});
+}
+
+export function missionRewardTotal(missions: readonly CompletedMission[]): MissionReward {
+	return missions.reduce((total, {reward}) => ({
+		points: total.points + reward.points,
+		experience: total.experience + reward.experience,
+		gems: total.gems + reward.gems,
+		money: total.money + reward.money
+	}), {points: 0, experience: 0, gems: 0, money: 0});
 }

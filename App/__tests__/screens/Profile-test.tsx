@@ -4,6 +4,8 @@ import Profile from "@/app/(protected)/(tabs)/profile";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 
+jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
+
 const mockPush = jest.fn();
 
 jest.mock("expo-router", () => ({

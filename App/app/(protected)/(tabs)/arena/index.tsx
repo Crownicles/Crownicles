@@ -2,6 +2,7 @@ import {ReactNode} from "react";
 import {Pressable, StyleSheet, Text, View} from "react-native";
 import {useRouter} from "expo-router";
 import {ArrowRight, CircleAlert, Swords, Zap} from "@/src/design/FightIcons";
+import {JOURNEY_LEVELS} from "ws-packets/src/objects/Journey";
 import {FightReq} from "ws-packets/src/fromClient/FightReq";
 import {FightErrorRes} from "ws-packets/src/fromServer/fight/FightRes";
 import {FightError} from "ws-packets/src/objects/Fight";
@@ -26,6 +27,9 @@ import {i18n} from "@/src/translations/i18n";
 const FIGHT_MENU: CommandMenu = {request: FightReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [FightErrorRes]};
 const ARENA_PAGES = ["classes", "history", "leagues", "rankings"] as const;
 type ArenaPage = typeof ARENA_PAGES[number];
+
+/** Fight history and leagues only mean something once the player can fight. */
+const BEFORE_FIGHTS_PAGES: readonly ArenaPage[] = ["classes", "rankings"];
 const ARENA_ICONS = {classes: "commands.classes", history: "fightHistory.menu", leagues: "unitValues.score", rankings: "top.congrats"} as const;
 const styles = StyleSheet.create({
 	header: {paddingTop: 8, paddingBottom: 26, flexDirection: "row", gap: 14, alignItems: "center"},
@@ -71,14 +75,14 @@ function ArenaStartError({error}: {error: FightError}): ReactNode {
 }
 
 /** The league and class tiles wear the player's own league and class, as the mockup does. */
-function ArenaLinks({onSelect, leagueId, classId}: {onSelect: (page: ArenaPage) => void; leagueId?: number; classId?: number}): ReactNode {
+function ArenaLinks({pages, onSelect, leagueId, classId}: {pages: readonly ArenaPage[]; onSelect: (page: ArenaPage) => void; leagueId?: number; classId?: number}): ReactNode {
 	const icon = (page: ArenaPage): string => {
 		if (page === "leagues" && leagueId !== undefined) return AppIcons.getIcon(`leagues.${leagueId}`);
 		if (page === "classes" && classId !== undefined) return AppIcons.getIcon(`classes.${classId}`);
 		return AppIcons.getIcon(ARENA_ICONS[page]);
 	};
 	return <View style={styles.links}><QuickActions>
-		{ARENA_PAGES.map(page => <QuickAction key={page} icon={icon(page)} onPress={(): void => onSelect(page)}>{i18n.t(`app:arena.pages.${page}`)}</QuickAction>)}
+		{pages.map(page => <QuickAction key={page} icon={icon(page)} onPress={(): void => onSelect(page)}>{i18n.t(`app:arena.pages.${page}`)}</QuickAction>)}
 	</QuickActions></View>;
 }
 
@@ -104,12 +108,14 @@ export default function Arena(): ReactNode {
 	const ongoing = Boolean(fight.introduction && !fight.result && !fight.error);
 	const start = (): Promise<void> => {fightStore.reset(); return open(FIGHT_MENU);};
 	const startError = fight.visible ? null : fight.error;
+	// Before the fight level the arena only holds the class choice and the rankings; fights are announced when they open.
+	const canFight = state.status !== "ready" || state.data.level >= JOURNEY_LEVELS.FIGHTS;
 	return <Screen>
 		<ArenaHeader />
 		<GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{profile => <ArenaProfile profile={profile} />}</GameQueryContent>
 		{message ? <Note>{message}</Note> : null}
-		<ArenaStart pending={pending} ongoing={ongoing} onStart={start} />
+		{canFight ? <ArenaStart pending={pending} ongoing={ongoing} onStart={start} /> : null}
 		{startError ? <ArenaStartError error={startError} /> : null}
-		<ArenaLinks onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
+		<ArenaLinks pages={canFight ? ARENA_PAGES : BEFORE_FIGHTS_PAGES} onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
 	</Screen>;
 }

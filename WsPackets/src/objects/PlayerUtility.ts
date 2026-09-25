@@ -1,4 +1,7 @@
-export const PLAYER_EFFECTS = { DEAD: "dead" } as const;
+export const PLAYER_EFFECTS = {
+	DEAD: "dead",
+	NOT_STARTED: "notStarted"
+} as const;
 
 export const PLAYER_UTILITY_ERRORS = {
 	ALREADY_ALIVE: "alreadyAlive",

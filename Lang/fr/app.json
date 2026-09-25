@@ -479,7 +479,8 @@
     },
     "onTheRoad": "Progression sur la route",
     "unknownLocation": "Lieu inconnu",
-    "empty": "Aucun rapport de voyage disponible"
+    "empty": "Aucun rapport de voyage disponible",
+    "ownJournal": "Votre journal"
   },
   "city": {
     "staleAction": "La situation a changé. Les actions de la ville ont été actualisées.",
@@ -773,6 +774,44 @@
     "health": "Vos points de vie sont entièrement restaurés.",
     "journey": "Votre voyage repart de votre dernière étape."
   },
+  "welcome": {
+    "eyebrow": "Nouvelle aventure",
+    "title": "Bienvenue sur Crownicles",
+    "description": "Votre personnage part à l'aventure et voyage de ville en ville. Sur la route l'attendent rencontres, trésors et dangers, qui le rendent plus fort au fil du temps.",
+    "rhythm": "Le voyage continue même application fermée : revenez régulièrement faire votre rapport pour découvrir ce qui s'est passé.",
+    "road": "La route qui mène du village au château",
+    "depart": "Partir à l'aventure"
+  },
+  "journey": {
+    "title": "Votre parcours",
+    "nextStep": "Prochaine étape · {{value}}/{{max}}",
+    "unlocked": "Nouveau",
+    "unlockedAtLevel": "Niveau {{level}} atteint",
+    "discover": "Découvrir",
+    "later": "Plus tard",
+    "features": {
+      "profile": {
+        "title": "Votre personnage",
+        "unlocked": "Inventaire, missions et statistiques : tout ce que vous portez et accomplissez vous attend désormais dans ce nouvel onglet."
+      },
+      "classes": {
+        "title": "Les classes",
+        "unlocked": "Chaque classe façonne votre manière de combattre. Choisissez celle qui vous ressemble."
+      },
+      "fights": {
+        "title": "L'arène",
+        "unlocked": "Défiez d'autres aventuriers, gagnez de la gloire et gravissez les ligues. Votre première victoire vous attend."
+      },
+      "guild": {
+        "title": "Les guildes",
+        "unlocked": "Rejoignez une guilde ou fondez la vôtre : ensemble, vous bâtirez un domaine et relèverez des défis chaque jour."
+      },
+      "pet": {
+        "title": "Votre familier",
+        "unlocked": "Un compagnon peut désormais partager votre aventure : prenez-en soin, il combat à vos côtés et part en expédition."
+      }
+    }
+  },
   "utilities": {
     "title": "Services au joueur",
     "unlock": "Libérer un joueur", "prisoner": "Joueur à libérer", "prisonerRank": "Classement du joueur à libérer",
@@ -983,7 +1022,28 @@
     "noSideMissions": "Vous n'avez aucune mission secondaire en cours.",
     "resetsAt": "Renouvellement le {{date}}",
     "expiresAt": "À terminer avant le {{date}}",
-    "risk": "{{icon}} {{risk}}"
+    "risk": "{{icon}} {{risk}}",
+    "rewards": {
+      "section": "Missions accomplies",
+      "completed_one": "Mission accomplie",
+      "completed_other": "{{count}} missions accomplies",
+      "toast": "Vos gains sont à découvrir dans vos missions.",
+      "waiting_one": "Voir les gains d'une mission accomplie",
+      "waiting_other": "Voir les gains de {{count}} missions accomplies",
+      "claim_one": "Voir les gains de cette mission",
+      "claim_other": "Voir les gains de ces {{count}} missions",
+      "title": "Récompenses obtenues",
+      "none": "Cette mission ne rapportait aucune récompense.",
+      "pet": "Familier",
+      "recipe": "Recette",
+      "nextCampaign": "Prochaine mission de campagne : {{mission}}",
+      "continue": "Continuer",
+      "types": {
+        "campaign": "Mission de campagne",
+        "daily": "Mission quotidienne",
+        "sideMission": "Mission secondaire"
+      }
+    }
   },
   "reference": {
     "empty": "Aucune information disponible.",

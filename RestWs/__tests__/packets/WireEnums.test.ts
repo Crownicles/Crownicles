@@ -61,7 +61,7 @@ describe("wire enums mirror their back-end counterpart", () => {
 		["ChestErrors", CHEST_ERRORS, HomeConstants.CHEST_ERRORS],
 		["PlantTransferActions", PLANT_TRANSFER_ACTIONS, HomeConstants.PLANT_TRANSFER_ACTIONS],
 		["PlantTransferErrors", PLANT_TRANSFER_ERRORS, HomeConstants.PLANT_TRANSFER_ERRORS],
-		["DeathEffect", PLAYER_EFFECTS, {DEAD: Effect.DEAD.id}],
+		["PlayerEffects", PLAYER_EFFECTS, {DEAD: Effect.DEAD.id, NOT_STARTED: Effect.NOT_STARTED.id}],
 		["TopDataType", TopDataType, CoreTopDataType],
 		["TopTiming", TopTiming, CoreTopTiming],
 		["EloGameResult", EloGameResult, CoreEloGameResult],

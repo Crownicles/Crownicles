@@ -7,6 +7,9 @@ import { MissionsReq } from "../../../WsPackets/src/fromClient/MissionsReq";
 import { PlayerNotFound } from "../../../WsPackets/src/fromServer/common/PlayerNotFound";
 import MissionsCommandClientTranslator from "../../src/packets/fromClient/translators/MissionsCommandClientTranslator";
 import MissionsCommandServerTranslator from "../../src/packets/fromServer/translators/MissionsCommandServerTranslator";
+import MissionsCompletedServerTranslator from "../../src/packets/fromServer/translators/MissionsCompletedServerTranslator";
+import { MissionsCompletedPacket } from "../../../Lib/src/packets/events/MissionsCompletedPacket";
+import { MissionsCompletedRes } from "../../../WsPackets/src/fromServer/missions/MissionsCompletedRes";
 
 const CONTEXT: PacketContext = { frontEndOrigin: "websocket", frontEndSubOrigin: "", keycloakId: "authenticated-player", webSocket: {} };
 
@@ -54,5 +57,22 @@ describe("missions over WebSocket", () => {
 
 	it("returns the existing not-found state", async () => {
 		expect(await MissionsCommandServerTranslator.notFound(CONTEXT, makePacket(CommandMissionPlayerNotFoundPacket, {}))).toBeInstanceOf(PlayerNotFound);
+	});
+
+	it("pushes completed missions with the rewards Core credited and the next campaign step", async () => {
+		const packet = makePacket(MissionsCompletedPacket, {
+			keycloakId: "private-id",
+			missions: [{ missionId: "commandReport", missionType: MissionType.CAMPAIGN, missionObjective: 1, missionVariant: 0, numberDone: 1, pointsToWin: 75, xpToWin: 100, gemsToWin: 6, moneyToWin: 20, petRewardTypeId: 3 }],
+			nextCampaignMission: { missionId: "travelHours", missionType: MissionType.CAMPAIGN, missionObjective: 1, missionVariant: 1, numberDone: 0 }
+		});
+		const result = await MissionsCompletedServerTranslator.translate(CONTEXT, JSON.parse(JSON.stringify(packet)));
+		expect(result).toBeInstanceOf(MissionsCompletedRes);
+		expect(result.missions).toEqual([{
+			mission: { missionId: "commandReport", missionType: "campaign", missionObjective: 1, missionVariant: 0, numberDone: 1 },
+			reward: { points: 75, experience: 100, gems: 6, money: 20, petRewardTypeId: 3 }
+		}]);
+		expect(result.nextCampaignMission?.missionId).toBe("travelHours");
+		expect(result).not.toHaveProperty("keycloakId");
+		expect(result).not.toHaveProperty("discoveredRecipes");
 	});
 });

@@ -73,6 +73,9 @@ import {DetailScreen} from "@/src/design/DetailScreen";
 import {PrisonerRelease} from "@/src/components/Utilities";
 import {DeathScreen} from "@/src/components/DeathScreen";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
+import {AdventureWelcome} from "@/src/components/AdventureWelcome";
+import {JourneyGuide} from "@/src/components/JourneyGuide";
+import {useJourney} from "@/src/journey/useJourney";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
 import {useReportView, useReportAdvance} from "@/src/store/useReportActions";
@@ -348,6 +351,12 @@ function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): 
   return formatDuration(packet.nextStopTime - currentTime);
 }
 
+/** Arriving opens the report too, so a stop planned after the arrival never delays it. */
+function reportWait(packet: ReportTravelSummaryRes, currentTime: number): string {
+	const opensAt = Math.min(packet.nextStopTime, packet.arriveTime);
+	return opensAt <= currentTime ? i18n.t("app:adventure.now") : formatDuration(opensAt - currentTime);
+}
+
 function hasNextStop(packet: ReportTravelSummaryRes): boolean {
 	return packet.nextStopTime <= packet.arriveTime;
 }
@@ -358,7 +367,7 @@ function hasNextStop(packet: ReportTravelSummaryRes): boolean {
  * Reaching a stop brings a new one.
  */
 function travelAdvice(stopTime: number): string {
-	const advices = i18n.tArray("advices:advices");
+	const advices = i18n.tArray("advices:advices").filter(advice => !/(?:^|\s)\/[a-z][\w-]*/i.test(advice));
 	return advices.length === 0 ? "" : plainStory(advices[Math.abs(stopTime) % advices.length]);
 }
 
@@ -767,9 +776,11 @@ type AdventureTool = keyof typeof ADVENTURE_TOOLS;
 
 /** Side trips that belong to the journey screen itself, never on top of an open menu. */
 function AdventureTools({onOpen}: {onOpen: (tool: AdventureTool) => void}): ReactNode {
+	// Bailing other players out means nothing yet to someone still discovering the game.
+	const beginner = useJourney().nextStep !== null;
 	return <QuickActions>
 		<QuickAction icon={AppIcons.getIcon("expedition.map")} onPress={(): void => onOpen("MAP")}>{i18n.t("app:map.title")}</QuickAction>
-		<QuickAction icon={AppIcons.getIcon("notifications.types.playerFreedFromJail")} onPress={(): void => onOpen("UNLOCK")}>{i18n.t("app:utilities.unlock")}</QuickAction>
+		{beginner ? null : <QuickAction icon={AppIcons.getIcon("notifications.types.playerFreedFromJail")} onPress={(): void => onOpen("UNLOCK")}>{i18n.t("app:utilities.unlock")}</QuickAction>}
 	</QuickActions>;
 }
 
@@ -815,7 +826,7 @@ function AdventureActions({packet, currentTime, actions}: {packet: ReportTravelS
 			packet={packet}
 			reportReady={actions.reportReady}
 			reportAction={actions.reportAction}
-			waitFor={nextStopDuration(packet, currentTime)}
+			waitFor={reportWait(packet, currentTime)}
 			advance={actions.advance}
 		/>
 		{packet.heal && canCure(packet) ? <HealAction heal={packet.heal} action={actions.heal} /> : null}
@@ -838,6 +849,7 @@ function AdventureSheet({packet, currentTime, actions, tools, dash, cure}: {
 		<Screen>
 			<AdventureHeader context={context} dash={dash} cure={cure} />
 			<AdventureActions packet={packet} currentTime={currentTime} actions={actions} />
+			<JourneyGuide />
 			{advice ? <Note>{advice}</Note> : null}
 			{tools}
 		</Screen>
@@ -979,11 +991,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	}
 	if (!travel) {
 		return <>
-			<Screen>
-				<Standing caption={i18n.t("app:adventure.eyebrow")} title={i18n.t("app:adventure.startReport")} />
-				<ReportAdvance reportReady={reportState.data.reportReady} reportAction={reportAction} />
-				{tools}
-			</Screen>
+			<AdventureWelcome />
 			{pendingReportConfirmation}
 		</>;
 	}
