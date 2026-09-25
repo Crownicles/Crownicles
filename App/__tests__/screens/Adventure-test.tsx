@@ -639,4 +639,15 @@ describe("Adventure screen", () => {
 		packet.isInCity = true;
 		expect(reportRefreshDelay(packet, 1_700_000_000_000)).toBeNull();
 	});
+
+	it("refreshes when an active alteration stops delaying the report", () => {
+		const now = 1_700_000_000_000;
+		const packet = report();
+		packet.nextStopTime = now + 300_000;
+		packet.arriveTime = now + 600_000;
+		packet.effect = "occupied";
+		packet.effectEndTime = now + 900_000;
+
+		expect(reportRefreshDelay(packet, now)).toBe(900_000);
+	});
 });

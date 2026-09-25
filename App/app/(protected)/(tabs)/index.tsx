@@ -88,6 +88,7 @@ const MILLISECONDS_PER_MINUTE = MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE;
 const FULL_PROGRESS = 1;
 const NO_PROGRESS = 0;
 const PERCENTAGE_SCALE = 100;
+const REPORT_READY_PULSE = {fromScale: 0.96, damping: 18, stiffness: 220, mass: 0.8} as const;
 
 /** The run to the next stop once tokens are spent: long enough to be seen, short enough not to be waited for. */
 const TRAVEL_DASH = {durationMs: 1_100, strideMs: 110, hop: -7, lean: "10deg"} as const;
@@ -355,10 +356,14 @@ function isAlterationReport(packet: ReportTravelSummaryRes): boolean {
 	return packet.effect !== undefined && packet.effect !== "none";
 }
 
+function reportOpensAt(packet: ReportTravelSummaryRes): number {
+	const nextStopOrArrival = Math.min(packet.nextStopTime, packet.arriveTime);
+	return isAlterationReport(packet) ? Math.max(nextStopOrArrival, packet.effectEndTime ?? 0) : nextStopOrArrival;
+}
+
 /** Arriving opens the report too, so a stop planned after the arrival never delays it; an alteration holds it until it ends. */
 export function reportWait(packet: ReportTravelSummaryRes, currentTime: number): string {
-	const alterationEnd = isAlterationReport(packet) ? packet.effectEndTime ?? 0 : 0;
-	const opensAt = Math.max(Math.min(packet.nextStopTime, packet.arriveTime), alterationEnd);
+	const opensAt = reportOpensAt(packet);
 	return opensAt <= currentTime ? i18n.t("app:adventure.now") : formatDuration(opensAt - currentTime);
 }
 
@@ -377,7 +382,7 @@ function travelAdvice(stopTime: number): string {
 }
 
 export function reportRefreshDelay(packet: ReportTravelSummaryRes, now = Date.now()): number | null {
-	const nextRefresh = packet.isInCity ? packet.effectEndTime : Math.min(packet.nextStopTime, packet.arriveTime);
+	const nextRefresh = packet.isInCity ? packet.effectEndTime : reportOpensAt(packet);
 	return nextRefresh !== undefined && nextRefresh > now ? nextRefresh - now : null;
 }
 
@@ -755,6 +760,28 @@ function cureReplacesReport(packet: ReportTravelSummaryRes, reportReady: boolean
 	return !reportReady && packet.heal !== undefined && canCure(packet);
 }
 
+function ReportReadyPulse({ready, children}: {ready: boolean; children: ReactNode}): ReactNode {
+	const reducedMotion = useReducedMotion();
+	const [scale] = useState(() => new Animated.Value(1));
+	const wasReady = useRef(ready);
+
+	useEffect(() => {
+		if (!wasReady.current && ready && !reducedMotion) {
+			scale.setValue(REPORT_READY_PULSE.fromScale);
+			Animated.spring(scale, {
+				toValue: 1,
+				damping: REPORT_READY_PULSE.damping,
+				stiffness: REPORT_READY_PULSE.stiffness,
+				mass: REPORT_READY_PULSE.mass,
+				useNativeDriver: true
+			}).start();
+		}
+		wasReady.current = ready;
+	}, [ready, reducedMotion, scale]);
+
+	return <Animated.View style={{transform: [{scale}]}}>{children}</Animated.View>;
+}
+
 /** A single way on: the free report once it is ready, otherwise tokens to reach the stop now. */
 function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 	packet: ReportTravelSummaryRes;
@@ -764,9 +791,12 @@ function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 	advance: PendingAction;
 }): ReactNode {
 	const tokens = tokenOffer(packet, reportReady);
-	if (tokens) return <TokenAdvance tokens={tokens} reportAction={reportAction} waitFor={waitFor} advance={advance} />;
-	if (cureReplacesReport(packet, reportReady)) return null;
-	return <ReportAdvance reportReady={reportReady} reportAction={reportAction} waitFor={waitFor} />;
+	const action = tokens
+		? <TokenAdvance tokens={tokens} reportAction={reportAction} waitFor={waitFor} advance={advance} />
+		: cureReplacesReport(packet, reportReady)
+			? null
+			: <ReportAdvance reportReady={reportReady} reportAction={reportAction} waitFor={waitFor} />;
+	return action ? <ReportReadyPulse ready={reportReady}>{action}</ReportReadyPulse> : null;
 }
 
 const ADVENTURE_TOOLS = {
