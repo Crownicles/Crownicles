@@ -68,8 +68,7 @@ function impactPose(cue: FightCue): FighterPose {
 }
 
 function petPose(cue: FightCue): FighterPose {
-	if (cue.outcome === FIGHT_OUTCOMES.PREPARED) return PET_PREPARE_POSE;
-	if (PET_MELEE_MOTIONS.has(cue.motion)) return PET_POSE;
+	if (PET_MELEE_MOTIONS.has(cue.motion)) return cue.outcome === FIGHT_OUTCOMES.PREPARED ? PET_PREPARE_POSE : PET_POSE;
 	return ACTOR_POSES[cue.motion] ?? PET_CAST_POSE;
 }
 

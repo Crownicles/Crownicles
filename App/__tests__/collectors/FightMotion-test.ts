@@ -70,7 +70,7 @@ describe("combat animation meaning", () => {
 	it("lunges with a pet only for melee attacks, never for a heal or an intimidation", () => {
 		const lunge = fighterMotionFrames(fightCue({...ENTRY, fightActionId: "horn", status: "success", pet: PET, fightActionEffectDealt: {damages: 30}}), "self");
 		const heal = fighterMotionFrames(fightCue({...ENTRY, fightActionId: "healEveryone", status: "success", pet: PET, fightActionEffectReceived: {energy: 20}}), "self");
-		const roar = fighterMotionFrames(fightCue({...ENTRY, fightActionId: "scareFish", status: "success", pet: PET}), "self");
+		const roar = fighterMotionFrames(fightCue({...ENTRY, fightActionId: "scareFish", status: "generalEffect", pet: PET}), "self");
 		expect(Math.max(...lunge)).toBeGreaterThan(20);
 		expect(Math.max(...heal)).toBeLessThan(10);
 		expect(Math.max(...roar)).toBeLessThan(10);
