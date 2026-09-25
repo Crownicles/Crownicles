@@ -58,6 +58,7 @@ import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/
 import {EmptyState, Note, QuickAction, QuickActions, Screen} from "@/src/design/Primitives";
 import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
 import {Entrance} from "@/src/design/Entrance";
+import {Cure, CureEmblem, HappyEmblem} from "@/src/components/CureEmblem";
 import {plainStory} from "@/src/display/Markdown";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {SilentAnswer, useReportShortcut} from "@/src/store/useReportShortcut";
@@ -553,11 +554,8 @@ function HealAction({heal, action}: {heal: NonNullable<ReportTravelSummaryRes["h
 	/>;
 }
 
-/** The ailment emoji the heal removes, and what happens once it is gone. */
-type Cure = {from: string; onDone: () => void};
-
-/** The ailment spins away and the healthy face pops in, before the heal result opens. */
-const CURE_MOTION = {leaveMs: 320, holdMs: 450, safetyMs: 2_500} as const;
+/** Long enough for the whole cure choreography, so only a cure whose emblem vanished ends here. */
+const CURE_SAFETY_MS = 5_000;
 
 /** Ends the cure once: when the emblem finishes it, or later if the report refreshes into a layout without the emblem. */
 function once(finish: () => void): () => void {
@@ -567,40 +565,8 @@ function once(finish: () => void): () => void {
 		finished = true;
 		finish();
 	};
-	setTimeout(end, CURE_MOTION.safetyMs);
+	setTimeout(end, CURE_SAFETY_MS);
 	return end;
-}
-
-function CureEmblem({cure}: {cure: Cure}): ReactNode {
-	const reducedMotion = useReducedMotion();
-	const [leaving] = useState(() => new Animated.Value(1));
-	const [arriving] = useState(() => new Animated.Value(0));
-	const [cured, setCured] = useState(false);
-	useEffect(() => {
-		if (reducedMotion) {
-			cure.onDone();
-			return;
-		}
-		Animated.timing(leaving, {toValue: 0, duration: CURE_MOTION.leaveMs, easing: Easing.in(Easing.back(2)), useNativeDriver: true}).start(() => {
-			setCured(true);
-			Animated.sequence([
-				Animated.spring(arriving, {toValue: 1, bounciness: 18, speed: 12, useNativeDriver: true}),
-				Animated.delay(CURE_MOTION.holdMs)
-			]).start(() => cure.onDone());
-		});
-	}, [arriving, cure, leaving, reducedMotion]);
-	const healthy = AppIcons.getIconOrNull("effects.none");
-	if (cured && healthy) {
-		return <Animated.View style={{transform: [{scale: arriving}]}}>
-			<TwemojiIcon emoji={healthy} size={Theme.dimensions.headerIcon} />
-		</Animated.View>;
-	}
-	return <Animated.View style={{opacity: leaving, transform: [
-		{scale: leaving},
-		{rotate: leaving.interpolate({inputRange: [0, 1], outputRange: ["-240deg", "0deg"]})}
-	]}}>
-		<TwemojiIcon emoji={cure.from} size={Theme.dimensions.headerIcon} />
-	</Animated.View>;
 }
 
 function offersTokens(packet: ReportTravelSummaryRes): boolean {
@@ -691,12 +657,14 @@ function adventureSubtitle(context: AdventureContext): string {
 	return travelSubtitle(context);
 }
 
-/** The emblem says where the journey is heading, or what is holding the player back. */
+/** The emblem shows how the player is doing: the alteration holding them back, or a smile when all is well. */
 function adventureEmblem(packet: ReportTravelSummaryRes, cure: Cure | null): ReactNode {
 	if (cure) return <CureEmblem cure={cure} />;
-	const icon = isAlterationReport(packet) && packet.effect
-		? AppIcons.getIconOrNull(`effects.${packet.effect}`)
-		: AppIcons.getIconOrNull(`mapTypes.${packet.endMap.type}`);
+	if (!isAlterationReport(packet)) {
+		const healthy = AppIcons.getIconOrNull("effects.none");
+		return healthy ? <HappyEmblem emoji={healthy} /> : null;
+	}
+	const icon = packet.effect ? AppIcons.getIconOrNull(`effects.${packet.effect}`) : null;
 	return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : null;
 }
 

@@ -2621,7 +2621,8 @@ export const CrowniclesIcons: {
 		car: "🚗",
 		walking: "🚶",
 		leagueUp: "↗️",
-		leagueDown: "↘️"
+		leagueDown: "↘️",
+		explosion: "💥"
 	},
 	guild: {
 		icon: "🏟️",

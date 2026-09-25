@@ -430,6 +430,17 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:collector.pending")).toBeNull();
 	});
 
+	it("smiles next to the title when nothing holds the player back", async () => {
+		mockReport();
+		mockedAppIcons.getIconOrNull.mockImplementation((path: string) => ({"effects.none": "😃", "mapTypes.main": "🌲"})[path] ?? null);
+
+		await render(<Adventure />);
+
+		expect(screen.getByLabelText("😃")).toBeTruthy();
+		// Only the two ends of the travel path still show the map type.
+		expect(screen.getAllByLabelText("🌲")).toHaveLength(2);
+	});
+
 	it("shows the cure action for an alteration while staying in a city", async () => {
 		const altered = report();
 		altered.effect = "sick";
@@ -478,7 +489,7 @@ describe("Adventure screen", () => {
 		altered.effectEndTime = Date.now() + altered.effectDuration;
 		altered.heal = {price: 410, canAfford: true};
 		mockReport(altered);
-		mockedAppIcons.getIconOrNull.mockImplementation((path: string) => path.startsWith("effects.") ? "🤢" : null);
+		mockedAppIcons.getIconOrNull.mockImplementation((path: string) => ({"effects.sick": "🤢", "effects.healed": "🏥", "effects.none": "😃"})[path] ?? null);
 		const confirmation: ReactionCollectorCreation = {
 			id: "buy-heal",
 			endTime: Date.now() + 60_000,
@@ -492,6 +503,9 @@ describe("Adventure screen", () => {
 		await act(async () => pushFromCore(ReportBuyHealAcceptedRes.wireName, {healPrice: 410, isArrived: false}));
 
 		expect(screen.getByText("app:adventure.alteration.eyebrow")).toBeTruthy();
+		expect(screen.getByLabelText("🤢")).toBeTruthy();
+		await waitFor(() => expect(screen.getByLabelText("🏥")).toBeTruthy(), {timeout: 3_000});
+		await waitFor(() => expect(screen.getByLabelText("😃")).toBeTruthy(), {timeout: 3_000});
 		await waitFor(() => expect(screen.queryByText("app:adventure.alteration.eyebrow")).toBeNull(), {timeout: 3_000});
 		reportEventStore.clearHeal();
 	});
