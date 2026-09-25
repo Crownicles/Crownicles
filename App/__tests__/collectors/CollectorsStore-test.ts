@@ -3,6 +3,7 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {COLLECTOR_STOP_REASONS, ReactionCollectorStop} from "ws-packets/src/fromServer/common/ReactionCollectorStop";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ReactionCollectorReactReq} from "ws-packets/src/fromClient/ReactionCollectorReactReq";
+import {ReactionCollectorEnded} from "ws-packets/src/fromServer/common/ReactionCollectorEnded";
 import {CommandGetCurrentReactionCollectorsRes} from "ws-packets/src/fromServer/getCurrentReactionCollectors/GetCurrentReactionCollectorsRes";
 import {CITY_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {ReportStayInCity} from "ws-packets/src/fromServer/report/ReportStayInCity";
@@ -62,6 +63,25 @@ describe("CollectorsStore", () => {
 		expect(collectorsStore.isAnswerPending(item.id)).toBe(false);
 		expect(resolution).toHaveBeenCalledWith("unknown");
 		unsubscribe();
+	});
+
+	it("dismisses an already-ended collector and refreshes its report", () => {
+		const sendPacket = jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();
+		sendPacket.mockClear();
+		const resolution = jest.fn();
+		const unsubscribe = collectorsStore.subscribeToResolution(resolution);
+		const item = collector("collector-already-ended");
+
+		collectorsStore.track(item);
+		collectorsStore.react(item.id, 0);
+		const handlers = sendPacket.mock.calls[0]?.[1];
+		handlers[ReactionCollectorEnded.wireName](new ReactionCollectorEnded() as never);
+
+		expect(collectorsStore.getSnapshot()).toHaveLength(0);
+		expect(collectorsStore.isAnswerPending(item.id)).toBe(false);
+		expect(resolution).toHaveBeenCalledWith("unknown");
+		unsubscribe();
+		sendPacket.mockRestore();
 	});
 
 	it("drops an expired collector without asking for a refresh the server will announce", () => {

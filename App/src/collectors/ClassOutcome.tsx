@@ -12,7 +12,7 @@ function outcomeMessage(outcome: Outcome): string {
 
 export function ClassOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
 	return <Sheet
-		caption={i18n.t("app:classes.name")}
+		caption={i18n.t("app:classes.change")}
 		title={i18n.t(`app:classes.outcomes.${outcome.kind}`)}
 		subtitle={outcomeMessage(outcome)}
 		closeLabel={i18n.t("app:common.back")}

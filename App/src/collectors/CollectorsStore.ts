@@ -1,5 +1,6 @@
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ReactionCollectorStop, COLLECTOR_STOP_REASONS} from "ws-packets/src/fromServer/common/ReactionCollectorStop";
+import {ReactionCollectorEnded} from "ws-packets/src/fromServer/common/ReactionCollectorEnded";
 import {ReactionCollectorReactReq} from "ws-packets/src/fromClient/ReactionCollectorReactReq";
 import {CommandGetCurrentReactionCollectorsReq} from "ws-packets/src/fromClient/GetCurrentReactionCollectorsReq";
 import {CommandGetCurrentReactionCollectorsRes} from "ws-packets/src/fromServer/getCurrentReactionCollectors/GetCurrentReactionCollectorsRes";
@@ -154,7 +155,16 @@ class CollectorsStore {
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(ReactionCollectorReactReq, {
 			collectorId,
 			reactionIndex
-		}), {});
+		}), {
+			[ReactionCollectorEnded.wireName]: (): void => {
+				const answeredKind = this.answeredKinds.get(collectorId);
+				this.finished.add(collectorId);
+				this.forget(collectorId);
+				this.hidden.delete(collectorId);
+				this.answeredKinds.delete(collectorId);
+				if (answeredKind) this.notifyResolution(answeredKind);
+			}
+		});
 	};
 
 	private readonly stop = (packet: ReactionCollectorStop): void => {

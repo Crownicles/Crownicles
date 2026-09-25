@@ -122,9 +122,10 @@ function TabsHeader(): ReactNode {
 function TabPager({journey}: {journey: Journey}): ReactNode {
 	const insets = useSafeAreaInsets();
 	const detailOpen = useSwipeBackOpen();
+	const adventureBusy = useAdventureBusy();
 	const unclaimedMissions = useMissionRewards().rewards.missions.length;
 	// A lone tab needs no bar: the newcomer only sees the adventure until something else opens.
-	const tabBarStyle = journey.tabs.length > 1
+	const tabBarStyle = journey.tabs.length > 1 && !adventureBusy
 		? {...tabBarOptions.tabBarStyle, paddingBottom: insets.bottom + Theme.spacing.tabBarVertical}
 		: {display: "none" as const};
 	return (
@@ -132,7 +133,7 @@ function TabPager({journey}: {journey: Journey}): ReactNode {
 			tabBarPosition="bottom"
 			screenOptions={{
 				...tabBarOptions,
-				swipeEnabled: !detailOpen && journey.tabs.length > 1,
+				swipeEnabled: !detailOpen && !adventureBusy && journey.tabs.length > 1,
 				tabBarStyle
 			}}
 			screenListeners={({route}: {route: {name: string}}) => ({focus: (): void => {

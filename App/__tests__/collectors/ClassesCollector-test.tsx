@@ -1,6 +1,7 @@
 import {fireEvent, render, screen} from "@testing-library/react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ClassesCollector} from "@/src/collectors/ClassesCollector";
+import {ClassOutcome} from "@/src/collectors/ClassOutcome";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
@@ -41,5 +42,12 @@ describe("class selection", () => {
 		await fireEvent.press(screen.getByText("models:classes.7"));
 		await fireEvent.press(screen.getByText("app:classes.confirm"));
 		expect(onChoose).not.toHaveBeenCalled();
+	});
+
+	it("names the changed class without an unfilled name template", async () => {
+		await render(<ClassOutcome outcome={{kind: "success", classId: 7}} onContinue={jest.fn()} />);
+		expect(screen.getByText("app:classes.change")).toBeTruthy();
+		expect(screen.getByText("app:classes.outcomes.success")).toBeTruthy();
+		expect(screen.getByText("models:classes.7")).toBeTruthy();
 	});
 });
