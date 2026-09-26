@@ -50,8 +50,9 @@ import {
 } from "@/src/collectors/CollectorRouting";
 import {
 	reportEventStore, TokenOutcomeRequiringAcknowledgement, useBigEventOutcome, useHealOutcome, useShopResult,
-	useAutomaticSmallEventOutcome, useLotteryOutcome, useSmallEventChoiceOutcome, useTokenOutcome, useWitchOutcome
+	useAutomaticSmallEventOutcome, useLotteryOutcome, usePveFightOutcome, useSmallEventChoiceOutcome, useTokenOutcome, useWitchOutcome
 } from "@/src/collectors/ReportEventStore";
+import {PveFightOutcomeScreen} from "@/src/collectors/PveFightCollector";
 import {SmallEventChoiceOutcome as SmallEventChoiceOutcomeScreen} from "@/src/collectors/SmallEventChoiceOutcome";
 import {ShopResultScreen} from "@/src/collectors/ShopResultScreen";
 import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/src/collectors/AutomaticSmallEventOutcome";
@@ -346,7 +347,6 @@ function TravelPath({packet, progress, dash}: { packet: ReportTravelSummaryRes; 
 }
 
 
-function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): string {
 /** The last minute before a stop is counted in seconds, so the wait visibly runs down. */
 function formatCountdown(milliseconds: number): string {
 	return milliseconds < MILLISECONDS_PER_MINUTE
@@ -354,6 +354,7 @@ function formatCountdown(milliseconds: number): string {
 		: formatDuration(milliseconds);
 }
 
+function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): string {
   if (packet.nextStopTime <= currentTime) {
     return i18n.t("app:adventure.now");
   }
@@ -416,6 +417,7 @@ type CollectorOutcomeViewProps = {
 	witchOutcome: ReturnType<typeof useWitchOutcome>;
 	choiceOutcome: ReturnType<typeof useSmallEventChoiceOutcome>;
 	automaticOutcome: ReturnType<typeof useAutomaticSmallEventOutcome>;
+	pveFightOutcome: ReturnType<typeof usePveFightOutcome>;
 	tokenOutcome: TokenOutcomeData | null;
 	healOutcome: ReturnType<typeof useHealOutcome>;
 	shopResult: ReturnType<typeof useShopResult>;
@@ -443,15 +445,16 @@ function collectorScreen(
 	/>;
 }
 
-function storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome}: Pick<
+function storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome, pveFightOutcome}: Pick<
 	CollectorOutcomeViewProps,
-	"bigEventOutcome" | "lotteryOutcome" | "witchOutcome" | "choiceOutcome" | "automaticOutcome"
+	"bigEventOutcome" | "lotteryOutcome" | "witchOutcome" | "choiceOutcome" | "automaticOutcome" | "pveFightOutcome"
 >): ReactNode {
 	if (bigEventOutcome) return <BigEventOutcomeScreen outcome={bigEventOutcome} onContinue={reportEventStore.clear} />;
 	if (lotteryOutcome) return <LotteryOutcomeScreen outcome={lotteryOutcome} onContinue={reportEventStore.clearLottery} />;
 	if (witchOutcome) return <WitchOutcomeScreen outcome={witchOutcome} onContinue={reportEventStore.clearWitch} />;
 	if (choiceOutcome) return <SmallEventChoiceOutcomeScreen outcome={choiceOutcome} onContinue={reportEventStore.clearChoice} />;
 	if (automaticOutcome) return <AutomaticSmallEventOutcomeScreen outcome={automaticOutcome} onContinue={reportEventStore.clearAutomatic} />;
+	if (pveFightOutcome) return <PveFightOutcomeScreen outcome={pveFightOutcome} onContinue={reportEventStore.clearPveFight} />;
 	return null;
 }
 
@@ -478,6 +481,7 @@ function CollectorOutcomeView({
 	tokenOutcome,
 	healOutcome,
 	shopResult,
+	pveFightOutcome,
 	reactToCollector,
 	isAnswerPending,
 	continueAfterTokenOutcome,
@@ -486,7 +490,7 @@ function CollectorOutcomeView({
 	if (bigEventCollector) {
 		return collectorScreen(bigEventCollector, reactToCollector, isAnswerPending);
 	}
-	const eventOutcome = storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome});
+	const eventOutcome = storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome, pveFightOutcome});
 	if (eventOutcome) return eventOutcome;
 	const recoveryOutcome = storedRecoveryOutcome({tokenOutcome, healOutcome, shopResult, continueAfterTokenOutcome, continueAfterHealOutcome});
 	if (recoveryOutcome) return recoveryOutcome;
@@ -873,6 +877,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	const tokenOutcome = useTokenOutcome();
 	const healOutcome = useHealOutcome();
 	const shopResult = useShopResult();
+	const pveFightOutcome = usePveFightOutcome();
 	const currentTime = useCurrentTime();
 
 	useEffect(() => {
@@ -947,6 +952,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 		tokenOutcome,
 		healOutcome: cure ? null : healOutcome,
 		shopResult,
+		pveFightOutcome,
 		reactToCollector,
 		isAnswerPending,
 		continueAfterTokenOutcome,

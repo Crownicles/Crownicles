@@ -56,7 +56,7 @@ describe("fight collectors", () => {
 
 function battle(): FightSnapshot {
 	const fighter: FightFighter = {isSelf: true, name: "Aster", classId: 1, level: 10, stats: {power: 80, maxEnergy: 100, attack: 15, defense: 12, speed: 20, breath: 6, maxBreath: 10, breathRegen: 2}};
-	return {introduction: {fightId: "screen", initiator: fighter, opponent: {...fighter, name: "Arsene", isSelf: false}, initiatorActions: [["simpleAttack", 2]], opponentActions: []}, status: {fightId: "screen", numberOfTurn: 3, maxNumberOfTurn: 26, activeFighter: {...fighter, name: "Arsene", isSelf: false}, defendingFighter: fighter}, logs: [], result: null, reward: null, error: null, visible: true, waiting: true, playedSequence: 0};
+	return {introduction: {fightId: "screen", initiator: fighter, opponent: {...fighter, name: "Arsene", isSelf: false}, initiatorActions: [["simpleAttack", 2]], opponentActions: []}, status: {fightId: "screen", numberOfTurn: 3, maxNumberOfTurn: 26, activeFighter: {...fighter, name: "Arsene", isSelf: false}, defendingFighter: fighter}, logs: [], result: null, reward: null, monsterReward: null, error: null, visible: true, waiting: true, playedSequence: 0};
 }
 
 describe("live battle presentation", () => {
@@ -129,6 +129,26 @@ describe("live battle presentation", () => {
 		expect(screen.getByText("app:arena.victory")).toBeTruthy();
 		await fireEvent.press(screen.getAllByRole("button", {name: "app:arena.log"})[0]);
 		expect(screen.getByText("models:fight_actions.heavyAttack.name")).toBeTruthy();
+	});
+	it("ends an island boss fight on its loot and leads back to the adventure", async () => {
+		const initial = battle();
+		const close = jest.fn();
+		const bossFight: FightSnapshot = {
+			...initial,
+			introduction: {...initial.introduction!, opponent: {isSelf: false, monsterId: "forestTroll"}},
+			result: {winner: {isSelf: true, name: "Aster", finalEnergy: 40, maxEnergy: 100}, loser: {isSelf: false, monsterId: "forestTroll", finalEnergy: 0, maxEnergy: 900}, draw: false, turns: 12, maxTurns: 26},
+			monsterReward: {money: 120, experience: 340, guildXp: 0, guildPoints: 15, materialLoot: [{materialId: 54, quantity: 3}]}
+		};
+		await render(<FightLiveView fight={bossFight} onChoose={jest.fn()} submitting={false} onClose={close} />);
+		expect(screen.getByText("app:arena.victory")).toBeTruthy();
+		expect(screen.getByText("+120")).toBeTruthy();
+		expect(screen.getByText("+340")).toBeTruthy();
+		expect(screen.getByText("+15")).toBeTruthy();
+		expect(screen.getByText("+3")).toBeTruthy();
+		expect(screen.queryByText("app:battle.monsterReward.guildXp")).toBeNull();
+		expect(screen.queryByText("app:battle.returnToArena")).toBeNull();
+		await fireEvent.press(screen.getByText("app:adventure.continueReport"));
+		expect(close).toHaveBeenCalledTimes(1);
 	});
 	it("omits moving visual effects when reduced motion is enabled", async () => {
 		jest.spyOn(AccessibilityInfo, "isReduceMotionEnabled").mockResolvedValue(true);

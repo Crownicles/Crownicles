@@ -1,6 +1,7 @@
 import {
 	ReactionCollectorDataKind, ReactionCollectorReactionKind
 } from "../ReactionCollectorProtocol";
+import { MonsterStats } from "../../../objects/Fight";
 
 declare module "../ReactionCollectorProtocol" {
 	interface ReactionCollectorDataPayloads {
@@ -22,6 +23,10 @@ declare module "../ReactionCollectorProtocol" {
 			maxWeekly: number;
 			amounts: number[];
 		};
+		reportPveFight: {
+			monster: MonsterStats;
+			mapId: number;
+		};
 	}
 
 	interface ReactionCollectorReactionPayloads {
@@ -42,7 +47,8 @@ export const REPORT_COLLECTOR_DATA_KINDS = {
 	DESTINATION: "reportDestination",
 	USE_TOKENS: "reportUseTokens",
 	BUY_HEAL: "reportBuyHeal",
-	TOKEN_MERCHANT: "reportTokenMerchant"
+	TOKEN_MERCHANT: "reportTokenMerchant",
+	PVE_FIGHT: "reportPveFight"
 } as const satisfies Record<string, ReactionCollectorDataKind>;
 
 export const REPORT_COLLECTOR_REACTION_KINDS = {

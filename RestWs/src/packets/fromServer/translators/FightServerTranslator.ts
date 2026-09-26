@@ -13,8 +13,9 @@ import { BuggedFightPacket } from "../../../../../Lib/src/packets/fights/BuggedF
 import {
 	CommandFightNotEnoughEnergyPacketRes, CommandFightOpponentsNotFoundPacket, CommandFightRefusePacketRes, CommandFightResumeRes
 } from "../../../../../Lib/src/packets/commands/CommandFightPacket";
+import { CommandReportMonsterRewardRes } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	FightIntroductionRes, FightStatusRes, FightLogRes, FightEndRes, FightRewardRes, FightWaitRes, FightErrorRes, FightResumeRes
+	FightIntroductionRes, FightStatusRes, FightLogRes, FightEndRes, FightRewardRes, FightWaitRes, FightErrorRes, FightResumeRes, FightMonsterRewardRes
 } from "../../../../../WsPackets/src/fromServer/fight/FightRes";
 import {
 	FIGHT_ERRORS, FightError, FightFighter, FightRankingChange, FightStatus
@@ -128,6 +129,19 @@ export default class FightServerTranslator {
 					petNickname: petLoveChange.petNickname
 				} }
 				: {}
+		} });
+	}
+
+	@fromServerTranslator(CommandReportMonsterRewardRes, FightMonsterRewardRes)
+	public static monsterReward(_context: PacketContext, packet: CommandReportMonsterRewardRes): Promise<FightMonsterRewardRes> {
+		return asyncMakeFromServerPacket(FightMonsterRewardRes, { reward: {
+			money: packet.money,
+			experience: packet.experience,
+			guildXp: packet.guildXp,
+			guildPoints: packet.guildPoints,
+			...packet.petReaction ? { petReaction: packet.petReaction } : {},
+			...packet.materialLoot?.length ? { materialLoot: packet.materialLoot } : {},
+			...packet.discoveredRecipe ? { discoveredRecipe: packet.discoveredRecipe } : {}
 		} });
 	}
 

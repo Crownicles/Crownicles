@@ -15,6 +15,8 @@ import {
 	AdventureCollector, BigEventOutcome, HealOutcome, LotteryOutcome, TokenOutcome, WitchOutcome
 } from "@/src/collectors/AdventureCollector";
 import {CityMenu} from "@/src/collectors/CityCollector";
+import {PveFightOutcomeScreen} from "@/src/collectors/PveFightCollector";
+import {PVE_FIGHT_OUTCOMES} from "@/src/collectors/ReportEventStore";
 
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: () => ({push: mockPush})}));
@@ -583,5 +585,31 @@ describe("AdventureCollector", () => {
 
 	it.each(outcomeScenarios)("$name", async scenario => {
 		await continueOutcome(scenario.renderOutcome, scenario.continueText, scenario.assertView);
+	});
+});
+
+describe("island boss encounter", () => {
+	const monster = {id: "forestTroll", level: 42, energy: 1_500, attack: 310, defense: 180, speed: 90};
+
+	it("introduces the boss with its statistics and answers at the original indexes", async () => {
+		const onChoose = jest.fn();
+		await render(<AdventureCollector collector={confirmationCollector("pve-fight", {type: REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT, data: {monster, mapId: 1001}})} onChoose={onChoose} submitting={false} />);
+
+		expect(screen.getByText("small-event-description")).toBeTruthy();
+		expect(screen.getByText("models:monsters.forestTroll.name")).toBeTruthy();
+		expect(screen.getByText("models:monsters.forestTroll.description")).toBeTruthy();
+		for (const value of ["310", "180", "90"]) expect(screen.getByText(value)).toBeTruthy();
+
+		await fireEvent.press(screen.getByText(GENERIC_REACTION_KINDS.REFUSE));
+		expect(onChoose).toHaveBeenCalledWith(1);
+	});
+
+	it("tells the player they hid from the boss before going on", async () => {
+		const onContinue = jest.fn();
+		await render(<PveFightOutcomeScreen outcome={PVE_FIGHT_OUTCOMES.REFUSED} onContinue={onContinue} />);
+
+		expect(screen.getByText("commands:report.pveFightRefusedStory")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:adventure.continueReport"));
+		expect(onContinue).toHaveBeenCalledTimes(1);
 	});
 });

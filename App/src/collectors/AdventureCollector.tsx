@@ -18,6 +18,7 @@ import {BuyCategorySlotCollector, ShopCollector, SkipMissionCollector} from "@/s
 import {SmallEventShopCollector} from "@/src/collectors/SmallEventShopCollector";
 import {RecipeShopCollector} from "@/src/collectors/RecipeShopCollector";
 import {PveIslandInvitationCollector} from "@/src/collectors/PveIslandInvitationCollector";
+import {PveFightCollector} from "@/src/collectors/PveFightCollector";
 import {ItemAcceptCollector, ItemChoiceCollector} from "@/src/collectors/ItemRewardCollector";
 import {collectorDescription, collectorTitle, eventPromptIcon, isEventPrompt} from "@/src/collectors/CollectorLabels";
 import type {
@@ -270,6 +271,7 @@ const SPECIALIZED_COLLECTORS: Partial<Record<ReactionCollectorData["type"], Comp
 	[REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS]: TokenUseCollector,
 	[REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL]: BuyHealCollector,
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: TokenMerchantCollector,
+	[REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT]: PveFightCollector,
 	[CITY_DATA_KINDS.CITY]: CityCollector,
 	[SHOP_DATA_KINDS.COLLECTOR]: ShopCollector,
 	[SHOP_DATA_KINDS.SKIP_MISSION]: SkipMissionCollector,

@@ -5,6 +5,7 @@ import {
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import { ReactionCollectorUseTokensData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
 import { ReactionCollectorBuyHealData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
+import { ReactionCollectorPveFightData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
 import {
 	ReactionCollectorTokenMerchantBuyReaction, ReactionCollectorTokenMerchantData
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorTokenMerchant";
@@ -49,5 +50,9 @@ export const reportCollectorDataMappings: DataMapping[] = [
 		maxDaily: ShopConstants.MAX_DAILY_TOKEN_BUYOUTS,
 		maxWeekly: ShopConstants.MAX_WEEKLY_TOKEN_BUYOUTS,
 		amounts: data.amounts
+	})),
+	defineDataMapping(ReactionCollectorPveFightData, REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT, data => ({
+		monster: { ...data.monster },
+		mapId: data.mapId
 	}))
 ];

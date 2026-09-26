@@ -185,6 +185,28 @@ type DataHandler = (data: ReactionCollectorData) => string | undefined;
 type ReactionHandler = (reaction: ReactionCollectorReaction, data: ReactionCollectorData) => string;
 type ChoosableHandler = (reaction: ReactionCollectorReaction, data?: ReactionCollectorData) => boolean;
 
+/** The emoji and the wording of a yes/no answer, for the collectors that name theirs. */
+type ChoiceLabel = {icon: string; key: string};
+
+const DEFAULT_ACCEPT_LABEL: ChoiceLabel = {icon: "collectors.accept", key: "app:collector.accept"};
+const DEFAULT_REFUSE_LABEL: ChoiceLabel = {icon: "collectors.refuse", key: "app:collector.refuse"};
+
+const ACCEPT_LABELS: Partial<Record<ReactionCollectorData["type"], ChoiceLabel>> = {
+	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: {icon: "collectors.accept", key: "app:collector.pveIsland.embark"},
+	[SMALL_EVENT_DATA_KINDS.CART]: {icon: "cartSmallEvent.accept", key: "app:collector.cart.accept"},
+	[REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT]: {icon: "pveFights.startFight", key: "app:adventure.pveFight.start"}
+};
+
+const REFUSE_LABELS: Partial<Record<ReactionCollectorData["type"], ChoiceLabel>> = {
+	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: {icon: "collectors.refuse", key: "app:collector.pveIsland.continueJourney"},
+	[SMALL_EVENT_DATA_KINDS.CART]: {icon: "collectors.refuse", key: "app:collector.cart.refuse"},
+	[REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT]: {icon: "pveFights.waitABit", key: "app:adventure.pveFight.wait"}
+};
+
+function choiceLabel({icon, key}: ChoiceLabel): string {
+	return withIcon(icon, i18n.t(key));
+}
+
 function isDataOfType<Kind extends ReactionCollectorData["type"]>(
 	data: ReactionCollectorData | undefined,
 	kind: Kind
@@ -269,6 +291,7 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 	[REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS]: () => i18n.t("app:adventure.tokens.use.title"),
 	[REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL]: () => i18n.t("app:adventure.heal.use.title"),
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.title"),
+	[REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT]: () => smallEventTitle("app:adventure.pveFight.title", "pveFights.startFight"),
 	[CITY_DATA_KINDS.CITY]: () => i18n.t("app:collector.titles.city"),
 	[SHOP_DATA_KINDS.COLLECTOR]: () => i18n.t("app:city.shop.title"),
 	[SHOP_DATA_KINDS.SKIP_MISSION]: () => plainStory(i18n.t("commands:shop.shopItems.skipMission.name")),
@@ -359,6 +382,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 		money: data.data.playerMoney
 	})),
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.description"),
+	[REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT]: makeDataHandler(REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT, data => i18n.t(`models:pveMapsStory.${data.data.mapId}.${data.data.monster.id}`)),
 	[CITY_DATA_KINDS.CITY]: () => undefined,
 	[SHOP_DATA_KINDS.COLLECTOR]: () => i18n.t("app:city.shop.description"),
 	[SHOP_DATA_KINDS.SKIP_MISSION]: () => plainStory(i18n.t("commands:shop.shopItems.skipMission.giveDesc")),
@@ -382,14 +406,8 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 	[DAILY_BONUS_REACTION_KINDS.OBJECT]: makeReactionHandler(DAILY_BONUS_REACTION_KINDS.OBJECT, reaction => itemDisplayName(reaction.data.object)),
 	[SELL_REACTION_KINDS.ITEM]: makeReactionHandler(SELL_REACTION_KINDS.ITEM, reaction => itemDisplayName(reaction.data.item)),
 	[EQUIP_REACTION_KINDS.CLOSE]: () => i18n.t("app:equipment.close"),
-	[GENERIC_REACTION_KINDS.ACCEPT]: (_reaction, data) => data.type === SMALL_EVENT_DATA_KINDS.PVE_ISLAND
-		? withIcon("collectors.accept", i18n.t("app:collector.pveIsland.embark"))
-		: data.type === SMALL_EVENT_DATA_KINDS.CART
-			? withIcon("cartSmallEvent.accept", i18n.t("app:collector.cart.accept"))
-			: withIcon("collectors.accept", i18n.t("app:collector.accept")),
-	[GENERIC_REACTION_KINDS.REFUSE]: (_reaction, data) => withIcon("collectors.refuse", i18n.t(data.type === SMALL_EVENT_DATA_KINDS.PVE_ISLAND
-		? "app:collector.pveIsland.continueJourney"
-		: data.type === SMALL_EVENT_DATA_KINDS.CART ? "app:collector.cart.refuse" : "app:collector.refuse")),
+	[GENERIC_REACTION_KINDS.ACCEPT]: (_reaction, data) => choiceLabel(ACCEPT_LABELS[data.type] ?? DEFAULT_ACCEPT_LABEL),
+	[GENERIC_REACTION_KINDS.REFUSE]: (_reaction, data) => choiceLabel(REFUSE_LABELS[data.type] ?? DEFAULT_REFUSE_LABEL),
 	[DRINK_REACTION_KINDS.POTION]: makeReactionHandler(DRINK_REACTION_KINDS.POTION, reaction => `${AppIcons.getIcon(`potions.${reaction.data.potion.id}`)} ${i18n.t(`models:potions.${reaction.data.potion.id}`)}`),
 	[BIG_EVENT_REACTION_KINDS.POSSIBILITY]: makeReactionHandler(BIG_EVENT_REACTION_KINDS.POSSIBILITY, (reaction, data) => {
 		if (!isDataOfType(data, BIG_EVENT_DATA_KINDS.COLLECTOR)) {
@@ -600,7 +618,8 @@ const EVENT_ICON_PATHS: Partial<Record<ReactionCollectorData["type"], (data: Rea
 	[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP]: data => data.type === SMALL_EVENT_DATA_KINDS.RECIPE_SHOP && data.data.source === "gaspardJo"
 		? "smallEvents.ultimateFoodMerchant"
 		: "smallEvents.farmer",
-	[SMALL_EVENT_DATA_KINDS.WITCH]: () => "smallEvents.witch"
+	[SMALL_EVENT_DATA_KINDS.WITCH]: () => "smallEvents.witch",
+	[REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT]: data => data.type === REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT ? `monsters.${data.data.monster.id}` : "pveFights.startFight"
 };
 
 /** Whether the collector is an event of the journey, told as a journal entry rather than a menu. */

@@ -27,6 +27,7 @@ import {
 	ReportBuyHealRefusedRes
 } from "ws-packets/src/fromServer/report/ReportHealRes";
 import {ShopNoPetRes, ShopOutcome, ShopOutcomeRes, ShopPetCheckupRes} from "ws-packets/src/fromServer/shop/ShopRes";
+import {ReportPveFightRefusedRes, ReportPveNoMonsterRes} from "ws-packets/src/fromServer/report/ReportPveFightRes";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 type Listener = () => void;
@@ -68,6 +69,10 @@ export type ShopResult =
 	| {kind: "noPet"}
 	| {kind: "outcome"; outcome: ShopOutcome};
 
+/** How an island boss encounter ended when no fight took place. */
+export const PVE_FIGHT_OUTCOMES = {REFUSED: "refused", NO_MONSTER: "noMonster"} as const;
+export type PveFightOutcome = typeof PVE_FIGHT_OUTCOMES[keyof typeof PVE_FIGHT_OUTCOMES];
+
 /**
  * Keeps the last big-event outcome until the player has read it. The result follows the collector
  * stop packet, so it cannot live in the collector itself.
@@ -88,6 +93,8 @@ class ReportEventStore {
 	private healOutcome: HealOutcome | null = null;
 
 	private shopResult: ShopResult | null = null;
+
+	private pveFightOutcome: PveFightOutcome | null = null;
 
 	private readonly listeners = new Set<Listener>();
 
@@ -117,6 +124,8 @@ class ReportEventStore {
 		client.registerPushedPacketHandler<ShopPetCheckupRes>(ShopPetCheckupRes.wireName, packet => this.setShopResult({kind: "checkup", packet}));
 		client.registerPushedPacketHandler<ShopNoPetRes>(ShopNoPetRes.wireName, () => this.setShopResult({kind: "noPet"}));
 		client.registerPushedPacketHandler<ShopOutcomeRes>(ShopOutcomeRes.wireName, packet => this.setShopResult({kind: "outcome", outcome: packet.outcome}));
+		client.registerPushedPacketHandler<ReportPveFightRefusedRes>(ReportPveFightRefusedRes.wireName, () => this.setPveFightOutcome(PVE_FIGHT_OUTCOMES.REFUSED));
+		client.registerPushedPacketHandler<ReportPveNoMonsterRes>(ReportPveNoMonsterRes.wireName, () => this.setPveFightOutcome(PVE_FIGHT_OUTCOMES.NO_MONSTER));
 	}
 
 	public readonly subscribe = (listener: Listener): (() => void) => {
@@ -142,6 +151,8 @@ class ReportEventStore {
 
 	public readonly getShopResultSnapshot = (): ShopResult | null => this.shopResult;
 
+	public readonly getPveFightSnapshot = (): PveFightOutcome | null => this.pveFightOutcome;
+
 	public readonly reset = (): void => {
 		this.outcome = null;
 		this.lotteryOutcome = null;
@@ -151,6 +162,7 @@ class ReportEventStore {
 		this.tokenOutcome = null;
 		this.healOutcome = null;
 		this.shopResult = null;
+		this.pveFightOutcome = null;
 		this.notify();
 	};
 
@@ -218,6 +230,14 @@ class ReportEventStore {
 		this.notify();
 	};
 
+	public readonly clearPveFight = (): void => {
+		if (this.pveFightOutcome === null) {
+			return;
+		}
+		this.pveFightOutcome = null;
+		this.notify();
+	};
+
 	private readonly setOutcome = (outcome: ReportBigEventResultRes): void => {
 		this.outcome = outcome;
 		this.notify();
@@ -261,6 +281,11 @@ class ReportEventStore {
 		this.notify();
 	};
 
+	private readonly setPveFightOutcome = (outcome: PveFightOutcome): void => {
+		this.pveFightOutcome = outcome;
+		this.notify();
+	};
+
 	private notify(): void {
 		for (const listener of this.listeners) {
 			listener();
@@ -300,4 +325,8 @@ export function useHealOutcome(): HealOutcome | null {
 
 export function useShopResult(): ShopResult | null {
 	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getShopResultSnapshot, reportEventStore.getShopResultSnapshot);
+}
+
+export function usePveFightOutcome(): PveFightOutcome | null {
+	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getPveFightSnapshot, reportEventStore.getPveFightSnapshot);
 }

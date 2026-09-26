@@ -1,18 +1,18 @@
 import {useSyncExternalStore} from "react";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {FightResumeReq} from "ws-packets/src/fromClient/FightReq";
-import {FightIntroductionRes, FightStatusRes, FightLogRes, FightEndRes, FightRewardRes, FightWaitRes, FightErrorRes, FightResumeRes} from "ws-packets/src/fromServer/fight/FightRes";
-import {FightIntroduction, FightStatus, FightLogEntry, FightEnd, FightReward, FightError, FIGHT_ERRORS} from "ws-packets/src/objects/Fight";
+import {FightIntroductionRes, FightStatusRes, FightLogRes, FightEndRes, FightRewardRes, FightWaitRes, FightErrorRes, FightResumeRes, FightMonsterRewardRes} from "ws-packets/src/fromServer/fight/FightRes";
+import {FightIntroduction, FightStatus, FightLogEntry, FightEnd, FightReward, FightError, FIGHT_ERRORS, MonsterReward} from "ws-packets/src/objects/Fight";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 type Listener = () => void;
 export type FightLogRecord = {sequence: number; entry: FightLogEntry; before?: FightStatus; after?: FightStatus};
 export type FightSnapshot = {
 	introduction: FightIntroduction | null; status: FightStatus | null; logs: FightLogRecord[];
-	result: FightEnd | null; reward: FightReward | null; error: FightError | null;
+	result: FightEnd | null; reward: FightReward | null; monsterReward: MonsterReward | null; error: FightError | null;
 	visible: boolean; waiting: boolean; playedSequence: number;
 };
-const EMPTY_FIGHT: FightSnapshot = {introduction: null, status: null, logs: [], result: null, reward: null, error: null, visible: false, waiting: false, playedSequence: 0};
+const EMPTY_FIGHT: FightSnapshot = {introduction: null, status: null, logs: [], result: null, reward: null, monsterReward: null, error: null, visible: false, waiting: false, playedSequence: 0};
 
 class FightStore {
 	private snapshot: FightSnapshot = EMPTY_FIGHT;
@@ -27,6 +27,7 @@ class FightStore {
 		client.registerPushedPacketHandler<FightWaitRes>(FightWaitRes.wireName, () => this.update({waiting: true}));
 		client.registerPushedPacketHandler<FightEndRes>(FightEndRes.wireName, packet => this.update({result: packet.result, waiting: false, visible: true}));
 		client.registerPushedPacketHandler<FightRewardRes>(FightRewardRes.wireName, packet => this.update({reward: packet.reward, waiting: false, visible: true}));
+		client.registerPushedPacketHandler<FightMonsterRewardRes>(FightMonsterRewardRes.wireName, packet => this.update({monsterReward: packet.reward}));
 		client.registerPushedPacketHandler<FightErrorRes>(FightErrorRes.wireName, packet => this.fail(packet.error));
 	}
 

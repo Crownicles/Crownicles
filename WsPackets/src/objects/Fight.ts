@@ -1,5 +1,25 @@
 import { OwnedPet } from "./OwnedPet";
 import { PetBasicInfo } from "./PetExpedition";
+import { MaterialQuantity } from "./MaterialQuantity";
+import { RecipeDisplay } from "./RecipeDisplay";
+
+/** An island boss as it is announced before the player decides to face it. */
+export type MonsterStats = {
+	id: string; level: number; energy: number; attack: number; defense: number; speed: number;
+};
+
+/** What beating (or drawing with) an island boss brought back. */
+export type MonsterReward = {
+	money: number;
+	experience: number;
+	guildXp: number;
+	guildPoints: number;
+	petReaction?: {
+		reactionType: string; loveDelta: number; petId: number; petSex: string; petNickname?: string;
+	};
+	materialLoot?: MaterialQuantity[];
+	discoveredRecipe?: RecipeDisplay;
+};
 
 export type FightPlayerStats = {
 	pet?: PetBasicInfo & { isOnExpedition: boolean };

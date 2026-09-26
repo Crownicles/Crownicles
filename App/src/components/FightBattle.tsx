@@ -51,9 +51,10 @@ function FightTurn({fight, playback, collector, onChoose, submitting, navigation
 
 function FightContent(props: FightContentProps): ReactNode {
 	const {fight, playback, navigation} = props;
-	if (fight.error) return <View style={styles.loading}><CircleAlert size={38} color={Theme.colors.muted} /><Note>{i18n.t(`app:arena.errors.${fight.error}`)}</Note><Button onPress={navigation.onClose}>{i18n.t("app:battle.returnToArena")}</Button></View>;
+	const closeLabel = i18n.t(fight.introduction?.opponent.monsterId ? "app:adventure.continueReport" : "app:battle.returnToArena");
+	if (fight.error) return <View style={styles.loading}><CircleAlert size={38} color={Theme.colors.muted} /><Note>{i18n.t(`app:arena.errors.${fight.error}`)}</Note><Button onPress={navigation.onClose}>{closeLabel}</Button></View>;
 	if (!fight.result || playback.record) return <FightTurn {...props} />;
-	return <View style={styles.body}><FightResult result={fight.result} reward={fight.reward} /><View style={styles.resultActions}><ButtonRow><Button variant="primary" onPress={navigation.onClose}>{i18n.t("app:battle.returnToArena")}</Button><Button onPress={navigation.onJournal}>{i18n.t("app:arena.log")}</Button></ButtonRow></View></View>;
+	return <View style={styles.body}><FightResult result={fight.result} reward={fight.reward} monsterReward={fight.monsterReward} /><View style={styles.resultActions}><ButtonRow><Button variant="primary" onPress={navigation.onClose}>{closeLabel}</Button><Button onPress={navigation.onJournal}>{i18n.t("app:arena.log")}</Button></ButtonRow></View></View>;
 }
 
 function FightJournal({entries, onClose}: {entries: FightLogRecord[]; onClose: () => void}): ReactNode {

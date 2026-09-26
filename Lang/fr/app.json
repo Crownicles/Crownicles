@@ -334,6 +334,17 @@
   },
   "adventure": {
     "continueReport": "Continuer l'aventure",
+    "pveFight": {
+      "title": "Combat contre le boss",
+      "start": "Commencer le combat",
+      "wait": "Attendre un peu",
+      "stats": {
+        "energy": "Énergie",
+        "attack": "Attaque",
+        "defense": "Défense",
+        "speed": "Vitesse"
+      }
+    },
     "eyebrow": "Votre aventure",
     "cityTitle": "Arrivée en ville",
     "citySubtitle": "Position actuelle : {{location}}",
@@ -842,7 +853,12 @@
     "breathRegen_one": "+{{count}} au prochain tour", "breathRegen_other": "+{{count}} au prochain tour",
     "actions": "Vos actions", "chooseAction": "À vous de jouer", "wait": "En attente", "ready": "Choisissez votre action", "opening": "Le combat commence", "preparing": "Les combattants se préparent…",
     "unavailable": "Indisponible", "actionDetails": "Détail : {{action}}", "critical": "Critique", "missed": "Manqué", "noEffect": "Sans effet", "showHistory": "Ouvrir le journal", "backToFight": "Retour au combat",
-    "finishedAgainst": "Face à {{opponent}} · {{turns}} tours", "returnToArena": "Retour à l'arène"
+    "finishedAgainst": "Face à {{opponent}} · {{turns}} tours", "returnToArena": "Retour à l'arène",
+    "monsterReward": {
+      "experience": "Expérience",
+      "guildXp": "Expérience de guilde",
+      "guildPoints": "Points de guilde"
+    }
   },
   "arena": {
     "unknownPlayer": "Joueur inconnu",

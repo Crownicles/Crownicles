@@ -1,6 +1,6 @@
 import { FromServerPacket } from "../FromServerPacket";
 import {
-	FightIntroduction, FightStatus, FightLogEntry, FightEnd, FightReward, FightError
+	FightIntroduction, FightStatus, FightLogEntry, FightEnd, FightReward, FightError, MonsterReward
 } from "../../objects/Fight";
 
 export class FightResumeRes extends FromServerPacket {
@@ -33,6 +33,11 @@ export class FightRewardRes extends FromServerPacket {
 	public static readonly wireName = "FightRewardRes";
 
 	reward!: FightReward;
+}
+export class FightMonsterRewardRes extends FromServerPacket {
+	public static readonly wireName = "FightMonsterRewardRes";
+
+	reward!: MonsterReward;
 }
 export class FightWaitRes extends FromServerPacket {
 	public static readonly wireName = "FightWaitRes";
