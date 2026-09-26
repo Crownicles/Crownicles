@@ -2,7 +2,7 @@
 import * as i18next from "i18next";
 import {Language} from "@/src/translations/Language";
 import {AppIcons} from "@/src/AppIcons";
-import {reloadI18n, currentLanguage} from "@/src/translations/i18nLoader";
+import {currentLanguage} from "@/src/translations/i18nLoader";
 
 /**
  * Get the corresponding to emote for the given emote name
@@ -178,12 +178,5 @@ export class I18nCrownicles {
 		return currentLanguage();
 	}
 }
-
-// Initialise the native bundle immediately so loading and authentication screens
-// can safely call i18n before the downloaded language assets are ready. Asset
-// reloads are queued by the loader and replace this bootstrap resource set.
-reloadI18n().catch(error => {
-	console.error("Failed to initialize translations:", error);
-});
 
 export const i18n = I18nCrownicles;

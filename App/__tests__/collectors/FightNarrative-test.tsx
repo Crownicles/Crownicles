@@ -1,11 +1,7 @@
 import {render, screen} from "@testing-library/react-native";
 import {FightEventStory, FightLog} from "@/src/components/FightDetails";
 import {FightLogRecord} from "@/src/store/FightStore";
-import {reloadI18n} from "@/src/translations/i18nLoader";
 import {AppIcons} from "@/src/AppIcons";
-import french from "../../../Lang/fr/app.json";
-import commands from "../../../Lang/fr/commands.json";
-import models from "../../../Lang/fr/models.json";
 
 const PET_ACTION: FightLogRecord = {sequence: 1, entry: {
 	fightId: "story", fighter: {isSelf: true, name: "Drapht"}, fightActionId: "stealWeapon", status: "success",
@@ -13,9 +9,6 @@ const PET_ACTION: FightLogRecord = {sequence: 1, entry: {
 }};
 
 describe("live combat narrative", () => {
-	beforeAll(async () => {
-		await reloadI18n(new Map([["Lang/fr/app.json", JSON.stringify(french)], ["Lang/fr/commands.json", JSON.stringify(commands)], ["Lang/fr/models.json", JSON.stringify(models)]]));
-	});
 	it("renders the pet-specific story with its nickname and without raw Markdown", async () => {
 		await render(<FightEventStory record={PET_ACTION} />);
 		expect(screen.getByText(/Drapht demande l'aide de Milo qui s'élance/)).toBeTruthy();

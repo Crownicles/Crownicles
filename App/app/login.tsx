@@ -15,7 +15,6 @@ import {
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
-import {useTranslationsReady} from "@/src/translations/useTranslationsReady";
 import {Theme} from "@/src/design/Theme";
 import {Screen} from "@/src/design/Primitives";
 import {
@@ -90,7 +89,6 @@ export default function LoginScreen(): React.ReactElement {
 	const authState = React.useContext(AuthContext);
 	const connecting = authState.state === AuthStateEnum.CONNECTING;
 
-	useTranslationsReady();
 	handleExpiredSession(authState);
 
 	const start = (authorize: () => Promise<KeycloakOAuth2Token>): void => {

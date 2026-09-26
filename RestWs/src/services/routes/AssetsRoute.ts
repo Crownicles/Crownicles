@@ -1,7 +1,9 @@
 import { FastifyInstance } from "fastify";
+import { gzipSync } from "node:zlib";
 import {
 	Language, LANGUAGE
 } from "../../../../Lib/src/Language";
+import { AssetsBundle } from "../../../../WsPackets/src/objects/AssetsBundle";
 import {
 	readdir, readFile
 } from "node:fs/promises";
@@ -12,6 +14,11 @@ import { getRequestLoggerMetadata } from "../RestApi";
 
 const assets: Map<string, string> = new Map();
 const assetsHashes: Map<string, string> = new Map();
+const languageBundles: Map<Language, {
+	json: string;
+	gzip: Buffer;
+	etag: string;
+}> = new Map();
 
 /**
  * Computes the SHA-256 hash of the given file content.
@@ -27,7 +34,8 @@ function computeFileHash(fileContent: string): string {
  * Computes the assets for the languages and stores them in the `assets` and `assetsHashes` maps.
  */
 async function computeLanguagesAssets(debugMode: boolean): Promise<void> {
-	const languages = (await readdir("dist/Lang", {
+	const languagesRoot = debugMode ? "../Lang" : "dist/Lang";
+	const languages = (await readdir(languagesRoot, {
 		withFileTypes: true
 	}))
 		.filter(dirent => dirent.isDirectory())
@@ -35,7 +43,7 @@ async function computeLanguagesAssets(debugMode: boolean): Promise<void> {
 		.filter(name => LANGUAGE.LANGUAGES.includes(name as Language));
 
 	for (const language of languages) {
-		const dirRoot = debugMode ? `../Lang/${language}` : `dist/Lang/${language}`;
+		const dirRoot = `${languagesRoot}/${language}`;
 		const files = await readdir(dirRoot, {
 			withFileTypes: true
 		});
@@ -64,8 +72,31 @@ function computeIconsAssets(): void {
  * Computes the assets with their hashes and stores them in the `assets` and `assetsHashes` maps.
  */
 async function computeAssets(debugMode: boolean): Promise<void> {
+	assets.clear();
+	assetsHashes.clear();
+	languageBundles.clear();
 	await computeLanguagesAssets(debugMode);
 	computeIconsAssets();
+	for (const language of LANGUAGE.LANGUAGES) {
+		const namespaces: Record<string, object> = {};
+		for (const [file, content] of assets.entries()) {
+			const prefix = `Lang/${language}/`;
+			if (file.startsWith(prefix)) {
+				namespaces[file.slice(prefix.length, -5)] = JSON.parse(content) as object;
+			}
+		}
+		const bundle: AssetsBundle = {
+			language,
+			namespaces,
+			icons: JSON.parse(assets.get("icons.json")!) as Record<string, unknown>
+		};
+		const json = JSON.stringify(bundle);
+		languageBundles.set(language, {
+			json,
+			gzip: gzipSync(json),
+			etag: `"${computeFileHash(json)}"`
+		});
+	}
 }
 
 /**
@@ -93,6 +124,52 @@ export async function setupAssetsRoutes(server: FastifyInstance, debugMode: bool
 		reply.type("application/json")
 			.status(200)
 			.send(JSON.stringify(Object.fromEntries(assetsHashes)));
+	});
+
+	server.get("/assets/bundle", async (request, reply) => {
+		if (debugMode) {
+			await computeAssets(debugMode);
+		}
+
+		const requestedLanguage = (request.query as { lang?: string }).lang;
+		if (!requestedLanguage || !LANGUAGE.LANGUAGES.includes(requestedLanguage as Language)) {
+			CrowniclesLogger.warn("Assets bundle requested with invalid language", {
+				language: requestedLanguage,
+				...getRequestLoggerMetadata(request)
+			});
+			reply.status(400).send({ error: "Invalid language" });
+			return;
+		}
+
+		const language = requestedLanguage as Language;
+		const bundle = languageBundles.get(language);
+		if (!bundle) {
+			reply.status(404).send({ error: "Asset bundle not found" });
+			return;
+		}
+
+		reply.header("ETag", bundle.etag)
+			.header("Cache-Control", "no-cache")
+			.header("Vary", "Accept-Encoding");
+		const ifNoneMatch = request.headers["if-none-match"];
+		if (ifNoneMatch?.split(",").some(value => value.trim() === bundle.etag)) {
+			reply.status(304).send();
+			return;
+		}
+
+		const acceptsGzip = request.headers["accept-encoding"]?.split(",").some(value => {
+			const [encoding, ...parameters] = value.trim().split(";");
+			const qualityParameter = parameters.find(parameter => parameter.trim().startsWith("q="));
+			const quality = qualityParameter ? Number(qualityParameter.trim().slice(2)) : 1;
+			return encoding.toLowerCase() === "gzip" && quality > 0 && quality <= 1;
+		});
+		if (acceptsGzip) {
+			reply.header("Content-Encoding", "gzip")
+				.type("application/json")
+				.send(bundle.gzip);
+			return;
+		}
+		reply.type("application/json").send(bundle.json);
 	});
 
 	server.get("/assets/download", (request, reply) => {

@@ -1,4 +1,4 @@
-import {DarkTheme, DefaultTheme, Stack, ThemeProvider} from "expo-router";
+import {DarkTheme, DefaultTheme, SplashScreen, Stack, ThemeProvider} from "expo-router";
 import {StatusBar} from "expo-status-bar";
 import React, {ReactNode} from "react";
 import {useFonts} from "expo-font";
@@ -9,6 +9,11 @@ import {AppFontAssets} from "@/src/design/Fonts";
 import {ACTIVE_COLOR_SCHEME, Theme} from "@/src/design/Theme";
 import {THEME_PREFERENCES} from "@/src/design/ThemePreference";
 import {useThemeFollower} from "@/src/design/useThemeFollower";
+import {BootGate} from "@/src/translations/BootGate";
+
+SplashScreen.preventAutoHideAsync().catch((error: unknown) => {
+	console.warn("Unable to keep the native splash screen visible:", error);
+});
 
 const BASE_NAVIGATION_THEME = ACTIVE_COLOR_SCHEME === THEME_PREFERENCES.DARK ? DarkTheme : DefaultTheme;
 
@@ -27,17 +32,26 @@ const NAVIGATION_THEME = {
 
 function AppProviders({children}: {children: ReactNode}): ReactNode {
 	return <GestureHandlerRootView style={{ flex: 1 }}>
-		<AuthProvider>
-			<PreferencesProvider>
-				<ThemeProvider value={NAVIGATION_THEME}>{children}</ThemeProvider>
-			</PreferencesProvider>
-		</AuthProvider>
+		<ThemeProvider value={NAVIGATION_THEME}>
+			<BootGate>
+				<AuthProvider>
+					<PreferencesProvider>{children}</PreferencesProvider>
+				</AuthProvider>
+			</BootGate>
+		</ThemeProvider>
 	</GestureHandlerRootView>;
 }
 
 export default function RootLayout() {
 	const [fontsLoaded, fontError] = useFonts(AppFontAssets);
 	useThemeFollower();
+	React.useEffect((): void => {
+		if (fontsLoaded || fontError) {
+			SplashScreen.hideAsync().catch((error: unknown) => {
+				console.warn("Unable to hide the native splash screen:", error);
+			});
+		}
+	}, [fontsLoaded, fontError]);
 
 	if (!fontsLoaded && !fontError) {
 		return null;

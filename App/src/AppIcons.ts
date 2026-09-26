@@ -26,22 +26,8 @@ export class AppIcons {
 		return this.getIconOrNull(emote) ?? "❓";
 	}
 
-	static reloadAppIcons(iconsAsset: Map<string, string>): void {
-		libIcons = {};
-
-		if (iconsAsset.size === 1) {
-			try {
-				libIcons = JSON.parse(iconsAsset.values().next().value!);
-			} catch (error) {
-				console.error("Failed to parse icons.json:", error);
-			}
-		}
-		else if (iconsAsset.size > 1) {
-			console.error("Multiple icons.json assets found. This should not happen.");
-		}
-		else {
-			console.warn("No icons.json asset found.");
-		}
+	static reloadAppIcons(icons: Record<string, unknown>): void {
+		libIcons = icons;
 	}
 }
 

@@ -1,11 +1,9 @@
 import React, {PropsWithChildren, useEffect} from "react";
-import {SplashScreen, useRouter} from "expo-router";
+import {useRouter} from "expo-router";
 import {deleteStoredToken, readFullStoredToken, readStoredToken, writeStoredToken} from "@/src/authentication/TokenStorage";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
-
-SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from hiding until the auth state is determined
 
 type AuthState = {
 	state: AuthStateEnum;
@@ -172,12 +170,6 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 			clearTimeout(initialNavigationTimer.current);
 		}
 	}, []);
-
-	useEffect(() => {
-		if (state !== AuthStateEnum.NOT_READY && state !== AuthStateEnum.CONNECTING) {
-			SplashScreen.hideAsync(); // Hide the splash screen once the auth state is determined
-		}
-	}, [state]);
 
 	return (
 			<AuthContext.Provider value={{ state, setState: setStateInternal, saveToken, clearToken }}>

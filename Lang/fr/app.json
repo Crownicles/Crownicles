@@ -88,9 +88,12 @@
     "yes": "Oui",
     "no": "Non",
     "connectionError": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
-    "reconnect": "Se reconnecter",
-    "assetsUpdateError": "Les ressources de l'application n'ont pas pu être mises à jour. Vérifiez votre connexion puis réessayez.",
-    "assetsUpdating": "Mise à jour de l'application…"
+    "reconnect": "Se reconnecter"
+  },
+  "boot": {
+    "updating": "Préparation du royaume…",
+    "error": "Les traductions n'ont pas pu être chargées. Vérifiez votre connexion puis réessayez.",
+    "retry": "Réessayer"
   },
   "auth": {
     "caption": "Crownicles",
