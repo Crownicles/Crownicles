@@ -37,6 +37,8 @@ export abstract class MqttTopicUtils {
 
 	private static readonly WEB_SOCKET_BLESSING_ANNOUNCEMENT_TOPIC = "crownicles_websocket_blessing_announcement";
 
+	private static readonly DISCORD_NOTIFICATION_PREFERENCES_REQUEST_TOPIC = "crownicles_discord_notification_preferences_request";
+
 
 	static getCoreTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.CORE_TOPIC}`;
@@ -84,5 +86,9 @@ export abstract class MqttTopicUtils {
 
 	static getWebSocketBlessingAnnouncementTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.WEB_SOCKET_BLESSING_ANNOUNCEMENT_TOPIC}`;
+	}
+
+	static getDiscordNotificationPreferencesRequestTopic(prefix: MqttPrefix): string {
+		return `${prefix}/${MqttTopicUtils.DISCORD_NOTIFICATION_PREFERENCES_REQUEST_TOPIC}`;
 	}
 }

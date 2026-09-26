@@ -25,7 +25,8 @@ export const GAME_ENTITIES = {
 	LEAGUES: "leagues",
 	RANKINGS: "rankings",
 	RARITY: "rarity",
-	BLESSING: "blessing"
+	BLESSING: "blessing",
+	NOTIFICATION_PREFERENCES: "notificationPreferences"
 } as const;
 
 export type GameEntity = typeof GAME_ENTITIES[keyof typeof GAME_ENTITIES];

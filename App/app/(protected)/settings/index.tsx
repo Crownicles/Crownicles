@@ -21,6 +21,8 @@ import {storedThemePreference, THEME_PREFERENCES, ThemePreference} from "@/src/d
 import {applyThemePreference} from "@/src/design/useThemeFollower";
 import {BackButton} from "@/src/design/Sections";
 import {Button as DesignButton} from "@/src/design/Primitives";
+import {cancelReportNotification} from "@/src/notifications/ReportNotifications";
+import {DELIVERED_NOTIFICATION_TYPES, useNotificationPreferenceChange, useNotificationPreferences} from "@/src/store/useNotificationPreferences";
 import {i18n} from "@/src/translations/i18n";
 
 const styles = StyleSheet.create({
@@ -67,6 +69,12 @@ const styles = StyleSheet.create({
 		fontSize: Theme.fontSize.body,
 		color: Theme.colors.ink
 	},
+	hint: {
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.note,
+		color: Theme.colors.muted,
+		marginVertical: Theme.spacing.sm
+	},
 });
 
 const ListItem = ({ children }: PropsWithChildren) => (
@@ -74,6 +82,34 @@ const ListItem = ({ children }: PropsWithChildren) => (
     {children}
   </View>
 );
+
+/** One switch per kind the app sends; Discord's settings are separate and are not touched here. */
+function NotificationSettings(): React.JSX.Element {
+	const state = useNotificationPreferences();
+	const change = useNotificationPreferenceChange();
+	return (
+		<View style={styles.combatPreference}>
+			<Text style={styles.preferenceLabel}>{i18n.t("app:settings.notifications.label")}</Text>
+			<Text style={styles.hint}>{i18n.t("app:settings.notifications.independent")}</Text>
+			{DELIVERED_NOTIFICATION_TYPES.map(type => (
+				<ListItem key={type}>
+					<Text style={styles.label}>{i18n.t(`app:settings.notifications.types.${type}`)}</Text>
+					{state.status === "ready"
+						? <Switch
+							accessibilityLabel={i18n.t(`app:settings.notifications.types.${type}`)}
+							value={state.data.preferences[type]}
+							disabled={change.pending}
+							onValueChange={(enabled): void => {
+								change.submit({type, enabled}).then();
+							}}
+						/>
+						: <ActivityIndicator size="small" style={styles.loadingIndicator} />}
+				</ListItem>
+			))}
+			{change.message ? <Text style={styles.hint}>{change.message}</Text> : null}
+		</View>
+	);
+}
 
 export default function Index() {
 	const router = useRouter();
@@ -120,6 +156,7 @@ export default function Index() {
 						{value: THEME_PREFERENCES.DARK, label: i18n.t("app:settings.theme.dark")}
 					]} />
 				</View>
+				<NotificationSettings />
 				<ListItem>
 					<Text style={styles.label}>{i18n.t("app:settings.coreVersion")}</Text>
 					<Text style={styles.pingValue}>{version.status === "ready" ? version.data.coreVersion : i18n.t("app:common.loading")}</Text>
@@ -140,6 +177,7 @@ export default function Index() {
 				)}
 				<ListItem>
 					<DesignButton variant="danger" onPress={() => {
+						cancelReportNotification();
 						authState.setState(AuthStateEnum.NO_TOKEN);
 						authState.clearToken().then().catch((err) => {
 							console.error("Failed to clear token:", err);

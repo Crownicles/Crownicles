@@ -19,6 +19,7 @@ import {Journey, useJourney} from "@/src/journey/useJourney";
 import {MissionCompletedToast} from "@/src/components/MissionRewards";
 import {BlessingActivatedToast} from "@/src/components/BlessingActivatedToast";
 import {useMissionRewards, useMissionRewardsAccount} from "@/src/store/MissionRewardsStore";
+import {useNotificationNavigation, useReportNotification} from "@/src/notifications/useNotifications";
 
 const screenStyles = {flex: 1, backgroundColor: Theme.colors.paper};
 const NEW_MARK_SIZE = 8;
@@ -175,6 +176,8 @@ export default function TabLayout(): ReactNode {
 	const dead = usePlayerIsDead();
 	const journey = useJourney();
 	useMissionRewardsAccount();
+	useReportNotification();
+	useNotificationNavigation();
 	if (dead) {
 		return <DeathScreen />;
 	}

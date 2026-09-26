@@ -40,6 +40,8 @@ import {GARDEN_OPERATIONS as CoreGardenOperations} from "../../../Lib/src/types/
 import {GARDEN_OPERATIONS, GARDEN_ACCESS, GARDEN_NO_ACCESS, GARDEN_ERRORS} from "../../../WsPackets/src/objects/Garden";
 import {REPORT_CITY_ACTION_RESULTS as CoreCityActionResults} from "../../../Lib/src/types/ReportView";
 import {REPORT_CITY_ACTION_RESULTS} from "../../../WsPackets/src/objects/ReportView";
+import {NOTIFICATION_TYPES as LibNotificationTypes} from "../../../Lib/src/types/NotificationPreferences";
+import {NOTIFICATION_TYPES} from "../../../WsPackets/src/objects/NotificationPreferences";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -78,7 +80,8 @@ describe("wire enums mirror their back-end counterpart", () => {
 		["PetFood", PetFood, LibPetFood],
 		["PetFeedResult", PET_FEED_RESULTS, CommandPetFeedResult],
 		["EquipAction", EQUIP_ACTIONS, ItemConstants.EQUIP_ACTIONS],
-		["EquipError", EQUIP_ERRORS, ItemConstants.EQUIP_ERRORS]
+		["EquipError", EQUIP_ERRORS, ItemConstants.EQUIP_ERRORS],
+		["NotificationTypes", NOTIFICATION_TYPES, LibNotificationTypes]
 	])("%s has the same members in the same order", (_name, wireEnum, libEnum) => {
 		expect(wireEnum).toStrictEqual(libEnum);
 	});

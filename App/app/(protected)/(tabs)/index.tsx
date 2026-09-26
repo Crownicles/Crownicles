@@ -59,6 +59,7 @@ import {EmptyState, Note, QuickAction, QuickActions, Screen} from "@/src/design/
 import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
 import {Entrance} from "@/src/design/Entrance";
 import {Cure, CureEmblem, HappyEmblem} from "@/src/components/CureEmblem";
+import {isAlterationReport, reportOpensAt, reportReadyAt} from "@/src/display/ReportTiming";
 import {plainStory} from "@/src/display/Markdown";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {SilentAnswer, useReportShortcut} from "@/src/store/useReportShortcut";
@@ -352,15 +353,6 @@ function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): 
   return formatDuration(packet.nextStopTime - currentTime);
 }
 
-function isAlterationReport(packet: ReportTravelSummaryRes): boolean {
-	return packet.effect !== undefined && packet.effect !== "none";
-}
-
-function reportOpensAt(packet: ReportTravelSummaryRes): number {
-	const nextStopOrArrival = Math.min(packet.nextStopTime, packet.arriveTime);
-	return isAlterationReport(packet) ? Math.max(nextStopOrArrival, packet.effectEndTime ?? 0) : nextStopOrArrival;
-}
-
 /** Arriving opens the report too, so a stop planned after the arrival never delays it; an alteration holds it until it ends. */
 export function reportWait(packet: ReportTravelSummaryRes, currentTime: number): string {
 	const opensAt = reportOpensAt(packet);
@@ -382,7 +374,7 @@ function travelAdvice(stopTime: number): string {
 }
 
 export function reportRefreshDelay(packet: ReportTravelSummaryRes, now = Date.now()): number | null {
-	const nextRefresh = packet.isInCity ? packet.effectEndTime : reportOpensAt(packet);
+	const nextRefresh = reportReadyAt(packet);
 	return nextRefresh !== undefined && nextRefresh > now ? nextRefresh - now : null;
 }
 

@@ -224,6 +224,13 @@
     "coreVersion": "Version du moteur",
     "ping": "Ping",
     "logout": "Se déconnecter",
+    "notifications": {
+      "label": "Notifications",
+      "independent": "Ces réglages ne concernent que l'application : ceux de Discord restent inchangés.",
+      "types": {
+        "report": "Suite du voyage"
+      }
+    },
     "deleteAccount": {
       "entry": "Supprimer mon compte",
       "title": "Supprimer mon compte",
@@ -1178,5 +1185,14 @@
       "emptySlot": "Emplacement vide"
     },
     "notFound": "Profil introuvable"
+  },
+  "notifications": {
+    "channels": {
+      "report": "Rapports de voyage"
+    },
+    "reportReady": {
+      "title": "Votre aventure continue",
+      "body": "La suite de votre voyage vers {{destination}} est prête à être découverte."
+    }
   }
 }

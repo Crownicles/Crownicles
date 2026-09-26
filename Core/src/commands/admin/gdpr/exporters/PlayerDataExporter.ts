@@ -4,6 +4,9 @@ import {
 	toCSV, GDPRCsvFiles
 } from "../CSVUtils";
 import { Players } from "../../../../core/database/game/models/Player";
+import {
+	AppNotificationPreferences, preferencesOf
+} from "../../../../core/database/game/models/AppNotificationPreference";
 import { PlayerBadges } from "../../../../core/database/game/models/PlayerBadges";
 import { InventorySlots } from "../../../../core/database/game/models/InventorySlot";
 import { InventoryInfo } from "../../../../core/database/game/models/InventoryInfo";
@@ -189,6 +192,19 @@ async function exportPetData(
 	}
 }
 
+async function exportAppNotificationPreferences(player: NonNullable<Player>, csvFiles: GDPRCsvFiles): Promise<void> {
+	const preferences = await AppNotificationPreferences.find(player.keycloakId);
+	if (preferences) {
+		csvFiles["27_app_notification_preferences.csv"] = toCSV([
+			{
+				...preferencesOf(preferences),
+				createdAt: preferences.createdAt,
+				updatedAt: preferences.updatedAt
+			}
+		]);
+	}
+}
+
 async function exportScheduledNotifications(player: NonNullable<Player>, csvFiles: GDPRCsvFiles): Promise<void> {
 	const dailyBonusNotifs = await ScheduledDailyBonusNotification.findAll({ where: { playerId: player.id } });
 	const reportNotifs = await ScheduledReportNotification.findAll({ where: { playerId: player.id } });
@@ -303,6 +319,7 @@ async function exportMiscData(
 	}
 
 	await exportScheduledNotifications(player, csvFiles);
+	await exportAppNotificationPreferences(player, csvFiles);
 	await exportCurrentBlessing(player, csvFiles);
 	await exportPlayerMaterials(player.id, csvFiles);
 
