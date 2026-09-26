@@ -347,16 +347,23 @@ function TravelPath({packet, progress, dash}: { packet: ReportTravelSummaryRes; 
 
 
 function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): string {
+/** The last minute before a stop is counted in seconds, so the wait visibly runs down. */
+function formatCountdown(milliseconds: number): string {
+	return milliseconds < MILLISECONDS_PER_MINUTE
+		? i18n.t("app:adventure.duration.seconds", {count: Math.ceil(milliseconds / MILLISECONDS_PER_SECOND)})
+		: formatDuration(milliseconds);
+}
+
   if (packet.nextStopTime <= currentTime) {
     return i18n.t("app:adventure.now");
   }
-  return formatDuration(packet.nextStopTime - currentTime);
+  return formatCountdown(packet.nextStopTime - currentTime);
 }
 
 /** Arriving opens the report too, so a stop planned after the arrival never delays it; an alteration holds it until it ends. */
 export function reportWait(packet: ReportTravelSummaryRes, currentTime: number): string {
 	const opensAt = reportOpensAt(packet);
-	return opensAt <= currentTime ? i18n.t("app:adventure.now") : formatDuration(opensAt - currentTime);
+	return opensAt <= currentTime ? i18n.t("app:adventure.now") : formatCountdown(opensAt - currentTime);
 }
 
 function hasNextStop(packet: ReportTravelSummaryRes): boolean {

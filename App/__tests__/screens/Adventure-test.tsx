@@ -564,6 +564,14 @@ describe("Adventure screen", () => {
 		expect(reportWait({...occupied, effect: "none"}, now)).toBe("app:adventure.now");
 	});
 
+	it("counts the last minute before the next stop in seconds", () => {
+		const now = 1_700_000_000_000;
+		const travelling = {...report(), arriveTime: now + 3_600_000};
+
+		expect(reportWait({...travelling, nextStopTime: now + 42_000}, now)).toBe("app:adventure.duration.seconds");
+		expect(reportWait({...travelling, nextStopTime: now + 60_000}, now)).toBe("app:adventure.duration.minutes");
+	});
+
 	it("resumes automatically after advancing, cancelling, or leaving the token merchant", () => {
 		expect(tokenOutcomeNeedsAcknowledgement({kind: "used", packet: {tokensSpent: 1, isArrived: false}})).toBe(false);
 		expect(tokenOutcomeNeedsAcknowledgement({kind: "useRefused", packet: {}})).toBe(false);

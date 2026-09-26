@@ -471,7 +471,9 @@
     "duration": {
       "hoursMinutes": "{{hours}} h {{minutes}}", "hours": "{{count}} h",
       "minutes_one": "{{count}} minute",
-      "minutes_other": "{{count}} minutes"
+      "minutes_other": "{{count}} minutes",
+      "seconds_one": "{{count}} seconde",
+      "seconds_other": "{{count}} secondes"
     },
     "now": "Maintenant",
     "quick": {
