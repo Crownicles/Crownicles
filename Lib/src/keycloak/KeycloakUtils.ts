@@ -1,6 +1,7 @@
 import { KeycloakConfig } from "./KeycloakConfig";
 import { KeycloakUserToRegister } from "./KeycloakUserToRegister";
 import { KeycloakUser } from "./KeycloakUser";
+import { KeycloakRegisterEvent } from "./KeycloakRegisterEvent";
 import {
 	Language, LANGUAGE
 } from "../Language";
@@ -196,24 +197,7 @@ export abstract class KeycloakUtils {
 			body: JSON.stringify({
 				username: registerParams.keycloakUsername,
 				attributes,
-				enabled: true,
-
-				// Left unverified on purpose: the realm's verifyEmail asks for the proof at first login
-				...registerParams.email
-					? {
-						email: registerParams.email,
-						emailVerified: false
-					}
-					: {},
-				credentials: registerParams.password
-					? [
-						{
-							type: "password",
-							value: registerParams.password,
-							temporary: false
-						}
-					]
-					: undefined
+				enabled: true
 			})
 		});
 
@@ -231,21 +215,18 @@ export abstract class KeycloakUtils {
 	}
 
 	/**
-	 * Ask Keycloak to send the address verification mail.
-	 *
-	 * Failing here is expected when the mail relay is out of quota, so callers must treat it as a
-	 * failed registration: an account nobody can verify still holds the address hostage.
+	 * Get the most recent account creations, as long as the realm keeps its `REGISTER` events
 	 * @param keycloakConfig
-	 * @param keycloakId
+	 * @param max
 	 */
-	public static async sendVerificationEmail(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<ApiCallReturnType<Record<string, never>>> {
+	public static async getRegisterEvents(keycloakConfig: KeycloakConfig, max: number): Promise<ApiCallReturnType<{ events: KeycloakRegisterEvent[] }>> {
 		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
 		if (checkAndQueryToken.isError) {
 			return checkAndQueryToken;
 		}
 
-		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${keycloakId}/send-verify-email`, {
-			method: "PUT",
+		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/events?type=REGISTER&first=0&max=${max}`, {
+			method: "GET",
 			headers: {
 				"Authorization": `Bearer ${this.keycloakToken}`,
 				"Content-Type": "application/json"
@@ -256,7 +237,7 @@ export abstract class KeycloakUtils {
 			return formatApiCallError(res);
 		}
 
-		return formatApiCallOk(res, {});
+		return formatApiCallOk(res, { events: await res.json() as KeycloakRegisterEvent[] });
 	}
 
 	/**
@@ -405,7 +386,9 @@ export abstract class KeycloakUtils {
 				"Authorization": `Bearer ${this.keycloakToken}`,
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({ attributes })
+
+			// The whole account goes back: Keycloak erases the address and the names a partial update omits
+			body: JSON.stringify(user)
 		});
 
 		if (!res.ok) {
@@ -450,34 +433,6 @@ export abstract class KeycloakUtils {
 			payload: { users },
 			isError: false
 		};
-	}
-
-	/**
-	 * Check if a user exists in Keycloak
-	 * @param keycloakConfig
-	 * @param username
-	 */
-	public static async userExists(keycloakConfig: KeycloakConfig, username: string): Promise<ApiCallReturnType<{ exists: boolean }>> {
-		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
-		if (checkAndQueryToken.isError) {
-			return checkAndQueryToken;
-		}
-
-		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users?username=${username}`, {
-			method: "GET",
-			headers: {
-				"Authorization": `Bearer ${this.keycloakToken}`,
-				"Content-Type": "application/json"
-			}
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		const obj = await res.json() as KeycloakUser[];
-
-		return formatApiCallOk(res, { exists: obj.length > 0 });
 	}
 
 	/**
@@ -535,14 +490,23 @@ export abstract class KeycloakUtils {
 		};
 	}
 
-	private static async updateGameUsername(user: KeycloakUser, newGameUsername: string, keycloakConfig: KeycloakConfig): Promise<ApiCallReturnType<Record<string, never>>> {
+	/**
+	 * Replace the name shown in game, keeping the other attributes of the account
+	 * @param user
+	 * @param newGameUsername
+	 * @param keycloakConfig
+	 */
+	public static async updateGameUsername(user: KeycloakUser, newGameUsername: string, keycloakConfig: KeycloakConfig): Promise<ApiCallReturnType<Record<string, never>>> {
 		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
 		if (checkAndQueryToken.isError) {
 			return checkAndQueryToken;
 		}
 
-		const attributes = user.attributes;
-		attributes.gameUsername = [newGameUsername];
+		// An account created from the sign-up page carries no attribute at all until it gets one
+		user.attributes = {
+			...user.attributes,
+			gameUsername: [newGameUsername]
+		};
 
 		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${user.id}`, {
 			method: "PUT",
@@ -550,7 +514,9 @@ export abstract class KeycloakUtils {
 				"Authorization": `Bearer ${this.keycloakToken}`,
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({ attributes })
+
+			// The whole account goes back: Keycloak erases the address and the names a partial update omits
+			body: JSON.stringify(user)
 		});
 
 		if (!res.ok) {
