@@ -75,6 +75,7 @@ const WIRE_NAMES = [
 	"SellRes",
 	"SellNoItemRes",
 	"SellCancelRes",
+	"ItemRefusedRes",
 	"ShopOutcomeRes",
 	"ShopPetCheckupRes",
 	"ShopNoPetRes",

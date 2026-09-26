@@ -3,7 +3,7 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {GENERIC_REACTION_KINDS, ITEM_DATA_KINDS, ITEM_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {AppIcons} from "@/src/AppIcons";
-import {itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
+import {isPotionCategory, itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
 import {EventJournal, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {useChooseOnce} from "@/src/collectors/ShopCollector";
 import {inventoryItemDetails, inventoryItemEmblem, InventoryItemRow} from "@/src/components/InventoryItemRow";
@@ -12,8 +12,6 @@ import {Button, ButtonRow, Note, Screen, SectionHeader} from "@/src/design/Primi
 import {ActionBanner, Card, ExpandableEntry} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {i18n} from "@/src/translations/i18n";
-
-const POTION_CATEGORY = 2;
 
 type ItemRewardProps = {
 	collector: ReactionCollectorCreation;
@@ -47,7 +45,7 @@ function FoundItemExits({collector, foundItem, drinkType, refuseType, choose, lo
 }): ReactNode {
 	const drinkIndex = reactionIndex(collector, drinkType);
 	const refuseIndex = reactionIndex(collector, refuseType);
-	const isPotion = foundItem.itemCategory === POTION_CATEGORY;
+	const isPotion = isPotionCategory(foundItem.itemCategory);
 	return <ButtonRow>
 		{drinkIndex >= 0 ? <Button
 			emoji={AppIcons.getIcon("items.drinkPotion")}
@@ -123,7 +121,7 @@ export function ItemAcceptCollector({collector, onChoose, submitting}: ItemRewar
 	return (
 		<Screen>
 			<FoundItemJournal item={foundItem} />
-			<SectionHeader>{i18n.t(foundItem.itemCategory === POTION_CATEGORY
+			<SectionHeader>{i18n.t(isPotionCategory(foundItem.itemCategory)
 				? "commands:inventory.randomItemAcceptTitlePotion"
 				: "commands:inventory.randomItemAcceptTitle")}</SectionHeader>
 			<Card><InventoryItemRow item={itemWithDetails} /></Card>

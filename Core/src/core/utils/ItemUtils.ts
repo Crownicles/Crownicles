@@ -184,17 +184,20 @@ async function dontKeepOriginalItem(
  * @param response
  * @param player
  * @param item
- * @param money
+ * @param itemValue
+ * @returns the amount actually credited, blessing included
  */
-async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, item: GenericItem, money: number): Promise<void> {
+async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, item: GenericItem, itemValue: number): Promise<number> {
+	const credited = BlessingManager.getInstance().applyMoneyBlessing(itemValue);
 	await player.addMoney({
-		amount: money,
+		amount: credited,
 		response,
-		reason: NumberChangeReason.ITEM_SELL
+		reason: NumberChangeReason.ITEM_SELL,
+		ignoreBlessing: true
 	});
 	await MissionsController.update(player, response, {
 		missionId: "sellItemWithGivenCost",
-		params: { itemCost: money }
+		params: { itemCost: itemValue }
 	});
 	await MissionsController.update(player, response, {
 		missionId: "sellItems"
@@ -202,6 +205,7 @@ async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, 
 	await player.save();
 	crowniclesInstance?.logsDatabase.logItemSell(player.keycloakId, item)
 		.then();
+	return credited;
 }
 
 /**
@@ -210,20 +214,20 @@ async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, 
  * @param player
  * @param inventorySlots
  * @param item
- * @param money
+ * @param soldMoney - amount already credited, blessing included
  * @param autoSell
  */
 async function manageItemRefusal(response: CrowniclesPacket[], {
 	player,
 	inventorySlots
-}: WhoIsConcerned, item: GenericItem, money: number, autoSell: boolean): Promise<void> {
+}: WhoIsConcerned, item: GenericItem, soldMoney: number, autoSell: boolean): Promise<void> {
 	response.push(makePacket(ItemRefusePacket, {
 		item: {
 			id: item.id,
 			category: item.getCategory()
 		},
 		autoSell,
-		soldMoney: BlessingManager.getInstance().applyMoneyBlessing(money)
+		soldMoney
 	}));
 	await MissionsController.update(player, response, { missionId: "findOrBuyItem" });
 	await player.reload();
@@ -267,17 +271,15 @@ async function sellOrKeepItem(
 		item = itemToReplaceInstance!;
 		resaleMultiplier = 1;
 	}
-	let money = 0;
+	let soldMoney = 0;
 	if (item.getCategory() !== ItemCategory.POTION) {
-		money = Math.round(getItemValue(item) * resaleMultiplier);
-
 		// For auto-sell scenarios, ensure we reload again before adding money to prevent race conditions
 		if (autoSell) {
 			await player.reload();
 		}
-		await manageMoneyPayment(response, player, item, money);
+		soldMoney = await manageMoneyPayment(response, player, item, Math.round(getItemValue(item) * resaleMultiplier));
 	}
-	await manageItemRefusal(response, whoIsConcerned, item, money, autoSell ?? false);
+	await manageItemRefusal(response, whoIsConcerned, item, soldMoney, autoSell ?? false);
 }
 
 /**

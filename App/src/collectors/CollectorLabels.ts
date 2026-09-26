@@ -128,6 +128,10 @@ function itemTypeFromCategory(category: number): typeof ITEM_TYPES_BY_CATEGORY[n
 	return ITEM_TYPES_BY_CATEGORY[category] ?? null;
 }
 
+export function isPotionCategory(category: number): boolean {
+	return itemTypeFromCategory(category) === "potion";
+}
+
 export function itemCategoryLabel(category: number): string {
 	const type = itemTypeFromCategory(category);
 	return type ? i18n.t(`items:${type}`, {count: 1}) : i18n.t("app:collector.descriptions.unknownItem");

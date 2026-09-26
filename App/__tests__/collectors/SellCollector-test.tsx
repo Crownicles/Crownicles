@@ -4,7 +4,7 @@ import {GENERIC_REACTION_KINDS, SELL_DATA_KINDS, SELL_REACTION_KINDS} from "ws-p
 import {SellCollector} from "@/src/collectors/SellCollector";
 import {InventoryOutcome} from "@/src/collectors/InventoryOutcome";
 
-jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
+jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: {amount?: string}): string => options?.amount ? `${key}:${options.amount}` : key}}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));
 jest.mock("@/src/store/usePlayerProfile", () => ({usePlayerProfile: (): object => ({status: "ready", data: {pseudo: "Drapht"}})}));
 
@@ -50,6 +50,7 @@ describe("sale confirmation", () => {
 		const onContinue = jest.fn();
 		await render(<InventoryOutcome outcome={{kind: "sale", packet: {item: {id: 7, category: 0}, price: 132}}} onContinue={onContinue} />);
 		expect(screen.getByText("commands:sell.soldMessageTitle")).toBeTruthy();
+		expect(screen.getByText("app:inventoryActions.gain:132")).toBeTruthy();
 		await fireEvent.press(screen.getByRole("alert"));
 		expect(onContinue).toHaveBeenCalledTimes(1);
 	});
@@ -58,5 +59,26 @@ describe("sale confirmation", () => {
 		const choose = jest.fn();
 		await render(<SellCollector collector={collector()} onChoose={choose} submitting={false} />);
 		expect(screen.getByTestId("swipe-back")).toBeTruthy();
+	});
+});
+
+describe("item left behind after a find", () => {
+	it("announces the money received for the replaced equipment", async () => {
+		await render(<InventoryOutcome outcome={{kind: "refused", packet: {item: {id: 7, category: 0}, autoSell: false, soldMoney: 132}}} onContinue={jest.fn()} />);
+		expect(screen.getByText("commands:sell.soldMessageTitle")).toBeTruthy();
+		expect(screen.getByText("models:weapons.7")).toBeTruthy();
+		expect(screen.getByText("app:inventoryActions.gain:132")).toBeTruthy();
+	});
+
+	it("says the find was already owned when Core sold it automatically", async () => {
+		await render(<InventoryOutcome outcome={{kind: "refused", packet: {item: {id: 7, category: 0}, autoSell: true, soldMoney: 40}}} onContinue={jest.fn()} />);
+		expect(screen.getByText("commands:sell.soldMessageAlreadyOwnTitle")).toBeTruthy();
+		expect(screen.getByText("app:inventoryActions.gain:40")).toBeTruthy();
+	});
+
+	it("announces a destroyed potion without any gain", async () => {
+		await render(<InventoryOutcome outcome={{kind: "refused", packet: {item: {id: 43, category: 2}, autoSell: false, soldMoney: 0}}} onContinue={jest.fn()} />);
+		expect(screen.getByText("commands:sell.potionDestroyedTitle")).toBeTruthy();
+		expect(screen.queryByText(/inventoryActions.gain/)).toBeNull();
 	});
 });

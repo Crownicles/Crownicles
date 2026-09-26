@@ -1,7 +1,8 @@
 import {ReactNode} from "react";
 import {InventoryOutcome as Outcome} from "@/src/store/useInventoryOutcome";
+import {ItemRefusedRes} from "ws-packets/src/fromServer/inventory/ItemRefusedRes";
 import {UnitIcon} from "@/src/components/UnitIcon";
-import {itemDisplayName} from "@/src/collectors/CollectorLabels";
+import {isPotionCategory, itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {plainStory} from "@/src/display/Markdown";
 import {Toast, ToastValue} from "@/src/design/Sections";
@@ -23,6 +24,20 @@ function gain(amount: string, unit: string): ToastValue {
 	return {amount: i18n.t("app:inventoryActions.gain", {amount}), unit};
 }
 
+/** Same titles as Discord: a potion is destroyed, anything else is sold, and a duplicate find says so. */
+function refusedTitleKey(autoSell: boolean, potion: boolean): string {
+	if (autoSell) return "commands:sell.soldMessageAlreadyOwnTitle";
+	return potion ? "commands:sell.potionDestroyedTitle" : "commands:sell.soldMessageTitle";
+}
+
+function refusedToast({item, autoSell, soldMoney}: ItemRefusedRes, pseudo: string): OutcomeToast {
+	const potion = isPotionCategory(item.category);
+	const title = plainStory(i18n.t(refusedTitleKey(autoSell, potion), {pseudo}));
+	return potion || soldMoney <= 0
+		? {unit: NO_GAIN_UNIT, title, subtitle: itemDisplayName(item)}
+		: {unit: "money", title, subtitle: itemDisplayName(item), value: gain(formatNumber(soldMoney), "money")};
+}
+
 function outcomeToast(outcome: Outcome, pseudo: string): OutcomeToast {
 	switch (outcome.kind) {
 		case "sale": {
@@ -31,6 +46,8 @@ function outcomeToast(outcome: Outcome, pseudo: string): OutcomeToast {
 				? {unit: "money", title: plainStory(i18n.t("commands:sell.soldMessageTitle", {pseudo})), subtitle: itemDisplayName(item), value: gain(formatNumber(price), "money")}
 				: {unit: NO_GAIN_UNIT, title: plainStory(i18n.t("commands:sell.potionDestroyedTitle")), subtitle: itemDisplayName(item)};
 		}
+		case "refused":
+			return refusedToast(outcome.packet, pseudo);
 		case "cooldown": {
 			const availableAt = outcome.packet.lastDailyTimestamp + outcome.packet.cooldownHours * MILLISECONDS_PER_HOUR;
 			return {
