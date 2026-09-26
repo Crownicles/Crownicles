@@ -28,6 +28,8 @@ import {
 	PlantId, PLANT_SLOT_TYPE
 } from "../../../../Lib/src/constants/PlantConstants";
 import { buildPotionDisplayPacket } from "./InventoryPotionUtils";
+import { DailyConstants } from "../../../../Lib/src/constants/DailyConstants";
+import { hoursToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 
 function buildMainItemBackups(
 	items: InventorySlot[],
@@ -92,6 +94,11 @@ function buildPlantsData(
 	};
 }
 
+/**
+ * This command can return the following packets:
+ * - CommandInventoryPacketRes
+ * - CommandInventoryPlayerNotFound
+ */
 export default class InventoryCommand {
 	@commandRequires(CommandInventoryPacketReq, {
 		notBlocked: false,
@@ -127,12 +134,15 @@ async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInvento
 	const potion = items.find(item => item.isPotion() && item.isEquipped())!;
 	const object = items.find(item => item.isObject() && item.isEquipped())!;
 
+	const dailyBonusAvailableAt = invInfo.getLastDailyAtTimestamp() + hoursToMilliseconds(DailyConstants.TIME_BETWEEN_DAILIES);
+
 	return {
 		foundPlayer: true,
 		keycloakId: toCheckPlayer.keycloakId,
 		hasTalisman: talismans.hasTalisman,
 		hasCloneTalisman: talismans.hasCloneTalisman,
 		hasRemoteHarvestTalisman: talismans.hasRemoteHarvestTalisman,
+		dailyBonusAvailableAt,
 		data: {
 			weapon: (weapon.getItem() as MainItem).getDisplayPacket(weapon.itemLevel, weapon.itemEnchantmentId ?? undefined, maxStatsValues),
 			armor: (armor.getItem() as MainItem).getDisplayPacket(armor.itemLevel, armor.itemEnchantmentId ?? undefined, maxStatsValues),

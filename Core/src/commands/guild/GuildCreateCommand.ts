@@ -216,7 +216,8 @@ export default class GuildCreateCommand {
 
 		// Send collector
 		const collector = new ReactionCollectorGuildCreate(
-			packet.askedGuildName
+			packet.askedGuildName,
+			GuildCreateConstants.PRICE
 		);
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {

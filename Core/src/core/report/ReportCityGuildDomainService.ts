@@ -144,11 +144,15 @@ async function loadAuthorizedGuild(
 	return { guild };
 }
 
-function validateBuildingUpgrade(guild: Guild, building: GuildBuilding): ResolvedUpgrade | GuildDomainError {
+function validateBuildingUpgrade(guild: Guild, packet: CommandReportGuildDomainUpgradeReq): ResolvedUpgrade | GuildDomainError {
+	const { building } = packet;
 	if (!Object.values(GuildBuilding).includes(building)) {
 		return GUILD_DOMAIN_ERROR.INVALID_BUILDING;
 	}
 	const currentLevel = guild.getDataValue(BUILDING_LEVEL_FIELDS[building]) as number;
+	if (packet.expectedLevel !== undefined && currentLevel !== packet.expectedLevel) {
+		return GUILD_DOMAIN_ERROR.CANNOT_BUY;
+	}
 	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
 	if (upgradeCost === null) {
 		return GUILD_DOMAIN_ERROR.MAX_LEVEL;
@@ -172,7 +176,7 @@ async function resolveUpgrade(
 	if (typeof authResult === "string") {
 		return authResult;
 	}
-	return validateBuildingUpgrade(authResult.guild, packet.building);
+	return validateBuildingUpgrade(authResult.guild, packet);
 }
 
 export async function handleGuildDomainUpgrade(keycloakId: string, packet: CommandReportGuildDomainUpgradeReq, response: CrowniclesPacket[]): Promise<void> {
@@ -192,7 +196,11 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 	 * resolves on the upgrade packet.
 	 */
 	const logParams = await Guild.withLocked(fastResolved.guild.id, async guild => {
-		const revalidated = validateBuildingUpgrade(guild, packet.building);
+		if (guild.chiefId !== fastResolved.guild.chiefId) {
+			response.push(makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_AUTHORIZED }));
+			return null;
+		}
+		const revalidated = validateBuildingUpgrade(guild, packet);
 		if (typeof revalidated === "string") {
 			response.push(makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: revalidated }));
 			return null;

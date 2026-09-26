@@ -12,13 +12,18 @@ import { PlayerActiveObjects } from "./PlayerActiveObjects";
 import {
 	asMilliseconds,
 	daysToMilliseconds,
+	getNextSaturdayMidnight,
 	getOneDayAgo,
 	Millisecond,
 	millisecondsToSeconds,
 	asMinutes,
-	minutesToHours
+	minutesToHours,
+	todayIsSunday
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { TravelTime } from "../../../maps/TravelTime";
+import {
+	LEAGUE_REWARD_BLOCKERS, LeagueRewardAvailability
+} from "../../../../../../Lib/src/types/LeagueRewardAvailability";
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
 import { Maps } from "../../../maps/Maps";
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
@@ -1283,6 +1288,29 @@ export class Player extends Model {
 		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
 	}
 
+	/**
+	 * Blockers known without reading the logs, so the claim command keeps checking the already
+	 * claimed case under its lock.
+	 */
+	getLeagueRewardSchedule(ignoreDate = false): Exclude<LeagueRewardAvailability, {
+		type: typeof LEAGUE_REWARD_BLOCKERS.ALREADY_CLAIMED;
+	}> {
+		if (!ignoreDate && !todayIsSunday()) {
+			return {
+				type: LEAGUE_REWARD_BLOCKERS.NOT_SUNDAY, nextSunday: getNextSaturdayMidnight()
+			};
+		}
+		return this.gloryPointsLastSeason === 0 ? { type: LEAGUE_REWARD_BLOCKERS.NO_POINTS } : null;
+	}
+
+	async getLeagueRewardAvailability(): Promise<LeagueRewardAvailability> {
+		const schedule = this.getLeagueRewardSchedule();
+		if (schedule) {
+			return schedule;
+		}
+		return await this.hasClaimedLeagueReward() ? { type: LEAGUE_REWARD_BLOCKERS.ALREADY_CLAIMED } : null;
+	}
+
 	public async addRage(parameters: EditValueParameters): Promise<void> {
 		const amount = parameters.amount > 0 && BlessingManager.getInstance().isRageAmplified()
 			? parameters.amount * 2
@@ -1507,7 +1535,9 @@ export class Players {
 			? askedPlayer.keycloakId === originalPlayer.keycloakId
 				? originalPlayer
 				: await Players.getByKeycloakId(askedPlayer.keycloakId)
-			: await Players.getByRank(askedPlayer.rank ?? 1);
+			: askedPlayer.rank
+				? await Players.getByRank(askedPlayer.rank)
+				: originalPlayer;
 	}
 
 	/**

@@ -1,0 +1,1215 @@
+{
+  "garden": {
+    "plots": "Parcelles",
+    "plant": "Planter",
+    "water": "Arroser",
+    "harvest": "Récolter",
+    "compost": "Composter",
+    "storage": "Réserve de plantes",
+    "refresh": "Actualiser le jardin",
+    "remote": "Récolte à distance. Les autres actions nécessitent de rentrer chez vous.",
+    "quantity_one": "×{{count}}",
+    "quantity_other": "×{{count}}",
+    "confirmPlant": "Planter {{plant}} dans la parcelle {{slot}} ?",
+    "confirmCompost_one": "Transformer {{count}} {{plant}} en matériau ?",
+    "confirmCompost_other": "Transformer {{count}} {{plant}} en matériaux ?",
+    "planted": "{{plant}} a été planté dans la parcelle {{slot}}.",
+    "watered_one": "{{count}} parcelle arrosée, {{ready}} devenue prête à récolter.",
+    "watered_other": "{{count}} parcelles arrosées, {{ready}} devenues prêtes à récolter.",
+    "harvested": "Plantes stockées : {{stored}}. Plantes compostées faute de place : {{composted}}.",
+    "composted_one": "{{count}} plante compostée.",
+    "composted_other": "{{count}} plantes compostées.",
+    "notEnoughPlants": "Il n'y a plus assez de plantes en réserve pour ce compostage.",
+    "noAccess": {"noHome": "Vous ne possédez pas de maison.", "noGarden": "Votre maison ne possède pas encore de jardin.", "noTalisman": "Rentrez chez vous ou obtenez le Cœur Sylvestre pour consulter votre jardin."},
+    "errors": {"notAtHome": "Cette action nécessite d'être chez vous.", "invalidAction": "Cette action n'est plus disponible.", "noReadyPlants": "Aucune plante n'est prête à être récoltée.", "noSeed": "Vous ne transportez pas de graine à planter.", "noEmptyPlot": "Aucune parcelle libre n'est disponible.", "seedAlreadyPlanted": "Cette plante pousse déjà dans votre jardin.", "wateringOnCooldown": "Le prochain arrosage n'est pas encore disponible.", "noPlantsToWater": "Aucune plante n'a besoin d'être arrosée."}
+  },
+  "cooking": {
+    "level": "Niveau de cuisine",
+    "grade": "Grade",
+    "furnace": "Fourneau",
+    "lit": "Allumé",
+    "unlit": "Éteint",
+    "ignite": "Allumer le fourneau",
+    "revive": "Relancer le fourneau",
+    "craft": "Préparer",
+    "pin": "Épingler",
+    "unpin": "Désépingler",
+    "pinned": "Recette épinglée",
+    "recipeLevel": "Niveau de recette",
+    "secretRecipe": "Recette mystérieuse",
+    "emptySlot": "Emplacement {{slot}} vide.",
+    "ingredientQuantity": "{{owned}} / {{required}}",
+    "notReady": "Les conditions de cette recette ne sont pas remplies.",
+    "noWood": "Vous n'avez pas de bois pour alimenter le fourneau.",
+    "unavailable": "Cette action de cuisine n'est plus disponible.",
+    "confirmCraft": "Préparer {{recipe}} ? Les ingrédients sont consommés même en cas d'échec.",
+    "confirmRevive": "Alimenter le fourneau en bois pour renouveler les recettes disponibles ?",
+    "rareWood": "Utiliser un bois rare",
+    "confirmWood": "Consommer un matériau {{material}} de rareté {{rarity}} ?",
+    "woodConsumed": "Bois consommé : {{material}}.",
+    "woodSaved": "Le bois {{material}} a été économisé.",
+    "success": "Préparation réussie",
+    "failed": "Préparation ratée",
+    "potion": "Potion obtenue",
+    "consolation": "Potion de consolation",
+    "foodStored": "{{stored}} en réserve sur {{quantity}} préparés",
+    "petFed": "Votre familier a profité du surplus de nourriture.",
+    "savedMaterial": "Matériau économisé : {{material}}.",
+    "bonusOutput": "Une production bonus a été obtenue.",
+    "xpGained": "Expérience de cuisine gagnée",
+    "levelUp": "Cuisine niveau {{level}} · {{grade}}",
+    "discovered": "Recette découverte : {{recipe}} · niveau {{level}}",
+    "errors": {"craftUnavailable": "La recette ou ses ingrédients ont changé. La liste a été actualisée.", "inventoryFull": "Votre inventaire ne peut pas recevoir cette préparation.", "guildRequired": "Cette recette nécessite une guilde.", "guildStorageFull": "La réserve de nourriture de votre guilde est pleine."}
+  },
+  "homeChest": {
+    "title": "Coffre de la maison",
+    "views": {"equipment": "Équipement", "plants": "Plantes"},
+    "chest": "Dans le coffre",
+    "inventory": "Dans l'inventaire",
+    "slot": "Emplacement {{slot}}",
+    "emptyChest": "Le coffre ne contient aucun équipement.",
+    "emptyInventory": "Aucun équipement à déposer.",
+    "noStoredPlants": "Aucune plante dans le coffre.",
+    "capacity": "Capacités",
+    "capacities": "Coffre : {{chest}} · Réserve : {{inventory}}",
+    "plantCapacity_one": "Capacité par plante : {{count}}",
+    "plantCapacity_other": "Capacité par plante : {{count}}",
+    "swapWith": "Échanger avec",
+    "unavailable": "Vous ne disposez pas d'un coffre accessible.",
+    "actions": {"deposit": "Déposer", "withdraw": "Retirer", "swap": "Échanger", "plantDeposit": "Déposer une plante", "plantWithdraw": "Retirer une plante"},
+    "done": {"deposit": "Équipement déposé dans le coffre.", "withdraw": "Équipement retiré du coffre.", "swap": "Équipements échangés.", "plantDeposit": "Plante déposée dans le coffre.", "plantWithdraw": "Plante retirée du coffre."},
+    "errors": {"invalid": "Ce déplacement n'est plus disponible. Actualisez le coffre puis réessayez.", "chestFull": "Le coffre est plein dans cette catégorie.", "inventoryFull": "Votre inventaire est plein dans cette catégorie.", "storageFull": "Le stockage de cette plante est plein.", "noEmptySlot": "Vous n'avez pas d'emplacement libre pour cette plante.", "notFound": "Cette plante n'est plus disponible."}
+  },
+  "common": {
+    "loading": "Chargement",
+    "error": "Les informations n'ont pas pu être récupérées",
+    "retry": "Réessayer",
+    "back": "Retour",
+    "yes": "Oui",
+    "no": "Non",
+    "connectionError": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
+    "reconnect": "Se reconnecter",
+    "assetsUpdateError": "Les ressources de l'application n'ont pas pu être mises à jour. Vérifiez votre connexion puis réessayez.",
+    "assetsUpdating": "Mise à jour de l'application…"
+  },
+  "auth": {
+    "caption": "Crownicles",
+    "title": "Le royaume vous attend",
+    "withDiscord": "Continuer avec Discord",
+    "withAccount": "Utiliser un compte Crownicles",
+    "createAccount": "Créer un compte",
+    "connecting": "Connexion en cours",
+    "sessionExpired": "Votre session a expiré. Reconnectez-vous pour reprendre votre aventure.",
+    "loginFailed": "Connexion impossible",
+    "failures": {
+      "denied": "L'autorisation a été refusée. Acceptez de partager votre identité pour rejoindre le royaume.",
+      "unreachable": "Le royaume est injoignable. Vérifiez votre connexion, puis réessayez.",
+      "invalidToken": "La réponse reçue est inexploitable. Réessayez dans un instant.",
+      "unknown": "La connexion n'a pas abouti. Réessayez dans un instant."
+    }
+  },
+  "register": {
+    "caption": "Crownicles",
+    "title": "Créer un compte",
+    "subtitle": "Votre adresse permet de retrouver votre compte si le mot de passe vous échappe.",
+    "fields": {
+      "username": "Nom d'aventurier",
+      "email": "Adresse email",
+      "password": "Mot de passe ({{minimum}} caractères au minimum)"
+    },
+    "requirements": {
+      "invalid": "Il manque un nom, une adresse valide ou un mot de passe d'au moins {{minimum}} caractères.",
+      "taken": "Les noms commençant par « discord- » appartiennent aux comptes créés depuis Discord."
+    },
+    "submit": "Créer mon compte",
+    "pending": "Création en cours",
+    "back": "Revenir à la connexion",
+    "failed": "Création impossible",
+    "failures": {
+      "invalid": "Les informations transmises ont été refusées. Vérifiez l'adresse et le mot de passe.",
+      "taken": "Ce nom d'aventurier est déjà porté. Choisissez-en un autre.",
+      "mailUnavailable": "L'email de vérification n'a pas pu partir, le compte n'a donc pas été créé. Réessayez dans quelques minutes.",
+      "closed": "Les inscriptions sont fermées pour le moment.",
+      "unreachable": "Le royaume est injoignable. Vérifiez votre connexion, puis réessayez.",
+      "unknown": "La création n'a pas abouti. Réessayez dans un instant."
+    },
+    "sent": {
+      "title": "Un email vous attend",
+      "body": "Le lien envoyé à {{email}} active votre compte. Une fois ouvert, la connexion devient possible.",
+      "back": "Revenir à la connexion"
+    }
+  },
+  "requirements": {
+    "guildRole": "Cette action nécessite le rôle {{role}} dans la guilde.",
+    "guild": "Vous devez appartenir à une guilde pour effectuer cette action.",
+    "oracle": "Vous devez d'abord rencontrer l'Oracle pendant vos voyages.",
+    "level": "Cette action est disponible à partir du niveau {{level}}.",
+    "location": "Cette action n'est pas disponible à votre position actuelle.",
+    "effect": "{{effect}} Temps restant : {{duration}}."
+  },
+  "inventory": {
+    "views": {"equipped": "Équipement", "reserve": "Réserve", "materials": "Matériaux", "plants": "Plantes"},
+    "actions": {"equip": "Équiper", "deposit": "Ranger", "drink": "Boire", "daily": "Bonus journalier", "sell": "Vendre", "discard": "Jeter", "confirm": "Confirmer"},
+    "itemSummary": "{{rarity}} · {{details}}",
+    "level": "Niveau {{level}}",
+    "enchantment": "Enchantement",
+    "noMaterials": "Vous ne transportez aucun matériau.",
+    "noPlants": "Vous ne transportez aucune plante ni graine.",
+    "seed": "Graine",
+    "plantSlot": "Emplacement {{slot}}",
+    "owned": "Obtenu",
+    "absent": "Absent",
+    "artifacts": {"title": "Artefacts", "expedition": "Talisman d'ancrage", "clone": "Talisman de clonage", "harvest": "Cœur sylvestre"}
+  },
+  "inventoryActions": {
+    "gain": "+{{amount}}",
+    "noPotion": "Vous ne possédez aucune potion utilisable hors combat.",
+    "drinkTitle": "Boire une potion",
+    "drunk": "Potion consommée"
+  },
+  "dailyBonus": {
+    "title": "Bonus journalier",
+    "claim": "Activer le bonus journalier",
+    "received": "Bonus journalier activé",
+    "noObject": "Vous ne possédez aucun objet à effet journalier.",
+    "cooldown": "Bonus déjà utilisé",
+    "availableIn": "Le prochain bonus sera disponible dans {{time}}.",
+    "locked": "Bonus journalier déjà utilisé : de nouveau disponible dans {{time}}."
+  },
+  "sale": {
+    "eyebrow": "Inventaire · réserve",
+    "title": "Vendre un équipement",
+    "noItems": "Votre réserve ne contient aucun objet à vendre ou à jeter.",
+    "itemSlot": "{{category}} · réserve {{slot}}",
+    "discard": "Jeter",
+    "confirmSell": "Vendre cet objet ?",
+    "confirmDiscard": "Jeter cet objet ?"
+  },
+  "equipment": {
+    "eyebrow": "Inventaire",
+    "title": "Gestion de l'équipement",
+    "equipped": "Porté",
+    "worn": "Équipement porté",
+    "reserve": "Réserve",
+    "slot": "Réserve {{slot}}",
+    "stats": {
+      "attack": "Attaque",
+      "defense": "Défense",
+      "speed": "Vitesse",
+      "effect": "Effet",
+      "change": "{{value}} ({{difference}})"
+    },
+    "noEquippedItem": "Aucun objet porté dans cette catégorie.",
+    "emptyReserve": "Aucun objet en réserve.",
+    "capacity": "Réserve : {{count}} / {{max}}",
+    "close": "Terminer",
+    "confirm": {
+      "equip": "Équiper cet objet ?",
+      "deposit": "Déposer cet objet ?"
+    },
+    "errors": {
+      "invalid": "Cet objet n'est plus disponible. Fermez ce menu puis réessayez.",
+      "noItem": "Aucun objet à déposer.",
+      "reserveFull": "La réserve est pleine."
+    }
+  },
+  "settings": {
+    "theme": {
+      "label": "Thème",
+      "system": "Système",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "developerMode": "Mode développeur",
+    "coreVersion": "Version du moteur",
+    "ping": "Ping",
+    "logout": "Se déconnecter",
+    "notifications": {
+      "label": "Notifications",
+      "independent": "Ces réglages ne concernent que l'application : ceux de Discord restent inchangés.",
+      "types": {
+        "report": "Suite du voyage"
+      }
+    },
+    "deleteAccount": {
+      "entry": "Supprimer mon compte",
+      "title": "Supprimer mon compte",
+      "warning": "Cette action est définitive et ne peut pas être annulée.",
+      "removed": "Votre compte et vos identifiants sont supprimés. Vous ne pourrez plus vous connecter, ni depuis l'application, ni depuis Discord.",
+      "kept": "Votre personnage reste visible dans les classements sous un nom anonyme. Les noms que vous avez choisis pour vos familiers et pour votre guilde sont conservés.",
+      "requestStep": "Étape 1 : demander la suppression",
+      "requestExplanation": "Votre demande est transmise à l'équipe, qui vérifie qu'elle vient bien de vous. Un code de confirmation vous est ensuite envoyé à l'adresse rattachée à votre compte.",
+      "ask": "Demander la suppression",
+      "requested": "Votre demande est enregistrée. Le code de confirmation vous parviendra par courrier électronique.",
+      "requestError": "La demande n'a pas pu être transmise. Réessayez dans un instant.",
+      "confirmStep": "Étape 2 : confirmer avec le code",
+      "confirmExplanation": "Une fois le code reçu, saisissez-le ci-dessous pour effacer définitivement votre compte.",
+      "codeLabel": "Code de confirmation",
+      "confirm": "Supprimer définitivement mon compte",
+      "codeError": "Ce code n'est pas valide. Vérifiez-le, ou demandez-en un nouveau."
+    }
+  },
+  "navigation": {
+    "classInfo": "Informations de classe",
+    "featureNotAvailable": "Cette fonctionnalité sera disponible prochainement."
+  },
+  "vitals": {
+    "health": "Vie",
+    "energy": "Énergie"
+  },
+  "collector": {
+    "accept": "Confirmer",
+    "refuse": "Annuler",
+    "unknownChoice": "Choix indisponible dans cette version",
+    "pending": "Une action est en attente",
+    "answering": "Votre choix est envoyé…",
+    "timeLeft": "{{seconds}} s",
+    "expired": "Le temps imparti est écoulé",
+    "titles": {
+      "drink": "Quelle potion boire ?",
+      "bigEvent": "Événement en cours",
+      "altar": "L'autel des bénédictions",
+      "badPet": "Un familier en colère",
+      "cart": "Une charrette sur la route",
+      "fightPet": "Un familier sauvage",
+      "gardener": "Le jardinier",
+      "gobletsGame": "Le jeu des gobelets",
+      "interactOtherPlayers": "Un autre aventurier",
+      "limoges": "Le conteur de Limoges",
+      "lottery": "La loterie",
+      "petFood": "Une trouvaille pour le familier",
+      "shopSmallEvent": "Un marchand ambulant",
+      "epicShopSmallEvent": "Aldéric l'antiquaire",
+      "recipeShopSmallEvent": "Une recette à découvrir",
+      "witch": "La sorcière",
+      "itemChoice": "Choisir dans l'inventaire",
+      "itemAccept": "Gérer l'objet reçu",
+      "destination": "Où souhaitez-vous aller ?",
+      "city": "Ville",
+      "unknown": "Une action est en attente"
+    },
+    "descriptions": {
+      "unknownItem": "cet objet",
+      "destination": "Choisissez la prochaine étape de votre aventure.",
+      "unknownDuration": "durée inconnue"
+    },
+    "shop": {
+      "refuse": "Passer son chemin",
+      "fields": {
+        "rarity": "Rareté",
+        "level": "Niveau",
+        "price": "Prix"
+      }
+    },
+    "item": {
+      "replaceWith": "Remplacer par {{item}}",
+      "sellFound": "Vendre l'objet trouvé",
+      "throwFound": "Jeter la potion trouvée"
+    },
+    "choices": {
+      "altarContribute": "Offrir {{amount}} {emote:unitValues.money}",
+      "drinkPotion": "Boire la potion trouvée",
+      "lotteryEasy": "Petite récompense",
+      "lotteryMedium": "Récompense moyenne",
+      "lotteryHard": "Grande récompense",
+      "destination": "{{destination}} ({{duration}})",
+      "stayInCity": "Rester en ville"
+    },
+    "pveIsland": {
+      "title": "Cap sur l'île mystérieuse",
+      "embark": "Embarquer",
+      "continueJourney": "Continuer mon voyage"
+    },
+    "cart": {
+      "accept": "Monter dans la charrette",
+      "refuse": "Continuer à pied"
+    }
+  },
+  "tabs": {
+    "arena": "Arène",
+    "guild": "Guilde",
+    "adventure": "Aventure",
+    "profile": "Profil",
+    "pet": "Familier"
+  },
+  "adventure": {
+    "continueReport": "Continuer l'aventure",
+    "pveFight": {
+      "title": "Combat contre le boss",
+      "start": "Commencer le combat",
+      "wait": "Attendre un peu",
+      "stats": {
+        "energy": "Énergie",
+        "attack": "Attaque",
+        "defense": "Défense",
+        "speed": "Vitesse"
+      }
+    },
+    "eyebrow": "Votre aventure",
+    "cityTitle": "Arrivée en ville",
+    "citySubtitle": "Position actuelle : {{location}}",
+    "travel": {
+      "eyebrow": "Rapport · en voyage",
+      "title": "Tout se passe bien dans votre aventure",
+      "titleWithLastEvent": "Tout se passe bien depuis votre dernière aventure {{smallEvent}}",
+      "heading": "En route vers {{destination}}",
+      "arrivedEyebrow": "Rapport · arrivée",
+      "arrivedTitle": "Vous êtes arrivé à destination",
+      "arrivedSubtitle": "{{destination}} est en vue : continuez l'aventure pour découvrir ce qui vous y attend."
+    },
+    "notReady": "Le prochain rapport sera disponible dans {{time}}.",
+    "alteration": {
+      "eyebrow": "Rapport · altération",
+      "title": "Altération d'état",
+      "description": "Cette altération vous affecte encore pendant {{time}}.",
+      "fields": {
+        "timeRemaining": "Temps restant",
+        "price": "Prix du soin"
+      }
+    },
+    "smallEvent": {
+      "eyebrow": "Rapport · mini-événement",
+      "continue": "Continuer"
+    },
+    "event": {
+      "eyebrow": "Votre aventure",
+      "continue": "Poursuivre l'aventure",
+      "fields": {
+        "points": "Points",
+        "money": "Argent",
+        "health": "Santé",
+        "energy": "Énergie",
+        "gems": "Gemmes",
+        "tokens": "Jetons",
+        "experience": "Expérience",
+        "timeLost": "Temps perdu"
+      }
+    },
+    "destination": {
+      "eyebrow": "Rapport · destination"
+    },
+    "lottery": {
+      "rewards": {
+        "money": "Argent gagné",
+        "xp": "Expérience gagnée",
+        "points": "Points gagnés",
+        "guildXp": "Expérience de guilde gagnée"
+      },
+      "fields": {
+        "moneyLost": "Argent perdu"
+      }
+    },
+    "witch": {
+      "fields": {
+        "effect": "Altération",
+        "recipe": "Recette découverte"
+      }
+    },
+    "choiceResults": {
+      "fields": {
+        "pool": "Cagnotte de l'autel",
+        "contribution": "Offrande",
+        "gems": "Gemmes reçues",
+        "blessing": "Bénédiction déclenchée",
+        "bonusItem": "Objet bonus obtenu",
+        "badge": "Badge de l'Oracle obtenu",
+        "plant": "Plante",
+        "material": "Matériau",
+        "cost": "Prix payé",
+        "health": "Vie perdue",
+        "money": "Argent perdu",
+        "affection": "Affection",
+        "recipe": "Recette apprise"
+      }
+    },
+    "automaticResults": {
+      "description": "Cet événement a modifié la suite de votre aventure.",
+      "fields": {
+        "timeGained": "Temps gagné"
+      }
+    },
+    "tokens": {
+      "continue": "Continuer",
+      "away": {
+        "eyebrow": "Marchand de jetons",
+        "title": "Vous avez raflé tout son stock !",
+        "description": "Le marchand ne peut plus rien vous céder pour l'instant. Il repart remplir ses sacoches, le sourire aux lèvres : vos routes se recroiseront bientôt.",
+        "meanwhile": "En attendant",
+        "dailyGift": "De nouveaux jetons vous sont offerts chaque jour.",
+        "expeditions": "Les expéditions de votre familier en rapportent aussi.",
+        "continue": "Reprendre la route"
+      },
+      "fields": {
+        "costMoney": "Coût total",
+        "remainingMoney": "Argent restant",
+        "received": "Jetons reçus"
+      },
+      "use": {
+        "title": "Atteindre le prochain arrêt ?",
+        "description_one": "Vous atteindrez immédiatement le prochain arrêt pour {{count}} jeton.",
+        "description_other": "Vous atteindrez immédiatement le prochain arrêt pour {{count}} jetons.",
+        "confirm": "Avancer",
+        "cancel": "Annuler"
+      },
+      "merchant": {
+        "eyebrow": "Rapport · marchand de jetons",
+        "title": "{emote:unitValues.token} Le marchand de jetons",
+        "description": "Les jetons permettent d'avancer jusqu'au prochain arrêt. Le marchand vous propose les lots actuellement accessibles.",
+        "buyOne": "Acheter {{amount}} jeton — {{price}} {emote:unitValues.money}",
+        "buyMany": "Acheter {{amount}} jetons — {{price}} {emote:unitValues.money}",
+        "confirm": "Confirmer l'achat"
+      }
+    },
+    "heal": {
+      "use": {
+        "eyebrow": "Rapport · soin",
+        "title": "Acheter un soin",
+        "description": "Retirez votre altération pour {{price}} pièces. Votre solde actuel est de {{money}} pièces.",
+        "confirm": "Payer {{price}} pièces",
+        "cancel": "Renoncer"
+      },
+      "fields": {
+        "cost": "Prix du soin",
+        "balance": "Votre argent"
+      },
+      "continue": "Continuer"
+    },
+    "fields": {
+      "timeRemaining": "Temps restant",
+      "nextStop": "Prochain arrêt",
+      "points": "Points récoltés"
+    },
+    "duration": {
+      "hoursMinutes": "{{hours}} h {{minutes}}", "hours": "{{count}} h",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "seconds_one": "{{count}} seconde",
+      "seconds_other": "{{count}} secondes"
+    },
+    "now": "Maintenant",
+    "quick": {
+      "advanceWithCost_one": "Avancer · {{count}} jeton",
+      "advanceWithCost_other": "Avancer · {{count}} jetons",
+      "getTokens": "Obtenir des jetons",
+      "healWithCost": "Se soigner · {{price}}",
+      "healNotEnough": "Il vous faut {{price}} pour acheter ce soin."
+    },
+    "onTheRoad": "Progression sur la route",
+    "unknownLocation": "Lieu inconnu",
+    "empty": "Aucun rapport de voyage disponible",
+    "ownJournal": "Votre journal"
+  },
+  "city": {
+    "staleAction": "La situation a changé. Les actions de la ville ont été actualisées.",
+    "titles": {
+      "eyebrow": "Vous êtes en ville",
+      "housing": "Votre logement",
+      "services": "Services",
+      "shops": "Commerces",
+      "guild": "Guilde",
+      "quit": "Quitter",
+      "meals": "Repas",
+      "rooms": "Chambres",
+      "actions": "Actions",
+      "yourHome": "Votre maison",
+      "apartments": "Les logis",
+      "homeServices": "Services chez vous",
+      "garden": "Jardin",
+      "equipment": "Améliorer un équipement",
+      "disenchant": "Désenchanter",
+      "recycling": "Équipements recyclables",
+      "eligibleEquipment": "Vos équipements éligibles"
+    },
+    "subtitles": {
+      "homeScreen": "Un havre de paix pour préparer vos prochaines aventures",
+      "bed": "Récupérez votre vie gratuitement dans votre lit",
+      "chest": "Stocker vos équipements et vos plantes",
+      "garden": "Cultiver, arroser et récolter vos plantes",
+      "upgradeStation": "Améliorer vos équipements avec les ressources de la maison",
+      "cookingScreen": "Préparer des recettes et gérer vos fourneaux",
+      "cooking": "Fourneau de niveau {{level}}",
+      "homeDetails": "Maison de niveau {{level}} · {{services}}",
+      "mealDetails": "Énergie +{{energy}} {emote:unitValues.energy}",
+      "roomDetails": "Vie +{{health}} {emote:unitValues.health}",
+      "notary": "Acheter, améliorer ou déplacer un logement",
+      "noActions": "Aucune action disponible pour le moment.",
+      "upgradeDetails": "Niveau {{from}} → {{to}} · {{materials}}{{missingMaterials}}",
+      "disenchantDetails": "{{enchantment}} · retirer l'enchantement",
+      "recycleDetails": "Rend {{materials}}"
+    },
+    "enchantmentCatalog": {
+      "title": "Catalogue des enchantements",
+      "attack": "Attaque I à III",
+      "attackDetails": "Jusqu'à +10 % de dégâts · armes",
+      "pvpPveAttack": "Attaque PvP et PvE I à III",
+      "pvpPveAttackDetails": "Jusqu'à +12 % contre joueurs ou monstres · armes",
+      "defense": "Défense I à III",
+      "defenseDetails": "Jusqu'à −8,3 % de dégâts reçus · armures",
+      "speed": "Vitesse I à III",
+      "speedDetails": "Jusqu'à +20 % de vitesse · armures",
+      "energy": "Énergie max I à III",
+      "energyDetails": "Jusqu'à +9 % d'énergie · armures",
+      "breath": "Souffle de base I à II et souffle max",
+      "breathDetails": "+2 au souffle initial, +3 au souffle maximal",
+      "elemental": "Aspect de feu, de givre ou de venin",
+      "elementalDetails": "+20 % de dégâts d'altération et +25 % de résistance"
+    },
+    "garden": {
+      "plot": "Parcelle {{slot}}",
+      "plotPlant": "Parcelle {{slot}} · {{plant}}",
+      "empty": "Libre · une graine peut y être plantée",
+      "ready": "Prête à récolter",
+      "growing": "Croissance · {{progress}} %"
+    },
+    "labels": {
+      "home": "Votre maison",
+      "apartment": "Votre logis",
+      "bed": "Le lit",
+      "manageHome": "Gérer la maison",
+      "chest": "Le coffre",
+      "cooking": "La cuisine",
+      "garden": "Le jardin",
+      "upgradeStation": "L'établi d'équipement",
+      "enchanter": "L'enchanteur",
+      "blacksmith": "Le forgeron",
+      "scrapDealer": "Le ferrailleur",
+      "royalBlacksmith": "Le forgeron royal",
+      "guildDomain": "Domaine de guilde",
+      "inn": "{{name}}"
+    },
+    "summary": {
+      "energy": "Énergie",
+      "health": "Vie",
+      "level": "Niveau actuel",
+      "homeType": "Type de logement",
+      "apartment": "Logis",
+      "mainHome": "Maison principale",
+      "cooking": "Cuisine",
+      "cookingSlots": "Emplacements de cuisine",
+      "bedRegeneration": "Régénération du lit",
+      "gardenPlots": "Parcelles du jardin",
+      "upgradeableItems": "Équipements améliorables",
+      "services": "Services disponibles",
+      "bed": "lit",
+      "chest": "coffre",
+      "garden": "jardin",
+      "forge": "forge",
+      "storedItems": "Objets dans le coffre",
+      "depositableItems": "Objets de la réserve",
+      "apartments": "Logis possédés",
+      "rents": "Rentes",
+      "enchantment": "Enchantement du jour",
+      "compatibleWith": "Compatible avec",
+      "price": "Coût",
+      "missingMaterials": " · matériaux manquants achetés pour {{price}}",
+      "discount": "Réduction mage",
+      "eligibleItems": "Équipements éligibles",
+      "money": "Votre argent",
+      "upgrades": "Améliorations possibles",
+      "disenchantable": "Équipements désenchantables",
+      "recyclableItems": "Équipements recyclables",
+      "status": "État",
+      "playerLevel": "Votre niveau",
+      "gems": "Gemmes",
+      "guild": "Guilde",
+      "guildLevel": "Niveau de guilde",
+      "treasury": "Trésorerie",
+      "buildings": "Bâtiments",
+      "buildingLevels": "Boutique {{shop}} · refuge {{shelter}} · garde-manger {{pantry}} · terrain {{training}}",
+      "foodStock": "Nourriture en stock",
+      "foodStockDetails": "Friandises {{common}} · viande {{carnivorous}} · salade {{herbivorous}} · soupe ultime {{ultimate}}",
+      "domain": "Domaine implanté",
+      "domainCost": "Coût du domaine"
+    },
+    "status": {
+      "not_worthy": "Niveau requis non atteint",
+      "items_too_low": "Aucun équipement éligible",
+      "all_maxed": "Équipements déjà au maximum",
+      "ready": "Amélioration disponible"
+    },
+    "locks": {
+      "missingMoney": "Il vous manque {{amount}}.",
+      "guildTreasury": "La trésorerie de la guilde ne couvre pas les {{amount}} demandés.",
+      "missingMaterials": "Il vous manque des matériaux pour cette amélioration.",
+      "nothingToHarvest": "Aucune plante n'est prête à être récoltée.",
+      "alreadyWatered": "Le jardin a déjà été arrosé récemment.",
+      "nothingToCompost": "Aucune plante à composter.",
+      "noRent": "Aucune rente n'a encore été accumulée.",
+      "unavailable": "Cette action n'est pas disponible pour le moment."
+    },
+    "notes": {
+      "blacksmithMissingMaterials": "Le forgeron peut vendre les matériaux manquants avant l'amélioration.",
+      "blacksmith": "Le forgeron peut améliorer jusqu'au niveau 4 ; le niveau 5 est réservé au forgeron royal.",
+      "scrapDealer": "Le démontage est définitif : seuls les équipements de réserve non enchantés sont acceptés.",
+      "royalBlacksmith": "Le forgeron royal est le seul artisan capable de porter un équipement au niveau 5.",
+      "enchanter": "Mernil change de ville chaque jour et propose un seul enchantement quotidien.",
+      "inn": "Un repas est disponible toutes les 12 h et une chambre toutes les 24 h.",
+      "garden": "L'arrosage est possible toutes les 12 heures. Le jardin à distance permet seulement la récolte.",
+      "notary": "Chaque ville applique son propre coefficient de prix pour les logements.",
+      "guildDomain": "Le domaine regroupe la boutique, le refuge, l'entrepôt et la ménagerie de votre guilde.",
+      "chest": "Le coffre est consultable ici ; les dépôts et retraits utilisent le flux dédié.",
+      "cooking": "Le niveau du fourneau est synchronisé ; les recettes en cours apparaîtront dans le flux cuisine."
+    },
+    "reactions": {
+      "enchant": "Aller voir l'enchanteur",
+      "buyHome": "Acheter une maison",
+      "upgradeHome": "Améliorer la maison",
+      "moveHome": "Déménager la maison",
+      "home": "Rentrer chez vous",
+      "bed": "Se reposer chez vous",
+      "upgradeItem": "Améliorer l'équipement",
+      "blacksmith": "Aller chez le forgeron",
+      "blacksmithUpgrade": "Améliorer un équipement",
+      "disenchant": "Désenchanter un équipement",
+      "scrapDealer": "Aller chez le ferrailleur",
+      "recycle": "Recycler un équipement",
+      "royalBlacksmith": "Aller chez le forgeron royal",
+      "royalBlacksmithUpgrade": "Améliorer un équipement au niveau 5",
+      "gardenHarvest": "Récolter le jardin",
+      "gardenWater": "Arroser le jardin",
+      "gardenCompost": "Composter des plantes ({{quantity}})",
+      "guildDomain": "Visiter le domaine de guilde",
+      "guildNotary": "Consulter le notaire de guilde",
+      "apartmentBuy": "Acheter le logis",
+      "claimRent": "Percevoir la rente"
+    },
+    "actions": {
+      "home": "Aller chez vous",
+      "notary": "Voir le notaire",
+      "back": "Retour",
+      "close": "Fermer"
+    },
+    "shop": {
+      "title": "Boutique",
+      "description": "Choisissez un article. Le prix et la quantité sont affichés avant confirmation.",
+      "item": "Acheter {{amount}} × {{item}} pour {{price}}",
+      "dailyPotion": "Potion du jour",
+      "buyItem": "Acheter {{item}}",
+      "close": "Fermer la boutique",
+      "slotsLeft": "Encore {{count}} emplacement disponible sur {{limit}}",
+      "slotsLeft_other": "Encore {{count}} emplacements disponibles sur {{limit}}",
+      "result": {
+        "eyebrow": "Au comptoir",
+        "done": "Transaction réussie",
+        "refused": "Transaction refusée"
+      }
+    },
+    "checkup": {
+      "eyebrow": "Consultation du vétérinaire",
+      "noPet": "Aucun familier à ausculter",
+      "noPetDescription": "Le vétérinaire referme sa trousse : vous n'avez aucun compagnon à lui présenter.",
+      "continue": "Continuer"
+    }
+  },
+  "pet": {
+    "name": "{{icon}} {{name}}",
+    "management": {
+      "title": "Gestion du familier",
+      "transfer": "Transférer",
+      "free": "Libérer un familier",
+      "shelter": "Refuge de la guilde",
+      "emptyShelter": "Le refuge n'accueille aucun familier.",
+      "boardersTitle": "Pensionnaires",
+      "shelterFull": "Le refuge est complet.",
+      "noOwnPet": "Vous n'avez aucun familier",
+      "boarders": "{{count}} pensionnaire au refuge",
+      "boarders_other": "{{count}} pensionnaires au refuge",
+      "transferHint": "Un familier déposé au refuge reste accessible à toute la guilde.",
+      "confirmTransfer": "Confirmer ce transfert",
+      "irreversible": "Cette libération est définitive. Le familier ne pourra pas être récupéré.",
+      "origin": "Provenance",
+      "ownPet": "Votre familier",
+      "deposit": "Déposer {{pet}} au refuge",
+      "withdraw": "Adopter {{pet}}",
+      "switch": "Échanger avec {{pet}}",
+      "deposited": "Familier déposé",
+      "withdrawn": "Nouveau compagnon",
+      "freed": "{{pet}} a retrouvé sa liberté.",
+      "freedShelter": "{{pet}} a quitté définitivement le refuge.",
+      "meat": "De la viande a été ajoutée à l'entrepôt de la guilde.",
+      "cooldown": "Une nouvelle libération sera possible dans {{duration}}.",
+      "missingMoney": "Il vous manque {{money}} pour cette libération.",
+      "available": "Votre familier peut être libéré.",
+      "outcomes": {"transfer": "Transfert terminé", "freed": "Familier libéré", "freeStatus": "Libération indisponible", "error": "Action interrompue", "sold": "Vente terminée", "salePrice": "Prix invalide", "saleFunds": "Fonds insuffisants"},
+      "errors": {"busy": "Un autre membre utilise déjà le refuge.", "cancelled": "L'action a été annulée.", "changed": "La situation du familier ou d'un participant a changé. Veuillez réessayer.", "noPet": "Aucun familier n'est disponible pour cette action.", "feisty": "Cette action est impossible avec un familier fielleux.", "expedition": "Ce familier est actuellement en expédition.", "noGuild": "Il faut appartenir à une guilde pour vendre un familier.", "self": "Vous ne pouvez pas acheter votre propre familier.", "sameGuild": "L'acheteur appartient à la même guilde que le vendeur.", "hasPet": "L'acheteur possède déjà un familier.", "ownerOnly": "Seul le vendeur peut annuler cette offre.", "noBuyer": "Aucun acheteur n'a pu répondre à cette offre."}
+    },
+    "powers": {"expedition": "Un familier en expédition ne participe pas aux combats."},
+    "sale": {
+      "title": "Vendre le familier",
+      "offerTitle": "Vente de familier",
+      "rank": "Classement de l'acheteur",
+      "price": "Prix de vente",
+      "offer": "Proposer la vente",
+      "seller": "Vendeur",
+      "buyer": "Acheteur",
+      "waiting": "La réponse de l'acheteur est attendue.",
+      "buy": "Acheter le familier",
+      "cancel": "Annuler la vente",
+      "refuse": "Refuser l'offre",
+      "badPrice": "Le prix doit être compris entre {{min}} et {{max}}.",
+      "missingMoney": "Il manque {{money}} à l'acheteur.",
+      "sold": "La vente de {{pet}} est terminée.",
+      "treasury": "Trésorerie de {{guild}}"
+    },
+    "care": {
+      "caress": "Caresser",
+      "feed": "Nourrir",
+      "rename": "Renommer",
+      "feedPet": "Nourrir {{pet}}",
+      "notHungryUntil": "{{pet}} n'a pas encore faim, son prochain repas sera possible le {{date}}.",
+      "price": "Prix",
+      "enough": "{{pet}} en a assez des câlins et s'éloigne un instant.",
+      "newNickname": "Nouveau surnom",
+      "save": "Enregistrer",
+      "clear": "Effacer le surnom",
+      "invalidNickname": "Ce surnom n'est pas valide. Il doit contenir des lettres et ne pas utiliser de caractères spéciaux ni d'espaces répétés.",
+      "renamed": "Votre familier se nomme désormais {{nickname}}.",
+      "cleared": "Le surnom de votre familier a été effacé."
+    },
+    "feed": {
+      "food": "{{food}} · Entrepôt : {{amount}} / {{max}}",
+      "storage": "Entrepôt de la guilde : {{amount}} / {{max}}",
+      "unavailable": "Nourrissage interrompu",
+      "continue": "Revenir à mon familier",
+      "errors": {
+        "expedition": "Votre familier est actuellement en expédition.",
+        "emptyStorage": "Cette nourriture n'est plus disponible dans l'entrepôt de la guilde."
+      }
+    },
+    "eyebrow": "Votre familier",
+    "noPet": "Aucun familier ne vous accompagne pour le moment",
+    "fields": {
+      "nickname": "Surnom"
+    }
+  },
+  "map": {"title": "Carte", "image": "Carte du monde et position du personnage", "expand": "Agrandir la carte", "expandHint": "Touchez la carte pour l'ouvrir, puis pincez pour zoomer.", "imageError": "La carte n'a pas pu être chargée.", "position": "Position", "destination": "Destination"},
+  "death": {
+    "eyebrow": "Aventure interrompue",
+    "description": "Vous pouvez revivre pour pouvoir continuer à jouer et reprendre l'aventure après ce petit… accident.",
+    "comeback": "En revivant",
+    "scoreLossCaption": "Score retiré durant l'opération",
+    "health": "Vos points de vie sont entièrement restaurés.",
+    "journey": "Votre voyage repart de votre dernière étape."
+  },
+  "welcome": {
+    "eyebrow": "Nouvelle aventure",
+    "title": "Bienvenue sur Crownicles",
+    "description": "Votre personnage part à l'aventure et voyage de ville en ville. Sur la route l'attendent rencontres, trésors et dangers, qui le rendent plus fort au fil du temps.",
+    "rhythm": "Le voyage continue même application fermée : revenez régulièrement faire votre rapport pour découvrir ce qui s'est passé.",
+    "road": "La route qui mène du village au château",
+    "depart": "Partir à l'aventure"
+  },
+  "journey": {
+    "title": "Votre parcours",
+    "nextStep": "Prochaine étape · {{value}}/{{max}}",
+    "unlocked": "Nouveau",
+    "unlockedAtLevel": "Niveau {{level}} atteint",
+    "discover": "Découvrir",
+    "later": "Plus tard",
+    "features": {
+      "profile": {
+        "title": "Votre personnage",
+        "unlocked": "Inventaire, missions et statistiques : tout ce que vous portez et accomplissez vous attend désormais dans ce nouvel onglet."
+      },
+      "classes": {
+        "title": "Les classes",
+        "unlocked": "Chaque classe façonne votre manière de combattre. Choisissez celle qui vous ressemble."
+      },
+      "fights": {
+        "title": "L'arène",
+        "unlocked": "Défiez d'autres aventuriers, gagnez de la gloire et gravissez les ligues. Votre première victoire vous attend."
+      },
+      "guild": {
+        "title": "Les guildes",
+        "unlocked": "Rejoignez une guilde ou fondez la vôtre : ensemble, vous bâtirez un domaine et relèverez des défis chaque jour."
+      },
+      "pet": {
+        "title": "Votre familier",
+        "unlocked": "Un compagnon peut désormais partager votre aventure : prenez-en soin, il combat à vos côtés et part en expédition."
+      }
+    }
+  },
+  "utilities": {
+    "title": "Services au joueur",
+    "unlock": "Libérer un joueur", "prisoner": "Joueur à libérer", "prisonerRank": "Classement du joueur à libérer",
+    "boat": "Rejoindre le bateau", "respawn": "Revivre", "respawnWarning": "Une partie de votre score est retirée durant l'opération.",
+    "result": "Résultat de l'action", "moneyError": "Votre solde de {{money}} ne suffit pas pour payer cette caution.",
+    "respawned": "Vous avez été ressuscité avec succès ! Cependant, {{lostScore}} points ont été retirés de votre score durant l'opération.", "boatJoined": "Vous avez rejoint le bateau. Votre trajet a rapporté {{score}} points.", "unlocked": "{{name}} a été libéré.",
+    "errors": {"alreadyAlive": "Votre personnage est déjà en vie.", "noPlayer": "Ce joueur n'a pas été trouvé.", "notJailed": "Ce joueur n'est pas en prison.", "self": "Vous ne pouvez pas payer votre propre caution.", "cancelled": "L'action a été annulée.", "noGuild": "Vous devez appartenir à une guilde.", "tooManyRuns": "Vous avez atteint la limite de voyages vers l'île cette semaine.", "noMemberOnBoat": "Aucun membre de votre guilde n'est disponible sur un bateau.", "notTravelling": "Vous devez être en voyage pour rejoindre un bateau.", "noEnergy": "Votre énergie est insuffisante.", "noGems": "Vous n'avez pas assez de gemmes pour cette traversée."}
+  },
+  "battle": {
+    "story": {
+      "live": "Fil du combat",
+      "self": "Votre personnage",
+      "opponent": "L'adversaire",
+      "sentence": "**{{fighter}}** {{action}}",
+      "generic": "utilise {{attack}}.",
+      "petAction": "Intervention de {{pet}}",
+      "substitution": "{{selected}} → {{used}}"
+    },
+    "speed": {"label": "Vitesse des animations de combat", "normal": "Normale (1×)", "fast": "Rapide (2×)"},
+    "duel": "Combat · arène", "encounter": "Rencontre · combat", "yourTurn": "Votre tour", "opponentTurn": "Tour adverse", "resolving": "Action en cours", "finished": "Combat terminé",
+    "versus": "VS", "level": "Niv. {{level}}", "shortTurn": "Tour {{turn}}", "seconds": "{{seconds}} s", "availableBreath": "Disponible",
+    "breathRegen_one": "+{{count}} au prochain tour", "breathRegen_other": "+{{count}} au prochain tour",
+    "actions": "Vos actions", "chooseAction": "À vous de jouer", "wait": "En attente", "ready": "Choisissez votre action", "opening": "Le combat commence", "preparing": "Les combattants se préparent…",
+    "unavailable": "Indisponible", "actionDetails": "Détail : {{action}}", "critical": "Critique", "missed": "Manqué", "noEffect": "Sans effet", "showHistory": "Ouvrir le journal", "backToFight": "Retour au combat",
+    "finishedAgainst": "Face à {{opponent}} · {{turns}} tours", "returnToArena": "Retour à l'arène",
+    "monsterReward": {
+      "experience": "Expérience",
+      "guildXp": "Expérience de guilde",
+      "guildPoints": "Points de guilde"
+    }
+  },
+  "arena": {
+    "unknownPlayer": "Joueur inconnu",
+    "pages": {"classes": "Classes", "history": "Historique", "leagues": "Ligues", "rankings": "Classements"},
+    "history": {"empty": "Aucun combat n'est encore enregistré."},
+    "leagues": {"name": "{{icon}} {{name}}", "reward": "Récompense de ligue", "claim": "Réclamer la récompense", "catalog": "Les ligues", "threshold": "Gloire minimale", "seasonMoney": "Argent de fin de saison", "seasonXp": "Expérience de fin de saison", "winMoney": "Argent gagné par combat remporté", "nextClaim": "La récompense pourra être réclamée le {{date}}.", "noPoints": "Aucune gloire n'a été obtenue pendant la saison précédente.", "alreadyClaimed": "La récompense de cette saison a déjà été réclamée."},
+    "rankings": {"title": "Classements", "types": {"Score": "Score", "Glory": "Gloire", "Guild": "Guildes"}, "period": "Période", "timings": {"AllTime": "Général", "Week": "Semaine"}, "positions": "Classement", "yourPlace": "Votre place", "ofTotal": "sur {{total}} classés", "unavailable": "Vous ne pouvez pas figurer dans ce classement pour le moment.", "needFight_one": "Encore un combat avant d'entrer au classement.", "needFight_other": "Encore {{count}} combats avant d'entrer au classement.", "empty": "Ce classement est encore vide.", "page": "Page {{page}} / {{total}}", "pageWithReset": "Page {{page}} / {{total}} · Début", "backToFirst": "Revenir à la première page", "goToMyPage": "Aller à la page où vous êtes classé", "previous": "Précédent", "next": "Suivant", "inactive": "Inactif"},
+    "details": "Statistiques", "eyebrow": "COMBAT", "title": "Arène", "confirm": "Préparer le duel", "start": "Chercher un adversaire", "resume": "Reprendre le combat",
+    "you": "Vous", "opponent": "Adversaire", "energy": "Énergie", "breath": "Souffle", "glory": "Gloire", "league": "Ligue", "pet": "Familier",
+    "turn": "Tour {{turn}} / {{max}}", "turns": "Tours joués", "waiting": "L'adversaire choisit son action…", "action": "Action de combat", "actionBreath": "{{value}} souffle",
+    "log": "Journal du combat", "victory": "Victoire", "defeat": "Défaite", "draw": "Match nul", "gloryChange": "{{before}} → {{after}}", "petLove": "Votre familier gagne {{count}} points d'amour.",
+    "stats": {"attack": "Attaque", "defense": "Défense", "speed": "Vitesse", "breathRegen": "Souffle récupéré"},
+    "effects": {"newAlteration": "Altération"},
+    "errors": {"energy": "Votre énergie est insuffisante pour lancer un duel.", "noOpponent": "Aucun adversaire n'est disponible pour le moment.", "bugged": "Le combat a été interrompu par une erreur. Votre état est en cours de rafraîchissement."}
+  },
+  "guildDomain": {
+    "buildings": "Bâtiments",
+    "foodShopDescription": "Nourriture pour les familiers de {{guild}}",
+    "upgrade": "Améliorer le bâtiment",
+    "cost": "Coût",
+    "requiredLevel": "Niveau de guilde requis",
+    "maxLevel": "Ce bâtiment a atteint son niveau maximal.",
+    "installed": "Le domaine a été installé dans cette ville.",
+    "relocated": "Le domaine a été déplacé dans cette ville.",
+    "missingTreasury": "Il manque {{amount}} à la trésorerie de guilde.",
+    "stock": "Stock",
+    "deposit": "Déposer de l'argent",
+    "depositNet": "{{net}} versés à la guilde",
+    "credited": "Somme versée à la guilde",
+    "reimburse": "Rembourser la guilde",
+    "confirmReimburse": "La guilde a financé cet achat. Un versement de {{amount}} depuis votre solde personnel reconstitue sa trésorerie, sans commission.",
+    "confirmDeposit": "Le dépôt coûte {{amount}}. La guilde reçoit {{net}} après commission.",
+    "confirmUpgrade": "L'amélioration de {{building}} coûte {{cost}} à la trésorerie de guilde.",
+    "confirmFood_one": "L'achat porte sur une unité pour {{cost}}, prélevés sur la trésorerie de guilde.",
+    "confirmFood_other": "L'achat peut atteindre {{count}} unités pour un maximum de {{cost}}, prélevés sur la trésorerie de guilde.",
+    "capacity": "Places au refuge",
+    "production": "+{{count}} par jour",
+    "training": "Les familiers du refuge gagnent {{count}} points d'amour par jour.",
+    "outcomes": {"upgrade": "Bâtiment amélioré", "food": "Nourriture achetée", "deposit": "Dépôt effectué", "error": "Action impossible", "notary": "Domaine de guilde", "treasuryMissing": "Trésorerie insuffisante"},
+    "errors": {
+      "noGuild": "Vous n'appartenez plus à une guilde.", "noDomain": "La guilde n'a pas de domaine.", "notInCity": "Rendez-vous sur le domaine de la guilde pour agir ici.", "noShop": "La boutique n'est pas construite.",
+      "notAuthorized": "Cette action est réservée au chef de guilde.", "invalidBuilding": "Ce bâtiment n'est pas disponible.", "maxLevel": "Le bâtiment a atteint son niveau maximal.",
+      "guildLevelTooLow": "Le niveau de la guilde est insuffisant.", "notEnoughTreasury": "La trésorerie est insuffisante.", "notEnoughMoney": "Votre solde est insuffisant.",
+      "invalidTier": "Ce palier n'est pas disponible.", "invalidAmount": "La quantité demandée n'est pas valide.", "invalidFood": "Cette nourriture n'est pas disponible.",
+      "storageFull": "L'entrepôt est plein pour cette nourriture.", "cannotBuy": "La situation a changé ou cet achat n'est plus disponible."
+    }
+  },
+  "guild": {
+    "invite": "Inviter un joueur",
+    "sendInvitation": "Envoyer l'invitation",
+    "inviteRank": "Classement du joueur",
+    "inviteRankMissing": "Indiquez le classement général du joueur à inviter.",
+    "inviteHint": "Le joueur reçoit une invitation qu'il doit accepter lui-même.",
+    "invitation": "Invitation de guilde",
+    "confirmInvitation": "Vous avez reçu une invitation à rejoindre la guilde {{guild}}.",
+    "confirmMember": "Cette action concerne {{member}}, membre de {{guild}}.",
+    "requiredRoles": {"0": "membre", "1": "aîné", "2": "chef"},
+    "memberControls": {"promote": "Nommer aîné", "demote": "Retirer le rôle d'aîné", "kick": "Exclure le membre"},
+    "memberResults": {
+      "invited": "L'invitation a été envoyée à {{member}}. Sa réponse est attendue.",
+      "joined": "{{member}} a rejoint la guilde.",
+      "refused": "L'invitation de {{member}} a été refusée ou a expiré.",
+      "promoted": "{{member}} a été nommé aîné.",
+      "demoted": "{{member}} n'est plus aîné.",
+      "kicked": "{{member}} a été exclu de la guilde."
+    },
+    "memberErrors": {
+      "notFound": "Ce joueur est introuvable.", "noGuild": "Vous n'appartenez plus à une guilde.",
+      "level": "Ce joueur n'a pas le niveau nécessaire pour rejoindre une guilde.", "full": "La guilde est complète.",
+      "dead": "Ce joueur est actuellement K.O.", "island": "Ce joueur ne peut pas rejoindre une guilde depuis l'île.",
+      "alreadyMember": "Ce joueur appartient déjà à une guilde.", "sameGuild": "Ce joueur ne fait pas partie de votre guilde.",
+      "self": "Cette action ne peut pas vous viser.", "alreadyElder": "Ce membre est déjà aîné.",
+      "noElder": "La guilde n'a pas d'aîné.", "blocked": "Ce joueur a déjà une action en cours."
+    },
+    "description": "Description de la guilde",
+    "identity": "Identité",
+    "yourRole": "Votre rôle : {{role}}",
+    "descriptionUnchanged": "La description n'a pas changé.",
+    "confirmDescription": "Enregistrer cette description ?",
+    "descriptionUpdated": "La description de la guilde a été modifiée.",
+    "descriptionInvalid": "La description doit contenir entre {{min}} et {{max}} caractères et respecter les règles de nommage.",
+    "membership": "Appartenance à la guilde",
+    "leave": "Quitter la guilde",
+    "leaveWarning": "Vous allez quitter la guilde {{name}}.",
+    "dissolveWarning": "Vous êtes le dernier membre de {{name}}. Votre départ supprimera définitivement la guilde.",
+    "left": "Vous avez quitté la guilde {{name}}.",
+    "dissolved": "La guilde {{name}} a été dissoute.",
+    "newChief": "La guilde est désormais dirigée par {{name}}.",
+    "forbidden": "Votre rôle dans la guilde ne permet pas cette action.",
+    "eyebrow": "Guilde",
+    "name": "Nom de la guilde",
+    "noGuild": "Aucune guilde",
+    "joinHint": "Votre personnage n'appartient pas encore à une guilde. Une invitation peut vous permettre d'en rejoindre une.",
+    "create": "Créer une guilde",
+    "confirmCreate": "Créer la guilde {{name}} ?",
+    "created": "La guilde {{name}} a été créée.",
+    "level": "Niveau {{level}}",
+    "maxLevel": "Niveau {{level}} · Maximum atteint",
+    "daily": "Bonus de guilde",
+    "dailyCooldown": "Prochain bonus dans {{duration}}. Délai entre deux bonus : {{total}}.",
+    "members": "Membres",
+    "noMembers": "Cette guilde n'a plus aucun membre.",
+    "you": "Vous",
+    "yourMoney": "Votre argent",
+    "memberRank": "Classement général : {{rank}}",
+    "roles": {"chief": "Chef", "elder": "Aîné", "member": "Membre"},
+    "pages": {"storage": "Entrepôt", "shelter": "Refuge", "manage": "Gestion", "domain": "Domaine"},
+    "domainLocks": {
+      "none": "Votre guilde n'a pas encore de domaine. Son chef peut l'implanter chez un notaire, en ville.",
+      "chiefOnly": "Seul le chef de guilde peut entrer dans le domaine.",
+      "away": "Le domaine se trouve à {{city}}. Il faut s'y rendre pour y entrer.",
+      "awayUnknown": "Il faut se trouver dans la ville du domaine pour y entrer."
+    },
+    "dailyLocks": {
+      "cooldown": "Prochain bonus dans {{duration}}.",
+      "island": "Un membre explore l'île mystérieuse : le bonus reste bloqué jusqu'à son retour."
+    },
+    "island": {"isOnPveIsland": "Sur l'île mystérieuse", "isOnBoat": "Sur le bateau"},
+    "boatLock": "Ce membre attend depuis trop longtemps pour être rejoint.",
+    "errors": {"alreadyMember": "Vous appartenez déjà à une guilde.", "nameTaken": "Ce nom de guilde est déjà utilisé.", "invalidName": "Ce nom de guilde n'est pas valide.", "missingMoney": "Il vous manque {{money}} pour créer cette guilde.", "dailyIsland": "Le bonus de guilde ne peut pas être utilisé depuis l'île."},
+    "rewards": {"money": "Argent", "heal": "Vie restaurée", "personalXp": "Expérience personnelle", "guildXp": "Expérience de guilde", "guildPoints": "Points de guilde", "commonFood": "Friandises", "fullHeal": "Les membres ont été entièrement soignés.", "badge": "Le badge de guilde puissante a été obtenu.", "superBadge": "Le badge de guilde exceptionnelle a été obtenu.", "advanceTime": "Le voyage des membres a avancé de {{duration}}.", "alteration": "Les altérations ont été soignées. Vie restaurée : {{health}}.", "pet": "Un familier a rejoint le refuge : {{pet}}."}
+  },
+  "expedition": {
+    "open": "Expédition",
+    "locationName": "{{icon}} {{name}}",
+    "destination": "Destination",
+    "duration": "Durée",
+    "risk": "Risque",
+    "terrain": "Terrain",
+    "rewards": "Récompenses potentielles",
+    "foodCost": "Rations nécessaires",
+    "foodConsumed": "Rations consommées",
+    "returnAt": "Retour prévu",
+    "remaining": "Temps restant",
+    "start": "Partir",
+    "recall": "Rappeler le familier",
+    "claim": "Récupérer les récompenses",
+    "ready": "Votre familier peut partir en expédition.",
+    "confirmStart": "Confirmer cette expédition ?",
+    "confirmRecall": "Rappeler votre familier ?",
+    "recallWarning": "Le rappel met fin à l'expédition et peut diminuer le moral de votre familier.",
+    "optionSummary_one": "{{duration}} · {{risk}} · {{count}} ration",
+    "optionSummary_other": "{{duration}} · {{risk}} · {{count}} rations",
+    "guildFood": "Rations disponibles dans la guilde : {{amount}}",
+    "noGuildFood": "Sans guilde, votre familier partira sans provisions.",
+    "cloneBonus": "Chance accrue de trouver un talisman de clonage.",
+    "tokenBonus": "Cette expédition peut rapporter des jetons supplémentaires.",
+    "cloneFound": "Talisman de clonage obtenu",
+    "itemFound": "Équipement trouvé",
+    "plannedDuration": "Durée annoncée avant le départ : {{duration}}",
+    "overview": "Votre familier est en expédition. Retour prévu le {{date}}.",
+    "loveChange": "Variation du moral",
+    "loveLost": "Points d'amour perdus : {{amount}}",
+    "freeCancellation": "Cette annulation n'a pas pénalisé le moral du familier.",
+    "liked": "Votre familier a apprécié cette destination.",
+    "badge": "Badge obtenu : {{badge}}",
+    "titles": {"expeditionChoice": "Choisir une expédition", "expeditionProgress": "Expédition en cours", "expeditionFinished": "Expédition terminée"},
+    "outcomes": {"status": "Expédition", "started": "Départ en expédition", "cancelled": "Expédition annulée", "recalled": "Familier rappelé", "resolved": "Résultat de l'expédition", "error": "Expédition indisponible"},
+    "resolved": {"success": "Votre familier a terminé son expédition avec succès.", "partial": "Votre familier revient avec une partie des récompenses.", "failure": "Votre familier revient sans récompense de cette expédition."},
+    "insufficientFood": {"noGuild": "Sans provisions de guilde, les risques de cette expédition sont accrus.", "guildNoFood": "Les provisions de la guilde étaient insuffisantes. Les risques de cette expédition sont accrus."},
+    "errors": {
+      "noPet": "Aucun familier ne peut partir en expédition.",
+      "noExpedition": "Aucune expédition n'est en cours.",
+      "expeditionNotComplete": "Cette expédition n'est pas encore terminée.",
+      "invalidState": "La situation de votre familier a changé. Consultez de nouveau ses expéditions.",
+      "expeditionInProgress": "Votre familier est déjà en expédition.",
+      "noTalisman": "Le talisman d'ancrage est nécessaire pour envoyer votre familier en expédition.",
+      "insufficientLove": "Votre familier ne vous fait pas encore suffisamment confiance pour partir.",
+      "petHungry": "Votre familier doit être nourri avant de partir.",
+      "notOnContinent": "Votre personnage doit être sur le continent pour commencer une expédition.",
+      "cannotRecallOnIsland": "Votre familier ne peut pas être rappelé pendant votre exploration de l'île."
+    }
+  },
+  "missions": {
+    "campaign": "Campagne",
+    "daily": "Mission quotidienne",
+    "side": "Missions secondaires",
+    "progress": "Progression",
+    "completed": "Terminée",
+    "inProgress": "En cours",
+    "campaignCompleted": "Vous avez terminé la campagne.",
+    "empty": "Aucune mission disponible.",
+    "noSideMissions": "Vous n'avez aucune mission secondaire en cours.",
+    "resetsAt": "Renouvellement le {{date}}",
+    "expiresAt": "À terminer avant le {{date}}",
+    "risk": "{{icon}} {{risk}}",
+    "rewards": {
+      "section": "Missions accomplies",
+      "completed_one": "Mission accomplie",
+      "completed_other": "{{count}} missions accomplies",
+      "toast": "Vos gains sont à découvrir dans vos missions.",
+      "waiting_one": "Voir les gains d'une mission accomplie",
+      "waiting_other": "Voir les gains de {{count}} missions accomplies",
+      "claim_one": "Voir les gains de cette mission",
+      "claim_other": "Voir les gains de ces {{count}} missions",
+      "title": "Récompenses obtenues",
+      "none": "Cette mission ne rapportait aucune récompense.",
+      "pet": "Familier",
+      "recipe": "Recette",
+      "nextCampaign": "Prochaine mission de campagne : {{mission}}",
+      "continue": "Continuer",
+      "types": {
+        "campaign": "Mission de campagne",
+        "daily": "Mission quotidienne",
+        "sideMission": "Mission secondaire"
+      }
+    }
+  },
+  "reference": {
+    "empty": "Aucune information disponible.",
+    "percentage": "{{value, number}} %",
+    "guide": "Ouvrir le guide en ligne",
+    "blessing": {
+      "activated": "Bénédiction activée : {{name}}",
+      "contributors": "Contributeurs",
+      "triggeredBy": "Déclenchée par",
+      "topContributor": "Plus gros contributeur",
+      "topAmount": "Contribution",
+      "endsAt": "Fin de la bénédiction",
+      "expiresAt": "Expiration de la cagnotte",
+      "pool": "Cagnotte de l'Oracle"
+    },
+    "badges": {
+      "total": "Badges obtenus : {{count}} / {{total}}",
+      "names": {
+        "top_v1_player": "Meilleur joueur de la première saison",
+        "top_10_v1": "Top 10 de la première saison",
+        "bot_owner": "Créateur de Crownicles",
+        "technical_team": "Équipe technique",
+        "top_glory": "Sommet du classement de gloire",
+        "support": "Équipe de support",
+        "contest": "Concours communautaire",
+        "major_bug_reporter": "Signalement d'un bug majeur",
+        "random": "Distinction surprise",
+        "first_20_members": "Premiers membres",
+        "top_1_before_reset": "Premier avant la remise à zéro",
+        "rich": "Fortune du royaume",
+        "advertiser": "Ambassadeur",
+        "redactor": "Équipe de rédaction",
+        "translator": "Équipe de traduction",
+        "top_week": "Champion de la semaine",
+        "christmas": "Fêtes de fin d'année",
+        "funny": "Humour remarquable",
+        "powerful_guild": "Guilde puissante",
+        "very_powerful_guild": "Guilde exceptionnelle",
+        "tournament_winner": "Vainqueur de tournoi",
+        "early_class_adopter": "Pionnier des classes",
+        "legendary_pet": "Familier légendaire",
+        "mission_completer": "Campagne accomplie",
+        "good_bug_reporter": "Signalements utiles",
+        "animal_lover": "Ami des familiers",
+        "expert_expediteur": "Expert des expéditions",
+        "oracle_patron": "Mécène de l'Oracle",
+        "sentimental_crafter": "Artisan sentimental"
+      }
+    }
+  },
+  "classes": {
+    "name": "{{icon}} {{name}}",
+    "yours": "Votre classe",
+    "change": "Changer de classe",
+    "comparison": "Comparer les classes",
+    "attacks": "Attaques de la classe",
+    "breathCost": "{{cost}} {emote:unitValues.breath}",
+    "tierKind": "Palier {{tier}} · {{kind}}",
+    "current": "Actuelle",
+    "empty": "Aucune classe disponible.",
+    "cancelled": "Changement de classe annulé.",
+    "availableInDays_one": "Disponible dans {{count}} jour",
+    "availableInDays_other": "Disponible dans {{count}} jours",
+    "availableInHours_one": "Disponible dans {{count}} heure",
+    "availableInHours_other": "Disponible dans {{count}} heures",
+    "cooldownAfter": "Après un changement, le prochain sera disponible dans {{duration}}.",
+    "confirm": "Choisir la classe {{name}} ?",
+    "availableAt": "Un nouveau changement sera possible le {{date}}.",
+    "outcomes": {"success": "Classe modifiée", "cooldown": "Changement indisponible"},
+    "kinds": {"basic": "Polyvalente", "attack": "Attaque", "defense": "Défense", "other": "Spécialisée"}
+  },
+  "profile": {
+    "eyebrow": "Profil",
+    "subtitle": "{{className}} · niveau {{level, number}} · {{location}}",
+    "level": "Niveau {{level}}",
+    "titles": {
+      "information": "Informations",
+      "scoreAndRank": "Score et Rang",
+      "statistics": "Statistiques",
+      "missions": "Missions",
+      "unlock": "$t(app:utilities.unlock)",
+      "classes": "Classes",
+      "badges": "Badges",
+      "rarity": "Raretés",
+      "guide": "Guide",
+      "blessing": "Bénédictions",
+      "gloryAndLeague": "Gloire et ligue",
+      "status": "Temps restant",
+      "cooking": "Cuisine",
+      "guild": "Guilde",
+      "destination": "Destination",
+      "pet": "Familier",
+      "inventory": "Inventaire"
+    },
+    "fields": {
+      "health": "Vie",
+      "experience": "Expérience",
+      "money": "Argent",
+      "tokens": "Jetons",
+      "energy": "Énergie",
+      "attack": "Attaque",
+      "defense": "Défense",
+      "speed": "Vitesse",
+      "breath": "Souffle",
+      "breathRegen": "Récupération de souffle",
+      "gems": "Gemmes",
+      "campaign": "Campagne",
+      "rank": "Classement",
+      "score": "Score",
+      "gloryRank": "Classement de gloire",
+      "glory": "Points de gloire",
+      "league": "Ligue",
+      "effect": "État",
+      "cooking": "Grade",
+      "guild": "Guilde",
+      "location": "Position",
+      "pet": "Familier"
+    },
+    "formats": {
+      "number": "{{value, number}}",
+      "progress": "{{value, number}} / {{max, number}}",
+      "percentage": "{{value, number}} %",
+      "rank": "{{rank, number}} / {{players, number}}",
+      "cooking": "Niveau {{level, number}} · {{grade}}"
+    },
+    "values": {
+      "none": "Aucun",
+      "unknown": "Classe inconnue",
+      "unknownLocation": "Lieu inconnu",
+      "unranked": "Non classé"
+    },
+    "inventory": {
+      "empty": "Aucun objet à afficher",
+      "emptySlot": "Emplacement vide"
+    },
+    "notFound": "Profil introuvable"
+  },
+  "notifications": {
+    "channels": {
+      "report": "Rapports de voyage"
+    },
+    "reportReady": {
+      "title": "Votre aventure continue",
+      "body": "La suite de votre voyage vers {{destination}} est prête à être découverte."
+    }
+  }
+}

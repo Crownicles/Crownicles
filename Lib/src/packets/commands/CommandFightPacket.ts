@@ -10,6 +10,14 @@ export class CommandFightRefusePacketRes extends CrowniclesPacket {
 export class CommandFightPacketReq extends CrowniclesPacket {
 }
 
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandFightResumeReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandFightResumeRes extends CrowniclesPacket {
+	active!: boolean;
+}
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandFightNotEnoughEnergyPacketRes extends CrowniclesPacket {
 }

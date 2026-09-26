@@ -6,7 +6,7 @@ import { Language } from "../Language";
 export interface KeycloakUser {
 	access: { [key: string]: boolean[] };
 	attributes: {
-		gameUsername: [string]; language: [Language]; discordId?: [string];
+		gameUsername: [string]; language?: [Language]; discordId?: [string];
 	};
 	clientConsents?: KeycloakUserConsent[];
 	clientRoles?: { [key: string]: string[] };

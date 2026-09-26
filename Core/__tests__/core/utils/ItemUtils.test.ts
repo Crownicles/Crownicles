@@ -7,7 +7,7 @@ import { InventoryInfos } from '../../../src/core/database/game/models/Inventory
 import { MissionsController } from '../../../src/core/missions/MissionsController';
 import { BlockingUtils } from '../../../src/core/utils/BlockingUtils';
 import { crowniclesInstance } from '../../../src/app';
-import { ItemCategory, ItemRarity } from '../../../../Lib/src/constants/ItemConstants';
+import { ItemCategory, ItemConstants, ItemRarity } from '../../../../Lib/src/constants/ItemConstants';
 import { BlockingConstants } from '../../../../Lib/src/constants/BlockingConstants';
 import { CrowniclesPacket, PacketContext } from '../../../../Lib/src/packets/CrowniclesPacket';
 import { ItemFoundPacket } from '../../../../Lib/src/packets/events/ItemFoundPacket';
@@ -17,6 +17,7 @@ import { ReactionCollectorItemChoiceItemReaction } from '../../../../Lib/src/pac
 import { ReactionCollectorAcceptReaction } from '../../../../Lib/src/packets/interaction/ReactionCollectorPacket';
 import { MainItem } from '../../../src/data/MainItem';
 import { Potion } from '../../../src/data/Potion';
+import { BlessingManager } from '../../../src/core/blessings/BlessingManager';
 
 type CapturedCollector = {
 	getFirstReaction: () => {
@@ -345,6 +346,40 @@ describe('ItemUtils - giveItemToPlayer', () => {
 					})
 				}
 			});
+		});
+
+		it('should announce exactly the blessed amount credited for the replaced item', async () => {
+			Object.setPrototypeOf(mockItem, MainItem.prototype);
+			mockItem.getDisplayPacket.mockReturnValue({ id: mockItem.id });
+			const blessing = vi.spyOn(BlessingManager.getInstance(), 'applyMoneyBlessing').mockImplementation(amount => amount * 2);
+
+			try {
+				await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
+				const callbackResponse: CrowniclesPacket[] = [];
+				await capturedCollectorCallback!({
+					getFirstReaction: () => ({
+						reaction: { type: ReactionCollectorAcceptReaction.name }
+					})
+				}, callbackResponse);
+
+				const expectedMoney = 2 * Math.round(ItemConstants.RARITY.VALUES[ItemRarity.COMMON] + 5);
+				expect(mockPlayer.addMoney).toHaveBeenCalledTimes(1);
+				expect(mockPlayer.addMoney).toHaveBeenCalledWith(expect.objectContaining({
+					amount: expectedMoney,
+					ignoreBlessing: true
+				}));
+				expect(callbackResponse).toContainEqual({
+					type: 'ItemRefusePacket',
+					data: {
+						item: { id: 50, category: ItemCategory.WEAPON },
+						autoSell: false,
+						soldMoney: expectedMoney
+					}
+				});
+			}
+			finally {
+				blessing.mockRestore();
+			}
 		});
 
 		it('should handle multi-slot categories with choice collector', async () => {

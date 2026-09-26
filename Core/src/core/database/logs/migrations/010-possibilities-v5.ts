@@ -1,5 +1,5 @@
 import { QueryInterface } from "sequelize";
-import * as emojiToIdMap from "./010-possibilities-emoji-to-id.json";
+import emojiToIdMap from "./010-possibilities-emoji-to-id.json";
 
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
 	for (const [eventId, eventPossibilities] of Object.entries(emojiToIdMap)) {

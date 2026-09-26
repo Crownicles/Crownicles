@@ -20,6 +20,9 @@ import { MissionType } from "../../../../Lib/src/types/CompletedMission";
 import { DailyMissions } from "../../core/database/game/models/DailyMission";
 import { Campaign } from "../../core/missions/Campaign";
 import { MissionsController } from "../../core/missions/MissionsController";
+import {
+	datesAreOnSameDay, dateToMs, getTomorrowMidnight
+} from "../../../../Lib/src/utils/TimeUtils";
 
 export default class MissionsCommand {
 	@commandRequires(CommandMissionsPacketReq, {
@@ -63,7 +66,11 @@ export default class MissionsCommand {
 			missions: baseMissions,
 			maxCampaignNumber: Campaign.getMaxCampaignNumber(),
 			campaignProgression: missionInfo.campaignProgression,
-			maxSideMissionSlots: toCheckPlayer.getMissionSlotsNumber()
+			maxSideMissionSlots: toCheckPlayer.getMissionSlotsNumber(),
+			dailyMission: {
+				completed: datesAreOnSameDay(new Date(), new Date(missionInfo.lastDailyMissionCompleted)),
+				resetsAt: dateToMs(getTomorrowMidnight())
+			}
 		}));
 	}
 }

@@ -1,12 +1,12 @@
-import {
-	createHmac,
-	timingSafeEqual
-} from "crypto";
 import { Collection } from "discord.js";
 import { Language } from "../../../Lib/src/Language";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { discordConfig } from "../bot/CrowniclesShard";
 import { DiscordConstants } from "../DiscordConstants";
+import {
+	generateDeletionCode as deriveDeletionCode,
+	verifyDeletionCode as checkDeletionCode
+} from "../../../Lib/src/utils/AccountDeletionCode";
 
 /**
  * Gets the deletion secret from config (shared across all shards) or falls back to the default one
@@ -55,11 +55,7 @@ export const DELETION_CONFIRMATION_PHRASES = DiscordConstants.ACCOUNT_DELETION.C
  * @returns An uppercase hex string of CODE_LENGTH characters
  */
 export function generateDeletionCode(keycloakId: string): string {
-	return createHmac("sha256", getDeletionSecret())
-		.update(keycloakId)
-		.digest("hex")
-		.substring(0, DiscordConstants.ACCOUNT_DELETION.CODE_LENGTH)
-		.toUpperCase();
+	return deriveDeletionCode(keycloakId, getDeletionSecret());
 }
 
 /**
@@ -70,12 +66,7 @@ export function generateDeletionCode(keycloakId: string): string {
  * @returns True if the code is valid
  */
 export function verifyDeletionCode(keycloakId: string, code: string): boolean {
-	const expected = generateDeletionCode(keycloakId);
-	const provided = code.trim().toUpperCase();
-	if (expected.length !== provided.length) {
-		return false;
-	}
-	return timingSafeEqual(Buffer.from(expected, "utf8"), Buffer.from(provided, "utf8"));
+	return checkDeletionCode(keycloakId, code, getDeletionSecret());
 }
 
 /**

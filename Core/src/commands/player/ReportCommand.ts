@@ -67,13 +67,13 @@ import {
 import {
 	Guild, Guilds
 } from "../../core/database/game/models/Guild";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import {
-	GuildBuilding, GuildDomainConstants
-} from "../../../../Lib/src/constants/GuildDomainConstants";
-import { BuildingUpgradeEligibilityMap } from "../../../../Lib/src/types/GuildDomainEligibility";
-import { GuildPets } from "../../core/database/game/models/GuildPet";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+	buildGuildDomainSnapshot, buildGuildFoodShopSnapshot
+} from "../../core/report/ReportGuildDomainData";
+import {
+	InventorySlot, InventorySlots
+} from "../../core/database/game/models/InventorySlot";
 import { Homes } from "../../core/database/game/models/Home";
 import { Materials } from "../../core/database/game/models/Material";
 import {
@@ -392,29 +392,33 @@ type CityReactionParams = {
 	response: CrowniclesPacket[];
 	reactionData: unknown;
 	collectorData: unknown;
-	collectorId: string;
+	collectorId?: string;
+	onReturnToCity?: (response: CrowniclesPacket[]) => Promise<void>;
 };
 
 async function handleCityShopReactionWithDeferredStop(params: CityReactionParams): Promise<void> {
-	await runWithDeferredCollectorStop(params.response, params.collectorId, async () => {
-		await handleCityShopReaction({
-			player: params.player,
-			city: params.city,
-			shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
-			context: params.context,
-			response: params.response,
-			onClose: async (closeResponse): Promise<void> => {
-				await params.player.reload();
-				await sendCityCollector(
-					params.context,
-					closeResponse,
-					params.player,
-					params.city,
-					{ forceSpecificEvent: params.forceSpecificEvent }
-				);
-			}
-		});
+	const openShop = (): Promise<void> => handleCityShopReaction({
+		player: params.player,
+		city: params.city,
+		shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
+		context: params.context,
+		response: params.response,
+		onClose: params.onReturnToCity ?? (async (closeResponse): Promise<void> => {
+			await params.player.reload();
+			await sendCityCollector(
+				params.context,
+				closeResponse,
+				params.player,
+				params.city,
+				{ forceSpecificEvent: params.forceSpecificEvent }
+			);
+		})
 	});
+	if (params.collectorId) {
+		await runWithDeferredCollectorStop(params.response, params.collectorId, openShop);
+		return;
+	}
+	await openShop();
 }
 
 const NOOP_REACTION = (): Promise<void> => Promise.resolve();
@@ -557,7 +561,7 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 	]
 ]);
 
-async function handleCityReaction(reactionType: string, params: CityReactionParams): Promise<void> {
+export async function handleCityReaction(reactionType: string, params: CityReactionParams): Promise<void> {
 	const handler = CITY_REACTION_HANDLERS.get(reactionType);
 	if (!handler) {
 		CrowniclesLogger.error(`Unknown city reaction: ${reactionType}`);
@@ -566,40 +570,108 @@ async function handleCityReaction(reactionType: string, params: CityReactionPara
 	await handler(params);
 }
 
-const GUILD_BUILDING_LEVEL_FIELDS: Record<GuildBuilding, "shopLevel" | "shelterLevel" | "pantryLevel" | "trainingGroundLevel"> = {
-	[GuildBuilding.SHOP]: "shopLevel",
-	[GuildBuilding.SHELTER]: "shelterLevel",
-	[GuildBuilding.PANTRY]: "pantryLevel",
-	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
+type CitySnapshotPlayerData = {
+	player: Player; inventory: InventorySlot[]; materialMap: Map<number, number>;
 };
 
-function buildCanUpgradeBuildings(guild: Guild): BuildingUpgradeEligibilityMap {
-	const result = {} as BuildingUpgradeEligibilityMap;
-	for (const building of Object.values(GuildBuilding)) {
-		const currentLevel = guild[GUILD_BUILDING_LEVEL_FIELDS[building]];
-		const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
-		if (upgradeCost === null) {
-			result[building] = null;
-			continue;
-		}
-		const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel);
-		result[building] = {
-			canAfford: guild.treasury >= upgradeCost,
-			meetsLevel: requiredGuildLevel === null || guild.level >= requiredGuildLevel
-		};
-	}
-	return result;
+type CityCraftServices = Pick<ReactionCollectorCityData, "blacksmith" | "scrapDealer" | "royalBlacksmith">;
+
+async function buildCityCraftServices(playerData: CitySnapshotPlayerData, city: City): Promise<CityCraftServices> {
+	const {
+		player, inventory, materialMap
+	} = playerData;
+	return {
+		blacksmith: city.hasService(CITY_SERVICES.BLACKSMITH)
+			? buildBlacksmithData(inventory, materialMap, player)
+			: undefined,
+		scrapDealer: city.hasService(CITY_SERVICES.SCRAP_DEALER)
+			? buildScrapDealerData(inventory, player)
+			: undefined,
+		royalBlacksmith: city.hasService(CITY_SERVICES.ROYAL_BLACKSMITH)
+			? await buildRoyalBlacksmithData(inventory, materialMap, player)
+			: undefined
+	};
 }
 
-async function sendCityCollector(
-	context: PacketContext,
-	response: CrowniclesPacket[],
-	player: Player,
+/**
+ * The domain notary only shows up for a chief standing outside of their own domain city,
+ * to buy a first domain or to relocate the existing one.
+ */
+function buildGuildDomainNotaryData(player: Player, guild: Guild | null, city: City): ReactionCollectorCityData["guildDomainNotary"] {
+	if (!guild || guild.chiefId !== player.id || guild.domainCityId === city.id) {
+		return undefined;
+	}
+	const cost = guild.domainCityId
+		? GuildDomainConstants.DOMAIN_RELOCATION_COST
+		: GuildDomainConstants.DOMAIN_PURCHASE_COST;
+	return {
+		hasDomain: guild.domainCityId !== null,
+		cost,
+		treasury: guild.treasury,
+		isChief: true,
+		canAfford: guild.treasury >= cost
+	};
+}
+
+function buildCityInns(city: City): ReactionCollectorCityData["inns"] {
+	return city.inns.map(inn => ({
+		innId: inn.id,
+		meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
+			mealId: meal.id,
+			price: meal.price,
+			energy: meal.energy
+		})),
+		rooms: inn.rooms.map(room => ({
+			roomId: room.id,
+			price: room.price,
+			health: room.health
+		}))
+	}));
+}
+
+type CityGuildServices = Pick<ReactionCollectorCityData, "guildDomain" | "guildFoodShop" | "guildDomainNotary">;
+
+async function buildCityGuildServices(player: Player, city: City): Promise<CityGuildServices> {
+	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+	const inDomainCity = guild?.domainCityId === city.id;
+	return {
+		guildDomain: guild && inDomainCity
+			? await buildGuildDomainSnapshot(player, guild)
+			: undefined,
+
+		// Outside the domain city only: there, the full shop is reached through the domain entrance.
+		guildFoodShop: guild && guild.shopLevel >= 1 && !inDomainCity
+			? buildGuildFoodShopSnapshot(player, guild)
+			: undefined,
+		guildDomainNotary: buildGuildDomainNotaryData(player, guild, city)
+	};
+}
+
+function buildCityAvailableServices(
 	city: City,
-	options: {
-		forceSpecificEvent: number; initialMenu?: string;
-	} = { forceSpecificEvent: 0 }
-): Promise<void> {
+	craftServices: CityCraftServices,
+	enchanter: ReactionCollectorCityData["enchanter"]
+): ReactionCollectorCityData["availableServices"] {
+	return getAvailableCityServices({
+		[CITY_SERVICES.BLACKSMITH]: craftServices.blacksmith !== undefined,
+		[CITY_SERVICES.SCRAP_DEALER]: craftServices.scrapDealer !== undefined,
+		[CITY_SERVICES.ROYAL_BLACKSMITH]: craftServices.royalBlacksmith !== undefined,
+		[CITY_SERVICES.ENCHANTER]: enchanter !== undefined,
+		[CITY_SERVICES.BOSS_ARCHIVIST]: city.hasService(CITY_SERVICES.BOSS_ARCHIVIST)
+	});
+}
+
+function buildCityShops(player: Player, city: City): Promise<ReactionCollectorCityData["shops"]> {
+	return Promise.all((city.shops || []).map(async shopId => ({
+		shopId,
+		isEmpty: await isCityShopEmpty(player, shopId)
+	})));
+}
+
+export async function buildCitySnapshot(
+	player: Player,
+	city: City
+): Promise<ReactionCollectorCityData> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
 	const enchanter = await buildAvailableEnchanterData({
@@ -610,88 +682,9 @@ async function sendCityCollector(
 	const playerMaterials = await Materials.getPlayerMaterials(player.id);
 	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
 
-	// Build blacksmith data if city has a blacksmith
-	const blacksmith = city.hasService(CITY_SERVICES.BLACKSMITH)
-		? buildBlacksmithData(playerInventory, playerMaterialMap, player)
-		: undefined;
-
-	const scrapDealer = city.hasService(CITY_SERVICES.SCRAP_DEALER)
-		? buildScrapDealerData(playerInventory, player)
-		: undefined;
-
-	// Build royal blacksmith data if city has a royal blacksmith (e.g. royal castle)
-	const royalBlacksmith = city.hasService(CITY_SERVICES.ROYAL_BLACKSMITH)
-		? await buildRoyalBlacksmithData(playerInventory, playerMaterialMap, player)
-		: undefined;
-
-	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
-	let shelterPets: Awaited<ReturnType<typeof PetEntities.getById>>[] = [];
-	if (guild?.domainCityId === city.id) {
-		const guildPetEntries = await GuildPets.getOfGuild(guild.id);
-		shelterPets = await Promise.all(guildPetEntries.map(gp => PetEntities.getById(gp.petEntityId)));
-	}
-	const guildFoodSnapshot = guild
-		? {
-			food: {
-				common: guild.commonFood,
-				carnivorous: guild.carnivorousFood,
-				herbivorous: guild.herbivorousFood,
-				ultimate: guild.ultimateFood
-			},
-			foodArray: [
-				guild.commonFood,
-				guild.herbivorousFood,
-				guild.carnivorousFood,
-				guild.ultimateFood
-			] as const,
-			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel)
-		}
-		: null;
-	const guildMaxBuyableFood = guild && guildFoodSnapshot
-		? GuildDomainConstants.getMaxBuyableFood(guild.treasury, guildFoodSnapshot.foodArray, guildFoodSnapshot.foodCaps)
-		: null;
-
-	const guildDomain = guild?.domainCityId === city.id
-		? {
-			isInCity: true,
-			guildName: guild.name,
-			shopLevel: guild.shopLevel,
-			shelterLevel: guild.shelterLevel,
-			pantryLevel: guild.pantryLevel,
-			trainingGroundLevel: guild.trainingGroundLevel,
-			guildLevel: guild.level,
-			treasury: guild.treasury,
-			playerMoney: player.money,
-			isChief: guild.chiefId === player.id,
-			isElder: guild.elderId === player.id,
-			food: guildFoodSnapshot!.food,
-			foodCaps: guildFoodSnapshot!.foodCaps,
-			maxBuyableFood: guildMaxBuyableFood!,
-			shelterPets: shelterPets.filter(pe => pe !== null).map(pe => pe!.asOwnedPet()),
-			shelterMaxCount: GuildDomainConstants.getShelterSlots(guild.shelterLevel),
-			canUpgradeBuildings: buildCanUpgradeBuildings(guild),
-			canDeposit: {
-				small: player.money >= GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT,
-				big: player.money >= GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT,
-				huge: player.money >= GuildDomainConstants.SHOP_PRICES.HUGE_DEPOSIT
-			}
-		}
-		: undefined;
-
-	const isGuildChief = guild !== null && guild.chiefId === player.id;
-	let guildDomainNotary: ReactionCollectorCityData["guildDomainNotary"];
-	if (isGuildChief && guild.domainCityId !== city.id) {
-		const cost = guild.domainCityId
-			? GuildDomainConstants.DOMAIN_RELOCATION_COST
-			: GuildDomainConstants.DOMAIN_PURCHASE_COST;
-		guildDomainNotary = {
-			hasDomain: guild.domainCityId !== null,
-			cost,
-			treasury: guild.treasury,
-			isChief: true,
-			canAfford: guild.treasury >= cost
-		};
-	}
+	const craftServices = await buildCityCraftServices({
+		player, inventory: playerInventory, materialMap: playerMaterialMap
+	}, city);
 
 	/*
 	 * Apartment notary: present in every city. Lets the player buy an apartment
@@ -699,45 +692,12 @@ async function sendCityCollector(
 	 */
 	const apartmentNotary = await buildApartmentNotaryData(player, city, home, new Date());
 
-	// Guild food shop: available when the guild has a shop but is NOT in the domain city (where the full shop is available via the domain entrance).
-	const guildFoodShop = guild && guild.shopLevel >= 1 && guild.domainCityId !== city.id
-		? {
-			guildName: guild.name,
-			food: guildFoodSnapshot!.food,
-			foodCaps: guildFoodSnapshot!.foodCaps,
-			maxBuyableFood: guildMaxBuyableFood!,
-			playerMoney: player.money,
-			treasury: guild.treasury
-		}
-		: undefined;
-
-	const collectorData: ReactionCollectorCityData = {
+	return {
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
 		mapLocationId: player.getDestinationId()!,
-		availableServices: getAvailableCityServices({
-			[CITY_SERVICES.BLACKSMITH]: blacksmith !== undefined,
-			[CITY_SERVICES.SCRAP_DEALER]: scrapDealer !== undefined,
-			[CITY_SERVICES.ROYAL_BLACKSMITH]: royalBlacksmith !== undefined,
-			[CITY_SERVICES.ENCHANTER]: enchanter !== undefined,
-			[CITY_SERVICES.BOSS_ARCHIVIST]: city.hasService(CITY_SERVICES.BOSS_ARCHIVIST)
-		}),
-		inns: city.inns.map(inn => ({
-			innId: inn.id,
-			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
-				mealId: meal.id,
-				price: meal.price,
-				energy: meal.energy
-			})),
-			rooms: inn.rooms.map(room => ({
-				roomId: room.id,
-				price: room.price,
-				health: room.health
-			}))
-		})),
-		shops: await Promise.all((city.shops || []).map(async shopId => ({
-			shopId,
-			isEmpty: await isCityShopEmpty(player, shopId)
-		}))),
+		availableServices: buildCityAvailableServices(city, craftServices, enchanter),
+		inns: buildCityInns(city),
+		shops: await buildCityShops(player, city),
 		energy: {
 			current: player.getCumulativeEnergy(playerActiveObjects),
 			max: player.getMaxCumulativeEnergy(playerActiveObjects)
@@ -756,16 +716,25 @@ async function sendCityCollector(
 			},
 			city
 		),
-		blacksmith,
-		scrapDealer,
-		royalBlacksmith,
-		guildDomain,
-		guildFoodShop,
-		guildDomainNotary,
-		apartmentNotary,
+		...craftServices,
+		...await buildCityGuildServices(player, city),
+		apartmentNotary
+	};
+}
+
+async function sendCityCollector(
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	player: Player,
+	city: City,
+	options: {
+		forceSpecificEvent: number; initialMenu?: string;
+	} = { forceSpecificEvent: 0 }
+): Promise<void> {
+	const collectorData = {
+		...await buildCitySnapshot(player, city),
 		initialMenu: options.initialMenu
 	};
-
 	const collector = new ReactionCollectorCity(collectorData);
 
 	const collectorPacket = new ReactionCollectorInstance(

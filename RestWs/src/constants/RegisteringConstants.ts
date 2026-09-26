@@ -5,7 +5,7 @@ export abstract class RegisteringConstants {
 	static readonly DISALLOWED_USERNAME_PREFIXES = ["discord-"];
 
 	/**
-	 * Keycloak role that is allowed to log in if the beta login is enabled
+	 * Shape an address must have to be forwarded to Keycloak, which then applies its own validator
 	 */
-	static readonly BETA_GROUP = "beta";
+	static readonly EMAIL_PATTERN = /^[^\s@]+@[^\s@.]+\.[^\s@]+$/u;
 }

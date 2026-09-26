@@ -1,0 +1,135 @@
+import {FightEffect, FightLogEntry} from "ws-packets/src/objects/Fight";
+import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
+import {Theme} from "@/src/design/Theme";
+
+export const FIGHT_SPEEDS = {NORMAL: "normal", FAST: "fast"} as const;
+export type FightSpeed = typeof FIGHT_SPEEDS[keyof typeof FIGHT_SPEEDS];
+
+export const FIGHT_MOTIONS = {
+	SLASH: "slash", RAPID: "rapid", HEAVY: "heavy", PIERCE: "pierce", SHOT: "shot", RETURN: "return",
+	FLAME: "flame", FROST: "frost", LIGHTNING: "lightning", WAVE: "wave", POISON: "poison",
+	SHIELD: "shield", BLESSING: "blessing", HEAL: "heal", REST: "rest", CHARGE: "charge",
+	CURSE: "curse", DRAIN: "drain", ROAR: "roar", SUMMON: "summon", DODGE: "dodge",
+	DEBUFF: "debuff", QUAKE: "quake", BITE: "bite", CLAW: "claw", MIMIC: "mimic"
+} as const;
+export type FightMotion = typeof FIGHT_MOTIONS[keyof typeof FIGHT_MOTIONS];
+export type FightSide = "self" | "opponent";
+
+export function isHeavyMotion(motion: FightMotion | undefined): boolean {
+	return motion === FIGHT_MOTIONS.HEAVY || motion === FIGHT_MOTIONS.QUAKE;
+}
+
+const MOTION_ACTIONS = {
+	slash: ["simpleAttack", "intenseAttack", "sabotageAttack", "stealWeapon", "useTool"],
+	rapid: ["quickAttack", "fatalFlight", "goesWild"],
+	heavy: ["heavyAttack", "powerfulAttack", "clubSmashAttack", "chargingAttack", "ramAttack", "slamAttack", "grabAndThrowAttack", "petCharge", "petSmallCharge", "petHit", "crush", "horn", "revenge", "shieldAttack", "tailWhipAttack", "tentacleBlowAttack"],
+	pierce: ["piercingAttack", "aerialDiveAttack", "peck"],
+	bite: ["aceratedFangs", "hardBiteAttack", "familyMealAttack", "bite", "smallBite", "pinch", "swallow"],
+	claw: ["clawAttack", "claws", "smallClaws", "petMakeBleed"],
+	shot: ["canonAttack", "boulderTossAttack", "inkJet", "spit", "spitInk", "mudShotAttack", "webShotAttack", "createBomb"],
+	return: ["boomerangAttack"],
+	flame: ["fireAttack", "eruptionAttack", "lavaWaveAttack", "heatMudAttack", "spitFire", "burned"],
+	frost: ["blizzardRageAttack", "glacialBreathAttack", "frozenKissAttack", "icySeductionAttack", "startPolarEmbraceAttack", "isStuckInPolarEmbrace", "snowBall", "frozen", "crystalShardAttack"],
+	lightning: ["celestialLightning", "lightRayAttack", "divineAttack", "radiantBlastAttack", "paralyzed", "meduseParalyze"],
+	wave: ["callOfTheSea", "deluge", "maelstromAttack", "tidalWave", "waterJet", "wateryGust", "drowning", "soaked", "submerged"],
+	poison: ["poisonousAttack", "petPoison", "poisonousBite", "poisoned", "blackCorrosion"],
+	shield: ["defenseBuff", "protection", "tentacleShield", "rockShieldAttack", "solidification", "stoneSkinAttack", "crystallineArmorAttack", "boostDefense", "buildBarrage", "fishProtectAgainstFire", "protectAgainstCold", "protected"],
+	blessing: ["benediction", "concentration", "concentrated", "boostSpeed", "rainbowPower", "outrageAttack", "outrage"],
+	heal: ["hydraulicHeal", "magmaBathAttack", "fairyHeal", "healEveryone", "healOwnerInEnergyRange", "smallRegen", "unBlind", "full"],
+	rest: ["resting", "helpBreathe", "outOfBreath", "none", "sleeping", "rest"],
+	charge: ["chargeChargeMaelstromAttack", "chargeChargeRadiantBlastAttack", "chargeClubSmashAttack", "chargeDeluge", "chargeMaelstromAttack", "chargeRadiantBlastAttack", "chargeUltimateAttack", "chargeChargingAttack"],
+	curse: ["abyssalAura", "cursedAttack", "cursedOfTheSea", "darkAttack", "mutiny", "spectralRevengeAttack", "cursed", "cursedByTheSea", "petCurse", "petrificationAttack", "petPetrified", "petrified"],
+	drain: ["energeticAttack", "heatDrainAttack", "breathTakingAttack", "vampirism", "sepulcralHunger"],
+	roar: ["hellishScream", "roarAttack", "howlAttack", "sing", "scareElephant", "scareFish"],
+	summon: ["guildAttack", "summonAttack", "callPack", "packAttack", "alliesArePresent"],
+	dodge: ["aqueousEvasion", "ambush", "stealth", "retreat", "slipping"],
+	debuff: ["blind", "confused", "dirty", "getDirty", "stunned", "slowed", "swallowed", "targeted", "tetanized", "weak", "bleeding", "breakArmor", "hypnosis", "elephantRememberLastAction", "isUseless", "triesToHelp"],
+	quake: ["earthquake", "hammerQuakeAttack", "glacialCaveCollapseAttack", "rageExplosion", "ultimateAttack"],
+	mimic: ["counterAttack", "magicMimicAttack", "mimicAttack"]
+} as const satisfies Record<FightMotion, readonly string[]>;
+
+export const FIGHT_ACTION_MOTIONS = new Map<string, FightMotion>(
+	Object.entries(MOTION_ACTIONS).flatMap(([motion, actions]) => actions.map(action => [action, motion as FightMotion] as const))
+);
+
+const SELF_MOTIONS = new Set<FightMotion>([FIGHT_MOTIONS.SHIELD, FIGHT_MOTIONS.BLESSING, FIGHT_MOTIONS.HEAL, FIGHT_MOTIONS.REST, FIGHT_MOTIONS.CHARGE, FIGHT_MOTIONS.DODGE]);
+export const FIGHT_OUTCOMES = {HIT: "hit", CRITICAL: "critical", MISSED: "missed", FIZZLED: "fizzled", CHARGING: "charging", PREPARED: "prepared"} as const;
+export type FightOutcome = typeof FIGHT_OUTCOMES[keyof typeof FIGHT_OUTCOMES];
+const STATUS_OUTCOMES: Readonly<Partial<Record<string, FightOutcome>>> = {
+	critical: FIGHT_OUTCOMES.CRITICAL, missed: FIGHT_OUTCOMES.MISSED, charging: FIGHT_OUTCOMES.CHARGING,
+	maxUses: FIGHT_OUTCOMES.FIZZLED, afraid: FIGHT_OUTCOMES.FIZZLED, noAction: FIGHT_OUTCOMES.FIZZLED
+};
+
+/** Pet statuses whose look depends on what the Core actually applied rather than on the status alone. */
+const EFFECT_DEPENDENT_OUTCOMES: Readonly<Record<string, FightOutcome>> = {
+	failure: FIGHT_OUTCOMES.MISSED,
+	generalEffect: FIGHT_OUTCOMES.PREPARED
+};
+const ALTERATION_STATUSES = new Set(["new", "active", "stop", "randomAction", "noAction"]);
+const MOTION_COLORS: Partial<Record<FightMotion, string>> = {
+	flame: "#D96B32", frost: "#3F9CAE", lightning: Theme.colors.gold, wave: Theme.colors.blue,
+	poison: "#7A923C", shield: Theme.colors.blue, blessing: Theme.colors.gold, heal: Theme.colors.green,
+	rest: Theme.colors.blue, charge: Theme.colors.gold, curse: "#8B6088", drain: Theme.colors.green,
+	roar: Theme.colors.gold, summon: Theme.colors.gold, dodge: Theme.colors.muted, debuff: Theme.colors.muted,
+	quake: Theme.colors.red, mimic: Theme.colors.blue
+};
+
+export const FIGHT_IMPACT_SOURCES = {DEALT: "dealt", RECEIVED: "received", REFLECTED: "reflected"} as const;
+type FightImpactSource = typeof FIGHT_IMPACT_SOURCES[keyof typeof FIGHT_IMPACT_SOURCES];
+export type FightImpact = {side: FightSide; source: FightImpactSource; kind: "damage" | "energy" | "breath"; amount: number};
+export type FightCue = {
+	actionId: string; sourceActionId: string; motion: FightMotion; color: string; actor: FightSide; target: FightSide;
+	missed: boolean; critical: boolean; periodic: boolean; impacts: FightImpact[]; outcome: FightOutcome; pet?: OwnedPet;
+};
+
+export function fightMotionColor(motion: FightMotion): string {
+	return MOTION_COLORS[motion] ?? Theme.colors.red;
+}
+
+function effectImpacts(effect: FightEffect | undefined, side: FightSide, source: FightImpactSource): FightImpact[] {
+	if (!effect) return [];
+	const impacts: FightImpact[] = [];
+	if (effect.damages) impacts.push({side, source, kind: "damage", amount: effect.damages});
+	if (effect.energy) impacts.push({side, source, kind: "energy", amount: effect.energy});
+	if (effect.breath) impacts.push({side, source, kind: "breath", amount: effect.breath});
+	return impacts;
+}
+
+function hasEffect(effect: FightEffect | undefined): boolean {
+	return Object.values(effect ?? {}).some(Boolean);
+}
+
+/** A failed or general pet action still lands when the Core transmits an effect: only an empty one is a miss or a preparation. */
+function entryOutcome(entry: FightLogEntry): FightOutcome {
+	const status = entry.status ?? "";
+	const dependent = EFFECT_DEPENDENT_OUTCOMES[status];
+	if (dependent) return hasEffect(entry.fightActionEffectDealt) || hasEffect(entry.fightActionEffectReceived) ? FIGHT_OUTCOMES.HIT : dependent;
+	return STATUS_OUTCOMES[status] ?? FIGHT_OUTCOMES.HIT;
+}
+
+function animationTarget(entry: FightLogEntry, motion: FightMotion, actor: FightSide, periodic: boolean): FightSide {
+	const opponent = actor === "self" ? "opponent" : "self";
+	if (periodic) return actor;
+	if (entry.fightActionEffectDealt?.damages) return opponent;
+	if (SELF_MOTIONS.has(motion)) return actor;
+	const affectsOpponent = hasEffect(entry.fightActionEffectDealt);
+	const affectsActor = hasEffect(entry.fightActionEffectReceived);
+	return affectsActor && !affectsOpponent ? actor : opponent;
+}
+
+function actionImpacts(entry: FightLogEntry, actor: FightSide, periodic: boolean): FightImpact[] {
+	const opponent = actor === "self" ? "opponent" : "self";
+	const impacts = [...effectImpacts(entry.fightActionEffectDealt, periodic ? actor : opponent, FIGHT_IMPACT_SOURCES.DEALT), ...effectImpacts(entry.fightActionEffectReceived, actor, FIGHT_IMPACT_SOURCES.RECEIVED)];
+	if (entry.fightActionEffectDealt?.reflectedDamages) impacts.push({side: actor, source: FIGHT_IMPACT_SOURCES.REFLECTED, kind: "damage", amount: entry.fightActionEffectDealt.reflectedDamages});
+	return impacts;
+}
+
+export function fightCue(entry: FightLogEntry): FightCue {
+	const actionId = entry.usedFightActionId ?? entry.fightActionId;
+	const motion = entry.status === "charging" ? FIGHT_MOTIONS.CHARGE : FIGHT_ACTION_MOTIONS.get(actionId) ?? FIGHT_MOTIONS.SLASH;
+	const actor: FightSide = entry.fighter.isSelf ? "self" : "opponent";
+	const periodic = ALTERATION_STATUSES.has(entry.status ?? "");
+	const outcome = entryOutcome(entry);
+	const target = outcome === FIGHT_OUTCOMES.PREPARED ? actor : animationTarget(entry, motion, actor, periodic);
+	return {actionId, sourceActionId: entry.fightActionId, motion, actor, target, impacts: actionImpacts(entry, actor, periodic), periodic, outcome, color: fightMotionColor(motion), missed: outcome === FIGHT_OUTCOMES.MISSED || outcome === FIGHT_OUTCOMES.FIZZLED, critical: outcome === FIGHT_OUTCOMES.CRITICAL, ...(entry.pet ? {pet: entry.pet} : {})};
+}

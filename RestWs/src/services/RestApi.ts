@@ -3,10 +3,9 @@ import fastify, {
 } from "fastify";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { setupRegisterRoute } from "./routes/RegisterRoute";
-import { setupLoginRoute } from "./routes/LoginRoute";
-import { setupRefreshTokenRoute } from "./routes/RefreshTokenRoute";
-import { DiscordSsoConfig } from "../config/DiscordSsoConfig";
-import { setupDiscordRoutes } from "./routes/DiscordRoutes";
+import { setupAssetsRoutes } from "./routes/AssetsRoute";
+import { setupAccountDeletionRoutes } from "./routes/AccountDeletionRoute";
+import { AccountDeletionConfig } from "../config/RestWsConfig";
 
 // todo add anti spam mechanism and registering with a captcha
 
@@ -49,14 +48,14 @@ export class RestApi {
 	private readonly allowNewUsersRegistering: boolean;
 
 	/**
-	 * Discord SSO configuration.
+	 * Debug mode for the server.
 	 */
-	private readonly discordSso?: DiscordSsoConfig;
+	private readonly debugMode: boolean;
 
 	/**
-	 * Flag to enable beta login.
+	 * How deletion requests are authenticated and notified.
 	 */
-	private readonly betaLogin: boolean;
+	private readonly accountDeletion: AccountDeletionConfig;
 
 	/**
 	 * Constructor for the RestApi class.
@@ -64,36 +63,41 @@ export class RestApi {
 	 */
 	constructor(options: {
 		allowNewUsersRegistering: boolean;
-		discordSso?: DiscordSsoConfig;
-		betaLogin: boolean;
+		debugMode: boolean;
+		accountDeletion: AccountDeletionConfig;
 	}) {
 		this.server = fastify();
 		this.allowNewUsersRegistering = options.allowNewUsersRegistering;
-		this.discordSso = options.discordSso;
-		this.betaLogin = options.betaLogin;
-
-		this.setupRoutes();
+		this.debugMode = options.debugMode;
+		this.accountDeletion = options.accountDeletion;
 	}
 
 	/**
 	 * Sets up the routes for the API.
 	 */
-	private setupRoutes(): void {
-		setupRegisterRoute(this.server, this.allowNewUsersRegistering);
-		setupLoginRoute(this.server, this.betaLogin);
-		setupRefreshTokenRoute(this.server);
+	private async setupRoutes(): Promise<void> {
+		this.server.setNotFoundHandler((request, reply) => {
+			CrowniclesLogger.warn("Not found request", {
+				...getRequestLoggerMetadata(request)
+			});
+			reply.status(404).send({ error: "Not Found" });
+		});
 
-		if (this.discordSso) {
-			setupDiscordRoutes(this.server, this.discordSso, this.betaLogin);
-		}
+		setupRegisterRoute(this.server, this.allowNewUsersRegistering);
+		setupAccountDeletionRoutes(this.server, this.accountDeletion);
+		await setupAssetsRoutes(this.server, this.debugMode);
 	}
 
 	/**
 	 * Starts the server on the specified port.
 	 * @param port
 	 */
-	public start(port: number): void {
-		this.server.listen({ port }, (err, address) => {
+	public async start(port: number): Promise<void> {
+		await this.setupRoutes();
+
+		this.server.listen({
+			port, host: "0.0.0.0"
+		}, (err, address) => {
 			if (err) {
 				CrowniclesLogger.errorWithObj("Failed to start Rest API", err);
 				process.exit(1);

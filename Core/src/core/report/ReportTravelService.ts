@@ -217,14 +217,13 @@ function isStationaryInCity(player: Player): boolean {
 }
 
 /**
- * Send the location where the player is currently staying on the road
+ * Build the location where the player is currently staying on the road
  */
-export async function sendTravelPath(
+export async function buildTravelSummary(
 	player: Player,
-	response: CrowniclesPacket[],
 	date: Date,
 	effectId: string | null
-): Promise<void> {
+): Promise<CommandReportTravelSummaryRes> {
 	const timeData = await TravelTime.getTravelData(player, date);
 	const showEnergy = Maps.isOnPveIsland(player) || Maps.isOnBoat(player);
 	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
@@ -236,7 +235,7 @@ export async function sendTravelPath(
 	// Calculate token cost
 	const tokenCostResult = calculateTokenCost(effectId ?? Effect.NO_EFFECT.id, timeData.effectRemainingTime);
 
-	response.push(makePacket(CommandReportTravelSummaryRes, {
+	return makePacket(CommandReportTravelSummaryRes, {
 		effect: travelSummaryData.effect ?? undefined,
 		startTime: travelSummaryData.startTime,
 		arriveTime: travelSummaryData.arriveTime,
@@ -258,5 +257,14 @@ export async function sendTravelPath(
 		tokens: buildTokenData(tokenCostResult, player),
 		heal: buildHealData(player, effectId),
 		isInCity: isStationaryInCity(player)
-	}));
+	});
+}
+
+export async function sendTravelPath(
+	player: Player,
+	response: CrowniclesPacket[],
+	date: Date,
+	effectId: string | null
+): Promise<void> {
+	response.push(await buildTravelSummary(player, date, effectId));
 }

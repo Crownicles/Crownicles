@@ -14,15 +14,14 @@ import {
 	HomeFeatures, ChestSlotsPerCategory
 } from "../../types/HomeFeatures";
 import {
-	BuildingUpgradeEligibilityMap, DepositTierAffordability
-} from "../../types/GuildDomainEligibility";
+	GuildDomainSnapshot, GuildFoodShopSnapshot
+} from "../../types/GuildDomainSnapshot";
 import { MaterialRarity } from "../../types/MaterialRarity";
 import { ItemSlot } from "../../types/ItemSlot";
 import { PlantId } from "../../constants/PlantConstants";
 import {
 	PlantStorageEntry, PlayerPlantSlotEntry
 } from "../../types/PlantStorageEntry";
-import { OwnedPet } from "../../types/OwnedPet";
 import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
 import { GardenAccessMode } from "../../types/GardenAccessMode";
 import { GardenConstants } from "../../constants/GardenConstants";
@@ -300,6 +299,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		/** Player level snapshot — used for the "not worthy" RP message. */
 		playerLevel: number;
 
+		/** Minimum player level required to use the royal blacksmith. */
+		requiredPlayerLevel: number;
+
 		/** Items currently at level 4 that the Royal Blacksmith can push to level 5. */
 		upgradeableItems: {
 			slot: number;
@@ -346,95 +348,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	/**
 	 * Guild domain data - shown when the guild has its domain in this city
 	 */
-	guildDomain?: {
-
-		/** Whether the player's guild has its domain in this city */
-		isInCity: boolean;
-
-		/** Guild name */
-		guildName: string;
-
-		/** Building levels */
-		shopLevel: number;
-		shelterLevel: number;
-		pantryLevel: number;
-		trainingGroundLevel: number;
-
-		/** Guild level (for upgrade requirements) */
-		guildLevel: number;
-
-		/** Treasury balance */
-		treasury: number;
-
-		/** Player money */
-		playerMoney: number;
-
-		/** Whether the player is the guild chief */
-		isChief: boolean;
-
-		/** Whether the player is the guild elder */
-		isElder: boolean;
-
-		/** Food storage */
-		food: {
-			common: number;
-			carnivorous: number;
-			herbivorous: number;
-			ultimate: number;
-		};
-
-		/** Food caps based on pantry level */
-		foodCaps: readonly number[];
-
-		/** Max quantity of each food the guild can currently buy from its treasury (clamped by remaining cap and unit price). */
-		maxBuyableFood: readonly number[];
-
-		/** Pets currently in the guild shelter */
-		shelterPets: OwnedPet[];
-
-		/** Maximum number of pets the shelter can hold */
-		shelterMaxCount: number;
-
-		/**
-		 * Per-building upgrade eligibility computed by Core.
-		 * `null` means the building is already at max level.
-		 * `canAfford` = treasury covers the upgrade cost.
-		 * `meetsLevel` = guild level satisfies the required level.
-		 */
-		canUpgradeBuildings: BuildingUpgradeEligibilityMap;
-
-		/** Whether the player can afford each treasury deposit tier (computed by Core). */
-		canDeposit: DepositTierAffordability;
-	};
+	guildDomain?: GuildDomainSnapshot;
 
 	/**
 	 * Guild food shop - shown when the player has a guild with a shop but is NOT in the domain city
 	 */
-	guildFoodShop?: {
-
-		/** Guild name */
-		guildName: string;
-
-		/** Food storage */
-		food: {
-			common: number;
-			carnivorous: number;
-			herbivorous: number;
-			ultimate: number;
-		};
-
-		/** Food caps based on pantry level */
-		foodCaps: readonly number[];
-
-		/** Max quantity of each food the guild can currently buy from its treasury (clamped by remaining cap and unit price). */
-		maxBuyableFood: readonly number[];
-
-		/** Player money */
-		playerMoney: number;
-
-		/** Guild treasury balance (used to fund purchases) */
-		treasury: number;
-	};
+	guildFoodShop?: GuildFoodShopSnapshot;
 
 	/**
 	 * Guild domain notary options - shown when the player is a guild chief
@@ -911,8 +830,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 		return reactions;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
-		const reactions = this.data.gardenOnly
+	getReactions(): ReactionCollectorCityPacket["reactions"] {
+		return this.data.gardenOnly
 			? [
 				this.buildReaction(ReactionCollectorRefuseReaction, {}),
 				...this.buildHomeFeatureReactions()
@@ -931,10 +850,13 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...this.buildGuildDomainReactions(),
 				...this.buildApartmentNotaryReactions()
 			];
+	}
+
+	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
 		return {
 			id,
 			endTime,
-			reactions,
+			reactions: this.getReactions(),
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data
 			})
