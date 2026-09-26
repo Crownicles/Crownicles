@@ -18,6 +18,7 @@ import {LucideIcon} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
+import {useKeyboardClearance} from "@/src/design/useKeyboardClearance";
 
 const screenStyles = StyleSheet.create({
 	screenContent: {
@@ -268,7 +269,17 @@ export function Screen({ children, contentContainerStyle }: {
 	children: ReactNode;
 	contentContainerStyle?: StyleProp<ViewStyle>;
 }): ReactNode {
-	return <ScrollView contentContainerStyle={[styles.screenContent, contentContainerStyle]}>{children}</ScrollView>;
+	const {scrollRef, clearance} = useKeyboardClearance();
+
+	return <ScrollView
+		ref={scrollRef}
+		style={{marginBottom: clearance}}
+		contentContainerStyle={[styles.screenContent, contentContainerStyle]}
+		automaticallyAdjustKeyboardInsets
+		keyboardShouldPersistTaps="handled"
+	>
+		{children}
+	</ScrollView>;
 }
 
 export function SectionHeader({ children, action, icon, first = false }: {

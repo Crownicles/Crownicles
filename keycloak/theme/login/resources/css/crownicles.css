@@ -356,3 +356,22 @@ a:hover {
 .login-pf-brand {
 	display: none;
 }
+
+/* Resending the verification mail is a POST, drawn as the surrounding text's link. */
+.crownicles-link-button {
+	font: inherit;
+	color: var(--crownicles-ink);
+	font-weight: 600;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+}
+
+#crownicles-verify-email-continue:not([hidden]) {
+	display: block;
+	text-align: center;
+	text-decoration: none;
+}

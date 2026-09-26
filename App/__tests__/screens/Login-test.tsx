@@ -26,7 +26,7 @@ jest.mock("@/src/authentication/TokenStorage", () => ({
 }));
 jest.mock("@/src/authentication/KeycloakAuth", () => ({
 	IDENTITY_PROVIDERS: {DISCORD: "discord"},
-	KeycloakAuth: {login: jest.fn()}
+	KeycloakAuth: {login: jest.fn(), register: jest.fn()}
 }));
 jest.mock("@/src/assets/AssetsManager", () => ({AssetsManager: {
 	areAssetsReady: jest.fn().mockReturnValue(false),
@@ -88,7 +88,16 @@ describe("login screen", () => {
 		await renderLogin();
 
 		await fireEvent.press(screen.getByText("app:auth.withAccount"));
-		await waitFor(() => expect(KeycloakAuth.login).toHaveBeenCalledWith(undefined));
+		await waitFor(() => expect(KeycloakAuth.login).toHaveBeenCalledWith());
+	});
+
+	it("creates the account on the Keycloak page, then signs the player in", async () => {
+		jest.mocked(KeycloakAuth.register).mockRejectedValue(new AuthFailure(AUTH_FAILURES.CANCELLED, "dismiss"));
+		await renderLogin();
+
+		await fireEvent.press(screen.getByText("app:auth.createAccount"));
+		await waitFor(() => expect(KeycloakAuth.register).toHaveBeenCalled());
+		expect(KeycloakAuth.login).not.toHaveBeenCalled();
 	});
 
 	it("says nothing when the player backs out of the browser", async () => {

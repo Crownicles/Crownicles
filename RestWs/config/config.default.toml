@@ -5,8 +5,6 @@ prefix = "crownicles"
 debug = false
 
 [restApi]
-# Allow registering of new users
-allowRegister = true
 # Port to run the REST API on
 port = 10500
 

@@ -2,12 +2,9 @@ import fastify, {
 	FastifyInstance, FastifyRequest
 } from "fastify";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
-import { setupRegisterRoute } from "./routes/RegisterRoute";
 import { setupAssetsRoutes } from "./routes/AssetsRoute";
 import { setupAccountDeletionRoutes } from "./routes/AccountDeletionRoute";
 import { AccountDeletionConfig } from "../config/RestWsConfig";
-
-// todo add anti spam mechanism and registering with a captcha
 
 /**
  * Returns the metadata for logging requests.
@@ -43,11 +40,6 @@ export class RestApi {
 	private readonly server: FastifyInstance;
 
 	/**
-	 * Flag to allow new users to register.
-	 */
-	private readonly allowNewUsersRegistering: boolean;
-
-	/**
 	 * Debug mode for the server.
 	 */
 	private readonly debugMode: boolean;
@@ -62,12 +54,10 @@ export class RestApi {
 	 * @param options
 	 */
 	constructor(options: {
-		allowNewUsersRegistering: boolean;
 		debugMode: boolean;
 		accountDeletion: AccountDeletionConfig;
 	}) {
 		this.server = fastify();
-		this.allowNewUsersRegistering = options.allowNewUsersRegistering;
 		this.debugMode = options.debugMode;
 		this.accountDeletion = options.accountDeletion;
 	}
@@ -83,7 +73,6 @@ export class RestApi {
 			reply.status(404).send({ error: "Not Found" });
 		});
 
-		setupRegisterRoute(this.server, this.allowNewUsersRegistering);
 		setupAccountDeletionRoutes(this.server, this.accountDeletion);
 		await setupAssetsRoutes(this.server, this.debugMode);
 	}

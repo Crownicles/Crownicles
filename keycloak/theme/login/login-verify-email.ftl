@@ -25,6 +25,7 @@
             </form>
         <#else>
             <p class="instruction">${msg("crowniclesEmailVerifyAutoContinue")}</p>
+            <p id="crownicles-verify-email-elsewhere" class="instruction" hidden>${msg("crowniclesEmailVerifyElsewhere")}</p>
             <div id="kc-form-buttons" class="${properties.kcFormButtonsClass!}">
                 <a id="crownicles-verify-email-continue" href="${url.loginAction}" class="${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}">${msg("crowniclesEmailVerifyContinue")}</a>
             </div>

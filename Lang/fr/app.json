@@ -108,37 +108,6 @@
       "unknown": "La connexion n'a pas abouti. Réessayez dans un instant."
     }
   },
-  "register": {
-    "caption": "Crownicles",
-    "title": "Créer un compte",
-    "subtitle": "Votre adresse permet de retrouver votre compte si le mot de passe vous échappe.",
-    "fields": {
-      "username": "Nom d'aventurier",
-      "email": "Adresse email",
-      "password": "Mot de passe ({{minimum}} caractères au minimum)"
-    },
-    "requirements": {
-      "invalid": "Il manque un nom, une adresse valide ou un mot de passe d'au moins {{minimum}} caractères.",
-      "taken": "Les noms commençant par « discord- » appartiennent aux comptes créés depuis Discord."
-    },
-    "submit": "Créer mon compte",
-    "pending": "Création en cours",
-    "back": "Revenir à la connexion",
-    "failed": "Création impossible",
-    "failures": {
-      "invalid": "Les informations transmises ont été refusées. Vérifiez l'adresse et le mot de passe.",
-      "taken": "Ce nom d'aventurier est déjà porté. Choisissez-en un autre.",
-      "mailUnavailable": "L'email de vérification n'a pas pu partir, le compte n'a donc pas été créé. Réessayez dans quelques minutes.",
-      "closed": "Les inscriptions sont fermées pour le moment.",
-      "unreachable": "Le royaume est injoignable. Vérifiez votre connexion, puis réessayez.",
-      "unknown": "La création n'a pas abouti. Réessayez dans un instant."
-    },
-    "sent": {
-      "title": "Un email vous attend",
-      "body": "Le lien envoyé à {{email}} active votre compte. Une fois ouvert, la connexion devient possible.",
-      "back": "Revenir à la connexion"
-    }
-  },
   "requirements": {
     "guildRole": "Cette action nécessite le rôle {{role}} dans la guilde.",
     "guild": "Vous devez appartenir à une guilde pour effectuer cette action.",

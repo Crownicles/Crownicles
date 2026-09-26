@@ -18,7 +18,6 @@ export interface RestWsConfig {
 	LOKI_HOST?: string;
 	LOKI_USERNAME?: string;
 	LOKI_PASSWORD?: string;
-	REST_API_ALLOW_NEW_USERS_REGISTERING: boolean;
 	REST_API_PORT: number;
 	WEB_SOCKET_PORT: number;
 	PREFIX: MqttPrefix;
@@ -51,7 +50,6 @@ type ConfigStructure = {
 		debug: boolean;
 	};
 	restApi: {
-		allowRegister: boolean;
 		port: number;
 	};
 	webSocket: { port: number };
@@ -123,7 +121,6 @@ export function loadConfig(): RestWsConfig {
 		LOKI_HOST: config.logs.loki?.host,
 		LOKI_USERNAME: config.logs.loki?.username,
 		LOKI_PASSWORD: config.logs.loki?.password,
-		REST_API_ALLOW_NEW_USERS_REGISTERING: config.restApi.allowRegister,
 		REST_API_PORT: config.restApi.port,
 		WEB_SOCKET_PORT: config.webSocket.port,
 		PREFIX: createMqttPrefix(config.global.prefix),

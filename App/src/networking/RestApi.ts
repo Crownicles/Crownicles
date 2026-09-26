@@ -55,24 +55,6 @@ export class RestApi {
 		return await response.text();
 	}
 
-	/** Returns the status rather than throwing: every code the route answers means something to say. */
-	public static async register(account: {
-		username: string;
-		email: string;
-		password: string;
-		language: string;
-	}): Promise<number> {
-		const response = await fetch(`${RestApi.getBaseUrl()}/register`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify(account)
-		});
-
-		return response.status;
-	}
-
 	/** The account removed is the one the token belongs to: nothing identifies it in the request. */
 	public static async deleteAccount(accessToken: string, code: string): Promise<boolean> {
 		const response = await fetch(`${RestApi.getBaseUrl()}/account`, {

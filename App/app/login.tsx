@@ -6,15 +6,15 @@ import React from "react";
 import crowniclesLogo from "@/assets/images/icon.png";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {
-	IDENTITY_PROVIDERS, KeycloakAuth, type IdentityProvider
+	IDENTITY_PROVIDERS, KeycloakAuth
 } from "@/src/authentication/KeycloakAuth";
+import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 import {
 	AUTH_FAILURES, reasonOfUnknownError
 } from "@/src/authentication/AuthFailure";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
-import {useRouter} from "expo-router";
 import {useTranslationsReady} from "@/src/translations/useTranslationsReady";
 import {Theme} from "@/src/design/Theme";
 import {Screen} from "@/src/design/Primitives";
@@ -56,9 +56,9 @@ function handleExpiredSession(authState: LoginAuthState): void {
 	});
 }
 
-async function handleLogin(authState: LoginAuthState, identityProvider?: IdentityProvider): Promise<void> {
+async function handleLogin(authState: LoginAuthState, authorize: () => Promise<KeycloakOAuth2Token>): Promise<void> {
 	try {
-		const authToken = AuthToken.fromKeycloakOAuth2Token(await KeycloakAuth.login(identityProvider));
+		const authToken = AuthToken.fromKeycloakOAuth2Token(await authorize());
 
 		authState.saveToken(authToken).catch((error: unknown) => {
 			console.error("Failed to save token:", error);
@@ -89,13 +89,12 @@ async function handleLogin(authState: LoginAuthState, identityProvider?: Identit
 export default function LoginScreen(): React.ReactElement {
 	const authState = React.useContext(AuthContext);
 	const connecting = authState.state === AuthStateEnum.CONNECTING;
-	const router = useRouter();
 
 	useTranslationsReady();
 	handleExpiredSession(authState);
 
-	const start = (identityProvider?: IdentityProvider): void => {
-		handleLogin(authState, identityProvider).catch((error: unknown) => {
+	const start = (authorize: () => Promise<KeycloakOAuth2Token>): void => {
+		handleLogin(authState, authorize).catch((error: unknown) => {
 			console.error("Login error:", error);
 		});
 	};
@@ -113,7 +112,7 @@ export default function LoginScreen(): React.ReactElement {
 					label={connecting ? i18n.t("app:auth.connecting") : i18n.t("app:auth.withDiscord")}
 					pending={connecting}
 					onPress={(): void => {
-						start(IDENTITY_PROVIDERS.DISCORD);
+						start(() => KeycloakAuth.login(IDENTITY_PROVIDERS.DISCORD));
 					}}
 					testID="login-discord"
 				/>
@@ -122,7 +121,7 @@ export default function LoginScreen(): React.ReactElement {
 					label={i18n.t("app:auth.withAccount")}
 					pending={connecting}
 					onPress={(): void => {
-						start();
+						start(() => KeycloakAuth.login());
 					}}
 					testID="login-account"
 				/>
@@ -131,7 +130,7 @@ export default function LoginScreen(): React.ReactElement {
 					label={i18n.t("app:auth.createAccount")}
 					pending={connecting}
 					onPress={(): void => {
-						router.push("/register");
+						start(() => KeycloakAuth.register());
 					}}
 					testID="login-register"
 				/>

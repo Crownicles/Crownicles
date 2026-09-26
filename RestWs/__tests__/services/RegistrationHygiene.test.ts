@@ -17,6 +17,9 @@ vi.mock("../../src/index", () => ({ keycloakConfig: {
 vi.mock("../../../Lib/src/keycloak/KeycloakUtils", () => ({ KeycloakUtils: {
 	getRegisterEvents, getUserByKeycloakId, deleteUser, updateGameUsername
 } }));
+vi.mock("../../../Lib/src/logs/CrowniclesLogger", () => ({ CrowniclesLogger: {
+	info: vi.fn(), error: vi.fn(), errorWithObj: vi.fn()
+} }));
 
 const NOW = asMilliseconds(Date.UTC(2026, 8, 27, 12));
 
@@ -25,6 +28,7 @@ type Account = {
 	username: string;
 	emailVerified: boolean;
 	gameUsername?: string;
+	typed?: string;
 	minutesAgo: number;
 	method?: string;
 };
@@ -36,7 +40,7 @@ function arrange(accounts: Account[]): void {
 		payload: { events: accounts.map(account => ({
 			time: NOW - minutesToMilliseconds(asMinutes(account.minutesAgo)),
 			userId: account.id,
-			details: { username: account.username, register_method: account.method ?? "form" }
+			details: { username: account.typed ?? account.username, register_method: account.method ?? "form" }
 		})) }
 	});
 	getUserByKeycloakId.mockImplementation((_config: unknown, id: string) => {
@@ -111,28 +115,35 @@ describe("registration hygiene", () => {
 		expect(deleteUser).toHaveBeenCalledWith(expect.anything(), "abandoned");
 	});
 
-	it("resets a displayed name that is not the username", async () => {
+	it("names the account in game with the case the player typed", async () => {
 		arrange([
 			{
-				id: "impostor", username: "anonyme", emailVerified: true, gameUsername: "Crownicles", minutesAgo: 5
-			},
-			{
-				id: "no-script", username: "sansjs", emailVerified: false, minutesAgo: 5
+				id: "newcomer", username: "bastlast", typed: "BastLast", emailVerified: false, minutesAgo: 1
 			}
 		]);
 
 		await review();
 
-		expect(updateGameUsername).toHaveBeenCalledTimes(2);
-		expect(updateGameUsername).toHaveBeenCalledWith(expect.objectContaining({ id: "impostor" }), "anonyme", expect.anything());
-		expect(updateGameUsername).toHaveBeenCalledWith(expect.objectContaining({ id: "no-script" }), "sansjs", expect.anything());
+		expect(updateGameUsername).toHaveBeenCalledWith(expect.objectContaining({ id: "newcomer" }), "BastLast", expect.anything());
 		expect(deleteUser).not.toHaveBeenCalled();
 	});
 
-	it("keeps the case the player typed and stops looking at a settled account", async () => {
+	it("falls back to the username when the event does not match it", async () => {
 		arrange([
 			{
-				id: "player", username: "bastlast", emailVerified: true, gameUsername: "BastLast", minutesAgo: 90
+				id: "odd", username: "anonyme", typed: "Crownicles", emailVerified: true, gameUsername: "Crownicles", minutesAgo: 5
+			}
+		]);
+
+		await review();
+
+		expect(updateGameUsername).toHaveBeenCalledWith(expect.objectContaining({ id: "odd" }), "anonyme", expect.anything());
+	});
+
+	it("stops looking at an account once named and verified", async () => {
+		arrange([
+			{
+				id: "player", username: "bastlast", typed: "BastLast", emailVerified: true, gameUsername: "BastLast", minutesAgo: 90
 			}
 		]);
 

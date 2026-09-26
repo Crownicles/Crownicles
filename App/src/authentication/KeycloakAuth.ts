@@ -86,7 +86,19 @@ function hasCompleteToken(token: KeycloakOAuth2Token): boolean {
  * the same whichever provider the player picks. Naming one sends them straight to it.
  */
 export class KeycloakAuth {
-	public static async login(identityProvider?: IdentityProvider): Promise<KeycloakOAuth2Token> {
+	public static login(identityProvider?: IdentityProvider): Promise<KeycloakOAuth2Token> {
+		return KeycloakAuth.authorize(identityProvider ? {kc_idp_hint: identityProvider} : {});
+	}
+
+	/**
+	 * Opens Keycloak's sign-up page. The address is confirmed and the password chosen within the
+	 * same browser session, so the player comes back signed in.
+	 */
+	public static register(): Promise<KeycloakOAuth2Token> {
+		return KeycloakAuth.authorize({prompt: "create"});
+	}
+
+	private static async authorize(entryParams: Record<string, string>): Promise<KeycloakOAuth2Token> {
 		const redirectUri = getRedirectUri();
 		// Typed as a string, but i18next answers nothing until it has loaded its resources, and
 		// login is reachable before that.
@@ -101,7 +113,7 @@ export class KeycloakAuth {
 				// Keycloak falls back to the realm default without this, so its pages would ignore
 				// the language the player already chose in the app.
 				...language ? {ui_locales: language} : {},
-				...identityProvider ? {kc_idp_hint: identityProvider} : {}
+				...entryParams
 			}
 		});
 

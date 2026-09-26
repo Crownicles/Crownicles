@@ -86,6 +86,17 @@ describe("KeycloakAuth", () => {
 		expect(mockAuthRequestConfigs.at(-1)?.extraParams).not.toHaveProperty("kc_idp_hint");
 	});
 
+	it("opens the sign-up page and returns the token of the account just created", async () => {
+		mockPromptAsync.mockResolvedValue({
+			type: "success",
+			params: {code: "authorization-code"}
+		});
+		jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify(offlineToken()), {status: 200}));
+
+		await expect(KeycloakAuth.register()).resolves.toEqual(offlineToken());
+		expect(mockAuthRequestConfigs.at(-1)).toMatchObject({extraParams: {prompt: "create", ui_locales: "fr"}, usePKCE: true});
+	});
+
 	it("asks Keycloak for the pages in the language of the app", async () => {
 		mockPromptAsync.mockResolvedValue({
 			type: "success",

@@ -176,8 +176,11 @@ surface, not a separate website. The realm points `loginTheme` and `emailTheme` 
 a theme living in `keycloak/theme` and mounted into the container as a single theme — mounting over
 `/opt/keycloak/themes` would hide the built-in ones it inherits from.
 
-It carries no template of its own. `login` inherits from `keycloak` and adds one stylesheet that
+It carries a single template of its own. `login` inherits from `keycloak` and adds one stylesheet that
 restates the tokens of `App/src/design/Theme.ts`: white paper, ink text, pill buttons, no relief.
+It overrides `login-verify-email.ftl` only: the mail link is usually opened in the mail app, so the
+page resumes the sign-up when the player comes back to it (`js/crownicles.js`), and tells them where
+it went on when the link was opened in another browser, which takes the flow over.
 `email` inherits from `base` and replaces the layout and the wordings, in French and in English.
 
 Three things to know before editing it:
@@ -210,16 +213,34 @@ A few settings in `realm.json` are deliberate and easy to undo by accident:
   public client address — a VPN, or Docker's own NAT — and then answers `HTTPS required` to
   everything. The fix is to lower the *running* realm, never the file:
   `kcadm.sh update realms/Crownicles -s sslRequired=NONE`.
-- **`registrationAllowed` is `false`, and `verifyEmail` is `true`.** Sign-up goes through the app's
-  own screen, which posts to `RegisterRoute` — the only path that enforces
-  `DISALLOWED_USERNAME_PREFIXES` and therefore stops anyone from claiming the `discord-<id>` name of
-  an existing player. Keycloak's own form does not, so it stays closed.
-  `registrationEmailAsUsername` would have removed the problem at the root, since a `discord-` name
-  could not be typed at all — but Keycloak then requires an address **through the Admin API too**,
-  and the Discord bot creates its accounts without one. It fails with `error-user-attribute-required`.
-  ⚠️ That form is also broken in this realm: it renders no password field at all. Cause unknown, a
-  blank realm renders it correctly, and neither the flow, the theme, the password policy nor the
-  user profile explains it. It matters only if the form is ever reopened.
+- **Sign-up is Keycloak's own page, with `verifyEmail` on.** The app opens it with `prompt=create`.
+  It asks for a username and an address only: with `verifyEmail` on, Keycloak leaves the password
+  out of the form and asks for it through `UPDATE_PASSWORD` once the address is confirmed, in the
+  same browser session. Nobody can therefore hold a usable account on an address they do not own,
+  and the player comes back to the app signed in. `accessCodeLifespanUserAction` and the
+  `verify-email` action token last 15 minutes, so reading the mail does not time the flow out.
+- **RestWs reviews every sign-up** (`RegistrationHygiene`), since the page offers no hook of its
+  own. It reads the `REGISTER` events — the only type the realm stores, for a day — and, for the
+  accounts created by the form, deletes those named `discord-…` (the name the bot gives the
+  account of a Discord player, which a squatter would otherwise take from them) or after a
+  reserved name, deletes those still unconfirmed after an hour, and copies the username as typed
+  into `gameUsername`: Keycloak lowercases the username, the event keeps the player's case. The
+  `restWs` service account needs `view-events` and `manage-users` on `realm-management`.
+  `registrationEmailAsUsername` would have closed the `discord-` names at the root, but Keycloak
+  then requires an address **through the Admin API too**, and the Discord bot creates its accounts
+  without one. It fails with `error-user-attribute-required`.
+- **Unmanaged attributes are `ADMIN_EDIT`.** `discordId`, `gameUsername` and `language` are not
+  declared in the user profile, so only the Admin API writes them. Under `ENABLED` a player could
+  set their own `discordId` — from the account console, or by adding a field to the sign-up
+  form — and be taken for another player by the bot. ⚠️ Importing `realm.json` resets the policy
+  to `ENABLED`: the file declares Keycloak 22, and the migration to 24 enables unmanaged attributes
+  to preserve the behaviour of the time. Set it back after every import, in *Realm settings → User
+  profile → Unmanaged attributes*.
+- **The account console is off.** The `account-console` client is disabled and the default roles
+  no longer grant `manage-account` nor `view-profile`. The app covers what it offered: the account
+  deletion goes through RestWs, and a forgotten password through the sign-in page.
+- **Attribute updates send the whole account back.** A partial `PUT` on a user makes Keycloak erase
+  what it omits, the address included, which locks a player out of their password reset.
 - **`passwordPolicy` requires 10 characters** and refuses the username or the address as a password.
   Without it any password is accepted, including a single letter, which matters as soon as accounts
   are not brokered any more.

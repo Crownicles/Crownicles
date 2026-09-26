@@ -23,10 +23,11 @@ function isForbiddenUsername(username: string): boolean {
 }
 
 /**
- * The sign-up page fills the displayed name from the username, only its case may differ
+ * Keycloak lowercases the username, the registration event keeps the case the player typed
  */
-function hasGameUsernameOfUsername(user: KeycloakUser): boolean {
-	return user.attributes?.gameUsername?.[0]?.toLowerCase() === user.username;
+export function typedUsername(event: KeycloakRegisterEvent, user: KeycloakUser): string {
+	const typed = event.details?.username;
+	return typed?.toLowerCase() === user.username ? typed : user.username;
 }
 
 /**
@@ -42,7 +43,7 @@ export function judgeRegistration(event: KeycloakRegisterEvent, user: KeycloakUs
 	if (!user.emailVerified && msDiff(now, asMilliseconds(event.time)) > RegisteringConstants.UNVERIFIED_ACCOUNT_LIFETIME) {
 		return REGISTRATION_VERDICTS.DELETE;
 	}
-	if (!hasGameUsernameOfUsername(user)) {
+	if (user.attributes?.gameUsername?.[0] !== typedUsername(event, user)) {
 		return REGISTRATION_VERDICTS.FIX_GAME_USERNAME;
 	}
 	return user.emailVerified ? REGISTRATION_VERDICTS.SETTLED : REGISTRATION_VERDICTS.WAIT;
@@ -50,7 +51,8 @@ export function judgeRegistration(event: KeycloakRegisterEvent, user: KeycloakUs
 
 /**
  * Reviews the accounts created from Keycloak's sign-up page, which offers no hook of its own: it
- * frees the names reserved to the bot and the staff, and the addresses nobody confirmed
+ * names them in game, and frees the names reserved to the bot and the staff as well as the
+ * addresses nobody confirmed
  */
 export abstract class RegistrationHygiene {
 	private static readonly settledUserIds = new Set<string>();
@@ -105,7 +107,7 @@ export abstract class RegistrationHygiene {
 				await RegistrationHygiene.deleteAccount(user);
 				break;
 			case REGISTRATION_VERDICTS.FIX_GAME_USERNAME:
-				await RegistrationHygiene.fixGameUsername(user);
+				await RegistrationHygiene.setGameUsername(user, typedUsername(event, user));
 				break;
 			case REGISTRATION_VERDICTS.SETTLED:
 				RegistrationHygiene.settledUserIds.add(user.id);
@@ -129,8 +131,8 @@ export abstract class RegistrationHygiene {
 		});
 	}
 
-	private static async fixGameUsername(user: KeycloakUser): Promise<void> {
-		const update = await KeycloakUtils.updateGameUsername(user, user.username, keycloakConfig);
+	private static async setGameUsername(user: KeycloakUser, gameUsername: string): Promise<void> {
+		const update = await KeycloakUtils.updateGameUsername(user, gameUsername, keycloakConfig);
 		if (update.isError) {
 			CrowniclesLogger.error("Could not set the game username of a registered account", {
 				apiReturn: update, keycloakId: user.id

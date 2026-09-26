@@ -8,7 +8,6 @@ export interface KeycloakRegisterEvent {
 		username?: string;
 
 		// Keycloak naming: "form" when the account comes from the sign-up page
-		// eslint-disable-next-line camelcase
 		register_method?: string;
 	};
 }
