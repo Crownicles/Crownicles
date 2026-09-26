@@ -1,6 +1,7 @@
 import {MARKET_TRENDS, MarketTrendKind, PlantForecast, ShopOutcome} from "ws-packets/src/fromServer/shop/ShopRes";
 import {missionDescription} from "@/src/display/Missions";
 import {i18n} from "@/src/translations/i18n";
+import {joinLines, joinParagraphs} from "@/src/display/Paragraphs";
 
 /** The three moments a forecast speaks about, in the order the server sends them. */
 const TIME_HORIZONS = ["tomorrow", "threeDays", "oneWeek"] as const;
@@ -85,7 +86,7 @@ function purchaseReport(outcome: Extract<ShopOutcome, {kind: "purchase"}>): stri
 			.map(([materialId, quantity]) => i18n.t("commands:shop.materialLine", {
 				materialId, quantity
 			}));
-		text += `\n\n${lines.join("\n")}`;
+		text = joinParagraphs([text, joinLines(lines)]);
 	}
 	return text;
 }
@@ -124,8 +125,10 @@ export function shopOutcomeReport(outcome: ReportedOutcome, now: number): string
 		case "kingsFavor":
 			return i18n.t("commands:shop.shopItems.kingsFavor.giveDescription", {thousandPoints: outcome.thousandPoints});
 		case "missionSkipped":
-			return `${i18n.t("commands:shop.shopItems.skipMission.successDescription", {mission: missionDescription(outcome.oldMission, now)})}\n${
-				i18n.t("commands:shop.shopItems.skipMission.getNewMission", {mission: missionDescription(outcome.newMission, now)})}`;
+			return joinLines([
+				i18n.t("commands:shop.shopItems.skipMission.successDescription", {mission: missionDescription(outcome.oldMission, now)}),
+				i18n.t("commands:shop.shopItems.skipMission.getNewMission", {mission: missionDescription(outcome.newMission, now)})
+			]);
 		case "badge":
 			return i18n.t("commands:shop.badgeBought", {badgeName: outcome.badgeId});
 		default:

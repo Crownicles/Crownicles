@@ -28,6 +28,7 @@ import {Button, ButtonRow, Screen} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
+import {joinParagraphs} from "@/src/display/Paragraphs";
 import {ActionBanner, Card, Effect, ExpandableEntry, ExpandableList, Fact, Sheet, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {EventJournal, EventOutcomeScreen, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
@@ -499,18 +500,21 @@ function witchForcedEmoji(outcome: SmallEventWitchResultRes): string {
 	return ` ${AppIcons.getIconOrNull(`effects.${outcome.effectId}`) ?? ""}`;
 }
 
-function witchRecipe(outcome: SmallEventWitchResultRes): string {
+function witchRecipe(outcome: SmallEventWitchResultRes): string | null {
 	return outcome.discoveredRecipe
-		? `\n\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {recipe: i18n.t("models:cooking.recipeDisplay", outcome.discoveredRecipe)})}`
-		: "";
+		? i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {recipe: i18n.t("models:cooking.recipeDisplay", outcome.discoveredRecipe)})
+		: null;
 }
 
 /** The Discord account of the witch's brew: the ingredient or advice, what it did, and what it cost. */
 function witchOutcomeDescription(outcome: SmallEventWitchResultRes): string {
 	const outcomeKey = outcome.outcome === WITCH_OUTCOMES.EFFECT ? `2.${outcome.effectId}` : String(outcome.outcome + 1);
 	const witchEvent = `${i18n.t(`smallEvents:witch.witchEventNames.${outcome.ingredientId}`)} ${AppIcons.getIconOrNull(`witchSmallEvent.${outcome.ingredientId}`) ?? ""}`.toLowerCase();
-	return `${anyTranslation(`smallEvents:witch.witchEventResults.${outcome.isIngredient ? "ingredientIntros" : "adviceIntros"}`, {witchEvent})} ${
-		anyTranslation(`smallEvents:witch.witchEventResults.outcomes.${outcomeKey}`, {lifeLoss: outcome.lifeLoss})}${witchTimeOutro(outcome)}${witchForcedEmoji(outcome)}${witchRecipe(outcome)}`;
+	return joinParagraphs([
+		`${anyTranslation(`smallEvents:witch.witchEventResults.${outcome.isIngredient ? "ingredientIntros" : "adviceIntros"}`, {witchEvent})} ${
+			anyTranslation(`smallEvents:witch.witchEventResults.outcomes.${outcomeKey}`, {lifeLoss: outcome.lifeLoss})}${witchTimeOutro(outcome)}${witchForcedEmoji(outcome)}`,
+		witchRecipe(outcome)
+	]);
 }
 
 function witchEffect(outcome: SmallEventWitchResultRes): Effect | null {

@@ -7,6 +7,7 @@ import {missionDate, missionDescription} from "@/src/display/Missions";
 import {petIcon, petName, petShortField} from "@/src/display/PetDisplay";
 import {anyTranslation} from "@/src/translations/RandomTranslation";
 import {i18n} from "@/src/translations/i18n";
+import {joinParagraphs} from "@/src/display/Paragraphs";
 
 /**
  * The stories Discord tells for the small events that ask nothing of the player, rebuilt from the
@@ -151,15 +152,18 @@ const EXPEDITION_STORIES: Record<string, StoryBuilder> = {
 function findMaterialStory(data: Data): string {
 	const materialId = str(data, "materialId");
 	const rarity = num(data, "materialRarity") ?? 1;
-	return `${smallEventIntro()}${t(`findMaterial.typesStories.${str(data, "materialType")}`)}\n\n${t(`findMaterial.foundStories.${rarity}`, {
-		materialId, materialEmote: icon(`materials.${materialId}`), rarityEmote: icon(`rarity.${rarity - 1}`), quantity: num(data, "quantity")
-	})}`;
+	return joinParagraphs([
+		`${smallEventIntro()}${t(`findMaterial.typesStories.${str(data, "materialType")}`)}`,
+		t(`findMaterial.foundStories.${rarity}`, {
+			materialId, materialEmote: icon(`materials.${materialId}`), rarityEmote: icon(`rarity.${rarity - 1}`), quantity: num(data, "quantity")
+		})
+	]);
 }
 
 function findMissionStory(data: Data): string {
 	const mission = record(data, "mission") as Mission | undefined;
 	const description = mission ? missionDescription(mission, Date.now()) : "";
-	return `${smallEventIntro()}${any("findMission.intrigue")}\n\n**${description}**`;
+	return joinParagraphs([`${smallEventIntro()}${any("findMission.intrigue")}`, `**${description}**`]);
 }
 
 function findPetKey(data: Data): string {
@@ -296,8 +300,10 @@ const STORIES: Record<string, StoryBuilder> = {
 	altarFirstEncounter: () => smallEventIntro() + t("altar.firstEncounter"),
 	bigBad: data => smallEventIntro() + (BIG_BAD_STORIES[str(data, "kind") ?? ""]?.(data) ?? ""),
 	boatAdvice: () => any("boatAdvice.intro", {advice: any("boatAdvice.advices")}),
-	bonusGuildPVEIsland: data => `${t(`bonusGuildPVEIsland.events.${num(data, "event")}.intro`)}\n\n${
-		t(`bonusGuildPVEIsland.events.${num(data, "event")}.${str(data, "result")}.${str(data, "surrounding")}`, {amount: num(data, "amount"), emoteKey: str(data, "emoteKey")})}`,
+	bonusGuildPVEIsland: data => joinParagraphs([
+		t(`bonusGuildPVEIsland.events.${num(data, "event")}.intro`),
+		t(`bonusGuildPVEIsland.events.${num(data, "event")}.${str(data, "result")}.${str(data, "surrounding")}`, {amount: num(data, "amount"), emoteKey: str(data, "emoteKey")})
+	]),
 	botFacts: withIntro("botFacts.stories", data => ({
 		botFact: t(`botFacts.possibleInfo.${str(data, "information")}`, {
 			count: num(data, "infoNumber"), infoNumber: num(data, "infoNumber"), infoComplement: i18n.t("models:classFormat", {id: num(data, "infoComplement") ?? 0})

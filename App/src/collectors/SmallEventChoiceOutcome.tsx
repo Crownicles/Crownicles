@@ -15,6 +15,7 @@ import {smallEventIntro} from "@/src/display/SmallEventStories";
 import type {Effect} from "@/src/design/Sections";
 import {anyTranslation} from "@/src/translations/RandomTranslation";
 import {i18n} from "@/src/translations/i18n";
+import {joinLines, joinParagraphs} from "@/src/display/Paragraphs";
 
 /**
  * What a small event the player answered came to, told with the very sentences Discord posts, then
@@ -64,12 +65,12 @@ function timeLostEffect(minutes: number): Effect | null {
 	return minutes > 0 ? lossEffect(i18n.t("app:adventure.event.fields.timeLost"), formatDurationMinutes(minutes), {unit: UNITS.time}) : null;
 }
 
-function altarBonusText(result: Result<"altar"> & {outcome: "contributed"}): string {
+function altarBonusTexts(result: Result<"altar"> & {outcome: "contributed"}): (string | null)[] {
 	return [
 		result.bonusGems > 0 ? any("altar.bonusGems", {gems: result.bonusGems, gemEmote: icon("unitValues.gem")}) : null,
 		result.bonusItemGiven ? any("altar.bonusItem") : null,
 		result.badgeAwarded ? t("altar.badgeAwarded") : null
-	].filter(text => text !== null).map(text => `\n\n${text}`).join("");
+	];
 }
 
 function altarStory(result: Result<"altar">): string {
@@ -77,10 +78,13 @@ function altarStory(result: Result<"altar">): string {
 	if (result.outcome === "notContributed") {
 		return any(`altar.${result.canAfford ? "refused" : "notEnoughMoney"}`, params);
 	}
-	return any(`altar.${result.blessingTriggered ? "blessingTriggered" : "contributed"}`, {
-		...params,
-		blessingType: result.blessingTriggered ? i18n.t(`bot:blessingNames.${result.blessingType}`) : ""
-	}) + altarBonusText(result);
+	return joinParagraphs([
+		any(`altar.${result.blessingTriggered ? "blessingTriggered" : "contributed"}`, {
+			...params,
+			blessingType: result.blessingTriggered ? i18n.t(`bot:blessingNames.${result.blessingType}`) : ""
+		}),
+		...altarBonusTexts(result)
+	]);
 }
 
 function altarEffects(result: Result<"altar">): Effect[] {
@@ -197,7 +201,7 @@ const LIMOGES_PENALTY_UNITS = {health: UNITS.lostHealth, money: UNITS.lostMoney,
 function limogesDetails(result: Result<"limoges">): OutcomeDetails {
 	const recap = t(`limoges.recap.${result.outcome}.${result.shouldHaveAccepted ? "accept" : "refuse"}`);
 	return {
-		story: `${recap}\n\n${limogesOutcome(result)}`,
+		story: joinParagraphs([recap, limogesOutcome(result)]),
 		effects: presentEffects([
 			result.reward ? amountEffect(i18n.t("app:adventure.event.fields.experience"), result.reward.experience, {gain: UNITS.xp}) : null,
 			result.reward ? pointsEffect(result.reward.score) : null,
@@ -226,7 +230,7 @@ function petFoodStory(result: Result<"petFood">): string {
 		foodName: foodNames.length > 0 ? foodNames[Math.floor(Math.random() * foodNames.length)] : "",
 		time: PET_FOOD_INVESTIGATED.has(result.outcome) && result.timeLostMinutes ? formatDurationMinutes(result.timeLostMinutes) : ""
 	});
-	return found ? `${story}\n${t(`petFood.love.${petFoodLoveKey(result.loveChange)}`, {context})}` : story;
+	return joinLines([story, found && t(`petFood.love.${petFoodLoveKey(result.loveChange)}`, {context})]);
 }
 
 function petFoodDetails(result: Result<"petFood">): OutcomeDetails {

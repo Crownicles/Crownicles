@@ -25,6 +25,7 @@ import {Item} from "ws-packets/src/objects/Item";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {PetSex} from "ws-packets/src/objects/OwnedPet";
 import {i18n} from "@/src/translations/i18n";
+import {joinParagraphs} from "@/src/display/Paragraphs";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {randomTranslation} from "@/src/translations/RandomTranslation";
 import {AppIcons} from "@/src/AppIcons";
@@ -323,12 +324,18 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 		playerDisplay: i18n.t(`smallEvents:interactOtherPlayers.playerDisplay${data.data.rank ? "Ranked" : "Unranked"}`, {pseudo: data.data.playerName ?? "", rank: data.data.rank})
 	})),
 	[SMALL_EVENT_DATA_KINDS.LIMOGES]: makeDataHandler(SMALL_EVENT_DATA_KINDS.LIMOGES, data =>
-		`${promptIntro(data)}${randomTranslation("smallEvents:limoges.stories", {questionId: data.data.questionId})}\n\n${i18n.t(`smallEvents:limoges.questions.${data.data.questionId}`)}`),
+		joinParagraphs([
+			`${promptIntro(data)}${randomTranslation("smallEvents:limoges.stories", {questionId: data.data.questionId})}`,
+			i18n.t(`smallEvents:limoges.questions.${data.data.questionId}`)
+		])),
 	[SMALL_EVENT_DATA_KINDS.LOTTERY]: () => i18n.t("smallEvents:lottery.intro"),
 	[SMALL_EVENT_DATA_KINDS.PET_FOOD]: makeDataHandler(SMALL_EVENT_DATA_KINDS.PET_FOOD, data => i18n.t(`smallEvents:petFood.intro.${data.data.foodType}`, {context: sexContext(data.data.petSex)})),
-	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: makeDataHandler(SMALL_EVENT_DATA_KINDS.PVE_ISLAND, data => `${promptIntro(data)}${randomTranslation("smallEvents:goToPVEIsland.stories", {
-		priceText: i18n.t(`smallEvents:goToPVEIsland.price${data.data.price === 0 ? "Free" : "Money"}`, {price: data.data.price})
-	})}\n\n${i18n.t("smallEvents:goToPVEIsland.confirm", {energy: data.data.energy.current, energyMax: data.data.energy.max})}`),
+	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: makeDataHandler(SMALL_EVENT_DATA_KINDS.PVE_ISLAND, data => joinParagraphs([
+		`${promptIntro(data)}${randomTranslation("smallEvents:goToPVEIsland.stories", {
+			priceText: i18n.t(`smallEvents:goToPVEIsland.price${data.data.price === 0 ? "Free" : "Money"}`, {price: data.data.price})
+		})}`,
+		i18n.t("smallEvents:goToPVEIsland.confirm", {energy: data.data.energy.current, energyMax: data.data.energy.max})
+	])),
 	[SMALL_EVENT_DATA_KINDS.SHOP]: makeDataHandler(SMALL_EVENT_DATA_KINDS.SHOP, data => shopPrompt(data.data)),
 	[SMALL_EVENT_DATA_KINDS.EPIC_SHOP]: makeDataHandler(SMALL_EVENT_DATA_KINDS.EPIC_SHOP, data => randomTranslation("smallEvents:epicItemShop.intro", {price: data.data.price})
 		+ (data.data.tip ? i18n.t("smallEvents:epicItemShop.reductionTip") : "")

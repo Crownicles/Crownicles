@@ -17,6 +17,7 @@ import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {i18n} from "@/src/translations/i18n";
+import {joinParagraphs} from "@/src/display/Paragraphs";
 
 const ROW_EMBLEM_SIZE = 26;
 
@@ -187,11 +188,11 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 	const data = collector.data.data;
 	const leave = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === SHOP_REACTION_KINDS.CLOSE));
 	const place = data.shopId ? `commands:report.city.shops.${data.shopId}` : null;
-	const story = [
-		place ? plainStory(i18n.t(`${place}.description`)) : null,
+	const story = joinParagraphs([
+		place && plainStory(i18n.t(`${place}.description`)),
 		i18n.t("commands:shop.greeting", {pseudo}),
 		i18n.t("commands:shop.currentMoney", {money: data.availableCurrency, currency: data.currency})
-	].filter(paragraph => paragraph !== null).join("\n\n");
+	]);
 
 	return (
 		<SwipeBack onClose={leave}>
