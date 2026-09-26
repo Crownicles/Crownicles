@@ -15,7 +15,14 @@ jest.mock("@/src/AppIcons", () => ({
 			? "🦊"
 			: path === "events.19.end.0" ? "🚶"
 			: path === "badPetSmallEvent.intimidate" ? "🦁"
-			: path === "witchSmallEvent.bat" ? "🦇" : null
+			: path === "witchSmallEvent.bat" ? "🦇"
+			: path === "goblets.metal" ? "🐲"
+			: path === "goblets.biggest" ? "🪣"
+			: path === "goblets.sparkling" ? "✨"
+			: path === "goblets.cracked" ? "💀"
+			: path === "collectors.question" ? "❓"
+			: path === "smallEvents.pet" ? "🐕‍🦺"
+			: path === "smallEvents.doNothing" ? "🚶" : null
 	}
 }));
 
@@ -106,6 +113,38 @@ describe("CollectorLabels", () => {
 
 		expect(reactionLabel(reaction, data)).toBe("app:collector.unknownChoice");
 		expect(isChoosable(reaction, data)).toBe(false);
+	});
+
+	it("uses the Discord emoji for each goblet choice", () => {
+		const data = {
+			type: SMALL_EVENT_DATA_KINDS.GOBLETS_GAME,
+			data: {}
+		} as const;
+		const goblets = [
+			{id: "metal", strategy: "classic", icon: "🐲"},
+			{id: "biggest", strategy: "safe", icon: "🪣"},
+			{id: "sparkling", strategy: "risky", icon: "✨"},
+			{id: "cracked", strategy: "gambler", icon: "💀"}
+		] as const;
+
+		for (const goblet of goblets) {
+			expect(reactionLabel({
+				type: SMALL_EVENT_REACTION_KINDS.GOBLETS_GAME,
+				data: {id: goblet.id, strategy: goblet.strategy}
+			}, data)).toBe(`${goblet.icon} smallEvents:gobletsGame.goblets.${goblet.id}.name`);
+		}
+	});
+
+	it("uses the Discord emoji for each pet food choice", () => {
+		const choices = [
+			{type: SMALL_EVENT_REACTION_KINDS.PET_FOOD_INVESTIGATE, label: "smallEvents:petFood.choices.investigate", icon: "❓"},
+			{type: SMALL_EVENT_REACTION_KINDS.PET_FOOD_SEND_PET, label: "smallEvents:petFood.choices.sendPet", icon: "🐕‍🦺"},
+			{type: SMALL_EVENT_REACTION_KINDS.PET_FOOD_CONTINUE, label: "smallEvents:petFood.choices.continue", icon: "🚶"}
+		] as const;
+
+		for (const choice of choices) {
+			expect(reactionLabel({type: choice.type, data: {}}, eventData)).toBe(`${choice.icon} ${choice.label}`);
+		}
 	});
 
 	it("tells the gardener's offer with the Discord story and seed price", () => {

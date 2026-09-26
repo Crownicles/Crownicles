@@ -412,14 +412,14 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 		if (!isDataOfType(data, SMALL_EVENT_DATA_KINDS.GOBLETS_GAME) || !isKnownGoblet(reaction.data.id, reaction.data.strategy)) {
 			return i18n.t("app:collector.unknownChoice");
 		}
-		return withIcon("smallEvents.gobletsGame", i18n.t(`smallEvents:gobletsGame.goblets.${reaction.data.id}.name`));
+		return withIcon(`goblets.${reaction.data.id}`, i18n.t(`smallEvents:gobletsGame.goblets.${reaction.data.id}.name`));
 	}),
 	[SMALL_EVENT_REACTION_KINDS.LOTTERY_EASY]: () => withIcon("collectors.lottery.easy", i18n.t("app:collector.choices.lotteryEasy")),
 	[SMALL_EVENT_REACTION_KINDS.LOTTERY_MEDIUM]: () => withIcon("collectors.lottery.medium", i18n.t("app:collector.choices.lotteryMedium")),
 	[SMALL_EVENT_REACTION_KINDS.LOTTERY_HARD]: () => withIcon("collectors.lottery.hard", i18n.t("app:collector.choices.lotteryHard")),
-	[SMALL_EVENT_REACTION_KINDS.PET_FOOD_INVESTIGATE]: () => withIcon("smallEvents.petFood", i18n.t("smallEvents:petFood.choices.investigate")),
-	[SMALL_EVENT_REACTION_KINDS.PET_FOOD_SEND_PET]: () => withIcon("smallEvents.petFood", i18n.t("smallEvents:petFood.choices.sendPet")),
-	[SMALL_EVENT_REACTION_KINDS.PET_FOOD_CONTINUE]: () => withIcon("smallEvents.petFood", i18n.t("smallEvents:petFood.choices.continue")),
+	[SMALL_EVENT_REACTION_KINDS.PET_FOOD_INVESTIGATE]: () => withIcon("collectors.question", i18n.t("smallEvents:petFood.choices.investigate")),
+	[SMALL_EVENT_REACTION_KINDS.PET_FOOD_SEND_PET]: () => withIcon("smallEvents.pet", i18n.t("smallEvents:petFood.choices.sendPet")),
+	[SMALL_EVENT_REACTION_KINDS.PET_FOOD_CONTINUE]: () => withIcon("smallEvents.doNothing", i18n.t("smallEvents:petFood.choices.continue")),
 	[SMALL_EVENT_REACTION_KINDS.WITCH]: makeReactionHandler(SMALL_EVENT_REACTION_KINDS.WITCH, reaction => {
 		if (AppIcons.getIconOrNull(`witchSmallEvent.${reaction.data.id}`) === null) {
 			return i18n.t("app:collector.unknownChoice");
