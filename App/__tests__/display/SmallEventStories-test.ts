@@ -25,6 +25,14 @@ describe("small-event stories told as on Discord", () => {
 		expect(smallEventStory("interactOtherPlayers", {})).toBe("smallEvents:interactOtherPlayers.no_one");
 	});
 
+	it("uses the pet sex code expected by the story translation context", () => {
+		for (const petSex of ["m", "f"]) {
+			const story = smallEventStory("pet", {interactionName: "nothing", petSex});
+
+			expect(story).toContain(`"context":"${petSex}"`);
+		}
+	});
+
 	it("completes the sky watching with its result, as Discord edits the same message", () => {
 		const story = smallEventStory(smallEventKey("SmallEventSpaceResultPacket"), {chosenEvent: "neoWS", values: {mainValue: 3}});
 

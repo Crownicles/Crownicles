@@ -42,6 +42,15 @@ describe("SmallEventChoiceOutcome", () => {
 		expect(onContinue).toHaveBeenCalledTimes(1);
 	});
 
+	it.each(RESULTS.filter(([result]) => result.event === "badPet" || result.event === "petFood"))(
+		"does not show a numeric affection change for result %#",
+		async result => {
+			await render(<SmallEventChoiceOutcome outcome={{result} as SmallEventChoiceResultRes} onContinue={jest.fn()} />);
+
+			expect(screen.queryByText("app:adventure.choiceResults.fields.affection")).toBeNull();
+		}
+	);
+
 	it("adds the score to the cart story only once the trip was paid", async () => {
 		await render(<SmallEventChoiceOutcome outcome={{result: {
 			event: "cart", outcome: "resolved", accepted: true, canAfford: true, isScam: false, isDisplayed: true, pointsWon: 20

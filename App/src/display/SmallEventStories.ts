@@ -37,7 +37,7 @@ function sex(value: unknown): PetSex {
 }
 
 function sexContext(value: unknown): string {
-	return sex(value) === "f" ? "female" : "male";
+	return sex(value);
 }
 
 function t(key: string, options: Record<string, unknown> = {}): string {

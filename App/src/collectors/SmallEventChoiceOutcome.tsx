@@ -105,7 +105,7 @@ function badPetDetails(result: Result<"badPet">): OutcomeDetails {
 			pet: petShortField({typeId: result.petId, sex: result.sex, ...result.petNickname ? {nickname: result.petNickname} : {}}),
 			context: sexContext(result.sex === "f")
 		}),
-		effects: presentEffects([lostAmountEffect(label("affection"), result.loveLost)])
+		effects: []
 	};
 }
 
@@ -236,7 +236,7 @@ function petFoodStory(result: Result<"petFood">): string {
 function petFoodDetails(result: Result<"petFood">): OutcomeDetails {
 	return {
 		story: petFoodStory(result),
-		effects: presentEffects([amountEffect(label("affection"), result.loveChange), timeLostEffect(result.timeLostMinutes ?? 0)])
+		effects: presentEffects([timeLostEffect(result.timeLostMinutes ?? 0)])
 	};
 }
 
