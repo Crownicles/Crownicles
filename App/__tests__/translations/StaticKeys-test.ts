@@ -40,23 +40,26 @@ function isEntries(value: unknown): value is Record<string, unknown> {
 	return !Array.isArray(value);
 }
 
+type KeySegment = {name: string; last: boolean};
+
 /** The last segment of a key may name a plural or context variant rather than the key itself. */
-function lastSegmentMatch(entries: Record<string, unknown>, segment: string): string | undefined {
-	const exact = [segment, ...I18NEXT_SUFFIXES.map(suffix => `${segment}${suffix}`)].find(candidate => Object.hasOwn(entries, candidate));
-	return exact ?? Object.keys(entries).find(candidate => candidate.startsWith(`${segment}_`));
+function lastSegmentMatch(entries: Record<string, unknown>, name: string): string | undefined {
+	const exact = [name, ...I18NEXT_SUFFIXES.map(suffix => `${name}${suffix}`)].find(candidate => Object.hasOwn(entries, candidate));
+	return exact ?? Object.keys(entries).find(candidate => candidate.startsWith(`${name}_`));
 }
 
-function segmentMatch(entries: Record<string, unknown>, segment: string, last: boolean): string | undefined {
-	if (last) return lastSegmentMatch(entries, segment);
-	return Object.hasOwn(entries, segment) ? segment : undefined;
+function segmentMatch(entries: Record<string, unknown>, segment: KeySegment): string | undefined {
+	if (segment.last) return lastSegmentMatch(entries, segment.name);
+	return Object.hasOwn(entries, segment.name) ? segment.name : undefined;
 }
 
-function translationAtPath(namespace: Record<string, unknown>, key: string): boolean {
-	const segments = key.split(".");
+type StaticKey = {namespaceName: string; segments: readonly string[]};
+
+function translationAtPath(namespace: Record<string, unknown>, {segments}: StaticKey): boolean {
 	let current: unknown = namespace;
-	for (const [index, segment] of segments.entries()) {
+	for (const [index, name] of segments.entries()) {
 		if (!isEntries(current)) return false;
-		const matched = segmentMatch(current, segment, index === segments.length - 1);
+		const matched = segmentMatch(current, {name, last: index === segments.length - 1});
 		if (matched === undefined) return false;
 		current = current[matched];
 	}
@@ -65,9 +68,9 @@ function translationAtPath(namespace: Record<string, unknown>, key: string): boo
 
 type TranslationRoots = {repositoryRoot: string; frenchRoot: string};
 
-function readNamespace(frenchRoot: string, namespaceName: string): Record<string, unknown> | null {
+function readNamespace(roots: TranslationRoots, {namespaceName}: StaticKey): Record<string, unknown> | null {
 	try {
-		return JSON.parse(fs.readFileSync(path.join(frenchRoot, `${namespaceName}.json`), "utf8")) as Record<string, unknown>;
+		return JSON.parse(fs.readFileSync(path.join(roots.frenchRoot, `${namespaceName}.json`), "utf8")) as Record<string, unknown>;
 	}
 	catch {
 		return null;
@@ -75,20 +78,20 @@ function readNamespace(frenchRoot: string, namespaceName: string): Record<string
 }
 
 /** A key built at runtime, or without a namespace, cannot be checked statically. */
-function staticKeyParts(fullKey: string): {namespaceName: string; key: string} | null {
+function staticKey(fullKey: string): StaticKey | null {
 	const [namespaceName, ...keyParts] = fullKey.split(":");
 	const key = keyParts.join(":");
-	return keyParts.length === 0 || key.includes("${") ? null : {namespaceName, key};
+	return keyParts.length === 0 || key.includes("${") ? null : {namespaceName, segments: key.split(".")};
 }
 
 function missingKeysInFile(file: string, roots: TranslationRoots): TranslationKeyUsage[] {
 	const source = fs.readFileSync(file, "utf8");
 	KEY_CALL.lastIndex = 0;
 	return [...source.matchAll(KEY_CALL)].flatMap(match => {
-		const parts = staticKeyParts(match[2]);
-		if (!parts) return [];
-		const namespace = readNamespace(roots.frenchRoot, parts.namespaceName);
-		if (namespace && translationAtPath(namespace, parts.key)) return [];
+		const key = staticKey(match[2]);
+		if (!key) return [];
+		const namespace = readNamespace(roots, key);
+		if (namespace && translationAtPath(namespace, key)) return [];
 		const line = source.slice(0, match.index).split("\n").length;
 		return [{file: path.relative(roots.repositoryRoot, file), line, key: match[2]}];
 	});
