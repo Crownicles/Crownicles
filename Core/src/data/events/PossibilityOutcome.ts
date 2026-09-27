@@ -27,6 +27,7 @@ import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import { reportExperience } from "../../core/onboarding/OnboardingExperience";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(minutesToMilliseconds(asMinutes(time)))
@@ -66,6 +67,7 @@ async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Playe
 		experienceChange = 0;
 	}
 	experienceChange += outcome.bonusExperience ?? 0;
+	experienceChange = await reportExperience(player, experienceChange);
 	if (experienceChange !== 0) {
 		await player.addExperience({
 			amount: experienceChange,

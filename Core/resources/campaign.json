@@ -14,7 +14,7 @@
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
-      "xpToWin": 20,
+      "xpToWin": 10,
       "moneyToWin": 0
     },
     {
@@ -22,7 +22,7 @@
       "missionVariant": 0,
       "missionObjective": 100,
       "gemsToWin": 1,
-      "xpToWin": 25,
+      "xpToWin": 10,
       "moneyToWin": 0
     },
     {
@@ -30,7 +30,7 @@
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 2,
-      "xpToWin": 20,
+      "xpToWin": 15,
       "moneyToWin": 0
     },
     {
@@ -38,7 +38,7 @@
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
-      "xpToWin": 25,
+      "xpToWin": 15,
       "moneyToWin": 0
     },
     {
@@ -46,7 +46,7 @@
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
-      "xpToWin": 40,
+      "xpToWin": 15,
       "moneyToWin": 0
     },
     {
@@ -54,7 +54,7 @@
       "missionVariant": 2,
       "missionObjective": 1,
       "gemsToWin": 1,
-      "xpToWin": 30,
+      "xpToWin": 15,
       "moneyToWin": 0
     },
     {

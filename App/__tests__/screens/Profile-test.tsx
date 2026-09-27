@@ -108,7 +108,7 @@ describe("Profile screen", () => {
 	});
 
 	it("explains once to a contest candidate what their new profile holds", async () => {
-		mockMissions.mockReturnValue({status: "ready", data: {campaignProgression: 4, missions: []}});
+		mockMissions.mockReturnValue({status: "ready", data: {campaignProgression: 5, missions: []}});
 		const view = await render(<Profile />);
 		expect(view.getByTestId("guide-tip-profile")).toBeTruthy();
 

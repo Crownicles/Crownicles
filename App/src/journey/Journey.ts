@@ -33,11 +33,12 @@ export type JourneyProgress = {
 	hasPet: boolean;
 	hasGuild: boolean;
 
-	/** The campaign reached the first item, which the profile's inventory is there to equip. */
+	/** The campaign got past the first item, which the profile's inventory is there to equip. */
 	inventoryTaught: boolean;
 };
 
-const INVENTORY_MISSION_POSITION = ONBOARDING_TRIALS.flatMap(trial => trial.missions).indexOf(ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM) + 1;
+/** The mission right after the first item: by then the player holds something to equip. */
+const INVENTORY_MISSION_POSITION = ONBOARDING_TRIALS.flatMap(trial => trial.missions).indexOf(ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM) + 2;
 
 /** Core sends 0 once the whole campaign is completed. */
 const CAMPAIGN_COMPLETED = 0;

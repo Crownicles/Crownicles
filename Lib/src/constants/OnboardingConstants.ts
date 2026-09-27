@@ -40,6 +40,9 @@ export abstract class OnboardingConstants {
 		drinkPotion: "findPotion"
 	};
 
+	/** Experience a single report may give during the first trial, before the long road of the second. */
+	static readonly FIRST_TRIAL_MAX_REPORT_EXPERIENCE = 15;
+
 	/** Small events kept off the road of a newcomer: empty stops, severe setbacks, and later mechanics. */
 	static readonly HIDDEN_SMALL_EVENTS: readonly string[] = [
 		"doNothing",

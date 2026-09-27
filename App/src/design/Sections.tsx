@@ -337,7 +337,7 @@ export function Figures({items}: {items: Figure[]}): ReactNode {
 	</View>)}</View>;
 }
 
-export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false, lock, hint, testID}: {
+export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false, disabled = false, lock, hint, testID}: {
 	icon: LucideIcon;
 
 	/** A game emoji drawn instead of `icon`, when the action spends or earns something the game draws. */
@@ -345,13 +345,16 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 	label: string;
 	onPress: () => void;
 	pending?: boolean;
+
+	/** Greyed without a notice, for when the screen already says why. */
+	disabled?: boolean;
 	lock?: Lock;
 
 	/** What the player should know before pressing, without preventing the press. */
 	hint?: Lock;
 	testID?: string;
 }): ReactNode {
-	const blocked = pending || Boolean(lock);
+	const blocked = pending || disabled || Boolean(lock);
 	const {scale, iconScale, handlers} = usePressMotion(onPress);
 	const glyph = emoji ? <TwemojiIcon emoji={emoji} size={BANNER_EMOJI_SIZE} /> : <Icon size={20} color={Theme.colors.paper} />;
 	const notice = lock ?? hint;

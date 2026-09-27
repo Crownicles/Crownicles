@@ -61,11 +61,11 @@ import {EmptyState, Note, QuickAction, QuickActions, Screen} from "@/src/design/
 import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
 import {Entrance} from "@/src/design/Entrance";
 import {Cure, CureEmblem, HappyEmblem} from "@/src/components/CureEmblem";
-import {isAlterationReport, reportOpensAt, reportReadyAt} from "@/src/display/ReportTiming";
+import {isAlterationReport, reportReadyAt} from "@/src/display/ReportTiming";
 import {plainStory} from "@/src/display/Markdown";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {SilentAnswer, useReportShortcut} from "@/src/store/useReportShortcut";
-import {BookOpen, CircleAlert, Clock3} from "@/src/design/FightIcons";
+import {BookOpen, CircleAlert} from "@/src/design/FightIcons";
 import {PlayerVitals} from "@/src/components/PlayerVitals";
 import {formatMoney} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
@@ -81,7 +81,6 @@ import {DeathScreen} from "@/src/components/DeathScreen";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {AdventureWelcome} from "@/src/components/AdventureWelcome";
 import {MissionRewardsBanner} from "@/src/components/MissionRewards";
-import {clockTime} from "@/src/display/Clock";
 import {useContest} from "@/src/onboarding/Contest";
 import {ADVENTURE_MISSIONS, ADVENTURE_TOOL_NAMES, ADVENTURE_TOOL_PARAM, AdventureToolName} from "@/src/navigation/AdventureTools";
 import {ONBOARDING_MISSION_IDS} from "ws-packets/src/objects/Onboarding";
@@ -369,19 +368,6 @@ function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): 
     return i18n.t("app:adventure.now");
   }
   return formatCountdown(packet.nextStopTime - currentTime);
-}
-
-/** Arriving opens the report too, so a stop planned after the arrival never delays it; an alteration holds it until it ends. */
-export function reportWait(packet: ReportTravelSummaryRes, currentTime: number): string {
-	const opensAt = reportOpensAt(packet);
-	return opensAt <= currentTime ? i18n.t("app:adventure.now") : formatCountdown(opensAt - currentTime);
-}
-
-/** How long the report still waits, and the hour of the player's own clock it opens at. */
-type ReportWait = {duration: string; clock: string};
-
-function reportWaitAt(packet: ReportTravelSummaryRes, currentTime: number): ReportWait {
-	return {duration: reportWait(packet, currentTime), clock: clockTime(reportOpensAt(packet))};
 }
 
 function hasNextStop(packet: ReportTravelSummaryRes): boolean {
@@ -705,19 +691,18 @@ function travelFigures(context: AdventureContext): Figure[] {
 	];
 }
 
-/** The report is the one thing to do here, so it says by itself why it is not ready yet, and at what hour it will be. */
-function ReportAdvance({reportReady, reportAction, waitFor}: {reportReady: boolean; reportAction: GameMutation<void>; waitFor?: ReportWait}): ReactNode {
-	const lock = reportReady || !waitFor ? undefined : {reason: i18n.t("app:adventure.notReadyAt", {time: waitFor.duration, clock: waitFor.clock}), icon: Clock3};
+/** Greyed until the stop is reached: the countdown above already says when. */
+function ReportAdvance({reportReady, reportAction}: {reportReady: boolean; reportAction: GameMutation<void>}): ReactNode {
 	return <>
 		{reportAction.message ? <Note>{reportAction.message}</Note> : null}
 		<ActionBanner
 			icon={BookOpen}
 			label={i18n.t("app:adventure.continueReport")}
 			pending={reportAction.pending}
+			disabled={!reportReady}
 			onPress={(): void => {
 				reportAction.submit().catch(console.error);
 			}}
-			{...lock ? {lock} : {}}
 		/>
 	</>;
 }
@@ -775,11 +760,10 @@ function ReportReadyPulse({ready, children}: {ready: boolean; children: ReactNod
 }
 
 /** A single way on: the free report once it is ready, otherwise tokens to reach the stop now. */
-function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
+function JourneyAction({packet, reportReady, reportAction, advance}: {
 	packet: ReportTravelSummaryRes;
 	reportReady: boolean;
 	reportAction: GameMutation<void>;
-	waitFor: ReportWait;
 	advance: PendingAction;
 }): ReactNode {
 	const tokens = tokenOffer(packet, reportReady);
@@ -787,7 +771,7 @@ function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 		? <TokenAdvance tokens={tokens} reportAction={reportAction} advance={advance} />
 		: cureReplacesReport(packet, reportReady)
 			? null
-			: <ReportAdvance reportReady={reportReady} reportAction={reportAction} waitFor={waitFor} />;
+			: <ReportAdvance reportReady={reportReady} reportAction={reportAction} />;
 	return action ? <ReportReadyPulse ready={reportReady}>{action}</ReportReadyPulse> : null;
 }
 
@@ -880,7 +864,6 @@ function AdventureActions({packet, currentTime, actions}: {packet: ReportTravelS
 			packet={packet}
 			reportReady={actions.reportReady}
 			reportAction={actions.reportAction}
-			waitFor={reportWaitAt(packet, currentTime)}
 			advance={actions.advance}
 		/>
 		{packet.heal && canCure(packet) ? <HealAction heal={packet.heal} action={actions.heal} /> : null}

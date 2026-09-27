@@ -35,12 +35,12 @@ describe("journey of a character who just set off", () => {
 		expect(mockResetQueries).toHaveBeenCalledTimes(1);
 	});
 
-	it("opens the profile only once the campaign reaches the first item", async () => {
-		jest.mocked(useMissions).mockReturnValue({status: "ready", data: {campaignProgression: 2} as MissionsRes});
+	it("opens the profile only once the first item is found", async () => {
+		jest.mocked(useMissions).mockReturnValue({status: "ready", data: {campaignProgression: 4} as MissionsRes});
 		const {result, rerender} = await renderHook(() => useJourney());
 		expect(result.current.tabs).toEqual(["index"]);
 
-		jest.mocked(useMissions).mockReturnValue({status: "ready", data: {campaignProgression: 4} as MissionsRes});
+		jest.mocked(useMissions).mockReturnValue({status: "ready", data: {campaignProgression: 5} as MissionsRes});
 		await rerender({});
 		expect(result.current.tabs).toEqual(["index", "profile"]);
 	});

@@ -6,11 +6,12 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { SmallEventWinPersonalXPPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventWinPersonalXPPacket";
 import { Maps } from "../maps/Maps";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { reportExperience } from "../onboarding/OnboardingExperience";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 	executeSmallEvent: async (response, player): Promise<void> => {
-		const xpWon = RandomUtils.rangedInt(SmallEventConstants.EXPERIENCE);
+		const xpWon = await reportExperience(player, RandomUtils.rangedInt(SmallEventConstants.EXPERIENCE));
 		await player.addExperience({
 			amount: xpWon,
 			response,

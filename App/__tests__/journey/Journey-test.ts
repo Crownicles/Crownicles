@@ -19,10 +19,10 @@ describe("journey unlocks", () => {
 		expect(openTabs(unlockedFeatures(progress({started: false})))).toEqual(["index"]);
 	});
 
-	it("keeps the profile closed until the campaign reaches the first item, and open once the campaign is over", () => {
-		expect(isInventoryTaught(3)).toBe(false);
+	it("keeps the profile closed until the first item is found, and open once the campaign is over", () => {
+		expect(isInventoryTaught(4)).toBe(false);
 		expect(openTabs(unlockedFeatures(progress({inventoryTaught: false})))).toEqual(["index"]);
-		expect(isInventoryTaught(4)).toBe(true);
+		expect(isInventoryTaught(5)).toBe(true);
 		expect(isInventoryTaught(0)).toBe(true);
 	});
 

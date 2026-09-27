@@ -333,7 +333,6 @@
       "arrivedTitle": "Vous êtes arrivé à destination",
       "arrivedSubtitle": "{{destination}} est en vue : continuez l'aventure pour découvrir ce qui vous y attend."
     },
-    "notReadyAt": "Prochain arrêt gratuit à {{clock}}, dans {{time}}.",
     "alteration": {
       "eyebrow": "Rapport · altération",
       "title": "Altération d'état",
