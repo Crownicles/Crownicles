@@ -96,7 +96,7 @@ export function UnclaimedMissions(): ReactNode {
 			</Card>
 			<ActionBanner
 				icon={Gift}
-				emoji={AppIcons.getIcon("missions.total")}
+				emoji={AppIcons.getIcon("missions.rewards")}
 				label={i18n.t("app:missions.rewards.claim", {count})}
 				onPress={(): void => setRevealed(rewards)}
 				testID="mission-rewards-claim"
@@ -116,7 +116,7 @@ export function MissionRewardsBanner(): ReactNode {
 	if (count === 0) return null;
 	return <ActionBanner
 		icon={Gift}
-		emoji={AppIcons.getIcon("missions.total")}
+		emoji={AppIcons.getIcon("missions.rewards")}
 		label={i18n.t("app:missions.rewards.waiting", {count})}
 		onPress={(): void => router.navigate(ADVENTURE_MISSIONS)}
 		testID="mission-rewards-banner"

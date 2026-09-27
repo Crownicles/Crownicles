@@ -25,8 +25,8 @@ import {useMissionRewards} from "@/src/store/MissionRewardsStore";
 const CLOCK_INTERVAL = 60_000;
 const MISSION_EMBLEM_SIZE = 26;
 
-/** A mission and when it lapses; missions listed here are still to do. */
-type MissionEntryData = {key: string; mission: Mission; deadline?: string};
+/** A mission still to do, with what kind it is and when it lapses. */
+type MissionEntryData = {key: string; mission: Mission; kind: string; deadline?: string};
 type MissionListProps = {entries: MissionEntryData[]; now: number; unfolding: ExpandedEntry<string>};
 
 function MissionList({entries, now, unfolding}: MissionListProps): ReactNode {
@@ -35,7 +35,7 @@ function MissionList({entries, now, unfolding}: MissionListProps): ReactNode {
 			key={entry.key}
 			emblem={<TwemojiIcon emoji={AppIcons.getIcon(`missions.${entry.mission.missionType}`)} size={MISSION_EMBLEM_SIZE} />}
 			label={missionDescription(entry.mission, now)}
-			caption={i18n.t("app:missions.inProgress")}
+			caption={entry.kind}
 			end={<Text style={sectionStyles.amount}>{i18n.t("app:profile.formats.progress", {value: entry.mission.numberDone, max: entry.mission.missionObjective})}</Text>}
 			expanded={unfolding.isExpanded(entry.key)}
 			onToggle={(): void => unfolding.toggle(entry.key)}
@@ -52,66 +52,68 @@ function MissionList({entries, now, unfolding}: MissionListProps): ReactNode {
 	</ExpandableList>;
 }
 
-function CampaignMissions({data, now, unfolding, first}: {data: MissionsRes; first: boolean} & Omit<MissionListProps, "entries">): ReactNode {
-	const mission = data.missions.find(entry => entry.missionType === MISSION_TYPES.CAMPAIGN);
+function missionOfType(data: MissionsRes, type: Mission["missionType"]): Mission | undefined {
+	return data.missions.find(entry => entry.missionType === type);
+}
+
+function campaignEntry(data: MissionsRes): MissionEntryData[] {
+	const mission = missionOfType(data, MISSION_TYPES.CAMPAIGN);
+	if (data.campaignProgression === 0 || !mission) return [];
+	return [{key: "campaign", mission, kind: i18n.t("app:missions.kinds.campaign", {value: data.campaignProgression, max: data.maxCampaignNumber})}];
+}
+
+function dailyEntry(data: MissionsRes): MissionEntryData[] {
+	const mission = missionOfType(data, MISSION_TYPES.DAILY);
+	if (data.dailyMission.completed || !mission) return [];
+	return [{key: "daily", mission, kind: i18n.t("app:missions.kinds.daily"), deadline: i18n.t("app:missions.resetsAt", {date: missionDate(data.dailyMission.resetsAt)})}];
+}
+
+function sideEntries(data: MissionsRes): MissionEntryData[] {
+	return data.missions.filter(entry => entry.missionType === MISSION_TYPES.NORMAL).map(mission => ({
+		key: `${mission.missionId}:${mission.missionVariant}:${mission.expiresAt}`,
+		mission,
+		kind: i18n.t("app:missions.kinds.side"),
+		...mission.expiresAt ? {deadline: i18n.t("app:missions.expiresAt", {date: missionDate(Date.parse(mission.expiresAt))})} : {}
+	}));
+}
+
+/** Everything the player can still work on, whatever its kind: the one place to look for what to do. */
+function MissionsToDo({data, now, unfolding, first}: {data: MissionsRes; first: boolean} & Omit<MissionListProps, "entries">): ReactNode {
+	const entries = [...campaignEntry(data), ...dailyEntry(data), ...sideEntries(data)];
 	return <>
-		<SectionHeader first={first} action={{hint: i18n.t("app:profile.formats.progress", {value: data.campaignProgression || data.maxCampaignNumber, max: data.maxCampaignNumber})}}>{i18n.t("app:missions.campaign")}</SectionHeader>
-		{data.campaignProgression === 0
-			? <Note>{i18n.t("app:missions.campaignCompleted")}</Note>
-			: mission
-				? <MissionList entries={[{key: "campaign", mission}]} now={now} unfolding={unfolding} />
-				: <Note>{i18n.t("app:missions.empty")}</Note>}
+		<SectionHeader first={first}>{i18n.t("app:missions.todo")}</SectionHeader>
+		{entries.length === 0
+			? <Note>{i18n.t("app:missions.nothingToDo")}</Note>
+			: <MissionList entries={entries} now={now} unfolding={unfolding} />}
 	</>;
 }
 
-/** Once done, today's mission steps aside: nothing more to do until the next one arrives. */
-function DailyMissionDone({mission, data, now}: {mission: Mission; data: MissionsRes; now: number}): ReactNode {
-	return <ExpandableList>
-		<EntryRow
-			emblem={<TwemojiIcon emoji={AppIcons.getIcon("messages.validate")} size={MISSION_EMBLEM_SIZE} />}
-			title={missionDescription(mission, now)}
-			subtitle={i18n.t("app:missions.dailyDone", {date: missionDate(data.dailyMission.resetsAt)})}
-			disabled
-			testID="mission-daily-done"
-		/>
-	</ExpandableList>;
+function DoneRow({title, subtitle, testID}: {title: string; subtitle?: string; testID: string}): ReactNode {
+	return <EntryRow
+		emblem={<TwemojiIcon emoji={AppIcons.getIcon("messages.validate")} size={MISSION_EMBLEM_SIZE} />}
+		title={title}
+		{...subtitle ? {subtitle} : {}}
+		disabled
+		testID={testID}
+	/>;
 }
 
-function DailyMission({data, now, unfolding}: {data: MissionsRes} & Omit<MissionListProps, "entries">): ReactNode {
-	const mission = data.missions.find(entry => entry.missionType === MISSION_TYPES.DAILY);
-	if (!mission) {
-		return <>
-			<SectionHeader>{i18n.t("app:missions.daily")}</SectionHeader>
-			<Note>{i18n.t("app:missions.empty")}</Note>
-		</>;
-	}
+/** What is over and asks nothing more, set apart below so it never reads as something to do. */
+function MissionsDone({data, now}: {data: MissionsRes; now: number}): ReactNode {
+	const daily = missionOfType(data, MISSION_TYPES.DAILY);
+	const dailyDone = data.dailyMission.completed && daily !== undefined;
+	const campaignDone = data.campaignProgression === 0;
+	if (!dailyDone && !campaignDone) return null;
 	return <>
-		<SectionHeader>{i18n.t("app:missions.daily")}</SectionHeader>
-		{data.dailyMission.completed
-			? <DailyMissionDone mission={mission} data={data} now={now} />
-			: <MissionList
-				entries={[{key: "daily", mission, deadline: i18n.t("app:missions.resetsAt", {date: missionDate(data.dailyMission.resetsAt)})}]}
-				now={now}
-				unfolding={unfolding}
-			/>}
-	</>;
-}
-
-function SideMissions({data, now, unfolding}: {data: MissionsRes} & Omit<MissionListProps, "entries">): ReactNode {
-	const missions = data.missions.filter(entry => entry.missionType === MISSION_TYPES.NORMAL);
-	return <>
-		<SectionHeader action={{hint: i18n.t("app:profile.formats.progress", {value: missions.length, max: data.maxSideMissionSlots})}}>{i18n.t("app:missions.side")}</SectionHeader>
-		{missions.length === 0
-			? <Note>{i18n.t("app:missions.noSideMissions")}</Note>
-			: <MissionList
-				entries={missions.map(mission => ({
-					key: `${mission.missionId}:${mission.missionVariant}:${mission.expiresAt}`,
-					mission,
-					...mission.expiresAt ? {deadline: i18n.t("app:missions.expiresAt", {date: missionDate(Date.parse(mission.expiresAt))})} : {}
-				}))}
-				now={now}
-				unfolding={unfolding}
-			/>}
+		<SectionHeader>{i18n.t("app:missions.done")}</SectionHeader>
+		<ExpandableList>
+			{dailyDone ? <DoneRow
+				title={missionDescription(daily, now)}
+				subtitle={i18n.t("app:missions.dailyDone", {date: missionDate(data.dailyMission.resetsAt)})}
+				testID="mission-daily-done"
+			/> : null}
+			{campaignDone ? <DoneRow title={i18n.t("app:missions.campaignCompleted")} testID="mission-campaign-done" /> : null}
+		</ExpandableList>
 	</>;
 }
 
@@ -119,14 +121,9 @@ export function MissionsContent({data, now}: {data: MissionsRes; now: number}): 
 	const unfolding = useExpandedEntry<string>();
 	const rewardsFirst = useMissionRewards().rewards.missions.length > 0;
 	if (data.missions.length === 0) return <EmptyState>{i18n.t("app:missions.empty")}</EmptyState>;
-	const sections = {now, unfolding};
-	const daily = <DailyMission data={data} {...sections} />;
-	// A daily mission already done moves below what is left to do.
 	return <>
-		<CampaignMissions data={data} first={!rewardsFirst} {...sections} />
-		{data.dailyMission.completed ? null : daily}
-		<SideMissions data={data} {...sections} />
-		{data.dailyMission.completed ? daily : null}
+		<MissionsToDo data={data} first={!rewardsFirst} now={now} unfolding={unfolding} />
+		<MissionsDone data={data} now={now} />
 	</>;
 }
 

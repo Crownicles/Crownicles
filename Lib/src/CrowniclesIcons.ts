@@ -2435,7 +2435,8 @@ export const CrowniclesIcons: {
 		campaign: "📖",
 		sideMission: "📜",
 		total: "🧾",
-		book: "📖"
+		book: "📖",
+		rewards: "👑"
 	},
 	messages: {
 		validate: "✅",

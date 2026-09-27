@@ -42,26 +42,24 @@ function packet(): MissionsRes {
 describe("missions screen", () => {
 	beforeEach(() => jest.clearAllMocks());
 
-	it("renders all families and sets aside the daily mission the server calls done", async () => {
+	it("lists what is left to do apart from the daily mission the server calls done", async () => {
 		await render(<MissionsContent data={packet()} now={NOW} />);
-		expect(screen.getByText("app:missions.campaign")).toBeTruthy();
-		expect(screen.getByText("app:missions.daily")).toBeTruthy();
-		expect(screen.getByText("app:missions.side")).toBeTruthy();
+		expect(screen.getByText("app:missions.kinds.campaign")).toBeTruthy();
+		expect(screen.getByText("app:missions.kinds.side")).toBeTruthy();
+		expect(screen.queryByText("app:missions.kinds.daily")).toBeNull();
 		expect(screen.getByText("app:missions.dailyDone")).toBeTruthy();
-		expect(screen.getAllByText("app:missions.inProgress")).toHaveLength(2);
-		expect(screen.getByText("4 / 150")).toBeTruthy();
-		expect(screen.getByText("1 / 2")).toBeTruthy();
-		const headers = ["app:missions.side", "app:missions.daily"].map(header => JSON.stringify(screen.toJSON()).indexOf(header));
+		const headers = ["app:missions.todo", "app:missions.done"].map(header => JSON.stringify(screen.toJSON()).indexOf(header));
+		expect(headers[0]).toBeGreaterThan(-1);
 		expect(headers[0]).toBeLessThan(headers[1]);
+		expect(JSON.stringify(screen.toJSON()).indexOf("app:missions.dailyDone")).toBeGreaterThan(headers[1]);
 	});
 
-	it("keeps today's mission up front while it is still to do", async () => {
+	it("keeps today's mission among the things to do while it is not done, with nothing set apart", async () => {
 		const data = packet();
 		data.dailyMission.completed = false;
 		await render(<MissionsContent data={data} now={NOW} />);
-		expect(screen.queryByText("app:missions.dailyDone")).toBeNull();
-		const headers = ["app:missions.daily", "app:missions.side"].map(header => JSON.stringify(screen.toJSON()).indexOf(header));
-		expect(headers[0]).toBeLessThan(headers[1]);
+		expect(screen.getByText("app:missions.kinds.daily")).toBeTruthy();
+		expect(screen.queryByText("app:missions.done")).toBeNull();
 	});
 
 	it("keeps a mission's gauge folded until its line is opened", async () => {
@@ -71,13 +69,14 @@ describe("missions screen", () => {
 		expect(screen.getByText("app:missions.progress")).toBeTruthy();
 	});
 
-	it("renders a completed campaign and no secondary mission", async () => {
+	it("sets a completed campaign apart and shows no empty section for secondary missions", async () => {
 		const data = packet();
 		data.campaignProgression = 0;
 		data.missions = [mission(MISSION_TYPES.DAILY)];
 		await render(<MissionsContent data={data} now={NOW} />);
 		expect(screen.getByText("app:missions.campaignCompleted")).toBeTruthy();
-		expect(screen.getByText("app:missions.noSideMissions")).toBeTruthy();
+		expect(screen.queryByText("app:missions.kinds.side")).toBeNull();
+		expect(screen.getByText("app:missions.nothingToDo")).toBeTruthy();
 	});
 
 	it("shows an empty state instead of invented objectives", async () => {
@@ -99,7 +98,7 @@ describe("missions screen", () => {
 		const invalidate = jest.spyOn(client, "invalidateQueries");
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: packet()});
 		await render(<QueryClientProvider client={client}><Missions /></QueryClientProvider>);
-		await waitFor(() => expect(screen.getByText("app:missions.daily")).toBeTruthy());
+		await waitFor(() => expect(screen.getByText("app:missions.todo")).toBeTruthy());
 		expect(GameClient.request).toHaveBeenCalledWith(expect.any(MissionsReq), MissionsRes, expect.any(Array));
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({askedPlayer: {}});
 		expect(invalidate).toHaveBeenCalledWith({queryKey: gameKey(GAME_ENTITIES.PROFILE)});
@@ -111,7 +110,7 @@ describe("missions screen", () => {
 		await render(<QueryClientProvider client={client}><Missions /></QueryClientProvider>);
 		await waitFor(() => expect(screen.getByText("app:common.error")).toBeTruthy());
 		await fireEvent.press(screen.getByText("app:common.retry"));
-		await waitFor(() => expect(screen.getByText("app:missions.daily")).toBeTruthy());
+		await waitFor(() => expect(screen.getByText("app:missions.todo")).toBeTruthy());
 		expect(screen.queryByText("app:common.error")).toBeNull();
 	});
 });
