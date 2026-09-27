@@ -18,15 +18,15 @@ import {isJourneyTab, JOURNEY_TABS, JourneyTab} from "@/src/journey/Journey";
 import {Journey, useJourney} from "@/src/journey/useJourney";
 import {MissionCompletedToast} from "@/src/components/MissionRewards";
 import {BlessingActivatedToast} from "@/src/components/BlessingActivatedToast";
-import {useMissionRewards, useMissionRewardsAccount} from "@/src/store/MissionRewardsStore";
+import {useMissionRewards} from "@/src/store/MissionRewardsStore";
 import {useNotificationNavigation, useReportNotification} from "@/src/notifications/useNotifications";
 import {allowPermissionPrompt} from "@/src/notifications/ReportNotifications";
 import {useReportView} from "@/src/store/useReportActions";
 import {ContestView, useContest} from "@/src/onboarding/Contest";
-import {OnboardingMoments, ONBOARDING_MOMENTS, useOnboardingAccount, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
+import {OnboardingMoments, ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
 import {ContestSeal, DepartureFork, forkDue, sealDue, stageMoment, StopArrivedToast} from "@/src/onboarding/OnboardingStage";
 import {RoyalLetter} from "@/src/onboarding/RoyalLetter";
-import {useRoyalLetter, useRoyalLetterAccount} from "@/src/store/RoyalLetterStore";
+import {useRoyalLetter} from "@/src/store/RoyalLetterStore";
 import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 
 const screenStyles = {flex: 1, backgroundColor: Theme.colors.paper};
@@ -216,7 +216,7 @@ function OnboardingOverlays({journey}: {journey: Journey}): ReactNode {
 	useContestPermissionPrompt(contest);
 	const unlock = useUnlockCelebration(journey, stageMoment(view));
 	if (busy) return null;
-	if (letter) return <RoyalLetter letter={letter} />;
+	if (letter) return <RoyalLetter unread={letter} />;
 	return unlock ?? <ContestOverlay view={view} contest={contest} moments={moments} />;
 }
 
@@ -230,9 +230,6 @@ function StopToast(): ReactNode {
 export default function TabLayout(): ReactNode {
 	const dead = usePlayerIsDead();
 	const journey = useJourney();
-	useMissionRewardsAccount();
-	useOnboardingAccount();
-	useRoyalLetterAccount();
 	useReportNotification();
 	useNotificationNavigation();
 	if (dead) {

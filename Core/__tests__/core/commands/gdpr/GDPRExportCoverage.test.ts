@@ -345,6 +345,8 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"campaignBlob",
 		"royalLettersReceived",
 		"lastRoyalLetterAt",
+		"appSeen",
+		"pendingReveals",
 		"updatedAt",
 		"createdAt"
 	],

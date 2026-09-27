@@ -1,11 +1,13 @@
-import {useEffect, useMemo, useSyncExternalStore} from "react";
+import {useEffect, useMemo} from "react";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {usePlayerHasNotStarted} from "@/src/store/usePlayerHasNotStarted";
 import {
-	JOURNEY_STEPS, JOURNEY_TABS, JourneyFeature, JourneyProgress, JourneyStep, JourneyTab, nextLevelStep, openTabs, unlockedFeatures
+	isInventoryTaught, JOURNEY_STEPS, JOURNEY_TABS, JourneyFeature, JourneyProgress, JourneyStep, JourneyTab, nextLevelStep, openTabs, unlockedFeatures
 } from "@/src/journey/Journey";
-import {journeyStore, JourneyRecord} from "@/src/journey/JourneyStore";
+import {useMissions} from "@/src/components/Missions";
+import {announcedFlag, firstRecord, journeyRecordOf, journeyStore, JourneyRecord, visitedFlag} from "@/src/journey/JourneyStore";
+import {AppStateChange, useAppState, useAppStateChange} from "@/src/store/AppState";
 
 export type Journey = {
 
@@ -48,32 +50,44 @@ function hasUnvisitedUnlock(tab: JourneyTab, unlocked: readonly JourneyFeature[]
 }
 
 /** The character's progress as far as unlocking goes, kept stable while none of it changes. */
-function useJourneyProgress(): {progress: JourneyProgress | null; account: string | null} {
+function useJourneyProgress(): JourneyProgress | null {
 	const profile = usePlayerProfile();
+	const missions = useMissions();
 	const notStarted = usePlayerHasNotStarted();
 	const data = profile.status === "ready" ? profile.data : null;
-	const known = notStarted || data !== null;
+	const known = notStarted || data !== null && missions.status !== "loading";
+	// Without the missions, a veteran keeps the profile rather than lose it on a failed request.
+	const inventoryTaught = missions.status !== "ready" || isInventoryTaught(missions.data.campaignProgression);
 	const {level, hasPet, hasGuild} = profileFacts(data);
 	useEffect(() => {
 		if (notStarted) journeyStore.markNewcomer();
 	}, [notStarted]);
-	const progress = useMemo(
-		(): JourneyProgress | null => (known ? {started: !notStarted, level, hasPet, hasGuild} : null),
-		[known, notStarted, level, hasPet, hasGuild]
+	return useMemo(
+		(): JourneyProgress | null => (known ? {started: !notStarted, level, hasPet, hasGuild, inventoryTaught} : null),
+		[known, notStarted, level, hasPet, hasGuild, inventoryTaught]
 	);
-	return {progress, account: data?.pseudo ?? null};
+}
+
+/** The record Core keeps, written once for a character the app meets for the first time. */
+function useJourneyRecord(unlocked: readonly JourneyFeature[] | null): {record: JourneyRecord | null; change: (change: AppStateChange) => void} {
+	const state = useAppState();
+	const change = useAppStateChange();
+	const seen = state.status === "ready" ? state.data.seen : null;
+	const record = useMemo(() => (seen ? journeyRecordOf(seen) : null), [seen]);
+	const toWrite = seen !== null && record === null && unlocked !== null;
+	useEffect(() => {
+		if (toWrite && unlocked) change({seen: firstRecord(journeyStore.isNewcomer(), unlocked)});
+	}, [toWrite, unlocked, change]);
+	return {record, change};
 }
 
 /** How far the character has come, which parts of the app it has opened, and what it has yet to be shown. */
 export function useJourney(): Journey {
-	const {progress, account} = useJourneyProgress();
-	const record = useSyncExternalStore(journeyStore.subscribe, journeyStore.getSnapshot, journeyStore.getSnapshot);
+	const progress = useJourneyProgress();
 	const unlocked = useMemo(() => (progress ? unlockedFeatures(progress) : null), [progress]);
+	const {record, change} = useJourneyRecord(unlocked);
 	const tabs = useMemo(() => (unlocked ? openTabs(unlocked) : journeyStore.lastTabs() ?? [JOURNEY_TABS.ADVENTURE]), [unlocked]);
 
-	useEffect(() => {
-		if (account && unlocked) journeyStore.load(account, unlocked);
-	}, [account, unlocked]);
 	useEffect(() => {
 		if (unlocked) journeyStore.saveLastTabs(tabs);
 	}, [unlocked, tabs]);
@@ -84,9 +98,12 @@ export function useJourney(): Journey {
 		nextStep: progress ? nextLevelStep(progress) : null,
 		unannounced: firstUnannounced(progress, record),
 		isNew: tab => hasUnvisitedUnlock(tab, unlocked, record),
-		announce: feature => journeyStore.announce(feature),
+		announce: feature => {
+			if (record && !record.announced.includes(feature)) change({seen: [announcedFlag(feature)]});
+		},
 		visit: tab => {
-			if (unlocked) journeyStore.visit(unlockedOn(tab, unlocked));
+			const features = unlocked && record ? unlockedOn(tab, unlocked).filter(feature => !record.visited.includes(feature)) : [];
+			if (features.length > 0) change({seen: features.flatMap(feature => [announcedFlag(feature), visitedFlag(feature)])});
 		}
 	};
 }

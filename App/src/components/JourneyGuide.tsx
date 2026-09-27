@@ -7,8 +7,8 @@ import {Card, EntryRow} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {useMissions} from "@/src/components/Missions";
 import {missionDescription} from "@/src/display/Missions";
-import {JOURNEY_TABS} from "@/src/journey/Journey";
 import {useJourney} from "@/src/journey/useJourney";
+import {ADVENTURE_MISSIONS} from "@/src/navigation/AdventureTools";
 import {i18n} from "@/src/translations/i18n";
 
 const GUIDE_EMBLEM = 26;
@@ -26,7 +26,6 @@ export function JourneyGuide(): ReactNode {
 		? missions.data.missions.find(mission => mission.missionType === MISSION_TYPES.CAMPAIGN)
 		: undefined;
 	if (!campaign) return null;
-	const canOpenMissions = journey.tabs.includes(JOURNEY_TABS.PROFILE);
 	return <>
 		<SectionHeader>{i18n.t("app:journey.title")}</SectionHeader>
 		<Card>
@@ -34,7 +33,7 @@ export function JourneyGuide(): ReactNode {
 				emblem={<TwemojiIcon emoji={AppIcons.getIcon(`missions.${campaign.missionType}`)} size={GUIDE_EMBLEM} />}
 				title={missionDescription(campaign, now)}
 				subtitle={i18n.t("app:journey.nextStep", {value: campaign.numberDone, max: campaign.missionObjective})}
-				{...canOpenMissions ? {onPress: (): void => router.push("/profile/missions")} : {}}
+				onPress={(): void => router.navigate(ADVENTURE_MISSIONS)}
 				testID="journey-campaign"
 			/>
 		</Card>

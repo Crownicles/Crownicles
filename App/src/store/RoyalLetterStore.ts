@@ -1,99 +1,21 @@
-import {useEffect, useSyncExternalStore} from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {PendingReveal} from "ws-packets/src/fromServer/appState/AppStateRes";
 import {RoyalLetterRes} from "ws-packets/src/fromServer/onboarding/RoyalLetterRes";
-import {WebSocketClient} from "@/src/networking/WebSocketClient";
-import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {useAppState, useAppStateChange} from "@/src/store/AppState";
 
-type RoyalLetterSnapshot = {account: string | null; unread: readonly RoyalLetterRes[]; ready: boolean};
+export type UnreadRoyalLetter = {id: number; letter: RoyalLetterRes};
 
-const STORAGE_KEY_PREFIX = "royal-letters:";
-
-const LETTER_NUMBER_FIELDS = ["letter", "letters", "tokens", "money", "gems"] as const;
-
-function isRoyalLetter(value: unknown): value is RoyalLetterRes {
-	if (typeof value !== "object" || value === null) return false;
-	const letter = value as Record<string, unknown>;
-	return LETTER_NUMBER_FIELDS.every(field => typeof letter[field] === "number");
+/** The oldest letter Core still keeps for the player to read. */
+export function firstUnreadLetter(reveals: readonly PendingReveal[]): UnreadRoyalLetter | null {
+	const reveal = reveals.find(candidate => candidate.letter !== undefined);
+	return reveal?.letter ? {id: reveal.id, letter: reveal.letter} : null;
 }
 
-function parse(stored: string | null): readonly RoyalLetterRes[] {
-	if (!stored) return [];
-	try {
-		const parsed: unknown = JSON.parse(stored);
-		return Array.isArray(parsed) ? parsed.filter(isRoyalLetter) : [];
-	}
-	catch {
-		return [];
-	}
+export function useRoyalLetter(): UnreadRoyalLetter | null {
+	const state = useAppState();
+	return state.status === "ready" ? firstUnreadLetter(state.data.reveals) : null;
 }
 
-function merge(cached: readonly RoyalLetterRes[], received: readonly RoyalLetterRes[]): readonly RoyalLetterRes[] {
-	const letters = new Map<number, RoyalLetterRes>();
-	for (const letter of [...cached, ...received]) letters.set(letter.letter, letter);
-	return [...letters.values()].sort((first, second) => first.letter - second.letter);
-}
-
-class RoyalLetterStore {
-	private snapshot: RoyalLetterSnapshot = {account: null, unread: [], ready: false};
-
-	private readonly listeners = new Set<() => void>();
-
-	public constructor() {
-		WebSocketClient.getInstance().registerPushedPacketHandler<RoyalLetterRes>(RoyalLetterRes.wireName, this.receive);
-	}
-
-	public readonly subscribe = (listener: () => void): (() => void) => {
-		this.listeners.add(listener);
-		return (): void => {
-			this.listeners.delete(listener);
-		};
-	};
-
-	public readonly getSnapshot = (): RoyalLetterSnapshot => this.snapshot;
-
-	public async load(account: string): Promise<void> {
-		if (this.snapshot.account === account) return;
-		const pending = this.snapshot.account === null ? this.snapshot.unread : [];
-		this.set({account, unread: pending, ready: false});
-		const cached = parse(await AsyncStorage.getItem(`${STORAGE_KEY_PREFIX}${account}`).catch(() => null));
-		if (this.snapshot.account !== account) return;
-		this.set({account, unread: merge(cached, this.snapshot.unread), ready: true});
-	}
-
-	public readonly read = (): void => {
-		if (this.snapshot.unread.length === 0) return;
-		this.set({...this.snapshot, unread: this.snapshot.unread.slice(1)});
-	};
-
-	private readonly receive = (packet: RoyalLetterRes): void => {
-		this.set({...this.snapshot, unread: merge(this.snapshot.unread, [packet])});
-	};
-
-	private set(snapshot: RoyalLetterSnapshot): void {
-		this.snapshot = snapshot;
-		if (snapshot.ready && snapshot.account !== null) {
-			const key = `${STORAGE_KEY_PREFIX}${snapshot.account}`;
-			const saved = snapshot.unread.length === 0
-				? AsyncStorage.removeItem(key)
-				: AsyncStorage.setItem(key, JSON.stringify(snapshot.unread));
-			saved.catch(error => console.warn("Could not save a royal letter:", error));
-		}
-		for (const listener of this.listeners) listener();
-	}
-}
-
-export const royalLetterStore = new RoyalLetterStore();
-
-export function useRoyalLetter(): RoyalLetterRes | null {
-	const profile = usePlayerProfile();
-	const snapshot = useSyncExternalStore(royalLetterStore.subscribe, royalLetterStore.getSnapshot, royalLetterStore.getSnapshot);
-	return profile.status === "ready" && snapshot.ready && snapshot.account === profile.data.pseudo ? snapshot.unread[0] ?? null : null;
-}
-
-export function useRoyalLetterAccount(): void {
-	const profile = usePlayerProfile();
-	const account = profile.status === "ready" ? profile.data.pseudo : null;
-	useEffect(() => {
-		if (account) royalLetterStore.load(account).catch(error => console.warn("Could not restore royal letters:", error));
-	}, [account]);
+export function useReadRoyalLetter(): (unread: UnreadRoyalLetter) => void {
+	const change = useAppStateChange();
+	return unread => change({acknowledged: [unread.id]});
 }

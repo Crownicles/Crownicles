@@ -83,6 +83,8 @@ import {
 	validateUseTokensRequest
 } from "../../core/report/ReportTokenHealService";
 import { openTokenMerchant } from "../../core/report/ReportTokenMerchantService";
+import { hidesTokenOffer } from "../../core/onboarding/OnboardingTokens";
+import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import { getAvailableCityServices } from "../../core/report/ReportCityServiceAvailability";
 import {
 	HEAL_VALIDATION_REASONS, USE_TOKENS_VALIDATION_REASONS
@@ -302,7 +304,8 @@ export default class ReportCommand {
 		const validation = validateUseTokensRequest(player, player.effectId, timeData.effectRemainingTime);
 
 		if (!validation.valid) {
-			if (validation.reason === USE_TOKENS_VALIDATION_REASONS.INSUFFICIENT_TOKENS) {
+			const insufficient = validation.reason === USE_TOKENS_VALIDATION_REASONS.INSUFFICIENT_TOKENS;
+			if (insufficient && !hidesTokenOffer(await PlayerMissionsInfos.getOfPlayer(player.id), false)) {
 				await openTokenMerchant(player, context, response);
 			}
 			return;

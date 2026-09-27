@@ -13,10 +13,10 @@ import {Celebration} from "@/src/components/UnlockCelebration";
 import {useToastTurn} from "@/src/components/useToastTurn";
 import {amountEffect, gainEffect, presentEffects} from "@/src/display/OutcomeEffects";
 import {missionDescription, missionRewardTotal, missionRows} from "@/src/display/Missions";
-import {MissionRewards, missionRewardsStore, useMissionRewards} from "@/src/store/MissionRewardsStore";
+import {MissionRewards, missionRewardsStore, useClaimMissionRewards, useMissionRewards} from "@/src/store/MissionRewardsStore";
 import {i18n} from "@/src/translations/i18n";
+import {ADVENTURE_MISSIONS} from "@/src/navigation/AdventureTools";
 
-const MISSIONS_ROUTE = "/profile/missions";
 const MISSION_EMBLEM_SIZE = 26;
 const TOAST_EMBLEM_SIZE = 24;
 
@@ -80,6 +80,7 @@ function UnclaimedMissionRow({completed, now}: {completed: CompletedMission; now
 /** The missions Core completed since the player last looked, waiting for them to collect what they earned. */
 export function UnclaimedMissions(): ReactNode {
 	const {rewards} = useMissionRewards();
+	const claim = useClaimMissionRewards();
 	const [revealed, setRevealed] = useState<MissionRewards | null>(null);
 	const [now] = useState(Date.now);
 	const count = rewards.missions.length;
@@ -102,13 +103,13 @@ export function UnclaimedMissions(): ReactNode {
 			/>
 		</> : null}
 		{revealed ? <MissionRewardsReveal rewards={revealed} onClose={(): void => {
-			missionRewardsStore.claim(revealed);
+			claim(revealed);
 			setRevealed(null);
 		}} /> : null}
 	</>;
 }
 
-/** On the profile, the way to the rewards waiting in the missions. */
+/** On the adventure, the way to the rewards waiting in the missions. */
 export function MissionRewardsBanner(): ReactNode {
 	const router = useRouter();
 	const count = useMissionRewards().rewards.missions.length;
@@ -117,7 +118,7 @@ export function MissionRewardsBanner(): ReactNode {
 		icon={Gift}
 		emoji={AppIcons.getIcon("missions.total")}
 		label={i18n.t("app:missions.rewards.waiting", {count})}
-		onPress={(): void => router.push(MISSIONS_ROUTE)}
+		onPress={(): void => router.navigate(ADVENTURE_MISSIONS)}
 		testID="mission-rewards-banner"
 	/>;
 }
@@ -138,7 +139,7 @@ export function MissionCompletedToast(): ReactNode {
 		onDismiss={dismiss}
 		onPress={(): void => {
 			dismiss();
-			router.navigate(MISSIONS_ROUTE);
+			router.navigate(ADVENTURE_MISSIONS);
 		}}
 	/>;
 }

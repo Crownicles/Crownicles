@@ -15,7 +15,9 @@ import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
-import {MissionRewardsBanner} from "@/src/components/MissionRewards";
+import {useContest} from "@/src/onboarding/Contest";
+import {GuideTip} from "@/src/onboarding/GuideTip";
+import {ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
 import {useJourney} from "@/src/journey/useJourney";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
@@ -276,6 +278,19 @@ function Belongings({profile}: {profile: ProfileRes}): ReactNode {
 	);
 }
 
+/** The profile opens with the first item of the contest: the guide says once what the page holds. */
+function ProfileGuide(): ReactNode {
+	const moments = useOnboardingMoments();
+	const contestRunning = useContest()?.running === true;
+	const guiding = contestRunning && moments.ready;
+	if (!guiding || moments.seen(ONBOARDING_MOMENTS.PROFILE)) return null;
+	return <GuideTip
+		text={i18n.t("app:contest.tips.profile")}
+		action={{label: i18n.t("app:contest.tips.understood"), onPress: (): void => moments.mark(ONBOARDING_MOMENTS.PROFILE)}}
+		testID="guide-tip-profile"
+	/>;
+}
+
 function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: ProfilePage) => void}): ReactNode {
 	// Bailing other players out means nothing yet to someone still discovering the game.
 	const beginner = useJourney().nextStep !== null;
@@ -283,8 +298,8 @@ function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: 
 	return (
 		<>
 			<ProfileStanding profile={profile} />
+			<ProfileGuide />
 			{shouldDisplayEffectTime(profile) ? <Note>{effectLabel(profile)}</Note> : null}
-			<MissionRewardsBanner />
 			<QuickActions>
 				{pages.map(entry => <QuickAction key={entry.page} icon={AppIcons.getIcon(entry.icon)} onPress={(): void => onPage(entry.page)}>{i18n.t(`app:profile.titles.${entry.page}`)}</QuickAction>)}
 			</QuickActions>

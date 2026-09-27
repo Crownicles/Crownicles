@@ -2,6 +2,7 @@ import {ReactNode, useEffect, useRef, useState} from "react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {MissionsCompletedRes} from "ws-packets/src/fromServer/missions/MissionsCompletedRes";
 import {BlessingActivatedRes} from "ws-packets/src/fromServer/character/BlessingActivatedRes";
+import {RoyalLetterRes} from "ws-packets/src/fromServer/onboarding/RoyalLetterRes";
 import {AppConstants} from "@/src/AppConstants";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
@@ -26,6 +27,28 @@ export function createGameQueryClient(): QueryClient {
 	});
 }
 
+function refresh(queryClient: QueryClient, entity: typeof GAME_ENTITIES[keyof typeof GAME_ENTITIES]): void {
+	queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(error => {
+		console.error(`Failed to refresh ${entity} after a reward:`, error);
+	});
+}
+
+/**
+ * Completed missions change the list, and Core now keeps them to show; a token reward also changes
+ * what the report offers to spend. A royal letter is kept the same way.
+ */
+function useRewardsRefresh(queryClient: QueryClient): void {
+	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<MissionsCompletedRes>(MissionsCompletedRes.wireName, packet => {
+		if (packet.missions.length === 0) return;
+		refresh(queryClient, GAME_ENTITIES.MISSIONS);
+		refresh(queryClient, GAME_ENTITIES.APP_STATE);
+		if (packet.missions.some(completed => completed.reward.tokens)) refresh(queryClient, GAME_ENTITIES.REPORT);
+	}), [queryClient]);
+	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler(RoyalLetterRes.wireName, () => {
+		refresh(queryClient, GAME_ENTITIES.APP_STATE);
+	}), [queryClient]);
+}
+
 /**
  * Makes the game state available to every screen below it.
  * @param children Screens reading the game state
@@ -39,17 +62,7 @@ export function GameQueryProvider({ children, client, authState }: {
 	const [queryClient] = useState(() => client ?? createGameQueryClient());
 	const previousAuthState = useRef<AuthStateEnum>(AuthStateEnum.NOT_READY);
 
-	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<MissionsCompletedRes>(MissionsCompletedRes.wireName, packet => {
-		if (packet.missions.length === 0) return;
-		queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.MISSIONS)}).catch(error => {
-			console.error("Failed to refresh missions after completion:", error);
-		});
-		// A token reward changes what the report offers to spend.
-		if (!packet.missions.some(completed => completed.reward.tokens)) return;
-		queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.REPORT)}).catch(error => {
-			console.error("Failed to refresh the report after a token reward:", error);
-		});
-	}), [queryClient]);
+	useRewardsRefresh(queryClient);
 
 	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler(BlessingActivatedRes.wireName, () => {
 		queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.BLESSING)}).catch(error => {

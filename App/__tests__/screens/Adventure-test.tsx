@@ -27,23 +27,30 @@ import {MissionsRes} from "ws-packets/src/fromServer/missions/MissionsRes";
 import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
 import {useMissions} from "@/src/components/Missions";
 import {i18n} from "@/src/translations/i18n";
-import {onboardingStore} from "@/src/onboarding/OnboardingStore";
+import {fakeAppState} from "@/src/testing/fakeAppState";
 import {ONBOARDING_TRIALS} from "ws-packets/src/objects/Onboarding";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
+import {ADVENTURE_MISSIONS, ADVENTURE_TOOL_NAMES, ADVENTURE_TOOL_PARAM} from "@/src/navigation/AdventureTools";
 
 /** Delivers a packet exactly as Core pushes it through the socket. */
 function pushFromCore(wireName: string, packet: object): void {
 	Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry").dispatch(wireName, packet);
 }
 
+const mockNavigate = jest.fn();
+const mockSearchParams = jest.fn((): Record<string, string> => ({}));
+
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined,
-	useRouter: (): {push: jest.Mock} => ({push: jest.fn()})
+	useRouter: (): object => ({push: jest.fn(), navigate: mockNavigate, setParams: jest.fn()}),
+	useLocalSearchParams: (): Record<string, string> => mockSearchParams()
 }));
 
 jest.mock("@/src/store/useGameQuery", () => ({
 	useGameQuery: jest.fn()
 }));
+
+jest.mock("@/src/store/AppState", () => require("@/src/testing/fakeAppState").fakeAppState.hooks);
 
 jest.mock("@/src/store/usePlayerProfile", () => ({
 	usePlayerProfile: jest.fn()
@@ -145,6 +152,7 @@ describe("Adventure screen", () => {
 	afterEach(() => jest.restoreAllMocks());
 	beforeEach((): void => {
 		jest.clearAllMocks();
+		fakeAppState.reset();
 		jest.mocked(i18n.tArray).mockImplementation((key: string): string[] => [`${key}:only`]);
 		jest.mocked(useMissions).mockReturnValue({status: "loading"});
 		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: profile()});
@@ -227,26 +235,35 @@ describe("Adventure screen", () => {
 		expect(screen.getByText("app:profile.titles.missions")).toBeTruthy();
 	});
 
-	it("keeps the first road free of tokens until the first mission hands one over", async () => {
-		mockReport();
+	it("leads a candidate who just set off to the missions, where the first reward waits", async () => {
+		mockReport({...report(), tokens: undefined});
 		mockContestAt("commandMission");
-		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: {...profile(), level: 1, missions: {gems: 0, campaignProgression: 1}} as ProfileRes});
-		const view = await render(<Adventure />);
+		await render(<Adventure />);
+
+		await fireEvent.press(screen.getByText("app:contest.tips.openMissions"));
+
+		expect(mockNavigate).toHaveBeenCalledWith(ADVENTURE_MISSIONS);
+	});
+
+	it("opens the missions another screen asked for", async () => {
+		mockReport();
+		mockSearchParams.mockReturnValueOnce({[ADVENTURE_TOOL_PARAM]: ADVENTURE_TOOL_NAMES.MISSIONS});
+		await render(<Adventure />);
+		expect(screen.getAllByText("app:profile.titles.missions").length).toBeGreaterThan(1);
+	});
+
+	it("offers no way to advance while the road has no token to spend on it", async () => {
+		mockReport({...report(), tokens: undefined});
+		await render(<Adventure />);
 		expect(screen.queryByText("app:adventure.quick.advanceWithCost")).toBeNull();
 		expect(screen.queryByText("app:adventure.quick.getTokens")).toBeNull();
 		expect(screen.getByText("app:adventure.continueReport")).toBeTruthy();
-
-		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: {...profile(), level: 1, missions: {gems: 1, campaignProgression: 2}} as ProfileRes});
-		await view.rerender(<Adventure />);
-
-		expect(screen.getByText("app:adventure.quick.advanceWithCost")).toBeTruthy();
 	});
 
 	it("shows a candidate how a token buys time on the road, until they spend one", async () => {
 		mockReport();
 		mockContestAt("findOrBuyItem");
 		jest.spyOn(GameClient, "request").mockResolvedValue({kind: "timeout"});
-		await act(async () => onboardingStore.load("token-candidate"));
 		await render(<Adventure />);
 		expect(screen.getByTestId("guide-tip-tokens")).toBeTruthy();
 
@@ -258,7 +275,6 @@ describe("Adventure screen", () => {
 	it("explains once why a mishap holds the candidate back", async () => {
 		mockReport({...report(), effect: PLAYER_EFFECTS.OCCUPIED, effectEndTime: Date.now() + 1_800_000});
 		mockContestAt("findOrBuyItem");
-		await act(async () => onboardingStore.load("occupied-candidate"));
 		await render(<Adventure />);
 
 		await fireEvent.press(screen.getByText("app:contest.tips.understood"));

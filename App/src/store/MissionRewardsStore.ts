@@ -1,16 +1,19 @@
-import {useEffect, useSyncExternalStore} from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useSyncExternalStore} from "react";
 import {MissionsCompletedRes} from "ws-packets/src/fromServer/missions/MissionsCompletedRes";
+import {PendingReveal} from "ws-packets/src/fromServer/appState/AppStateRes";
 import {CompletedMission, Mission} from "ws-packets/src/objects/Mission";
 import {RecipeDisplay} from "ws-packets/src/objects/RecipeDisplay";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
-import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {useAppState, useAppStateChange} from "@/src/store/AppState";
 
-/** Missions Core has completed and already rewarded, kept until the player comes to see what they earned. */
+/** Missions Core has completed and already rewarded, kept by Core until the player comes to see what they earned. */
 export type MissionRewards = {
 	missions: readonly CompletedMission[];
 	recipes: readonly RecipeDisplay[];
 	nextCampaignMission?: Mission;
+
+	/** The reveals these rewards come from, to tell Core once they are seen. */
+	revealIds: readonly number[];
 };
 
 export type MissionRewardsSnapshot = {
@@ -20,40 +23,24 @@ export type MissionRewardsSnapshot = {
 	unannounced: number;
 };
 
-const STORAGE_KEY_PREFIX = "mission-rewards:";
+const NO_REWARDS: MissionRewards = {missions: [], recipes: [], revealIds: []};
 
-/** A player who never comes to look still keeps a bounded list. */
-const MAX_KEPT_MISSIONS = 50;
-const NO_REWARDS: MissionRewards = {missions: [], recipes: []};
-const EMPTY: MissionRewardsSnapshot = {rewards: NO_REWARDS, unannounced: 0};
-
-function merge(kept: MissionRewards, received: MissionRewards): MissionRewards {
-	const nextCampaignMission = received.nextCampaignMission ?? kept.nextCampaignMission;
-	return {
-		missions: [...kept.missions, ...received.missions].slice(-MAX_KEPT_MISSIONS),
-		recipes: [...kept.recipes, ...received.recipes],
-		...nextCampaignMission ? {nextCampaignMission} : {}
-	};
+export function rewardsOf(reveals: readonly PendingReveal[]): MissionRewards {
+	return reveals.reduce<MissionRewards>((rewards, reveal) => {
+		if (!reveal.missions) return rewards;
+		const nextCampaignMission = reveal.missions.nextCampaignMission ?? rewards.nextCampaignMission;
+		return {
+			missions: [...rewards.missions, ...reveal.missions.missions],
+			recipes: [...rewards.recipes, ...reveal.missions.discoveredRecipes ?? []],
+			...nextCampaignMission ? {nextCampaignMission} : {},
+			revealIds: [...rewards.revealIds, reveal.id]
+		};
+	}, NO_REWARDS);
 }
 
-function parse(stored: string | null): MissionRewards {
-	if (!stored) return NO_REWARDS;
-	try {
-		const value = JSON.parse(stored) as Partial<MissionRewards>;
-		return Array.isArray(value.missions) && Array.isArray(value.recipes) ? value as MissionRewards : NO_REWARDS;
-	}
-	catch {
-		return NO_REWARDS;
-	}
-}
-
-class MissionRewardsStore {
-	private account: string | null = null;
-
-	/** Until the account's record is read, what arrives is only held: the first report completes a mission before the profile can name the player. */
-	private loaded = false;
-
-	private snapshot: MissionRewardsSnapshot = EMPTY;
+/** How many missions were completed since the player was last told; only this launch needs to know. */
+class UnannouncedMissions {
+	private count = 0;
 
 	private readonly listeners = new Set<() => void>();
 
@@ -68,72 +55,33 @@ class MissionRewardsStore {
 		};
 	};
 
-	public readonly getSnapshot = (): MissionRewardsSnapshot => this.snapshot;
+	public readonly getSnapshot = (): number => this.count;
 
-	public async load(account: string): Promise<void> {
-		if (this.account === account) return;
-		if (this.account !== null) this.snapshot = EMPTY;
-		this.account = account;
-		this.loaded = false;
-		const stored = parse(await AsyncStorage.getItem(`${STORAGE_KEY_PREFIX}${account}`).catch(() => null));
-		if (this.account !== account) return;
-		this.loaded = true;
-		this.set({rewards: merge(stored, this.snapshot.rewards), unannounced: this.snapshot.unannounced});
-	}
-
-	public announced(): void {
-		if (this.snapshot.unannounced > 0) this.set({...this.snapshot, unannounced: 0});
-	}
-
-	public claim(revealed: MissionRewards): void {
-		const missions = new Set(revealed.missions);
-		const recipes = new Set(revealed.recipes);
-		const remainingMissions = this.snapshot.rewards.missions.filter(mission => !missions.has(mission));
-		this.set({
-			rewards: {
-				missions: remainingMissions,
-				recipes: this.snapshot.rewards.recipes.filter(recipe => !recipes.has(recipe))
-			},
-			unannounced: Math.min(this.snapshot.unannounced, remainingMissions.length)
-		});
-	}
-
-	private readonly receive = (packet: MissionsCompletedRes): void => {
-		if (packet.missions.length === 0) return;
-		this.set({
-			rewards: merge(this.snapshot.rewards, {
-				missions: packet.missions,
-				recipes: packet.discoveredRecipes ?? [],
-				...packet.nextCampaignMission ? {nextCampaignMission: packet.nextCampaignMission} : {}
-			}),
-			unannounced: this.snapshot.unannounced + packet.missions.length
-		});
+	public readonly announced = (): void => {
+		if (this.count > 0) this.set(0);
 	};
 
-	private set(snapshot: MissionRewardsSnapshot): void {
-		this.snapshot = snapshot;
-		if (this.account !== null && this.loaded) this.save(this.account, snapshot.rewards);
+	private readonly receive = (packet: MissionsCompletedRes): void => {
+		if (packet.missions.length > 0) this.set(this.count + packet.missions.length);
+	};
+
+	private set(count: number): void {
+		this.count = count;
 		for (const listener of this.listeners) listener();
 	}
-
-	private save(account: string, rewards: MissionRewards): void {
-		const key = `${STORAGE_KEY_PREFIX}${account}`;
-		const saved = rewards.missions.length === 0 ? AsyncStorage.removeItem(key) : AsyncStorage.setItem(key, JSON.stringify(rewards));
-		saved.catch(error => console.warn("Could not save mission rewards", error));
-	}
 }
 
-export const missionRewardsStore = new MissionRewardsStore();
+export const missionRewardsStore = new UnannouncedMissions();
 
 export function useMissionRewards(): MissionRewardsSnapshot {
-	return useSyncExternalStore(missionRewardsStore.subscribe, missionRewardsStore.getSnapshot, missionRewardsStore.getSnapshot);
+	const state = useAppState();
+	const unannounced = useSyncExternalStore(missionRewardsStore.subscribe, missionRewardsStore.getSnapshot, missionRewardsStore.getSnapshot);
+	const rewards = state.status === "ready" ? rewardsOf(state.data.reveals) : NO_REWARDS;
+	return {rewards, unannounced: Math.min(unannounced, rewards.missions.length)};
 }
 
-/** Opens the record of the account the profile names, once it names one. */
-export function useMissionRewardsAccount(): void {
-	const profile = usePlayerProfile();
-	const account = profile.status === "ready" ? profile.data.pseudo : null;
-	useEffect(() => {
-		if (account) missionRewardsStore.load(account).catch(error => console.warn("Could not restore mission rewards", error));
-	}, [account]);
+/** The player has seen these rewards: Core forgets them, and what arrived meanwhile stays. */
+export function useClaimMissionRewards(): (revealed: MissionRewards) => void {
+	const change = useAppStateChange();
+	return revealed => change({acknowledged: revealed.revealIds});
 }

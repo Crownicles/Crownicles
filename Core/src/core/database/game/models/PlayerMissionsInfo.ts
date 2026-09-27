@@ -59,6 +59,12 @@ export class PlayerMissionsInfo extends Model {
 	/** When the last letter came, or when the royal mail started counting days for this player. */
 	declare lastRoyalLetterAt: Date | null;
 
+	/** Bitmask of what the app has already shown this character, see `APP_STATE_FLAGS`. */
+	declare appSeen: number;
+
+	/** JSON list of the rewards told to the app and not seen there yet. */
+	declare pendingReveals: string | null;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -179,6 +185,16 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		lastRoyalLetterAt: {
 			type: DataTypes.DATE,
+			defaultValue: null
+		},
+		appSeen: {
+			type: DataTypes.INTEGER.UNSIGNED,
+			allowNull: false,
+			defaultValue: 0
+		},
+		pendingReveals: {
+			type: DataTypes.TEXT,
+			allowNull: true,
 			defaultValue: null
 		},
 		updatedAt: {

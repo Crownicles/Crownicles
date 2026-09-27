@@ -8,14 +8,13 @@ import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
-import {Missions} from "@/src/components/Missions";
 import {Blessing, Guide} from "@/src/components/CharacterReference";
 import {PrisonerRelease} from "@/src/components/Utilities";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {EmptyState, Note} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 
-const PROFILE_PAGES = ["inventory", "missions", "unlock", "guide", "blessing"] as const;
+const PROFILE_PAGES = ["inventory", "unlock", "guide", "blessing"] as const;
 type ProfilePageName = typeof PROFILE_PAGES[number];
 
 function isProfilePage(page: string | string[] | undefined): page is ProfilePageName {
@@ -48,7 +47,6 @@ function ProfileInventory(): ReactNode {
 function ProfilePageContent({page}: {page: ProfilePageName}): ReactNode {
 	switch (page) {
 		case "inventory": return <ProfileInventory />;
-		case "missions": return <Missions />;
 		case "unlock": return <PrisonerRelease />;
 		case "guide": return <Guide />;
 		default: return <Blessing />;

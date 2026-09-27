@@ -11,6 +11,7 @@ import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
+jest.mock("@/src/store/AppState", () => require("@/src/testing/fakeAppState").fakeAppState.hooks);
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (path: string): string => path}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {
 	language: "fr",

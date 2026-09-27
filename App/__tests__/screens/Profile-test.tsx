@@ -3,6 +3,7 @@ import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import Profile from "@/app/(protected)/(tabs)/profile";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {fakeAppState} from "@/src/testing/fakeAppState";
 
 jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
 
@@ -18,6 +19,8 @@ jest.mock("@/src/store/useGameQuery", () => ({
 	useGameQuery: jest.fn()
 }));
 
+jest.mock("@/src/store/AppState", () => require("@/src/testing/fakeAppState").fakeAppState.hooks);
+
 jest.mock("@/src/store/usePlayerProfile", () => ({
 	usePlayerProfile: jest.fn()
 }));
@@ -26,7 +29,9 @@ jest.mock("@/src/components/Inventory", () => ({
 	Inventory: (): null => null
 }));
 
-jest.mock("@/src/components/Missions", () => ({Missions: (): null => null}));
+const mockMissions = jest.fn((): object => ({status: "empty"}));
+jest.mock("@/src/components/Missions", () => ({Missions: (): null => null, useMissions: (): object => mockMissions()}));
+jest.mock("expo-secure-store", () => ({getItem: (): null => null, setItem: jest.fn()}));
 
 jest.mock("@/src/AppIcons", () => ({
 	AppIcons: {
@@ -70,6 +75,7 @@ function profile(): ProfileRes {
 describe("Profile screen", () => {
 	beforeEach((): void => {
 		jest.clearAllMocks();
+		fakeAppState.reset();
 		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: profile()});
 		mockedUseGameQuery.mockReturnValue({status: "ready", data: {foundPlayer: true} as never});
 	});
@@ -98,5 +104,16 @@ describe("Profile screen", () => {
 		await fireEvent.press(view.getByRole("button", {name: /app:profile.titles.unlock/}));
 		expect(mockPush).toHaveBeenCalledWith("/profile/unlock");
 		expect(view.queryByRole("button", {name: /app:profile.titles.missions/})).toBeNull();
+	});
+
+	it("explains once to a contest candidate what their new profile holds", async () => {
+		mockMissions.mockReturnValue({status: "ready", data: {campaignProgression: 4, missions: []}});
+		const view = await render(<Profile />);
+		expect(view.getByTestId("guide-tip-profile")).toBeTruthy();
+
+		await fireEvent.press(view.getByText("app:contest.tips.understood"));
+
+		expect(view.queryByTestId("guide-tip-profile")).toBeNull();
+		mockMissions.mockReturnValue({status: "empty"});
 	});
 });

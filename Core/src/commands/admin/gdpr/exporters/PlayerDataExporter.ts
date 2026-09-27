@@ -139,6 +139,8 @@ async function exportMissionData(
 				campaignBlob: missionsInfo.campaignBlob,
 				royalLettersReceived: missionsInfo.royalLettersReceived,
 				lastRoyalLetterAt: missionsInfo.lastRoyalLetterAt,
+				appSeen: missionsInfo.appSeen,
+				pendingReveals: missionsInfo.pendingReveals,
 				createdAt: missionsInfo.createdAt,
 				updatedAt: missionsInfo.updatedAt
 			}

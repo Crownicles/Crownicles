@@ -1,5 +1,5 @@
-import {nextLevelStep, openTabs, unlockedFeatures, JourneyProgress} from "@/src/journey/Journey";
-import {journeyStore} from "@/src/journey/JourneyStore";
+import {isInventoryTaught, nextLevelStep, openTabs, unlockedFeatures, JourneyProgress} from "@/src/journey/Journey";
+import {announcedFlag, firstRecord, journeyRecordOf} from "@/src/journey/JourneyStore";
 
 const mockStorage = new Map<string, string>();
 
@@ -11,12 +11,19 @@ jest.mock("expo-secure-store", () => ({
 }));
 
 function progress(values: Partial<JourneyProgress>): JourneyProgress {
-	return {started: true, level: 1, hasPet: false, hasGuild: false, ...values};
+	return {started: true, level: 1, hasPet: false, hasGuild: false, inventoryTaught: true, ...values};
 }
 
 describe("journey unlocks", () => {
 	it("keeps a character who has not set off on the adventure alone", () => {
 		expect(openTabs(unlockedFeatures(progress({started: false})))).toEqual(["index"]);
+	});
+
+	it("keeps the profile closed until the campaign reaches the first item, and open once the campaign is over", () => {
+		expect(isInventoryTaught(3)).toBe(false);
+		expect(openTabs(unlockedFeatures(progress({inventoryTaught: false})))).toEqual(["index"]);
+		expect(isInventoryTaught(4)).toBe(true);
+		expect(isInventoryTaught(0)).toBe(true);
 	});
 
 	it("opens the tabs in the order of the first hours of play", () => {
@@ -39,21 +46,18 @@ describe("journey unlocks", () => {
 	});
 });
 
-describe("journey record", () => {
-	beforeEach(() => mockStorage.clear());
-
-	it("does not celebrate again what a returning character already unlocked", () => {
-		journeyStore.load("veteran", ["profile", "classes"]);
-		expect(journeyStore.getSnapshot()).toEqual({announced: ["profile", "classes"], visited: ["profile", "classes"]});
+describe("journey record kept by Core", () => {
+	it("has none until the app writes the first one", () => {
+		expect(journeyRecordOf([])).toBeNull();
 	});
 
-	it("announces everything to a newcomer seen before their first report, and remembers it", () => {
-		journeyStore.markNewcomer();
-		journeyStore.load("newcomer", ["profile"]);
-		expect(journeyStore.getSnapshot()?.announced).toEqual([]);
-		journeyStore.announce("profile");
-		journeyStore.load("veteran", []);
-		journeyStore.load("newcomer", ["profile", "classes"]);
-		expect(journeyStore.getSnapshot()).toEqual({announced: ["profile"], visited: []});
+	it("does not celebrate again what a returning character already unlocked", () => {
+		expect(journeyRecordOf(firstRecord(false, ["profile", "classes"]))).toEqual({announced: ["profile", "classes"], visited: ["profile", "classes"]});
+	});
+
+	it("announces everything to a newcomer seen before their first report", () => {
+		const record = firstRecord(true, ["profile"]);
+		expect(journeyRecordOf(record)).toEqual({announced: [], visited: []});
+		expect(journeyRecordOf([...record, announcedFlag("profile")])).toEqual({announced: ["profile"], visited: []});
 	});
 });

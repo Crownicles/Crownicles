@@ -3,7 +3,7 @@ import {MissionsRes} from "ws-packets/src/fromServer/missions/MissionsRes";
 import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
 import {ONBOARDING_TRIALS, OnboardingTrialId} from "ws-packets/src/objects/Onboarding";
 import {useMissions} from "@/src/components/Missions";
-import {onboardingStore, ONBOARDING_MOMENTS} from "@/src/onboarding/OnboardingStore";
+import {ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
 
 /** The contest covers the first campaign positions, 1-indexed like `campaignProgression`. */
 export const CONTEST_LENGTH = ONBOARDING_TRIALS.reduce((length, trial) => length + trial.missions.length, 0);
@@ -41,10 +41,11 @@ export function contestOf(missions: Pick<MissionsRes, "campaignProgression" | "m
 /** The contest as the player's missions draw it, read without counting as consulting them. */
 export function useContest(): ContestView | null {
 	const missions = useMissions();
+	const {ready, seen, mark} = useOnboardingMoments();
 	const view = missions.status === "ready" ? contestOf(missions.data) : null;
-	const running = view?.running ?? false;
+	const joining = (view?.running ?? false) && ready && !seen(ONBOARDING_MOMENTS.CONTEST_JOINED);
 	useEffect(() => {
-		if (running) onboardingStore.mark(ONBOARDING_MOMENTS.CONTEST_JOINED);
-	}, [running]);
+		if (joining) mark(ONBOARDING_MOMENTS.CONTEST_JOINED);
+	}, [joining, mark]);
 	return view;
 }

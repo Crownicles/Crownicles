@@ -12,6 +12,7 @@ import {
 import { PlayerMissionsInfo } from "../../../src/core/database/game/models/PlayerMissionsInfo";
 import { PlayerActiveObjects } from "../../../src/core/database/game/models/PlayerActiveObjects";
 import { PlayersConstants } from "../../../../Lib/src/constants/PlayersConstants";
+import { hidesTokenOffer } from "../../../src/core/onboarding/OnboardingTokens";
 
 function atPosition(campaignProgression: number): PlayerMissionsInfo {
 	return { campaignProgression } as PlayerMissionsInfo;
@@ -37,6 +38,13 @@ describe("royal contest onboarding", () => {
 		const [first, ...others] = CampaignData.getMissions();
 		expect(first).toMatchObject({ missionId: "commandMission", tokensToWin: 1 });
 		expect(others.filter(mission => mission.tokensToWin)).toEqual([]);
+	});
+
+	it("never leads a newcomer to the token merchant, only to tokens they can spend", () => {
+		expect(hidesTokenOffer(atPosition(1), false)).toBe(true);
+		expect(hidesTokenOffer(atPosition(2), true)).toBe(false);
+		expect(hidesTokenOffer(atPosition(OnboardingConstants.CAMPAIGN_LENGTH + 1), false)).toBe(false);
+		expect(hidesTokenOffer(atPosition(0), false)).toBe(false);
 	});
 
 	it("is over once the class is chosen, and for a completed campaign", () => {

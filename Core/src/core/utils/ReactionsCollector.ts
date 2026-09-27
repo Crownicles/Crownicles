@@ -21,6 +21,7 @@ import {
 	ReactionCollectorResetTimerPacketRes
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { keepPendingReveals } from "../appState/AppState";
 
 export type CollectCallback = (collector: ReactionCollectorInstance, reaction: ReactionCollectorReaction, keycloakId: string, response: CrowniclesPacket[]) => void | Promise<void>;
 
@@ -168,6 +169,7 @@ export class ReactionCollectorInstance {
 			await this.endCallback(this, packets);
 		}
 		if (!isResponseProvided) {
+			await keepPendingReveals(this._context, packets);
 			PacketUtils.sendPackets(this._context, packets);
 		}
 	}

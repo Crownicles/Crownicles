@@ -1,4 +1,5 @@
 import {ReactNode, useEffect, useRef, useState} from "react";
+import {useLocalSearchParams, useRouter} from "expo-router";
 import {ActivityIndicator, Animated, Easing, StyleSheet, Text, View} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
@@ -78,11 +79,13 @@ import {DeathScreen} from "@/src/components/DeathScreen";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {AdventureWelcome} from "@/src/components/AdventureWelcome";
 import {JourneyGuide} from "@/src/components/JourneyGuide";
+import {MissionRewardsBanner} from "@/src/components/MissionRewards";
 import {clockTime} from "@/src/display/Clock";
 import {useContest} from "@/src/onboarding/Contest";
-import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {ADVENTURE_MISSIONS, ADVENTURE_TOOL_NAMES, ADVENTURE_TOOL_PARAM, AdventureToolName} from "@/src/navigation/AdventureTools";
+import {ONBOARDING_MISSION_IDS} from "ws-packets/src/objects/Onboarding";
 import {GuideTip} from "@/src/onboarding/GuideTip";
-import {onboardingStore, ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
+import {OnboardingMoment, OnboardingMoments, ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
 import {useReportView, useReportAdvance} from "@/src/store/useReportActions";
@@ -730,17 +733,8 @@ function TokenAdvance({tokens, reportAction, waitFor, advance}: {
 }
 
 /** Tokens are only worth spending while the report is not ready yet. */
-function tokenOffer(packet: ReportTravelSummaryRes, reportReady: boolean, tokensUnlocked: boolean): NonNullable<ReportTravelSummaryRes["tokens"]> | null {
-	if (!tokensUnlocked || reportReady) return null;
-	return offersTokens(packet) ? packet.tokens ?? null : null;
-}
-
-/** The campaign mission that hands the newcomer their first token: until then, the first road is only waited for. */
-const FIRST_TOKEN_MISSION = 1;
-
-function useTokensUnlocked(): boolean {
-	const profile = usePlayerProfile();
-	return profile.status !== "ready" || profile.data.missions.campaignProgression !== FIRST_TOKEN_MISSION;
+function tokenOffer(packet: ReportTravelSummaryRes, reportReady: boolean): NonNullable<ReportTravelSummaryRes["tokens"]> | null {
+	return reportReady || !offersTokens(packet) ? null : packet.tokens ?? null;
 }
 
 /** A greyed report says nothing the figures do not: the cure, when there is one, is the thing to do. */
@@ -778,7 +772,7 @@ function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 	waitFor: ReportWait;
 	advance: PendingAction;
 }): ReactNode {
-	const tokens = tokenOffer(packet, reportReady, useTokensUnlocked());
+	const tokens = tokenOffer(packet, reportReady);
 	const action = tokens
 		? <TokenAdvance tokens={tokens} reportAction={reportAction} waitFor={waitFor} advance={advance} />
 		: cureReplacesReport(packet, reportReady)
@@ -787,27 +781,44 @@ function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 	return action ? <ReportReadyPulse ready={reportReady}>{action}</ReportReadyPulse> : null;
 }
 
-const ADVENTURE_TOOLS = {
-	MAP: {title: "app:map.title", content: WorldMap},
-	MISSIONS: {title: "app:profile.titles.missions", content: Missions}
-} as const;
-type AdventureTool = keyof typeof ADVENTURE_TOOLS;
+const ADVENTURE_TOOLS: Record<AdventureToolName, {title: string; content: () => ReactNode}> = {
+	[ADVENTURE_TOOL_NAMES.MAP]: {title: "app:map.title", content: WorldMap},
+	[ADVENTURE_TOOL_NAMES.MISSIONS]: {title: "app:profile.titles.missions", content: Missions}
+};
+type AdventureTool = AdventureToolName;
+
+function isAdventureTool(value: unknown): value is AdventureTool {
+	return typeof value === "string" && Object.hasOwn(ADVENTURE_TOOLS, value);
+}
 
 /** Side trips that belong to the journey screen itself, never on top of an open menu. */
 function AdventureTools({onOpen}: {onOpen: (tool: AdventureTool) => void}): ReactNode {
 	return <QuickActions>
-		<QuickAction icon={AppIcons.getIcon("expedition.map")} onPress={(): void => onOpen("MAP")}>{i18n.t("app:map.title")}</QuickAction>
-		<QuickAction icon={AppIcons.getIcon("missions.campaign")} onPress={(): void => onOpen("MISSIONS")}>{i18n.t("app:profile.titles.missions")}</QuickAction>
+		<QuickAction icon={AppIcons.getIcon("expedition.map")} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.MAP)}>{i18n.t("app:map.title")}</QuickAction>
+		<QuickAction icon={AppIcons.getIcon("missions.campaign")} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.MISSIONS)}>{i18n.t("app:profile.titles.missions")}</QuickAction>
 	</QuickActions>;
 }
 
-/** While the contest runs, the guide explains once what a token does, and once why a mishap holds the traveller back. */
+function unseen(moments: OnboardingMoments, moment: OnboardingMoment): boolean {
+	return moments.ready && !moments.seen(moment);
+}
+
+/**
+ * While the contest runs, the guide leads to the first mission, then explains once what a token does,
+ * and once why a mishap holds the traveller back.
+ */
 function ContestTips({packet, reportReady}: {packet: ReportTravelSummaryRes; reportReady: boolean}): ReactNode {
+	const router = useRouter();
 	const moments = useOnboardingMoments();
-	const tokens = tokenOffer(packet, reportReady, useTokensUnlocked());
-	const tokenTip = moments.ready && !moments.seen(ONBOARDING_MOMENTS.TOKENS) && tokens?.canAfford === true;
-	const occupiedTip = moments.ready && !moments.seen(ONBOARDING_MOMENTS.OCCUPIED) && packet.effect === PLAYER_EFFECTS.OCCUPIED;
+	const missionsDue = useContest()?.missionId === ONBOARDING_MISSION_IDS.COMMAND_MISSION;
+	const tokenTip = unseen(moments, ONBOARDING_MOMENTS.TOKENS) && tokenOffer(packet, reportReady)?.canAfford === true;
+	const occupiedTip = unseen(moments, ONBOARDING_MOMENTS.OCCUPIED) && packet.effect === PLAYER_EFFECTS.OCCUPIED;
 	return <>
+		{missionsDue ? <GuideTip
+			text={i18n.t("app:contest.tips.missions")}
+			action={{label: i18n.t("app:contest.tips.openMissions"), onPress: (): void => router.navigate(ADVENTURE_MISSIONS)}}
+			testID="guide-tip-missions"
+		/> : null}
 		{tokenTip ? <GuideTip text={i18n.t("app:contest.tips.tokens")} testID="guide-tip-tokens" /> : null}
 		{occupiedTip ? <GuideTip
 			text={i18n.t("app:contest.tips.occupied")}
@@ -886,6 +897,7 @@ function AdventureSheet({packet, currentTime, actions, tools, dash, cure}: {
 			{contestRunning ? <ContestTips packet={packet} reportReady={actions.reportReady} /> : null}
 			<JourneyGuide />
 			{advice ? <Note>{advice}</Note> : null}
+			<MissionRewardsBanner />
 			{tools}
 		</Screen>
 	);
@@ -918,6 +930,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	const shopResult = useShopResult();
 	const pveFightOutcome = usePveFightOutcome();
 	const currentTime = useCurrentTime();
+	const moments = useOnboardingMoments();
 
 	useEffect(() => {
 		if (!tokenOutcome || tokenOutcomeNeedsAcknowledgement(tokenOutcome)) {
@@ -928,7 +941,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	}, [tokenOutcome]);
 
 	const advanceWithTokens = (): void => {
-		onboardingStore.mark(ONBOARDING_MOMENTS.TOKENS);
+		moments.mark(ONBOARDING_MOMENTS.TOKENS);
 		const nextStop = travel && !showsAilmentOnly(travel) ? getTravelMetrics(travel, travel.nextStopTime).progress : null;
 		advance.run((outcome, done) => {
 			if (outcome.kind !== "used") {
@@ -1059,8 +1072,20 @@ function AdventureToolScreen({tool, onClose}: {tool: AdventureTool; onClose: () 
 	return <DetailScreen overlay title={i18n.t(title)} eyebrow={i18n.t("app:adventure.eyebrow")} onClose={onClose}><Content /></DetailScreen>;
 }
 
+/** Another screen may ask for a tool through the route: it opens once, then the request is cleared. */
+function useRequestedTool(open: (tool: AdventureTool) => void): void {
+	const router = useRouter();
+	const requested = useLocalSearchParams()[ADVENTURE_TOOL_PARAM];
+	useEffect(() => {
+		if (!isAdventureTool(requested)) return;
+		open(requested);
+		router.setParams({[ADVENTURE_TOOL_PARAM]: undefined});
+	}, [requested, open, router]);
+}
+
 export default function Index(): ReactNode {
 	const [tool, setTool] = useState<AdventureTool | null>(null);
+	useRequestedTool(setTool);
 	return (
 		<View style={styles.adventureRoot}>
 			<PlayerVitals />
