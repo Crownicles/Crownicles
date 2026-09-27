@@ -18,7 +18,6 @@ import {isJourneyTab, JOURNEY_TABS, JourneyTab} from "@/src/journey/Journey";
 import {Journey, useJourney} from "@/src/journey/useJourney";
 import {MissionCompletedToast} from "@/src/components/MissionRewards";
 import {BlessingActivatedToast} from "@/src/components/BlessingActivatedToast";
-import {useMissionRewards} from "@/src/store/MissionRewardsStore";
 import {useNotificationNavigation, useReportNotification} from "@/src/notifications/useNotifications";
 import {allowPermissionPrompt} from "@/src/notifications/ReportNotifications";
 import {useReportView} from "@/src/store/useReportActions";
@@ -31,7 +30,6 @@ import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 
 const screenStyles = {flex: 1, backgroundColor: Theme.colors.paper};
 const NEW_MARK_SIZE = 8;
-const COUNT_MARK_SIZE = 18;
 const tabStyles = StyleSheet.create({
 	icon: {alignItems: "center", justifyContent: "center"},
 	mark: {position: "absolute", top: -Theme.spacing.xs, left: "100%", marginLeft: -Theme.spacing.xs},
@@ -40,21 +38,6 @@ const tabStyles = StyleSheet.create({
 		height: NEW_MARK_SIZE,
 		borderRadius: NEW_MARK_SIZE / 2,
 		backgroundColor: Theme.colors.gold
-	},
-	countMark: {
-		minWidth: COUNT_MARK_SIZE,
-		height: COUNT_MARK_SIZE,
-		paddingHorizontal: Theme.spacing.xs,
-		borderRadius: COUNT_MARK_SIZE / 2,
-		alignItems: "center",
-		justifyContent: "center",
-		backgroundColor: Theme.colors.gold
-	},
-	countLabel: {
-		fontFamily: Theme.fonts.bold,
-		fontSize: Theme.fontSize.eyebrow,
-		color: Theme.colors.paper,
-		fontVariant: ["tabular-nums"]
 	}
 });
 
@@ -71,15 +54,7 @@ function NewMark(): ReactElement {
 	return <View style={tabStyles.newMark} testID="tab-new-mark" />;
 }
 
-/** Rewards waiting to be collected are counted, where a new feature is only marked. */
-function CountMark({count}: {count: number}): ReactElement {
-	return <View style={tabStyles.countMark} testID="tab-count-mark">
-		<Text style={tabStyles.countLabel}>{count}</Text>
-	</View>;
-}
-
-function tabMark(tab: JourneyTab, journey: Journey, unclaimedMissions: number): ReactElement | null {
-	if (tab === JOURNEY_TABS.PROFILE && unclaimedMissions > 0) return <CountMark count={unclaimedMissions} />;
+function tabMark(tab: JourneyTab, journey: Journey): ReactElement | null {
 	return journey.isNew(tab) ? <NewMark /> : null;
 }
 
@@ -133,7 +108,6 @@ function TabPager({journey}: {journey: Journey}): ReactNode {
 	const insets = useSafeAreaInsets();
 	const detailOpen = useSwipeBackOpen();
 	const adventureBusy = useAdventureBusy();
-	const unclaimedMissions = useMissionRewards().rewards.missions.length;
 	// A lone tab needs no bar: the newcomer only sees the adventure until something else opens.
 	const tabBarStyle = journey.tabs.length > 1 && !adventureBusy
 		? {...tabBarOptions.tabBarStyle, paddingBottom: insets.bottom + Theme.spacing.tabBarVertical}
@@ -153,7 +127,7 @@ function TabPager({journey}: {journey: Journey}): ReactNode {
 			{TABS.map(tab => <TopTabs.Protected key={tab.name} guard={journey.tabs.includes(tab.name)}>
 				<TopTabs.Screen
 					name={tab.name}
-					options={{title: i18n.t(tab.title), tabBarIcon: tabIcon(tab.icon, tabMark(tab.name, journey, unclaimedMissions))}}
+					options={{title: i18n.t(tab.title), tabBarIcon: tabIcon(tab.icon, tabMark(tab.name, journey))}}
 				/>
 			</TopTabs.Protected>)}
 		</TopTabs>

@@ -78,7 +78,6 @@ import {Missions} from "@/src/components/Missions";
 import {DeathScreen} from "@/src/components/DeathScreen";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {AdventureWelcome} from "@/src/components/AdventureWelcome";
-import {JourneyGuide} from "@/src/components/JourneyGuide";
 import {MissionRewardsBanner} from "@/src/components/MissionRewards";
 import {clockTime} from "@/src/display/Clock";
 import {useContest} from "@/src/onboarding/Contest";
@@ -895,7 +894,6 @@ function AdventureSheet({packet, currentTime, actions, tools, dash, cure}: {
 			<AdventureHeader context={context} dash={dash} cure={cure} />
 			<AdventureActions packet={packet} currentTime={currentTime} actions={actions} />
 			{contestRunning ? <ContestTips packet={packet} reportReady={actions.reportReady} /> : null}
-			<JourneyGuide />
 			{advice ? <Note>{advice}</Note> : null}
 			<MissionRewardsBanner />
 			{tools}

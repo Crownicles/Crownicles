@@ -773,8 +773,6 @@
     "depart": "Partir à l'aventure"
   },
   "journey": {
-    "title": "Votre parcours",
-    "nextStep": "Prochaine étape · {{value}}/{{max}}",
     "unlocked": "Nouveau",
     "unlockedAtLevel": "Niveau {{level}} atteint",
     "discover": "Découvrir",

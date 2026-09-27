@@ -282,22 +282,9 @@ describe("Adventure screen", () => {
 		expect(screen.queryByTestId("guide-tip-occupied")).toBeNull();
 	});
 
-	it("hands over to the campaign guide once the contest is sealed", async () => {
-		mockReport();
-		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: {...profile(), level: 5} as ProfileRes});
-		jest.mocked(useMissions).mockReturnValue({status: "ready", data: {
-			campaignProgression: 12,
-			missions: [{missionId: "recoverAlteration", missionType: MISSION_TYPES.CAMPAIGN, missionVariant: 0, missionObjective: 1, numberDone: 0}]
-		} as unknown as MissionsRes});
-		await render(<Adventure />);
-		expect(screen.getByText("app:journey.title")).toBeTruthy();
-		expect(screen.getByText("models:missions.recoverAlteration")).toBeTruthy();
-	});
-
-	it("leaves the guide out once every part of the game is open, the missions one tap away", async () => {
+	it("keeps the missions one tap away once every part of the game is open", async () => {
 		mockReport();
 		await render(<Adventure />);
-		expect(screen.queryByText("app:journey.title")).toBeNull();
 		expect(screen.queryByText("app:utilities.unlock")).toBeNull();
 		await fireEvent.press(screen.getByText("app:profile.titles.missions"));
 		expect(screen.getAllByText("app:profile.titles.missions").length).toBeGreaterThan(1);
