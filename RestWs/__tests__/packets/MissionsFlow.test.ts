@@ -84,4 +84,13 @@ describe("missions over WebSocket", () => {
 		expect(result).not.toHaveProperty("keycloakId");
 		expect(result).not.toHaveProperty("discoveredRecipes");
 	});
+
+	it("tells the app about the token a campaign mission hands over", async () => {
+		const packet = makePacket(MissionsCompletedPacket, {
+			keycloakId: "private-id",
+			missions: [{ missionId: "commandMission", missionType: MissionType.CAMPAIGN, missionObjective: 1, missionVariant: 0, numberDone: 1, pointsToWin: 0, xpToWin: 10, gemsToWin: 1, moneyToWin: 0, tokensToWin: 1 }]
+		});
+		const result = await MissionsCompletedServerTranslator.translate(CONTEXT, JSON.parse(JSON.stringify(packet)));
+		expect(result.missions[0].reward).toEqual({ points: 0, experience: 10, gems: 1, money: 0, tokens: 1 });
+	});
 });

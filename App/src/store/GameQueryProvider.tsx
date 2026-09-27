@@ -44,6 +44,11 @@ export function GameQueryProvider({ children, client, authState }: {
 		queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.MISSIONS)}).catch(error => {
 			console.error("Failed to refresh missions after completion:", error);
 		});
+		// A token reward changes what the report offers to spend.
+		if (!packet.missions.some(completed => completed.reward.tokens)) return;
+		queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.REPORT)}).catch(error => {
+			console.error("Failed to refresh the report after a token reward:", error);
+		});
 	}), [queryClient]);
 
 	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler(BlessingActivatedRes.wireName, () => {

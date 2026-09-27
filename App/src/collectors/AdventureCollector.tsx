@@ -40,7 +40,7 @@ import {
 } from "@/src/display/OutcomeEffects";
 import {LotteryReward} from "ws-packets/src/fromServer/smallEvents/SmallEventLotteryRes";
 import {anyTranslation} from "@/src/translations/RandomTranslation";
-import {useContest} from "@/src/onboarding/ContestBooklet";
+import {useContest} from "@/src/onboarding/Contest";
 import {GuideTip} from "@/src/onboarding/GuideTip";
 import {ONBOARDING_MISSION_IDS} from "ws-packets/src/objects/Onboarding";
 
@@ -291,7 +291,7 @@ const SPECIALIZED_COLLECTORS: Partial<Record<ReactionCollectorData["type"], Comp
 function DestinationGuide({collector}: {collector: ReactionCollectorCreation}): ReactNode {
 	const contest = useContest();
 	const canStay = reactionIndex(collector, REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY) >= 0;
-	const shopTrial = contest?.running === true && contest.contest.current?.mission.missionId === ONBOARDING_MISSION_IDS.VISIT_CITY_NPC;
+	const shopTrial = contest?.missionId === ONBOARDING_MISSION_IDS.VISIT_CITY_NPC;
 	if (!canStay || !shopTrial) return null;
 	return <GuideTip text={i18n.t("app:contest.tips.stayInCity")} testID="guide-tip-stay-in-city" />;
 }

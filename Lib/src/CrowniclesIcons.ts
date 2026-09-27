@@ -2624,7 +2624,6 @@ export const CrowniclesIcons: {
 		leagueDown: "↘️",
 		explosion: "💥",
 		royalLetter: "✉️",
-		contestBooklet: "📜",
 		seal: "🏵️",
 		guide: "💁‍♀️"
 	},

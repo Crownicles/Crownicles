@@ -11,6 +11,7 @@ import {
 } from "../../../src/core/onboarding/OnboardingSmallEvents";
 import { PlayerMissionsInfo } from "../../../src/core/database/game/models/PlayerMissionsInfo";
 import { PlayerActiveObjects } from "../../../src/core/database/game/models/PlayerActiveObjects";
+import { PlayersConstants } from "../../../../Lib/src/constants/PlayersConstants";
 
 function atPosition(campaignProgression: number): PlayerMissionsInfo {
 	return { campaignProgression } as PlayerMissionsInfo;
@@ -31,8 +32,15 @@ describe("royal contest onboarding", () => {
 		expect(OnboardingConstants.CAMPAIGN_LENGTH).toBe(trialMissions.length);
 	});
 
+	it("hands a newcomer, who starts without any, their first token with the first mission only", () => {
+		expect(PlayersConstants.PLAYER_DEFAULT_VALUES.TOKENS).toBe(0);
+		const [first, ...others] = CampaignData.getMissions();
+		expect(first).toMatchObject({ missionId: "commandMission", tokensToWin: 1 });
+		expect(others.filter(mission => mission.tokensToWin)).toEqual([]);
+	});
+
 	it("is over once the class is chosen, and for a completed campaign", () => {
-		expect(currentOnboardingMission(atPosition(1))).toBe("commandReport");
+		expect(currentOnboardingMission(atPosition(1))).toBe("commandMission");
 		expect(currentOnboardingMission(atPosition(OnboardingConstants.CAMPAIGN_LENGTH))).toBe("chooseClass");
 		expect(currentOnboardingMission(atPosition(OnboardingConstants.CAMPAIGN_LENGTH + 1))).toBeNull();
 		expect(currentOnboardingMission(atPosition(0))).toBeNull();

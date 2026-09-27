@@ -97,13 +97,13 @@ function SideMissions({data, now, unfolding}: {data: MissionsRes} & Omit<Mission
 	</>;
 }
 
-export function MissionsContent({data, now, campaign = true}: {data: MissionsRes; now: number; campaign?: boolean}): ReactNode {
+export function MissionsContent({data, now}: {data: MissionsRes; now: number}): ReactNode {
 	const unfolding = useExpandedEntry<string>();
 	const rewardsFirst = useMissionRewards().rewards.missions.length > 0;
 	if (data.missions.length === 0) return <EmptyState>{i18n.t("app:missions.empty")}</EmptyState>;
 	const sections = {now, unfolding};
 	return <>
-		{campaign ? <CampaignMissions data={data} first={!rewardsFirst} {...sections} /> : null}
+		<CampaignMissions data={data} first={!rewardsFirst} {...sections} />
 		<DailyMission data={data} {...sections} />
 		<SideMissions data={data} {...sections} />
 	</>;
@@ -138,7 +138,7 @@ function useConsultMissions(): void {
 	}, [queryClient]);
 }
 
-export function Missions({campaign = true}: {campaign?: boolean}): ReactNode {
+export function Missions(): ReactNode {
 	const queryClient = useQueryClient();
 	const [now, setNow] = useState(Date.now);
 	const state = useMissions();
@@ -157,6 +157,6 @@ export function Missions({campaign = true}: {campaign?: boolean}): ReactNode {
 	if (state.status === "empty") return <EmptyState>{i18n.t("app:profile.notFound")}</EmptyState>;
 	return <>
 		<UnclaimedMissions />
-		<MissionsContent data={state.data} now={now} campaign={campaign} />
+		<MissionsContent data={state.data} now={now} />
 	</>;
 }

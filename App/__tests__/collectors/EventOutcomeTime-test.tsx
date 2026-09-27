@@ -1,9 +1,8 @@
 import {render, screen} from "@testing-library/react-native";
 import {BigEventOutcome, LotteryOutcome} from "@/src/collectors/AdventureCollector";
 
-jest.mock("@/src/onboarding/ContestBooklet", () => ({
-	useContest: (): null => null,
-	ContestCityTip: (): null => null
+jest.mock("@/src/onboarding/Contest", () => ({
+	useContest: (): null => null
 }));
 
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));

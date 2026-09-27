@@ -51,6 +51,7 @@ export class Campaign {
 				...campaign.toJSON(),
 				missionType: MissionType.CAMPAIGN,
 				pointsToWin: 0, // Campaign doesn't give points
+				tokensToWin: currentCampaignData?.tokensToWin,
 				petRewardTypeId: currentCampaignData?.petRewardTypeId
 			});
 			const campaignBlob = missionInfo.getCampaignBlob();

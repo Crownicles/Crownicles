@@ -21,9 +21,8 @@ import {PVE_FIGHT_OUTCOMES} from "@/src/collectors/ReportEventStore";
 const mockPush = jest.fn();
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: () => ({push: mockPush})}));
 
-jest.mock("@/src/onboarding/ContestBooklet", () => ({
-	useContest: (): null => null,
-	ContestCityTip: (): null => null
+jest.mock("@/src/onboarding/Contest", () => ({
+	useContest: (): null => null
 }));
 
 jest.mock("@/src/AppIcons", () => ({

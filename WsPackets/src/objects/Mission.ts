@@ -51,6 +51,7 @@ export type MissionReward = {
 	experience: number;
 	gems: number;
 	money: number;
+	tokens?: number;
 	petRewardTypeId?: number;
 };
 

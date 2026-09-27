@@ -8,7 +8,7 @@ import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePack
 import { missionData } from "../MissionDisplay";
 
 function completedMission({
-	pointsToWin, xpToWin, gemsToWin, moneyToWin, petRewardTypeId, ...mission
+	pointsToWin, xpToWin, gemsToWin, moneyToWin, tokensToWin, petRewardTypeId, ...mission
 }: LibCompletedMission): CompletedMission {
 	return {
 		mission: missionData(mission),
@@ -17,6 +17,7 @@ function completedMission({
 			experience: xpToWin,
 			gems: gemsToWin,
 			money: moneyToWin,
+			...tokensToWin ? { tokens: tokensToWin } : {},
 			...petRewardTypeId === undefined ? {} : { petRewardTypeId }
 		}
 	};

@@ -65,14 +65,14 @@ describe("075-onboarding-campaign-reorder migration", () => {
 		}
 	});
 
-	it("sends a newcomer who already consulted the missions back to its first report", async () => {
+	it("keeps a newcomer who already consulted the missions on its first report", async () => {
 		await insertPlayer(1, {
 			level: 1, classId: 0, progression: 2, blob: blob("1"), slot: { missionId: "commandReport", missionVariant: 0, numberDone: 0 }
 		});
 		await up({ context: context() });
 		const result = await row(1);
-		expect(result.campaignBlob.slice(0, 3)).toBe("010");
-		expect(result.campaignProgression).toBe(1);
+		expect(result.campaignBlob.slice(0, 3)).toBe("100");
+		expect(result.campaignProgression).toBe(2);
 		expect(result.missionId).toBe("commandReport");
 	});
 

@@ -21,7 +21,8 @@
         "gems": "Gemmes gagnées : {{count, number}} {emote:unitValues.gem}",
         "points": "Points gagnés : {{count, number}} {emote:unitValues.score}",
         "money": "Argent gagné : {{count, number}} {emote:unitValues.money}",
-        "xp": "Expérience gagnée : {{count, number}} {emote:unitValues.xp}"
+        "xp": "Expérience gagnée : {{count, number}} {emote:unitValues.xp}",
+      "tokens": "Jetons gagnés : {{count, number}} {emote:unitValues.token}"
       },
       "noRewards": "Aucune récompense.",
       "nextCampaignMission": "{emote:missions.campaign} Prochaine mission de campagne",
@@ -29,7 +30,8 @@
       "pointsDisplay": "+{{count, number}} {emote:unitValues.score}",
       "gemsDisplay": "+{{count, number}} {emote:unitValues.gem}",
       "moneyDisplay": "+{{count, number}} {emote:unitValues.money}",
-      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}"
+      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}",
+    "tokensDisplay": "+{{count, number}} {emote:unitValues.token}"
     }
   },
   "guildFood": {

@@ -540,6 +540,14 @@ export abstract class MissionsController {
 			response,
 			reason: NumberChangeReason.MISSION_FINISHED
 		});
+		const tokens = totalizer(m => m.tokensToWin ?? 0);
+		if (tokens > 0) {
+			player = await player.addTokens({
+				amount: tokens,
+				response,
+				reason: NumberChangeReason.MISSION_FINISHED
+			});
+		}
 
 		return player;
 	}

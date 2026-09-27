@@ -1,19 +1,20 @@
 {
   "missions": [
     {
-      "missionId": "commandReport",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 1,
-      "xpToWin": 20,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "commandMission",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 10,
+      "moneyToWin": 0,
+      "tokensToWin": 1
+    },
+    {
+      "missionId": "commandReport",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 20,
       "moneyToWin": 0
     },
     {

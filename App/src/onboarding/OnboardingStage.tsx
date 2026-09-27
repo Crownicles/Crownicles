@@ -13,7 +13,7 @@ import {Celebration} from "@/src/components/UnlockCelebration";
 import {clockTime} from "@/src/display/Clock";
 import {reportOpensAt} from "@/src/display/ReportTiming";
 import {reportNotificationsAllowed, requestReportNotifications} from "@/src/notifications/ReportNotifications";
-import {ContestView} from "@/src/onboarding/ContestBooklet";
+import {ContestView} from "@/src/onboarding/Contest";
 import {OnboardingMoment, OnboardingMoments, ONBOARDING_MOMENTS} from "@/src/onboarding/OnboardingStore";
 import {i18n} from "@/src/translations/i18n";
 
@@ -43,7 +43,7 @@ function roadTravel(view: ReportViewRes | null): ReportTravelSummaryRes | null {
 }
 
 function onRoadTrial(contest: ContestView | null): boolean {
-	return contest?.running === true && contest.contest.current?.trial.id === ONBOARDING_TRIAL_IDS.ROAD;
+	return contest?.trialId === ONBOARDING_TRIAL_IDS.ROAD;
 }
 
 function unseen(moments: OnboardingMoments, moment: OnboardingMoment): boolean {

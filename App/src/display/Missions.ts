@@ -56,11 +56,12 @@ export function missionRows(missions: readonly CompletedMission[]): {key: string
 	});
 }
 
-export function missionRewardTotal(missions: readonly CompletedMission[]): MissionReward {
+export function missionRewardTotal(missions: readonly CompletedMission[]): Required<Omit<MissionReward, "petRewardTypeId">> {
 	return missions.reduce((total, {reward}) => ({
 		points: total.points + reward.points,
 		experience: total.experience + reward.experience,
 		gems: total.gems + reward.gems,
-		money: total.money + reward.money
-	}), {points: 0, experience: 0, gems: 0, money: 0});
+		money: total.money + reward.money,
+		tokens: total.tokens + (reward.tokens ?? 0)
+	}), {points: 0, experience: 0, gems: 0, money: 0, tokens: 0});
 }

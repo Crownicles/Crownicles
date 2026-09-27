@@ -803,57 +803,9 @@
     }
   },
   "contest": {
-    "title": "Livret du concours",
-    "eyebrow": "Concours du roi",
-    "trial": "Épreuve {{number}} sur {{count}}",
-    "intro": "Chaque épreuve réussie est scellée dans ce livret. Le roi suit de près les progrès de chaque candidat.",
-    "ahead": "Épreuve à découvrir",
-    "sealed": "Scellée",
-    "current": "En cours",
-    "soon": "Bientôt",
-    "missions": {
-      "commandReport": "Faire son premier rapport",
-      "commandMission": "Ouvrir le Livret du concours",
-      "earnMoney": "Recevoir la bourse du roi",
-      "findOrBuyItem": "Trouver un objet",
-      "drinkPotion": "Boire une potion",
-      "visitCityNpc": "Visiter le magasin général",
-      "commandMap": "Consulter la carte du royaume",
-      "chooseClass": "Choisir sa classe"
-    },
-    "trials": {
-      "audience": {
-        "title": "L'audience royale",
-        "description": "Présentez-vous au roi et recevez votre bourse de départ."
-      },
-      "road": {
-        "title": "La route du chef-lieu",
-        "description": "Équipez-vous en chemin et découvrez votre première ville."
-      },
-      "path": {
-        "title": "Le choix de la voie",
-        "description": "Choisissez la classe qui façonnera votre manière de combattre."
-      }
-    },
-    "hints": {
-      "commandReport": "La route vous attend : faites votre premier rapport de voyage.",
-      "commandMission": "La guide vous tend le Livret du concours : ouvrez-le pour découvrir vos épreuves.",
-      "earnMoney": "Le roi reçoit les candidats dans la salle du trône et remet à chacun une bourse de départ.",
-      "findOrBuyItem": "Sur la route, un voyageur attentif trouve toujours de quoi s'équiper.",
-      "drinkPotion": "Une potion se boit depuis votre inventaire : ses bienfaits vous accompagnent en voyage.",
-      "visitCityNpc": "Au chef-lieu, poussez la porte du magasin général pour découvrir ses marchandises.",
-      "commandMap": "Consultez la carte du royaume pour préparer votre prochaine destination.",
-      "chooseClass": "Le niveau 4 ouvre le choix de votre classe : elle façonnera votre manière de combattre."
-    },
-    "actions": {
-      "open": "Ouvrir le livret",
-      "openMap": "Ouvrir la carte",
-      "openInventory": "Ouvrir l'inventaire",
-      "chooseClass": "Choisir ma classe"
-    },
     "tips": {
-      "tokens": "La route se parcourt en temps réel : votre personnage avance même application fermée. Un jeton le mène au prochain arrêt sans attendre.",
-      "occupied": "Certaines péripéties prennent du temps. Vous pouvez les écourter avec des jetons, ou profiter de ce moment pour parcourir votre livret et votre inventaire.",
+      "tokens": "Votre première mission vous a rapporté un jeton. La route se parcourt en temps réel, mais un jeton permet d'avancer plus vite vers la suite de l'histoire : touchez le bouton Avancer juste au-dessus pour rejoindre tout de suite le prochain arrêt.",
+      "occupied": "Certaines péripéties prennent du temps. Vous pouvez les écourter avec des jetons, ou profiter de ce moment pour parcourir vos missions et votre inventaire.",
       "understood": "Compris",
       "stayInCity": "La guide vous conseille de rester en ville pour l'instant : le magasin général vous attend, et une nouvelle route se prendra toujours plus tard."
     },
@@ -868,7 +820,7 @@
     "seal": {
       "eyebrow": "Sceau royal",
       "title": "Les épreuves du concours sont réussies",
-      "description": "Le roi appose son grand sceau sur votre livret. Le vrai voyage commence : chaque destination demande désormais des heures de route, et une lettre du roi vous attend chaque jour de la semaine.",
+      "description": "Le roi salue vos premiers pas. Le vrai voyage commence : chaque destination demande désormais des heures de route, et une lettre du roi vous attend chaque jour de la semaine.",
       "continue": "Poursuivre l'aventure"
     },
     "letter": {

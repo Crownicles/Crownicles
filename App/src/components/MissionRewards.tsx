@@ -39,6 +39,7 @@ function rewardEffects(rewards: MissionRewards): Effect[] {
 		amountEffect(i18n.t("app:adventure.event.fields.money"), total.money, {gain: "money"}),
 		amountEffect(i18n.t("app:adventure.event.fields.gems"), total.gems, {gain: "gem"}),
 		amountEffect(i18n.t("app:adventure.event.fields.points"), total.points, {gain: "score"}),
+		amountEffect(i18n.t("app:adventure.event.fields.tokens"), total.tokens, {gain: "token"}),
 		amountEffect(i18n.t("app:missions.rewards.pet"), rewards.missions.filter(mission => mission.reward.petRewardTypeId !== undefined).length),
 		...rewards.recipes.map(recipe => gainEffect(i18n.t("app:missions.rewards.recipe"), recipeLabel(recipe)))
 	]);

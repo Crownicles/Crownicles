@@ -3,17 +3,16 @@ import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {MissionsRes} from "ws-packets/src/fromServer/missions/MissionsRes";
 import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
-import {ONBOARDING_MISSION_IDS} from "ws-packets/src/objects/Onboarding";
-import {CONTEST_LENGTH, contestOf, isContestBookletAvailable, SEAL_STATES, sealedCount} from "@/src/onboarding/Contest";
+import {ONBOARDING_MISSION_IDS, ONBOARDING_TRIAL_IDS} from "ws-packets/src/objects/Onboarding";
+import {CONTEST_LENGTH, contestOf, ContestView} from "@/src/onboarding/Contest";
 import {forkDue, StopArrivedToast} from "@/src/onboarding/OnboardingStage";
-import {ContestView} from "@/src/onboarding/ContestBooklet";
 import {OnboardingMoments} from "@/src/onboarding/OnboardingStore";
 
 jest.mock("expo-router", () => ({
 	useRouter: (): {navigate: jest.Mock} => ({navigate: jest.fn()}),
 	usePathname: (): string => "/profile"
 }));
-jest.mock("@/src/onboarding/ContestBooklet", () => ({}));
+jest.mock("@/src/components/Missions", () => ({}));
 jest.mock("@/src/components/UnlockCelebration", () => ({Celebration: (): null => null}));
 jest.mock("@/src/notifications/ReportNotifications", () => ({}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
@@ -29,7 +28,7 @@ function missionsAt(missionId: string, campaignProgression: number): Pick<Missio
 }
 
 function contestView(missionId: string, campaignProgression: number): ContestView {
-	return {contest: contestOf(missionsAt(missionId, campaignProgression)), running: true, bookletAvailable: true};
+	return contestOf(missionsAt(missionId, campaignProgression));
 }
 
 function travel(tripMinutes: number, nextStopTime = Date.now() + 10 * MINUTE): ReportTravelSummaryRes {
@@ -55,23 +54,15 @@ function moments(seen: boolean): OnboardingMoments {
 
 const ROAD_START = 4;
 
-describe("contest booklet", () => {
-	it("seals the missions already done and names the one the player is on", () => {
-		const contest = contestOf(missionsAt(ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM, ROAD_START));
-		expect(sealedCount(contest)).toBe(ROAD_START - 1);
-		expect(contest.trials.map(trial => trial.state)).toEqual([SEAL_STATES.SEALED, SEAL_STATES.CURRENT, SEAL_STATES.AHEAD]);
-		expect(contest.current?.mission.missionId).toBe(ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM);
+describe("royal contest", () => {
+	it("names the trial and mission the player is on", () => {
+		expect(contestView(ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM, ROAD_START)).toEqual({running: true, trialId: ONBOARDING_TRIAL_IDS.ROAD, missionId: ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM});
 	});
 
-	it("is fully sealed once the whole campaign is completed", () => {
-		const contest = contestOf(missionsAt(ONBOARDING_MISSION_IDS.CHOOSE_CLASS, 0));
-		expect(sealedCount(contest)).toBe(CONTEST_LENGTH);
-		expect(contest.current).toBeNull();
-	});
-
-	it("stays open right after the last seal, then gives way to the campaign", () => {
-		expect(isContestBookletAvailable(CONTEST_LENGTH + 1)).toBe(true);
-		expect(isContestBookletAvailable(CONTEST_LENGTH + 2)).toBe(false);
+	it("is over once its last mission is done, and for a completed campaign", () => {
+		expect(contestView(ONBOARDING_MISSION_IDS.CHOOSE_CLASS, CONTEST_LENGTH).running).toBe(true);
+		expect(contestView("travelHours", CONTEST_LENGTH + 1)).toEqual({running: false, trialId: null, missionId: null});
+		expect(contestView(ONBOARDING_MISSION_IDS.CHOOSE_CLASS, 0).running).toBe(false);
 	});
 });
 

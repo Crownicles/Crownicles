@@ -22,7 +22,7 @@ import {useMissionRewards, useMissionRewardsAccount} from "@/src/store/MissionRe
 import {useNotificationNavigation, useReportNotification} from "@/src/notifications/useNotifications";
 import {allowPermissionPrompt} from "@/src/notifications/ReportNotifications";
 import {useReportView} from "@/src/store/useReportActions";
-import {ContestView, useContest} from "@/src/onboarding/ContestBooklet";
+import {ContestView, useContest} from "@/src/onboarding/Contest";
 import {OnboardingMoments, ONBOARDING_MOMENTS, useOnboardingAccount, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
 import {ContestSeal, DepartureFork, forkDue, sealDue, stageMoment, StopArrivedToast} from "@/src/onboarding/OnboardingStage";
 import {RoyalLetter} from "@/src/onboarding/RoyalLetter";

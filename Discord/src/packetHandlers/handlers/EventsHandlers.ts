@@ -41,6 +41,7 @@ type MissionRewardTotals = {
 	points: number;
 	money: number;
 	xp: number;
+	tokens: number;
 };
 
 /**
@@ -56,13 +57,14 @@ function buildCompletedMissionData(missions: CompletedMission[], lng: Language):
 		[MissionType.NORMAL]: []
 	};
 	const totals: MissionRewardTotals = {
-		gems: 0, points: 0, money: 0, xp: 0
+		gems: 0, points: 0, money: 0, xp: 0, tokens: 0
 	};
 	for (const mission of missions) {
 		totals.gems += mission.gemsToWin;
 		totals.points += mission.pointsToWin;
 		totals.money += mission.moneyToWin;
 		totals.xp += mission.xpToWin;
+		totals.tokens += mission.tokensToWin ?? 0;
 		missionLists[mission.missionType].push(MissionUtils.formatCompletedMission(mission, lng));
 	}
 	return {
@@ -86,6 +88,9 @@ function buildTotalRewardsLines(totals: MissionRewardTotals, lng: Language): str
 		},
 		{
 			value: totals.xp, key: "xp"
+		},
+		{
+			value: totals.tokens, key: "tokens"
 		}
 	];
 	const lines = rewards

@@ -2012,17 +2012,17 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous écoutez patiemment le roi, puis la guide vous raccompagne à l'entrée, le Livret du concours sous le bras. Un attelage peut vous conduire vers le chef-lieu de votre choix, et le roi promet de vous écrire chaque jour durant votre première semaine de voyage."
+          "0": "Vous écoutez patiemment le roi, puis la guide vous raccompagne à l'entrée. Un attelage peut vous conduire vers le chef-lieu de votre choix, et le roi promet de vous écrire chaque jour durant votre première semaine de voyage."
         }
       },
       "start": {
         "outcomes": {
-          "0": "Vous glissez le Livret du concours dans votre sac et quittez la salle du trône. La guide vous attend à l'entrée : un attelage peut vous conduire vers le chef-lieu de votre choix, et le roi promet de vous écrire chaque jour durant votre première semaine de voyage."
+          "0": "Vous rangez votre bourse et quittez la salle du trône. La guide vous attend à l'entrée : un attelage peut vous conduire vers le chef-lieu de votre choix, et le roi promet de vous écrire chaque jour durant votre première semaine de voyage."
         },
         "text": "Débuter votre aventure."
       }
     },
-    "text": "Dans la grande salle du trône, le roi vous reçoit en personne. Le concours est simple : parcourir le royaume, gagner en renommée et récolter le plus de points possible pour dominer les classements. Le roi vous remet une bourse de départ ainsi que le Livret du concours, un carnet frappé du sceau royal dans lequel chaque épreuve réussie sera scellée."
+    "text": "Dans la grande salle du trône, le roi vous reçoit en personne. Le concours est simple : parcourir le royaume, gagner en renommée et récolter le plus de points possible pour dominer les classements. Le roi vous remet une bourse de départ pour bien commencer votre aventure."
   },
   "61": {
     "possibilities": {

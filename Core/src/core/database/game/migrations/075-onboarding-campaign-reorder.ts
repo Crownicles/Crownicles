@@ -63,8 +63,8 @@ const PREVIOUS_ORDER: FrozenCampaignMission[] = [
 
 /** For each new position (1-indexed), the previous position of the mission now standing there. */
 export const ONBOARDING_ORDER = [
-	2,
 	1,
+	2,
 	3,
 	6,
 	9,
@@ -156,7 +156,7 @@ async function reorder(context: QueryInterface, order: number[], before: FrozenC
 
 /*
  * The royal contest onboarding (#4796) teaches the game in the order a newcomer meets it:
- * report, contest booklet, royal purse, then an item, a potion, the map on the road, the first
+ * missions, report, royal purse, then an item, a potion, the map on the road, the first
  * city, up to the class. The first sixteen campaign missions are permuted accordingly; completions
  * move with their mission, so no player loses or regains a finished mission.
  */

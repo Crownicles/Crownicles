@@ -6,8 +6,8 @@ export const ONBOARDING_TRIALS = [
 	{
 		id: "audience",
 		missions: [
-			"commandReport",
 			"commandMission",
+			"commandReport",
 			"earnMoney"
 		]
 	},
