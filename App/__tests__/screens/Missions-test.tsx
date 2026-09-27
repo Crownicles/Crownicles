@@ -42,14 +42,26 @@ function packet(): MissionsRes {
 describe("missions screen", () => {
 	beforeEach(() => jest.clearAllMocks());
 
-	it("renders all families and uses the server's completed daily state", async () => {
+	it("renders all families and sets aside the daily mission the server calls done", async () => {
 		await render(<MissionsContent data={packet()} now={NOW} />);
 		expect(screen.getByText("app:missions.campaign")).toBeTruthy();
 		expect(screen.getByText("app:missions.daily")).toBeTruthy();
 		expect(screen.getByText("app:missions.side")).toBeTruthy();
-		expect(screen.getByText("app:missions.completed")).toBeTruthy();
+		expect(screen.getByText("app:missions.dailyDone")).toBeTruthy();
+		expect(screen.getAllByText("app:missions.inProgress")).toHaveLength(2);
 		expect(screen.getByText("4 / 150")).toBeTruthy();
 		expect(screen.getByText("1 / 2")).toBeTruthy();
+		const headers = ["app:missions.side", "app:missions.daily"].map(header => JSON.stringify(screen.toJSON()).indexOf(header));
+		expect(headers[0]).toBeLessThan(headers[1]);
+	});
+
+	it("keeps today's mission up front while it is still to do", async () => {
+		const data = packet();
+		data.dailyMission.completed = false;
+		await render(<MissionsContent data={data} now={NOW} />);
+		expect(screen.queryByText("app:missions.dailyDone")).toBeNull();
+		const headers = ["app:missions.daily", "app:missions.side"].map(header => JSON.stringify(screen.toJSON()).indexOf(header));
+		expect(headers[0]).toBeLessThan(headers[1]);
 	});
 
 	it("keeps a mission's gauge folded until its line is opened", async () => {

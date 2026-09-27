@@ -28,6 +28,7 @@ import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
 import {useMissions} from "@/src/components/Missions";
 import {i18n} from "@/src/translations/i18n";
 import {fakeAppState} from "@/src/testing/fakeAppState";
+import {travelAdvicePreference} from "@/src/preferences/TravelAdvicePreference";
 import {ONBOARDING_TRIALS} from "ws-packets/src/objects/Onboarding";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 import {ADVENTURE_MISSIONS, ADVENTURE_TOOL_NAMES, ADVENTURE_TOOL_PARAM} from "@/src/navigation/AdventureTools";
@@ -329,6 +330,25 @@ describe("Adventure screen", () => {
 		expect(screen.getByText("advices:advices:only")).toBeTruthy();
 	});
 
+	it("keeps the advices away from a newcomer, who has the guide to follow", async () => {
+		mockReport();
+		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: {...profile(), level: 4} as ProfileRes});
+
+		await render(<Adventure />);
+
+		expect(screen.queryByText("advices:advices:only")).toBeNull();
+	});
+
+	it("leaves the advices out once the player turns them off in the settings", async () => {
+		mockReport();
+		travelAdvicePreference.set(false);
+
+		await render(<Adventure />);
+
+		expect(screen.queryByText("advices:advices:only")).toBeNull();
+		travelAdvicePreference.set(true);
+	});
+
 	it("does not suggest Discord commands in the travel advice", async () => {
 		jest.mocked(i18n.tArray).mockReturnValue(["Utilisez la commande /idea !", "Garder de l'argent de côté est judicieux."]);
 		mockReport();
@@ -372,6 +392,15 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:adventure.quick.advanceWithCost")).toBeNull();
 	});
 
+	it("counts the last minute of the whole trip in seconds, like the next stop", async () => {
+		mockReport({...report(), arriveTime: Date.now() + 30_000, nextStopTime: Date.now() + 60_000});
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("app:adventure.fields.timeRemaining")).toBeTruthy();
+		expect(screen.getByText("app:adventure.duration.seconds")).toBeTruthy();
+	});
+
 	it("says the traveller has arrived instead of counting zero minutes", async () => {
 		const arrived = {...report(), startTime: Date.now() - 7_200_000, arriveTime: Date.now() - 60_000, nextStopTime: Date.now() - 60_000};
 		mockReport(arrived, true);
@@ -399,7 +428,7 @@ describe("Adventure screen", () => {
 		await render(<Adventure />);
 
 		expect(screen.getByText("app:adventure.quick.advanceWithCost")).toBeTruthy();
-		expect(screen.getByText("app:adventure.tokenSkip")).toBeTruthy();
+		expect(screen.queryByText("app:adventure.tokenSkip")).toBeNull();
 		expect(screen.queryByText("app:adventure.continueReport")).toBeNull();
 	});
 

@@ -72,6 +72,8 @@ import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
+import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {useTravelAdvicesShown} from "@/src/preferences/TravelAdvicePreference";
 import {WorldMap} from "@/src/components/WorldMap";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {Missions} from "@/src/components/Missions";
@@ -161,7 +163,8 @@ const styles = StyleSheet.create({
     marginLeft: -Theme.dimensions.quickActionIcon / 2
   },
   actions: {
-    gap: Theme.spacing.md
+    gap: Theme.spacing.md,
+    marginBottom: Theme.spacing.md
   },
 });
 
@@ -393,6 +396,16 @@ function hasNextStop(packet: ReportTravelSummaryRes): boolean {
 function travelAdvice(stopTime: number): string {
 	const advices = i18n.tArray("advices:advices").filter(advice => !/(?:^|\s)\/[a-z][\w-]*/i.test(advice));
 	return advices.length === 0 ? "" : plainStory(advices[Math.abs(stopTime) % advices.length]);
+}
+
+/** A newcomer already has the guide to follow; the advices wait until they find their feet. */
+const TRAVEL_ADVICE_LEVEL = 5;
+
+function useTravelAdvice(stopTime: number): string {
+	const shown = useTravelAdvicesShown();
+	const profile = usePlayerProfile();
+	const experienced = profile.status === "ready" && profile.data.level >= TRAVEL_ADVICE_LEVEL;
+	return shown && experienced ? travelAdvice(stopTime) : "";
 }
 
 export function reportRefreshDelay(packet: ReportTravelSummaryRes, now = Date.now()): number | null {
@@ -686,7 +699,7 @@ function travelFigures(context: AdventureContext): Figure[] {
 	const {packet, metrics, currentTime} = context;
 	const stage = journeyStage(context);
 	return [
-		...stage === JOURNEY_STAGES.ARRIVED ? [] : [{caption: i18n.t("app:adventure.fields.timeRemaining"), value: formatDuration(metrics.remainingMilliseconds)}],
+		...stage === JOURNEY_STAGES.ARRIVED ? [] : [{caption: i18n.t("app:adventure.fields.timeRemaining"), value: formatCountdown(metrics.remainingMilliseconds)}],
 		...stage === JOURNEY_STAGES.TRAVELLING && hasNextStop(packet) ? [{caption: i18n.t("app:adventure.fields.nextStop"), value: nextStopDuration(packet, currentTime)}] : [],
 		...packet.points.show ? [{caption: i18n.t("app:adventure.fields.points"), value: String(packet.points.cumulated), unit: "score"}] : []
 	];
@@ -709,11 +722,10 @@ function ReportAdvance({reportReady, reportAction, waitFor}: {reportReady: boole
 	</>;
 }
 
-/** Tokens reach the stop now; what they save, and when the stop would come for free, is written under the button. */
-function TokenAdvance({tokens, reportAction, waitFor, advance}: {
+/** Tokens reach the stop now; the onboarding has already told what they are for. */
+function TokenAdvance({tokens, reportAction, advance}: {
 	tokens: NonNullable<ReportTravelSummaryRes["tokens"]>;
 	reportAction: GameMutation<void>;
-	waitFor: ReportWait;
 	advance: PendingAction;
 }): ReactNode {
 	return <>
@@ -725,7 +737,6 @@ function TokenAdvance({tokens, reportAction, waitFor, advance}: {
 				? i18n.t("app:adventure.quick.advanceWithCost", {count: tokens.cost})
 				: i18n.t("app:adventure.quick.getTokens")}
 			pending={advance.pending || reportAction.pending}
-			hint={{reason: i18n.t("app:adventure.tokenSkip", {time: waitFor.duration, clock: waitFor.clock}), icon: Clock3}}
 			onPress={advance.onPress}
 		/>
 	</>;
@@ -773,7 +784,7 @@ function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 }): ReactNode {
 	const tokens = tokenOffer(packet, reportReady);
 	const action = tokens
-		? <TokenAdvance tokens={tokens} reportAction={reportAction} waitFor={waitFor} advance={advance} />
+		? <TokenAdvance tokens={tokens} reportAction={reportAction} advance={advance} />
 		: cureReplacesReport(packet, reportReady)
 			? null
 			: <ReportAdvance reportReady={reportReady} reportAction={reportAction} waitFor={waitFor} />;
@@ -887,7 +898,7 @@ function AdventureSheet({packet, currentTime, actions, tools, dash, cure}: {
 	const metrics = getTravelMetrics(packet, currentTime);
 	const context: AdventureContext = {packet, currentTime, metrics, destination: mapName(packet.endMap)};
 	const contestRunning = useContest()?.running ?? false;
-	const advice = travelAdvice(packet.nextStopTime);
+	const advice = useTravelAdvice(packet.nextStopTime);
 
 	return (
 		<Screen>

@@ -20,6 +20,7 @@ jest.mock("@/src/store/useGameQuery", () => ({
 }));
 
 jest.mock("@/src/store/AppState", () => require("@/src/testing/fakeAppState").fakeAppState.hooks);
+jest.mock("@tanstack/react-query", () => ({useQueryClient: (): object => ({resetQueries: jest.fn(() => Promise.resolve())})}));
 
 jest.mock("@/src/store/usePlayerProfile", () => ({
 	usePlayerProfile: jest.fn()

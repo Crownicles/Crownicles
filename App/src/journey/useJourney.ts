@@ -1,7 +1,9 @@
 import {useEffect, useMemo} from "react";
+import {useQueryClient} from "@tanstack/react-query";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
-import {usePlayerHasNotStarted} from "@/src/store/usePlayerHasNotStarted";
+import {refusedAsNotStarted, usePlayerHasNotStarted} from "@/src/store/usePlayerHasNotStarted";
+import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {
 	isInventoryTaught, JOURNEY_STEPS, JOURNEY_TABS, JourneyFeature, JourneyProgress, JourneyStep, JourneyTab, nextLevelStep, openTabs, unlockedFeatures
 } from "@/src/journey/Journey";
@@ -51,17 +53,23 @@ function hasUnvisitedUnlock(tab: JourneyTab, unlocked: readonly JourneyFeature[]
 
 /** The character's progress as far as unlocking goes, kept stable while none of it changes. */
 function useJourneyProgress(): JourneyProgress | null {
+	const queryClient = useQueryClient();
 	const profile = usePlayerProfile();
 	const missions = useMissions();
 	const notStarted = usePlayerHasNotStarted();
 	const data = profile.status === "ready" ? profile.data : null;
-	const known = notStarted || data !== null && missions.status !== "loading";
+	// Refused before the departure: that answer says nothing of the campaign now under way.
+	const missionsOutdated = !notStarted && refusedAsNotStarted(missions);
+	const known = notStarted || data !== null && missions.status !== "loading" && !missionsOutdated;
 	// Without the missions, a veteran keeps the profile rather than lose it on a failed request.
 	const inventoryTaught = missions.status !== "ready" || isInventoryTaught(missions.data.campaignProgression);
 	const {level, hasPet, hasGuild} = profileFacts(data);
 	useEffect(() => {
 		if (notStarted) journeyStore.markNewcomer();
 	}, [notStarted]);
+	useEffect(() => {
+		if (missionsOutdated) queryClient.resetQueries({queryKey: gameKey(GAME_ENTITIES.MISSIONS)}).catch(console.error);
+	}, [missionsOutdated, queryClient]);
 	return useMemo(
 		(): JourneyProgress | null => (known ? {started: !notStarted, level, hasPet, hasGuild, inventoryTaught} : null),
 		[known, notStarted, level, hasPet, hasGuild, inventoryTaught]

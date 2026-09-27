@@ -24,6 +24,7 @@ import {Button as DesignButton} from "@/src/design/Primitives";
 import {cancelReportNotification} from "@/src/notifications/ReportNotifications";
 import {DELIVERED_NOTIFICATION_TYPES, useNotificationPreferenceChange, useNotificationPreferences} from "@/src/store/useNotificationPreferences";
 import {i18n} from "@/src/translations/i18n";
+import {travelAdvicePreference, useTravelAdvicesShown} from "@/src/preferences/TravelAdvicePreference";
 
 const styles = StyleSheet.create({
 	combatPreference: {marginBottom: Theme.spacing.lg},
@@ -111,6 +112,19 @@ function NotificationSettings(): React.JSX.Element {
 	);
 }
 
+function TravelAdviceSetting(): React.JSX.Element {
+	const shown = useTravelAdvicesShown();
+	return (
+		<View style={styles.combatPreference}>
+			<ListItem>
+				<Text style={styles.label}>{i18n.t("app:settings.travelAdvices.label")}</Text>
+				<Switch accessibilityLabel={i18n.t("app:settings.travelAdvices.label")} value={shown} onValueChange={travelAdvicePreference.set} />
+			</ListItem>
+			<Text style={styles.hint}>{i18n.t("app:settings.travelAdvices.hint")}</Text>
+		</View>
+	);
+}
+
 export default function Index() {
 	const router = useRouter();
 	const preferences = React.useContext(PreferencesContext);
@@ -157,6 +171,7 @@ export default function Index() {
 					]} />
 				</View>
 				<NotificationSettings />
+				<TravelAdviceSetting />
 				<ListItem>
 					<Text style={styles.label}>{i18n.t("app:settings.coreVersion")}</Text>
 					<Text style={styles.pingValue}>{version.status === "ready" ? version.data.coreVersion : i18n.t("app:common.loading")}</Text>

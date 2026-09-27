@@ -12,7 +12,7 @@ import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {FightGauge} from "@/src/components/FightGauge";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
-import {ExpandableEntry, ExpandableList, sectionStyles} from "@/src/design/Sections";
+import {EntryRow, ExpandableEntry, ExpandableList, sectionStyles} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
@@ -25,8 +25,8 @@ import {useMissionRewards} from "@/src/store/MissionRewardsStore";
 const CLOCK_INTERVAL = 60_000;
 const MISSION_EMBLEM_SIZE = 26;
 
-/** A mission and the two things only it knows: whether the server calls it done, and when it lapses. */
-type MissionEntryData = {key: string; mission: Mission; completed: boolean; deadline?: string};
+/** A mission and when it lapses; missions listed here are still to do. */
+type MissionEntryData = {key: string; mission: Mission; deadline?: string};
 type MissionListProps = {entries: MissionEntryData[]; now: number; unfolding: ExpandedEntry<string>};
 
 function MissionList({entries, now, unfolding}: MissionListProps): ReactNode {
@@ -35,7 +35,7 @@ function MissionList({entries, now, unfolding}: MissionListProps): ReactNode {
 			key={entry.key}
 			emblem={<TwemojiIcon emoji={AppIcons.getIcon(`missions.${entry.mission.missionType}`)} size={MISSION_EMBLEM_SIZE} />}
 			label={missionDescription(entry.mission, now)}
-			caption={i18n.t(entry.completed ? "app:missions.completed" : "app:missions.inProgress")}
+			caption={i18n.t("app:missions.inProgress")}
 			end={<Text style={sectionStyles.amount}>{i18n.t("app:profile.formats.progress", {value: entry.mission.numberDone, max: entry.mission.missionObjective})}</Text>}
 			expanded={unfolding.isExpanded(entry.key)}
 			onToggle={(): void => unfolding.toggle(entry.key)}
@@ -59,22 +59,41 @@ function CampaignMissions({data, now, unfolding, first}: {data: MissionsRes; fir
 		{data.campaignProgression === 0
 			? <Note>{i18n.t("app:missions.campaignCompleted")}</Note>
 			: mission
-				? <MissionList entries={[{key: "campaign", mission, completed: false}]} now={now} unfolding={unfolding} />
+				? <MissionList entries={[{key: "campaign", mission}]} now={now} unfolding={unfolding} />
 				: <Note>{i18n.t("app:missions.empty")}</Note>}
 	</>;
 }
 
+/** Once done, today's mission steps aside: nothing more to do until the next one arrives. */
+function DailyMissionDone({mission, data, now}: {mission: Mission; data: MissionsRes; now: number}): ReactNode {
+	return <ExpandableList>
+		<EntryRow
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon("messages.validate")} size={MISSION_EMBLEM_SIZE} />}
+			title={missionDescription(mission, now)}
+			subtitle={i18n.t("app:missions.dailyDone", {date: missionDate(data.dailyMission.resetsAt)})}
+			disabled
+			testID="mission-daily-done"
+		/>
+	</ExpandableList>;
+}
+
 function DailyMission({data, now, unfolding}: {data: MissionsRes} & Omit<MissionListProps, "entries">): ReactNode {
 	const mission = data.missions.find(entry => entry.missionType === MISSION_TYPES.DAILY);
+	if (!mission) {
+		return <>
+			<SectionHeader>{i18n.t("app:missions.daily")}</SectionHeader>
+			<Note>{i18n.t("app:missions.empty")}</Note>
+		</>;
+	}
 	return <>
 		<SectionHeader>{i18n.t("app:missions.daily")}</SectionHeader>
-		{mission
-			? <MissionList
-				entries={[{key: "daily", mission, completed: data.dailyMission.completed, deadline: i18n.t("app:missions.resetsAt", {date: missionDate(data.dailyMission.resetsAt)})}]}
+		{data.dailyMission.completed
+			? <DailyMissionDone mission={mission} data={data} now={now} />
+			: <MissionList
+				entries={[{key: "daily", mission, deadline: i18n.t("app:missions.resetsAt", {date: missionDate(data.dailyMission.resetsAt)})}]}
 				now={now}
 				unfolding={unfolding}
-			/>
-			: <Note>{i18n.t("app:missions.empty")}</Note>}
+			/>}
 	</>;
 }
 
@@ -88,7 +107,6 @@ function SideMissions({data, now, unfolding}: {data: MissionsRes} & Omit<Mission
 				entries={missions.map(mission => ({
 					key: `${mission.missionId}:${mission.missionVariant}:${mission.expiresAt}`,
 					mission,
-					completed: false,
 					...mission.expiresAt ? {deadline: i18n.t("app:missions.expiresAt", {date: missionDate(Date.parse(mission.expiresAt))})} : {}
 				}))}
 				now={now}
@@ -102,10 +120,13 @@ export function MissionsContent({data, now}: {data: MissionsRes; now: number}): 
 	const rewardsFirst = useMissionRewards().rewards.missions.length > 0;
 	if (data.missions.length === 0) return <EmptyState>{i18n.t("app:missions.empty")}</EmptyState>;
 	const sections = {now, unfolding};
+	const daily = <DailyMission data={data} {...sections} />;
+	// A daily mission already done moves below what is left to do.
 	return <>
 		<CampaignMissions data={data} first={!rewardsFirst} {...sections} />
-		<DailyMission data={data} {...sections} />
+		{data.dailyMission.completed ? null : daily}
 		<SideMissions data={data} {...sections} />
+		{data.dailyMission.completed ? daily : null}
 	</>;
 }
 

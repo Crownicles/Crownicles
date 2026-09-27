@@ -192,6 +192,10 @@
       "light": "Clair",
       "dark": "Sombre"
     },
+    "travelAdvices": {
+      "label": "Conseils de voyage",
+      "hint": "Des astuces sur le jeu apparaissent sur la page Aventure à partir du niveau 5."
+    },
     "developerMode": "Mode développeur",
     "coreVersion": "Version du moteur",
     "ping": "Ping",
@@ -330,7 +334,6 @@
       "arrivedSubtitle": "{{destination}} est en vue : continuez l'aventure pour découvrir ce qui vous y attend."
     },
     "notReadyAt": "Prochain arrêt gratuit à {{clock}}, dans {{time}}.",
-    "tokenSkip": "Des jetons permettent d'avancer sans attendre. Sinon, la prochaine étape sera disponible à {{clock}} (dans {{time}}).",
     "alteration": {
       "eyebrow": "Rapport · altération",
       "title": "Altération d'état",
@@ -1043,8 +1046,8 @@
     "daily": "Mission quotidienne",
     "side": "Missions secondaires",
     "progress": "Progression",
-    "completed": "Terminée",
     "inProgress": "En cours",
+    "dailyDone": "Réussie · nouvelle mission le {{date}}",
     "campaignCompleted": "Vous avez terminé la campagne.",
     "empty": "Aucune mission disponible.",
     "noSideMissions": "Vous n'avez aucune mission secondaire en cours.",
