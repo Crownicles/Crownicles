@@ -27,6 +27,9 @@ import {MissionsRes} from "ws-packets/src/fromServer/missions/MissionsRes";
 import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
 import {useMissions} from "@/src/components/Missions";
 import {i18n} from "@/src/translations/i18n";
+import {onboardingStore} from "@/src/onboarding/OnboardingStore";
+import {ONBOARDING_TRIALS} from "ws-packets/src/objects/Onboarding";
+import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 
 /** Delivers a packet exactly as Core pushes it through the socket. */
 function pushFromCore(wireName: string, packet: object): void {
@@ -99,6 +102,15 @@ function mockReport(travel = report(), reportReady = false): ReportViewRes {
 	const view = Object.assign(new ReportViewRes(), {travel, reportReady});
 	mockedUseGameQuery.mockReturnValue({status: "ready", data: view});
 	return view;
+}
+
+/** A contest candidate whose current campaign mission is the given one, at its campaign position. */
+function mockContestAt(missionId: string): void {
+	const campaignProgression = ONBOARDING_TRIALS.flatMap(trial => trial.missions).findIndex(id => id === missionId) + 1;
+	jest.mocked(useMissions).mockReturnValue({status: "ready", data: {
+		campaignProgression,
+		missions: [{missionId, missionType: MISSION_TYPES.CAMPAIGN, missionVariant: 0, missionObjective: 1, numberDone: 0}]
+	} as unknown as MissionsRes});
 }
 
 function mockCity(): ReportViewRes {
@@ -230,6 +242,30 @@ describe("Adventure screen", () => {
 		expect(screen.getAllByTestId("contest-seal-sealed")).toHaveLength(3);
 		expect(screen.queryByText("app:journey.title")).toBeNull();
 		expect(screen.queryByText("advices:advices:only")).toBeNull();
+	});
+
+	it("shows a candidate how a token buys time on the road, until they spend one", async () => {
+		mockReport();
+		mockContestAt("findOrBuyItem");
+		jest.spyOn(GameClient, "request").mockResolvedValue({kind: "timeout"});
+		await act(async () => onboardingStore.load("token-candidate"));
+		await render(<Adventure />);
+		expect(screen.getByTestId("guide-tip-tokens")).toBeTruthy();
+
+		await fireEvent.press(screen.getByText("app:adventure.quick.advanceWithCost"));
+
+		expect(screen.queryByTestId("guide-tip-tokens")).toBeNull();
+	});
+
+	it("explains once why a mishap holds the candidate back", async () => {
+		mockReport({...report(), effect: PLAYER_EFFECTS.OCCUPIED, effectEndTime: Date.now() + 1_800_000});
+		mockContestAt("findOrBuyItem");
+		await act(async () => onboardingStore.load("occupied-candidate"));
+		await render(<Adventure />);
+
+		await fireEvent.press(screen.getByText("app:contest.tips.understood"));
+
+		expect(screen.queryByTestId("guide-tip-occupied")).toBeNull();
 	});
 
 	it("keeps all three sealed trials accessible immediately after choosing a class", async () => {

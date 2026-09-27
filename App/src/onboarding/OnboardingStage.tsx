@@ -3,6 +3,7 @@ import {Modal, StyleSheet, Text, View} from "react-native";
 import {usePathname, useRouter} from "expo-router";
 import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
+import {ONBOARDING_TRIAL_IDS} from "ws-packets/src/objects/Onboarding";
 import {AppIcons} from "@/src/AppIcons";
 import {ActionBanner, Toast} from "@/src/design/Sections";
 import {Bell, Check, Footprints} from "@/src/design/FightIcons";
@@ -39,7 +40,7 @@ export function stageMoment(view: ReportViewRes | null): string {
 export function forkDue({view, contest, moments}: {view: ReportViewRes | null; contest: ContestView | null; moments: OnboardingMoments}): ReportTravelSummaryRes | null {
 	const travel = view?.travel;
 	if (!travel || view?.city || !contest?.running || !moments.ready || moments.seen(ONBOARDING_MOMENTS.FORK)) return null;
-	if (contest.contest.current?.trial.id !== "road") return null;
+	if (contest.contest.current?.trial.id !== ONBOARDING_TRIAL_IDS.ROAD) return null;
 	return travel.arriveTime - travel.startTime >= FORK_MIN_TRIP_MS ? travel : null;
 }
 

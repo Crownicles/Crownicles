@@ -28,6 +28,11 @@ export function dueRoyalLetter(info: Pick<PlayerMissionsInfo, "royalLettersRecei
 	return datesAreOnSameDay(info.lastRoyalLetterAt, now) || info.lastRoyalLetterAt > now ? null : info.royalLettersReceived + 1;
 }
 
+/** Whether this report may start the daily count or bring a letter. */
+function royalMailPending(info: Pick<PlayerMissionsInfo, "royalLettersReceived" | "lastRoyalLetterAt">, now: Date): boolean {
+	return info.lastRoyalLetterAt ? dueRoyalLetter(info, now) !== null : info.royalLettersReceived < ROYAL_MAIL.LETTERS;
+}
+
 /** The letter and its gifts commit together; the first report only starts the daily count. */
 async function claimRoyalLetterUnderLock(
 	player: Locked<Player>,
@@ -35,15 +40,15 @@ async function claimRoyalLetterUnderLock(
 	response: CrowniclesPacket[],
 	now: Date
 ): Promise<RoyalLetterClaim | null> {
-	if (!info.lastRoyalLetterAt && info.royalLettersReceived < ROYAL_MAIL.LETTERS) {
+	if (!royalMailPending(info, now)) {
+		return null;
+	}
+	if (!info.lastRoyalLetterAt) {
 		info.lastRoyalLetterAt = now;
 		await info.save();
 		return null;
 	}
-	const letter = dueRoyalLetter(info, now);
-	if (letter === null) {
-		return null;
-	}
+	const letter = dueRoyalLetter(info, now)!;
 	const tokens = await player.addTokensAndGetActualGain({
 		amount: ROYAL_MAIL.TOKENS,
 		response,
@@ -69,6 +74,10 @@ async function claimRoyalLetterUnderLock(
 
 /** Delivers the king's letter of the day to a newcomer, with its gifts, during their first week. */
 export async function deliverRoyalLetter(player: Player, response: CrowniclesPacket[], now = new Date()): Promise<void> {
+	// Every report comes here: settle the veterans and the rest of the day without taking a lock.
+	if (!royalMailPending(await PlayerMissionsInfos.getOfPlayer(player.id), now)) {
+		return;
+	}
 	const rewardPackets: CrowniclesPacket[] = [];
 	const delivered = await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		const info = await PlayerMissionsInfos.getOfPlayer(player.id);

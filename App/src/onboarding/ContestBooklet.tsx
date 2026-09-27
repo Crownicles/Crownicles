@@ -2,7 +2,7 @@ import {ReactNode, useEffect, useState} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {useRouter} from "expo-router";
 import {Mission} from "ws-packets/src/objects/Mission";
-import {ONBOARDING_TRIALS} from "ws-packets/src/objects/Onboarding";
+import {ONBOARDING_MISSION_IDS, ONBOARDING_TRIALS, OnboardingMissionId} from "ws-packets/src/objects/Onboarding";
 import {AppIcons} from "@/src/AppIcons";
 import {Note, SectionHeader} from "@/src/design/Primitives";
 import {Card, EntryRow, ExpandableList, Fact} from "@/src/design/Sections";
@@ -66,11 +66,11 @@ function SealStrip({contest, trial}: {contest: Contest; trial: ContestTrial}): R
 type ContestTarget = "booklet" | "map" | "inventory" | "classes";
 
 const MISSION_TARGETS: Partial<Record<string, ContestTarget>> = {
-	findOrBuyItem: "inventory",
-	drinkPotion: "inventory",
-	commandMap: "map",
-	chooseClass: "classes"
-};
+	[ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM]: "inventory",
+	[ONBOARDING_MISSION_IDS.DRINK_POTION]: "inventory",
+	[ONBOARDING_MISSION_IDS.COMMAND_MAP]: "map",
+	[ONBOARDING_MISSION_IDS.CHOOSE_CLASS]: "classes"
+} satisfies Partial<Record<OnboardingMissionId, ContestTarget>>;
 
 export type ContestOpeners = {openBooklet: () => void; openMap: () => void};
 
@@ -164,9 +164,9 @@ export function ContestCityTip({openMap}: {openMap: () => void}): ReactNode {
 	const router = useRouter();
 	const mission = view?.running ? view.contest.current?.mission : undefined;
 	if (!mission) return null;
-	const action = mission.missionId === "chooseClass"
+	const action = mission.missionId === ONBOARDING_MISSION_IDS.CHOOSE_CLASS
 		? {label: i18n.t("app:contest.actions.chooseClass"), onPress: (): void => router.push("/arena/classes")}
-		: mission.missionId === "commandMap"
+		: mission.missionId === ONBOARDING_MISSION_IDS.COMMAND_MAP
 			? {label: i18n.t("app:contest.actions.openMap"), onPress: openMap}
 			: undefined;
 	return <GuideTip text={i18n.t(`app:contest.hints.${mission.missionId}`)} {...action ? {action} : {}} testID="guide-tip-city" />;

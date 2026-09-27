@@ -42,6 +42,7 @@ import {LotteryReward} from "ws-packets/src/fromServer/smallEvents/SmallEventLot
 import {anyTranslation} from "@/src/translations/RandomTranslation";
 import {useContest} from "@/src/onboarding/ContestBooklet";
 import {GuideTip} from "@/src/onboarding/GuideTip";
+import {ONBOARDING_MISSION_IDS} from "ws-packets/src/objects/Onboarding";
 
 /** Being occupied is the alteration that only costs time: Discord never draws its emoji after a story. */
 const OCCUPIED_EFFECT = "occupied";
@@ -290,7 +291,7 @@ const SPECIALIZED_COLLECTORS: Partial<Record<ReactionCollectorData["type"], Comp
 function DestinationGuide({collector}: {collector: ReactionCollectorCreation}): ReactNode {
 	const contest = useContest();
 	const canStay = reactionIndex(collector, REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY) >= 0;
-	if (!canStay || !contest?.running || contest.contest.current?.mission.missionId !== "visitCityNpc") return null;
+	if (!canStay || !contest?.running || contest.contest.current?.mission.missionId !== ONBOARDING_MISSION_IDS.VISIT_CITY_NPC) return null;
 	return <GuideTip text={i18n.t("app:contest.tips.stayInCity")} testID="guide-tip-stay-in-city" />;
 }
 
