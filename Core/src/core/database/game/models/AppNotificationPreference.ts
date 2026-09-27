@@ -75,7 +75,7 @@ export abstract class AppNotificationPreferences {
 	}
 
 	/** Applies Discord's settings once, and only while the player has changed nothing in the app. */
-	static async seedFromDiscord(keycloakId: string, preferences: NotificationPreferences | undefined): Promise<boolean> {
+	static async seedFromDiscord(keycloakId: string, preferences?: NotificationPreferences): Promise<boolean> {
 		const [updated] = await AppNotificationPreference.update(
 			{
 				...preferences ?? {}, discordPending: false

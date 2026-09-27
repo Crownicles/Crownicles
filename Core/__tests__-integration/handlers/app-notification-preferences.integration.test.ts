@@ -57,7 +57,7 @@ describe("app notification preferences", () => {
 
 	it("keeps the defaults when the player has nothing on Discord", async () => {
 		await preferences.AppNotificationPreferences.getOrCreate("no-discord");
-		expect(await preferences.AppNotificationPreferences.seedFromDiscord("no-discord", undefined)).toBe(true);
+		expect(await preferences.AppNotificationPreferences.seedFromDiscord("no-discord")).toBe(true);
 		expect(await stored("no-discord")).toEqual(DEFAULT_NOTIFICATION_PREFERENCES);
 		expect((await preferences.AppNotificationPreferences.find("no-discord"))!.discordPending).toBe(false);
 	});

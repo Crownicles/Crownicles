@@ -1,4 +1,13 @@
-import * as Notifications from "expo-notifications";
+import {
+	AndroidImportance,
+	cancelScheduledNotificationAsync,
+	getPermissionsAsync,
+	requestPermissionsAsync,
+	SchedulableTriggerInputTypes,
+	scheduleNotificationAsync,
+	setNotificationChannelAsync,
+	setNotificationHandler
+} from "expo-notifications";
 import {Platform} from "react-native";
 import {i18n} from "@/src/translations/i18n";
 
@@ -17,7 +26,7 @@ const REPORT_NOTIFICATION = {id: "report-ready", channel: "report"} as const;
 const MIN_LEAD_MS = 5_000;
 
 // While the app is open the screen already tells what changed: the notification is for when it is not.
-Notifications.setNotificationHandler({
+setNotificationHandler({
 	handleNotification: () => Promise.resolve({shouldShowBanner: false, shouldShowList: false, shouldPlaySound: false, shouldSetBadge: false})
 });
 
@@ -42,32 +51,32 @@ function enqueue(task: () => Promise<void>): void {
 }
 
 async function canNotify(): Promise<boolean> {
-	const current = await Notifications.getPermissionsAsync();
+	const current = await getPermissionsAsync();
 	if (current.granted) return true;
 	if (!current.canAskAgain || !permissionPromptAllowed) return false;
-	return (await Notifications.requestPermissionsAsync()).granted;
+	return (await requestPermissionsAsync()).granted;
 }
 
 async function ensureReportChannel(): Promise<void> {
 	if (Platform.OS !== "android") return;
-	await Notifications.setNotificationChannelAsync(REPORT_NOTIFICATION.channel, {
+	await setNotificationChannelAsync(REPORT_NOTIFICATION.channel, {
 		name: i18n.t("app:notifications.channels.report"),
-		importance: Notifications.AndroidImportance.DEFAULT
+		importance: AndroidImportance.DEFAULT
 	});
 }
 
 async function schedule(readyAt: number, destination: string): Promise<void> {
-	await Notifications.cancelScheduledNotificationAsync(REPORT_NOTIFICATION.id);
+	await cancelScheduledNotificationAsync(REPORT_NOTIFICATION.id);
 	if (readyAt - Date.now() < MIN_LEAD_MS || !await canNotify()) return;
 	await ensureReportChannel();
-	await Notifications.scheduleNotificationAsync({
+	await scheduleNotificationAsync({
 		identifier: REPORT_NOTIFICATION.id,
 		content: {
 			title: i18n.t("app:notifications.reportReady.title"),
 			body: i18n.t("app:notifications.reportReady.body", {destination}),
 			data: {[NOTIFICATION_SCREEN_KEY]: "adventure" satisfies NotificationScreen}
 		},
-		trigger: {type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(readyAt), channelId: REPORT_NOTIFICATION.channel}
+		trigger: {type: SchedulableTriggerInputTypes.DATE, date: new Date(readyAt), channelId: REPORT_NOTIFICATION.channel}
 	});
 }
 
@@ -79,18 +88,18 @@ export function scheduleReportNotification(readyAt: number, destination: string)
 
 export function cancelReportNotification(): void {
 	lastReminder = null;
-	enqueue(() => Notifications.cancelScheduledNotificationAsync(REPORT_NOTIFICATION.id));
+	enqueue(() => cancelScheduledNotificationAsync(REPORT_NOTIFICATION.id));
 }
 
 /** Whether the player already lets the app remind them of their reports. */
 export async function reportNotificationsAllowed(): Promise<boolean> {
-	return (await Notifications.getPermissionsAsync()).granted;
+	return (await getPermissionsAsync()).granted;
 }
 
 /** Asks the player, who chose to be reminded, then reminds them of the report already waiting. */
 export async function requestReportNotifications(): Promise<boolean> {
-	const current = await Notifications.getPermissionsAsync();
-	const granted = current.granted || current.canAskAgain && (await Notifications.requestPermissionsAsync()).granted;
+	const current = await getPermissionsAsync();
+	const granted = current.granted || current.canAskAgain && (await requestPermissionsAsync()).granted;
 	if (granted && lastReminder) scheduleReportNotification(lastReminder.readyAt, lastReminder.destination);
 	return granted;
 }

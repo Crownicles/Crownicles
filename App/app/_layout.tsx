@@ -30,13 +30,18 @@ const NAVIGATION_THEME = {
 	}
 };
 
+/** What needs the translations: the signed-in session and the player's preferences. */
+function SessionProviders({children}: {children: ReactNode}): ReactNode {
+	return <AuthProvider>
+		<PreferencesProvider>{children}</PreferencesProvider>
+	</AuthProvider>;
+}
+
 function AppProviders({children}: {children: ReactNode}): ReactNode {
 	return <GestureHandlerRootView style={{ flex: 1 }}>
 		<ThemeProvider value={NAVIGATION_THEME}>
 			<BootGate>
-				<AuthProvider>
-					<PreferencesProvider>{children}</PreferencesProvider>
-				</AuthProvider>
+				<SessionProviders>{children}</SessionProviders>
 			</BootGate>
 		</ThemeProvider>
 	</GestureHandlerRootView>;

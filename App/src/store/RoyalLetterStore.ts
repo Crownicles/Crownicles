@@ -8,14 +8,19 @@ type RoyalLetterSnapshot = {account: string | null; unread: readonly RoyalLetter
 
 const STORAGE_KEY_PREFIX = "royal-letters:";
 
+const LETTER_NUMBER_FIELDS = ["letter", "letters", "tokens", "money", "gems"] as const;
+
+function isRoyalLetter(value: unknown): value is RoyalLetterRes {
+	if (typeof value !== "object" || value === null) return false;
+	const letter = value as Record<string, unknown>;
+	return LETTER_NUMBER_FIELDS.every(field => typeof letter[field] === "number");
+}
+
 function parse(stored: string | null): readonly RoyalLetterRes[] {
 	if (!stored) return [];
 	try {
 		const parsed: unknown = JSON.parse(stored);
-		return Array.isArray(parsed) ? parsed.filter((letter): letter is RoyalLetterRes =>
-			typeof letter === "object" && letter !== null
-			&& typeof letter.letter === "number" && typeof letter.letters === "number"
-			&& typeof letter.tokens === "number" && typeof letter.money === "number" && typeof letter.gems === "number") : [];
+		return Array.isArray(parsed) ? parsed.filter(isRoyalLetter) : [];
 	}
 	catch {
 		return [];

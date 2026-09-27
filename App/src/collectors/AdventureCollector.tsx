@@ -291,7 +291,8 @@ const SPECIALIZED_COLLECTORS: Partial<Record<ReactionCollectorData["type"], Comp
 function DestinationGuide({collector}: {collector: ReactionCollectorCreation}): ReactNode {
 	const contest = useContest();
 	const canStay = reactionIndex(collector, REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY) >= 0;
-	if (!canStay || !contest?.running || contest.contest.current?.mission.missionId !== ONBOARDING_MISSION_IDS.VISIT_CITY_NPC) return null;
+	const shopTrial = contest?.running === true && contest.contest.current?.mission.missionId === ONBOARDING_MISSION_IDS.VISIT_CITY_NPC;
+	if (!canStay || !shopTrial) return null;
 	return <GuideTip text={i18n.t("app:contest.tips.stayInCity")} testID="guide-tip-stay-in-city" />;
 }
 

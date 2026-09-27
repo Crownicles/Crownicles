@@ -13,8 +13,9 @@ type ReportReminder = {readyAt: number; destination: string};
 
 /** A report still to wait for, or nothing when it can be opened already or the player is in a city. */
 export function reportReminder(view: ReportViewRes): ReportReminder | null {
+	if (view.reportReady) return null;
 	const travel = view.travel;
-	if (view.reportReady || view.city || !travel) return null;
+	if (!travel || view.city) return null;
 	const readyAt = reportReadyAt(travel);
 	if (readyAt === undefined) return null;
 	const destination = travel.endMap.id > 0

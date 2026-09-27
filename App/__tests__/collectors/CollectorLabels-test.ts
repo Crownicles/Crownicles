@@ -8,23 +8,27 @@ import {
 	collectorDescription, collectorTitle, isChoosable, isEventPrompt, reactionLabel
 } from "@/src/collectors/CollectorLabels";
 
-jest.mock("@/src/AppIcons", () => ({
-	AppIcons: {
-		getIcon: (path: string): string => `icon:${path}`,
-		getIconOrNull: (path: string): string | null => path === "events.19.butch"
-			? "🦊"
-			: path === "events.19.end.0" ? "🚶"
-			: path === "badPetSmallEvent.intimidate" ? "🦁"
-			: path === "witchSmallEvent.bat" ? "🦇"
-			: path === "goblets.metal" ? "🐲"
-			: path === "goblets.biggest" ? "🪣"
-			: path === "goblets.sparkling" ? "✨"
-			: path === "goblets.cracked" ? "💀"
-			: path === "collectors.question" ? "❓"
-			: path === "smallEvents.pet" ? "🐕‍🦺"
-			: path === "smallEvents.doNothing" ? "🚶" : null
-	}
-}));
+jest.mock("@/src/AppIcons", () => {
+	const icons: Record<string, string> = {
+		"events.19.butch": "🦊",
+		"events.19.end.0": "🚶",
+		"badPetSmallEvent.intimidate": "🦁",
+		"witchSmallEvent.bat": "🦇",
+		"goblets.metal": "🐲",
+		"goblets.biggest": "🪣",
+		"goblets.sparkling": "✨",
+		"goblets.cracked": "💀",
+		"collectors.question": "❓",
+		"smallEvents.pet": "🐕‍🦺",
+		"smallEvents.doNothing": "🚶"
+	};
+	return {
+		AppIcons: {
+			getIcon: (path: string): string => `icon:${path}`,
+			getIconOrNull: (path: string): string | null => icons[path] ?? null
+		}
+	};
+});
 
 jest.mock("@/src/translations/i18n", () => ({
 	i18n: {

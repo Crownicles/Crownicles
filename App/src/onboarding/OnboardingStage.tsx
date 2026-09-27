@@ -14,7 +14,7 @@ import {clockTime} from "@/src/display/Clock";
 import {reportOpensAt} from "@/src/display/ReportTiming";
 import {reportNotificationsAllowed, requestReportNotifications} from "@/src/notifications/ReportNotifications";
 import {ContestView} from "@/src/onboarding/ContestBooklet";
-import {OnboardingMoments, ONBOARDING_MOMENTS} from "@/src/onboarding/OnboardingStore";
+import {OnboardingMoment, OnboardingMoments, ONBOARDING_MOMENTS} from "@/src/onboarding/OnboardingStore";
 import {i18n} from "@/src/translations/i18n";
 
 /** The road to the first city is long enough to leave the app: shorter hops are not worth the card. */
@@ -36,12 +36,32 @@ export function stageMoment(view: ReportViewRes | null): string {
 	return [travel?.nextStopTime, travel?.arriveTime, travel?.endMap.id, view?.reportReady, view?.city ? "city" : "road"].join(":");
 }
 
+type ForkContext = {view: ReportViewRes | null; contest: ContestView | null; moments: OnboardingMoments};
+
+function roadTravel(view: ReportViewRes | null): ReportTravelSummaryRes | null {
+	return view?.city ? null : view?.travel ?? null;
+}
+
+function onRoadTrial(contest: ContestView | null): boolean {
+	return contest?.running === true && contest.contest.current?.trial.id === ONBOARDING_TRIAL_IDS.ROAD;
+}
+
+function unseen(moments: OnboardingMoments, moment: OnboardingMoment): boolean {
+	return moments.ready && !moments.seen(moment);
+}
+
 /** The long road of the contest's second trial is where a newcomer may leave: the guide offers the reminder there, once. */
-export function forkDue({view, contest, moments}: {view: ReportViewRes | null; contest: ContestView | null; moments: OnboardingMoments}): ReportTravelSummaryRes | null {
-	const travel = view?.travel;
-	if (!travel || view?.city || !contest?.running || !moments.ready || moments.seen(ONBOARDING_MOMENTS.FORK)) return null;
-	if (contest.contest.current?.trial.id !== ONBOARDING_TRIAL_IDS.ROAD) return null;
+export function forkDue({view, contest, moments}: ForkContext): ReportTravelSummaryRes | null {
+	const travel = roadTravel(view);
+	if (!travel || !onRoadTrial(contest)) return null;
+	if (!unseen(moments, ONBOARDING_MOMENTS.FORK)) return null;
 	return travel.arriveTime - travel.startTime >= FORK_MIN_TRIP_MS ? travel : null;
+}
+
+/** The royal seal closes a contest this device saw the player run, once. */
+export function sealDue(contest: ContestView | null, moments: OnboardingMoments): boolean {
+	if (!contest || contest.running) return false;
+	return unseen(moments, ONBOARDING_MOMENTS.ROYAL_SEAL) && moments.seen(ONBOARDING_MOMENTS.CONTEST_JOINED);
 }
 
 function destinationName(travel: ReportTravelSummaryRes): string {
@@ -90,6 +110,29 @@ export function ContestSeal({onClose}: {onClose: () => void}): ReactNode {
 	</Modal>;
 }
 
+type StopWatch = {ready: boolean; opensAt: number | null};
+
+/** The report just opened on its own clock: a stop bought with tokens opens well before its time. */
+function openedByItself(before: StopWatch, ready: boolean): boolean {
+	if (!ready || before.ready) return false;
+	return before.opensAt !== null && before.opensAt <= Date.now() + NATURAL_STOP_TOLERANCE_MS;
+}
+
+function useStopArrived(view: ReportViewRes | null): {shown: boolean; dismiss: () => void} {
+	const [shown, setShown] = useState(false);
+	const previous = useRef<StopWatch>({ready: true, opensAt: null});
+	const ready = view?.reportReady ?? true;
+	const travel = roadTravel(view);
+	const opensAt = travel ? reportOpensAt(travel) : null;
+	useEffect(() => {
+		const before = previous.current;
+		previous.current = {ready, opensAt};
+		if (openedByItself(before, ready)) setShown(true);
+	}, [ready, opensAt]);
+	const dismiss = useCallback((): void => setShown(false), []);
+	return {shown, dismiss};
+}
+
 /**
  * Says a stop came by itself while the player was busy elsewhere: time runs on the road, and what
  * it brings costs nothing. A stop reached with tokens is expected, so it says nothing then.
@@ -97,18 +140,10 @@ export function ContestSeal({onClose}: {onClose: () => void}): ReactNode {
 export function StopArrivedToast({view, contestRunning}: {view: ReportViewRes | null; contestRunning: boolean}): ReactNode {
 	const router = useRouter();
 	const pathname = usePathname();
-	const [shown, setShown] = useState(false);
-	const previous = useRef<{ready: boolean; opensAt: number | null}>({ready: true, opensAt: null});
-	const ready = view?.reportReady ?? true;
-	const opensAt = view?.travel && !view.city ? reportOpensAt(view.travel) : null;
-	useEffect(() => {
-		const before = previous.current;
-		previous.current = {ready, opensAt};
-		if (!ready || before.ready || before.opensAt === null) return;
-		if (before.opensAt <= Date.now() + NATURAL_STOP_TOLERANCE_MS) setShown(true);
-	}, [ready, opensAt]);
-	const dismiss = useCallback((): void => setShown(false), []);
-	if (!shown || !contestRunning && pathname === "/") return null;
+	const {shown, dismiss} = useStopArrived(view);
+	// Past the contest, the adventure screen shows the open report by itself.
+	const seenOnScreen = !contestRunning && pathname === "/";
+	if (!shown || seenOnScreen) return null;
 	return <Toast
 		emblem={<TwemojiIcon emoji={AppIcons.getIcon("other.walking")} size={TOAST_EMBLEM_SIZE} />}
 		title={i18n.t("app:contest.stopArrived.title")}

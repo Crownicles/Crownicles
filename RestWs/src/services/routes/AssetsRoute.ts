@@ -99,6 +99,29 @@ async function computeAssets(debugMode: boolean): Promise<void> {
 	}
 }
 
+function isBundleLanguage(value: string | undefined): value is Language {
+	return value !== undefined && LANGUAGE.LANGUAGES.includes(value as Language);
+}
+
+function matchesEtag(ifNoneMatch: string | undefined, etag: string): boolean {
+	return ifNoneMatch?.split(",").some(value => value.trim() === etag) ?? false;
+}
+
+/** Whether one `Accept-Encoding` entry accepts gzip with a quality between 0 excluded and 1. */
+function acceptsGzipEntry(entry: string): boolean {
+	const [encoding, ...parameters] = entry.trim().split(";");
+	if (encoding.toLowerCase() !== "gzip") {
+		return false;
+	}
+	const qualityParameter = parameters.find(parameter => parameter.trim().startsWith("q="));
+	const quality = qualityParameter ? Number(qualityParameter.trim().slice(2)) : 1;
+	return quality > 0 && quality <= 1;
+}
+
+function acceptsGzip(acceptEncoding: string | undefined): boolean {
+	return acceptEncoding?.split(",").some(acceptsGzipEntry) ?? false;
+}
+
 /**
  * Sets up the assets routes for the Fastify server.
  * @param server
@@ -132,7 +155,7 @@ export async function setupAssetsRoutes(server: FastifyInstance, debugMode: bool
 		}
 
 		const requestedLanguage = (request.query as { lang?: string }).lang;
-		if (!requestedLanguage || !LANGUAGE.LANGUAGES.includes(requestedLanguage as Language)) {
+		if (!isBundleLanguage(requestedLanguage)) {
 			CrowniclesLogger.warn("Assets bundle requested with invalid language", {
 				language: requestedLanguage,
 				...getRequestLoggerMetadata(request)
@@ -141,8 +164,7 @@ export async function setupAssetsRoutes(server: FastifyInstance, debugMode: bool
 			return;
 		}
 
-		const language = requestedLanguage as Language;
-		const bundle = languageBundles.get(language);
+		const bundle = languageBundles.get(requestedLanguage);
 		if (!bundle) {
 			reply.status(404).send({ error: "Asset bundle not found" });
 			return;
@@ -151,19 +173,12 @@ export async function setupAssetsRoutes(server: FastifyInstance, debugMode: bool
 		reply.header("ETag", bundle.etag)
 			.header("Cache-Control", "no-cache")
 			.header("Vary", "Accept-Encoding");
-		const ifNoneMatch = request.headers["if-none-match"];
-		if (ifNoneMatch?.split(",").some(value => value.trim() === bundle.etag)) {
+		if (matchesEtag(request.headers["if-none-match"], bundle.etag)) {
 			reply.status(304).send();
 			return;
 		}
 
-		const acceptsGzip = request.headers["accept-encoding"]?.split(",").some(value => {
-			const [encoding, ...parameters] = value.trim().split(";");
-			const qualityParameter = parameters.find(parameter => parameter.trim().startsWith("q="));
-			const quality = qualityParameter ? Number(qualityParameter.trim().slice(2)) : 1;
-			return encoding.toLowerCase() === "gzip" && quality > 0 && quality <= 1;
-		});
-		if (acceptsGzip) {
+		if (acceptsGzip(request.headers["accept-encoding"])) {
 			reply.header("Content-Encoding", "gzip")
 				.type("application/json")
 				.send(bundle.gzip);

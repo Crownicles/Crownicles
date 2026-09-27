@@ -66,38 +66,37 @@ export abstract class RegistrationHygiene {
 	}
 
 	static async review(now: Millisecond): Promise<void> {
+		const formEvents = await RegistrationHygiene.formRegisterEvents();
+		if (!formEvents) {
+			return;
+		}
+		RegistrationHygiene.forgetAccountsNoLongerListed(formEvents);
+		const pending = formEvents.filter(event => !RegistrationHygiene.settledUserIds.has(event.userId));
+		for (const event of pending) {
+			await RegistrationHygiene.reviewAccount(event, now);
+		}
+	}
+
+	private static async formRegisterEvents(): Promise<KeycloakRegisterEvent[] | null> {
 		const getEvents = await KeycloakUtils.getRegisterEvents(keycloakConfig, RegisteringConstants.REGISTER_EVENTS_PER_REVIEW);
 		if (getEvents.isError) {
 			CrowniclesLogger.error("Could not read the registration events", { apiReturn: getEvents });
-			return;
+			return null;
 		}
+		return getEvents.payload.events.filter(event => event.details?.register_method === RegisteringConstants.FORM_REGISTER_METHOD);
+	}
 
-		const formEvents = getEvents.payload.events.filter(event => event.details?.register_method === RegisteringConstants.FORM_REGISTER_METHOD);
-		const reviewedIds = new Set(formEvents.map(event => event.userId));
-		for (const userId of RegistrationHygiene.settledUserIds) {
-			if (!reviewedIds.has(userId)) {
-				RegistrationHygiene.settledUserIds.delete(userId);
-			}
-		}
-
-		for (const event of formEvents) {
-			if (!RegistrationHygiene.settledUserIds.has(event.userId)) {
-				await RegistrationHygiene.reviewAccount(event, now);
-			}
-		}
+	/** The settled set only needs the accounts the events still list. */
+	private static forgetAccountsNoLongerListed(formEvents: KeycloakRegisterEvent[]): void {
+		const listedIds = new Set(formEvents.map(event => event.userId));
+		const unlisted = [...RegistrationHygiene.settledUserIds].filter(userId => !listedIds.has(userId));
+		unlisted.forEach(userId => RegistrationHygiene.settledUserIds.delete(userId));
 	}
 
 	private static async reviewAccount(event: KeycloakRegisterEvent, now: Millisecond): Promise<void> {
 		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, event.userId);
 		if (getUser.isError) {
-			if (getUser.status === 404) {
-				RegistrationHygiene.settledUserIds.add(event.userId);
-			}
-			else {
-				CrowniclesLogger.error("Could not read a registered account", {
-					apiReturn: getUser, keycloakId: event.userId
-				});
-			}
+			RegistrationHygiene.handleUnreadableAccount(getUser, event.userId);
 			return;
 		}
 
@@ -115,6 +114,17 @@ export abstract class RegistrationHygiene {
 			default:
 				break;
 		}
+	}
+
+	private static handleUnreadableAccount(getUser: { status: number }, userId: string): void {
+		// A deleted account has nothing left to review.
+		if (getUser.status === 404) {
+			RegistrationHygiene.settledUserIds.add(userId);
+			return;
+		}
+		CrowniclesLogger.error("Could not read a registered account", {
+			apiReturn: getUser, keycloakId: userId
+		});
 	}
 
 	private static async deleteAccount(user: KeycloakUser): Promise<void> {

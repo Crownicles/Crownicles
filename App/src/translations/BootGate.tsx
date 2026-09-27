@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
 	}
 });
 
-export function BootGate({children}: PropsWithChildren): React.ReactElement {
+export function BootGate({children}: PropsWithChildren): React.ReactNode {
 	const [state, setState] = useState<BootState>("loading");
 	const [retryCount, setRetryCount] = useState(0);
 
@@ -73,7 +73,7 @@ export function BootGate({children}: PropsWithChildren): React.ReactElement {
 	};
 
 	if (state === "ready") {
-		return <>{children}</>;
+		return children;
 	}
 
 	return <View style={styles.container}>
