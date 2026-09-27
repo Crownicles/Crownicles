@@ -46,6 +46,14 @@ function getMapInformation(player: Player, destination: MapLocation, hasArrived:
 		};
 	}
 
+	if (!hasArrived && departure.id === MapConstants.LOCATIONS_IDS.RECEPTION_ROOM) {
+		return {
+			name: `${language}_${destination.id}_`,
+			fallback: `en_${destination.id}_`,
+			forced: false
+		};
+	}
+
 	if (hasArrived) {
 		return {
 			name: mapLink.forcedImage && departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED

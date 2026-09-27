@@ -84,6 +84,7 @@ const WIRE_NAMES = [
 	"MissionsReq",
 	"MissionsRes",
 	"MissionsCompletedRes",
+	"RoyalLetterRes",
 	"PetNotFound",
 	"PetReq",
 	"PetRes",

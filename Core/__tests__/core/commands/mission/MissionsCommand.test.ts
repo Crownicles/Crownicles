@@ -21,9 +21,9 @@ vi.mock("../../../../src/core/missions/MissionsController", () => ({ MissionsCon
 const CONTEXT: PacketContext = { keycloakId: "player", frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {} };
 const PLAYER = { id: 1, keycloakId: "player", hasStartedToPlay: (): boolean => true, getMissionSlotsNumber: (): number => 2 } as Player;
 
-async function readMissions(): Promise<CommandMissionsPacketRes> {
+async function readMissions(passive?: boolean): Promise<CommandMissionsPacketRes> {
 	const response: CrowniclesPacket[] = [];
-	await new MissionsCommand().execute(response, PLAYER, makePacket(CommandMissionsPacketReq, { askedPlayer: { keycloakId: "player" } }), CONTEXT);
+	await new MissionsCommand().execute(response, PLAYER, makePacket(CommandMissionsPacketReq, { askedPlayer: { keycloakId: "player" }, ...(passive ? { passive } : {}) }), CONTEXT);
 	const result = response.find(packet => packet instanceof CommandMissionsPacketRes);
 	if (!(result instanceof CommandMissionsPacketRes)) throw new Error("Missing missions response");
 	return result;
@@ -65,5 +65,12 @@ describe("missions calendar sent to clients", () => {
 		expect((await readMissions()).dailyMission.completed).toBe(true);
 		vi.setSystemTime(new Date(2026, 8, 11, 0, 1));
 		expect((await readMissions()).dailyMission).toEqual({ completed: false, resetsAt: new Date(2026, 8, 12).valueOf() });
+	});
+
+	it("counts the player opening their missions, but not the app glancing at them", async () => {
+		await readMissions(true);
+		expect(MissionsController.update).not.toHaveBeenCalled();
+		await readMissions();
+		expect(MissionsController.update).toHaveBeenCalledWith(PLAYER, expect.any(Array), { missionId: "commandMission" });
 	});
 });

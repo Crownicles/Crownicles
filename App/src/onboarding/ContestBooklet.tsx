@@ -10,7 +10,7 @@ import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Missions, useMissions} from "@/src/components/Missions";
 import {missionDescription} from "@/src/display/Missions";
-import {Contest, contestOf, ContestSeal, ContestTrial, isContestRunning, SEAL_STATES} from "@/src/onboarding/Contest";
+import {Contest, contestOf, ContestSeal, ContestTrial, isContestBookletAvailable, isContestRunning, SEAL_STATES} from "@/src/onboarding/Contest";
 import {GuideTip} from "@/src/onboarding/GuideTip";
 import {ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
 import {i18n} from "@/src/translations/i18n";
@@ -27,13 +27,17 @@ const styles = StyleSheet.create({
 	trialTitle: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: Theme.colors.muted, textAlign: "right"}
 });
 
-export type ContestView = {contest: Contest; running: boolean};
+export type ContestView = {contest: Contest; running: boolean; bookletAvailable: boolean};
 
 /** The contest as the player's missions draw it, read without counting as opening the booklet. */
 export function useContest(): ContestView | null {
 	const missions = useMissions();
 	const {mark} = useOnboardingMoments();
-	const view = missions.status === "ready" ? {contest: contestOf(missions.data), running: isContestRunning(missions.data.campaignProgression)} : null;
+	const view = missions.status === "ready" ? {
+		contest: contestOf(missions.data),
+		running: isContestRunning(missions.data.campaignProgression),
+		bookletAvailable: isContestBookletAvailable(missions.data.campaignProgression)
+	} : null;
 	const running = view?.running ?? false;
 	useEffect(() => {
 		if (running) mark(ONBOARDING_MOMENTS.CONTEST_JOINED);
@@ -70,15 +74,24 @@ const MISSION_TARGETS: Partial<Record<string, ContestTarget>> = {
 
 export type ContestOpeners = {openBooklet: () => void; openMap: () => void};
 
-function useContestTarget({openBooklet, openMap}: ContestOpeners): (mission: Mission) => () => void {
+const TARGET_LABELS: Record<ContestTarget, string> = {
+	booklet: "app:contest.actions.open",
+	map: "app:contest.actions.openMap",
+	inventory: "app:contest.actions.openInventory",
+	classes: "app:contest.actions.chooseClass"
+};
+
+function useContestTarget({openBooklet, openMap}: ContestOpeners): (mission: Mission) => {label: string; onPress: () => void} {
 	const router = useRouter();
+	const go: Record<ContestTarget, () => void> = {
+		booklet: openBooklet,
+		map: openMap,
+		inventory: (): void => router.push("/profile/inventory"),
+		classes: (): void => router.push("/arena/classes")
+	};
 	return mission => {
-		switch (MISSION_TARGETS[mission.missionId] ?? "booklet") {
-			case "map": return openMap;
-			case "inventory": return (): void => router.push("/profile/inventory");
-			case "classes": return (): void => router.push("/arena/classes");
-			default: return openBooklet;
-		}
+		const target = MISSION_TARGETS[mission.missionId] ?? "booklet";
+		return {label: i18n.t(TARGET_LABELS[target]), onPress: go[target]};
 	};
 }
 
@@ -89,19 +102,20 @@ function useContestTarget({openBooklet, openMap}: ContestOpeners): (mission: Mis
 export function ContestBookletCard(openers: ContestOpeners): ReactNode {
 	const view = useContest();
 	const target = useContestTarget(openers);
-	const [now] = useState(Date.now);
 	const current = view?.running ? view.contest.current : null;
 	if (!view || !current) return null;
 	const {trial, mission} = current;
+	const action = target(mission);
 	return <>
 		<SectionHeader action={{hint: i18n.t("app:contest.trial", {number: trial.number, count: ONBOARDING_TRIALS.length})}}>{i18n.t("app:contest.title")}</SectionHeader>
 		<Card>
 			<SealStrip contest={view.contest} trial={trial} />
 			<EntryRow
 				emblem={<TwemojiIcon emoji={AppIcons.getIcon("other.guide")} size={MISSION_EMBLEM} />}
-				title={missionDescription(mission, now)}
+				title={i18n.t(`app:contest.missions.${mission.missionId}`)}
 				subtitle={i18n.t(`app:contest.hints.${mission.missionId}`)}
-				onPress={target(mission)}
+				end={action.label}
+				onPress={action.onPress}
 				testID="contest-current-mission"
 			/>
 		</Card>
@@ -110,7 +124,7 @@ export function ContestBookletCard(openers: ContestOpeners): ReactNode {
 
 function sealLabel(seal: ContestSeal): string {
 	if (seal.state === SEAL_STATES.SEALED) return i18n.t("app:contest.sealed");
-	return i18n.t(seal.state === SEAL_STATES.CURRENT ? "app:contest.current" : "app:contest.ahead");
+	return i18n.t(seal.state === SEAL_STATES.CURRENT ? "app:contest.current" : "app:contest.soon");
 }
 
 function TrialSection({trial, current, now}: {trial: ContestTrial; current: Mission | null; now: number}): ReactNode {
@@ -126,7 +140,7 @@ function TrialSection({trial, current, now}: {trial: ContestTrial; current: Miss
 					? i18n.t("app:contest.ahead")
 					: seal.state === SEAL_STATES.CURRENT && current
 						? missionDescription(current, now)
-						: i18n.t(`models:missions.${seal.missionId}`, {count: 1, objective: 1})}
+						: i18n.t(`app:contest.missions.${seal.missionId}`)}
 				value={sealLabel(seal)}
 			/>)}
 		</ExpandableList>
@@ -142,4 +156,18 @@ export function ContestBooklet(): ReactNode {
 		{view ? view.contest.trials.map(trial => <TrialSection key={trial.id} trial={trial} current={view.contest.current?.mission ?? null} now={now} />) : null}
 		<Missions campaign={false} />
 	</>;
+}
+
+/** In a city the travel tools are out of reach: the guide names the contest step and opens what it needs. */
+export function ContestCityTip({openMap}: {openMap: () => void}): ReactNode {
+	const view = useContest();
+	const router = useRouter();
+	const mission = view?.running ? view.contest.current?.mission : undefined;
+	if (!mission) return null;
+	const action = mission.missionId === "chooseClass"
+		? {label: i18n.t("app:contest.actions.chooseClass"), onPress: (): void => router.push("/arena/classes")}
+		: mission.missionId === "commandMap"
+			? {label: i18n.t("app:contest.actions.openMap"), onPress: openMap}
+			: undefined;
+	return <GuideTip text={i18n.t(`app:contest.hints.${mission.missionId}`)} {...action ? {action} : {}} testID="guide-tip-city" />;
 }

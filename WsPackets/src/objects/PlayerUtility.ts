@@ -1,6 +1,7 @@
 export const PLAYER_EFFECTS = {
 	DEAD: "dead",
-	NOT_STARTED: "notStarted"
+	NOT_STARTED: "notStarted",
+	OCCUPIED: "occupied"
 } as const;
 
 export const PLAYER_UTILITY_ERRORS = {

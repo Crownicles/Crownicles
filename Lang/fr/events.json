@@ -2012,39 +2012,39 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous écoutez patiemment le roi avant d'être reconduit à l'entrée. On vous transmet également quelques informations à propos de quelques missions supplémentaires confiées par le roi pour faciliter votre quête (commande {command:missions}) et on vous propose un transport vers le chef-lieu de votre choix."
+          "0": "Vous écoutez patiemment le roi, puis la guide vous raccompagne à l'entrée, le Livret du concours sous le bras. Un attelage peut vous conduire vers le chef-lieu de votre choix, et le roi promet de vous écrire chaque jour durant votre première semaine de voyage."
         }
       },
       "start": {
         "outcomes": {
-          "0": "Une fois votre lecture terminée, vous êtes reconduit à l'entrée. On vous transmet également quelques informations à propos de quelques missions supplémentaires confiées par le roi pour faciliter votre quête (commande {command:missions}) et on vous propose un transport vers le chef-lieu de votre choix."
+          "0": "Vous glissez le Livret du concours dans votre sac et quittez la salle du trône. La guide vous attend à l'entrée : un attelage peut vous conduire vers le chef-lieu de votre choix, et le roi promet de vous écrire chaque jour durant votre première semaine de voyage."
         },
         "text": "Débuter votre aventure."
       }
     },
-    "text": "Vous êtes amené dans la grande salle de réception du château où vous rencontrez rapidement le roi. On vous explique la nature du concours qui consiste à récolter un grand nombre de points dans l'objectif de dominer les classements. En plus d'une agréable prime de départ, vous recevez un bel ouvrage censé vous guider lors de votre aventure. Vous ouvrez le livre (https://guide.crownicles.com) et consultez rapidement les premières pages..."
+    "text": "Dans la grande salle du trône, le roi vous reçoit en personne. Le concours est simple : parcourir le royaume, gagner en renommée et récolter le plus de points possible pour dominer les classements. Le roi vous remet une bourse de départ ainsi que le Livret du concours, un carnet frappé du sceau royal dans lequel chaque épreuve réussie sera scellée."
   },
   "61": {
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous restez sans réagir à l'invitation du garde. Après quelques instants, la jeune femme arrive finalement à votre hauteur et vous transmet quelques conseils. Vous apprenez notamment que la commande {command:report} vous permet d'obtenir toutes les informations à propos de votre voyage."
+          "0": "Vous restez immobile devant les portes. La jeune femme finit par vous rejoindre : elle veille sur les candidats du concours et guidera vos premiers pas. D'un geste, elle désigne la route qui mène à la salle du trône, où le roi reçoit les nouveaux arrivants."
         }
       },
       "follow": {
         "outcomes": {
-          "0": "La jeune femme se présente et enchaîne rapidement sur des premiers conseils que vous écoutez avec attention, vous apprenez que la commande {command:report} vous permet d'obtenir toutes les informations à propos de votre voyage."
+          "0": "La jeune femme se présente : elle veille sur les candidats du concours et guidera vos premiers pas. D'un geste, elle désigne la route qui mène à la salle du trône, où le roi reçoit les nouveaux arrivants."
         },
         "text": "Suivre votre guide."
       },
       "observe": {
         "outcomes": {
-          "0": "Vous admirez les immenses murailles du château. Après quelques instants, la jeune femme arrive finalement à votre hauteur et vous transmet quelques conseils. Vous apprenez notamment que la commande {command:report} vous permet d'obtenir toutes les informations à propos de votre voyage."
+          "0": "Vous admirez les immenses murailles du château. La jeune femme vous laisse contempler les lieux, puis vous rejoint : elle veille sur les candidats du concours et guidera vos premiers pas. Elle vous indique la route de la salle du trône, où le roi reçoit les nouveaux arrivants."
         },
         "text": "Observer les alentours."
       }
     },
-    "text": "**Bonjour et bienvenue sur Crownicles !** {emote:other.crown} Le roi est à la recherche d'un noble chevalier pour marier sa fille et vous avez choisi de participer au concours de sélection ! Venant d'arriver à l'entrée du château après un long voyage, vous signalez votre présence aux gardes de l'entrée. Vous êtes invité à rentrer et rencontrez rapidement une jeune femme qui semble vouloir vous accueillir."
+    "text": "**Bienvenue sur Crownicles !** {emote:other.crown} Le roi cherche un noble chevalier pour épouser sa fille, et vous voici candidat au grand concours de sélection. Après un long voyage, vous atteignez enfin les portes du château. Les gardes vous laissent entrer, et une jeune femme s'avance pour vous accueillir."
   },
   "62": {
     "possibilities": {

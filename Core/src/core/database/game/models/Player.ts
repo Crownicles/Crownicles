@@ -108,7 +108,8 @@ type ressourcesLostOnPveFaint = {
  */
 const OVER_CAP_TOKEN_REASONS: ReadonlySet<NumberChangeReason> = new Set([
 	NumberChangeReason.EXPEDITION,
-	NumberChangeReason.BIG_EVENT
+	NumberChangeReason.BIG_EVENT,
+	NumberChangeReason.ROYAL_MAIL
 ]);
 
 const PLAYERS_LEVELING_UP_CONTEXT_KEY = "playersLevelingUp" as const;
@@ -1486,14 +1487,26 @@ export class Player extends Model {
  * This class is used to store information about players
  */
 export class Players {
+	private static readonly registrations = new Map<string, Promise<Player>>();
+
 	/**
 	 * Get or create a player
 	 * @param keycloakId
 	 */
 	static async getOrRegister(keycloakId: string): Promise<Player> {
-		return (await Player.findOrCreate(
-			{ where: { keycloakId } }
-		))[0]; // We don't care about the boolean that findOrCreate returns, so we strip it there
+		const inFlight = this.registrations.get(keycloakId);
+		if (inFlight) {
+			return inFlight;
+		}
+
+		const registration = Player.findOrCreate({ where: { keycloakId } }).then(([player]): Player => player);
+		this.registrations.set(keycloakId, registration);
+		try {
+			return await registration;
+		}
+		finally {
+			this.registrations.delete(keycloakId);
+		}
 	}
 
 	/**

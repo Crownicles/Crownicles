@@ -11,26 +11,75 @@ type FrozenCampaignMission = {
 
 /** The first campaign missions before the royal contest onboarding, frozen here so the migration never drifts with campaign.json. */
 const PREVIOUS_ORDER: FrozenCampaignMission[] = [
-	{ missionId: "commandMission", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 10, moneyToWin: 0 },
-	{ missionId: "commandReport", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 20, moneyToWin: 0 },
-	{ missionId: "earnMoney", missionVariant: 0, missionObjective: 100, gemsToWin: 1, xpToWin: 25, moneyToWin: 0 },
-	{ missionId: "travelHours", missionVariant: 1, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0 },
-	{ missionId: "reachLevel", missionVariant: 0, missionObjective: 5, gemsToWin: 1, xpToWin: 50, moneyToWin: 0 },
-	{ missionId: "findOrBuyItem", missionVariant: 0, missionObjective: 1, gemsToWin: 2, xpToWin: 20, moneyToWin: 0 },
-	{ missionId: "chooseClass", missionVariant: 0, missionObjective: 1, gemsToWin: 3, xpToWin: 100, moneyToWin: 0 },
-	{ missionId: "travelHours", missionVariant: 3, missionObjective: 1, gemsToWin: 1, xpToWin: 75, moneyToWin: 0 },
-	{ missionId: "drinkPotion", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0 },
-	{ missionId: "commandMap", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 40, moneyToWin: 0 },
-	{ missionId: "goToPlace", missionVariant: 3, missionObjective: 1, gemsToWin: 2, xpToWin: 100, moneyToWin: 0 },
-	{ missionId: "visitCityNpc", missionVariant: 2, missionObjective: 1, gemsToWin: 1, xpToWin: 30, moneyToWin: 0 },
-	{ missionId: "recoverAlteration", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0 },
-	{ missionId: "sellItems", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0 },
-	{ missionId: "sleepInInn", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0 },
-	{ missionId: "reachLevel", missionVariant: 0, missionObjective: 8, gemsToWin: 1, xpToWin: 50, moneyToWin: 0 }
+	{
+		missionId: "commandMission", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 10, moneyToWin: 0
+	},
+	{
+		missionId: "commandReport", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 20, moneyToWin: 0
+	},
+	{
+		missionId: "earnMoney", missionVariant: 0, missionObjective: 100, gemsToWin: 1, xpToWin: 25, moneyToWin: 0
+	},
+	{
+		missionId: "travelHours", missionVariant: 1, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0
+	},
+	{
+		missionId: "reachLevel", missionVariant: 0, missionObjective: 5, gemsToWin: 1, xpToWin: 50, moneyToWin: 0
+	},
+	{
+		missionId: "findOrBuyItem", missionVariant: 0, missionObjective: 1, gemsToWin: 2, xpToWin: 20, moneyToWin: 0
+	},
+	{
+		missionId: "chooseClass", missionVariant: 0, missionObjective: 1, gemsToWin: 3, xpToWin: 100, moneyToWin: 0
+	},
+	{
+		missionId: "travelHours", missionVariant: 3, missionObjective: 1, gemsToWin: 1, xpToWin: 75, moneyToWin: 0
+	},
+	{
+		missionId: "drinkPotion", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0
+	},
+	{
+		missionId: "commandMap", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 40, moneyToWin: 0
+	},
+	{
+		missionId: "goToPlace", missionVariant: 3, missionObjective: 1, gemsToWin: 2, xpToWin: 100, moneyToWin: 0
+	},
+	{
+		missionId: "visitCityNpc", missionVariant: 2, missionObjective: 1, gemsToWin: 1, xpToWin: 30, moneyToWin: 0
+	},
+	{
+		missionId: "recoverAlteration", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0
+	},
+	{
+		missionId: "sellItems", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0
+	},
+	{
+		missionId: "sleepInInn", missionVariant: 0, missionObjective: 1, gemsToWin: 1, xpToWin: 25, moneyToWin: 0
+	},
+	{
+		missionId: "reachLevel", missionVariant: 0, missionObjective: 8, gemsToWin: 1, xpToWin: 50, moneyToWin: 0
+	}
 ];
 
 /** For each new position (1-indexed), the previous position of the mission now standing there. */
-export const ONBOARDING_ORDER = [2, 1, 3, 6, 9, 12, 10, 7, 4, 15, 14, 13, 5, 8, 11, 16];
+export const ONBOARDING_ORDER = [
+	2,
+	1,
+	3,
+	6,
+	9,
+	10,
+	12,
+	7,
+	4,
+	15,
+	14,
+	13,
+	5,
+	8,
+	11,
+	16
+];
 
 const REORDERED_LENGTH = ONBOARDING_ORDER.length;
 
@@ -78,6 +127,7 @@ async function reorder(context: QueryInterface, order: number[], before: FrozenC
 
 	const newMissionId = slotCase(after, mission => `'${mission.missionId}'`);
 	const newVariant = slotCase(after, mission => `${mission.missionVariant}`);
+	const newObjective = slotCase(after, mission => `${mission.missionObjective}`);
 
 	// A player whose current mission is unchanged keeps its progress on it.
 	await context.sequelize.query(`
@@ -86,7 +136,7 @@ async function reorder(context: QueryInterface, order: number[], before: FrozenC
 		JOIN players p ON p.id = ms.playerId
 		SET ms.missionId = ${newMissionId},
 		    ms.missionVariant = ${newVariant},
-		    ms.missionObjective = ${slotCase(after, mission => `${mission.missionObjective}`)},
+		    ms.missionObjective = ${newObjective},
 		    ms.gemsToWin = ${slotCase(after, mission => `${mission.gemsToWin}`)},
 		    ms.xpToWin = ${slotCase(after, mission => `${mission.xpToWin}`)},
 		    ms.moneyToWin = ${slotCase(after, mission => `${mission.moneyToWin}`)},
@@ -94,7 +144,7 @@ async function reorder(context: QueryInterface, order: number[], before: FrozenC
 		    ms.saveBlob = NULL
 		WHERE ms.expiresAt IS NULL
 		  AND ${inRange}
-		  AND (ms.missionId <> ${newMissionId} OR ms.missionVariant <> ${newVariant})
+		  AND (ms.missionId <> ${newMissionId} OR ms.missionVariant <> ${newVariant} OR ms.missionObjective <> ${newObjective})
 	`);
 
 	await context.sequelize.query(`
@@ -106,8 +156,8 @@ async function reorder(context: QueryInterface, order: number[], before: FrozenC
 
 /*
  * The royal contest onboarding (#4796) teaches the game in the order a newcomer meets it:
- * report, contest booklet, royal purse, then an item, a potion, the first city and the map,
- * up to the class. The first sixteen campaign missions are permuted accordingly; completions
+ * report, contest booklet, royal purse, then an item, a potion, the map on the road, the first
+ * city, up to the class. The first sixteen campaign missions are permuted accordingly; completions
  * move with their mission, so no player loses or regains a finished mission.
  */
 export async function up({ context }: { context: QueryInterface }): Promise<void> {

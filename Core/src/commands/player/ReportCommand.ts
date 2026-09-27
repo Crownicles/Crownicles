@@ -154,6 +154,7 @@ import {
 	handleApartmentBuyReaction,
 	handleApartmentClaimRentReaction
 } from "../../core/report/ReportCityNotaryService";
+import { deliverRoyalLetter } from "../../core/onboarding/RoyalMail";
 
 /**
  * Handle the case where the player is stationary inside a city.
@@ -259,6 +260,7 @@ export default class ReportCommand {
 		BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND, Constants.MESSAGES.COLLECTOR_TIME * 3); // MaxTime here is to prevent any accident permanent blocking
 
 		await MissionsController.update(player, response, { missionId: "commandReport" });
+		await deliverRoyalLetter(player, response);
 
 		const currentDate = new Date();
 

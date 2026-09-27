@@ -21,6 +21,9 @@ import {groupCityEntries} from "@/src/collectors/CityMenuModel";
 import {CitySection} from "@/src/collectors/CityRows";
 import {Note, Screen} from "@/src/design/Primitives";
 import {Standing} from "@/src/design/Sections";
+import {ContestCityTip} from "@/src/onboarding/ContestBooklet";
+import {WorldMap} from "@/src/components/WorldMap";
+import {DetailScreen} from "@/src/design/DetailScreen";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
 import {HOME_SERVICE_DESTINATIONS} from "@/src/navigation/HomeServices";
@@ -96,7 +99,7 @@ function citySectionDefinitions(): {key: CityGroup; title: string; hint?: string
 	];
 }
 
-function cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting}: {
+function cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting, openMap}: {
 	collector: CityMenuData;
 	model: CityMenuModel;
 	locationName: string;
@@ -106,10 +109,12 @@ function cityOverview({collector, model, locationName, locationDescription, mapI
 	navigate: (item: CityNavigationItem) => void;
 	locked: boolean;
 	submitting: boolean;
+	openMap: () => void;
 }): ReactNode {
 	const sections = citySectionDefinitions().filter(section => model.groups[section.key].length > 0);
 	return <Screen>
 		<Standing {...mapIcon ? {emblem: mapIcon} : {}} caption={i18n.t("app:city.titles.eyebrow")} title={locationName} subtitle={locationDescription} />
+		<ContestCityTip openMap={openMap} />
 		{sections.map((section, index) => <CitySection key={section.key} title={section.title} hint={section.hint} items={model.groups[section.key]} collector={collector} onChoose={choose} onNavigate={navigate} locked={locked} first={index === 0} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={renderCityRowSubtitle} rowEnd={renderCityRowEnd} reactionAvailable={cityReactionAvailable} />)}
 		{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
 	</Screen>;
@@ -182,7 +187,10 @@ function renderSubmenuView({submenu, innId, model, collector, snapshot, choose, 
 	/>;
 }
 
-function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting}: {
+function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting, mapOpen, openMap, closeMap}: {
+	mapOpen: boolean;
+	openMap: () => void;
+	closeMap: () => void;
 	collector: CityMenuData;
 	model: CityMenuModel;
 	snapshot: CityMobileSnapshot | undefined;
@@ -202,8 +210,9 @@ function cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseI
 	if (gardenOnly) return renderGardenView({collector, model, snapshot, choose, gardenCloseIndex, locked});
 	/** The city list keeps its place in the tree so an opening submenu never remounts it. */
 	return <View style={cityStyles.stack}>
-		{cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting})}
+		{cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting, openMap})}
 		{submenu ? renderSubmenuView({submenu, innId, model, collector, snapshot, choose, navigate, setSubmenu, locked}) : null}
+		{mapOpen ? <DetailScreen overlay title={i18n.t("app:map.title")} eyebrow={i18n.t("app:contest.title")} onClose={closeMap}><WorldMap /></DetailScreen> : null}
 	</View>;
 }
 
@@ -212,12 +221,15 @@ type CityNavigation = {
 	setSubmenu: (submenu: CitySubmenu | null) => void;
 	innId: string | undefined;
 	navigate: (item: CityNavigationItem) => void;
+	mapOpen: boolean;
+	setMapOpen: (open: boolean) => void;
 };
 
 function useCityNavigation(): CityNavigation {
 	const router = useRouter();
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);
 	const [innId, setInnId] = useState<string>();
+	const [mapOpen, setMapOpen] = useState(false);
 	const navigate = (item: CityNavigationItem): void => {
 		if (item.view in HOME_SERVICE_DESTINATIONS) {
 			const service = HOME_SERVICE_DESTINATIONS[item.view as keyof typeof HOME_SERVICE_DESTINATIONS];
@@ -227,12 +239,12 @@ function useCityNavigation(): CityNavigation {
 		setInnId(item.innId);
 		setSubmenu(item.view);
 	};
-	return {submenu, setSubmenu, innId, navigate};
+	return {submenu, setSubmenu, innId, navigate, mapOpen, setMapOpen};
 }
 
 export function CityMenu({collector, onChoose, submitting}: CityMenuProps): ReactNode {
 	const {
-		submenu, setSubmenu, innId, navigate
+		submenu, setSubmenu, innId, navigate, mapOpen, setMapOpen
 	} = useCityNavigation();
 	const locked = submitting;
 	const entries = collector.reactions.map((reaction, index) => ({reaction, index}));
@@ -249,7 +261,12 @@ export function CityMenu({collector, onChoose, submitting}: CityMenuProps): Reac
 	const mapIcon = mapEmoji ? <TwemojiIcon emoji={mapEmoji} size={CITY_EMBLEM_SIZE} /> : undefined;
 	const gardenOnly = data.data.gardenOnly === true;
 	const gardenCloseIndex = gardenOnly ? collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE) : -1;
-	return cityCollectorView({collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting});
+	return cityCollectorView({
+		collector, model, snapshot, gardenOnly, gardenCloseIndex, submenu, innId, choose, navigate, setSubmenu, locked, locationName, locationDescription, mapIcon, submitting,
+		mapOpen,
+		openMap: (): void => setMapOpen(true),
+		closeMap: (): void => setMapOpen(false)
+	});
 }
 
 export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {

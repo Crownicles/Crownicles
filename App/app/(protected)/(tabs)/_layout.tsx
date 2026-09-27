@@ -1,4 +1,4 @@
-import {ReactElement, ReactNode} from "react";
+import {ReactElement, ReactNode, useEffect, useState} from "react";
 import {useRouter} from "expo-router";
 /** Expo SDK 57 no longer accepts react-navigation directly, so the top tabs come from its own copy. */
 import {TopTabs} from "expo-router/js-top-tabs";
@@ -20,6 +20,13 @@ import {MissionCompletedToast} from "@/src/components/MissionRewards";
 import {BlessingActivatedToast} from "@/src/components/BlessingActivatedToast";
 import {useMissionRewards, useMissionRewardsAccount} from "@/src/store/MissionRewardsStore";
 import {useNotificationNavigation, useReportNotification} from "@/src/notifications/useNotifications";
+import {allowPermissionPrompt} from "@/src/notifications/ReportNotifications";
+import {useReportView} from "@/src/store/useReportActions";
+import {useContest} from "@/src/onboarding/ContestBooklet";
+import {ONBOARDING_MOMENTS, useOnboardingAccount, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
+import {ContestSeal, DepartureFork, forkDue, stageMoment, StopArrivedToast} from "@/src/onboarding/OnboardingStage";
+import {RoyalLetter} from "@/src/onboarding/RoyalLetter";
+import {useRoyalLetter, useRoyalLetterAccount} from "@/src/store/RoyalLetterStore";
 
 const screenStyles = {flex: 1, backgroundColor: Theme.colors.paper};
 const NEW_MARK_SIZE = 8;
@@ -152,30 +159,66 @@ function TabPager({journey}: {journey: Journey}): ReactNode {
 	);
 }
 
-/** Waits for the adventure to finish its story before announcing what the player unlocked. */
-function JourneyCelebration({journey}: {journey: Journey}): ReactNode {
+/**
+ * Stages what the contest wants the player to stop on, one thing at a time and never over a story:
+ * the king's letter first, then what just opened, the royal seal, and the reminder offered on the
+ * long road. After a discovery, the next one waits for the report to move on.
+ */
+function OnboardingOverlays({journey}: {journey: Journey}): ReactNode {
 	const router = useRouter();
 	const busy = useAdventureBusy();
+	const report = useReportView();
+	const view = report.status === "ready" ? report.data : null;
+	const contest = useContest();
+	const moments = useOnboardingMoments();
+	const letter = useRoyalLetter();
+	const [heldAt, setHeldAt] = useState<string | null>(null);
+	const moment = stageMoment(view);
+	const contestKnown = contest !== null;
+	const contestRunning = contest?.running ?? false;
+	useEffect(() => {
+		allowPermissionPrompt(contestKnown && !contestRunning);
+	}, [contestKnown, contestRunning]);
+	if (busy) return null;
+	if (letter) return <RoyalLetter letter={letter} />;
 	const step = journey.unannounced;
-	if (busy || !journey.progress) return null;
-	if (!step) return null;
-	return <UnlockCelebration
-		key={step.feature}
-		step={step}
-		level={journey.progress.level}
-		onDiscover={(): void => {
-			journey.announce(step.feature);
-			journey.visit(step.tab);
-			router.navigate(step.route);
-		}}
-		onLater={(): void => journey.announce(step.feature)}
-	/>;
+	if (step && journey.progress && heldAt !== moment) {
+		return <UnlockCelebration
+			key={step.feature}
+			step={step}
+			level={journey.progress.level}
+			onDiscover={(): void => {
+				journey.announce(step.feature);
+				journey.visit(step.tab);
+				setHeldAt(moment);
+				router.navigate(step.route);
+			}}
+			onLater={(): void => {
+				journey.announce(step.feature);
+				setHeldAt(moment);
+			}}
+		/>;
+	}
+	if (contestKnown && !contestRunning && moments.ready && moments.seen(ONBOARDING_MOMENTS.CONTEST_JOINED) && !moments.seen(ONBOARDING_MOMENTS.ROYAL_SEAL)) {
+		return <ContestSeal onClose={(): void => moments.mark(ONBOARDING_MOMENTS.ROYAL_SEAL)} />;
+	}
+	const forkTravel = forkDue({view, contest, moments});
+	return forkTravel ? <DepartureFork travel={forkTravel} onClose={(): void => moments.mark(ONBOARDING_MOMENTS.FORK)} /> : null;
+}
+
+function StopToast(): ReactNode {
+	const busy = useAdventureBusy();
+	const report = useReportView();
+	const contest = useContest();
+	return busy ? null : <StopArrivedToast view={report.status === "ready" ? report.data : null} contestRunning={contest?.running ?? false} />;
 }
 
 export default function TabLayout(): ReactNode {
 	const dead = usePlayerIsDead();
 	const journey = useJourney();
 	useMissionRewardsAccount();
+	useOnboardingAccount();
+	useRoyalLetterAccount();
 	useReportNotification();
 	useNotificationNavigation();
 	if (dead) {
@@ -185,9 +228,10 @@ export default function TabLayout(): ReactNode {
 		<View style={screenStyles}>
 			<TabsHeader />
 			<SwipeBackBoundary><TabPager journey={journey} /></SwipeBackBoundary>
-			<JourneyCelebration journey={journey} />
+			<OnboardingOverlays journey={journey} />
 			<MissionCompletedToast />
 			<BlessingActivatedToast />
+			<StopToast />
 		</View>
 	);
 }

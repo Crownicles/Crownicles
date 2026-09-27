@@ -78,6 +78,10 @@ import {DeathScreen} from "@/src/components/DeathScreen";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {AdventureWelcome} from "@/src/components/AdventureWelcome";
 import {JourneyGuide} from "@/src/components/JourneyGuide";
+import {clockTime} from "@/src/display/Clock";
+import {ContestBooklet, ContestBookletCard, useContest} from "@/src/onboarding/ContestBooklet";
+import {GuideTip} from "@/src/onboarding/GuideTip";
+import {onboardingStore, ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
 import {useReportView, useReportAdvance} from "@/src/store/useReportActions";
@@ -365,6 +369,13 @@ function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): 
 export function reportWait(packet: ReportTravelSummaryRes, currentTime: number): string {
 	const opensAt = reportOpensAt(packet);
 	return opensAt <= currentTime ? i18n.t("app:adventure.now") : formatCountdown(opensAt - currentTime);
+}
+
+/** How long the report still waits, and the hour of the player's own clock it opens at. */
+type ReportWait = {duration: string; clock: string};
+
+function reportWaitAt(packet: ReportTravelSummaryRes, currentTime: number): ReportWait {
+	return {duration: reportWait(packet, currentTime), clock: clockTime(reportOpensAt(packet))};
 }
 
 function hasNextStop(packet: ReportTravelSummaryRes): boolean {
@@ -678,9 +689,9 @@ function travelFigures(context: AdventureContext): Figure[] {
 	];
 }
 
-/** The report is the one thing to do here, so it says by itself why it is not ready yet. */
-function ReportAdvance({reportReady, reportAction, waitFor}: {reportReady: boolean; reportAction: GameMutation<void>; waitFor?: string}): ReactNode {
-	const lock = reportReady ? undefined : {reason: i18n.t("app:adventure.notReady", {time: waitFor ?? i18n.t("app:adventure.now")}), icon: Clock3};
+/** The report is the one thing to do here, so it says by itself why it is not ready yet, and at what hour it will be. */
+function ReportAdvance({reportReady, reportAction, waitFor}: {reportReady: boolean; reportAction: GameMutation<void>; waitFor?: ReportWait}): ReactNode {
+	const lock = reportReady || !waitFor ? undefined : {reason: i18n.t("app:adventure.notReadyAt", {time: waitFor.duration, clock: waitFor.clock}), icon: Clock3};
 	return <>
 		{reportAction.message ? <Note>{reportAction.message}</Note> : null}
 		<ActionBanner
@@ -695,11 +706,11 @@ function ReportAdvance({reportReady, reportAction, waitFor}: {reportReady: boole
 	</>;
 }
 
-/** Tokens reach the stop now; the wait the report would otherwise need is written under the button. */
+/** Tokens reach the stop now; what they save, and when the stop would come for free, is written under the button. */
 function TokenAdvance({tokens, reportAction, waitFor, advance}: {
 	tokens: NonNullable<ReportTravelSummaryRes["tokens"]>;
 	reportAction: GameMutation<void>;
-	waitFor: string;
+	waitFor: ReportWait;
 	advance: PendingAction;
 }): ReactNode {
 	return <>
@@ -711,7 +722,7 @@ function TokenAdvance({tokens, reportAction, waitFor, advance}: {
 				? i18n.t("app:adventure.quick.advanceWithCost", {count: tokens.cost})
 				: i18n.t("app:adventure.quick.getTokens")}
 			pending={advance.pending || reportAction.pending}
-			hint={{reason: i18n.t("app:adventure.notReady", {time: waitFor}), icon: Clock3}}
+			hint={{reason: i18n.t("app:adventure.tokenSkip", {time: waitFor.duration, clock: waitFor.clock}), icon: Clock3}}
 			onPress={advance.onPress}
 		/>
 	</>;
@@ -754,7 +765,7 @@ function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 	packet: ReportTravelSummaryRes;
 	reportReady: boolean;
 	reportAction: GameMutation<void>;
-	waitFor: string;
+	waitFor: ReportWait;
 	advance: PendingAction;
 }): ReactNode {
 	const tokens = tokenOffer(packet, reportReady);
@@ -768,16 +779,43 @@ function JourneyAction({packet, reportReady, reportAction, waitFor, advance}: {
 
 const ADVENTURE_TOOLS = {
 	MAP: {title: "app:map.title", content: WorldMap},
-	MISSIONS: {title: "app:profile.titles.missions", content: Missions}
+	MISSIONS: {title: "app:profile.titles.missions", content: Missions},
+	BOOKLET: {title: "app:contest.title", content: ContestBooklet}
 } as const;
 type AdventureTool = keyof typeof ADVENTURE_TOOLS;
 
-/** Side trips that belong to the journey screen itself, never on top of an open menu. */
+/** Side trips that belong to the journey screen itself, never on top of an open menu. During the contest, the missions are its booklet. */
 function AdventureTools({onOpen}: {onOpen: (tool: AdventureTool) => void}): ReactNode {
+	const contest = useContest();
 	return <QuickActions>
 		<QuickAction icon={AppIcons.getIcon("expedition.map")} onPress={(): void => onOpen("MAP")}>{i18n.t("app:map.title")}</QuickAction>
-		<QuickAction icon={AppIcons.getIcon("missions.campaign")} onPress={(): void => onOpen("MISSIONS")}>{i18n.t("app:profile.titles.missions")}</QuickAction>
+		{contest?.running
+			? <QuickAction icon={AppIcons.getIcon("other.contestBooklet")} onPress={(): void => onOpen("BOOKLET")}>{i18n.t("app:contest.title")}</QuickAction>
+			: <QuickAction icon={AppIcons.getIcon("missions.campaign")} onPress={(): void => onOpen("MISSIONS")}>{i18n.t("app:profile.titles.missions")}</QuickAction>}
+		{contest?.bookletAvailable && !contest.running
+			? <QuickAction icon={AppIcons.getIcon("other.contestBooklet")} onPress={(): void => onOpen("BOOKLET")}>{i18n.t("app:contest.title")}</QuickAction>
+			: null}
 	</QuickActions>;
+}
+
+/**
+ * While the contest runs, the guide stands under the journey action: once to show that a token buys
+ * time on the road, once to explain a mishap that holds the traveller back, and always with the booklet.
+ */
+function ContestGuidance({packet, reportReady, openTool}: {packet: ReportTravelSummaryRes; reportReady: boolean; openTool: (tool: AdventureTool) => void}): ReactNode {
+	const moments = useOnboardingMoments();
+	const tokens = tokenOffer(packet, reportReady);
+	const tokenTip = moments.ready && !moments.seen(ONBOARDING_MOMENTS.TOKENS) && tokens?.canAfford === true;
+	const occupiedTip = moments.ready && !moments.seen(ONBOARDING_MOMENTS.OCCUPIED) && packet.effect === PLAYER_EFFECTS.OCCUPIED;
+	return <>
+		{tokenTip ? <GuideTip text={i18n.t("app:contest.tips.tokens")} testID="guide-tip-tokens" /> : null}
+		{occupiedTip ? <GuideTip
+			text={i18n.t("app:contest.tips.occupied")}
+			action={{label: i18n.t("app:contest.tips.understood"), onPress: (): void => moments.mark(ONBOARDING_MOMENTS.OCCUPIED)}}
+			testID="guide-tip-occupied"
+		/> : null}
+		<ContestBookletCard openBooklet={(): void => openTool("BOOKLET")} openMap={(): void => openTool("MAP")} />
+	</>;
 }
 
 type SheetActions = {
@@ -822,37 +860,40 @@ function AdventureActions({packet, currentTime, actions}: {packet: ReportTravelS
 			packet={packet}
 			reportReady={actions.reportReady}
 			reportAction={actions.reportAction}
-			waitFor={reportWait(packet, currentTime)}
+			waitFor={reportWaitAt(packet, currentTime)}
 			advance={actions.advance}
 		/>
 		{packet.heal && canCure(packet) ? <HealAction heal={packet.heal} action={actions.heal} /> : null}
 	</View>;
 }
 
-function AdventureSheet({packet, currentTime, actions, tools, dash, cure}: {
+function AdventureSheet({packet, currentTime, actions, tools, openTool, dash, cure}: {
 	packet: ReportTravelSummaryRes;
 	currentTime: number;
 	actions: SheetActions;
 	tools: ReactNode;
+	openTool: (tool: AdventureTool) => void;
 	dash: TravelDash | null;
 	cure: Cure | null;
 }): ReactNode {
 	const metrics = getTravelMetrics(packet, currentTime);
 	const context: AdventureContext = {packet, currentTime, metrics, destination: mapName(packet.endMap)};
-	const advice = travelAdvice(packet.nextStopTime);
+	const contestRunning = useContest()?.running ?? false;
+	// The guide speaks for the advices while the contest runs: they name parts of the game still closed.
+	const advice = contestRunning ? "" : travelAdvice(packet.nextStopTime);
 
 	return (
 		<Screen>
 			<AdventureHeader context={context} dash={dash} cure={cure} />
 			<AdventureActions packet={packet} currentTime={currentTime} actions={actions} />
-			<JourneyGuide />
+			{contestRunning ? <ContestGuidance packet={packet} reportReady={actions.reportReady} openTool={openTool} /> : <JourneyGuide />}
 			{advice ? <Note>{advice}</Note> : null}
 			{tools}
 		</Screen>
 	);
 }
 
-function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
+function AdventureBody({tools, openTool}: {tools: ReactNode; openTool: (tool: AdventureTool) => void}): ReactNode {
 	const reportState = useReportView();
 	const travel = reportState.status === "ready" ? reportState.data.travel : undefined;
 	const reportAction = useReportAdvance();
@@ -889,6 +930,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	}, [tokenOutcome]);
 
 	const advanceWithTokens = (): void => {
+		onboardingStore.mark(ONBOARDING_MOMENTS.TOKENS);
 		const nextStop = travel && !showsAilmentOnly(travel) ? getTravelMetrics(travel, travel.nextStopTime).progress : null;
 		advance.run((outcome, done) => {
 			if (outcome.kind !== "used") {
@@ -1006,6 +1048,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 					reportAction
 				}}
 				tools={tools}
+				openTool={openTool}
 				dash={dash}
 				cure={cure}
 			/>
@@ -1024,7 +1067,7 @@ export default function Index(): ReactNode {
 	return (
 		<View style={styles.adventureRoot}>
 			<PlayerVitals />
-			<AdventureBody tools={<AdventureTools onOpen={setTool} />} />
+			<AdventureBody tools={<AdventureTools onOpen={setTool} />} openTool={setTool} />
 			{tool ? <AdventureToolScreen tool={tool} onClose={(): void => setTool(null)} /> : null}
 		</View>
 	);

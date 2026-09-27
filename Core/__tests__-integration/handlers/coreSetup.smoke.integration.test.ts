@@ -1,5 +1,5 @@
 import {
-	afterAll, beforeAll, describe, expect, it
+	afterAll, beforeAll, describe, expect, it, vi
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
@@ -41,6 +41,37 @@ describe("setupCoreForTests smoke", () => {
 		const created = await Player.create({ keycloakId: "smoke-test-player" });
 		const fetched = await Player.findOne({ where: { keycloakId: "smoke-test-player" } });
 		expect(fetched?.id).toBe(created.id);
+	});
+
+	it("registers only one character when several first requests arrive together", async () => {
+		const Players = loadProductionModule<typeof import("../../src/core/database/game/models/Player")>("core/database/game/models/Player").Players;
+		const keycloakId = "simultaneous-first-login";
+		const ids = await Promise.all(Array.from({length: 6}, async () => {
+			const existing = await Players.getByKeycloakId(keycloakId);
+			return (existing ?? await Players.getOrRegister(keycloakId)).id;
+		}));
+		expect(new Set(ids).size).toBe(1);
+		expect(await Player.count({where: {keycloakId}})).toBe(1);
+	});
+
+	it("can retry registration after the first attempt fails", async () => {
+		const Players = loadProductionModule<typeof import("../../src/core/database/game/models/Player")>("core/database/game/models/Player").Players;
+		const keycloakId = "failed-first-login";
+		const findOrCreate = vi.spyOn(Player, "findOrCreate").mockRejectedValueOnce(new Error("registration failed"));
+		try {
+			const attempts = await Promise.allSettled([
+				Players.getOrRegister(keycloakId),
+				Players.getOrRegister(keycloakId)
+			]);
+			expect(attempts.map(attempt => attempt.status)).toEqual(["rejected", "rejected"]);
+			expect(findOrCreate).toHaveBeenCalledTimes(1);
+		}
+		finally {
+			findOrCreate.mockRestore();
+		}
+
+		await Players.getOrRegister(keycloakId);
+		expect(await Player.count({where: {keycloakId}})).toBe(1);
 	});
 
 	it("loads production modules from the dist tree", () => {

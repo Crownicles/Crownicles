@@ -55,5 +55,28 @@
     "cancelled": "{emote:notifications.types.tournament} Le tournoi est annulé car le nombre minimum de participants n'a pas été atteint.",
     "noWinner": "aucun vainqueur",
     "unranked": "non classé"
+  },
+  "royalMail": {
+    "title": "{{pseudo}}, une lettre du roi vous attend",
+    "progress": "{emote:other.royalLetter} Lettre {{letter}} sur {{letters}}",
+    "letters": {
+      "1": "Un messager aux couleurs du royaume vous tend une lettre scellée. Le roi s'y réjouit de vous compter parmi les candidats du concours et rappelle qu'une mission quotidienne attend chaque aventurier : l'accomplir chaque jour rapproche de la victoire.",
+      "2": "La deuxième lettre du roi évoque les classements du concours : chaque point récolté sur la route fait gravir les rangs, et les meilleurs candidats sont célébrés chaque semaine.",
+      "3": "Le roi a entendu parler de vos premiers exploits. Sa lettre vous encourage à visiter les boutiques et les forgerons des villes : un bon équipement fait toute la différence face aux dangers de la route.",
+      "4": "Dans sa quatrième lettre, le roi évoque l'arène du royaume : dès le niveau 8, les candidats peuvent s'y mesurer les uns aux autres pour gagner de la gloire.",
+      "5": "Le roi vous écrit au sujet des guildes : dès le niveau 10, rejoindre ou fonder une guilde permet de relever des défis quotidiens aux côtés d'autres aventuriers.",
+      "6": "La sixième lettre du roi parle des compagnons de route : un familier rencontré sur le chemin peut partager votre aventure, combattre à vos côtés et partir en expédition.",
+      "7": "La dernière lettre de la semaine porte le grand sceau royal. Le roi salue votre persévérance : la semaine d'épreuves s'achève, mais le concours, lui, ne fait que commencer."
+    },
+    "gifts": "Le roi y joint :",
+    "gift": {
+      "tokens_one": "{{count}} jeton {emote:unitValues.token}",
+      "tokens_other": "{{count}} jetons {emote:unitValues.token}",
+      "money_one": "{{count}} pièce {emote:unitValues.money}",
+      "money_other": "{{count}} pièces {emote:unitValues.money}",
+      "gems_one": "{{count}} gemme {emote:unitValues.gem}",
+      "gems_other": "{{count}} gemmes {emote:unitValues.gem}"
+    },
+    "rank": "{emote:unitValues.score} Place au concours : {{rank}} sur {{rankedPlayers}}"
   }
 }

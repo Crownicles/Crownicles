@@ -134,6 +134,7 @@ describe("Adventure screen", () => {
 	beforeEach((): void => {
 		jest.clearAllMocks();
 		jest.mocked(i18n.tArray).mockImplementation((key: string): string[] => [`${key}:only`]);
+		jest.mocked(useMissions).mockReturnValue({status: "loading"});
 		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: profile()});
 		mockedUseCollectors.mockReturnValue({open: [], track: jest.fn(), react: jest.fn(), isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()});
 	});
@@ -214,16 +215,49 @@ describe("Adventure screen", () => {
 		expect(screen.getByText("app:profile.titles.missions")).toBeTruthy();
 	});
 
-	it("guides a newcomer with the one campaign step to do now", async () => {
+	it("guides a contest candidate with the booklet: the seals set, the one mission to do now, and where it is done", async () => {
 		mockReport();
 		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: {...profile(), level: 2} as ProfileRes});
 		jest.mocked(useMissions).mockReturnValue({status: "ready", data: {
-			campaignProgression: 2,
-			missions: [{missionId: "commandReport", missionType: MISSION_TYPES.CAMPAIGN, missionVariant: 0, missionObjective: 1, numberDone: 0}]
+			campaignProgression: 4,
+			missions: [{missionId: "findOrBuyItem", missionType: MISSION_TYPES.CAMPAIGN, missionVariant: 0, missionObjective: 1, numberDone: 0}]
+		} as unknown as MissionsRes});
+		await render(<Adventure />);
+		expect(screen.getAllByText("app:contest.title").length).toBeGreaterThan(0);
+		expect(screen.getByText("app:contest.missions.findOrBuyItem")).toBeTruthy();
+		expect(screen.getByText("app:contest.hints.findOrBuyItem")).toBeTruthy();
+		expect(screen.getByText("app:contest.actions.openInventory")).toBeTruthy();
+		expect(screen.getAllByTestId("contest-seal-sealed")).toHaveLength(3);
+		expect(screen.queryByText("app:journey.title")).toBeNull();
+		expect(screen.queryByText("advices:advices:only")).toBeNull();
+	});
+
+	it("keeps all three sealed trials accessible immediately after choosing a class", async () => {
+		mockReport();
+		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: {...profile(), level: 5} as ProfileRes});
+		jest.mocked(useMissions).mockReturnValue({status: "ready", data: {
+			campaignProgression: 9,
+			missions: [{missionId: "travelHours", missionType: MISSION_TYPES.CAMPAIGN, missionVariant: 1, missionObjective: 1, numberDone: 0}]
+		} as unknown as MissionsRes});
+		await render(<Adventure />);
+		expect(screen.getByText("app:contest.title")).toBeTruthy();
+		expect(screen.getByText("app:profile.titles.missions")).toBeTruthy();
+		expect(screen.queryByText("app:contest.missions.chooseClass")).toBeNull();
+		await fireEvent.press(screen.getByText("app:contest.title"));
+		expect(screen.getAllByText("app:contest.sealed")).toHaveLength(8);
+	});
+
+	it("hands over to the campaign guide once the contest is sealed", async () => {
+		mockReport();
+		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: {...profile(), level: 5} as ProfileRes});
+		jest.mocked(useMissions).mockReturnValue({status: "ready", data: {
+			campaignProgression: 12,
+			missions: [{missionId: "recoverAlteration", missionType: MISSION_TYPES.CAMPAIGN, missionVariant: 0, missionObjective: 1, numberDone: 0}]
 		} as unknown as MissionsRes});
 		await render(<Adventure />);
 		expect(screen.getByText("app:journey.title")).toBeTruthy();
-		expect(screen.getByText("models:missions.commandReport")).toBeTruthy();
+		expect(screen.getByText("models:missions.recoverAlteration")).toBeTruthy();
+		expect(screen.queryByText("app:contest.title")).toBeNull();
 	});
 
 	it("leaves the guide out once every part of the game is open, the missions one tap away", async () => {
@@ -344,7 +378,7 @@ describe("Adventure screen", () => {
 		await render(<Adventure />);
 
 		expect(screen.getByText("app:adventure.quick.advanceWithCost")).toBeTruthy();
-		expect(screen.getByText("app:adventure.notReady")).toBeTruthy();
+		expect(screen.getByText("app:adventure.tokenSkip")).toBeTruthy();
 		expect(screen.queryByText("app:adventure.continueReport")).toBeNull();
 	});
 

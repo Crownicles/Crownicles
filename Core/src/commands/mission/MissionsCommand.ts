@@ -42,7 +42,7 @@ export default class MissionsCommand {
 			return;
 		}
 
-		if (toCheckPlayer.id === player.id) {
+		if (toCheckPlayer.id === player.id && !packet.passive) {
 			await MissionsController.update(player, response, { missionId: "commandMission" });
 		}
 

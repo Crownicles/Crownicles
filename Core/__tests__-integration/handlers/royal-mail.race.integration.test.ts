@@ -1,5 +1,5 @@
 import {
-	afterAll, beforeAll, beforeEach, describe, expect, it
+	afterAll, beforeAll, beforeEach, describe, expect, it, vi
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
@@ -35,12 +35,18 @@ describe("royal mail", () => {
 	});
 
 	beforeEach(async () => {
-		await PlayerMissionsInfo.destroy({
-			truncate: true, force: true
-		});
-		await Player.destroy({
-			truncate: true, force: true
-		});
+		await env.crownicles.gameDatabase.sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+		try {
+			await PlayerMissionsInfo.destroy({
+				truncate: true, force: true
+			});
+			await Player.destroy({
+				truncate: true, force: true
+			});
+		}
+		finally {
+			await env.crownicles.gameDatabase.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+		}
 	});
 
 	async function newcomer(lastRoyalLetterAt: Date | null, royalLettersReceived = 0): Promise<PlayerType> {
@@ -100,6 +106,33 @@ describe("royal mail", () => {
 		const response: CrowniclesPacket[] = [];
 		await deliverRoyalLetter((await Player.findByPk(player.id))!, response, nextWeek);
 		expect(letters([response])).toBe(0);
+	});
+
+	it("does not lose a letter or its gifts when a reward fails, and can retry the report", async () => {
+		const player = await newcomer(new Date(Date.now() - DAY_MS));
+		const addMoney = vi.spyOn(Player.prototype, "addMoney").mockRejectedValueOnce(new Error("payout interrupted"));
+		const interruptedResponse: CrowniclesPacket[] = [];
+		try {
+			await expect(deliverRoyalLetter(player, interruptedResponse)).rejects.toThrow("payout interrupted");
+		}
+		finally {
+			addMoney.mockRestore();
+		}
+		expect(await reload(player)).toMatchObject({
+			letters: 0,
+			tokens: STARTING_TOKENS,
+			money: 0
+		});
+		expect(letters([interruptedResponse])).toBe(0);
+
+		const retryResponse: CrowniclesPacket[] = [];
+		await deliverRoyalLetter((await Player.findByPk(player.id))!, retryResponse);
+		expect(letters([retryResponse])).toBe(1);
+		expect(await reload(player)).toMatchObject({
+			letters: 1,
+			tokens: STARTING_TOKENS + OnboardingConstants.ROYAL_MAIL.TOKENS,
+			money: OnboardingConstants.ROYAL_MAIL.MONEY
+		});
 	});
 
 	it("leaves players who were already in the kingdom alone", async () => {

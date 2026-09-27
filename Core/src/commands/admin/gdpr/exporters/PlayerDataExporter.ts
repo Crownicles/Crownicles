@@ -137,6 +137,8 @@ async function exportMissionData(
 				dailyMissionBlob: missionsInfo.dailyMissionBlob?.toString("base64"),
 				campaignProgression: missionsInfo.campaignProgression,
 				campaignBlob: missionsInfo.campaignBlob,
+				royalLettersReceived: missionsInfo.royalLettersReceived,
+				lastRoyalLetterAt: missionsInfo.lastRoyalLetterAt,
 				createdAt: missionsInfo.createdAt,
 				updatedAt: missionsInfo.updatedAt
 			}

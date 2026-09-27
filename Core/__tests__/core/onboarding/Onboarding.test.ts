@@ -55,6 +55,7 @@ describe("royal contest onboarding", () => {
 
 	it("keeps small events about closed parts of the game away from newcomers only", () => {
 		expect(hiddenSmallEvents(atPosition(4))).toEqual(OnboardingConstants.HIDDEN_SMALL_EVENTS);
+		expect(hiddenSmallEvents(atPosition(4))).toContain("bigBad");
 		expect(hiddenSmallEvents(atPosition(OnboardingConstants.CAMPAIGN_LENGTH + 1))).toEqual([]);
 	});
 

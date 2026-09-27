@@ -6,7 +6,7 @@ import {MissionsReq} from "ws-packets/src/fromClient/MissionsReq";
 import {MissionsRes} from "ws-packets/src/fromServer/missions/MissionsRes";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {Mission, MISSION_TYPES} from "ws-packets/src/objects/Mission";
-import {GameClient} from "@/src/networking/GameClient";
+import {GameAnswer, GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
@@ -97,32 +97,52 @@ function SideMissions({data, now, unfolding}: {data: MissionsRes} & Omit<Mission
 	</>;
 }
 
-export function MissionsContent({data, now}: {data: MissionsRes; now: number}): ReactNode {
+export function MissionsContent({data, now, campaign = true}: {data: MissionsRes; now: number; campaign?: boolean}): ReactNode {
 	const unfolding = useExpandedEntry<string>();
 	const rewardsFirst = useMissionRewards().rewards.missions.length > 0;
 	if (data.missions.length === 0) return <EmptyState>{i18n.t("app:missions.empty")}</EmptyState>;
 	const sections = {now, unfolding};
 	return <>
-		<CampaignMissions data={data} first={!rewardsFirst} {...sections} />
+		{campaign ? <CampaignMissions data={data} first={!rewardsFirst} {...sections} /> : null}
 		<DailyMission data={data} {...sections} />
 		<SideMissions data={data} {...sections} />
 	</>;
+}
+
+function requestMissions(passive: boolean): Promise<GameAnswer<MissionsRes>> {
+	return GameClient.request(makeFromClientPacket(MissionsReq, {askedPlayer: {}, ...passive ? {passive} : {}}), MissionsRes, [PlayerNotFound]);
 }
 
 /** The player's missions, read through the shared cache; an answer also refreshes the profile Core rewarded. */
 export function useMissions(): RequestState<MissionsRes> {
 	const queryClient = useQueryClient();
 	return useGameQuery(GAME_ENTITIES.MISSIONS, async () => {
-		const answer = await GameClient.request(makeFromClientPacket(MissionsReq, {askedPlayer: {}}), MissionsRes, [PlayerNotFound]);
+		// Screens glance at the missions on their own: only opening them counts as consulting them.
+		const answer = await requestMissions(true);
 		if (answer.kind === "answer") await queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.PROFILE)});
 		return answer;
 	});
 }
 
-export function Missions(): ReactNode {
+/** Opening the missions is what the campaign counts as the player consulting them. */
+function useConsultMissions(): void {
+	const queryClient = useQueryClient();
+	useEffect(() => {
+		requestMissions(false)
+			.then(async answer => {
+				if (answer.kind === "timeout") return;
+				queryClient.setQueryData(gameKey(GAME_ENTITIES.MISSIONS), answer);
+				if (answer.kind === "answer") await queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.PROFILE)});
+			})
+			.catch(error => console.error("Failed to consult the missions:", error));
+	}, [queryClient]);
+}
+
+export function Missions({campaign = true}: {campaign?: boolean}): ReactNode {
 	const queryClient = useQueryClient();
 	const [now, setNow] = useState(Date.now);
 	const state = useMissions();
+	useConsultMissions();
 	const resetsAt = state.status === "ready" ? state.data.dailyMission.resetsAt : null;
 	useGameDeadline(GAME_ENTITIES.MISSIONS, resetsAt);
 	useEffect(() => {
@@ -137,6 +157,6 @@ export function Missions(): ReactNode {
 	if (state.status === "empty") return <EmptyState>{i18n.t("app:profile.notFound")}</EmptyState>;
 	return <>
 		<UnclaimedMissions />
-		<MissionsContent data={state.data} now={now} />
+		<MissionsContent data={state.data} now={now} campaign={campaign} />
 	</>;
 }

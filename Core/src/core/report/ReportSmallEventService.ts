@@ -14,6 +14,12 @@ import { crowniclesInstance } from "../../app";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	PlayerMissionsInfo, PlayerMissionsInfos
+} from "../database/game/models/PlayerMissionsInfo";
+import {
+	hiddenSmallEvents, teachingSmallEvent
+} from "../onboarding/OnboardingSmallEvents";
 
 /**
  * Small event eligibility result
@@ -56,9 +62,10 @@ async function checkSmallEventEligibility(
 async function getEligibleSmallEvents(
 	player: Player,
 	playerActiveObjects: PlayerActiveObjects,
-	response: CrowniclesPacket[]
+	response: CrowniclesPacket[],
+	hidden: readonly string[]
 ): Promise<SmallEventEligibility[]> {
-	const keys = SmallEventDataController.instance.getKeys();
+	const keys = SmallEventDataController.instance.getKeys().filter(key => !hidden.includes(key));
 	const eligibleEvents: SmallEventEligibility[] = [];
 
 	for (const key of keys) {
@@ -95,9 +102,10 @@ function selectRandomSmallEvent(eligibleEvents: SmallEventEligibility[]): string
 async function getRandomSmallEvent(
 	response: CrowniclesPacket[],
 	player: Player,
-	playerActiveObjects: PlayerActiveObjects
+	playerActiveObjects: PlayerActiveObjects,
+	hidden: readonly string[]
 ): Promise<string | null> {
-	const eligibleEvents = await getEligibleSmallEvents(player, playerActiveObjects, response);
+	const eligibleEvents = await getEligibleSmallEvents(player, playerActiveObjects, response, hidden);
 
 	if (eligibleEvents.length === 0) {
 		return null;
@@ -173,6 +181,22 @@ async function runSmallEventUnderLock(
 }
 
 /**
+ * During the royal contest, the stop that teaches the current mission comes once per trip.
+ */
+async function teachingStop(
+	player: Player,
+	missionInfo: PlayerMissionsInfo,
+	playerActiveObjects: PlayerActiveObjects,
+	response: CrowniclesPacket[]
+): Promise<string | null> {
+	const key = teachingSmallEvent(missionInfo, playerActiveObjects);
+	if (!key || await PlayerSmallEvents.playerSmallEventCount(player.id, key) > 0) {
+		return null;
+	}
+	return await checkSmallEventEligibility(key, player, playerActiveObjects, response) ? key : null;
+}
+
+/**
  * Executes a small event
  */
 export async function executeSmallEvent(
@@ -182,9 +206,12 @@ export async function executeSmallEvent(
 	forced: string | null
 ): Promise<void> {
 	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 
 	// Pick a random event or use forced one
-	const event = forced ?? await getRandomSmallEvent(response, player, playerActiveObjects);
+	const event = forced
+		?? await teachingStop(player, missionInfo, playerActiveObjects, response)
+		?? await getRandomSmallEvent(response, player, playerActiveObjects, hiddenSmallEvents(missionInfo));
 
 	if (!event) {
 		PacketUtils.pushInternalError(response, "No small event can be executed", {

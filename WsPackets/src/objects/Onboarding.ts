@@ -5,11 +5,20 @@
 export const ONBOARDING_TRIALS = [
 	{
 		id: "audience",
-		missions: ["commandReport", "commandMission", "earnMoney"]
+		missions: [
+			"commandReport",
+			"commandMission",
+			"earnMoney"
+		]
 	},
 	{
 		id: "road",
-		missions: ["findOrBuyItem", "drinkPotion", "visitCityNpc", "commandMap"]
+		missions: [
+			"findOrBuyItem",
+			"drinkPotion",
+			"commandMap",
+			"visitCityNpc"
+		]
 	},
 	{
 		id: "path",

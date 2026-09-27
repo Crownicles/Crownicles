@@ -30,11 +30,11 @@ function blob(prefix: string): string {
 	return prefix.padEnd(CAMPAIGN_LENGTH, "0");
 }
 
-async function insertPlayer(id: number, player: { level: number; classId: number; progression: number; blob: string; slot: { missionId: string; missionVariant: number; numberDone: number } }): Promise<void> {
+async function insertPlayer(id: number, player: { level: number; classId: number; progression: number; blob: string; slot: { missionId: string; missionVariant: number; missionObjective?: number; numberDone: number } }): Promise<void> {
 	await env.sequelize.query(`INSERT INTO players (id, level, class) VALUES (${id}, ${player.level}, ${player.classId})`);
 	await env.sequelize.query(`INSERT INTO player_missions_info (playerId, campaignProgression, campaignBlob) VALUES (${id}, ${player.progression}, '${player.blob}')`);
 	await env.sequelize.query(`INSERT INTO mission_slots (playerId, missionId, missionVariant, missionObjective, numberDone, gemsToWin, xpToWin, moneyToWin, saveBlob, expiresAt)
-		VALUES (${id}, '${player.slot.missionId}', ${player.slot.missionVariant}, 1, ${player.slot.numberDone}, 1, 10, 0, 'saved', NULL)`);
+		VALUES (${id}, '${player.slot.missionId}', ${player.slot.missionVariant}, ${player.slot.missionObjective ?? 1}, ${player.slot.numberDone}, 1, 10, 0, 'saved', NULL)`);
 }
 
 async function row(id: number): Promise<Row> {
@@ -78,7 +78,7 @@ describe("075-onboarding-campaign-reorder migration", () => {
 
 	it("moves a player waiting on level 5 to the item it has not found yet, keeping every completion", async () => {
 		await insertPlayer(2, {
-			level: 3, classId: 0, progression: 5, blob: blob("1111"), slot: { missionId: "reachLevel", missionVariant: 0, numberDone: 3 }
+			level: 3, classId: 0, progression: 5, blob: blob("1111"), slot: { missionId: "reachLevel", missionVariant: 0, missionObjective: 5, numberDone: 3 }
 		});
 		await up({ context: context() });
 		const result = await row(2);
@@ -90,7 +90,7 @@ describe("075-onboarding-campaign-reorder migration", () => {
 
 	it("keeps the progress of a player whose current mission stays the first one left", async () => {
 		await insertPlayer(3, {
-			level: 1, classId: 0, progression: 3, blob: blob("11"), slot: { missionId: "earnMoney", missionVariant: 0, numberDone: 60 }
+			level: 1, classId: 0, progression: 3, blob: blob("11"), slot: { missionId: "earnMoney", missionVariant: 0, missionObjective: 100, numberDone: 60 }
 		});
 		await up({ context: context() });
 		const result = await row(3);
@@ -99,16 +99,16 @@ describe("075-onboarding-campaign-reorder migration", () => {
 		expect(result.numberDone).toBe(60);
 	});
 
-	it("starts a level-driven mission from the player's current level", async () => {
+	it("keeps the level progress of a player still waiting on level 5 once everything before it is done", async () => {
 		// Everything but reachLevel 5 (previous position 5) and what follows the class is done.
 		await insertPlayer(4, {
-			level: 7, classId: 2, progression: 5, blob: blob("1111011111111110"), slot: { missionId: "reachLevel", missionVariant: 0, numberDone: 4 }
+			level: 4, classId: 2, progression: 5, blob: blob("1111011111111110"), slot: { missionId: "reachLevel", missionVariant: 0, missionObjective: 5, numberDone: 4 }
 		});
 		await up({ context: context() });
 		const result = await row(4);
 		expect(result.campaignProgression).toBe(13);
 		expect(result.missionId).toBe("reachLevel");
-		expect(result.numberDone).toBe(7);
+		expect(result.numberDone).toBe(4);
 	});
 
 	it("leaves players past the reordered missions untouched", async () => {
@@ -137,7 +137,7 @@ describe("075-onboarding-campaign-reorder migration", () => {
 	it("is undone by down()", async () => {
 		const before = blob("1111");
 		await insertPlayer(7, {
-			level: 3, classId: 0, progression: 5, blob: before, slot: { missionId: "reachLevel", missionVariant: 0, numberDone: 3 }
+			level: 3, classId: 0, progression: 5, blob: before, slot: { missionId: "reachLevel", missionVariant: 0, missionObjective: 5, numberDone: 3 }
 		});
 		await up({ context: context() });
 		await down({ context: context() });

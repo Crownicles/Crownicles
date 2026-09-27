@@ -14,17 +14,7 @@ import {
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import Player from "../../core/database/game/models/Player";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
-import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
-import { secondsToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
-
-/**
- * Mirrors the cooldown ClassesCommand enforces, so the front-end can announce it before asking.
- */
-async function getNextChangeTimestamp(player: Player): Promise<number> {
-	const currentClassGroup = ClassDataController.instance.getById(player.class)!.classGroup;
-	const lastChange = await LogsReadRequests.getLastTimeThePlayerHasEditedHisClass(player.keycloakId);
-	return lastChange.valueOf() + secondsToMilliseconds(ClassConstants.TIME_BEFORE_CHANGE_CLASS[currentClassGroup]);
-}
+import { classChangeCooldownUntil } from "./ClassChangeCooldown";
 
 export default class ClassesInfoCommand {
 	@commandRequires(CommandClassesInfoPacketReq, {
@@ -59,11 +49,11 @@ export default class ClassesInfoCommand {
 			});
 		}
 
-		const nextChangeTimestamp = await getNextChangeTimestamp(player);
+		const nextChangeTimestamp = await classChangeCooldownUntil(player);
 		response.push(makePacket(CommandClassesInfoPacketRes, {
 			data: {
 				classesStats: classesLineDisplay,
-				...nextChangeTimestamp > Date.now() ? { nextChangeTimestamp } : {}
+				...nextChangeTimestamp === null ? {} : { nextChangeTimestamp }
 			}
 		}));
 	}

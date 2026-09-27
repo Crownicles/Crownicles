@@ -1,6 +1,11 @@
 import {render, screen} from "@testing-library/react-native";
 import {BigEventOutcome, LotteryOutcome} from "@/src/collectors/AdventureCollector";
 
+jest.mock("@/src/onboarding/ContestBooklet", () => ({
+	useContest: (): null => null,
+	ContestCityTip: (): null => null
+}));
+
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: object): string => `${key}${options ? ` ${JSON.stringify(options)}` : ""}`, tArray: (): string[] => []}}));
 jest.mock("@/src/store/usePlayerProfile", () => ({usePlayerProfile: (): object => ({status: "ready", data: {pseudo: "Drapht"}})}));

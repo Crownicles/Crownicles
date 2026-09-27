@@ -36,6 +36,10 @@ export function isContestRunning(progression: number): boolean {
 	return progression !== CAMPAIGN_COMPLETED && progression <= CONTEST_LENGTH;
 }
 
+export function isContestBookletAvailable(progression: number): boolean {
+	return isContestRunning(progression) || progression === CONTEST_LENGTH + 1;
+}
+
 /** The booklet as the missions draw it: which seals are set, and what the player does next. */
 export function contestOf(missions: Pick<MissionsRes, "campaignProgression" | "missions">): Contest {
 	const progression = missions.campaignProgression;

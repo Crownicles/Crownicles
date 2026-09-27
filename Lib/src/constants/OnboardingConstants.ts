@@ -5,11 +5,20 @@
 export const ONBOARDING_TRIALS = [
 	{
 		id: "audience",
-		missions: ["commandReport", "commandMission", "earnMoney"]
+		missions: [
+			"commandReport",
+			"commandMission",
+			"earnMoney"
+		]
 	},
 	{
 		id: "road",
-		missions: ["findOrBuyItem", "drinkPotion", "visitCityNpc", "commandMap"]
+		missions: [
+			"findOrBuyItem",
+			"drinkPotion",
+			"commandMap",
+			"visitCityNpc"
+		]
 	},
 	{
 		id: "path",
@@ -31,9 +40,10 @@ export abstract class OnboardingConstants {
 		drinkPotion: "findPotion"
 	};
 
-	/** Small events kept off the road of a newcomer: they speak of parts of the game the contest has not opened yet, or of nothing at all. */
+	/** Small events kept off the road of a newcomer: empty stops, severe setbacks, and later mechanics. */
 	static readonly HIDDEN_SMALL_EVENTS: readonly string[] = [
 		"doNothing",
+		"bigBad",
 		"findPet",
 		"expeditionAdvice",
 		"ultimateFoodMerchant",

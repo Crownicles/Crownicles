@@ -2622,7 +2622,11 @@ export const CrowniclesIcons: {
 		walking: "🚶",
 		leagueUp: "↗️",
 		leagueDown: "↘️",
-		explosion: "💥"
+		explosion: "💥",
+		royalLetter: "✉️",
+		contestBooklet: "📜",
+		seal: "🏵️",
+		guide: "💁‍♀️"
 	},
 	guild: {
 		icon: "🏟️",

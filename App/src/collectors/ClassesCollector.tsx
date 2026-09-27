@@ -39,13 +39,13 @@ function ClassEntry({choice, locked, expanded, onToggle, onConfirm}: {
 		expanded={expanded}
 		onToggle={onToggle}
 	>
-		<ClassStatistics stats={{...choice.details, fightPoint: choice.details.energy, baseBreath: choice.details.initialBreath}} />
 		<ActionBanner
 			icon={Check}
 			label={i18n.t("app:classes.confirm", {name: i18n.t(`models:classes.${choice.details.id}`)})}
 			pending={locked}
 			onPress={onConfirm}
 		/>
+		<ClassStatistics stats={{...choice.details, fightPoint: choice.details.energy, baseBreath: choice.details.initialBreath}} />
 	</ExpandableEntry>;
 }
 

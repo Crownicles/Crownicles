@@ -3,6 +3,9 @@ import {
 } from "vitest";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
+import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import type { ReactionCollectorChooseDestination } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import type { Player } from "../../../src/core/database/game/models/Player";
 import type { MapLink } from "../../../src/data/MapLink";
 import { BlockingUtils } from "../../../src/core/utils/BlockingUtils";
@@ -67,9 +70,11 @@ vi.mock("../../../src/core/utils/BlockingUtils", () => ({
 }));
 
 let capturedEndCallback: ((collector: { getFirstReaction: () => unknown }, response: unknown[]) => Promise<void>) | undefined;
+let capturedDestinationCollector: ReactionCollectorChooseDestination | undefined;
 vi.mock("../../../src/core/utils/ReactionsCollector", () => ({
 	ReactionCollectorInstance: class {
-		constructor(_collector: unknown, _context: unknown, _options: unknown, endCallback: typeof capturedEndCallback) {
+		constructor(collector: ReactionCollectorChooseDestination, _context: unknown, _options: unknown, endCallback: typeof capturedEndCallback) {
+			capturedDestinationCollector = collector;
 			capturedEndCallback = endCallback;
 		}
 
@@ -180,6 +185,39 @@ describe("canAutoChooseDestination", () => {
 });
 
 describe("chooseDestination collector", () => {
+	it("shows all royal departure durations, but keeps ordinary journey durations uncertain", async () => {
+		vi.clearAllMocks();
+		getCityByMapIdMock.mockReturnValue(undefined);
+		isOnPveIslandMock.mockReturnValue(false);
+		getNextPlayerAvailableMapsMock.mockReturnValue([6, 10]);
+		getMapLinkByLocationsMock.mockImplementation((_start: number, end: number) => ({id: end + 80, endMap: end, tripDuration: 60}));
+		getMapLocationByIdMock.mockImplementation((mapId: number) => ({
+			type: mapId === 29 ? MapLocationConstants.TYPES.CASTLE_THRONE : MapLocationConstants.TYPES.VILLAGE
+		}));
+		const randomDuration = vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+		try {
+			const audiencePlayer = {
+				...makePlayer(75, 29), keycloakId: "newcomer", effectRemainingTime: (): number => 0
+			} as Player;
+			await chooseDestination({} as never, audiencePlayer, null, [], {allowStayInCity: false});
+			const firstChoices = capturedDestinationCollector!.creationPacket("first", 0).reactions;
+			expect(firstChoices).toEqual(expect.arrayContaining([
+				expect.objectContaining({data: expect.objectContaining({mapId: 6, tripDuration: 60})}),
+				expect.objectContaining({data: expect.objectContaining({mapId: 10, tripDuration: 60})})
+			]));
+
+			const otherPlayer = {
+				...makePlayer(81, 23), keycloakId: "veteran", effectRemainingTime: (): number => 0
+			} as Player;
+			await chooseDestination({} as never, otherPlayer, null, [], {allowStayInCity: false});
+			const laterChoices = capturedDestinationCollector!.creationPacket("later", 0).reactions;
+			expect(laterChoices.map(choice => Reflect.get(choice.data, "tripDuration"))).toEqual([undefined, undefined]);
+		}
+		finally {
+			randomDuration.mockRestore();
+		}
+	});
+
 	it("retries travel persistence after a connection setup timeout", async () => {
 		capturedEndCallback = undefined;
 		vi.clearAllMocks();

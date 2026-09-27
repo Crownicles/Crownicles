@@ -9,6 +9,9 @@ import { resolveAskedPlayer } from "../AskedPlayerResolver";
 export default class MissionsCommandClientTranslator {
 	@fromClientTranslator(MissionsReq)
 	public static translate(context: PacketContext, packet: MissionsReq): Promise<CommandMissionsPacketReq> {
-		return asyncMakePacket(CommandMissionsPacketReq, { askedPlayer: resolveAskedPlayer(context, packet.askedPlayer) });
+		return asyncMakePacket(CommandMissionsPacketReq, {
+			askedPlayer: resolveAskedPlayer(context, packet.askedPlayer),
+			...packet.passive === true ? { passive: true } : {}
+		});
 	}
 }

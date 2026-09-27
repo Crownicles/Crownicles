@@ -17,7 +17,7 @@ import {OnboardingMoments, ONBOARDING_MOMENTS} from "@/src/onboarding/Onboarding
 import {i18n} from "@/src/translations/i18n";
 
 /** The road to the first city is long enough to leave the app: shorter hops are not worth the card. */
-const FORK_MIN_REMAINING_MS = 20 * 60_000;
+const FORK_MIN_TRIP_MS = 20 * 60_000;
 
 /** A report whose time came within this margin of the moment it opened reached it on its own, not through tokens. */
 const NATURAL_STOP_TOLERANCE_MS = 5_000;
@@ -36,11 +36,11 @@ export function stageMoment(view: ReportViewRes | null): string {
 }
 
 /** The long road of the contest's second trial is where a newcomer may leave: the guide offers the reminder there, once. */
-export function forkDue({view, contest, moments, now}: {view: ReportViewRes | null; contest: ContestView | null; moments: OnboardingMoments; now: number}): ReportTravelSummaryRes | null {
+export function forkDue({view, contest, moments}: {view: ReportViewRes | null; contest: ContestView | null; moments: OnboardingMoments}): ReportTravelSummaryRes | null {
 	const travel = view?.travel;
 	if (!travel || view?.city || !contest?.running || !moments.ready || moments.seen(ONBOARDING_MOMENTS.FORK)) return null;
 	if (contest.contest.current?.trial.id !== "road") return null;
-	return travel.arriveTime - now >= FORK_MIN_REMAINING_MS ? travel : null;
+	return travel.arriveTime - travel.startTime >= FORK_MIN_TRIP_MS ? travel : null;
 }
 
 function destinationName(travel: ReportTravelSummaryRes): string {

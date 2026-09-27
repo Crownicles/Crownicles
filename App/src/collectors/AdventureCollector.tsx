@@ -40,6 +40,8 @@ import {
 } from "@/src/display/OutcomeEffects";
 import {LotteryReward} from "ws-packets/src/fromServer/smallEvents/SmallEventLotteryRes";
 import {anyTranslation} from "@/src/translations/RandomTranslation";
+import {useContest} from "@/src/onboarding/ContestBooklet";
+import {GuideTip} from "@/src/onboarding/GuideTip";
 
 /** Being occupied is the alteration that only costs time: Discord never draws its emoji after a story. */
 const OCCUPIED_EFFECT = "occupied";
@@ -284,6 +286,14 @@ const SPECIALIZED_COLLECTORS: Partial<Record<ReactionCollectorData["type"], Comp
 	[ITEM_DATA_KINDS.ACCEPT]: ItemAcceptCollector
 };
 
+/** Reaching the first city is the contest's next trial: the guide holds the newcomer back before a new road. */
+function DestinationGuide({collector}: {collector: ReactionCollectorCreation}): ReactNode {
+	const contest = useContest();
+	const canStay = reactionIndex(collector, REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY) >= 0;
+	if (!canStay || !contest?.running || contest.contest.current?.mission.missionId !== "visitCityNpc") return null;
+	return <GuideTip text={i18n.t("app:contest.tips.stayInCity")} testID="guide-tip-stay-in-city" />;
+}
+
 /** The report-owned collector is rendered in the same screen hierarchy as the mobile mockup. */
 export function AdventureCollector(props: AdventureCollectorProps): ReactNode {
 	const SpecializedCollector = SPECIALIZED_COLLECTORS[props.collector.data.type];
@@ -306,6 +316,7 @@ export function AdventureCollector(props: AdventureCollectorProps): ReactNode {
 				title={collectorTitle(props.collector.data)}
 				subtitle={description}
 			/>
+			{isDestination(props.collector) ? <DestinationGuide collector={props.collector} /> : null}
 			<CollectorChoices {...props} />
 		</Screen>
 	);

@@ -1,19 +1,19 @@
 {
   "missions": [
     {
-      "missionId": "commandMission",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 1,
-      "xpToWin": 10,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "commandReport",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 20,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "commandMission",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 10,
       "moneyToWin": 0
     },
     {
@@ -25,43 +25,11 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "travelHours",
-      "missionVariant": 1,
-      "missionObjective": 1,
-      "gemsToWin": 1,
-      "xpToWin": 25,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "reachLevel",
-      "missionVariant": 0,
-      "missionObjective": 5,
-      "gemsToWin": 1,
-      "xpToWin": 50,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "findOrBuyItem",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 20,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "chooseClass",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 3,
-      "xpToWin": 100,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "travelHours",
-      "missionVariant": 3,
-      "missionObjective": 1,
-      "gemsToWin": 1,
-      "xpToWin": 75,
       "moneyToWin": 0
     },
     {
@@ -81,14 +49,6 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "goToPlace",
-      "missionVariant": 3,
-      "missionObjective": 1,
-      "gemsToWin": 2,
-      "xpToWin": 100,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "visitCityNpc",
       "missionVariant": 2,
       "missionObjective": 1,
@@ -97,7 +57,23 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "recoverAlteration",
+      "missionId": "chooseClass",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "travelHours",
+      "missionVariant": 1,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 25,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "sleepInInn",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
@@ -113,11 +89,35 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "sleepInInn",
+      "missionId": "recoverAlteration",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "reachLevel",
+      "missionVariant": 0,
+      "missionObjective": 5,
+      "gemsToWin": 1,
+      "xpToWin": 50,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "travelHours",
+      "missionVariant": 3,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 75,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "goToPlace",
+      "missionVariant": 3,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 100,
       "moneyToWin": 0
     },
     {

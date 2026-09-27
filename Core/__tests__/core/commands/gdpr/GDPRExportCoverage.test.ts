@@ -343,6 +343,8 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"dailyMissionBlob",
 		"campaignProgression",
 		"campaignBlob",
+		"royalLettersReceived",
+		"lastRoyalLetterAt",
 		"updatedAt",
 		"createdAt"
 	],

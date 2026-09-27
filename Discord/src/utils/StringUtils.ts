@@ -58,4 +58,11 @@ export abstract class StringUtils {
 	static joinParagraphs(parts: ReadonlyArray<string | false | null | undefined>): string {
 		return parts.filter((p): p is string => Boolean(p)).join("\n\n");
 	}
+
+	/**
+	 * Join several lines of the same paragraph. Falsy/empty entries are skipped.
+	 */
+	static joinLines(parts: ReadonlyArray<string | false | null | undefined>): string {
+		return parts.filter((p): p is string => Boolean(p)).join("\n");
+	}
 }

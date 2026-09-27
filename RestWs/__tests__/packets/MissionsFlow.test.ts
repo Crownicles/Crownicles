@@ -23,6 +23,15 @@ describe("missions over WebSocket", () => {
 		expect((await MissionsCommandClientTranslator.translate(CONTEXT, request)).askedPlayer).toEqual({ rank: 7 });
 	});
 
+	it("forwards a glance the app takes on its own, so Core does not count it as consulting the missions", async () => {
+		const glance = Object.assign(new MissionsReq(), { askedPlayer: {}, passive: true });
+		expect((await MissionsCommandClientTranslator.translate(CONTEXT, glance)).passive).toBe(true);
+		const opened = Object.assign(new MissionsReq(), { askedPlayer: {} });
+		const active = await MissionsCommandClientTranslator.translate(CONTEXT, opened);
+		expect(active.passive).toBeUndefined();
+		expect(JSON.parse(JSON.stringify(active))).not.toHaveProperty("passive");
+	});
+
 	it("transports mission families and the server calendar without the player's identity", async () => {
 		const packet = makePacket(CommandMissionsPacketRes, {
 			keycloakId: "private-id",
