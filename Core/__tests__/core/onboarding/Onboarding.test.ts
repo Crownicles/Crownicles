@@ -13,6 +13,13 @@ import { PlayerMissionsInfo } from "../../../src/core/database/game/models/Playe
 import { PlayerActiveObjects } from "../../../src/core/database/game/models/PlayerActiveObjects";
 import { PlayersConstants } from "../../../../Lib/src/constants/PlayersConstants";
 import { hidesTokenOffer } from "../../../src/core/onboarding/OnboardingTokens";
+import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
+import Player from "../../../src/core/database/game/models/Player";
+import { MapLocation } from "../../../src/data/MapLocation";
+
+function headingTo(attribute: string | null): Player {
+	return { getDestination: (): MapLocation | null => (attribute === null ? null : { attribute } as MapLocation) } as Player;
+}
 
 function atPosition(campaignProgression: number): PlayerMissionsInfo {
 	return { campaignProgression } as PlayerMissionsInfo;
@@ -40,11 +47,12 @@ describe("royal contest onboarding", () => {
 		expect(others.filter(mission => mission.tokensToWin)).toEqual([]);
 	});
 
-	it("never leads a newcomer to the token merchant, only to tokens they can spend", () => {
-		expect(hidesTokenOffer(atPosition(1), false)).toBe(true);
-		expect(hidesTokenOffer(atPosition(2), true)).toBe(false);
-		expect(hidesTokenOffer(atPosition(OnboardingConstants.CAMPAIGN_LENGTH + 1), false)).toBe(false);
-		expect(hidesTokenOffer(atPosition(0), false)).toBe(false);
+	it("never leads a newcomer to the token merchant in the king's castle, only to tokens they can spend", () => {
+		const inCastle = headingTo(MapConstants.MAP_ATTRIBUTES.KING_CASTLE);
+		expect(hidesTokenOffer(inCastle, false)).toBe(true);
+		expect(hidesTokenOffer(inCastle, true)).toBe(false);
+		expect(hidesTokenOffer(headingTo(MapConstants.MAP_ATTRIBUTES.CONTINENT1), false)).toBe(false);
+		expect(hidesTokenOffer(headingTo(null), false)).toBe(false);
 	});
 
 	it("is over once the class is chosen, and for a completed campaign", () => {

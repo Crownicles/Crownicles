@@ -1,37 +1,29 @@
 import {
-	afterEach, describe, expect, it, vi
+	describe, expect, it
 } from "vitest";
 import { CampaignData } from "../../../src/data/Campaign";
-import {
-	OnboardingConstants, ONBOARDING_TRIALS
-} from "../../../../Lib/src/constants/OnboardingConstants";
+import { OnboardingConstants } from "../../../../Lib/src/constants/OnboardingConstants";
+import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import Player from "../../../src/core/database/game/models/Player";
-import {
-	PlayerMissionsInfo, PlayerMissionsInfos
-} from "../../../src/core/database/game/models/PlayerMissionsInfo";
+import { MapLocation } from "../../../src/data/MapLocation";
 import { reportExperience } from "../../../src/core/onboarding/OnboardingExperience";
 
-const PLAYER = { id: 1 } as Player;
-const CAP = OnboardingConstants.FIRST_TRIAL_MAX_REPORT_EXPERIENCE;
+const CAP = OnboardingConstants.KING_CASTLE_MAX_REPORT_EXPERIENCE;
 
-function atPosition(campaignProgression: number): void {
-	vi.spyOn(PlayerMissionsInfos, "getOfPlayer").mockResolvedValue({ campaignProgression } as PlayerMissionsInfo);
+function headingTo(attribute: string | null): Player {
+	return { getDestination: (): MapLocation | null => (attribute === null ? null : { attribute } as MapLocation) } as Player;
 }
 
-describe("experience at the start of the contest", () => {
-	afterEach(() => vi.restoreAllMocks());
-
-	it("gives only a hint of experience from reports during the first trial", async () => {
-		atPosition(ONBOARDING_TRIALS[0].missions.length);
-		expect(await reportExperience(PLAYER, 120)).toBe(CAP);
-		expect(await reportExperience(PLAYER, 8)).toBe(8);
+describe("experience at the start of the adventure", () => {
+	it("gives only a hint of experience from reports inside the king's castle", () => {
+		const newcomer = headingTo(MapConstants.MAP_ATTRIBUTES.KING_CASTLE);
+		expect(reportExperience(newcomer, 287)).toBe(CAP);
+		expect(reportExperience(newcomer, 8)).toBe(8);
 	});
 
-	it("gives full experience from the long road of the second trial on", async () => {
-		atPosition(ONBOARDING_TRIALS[0].missions.length + 1);
-		expect(await reportExperience(PLAYER, 120)).toBe(120);
-		atPosition(0);
-		expect(await reportExperience(PLAYER, 120)).toBe(120);
+	it("gives full experience from the road to a first city on", () => {
+		expect(reportExperience(headingTo(MapConstants.MAP_ATTRIBUTES.CONTINENT1), 287)).toBe(287);
+		expect(reportExperience(headingTo(null), 287)).toBe(287);
 	});
 
 	it("rewards the missions before the class choice with little experience", () => {

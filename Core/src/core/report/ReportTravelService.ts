@@ -17,9 +17,6 @@ import {
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { CityDataController } from "../../data/City";
-import {
-	PlayerMissionsInfo, PlayerMissionsInfos
-} from "../database/game/models/PlayerMissionsInfo";
 import { hidesTokenOffer } from "../onboarding/OnboardingTokens";
 
 /**
@@ -166,8 +163,7 @@ export function canUseTokensAtLocation(player: Player): boolean {
  */
 function buildTokenData(
 	tokenCostResult: TokenCostResult | TokenCostUnavailable,
-	player: Player,
-	missionInfo: PlayerMissionsInfo
+	player: Player
 ): TokenButtonData | undefined {
 	if (!tokenCostResult.canUseTokens) {
 		return undefined;
@@ -179,7 +175,7 @@ function buildTokenData(
 	}
 
 	const canAfford = player.tokens >= tokenCostResult.cost;
-	if (hidesTokenOffer(missionInfo, canAfford)) {
+	if (hidesTokenOffer(player, canAfford)) {
 		return undefined;
 	}
 
@@ -264,7 +260,7 @@ export async function buildTravelSummary(
 			type: startMap?.type ?? ""
 		},
 		isOnBoat: travelSummaryData.isOnBoat,
-		tokens: buildTokenData(tokenCostResult, player, await PlayerMissionsInfos.getOfPlayer(player.id)),
+		tokens: buildTokenData(tokenCostResult, player),
 		heal: buildHealData(player, effectId),
 		isInCity: isStationaryInCity(player)
 	});

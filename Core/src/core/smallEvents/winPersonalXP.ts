@@ -11,7 +11,7 @@ import { reportExperience } from "../onboarding/OnboardingExperience";
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 	executeSmallEvent: async (response, player): Promise<void> => {
-		const xpWon = await reportExperience(player, RandomUtils.rangedInt(SmallEventConstants.EXPERIENCE));
+		const xpWon = reportExperience(player, RandomUtils.rangedInt(SmallEventConstants.EXPERIENCE));
 		await player.addExperience({
 			amount: xpWon,
 			response,

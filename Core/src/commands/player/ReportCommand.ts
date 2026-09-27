@@ -84,7 +84,6 @@ import {
 } from "../../core/report/ReportTokenHealService";
 import { openTokenMerchant } from "../../core/report/ReportTokenMerchantService";
 import { hidesTokenOffer } from "../../core/onboarding/OnboardingTokens";
-import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import { getAvailableCityServices } from "../../core/report/ReportCityServiceAvailability";
 import {
 	HEAL_VALIDATION_REASONS, USE_TOKENS_VALIDATION_REASONS
@@ -305,7 +304,7 @@ export default class ReportCommand {
 
 		if (!validation.valid) {
 			const insufficient = validation.reason === USE_TOKENS_VALIDATION_REASONS.INSUFFICIENT_TOKENS;
-			if (insufficient && !hidesTokenOffer(await PlayerMissionsInfos.getOfPlayer(player.id), false)) {
+			if (insufficient && !hidesTokenOffer(player, false)) {
 				await openTokenMerchant(player, context, response);
 			}
 			return;

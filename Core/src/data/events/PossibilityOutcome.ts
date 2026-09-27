@@ -67,7 +67,7 @@ async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Playe
 		experienceChange = 0;
 	}
 	experienceChange += outcome.bonusExperience ?? 0;
-	experienceChange = await reportExperience(player, experienceChange);
+	experienceChange = reportExperience(player, experienceChange);
 	if (experienceChange !== 0) {
 		await player.addExperience({
 			amount: experienceChange,

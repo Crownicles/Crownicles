@@ -101,7 +101,7 @@ async function giveRewardToPlayer(
 ): Promise<void> {
 	switch (rewardType) {
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.XP: {
-			const experience = await reportExperience(player, SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient);
+			const experience = reportExperience(player, SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient);
 			await player.addExperience({
 				amount: experience,
 				response,

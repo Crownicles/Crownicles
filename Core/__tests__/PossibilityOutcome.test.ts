@@ -39,7 +39,7 @@ vi.mock("../src/core/blessings/BlessingManager", () => ({
 }));
 
 vi.mock("../src/core/onboarding/OnboardingExperience", () => ({
-	reportExperience: (_player: unknown, amount: number): Promise<number> => Promise.resolve(amount)
+	reportExperience: (_player: unknown, amount: number): number => amount
 }));
 
 describe("applyPossibilityOutcome", () => {

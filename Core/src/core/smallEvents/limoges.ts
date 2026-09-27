@@ -67,7 +67,7 @@ async function applyFavorableOutcome(
 	response: CrowniclesPacket[],
 	properties: LimogesProperties
 ): Promise<Required<SmallEventLimogesPacket>["reward"]> {
-	const experience = await reportExperience(player, RandomUtils.rangedInt(properties.reward.experience));
+	const experience = reportExperience(player, RandomUtils.rangedInt(properties.reward.experience));
 	const score = RandomUtils.rangedInt(properties.reward.score);
 	await player.addExperience({
 		amount: experience,

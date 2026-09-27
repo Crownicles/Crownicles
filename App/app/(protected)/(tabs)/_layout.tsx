@@ -18,6 +18,7 @@ import {isJourneyTab, JOURNEY_TABS, JourneyTab} from "@/src/journey/Journey";
 import {Journey, useJourney} from "@/src/journey/useJourney";
 import {MissionCompletedToast} from "@/src/components/MissionRewards";
 import {BlessingActivatedToast} from "@/src/components/BlessingActivatedToast";
+import {LevelUpToast} from "@/src/components/LevelUpToast";
 import {useNotificationNavigation, useReportNotification} from "@/src/notifications/useNotifications";
 import {allowPermissionPrompt} from "@/src/notifications/ReportNotifications";
 import {useReportView} from "@/src/store/useReportActions";
@@ -216,6 +217,7 @@ export default function TabLayout(): ReactNode {
 			<OnboardingOverlays journey={journey} />
 			<MissionCompletedToast />
 			<BlessingActivatedToast />
+			<LevelUpToast />
 			<StopToast />
 		</View>
 	);

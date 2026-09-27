@@ -1040,6 +1040,13 @@
       "cannotRecallOnIsland": "Votre familier ne peut pas être rappelé pendant votre exploration de l'île."
     }
   },
+  "levelUp": {
+    "title": "Niveau {{level}} atteint",
+    "healthRestored": "Vie restaurée",
+    "statsIncreased": "Statistiques améliorées",
+    "missionSlot": "Nouvel emplacement de mission",
+    "stronger": "Votre personnage gagne en expérience."
+  },
   "missions": {
     "todo": "À faire",
     "done": "Déjà accomplies",

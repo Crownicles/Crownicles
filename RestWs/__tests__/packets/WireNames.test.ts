@@ -46,6 +46,7 @@ const WIRE_NAMES = [
 	"BlessingReq",
 	"BlessingRes",
 	"BlessingActivatedRes",
+	"PlayerLevelUpRes",
 	"NotificationPreferencesReq",
 	"NotificationPreferenceSetReq",
 	"NotificationPreferencesRes",
