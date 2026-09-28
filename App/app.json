@@ -35,7 +35,7 @@
         "backgroundColor": "#B95E4B"
       },
       "package": "com.crownicles.app",
-      "versionCode": 4
+      "versionCode": 5
     },
     "web": {
       "bundler": "metro",
