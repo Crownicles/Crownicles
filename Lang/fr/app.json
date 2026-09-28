@@ -232,7 +232,7 @@
   },
   "vitals": {
     "health": "Vie",
-    "energy": "Énergie"
+    "points": "Points"
   },
   "collector": {
     "accept": "Confirmer",

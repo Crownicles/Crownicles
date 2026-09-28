@@ -82,6 +82,15 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		gap: Theme.spacing.xs
+	},
+	score: {
+		alignItems: "flex-end"
+	},
+	scoreValue: {
+		color: Theme.colors.ink,
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.rowTitle,
+		fontVariant: ["tabular-nums"]
 	}
 });
 
@@ -128,8 +137,17 @@ function Chip({unit, value}: { unit: AmountUnit; value: number }): ReactNode {
 	);
 }
 
+/** The total points rank the player against everyone: the figure worth keeping in sight. */
+function Score({score}: {score: number}): ReactNode {
+	return (
+		<View style={styles.score} testID="vitals-score">
+			<Text style={styles.vitalLabel}>{i18n.t("app:vitals.points")}</Text>
+			<EmojiLabel emoji={AppIcons.getIcon("unitValues.score")} text={formatNumber(score)} textStyle={styles.scoreValue} size={Theme.fontSize.rowTitle} />
+		</View>
+	);
+}
+
 function VitalsBand({profile}: { profile: ProfileRes }): ReactNode {
-	const energy = profile.stats?.energy;
 	return (
 		<View style={styles.band}>
 			<View style={styles.vitals}>
@@ -140,15 +158,7 @@ function VitalsBand({profile}: { profile: ProfileRes }): ReactNode {
 					max={profile.health.max}
 					color={Theme.colors.red}
 				/>
-				{energy ? (
-					<Vital
-						icon={AppIcons.getIcon("unitValues.energy")}
-						label={i18n.t("app:vitals.energy")}
-						current={energy.value}
-						max={energy.max}
-						color={Theme.colors.green}
-					/>
-				) : null}
+				<Score score={profile.rank.score} />
 			</View>
 			<View style={styles.wallet}>
 				<Chip unit={AMOUNT_UNITS.MONEY} value={profile.money} />
@@ -160,7 +170,7 @@ function VitalsBand({profile}: { profile: ProfileRes }): ReactNode {
 }
 
 /**
- * Health, energy and purse, kept above the adventure content like in `mobile.html`.
+ * Health, total points and purse, kept above the adventure content.
  *
  * Reads the shared profile rather than taking values from the screen below it: the same numbers
  * are shown whichever adventure state is on screen, and a resolved action refreshes both at once.

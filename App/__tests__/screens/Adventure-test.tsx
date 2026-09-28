@@ -1,4 +1,4 @@
-import {act, fireEvent, render, screen, waitFor} from "@testing-library/react-native";
+import {act, fireEvent, render, screen, waitFor, within} from "@testing-library/react-native";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
@@ -145,7 +145,8 @@ function profile(): ProfileRes {
 		experience: {value: 100, max: 900},
 		pseudo: "Aster",
 		money: 1_240,
-		tokens: {value: 2, max: 5}
+		tokens: {value: 2, max: 5},
+		rank: {unranked: false, rank: 4, numberOfPlayers: 20, score: 12_345}
 	} as ProfileRes;
 }
 
@@ -432,13 +433,14 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:adventure.continueReport")).toBeNull();
 	});
 
-	it("keeps the vitals band above the report like the mobile mockup", async () => {
+	it("keeps health, total points and purse above the report", async () => {
 		mockReport();
 
 		await render(<Adventure />);
 
 		expect(screen.getByText("75 / 100")).toBeTruthy();
-		expect(screen.getByText("8 / 10")).toBeTruthy();
+		expect(screen.queryByText("8 / 10")).toBeNull();
+		expect(within(screen.getByTestId("vitals-score")).getByText("12,345")).toBeTruthy();
 		expect(screen.getByLabelText("icon:unitValues.money")).toBeTruthy();
 		expect(screen.getByText("1,240")).toBeTruthy();
 		expect(screen.getByLabelText("icon:unitValues.gem")).toBeTruthy();
