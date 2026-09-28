@@ -40,11 +40,19 @@ function pushFromCore(wireName: string, packet: object): void {
 
 const mockNavigate = jest.fn();
 const mockSearchParams = jest.fn((): Record<string, string> => ({}));
+const mockTabPress: {listener: (() => void) | null} = {listener: null};
 
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined,
 	useRouter: (): object => ({push: jest.fn(), navigate: mockNavigate, setParams: jest.fn()}),
-	useLocalSearchParams: (): Record<string, string> => mockSearchParams()
+	useLocalSearchParams: (): Record<string, string> => mockSearchParams(),
+	useNavigation: (): object => ({
+		isFocused: (): boolean => true,
+		addListener: (_event: string, listener: () => void): (() => void) => {
+			mockTabPress.listener = listener;
+			return (): void => undefined;
+		}
+	})
 }));
 
 jest.mock("@/src/store/useGameQuery", () => ({
@@ -290,6 +298,15 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:utilities.unlock")).toBeNull();
 		await fireEvent.press(screen.getByText("app:profile.titles.missions"));
 		expect(screen.getAllByText("app:profile.titles.missions").length).toBeGreaterThan(1);
+	});
+
+	it("goes back to the adventure when its tab is tapped over the missions", async () => {
+		mockReport();
+		await render(<Adventure />);
+		await fireEvent.press(screen.getByText("app:profile.titles.missions"));
+		expect(screen.getAllByText("app:profile.titles.missions").length).toBeGreaterThan(1);
+		await act(async () => mockTabPress.listener?.());
+		expect(screen.getAllByText("app:profile.titles.missions")).toHaveLength(1);
 	});
 
 	it("shows a passive city and sends a city action only when the player chooses to leave", async () => {

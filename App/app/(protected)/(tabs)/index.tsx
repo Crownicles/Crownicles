@@ -1,5 +1,5 @@
-import {ReactNode, useEffect, useRef, useState} from "react";
-import {useLocalSearchParams, useRouter} from "expo-router";
+import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
+import {useLocalSearchParams, useNavigation, useRouter} from "expo-router";
 import {ActivityIndicator, Animated, Easing, Text, View} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
@@ -1000,10 +1000,21 @@ function useRequestedTool(open: (tool: AdventureTool) => void): void {
 	}, [requested, open, router]);
 }
 
+type TabPressNavigation = {addListener: (event: "tabPress", callback: () => void) => () => void; isFocused: () => boolean};
+
+/** Tapping the adventure tab while a tool is open goes back to the adventure, as the other tabs pop their pages. */
+function useCloseOnTabPress(close: () => void): void {
+	const navigation = useNavigation<TabPressNavigation>();
+	useEffect(() => navigation.addListener("tabPress", () => {
+		if (navigation.isFocused()) close();
+	}), [navigation, close]);
+}
+
 export default function Index(): ReactNode {
 	const styles = useStyles();
 	const [tool, setTool] = useState<AdventureTool | null>(null);
 	useRequestedTool(setTool);
+	useCloseOnTabPress(useCallback(() => setTool(null), []));
 	return (
 		<View style={styles.adventureRoot}>
 			<PlayerVitals />
