@@ -38,7 +38,7 @@ const HAPPY_MOTION = {stepMs: 150, hop: -5, tilt: "10deg"} as const;
 
 const EMBLEM_BOX = 48;
 
-const useStyles = createStyles(colors => ({
+const useStyles = createStyles(() => ({
 	box: {width: EMBLEM_BOX, height: EMBLEM_BOX, alignItems: "center", justifyContent: "center"},
 	layer: {position: "absolute"},
 	ring: {position: "absolute", width: EMBLEM_BOX, height: EMBLEM_BOX, borderRadius: EMBLEM_BOX / 2, borderWidth: CURE_MOTION.ringWidth},

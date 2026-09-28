@@ -30,7 +30,7 @@ const SPARKLES = [
 
 const SPARKLE_FLASH_SPAN = 0.14;
 
-const useStyles = createStyles(colors => ({
+const useStyles = createStyles(() => ({
 	sparkle: {position: "absolute"}
 }));
 

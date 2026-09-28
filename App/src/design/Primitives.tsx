@@ -1,7 +1,7 @@
 import {ReactNode, useEffect, useState} from "react";
 import {impactAsync, ImpactFeedbackStyle} from "expo-haptics";
-import {Animated, Easing, Pressable, type PressableProps, ScrollView, Text, View, type StyleProp, type TextStyle, type ViewStyle} from "react-native";
-import {Theme} from "@/src/design/Theme";
+import {Animated, Easing, Pressable, type PressableProps, ScrollView, StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle} from "react-native";
+import {type Palette, Theme} from "@/src/design/Theme";
 import {LucideIcon} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
@@ -9,7 +9,7 @@ import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {useKeyboardClearance} from "@/src/design/useKeyboardClearance";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 
-const useStyles = createStyles(colors => ({
+const screenStylesOf = (colors: Palette) => StyleSheet.create({
 	screenContent: {
 		flexGrow: 1,
 		paddingTop: Theme.spacing.screenTop,
@@ -42,7 +42,10 @@ const useStyles = createStyles(colors => ({
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.body,
 		lineHeight: Theme.lineHeight.heroSubtitle
-	},
+	}
+});
+
+const sectionStylesOf = (colors: Palette) => StyleSheet.create({
 	sectionHead: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -97,7 +100,10 @@ const useStyles = createStyles(colors => ({
 		fontSize: Theme.fontSize.note,
 		lineHeight: Theme.lineHeight.note,
 		textAlign: "center"
-	},
+	}
+});
+
+const fieldStylesOf = (colors: Palette) => StyleSheet.create({
 	keyValue: {
 		flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: 10, paddingHorizontal: Theme.spacing.lg
 	},
@@ -129,7 +135,10 @@ const useStyles = createStyles(colors => ({
 		fontSize: Theme.fontSize.note,
 		lineHeight: Theme.lineHeight.note,
 		color: colors.muted
-	},
+	}
+});
+
+const buttonStylesOf = (colors: Palette) => StyleSheet.create({
 	buttonRow: {
 		flexDirection: "row",
 		flexWrap: "wrap",
@@ -174,7 +183,10 @@ const useStyles = createStyles(colors => ({
 	},
 	buttonDangerText: {
 		color: colors.red
-	},
+	}
+});
+
+const quickActionStylesOf = (colors: Palette) => StyleSheet.create({
 	quickActions: {
 		flexDirection: "row",
 		gap: Theme.spacing.sm,
@@ -205,6 +217,14 @@ const useStyles = createStyles(colors => ({
 		lineHeight: Theme.lineHeight.tabLabel,
 		textAlign: "center"
 	}
+});
+
+const useStyles = createStyles(colors => ({
+	...screenStylesOf(colors),
+	...sectionStylesOf(colors),
+	...fieldStylesOf(colors),
+	...buttonStylesOf(colors),
+	...quickActionStylesOf(colors)
 }));
 
 type PrimitiveStyles = ReturnType<typeof useStyles>;

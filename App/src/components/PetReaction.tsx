@@ -20,7 +20,7 @@ const FEAST_PET_SIZE = 52;
 const MOTE_SIZES = [14, 10, 16] as const;
 const MOTE_DRIFTS = [-6, 4, 10] as const;
 
-const useStyles = createStyles(colors => ({
+const useStyles = createStyles(() => ({
 	feast: {height: 78, alignItems: "center", justifyContent: "center"},
 	stage: {alignItems: "center", justifyContent: "center"},
 	motes: {position: "absolute", top: -18, flexDirection: "row", alignItems: "flex-end", gap: Theme.spacing.sm}

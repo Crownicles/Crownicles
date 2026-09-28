@@ -35,7 +35,7 @@ const PROFILE_PAGES: {page: ProfilePage; icon: string}[] = [
 	{page: "blessing", icon: "smallEvents.altar"}
 ];
 
-const useStyles = createStyles(colors => ({
+const useStyles = createStyles(() => ({
 	state: {
 		alignItems: "center",
 		justifyContent: "center",
