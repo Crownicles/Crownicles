@@ -193,7 +193,7 @@ function claimLock(availability: LeagueRewardAvailability): Lock | undefined {
 }
 
 export function LeaguesContent({data}: {data: LeagueInfoRes}): ReactNode {
-	const [selected, setSelected] = useState<number | undefined>(data.currentLeagueId);
+	const [selected, setSelected] = useState<number | undefined>();
 	const {pending, message, open} = useCommandMenus();
 	const leagues = [...data.leagues].sort((first, second) => first.minGloryPoints - second.minGloryPoints);
 	const current = leagues.find(league => league.id === data.currentLeagueId);

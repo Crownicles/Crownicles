@@ -46,7 +46,7 @@ describe("missions screen", () => {
 		await render(<MissionsContent data={packet()} now={NOW} />);
 		expect(screen.getByText("app:missions.kinds.campaign")).toBeTruthy();
 		expect(screen.getByText("app:missions.kinds.side")).toBeTruthy();
-		expect(screen.queryByText("app:missions.kinds.daily")).toBeNull();
+		expect(screen.queryByText(/app:missions\.kinds\.daily/)).toBeNull();
 		expect(screen.getByText("app:missions.dailyDone")).toBeTruthy();
 		const headers = ["app:missions.todo", "app:missions.done"].map(header => JSON.stringify(screen.toJSON()).indexOf(header));
 		expect(headers[0]).toBeGreaterThan(-1);
@@ -58,15 +58,18 @@ describe("missions screen", () => {
 		const data = packet();
 		data.dailyMission.completed = false;
 		await render(<MissionsContent data={data} now={NOW} />);
-		expect(screen.getByText("app:missions.kinds.daily")).toBeTruthy();
+		expect(screen.getByText(/app:missions\.kinds\.daily/)).toBeTruthy();
 		expect(screen.queryByText("app:missions.done")).toBeNull();
 	});
 
-	it("keeps a mission's gauge folded until its line is opened", async () => {
-		await render(<MissionsContent data={packet()} now={NOW} />);
-		expect(screen.queryByText("app:missions.progress")).toBeNull();
+	it("shows each mission's kind, deadline and progress on its line, with nothing to open", async () => {
+		const data = packet();
+		data.dailyMission.completed = false;
+		await render(<MissionsContent data={data} now={NOW} />);
+		expect(screen.getByText(/app:missions\.kinds\.daily · reset/)).toBeTruthy();
+		expect(screen.getAllByText("1 / 3").length).toBeGreaterThan(0);
 		await fireEvent.press(screen.getAllByRole("button")[0]);
-		expect(screen.getByText("app:missions.progress")).toBeTruthy();
+		expect(screen.queryByTestId("detail-sheet-backdrop")).toBeNull();
 	});
 
 	it("sets a completed campaign apart and shows no empty section for secondary missions", async () => {

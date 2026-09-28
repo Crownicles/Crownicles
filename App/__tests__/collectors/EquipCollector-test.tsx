@@ -30,13 +30,13 @@ async function openMenu(): Promise<void> {
 describe("equipment menu", () => {
 	afterEach(() => jest.restoreAllMocks());
 
-	it("does not send an action before confirmation or after folding the entry back", async () => {
+	it("does not send an action before confirmation or after putting the details away", async () => {
 		const request = jest.spyOn(GameClient, "request").mockImplementation();
 		await openMenu();
 		await fireEvent.press(screen.getByText("models:weapons.7"));
 		expect(screen.getByText("app:equipment.confirm.equip")).toBeTruthy();
 		expect(request).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByText("models:weapons.7"));
+		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
 		expect(screen.queryByText("app:equipment.confirm.equip")).toBeNull();
 		expect(request).not.toHaveBeenCalled();
 	});

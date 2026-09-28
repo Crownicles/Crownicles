@@ -33,7 +33,7 @@ describe("sale confirmation", () => {
 		await render(<SellCollector collector={collector()} onChoose={choose} submitting={false} />);
 		await fireEvent.press(screen.getByText("models:potions.43"));
 		expect(screen.getByText("app:sale.confirmDiscard")).toBeTruthy();
-		await fireEvent.press(screen.getByText("models:potions.43"));
+		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
 		expect(screen.queryByText("app:sale.confirmDiscard")).toBeNull();
 		expect(choose).not.toHaveBeenCalled();
 	});

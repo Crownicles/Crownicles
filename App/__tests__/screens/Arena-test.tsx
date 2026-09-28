@@ -56,10 +56,9 @@ describe("arena references", () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "LeagueRewardRes"});
 		await render(<LeaguesContent data={LEAGUES} />);
 		expect(within(screen.getByTestId("league-standing")).getByLabelText("models:leagues.1")).toHaveProp("accessibilityValue", {now: 123, max: 300});
-		expect(screen.getByTestId("league-rewards-0")).toBeTruthy();
+		expect(screen.queryByTestId("league-rewards-0")).toBeNull();
 		await fireEvent.press(screen.getByRole("button", {name: "models:leagues.1"}));
 		expect(screen.getByRole("button", {name: "models:leagues.1", selected: true})).toBeTruthy();
-		expect(screen.queryByTestId("league-rewards-0")).toBeNull();
 		const rewards = within(screen.getByTestId("league-rewards-1"));
 		expect(rewards.getByText("300")).toBeTruthy();
 		expect(rewards.getByText("350")).toBeTruthy();
@@ -67,7 +66,7 @@ describe("arena references", () => {
 		const standing = within(screen.getByTestId("league-standing"));
 		expect(standing.getByText("models:leagues.0")).toBeTruthy();
 		expect(standing.getByText("123")).toBeTruthy();
-		await fireEvent.press(screen.getByRole("button", {name: "models:leagues.1"}));
+		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
 		expect(screen.queryByTestId("league-rewards-1")).toBeNull();
 		expect(screen.getByRole("button", {name: "models:leagues.1", selected: false})).toHaveProp("accessibilityState", {selected: false, expanded: false});
 		expect(GameClient.request).not.toHaveBeenCalled();

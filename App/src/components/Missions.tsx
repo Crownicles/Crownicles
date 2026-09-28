@@ -10,14 +10,12 @@ import {GameAnswer, GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
-import {FightGauge} from "@/src/components/FightGauge";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
-import {EntryRow, ExpandableEntry, ExpandableList, sectionStyles} from "@/src/design/Sections";
+import {EntryRow, ExpandableList, sectionStyles} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
-import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
+import {joinFacts} from "@/src/display/Facts";
 import {missionDate, missionDescription} from "@/src/display/Missions";
 import {UnclaimedMissions} from "@/src/components/MissionRewards";
 import {useMissionRewards} from "@/src/store/MissionRewardsStore";
@@ -27,28 +25,17 @@ const MISSION_EMBLEM_SIZE = 26;
 
 /** A mission still to do, with what kind it is and when it lapses. */
 type MissionEntryData = {key: string; mission: Mission; kind: string; deadline?: string};
-type MissionListProps = {entries: MissionEntryData[]; now: number; unfolding: ExpandedEntry<string>};
 
-function MissionList({entries, now, unfolding}: MissionListProps): ReactNode {
+function MissionList({entries, now}: {entries: MissionEntryData[]; now: number}): ReactNode {
 	return <ExpandableList>
-		{entries.map(entry => <ExpandableEntry
+		{entries.map(entry => <EntryRow
 			key={entry.key}
 			emblem={<TwemojiIcon emoji={AppIcons.getIcon(`missions.${entry.mission.missionType}`)} size={MISSION_EMBLEM_SIZE} />}
-			label={missionDescription(entry.mission, now)}
-			caption={entry.kind}
+			title={missionDescription(entry.mission, now)}
+			subtitle={joinFacts([entry.kind, entry.deadline])}
 			end={<Text style={sectionStyles.amount}>{i18n.t("app:profile.formats.progress", {value: entry.mission.numberDone, max: entry.mission.missionObjective})}</Text>}
-			expanded={unfolding.isExpanded(entry.key)}
-			onToggle={(): void => unfolding.toggle(entry.key)}
 			testID={`mission-${entry.key}`}
-		>
-			<FightGauge
-				label={i18n.t("app:missions.progress")}
-				value={entry.mission.numberDone}
-				max={entry.mission.missionObjective}
-				color={Theme.colors.gold}
-			/>
-			{entry.deadline ? <Text style={sectionStyles.caption}>{entry.deadline}</Text> : null}
-		</ExpandableEntry>)}
+		/>)}
 	</ExpandableList>;
 }
 
@@ -78,13 +65,13 @@ function sideEntries(data: MissionsRes): MissionEntryData[] {
 }
 
 /** Everything the player can still work on, whatever its kind: the one place to look for what to do. */
-function MissionsToDo({data, now, unfolding, first}: {data: MissionsRes; first: boolean} & Omit<MissionListProps, "entries">): ReactNode {
+function MissionsToDo({data, now, first}: {data: MissionsRes; now: number; first: boolean}): ReactNode {
 	const entries = [...campaignEntry(data), ...dailyEntry(data), ...sideEntries(data)];
 	return <>
 		<SectionHeader first={first}>{i18n.t("app:missions.todo")}</SectionHeader>
 		{entries.length === 0
 			? <Note>{i18n.t("app:missions.nothingToDo")}</Note>
-			: <MissionList entries={entries} now={now} unfolding={unfolding} />}
+			: <MissionList entries={entries} now={now} />}
 	</>;
 }
 
@@ -118,11 +105,10 @@ function MissionsDone({data, now}: {data: MissionsRes; now: number}): ReactNode 
 }
 
 export function MissionsContent({data, now}: {data: MissionsRes; now: number}): ReactNode {
-	const unfolding = useExpandedEntry<string>();
 	const rewardsFirst = useMissionRewards().rewards.missions.length > 0;
 	if (data.missions.length === 0) return <EmptyState>{i18n.t("app:missions.empty")}</EmptyState>;
 	return <>
-		<MissionsToDo data={data} first={!rewardsFirst} now={now} unfolding={unfolding} />
+		<MissionsToDo data={data} first={!rewardsFirst} now={now} />
 		<MissionsDone data={data} now={now} />
 	</>;
 }

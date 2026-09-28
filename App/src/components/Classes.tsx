@@ -103,7 +103,7 @@ function ClassChoice({details, current, selected, onSelect}: ClassChoiceProps): 
 }
 
 export function ClassesContent({classes, currentClass}: {classes: ClassDetails[]; currentClass?: number}): ReactNode {
-	const [selected, setSelected] = useState<number | undefined>(currentClass);
+	const [selected, setSelected] = useState<number | undefined>();
 	const current = classes.find(entry => entry.id === currentClass);
 	const select = (id: number): void => setSelected(previous => previous === id ? undefined : id);
 	if (classes.length === 0) return <EmptyState>{i18n.t("app:classes.empty")}</EmptyState>;

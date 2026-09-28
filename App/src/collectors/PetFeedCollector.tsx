@@ -9,7 +9,7 @@ import {formatMoney} from "@/src/display/Amounts";
 import {petIcon, petName} from "@/src/display/PetDisplay";
 import {CircleAlert, Clock3, Utensils} from "@/src/design/FightIcons";
 import {Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, ExpandableEntry, ExpandableList, Lock, LockHint, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
+import {ActionBanner, BackButton, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Lock, LockHint, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
@@ -51,9 +51,19 @@ function feedLock(option: FeedOption, expired: boolean): Lock | null {
 	return option.soldOut ? {reason: i18n.t("app:pet.feed.errors.emptyStorage"), icon: CircleAlert} : null;
 }
 
+function FeedAction({lock, pending, onPress}: {lock: Lock | null; pending: boolean; onPress: () => void}): ReactNode {
+	return <ActionBanner
+		icon={Utensils}
+		label={i18n.t("app:pet.care.feed")}
+		pending={pending}
+		onPress={onPress}
+		{...lock ? {lock} : {}}
+	/>;
+}
+
 function FeedMenu({collector, pet, onChoose, submitting, onClose}: PetFeedProps & {pet: OwnedPet; onClose: () => void}): ReactNode {
 	const options = feedOptions(collector);
-	const [expanded, setExpanded] = useState<number | undefined>(options[0]?.index);
+	const [expanded, setExpanded] = useState<number | undefined>();
 	const [answered, setAnswered] = useState(false);
 	const secondsLeft = useSecondsLeft(collector.endTime);
 	const pending = submitting || answered;
@@ -61,6 +71,8 @@ function FeedMenu({collector, pet, onChoose, submitting, onClose}: PetFeedProps 
 		setAnswered(true);
 		onChoose(index);
 	};
+	// A lone food needs no picking: its button sits right under it.
+	const lone = options.length === 1 ? options[0] : null;
 	return <Screen>
 		<BackButton label={i18n.t("app:common.back")} onClose={onClose} />
 		<Standing
@@ -78,17 +90,15 @@ function FeedMenu({collector, pet, onChoose, submitting, onClose}: PetFeedProps 
 				caption={lock && !open ? <LockHint lock={lock} /> : option.caption}
 				dimmed={Boolean(lock)}
 				expanded={open}
-				onToggle={(): void => setExpanded(previous => previous === option.index ? undefined : option.index)}
+				{...lone ? {chevron: ENTRY_CHEVRONS.NONE} : {}}
+				onToggle={(): void => {
+					if (!lone) setExpanded(previous => previous === option.index ? undefined : option.index);
+				}}
 			>
-				<ActionBanner
-					icon={Utensils}
-					label={i18n.t("app:pet.care.feed")}
-					pending={pending}
-					onPress={(): void => choose(option.index)}
-					{...lock ? {lock} : {}}
-				/>
+				<FeedAction lock={lock} pending={pending} onPress={(): void => choose(option.index)} />
 			</ExpandableEntry>;
 		})}</ExpandableList>
+		{lone ? <FeedAction lock={feedLock(lone, secondsLeft === 0)} pending={pending} onPress={(): void => choose(lone.index)} /> : null}
 		<Note>{countdownLabel(secondsLeft, pending)}</Note>
 	</Screen>;
 }

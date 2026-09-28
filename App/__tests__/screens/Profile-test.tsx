@@ -91,11 +91,11 @@ describe("Profile screen", () => {
 		expect(view.queryByText("app:profile.tooltips.money")).toBeNull();
 	});
 
-	it("keeps the fighting statistics folded until they are asked for", async () => {
+	it("shows the fighting statistics directly, with nothing to unfold", async () => {
 		const view = await render(<Profile />);
-		expect(view.queryByText("app:profile.fields.attack")).toBeNull();
-		await fireEvent.press(view.getByText("app:profile.titles.statistics"));
 		expect(view.getByText("app:profile.fields.attack")).toBeTruthy();
+		expect(view.getByText("app:profile.fields.energy")).toBeTruthy();
+		expect(view.queryByRole("button", {name: "app:profile.titles.statistics"})).toBeNull();
 	});
 
 	it("hands the sub-pages over to the navigation stack, so the back gesture works", async () => {

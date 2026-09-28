@@ -24,15 +24,17 @@ const MILLISECONDS_PER_DAY = 86_400_000;
 const DETAILS: ClassDetails = {id: 7, stats: {health: 99, attack: 50, defense: 30, speed: 20, fightPoint: 333, baseBreath: 5, maxBreath: 12, breathRegen: 3, classGroup: 1, classKind: "attack"}, attacks: [{id: "simpleAttack", cost: 4}]};
 
 describe("classes screen", () => {
-	it("opens on the player's own class and folds it away on demand", async () => {
+	it("shows a class's details over the list on demand, and puts them away", async () => {
 		await render(<ClassesContent classes={[DETAILS]} currentClass={7} />);
 		expect(screen.getByText("app:classes.current")).toBeTruthy();
+		expect(screen.queryByTestId("class-details-7")).toBeNull();
+		await fireEvent.press(screen.getAllByText("models:classes.7").at(-1)!);
 		expect(screen.getByTestId("class-details-7")).toBeTruthy();
 		expect(screen.getByText("99")).toBeTruthy();
 		expect(screen.getByText("333")).toBeTruthy();
 		expect(screen.getByText("models:fight_actions.simpleAttack.description")).toBeTruthy();
 		expect(screen.getByText("breath 4")).toBeTruthy();
-		await fireEvent.press(screen.getAllByText("models:classes.7").at(-1)!);
+		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
 		expect(screen.queryByTestId("class-details-7")).toBeNull();
 		expect(screen.getByText("app:classes.current")).toBeTruthy();
 	});

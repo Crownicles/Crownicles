@@ -7,7 +7,7 @@ import {itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
 import {consumableDescription} from "@/src/display/ItemEffects";
 import {Clock3, Droplets, Gift} from "@/src/design/FightIcons";
 import {Note} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, Sheet} from "@/src/design/Sections";
+import {ActionBanner, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Sheet} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
@@ -34,7 +34,7 @@ function ConsumableEmblem({item}: {item: ItemWithDetails}): ReactNode {
 
 function ConsumableMenu({collector, onChoose, submitting, onClose}: ConsumableCollectorProps & {onClose: () => void}): ReactNode {
 	const options = consumableOptions(collector);
-	const [expanded, setExpanded] = useState<number | undefined>(options[0]?.index);
+	const [expanded, setExpanded] = useState<number | undefined>();
 	const [answered, setAnswered] = useState(false);
 	const secondsLeft = useSecondsLeft(collector.endTime);
 	const dailyBonus = collector.data.type === DAILY_BONUS_DATA_KINDS.COLLECTOR;
@@ -43,6 +43,15 @@ function ConsumableMenu({collector, onChoose, submitting, onClose}: ConsumableCo
 		setAnswered(true);
 		onChoose(index);
 	};
+	// A lone consumable needs no picking: its button sits right under it.
+	const lone = options.length === 1 ? options[0] : null;
+	const action = (index: number): ReactNode => <ActionBanner
+		icon={dailyBonus ? Gift : Droplets}
+		label={i18n.t(dailyBonus ? "app:dailyBonus.claim" : "app:collector.choices.drinkPotion")}
+		pending={pending}
+		onPress={(): void => choose(index)}
+		{...secondsLeft === 0 ? {lock: {reason: i18n.t("app:collector.expired"), icon: Clock3}} : {}}
+	/>;
 	return <Sheet
 		caption={i18n.t("app:equipment.eyebrow")}
 		title={i18n.t(dailyBonus ? "app:dailyBonus.title" : "app:inventoryActions.drinkTitle")}
@@ -55,16 +64,12 @@ function ConsumableMenu({collector, onChoose, submitting, onClose}: ConsumableCo
 			label={itemDisplayName(option.item)}
 			caption={consumableDescription(option.item)}
 			expanded={expanded === option.index}
-			onToggle={(): void => setExpanded(previous => previous === option.index ? undefined : option.index)}
-		>
-			<ActionBanner
-				icon={dailyBonus ? Gift : Droplets}
-				label={i18n.t(dailyBonus ? "app:dailyBonus.claim" : "app:collector.choices.drinkPotion")}
-				pending={pending}
-				onPress={(): void => choose(option.index)}
-				{...secondsLeft === 0 ? {lock: {reason: i18n.t("app:collector.expired"), icon: Clock3}} : {}}
-			/>
-		</ExpandableEntry>)}</ExpandableList>
+			{...lone ? {chevron: ENTRY_CHEVRONS.NONE} : {}}
+			onToggle={(): void => {
+				if (!lone) setExpanded(previous => previous === option.index ? undefined : option.index);
+			}}
+		>{action(option.index)}</ExpandableEntry>)}</ExpandableList>
+		{lone ? action(lone.index) : null}
 		<Note>{countdownLabel(secondsLeft, pending)}</Note>
 	</Sheet>;
 }

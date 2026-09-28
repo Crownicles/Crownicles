@@ -45,8 +45,11 @@ const styles = StyleSheet.create({
 	dimmed: {opacity: 0.45},
 	entryEmblem: {width: 32, height: 32, flexShrink: 0, alignItems: "center", justifyContent: "center"},
 	entryLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink},
-	chevronOpen: {transform: [{rotate: "180deg"}]},
-	details: {backgroundColor: Theme.colors.wash, paddingHorizontal: Theme.spacing.lg, paddingBottom: Theme.spacing.lg, gap: Theme.spacing.md},
+	detailBackdrop: {flex: 1, justifyContent: "flex-end", backgroundColor: Theme.colors.overlay},
+	detailCard: {backgroundColor: Theme.colors.paper, borderTopLeftRadius: Theme.radius * 2, borderTopRightRadius: Theme.radius * 2, paddingHorizontal: Theme.spacing.xl, paddingTop: Theme.spacing.md, gap: Theme.spacing.lg, maxHeight: "85%"},
+	detailGrabber: {alignSelf: "center", width: 40, height: 4, borderRadius: 2, backgroundColor: Theme.colors.line},
+	detailHead: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
+	detailBody: {gap: Theme.spacing.md},
 	back: {width: 34, height: 34, borderRadius: 17, backgroundColor: Theme.colors.wash, alignItems: "center", justifyContent: "center", marginBottom: Theme.spacing.lg},
 	/** The icon set only ships a downward chevron; a quarter turn points it back. */
 	backChevron: {transform: [{rotate: "90deg"}]},
@@ -389,10 +392,37 @@ export const ENTRY_CHEVRONS = {
 } as const;
 export type EntryChevron = typeof ENTRY_CHEVRONS[keyof typeof ENTRY_CHEVRONS];
 
-function EntryChevronIcon({chevron, expanded}: {chevron: EntryChevron; expanded: boolean}): ReactNode {
+function EntryChevronIcon({chevron}: {chevron: EntryChevron}): ReactNode {
 	if (chevron === ENTRY_CHEVRONS.NONE) return null;
-	if (chevron === ENTRY_CHEVRONS.FORWARD) return <ChevronRight size={16} color={Theme.colors.faint} />;
-	return <View style={expanded && styles.chevronOpen}><ChevronDown size={16} color={Theme.colors.muted} /></View>;
+	return <ChevronRight size={16} color={chevron === ENTRY_CHEVRONS.FORWARD ? Theme.colors.faint : Theme.colors.muted} />;
+}
+
+/** The details of a line rise over the screen rather than push the rest of the list down; a tap outside puts them away. */
+function DetailSheet({emblem, label, caption, onClose, children, testID}: {
+	emblem?: ReactNode;
+	label: string;
+	caption?: ReactNode;
+	onClose: () => void;
+	children: ReactNode;
+	testID?: string;
+}): ReactNode {
+	const insets = useSafeAreaInsets();
+	return <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+		<Pressable accessibilityRole="none" style={styles.detailBackdrop} onPress={onClose} testID="detail-sheet-backdrop">
+			{/* Presses inside the card stay there instead of closing it. */}
+			<Pressable accessibilityRole="none" style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl}]} onPress={(): void => undefined} testID={testID}>
+				<View style={styles.detailGrabber} />
+				<View style={styles.detailHead}>
+					{emblem ? <View style={styles.entryEmblem}>{emblem}</View> : null}
+					<View style={styles.body}>
+						<TwemojiText textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
+						{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{caption}</TwemojiText> : caption}
+					</View>
+				</View>
+				<View style={styles.detailBody}>{children}</View>
+			</Pressable>
+		</Pressable>
+	</Modal>;
 }
 
 export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle, chevron = ENTRY_CHEVRONS.EXPAND, highlighted = false, dimmed = false, children, testID}: {
@@ -422,9 +452,15 @@ export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle
 				{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{caption}</TwemojiText> : caption}
 			</View>
 			{end}
-			<EntryChevronIcon chevron={chevron} expanded={expanded} />
+			<EntryChevronIcon chevron={chevron} />
 		</Pressable>
-		{expanded ? <View style={styles.details} testID={testID}>{children}</View> : null}
+		{expanded && children ? <DetailSheet
+			{...emblem ? {emblem} : {}}
+			label={label}
+			{...caption === undefined ? {} : {caption}}
+			onClose={onToggle}
+			{...testID === undefined ? {} : {testID}}
+		>{children}</DetailSheet> : null}
 	</View>;
 }
 

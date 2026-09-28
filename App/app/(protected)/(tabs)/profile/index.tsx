@@ -7,9 +7,8 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {gaugeEmoji} from "@/src/components/Guild";
 import {AppIcons} from "@/src/AppIcons";
 import {EmptyState, Note, QuickAction, QuickActions, Screen, SectionHeader} from "@/src/design/Primitives";
-import {ExpandableEntry, ExpandableList, Fact, Figure, Figures, Standing} from "@/src/design/Sections";
+import {ExpandableList, Fact, Figure, Figures, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {formatNumber} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
@@ -25,7 +24,6 @@ const PET_RARITY_MIN = 0;
 const PET_RARITY_MAX = 8;
 const CAMPAIGN_COMPLETE = 100;
 const UNRANKED_GLORY = -1;
-const SECTION_EMBLEM_SIZE = 26;
 const STANDING_EMBLEM_SIZE = 40;
 type ProfilePage = "inventory" | "unlock" | "guide" | "blessing";
 const PROFILE_PAGES: {page: ProfilePage; icon: string}[] = [
@@ -146,7 +144,7 @@ function ProfileStanding({profile}: {profile: ProfileRes}): ReactNode {
 	);
 }
 
-type ProfileSection = {id: string; icon: string; label: string; caption: string; content: ReactNode};
+type ProfileSection = {id: string; icon: string; label: string; caption?: string; content: ReactNode};
 
 function statisticsSection(profile: ProfileRes): ProfileSection | null {
 	if (!profile.stats) {
@@ -157,7 +155,6 @@ function statisticsSection(profile: ProfileRes): ProfileSection | null {
 		id: "statistics",
 		icon: "unitValues.attack",
 		label: i18n.t("app:profile.titles.statistics"),
-		caption: progressValue(stats.energy.value, stats.energy.max),
 		content: <>
 			<Figures items={[
 				{caption: i18n.t("app:profile.fields.attack"), value: numberValue(stats.attack), unit: "attack"},
@@ -165,6 +162,7 @@ function statisticsSection(profile: ProfileRes): ProfileSection | null {
 				{caption: i18n.t("app:profile.fields.speed"), value: numberValue(stats.speed), unit: "speed"}
 			]} />
 			<Figures items={[
+				{caption: i18n.t("app:profile.fields.energy"), value: progressValue(stats.energy.value, stats.energy.max), unit: "energy"},
 				{caption: i18n.t("app:profile.fields.breath"), value: progressValue(stats.breath.base, stats.breath.max), unit: "breath"},
 				{caption: i18n.t("app:profile.fields.breathRegen"), value: numberValue(stats.breath.regen), unit: "breathRegen"}
 			]} />
@@ -243,23 +241,16 @@ function cookingSection(profile: ProfileRes): ProfileSection | null {
 	};
 }
 
+/** Everything the character is, read at a glance: nothing to unfold. */
 function ProfileSections({profile}: {profile: ProfileRes}): ReactNode {
-	const {isExpanded, toggle} = useExpandedEntry<string>();
 	const sections = [statisticsSection(profile), rankingSection(profile), campaignSection(profile), cookingSection(profile)]
 		.filter((section): section is ProfileSection => section !== null);
-	return (
-		<ExpandableList>
-			{sections.map(section => <ExpandableEntry
-				key={section.id}
-				emblem={<TwemojiIcon emoji={AppIcons.getIcon(section.icon)} size={SECTION_EMBLEM_SIZE} />}
-				label={section.label}
-				caption={section.caption}
-				expanded={isExpanded(section.id)}
-				onToggle={(): void => toggle(section.id)}
-				testID={`profile-${section.id}`}
-			>{section.content}</ExpandableEntry>)}
-		</ExpandableList>
-	);
+	return <>
+		{sections.map(section => <View key={section.id} testID={`profile-${section.id}`}>
+			<SectionHeader icon={AppIcons.getIcon(section.icon)} {...section.caption ? {action: {hint: section.caption}} : {}}>{section.label}</SectionHeader>
+			{section.content}
+		</View>)}
+	</>;
 }
 
 /** The company the player keeps, which lives in its own tab but is worth naming here. */
