@@ -62,16 +62,24 @@ function ArenaProfile({profile}: {profile: ProfileRes}): ReactNode {
 	</>;
 }
 
-function ArenaStart({pending, ongoing, onStart}: {pending: boolean; ongoing: boolean; onStart: () => Promise<void>}): ReactNode {
+function ArenaStartNotice({text, testID}: {text: string; testID: string}): ReactNode {
+	return <View style={styles.startError} testID={testID}>
+		<CircleAlert size={15} color={Theme.colors.muted} />
+		<Text style={styles.startErrorText}>{text}</Text>
+	</View>;
+}
+
+function ArenaStart({pending, ongoing, locked, onStart}: {pending: boolean; ongoing: boolean; locked: boolean; onStart: () => Promise<void>}): ReactNode {
 	const label = pending ? "app:battle.preparing" : ongoing ? "app:arena.resume" : "app:arena.start";
-	return <Pressable accessibilityRole="button" disabled={pending} onPress={ongoing ? fightStore.show : onStart} style={({pressed}) => [styles.start, pending && styles.disabled, pressed && styles.pressed]}><Swords size={20} color={Theme.colors.paper} /><Text style={styles.startLabel}>{i18n.t(label)}</Text><ArrowRight size={18} color={Theme.colors.paper} /></Pressable>;
+	const disabled = pending || locked;
+	return <>
+		<Pressable accessibilityRole="button" accessibilityState={{disabled}} disabled={disabled} onPress={ongoing ? fightStore.show : onStart} style={({pressed}) => [styles.start, disabled && styles.disabled, pressed && styles.pressed]}><Swords size={20} color={Theme.colors.paper} /><Text style={styles.startLabel}>{i18n.t(label)}</Text><ArrowRight size={18} color={Theme.colors.paper} /></Pressable>
+		{locked ? <ArenaStartNotice text={i18n.t("app:arena.locked", {level: JOURNEY_LEVELS.FIGHTS})} testID="arena-start-locked" /> : null}
+	</>;
 }
 
 function ArenaStartError({error}: {error: FightError}): ReactNode {
-	return <View style={styles.startError} testID="arena-start-error">
-		<CircleAlert size={15} color={Theme.colors.muted} />
-		<Text style={styles.startErrorText}>{i18n.t(`app:arena.errors.${error}`)}</Text>
-	</View>;
+	return <ArenaStartNotice text={i18n.t(`app:arena.errors.${error}`)} testID="arena-start-error" />;
 }
 
 /** The league and class tiles wear the player's own league and class, as the mockup does. */
@@ -108,13 +116,13 @@ export default function Arena(): ReactNode {
 	const ongoing = Boolean(fight.introduction && !fight.result && !fight.error);
 	const start = (): Promise<void> => {fightStore.reset(); return open(FIGHT_MENU);};
 	const startError = fight.visible ? null : fight.error;
-	// Before the fight level the arena only holds the class choice and the rankings; fights are announced when they open.
+	// Before the fight level the start button stays in sight, greyed, with the level that opens fights.
 	const canFight = state.status !== "ready" || state.data.level >= JOURNEY_LEVELS.FIGHTS;
 	return <Screen>
 		<ArenaHeader />
 		<GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{profile => <ArenaProfile profile={profile} />}</GameQueryContent>
 		{message ? <Note>{message}</Note> : null}
-		{canFight ? <ArenaStart pending={pending} ongoing={ongoing} onStart={start} /> : null}
+		<ArenaStart pending={pending} ongoing={ongoing} locked={!canFight} onStart={start} />
 		{startError ? <ArenaStartError error={startError} /> : null}
 		<ArenaLinks pages={canFight ? ARENA_PAGES : BEFORE_FIGHTS_PAGES} onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
 	</Screen>;

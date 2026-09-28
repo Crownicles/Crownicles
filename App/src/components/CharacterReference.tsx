@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {Linking} from "react-native";
+import {Linking, Pressable, StyleSheet, Text} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {RarityReq} from "ws-packets/src/fromClient/RarityReq";
 import {BlessingReq} from "ws-packets/src/fromClient/BlessingReq";
@@ -29,7 +29,14 @@ import {i18n} from "@/src/translations/i18n";
 const HIDDEN_BADGES = new Set<Badge>([BADGE_CODES.DONOR, BADGE_CODES.VOTER]);
 const VISIBLE_BADGES = Object.values(BADGE_CODES).filter(badge => !HIDDEN_BADGES.has(badge));
 const BLESSING_EMBLEM_SIZE = 40;
+const BADGE_EMOJI_SIZE = 28;
 const GUIDE_URL = "https://guide.crownicles.com";
+
+const styles = StyleSheet.create({
+	badges: {flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: Theme.spacing.md, padding: Theme.spacing.lg},
+	noBadge: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, color: Theme.colors.muted},
+	pressed: {opacity: 0.7}
+});
 
 export function RarityContent({rarities}: {rarities: number[]}): ReactNode {
 	if (rarities.length === 0) return <Note>{i18n.t("app:reference.empty")}</Note>;
@@ -95,19 +102,34 @@ export function BadgesContent({badges}: {badges: string[]}): ReactNode {
 	const owned = new Set(badges);
 	// The ones earned come first, so a handful of badges is not lost among the thirty that remain to be won.
 	const ordered = [...VISIBLE_BADGES].sort((first, second) => Number(owned.has(second)) - Number(owned.has(first)));
+	return <ExpandableList>{ordered.map(badge => <EntryRow key={badge}
+		disabled={!owned.has(badge)}
+		emblem={<TwemojiIcon emoji={AppIcons.getIcon(`badges.${badge}`)} size={Theme.dimensions.headerIcon} />}
+		title={i18n.t(`app:reference.badges.names.${badge}`)} end={i18n.t(owned.has(badge) ? "app:inventory.owned" : "app:inventory.absent")}
+	/>)}</ExpandableList>;
+}
+
+/** The badges earned, shown as their emojis; a tap opens what each one means and those left to win. */
+export function ProfileBadges({badges, onOpen}: {badges: string[]; onOpen: () => void}): ReactNode {
+	const earned = VISIBLE_BADGES.filter(badge => badges.includes(badge));
 	return <>
-		<Note>{i18n.t("app:reference.badges.total", {count: VISIBLE_BADGES.filter(badge => owned.has(badge)).length, total: VISIBLE_BADGES.length})}</Note>
-		<ExpandableList>{ordered.map(badge => <EntryRow key={badge}
-			disabled={!owned.has(badge)}
-			emblem={<TwemojiIcon emoji={AppIcons.getIcon(`badges.${badge}`)} size={Theme.dimensions.headerIcon} />}
-			title={i18n.t(`app:reference.badges.names.${badge}`)} end={i18n.t(owned.has(badge) ? "app:inventory.owned" : "app:inventory.absent")}
-		/>)}</ExpandableList>
+		<SectionHeader action={{hint: i18n.t("app:profile.formats.progress", {value: earned.length, max: VISIBLE_BADGES.length})}}>{i18n.t("app:profile.titles.badges")}</SectionHeader>
+		<ExpandableList>
+			<Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:profile.titles.badges")} onPress={onOpen} style={({pressed}): object[] => [styles.badges, pressed && styles.pressed].filter(Boolean) as object[]}>
+				{earned.length === 0
+					? <Text style={styles.noBadge}>{i18n.t("app:reference.badges.none")}</Text>
+					: earned.map(badge => <TwemojiIcon key={badge} emoji={AppIcons.getIcon(`badges.${badge}`)} size={BADGE_EMOJI_SIZE} />)}
+			</Pressable>
+		</ExpandableList>
 	</>;
 }
 
 export function Badges(): ReactNode {
 	const state = usePlayerProfile();
-	return <GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{data => <BadgesContent badges={data.badges} />}</GameQueryContent>;
+	return <GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{data => <>
+		<Note>{i18n.t("app:reference.badges.total", {count: VISIBLE_BADGES.filter(badge => data.badges.includes(badge)).length, total: VISIBLE_BADGES.length})}</Note>
+		<BadgesContent badges={data.badges} />
+	</>}</GameQueryContent>;
 }
 
 /** Everything a player may want to look up: the online guide first, then the tables the game never explains by itself. */
@@ -116,8 +138,6 @@ export function Guide(): ReactNode {
 		<ActionBanner icon={BookOpen} label={i18n.t("app:reference.guide")} onPress={(): void => {
 			Linking.openURL(GUIDE_URL).catch(console.error);
 		}} />
-		<SectionHeader>{i18n.t("app:profile.titles.badges")}</SectionHeader>
-		<Badges />
 		<SectionHeader>{i18n.t("app:profile.titles.rarity")}</SectionHeader>
 		<Rarity />
 	</>;

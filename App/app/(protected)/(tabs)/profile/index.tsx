@@ -5,6 +5,7 @@ import {RequestState} from "@/src/store/useGameQuery";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {FightGauge} from "@/src/components/FightGauge";
 import {gaugeEmoji} from "@/src/components/Guild";
+import {ProfileBadges} from "@/src/components/CharacterReference";
 import {AppIcons} from "@/src/AppIcons";
 import {EmptyState, Note, QuickAction, QuickActions, Screen, SectionHeader} from "@/src/design/Primitives";
 import {ExpandableList, Fact, Figure, Figures, Standing} from "@/src/design/Sections";
@@ -25,7 +26,7 @@ const PET_RARITY_MAX = 8;
 const CAMPAIGN_COMPLETE = 100;
 const UNRANKED_GLORY = -1;
 const STANDING_EMBLEM_SIZE = 40;
-type ProfilePage = "inventory" | "unlock" | "guide" | "blessing";
+type ProfilePage = "inventory" | "unlock" | "guide" | "blessing" | "badges";
 const PROFILE_PAGES: {page: ProfilePage; icon: string}[] = [
 	{page: "inventory", icon: "inventory.stock"},
 	{page: "unlock", icon: "notifications.types.playerFreedFromJail"},
@@ -291,6 +292,7 @@ function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: 
 				{pages.map(entry => <QuickAction key={entry.page} icon={AppIcons.getIcon(entry.icon)} onPress={(): void => onPage(entry.page)}>{i18n.t(`app:profile.titles.${entry.page}`)}</QuickAction>)}
 			</QuickActions>
 			<ProfileSections profile={profile} />
+			<ProfileBadges badges={profile.badges} onOpen={(): void => onPage("badges")} />
 			<Belongings profile={profile} />
 		</>
 	);
