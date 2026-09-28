@@ -3,7 +3,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import Arena from "@/app/(protected)/(tabs)/arena";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 
-const mockOpen = jest.fn();
+const mockOpen = jest.fn().mockResolvedValue(undefined);
 
 jest.mock("expo-router", () => ({useRouter: (): object => ({push: jest.fn()})}));
 jest.mock("@/src/store/usePlayerProfile", () => ({usePlayerProfile: jest.fn()}));

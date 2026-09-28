@@ -203,7 +203,7 @@ describe("Adventure screen", () => {
 		};
 		const request = jest.spyOn(GameClient, "request")
 			.mockResolvedValueOnce({kind: "answer", packet: confirmation})
-			.mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName});
+			.mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName, packet: new SmallEventResultRes()});
 
 		await render(<Adventure />);
 		await fireEvent.press(screen.getByText("app:adventure.quick.advanceWithCost"));
@@ -219,7 +219,7 @@ describe("Adventure screen", () => {
 
 	it("welcomes the character who has not set off, and waits for them to leave", async () => {
 		mockedUseGameQuery.mockReturnValue({status: "ready", data: Object.assign(new ReportViewRes(), {reportReady: true})});
-		const request = jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName});
+		const request = jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName, packet: new SmallEventResultRes()});
 		await render(<Adventure />);
 		expect(screen.getByText("app:welcome.title")).toBeTruthy();
 		expect(request).not.toHaveBeenCalled();
@@ -672,7 +672,7 @@ describe("Adventure screen", () => {
 
 	it("executes the report only after a click and does not replay an automatic small event", async () => {
 		mockReport(report(), true);
-		const request = jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName});
+		const request = jest.spyOn(GameClient, "request").mockResolvedValueOnce({kind: "alternative", packetName: SmallEventResultRes.wireName, packet: new SmallEventResultRes()});
 		await render(<Adventure />);
 		expect(request).not.toHaveBeenCalled();
 		await fireEvent.press(screen.getByRole("button", {name: "app:adventure.continueReport"}));

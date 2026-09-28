@@ -24,7 +24,7 @@ describe("adventure welcome", () => {
 	});
 
 	it("sends the first report when the player sets off", async () => {
-		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "SmallEventResultRes"});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "SmallEventResultRes", packet: {}});
 		await renderWithGameQuery(<AdventureWelcome />);
 		await fireEvent.press(screen.getByText("app:welcome.depart"));
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalledTimes(1));

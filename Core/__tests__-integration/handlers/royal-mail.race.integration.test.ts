@@ -80,7 +80,7 @@ describe("royal mail", () => {
 		expect(info!.royalLettersReceived).toBe(0);
 	});
 
-	it("delivers exactly one letter a day, whatever the number of reports racing for it", async () => {
+	it("delivers exactly one letter when it is due, whatever the number of reports racing for it", async () => {
 		const player = await newcomer(new Date(Date.now() - DAY_MS));
 		const responses = Array.from({ length: RACERS }, (): CrowniclesPacket[] => []);
 		await Promise.all(responses.map(async response => {

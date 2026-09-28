@@ -10,6 +10,7 @@ import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {GuildManagement, GuildStorage} from "@/src/components/Guild";
 import {GuildDomain} from "@/src/components/GuildDomain";
 import {GuildShelter} from "@/src/components/PetManagement";
+import {GuildRankings} from "@/src/components/Rankings";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {Note} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
@@ -22,7 +23,7 @@ function Management(): ReactNode {
 		: <Note>{i18n.t("app:guild.joinHint")}</Note>}</GameQueryContent>;
 }
 
-const GUILD_PAGES = {storage: GuildStorage, shelter: GuildShelter, domain: GuildDomain, manage: Management} as const;
+const GUILD_PAGES = {storage: GuildStorage, shelter: GuildShelter, domain: GuildDomain, manage: Management, rankings: GuildRankings} as const;
 type GuildPageName = keyof typeof GUILD_PAGES;
 
 function isGuildPage(page: string | string[] | undefined): page is GuildPageName {

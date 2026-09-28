@@ -150,13 +150,26 @@ export function RankingsContent({data, onPage}: {data: TopRes; onPage: (page: nu
 	</>;
 }
 
-export function Rankings(): ReactNode {
-	const [selection, setSelection] = useState<RankingSelection>({dataType: TopDataType.SCORE, timing: TopTiming.ALL_TIME});
+/** Glory is a weekly race; the other boards open on the all-time standings. */
+function selectionFor(dataType: TopDataType): RankingSelection {
+	return {dataType, timing: dataType === TopDataType.GLORY ? TopTiming.WEEK : TopTiming.ALL_TIME};
+}
+
+export function Rankings({initialType = TopDataType.SCORE}: {initialType?: TopDataType}): ReactNode {
+	const [selection, setSelection] = useState<RankingSelection>(() => selectionFor(initialType));
 	const state = useRankings(selection);
-	const selectType = (dataType: TopDataType): void => setSelection({dataType, timing: dataType === TopDataType.GLORY ? TopTiming.WEEK : TopTiming.ALL_TIME});
+	const selectType = (dataType: TopDataType): void => setSelection(selectionFor(dataType));
 	return <>
-		<SegmentedControl label={i18n.t("app:arena.rankings.title")} value={selection.dataType} onChange={selectType} options={Object.values(TopDataType).map(value => ({value, label: i18n.t(`app:arena.rankings.types.${value}`)}))} />
+		<SegmentedControl label={i18n.t("app:arena.rankings.title")} value={selection.dataType} onChange={selectType} options={Object.values(TopDataType).map(value => ({value, label: i18n.t(`app:arena.rankings.types.${value}`), icon: AppIcons.getIcon(`unitValues.${RANKING_UNITS[value]}`)}))} />
 		{selection.dataType === TopDataType.SCORE ? <SegmentedControl label={i18n.t("app:arena.rankings.period")} value={selection.timing} onChange={(timing): void => setSelection({dataType: selection.dataType, timing})} options={Object.values(TopTiming).map(value => ({value, label: i18n.t(`app:arena.rankings.timings.${value}`)}))} /> : null}
 		<GameQueryContent state={state} entity={GAME_ENTITIES.RANKINGS}>{packet => <RankingsContent data={packet} onPage={(page): void => setSelection({...selection, page})} />}</GameQueryContent>
 	</>;
+}
+
+export function GloryRankings(): ReactNode {
+	return <Rankings initialType={TopDataType.GLORY} />;
+}
+
+export function GuildRankings(): ReactNode {
+	return <Rankings initialType={TopDataType.GUILD} />;
 }

@@ -824,7 +824,7 @@
     "seal": {
       "eyebrow": "Sceau royal",
       "title": "Les épreuves du concours sont réussies",
-      "description": "Le roi salue vos premiers pas. Le vrai voyage commence : chaque destination demande désormais des heures de route, et une lettre du roi vous attend chaque jour de la semaine.",
+      "description": "Le roi salue vos premiers pas. Le vrai voyage commence : chaque destination demande désormais des heures de route, et le roi vous écrira tout au long de la semaine.",
       "continue": "Poursuivre l'aventure"
     },
     "letter": {
@@ -974,7 +974,7 @@
     "yourMoney": "Votre argent",
     "memberRank": "Classement général : {{rank}}",
     "roles": {"chief": "Chef", "elder": "Aîné", "member": "Membre"},
-    "pages": {"storage": "Entrepôt", "shelter": "Refuge", "manage": "Gestion", "domain": "Domaine"},
+    "pages": {"storage": "Entrepôt", "shelter": "Refuge", "manage": "Gestion", "domain": "Domaine", "rankings": "Classement"},
     "domainLocks": {
       "none": "Votre guilde n'a pas encore de domaine. Son chef peut l'implanter chez un notaire, en ville.",
       "chiefOnly": "Seul le chef de guilde peut entrer dans le domaine.",
@@ -1178,7 +1178,8 @@
       "guild": "Guilde",
       "destination": "Destination",
       "pet": "Familier",
-      "inventory": "Inventaire"
+      "inventory": "Inventaire",
+      "rankings": "$t(app:arena.pages.rankings)"
     },
     "fields": {
       "health": "Vie",

@@ -1,7 +1,8 @@
 import {ReactNode} from "react";
-import {Pressable, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {useRouter} from "expo-router";
-import {ArrowRight, CircleAlert, Swords, Zap} from "@/src/design/FightIcons";
+import {CircleAlert, Swords, Zap} from "@/src/design/FightIcons";
+import {ActionBanner} from "@/src/design/Sections";
 import {JOURNEY_LEVELS} from "ws-packets/src/objects/Journey";
 import {FightReq} from "ws-packets/src/fromClient/FightReq";
 import {FightErrorRes} from "ws-packets/src/fromServer/fight/FightRes";
@@ -39,18 +40,15 @@ const styles = StyleSheet.create({
 	identity: {flexDirection: "row", alignItems: "center", gap: 12, paddingBottom: 20},
 	name: {fontFamily: Theme.fonts.bold, fontSize: 17, color: Theme.colors.ink},
 	className: {fontFamily: Theme.fonts.regular, fontSize: 12, color: Theme.colors.muted, marginTop: 4},
-	ranking: {flexDirection: "row", borderTopWidth: 1, borderBottomWidth: 1, borderColor: Theme.colors.line, marginTop: 22, marginBottom: 22, paddingVertical: 18},
+	ranking: {flexDirection: "row", borderTopWidth: 1, borderBottomWidth: 1, borderColor: Theme.colors.line, marginTop: 22, paddingVertical: 18},
 	rank: {flex: 1, minWidth: 0, gap: 6},
 	rankEnd: {alignItems: "flex-end"},
 	rankLabel: {fontFamily: Theme.fonts.medium, fontSize: 11, color: Theme.colors.muted},
 	rankValue: {fontFamily: Theme.fonts.bold, fontSize: 17, color: Theme.colors.ink},
-	start: {minHeight: 52, paddingHorizontal: 18, paddingVertical: 12, borderRadius: Theme.pillRadius, backgroundColor: Theme.colors.ink, flexDirection: "row", alignItems: "center", gap: 12},
-	startLabel: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: 14, lineHeight: 19, color: Theme.colors.paper},
+	start: {marginTop: 22},
 	startError: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.sm, paddingTop: Theme.spacing.md},
 	startErrorText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
-	disabled: {opacity: 0.5},
-	links: {marginTop: 30},
-	pressed: {opacity: 0.7}
+	links: {marginTop: 30}
 });
 
 function ArenaProfile({profile}: {profile: ProfileRes}): ReactNode {
@@ -62,24 +60,25 @@ function ArenaProfile({profile}: {profile: ProfileRes}): ReactNode {
 	</>;
 }
 
-function ArenaStartNotice({text, testID}: {text: string; testID: string}): ReactNode {
-	return <View style={styles.startError} testID={testID}>
-		<CircleAlert size={15} color={Theme.colors.muted} />
-		<Text style={styles.startErrorText}>{text}</Text>
-	</View>;
-}
-
 function ArenaStart({pending, ongoing, locked, onStart}: {pending: boolean; ongoing: boolean; locked: boolean; onStart: () => Promise<void>}): ReactNode {
 	const label = pending ? "app:battle.preparing" : ongoing ? "app:arena.resume" : "app:arena.start";
-	const disabled = pending || locked;
-	return <>
-		<Pressable accessibilityRole="button" accessibilityState={{disabled}} disabled={disabled} onPress={ongoing ? fightStore.show : onStart} style={({pressed}) => [styles.start, disabled && styles.disabled, pressed && styles.pressed]}><Swords size={20} color={Theme.colors.paper} /><Text style={styles.startLabel}>{i18n.t(label)}</Text><ArrowRight size={18} color={Theme.colors.paper} /></Pressable>
-		{locked ? <ArenaStartNotice text={i18n.t("app:arena.locked", {level: JOURNEY_LEVELS.FIGHTS})} testID="arena-start-locked" /> : null}
-	</>;
+	return <View style={styles.start}><ActionBanner
+		icon={Swords}
+		label={i18n.t(label)}
+		pending={pending}
+		onPress={ongoing ? fightStore.show : (): void => {
+			onStart().catch(console.error);
+		}}
+		{...locked ? {lock: {reason: i18n.t("app:arena.locked", {level: JOURNEY_LEVELS.FIGHTS})}} : {}}
+		testID="arena-start-locked"
+	/></View>;
 }
 
 function ArenaStartError({error}: {error: FightError}): ReactNode {
-	return <ArenaStartNotice text={i18n.t(`app:arena.errors.${error}`)} testID="arena-start-error" />;
+	return <View style={styles.startError} testID="arena-start-error">
+		<CircleAlert size={15} color={Theme.colors.muted} />
+		<Text style={styles.startErrorText}>{i18n.t(`app:arena.errors.${error}`)}</Text>
+	</View>;
 }
 
 /** The league and class tiles wear the player's own league and class, as the mockup does. */

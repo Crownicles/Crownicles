@@ -9,12 +9,13 @@ import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {Badges, Blessing, Guide} from "@/src/components/CharacterReference";
+import {Rankings} from "@/src/components/Rankings";
 import {PrisonerRelease} from "@/src/components/Utilities";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {EmptyState, Note} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 
-const PROFILE_PAGES = ["inventory", "unlock", "guide", "blessing", "badges"] as const;
+const PROFILE_PAGES = ["inventory", "unlock", "guide", "blessing", "badges", "rankings"] as const;
 type ProfilePageName = typeof PROFILE_PAGES[number];
 
 function isProfilePage(page: string | string[] | undefined): page is ProfilePageName {
@@ -50,6 +51,7 @@ function ProfilePageContent({page}: {page: ProfilePageName}): ReactNode {
 		case "unlock": return <PrisonerRelease />;
 		case "guide": return <Guide />;
 		case "badges": return <Badges />;
+		case "rankings": return <Rankings />;
 		default: return <Blessing />;
 	}
 }

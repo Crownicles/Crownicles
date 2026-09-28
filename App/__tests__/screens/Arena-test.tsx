@@ -1,10 +1,10 @@
 import {fireEvent, render, screen, waitFor, within} from "@testing-library/react-native";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {FightHistoryContent, LeaguesContent} from "@/src/components/ArenaReferences";
-import {Rankings, RankingsContent} from "@/src/components/Rankings";
+import {GloryRankings, GuildRankings, Rankings, RankingsContent} from "@/src/components/Rankings";
 import {GameClient} from "@/src/networking/GameClient";
 import {TopReq, LeagueRewardReq} from "ws-packets/src/fromClient/RankingsReq";
-import {TopRes, LeagueInfoRes} from "ws-packets/src/fromServer/fight/RankingsRes";
+import {TopRes, TopEmptyRes, LeagueInfoRes} from "ws-packets/src/fromServer/fight/RankingsRes";
 import {TopDataType, TopTiming, EloGameResult} from "ws-packets/src/objects/Rankings";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
@@ -39,6 +39,25 @@ describe("arena references", () => {
 		expect(request).toBeInstanceOf(TopReq);
 		expect(JSON.parse(JSON.stringify(request))).not.toHaveProperty("page");
 	});
+	it.each([
+		{case: "the arena opens on the weekly glory board", Board: GloryRankings, dataType: TopDataType.GLORY, timing: TopTiming.WEEK},
+		{case: "the guild opens on the guild board", Board: GuildRankings, dataType: TopDataType.GUILD, timing: TopTiming.ALL_TIME}
+	])("$case", async ({Board, dataType, timing}) => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: TopEmptyRes.wireName, packet: new TopEmptyRes()});
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><Board /></QueryClientProvider>);
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalledWith(expect.objectContaining({dataType, timing}), TopRes, expect.any(Array)));
+		expect(screen.getByRole("tab", {selected: true})).toHaveTextContent(`app:arena.rankings.types.${dataType}`);
+	});
+	it("shows a glory board nobody entered as an empty board with the fights still owed", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: TopEmptyRes.wireName, packet: Object.assign(new TopEmptyRes(), {needFight: 3})});
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><Rankings /></QueryClientProvider>);
+		await fireEvent.press(screen.getByText("app:arena.rankings.types.Glory"));
+		expect(await screen.findByText("app:arena.rankings.empty")).toBeTruthy();
+		expect(screen.getByText("app:arena.rankings.needFight")).toBeTruthy();
+		expect(screen.queryByText("app:reference.empty")).toBeNull();
+	});
 	it("distinguishes a defense from an attack and shows the glory swing at a glance", async () => {
 		await render(<FightHistoryContent history={[{id: 42, initiator: false, opponentName: "Arsene", result: EloGameResult.LOSS, date: 1_900_000_000_000, classes: {me: 1, opponent: 2}, glory: {initial: {me: 500, opponent: 600}, change: {me: -10, opponent: 15}, leaguesChanges: {me: {oldLeague: 2, newLeague: 1}}}}]} />);
 		expect(screen.getByText("Arsene")).toBeTruthy();
@@ -53,7 +72,7 @@ describe("arena references", () => {
 		expect(screen.getByText("models:leagues.2")).toBeTruthy();
 	});
 	it("selects another league without claiming a reward until explicitly requested", async () => {
-		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "LeagueRewardRes"});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "LeagueRewardRes", packet: {}});
 		await render(<LeaguesContent data={LEAGUES} />);
 		expect(within(screen.getByTestId("league-standing")).getByLabelText("models:leagues.1")).toHaveProp("accessibilityValue", {now: 123, max: 300});
 		expect(screen.queryByTestId("league-rewards-0")).toBeNull();
@@ -96,7 +115,7 @@ describe("arena references", () => {
 	});
 	it("allows an explicit retry after a failed reward request", async () => {
 		jest.mocked(GameClient.request).mockRejectedValueOnce(new Error("Offline"))
-			.mockResolvedValueOnce({kind: "alternative", packetName: "LeagueRewardRes"});
+			.mockResolvedValueOnce({kind: "alternative", packetName: "LeagueRewardRes", packet: {}});
 		await render(<LeaguesContent data={LEAGUES} />);
 		await fireEvent.press(screen.getByRole("button", {name: "app:arena.leagues.claim"}));
 		await screen.findByText("app:common.connectionError");

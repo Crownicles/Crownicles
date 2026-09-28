@@ -8,6 +8,20 @@ import {GameRequestTimeout, RequestState} from "@/src/store/useGameQuery";
 
 export type RankingSelection = Pick<TopReq, "dataType" | "timing" | "page">;
 
+/** A board nobody entered yet is still a board: shown empty, with the fights the player still owes, rather than as missing data. */
+function emptyBoard(selection: RankingSelection, packet: TopEmptyRes): TopRes {
+	return Object.assign(new TopRes(), {
+		dataType: selection.dataType,
+		timing: selection.timing,
+		canBeRanked: true,
+		elements: [],
+		totalElements: 0,
+		elementsPerPage: 1,
+		pageNumber: 1,
+		...packet.needFight === undefined ? {} : {needFight: packet.needFight}
+	});
+}
+
 export function useRankings(selection: RankingSelection): RequestState<TopRes> {
 	const query = useQuery({
 		queryKey: [GAME_ENTITIES.RANKINGS, selection],
@@ -20,5 +34,6 @@ export function useRankings(selection: RankingSelection): RequestState<TopRes> {
 	if (query.isPending) return {status: "loading"};
 	if (query.isError) return {status: "failed"};
 	if (query.data.kind === "rejected") return {status: "failed", rejection: query.data.packet.rejection};
-	return query.data.kind === "answer" ? {status: "ready", data: query.data.packet} : {status: "empty", packetName: query.data.packetName};
+	if (query.data.kind === "alternative") return {status: "ready", data: emptyBoard(selection, query.data.packet as TopEmptyRes)};
+	return {status: "ready", data: query.data.packet};
 }

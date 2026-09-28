@@ -30,6 +30,20 @@ export type OnboardingTrial = typeof ONBOARDING_TRIALS[number];
 export type OnboardingTrialId = OnboardingTrial["id"];
 export type OnboardingMissionId = OnboardingTrial["missions"][number];
 
+/**
+ * Hours each royal letter waits after the previous one (the first after the report that starts the count):
+ * close together while the newcomer is discovering the game, then about once a day.
+ */
+const ROYAL_LETTER_DELAYS_HOURS = [
+	1,
+	3,
+	8,
+	20,
+	20,
+	20,
+	20
+] as const;
+
 export abstract class OnboardingConstants {
 	/** Campaign positions 1 to this one form the contest; a newcomer is onboarding while one of them is current. */
 	static readonly CAMPAIGN_LENGTH = ONBOARDING_TRIALS.reduce((length, trial) => length + trial.missions.length, 0);
@@ -54,9 +68,10 @@ export abstract class OnboardingConstants {
 		"dwarfPetFan"
 	];
 
-	/** The king writes to the newcomer once a day during their first week, spreading the starting purse over it. */
+	/** The king writes to the newcomer during their first week, often at first and then about daily, spreading the starting purse over it. */
 	static readonly ROYAL_MAIL = {
-		LETTERS: 7,
+		LETTERS: ROYAL_LETTER_DELAYS_HOURS.length,
+		DELAYS_HOURS: ROYAL_LETTER_DELAYS_HOURS,
 		TOKENS: 20,
 		MONEY: 2000,
 

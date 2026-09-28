@@ -63,7 +63,7 @@ describe("pet care screens", () => {
 	});
 
 	it("offers a pet to the chosen rank without changing the price", async () => {
-		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "PetManagementRes"});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "PetManagementRes", packet: {}});
 		await render(<PetSale pet={PET} />);
 		await fireEvent.changeText(screen.getByLabelText("app:pet.sale.rank"), "12");
 		await fireEvent.changeText(screen.getByLabelText("app:pet.sale.price"), "321");

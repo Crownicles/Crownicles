@@ -26,7 +26,7 @@ import {formatNumber} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
 
-export type GuildPage = "storage" | "shelter" | "manage" | "domain";
+export type GuildPage = "storage" | "shelter" | "manage" | "domain" | "rankings";
 const CREATE_MENU: CommandMenu = {request: GuildCreateReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
 const DAILY_MENU: CommandMenu = {request: GuildDailyReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
 const DESCRIPTION_MENU: CommandMenu = {request: GuildDescriptionReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
@@ -34,8 +34,8 @@ const LEAVE_MENU: CommandMenu = {request: GuildLeaveReq, emptyPacket: PlayerNotF
 
 /** Only the whereabouts another member can act upon are worth a word; the rest is noise. */
 const TRAVEL_STATUSES = ["isOnPveIsland", "isOnBoat"] as const;
-const GUILD_PAGES = ["storage", "shelter", "domain", "manage"] as const;
-const PAGE_ICONS = {storage: "foods.commonFood", shelter: "other.pet", domain: "city.guildDomain.menu", manage: "guild.chief"} as const;
+const GUILD_PAGES = ["storage", "shelter", "domain", "rankings", "manage"] as const;
+const PAGE_ICONS = {storage: "foods.commonFood", shelter: "other.pet", domain: "city.guildDomain.menu", rankings: "top.congrats", manage: "guild.chief"} as const;
 const MILLISECONDS_PER_MINUTE = 60_000;
 
 const styles = StyleSheet.create({

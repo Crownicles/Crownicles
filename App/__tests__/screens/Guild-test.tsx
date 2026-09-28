@@ -60,7 +60,7 @@ describe("guild screens", () => {
 		{kind: "deposit", Packet: GuildDomainDepositReq, expected: {amount: 1000}, confirm: "app:guildDomain.confirmDeposit"},
 		{kind: "upgrade", Packet: GuildDomainUpgradeReq, expected: {building: "pantry", expectedLevel: 0}, confirm: "app:guildDomain.confirmUpgrade"}
 	])("unfolds the row before submitting the server $kind offer", async scenario => {
-		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "GuildDomainRes"});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "GuildDomainRes", packet: {}});
 		await render(<GuildDomainContent domain={DOMAIN} />);
 		if (scenario.kind === "upgrade") await fireEvent.press(screen.getByText(/commands:report.city.guildDomain.buildings.pantry/));
 		else await fireEvent.press(screen.getByText("app:guildDomain.depositNet"));

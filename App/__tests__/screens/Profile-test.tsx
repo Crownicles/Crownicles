@@ -104,6 +104,8 @@ describe("Profile screen", () => {
 		expect(mockPush).toHaveBeenCalledWith("/profile/inventory");
 		await fireEvent.press(view.getByRole("button", {name: /app:profile.titles.unlock/}));
 		expect(mockPush).toHaveBeenCalledWith("/profile/unlock");
+		await fireEvent.press(view.getByRole("button", {name: "app:profile.titles.rankings"}));
+		expect(mockPush).toHaveBeenCalledWith("/profile/rankings");
 		expect(view.queryByRole("button", {name: /app:profile.titles.missions/})).toBeNull();
 	});
 

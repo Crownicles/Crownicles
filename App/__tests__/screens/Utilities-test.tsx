@@ -24,7 +24,7 @@ describe("player utilities", () => {
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 	it("requests the respawn from the death screen", async () => {
-		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "PlayerUtilityRes"});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "PlayerUtilityRes", packet: {}});
 		await render(<DeathScreen />);
 		await fireEvent.press(screen.getByText("app:utilities.respawn"));
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());

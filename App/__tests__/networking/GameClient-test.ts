@@ -37,14 +37,16 @@ describe("GameClient", () => {
 		}));
 	});
 
-	it("turns a legitimate alternative response into an empty answer", async () => {
+	it("turns a legitimate alternative response into a named answer that keeps its content", async () => {
+		const alternative = {needFight: 2};
 		jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation((_packet, handlers) => {
-			handlers[TestAlternative.wireName]({} as never);
+			handlers[TestAlternative.wireName](alternative as never);
 		});
 
 		await expect(GameClient.request(new TestRequest(), TestResponse, [TestAlternative])).resolves.toEqual({
 			kind: "alternative",
-			packetName: TestAlternative.wireName
+			packetName: TestAlternative.wireName,
+			packet: alternative
 		});
 	});
 

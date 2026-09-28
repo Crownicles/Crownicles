@@ -10,7 +10,10 @@ import {
 import { RoyalLetterPacket } from "../../../../Lib/src/packets/events/RoyalLetterPacket";
 import { OnboardingConstants } from "../../../../Lib/src/constants/OnboardingConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { datesAreOnSameDay } from "../../../../Lib/src/utils/TimeUtils";
+import { hoursToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asHours, dateToMs
+} from "../../../../Lib/src/types/TimeTypes";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
 
@@ -20,20 +23,21 @@ type RoyalLetterClaim = {
 	letter: number; tokens: number;
 };
 
-/** The letter the king writes today, if one is due. */
+/** The next letter, once its delay since the previous one has passed. */
 export function dueRoyalLetter(info: Pick<PlayerMissionsInfo, "royalLettersReceived" | "lastRoyalLetterAt">, now: Date): number | null {
 	if (info.royalLettersReceived >= ROYAL_MAIL.LETTERS || !info.lastRoyalLetterAt) {
 		return null;
 	}
-	return datesAreOnSameDay(info.lastRoyalLetterAt, now) || info.lastRoyalLetterAt > now ? null : info.royalLettersReceived + 1;
+	const delay = hoursToMilliseconds(asHours(ROYAL_MAIL.DELAYS_HOURS[info.royalLettersReceived]));
+	return dateToMs(now) - dateToMs(info.lastRoyalLetterAt) >= delay ? info.royalLettersReceived + 1 : null;
 }
 
-/** Whether this report may start the daily count or bring a letter. */
+/** Whether this report may start the count or bring a letter. */
 function royalMailPending(info: Pick<PlayerMissionsInfo, "royalLettersReceived" | "lastRoyalLetterAt">, now: Date): boolean {
 	return info.lastRoyalLetterAt ? dueRoyalLetter(info, now) !== null : info.royalLettersReceived < ROYAL_MAIL.LETTERS;
 }
 
-/** The letter and its gifts commit together; the first report only starts the daily count. */
+/** The letter and its gifts commit together; the first report only starts the count. */
 async function claimRoyalLetterUnderLock(
 	player: Locked<Player>,
 	info: Locked<PlayerMissionsInfo>,
@@ -72,7 +76,7 @@ async function claimRoyalLetterUnderLock(
 	};
 }
 
-/** Delivers the king's letter of the day to a newcomer, with its gifts, during their first week. */
+/** Delivers the king's next letter to a newcomer, with its gifts, during their first week. */
 export async function deliverRoyalLetter(player: Player, response: CrowniclesPacket[], now = new Date()): Promise<void> {
 	// Every report comes here: settle the veterans and the rest of the day without taking a lock.
 	if (!royalMailPending(await PlayerMissionsInfos.getOfPlayer(player.id), now)) {

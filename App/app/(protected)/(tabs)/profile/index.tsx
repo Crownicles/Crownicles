@@ -26,7 +26,7 @@ const PET_RARITY_MAX = 8;
 const CAMPAIGN_COMPLETE = 100;
 const UNRANKED_GLORY = -1;
 const STANDING_EMBLEM_SIZE = 40;
-type ProfilePage = "inventory" | "unlock" | "guide" | "blessing" | "badges";
+type ProfilePage = "inventory" | "unlock" | "guide" | "blessing" | "badges" | "rankings";
 const PROFILE_PAGES: {page: ProfilePage; icon: string}[] = [
 	{page: "inventory", icon: "inventory.stock"},
 	{page: "unlock", icon: "notifications.types.playerFreedFromJail"},
@@ -142,7 +142,8 @@ function ProfileStanding({profile}: {profile: ProfileRes}): ReactNode {
 	);
 }
 
-type ProfileSection = {id: string; icon: string; label: string; caption?: string; content: ReactNode};
+/** A section either states a short fact beside its title or leads to the page holding the rest. */
+type ProfileSection = {id: string; icon: string; label: string; caption?: string; page?: ProfilePage; content: ReactNode};
 
 function statisticsSection(profile: ProfileRes): ProfileSection | null {
 	if (!profile.stats) {
@@ -186,12 +187,13 @@ function rankingSection(profile: ProfileRes): ProfileSection {
 		id: "ranking",
 		icon: "announcements.trophy",
 		label: i18n.t("app:profile.titles.scoreAndRank"),
-		caption: rank,
+		page: "rankings",
 		content: <>
 			<Figures items={[
 				{caption: i18n.t("app:profile.fields.score"), value: formatNumber(profile.rank.score), unit: "score"},
 				...fight ? [{caption: i18n.t("app:profile.fields.glory"), value: formatNumber(fight.glory), unit: "glory"}] : []
 			]} />
+			<Fact label={i18n.t("app:profile.fields.rank")} value={rank} />
 			{fight ? <>
 				<Fact label={i18n.t("app:profile.fields.gloryRank")} value={gloryRank} />
 				<Fact label={i18n.t("app:profile.fields.league")} value={leagueLabel(fight.league)} />
@@ -238,13 +240,19 @@ function cookingSection(profile: ProfileRes): ProfileSection | null {
 	};
 }
 
+function sectionAction(section: ProfileSection, onPage: (page: ProfilePage) => void): {action?: {label?: string; hint?: string; onPress?: () => void}} {
+	const {page, caption} = section;
+	if (page) return {action: {label: i18n.t(`app:profile.titles.${page}`), onPress: (): void => onPage(page)}};
+	return caption ? {action: {hint: caption}} : {};
+}
+
 /** Everything the character is, read at a glance: nothing to unfold. */
-function ProfileSections({profile}: {profile: ProfileRes}): ReactNode {
+function ProfileSections({profile, onPage}: {profile: ProfileRes; onPage: (page: ProfilePage) => void}): ReactNode {
 	const sections = [statisticsSection(profile), rankingSection(profile), campaignSection(profile), cookingSection(profile)]
 		.filter((section): section is ProfileSection => section !== null);
 	return <>
 		{sections.map(section => <View key={section.id} testID={`profile-${section.id}`}>
-			<SectionHeader icon={AppIcons.getIcon(section.icon)} {...section.caption ? {action: {hint: section.caption}} : {}}>{section.label}</SectionHeader>
+			<SectionHeader icon={AppIcons.getIcon(section.icon)} {...sectionAction(section, onPage)}>{section.label}</SectionHeader>
 			<ExpandableList>{section.content}</ExpandableList>
 		</View>)}
 	</>;
@@ -291,7 +299,7 @@ function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: 
 			<QuickActions>
 				{pages.map(entry => <QuickAction key={entry.page} icon={AppIcons.getIcon(entry.icon)} onPress={(): void => onPage(entry.page)}>{i18n.t(`app:profile.titles.${entry.page}`)}</QuickAction>)}
 			</QuickActions>
-			<ProfileSections profile={profile} />
+			<ProfileSections profile={profile} onPage={onPage} />
 			<ProfileBadges badges={profile.badges} onOpen={(): void => onPage("badges")} />
 			<Belongings profile={profile} />
 		</>

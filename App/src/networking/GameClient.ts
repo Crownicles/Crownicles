@@ -14,7 +14,7 @@ import {AppConstants} from "@/src/AppConstants";
  */
 export type GameAnswer<Answer extends FromServerPacket> =
 	| { kind: "answer"; packet: Answer }
-	| { kind: "alternative"; packetName: string }
+	| { kind: "alternative"; packetName: string; packet: FromServerPacket }
 	| { kind: "rejected"; packet: CommandRejected }
 	| { kind: "timeout" };
 
@@ -42,7 +42,7 @@ export class GameClient {
 				[expected.wireName]: (packet: Answer): void => resolve({ kind: "answer", packet })
 			};
 			for (const alternative of alternatives) {
-				handlers[alternative.wireName] = (): void => resolve({ kind: "alternative", packetName: alternative.wireName });
+				handlers[alternative.wireName] = (packet: FromServerPacket): void => resolve({ kind: "alternative", packetName: alternative.wireName, packet });
 			}
 
 			WebSocketClient.getInstance().sendPacket(request, handlers, {
