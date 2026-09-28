@@ -2,9 +2,7 @@ import {ReactNode, useEffect, useRef, useState} from "react";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {ActivityIndicator, Animated, Easing, Text, View} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
-import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {ReportBuyHealReq} from "ws-packets/src/fromClient/ReportBuyHealReq";
 import {ReportUseTokensReq} from "ws-packets/src/fromClient/ReportUseTokensReq";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
@@ -20,14 +18,8 @@ import {
 	ReportUseTokensAcceptedRes,
 	ReportUseTokensRefusedRes
 } from "ws-packets/src/fromServer/report/ReportTokenRes";
-import {
-	ReportBuyHealAcceptedRes,
-	ReportBuyHealCannotHealOccupiedRes,
-	ReportBuyHealNoAlterationRes,
-	ReportBuyHealRefusedRes
-} from "ws-packets/src/fromServer/report/ReportHealRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {REPORT_COLLECTOR_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {Blocked} from "ws-packets/src/fromServer/common/Blocked";
 import {AppIcons} from "@/src/AppIcons";
 import {GameAnswer, GameClient} from "@/src/networking/GameClient";
@@ -60,14 +52,14 @@ import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/
 import {EmptyState, Note, QuickAction, QuickActions, Screen} from "@/src/design/Primitives";
 import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
 import {Entrance} from "@/src/design/Entrance";
-import {Cure, CureEmblem, HappyEmblem} from "@/src/components/CureEmblem";
+import {CureEmblem, Cure, HappyEmblem} from "@/src/components/CureEmblem";
+import {acceptAnswer, canCure, celebrate, HealAction, PendingAction, useBuyHeal} from "@/src/components/HealAction";
 import {isAlterationReport, reportReadyAt} from "@/src/display/ReportTiming";
 import {plainStory} from "@/src/display/Markdown";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {SilentAnswer, useReportShortcut} from "@/src/store/useReportShortcut";
-import {BookOpen, CircleAlert} from "@/src/design/FightIcons";
+import {BookOpen} from "@/src/design/FightIcons";
 import {PlayerVitals} from "@/src/components/PlayerVitals";
-import {formatMoney} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
@@ -200,36 +192,12 @@ function requestTokenAdvance(): Promise<GameAnswer<ReactionCollectorCreation>> {
 	]);
 }
 
-function acceptAnswer(collector: ReactionCollectorCreation): SilentAnswer | null {
-	const reactionIndex = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT);
-	return reactionIndex >= 0 ? {collectorId: collector.id, reactionIndex} : null;
-}
-
 /** The button already names the token cost, so pressing it answers Core's confirmation, if it can be answered. */
 function tokenAdvanceConfirmation(answer: GameAnswer<ReactionCollectorCreation>): SilentAnswer | null {
 	if (answer.kind !== "answer") return null;
 	const {data} = answer.packet;
 	if (data.type !== REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS || data.data.playerTokens < data.data.cost) return null;
 	return acceptAnswer(answer.packet);
-}
-
-/** The heal button already names its price, so pressing it answers Core's confirmation the same way. */
-function healConfirmation(answer: GameAnswer<ReactionCollectorCreation>): SilentAnswer | null {
-	if (answer.kind !== "answer" || answer.packet.data.type !== REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL) return null;
-	return acceptAnswer(answer.packet);
-}
-
-function celebrate(): void {
-	notificationAsync(NotificationFeedbackType.Success).catch(() => undefined);
-}
-
-function requestBuyHeal(): Promise<GameAnswer<ReactionCollectorCreation>> {
-	return GameClient.request(makeFromClientPacket(ReportBuyHealReq, {}), ReactionCollectorCreation, [
-		ReportBuyHealAcceptedRes,
-		ReportBuyHealRefusedRes,
-		ReportBuyHealNoAlterationRes,
-		ReportBuyHealCannotHealOccupiedRes
-	]);
 }
 
 function getEffectStartTime(packet: ReportTravelSummaryRes): number | null {
@@ -560,41 +528,8 @@ function RoutePanel({packet, metrics, dash}: {
   return <TravelPath packet={packet} progress={metrics.progress} dash={dash} />;
 }
 
-/** A report-side action the player triggers, and whether Core is still answering it. */
-type PendingAction = {pending: boolean; onPress: () => void};
-
-function HealAction({heal, action}: {heal: NonNullable<ReportTravelSummaryRes["heal"]>; action: PendingAction}): ReactNode {
-	return <ActionBanner
-		icon={CircleAlert}
-		emoji={AppIcons.getIcon("shopItems.healAlteration")}
-		label={i18n.t("app:adventure.quick.healWithCost", {price: formatMoney(heal.price)})}
-		pending={action.pending}
-		{...heal.canAfford ? {} : {lock: {reason: i18n.t("app:adventure.quick.healNotEnough", {price: formatMoney(heal.price)}), icon: CircleAlert}}}
-		onPress={action.onPress}
-	/>;
-}
-
-/** Long enough for the whole cure choreography, so only a cure whose emblem vanished ends here. */
-const CURE_SAFETY_MS = 5_000;
-
-/** Ends the cure once: when the emblem finishes it, or later if the report refreshes into a layout without the emblem. */
-function once(finish: () => void): () => void {
-	let finished = false;
-	const end = (): void => {
-		if (finished) return;
-		finished = true;
-		finish();
-	};
-	setTimeout(end, CURE_SAFETY_MS);
-	return end;
-}
-
 function offersTokens(packet: ReportTravelSummaryRes): boolean {
 	return packet.tokens !== undefined && (!packet.isInCity || isAlterationReport(packet));
-}
-
-function canCure(packet: ReportTravelSummaryRes): boolean {
-	return !packet.isInCity || isAlterationReport(packet);
 }
 
 
@@ -908,9 +843,8 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	useReportRefreshAtNextStop(travel ?? null);
 	const queryClient = useQueryClient();
 	const advance = useReportShortcut({request: requestTokenAdvance, confirm: tokenAdvanceConfirmation, outcome: reportEventStore.getTokenSnapshot});
-	const heal = useReportShortcut({request: requestBuyHeal, confirm: healConfirmation, outcome: reportEventStore.getHealSnapshot});
+	const {action: heal, cure} = useBuyHeal(travel?.effect);
 	const [dash, setDash] = useState<TravelDash | null>(null);
-	const [cure, setCure] = useState<Cure | null>(null);
 	const {
 		open: openCollectors, react: reactToCollector, isAnswerPending
 	} = useCollectors();
@@ -956,21 +890,6 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 			};
 			if (nextStop === null) openStop();
 			else setDash({to: nextStop, onDone: openStop});
-		});
-	};
-
-	const buyHeal = (): void => {
-		const ailment = travel?.effect ? AppIcons.getIconOrNull(`effects.${travel.effect}`) : null;
-		heal.run((outcome, done) => {
-			if (outcome.kind !== "accepted" || !ailment) {
-				done();
-				return;
-			}
-			celebrate();
-			setCure({from: ailment, onDone: once(() => {
-				setCure(null);
-				done();
-			})});
 		});
 	};
 
@@ -1052,7 +971,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 				currentTime={currentTime}
 				actions={{
 					advance: {pending: advance.pending, onPress: advanceWithTokens},
-					heal: {pending: heal.pending, onPress: buyHeal},
+					heal,
 					reportReady: reportState.data.reportReady,
 					reportAction
 				}}

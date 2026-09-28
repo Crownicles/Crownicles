@@ -2,7 +2,14 @@ import {ReactNode} from "react";
 import {Text, View} from "react-native";
 import {useRouter} from "expo-router";
 import {CircleAlert, Swords, Zap} from "@/src/design/FightIcons";
-import {ActionBanner} from "@/src/design/Sections";
+import {ActionBanner, Lock} from "@/src/design/Sections";
+import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
+import {useQueryClient} from "@tanstack/react-query";
+import {Cure, CureEmblem} from "@/src/components/CureEmblem";
+import {HealAction, healOffer, useBuyHeal} from "@/src/components/HealAction";
+import {reportEventStore} from "@/src/collectors/ReportEventStore";
+import {commandRejectionMessage} from "@/src/display/CommandRejection";
+import {useReportView} from "@/src/store/useReportActions";
 import {JOURNEY_LEVELS} from "ws-packets/src/objects/Journey";
 import {FightReq} from "ws-packets/src/fromClient/FightReq";
 import {FightErrorRes} from "ws-packets/src/fromServer/fight/FightRes";
@@ -13,7 +20,7 @@ import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {RequestState} from "@/src/store/useGameQuery";
 import {fightStore, useFight} from "@/src/store/FightStore";
-import {GAME_ENTITIES} from "@/src/store/GameEntities";
+import {gameKey, GAME_ENTITIES} from "@/src/store/GameEntities";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {Note, QuickAction, QuickActions, Screen} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
@@ -33,6 +40,7 @@ type ArenaPage = typeof ARENA_PAGES[number];
 /** Fight history and leagues only mean something once the player can fight. */
 const BEFORE_FIGHTS_PAGES: readonly ArenaPage[] = ["classes", "rankings"];
 const ARENA_ICONS = {classes: "commands.classes", history: "fightHistory.menu", leagues: "unitValues.score", rankings: "top.congrats"} as const;
+const IDENTITY_EMBLEM_SIZE = 42;
 const useStyles = createStyles(colors => ({
 	header: {paddingTop: 8, paddingBottom: 26, flexDirection: "row", gap: 14, alignItems: "center"},
 	emblem: {width: 52, height: 52, backgroundColor: colors.wash, borderRadius: 14, alignItems: "center", justifyContent: "center"},
@@ -52,18 +60,38 @@ const useStyles = createStyles(colors => ({
 	links: {marginTop: 30}
 }));
 
-function ArenaProfile({profile}: {profile: ProfileRes}): ReactNode {
+type PlayerEffect = ProfileRes["effect"];
+
+/** Any alteration still running forbids a duel, as Core does. */
+function activeEffect(profile: ProfileRes): PlayerEffect | null {
+	const {effect} = profile;
+	return effect.effect !== "none" && effect.hasTimeDisplay && !effect.healed ? effect : null;
+}
+
+/** A running alteration takes the place of the class: it is what decides whether the player can fight. */
+function identityEmblem(profile: ProfileRes, cure: Cure | null): ReactNode {
+	if (cure) return <CureEmblem cure={cure} />;
+	const effect = activeEffect(profile);
+	const path = effect ? `effects.${effect.effect}` : profile.classId === undefined ? null : `classes.${profile.classId}`;
+	const icon = path ? AppIcons.getIconOrNull(path) : null;
+	return icon ? <TwemojiIcon emoji={icon} size={IDENTITY_EMBLEM_SIZE} /> : null;
+}
+
+function effectLock(effect: PlayerEffect): Lock {
+	return {reason: commandRejectionMessage({type: COMMAND_REJECTIONS.EFFECT, currentEffectId: effect.effect, remainingTime: effect.timeLeft})};
+}
+
+function ArenaProfile({profile, cure}: {profile: ProfileRes; cure: Cure | null}): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
-	const icon = profile.classId === undefined ? null : AppIcons.getIconOrNull(`classes.${profile.classId}`);
 	return <>
-		<View style={styles.identity}>{icon ? <TwemojiIcon emoji={icon} size={42} /> : null}<View><Text style={styles.name}>{profile.pseudo}</Text>{profile.classId === undefined ? null : <Text style={styles.className}>{i18n.t(`models:classes.${profile.classId}`)} · {i18n.t("app:battle.level", {level: profile.level})}</Text>}</View></View>
+		<View style={styles.identity}>{identityEmblem(profile, cure)}<View><Text style={styles.name}>{profile.pseudo}</Text>{profile.classId === undefined ? null : <Text style={styles.className}>{i18n.t(`models:classes.${profile.classId}`)} · {i18n.t("app:battle.level", {level: profile.level})}</Text>}</View></View>
 		{profile.stats ? <FightGauge label={i18n.t("app:arena.energy")} icon={Zap} value={profile.stats.energy.value} max={profile.stats.energy.max} color={colors.green} /> : null}
 		{profile.fightRanking ? <View style={styles.ranking}><View style={styles.rank}><Text style={styles.rankLabel}>{i18n.t("app:arena.glory")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{formatGlory(profile.fightRanking.glory)}</TwemojiText></View><View style={[styles.rank, styles.rankEnd]}><Text style={styles.rankLabel}>{i18n.t("app:arena.league")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{leagueName(profile.fightRanking.league)}</TwemojiText></View></View> : null}
 	</>;
 }
 
-function ArenaStart({pending, ongoing, locked, onStart}: {pending: boolean; ongoing: boolean; locked: boolean; onStart: () => Promise<void>}): ReactNode {
+function ArenaStart({pending, ongoing, lock, onStart}: {pending: boolean; ongoing: boolean; lock: Lock | undefined; onStart: () => Promise<void>}): ReactNode {
 	const styles = useStyles();
 	const label = pending ? "app:battle.preparing" : ongoing ? "app:arena.resume" : "app:arena.start";
 	return <View style={styles.start}><ActionBanner
@@ -73,7 +101,7 @@ function ArenaStart({pending, ongoing, locked, onStart}: {pending: boolean; ongo
 		onPress={ongoing ? fightStore.show : (): void => {
 			onStart().catch(console.error);
 		}}
-		{...locked ? {lock: {reason: i18n.t("app:arena.locked", {level: JOURNEY_LEVELS.FIGHTS})}} : {}}
+		{...lock ? {lock} : {}}
 		testID="arena-start-locked"
 	/></View>;
 }
@@ -118,7 +146,10 @@ function ArenaHeader(): ReactNode {
 
 export default function Arena(): ReactNode {
 	const router = useRouter();
+	const styles = useStyles();
 	const state = usePlayerProfile();
+	const report = useReportView();
+	const queryClient = useQueryClient();
 	const fight = useFight();
 	const {pending, message, open} = useCommandMenus();
 	const ongoing = Boolean(fight.introduction && !fight.result && !fight.error);
@@ -126,11 +157,22 @@ export default function Arena(): ReactNode {
 	const startError = fight.visible ? null : fight.error;
 	// Before the fight level the start button stays in sight, greyed, with the level that opens fights.
 	const canFight = state.status !== "ready" || state.data.level >= JOURNEY_LEVELS.FIGHTS;
+	const effect = state.status === "ready" ? activeEffect(state.data) : null;
+	const {action: heal, cure} = useBuyHeal(effect?.effect, (): void => {
+		reportEventStore.clearHeal();
+		for (const entity of [GAME_ENTITIES.PROFILE, GAME_ENTITIES.REPORT]) {
+			queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(console.error);
+		}
+	});
+	const offer = effect && !ongoing ? healOffer(report.status === "ready" ? report.data.travel : undefined) : null;
+	const lock = canFight ? effect && !ongoing ? effectLock(effect) : undefined : {reason: i18n.t("app:arena.locked", {level: JOURNEY_LEVELS.FIGHTS})};
 	return <Screen>
 		<ArenaHeader />
-		<GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{profile => <ArenaProfile profile={profile} />}</GameQueryContent>
+		<GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{profile => <ArenaProfile profile={profile} cure={cure} />}</GameQueryContent>
 		{message ? <Note>{message}</Note> : null}
-		<ArenaStart pending={pending} ongoing={ongoing} locked={!canFight} onStart={start} />
+		{offer
+			? <View style={styles.start}><HealAction heal={offer} action={heal} /></View>
+			: <ArenaStart pending={pending} ongoing={ongoing} lock={lock} onStart={start} />}
 		{startError ? <ArenaStartError error={startError} /> : null}
 		<ArenaLinks pages={canFight ? ARENA_PAGES : BEFORE_FIGHTS_PAGES} onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
 	</Screen>;
