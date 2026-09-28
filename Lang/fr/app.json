@@ -975,6 +975,18 @@
     "noGuild": "Aucune guilde",
     "joinHint": "Votre personnage n'appartient pas encore à une guilde. Une invitation peut vous permettre d'en rejoindre une.",
     "create": "Créer une guilde",
+    "absent": {
+      "title": "Aucune bannière sous laquelle marcher",
+      "description": "Une guilde rassemble des aventuriers : ensemble, ils bâtissent un domaine, abritent des familiers et récoltent chaque jour les fruits de leur entente.",
+      "perks": "Ce qu'une guilde apporte",
+      "dailyBonus": "Un bonus quotidien profite à tous les membres.",
+      "domain": "Un domaine à bâtir ensemble, avec sa boutique et son garde-manger.",
+      "shelter": "Un refuge où recueillir et adopter des familiers.",
+      "createWithCost": "Fonder une guilde · {{price}}",
+      "join": "Rejoindre une guilde",
+      "joinHow": "Une guilde se rejoint sur invitation de son chef. Faites-lui connaître votre nom, {{pseudo}} : son invitation s'affichera ici même.",
+      "browse": "Parcourir les guildes"
+    },
     "confirmCreate": "Créer la guilde {{name}} ?",
     "created": "La guilde {{name}} a été créée.",
     "level": "Niveau {{level}}",

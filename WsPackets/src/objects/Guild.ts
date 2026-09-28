@@ -1,5 +1,8 @@
 import { ValueAndMax } from "./ValueAndMax";
 
+/** What founding a guild costs; a RestWs test keeps it equal to Lib's constant. */
+export const GUILD_CREATION_PRICE = 5000;
+
 export type GuildMember = {
 	id: number;
 	name?: string;
