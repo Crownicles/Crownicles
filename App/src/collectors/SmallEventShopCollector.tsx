@@ -8,9 +8,11 @@ import {formatNumber} from "@/src/display/Amounts";
 import {collectorDescription, eventPromptIcon, itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {EventJournal} from "@/src/collectors/EventOutcomeScreen";
 import {Button, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, Figures} from "@/src/design/Sections";
+import {ActionBanner, BackButton, Figure, Figures, Standing} from "@/src/design/Sections";
+import {inventoryItemEmblem} from "@/src/components/InventoryItemRow";
+import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {SwipeBack} from "@/src/design/SwipeBack";
-import {Check} from "@/src/design/FightIcons";
+import {ShoppingBag} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 
@@ -22,12 +24,22 @@ type ShopSmallEventData = Extract<ReactionCollectorData, {
 	type: typeof SMALL_EVENT_DATA_KINDS.SHOP | typeof SMALL_EVENT_DATA_KINDS.EPIC_SHOP;
 }>;
 
-function itemFigures(data: ShopSmallEventData): {caption: string; value: string; unit?: string}[] {
+function itemFigures(data: ShopSmallEventData): Figure[] {
 	return [
-		{caption: i18n.t("app:collector.shop.fields.rarity"), value: i18n.t(`items:raritiesWithoutEmote.${data.data.item.rarity}`)},
 		...("itemLevel" in data.data.item ? [{caption: i18n.t("app:collector.shop.fields.level"), value: String(data.data.item.itemLevel)}] : []),
 		{caption: i18n.t("app:collector.shop.fields.price"), value: formatNumber(data.data.price), unit: "money"}
 	];
+}
+
+/** The item's name first; its kind and rarity only qualify it. */
+function OfferedItem({item}: {item: ItemWithDetails}): ReactNode {
+	const emblem = inventoryItemEmblem(item);
+	return <Standing
+		{...emblem ? {emblem} : {}}
+		caption={i18n.tArray("smallEvents:shop.types")[item.itemCategory] ?? ""}
+		title={itemDisplayName(item)}
+		subtitle={i18n.t(`items:rarities.${item.rarity}`)}
+	/>;
 }
 
 /** Buying or walking on, the same way for every travelling merchant. */
@@ -38,7 +50,7 @@ export function MerchantOfferActions({item, locked, onBuy, onLeave}: {
 	onLeave: () => void;
 }): ReactNode {
 	return <View style={styles.actions}>
-		<ActionBanner icon={Check} label={i18n.t("app:city.shop.buyItem", {item})} pending={locked} onPress={onBuy} />
+		<ActionBanner icon={ShoppingBag} label={i18n.t("app:city.shop.buyItem", {item})} pending={locked} onPress={onBuy} />
 		<Button disabled={locked} onPress={onLeave}>{i18n.t("app:collector.shop.refuse")}</Button>
 	</View>;
 }
@@ -70,6 +82,7 @@ export function SmallEventShopCollector({collector, onChoose, submitting}: {
 			<Screen>
 				<BackButton label={i18n.t("app:collector.refuse")} onClose={leave} />
 				<EventJournal emoji={eventPromptIcon(data)} story={collectorDescription(data) ?? ""} />
+				<OfferedItem item={data.data.item} />
 				<Figures items={itemFigures(data)} />
 				<MerchantOfferActions
 					item={itemDisplayName(data.data.item)}

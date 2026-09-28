@@ -10,7 +10,7 @@ import {inventoryItemDetails, inventoryItemEmblem, InventoryItemRow} from "@/src
 import {plainStory} from "@/src/display/Markdown";
 import {Button, ButtonRow, Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, Card, ExpandableEntry} from "@/src/design/Sections";
-import {Check} from "@/src/design/FightIcons";
+import {Check, Droplets} from "@/src/design/FightIcons";
 import {i18n} from "@/src/translations/i18n";
 
 type ItemRewardProps = {
@@ -46,20 +46,21 @@ function FoundItemExits({collector, foundItem, drinkType, refuseType, choose, lo
 	const drinkIndex = reactionIndex(collector, drinkType);
 	const refuseIndex = reactionIndex(collector, refuseType);
 	const isPotion = isPotionCategory(foundItem.itemCategory);
-	return <ButtonRow>
-		{drinkIndex >= 0 ? <Button
-			emoji={AppIcons.getIcon("items.drinkPotion")}
-			disabled={locked}
+	return <>
+		{drinkIndex >= 0 ? <ActionBanner
+			icon={Droplets}
+			label={i18n.t("app:collector.choices.drinkPotion")}
+			pending={locked}
 			onPress={(): void => choose(drinkIndex)}
-		>{i18n.t("app:collector.choices.drinkPotion")}</Button> : null}
-		{refuseIndex >= 0 ? <Button
+		/> : null}
+		{refuseIndex >= 0 ? <ButtonRow><Button
 			emoji={AppIcons.getIcon(isPotion ? "collectors.refuse" : "unitValues.money")}
 			disabled={locked}
 			onPress={(): void => choose(refuseIndex)}
 		>
 			{i18n.t(isPotion ? "app:collector.item.throwFound" : "app:collector.item.sellFound")}
-		</Button> : null}
-	</ButtonRow>;
+		</Button></ButtonRow> : null}
+	</>;
 }
 
 /** The inventory is full: every item of the same kind is listed, and the one given away is confirmed in place. */

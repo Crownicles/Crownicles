@@ -10,6 +10,8 @@ import {ArrowRight, Coins, Droplets, Gift, LucideIcon, Swords, X} from "@/src/de
 import {Button, ButtonRow, Note} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, Fact, Figures, LockHint, useSectionStyles} from "@/src/design/Sections";
 import {ExpandedEntry} from "@/src/design/useExpandedEntry";
+import {Theme} from "@/src/design/Theme";
+import {TwemojiText} from "@/src/design/TwemojiText";
 import {
 	InventoryItem, InventoryItemActions, ITEM_ACTIONS, ItemAction, ItemActionChoice
 } from "@/src/store/useInventoryItemActions";
@@ -74,18 +76,26 @@ function ItemStats({item}: {item: ItemWithDetails}): ReactNode {
 	</>;
 }
 
-/** A caption short enough to hold on one line: the numbers live at the end of the row and in the unfolded panel. */
-function itemSummary(item: ItemWithDetails): string {
-	const rarity = i18n.t(`items:raritiesWithoutEmote.${item.rarity}`);
-	return isMainItem(item) ? i18n.t("app:inventory.itemSummary", {rarity, details: i18n.t("app:inventory.level", {level: item.itemLevel})}) : rarity;
+/** Multi-use potions tell on the closed row how many sips they have left. */
+function itemDetails(item: ItemWithDetails): string | null {
+	if (isMainItem(item)) return i18n.t("app:inventory.level", {level: item.itemLevel});
+	if (!item.maxUsages || item.maxUsages <= 1) return null;
+	return i18n.t("app:inventory.usages", {usages: item.usages ?? item.maxUsages, max: item.maxUsages});
 }
 
-/** What the item is, and on the closed row already, why one of its actions is refused. */
+/** A caption short enough to hold on one line: the numbers live at the end of the row and in the unfolded panel. */
+function itemSummary(item: ItemWithDetails): string {
+	const rarity = i18n.t(`items:rarities.${item.rarity}`);
+	const details = itemDetails(item);
+	return details ? i18n.t("app:inventory.itemSummary", {rarity, details}) : rarity;
+}
+
+/** What the item is, and on the closed row already, why one of its actions is refused; a full reserve only shows once unfolded. */
 function ItemCaption({item, choices, expanded}: {item: ItemWithDetails; choices: ItemActionChoice[]; expanded: boolean}): ReactNode {
 	const sectionStyles = useSectionStyles();
-	const lock = expanded ? undefined : choices.find(choice => choice.lock)?.lock;
+	const lock = expanded ? undefined : choices.find(choice => choice.lock && choice.action !== ITEM_ACTIONS.DEPOSIT)?.lock;
 	return <>
-		<Text style={sectionStyles.caption} numberOfLines={1}>{itemSummary(item)}</Text>
+		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.rowSubtitle} numberOfLines={1}>{itemSummary(item)}</TwemojiText>
 		{lock ? <LockHint lock={lock} /> : null}
 	</>;
 }

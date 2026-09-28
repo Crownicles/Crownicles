@@ -28,7 +28,7 @@ function mainItemStats(item: MainItem): string {
 }
 
 export function inventoryItemDetails(item: ItemWithDetails): string {
-	const rarity = i18n.t(`items:raritiesWithoutEmote.${item.rarity}`);
+	const rarity = i18n.t(`items:rarities.${item.rarity}`);
 	if ("nature" in item) return i18n.t("app:inventory.itemSummary", {rarity, details: consumableDescription(item)});
 	const level = i18n.t("app:inventory.level", {level: item.itemLevel});
 	const enchantment = item.itemEnchantmentId ? i18n.t(`items:enchantments.${item.itemEnchantmentId}`) : "";

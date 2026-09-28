@@ -10,7 +10,7 @@ import {EventJournal, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen
 import {shopItemKey, shopItemName} from "@/src/collectors/ShopLabels";
 import {missionDescription} from "@/src/display/Missions";
 import {Button, Note, Screen, SectionHeader} from "@/src/design/Primitives";
-import {Check, Coins} from "@/src/design/FightIcons";
+import {Coins, ShoppingBag} from "@/src/design/FightIcons";
 import {ActionBanner, BackButton, Card, ENTRY_CHEVRONS, ExpandableEntry, Lock, LockHint, useSectionStyles} from "@/src/design/Sections";
 import {SwipeBack} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
@@ -129,7 +129,7 @@ function ArticleConfirmation({article, context, onCancel}: {article: ShopArticle
 				?? (isChoosable(offer.reaction, context.collector.data) ? undefined : {reason: i18n.t("app:city.locks.unavailable")});
 			return <ActionBanner
 				key={offer.index}
-				icon={Check}
+				icon={ShoppingBag}
 				label={isSingleUnit(article)
 					? shopText("confirmButton")
 					: shopText("amountButton", {amount: offer.reaction.data.amount, price: offer.reaction.data.price, currency: data.currency})}

@@ -36,6 +36,7 @@ jest.mock("@/src/collectors/CollectorLabels", () => ({
 	collectorDescription: (): string => "small-event-description",
 	collectorTitle: (): string => "small-event-title",
 	itemDisplayName: (): string => "offered-item",
+	itemIconPath: (): null => null,
 	isChoosable: (): boolean => true,
 	isEventPrompt: (data: {type: string}): boolean => data.type.startsWith("smallEvent") || data.type.startsWith("bigEvent"),
 	eventPromptIcon: (): undefined => undefined,
@@ -293,7 +294,7 @@ const collectorScenarios: CollectorScenario[] = [
 		choiceText: "app:city.shop.buyItem",
 		assertView: () => {
 			expect(screen.getByText("small-event-description")).toBeTruthy();
-			expect(screen.getByText("app:collector.shop.fields.rarity")).toBeTruthy();
+			expect(screen.getByText("offered-item")).toBeTruthy();
 			expect(screen.getByText("app:collector.shop.fields.price")).toBeTruthy();
 		}
 	},

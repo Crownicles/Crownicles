@@ -153,20 +153,11 @@ export function itemIconPath(item: ItemWithDetails): string | null {
 /** An item on sale and what it costs, as the wandering and the epic merchants offer it. */
 type ShopOffer = {item: ItemWithDetails; price: number};
 
-function shopEnd({item, price}: ShopOffer): string {
-	const iconPath = itemIconPath(item);
-	return randomTranslation("smallEvents:shop.end", {
-		item: `${iconPath ? AppIcons.getIconOrNull(iconPath) ?? "" : ""} ${itemDisplayName(item)}`,
-		price,
-		type: `${AppIcons.getIconOrNull(`itemCategories.${item.itemCategory}`) ?? ""}${i18n.tArray("smallEvents:shop.types")[item.itemCategory] ?? ""}`
-	});
-}
-
-/** The wandering merchant is a man or a woman, drawn once per offer like Discord draws it once per message. */
+/** The wandering merchant is a man or a woman, drawn once per offer like Discord draws it once per message; the item itself is shown by the screen. */
 function shopPrompt(offer: ShopOffer): string {
 	const context = (offer.item.id + offer.price) % 2 === 0 ? "m" : "f";
 	const name = randomTranslation("smallEvents:shop.names", {context, price: offer.price});
-	return randomTranslation("smallEvents:shop.intro", {context, name}) + shopEnd(offer);
+	return randomTranslation("smallEvents:shop.intro", {context, name});
 }
 
 function destinationDuration(tripDurationMinutes: number | undefined): string {
@@ -365,8 +356,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 	])),
 	[SMALL_EVENT_DATA_KINDS.SHOP]: makeDataHandler(SMALL_EVENT_DATA_KINDS.SHOP, data => shopPrompt(data.data)),
 	[SMALL_EVENT_DATA_KINDS.EPIC_SHOP]: makeDataHandler(SMALL_EVENT_DATA_KINDS.EPIC_SHOP, data => randomTranslation("smallEvents:epicItemShop.intro", {price: data.data.price})
-		+ (data.data.tip ? i18n.t("smallEvents:epicItemShop.reductionTip") : "")
-		+ shopEnd(data.data)),
+		+ (data.data.tip ? i18n.t("smallEvents:epicItemShop.reductionTip") : "")),
 	[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP]: makeDataHandler(SMALL_EVENT_DATA_KINDS.RECIPE_SHOP, data => i18n.t(`smallEvents:recipeShop.offer.${data.data.source}`, {
 		recipe: i18n.t("models:cooking.recipeDisplay", data.data.recipe),
 		price: data.data.recipeCost

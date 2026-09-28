@@ -126,6 +126,7 @@
     "actions": {"equip": "Équiper", "deposit": "Ranger", "drink": "Boire", "daily": "Bonus journalier", "sell": "Vendre", "discard": "Jeter", "confirm": "Confirmer"},
     "itemSummary": "{{rarity}} · {{details}}",
     "level": "Niveau {{level}}",
+    "usages": "{{usages}}/{{max}} utilisations",
     "enchantment": "Enchantement",
     "noMaterials": "Vous ne transportez aucun matériau.",
     "noPlants": "Vous ne transportez aucune plante ni graine.",

@@ -96,7 +96,7 @@ function ReserveEntry({item, slot, equipped, locked, expanded, category, onToggl
 	return <ExpandableEntry
 		emblem={itemEmblem(item)}
 		label={itemDisplayName(item)}
-		caption={i18n.t(`items:raritiesWithoutEmote.${item.rarity}`)}
+		caption={i18n.t(`items:rarities.${item.rarity}`)}
 		end={<Text style={sectionStyles.caption}>{i18n.t("app:equipment.slot", {slot})}</Text>}
 		dimmed={locked}
 		expanded={expanded}
@@ -132,7 +132,7 @@ function EquippedSection({category, locked, expanded, onToggle, onConfirm}: {
 				emblem={itemEmblem(equipped.details)}
 				label={itemDisplayName(equipped.details)}
 				caption={category.canDeposit
-					? i18n.t(`items:raritiesWithoutEmote.${equipped.details.rarity}`)
+					? i18n.t(`items:rarities.${equipped.details.rarity}`)
 					: i18n.t("app:equipment.errors.reserveFull")}
 				end={<Text style={sectionStyles.caption}>{i18n.t("app:equipment.equipped")}</Text>}
 				dimmed={locked || !category.canDeposit}

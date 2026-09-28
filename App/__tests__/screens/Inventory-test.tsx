@@ -15,10 +15,11 @@ const mockTrack = jest.fn();
 const mockAnswer = jest.fn();
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: mockTrack, answerWithoutShowing: mockAnswer})}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));
-jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: {count?: number; max?: number; slot?: number; value?: number; details?: string}): string => {
+jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: {count?: number; max?: number; slot?: number; value?: number; details?: string; usages?: number}): string => {
 	if (key === "app:profile.formats.progress") return `${options?.value} / ${options?.max}`;
 	if (key === "items:attack") return `attack ${Number(options?.value)}`;
 	if (key === "app:inventory.itemSummary") return options?.details ?? key;
+	if (key === "app:inventory.usages") return `${options?.usages}/${options?.max} uses`;
 	return key;
 }}}));
 
@@ -45,6 +46,13 @@ describe("inventory views", () => {
 		expect(screen.getByText("app:inventory.absent")).toBeTruthy();
 		expect(screen.getByText("20")).toBeTruthy();
 		expect(screen.getByText("60")).toBeTruthy();
+	});
+
+	it("tells on the closed row how many uses a multi-use potion has left", async () => {
+		const data = inventory();
+		data.potion = {...data.potion, usages: 2, maxUsages: 3};
+		await renderWithGameQuery(<Inventory inventoryData={data} />);
+		expect(screen.getByText("2/3 uses")).toBeTruthy();
 	});
 
 	it("heads each reserve row with the value the item is worn for and excludes the equipped slot from capacity", async () => {
