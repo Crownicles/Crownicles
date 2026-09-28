@@ -32,25 +32,42 @@ function ConsumableEmblem({item}: {item: ItemWithDetails}): ReactNode {
 	return icon ? <TwemojiIcon emoji={icon} size={CONSUMABLE_EMBLEM_SIZE} /> : null;
 }
 
-function ConsumableMenu({collector, onChoose, submitting, onClose}: ConsumableCollectorProps & {onClose: () => void}): ReactNode {
-	const options = consumableOptions(collector);
+/** A lone consumable needs no picking: its button sits right under it instead of behind a press. */
+function ConsumableList({options, action}: {options: ConsumableOption[]; action: (index: number) => ReactNode}): ReactNode {
 	const [expanded, setExpanded] = useState<number | undefined>();
+	const lone = options.length === 1 ? options[0] : null;
+	const toggle = (index: number): void => setExpanded(previous => previous === index ? undefined : index);
+	return <>
+		<ExpandableList>{options.map(option => <ExpandableEntry
+			key={option.index}
+			emblem={<ConsumableEmblem item={option.item} />}
+			label={itemDisplayName(option.item)}
+			caption={consumableDescription(option.item)}
+			expanded={expanded === option.index}
+			chevron={lone ? ENTRY_CHEVRONS.NONE : ENTRY_CHEVRONS.EXPAND}
+			onToggle={(): void => {
+				if (!lone) toggle(option.index);
+			}}
+		>{action(option.index)}</ExpandableEntry>)}</ExpandableList>
+		{lone ? action(lone.index) : null}
+	</>;
+}
+
+function ConsumableMenu({collector, onChoose, submitting, onClose}: ConsumableCollectorProps & {onClose: () => void}): ReactNode {
 	const [answered, setAnswered] = useState(false);
 	const secondsLeft = useSecondsLeft(collector.endTime);
 	const dailyBonus = collector.data.type === DAILY_BONUS_DATA_KINDS.COLLECTOR;
 	const pending = submitting || answered;
-	const choose = (index: number): void => {
-		setAnswered(true);
-		onChoose(index);
-	};
-	// A lone consumable needs no picking: its button sits right under it.
-	const lone = options.length === 1 ? options[0] : null;
+	const lock = secondsLeft === 0 ? {lock: {reason: i18n.t("app:collector.expired"), icon: Clock3}} : {};
 	const action = (index: number): ReactNode => <ActionBanner
 		icon={dailyBonus ? Gift : Droplets}
 		label={i18n.t(dailyBonus ? "app:dailyBonus.claim" : "app:collector.choices.drinkPotion")}
 		pending={pending}
-		onPress={(): void => choose(index)}
-		{...secondsLeft === 0 ? {lock: {reason: i18n.t("app:collector.expired"), icon: Clock3}} : {}}
+		onPress={(): void => {
+			setAnswered(true);
+			onChoose(index);
+		}}
+		{...lock}
 	/>;
 	return <Sheet
 		caption={i18n.t("app:equipment.eyebrow")}
@@ -58,18 +75,7 @@ function ConsumableMenu({collector, onChoose, submitting, onClose}: ConsumableCo
 		closeLabel={i18n.t("app:common.back")}
 		onClose={onClose}
 	>
-		<ExpandableList>{options.map(option => <ExpandableEntry
-			key={option.index}
-			emblem={<ConsumableEmblem item={option.item} />}
-			label={itemDisplayName(option.item)}
-			caption={consumableDescription(option.item)}
-			expanded={expanded === option.index}
-			{...lone ? {chevron: ENTRY_CHEVRONS.NONE} : {}}
-			onToggle={(): void => {
-				if (!lone) setExpanded(previous => previous === option.index ? undefined : option.index);
-			}}
-		>{action(option.index)}</ExpandableEntry>)}</ExpandableList>
-		{lone ? action(lone.index) : null}
+		<ConsumableList options={consumableOptions(collector)} action={action} />
 		<Note>{countdownLabel(secondsLeft, pending)}</Note>
 	</Sheet>;
 }

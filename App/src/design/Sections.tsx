@@ -397,38 +397,40 @@ function EntryChevronIcon({chevron}: {chevron: EntryChevron}): ReactNode {
 	return <ChevronRight size={16} color={chevron === ENTRY_CHEVRONS.FORWARD ? Theme.colors.faint : Theme.colors.muted} />;
 }
 
+type EntryHeadingProps = {emblem?: ReactNode; label: string; caption?: ReactNode};
+
+/** The emblem, name and caption a line shows, repeated on top of its details so the player knows what they are reading. */
+function EntryHeading({emblem, label, caption}: EntryHeadingProps): ReactNode {
+	return <>
+		{emblem ? <View style={styles.entryEmblem}>{emblem}</View> : null}
+		<View style={styles.body}>
+			<TwemojiText textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
+			{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{caption}</TwemojiText> : caption}
+		</View>
+	</>;
+}
+
 /** The details of a line rise over the screen rather than push the rest of the list down; a tap outside puts them away. */
-function DetailSheet({emblem, label, caption, onClose, children, testID}: {
-	emblem?: ReactNode;
-	label: string;
-	caption?: ReactNode;
-	onClose: () => void;
-	children: ReactNode;
-	testID?: string;
-}): ReactNode {
+function DetailSheet({heading, onClose, children, testID}: {heading: ReactNode; onClose: () => void; children: ReactNode; testID: string | undefined}): ReactNode {
 	const insets = useSafeAreaInsets();
+	// Presses inside the card stay there instead of closing it.
+	const card = <Pressable accessibilityRole="none" style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl}]} onPress={(): void => undefined} testID={testID}>
+		<View style={styles.detailGrabber} />
+		<View style={styles.detailHead}>{heading}</View>
+		<View style={styles.detailBody}>{children}</View>
+	</Pressable>;
 	return <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-		<Pressable accessibilityRole="none" style={styles.detailBackdrop} onPress={onClose} testID="detail-sheet-backdrop">
-			{/* Presses inside the card stay there instead of closing it. */}
-			<Pressable accessibilityRole="none" style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl}]} onPress={(): void => undefined} testID={testID}>
-				<View style={styles.detailGrabber} />
-				<View style={styles.detailHead}>
-					{emblem ? <View style={styles.entryEmblem}>{emblem}</View> : null}
-					<View style={styles.body}>
-						<TwemojiText textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
-						{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{caption}</TwemojiText> : caption}
-					</View>
-				</View>
-				<View style={styles.detailBody}>{children}</View>
-			</Pressable>
-		</Pressable>
+		<Pressable accessibilityRole="none" style={styles.detailBackdrop} onPress={onClose} testID="detail-sheet-backdrop">{card}</Pressable>
 	</Modal>;
 }
 
-export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle, chevron = ENTRY_CHEVRONS.EXPAND, highlighted = false, dimmed = false, children, testID}: {
-	emblem?: ReactNode;
-	label: string;
-	caption?: ReactNode;
+type EntryLook = {expanded: boolean; highlighted: boolean; dimmed: boolean};
+
+function entryHeaderStyle({expanded, highlighted, dimmed}: EntryLook, pressed: boolean): object[] {
+	return [styles.entryHeader, expanded && styles.expanded, highlighted && styles.highlighted, dimmed && !expanded && styles.dimmed, pressed && styles.pressed].filter(Boolean) as object[];
+}
+
+export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle, chevron = ENTRY_CHEVRONS.EXPAND, highlighted = false, dimmed = false, children, testID}: EntryHeadingProps & {
 	end?: ReactNode;
 	expanded: boolean;
 	onToggle: () => void;
@@ -438,29 +440,20 @@ export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle
 	children?: ReactNode;
 	testID?: string;
 }): ReactNode {
+	const heading = <EntryHeading emblem={emblem} label={label} caption={caption} />;
 	return <View style={styles.entry}>
 		<Pressable
 			accessibilityRole="button"
 			accessibilityLabel={label}
 			accessibilityState={{selected: expanded, expanded}}
 			onPress={onToggle}
-			style={({pressed}): object[] => [styles.entryHeader, expanded && styles.expanded, highlighted && styles.highlighted, dimmed && !expanded && styles.dimmed, pressed && styles.pressed].filter(Boolean) as object[]}
+			style={({pressed}): object[] => entryHeaderStyle({expanded, highlighted, dimmed}, pressed)}
 		>
-			{emblem ? <View style={styles.entryEmblem}>{emblem}</View> : null}
-			<View style={styles.body}>
-				<TwemojiText textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
-				{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{caption}</TwemojiText> : caption}
-			</View>
+			{heading}
 			{end}
 			<EntryChevronIcon chevron={chevron} />
 		</Pressable>
-		{expanded && children ? <DetailSheet
-			{...emblem ? {emblem} : {}}
-			label={label}
-			{...caption === undefined ? {} : {caption}}
-			onClose={onToggle}
-			{...testID === undefined ? {} : {testID}}
-		>{children}</DetailSheet> : null}
+		{expanded && children ? <DetailSheet heading={heading} onClose={onToggle} testID={testID}>{children}</DetailSheet> : null}
 	</View>;
 }
 
