@@ -1189,7 +1189,7 @@
       "defense": "Défense",
       "speed": "Vitesse",
       "breath": "Souffle",
-      "breathRegen": "Récupération de souffle",
+      "breathRegen": "Récup. souffle",
       "gems": "Gemmes",
       "campaign": "Campagne",
       "rank": "Classement",
@@ -1206,7 +1206,6 @@
     "formats": {
       "number": "{{value, number}}",
       "progress": "{{value, number}} / {{max, number}}",
-      "percentage": "{{value, number}} %",
       "rank": "{{rank, number}} / {{players, number}}",
       "cooking": "Niveau {{level, number}} · {{grade}}"
     },

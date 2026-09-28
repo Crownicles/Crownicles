@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		paddingVertical: Theme.spacing.xxl
-	}
+	},
+	gauge: {padding: Theme.spacing.md}
 });
 
 function numberValue(value: number): string {
@@ -47,10 +48,6 @@ function numberValue(value: number): string {
 
 function progressValue(value: number, max: number): string {
 	return i18n.t("app:profile.formats.progress", {value, max});
-}
-
-function percentageValue(value: number): string {
-	return i18n.t("app:profile.formats.percentage", {value});
 }
 
 function duration(milliseconds: number): string {
@@ -207,14 +204,13 @@ function campaignSection(profile: ProfileRes): ProfileSection {
 		id: "missions",
 		icon: "missions.campaign",
 		label: i18n.t("app:profile.fields.campaign"),
-		caption: percentageValue(profile.missions.campaignProgression),
-		content: <FightGauge
-			label={i18n.t("app:profile.fields.campaign")}
+		content: <View style={styles.gauge}><FightGauge
+			label={i18n.t("app:missions.progress")}
 			value={profile.missions.campaignProgression}
 			max={CAMPAIGN_COMPLETE}
 			color={Theme.colors.gold}
 			{...gaugeEmoji("missions.campaign")}
-		/>
+		/></View>
 	};
 }
 
@@ -231,13 +227,13 @@ function cookingSection(profile: ProfileRes): ProfileSection | null {
 			level: cooking.level,
 			grade: i18n.t(`models:cooking.grades.${cooking.grade}`)
 		}),
-		content: <FightGauge
+		content: <View style={styles.gauge}><FightGauge
 			label={i18n.t("app:profile.fields.experience")}
 			value={cooking.experience.value}
 			max={cooking.experience.max}
 			color={Theme.colors.gold}
 			{...gaugeEmoji("unitValues.xp")}
-		/>
+		/></View>
 	};
 }
 
@@ -248,7 +244,7 @@ function ProfileSections({profile}: {profile: ProfileRes}): ReactNode {
 	return <>
 		{sections.map(section => <View key={section.id} testID={`profile-${section.id}`}>
 			<SectionHeader icon={AppIcons.getIcon(section.icon)} {...section.caption ? {action: {hint: section.caption}} : {}}>{section.label}</SectionHeader>
-			{section.content}
+			<ExpandableList>{section.content}</ExpandableList>
 		</View>)}
 	</>;
 }

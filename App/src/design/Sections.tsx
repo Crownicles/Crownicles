@@ -8,6 +8,7 @@ import {SwipeBack} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {i18n} from "@/src/translations/i18n";
 
 /**
  * The grammar every detail screen is written in: an identity banner, a row of figures, a dark
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
 	caption: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
 	title: {fontFamily: Theme.fonts.extraBold, fontSize: 23, lineHeight: 29, color: Theme.colors.ink},
 	chevron: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.chevron, color: Theme.colors.faint},
-	figures: {flexDirection: "row", borderTopWidth: 1, borderBottomWidth: 1, borderColor: Theme.colors.line, paddingVertical: Theme.spacing.xl},
+	figures: {flexDirection: "row", paddingVertical: Theme.spacing.lg, paddingHorizontal: Theme.spacing.md},
 	figure: {flex: 1, minWidth: 0, gap: 6},
 	figureSingle: {alignItems: "center", justifyContent: "space-between"},
 	figureEnd: {alignItems: "flex-end"},
@@ -37,8 +38,8 @@ const styles = StyleSheet.create({
 	lockText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
 	disabled: {opacity: 0.5},
 	pressed: {opacity: 0.7},
-	list: {borderTopWidth: 1, borderColor: Theme.colors.line},
-	entry: {borderBottomWidth: 1, borderColor: Theme.colors.line},
+	/** Rows sit together on one card: the card and the spacing group them, no rule is drawn between them. */
+	list: {backgroundColor: Theme.colors.paper, borderRadius: Theme.radius, overflow: "hidden"},
 	entryHeader: {minHeight: 72, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"},
 	expanded: {backgroundColor: Theme.colors.wash},
 	highlighted: {borderLeftColor: Theme.colors.green},
@@ -50,16 +51,17 @@ const styles = StyleSheet.create({
 	detailGrabber: {alignSelf: "center", width: 40, height: 4, borderRadius: 2, backgroundColor: Theme.colors.line},
 	detailHead: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
 	detailBody: {gap: Theme.spacing.md},
-	back: {width: 34, height: 34, borderRadius: 17, backgroundColor: Theme.colors.wash, alignItems: "center", justifyContent: "center", marginBottom: Theme.spacing.lg},
+	back: {alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: Theme.spacing.xs, height: 34, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: Theme.colors.wash, marginBottom: Theme.spacing.lg},
+	backLabel: {color: Theme.colors.ink, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body},
 	/** The icon set only ships a downward chevron; a quarter turn points it back. */
 	backChevron: {transform: [{rotate: "90deg"}]},
-	fact: {minHeight: 44, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderBottomWidth: 1, borderColor: Theme.colors.line},
+	fact: {minHeight: 44, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md},
 	// TwemojiText applies textStyle to its inner Text: a flex there would stretch the line to the full row.
 	factLabelBox: {flex: 1, minWidth: 0},
 	factLabel: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
 	factValue: {flexShrink: 1, minWidth: 0, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 4},
 	factAmount: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink, fontVariant: ["tabular-nums"], textAlign: "right"},
-	gauge: {paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, gap: 6, borderBottomWidth: 1, borderColor: Theme.colors.line},
+	gauge: {paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, gap: 6},
 	gaugeTop: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md},
 	gaugeValue: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
 	gaugeTrack: {height: 5, borderRadius: 999, backgroundColor: Theme.colors.line, overflow: "hidden"},
@@ -257,6 +259,8 @@ export function LockHint({lock, testID}: {lock: Lock; testID?: string}): ReactNo
 export function BackButton({label, onClose}: {label: string; onClose: () => void}): ReactNode {
 	return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onClose} style={({pressed}): object[] => [styles.back, pressed && styles.pressed].filter(Boolean) as object[]}>
 		<View style={styles.backChevron}><ChevronDown size={18} color={Theme.colors.ink} /></View>
+		{/* Always « Retour », so it is never confused with a screen's own cancel button. */}
+		<Text style={styles.backLabel}>{i18n.t("app:common.back")}</Text>
 	</Pressable>;
 }
 
@@ -441,7 +445,7 @@ export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle
 	testID?: string;
 }): ReactNode {
 	const heading = <EntryHeading emblem={emblem} label={label} caption={caption} />;
-	return <View style={styles.entry}>
+	return <View>
 		<Pressable
 			accessibilityRole="button"
 			accessibilityLabel={label}
