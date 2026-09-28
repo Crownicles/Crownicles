@@ -8,6 +8,7 @@ import {Theme} from "@/src/design/Theme";
 import {fighterName, fightEntryTitle, fightImpactLabel, fightNarrative, fightConsequences} from "@/src/display/Fight";
 import {petName, petIcon} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
+import {joinFacts} from "@/src/display/Facts";
 import {FightCue, fightCue} from "@/src/display/FightMotion";
 import {AppIcons} from "@/src/AppIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -51,7 +52,7 @@ function FightLogSummary({record, cue}: {record: FightLogRecord; cue: FightCue})
 	const turn = record.before ? i18n.t("app:battle.shortTurn", {turn: record.before.numberOfTurn}) : "";
 	return <>
 		<FightEventIcon entry={record.entry} />
-		<View style={styles.entryBody}><Text style={styles.action}>{fightEntryTitle(record.entry)}</Text><Text style={styles.actor}>{[actor, turn].filter(Boolean).join(" · ")}</Text></View>
+		<View style={styles.entryBody}><Text style={styles.action}>{fightEntryTitle(record.entry)}</Text><Text style={styles.actor}>{joinFacts([actor, turn])}</Text></View>
 		<FightLogImpact cue={cue} />
 	</>;
 }

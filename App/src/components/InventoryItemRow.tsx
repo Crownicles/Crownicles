@@ -8,6 +8,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
 import {consumableDescription} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
+import {joinFacts} from "@/src/display/Facts";
 import {EntryRow} from "@/src/design/Sections";
 
 export function statValue(stat: MainItemStat): number {
@@ -19,11 +20,11 @@ export function isMainItem(item: ItemWithDetails): item is MainItem {
 }
 
 function mainItemStats(item: MainItem): string {
-	return [
+	return joinFacts([
 		i18n.t("items:attack", {value: statValue(item.attack)}),
 		i18n.t("items:defense", {value: statValue(item.defense)}),
 		i18n.t("items:speed", {value: statValue(item.speed)})
-	].join(" · ");
+	]);
 }
 
 export function inventoryItemDetails(item: ItemWithDetails): string {

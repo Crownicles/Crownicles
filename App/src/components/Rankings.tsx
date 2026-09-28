@@ -15,6 +15,7 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
+import {joinFacts} from "@/src/display/Facts";
 
 /** Each board counts its own currency, and shows the emoji the rest of the game gives it. */
 const RANKING_UNITS: Record<TopDataType, string> = {
@@ -63,7 +64,7 @@ function entryMeta(entry: RankingEntry): string {
 	const labels = [i18n.t("app:guild.level", {level: entry.level})];
 	if (entry.leagueId !== undefined) labels.push(i18n.t(`models:leagues.${entry.leagueId}`));
 	if (entry.afk) labels.push(i18n.t("app:arena.rankings.inactive"));
-	return labels.join(" · ");
+	return joinFacts(labels);
 }
 
 /** The page the player sits on, so the list can jump straight to it instead of being paged through. */

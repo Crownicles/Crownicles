@@ -858,7 +858,7 @@ function AdventureHeader({context, dash, cure}: {context: AdventureContext; dash
 	</>;
 }
 
-function AdventureActions({packet, currentTime, actions}: {packet: ReportTravelSummaryRes; currentTime: number; actions: SheetActions}): ReactNode {
+function AdventureActions({packet, actions}: {packet: ReportTravelSummaryRes; actions: SheetActions}): ReactNode {
 	return <View style={styles.actions}>
 		<JourneyAction
 			packet={packet}
@@ -886,7 +886,7 @@ function AdventureSheet({packet, currentTime, actions, tools, dash, cure}: {
 	return (
 		<Screen>
 			<AdventureHeader context={context} dash={dash} cure={cure} />
-			<AdventureActions packet={packet} currentTime={currentTime} actions={actions} />
+			<AdventureActions packet={packet} actions={actions} />
 			{contestRunning ? <ContestTips packet={packet} reportReady={actions.reportReady} /> : null}
 			{advice ? <Note>{advice}</Note> : null}
 			<MissionRewardsBanner />

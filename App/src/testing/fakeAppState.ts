@@ -1,8 +1,8 @@
 import {useSyncExternalStore} from "react";
 import {AppStateRes} from "ws-packets/src/fromServer/appState/AppStateRes";
-import type * as AppStateModule from "@/src/store/AppState";
+import type {useAppState, useAppStateChange, withChange} from "@/src/store/AppState";
 
-type AppStateHooks = Pick<typeof AppStateModule, "useAppState" | "useAppStateChange">;
+type AppStateHooks = {useAppState: typeof useAppState; useAppStateChange: typeof useAppStateChange};
 
 function emptyState(): AppStateRes {
 	return Object.assign(new AppStateRes(), {seen: [], reveals: []});
@@ -21,7 +21,7 @@ class FakeAppState {
 
 	public readonly hooks: AppStateHooks = {
 		useAppState: () => ({status: "ready", data: useSyncExternalStore(this.subscribe, this.snapshot)}),
-		useAppStateChange: () => change => this.set(jest.requireActual<typeof AppStateModule>("@/src/store/AppState").withChange(this.state, change))
+		useAppStateChange: () => change => this.set(jest.requireActual<{withChange: typeof withChange}>("@/src/store/AppState").withChange(this.state, change))
 	};
 
 	public reset(): void {

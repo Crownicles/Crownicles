@@ -5,6 +5,7 @@ import {AMOUNT_UNITS, formatMoney, formatNumber} from "@/src/display/Amounts";
 import {ExpandableList, Fact, Figures, Gauge} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
+import {joinFacts} from "@/src/display/Facts";
 import {renderCityNotarySummary} from "@/src/collectors/CityNotarySummary";
 
 type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
@@ -13,13 +14,13 @@ type SummaryRenderer = (snapshot: CityMobileSnapshot) => ReactNode;
 type OwnedHome = NonNullable<NonNullable<CityMobileSnapshot["home"]>["owned"]>;
 
 function homeServices(home: OwnedHome): string {
-	return [
+	return joinFacts([
 		home.hasBed ? i18n.t("app:city.summary.bed") : null,
 		home.hasChest ? i18n.t("app:city.summary.chest") : null,
 		home.hasGarden ? i18n.t("app:city.summary.garden") : null,
 		home.hasCooking ? i18n.t("app:city.summary.cooking") : null,
 		home.hasUpgradeStation ? i18n.t("app:city.summary.forge") : null
-	].filter(Boolean).join(" · ") || "—";
+	]) || "—";
 }
 
 function renderInnSummary(snapshot: CityMobileSnapshot): ReactNode {
