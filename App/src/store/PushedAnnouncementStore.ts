@@ -10,11 +10,11 @@ export class PushedAnnouncementStore<Packet extends FromServerPacket> {
 
 	/**
 	 * @param wireName The pushed packet to keep
-	 * @param concerns Whether a packet is worth announcing to this player
+	 * @param concerns Whether a packet is worth announcing to this player; every one is, without it
 	 */
-	public constructor(wireName: string, concerns: (packet: Packet) => boolean = (): boolean => true) {
+	public constructor(wireName: string, concerns?: (packet: Packet) => boolean) {
 		WebSocketClient.getInstance().registerPushedPacketHandler<Packet>(wireName, packet => {
-			if (!concerns(packet)) return;
+			if (concerns && !concerns(packet)) return;
 			this.latest = packet;
 			this.notify();
 		});
