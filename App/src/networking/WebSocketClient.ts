@@ -8,8 +8,9 @@ import {PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
 import {WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON} from "ws-packets/src/WebSocketCloseReasons";
 import {APP_PROTOCOL_QUERY_PARAMETER, APP_PROTOCOL_VERSION} from "ws-packets/src/AppCompatibility";
 
-/** The server refuses an app speaking another protocol: retrying cannot help, only an update can. */
-const OUTDATED_CLOSE_STATES: Partial<Record<string, AuthStateEnum>> = {
+/** Closes that reconnecting cannot fix: another session took over, or the app and server speak different protocols. */
+const FINAL_CLOSE_STATES: Partial<Record<string, AuthStateEnum>> = {
+	[WEBSOCKET_SESSION_REPLACED_REASON]: AuthStateEnum.CONNECTION_ERROR,
 	[WEBSOCKET_APP_OUTDATED_REASON]: AuthStateEnum.APP_OUTDATED,
 	[WEBSOCKET_SERVER_OUTDATED_REASON]: AuthStateEnum.SERVER_OUTDATED
 };
@@ -312,15 +313,10 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 			return;
 		}
 		console.log("WebSocket connection closed.");
-		const outdatedState = OUTDATED_CLOSE_STATES[error.reason];
-		if (outdatedState !== undefined) {
+		const finalState = FINAL_CLOSE_STATES[error.reason];
+		if (finalState !== undefined) {
 			this.disconnect();
-			this.setState?.(outdatedState);
-			return;
-		}
-		if (error.reason === WEBSOCKET_SESSION_REPLACED_REASON) {
-			this.disconnect();
-			this.setState?.(AuthStateEnum.CONNECTION_ERROR);
+			this.setState?.(finalState);
 			return;
 		}
 		if (error.reason === "Unauthorized") {
