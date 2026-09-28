@@ -497,11 +497,13 @@ export async function giveItemToPlayer(
 		slotData.itemEnchantmentId,
 		slotData.remainingPotionUsages
 	);
+	const kept = await player.giveItem(item, slotData.itemLevel, slotData.itemEnchantmentId);
 	response.push(makePacket(ItemFoundPacket, {
-		itemWithDetails: foundItem
+		itemWithDetails: foundItem,
+		kept
 	}));
 
-	if (await player.giveItem(item, slotData.itemLevel, slotData.itemEnchantmentId)) {
+	if (kept) {
 		await manageGiveItemRelateds(response, player, item);
 		return;
 	}

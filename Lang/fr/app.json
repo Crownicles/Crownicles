@@ -137,7 +137,8 @@
     "gain": "+{{amount}}",
     "noPotion": "Vous ne possédez aucune potion utilisable hors combat.",
     "drinkTitle": "Boire une potion",
-    "drunk": "Potion consommée"
+    "drunk": "Potion consommée",
+    "found": "Nouvel objet dans l'inventaire"
   },
   "dailyBonus": {
     "title": "Bonus journalier",

@@ -257,7 +257,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 						id: mockItem.id,
 						category: ItemCategory.WEAPON,
 						rarity: ItemRarity.COMMON
-					})
+					}),
+					kept: true
 				}
 			});
 		});
@@ -302,6 +303,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 
 			// Assert
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
+			expect(mockResponse[0]).toMatchObject({ data: { kept: false } });
 			expect(mockResponse[1]).toBeInstanceOf(ReactionCollectorInstance);
 		});
 

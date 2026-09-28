@@ -73,7 +73,8 @@ async function applyTournamentRewardUnderLock(
 			rewardItem.item,
 			rewardItem.itemLevel,
 			rewardItem.itemEnchantmentId
-		)
+		),
+		kept: true
 	}));
 	await player.addExperience({
 		amount: participant.rewardXp,

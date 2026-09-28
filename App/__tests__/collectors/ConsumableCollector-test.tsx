@@ -4,10 +4,43 @@ import {DAILY_BONUS_DATA_KINDS, DAILY_BONUS_REACTION_KINDS, GENERIC_REACTION_KIN
 import {ItemNature} from "ws-packets/src/objects/ItemNature";
 import {ConsumableCollector} from "@/src/collectors/ConsumableCollector";
 import {InventoryOutcome} from "@/src/collectors/InventoryOutcome";
+import {ReactNode} from "react";
+import {ItemFoundRes} from "ws-packets/src/fromServer/inventory/ItemFoundRes";
+import {useInventoryOutcome} from "@/src/store/useInventoryOutcome";
+import {WebSocketClient} from "@/src/networking/WebSocketClient";
+import {renderWithGameQuery} from "@/src/testing/testUtils";
 
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIconOrNull: (): null => null, getIcon: (): string => ""}}));
 jest.mock("@/src/store/usePlayerProfile", () => ({usePlayerProfile: (): object => ({status: "ready", data: {pseudo: "Drapht"}})}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: object): string => `${key}${options ? ` ${JSON.stringify(options)}` : ""}`}}));
+
+describe("items found on the road", () => {
+	const potion = {id: 7, itemCategory: 2, rarity: 1, nature: ItemNature.HEALTH, power: 20, maxPower: 20};
+
+	function LatestOutcome(): ReactNode {
+		const {outcome} = useInventoryOutcome();
+		return outcome ? <InventoryOutcome outcome={outcome} onContinue={jest.fn()} /> : null;
+	}
+
+	async function findFromCore(kept: boolean): Promise<void> {
+		await act(async () => {
+			Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry").dispatch(ItemFoundRes.wireName, {item: potion, kept});
+		});
+	}
+
+	it("names the item put straight into a free slot", async () => {
+		await renderWithGameQuery(<LatestOutcome />);
+		await findFromCore(true);
+		expect(screen.getByText("app:inventoryActions.found")).toBeTruthy();
+		expect(screen.getByText("models:potions.7")).toBeTruthy();
+	});
+
+	it("leaves a find that did not fit to the choice that follows it", async () => {
+		await renderWithGameQuery(<LatestOutcome />);
+		await findFromCore(false);
+		expect(screen.queryByText("app:inventoryActions.found")).toBeNull();
+	});
+});
 
 describe("daily bonus and potion outcomes", () => {
 	it("offers the server object without shifting its reaction index", async () => {

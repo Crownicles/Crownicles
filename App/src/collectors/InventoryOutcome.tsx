@@ -2,7 +2,9 @@ import {ReactNode} from "react";
 import {InventoryOutcome as Outcome} from "@/src/store/useInventoryOutcome";
 import {ItemRefusedRes} from "ws-packets/src/fromServer/inventory/ItemRefusedRes";
 import {UnitIcon} from "@/src/components/UnitIcon";
-import {isPotionCategory, itemDisplayName} from "@/src/collectors/CollectorLabels";
+import {isPotionCategory, itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
+import {AppIcons} from "@/src/AppIcons";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {plainStory} from "@/src/display/Markdown";
 import {Toast, ToastValue} from "@/src/design/Sections";
@@ -18,7 +20,7 @@ const EMBLEM_SIZE = 22;
 const NO_GAIN_UNIT = "none";
 const WAITING_UNIT = "time";
 
-type OutcomeToast = {unit: string; title: string; subtitle: string; value?: ToastValue};
+type OutcomeToast = {unit: string; title: string; subtitle: string; value?: ToastValue; icon?: string};
 
 function gain(amount: string, unit: string): ToastValue {
 	return {amount: i18n.t("app:inventoryActions.gain", {amount}), unit};
@@ -48,6 +50,15 @@ function outcomeToast(outcome: Outcome, pseudo: string): OutcomeToast {
 		}
 		case "refused":
 			return refusedToast(outcome.packet, pseudo);
+		case "found": {
+			const iconPath = itemIconPath(outcome.packet.item);
+			return {
+				unit: NO_GAIN_UNIT,
+				title: i18n.t("app:inventoryActions.found"),
+				subtitle: itemDisplayName(outcome.packet.item),
+				...iconPath ? {icon: AppIcons.getIconOrNull(iconPath) ?? undefined} : {}
+			};
+		}
 		case "cooldown": {
 			const availableAt = outcome.packet.lastDailyTimestamp + outcome.packet.cooldownHours * MILLISECONDS_PER_HOUR;
 			return {
@@ -73,7 +84,7 @@ function outcomeToast(outcome: Outcome, pseudo: string): OutcomeToast {
 export function InventoryOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
 	const toast = outcomeToast(outcome, usePlayerPseudo());
 	return <Toast
-		emblem={<UnitIcon unit={toast.unit} size={EMBLEM_SIZE} />}
+		emblem={toast.icon ? <TwemojiIcon emoji={toast.icon} size={EMBLEM_SIZE} /> : <UnitIcon unit={toast.unit} size={EMBLEM_SIZE} />}
 		title={toast.title}
 		subtitle={toast.subtitle}
 		{...toast.value ? {value: toast.value} : {}}

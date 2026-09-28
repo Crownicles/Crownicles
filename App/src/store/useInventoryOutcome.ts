@@ -5,12 +5,14 @@ import {DailyBonusCancelRes, DailyBonusCooldownRes, DailyBonusRes} from "ws-pack
 import {DrinkRes} from "ws-packets/src/fromServer/drink/DrinkRes";
 import {DrinkCancel} from "ws-packets/src/fromServer/drink/DrinkCancel";
 import {ItemRefusedRes} from "ws-packets/src/fromServer/inventory/ItemRefusedRes";
+import {ItemFoundRes} from "ws-packets/src/fromServer/inventory/ItemFoundRes";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 
 export type InventoryOutcome =
 	| {kind: "sale"; packet: SellRes}
 	| {kind: "refused"; packet: ItemRefusedRes}
+	| {kind: "found"; packet: ItemFoundRes}
 	| {kind: "daily"; packet: DailyBonusRes}
 	| {kind: "drink"; packet: DrinkRes}
 	| {kind: "cooldown"; packet: DailyBonusCooldownRes};
@@ -36,6 +38,10 @@ export function useInventoryOutcome(): InventoryOutcomeState {
 		const unregister = [
 			client.registerPushedPacketHandler<SellRes>(SellRes.wireName, packet => receive({kind: "sale", packet})),
 			client.registerPushedPacketHandler<ItemRefusedRes>(ItemRefusedRes.wireName, packet => receive({kind: "refused", packet})),
+			// A find that does not fit is told by the choice, the sale or the destruction that follows.
+			client.registerPushedPacketHandler<ItemFoundRes>(ItemFoundRes.wireName, packet => {
+				if (packet.kept) receive({kind: "found", packet});
+			}),
 			client.registerPushedPacketHandler<DailyBonusRes>(DailyBonusRes.wireName, packet => receive({kind: "daily", packet})),
 			client.registerPushedPacketHandler<DrinkRes>(DrinkRes.wireName, packet => receive({kind: "drink", packet})),
 			client.registerPushedPacketHandler<DailyBonusCooldownRes>(DailyBonusCooldownRes.wireName, packet => receive({kind: "cooldown", packet})),
