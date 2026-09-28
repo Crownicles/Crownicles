@@ -93,7 +93,9 @@
   "boot": {
     "updating": "Préparation du royaume…",
     "error": "Les traductions n'ont pas pu être chargées. Vérifiez votre connexion puis réessayez.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "appOutdated": "Une nouvelle version de l'application est disponible. Mettez-la à jour depuis votre magasin d'applications pour continuer l'aventure.",
+    "serverOutdated": "Le royaume est en cours de mise à jour. Réessayez dans quelques instants."
   },
   "auth": {
     "caption": "Crownicles",

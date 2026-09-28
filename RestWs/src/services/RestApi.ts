@@ -4,6 +4,7 @@ import fastify, {
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { setupAssetsRoutes } from "./routes/AssetsRoute";
 import { setupAccountDeletionRoutes } from "./routes/AccountDeletionRoute";
+import { setupAppCompatibilityRoutes } from "./routes/AppCompatibilityRoute";
 import { AccountDeletionConfig } from "../config/RestWsConfig";
 
 /**
@@ -73,6 +74,7 @@ export class RestApi {
 			reply.status(404).send({ error: "Not Found" });
 		});
 
+		setupAppCompatibilityRoutes(this.server);
 		setupAccountDeletionRoutes(this.server, this.accountDeletion);
 		await setupAssetsRoutes(this.server, this.debugMode);
 	}

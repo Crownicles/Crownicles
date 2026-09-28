@@ -10,8 +10,11 @@ import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../packets/fromClient/FromClientTranslator";
 import { InvalidClientPacketError } from "../packets/fromClient/InvalidClientPacketError";
 import {
-	WEBSOCKET_SESSION_REPLACED_REASON, WebSocketCloseReason
+	WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON, WebSocketCloseReason
 } from "../../../WsPackets/src/WebSocketCloseReasons";
+import {
+	APP_COMPATIBILITY_STATUSES, APP_PROTOCOL_QUERY_PARAMETER, APP_PROTOCOL_VERSION, compareProtocolVersions
+} from "../../../WsPackets/src/AppCompatibility";
 import { FromClientPacket } from "../../../WsPackets/src/fromClient/FromClientPacket";
 import {
 	Server, WebSocket
@@ -235,15 +238,24 @@ export class WebSocketServer {
 	 * @param req
 	 */
 	static async verifyClientConnection(ws: WebSocket, req: IncomingMessage): Promise<ConnectedPlayer | null> {
+		const query = new URL(req.url ?? "", "ws://localhost").searchParams;
+
+		// An app without the parameter predates the check, so it is outdated too
+		const compatibility = compareProtocolVersions(Number(query.get(APP_PROTOCOL_QUERY_PARAMETER)), APP_PROTOCOL_VERSION);
+		if (compatibility !== APP_COMPATIBILITY_STATUSES.UP_TO_DATE) {
+			ws.close(1008, compatibility === APP_COMPATIBILITY_STATUSES.APP_OUTDATED ? WEBSOCKET_APP_OUTDATED_REASON : WEBSOCKET_SERVER_OUTDATED_REASON);
+			return null;
+		}
+
 		// Check if the request has a token
-		const urlSplit = req.url?.split("token=");
-		if (!urlSplit || urlSplit.length < 2) {
+		const token = query.get("token");
+		if (!token) {
 			ws.close(1008, "Unauthorized");
 			return null;
 		}
 
 		// Check if the token is valid and get the keycloakId
-		const checkToken = await KeycloakUtils.checkTokenAndGetKeycloakId(keycloakConfig, urlSplit[1]);
+		const checkToken = await KeycloakUtils.checkTokenAndGetKeycloakId(keycloakConfig, token);
 		if (!checkToken || checkToken.isError) {
 			ws.close(1008, "Unauthorized");
 			return null;

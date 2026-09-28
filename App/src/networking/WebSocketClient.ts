@@ -5,7 +5,14 @@ import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {wireNameOf} from "ws-packets/src/MakePackets";
 import {PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
-import {WEBSOCKET_SESSION_REPLACED_REASON} from "ws-packets/src/WebSocketCloseReasons";
+import {WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON} from "ws-packets/src/WebSocketCloseReasons";
+import {APP_PROTOCOL_QUERY_PARAMETER, APP_PROTOCOL_VERSION} from "ws-packets/src/AppCompatibility";
+
+/** The server refuses an app speaking another protocol: retrying cannot help, only an update can. */
+const OUTDATED_CLOSE_STATES: Partial<Record<string, AuthStateEnum>> = {
+	[WEBSOCKET_APP_OUTDATED_REASON]: AuthStateEnum.APP_OUTDATED,
+	[WEBSOCKET_SERVER_OUTDATED_REASON]: AuthStateEnum.SERVER_OUTDATED
+};
 
 export type WebSocketPacketResponseHandler<T extends FromServerPacket> = (packet: T) => void;
 
@@ -205,7 +212,7 @@ export class WebSocketClient {
 		}
 
 		let firstConnectionFlag = firstConnection;
-		const socket = new WebSocket(`${webSocketUrl}?token=${accessToken}`);
+		const socket = new WebSocket(`${webSocketUrl}?${APP_PROTOCOL_QUERY_PARAMETER}=${APP_PROTOCOL_VERSION}&token=${accessToken}`);
 		this.socket = socket;
 
 		socket.onopen = (): void => {
@@ -305,6 +312,12 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 			return;
 		}
 		console.log("WebSocket connection closed.");
+		const outdatedState = OUTDATED_CLOSE_STATES[error.reason];
+		if (outdatedState !== undefined) {
+			this.disconnect();
+			this.setState?.(outdatedState);
+			return;
+		}
 		if (error.reason === WEBSOCKET_SESSION_REPLACED_REASON) {
 			this.disconnect();
 			this.setState?.(AuthStateEnum.CONNECTION_ERROR);

@@ -46,20 +46,32 @@ function isAuthPending(state: AuthStateEnum): boolean {
 	return state === AuthStateEnum.NOT_READY || state === AuthStateEnum.CONNECTING;
 }
 
+/** A protocol mismatch cannot be retried away when the app is the one behind: the notice has no button then. */
+const OUTDATED_NOTICES: Partial<Record<AuthStateEnum, {message: string; canRetry: boolean}>> = {
+	[AuthStateEnum.APP_OUTDATED]: {message: "app:boot.appOutdated", canRetry: false},
+	[AuthStateEnum.SERVER_OUTDATED]: {message: "app:boot.serverOutdated", canRetry: true}
+};
+
+function BlockingNotice({message, onRetry}: {message: string; onRetry?: () => void}): React.ReactElement {
+	return (
+		<Modal visible transparent animationType="fade">
+			<View style={styles.overlay} pointerEvents="auto">
+				<View style={styles.indicatorContainer}>
+					<Text style={styles.blockingText}>{message}</Text>
+					{onRetry ? <DesignButton variant="primary" onPress={onRetry}>{i18n.t("app:common.reconnect")}</DesignButton> : null}
+				</View>
+			</View>
+		</Modal>
+	);
+}
+
 function renderBlockingState(authState: AuthStateEnum, onReconnect: () => void): React.ReactElement | null {
 	if (authState === AuthStateEnum.CONNECTION_ERROR) {
-		return (
-			<Modal visible transparent animationType="fade">
-				<View style={styles.overlay} pointerEvents="auto">
-					<View style={styles.indicatorContainer}>
-						<Text style={styles.blockingText}>
-							{i18n.t("app:common.connectionError")}
-						</Text>
-						<DesignButton variant="primary" onPress={onReconnect}>{i18n.t("app:common.reconnect")}</DesignButton>
-					</View>
-				</View>
-			</Modal>
-		);
+		return <BlockingNotice message={i18n.t("app:common.connectionError")} onRetry={onReconnect} />;
+	}
+	const outdated = OUTDATED_NOTICES[authState];
+	if (outdated) {
+		return <BlockingNotice message={i18n.t(outdated.message)} {...outdated.canRetry ? {onRetry: onReconnect} : {}} />;
 	}
 
 	return null;

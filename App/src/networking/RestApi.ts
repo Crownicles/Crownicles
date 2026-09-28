@@ -1,4 +1,5 @@
 import type {AssetsBundle, AssetsBundleLanguage} from "../../../WsPackets/src/objects/AssetsBundle";
+import {APP_PROTOCOL_VERSION, AppCompatibility, AppCompatibilityStatus, compareProtocolVersions} from "../../../WsPackets/src/AppCompatibility";
 
 export const REST_TIMEOUT_MS = 15_000;
 
@@ -40,6 +41,28 @@ export class RestApi {
 		}
 
 		return await response.json() as T;
+	}
+
+	/**
+	 * Whether this app can play with the server. A server without the route predates the check, so it is the
+	 * one behind; a network failure answers null and leaves the WebSocket check to decide.
+	 */
+	public static async getCompatibility(): Promise<AppCompatibilityStatus | null> {
+		try {
+			const response = await RestApi.fetchWithTimeout(`${RestApi.getBaseUrl()}/app/compatibility`, {method: "GET"}, REST_TIMEOUT_MS);
+			if (response.status === 404) {
+				return compareProtocolVersions(APP_PROTOCOL_VERSION, 0);
+			}
+			if (!response.ok) {
+				return null;
+			}
+			const {protocolVersion} = await response.json() as AppCompatibility;
+			return compareProtocolVersions(APP_PROTOCOL_VERSION, protocolVersion);
+		}
+		catch (error) {
+			console.warn("Could not check the app compatibility:", error);
+			return null;
+		}
 	}
 
 	public static async getAssetsBundle(language: AssetsBundleLanguage, etag?: string): Promise<AssetsBundleResponse> {

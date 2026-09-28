@@ -4,12 +4,14 @@ import {act, fireEvent, render, waitFor} from "@testing-library/react-native";
 import {BootGate} from "@/src/translations/BootGate";
 import {AssetsManager, CachedBundle} from "@/src/assets/AssetsManager";
 import {applyServerBundle} from "@/src/translations/i18nLoader";
+import {RestApi} from "@/src/networking/RestApi";
 
 jest.mock("@/src/assets/AssetsManager", () => ({AssetsManager: {
 	loadCachedBundle: jest.fn(),
 	syncBundle: jest.fn()
 }}));
 jest.mock("@/src/translations/i18nLoader", () => ({applyServerBundle: jest.fn()}));
+jest.mock("@/src/networking/RestApi", () => ({RestApi: {getCompatibility: jest.fn()}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
 jest.mock("@/src/design/Primitives", () => {
 	const react = jest.requireActual("react");
@@ -38,6 +40,33 @@ describe("BootGate", () => {
 		jest.clearAllMocks();
 		mockedLoadCachedBundle.mockResolvedValue(null);
 		mockedSyncBundle.mockResolvedValue(bundle);
+		jest.mocked(RestApi.getCompatibility).mockResolvedValue("upToDate");
+	});
+
+	it("refuses to open the game to an app older than the server, with no way around it", async () => {
+		mockedLoadCachedBundle.mockResolvedValue(bundle);
+		jest.mocked(RestApi.getCompatibility).mockResolvedValue("appOutdated");
+		const view = await renderGate();
+
+		await waitFor(() => expect(view.getByText("app:boot.appOutdated")).toBeTruthy());
+		expect(view.queryByText("route content")).toBeNull();
+		expect(view.queryByText("app:boot.retry")).toBeNull();
+	});
+
+	it("waits for a server being updated and lets the player try again", async () => {
+		jest.mocked(RestApi.getCompatibility).mockResolvedValueOnce("serverOutdated").mockResolvedValue("upToDate");
+		const view = await renderGate();
+
+		await waitFor(() => expect(view.getByText("app:boot.serverOutdated")).toBeTruthy());
+		fireEvent.press(view.getByText("app:boot.retry"));
+		await waitFor(() => expect(view.getByText("route content")).toBeTruthy());
+	});
+
+	it("still starts when the compatibility cannot be checked", async () => {
+		jest.mocked(RestApi.getCompatibility).mockResolvedValue(null);
+		const view = await renderGate();
+
+		await waitFor(() => expect(view.getByText("route content")).toBeTruthy());
 	});
 
 	it("does not mount routes before a fresh bundle is loaded", async () => {
