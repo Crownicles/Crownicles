@@ -1,10 +1,11 @@
 import {ReactNode} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {ClassStats} from "ws-packets/src/objects/ClassDetails";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {Theme} from "@/src/design/Theme";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles} from "@/src/design/ThemeContext";
 
 export type ClassVitals = Pick<ClassStats, "health" | "attack" | "defense" | "speed" | "fightPoint" | "baseBreath" | "maxBreath" | "breathRegen">;
 
@@ -18,14 +19,15 @@ const STAT_FIELDS = [
 	{field: "breathRegen", unit: "breathRegen"}
 ] as const;
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	stats: {flexDirection: "row", flexWrap: "wrap", gap: Theme.spacing.sm},
-	stat: {flexGrow: 1, flexBasis: "30%", alignItems: "center", gap: 2, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.xs, backgroundColor: Theme.colors.paper, borderWidth: 1, borderColor: Theme.colors.line, borderRadius: 10},
-	value: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowTitle, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
-	label: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, color: Theme.colors.muted, textAlign: "center"}
-});
+	stat: {flexGrow: 1, flexBasis: "30%", alignItems: "center", gap: 2, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.xs, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line, borderRadius: 10},
+	value: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowTitle, color: colors.ink, fontVariant: ["tabular-nums"]},
+	label: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, color: colors.muted, textAlign: "center"}
+}));
 
 export function ClassStatistics({stats}: {stats: ClassVitals}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.stats}>
 		{STAT_FIELDS.map(stat => <View key={stat.field} style={styles.stat}>
 			<UnitIcon unit={stat.unit} size={15} />

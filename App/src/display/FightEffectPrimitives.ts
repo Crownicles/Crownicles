@@ -1,4 +1,5 @@
 import {FightMotion} from "@/src/display/FightMotion";
+import type {Tint} from "@/src/design/Theme";
 
 export const FIGHT_EFFECT_FRAMES = [0, 0.18, 0.4, 0.56, 0.78, 1];
 export const FIGHT_EFFECT_LAYOUT = {anchors: {self: 0.235, opponent: 0.765}, centerY: 76};
@@ -19,7 +20,7 @@ export type FightParticle = {
 	stretch?: {horizontal: FightFrames; vertical: FightFrames};
 	rotation?: FightFrames;
 	travel?: FightFrames;
-	tint?: string;
+	tint?: Tint;
 	glyph?: FightMotion;
 	onHit?: boolean;
 };
@@ -51,7 +52,7 @@ const BURST_DIRECTIONS = [
 ] as const;
 const BURST_DISTANCE: FightFrames = [0, 0, 0.18, 0.65, 0.9, 1];
 const BURST_HEIGHT_RATIO = 2;
-type BurstStyle = {radius: number; size: number; anchor?: FightParticle["anchor"]; tint?: string; timing?: FightFrames; form?: FightParticle["form"]};
+type BurstStyle = {radius: number; size: number; anchor?: FightParticle["anchor"]; tint?: Tint; timing?: FightFrames; form?: FightParticle["form"]};
 
 export function fightBurst(id: string, style: BurstStyle): FightChoreography {
 	return BURST_DIRECTIONS.map(direction => ({

@@ -5,11 +5,14 @@ import {
 	type AuthRequestPromptOptions,
 	type DiscoveryDocument
 } from "expo-auth-session";
+import {Appearance} from "react-native";
 import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 import {
 	AUTH_FAILURES, AuthFailure, failureOfAuthResult
 } from "@/src/authentication/AuthFailure";
-import {Theme} from "@/src/design/Theme";
+import {PALETTES} from "@/src/design/Theme";
+import {resolveScheme} from "@/src/design/ThemeContext";
+import {storedThemePreference} from "@/src/design/ThemePreference";
 import {currentLanguage} from "@/src/translations/i18nLoader";
 
 /**
@@ -31,11 +34,15 @@ export type IdentityProvider = typeof IDENTITY_PROVIDERS[keyof typeof IDENTITY_P
  * presented as a sheet and offering no styling. They shape the Android custom tab, whose default
  * chrome would otherwise announce a website in the middle of the game.
  */
-const BROWSER_PRESENTATION: AuthRequestPromptOptions = {
-	toolbarColor: Theme.colors.paper,
-	controlsColor: Theme.colors.ink,
-	showTitle: false
-};
+/** Read when the browser opens: the auth pages live outside the React tree, so they take the palette of the moment. */
+function browserPresentation(): AuthRequestPromptOptions {
+	const colors = PALETTES[resolveScheme(storedThemePreference(), Appearance.getColorScheme())];
+	return {
+		toolbarColor: colors.paper,
+		controlsColor: colors.ink,
+		showTitle: false
+	};
+}
 
 // Expo inlines the EXPO_PUBLIC_ variables at build time, so each one has to be read literally.
 function requireEnv(value: string | undefined, name: string): string {
@@ -117,7 +124,7 @@ export class KeycloakAuth {
 			}
 		});
 
-		const result = await request.promptAsync(getDiscovery(), BROWSER_PRESENTATION);
+		const result = await request.promptAsync(getDiscovery(), browserPresentation());
 
 		if (result.type !== "success") {
 			throw failureOfAuthResult(result);

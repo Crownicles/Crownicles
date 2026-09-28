@@ -10,31 +10,32 @@ import {i18n} from "@/src/translations/i18n";
 import {GameQueryProvider} from "@/src/store/GameQueryProvider";
 import {CollectorsProvider} from "@/src/collectors/CollectorsContext";
 import {OpenCollectors} from "@/src/collectors/OpenCollectors";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	overlay: {
 		...StyleSheet.absoluteFill,
-		backgroundColor: Theme.colors.overlay,
+		backgroundColor: colors.overlay,
 		justifyContent: "center",
 		alignItems: "center",
 		zIndex: 9999,
 	},
 	indicatorContainer: {
-		backgroundColor: Theme.colors.paper,
+		backgroundColor: colors.paper,
 		borderRadius: Theme.radius,
 		padding: Theme.spacing.xxl,
 		elevation: 4,
 	},
 	blockingText: {
 		fontFamily: Theme.fonts.regular,
-		color: Theme.colors.ink,
+		color: colors.ink,
 		marginBottom: Theme.spacing.md,
 		textAlign: "center"
 	},
 	authenticatedRoot: {
 		flex: 1
 	},
-});
+}));
 
 const ALLOWED_AUTH_STATES: AuthStateEnum[] = [
 	AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE,
@@ -53,6 +54,7 @@ const OUTDATED_NOTICES: Partial<Record<AuthStateEnum, {message: string; canRetry
 };
 
 function BlockingNotice({message, onRetry}: {message: string; onRetry?: () => void}): React.ReactElement {
+	const styles = useStyles();
 	return (
 		<Modal visible transparent animationType="fade">
 			<View style={styles.overlay} pointerEvents="auto">
@@ -78,16 +80,19 @@ function renderBlockingState(authState: AuthStateEnum, onReconnect: () => void):
 }
 
 function ReconnectingOverlay(): React.ReactElement {
+	const styles = useStyles();
+	const colors = useColors();
 	return (
 		<View style={styles.overlay} pointerEvents="auto">
 			<View style={styles.indicatorContainer}>
-				<ActivityIndicator size="large" color={Theme.colors.ink} />
+				<ActivityIndicator size="large" color={colors.ink} />
 			</View>
 		</View>
 	);
 }
 
 function AuthenticatedContent({ state }: { state: AuthStateEnum }): React.ReactElement {
+	const styles = useStyles();
 	return (
 		<View style={styles.authenticatedRoot}>
 			<Stack screenOptions={{headerShown: false}}>

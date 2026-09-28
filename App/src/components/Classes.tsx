@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ClassesInfoReq} from "ws-packets/src/fromClient/ClassesInfoReq";
 import {ClassesReq} from "ws-packets/src/fromClient/ClassesReq";
@@ -12,7 +12,7 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {CommandMenu, CommandMenuState, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
-import {ExpandableEntry, ExpandableList, sectionStyles, Standing} from "@/src/design/Sections";
+import {ExpandableEntry, ExpandableList, useSectionStyles, Standing} from "@/src/design/Sections";
 import {Swords} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -21,6 +21,7 @@ import {ClassStatistics} from "@/src/components/ClassStatistics";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const CHANGE_CLASS_MENU: CommandMenu = {request: ClassesReq, emptyPacket: ClassesCancelRes, emptyMessage: "app:classes.cancelled", outcomePackets: [ClassesCooldownRes]};
 
@@ -36,19 +37,20 @@ function changeCountdown(timestamp?: number): string | null {
 		: i18n.t("app:classes.availableInHours", {count: hours});
 }
 
-const styles = StyleSheet.create({
-	description: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.note, lineHeight: Theme.lineHeight.note, color: Theme.colors.muted, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: Theme.colors.line},
-	attacksLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: Theme.colors.muted, paddingTop: Theme.spacing.sm},
+const useStyles = createStyles(colors => ({
+	description: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.note, lineHeight: Theme.lineHeight.note, color: colors.muted, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: colors.line},
+	attacksLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: colors.muted, paddingTop: Theme.spacing.sm},
 	attack: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.sm},
 	attackBody: {flex: 1, minWidth: 0, gap: 2},
-	attackName: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.ink},
-	attackDescription: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
-	attackCost: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.caption, color: Theme.colors.muted}
-});
+	attackName: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.ink},
+	attackDescription: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
+	attackCost: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.caption, color: colors.muted}
+}));
 
 function ClassEmblem({classId, size}: {classId: number; size: number}): ReactNode {
+	const colors = useColors();
 	const icon = AppIcons.getIconOrNull(`classes.${classId}`);
-	return icon ? <TwemojiIcon emoji={icon} size={size} /> : <Swords size={size} color={Theme.colors.muted} />;
+	return icon ? <TwemojiIcon emoji={icon} size={size} /> : <Swords size={size} color={colors.muted} />;
 }
 
 function classTier(details: ClassDetails): string {
@@ -66,6 +68,7 @@ function ClassStanding({details}: {details: ClassDetails}): ReactNode {
 }
 
 function ClassAttack({attack}: {attack: ClassDetails["attacks"][number]}): ReactNode {
+	const styles = useStyles();
 	const icon = AppIcons.getIconOrNull(`fightActions.${attack.id}`);
 	return <View style={styles.attack}>
 		{icon ? <TwemojiIcon emoji={icon} size={14} /> : null}
@@ -78,6 +81,7 @@ function ClassAttack({attack}: {attack: ClassDetails["attacks"][number]}): React
 }
 
 function ClassDetailsPanel({details}: {details: ClassDetails}): ReactNode {
+	const styles = useStyles();
 	return <View testID={`class-details-${details.id}`}>
 		<Text style={styles.description}>{i18n.t(`models:class_descriptions.${details.id}`)}</Text>
 		<ClassStatistics stats={details.stats} />
@@ -89,6 +93,7 @@ function ClassDetailsPanel({details}: {details: ClassDetails}): ReactNode {
 type ClassChoiceProps = {details: ClassDetails; current: boolean; selected: boolean; onSelect: (id: number) => void};
 
 function ClassChoice({details, current, selected, onSelect}: ClassChoiceProps): ReactNode {
+	const sectionStyles = useSectionStyles();
 	return <ExpandableEntry
 		emblem={<ClassEmblem classId={details.id} size={26} />}
 		label={i18n.t(`models:classes.${details.id}`)}

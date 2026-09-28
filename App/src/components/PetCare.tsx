@@ -17,7 +17,8 @@ import {PET_MANAGEMENT_MENUS} from "@/src/components/PetManagement";
 import {Button, ButtonRow, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, Lock, LockHint, Standing} from "@/src/design/Sections";
 import {Clock3, Flag, Flame, Heart, HeartPulse, LogOut, LucideIcon, PawPrint, Utensils, Wind} from "@/src/design/FightIcons";
-import {Theme} from "@/src/design/Theme";
+import {PaletteColor} from "@/src/design/Theme";
+import {useColors} from "@/src/design/ThemeContext";
 import {AppIcons} from "@/src/AppIcons";
 import {petMood, petName, petRarity, petSex, petTypeName} from "@/src/display/PetDisplay";
 import {missionDate} from "@/src/display/Missions";
@@ -33,15 +34,17 @@ const MOOD_STEPS = 5;
 const PET_EMBLEM_SIZE = 40;
 
 /** How each rung of that ladder reads at a glance, from a hostile pet to a devoted one. */
-const MOOD_LOOKS: Record<number, {icon: LucideIcon; color: string}> = {
-	1: {icon: Flame, color: Theme.colors.red},
-	2: {icon: PawPrint, color: Theme.colors.red},
-	3: {icon: Wind, color: Theme.colors.gold},
-	4: {icon: Heart, color: Theme.colors.green},
-	5: {icon: HeartPulse, color: Theme.colors.green}
+const MOOD_LOOKS: Record<number, {icon: LucideIcon; color: PaletteColor}> = {
+	1: {icon: Flame, color: "red"},
+	2: {icon: PawPrint, color: "red"},
+	3: {icon: Wind, color: "gold"},
+	4: {icon: Heart, color: "green"},
+	5: {icon: HeartPulse, color: "green"}
 };
 
 function PetStanding({pet, strokes, hadEnough}: {pet: OwnedPet; strokes: number; hadEnough: boolean}): ReactNode {
+	const colors = useColors();
+	const mood = MOOD_LOOKS[pet.loveLevel] ?? MOOD_LOOKS[MOOD_STEPS];
 	return <Standing
 		testID="pet-standing"
 		emblem={<PetCaress pet={pet} size={PET_EMBLEM_SIZE} strokes={strokes} hadEnough={hadEnough} />}
@@ -49,7 +52,7 @@ function PetStanding({pet, strokes, hadEnough}: {pet: OwnedPet; strokes: number;
 		title={petName(pet)}
 		subtitle={`${petTypeName(pet)} · ${petRarity(pet)} · ${petSex(pet)}`}
 	>
-		<FightGauge label={petMood(pet)} value={pet.loveLevel} max={MOOD_STEPS} {...MOOD_LOOKS[pet.loveLevel] ?? MOOD_LOOKS[MOOD_STEPS]} />
+		<FightGauge label={petMood(pet)} value={pet.loveLevel} max={MOOD_STEPS} icon={mood.icon} color={colors[mood.color]} />
 	</Standing>;
 }
 

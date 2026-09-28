@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {StyleSheet, Text, TextStyle, View} from "react-native";
+import {Text, TextStyle, View} from "react-native";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {AppIcons} from "@/src/AppIcons";
 import {AMOUNT_UNITS, AmountUnit, formatNumber} from "@/src/display/Amounts";
@@ -7,14 +7,15 @@ import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const FULL_RATIO = 1;
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	band: {
-		backgroundColor: Theme.colors.paper,
+		backgroundColor: colors.paper,
 		borderBottomWidth: 1,
-		borderBottomColor: Theme.colors.line,
+		borderBottomColor: colors.line,
 		paddingTop: Theme.spacing.sm
 	},
 	vitals: {
@@ -36,13 +37,13 @@ const styles = StyleSheet.create({
 		marginBottom: Theme.spacing.xs
 	},
 	vitalLabel: {
-		color: Theme.colors.muted,
+		color: colors.muted,
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.vitalLabel,
 		letterSpacing: Theme.letterSpacing.vitalLabel
 	},
 	vitalValue: {
-		color: Theme.colors.ink,
+		color: colors.ink,
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.vitalLabel,
 		letterSpacing: Theme.letterSpacing.vitalLabel
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
 	track: {
 		height: Theme.dimensions.vitalBarHeight,
 		borderRadius: Theme.pillRadius,
-		backgroundColor: Theme.colors.line,
+		backgroundColor: colors.line,
 		overflow: "hidden"
 	},
 	fill: {
@@ -67,13 +68,13 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
-		backgroundColor: Theme.colors.wash,
+		backgroundColor: colors.wash,
 		borderRadius: Theme.pillRadius,
 		paddingVertical: Theme.spacing.chipVertical,
 		paddingHorizontal: Theme.spacing.chipHorizontal
 	},
 	chipText: {
-		color: Theme.colors.ink,
+		color: colors.ink,
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.caption,
 		letterSpacing: Theme.letterSpacing.chip
@@ -87,12 +88,12 @@ const styles = StyleSheet.create({
 		alignItems: "flex-end"
 	},
 	scoreValue: {
-		color: Theme.colors.ink,
+		color: colors.ink,
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.rowTitle,
 		fontVariant: ["tabular-nums"]
 	}
-});
+}));
 
 function ratioOf(current: number, max: number): number {
 	return max <= 0 ? FULL_RATIO : current / max;
@@ -100,6 +101,7 @@ function ratioOf(current: number, max: number): number {
 
 /** These labels hold on one line: centring the emoji on it beats the baseline an inline image sits on. */
 function EmojiLabel({emoji, text, textStyle, size}: {emoji: string; text: string; textStyle: TextStyle; size: number}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.emojiLabel}>
 		<TwemojiIcon emoji={emoji} size={size} />
 		<Text style={textStyle} numberOfLines={1}>{text}</Text>
@@ -113,6 +115,7 @@ function Vital({icon, label, current, max, color}: {
 	max: number;
 	color: string;
 }): ReactNode {
+	const styles = useStyles();
 	return (
 		<View style={styles.vital}>
 			<View style={styles.vitalHead}>
@@ -130,6 +133,7 @@ function Vital({icon, label, current, max, color}: {
 }
 
 function Chip({unit, value}: { unit: AmountUnit; value: number }): ReactNode {
+	const styles = useStyles();
 	return (
 		<View style={styles.chip}>
 			<EmojiLabel emoji={AppIcons.getIcon(`unitValues.${unit}`)} text={formatNumber(value)} textStyle={styles.chipText} size={Theme.fontSize.caption} />
@@ -139,6 +143,7 @@ function Chip({unit, value}: { unit: AmountUnit; value: number }): ReactNode {
 
 /** The total points rank the player against everyone: the figure worth keeping in sight. */
 function Score({score}: {score: number}): ReactNode {
+	const styles = useStyles();
 	return (
 		<View style={styles.score} testID="vitals-score">
 			<Text style={styles.vitalLabel}>{i18n.t("app:vitals.points")}</Text>
@@ -148,6 +153,8 @@ function Score({score}: {score: number}): ReactNode {
 }
 
 function VitalsBand({profile}: { profile: ProfileRes }): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	return (
 		<View style={styles.band}>
 			<View style={styles.vitals}>
@@ -156,7 +163,7 @@ function VitalsBand({profile}: { profile: ProfileRes }): ReactNode {
 					label={i18n.t("app:vitals.health")}
 					current={profile.health.value}
 					max={profile.health.max}
-					color={Theme.colors.red}
+					color={colors.red}
 				/>
 				<Score score={profile.rank.score} />
 			</View>

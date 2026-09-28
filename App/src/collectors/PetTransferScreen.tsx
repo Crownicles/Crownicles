@@ -5,7 +5,7 @@ import {GENERIC_REACTION_KINDS, PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTI
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {ShelterChoices} from "ws-packets/src/objects/PetManagement";
 import {Button, ButtonRow, EmptyState, Note, Screen, SectionHeader} from "@/src/design/Primitives";
-import {ExpandableEntry, ExpandableList, sectionStyles, Standing} from "@/src/design/Sections";
+import {ExpandableEntry, ExpandableList, useSectionStyles, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
@@ -56,6 +56,7 @@ export function PetTransferScreen({collector, locked, onChoose, onClose}: {
 	onChoose: (index: number) => void;
 	onClose: () => void;
 }): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const {isExpanded, toggle} = useExpandedEntry<number>();
 	if (collector.data.type !== PET_MANAGEMENT_DATA_KINDS.TRANSFER) return null;
 	const shelter = collector.data.data;

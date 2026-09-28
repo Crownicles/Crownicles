@@ -14,7 +14,7 @@ import {Segment, SegmentedControl} from "@/src/design/SegmentedControl";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {
-	ActionBanner, ExpandableEntry, ExpandableList, Fact, Figure, Figures, sectionStyles, Sheet
+	ActionBanner, ExpandableEntry, ExpandableList, Fact, Figure, Figures, useSectionStyles, Sheet
 } from "@/src/design/Sections";
 import {ArrowRight, Check} from "@/src/design/FightIcons";
 import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
@@ -92,6 +92,7 @@ function ReserveEntry({item, slot, equipped, locked, expanded, category, onToggl
 	onToggle: () => void;
 	onConfirm: (selection: EquipmentSelection) => void;
 }): ReactNode {
+	const sectionStyles = useSectionStyles();
 	return <ExpandableEntry
 		emblem={itemEmblem(item)}
 		label={itemDisplayName(item)}
@@ -121,6 +122,7 @@ function EquippedSection({category, locked, expanded, onToggle, onConfirm}: {
 	onToggle: () => void;
 	onConfirm: (selection: EquipmentSelection) => void;
 }): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const equipped = category.equippedItem;
 	if (!equipped) return <ExpandableList><EmptyState>{i18n.t("app:equipment.noEquippedItem")}</EmptyState></ExpandableList>;
 	return <>

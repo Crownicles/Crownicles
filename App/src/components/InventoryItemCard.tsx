@@ -8,7 +8,7 @@ import {formatNumber} from "@/src/display/Amounts";
 import {consumableDescription, effectAmount, natureUnit} from "@/src/display/ItemEffects";
 import {ArrowRight, Coins, Droplets, Gift, LucideIcon, Swords, X} from "@/src/design/FightIcons";
 import {Button, ButtonRow, Note} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, Fact, Figures, LockHint, sectionStyles} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, Fact, Figures, LockHint, useSectionStyles} from "@/src/design/Sections";
 import {ExpandedEntry} from "@/src/design/useExpandedEntry";
 import {
 	InventoryItem, InventoryItemActions, ITEM_ACTIONS, ItemAction, ItemActionChoice
@@ -53,6 +53,7 @@ function headline({item, kind}: InventoryItem): {value: string; unit: string} | 
 }
 
 function ItemHeadline({entry}: {entry: InventoryItem}): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const value = headline(entry);
 	if (!value) return null;
 	return <View style={sectionStyles.value}>
@@ -81,6 +82,7 @@ function itemSummary(item: ItemWithDetails): string {
 
 /** What the item is, and on the closed row already, why one of its actions is refused. */
 function ItemCaption({item, choices, expanded}: {item: ItemWithDetails; choices: ItemActionChoice[]; expanded: boolean}): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const lock = expanded ? undefined : choices.find(choice => choice.lock)?.lock;
 	return <>
 		<Text style={sectionStyles.caption} numberOfLines={1}>{itemSummary(item)}</Text>

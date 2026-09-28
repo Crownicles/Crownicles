@@ -1,4 +1,3 @@
-import {Appearance} from "react-native";
 import {getItem, setItem} from "expo-secure-store";
 
 export const THEME_PREFERENCES = {
@@ -32,12 +31,4 @@ export function storedThemePreference(): ThemePreference {
 
 export function saveThemePreference(preference: ThemePreference): void {
 	setItem(STORAGE_KEY, preference);
-}
-
-export function systemColorScheme(): ColorScheme {
-	return Appearance.getColorScheme() === THEME_PREFERENCES.DARK ? THEME_PREFERENCES.DARK : THEME_PREFERENCES.LIGHT;
-}
-
-export function resolveColorScheme(preference: ThemePreference): ColorScheme {
-	return preference === THEME_PREFERENCES.SYSTEM ? systemColorScheme() : preference;
 }

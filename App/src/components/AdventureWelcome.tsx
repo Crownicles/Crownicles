@@ -12,6 +12,7 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {useReportAdvance} from "@/src/store/useReportActions";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const WELCOME_MOTION = {
 	floatMs: 2800,
@@ -36,13 +37,13 @@ const TWINKLES = [
 
 const RHYTHM_ICON = 32;
 
-const styles = StyleSheet.create({
-	backdrop: {flex: 1, backgroundColor: Theme.colors.wash},
+const useStyles = createStyles(colors => ({
+	backdrop: {flex: 1, backgroundColor: colors.wash},
 	centered: {justifyContent: "center"},
 	twinkle: {position: "absolute"},
-	rhythm: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, padding: Theme.spacing.lg, borderRadius: Theme.radius, backgroundColor: Theme.colors.paper},
-	rhythmIcon: {width: RHYTHM_ICON, height: RHYTHM_ICON, borderRadius: RHYTHM_ICON / 2, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.goldWash},
-	rhythmText: {flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.bodySmall, lineHeight: Theme.lineHeight.bodySmall, color: Theme.colors.ink},
+	rhythm: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, padding: Theme.spacing.lg, borderRadius: Theme.radius, backgroundColor: colors.paper},
+	rhythmIcon: {width: RHYTHM_ICON, height: RHYTHM_ICON, borderRadius: RHYTHM_ICON / 2, alignItems: "center", justifyContent: "center", backgroundColor: colors.goldWash},
+	rhythmText: {flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.bodySmall, lineHeight: Theme.lineHeight.bodySmall, color: colors.ink},
 	road: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -52,19 +53,19 @@ const styles = StyleSheet.create({
 		paddingBottom: Theme.spacing.lg,
 		paddingHorizontal: Theme.spacing.lg,
 		borderRadius: Theme.radius,
-		backgroundColor: Theme.colors.paper
+		backgroundColor: colors.paper
 	},
-	track: {flex: 1, height: 6, borderRadius: Theme.pillRadius, backgroundColor: Theme.colors.line},
-	trackFill: {height: "100%", borderRadius: Theme.pillRadius, backgroundColor: Theme.colors.gold},
+	track: {flex: 1, height: 6, borderRadius: Theme.pillRadius, backgroundColor: colors.line},
+	trackFill: {height: "100%", borderRadius: Theme.pillRadius, backgroundColor: colors.gold},
 	runner: {position: "absolute", top: -Theme.dimensions.headerIcon + Theme.spacing.xs, marginLeft: -Theme.dimensions.quickActionIcon / 2},
 	footer: {
 		paddingTop: Theme.spacing.md,
 		paddingHorizontal: Theme.spacing.xl,
 		borderTopWidth: StyleSheet.hairlineWidth,
-		borderTopColor: Theme.colors.line,
-		backgroundColor: Theme.colors.wash
+		borderTopColor: colors.line,
+		backgroundColor: colors.wash
 	}
-});
+}));
 
 /** A block of the page sliding up into place a little after the one above it. */
 function Rise({order, children}: {order: number; children: ReactNode}): ReactNode {
@@ -88,14 +89,16 @@ function Rise({order, children}: {order: number; children: ReactNode}): ReactNod
 
 /** The crown hovers over a golden halo while sparks glint around it. */
 function WelcomeEmblem(): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const float = useMotionLoop(WELCOME_MOTION.floatMs, true);
 	const twinkle = useMotionLoop(WELCOME_MOTION.twinkleMs, false);
-	return <FarewellEmblem pulse={float} haloColor={Theme.colors.goldWash}>
+	return <FarewellEmblem pulse={float} haloColor={colors.goldWash}>
 		{TWINKLES.map(spark => <Animated.View key={spark.phase} style={[styles.twinkle, spark.style, {
 			opacity: cycleWindow(twinkle, {phase: spark.phase, span: WELCOME_MOTION.twinkleSpan, rest: 0.35, peak: 1}),
 			transform: [{scale: cycleWindow(twinkle, {phase: spark.phase, span: WELCOME_MOTION.twinkleSpan, rest: 0.7, peak: 1.2})}]
 		}]}>
-			<Sparkles size={spark.size} color={Theme.colors.gold} />
+			<Sparkles size={spark.size} color={colors.gold} />
 		</Animated.View>)}
 		<Animated.View style={{transform: [{translateY: float.interpolate({inputRange: [0, 1], outputRange: [0, WELCOME_MOTION.float]})}]}}>
 			<TwemojiIcon emoji={AppIcons.getIcon("other.crown")} size={WELCOME_MOTION.crown} />
@@ -105,14 +108,17 @@ function WelcomeEmblem(): ReactNode {
 
 /** The one rule a newcomer must know: the journey goes on while the app is closed. */
 function Rhythm(): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	return <View style={styles.rhythm}>
-		<View style={styles.rhythmIcon}><Clock3 size={16} color={Theme.colors.gold} /></View>
+		<View style={styles.rhythmIcon}><Clock3 size={16} color={colors.gold} /></View>
 		<Text style={styles.rhythmText}>{i18n.t("app:welcome.rhythm")}</Text>
 	</View>;
 }
 
 /** The road out of the village, with the traveller waiting at its start until the player sets off. */
 function DepartureRoad({progress, stride}: {progress: Animated.Value; stride: Animated.Value}): ReactNode {
+	const styles = useStyles();
 	const position = progress.interpolate({inputRange: [0, 1], outputRange: ["0%", "100%"]});
 	return <View accessible accessibilityLabel={i18n.t("app:welcome.road")} style={styles.road}>
 		<TwemojiIcon emoji={AppIcons.getIcon("mapTypes.vi")} size={Theme.dimensions.headerIcon} />
@@ -173,6 +179,8 @@ function useDeparture(start: () => void, failure: string | null): {progress: Ani
  * game's rhythm and the road the first report opens. What the game holds next is revealed as it opens.
  */
 export function AdventureWelcome(): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const insets = useSafeAreaInsets();
 	const reportAction = useReportAdvance();
 	const {progress, stride, depart, leaving} = useDeparture((): void => {
@@ -184,7 +192,7 @@ export function AdventureWelcome(): ReactNode {
 				<FarewellPage
 					emblem={<WelcomeEmblem />}
 					eyebrow={i18n.t("app:welcome.eyebrow")}
-					eyebrowColor={Theme.colors.gold}
+					eyebrowColor={colors.gold}
 					title={i18n.t("app:welcome.title")}
 					description={i18n.t("app:welcome.description")}
 				/>

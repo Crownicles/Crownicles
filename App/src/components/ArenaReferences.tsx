@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {FightHistoryReq, LeagueInfoReq, LeagueRewardReq} from "ws-packets/src/fromClient/RankingsReq";
 import {FightHistoryRes, LeagueInfoRes, LeagueRewardRes} from "ws-packets/src/fromServer/fight/RankingsRes";
@@ -13,68 +13,73 @@ import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {Note, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, Lock, sectionStyles, Standing} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, ExpandableList, Lock, useSectionStyles, Standing} from "@/src/design/Sections";
 import {Clock3, Medal, Shield, Swords, Trophy} from "@/src/design/FightIcons";
-import {Theme} from "@/src/design/Theme";
+import {PaletteColor, Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {formatNumber, formatSignedNumber} from "@/src/display/Amounts";
 import {missionDate} from "@/src/display/Missions";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const RESULT_LABELS = {[EloGameResult.WIN]: "app:arena.victory", [EloGameResult.LOSS]: "app:arena.defeat", [EloGameResult.DRAW]: "app:arena.draw"} as const;
-const RESULT_COLORS = {[EloGameResult.WIN]: Theme.colors.green, [EloGameResult.LOSS]: Theme.colors.red, [EloGameResult.DRAW]: Theme.colors.muted} as const;
+const RESULT_COLORS = {[EloGameResult.WIN]: "green", [EloGameResult.LOSS]: "red", [EloGameResult.DRAW]: "muted"} as const satisfies Record<EloGameResult, PaletteColor>;
 const REWARD_MENU: CommandMenu = {request: LeagueRewardReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [LeagueRewardRes]};
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	history: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg, minHeight: 64},
-	emblem: {width: 38, height: 38, borderRadius: 12, backgroundColor: Theme.colors.wash, alignItems: "center", justifyContent: "center"},
+	emblem: {width: 38, height: 38, borderRadius: 12, backgroundColor: colors.wash, alignItems: "center", justifyContent: "center"},
 	body: {flex: 1, minWidth: 0, gap: 3},
-	title: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, color: Theme.colors.ink},
+	title: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, color: colors.ink},
 	meta: {flexDirection: "row", alignItems: "center", gap: 5},
 	result: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle},
-	metaText: {flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	metaText: {flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
 	leagueLabel: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle},
 	end: {alignItems: "flex-end", alignSelf: "flex-start", paddingTop: 1},
 	glory: {flexDirection: "row", alignItems: "center", gap: 4},
 	gloryValue: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, fontVariant: ["tabular-nums"]},
 	leagueStanding: {paddingBottom: Theme.spacing.xl, gap: Theme.spacing.lg},
 	leagueIdentity: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.lg},
-	leagueEmblem: {width: 64, height: 64, flexShrink: 0, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.wash, borderRadius: 8},
-	leagueTitle: {fontFamily: Theme.fonts.extraBold, fontSize: 23, lineHeight: 29, color: Theme.colors.ink, flexShrink: 1},
-	leagueCaption: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	leagueEmblem: {width: 64, height: 64, flexShrink: 0, alignItems: "center", justifyContent: "center", backgroundColor: colors.wash, borderRadius: 8},
+	leagueTitle: {fontFamily: Theme.fonts.extraBold, fontSize: 23, lineHeight: 29, color: colors.ink, flexShrink: 1},
+	leagueCaption: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
 	leagueGlory: {flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.sm},
-	leagueGloryAmount: {fontFamily: Theme.fonts.extraBold, fontSize: 28, lineHeight: 34, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
+	leagueGloryAmount: {fontFamily: Theme.fonts.extraBold, fontSize: 28, lineHeight: 34, color: colors.ink, fontVariant: ["tabular-nums"]},
 	leagueThreshold: {alignItems: "flex-end", maxWidth: "35%", gap: 3, flexShrink: 1},
-	leagueThresholdValue: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowTitle, color: Theme.colors.ink, fontVariant: ["tabular-nums"], flexShrink: 1},
-	leagueSeasonRewards: {flexDirection: "row", flexWrap: "wrap", gap: Theme.spacing.lg, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: Theme.colors.line},
+	leagueThresholdValue: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowTitle, color: colors.ink, fontVariant: ["tabular-nums"], flexShrink: 1},
+	leagueSeasonRewards: {flexDirection: "row", flexWrap: "wrap", gap: Theme.spacing.lg, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: colors.line},
 	leagueReward: {flex: 1, minWidth: 100, gap: 6},
-	leagueRewardAmount: {fontFamily: Theme.fonts.bold, fontSize: 21, lineHeight: 27, color: Theme.colors.ink, fontVariant: ["tabular-nums"], flexShrink: 1},
-	leagueWinReward: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: Theme.colors.line},
-	leagueWinLabel: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted}
-});
+	leagueRewardAmount: {fontFamily: Theme.fonts.bold, fontSize: 21, lineHeight: 27, color: colors.ink, fontVariant: ["tabular-nums"], flexShrink: 1},
+	leagueWinReward: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: colors.line},
+	leagueWinLabel: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted}
+}));
 
 function HistoryLeagueChange({change}: {change: {oldLeague: number; newLeague: number}}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const promoted = change.newLeague > change.oldLeague;
 	const icon = AppIcons.getIconOrNull(`leagues.${change.newLeague}`);
 	return <View style={styles.meta}>
 		{icon ? <TwemojiIcon emoji={icon} size={12} /> : null}
-		<Text style={[styles.leagueLabel, {color: promoted ? Theme.colors.green : Theme.colors.red}]} numberOfLines={1}>
+		<Text style={[styles.leagueLabel, {color: promoted ? colors.green : colors.red}]} numberOfLines={1}>
 			{i18n.t(`models:leagues.${change.newLeague}`)}
 		</Text>
 	</View>;
 }
 
 function HistoryEntry({entry}: {entry: FightHistoryEntry}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const league = entry.glory.leaguesChanges.me;
 	const classIcon = AppIcons.getIconOrNull(`classes.${entry.classes.opponent}`);
 	const gloryIcon = AppIcons.getIconOrNull("unitValues.glory");
 	const Icon = entry.initiator ? Swords : Shield;
 	const opponent = entry.opponentName ?? i18n.t("app:arena.opponent");
 	return <View style={styles.history}>
-		<View style={styles.emblem}><Icon size={18} color={Theme.colors.muted} /></View>
+		<View style={styles.emblem}><Icon size={18} color={colors.muted} /></View>
 		<View style={styles.body}>
 			<Text style={styles.title} numberOfLines={1}>{opponent}</Text>
-			<Text style={[styles.result, {color: RESULT_COLORS[entry.result]}]}>{i18n.t(RESULT_LABELS[entry.result])}</Text>
+			<Text style={[styles.result, {color: colors[RESULT_COLORS[entry.result]]}]}>{i18n.t(RESULT_LABELS[entry.result])}</Text>
 			<View style={styles.meta}>
 				{classIcon ? <TwemojiIcon emoji={classIcon} size={12} /> : null}
 				<Text style={styles.metaText} numberOfLines={1}>{i18n.t(`models:classes.${entry.classes.opponent}`)} · {missionDate(entry.date)}</Text>
@@ -83,7 +88,7 @@ function HistoryEntry({entry}: {entry: FightHistoryEntry}): ReactNode {
 		</View>
 		<View style={styles.end}>
 			<View style={styles.glory}>
-				<Text style={[styles.gloryValue, {color: RESULT_COLORS[entry.result]}]}>{formatSignedNumber(entry.glory.change.me)}</Text>
+				<Text style={[styles.gloryValue, {color: colors[RESULT_COLORS[entry.result]]}]}>{formatSignedNumber(entry.glory.change.me)}</Text>
 				{gloryIcon ? <TwemojiIcon emoji={gloryIcon} size={12} /> : null}
 			</View>
 		</View>
@@ -117,11 +122,14 @@ export function FightHistory(): ReactNode {
 }
 
 function LeagueEmblem({leagueId, size}: {leagueId: number; size: number}): ReactNode {
+	const colors = useColors();
 	const icon = AppIcons.getIconOrNull(`leagues.${leagueId}`);
-	return icon ? <TwemojiIcon emoji={icon} size={size} /> : <Medal size={size} color={Theme.colors.gold} />;
+	return icon ? <TwemojiIcon emoji={icon} size={size} /> : <Medal size={size} color={colors.gold} />;
 }
 
 function LeagueStanding({data, next}: {data: LeagueInfoRes; next?: LeagueInfo}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	return <Standing
 		testID="league-standing"
 		emblem={<LeagueEmblem leagueId={data.currentLeagueId} size={40} />}
@@ -132,11 +140,12 @@ function LeagueStanding({data, next}: {data: LeagueInfoRes; next?: LeagueInfo}):
 			<Text style={styles.leagueCaption}>{i18n.t("app:arena.glory")}</Text>
 			<View style={styles.glory}><Text style={styles.leagueGloryAmount}>{formatNumber(data.glory)}</Text><UnitIcon unit="glory" size={20} /></View>
 		</View>
-		{next ? <FightGauge label={i18n.t(`models:leagues.${next.id}`)} value={data.glory} max={next.minGloryPoints} color={Theme.colors.green} /> : null}
+		{next ? <FightGauge label={i18n.t(`models:leagues.${next.id}`)} value={data.glory} max={next.minGloryPoints} color={colors.green} /> : null}
 	</Standing>;
 }
 
 function LeagueRewards({league}: {league: LeagueInfo}): ReactNode {
+	const styles = useStyles();
 	return <View testID={`league-rewards-${league.id}`}>
 		<View style={styles.leagueSeasonRewards}>
 			<View style={styles.leagueReward}>
@@ -161,6 +170,8 @@ function LeagueRewards({league}: {league: LeagueInfo}): ReactNode {
 type LeagueChoiceProps = {league: LeagueInfo; current: boolean; locked: boolean; selected: boolean; onSelect: (id: number) => void};
 
 function LeagueThreshold({league, current}: {league: LeagueInfo; current: boolean}): ReactNode {
+	const sectionStyles = useSectionStyles();
+	const styles = useStyles();
 	return <View style={styles.leagueThreshold}>
 		<View style={styles.glory}><Text style={styles.leagueThresholdValue}>{formatNumber(league.minGloryPoints)}</Text><UnitIcon unit="glory" size={12} /></View>
 		{current ? <Text style={sectionStyles.you}>{i18n.t("app:arena.you")}</Text> : null}

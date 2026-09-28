@@ -3,7 +3,7 @@ import {Text} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, ReactionCollectorReaction, SELL_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {Note} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, sectionStyles, Sheet} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, ExpandableList, useSectionStyles, Sheet} from "@/src/design/Sections";
 import {Check, X} from "@/src/design/FightIcons";
 import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {itemCategoryLabel, itemDisplayName} from "@/src/collectors/CollectorLabels";
@@ -24,6 +24,7 @@ function SaleEntry({choice, locked, expanded, onToggle, onChoose}: {
 	onToggle: () => void;
 	onChoose: (index: number) => void;
 }): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const {item, slot, price} = choice.reaction.data;
 	const discarded = price === 0;
 	return <ExpandableEntry

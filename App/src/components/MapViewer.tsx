@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {Image, LayoutChangeEvent, StyleSheet, View} from "react-native";
+import {Image, LayoutChangeEvent, View} from "react-native";
 import {Gesture, GestureDetector, GestureHandlerRootView} from "react-native-gesture-handler";
 import Animated, {cancelAnimation, useAnimatedStyle, useSharedValue, withDecay, withSpring} from "react-native-reanimated";
 import {BackButton, ModalSurface} from "@/src/design/Sections";
@@ -8,6 +8,7 @@ import {
 	clampPoint, drawnSize, MAP_ZOOM, MapLayout, panLimits, resistedMove, resistedScale, settledView, zoomAround
 } from "@/src/display/MapZoom";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles} from "@/src/design/ThemeContext";
 
 /** Settles without a visible overshoot, fast enough to feel attached to the finger. */
 const SETTLE_SPRING = {damping: 26, stiffness: 240, mass: 0.9} as const;
@@ -15,14 +16,15 @@ const DECAY_DECELERATION = 0.994;
 /** A finger moving further than this is a drag, not a tap: the double tap gives up at once. */
 const TAP_MAX_DISTANCE = 12;
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	root: {flex: 1},
 	toolbar: {paddingHorizontal: Theme.spacing.xl, paddingTop: Theme.spacing.md},
 	stage: {flex: 1, alignItems: "center", justifyContent: "center", overflow: "hidden"},
-	image: {backgroundColor: Theme.colors.wash}
-});
+	image: {backgroundColor: colors.wash}
+}));
 
 function MapFrame({onClose, children}: {onClose: () => void; children: ReactNode}): ReactNode {
+	const styles = useStyles();
 	return <ModalSurface tone="wash">
 		<GestureHandlerRootView style={styles.root}>
 			<View style={styles.toolbar}>
@@ -43,6 +45,7 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 	onError: () => void;
 	ratio: number;
 }): ReactNode {
+	const styles = useStyles();
 	const [frame, setFrame] = useState({width: 0, height: 0});
 	const scale = useSharedValue<number>(MAP_ZOOM.min);
 	const x = useSharedValue(0);

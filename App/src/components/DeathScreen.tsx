@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useRef, useState} from "react";
-import {Animated, Easing, StyleSheet, Text, View} from "react-native";
+import {Animated, Easing, Text, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {AppIcons} from "@/src/AppIcons";
 import {Note, Screen} from "@/src/design/Primitives";
@@ -15,6 +15,7 @@ import {formatNumber} from "@/src/display/Amounts";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const DEATH_MOTION = {
 	driftMs: 2600,
@@ -51,14 +52,14 @@ const WISP_SPAN = 0.14;
 /** Sideways drift of each spark flying out of the resurrection. */
 const SPARKS = [-54, -24, 8, 36, 60] as const;
 
-const styles = StyleSheet.create({
-	backdrop: {flex: 1, backgroundColor: Theme.colors.wash},
+const useStyles = createStyles(colors => ({
+	backdrop: {flex: 1, backgroundColor: colors.wash},
 	content: {flexGrow: 1, justifyContent: "center"},
-	wisp: {position: "absolute", width: DEATH_MOTION.wisp, height: DEATH_MOTION.wisp, borderRadius: DEATH_MOTION.wisp / 2, backgroundColor: Theme.colors.muted},
+	wisp: {position: "absolute", width: DEATH_MOTION.wisp, height: DEATH_MOTION.wisp, borderRadius: DEATH_MOTION.wisp / 2, backgroundColor: colors.muted},
 	layer: {position: "absolute", alignItems: "center", justifyContent: "center"},
-	ring: {position: "absolute", width: REVIVAL_MOTION.ring, height: REVIVAL_MOTION.ring, borderRadius: REVIVAL_MOTION.ring / 2, borderWidth: 3, borderColor: Theme.colors.green},
-	lifeHalo: {position: "absolute", width: 104, height: 104, borderRadius: 52, backgroundColor: Theme.colors.greenWash},
-	flash: {position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: Theme.colors.greenWash},
+	ring: {position: "absolute", width: REVIVAL_MOTION.ring, height: REVIVAL_MOTION.ring, borderRadius: REVIVAL_MOTION.ring / 2, borderWidth: 3, borderColor: colors.green},
+	lifeHalo: {position: "absolute", width: 104, height: 104, borderRadius: 52, backgroundColor: colors.greenWash},
+	flash: {position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: colors.greenWash},
 	stake: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -67,12 +68,12 @@ const styles = StyleSheet.create({
 		marginBottom: Theme.spacing.xl,
 		padding: Theme.spacing.lg,
 		borderRadius: Theme.radius,
-		backgroundColor: Theme.colors.paper
+		backgroundColor: colors.paper
 	},
-	stakeCaption: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, color: Theme.colors.ink},
+	stakeCaption: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, color: colors.ink},
 	stakeValue: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.xs},
-	stakeAmount: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, color: Theme.colors.red, fontVariant: ["tabular-nums"]}
-});
+	stakeAmount: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, color: colors.red, fontVariant: ["tabular-nums"]}
+}));
 
 function comebackTips(): FarewellTip[] {
 	return [
@@ -88,6 +89,8 @@ function between(value: Animated.Value, input: [number, number], output: [number
 
 /** Green life takes over the red halo, a ring bursts outwards and sparks fly up while the heart replaces the skull. */
 function RevivalBloom({bloom}: {bloom: Animated.Value}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	return <>
 		<Animated.View style={[styles.lifeHalo, {opacity: between(bloom, [0, 0.5], [0, 1])}]} />
 		<Animated.View style={[styles.ring, {
@@ -101,7 +104,7 @@ function RevivalBloom({bloom}: {bloom: Animated.Value}): ReactNode {
 				{translateY: between(bloom, [0.45, 1], [0, REVIVAL_MOTION.sparkRise])}
 			]
 		}]}>
-			<Sparkles size={REVIVAL_MOTION.sparkSize} color={Theme.colors.gold} />
+			<Sparkles size={REVIVAL_MOTION.sparkSize} color={colors.gold} />
 		</Animated.View>)}
 		<Animated.View style={[styles.layer, {
 			opacity: between(bloom, [0.35, 0.65], [0, 1]),
@@ -114,9 +117,11 @@ function RevivalBloom({bloom}: {bloom: Animated.Value}): ReactNode {
 
 /** The skull hovers while faint wisps slip away from it; once the player gets up, it shudders and gives way to a heart. */
 function DeathEmblem({shake, bloom}: {shake: Animated.Value; bloom: Animated.Value}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const drift = useMotionLoop(DEATH_MOTION.driftMs, true);
 	const wisps = useMotionLoop(DEATH_MOTION.wispMs, false);
-	return <FarewellEmblem pulse={drift} haloColor={Theme.colors.redWash}>
+	return <FarewellEmblem pulse={drift} haloColor={colors.redWash}>
 		{WISPS.map(wisp => <Animated.View key={wisp.phase} style={[styles.wisp, wisp.style, {
 			opacity: cycleWindow(wisps, {phase: wisp.phase, span: WISP_SPAN, rest: 0, peak: DEATH_MOTION.wispPeak}),
 			transform: [{translateY: wisps.interpolate({
@@ -172,6 +177,7 @@ function useRevival(respawn: () => void, failure: string | null): {shake: Animat
 
 /** What getting back up costs, stated in points before the player commits. */
 function ScoreStake({scoreLoss}: {scoreLoss: number}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.stake}>
 		<Text style={styles.stakeCaption}>{i18n.t("app:death.scoreLossCaption")}</Text>
 		<View style={styles.stakeValue}>
@@ -183,6 +189,8 @@ function ScoreStake({scoreLoss}: {scoreLoss: number}): ReactNode {
 
 /** A dead character can do nothing but get back up, so the whole screen is given to that single choice. */
 export function DeathScreen(): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const insets = useSafeAreaInsets();
 	const profile = usePlayerProfile();
 	const scoreLoss = profile.status === "ready" ? profile.data.effect.respawnScoreLoss : undefined;
@@ -193,7 +201,7 @@ export function DeathScreen(): ReactNode {
 			<FarewellPage
 				emblem={<DeathEmblem shake={shake} bloom={bloom} />}
 				eyebrow={i18n.t("app:death.eyebrow")}
-				eyebrowColor={Theme.colors.red}
+				eyebrowColor={colors.red}
 				title={i18n.t("error:effects.dead.self")}
 				description={i18n.t("app:death.description")}
 			/>

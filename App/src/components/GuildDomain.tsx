@@ -16,14 +16,14 @@ import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
 import {gaugeEmoji} from "@/src/components/Guild";
 import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, Figures, Lock, sectionStyles, Standing} from "@/src/design/Sections";
+import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, Figures, Lock, useSectionStyles, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
-import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {petName, petMood, petIcon} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
+import {useColors} from "@/src/design/ThemeContext";
 
 const DOMAIN_MENUS = {
 	upgrade: {request: GuildDomainUpgradeReq, emptyPacket: PlayerNotFound, emptyMessage: "app:guild.noGuild", outcomePackets: [GuildDomainRes]},
@@ -143,6 +143,8 @@ function DomainDeposits({domain, actions, openAmount, onOpen}: {
 }
 
 function BuildingContents({domain, building, actions}: {domain: GuildDomainSnapshot; building: GuildBuilding; actions: DomainActions}): ReactNode {
+	const sectionStyles = useSectionStyles();
+	const colors = useColors();
 	switch (building) {
 		case GuildBuilding.SHOP:
 			return <>{Object.values(PetFood).map((foodType, index) => <GuildFoodLine key={foodType} data={domain} foodType={foodType} index={index} actions={actions} />)}</>;
@@ -157,7 +159,7 @@ function BuildingContents({domain, building, actions}: {domain: GuildDomainSnaps
 					label={i18n.t(`models:foods.${foodType}`, {count: domain.food[FOOD_FIELDS[foodType]], context: "capitalized"})}
 					value={domain.food[FOOD_FIELDS[foodType]]}
 					max={domain.foodCaps[index]}
-					color={Theme.colors.gold}
+					color={colors.gold}
 					{...gaugeEmoji(`foods.${foodType}`)}
 				/>
 				<Note>{i18n.t("app:guildDomain.production", {count: domain.dailyFoodProduction[index]})}</Note>
@@ -170,6 +172,7 @@ function BuildingContents({domain, building, actions}: {domain: GuildDomainSnaps
 type BuildingEntryProps = {domain: GuildDomainSnapshot; building: GuildBuilding; actions: DomainActions; expanded: boolean; onSelect: (building: GuildBuilding) => void; onTransfer: () => void};
 
 function BuildingEntry({domain, building, actions, expanded, onSelect, onTransfer}: BuildingEntryProps): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const icon = AppIcons.getIconOrNull(`city.guildDomain.${building}`);
 	return <ExpandableEntry
 		emblem={icon ? <TwemojiIcon emoji={icon} size={22} /> : null}

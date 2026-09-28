@@ -1,5 +1,5 @@
 import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
-import {Modal, StyleSheet, Text, View} from "react-native";
+import {Modal, Text, View} from "react-native";
 import {usePathname, useRouter} from "expo-router";
 import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
@@ -16,6 +16,7 @@ import {reportNotificationsAllowed, requestReportNotifications} from "@/src/noti
 import {ContestView} from "@/src/onboarding/Contest";
 import {OnboardingMoment, OnboardingMoments, ONBOARDING_MOMENTS} from "@/src/onboarding/OnboardingStore";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles} from "@/src/design/ThemeContext";
 
 /** The road to the first city is long enough to leave the app: shorter hops are not worth the card. */
 const FORK_MIN_TRIP_MS = 20 * 60_000;
@@ -25,10 +26,10 @@ const NATURAL_STOP_TOLERANCE_MS = 5_000;
 
 const TOAST_EMBLEM_SIZE = 24;
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	actions: {gap: Theme.spacing.sm},
-	notified: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.bodySmall, color: Theme.colors.muted, textAlign: "center", paddingVertical: Theme.spacing.md}
-});
+	notified: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.bodySmall, color: colors.muted, textAlign: "center", paddingVertical: Theme.spacing.md}
+}));
 
 /** What the report shows now; a discovery waits for this to change before following another. */
 export function stageMoment(view: ReportViewRes | null): string {
@@ -70,6 +71,7 @@ function destinationName(travel: ReportTravelSummaryRes): string {
 
 /** The end of the first session: the character goes on alone, and the player chooses how to come back. */
 export function DepartureFork({travel, onClose}: {travel: ReportTravelSummaryRes; onClose: () => void}): ReactNode {
+	const styles = useStyles();
 	const [allowed, setAllowed] = useState<boolean | null>(null);
 	useEffect(() => {
 		reportNotificationsAllowed().then(setAllowed).catch(() => setAllowed(false));

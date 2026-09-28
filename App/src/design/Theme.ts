@@ -1,4 +1,4 @@
-import {resolveColorScheme, storedThemePreference, THEME_PREFERENCES} from "@/src/design/ThemePreference";
+import {ColorScheme, THEME_PREFERENCES} from "@/src/design/ThemePreference";
 
 const LIGHT_COLORS = {
 	ink: "#0B0B0C",
@@ -21,7 +21,16 @@ const LIGHT_COLORS = {
 	goldWash: "#F8EFDD"
 };
 
-type Palette = typeof LIGHT_COLORS;
+export type Palette = typeof LIGHT_COLORS;
+
+/** A colour named by its role, resolved against the palette in use when it is drawn. */
+export type PaletteColor = keyof Palette;
+
+/** A colour of its own, the same whatever the theme. */
+export type HexColor = `#${string}`;
+
+/** What a drawing may be tinted with: a role that follows the theme, or a fixed colour. */
+export type Tint = PaletteColor | HexColor;
 
 /** The same roles at night: ink turns to light text, paper to the raised surface, accents lifted for contrast. */
 const DARK_COLORS: Palette = {
@@ -43,12 +52,14 @@ const DARK_COLORS: Palette = {
 	goldWash: "#2D2414"
 };
 
-/** Decided once per launch: changing it reloads the app so every style is built again. */
-export const ACTIVE_COLOR_SCHEME = resolveColorScheme(storedThemePreference());
+export const PALETTES: Record<ColorScheme, Palette> = {
+	[THEME_PREFERENCES.LIGHT]: LIGHT_COLORS,
+	[THEME_PREFERENCES.DARK]: DARK_COLORS
+};
 
 /**
  * Style tokens taken from `App/mockups/mobile.html`. A screen declares no colour and no spacing of
- * its own: it composes these.
+ * its own: it composes these. Colours come from `useColors()`, since the palette follows the theme live.
  */
 export const Theme = {
 	fonts: {
@@ -58,7 +69,6 @@ export const Theme = {
 		bold: "Inter_700Bold",
 		extraBold: "Inter_800ExtraBold"
 	},
-	colors: ACTIVE_COLOR_SCHEME === THEME_PREFERENCES.DARK ? DARK_COLORS : LIGHT_COLORS,
 	spacing: {
 		xs: 4,
 		sm: 8,

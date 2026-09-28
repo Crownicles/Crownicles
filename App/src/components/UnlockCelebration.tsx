@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Animated, Easing, Pressable, StyleSheet, Text, View} from "react-native";
+import {Animated, Easing, Pressable, Text, View} from "react-native";
 import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
 import {AppIcons} from "@/src/AppIcons";
 import {ActionBanner} from "@/src/design/Sections";
@@ -15,6 +15,7 @@ import {
 } from "@/src/collectors/ReportEventStore";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const CELEBRATION_MOTION = {
 	backdropMs: 220,
@@ -34,21 +35,21 @@ const SPARK_ANGLES = [-2.6, -1.9, -1.2, -0.5, 0.2, 0.9] as const;
 
 const FILL = {position: "absolute", top: 0, right: 0, bottom: 0, left: 0} as const;
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	layer: {...FILL, justifyContent: "center", padding: Theme.spacing.xxl},
-	backdrop: {...FILL, backgroundColor: Theme.colors.overlay},
-	card: {alignItems: "center", paddingTop: Theme.spacing.xl, paddingBottom: Theme.spacing.lg, paddingHorizontal: Theme.spacing.xl, borderRadius: Theme.radius, backgroundColor: Theme.colors.paper},
+	backdrop: {...FILL, backgroundColor: colors.overlay},
+	card: {alignItems: "center", paddingTop: Theme.spacing.xl, paddingBottom: Theme.spacing.lg, paddingHorizontal: Theme.spacing.xl, borderRadius: Theme.radius, backgroundColor: colors.paper},
 	burst: {position: "absolute", alignItems: "center", justifyContent: "center"},
-	ring: {position: "absolute", width: CELEBRATION_MOTION.ring, height: CELEBRATION_MOTION.ring, borderRadius: CELEBRATION_MOTION.ring / 2, borderWidth: 3, borderColor: Theme.colors.gold},
+	ring: {position: "absolute", width: CELEBRATION_MOTION.ring, height: CELEBRATION_MOTION.ring, borderRadius: CELEBRATION_MOTION.ring / 2, borderWidth: 3, borderColor: colors.gold},
 	eyebrow: {
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.eyebrow,
 		lineHeight: Theme.lineHeight.eyebrow,
 		letterSpacing: Theme.letterSpacing.eyebrow,
 		textTransform: "uppercase",
-		color: Theme.colors.gold
+		color: colors.gold
 	},
-	title: {marginTop: Theme.spacing.xs, fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, textAlign: "center", color: Theme.colors.ink},
+	title: {marginTop: Theme.spacing.xs, fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, textAlign: "center", color: colors.ink},
 	description: {
 		marginTop: Theme.spacing.sm,
 		marginBottom: Theme.spacing.xl,
@@ -56,13 +57,13 @@ const styles = StyleSheet.create({
 		fontSize: Theme.fontSize.body,
 		lineHeight: Theme.lineHeight.body,
 		textAlign: "center",
-		color: Theme.colors.muted
+		color: colors.muted
 	},
 	actions: {alignSelf: "stretch", gap: Theme.spacing.sm},
 	later: {flexDirection: "row", alignItems: "center", justifyContent: "center", gap: Theme.spacing.xs, paddingVertical: Theme.spacing.md},
-	laterLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.bodySmall, color: Theme.colors.muted},
+	laterLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.bodySmall, color: colors.muted},
 	pressed: {opacity: 0.6}
-});
+}));
 
 function between(value: Animated.Value, input: [number, number], output: [number, number]): Animated.AnimatedInterpolation<number> {
 	return value.interpolate({inputRange: input, outputRange: output, extrapolate: "clamp"});
@@ -80,8 +81,10 @@ export function useAdventureBusy(): boolean {
 
 /** The emblem of what just opened pops out of a golden ring while sparks fly away from it. */
 function UnlockEmblem({icon, burst}: {icon: string; burst: Animated.Value}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const halo = useMotionLoop(CELEBRATION_MOTION.haloMs, true);
-	return <FarewellEmblem pulse={halo} haloColor={Theme.colors.goldWash}>
+	return <FarewellEmblem pulse={halo} haloColor={colors.goldWash}>
 		<Animated.View style={[styles.ring, {
 			opacity: between(burst, [0.2, 1], [0.9, 0]),
 			transform: [{scale: between(burst, [0.2, 1], [0.6, CELEBRATION_MOTION.ringSpread])}]
@@ -93,7 +96,7 @@ function UnlockEmblem({icon, burst}: {icon: string; burst: Animated.Value}): Rea
 				{translateY: between(burst, [0.25, 1], [0, Math.sin(angle) * CELEBRATION_MOTION.sparkReach])}
 			]
 		}]}>
-			<Sparkles size={CELEBRATION_MOTION.sparkSize} color={Theme.colors.gold} />
+			<Sparkles size={CELEBRATION_MOTION.sparkSize} color={colors.gold} />
 		</Animated.View>)}
 		<Animated.View style={{transform: [{scale: burst.interpolate({inputRange: [0, 0.45, 0.75, 1], outputRange: [0.2, CELEBRATION_MOTION.emblemOvershoot, 0.95, 1]})}]}}>
 			<TwemojiIcon emoji={AppIcons.getIcon(icon)} size={CELEBRATION_MOTION.emblem} />
@@ -115,6 +118,7 @@ export function Celebration({icon, eyebrow: caption, title, description, childre
 	children: ReactNode;
 	testID?: string;
 }): ReactNode {
+	const styles = useStyles();
 	const reducedMotion = useReducedMotion();
 	const [shown] = useState(() => new Animated.Value(reducedMotion ? 1 : 0));
 	const [burst] = useState(() => new Animated.Value(reducedMotion ? 1 : 0));
@@ -147,6 +151,7 @@ export function Celebration({icon, eyebrow: caption, title, description, childre
  * holds, and leads there at once or lets the player come back to it through the tab's mark.
  */
 export function UnlockCelebration({step, level, onDiscover, onLater}: {step: JourneyStep; level: number; onDiscover: () => void; onLater: () => void}): ReactNode {
+	const styles = useStyles();
 	return <Celebration
 		icon={step.icon}
 		eyebrow={eyebrow(step, level)}

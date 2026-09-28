@@ -11,7 +11,7 @@ import {shopItemKey, shopItemName} from "@/src/collectors/ShopLabels";
 import {missionDescription} from "@/src/display/Missions";
 import {Button, Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {Check, Coins} from "@/src/design/FightIcons";
-import {ActionBanner, BackButton, Card, ENTRY_CHEVRONS, ExpandableEntry, Lock, LockHint, sectionStyles} from "@/src/design/Sections";
+import {ActionBanner, BackButton, Card, ENTRY_CHEVRONS, ExpandableEntry, Lock, LockHint, useSectionStyles} from "@/src/design/Sections";
 import {SwipeBack} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -116,6 +116,7 @@ type ShelfContext = {collector: ReactionCollectorCreation; data: ShopData; locke
 
 /** Once "Acheter" is pressed the article opens in place on what Discord confirms: what it does, then the quantity. */
 function ArticleConfirmation({article, context, onCancel}: {article: ShopArticle; context: ShelfContext; onCancel: () => void}): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const {data, locked, choose} = context;
 	const info = shopText(`shopItems.${shopItemKey({shopItemId: article.shopItemId})}.info`, {
 		kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio ?? 0,
@@ -142,6 +143,7 @@ function ArticleConfirmation({article, context, onCancel}: {article: ShopArticle
 }
 
 function ShopArticleRow({article, context, expanded, onToggle}: {article: ShopArticle; context: ShelfContext; expanded: boolean; onToggle: () => void}): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const {data, locked} = context;
 	const cheapest = Math.min(...article.offers.map(offer => offer.reaction.data.price));
 	const lock = missingMoneyLock(cheapest, data.availableCurrency, data.currency);

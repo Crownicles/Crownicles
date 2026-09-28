@@ -5,6 +5,7 @@ import {FIGHT_EFFECT_FRAMES, FIGHT_EFFECT_LAYOUT, FIGHT_PARTICLE_FORMS, FightCho
 import {AppIcons} from "@/src/AppIcons";
 import {Cannon, Swords, Sword, Hammer, Sparkles, Flame, Snowflake, Zap, Waves, Droplets, HeartPulse, Shield, Wind, Crosshair, Skull, AudioLines, PawPrint, CircleDashed} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {paletteColor, useColors} from "@/src/design/ThemeContext";
 
 const REST_FRAMES: FightFrames = [0, 0, 0, 0, 0, 0];
 const SCALE_FRAMES: FightFrames = [1, 1, 1, 1, 1, 1];
@@ -73,7 +74,7 @@ function particleScale(particle: FightParticle, progress: Animated.Value): Parti
 
 function AnimatedParticle({particle, cue, progress, width}: EffectProps & {particle: FightParticle}): ReactNode {
 	const direction = cue.actor === "self" ? 1 : -1;
-	const color = particle.tint ?? cue.color;
+	const color = paletteColor(useColors(), particle.tint ?? cue.color);
 	const timing = particle.timing ?? FIGHT_EFFECT_FRAMES;
 	return <Animated.View testID={`fight-particle-${particle.id}`} style={[particleAppearance(particle, color, width), {
 		opacity: interpolate(progress, particle.opacity, timing),

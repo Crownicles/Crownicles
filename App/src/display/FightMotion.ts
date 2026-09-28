@@ -1,6 +1,6 @@
 import {FightEffect, FightLogEntry} from "ws-packets/src/objects/Fight";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
-import {Theme} from "@/src/design/Theme";
+import type {Tint} from "@/src/design/Theme";
 
 export const FIGHT_SPEEDS = {NORMAL: "normal", FAST: "fast"} as const;
 export type FightSpeed = typeof FIGHT_SPEEDS[keyof typeof FIGHT_SPEEDS];
@@ -66,24 +66,24 @@ const EFFECT_DEPENDENT_OUTCOMES: Readonly<Record<string, FightOutcome>> = {
 	generalEffect: FIGHT_OUTCOMES.PREPARED
 };
 const ALTERATION_STATUSES = new Set(["new", "active", "stop", "randomAction", "noAction"]);
-const MOTION_COLORS: Partial<Record<FightMotion, string>> = {
-	flame: "#D96B32", frost: "#3F9CAE", lightning: Theme.colors.gold, wave: Theme.colors.blue,
-	poison: "#7A923C", shield: Theme.colors.blue, blessing: Theme.colors.gold, heal: Theme.colors.green,
-	rest: Theme.colors.blue, charge: Theme.colors.gold, curse: "#8B6088", drain: Theme.colors.green,
-	roar: Theme.colors.gold, summon: Theme.colors.gold, dodge: Theme.colors.muted, debuff: Theme.colors.muted,
-	quake: Theme.colors.red, mimic: Theme.colors.blue
+const MOTION_COLORS: Partial<Record<FightMotion, Tint>> = {
+	flame: "#D96B32", frost: "#3F9CAE", lightning: "gold", wave: "blue",
+	poison: "#7A923C", shield: "blue", blessing: "gold", heal: "green",
+	rest: "blue", charge: "gold", curse: "#8B6088", drain: "green",
+	roar: "gold", summon: "gold", dodge: "muted", debuff: "muted",
+	quake: "red", mimic: "blue"
 };
 
 export const FIGHT_IMPACT_SOURCES = {DEALT: "dealt", RECEIVED: "received", REFLECTED: "reflected"} as const;
 type FightImpactSource = typeof FIGHT_IMPACT_SOURCES[keyof typeof FIGHT_IMPACT_SOURCES];
 export type FightImpact = {side: FightSide; source: FightImpactSource; kind: "damage" | "energy" | "breath"; amount: number};
 export type FightCue = {
-	actionId: string; sourceActionId: string; motion: FightMotion; color: string; actor: FightSide; target: FightSide;
+	actionId: string; sourceActionId: string; motion: FightMotion; color: Tint; actor: FightSide; target: FightSide;
 	missed: boolean; critical: boolean; periodic: boolean; impacts: FightImpact[]; outcome: FightOutcome; pet?: OwnedPet;
 };
 
-export function fightMotionColor(motion: FightMotion): string {
-	return MOTION_COLORS[motion] ?? Theme.colors.red;
+export function fightMotionColor(motion: FightMotion): Tint {
+	return MOTION_COLORS[motion] ?? "red";
 }
 
 function effectImpacts(effect: FightEffect | undefined, side: FightSide, source: FightImpactSource): FightImpact[] {

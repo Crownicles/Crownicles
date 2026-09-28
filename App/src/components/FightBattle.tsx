@@ -1,5 +1,5 @@
 import {ReactNode, useRef, useState} from "react";
-import {ActivityIndicator, ScrollView, StyleSheet, Text, View, useWindowDimensions} from "react-native";
+import {ActivityIndicator, ScrollView, Text, View, useWindowDimensions} from "react-native";
 import {CircleAlert} from "@/src/design/FightIcons";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {Button, ButtonRow, Note} from "@/src/design/Primitives";
@@ -15,18 +15,19 @@ import {FightPlayback, useFightPlayback} from "@/src/store/useFightPlayback";
 import {i18n} from "@/src/translations/i18n";
 import {useFightSpeed} from "@/src/store/useFightSpeed";
 import {FightSpeed} from "@/src/display/FightMotion";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	content: {flex: 1, width: "100%", maxWidth: 600, alignSelf: "center", paddingHorizontal: Theme.spacing.xl, paddingBottom: 12, overflow: "hidden"},
 	body: {flex: 1, minHeight: 0, overflow: "hidden"},
 	stage: {flex: 1, minHeight: 0, overflow: "hidden"},
 	actions: {flexShrink: 0, overflow: "hidden"},
-	activitySubtitle: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 15, color: Theme.colors.muted},
+	activitySubtitle: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 15, color: colors.muted},
 	journal: {maxHeight: 480},
 	resultActions: {marginTop: 18},
 	loading: {flex: 1, alignItems: "center", justifyContent: "center", gap: 14},
 	compactContent: {paddingHorizontal: 12, paddingBottom: 8}
-});
+}));
 
 type FightLiveProps = {fight: FightSnapshot; collector?: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean; onClose: () => void};
 type FightContentProps = FightLiveProps & {playback: FightPlayback; navigation: FightNavigation; speed: FightSpeed};
@@ -39,8 +40,10 @@ function fightPhase(props: FightLiveProps, playback: FightPlayback): FightPhase 
 }
 
 function FightTurn({fight, playback, collector, onChoose, submitting, navigation, speed}: FightContentProps): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const status = playback.status;
-	if (!status) return <View style={styles.loading}><ActivityIndicator color={Theme.colors.muted} /><Text style={styles.activitySubtitle}>{i18n.t("app:battle.preparing")}</Text></View>;
+	if (!status) return <View style={styles.loading}><ActivityIndicator color={colors.muted} /><Text style={styles.activitySubtitle}>{i18n.t("app:battle.preparing")}</Text></View>;
 	const pending = submitting || Boolean(playback.record);
 	return <View style={styles.body}>
 		<View style={styles.stage}><FightStage status={status} introduction={fight.introduction} record={playback.record} onImpact={playback.impact} onComplete={playback.finishMotion} reducedMotion={playback.reducedMotion} speed={speed} /></View>
@@ -50,14 +53,17 @@ function FightTurn({fight, playback, collector, onChoose, submitting, navigation
 }
 
 function FightContent(props: FightContentProps): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const {fight, playback, navigation} = props;
 	const closeLabel = i18n.t(fight.introduction?.opponent.monsterId ? "app:adventure.continueReport" : "app:battle.returnToArena");
-	if (fight.error) return <View style={styles.loading}><CircleAlert size={38} color={Theme.colors.muted} /><Note>{i18n.t(`app:arena.errors.${fight.error}`)}</Note><Button onPress={navigation.onClose}>{closeLabel}</Button></View>;
+	if (fight.error) return <View style={styles.loading}><CircleAlert size={38} color={colors.muted} /><Note>{i18n.t(`app:arena.errors.${fight.error}`)}</Note><Button onPress={navigation.onClose}>{closeLabel}</Button></View>;
 	if (!fight.result || playback.record) return <FightTurn {...props} />;
 	return <View style={styles.body}><FightResult result={fight.result} reward={fight.reward} monsterReward={fight.monsterReward} /><View style={styles.resultActions}><ButtonRow><Button variant="primary" onPress={navigation.onClose}>{closeLabel}</Button><Button onPress={navigation.onJournal}>{i18n.t("app:arena.log")}</Button></ButtonRow></View></View>;
 }
 
 function FightJournal({entries, onClose}: {entries: FightLogRecord[]; onClose: () => void}): ReactNode {
+	const styles = useStyles();
 	const {height} = useWindowDimensions();
 	const scroll = useRef<ScrollView>(null);
 	const positioned = useRef(false);
@@ -76,6 +82,7 @@ function FightJournal({entries, onClose}: {entries: FightLogRecord[]; onClose: (
 
 /** Measures the room the battle really has, so the layout adapts to the device instead of guessing. */
 function BattleFrame({height, onHeight, children}: {height: number | null; onHeight: (height: number) => void; children: ReactNode}): ReactNode {
+	const styles = useStyles();
 	const compact = useCompactFight();
 	return <View testID="fight-frame" style={[styles.content, compact && styles.compactContent]} onLayout={(event): void => {
 		const measured = event.nativeEvent.layout.height;

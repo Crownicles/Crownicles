@@ -11,12 +11,12 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {useGardenActions} from "@/src/store/useGardenActions";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
-import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, Gauge, sectionStyles} from "@/src/design/Sections";
+import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, Gauge, useSectionStyles} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {materialName, plantName} from "@/src/display/Resources";
 import {i18n} from "@/src/translations/i18n";
+import {useColors} from "@/src/design/ThemeContext";
 
 const PERCENTAGE_SCALE = 100;
 type GardenActions = {
@@ -36,6 +36,7 @@ function GardenChoice({entryKey, label, caption, end, operation, actions, action
 	actions: GardenActions;
 	action: string;
 }): ReactNode {
+	const sectionStyles = useSectionStyles();
 	return <ExpandableEntry
 		label={label}
 		{...caption ? {caption} : {}}
@@ -57,12 +58,13 @@ function GardenChoice({entryKey, label, caption, end, operation, actions, action
 }
 
 function GardenPlotRow({plot, garden, actions}: {plot: GardenPlot; garden: GardenSnapshot; actions: GardenActions}): ReactNode {
+	const colors = useColors();
 	if (plot.plantId !== 0) {
 		return <Gauge
 			label={i18n.t("app:city.garden.plotPlant", {slot: plot.slot + 1, plant: plantName(plot.plantId)})}
 			value={i18n.t(plot.isReady ? "app:city.garden.ready" : "app:city.garden.growing", {progress: Math.round(plot.growthProgress * PERCENTAGE_SCALE)})}
 			ratio={plot.growthProgress}
-			color={Theme.colors.green}
+			color={colors.green}
 		/>;
 	}
 	if (!garden.eligibility.canPlantSeed) {

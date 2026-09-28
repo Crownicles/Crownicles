@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Image, Pressable, StyleSheet} from "react-native";
+import {Image, Pressable} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {MapReq} from "ws-packets/src/fromClient/MapReq";
 import {MapRes} from "ws-packets/src/fromServer/report/MapRes";
@@ -15,14 +15,16 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
+import {createStyles} from "@/src/design/ThemeContext";
 
 const DEFAULT_MAP_RATIO = 4 / 3;
-const styles = StyleSheet.create({
-	map: {width: "100%", backgroundColor: Theme.colors.wash},
-	frame: {borderRadius: 12, borderWidth: 1, borderColor: Theme.colors.line, overflow: "hidden", backgroundColor: Theme.colors.wash}
-});
+const useStyles = createStyles(colors => ({
+	map: {width: "100%", backgroundColor: colors.wash},
+	frame: {borderRadius: 12, borderWidth: 1, borderColor: colors.line, overflow: "hidden", backgroundColor: colors.wash}
+}));
 
 export function MapImage({packet}: {packet: MapRes}): ReactNode {
+	const styles = useStyles();
 	const [uri, setUri] = useState(packet.imageUrl);
 	const [failed, setFailed] = useState(false);
 	const [expanded, setExpanded] = useState(false);

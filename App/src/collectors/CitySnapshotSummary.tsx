@@ -3,14 +3,15 @@ import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
 import {AMOUNT_UNITS, formatMoney, formatNumber} from "@/src/display/Amounts";
 import {ExpandableList, Fact, Figures, Gauge} from "@/src/design/Sections";
-import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {joinFacts} from "@/src/display/Facts";
 import {renderCityNotarySummary} from "@/src/collectors/CityNotarySummary";
+import {useColors} from "@/src/design/ThemeContext";
+import type {Palette} from "@/src/design/Theme";
 
 type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
 
-type SummaryRenderer = (snapshot: CityMobileSnapshot) => ReactNode;
+type SummaryRenderer = (snapshot: CityMobileSnapshot, colors: Palette) => ReactNode;
 type OwnedHome = NonNullable<NonNullable<CityMobileSnapshot["home"]>["owned"]>;
 
 function homeServices(home: OwnedHome): string {
@@ -23,7 +24,7 @@ function homeServices(home: OwnedHome): string {
 	]) || "—";
 }
 
-function renderInnSummary(snapshot: CityMobileSnapshot): ReactNode {
+function renderInnSummary(snapshot: CityMobileSnapshot, colors: Palette): ReactNode {
 	if (!snapshot.energy || !snapshot.health) {
 		return null;
 	}
@@ -32,13 +33,13 @@ function renderInnSummary(snapshot: CityMobileSnapshot): ReactNode {
 			label={i18n.t("app:city.summary.energy")}
 			value={`${snapshot.energy.current} / ${snapshot.energy.max} ${AppIcons.getIcon("unitValues.energy")}`}
 			ratio={snapshot.energy.max > 0 ? snapshot.energy.current / snapshot.energy.max : 0}
-			color={Theme.colors.green}
+			color={colors.green}
 		/>
 		<Gauge
 			label={i18n.t("app:city.summary.health")}
 			value={`${snapshot.health.current} / ${snapshot.health.max} ${AppIcons.getIcon("unitValues.health")}`}
 			ratio={snapshot.health.max > 0 ? snapshot.health.current / snapshot.health.max : 0}
-			color={Theme.colors.red}
+			color={colors.red}
 		/>
 	</ExpandableList>;
 }
@@ -61,7 +62,7 @@ function renderHomeSummary(snapshot: CityMobileSnapshot): ReactNode {
 	</>;
 }
 
-function renderHomeBedSummary(snapshot: CityMobileSnapshot): ReactNode {
+function renderHomeBedSummary(snapshot: CityMobileSnapshot, colors: Palette): ReactNode {
 	const home = snapshot.home?.owned;
 	if (!home || !snapshot.health) {
 		return null;
@@ -76,7 +77,7 @@ function renderHomeBedSummary(snapshot: CityMobileSnapshot): ReactNode {
 				label={i18n.t("app:city.summary.health")}
 				value={`${snapshot.health.current} / ${snapshot.health.max} ${AppIcons.getIcon("unitValues.health")}`}
 				ratio={snapshot.health.max > 0 ? snapshot.health.current / snapshot.health.max : 0}
-				color={Theme.colors.red}
+				color={colors.red}
 			/>
 		</ExpandableList>
 	</>;
@@ -214,5 +215,6 @@ const SUMMARY_RENDERERS: Partial<Record<CitySubmenu, SummaryRenderer>> = {
 };
 
 export function CitySnapshotSummary({view, snapshot}: {view: CitySubmenu; snapshot?: CityMobileSnapshot}): ReactNode {
-	return snapshot ? SUMMARY_RENDERERS[view]?.(snapshot) ?? null : null;
+	const colors = useColors();
+	return snapshot ? SUMMARY_RENDERERS[view]?.(snapshot, colors) ?? null : null;
 }

@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {GuildCreateReq, GuildDailyReq, GuildStorageReq} from "ws-packets/src/fromClient/GuildReq";
 import {GuildDescriptionReq, GuildLeaveReq} from "ws-packets/src/fromClient/GuildManagementReq";
@@ -15,7 +15,7 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {GuildBoatBoarding, GuildInvitation, GuildMemberControls} from "@/src/components/GuildMembers";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {Button, ButtonRow, EmptyState, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, Figure, Figures, Lock, LockHint, sectionStyles, Standing} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, ExpandableList, Figure, Figures, Lock, LockHint, useSectionStyles, Standing} from "@/src/design/Sections";
 import {TextField} from "@/src/design/Inputs";
 import {Check, Clock3, Gift, LogOut, Star} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
@@ -25,6 +25,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 export type GuildPage = "storage" | "shelter" | "manage" | "domain" | "rankings";
 const CREATE_MENU: CommandMenu = {request: GuildCreateReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
@@ -38,11 +39,11 @@ const GUILD_PAGES = ["storage", "shelter", "domain", "rankings", "manage"] as co
 const PAGE_ICONS = {storage: "foods.commonFood", shelter: "other.pet", domain: "city.guildDomain.menu", rankings: "top.congrats", manage: "guild.chief"} as const;
 const MILLISECONDS_PER_MINUTE = 60_000;
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	links: {marginTop: Theme.spacing.xxl},
-	self: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: Theme.colors.green},
+	self: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: colors.green},
 	score: {alignItems: "flex-end", gap: 3, flexShrink: 0}
-});
+}));
 
 /** The gauge takes an emoji only when the asset pack ships one, so an unknown path leaves it bare. */
 export function gaugeEmoji(path: string): {emoji?: string} {
@@ -61,6 +62,8 @@ export function GuildCreation(): ReactNode {
 }
 
 export function GuildStorage(): ReactNode {
+	const sectionStyles = useSectionStyles();
+	const colors = useColors();
 	const state = useGameQuery(GAME_ENTITIES.GUILD_STORAGE, () => GameClient.request(makeFromClientPacket(GuildStorageReq, {}), GuildStorageRes));
 	return <GameQueryContent state={state} entity={GAME_ENTITIES.GUILD_STORAGE}>{data => <>
 		<SectionHeader first>{data.guildName}</SectionHeader>
@@ -69,7 +72,7 @@ export function GuildStorage(): ReactNode {
 				label={i18n.t(`models:foods.${food.id}`, {count: food.amount, context: "capitalized"})}
 				value={food.amount}
 				max={food.maxAmount}
-				color={Theme.colors.gold}
+				color={colors.gold}
 				{...gaugeEmoji(`foods.${food.id}`)}
 			/>
 		</View>)}
@@ -93,6 +96,8 @@ function MemberEmblem({role, size = 26}: {role: MemberRole; size?: number}): Rea
 }
 
 function MemberScore({member}: {member: GuildMember}): ReactNode {
+	const sectionStyles = useSectionStyles();
+	const styles = useStyles();
 	return <View style={styles.score}>
 		<View style={sectionStyles.value}>
 			<Text style={sectionStyles.amount} numberOfLines={1}>{formatNumber(member.score)}</Text>
@@ -105,6 +110,7 @@ function MemberScore({member}: {member: GuildMember}): ReactNode {
 type MemberEntryProps = {member: GuildMember; guild: GuildData; expanded: boolean; onToggle: (id: number) => void};
 
 function MemberEntry({member, guild, expanded, onToggle}: MemberEntryProps): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const role = memberRole(member, guild);
 	return <ExpandableEntry
 		emblem={<MemberEmblem role={role} />}
@@ -192,6 +198,7 @@ function guildFigures(guild: GuildData, membership?: GuildMembership): Figure[] 
 }
 
 function GuildStanding({guild, membership}: {guild: GuildData; membership?: GuildMembership}): ReactNode {
+	const colors = useColors();
 	const icon = AppIcons.getIconOrNull("guild.icon");
 	return <Standing
 		testID="guild-standing"
@@ -204,7 +211,7 @@ function GuildStanding({guild, membership}: {guild: GuildData; membership?: Guil
 			label={i18n.t("app:profile.fields.experience")}
 			value={guild.experience.value}
 			{...guild.isMaxLevel ? {} : {max: guild.experience.max}}
-			color={Theme.colors.gold}
+			color={colors.gold}
 			icon={Star}
 		/>
 		<Figures items={guildFigures(guild, membership)} />
@@ -231,6 +238,7 @@ function domainLock(membership: GuildMembership, isChief: boolean): Lock | undef
 }
 
 function GuildLinks({lock, onPage}: {lock?: Lock; onPage: (page: GuildPage) => void}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.links}>
 		<QuickActions>
 			{GUILD_PAGES.map(page => <QuickAction

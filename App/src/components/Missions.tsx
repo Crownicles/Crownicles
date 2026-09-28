@@ -11,7 +11,7 @@ import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
-import {EntryRow, ExpandableList, sectionStyles} from "@/src/design/Sections";
+import {EntryRow, ExpandableList, useSectionStyles} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
@@ -27,6 +27,7 @@ const MISSION_EMBLEM_SIZE = 26;
 type MissionEntryData = {key: string; mission: Mission; kind: string; deadline?: string};
 
 function MissionList({entries, now}: {entries: MissionEntryData[]; now: number}): ReactNode {
+	const sectionStyles = useSectionStyles();
 	return <ExpandableList>
 		{entries.map(entry => <EntryRow
 			key={entry.key}

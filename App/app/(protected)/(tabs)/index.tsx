@@ -1,6 +1,6 @@
 import {ReactNode, useEffect, useRef, useState} from "react";
 import {useLocalSearchParams, useRouter} from "expo-router";
-import {ActivityIndicator, Animated, Easing, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Animated, Easing, Text, View} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
@@ -91,6 +91,7 @@ import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
 import {useReportView, useReportAdvance} from "@/src/store/useReportActions";
 import {GameMutation} from "@/src/store/useGameMutation";
 import {ReportCity} from "@/src/components/ReportCity";
+import {createStyles} from "@/src/design/ThemeContext";
 
 const MILLISECONDS_PER_SECOND = 1_000;
 const SECONDS_PER_MINUTE = 60;
@@ -112,19 +113,19 @@ type TravelMetrics = {
   remainingMilliseconds: number;
 };
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
   centered: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     padding: Theme.spacing.xxl,
-    backgroundColor: Theme.colors.wash
+    backgroundColor: colors.wash
   },
   adventureRoot: {
     flex: 1
   },
   message: {
-    color: Theme.colors.muted,
+    color: colors.muted,
     fontFamily: Theme.fonts.regular,
     fontSize: Theme.fontSize.body,
     lineHeight: Theme.lineHeight.body,
@@ -148,13 +149,13 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 6,
     borderRadius: Theme.pillRadius,
-    backgroundColor: Theme.colors.line,
+    backgroundColor: colors.line,
     position: "relative"
   },
   travelFill: {
     height: "100%",
     borderRadius: Theme.pillRadius,
-    backgroundColor: Theme.colors.ink
+    backgroundColor: colors.ink
   },
   runner: {
     position: "absolute",
@@ -165,9 +166,10 @@ const styles = StyleSheet.create({
     gap: Theme.spacing.md,
     marginBottom: Theme.spacing.md
   },
-});
+}));
 
 function Centered({ children }: { children: ReactNode }): ReactNode {
+	const styles = useStyles();
   return <View style={styles.centered}>{children}</View>;
 }
 
@@ -290,6 +292,7 @@ function runnerIcon(packet: ReportTravelSummaryRes): string {
 
 /** Twemoji draws the walker and the ferry heading left, so it is mirrored to face the destination on the right. */
 function TravelRunner({packet, position, stride}: {packet: ReportTravelSummaryRes; position: Animated.AnimatedInterpolation<string>; stride: Animated.Value}): ReactNode {
+	const styles = useStyles();
   return <Animated.View style={[styles.runner, {left: position}]}>
     <Animated.View style={{transform: [
       {translateY: stride.interpolate({inputRange: [0, 1], outputRange: [0, TRAVEL_DASH.hop]})},
@@ -302,6 +305,7 @@ function TravelRunner({packet, position, stride}: {packet: ReportTravelSummaryRe
 }
 
 function TravelPath({packet, progress, dash}: { packet: ReportTravelSummaryRes; progress: number; dash: TravelDash | null }): ReactNode {
+	const styles = useStyles();
   const progressLabel = i18n.t("app:adventure.onTheRoad");
   const reducedMotion = useReducedMotion();
   const [shown] = useState(() => new Animated.Value(progress));
@@ -526,6 +530,7 @@ function ReportStatusView({
 	reportState: RequestState<ReportViewRes>;
 	waitingForCollector: boolean;
 }): ReactNode {
+	const styles = useStyles();
 	if (waitingForCollector) {
 		return <Centered><EmptyState>{i18n.t("app:collector.pending")}</EmptyState></Centered>;
 	}	switch (reportState.status) {
@@ -859,6 +864,7 @@ function AdventureHeader({context, dash, cure}: {context: AdventureContext; dash
 }
 
 function AdventureActions({packet, actions}: {packet: ReportTravelSummaryRes; actions: SheetActions}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.actions}>
 		<JourneyAction
 			packet={packet}
@@ -1076,6 +1082,7 @@ function useRequestedTool(open: (tool: AdventureTool) => void): void {
 }
 
 export default function Index(): ReactNode {
+	const styles = useStyles();
 	const [tool, setTool] = useState<AdventureTool | null>(null);
 	useRequestedTool(setTool);
 	return (

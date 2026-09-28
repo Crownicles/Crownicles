@@ -1,6 +1,6 @@
 import React from "react";
 import {useRouter} from "expo-router";
-import {ScrollView, StyleSheet, Text, View} from "react-native";
+import {ScrollView, Text, View} from "react-native";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {readFullStoredToken} from "@/src/authentication/TokenStorage";
@@ -11,54 +11,55 @@ import {BackButton} from "@/src/design/Sections";
 import {Button as DesignButton} from "@/src/design/Primitives";
 import {TextField} from "@/src/design/Inputs";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles} from "@/src/design/ThemeContext";
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	container: {
 		flex: 1,
 		padding: Theme.spacing.xl,
-		backgroundColor: Theme.colors.wash,
+		backgroundColor: colors.wash,
 	},
 	title: {
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.hero,
-		color: Theme.colors.ink,
+		color: colors.ink,
 		marginBottom: Theme.spacing.lg,
 	},
 	warning: {
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.body,
-		color: Theme.colors.ink,
+		color: colors.ink,
 		marginBottom: Theme.spacing.lg,
 	},
 	paragraph: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.body,
-		color: Theme.colors.ink,
+		color: colors.ink,
 		marginBottom: Theme.spacing.lg,
 	},
 	stepTitle: {
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.body,
-		color: Theme.colors.ink,
+		color: colors.ink,
 		marginTop: Theme.spacing.lg,
 		marginBottom: Theme.spacing.sm,
 	},
 	notice: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.body,
-		color: Theme.colors.green,
+		color: colors.green,
 		marginBottom: Theme.spacing.lg,
 	},
 	error: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.body,
-		color: Theme.colors.red,
+		color: colors.red,
 		marginBottom: Theme.spacing.lg,
 	},
 	action: {
 		marginBottom: Theme.spacing.sm,
 	},
-});
+}));
 
 /** Reads the session from the keychain, refreshing it when it is about to expire. */
 async function currentAccessToken(): Promise<string | null> {
@@ -73,6 +74,7 @@ async function currentAccessToken(): Promise<string | null> {
 }
 
 export default function DeleteAccount(): React.ReactElement {
+	const styles = useStyles();
 	const router = useRouter();
 	const authState = React.useContext(AuthContext);
 	const [code, setCode] = React.useState("");

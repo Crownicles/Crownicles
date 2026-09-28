@@ -1,53 +1,54 @@
 import {ComponentProps} from "react";
-import {StyleSheet} from "react-native";
 import type {TopTabs} from "expo-router/js-top-tabs";
-import {Theme} from "@/src/design/Theme";
+import {Palette, Theme} from "@/src/design/Theme";
+import {createStyles} from "@/src/design/ThemeContext";
 
 /** Expo SDK 57 ships its own copy of the navigators, so the options type is read back off the component. */
 type TopTabOptions = Exclude<ComponentProps<typeof TopTabs>["screenOptions"], undefined | ((...args: never[]) => unknown)>;
 
-export const tabBarOptions = {
-	tabBarActiveTintColor: Theme.colors.ink,
-	tabBarInactiveTintColor: Theme.colors.muted,
-	tabBarShowIcon: true,
-	/** The bar carries the selection through colour alone, as the bottom bar always did. */
-	tabBarIndicatorStyle: {
-		height: 0
-	},
-	tabBarPressColor: "transparent",
-	tabBarStyle: {
-		borderTopWidth: 1,
-		borderTopColor: Theme.colors.line,
-		backgroundColor: Theme.colors.paper,
-		paddingTop: Theme.spacing.tabBarVertical,
-		paddingHorizontal: Theme.spacing.tabBarHorizontal,
-		elevation: 0,
-		shadowOpacity: 0
-	},
-	tabBarItemStyle: {
-		paddingVertical: 0
-	},
-	tabBarLabelStyle: {
-		fontFamily: Theme.fonts.semiBold,
-		fontSize: Theme.fontSize.tabLabel,
-		lineHeight: Theme.lineHeight.tabLabel,
-		textTransform: "none" as const
-	}
-} satisfies Pick<
-	TopTabOptions,
-	"tabBarActiveTintColor" | "tabBarInactiveTintColor" | "tabBarShowIcon" | "tabBarIndicatorStyle" | "tabBarPressColor" | "tabBarStyle" | "tabBarItemStyle" | "tabBarLabelStyle"
->;
+type TabBarOptionKeys = "tabBarActiveTintColor" | "tabBarInactiveTintColor" | "tabBarShowIcon" | "tabBarIndicatorStyle" | "tabBarPressColor" | "tabBarStyle" | "tabBarItemStyle" | "tabBarLabelStyle";
 
-export const navigationStyles = StyleSheet.create({
+export function tabBarOptionsOf(colors: Palette) {
+	return {
+		tabBarActiveTintColor: colors.ink,
+		tabBarInactiveTintColor: colors.muted,
+		tabBarShowIcon: true,
+		/** The bar carries the selection through colour alone, as the bottom bar always did. */
+		tabBarIndicatorStyle: {
+			height: 0
+		},
+		tabBarPressColor: "transparent",
+		tabBarStyle: {
+			borderTopWidth: 1,
+			borderTopColor: colors.line,
+			backgroundColor: colors.paper,
+			paddingTop: Theme.spacing.tabBarVertical,
+			paddingHorizontal: Theme.spacing.tabBarHorizontal,
+			elevation: 0,
+			shadowOpacity: 0
+		},
+		tabBarItemStyle: {
+			paddingVertical: 0
+		},
+		tabBarLabelStyle: {
+			fontFamily: Theme.fonts.semiBold,
+			fontSize: Theme.fontSize.tabLabel,
+			lineHeight: Theme.lineHeight.tabLabel,
+			textTransform: "none" as const
+		}
+	} satisfies Pick<TopTabOptions, TabBarOptionKeys>;
+}
+
+export const useNavigationStyles = createStyles(colors => ({
 	header: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
 		paddingHorizontal: Theme.spacing.lg,
 		paddingBottom: Theme.spacing.md,
-		backgroundColor: Theme.colors.paper,
+		backgroundColor: colors.paper,
 		borderBottomWidth: 1,
-		borderBottomColor: Theme.colors.line
+		borderBottomColor: colors.line
 	},
 	/** Balances the settings button so the identity stays centred. */
 	headerSpacer: {
@@ -74,16 +75,16 @@ export const navigationStyles = StyleSheet.create({
 	profileName: {
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.title,
-		color: Theme.colors.ink,
+		color: colors.ink,
 		textAlign: "center"
 	},
 	profileLevel: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.caption,
-		color: Theme.colors.muted,
+		color: colors.muted,
 		textAlign: "center"
 	},
 	settingsButton: {
 		marginRight: Theme.spacing.lg
 	}
-});
+}));

@@ -2,12 +2,12 @@ import {ReactElement, ReactNode, useEffect, useState} from "react";
 import {useRouter} from "expo-router";
 /** Expo SDK 57 no longer accepts react-navigation directly, so the top tabs come from its own copy. */
 import {TopTabs} from "expo-router/js-top-tabs";
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Text, TouchableOpacity, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {AppIcons} from "@/src/AppIcons";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
-import {navigationStyles, tabBarOptions} from "@/src/design/Navigation";
+import {useNavigationStyles, tabBarOptionsOf} from "@/src/design/Navigation";
 import {SwipeBackBoundary, useSwipeBackOpen} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -28,19 +28,19 @@ import {ContestSeal, DepartureFork, forkDue, sealDue, stageMoment, StopArrivedTo
 import {RoyalLetter} from "@/src/onboarding/RoyalLetter";
 import {useRoyalLetter} from "@/src/store/RoyalLetterStore";
 import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
-const screenStyles = {flex: 1, backgroundColor: Theme.colors.paper};
 const NEW_MARK_SIZE = 8;
-const tabStyles = StyleSheet.create({
+const useTabStyles = createStyles(colors => ({
 	icon: {alignItems: "center", justifyContent: "center"},
 	mark: {position: "absolute", top: -Theme.spacing.xs, left: "100%", marginLeft: -Theme.spacing.xs},
 	newMark: {
 		width: NEW_MARK_SIZE,
 		height: NEW_MARK_SIZE,
 		borderRadius: NEW_MARK_SIZE / 2,
-		backgroundColor: Theme.colors.gold
+		backgroundColor: colors.gold
 	}
-});
+}));
 
 /** Every tab of the app, in the order of the bar; the journey decides which of them are open. */
 const TABS: readonly {name: JourneyTab; title: string; icon: string}[] = [
@@ -52,6 +52,7 @@ const TABS: readonly {name: JourneyTab; title: string; icon: string}[] = [
 ];
 
 function NewMark(): ReactElement {
+	const tabStyles = useTabStyles();
 	return <View style={tabStyles.newMark} testID="tab-new-mark" />;
 }
 
@@ -59,17 +60,24 @@ function tabMark(tab: JourneyTab, journey: Journey): ReactElement | null {
 	return journey.isNew(tab) ? <NewMark /> : null;
 }
 
-/** The mark rides on the icon: a badge of the tab itself drifts to the screen edge when few tabs share the bar. */
-function tabIcon(path: string, mark: ReactElement | null): (props: {focused: boolean}) => ReactElement {
-	const Icon = ({focused}: {focused: boolean}): ReactElement => <View style={tabStyles.icon}>
+function TabIconView({path, mark, focused}: {path: string; mark: ReactElement | null; focused: boolean}): ReactElement {
+	const tabStyles = useTabStyles();
+	return <View style={tabStyles.icon}>
 		<TwemojiIcon emoji={AppIcons.getIcon(path)} size={Theme.dimensions.tabBarIcon} opacity={focused ? 1 : 0.55} />
 		{mark ? <View style={tabStyles.mark}>{mark}</View> : null}
 	</View>;
+}
+
+/** The mark rides on the icon: a badge of the tab itself drifts to the screen edge when few tabs share the bar. */
+function tabIcon(path: string, mark: ReactElement | null): (props: {focused: boolean}) => ReactElement {
+	// The navigator calls this as a plain function, so the hook lives in the component it returns.
+	const Icon = ({focused}: {focused: boolean}): ReactElement => <TabIconView path={path} mark={mark} focused={focused} />;
 	Icon.displayName = `TabIcon(${path})`;
 	return Icon;
 }
 
 const ProfileHeader = (): ReactNode => {
+	const navigationStyles = useNavigationStyles();
 	/*
 	 * Reads the profile from the store rather than waiting for the profile screen to fill it in:
 	 * the header is shown before that screen is ever opened, and both share this single request.
@@ -92,6 +100,7 @@ const ProfileHeader = (): ReactNode => {
 };
 
 function TabsHeader(): ReactNode {
+	const navigationStyles = useNavigationStyles();
 	const router = useRouter();
 	const insets = useSafeAreaInsets();
 	return (
@@ -109,6 +118,7 @@ function TabPager({journey}: {journey: Journey}): ReactNode {
 	const insets = useSafeAreaInsets();
 	const detailOpen = useSwipeBackOpen();
 	const adventureBusy = useAdventureBusy();
+	const tabBarOptions = tabBarOptionsOf(useColors());
 	// A lone tab needs no bar: the newcomer only sees the adventure until something else opens.
 	const tabBarStyle = journey.tabs.length > 1 && !adventureBusy
 		? {...tabBarOptions.tabBarStyle, paddingBottom: insets.bottom + Theme.spacing.tabBarVertical}
@@ -205,13 +215,14 @@ function StopToast(): ReactNode {
 export default function TabLayout(): ReactNode {
 	const dead = usePlayerIsDead();
 	const journey = useJourney();
+	const colors = useColors();
 	useReportNotification();
 	useNotificationNavigation();
 	if (dead) {
 		return <DeathScreen />;
 	}
 	return (
-		<View style={screenStyles}>
+		<View style={{flex: 1, backgroundColor: colors.paper}}>
 			<TabsHeader />
 			<SwipeBackBoundary><TabPager journey={journey} /></SwipeBackBoundary>
 			<OnboardingOverlays journey={journey} />

@@ -1,6 +1,5 @@
 import {FightCue, FightMotion, FIGHT_MOTIONS} from "@/src/display/FightMotion";
 import {FIGHT_PARTICLE_FORMS, FightChoreography, FightFrames} from "@/src/display/FightEffectPrimitives";
-import {Theme} from "@/src/design/Theme";
 import {FIGHT_ATTACK_SIGNATURES} from "@/src/display/FightAttackSignatures";
 import {FIGHT_CAST_PRELUDES, FIGHT_CHARGING_SIGNATURES, FIGHT_PERIODIC_SIGNATURES, FIGHT_SPELL_SIGNATURES} from "@/src/display/FightSpellSignatures";
 import {fightOutcomeEffects} from "@/src/display/FightOutcomeEffects";
@@ -16,13 +15,13 @@ const HEAVY_SWING_TIMING: FightFrames = [0, 0.2, 0.34, 0.4, 0.58, 1];
 
 const SLASH: FightChoreography = [
 	{id: "blade", form: FIGHT_PARTICLE_FORMS.ARC, width: 94, height: 60, opacity: STRIKE, x: [-28, -18, 0, 12, 25, 30], y: [-20, -14, 0, 12, 20, 24], rotation: [-65, -55, -35, -15, 0, 0], scale: GROW},
-	{id: "edge", form: FIGHT_PARTICLE_FORMS.STREAK, width: 4, height: 90, opacity: STRIKE, x: [-30, -20, 0, 18, 26, 30], y: [-24, -16, 0, 14, 24, 28], rotation: [32, 32, 32, 32, 32, 32], tint: Theme.colors.paper},
+	{id: "edge", form: FIGHT_PARTICLE_FORMS.STREAK, width: 4, height: 90, opacity: STRIKE, x: [-30, -20, 0, 18, 26, 30], y: [-24, -16, 0, 14, 24, 28], rotation: [32, 32, 32, 32, 32, 32], tint: "paper"},
 	{id: "crosscut", form: FIGHT_PARTICLE_FORMS.ARC, width: 72, height: 46, opacity: FOLLOW_THROUGH, rotation: [35, 35, 35, 55, 70, 80], scale: GROW}
 ];
 
 const RAPID: FightChoreography = [
 	{id: "opening-cut", form: FIGHT_PARTICLE_FORMS.STREAK, width: 3, height: 70, opacity: [0, 0.7, 0.2, 0, 0, 0], x: [-24, -12, 18, 25, 25, 25], y: [-14, -10, 0, 6, 6, 6], rotation: [55, 55, 55, 55, 55, 55]},
-	{id: "return-cut", form: FIGHT_PARTICLE_FORMS.STREAK, width: 4, height: 86, opacity: STRIKE, x: [20, 20, 0, -20, -28, -28], rotation: [-40, -40, -40, -40, -40, -40], tint: Theme.colors.paper},
+	{id: "return-cut", form: FIGHT_PARTICLE_FORMS.STREAK, width: 4, height: 86, opacity: STRIKE, x: [20, 20, 0, -20, -28, -28], rotation: [-40, -40, -40, -40, -40, -40], tint: "paper"},
 	{id: "finishing-cut", form: FIGHT_PARTICLE_FORMS.ARC, width: 92, height: 36, opacity: FOLLOW_THROUGH, x: [-24, -24, -12, 8, 28, 32], y: [12, 12, 12, 0, -10, -12], rotation: [-20, -20, -20, -20, -20, -20]},
 	{id: "speed-trail", form: FIGHT_PARTICLE_FORMS.STREAK, anchor: "actor", width: 62, height: 2, opacity: STRIKE, travel: [0, 0.05, 0.65, 0.9, 1, 1], y: [-18, -18, -18, -18, -18, -18]}
 ];
@@ -31,12 +30,12 @@ const HEAVY: FightChoreography = [
 	{id: "raised-weapon", form: FIGHT_PARTICLE_FORMS.GLYPH, glyph: FIGHT_MOTIONS.HEAVY, anchor: "actor", width: 44, height: 44, timing: HEAVY_SWING_TIMING, opacity: [0, 1, 1, 1, 0, 0], travel: [0, 0, 0.25, 1, 1, 1], y: [-12, -32, -34, 0, 18, 24], rotation: [-35, -70, -50, 35, 65, 65], scale: [0.6, 1, 1.05, 1.15, 0.5, 0]},
 	{id: "downward-impact", form: FIGHT_PARTICLE_FORMS.STREAK, width: 9, height: 100, timing: HEAVY_SWING_TIMING, opacity: [0, 0, 0, 1, 0.1, 0], y: [-38, -38, -38, 0, 16, 28], rotation: [-24, -24, -24, -24, -24, -24], scale: [0.1, 0.1, 0.1, 1.15, 0.65, 0.1]},
 	{id: "shockwave", form: FIGHT_PARTICLE_FORMS.RING, width: 84, height: 32, timing: [0, 0.39, 0.4, 0.49, 0.7, 1], opacity: [0, 0, 0.9, 0.6, 0.15, 0], y: [30, 30, 30, 30, 30, 30], scale: [0.1, 0.1, 0.3, 1, 1.35, 1.55], onHit: true},
-	{id: "impact-core", form: FIGHT_PARTICLE_FORMS.SPARK, width: 42, height: 42, timing: [0, 0.39, 0.4, 0.44, 0.56, 1], opacity: [0, 0, 1, 0.8, 0, 0], scale: [0, 0, 1.2, 0.9, 0.2, 0], tint: Theme.colors.paper, onHit: true}
+	{id: "impact-core", form: FIGHT_PARTICLE_FORMS.SPARK, width: 42, height: 42, timing: [0, 0.39, 0.4, 0.44, 0.56, 1], opacity: [0, 0, 1, 0.8, 0, 0], scale: [0, 0, 1.2, 0.9, 0.2, 0], tint: "paper", onHit: true}
 ];
 
 const PIERCE: FightChoreography = [
 	{id: "thrust", form: FIGHT_PARTICLE_FORMS.STREAK, anchor: "actor", width: 92, height: 4, opacity: STRIKE, travel: [0, 0.05, 0.92, 1.1, 1.15, 1.15], scale: [0.15, 0.35, 1, 0.65, 0.2, 0]},
-	{id: "point", form: FIGHT_PARTICLE_FORMS.SHARD, anchor: "actor", width: 20, height: 8, opacity: STRIKE, travel: [0, 0.1, 1, 1.16, 1.18, 1.18], rotation: [0, 0, 0, 0, 0, 0], tint: Theme.colors.paper},
+	{id: "point", form: FIGHT_PARTICLE_FORMS.SHARD, anchor: "actor", width: 20, height: 8, opacity: STRIKE, travel: [0, 0.1, 1, 1.16, 1.18, 1.18], rotation: [0, 0, 0, 0, 0, 0], tint: "paper"},
 	{id: "entry-ring", form: FIGHT_PARTICLE_FORMS.RING, width: 24, height: 58, opacity: AFTERGLOW, scale: GROW, onHit: true}
 ];
 

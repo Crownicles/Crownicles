@@ -13,7 +13,7 @@ import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {InventoryItemRow, inventoryItemDetails, inventoryItemEmblem} from "@/src/components/InventoryItemRow";
 import {Note, SectionHeader} from "@/src/design/Primitives";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
-import {ActionBanner, ExpandableEntry, ExpandableList, Fact, sectionStyles} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, ExpandableList, Fact, useSectionStyles} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {plantName} from "@/src/display/Resources";
@@ -35,6 +35,7 @@ function ChestItem({item, source, data, location, actions, expanded, onToggle}: 
 	expanded: boolean;
 	onToggle: () => void;
 }): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const action = source === "chest" ? CHEST_ACTIONS.WITHDRAW : CHEST_ACTIONS.DEPOSIT;
 	const swappable = (source === "chest" ? data.depositableItems : data.chestItems).filter(other => other.category === item.category);
 	const submit = (request: HomeChestActionReq): void => {
@@ -111,6 +112,7 @@ function PlantTransfer({plantId, caption, location, request, actions, expanded, 
 	expanded: boolean;
 	onToggle: () => void;
 }): ReactNode {
+	const sectionStyles = useSectionStyles();
 	return <ExpandableEntry
 		label={plantName(plantId)}
 		caption={caption}

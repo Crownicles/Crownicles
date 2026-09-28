@@ -15,7 +15,7 @@ import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, Lock, sectionStyles, Standing} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, ExpandableList, Lock, useSectionStyles, Standing} from "@/src/design/Sections";
 import {ArrowRight} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
@@ -129,6 +129,7 @@ function BoardersSection({boarders, hasOwnPet, actions}: {boarders: OwnedPet[]; 
 
 /** The shelter and the transfers it allows on one screen: a pet is moved from where it is shown. */
 function ShelterContent(props: ShelterProps): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const {ownPet, boarders, guildName, maxCount} = props;
 	const unfolding = useExpandedEntry<string>();
 	const {pending, message, open} = useCommandMenus();

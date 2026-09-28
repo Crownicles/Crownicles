@@ -1,5 +1,5 @@
 import React, {PropsWithChildren, useEffect, useState} from "react";
-import {ActivityIndicator, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Text, View} from "react-native";
 import {AssetsManager} from "@/src/assets/AssetsManager";
 import {Button} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
@@ -7,6 +7,7 @@ import {applyServerBundle} from "@/src/translations/i18nLoader";
 import {i18n} from "@/src/translations/i18n";
 import {RestApi} from "@/src/networking/RestApi";
 import {APP_COMPATIBILITY_STATUSES} from "../../../WsPackets/src/AppCompatibility";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 type OutdatedState = typeof APP_COMPATIBILITY_STATUSES.APP_OUTDATED | typeof APP_COMPATIBILITY_STATUSES.SERVER_OUTDATED;
 type BootState = "loading" | "ready" | "error" | OutdatedState;
@@ -17,23 +18,25 @@ const OUTDATED_NOTICES: Record<OutdatedState, {message: string; canRetry: boolea
 	[APP_COMPATIBILITY_STATUSES.SERVER_OUTDATED]: {message: "app:boot.serverOutdated", canRetry: true}
 };
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	container: {
 		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
-		backgroundColor: Theme.colors.wash,
+		backgroundColor: colors.wash,
 		padding: Theme.spacing.xl,
 		gap: Theme.spacing.md
 	},
 	text: {
 		fontFamily: Theme.fonts.regular,
-		color: Theme.colors.ink,
+		color: colors.ink,
 		textAlign: "center"
 	}
-});
+}));
 
 export function BootGate({children}: PropsWithChildren): React.ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const [state, setState] = useState<BootState>("loading");
 	const [retryCount, setRetryCount] = useState(0);
 
@@ -106,7 +109,7 @@ export function BootGate({children}: PropsWithChildren): React.ReactNode {
 			<Text style={styles.text}>{i18n.t("app:boot.error")}</Text>
 			<Button variant="primary" onPress={retry}>{i18n.t("app:boot.retry")}</Button>
 		</> : <>
-			<ActivityIndicator size="large" color={Theme.colors.ink} />
+			<ActivityIndicator size="large" color={colors.ink} />
 			<Text style={styles.text}>{i18n.t("app:boot.updating")}</Text>
 		</>}
 	</View>;

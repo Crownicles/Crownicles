@@ -1,6 +1,6 @@
 import {useNavigation, useRouter} from "expo-router";
 import {ReactNode, useEffect} from "react";
-import {ActivityIndicator, StyleSheet, View} from "react-native";
+import {ActivityIndicator, View} from "react-native";
 import {RequestState} from "@/src/store/useGameQuery";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {FightGauge} from "@/src/components/FightGauge";
@@ -19,6 +19,7 @@ import {useContest} from "@/src/onboarding/Contest";
 import {GuideTip} from "@/src/onboarding/GuideTip";
 import {ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
 import {useJourney} from "@/src/journey/useJourney";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 const PET_RARITY_MIN = 0;
@@ -34,14 +35,14 @@ const PROFILE_PAGES: {page: ProfilePage; icon: string}[] = [
 	{page: "blessing", icon: "smallEvents.altar"}
 ];
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	state: {
 		alignItems: "center",
 		justifyContent: "center",
 		paddingVertical: Theme.spacing.xxl
 	},
 	gauge: {padding: Theme.spacing.md}
-});
+}));
 
 function numberValue(value: number): string {
 	return i18n.t("app:profile.formats.number", {value});
@@ -110,6 +111,7 @@ function walletFigures(profile: ProfileRes): Figure[] {
 }
 
 function ProfileStanding({profile}: {profile: ProfileRes}): ReactNode {
+	const colors = useColors();
 	const classIcon = profile.classId === undefined ? null : AppIcons.getIconOrNull(`classes.${profile.classId}`);
 	return (
 		<Standing
@@ -127,14 +129,14 @@ function ProfileStanding({profile}: {profile: ProfileRes}): ReactNode {
 				label={i18n.t("app:profile.fields.health")}
 				value={profile.health.value}
 				max={profile.health.max}
-				color={Theme.colors.red}
+				color={colors.red}
 				{...gaugeEmoji("unitValues.health")}
 			/>
 			<FightGauge
 				label={i18n.t("app:profile.fields.experience")}
 				value={profile.experience.value}
 				max={profile.experience.max}
-				color={Theme.colors.gold}
+				color={colors.gold}
 				{...gaugeEmoji("unitValues.xp")}
 			/>
 			<Figures items={walletFigures(profile)} />
@@ -202,18 +204,18 @@ function rankingSection(profile: ProfileRes): ProfileSection {
 	};
 }
 
+function SectionGauge({label, value, max, emojiPath}: {label: string; value: number; max: number; emojiPath: string}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
+	return <View style={styles.gauge}><FightGauge label={label} value={value} max={max} color={colors.gold} {...gaugeEmoji(emojiPath)} /></View>;
+}
+
 function campaignSection(profile: ProfileRes): ProfileSection {
 	return {
 		id: "missions",
 		icon: "missions.campaign",
 		label: i18n.t("app:profile.fields.campaign"),
-		content: <View style={styles.gauge}><FightGauge
-			label={i18n.t("app:missions.progress")}
-			value={profile.missions.campaignProgression}
-			max={CAMPAIGN_COMPLETE}
-			color={Theme.colors.gold}
-			{...gaugeEmoji("missions.campaign")}
-		/></View>
+		content: <SectionGauge label={i18n.t("app:missions.progress")} value={profile.missions.campaignProgression} max={CAMPAIGN_COMPLETE} emojiPath="missions.campaign" />
 	};
 }
 
@@ -230,13 +232,7 @@ function cookingSection(profile: ProfileRes): ProfileSection | null {
 			level: cooking.level,
 			grade: i18n.t(`models:cooking.grades.${cooking.grade}`)
 		}),
-		content: <View style={styles.gauge}><FightGauge
-			label={i18n.t("app:profile.fields.experience")}
-			value={cooking.experience.value}
-			max={cooking.experience.max}
-			color={Theme.colors.gold}
-			{...gaugeEmoji("unitValues.xp")}
-		/></View>
+		content: <SectionGauge label={i18n.t("app:profile.fields.experience")} value={cooking.experience.value} max={cooking.experience.max} emojiPath="unitValues.xp" />
 	};
 }
 
@@ -307,10 +303,12 @@ function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: 
 }
 
 function ProfileState({state, onPage}: {state: RequestState<ProfileRes>; onPage: (page: ProfilePage) => void}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	if (state.status === "loading") {
 		return (
 			<View style={styles.state}>
-				<ActivityIndicator size="large" color={Theme.colors.ink} />
+				<ActivityIndicator size="large" color={colors.ink} />
 				<EmptyState>{i18n.t("app:common.loading")}</EmptyState>
 			</View>
 		);

@@ -11,7 +11,7 @@ import {CookingRequest, cookingMenuFromOutcome, useCookingActions} from "@/src/s
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {HomeCookingResults} from "@/src/components/HomeCookingResults";
 import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, Fact, sectionStyles} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, ExpandableList, Fact, useSectionStyles} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {materialName, plantName} from "@/src/display/Resources";
@@ -34,6 +34,7 @@ function recipeName(recipe: NonNullable<CookingSlot["recipe"]>): string {
 function RecipeSlot({slot, actions, expanded, onToggle}: {
 	slot: CookingSlot; actions: CookingActions; expanded: boolean; onToggle: () => void;
 }): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const {recipe, slotIndex} = slot;
 	if (!recipe) return <Note>{i18n.t("app:cooking.emptySlot", {slot: slotIndex + 1})}</Note>;
 	return <ExpandableEntry

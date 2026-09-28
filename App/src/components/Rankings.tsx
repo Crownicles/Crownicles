@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle} from "react-native";
+import {Pressable, Text, View, type StyleProp, type ViewStyle} from "react-native";
 import {TopDataType, TopTiming, RankingEntry} from "ws-packets/src/objects/Rankings";
 import {TopRes} from "ws-packets/src/fromServer/fight/RankingsRes";
 import {RankingSelection, useRankings} from "@/src/store/useRankings";
@@ -16,6 +16,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 import {joinFacts} from "@/src/display/Facts";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 /** Each board counts its own currency, and shows the emoji the rest of the game gives it. */
 const RANKING_UNITS: Record<TopDataType, string> = {
@@ -25,31 +26,31 @@ const RANKING_UNITS: Record<TopDataType, string> = {
 };
 const PODIUM_LAST_RANK = 3;
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	entry: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, minHeight: 64, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"},
-	entrySelf: {backgroundColor: Theme.colors.wash, borderLeftColor: Theme.colors.green},
-	rankBadge: {minWidth: 38, height: 30, flexShrink: 0, alignItems: "center", justifyContent: "center", paddingHorizontal: Theme.spacing.sm, backgroundColor: Theme.colors.wash, borderRadius: 10},
-	rankBadgePodium: {backgroundColor: Theme.colors.paper, borderWidth: 1, borderColor: Theme.colors.gold},
-	rank: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowSubtitle, color: Theme.colors.muted, fontVariant: ["tabular-nums"]},
-	rankPodium: {color: Theme.colors.gold},
+	entrySelf: {backgroundColor: colors.wash, borderLeftColor: colors.green},
+	rankBadge: {minWidth: 38, height: 30, flexShrink: 0, alignItems: "center", justifyContent: "center", paddingHorizontal: Theme.spacing.sm, backgroundColor: colors.wash, borderRadius: 10},
+	rankBadgePodium: {backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.gold},
+	rank: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowSubtitle, color: colors.muted, fontVariant: ["tabular-nums"]},
+	rankPodium: {color: colors.gold},
 	body: {flex: 1, minWidth: 0, gap: 3},
-	name: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, color: Theme.colors.ink},
+	name: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, color: colors.ink},
 	meta: {flexDirection: "row", alignItems: "center", gap: 5},
-	metaText: {flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	metaText: {flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
 	end: {alignItems: "flex-end", maxWidth: "40%", gap: 3, flexShrink: 1},
 	value: {flexDirection: "row", alignItems: "center", gap: 4, flexShrink: 1},
-	valueText: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowTitle, color: Theme.colors.ink, fontVariant: ["tabular-nums"], flexShrink: 1},
-	self: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: Theme.colors.green},
+	valueText: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowTitle, color: colors.ink, fontVariant: ["tabular-nums"], flexShrink: 1},
+	self: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: colors.green},
 	pagination: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingBottom: Theme.spacing.md},
 	pageLabel: {flex: 1, minHeight: 40, justifyContent: "center"},
-	page: {textAlign: "center", fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: Theme.colors.muted},
-	pageAction: {color: Theme.colors.blue},
-	pageButton: {width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.wash, borderRadius: Theme.pillRadius},
+	page: {textAlign: "center", fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: colors.muted},
+	pageAction: {color: colors.blue},
+	pageButton: {width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: colors.wash, borderRadius: Theme.pillRadius},
 	pageButtonDisabled: {opacity: 0.35},
 	pressed: {opacity: 0.7},
 	previousArrow: {transform: [{rotate: "90deg"}]},
 	nextArrow: {transform: [{rotate: "-90deg"}]}
-});
+}));
 
 /** The badges a ranked player carries: their league, where they travel, what ails them. */
 function entryIcons(entry: RankingEntry): string[] {
@@ -86,6 +87,7 @@ function RankingStanding({data, onPage}: {data: TopRes; onPage: (page: number) =
 }
 
 function RankingRow({entry, unit}: {entry: RankingEntry; unit: string}): ReactNode {
+	const styles = useStyles();
 	const podium = entry.rank <= PODIUM_LAST_RANK;
 	return <View style={[styles.entry, entry.sameContext && styles.entrySelf]}>
 		<View style={[styles.rankBadge, podium && styles.rankBadgePodium]}>
@@ -109,6 +111,8 @@ function RankingRow({entry, unit}: {entry: RankingEntry; unit: string}): ReactNo
 }
 
 function PageArrow({label, arrow, disabled, onPress}: {label: string; arrow: StyleProp<ViewStyle>; disabled: boolean; onPress: () => void}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	return <Pressable
 		accessibilityRole="button"
 		accessibilityLabel={label}
@@ -116,10 +120,11 @@ function PageArrow({label, arrow, disabled, onPress}: {label: string; arrow: Sty
 		disabled={disabled}
 		onPress={onPress}
 		style={({pressed}) => [styles.pageButton, disabled && styles.pageButtonDisabled, pressed && styles.pressed]}
-	><View style={arrow}><ChevronDown size={18} color={Theme.colors.ink} /></View></Pressable>;
+	><View style={arrow}><ChevronDown size={18} color={colors.ink} /></View></Pressable>;
 }
 
 function RankingPagination({page, lastPage, onPage}: {page: number; lastPage: number; onPage: (page: number) => void}): ReactNode {
+	const styles = useStyles();
 	const atStart = page <= 1;
 	return <View style={styles.pagination}>
 		<PageArrow label={i18n.t("app:arena.rankings.previous")} arrow={styles.previousArrow} disabled={atStart} onPress={(): void => onPage(page - 1)} />

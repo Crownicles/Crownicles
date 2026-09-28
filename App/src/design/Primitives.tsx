@@ -1,36 +1,25 @@
 import {ReactNode, useEffect, useState} from "react";
 import {impactAsync, ImpactFeedbackStyle} from "expo-haptics";
-import {
-	Animated,
-	Easing,
-	Pressable,
-	type PressableProps,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View,
-	type StyleProp,
-	type TextStyle,
-	type ViewStyle
-} from "react-native";
+import {Animated, Easing, Pressable, type PressableProps, ScrollView, Text, View, type StyleProp, type TextStyle, type ViewStyle} from "react-native";
 import {Theme} from "@/src/design/Theme";
 import {LucideIcon} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {useKeyboardClearance} from "@/src/design/useKeyboardClearance";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
-const screenStyles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	screenContent: {
 		flexGrow: 1,
 		paddingTop: Theme.spacing.screenTop,
 		paddingHorizontal: Theme.spacing.xl,
 		paddingBottom: Theme.spacing.screenBottom,
-		backgroundColor: Theme.colors.wash
+		backgroundColor: colors.wash
 	},
 	hero: { marginBottom: Theme.spacing.xl },
 	eyebrow: {
-		color: Theme.colors.muted,
+		color: colors.muted,
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.eyebrow,
 		lineHeight: Theme.lineHeight.eyebrow,
@@ -42,14 +31,14 @@ const screenStyles = StyleSheet.create({
 		marginBottom: Theme.spacing.titleGap
 	},
 	heroTitleText: {
-		color: Theme.colors.ink,
+		color: colors.ink,
 		fontFamily: Theme.fonts.extraBold,
 		fontSize: Theme.fontSize.hero,
 		letterSpacing: Theme.letterSpacing.hero,
 		lineHeight: Theme.lineHeight.hero
 	},
 	heroSubtitle: {
-		color: Theme.colors.muted,
+		color: colors.muted,
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.body,
 		lineHeight: Theme.lineHeight.heroSubtitle
@@ -72,14 +61,14 @@ const screenStyles = StyleSheet.create({
 		flexShrink: 1
 	},
 	sectionHeader: {
-		color: Theme.colors.ink,
+		color: colors.ink,
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.sectionHeader,
 		letterSpacing: Theme.letterSpacing.sectionHeader,
 		flexShrink: 1
 	},
 	sectionHint: {
-		color: Theme.colors.faint,
+		color: colors.faint,
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.caption,
 		flexShrink: 1,
@@ -90,7 +79,7 @@ const screenStyles = StyleSheet.create({
 		paddingLeft: Theme.spacing.sm
 	},
 	sectionActionText: {
-		color: Theme.colors.blue,
+		color: colors.blue,
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.bodySmall
 	},
@@ -103,22 +92,19 @@ const screenStyles = StyleSheet.create({
 		alignItems: "center"
 	},
 	emptyText: {
-		color: Theme.colors.muted,
+		color: colors.muted,
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.note,
 		lineHeight: Theme.lineHeight.note,
 		textAlign: "center"
-	}
-});
-
-const fieldStyles = StyleSheet.create({
+	},
 	keyValue: {
 		flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: 10, paddingHorizontal: Theme.spacing.lg
 	},
-	keyValueLabel: { color: Theme.colors.muted, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.body, lineHeight: Theme.lineHeight.body },
+	keyValueLabel: { color: colors.muted, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.body, lineHeight: Theme.lineHeight.body },
 	keyValueLabelContainer: { flexShrink: 1 },
 	keyValueValue: {
-		color: Theme.colors.ink,
+		color: colors.ink,
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.body,
 		lineHeight: Theme.lineHeight.body,
@@ -131,7 +117,7 @@ const fieldStyles = StyleSheet.create({
 		flexDirection: "row", justifyContent: "space-between", marginBottom: Theme.spacing.sm
 	},
 	track: {
-		height: 5, borderRadius: 3, backgroundColor: Theme.colors.line, overflow: "hidden"
+		height: 5, borderRadius: 3, backgroundColor: colors.line, overflow: "hidden"
 	},
 	fill: { height: "100%", borderRadius: 3 },
 	note: {
@@ -142,11 +128,8 @@ const fieldStyles = StyleSheet.create({
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.note,
 		lineHeight: Theme.lineHeight.note,
-		color: Theme.colors.muted
-	}
-});
-
-const actionStyles = StyleSheet.create({
+		color: colors.muted
+	},
 	buttonRow: {
 		flexDirection: "row",
 		flexWrap: "wrap",
@@ -161,23 +144,23 @@ const actionStyles = StyleSheet.create({
 		paddingVertical: Theme.spacing.md,
 		paddingHorizontal: Theme.spacing.buttonHorizontal,
 		borderWidth: 1,
-		borderColor: Theme.colors.line,
+		borderColor: colors.line,
 		borderRadius: Theme.pillRadius,
-		backgroundColor: Theme.colors.paper
+		backgroundColor: colors.paper
 	},
 	buttonPressed: {
-		backgroundColor: Theme.colors.wash,
+		backgroundColor: colors.wash,
 		transform: [{scale: 0.985}]
 	},
 	buttonPrimary: {
-		borderColor: Theme.colors.ink,
-		backgroundColor: Theme.colors.ink
+		borderColor: colors.ink,
+		backgroundColor: colors.ink
 	},
 	buttonDanger: {
-		borderColor: Theme.colors.line
+		borderColor: colors.line
 	},
 	buttonText: {
-		color: Theme.colors.ink,
+		color: colors.ink,
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.button,
 	},
@@ -187,14 +170,11 @@ const actionStyles = StyleSheet.create({
 		gap: Theme.spacing.sm
 	},
 	buttonPrimaryText: {
-		color: Theme.colors.paper
+		color: colors.paper
 	},
 	buttonDangerText: {
-		color: Theme.colors.red
-	}
-});
-
-const quickActionStyles = StyleSheet.create({
+		color: colors.red
+	},
 	quickActions: {
 		flexDirection: "row",
 		gap: Theme.spacing.sm,
@@ -210,29 +190,24 @@ const quickActionStyles = StyleSheet.create({
 		paddingVertical: Theme.spacing.quickActionVertical,
 		paddingHorizontal: Theme.spacing.xs,
 		borderWidth: 1,
-		borderColor: Theme.colors.line,
+		borderColor: colors.line,
 		borderRadius: Theme.radius,
-		backgroundColor: Theme.colors.paper
+		backgroundColor: colors.paper
 	},
 	quickActionPressed: {
-		backgroundColor: Theme.colors.wash
+		backgroundColor: colors.wash
 	},
 	quickActionSlot: {flex: 1},
 	quickActionLabel: {
-		color: Theme.colors.ink,
+		color: colors.ink,
 		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.caption,
 		lineHeight: Theme.lineHeight.tabLabel,
 		textAlign: "center"
 	}
-});
+}));
 
-const styles = {
-	...screenStyles,
-	...fieldStyles,
-	...actionStyles,
-	...quickActionStyles
-};
+type PrimitiveStyles = ReturnType<typeof useStyles>;
 
 type ButtonVariant = "secondary" | "primary" | "danger";
 
@@ -256,9 +231,13 @@ type QuickActionProps = {
 
 const buttonVariantStyles = {
 	secondary: {button: undefined, text: undefined},
-	primary: {button: styles.buttonPrimary, text: styles.buttonPrimaryText},
-	danger: {button: styles.buttonDanger, text: styles.buttonDangerText}
-} satisfies Record<ButtonVariant, {button: StyleProp<ViewStyle>; text: StyleProp<TextStyle>}>;
+	primary: {button: "buttonPrimary", text: "buttonPrimaryText"},
+	danger: {button: "buttonDanger", text: "buttonDangerText"}
+} as const satisfies Record<ButtonVariant, {button?: keyof PrimitiveStyles; text?: keyof PrimitiveStyles}>;
+
+function variantStyle(styles: PrimitiveStyles, key: keyof PrimitiveStyles | undefined): StyleProp<ViewStyle & TextStyle> {
+	return key ? styles[key] : undefined;
+}
 
 /**
  * Building blocks of `App/mockups/mobile.html`: a bordered card, key/value rows, section headers,
@@ -269,6 +248,7 @@ export function Screen({ children, contentContainerStyle }: {
 	children: ReactNode;
 	contentContainerStyle?: StyleProp<ViewStyle>;
 }): ReactNode {
+	const styles = useStyles();
 	const {scrollRef, clearance} = useKeyboardClearance();
 
 	return <ScrollView
@@ -290,6 +270,7 @@ export function SectionHeader({ children, action, icon, first = false }: {
 	action?: { label?: string; hint?: string; onPress?: () => void };
 	first?: boolean;
 }): ReactNode {
+	const styles = useStyles();
 	return (
 		<View style={[styles.sectionHead, first && styles.sectionHeadFirst]}>
 			<View style={styles.sectionTitle}>
@@ -307,31 +288,34 @@ export function SectionHeader({ children, action, icon, first = false }: {
 }
 
 export function Note({ children }: { children: string }): ReactNode {
+	const styles = useStyles();
 	return <TwemojiText containerStyle={styles.note} textStyle={styles.noteText} emojiSize={Theme.fontSize.note}>{children}</TwemojiText>;
 }
 
-function getButtonStyle(variant: ButtonVariant, disabled: boolean, pressed = false): StyleProp<ViewStyle> {
+function getButtonStyle(styles: PrimitiveStyles, variant: ButtonVariant, disabled: boolean, pressed = false): StyleProp<ViewStyle> {
 	return [
 		styles.button,
-		buttonVariantStyles[variant].button,
+		variantStyle(styles, buttonVariantStyles[variant].button),
 		pressed && styles.buttonPressed,
 		disabled && styles.rowDisabled
 	];
 }
 
 export function Button({children, onPress, variant = "secondary", disabled = false, icon: Icon, emoji}: ButtonProps): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const button = (
 		<View style={styles.buttonLabel}>
 			{emoji ? <TwemojiIcon emoji={emoji} size={Theme.fontSize.rowTitle} /> : null}
-			{Icon && !emoji ? <Icon size={16} color={variant === "primary" ? Theme.colors.paper : Theme.colors.ink} /> : null}
-			<Text style={[styles.buttonText, buttonVariantStyles[variant].text]}>
+			{Icon && !emoji ? <Icon size={16} color={variant === "primary" ? colors.paper : colors.ink} /> : null}
+			<Text style={[styles.buttonText, variantStyle(styles, buttonVariantStyles[variant].text)]}>
 				{children}
 			</Text>
 		</View>
 	);
 
 	if (!onPress) {
-		return <View style={getButtonStyle(variant, disabled)}>{button}</View>;
+		return <View style={getButtonStyle(styles, variant, disabled)}>{button}</View>;
 	}
 
 	return (
@@ -339,7 +323,7 @@ export function Button({children, onPress, variant = "secondary", disabled = fal
 			accessibilityRole="button"
 			disabled={disabled}
 			onPress={onPress}
-			style={({pressed}) => getButtonStyle(variant, disabled, pressed)}
+			style={({pressed}) => getButtonStyle(styles, variant, disabled, pressed)}
 		>
 			{button}
 		</Pressable>
@@ -347,10 +331,12 @@ export function Button({children, onPress, variant = "secondary", disabled = fal
 }
 
 export function ButtonRow({ children }: { children: ReactNode }): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.buttonRow}>{children}</View>;
 }
 
 export function QuickActions({ children }: { children: ReactNode }): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.quickActions}>{children}</View>;
 }
 
@@ -410,6 +396,7 @@ export function PendingMotion({children}: {children: ReactNode}): ReactNode {
 }
 
 function QuickActionContent({icon, label, iconScale}: {icon: string; label: string; iconScale?: Animated.Value}): ReactNode {
+	const styles = useStyles();
 	return <>
 		<Animated.View style={iconScale ? {transform: [{scale: iconScale}]} : undefined}>
 			<TwemojiIcon emoji={icon} size={Theme.dimensions.quickActionIcon} />
@@ -419,6 +406,7 @@ function QuickActionContent({icon, label, iconScale}: {icon: string; label: stri
 }
 
 function PressableQuickAction({icon, children, onPress, disabled}: Required<QuickActionProps>): ReactNode {
+	const styles = useStyles();
 	const {scale, iconScale, handlers} = usePressMotion(onPress);
 	return (
 		<Pressable
@@ -441,6 +429,7 @@ function PressableQuickAction({icon, children, onPress, disabled}: Required<Quic
 }
 
 export function QuickAction({icon, children, onPress, disabled = false}: QuickActionProps): ReactNode {
+	const styles = useStyles();
 	if (!onPress) {
 		return <View style={[styles.quickAction, disabled && styles.rowDisabled]}>
 			<QuickActionContent icon={icon} label={children} />
@@ -450,6 +439,7 @@ export function QuickAction({icon, children, onPress, disabled = false}: QuickAc
 }
 
 export function EmptyState({ children }: { children: string }): ReactNode {
+	const styles = useStyles();
 	return (
 		<View style={styles.empty}>
 			<Text style={styles.emptyText}>{children}</Text>

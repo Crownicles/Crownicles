@@ -1,5 +1,5 @@
-import {ReactNode, useEffect, useState} from "react";
-import {Animated, Modal, ModalProps, Pressable, StyleSheet, Text, View} from "react-native";
+import {ReactNode, useEffect, useMemo, useState} from "react";
+import {Animated, Modal, ModalProps, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
@@ -9,62 +9,63 @@ import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 /**
  * The grammar every detail screen is written in: an identity banner, a row of figures, a dark
  * call to action that says beforehand why it cannot be pressed, and expandable lists.
  */
 
-const styles = StyleSheet.create({
-	surface: {flex: 1, backgroundColor: Theme.colors.paper},
+const useStyles = createStyles(colors => ({
+	surface: {flex: 1, backgroundColor: colors.paper},
 	standing: {paddingBottom: Theme.spacing.xl, gap: Theme.spacing.lg},
 	identity: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.lg},
-	emblem: {width: 64, height: 64, flexShrink: 0, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.wash, borderRadius: 8},
+	emblem: {width: 64, height: 64, flexShrink: 0, alignItems: "center", justifyContent: "center", backgroundColor: colors.wash, borderRadius: 8},
 	body: {flex: 1, minWidth: 0, gap: 3},
-	caption: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
-	title: {fontFamily: Theme.fonts.extraBold, fontSize: 23, lineHeight: 29, color: Theme.colors.ink},
-	chevron: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.chevron, color: Theme.colors.faint},
+	caption: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
+	title: {fontFamily: Theme.fonts.extraBold, fontSize: 23, lineHeight: 29, color: colors.ink},
+	chevron: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.chevron, color: colors.faint},
 	figures: {flexDirection: "row", paddingVertical: Theme.spacing.lg, paddingHorizontal: Theme.spacing.md},
 	figure: {flex: 1, minWidth: 0, gap: 6},
 	figureSingle: {alignItems: "center", justifyContent: "space-between"},
 	figureEnd: {alignItems: "flex-end"},
 	figureValue: {flexDirection: "row", alignItems: "center", gap: 4},
-	figureAmount: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
-	banner: {minHeight: 52, paddingHorizontal: Theme.spacing.xl, paddingVertical: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: Theme.colors.ink, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
+	figureAmount: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, color: colors.ink, fontVariant: ["tabular-nums"]},
+	banner: {minHeight: 52, paddingHorizontal: Theme.spacing.xl, paddingVertical: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: colors.ink, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
 	bannerIcon: {width: 24, height: 24, alignItems: "center", justifyContent: "center"},
 	bannerLabelBox: {flex: 1},
-	bannerLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.button, lineHeight: Theme.lineHeight.body, color: Theme.colors.paper},
+	bannerLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.button, lineHeight: Theme.lineHeight.body, color: colors.paper},
 	lock: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.sm, paddingTop: Theme.spacing.md},
-	lockText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	lockText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
 	disabled: {opacity: 0.5},
 	pressed: {opacity: 0.7},
 	/** Rows sit together on one card: the card and the spacing group them, no rule is drawn between them. */
-	list: {backgroundColor: Theme.colors.paper, borderRadius: Theme.radius, overflow: "hidden"},
+	list: {backgroundColor: colors.paper, borderRadius: Theme.radius, overflow: "hidden"},
 	entryHeader: {minHeight: 72, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"},
-	expanded: {backgroundColor: Theme.colors.wash},
-	highlighted: {borderLeftColor: Theme.colors.green},
+	expanded: {backgroundColor: colors.wash},
+	highlighted: {borderLeftColor: colors.green},
 	dimmed: {opacity: 0.45},
 	entryEmblem: {width: 32, height: 32, flexShrink: 0, alignItems: "center", justifyContent: "center"},
-	entryLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink},
-	detailBackdrop: {flex: 1, justifyContent: "flex-end", backgroundColor: Theme.colors.overlay},
-	detailCard: {backgroundColor: Theme.colors.paper, borderTopLeftRadius: Theme.radius * 2, borderTopRightRadius: Theme.radius * 2, paddingHorizontal: Theme.spacing.xl, paddingTop: Theme.spacing.md, gap: Theme.spacing.lg, maxHeight: "85%"},
-	detailGrabber: {alignSelf: "center", width: 40, height: 4, borderRadius: 2, backgroundColor: Theme.colors.line},
+	entryLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: colors.ink},
+	detailBackdrop: {flex: 1, justifyContent: "flex-end", backgroundColor: colors.overlay},
+	detailCard: {backgroundColor: colors.paper, borderTopLeftRadius: Theme.radius * 2, borderTopRightRadius: Theme.radius * 2, paddingHorizontal: Theme.spacing.xl, paddingTop: Theme.spacing.md, gap: Theme.spacing.lg, maxHeight: "85%"},
+	detailGrabber: {alignSelf: "center", width: 40, height: 4, borderRadius: 2, backgroundColor: colors.line},
 	detailHead: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
 	detailBody: {gap: Theme.spacing.md},
-	back: {alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: Theme.spacing.xs, height: 34, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: Theme.colors.wash, marginBottom: Theme.spacing.lg},
-	backLabel: {color: Theme.colors.ink, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body},
+	back: {alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: Theme.spacing.xs, height: 34, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: colors.wash, marginBottom: Theme.spacing.lg},
+	backLabel: {color: colors.ink, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body},
 	/** The icon set only ships a downward chevron; a quarter turn points it back. */
 	backChevron: {transform: [{rotate: "90deg"}]},
 	fact: {minHeight: 44, flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md},
 	// TwemojiText applies textStyle to its inner Text: a flex there would stretch the line to the full row.
 	factLabelBox: {flex: 1, minWidth: 0},
-	factLabel: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	factLabel: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
 	factValue: {flexShrink: 1, minWidth: 0, flexDirection: "row", alignItems: "center", justifyContent: "flex-end", gap: 4},
-	factAmount: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink, fontVariant: ["tabular-nums"], textAlign: "right"},
+	factAmount: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: colors.ink, fontVariant: ["tabular-nums"], textAlign: "right"},
 	gauge: {paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, gap: 6},
 	gaugeTop: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md},
-	gaugeValue: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
-	gaugeTrack: {height: 5, borderRadius: 999, backgroundColor: Theme.colors.line, overflow: "hidden"},
+	gaugeValue: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.ink, fontVariant: ["tabular-nums"]},
+	gaugeTrack: {height: 5, borderRadius: 999, backgroundColor: colors.line, overflow: "hidden"},
 	gaugeFill: {height: "100%", borderRadius: 999},
 	toastLayer: {...StyleSheet.absoluteFill, paddingHorizontal: Theme.spacing.lg},
 	toast: {
@@ -74,54 +75,58 @@ const styles = StyleSheet.create({
 		paddingVertical: Theme.spacing.md,
 		paddingHorizontal: Theme.spacing.lg,
 		borderRadius: Theme.radius,
-		backgroundColor: Theme.colors.ink,
-		shadowColor: Theme.colors.shadow,
+		backgroundColor: colors.ink,
+		shadowColor: colors.shadow,
 		shadowOpacity: 0.25,
 		shadowRadius: 14,
 		shadowOffset: {width: 0, height: 6},
 		elevation: 8
 	},
-	toastEmblem: {width: 40, height: 40, flexShrink: 0, borderRadius: 20, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.paper},
-	toastTitle: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.paper},
-	toastSubtitle: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.faint},
-	toastAmount: {fontFamily: Theme.fonts.extraBold, fontSize: Theme.fontSize.title, color: Theme.colors.paper, fontVariant: ["tabular-nums"]},
+	toastEmblem: {width: 40, height: 40, flexShrink: 0, borderRadius: 20, alignItems: "center", justifyContent: "center", backgroundColor: colors.paper},
+	toastTitle: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: colors.paper},
+	toastSubtitle: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.faint},
+	toastAmount: {fontFamily: Theme.fonts.extraBold, fontSize: Theme.fontSize.title, color: colors.paper, fontVariant: ["tabular-nums"]},
 	effects: {flexDirection: "row", flexWrap: "wrap", gap: Theme.spacing.sm},
 	effect: {flexDirection: "row", alignItems: "center", gap: 6, paddingVertical: 6, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius},
-	effectLabel: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	effectLabel: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
 	effectValue: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, fontVariant: ["tabular-nums"]},
-	effectGain: {color: Theme.colors.green},
-	effectLoss: {color: Theme.colors.red},
-	effectNeutral: {color: Theme.colors.ink},
-	effectGainChip: {backgroundColor: Theme.colors.greenWash},
-	effectLossChip: {backgroundColor: Theme.colors.redWash},
-	effectNeutralChip: {backgroundColor: Theme.colors.wash},
+	effectGain: {color: colors.green},
+	effectLoss: {color: colors.red},
+	effectNeutral: {color: colors.ink},
+	effectGainChip: {backgroundColor: colors.greenWash},
+	effectLossChip: {backgroundColor: colors.redWash},
+	effectNeutralChip: {backgroundColor: colors.wash},
 	journal: {
 		marginBottom: Theme.spacing.xl,
 		padding: Theme.spacing.xl,
 		gap: Theme.spacing.lg,
 		borderRadius: Theme.radius,
-		backgroundColor: Theme.colors.paper,
-		shadowColor: Theme.colors.shadow,
+		backgroundColor: colors.paper,
+		shadowColor: colors.shadow,
 		shadowOpacity: 0.06,
 		shadowRadius: 12,
 		shadowOffset: {width: 0, height: 4},
 		elevation: 2
 	},
-	journalEmblem: {width: 44, height: 44, flexShrink: 0, borderRadius: 22, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.wash},
-	journalTitle: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: Theme.colors.ink},
+	journalEmblem: {width: 44, height: 44, flexShrink: 0, borderRadius: 22, alignItems: "center", justifyContent: "center", backgroundColor: colors.wash},
+	journalTitle: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: colors.ink},
 	card: {
 		marginBottom: Theme.spacing.xl,
 		borderRadius: Theme.radius,
-		backgroundColor: Theme.colors.paper,
-		shadowColor: Theme.colors.shadow,
+		backgroundColor: colors.paper,
+		shadowColor: colors.shadow,
 		shadowOpacity: 0.06,
 		shadowRadius: 12,
 		shadowOffset: {width: 0, height: 4},
 		elevation: 2
 	},
 	// The shadow lives on the outer view: clipping it there would erase it.
-	cardClip: {borderRadius: Theme.radius, overflow: "hidden"}
-});
+	cardClip: {borderRadius: Theme.radius, overflow: "hidden"},
+	you: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: colors.green},
+	lineGauge: {paddingTop: Theme.spacing.lg}
+}));
+
+type SectionStyles = ReturnType<typeof useStyles>;
 
 /** Why an action cannot be taken, so the screen can say it instead of letting the player find out. */
 export type Lock = {reason: string; icon?: LucideIcon};
@@ -135,10 +140,10 @@ export type Effect = {label: string; value: string; tone: EffectTone; unit?: str
 
 const EFFECT_EMBLEM_SIZE = 15;
 const EFFECT_TONE_STYLES = {
-	[EFFECT_TONES.GAIN]: {value: styles.effectGain, chip: styles.effectGainChip},
-	[EFFECT_TONES.LOSS]: {value: styles.effectLoss, chip: styles.effectLossChip},
-	[EFFECT_TONES.NEUTRAL]: {value: styles.effectNeutral, chip: styles.effectNeutralChip}
-};
+	[EFFECT_TONES.GAIN]: {value: "effectGain", chip: "effectGainChip"},
+	[EFFECT_TONES.LOSS]: {value: "effectLoss", chip: "effectLossChip"},
+	[EFFECT_TONES.NEUTRAL]: {value: "effectNeutral", chip: "effectNeutralChip"}
+} as const;
 
 function EffectEmblem({effect}: {effect: Effect}): ReactNode {
 	if (effect.unit) return <UnitIcon unit={effect.unit} size={EFFECT_EMBLEM_SIZE} />;
@@ -147,10 +152,11 @@ function EffectEmblem({effect}: {effect: Effect}): ReactNode {
 
 /** What an event did to the player, one tinted chip per change: green when it helps, red when it hurts. */
 export function Effects({items}: {items: Effect[]}): ReactNode {
-	return <View style={styles.effects}>{items.map(effect => <View key={effect.label} style={[styles.effect, EFFECT_TONE_STYLES[effect.tone].chip]} testID="event-effect">
+	const styles = useStyles();
+	return <View style={styles.effects}>{items.map(effect => <View key={effect.label} style={[styles.effect, styles[EFFECT_TONE_STYLES[effect.tone].chip]]} testID="event-effect">
 		<EffectEmblem effect={effect} />
 		<Text style={styles.effectLabel}>{effect.label}</Text>
-		<Text style={[styles.effectValue, EFFECT_TONE_STYLES[effect.tone].value]}>{effect.value}</Text>
+		<Text style={[styles.effectValue, styles[EFFECT_TONE_STYLES[effect.tone].value]]}>{effect.value}</Text>
 	</View>)}</View>;
 }
 
@@ -164,6 +170,7 @@ export function JournalEntry({emblem, title, effects, children}: {
 	effects: Effect[];
 	children: ReactNode;
 }): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.journal}>
 		<View style={styles.identity}>
 			{emblem ? <View style={styles.journalEmblem}>{emblem}</View> : null}
@@ -176,6 +183,7 @@ export function JournalEntry({emblem, title, effects, children}: {
 
 /** A list lifted on the same white page as a journal entry, so the rows that follow it read as one piece. */
 export function Card({children}: {children: ReactNode}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.card}><View style={styles.cardClip}>{children}</View></View>;
 }
 
@@ -191,6 +199,7 @@ const BANNER_LABEL_LINES = 2;
 export type ToastValue = {amount: string; unit: string};
 
 function ToastContent({emblem, title, subtitle, value}: {emblem?: ReactNode; title: string; subtitle?: string; value?: ToastValue}): ReactNode {
+	const styles = useStyles();
 	return <>
 		{emblem ? <View style={styles.toastEmblem}>{emblem}</View> : null}
 		<View style={styles.body}>
@@ -216,6 +225,7 @@ export function Toast({emblem, title, subtitle, value, onDismiss, onPress}: {
 	onDismiss: () => void;
 	onPress?: () => void;
 }): ReactNode {
+	const styles = useStyles();
 	const insets = useSafeAreaInsets();
 	const [entrance] = useState(() => new Animated.Value(0));
 	useEffect(() => {
@@ -239,26 +249,33 @@ export function Toast({emblem, title, subtitle, value, onDismiss, onPress}: {
 
 /** React Native paints a full-screen modal white until its content lays out: the palette avoids a flash in dark mode. */
 export function SheetModal(props: Omit<ModalProps, "animationType" | "backdropColor">): ReactNode {
-	return <Modal animationType="slide" backdropColor={Theme.colors.paper} {...props} />;
+	const colors = useColors();
+	return <Modal animationType="slide" backdropColor={colors.paper} {...props} />;
 }
 
 /** A full-screen modal is its own window on iOS, where `SafeAreaView` measures nothing: apply the insets here. */
 export function ModalSurface({children, tone = "paper"}: {children: ReactNode; tone?: "paper" | "wash"}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const insets = useSafeAreaInsets();
-	return <View style={[styles.surface, {backgroundColor: Theme.colors[tone], paddingTop: insets.top, paddingBottom: insets.bottom}]}>{children}</View>;
+	return <View style={[styles.surface, {backgroundColor: colors[tone], paddingTop: insets.top, paddingBottom: insets.bottom}]}>{children}</View>;
 }
 
 export function LockHint({lock, testID}: {lock: Lock; testID?: string}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const Icon = lock.icon ?? CircleAlert;
 	return <View style={styles.lock} testID={testID}>
-		<Icon size={15} color={Theme.colors.muted} />
+		<Icon size={15} color={colors.muted} />
 		<Text style={styles.lockText}>{lock.reason}</Text>
 	</View>;
 }
 
 export function BackButton({label, onClose}: {label: string; onClose: () => void}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	return <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onClose} style={({pressed}): object[] => [styles.back, pressed && styles.pressed].filter(Boolean) as object[]}>
-		<View style={styles.backChevron}><ChevronDown size={18} color={Theme.colors.ink} /></View>
+		<View style={styles.backChevron}><ChevronDown size={18} color={colors.ink} /></View>
 		{/* Always « Retour », so it is never confused with a screen's own cancel button. */}
 		<Text style={styles.backLabel}>{i18n.t("app:common.back")}</Text>
 	</Pressable>;
@@ -274,6 +291,7 @@ export function Standing({emblem, caption, title, subtitle, children, onPress, a
 	accessibilityLabel?: string;
 	testID?: string;
 }): ReactNode {
+	const styles = useStyles();
 	const identity = <>
 		{emblem ? <View style={styles.emblem}>{emblem}</View> : null}
 		<View style={styles.body}>
@@ -324,6 +342,7 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 export type Figure = {caption: string; value: string; unit?: string};
 
 function FigureValue({figure}: {figure: Figure}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.figureValue}>
 		<Text style={styles.figureAmount}>{figure.value}</Text>
 		{figure.unit ? <UnitIcon unit={figure.unit} size={15} /> : null}
@@ -332,6 +351,7 @@ function FigureValue({figure}: {figure: Figure}): ReactNode {
 
 /** Side by side when there are several; a lone figure spans the line instead of sitting in a corner. */
 export function Figures({items}: {items: Figure[]}): ReactNode {
+	const styles = useStyles();
 	if (items.length === 1) {
 		return <View style={[styles.figures, styles.figureSingle]}>
 			<Text style={styles.caption}>{items[0].caption}</Text>
@@ -361,9 +381,11 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 	hint?: Lock;
 	testID?: string;
 }): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const blocked = pending || disabled || Boolean(lock);
 	const {scale, iconScale, handlers} = usePressMotion(onPress);
-	const glyph = emoji ? <TwemojiIcon emoji={emoji} size={BANNER_EMOJI_SIZE} /> : <Icon size={20} color={Theme.colors.paper} />;
+	const glyph = emoji ? <TwemojiIcon emoji={emoji} size={BANNER_EMOJI_SIZE} /> : <Icon size={20} color={colors.paper} />;
 	const notice = lock ?? hint;
 	return <View>
 		<Pressable
@@ -377,7 +399,7 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 					{pending ? <PendingMotion>{glyph}</PendingMotion> : <Animated.View style={{transform: [{scale: iconScale}]}}>{glyph}</Animated.View>}
 				</View>
 				<TwemojiText containerStyle={styles.bannerLabelBox} textStyle={styles.bannerLabel} emojiSize={Theme.fontSize.button} numberOfLines={BANNER_LABEL_LINES}>{label}</TwemojiText>
-				<ArrowRight size={18} color={Theme.colors.paper} />
+				<ArrowRight size={18} color={colors.paper} />
 			</Animated.View>}
 		</Pressable>
 		{notice ? <LockHint lock={notice} testID={testID} /> : null}
@@ -385,6 +407,7 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 }
 
 export function ExpandableList({children}: {children: ReactNode}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.list}>{children}</View>;
 }
 
@@ -397,14 +420,16 @@ export const ENTRY_CHEVRONS = {
 export type EntryChevron = typeof ENTRY_CHEVRONS[keyof typeof ENTRY_CHEVRONS];
 
 function EntryChevronIcon({chevron}: {chevron: EntryChevron}): ReactNode {
+	const colors = useColors();
 	if (chevron === ENTRY_CHEVRONS.NONE) return null;
-	return <ChevronRight size={16} color={chevron === ENTRY_CHEVRONS.FORWARD ? Theme.colors.faint : Theme.colors.muted} />;
+	return <ChevronRight size={16} color={chevron === ENTRY_CHEVRONS.FORWARD ? colors.faint : colors.muted} />;
 }
 
 type EntryHeadingProps = {emblem?: ReactNode; label: string; caption?: ReactNode};
 
 /** The emblem, name and caption a line shows, repeated on top of its details so the player knows what they are reading. */
 function EntryHeading({emblem, label, caption}: EntryHeadingProps): ReactNode {
+	const styles = useStyles();
 	return <>
 		{emblem ? <View style={styles.entryEmblem}>{emblem}</View> : null}
 		<View style={styles.body}>
@@ -416,6 +441,7 @@ function EntryHeading({emblem, label, caption}: EntryHeadingProps): ReactNode {
 
 /** The details of a line rise over the screen rather than push the rest of the list down; a tap outside puts them away. */
 function DetailSheet({heading, onClose, children, testID}: {heading: ReactNode; onClose: () => void; children: ReactNode; testID: string | undefined}): ReactNode {
+	const styles = useStyles();
 	const insets = useSafeAreaInsets();
 	// Presses inside the card stay there instead of closing it.
 	const card = <Pressable accessibilityRole="none" style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl}]} onPress={(): void => undefined} testID={testID}>
@@ -430,7 +456,7 @@ function DetailSheet({heading, onClose, children, testID}: {heading: ReactNode; 
 
 type EntryLook = {expanded: boolean; highlighted: boolean; dimmed: boolean};
 
-function entryHeaderStyle({expanded, highlighted, dimmed}: EntryLook, pressed: boolean): object[] {
+function entryHeaderStyle(styles: SectionStyles, {expanded, highlighted, dimmed}: EntryLook, pressed: boolean): object[] {
 	return [styles.entryHeader, expanded && styles.expanded, highlighted && styles.highlighted, dimmed && !expanded && styles.dimmed, pressed && styles.pressed].filter(Boolean) as object[];
 }
 
@@ -444,6 +470,7 @@ export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle
 	children?: ReactNode;
 	testID?: string;
 }): ReactNode {
+	const styles = useStyles();
 	const heading = <EntryHeading emblem={emblem} label={label} caption={caption} />;
 	return <View>
 		<Pressable
@@ -451,7 +478,7 @@ export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle
 			accessibilityLabel={label}
 			accessibilityState={{selected: expanded, expanded}}
 			onPress={onToggle}
-			style={({pressed}): object[] => entryHeaderStyle({expanded, highlighted, dimmed}, pressed)}
+			style={({pressed}): object[] => entryHeaderStyle(styles, {expanded, highlighted, dimmed}, pressed)}
 		>
 			{heading}
 			{end}
@@ -468,6 +495,7 @@ export function Fact({label, value, unit, end}: {
 	unit?: string;
 	end?: ReactNode;
 }): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.fact}>
 		<TwemojiText containerStyle={styles.factLabelBox} textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
 		{end !== undefined && typeof end !== "string"
@@ -479,7 +507,7 @@ export function Fact({label, value, unit, end}: {
 	</View>;
 }
 
-function rowTrailing(end: ReactNode): ReactNode {
+function rowTrailing(styles: SectionStyles, end: ReactNode): ReactNode {
 	return typeof end === "string"
 		? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{end}</TwemojiText>
 		: end;
@@ -496,7 +524,7 @@ export function EntryRow({title, subtitle, end, emblem, onPress, disabled = fals
 	danger?: boolean;
 	testID?: string;
 }): ReactNode {
-	const trailing = rowTrailing(end);
+	const trailing = rowTrailing(useStyles(), end);
 	const action = disabled ? undefined : onPress;
 	return <ExpandableEntry
 		{...emblem ? {emblem} : {}}
@@ -518,6 +546,7 @@ export function Gauge({label, value, ratio, color}: {
 	ratio: number;
 	color: string;
 }): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.gauge}>
 		<View style={styles.gaugeTop}>
 			<TwemojiText containerStyle={styles.factLabelBox} textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
@@ -529,11 +558,14 @@ export function Gauge({label, value, ratio, color}: {
 	</View>;
 }
 
-/** What a screen needs to write a line in the same hand as these blocks. */
-export const sectionStyles = StyleSheet.create({
-	caption: styles.caption,
-	value: styles.figureValue,
-	amount: styles.figureAmount,
-	you: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: Theme.colors.green},
-	gauge: {paddingTop: Theme.spacing.lg}
-});
+/** What a screen needs to write a line in the same hand as these blocks, taken from their own sheet. */
+export function useSectionStyles(): {caption: TextStyle; value: ViewStyle; amount: TextStyle; you: TextStyle; gauge: ViewStyle} {
+	const styles = useStyles();
+	return useMemo(() => ({
+		caption: styles.caption,
+		value: styles.figureValue,
+		amount: styles.figureAmount,
+		you: styles.you,
+		gauge: styles.lineGauge
+	}), [styles]);
+}

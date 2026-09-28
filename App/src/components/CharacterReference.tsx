@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {Linking, Pressable, StyleSheet, Text} from "react-native";
+import {Linking, Pressable, Text} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {RarityReq} from "ws-packets/src/fromClient/RarityReq";
 import {BlessingReq} from "ws-packets/src/fromClient/BlessingReq";
@@ -25,6 +25,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {missionDate} from "@/src/display/Missions";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const HIDDEN_BADGES = new Set<Badge>([BADGE_CODES.DONOR, BADGE_CODES.VOTER]);
 const VISIBLE_BADGES = Object.values(BADGE_CODES).filter(badge => !HIDDEN_BADGES.has(badge));
@@ -32,11 +33,11 @@ const BLESSING_EMBLEM_SIZE = 40;
 const BADGE_EMOJI_SIZE = 28;
 const GUIDE_URL = "https://guide.crownicles.com";
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	badges: {flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: Theme.spacing.md, padding: Theme.spacing.lg},
-	noBadge: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, color: Theme.colors.muted},
+	noBadge: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, color: colors.muted},
 	pressed: {opacity: 0.7}
-});
+}));
 
 export function RarityContent({rarities}: {rarities: number[]}): ReactNode {
 	if (rarities.length === 0) return <Note>{i18n.t("app:reference.empty")}</Note>;
@@ -69,6 +70,7 @@ function blessingFigures(data: BlessingRes): Figure[] {
 }
 
 export function BlessingContent({data}: {data: BlessingRes}): ReactNode {
+	const colors = useColors();
 	const active = data.activeBlessingType !== BlessingType.NONE;
 	const details = blessingDetails(data, active);
 	return <>
@@ -82,7 +84,7 @@ export function BlessingContent({data}: {data: BlessingRes}): ReactNode {
 				label={i18n.t("app:missions.progress")}
 				value={data.poolAmount}
 				max={data.poolThreshold}
-				color={Theme.colors.gold}
+				color={colors.gold}
 				{...gaugeEmoji("unitValues.money")}
 			/>}
 			<Figures items={blessingFigures(data)} />
@@ -111,6 +113,7 @@ export function BadgesContent({badges}: {badges: string[]}): ReactNode {
 
 /** The badges earned, shown as their emojis; a tap opens what each one means and those left to win. */
 export function ProfileBadges({badges, onOpen}: {badges: string[]; onOpen: () => void}): ReactNode {
+	const styles = useStyles();
 	const earned = VISIBLE_BADGES.filter(badge => badges.includes(badge));
 	return <>
 		<SectionHeader action={{hint: i18n.t("app:profile.formats.progress", {value: earned.length, max: VISIBLE_BADGES.length})}}>{i18n.t("app:profile.titles.badges")}</SectionHeader>

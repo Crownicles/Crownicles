@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Animated, Easing, StyleSheet, View} from "react-native";
+import {Animated, Easing, View} from "react-native";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {PetFeedResult} from "ws-packets/src/objects/PetFood";
 import {DANCE_TIMELINE, DanceFrames, caressFrames, feastFrames, feedEncore} from "@/src/display/PetDance";
@@ -8,6 +8,7 @@ import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {Heart, LucideIcon, Sparkles} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const DANCE_DURATION = 760;
 const REDUCED_DANCE_DURATION = 120;
@@ -19,11 +20,11 @@ const FEAST_PET_SIZE = 52;
 const MOTE_SIZES = [14, 10, 16] as const;
 const MOTE_DRIFTS = [-6, 4, 10] as const;
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	feast: {height: 78, alignItems: "center", justifyContent: "center"},
 	stage: {alignItems: "center", justifyContent: "center"},
 	motes: {position: "absolute", top: -18, flexDirection: "row", alignItems: "flex-end", gap: Theme.spacing.sm}
-});
+}));
 
 /** Runs the dance once per change of `play`, so the same scene can be replayed on demand. */
 function useDance(repeats: number, play: number): Animated.Value {
@@ -56,6 +57,7 @@ function DancingPet({pet, size, frames, progress}: {pet: OwnedPet; size: number;
 
 /** What the pet gives off while it dances: sparkles over a good meal, hearts under a hand. */
 function DanceMotes({count, icon: Icon, color, progress}: {count: number; icon: LucideIcon; color: string; progress: Animated.Value}): ReactNode {
+	const styles = useStyles();
 	if (count === 0) return null;
 	return <View style={styles.motes} pointerEvents="none" testID="pet-motes">{MOTE_SIZES.slice(0, count).map((size, index) => <Animated.View
 		key={size}
@@ -72,11 +74,13 @@ function DanceMotes({count, icon: Icon, color, progress}: {count: number; icon: 
 
 /** The pet acts out its meal, in the manners of its species and with the appetite the server reported. */
 export function PetFeast({pet, result, play}: {pet: OwnedPet; result: PetFeedResult; play: number}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const {repeats, sparkles} = feedEncore(result);
 	const progress = useDance(repeats, play);
 	return <View style={styles.feast} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="pet-feast">
 		<View style={styles.stage}>
-			<DanceMotes count={sparkles} icon={Sparkles} color={Theme.colors.gold} progress={progress} />
+			<DanceMotes count={sparkles} icon={Sparkles} color={colors.gold} progress={progress} />
 			<DancingPet pet={pet} size={FEAST_PET_SIZE} frames={feastFrames(pet, result)} progress={progress} />
 		</View>
 	</View>;
@@ -84,9 +88,11 @@ export function PetFeast({pet, result, play}: {pet: OwnedPet; result: PetFeedRes
 
 /** The pet answers a stroke where it stands, once per stroke the server accepted. */
 export function PetCaress({pet, size, strokes, hadEnough}: {pet: OwnedPet; size: number; strokes: number; hadEnough: boolean}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const progress = useDance(CARESS_REPEATS, strokes);
 	return <View style={styles.stage} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="pet-caress">
-		<DanceMotes count={hadEnough || strokes === 0 ? 0 : CARESS_HEARTS} icon={Heart} color={Theme.colors.red} progress={progress} />
+		<DanceMotes count={hadEnough || strokes === 0 ? 0 : CARESS_HEARTS} icon={Heart} color={colors.red} progress={progress} />
 		<DancingPet pet={pet} size={size} frames={caressFrames(pet, hadEnough)} progress={progress} />
 	</View>;
 }

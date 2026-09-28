@@ -1,6 +1,5 @@
 import {ReactElement} from "react";
 import {Image, ImageSource} from "expo-image";
-import {Theme} from "@/src/design/Theme";
 import cannonAsset from "@/assets/images/fight/cannon.svg";
 import arrowRightAsset from "lucide-static/icons/arrow-right.svg";
 import atSignAsset from "lucide-static/icons/at-sign.svg";
@@ -46,13 +45,15 @@ import wavesAsset from "lucide-static/icons/waves.svg";
 import windAsset from "lucide-static/icons/wind.svg";
 import xAsset from "lucide-static/icons/x.svg";
 import zapAsset from "lucide-static/icons/zap.svg";
+import {useColors} from "@/src/design/ThemeContext";
 
 type IconProps = {size?: number; color?: string};
 export type LucideIcon = (props: IconProps) => ReactElement;
 
 function iconAsset(source: number | ImageSource): LucideIcon {
-	return function Icon({size = 24, color = Theme.colors.ink}: IconProps): ReactElement {
-		return <Image source={source} contentFit="contain" tintColor={color} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{width: size, height: size, flexShrink: 0}} />;
+	return function Icon({size = 24, color}: IconProps): ReactElement {
+		const colors = useColors();
+		return <Image source={source} contentFit="contain" tintColor={color ?? colors.ink} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={{width: size, height: size, flexShrink: 0}} />;
 	};
 }
 

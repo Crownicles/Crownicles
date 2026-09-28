@@ -1,7 +1,6 @@
 import {ReactNode} from "react";
 import {ExpeditionFood, ExpeditionOption, ExpeditionProgress, ExpeditionRewards} from "ws-packets/src/objects/PetExpedition";
 import {Note} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
 import {expeditionLocationName, expeditionPetName, expeditionRisk} from "@/src/display/PetExpedition";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
@@ -10,6 +9,7 @@ import {missionDate} from "@/src/display/Missions";
 import {useSecondsLeft} from "@/src/collectors/CollectorPrompt";
 import {i18n} from "@/src/translations/i18n";
 import {EntryRow, ExpandableList, Fact, Gauge} from "@/src/design/Sections";
+import {useColors} from "@/src/design/ThemeContext";
 
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
@@ -35,6 +35,7 @@ export function ExpeditionOptionDetails({option}: {option: ExpeditionOption}): R
 }
 
 export function ExpeditionProgressDetails({data}: {data: ExpeditionProgress}): ReactNode {
+	const colors = useColors();
 	const secondsLeft = useSecondsLeft(data.returnTime);
 	const duration = data.startTime === undefined ? null : data.returnTime - data.startTime;
 	return <ExpandableList>
@@ -42,7 +43,7 @@ export function ExpeditionProgressDetails({data}: {data: ExpeditionProgress}): R
 		<Fact label={i18n.t("app:expedition.destination")} value={expeditionLocationName(data)} />
 		<Fact label={i18n.t("app:expedition.risk")} value={expeditionRisk(data.riskCategory)} />
 		<Fact label={i18n.t("app:expedition.returnAt")} value={missionDate(data.returnTime)} />
-		{duration ? <Gauge label={i18n.t("app:expedition.remaining")} value={formatDurationMinutes(secondsLeft / SECONDS_PER_MINUTE)} ratio={1 - secondsLeft * MILLISECONDS_PER_SECOND / duration} color={Theme.colors.green} /> : null}
+		{duration ? <Gauge label={i18n.t("app:expedition.remaining")} value={formatDurationMinutes(secondsLeft / SECONDS_PER_MINUTE)} ratio={1 - secondsLeft * MILLISECONDS_PER_SECOND / duration} color={colors.green} /> : null}
 		{data.durationMinutes !== undefined ? <Fact label={i18n.t("app:expedition.duration")} value={formatDurationMinutes(data.durationMinutes)} /> : null}
 		<ExpeditionFoodDetails amount={data.foodConsumed} details={data.foodConsumedDetails} />
 	</ExpandableList>;

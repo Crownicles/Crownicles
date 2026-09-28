@@ -3,7 +3,7 @@ import {useFightSpeed} from "@/src/store/useFightSpeed";
 import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
 import React, {PropsWithChildren} from "react";
 import {useRouter} from "expo-router";
-import {ActivityIndicator, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
+import {ActivityIndicator, ScrollView, Switch, Text, View} from "react-native";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthContext} from "@/src/authentication/AuthContext";
@@ -17,28 +17,28 @@ import {GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {Theme} from "@/src/design/Theme";
-import {storedThemePreference, THEME_PREFERENCES, ThemePreference} from "@/src/design/ThemePreference";
-import {applyThemePreference} from "@/src/design/useThemeFollower";
+import {THEME_PREFERENCES} from "@/src/design/ThemePreference";
 import {BackButton} from "@/src/design/Sections";
 import {Button as DesignButton} from "@/src/design/Primitives";
 import {cancelReportNotification} from "@/src/notifications/ReportNotifications";
 import {DELIVERED_NOTIFICATION_TYPES, useNotificationPreferenceChange, useNotificationPreferences} from "@/src/store/useNotificationPreferences";
 import {i18n} from "@/src/translations/i18n";
 import {travelAdvicePreference, useTravelAdvicesShown} from "@/src/preferences/TravelAdvicePreference";
+import {createStyles, useTheme} from "@/src/design/ThemeContext";
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	combatPreference: {marginBottom: Theme.spacing.lg},
-	preferenceLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body, color: Theme.colors.ink},
+	preferenceLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body, color: colors.ink},
 	container: {
 		flex: 1,
 		padding: Theme.spacing.xl,
-		backgroundColor: Theme.colors.wash,
+		backgroundColor: colors.wash,
 	},
 	header: {
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.hero,
 		marginBottom: Theme.spacing.xl,
-		color: Theme.colors.ink,
+		color: colors.ink,
 	},
 	item: {
 		flexDirection: 'row',
@@ -52,10 +52,10 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		padding: Theme.spacing.lg,
 		marginBottom: Theme.spacing.sm,
-		backgroundColor: Theme.colors.paper,
+		backgroundColor: colors.paper,
 		borderRadius: Theme.radius,
 		borderWidth: 1,
-		borderColor: Theme.colors.line,
+		borderColor: colors.line,
 	},
 	loadingIndicator: {
 		marginLeft: Theme.spacing.sm
@@ -63,29 +63,31 @@ const styles = StyleSheet.create({
 	pingValue: {
 		marginLeft: Theme.spacing.sm,
 		fontFamily: Theme.fonts.regular,
-		color: Theme.colors.muted
+		color: colors.muted
 	},
 	label: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.body,
-		color: Theme.colors.ink
+		color: colors.ink
 	},
 	hint: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.note,
-		color: Theme.colors.muted,
+		color: colors.muted,
 		marginVertical: Theme.spacing.sm
 	},
-});
+}));
 
-const ListItem = ({ children }: PropsWithChildren) => (
-  <View style={styles.listItem}>
-    {children}
-  </View>
-);
+const ListItem = ({ children }: PropsWithChildren) => {
+	const styles = useStyles();
+	return <View style={styles.listItem}>
+		{children}
+	</View>;
+};
 
 /** One switch per kind the app sends; Discord's settings are separate and are not touched here. */
 function NotificationSettings(): React.JSX.Element {
+	const styles = useStyles();
 	const state = useNotificationPreferences();
 	const change = useNotificationPreferenceChange();
 	return (
@@ -113,6 +115,7 @@ function NotificationSettings(): React.JSX.Element {
 }
 
 function TravelAdviceSetting(): React.JSX.Element {
+	const styles = useStyles();
 	const shown = useTravelAdvicesShown();
 	return (
 		<View style={styles.combatPreference}>
@@ -126,11 +129,12 @@ function TravelAdviceSetting(): React.JSX.Element {
 }
 
 export default function Index() {
+	const styles = useStyles();
 	const router = useRouter();
 	const preferences = React.useContext(PreferencesContext);
 	const authState = React.useContext(AuthContext);
 	const {speed, setSpeed} = useFightSpeed();
-	const [themePreference, setThemePreference] = React.useState<ThemePreference>(storedThemePreference);
+	const theme = useTheme();
 	const [pingLoading, setPingLoading] = React.useState(false);
 	const [pingTime, setPingTime] = React.useState<number | null>(null);
 	const version = useGameQuery(GAME_ENTITIES.VERSION, () => GameClient.request(makeFromClientPacket(VersionReq, {}), VersionRes));
@@ -161,10 +165,7 @@ export default function Index() {
 				</View>
 				<View style={styles.combatPreference}>
 					<Text style={styles.preferenceLabel}>{i18n.t("app:settings.theme.label")}</Text>
-					<SegmentedControl label={i18n.t("app:settings.theme.label")} value={themePreference} onChange={(preference): void => {
-						setThemePreference(preference);
-						applyThemePreference(preference);
-					}} options={[
+					<SegmentedControl label={i18n.t("app:settings.theme.label")} value={theme.preference} onChange={theme.setPreference} options={[
 						{value: THEME_PREFERENCES.SYSTEM, label: i18n.t("app:settings.theme.system")},
 						{value: THEME_PREFERENCES.LIGHT, label: i18n.t("app:settings.theme.light")},
 						{value: THEME_PREFERENCES.DARK, label: i18n.t("app:settings.theme.dark")}

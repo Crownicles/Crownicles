@@ -1,8 +1,9 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Animated, Easing, StyleSheet, Text, View} from "react-native";
+import {Animated, Easing, Text, View} from "react-native";
 import {LucideIcon} from "@/src/design/FightIcons";
-import {Theme} from "@/src/design/Theme";
+import {PaletteColor, Theme} from "@/src/design/Theme";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const FAREWELL_EMBLEM = {area: 132, halo: 104, haloGrowth: 1.06} as const;
 
@@ -14,19 +15,19 @@ export type FarewellTone = typeof FAREWELL_TONES[keyof typeof FAREWELL_TONES];
 
 export type FarewellTip = {icon: LucideIcon; text: string; tone: FarewellTone};
 
-const TONE_COLORS: Record<FarewellTone, {icon: string; wash: string}> = {
-	[FAREWELL_TONES.GAIN]: {icon: Theme.colors.green, wash: Theme.colors.greenWash},
-	[FAREWELL_TONES.LOSS]: {icon: Theme.colors.red, wash: Theme.colors.redWash}
+const TONE_COLORS: Record<FarewellTone, {icon: PaletteColor; wash: PaletteColor}> = {
+	[FAREWELL_TONES.GAIN]: {icon: "green", wash: "greenWash"},
+	[FAREWELL_TONES.LOSS]: {icon: "red", wash: "redWash"}
 };
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	page: {
 		alignItems: "center",
 		marginBottom: Theme.spacing.xl,
 		paddingVertical: Theme.spacing.xxl,
 		paddingHorizontal: Theme.spacing.xl,
 		borderRadius: Theme.radius,
-		backgroundColor: Theme.colors.paper
+		backgroundColor: colors.paper
 	},
 	emblem: {width: FAREWELL_EMBLEM.area, height: FAREWELL_EMBLEM.area, alignItems: "center", justifyContent: "center", marginBottom: Theme.spacing.md},
 	halo: {position: "absolute", width: FAREWELL_EMBLEM.halo, height: FAREWELL_EMBLEM.halo, borderRadius: FAREWELL_EMBLEM.halo / 2},
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.title,
 		textAlign: "center",
-		color: Theme.colors.ink
+		color: colors.ink
 	},
 	description: {
 		marginTop: Theme.spacing.sm,
@@ -50,20 +51,20 @@ const styles = StyleSheet.create({
 		fontSize: Theme.fontSize.body,
 		lineHeight: Theme.lineHeight.body,
 		textAlign: "center",
-		color: Theme.colors.muted
+		color: colors.muted
 	},
 	tips: {
 		marginBottom: Theme.spacing.xl,
 		padding: Theme.spacing.lg,
 		gap: Theme.spacing.md,
 		borderRadius: Theme.radius,
-		backgroundColor: Theme.colors.paper
+		backgroundColor: colors.paper
 	},
-	tipsTitle: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, color: Theme.colors.ink},
+	tipsTitle: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, color: colors.ink},
 	tip: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
 	tipIcon: {width: 32, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center"},
-	tipText: {flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.bodySmall, lineHeight: Theme.lineHeight.bodySmall, color: Theme.colors.ink}
-});
+	tipText: {flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.bodySmall, lineHeight: Theme.lineHeight.bodySmall, color: colors.ink}
+}));
 
 /** A value running 0 → 1 forever, back and forth when `pingPong`; it stays still under reduced motion. */
 export function useMotionLoop(durationMs: number, pingPong: boolean): Animated.Value {
@@ -96,6 +97,7 @@ export function cycleWindow(cycle: Animated.Value, {phase, span, rest, peak}: {p
 
 /** The round stage of a farewell: a halo that breathes with `pulse`, and whatever floats over it. */
 export function FarewellEmblem({pulse, haloColor, children}: {pulse: Animated.Value; haloColor: string; children: ReactNode}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.emblem}>
 		<Animated.View style={[styles.halo, {
 			backgroundColor: haloColor,
@@ -113,6 +115,7 @@ export function FarewellPage({emblem, eyebrow, eyebrowColor, title, description}
 	title: string;
 	description: string;
 }): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.page}>
 		{emblem}
 		<Text style={[styles.eyebrow, {color: eyebrowColor}]}>{eyebrow}</Text>
@@ -122,14 +125,17 @@ export function FarewellPage({emblem, eyebrow, eyebrowColor, title, description}
 }
 
 function Tip({icon: Icon, text, tone}: FarewellTip): ReactNode {
-	const colors = TONE_COLORS[tone];
+	const styles = useStyles();
+	const colors = useColors();
+	const tones = TONE_COLORS[tone];
 	return <View style={styles.tip}>
-		<View style={[styles.tipIcon, {backgroundColor: colors.wash}]}><Icon size={16} color={colors.icon} /></View>
+		<View style={[styles.tipIcon, {backgroundColor: colors[tones.wash]}]}><Icon size={16} color={colors[tones.icon]} /></View>
 		<Text style={styles.tipText}>{text}</Text>
 	</View>;
 }
 
 export function FarewellTips({title, tips}: {title: string; tips: FarewellTip[]}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.tips}>
 		<Text style={styles.tipsTitle}>{title}</Text>
 		{tips.map(tip => <Tip key={tip.text} {...tip} />)}

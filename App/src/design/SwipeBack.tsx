@@ -1,9 +1,10 @@
 import {
 	createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState
 } from "react";
-import {Animated, BackHandler, PanResponder, StyleSheet, useWindowDimensions} from "react-native";
+import {Animated, BackHandler, PanResponder, useWindowDimensions} from "react-native";
 import {useFocusEffect} from "expo-router";
-import {Theme} from "@/src/design/Theme";
+import {Palette} from "@/src/design/Theme";
+import {createStyles} from "@/src/design/ThemeContext";
 
 /** Where a finger may start the gesture, so a tap on a row is never mistaken for a way out. */
 const EDGE_WIDTH = 42;
@@ -24,9 +25,9 @@ export function edgeSwipeCloses(gesture: Pick<Gesture, "dx" | "vx">, width: numb
 	return gesture.dx > width * RELEASE_RATIO || gesture.vx > RELEASE_VELOCITY;
 }
 
-const sheetStyle = {
-	backgroundColor: Theme.colors.wash,
-	shadowColor: Theme.colors.shadow,
+const sheetStyleOf = (colors: Palette) => ({
+	backgroundColor: colors.wash,
+	shadowColor: colors.shadow,
 	shadowOpacity: 0.16,
 	shadowRadius: 12,
 	shadowOffset: {
@@ -34,22 +35,22 @@ const sheetStyle = {
 		height: 0
 	},
 	elevation: 12
-};
+});
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	sheet: {
-		...sheetStyle,
+		...sheetStyleOf(colors),
 		flex: 1
 	},
 	overlay: {
-		...sheetStyle,
+		...sheetStyleOf(colors),
 		position: "absolute",
 		top: 0,
 		right: 0,
 		bottom: 0,
 		left: 0
 	}
-});
+}));
 
 const SwipeBackDepth = createContext<((delta: number) => void) | null>(null);
 const SwipeBackOpen = createContext(false);
@@ -68,6 +69,7 @@ export function useSwipeBackOpen(): boolean {
 
 /** Dragging from the left edge closes the view, the same way a pushed route would. */
 export function SwipeBack({onClose, overlay, children}: {onClose: () => void; overlay?: boolean; children: ReactNode}): ReactNode {
+	const styles = useStyles();
 	const {width} = useWindowDimensions();
 	const [translateX] = useState(() => new Animated.Value(0));
 	const reportDepth = useContext(SwipeBackDepth);

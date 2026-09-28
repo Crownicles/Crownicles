@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {Coins, Flag, Medal, Trophy, Swords} from "@/src/design/FightIcons";
 import {FightEnd, FightReward, MonsterReward} from "ws-packets/src/objects/Fight";
 import {Note} from "@/src/design/Primitives";
@@ -14,27 +14,30 @@ import {materialName} from "@/src/display/Resources";
 import {petShortField} from "@/src/display/PetDisplay";
 import {randomTranslation} from "@/src/translations/RandomTranslation";
 import {usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	result: {alignItems: "center", paddingTop: 20, paddingBottom: 24, gap: 10},
-	emblem: {width: 80, height: 80, alignItems: "center", justifyContent: "center", backgroundColor: Theme.colors.wash, borderRadius: 22, marginBottom: 4},
-	resultTitle: {fontFamily: Theme.fonts.extraBold, fontSize: 30, lineHeight: 36, color: Theme.colors.ink, textAlign: "center"},
-	resultSubtitle: {fontFamily: Theme.fonts.regular, fontSize: 13, lineHeight: 20, color: Theme.colors.muted, textAlign: "center"},
-	rewards: {flexDirection: "row", borderTopWidth: 1, borderBottomWidth: 1, borderColor: Theme.colors.line, paddingVertical: 20, marginBottom: 18},
+	emblem: {width: 80, height: 80, alignItems: "center", justifyContent: "center", backgroundColor: colors.wash, borderRadius: 22, marginBottom: 4},
+	resultTitle: {fontFamily: Theme.fonts.extraBold, fontSize: 30, lineHeight: 36, color: colors.ink, textAlign: "center"},
+	resultSubtitle: {fontFamily: Theme.fonts.regular, fontSize: 13, lineHeight: 20, color: colors.muted, textAlign: "center"},
+	rewards: {flexDirection: "row", borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line, paddingVertical: 20, marginBottom: 18},
 	reward: {flex: 1, minWidth: 0, alignItems: "center", gap: 7, paddingHorizontal: 4},
-	rewardValue: {fontFamily: Theme.fonts.extraBold, fontSize: 22, color: Theme.colors.ink, fontVariant: ["tabular-nums"]},
-	rewardLabel: {fontFamily: Theme.fonts.medium, fontSize: 11, color: Theme.colors.muted},
+	rewardValue: {fontFamily: Theme.fonts.extraBold, fontSize: 22, color: colors.ink, fontVariant: ["tabular-nums"]},
+	rewardLabel: {fontFamily: Theme.fonts.medium, fontSize: 11, color: colors.muted},
 	resultDetails: {gap: 10}
-});
+}));
 
 function FightRewards({reward}: {reward: FightReward}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const ranking = reward.player1.isSelf ? reward.player1 : reward.player2;
 	const gloryChange = ranking.newGlory - ranking.oldGlory;
 	return <>
 		<View style={styles.rewards}>
-			<View style={styles.reward}><Medal size={23} color={Theme.colors.gold} /><Text style={[styles.rewardValue, {color: gloryChange < 0 ? Theme.colors.red : Theme.colors.green}]}>{formatSignedNumber(gloryChange)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:arena.glory")}</Text></View>
-			<View style={styles.reward}><Coins size={23} color={Theme.colors.gold} /><Text style={styles.rewardValue}>{formatNumber(reward.money)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:profile.fields.money")}</Text></View>
-			<View style={styles.reward}><Flag size={23} color={Theme.colors.blue} /><Text style={styles.rewardValue}>{formatNumber(reward.points)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:profile.fields.score")}</Text></View>
+			<View style={styles.reward}><Medal size={23} color={colors.gold} /><Text style={[styles.rewardValue, {color: gloryChange < 0 ? colors.red : colors.green}]}>{formatSignedNumber(gloryChange)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:arena.glory")}</Text></View>
+			<View style={styles.reward}><Coins size={23} color={colors.gold} /><Text style={styles.rewardValue}>{formatNumber(reward.money)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:profile.fields.money")}</Text></View>
+			<View style={styles.reward}><Flag size={23} color={colors.blue} /><Text style={styles.rewardValue}>{formatNumber(reward.points)}</Text><Text style={styles.rewardLabel}>{i18n.t("app:profile.fields.score")}</Text></View>
 		</View>
 		<View style={styles.resultDetails}>
 			<Fact label={i18n.t("app:arena.glory")} value={i18n.t("app:arena.gloryChange", {before: ranking.oldGlory, after: formatGlory(ranking.newGlory)})} />
@@ -67,6 +70,7 @@ function PetReactionNote({reaction}: {reaction: PetReaction}): ReactNode {
 
 /** What the island boss left behind, as Discord lists it in its reward embed. */
 function MonsterRewards({reward}: {reward: MonsterReward}): ReactNode {
+	const styles = useStyles();
 	return <View style={styles.resultDetails}>
 		<Effects items={monsterRewardEffects(reward)} />
 		{reward.petReaction ? <PetReactionNote reaction={reward.petReaction} /> : null}
@@ -74,11 +78,13 @@ function MonsterRewards({reward}: {reward: MonsterReward}): ReactNode {
 }
 
 export function FightResult({result, reward, monsterReward}: {result: FightEnd; reward: FightReward | null; monsterReward: MonsterReward | null}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const opponent = result.winner.isSelf ? result.loser : result.winner;
 	const won = !result.draw && result.winner.isSelf;
 	const Icon = won ? Trophy : Swords;
 	return <>
-		<View style={styles.result}><View style={styles.emblem}><Icon size={43} color={won ? Theme.colors.gold : Theme.colors.muted} /></View><Text style={styles.resultTitle}>{i18n.t(result.draw ? "app:arena.draw" : won ? "app:arena.victory" : "app:arena.defeat")}</Text><Text style={styles.resultSubtitle}>{i18n.t("app:battle.finishedAgainst", {opponent: fighterName(opponent), turns: result.turns})}</Text></View>
+		<View style={styles.result}><View style={styles.emblem}><Icon size={43} color={won ? colors.gold : colors.muted} /></View><Text style={styles.resultTitle}>{i18n.t(result.draw ? "app:arena.draw" : won ? "app:arena.victory" : "app:arena.defeat")}</Text><Text style={styles.resultSubtitle}>{i18n.t("app:battle.finishedAgainst", {opponent: fighterName(opponent), turns: result.turns})}</Text></View>
 		{reward ? <FightRewards reward={reward} /> : null}
 		{monsterReward ? <MonsterRewards reward={monsterReward} /> : null}
 		<ExpandableList>

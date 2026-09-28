@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {useRouter} from "expo-router";
 import {CircleAlert, Swords, Zap} from "@/src/design/FightIcons";
 import {ActionBanner} from "@/src/design/Sections";
@@ -24,6 +24,7 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {formatGlory} from "@/src/display/Amounts";
 import {leagueName} from "@/src/display/Leagues";
 import {i18n} from "@/src/translations/i18n";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const FIGHT_MENU: CommandMenu = {request: FightReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [FightErrorRes]};
 const ARENA_PAGES = ["classes", "history", "leagues", "rankings"] as const;
@@ -32,35 +33,38 @@ type ArenaPage = typeof ARENA_PAGES[number];
 /** Fight history and leagues only mean something once the player can fight. */
 const BEFORE_FIGHTS_PAGES: readonly ArenaPage[] = ["classes", "rankings"];
 const ARENA_ICONS = {classes: "commands.classes", history: "fightHistory.menu", leagues: "unitValues.score", rankings: "top.congrats"} as const;
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	header: {paddingTop: 8, paddingBottom: 26, flexDirection: "row", gap: 14, alignItems: "center"},
-	emblem: {width: 52, height: 52, backgroundColor: Theme.colors.wash, borderRadius: 14, alignItems: "center", justifyContent: "center"},
-	eyebrow: {fontFamily: Theme.fonts.semiBold, fontSize: 10, color: Theme.colors.muted, marginBottom: 4, letterSpacing: 0},
-	title: {fontFamily: Theme.fonts.extraBold, fontSize: 26, color: Theme.colors.ink},
+	emblem: {width: 52, height: 52, backgroundColor: colors.wash, borderRadius: 14, alignItems: "center", justifyContent: "center"},
+	eyebrow: {fontFamily: Theme.fonts.semiBold, fontSize: 10, color: colors.muted, marginBottom: 4, letterSpacing: 0},
+	title: {fontFamily: Theme.fonts.extraBold, fontSize: 26, color: colors.ink},
 	identity: {flexDirection: "row", alignItems: "center", gap: 12, paddingBottom: 20},
-	name: {fontFamily: Theme.fonts.bold, fontSize: 17, color: Theme.colors.ink},
-	className: {fontFamily: Theme.fonts.regular, fontSize: 12, color: Theme.colors.muted, marginTop: 4},
-	ranking: {flexDirection: "row", borderTopWidth: 1, borderBottomWidth: 1, borderColor: Theme.colors.line, marginTop: 22, paddingVertical: 18},
+	name: {fontFamily: Theme.fonts.bold, fontSize: 17, color: colors.ink},
+	className: {fontFamily: Theme.fonts.regular, fontSize: 12, color: colors.muted, marginTop: 4},
+	ranking: {flexDirection: "row", borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line, marginTop: 22, paddingVertical: 18},
 	rank: {flex: 1, minWidth: 0, gap: 6},
 	rankEnd: {alignItems: "flex-end"},
-	rankLabel: {fontFamily: Theme.fonts.medium, fontSize: 11, color: Theme.colors.muted},
-	rankValue: {fontFamily: Theme.fonts.bold, fontSize: 17, color: Theme.colors.ink},
+	rankLabel: {fontFamily: Theme.fonts.medium, fontSize: 11, color: colors.muted},
+	rankValue: {fontFamily: Theme.fonts.bold, fontSize: 17, color: colors.ink},
 	start: {marginTop: 22},
 	startError: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.sm, paddingTop: Theme.spacing.md},
-	startErrorText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: Theme.colors.muted},
+	startErrorText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
 	links: {marginTop: 30}
-});
+}));
 
 function ArenaProfile({profile}: {profile: ProfileRes}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	const icon = profile.classId === undefined ? null : AppIcons.getIconOrNull(`classes.${profile.classId}`);
 	return <>
 		<View style={styles.identity}>{icon ? <TwemojiIcon emoji={icon} size={42} /> : null}<View><Text style={styles.name}>{profile.pseudo}</Text>{profile.classId === undefined ? null : <Text style={styles.className}>{i18n.t(`models:classes.${profile.classId}`)} · {i18n.t("app:battle.level", {level: profile.level})}</Text>}</View></View>
-		{profile.stats ? <FightGauge label={i18n.t("app:arena.energy")} icon={Zap} value={profile.stats.energy.value} max={profile.stats.energy.max} color={Theme.colors.green} /> : null}
+		{profile.stats ? <FightGauge label={i18n.t("app:arena.energy")} icon={Zap} value={profile.stats.energy.value} max={profile.stats.energy.max} color={colors.green} /> : null}
 		{profile.fightRanking ? <View style={styles.ranking}><View style={styles.rank}><Text style={styles.rankLabel}>{i18n.t("app:arena.glory")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{formatGlory(profile.fightRanking.glory)}</TwemojiText></View><View style={[styles.rank, styles.rankEnd]}><Text style={styles.rankLabel}>{i18n.t("app:arena.league")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{leagueName(profile.fightRanking.league)}</TwemojiText></View></View> : null}
 	</>;
 }
 
 function ArenaStart({pending, ongoing, locked, onStart}: {pending: boolean; ongoing: boolean; locked: boolean; onStart: () => Promise<void>}): ReactNode {
+	const styles = useStyles();
 	const label = pending ? "app:battle.preparing" : ongoing ? "app:arena.resume" : "app:arena.start";
 	return <View style={styles.start}><ActionBanner
 		icon={Swords}
@@ -75,14 +79,17 @@ function ArenaStart({pending, ongoing, locked, onStart}: {pending: boolean; ongo
 }
 
 function ArenaStartError({error}: {error: FightError}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	return <View style={styles.startError} testID="arena-start-error">
-		<CircleAlert size={15} color={Theme.colors.muted} />
+		<CircleAlert size={15} color={colors.muted} />
 		<Text style={styles.startErrorText}>{i18n.t(`app:arena.errors.${error}`)}</Text>
 	</View>;
 }
 
 /** The league and class tiles wear the player's own league and class, as the mockup does. */
 function ArenaLinks({pages, onSelect, leagueId, classId}: {pages: readonly ArenaPage[]; onSelect: (page: ArenaPage) => void; leagueId?: number; classId?: number}): ReactNode {
+	const styles = useStyles();
 	const icon = (page: ArenaPage): string => {
 		if (page === "leagues" && leagueId !== undefined) return AppIcons.getIcon(`leagues.${leagueId}`);
 		if (page === "classes" && classId !== undefined) return AppIcons.getIcon(`classes.${classId}`);
@@ -104,7 +111,9 @@ function playerEmblems(state: RequestState<ProfileRes>): {leagueId?: number; cla
 }
 
 function ArenaHeader(): ReactNode {
-	return <View style={styles.header}><View style={styles.emblem}><Swords size={27} color={Theme.colors.ink} /></View><View><Text style={styles.eyebrow}>{i18n.t("app:arena.eyebrow")}</Text><Text style={styles.title}>{i18n.t("app:arena.title")}</Text></View></View>;
+	const styles = useStyles();
+	const colors = useColors();
+	return <View style={styles.header}><View style={styles.emblem}><Swords size={27} color={colors.ink} /></View><View><Text style={styles.eyebrow}>{i18n.t("app:arena.eyebrow")}</Text><Text style={styles.title}>{i18n.t("app:arena.title")}</Text></View></View>;
 }
 
 export default function Arena(): ReactNode {

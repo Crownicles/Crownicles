@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {StyleSheet, View} from "react-native";
+import {View} from "react-native";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
@@ -35,12 +35,13 @@ import {useLeagueRewardOutcome} from "@/src/store/useLeagueRewardOutcome";
 import {LeagueRewardOutcome} from "@/src/collectors/LeagueRewardOutcome";
 import {PlayerUtilityCollector, PlayerUtilityOutcome} from "@/src/collectors/PlayerUtilityCollector";
 import {usePlayerUtilityOutcome} from "@/src/store/usePlayerUtilityOutcome";
+import {createStyles} from "@/src/design/ThemeContext";
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	container: {
-		paddingHorizontal: Theme.spacing.xl, paddingBottom: Theme.spacing.md, backgroundColor: Theme.colors.wash
+		paddingHorizontal: Theme.spacing.xl, paddingBottom: Theme.spacing.md, backgroundColor: colors.wash
 	}
-});
+}));
 
 type ActiveCollectorProps = {
 	collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean;
@@ -111,6 +112,7 @@ function PendingOutcomes(): ReactNode {
 }
 
 export function OpenCollectors(): ReactNode {
+	const styles = useStyles();
 	const {open, react, isAnswerPending} = useCollectors();
 	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector) && collector.data.type !== FIGHT_DATA_KINDS.ACTION);
 	return <>

@@ -1,10 +1,11 @@
 import {ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
-import {Animated, Easing, EasingFunction, Pressable, StyleSheet} from "react-native";
+import {Animated, Easing, EasingFunction, Pressable} from "react-native";
 import {impactAsync, ImpactFeedbackStyle} from "expo-haptics";
 import {AppIcons} from "@/src/AppIcons";
-import {Theme} from "@/src/design/Theme";
+import {PaletteColor, Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 /** The ailment emoji the heal removes, and what happens once it is gone. */
 export type Cure = {from: string; onDone: () => void};
@@ -37,14 +38,14 @@ const HAPPY_MOTION = {stepMs: 150, hop: -5, tilt: "10deg"} as const;
 
 const EMBLEM_BOX = 48;
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	box: {width: EMBLEM_BOX, height: EMBLEM_BOX, alignItems: "center", justifyContent: "center"},
 	layer: {position: "absolute"},
 	ring: {position: "absolute", width: EMBLEM_BOX, height: EMBLEM_BOX, borderRadius: EMBLEM_BOX / 2, borderWidth: CURE_MOTION.ringWidth},
 	spark: {position: "absolute", width: CURE_MOTION.sparkSize, height: CURE_MOTION.sparkSize, borderRadius: CURE_MOTION.sparkSize / 2}
-});
+}));
 
-const SPARK_COLORS = [Theme.colors.gold, Theme.colors.green, Theme.colors.blue, Theme.colors.violet, Theme.colors.red];
+const SPARK_COLORS: readonly PaletteColor[] = ["gold", "green", "blue", "violet", "red"];
 
 function timing(value: Animated.Value, toValue: number, duration: number, easing: EasingFunction = Easing.inOut(Easing.quad)): Animated.CompositeAnimation {
 	return Animated.timing(value, {toValue, duration, easing, useNativeDriver: true});
@@ -76,13 +77,15 @@ function DanceMotion({wiggle, children}: {wiggle: Animated.Value; children: Reac
 }
 
 function Sparks({burst}: {burst: Animated.Value}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	return Array.from({length: CURE_MOTION.sparks}, (_, index) => {
 		const angle = 2 * Math.PI * index / CURE_MOTION.sparks;
 		return <Animated.View
 			key={index}
 			pointerEvents="none"
 			style={[styles.spark, {
-				backgroundColor: SPARK_COLORS[index % SPARK_COLORS.length],
+				backgroundColor: colors[SPARK_COLORS[index % SPARK_COLORS.length]],
 				opacity: fade(burst, [0, 0.15, 1], [0, 1, 0]),
 				transform: [
 					{translateX: burst.interpolate({inputRange: [0, 1], outputRange: [0, Math.cos(angle) * CURE_MOTION.burstRadius]})},
@@ -125,14 +128,17 @@ function stageAnimation(values: CureValues, stage: number, last: number): Animat
 }
 
 function CureRing({ring, healed}: {ring: Animated.Value; healed: boolean}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
 	return <Animated.View pointerEvents="none" style={[styles.ring, {
-		borderColor: healed ? Theme.colors.green : Theme.colors.red,
+		borderColor: healed ? colors.green : colors.red,
 		opacity: fade(ring, [0, 1], [CURE_MOTION.ringOpacity, 0]),
 		transform: [{scale: ring.interpolate({inputRange: [0, 1], outputRange: [CURE_MOTION.ringFrom, CURE_MOTION.ringTo]})}]
 	}]} />;
 }
 
 function LeavingEmoji({emoji, swap}: {emoji: string; swap: Animated.Value}): ReactNode {
+	const styles = useStyles();
 	return <Animated.View style={[styles.layer, {
 		opacity: fade(swap, [0, 1], [1, 0]),
 		transform: [
@@ -145,6 +151,7 @@ function LeavingEmoji({emoji, swap}: {emoji: string; swap: Animated.Value}): Rea
 }
 
 function ArrivingEmoji({emoji, values, wiggle}: {emoji: string; values: CureValues; wiggle: Animated.Value}): ReactNode {
+	const styles = useStyles();
 	return <Animated.View style={[styles.layer, {
 		opacity: fade(values.swap, [0, 0.3], [0, 1]),
 		transform: [
@@ -162,6 +169,7 @@ function ArrivingEmoji({emoji, values, wiggle}: {emoji: string; values: CureValu
 
 /** The ailment trembles and spins away as the hospital takes its place, which then gives way to the healthy face. */
 export function CureEmblem({cure}: {cure: Cure}): ReactNode {
+	const styles = useStyles();
 	const reducedMotion = useReducedMotion();
 	const {wiggle, dance} = useHappyDance();
 	const [values] = useState((): CureValues => ({
@@ -207,6 +215,7 @@ const EASTER_EGG = {spamMs: 10_000, maxGapMs: 700, blastMs: 650, blastScale: 2.4
 type HappyPhase = "happy" | "blast" | "gone";
 
 export function HappyEmblem({emoji}: {emoji: string}): ReactNode {
+	const styles = useStyles();
 	const reducedMotion = useReducedMotion();
 	const {wiggle, dance} = useHappyDance();
 	const [phase, setPhase] = useState<HappyPhase>("happy");

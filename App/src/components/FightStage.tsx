@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {FightIntroduction, FightStatus} from "ws-packets/src/objects/Fight";
 import {FightLogRecord} from "@/src/store/FightStore";
 import {FightEffects} from "@/src/components/FightEffects";
@@ -9,16 +9,18 @@ import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {useCompactFight} from "@/src/components/FightControls";
 import {FightSpeed} from "@/src/display/FightMotion";
+import {createStyles} from "@/src/design/ThemeContext";
 
-const styles = StyleSheet.create({
+const useStyles = createStyles(colors => ({
 	stage: {flex: 1, minHeight: 0, position: "relative"},
 	participants: {flex: 1, flexDirection: "row", gap: Theme.spacing.md},
-	versus: {position: "absolute", top: 66, left: "50%", marginLeft: -16, width: 32, height: 32, borderRadius: 16, backgroundColor: Theme.colors.paper, borderWidth: 1, borderColor: Theme.colors.line, alignItems: "center", justifyContent: "center", zIndex: 2},
-	versusText: {fontFamily: Theme.fonts.extraBold, fontSize: 10, color: Theme.colors.faint},
+	versus: {position: "absolute", top: 66, left: "50%", marginLeft: -16, width: 32, height: 32, borderRadius: 16, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line, alignItems: "center", justifyContent: "center", zIndex: 2},
+	versusText: {fontFamily: Theme.fonts.extraBold, fontSize: 10, color: colors.faint},
 	compactVersus: {top: 40}
-});
+}));
 
 export function FightStage({status, introduction, record, onImpact, onComplete, reducedMotion, speed}: {status: FightStatus; introduction: FightIntroduction | null; record?: FightLogRecord; onImpact: () => void; onComplete: () => void; reducedMotion: boolean; speed: FightSpeed}): ReactNode {
+	const styles = useStyles();
 	const compact = useCompactFight();
 	const [width, setWidth] = useState(350);
 	const animation = useFightAnimation(record, {onImpact, onComplete}, reducedMotion, speed);

@@ -12,7 +12,7 @@ import {cityReactionLock} from "@/src/collectors/CityReactionLocks";
 import {plainStory} from "@/src/display/Markdown";
 import {SectionHeader} from "@/src/design/Primitives";
 import {Check} from "@/src/design/FightIcons";
-import {ActionBanner, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Lock, LockHint, sectionStyles} from "@/src/design/Sections";
+import {ActionBanner, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Lock, LockHint, useSectionStyles} from "@/src/design/Sections";
 import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {i18n} from "@/src/translations/i18n";
 
@@ -61,7 +61,8 @@ function entryCaption(subtitle: string | undefined, lock: Lock | undefined, expa
 	return subtitle === undefined ? undefined : plainStory(subtitle);
 }
 
-function entryEnd(value: string | undefined): ReactNode {
+function EntryEnd({value}: {value: string | undefined}): ReactNode {
+	const sectionStyles = useSectionStyles();
 	return value ? <Text style={sectionStyles.caption}>{plainStory(value)}</Text> : null;
 }
 
@@ -103,7 +104,7 @@ function reactionEntry(item: CityReactionItem, props: CityRowsProps, unfolding: 
 		emblem: rowIcon(reaction, snapshot),
 		label: plainStory(rowTitle(reaction, collector.data, snapshot)),
 		caption: entryCaption(rowSubtitle(reaction, snapshot), lock, expanded),
-		end: entryEnd(rowEnd(reaction, snapshot)),
+		end: <EntryEnd value={rowEnd(reaction, snapshot)} />,
 		dimmed: locked || !choosable
 	};
 	if (!confirms) {

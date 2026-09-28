@@ -3,11 +3,12 @@ import {Text} from "react-native";
 import {ShopOutcome} from "ws-packets/src/fromServer/shop/ShopRes";
 import {MarketForecast, marketReport} from "@/src/display/ShopReport";
 import {Note, SectionHeader} from "@/src/design/Primitives";
-import {ExpandableEntry, ExpandableList, sectionStyles} from "@/src/design/Sections";
+import {ExpandableEntry, ExpandableList, useSectionStyles} from "@/src/design/Sections";
 import {plainLines, plainStory} from "@/src/display/Markdown";
 
 /** A plant keeps its forecasts folded, so the whole market fits on one screen. */
 function PlantForecasts({forecasts}: {forecasts: MarketForecast[]}): ReactNode {
+	const sectionStyles = useSectionStyles();
 	const [openId, setOpenId] = useState<string>();
 	return <ExpandableList>
 		{forecasts.map(forecast => <ExpandableEntry
