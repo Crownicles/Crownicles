@@ -11,7 +11,7 @@ jest.mock("expo-secure-store", () => ({
 }));
 
 function progress(values: Partial<JourneyProgress>): JourneyProgress {
-	return {started: true, level: 1, hasPet: false, hasGuild: false, inventoryTaught: true, ...values};
+	return {started: true, level: 1, metPet: false, hasGuild: false, inventoryTaught: true, ...values};
 }
 
 describe("journey unlocks", () => {
@@ -31,11 +31,16 @@ describe("journey unlocks", () => {
 		expect(openTabs(unlockedFeatures(progress({level: 4})))).toEqual(["index", "profile", "arena"]);
 		expect(unlockedFeatures(progress({level: 7}))).not.toContain("fights");
 		expect(unlockedFeatures(progress({level: 8}))).toContain("fights");
-		expect(openTabs(unlockedFeatures(progress({level: 10})))).toEqual(["index", "profile", "pet", "guild", "arena"]);
+		expect(openTabs(unlockedFeatures(progress({level: 10})))).toEqual(["index", "profile", "guild", "arena"]);
+	});
+
+	it("opens the pet tab with the first pet, whatever the level", () => {
+		expect(unlockedFeatures(progress({level: 60}))).not.toContain("pet");
+		expect(openTabs(unlockedFeatures(progress({level: 2, metPet: true})))).toEqual(["index", "profile", "pet"]);
 	});
 
 	it("opens the pet and guild tabs as soon as the character has one", () => {
-		expect(openTabs(unlockedFeatures(progress({level: 2, hasPet: true, hasGuild: true})))).toEqual(["index", "profile", "pet", "guild"]);
+		expect(openTabs(unlockedFeatures(progress({level: 2, metPet: true, hasGuild: true})))).toEqual(["index", "profile", "pet", "guild"]);
 	});
 
 	it("holds out the closest level still to reach, then nothing once all is open", () => {

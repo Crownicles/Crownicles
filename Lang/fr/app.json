@@ -757,6 +757,16 @@
     },
     "eyebrow": "Votre familier",
     "noPet": "Aucun familier ne vous accompagne pour le moment",
+    "absent": {
+      "title": "Personne à vos côtés… pour l'instant",
+      "description": "Aucun compagnon ne partage encore votre route. Les chemins du royaume regorgent pourtant de créatures en quête d'un maître.",
+      "where": "Où trouver un compagnon",
+      "roadHint": "Un animal errant croise parfois le chemin des voyageurs et décide de les suivre.",
+      "shelterHint": "Les familiers recueillis au refuge de votre guilde n'attendent qu'une famille.",
+      "shelterNoGuild": "Les guildes recueillent des familiers dans leur refuge : rejoignez-en une pour en adopter.",
+      "visitShelter": "Visiter le refuge",
+      "continue": "Reprendre la route"
+    },
     "fields": {
       "nickname": "Surnom"
     }
@@ -802,7 +812,7 @@
       },
       "pet": {
         "title": "Votre familier",
-        "unlocked": "Un compagnon peut désormais partager votre aventure : prenez-en soin, il combat à vos côtés et part en expédition."
+        "unlocked": "Votre premier compagnon vous a rejoint : prenez-en soin, il combat à vos côtés et part en expédition."
       }
     }
   },

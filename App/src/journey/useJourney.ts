@@ -1,11 +1,12 @@
 import {useEffect, useMemo} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
+import {AppStateFlag} from "ws-packets/src/objects/AppState";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {refusedAsNotStarted, usePlayerHasNotStarted} from "@/src/store/usePlayerHasNotStarted";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {
-	isInventoryTaught, JOURNEY_STEPS, JOURNEY_TABS, JourneyFeature, JourneyProgress, JourneyStep, JourneyTab, nextLevelStep, openTabs, unlockedFeatures
+	isInventoryTaught, JOURNEY_FEATURES, JOURNEY_STEPS, JOURNEY_TABS, JourneyFeature, JourneyProgress, JourneyStep, JourneyTab, nextLevelStep, openTabs, unlockedFeatures
 } from "@/src/journey/Journey";
 import {useMissions} from "@/src/components/Missions";
 import {announcedFlag, firstRecord, journeyRecordOf, journeyStore, JourneyRecord, visitedFlag} from "@/src/journey/JourneyStore";
@@ -74,8 +75,13 @@ function isProgressKnown(notStarted: boolean, profileKnown: boolean, missionsKno
 	return profileKnown && missionsKnown;
 }
 
+/** A pet once announced stays met, even after it was freed. */
+function petAlreadyMet(record: JourneyRecord | null): boolean {
+	return record?.announced.includes(JOURNEY_FEATURES.PET) === true;
+}
+
 /** The character's progress as far as unlocking goes, kept stable while none of it changes. */
-function useJourneyProgress(): JourneyProgress | null {
+function useJourneyProgress(record: JourneyRecord | null): JourneyProgress | null {
 	const profile = usePlayerProfile();
 	const notStarted = usePlayerHasNotStarted();
 	const missions = useMissionsFacts(notStarted);
@@ -83,26 +89,31 @@ function useJourneyProgress(): JourneyProgress | null {
 	const known = isProgressKnown(notStarted, data !== null, missions.known);
 	const {inventoryTaught} = missions;
 	const {level, hasPet, hasGuild} = profileFacts(data);
+	const metPet = hasPet || petAlreadyMet(record);
 	useEffect(() => {
 		if (notStarted) journeyStore.markNewcomer();
 	}, [notStarted]);
 	return useMemo(
-		(): JourneyProgress | null => (known ? {started: !notStarted, level, hasPet, hasGuild, inventoryTaught} : null),
-		[known, notStarted, level, hasPet, hasGuild, inventoryTaught]
+		(): JourneyProgress | null => (known ? {started: !notStarted, level, metPet, hasGuild, inventoryTaught} : null),
+		[known, notStarted, level, metPet, hasGuild, inventoryTaught]
 	);
 }
 
 /** The record Core keeps, written once for a character the app meets for the first time. */
-function useJourneyRecord(unlocked: readonly JourneyFeature[] | null): {record: JourneyRecord | null; change: (change: AppStateChange) => void} {
+function useJourneyRecord(): {record: JourneyRecord | null; change: (change: AppStateChange) => void; seen: readonly AppStateFlag[] | null} {
 	const state = useAppState();
 	const change = useAppStateChange();
 	const seen = state.status === "ready" ? state.data.seen : null;
 	const record = useMemo(() => (seen ? journeyRecordOf(seen) : null), [seen]);
+	return {record, change, seen};
+}
+
+/** A character the app meets for the first time gets its record, from what it has already unlocked. */
+function useFirstRecord(seen: readonly AppStateFlag[] | null, record: JourneyRecord | null, unlocked: readonly JourneyFeature[] | null, change: (change: AppStateChange) => void): void {
 	const toWrite = seen !== null && record === null && unlocked !== null;
 	useEffect(() => {
 		if (toWrite && unlocked) change({seen: firstRecord(journeyStore.isNewcomer(), unlocked)});
 	}, [toWrite, unlocked, change]);
-	return {record, change};
 }
 
 function unvisitedOn(tab: JourneyTab, unlocked: readonly JourneyFeature[] | null, record: JourneyRecord | null): JourneyFeature[] {
@@ -125,9 +136,10 @@ function recordUpdates(record: JourneyRecord | null, unlocked: readonly JourneyF
 
 /** How far the character has come, which parts of the app it has opened, and what it has yet to be shown. */
 export function useJourney(): Journey {
-	const progress = useJourneyProgress();
+	const {record, change, seen} = useJourneyRecord();
+	const progress = useJourneyProgress(record);
 	const unlocked = useMemo(() => (progress ? unlockedFeatures(progress) : null), [progress]);
-	const {record, change} = useJourneyRecord(unlocked);
+	useFirstRecord(seen, record, unlocked, change);
 	const tabs = useMemo(() => (unlocked ? openTabs(unlocked) : journeyStore.lastTabs() ?? [JOURNEY_TABS.ADVENTURE]), [unlocked]);
 
 	useEffect(() => {

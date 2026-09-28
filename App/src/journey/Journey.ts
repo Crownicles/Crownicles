@@ -30,7 +30,9 @@ export function isJourneyTab(value: unknown): value is JourneyTab {
 export type JourneyProgress = {
 	started: boolean;
 	level: number;
-	hasPet: boolean;
+
+	/** The character owns a pet, or already did: freeing it does not close the tab again. */
+	metPet: boolean;
 	hasGuild: boolean;
 
 	/** The campaign got past the first item, which the profile's inventory is there to equip. */
@@ -74,10 +76,9 @@ export const JOURNEY_STEPS: readonly JourneyStep[] = [
 		feature: JOURNEY_FEATURES.GUILD, tab: JOURNEY_TABS.GUILD, route: "/guild", icon: "navigation.guild", level: JOURNEY_LEVELS.GUILD,
 		isUnlocked: progress => progress.hasGuild || progress.level >= JOURNEY_LEVELS.GUILD
 	},
-	// A pet met on the road opens its tab before the level does, where the guild shelter becomes reachable.
 	{
-		feature: JOURNEY_FEATURES.PET, tab: JOURNEY_TABS.PET, route: "/pet", icon: "navigation.pet", level: JOURNEY_LEVELS.GUILD,
-		isUnlocked: progress => progress.hasPet || progress.level >= JOURNEY_LEVELS.GUILD
+		feature: JOURNEY_FEATURES.PET, tab: JOURNEY_TABS.PET, route: "/pet", icon: "navigation.pet",
+		isUnlocked: progress => progress.metPet
 	}
 ];
 

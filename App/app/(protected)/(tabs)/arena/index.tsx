@@ -6,7 +6,7 @@ import {ActionBanner, Lock} from "@/src/design/Sections";
 import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
 import {useQueryClient} from "@tanstack/react-query";
 import {Cure, CureEmblem} from "@/src/components/CureEmblem";
-import {HealAction, healOffer, useBuyHeal} from "@/src/components/HealAction";
+import {HealAction, HealOffer, healOffer, PendingAction, useBuyHeal} from "@/src/components/HealAction";
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
 import {commandRejectionMessage} from "@/src/display/CommandRejection";
 import {useReportView} from "@/src/store/useReportActions";
@@ -144,35 +144,59 @@ function ArenaHeader(): ReactNode {
 	return <View style={styles.header}><View style={styles.emblem}><Swords size={27} color={colors.ink} /></View><View><Text style={styles.eyebrow}>{i18n.t("app:arena.eyebrow")}</Text><Text style={styles.title}>{i18n.t("app:arena.title")}</Text></View></View>;
 }
 
-export default function Arena(): ReactNode {
-	const router = useRouter();
-	const styles = useStyles();
-	const state = usePlayerProfile();
+type ArenaCure = {offer: HealOffer | null; action: PendingAction; cure: Cure | null};
+
+/** While an alteration that can be healed holds the player back, the cure takes the place of the duel. */
+function useArenaCure(blocking: PlayerEffect | null): ArenaCure {
 	const report = useReportView();
 	const queryClient = useQueryClient();
-	const fight = useFight();
-	const {pending, message, open} = useCommandMenus();
-	const ongoing = Boolean(fight.introduction && !fight.result && !fight.error);
-	const start = (): Promise<void> => {fightStore.reset(); return open(FIGHT_MENU);};
-	const startError = fight.visible ? null : fight.error;
-	// Before the fight level the start button stays in sight, greyed, with the level that opens fights.
-	const canFight = state.status !== "ready" || state.data.level >= JOURNEY_LEVELS.FIGHTS;
-	const effect = state.status === "ready" ? activeEffect(state.data) : null;
-	const {action: heal, cure} = useBuyHeal(effect?.effect, (): void => {
+	const {action, cure} = useBuyHeal(blocking?.effect, (): void => {
 		reportEventStore.clearHeal();
 		for (const entity of [GAME_ENTITIES.PROFILE, GAME_ENTITIES.REPORT]) {
 			queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(console.error);
 		}
 	});
-	const offer = effect && !ongoing ? healOffer(report.status === "ready" ? report.data.travel : undefined) : null;
-	const lock = canFight ? effect && !ongoing ? effectLock(effect) : undefined : {reason: i18n.t("app:arena.locked", {level: JOURNEY_LEVELS.FIGHTS})};
+	const travel = report.status === "ready" ? report.data.travel : undefined;
+	return {offer: blocking ? healOffer(travel) : null, action, cure};
+}
+
+/** Before the fight level the start button stays in sight, greyed, with the level that opens fights. */
+function startLock(canFight: boolean, blocking: PlayerEffect | null): Lock | undefined {
+	if (!canFight) return {reason: i18n.t("app:arena.locked", {level: JOURNEY_LEVELS.FIGHTS})};
+	return blocking ? effectLock(blocking) : undefined;
+}
+
+function useArenaFight(): {ongoing: boolean; startError: FightError | null; pending: boolean; message: string | null; start: () => Promise<void>} {
+	const fight = useFight();
+	const {pending, message, open} = useCommandMenus();
+	return {
+		ongoing: Boolean(fight.introduction && !fight.result && !fight.error),
+		startError: fight.visible ? null : fight.error,
+		pending,
+		message,
+		start: (): Promise<void> => {
+			fightStore.reset();
+			return open(FIGHT_MENU);
+		}
+	};
+}
+
+export default function Arena(): ReactNode {
+	const router = useRouter();
+	const styles = useStyles();
+	const state = usePlayerProfile();
+	const {ongoing, startError, pending, message, start} = useArenaFight();
+	const canFight = state.status !== "ready" || state.data.level >= JOURNEY_LEVELS.FIGHTS;
+	// A fight already under way can always be resumed.
+	const blocking = state.status === "ready" && !ongoing ? activeEffect(state.data) : null;
+	const {offer, action: heal, cure} = useArenaCure(blocking);
 	return <Screen>
 		<ArenaHeader />
 		<GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{profile => <ArenaProfile profile={profile} cure={cure} />}</GameQueryContent>
 		{message ? <Note>{message}</Note> : null}
 		{offer
 			? <View style={styles.start}><HealAction heal={offer} action={heal} /></View>
-			: <ArenaStart pending={pending} ongoing={ongoing} lock={lock} onStart={start} />}
+			: <ArenaStart pending={pending} ongoing={ongoing} lock={startLock(canFight, blocking)} onStart={start} />}
 		{startError ? <ArenaStartError error={startError} /> : null}
 		<ArenaLinks pages={canFight ? ARENA_PAGES : BEFORE_FIGHTS_PAGES} onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
 	</Screen>;
