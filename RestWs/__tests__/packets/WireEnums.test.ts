@@ -22,6 +22,10 @@ import { CommandPetFeedResult } from "../../../Lib/src/packets/commands/CommandP
 import { PetFood, PET_FEED_RESULTS } from "../../../WsPackets/src/objects/PetFood";
 import {GuildBuilding as LibGuildBuilding, GUILD_DOMAIN_ERROR} from "../../../Lib/src/constants/GuildDomainConstants";
 import {GuildBuilding, GUILD_DOMAIN_ERRORS} from "../../../WsPackets/src/objects/GuildDomain";
+import {GUILD_JOIN_ERRORS, GUILD_RECRUITMENT_ERRORS} from "../../../WsPackets/src/objects/GuildRecruitment";
+import {
+	GUILD_JOIN_ERRORS as LibGuildJoinErrors, GUILD_RECRUITMENT_ERRORS as LibGuildRecruitmentErrors
+} from "../../../Lib/src/types/GuildRecruitment";
 import {TopDataType as CoreTopDataType} from "../../../Lib/src/types/TopDataType";
 import {TopTiming as CoreTopTiming} from "../../../Lib/src/types/TopTimings";
 import {EloGameResult as CoreEloGameResult} from "../../../Lib/src/types/EloGameResult";
@@ -69,6 +73,8 @@ describe("wire enums mirror their back-end counterpart", () => {
 		["EloGameResult", EloGameResult, CoreEloGameResult],
 		["GuildBuilding", GuildBuilding, LibGuildBuilding],
 		["GuildDomainError", GUILD_DOMAIN_ERRORS, GUILD_DOMAIN_ERROR],
+		["GuildJoinErrors", GUILD_JOIN_ERRORS, LibGuildJoinErrors],
+		["GuildRecruitmentErrors", GUILD_RECRUITMENT_ERRORS, LibGuildRecruitmentErrors],
 		["ItemNature", ItemNature, LibItemNature],
 		["ItemRarity", ItemRarity, LibItemRarity],
 		["PlantId", PlantId, LibPlantId],

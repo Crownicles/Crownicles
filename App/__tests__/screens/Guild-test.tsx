@@ -23,11 +23,12 @@ jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => 
 const DOMAIN: GuildDomainSnapshot = {
 	guildName: "Aurore", guildLevel: 20, treasury: 50_000, playerMoney: 2000,
 	isInCity: true, isChief: true, isElder: false, domainCityId: "test-city",
-	shopLevel: 1, shelterLevel: 0, pantryLevel: 0, trainingGroundLevel: 0,
+	shopLevel: 1, shelterLevel: 0, pantryLevel: 0, trainingGroundLevel: 0, recruitmentOfficeLevel: 0,
+	recruitment: {open: false, minScore: 0},
 	food: {common: 0, carnivorous: 0, herbivorous: 0, ultimate: 0},
 	foodCaps: [150, 90, 90, 30], foodPrices: [20, 250, 250, 600], maxBuyableFood: [10, 2, 2, 1], maxFoodCosts: [200, 500, 500, 600],
 	canUseShop: true, shelterPets: [], shelterMaxCount: 6,
-	canUpgradeBuildings: {shop: null, shelter: {canAfford: true, meetsLevel: true, cost: 10_000, requiredGuildLevel: 15}, pantry: {canAfford: true, meetsLevel: true, cost: 40_000, requiredGuildLevel: 15}, trainingGround: {canAfford: false, meetsLevel: false, cost: 150_000, requiredGuildLevel: 50}},
+	canUpgradeBuildings: {shop: null, shelter: {canAfford: true, meetsLevel: true, cost: 10_000, requiredGuildLevel: 15}, pantry: {canAfford: true, meetsLevel: true, cost: 40_000, requiredGuildLevel: 15}, trainingGround: {canAfford: false, meetsLevel: false, cost: 150_000, requiredGuildLevel: 50}, recruitmentOffice: {canAfford: true, meetsLevel: true, cost: 10_000, requiredGuildLevel: 5}},
 	canDeposit: {small: true, big: false, huge: false}, depositOffers: [{amount: 1000, treasuryDeposited: 950, canAfford: true}],
 	dailyFoodProduction: [0, 0, 0, 0], dailyLovePoints: 0
 };

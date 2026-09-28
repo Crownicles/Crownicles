@@ -26,6 +26,8 @@ const WIRE_NAMES = [
 	"GuildInviteReq", "GuildPromoteReq", "GuildDemoteReq", "GuildKickReq",
 	"GuildDescriptionReq", "GuildLeaveReq",
 	"GuildReq", "GuildCreateReq", "GuildStorageReq", "GuildDailyReq", "GuildRes", "GuildStorageRes", "GuildCommandRes",
+	"GuildRecruitmentReq", "GuildRecruitmentListReq", "GuildJoinReq",
+	"GuildRecruitmentRes", "GuildRecruitmentErrorRes", "GuildRecruitmentListRes", "GuildJoinRes", "GuildJoinErrorRes",
 	"PetTransferReq", "PetFreeReq", "PetSellReq", "GuildShelterReq", "PetManagementRes", "GuildShelterRes", "GuildShelterEmptyRes",
 	"PetExpeditionReq",
 	"PetExpeditionResolveReq",

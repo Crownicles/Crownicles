@@ -113,6 +113,12 @@ import { MainItem } from "../../../WsPackets/src/objects/MainItem";
 import { Item } from "../../../WsPackets/src/objects/Item";
 import { MaterialQuantity } from "../../../WsPackets/src/objects/MaterialQuantity";
 import { OwnedPet } from "../../../WsPackets/src/objects/OwnedPet";
+import {
+	GuildRecruitmentSettings, RecruitingGuild
+} from "../../../WsPackets/src/objects/GuildRecruitment";
+import {
+	GuildRecruitmentSettings as LibGuildRecruitmentSettings, RecruitingGuild as LibRecruitingGuild
+} from "../../../Lib/src/types/GuildRecruitment";
 import { SupportItem } from "../../../WsPackets/src/objects/SupportItem";
 import { ValueAndMax } from "../../../WsPackets/src/objects/ValueAndMax";
 import { CommandClassesInfoPacketRes } from "../../../Lib/src/packets/commands/CommandClassesInfoPacket";
@@ -288,12 +294,16 @@ type ClassesInfoContract = Assert<IsEqual<WireShape<CommandClassesInfoPacketRes>
 type AvailableClassContract = Assert<IsEqual<WireShape<ReactionCollectorChangeClassDetails>, WireShape<AvailableClass>>>;
 type ClassStatsContract = Assert<IsEqual<WireShape<LibClassStats>, WireShape<ClassStats>>>;
 type ClassKindContract = Assert<IsEqual<LibClassKind, ClassKind>>;
+type RecruitingGuildContract = Assert<IsEqual<WireShape<LibRecruitingGuild>, WireShape<RecruitingGuild>>>;
+type GuildRecruitmentSettingsContract = Assert<IsEqual<WireShape<LibGuildRecruitmentSettings>, WireShape<GuildRecruitmentSettings>>>;
 
 export const packetContractChecks: {
 	classesInfo: ClassesInfoContract;
 	availableClass: AvailableClassContract;
 	classStats: ClassStatsContract;
 	classKind: ClassKindContract;
+	recruitingGuild: RecruitingGuildContract;
+	guildRecruitmentSettings: GuildRecruitmentSettingsContract;
 	drinkRequest: DrinkRequestContract;
 	inventoryRequest: InventoryRequestContract;
 	petRequest: PetRequestContract;
@@ -347,6 +357,8 @@ export const packetContractChecks: {
 	availableClass: true,
 	classStats: true,
 	classKind: true,
+	recruitingGuild: true,
+	guildRecruitmentSettings: true,
 	drinkRequest: true,
 	inventoryRequest: true,
 	petRequest: true,

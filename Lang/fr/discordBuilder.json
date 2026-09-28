@@ -91,6 +91,35 @@
       }
     }
   },
+  "guildRecruitment": {
+    "description": "Ouvrir ou fermer le recrutement de la guilde et choisir le score minimum exigé.",
+    "name": "recrutementguilde",
+    "options": {
+      "status": {
+        "description": "Ouvrir ou fermer le recrutement.",
+        "name": "etat"
+      },
+      "minimum": {
+        "description": "Le score minimum pour rejoindre la guilde.",
+        "name": "minimum"
+      }
+    },
+    "statuses": {
+      "open": "Ouvert",
+      "closed": "Fermé"
+    },
+    "minimumChoice": "{{score, number}} points"
+  },
+  "guildJoin": {
+    "description": "Rejoindre une guilde qui recrute.",
+    "name": "rejoindreguilde",
+    "options": {
+      "name": {
+        "description": "Chercher une guilde par son nom.",
+        "name": "nom"
+      }
+    }
+  },
   "guildInvite": {
     "description": "Recruter un nouveau membre dans votre guilde.",
     "name": "invitationguilde",

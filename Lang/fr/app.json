@@ -594,7 +594,7 @@
       "guildLevel": "Niveau de guilde",
       "treasury": "Trésorerie",
       "buildings": "Bâtiments",
-      "buildingLevels": "Boutique {{shop}} · refuge {{shelter}} · garde-manger {{pantry}} · terrain {{training}}",
+      "buildingLevels": "Boutique {{shop}} · refuge {{shelter}} · garde-manger {{pantry}} · terrain {{training}} · recrutement {{recruitment}}",
       "foodStock": "Nourriture en stock",
       "foodStockDetails": "Friandises {{common}} · viande {{carnivorous}} · salade {{herbivorous}} · soupe ultime {{ultimate}}",
       "domain": "Domaine implanté",
@@ -898,6 +898,11 @@
   },
   "guildDomain": {
     "buildings": "Bâtiments",
+    "recruitment": {
+      "locked": "Une échoppe vide donne sur la place. Une fois aménagée, elle fera connaître la guilde à tous les aventuriers en quête d'une bannière.",
+      "open": "Le crieur annonce que la guilde recrute tout aventurier ayant au moins {{minScore}} points.",
+      "closed": "Le crieur se repose : la guilde ne recrute pas pour le moment."
+    },
     "foodShopDescription": "Nourriture pour les familiers de {{guild}}",
     "upgrade": "Améliorer le bâtiment",
     "cost": "Coût",
@@ -983,9 +988,31 @@
       "domain": "Un domaine à bâtir ensemble, avec sa boutique et son garde-manger.",
       "shelter": "Un refuge où recueillir et adopter des familiers.",
       "createWithCost": "Fonder une guilde · {{price}}",
-      "join": "Rejoindre une guilde",
-      "joinHow": "Une guilde se rejoint sur invitation de son chef. Faites-lui connaître votre nom, {{pseudo}} : son invitation s'affichera ici même.",
-      "browse": "Parcourir les guildes"
+      "join": "Rejoindre une guilde"
+    },
+    "recruitment": {
+      "title": "Recrutement",
+      "statuses": {"open": "Ouvert", "closed": "Fermé"},
+      "openHint": "La guilde apparaît aux aventuriers en quête d'une bannière : ceux qui atteignent le score minimum la rejoignent sans invitation.",
+      "closedHint": "La guilde reste discrète : seule une invitation permet de la rejoindre.",
+      "minScore": "Score minimum",
+      "lower": "Abaisser",
+      "raise": "Relever",
+      "noOffice": "Construisez un bureau de recrutement dans le domaine de la guilde pour la faire connaître à tous les aventuriers."
+    },
+    "join": {
+      "searchLabel": "Nom de la guilde",
+      "search": "Chercher",
+      "suggestions": "Suggestions",
+      "suggested": "Guildes qui vous ouvrent leurs portes",
+      "results": "Guildes dont le nom contient « {{search}} »",
+      "yourScore": "Votre score : {{score}} points.",
+      "caption": "Niveau {{level}} · {{members}}/{{max}} membres · minimum {{minScore}}",
+      "join": "Rejoindre {{name}}",
+      "blockers": {"full": "Cette guilde est complète.", "minScore": "Votre score est encore trop bas pour cette guilde."},
+      "noSuggestion": "Aucune guilde ne recrute d'aventurier de votre envergure pour le moment. Revenez plus tard, ou cherchez une guilde par son nom.",
+      "noMatch": "Aucune guilde qui recrute ne porte ce nom.",
+      "invitation": "Une guilde peut aussi vous inviter : son invitation s'affiche alors ici même."
     },
     "confirmCreate": "Créer la guilde {{name}} ?",
     "created": "La guilde {{name}} a été créée.",
@@ -999,7 +1026,7 @@
     "yourMoney": "Votre argent",
     "memberRank": "Classement général : {{rank}}",
     "roles": {"chief": "Chef", "elder": "Aîné", "member": "Membre"},
-    "pages": {"storage": "Entrepôt", "shelter": "Refuge", "manage": "Gestion", "domain": "Domaine", "rankings": "Classement"},
+    "pages": {"storage": "Entrepôt", "shelter": "Refuge", "manage": "Gestion", "domain": "Domaine", "rankings": "Classement", "join": "Rejoindre une guilde"},
     "domainLocks": {
       "none": "Votre guilde n'a pas encore de domaine. Son chef peut l'implanter chez un notaire, en ville.",
       "chiefOnly": "Seul le chef de guilde peut entrer dans le domaine.",

@@ -26,6 +26,7 @@ import {formatNumber} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
+import {RecruitmentSettings} from "@/src/components/GuildRecruitment";
 
 export type GuildPage = "storage" | "shelter" | "manage" | "domain" | "rankings";
 const CREATE_MENU: CommandMenu = {request: GuildCreateReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
@@ -181,8 +182,7 @@ export function GuildManagement({guild}: {guild: GuildData}): ReactNode {
 			testID="guild-management-standing"
 		/>
 		<GuildDescriptionForm guild={guild} {...lock ? {lock} : {}} />
-		<GuildInvitation {...lock ? {lock} : {}} />
-		<GuildDeparture guild={guild} />
+		<GuildInvitation {...lock ? {lock} : {}} />			{lock ? null : <RecruitmentSettings />}		<GuildDeparture guild={guild} />
 	</>;
 }
 

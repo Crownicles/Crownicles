@@ -119,6 +119,8 @@ describe("packet contracts", () => {
 			availableClass: true,
 			classStats: true,
 			classKind: true,
+			recruitingGuild: true,
+			guildRecruitmentSettings: true,
 			drinkRequest: true,
 			inventoryRequest: true,
 			petRequest: true,

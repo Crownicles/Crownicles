@@ -1,11 +1,13 @@
 import { OwnedPet } from "./OwnedPet";
 import { PetFood } from "./PetFood";
+import { GuildRecruitmentSettings } from "./GuildRecruitment";
 
 export enum GuildBuilding {
 	SHOP = "shop",
 	SHELTER = "shelter",
 	PANTRY = "pantry",
-	TRAINING_GROUND = "trainingGround"
+	TRAINING_GROUND = "trainingGround",
+	RECRUITMENT_OFFICE = "recruitmentOffice"
 }
 
 export const GUILD_DOMAIN_ERRORS = {
@@ -57,6 +59,8 @@ export type GuildDomainSnapshot = GuildFoodShop & {
 	shelterLevel: number;
 	pantryLevel: number;
 	trainingGroundLevel: number;
+	recruitmentOfficeLevel: number;
+	recruitment: GuildRecruitmentSettings;
 	shelterMaxCount: number;
 	guildLevel: number;
 	shelterPets: GuildDomainPet[];

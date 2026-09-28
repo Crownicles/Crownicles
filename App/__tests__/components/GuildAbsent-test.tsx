@@ -31,11 +31,9 @@ describe("guild tab without a guild", () => {
 		expect(screen.getByRole("button", {name: "app:guild.absent.createWithCost"})).toBeDisabled();
 	});
 
-	it("explains that a guild is joined on invitation, and leads to the guilds", async () => {
+	it("leads to the guilds that recruit", async () => {
 		await renderWith(100);
 		await fireEvent.press(screen.getByRole("button", {name: "app:guild.absent.join"}));
-		expect(screen.getByText("app:guild.absent.joinHow")).toBeTruthy();
-		await fireEvent.press(screen.getByRole("button", {name: "app:guild.absent.browse"}));
-		expect(mockPush).toHaveBeenCalledWith("/guild/rankings");
+		expect(mockPush).toHaveBeenCalledWith("/guild/join");
 	});
 });

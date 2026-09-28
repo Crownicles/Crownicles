@@ -34,7 +34,8 @@ type DomainRequest = {kind: keyof typeof DOMAIN_MENUS; request: FromClientPacket
 type DomainActions = {pending: boolean; run: (action: DomainRequest) => void};
 const BUILDING_LEVEL_FIELDS = {
 	[GuildBuilding.SHOP]: "shopLevel", [GuildBuilding.SHELTER]: "shelterLevel",
-	[GuildBuilding.PANTRY]: "pantryLevel", [GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
+	[GuildBuilding.PANTRY]: "pantryLevel", [GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel",
+	[GuildBuilding.RECRUITMENT_OFFICE]: "recruitmentOfficeLevel"
 } as const;
 const FOOD_FIELDS = {
 	[PetFood.CANDY]: "common", [PetFood.SALAD]: "herbivorous", [PetFood.MEAT]: "carnivorous", [PetFood.ULTIMATE]: "ultimate"
@@ -142,6 +143,13 @@ function DomainDeposits({domain, actions, openAmount, onOpen}: {
 	</>;
 }
 
+function recruitmentOfficeNote(domain: GuildDomainSnapshot): string {
+	if (domain.recruitmentOfficeLevel === 0) return i18n.t("app:guildDomain.recruitment.locked");
+	return domain.recruitment.open
+		? i18n.t("app:guildDomain.recruitment.open", {minScore: formatNumber(domain.recruitment.minScore)})
+		: i18n.t("app:guildDomain.recruitment.closed");
+}
+
 function BuildingContents({domain, building, actions}: {domain: GuildDomainSnapshot; building: GuildBuilding; actions: DomainActions}): ReactNode {
 	const sectionStyles = useSectionStyles();
 	const colors = useColors();
@@ -164,6 +172,8 @@ function BuildingContents({domain, building, actions}: {domain: GuildDomainSnaps
 				/>
 				<Note>{i18n.t("app:guildDomain.production", {count: domain.dailyFoodProduction[index]})}</Note>
 			</View>)}</>;
+		case GuildBuilding.RECRUITMENT_OFFICE:
+			return <Note>{recruitmentOfficeNote(domain)}</Note>;
 		default:
 			return <Note>{i18n.t("app:guildDomain.training", {count: domain.dailyLovePoints})}</Note>;
 	}

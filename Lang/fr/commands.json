@@ -433,6 +433,41 @@
     "noGuild": "Il semblerait que vous ne fassiez plus partie d'une guilde.",
     "notAnElder": "Vous n'avez plus les permissions nécessaires pour effectuer cette commande."
   },
+  "guildRecruitment": {
+    "title": "Recrutement de la guilde",
+    "statusOpen": "{emote:city.guildDomain.recruitmentOffice} Le recrutement est **ouvert** : tout aventurier ayant au moins **{{minScore, number}}** {emote:unitValues.score} peut rejoindre la guilde avec {command:guildjoin}.",
+    "statusClosed": "{emote:city.guildDomain.recruitmentOffice} Le recrutement est **fermé** : la guilde n'apparaît pas aux aventuriers en quête d'une bannière.",
+    "updated": "{emote:messages.info} Le crieur a reçu ses nouvelles consignes.",
+    "howToChange": "{emote:messages.info} Précisez un état ou un score minimum dans {command:guildrecruitment} pour modifier le recrutement.",
+    "errors": {
+      "noOffice": "La guilde doit d'abord construire un bureau de recrutement dans son domaine.",
+      "invalidMinScore": "Ce score minimum ne fait pas partie des choix proposés."
+    }
+  },
+  "guildJoin": {
+    "title": "Guildes qui recrutent",
+    "suggestionIntro": "Voici les guildes qui vous ouvrent leurs portes, les plus adaptées à vos **{{score, number}}** {emote:unitValues.score} en premier.",
+    "searchIntro": "Guildes qui recrutent et dont le nom contient **{{search}}** :",
+    "noSuggestion": "Aucune guilde ne recrute d'aventurier de votre envergure pour le moment. Revenez plus tard, ou cherchez une guilde par son nom.",
+    "noMatch": "Aucune guilde qui recrute ne porte un nom contenant **{{search}}**.",
+    "guildLine": "**{{name}}** · Niv. {{level}} · {{members}}/{{maxMembers}} membres · minimum {{minScore, number}} {emote:unitValues.score}",
+    "blockers": {
+      "full": "{emote:collectors.refuse} La guilde est complète.",
+      "minScore": "{emote:collectors.refuse} Votre score est encore trop bas."
+    },
+    "placeholder": "Choisir la guilde à rejoindre",
+    "optionDescription": "Niv. {{level}} · {{members}}/{{maxMembers}} membres",
+    "joinedTitle": "Bienvenue dans la guilde !",
+    "joined": "Vous faites désormais partie de la guilde **{{guildName}}**.",
+    "errors": {
+      "full": "Cette guilde est complète.",
+      "minScore": "Cette guilde exige au moins {{minScore, number}} points.",
+      "closed": "Cette guilde ne recrute plus.",
+      "notFound": "Cette guilde n'existe plus.",
+      "alreadyInGuild": "Vous faites déjà partie d'une guilde.",
+      "onIsland": "Impossible de rejoindre une guilde depuis l'île mystérieuse ou le bateau qui y mène."
+    }
+  },
   "help": {
     "aliasFieldTitle": "Alias",
     "aliasesFieldTitle": "Alias",
@@ -492,6 +527,12 @@
       },
       "GUILD_STORAGE": {
         "description": "Affiche le contenu de l'entrepôt de la guilde."
+      },
+      "GUILD_RECRUITMENT": {
+        "description": "Ouvre ou ferme le recrutement de la guilde et règle le score minimum exigé. Nécessite un bureau de recrutement dans le domaine et d'être chef ou aîné de la guilde."
+      },
+      "GUILD_JOIN": {
+        "description": "Affiche les guildes qui vous ouvrent leurs portes, ou cherche une guilde qui recrute par son nom, pour la rejoindre sans invitation."
       },
       "GUILD_TOP": {
         "description": "Affiche le classement des guildes par tranche de 15 guildes. Les guildes sont classées en fonction des points récoltés sur les îles mystérieuses."
@@ -1407,7 +1448,8 @@
           "shop": "{emote:city.guildDomain.shop} Boutique Niv.{{level}} ({{cost}} {emote:unitValues.money})",
           "shelter": "{emote:city.guildDomain.shelter} Refuge Niv.{{level}} ({{cost}} {emote:unitValues.money})",
           "pantry": "{emote:city.guildDomain.pantry} Entrepôt Niv.{{level}} ({{cost}} {emote:unitValues.money})",
-          "trainingGround": "{emote:city.guildDomain.trainingGround} Ménagerie Niv.{{level}} ({{cost}} {emote:unitValues.money})"
+          "trainingGround": "{emote:city.guildDomain.trainingGround} Ménagerie Niv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "recruitmentOffice": "{emote:city.guildDomain.recruitmentOffice} Bureau de recrutement Niv.{{level}} ({{cost}} {emote:unitValues.money})"
         },
         "upgradeConfirmDescription": "{emote:collectors.warning} Cette validation améliorera **{{building}}** au **niveau {{level}}** pour **{{cost}} {emote:unitValues.money}** depuis la trésorerie.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
         "upgradeSuccess": "{emote:messages.info} Les ouvriers ont terminé les travaux ! **{{building}}** a été amélioré au **niveau {{level}}**.\n{emote:unitValues.xp} La guilde gagne **{{xpGained, number}}** points d'expérience.",
@@ -1416,7 +1458,8 @@
           "shop": "Boutique",
           "shelter": "Refuge",
           "pantry": "Entrepôt",
-          "trainingGround": "Ménagerie"
+          "trainingGround": "Ménagerie",
+          "recruitmentOffice": "Bureau de recrutement"
         },
         "leaveDomain": "Quitter le domaine",
         "notaryPurchaseDescription": "{emote:city.guildDomainNotary} Le notaire examine attentivement les registres de votre guilde et hoche la tête avec satisfaction. Il vous informe que la ville propose actuellement l'installation gratuite de domaines de guilde pour encourager le développement de la région. Il vous laisse le temps de réfléchir et attend votre décision.",
@@ -1436,7 +1479,8 @@
           "shop": "Acheter",
           "shelter": "Visiter",
           "pantry": "Inspecter",
-          "trainingGround": "Observer"
+          "trainingGround": "Observer",
+          "recruitmentOffice": "Consulter"
         },
         "backToDomain": "Retour au domaine",
         "buildingSummary": {
@@ -1449,6 +1493,10 @@
           "trainingGround": {
             "inactive": "L'enclos est à l'abandon. Les familiers ne peuvent pas s'y exercer.",
             "active": "Les familiers s'exercent chaque jour et gagnent **+{{love}}** {emote:expedition.love} par jour."
+          },
+          "recruitmentOffice": {
+            "locked": "Un panneau vierge attend qu'on y placarde l'appel de la guilde.",
+            "built": "Un crieur fait connaître la guilde à tous les aventuriers en quête d'une bannière."
           }
         },
         "subMenus": {
@@ -1499,6 +1547,12 @@
             "title": "{emote:city.guildDomain.trainingGround} Ménagerie",
             "descriptionInactive": "{emote:city.guildDomain.trainingGround} La ménagerie est un vaste espace clos aux palissades branlantes et à la paille rance. Les abreuvoirs sont à sec et les parcours d'agilité couverts de mousse. Les familiers ne peuvent pas s'y exercer dans ces conditions.",
             "descriptionActive": "{emote:city.guildDomain.trainingGround} La ménagerie bourdonne d'activité. Un ancien dresseur royal supervise les exercices quotidiens des familiers, entre parcours d'obstacles en bois et cibles rembourrées. L'air est empli de cris enthousiastes et de battements d'ailes.\n\nLes familiers au refuge gagnent **+{{love}}** {emote:expedition.love} points d'amour par jour."
+          },
+          "recruitmentOffice": {
+            "title": "{emote:city.guildDomain.recruitmentOffice} Bureau de recrutement",
+            "descriptionLocked": "{emote:city.guildDomain.recruitmentOffice} Une échoppe vide donne sur la place. Une fois aménagée, elle permettra au chef ou à l'aîné de faire connaître la guilde à tous les aventuriers en quête d'une bannière.",
+            "descriptionOpen": "{emote:city.guildDomain.recruitmentOffice} Un crieur annonce sur la place que la guilde accueille de nouveaux membres. Tout aventurier ayant au moins **{{minScore, number}}** {emote:unitValues.score} peut la rejoindre avec {command:guildjoin}.\n\n{emote:messages.info} Le chef ou l'aîné règle le recrutement avec {command:guildrecruitment}.",
+            "descriptionClosed": "{emote:city.guildDomain.recruitmentOffice} Le crieur se repose : la guilde ne recrute pas pour le moment.\n\n{emote:messages.info} Le chef ou l'aîné peut ouvrir le recrutement avec {command:guildrecruitment}."
           }
         }
       },

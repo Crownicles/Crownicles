@@ -31,7 +31,8 @@ const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
 	[GuildBuilding.SHOP]: "shopLevel",
 	[GuildBuilding.SHELTER]: "shelterLevel",
 	[GuildBuilding.PANTRY]: "pantryLevel",
-	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
+	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel",
+	[GuildBuilding.RECRUITMENT_OFFICE]: "recruitmentOfficeLevel"
 };
 
 function logGuildDomainPurchase(params: GuildDomainPurchaseLogParams): void {

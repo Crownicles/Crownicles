@@ -1,4 +1,5 @@
 import { OwnedPet } from "./OwnedPet";
+import { GuildRecruitmentSettings } from "./GuildRecruitment";
 import {
 	BuildingUpgradeEligibilityMap, DepositTierAffordability
 } from "./GuildDomainEligibility";
@@ -29,6 +30,8 @@ export type GuildDomainSnapshot = GuildFoodShopSnapshot & {
 	shelterLevel: number;
 	pantryLevel: number;
 	trainingGroundLevel: number;
+	recruitmentOfficeLevel: number;
+	recruitment: GuildRecruitmentSettings;
 	guildLevel: number;
 	isChief: boolean;
 	isElder: boolean;

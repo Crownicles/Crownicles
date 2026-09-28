@@ -4,7 +4,7 @@ import {useRouter} from "expo-router";
 import {GUILD_CREATION_PRICE} from "ws-packets/src/objects/Guild";
 import {AppIcons} from "@/src/AppIcons";
 import {GuildCreation} from "@/src/components/Guild";
-import {Button, ButtonRow, Note} from "@/src/design/Primitives";
+import {Button, ButtonRow} from "@/src/design/Primitives";
 import {ActionBanner, Lock} from "@/src/design/Sections";
 import {
 	cycleWindow, FAREWELL_TONES, FarewellEmblem, FarewellPage, FarewellTip, FarewellTips, useMotionLoop
@@ -39,9 +39,6 @@ const useStyles = createStyles(() => ({
 	shield: {position: "absolute"},
 	actions: {gap: 12}
 }));
-
-const ABSENT_CHOICES = {CREATE: "create", JOIN: "join"} as const;
-type AbsentChoice = typeof ABSENT_CHOICES[keyof typeof ABSENT_CHOICES];
 
 function perks(): FarewellTip[] {
 	return [
@@ -79,23 +76,14 @@ function creationLock(money: number | undefined): Lock | undefined {
 	return {reason: i18n.t("app:city.locks.missingMoney", {amount: formatMoney(GUILD_CREATION_PRICE - money)}), icon: Coins};
 }
 
-/** A guild is only joined on its chief's invitation, which the app shows as soon as it is sent. */
-function JoinHelp({pseudo}: {pseudo: string}): ReactNode {
-	const router = useRouter();
-	return <>
-		<Note>{i18n.t("app:guild.absent.joinHow", {pseudo})}</Note>
-		<ButtonRow><Button onPress={(): void => router.push("/guild/rankings")}>{i18n.t("app:guild.absent.browse")}</Button></ButtonRow>
-	</>;
-}
-
-/** No guild yet: what one brings, then founding one or joining one. */
+/** No guild yet: what one brings, then founding one or looking for one to join. */
 export function GuildAbsent(): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
+	const router = useRouter();
 	const profile = usePlayerProfile();
-	const [choice, setChoice] = useState<AbsentChoice | null>(null);
-	const data = profile.status === "ready" ? profile.data : null;
-	const lock = creationLock(data?.money);
+	const [creating, setCreating] = useState(false);
+	const lock = creationLock(profile.status === "ready" ? profile.data.money : undefined);
 	return <>
 		<FarewellPage
 			emblem={<BannerEmblem />}
@@ -109,12 +97,11 @@ export function GuildAbsent(): ReactNode {
 			<ActionBanner
 				icon={Flag}
 				label={i18n.t("app:guild.absent.createWithCost", {price: formatMoney(GUILD_CREATION_PRICE)})}
-				onPress={(): void => setChoice(ABSENT_CHOICES.CREATE)}
+				onPress={(): void => setCreating(true)}
 				{...lock ? {lock} : {}}
 			/>
-			{choice === ABSENT_CHOICES.CREATE ? <GuildCreation /> : null}
-			<ButtonRow><Button icon={UserPlus} onPress={(): void => setChoice(ABSENT_CHOICES.JOIN)}>{i18n.t("app:guild.absent.join")}</Button></ButtonRow>
-			{choice === ABSENT_CHOICES.JOIN ? <JoinHelp pseudo={data?.pseudo ?? ""} /> : null}
+			{creating ? <GuildCreation /> : null}
+			<ButtonRow><Button icon={UserPlus} onPress={(): void => router.push("/guild/join")}>{i18n.t("app:guild.absent.join")}</Button></ButtonRow>
 		</View>
 	</>;
 }

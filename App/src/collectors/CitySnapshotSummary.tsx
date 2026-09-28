@@ -182,7 +182,8 @@ function renderGuildSummary(snapshot: CityMobileSnapshot): ReactNode {
 					shop: guild.shopLevel,
 					shelter: guild.shelterLevel,
 					pantry: guild.pantryLevel,
-					training: guild.trainingGroundLevel
+					training: guild.trainingGroundLevel,
+					recruitment: guild.recruitmentOfficeLevel
 				})} />
 				<Fact label={i18n.t("app:city.summary.foodStock")} value={i18n.t("app:city.summary.foodStockDetails", guild.food)} />
 			</ExpandableList>

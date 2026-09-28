@@ -15,7 +15,8 @@ const BUILDING_LEVEL_FIELDS = {
 	[GuildBuilding.SHOP]: "shopLevel",
 	[GuildBuilding.SHELTER]: "shelterLevel",
 	[GuildBuilding.PANTRY]: "pantryLevel",
-	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
+	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel",
+	[GuildBuilding.RECRUITMENT_OFFICE]: "recruitmentOfficeLevel"
 } as const;
 
 export function buildCanUpgradeBuildings(guild: Guild): BuildingUpgradeEligibilityMap {
@@ -85,6 +86,11 @@ export async function buildGuildDomainSnapshot(player: Player, guild: Guild): Pr
 		shelterLevel: guild.shelterLevel,
 		pantryLevel: guild.pantryLevel,
 		trainingGroundLevel: guild.trainingGroundLevel,
+		recruitmentOfficeLevel: guild.recruitmentOfficeLevel,
+		recruitment: {
+			open: guild.recruitmentOpen,
+			minScore: guild.recruitmentMinScore
+		},
 		guildLevel: guild.level,
 		isChief: guild.chiefId === player.id,
 		isElder: guild.elderId === player.id,

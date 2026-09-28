@@ -279,6 +279,7 @@ export const CrowniclesIcons: {
 			shelter: string;
 			pantry: string;
 			trainingGround: string;
+			recruitmentOffice: string;
 		};
 		guildDomainNotary: string;
 		apartmentNotary: {
@@ -2762,7 +2763,8 @@ export const CrowniclesIcons: {
 			shop: "🛒",
 			shelter: "🐾",
 			pantry: "🍖",
-			trainingGround: "⚔️"
+			trainingGround: "⚔️",
+			recruitmentOffice: "📢"
 		},
 		guildDomainNotary: "📋",
 		apartmentNotary: {
