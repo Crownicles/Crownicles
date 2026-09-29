@@ -2,10 +2,10 @@ import {fireEvent, render, screen} from "@testing-library/react-native";
 import {PetExpeditionCollector} from "@/src/collectors/PetExpeditionCollector";
 import {PetExpeditionOutcome} from "@/src/collectors/PetExpeditionOutcome";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {PetExpeditionCancelRes, PetExpeditionResolveRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
+import {PetExpeditionCancelRes, PetExpeditionResolveRes, PetExpeditionStartedRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
 
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
-jest.mock("@/src/translations/i18n", () => ({i18n: {language: "fr", t: (key: string, options?: Record<string, unknown>): string => key === "app:expedition.locationName" ? String(options?.name) : key}}));
+jest.mock("@/src/translations/i18n", () => ({i18n: {language: "fr", tArray: (): string[] => [], t: (key: string, options?: Record<string, unknown>): string => key === "app:expedition.locationName" ? String(options?.name) : key}}));
 
 const PET = {petTypeId: 1, petSex: "m" as const, petNickname: "Aster"};
 const OPTION = {id: "trip", displayDurationMinutes: 120, mapLocationId: 12, locationType: "forest", riskCategory: "moderate", difficultyCategory: "easy", rewardCategory: "meager", foodCost: 3};
@@ -59,11 +59,20 @@ describe("expedition collectors", () => {
 		expect(screen.queryByTestId("event-effect")).toBeNull();
 	});
 
+	it("announces a departure with a toast, the pet page following the trip from there", async () => {
+		const packet = Object.assign(new PetExpeditionStartedRes(), {success: true, expedition: {pet: PET, locationType: "forest", mapLocationId: 12, returnTime: Date.now() + 60_000, riskCategory: "low"}, insufficientFood: true, insufficientFoodCause: "guildNoFood"});
+		await render(<PetExpeditionOutcome outcome={{kind: "started", packet}} onContinue={jest.fn()} />);
+		expect(screen.getByText("app:expedition.outcomes.started")).toBeTruthy();
+		expect(screen.getByText("app:expedition.insufficientFood.guildNoFood")).toBeTruthy();
+		expect(screen.queryByText("app:common.back")).toBeNull();
+	});
+
 	it("displays the granted rewards without applying another partial-success multiplier", async () => {
 		const packet = Object.assign(new PetExpeditionResolveRes(), {success: true, partialSuccess: true, totalFailure: false, pet: PET, expedition: {locationType: "forest", mapLocationId: 12}, rewards: {money: 53, experience: 29, points: 37, tokens: 2}, loveChange: 3, petLikedExpedition: true});
 		await render(<PetExpeditionOutcome outcome={{kind: "resolved", packet}} onContinue={jest.fn()} />);
-		expect(screen.getByText("29")).toBeTruthy();
-		expect(screen.getByText("37")).toBeTruthy();
-		expect(screen.getByText("app:expedition.resolved.partial")).toBeTruthy();
+		expect(screen.getByText("+29")).toBeTruthy();
+		expect(screen.getByText("+37")).toBeTruthy();
+		expect(screen.getByText("app:expedition.resolvedTitles.partial")).toBeTruthy();
+		expect(screen.getByText("commands:petExpedition.partialSuccesscommands:petExpedition.loveChangePartialPositivecommands:petExpedition.petLikedExpedition")).toBeTruthy();
 	});
 });

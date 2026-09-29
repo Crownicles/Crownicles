@@ -76,13 +76,32 @@ describe("pet care screens", () => {
 		await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(PetExpeditionReq));
 	});
 
-	it("replaces the meal with the expedition while the pet is away", async () => {
-		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
-		const expedition = {startTime: Date.now(), endTime: Date.now() + 60_000, riskRate: 1, difficulty: 1, locationType: "forest" as const, mapLocationId: 3, foodConsumed: 6};
-		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: true, expeditionInProgress: expedition})} onPage={jest.fn()} /></QueryClientProvider>);
-		expect(screen.getByText("app:expedition.titles.expeditionProgress")).toBeTruthy();
+	it("follows the expedition right on the pet page instead of the meal, with the recall under it", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		const expedition = {startTime: Date.now(), endTime: Date.now() + 60_000, riskRate: 1, difficulty: 1, locationType: "forest" as const, mapLocationId: 3, foodConsumed: 6, riskCategory: "low"};
+		const onPage = await renderOverview({expeditionInProgress: expedition});
+		expect(screen.getByTestId("pet-expedition-journey")).toBeTruthy();
+		expect(screen.getByText("app:expedition.away.exploring")).toBeTruthy();
+		expect(screen.queryByTestId("pet-standing")).toBeNull();
 		expect(screen.queryByText("app:pet.care.feedPet")).toBeNull();
 		expect(screen.queryByText("app:pet.care.caress")).toBeNull();
+		expect(screen.queryByText("app:pet.sale.title")).toBeNull();
+		expect(screen.queryByText("app:pet.management.free")).toBeNull();
+		await fireEvent.press(screen.getByText("app:pet.care.rename"));
+		expect(onPage).toHaveBeenCalledWith("rename");
+		await fireEvent.press(screen.getByText("app:expedition.recall"));
+		await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(PetExpeditionReq));
+	});
+
+	it("offers to claim the rewards once the pet is due back, and claims them without another question", async () => {
+		const finished = Object.assign(new ReactionCollectorCreation(), {id: "finished", endTime: Date.now() + 60_000, data: {type: "expeditionFinished", data: {pet: {petTypeId: 1, petSex: "m"}, locationType: "forest", riskCategory: "low"}}, reactions: [{type: "unknown", data: {serverType: "future"}}, {type: "expeditionClaim", data: {}}]});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: finished});
+		const expedition = {startTime: Date.now() - 120_000, endTime: Date.now() - 1_000, riskRate: 1, difficulty: 1, locationType: "forest" as const, mapLocationId: 3, foodConsumed: 6, riskCategory: "low"};
+		await renderOverview({expeditionInProgress: expedition});
+		expect(screen.getByText("app:expedition.away.back")).toBeTruthy();
+		expect(screen.queryByText("app:expedition.recall")).toBeNull();
+		await fireEvent.press(screen.getByText("app:expedition.claim"));
+		await waitFor(() => expect(mockAnswerWithoutShowing).toHaveBeenCalledWith("finished", 1));
 	});
 
 	it("offers a pet to the chosen rank without changing the price", async () => {

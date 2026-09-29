@@ -1,10 +1,13 @@
 import {ReactNode} from "react";
 import {View} from "react-native";
+import {usePathname} from "expo-router";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
+import {ItemAcceptCollector, ItemChoiceCollector} from "@/src/collectors/ItemRewardCollector";
+import {ModalSurface, SheetModal} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
-import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, SELL_DATA_KINDS, GUILD_DATA_KINDS, FIGHT_DATA_KINDS, ReactionCollectorDataKind,PLAYER_UTILITY_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, ITEM_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, SELL_DATA_KINDS, GUILD_DATA_KINDS, FIGHT_DATA_KINDS, ReactionCollectorDataKind,PLAYER_UTILITY_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {EquipCollector} from "@/src/collectors/EquipCollector";
 import {SellCollector} from "@/src/collectors/SellCollector";
 import {useInventoryOutcome} from "@/src/store/useInventoryOutcome";
@@ -89,6 +92,23 @@ function PendingOutcome<Outcome>({state, Content}: {state: {outcome: Outcome | n
 	return state.outcome === null ? null : <Content outcome={state.outcome} onContinue={state.clear} />;
 }
 
+const ITEM_KINDS = new Set<ReactionCollectorDataKind>([ITEM_DATA_KINDS.CHOICE, ITEM_DATA_KINDS.ACCEPT]);
+
+/**
+ * An item found away from the road, such as on an expedition, still has to be kept or left. The
+ * adventure page asks on its own; elsewhere it is asked here, once the result that brought it is read.
+ */
+function StrayItemCollector({waiting}: {waiting: boolean}): ReactNode {
+	const pathname = usePathname();
+	const {open, react, isAnswerPending} = useCollectors();
+	const collector = open.find(candidate => ITEM_KINDS.has(candidate.data.type));
+	if (waiting || pathname === "/" || !collector) return null;
+	const Component = collector.data.type === ITEM_DATA_KINDS.CHOICE ? ItemChoiceCollector : ItemAcceptCollector;
+	return <SheetModal visible onRequestClose={(): void => undefined}>
+		<ModalSurface><Component collector={collector} onChoose={(reactionIndex): void => react(collector.id, reactionIndex)} submitting={isAnswerPending(collector.id)} /></ModalSurface>
+	</SheetModal>;
+}
+
 function PendingOutcomes(): ReactNode {
 	const inventoryOutcome = useInventoryOutcome();
 	const classOutcome = useClassOutcome();
@@ -99,16 +119,22 @@ function PendingOutcomes(): ReactNode {
 	const domainOutcome = useGuildDomainOutcome();
 	const leagueOutcome = useLeagueRewardOutcome();
 	const utilityOutcome = usePlayerUtilityOutcome();
+	// iOS presents one modal at a time: when an action yields several results, they are read one after the other.
+	const outcomes: {state: {outcome: unknown}; node: ReactNode}[] = [
+		{state: utilityOutcome, node: <PendingOutcome state={utilityOutcome} Content={PlayerUtilityOutcome} />},
+		{state: leagueOutcome, node: <PendingOutcome state={leagueOutcome} Content={LeagueRewardOutcome} />},
+		{state: domainOutcome, node: <PendingOutcome state={domainOutcome} Content={GuildDomainOutcome} />},
+		{state: guildOutcome, node: <PendingOutcome state={guildOutcome} Content={GuildOutcome} />},
+		{state: managementOutcome, node: <PendingOutcome state={managementOutcome} Content={PetManagementOutcome} />},
+		{state: expeditionOutcome, node: <PendingOutcome state={expeditionOutcome} Content={PetExpeditionOutcome} />},
+		{state: feedOutcome, node: <PendingOutcome state={feedOutcome} Content={PetFeedOutcome} />},
+		{state: classOutcome, node: <PendingOutcome state={classOutcome} Content={ClassOutcome} />},
+		{state: inventoryOutcome, node: <PendingOutcome state={inventoryOutcome} Content={InventoryOutcome} />}
+	];
+	const current = outcomes.find(entry => entry.state.outcome !== null);
 	return <>
-		<PendingOutcome state={utilityOutcome} Content={PlayerUtilityOutcome} />
-		<PendingOutcome state={leagueOutcome} Content={LeagueRewardOutcome} />
-		<PendingOutcome state={domainOutcome} Content={GuildDomainOutcome} />
-		<PendingOutcome state={guildOutcome} Content={GuildOutcome} />
-		<PendingOutcome state={managementOutcome} Content={PetManagementOutcome} />
-		<PendingOutcome state={expeditionOutcome} Content={PetExpeditionOutcome} />
-		<PendingOutcome state={feedOutcome} Content={PetFeedOutcome} />
-		<PendingOutcome state={classOutcome} Content={ClassOutcome} />
-		<PendingOutcome state={inventoryOutcome} Content={InventoryOutcome} />
+		{current?.node ?? null}
+		<StrayItemCollector waiting={current !== undefined} />
 	</>;
 }
 

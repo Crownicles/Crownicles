@@ -1104,14 +1104,15 @@
     "cloneFound": "Talisman de clonage obtenu",
     "itemFound": "Équipement trouvé",
     "plannedDuration": "Durée annoncée avant le départ : {{duration}}",
-    "overview": "Votre familier est en expédition. Retour prévu le {{date}}.",
-    "loveChange": "Variation du moral",
+    "away": {
+      "exploring": "{{pet}} explore la région · retour prévu le {{date}}",
+      "back": "{{pet}} est de retour : ses trouvailles n'attendent plus que vous."
+    },
     "love": "Points d'amour",
-    "liked": "Votre familier a apprécié cette destination.",
     "badge": "Badge obtenu : {{badge}}",
     "titles": {"expeditionChoice": "Choisir une expédition", "expeditionProgress": "Expédition en cours", "expeditionFinished": "Expédition terminée"},
     "outcomes": {"status": "Expédition", "started": "Départ en expédition", "cancelled": "Départ annulé", "recalled": "Expédition interrompue", "resolved": "Résultat de l'expédition", "error": "Expédition indisponible"},
-    "resolved": {"success": "Votre familier a terminé son expédition avec succès.", "partial": "Votre familier revient avec une partie des récompenses.", "failure": "Votre familier revient sans récompense de cette expédition."},
+    "resolvedTitles": {"success": "Retour triomphal", "partial": "Retour mitigé", "failure": "Expédition échouée"},
     "insufficientFood": {"noGuild": "Sans provisions de guilde, les risques de cette expédition sont accrus.", "guildNoFood": "Les provisions de la guilde étaient insuffisantes. Les risques de cette expédition sont accrus."},
     "errors": {
       "noPet": "Aucun familier ne peut partir en expédition.",

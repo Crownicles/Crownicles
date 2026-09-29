@@ -6,6 +6,7 @@ import {
 import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePackets";
 import { PetRes } from "../../../../../WsPackets/src/fromServer/pet/PetRes";
 import { PetNotFound } from "../../../../../WsPackets/src/fromServer/pet/PetNotFound";
+import { getRiskCategoryName } from "../../../../../Lib/src/utils/ExpeditionUtils";
 
 export default class PetCommandServerTranslator {
 	@fromServerTranslator(CommandPetPacketRes, PetRes)
@@ -14,7 +15,13 @@ export default class PetCommandServerTranslator {
 			pet: packet.pet,
 			...packet.hasTalisman === undefined ? {} : { hasTalisman: packet.hasTalisman },
 			...packet.feedAvailableAt === undefined ? {} : { feedAvailableAt: packet.feedAvailableAt },
-			...packet.expeditionInProgress === undefined ? {} : { expeditionInProgress: packet.expeditionInProgress },
+			...packet.expeditionInProgress === undefined
+				? {}
+				: {
+					expeditionInProgress: {
+						...packet.expeditionInProgress, riskCategory: getRiskCategoryName(packet.expeditionInProgress.riskRate)
+					}
+				},
 			...packet.expeditionBlocker === undefined ? {} : { expeditionBlocker: packet.expeditionBlocker }
 		});
 	}

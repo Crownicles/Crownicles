@@ -30,6 +30,9 @@ export type PetExpedition = {
 	mapLocationId: number;
 	foodConsumed: number;
 	isDistantExpedition?: boolean;
+
+	/** Display bucket of `riskRate`, named as the expedition screens name it. */
+	riskCategory: string;
 };
 
 export class PetRes extends FromServerPacket {

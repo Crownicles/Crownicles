@@ -75,6 +75,9 @@ export const HEARTBROKEN_FRAMES: DanceFrames = {lift: [0, 2, 4, 6, 7, 7], drift:
 /** A departure called off for free only earns a puzzled tilt of the head. */
 export const PUZZLED_FRAMES: DanceFrames = {lift: [0, -2, -3, -3, -2, -2], drift: STILL, tilt: [0, 8, 14, 14, 12, 12], scale: STEADY};
 
+/** Every species comes home from a successful trip bounding with joy. */
+export const TRIUMPH_FRAMES: DanceFrames = DANCE_FRAMES[PET_DANCES.HOP];
+
 /** How much the meal pleased the pet decides how long it keeps dancing, and how much it sparkles. */
 const FEED_ENCORES = {
 	[PET_FEED_RESULTS.DISLIKE]: {repeats: 1, sparkles: 0},

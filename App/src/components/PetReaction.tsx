@@ -2,7 +2,7 @@ import {ReactNode, useEffect, useState} from "react";
 import {Animated, Easing, View} from "react-native";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {PetFeedResult} from "ws-packets/src/objects/PetFood";
-import {DANCE_TIMELINE, DanceFrames, EMPTY_BOWL_FRAMES, HEARTBROKEN_FRAMES, IMPATIENCE_FRAMES, PUZZLED_FRAMES, caressFrames, feastFrames, feedEncore} from "@/src/display/PetDance";
+import {DANCE_TIMELINE, DanceFrames, EMPTY_BOWL_FRAMES, HEARTBROKEN_FRAMES, IMPATIENCE_FRAMES, PUZZLED_FRAMES, TRIUMPH_FRAMES, caressFrames, feastFrames, feedEncore} from "@/src/display/PetDance";
 import {petIcon} from "@/src/display/PetDisplay";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {Heart, LucideIcon, Sparkles} from "@/src/design/FightIcons";
@@ -24,6 +24,8 @@ const STOMP_PAUSE = 700;
 const LET_DOWN_DURATION = 1400;
 const BROKEN_HEART_SIZE = 20;
 const BROKEN_HEART_RISE = -22;
+const TRIUMPH_HOPS = 2;
+const TRIUMPH_SPARKLES = 3;
 
 /** The motes drift out of the pet in mismatched sizes, so a handful never looks like a row. */
 const MOTE_SIZES = [14, 10, 16] as const;
@@ -149,6 +151,17 @@ export function LetDownPet({emoji, size, play, forgiving}: {emoji: string; size:
 			opacity: progress.interpolate({inputRange: [0, 0.3, 0.75, 1], outputRange: [0, 1, 1, 0]}),
 			transform: [{translateY: progress.interpolate({inputRange: [0, 1], outputRange: [0, BROKEN_HEART_RISE]})}]
 		}]}><TwemojiIcon emoji={heart} size={BROKEN_HEART_SIZE} /></Animated.View> : null}
+	</View>;
+}
+
+/** Back from a successful expedition, the pet bounds home in a shower of sparkles. */
+export function TriumphantPet({emoji, size, play}: {emoji: string; size: number; play: number}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
+	const progress = useDance(TRIUMPH_HOPS, play);
+	return <View style={styles.stage} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="pet-triumph">
+		<DanceMotes count={TRIUMPH_SPARKLES} icon={Sparkles} color={colors.gold} progress={progress} />
+		<DancingEmoji emoji={emoji} size={size} frames={TRIUMPH_FRAMES} progress={progress} />
 	</View>;
 }
 

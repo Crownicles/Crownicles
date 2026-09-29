@@ -1,11 +1,14 @@
 import {ReactNode} from "react";
+import {View} from "react-native";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
-import {PetRes} from "ws-packets/src/fromServer/pet/PetRes";
+import {PetExpedition, PetRes} from "ws-packets/src/fromServer/pet/PetRes";
 import {PetNotFound} from "ws-packets/src/fromServer/pet/PetNotFound";
 import {PetFeedReq} from "ws-packets/src/fromClient/PetCareReq";
 import {PetFeedRes} from "ws-packets/src/fromServer/pet/PetCareRes";
 import {PetExpeditionReq} from "ws-packets/src/fromClient/PetExpeditionReq";
 import {PetExpeditionErrorRes, PetExpeditionRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
+import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import {EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameDeadline} from "@/src/store/useGameDeadline";
 import {PetActions, usePetActions} from "@/src/store/usePetActions";
@@ -14,11 +17,13 @@ import {CommandMenu, CommandMenuState, useCommandMenus} from "@/src/store/useInv
 import {FightGauge} from "@/src/components/FightGauge";
 import {PetCaress} from "@/src/components/PetReaction";
 import {PET_MANAGEMENT_MENUS} from "@/src/components/PetManagement";
+import {PetExpeditionJourney} from "@/src/components/PetExpeditionJourney";
+import {useSecondsLeft} from "@/src/collectors/CollectorPrompt";
 import {Button, ButtonRow, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, Lock, LockHint, Refusal, Standing} from "@/src/design/Sections";
-import {Clock3, Flag, Flame, Heart, HeartPulse, LogOut, LucideIcon, PawPrint, Utensils, Wind} from "@/src/design/FightIcons";
-import {PaletteColor} from "@/src/design/Theme";
-import {useColors} from "@/src/design/ThemeContext";
+import {Clock3, Flame, Gift, Heart, HeartPulse, LogOut, LucideIcon, PawPrint, Utensils, Wind} from "@/src/design/FightIcons";
+import {PaletteColor, Theme} from "@/src/design/Theme";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 import {AppIcons} from "@/src/AppIcons";
 import {petMood, petName, petRarity, petSex, petTypeName} from "@/src/display/PetDisplay";
 import {activeEffect, effectLock} from "@/src/display/CommandRejection";
@@ -34,6 +39,10 @@ const EXPEDITION_MENU: CommandMenu = {request: PetExpeditionReq, emptyPacket: Pe
 /** The moral ladder Core walks a pet up, from feisty to trained. */
 const MOOD_STEPS = 5;
 const PET_EMBLEM_SIZE = 40;
+
+const useStyles = createStyles(() => ({
+	awayAction: {marginTop: Theme.spacing.lg}
+}));
 
 /** How each rung of that ladder reads at a glance, from a hostile pet to a devoted one. */
 const MOOD_LOOKS: Record<number, {icon: LucideIcon; color: PaletteColor}> = {
@@ -65,20 +74,28 @@ function feedLock(packet: PetRes, alteration: Lock | undefined): Lock | undefine
 		: undefined;
 }
 
+/** The banner already says what it does, so Core's claim question is answered without being shown. */
+function claimReaction(collector: ReactionCollectorCreation): number | null {
+	if (collector.data.type !== EXPEDITION_DATA_KINDS.FINISHED) return null;
+	const index = collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CLAIM);
+	return index < 0 ? null : index;
+}
+
+/** Once the pet is due back, welcoming it home is the one thing left to do; before that, the recall sits with the other actions. */
+function PetAwayAction({expedition, menus}: {expedition: PetExpedition; menus: CommandMenuState}): ReactNode {
+	const styles = useStyles();
+	const back = useSecondsLeft(expedition.endTime) === 0;
+	return back
+		? <View style={styles.awayAction}><ActionBanner icon={Gift} label={i18n.t("app:expedition.claim")} pending={menus.pending} onPress={(): void => {
+			menus.open(EXPEDITION_MENU, undefined, claimReaction).catch(console.error);
+		}} /></View>
+		: null;
+}
+
 /** The single thing to do with the pet: follow its expedition, or else feed it. */
 function PetMainAction({packet, menus, alteration, onExpedition}: {packet: PetRes; menus: CommandMenuState; alteration: Lock | undefined; onExpedition: () => void}): ReactNode {
 	const expedition = packet.expeditionInProgress;
-	if (expedition) {
-		return <>
-			<ActionBanner
-				icon={Flag}
-				label={i18n.t("app:expedition.titles.expeditionProgress")}
-				pending={menus.pending}
-				onPress={onExpedition}
-			/>
-			<Note>{i18n.t("app:expedition.overview", {date: missionDate(expedition.endTime)})}</Note>
-		</>;
-	}
+	if (expedition) return <PetAwayAction expedition={expedition} menus={menus} />;
 	const lock = feedLock(packet, alteration);
 	return <ActionBanner
 		icon={Utensils}
@@ -144,6 +161,7 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 	const menus = useCommandMenus();
 	const patience = usePetPatience();
 	useGameDeadline(GAME_ENTITIES.PET, expedition?.endTime ?? null);
+	const recallable = useSecondsLeft(expedition?.endTime ?? 0) > 0;
 	const expeditionBlocked = expeditionLock(packet);
 	const alteration = usePlayerAlteration();
 	const openExpedition = (): void => {
@@ -151,15 +169,18 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 	};
 	const message = actions.message ?? menus.message;
 	return <>
-		<PetStanding pet={pet} strokes={patience.strokes} hadEnough={patience.hadEnough} />
+		{expedition
+			? <PetExpeditionJourney pet={pet} expedition={expedition} />
+			: <PetStanding pet={pet} strokes={patience.strokes} hadEnough={patience.hadEnough} />}
 		{message ? <Refusal>{message}</Refusal> : null}
 		<PetMainAction packet={packet} menus={menus} alteration={alteration} onExpedition={openExpedition} />
 		<QuickActions>
 			{expedition ? null : <PetHomeActions actions={actions} patience={patience} expeditionLocked={expeditionBlocked !== undefined} menus={menus} onExpedition={openExpedition} />}
+			{recallable ? <QuickAction icon={AppIcons.getIcon("expedition.recall")} disabled={menus.pending} onPress={openExpedition}>{i18n.t("app:expedition.recall")}</QuickAction> : null}
 			<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={(): void => onPage("rename")}>{i18n.t("app:pet.care.rename")}</QuickAction>
-			<QuickAction icon={AppIcons.getIcon("unitValues.money")} disabled={alteration !== undefined} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>
+			{expedition ? null : <QuickAction icon={AppIcons.getIcon("unitValues.money")} disabled={alteration !== undefined} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>}
 		</QuickActions>
 		<PetLocks expedition={expeditionBlocked} hadEnough={patience.hadEnough} pet={pet} />
-		<PetRelease menus={menus} />
+		{expedition ? null : <PetRelease menus={menus} />}
 	</>;
 }

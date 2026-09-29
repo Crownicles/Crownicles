@@ -1,14 +1,13 @@
 import {ReactNode} from "react";
 import {Pressable, Text, View} from "react-native";
-import {ExpeditionFood, ExpeditionOption, ExpeditionProgress, ExpeditionRewards} from "ws-packets/src/objects/PetExpedition";
+import {ExpeditionFood, ExpeditionOption, ExpeditionProgress} from "ws-packets/src/objects/PetExpedition";
 import {expeditionLocationIcon, expeditionLocationName, expeditionLocationTitle, expeditionPetName, expeditionRisk} from "@/src/display/PetExpedition";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
-import {formatMoney, formatNumber} from "@/src/display/Amounts";
-import {materialName} from "@/src/display/Resources";
+import {formatNumber} from "@/src/display/Amounts";
 import {missionDate} from "@/src/display/Missions";
 import {useSecondsLeft} from "@/src/collectors/CollectorPrompt";
 import {i18n} from "@/src/translations/i18n";
-import {EntryRow, ExpandableList, Fact, Gauge} from "@/src/design/Sections";
+import {ExpandableList, Fact, Gauge} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Theme} from "@/src/design/Theme";
 import {AppIcons} from "@/src/AppIcons";
@@ -102,18 +101,4 @@ export function ExpeditionProgressDetails({data}: {data: ExpeditionProgress}): R
 		{data.durationMinutes !== undefined ? <Fact label={i18n.t("app:expedition.duration")} value={formatDurationMinutes(data.durationMinutes)} /> : null}
 		<ExpeditionFoodDetails amount={data.foodConsumed} details={data.foodConsumedDetails} />
 	</ExpandableList>;
-}
-
-export function ExpeditionRewardDetails({rewards}: {rewards: ExpeditionRewards}): ReactNode {
-	return <>
-		<ExpandableList>
-			<Fact label={i18n.t("app:profile.fields.money")} value={formatMoney(rewards.money)} />
-			<Fact label={i18n.t("app:profile.fields.experience")} value={formatNumber(rewards.experience)} />
-			<Fact label={i18n.t("app:profile.fields.score")} value={formatNumber(rewards.points)} />
-			{rewards.tokens !== undefined ? <Fact label={i18n.t("app:profile.fields.tokens")} value={formatNumber(rewards.tokens)} /> : null}
-			{rewards.materialLoot?.map(material => <Fact key={material.materialId} label={materialName(material.materialId)} value={formatNumber(material.quantity)} />)}
-		</ExpandableList>
-		{rewards.cloneTalismanFound ? <EntryRow title={i18n.t("app:expedition.cloneFound")} /> : null}
-		{rewards.itemGiven ? <EntryRow title={i18n.t("app:expedition.itemFound")} /> : null}
-	</>;
 }

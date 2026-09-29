@@ -135,6 +135,7 @@ describe("packet contracts", () => {
 			drinkUnavailable: true,
 			inventoryResponse: true,
 			petResponse: true,
+			petExpeditionInProgress: true,
 			pingResponse: true,
 			profileResponse: true,
 			reportTravelSummary: true,

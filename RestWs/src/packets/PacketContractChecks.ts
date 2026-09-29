@@ -171,8 +171,12 @@ type InventoryResponseContract = Assert<IsEqual<
 	WireShape<WirePacketFields<InventoryRes>>
 >>;
 type PetResponseContract = Assert<IsEqual<
-	WireShape<Omit<CommandPetPacketRes, "askedKeycloakId">>,
-	WireShape<WirePacketFields<PetRes>>
+	WireShape<Omit<CommandPetPacketRes, "askedKeycloakId" | "expeditionInProgress">>,
+	WireShape<Omit<WirePacketFields<PetRes>, "expeditionInProgress">>
+>>;
+type PetExpeditionInProgressContract = Assert<IsEqual<
+	WireShape<NonNullable<CommandPetPacketRes["expeditionInProgress"]>>,
+	WireShape<Omit<NonNullable<PetRes["expeditionInProgress"]>, "riskCategory">>
 >>;
 type PingResponseContract = Assert<IsEqual<
 	WireShape<RenameField<CommandPingPacketRes, "clientTime", "time">>,
@@ -318,6 +322,7 @@ export const packetContractChecks: {
 	drinkUnavailable: DrinkUnavailableContract;
 	inventoryResponse: InventoryResponseContract;
 	petResponse: PetResponseContract;
+	petExpeditionInProgress: PetExpeditionInProgressContract;
 	pingResponse: PingResponseContract;
 	profileResponse: ProfileResponseContract;
 	reportTravelSummary: ReportTravelSummaryContract;
@@ -373,6 +378,7 @@ export const packetContractChecks: {
 	drinkUnavailable: true,
 	inventoryResponse: true,
 	petResponse: true,
+	petExpeditionInProgress: true,
 	pingResponse: true,
 	profileResponse: true,
 	reportTravelSummary: true,
