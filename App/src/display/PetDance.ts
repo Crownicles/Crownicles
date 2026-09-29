@@ -66,6 +66,15 @@ export function caressFrames(pet: OwnedPet, hadEnough = false): DanceFrames {
 /** Every species noses an empty bowl the same way before its shoulders drop; the bowl sits on the side the emoji faces. */
 export const EMPTY_BOWL_FRAMES: DanceFrames = DANCE_FRAMES[PET_DANCES.SNIFF];
 
+/** Stamping from one foot to the other, while the pet waits to be sent off. */
+export const IMPATIENCE_FRAMES: DanceFrames = {lift: [0, -6, 0, -6, 0, 0], drift: STILL, tilt: [0, -8, 0, 8, 0, 0], scale: [1, 1.03, 0.95, 1.03, 0.97, 1]};
+
+/** A pet let down lowers its head and shrinks away, and stays that way: these frames end off the resting pose. */
+export const HEARTBROKEN_FRAMES: DanceFrames = {lift: [0, 2, 4, 6, 7, 7], drift: [0, -2, -4, -6, -7, -7], tilt: [0, -5, -9, -12, -13, -13], scale: [1, 0.98, 0.96, 0.94, 0.93, 0.93]};
+
+/** A departure called off for free only earns a puzzled tilt of the head. */
+export const PUZZLED_FRAMES: DanceFrames = {lift: [0, -2, -3, -3, -2, -2], drift: STILL, tilt: [0, 8, 14, 14, 12, 12], scale: STEADY};
+
 /** How much the meal pleased the pet decides how long it keeps dancing, and how much it sparkles. */
 const FEED_ENCORES = {
 	[PET_FEED_RESULTS.DISLIKE]: {repeats: 1, sparkles: 0},

@@ -2,7 +2,7 @@ import {ReactNode, useEffect, useState} from "react";
 import {Animated, Easing, View} from "react-native";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {PetFeedResult} from "ws-packets/src/objects/PetFood";
-import {DANCE_TIMELINE, DanceFrames, EMPTY_BOWL_FRAMES, caressFrames, feastFrames, feedEncore} from "@/src/display/PetDance";
+import {DANCE_TIMELINE, DanceFrames, EMPTY_BOWL_FRAMES, HEARTBROKEN_FRAMES, IMPATIENCE_FRAMES, PUZZLED_FRAMES, caressFrames, feastFrames, feedEncore} from "@/src/display/PetDance";
 import {petIcon} from "@/src/display/PetDisplay";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {Heart, LucideIcon, Sparkles} from "@/src/design/FightIcons";
@@ -19,6 +19,11 @@ const FEAST_PET_SIZE = 52;
 const EMPTY_BOWL_SNIFFS = 2;
 const BOWL_SIZE = 34;
 const EMPTY_BOWL_OPACITY = 0.55;
+const STOMP_DURATION = 520;
+const STOMP_PAUSE = 700;
+const LET_DOWN_DURATION = 1400;
+const BROKEN_HEART_SIZE = 20;
+const BROKEN_HEART_RISE = -22;
 
 /** The motes drift out of the pet in mismatched sizes, so a handful never looks like a row. */
 const MOTE_SIZES = [14, 10, 16] as const;
@@ -28,6 +33,7 @@ const useStyles = createStyles(() => ({
 	feast: {height: 78, alignItems: "center", justifyContent: "center"},
 	stage: {alignItems: "center", justifyContent: "center"},
 	bowlScene: {flexDirection: "row", alignItems: "flex-end", justifyContent: "center", gap: Theme.spacing.lg, paddingVertical: Theme.spacing.md},
+	brokenHeart: {position: "absolute", top: -6, right: -10},
 	motes: {position: "absolute", top: -18, flexDirection: "row", alignItems: "flex-end", gap: Theme.spacing.sm}
 }));
 
@@ -48,7 +54,7 @@ function useDance(repeats: number, play: number): Animated.Value {
 	return progress;
 }
 
-function DancingPet({pet, size, frames, progress}: {pet: OwnedPet; size: number; frames: DanceFrames; progress: Animated.Value}): ReactNode {
+function DancingEmoji({emoji, size, frames, progress}: {emoji: string; size: number; frames: DanceFrames; progress: Animated.Value}): ReactNode {
 	const timeline = [...DANCE_TIMELINE];
 	return <Animated.View style={{
 		transform: [
@@ -57,7 +63,29 @@ function DancingPet({pet, size, frames, progress}: {pet: OwnedPet; size: number;
 			{rotate: progress.interpolate({inputRange: timeline, outputRange: frames.tilt.map(angle => `${angle}deg`)})},
 			{scale: progress.interpolate({inputRange: timeline, outputRange: [...frames.scale]})}
 		]
-	}}><TwemojiIcon emoji={petIcon(pet)} size={size} /></Animated.View>;
+	}}><TwemojiIcon emoji={emoji} size={size} /></Animated.View>;
+}
+
+function DancingPet({pet, size, frames, progress}: {pet: OwnedPet; size: number; frames: DanceFrames; progress: Animated.Value}): ReactNode {
+	return <DancingEmoji emoji={petIcon(pet)} size={size} frames={frames} progress={progress} />;
+}
+
+/** The pet stamps on the spot for as long as the screen waits for a destination. */
+export function ImpatientPet({emoji, size}: {emoji: string; size: number}): ReactNode {
+	const reducedMotion = useReducedMotion();
+	const [progress] = useState(() => new Animated.Value(0));
+	useEffect(() => {
+		if (reducedMotion) return undefined;
+		const stomp = Animated.loop(Animated.sequence([
+			Animated.timing(progress, {toValue: 1, duration: STOMP_DURATION, easing: Easing.linear, useNativeDriver: true}),
+			Animated.delay(STOMP_PAUSE)
+		]));
+		stomp.start();
+		return (): void => stomp.stop();
+	}, [progress, reducedMotion]);
+	return <View accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="pet-impatience">
+		<DancingEmoji emoji={emoji} size={size} frames={IMPATIENCE_FRAMES} progress={progress} />
+	</View>;
 }
 
 /** What the pet gives off while it dances: sparkles over a good meal, hearts under a hand. */
@@ -99,6 +127,28 @@ export function PetEmptyBowl({pet, play}: {pet: OwnedPet | undefined; play: numb
 	return <View style={styles.bowlScene} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="pet-empty-bowl">
 		{bowl ? <TwemojiIcon emoji={bowl} size={BOWL_SIZE} opacity={EMPTY_BOWL_OPACITY} /> : null}
 		{pet ? <DancingPet pet={pet} size={FEAST_PET_SIZE} frames={EMPTY_BOWL_FRAMES} progress={progress} /> : null}
+	</View>;
+}
+
+/** Called back or left at home: the pet hangs its head as a heart breaks over it, or only tilts it when the change of plan cost nothing. */
+export function LetDownPet({emoji, size, play, forgiving}: {emoji: string; size: number; play: number; forgiving: boolean}): ReactNode {
+	const styles = useStyles();
+	const reducedMotion = useReducedMotion();
+	const [progress] = useState(() => new Animated.Value(0));
+	useEffect(() => {
+		if (play === 0) return undefined;
+		progress.setValue(0);
+		const droop = Animated.timing(progress, {toValue: 1, duration: reducedMotion ? REDUCED_DANCE_DURATION : LET_DOWN_DURATION, easing: Easing.out(Easing.quad), useNativeDriver: true});
+		droop.start();
+		return (): void => droop.stop();
+	}, [progress, play, reducedMotion]);
+	const heart = forgiving ? null : AppIcons.getIconOrNull("expedition.disliked");
+	return <View style={styles.stage} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="pet-let-down">
+		<DancingEmoji emoji={emoji} size={size} frames={forgiving ? PUZZLED_FRAMES : HEARTBROKEN_FRAMES} progress={progress} />
+		{heart ? <Animated.View style={[styles.brokenHeart, {
+			opacity: progress.interpolate({inputRange: [0, 0.3, 0.75, 1], outputRange: [0, 1, 1, 0]}),
+			transform: [{translateY: progress.interpolate({inputRange: [0, 1], outputRange: [0, BROKEN_HEART_RISE]})}]
+		}]}><TwemojiIcon emoji={heart} size={BROKEN_HEART_SIZE} /></Animated.View> : null}
 	</View>;
 }
 

@@ -1,4 +1,5 @@
 import {ReactNode, useState} from "react";
+import {View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PET_FEED_DATA_KINDS, PET_FEED_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
@@ -11,11 +12,17 @@ import {CircleAlert, Clock3, Utensils} from "@/src/design/FightIcons";
 import {Note, Screen} from "@/src/design/Primitives";
 import {ActionBanner, BackButton, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Lock, LockHint, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {Theme} from "@/src/design/Theme";
+import {createStyles} from "@/src/design/ThemeContext";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
 
 const FOOD_EMBLEM_SIZE = 26;
 const PET_EMBLEM_SIZE = 34;
+
+const useStyles = createStyles(() => ({
+	decision: {marginTop: Theme.spacing.xl}
+}));
 
 type PetFeedProps = {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean};
 /** The position in the collector is the answer, so every meal carries the index it was sent at. */
@@ -62,6 +69,7 @@ function FeedAction({lock, pending, onPress}: {lock: Lock | null; pending: boole
 }
 
 function FeedMenu({collector, pet, onChoose, submitting, onClose}: PetFeedProps & {pet: OwnedPet; onClose: () => void}): ReactNode {
+	const styles = useStyles();
 	const options = feedOptions(collector);
 	const [expanded, setExpanded] = useState<number | undefined>();
 	const [answered, setAnswered] = useState(false);
@@ -98,7 +106,7 @@ function FeedMenu({collector, pet, onChoose, submitting, onClose}: PetFeedProps 
 				<FeedAction lock={lock} pending={pending} onPress={(): void => choose(option.index)} />
 			</ExpandableEntry>;
 		})}</ExpandableList>
-		{lone ? <FeedAction lock={feedLock(lone, secondsLeft === 0)} pending={pending} onPress={(): void => choose(lone.index)} /> : null}
+		{lone ? <View style={styles.decision}><FeedAction lock={feedLock(lone, secondsLeft === 0)} pending={pending} onPress={(): void => choose(lone.index)} /></View> : null}
 		<Note>{countdownLabel(secondsLeft, pending)}</Note>
 	</Screen>;
 }

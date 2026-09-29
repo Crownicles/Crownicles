@@ -6,16 +6,28 @@ export function expeditionPetName(pet: PetBasicInfo): string {
 	return pet.petNickname || i18n.t(`models:pets.${pet.petTypeId}`, {context: pet.petSex === "f" ? "female" : "male"});
 }
 
-export function expeditionPetLabel(pet: PetBasicInfo): string {
-	return i18n.t("app:pet.name", {icon: AppIcons.getIcon(`pets.${pet.petTypeId}.${pet.petSex === "f" ? "emoteFemale" : "emoteMale"}`), name: expeditionPetName(pet)});
+export function expeditionPetIcon(pet: PetBasicInfo): string {
+	return AppIcons.getIcon(`pets.${pet.petTypeId}.${pet.petSex === "f" ? "emoteFemale" : "emoteMale"}`);
 }
 
-export function expeditionLocationName(location: ExpeditionLocation): string {
+export function expeditionPetLabel(pet: PetBasicInfo): string {
+	return i18n.t("app:pet.name", {icon: expeditionPetIcon(pet), name: expeditionPetName(pet)});
+}
+
+/** The destination's own name, without its landscape emoji. */
+export function expeditionLocationTitle(location: ExpeditionLocation): string {
 	const name = location.mapLocationId === undefined
 		? i18n.t(`models:map_types.${location.locationType}.name`)
 		: i18n.t(`commands:petExpedition.mapLocationExpeditions.${location.mapLocationId}`);
-	const label = location.isDistantExpedition ? i18n.t("commands:petExpedition.distantExpeditionPrefix", {location: name}) : name;
-	return i18n.t("app:expedition.locationName", {icon: AppIcons.getIcon(`expedition.locations.${location.locationType}`), name: label});
+	return location.isDistantExpedition ? i18n.t("commands:petExpedition.distantExpeditionPrefix", {location: name}) : name;
+}
+
+export function expeditionLocationIcon(location: ExpeditionLocation): string {
+	return AppIcons.getIcon(`expedition.locations.${location.locationType}`);
+}
+
+export function expeditionLocationName(location: ExpeditionLocation): string {
+	return i18n.t("app:expedition.locationName", {icon: expeditionLocationIcon(location), name: expeditionLocationTitle(location)});
 }
 
 export function expeditionRisk(category: string): string {
