@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {PetManagementRes} from "ws-packets/src/fromServer/pet/PetManagementRes";
 import {PET_MANAGEMENT_ERRORS, PetManagementOutcome} from "ws-packets/src/objects/PetManagement";
@@ -21,5 +21,6 @@ export function usePetManagementOutcome(): OutcomeState {
 		setOutcome(isWorthShowing(packet.outcome) ? packet.outcome : null);
 		for (const entity of [GAME_ENTITIES.PET, GAME_ENTITIES.PROFILE, GAME_ENTITIES.SHELTER, GAME_ENTITIES.GUILD, GAME_ENTITIES.MISSIONS, GAME_ENTITIES.REPORT]) queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(console.error);
 	}), [queryClient]);
-	return {outcome, clear: (): void => setOutcome(null)};
+	const clear = useCallback((): void => setOutcome(null), []);
+	return {outcome, clear};
 }

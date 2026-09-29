@@ -5,10 +5,13 @@ import {PetFreeStatus, PetManagementOutcome as Outcome} from "ws-packets/src/obj
 import {Note} from "@/src/design/Primitives";
 import {formatMoney} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
-import {petName} from "@/src/display/PetDisplay";
+import {petIcon, petName} from "@/src/display/PetDisplay";
 import {expeditionPetName} from "@/src/display/PetExpedition";
 import {i18n} from "@/src/translations/i18n";
-import {ExpandableList, Fact, Sheet} from "@/src/design/Sections";
+import {ExpandableList, Fact, Sheet, Toast} from "@/src/design/Sections";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+
+const TOAST_EMBLEM_SIZE = 24;
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 function statusMessage(status: PetFreeStatus): string {
@@ -53,14 +56,30 @@ function ManagementResult({outcome}: {outcome: Outcome}): ReactNode {
 		<Note>{i18n.t("app:pet.sale.sold", {pet: petName(outcome.pet)})}</Note>
 		<Fact label={i18n.t("app:pet.sale.treasury", {guild: outcome.guildName})} value={formatMoney(outcome.treasuryEarned)} />
 	</>;
-	if (outcome.type === "transfer") return <>
-		{outcome.oldPet ? <Fact label={i18n.t("app:pet.management.deposited")} value={petName(outcome.oldPet)} /> : null}
-		{outcome.newPet ? <Fact label={i18n.t("app:pet.management.withdrawn")} value={petName(outcome.newPet)} /> : null}
-	</>;
 	return outcome.type === "freed" ? <FreedPetResult outcome={outcome} /> : null;
 }
 
+type TransferOutcome = Extract<Outcome, {type: "transfer"}>;
+
+function transferTitle(outcome: TransferOutcome): string {
+	if (outcome.oldPet && outcome.newPet) return i18n.t("app:pet.management.switched", {oldPet: petName(outcome.oldPet), newPet: petName(outcome.newPet)});
+	return outcome.newPet
+		? i18n.t("app:pet.management.withdrawnToast", {pet: petName(outcome.newPet)})
+		: i18n.t("app:pet.management.depositedToast", {pet: outcome.oldPet ? petName(outcome.oldPet) : ""});
+}
+
+/** A transfer is acknowledged in passing: the shelter already shows where each pet went. */
+function TransferToast({outcome, onContinue}: {outcome: TransferOutcome; onContinue: () => void}): ReactNode {
+	const pet = outcome.newPet ?? outcome.oldPet;
+	return <Toast
+		{...pet ? {emblem: <TwemojiIcon emoji={petIcon(pet)} size={TOAST_EMBLEM_SIZE} />} : {}}
+		title={transferTitle(outcome)}
+		onDismiss={onContinue}
+	/>;
+}
+
 export function PetManagementOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
+	if (outcome.type === "transfer") return <TransferToast outcome={outcome} onContinue={onContinue} />;
 	return <Sheet
 		caption={i18n.t("app:pet.eyebrow")}
 		title={i18n.t(`app:pet.management.outcomes.${outcome.type}`)}
