@@ -44,3 +44,15 @@ export function resolvePlayerReference(reference: string): string | null {
 		return null;
 	}
 }
+
+/** No account bears this identifier, so Core answers that the player does not exist. */
+const UNKNOWN_PLAYER = "unknown-player-reference";
+
+/**
+ * The account a client request targets through a reference: a forged or outdated one must end in
+ * "player not found", never fall back on the requester.
+ * @param reference
+ */
+export function referencedKeycloakId(reference: unknown): string {
+	return (typeof reference === "string" ? resolvePlayerReference(reference) : null) ?? UNKNOWN_PLAYER;
+}

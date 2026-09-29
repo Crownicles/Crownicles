@@ -7,6 +7,34 @@ import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
 import { MissionsController } from "../missions/MissionsController";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	GUILD_JOIN_ERRORS, GuildJoinBlocker, RecruitingGuild
+} from "../../../../Lib/src/types/GuildRecruitment";
+
+/** A guild can be found and joined on one's own only once its office is built and its doors are open. */
+export function isDiscoverable(guild: Guild): boolean {
+	return guild.recruitmentOfficeLevel > 0 && guild.recruitmentOpen;
+}
+
+function joinBlocker(guild: Guild, memberCount: number, playerScore: number): GuildJoinBlocker | undefined {
+	if (memberCount >= GuildConstants.MAX_GUILD_MEMBERS) {
+		return GUILD_JOIN_ERRORS.FULL;
+	}
+	return playerScore < guild.recruitmentMinScore ? GUILD_JOIN_ERRORS.MIN_SCORE : undefined;
+}
+
+/** A recruiting guild as a player looking for one sees it, with what stops them from joining. */
+export function recruitingGuild(guild: Guild, memberCount: number, playerScore: number): RecruitingGuild {
+	const blocker = joinBlocker(guild, memberCount, playerScore);
+	return {
+		id: guild.id,
+		name: guild.name,
+		level: guild.level,
+		memberCount,
+		minScore: guild.recruitmentMinScore,
+		...blocker ? { blocker } : {}
+	};
+}
 
 export const GUILD_ATTACH_RESULTS = {
 	OK: "OK",

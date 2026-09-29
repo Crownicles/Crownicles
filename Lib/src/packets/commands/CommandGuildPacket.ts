@@ -3,6 +3,7 @@ import {
 } from "../CrowniclesPacket";
 import { GuildMember } from "../../types/GuildMember";
 import { GuildMembership } from "../../types/GuildMembership";
+import { RecruitingGuild } from "../../types/GuildRecruitment";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandGuildPacketReq extends CrowniclesPacket {
@@ -41,5 +42,8 @@ export class CommandGuildPacketRes extends CrowniclesPacket {
 
 		/** Only sent when the asking player belongs to this guild, since it describes their own standing in it. */
 		membership?: GuildMembership;
+
+		/** Only sent to a player without a guild, when this one recruits through its office. */
+		recruitment?: RecruitingGuild;
 	};
 }

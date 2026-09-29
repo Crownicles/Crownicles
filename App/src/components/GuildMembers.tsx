@@ -1,12 +1,15 @@
 import {ReactNode, useState} from "react";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {GuildInviteReq, GuildKickReq, GuildPromoteReq, GuildDemoteReq} from "ws-packets/src/fromClient/GuildManagementReq";
+import {GuildInviteReq, GuildInvitePlayerReq, GuildKickReq, GuildPromoteReq, GuildDemoteReq} from "ws-packets/src/fromClient/GuildManagementReq";
 import {JoinBoatReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
 import {GuildCommandRes} from "ws-packets/src/fromServer/guild/GuildRes";
 import {PlayerUtilityRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
+import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {GuildData, GuildMember} from "ws-packets/src/objects/Guild";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
+import {useOwnGuild} from "@/src/store/useGuild";
+import {gameRules} from "@/src/rules/GameRules";
 import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, Lock, Refusal} from "@/src/design/Sections";
 import {UserPlus, Waves} from "@/src/design/FightIcons";
@@ -74,6 +77,28 @@ export function GuildInvitation({lock}: {lock?: Lock}): ReactNode {
 
 function playerIsChief(guild: GuildData): boolean {
 	return guild.members.some(entry => entry.isSelf && entry.id === guild.chiefId);
+}
+
+/** A chief with room left invites, straight from their profile, a player met in a ranking. */
+export function GuildInvitePlayer({playerRef, profile}: {playerRef: string; profile: ProfileRes}): ReactNode {
+	const state = useOwnGuild();
+	const {pending, message, open} = useCommandMenus();
+	const guild = state.status === "ready" ? state.data.data : undefined;
+	if (!guild || !playerIsChief(guild) || guild.members.length >= gameRules().guild.maxMembers) return null;
+	const lock: Lock | undefined = profile.guild ? {reason: i18n.t("app:guild.memberErrors.alreadyMember")} : undefined;
+	return <>
+		{message ? <Refusal>{message}</Refusal> : null}
+		<ActionBanner
+			icon={UserPlus}
+			label={i18n.t("app:guild.inviteInto", {guild: guild.name})}
+			pending={pending}
+			{...lock ? {lock} : {}}
+			onPress={(): void => {
+				open(MEMBER_MENUS.INVITE, makeFromClientPacket(GuildInvitePlayerReq, {playerRef})).catch(console.error);
+			}}
+			testID="profile-guild-invite"
+		/>
+	</>;
 }
 
 /** The chief's levers on one member, shown inside that member's own row rather than behind a separate screen. */

@@ -13,6 +13,9 @@ import {GuildCreateReq} from "../../../WsPackets/src/fromClient/GuildReq";
 import GuildClientTranslator from "../../src/packets/fromClient/translators/GuildClientTranslator";
 import GuildServerTranslator from "../../src/packets/fromServer/translators/GuildServerTranslator";
 import {mapCollectorCreation} from "../../src/packets/fromServer/collectors/ReactionCollectorMapper";
+import ProfileCommandClientTranslator from "../../src/packets/fromClient/translators/ProfileCommandClientTranslator";
+import {PlayerProfileReq} from "../../../WsPackets/src/fromClient/ProfileReq";
+import {makeFromClientPacket} from "../../../WsPackets/src/MakePackets";
 
 vi.mock("../../src/packets/fromServer/PlayerDisplay", () => ({resolvePlayerName: vi.fn(async () => "Aventurier")}));
 const CONTEXT: PacketContext = {keycloakId: "authenticated", frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {}};
@@ -47,6 +50,15 @@ describe("guild commands", () => {
 		expect(result.data?.members[0]).toMatchObject({id: 7, name: "Aventurier", isSelf: true});
 		expect(JSON.stringify(result)).not.toContain("keycloakId");
 		expect(JSON.stringify(result)).not.toContain("authenticated");
+	});
+	it("lets a member's profile be asked through an opaque handle, and forwards what joining a recruiting guild requires", async () => {
+		const recruitment = {id: 3, name: "Aurore", level: 1, memberCount: 1, minScore: 500, blocker: "minScore" as const};
+		const packet = makePacket(CommandGuildPacketRes, {foundGuild: true, data: {name: "Aurore", chiefId: 7, elderId: null, level: 1, isMaxLevel: false, experience: {value: 0, max: 10}, rank: {unranked: false, rank: 1, numberOfGuilds: 4, score: 42}, recruitment, members: [{id: 7, keycloakId: "private-member", rank: 12, score: 42, islandStatus: {isOnBoat: false, isOnPveIsland: false, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}}]}});
+		const result = await GuildServerTranslator.info(CONTEXT, packet);
+		expect(result.data?.recruitment).toEqual(recruitment);
+		expect(JSON.stringify(result)).not.toContain("private-member");
+		const asked = await ProfileCommandClientTranslator.other(CONTEXT, makeFromClientPacket(PlayerProfileReq, {playerRef: result.data!.members[0].playerRef}));
+		expect(asked.askedPlayer).toEqual({keycloakId: "private-member"});
 	});
 	it("forwards daily rewards after Core has applied them", async () => {
 		const result = await GuildServerTranslator.daily(CONTEXT, makePacket(CommandGuildDailyRewardPacket, {guildName: "Aurore", money: 123, personalXp: 57, fullHeal: true, alteration: {healAmount: 5}}));

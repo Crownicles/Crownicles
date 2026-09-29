@@ -1,5 +1,6 @@
 import {ReactNode, useState} from "react";
 import {Text, View} from "react-native";
+import {useRouter} from "expo-router";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {GuildCreateReq, GuildDailyReq, GuildStorageReq} from "ws-packets/src/fromClient/GuildReq";
 import {GuildDescriptionReq, GuildLeaveReq} from "ws-packets/src/fromClient/GuildManagementReq";
@@ -17,11 +18,11 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {GuildBoatBoarding, GuildInvitation, GuildMemberControls} from "@/src/components/GuildMembers";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {Button, ButtonRow, EmptyState, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, Figure, Figures, Lock, LockHint, Refusal, useSectionStyles, Standing} from "@/src/design/Sections";
+import {ActionBanner, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Figure, Figures, Lock, LockHint, Refusal, useSectionStyles, Standing} from "@/src/design/Sections";
 import {TextField} from "@/src/design/Inputs";
 import {FormBlock} from "@/src/design/KeyboardAvoidance";
 import {guildPacketRefusal} from "@/src/collectors/GuildOutcome";
-import {Check, Clock3, Gift, LogOut, Star} from "@/src/design/FightIcons";
+import {ArrowRight, Check, Clock3, Gift, LogOut, Star} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {useExpandedEntry} from "@/src/design/useExpandedEntry";
@@ -30,7 +31,7 @@ import {formatNumber} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
-import {RecruitmentSettings} from "@/src/components/GuildRecruitment";
+import {GuildJoinOffer, RecruitmentSettings} from "@/src/components/GuildRecruitment";
 
 export type GuildPage = "storage" | "shelter" | "manage" | "domain" | "rankings";
 const CREATE_MENU: CommandMenu = {request: GuildCreateReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal};
@@ -117,20 +118,40 @@ function MemberScore({member}: {member: GuildMember}): ReactNode {
 
 type MemberEntryProps = {member: GuildMember; guild: GuildData; expanded: boolean; onToggle: (id: number) => void};
 
+function useOpenMemberProfile(): (member: GuildMember) => void {
+	const router = useRouter();
+	return (member): void => member.isSelf
+		? router.navigate("/profile")
+		: router.push({pathname: "/player/[ref]", params: {ref: member.playerRef}});
+}
+
 function MemberEntry({member, guild, expanded, onToggle}: MemberEntryProps): ReactNode {
 	const sectionStyles = useSectionStyles();
+	const openProfile = useOpenMemberProfile();
 	const role = memberRole(member, guild);
-	return <ExpandableEntry
-		emblem={<MemberEmblem role={role} />}
-		label={member.name ?? i18n.t("app:profile.values.unknown")}
-		caption={memberCaption(member, role)}
-		end={<MemberScore member={member} />}
-		expanded={expanded}
-		highlighted={member.isSelf}
-		onToggle={(): void => onToggle(member.id)}
-		testID={`guild-member-${member.id}`}
-	>
+	const heading = {
+		emblem: <MemberEmblem role={role} />,
+		label: member.name ?? i18n.t("app:profile.values.unknown"),
+		caption: memberCaption(member, role),
+		end: <MemberScore member={member} />,
+		highlighted: member.isSelf,
+		testID: `guild-member-${member.id}`
+	};
+	// Outside one's own guild there is nothing to do with a member but look them up.
+	if (!guild.membership) {
+		return <ExpandableEntry {...heading} expanded={false} chevron={ENTRY_CHEVRONS.FORWARD} onToggle={(): void => openProfile(member)} />;
+	}
+	return <ExpandableEntry {...heading} expanded={expanded} onToggle={(): void => onToggle(member.id)}>
 		<Text style={sectionStyles.caption}>{i18n.t("app:guild.memberRank", {rank: formatNumber(member.rank)})}</Text>
+		<ActionBanner
+			icon={ArrowRight}
+			label={i18n.t("app:guild.openProfile")}
+			onPress={(): void => {
+				onToggle(member.id);
+				openProfile(member);
+			}}
+			testID={`guild-member-profile-${member.id}`}
+		/>
 		<GuildBoatBoarding member={member} />
 		<GuildMemberControls member={member} guild={guild} />
 	</ExpandableEntry>;
@@ -296,11 +317,12 @@ function GuildMemberTools({guild, membership, onPage}: {guild: GuildData; member
 	</>;
 }
 
-export function GuildOverview({guild, onPage}: {guild: GuildData; onPage: (page: GuildPage) => void}): ReactNode {
+export function GuildOverview({guild, onPage}: {guild: GuildData; onPage?: (page: GuildPage) => void}): ReactNode {
 	return <>
 		<GuildStanding guild={guild} {...guild.membership ? {membership: guild.membership} : {}} />
 		{guild.description ? <Note>{guild.description}</Note> : null}
-		{guild.membership ? <GuildMemberTools guild={guild} membership={guild.membership} onPage={onPage} /> : null}
+		{guild.recruitment ? <GuildJoinOffer guild={guild.recruitment} /> : null}
+		{guild.membership && onPage ? <GuildMemberTools guild={guild} membership={guild.membership} onPage={onPage} /> : null}
 		<SectionHeader action={{hint: formatNumber(guild.members.length)}}>{i18n.t("app:guild.members")}</SectionHeader>
 		{guild.members.length ? <GuildMemberList guild={guild} /> : <ExpandableList><EmptyState>{i18n.t("app:guild.noMembers")}</EmptyState></ExpandableList>}
 	</>;

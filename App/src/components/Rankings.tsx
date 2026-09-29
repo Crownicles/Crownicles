@@ -87,11 +87,30 @@ function RankingStanding({data, onPage}: {data: TopRes; onPage: (page: number) =
 	/>;
 }
 
-function RankingRow({entry, unit}: {entry: RankingEntry; unit: string}): ReactNode {
+type RankingLink = {label: string; open: () => void};
+
+/** Where a row leads: one's own row goes to one's own tab, with everything only they can do there. */
+function rankingLink(entry: RankingEntry, dataType: TopDataType, router: ReturnType<typeof useRouter>): RankingLink | undefined {
+	if (dataType === TopDataType.GUILD) {
+		if (!entry.name) return undefined;
+		return {
+			label: i18n.t("app:arena.rankings.openGuild", {name: entry.name}),
+			open: (): void => entry.sameContext ? router.navigate("/guild") : router.push({pathname: "/guilds/[name]", params: {name: entry.name}})
+		};
+	}
+	const {playerRef} = entry;
+	if (!playerRef) return undefined;
+	return {
+		label: i18n.t("app:arena.rankings.openProfile", {name: entry.name || i18n.t("app:arena.unknownPlayer")}),
+		open: (): void => entry.sameContext ? router.navigate("/profile") : router.push({pathname: "/player/[ref]", params: {ref: playerRef}})
+	};
+}
+
+function RankingRow({entry, dataType}: {entry: RankingEntry; dataType: TopDataType}): ReactNode {
 	const styles = useStyles();
 	const router = useRouter();
 	const podium = entry.rank <= PODIUM_LAST_RANK;
-	const {playerRef} = entry;
+	const link = rankingLink(entry, dataType, router);
 	const row = <>
 		<View style={[styles.rankBadge, podium && styles.rankBadgePodium]}>
 			<Text style={[styles.rank, podium && styles.rankPodium]} numberOfLines={1}>{formatNumber(entry.rank)}</Text>
@@ -106,18 +125,16 @@ function RankingRow({entry, unit}: {entry: RankingEntry; unit: string}): ReactNo
 		<View style={styles.end}>
 			<View style={styles.value}>
 				<Text style={styles.valueText} numberOfLines={1}>{formatNumber(entry.value)}</Text>
-				<UnitIcon unit={unit} size={12} />
+				<UnitIcon unit={RANKING_UNITS[dataType]} size={12} />
 			</View>
 			{entry.sameContext ? <Text style={styles.self}>{i18n.t("app:arena.you")}</Text> : null}
 		</View>
 	</>;
-	if (!playerRef) return <View style={[styles.entry, entry.sameContext && styles.entrySelf]}>{row}</View>;
-	// The player's own row leads to their own profile tab, with everything only they can do there.
-	const open = (): void => entry.sameContext ? router.navigate("/profile") : router.push({pathname: "/player/[ref]", params: {ref: playerRef}});
+	if (!link) return <View style={[styles.entry, entry.sameContext && styles.entrySelf]}>{row}</View>;
 	return <Pressable
 		accessibilityRole="button"
-		accessibilityLabel={i18n.t("app:arena.rankings.openProfile", {name: entry.name || i18n.t("app:arena.unknownPlayer")})}
-		onPress={open}
+		accessibilityLabel={link.label}
+		onPress={link.open}
 		style={({pressed}): StyleProp<ViewStyle> => [styles.entry, entry.sameContext && styles.entrySelf, pressed && styles.pressed]}
 	>{row}</Pressable>;
 }
@@ -154,7 +171,6 @@ function RankingPagination({page, lastPage, onPage}: {page: number; lastPage: nu
 
 export function RankingsContent({data, onPage}: {data: TopRes; onPage: (page: number) => void}): ReactNode {
 	const lastPage = Math.max(1, Math.ceil(data.totalElements / data.elementsPerPage));
-	const unit = RANKING_UNITS[data.dataType];
 	return <>
 		<RankingStanding data={data} onPage={onPage} />
 		{data.needFight ? <Note>{i18n.t("app:arena.rankings.needFight", {count: data.needFight})}</Note> : null}
@@ -162,7 +178,7 @@ export function RankingsContent({data, onPage}: {data: TopRes; onPage: (page: nu
 		<SectionHeader first>{i18n.t("app:arena.rankings.positions")}</SectionHeader>
 		{lastPage > 1 ? <RankingPagination page={data.pageNumber} lastPage={lastPage} onPage={onPage} /> : null}
 		{data.elements.length
-			? <ExpandableList>{data.elements.map(entry => <RankingRow key={entry.rank} entry={entry} unit={unit} />)}</ExpandableList>
+			? <ExpandableList>{data.elements.map(entry => <RankingRow key={entry.rank} entry={entry} dataType={data.dataType} />)}</ExpandableList>
 			: <ExpandableList><EmptyState>{i18n.t("app:arena.rankings.empty")}</EmptyState></ExpandableList>}
 	</>;
 }

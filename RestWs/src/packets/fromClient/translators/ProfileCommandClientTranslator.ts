@@ -7,10 +7,7 @@ import {
 	PlayerProfileReq, ProfileReq
 } from "../../../../../WsPackets/src/fromClient/ProfileReq";
 import { resolveAskedPlayer } from "../AskedPlayerResolver";
-import { resolvePlayerReference } from "../../../services/PlayerReference";
-
-/** No account bears this identifier, so Core answers that the player does not exist. */
-const UNKNOWN_PLAYER = "unknown-player-reference";
+import { referencedKeycloakId } from "../../../services/PlayerReference";
 
 export default class ProfileCommandClientTranslator {
 	@fromClientTranslator(ProfileReq)
@@ -20,8 +17,6 @@ export default class ProfileCommandClientTranslator {
 
 	@fromClientTranslator(PlayerProfileReq)
 	public static other(_context: PacketContext, packet: PlayerProfileReq): Promise<CommandProfilePacketReq> {
-		// A forged or outdated handle must end in "player not found", never fall back on the requester.
-		const keycloakId = typeof packet.playerRef === "string" ? resolvePlayerReference(packet.playerRef) : null;
-		return asyncMakePacket(CommandProfilePacketReq, { askedPlayer: { keycloakId: keycloakId ?? UNKNOWN_PLAYER } });
+		return asyncMakePacket(CommandProfilePacketReq, { askedPlayer: { keycloakId: referencedKeycloakId(packet.playerRef) } });
 	}
 }

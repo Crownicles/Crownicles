@@ -5,16 +5,22 @@ import {GameClient} from "@/src/networking/GameClient";
 import {GuildCreateReq} from "ws-packets/src/fromClient/GuildReq";
 import {GuildCreateCollector} from "@/src/collectors/GuildCreateCollector";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {GuildInvitation} from "@/src/components/GuildMembers";
-import {GuildInviteReq} from "ws-packets/src/fromClient/GuildManagementReq";
+import {GuildInvitation, GuildInvitePlayer} from "@/src/components/GuildMembers";
+import {GuildInvitePlayerReq, GuildInviteReq} from "ws-packets/src/fromClient/GuildManagementReq";
 import {JoinBoatReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
 import {GuildDomainContent} from "@/src/components/GuildDomain";
 import {GuildDomainSnapshot} from "ws-packets/src/objects/GuildDomain";
 import {GuildDomainDepositReq, GuildDomainUpgradeReq} from "ws-packets/src/fromClient/GuildDomainReq";
 import {formatNumber} from "@/src/display/Amounts";
-import {GuildCommandRes} from "ws-packets/src/fromServer/guild/GuildRes";
+import {GuildCommandRes, GuildRes} from "ws-packets/src/fromServer/guild/GuildRes";
+import {GuildReq} from "ws-packets/src/fromClient/GuildReq";
+import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 
-jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: (): {push: jest.Mock} => ({push: jest.fn()})}));
+const mockPush = jest.fn();
+const mockNavigate = jest.fn();
+const mockReplace = jest.fn();
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: (): object => ({push: mockPush, navigate: mockNavigate, replace: mockReplace})}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
 const mockTrack = jest.fn();
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: mockTrack})}));
@@ -34,7 +40,7 @@ const DOMAIN: GuildDomainSnapshot = {
 	dailyFoodProduction: [0, 0, 0, 0], dailyLovePoints: 0
 };
 
-const SELF: GuildMember = {id: 7, name: "Aventurier", isSelf: true, rank: 12, score: 42, islandStatus: {isOnPveIsland: false, isOnBoat: false, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}};
+const SELF: GuildMember = {id: 7, name: "Aventurier", isSelf: true, playerRef: "opaque-self", rank: 12, score: 42, islandStatus: {isOnPveIsland: false, isOnBoat: false, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}};
 const MEMBERSHIP: GuildMembership = {treasury: 12_000, daily: {availableAt: 0, blockedByIsland: false}, domain: {established: true, isInCity: true, mapLocationId: 3}};
 
 function guildData(overrides: Partial<GuildData> = {}): GuildData {
@@ -89,6 +95,38 @@ describe("guild screens", () => {
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(GuildInviteReq);
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({rank: 42});
+	});
+	describe("invitation from another player's profile", () => {
+		const STRANGER = Object.assign(new ProfileRes(), {guild: undefined});
+		async function renderInvite(guild: GuildData, profile: ProfileRes = STRANGER): Promise<void> {
+			jest.mocked(GameClient.request).mockImplementation(async packet => packet instanceof GuildReq
+				? {kind: "answer", packet: Object.assign(new GuildRes(), {foundGuild: true, data: guild})}
+				: {kind: "answer", packet: new GuildCommandRes()});
+			const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+			await render(<QueryClientProvider client={client}><GuildInvitePlayer playerRef="opaque-ref" profile={profile} /></QueryClientProvider>);
+			await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
+		}
+		it("lets a chief with room left invite the player through their handle", async () => {
+			await renderInvite(guildData());
+			await fireEvent.press(await screen.findByRole("button", {name: "app:guild.inviteInto"}));
+			await waitFor(() => expect(GameClient.request).toHaveBeenCalledTimes(2));
+			const invite = jest.mocked(GameClient.request).mock.calls[1][0];
+			expect(invite).toBeInstanceOf(GuildInvitePlayerReq);
+			expect(invite).toMatchObject({playerRef: "opaque-ref"});
+		});
+		it.each([
+			{name: "a member who is not the chief", guild: guildData({chiefId: 99})},
+			{name: "a chief whose guild is full", guild: guildData({members: Array.from({length: 6}, (_, index) => ({...SELF, id: 7 + index, isSelf: index === 0}))})}
+		])("offers nothing to $name", async ({guild}) => {
+			await renderInvite(guild);
+			expect(screen.queryByRole("button", {name: "app:guild.inviteInto"})).toBeNull();
+		});
+		it("says why a player who already has a guild cannot be invited", async () => {
+			await renderInvite(guildData(), Object.assign(new ProfileRes(), {guild: "Crépuscule"}));
+			await fireEvent.press(await screen.findByRole("button", {name: "app:guild.inviteInto"}));
+			expect(screen.getByText("app:guild.memberErrors.alreadyMember")).toBeTruthy();
+			expect(GameClient.request).toHaveBeenCalledTimes(1);
+		});
 	});
 	it("shows the guild treasury to a plain member", async () => {
 		await render(<GuildOverview guild={guildData({chiefId: 99})} onPage={jest.fn()} />);
@@ -176,7 +214,7 @@ describe("guild screens", () => {
 		{case: "sailing", cannotBeJoinedOnBoat: false, requested: true},
 		{case: "sailing for too long", cannotBeJoinedOnBoat: true, requested: false}
 	])("offers the crossing from a member $case", async scenario => {
-		const sailor: GuildMember = {id: 9, name: "Marin", isSelf: false, rank: 30, score: 12, islandStatus: {isOnPveIsland: false, isOnBoat: true, isPveIslandAlly: false, cannotBeJoinedOnBoat: scenario.cannotBeJoinedOnBoat}};
+		const sailor: GuildMember = {id: 9, name: "Marin", isSelf: false, playerRef: "opaque-marin", rank: 30, score: 12, islandStatus: {isOnPveIsland: false, isOnBoat: true, isPveIslandAlly: false, cannotBeJoinedOnBoat: scenario.cannotBeJoinedOnBoat}};
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
 		await render(<GuildOverview guild={guildData({members: [SELF, sailor]})} onPage={jest.fn()} />);
 		await fireEvent.press(screen.getByText("Marin"));
@@ -188,5 +226,39 @@ describe("guild screens", () => {
 		await render(<GuildOverview guild={guildData()} onPage={jest.fn()} />);
 		await fireEvent.press(screen.getByText("Aventurier"));
 		expect(screen.queryByText("app:utilities.boat")).toBeNull();
+	});
+	it("opens a guildmate's profile from their sheet, and the player's own on their tab", async () => {
+		const mate: GuildMember = {...SELF, id: 9, name: "Marin", isSelf: false, playerRef: "opaque-marin"};
+		await render(<GuildOverview guild={guildData({members: [SELF, mate]})} onPage={jest.fn()} />);
+		await fireEvent.press(screen.getByText("Marin"));
+		await fireEvent.press(screen.getByText("app:guild.openProfile"));
+		expect(mockPush).toHaveBeenCalledWith({pathname: "/player/[ref]", params: {ref: "opaque-marin"}});
+		await fireEvent.press(screen.getByText("Aventurier"));
+		await fireEvent.press(screen.getByText("app:guild.openProfile"));
+		expect(mockNavigate).toHaveBeenCalledWith("/profile");
+	});
+	it("shows another guild read-only, where a member leads straight to their profile", async () => {
+		const sailor: GuildMember = {id: 9, name: "Marin", isSelf: false, playerRef: "opaque-marin", rank: 30, score: 12, islandStatus: {isOnPveIsland: false, isOnBoat: true, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}};
+		const {membership: _ownOnly, ...foreign} = guildData({chiefId: 9, members: [sailor]});
+		await render(<GuildOverview guild={foreign} />);
+		expect(screen.queryByText(formatNumber(MEMBERSHIP.treasury))).toBeNull();
+		await fireEvent.press(screen.getByText("Marin"));
+		expect(mockPush).toHaveBeenCalledWith({pathname: "/player/[ref]", params: {ref: "opaque-marin"}});
+		expect(screen.queryByText("app:utilities.boat")).toBeNull();
+	});
+	it.each([
+		{case: "joins it at once", blocker: undefined, requested: true},
+		{case: "learns why it cannot join yet", blocker: "minScore" as const, requested: false}
+	])("offers a recruiting guild to a player without one, who $case", async scenario => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		const {membership: _ownOnly, ...foreign} = guildData({chiefId: 9, members: []});
+		const recruitment = {id: 3, name: "Aurore", level: 3, memberCount: 0, minScore: 500, ...scenario.blocker ? {blocker: scenario.blocker} : {}};
+		await render(<QueryClientProvider client={new QueryClient()}><GuildOverview guild={{...foreign, recruitment}} /></QueryClientProvider>);
+		await fireEvent.press(screen.getByText("app:guild.join.join"));
+		if (scenario.requested) await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({guildId: 3}));
+		else {
+			expect(screen.getByText("app:guild.join.blockers.minScore")).toBeTruthy();
+			expect(GameClient.request).not.toHaveBeenCalled();
+		}
 	});
 });

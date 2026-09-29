@@ -1,9 +1,13 @@
 import { ValueAndMax } from "./ValueAndMax";
+import { RecruitingGuild } from "./GuildRecruitment";
 
 export type GuildMember = {
 	id: number;
 	name?: string;
 	isSelf: boolean;
+
+	/** Opaque handle to ask for this member's profile, never their account. */
+	playerRef: string;
 	rank: number;
 	score: number;
 	islandStatus: {
@@ -43,6 +47,9 @@ export type GuildData = {
 
 	/** Absent when the player asks about a guild that is not theirs. */
 	membership?: GuildMembership;
+
+	/** Present when the player has no guild and this one recruits through its office. */
+	recruitment?: RecruitingGuild;
 };
 export type GuildCreationStatus = {
 	foundGuild: boolean; guildNameIsAvailable?: boolean; guildNameIsAcceptable?: boolean; missingMoney?: number;

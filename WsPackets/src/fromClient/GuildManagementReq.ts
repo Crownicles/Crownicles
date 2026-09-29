@@ -16,6 +16,13 @@ export class GuildInviteReq extends FromClientPacket {
 	public rank!: number;
 }
 
+/** Invites a player met in a ranking, through the opaque handle the ranking sent with them. */
+export class GuildInvitePlayerReq extends FromClientPacket {
+	public static readonly wireName = "GuildInvitePlayerReq";
+
+	public playerRef!: string;
+}
+
 export class GuildPromoteReq extends FromClientPacket {
 	public static readonly wireName = "GuildPromoteReq";
 

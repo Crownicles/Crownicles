@@ -898,7 +898,7 @@
     "pages": {"classes": "Classes", "history": "Historique", "leagues": "Ligues", "rankings": "Classements"},
     "history": {"empty": "Aucun combat n'est encore enregistré."},
     "leagues": {"name": "{{icon}} {{name}}", "reward": "Récompense de ligue", "claim": "Réclamer la récompense", "catalog": "Les ligues", "threshold": "Gloire minimale", "seasonMoney": "Argent de fin de saison", "seasonXp": "Expérience de fin de saison", "winMoney": "Argent gagné par combat remporté", "nextClaim": "La récompense pourra être réclamée le {{date}}.", "noPoints": "Aucune gloire n'a été obtenue pendant la saison précédente.", "alreadyClaimed": "La récompense de cette saison a déjà été réclamée."},
-    "rankings": {"title": "Classements", "types": {"Score": "Score", "Glory": "Gloire", "Guild": "Guildes"}, "period": "Période", "timings": {"AllTime": "Général", "Week": "Semaine"}, "positions": "Classement", "yourPlace": "Votre place", "ofTotal": "sur {{total}} classés", "unavailable": "Vous ne pouvez pas figurer dans ce classement pour le moment.", "needFight_one": "Encore un combat avant d'entrer au classement.", "needFight_other": "Encore {{count}} combats avant d'entrer au classement.", "empty": "Ce classement est encore vide.", "page": "Page {{page}} / {{total}}", "pageWithReset": "Page {{page}} / {{total}} · Début", "backToFirst": "Revenir à la première page", "goToMyPage": "Aller à la page où vous êtes classé", "previous": "Précédent", "next": "Suivant", "inactive": "Inactif", "openProfile": "Voir le profil de {{name}}"},
+    "rankings": {"title": "Classements", "types": {"Score": "Score", "Glory": "Gloire", "Guild": "Guildes"}, "period": "Période", "timings": {"AllTime": "Général", "Week": "Semaine"}, "positions": "Classement", "yourPlace": "Votre place", "ofTotal": "sur {{total}} classés", "unavailable": "Vous ne pouvez pas figurer dans ce classement pour le moment.", "needFight_one": "Encore un combat avant d'entrer au classement.", "needFight_other": "Encore {{count}} combats avant d'entrer au classement.", "empty": "Ce classement est encore vide.", "page": "Page {{page}} / {{total}}", "pageWithReset": "Page {{page}} / {{total}} · Début", "backToFirst": "Revenir à la première page", "goToMyPage": "Aller à la page où vous êtes classé", "previous": "Précédent", "next": "Suivant", "inactive": "Inactif", "openProfile": "Voir le profil de {{name}}", "openGuild": "Voir la guilde {{name}}"},
     "details": "Statistiques", "eyebrow": "COMBAT", "title": "Arène", "confirm": "Préparer le duel", "start": "Chercher un adversaire", "resume": "Reprendre le combat", "locked": "Les combats se débloquent au niveau {{level}}.",
     "you": "Vous", "opponent": "Adversaire", "energy": "Énergie", "breath": "Souffle", "glory": "Gloire", "league": "Ligue", "pet": "Familier",
     "turn": "Tour {{turn}} / {{max}}", "turns": "Tours joués", "waiting": "L'adversaire choisit son action…", "action": "Action de combat", "actionBreath": "{{value}} souffle",
@@ -945,8 +945,10 @@
     }
   },
   "guild": {
+    "notFound": "Cette guilde est introuvable.",
     "invite": "Inviter un joueur",
     "sendInvitation": "Envoyer l'invitation",
+    "inviteInto": "Inviter dans {{guild}}",
     "inviteRank": "Classement du joueur",
     "inviteRankMissing": "Indiquez le classement général du joueur à inviter.",
     "inviteHint": "Le joueur reçoit une invitation qu'il doit accepter lui-même.",
@@ -1048,6 +1050,7 @@
     "you": "Vous",
     "yourMoney": "Votre argent",
     "memberRank": "Classement général : {{rank}}",
+    "openProfile": "Voir le profil",
     "roles": {"chief": "Chef", "elder": "Aîné", "member": "Membre"},
     "pages": {"storage": "Entrepôt", "shelter": "Refuge", "manage": "Gestion", "domain": "Domaine", "rankings": "Classement", "join": "Rejoindre une guilde"},
     "domainLocks": {

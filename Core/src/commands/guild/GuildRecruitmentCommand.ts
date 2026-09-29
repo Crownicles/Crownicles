@@ -15,7 +15,7 @@ import {
 	CommandGuildRecruitmentPacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildRecruitmentPacket";
 import {
-	GUILD_JOIN_ERRORS, GUILD_RECRUITMENT_ERRORS, GuildJoinBlocker, GuildJoinError, RecruitingGuild
+	GUILD_JOIN_ERRORS, GUILD_RECRUITMENT_ERRORS, GuildJoinError, RecruitingGuild
 } from "../../../../Lib/src/types/GuildRecruitment";
 import { GuildRecruitmentConstants } from "../../../../Lib/src/constants/GuildRecruitmentConstants";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
@@ -32,7 +32,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	attachMemberUnderLock, GUILD_ATTACH_RESULTS
+	attachMemberUnderLock, GUILD_ATTACH_RESULTS, isDiscoverable, recruitingGuild
 } from "../../core/utils/GuildJoinUtils";
 
 /** Suggestions are picked among more guilds than shown, since some turn out full. */
@@ -43,10 +43,6 @@ const DISCOVERABLE: WhereOptions = {
 	recruitmentOfficeLevel: { [Op.gt]: 0 },
 	recruitmentOpen: true
 };
-
-function isDiscoverable(guild: Guild): boolean {
-	return guild.recruitmentOfficeLevel > 0 && guild.recruitmentOpen;
-}
 
 async function memberCounts(guildIds: number[]): Promise<Map<number, number>> {
 	if (guildIds.length === 0) {
@@ -59,27 +55,9 @@ async function memberCounts(guildIds: number[]): Promise<Map<number, number>> {
 	return new Map(rows.map(row => [Number(row.guildId), row.count]));
 }
 
-function joinBlocker(guild: Guild, memberCount: number, playerScore: number): GuildJoinBlocker | undefined {
-	if (memberCount >= GuildConstants.MAX_GUILD_MEMBERS) {
-		return GUILD_JOIN_ERRORS.FULL;
-	}
-	return playerScore < guild.recruitmentMinScore ? GUILD_JOIN_ERRORS.MIN_SCORE : undefined;
-}
-
 async function describeGuilds(guilds: Guild[], playerScore: number): Promise<RecruitingGuild[]> {
 	const counts = await memberCounts(guilds.map(guild => guild.id));
-	return guilds.map(guild => {
-		const memberCount = counts.get(guild.id) ?? 0;
-		const blocker = joinBlocker(guild, memberCount, playerScore);
-		return {
-			id: guild.id,
-			name: guild.name,
-			level: guild.level,
-			memberCount,
-			minScore: guild.recruitmentMinScore,
-			...blocker ? { blocker } : {}
-		};
-	});
+	return guilds.map(guild => recruitingGuild(guild, counts.get(guild.id) ?? 0, playerScore));
 }
 
 /**

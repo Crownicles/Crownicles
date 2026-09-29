@@ -11,6 +11,9 @@ import {
 	CommandGuildPacketReq, CommandGuildPacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildPacket";
 import { Maps } from "../../core/maps/Maps";
+import {
+	isDiscoverable, recruitingGuild
+} from "../../core/utils/GuildJoinUtils";
 import { MapCache } from "../../core/maps/MapCache";
 import { CityDataController } from "../../data/City";
 import {
@@ -119,7 +122,8 @@ export default class GuildCommand {
 						score: guild.score
 					},
 					members: guildMembers,
-					...player.guildId === guild.id ? { membership: buildMembership(player, guild, guildMembers) } : {}
+					...player.guildId === guild.id ? { membership: buildMembership(player, guild, guildMembers) } : {},
+					...!player.hasAGuild() && isDiscoverable(guild) ? { recruitment: recruitingGuild(guild, guildMembers.length, player.score) } : {}
 				}
 			}));
 		}

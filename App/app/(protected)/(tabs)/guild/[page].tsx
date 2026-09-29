@@ -1,11 +1,7 @@
 import {ReactNode} from "react";
 import {useLocalSearchParams, useRouter} from "expo-router";
-import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {GuildReq} from "ws-packets/src/fromClient/GuildReq";
-import {GuildRes} from "ws-packets/src/fromServer/guild/GuildRes";
-import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
-import {useGameQuery} from "@/src/store/useGameQuery";
+import {useOwnGuild} from "@/src/store/useGuild";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {GuildManagement, GuildStorage} from "@/src/components/Guild";
 import {GuildDomain} from "@/src/components/GuildDomain";
@@ -18,7 +14,7 @@ import {i18n} from "@/src/translations/i18n";
 
 /** Management is the only page that needs the guild itself, so it reads the same query as the overview. */
 function Management(): ReactNode {
-	const state = useGameQuery(GAME_ENTITIES.GUILD, () => GameClient.request(makeFromClientPacket(GuildReq, {askedPlayer: {}}), GuildRes));
+	const state = useOwnGuild();
 	return <GameQueryContent state={state} entity={GAME_ENTITIES.GUILD}>{data => data.data
 		? <GuildManagement guild={data.data} />
 		: <Note>{i18n.t("app:guild.joinHint")}</Note>}</GameQueryContent>;

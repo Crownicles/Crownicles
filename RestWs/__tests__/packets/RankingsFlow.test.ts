@@ -11,6 +11,8 @@ import RankingsServerTranslator from "../../src/packets/fromServer/translators/R
 import RankingsClientTranslator from "../../src/packets/fromClient/translators/RankingsClientTranslator";
 import ProfileCommandClientTranslator from "../../src/packets/fromClient/translators/ProfileCommandClientTranslator";
 import {PlayerProfileReq} from "../../../WsPackets/src/fromClient/ProfileReq";
+import GuildManagementClientTranslator from "../../src/packets/fromClient/translators/GuildManagementClientTranslator";
+import {GuildInvitePlayerReq} from "../../../WsPackets/src/fromClient/GuildManagementReq";
 import {makeFromClientPacket} from "../../../WsPackets/src/MakePackets";
 
 vi.mock("../../src/packets/fromServer/PlayerDisplay", () => ({resolvePlayerName: vi.fn(async () => "Aventurier")}));
@@ -37,6 +39,15 @@ describe("arena reference data", () => {
 		const forged = await ProfileCommandClientTranslator.other(CONTEXT, makeFromClientPacket(PlayerProfileReq, {playerRef: `${playerRef.slice(0, -2)}AA`}));
 		expect(forged.askedPlayer.keycloakId).not.toBe("private-account");
 		expect(forged.askedPlayer.keycloakId).not.toBe(CONTEXT.keycloakId);
+	});
+	it("invites a ranked player through the same handle, and a forged one invites nobody", async () => {
+		const score = await RankingsServerTranslator.score(CONTEXT, makePacket(CommandTopPacketResScore, {...PAGE, elements: [{rank: 2, sameContext: false, text: "private-account", attributes: {1: {afk: false}, 2: 10, 3: 5}}]}));
+		const playerRef = score.elements[0].playerRef!;
+		const invite = await GuildManagementClientTranslator.invitePlayer(CONTEXT, makeFromClientPacket(GuildInvitePlayerReq, {playerRef}));
+		expect(invite.invitedPlayerKeycloakId).toBe("private-account");
+		expect(invite.invitedPlayerRank).toBeUndefined();
+		const forged = await GuildManagementClientTranslator.invitePlayer(CONTEXT, makeFromClientPacket(GuildInvitePlayerReq, {playerRef: `${playerRef.slice(0, -2)}AA`}));
+		expect([CONTEXT.keycloakId, "private-account"]).not.toContain(forged.invitedPlayerKeycloakId);
 	});
 	it("returns history record IDs and never leaks the opponent account", async () => {
 		const result = await RankingsServerTranslator.history(CONTEXT, makePacket(CommandFightHistoryPacketRes, {history: [{id: 42, initiator: false, opponentKeycloakId: "private-opponent", result: EloGameResult.LOSS, date: 123456, classes: {me: 1, opponent: 2}, glory: {initial: {me: 500, opponent: 600}, change: {me: -10, opponent: 15}, leaguesChanges: {}}}]}));

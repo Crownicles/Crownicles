@@ -15,6 +15,7 @@ import {
 	GuildRes, GuildStorageRes, GuildCommandRes
 } from "../../../../../WsPackets/src/fromServer/guild/GuildRes";
 import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePackets";
+import { playerReference } from "../../../services/PlayerReference";
 
 async function guildMember(member: LibGuildMember, context: PacketContext): Promise<GuildMember> {
 	const {
@@ -22,7 +23,7 @@ async function guildMember(member: LibGuildMember, context: PacketContext): Prom
 	} = member;
 	const name = await resolvePlayerName(keycloakId);
 	return {
-		...data, isSelf: keycloakId === context.keycloakId, ...name ? { name } : {}
+		...data, isSelf: keycloakId === context.keycloakId, playerRef: playerReference(keycloakId), ...name ? { name } : {}
 	};
 }
 export default class GuildServerTranslator {

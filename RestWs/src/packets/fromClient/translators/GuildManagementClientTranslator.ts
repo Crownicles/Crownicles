@@ -10,8 +10,9 @@ import { CommandGuildElderPacketReq } from "../../../../../Lib/src/packets/comma
 import { CommandGuildElderRemovePacketReq } from "../../../../../Lib/src/packets/commands/CommandGuildElderRemovePacket";
 import { CommandGuildKickPacketReq } from "../../../../../Lib/src/packets/commands/CommandGuildKickPacket";
 import {
-	GuildDescriptionReq, GuildLeaveReq, GuildInviteReq, GuildPromoteReq, GuildDemoteReq, GuildKickReq
+	GuildDescriptionReq, GuildLeaveReq, GuildInviteReq, GuildInvitePlayerReq, GuildPromoteReq, GuildDemoteReq, GuildKickReq
 } from "../../../../../WsPackets/src/fromClient/GuildManagementReq";
+import { referencedKeycloakId } from "../../../services/PlayerReference";
 
 function validateMemberRank(rank: number): void {
 	if (!Number.isSafeInteger(rank) || rank < 1) {
@@ -26,6 +27,11 @@ export default class GuildManagementClientTranslator {
 		return asyncMakePacket(CommandGuildInvitePacketReq, {
 			invitedPlayerKeycloakId: "", invitedPlayerRank: packet.rank
 		});
+	}
+
+	@fromClientTranslator(GuildInvitePlayerReq)
+	public static invitePlayer(_context: PacketContext, packet: GuildInvitePlayerReq): Promise<CommandGuildInvitePacketReq> {
+		return asyncMakePacket(CommandGuildInvitePacketReq, { invitedPlayerKeycloakId: referencedKeycloakId(packet.playerRef) });
 	}
 
 	@fromClientTranslator(GuildPromoteReq)

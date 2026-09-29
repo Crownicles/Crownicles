@@ -3,7 +3,7 @@ import {useRouter} from "expo-router";
 import {RecruitingGuild} from "ws-packets/src/objects/GuildRecruitment";
 import {gameRules} from "@/src/rules/GameRules";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, Fact} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, ExpandableList, Fact, Refusal} from "@/src/design/Sections";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {TextField} from "@/src/design/Inputs";
 import {FormBlock} from "@/src/design/KeyboardAvoidance";
@@ -80,6 +80,24 @@ function RecruitingGuildEntry({guild, expanded, onToggle, pending, onJoin}: {
 			{...guild.blocker ? {lock: {reason: i18n.t(`app:guild.join.blockers.${guild.blocker}`)}} : {}}
 		/>
 	</ExpandableEntry>;
+}
+
+/** On a recruiting guild's own page, a player without a guild joins it where they found it. */
+export function GuildJoinOffer({guild}: {guild: RecruitingGuild}): ReactNode {
+	const router = useRouter();
+	const {pending, message, join} = useGuildJoin(() => router.replace("/guild"));
+	return <>
+		<Note>{guildCaption(guild)}</Note>
+		{message ? <Refusal>{message}</Refusal> : null}
+		<ActionBanner
+			icon={UserPlus}
+			label={i18n.t("app:guild.join.join", {name: guild.name})}
+			pending={pending}
+			onPress={(): void => join(guild.id)}
+			{...guild.blocker ? {lock: {reason: i18n.t(`app:guild.join.blockers.${guild.blocker}`)}} : {}}
+			testID="guild-join-offer"
+		/>
+	</>;
 }
 
 /** Looking for a guild: the most fitting ones at once, or those whose name contains a search. */
