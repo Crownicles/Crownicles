@@ -10,6 +10,7 @@ import {
 } from "expo-file-system/legacy";
 import {AssetsManager} from "@/src/assets/AssetsManager";
 import {RestApi} from "@/src/networking/RestApi";
+import {fakeGameRules} from "@/src/testing/fakeGameRules";
 
 jest.mock("expo-file-system/legacy", () => ({
 	EncodingType: {UTF8: "utf8"},
@@ -39,7 +40,8 @@ const mockedDeleteAsync = deleteAsync as jest.MockedFunction<typeof deleteAsync>
 const bundle = {
 	language: "fr" as const,
 	namespaces: {app: {common: {loading: "Chargement"}}},
-	icons: {clocks: ["clock"]}
+	icons: {clocks: ["clock"]},
+	rules: fakeGameRules
 };
 const cached = {bundle, etag: '"bundle-hash"'};
 
@@ -82,6 +84,15 @@ describe("AssetsManager", () => {
 	it("deletes a corrupt cache file and treats it as a cache miss", async () => {
 		mockedGetInfoAsync.mockResolvedValue({exists: true, uri: `${documentDirectory}i18n/bundle-fr.json`, isDirectory: false, size: 1, modificationTime: 0});
 		mockedReadAsStringAsync.mockResolvedValue("not json");
+
+		await expect(AssetsManager.loadCachedBundle("fr")).resolves.toBeNull();
+		expect(mockedDeleteAsync).toHaveBeenCalledWith(`${documentDirectory}i18n/bundle-fr.json`, {idempotent: true});
+	});
+
+	it("drops a cache saved before the server sent game rules, so they get downloaded", async () => {
+		mockedGetInfoAsync.mockResolvedValue({exists: true, uri: `${documentDirectory}i18n/bundle-fr.json`, isDirectory: false, size: 1, modificationTime: 0});
+		const {rules: _rules, ...withoutRules} = bundle;
+		mockedReadAsStringAsync.mockResolvedValue(JSON.stringify({...cached, bundle: withoutRules}));
 
 		await expect(AssetsManager.loadCachedBundle("fr")).resolves.toBeNull();
 		expect(mockedDeleteAsync).toHaveBeenCalledWith(`${documentDirectory}i18n/bundle-fr.json`, {idempotent: true});

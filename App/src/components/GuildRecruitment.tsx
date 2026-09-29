@@ -1,7 +1,7 @@
 import {ReactNode, useEffect, useState} from "react";
 import {useRouter} from "expo-router";
-import {GUILD_RECRUITMENT_MIN_SCORE_STEPS, RecruitingGuild} from "ws-packets/src/objects/GuildRecruitment";
-import {MAX_GUILD_MEMBERS} from "ws-packets/src/objects/Guild";
+import {RecruitingGuild} from "ws-packets/src/objects/GuildRecruitment";
+import {gameRules} from "@/src/rules/GameRules";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, ExpandableList, Fact} from "@/src/design/Sections";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
@@ -15,19 +15,20 @@ import {i18n} from "@/src/translations/i18n";
 const RECRUITMENT_STATUSES = ["open", "closed"] as const;
 type RecruitmentStatus = typeof RECRUITMENT_STATUSES[number];
 
-function stepIndex(minScore: number): number {
-	return Math.max(0, GUILD_RECRUITMENT_MIN_SCORE_STEPS.findIndex(step => step === minScore));
+function stepIndex(steps: number[], minScore: number): number {
+	return Math.max(0, steps.findIndex(step => step === minScore));
 }
 
 /** The minimum score moves from step to step, so the setting never needs the keyboard. */
 function MinScoreStepper({minScore, pending, onChange}: {minScore: number; pending: boolean; onChange: (minScore: number) => void}): ReactNode {
-	const index = stepIndex(minScore);
-	const last = GUILD_RECRUITMENT_MIN_SCORE_STEPS.length - 1;
+	const steps = gameRules().guild.recruitmentMinScoreSteps;
+	const index = stepIndex(steps, minScore);
+	const last = steps.length - 1;
 	return <>
 		<ExpandableList><Fact label={i18n.t("app:guild.recruitment.minScore")} value={formatNumber(minScore)} /></ExpandableList>
 		<ButtonRow>
-			<Button icon={Minus} disabled={pending || index === 0} onPress={(): void => onChange(GUILD_RECRUITMENT_MIN_SCORE_STEPS[index - 1])}>{i18n.t("app:guild.recruitment.lower")}</Button>
-			<Button icon={Plus} disabled={pending || index === last} onPress={(): void => onChange(GUILD_RECRUITMENT_MIN_SCORE_STEPS[index + 1])}>{i18n.t("app:guild.recruitment.raise")}</Button>
+			<Button icon={Minus} disabled={pending || index === 0} onPress={(): void => onChange(steps[index - 1])}>{i18n.t("app:guild.recruitment.lower")}</Button>
+			<Button icon={Plus} disabled={pending || index === last} onPress={(): void => onChange(steps[index + 1])}>{i18n.t("app:guild.recruitment.raise")}</Button>
 		</ButtonRow>
 	</>;
 }
@@ -57,7 +58,7 @@ function guildCaption(guild: RecruitingGuild): string {
 	return i18n.t("app:guild.join.caption", {
 		level: guild.level,
 		members: guild.memberCount,
-		max: MAX_GUILD_MEMBERS,
+		max: gameRules().guild.maxMembers,
 		minScore: formatNumber(guild.minScore)
 	});
 }

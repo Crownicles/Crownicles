@@ -28,7 +28,8 @@ function isAssetsBundle(value: unknown, language: AssetsBundleLanguage): value i
 	return isRecord(value)
 		&& value.language === language
 		&& isRecord(value.namespaces)
-		&& isRecord(value.icons);
+		&& isRecord(value.icons)
+		&& isRecord(value.rules);
 }
 
 export class AssetsManager {

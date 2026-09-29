@@ -1,6 +1,7 @@
 import type {Href} from "expo-router";
-import {JOURNEY_LEVELS} from "ws-packets/src/objects/Journey";
-import {ONBOARDING_MISSION_IDS, ONBOARDING_TRIALS} from "ws-packets/src/objects/Onboarding";
+import type {JourneyLevels} from "ws-packets/src/objects/Journey";
+import {ONBOARDING_MISSION_IDS} from "ws-packets/src/objects/Onboarding";
+import {gameRules} from "@/src/rules/GameRules";
 
 /** The parts of the game a newcomer discovers one after the other, in that order. */
 export const JOURNEY_FEATURES = {
@@ -40,13 +41,15 @@ export type JourneyProgress = {
 };
 
 /** The mission right after the first item: by then the player holds something to equip. */
-const INVENTORY_MISSION_POSITION = ONBOARDING_TRIALS.flatMap(trial => trial.missions).indexOf(ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM) + 2;
+function inventoryMissionPosition(): number {
+	return gameRules().onboardingTrials.flatMap(trial => trial.missions).indexOf(ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM) + 2;
+}
 
 /** Core sends 0 once the whole campaign is completed. */
 const CAMPAIGN_COMPLETED = 0;
 
 export function isInventoryTaught(campaignProgression: number): boolean {
-	return campaignProgression === CAMPAIGN_COMPLETED || campaignProgression >= INVENTORY_MISSION_POSITION;
+	return campaignProgression === CAMPAIGN_COMPLETED || campaignProgression >= inventoryMissionPosition();
 }
 
 export type JourneyStep = {
@@ -57,24 +60,33 @@ export type JourneyStep = {
 	route: Href;
 	icon: string;
 
-	/** The level announced to the player while the feature is still closed, when a level opens it. */
-	level?: number;
+	/** The level that opens the feature, announced to the player while it is still closed. */
+	unlockLevel?: keyof JourneyLevels;
 	isUnlocked: (progress: JourneyProgress) => boolean;
 };
+
+/** The level that opens a step, as Core currently requires it. */
+export function journeyStepLevel(step: JourneyStep): number | undefined {
+	return step.unlockLevel ? gameRules().journeyLevels[step.unlockLevel] : undefined;
+}
+
+function reached(progress: JourneyProgress, level: keyof JourneyLevels): boolean {
+	return progress.level >= gameRules().journeyLevels[level];
+}
 
 export const JOURNEY_STEPS: readonly JourneyStep[] = [
 	{feature: JOURNEY_FEATURES.PROFILE, tab: JOURNEY_TABS.PROFILE, route: "/profile", icon: "navigation.profile", isUnlocked: progress => progress.started && progress.inventoryTaught},
 	{
-		feature: JOURNEY_FEATURES.CLASSES, tab: JOURNEY_TABS.ARENA, route: "/arena/classes", icon: "commands.classes", level: JOURNEY_LEVELS.CLASSES,
-		isUnlocked: progress => progress.level >= JOURNEY_LEVELS.CLASSES
+		feature: JOURNEY_FEATURES.CLASSES, tab: JOURNEY_TABS.ARENA, route: "/arena/classes", icon: "commands.classes", unlockLevel: "classes",
+		isUnlocked: progress => reached(progress, "classes")
 	},
 	{
-		feature: JOURNEY_FEATURES.FIGHTS, tab: JOURNEY_TABS.ARENA, route: "/arena", icon: "navigation.fight", level: JOURNEY_LEVELS.FIGHTS,
-		isUnlocked: progress => progress.level >= JOURNEY_LEVELS.FIGHTS
+		feature: JOURNEY_FEATURES.FIGHTS, tab: JOURNEY_TABS.ARENA, route: "/arena", icon: "navigation.fight", unlockLevel: "fights",
+		isUnlocked: progress => reached(progress, "fights")
 	},
 	{
-		feature: JOURNEY_FEATURES.GUILD, tab: JOURNEY_TABS.GUILD, route: "/guild", icon: "navigation.guild", level: JOURNEY_LEVELS.GUILD,
-		isUnlocked: progress => progress.hasGuild || progress.level >= JOURNEY_LEVELS.GUILD
+		feature: JOURNEY_FEATURES.GUILD, tab: JOURNEY_TABS.GUILD, route: "/guild", icon: "navigation.guild", unlockLevel: "guild",
+		isUnlocked: progress => progress.hasGuild || reached(progress, "guild")
 	},
 	{
 		feature: JOURNEY_FEATURES.PET, tab: JOURNEY_TABS.PET, route: "/pet", icon: "navigation.pet",
@@ -93,6 +105,9 @@ export function openTabs(unlocked: readonly JourneyFeature[]): JourneyTab[] {
 
 /** The closest part of the game a level still keeps closed. */
 export function nextLevelStep(progress: JourneyProgress): JourneyStep & {level: number} | null {
-	const closed = JOURNEY_STEPS.filter((step): step is JourneyStep & {level: number} => step.level !== undefined && !step.isUnlocked(progress));
+	const closed = JOURNEY_STEPS.filter(step => !step.isUnlocked(progress)).flatMap(step => {
+		const level = journeyStepLevel(step);
+		return level === undefined ? [] : [{...step, level}];
+	});
 	return closed.reduce<JourneyStep & {level: number} | null>((closest, step) => closest === null || step.level < closest.level ? step : closest, null);
 }

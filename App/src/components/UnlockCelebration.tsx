@@ -7,7 +7,7 @@ import {FarewellEmblem, useMotionLoop} from "@/src/design/Farewell";
 import {ArrowRight, Sparkles} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {JourneyStep} from "@/src/journey/Journey";
+import {journeyStepLevel, JourneyStep} from "@/src/journey/Journey";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {
 	useAutomaticSmallEventOutcome, useBigEventOutcome, useHealOutcome, useLotteryOutcome, useShopResult,
@@ -106,7 +106,8 @@ function UnlockEmblem({icon, burst}: {icon: string; burst: Animated.Value}): Rea
 
 /** A pet or a guild can open its tab before the level does: the level is only named when it is what opened it. */
 function eyebrow(step: JourneyStep, level: number): string {
-	return step.level !== undefined && level >= step.level ? i18n.t("app:journey.unlockedAtLevel", {level: step.level}) : i18n.t("app:journey.unlocked");
+	const unlockLevel = journeyStepLevel(step);
+	return unlockLevel !== undefined && level >= unlockLevel ? i18n.t("app:journey.unlockedAtLevel", {level: unlockLevel}) : i18n.t("app:journey.unlocked");
 }
 
 /** A card that bursts in over a dimmed screen, for the moments the game wants the player to stop on. */

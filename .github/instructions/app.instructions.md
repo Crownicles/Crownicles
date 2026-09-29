@@ -15,6 +15,14 @@ Two consequences that decide most design questions:
 
 - **No game rule lives in `App/`.** No balance value, no reward computation, no eligibility check. If
   a screen needs a number the server does not send, the fix is a packet field, not a constant.
+- **Game values the app needs up front travel with the assets bundle.** Prices, level thresholds,
+  input rules (`GameRules` in `WsPackets/src/objects/GameRules.ts`) are built from Lib's constants by
+  `RestWs/src/services/GameRules.ts` and read in the app through `gameRules()`. Never copy such a
+  value into `WsPackets` or `App/`: an installed app would keep the old one until a store release.
+- **Typed text is checked with the rule Core applies.** Lib's `TextRuleConstants` describe each field
+  as data; `checkText(input, TEXT_RULE_IDS.X)` / `checkWholeNumber(input, range)` return the value to
+  send and a `Lock` that `TextField` shows under the field. A RestWs test keeps the app's
+  `findTextIssue` verdicts equal to Lib's.
 - **No data shape is invented.** `Lib/src/packets/` already defines 53 command packets and 55
   collectors, with their exact fields and optionals. Copy that shape; never guess one.
 

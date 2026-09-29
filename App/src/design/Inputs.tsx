@@ -2,11 +2,17 @@ import {ReactNode} from "react";
 import {Text, TextInput, TextInputProps, View} from "react-native";
 import {Theme} from "@/src/design/Theme";
 import {createStyles} from "@/src/design/ThemeContext";
+import {Lock, LockHint} from "@/src/design/Sections";
 
 type TextFieldProps = Pick<TextInputProps,
 	"value" | "onChangeText" | "keyboardType" | "multiline" | "editable" | "onSubmitEditing"
-	| "secureTextEntry" | "autoCapitalize" | "autoComplete" | "textContentType" | "returnKeyType"
-> & {label: string};
+	| "secureTextEntry" | "autoCapitalize" | "autoComplete" | "autoCorrect" | "textContentType" | "returnKeyType"
+> & {
+	label: string;
+
+	/** Why what is typed cannot be sent yet, shown under the field while it lasts. */
+	lock?: Lock | null;
+};
 const useStyles = createStyles(colors => ({
 	root: {gap: Theme.spacing.sm, marginVertical: Theme.spacing.md},
 	label: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body, color: colors.ink},
@@ -14,10 +20,11 @@ const useStyles = createStyles(colors => ({
 	paragraph: {minHeight: 96, textAlignVertical: "top"}
 }));
 
-export function TextField({label, ...props}: TextFieldProps): ReactNode {
+export function TextField({label, lock, ...props}: TextFieldProps): ReactNode {
 	const styles = useStyles();
 	return <View style={styles.root}>
 		<Text style={styles.label}>{label}</Text>
 		<TextInput {...props} accessibilityLabel={label} style={[styles.input, props.multiline && styles.paragraph]} />
+		{lock ? <LockHint lock={lock} /> : null}
 	</View>;
 }

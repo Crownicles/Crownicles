@@ -1,5 +1,10 @@
 import type {EffectCallback} from "react";
 import {clearTestQueryClients} from "./src/testing/testUtils";
+import {fakeGameRules} from "./src/testing/fakeGameRules";
+import {loadGameRules} from "./src/rules/GameRules";
+
+// Outside the app shell no assets bundle is downloaded: screens read the rules a server would send.
+loadGameRules(fakeGameRules);
 
 // Tests render screens outside the app shell, where the real provider would have no window to measure.
 jest.mock("react-native-safe-area-context", () => jest.requireActual("react-native-safe-area-context/jest/mock").default);

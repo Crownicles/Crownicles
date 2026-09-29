@@ -1,5 +1,6 @@
 import i18next from "i18next";
 import {AppIcons} from "@/src/AppIcons";
+import {loadGameRules} from "@/src/rules/GameRules";
 import type {AssetsBundle} from "../../../WsPackets/src/objects/AssetsBundle";
 import {embeddedTranslations} from "@/src/translations/embeddedTranslations";
 
@@ -32,6 +33,7 @@ export function applyServerBundle(bundle: AssetsBundle): void {
 		i18next.addResourceBundle(bundle.language, namespace, translations, true, true);
 	}
 	AppIcons.reloadAppIcons(bundle.icons);
+	loadGameRules(bundle.rules);
 }
 
 /**

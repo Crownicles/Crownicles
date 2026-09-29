@@ -26,7 +26,10 @@ import {
 	CommandGuildDescriptionPacketReq,
 	CommandGuildDescriptionRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
-import { checkNameString } from "../../../../Lib/src/utils/StringUtils";
+import {
+	findTextIssue, normalizeText
+} from "../../../../Lib/src/utils/StringUtils";
+import { TextRuleConstants } from "../../../../Lib/src/constants/TextRuleConstants";
 import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
@@ -141,7 +144,8 @@ export default class GuildDescriptionCommand {
 			return;
 		}
 
-		if (!checkNameString(packet.description, GuildConstants.DESCRIPTION_LENGTH_RANGE)) {
+		const description = normalizeText(packet.description);
+		if (findTextIssue(description, TextRuleConstants.GUILD_DESCRIPTION) !== null) {
 			response.push(makePacket(CommandGuildDescriptionInvalidPacket, {
 				min: GuildConstants.DESCRIPTION_LENGTH_RANGE.MIN,
 				max: GuildConstants.DESCRIPTION_LENGTH_RANGE.MAX
@@ -150,7 +154,7 @@ export default class GuildDescriptionCommand {
 		}
 
 		const collector = new ReactionCollectorGuildDescription(
-			packet.description
+			description
 		);
 
 		const collectorPacket = new ReactionCollectorInstance(
@@ -160,7 +164,7 @@ export default class GuildDescriptionCommand {
 				allowedPlayerKeycloakIds: [player.keycloakId],
 				reactionLimit: 1
 			},
-			endCallback(player, packet.description)
+			endCallback(player, description)
 		)
 			.block(player.keycloakId, BlockingConstants.REASONS.GUILD_DESCRIPTION)
 			.build();

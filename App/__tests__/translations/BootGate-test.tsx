@@ -5,6 +5,7 @@ import {BootGate} from "@/src/translations/BootGate";
 import {AssetsManager, CachedBundle} from "@/src/assets/AssetsManager";
 import {applyServerBundle} from "@/src/translations/i18nLoader";
 import {RestApi} from "@/src/networking/RestApi";
+import {fakeGameRules} from "@/src/testing/fakeGameRules";
 
 jest.mock("@/src/assets/AssetsManager", () => ({AssetsManager: {
 	loadCachedBundle: jest.fn(),
@@ -24,7 +25,7 @@ jest.mock("@/src/design/Primitives", () => {
 });
 
 const bundle = {
-	bundle: {language: "fr" as const, namespaces: {app: {boot: {updating: "Préparation"}}}, icons: {}},
+	bundle: {language: "fr" as const, namespaces: {app: {boot: {updating: "Préparation"}}}, icons: {}, rules: fakeGameRules},
 	etag: '"bundle-hash"'
 };
 const mockedLoadCachedBundle = jest.mocked(AssetsManager.loadCachedBundle);

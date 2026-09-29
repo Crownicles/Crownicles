@@ -1,7 +1,7 @@
 import {ReactNode, useState} from "react";
 import {Animated, View} from "react-native";
 import {useRouter} from "expo-router";
-import {GUILD_CREATION_PRICE} from "ws-packets/src/objects/Guild";
+import {gameRules} from "@/src/rules/GameRules";
 import {AppIcons} from "@/src/AppIcons";
 import {GuildCreation} from "@/src/components/Guild";
 import {Button, ButtonRow} from "@/src/design/Primitives";
@@ -71,9 +71,9 @@ function BannerEmblem(): ReactNode {
 	</FarewellEmblem>;
 }
 
-function creationLock(money: number | undefined): Lock | undefined {
-	if (money === undefined || money >= GUILD_CREATION_PRICE) return undefined;
-	return {reason: i18n.t("app:city.locks.missingMoney", {amount: formatMoney(GUILD_CREATION_PRICE - money)}), icon: Coins};
+function creationLock(money: number | undefined, price: number): Lock | undefined {
+	if (money === undefined || money >= price) return undefined;
+	return {reason: i18n.t("app:city.locks.missingMoney", {amount: formatMoney(price - money)}), icon: Coins};
 }
 
 /** No guild yet: what one brings, then founding one or looking for one to join. */
@@ -83,7 +83,8 @@ export function GuildAbsent(): ReactNode {
 	const router = useRouter();
 	const profile = usePlayerProfile();
 	const [creating, setCreating] = useState(false);
-	const lock = creationLock(profile.status === "ready" ? profile.data.money : undefined);
+	const price = gameRules().guild.creationPrice;
+	const lock = creationLock(profile.status === "ready" ? profile.data.money : undefined, price);
 	return <>
 		<FarewellPage
 			emblem={<BannerEmblem />}
@@ -96,7 +97,7 @@ export function GuildAbsent(): ReactNode {
 		<View style={styles.actions}>
 			<ActionBanner
 				icon={Flag}
-				label={i18n.t("app:guild.absent.createWithCost", {price: formatMoney(GUILD_CREATION_PRICE)})}
+				label={i18n.t("app:guild.absent.createWithCost", {price: formatMoney(price)})}
 				onPress={(): void => setCreating(true)}
 				{...lock ? {lock} : {}}
 			/>

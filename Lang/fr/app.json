@@ -90,6 +90,17 @@
     "connectionError": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
     "reconnect": "Se reconnecter"
   },
+  "inputIssues": {
+    "forbiddenCharacter": "Le caractère {{character}} n'est pas autorisé.",
+    "doublePunctuation": "Deux signes de ponctuation ne peuvent pas se suivre.",
+    "digitsOnly": "Au moins une lettre est nécessaire.",
+    "accentedEnding": "Le texte ne peut pas se terminer par deux lettres accentuées.",
+    "tooLong": "{{max}} caractères au maximum.",
+    "tooShort": "{{min}} caractères au minimum.",
+    "notWholeNumber": "Un nombre entier est attendu.",
+    "belowMin": "La valeur minimale est {{min}}.",
+    "aboveMax": "La valeur maximale est {{max}}."
+  },
   "boot": {
     "updating": "Préparation du royaume…",
     "error": "Les traductions n'ont pas pu être chargées. Vérifiez votre connexion puis réessayez.",

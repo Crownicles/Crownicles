@@ -4,7 +4,7 @@ import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTra
 import {MissionsRes} from "ws-packets/src/fromServer/missions/MissionsRes";
 import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
 import {ONBOARDING_MISSION_IDS, ONBOARDING_TRIAL_IDS} from "ws-packets/src/objects/Onboarding";
-import {CONTEST_LENGTH, contestOf, ContestView} from "@/src/onboarding/Contest";
+import {contestLength, contestOf, ContestView} from "@/src/onboarding/Contest";
 import {forkDue, StopArrivedToast} from "@/src/onboarding/OnboardingStage";
 import {OnboardingMoments} from "@/src/onboarding/OnboardingStore";
 
@@ -60,8 +60,8 @@ describe("royal contest", () => {
 	});
 
 	it("is over once its last mission is done, and for a completed campaign", () => {
-		expect(contestView(ONBOARDING_MISSION_IDS.CHOOSE_CLASS, CONTEST_LENGTH).running).toBe(true);
-		expect(contestView("travelHours", CONTEST_LENGTH + 1)).toEqual({running: false, trialId: null, missionId: null});
+		expect(contestView(ONBOARDING_MISSION_IDS.CHOOSE_CLASS, contestLength()).running).toBe(true);
+		expect(contestView("travelHours", contestLength() + 1)).toEqual({running: false, trialId: null, missionId: null});
 		expect(contestView(ONBOARDING_MISSION_IDS.CHOOSE_CLASS, 0).running).toBe(false);
 	});
 });

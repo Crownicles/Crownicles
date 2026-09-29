@@ -2,6 +2,10 @@ import fastify from "fastify";
 import { gunzipSync } from "node:zlib";
 import { afterEach, describe, expect, it } from "vitest";
 import { setupAssetsRoutes } from "../../src/services/routes/AssetsRoute";
+import { GuildCreateConstants } from "../../../Lib/src/constants/GuildCreateConstants";
+import { GuildConstants } from "../../../Lib/src/constants/GuildConstants";
+import { FightConstants } from "../../../Lib/src/constants/FightConstants";
+import { ONBOARDING_TRIALS } from "../../../Lib/src/constants/OnboardingConstants";
 
 describe("assets bundle route", () => {
 	const servers: ReturnType<typeof fastify>[] = [];
@@ -29,6 +33,16 @@ describe("assets bundle route", () => {
 		expect(bundle.language).toBe("fr");
 		expect(bundle.namespaces.app).toBeDefined();
 		expect(bundle.icons).toBeDefined();
+	});
+
+	it("carries the values Core plays by", async () => {
+		const server = await createServer();
+		const { rules } = (await server.inject({ url: "/assets/bundle?lang=fr" })).json();
+
+		expect(rules.guild.creationPrice).toBe(GuildCreateConstants.PRICE);
+		expect(rules.textRules.guildName.max).toBe(GuildConstants.GUILD_NAME_LENGTH_RANGE.MAX);
+		expect(rules.journeyLevels.fights).toBe(FightConstants.REQUIRED_LEVEL);
+		expect(rules.onboardingTrials.map((trial: { id: string }) => trial.id)).toEqual(ONBOARDING_TRIALS.map(trial => trial.id));
 	});
 
 	it("returns 304 when the ETag matches", async () => {

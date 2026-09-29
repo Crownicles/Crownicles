@@ -10,7 +10,7 @@ import {HealAction, HealOffer, healOffer, PendingAction, useBuyHeal} from "@/src
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
 import {commandRejectionMessage} from "@/src/display/CommandRejection";
 import {useReportView} from "@/src/store/useReportActions";
-import {JOURNEY_LEVELS} from "ws-packets/src/objects/Journey";
+import {gameRules} from "@/src/rules/GameRules";
 import {FightReq} from "ws-packets/src/fromClient/FightReq";
 import {FightErrorRes} from "ws-packets/src/fromServer/fight/FightRes";
 import {FightError} from "ws-packets/src/objects/Fight";
@@ -162,7 +162,7 @@ function useArenaCure(blocking: PlayerEffect | null): ArenaCure {
 
 /** Before the fight level the start button stays in sight, greyed, with the level that opens fights. */
 function startLock(canFight: boolean, blocking: PlayerEffect | null): Lock | undefined {
-	if (!canFight) return {reason: i18n.t("app:arena.locked", {level: JOURNEY_LEVELS.FIGHTS})};
+	if (!canFight) return {reason: i18n.t("app:arena.locked", {level: gameRules().journeyLevels.fights})};
 	return blocking ? effectLock(blocking) : undefined;
 }
 
@@ -186,7 +186,7 @@ export default function Arena(): ReactNode {
 	const styles = useStyles();
 	const state = usePlayerProfile();
 	const {ongoing, startError, pending, message, start} = useArenaFight();
-	const canFight = state.status !== "ready" || state.data.level >= JOURNEY_LEVELS.FIGHTS;
+	const canFight = state.status !== "ready" || state.data.level >= gameRules().journeyLevels.fights;
 	// A fight already under way can always be resumed.
 	const blocking = state.status === "ready" && !ongoing ? activeEffect(state.data) : null;
 	const {offer, action: heal, cure} = useArenaCure(blocking);

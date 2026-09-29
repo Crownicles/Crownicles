@@ -1,5 +1,7 @@
 import { StringConstants } from "../constants/StringConstants";
-import { ConstantRange } from "../constants/Constants";
+import {
+	TEXT_ISSUES, TextIssueKind, TextRule
+} from "../constants/TextRuleConstants";
 
 /**
  * Remove discord formatting scrap from usernames
@@ -46,26 +48,41 @@ export function progressBar(value: number, maxValue: number): string {
 	return `\`\`\`[${progressText}${emptyProgressText}]${percentageText}\`\`\``;
 }
 
+export type TextIssue =
+	| {
+		kind: typeof TEXT_ISSUES.FORBIDDEN_CHARACTER; character: string;
+	}
+	| { kind: Exclude<TextIssueKind, typeof TEXT_ISSUES.FORBIDDEN_CHARACTER> };
+
 /**
- * Check if a name is valid (is used to check guilds or pet names and guild descriptions)
- * @param name - the string to check
- * @param range - custom range for the name length
+ * A typed text as it is kept: surrounding spaces dropped, the curly apostrophe of mobile keyboards straightened.
+ * @param text
  */
-export function checkNameString(name: string, range: ConstantRange): boolean {
-	// Here are the characters that are allowed in a name or description
-	const regexAllowed = /^[A-Za-z0-9 ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû!,'.:()-]+$/u;
+export function normalizeText(text: string): string {
+	return text.trim().replace(/\u2019/gu, "'");
+}
 
-	/*
-	 * Here are the scenarios where the name is not valid and checked by this regex :
-	 * The name contains only numbers ^[0-9 ]+$ (only numbers and spaces)
-	 * $|( {2}) is used to check if there are 2 spaces in a row
-	 * $|([ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû]{2}) is used to check if there are 2 special characters in a row
-	 * $|([!,'.:()]{2}) is used to check if there are 2 punctuation characters in a row
-	 */
-	const regexSpecialCases = /^[0-9 ]+$|( {2})+$|([ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû]{2})+$|([!,'.:()-]{2})+/u;
-
-	// We also check for the length of the name
-	return regexAllowed.test(name) && !regexSpecialCases.test(name) && name.length >= range.MIN && name.length <= range.MAX;
+/**
+ * The first rule a normalized text breaks, or null when it is acceptable (guild names and descriptions, pet nicknames)
+ * @param text - the normalized text to check
+ * @param rule - the rule of the field the text is typed in
+ */
+export function findTextIssue(text: string, rule: TextRule): TextIssue | null {
+	const allowed = new RegExp(`^[${rule.allowedCharacters}]$`, "u");
+	const character = [...text].find(candidate => !allowed.test(candidate));
+	if (character !== undefined) {
+		return {
+			kind: TEXT_ISSUES.FORBIDDEN_CHARACTER, character
+		};
+	}
+	const pattern = rule.forbiddenPatterns.find(forbidden => new RegExp(forbidden.pattern, "u").test(text));
+	if (pattern) {
+		return { kind: pattern.issue };
+	}
+	if (text.length > rule.lengthRange.MAX) {
+		return { kind: TEXT_ISSUES.TOO_LONG };
+	}
+	return text.length < rule.lengthRange.MIN ? { kind: TEXT_ISSUES.TOO_SHORT } : null;
 }
 
 /**

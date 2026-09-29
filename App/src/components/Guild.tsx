@@ -6,6 +6,8 @@ import {GuildDescriptionReq, GuildLeaveReq} from "ws-packets/src/fromClient/Guil
 import {GuildCommandRes, GuildStorageRes} from "ws-packets/src/fromServer/guild/GuildRes";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {GuildData, GuildMember, GuildMembership} from "ws-packets/src/objects/Guild";
+import {TEXT_RULE_IDS} from "ws-packets/src/objects/TextRules";
+import {checkText} from "@/src/rules/InputChecks";
 import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
@@ -55,10 +57,11 @@ export function gaugeEmoji(path: string): {emoji?: string} {
 export function GuildCreation(): ReactNode {
 	const [name, setName] = useState("");
 	const {pending, message, open} = useCommandMenus();
+	const guildName = checkText(name, TEXT_RULE_IDS.GUILD_NAME);
 	return <>
-		<TextField label={i18n.t("app:guild.name")} value={name} onChangeText={setName} editable={!pending} />
+		<TextField label={i18n.t("app:guild.name")} value={name} onChangeText={setName} editable={!pending} autoCorrect={false} lock={guildName.lock} />
 		{message ? <Note>{message}</Note> : null}
-		<ButtonRow><Button variant="primary" disabled={pending || name.length === 0} onPress={(): Promise<void> => open(CREATE_MENU, makeFromClientPacket(GuildCreateReq, {askedGuildName: name}))}>{i18n.t("app:guild.create")}</Button></ButtonRow>
+		<ButtonRow><Button variant="primary" disabled={pending || guildName.lock !== null} onPress={(): Promise<void> => open(CREATE_MENU, makeFromClientPacket(GuildCreateReq, {askedGuildName: guildName.value}))}>{i18n.t("app:guild.create")}</Button></ButtonRow>
 	</>;
 }
 
@@ -139,8 +142,9 @@ function GuildMemberList({guild}: {guild: GuildData}): ReactNode {
 function GuildDescriptionForm({guild, lock}: {guild: GuildData; lock?: Lock}): ReactNode {
 	const [description, setDescription] = useState(guild.description ?? "");
 	const {pending, message, open} = useCommandMenus();
-	const unchanged = description === (guild.description ?? "");
-	const blocked = lock ?? (unchanged ? {reason: i18n.t("app:guild.descriptionUnchanged")} : undefined);
+	const checked = checkText(description, TEXT_RULE_IDS.GUILD_DESCRIPTION);
+	const unchanged = checked.value === (guild.description ?? "");
+	const blocked = lock ?? (unchanged ? {reason: i18n.t("app:guild.descriptionUnchanged")} : checked.lock ?? undefined);
 	return <>
 		<SectionHeader first>{i18n.t("app:guild.identity")}</SectionHeader>
 		<TextField label={i18n.t("app:guild.description")} value={description} onChangeText={setDescription} multiline editable={!pending && !lock} />
@@ -151,7 +155,7 @@ function GuildDescriptionForm({guild, lock}: {guild: GuildData; lock?: Lock}): R
 			pending={pending}
 			{...blocked ? {lock: blocked} : {}}
 			onPress={(): void => {
-				open(DESCRIPTION_MENU, makeFromClientPacket(GuildDescriptionReq, {description})).catch(console.error);
+				open(DESCRIPTION_MENU, makeFromClientPacket(GuildDescriptionReq, {description: checked.value})).catch(console.error);
 			}}
 			testID="guild-description-save"
 		/>

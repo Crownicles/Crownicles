@@ -1,0 +1,52 @@
+import { GameRules } from "../../../WsPackets/src/objects/GameRules";
+import { TextRule as WireTextRule } from "../../../WsPackets/src/objects/TextRules";
+import {
+	TextRule, TextRuleConstants
+} from "../../../Lib/src/constants/TextRuleConstants";
+import { GuildConstants } from "../../../Lib/src/constants/GuildConstants";
+import { GuildCreateConstants } from "../../../Lib/src/constants/GuildCreateConstants";
+import { GuildRecruitmentConstants } from "../../../Lib/src/constants/GuildRecruitmentConstants";
+import { ClassConstants } from "../../../Lib/src/constants/ClassConstants";
+import { FightConstants } from "../../../Lib/src/constants/FightConstants";
+import { ONBOARDING_TRIALS } from "../../../Lib/src/constants/OnboardingConstants";
+import { PetSellConstants } from "../../../Lib/src/constants/PetSellConstants";
+
+function toWireTextRule(rule: TextRule): WireTextRule {
+	return {
+		min: rule.lengthRange.MIN,
+		max: rule.lengthRange.MAX,
+		allowedCharacters: rule.allowedCharacters,
+		forbiddenPatterns: rule.forbiddenPatterns.map(forbidden => ({ ...forbidden }))
+	};
+}
+
+/** Core's values the app reads instead of keeping its own copy. */
+export function buildGameRules(): GameRules {
+	return {
+		textRules: {
+			guildName: toWireTextRule(TextRuleConstants.GUILD_NAME),
+			guildDescription: toWireTextRule(TextRuleConstants.GUILD_DESCRIPTION),
+			petNickname: toWireTextRule(TextRuleConstants.PET_NICKNAME)
+		},
+		guild: {
+			creationPrice: GuildCreateConstants.PRICE,
+			maxMembers: GuildConstants.MAX_GUILD_MEMBERS,
+			recruitmentMinScoreSteps: [...GuildRecruitmentConstants.MIN_SCORE_STEPS]
+		},
+		journeyLevels: {
+			classes: ClassConstants.REQUIRED_LEVEL,
+			fights: FightConstants.REQUIRED_LEVEL,
+			guild: GuildConstants.REQUIRED_LEVEL
+		},
+		pet: {
+			sellPrice: {
+				min: PetSellConstants.SELL_PRICE.MIN,
+				max: PetSellConstants.SELL_PRICE.MAX
+			}
+		},
+		onboardingTrials: ONBOARDING_TRIALS.map(trial => ({
+			id: trial.id,
+			missions: [...trial.missions]
+		}))
+	};
+}

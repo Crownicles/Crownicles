@@ -28,19 +28,3 @@ export type RecruitingGuild = {
 	minScore: number;
 	blocker?: GuildJoinBlocker;
 };
-
-/** The minimum scores a chief can pick from; a RestWs test keeps them equal to Lib's steps. */
-export const GUILD_RECRUITMENT_MIN_SCORE_STEPS = [
-	0,
-	500,
-	1_000,
-	2_500,
-	5_000,
-	10_000,
-	25_000,
-	50_000,
-	100_000,
-	250_000,
-	500_000,
-	1_000_000
-] as const;

@@ -72,6 +72,15 @@ describe("pet care screens", () => {
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toEqual(Object.assign(new PetSellReq(), {rank: 12, price: 321}));
 	});
 
+	it("says a price is outside what the server accepts and keeps the offer from being sent", async () => {
+		await render(<PetSale pet={PET} />);
+		await fireEvent.changeText(screen.getByLabelText("app:pet.sale.rank"), "12");
+		await fireEvent.changeText(screen.getByLabelText("app:pet.sale.price"), "50");
+		expect(screen.getByText("app:inputIssues.belowMin")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:pet.sale.offer"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+
 	it.each(["seller", "buyer"])("offers only the authenticated %s controls with original indices", async role => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {id: "sale", endTime: Date.now() + 60_000, data: {type: "petSell", data: {pet: PET, price: 321, role}}, reactions: [{type: "unknown", data: {serverType: "future"}}, {type: "accept", data: {}}, {type: "refuse", data: {}}]});
 		const onChoose = jest.fn();
@@ -88,14 +97,23 @@ describe("pet care screens", () => {
 	});
 
 	it("submits a nickname and reports the server validation error", async () => {
-		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: Object.assign(new PetNickRes(), {foundPet: true, nickNameIsAcceptable: false, newNickname: "!"})});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: Object.assign(new PetNickRes(), {foundPet: true, nickNameIsAcceptable: false, newNickname: "Brume"})});
 		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
 		await render(<QueryClientProvider client={client}><PetNickname pet={PET} /></QueryClientProvider>);
-		await fireEvent.changeText(screen.getByLabelText("app:pet.care.newNickname"), "!");
+		await fireEvent.changeText(screen.getByLabelText("app:pet.care.newNickname"), " Brume ");
 		await fireEvent.press(screen.getByText("app:pet.care.save"));
 		await waitFor(() => expect(screen.getByText("app:pet.care.invalidNickname")).toBeTruthy());
 		expect(GameClient.request).toHaveBeenCalledWith(expect.any(PetNickReq), expect.any(Function), expect.any(Array));
-		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({newNickname: "!"});
+		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({newNickname: "Brume"});
+	});
+
+	it("says why a typed nickname is refused and keeps it from being sent", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><PetNickname pet={PET} /></QueryClientProvider>);
+		await fireEvent.changeText(screen.getByLabelText("app:pet.care.newNickname"), "Rex!!");
+		expect(screen.getByText("app:inputIssues.doublePunctuation")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:pet.care.save"));
+		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 
 	it("clears the nickname only after the server confirms it", async () => {

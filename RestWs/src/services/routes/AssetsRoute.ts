@@ -11,6 +11,7 @@ import { createHash } from "node:crypto";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { getRequestLoggerMetadata } from "../RestApi";
+import { buildGameRules } from "../GameRules";
 
 const assets: Map<string, string> = new Map();
 const assetsHashes: Map<string, string> = new Map();
@@ -77,6 +78,7 @@ async function computeAssets(debugMode: boolean): Promise<void> {
 	languageBundles.clear();
 	await computeLanguagesAssets(debugMode);
 	computeIconsAssets();
+	const rules = buildGameRules();
 	for (const language of LANGUAGE.LANGUAGES) {
 		const namespaces: Record<string, object> = {};
 		for (const [file, content] of assets.entries()) {
@@ -88,7 +90,8 @@ async function computeAssets(debugMode: boolean): Promise<void> {
 		const bundle: AssetsBundle = {
 			language,
 			namespaces,
-			icons: JSON.parse(assets.get("icons.json")!) as Record<string, unknown>
+			icons: JSON.parse(assets.get("icons.json")!) as Record<string, unknown>,
+			rules
 		};
 		const json = JSON.stringify(bundle);
 		languageBundles.set(language, {

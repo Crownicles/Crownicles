@@ -29,7 +29,7 @@ import {useMissions} from "@/src/components/Missions";
 import {i18n} from "@/src/translations/i18n";
 import {fakeAppState} from "@/src/testing/fakeAppState";
 import {travelAdvicePreference} from "@/src/preferences/TravelAdvicePreference";
-import {ONBOARDING_TRIALS} from "ws-packets/src/objects/Onboarding";
+import {fakeGameRules} from "@/src/testing/fakeGameRules";
 import {PLAYER_EFFECTS} from "ws-packets/src/objects/PlayerUtility";
 import {ADVENTURE_MISSIONS, ADVENTURE_TOOL_NAMES, ADVENTURE_TOOL_PARAM} from "@/src/navigation/AdventureTools";
 
@@ -122,7 +122,7 @@ function mockReport(travel = report(), reportReady = false): ReportViewRes {
 
 /** A contest candidate whose current campaign mission is the given one, at its campaign position. */
 function mockContestAt(missionId: string): void {
-	const campaignProgression = ONBOARDING_TRIALS.flatMap(trial => trial.missions).findIndex(id => id === missionId) + 1;
+	const campaignProgression = fakeGameRules.onboardingTrials.flatMap(trial => trial.missions).findIndex(id => id === missionId) + 1;
 	jest.mocked(useMissions).mockReturnValue({status: "ready", data: {
 		campaignProgression,
 		missions: [{missionId, missionType: MISSION_TYPES.CAMPAIGN, missionVariant: 0, missionObjective: 1, numberDone: 0}]

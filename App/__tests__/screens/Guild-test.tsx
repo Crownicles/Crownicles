@@ -137,6 +137,22 @@ describe("guild screens", () => {
 		expect(request).toMatchObject({askedGuildName: "Aurore"});
 		expect(request).not.toHaveProperty("keycloakId");
 	});
+	it("says why a typed guild name is refused and keeps it from being sent", async () => {
+		await render(<GuildCreation />);
+		await fireEvent.changeText(screen.getByLabelText("app:guild.name"), "Rois_");
+		expect(screen.getByText("app:inputIssues.forbiddenCharacter")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:guild.create"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+	it("sends the name as the keyboard typed it, trimmed and with a straight apostrophe", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		await render(<GuildCreation />);
+		await fireEvent.changeText(screen.getByLabelText("app:guild.name"), "L’Ordre ");
+		expect(screen.queryByText(/^app:inputIssues\./u)).toBeNull();
+		await fireEvent.press(screen.getByText("app:guild.create"));
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
+		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({askedGuildName: "L'Ordre"});
+	});
 	it.each([
 		{case: "sailing", cannotBeJoinedOnBoat: false, requested: true},
 		{case: "sailing for too long", cannotBeJoinedOnBoat: true, requested: false}

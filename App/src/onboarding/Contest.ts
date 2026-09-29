@@ -1,12 +1,15 @@
 import {useEffect} from "react";
 import {MissionsRes} from "ws-packets/src/fromServer/missions/MissionsRes";
 import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
-import {ONBOARDING_TRIALS, OnboardingTrialId} from "ws-packets/src/objects/Onboarding";
+import {OnboardingTrialId} from "ws-packets/src/objects/Onboarding";
+import {gameRules} from "@/src/rules/GameRules";
 import {useMissions} from "@/src/components/Missions";
 import {ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
 
 /** The contest covers the first campaign positions, 1-indexed like `campaignProgression`. */
-export const CONTEST_LENGTH = ONBOARDING_TRIALS.reduce((length, trial) => length + trial.missions.length, 0);
+export function contestLength(): number {
+	return gameRules().onboardingTrials.reduce((length, trial) => length + trial.missions.length, 0);
+}
 
 /** Core sends 0 once the whole campaign is completed. */
 const CAMPAIGN_COMPLETED = 0;
@@ -21,12 +24,12 @@ export type ContestView = {
 };
 
 export function isContestRunning(progression: number): boolean {
-	return progression !== CAMPAIGN_COMPLETED && progression <= CONTEST_LENGTH;
+	return progression !== CAMPAIGN_COMPLETED && progression <= contestLength();
 }
 
 function trialAt(progression: number): OnboardingTrialId | null {
 	let lastPosition = 0;
-	return ONBOARDING_TRIALS.find(trial => {
+	return gameRules().onboardingTrials.find(trial => {
 		lastPosition += trial.missions.length;
 		return progression <= lastPosition;
 	})?.id ?? null;
