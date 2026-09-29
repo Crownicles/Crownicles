@@ -212,6 +212,15 @@
       "hint": "Des astuces sur le jeu apparaissent sur la page Aventure à partir du niveau 5."
     },
     "developerMode": "Mode développeur",
+    "testCommands": {
+      "title": "Commandes test",
+      "hint": "Les mêmes commandes que /test sur Discord. Plusieurs commandes peuvent s'enchaîner avec &&.",
+      "command": "Commande et arguments",
+      "run": "Exécuter",
+      "results": "Résultats",
+      "clear": "Effacer",
+      "disabled": "Ce serveur n'est pas en mode test : les commandes test y sont désactivées."
+    },
     "coreVersion": "Version du moteur",
     "ping": "Ping",
     "logout": "Se déconnecter",

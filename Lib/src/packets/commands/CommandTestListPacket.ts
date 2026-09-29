@@ -15,6 +15,9 @@ export class CommandTestListPacketReq extends CrowniclesPacket {
  */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandTestListPacketRes extends CrowniclesPacket {
+	/** Whether this Core runs the test commands at all; outside test mode they are silently ignored. */
+	testMode!: boolean;
+
 	/**
 	 * Array of test commands with their names and aliases
 	 */
@@ -22,5 +25,7 @@ export class CommandTestListPacketRes extends CrowniclesPacket {
 		name: string;
 		aliases?: string[];
 		category?: string;
+		description?: string;
+		format?: string;
 	}>;
 }

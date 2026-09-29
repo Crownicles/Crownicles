@@ -191,6 +191,11 @@ export default function Index() {
 						) : null}
 					</ListItem>
 				)}
+				{preferences.getDevMode() && (
+					<ListItem>
+						<DesignButton onPress={() => router.push("/settings/test-commands")}>{i18n.t("app:settings.testCommands.title")}</DesignButton>
+					</ListItem>
+				)}
 				<ListItem>
 					<DesignButton variant="danger" onPress={() => {
 						cancelReportNotification();
