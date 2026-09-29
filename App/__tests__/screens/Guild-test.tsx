@@ -1,12 +1,12 @@
 import {fireEvent, render, screen, waitFor} from "@testing-library/react-native";
-import {GuildOverview, GuildCreation} from "@/src/components/Guild";
+import {GuildOverview, GuildCreation, GuildDeparture} from "@/src/components/Guild";
 import {GuildData, GuildMember, GuildMembership} from "ws-packets/src/objects/Guild";
 import {GameClient} from "@/src/networking/GameClient";
 import {GuildCreateReq} from "ws-packets/src/fromClient/GuildReq";
 import {GuildCreateCollector} from "@/src/collectors/GuildCreateCollector";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GuildInvitation, GuildInvitePlayer} from "@/src/components/GuildMembers";
-import {GuildInvitePlayerReq, GuildInviteReq} from "ws-packets/src/fromClient/GuildManagementReq";
+import {GuildInvitePlayerReq, GuildInviteReq, GuildLeaveReq} from "ws-packets/src/fromClient/GuildManagementReq";
 import {JoinBoatReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
 import {GuildDomainContent} from "@/src/components/GuildDomain";
 import {GuildDomainSnapshot} from "ws-packets/src/objects/GuildDomain";
@@ -72,6 +72,11 @@ describe("guild screens", () => {
 		expect(screen.getByText("Marchands loyaux")).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:pet.care.save"));
 		expect(choose).toHaveBeenCalledWith(1);
+	});
+	it("tells the chief how to found a domain instead of listing buildings that do not exist yet", async () => {
+		await render(<GuildDomainContent domain={{...DOMAIN, domainCityId: null}} />);
+		expect(screen.getByText("app:guild.domainLocks.none")).toBeTruthy();
+		expect(screen.queryByText("app:guildDomain.buildings")).toBeNull();
 	});
 	it.each([
 		{kind: "deposit", Packet: GuildDomainDepositReq, expected: {amount: 1000}, confirm: "app:guildDomain.confirmDeposit"},
@@ -140,23 +145,24 @@ describe("guild screens", () => {
 		await fireEvent.press(screen.getByText("app:guild.pages.storage"));
 		expect(onPage).toHaveBeenCalledWith("storage");
 	});
-	it.each([
-		{case: "no domain", domain: {established: false, isInCity: false}, chiefId: 7, lock: "app:guild.domainLocks.none"},
-		{case: "not the chief", domain: {established: true, isInCity: true}, chiefId: 99, lock: "app:guild.domainLocks.chiefOnly"},
-		{case: "away from the city", domain: {established: true, isInCity: false, mapLocationId: 3}, chiefId: 7, lock: "app:guild.domainLocks.away"}
-	])("locks the domain and says why when $case", async scenario => {
+	it("shows the domain to the chief alone, and the way out to the other members instead", async () => {
 		const onPage = jest.fn();
-		await render(<GuildOverview guild={guildData({chiefId: scenario.chiefId, membership: {...MEMBERSHIP, domain: scenario.domain}})} onPage={onPage} />);
-		expect(screen.getByText(scenario.lock)).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:guild.pages.domain"));
-		expect(onPage).not.toHaveBeenCalled();
-	});
-	it("opens the domain once the chief stands in its city", async () => {
-		const onPage = jest.fn();
-		await render(<GuildOverview guild={guildData()} onPage={onPage} />);
-		expect(screen.queryByTestId("guild-domain-lock")).toBeNull();
+		const away = {...MEMBERSHIP, domain: {established: true, isInCity: false, mapLocationId: 3}};
+		const view = await render(<GuildOverview guild={guildData({membership: away})} onPage={onPage} />);
+		expect(screen.queryByText("app:guild.pages.leave")).toBeNull();
 		await fireEvent.press(screen.getByText("app:guild.pages.domain"));
 		expect(onPage).toHaveBeenCalledWith("domain");
+		await view.rerender(<GuildOverview guild={guildData({chiefId: 99, membership: away})} onPage={onPage} />);
+		expect(screen.queryByText("app:guild.pages.domain")).toBeNull();
+		await fireEvent.press(screen.getByText("app:guild.pages.leave"));
+		expect(onPage).toHaveBeenLastCalledWith("leave");
+	});
+	it("warns before asking Core to leave, from the departure page", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		await render(<GuildDeparture guild={guildData({members: [SELF]})} />);
+		expect(screen.getByText("app:guild.dissolveWarning")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:guild.leave"));
+		await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(GuildLeaveReq));
 	});
 	it.each([
 		{case: "the cooldown is running", daily: {availableAt: Date.now() + 3_600_000, blockedByIsland: false}, lock: "app:guild.dailyLocks.cooldown"},

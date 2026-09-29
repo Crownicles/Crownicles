@@ -231,17 +231,19 @@ export function GuildDomainContent({domain}: {domain: GuildDomainSnapshot}): Rea
 	return <>
 		<DomainStanding domain={domain} />
 		{message ? <Refusal>{message}</Refusal> : null}
-		<SectionHeader>{i18n.t("app:guildDomain.buildings")}</SectionHeader>
-		<ExpandableList>{Object.values(GuildBuilding).map(value => <BuildingEntry
-			key={value}
-			domain={domain}
-			building={value}
-			actions={actions}
-			expanded={building === value}
-			onSelect={(selected): void => setBuilding(current => current === selected ? null : selected)}
-			onTransfer={(): void => router.push("/guild/shelter")}
-		/>)}</ExpandableList>
-		<DomainDeposits domain={domain} actions={actions} openAmount={openAmount} onOpen={setOpenAmount} />
+		{domain.domainCityId === null ? <Note>{i18n.t("app:guild.domainLocks.none")}</Note> : <>
+			<SectionHeader>{i18n.t("app:guildDomain.buildings")}</SectionHeader>
+			<ExpandableList>{Object.values(GuildBuilding).map(value => <BuildingEntry
+				key={value}
+				domain={domain}
+				building={value}
+				actions={actions}
+				expanded={building === value}
+				onSelect={(selected): void => setBuilding(current => current === selected ? null : selected)}
+				onTransfer={(): void => router.push("/guild/shelter")}
+			/>)}</ExpandableList>
+			<DomainDeposits domain={domain} actions={actions} openAmount={openAmount} onOpen={setOpenAmount} />
+		</>}
 	</>;
 }
 

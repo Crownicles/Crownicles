@@ -18,7 +18,7 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {GuildBoatBoarding, GuildInvitation, GuildMemberControls} from "@/src/components/GuildMembers";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {Button, ButtonRow, EmptyState, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Figure, Figures, Lock, LockHint, Refusal, useSectionStyles, Standing} from "@/src/design/Sections";
+import {ActionBanner, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Figure, Figures, Lock, Refusal, useSectionStyles, Standing} from "@/src/design/Sections";
 import {TextField} from "@/src/design/Inputs";
 import {FormBlock} from "@/src/design/KeyboardAvoidance";
 import {guildPacketRefusal} from "@/src/collectors/GuildOutcome";
@@ -33,7 +33,7 @@ import {i18n} from "@/src/translations/i18n";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 import {GuildJoinOffer, RecruitmentSettings} from "@/src/components/GuildRecruitment";
 
-export type GuildPage = "storage" | "shelter" | "manage" | "domain" | "rankings";
+export type GuildPage = "storage" | "shelter" | "domain" | "rankings" | "leave";
 const CREATE_MENU: CommandMenu = {request: GuildCreateReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal};
 const DAILY_MENU: CommandMenu = {request: GuildDailyReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal};
 const DESCRIPTION_MENU: CommandMenu = {request: GuildDescriptionReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal};
@@ -41,8 +41,8 @@ const LEAVE_MENU: CommandMenu = {request: GuildLeaveReq, emptyPacket: PlayerNotF
 
 /** Only the whereabouts another member can act upon are worth a word; the rest is noise. */
 const TRAVEL_STATUSES = ["isOnPveIsland", "isOnBoat"] as const;
-const GUILD_PAGES = ["storage", "shelter", "domain", "rankings", "manage"] as const;
-const PAGE_ICONS = {storage: "foods.commonFood", shelter: "other.pet", domain: "city.guildDomain.menu", rankings: "top.congrats", manage: "guild.chief"} as const;
+const GUILD_PAGES = ["storage", "shelter", "domain", "rankings", "leave"] as const;
+const PAGE_ICONS = {storage: "foods.commonFood", shelter: "city.guildDomain.shelter", domain: "city.guildDomain.menu", rankings: "top.congrats", leave: "city.exit"} as const;
 const MILLISECONDS_PER_MINUTE = 60_000;
 
 const useStyles = createStyles(colors => ({
@@ -201,33 +201,33 @@ function GuildDescriptionForm({guild, lock}: {guild: GuildData; lock?: Lock}): R
 	</>;
 }
 
-function GuildDeparture({guild}: {guild: GuildData}): ReactNode {
+/** Leaving has a page of its own, so the warning is read before the confirmation. */
+export function GuildDeparture({guild}: {guild: GuildData}): ReactNode {
 	const {pending, message, open} = useCommandMenus();
-	const dissolves = guild.members.length === 1;
 	return <>
-		<SectionHeader>{i18n.t("app:guild.membership")}</SectionHeader>
-		<Note>{i18n.t(dissolves ? "app:guild.dissolveWarning" : "app:guild.leaveWarning", {name: guild.name})}</Note>
+		<Note>{i18n.t(guild.members.length === 1 ? "app:guild.dissolveWarning" : "app:guild.leaveWarning", {name: guild.name})}</Note>
 		{message ? <Refusal>{message}</Refusal> : null}
 		<ButtonRow><Button variant="danger" icon={LogOut} disabled={pending} onPress={(): Promise<void> => open(LEAVE_MENU)}>{i18n.t("app:guild.leave")}</Button></ButtonRow>
 	</>;
 }
 
+/** The chief finds the way out inside the domain rather than beside everyday pages. */
+export function GuildDepartureLink(): ReactNode {
+	const router = useRouter();
+	return <>
+		<SectionHeader>{i18n.t("app:guild.membership")}</SectionHeader>
+		<ButtonRow><Button icon={LogOut} onPress={(): void => router.push("/guild/leave")}>{i18n.t("app:guild.leave")}</Button></ButtonRow>
+	</>;
+}
+
+/** The chief's levers, found inside the domain since only the chief enters it. */
 export function GuildManagement({guild}: {guild: GuildData}): ReactNode {
 	const self = guild.members.find(entry => entry.isSelf);
-	const role = self ? memberRole(self, guild) : "member";
-	const lock = role === "member" ? {reason: i18n.t("app:guild.forbidden")} : undefined;
+	const lock = self && memberRole(self, guild) !== "member" ? undefined : {reason: i18n.t("app:guild.forbidden")};
 	return <>
-		<Standing
-			emblem={<MemberEmblem role={role} size={40} />}
-			caption={i18n.t("app:guild.pages.manage")}
-			title={guild.name}
-			subtitle={i18n.t("app:guild.yourRole", {role: i18n.t(`app:guild.roles.${role}`)})}
-			testID="guild-management-standing"
-		/>
 		<GuildDescriptionForm guild={guild} {...lock ? {lock} : {}} />
 		<GuildInvitation {...lock ? {lock} : {}} />
 		{lock ? null : <RecruitmentSettings />}
-		<GuildDeparture guild={guild} />
 	</>;
 }
 
@@ -271,29 +271,19 @@ function dailyLock(membership: GuildMembership): Lock | undefined {
 	return {reason: i18n.t("app:guild.dailyLocks.cooldown", {duration: formatDurationMinutes(remaining / MILLISECONDS_PER_MINUTE)}), icon: Clock3};
 }
 
-/** Why the domain cannot be entered, in the order Core enforces: it must exist, you must lead, you must stand there. */
-function domainLock(membership: GuildMembership, isChief: boolean): Lock | undefined {
-	const domain = membership.domain;
-	if (!domain.established) return {reason: i18n.t("app:guild.domainLocks.none")};
-	if (!isChief) return {reason: i18n.t("app:guild.domainLocks.chiefOnly")};
-	if (domain.isInCity) return undefined;
-	return {reason: domain.mapLocationId === undefined
-		? i18n.t("app:guild.domainLocks.awayUnknown")
-		: i18n.t("app:guild.domainLocks.away", {city: i18n.t(`models:map_locations.${domain.mapLocationId}.name`)})};
-}
+type GuildLinksProps = {isChief: boolean; onPage: (page: GuildPage) => void};
 
-function GuildLinks({lock, onPage}: {lock?: Lock; onPage: (page: GuildPage) => void}): ReactNode {
+/** The domain is the chief's alone; the chief leaves from there, everyone else from here. */
+function GuildLinks({isChief, onPage}: GuildLinksProps): ReactNode {
 	const styles = useStyles();
 	return <View style={styles.links}>
 		<QuickActions>
-			{GUILD_PAGES.map(page => <QuickAction
+			{GUILD_PAGES.filter(page => page === "domain" ? isChief : page !== "leave" || !isChief).map(page => <QuickAction
 				key={page}
 				icon={AppIcons.getIcon(PAGE_ICONS[page])}
-				disabled={page === "domain" && lock !== undefined}
 				onPress={(): void => onPage(page)}
 			>{i18n.t(`app:guild.pages.${page}`)}</QuickAction>)}
 		</QuickActions>
-		{lock ? <LockHint lock={lock} testID="guild-domain-lock" /> : null}
 	</View>;
 }
 
@@ -301,7 +291,6 @@ function GuildMemberTools({guild, membership, onPage}: {guild: GuildData; member
 	const {pending, message, open} = useCommandMenus();
 	const isChief = guild.members.some(member => member.isSelf && member.id === guild.chiefId);
 	const daily = dailyLock(membership);
-	const domain = domainLock(membership, isChief);
 	return <>
 		{message ? <Refusal>{message}</Refusal> : null}
 		<ActionBanner
@@ -314,7 +303,7 @@ function GuildMemberTools({guild, membership, onPage}: {guild: GuildData; member
 			}}
 			testID="guild-daily-lock"
 		/>
-		<GuildLinks {...domain ? {lock: domain} : {}} onPage={onPage} />
+		<GuildLinks isChief={isChief} onPage={onPage} />
 	</>;
 }
 
