@@ -19,11 +19,12 @@ import {
 import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
 import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import { PetDataController } from "../../data/Pet";
+import { expeditionStartBlocker } from "../../core/expeditions/ExpeditionValidation";
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 
-type OwnPetDetails = Pick<CommandPetPacketRes, "hasTalisman" | "feedAvailableAt" | "expeditionInProgress">;
+type OwnPetDetails = Pick<CommandPetPacketRes, "hasTalisman" | "feedAvailableAt" | "expeditionInProgress" | "expeditionBlocker">;
 
 async function getExpeditionInProgress(player: Player): Promise<PetExpeditionInfo | undefined> {
 	const currentExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
@@ -42,15 +43,20 @@ async function getExpeditionInProgress(player: Player): Promise<PetExpeditionInf
 }
 
 /**
- * What only the owner gets to see about their own pet: the expedition in progress, the talisman and the feeding cooldown
+ * What only the owner gets to see about their own pet: the expedition in progress, the talisman, the feeding cooldown
+ * and what keeps the pet from leaving
  */
 async function getOwnPetDetails(player: Player, pet: PetEntity): Promise<OwnPetDetails> {
 	const expeditionInProgress = await getExpeditionInProgress(player);
-	const feedCooldown = pet.getFeedCooldown(PetDataController.instance.getById(pet.typeId)!);
+	const petModel = PetDataController.instance.getById(pet.typeId)!;
+	const feedCooldown = pet.getFeedCooldown(petModel);
+	const hasTalisman = (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman;
+	const blocker = hasTalisman ? expeditionStartBlocker(player, pet, petModel) : ExpeditionConstants.ERROR_CODES.NO_TALISMAN;
 	return {
-		hasTalisman: (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman,
+		hasTalisman,
 		...feedCooldown > 0 ? { feedAvailableAt: Date.now() + feedCooldown } : {},
-		...expeditionInProgress ? { expeditionInProgress } : {}
+		...expeditionInProgress ? { expeditionInProgress } : {},
+		...blocker && !expeditionInProgress ? { expeditionBlocker: blocker } : {}
 	};
 }
 

@@ -763,6 +763,11 @@
       "storage": "Entrepôt de la guilde : {{amount}} / {{max}}",
       "unavailable": "Nourrissage interrompu",
       "continue": "Revenir à mon familier",
+      "empty": {
+        "title": "La gamelle reste vide",
+        "description": "{{pet}} renifle sa gamelle, puis lève vers vous un regard déçu : l'entrepôt de la guilde n'a plus une seule ration à offrir.",
+        "refill": "L'entrepôt se remplit grâce au garde-manger du domaine, qui produit des rations chaque jour une fois construit, et au marchand de la guilde, qui en vend en ville."
+      },
       "errors": {
         "expedition": "Votre familier est actuellement en expédition.",
         "emptyStorage": "Cette nourriture n'est plus disponible dans l'entrepôt de la guilde."

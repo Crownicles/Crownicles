@@ -89,10 +89,10 @@ function PetMainAction({packet, menus, onExpedition}: {packet: PetRes; menus: Co
 }
 
 /** What can be done with a pet at home: caress it or send it away. On expedition, it is out of reach. */
-function PetHomeActions({actions, patience, noTalisman, menus, onExpedition}: {
+function PetHomeActions({actions, patience, expeditionLocked, menus, onExpedition}: {
 	actions: PetActions;
 	patience: PetPatience;
-	noTalisman: Lock | undefined;
+	expeditionLocked: boolean;
 	menus: CommandMenuState;
 	onExpedition: () => void;
 }): ReactNode {
@@ -102,18 +102,18 @@ function PetHomeActions({actions, patience, noTalisman, menus, onExpedition}: {
 				if (petted) patience.stroke();
 			}).catch(console.error);
 		}}>{i18n.t("app:pet.care.caress")}</QuickAction>
-		<QuickAction icon={AppIcons.getIcon("expedition.map")} disabled={menus.pending || Boolean(noTalisman)} onPress={onExpedition}>{i18n.t("app:expedition.open")}</QuickAction>
+		<QuickAction icon={AppIcons.getIcon("expedition.map")} disabled={menus.pending || expeditionLocked} onPress={onExpedition}>{i18n.t("app:expedition.open")}</QuickAction>
 	</>;
 }
 
-/** Only a pet at home without an anchor talisman is kept from leaving on an expedition. */
-function talismanLock(packet: PetRes): Lock | undefined {
-	return packet.hasTalisman || packet.expeditionInProgress ? undefined : {reason: i18n.t("app:expedition.errors.noTalisman")};
+/** What keeps a pet at home from leaving, as Core tells it; a pet already away is followed, not sent. */
+function expeditionLock(packet: PetRes): Lock | undefined {
+	return packet.expeditionBlocker && !packet.expeditionInProgress ? {reason: i18n.t(`app:expedition.errors.${packet.expeditionBlocker}`)} : undefined;
 }
 
-function PetLocks({noTalisman, hadEnough, pet}: {noTalisman: Lock | undefined; hadEnough: boolean; pet: PetRes["pet"]}): ReactNode {
+function PetLocks({expedition, hadEnough, pet}: {expedition: Lock | undefined; hadEnough: boolean; pet: PetRes["pet"]}): ReactNode {
 	return <>
-		{noTalisman ? <LockHint lock={noTalisman} testID="pet-expedition-lock" /> : null}
+		{expedition ? <LockHint lock={expedition} testID="pet-expedition-lock" /> : null}
 		{hadEnough ? <LockHint lock={{reason: i18n.t("app:pet.care.enough", {pet: petName(pet)}), icon: Clock3}} testID="pet-caress-lock" /> : null}
 	</>;
 }
@@ -134,7 +134,7 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 	const menus = useCommandMenus();
 	const patience = usePetPatience();
 	useGameDeadline(GAME_ENTITIES.PET, expedition?.endTime ?? null);
-	const noTalisman = talismanLock(packet);
+	const expeditionBlocked = expeditionLock(packet);
 	const openExpedition = (): void => {
 		menus.open(EXPEDITION_MENU).catch(console.error);
 	};
@@ -144,11 +144,11 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 		{message ? <Refusal>{message}</Refusal> : null}
 		<PetMainAction packet={packet} menus={menus} onExpedition={openExpedition} />
 		<QuickActions>
-			{expedition ? null : <PetHomeActions actions={actions} patience={patience} noTalisman={noTalisman} menus={menus} onExpedition={openExpedition} />}
+			{expedition ? null : <PetHomeActions actions={actions} patience={patience} expeditionLocked={expeditionBlocked !== undefined} menus={menus} onExpedition={openExpedition} />}
 			<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={(): void => onPage("rename")}>{i18n.t("app:pet.care.rename")}</QuickAction>
 			<QuickAction icon={AppIcons.getIcon("unitValues.money")} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>
 		</QuickActions>
-		<PetLocks noTalisman={noTalisman} hadEnough={patience.hadEnough} pet={pet} />
+		<PetLocks expedition={expeditionBlocked} hadEnough={patience.hadEnough} pet={pet} />
 		<PetRelease menus={menus} />
 	</>;
 }

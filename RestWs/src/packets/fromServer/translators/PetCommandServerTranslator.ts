@@ -14,7 +14,8 @@ export default class PetCommandServerTranslator {
 			pet: packet.pet,
 			...packet.hasTalisman === undefined ? {} : { hasTalisman: packet.hasTalisman },
 			...packet.feedAvailableAt === undefined ? {} : { feedAvailableAt: packet.feedAvailableAt },
-			...packet.expeditionInProgress === undefined ? {} : { expeditionInProgress: packet.expeditionInProgress }
+			...packet.expeditionInProgress === undefined ? {} : { expeditionInProgress: packet.expeditionInProgress },
+			...packet.expeditionBlocker === undefined ? {} : { expeditionBlocker: packet.expeditionBlocker }
 		});
 	}
 

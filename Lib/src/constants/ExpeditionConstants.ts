@@ -839,6 +839,9 @@ export type {
 } from "./PetExpeditionPreferences";
 
 export type ExpeditionStatus = (typeof ExpeditionConstants.STATUS)[keyof typeof ExpeditionConstants.STATUS];
+
+/** What keeps a pet at home from leaving on an expedition, so a front-end can say it before the player asks. */
+export type ExpeditionStartBlocker = typeof ExpeditionConstants.ERROR_CODES["NO_TALISMAN" | "INSUFFICIENT_LOVE" | "PET_HUNGRY" | "NOT_ON_CONTINENT"];
 export type ExpeditionLocationType = (typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES)[keyof typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES];
 export type RewardWeights = Record<"money" | "experience" | "points", number>;
 export type SpeedCategory = (typeof ExpeditionConstants.SPEED_CATEGORIES)[keyof typeof ExpeditionConstants.SPEED_CATEGORIES];

@@ -36,15 +36,20 @@ const BOARDER = {typeId: 8, nickname: null, rarity: 2, sex: "f" as const, loveLe
 describe("pet care screens", () => {
 	beforeEach(() => jest.clearAllMocks());
 
-	it("refuses an expedition without the talisman and says why", async () => {
+	it.each([
+		{blocker: "noTalisman" as const},
+		{blocker: "insufficientLove" as const},
+		{blocker: "petHungry" as const},
+		{blocker: "notOnContinent" as const}
+	])("refuses an expedition Core would turn down ($blocker) and says why", async ({blocker}) => {
 		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
-		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: false})} onPage={jest.fn()} /></QueryClientProvider>);
-		expect(screen.getByTestId("pet-expedition-lock")).toBeTruthy();
+		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: blocker !== "noTalisman", expeditionBlocker: blocker})} onPage={jest.fn()} /></QueryClientProvider>);
+		expect(screen.getByText(`app:expedition.errors.${blocker}`)).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:expedition.open"));
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 
-	it("opens the expedition once the talisman is owned", async () => {
+	it("opens the expedition once nothing keeps the pet home", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
 		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
 		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: true})} onPage={jest.fn()} /></QueryClientProvider>);
@@ -178,6 +183,16 @@ describe("pet care screens", () => {
 		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: false, error: PET_FEED_ERRORS.NO_MONEY}} onContinue={jest.fn()} /></QueryClientProvider>);
 		expect(screen.queryByTestId("pet-feast", {includeHiddenElements: true})).toBeNull();
 		expect(screen.getByText("commands:petFeed.noMoney")).toBeTruthy();
+	});
+
+	it("shows the pet at its empty bowl, and how the storage fills up, when the guild has no food left", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		client.setQueryData(gameKey(GAME_ENTITIES.PET), {kind: "answer", packet: Object.assign(new PetRes(), {pet: PET})});
+		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: false, error: PET_FEED_ERRORS.EMPTY_STORAGE}} onContinue={jest.fn()} /></QueryClientProvider>);
+		expect(screen.getByTestId("pet-empty-bowl", {includeHiddenElements: true})).toBeTruthy();
+		expect(screen.getByText("app:pet.feed.empty.title")).toBeTruthy();
+		expect(screen.getByText("app:pet.feed.empty.refill")).toBeTruthy();
+		expect(screen.queryByText("commands:petFeed.guildStorageEmpty")).toBeNull();
 	});
 
 	it("gives the meal result a way back to the game", async () => {

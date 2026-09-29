@@ -2,7 +2,9 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import { OwnedPet } from "../../types/OwnedPet";
-import { ExpeditionLocationType } from "../../constants/ExpeditionConstants";
+import {
+	ExpeditionLocationType, ExpeditionStartBlocker
+} from "../../constants/ExpeditionConstants";
 
 /**
  * Data for an expedition in progress, used in /pet display
@@ -46,6 +48,11 @@ export class CommandPetPacketRes extends CrowniclesPacket {
 	 * Current expedition in progress, if any
 	 */
 	expeditionInProgress?: PetExpeditionInfo;
+
+	/**
+	 * Why the pet cannot leave on an expedition right now; absent when it can, or while it is away
+	 */
+	expeditionBlocker?: ExpeditionStartBlocker;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

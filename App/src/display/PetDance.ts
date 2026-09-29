@@ -10,7 +10,7 @@ import {PET_FEED_RESULTS, PetFeedResult} from "ws-packets/src/objects/PetFood";
 export const PET_DANCES = {
 	HOP: "hop", WIGGLE: "wiggle", SPIN: "spin", BOUNCE: "bounce", SWAY: "sway", POUNCE: "pounce",
 	NUZZLE: "nuzzle", PURR: "purr", WAG: "wag", STRETCH: "stretch", MELT: "melt", LEAN: "lean",
-	HUFF: "huff"
+	HUFF: "huff", SNIFF: "sniff"
 } as const;
 export type PetDance = typeof PET_DANCES[keyof typeof PET_DANCES];
 
@@ -34,7 +34,8 @@ const DANCE_FRAMES = {
 	stretch: {lift: [0, -4, -7, -3, 0, 0], drift: [0, -4, -7, -2, 0, 0], tilt: [0, -7, -12, -4, 0, 0], scale: [1, 1.07, 1.11, 1.03, 1, 1]},
 	melt: {lift: [0, 3, 6, 4, 1, 0], drift: STILL, tilt: [0, 5, 10, 6, 2, 0], scale: [1, 0.97, 0.94, 0.97, 1, 1]},
 	lean: {lift: [0, -3, -2, -3, 0, 0], drift: [0, 8, 11, 6, 2, 0], tilt: [0, 7, 11, 6, 2, 0], scale: STEADY},
-	huff: {lift: [0, -3, -1, -2, 0, 0], drift: [0, -12, -17, -12, -5, 0], tilt: [0, -16, -22, -14, -5, 0], scale: [1, 0.97, 0.94, 0.96, 0.99, 1]}
+	huff: {lift: [0, -3, -1, -2, 0, 0], drift: [0, -12, -17, -12, -5, 0], tilt: [0, -16, -22, -14, -5, 0], scale: [1, 0.97, 0.94, 0.96, 0.99, 1]},
+	sniff: {lift: [0, 2, 0, 2, 6, 0], drift: [0, -10, -13, -10, -4, 0], tilt: [0, -14, -9, -14, -6, 0], scale: [1, 1, 1.03, 1, 0.93, 1]}
 } as const satisfies Record<PetDance, DanceFrames>;
 
 /** A meal is celebrated; a stroke is answered in a quieter register, where the pet leans into the hand. */
@@ -61,6 +62,9 @@ export function feastFrames(pet: OwnedPet, result: PetFeedResult): DanceFrames {
 export function caressFrames(pet: OwnedPet, hadEnough = false): DanceFrames {
 	return DANCE_FRAMES[caressDance(pet, hadEnough)];
 }
+
+/** Every species noses an empty bowl the same way before its shoulders drop; the bowl sits on the side the emoji faces. */
+export const EMPTY_BOWL_FRAMES: DanceFrames = DANCE_FRAMES[PET_DANCES.SNIFF];
 
 /** How much the meal pleased the pet decides how long it keeps dancing, and how much it sparkles. */
 const FEED_ENCORES = {

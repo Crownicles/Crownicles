@@ -1,5 +1,8 @@
 import { FromServerPacket } from "../FromServerPacket";
 import { OwnedPet } from "../../objects/OwnedPet";
+import { EXPEDITION_ERRORS } from "../../objects/PetExpedition";
+
+export type ExpeditionStartBlocker = typeof EXPEDITION_ERRORS["NO_TALISMAN" | "INSUFFICIENT_LOVE" | "PET_HUNGRY" | "NOT_ON_CONTINENT"];
 
 export const EXPEDITION_LOCATION_TYPES = {
 	FOREST: "forest",
@@ -45,4 +48,9 @@ export class PetRes extends FromServerPacket {
 	feedAvailableAt?: number;
 
 	expeditionInProgress?: PetExpedition;
+
+	/**
+	 * Why the pet cannot leave on an expedition right now; absent when it can, or while it is away.
+	 */
+	expeditionBlocker?: ExpeditionStartBlocker;
 }

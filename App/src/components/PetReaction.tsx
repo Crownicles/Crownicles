@@ -2,19 +2,23 @@ import {ReactNode, useEffect, useState} from "react";
 import {Animated, Easing, View} from "react-native";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {PetFeedResult} from "ws-packets/src/objects/PetFood";
-import {DANCE_TIMELINE, DanceFrames, caressFrames, feastFrames, feedEncore} from "@/src/display/PetDance";
+import {DANCE_TIMELINE, DanceFrames, EMPTY_BOWL_FRAMES, caressFrames, feastFrames, feedEncore} from "@/src/display/PetDance";
 import {petIcon} from "@/src/display/PetDisplay";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {Heart, LucideIcon, Sparkles} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
+import {AppIcons} from "@/src/AppIcons";
 
 const DANCE_DURATION = 760;
 const REDUCED_DANCE_DURATION = 120;
 const CARESS_REPEATS = 1;
 const CARESS_HEARTS = 2;
 const FEAST_PET_SIZE = 52;
+const EMPTY_BOWL_SNIFFS = 2;
+const BOWL_SIZE = 34;
+const EMPTY_BOWL_OPACITY = 0.55;
 
 /** The motes drift out of the pet in mismatched sizes, so a handful never looks like a row. */
 const MOTE_SIZES = [14, 10, 16] as const;
@@ -23,6 +27,7 @@ const MOTE_DRIFTS = [-6, 4, 10] as const;
 const useStyles = createStyles(() => ({
 	feast: {height: 78, alignItems: "center", justifyContent: "center"},
 	stage: {alignItems: "center", justifyContent: "center"},
+	bowlScene: {flexDirection: "row", alignItems: "flex-end", justifyContent: "center", gap: Theme.spacing.lg, paddingVertical: Theme.spacing.md},
 	motes: {position: "absolute", top: -18, flexDirection: "row", alignItems: "flex-end", gap: Theme.spacing.sm}
 }));
 
@@ -83,6 +88,17 @@ export function PetFeast({pet, result, play}: {pet: OwnedPet; result: PetFeedRes
 			<DanceMotes count={sparkles} icon={Sparkles} color={colors.gold} progress={progress} />
 			<DancingPet pet={pet} size={FEAST_PET_SIZE} frames={feastFrames(pet, result)} progress={progress} />
 		</View>
+	</View>;
+}
+
+/** Nothing is left in the guild's storage: the pet noses its empty bowl, then gives up. */
+export function PetEmptyBowl({pet, play}: {pet: OwnedPet | undefined; play: number}): ReactNode {
+	const styles = useStyles();
+	const progress = useDance(EMPTY_BOWL_SNIFFS, play);
+	const bowl = AppIcons.getIconOrNull("petInformation.diet");
+	return <View style={styles.bowlScene} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" testID="pet-empty-bowl">
+		{bowl ? <TwemojiIcon emoji={bowl} size={BOWL_SIZE} opacity={EMPTY_BOWL_OPACITY} /> : null}
+		{pet ? <DancingPet pet={pet} size={FEAST_PET_SIZE} frames={EMPTY_BOWL_FRAMES} progress={progress} /> : null}
 	</View>;
 }
 

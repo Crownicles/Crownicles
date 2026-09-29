@@ -1,7 +1,9 @@
 import {ReactNode, useState} from "react";
 import {PetFeedOutcome as Outcome} from "ws-packets/src/fromServer/pet/PetCareRes";
 import {PET_FEED_ERRORS} from "ws-packets/src/objects/PetFood";
-import {PetFeast} from "@/src/components/PetReaction";
+import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
+import {PetEmptyBowl, PetFeast} from "@/src/components/PetReaction";
+import {Note} from "@/src/design/Primitives";
 import {useKnownPet} from "@/src/store/useKnownPet";
 import {ActionBanner, Sheet} from "@/src/design/Sections";
 import {PawPrint} from "@/src/design/FightIcons";
@@ -29,21 +31,45 @@ function feedMessage(outcome: Outcome): string {
 	return plainStory(i18n.t(`commands:petFeed.${ERROR_KEYS[outcome.error]}`, {pet}));
 }
 
+type FeedScene = {emblem: ReactNode; title: string; subtitle: string; stage?: ReactNode; hint?: string};
+
+function feedScene(outcome: Outcome, pet: OwnedPet | undefined, play: number, pseudo: string): FeedScene {
+	if (outcome.success) {
+		return {
+			emblem: pet ? <PetFeast pet={pet} result={outcome.result} play={play} /> : null,
+			title: plainStory(i18n.t("commands:petFeed.resultTitle", {pseudo})),
+			subtitle: feedMessage(outcome)
+		};
+	}
+	if (outcome.error === PET_FEED_ERRORS.EMPTY_STORAGE) {
+		return {
+			emblem: null,
+			stage: <PetEmptyBowl pet={pet} play={play} />,
+			title: i18n.t("app:pet.feed.empty.title"),
+			subtitle: i18n.t("app:pet.feed.empty.description", {pet: pet ? petName(pet) : i18n.t("app:pet.eyebrow")}),
+			hint: i18n.t("app:pet.feed.empty.refill")
+		};
+	}
+	return {emblem: null, title: i18n.t("app:pet.feed.unavailable"), subtitle: feedMessage(outcome)};
+}
+
 export function PetFeedOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
 	const pet = useKnownPet();
 	const pseudo = usePlayerPseudo();
 	/** The layer opens over the feeding menu, so the dance waits to be on screen rather than play behind the transition. */
 	const [play, setPlay] = useState(0);
-	const feast = outcome.success && pet ? <PetFeast pet={pet} result={outcome.result} play={play} /> : null;
+	const {emblem, title, subtitle, stage, hint} = feedScene(outcome, pet, play, pseudo);
 	return <Sheet
-		{...feast ? {emblem: feast} : {}}
+		{...emblem ? {emblem} : {}}
 		caption={i18n.t("app:pet.eyebrow")}
-		title={outcome.success ? plainStory(i18n.t("commands:petFeed.resultTitle", {pseudo})) : i18n.t("app:pet.feed.unavailable")}
-		subtitle={feedMessage(outcome)}
+		title={title}
+		subtitle={subtitle}
 		closeLabel={i18n.t("app:common.back")}
 		onShow={(): void => setPlay(1)}
 		onClose={onContinue}
 	>
+		{stage}
+		{hint ? <Note>{hint}</Note> : null}
 		<ActionBanner icon={PawPrint} label={i18n.t("app:pet.feed.continue")} onPress={onContinue} />
 	</Sheet>;
 }

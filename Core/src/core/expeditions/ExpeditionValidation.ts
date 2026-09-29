@@ -1,6 +1,29 @@
 import { PetExpeditions } from "../database/game/models/PetExpedition";
-import { PetEntities } from "../database/game/models/PetEntity";
-import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
+import {
+	PetEntities, PetEntity
+} from "../database/game/models/PetEntity";
+import { Player } from "../database/game/models/Player";
+import { Pet } from "../../data/Pet";
+import { Maps } from "../maps/Maps";
+import {
+	ExpeditionConstants, ExpeditionStartBlocker
+} from "../../../../Lib/src/constants/ExpeditionConstants";
+
+/**
+ * Why a pet at home cannot leave on an expedition right now, in the order it is checked, or null when it can
+ * @param player
+ * @param petEntity
+ * @param petModel
+ */
+export function expeditionStartBlocker(player: Player, petEntity: PetEntity, petModel: Pet): ExpeditionStartBlocker | null {
+	if (petEntity.lovePoints < ExpeditionConstants.REQUIREMENTS.MIN_LOVE_POINTS) {
+		return ExpeditionConstants.ERROR_CODES.INSUFFICIENT_LOVE;
+	}
+	if (petEntity.getFeedCooldown(petModel) <= 0) {
+		return ExpeditionConstants.ERROR_CODES.PET_HUNGRY;
+	}
+	return Maps.isOnContinent(player) ? null : ExpeditionConstants.ERROR_CODES.NOT_ON_CONTINENT;
+}
 
 /**
  * Context for expedition resolution validation - success case
