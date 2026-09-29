@@ -1,4 +1,6 @@
 import {ReactNode} from "react";
+import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
+import {PlayerUtilityRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PLAYER_UTILITY_DATA_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
 import {PlayerUtilityOutcome as Outcome} from "ws-packets/src/objects/PlayerUtility";
@@ -36,13 +38,25 @@ export function PlayerUtilityCollector({collector, onChoose, submitting}: {colle
 	</Sheet>;
 }
 
+/** Why Core turned a request down, or null when the outcome is a result worth its own sheet. */
+export function utilityRefusal(outcome: Outcome): string | null {
+	if (outcome.type === "error") return i18n.t(`app:utilities.errors.${outcome.error}`);
+	return outcome.type === "money" ? i18n.t("app:utilities.moneyError", {money: formatMoney(outcome.money)}) : null;
+}
+
+/** The refusal a utility menu reads from its outcome packet. */
+export function utilityPacketRefusal(packet: FromServerPacket): string | null {
+	return utilityRefusal((packet as PlayerUtilityRes).outcome);
+}
+
 function UtilityResult({outcome}: {outcome: Outcome}): ReactNode {
+	const refusal = utilityRefusal(outcome);
+	if (refusal !== null) return <Note>{refusal}</Note>;
 	switch (outcome.type) {
-		case "error": return <Note>{i18n.t(`app:utilities.errors.${outcome.error}`)}</Note>;
-		case "money": return <Note>{i18n.t("app:utilities.moneyError", {money: formatMoney(outcome.money)})}</Note>;
 		case "respawn": return <Note>{i18n.t("app:utilities.respawned", {lostScore: formatNumber(outcome.lostScore)})}</Note>;
 		case "boat": return <Note>{i18n.t("app:utilities.boatJoined", {score: formatNumber(outcome.score)})}</Note>;
-		default: return <Note>{i18n.t("app:utilities.unlocked", {name: outcome.playerName ?? i18n.t("app:arena.unknownPlayer")})}</Note>;
+		case "unlocked": return <Note>{i18n.t("app:utilities.unlocked", {name: outcome.playerName ?? i18n.t("app:arena.unknownPlayer")})}</Note>;
+		default: return null;
 	}
 }
 

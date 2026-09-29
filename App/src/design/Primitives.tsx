@@ -1,13 +1,16 @@
 import {ReactNode, useEffect, useState} from "react";
 import {impactAsync, ImpactFeedbackStyle} from "expo-haptics";
-import {Animated, Easing, Pressable, type PressableProps, ScrollView, StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle} from "react-native";
+import {Animated, Easing, Platform, Pressable, type PressableProps, ScrollView, StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle} from "react-native";
 import {type Palette, Theme} from "@/src/design/Theme";
 import {LucideIcon} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
-import {useKeyboardClearance} from "@/src/design/useKeyboardClearance";
+import {KeyboardRevealProvider, useKeyboardAvoidance} from "@/src/design/KeyboardAvoidance";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
+
+/** The scroll offset only feeds the keyboard reveal, which needs no finer grain than a frame. */
+const SCROLL_EVENT_THROTTLE_MS = 16;
 
 const screenStylesOf = (colors: Palette) => StyleSheet.create({
 	screenContent: {
@@ -269,7 +272,7 @@ export function Screen({ children, contentContainerStyle }: {
 	contentContainerStyle?: StyleProp<ViewStyle>;
 }): ReactNode {
 	const styles = useStyles();
-	const {scrollRef, clearance} = useKeyboardClearance();
+	const {scrollRef, clearance, onScroll, reveal} = useKeyboardAvoidance();
 
 	return <ScrollView
 		ref={scrollRef}
@@ -277,8 +280,11 @@ export function Screen({ children, contentContainerStyle }: {
 		contentContainerStyle={[styles.screenContent, contentContainerStyle]}
 		automaticallyAdjustKeyboardInsets
 		keyboardShouldPersistTaps="handled"
+		keyboardDismissMode={Platform.OS === "ios" ? "interactive" : "on-drag"}
+		onScroll={onScroll}
+		scrollEventThrottle={SCROLL_EVENT_THROTTLE_MS}
 	>
-		{children}
+		<KeyboardRevealProvider reveal={reveal}>{children}</KeyboardRevealProvider>
 	</ScrollView>;
 }
 

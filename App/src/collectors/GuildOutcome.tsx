@@ -1,4 +1,6 @@
 import {ReactNode} from "react";
+import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
+import {GuildCommandRes} from "ws-packets/src/fromServer/guild/GuildRes";
 import {GuildCommandOutcome, GuildCreationStatus, GuildDailyReward} from "ws-packets/src/objects/Guild";
 import {Note} from "@/src/design/Primitives";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
@@ -32,15 +34,30 @@ function DailyReward({reward}: {reward: GuildDailyReward}): ReactNode {
 function GuildManagementResult({outcome}: {outcome: GuildCommandOutcome}): ReactNode {
 	switch (outcome.type) {
 		case "descriptionUpdated": return <Note>{i18n.t("app:guild.descriptionUpdated")}</Note>;
-		case "descriptionInvalid": return <Note>{i18n.t("app:guild.descriptionInvalid", {min: outcome.min, max: outcome.max})}</Note>;
-		case "notInGuild": return <Note>{i18n.t("app:requirements.guild")}</Note>;
-		case "forbidden": return <Note>{i18n.t("app:guild.forbidden")}</Note>;
 		case "left": return <>
 			<Note>{i18n.t(outcome.isGuildDestroyed ? "app:guild.dissolved" : "app:guild.left", {name: outcome.guildName})}</Note>
 			{outcome.newChiefName ? <Note>{i18n.t("app:guild.newChief", {name: outcome.newChiefName})}</Note> : null}
 		</>;
 		default: return null;
 	}
+}
+
+/** Why Core turned a request down, or null when the outcome is a result worth its own sheet. */
+export function guildRefusal(outcome: GuildCommandOutcome): string | null {
+	switch (outcome.type) {
+		case "creationStatus": return creationMessage(outcome.status);
+		case "descriptionInvalid": return i18n.t("app:guild.descriptionInvalid", {min: outcome.min, max: outcome.max});
+		case "memberError": return i18n.t(`app:guild.memberErrors.${outcome.error}`);
+		case "notInGuild": return i18n.t("app:requirements.guild");
+		case "forbidden": return i18n.t("app:guild.forbidden");
+		case "dailyCooldown": return i18n.t("app:guild.dailyCooldown", {duration: formatDurationMinutes(outcome.remainingTime / MS_PER_MINUTE), total: formatDurationMinutes(outcome.totalTime * MINUTES_PER_HOUR)});
+		default: return null;
+	}
+}
+
+/** The refusal a guild command menu reads from its outcome packet. */
+export function guildPacketRefusal(packet: FromServerPacket): string | null {
+	return guildRefusal((packet as GuildCommandRes).outcome);
 }
 
 function GuildMemberResult({outcome}: {outcome: Extract<GuildCommandOutcome, {type: "memberAction"}>}): ReactNode {
@@ -51,14 +68,12 @@ function GuildMemberResult({outcome}: {outcome: Extract<GuildCommandOutcome, {ty
 }
 
 function GuildResult({outcome}: {outcome: GuildCommandOutcome}): ReactNode {
+	const refusal = guildRefusal(outcome);
+	if (refusal !== null) return <Note>{refusal}</Note>;
 	switch (outcome.type) {
 		case "memberAction": return <GuildMemberResult outcome={outcome} />;
-		case "memberError": return <Note>{i18n.t(`app:guild.memberErrors.${outcome.error}`)}</Note>;
 		case "created": return <Note>{i18n.t("app:guild.created", {name: outcome.guildName})}</Note>;
-		case "creationStatus": return <Note>{creationMessage(outcome.status)}</Note>;
 		case "daily": return <DailyReward reward={outcome.reward} />;
-		case "dailyCooldown": return <Note>{i18n.t("app:guild.dailyCooldown", {duration: formatDurationMinutes(outcome.remainingTime / MS_PER_MINUTE), total: formatDurationMinutes(outcome.totalTime * MINUTES_PER_HOUR)})}</Note>;
-		case "dailyIsland": return <Note>{i18n.t("app:guild.errors.dailyIsland")}</Note>;
 		default: return <GuildManagementResult outcome={outcome} />;
 	}
 }

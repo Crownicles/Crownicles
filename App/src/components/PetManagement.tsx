@@ -14,18 +14,19 @@ import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, Lock, useSectionStyles, Standing} from "@/src/design/Sections";
+import {EmptyState, SectionHeader} from "@/src/design/Primitives";
+import {ActionBanner, ExpandableEntry, ExpandableList, Lock, Refusal, useSectionStyles, Standing} from "@/src/design/Sections";
 import {ArrowRight} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
 import {petIcon, petMood, petName, petRarity} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
+import {petManagementPacketRefusal} from "@/src/collectors/PetManagementOutcome";
 
 export const PET_MANAGEMENT_MENUS = {
-	TRANSFER: {request: PetTransferReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetManagementRes]},
-	FREE: {request: PetFreeReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetManagementRes]}
+	TRANSFER: {request: PetTransferReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetManagementRes], refusal: petManagementPacketRefusal},
+	FREE: {request: PetFreeReq, emptyPacket: PetNotFound, emptyMessage: "app:pet.noPet", outcomePackets: [PetManagementRes], refusal: petManagementPacketRefusal}
 } satisfies Record<string, CommandMenu>;
 
 /** What the player pressed, before the server says which reaction carries it out. */
@@ -153,7 +154,7 @@ function ShelterContent(props: ShelterProps): ReactNode {
 			title={guildName ?? i18n.t("app:guild.eyebrow")}
 			subtitle={i18n.t("app:pet.management.boarders", {count: boarders.length})}
 		/>
-		{message ? <Note>{message}</Note> : null}
+		{message ? <Refusal>{message}</Refusal> : null}
 		<SectionHeader first>{i18n.t("app:pet.management.ownPet")}</SectionHeader>
 		<OwnPetSection {...ownPet ? {ownPet} : {}} {...full ? {full} : {}} actions={actions} />
 		<SectionHeader action={{hint: occupancy}}>{i18n.t("app:pet.management.boardersTitle")}</SectionHeader>

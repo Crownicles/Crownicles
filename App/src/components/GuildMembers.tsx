@@ -8,17 +8,20 @@ import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {GuildData, GuildMember} from "ws-packets/src/objects/Guild";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, Lock} from "@/src/design/Sections";
+import {ActionBanner, Lock, Refusal} from "@/src/design/Sections";
 import {UserPlus, Waves} from "@/src/design/FightIcons";
 import {TextField} from "@/src/design/Inputs";
+import {FormBlock} from "@/src/design/KeyboardAvoidance";
+import {guildPacketRefusal} from "@/src/collectors/GuildOutcome";
+import {utilityPacketRefusal} from "@/src/collectors/PlayerUtilityCollector";
 import {i18n} from "@/src/translations/i18n";
 
 const MEMBER_MENUS = {
-	INVITE: {request: GuildInviteReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]},
-	KICK: {request: GuildKickReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]},
-	PROMOTE: {request: GuildPromoteReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]},
-	DEMOTE: {request: GuildDemoteReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]},
-	BOAT: {request: JoinBoatReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [PlayerUtilityRes]}
+	INVITE: {request: GuildInviteReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal},
+	KICK: {request: GuildKickReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal},
+	PROMOTE: {request: GuildPromoteReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal},
+	DEMOTE: {request: GuildDemoteReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal},
+	BOAT: {request: JoinBoatReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [PlayerUtilityRes], refusal: utilityPacketRefusal}
 } satisfies Record<string, CommandMenu>;
 
 /** The crossing is offered where the player sees someone already sailing, rather than in a menu of its own. */
@@ -27,7 +30,7 @@ export function GuildBoatBoarding({member}: {member: GuildMember}): ReactNode {
 	if (!member.islandStatus.isOnBoat || member.isSelf) return null;
 	const lock: Lock | undefined = member.islandStatus.cannotBeJoinedOnBoat ? {reason: i18n.t("app:guild.boatLock")} : undefined;
 	return <>
-		{message ? <Note>{message}</Note> : null}
+		{message ? <Refusal>{message}</Refusal> : null}
 		<ActionBanner
 			icon={Waves}
 			label={i18n.t("app:utilities.boat")}
@@ -43,25 +46,29 @@ export function GuildBoatBoarding({member}: {member: GuildMember}): ReactNode {
 
 export function GuildInvitation({lock}: {lock?: Lock}): ReactNode {
 	const [rank, setRank] = useState("");
-	const {pending, message, open} = useCommandMenus();
+	const {pending, message, open, clearMessage} = useCommandMenus();
 	const rankValue = Number(rank);
 	const missingRank = !Number.isSafeInteger(rankValue) || rankValue <= 0;
 	const blocked = lock ?? (missingRank ? {reason: i18n.t("app:guild.inviteRankMissing")} : undefined);
 	return <>
 		<SectionHeader>{i18n.t("app:guild.invite")}</SectionHeader>
-		<TextField label={i18n.t("app:guild.inviteRank")} value={rank} onChangeText={setRank} keyboardType="number-pad" editable={!pending && !lock} />
-		<Note>{i18n.t("app:guild.inviteHint")}</Note>
-		{message ? <Note>{message}</Note> : null}
-		<ActionBanner
-			icon={UserPlus}
-			label={i18n.t("app:guild.sendInvitation")}
-			pending={pending}
-			{...blocked ? {lock: blocked} : {}}
-			onPress={(): void => {
-				open(MEMBER_MENUS.INVITE, makeFromClientPacket(GuildInviteReq, {rank: rankValue})).catch(console.error);
-			}}
-			testID="guild-invite"
-		/>
+		<FormBlock>
+			<TextField label={i18n.t("app:guild.inviteRank")} value={rank} onChangeText={(value): void => {
+				setRank(value);
+				clearMessage();
+			}} keyboardType="number-pad" editable={!pending && !lock} refusal={message} />
+			<Note>{i18n.t("app:guild.inviteHint")}</Note>
+			<ActionBanner
+				icon={UserPlus}
+				label={i18n.t("app:guild.sendInvitation")}
+				pending={pending}
+				{...blocked ? {lock: blocked} : {}}
+				onPress={(): void => {
+					open(MEMBER_MENUS.INVITE, makeFromClientPacket(GuildInviteReq, {rank: rankValue})).catch(console.error);
+				}}
+				testID="guild-invite"
+			/>
+		</FormBlock>
 	</>;
 }
 
@@ -75,7 +82,7 @@ export function GuildMemberControls({member, guild}: {member: GuildMember; guild
 	const isElder = member.id === guild.elderId;
 	if (member.isSelf || !playerIsChief(guild)) return null;
 	return <>
-		{message ? <Note>{message}</Note> : null}
+		{message ? <Refusal>{message}</Refusal> : null}
 		<ButtonRow>
 			<Button disabled={pending} onPress={(): Promise<void> => isElder
 				? open(MEMBER_MENUS.DEMOTE)

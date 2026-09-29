@@ -3,13 +3,16 @@ import {useQueryClient} from "@tanstack/react-query";
 import {PlayerUtilityRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
 import {PlayerUtilityOutcome} from "ws-packets/src/objects/PlayerUtility";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
+import {utilityRefusal} from "@/src/collectors/PlayerUtilityCollector";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 
 type UtilityOutcomeState = {outcome: PlayerUtilityOutcome | null; clear: () => void};
 export function usePlayerUtilityOutcome(): UtilityOutcomeState {
 	const [outcome, setOutcome] = useState<PlayerUtilityOutcome | null>(null);
 	const queryClient = useQueryClient();
-	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<PlayerUtilityRes>(PlayerUtilityRes.wireName, packet => {
+	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<PlayerUtilityRes>(PlayerUtilityRes.wireName, (packet, {answersRequest}) => {
+		// The screen that asked shows the refusal where the player made the request.
+		if (answersRequest && utilityRefusal(packet.outcome) !== null) return;
 		if (packet.outcome.type === "error" || packet.outcome.type === "money") {
 			setOutcome(packet.outcome);
 			return;

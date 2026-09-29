@@ -164,7 +164,7 @@ describe("game state store", () => {
 			const receive = registration.mock.calls.find(([name]) => name === ReportViewRes.wireName)![1];
 			const pushed = Object.assign(new ReportViewRes(), {reportReady: false});
 			pushed.city = {data: {type: CITY_DATA_KINDS.CITY, data: {mapLocationId: 10, mapTypeId: "ci", availableServices: []}}, actions: []};
-			await act(async () => {receive(pushed);});
+			await act(async () => {receive(pushed, {answersRequest: false});});
 			await waitFor(() => expect(screen.getByText("city")).toBeTruthy());
 			expect(request).toHaveBeenCalledTimes(1);
 			expect(request.mock.calls[0][0]).toBeInstanceOf(ReportViewReq);

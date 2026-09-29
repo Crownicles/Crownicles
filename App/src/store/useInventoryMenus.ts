@@ -20,6 +20,9 @@ export type CommandMenu = {
 	emptyPacket: FromServerPacketLike<FromServerPacket>;
 	emptyMessage: string;
 	outcomePackets?: FromServerPacketLike<FromServerPacket>[];
+
+	/** Reads an outcome packet as a refusal to show where the request was made; null leaves it to its sheet. */
+	refusal?: (packet: FromServerPacket) => string | null;
 };
 
 export const INVENTORY_MENUS = {
@@ -35,13 +38,16 @@ export type CommandMenuState = {
 	message: string | null;
 	pending: boolean;
 	open: (menu: CommandMenu, request?: FromClientPacket, resolve?: MenuResolver) => Promise<void>;
+
+	/** Forgets the last refusal, once the player changed what was refused. */
+	clearMessage: () => void;
 };
 
 function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: CommandMenu): string | null {
 	if (answer.kind === "rejected") return commandRejectionMessage(answer.packet.rejection);
 	if (answer.kind !== "alternative") return i18n.t("app:common.connectionError");
 	if (answer.packetName === menu.emptyPacket.wireName) return i18n.t(menu.emptyMessage);
-	if (menu.outcomePackets?.some(packet => packet.wireName === answer.packetName)) return null;
+	if (menu.outcomePackets?.some(packet => packet.wireName === answer.packetName)) return menu.refusal?.(answer.packet) ?? null;
 	return i18n.t("app:collector.pending");
 }
 
@@ -82,5 +88,5 @@ export function useCommandMenus(): CommandMenuState {
 		}
 	};
 
-	return {message, pending, open};
+	return {message, pending, open, clearMessage: (): void => setMessage(null)};
 }

@@ -12,6 +12,7 @@ import {GuildDomainContent} from "@/src/components/GuildDomain";
 import {GuildDomainSnapshot} from "ws-packets/src/objects/GuildDomain";
 import {GuildDomainDepositReq, GuildDomainUpgradeReq} from "ws-packets/src/fromClient/GuildDomainReq";
 import {formatNumber} from "@/src/display/Amounts";
+import {GuildCommandRes} from "ws-packets/src/fromServer/guild/GuildRes";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: (): {push: jest.Mock} => ({push: jest.fn()})}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
@@ -143,6 +144,15 @@ describe("guild screens", () => {
 		expect(screen.getByText("app:inputIssues.forbiddenCharacter")).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:guild.create"));
 		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+	it("shows the server's refusal in the form, until the name is changed", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: GuildCommandRes.wireName, packet: Object.assign(new GuildCommandRes(), {outcome: {type: "creationStatus", status: {foundGuild: false, guildNameIsAvailable: false}}})});
+		await render(<GuildCreation />);
+		await fireEvent.changeText(screen.getByLabelText("app:guild.name"), "Aurore");
+		await fireEvent.press(screen.getByText("app:guild.create"));
+		await waitFor(() => expect(screen.getByText("app:guild.errors.nameTaken")).toBeTruthy());
+		await fireEvent.changeText(screen.getByLabelText("app:guild.name"), "Aurores");
+		expect(screen.queryByText("app:guild.errors.nameTaken")).toBeNull();
 	});
 	it("sends the name as the keyboard typed it, trimmed and with a straight apostrophe", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});

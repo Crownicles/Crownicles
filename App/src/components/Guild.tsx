@@ -17,8 +17,10 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {GuildBoatBoarding, GuildInvitation, GuildMemberControls} from "@/src/components/GuildMembers";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {Button, ButtonRow, EmptyState, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, ExpandableList, Figure, Figures, Lock, LockHint, useSectionStyles, Standing} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, ExpandableList, Figure, Figures, Lock, LockHint, Refusal, useSectionStyles, Standing} from "@/src/design/Sections";
 import {TextField} from "@/src/design/Inputs";
+import {FormBlock} from "@/src/design/KeyboardAvoidance";
+import {guildPacketRefusal} from "@/src/collectors/GuildOutcome";
 import {Check, Clock3, Gift, LogOut, Star} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -31,10 +33,10 @@ import {createStyles, useColors} from "@/src/design/ThemeContext";
 import {RecruitmentSettings} from "@/src/components/GuildRecruitment";
 
 export type GuildPage = "storage" | "shelter" | "manage" | "domain" | "rankings";
-const CREATE_MENU: CommandMenu = {request: GuildCreateReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
-const DAILY_MENU: CommandMenu = {request: GuildDailyReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
-const DESCRIPTION_MENU: CommandMenu = {request: GuildDescriptionReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
-const LEAVE_MENU: CommandMenu = {request: GuildLeaveReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes]};
+const CREATE_MENU: CommandMenu = {request: GuildCreateReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal};
+const DAILY_MENU: CommandMenu = {request: GuildDailyReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal};
+const DESCRIPTION_MENU: CommandMenu = {request: GuildDescriptionReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal};
+const LEAVE_MENU: CommandMenu = {request: GuildLeaveReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [GuildCommandRes], refusal: guildPacketRefusal};
 
 /** Only the whereabouts another member can act upon are worth a word; the rest is noise. */
 const TRAVEL_STATUSES = ["isOnPveIsland", "isOnBoat"] as const;
@@ -56,13 +58,15 @@ export function gaugeEmoji(path: string): {emoji?: string} {
 
 export function GuildCreation(): ReactNode {
 	const [name, setName] = useState("");
-	const {pending, message, open} = useCommandMenus();
+	const {pending, message, open, clearMessage} = useCommandMenus();
 	const guildName = checkText(name, TEXT_RULE_IDS.GUILD_NAME);
-	return <>
-		<TextField label={i18n.t("app:guild.name")} value={name} onChangeText={setName} editable={!pending} autoCorrect={false} lock={guildName.lock} />
-		{message ? <Note>{message}</Note> : null}
+	return <FormBlock>
+		<TextField label={i18n.t("app:guild.name")} value={name} onChangeText={(value): void => {
+			setName(value);
+			clearMessage();
+		}} editable={!pending} autoCorrect={false} lock={guildName.lock} refusal={message} />
 		<ButtonRow><Button variant="primary" disabled={pending || guildName.lock !== null} onPress={(): Promise<void> => open(CREATE_MENU, makeFromClientPacket(GuildCreateReq, {askedGuildName: guildName.value}))}>{i18n.t("app:guild.create")}</Button></ButtonRow>
-	</>;
+	</FormBlock>;
 }
 
 export function GuildStorage(): ReactNode {
@@ -141,24 +145,37 @@ function GuildMemberList({guild}: {guild: GuildData}): ReactNode {
 
 function GuildDescriptionForm({guild, lock}: {guild: GuildData; lock?: Lock}): ReactNode {
 	const [description, setDescription] = useState(guild.description ?? "");
-	const {pending, message, open} = useCommandMenus();
+	const {pending, message, open, clearMessage} = useCommandMenus();
 	const checked = checkText(description, TEXT_RULE_IDS.GUILD_DESCRIPTION);
 	const unchanged = checked.value === (guild.description ?? "");
 	const blocked = lock ?? (unchanged ? {reason: i18n.t("app:guild.descriptionUnchanged")} : checked.lock ?? undefined);
 	return <>
 		<SectionHeader first>{i18n.t("app:guild.identity")}</SectionHeader>
-		<TextField label={i18n.t("app:guild.description")} value={description} onChangeText={setDescription} multiline editable={!pending && !lock} />
-		{message ? <Note>{message}</Note> : null}
-		<ActionBanner
-			icon={Check}
-			label={i18n.t("app:pet.care.save")}
-			pending={pending}
-			{...blocked ? {lock: blocked} : {}}
-			onPress={(): void => {
-				open(DESCRIPTION_MENU, makeFromClientPacket(GuildDescriptionReq, {description: checked.value})).catch(console.error);
-			}}
-			testID="guild-description-save"
-		/>
+		<FormBlock>
+			<TextField
+				label={i18n.t("app:guild.description")}
+				value={description}
+				onChangeText={(value): void => {
+					setDescription(value);
+					clearMessage();
+				}}
+				multiline
+				returnKeyType="done"
+				submitBehavior="blurAndSubmit"
+				editable={!pending && !lock}
+				refusal={message}
+			/>
+			<ActionBanner
+				icon={Check}
+				label={i18n.t("app:pet.care.save")}
+				pending={pending}
+				{...blocked ? {lock: blocked} : {}}
+				onPress={(): void => {
+					open(DESCRIPTION_MENU, makeFromClientPacket(GuildDescriptionReq, {description: checked.value})).catch(console.error);
+				}}
+				testID="guild-description-save"
+			/>
+		</FormBlock>
 	</>;
 }
 
@@ -168,7 +185,7 @@ function GuildDeparture({guild}: {guild: GuildData}): ReactNode {
 	return <>
 		<SectionHeader>{i18n.t("app:guild.membership")}</SectionHeader>
 		<Note>{i18n.t(dissolves ? "app:guild.dissolveWarning" : "app:guild.leaveWarning", {name: guild.name})}</Note>
-		{message ? <Note>{message}</Note> : null}
+		{message ? <Refusal>{message}</Refusal> : null}
 		<ButtonRow><Button variant="danger" icon={LogOut} disabled={pending} onPress={(): Promise<void> => open(LEAVE_MENU)}>{i18n.t("app:guild.leave")}</Button></ButtonRow>
 	</>;
 }
@@ -262,7 +279,7 @@ function GuildMemberTools({guild, membership, onPage}: {guild: GuildData; member
 	const daily = dailyLock(membership);
 	const domain = domainLock(membership, isChief);
 	return <>
-		{message ? <Note>{message}</Note> : null}
+		{message ? <Refusal>{message}</Refusal> : null}
 		<ActionBanner
 			icon={Gift}
 			label={i18n.t("app:guild.daily")}

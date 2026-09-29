@@ -1,6 +1,9 @@
 import type {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 
-export type PushedPacketHandler<Packet extends FromServerPacket = FromServerPacket> = (packet: Packet) => void;
+/** How a pushed packet reached the app: on its own, or also as the answer to a request a screen is awaiting. */
+export type PacketDelivery = {answersRequest: boolean};
+
+export type PushedPacketHandler<Packet extends FromServerPacket = FromServerPacket> = (packet: Packet, delivery: PacketDelivery) => void;
 
 type RegisteredHandler = PushedPacketHandler<FromServerPacket>;
 
@@ -22,14 +25,14 @@ export class PushedPacketRegistry {
 		};
 	}
 
-	public dispatch(packetName: string, packet: FromServerPacket): boolean {
+	public dispatch(packetName: string, packet: FromServerPacket, delivery: PacketDelivery = {answersRequest: false}): boolean {
 		const packetHandlers = this.handlers.get(packetName);
 		if (!packetHandlers || packetHandlers.size === 0) {
 			return false;
 		}
 
 		for (const handler of packetHandlers) {
-			handler(packet);
+			handler(packet, delivery);
 		}
 		return true;
 	}

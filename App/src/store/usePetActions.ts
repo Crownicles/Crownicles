@@ -10,7 +10,15 @@ import {commandRejectionMessage} from "@/src/display/CommandRejection";
 import {i18n} from "@/src/translations/i18n";
 
 type PetCareAction = {type: "caress"} | {type: "rename"; nickname: string};
-export type PetActions = {pending: boolean; message: string | null; care: (action: PetCareAction) => Promise<boolean>};
+export type PetActions = {
+	pending: boolean;
+	message: string | null;
+
+	/** The message says why the server turned the care down, rather than what it did. */
+	failed: boolean;
+	care: (action: PetCareAction) => Promise<boolean>;
+	clearMessage: () => void;
+};
 function requestCare(action: PetCareAction): Promise<GameAnswer<PetCaressRes | PetNickRes>> {
 	if (action.type === "caress") return GameClient.request(makeFromClientPacket(PetCaressReq, {}), PetCaressRes, [Blocked]);
 	return GameClient.request(makeFromClientPacket(PetNickReq, {newNickname: action.nickname}), PetNickRes, [Blocked]);
@@ -38,12 +46,18 @@ export function usePetActions(): PetActions {
 	const queryClient = useQueryClient();
 	const [pending, setPending] = useState(false);
 	const [message, setMessage] = useState<string | null>(null);
+	const [failed, setFailed] = useState(false);
 	const inFlight = useRef(false);
 	const active = useRef(true);
 	useEffect(() => {
 		active.current = true;
 		return (): void => {active.current = false;};
 	}, []);
+	const say = (text: string | null, refused: boolean): void => {
+		if (!active.current) return;
+		setMessage(text);
+		setFailed(refused);
+	};
 	const care = async (action: PetCareAction): Promise<boolean> => {
 		if (inFlight.current) return false;
 		inFlight.current = true;
@@ -51,17 +65,18 @@ export function usePetActions(): PetActions {
 		try {
 			const answer = await requestCare(action);
 			if (answer.kind !== "answer") {
-				if (active.current) setMessage(careFailure(answer));
+				say(careFailure(answer), true);
 				return false;
 			}
 			for (const entity of [GAME_ENTITIES.PET, GAME_ENTITIES.PROFILE, GAME_ENTITIES.MISSIONS]) {
 				await queryClient.invalidateQueries({queryKey: gameKey(entity)});
 			}
-			if (active.current) setMessage(careResult(answer.packet));
-			return careSucceeded(answer.packet);
+			const succeeded = careSucceeded(answer.packet);
+			say(careResult(answer.packet), !succeeded);
+			return succeeded;
 		}
 		catch {
-			if (active.current) setMessage(i18n.t("app:common.connectionError"));
+			say(i18n.t("app:common.connectionError"), true);
 			return false;
 		}
 		finally {
@@ -69,5 +84,5 @@ export function usePetActions(): PetActions {
 			if (active.current) setPending(false);
 		}
 	};
-	return {pending, message, care};
+	return {pending, message, failed, care, clearMessage: (): void => setMessage(null)};
 }

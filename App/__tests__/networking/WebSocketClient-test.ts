@@ -92,7 +92,7 @@ describe("WebSocketClient", () => {
 		});
 
 		expect(responseHandler).toHaveBeenCalledWith({value: "ok"});
-		expect(pushedHandler).toHaveBeenCalledWith({value: "ok"});
+		expect(pushedHandler).toHaveBeenCalledWith({value: "ok"}, {answersRequest: true});
 		unregister();
 	});
 
@@ -106,7 +106,7 @@ describe("WebSocketClient", () => {
 			packet: {value: "hello"}
 		});
 
-		expect(pushedHandler).toHaveBeenCalledWith({value: "hello"});
+		expect(pushedHandler).toHaveBeenCalledWith({value: "hello"}, {answersRequest: false});
 		unregister();
 	});
 

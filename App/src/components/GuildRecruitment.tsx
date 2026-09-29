@@ -6,6 +6,7 @@ import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/P
 import {ActionBanner, ExpandableEntry, ExpandableList, Fact} from "@/src/design/Sections";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {TextField} from "@/src/design/Inputs";
+import {FormBlock} from "@/src/design/KeyboardAvoidance";
 import {Minus, Plus, Search, UserPlus} from "@/src/design/FightIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {useExpandedEntry} from "@/src/design/useExpandedEntry";
@@ -92,14 +93,16 @@ export function GuildJoin(): ReactNode {
 	const guilds = result?.guilds ?? [];
 	const message = joinMessage ?? searchMessage;
 	return <>
-		<TextField label={i18n.t("app:guild.join.searchLabel")} value={text} onChangeText={setText} returnKeyType="search" onSubmitEditing={(): void => search(text)} editable={!searching} />
-		<ButtonRow>
-			<Button icon={Search} disabled={searching} onPress={(): void => search(text)}>{i18n.t("app:guild.join.search")}</Button>
-			{result?.search ? <Button disabled={searching} onPress={(): void => {
-				setText("");
-				search("");
-			}}>{i18n.t("app:guild.join.suggestions")}</Button> : null}
-		</ButtonRow>
+		<FormBlock>
+			<TextField label={i18n.t("app:guild.join.searchLabel")} value={text} onChangeText={setText} returnKeyType="search" onSubmitEditing={(): void => search(text)} editable={!searching} />
+			<ButtonRow>
+				<Button icon={Search} disabled={searching} onPress={(): void => search(text)}>{i18n.t("app:guild.join.search")}</Button>
+				{result?.search ? <Button disabled={searching} onPress={(): void => {
+					setText("");
+					search("");
+				}}>{i18n.t("app:guild.join.suggestions")}</Button> : null}
+			</ButtonRow>
+		</FormBlock>
 		{message ? <Note>{message}</Note> : null}
 		<SectionHeader>{result?.search ? i18n.t("app:guild.join.results", {search: result.search}) : i18n.t("app:guild.join.suggested")}</SectionHeader>
 		{result ? <Note>{i18n.t("app:guild.join.yourScore", {score: formatNumber(result.playerScore)})}</Note> : null}

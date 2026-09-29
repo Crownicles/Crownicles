@@ -14,8 +14,8 @@ describe("PushedPacketRegistry", () => {
 		registry.register("TestPushedPacket", secondHandler);
 
 		expect(registry.dispatch("TestPushedPacket", packet)).toBe(true);
-		expect(firstHandler).toHaveBeenCalledWith(packet);
-		expect(secondHandler).toHaveBeenCalledWith(packet);
+		expect(firstHandler).toHaveBeenCalledWith(packet, {answersRequest: false});
+		expect(secondHandler).toHaveBeenCalledWith(packet, {answersRequest: false});
 
 		unregisterFirst();
 		registry.dispatch("TestPushedPacket", packet);

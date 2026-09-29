@@ -4,7 +4,7 @@ import {AuthToken} from "@/src/authentication/AuthToken";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {wireNameOf} from "ws-packets/src/MakePackets";
-import {PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
+import {PushedPacketHandler, PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
 import {WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON} from "ws-packets/src/WebSocketCloseReasons";
 import {APP_PROTOCOL_QUERY_PARAMETER, APP_PROTOCOL_VERSION} from "ws-packets/src/AppCompatibility";
 
@@ -76,7 +76,7 @@ export class WebSocketClient {
 		return WebSocketClient.instance;
 	}
 
-	public registerPushedPacketHandler<Packet extends FromServerPacket>(packetName: string, callback: WebSocketPacketResponseHandler<Packet>): () => void {
+	public registerPushedPacketHandler<Packet extends FromServerPacket>(packetName: string, callback: PushedPacketHandler<Packet>): () => void {
 		return this.pushedPacketRegistry.register(packetName, callback);
 	}
 
@@ -292,7 +292,7 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 
 		const handledAsResponse = this.handleCorrelatedPacket(packetId, packetName, packetData);
 
-		const handledAsPushedPacket = this.pushedPacketRegistry.dispatch(packetName, packetData);
+		const handledAsPushedPacket = this.pushedPacketRegistry.dispatch(packetName, packetData, {answersRequest: handledAsResponse});
 		if (!handledAsResponse && !handledAsPushedPacket) {
 			this.pushedPacketRegistry.reportUnhandled(packetName);
 		}

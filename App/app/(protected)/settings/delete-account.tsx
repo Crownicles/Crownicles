@@ -1,22 +1,22 @@
 import React from "react";
 import {useRouter} from "expo-router";
-import {ScrollView, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {readFullStoredToken} from "@/src/authentication/TokenStorage";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {RestApi} from "@/src/networking/RestApi";
 import {Theme} from "@/src/design/Theme";
-import {BackButton} from "@/src/design/Sections";
-import {Button as DesignButton} from "@/src/design/Primitives";
+import {BackButton, Refusal} from "@/src/design/Sections";
+import {Button as DesignButton, Screen} from "@/src/design/Primitives";
 import {TextField} from "@/src/design/Inputs";
+import {FormBlock} from "@/src/design/KeyboardAvoidance";
 import {i18n} from "@/src/translations/i18n";
 import {createStyles} from "@/src/design/ThemeContext";
 
 const useStyles = createStyles(colors => ({
 	container: {
 		flex: 1,
-		padding: Theme.spacing.xl,
 		backgroundColor: colors.wash,
 	},
 	title: {
@@ -48,12 +48,6 @@ const useStyles = createStyles(colors => ({
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.body,
 		color: colors.green,
-		marginBottom: Theme.spacing.lg,
-	},
-	error: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.body,
-		color: colors.red,
 		marginBottom: Theme.spacing.lg,
 	},
 	action: {
@@ -126,7 +120,7 @@ export default function DeleteAccount(): React.ReactElement {
 
 	return (
 		<View style={styles.container}>
-			<ScrollView>
+			<Screen>
 				<BackButton label={i18n.t("app:common.back")} onClose={router.back} />
 				<Text style={styles.title}>{i18n.t("app:settings.deleteAccount.title")}</Text>
 				<Text style={styles.warning}>{i18n.t("app:settings.deleteAccount.warning")}</Text>
@@ -136,7 +130,7 @@ export default function DeleteAccount(): React.ReactElement {
 				<Text style={styles.stepTitle}>{i18n.t("app:settings.deleteAccount.requestStep")}</Text>
 				<Text style={styles.paragraph}>{i18n.t("app:settings.deleteAccount.requestExplanation")}</Text>
 				{requested && <Text style={styles.notice}>{i18n.t("app:settings.deleteAccount.requested")}</Text>}
-				{failure === "request" && <Text style={styles.error}>{i18n.t("app:settings.deleteAccount.requestError")}</Text>}
+				{failure === "request" && <Refusal>{i18n.t("app:settings.deleteAccount.requestError")}</Refusal>}
 				<View style={styles.action}>
 					<DesignButton variant="danger" disabled={pending} onPress={requestDeletion}>
 						{i18n.t("app:settings.deleteAccount.ask")}
@@ -145,20 +139,23 @@ export default function DeleteAccount(): React.ReactElement {
 
 				<Text style={styles.stepTitle}>{i18n.t("app:settings.deleteAccount.confirmStep")}</Text>
 				<Text style={styles.paragraph}>{i18n.t("app:settings.deleteAccount.confirmExplanation")}</Text>
-				<TextField
-					label={i18n.t("app:settings.deleteAccount.codeLabel")}
-					value={code}
-					onChangeText={setCode}
-					autoCapitalize="characters"
-					editable={!pending}
-				/>
-				{failure === "code" && <Text style={styles.error}>{i18n.t("app:settings.deleteAccount.codeError")}</Text>}
-				<View style={styles.action}>
-					<DesignButton variant="danger" disabled={pending || code.trim().length === 0} onPress={confirmDeletion}>
-						{i18n.t("app:settings.deleteAccount.confirm")}
-					</DesignButton>
-				</View>
-			</ScrollView>
+				<FormBlock>
+					<TextField
+						label={i18n.t("app:settings.deleteAccount.codeLabel")}
+						value={code}
+						onChangeText={setCode}
+						autoCapitalize="characters"
+						autoCorrect={false}
+						editable={!pending}
+						refusal={failure === "code" ? i18n.t("app:settings.deleteAccount.codeError") : null}
+					/>
+					<View style={styles.action}>
+						<DesignButton variant="danger" disabled={pending || code.trim().length === 0} onPress={confirmDeletion}>
+							{i18n.t("app:settings.deleteAccount.confirm")}
+						</DesignButton>
+					</View>
+				</FormBlock>
+			</Screen>
 		</View>
 	);
 }

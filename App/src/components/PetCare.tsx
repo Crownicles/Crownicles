@@ -15,7 +15,7 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {PetCaress} from "@/src/components/PetReaction";
 import {PET_MANAGEMENT_MENUS} from "@/src/components/PetManagement";
 import {Button, ButtonRow, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, Lock, LockHint, Standing} from "@/src/design/Sections";
+import {ActionBanner, Lock, LockHint, Refusal, Standing} from "@/src/design/Sections";
 import {Clock3, Flag, Flame, Heart, HeartPulse, LogOut, LucideIcon, PawPrint, Utensils, Wind} from "@/src/design/FightIcons";
 import {PaletteColor} from "@/src/design/Theme";
 import {useColors} from "@/src/design/ThemeContext";
@@ -141,7 +141,7 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 	const message = actions.message ?? menus.message;
 	return <>
 		<PetStanding pet={pet} strokes={patience.strokes} hadEnough={patience.hadEnough} />
-		{message ? <Note>{message}</Note> : null}
+		{message ? <Refusal>{message}</Refusal> : null}
 		<PetMainAction packet={packet} menus={menus} onExpedition={openExpedition} />
 		<QuickActions>
 			{expedition ? null : <PetHomeActions actions={actions} patience={patience} noTalisman={noTalisman} menus={menus} onExpedition={openExpedition} />}

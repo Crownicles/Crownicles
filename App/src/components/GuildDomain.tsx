@@ -16,7 +16,7 @@ import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
 import {gaugeEmoji} from "@/src/components/Guild";
 import {Button, ButtonRow, Note, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, Figures, Lock, useSectionStyles, Standing} from "@/src/design/Sections";
+import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, Figures, Lock, Refusal, useSectionStyles, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
@@ -24,11 +24,12 @@ import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {petName, petMood, petIcon} from "@/src/display/PetDisplay";
 import {i18n} from "@/src/translations/i18n";
 import {useColors} from "@/src/design/ThemeContext";
+import {domainPacketRefusal} from "@/src/collectors/GuildDomainOutcome";
 
 const DOMAIN_MENUS = {
-	upgrade: {request: GuildDomainUpgradeReq, emptyPacket: PlayerNotFound, emptyMessage: "app:guild.noGuild", outcomePackets: [GuildDomainRes]},
-	food: {request: GuildDomainFoodReq, emptyPacket: PlayerNotFound, emptyMessage: "app:guild.noGuild", outcomePackets: [GuildDomainRes]},
-	deposit: {request: GuildDomainDepositReq, emptyPacket: PlayerNotFound, emptyMessage: "app:guild.noGuild", outcomePackets: [GuildDomainRes]}
+	upgrade: {request: GuildDomainUpgradeReq, emptyPacket: PlayerNotFound, emptyMessage: "app:guild.noGuild", outcomePackets: [GuildDomainRes], refusal: domainPacketRefusal},
+	food: {request: GuildDomainFoodReq, emptyPacket: PlayerNotFound, emptyMessage: "app:guild.noGuild", outcomePackets: [GuildDomainRes], refusal: domainPacketRefusal},
+	deposit: {request: GuildDomainDepositReq, emptyPacket: PlayerNotFound, emptyMessage: "app:guild.noGuild", outcomePackets: [GuildDomainRes], refusal: domainPacketRefusal}
 } satisfies Record<string, CommandMenu>;
 type DomainRequest = {kind: keyof typeof DOMAIN_MENUS; request: FromClientPacket};
 type DomainActions = {pending: boolean; run: (action: DomainRequest) => void};
@@ -229,7 +230,7 @@ export function GuildDomainContent({domain}: {domain: GuildDomainSnapshot}): Rea
 	};
 	return <>
 		<DomainStanding domain={domain} />
-		{message ? <Note>{message}</Note> : null}
+		{message ? <Refusal>{message}</Refusal> : null}
 		<SectionHeader>{i18n.t("app:guildDomain.buildings")}</SectionHeader>
 		<ExpandableList>{Object.values(GuildBuilding).map(value => <BuildingEntry
 			key={value}

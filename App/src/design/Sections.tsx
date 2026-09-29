@@ -37,6 +37,7 @@ const useStyles = createStyles(colors => ({
 	bannerLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.button, lineHeight: Theme.lineHeight.body, color: colors.paper},
 	lock: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.sm, paddingTop: Theme.spacing.md},
 	lockText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
+	lockRefusal: {color: colors.red},
 	disabled: {opacity: 0.5},
 	pressed: {opacity: 0.7},
 	/** Rows sit together on one card: the card and the spacing group them, no rule is drawn between them. */
@@ -130,6 +131,10 @@ type SectionStyles = ReturnType<typeof useStyles>;
 
 /** Why an action cannot be taken, so the screen can say it instead of letting the player find out. */
 export type Lock = {reason: string; icon?: LucideIcon};
+
+/** A hint only explains what is closed; a refusal says what the player did is wrong, in red. */
+export const HINT_TONES = {HINT: "hint", REFUSAL: "refusal"} as const;
+export type HintTone = typeof HINT_TONES[keyof typeof HINT_TONES];
 
 /** Whether a consequence helps the player, hurts them, or only tells them something. */
 export const EFFECT_TONES = {GAIN: "gain", LOSS: "loss", NEUTRAL: "neutral"} as const;
@@ -261,14 +266,20 @@ export function ModalSurface({children, tone = "paper"}: {children: ReactNode; t
 	return <View style={[styles.surface, {backgroundColor: colors[tone], paddingTop: insets.top, paddingBottom: insets.bottom}]}>{children}</View>;
 }
 
-export function LockHint({lock, testID}: {lock: Lock; testID?: string}): ReactNode {
+export function LockHint({lock, tone = HINT_TONES.HINT, testID}: {lock: Lock; tone?: HintTone; testID?: string}): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
 	const Icon = lock.icon ?? CircleAlert;
+	const refusal = tone === HINT_TONES.REFUSAL;
 	return <View style={styles.lock} testID={testID}>
-		<Icon size={15} color={colors.muted} />
-		<Text style={styles.lockText}>{lock.reason}</Text>
+		<Icon size={15} color={refusal ? colors.red : colors.muted} />
+		<Text style={[styles.lockText, refusal && styles.lockRefusal]}>{lock.reason}</Text>
 	</View>;
+}
+
+/** What the server answered instead of doing what was asked, shown where the player asked it. */
+export function Refusal({children}: {children: string}): ReactNode {
+	return <LockHint lock={{reason: children}} tone={HINT_TONES.REFUSAL} />;
 }
 
 export function BackButton({label, onClose}: {label: string; onClose: () => void}): ReactNode {
