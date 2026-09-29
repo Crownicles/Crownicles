@@ -500,6 +500,31 @@ async function buildGuildPetsEntities(
 	return guildPetsEntities;
 }
 
+/**
+ * Why the transfer cannot even be offered: another member is at the shelter, or the player's own pet cannot move
+ */
+async function transferBlocker(player: Player, playerPet: PetEntity | null): Promise<CrowniclesPacket | null> {
+	const transferringMemberId = await checkGuildMemberTransferring(player.guildId!);
+	if (transferringMemberId) {
+		return makePacket(CommandPetTransferAnotherMemberTransferringErrorPacket, {
+			keycloakId: transferringMemberId
+		});
+	}
+	if (playerPet?.isFeisty()) {
+		return makePacket(CommandPetTransferFeistyErrorPacket, {});
+	}
+	return playerPet && await PetUtils.isPetOnExpedition(player.id) ? makePacket(CommandPetTransferPetOnExpeditionErrorPacket, {}) : null;
+}
+
+/**
+ * Nothing left to choose: a newcomer on probation is told until when, anyone else that there is no pet to move
+ */
+function noTransferPacket(probationEnd: number | null, guildPets: GuildPet[]): CrowniclesPacket {
+	return probationEnd && guildPets.length > 0
+		? makePacket(CommandPetTransferProbationErrorPacket, { probationEndsAt: probationEnd })
+		: makePacket(CommandPetTransferNoPetErrorPacket, {});
+}
+
 export default class PetTransferCommand {
 	@commandRequires(CommandPetTransferPacketReq, {
 		notBlocked: true,
@@ -508,25 +533,10 @@ export default class PetTransferCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetTransferPacketReq, context: PacketContext): Promise<void> {
-		// Check if another guild member is transferring
-		const transferringMemberId = await checkGuildMemberTransferring(player.guildId!);
-		if (transferringMemberId) {
-			response.push(makePacket(CommandPetTransferAnotherMemberTransferringErrorPacket, {
-				keycloakId: transferringMemberId
-			}));
-			return;
-		}
-
 		const playerPet = await PetEntities.getById(player.petId);
-
-		if (playerPet?.isFeisty()) {
-			response.push(makePacket(CommandPetTransferFeistyErrorPacket, {}));
-			return;
-		}
-
-		// Check if player's pet is on expedition
-		if (playerPet && await PetUtils.isPetOnExpedition(player.id)) {
-			response.push(makePacket(CommandPetTransferPetOnExpeditionErrorPacket, {}));
+		const blocker = await transferBlocker(player, playerPet);
+		if (blocker) {
+			response.push(blocker);
 			return;
 		}
 
@@ -541,9 +551,7 @@ export default class PetTransferCommand {
 		// Build reactions - returns null if no valid transfer options
 		const reactions = buildTransferReactions(playerPet, guild.isPetShelterFull(guildPets), probationEnd ? [] : guildPets);
 		if (!reactions) {
-			response.push(probationEnd && guildPets.length > 0
-				? makePacket(CommandPetTransferProbationErrorPacket, { probationEndsAt: probationEnd })
-				: makePacket(CommandPetTransferNoPetErrorPacket, {}));
+			response.push(noTransferPacket(probationEnd, guildPets));
 			return;
 		}
 

@@ -53,7 +53,8 @@ export function useRevealOnFocus(): {inputRef: RefObject<TextInput | null>; root
 	const onFocus = (): void => {
 		const field = inputRef.current;
 		const block = form?.current ?? rootRef.current;
-		if (reveal && field && block) reveal({field, form: block});
+		if (!field || !block) return;
+		reveal?.({field, form: block});
 	};
 	return {inputRef, rootRef, onFocus};
 }
@@ -67,35 +68,22 @@ type KeyboardAvoidance = {
 	reveal: Reveal;
 };
 
+/** Scrolls just enough to bring the requested form above the keyboard. */
+async function scrollFormIntoSight(scrollView: ScrollView, target: RevealRequest, keyboardTop: number, offset: number): Promise<void> {
+	const scroll = scrollView.getNativeScrollRef();
+	if (!scroll) return;
+	const [viewport, form, field] = await Promise.all([spanOf(scroll), spanOf(target.form), spanOf(target.field)]);
+	const delta = revealOffset(form, field, {top: viewport.top, bottom: Math.min(viewport.bottom, keyboardTop)});
+	if (delta > 0) scrollView.scrollTo({y: offset + delta, animated: true});
+}
+
 /**
- * Keeps what the player types in, and what they need next, above the keyboard.
- *
- * iOS insets the scroll view natively (`automaticallyAdjustKeyboardInsets`) and Android gets it shortened
- * by `clearance`; both only bring the caret into sight, so the rest of the form is scrolled up here.
+ * Follows where the keyboard's top edge lies and, on Android, how much the scroll view must give up to stay above it.
+ * `onShown` and `onHidden` must keep their identity across renders.
  */
-export function useKeyboardAvoidance(): KeyboardAvoidance {
-	const scrollRef = useRef<ScrollView>(null);
+function useKeyboardFrame(scrollRef: RefObject<ScrollView | null>, keyboardTop: RefObject<number | null>, onShown: () => void, onHidden: () => void): number {
 	const [clearance, setClearance] = useState(0);
 	const applied = useRef(0);
-	const offset = useRef(0);
-	const keyboardTop = useRef<number | null>(null);
-	const request = useRef<RevealRequest | null>(null);
-	const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-	const settleThenReveal = useCallback((): void => {
-		if (timer.current) clearTimeout(timer.current);
-		timer.current = setTimeout(() => {
-			const target = request.current;
-			const scroll = scrollRef.current?.getNativeScrollRef();
-			const top = keyboardTop.current;
-			if (!target || !scroll || top === null) return;
-			Promise.all([spanOf(scroll), spanOf(target.form), spanOf(target.field)]).then(([viewport, form, field]) => {
-				const delta = revealOffset(form, field, {top: viewport.top, bottom: Math.min(viewport.bottom, top)});
-				if (delta > 0) scrollRef.current?.scrollTo({y: offset.current + delta, animated: true});
-			}).catch(console.warn);
-		}, SETTLE_DELAY_MS);
-	}, []);
-
 	useEffect(() => {
 		const apply = (value: number): void => {
 			applied.current = value;
@@ -109,19 +97,52 @@ export function useKeyboardAvoidance(): KeyboardAvoidance {
 					apply(Math.max(0, y + height + applied.current - endCoordinates.screenY));
 				});
 			}
-			settleThenReveal();
+			onShown();
 		});
 		const hidden = Keyboard.addListener("keyboardDidHide", () => {
 			keyboardTop.current = null;
-			request.current = null;
+			onHidden();
 			if (Platform.OS === "android") apply(0);
 		});
 		return (): void => {
 			shown.remove();
 			hidden.remove();
-			if (timer.current) clearTimeout(timer.current);
 		};
-	}, [settleThenReveal]);
+	}, [scrollRef, keyboardTop, onShown, onHidden]);
+	return clearance;
+}
+
+/**
+ * Keeps what the player types in, and what they need next, above the keyboard.
+ *
+ * iOS insets the scroll view natively (`automaticallyAdjustKeyboardInsets`) and Android gets it shortened
+ * by `clearance`; both only bring the caret into sight, so the rest of the form is scrolled up here.
+ */
+export function useKeyboardAvoidance(): KeyboardAvoidance {
+	const scrollRef = useRef<ScrollView>(null);
+	const offset = useRef(0);
+	const request = useRef<RevealRequest | null>(null);
+	const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const keyboardTop = useRef<number | null>(null);
+
+	const settleThenReveal = useCallback((): void => {
+		if (timer.current) clearTimeout(timer.current);
+		timer.current = setTimeout(() => {
+			const target = request.current;
+			const top = keyboardTop.current;
+			const view = scrollRef.current;
+			if (!target || top === null) return;
+			if (view) scrollFormIntoSight(view, target, top, offset.current).catch(console.warn);
+		}, SETTLE_DELAY_MS);
+	}, []);
+	const forget = useCallback((): void => {
+		request.current = null;
+	}, []);
+	const clearance = useKeyboardFrame(scrollRef, keyboardTop, settleThenReveal, forget);
+
+	useEffect(() => (): void => {
+		if (timer.current) clearTimeout(timer.current);
+	}, []);
 
 	const reveal = useCallback((next: RevealRequest): void => {
 		request.current = next;

@@ -28,7 +28,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
 import {
 	findTextIssue, normalizeText
-} from "../../../../Lib/src/utils/StringUtils";
+} from "../../../../Lib/src/utils/TextRuleUtils";
 import { TextRuleConstants } from "../../../../Lib/src/constants/TextRuleConstants";
 import {
 	LockedRowNotFoundError, withLockedEntities

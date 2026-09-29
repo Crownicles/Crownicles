@@ -30,10 +30,8 @@ function answerMessage<Answer extends GuildRecruitmentRes | GuildRecruitmentList
 
 function recruitmentState(answer: GameAnswer<GuildRecruitmentRes>): RecruitmentState {
 	if (answer.kind === "answer") return {status: "ready", settings: answer.packet.settings};
-	if (answer.kind === "alternative" && answer.packet instanceof GuildRecruitmentErrorRes && answer.packet.error === GUILD_RECRUITMENT_ERRORS.NO_OFFICE) {
-		return {status: "noOffice"};
-	}
-	return {status: "failed"};
+	const refusal = answer.kind === "alternative" ? answer.packet : null;
+	return refusal instanceof GuildRecruitmentErrorRes && refusal.error === GUILD_RECRUITMENT_ERRORS.NO_OFFICE ? {status: "noOffice"} : {status: "failed"};
 }
 
 function requestRecruitment(change: RecruitmentChange): Promise<GameAnswer<GuildRecruitmentRes>> {

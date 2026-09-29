@@ -27,29 +27,28 @@ const LEAGUES = Object.assign(new LeagueInfoRes(), {
 
 describe("arena references", () => {
 	beforeEach(() => jest.clearAllMocks());
-	it("opens a ranked player's profile, and the player's own row on their own tab", async () => {
-		const page = Object.assign(new TopRes(), {dataType: TopDataType.GLORY, timing: TopTiming.ALL_TIME, canBeRanked: true, totalElements: 2, elementsPerPage: 10, pageNumber: 1, elements: [
-			{rank: 1, sameContext: false, name: "Kyusaor", value: 1200, level: 60, playerRef: "opaque-kyusaor"},
-			{rank: 2, sameContext: true, name: "Aventurier", value: 900, level: 50, playerRef: "opaque-self"}
+	it.each([
+		{
+			board: "player", dataType: TopDataType.GLORY, label: "app:arena.rankings.openProfile", ownTab: "/profile",
+			other: {name: "Kyusaor", playerRef: "opaque-kyusaor"}, own: {name: "Aventurier", playerRef: "opaque-self"},
+			opened: {pathname: "/player/[ref]", params: {ref: "opaque-kyusaor"}}
+		},
+		{
+			board: "guild", dataType: TopDataType.GUILD, label: "app:arena.rankings.openGuild", ownTab: "/guild",
+			other: {name: "Aurore"}, own: {name: "Bananes"},
+			opened: {pathname: "/guilds/[name]", params: {name: "Aurore"}}
+		}
+	])("opens a ranked $board, and the player's own row on their own tab", async scenario => {
+		const page = Object.assign(new TopRes(), {dataType: scenario.dataType, timing: TopTiming.ALL_TIME, canBeRanked: true, totalElements: 2, elementsPerPage: 10, pageNumber: 1, elements: [
+			{rank: 1, sameContext: false, value: 1200, level: 60, ...scenario.other},
+			{rank: 2, sameContext: true, value: 900, level: 50, ...scenario.own}
 		]});
 		await render(<RankingsContent data={page} onPage={jest.fn()} />);
-		const [other, self] = screen.getAllByLabelText("app:arena.rankings.openProfile");
+		const [other, own] = screen.getAllByLabelText(scenario.label);
 		await fireEvent.press(other);
-		expect(mockPush).toHaveBeenCalledWith({pathname: "/player/[ref]", params: {ref: "opaque-kyusaor"}});
-		await fireEvent.press(self);
-		expect(mockNavigate).toHaveBeenCalledWith("/profile");
-	});
-	it("opens a ranked guild by its name, and the player's own guild on their guild tab", async () => {
-		const page = Object.assign(new TopRes(), {dataType: TopDataType.GUILD, timing: TopTiming.ALL_TIME, canBeRanked: true, totalElements: 2, elementsPerPage: 10, pageNumber: 1, elements: [
-			{rank: 1, sameContext: false, name: "Aurore", value: 4500, level: 12},
-			{rank: 2, sameContext: true, name: "Bananes", value: 900, level: 3}
-		]});
-		await render(<RankingsContent data={page} onPage={jest.fn()} />);
-		const [other, own] = screen.getAllByLabelText("app:arena.rankings.openGuild");
-		await fireEvent.press(other);
-		expect(mockPush).toHaveBeenCalledWith({pathname: "/guilds/[name]", params: {name: "Aurore"}});
+		expect(mockPush).toHaveBeenCalledWith(scenario.opened);
 		await fireEvent.press(own);
-		expect(mockNavigate).toHaveBeenCalledWith("/guild");
+		expect(mockNavigate).toHaveBeenCalledWith(scenario.ownTab);
 	});
 	it("uses the server page for navigation and resets it when switching rankings", async () => {
 		const page = Object.assign(new TopRes(), {dataType: TopDataType.SCORE, timing: TopTiming.ALL_TIME, contextRank: 36, canBeRanked: true, totalElements: 60, elementsPerPage: 10, pageNumber: 4, elements: [{rank: 36, sameContext: true, name: "Aventurier", value: 150, level: 10}]});

@@ -367,32 +367,28 @@ export function addUpgradeSection(container: ContainerBuilder, building: GuildBu
 	);
 }
 
-export function getBuildingSummary(building: GuildBuilding, level: number, lng: Language): string {
-	switch (building) {
-		case GuildBuilding.SHOP:
-			return level === 0
-				? i18n.t("commands:report.city.guildDomain.buildingSummary.shop.locked", { lng })
-				: i18n.t("commands:report.city.guildDomain.buildingSummary.shop.built", { lng });
-		case GuildBuilding.SHELTER:
-			return i18n.t("commands:report.city.guildDomain.buildingSummary.shelter", {
-				lng,
-				slots: GuildDomainConstants.getShelterSlots(level)
+const BUILDING_SUMMARIES: Record<GuildBuilding, (level: number, lng: Language) => string> = {
+	[GuildBuilding.SHOP]: (level, lng) => level === 0
+		? i18n.t("commands:report.city.guildDomain.buildingSummary.shop.locked", { lng })
+		: i18n.t("commands:report.city.guildDomain.buildingSummary.shop.built", { lng }),
+	[GuildBuilding.SHELTER]: (level, lng) => i18n.t("commands:report.city.guildDomain.buildingSummary.shelter", {
+		lng,
+		slots: GuildDomainConstants.getShelterSlots(level)
+	}),
+	[GuildBuilding.PANTRY]: (_level, lng) => i18n.t("commands:report.city.guildDomain.buildingSummary.pantry", { lng }),
+	[GuildBuilding.TRAINING_GROUND]: (level, lng) => {
+		const love = GuildDomainConstants.getTrainingLovePerDay(level);
+		return love === 0
+			? i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.inactive", { lng })
+			: i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.active", {
+				lng, love
 			});
-		case GuildBuilding.PANTRY:
-			return i18n.t("commands:report.city.guildDomain.buildingSummary.pantry", { lng });
-		case GuildBuilding.TRAINING_GROUND: {
-			const love = GuildDomainConstants.getTrainingLovePerDay(level);
-			return love === 0
-				? i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.inactive", { lng })
-				: i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.active", {
-					lng, love
-				});
-		}
-		case GuildBuilding.RECRUITMENT_OFFICE:
-			return level === 0
-				? i18n.t("commands:report.city.guildDomain.buildingSummary.recruitmentOffice.locked", { lng })
-				: i18n.t("commands:report.city.guildDomain.buildingSummary.recruitmentOffice.built", { lng });
-		default:
-			return "";
-	}
+	},
+	[GuildBuilding.RECRUITMENT_OFFICE]: (level, lng) => level === 0
+		? i18n.t("commands:report.city.guildDomain.buildingSummary.recruitmentOffice.locked", { lng })
+		: i18n.t("commands:report.city.guildDomain.buildingSummary.recruitmentOffice.built", { lng })
+};
+
+export function getBuildingSummary(building: GuildBuilding, level: number, lng: Language): string {
+	return BUILDING_SUMMARIES[building](level, lng);
 }

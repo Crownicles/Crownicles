@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { findTextIssue, normalizeText, progressBar } from "../../src/utils/StringUtils";
+import { progressBar } from "../../src/utils/StringUtils";
+import { findTextIssue, normalizeText } from "../../src/utils/TextRuleUtils";
 import { TEXT_ISSUES, TextRuleConstants } from "../../src/constants/TextRuleConstants";
 
 describe('progressBar', () => {

@@ -1,6 +1,7 @@
 import {ReactNode, useEffect, useState} from "react";
 import {useRouter} from "expo-router";
 import {RecruitingGuild} from "ws-packets/src/objects/GuildRecruitment";
+import {GuildRecruitmentListRes} from "ws-packets/src/fromServer/guild/GuildRecruitmentRes";
 import {gameRules} from "@/src/rules/GameRules";
 import {Button, ButtonRow, EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, ExpandableList, Fact, Refusal} from "@/src/design/Sections";
@@ -100,41 +101,56 @@ export function GuildJoinOffer({guild}: {guild: RecruitingGuild}): ReactNode {
 	</>;
 }
 
+/** A name to look for; once a search was made, a way back to the suggestions. */
+function GuildSearchForm({searching, searched, onSearch}: {searching: boolean; searched: boolean; onSearch: (text: string) => void}): ReactNode {
+	const [text, setText] = useState("");
+	return <FormBlock>
+		<TextField label={i18n.t("app:guild.join.searchLabel")} value={text} onChangeText={setText} returnKeyType="search" onSubmitEditing={(): void => onSearch(text)} editable={!searching} />
+		<ButtonRow>
+			<Button icon={Search} disabled={searching} onPress={(): void => onSearch(text)}>{i18n.t("app:guild.join.search")}</Button>
+			{searched ? <Button disabled={searching} onPress={(): void => {
+				setText("");
+				onSearch("");
+			}}>{i18n.t("app:guild.join.suggestions")}</Button> : null}
+		</ButtonRow>
+	</FormBlock>;
+}
+
+function RecruitingGuildList({guilds, searched, joining, onJoin}: {guilds: RecruitingGuild[]; searched: boolean; joining: boolean; onJoin: (guildId: number) => void}): ReactNode {
+	const unfolding = useExpandedEntry<number>();
+	if (guilds.length === 0) {
+		return <ExpandableList><EmptyState>{i18n.t(searched ? "app:guild.join.noMatch" : "app:guild.join.noSuggestion")}</EmptyState></ExpandableList>;
+	}
+	return <ExpandableList>{guilds.map(guild => <RecruitingGuildEntry
+		key={guild.id}
+		guild={guild}
+		expanded={unfolding.isExpanded(guild.id)}
+		onToggle={(): void => unfolding.toggle(guild.id)}
+		pending={joining}
+		onJoin={(): void => onJoin(guild.id)}
+	/>)}</ExpandableList>;
+}
+
+function SearchHeading({result}: {result: GuildRecruitmentListRes | null}): ReactNode {
+	return <>
+		<SectionHeader>{result?.search ? i18n.t("app:guild.join.results", {search: result.search}) : i18n.t("app:guild.join.suggested")}</SectionHeader>
+		{result ? <Note>{i18n.t("app:guild.join.yourScore", {score: formatNumber(result.playerScore)})}</Note> : null}
+	</>;
+}
+
 /** Looking for a guild: the most fitting ones at once, or those whose name contains a search. */
 export function GuildJoin(): ReactNode {
 	const router = useRouter();
-	const [text, setText] = useState("");
 	const {result, pending: searching, message: searchMessage, search} = useGuildSearch();
 	const {pending: joining, message: joinMessage, join} = useGuildJoin(() => router.replace("/guild"));
-	const unfolding = useExpandedEntry<number>();
 	useEffect(() => search(""), [search]);
-	const guilds = result?.guilds ?? [];
 	const message = joinMessage ?? searchMessage;
+	const searched = Boolean(result?.search);
 	return <>
-		<FormBlock>
-			<TextField label={i18n.t("app:guild.join.searchLabel")} value={text} onChangeText={setText} returnKeyType="search" onSubmitEditing={(): void => search(text)} editable={!searching} />
-			<ButtonRow>
-				<Button icon={Search} disabled={searching} onPress={(): void => search(text)}>{i18n.t("app:guild.join.search")}</Button>
-				{result?.search ? <Button disabled={searching} onPress={(): void => {
-					setText("");
-					search("");
-				}}>{i18n.t("app:guild.join.suggestions")}</Button> : null}
-			</ButtonRow>
-		</FormBlock>
+		<GuildSearchForm searching={searching} searched={searched} onSearch={search} />
 		{message ? <Note>{message}</Note> : null}
-		<SectionHeader>{result?.search ? i18n.t("app:guild.join.results", {search: result.search}) : i18n.t("app:guild.join.suggested")}</SectionHeader>
-		{result ? <Note>{i18n.t("app:guild.join.yourScore", {score: formatNumber(result.playerScore)})}</Note> : null}
-		<ExpandableList>{guilds.length > 0
-			? guilds.map(guild => <RecruitingGuildEntry
-				key={guild.id}
-				guild={guild}
-				expanded={unfolding.isExpanded(guild.id)}
-				onToggle={(): void => unfolding.toggle(guild.id)}
-				pending={joining}
-				onJoin={(): void => join(guild.id)}
-			/>)
-			: <EmptyState>{i18n.t(result?.search ? "app:guild.join.noMatch" : "app:guild.join.noSuggestion")}</EmptyState>}
-		</ExpandableList>
+		<SearchHeading result={result} />
+		<RecruitingGuildList guilds={result?.guilds ?? []} searched={searched} joining={joining} onJoin={join} />
 		<Note>{i18n.t("app:guild.join.invitation")}</Note>
 	</>;
 }

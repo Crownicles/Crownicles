@@ -39,6 +39,10 @@ export function recruitingGuild(guild: Guild, memberCount: number, playerScore: 
 	};
 }
 
+function isTrustedByRole(member: Player, guild: Guild): boolean {
+	return [guild.chiefId, guild.elderId].includes(member.id);
+}
+
 /**
  * When a member on probation may take pets out of the shelter again, or null when they already can.
  * The chief and the elder are trusted by role, whatever their date of arrival.
@@ -46,7 +50,7 @@ export function recruitingGuild(guild: Guild, memberCount: number, playerScore: 
  * @param guild
  */
 export function guildProbationEnd(member: Player, guild: Guild): Millisecond | null {
-	if (!member.guildJoinedAt || member.id === guild.chiefId || member.id === guild.elderId) {
+	if (!member.guildJoinedAt || isTrustedByRole(member, guild)) {
 		return null;
 	}
 	const end = asMilliseconds(dateToMs(member.guildJoinedAt) + GuildConstants.PROBATION_DURATION_MS);

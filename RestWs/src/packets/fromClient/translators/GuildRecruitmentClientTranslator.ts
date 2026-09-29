@@ -20,6 +20,14 @@ function checkSettings(packet: GuildRecruitmentReq): void {
 	}
 }
 
+/** No search at all asks for suggestions; otherwise it must be a string short enough for Core. */
+function isValidSearch(search: unknown): boolean {
+	if (search === undefined) {
+		return true;
+	}
+	return typeof search === "string" && search.length <= GuildRecruitmentConstants.SEARCH_MAX_LENGTH;
+}
+
 export default class GuildRecruitmentClientTranslator {
 	@fromClientTranslator(GuildRecruitmentReq)
 	public static settings(_context: PacketContext, packet: GuildRecruitmentReq): Promise<CommandGuildRecruitmentPacketReq> {
@@ -32,7 +40,7 @@ export default class GuildRecruitmentClientTranslator {
 
 	@fromClientTranslator(GuildRecruitmentListReq)
 	public static list(_context: PacketContext, packet: GuildRecruitmentListReq): Promise<CommandGuildRecruitmentListPacketReq> {
-		if (packet.search !== undefined && (typeof packet.search !== "string" || packet.search.length > GuildRecruitmentConstants.SEARCH_MAX_LENGTH)) {
+		if (!isValidSearch(packet.search)) {
 			throw new InvalidClientPacketError("Invalid guild search");
 		}
 		return asyncMakePacket(CommandGuildRecruitmentListPacketReq, packet.search ? { search: packet.search } : {});

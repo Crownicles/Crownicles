@@ -67,6 +67,12 @@ async function currentAccessToken(): Promise<string | null> {
 	return authToken.getAccessToken();
 }
 
+/** Each step ends on its own irreversible button, kept apart from what follows. */
+function DangerAction({label, disabled, onPress}: {label: string; disabled: boolean; onPress: () => void}): React.ReactElement {
+	const styles = useStyles();
+	return <View style={styles.action}><DesignButton variant="danger" disabled={disabled} onPress={onPress}>{label}</DesignButton></View>;
+}
+
 export default function DeleteAccount(): React.ReactElement {
 	const styles = useStyles();
 	const router = useRouter();
@@ -131,11 +137,7 @@ export default function DeleteAccount(): React.ReactElement {
 				<Text style={styles.paragraph}>{i18n.t("app:settings.deleteAccount.requestExplanation")}</Text>
 				{requested && <Text style={styles.notice}>{i18n.t("app:settings.deleteAccount.requested")}</Text>}
 				{failure === "request" && <Refusal>{i18n.t("app:settings.deleteAccount.requestError")}</Refusal>}
-				<View style={styles.action}>
-					<DesignButton variant="danger" disabled={pending} onPress={requestDeletion}>
-						{i18n.t("app:settings.deleteAccount.ask")}
-					</DesignButton>
-				</View>
+				<DangerAction label={i18n.t("app:settings.deleteAccount.ask")} disabled={pending} onPress={requestDeletion} />
 
 				<Text style={styles.stepTitle}>{i18n.t("app:settings.deleteAccount.confirmStep")}</Text>
 				<Text style={styles.paragraph}>{i18n.t("app:settings.deleteAccount.confirmExplanation")}</Text>
@@ -149,11 +151,7 @@ export default function DeleteAccount(): React.ReactElement {
 						editable={!pending}
 						refusal={failure === "code" ? i18n.t("app:settings.deleteAccount.codeError") : null}
 					/>
-					<View style={styles.action}>
-						<DesignButton variant="danger" disabled={pending || code.trim().length === 0} onPress={confirmDeletion}>
-							{i18n.t("app:settings.deleteAccount.confirm")}
-						</DesignButton>
-					</View>
+					<DangerAction label={i18n.t("app:settings.deleteAccount.confirm")} disabled={pending || code.trim().length === 0} onPress={confirmDeletion} />
 				</FormBlock>
 			</Screen>
 		</View>

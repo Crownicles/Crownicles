@@ -6,7 +6,7 @@ import {
 } from "../../../Lib/src/constants/TextRuleConstants";
 import {
 	findTextIssue as coreFindTextIssue, normalizeText as coreNormalizeText
-} from "../../../Lib/src/utils/StringUtils";
+} from "../../../Lib/src/utils/TextRuleUtils";
 import {
 	findTextIssue, normalizeText, TEXT_ISSUES, TextRuleId
 } from "../../../WsPackets/src/objects/TextRules";

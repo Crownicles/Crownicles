@@ -79,12 +79,18 @@ function playerIsChief(guild: GuildData): boolean {
 	return guild.members.some(entry => entry.isSelf && entry.id === guild.chiefId);
 }
 
+/** A chief with room left may invite; anyone else, or a full guild, has nothing to offer. */
+function canInviteInto(guild: GuildData | undefined): guild is GuildData {
+	if (!guild || !playerIsChief(guild)) return false;
+	return guild.members.length < gameRules().guild.maxMembers;
+}
+
 /** A chief with room left invites, straight from their profile, a player met in a ranking. */
 export function GuildInvitePlayer({playerRef, profile}: {playerRef: string; profile: ProfileRes}): ReactNode {
 	const state = useOwnGuild();
 	const {pending, message, open} = useCommandMenus();
 	const guild = state.status === "ready" ? state.data.data : undefined;
-	if (!guild || !playerIsChief(guild) || guild.members.length >= gameRules().guild.maxMembers) return null;
+	if (!canInviteInto(guild)) return null;
 	const lock: Lock | undefined = profile.guild ? {reason: i18n.t("app:guild.memberErrors.alreadyMember")} : undefined;
 	return <>
 		{message ? <Refusal>{message}</Refusal> : null}

@@ -8,7 +8,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandPetNickPacket";
 import {
 	findTextIssue, normalizeText
-} from "../../../../Lib/src/utils/StringUtils";
+} from "../../../../Lib/src/utils/TextRuleUtils";
 import { TextRuleConstants } from "../../../../Lib/src/constants/TextRuleConstants";
 import {
 	commandRequires, CommandUtils

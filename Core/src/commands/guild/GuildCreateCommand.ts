@@ -14,7 +14,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildCreatePacket";
 import {
 	findTextIssue, normalizeText
-} from "../../../../Lib/src/utils/StringUtils";
+} from "../../../../Lib/src/utils/TextRuleUtils";
 import { TextRuleConstants } from "../../../../Lib/src/constants/TextRuleConstants";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { ReactionCollectorGuildCreate } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildCreate";
