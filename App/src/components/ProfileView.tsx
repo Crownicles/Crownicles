@@ -115,6 +115,13 @@ function ProfileStanding({profile}: {profile: ProfileRes}): ReactNode {
 				color={colors.red}
 				{...gaugeEmoji("unitValues.health")}
 			/>
+			{profile.stats ? <FightGauge
+				label={i18n.t("app:profile.fields.energy")}
+				value={profile.stats.energy.value}
+				max={profile.stats.energy.max}
+				color={colors.green}
+				{...gaugeEmoji("unitValues.energy")}
+			/> : null}
 			<FightGauge
 				label={i18n.t("app:profile.fields.experience")}
 				value={profile.experience.value}
@@ -146,7 +153,6 @@ function statisticsSection(profile: ProfileRes): ProfileSection | null {
 				{caption: i18n.t("app:profile.fields.speed"), value: numberValue(stats.speed), unit: "speed"}
 			]} />
 			<Figures items={[
-				{caption: i18n.t("app:profile.fields.energy"), value: progressValue(stats.energy.value, stats.energy.max), unit: "energy"},
 				{caption: i18n.t("app:profile.fields.breath"), value: progressValue(stats.breath.base, stats.breath.max), unit: "breath"},
 				{caption: i18n.t("app:profile.fields.breathRegen"), value: numberValue(stats.breath.regen), unit: "breathRegen"}
 			]} />
