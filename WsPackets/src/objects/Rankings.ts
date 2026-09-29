@@ -39,7 +39,18 @@ export type FightHistoryEntry = {
 	date: number;
 };
 export type RankingEntry = {
-	rank: number; sameContext: boolean; name: string; value: number; level: number; leagueId?: number; mapType?: string; effectId?: string; afk?: boolean;
+	rank: number;
+	sameContext: boolean;
+	name: string;
+	value: number;
+	level: number;
+	leagueId?: number;
+	mapType?: string;
+	effectId?: string;
+	afk?: boolean;
+
+	/** Present on player boards, to ask for that player's profile: an opaque handle, never their account. */
+	playerRef?: string;
 };
 export type LeagueInfo = {
 	id: number; minGloryPoints: number; maxGloryPoints: number; money: number; xp: number; winMoney: number;

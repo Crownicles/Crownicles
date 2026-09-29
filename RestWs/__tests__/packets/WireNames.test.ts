@@ -96,6 +96,7 @@ const WIRE_NAMES = [
 	"PingReq",
 	"PingRes",
 	"PlayerNotFound",
+	"PlayerProfileReq",
 	"ProfileReq",
 	"ProfileRes",
 	"ReactionCollectorCreation",

@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {Linking, Pressable, Text} from "react-native";
+import {Linking, Pressable, Text, View} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {RarityReq} from "ws-packets/src/fromClient/RarityReq";
 import {BlessingReq} from "ws-packets/src/fromClient/BlessingReq";
@@ -111,18 +111,19 @@ export function BadgesContent({badges}: {badges: string[]}): ReactNode {
 	/>)}</ExpandableList>;
 }
 
-/** The badges earned, shown as their emojis; a tap opens what each one means and those left to win. */
-export function ProfileBadges({badges, onOpen}: {badges: string[]; onOpen: () => void}): ReactNode {
+/** The badges earned, shown as their emojis; on the player's own profile a tap opens what each one means. */
+export function ProfileBadges({badges, onOpen}: {badges: string[]; onOpen?: () => void}): ReactNode {
 	const styles = useStyles();
 	const earned = VISIBLE_BADGES.filter(badge => badges.includes(badge));
+	const content = earned.length === 0
+		? <Text style={styles.noBadge}>{i18n.t(onOpen ? "app:reference.badges.none" : "app:reference.badges.noneOther")}</Text>
+		: earned.map(badge => <TwemojiIcon key={badge} emoji={AppIcons.getIcon(`badges.${badge}`)} size={BADGE_EMOJI_SIZE} />);
 	return <>
 		<SectionHeader action={{hint: i18n.t("app:profile.formats.progress", {value: earned.length, max: VISIBLE_BADGES.length})}}>{i18n.t("app:profile.titles.badges")}</SectionHeader>
 		<ExpandableList>
-			<Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:profile.titles.badges")} onPress={onOpen} style={({pressed}): object[] => [styles.badges, pressed && styles.pressed].filter(Boolean) as object[]}>
-				{earned.length === 0
-					? <Text style={styles.noBadge}>{i18n.t("app:reference.badges.none")}</Text>
-					: earned.map(badge => <TwemojiIcon key={badge} emoji={AppIcons.getIcon(`badges.${badge}`)} size={BADGE_EMOJI_SIZE} />)}
-			</Pressable>
+			{onOpen
+				? <Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:profile.titles.badges")} onPress={onOpen} style={({pressed}): object[] => [styles.badges, pressed && styles.pressed].filter(Boolean) as object[]}>{content}</Pressable>
+				: <View style={styles.badges}>{content}</View>}
 		</ExpandableList>
 	</>;
 }

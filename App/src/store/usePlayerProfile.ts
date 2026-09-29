@@ -1,5 +1,5 @@
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {ProfileReq} from "ws-packets/src/fromClient/ProfileReq";
+import {PlayerProfileReq, ProfileReq} from "ws-packets/src/fromClient/ProfileReq";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {GameClient, GameAnswer} from "@/src/networking/GameClient";
@@ -21,4 +21,13 @@ export function requestPlayerProfile(): Promise<GameAnswer<ProfileRes>> {
  */
 export function usePlayerProfile(): RequestState<ProfileRes> {
 	return useGameQuery<ProfileRes>(GAME_ENTITIES.PROFILE, requestPlayerProfile);
+}
+
+/** Another player's profile, asked through the handle the server sent with them. */
+export function useOtherPlayerProfile(playerRef: string): RequestState<ProfileRes> {
+	return useGameQuery<ProfileRes>(
+		GAME_ENTITIES.PROFILE,
+		() => GameClient.request(makeFromClientPacket(PlayerProfileReq, {playerRef}), ProfileRes, [PlayerNotFound]),
+		playerRef
+	);
 }

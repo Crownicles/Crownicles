@@ -1,5 +1,6 @@
 import {ReactNode, useState} from "react";
 import {Pressable, Text, View, type StyleProp, type ViewStyle} from "react-native";
+import {useRouter} from "expo-router";
 import {TopDataType, TopTiming, RankingEntry} from "ws-packets/src/objects/Rankings";
 import {TopRes} from "ws-packets/src/fromServer/fight/RankingsRes";
 import {RankingSelection, useRankings} from "@/src/store/useRankings";
@@ -88,8 +89,10 @@ function RankingStanding({data, onPage}: {data: TopRes; onPage: (page: number) =
 
 function RankingRow({entry, unit}: {entry: RankingEntry; unit: string}): ReactNode {
 	const styles = useStyles();
+	const router = useRouter();
 	const podium = entry.rank <= PODIUM_LAST_RANK;
-	return <View style={[styles.entry, entry.sameContext && styles.entrySelf]}>
+	const {playerRef} = entry;
+	const row = <>
 		<View style={[styles.rankBadge, podium && styles.rankBadgePodium]}>
 			<Text style={[styles.rank, podium && styles.rankPodium]} numberOfLines={1}>{formatNumber(entry.rank)}</Text>
 		</View>
@@ -107,7 +110,16 @@ function RankingRow({entry, unit}: {entry: RankingEntry; unit: string}): ReactNo
 			</View>
 			{entry.sameContext ? <Text style={styles.self}>{i18n.t("app:arena.you")}</Text> : null}
 		</View>
-	</View>;
+	</>;
+	if (!playerRef) return <View style={[styles.entry, entry.sameContext && styles.entrySelf]}>{row}</View>;
+	// The player's own row leads to their own profile tab, with everything only they can do there.
+	const open = (): void => entry.sameContext ? router.navigate("/profile") : router.push({pathname: "/player/[ref]", params: {ref: playerRef}});
+	return <Pressable
+		accessibilityRole="button"
+		accessibilityLabel={i18n.t("app:arena.rankings.openProfile", {name: entry.name || i18n.t("app:arena.unknownPlayer")})}
+		onPress={open}
+		style={({pressed}): StyleProp<ViewStyle> => [styles.entry, entry.sameContext && styles.entrySelf, pressed && styles.pressed]}
+	>{row}</Pressable>;
 }
 
 function PageArrow({label, arrow, disabled, onPress}: {label: string; arrow: StyleProp<ViewStyle>; disabled: boolean; onPress: () => void}): ReactNode {

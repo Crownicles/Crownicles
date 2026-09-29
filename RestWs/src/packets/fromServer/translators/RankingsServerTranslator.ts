@@ -16,6 +16,7 @@ import {
 } from "../../../../../WsPackets/src/objects/Rankings";
 import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePackets";
 import { resolvePlayerName } from "../PlayerDisplay";
+import { playerReference } from "../../../services/PlayerReference";
 import {
 	TopElementScore, TopElementGlory
 } from "../../../../../Lib/src/types/TopElement";
@@ -40,6 +41,7 @@ async function playerRankingEntry(entry: TopElementScore | TopElementGlory): Pro
 	return {
 		rank: entry.rank,
 		sameContext: entry.sameContext,
+		playerRef: playerReference(entry.text),
 		name: await resolvePlayerName(entry.text) ?? "",
 		value: entry.attributes[2],
 		level: entry.attributes[3],

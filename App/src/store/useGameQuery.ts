@@ -55,10 +55,12 @@ function refreshGameStateOnFocus(queryClient: ReturnType<typeof useQueryClient>,
  */
 export function useGameQuery<Answer extends FromServerPacket>(
 	entity: GameEntity,
-	run: () => Promise<GameAnswer<Answer>>
+	run: () => Promise<GameAnswer<Answer>>,
+	scope?: string
 ): RequestState<Answer> {
 	const query = useQuery<SettledAnswer<Answer>>({
-		queryKey: gameKey(entity),
+		// Invalidating the entity also refreshes every scoped read of it, such as another player's profile.
+		queryKey: scope === undefined ? gameKey(entity) : [...gameKey(entity), scope],
 		queryFn: async (): Promise<SettledAnswer<Answer>> => {
 			const answer = await run();
 			if (answer.kind === "timeout") {

@@ -7,7 +7,9 @@ import {TopReq, LeagueRewardReq} from "ws-packets/src/fromClient/RankingsReq";
 import {TopRes, TopEmptyRes, LeagueInfoRes} from "ws-packets/src/fromServer/fight/RankingsRes";
 import {TopDataType, TopTiming, EloGameResult} from "ws-packets/src/objects/Rankings";
 
-jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
+const mockPush = jest.fn();
+const mockNavigate = jest.fn();
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: (): object => ({push: mockPush, navigate: mockNavigate})}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: jest.fn()})}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
@@ -25,6 +27,18 @@ const LEAGUES = Object.assign(new LeagueInfoRes(), {
 
 describe("arena references", () => {
 	beforeEach(() => jest.clearAllMocks());
+	it("opens a ranked player's profile, and the player's own row on their own tab", async () => {
+		const page = Object.assign(new TopRes(), {dataType: TopDataType.GLORY, timing: TopTiming.ALL_TIME, canBeRanked: true, totalElements: 2, elementsPerPage: 10, pageNumber: 1, elements: [
+			{rank: 1, sameContext: false, name: "Kyusaor", value: 1200, level: 60, playerRef: "opaque-kyusaor"},
+			{rank: 2, sameContext: true, name: "Aventurier", value: 900, level: 50, playerRef: "opaque-self"}
+		]});
+		await render(<RankingsContent data={page} onPage={jest.fn()} />);
+		const [other, self] = screen.getAllByLabelText("app:arena.rankings.openProfile");
+		await fireEvent.press(other);
+		expect(mockPush).toHaveBeenCalledWith({pathname: "/player/[ref]", params: {ref: "opaque-kyusaor"}});
+		await fireEvent.press(self);
+		expect(mockNavigate).toHaveBeenCalledWith("/profile");
+	});
 	it("uses the server page for navigation and resets it when switching rankings", async () => {
 		const page = Object.assign(new TopRes(), {dataType: TopDataType.SCORE, timing: TopTiming.ALL_TIME, contextRank: 36, canBeRanked: true, totalElements: 60, elementsPerPage: 10, pageNumber: 4, elements: [{rank: 36, sameContext: true, name: "Aventurier", value: 150, level: 10}]});
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: page});

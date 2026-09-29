@@ -109,12 +109,9 @@ export function translateProfileData(pseudo: string, playerData: ProfilePlayerDa
 export default class ProfileCommandServerTranslator {
 	@fromServerTranslator(CommandProfilePacketRes, ProfileRes)
 	public static async translate(_context: PacketContext, packet: CommandProfilePacketRes): Promise<ProfileRes> {
+		// The app names a player it cannot resolve the way rankings do, rather than losing the whole profile.
 		const name = await resolvePlayerName(packet.keycloakId);
-		if (name === null) {
-			throw "Error when retrieving the player";
-		}
-
-		return translateProfileData(escapeUsername(name), packet.playerData);
+		return translateProfileData(name === null ? "" : escapeUsername(name), packet.playerData);
 	}
 
 	@fromServerTranslator(CommandProfilePlayerNotFound, PlayerNotFound)
