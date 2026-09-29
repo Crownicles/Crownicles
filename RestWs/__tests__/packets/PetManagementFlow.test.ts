@@ -1,6 +1,7 @@
 import {describe, expect, it, vi} from "vitest";
 import {makePacket, PacketContext} from "../../../Lib/src/packets/CrowniclesPacket";
 import {CommandPetFreeAcceptPacketRes} from "../../../Lib/src/packets/commands/CommandPetFreePacket";
+import {CommandPetTransferProbationErrorPacket} from "../../../Lib/src/packets/commands/CommandPetTransferPacket";
 import {ReactionCollectorPetTransfer, ReactionCollectorPetTransferWithdrawReaction} from "../../../Lib/src/packets/interaction/ReactionCollectorPetTransfer";
 import {ReactionCollectorPetFree} from "../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
 import {ReactionCollectorPetSell} from "../../../Lib/src/packets/interaction/ReactionCollectorPetSell";
@@ -37,6 +38,13 @@ describe("pet ownership management", () => {
 	it("keeps shelter entity IDs and reaction positions", () => {
 		const result = mapCollectorCreation(new ReactionCollectorPetTransfer(PET, [{petEntityId: 42, pet: PET}], [makePacket(ReactionCollectorRefuseReaction, {}), makePacket(ReactionCollectorPetTransferWithdrawReaction, {petEntityId: 42})]).creationPacket("transfer", 1_900_000_000_000));
 		expect(result.reactions).toEqual([{type: "refuse", data: {}}, {type: "petWithdraw", data: {petEntityId: 42}}]);
+	});
+	it("tells a newcomer on probation until when the shelter stays closed to them", async () => {
+		const ENDS_AT = 1_900_000_000_000;
+		const collector = mapCollectorCreation(new ReactionCollectorPetTransfer(PET, [{petEntityId: 42, pet: PET}], [makePacket(ReactionCollectorRefuseReaction, {})], ENDS_AT).creationPacket("transfer", ENDS_AT));
+		expect(collector.data.data).toMatchObject({probationEndsAt: ENDS_AT});
+		const refusal = await PetManagementServerTranslator.probation(CONTEXT, makePacket(CommandPetTransferProbationErrorPacket, {probationEndsAt: ENDS_AT}));
+		expect(refusal.outcome).toEqual({type: "probation", probationEndsAt: ENDS_AT});
 	});
 	it("presents the server cost before free confirmation and after success", async () => {
 		const collector = mapCollectorCreation(new ReactionCollectorPetFree(1, "m", "Aster", 1000).creationPacket("free", 1_900_000_000_000));

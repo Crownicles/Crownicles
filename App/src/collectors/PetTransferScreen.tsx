@@ -5,7 +5,8 @@ import {GENERIC_REACTION_KINDS, PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTI
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {ShelterChoices} from "ws-packets/src/objects/PetManagement";
 import {Button, ButtonRow, EmptyState, Note, Screen, SectionHeader} from "@/src/design/Primitives";
-import {ExpandableEntry, ExpandableList, useSectionStyles, Standing} from "@/src/design/Sections";
+import {ExpandableEntry, ExpandableList, LockHint, useSectionStyles, Standing} from "@/src/design/Sections";
+import {probationMessage} from "@/src/collectors/PetManagementOutcome";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
@@ -73,6 +74,7 @@ export function PetTransferScreen({collector, locked, onChoose, onClose}: {
 			{shelter.ownPet ? <Text style={sectionStyles.caption}>{petRarity(shelter.ownPet)} · {petMood(shelter.ownPet)}</Text> : null}
 		</Standing>
 		<SectionHeader>{i18n.t("app:pet.management.shelter")}</SectionHeader>
+		{shelter.probationEndsAt === undefined ? null : <LockHint lock={{reason: probationMessage(shelter.probationEndsAt)}} testID="pet-transfer-probation" />}
 		{choices.length ? <ExpandableList>{choices.map(choice => <ChoiceEntry
 			key={choice.index}
 			choice={choice}

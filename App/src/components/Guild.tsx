@@ -96,7 +96,8 @@ function memberRole(member: GuildMember, guild: GuildData): MemberRole {
 
 function memberCaption(member: GuildMember, role: MemberRole): string {
 	const travels = TRAVEL_STATUSES.filter(key => member.islandStatus[key]).map(key => i18n.t(`app:guild.island.${key}`));
-	return [i18n.t(`app:guild.roles.${role}`), ...travels].join(" · ");
+	const probation = member.probationEndsAt === undefined ? [] : [i18n.t("app:guild.onProbation")];
+	return [i18n.t(`app:guild.roles.${role}`), ...probation, ...travels].join(" · ");
 }
 
 function MemberEmblem({role, size = 26}: {role: MemberRole; size?: number}): ReactNode {

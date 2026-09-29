@@ -12,8 +12,13 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildPacket";
 import { Maps } from "../../core/maps/Maps";
 import {
-	isDiscoverable, recruitingGuild
+	guildProbationEnd, isDiscoverable, recruitingGuild
 } from "../../core/utils/GuildJoinUtils";
+
+function probationField(member: Player, guild: Guild): { probationEndsAt?: number } {
+	const end = guildProbationEnd(member, guild);
+	return end ? { probationEndsAt: end } : {};
+}
 import { MapCache } from "../../core/maps/MapCache";
 import { CityDataController } from "../../data/City";
 import {
@@ -97,7 +102,8 @@ export default class GuildCommand {
 						isOnBoat: MapCache.boatEntryMapLinks.includes(member.mapLinkId),
 						isPveIslandAlly: membersPveAlliesIds.includes(member.id),
 						cannotBeJoinedOnBoat: member.isNotActiveEnoughToBeJoinedInTheBoat()
-					}
+					},
+					...probationField(member, guild)
 				}))
 			);
 

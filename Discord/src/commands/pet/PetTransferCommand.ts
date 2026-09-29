@@ -48,6 +48,7 @@ import {
 } from "../../utils/DiscordCollectorUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { escapeUsername } from "../../utils/StringUtils";
+import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandPetTransferPacketReq> {
 	await interaction.deferReply();
@@ -375,7 +376,12 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 
 	const mainMenuEmbed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:petTransfer.chooseActionTitle", { lng }), interaction.user)
-		.setDescription(i18n.t("commands:petTransfer.chooseActionDesc", { lng }));
+		.setDescription(i18n.t("commands:petTransfer.chooseActionDesc", { lng })
+			+ (data.probationEndsAt === undefined
+				? ""
+				: i18n.t("commands:petTransfer.probationNote", {
+					lng, time: finishInTimeDisplay(new Date(data.probationEndsAt))
+				})));
 
 	const mainMenuComponents = getMainMenuComponents(data, {
 		deposit: depositReaction,

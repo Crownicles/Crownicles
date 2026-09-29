@@ -599,6 +599,7 @@ export async function exportPlayerData(
 			furnacePosition: player.furnacePosition,
 			pinnedCookingRecipeId: player.pinnedCookingRecipeId,
 			lastGardenWatered: player.lastGardenWatered,
+			guildJoinedAt: player.guildJoinedAt,
 			createdAt: player.createdAt,
 			updatedAt: player.updatedAt
 		}

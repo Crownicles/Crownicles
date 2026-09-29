@@ -13,9 +13,11 @@ import {
 	CommandPetTransferNoPetErrorPacket,
 	CommandPetTransferPacketReq,
 	CommandPetTransferPetOnExpeditionErrorPacket,
+	CommandPetTransferProbationErrorPacket,
 	CommandPetTransferSituationChangedErrorPacket,
 	CommandPetTransferSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetTransferPacket";
+import { guildProbationEnd } from "../../core/utils/GuildJoinUtils";
 import {
 	PetEntities, PetEntity
 } from "../../core/database/game/models/PetEntity";
@@ -440,32 +442,35 @@ async function checkGuildMemberTransferring(
 
 /**
  * Build reactions array for pet transfer collector
+ * @param playerPet
+ * @param shelterFull
+ * @param reachablePets The shelter pets the player may take out: none while on probation
  */
 function buildTransferReactions(
 	playerPet: PetEntity | null,
-	guild: { isPetShelterFull: (pets: GuildPet[]) => boolean },
-	guildPets: GuildPet[]
+	shelterFull: boolean,
+	reachablePets: GuildPet[]
 ): ReactionCollectorReaction[] | null {
 	const reactions: ReactionCollectorReaction[] = [];
 
 	if (playerPet) {
-		if (!guild.isPetShelterFull(guildPets) && !playerPet.isFeisty()) {
+		if (!shelterFull && !playerPet.isFeisty()) {
 			reactions.push(makePacket(ReactionCollectorPetTransferDepositReaction, {}));
 		}
-		for (const guildPet of guildPets) {
+		for (const guildPet of reachablePets) {
 			reactions.push(makePacket(ReactionCollectorPetTransferSwitchReaction, {
 				petEntityId: guildPet.petEntityId
 			}));
 		}
 	}
-	else if (guildPets.length > 0) {
-		for (const guildPet of guildPets) {
+	else {
+		for (const guildPet of reachablePets) {
 			reactions.push(makePacket(ReactionCollectorPetTransferWithdrawReaction, {
 				petEntityId: guildPet.petEntityId
 			}));
 		}
 	}
-	else {
+	if (reactions.length === 0) {
 		return null; // No valid transfer options
 	}
 
@@ -531,11 +536,14 @@ export default class PetTransferCommand {
 			return;
 		}
 		const guildPets = await GuildPets.getOfGuild(player.guildId!);
+		const probationEnd = guildProbationEnd(player, guild);
 
 		// Build reactions - returns null if no valid transfer options
-		const reactions = buildTransferReactions(playerPet, guild, guildPets);
+		const reactions = buildTransferReactions(playerPet, guild.isPetShelterFull(guildPets), probationEnd ? [] : guildPets);
 		if (!reactions) {
-			response.push(makePacket(CommandPetTransferNoPetErrorPacket, {}));
+			response.push(probationEnd && guildPets.length > 0
+				? makePacket(CommandPetTransferProbationErrorPacket, { probationEndsAt: probationEnd })
+				: makePacket(CommandPetTransferNoPetErrorPacket, {}));
 			return;
 		}
 
@@ -544,7 +552,8 @@ export default class PetTransferCommand {
 		const collector = new ReactionCollectorPetTransfer(
 			playerPet?.asOwnedPet() as OwnedPet,
 			guildPetsEntities,
-			reactions
+			reactions,
+			probationEnd ?? undefined
 		);
 
 		const packet = new ReactionCollectorInstance(

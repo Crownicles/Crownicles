@@ -5,7 +5,11 @@ export type ShelterPet = {
 	petEntityId: number; pet: OwnedPet;
 };
 export type ShelterChoices = {
-	ownPet?: OwnedPet; shelterPets: ShelterPet[];
+	ownPet?: OwnedPet;
+	shelterPets: ShelterPet[];
+
+	/** Set while the player is on probation: shelter pets are listed, but none can be taken out yet. */
+	probationEndsAt?: number;
 };
 export type PetFreeConfirmation = {
 	pet: PetBasicInfo; freeCost: number; isFromShelter: boolean;
@@ -53,6 +57,9 @@ export type PetManagementOutcome =
 	}
 	| {
 		type: "saleFunds"; missingMoney: number;
+	}
+	| {
+		type: "probation"; probationEndsAt: number;
 	}
 	| {
 		type: "error"; error: PetManagementError;

@@ -292,6 +292,7 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"furnacePosition",
 		"pinnedCookingRecipeId",
 		"lastGardenWatered",
+		"guildJoinedAt",
 		"updatedAt",
 		"createdAt"
 	],

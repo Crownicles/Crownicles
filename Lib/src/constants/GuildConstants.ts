@@ -1,3 +1,7 @@
+import {
+	asHours, hoursToMilliseconds
+} from "../utils/TimeUtils";
+
 export abstract class GuildConstants {
 	static readonly ICON: "https://i.imgur.com/sQHBly4.png";
 
@@ -21,6 +25,9 @@ export abstract class GuildConstants {
 	static readonly REQUIRED_LEVEL = 10;
 
 	static readonly MAX_GUILD_MEMBERS = 6;
+
+	/** A newcomer can leave pets in the shelter but take none out until then, unless named elder sooner. */
+	static readonly PROBATION_DURATION_MS = hoursToMilliseconds(asHours(72));
 
 	static readonly GUILD_NAME_LENGTH_RANGE = {
 		MIN: 2,

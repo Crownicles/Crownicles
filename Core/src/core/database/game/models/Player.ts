@@ -228,6 +228,9 @@ export class Player extends Model {
 
 	declare lastGardenWatered: Date | null;
 
+	/** When the player last joined a guild; starts the probation during which shelter pets stay out of reach. */
+	declare guildJoinedAt: Date | null;
+
 	declare furnacePosition: number;
 
 	declare pinnedCookingRecipeId: string | null;
@@ -2054,6 +2057,11 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: null
 		},
 		lastGardenWatered: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
+		},
+		guildJoinedAt: {
 			type: DataTypes.DATE,
 			allowNull: true,
 			defaultValue: null

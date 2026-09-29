@@ -29,6 +29,13 @@ describe("pet management confirmation", () => {
 		await fireEvent.press(screen.getByText("app:pet.management.confirmTransfer"));
 		expect(screen.queryByText("app:pet.management.confirmTransfer")).toBeNull();
 	});
+	it("says why a newcomer on probation can only deposit", async () => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {id: "transfer", endTime: Date.now() + 60_000, data: {type: "petTransfer", data: {ownPet: PET, shelterPets: [{petEntityId: 4, pet: {...PET, nickname: "Rare"}}], probationEndsAt: Date.now() + 60 * 60_000}}, reactions: [{type: "refuse", data: {}}, {type: "petDeposit", data: {}}]});
+		await render(<PetManagementCollector collector={collector} onChoose={jest.fn()} submitting={false} />);
+		expect(screen.getByText("app:pet.management.probation")).toBeTruthy();
+		expect(screen.getByText("app:pet.management.deposit")).toBeTruthy();
+		expect(screen.queryByText("app:pet.management.switch")).toBeNull();
+	});
 	it("shows the irreversible warning and exact server price before freeing", async () => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {id: "free", endTime: Date.now() + 60_000, data: {type: "petFreeConfirm", data: {pet: {petTypeId: 1, petSex: "m", petNickname: "Aster"}, freeCost: 1000, isFromShelter: true}}, reactions: [{type: "accept", data: {}}, {type: "refuse", data: {}}]});
 		const onChoose = jest.fn();

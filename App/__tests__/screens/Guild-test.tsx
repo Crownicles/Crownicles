@@ -237,6 +237,12 @@ describe("guild screens", () => {
 		await fireEvent.press(screen.getByText("app:guild.openProfile"));
 		expect(mockNavigate).toHaveBeenCalledWith("/profile");
 	});
+	it("points out the members still on probation to the rest of the guild", async () => {
+		const newcomer: GuildMember = {...SELF, id: 9, name: "Recrue", isSelf: false, playerRef: "opaque-recrue", probationEndsAt: Date.now() + 60_000};
+		await render(<GuildOverview guild={guildData({members: [SELF, newcomer]})} onPage={jest.fn()} />);
+		expect(screen.getByText("app:guild.roles.member · app:guild.onProbation")).toBeTruthy();
+		expect(screen.getAllByText(/app:guild.onProbation/u)).toHaveLength(1);
+	});
 	it("shows another guild read-only, where a member leads straight to their profile", async () => {
 		const sailor: GuildMember = {id: 9, name: "Marin", isSelf: false, playerRef: "opaque-marin", rank: 30, score: 12, islandStatus: {isOnPveIsland: false, isOnBoat: true, isPveIslandAlly: false, cannotBeJoinedOnBoat: false}};
 		const {membership: _ownOnly, ...foreign} = guildData({chiefId: 9, members: [sailor]});

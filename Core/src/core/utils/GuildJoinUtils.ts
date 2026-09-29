@@ -10,6 +10,9 @@ import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 import {
 	GUILD_JOIN_ERRORS, GuildJoinBlocker, RecruitingGuild
 } from "../../../../Lib/src/types/GuildRecruitment";
+import {
+	asMilliseconds, dateToMs, Millisecond, nowMs
+} from "../../../../Lib/src/utils/TimeUtils";
 
 /** A guild can be found and joined on one's own only once its office is built and its doors are open. */
 export function isDiscoverable(guild: Guild): boolean {
@@ -34,6 +37,20 @@ export function recruitingGuild(guild: Guild, memberCount: number, playerScore: 
 		minScore: guild.recruitmentMinScore,
 		...blocker ? { blocker } : {}
 	};
+}
+
+/**
+ * When a member on probation may take pets out of the shelter again, or null when they already can.
+ * The chief and the elder are trusted by role, whatever their date of arrival.
+ * @param member
+ * @param guild
+ */
+export function guildProbationEnd(member: Player, guild: Guild): Millisecond | null {
+	if (!member.guildJoinedAt || member.id === guild.chiefId || member.id === guild.elderId) {
+		return null;
+	}
+	const end = asMilliseconds(dateToMs(member.guildJoinedAt) + GuildConstants.PROBATION_DURATION_MS);
+	return end > nowMs() ? end : null;
 }
 
 export const GUILD_ATTACH_RESULTS = {
@@ -68,6 +85,7 @@ export async function attachMemberUnderLock(
 	}
 
 	member.guildId = guild.id;
+	member.guildJoinedAt = new Date();
 	guild.updateLastDailyAt();
 	await Promise.all([
 		member.save(),

@@ -7,6 +7,7 @@ import {
 	CommandPetTransferNoPetErrorPacket,
 	CommandPetTransferFeistyErrorPacket,
 	CommandPetTransferPetOnExpeditionErrorPacket,
+	CommandPetTransferProbationErrorPacket,
 	CommandPetTransferSuccessPacket
 } from "../../../../../Lib/src/packets/commands/CommandPetTransferPacket";
 import {
@@ -185,6 +186,13 @@ export default class PetManagementServerTranslator {
 
 	@fromServerTranslator(CommandPetTransferFeistyErrorPacket, PetManagementRes)
 	public static feisty(_context: PacketContext, _packet: CommandPetTransferFeistyErrorPacket): Promise<PetManagementRes> { return failure(PET_MANAGEMENT_ERRORS.FEISTY); }
+
+	@fromServerTranslator(CommandPetTransferProbationErrorPacket, PetManagementRes)
+	public static probation(_context: PacketContext, packet: CommandPetTransferProbationErrorPacket): Promise<PetManagementRes> {
+		return asyncMakeFromServerPacket(PetManagementRes, { outcome: {
+			type: "probation", probationEndsAt: packet.probationEndsAt
+		} });
+	}
 
 	@fromServerTranslator(CommandPetTransferPetOnExpeditionErrorPacket, PetManagementRes)
 	public static expedition(_context: PacketContext, _packet: CommandPetTransferPetOnExpeditionErrorPacket): Promise<PetManagementRes> { return failure(PET_MANAGEMENT_ERRORS.EXPEDITION); }

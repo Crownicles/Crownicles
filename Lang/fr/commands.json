@@ -2767,7 +2767,9 @@
     "switchPlaceholder": "Choisissez un familier à échanger contre {{pet}}",
     "selectMenuPetDetails": "{{rarity}} | {{sex}} | {{loveLevel}}",
     "feistyError": "Vous ne pouvez pas transférer un familier fielleux.",
-    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être transféré."
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être transféré.",
+    "probationNote": "\n\nVous avez rejoint la guilde récemment : vous pourrez retirer ou échanger un familier du refuge {{time}}.",
+    "probationError": "Vous avez rejoint la guilde récemment : vous pourrez retirer ou échanger un familier du refuge {{time}}."
   },
   "petFeed": {
     "noPet": "Vous n'avez aucun familier !",

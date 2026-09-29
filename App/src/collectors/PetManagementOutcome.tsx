@@ -27,9 +27,15 @@ function FreedPetResult({outcome}: {outcome: Extract<Outcome, {type: "freed"}>})
 	</>;
 }
 
+/** How long a newcomer still waits before taking a pet out of the shelter. */
+export function probationMessage(probationEndsAt: number): string {
+	return i18n.t("app:pet.management.probation", {duration: formatDurationMinutes((probationEndsAt - Date.now()) / MILLISECONDS_PER_MINUTE)});
+}
+
 /** Why Core turned a request down, or null when the outcome is a result worth its own sheet. */
 export function petManagementRefusal(outcome: Outcome): string | null {
 	if (outcome.type === "error") return i18n.t(`app:pet.management.errors.${outcome.error}`);
+	if (outcome.type === "probation") return probationMessage(outcome.probationEndsAt);
 	if (outcome.type === "salePrice") return i18n.t("app:pet.sale.badPrice", {min: formatMoney(outcome.minPrice), max: formatMoney(outcome.maxPrice)});
 	return outcome.type === "saleFunds" ? i18n.t("app:pet.sale.missingMoney", {money: formatMoney(outcome.missingMoney)}) : null;
 }

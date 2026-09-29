@@ -17,7 +17,9 @@ import {
 
 function shelterChoices(data: ReactionCollectorPetTransferData): ShelterChoices {
 	return {
-		shelterPets: data.shelterPets, ...data.ownPet ? { ownPet: data.ownPet } : {}
+		shelterPets: data.shelterPets,
+		...data.ownPet ? { ownPet: data.ownPet } : {},
+		...data.probationEndsAt === undefined ? {} : { probationEndsAt: data.probationEndsAt }
 	};
 }
 function freeConfirmation(data: ReactionCollectorPetFreeData, isFromShelter: boolean): PetFreeConfirmation {
