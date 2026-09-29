@@ -18,8 +18,9 @@ import {GuildShelterRes} from "ws-packets/src/fromServer/pet/PetManagementRes";
 import {PetExpeditionReq} from "ws-packets/src/fromClient/PetExpeditionReq";
 import {PetReq} from "ws-packets/src/fromClient/PetReq";
 import {PetRes} from "ws-packets/src/fromServer/pet/PetRes";
+import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {PetNickReq} from "ws-packets/src/fromClient/PetCareReq";
+import {PetCaressReq, PetNickReq} from "ws-packets/src/fromClient/PetCareReq";
 import {PetCaressRes, PetNickRes} from "ws-packets/src/fromServer/pet/PetCareRes";
 import {GameClient} from "@/src/networking/GameClient";
 
@@ -32,6 +33,16 @@ jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => 
 
 const PET = {typeId: 1, nickname: "Aster", rarity: 1, sex: "m" as const, loveLevel: 3, force: 10, feedDelay: 2};
 const BOARDER = {typeId: 8, nickname: null, rarity: 2, sex: "f" as const, loveLevel: 1, force: 20, feedDelay: 2};
+const NO_EFFECT = {effect: "none", healed: false, timeLeft: 0, hasTimeDisplay: false};
+
+/** The overview also reads the player's alteration; it is served from the cache so only the pet's own requests reach the server. */
+async function renderOverview(pet: Partial<PetRes>, effect = NO_EFFECT): Promise<jest.Mock> {
+	const onPage = jest.fn();
+	const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity, staleTime: Infinity}}});
+	client.setQueryData(gameKey(GAME_ENTITIES.PROFILE), {kind: "answer", packet: Object.assign(new ProfileRes(), {effect})});
+	await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: true}, pet)} onPage={onPage} /></QueryClientProvider>);
+	return onPage;
+}
 
 describe("pet care screens", () => {
 	beforeEach(() => jest.clearAllMocks());
@@ -42,17 +53,24 @@ describe("pet care screens", () => {
 		{blocker: "petHungry" as const},
 		{blocker: "notOnContinent" as const}
 	])("refuses an expedition Core would turn down ($blocker) and says why", async ({blocker}) => {
-		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
-		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: blocker !== "noTalisman", expeditionBlocker: blocker})} onPage={jest.fn()} /></QueryClientProvider>);
+		await renderOverview({hasTalisman: blocker !== "noTalisman", expeditionBlocker: blocker});
 		expect(screen.getByText(`app:expedition.errors.${blocker}`)).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:expedition.open"));
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 
+	it("keeps feeding and selling out of reach while the player is occupied, and says for how long", async () => {
+		const onPage = await renderOverview({}, {effect: "occupied", healed: false, timeLeft: 90 * 60_000, hasTimeDisplay: true});
+		expect(screen.getByText("app:requirements.effect")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:pet.care.feedPet"));
+		await fireEvent.press(screen.getByText("app:pet.sale.title"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+		expect(onPage).not.toHaveBeenCalled();
+	});
+
 	it("opens the expedition once nothing keeps the pet home", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
-		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
-		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: true})} onPage={jest.fn()} /></QueryClientProvider>);
+		await renderOverview({});
 		expect(screen.queryByTestId("pet-expedition-lock")).toBeNull();
 		await fireEvent.press(screen.getByText("app:expedition.open"));
 		await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(PetExpeditionReq));
@@ -158,9 +176,10 @@ describe("pet care screens", () => {
 	});
 
 	it("walks the pet off after one stroke too many", async () => {
-		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: new PetCaressRes()});
-		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
-		await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: true})} onPage={jest.fn()} /></QueryClientProvider>);
+		jest.mocked(GameClient.request).mockImplementation(request => Promise.resolve(request instanceof PetCaressReq
+			? {kind: "answer", packet: new PetCaressRes()}
+			: {kind: "answer", packet: Object.assign(new ProfileRes(), {effect: NO_EFFECT})}));
+		await renderOverview({});
 		for (let stroke = 0; stroke < PET_PATIENCE.STROKES; stroke++) {
 			await fireEvent.press(screen.getByText("app:pet.care.caress"));
 		}

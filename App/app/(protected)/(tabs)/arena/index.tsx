@@ -3,12 +3,11 @@ import {Text, View} from "react-native";
 import {useRouter} from "expo-router";
 import {CircleAlert, Swords, Zap} from "@/src/design/FightIcons";
 import {ActionBanner, Lock} from "@/src/design/Sections";
-import {COMMAND_REJECTIONS} from "ws-packets/src/objects/CommandRejection";
 import {useQueryClient} from "@tanstack/react-query";
 import {Cure, CureEmblem} from "@/src/components/CureEmblem";
 import {HealAction, HealOffer, healOffer, PendingAction, useBuyHeal} from "@/src/components/HealAction";
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
-import {commandRejectionMessage} from "@/src/display/CommandRejection";
+import {activeEffect, effectLock, PlayerEffect} from "@/src/display/CommandRejection";
 import {useReportView} from "@/src/store/useReportActions";
 import {gameRules} from "@/src/rules/GameRules";
 import {FightReq} from "ws-packets/src/fromClient/FightReq";
@@ -60,14 +59,6 @@ const useStyles = createStyles(colors => ({
 	links: {marginTop: 30}
 }));
 
-type PlayerEffect = ProfileRes["effect"];
-
-/** Any alteration still running forbids a duel, as Core does. */
-function activeEffect(profile: ProfileRes): PlayerEffect | null {
-	const {effect} = profile;
-	return effect.effect !== "none" && effect.hasTimeDisplay && !effect.healed ? effect : null;
-}
-
 /** A running alteration takes the place of the class: it is what decides whether the player can fight. */
 function identityEmblem(profile: ProfileRes, cure: Cure | null): ReactNode {
 	if (cure) return <CureEmblem cure={cure} />;
@@ -75,10 +66,6 @@ function identityEmblem(profile: ProfileRes, cure: Cure | null): ReactNode {
 	const path = effect ? `effects.${effect.effect}` : profile.classId === undefined ? null : `classes.${profile.classId}`;
 	const icon = path ? AppIcons.getIconOrNull(path) : null;
 	return icon ? <TwemojiIcon emoji={icon} size={IDENTITY_EMBLEM_SIZE} /> : null;
-}
-
-function effectLock(effect: PlayerEffect): Lock {
-	return {reason: commandRejectionMessage({type: COMMAND_REJECTIONS.EFFECT, currentEffectId: effect.effect, remainingTime: effect.timeLeft})};
 }
 
 function ArenaProfile({profile, cure}: {profile: ProfileRes; cure: Cure | null}): ReactNode {

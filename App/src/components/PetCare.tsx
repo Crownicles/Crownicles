@@ -21,6 +21,8 @@ import {PaletteColor} from "@/src/design/Theme";
 import {useColors} from "@/src/design/ThemeContext";
 import {AppIcons} from "@/src/AppIcons";
 import {petMood, petName, petRarity, petSex, petTypeName} from "@/src/display/PetDisplay";
+import {activeEffect, effectLock} from "@/src/display/CommandRejection";
+import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {missionDate} from "@/src/display/Missions";
 import {i18n} from "@/src/translations/i18n";
 
@@ -56,14 +58,15 @@ function PetStanding({pet, strokes, hadEnough}: {pet: OwnedPet; strokes: number;
 	</Standing>;
 }
 
-function feedLock(packet: PetRes): Lock | undefined {
+function feedLock(packet: PetRes, alteration: Lock | undefined): Lock | undefined {
+	if (alteration) return alteration;
 	return packet.feedAvailableAt
 		? {reason: i18n.t("app:pet.care.notHungryUntil", {pet: petName(packet.pet), date: missionDate(packet.feedAvailableAt)}), icon: Clock3}
 		: undefined;
 }
 
 /** The single thing to do with the pet: follow its expedition, or else feed it. */
-function PetMainAction({packet, menus, onExpedition}: {packet: PetRes; menus: CommandMenuState; onExpedition: () => void}): ReactNode {
+function PetMainAction({packet, menus, alteration, onExpedition}: {packet: PetRes; menus: CommandMenuState; alteration: Lock | undefined; onExpedition: () => void}): ReactNode {
 	const expedition = packet.expeditionInProgress;
 	if (expedition) {
 		return <>
@@ -76,7 +79,7 @@ function PetMainAction({packet, menus, onExpedition}: {packet: PetRes; menus: Co
 			<Note>{i18n.t("app:expedition.overview", {date: missionDate(expedition.endTime)})}</Note>
 		</>;
 	}
-	const notHungry = feedLock(packet);
+	const lock = feedLock(packet, alteration);
 	return <ActionBanner
 		icon={Utensils}
 		label={i18n.t("app:pet.care.feedPet", {pet: petName(packet.pet)})}
@@ -84,7 +87,7 @@ function PetMainAction({packet, menus, onExpedition}: {packet: PetRes; menus: Co
 		onPress={(): void => {
 			menus.open(FEED_MENU).catch(console.error);
 		}}
-		{...notHungry ? {lock: notHungry} : {}}
+		{...lock ? {lock} : {}}
 	/>;
 }
 
@@ -126,6 +129,13 @@ function PetRelease({menus}: {menus: CommandMenuState}): ReactNode {
 	</>;
 }
 
+/** Core refuses feeding and selling to an altered player, so both wait with the alteration's reason. */
+function usePlayerAlteration(): Lock | undefined {
+	const profile = usePlayerProfile();
+	const effect = profile.status === "ready" ? activeEffect(profile.data) : null;
+	return effect ? effectLock(effect) : undefined;
+}
+
 /** The pet screen in one glance: who it is, the single thing to do with it, then everything else. */
 export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: PetPage) => void}): ReactNode {
 	const pet = packet.pet;
@@ -135,6 +145,7 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 	const patience = usePetPatience();
 	useGameDeadline(GAME_ENTITIES.PET, expedition?.endTime ?? null);
 	const expeditionBlocked = expeditionLock(packet);
+	const alteration = usePlayerAlteration();
 	const openExpedition = (): void => {
 		menus.open(EXPEDITION_MENU).catch(console.error);
 	};
@@ -142,11 +153,11 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 	return <>
 		<PetStanding pet={pet} strokes={patience.strokes} hadEnough={patience.hadEnough} />
 		{message ? <Refusal>{message}</Refusal> : null}
-		<PetMainAction packet={packet} menus={menus} onExpedition={openExpedition} />
+		<PetMainAction packet={packet} menus={menus} alteration={alteration} onExpedition={openExpedition} />
 		<QuickActions>
 			{expedition ? null : <PetHomeActions actions={actions} patience={patience} expeditionLocked={expeditionBlocked !== undefined} menus={menus} onExpedition={openExpedition} />}
 			<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={(): void => onPage("rename")}>{i18n.t("app:pet.care.rename")}</QuickAction>
-			<QuickAction icon={AppIcons.getIcon("unitValues.money")} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>
+			<QuickAction icon={AppIcons.getIcon("unitValues.money")} disabled={alteration !== undefined} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>
 		</QuickActions>
 		<PetLocks expedition={expeditionBlocked} hadEnough={patience.hadEnough} pet={pet} />
 		<PetRelease menus={menus} />
