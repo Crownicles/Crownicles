@@ -101,8 +101,9 @@ const ITEM_KINDS = new Set<ReactionCollectorDataKind>([ITEM_DATA_KINDS.CHOICE, I
 function StrayItemCollector({waiting}: {waiting: boolean}): ReactNode {
 	const pathname = usePathname();
 	const {open, react, isAnswerPending} = useCollectors();
+	if (waiting || pathname === "/") return null;
 	const collector = open.find(candidate => ITEM_KINDS.has(candidate.data.type));
-	if (waiting || pathname === "/" || !collector) return null;
+	if (!collector) return null;
 	const Component = collector.data.type === ITEM_DATA_KINDS.CHOICE ? ItemChoiceCollector : ItemAcceptCollector;
 	return <SheetModal visible onRequestClose={(): void => undefined}>
 		<ModalSurface><Component collector={collector} onChoose={(reactionIndex): void => react(collector.id, reactionIndex)} submitting={isAnswerPending(collector.id)} /></ModalSurface>

@@ -1,6 +1,7 @@
 import {ReactNode, useState} from "react";
 import {View} from "react-native";
 import {PetExpeditionResolveRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
+import {ExpeditionRewards} from "ws-packets/src/objects/PetExpedition";
 import {ExpeditionOutcome} from "@/src/store/useExpeditionOutcome";
 import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
 import {Effect, EFFECT_TONES, Effects, ModalSurface, SheetModal, Standing, Toast} from "@/src/design/Sections";
@@ -45,20 +46,32 @@ function gain(label: string, amount: number, look: {unit: string} | {emoji: stri
 	return {label, value: `+${formatNumber(amount)}`, tone: EFFECT_TONES.GAIN, ...look};
 }
 
+const AMOUNT_GAINS = [
+	{field: "money", label: "app:profile.fields.money", unit: "money"},
+	{field: "experience", label: "app:profile.fields.experience", unit: "xp"},
+	{field: "points", label: "app:profile.fields.score", unit: "score"},
+	{field: "tokens", label: "app:profile.fields.tokens", unit: "token"}
+] as const satisfies {field: keyof ExpeditionRewards; label: string; unit: string}[];
+
+function rewardEffects(rewards: ExpeditionRewards): Effect[] {
+	const amounts = AMOUNT_GAINS.flatMap(({field, label, unit}) => {
+		const amount = rewards[field] ?? 0;
+		return amount > 0 ? [gain(i18n.t(label), amount, {unit})] : [];
+	});
+	const materials = (rewards.materialLoot ?? []).map(material => gain(materialName(material.materialId), material.quantity, {emoji: AppIcons.getIcon(`materials.${material.materialId}`)}));
+	const talisman = rewards.cloneTalismanFound ? [gain(i18n.t("app:expedition.cloneFound"), 1, {emoji: AppIcons.getIcon("expedition.cloneTalisman")})] : [];
+	return [...amounts, ...materials, ...talisman];
+}
+
+function loveEffects(loveChange: number): Effect[] {
+	if (loveChange === 0) return [];
+	const gained = loveChange > 0;
+	return [{label: i18n.t("app:expedition.love"), value: `${gained ? "+" : ""}${formatNumber(loveChange)}`, tone: gained ? EFFECT_TONES.GAIN : EFFECT_TONES.LOSS, emoji: AppIcons.getIcon("expedition.love")}];
+}
+
 /** What the pet brought back, one chip per gain, and what the trip did to the bond between you. */
 function resolvedEffects(packet: ResolvedPacket): Effect[] {
-	const rewards = packet.rewards;
-	const love: Effect = {label: i18n.t("app:expedition.love"), value: `${packet.loveChange >= 0 ? "+" : ""}${formatNumber(packet.loveChange)}`, tone: packet.loveChange >= 0 ? EFFECT_TONES.GAIN : EFFECT_TONES.LOSS, emoji: AppIcons.getIcon("expedition.love")};
-	if (!rewards) return packet.loveChange === 0 ? [] : [love];
-	return [
-		...rewards.money > 0 ? [gain(i18n.t("app:profile.fields.money"), rewards.money, {unit: "money"})] : [],
-		...rewards.experience > 0 ? [gain(i18n.t("app:profile.fields.experience"), rewards.experience, {unit: "xp"})] : [],
-		...rewards.points > 0 ? [gain(i18n.t("app:profile.fields.score"), rewards.points, {unit: "score"})] : [],
-		...rewards.tokens ? [gain(i18n.t("app:profile.fields.tokens"), rewards.tokens, {unit: "token"})] : [],
-		...(rewards.materialLoot ?? []).map(material => gain(materialName(material.materialId), material.quantity, {emoji: AppIcons.getIcon(`materials.${material.materialId}`)})),
-		...rewards.cloneTalismanFound ? [gain(i18n.t("app:expedition.cloneFound"), 1, {emoji: AppIcons.getIcon("expedition.cloneTalisman")})] : [],
-		...packet.loveChange === 0 ? [] : [love]
-	];
+	return [...packet.rewards ? rewardEffects(packet.rewards) : [], ...loveEffects(packet.loveChange)];
 }
 
 /** Discord's account of the homecoming: how the pet came back, what it did to your bond, and whether it loved the place. */

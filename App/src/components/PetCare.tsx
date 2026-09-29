@@ -93,7 +93,7 @@ function PetAwayAction({expedition, menus}: {expedition: PetExpedition; menus: C
 }
 
 /** The single thing to do with the pet: follow its expedition, or else feed it. */
-function PetMainAction({packet, menus, alteration, onExpedition}: {packet: PetRes; menus: CommandMenuState; alteration: Lock | undefined; onExpedition: () => void}): ReactNode {
+function PetMainAction({packet, menus, alteration}: {packet: PetRes; menus: CommandMenuState; alteration: Lock | undefined}): ReactNode {
 	const expedition = packet.expeditionInProgress;
 	if (expedition) return <PetAwayAction expedition={expedition} menus={menus} />;
 	const lock = feedLock(packet, alteration);
@@ -108,13 +108,21 @@ function PetMainAction({packet, menus, alteration, onExpedition}: {packet: PetRe
 	/>;
 }
 
-/** What can be done with a pet at home: caress it or send it away. On expedition, it is out of reach. */
-function PetHomeActions({actions, patience, expeditionLocked, menus, onExpedition}: {
+function openExpeditionMenu(menus: CommandMenuState): void {
+	menus.open(EXPEDITION_MENU).catch(console.error);
+}
+
+function RenameAction({onPage}: {onPage: (page: PetPage) => void}): ReactNode {
+	return <QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={(): void => onPage("rename")}>{i18n.t("app:pet.care.rename")}</QuickAction>;
+}
+
+/** What can be done with a pet at home: caress it, send it away, rename or sell it. */
+function PetHomeActions({actions, patience, menus, locks, onPage}: {
 	actions: PetActions;
 	patience: PetPatience;
-	expeditionLocked: boolean;
 	menus: CommandMenuState;
-	onExpedition: () => void;
+	locks: {expedition: boolean; alteration: boolean};
+	onPage: (page: PetPage) => void;
 }): ReactNode {
 	return <>
 		<QuickAction icon={AppIcons.getIcon("petCommand.pet")} disabled={actions.pending || patience.hadEnough} onPress={(): void => {
@@ -122,7 +130,18 @@ function PetHomeActions({actions, patience, expeditionLocked, menus, onExpeditio
 				if (petted) patience.stroke();
 			}).catch(console.error);
 		}}>{i18n.t("app:pet.care.caress")}</QuickAction>
-		<QuickAction icon={AppIcons.getIcon("expedition.map")} disabled={menus.pending || expeditionLocked} onPress={onExpedition}>{i18n.t("app:expedition.open")}</QuickAction>
+		<QuickAction icon={AppIcons.getIcon("expedition.map")} disabled={menus.pending || locks.expedition} onPress={(): void => openExpeditionMenu(menus)}>{i18n.t("app:expedition.open")}</QuickAction>
+		<RenameAction onPage={onPage} />
+		<QuickAction icon={AppIcons.getIcon("unitValues.money")} disabled={locks.alteration} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>
+	</>;
+}
+
+/** On expedition, the pet is out of reach: it can only be recalled while on its way, and renamed. */
+function PetAwayActions({expedition, menus, onPage}: {expedition: PetExpedition; menus: CommandMenuState; onPage: (page: PetPage) => void}): ReactNode {
+	const recallable = useSecondsLeft(expedition.endTime) > 0;
+	return <>
+		{recallable ? <QuickAction icon={AppIcons.getIcon("expedition.recall")} disabled={menus.pending} onPress={(): void => openExpeditionMenu(menus)}>{i18n.t("app:expedition.recall")}</QuickAction> : null}
+		<RenameAction onPage={onPage} />
 	</>;
 }
 
@@ -161,24 +180,19 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 	const menus = useCommandMenus();
 	const patience = usePetPatience();
 	useGameDeadline(GAME_ENTITIES.PET, expedition?.endTime ?? null);
-	const recallable = useSecondsLeft(expedition?.endTime ?? 0) > 0;
 	const expeditionBlocked = expeditionLock(packet);
 	const alteration = usePlayerAlteration();
-	const openExpedition = (): void => {
-		menus.open(EXPEDITION_MENU).catch(console.error);
-	};
 	const message = actions.message ?? menus.message;
 	return <>
 		{expedition
 			? <PetExpeditionJourney pet={pet} expedition={expedition} />
 			: <PetStanding pet={pet} strokes={patience.strokes} hadEnough={patience.hadEnough} />}
 		{message ? <Refusal>{message}</Refusal> : null}
-		<PetMainAction packet={packet} menus={menus} alteration={alteration} onExpedition={openExpedition} />
+		<PetMainAction packet={packet} menus={menus} alteration={alteration} />
 		<QuickActions>
-			{expedition ? null : <PetHomeActions actions={actions} patience={patience} expeditionLocked={expeditionBlocked !== undefined} menus={menus} onExpedition={openExpedition} />}
-			{recallable ? <QuickAction icon={AppIcons.getIcon("expedition.recall")} disabled={menus.pending} onPress={openExpedition}>{i18n.t("app:expedition.recall")}</QuickAction> : null}
-			<QuickAction icon={AppIcons.getIcon("badges.redactor")} onPress={(): void => onPage("rename")}>{i18n.t("app:pet.care.rename")}</QuickAction>
-			{expedition ? null : <QuickAction icon={AppIcons.getIcon("unitValues.money")} disabled={alteration !== undefined} onPress={(): void => onPage("sell")}>{i18n.t("app:pet.sale.title")}</QuickAction>}
+			{expedition
+				? <PetAwayActions expedition={expedition} menus={menus} onPage={onPage} />
+				: <PetHomeActions actions={actions} patience={patience} menus={menus} locks={{expedition: expeditionBlocked !== undefined, alteration: alteration !== undefined}} onPage={onPage} />}
 		</QuickActions>
 		<PetLocks expedition={expeditionBlocked} hadEnough={patience.hadEnough} pet={pet} />
 		{expedition ? null : <PetRelease menus={menus} />}
