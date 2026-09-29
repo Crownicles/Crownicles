@@ -975,8 +975,9 @@
     "identity": "Identité",
     "yourRole": "Votre rôle : {{role}}",
     "descriptionUnchanged": "La description n'a pas changé.",
-    "confirmDescription": "Enregistrer cette description ?",
-    "descriptionUpdated": "La description de la guilde a été modifiée.",
+    "confirmDescription": "Nouvelle description",
+    "descriptionPreview": "Vue par les autres aventuriers",
+    "descriptionUpdated": "Description de la guilde enregistrée",
     "descriptionInvalid": "La description doit contenir entre {{min}} et {{max}} caractères et respecter les règles de nommage.",
     "membership": "Appartenance à la guilde",
     "leave": "Quitter la guilde",
@@ -1000,6 +1001,19 @@
       "shelter": "Un refuge où recueillir et adopter des familiers.",
       "createWithCost": "Fonder une guilde · {{price}}",
       "join": "Rejoindre une guilde"
+    },
+    "founding": {
+      "eyebrow": "Fondation d'une guilde",
+      "description": "Une nouvelle bannière s'apprête à flotter sur le royaume. Son fondateur en devient le chef et choisit les aventuriers qui marcheront sous ses couleurs.",
+      "cost": "Coût de la fondation",
+      "remaining": "Bourse restante",
+      "confirm": "Hisser la bannière",
+      "cancel": "Pas encore"
+    },
+    "founded": {
+      "eyebrow": "Guilde fondée",
+      "description": "La bannière flotte désormais au vent. Il ne reste plus qu'à rassembler des aventuriers sous ses couleurs.",
+      "enter": "Découvrir la guilde"
     },
     "recruitment": {
       "title": "Recrutement",
@@ -1025,8 +1039,6 @@
       "noMatch": "Aucune guilde qui recrute ne porte ce nom.",
       "invitation": "Une guilde peut aussi vous inviter : son invitation s'affiche alors ici même."
     },
-    "confirmCreate": "Créer la guilde {{name}} ?",
-    "created": "La guilde {{name}} a été créée.",
     "level": "Niveau {{level}}",
     "maxLevel": "Niveau {{level}} · Maximum atteint",
     "daily": "Bonus de guilde",

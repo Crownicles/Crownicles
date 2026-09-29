@@ -203,7 +203,9 @@ export function GuildManagement({guild}: {guild: GuildData}): ReactNode {
 			testID="guild-management-standing"
 		/>
 		<GuildDescriptionForm guild={guild} {...lock ? {lock} : {}} />
-		<GuildInvitation {...lock ? {lock} : {}} />			{lock ? null : <RecruitmentSettings />}		<GuildDeparture guild={guild} />
+		<GuildInvitation {...lock ? {lock} : {}} />
+		{lock ? null : <RecruitmentSettings />}
+		<GuildDeparture guild={guild} />
 	</>;
 }
 

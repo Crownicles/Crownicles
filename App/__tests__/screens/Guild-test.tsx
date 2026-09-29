@@ -58,6 +58,15 @@ describe("guild screens", () => {
 		await fireEvent.press(screen.getByText("app:collector.refuse"));
 		expect(choose).toHaveBeenCalledWith(1);
 	});
+	it("previews a new description and saves it through the server's accept reaction", async () => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {id: "description", endTime: Date.now() + 60_000, data: {type: "guildDescription", data: {description: "Marchands loyaux"}}, reactions: [{type: "refuse", data: {}}, {type: "accept", data: {}}]});
+		const choose = jest.fn();
+		await render(<GuildCreateCollector collector={collector} onChoose={choose} submitting={false} />);
+		expect(screen.getByText("app:guild.descriptionPreview")).toBeTruthy();
+		expect(screen.getByText("Marchands loyaux")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:pet.care.save"));
+		expect(choose).toHaveBeenCalledWith(1);
+	});
 	it.each([
 		{kind: "deposit", Packet: GuildDomainDepositReq, expected: {amount: 1000}, confirm: "app:guildDomain.confirmDeposit"},
 		{kind: "upgrade", Packet: GuildDomainUpgradeReq, expected: {building: "pantry", expectedLevel: 0}, confirm: "app:guildDomain.confirmUpgrade"}
