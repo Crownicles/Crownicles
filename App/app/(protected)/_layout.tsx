@@ -1,7 +1,7 @@
 import {Redirect, Stack} from "expo-router";
 import React from "react";
 import {AuthContext} from "@/src/authentication/AuthContext";
-import {SafeAreaProvider} from "react-native-safe-area-context";
+import {SafeAreaProvider, useSafeAreaInsets} from "react-native-safe-area-context";
 import {ActivityIndicator, Modal, StyleSheet, Text, View} from "react-native";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {Theme} from "@/src/design/Theme";
@@ -93,10 +93,13 @@ function ReconnectingOverlay(): React.ReactElement {
 
 function AuthenticatedContent({ state }: { state: AuthStateEnum }): React.ReactElement {
 	const styles = useStyles();
+	const colors = useColors();
+	const insets = useSafeAreaInsets();
 	return (
 		<View style={styles.authenticatedRoot}>
-			<Stack screenOptions={{headerShown: false}}>
-				<Stack.Screen name="(tabs)" options={{headerShown: false}} />
+			{/* The tabs draw their own header under the status bar; every page pushed over them starts below it. */}
+			<Stack screenOptions={{headerShown: false, contentStyle: {paddingTop: insets.top, backgroundColor: colors.wash}}}>
+				<Stack.Screen name="(tabs)" options={{headerShown: false, contentStyle: {paddingTop: 0}}} />
 			</Stack>
 			{state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && <ReconnectingOverlay />}
 			<OpenCollectors />
