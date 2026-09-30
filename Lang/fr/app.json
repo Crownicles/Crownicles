@@ -871,8 +871,8 @@
       "continue": "Ranger la lettre"
     },
     "stopArrived": {
-      "title": "Un arrêt vous attend",
-      "subtitle": "Votre personnage a avancé tout seul : ce rapport est gratuit."
+      "title": "Il s'est passé quelque chose",
+      "subtitle": "Votre personnage a poursuivi sa route pendant votre absence."
     }
   },
   "utilities": {
