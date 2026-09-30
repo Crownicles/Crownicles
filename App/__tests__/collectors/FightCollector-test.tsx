@@ -75,25 +75,24 @@ describe("live battle presentation", () => {
 		await fireEvent.press(screen.getByText("app:battle.returnToArena"));
 		expect(close).toHaveBeenCalledTimes(1);
 	});
-	it("offers a single history button during combat", async () => {
+	it("tells the fight in the feed itself, without a separate history during combat", async () => {
 		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
-		expect(screen.getAllByRole("button", {name: "app:battle.showHistory"})).toHaveLength(1);
 		expect(screen.queryByRole("button", {name: "app:arena.log"})).toBeNull();
+		expect(screen.getByLabelText("app:arena.waiting")).toBeTruthy();
 	});
-	it("keeps only the latest action in the feed and fits the screen without scrolling", async () => {
+	it("shows the whole exchange, each action on the side of the fighter who played it", async () => {
 		const initial = battle();
 		const logs = [
-			{sequence: 1, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: true}, fightActionId: "fireAttack", status: "normal"}},
-			{sequence: 2, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: false}, fightActionId: "heavyAttack", status: "normal"}}
+			{sequence: 1, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: true}, fightActionId: "fireAttack", status: "normal", fightActionEffectDealt: {damages: 40}}},
+			{sequence: 2, before: initial.status!, entry: {fightId: "screen", fighter: {isSelf: false}, fightActionId: "heavyAttack", status: "critical"}}
 		];
-		const view = await render(<FightLiveView fight={{...initial, logs, playedSequence: 2}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
-		expect(screen.getByText("models:fight_actions.heavyAttack.name")).toBeTruthy();
-		expect(screen.queryByText("models:fight_actions.fireAttack.name")).toBeNull();
-		expect(screen.queryByRole("button", {name: "app:battle.story.pause"})).toBeNull();
-		const scrolls = (): number => JSON.stringify(view.toJSON()).split("RCTScrollView").length - 1;
-		expect(scrolls()).toBe(0);
-		await fireEvent.press(screen.getByRole("button", {name: "app:battle.showHistory"}));
-		expect(scrolls()).toBeGreaterThan(0);
+		await render(<FightLiveView fight={{...initial, logs, playedSequence: 2}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(within(screen.getByTestId("fight-feed-self")).getByText("models:fight_actions.fireAttack.name")).toBeTruthy();
+		expect(within(screen.getByTestId("fight-feed-opponent")).getByText("models:fight_actions.heavyAttack.name")).toBeTruthy();
+		expect(within(screen.getByTestId("fight-feed-opponent")).getByText("app:battle.critical")).toBeTruthy();
+		expect(screen.getAllByText("app:battle.shortTurn")).toHaveLength(1);
+		// A plain hit is said by its name and effects: the generic sentence would only repeat them.
+		expect(screen.queryByText(/app:battle\.story\.sentence/)).toBeNull();
 	});
 	it("keeps the player on the left during an opponent turn and exposes fighter details", async () => {
 		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);

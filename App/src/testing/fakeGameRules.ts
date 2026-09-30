@@ -24,6 +24,7 @@ export const fakeGameRules: GameRules = {
 	textRules: {guildName: nameRule(2, 15), guildDescription: nameRule(2, 140), petNickname: nameRule(3, 16)},
 	guild: {creationPrice: 5000, maxMembers: 6, recruitmentMinScoreSteps: [0, 500, 1_000, 2_500, 5_000]},
 	journeyLevels: {classes: 4, fights: 8, guild: 10},
+	fight: {minimalEnergyRatio: 0.8},
 	pet: {sellPrice: {min: 100, max: 50_000}},
 	onboardingTrials: [
 		{id: ONBOARDING_TRIAL_IDS.AUDIENCE, missions: [ONBOARDING_MISSION_IDS.COMMAND_MISSION, ONBOARDING_MISSION_IDS.COMMAND_REPORT, ONBOARDING_MISSION_IDS.EARN_MONEY]},

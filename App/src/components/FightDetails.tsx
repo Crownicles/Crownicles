@@ -80,12 +80,3 @@ export function FightLog({entries, compact = false}: FightLogProps): ReactNode {
 	const latestSequence = entries.at(-1)!.sequence;
 	return entries.map(record => <FightLogLine key={record.sequence} record={record} compact={compact} current={record.sequence === latestSequence} />);
 }
-
-/** The live feed shows only the action being played; the full history stays in the journal. */
-export function FightLatestEvent({record}: {record: FightLogRecord}): ReactNode {
-	const styles = useStyles();
-	return <View>
-		<View style={styles.entryHead}><FightLogSummary record={record} cue={fightCue(record.entry)} /></View>
-		<FightEventStory record={record} />
-	</View>;
-}

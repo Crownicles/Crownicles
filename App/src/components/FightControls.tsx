@@ -1,10 +1,9 @@
 import {createContext, ReactNode, useContext, useState} from "react";
 import {Pressable, Text, View, useWindowDimensions} from "react-native";
-import {History, LucideIcon} from "@/src/design/FightIcons";
+import {LucideIcon} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
-import type {FightLogRecord, FightSnapshot} from "@/src/store/FightStore";
+import type {FightSnapshot} from "@/src/store/FightStore";
 import type {FightPlayback} from "@/src/store/useFightPlayback";
-import {FightLatestEvent} from "@/src/components/FightDetails";
 import {i18n} from "@/src/translations/i18n";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 
@@ -18,14 +17,7 @@ const useStyles = createStyles(colors => ({
 	headerBody: {flex: 1, minWidth: 0},
 	eyebrow: {fontFamily: Theme.fonts.semiBold, fontSize: 10, color: colors.muted, letterSpacing: 0, textTransform: "uppercase", marginBottom: 5},
 	title: {fontFamily: Theme.fonts.extraBold, fontSize: 22, lineHeight: 28, color: colors.ink},
-	headerActions: {flexDirection: "row", alignItems: "center"},
 	turn: {fontFamily: Theme.fonts.semiBold, fontSize: 11, color: colors.muted, textAlign: "right", fontVariant: ["tabular-nums"]},
-	activity: {flex: 1, minHeight: 0, overflow: "hidden", marginVertical: 8},
-	activityHead: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: 38},
-	/** Takes the room the cards leave, so a longer narration never pushes the action buttons around. */
-	feed: {flex: 1, minHeight: 0, overflow: "hidden", paddingBottom: 8},
-	activityTitle: {fontFamily: Theme.fonts.semiBold, fontSize: 12, lineHeight: 17, color: colors.ink},
-	activitySubtitle: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 15, color: colors.muted},
 	compactHeader: {paddingTop: 0, paddingBottom: 6}
 }));
 
@@ -68,24 +60,5 @@ export function FightHeader({fight, playback, phase}: {fight: FightSnapshot; pla
 	return <View style={[styles.header, compact && styles.compactHeader]}>
 		<View style={styles.headerBody}><Text style={styles.eyebrow}>{i18n.t(fight.introduction?.opponent.monsterId ? "app:battle.encounter" : "app:battle.duel")}</Text><Text style={styles.title}>{i18n.t(`app:battle.${phase}`)}</Text></View>
 		<Text style={styles.turn}>{status ? i18n.t("app:arena.turn", {turn: status.numberOfTurn, max: status.maxNumberOfTurn}) : ""}</Text>
-	</View>;
-}
-
-function FightActivityHeader({onJournal}: {onJournal: () => void}): ReactNode {
-	const styles = useStyles();
-	return <View style={styles.activityHead}>
-		<Text style={styles.activityTitle}>{i18n.t("app:battle.story.live")}</Text>
-		<View style={styles.headerActions}><FightIconButton icon={History} label={i18n.t("app:battle.showHistory")} onPress={onJournal} /></View>
-	</View>;
-}
-
-export function FightActivity({entries, ownTurn, onJournal}: {entries: FightLogRecord[]; ownTurn: boolean; onJournal: () => void}): ReactNode {
-	const styles = useStyles();
-	const latest = entries.at(-1);
-	return <View style={styles.activity}>
-		<FightActivityHeader onJournal={onJournal} />
-		<View style={styles.feed} accessibilityLiveRegion="polite">
-			{latest ? <FightLatestEvent record={latest} /> : <Text style={styles.activitySubtitle}>{i18n.t(ownTurn ? "app:battle.ready" : "app:arena.waiting")}</Text>}
-		</View>
 	</View>;
 }

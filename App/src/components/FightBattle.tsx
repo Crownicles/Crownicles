@@ -10,7 +10,8 @@ import {FightSnapshot, FightLogRecord} from "@/src/store/FightStore";
 import {FightLog} from "@/src/components/FightDetails";
 import {FightResult} from "@/src/components/FightResult";
 import {FightStage} from "@/src/components/FightStage";
-import {FIGHT_PHASES, BattleHeightProvider, FightActivity, FightHeader, FightNavigation, FightPhase, useCompactFight} from "@/src/components/FightControls";
+import {FIGHT_PHASES, BattleHeightProvider, FightHeader, FightNavigation, FightPhase, useCompactFight} from "@/src/components/FightControls";
+import {FightFeed} from "@/src/components/FightFeed";
 import {FightPlayback, useFightPlayback} from "@/src/store/useFightPlayback";
 import {i18n} from "@/src/translations/i18n";
 import {useFightSpeed} from "@/src/store/useFightSpeed";
@@ -47,7 +48,7 @@ function FightTurn({fight, playback, collector, onChoose, submitting, navigation
 	const pending = submitting || Boolean(playback.record);
 	return <View style={styles.body}>
 		<View style={styles.stage}><FightStage status={status} introduction={fight.introduction} record={playback.record} onImpact={playback.impact} onComplete={playback.finishMotion} reducedMotion={playback.reducedMotion} speed={speed} /></View>
-		<FightActivity entries={playback.logs} ownTurn={Boolean(collector) && !pending} onJournal={navigation.onJournal} />
+		<FightFeed entries={playback.logs} ownTurn={Boolean(collector) && !pending} opponentThinking={!collector && !pending && !fight.result} />
 		<View style={styles.actions}>{collector ? <FightActions key={collector.id} collector={collector} onChoose={onChoose} submitting={pending} /> : <FightActionsWaiting actions={fight.introduction?.initiatorActions ?? []} />}</View>
 	</View>;
 }

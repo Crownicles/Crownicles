@@ -10,6 +10,7 @@ import { ClassConstants } from "../../../Lib/src/constants/ClassConstants";
 import { FightConstants } from "../../../Lib/src/constants/FightConstants";
 import { ONBOARDING_TRIALS } from "../../../Lib/src/constants/OnboardingConstants";
 import { PetSellConstants } from "../../../Lib/src/constants/PetSellConstants";
+import { PVEConstants } from "../../../Lib/src/constants/PVEConstants";
 
 function toWireTextRule(rule: TextRule): WireTextRule {
 	return {
@@ -37,6 +38,9 @@ export function buildGameRules(): GameRules {
 			classes: ClassConstants.REQUIRED_LEVEL,
 			fights: FightConstants.REQUIRED_LEVEL,
 			guild: GuildConstants.REQUIRED_LEVEL
+		},
+		fight: {
+			minimalEnergyRatio: PVEConstants.MINIMAL_ENERGY_RATIO
 		},
 		pet: {
 			sellPrice: {

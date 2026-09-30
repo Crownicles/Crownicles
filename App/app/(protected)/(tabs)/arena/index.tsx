@@ -143,10 +143,19 @@ function useArenaCure(blocking: PlayerEffect | null): ArenaCure {
 	return {offer: blocking ? healOffer(travel) : null, action, cure};
 }
 
+/** The server refuses a fight below this share of energy: the button says it, and how much is missing, before the tap. */
+function energyLock(profile: ProfileRes): Lock | undefined {
+	const energy = profile.stats?.energy;
+	if (!energy) return undefined;
+	const required = Math.ceil(energy.max * gameRules().fight.minimalEnergyRatio);
+	return energy.value < required ? {reason: i18n.t("app:arena.lowEnergy", {required, value: energy.value}), icon: Zap} : undefined;
+}
+
 /** Before the fight level the start button stays in sight, greyed, with the level that opens fights. */
-function startLock(canFight: boolean, blocking: PlayerEffect | null): Lock | undefined {
+function startLock(canFight: boolean, blocking: PlayerEffect | null, profile: ProfileRes | null): Lock | undefined {
 	if (!canFight) return {reason: i18n.t("app:arena.locked", {level: gameRules().journeyLevels.fights})};
-	return blocking ? effectLock(blocking) : undefined;
+	if (blocking) return effectLock(blocking);
+	return profile ? energyLock(profile) : undefined;
 }
 
 function useArenaFight(): {ongoing: boolean; startError: FightError | null; pending: boolean; message: string | null; start: () => Promise<void>} {
@@ -179,7 +188,7 @@ export default function Arena(): ReactNode {
 		{message ? <Note>{message}</Note> : null}
 		{offer
 			? <View style={styles.start}><HealAction heal={offer} action={heal} /></View>
-			: <ArenaStart pending={pending} ongoing={ongoing} lock={startLock(canFight, blocking)} onStart={start} />}
+			: <ArenaStart pending={pending} ongoing={ongoing} lock={ongoing ? undefined : startLock(canFight, blocking, state.status === "ready" ? state.data : null)} onStart={start} />}
 		{startError ? <ArenaStartError error={startError} /> : null}
 		<ArenaLinks pages={canFight ? ARENA_PAGES : BEFORE_FIGHTS_PAGES} onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
 	</Screen>;

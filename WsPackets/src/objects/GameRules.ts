@@ -24,6 +24,11 @@ export type GameRules = {
 		recruitmentMinScoreSteps: number[];
 	};
 	journeyLevels: JourneyLevels;
+	fight: {
+
+		/** The share of the maximum energy a fighter needs to start a fight. */
+		minimalEnergyRatio: number;
+	};
 	pet: {
 		sellPrice: NumberRange;
 	};
