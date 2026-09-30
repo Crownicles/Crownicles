@@ -20,10 +20,16 @@ function hostTab(segments: string[]): HostTab | undefined {
 	return segments.find((segment): segment is HostTab => Object.hasOwn(PLAYER_ROUTES, segment));
 }
 
-export function useOpenPlayer(): (playerRef: string) => void {
+/** The guild page a profile was opened from, so the profile can lead back to it instead of stacking it again. */
+export const FROM_GUILD_PARAM = "fromGuild";
+
+export function useOpenPlayer(): (playerRef: string, fromGuild?: string) => void {
 	const router = useRouter();
 	const tab = hostTab(useSegments());
-	return (ref): void => router.push({pathname: tab ? PLAYER_ROUTES[tab] : "/player/[ref]", params: {ref}});
+	return (ref, fromGuild): void => router.push({
+		pathname: tab ? PLAYER_ROUTES[tab] : "/player/[ref]",
+		params: {ref, ...fromGuild ? {[FROM_GUILD_PARAM]: fromGuild} : {}}
+	});
 }
 
 export function useOpenGuild(): (name: string) => void {

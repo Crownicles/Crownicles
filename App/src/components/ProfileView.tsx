@@ -6,7 +6,7 @@ import {gaugeEmoji} from "@/src/components/Guild";
 import {ProfileBadges} from "@/src/components/CharacterReference";
 import {AppIcons} from "@/src/AppIcons";
 import {Note, SectionHeader} from "@/src/design/Primitives";
-import {ExpandableList, Fact, Figure, Figures, Standing} from "@/src/design/Sections";
+import {EntryRow, ExpandableList, Fact, Figure, Figures, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {formatNumber} from "@/src/display/Amounts";
 import {Theme} from "@/src/design/Theme";
@@ -20,6 +20,7 @@ const PET_RARITY_MAX = 8;
 const CAMPAIGN_COMPLETE = 100;
 const UNRANKED_GLORY = -1;
 const STANDING_EMBLEM_SIZE = 40;
+const GUILD_ROW_EMBLEM_SIZE = 24;
 
 export type ProfilePage = "inventory" | "unlock" | "guide" | "blessing" | "badges" | "rankings";
 
@@ -243,16 +244,20 @@ function ProfileSections({profile, onPage}: {profile: ProfileRes; onPage?: (page
 	</>;
 }
 
-/** The company the player keeps, which lives in its own tab but is worth naming here. */
-function Belongings({profile}: {profile: ProfileRes}): ReactNode {
+/** The company the player keeps, which lives in its own tab but is worth naming here; someone else's guild opens from it. */
+function Belongings({profile, onGuild}: {profile: ProfileRes; onGuild?: (name: string) => void}): ReactNode {
 	if (!profile.guild && !profile.pet) {
 		return null;
 	}
+	const guild = profile.guild;
 	return (
 		<>
 			<SectionHeader>{i18n.t("app:profile.titles.information")}</SectionHeader>
 			<ExpandableList>
-				{profile.guild ? <Fact label={iconLabel("guild.icon", i18n.t("app:profile.fields.guild"))} value={profile.guild} /> : null}
+				{guild && onGuild
+					? <EntryRow emblem={<TwemojiIcon emoji={AppIcons.getIcon("guild.icon")} size={GUILD_ROW_EMBLEM_SIZE} />} title={guild} subtitle={i18n.t("app:profile.fields.guild")} onPress={(): void => onGuild(guild)} testID="profile-guild" />
+					: null}
+				{guild && !onGuild ? <Fact label={iconLabel("guild.icon", i18n.t("app:profile.fields.guild"))} value={guild} /> : null}
 				{profile.pet ? <Fact label={iconLabel("other.pet", i18n.t("app:profile.fields.pet"))} value={petLabel(profile)} /> : null}
 			</ExpandableList>
 		</>
@@ -263,13 +268,13 @@ function Belongings({profile}: {profile: ProfileRes}): ReactNode {
  * A character as the server describes it. The player's own profile passes `onPage` to reach its sub-pages,
  * and `lead` for what only they see under their name; someone else's profile is read-only.
  */
-export function ProfileView({profile, onPage, lead}: {profile: ProfileRes; onPage?: (page: ProfilePage) => void; lead?: ReactNode}): ReactNode {
+export function ProfileView({profile, onPage, onGuild, lead}: {profile: ProfileRes; onPage?: (page: ProfilePage) => void; onGuild?: (name: string) => void; lead?: ReactNode}): ReactNode {
 	return <>
 		<ProfileStanding profile={profile} />
 		{lead}
 		{shouldDisplayEffectTime(profile) ? <Note>{effectLabel(profile)}</Note> : null}
 		<ProfileSections profile={profile} {...onPage ? {onPage} : {}} />
 		<ProfileBadges badges={profile.badges} {...onPage ? {onOpen: (): void => onPage("badges")} : {}} />
-		<Belongings profile={profile} />
+		<Belongings profile={profile} {...onGuild ? {onGuild} : {}} />
 	</>;
 }

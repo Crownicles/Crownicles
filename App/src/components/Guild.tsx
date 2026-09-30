@@ -120,17 +120,17 @@ function MemberScore({member}: {member: GuildMember}): ReactNode {
 
 type MemberEntryProps = {member: GuildMember; guild: GuildData; expanded: boolean; onToggle: (id: number) => void};
 
-function useOpenMemberProfile(): (member: GuildMember) => void {
+function useOpenMemberProfile(guildName: string): (member: GuildMember) => void {
 	const router = useRouter();
 	const openPlayer = useOpenPlayer();
 	return (member): void => member.isSelf
 		? router.navigate("/profile")
-		: openPlayer(member.playerRef);
+		: openPlayer(member.playerRef, guildName);
 }
 
 function MemberEntry({member, guild, expanded, onToggle}: MemberEntryProps): ReactNode {
 	const sectionStyles = useSectionStyles();
-	const openProfile = useOpenMemberProfile();
+	const openProfile = useOpenMemberProfile(guild.name);
 	const role = memberRole(member, guild);
 	const heading = {
 		emblem: <MemberEmblem role={role} />,
