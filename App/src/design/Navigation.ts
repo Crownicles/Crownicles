@@ -6,24 +6,19 @@ import {createStyles} from "@/src/design/ThemeContext";
 /** Expo SDK 57 ships its own copy of the navigators, so the options type is read back off the component. */
 type TopTabOptions = Exclude<ComponentProps<typeof TopTabs>["screenOptions"], undefined | ((...args: never[]) => unknown)>;
 
-type TabBarOptionKeys = "tabBarActiveTintColor" | "tabBarInactiveTintColor" | "tabBarShowIcon" | "tabBarIndicatorStyle" | "tabBarPressColor" | "tabBarStyle" | "tabBarItemStyle" | "tabBarLabelStyle";
+type TabBarOptionKeys = "tabBarActiveTintColor" | "tabBarInactiveTintColor" | "tabBarShowIcon" | "tabBarPressColor" | "tabBarStyle" | "tabBarItemStyle" | "tabBarLabelStyle";
 
 export function tabBarOptionsOf(colors: Palette) {
 	return {
-		tabBarActiveTintColor: colors.ink,
+		tabBarActiveTintColor: colors.selectionInk,
 		tabBarInactiveTintColor: colors.muted,
 		tabBarShowIcon: true,
-		/** The bar carries the selection through colour alone, as the bottom bar always did. */
-		tabBarIndicatorStyle: {
-			height: 0
-		},
 		tabBarPressColor: "transparent",
 		tabBarStyle: {
 			borderTopWidth: 1,
 			borderTopColor: colors.line,
 			backgroundColor: colors.paper,
 			paddingTop: Theme.spacing.tabBarVertical,
-			paddingHorizontal: Theme.spacing.tabBarHorizontal,
 			elevation: 0,
 			shadowOpacity: 0
 		},

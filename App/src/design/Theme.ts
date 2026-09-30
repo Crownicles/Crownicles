@@ -14,6 +14,9 @@ const LIGHT_COLORS = {
 	green: "#3F9A5C",
 	blue: "#2F6FD0",
 	violet: "#6C56C8",
+	/** Behind what is selected, black whatever the theme, and the text it carries. */
+	selection: "#0B0B0C",
+	selectionInk: "#FFFFFF",
 
 	/** Tints behind a gain or a loss, light enough for the green or red text they carry. */
 	greenWash: "#EAF5EE",
@@ -47,6 +50,8 @@ const DARK_COLORS: Palette = {
 	green: "#5DBE7B",
 	blue: "#6A9BEA",
 	violet: "#9A87EA",
+	selection: "#000000",
+	selectionInk: "#FFFFFF",
 	greenWash: "#17291E",
 	redWash: "#321B1A",
 	goldWash: "#2D2414"
@@ -85,7 +90,6 @@ export const Theme = {
 		quickActionVertical: 11,
 		noticeGap: 11,
 		tabBarVertical: 7,
-		tabBarHorizontal: 6,
 		vitalsBottom: 8,
 		walletBottom: 10,
 		chipVertical: 5,
