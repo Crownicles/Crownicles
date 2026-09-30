@@ -1,9 +1,8 @@
 import {ReactNode} from "react";
 import {View} from "react-native";
-import {usePathname} from "expo-router";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
-import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
+import {isAdventureCollector, isFoundItemCollector} from "@/src/collectors/CollectorRouting";
 import {ItemAcceptCollector, ItemChoiceCollector} from "@/src/collectors/ItemRewardCollector";
 import {BottomSheet, FULL_SCREEN_KINDS, FullScreen} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
@@ -96,17 +95,14 @@ function PendingOutcome<Outcome>({state, Content}: {state: {outcome: Outcome | n
 	return state.outcome === null ? null : <Content outcome={state.outcome} onContinue={state.clear} />;
 }
 
-const ITEM_KINDS = new Set<ReactionCollectorDataKind>([ITEM_DATA_KINDS.CHOICE, ITEM_DATA_KINDS.ACCEPT]);
-
 /**
- * An item found away from the road, such as on an expedition, still has to be kept or left. The
- * adventure page asks on its own; elsewhere it is asked here, once the result that brought it is read.
+ * A found item must be kept, swapped or left before anything else, wherever it was found: it holds the
+ * whole screen, once the result that brought it (an expedition, an event) has been read.
  */
-function StrayItemCollector({waiting}: {waiting: boolean}): ReactNode {
-	const pathname = usePathname();
+function FoundItemCollector({waiting}: {waiting: boolean}): ReactNode {
 	const {open, react, isAnswerPending} = useCollectors();
-	if (waiting || pathname === "/") return null;
-	const collector = open.find(candidate => ITEM_KINDS.has(candidate.data.type));
+	if (waiting) return null;
+	const collector = open.find(isFoundItemCollector);
 	if (!collector) return null;
 	const Component = collector.data.type === ITEM_DATA_KINDS.CHOICE ? ItemChoiceCollector : ItemAcceptCollector;
 	// The find must be kept or left: there is no backing out of the question.
@@ -140,7 +136,7 @@ function PendingOutcomes(): ReactNode {
 	const current = outcomes.find(entry => entry.state.outcome !== null);
 	return <>
 		{current?.node ?? null}
-		<StrayItemCollector waiting={current !== undefined} />
+		<FoundItemCollector waiting={current !== undefined} />
 	</>;
 }
 

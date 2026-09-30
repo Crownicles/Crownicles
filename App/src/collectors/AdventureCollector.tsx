@@ -5,7 +5,7 @@ import {
 	SmallEventWitchResultRes, WITCH_OUTCOMES
 } from "ws-packets/src/fromServer/smallEvents/SmallEventWitchResultRes";
 import {
-	BIG_EVENT_DATA_KINDS, GENERIC_REACTION_KINDS, ITEM_DATA_KINDS, REPORT_COLLECTOR_DATA_KINDS,
+	BIG_EVENT_DATA_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS,
 	REPORT_COLLECTOR_REACTION_KINDS, CITY_DATA_KINDS, SHOP_DATA_KINDS, SMALL_EVENT_DATA_KINDS,
 	ReactionCollectorData, ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
@@ -19,7 +19,6 @@ import {SmallEventShopCollector} from "@/src/collectors/SmallEventShopCollector"
 import {RecipeShopCollector} from "@/src/collectors/RecipeShopCollector";
 import {PveIslandInvitationCollector} from "@/src/collectors/PveIslandInvitationCollector";
 import {PveFightCollector} from "@/src/collectors/PveFightCollector";
-import {ItemAcceptCollector, ItemChoiceCollector} from "@/src/collectors/ItemRewardCollector";
 import {collectorDescription, collectorTitle, eventPromptIcon, isEventPrompt} from "@/src/collectors/CollectorLabels";
 import type {
 	HealOutcome as HealOutcomeData, LotteryOutcome as LotteryOutcomeData,
@@ -280,9 +279,7 @@ const SPECIALIZED_COLLECTORS: Partial<Record<ReactionCollectorData["type"], Comp
 	[SMALL_EVENT_DATA_KINDS.SHOP]: SmallEventShopCollector,
 	[SMALL_EVENT_DATA_KINDS.EPIC_SHOP]: SmallEventShopCollector,
 	[SMALL_EVENT_DATA_KINDS.RECIPE_SHOP]: RecipeShopCollector,
-	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: PveIslandInvitationCollector,
-	[ITEM_DATA_KINDS.CHOICE]: ItemChoiceCollector,
-	[ITEM_DATA_KINDS.ACCEPT]: ItemAcceptCollector
+	[SMALL_EVENT_DATA_KINDS.PVE_ISLAND]: PveIslandInvitationCollector
 };
 
 /** Reaching the first city is the contest's next trial: the guide holds the newcomer back before a new road. */

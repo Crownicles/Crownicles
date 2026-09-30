@@ -41,6 +41,11 @@ export function isBuyHealCollector(collector: ReactionCollectorCreation): boolea
 	return collector.data.type === REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL;
 }
 
+/** A find must be kept or left before anything else: it always takes the whole screen, whatever tab is open. */
+export function isFoundItemCollector(collector: ReactionCollectorCreation): boolean {
+	return collector.data.type === ITEM_DATA_KINDS.CHOICE || collector.data.type === ITEM_DATA_KINDS.ACCEPT;
+}
+
 export function isAdventureScreenCollector(collector: ReactionCollectorCreation): boolean {
-	return isAdventureCollector(collector) && !isTokenUseCollector(collector) && !isBuyHealCollector(collector);
+	return isAdventureCollector(collector) && !isTokenUseCollector(collector) && !isBuyHealCollector(collector) && !isFoundItemCollector(collector);
 }
