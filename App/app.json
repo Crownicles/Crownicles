@@ -15,7 +15,7 @@
       },
       "bundleIdentifier": "com.crownicles.app",
       "appleTeamId": "WJS86RD78F",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "infoPlist": {
         "UIApplicationSceneManifest": {
           "UIApplicationSupportsMultipleScenes": false,
@@ -36,7 +36,7 @@
         "backgroundColor": "#B95E4B"
       },
       "package": "com.crownicles.app",
-      "versionCode": 6
+      "versionCode": 7
     },
     "web": {
       "bundler": "metro",
