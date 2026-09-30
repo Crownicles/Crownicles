@@ -21,8 +21,11 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "transform": {
+      "^.+\\.mjs$": ["babel-jest", { "presets": ["babel-preset-expo"] }]
+    },
     "transformIgnorePatterns": [
-      "node_modules/(?!(.pnpm|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-svg|lucide-static|standard-navigation|ws-packets))"
+      "node_modules/(?!(.pnpm|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-svg|lucide-static|lucide-react-native|standard-navigation|ws-packets))"
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.ts"
@@ -64,6 +67,7 @@
     "expo-system-ui": "~57.0.2",
     "expo-web-browser": "~57.0.2",
     "i18next": "^25.3.2",
+    "lucide-react-native": "^1.49.0",
     "lucide-static": "^1.45.0",
     "markdown-it": "^15.0.2",
     "react": "19.2.3",

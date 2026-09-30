@@ -4,6 +4,24 @@ import {Platform} from "react-native";
 import {twemojiAssetUrl} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {Theme} from "@/src/design/Theme";
+import {ArrowRight, Cannon} from "@/src/design/FightIcons";
+
+describe("action icons", () => {
+	it.each([ArrowRight, Cannon])("renders light strokes directly on a native SVG", async (Icon) => {
+		const {toJSON} = await render(createElement(Icon, {size: 20, color: "#ffffff"}));
+		expect(toJSON()).toEqual(expect.objectContaining({
+			props: expect.objectContaining({
+				stroke: "#ffffff",
+				accessible: false,
+				bbWidth: 20,
+				bbHeight: 20
+			}),
+			children: expect.arrayContaining([expect.objectContaining({
+				props: expect.objectContaining({stroke: {type: 0, payload: Number.parseInt("ffffffff", 16)}})
+			})])
+		}));
+	});
+});
 
 describe("twemojiAssetUrl", () => {
 	it("keeps the variation selector in the source while using the canonical asset filename", () => {

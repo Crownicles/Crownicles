@@ -896,7 +896,7 @@
     "tips": {
       "missions": "Le roi confie des missions à chaque candidat du concours. Ouvrez-les pour découvrir la première et la récompense qui l'accompagne.",
       "openMissions": "Voir mes missions",
-      "profile": "Ce nouvel onglet rassemble votre personnage : ses statistiques, sa progression et son inventaire. C'est dans l'inventaire que vous équiperez les objets trouvés en chemin et que vous boirez vos potions.",
+      "profile": "Ce nouvel onglet présente les statistiques, la progression et l'inventaire de votre personnage. C'est dans l'inventaire que vous équiperez les objets trouvés en chemin et que vous boirez vos potions.",
       "tokens": "Votre première mission vous a rapporté un jeton. La route se parcourt en temps réel, mais un jeton permet d'avancer plus vite vers la suite de l'histoire : touchez le bouton Avancer juste au-dessus pour rejoindre tout de suite le prochain arrêt.",
       "occupied": "Certaines péripéties prennent du temps. Vous pouvez les écourter avec des jetons, ou profiter de ce moment pour parcourir vos missions et votre inventaire.",
       "understood": "Compris",
