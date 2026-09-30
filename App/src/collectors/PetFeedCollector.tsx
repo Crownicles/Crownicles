@@ -10,7 +10,7 @@ import {formatMoney} from "@/src/display/Amounts";
 import {petIcon, petName} from "@/src/display/PetDisplay";
 import {CircleAlert, Clock3, Utensils} from "@/src/design/FightIcons";
 import {Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, Lock, LockHint, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
+import {ActionBanner, BackButton, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, FullScreen, Lock, LockHint, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Theme} from "@/src/design/Theme";
 import {createStyles} from "@/src/design/ThemeContext";
@@ -119,7 +119,7 @@ export function PetFeedCollector(props: PetFeedProps): ReactNode {
 	};
 	const data = props.collector.data;
 	if (data.type !== PET_FEED_DATA_KINDS.GUILD && data.type !== PET_FEED_DATA_KINDS.PERSONAL) return null;
-	return <SheetModal visible onRequestClose={close}>
-		<ModalSurface><FeedMenu {...props} pet={data.data.pet} onChoose={answer} submitting={locked} onClose={close} /></ModalSurface>
-	</SheetModal>;
+	return <FullScreen onClose={close}>
+		<FeedMenu {...props} pet={data.data.pet} onChoose={answer} submitting={locked} onClose={close} />
+	</FullScreen>;
 }

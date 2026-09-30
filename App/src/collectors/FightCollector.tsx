@@ -1,7 +1,7 @@
 import {ReactNode, useEffect} from "react";
 import {useQueryClient} from "@tanstack/react-query";
 import {FIGHT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
-import {ModalSurface, SheetModal} from "@/src/design/Sections";
+import {FULL_SCREEN_KINDS, FullScreen} from "@/src/design/Sections";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {fightStore, useFight, FightSnapshot} from "@/src/store/FightStore";
 import {FIGHT_ERRORS} from "ws-packets/src/objects/Fight";
@@ -24,10 +24,9 @@ export function FightSession(): ReactNode {
 	const completed = useFightCompletion(fight);
 	const collector = open.find(entry => entry.data.type === FIGHT_DATA_KINDS.ACTION && entry.data.data.fightId === fight.introduction?.fightId);
 	if (!fight.visible) return null;
-	const close = completed || fight.error ? fightStore.reset : fightStore.minimize;
-	return <SheetModal visible onRequestClose={close}>
-		<ModalSurface>
-			<FightLiveView key={fight.introduction?.fightId} fight={fight} collector={collector} onChoose={(index): void => {if (collector) react(collector.id, index);}} submitting={collector ? isAnswerPending(collector.id) : false} onClose={close} />
-		</ModalSurface>
-	</SheetModal>;
+	// A fight holds the player until it ends: only its result or an error can be closed.
+	const over = completed || fight.error;
+	return <FullScreen onClose={fightStore.reset} kind={over ? FULL_SCREEN_KINDS.STANDARD : FULL_SCREEN_KINDS.BLOCKING}>
+		<FightLiveView key={fight.introduction?.fightId} fight={fight} collector={collector} onChoose={(index): void => {if (collector) react(collector.id, index);}} submitting={collector ? isAnswerPending(collector.id) : false} onClose={fightStore.reset} />
+	</FullScreen>;
 }

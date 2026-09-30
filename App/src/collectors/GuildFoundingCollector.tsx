@@ -5,10 +5,9 @@ import {GuildBannerEmblem} from "@/src/components/GuildBanner";
 import {CollectorDecision} from "@/src/collectors/CollectorPrompt";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {Screen} from "@/src/design/Primitives";
-import {BackButton, Figure, Figures, ModalSurface, SheetModal} from "@/src/design/Sections";
+import {BackButton, Figure, Figures, FullScreen} from "@/src/design/Sections";
 import {FarewellPage} from "@/src/design/Farewell";
 import {Flag} from "@/src/design/FightIcons";
-import {SwipeBack} from "@/src/design/SwipeBack";
 import {formatNumber} from "@/src/display/Amounts";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
@@ -27,10 +26,8 @@ export function GuildFoundingCollector({collector, onChoose, submitting}: {colle
 	if (collector.data.type !== GUILD_DATA_KINDS.CREATE) return null;
 	const {guildName, price} = collector.data.data;
 	const refuse = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
-	return <SheetModal visible onRequestClose={refuse}>
-		<ModalSurface>
-			<SwipeBack onClose={refuse}>
-				<Screen>
+	return <FullScreen onClose={refuse}>
+		<Screen>
 					<BackButton label={i18n.t("app:collector.refuse")} onClose={refuse} />
 					<FarewellPage
 						emblem={<GuildBannerEmblem haloColor={colors.goldWash} />}
@@ -49,7 +46,5 @@ export function GuildFoundingCollector({collector, onChoose, submitting}: {colle
 						cancelLabel={i18n.t("app:guild.founding.cancel")}
 					/>
 				</Screen>
-			</SwipeBack>
-		</ModalSurface>
-	</SheetModal>;
+	</FullScreen>;
 }

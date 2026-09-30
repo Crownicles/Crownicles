@@ -90,7 +90,20 @@ describe("pet care screens", () => {
 		await fireEvent.press(screen.getByText("app:pet.care.rename"));
 		expect(onPage).toHaveBeenCalledWith("rename");
 		await fireEvent.press(screen.getByText("app:expedition.recall"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+		expect(screen.getByText("app:expedition.recallWarning")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:expedition.confirmRecall"));
 		await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(PetExpeditionReq));
+	});
+
+	it("recalls the pet without showing Core's question once the page confirmed it", async () => {
+		const progress = Object.assign(new ReactionCollectorCreation(), {id: "progress", endTime: Date.now() + 60_000, data: {type: "expeditionProgress", data: {pet: {petTypeId: 1, petSex: "m"}, locationType: "forest", returnTime: Date.now() + 60_000, riskCategory: "low"}}, reactions: [{type: "expeditionRecall", data: {}}, {type: "expeditionClose", data: {}}]});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: progress});
+		const expedition = {startTime: Date.now(), endTime: Date.now() + 60_000, riskRate: 1, difficulty: 1, locationType: "forest" as const, mapLocationId: 3, foodConsumed: 6, riskCategory: "low"};
+		await renderOverview({expeditionInProgress: expedition});
+		await fireEvent.press(screen.getByText("app:expedition.recall"));
+		await fireEvent.press(screen.getByText("app:expedition.confirmRecall"));
+		await waitFor(() => expect(mockAnswerWithoutShowing).toHaveBeenCalledWith("progress", 0));
 	});
 
 	it("offers to claim the rewards once the pet is due back, and claims them without another question", async () => {

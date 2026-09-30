@@ -5,7 +5,8 @@ import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {PetEmptyBowl, PetFeast} from "@/src/components/PetReaction";
 import {Note} from "@/src/design/Primitives";
 import {useKnownPet} from "@/src/store/useKnownPet";
-import {ActionBanner, Sheet} from "@/src/design/Sections";
+import {ActionBanner, BottomSheet, JournalEntry} from "@/src/design/Sections";
+import {Story} from "@/src/design/Story";
 import {PawPrint} from "@/src/design/FightIcons";
 import {usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {plainStory} from "@/src/display/Markdown";
@@ -56,20 +57,15 @@ function feedScene(outcome: Outcome, pet: OwnedPet | undefined, play: number, ps
 export function PetFeedOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
 	const pet = useKnownPet();
 	const pseudo = usePlayerPseudo();
-	/** The layer opens over the feeding menu, so the dance waits to be on screen rather than play behind the transition. */
+	/** The sheet rises over the feeding menu, so the dance waits for it to settle rather than play while it moves. */
 	const [play, setPlay] = useState(0);
 	const {emblem, title, subtitle, stage, hint} = feedScene(outcome, pet, play, pseudo);
-	return <Sheet
-		{...emblem ? {emblem} : {}}
-		caption={i18n.t("app:pet.eyebrow")}
-		title={title}
-		subtitle={subtitle}
-		closeLabel={i18n.t("app:common.back")}
-		onShow={(): void => setPlay(1)}
-		onClose={onContinue}
-	>
+	return <BottomSheet onClose={onContinue} onShown={(): void => setPlay(1)}>
+		<JournalEntry plain {...emblem ? {emblem} : {}} title={title} effects={[]}>
+			<Story>{subtitle}</Story>
+		</JournalEntry>
 		{stage}
 		{hint ? <Note>{hint}</Note> : null}
 		<ActionBanner icon={PawPrint} label={i18n.t("app:pet.feed.continue")} onPress={onContinue} />
-	</Sheet>;
+	</BottomSheet>;
 }

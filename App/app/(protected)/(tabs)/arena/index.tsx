@@ -2,7 +2,7 @@ import {ReactNode} from "react";
 import {Text, View} from "react-native";
 import {useRouter} from "expo-router";
 import {CircleAlert, Swords, Zap} from "@/src/design/FightIcons";
-import {ActionBanner, Lock} from "@/src/design/Sections";
+import {ActionBanner, Lock, Standing} from "@/src/design/Sections";
 import {useQueryClient} from "@tanstack/react-query";
 import {Cure, CureEmblem} from "@/src/components/CureEmblem";
 import {HealAction, HealOffer, healOffer, PendingAction, useBuyHeal} from "@/src/components/HealAction";
@@ -41,10 +41,6 @@ const BEFORE_FIGHTS_PAGES: readonly ArenaPage[] = ["classes", "rankings"];
 const ARENA_ICONS = {classes: "commands.classes", history: "fightHistory.menu", leagues: "unitValues.score", rankings: "top.congrats"} as const;
 const IDENTITY_EMBLEM_SIZE = 42;
 const useStyles = createStyles(colors => ({
-	header: {paddingTop: 8, paddingBottom: 26, flexDirection: "row", gap: 14, alignItems: "center"},
-	emblem: {width: 52, height: 52, backgroundColor: colors.wash, borderRadius: 14, alignItems: "center", justifyContent: "center"},
-	eyebrow: {fontFamily: Theme.fonts.semiBold, fontSize: 10, color: colors.muted, marginBottom: 4, letterSpacing: 0},
-	title: {fontFamily: Theme.fonts.extraBold, fontSize: 26, color: colors.ink},
 	identity: {flexDirection: "row", alignItems: "center", gap: 12, paddingBottom: 20},
 	name: {fontFamily: Theme.fonts.bold, fontSize: 17, color: colors.ink},
 	className: {fontFamily: Theme.fonts.regular, fontSize: 12, color: colors.muted, marginTop: 4},
@@ -125,10 +121,10 @@ function playerEmblems(state: RequestState<ProfileRes>): {leagueId?: number; cla
 	};
 }
 
+/** The same identity banner as every other tab, so the arena reads as one of them. */
 function ArenaHeader(): ReactNode {
-	const styles = useStyles();
 	const colors = useColors();
-	return <View style={styles.header}><View style={styles.emblem}><Swords size={27} color={colors.ink} /></View><View><Text style={styles.eyebrow}>{i18n.t("app:arena.eyebrow")}</Text><Text style={styles.title}>{i18n.t("app:arena.title")}</Text></View></View>;
+	return <Standing emblem={<Swords size={27} color={colors.ink} />} caption={i18n.t("app:arena.eyebrow")} title={i18n.t("app:arena.title")} />;
 }
 
 type ArenaCure = {offer: HealOffer | null; action: PendingAction; cure: Cure | null};

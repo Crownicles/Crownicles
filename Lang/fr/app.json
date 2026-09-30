@@ -85,6 +85,7 @@
     "error": "Les informations n'ont pas pu être récupérées",
     "retry": "Réessayer",
     "back": "Retour",
+    "continue": "Continuer",
     "yes": "Oui",
     "no": "Non",
     "connectionError": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
@@ -248,10 +249,6 @@
       "confirm": "Supprimer définitivement mon compte",
       "codeError": "Ce code n'est pas valide. Vérifiez-le, ou demandez-en un nouveau."
     }
-  },
-  "navigation": {
-    "classInfo": "Informations de classe",
-    "featureNotAvailable": "Cette fonctionnalité sera disponible prochainement."
   },
   "vitals": {
     "health": "Vie",
@@ -901,7 +898,7 @@
     "versus": "VS", "level": "Niv. {{level}}", "shortTurn": "Tour {{turn}}", "seconds": "{{seconds}} s", "availableBreath": "Disponible",
     "breathRegen_one": "+{{count}} au prochain tour", "breathRegen_other": "+{{count}} au prochain tour",
     "actions": "Vos actions", "chooseAction": "À vous de jouer", "wait": "En attente", "ready": "Choisissez votre action", "opening": "Le combat commence", "preparing": "Les combattants se préparent…",
-    "unavailable": "Indisponible", "actionDetails": "Détail : {{action}}", "critical": "Critique", "missed": "Manqué", "noEffect": "Sans effet", "showHistory": "Ouvrir le journal", "backToFight": "Retour au combat",
+    "unavailable": "Indisponible", "actionDetails": "Détail : {{action}}", "critical": "Critique", "missed": "Manqué", "noEffect": "Sans effet", "showHistory": "Ouvrir le journal",
     "finishedAgainst": "Face à {{opponent}} · {{turns}} tours", "returnToArena": "Retour à l'arène",
     "monsterReward": {
       "experience": "Expérience",
@@ -1103,6 +1100,7 @@
     "recallWarning": "Le rappel met fin à l'expédition et peut diminuer le moral de votre familier.",
     "cloneFound": "Talisman de clonage obtenu",
     "itemFound": "Équipement trouvé",
+    "seeItem": "Voir l'équipement trouvé",
     "plannedDuration": "Durée annoncée avant le départ : {{duration}}",
     "away": {
       "exploring": "{{pet}} explore la région · retour prévu le {{date}}",
@@ -1113,7 +1111,6 @@
     "titles": {"expeditionChoice": "Choisir une expédition", "expeditionProgress": "Expédition en cours", "expeditionFinished": "Expédition terminée"},
     "outcomes": {"status": "Expédition", "started": "Départ en expédition", "cancelled": "Départ annulé", "recalled": "Expédition interrompue", "resolved": "Résultat de l'expédition", "error": "Expédition indisponible"},
     "resolvedTitles": {"success": "Retour triomphal", "partial": "Retour mitigé", "failure": "Expédition échouée"},
-    "continue": "Continuer",
     "insufficientFood": {"noGuild": "Sans provisions de guilde, les risques de cette expédition sont accrus.", "guildNoFood": "Les provisions de la guilde étaient insuffisantes. Les risques de cette expédition sont accrus."},
     "errors": {
       "noPet": "Aucun familier ne peut partir en expédition.",

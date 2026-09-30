@@ -6,9 +6,10 @@ import {Note} from "@/src/design/Primitives";
 import {formatMoney} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {petIcon, petName} from "@/src/display/PetDisplay";
-import {expeditionPetName} from "@/src/display/PetExpedition";
+import {expeditionPetIcon, expeditionPetName} from "@/src/display/PetExpedition";
 import {i18n} from "@/src/translations/i18n";
-import {ExpandableList, Fact, Sheet, Toast} from "@/src/design/Sections";
+import {ActionBanner, ExpandableList, Fact, QuestionSheet, Toast} from "@/src/design/Sections";
+import {Check} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 
 const TOAST_EMBLEM_SIZE = 24;
@@ -25,7 +26,7 @@ function statusMessage(status: PetFreeStatus): string {
 function FreedPetResult({outcome}: {outcome: Extract<Outcome, {type: "freed"}>}): ReactNode {
 	return <>
 		<Note>{i18n.t(outcome.isFromShelter ? "app:pet.management.freedShelter" : "app:pet.management.freed", {pet: expeditionPetName(outcome.pet)})}</Note>
-		<Fact label={i18n.t("app:pet.care.price")} value={formatMoney(outcome.freeCost)} />
+		<ExpandableList><Fact label={i18n.t("app:pet.care.price")} value={formatMoney(outcome.freeCost)} /></ExpandableList>
 		{outcome.luckyMeat ? <Note>{i18n.t("app:pet.management.meat")}</Note> : null}
 	</>;
 }
@@ -48,15 +49,12 @@ export function petManagementPacketRefusal(packet: FromServerPacket): string | n
 	return petManagementRefusal((packet as PetManagementRes).outcome);
 }
 
-function ManagementResult({outcome}: {outcome: Outcome}): ReactNode {
+/** What is said in passing: a refusal, a status, or a sale the guild's treasury already shows. */
+function passingNote(outcome: Outcome): string | null {
 	const refusal = petManagementRefusal(outcome);
-	if (refusal !== null) return <Note>{refusal}</Note>;
-	if (outcome.type === "freeStatus") return <Note>{statusMessage(outcome.status)}</Note>;
-	if (outcome.type === "sold") return <>
-		<Note>{i18n.t("app:pet.sale.sold", {pet: petName(outcome.pet)})}</Note>
-		<Fact label={i18n.t("app:pet.sale.treasury", {guild: outcome.guildName})} value={formatMoney(outcome.treasuryEarned)} />
-	</>;
-	return outcome.type === "freed" ? <FreedPetResult outcome={outcome} /> : null;
+	if (refusal !== null) return refusal;
+	if (outcome.type === "freeStatus") return statusMessage(outcome.status);
+	return outcome.type === "sold" ? formatMoney(outcome.treasuryEarned) : null;
 }
 
 type TransferOutcome = Extract<Outcome, {type: "transfer"}>;
@@ -80,12 +78,19 @@ function TransferToast({outcome, onContinue}: {outcome: TransferOutcome; onConti
 
 export function PetManagementOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
 	if (outcome.type === "transfer") return <TransferToast outcome={outcome} onContinue={onContinue} />;
-	return <Sheet
+	if (outcome.type === "freed") return <QuestionSheet
 		caption={i18n.t("app:pet.eyebrow")}
-		title={i18n.t(`app:pet.management.outcomes.${outcome.type}`)}
-		closeLabel={i18n.t("app:common.back")}
+		title={i18n.t("app:pet.management.outcomes.freed")}
+		emblem={<TwemojiIcon emoji={expeditionPetIcon(outcome.pet)} size={TOAST_EMBLEM_SIZE} />}
 		onClose={onContinue}
 	>
-		<ExpandableList><ManagementResult outcome={outcome} /></ExpandableList>
-	</Sheet>;
+		<FreedPetResult outcome={outcome} />
+		<ActionBanner icon={Check} label={i18n.t("app:common.continue")} onPress={onContinue} />
+	</QuestionSheet>;
+	const note = passingNote(outcome);
+	return <Toast
+		title={outcome.type === "sold" ? i18n.t("app:pet.sale.sold", {pet: petName(outcome.pet)}) : i18n.t(`app:pet.management.outcomes.${outcome.type}`)}
+		{...note ? {subtitle: note} : {}}
+		onDismiss={onContinue}
+	/>;
 }

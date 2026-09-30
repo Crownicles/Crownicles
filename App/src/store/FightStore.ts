@@ -71,7 +71,6 @@ class FightStore {
 	};
 	public readonly getSnapshot = (): FightSnapshot => this.snapshot;
 	public readonly show = (): void => this.update({visible: true});
-	public readonly minimize = (): void => this.update({visible: false, playedSequence: this.snapshot.logs.at(-1)?.sequence ?? this.snapshot.playedSequence});
 	public readonly markPlayed = (fightId: string, sequence: number): void => {
 		if (fightId !== this.snapshot.introduction?.fightId) return;
 		if (sequence <= this.snapshot.playedSequence) return;

@@ -3,9 +3,8 @@ import {useLocalSearchParams, useRouter} from "expo-router";
 import {ProfileView} from "@/src/components/ProfileView";
 import {GuildInvitePlayer} from "@/src/components/GuildMembers";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {EmptyState, Screen} from "@/src/design/Primitives";
-import {BackButton} from "@/src/design/Sections";
-import {SwipeBack} from "@/src/design/SwipeBack";
+import {EmptyState} from "@/src/design/Primitives";
+import {Page} from "@/src/design/DetailScreen";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useOtherPlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
@@ -25,10 +24,7 @@ export default function PlayerScreen(): ReactNode {
 		if (router.canGoBack()) router.back();
 		else router.replace("/");
 	};
-	return <SwipeBack onClose={close}>
-		<Screen>
-			<BackButton label={i18n.t("app:common.back")} onClose={close} />
-			{typeof ref === "string" ? <OtherPlayerProfile playerRef={ref} /> : <EmptyState>{i18n.t("app:profile.notFound")}</EmptyState>}
-		</Screen>
-	</SwipeBack>;
+	return <Page onClose={close}>
+		{typeof ref === "string" ? <OtherPlayerProfile playerRef={ref} /> : <EmptyState>{i18n.t("app:profile.notFound")}</EmptyState>}
+	</Page>;
 }

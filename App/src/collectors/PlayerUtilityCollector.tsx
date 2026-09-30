@@ -4,8 +4,7 @@ import {PlayerUtilityRes} from "ws-packets/src/fromServer/common/PlayerUtilityRe
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PLAYER_UTILITY_DATA_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
 import {PlayerUtilityOutcome as Outcome} from "ws-packets/src/objects/PlayerUtility";
-import {Note} from "@/src/design/Primitives";
-import {ExpandableList, Fact, Sheet} from "@/src/design/Sections";
+import {ExpandableList, Fact, QuestionSheet, Toast} from "@/src/design/Sections";
 import {CollectorDecision} from "@/src/collectors/CollectorPrompt";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
@@ -27,15 +26,14 @@ function UtilityDetails({data}: {data: ReactionCollectorData}): ReactNode {
 export function PlayerUtilityCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
 	const {answer, locked} = useCollectorAnswer(collector, onChoose, submitting);
 	const refuse = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
-	return <Sheet
+	return <QuestionSheet
 		caption={i18n.t("app:utilities.title")}
 		title={i18n.t(collector.data.type === PLAYER_UTILITY_DATA_KINDS.UNLOCK ? "app:utilities.unlock" : "app:utilities.boat")}
-		closeLabel={i18n.t("app:collector.refuse")}
 		onClose={refuse}
 	>
 		<ExpandableList><UtilityDetails data={collector.data} /></ExpandableList>
 		<CollectorDecision collector={collector} onChoose={answer} submitting={locked} />
-	</Sheet>;
+	</QuestionSheet>;
 }
 
 /** Why Core turned a request down, or null when the outcome is a result worth its own sheet. */
@@ -49,24 +47,19 @@ export function utilityPacketRefusal(packet: FromServerPacket): string | null {
 	return utilityRefusal((packet as PlayerUtilityRes).outcome);
 }
 
-function UtilityResult({outcome}: {outcome: Outcome}): ReactNode {
+function utilityResult(outcome: Outcome): string | null {
 	const refusal = utilityRefusal(outcome);
-	if (refusal !== null) return <Note>{refusal}</Note>;
+	if (refusal !== null) return refusal;
 	switch (outcome.type) {
-		case "respawn": return <Note>{i18n.t("app:utilities.respawned", {lostScore: formatNumber(outcome.lostScore)})}</Note>;
-		case "boat": return <Note>{i18n.t("app:utilities.boatJoined", {score: formatNumber(outcome.score)})}</Note>;
-		case "unlocked": return <Note>{i18n.t("app:utilities.unlocked", {name: outcome.playerName ?? i18n.t("app:arena.unknownPlayer")})}</Note>;
+		case "respawn": return i18n.t("app:utilities.respawned", {lostScore: formatNumber(outcome.lostScore)});
+		case "boat": return i18n.t("app:utilities.boatJoined", {score: formatNumber(outcome.score)});
+		case "unlocked": return i18n.t("app:utilities.unlocked", {name: outcome.playerName ?? i18n.t("app:arena.unknownPlayer")});
 		default: return null;
 	}
 }
 
+/** Each result is one sentence the screen behind already reflects: said in passing. */
 export function PlayerUtilityOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
-	return <Sheet
-		caption={i18n.t("app:utilities.title")}
-		title={i18n.t("app:utilities.result")}
-		closeLabel={i18n.t("app:common.back")}
-		onClose={onContinue}
-	>
-		<UtilityResult outcome={outcome} />
-	</Sheet>;
+	const result = utilityResult(outcome);
+	return <Toast title={i18n.t("app:utilities.result")} {...result ? {subtitle: result} : {}} onDismiss={onContinue} />;
 }

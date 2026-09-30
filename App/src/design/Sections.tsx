@@ -1,6 +1,10 @@
-import {ReactNode, useEffect, useMemo, useState} from "react";
-import {Animated, Easing, Modal, ModalProps, Pressable, ScrollView, StyleSheet, Text, TextStyle, useWindowDimensions, View, ViewStyle} from "react-native";
+import {ReactNode, useEffect, useMemo, useRef, useState} from "react";
+import {
+	Animated, Easing, KeyboardAvoidingView, Modal, ModalProps, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextStyle, useWindowDimensions, View, ViewStyle
+} from "react-native";
+import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
 import {PendingMotion, Screen, usePressMotion} from "@/src/design/Primitives";
@@ -53,6 +57,7 @@ const useStyles = createStyles(colors => ({
 	detailGrabber: {alignSelf: "center", width: 40, height: 4, borderRadius: 2, backgroundColor: colors.line},
 	detailHead: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
 	detailBody: {gap: Theme.spacing.md},
+	sheetHandle: {gap: Theme.spacing.lg},
 	sheetScroll: {flexGrow: 0},
 	back: {alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: Theme.spacing.xs, height: 34, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: colors.wash, marginBottom: Theme.spacing.lg},
 	backLabel: {color: colors.ink, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body},
@@ -111,6 +116,8 @@ const useStyles = createStyles(colors => ({
 		elevation: 2
 	},
 	journalEmblem: {width: 44, height: 44, flexShrink: 0, borderRadius: 22, alignItems: "center", justifyContent: "center", backgroundColor: colors.wash},
+	/** The same entry inside a bottom sheet, which is already the white page. */
+	journalPlain: {gap: Theme.spacing.lg},
 	journalTitle: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: colors.ink},
 	card: {
 		marginBottom: Theme.spacing.xl,
@@ -156,28 +163,48 @@ function EffectEmblem({effect}: {effect: Effect}): ReactNode {
 	return effect.emoji ? <TwemojiIcon emoji={effect.emoji} size={EFFECT_EMBLEM_SIZE} /> : null;
 }
 
-/** What an event did to the player, one tinted chip per change: green when it helps, red when it hurts. */
-export function Effects({items}: {items: Effect[]}): ReactNode {
+/** Chips pop in one after the other, so a list of gains is read one gain at a time. */
+const EFFECT_MOTION = {staggerMs: 90, popMs: 320, fromScale: 0.6, overshoot: 1.8} as const;
+
+function EffectChip({effect, order, still}: {effect: Effect; order: number; still: boolean}): ReactNode {
 	const styles = useStyles();
-	return <View style={styles.effects}>{items.map(effect => <View key={effect.label} style={[styles.effect, styles[EFFECT_TONE_STYLES[effect.tone].chip]]} testID="event-effect">
+	const [pop] = useState(() => new Animated.Value(still ? 1 : 0));
+	useEffect(() => {
+		if (still) return;
+		Animated.timing(pop, {toValue: 1, duration: EFFECT_MOTION.popMs, delay: order * EFFECT_MOTION.staggerMs, easing: Easing.out(Easing.back(EFFECT_MOTION.overshoot)), useNativeDriver: true}).start();
+	}, [pop, order, still]);
+	return <Animated.View
+		style={[styles.effect, styles[EFFECT_TONE_STYLES[effect.tone].chip], {opacity: pop, transform: [{scale: pop.interpolate({inputRange: [0, 1], outputRange: [EFFECT_MOTION.fromScale, 1]})}]}]}
+		testID="event-effect"
+	>
 		<EffectEmblem effect={effect} />
 		<Text style={styles.effectLabel}>{effect.label}</Text>
 		<Text style={[styles.effectValue, styles[EFFECT_TONE_STYLES[effect.tone].value]]}>{effect.value}</Text>
-	</View>)}</View>;
+	</Animated.View>;
+}
+
+/** What an event did to the player, one tinted chip per change: green when it helps, red when it hurts. */
+export function Effects({items}: {items: Effect[]}): ReactNode {
+	const styles = useStyles();
+	const still = useReducedMotion();
+	return <View style={styles.effects}>{items.map((effect, order) => <EffectChip key={effect.label} effect={effect} order={order} still={still} />)}</View>;
 }
 
 /**
  * An entry of the adventure journal, laid out in the order Discord posts it: whose journal it is
  * with the event's emoji, what the event changed, then the game's own prose.
  */
-export function JournalEntry({emblem, title, effects, children}: {
+export function JournalEntry({emblem, title, effects, plain = false, children}: {
 	emblem?: ReactNode;
 	title: string;
 	effects: Effect[];
+
+	/** Inside a bottom sheet, which is already the white page the card would draw. */
+	plain?: boolean;
 	children: ReactNode;
 }): ReactNode {
 	const styles = useStyles();
-	return <View style={styles.journal}>
+	return <View style={plain ? styles.journalPlain : styles.journal}>
 		<View style={styles.identity}>
 			{emblem ? <View style={styles.journalEmblem}>{emblem}</View> : null}
 			<Text style={styles.journalTitle}>{title}</Text>
@@ -197,6 +224,7 @@ const TOAST_DURATION_MS = 4_000;
 const TOAST_ENTRANCE_MS = 220;
 const TOAST_ENTRANCE_OFFSET = -24;
 const TOAST_UNIT_SIZE = 18;
+const TOAST_EMBLEM_POP = {from: 0.4, friction: 4, tension: 140} as const;
 const STANDING_TITLE_EMOJI_SIZE = 22;
 const BANNER_EMOJI_SIZE = 22;
 const BANNER_LABEL_LINES = 2;
@@ -204,10 +232,10 @@ const BANNER_LABEL_LINES = 2;
 /** The gain a toast announces, as a number and the game emoji of its unit. */
 export type ToastValue = {amount: string; unit: string};
 
-function ToastContent({emblem, title, subtitle, value}: {emblem?: ReactNode; title: string; subtitle?: string; value?: ToastValue}): ReactNode {
+function ToastContent({emblem, emblemPop, title, subtitle, value}: {emblem?: ReactNode; emblemPop: Animated.Value; title: string; subtitle?: string; value?: ToastValue}): ReactNode {
 	const styles = useStyles();
 	return <>
-		{emblem ? <View style={styles.toastEmblem}>{emblem}</View> : null}
+		{emblem ? <Animated.View style={[styles.toastEmblem, {transform: [{scale: emblemPop}]}]}>{emblem}</Animated.View> : null}
 		<View style={styles.body}>
 			<Text style={styles.toastTitle} numberOfLines={1}>{title}</Text>
 			{subtitle ? <Text style={styles.toastSubtitle} numberOfLines={2}>{subtitle}</Text> : null}
@@ -234,11 +262,16 @@ export function Toast({emblem, title, subtitle, value, onDismiss, onPress}: {
 	const styles = useStyles();
 	const insets = useSafeAreaInsets();
 	const [entrance] = useState(() => new Animated.Value(0));
+	// The emblem lands once the toast is down, with a bounce: a level gained, a mission done.
+	const [emblemPop] = useState(() => new Animated.Value(TOAST_EMBLEM_POP.from));
 	useEffect(() => {
-		Animated.timing(entrance, {toValue: 1, duration: TOAST_ENTRANCE_MS, useNativeDriver: true}).start();
+		Animated.sequence([
+			Animated.timing(entrance, {toValue: 1, duration: TOAST_ENTRANCE_MS, useNativeDriver: true}),
+			Animated.spring(emblemPop, {toValue: 1, friction: TOAST_EMBLEM_POP.friction, tension: TOAST_EMBLEM_POP.tension, useNativeDriver: true})
+		]).start();
 		const timer = setTimeout(onDismiss, TOAST_DURATION_MS);
 		return (): void => clearTimeout(timer);
-	}, [entrance, onDismiss]);
+	}, [entrance, emblemPop, onDismiss]);
 	return <View pointerEvents="box-none" style={[styles.toastLayer, {paddingTop: insets.top + Theme.spacing.sm}]}>
 		<Animated.View style={{opacity: entrance, transform: [{translateY: entrance.interpolate({inputRange: [0, 1], outputRange: [TOAST_ENTRANCE_OFFSET, 0]})}]}}>
 			<Pressable
@@ -247,7 +280,7 @@ export function Toast({emblem, title, subtitle, value, onDismiss, onPress}: {
 				onPress={onPress ?? onDismiss}
 				style={styles.toast}
 			>
-				<ToastContent emblem={emblem} title={title} {...subtitle ? {subtitle} : {}} {...value ? {value} : {}} />
+				<ToastContent emblem={emblem} emblemPop={emblemPop} title={title} {...subtitle ? {subtitle} : {}} {...value ? {value} : {}} />
 			</Pressable>
 		</Animated.View>
 	</View>;
@@ -325,6 +358,30 @@ export function Standing({emblem, caption, title, subtitle, children, onPress, a
 	</View>;
 }
 
+/** Whether a full screen can be left at any time, or holds the player until what it shows is over. */
+export const FULL_SCREEN_KINDS = {STANDARD: "standard", BLOCKING: "blocking"} as const;
+export type FullScreenKind = typeof FULL_SCREEN_KINDS[keyof typeof FULL_SCREEN_KINDS];
+
+/**
+ * The one full-screen window of the app, for what needs all the room: a long list to compare, a form,
+ * a fight. A standard one is left like a pushed page; a blocking one ignores the back gesture and the
+ * hardware back, so a fight cannot be walked away from.
+ */
+export function FullScreen({onClose, onShow, kind = FULL_SCREEN_KINDS.STANDARD, tone = "paper", children}: {
+	onClose: () => void;
+	onShow?: () => void;
+	kind?: FullScreenKind;
+	tone?: "paper" | "wash";
+	children: ReactNode;
+}): ReactNode {
+	const blocking = kind === FULL_SCREEN_KINDS.BLOCKING;
+	return <SheetModal visible onRequestClose={blocking ? (): void => undefined : onClose} {...onShow ? {onShow} : {}}>
+		<ModalSurface tone={tone}>
+			{blocking ? children : <SwipeBack onClose={onClose}>{children}</SwipeBack>}
+		</ModalSurface>
+	</SheetModal>;
+}
+
 /** A window the server opens over a screen: an answer to read, or a question only Core can settle. */
 export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, onShow, children}: {
 	caption: string;
@@ -336,40 +393,85 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 	onShow?: () => void;
 	children: ReactNode;
 }): ReactNode {
-	return <SheetModal visible onRequestClose={onClose} {...onShow ? {onShow} : {}}>
-		<ModalSurface>
-			{/* A window is left the same way a pushed page is: the button, the hardware back, or the edge gesture. */}
-			<SwipeBack onClose={onClose}>
-				<Screen>
-					<BackButton label={closeLabel} onClose={onClose} />
-					<Standing caption={caption} title={title} {...subtitle ? {subtitle} : {}} {...emblem ? {emblem} : {}} />
-					{children}
-				</Screen>
-			</SwipeBack>
-		</ModalSurface>
-	</SheetModal>;
+	return <FullScreen onClose={onClose} {...onShow ? {onShow} : {}}>
+		<Screen>
+			<BackButton label={closeLabel} onClose={onClose} />
+			<Standing caption={caption} title={title} {...subtitle ? {subtitle} : {}} {...emblem ? {emblem} : {}} />
+			{children}
+		</Screen>
+	</FullScreen>;
 }
 
-const SHEET_RISE_MS = 280;
+/** Settles quickly with a hint of bounce, like a sheet dropped on a table. */
+const SHEET_SPRING = {damping: 22, stiffness: 220, mass: 0.9, useNativeDriver: true} as const;
+const SHEET_DISMISS = {distance: 90, velocity: 0.8, slop: 4} as const;
 
-/** A page that rises over the screen instead of replacing it: a tap above it or the back gesture puts it away. */
-export function BottomSheet({onClose, children}: {onClose: () => void; children: ReactNode}): ReactNode {
+/**
+ * Everything that rises from the bottom: the detail of a line, a quick question, a short result.
+ * A tap above it, a drag of its top edge or the back gesture puts it away.
+ */
+export function BottomSheet({onClose, onShown, heading, children, testID}: {
+	onClose: () => void;
+
+	/** Once the sheet has settled, for an animation that should not play while it is still rising. */
+	onShown?: () => void;
+	heading?: ReactNode;
+	children: ReactNode;
+	testID?: string;
+}): ReactNode {
 	const styles = useStyles();
 	const insets = useSafeAreaInsets();
 	const {height} = useWindowDimensions();
-	const [rise] = useState(() => new Animated.Value(height));
+	const [offset] = useState(() => new Animated.Value(height));
+	const shown = useRef(onShown);
 	useEffect(() => {
-		Animated.timing(rise, {toValue: 0, duration: SHEET_RISE_MS, easing: Easing.out(Easing.cubic), useNativeDriver: true}).start();
-	}, [rise]);
+		shown.current = onShown;
+	}, [onShown]);
+	useEffect(() => {
+		Animated.spring(offset, {toValue: 0, ...SHEET_SPRING}).start(({finished}) => {
+			if (finished) shown.current?.();
+		});
+	}, [offset]);
+	const drag = useMemo(() => PanResponder.create({
+		onMoveShouldSetPanResponder: (_event, gesture) => gesture.dy > SHEET_DISMISS.slop && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+		onPanResponderMove: (_event, gesture) => offset.setValue(Math.max(0, gesture.dy)),
+		onPanResponderRelease: (_event, gesture) => {
+			if (gesture.dy > SHEET_DISMISS.distance || gesture.vy > SHEET_DISMISS.velocity) onClose();
+			// A sheet that cannot be dismissed yet settles back instead of staying where the finger left it.
+			Animated.spring(offset, {toValue: 0, ...SHEET_SPRING}).start();
+		}
+	}), [offset, onClose]);
 	return <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-		<View style={styles.detailBackdrop}>
-			<Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:common.back")} style={StyleSheet.absoluteFill} onPress={onClose} />
-			<Animated.View style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl, transform: [{translateY: rise}]}]}>
-				<View style={styles.detailGrabber} />
-				<ScrollView style={styles.sheetScroll}>{children}</ScrollView>
+		<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.detailBackdrop}>
+			<Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:common.back")} style={StyleSheet.absoluteFill} onPress={onClose} testID="detail-sheet-backdrop" />
+			<Animated.View style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl, transform: [{translateY: offset}]}]} testID={testID}>
+				<View {...drag.panHandlers} style={styles.sheetHandle}>
+					<View style={styles.detailGrabber} />
+					{heading}
+				</View>
+				<ScrollView style={styles.sheetScroll} contentContainerStyle={styles.detailBody} keyboardShouldPersistTaps="handled">{children}</ScrollView>
 			</Animated.View>
-		</View>
+		</KeyboardAvoidingView>
 	</Modal>;
+}
+
+/** A short question or result in a bottom sheet, headed like a page so the player knows what it is about. */
+export function QuestionSheet({caption, title, subtitle, emblem, onClose, onShown, children, testID}: {
+	caption: string;
+	title: string;
+	subtitle?: string;
+	emblem?: ReactNode;
+	onClose: () => void;
+	onShown?: () => void;
+	children: ReactNode;
+	testID?: string;
+}): ReactNode {
+	return <BottomSheet
+		onClose={onClose}
+		{...onShown ? {onShown} : {}}
+		{...testID ? {testID} : {}}
+		heading={<Standing caption={caption} title={title} {...subtitle ? {subtitle} : {}} {...emblem ? {emblem} : {}} />}
+	>{children}</BottomSheet>;
 }
 
 /** One headline number, with the game emoji of its unit when it has one. */
@@ -398,6 +500,24 @@ export function Figures({items}: {items: Figure[]}): ReactNode {
 	</View>)}</View>;
 }
 
+/** A locked button shakes its head when pressed anyway, instead of ignoring the finger. */
+const REFUSAL_SHAKE = {distance: 6, stepMs: 45, swings: 3} as const;
+
+function useRefusalShake(): {offset: Animated.Value; shake: () => void} {
+	const reducedMotion = useReducedMotion();
+	const [offset] = useState(() => new Animated.Value(0));
+	const swing = (toValue: number): Animated.CompositeAnimation => Animated.timing(offset, {toValue, duration: REFUSAL_SHAKE.stepMs, useNativeDriver: true});
+	return {
+		offset,
+		shake: (): void => {
+			notificationAsync(NotificationFeedbackType.Warning).catch(() => undefined);
+			if (reducedMotion) return;
+			const swings = Array.from({length: REFUSAL_SHAKE.swings}, () => [swing(REFUSAL_SHAKE.distance), swing(-REFUSAL_SHAKE.distance)]).flat();
+			Animated.sequence([...swings, swing(0)]).start();
+		}
+	};
+}
+
 export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false, disabled = false, lock, hint, testID}: {
 	icon: LucideIcon;
 
@@ -418,23 +538,28 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 	const styles = useStyles();
 	const colors = useColors();
 	const blocked = pending || disabled || Boolean(lock);
+	const refusable = Boolean(lock) && !pending && !disabled;
 	const {scale, iconScale, handlers} = usePressMotion(onPress);
+	const {offset, shake} = useRefusalShake();
 	const glyph = emoji ? <TwemojiIcon emoji={emoji} size={BANNER_EMOJI_SIZE} /> : <Icon size={20} color={colors.paper} />;
 	const notice = lock ?? hint;
 	return <View>
-		<Pressable
-			accessibilityRole="button"
-			accessibilityState={{disabled: blocked, busy: pending}}
-			disabled={blocked}
-			{...handlers}
-		>
-			{({pressed}): ReactNode => <Animated.View style={[styles.banner, blocked && styles.disabled, pressed && styles.pressed, {transform: [{scale}]}]}>
+		{/* A locked banner stays disabled for assistive tech; the press it ignores reaches this wrapper, which shakes it. */}
+		<Pressable accessible={false} {...refusable ? {onPress: shake} : {}}>
+			<Pressable
+				accessibilityRole="button"
+				accessibilityState={{disabled: blocked, busy: pending}}
+				disabled={blocked}
+				{...handlers}
+			>
+				{({pressed}): ReactNode => <Animated.View style={[styles.banner, blocked && styles.disabled, pressed && styles.pressed, {transform: [{scale}, {translateX: offset}]}]}>
 				<View style={styles.bannerIcon}>
 					{pending ? <PendingMotion>{glyph}</PendingMotion> : <Animated.View style={{transform: [{scale: iconScale}]}}>{glyph}</Animated.View>}
 				</View>
 				<TwemojiText containerStyle={styles.bannerLabelBox} textStyle={styles.bannerLabel} emojiSize={Theme.fontSize.button} numberOfLines={BANNER_LABEL_LINES}>{label}</TwemojiText>
 				<ArrowRight size={18} color={colors.paper} />
 			</Animated.View>}
+			</Pressable>
 		</Pressable>
 		{notice ? <LockHint lock={notice} testID={testID} /> : null}
 	</View>;
@@ -473,19 +598,10 @@ function EntryHeading({emblem, label, caption}: EntryHeadingProps): ReactNode {
 	</>;
 }
 
-/** The details of a line rise over the screen rather than push the rest of the list down; a tap outside puts them away. */
+/** The details of a line rise over the screen rather than push the rest of the list down. */
 function DetailSheet({heading, onClose, children, testID}: {heading: ReactNode; onClose: () => void; children: ReactNode; testID: string | undefined}): ReactNode {
 	const styles = useStyles();
-	const insets = useSafeAreaInsets();
-	// Presses inside the card stay there instead of closing it.
-	const card = <Pressable accessibilityRole="none" style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl}]} onPress={(): void => undefined} testID={testID}>
-		<View style={styles.detailGrabber} />
-		<View style={styles.detailHead}>{heading}</View>
-		<View style={styles.detailBody}>{children}</View>
-	</Pressable>;
-	return <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
-		<Pressable accessibilityRole="none" style={styles.detailBackdrop} onPress={onClose} testID="detail-sheet-backdrop">{card}</Pressable>
-	</Modal>;
+	return <BottomSheet onClose={onClose} heading={<View style={styles.detailHead}>{heading}</View>} {...testID ? {testID} : {}}>{children}</BottomSheet>;
 }
 
 type EntryLook = {expanded: boolean; highlighted: boolean; dimmed: boolean};

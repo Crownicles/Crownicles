@@ -4,7 +4,7 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {GENERIC_REACTION_KINDS, GUILD_DATA_KINDS, ReactionCollectorData, ReactionCollectorDataOf} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
 import {Note} from "@/src/design/Primitives";
-import {Sheet} from "@/src/design/Sections";
+import {QuestionSheet} from "@/src/design/Sections";
 import {Check, LogOut, LucideIcon} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -73,10 +73,9 @@ export function GuildCreateCollector({collector, onChoose, submitting}: {collect
 	const refuse = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
 	const action = acceptAction(collector.data);
 	const emblem = AppIcons.getIconOrNull("guild.icon");
-	return <Sheet
+	return <QuestionSheet
 		caption={i18n.t("app:guild.eyebrow")}
 		title={guildConfirmationTitle(collector.data)}
-		closeLabel={i18n.t("app:collector.refuse")}
 		onClose={refuse}
 		{...emblem ? {emblem: <TwemojiIcon emoji={emblem} size={GUILD_EMBLEM_SIZE} />} : {}}
 	>
@@ -88,5 +87,5 @@ export function GuildCreateCollector({collector, onChoose, submitting}: {collect
 			{...action.label ? {acceptLabel: action.label} : {}}
 			{...action.icon ? {acceptIcon: action.icon} : {}}
 		/>
-	</Sheet>;
+	</QuestionSheet>;
 }

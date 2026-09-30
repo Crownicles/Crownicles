@@ -4,9 +4,7 @@ import {GENERIC_REACTION_KINDS, SMALL_EVENT_DATA_KINDS} from "ws-packets/src/fro
 import {collectorDescription, eventPromptIcon} from "@/src/collectors/CollectorLabels";
 import {EventJournal} from "@/src/collectors/EventOutcomeScreen";
 import {MerchantOfferActions} from "@/src/collectors/SmallEventShopCollector";
-import {Screen} from "@/src/design/Primitives";
-import {BackButton} from "@/src/design/Sections";
-import {SwipeBack} from "@/src/design/SwipeBack";
+import {Page} from "@/src/design/DetailScreen";
 import {plainStory} from "@/src/display/Markdown";
 import {i18n} from "@/src/translations/i18n";
 
@@ -33,17 +31,13 @@ export function RecipeShopCollector({collector, onChoose, submitting}: {
 	const leave = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
 
 	return (
-		<SwipeBack onClose={leave}>
-			<Screen>
-				<BackButton label={i18n.t("app:collector.refuse")} onClose={leave} />
-				<EventJournal emoji={eventPromptIcon(collector.data)} story={collectorDescription(collector.data) ?? ""} />
-				<MerchantOfferActions
-					item={recipeName}
-					locked={locked}
-					onBuy={(): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT))}
-					onLeave={leave}
-				/>
-			</Screen>
-		</SwipeBack>
+		<Page onClose={leave} backLabel={i18n.t("app:collector.refuse")} heading={<EventJournal emoji={eventPromptIcon(collector.data)} story={collectorDescription(collector.data) ?? ""} />}>
+			<MerchantOfferActions
+				item={recipeName}
+				locked={locked}
+				onBuy={(): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT))}
+				onLeave={leave}
+			/>
+		</Page>
 	);
 }

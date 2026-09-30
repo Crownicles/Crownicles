@@ -5,7 +5,7 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
 import {ItemAcceptCollector, ItemChoiceCollector} from "@/src/collectors/ItemRewardCollector";
-import {ModalSurface, SheetModal} from "@/src/design/Sections";
+import {BottomSheet, FULL_SCREEN_KINDS, FullScreen} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, ITEM_DATA_KINDS, PET_FEED_DATA_KINDS, PET_MANAGEMENT_DATA_KINDS, SELL_DATA_KINDS, GUILD_DATA_KINDS, FIGHT_DATA_KINDS, ReactionCollectorDataKind,PLAYER_UTILITY_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {EquipCollector} from "@/src/collectors/EquipCollector";
@@ -78,8 +78,12 @@ const COLLECTOR_COMPONENTS: Partial<Record<ReactionCollectorDataKind, (props: Ac
 
 function InventoryCollector({collector, onChoose, submitting}: ActiveCollectorProps): ReactNode {
 	if (collector.data.type === EQUIP_DATA_KINDS.COLLECTOR) return <EquipCollector collector={{...collector, data: collector.data}} onChoose={onChoose} submitting={submitting} />;
-	const Component = COLLECTOR_COMPONENTS[collector.data.type] ?? CollectorPrompt;
-	return <Component collector={collector} onChoose={onChoose} submitting={submitting} />;
+	const Component = COLLECTOR_COMPONENTS[collector.data.type];
+	if (Component) return <Component collector={collector} onChoose={onChoose} submitting={submitting} />;
+	// A question without a screen of its own still arrives in a proper frame, answered from its list.
+	return <BottomSheet onClose={(): void => undefined}>
+		<CollectorPrompt collector={collector} onChoose={onChoose} submitting={submitting} />
+	</BottomSheet>;
 }
 
 /**
@@ -105,9 +109,10 @@ function StrayItemCollector({waiting}: {waiting: boolean}): ReactNode {
 	const collector = open.find(candidate => ITEM_KINDS.has(candidate.data.type));
 	if (!collector) return null;
 	const Component = collector.data.type === ITEM_DATA_KINDS.CHOICE ? ItemChoiceCollector : ItemAcceptCollector;
-	return <SheetModal visible onRequestClose={(): void => undefined}>
-		<ModalSurface><Component collector={collector} onChoose={(reactionIndex): void => react(collector.id, reactionIndex)} submitting={isAnswerPending(collector.id)} /></ModalSurface>
-	</SheetModal>;
+	// The find must be kept or left: there is no backing out of the question.
+	return <FullScreen onClose={(): void => undefined} kind={FULL_SCREEN_KINDS.BLOCKING}>
+		<Component collector={collector} onChoose={(reactionIndex): void => react(collector.id, reactionIndex)} submitting={isAnswerPending(collector.id)} />
+	</FullScreen>;
 }
 
 function PendingOutcomes(): ReactNode {

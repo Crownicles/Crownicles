@@ -7,11 +7,11 @@ import {
 import {formatNumber} from "@/src/display/Amounts";
 import {collectorDescription, eventPromptIcon, itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {EventJournal} from "@/src/collectors/EventOutcomeScreen";
-import {Button, Screen} from "@/src/design/Primitives";
-import {ActionBanner, BackButton, Figure, Figures, Standing} from "@/src/design/Sections";
+import {Button} from "@/src/design/Primitives";
+import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
 import {inventoryItemEmblem} from "@/src/components/InventoryItemRow";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
-import {SwipeBack} from "@/src/design/SwipeBack";
+import {Page} from "@/src/design/DetailScreen";
 import {ShoppingBag} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
@@ -78,19 +78,15 @@ export function SmallEventShopCollector({collector, onChoose, submitting}: {
 	const leave = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE));
 
 	return (
-		<SwipeBack onClose={leave}>
-			<Screen>
-				<BackButton label={i18n.t("app:collector.refuse")} onClose={leave} />
-				<EventJournal emoji={eventPromptIcon(data)} story={collectorDescription(data) ?? ""} />
-				<OfferedItem item={data.data.item} />
-				<Figures items={itemFigures(data)} />
-				<MerchantOfferActions
-					item={itemDisplayName(data.data.item)}
-					locked={locked}
-					onBuy={(): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT))}
-					onLeave={leave}
-				/>
-			</Screen>
-		</SwipeBack>
+		<Page onClose={leave} backLabel={i18n.t("app:collector.refuse")} heading={<EventJournal emoji={eventPromptIcon(data)} story={collectorDescription(data) ?? ""} />}>
+			<OfferedItem item={data.data.item} />
+			<Figures items={itemFigures(data)} />
+			<MerchantOfferActions
+				item={itemDisplayName(data.data.item)}
+				locked={locked}
+				onBuy={(): void => choose(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT))}
+				onLeave={leave}
+			/>
+		</Page>
 	);
 }

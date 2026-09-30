@@ -2,7 +2,7 @@ import {ReactElement, ReactNode, useEffect, useState} from "react";
 import {useRouter} from "expo-router";
 /** Expo SDK 57 no longer accepts react-navigation directly, so the top tabs come from its own copy. */
 import {TopTabs} from "expo-router/js-top-tabs";
-import {Alert, Text, TouchableOpacity, View} from "react-native";
+import {Text, TouchableOpacity, View} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {AppIcons} from "@/src/AppIcons";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
@@ -92,13 +92,14 @@ const ProfileHeader = (): ReactNode => {
 	 * the header is shown before that screen is ever opened, and both share this single request.
 	 */
 	const state = usePlayerProfile();
+	const router = useRouter();
+	const journey = useJourney();
 	const profile = state.status === "ready" ? state.data : null;
-	const showClassInfo = (): void => {
-		Alert.alert(i18n.t("app:navigation.classInfo"), i18n.t("app:navigation.featureNotAvailable"));
-	};
+	// The class emblem leads to the class comparison, once the arena that hosts it is open.
+	const showClassInfo = journey.tabs.includes(JOURNEY_TABS.ARENA) ? (): void => router.push("/arena/classes") : undefined;
 	const classIcon = profile ? AppIcons.getIconOrNull(`classes.${profile.classId}`) : null;
 	return (
-		<TouchableOpacity onPress={showClassInfo} style={navigationStyles.profileHeader}>
+		<TouchableOpacity disabled={!showClassInfo} onPress={showClassInfo} style={navigationStyles.profileHeader}>
 			{classIcon ? <View style={navigationStyles.profileClassIcon}><TwemojiIcon emoji={classIcon} size={Theme.fontSize.hero} /></View> : null}
 			<View style={navigationStyles.profileIdentity}>
 				<Text style={navigationStyles.profileName}>{profile?.pseudo}</Text>

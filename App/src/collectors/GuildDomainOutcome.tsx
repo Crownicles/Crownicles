@@ -2,10 +2,13 @@ import {ReactNode} from "react";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {GuildDomainRes} from "ws-packets/src/fromServer/guild/GuildDomainRes";
 import {GuildDomainOutcome as Outcome} from "ws-packets/src/objects/GuildDomain";
-import {Note} from "@/src/design/Primitives";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
-import {ExpandableList, Fact, Sheet} from "@/src/design/Sections";
+import {Toast} from "@/src/design/Sections";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {AppIcons} from "@/src/AppIcons";
+
+const TOAST_EMBLEM_SIZE = 22;
 
 /** Why Core turned a request down, or null when the outcome is a result worth its own sheet. */
 export function domainRefusal(outcome: Outcome): string | null {
@@ -18,40 +21,27 @@ export function domainPacketRefusal(packet: FromServerPacket): string | null {
 	return domainRefusal((packet as GuildDomainRes).outcome);
 }
 
-function DomainResult({outcome}: {outcome: Outcome}): ReactNode {
+/** The one line that sums the change up; the domain page shows the rest as soon as it refreshes. */
+function domainSummary(outcome: Outcome): string | undefined {
 	const refusal = domainRefusal(outcome);
-	if (refusal !== null) return <Note>{refusal}</Note>;
-	if (outcome.type === "notary") return <>
-		<Note>{i18n.t(outcome.relocated ? "app:guildDomain.relocated" : "app:guildDomain.installed")}</Note>
-		<Fact label={i18n.t("app:guildDomain.cost")} value={formatMoney(outcome.cost)} />
-	</>;
-	if (outcome.type === "deposit") return <>
-		<Fact label={i18n.t("app:guildDomain.credited")} value={formatMoney(outcome.treasuryDeposited)} />
-		<Fact label={i18n.t("app:city.summary.money")} value={formatMoney(outcome.newPlayerMoney)} />
-		<Fact label={i18n.t("app:city.summary.treasury")} value={formatMoney(outcome.newTreasury)} />
-	</>;
-	if (outcome.type === "food") return <>
-		<Fact label={i18n.t(`models:foods.${outcome.foodType}`, {count: outcome.amountBought})} value={formatNumber(outcome.amountBought)} />
-		<Fact label={i18n.t("app:guildDomain.cost")} value={formatMoney(outcome.totalCost)} />
-		<Fact label={i18n.t("app:guildDomain.stock")} value={formatNumber(outcome.newFoodStock)} />
-		<Fact label={i18n.t("app:city.summary.treasury")} value={formatMoney(outcome.newTreasury)} />
-	</>;
-	if (outcome.type !== "upgrade") return null;
-	return <>
-		<Fact label={i18n.t(`commands:report.city.guildDomain.buildings.${outcome.building}`)} value={i18n.t("app:guild.level", {level: outcome.newLevel})} />
-		<Fact label={i18n.t("app:guildDomain.cost")} value={formatMoney(outcome.cost)} />
-		<Fact label={i18n.t("app:profile.fields.experience")} value={formatNumber(outcome.xpGained)} />
-		<Fact label={i18n.t("app:city.summary.treasury")} value={formatMoney(outcome.newTreasury)} />
-	</>;
+	if (refusal !== null) return refusal;
+	switch (outcome.type) {
+		case "notary": return i18n.t(outcome.relocated ? "app:guildDomain.relocated" : "app:guildDomain.installed");
+		case "deposit": return formatMoney(outcome.treasuryDeposited);
+		case "food": return `${i18n.t(`models:foods.${outcome.foodType}`, {count: outcome.amountBought})} · ${formatNumber(outcome.amountBought)}`;
+		case "upgrade": return `${i18n.t(`commands:report.city.guildDomain.buildings.${outcome.building}`)} · ${i18n.t("app:guild.level", {level: outcome.newLevel})}`;
+		default: return undefined;
+	}
 }
 
+/** A change of the domain is acknowledged in passing: the domain page already shows the result. */
 export function GuildDomainOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
-	return <Sheet
-		caption={i18n.t("app:guild.pages.domain")}
+	const emblem = AppIcons.getIconOrNull("city.guildDomain.icon") ?? AppIcons.getIconOrNull("guild.icon");
+	const subtitle = domainSummary(outcome);
+	return <Toast
+		{...emblem ? {emblem: <TwemojiIcon emoji={emblem} size={TOAST_EMBLEM_SIZE} />} : {}}
 		title={i18n.t(`app:guildDomain.outcomes.${outcome.type}`)}
-		closeLabel={i18n.t("app:common.back")}
-		onClose={onContinue}
-	>
-		<ExpandableList><DomainResult outcome={outcome} /></ExpandableList>
-	</Sheet>;
+		{...subtitle ? {subtitle} : {}}
+		onDismiss={onContinue}
+	/>;
 }

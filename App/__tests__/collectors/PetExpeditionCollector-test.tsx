@@ -75,4 +75,14 @@ describe("expedition collectors", () => {
 		expect(screen.getByText("app:expedition.resolvedTitles.partial")).toBeTruthy();
 		expect(screen.getByText("commands:petExpedition.partialSuccesscommands:petExpedition.loveChangePartialPositivecommands:petExpedition.petLikedExpedition")).toBeTruthy();
 	});
+
+	it("names the equipment brought back among the gains and leads straight to it", async () => {
+		const onContinue = jest.fn();
+		const packet = Object.assign(new PetExpeditionResolveRes(), {success: true, partialSuccess: false, totalFailure: false, pet: PET, expedition: {locationType: "forest", mapLocationId: 12}, rewards: {money: 20, experience: 35, points: 10, itemGiven: true}, loveChange: 10});
+		await render(<PetExpeditionOutcome outcome={{kind: "resolved", packet}} onContinue={onContinue} />);
+		expect(screen.getByText("app:expedition.itemFound")).toBeTruthy();
+		expect(screen.queryByTestId("detail-sheet-backdrop")).toBeNull();
+		await fireEvent.press(screen.getByText("app:expedition.seeItem"));
+		expect(onContinue).toHaveBeenCalledTimes(1);
+	});
 });

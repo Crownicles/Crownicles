@@ -2,7 +2,7 @@ import {ReactNode} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, PET_MANAGEMENT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {Note, Screen} from "@/src/design/Primitives";
-import {Figures, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
+import {Figures, FullScreen, QuestionSheet, Standing} from "@/src/design/Sections";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {PetTransferScreen} from "@/src/collectors/PetTransferScreen";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
@@ -12,10 +12,11 @@ import {i18n} from "@/src/translations/i18n";
 
 type ManagementProps = {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean};
 
-function ManagementMenu(props: ManagementProps): ReactNode {
+/** Letting a pet go is one irreversible question: its price and where the pet came from, then yes or no. */
+function FreeConfirmation({onClose, ...props}: ManagementProps & {onClose: () => void}): ReactNode {
 	const {collector} = props;
-	if (collector.data.type === PET_MANAGEMENT_DATA_KINDS.FREE_CONFIRM) return <Screen>
-		<Standing caption={i18n.t("app:pet.eyebrow")} title={i18n.t("app:pet.management.free")} subtitle={expeditionPetName(collector.data.data.pet)} />
+	if (collector.data.type !== PET_MANAGEMENT_DATA_KINDS.FREE_CONFIRM) return null;
+	return <QuestionSheet caption={i18n.t("app:pet.eyebrow")} title={i18n.t("app:pet.management.free")} subtitle={expeditionPetName(collector.data.data.pet)} onClose={onClose}>
 		<Note>{i18n.t("app:pet.management.irreversible")}</Note>
 		<Figures items={[
 			{
@@ -27,11 +28,7 @@ function ManagementMenu(props: ManagementProps): ReactNode {
 			}
 		]} />
 		<CollectorChoices {...props} />
-	</Screen>;
-	return <Screen>
-		<Standing caption={i18n.t("app:pet.eyebrow")} title={i18n.t("app:pet.management.free")} />
-		<CollectorChoices {...props} />
-	</Screen>;
+	</QuestionSheet>;
 }
 
 export function PetManagementCollector({collector, onChoose, submitting}: ManagementProps): ReactNode {
@@ -43,11 +40,14 @@ export function PetManagementCollector({collector, onChoose, submitting}: Manage
 	 * waiting for the server to stop the collector. Waiting would leave the player behind a locked
 	 * screen if that packet never arrived, and would put the result window on top of this one.
 	 */
-	return <SheetModal visible={!answered} onRequestClose={close}>
-		<ModalSurface>
-			{collector.data.type === PET_MANAGEMENT_DATA_KINDS.TRANSFER
-				? <PetTransferScreen collector={collector} locked={locked} onChoose={answer} onClose={close} />
-				: <ManagementMenu collector={collector} onChoose={answer} submitting={locked} />}
-		</ModalSurface>
-	</SheetModal>;
+	if (answered) return null;
+	if (collector.data.type === PET_MANAGEMENT_DATA_KINDS.FREE_CONFIRM) return <FreeConfirmation collector={collector} onChoose={answer} submitting={locked} onClose={close} />;
+	return <FullScreen onClose={close}>
+		{collector.data.type === PET_MANAGEMENT_DATA_KINDS.TRANSFER
+			? <PetTransferScreen collector={collector} locked={locked} onChoose={answer} onClose={close} />
+			: <Screen>
+				<Standing caption={i18n.t("app:pet.eyebrow")} title={i18n.t("app:pet.management.free")} />
+				<CollectorChoices collector={collector} onChoose={answer} submitting={locked} />
+			</Screen>}
+	</FullScreen>;
 }

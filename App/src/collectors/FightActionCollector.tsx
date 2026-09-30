@@ -4,7 +4,7 @@ import {Clock3, Info, Wind, Swords} from "@/src/design/FightIcons";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {FIGHT_DATA_KINDS, FIGHT_REACTION_KINDS, GENERIC_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {Button, ButtonRow, Note} from "@/src/design/Primitives";
-import {ExpandableList, Fact, Sheet} from "@/src/design/Sections";
+import {ExpandableList, Fact, QuestionSheet} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
@@ -77,10 +77,9 @@ export function FightConfirmCollector({collector, onChoose, submitting}: Collect
 	const classIcon = AppIcons.getIconOrNull(`classes.${stats.classId}`);
 	const accept = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.ACCEPT);
 	const refuse = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE);
-	return <Sheet
+	return <QuestionSheet
 		caption={i18n.t("app:arena.eyebrow")}
 		title={i18n.t("app:arena.confirm")}
-		closeLabel={i18n.t("app:collector.refuse")}
 		onClose={(): void => answer(refuse)}
 	>
 		<View style={styles.preparation}>{classIcon ? <TwemojiIcon emoji={classIcon} size={44} /> : <Swords size={36} color={colors.muted} />}<Text style={styles.preparationName}>{i18n.t(`models:classes.${stats.classId}`)}</Text></View>
@@ -92,7 +91,7 @@ export function FightConfirmCollector({collector, onChoose, submitting}: Collect
 		</ExpandableList>
 		{stats.pet?.isOnExpedition ? <Note>{i18n.t("app:pet.powers.expedition")}</Note> : null}
 		<ButtonRow><Button variant="primary" icon={Swords} disabled={locked || accept < 0} onPress={(): void => answer(accept)}>{i18n.t("app:arena.start")}</Button><Button disabled={locked || refuse < 0} onPress={(): void => answer(refuse)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
-	</Sheet>;
+	</QuestionSheet>;
 }
 
 function ActionGrid({options, locked, onChoose}: {options: ActionOption[]; locked: boolean; onChoose: (index: number) => void}): ReactNode {
@@ -107,12 +106,11 @@ function ActionGrid({options, locked, onChoose}: {options: ActionOption[]; locke
 			return <FightActionButton key={actionId} actionId={actionId} {...(option.cost === undefined ? {} : {cost: option.cost})} disabled={locked || option.index < 0} onPress={(): void => onChoose(option.index)} onDetails={(): void => setDetails(actionId)} />;
 		})}
 		</View>
-		{details ? <Sheet
+		{details ? <QuestionSheet
 			caption={i18n.t("app:battle.actions")}
 			title={fightActionName(details)}
-			closeLabel={i18n.t("app:common.back")}
 			onClose={(): void => setDetails(null)}
-		><Note>{i18n.t(`models:fight_actions.${details}.description`, {defaultValue: ""})}</Note></Sheet> : null}
+		><Note>{i18n.t(`models:fight_actions.${details}.description`, {defaultValue: ""})}</Note></QuestionSheet> : null}
 	</>;
 }
 

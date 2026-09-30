@@ -10,7 +10,7 @@ import {Note} from "@/src/design/Primitives";
 import {formatMoney, formatNumber} from "@/src/display/Amounts";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
-import {ActionBanner, Fact, Sheet, Toast} from "@/src/design/Sections";
+import {ActionBanner, Fact, QuestionSheet, Toast} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 
 const TOAST_EMBLEM_SIZE = 22;
@@ -38,14 +38,6 @@ function DailyReward({reward}: {reward: GuildDailyReward}): ReactNode {
 	</>;
 }
 
-function GuildManagementResult({outcome}: {outcome: GuildCommandOutcome}): ReactNode {
-	if (outcome.type !== "left") return null;
-	return <>
-		<Note>{i18n.t(outcome.isGuildDestroyed ? "app:guild.dissolved" : "app:guild.left", {name: outcome.guildName})}</Note>
-		{outcome.newChiefName ? <Note>{i18n.t("app:guild.newChief", {name: outcome.newChiefName})}</Note> : null}
-	</>;
-}
-
 /** Why Core turned a request down, or null when the outcome is a result worth its own sheet. */
 export function guildRefusal(outcome: GuildCommandOutcome): string | null {
 	switch (outcome.type) {
@@ -54,6 +46,7 @@ export function guildRefusal(outcome: GuildCommandOutcome): string | null {
 		case "memberError": return i18n.t(`app:guild.memberErrors.${outcome.error}`);
 		case "notInGuild": return i18n.t("app:requirements.guild");
 		case "forbidden": return i18n.t("app:guild.forbidden");
+		case "dailyIsland": return i18n.t("app:guild.errors.dailyIsland");
 		case "dailyCooldown": return i18n.t("app:guild.dailyCooldown", {duration: formatDurationMinutes(outcome.remainingTime / MS_PER_MINUTE), total: formatDurationMinutes(outcome.totalTime * MINUTES_PER_HOUR)});
 		default: return null;
 	}
@@ -64,15 +57,15 @@ export function guildPacketRefusal(packet: FromServerPacket): string | null {
 	return guildRefusal((packet as GuildCommandRes).outcome);
 }
 
-function GuildResult({outcome}: {outcome: GuildCommandOutcome}): ReactNode {
-	const refusal = guildRefusal(outcome);
-	if (refusal !== null) return <Note>{refusal}</Note>;
-	return outcome.type === "daily" ? <DailyReward reward={outcome.reward} /> : <GuildManagementResult outcome={outcome} />;
-}
-
-/** A change the screen already shows is only acknowledged in passing, never in a window to close. */
+/** A change the screen already shows, or a refusal, is only acknowledged in passing, never in a window to close. */
 function acknowledgement(outcome: GuildCommandOutcome): {title: string; subtitle?: string} | null {
+	const refusal = guildRefusal(outcome);
+	if (refusal !== null) return {title: i18n.t("app:guild.pages.manage"), subtitle: refusal};
 	if (outcome.type === "descriptionUpdated") return {title: i18n.t("app:guild.descriptionUpdated")};
+	if (outcome.type === "left") return {
+		title: i18n.t(outcome.isGuildDestroyed ? "app:guild.dissolved" : "app:guild.left", {name: outcome.guildName}),
+		...outcome.newChiefName ? {subtitle: i18n.t("app:guild.newChief", {name: outcome.newChiefName})} : {}
+	};
 	if (outcome.type !== "memberAction") return null;
 	return {
 		title: i18n.t(`app:guild.memberResults.${outcome.action}`, {member: outcome.memberName ?? i18n.t("app:profile.values.unknown")}),
@@ -101,12 +94,13 @@ export function GuildOutcome({outcome, onContinue}: {outcome: GuildCommandOutcom
 			onDismiss={onContinue}
 		/>;
 	}
-	return <Sheet
+	if (outcome.type !== "daily") return null;
+	return <QuestionSheet
 		caption={i18n.t("app:guild.eyebrow")}
 		title={i18n.t("app:guild.pages.manage")}
-		closeLabel={i18n.t("app:common.back")}
 		onClose={onContinue}
 	>
-		<GuildResult outcome={outcome} />
-	</Sheet>;
+		<DailyReward reward={outcome.reward} />
+		<ActionBanner icon={ArrowRight} label={i18n.t("app:common.continue")} onPress={onContinue} />
+	</QuestionSheet>;
 }

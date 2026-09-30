@@ -6,7 +6,7 @@ import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {Theme} from "@/src/design/Theme";
 import {AppIcons} from "@/src/AppIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {ExpandableList, Fact, Sheet} from "@/src/design/Sections";
+import {ExpandableList, Fact, QuestionSheet} from "@/src/design/Sections";
 import {fighterDisplayName, fighterSubtitle, fightActionName} from "@/src/display/Fight";
 import {petName} from "@/src/display/PetDisplay";
 import {formatNumber} from "@/src/display/Amounts";
@@ -67,10 +67,9 @@ function FighterCombatStats({fighter}: {fighter: FightFighter}): ReactNode {
 function FighterStats({fighter, pet, onClose}: {fighter: FightFighter; pet?: OwnedPet; onClose: () => void}): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
-	return <Sheet
+	return <QuestionSheet
 		caption={i18n.t("app:arena.details")}
 		title={fighterDisplayName(fighter)}
-		closeLabel={i18n.t("app:common.back")}
 		onClose={onClose}
 	>
 		<View style={styles.statRow}>{COMBAT_STATS.map(({key, Icon}) => <View key={key} style={styles.stat}><Icon size={22} color={colors.muted} /><Text style={styles.statValue}>{formatNumber(fighter.stats[key])}</Text><Text style={styles.statLabel}>{i18n.t(`app:arena.stats.${key}`)}</Text></View>)}</View>
@@ -81,7 +80,7 @@ function FighterStats({fighter, pet, onClose}: {fighter: FightFighter; pet?: Own
 			{fighter.glory === undefined ? null : <Fact label={i18n.t("app:arena.glory")} value={formatNumber(fighter.glory)} />}
 			{pet ? <Fact label={i18n.t("app:arena.pet")} value={petName(pet)} /> : null}
 		</ExpandableList>
-	</Sheet>;
+	</QuestionSheet>;
 }
 
 function FighterRole({fighter, compact}: {fighter: FightFighter; compact: boolean}): ReactNode {

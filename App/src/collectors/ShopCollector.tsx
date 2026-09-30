@@ -9,10 +9,10 @@ import {isChoosable} from "@/src/collectors/CollectorLabels";
 import {EventJournal, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {shopItemKey, shopItemName} from "@/src/collectors/ShopLabels";
 import {missionDescription} from "@/src/display/Missions";
-import {Button, Note, Screen, SectionHeader} from "@/src/design/Primitives";
+import {Button, Note, SectionHeader} from "@/src/design/Primitives";
 import {Coins, ShoppingBag} from "@/src/design/FightIcons";
-import {ActionBanner, BackButton, Card, ENTRY_CHEVRONS, ExpandableEntry, Lock, LockHint, useSectionStyles} from "@/src/design/Sections";
-import {SwipeBack} from "@/src/design/SwipeBack";
+import {ActionBanner, Card, ENTRY_CHEVRONS, ExpandableEntry, Lock, LockHint, useSectionStyles} from "@/src/design/Sections";
+import {Page} from "@/src/design/DetailScreen";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
@@ -197,18 +197,18 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 	]);
 
 	return (
-		<SwipeBack onClose={leave}>
-			<Screen>
-				<BackButton label={i18n.t("app:city.shop.close")} onClose={leave} />
-				<EventJournal
-					emoji={AppIcons.getIconOrNull(data.shopId ? `city.shops.${data.shopId}` : "commands.shop") ?? undefined}
-					title={place ? plainStory(i18n.t(`${place}.label`)) : shopText("title")}
-					story={story}
-				/>
-				<ShopShelves context={{collector, data, locked, choose}} />
-				{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
-			</Screen>
-		</SwipeBack>
+		<Page
+			onClose={leave}
+			backLabel={i18n.t("app:city.shop.close")}
+			heading={<EventJournal
+				emoji={AppIcons.getIconOrNull(data.shopId ? `city.shops.${data.shopId}` : "commands.shop") ?? undefined}
+				title={place ? plainStory(i18n.t(`${place}.label`)) : shopText("title")}
+				story={story}
+			/>}
+		>
+			<ShopShelves context={{collector, data, locked, choose}} />
+			{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
+		</Page>
 	);
 }
 
@@ -221,14 +221,10 @@ function ShopSubMenu({collector, onChoose, submitting, heading, children}: ShopC
 	const leave = (): void => choose(collector.reactions.findIndex(reaction => reaction.type === SHOP_REACTION_KINDS.CLOSE));
 
 	return (
-		<SwipeBack onClose={leave}>
-			<Screen>
-				<BackButton label={i18n.t("app:city.shop.close")} onClose={leave} />
-				<EventJournal emoji={heading.emblem} title={heading.title} story={heading.story} />
-				<Card>{children(choose, locked)}</Card>
-				{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
-			</Screen>
-		</SwipeBack>
+		<Page onClose={leave} backLabel={i18n.t("app:city.shop.close")} heading={<EventJournal emoji={heading.emblem} title={heading.title} story={heading.story} />}>
+			<Card>{children(choose, locked)}</Card>
+			{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
+		</Page>
 	);
 }
 

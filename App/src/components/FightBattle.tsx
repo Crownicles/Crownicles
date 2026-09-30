@@ -3,7 +3,7 @@ import {ActivityIndicator, ScrollView, Text, View, useWindowDimensions} from "re
 import {CircleAlert} from "@/src/design/FightIcons";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {Button, ButtonRow, Note} from "@/src/design/Primitives";
-import {Sheet} from "@/src/design/Sections";
+import {QuestionSheet} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {FightActions, FightActionsWaiting} from "@/src/collectors/FightActionCollector";
 import {FightSnapshot, FightLogRecord} from "@/src/store/FightStore";
@@ -72,12 +72,11 @@ function FightJournal({entries, onClose}: {entries: FightLogRecord[]; onClose: (
 		positioned.current = true;
 		scroll.current?.scrollToEnd({animated: false});
 	};
-	return <Sheet
+	return <QuestionSheet
 		caption={i18n.t("app:arena.eyebrow")}
 		title={i18n.t("app:arena.log")}
-		closeLabel={i18n.t("app:battle.backToFight")}
 		onClose={onClose}
-	><ScrollView ref={scroll} style={[styles.journal, {maxHeight: height * 0.6}]} onContentSizeChange={showLatest}><FightLog entries={entries} /></ScrollView></Sheet>;
+	><ScrollView ref={scroll} style={[styles.journal, {maxHeight: height * 0.6}]} onContentSizeChange={showLatest}><FightLog entries={entries} /></ScrollView></QuestionSheet>;
 }
 
 /** Measures the room the battle really has, so the layout adapts to the device instead of guessing. */

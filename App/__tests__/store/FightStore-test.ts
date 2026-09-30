@@ -66,16 +66,6 @@ describe("fight session", () => {
 		expect(reopened.result.current.record).toBeUndefined();
 		expect(reopened.result.current.logs).toHaveLength(1);
 	});
-	it("keeps events received while minimized in the journal without replaying them on return", async () => {
-		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
-		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
-		fightStore.minimize();
-		registry.dispatch(FightLogRes.wireName, {entry: {fightId: "duel", fighter: {isSelf: false}, fightActionId: "simpleAttack"}});
-		fightStore.show();
-		const {result} = await renderHook(useFightPlayback, {initialProps: fightStore.getSnapshot()});
-		expect(result.current.record).toBeUndefined();
-		expect(result.current.logs).toHaveLength(1);
-	});
 	it("plays a burst of actions in order before showing the next authoritative energy", async () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
@@ -138,8 +128,6 @@ describe("fight session", () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
 		registry.dispatch(FightLogRes.wireName, {entry: {fightId: "duel", fighter: {isSelf: true}, fightActionId: "rest"}});
-		fightStore.minimize();
-		expect(fightStore.getSnapshot().visible).toBe(false);
 		registry.dispatch(FightIntroductionRes.wireName, {introduction: INTRO});
 		expect(fightStore.getSnapshot().logs).toHaveLength(1);
 		expect(fightStore.getSnapshot().visible).toBe(true);

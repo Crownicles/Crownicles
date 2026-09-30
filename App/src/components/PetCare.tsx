@@ -1,4 +1,4 @@
-import {ReactNode} from "react";
+import {ReactNode, useState} from "react";
 import {View} from "react-native";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {PetExpedition, PetRes} from "ws-packets/src/fromServer/pet/PetRes";
@@ -20,8 +20,9 @@ import {PET_MANAGEMENT_MENUS} from "@/src/components/PetManagement";
 import {PetExpeditionJourney} from "@/src/components/PetExpeditionJourney";
 import {useSecondsLeft} from "@/src/collectors/CollectorPrompt";
 import {Button, ButtonRow, Note, QuickAction, QuickActions, SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, Lock, LockHint, Refusal, Standing} from "@/src/design/Sections";
-import {Clock3, Flame, Gift, Heart, HeartPulse, LogOut, LucideIcon, PawPrint, Utensils, Wind} from "@/src/design/FightIcons";
+import {ActionBanner, Lock, LockHint, QuestionSheet, Refusal, Standing} from "@/src/design/Sections";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {Check, Clock3, Flame, Gift, Heart, HeartPulse, LogOut, LucideIcon, PawPrint, Utensils, Wind} from "@/src/design/FightIcons";
 import {PaletteColor, Theme} from "@/src/design/Theme";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 import {AppIcons} from "@/src/AppIcons";
@@ -81,6 +82,13 @@ function claimReaction(collector: ReactionCollectorCreation): number | null {
 	return index < 0 ? null : index;
 }
 
+/** The recall was confirmed on this page, so Core's question about the trip is answered without being shown. */
+function recallReaction(collector: ReactionCollectorCreation): number | null {
+	if (collector.data.type !== EXPEDITION_DATA_KINDS.PROGRESS) return null;
+	const index = collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.RECALL);
+	return index < 0 ? null : index;
+}
+
 /** Once the pet is due back, welcoming it home is the one thing left to do; before that, the recall sits with the other actions. */
 function PetAwayAction({expedition, menus}: {expedition: PetExpedition; menus: CommandMenuState}): ReactNode {
 	const styles = useStyles();
@@ -136,12 +144,31 @@ function PetHomeActions({actions, patience, menus, locks, onPage}: {
 	</>;
 }
 
+/** Calling the pet back breaks its trust: the page asks once in a sheet, then Core's question is answered for the player. */
+function RecallConfirmation({pet, menus, onClose}: {pet: OwnedPet; menus: CommandMenuState; onClose: () => void}): ReactNode {
+	return <QuestionSheet
+		caption={i18n.t("app:pet.eyebrow")}
+		title={i18n.t("app:expedition.recall")}
+		subtitle={petName(pet)}
+		emblem={<TwemojiIcon emoji={AppIcons.getIcon("expedition.recall")} size={Theme.dimensions.headerIcon} />}
+		onClose={onClose}
+	>
+		<Note>{i18n.t("app:expedition.recallWarning")}</Note>
+		<ActionBanner icon={Check} label={i18n.t("app:expedition.confirmRecall")} pending={menus.pending} onPress={(): void => {
+			onClose();
+			menus.open(EXPEDITION_MENU, undefined, recallReaction).catch(console.error);
+		}} />
+	</QuestionSheet>;
+}
+
 /** On expedition, the pet is out of reach: it can only be recalled while on its way, and renamed. */
-function PetAwayActions({expedition, menus, onPage}: {expedition: PetExpedition; menus: CommandMenuState; onPage: (page: PetPage) => void}): ReactNode {
+function PetAwayActions({pet, expedition, menus, onPage}: {pet: OwnedPet; expedition: PetExpedition; menus: CommandMenuState; onPage: (page: PetPage) => void}): ReactNode {
 	const recallable = useSecondsLeft(expedition.endTime) > 0;
+	const [confirming, setConfirming] = useState(false);
 	return <>
-		{recallable ? <QuickAction icon={AppIcons.getIcon("expedition.recall")} disabled={menus.pending} onPress={(): void => openExpeditionMenu(menus)}>{i18n.t("app:expedition.recall")}</QuickAction> : null}
+		{recallable ? <QuickAction icon={AppIcons.getIcon("expedition.recall")} disabled={menus.pending} onPress={(): void => setConfirming(true)}>{i18n.t("app:expedition.recall")}</QuickAction> : null}
 		<RenameAction onPage={onPage} />
+		{confirming ? <RecallConfirmation pet={pet} menus={menus} onClose={(): void => setConfirming(false)} /> : null}
 	</>;
 }
 
@@ -191,7 +218,7 @@ export function PetOverview({packet, onPage}: {packet: PetRes; onPage: (page: Pe
 		<PetMainAction packet={packet} menus={menus} alteration={alteration} />
 		<QuickActions>
 			{expedition
-				? <PetAwayActions expedition={expedition} menus={menus} onPage={onPage} />
+				? <PetAwayActions pet={pet} expedition={expedition} menus={menus} onPage={onPage} />
 				: <PetHomeActions actions={actions} patience={patience} menus={menus} locks={{expedition: expeditionBlocked !== undefined, alteration: alteration !== undefined}} onPage={onPage} />}
 		</QuickActions>
 		<PetLocks expedition={expeditionBlocked} hadEnough={patience.hadEnough} pet={pet} />

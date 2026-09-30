@@ -30,7 +30,7 @@ import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
 import {joinParagraphs} from "@/src/display/Paragraphs";
-import {ActionBanner, Card, Effect, ExpandableEntry, ExpandableList, Fact, Sheet, Standing} from "@/src/design/Sections";
+import {ActionBanner, Card, Effect, ExpandableEntry, ExpandableList, Fact, QuestionSheet, Standing} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {EventJournal, EventOutcomeScreen, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {plainStory} from "@/src/display/Markdown";
@@ -159,12 +159,11 @@ function TokenUseCollector({collector, onChoose, submitting}: {
 	const canRefuse = refuseIndex >= 0 && !submitting;
 
 	return (
-		<Sheet
+		<QuestionSheet
 			caption={i18n.t("app:adventure.tokens.merchant.eyebrow")}
 			title={i18n.t("app:adventure.tokens.use.title")}
 			subtitle={i18n.t("app:adventure.tokens.use.description", {count: collector.data.data.cost})}
 			emblem={<TwemojiIcon emoji={AppIcons.getIcon("unitValues.token")} size={Theme.dimensions.headerIcon} />}
-			closeLabel={i18n.t("app:adventure.tokens.use.cancel")}
 			onClose={canRefuse ? (): void => onChoose(refuseIndex) : (): void => undefined}
 		>
 			<ActionBanner
@@ -179,7 +178,7 @@ function TokenUseCollector({collector, onChoose, submitting}: {
 					{i18n.t("app:adventure.tokens.use.cancel")}
 				</Button>
 			</ButtonRow>
-		</Sheet>
+		</QuestionSheet>
 	);
 }
 
@@ -198,12 +197,11 @@ function BuyHealCollector({collector, onChoose, submitting}: {
 	const canRefuse = refuseIndex >= 0 && !submitting;
 
 	return (
-		<Sheet
+		<QuestionSheet
 			caption={i18n.t("app:adventure.heal.use.eyebrow")}
 			title={i18n.t("app:adventure.heal.use.title")}
 			subtitle={i18n.t("app:adventure.heal.use.description", {price: data.data.healPrice, money: data.data.playerMoney})}
 			emblem={<TwemojiIcon emoji={AppIcons.getIcon("shopItems.healAlteration")} size={Theme.dimensions.headerIcon} />}
-			closeLabel={i18n.t("app:adventure.heal.use.cancel")}
 			onClose={canRefuse ? (): void => onChoose(refuseIndex) : (): void => undefined}
 		>
 			<ExpandableList>
@@ -221,7 +219,7 @@ function BuyHealCollector({collector, onChoose, submitting}: {
 					{i18n.t("app:adventure.heal.use.cancel")}
 				</Button>
 			</ButtonRow>
-		</Sheet>
+		</QuestionSheet>
 	);
 }
 

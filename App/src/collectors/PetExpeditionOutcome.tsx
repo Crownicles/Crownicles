@@ -2,11 +2,11 @@ import {ReactNode, useState} from "react";
 import {PetExpeditionResolveRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
 import {ExpeditionRewards} from "ws-packets/src/objects/PetExpedition";
 import {ExpeditionOutcome} from "@/src/store/useExpeditionOutcome";
-import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
+import {Note, Screen} from "@/src/design/Primitives";
 import {
-	ActionBanner, Effect, EFFECT_TONES, JournalEntry, ModalSurface, SheetModal, Standing, Toast
+	ActionBanner, BottomSheet, Effect, EFFECT_TONES, FULL_SCREEN_KINDS, FullScreen, JournalEntry, QuestionSheet, Toast
 } from "@/src/design/Sections";
-import {BookOpen} from "@/src/design/FightIcons";
+import {ArrowRight, BookOpen} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Story} from "@/src/design/Story";
 import {Theme} from "@/src/design/Theme";
@@ -55,7 +55,8 @@ function rewardEffects(rewards: ExpeditionRewards): Effect[] {
 	});
 	const materials = (rewards.materialLoot ?? []).map(material => gain(materialName(material.materialId), material.quantity, {emoji: AppIcons.getIcon(`materials.${material.materialId}`)}));
 	const talisman = rewards.cloneTalismanFound ? [gain(i18n.t("app:expedition.cloneFound"), 1, {emoji: AppIcons.getIcon("expedition.cloneTalisman")})] : [];
-	return [...amounts, ...materials, ...talisman];
+	const item = rewards.itemGiven ? [gain(i18n.t("app:expedition.itemFound"), 1, {emoji: AppIcons.getIcon("commands.inventory")})] : [];
+	return [...amounts, ...materials, ...talisman, ...item];
 }
 
 function loveEffects(loveChange: number): Effect[] {
@@ -78,13 +79,12 @@ function resolvedStory(packet: ResolvedPacket, result: ExpeditionResult): string
 	return `${told}${i18n.t(`commands:petExpedition.${love(packet.loveChange)}`)}${liked}`;
 }
 
-function ExpeditionResolved({packet, emblem}: {packet: ResolvedPacket; emblem: ReactNode}): ReactNode {
+function ExpeditionResolved({packet, emblem, plain}: {packet: ResolvedPacket; emblem: ReactNode; plain: boolean}): ReactNode {
 	const result = expeditionResult(packet);
 	return <>
-		<JournalEntry emblem={emblem} title={i18n.t(`app:expedition.resolvedTitles.${result}`)} effects={resolvedEffects(packet)}>
+		<JournalEntry plain={plain} emblem={emblem} title={i18n.t(`app:expedition.resolvedTitles.${result}`)} effects={resolvedEffects(packet)}>
 			<Story>{resolvedStory(packet, result)}</Story>
 		</JournalEntry>
-		{packet.rewards?.itemGiven ? <Note>{i18n.t("app:expedition.itemFound")}</Note> : null}
 		{packet.badgeEarned ? <Note>{i18n.t("app:expedition.badge", {badge: i18n.t(`app:reference.badges.names.${packet.badgeEarned}`)})}</Note> : null}
 	</>;
 }
@@ -100,24 +100,20 @@ function ExpeditionLetDown({outcome, emblem}: {outcome: LoveLossOutcome; emblem:
 	const {pet, loveLost} = outcome.packet;
 	const key = outcome.kind === "recalled" ? "recalled" : isForgiven(outcome) ? "freeCancelled" : "cancelled";
 	const effects: Effect[] = loveLost > 0 ? [{label: i18n.t("app:expedition.love"), value: `-${formatNumber(loveLost)}`, tone: EFFECT_TONES.LOSS, emoji: AppIcons.getIcon("expedition.disliked")}] : [];
-	return <JournalEntry emblem={emblem} title={i18n.t(`app:expedition.outcomes.${outcome.kind}`)} effects={effects}>
+	return <JournalEntry plain emblem={emblem} title={i18n.t(`app:expedition.outcomes.${outcome.kind}`)} effects={effects}>
 		<Story>{i18n.t(`commands:petExpedition.${key}`, {petDisplay: `**${expeditionPetName(pet)}**`, context: pet.petSex === "f" ? "female" : "male"})}</Story>
 	</JournalEntry>;
 }
 
 type JournalOutcome = Extract<ExpeditionOutcome, {kind: "resolved" | "cancelled" | "recalled"}>;
-type PlainOutcome = Exclude<ExpeditionOutcome, JournalOutcome>;
+type InfoOutcome = Extract<ExpeditionOutcome, {kind: "status" | "started"}>;
 
 function isJournalOutcome(outcome: ExpeditionOutcome): outcome is JournalOutcome {
 	return outcome.kind === "resolved" || outcome.kind === "cancelled" || outcome.kind === "recalled";
 }
 
-function OutcomeContent({outcome}: {outcome: PlainOutcome}): ReactNode {
-	switch (outcome.kind) {
-		case "status": return <ExpeditionStatus packet={outcome.packet} />;
-		case "started": return <ExpeditionStarted packet={outcome.packet} />;
-		default: return <Note>{i18n.t(`app:expedition.errors.${outcome.packet.errorCode}`)}</Note>;
-	}
+function InfoContent({outcome}: {outcome: InfoOutcome}): ReactNode {
+	return outcome.kind === "status" ? <ExpeditionStatus packet={outcome.packet} /> : <ExpeditionStarted packet={outcome.packet} />;
 }
 
 /** The pet cheers when the trip went well, sulks otherwise, and forgives a free cancellation or a half success. */
@@ -131,24 +127,30 @@ function outcomeEmblem(outcome: JournalOutcome, play: number): ReactNode {
 		: <LetDownPet emoji={emoji} size={size} play={play} forgiving={result === EXPEDITION_RESULTS.PARTIAL} />;
 }
 
-/** A homecoming or a let-down is told like an event of the journey: its journal entry, then a single way on. */
-function OutcomeJournal({outcome, play, onContinue}: {outcome: JournalOutcome; play: number; onContinue: () => void}): ReactNode {
+/**
+ * A homecoming or a let-down is told like an event of the journey, in a sheet over the pet page. When
+ * the pet brought equipment back, the story holds the whole screen until the player goes on to keep it.
+ */
+function OutcomeJournal({outcome, onContinue}: {outcome: JournalOutcome; onContinue: () => void}): ReactNode {
+	// The pet's reaction waits for the window to settle rather than play while it rises.
+	const [play, setPlay] = useState(0);
 	const emblem = outcomeEmblem(outcome, play);
-	return <Screen>
-		{outcome.kind === "resolved"
-			? <ExpeditionResolved packet={outcome.packet} emblem={emblem} />
-			: <ExpeditionLetDown outcome={outcome} emblem={emblem} />}
-		<ActionBanner icon={BookOpen} label={i18n.t("app:expedition.continue")} onPress={onContinue} />
-	</Screen>;
-}
-
-function OutcomeMenu({outcome, play, onContinue}: {outcome: ExpeditionOutcome; play: number; onContinue: () => void}): ReactNode {
-	if (isJournalOutcome(outcome)) return <OutcomeJournal outcome={outcome} play={play} onContinue={onContinue} />;
-	return <Screen>
-		<Standing caption={i18n.t("app:pet.eyebrow")} title={i18n.t(`app:expedition.outcomes.${outcome.kind}`)} />
-		<OutcomeContent outcome={outcome} />
-		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:common.back")}</Button></ButtonRow>
-	</Screen>;
+	const loot = outcome.kind === "resolved" && outcome.packet.rewards?.itemGiven === true;
+	const story = outcome.kind === "resolved"
+		? <ExpeditionResolved packet={outcome.packet} emblem={emblem} plain={!loot} />
+		: <ExpeditionLetDown outcome={outcome} emblem={emblem} />;
+	if (loot) {
+		return <FullScreen onClose={onContinue} onShow={(): void => setPlay(1)} kind={FULL_SCREEN_KINDS.BLOCKING}>
+			<Screen>
+				{story}
+				<ActionBanner icon={ArrowRight} emoji={AppIcons.getIcon("commands.inventory")} label={i18n.t("app:expedition.seeItem")} onPress={onContinue} />
+			</Screen>
+		</FullScreen>;
+	}
+	return <BottomSheet onClose={onContinue} onShown={(): void => setPlay(1)}>
+		{story}
+		<ActionBanner icon={BookOpen} label={i18n.t("app:common.continue")} onPress={onContinue} />
+	</BottomSheet>;
 }
 
 type StartedOutcome = Extract<ExpeditionOutcome, {kind: "started"}>;
@@ -168,10 +170,13 @@ function DepartureToast({packet, onContinue}: {packet: StartedOutcome["packet"];
 }
 
 export function PetExpeditionOutcome({outcome, onContinue}: {outcome: ExpeditionOutcome; onContinue: () => void}): ReactNode {
-	// The pet's reaction waits for the window to be on screen rather than play behind the transition.
-	const [play, setPlay] = useState(0);
 	if (outcome.kind === "started" && outcome.packet.success) return <DepartureToast packet={outcome.packet} onContinue={onContinue} />;
-	return <SheetModal visible onRequestClose={onContinue} onShow={(): void => setPlay(1)}>
-		<ModalSurface><OutcomeMenu outcome={outcome} play={play} onContinue={onContinue} /></ModalSurface>
-	</SheetModal>;
+	if (isJournalOutcome(outcome)) return <OutcomeJournal outcome={outcome} onContinue={onContinue} />;
+	if (outcome.kind === "error") {
+		return <Toast title={i18n.t("app:expedition.outcomes.error")} subtitle={i18n.t(`app:expedition.errors.${outcome.packet.errorCode}`)} onDismiss={onContinue} />;
+	}
+	return <QuestionSheet caption={i18n.t("app:pet.eyebrow")} title={i18n.t(`app:expedition.outcomes.${outcome.kind}`)} onClose={onContinue}>
+		<InfoContent outcome={outcome} />
+		<ActionBanner icon={BookOpen} label={i18n.t("app:common.continue")} onPress={onContinue} />
+	</QuestionSheet>;
 }

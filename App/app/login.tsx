@@ -1,8 +1,8 @@
 import {
-	Alert, StyleSheet, View
+	StyleSheet, View
 } from "react-native";
 import {Image} from "expo-image";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import crowniclesLogo from "@/assets/images/icon.png";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {
@@ -16,9 +16,9 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {Theme} from "@/src/design/Theme";
-import {Screen} from "@/src/design/Primitives";
+import {Note, Screen} from "@/src/design/Primitives";
 import {
-	ActionBanner, Standing
+	ActionBanner, Refusal, Standing
 } from "@/src/design/Sections";
 import {
 	AtSign, MessageCircle, UserPlus
@@ -43,19 +43,25 @@ const styles = StyleSheet.create({
 
 type LoginAuthState = React.ContextType<typeof AuthContext>;
 
-function handleExpiredSession(authState: LoginAuthState): void {
-	if (authState.state !== AuthStateEnum.TOKEN_INVALID_OR_EXPIRED) {
-		return;
-	}
+/** Why the player is on this screen again, said on the screen itself rather than in a system alert. */
+type LoginNotice = {title: string; detail?: string};
 
-	Alert.alert(i18n.t("app:auth.sessionExpired"));
-	authState.setState(AuthStateEnum.NO_TOKEN);
-	authState.clearToken().catch((error: unknown) => {
-		console.error("Failed to clear token:", error);
-	});
+/** An expired session sends the player back here: the screen says why, then forgets the dead token. */
+function useExpiredSession(authState: LoginAuthState, onExpired: (notice: LoginNotice) => void): void {
+	const {state, setState, clearToken} = authState;
+	useEffect(() => {
+		if (state !== AuthStateEnum.TOKEN_INVALID_OR_EXPIRED) {
+			return;
+		}
+		onExpired({title: i18n.t("app:auth.sessionExpired")});
+		setState(AuthStateEnum.NO_TOKEN);
+		clearToken().catch((error: unknown) => {
+			console.error("Failed to clear token:", error);
+		});
+	}, [state, setState, clearToken, onExpired]);
 }
 
-async function handleLogin(authState: LoginAuthState, authorize: () => Promise<KeycloakOAuth2Token>): Promise<void> {
+async function handleLogin(authState: LoginAuthState, authorize: () => Promise<KeycloakOAuth2Token>, onRefused: (notice: LoginNotice) => void): Promise<void> {
 	try {
 		const authToken = AuthToken.fromKeycloakOAuth2Token(await authorize());
 
@@ -81,18 +87,20 @@ async function handleLogin(authState: LoginAuthState, authorize: () => Promise<K
 		}
 
 		console.error("Login error:", error);
-		Alert.alert(i18n.t("app:auth.loginFailed"), i18n.t(`app:auth.failures.${reason}`));
+		onRefused({title: i18n.t("app:auth.loginFailed"), detail: i18n.t(`app:auth.failures.${reason}`)});
 	}
 }
 
 export default function LoginScreen(): React.ReactElement {
 	const authState = React.useContext(AuthContext);
 	const connecting = authState.state === AuthStateEnum.CONNECTING;
+	const [notice, setNotice] = useState<LoginNotice | null>(null);
 
-	handleExpiredSession(authState);
+	useExpiredSession(authState, setNotice);
 
 	const start = (authorize: () => Promise<KeycloakOAuth2Token>): void => {
-		handleLogin(authState, authorize).catch((error: unknown) => {
+		setNotice(null);
+		handleLogin(authState, authorize, setNotice).catch((error: unknown) => {
 			console.error("Login error:", error);
 		});
 	};
@@ -104,6 +112,8 @@ export default function LoginScreen(): React.ReactElement {
 				caption={i18n.t("app:auth.caption")}
 				title={i18n.t("app:auth.title")}
 			/>
+			{notice ? <Refusal>{notice.title}</Refusal> : null}
+			{notice?.detail ? <Note>{notice.detail}</Note> : null}
 			<View style={styles.choices}>
 				<ActionBanner
 					icon={MessageCircle}

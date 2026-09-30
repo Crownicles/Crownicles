@@ -5,7 +5,7 @@ import {EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS, ReactionCollectorData}
 import {ExpeditionProgress} from "ws-packets/src/objects/PetExpedition";
 import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
 import {
-	ActionBanner, Effect, EFFECT_TONES, ExpandableList, Fact, JournalEntry, ModalSurface, SheetModal, Standing
+	ActionBanner, BottomSheet, Effect, EFFECT_TONES, ExpandableList, Fact, FullScreen, JournalEntry, Standing
 } from "@/src/design/Sections";
 import {Check, Flag, PawPrint} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -79,7 +79,10 @@ function progressEffects(data: ExpeditionProgress): Effect[] {
 	];
 }
 
-/** The trip reads as an entry of the journal; leaving it is the way on, recalling the pet asks twice. */
+/**
+ * The pet page follows the trip and recalls from its own button; this sheet only shows when Core asks
+ * about the trip another way, told as an entry of the journal.
+ */
 function ExpeditionInProgress({collector, data, locked, onChoose}: {collector: ReactionCollectorCreation; data: ExpeditionProgress; locked: boolean; onChoose: (index: number) => void}): ReactNode {
 	const styles = useStyles();
 	const [confirming, setConfirming] = useState(false);
@@ -88,6 +91,7 @@ function ExpeditionInProgress({collector, data, locked, onChoose}: {collector: R
 	const petDisplay = `**${expeditionPetName(data.pet)}**`;
 	return <>
 		<JournalEntry
+			plain
 			emblem={<TwemojiIcon emoji={expeditionPetIcon(data.pet)} size={Theme.dimensions.headerIcon} />}
 			title={i18n.t(`app:expedition.titles.${EXPEDITION_DATA_KINDS.PROGRESS}`)}
 			effects={progressEffects(data)}
@@ -141,12 +145,6 @@ function ExpeditionOptions({collector, data, locked, onChoose}: MenuProps): Reac
 
 function ExpeditionMenu({secondsLeft, ...props}: MenuProps & {secondsLeft: number}): ReactNode {
 	const timeLeft = props.data.type !== EXPEDITION_DATA_KINDS.FINISHED ? <Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note> : null;
-	if (props.data.type === EXPEDITION_DATA_KINDS.PROGRESS) {
-		return <Screen>
-			<ExpeditionInProgress collector={props.collector} data={props.data.data} locked={props.locked} onChoose={props.onChoose} />
-			{timeLeft}
-		</Screen>;
-	}
 	return <Screen>
 		<Standing
 			emblem={props.data.type === EXPEDITION_DATA_KINDS.CHOICE
@@ -170,15 +168,17 @@ export function PetExpeditionCollector({collector, onChoose, submitting}: {colle
 	};
 	const close = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CANCEL || reaction.type === EXPEDITION_REACTION_KINDS.CLOSE));
 	if (!isExpeditionCollector(collector.data)) return null;
-	return <SheetModal visible onRequestClose={close}>
-		<ModalSurface>
-			<ExpeditionMenu
-				collector={collector}
-				data={collector.data}
-				locked={locked}
-				onChoose={choose}
-				secondsLeft={secondsLeft}
-			/>
-		</ModalSurface>
-	</SheetModal>;
+	if (collector.data.type === EXPEDITION_DATA_KINDS.PROGRESS) return <BottomSheet onClose={close}>
+		<ExpeditionInProgress collector={collector} data={collector.data.data} locked={locked} onChoose={choose} />
+		<Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note>
+	</BottomSheet>;
+	return <FullScreen onClose={close}>
+		<ExpeditionMenu
+			collector={collector}
+			data={collector.data}
+			locked={locked}
+			onChoose={choose}
+			secondsLeft={secondsLeft}
+		/>
+	</FullScreen>;
 }

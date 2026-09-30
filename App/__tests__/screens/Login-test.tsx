@@ -1,7 +1,6 @@
 import {
 	fireEvent, render, screen, waitFor
 } from "@testing-library/react-native";
-import {Alert} from "react-native";
 import React from "react";
 import LoginScreen from "@/app/login";
 import {AuthContext} from "@/src/authentication/AuthContext";
@@ -65,20 +64,19 @@ describe("login screen", () => {
 	});
 
 	it("says nothing when the player backs out of the browser", async () => {
-		const alert = jest.spyOn(Alert, "alert").mockImplementation(() => undefined);
 		await renderLogin();
 
 		await fireEvent.press(screen.getByText("app:auth.withDiscord"));
 		await waitFor(() => expect(KeycloakAuth.login).toHaveBeenCalled());
-		expect(alert).not.toHaveBeenCalled();
+		expect(screen.queryByText(/app:auth\.loginFailed/)).toBeNull();
 	});
 
 	it("explains a refusal in the player's words, never the protocol's", async () => {
-		const alert = jest.spyOn(Alert, "alert").mockImplementation(() => undefined);
 		jest.mocked(KeycloakAuth.login).mockRejectedValue(new AuthFailure(AUTH_FAILURES.DENIED, "The user denied the request"));
 		await renderLogin();
 
 		await fireEvent.press(screen.getByText("app:auth.withDiscord"));
-		await waitFor(() => expect(alert).toHaveBeenCalledWith("app:auth.loginFailed", "app:auth.failures.denied"));
+		await waitFor(() => expect(screen.getByText("app:auth.failures.denied")).toBeTruthy());
+		expect(screen.getByText("app:auth.loginFailed")).toBeTruthy();
 	});
 });

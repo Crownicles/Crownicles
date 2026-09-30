@@ -44,10 +44,16 @@ describe("class selection", () => {
 		expect(onChoose).not.toHaveBeenCalled();
 	});
 
-	it("names the changed class without an unfilled name template", async () => {
+	it("celebrates the changed class by its name, without an unfilled name template", async () => {
 		await render(<ClassOutcome outcome={{kind: "success", classId: 7}} onContinue={jest.fn()} />);
-		expect(screen.getByText("app:classes.change")).toBeTruthy();
+		expect(screen.getByTestId("class-changed")).toBeTruthy();
 		expect(screen.getByText("app:classes.outcomes.success")).toBeTruthy();
 		expect(screen.getByText("models:classes.7")).toBeTruthy();
+	});
+
+	it("tells a refused change in passing, the button having said it beforehand", async () => {
+		await render(<ClassOutcome outcome={{kind: "cooldown", timestamp: Date.now() + 60_000}} onContinue={jest.fn()} />);
+		expect(screen.getByRole("alert")).toBeTruthy();
+		expect(screen.getByText("app:classes.outcomes.cooldown")).toBeTruthy();
 	});
 });

@@ -12,9 +12,9 @@ import {cityNavigationMeta, submenuTitle} from "@/src/collectors/CityMenuModel";
 import {CitySection} from "@/src/collectors/CityRows";
 import {submenuSections} from "@/src/collectors/CitySubmenuSections";
 import {plainStory} from "@/src/display/Markdown";
-import {Note, Screen} from "@/src/design/Primitives";
-import {BackButton, Standing} from "@/src/design/Sections";
-import {SwipeBack} from "@/src/design/SwipeBack";
+import {Note} from "@/src/design/Primitives";
+import {Standing} from "@/src/design/Sections";
+import {Page} from "@/src/design/DetailScreen";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {GuildDomain} from "@/src/components/GuildDomain";
 import {i18n} from "@/src/translations/i18n";
@@ -49,25 +49,20 @@ export function CitySubmenuView({view, innId, entries, collector, snapshot, onCh
 	const leave = (): void => {
 		if (!locked) onBack();
 	};
-	const swipe = {
+	const page = {
 		onClose: leave,
+		backLabel: backLabel ?? i18n.t("app:city.actions.back"),
+		heading: <SubmenuHeading view={view} snapshot={snapshot} innId={innId} />,
 		...overlay ? {overlay} : {}
 	};
-	const heading = <>
-		<BackButton label={backLabel ?? i18n.t("app:city.actions.back")} onClose={leave} />
-		<SubmenuHeading view={view} snapshot={snapshot} innId={innId} />
-	</>;
 	const InteractiveSubmenu = INTERACTIVE_SUBMENUS[view];
-	if (InteractiveSubmenu) return <SwipeBack {...swipe}><Screen>{heading}<InteractiveSubmenu /></Screen></SwipeBack>;
+	if (InteractiveSubmenu) return <Page {...page}><InteractiveSubmenu /></Page>;
 	const sections = submenuSections(view, entries, snapshot, {homeFeatureItems, gardenPlotItems, enchantmentCatalogItems});
 	const visibleSections = sections.filter(section => section.items.length > 0);
-	return <SwipeBack {...swipe}>
-		<Screen>
-			{heading}
+	return <Page {...page}>
 			<CitySnapshotSummary view={view} snapshot={snapshot} />
 			{visibleSections.map((section, index) => <CitySection key={section.title} title={section.title} items={section.items} collector={collector} onChoose={onChoose} onNavigate={onNavigate} locked={locked} first={index === 0} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={cityRowSubtitle} rowEnd={cityRowEnd} reactionAvailable={cityReactionAvailable} />)}
 			{citySnapshotNote(view, snapshot)}
-			{visibleSections.length === 0 ? <Note>{i18n.t("app:city.subtitles.noActions")}</Note> : null}
-		</Screen>
-	</SwipeBack>;
+		{visibleSections.length === 0 ? <Note>{i18n.t("app:city.subtitles.noActions")}</Note> : null}
+	</Page>;
 }
