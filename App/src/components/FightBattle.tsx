@@ -20,7 +20,7 @@ import {createStyles, useColors} from "@/src/design/ThemeContext";
 const useStyles = createStyles(colors => ({
 	content: {flex: 1, width: "100%", maxWidth: 600, alignSelf: "center", paddingHorizontal: Theme.spacing.xl, paddingBottom: 12, overflow: "hidden"},
 	body: {flex: 1, minHeight: 0, overflow: "hidden"},
-	stage: {flex: 1, minHeight: 0, overflow: "hidden"},
+	stage: {flexShrink: 0},
 	actions: {flexShrink: 0, overflow: "hidden"},
 	activitySubtitle: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 15, color: colors.muted},
 	journal: {maxHeight: 480},

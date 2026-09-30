@@ -9,9 +9,13 @@ import {fightChoreography, FIGHT_EFFECT_LAYOUT} from "@/src/display/FightChoreog
 import {FightActionEffects} from "@/src/components/FightActionEffects";
 import {createStyles, paletteColor, useColors} from "@/src/design/ThemeContext";
 
+/** Room between the two fighter cards; the hit flash needs it to cover one card exactly. */
+export const FIGHTER_GAP = Theme.spacing.md;
+
 const useStyles = createStyles(colors => ({
 	layer: {...StyleSheet.absoluteFill, zIndex: 3, overflow: "hidden"},
-	flash: {position: "absolute", top: 27, bottom: 70, width: "43%", borderRadius: Theme.radius},
+	fill: {...StyleSheet.absoluteFill},
+	flash: {position: "absolute", top: 0, bottom: 0, borderRadius: Theme.radius},
 	impact: {position: "absolute", minWidth: 88, alignItems: "center", top: 72},
 	amount: {fontFamily: Theme.fonts.extraBold, fontSize: 24, lineHeight: 30, textAlign: "center", textShadowColor: colors.paper, textShadowRadius: 4, textShadowOffset: {width: 0, height: 1}},
 	critical: {fontFamily: Theme.fonts.bold, fontSize: 9, color: colors.red, backgroundColor: colors.paper, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4},
@@ -43,10 +47,13 @@ export function FightEffects({cue, progress, width}: EffectProps): ReactNode {
 	const compact = useCompactFight();
 	const failedAtSource = cue.outcome === FIGHT_OUTCOMES.FIZZLED;
 	const lands = cue.outcome !== FIGHT_OUTCOMES.PREPARED;
-	return <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.layer, compact && {transform: [{translateY: -24}]}]} testID={`fight-effect-${cue.motion}`}>
-		<FightActionEffects cue={cue} progress={progress} width={width} choreography={fightChoreography(cue)} />
-		{!cue.missed && lands ? <Animated.View style={[styles.flash, {left: cue.target === "self" ? "0%" : "57%", backgroundColor: paletteColor(colors, cue.color), opacity: progress.interpolate({inputRange: [0, 0.28, 0.4, 0.64, 1], outputRange: [0, 0, 0.13, 0.04, 0]})}]} /> : null}
-		{cue.missed ? <Animated.Text style={[styles.miss, {left: width * FIGHT_EFFECT_LAYOUT.anchors[failedAtSource ? cue.actor : cue.target] - 56, opacity: effectOpacity(progress)}]}>{i18n.t(failedAtSource ? "app:battle.noEffect" : "app:battle.missed")}</Animated.Text> : null}
-		{impacts.map((impact, index) => <ImpactNumber key={`${impact.source}:${impact.kind}`} impact={impact} cue={cue} progress={progress} width={width} position={impacts.slice(0, index).filter(previous => previous.side === impact.side).length} />)}
+	const cardWidth = (width - FIGHTER_GAP) / 2;
+	return <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.layer} testID={`fight-effect-${cue.motion}`}>
+		{!cue.missed && lands ? <Animated.View style={[styles.flash, {left: cue.target === "self" ? 0 : cardWidth + FIGHTER_GAP, width: cardWidth, backgroundColor: paletteColor(colors, cue.color), opacity: progress.interpolate({inputRange: [0, 0.28, 0.4, 0.64, 1], outputRange: [0, 0, 0.13, 0.04, 0]})}]} /> : null}
+		<View style={[styles.fill, compact && {transform: [{translateY: -24}]}]}>
+			<FightActionEffects cue={cue} progress={progress} width={width} choreography={fightChoreography(cue)} />
+			{cue.missed ? <Animated.Text style={[styles.miss, {left: width * FIGHT_EFFECT_LAYOUT.anchors[failedAtSource ? cue.actor : cue.target] - 56, opacity: effectOpacity(progress)}]}>{i18n.t(failedAtSource ? "app:battle.noEffect" : "app:battle.missed")}</Animated.Text> : null}
+			{impacts.map((impact, index) => <ImpactNumber key={`${impact.source}:${impact.kind}`} impact={impact} cue={cue} progress={progress} width={width} position={impacts.slice(0, index).filter(previous => previous.side === impact.side).length} />)}
+		</View>
 	</View>;
 }

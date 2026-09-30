@@ -2,15 +2,14 @@ import {ReactNode} from "react";
 import {Text} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {GuildShelterReq, PetTransferReq, PetFreeReq} from "ws-packets/src/fromClient/PetManagementReq";
-import {PetReq} from "ws-packets/src/fromClient/PetReq";
 import {GuildShelterRes, GuildShelterEmptyRes, PetManagementRes} from "ws-packets/src/fromServer/pet/PetManagementRes";
-import {PetRes} from "ws-packets/src/fromServer/pet/PetRes";
 import {PetNotFound} from "ws-packets/src/fromServer/pet/PetNotFound";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTION_KINDS, ReactionCollectorDataOf} from "ws-packets/src/fromServer/collectors";
 import {OwnedPet} from "ws-packets/src/objects/OwnedPet";
 import {GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
+import {useOwnPet} from "@/src/store/useKnownPet";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
@@ -165,7 +164,7 @@ function ShelterContent(props: ShelterProps): ReactNode {
 
 export function GuildShelter(): ReactNode {
 	const shelter = useGameQuery(GAME_ENTITIES.SHELTER, () => GameClient.request(makeFromClientPacket(GuildShelterReq, {}), GuildShelterRes, [GuildShelterEmptyRes]));
-	const own = useGameQuery(GAME_ENTITIES.PET, () => GameClient.request(makeFromClientPacket(PetReq, {askedPlayer: {}}), PetRes, [PetNotFound]));
+	const own = useOwnPet();
 	const ownPet = own.status === "ready" ? {ownPet: own.data.pet} : {};
 	if (shelter.status === "empty") return <ShelterContent {...ownPet} boarders={[]} />;
 	return <GameQueryContent state={shelter} entity={GAME_ENTITIES.SHELTER}>{data => <ShelterContent

@@ -12,10 +12,10 @@ import {useCompactFight} from "@/src/components/FightControls";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const useStyles = createStyles(colors => ({
-	portrait: {width: 72, height: 70, alignSelf: "center", marginTop: 10, marginBottom: 7, alignItems: "center", justifyContent: "center"},
+	portrait: {width: 72, height: 70, alignSelf: "center", alignItems: "center", justifyContent: "center"},
 	base: {position: "absolute", bottom: 0, width: 62, height: 10, borderRadius: 5, backgroundColor: colors.wash},
 	pet: {position: "absolute", right: -9, bottom: 2, borderRadius: 10, backgroundColor: colors.paper, padding: 3, borderWidth: 1, borderColor: colors.line},
-	compact: {height: 40, marginTop: 3, marginBottom: 5}
+	compact: {height: 40}
 }));
 
 function fighterIcon(fighter: FightFighter): string | null {

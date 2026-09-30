@@ -13,9 +13,9 @@ const GAUGE_DURATION = 360;
 const useStyles = createStyles(colors => ({
 	top: {flexDirection: "row", justifyContent: "space-between", alignItems: "center", gap: 4, marginBottom: 6},
 	label: {fontFamily: Theme.fonts.medium, fontSize: 10, color: colors.muted},
-	value: {fontFamily: Theme.fonts.bold, fontSize: 11, color: colors.ink, fontVariant: ["tabular-nums"]},
-	track: {height: 6, backgroundColor: colors.line, borderRadius: 3, overflow: "hidden"},
-	fill: {height: "100%", borderRadius: 3},
+	value: {fontFamily: Theme.fonts.bold, fontSize: 12, color: colors.ink, fontVariant: ["tabular-nums"]},
+	track: {height: 8, backgroundColor: colors.line, borderRadius: 4, overflow: "hidden"},
+	fill: {height: "100%", borderRadius: 4},
 	lossTrail: {position: "absolute", top: 0, left: 0, opacity: 0.28},
 	resourceTitle: {fontFamily: Theme.fonts.semiBold, fontSize: 12, color: colors.ink},
 	meterLabel: {flexDirection: "row", alignItems: "center", gap: 5}

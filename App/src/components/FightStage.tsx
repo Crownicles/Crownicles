@@ -2,7 +2,7 @@ import {ReactNode, useState} from "react";
 import {Text, View} from "react-native";
 import {FightIntroduction, FightStatus} from "ws-packets/src/objects/Fight";
 import {FightLogRecord} from "@/src/store/FightStore";
-import {FightEffects} from "@/src/components/FightEffects";
+import {FIGHTER_GAP, FightEffects} from "@/src/components/FightEffects";
 import {FightFighterCard} from "@/src/components/FightFighterCard";
 import {useFightAnimation} from "@/src/store/useFightAnimation";
 import {Theme} from "@/src/design/Theme";
@@ -12,11 +12,12 @@ import {FightSpeed} from "@/src/display/FightMotion";
 import {createStyles} from "@/src/design/ThemeContext";
 
 const useStyles = createStyles(colors => ({
-	stage: {flex: 1, minHeight: 0, position: "relative"},
-	participants: {flex: 1, flexDirection: "row", gap: Theme.spacing.md},
-	versus: {position: "absolute", top: 66, left: "50%", marginLeft: -16, width: 32, height: 32, borderRadius: 16, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line, alignItems: "center", justifyContent: "center", zIndex: 2},
+	stage: {position: "relative"},
+	participants: {flexDirection: "row", alignItems: "flex-start", gap: FIGHTER_GAP},
+	/** Level with the middle of the portraits, between the two cards. */
+	versus: {position: "absolute", top: 57, left: "50%", marginLeft: -16, width: 32, height: 32, borderRadius: 16, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.line, alignItems: "center", justifyContent: "center", zIndex: 2},
 	versusText: {fontFamily: Theme.fonts.extraBold, fontSize: 10, color: colors.faint},
-	compactVersus: {top: 40}
+	compactVersus: {top: 36}
 }));
 
 export function FightStage({status, introduction, record, onImpact, onComplete, reducedMotion, speed}: {status: FightStatus; introduction: FightIntroduction | null; record?: FightLogRecord; onImpact: () => void; onComplete: () => void; reducedMotion: boolean; speed: FightSpeed}): ReactNode {

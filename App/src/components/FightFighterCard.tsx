@@ -18,50 +18,71 @@ import {FightPortrait} from "@/src/components/FightPortrait";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const COMBAT_STATS = [{key: "attack", Icon: Swords}, {key: "defense", Icon: Shield}, {key: "speed", Icon: Wind}] as const;
+/** Breath is spent a notch at a time, so it is drawn as notches: the player sees at once what they can afford. */
+const BREATH_NOTCH_GAP = 2;
 const useStyles = createStyles(colors => ({
 	participant: {flex: 1, minWidth: 0},
-	card: {flex: 1, minHeight: 226, borderWidth: 1, borderColor: colors.line, borderRadius: Theme.radius, backgroundColor: colors.paper, padding: Theme.spacing.md},
-	selfCard: {borderTopWidth: 3, borderTopColor: colors.blue},
-	foeCard: {borderTopWidth: 3, borderTopColor: colors.red},
-	roleRow: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 18},
-	role: {fontFamily: Theme.fonts.bold, fontSize: 9, lineHeight: 12, color: colors.muted, textTransform: "uppercase", letterSpacing: 0},
-	name: {fontFamily: Theme.fonts.bold, fontSize: 13, lineHeight: 17, color: colors.ink, textAlign: "center", minHeight: 34},
-	classLabel: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 14, color: colors.muted, textAlign: "center", minHeight: 28},
-	energy: {marginTop: 9},
+	card: {borderWidth: 1, borderColor: colors.line, borderRadius: Theme.radius, backgroundColor: colors.paper, padding: Theme.spacing.md, gap: Theme.spacing.sm},
+	roleRow: {flexDirection: "row", alignItems: "center", gap: 6, minHeight: 18},
+	sideMark: {width: 8, height: 8, borderRadius: 4},
+	role: {flex: 1, fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.eyebrow, color: colors.muted, textTransform: "uppercase"},
+	identity: {alignItems: "center"},
+	name: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowTitle, lineHeight: 19, color: colors.ink, textAlign: "center"},
+	classLabel: {fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.caption, lineHeight: 16, color: colors.muted, textAlign: "center"},
 	statRow: {flexDirection: "row", justifyContent: "space-around", paddingVertical: Theme.spacing.md, gap: Theme.spacing.md},
 	stat: {alignItems: "center", gap: 7},
 	statValue: {fontFamily: Theme.fonts.bold, fontSize: 18, color: colors.ink},
 	statLabel: {fontFamily: Theme.fonts.regular, fontSize: 11, color: colors.muted},
-	liveStats: {flexDirection: "row", gap: 4, paddingVertical: 8, marginTop: 7, borderTopWidth: 1, borderTopColor: colors.line},
-	liveStat: {flex: 1, minWidth: 0, alignItems: "center", gap: 3},
-	liveValue: {fontFamily: Theme.fonts.bold, fontSize: 12, lineHeight: 16, color: colors.ink, fontVariant: ["tabular-nums"]},
-	liveLabel: {fontFamily: Theme.fonts.regular, fontSize: 9, lineHeight: 12, color: colors.muted},
-	breath: {flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", columnGap: 4, rowGap: 2},
-	breathValue: {fontFamily: Theme.fonts.semiBold, fontSize: 10, lineHeight: 14, color: colors.blue, fontVariant: ["tabular-nums"]},
-	compactCard: {minHeight: 148, padding: 8},
-	compactRole: {minHeight: 14},
-	compactName: {minHeight: 17},
-	compactClass: {minHeight: 14}
+	liveStats: {flexDirection: "row", justifyContent: "space-between", paddingTop: Theme.spacing.xs},
+	liveStat: {flexDirection: "row", alignItems: "center", gap: 3, minWidth: 0},
+	liveValue: {fontFamily: Theme.fonts.bold, fontSize: 13, lineHeight: 17, color: colors.ink, fontVariant: ["tabular-nums"]},
+	breathHead: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 4, marginBottom: 6},
+	breathLabel: {flexDirection: "row", alignItems: "center", gap: 5},
+	breathTitle: {fontFamily: Theme.fonts.semiBold, fontSize: 12, color: colors.ink},
+	breathValue: {fontFamily: Theme.fonts.bold, fontSize: 12, color: colors.blue, fontVariant: ["tabular-nums"]},
+	notches: {flexDirection: "row", gap: BREATH_NOTCH_GAP, height: 8},
+	notch: {flex: 1, borderRadius: 2, backgroundColor: colors.line},
+	regen: {fontFamily: Theme.fonts.medium, fontSize: 11, lineHeight: 15, color: colors.muted, marginTop: 4},
+	compactCard: {padding: 8, gap: 6}
 }));
 
-function FighterIdentity({fighter, compact}: {fighter: FightFighter; compact: boolean}): ReactNode {
+function FighterIdentity({fighter}: {fighter: FightFighter}): ReactNode {
 	const styles = useStyles();
-	return <><Text style={[styles.name, compact && styles.compactName]} numberOfLines={2}>{fighterDisplayName(fighter)}</Text><Text style={[styles.classLabel, compact && styles.compactClass]} numberOfLines={2}>{fighterSubtitle(fighter)}</Text></>;
+	return <View style={styles.identity}>
+		<Text style={styles.name} numberOfLines={1}>{fighterDisplayName(fighter)}</Text>
+		<Text style={styles.classLabel} numberOfLines={1}>{fighterSubtitle(fighter)}</Text>
+	</View>;
+}
+
+/** The breath left against its maximum, one notch per point, and what the next turn gives back. */
+function BreathMeter({fighter}: {fighter: FightFighter}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
+	const {breath, maxBreath, breathRegen} = fighter.stats;
+	const value = i18n.t("app:profile.formats.progress", {value: breath, max: maxBreath});
+	return <View accessibilityRole="progressbar" accessibilityLabel={i18n.t("app:arena.breath")} accessibilityValue={{now: breath, max: maxBreath}} testID={`fight-stat-breath-${fighter.isSelf ? "self" : "opponent"}`}>
+		<View style={styles.breathHead}>
+			<View style={styles.breathLabel}><TwemojiIcon emoji={AppIcons.getIcon("unitValues.breath")} size={15} /><Text style={styles.breathTitle}>{i18n.t("app:arena.breath")}</Text></View>
+			<Text style={styles.breathValue}>{value}</Text>
+		</View>
+		<View style={styles.notches}>{Array.from({length: Math.max(maxBreath, 1)}, (_, notch) => <View key={notch} style={[styles.notch, notch < breath && {backgroundColor: colors.blue}]} />)}</View>
+		<Text style={styles.regen} numberOfLines={1}>{i18n.t("app:battle.breathRegen", {count: breathRegen})}</Text>
+	</View>;
 }
 
 function FighterCombatStats({fighter}: {fighter: FightFighter}): ReactNode {
 	const styles = useStyles();
-	const colors = useColors();
 	const side = fighter.isSelf ? "self" : "opponent";
-	return <>
-		<View style={styles.liveStats}>{COMBAT_STATS.map(({key, Icon}) => <View key={key} style={styles.liveStat} testID={`fight-stat-${key}-${side}`}>
-			<Icon size={13} color={colors.muted} />
-			<Text style={styles.liveValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{formatNumber(fighter.stats[key])}</Text>
-			<Text style={styles.liveLabel} numberOfLines={1} adjustsFontSizeToFit>{i18n.t(`app:arena.stats.${key}`)}</Text>
-		</View>)}</View>
-		<View style={styles.breath} testID={`fight-stat-breath-${side}`}><Text style={styles.liveLabel}>{i18n.t("app:arena.breath")}</Text><Text style={styles.breathValue}>{i18n.t("app:profile.formats.progress", {value: fighter.stats.breath, max: fighter.stats.maxBreath})}</Text></View>
-		<Text style={styles.liveLabel}>{i18n.t("app:battle.breathRegen", {count: fighter.stats.breathRegen})}</Text>
-	</>;
+	return <View style={styles.liveStats}>{COMBAT_STATS.map(({key}) => <View
+		key={key}
+		style={styles.liveStat}
+		accessible
+		accessibilityLabel={`${i18n.t(`app:arena.stats.${key}`)} ${formatNumber(fighter.stats[key])}`}
+		testID={`fight-stat-${key}-${side}`}
+	>
+		<TwemojiIcon emoji={AppIcons.getIcon(`unitValues.${key}`)} size={13} />
+		<Text style={styles.liveValue} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{formatNumber(fighter.stats[key])}</Text>
+	</View>)}</View>;
 }
 
 function FighterStats({fighter, pet, onClose}: {fighter: FightFighter; pet?: OwnedPet; onClose: () => void}): ReactNode {
@@ -83,11 +104,16 @@ function FighterStats({fighter, pet, onClose}: {fighter: FightFighter; pet?: Own
 	</QuestionSheet>;
 }
 
-function FighterRole({fighter, compact}: {fighter: FightFighter; compact: boolean}): ReactNode {
+function FighterRole({fighter}: {fighter: FightFighter}): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
 	const alterationIcon = fighter.alteration ? AppIcons.getIconOrNull(`fightActions.${fighter.alteration}`) : null;
-	return <View style={[styles.roleRow, compact && styles.compactRole]}><Text style={styles.role}>{i18n.t(fighter.isSelf ? "app:arena.you" : "app:arena.opponent")}</Text>{alterationIcon ? <View accessible accessibilityLabel={fightActionName(fighter.alteration!)}><TwemojiIcon emoji={alterationIcon} size={14} /></View> : null}<Info size={13} color={colors.faint} /></View>;
+	return <View style={styles.roleRow}>
+		<View style={[styles.sideMark, {backgroundColor: fighter.isSelf ? colors.blue : colors.red}]} />
+		<Text style={styles.role} numberOfLines={1}>{i18n.t(fighter.isSelf ? "app:arena.you" : "app:arena.opponent")}</Text>
+		{alterationIcon ? <View accessible accessibilityLabel={fightActionName(fighter.alteration!)}><TwemojiIcon emoji={alterationIcon} size={15} /></View> : null}
+		<Info size={14} color={colors.faint} />
+	</View>;
 }
 
 export function FightFighterCard({fighter, pet, animation}: {fighter: FightFighter; pet?: OwnedPet; animation: FightAnimation}): ReactNode {
@@ -96,11 +122,12 @@ export function FightFighterCard({fighter, pet, animation}: {fighter: FightFight
 	const [expanded, setExpanded] = useState(false);
 	const compact = useCompactFight();
 	return <View style={styles.participant} testID={`fight-fighter-${fighter.isSelf ? "self" : "opponent"}`}>
-		<Pressable accessibilityRole="button" accessibilityLabel={`${i18n.t("app:arena.details")} : ${fighterDisplayName(fighter)}`} onPress={(): void => setExpanded(true)} style={[styles.card, fighter.isSelf ? styles.selfCard : styles.foeCard, compact && styles.compactCard]}>
-			<FighterRole fighter={fighter} compact={compact} />
+		<Pressable accessibilityRole="button" accessibilityLabel={`${i18n.t("app:arena.details")} : ${fighterDisplayName(fighter)}`} onPress={(): void => setExpanded(true)} style={[styles.card, compact && styles.compactCard]}>
+			<FighterRole fighter={fighter} />
 			<FightPortrait fighter={fighter} pet={pet} animation={animation} />
-			<FighterIdentity fighter={fighter} compact={compact} />
-			<View style={styles.energy}><FightGauge label={i18n.t("app:arena.energy")} value={fighter.stats.power} max={fighter.stats.maxEnergy} color={fighter.isSelf ? colors.green : colors.red} reducedMotion={animation.reducedMotion} /></View>
+			<FighterIdentity fighter={fighter} />
+			<FightGauge emoji={AppIcons.getIcon("unitValues.energy")} label={i18n.t("app:arena.energy")} value={fighter.stats.power} max={fighter.stats.maxEnergy} color={fighter.isSelf ? colors.green : colors.red} reducedMotion={animation.reducedMotion} />
+			<BreathMeter fighter={fighter} />
 			<FighterCombatStats fighter={fighter} />
 		</Pressable>
 		{expanded ? <FighterStats fighter={fighter} pet={pet} onClose={(): void => setExpanded(false)} /> : null}

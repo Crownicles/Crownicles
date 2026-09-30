@@ -16,6 +16,10 @@ import {CapsuleTabBar, RING_TICK_MS} from "@/src/components/CapsuleTabBar";
 import {reportWaitProgress} from "@/src/display/ReportTiming";
 import {useCurrentTime} from "@/src/store/useCurrentTime";
 import {useTravelDashing} from "@/src/store/TravelDashStore";
+import {useOwnPet} from "@/src/store/useKnownPet";
+import {expeditionProgress} from "@/src/display/PetExpedition";
+import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
+import {useQueryClient} from "@tanstack/react-query";
 import {DeathScreen} from "@/src/components/DeathScreen";
 import {UnlockCelebration, useAdventureBusy, useAdventureHoldsTabs} from "@/src/components/UnlockCelebration";
 import {usePlayerIsDead} from "@/src/store/usePlayerIsDead";
@@ -45,12 +49,37 @@ const TABS: readonly {name: JourneyTab; title: string; icon: LucideIcon}[] = [
 ];
 
 /** How much of the wait for the next report has gone by; full once it can be opened, or while tokens rush there. */
-function useTravelProgress(): number | undefined {
+function useTravelProgress(currentTime: number): number | undefined {
 	const report = useReportView();
-	const currentTime = useCurrentTime(RING_TICK_MS);
 	const dashing = useTravelDashing();
 	if (report.status !== "ready" || !report.data.travel || currentTime === 0) return undefined;
 	return report.data.reportReady || dashing ? 1 : reportWaitProgress(report.data.travel, currentTime);
+}
+
+/** How far the pet's expedition has gone; full once it is back, until its finds are claimed. */
+function useExpeditionProgress(currentTime: number): number | undefined {
+	const pet = useOwnPet();
+	const expedition = pet.status === "ready" ? pet.data.expeditionInProgress : undefined;
+	return expedition && currentTime > 0 ? expeditionProgress(expedition, currentTime) : undefined;
+}
+
+/** The server gives energy back on its own schedule: the profile is asked again meanwhile, so the ring follows. */
+const ENERGY_REFRESH_MS = 60_000;
+
+/** How full the fight energy is while it comes back; no ring once it is full. */
+function useEnergyProgress(followed: boolean): number | undefined {
+	const profile = usePlayerProfile();
+	const queryClient = useQueryClient();
+	const energy = profile.status === "ready" ? profile.data.stats?.energy : undefined;
+	const regenerating = followed && energy !== undefined && energy.value < energy.max;
+	useEffect(() => {
+		if (!regenerating) return undefined;
+		const refresh = setInterval(() => {
+			queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.PROFILE)}).catch(console.error);
+		}, ENERGY_REFRESH_MS);
+		return (): void => clearInterval(refresh);
+	}, [queryClient, regenerating]);
+	return regenerating && energy.max > 0 ? energy.value / energy.max : undefined;
 }
 
 type NavigatorTabBarProps = {
@@ -63,16 +92,23 @@ type NavigatorTabBarProps = {
 };
 
 function NavigatorTabBar({state, position, navigation, journey}: NavigatorTabBarProps & {journey: Journey}): ReactNode {
-	const travelProgress = useTravelProgress();
+	const currentTime = useCurrentTime(RING_TICK_MS);
+	const progress: Partial<Record<JourneyTab, number | undefined>> = {
+		[JOURNEY_TABS.ADVENTURE]: useTravelProgress(currentTime),
+		[JOURNEY_TABS.PET]: useExpeditionProgress(currentTime),
+		[JOURNEY_TABS.ARENA]: useEnergyProgress(state.routes.some(route => route.name === JOURNEY_TABS.ARENA))
+	};
 	const tabs = state.routes.flatMap(route => {
 		const tab = TABS.find(candidate => candidate.name === route.name);
-		return tab ? [{
+		if (!tab) return [];
+		const ring = progress[tab.name];
+		return [{
 			name: tab.name,
 			title: i18n.t(tab.title),
 			Icon: tab.icon,
 			isNew: journey.isNew(tab.name),
-			...(tab.name === JOURNEY_TABS.ADVENTURE && travelProgress !== undefined ? {progress: travelProgress} : {})
-		}] : [];
+			...(ring === undefined ? {} : {progress: ring})
+		}];
 	});
 	const select = (name: string): void => {
 		const route = state.routes.find(candidate => candidate.name === name);

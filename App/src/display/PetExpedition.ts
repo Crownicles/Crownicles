@@ -33,3 +33,10 @@ export function expeditionLocationName(location: ExpeditionLocation): string {
 export function expeditionRisk(category: string): string {
 	return i18n.t("app:expedition.locationName", {icon: AppIcons.getIcon(`expedition.risk.${category}`), name: i18n.t(`commands:petExpedition.riskCategories.${category}`)});
 }
+
+/** How much of the expedition has gone by; full once the pet is back. */
+export function expeditionProgress(expedition: {startTime: number; endTime: number}, currentTime: number): number {
+	const duration = expedition.endTime - expedition.startTime;
+	if (duration <= 0) return 1;
+	return Math.min(Math.max((currentTime - expedition.startTime) / duration, 0), 1);
+}

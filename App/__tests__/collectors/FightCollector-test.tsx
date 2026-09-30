@@ -11,6 +11,7 @@ import {FightFighter} from "ws-packets/src/objects/Fight";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {FightEffects} from "@/src/components/FightEffects";
 import {fightCue} from "@/src/display/FightMotion";
+import {Theme} from "@/src/design/Theme";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
 jest.mock("@react-native-async-storage/async-storage", () => ({getItem: jest.fn().mockResolvedValue(null), setItem: jest.fn().mockResolvedValue(undefined)}));
@@ -172,10 +173,11 @@ describe("live battle presentation", () => {
 describe("battle screen layout", () => {
 	afterEach(() => fightStore.reset());
 	it("switches to the dense layout when the measured room is too small", async () => {
-		const view = await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
-		expect(JSON.stringify(view.toJSON())).not.toContain("\"minHeight\":148");
+		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		const cardPadding = (): unknown => StyleSheet.flatten(screen.getByRole("button", {name: "app:arena.details : Aster"}).props.style).padding;
+		expect(cardPadding()).toBe(Theme.spacing.md);
 		await fireEvent(screen.getByTestId("fight-frame"), "layout", {nativeEvent: {layout: {height: 700, width: 390}}});
-		expect(JSON.stringify(view.toJSON())).toContain("\"minHeight\":148");
+		expect(cardPadding()).toBeLessThan(Theme.spacing.md);
 	});
 	it("keeps the battle clear of the status bar now that it no longer scrolls", async () => {
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");

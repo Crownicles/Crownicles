@@ -20,11 +20,10 @@ const useStyles = createStyles(colors => ({
 	title: {fontFamily: Theme.fonts.extraBold, fontSize: 22, lineHeight: 28, color: colors.ink},
 	headerActions: {flexDirection: "row", alignItems: "center"},
 	turn: {fontFamily: Theme.fonts.semiBold, fontSize: 11, color: colors.muted, textAlign: "right", fontVariant: ["tabular-nums"]},
-	activity: {flexShrink: 0, overflow: "hidden", marginVertical: 8, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.line},
+	activity: {flex: 1, minHeight: 0, overflow: "hidden", marginVertical: 8},
 	activityHead: {flexDirection: "row", alignItems: "center", justifyContent: "space-between", height: 38},
-	/** Fixed so a longer narration never pushes the action buttons around. */
-	feed: {height: 184, overflow: "hidden", justifyContent: "center", paddingBottom: 8},
-	compactFeed: {height: 158},
+	/** Takes the room the cards leave, so a longer narration never pushes the action buttons around. */
+	feed: {flex: 1, minHeight: 0, overflow: "hidden", paddingBottom: 8},
 	activityTitle: {fontFamily: Theme.fonts.semiBold, fontSize: 12, lineHeight: 17, color: colors.ink},
 	activitySubtitle: {fontFamily: Theme.fonts.regular, fontSize: 10, lineHeight: 15, color: colors.muted},
 	compactHeader: {paddingTop: 0, paddingBottom: 6}
@@ -82,11 +81,10 @@ function FightActivityHeader({onJournal}: {onJournal: () => void}): ReactNode {
 
 export function FightActivity({entries, ownTurn, onJournal}: {entries: FightLogRecord[]; ownTurn: boolean; onJournal: () => void}): ReactNode {
 	const styles = useStyles();
-	const compact = useCompactFight();
 	const latest = entries.at(-1);
 	return <View style={styles.activity}>
 		<FightActivityHeader onJournal={onJournal} />
-		<View style={[styles.feed, compact && styles.compactFeed]} accessibilityLiveRegion="polite">
+		<View style={styles.feed} accessibilityLiveRegion="polite">
 			{latest ? <FightLatestEvent record={latest} /> : <Text style={styles.activitySubtitle}>{i18n.t(ownTurn ? "app:battle.ready" : "app:arena.waiting")}</Text>}
 		</View>
 	</View>;
