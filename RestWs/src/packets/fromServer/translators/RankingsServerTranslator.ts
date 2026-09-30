@@ -58,7 +58,9 @@ export default class RankingsServerTranslator {
 			} = entry;
 			const opponentName = await resolvePlayerName(opponentKeycloakId);
 			return {
-				...details, ...opponentName ? { opponentName } : {}
+				...details,
+				opponentRef: playerReference(opponentKeycloakId),
+				...opponentName ? { opponentName } : {}
 			};
 		})) });
 	}

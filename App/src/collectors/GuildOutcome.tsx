@@ -67,7 +67,7 @@ function acknowledgement(outcome: GuildCommandOutcome): {title: string; subtitle
 	};
 	if (outcome.type !== "memberAction") return null;
 	return {
-		title: i18n.t(`app:guild.memberResults.${outcome.action}`, {member: outcome.memberName ?? i18n.t("app:profile.values.unknown")}),
+		title: i18n.t(`app:guild.memberResults.${outcome.action}`, {member: outcome.memberName ?? i18n.t("error:unknownPlayer")}),
 		...outcome.guildName ? {subtitle: outcome.guildName} : {}
 	};
 }

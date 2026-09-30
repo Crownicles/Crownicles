@@ -84,14 +84,19 @@ describe("arena references", () => {
 		expect(screen.queryByText("app:reference.empty")).toBeNull();
 	});
 	it("distinguishes a defense from an attack and shows the glory swing at a glance", async () => {
-		await render(<FightHistoryContent history={[{id: 42, initiator: false, opponentName: "Arsene", result: EloGameResult.LOSS, date: 1_900_000_000_000, classes: {me: 1, opponent: 2}, glory: {initial: {me: 500, opponent: 600}, change: {me: -10, opponent: 15}, leaguesChanges: {me: {oldLeague: 2, newLeague: 1}}}}]} />);
+		await render(<FightHistoryContent history={[{id: 42, initiator: false, opponentName: "Arsene", opponentRef: "ref-arsene", result: EloGameResult.LOSS, date: 1_900_000_000_000, classes: {me: 1, opponent: 2}, glory: {initial: {me: 500, opponent: 600}, change: {me: -10, opponent: 15}, leaguesChanges: {me: {oldLeague: 2, newLeague: 1}}}}]} />);
 		expect(screen.getByText("Arsene")).toBeTruthy();
 		expect(screen.getByText("app:arena.defeat")).toBeTruthy();
 		expect(screen.getByText("-10")).toBeTruthy();
 		expect(screen.getByText("models:leagues.1")).toBeTruthy();
 	});
+	it("opens the opponent's profile from a fight of the history", async () => {
+		await render(<FightHistoryContent history={[{id: 42, initiator: false, opponentName: "Arsene", opponentRef: "ref-arsene", result: EloGameResult.LOSS, date: 1_900_000_000_000, classes: {me: 1, opponent: 2}, glory: {initial: {me: 500, opponent: 600}, change: {me: -10, opponent: 15}, leaguesChanges: {}}}]} />);
+		await fireEvent.press(screen.getByText("Arsene"));
+		expect(mockPush).toHaveBeenCalledWith(expect.objectContaining({params: expect.objectContaining({ref: "ref-arsene"})}));
+	});
 	it("signs a won fight and reports a promotion", async () => {
-		await render(<FightHistoryContent history={[{id: 43, initiator: true, opponentName: "Yuno", result: EloGameResult.WIN, date: 1_900_000_000_000, classes: {me: 1, opponent: 2}, glory: {initial: {me: 500, opponent: 600}, change: {me: 42, opponent: -15}, leaguesChanges: {me: {oldLeague: 1, newLeague: 2}}}}]} />);
+		await render(<FightHistoryContent history={[{id: 43, initiator: true, opponentName: "Yuno", opponentRef: "ref-yuno", result: EloGameResult.WIN, date: 1_900_000_000_000, classes: {me: 1, opponent: 2}, glory: {initial: {me: 500, opponent: 600}, change: {me: 42, opponent: -15}, leaguesChanges: {me: {oldLeague: 1, newLeague: 2}}}}]} />);
 		expect(screen.getByText("Yuno")).toBeTruthy();
 		expect(screen.getByText("+42")).toBeTruthy();
 		expect(screen.getByText("models:leagues.2")).toBeTruthy();

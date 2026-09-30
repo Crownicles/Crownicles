@@ -46,8 +46,8 @@ const TABS: readonly {name: JourneyTab; title: string; icon: LucideIcon}[] = [
 	{name: JOURNEY_TABS.ADVENTURE, title: "app:tabs.adventure", icon: Compass},
 	{name: JOURNEY_TABS.PROFILE, title: "app:tabs.profile", icon: UserRound},
 	{name: JOURNEY_TABS.PET, title: "app:tabs.pet", icon: PawPrint},
-	{name: JOURNEY_TABS.ARENA, title: "app:tabs.arena", icon: Swords},
-	{name: JOURNEY_TABS.GUILD, title: "app:tabs.guild", icon: Castle}
+	{name: JOURNEY_TABS.GUILD, title: "app:tabs.guild", icon: Castle},
+	{name: JOURNEY_TABS.ARENA, title: "app:tabs.arena", icon: Swords}
 ];
 
 /** How much of the wait for the next report has gone by; full once it can be opened, or while tokens rush there. */

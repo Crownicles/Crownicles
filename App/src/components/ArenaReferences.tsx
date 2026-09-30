@@ -1,5 +1,5 @@
 import {ReactNode, useState} from "react";
-import {Text, View} from "react-native";
+import {Pressable, StyleProp, Text, View, ViewStyle} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {FightHistoryReq, LeagueInfoReq, LeagueRewardReq} from "ws-packets/src/fromClient/RankingsReq";
 import {FightHistoryRes, LeagueInfoRes, LeagueRewardRes} from "ws-packets/src/fromServer/fight/RankingsRes";
@@ -14,7 +14,8 @@ import {FightGauge} from "@/src/components/FightGauge";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {Note, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, ExpandableList, Lock, useSectionStyles, Standing} from "@/src/design/Sections";
-import {Clock3, Medal, Shield, Swords, Trophy} from "@/src/design/FightIcons";
+import {ChevronRight, Clock3, Medal, Shield, Swords, Trophy} from "@/src/design/FightIcons";
+import {useOpenPlayer} from "@/src/navigation/OtherProfiles";
 import {PaletteColor, Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {AppIcons} from "@/src/AppIcons";
@@ -37,6 +38,7 @@ const useStyles = createStyles(colors => ({
 	leagueLabel: {flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle},
 	end: {alignItems: "flex-end", alignSelf: "flex-start", paddingTop: 1},
 	glory: {flexDirection: "row", alignItems: "center", gap: 4},
+	pressed: {opacity: 0.7},
 	gloryValue: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, fontVariant: ["tabular-nums"]},
 	leagueStanding: {paddingBottom: Theme.spacing.xl, gap: Theme.spacing.lg},
 	leagueIdentity: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.lg},
@@ -47,10 +49,10 @@ const useStyles = createStyles(colors => ({
 	leagueGloryAmount: {fontFamily: Theme.fonts.extraBold, fontSize: 28, lineHeight: 34, color: colors.ink, fontVariant: ["tabular-nums"]},
 	leagueThreshold: {alignItems: "flex-end", maxWidth: "35%", gap: 3, flexShrink: 1},
 	leagueThresholdValue: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowTitle, color: colors.ink, fontVariant: ["tabular-nums"], flexShrink: 1},
-	leagueSeasonRewards: {flexDirection: "row", flexWrap: "wrap", gap: Theme.spacing.lg, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: colors.line},
+	leagueSeasonRewards: {flexDirection: "row", flexWrap: "wrap", gap: Theme.spacing.lg, paddingTop: Theme.spacing.md},
 	leagueReward: {flex: 1, minWidth: 100, gap: 6},
 	leagueRewardAmount: {fontFamily: Theme.fonts.bold, fontSize: 21, lineHeight: 27, color: colors.ink, fontVariant: ["tabular-nums"], flexShrink: 1},
-	leagueWinReward: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingTop: Theme.spacing.md, borderTopWidth: 1, borderColor: colors.line},
+	leagueWinReward: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingTop: Theme.spacing.md},
 	leagueWinLabel: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted}
 }));
 
@@ -67,15 +69,22 @@ function HistoryLeagueChange({change}: {change: {oldLeague: number; newLeague: n
 	</View>;
 }
 
+/** A tap on a fight opens the opponent's profile, as a line of a ranking does. */
 function HistoryEntry({entry}: {entry: FightHistoryEntry}): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
+	const openPlayer = useOpenPlayer();
 	const league = entry.glory.leaguesChanges.me;
 	const classIcon = AppIcons.getIconOrNull(`classes.${entry.classes.opponent}`);
 	const gloryIcon = AppIcons.getIconOrNull("unitValues.glory");
 	const Icon = entry.initiator ? Swords : Shield;
-	const opponent = entry.opponentName ?? i18n.t("app:arena.opponent");
-	return <View style={styles.history}>
+	const opponent = entry.opponentName ?? i18n.t("error:unknownPlayer");
+	return <Pressable
+		accessibilityRole="button"
+		accessibilityLabel={i18n.t("app:arena.rankings.openProfile", {name: opponent})}
+		onPress={(): void => openPlayer(entry.opponentRef)}
+		style={({pressed}): StyleProp<ViewStyle> => [styles.history, pressed && styles.pressed]}
+	>
 		<View style={styles.emblem}><Icon size={18} color={colors.muted} /></View>
 		<View style={styles.body}>
 			<Text style={styles.title} numberOfLines={1}>{opponent}</Text>
@@ -92,7 +101,8 @@ function HistoryEntry({entry}: {entry: FightHistoryEntry}): ReactNode {
 				{gloryIcon ? <TwemojiIcon emoji={gloryIcon} size={12} /> : null}
 			</View>
 		</View>
-	</View>;
+		<ChevronRight size={16} color={colors.faint} />
+	</Pressable>;
 }
 
 function historyMonth(date: number): string {

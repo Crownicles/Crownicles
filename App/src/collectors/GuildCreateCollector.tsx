@@ -62,7 +62,7 @@ function GuildDepartureDetails({data}: {data: ReactionCollectorDataOf<typeof GUI
 function GuildConfirmationDetails({data}: {data: ReactionCollectorData}): ReactNode {
 	if (data.type === GUILD_DATA_KINDS.REIMBURSE) return <Note>{i18n.t("app:guildDomain.confirmReimburse", {amount: formatMoney(data.data.amount)})}</Note>;
 	if (data.type === GUILD_DATA_KINDS.INVITE) return <Note>{i18n.t("app:guild.confirmInvitation", {guild: data.data.guildName})}</Note>;
-	if (data.type === GUILD_DATA_KINDS.MEMBER) return <Note>{i18n.t("app:guild.confirmMember", {member: data.data.memberName ?? i18n.t("app:profile.values.unknown"), guild: data.data.guildName})}</Note>;
+	if (data.type === GUILD_DATA_KINDS.MEMBER) return <Note>{i18n.t("app:guild.confirmMember", {member: data.data.memberName ?? i18n.t("error:unknownPlayer"), guild: data.data.guildName})}</Note>;
 	if (data.type === GUILD_DATA_KINDS.DESCRIPTION) return <DescriptionPreview description={data.data.description} />;
 	if (data.type === GUILD_DATA_KINDS.LEAVE) return <GuildDepartureDetails data={data} />;
 	return null;

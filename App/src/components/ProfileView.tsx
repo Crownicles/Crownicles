@@ -102,7 +102,7 @@ function ProfileStanding({profile}: {profile: ProfileRes}): ReactNode {
 			testID="profile-standing"
 			emblem={classIcon ? <TwemojiIcon emoji={classIcon} size={STANDING_EMBLEM_SIZE} /> : null}
 			caption={i18n.t("app:profile.eyebrow")}
-			title={profile.pseudo || i18n.t("app:arena.unknownPlayer")}
+			title={profile.pseudo || i18n.t("error:unknownPlayer")}
 			subtitle={i18n.t("app:profile.subtitle", {
 				className: classLabel(profile),
 				level: profile.level,

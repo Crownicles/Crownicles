@@ -26,11 +26,12 @@ export type PushText = {
 	body: string;
 };
 
-/** The only namespaces a notification draws from: its own words, place and pet names, tournament categories. */
+/** The only namespaces a notification draws from: its own words, place and pet names, tournament categories, the unknown player. */
 const NAMESPACES = [
 	"app",
 	"models",
-	"commands"
+	"commands",
+	"error"
 ];
 
 /** Game names are resolved by the caller, which knows how to reach Keycloak. */
@@ -126,7 +127,7 @@ const TEXT_BUILDERS: Record<NotificationType, TextBuilder> = {
 export async function pushTextOf(type: NotificationType, packet: NotificationPacket, lng: Language, resolvePlayerName: PlayerNameResolver): Promise<PushText> {
 	return await TEXT_BUILDERS[type](packet, {
 		lng,
-		playerName: async keycloakId => await resolvePlayerName(keycloakId) ?? t("app:notifications.push.unknownPlayer", lng)
+		playerName: async keycloakId => await resolvePlayerName(keycloakId) ?? t("error:unknownPlayer", lng)
 	});
 }
 

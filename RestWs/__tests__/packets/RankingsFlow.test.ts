@@ -14,6 +14,7 @@ import {PlayerProfileReq} from "../../../WsPackets/src/fromClient/ProfileReq";
 import GuildManagementClientTranslator from "../../src/packets/fromClient/translators/GuildManagementClientTranslator";
 import {GuildInvitePlayerReq} from "../../../WsPackets/src/fromClient/GuildManagementReq";
 import {makeFromClientPacket} from "../../../WsPackets/src/MakePackets";
+import {resolvePlayerReference} from "../../src/services/PlayerReference";
 
 vi.mock("../../src/packets/fromServer/PlayerDisplay", () => ({resolvePlayerName: vi.fn(async () => "Aventurier")}));
 const CONTEXT: PacketContext = {keycloakId: "authenticated", frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {}};
@@ -53,6 +54,7 @@ describe("arena reference data", () => {
 		const result = await RankingsServerTranslator.history(CONTEXT, makePacket(CommandFightHistoryPacketRes, {history: [{id: 42, initiator: false, opponentKeycloakId: "private-opponent", result: EloGameResult.LOSS, date: 123456, classes: {me: 1, opponent: 2}, glory: {initial: {me: 500, opponent: 600}, change: {me: -10, opponent: 15}, leaguesChanges: {}}}]}));
 		expect(result.history[0]).toMatchObject({id: 42, opponentName: "Aventurier", initiator: false, result: 0, date: 123456});
 		expect(JSON.stringify(result)).not.toContain("private-opponent");
+		expect(resolvePlayerReference(result.history[0].opponentRef)).toBe("private-opponent");
 	});
 	it("preserves the claim date and the granted reward amounts", async () => {
 		const date = await RankingsServerTranslator.notSunday(CONTEXT, makePacket(CommandLeagueRewardNotSundayPacketRes, {nextSunday: 1_900_000_000_000}));

@@ -16,7 +16,7 @@ export function fighterSubtitle(fighter: FightParticipant): string {
 export function fighterName(fighter: FightParticipant): string {
 	if (fighter.isSelf) return i18n.t("app:arena.you");
 	if (fighter.monsterId) return i18n.t(`models:monsters.${fighter.monsterId}.name`, {defaultValue: i18n.t("app:arena.opponent")});
-	return fighter.name ?? i18n.t("app:arena.opponent");
+	return fighter.name ?? i18n.t("error:unknownPlayer");
 }
 
 export function fighterDisplayName(fighter: FightParticipant): string {

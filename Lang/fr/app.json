@@ -957,7 +957,6 @@
     }
   },
   "arena": {
-    "unknownPlayer": "Joueur inconnu",
     "pages": {"classes": "Classes", "history": "Historique", "leagues": "Ligues", "rankings": "Classements"},
     "history": {"empty": "Aucun combat n'est encore enregistré."},
     "leagues": {"name": "{{icon}} {{name}}", "reward": "Récompense de ligue", "claim": "Réclamer la récompense", "catalog": "Les ligues", "threshold": "Gloire minimale", "seasonMoney": "Argent de fin de saison", "seasonXp": "Expérience de fin de saison", "winMoney": "Argent gagné par combat remporté", "nextClaim": "La récompense pourra être réclamée le {{date}}.", "noPoints": "Aucune gloire n'a été obtenue pendant la saison précédente.", "alreadyClaimed": "La récompense de cette saison a déjà été réclamée."},
@@ -1376,7 +1375,6 @@
       "body": "La suite de votre voyage vers {{destination}} est prête à être découverte."
     },
     "push": {
-      "unknownPlayer": "Un aventurier",
       "report": {
         "title": "Arrivée à destination",
         "body": "Vous êtes arrivé à {{destination}}, la suite de votre aventure vous attend."

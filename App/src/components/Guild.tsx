@@ -134,7 +134,7 @@ function MemberEntry({member, guild, expanded, onToggle}: MemberEntryProps): Rea
 	const role = memberRole(member, guild);
 	const heading = {
 		emblem: <MemberEmblem role={role} />,
-		label: member.name ?? i18n.t("app:profile.values.unknown"),
+		label: member.name ?? i18n.t("error:unknownPlayer"),
 		caption: memberCaption(member, role),
 		end: <MemberScore member={member} />,
 		highlighted: member.isSelf,

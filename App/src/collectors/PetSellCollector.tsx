@@ -12,8 +12,8 @@ import {i18n} from "@/src/translations/i18n";
 
 function SaleParties({offer}: {offer: PetSaleOffer}): ReactNode {
 	return <ExpandableList>
-		<Fact label={i18n.t("app:pet.sale.seller")} value={offer.sellerName ?? i18n.t("app:profile.values.unknown")} />
-		<Fact label={i18n.t("app:pet.sale.buyer")} value={offer.buyerName ?? i18n.t("app:profile.values.unknown")} />
+		<Fact label={i18n.t("app:pet.sale.seller")} value={offer.sellerName ?? i18n.t("error:unknownPlayer")} />
+		<Fact label={i18n.t("app:pet.sale.buyer")} value={offer.buyerName ?? i18n.t("error:unknownPlayer")} />
 	</ExpandableList>;
 }
 

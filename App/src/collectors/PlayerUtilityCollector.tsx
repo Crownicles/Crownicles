@@ -13,7 +13,7 @@ import {i18n} from "@/src/translations/i18n";
 
 function UtilityDetails({data}: {data: ReactionCollectorData}): ReactNode {
 	if (data.type === PLAYER_UTILITY_DATA_KINDS.UNLOCK) return <>
-		<Fact label={i18n.t("app:utilities.prisoner")} value={data.data.playerName ?? i18n.t("app:arena.unknownPlayer")} />
+		<Fact label={i18n.t("app:utilities.prisoner")} value={data.data.playerName ?? i18n.t("error:unknownPlayer")} />
 		<Fact label={i18n.t("app:pet.care.price")} value={formatMoney(data.data.price)} />
 	</>;
 	if (data.type === PLAYER_UTILITY_DATA_KINDS.BOAT) return <>
@@ -53,7 +53,7 @@ function utilityResult(outcome: Outcome): string | null {
 	switch (outcome.type) {
 		case "respawn": return i18n.t("app:utilities.respawned", {lostScore: formatNumber(outcome.lostScore)});
 		case "boat": return i18n.t("app:utilities.boatJoined", {score: formatNumber(outcome.score)});
-		case "unlocked": return i18n.t("app:utilities.unlocked", {name: outcome.playerName ?? i18n.t("app:arena.unknownPlayer")});
+		case "unlocked": return i18n.t("app:utilities.unlocked", {name: outcome.playerName ?? i18n.t("error:unknownPlayer")});
 		default: return null;
 	}
 }

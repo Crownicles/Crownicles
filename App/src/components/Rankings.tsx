@@ -104,7 +104,7 @@ function rankingLink(entry: RankingEntry, dataType: TopDataType, {router, openPl
 	const {playerRef} = entry;
 	if (!playerRef) return undefined;
 	return {
-		label: i18n.t("app:arena.rankings.openProfile", {name: entry.name || i18n.t("app:arena.unknownPlayer")}),
+		label: i18n.t("app:arena.rankings.openProfile", {name: entry.name || i18n.t("error:unknownPlayer")}),
 		open: (): void => entry.sameContext ? router.navigate("/profile") : openPlayer(playerRef)
 	};
 }
@@ -121,7 +121,7 @@ function RankingRow({entry, dataType}: {entry: RankingEntry; dataType: TopDataTy
 			<Text style={[styles.rank, podium && styles.rankPodium]} numberOfLines={1}>{formatNumber(entry.rank)}</Text>
 		</View>
 		<View style={styles.body}>
-			<Text style={styles.name} numberOfLines={1}>{entry.name || i18n.t("app:arena.unknownPlayer")}</Text>
+			<Text style={styles.name} numberOfLines={1}>{entry.name || i18n.t("error:unknownPlayer")}</Text>
 			<View style={styles.meta}>
 				{entryIcons(entry).map(icon => <TwemojiIcon key={icon} emoji={icon} size={12} />)}
 				<Text style={styles.metaText} numberOfLines={1}>{entryMeta(entry)}</Text>

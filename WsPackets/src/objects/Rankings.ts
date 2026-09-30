@@ -16,6 +16,9 @@ export type FightHistoryEntry = {
 	id: number;
 	initiator: boolean;
 	opponentName?: string;
+
+	/** Opens the opponent's profile, as a ranking entry's `playerRef` does. */
+	opponentRef: string;
 	result: EloGameResult;
 	glory: {
 		initial: {

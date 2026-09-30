@@ -62,11 +62,11 @@ describe("push texts", () => {
 		expect(text.body).toContain("Plage Sentinelle");
 	});
 
-	it("names the player behind the notification, or an adventurer when they cannot be found", async () => {
+	it("names the player behind the notification, or says the name was not found, as Discord does", async () => {
 		expect((await pushTextOf(NOTIFICATION_TYPES.GUILD_KICK, SAMPLES.guildKick, "fr", names)).body)
 			.toBe("Gorgonzola vous a exclu de la guilde Les Fromages.");
 		const unknown = makePacket(PlayerWasAttackedNotificationPacket, {keycloakId: PLAYER, attackedByPlayerKeycloakId: "gone"});
-		expect((await pushTextOf(NOTIFICATION_TYPES.FIGHT_CHALLENGE, unknown, "fr", names)).body).toMatch(/^Un aventurier vous a attaqué/u);
+		expect((await pushTextOf(NOTIFICATION_TYPES.FIGHT_CHALLENGE, unknown, "fr", names)).body).toMatch(/^Pseudo 404 vous a attaqué/u);
 	});
 
 	it("tells a promotion from a demotion", async () => {
