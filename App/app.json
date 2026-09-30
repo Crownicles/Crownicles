@@ -69,6 +69,12 @@
       "expo-font",
       "expo-image",
       "expo-status-bar",
+      [
+        "expo-notifications",
+        {
+          "color": "#B95E4B"
+        }
+      ],
       "./plugins/withSceneLifecycle",
       "./plugins/withAndroidReleaseSigning"
     ],

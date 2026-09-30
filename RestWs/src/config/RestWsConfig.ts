@@ -23,6 +23,22 @@ export interface RestWsConfig {
 	PREFIX: MqttPrefix;
 	DEBUG: boolean;
 	ACCOUNT_DELETION: AccountDeletionConfig;
+	PUSH: PushConfig;
+}
+
+/**
+ * How notifications reach the app while it is closed. An empty path leaves that push service off.
+ */
+export interface PushConfig {
+	APNS: {
+		KEY_PATH: string;
+		KEY_ID: string;
+		TEAM_ID: string;
+		BUNDLE_ID: string;
+	};
+	FCM: {
+		SERVICE_ACCOUNT_PATH: string;
+	};
 }
 
 /**
@@ -72,6 +88,17 @@ type ConfigStructure = {
 			to?: string;
 		};
 	};
+	push?: {
+		apns?: {
+			keyPath?: string;
+			keyId?: string;
+			teamId?: string;
+			bundleId?: string;
+		};
+		fcm?: {
+			serviceAccountPath?: string;
+		};
+	};
 	logs: {
 		level: string;
 		locations: string[];
@@ -104,6 +131,22 @@ function loadAccountDeletionConfig(section: ConfigStructure["accountDeletion"] =
 	};
 }
 
+const DEFAULT_BUNDLE_ID = "com.crownicles.app";
+
+function loadPushConfig(section: ConfigStructure["push"] = {}): PushConfig {
+	return {
+		APNS: {
+			KEY_PATH: section.apns?.keyPath ?? "",
+			KEY_ID: section.apns?.keyId ?? "",
+			TEAM_ID: section.apns?.teamId ?? "",
+			BUNDLE_ID: section.apns?.bundleId ?? DEFAULT_BUNDLE_ID
+		},
+		FCM: {
+			SERVICE_ACCOUNT_PATH: section.fcm?.serviceAccountPath ?? ""
+		}
+	};
+}
+
 /**
  * Loads the config from the config file
  */
@@ -125,7 +168,8 @@ export function loadConfig(): RestWsConfig {
 		WEB_SOCKET_PORT: config.webSocket.port,
 		PREFIX: createMqttPrefix(config.global.prefix),
 		DEBUG: config.global.debug,
-		ACCOUNT_DELETION: loadAccountDeletionConfig(config.accountDeletion)
+		ACCOUNT_DELETION: loadAccountDeletionConfig(config.accountDeletion),
+		PUSH: loadPushConfig(config.push)
 	};
 }
 

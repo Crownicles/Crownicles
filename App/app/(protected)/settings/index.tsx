@@ -21,6 +21,8 @@ import {THEME_PREFERENCES} from "@/src/design/ThemePreference";
 import {BackButton} from "@/src/design/Sections";
 import {Button as DesignButton} from "@/src/design/Primitives";
 import {cancelReportNotification} from "@/src/notifications/ReportNotifications";
+import {forgetPushDevice} from "@/src/notifications/PushRegistration";
+import {NOTIFICATION_PERMISSIONS, useNotificationPermission} from "@/src/notifications/NotificationPermission";
 import {DELIVERED_NOTIFICATION_TYPES, useNotificationPreferenceChange, useNotificationPreferences} from "@/src/store/useNotificationPreferences";
 import {i18n} from "@/src/translations/i18n";
 import {travelAdvicePreference, useTravelAdvicesShown} from "@/src/preferences/TravelAdvicePreference";
@@ -70,6 +72,10 @@ const useStyles = createStyles(colors => ({
 		fontSize: Theme.fontSize.body,
 		color: colors.ink
 	},
+	typeLabel: {
+		flex: 1,
+		marginRight: Theme.spacing.md
+	},
 	hint: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.note,
@@ -85,6 +91,21 @@ const ListItem = ({ children }: PropsWithChildren) => {
 	</View>;
 };
 
+/** Settings are pointless while the phone forbids the app to notify: the way to allow it comes first. */
+function NotificationPermissionNotice(): React.JSX.Element | null {
+	const styles = useStyles();
+	const {permission, allow} = useNotificationPermission();
+	if (permission === null || permission === NOTIFICATION_PERMISSIONS.GRANTED) return null;
+	return (
+		<View>
+			<Text style={styles.hint}>{i18n.t("app:settings.notifications.permission.off")}</Text>
+			<DesignButton onPress={allow}>
+				{i18n.t(permission === NOTIFICATION_PERMISSIONS.BLOCKED ? "app:settings.notifications.permission.openSettings" : "app:settings.notifications.permission.allow")}
+			</DesignButton>
+		</View>
+	);
+}
+
 /** One switch per kind the app sends; Discord's settings are separate and are not touched here. */
 function NotificationSettings(): React.JSX.Element {
 	const styles = useStyles();
@@ -94,9 +115,10 @@ function NotificationSettings(): React.JSX.Element {
 		<View style={styles.combatPreference}>
 			<Text style={styles.preferenceLabel}>{i18n.t("app:settings.notifications.label")}</Text>
 			<Text style={styles.hint}>{i18n.t("app:settings.notifications.independent")}</Text>
+			<NotificationPermissionNotice />
 			{DELIVERED_NOTIFICATION_TYPES.map(type => (
 				<ListItem key={type}>
-					<Text style={styles.label}>{i18n.t(`app:settings.notifications.types.${type}`)}</Text>
+					<Text style={[styles.label, styles.typeLabel]}>{i18n.t(`app:settings.notifications.types.${type}`)}</Text>
 					{state.status === "ready"
 						? <Switch
 							accessibilityLabel={i18n.t(`app:settings.notifications.types.${type}`)}
@@ -199,6 +221,7 @@ export default function Index() {
 				<ListItem>
 					<DesignButton variant="danger" onPress={() => {
 						cancelReportNotification();
+						forgetPushDevice();
 						authState.setState(AuthStateEnum.NO_TOKEN);
 						authState.clearToken().then().catch((err) => {
 							console.error("Failed to clear token:", err);

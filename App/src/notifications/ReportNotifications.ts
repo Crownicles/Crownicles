@@ -9,23 +9,17 @@ import {
 	setNotificationHandler
 } from "expo-notifications";
 import {Platform} from "react-native";
+import {NOTIFICATION_TYPES} from "ws-packets/src/objects/NotificationPreferences";
 import {i18n} from "@/src/translations/i18n";
+import {NOTIFICATION_TYPE_KEY} from "@/src/notifications/NotificationRoutes";
+import {registerForPush} from "@/src/notifications/PushRegistration";
 
-/** The screens a notification can open, named in its data rather than carrying a route. */
-export const NOTIFICATION_SCREENS = {adventure: "/"} as const;
-export type NotificationScreen = keyof typeof NOTIFICATION_SCREENS;
-export const NOTIFICATION_SCREEN_KEY = "screen";
-
-export function isNotificationScreen(value: unknown): value is NotificationScreen {
-	return typeof value === "string" && Object.hasOwn(NOTIFICATION_SCREENS, value);
-}
-
-const REPORT_NOTIFICATION = {id: "report-ready", channel: "report"} as const;
+const REPORT_NOTIFICATION = {id: "report-ready", channel: NOTIFICATION_TYPES.REPORT} as const;
 
 /** A report opening in a few seconds is seen on screen; notifying it would only arrive after the fact. */
 const MIN_LEAD_MS = 5_000;
 
-// While the app is open the screen already tells what changed: the notification is for when it is not.
+// While the app is open the screen already tells what changed, pushed or not: the notification is for when it is not.
 setNotificationHandler({
 	handleNotification: () => Promise.resolve({shouldShowBanner: false, shouldShowList: false, shouldPlaySound: false, shouldSetBadge: false})
 });
@@ -50,11 +44,17 @@ function enqueue(task: () => Promise<void>): void {
 	pending = pending.then(task).catch(error => console.warn("Report notification not updated:", error));
 }
 
+/** Once the player allows notifications, the server is told where to push them. */
+function allowed(permission: {granted: boolean}): boolean {
+	if (permission.granted) registerForPush().catch(error => console.warn("Push notifications unavailable:", error));
+	return permission.granted;
+}
+
 async function canNotify(): Promise<boolean> {
 	const current = await getPermissionsAsync();
 	if (current.granted) return true;
 	if (!current.canAskAgain || !permissionPromptAllowed) return false;
-	return (await requestPermissionsAsync()).granted;
+	return allowed(await requestPermissionsAsync());
 }
 
 async function ensureReportChannel(): Promise<void> {
@@ -74,7 +74,7 @@ async function schedule(readyAt: number, destination: string): Promise<void> {
 		content: {
 			title: i18n.t("app:notifications.reportReady.title"),
 			body: i18n.t("app:notifications.reportReady.body", {destination}),
-			data: {[NOTIFICATION_SCREEN_KEY]: "adventure" satisfies NotificationScreen}
+			data: {[NOTIFICATION_TYPE_KEY]: NOTIFICATION_TYPES.REPORT}
 		},
 		trigger: {type: SchedulableTriggerInputTypes.DATE, date: new Date(readyAt), channelId: REPORT_NOTIFICATION.channel}
 	});
@@ -99,7 +99,7 @@ export async function reportNotificationsAllowed(): Promise<boolean> {
 /** Asks the player, who chose to be reminded, then reminds them of the report already waiting. */
 export async function requestReportNotifications(): Promise<boolean> {
 	const current = await getPermissionsAsync();
-	const granted = current.granted || current.canAskAgain && (await requestPermissionsAsync()).granted;
+	const granted = current.granted || current.canAskAgain && allowed(await requestPermissionsAsync());
 	if (granted && lastReminder) scheduleReportNotification(lastReminder.readyAt, lastReminder.destination);
 	return granted;
 }

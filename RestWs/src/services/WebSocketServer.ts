@@ -296,6 +296,14 @@ export class WebSocketServer {
 	}
 
 	/**
+	 * Whether the player has the app open right now
+	 * @param keycloakId
+	 */
+	static isConnected(keycloakId: string): boolean {
+		return WebSocketServer.keycloakIdToClients.get(keycloakId)?.readyState === WebSocket.OPEN;
+	}
+
+	/**
 	 * Dispatch packets to the client
 	 * @param keycloakId
 	 * @param packets

@@ -1,5 +1,5 @@
 import {
-	connect, IClientOptions, MqttClient
+	connect, IClientOptions, IClientSubscribeOptions, MqttClient
 } from "mqtt";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 
@@ -45,13 +45,14 @@ export abstract class RestWsMqttClient {
 	 * @param mqttClient MQTT client instance
 	 * @param topic Topic to subscribe to
 	 * @param cleanBefore Whether to clear the last message before subscribing
+	 * @param qos At least once (1) for messages that must survive a restart of this service
 	 */
-	protected subscribeTo(mqttClient: MqttClient, topic: string, cleanBefore: boolean): void {
+	protected subscribeTo(mqttClient: MqttClient, topic: string, cleanBefore: boolean, qos: IClientSubscribeOptions["qos"] = 0): void {
 		if (cleanBefore) {
 			mqttClient.publish(topic, "", { retain: true }); // Clear the last message to avoid processing it twice
 		}
 
-		mqttClient.subscribe(topic, err => {
+		mqttClient.subscribe(topic, { qos }, err => {
 			if (err) {
 				CrowniclesLogger.errorWithObj(`Error while subscribing to topic ${topic}`, err);
 				process.exit(1);

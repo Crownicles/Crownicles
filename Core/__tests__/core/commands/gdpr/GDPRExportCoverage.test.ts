@@ -124,6 +124,7 @@ const EXPORTED_TABLES = {
 	"ScheduledReportNotification": "12_scheduled_notifications.csv",
 	"ScheduledExpeditionNotification": "12_scheduled_notifications.csv",
 	"AppNotificationPreference": "27_app_notification_preferences.csv",
+	"AppPushDevice": "28_app_push_devices.csv",
 	"Guild": "13_guild_membership.csv",
 	"GuildPet": "14_guild_pets.csv",
 	"Material": "15_materials.csv",

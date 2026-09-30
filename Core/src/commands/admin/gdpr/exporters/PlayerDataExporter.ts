@@ -7,6 +7,7 @@ import { Players } from "../../../../core/database/game/models/Player";
 import {
 	AppNotificationPreferences, preferencesOf
 } from "../../../../core/database/game/models/AppNotificationPreference";
+import { AppPushDevices } from "../../../../core/database/game/models/AppPushDevice";
 import { PlayerBadges } from "../../../../core/database/game/models/PlayerBadges";
 import { InventorySlots } from "../../../../core/database/game/models/InventorySlot";
 import { InventoryInfo } from "../../../../core/database/game/models/InventoryInfo";
@@ -209,6 +210,18 @@ async function exportAppNotificationPreferences(player: NonNullable<Player>, csv
 	}
 }
 
+/** The token addresses the device for its push service: only what it is and since when is exported. */
+async function exportAppPushDevices(player: NonNullable<Player>, csvFiles: GDPRCsvFiles): Promise<void> {
+	const devices = await AppPushDevices.ofPlayer(player.keycloakId);
+	if (devices.length > 0) {
+		csvFiles["28_app_push_devices.csv"] = toCSV(devices.map(device => ({
+			platform: device.platform,
+			createdAt: device.createdAt,
+			updatedAt: device.updatedAt
+		})));
+	}
+}
+
 async function exportScheduledNotifications(player: NonNullable<Player>, csvFiles: GDPRCsvFiles): Promise<void> {
 	const dailyBonusNotifs = await ScheduledDailyBonusNotification.findAll({ where: { playerId: player.id } });
 	const reportNotifs = await ScheduledReportNotification.findAll({ where: { playerId: player.id } });
@@ -324,6 +337,7 @@ async function exportMiscData(
 
 	await exportScheduledNotifications(player, csvFiles);
 	await exportAppNotificationPreferences(player, csvFiles);
+	await exportAppPushDevices(player, csvFiles);
 	await exportCurrentBlessing(player, csvFiles);
 	await exportPlayerMaterials(player.id, csvFiles);
 

@@ -6,6 +6,7 @@ import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {readFullStoredToken} from "@/src/authentication/TokenStorage";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {RestApi} from "@/src/networking/RestApi";
+import {forgetPushDevice} from "@/src/notifications/PushRegistration";
 import {Theme} from "@/src/design/Theme";
 import {BackButton, Refusal} from "@/src/design/Sections";
 import {Button as DesignButton, Screen} from "@/src/design/Primitives";
@@ -120,6 +121,7 @@ export default function DeleteAccount(): React.ReactElement {
 			return;
 		}
 
+		forgetPushDevice();
 		await authState.clearToken();
 		authState.setState(AuthStateEnum.NO_TOKEN);
 	});

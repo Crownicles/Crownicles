@@ -63,7 +63,10 @@ export class GlobalMqttClient extends RestWsMqttClient {
 			});
 		}
 
-		WebSocketServer.dispatchPacketsToClient(context.keycloakId!, translatedPackets);
+		// Core answers some requests with nothing, such as a device forgotten on behalf of a push service
+		if (translatedPackets.length > 0) {
+			WebSocketServer.dispatchPacketsToClient(context.keycloakId!, translatedPackets);
+		}
 	}
 
 	/**

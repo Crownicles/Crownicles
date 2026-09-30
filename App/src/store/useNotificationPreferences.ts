@@ -12,8 +12,8 @@ import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {commandRejectionMessage} from "@/src/display/CommandRejection";
 import {i18n} from "@/src/translations/i18n";
 
-/** The kinds the app can send today; only these get a setting, the others stay stored for later. */
-export const DELIVERED_NOTIFICATION_TYPES: readonly NotificationType[] = [NOTIFICATION_TYPES.REPORT];
+/** Every kind reaches the app, pushed by the server: each gets its setting. */
+export const DELIVERED_NOTIFICATION_TYPES: readonly NotificationType[] = Object.values(NOTIFICATION_TYPES);
 
 export type NotificationPreferenceChange = {type: NotificationType; enabled: boolean};
 

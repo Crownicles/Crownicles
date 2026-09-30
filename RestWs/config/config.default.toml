@@ -43,6 +43,21 @@ password = ""
 from = ""
 to = ""
 
+[push.apns]
+# Apple push key (.p8) created in Apple Developer > Keys with "Apple Push Notifications service (APNs)".
+# Leave keyPath empty to push nothing to iOS. Keep the key outside the repository, readable by this service only.
+keyPath = ""
+# The 10 characters identifier shown next to the key
+keyId = ""
+# The 10 characters identifier of the Apple Developer team (Membership details)
+teamId = ""
+bundleId = "com.crownicles.app"
+
+[push.fcm]
+# Firebase service account (JSON) from Firebase console > Project settings > Service accounts.
+# Leave empty to push nothing to Android. Keep the file outside the repository, readable by this service only.
+serviceAccountPath = ""
+
 [logs]
 # The log level of the bot. It can be one of: "error", "warn", "info", "debug"
 level = "info"

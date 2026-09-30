@@ -7,6 +7,8 @@ import { RegistrationHygiene } from "./services/RegistrationHygiene";
 import { MqttManager } from "./mqtt/MqttManager";
 import { registerAllClientTranslators } from "./packets/fromClient/FromClientTranslator";
 import { registerAllServerTranslators } from "./packets/fromServer/FromServerTranslator";
+import { loadPushTexts } from "./push/PushTexts";
+import { languagesRootOf } from "./services/routes/AssetsRoute";
 
 process.on("uncaughtException", error => {
 	console.error(`Uncaught exception: ${error}`);
@@ -44,6 +46,9 @@ async function main(): Promise<void> {
 	// Register all translators
 	await registerAllClientTranslators();
 	await registerAllServerTranslators();
+
+	// The words of the notifications, needed before the first one arrives
+	await loadPushTexts(languagesRootOf(restWsConfig.DEBUG));
 
 	// Connect to the MQTT broker
 	MqttManager.connectClients();

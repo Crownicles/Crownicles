@@ -39,6 +39,10 @@ export abstract class MqttTopicUtils {
 
 	private static readonly DISCORD_NOTIFICATION_PREFERENCES_REQUEST_TOPIC = "crownicles_discord_notification_preferences_request";
 
+	private static readonly APP_NOTIFICATIONS_TOPIC = "crownicles_app_notifications";
+
+	private static readonly APP_NOTIFICATIONS_CONSUMER = "app-notifications-consumer";
+
 
 	static getCoreTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.CORE_TOPIC}`;
@@ -90,5 +94,13 @@ export abstract class MqttTopicUtils {
 
 	static getDiscordNotificationPreferencesRequestTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.DISCORD_NOTIFICATION_PREFERENCES_REQUEST_TOPIC}`;
+	}
+
+	static getAppNotificationsTopic(prefix: MqttPrefix): string {
+		return `${prefix}/${MqttTopicUtils.APP_NOTIFICATIONS_TOPIC}`;
+	}
+
+	static getAppNotificationsConsumerId(prefix: MqttPrefix): string {
+		return `${prefix}/${MqttTopicUtils.APP_NOTIFICATIONS_CONSUMER}`;
 	}
 }

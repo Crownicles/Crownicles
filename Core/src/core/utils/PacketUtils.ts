@@ -11,6 +11,7 @@ import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { DiscordNotificationPreferencesRequest } from "../../../../Lib/src/types/NotificationPreferences";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { publishAppNotifications } from "../bot/AppNotifications";
 
 export type InternalErrorDetails = {
 
@@ -137,5 +138,7 @@ export abstract class PacketUtils {
 			qos: 2
 		});
 		CrowniclesLogger.debug("Sent notifications", { json });
+		publishAppNotifications(notifications)
+			.catch(error => CrowniclesLogger.errorWithObj("Could not send app notifications", error));
 	}
 }

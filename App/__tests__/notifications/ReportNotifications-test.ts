@@ -48,7 +48,11 @@ describe("report notification", () => {
 	beforeEach(() => jest.clearAllMocks());
 
 	it("reminds of a report still to wait for, at the moment it opens", () => {
-		expect(reportReminder(view({travel: travel()}))).toEqual({readyAt: 1_700_000_300_000, destination: "models:map_locations.2.name"});
+		expect(reportReminder(view({travel: travel()}))).toEqual({readyAt: 1_700_000_300_000, destination: "models:map_locations.2.name", arrival: false});
+	});
+
+	it("tells the arrival apart from a stop, since the server pushes the arrival itself", () => {
+		expect(reportReminder(view({travel: travel({nextStopTime: 1_700_000_900_000})}))).toEqual({readyAt: 1_700_000_600_000, destination: "models:map_locations.2.name", arrival: true});
 	});
 
 	it("has nothing to remind once the report is ready, in a city, or before the first journey", () => {
@@ -67,7 +71,7 @@ describe("report notification", () => {
 		expect(mocked.cancelScheduledNotificationAsync).toHaveBeenCalledWith("report-ready");
 		expect(mocked.scheduleNotificationAsync).toHaveBeenCalledWith(expect.objectContaining({
 			identifier: "report-ready",
-			content: expect.objectContaining({data: {screen: "adventure"}}),
+			content: expect.objectContaining({data: {notificationType: "report"}}),
 			trigger: expect.objectContaining({date: new Date(readyAt)})
 		}));
 	});

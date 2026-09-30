@@ -228,8 +228,22 @@
     "notifications": {
       "label": "Notifications",
       "independent": "Ces réglages ne concernent que l'application : ceux de Discord restent inchangés.",
+      "permission": {
+        "off": "Votre téléphone n'autorise pas l'application à vous notifier : rien ne vous sera signalé tant qu'elle est fermée.",
+        "allow": "Autoriser les notifications",
+        "openSettings": "Ouvrir les réglages du téléphone"
+      },
       "types": {
-        "report": "Suite du voyage"
+        "report": "Suite du voyage",
+        "dailyBonus": "Bonus journalier disponible",
+        "energy": "Énergie au maximum",
+        "guildDaily": "Bonus de guilde récupéré",
+        "guildKick": "Exclusion de la guilde",
+        "guildStatusChange": "Changement de rôle dans la guilde",
+        "playerFreedFromJail": "Libération de prison",
+        "fightChallenge": "Attaque dans l'arène",
+        "petExpedition": "Retour d'expédition du familier",
+        "tournament": "Tournois"
       }
     },
     "deleteAccount": {
@@ -1309,11 +1323,73 @@
   },
   "notifications": {
     "channels": {
-      "report": "Rapports de voyage"
+      "report": "Rapports de voyage",
+      "dailyBonus": "Bonus journalier",
+      "energy": "Énergie",
+      "guildDaily": "Bonus de guilde",
+      "guildKick": "Exclusion de guilde",
+      "guildStatusChange": "Rôle dans la guilde",
+      "playerFreedFromJail": "Libération de prison",
+      "fightChallenge": "Attaques dans l'arène",
+      "petExpedition": "Expéditions du familier",
+      "tournament": "Tournois"
     },
     "reportReady": {
       "title": "Votre aventure continue",
       "body": "La suite de votre voyage vers {{destination}} est prête à être découverte."
+    },
+    "push": {
+      "unknownPlayer": "Un aventurier",
+      "report": {
+        "title": "Arrivée à destination",
+        "body": "Vous êtes arrivé à {{destination}}, la suite de votre aventure vous attend."
+      },
+      "dailyBonus": {
+        "title": "Bonus journalier",
+        "body": "Votre bonus journalier est de nouveau disponible."
+      },
+      "energy": {
+        "title": "Énergie au maximum",
+        "body": "Vous avez récupéré toute votre énergie : l'arène vous attend."
+      },
+      "guildDaily": {
+        "title": "Bonus de guilde",
+        "body": "{{pseudo}} a récupéré le bonus journalier de votre guilde."
+      },
+      "guildKick": {
+        "title": "Exclu de la guilde",
+        "body": "{{pseudo}} vous a exclu de la guilde {{guildName}}."
+      },
+      "guildStatusChange": {
+        "title": "Guilde {{guildName}}",
+        "body": {
+          "becomeChief": "Vous êtes désormais le chef de la guilde {{guildName}}.",
+          "becomeElder": "Vous avez été promu aîné de la guilde {{guildName}}.",
+          "becomeMember": "Vous n'êtes plus aîné de la guilde {{guildName}}."
+        }
+      },
+      "playerFreedFromJail": {
+        "title": "Libéré de prison",
+        "body": "{{pseudo}} vous a libéré de prison, vous pouvez reprendre la route."
+      },
+      "fightChallenge": {
+        "title": "Attaqué dans l'arène",
+        "body": "{{pseudo}} vous a attaqué. L'issue du combat vous attend dans votre historique."
+      },
+      "petExpedition": {
+        "title": "Retour d'expédition",
+        "body": "{{pet}} est de retour d'expédition et a peut-être ramené des trésors."
+      },
+      "tournament": {
+        "title": "Tournoi",
+        "body": {
+          "started": "Le tournoi commence : les combats sont ouverts en catégorie {{category}}.",
+          "ending": "Le tournoi se termine bientôt : il reste peu de temps pour gagner de la gloire en catégorie {{category}}.",
+          "ended": "Le tournoi est terminé. Votre rang en catégorie {{category}} : {{rank}}.",
+          "cancelled": "Le tournoi est annulé, faute d'assez de participants."
+        },
+        "unranked": "non classé"
+      }
     }
   }
 }

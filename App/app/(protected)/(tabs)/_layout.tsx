@@ -27,6 +27,8 @@ import {isJourneyTab, JOURNEY_TABS, JourneyTab} from "@/src/journey/Journey";
 import {Journey, useJourney} from "@/src/journey/useJourney";
 import {MissionCompletedToast} from "@/src/components/MissionRewards";
 import {BlessingActivatedToast} from "@/src/components/BlessingActivatedToast";
+import {AppNotificationToast, useAppNotificationRefresh} from "@/src/components/AppNotificationToast";
+import {usePushRegistration} from "@/src/notifications/PushRegistration";
 import {LevelUpToast} from "@/src/components/LevelUpToast";
 import {useNotificationNavigation, useReportNotification} from "@/src/notifications/useNotifications";
 import {allowPermissionPrompt} from "@/src/notifications/ReportNotifications";
@@ -254,6 +256,8 @@ export default function TabLayout(): ReactNode {
 	const colors = useColors();
 	useReportNotification();
 	useNotificationNavigation();
+	usePushRegistration();
+	useAppNotificationRefresh();
 	if (dead) {
 		return <DeathScreen />;
 	}
@@ -264,6 +268,7 @@ export default function TabLayout(): ReactNode {
 			<OnboardingOverlays journey={journey} />
 			<MissionCompletedToast />
 			<BlessingActivatedToast />
+			<AppNotificationToast />
 			<LevelUpToast />
 			<StopToast />
 		</View>

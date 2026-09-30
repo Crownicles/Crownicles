@@ -46,6 +46,8 @@ import {REPORT_CITY_ACTION_RESULTS as CoreCityActionResults} from "../../../Lib/
 import {REPORT_CITY_ACTION_RESULTS} from "../../../WsPackets/src/objects/ReportView";
 import {NOTIFICATION_TYPES as LibNotificationTypes} from "../../../Lib/src/types/NotificationPreferences";
 import {NOTIFICATION_TYPES} from "../../../WsPackets/src/objects/NotificationPreferences";
+import {PUSH_PLATFORMS as LibPushPlatforms} from "../../../Lib/src/types/PushDevices";
+import {PUSH_PLATFORMS} from "../../../WsPackets/src/objects/PushDevices";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -87,7 +89,8 @@ describe("wire enums mirror their back-end counterpart", () => {
 		["PetFeedResult", PET_FEED_RESULTS, CommandPetFeedResult],
 		["EquipAction", EQUIP_ACTIONS, ItemConstants.EQUIP_ACTIONS],
 		["EquipError", EQUIP_ERRORS, ItemConstants.EQUIP_ERRORS],
-		["NotificationTypes", NOTIFICATION_TYPES, LibNotificationTypes]
+		["NotificationTypes", NOTIFICATION_TYPES, LibNotificationTypes],
+		["PushPlatforms", PUSH_PLATFORMS, LibPushPlatforms]
 	])("%s has the same members in the same order", (_name, wireEnum, libEnum) => {
 		expect(wireEnum).toStrictEqual(libEnum);
 	});

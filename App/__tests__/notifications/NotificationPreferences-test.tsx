@@ -24,11 +24,10 @@ jest.mock("@/src/networking/WebSocketClient", () => ({WebSocketClient: {getInsta
 })}}));
 jest.mock("@/src/notifications/ReportNotifications", () => ({
 	cancelReportNotification: jest.fn(),
-	scheduleReportNotification: jest.fn(),
-	isNotificationScreen: jest.fn(),
-	NOTIFICATION_SCREEN_KEY: "screen",
-	NOTIFICATION_SCREENS: {}
+	scheduleReportNotification: jest.fn()
 }));
+const mockPushActive = jest.fn(() => false);
+jest.mock("@/src/notifications/PushRegistration", () => ({usePushActive: (): boolean => mockPushActive()}));
 
 const ALL_ON: NotificationPreferences = {
 	report: true, dailyBonus: true, energy: true, guildDaily: true, guildKick: true,
@@ -39,20 +38,20 @@ function preferences(report: boolean): NotificationPreferencesRes {
 	return Object.assign(new NotificationPreferencesRes(), {preferences: {...ALL_ON, report}});
 }
 
-function travelling(): ReportViewRes {
+function travelling(nextStopIn = 300_000): ReportViewRes {
 	return Object.assign(new ReportViewRes(), {
 		reportReady: false,
 		travel: {
 			startMap: {id: 1, type: "main"}, endMap: {id: 2, type: "main"}, startTime: 0,
-			arriveTime: Date.now() + 600_000, nextStopTime: Date.now() + 300_000, isOnBoat: false,
+			arriveTime: Date.now() + 600_000, nextStopTime: Date.now() + nextStopIn, isOnBoat: false,
 			points: {show: false, cumulated: 0}, energy: {show: false, current: 0, max: 0}, isInCity: false
 		}
 	});
 }
 
-function cacheWith(report: boolean): QueryClient {
+function cacheWith(report: boolean, view = travelling()): QueryClient {
 	const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity, staleTime: Infinity}}});
-	client.setQueryData(gameKey(GAME_ENTITIES.REPORT), {kind: "answer", packet: travelling()});
+	client.setQueryData(gameKey(GAME_ENTITIES.REPORT), {kind: "answer", packet: view});
 	client.setQueryData(gameKey(GAME_ENTITIES.NOTIFICATION_PREFERENCES), {kind: "answer", packet: preferences(report)});
 	return client;
 }
@@ -65,6 +64,22 @@ describe("app notification settings", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockPushed.clear();
+		mockPushActive.mockReturnValue(false);
+	});
+
+	it("leaves the arrival to the server once it can push to the device, but still reminds of a stop", async () => {
+		mockPushActive.mockReturnValue(true);
+		await renderHook(useReportNotification, {wrapper: wrapper(cacheWith(true, travelling(900_000)))});
+		expect(cancelReportNotification).toHaveBeenCalled();
+		expect(scheduleReportNotification).not.toHaveBeenCalled();
+
+		await renderHook(useReportNotification, {wrapper: wrapper(cacheWith(true))});
+		expect(scheduleReportNotification).toHaveBeenCalled();
+	});
+
+	it("reminds of the arrival itself while the server cannot reach the device", async () => {
+		await renderHook(useReportNotification, {wrapper: wrapper(cacheWith(true, travelling(900_000)))});
+		expect(scheduleReportNotification).toHaveBeenCalled();
 	});
 
 	it("sends no report notification once the player turned it off in the app", async () => {

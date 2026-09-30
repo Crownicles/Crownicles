@@ -32,10 +32,17 @@ function computeFileHash(fileContent: string): string {
 }
 
 /**
+ * Where the language folders are: the repository's in debug, the copy shipped with the build otherwise.
+ */
+export function languagesRootOf(debugMode: boolean): string {
+	return debugMode ? "../Lang" : "dist/Lang";
+}
+
+/**
  * Computes the assets for the languages and stores them in the `assets` and `assetsHashes` maps.
  */
 async function computeLanguagesAssets(debugMode: boolean): Promise<void> {
-	const languagesRoot = debugMode ? "../Lang" : "dist/Lang";
+	const languagesRoot = languagesRootOf(debugMode);
 	const languages = (await readdir(languagesRoot, {
 		withFileTypes: true
 	}))
