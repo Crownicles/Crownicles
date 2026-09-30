@@ -3,11 +3,13 @@ import {Animated, Easing, LayoutChangeEvent, Pressable, StyleSheet, View} from "
 import {selectionAsync} from "expo-haptics";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {LucideIcon} from "@/src/design/FightIcons";
+import {CountBadge} from "@/src/design/Primitives";
 import {ProgressRing} from "@/src/design/ProgressRing";
 import {Theme} from "@/src/design/Theme";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {TRAVEL_DASH_MS} from "@/src/store/TravelDashStore";
+import {i18n} from "@/src/translations/i18n";
 
 export type CapsuleTab = {
 	name: string;
@@ -16,6 +18,9 @@ export type CapsuleTab = {
 	isNew: boolean;
 	/** Draws a ring around the icon, filled that far. */
 	progress?: number;
+
+	/** How many rewards wait behind the tab, drawn as a pill on the icon. */
+	badge?: number;
 };
 
 type CapsuleTabBarProps = {
@@ -38,6 +43,8 @@ const FOCUSED_SHARE = 2.3;
 const LABEL = {gap: 8, padding: 14} as const;
 const CAPSULE_SHADOW = {opacity: 0.14, radius: 15, offsetY: 10, elevation: 8} as const;
 const NEW_MARK_SIZE = 8;
+/** The count pill leans out of the icon's corner without leaving the capsule. */
+const BADGE_OFFSET = 6;
 const FILL = {position: "absolute", top: 0, right: 0, bottom: 0, left: 0} as const;
 
 const useStyles = createStyles(colors => ({
@@ -79,6 +86,7 @@ const useStyles = createStyles(colors => ({
 		color: colors.selectionInk
 	},
 	hitArea: {position: "absolute", top: 0, height: PILL_HEIGHT},
+	badge: {position: "absolute", top: -BADGE_OFFSET, right: -BADGE_OFFSET},
 	newMark: {
 		position: "absolute",
 		top: 0,
@@ -178,7 +186,8 @@ function TabContent({tab, index, count, slots, position, focused}: TabContentPro
 		<Animated.View style={[styles.icon, {transform: [{translateX: motion.iconX}]}]}>
 			<Animated.View style={[styles.iconLayer, {opacity: motion.hidden}]}><TabGlyph tab={tab} color={colors.muted} ring={ring} /></Animated.View>
 			<Animated.View style={[styles.iconLayer, {opacity: motion.shown}]}><TabGlyph tab={tab} color={colors.selectionInk} ring={ring} /></Animated.View>
-			{tab.isNew && !focused ? <View style={styles.newMark} testID="tab-new-mark" /> : null}
+			{tab.badge ? <View style={styles.badge}><CountBadge count={tab.badge} testID={`tab-badge-${tab.name}`} /></View> : null}
+			{tab.isNew && !focused && !tab.badge ? <View style={styles.newMark} testID="tab-new-mark" /> : null}
 		</Animated.View>
 		<Animated.Text
 			numberOfLines={1}
@@ -218,6 +227,7 @@ export function CapsuleTabBar({tabs, focused, position, onSelect}: CapsuleTabBar
 					accessibilityRole="tab"
 					accessibilityLabel={tab.title}
 					accessibilityState={{selected: tab.name === focused}}
+					{...tab.badge ? {accessibilityValue: {text: i18n.t("app:common.toCollect", {count: tab.badge})}} : {}}
 					style={[styles.hitArea, {left: slotStart(index, focusIndex, slots), width: index === focusIndex ? slots.focused : slots.idle}]}
 					testID={`capsule-tab-${tab.name}`}
 				/>)}

@@ -1,5 +1,6 @@
 import {ItemNature} from "ws-packets/src/objects/ItemNature";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
+import {SupportItem} from "ws-packets/src/objects/SupportItem";
 import {i18n} from "@/src/translations/i18n";
 import {formatNumber} from "@/src/display/Amounts";
 
@@ -18,6 +19,21 @@ const NATURE_UNITS: Partial<Record<ItemNature, string>> = {
 
 export function natureUnit(nature: ItemNature): string | undefined {
 	return NATURE_UNITS[nature];
+}
+
+/** Natures only a fight can use: such a potion cannot be drunk and such an object gives no daily bonus. */
+const FIGHT_NATURES: ReadonlySet<ItemNature> = new Set([ItemNature.ATTACK, ItemNature.DEFENSE, ItemNature.SPEED]);
+
+function isSupportItem(item: ItemWithDetails): item is SupportItem {
+	return "nature" in item;
+}
+
+export function isDrinkable(item: ItemWithDetails): boolean {
+	return isSupportItem(item) && !FIGHT_NATURES.has(item.nature);
+}
+
+export function givesDailyBonus(item: ItemWithDetails): boolean {
+	return isSupportItem(item) && item.nature !== ItemNature.NONE && !FIGHT_NATURES.has(item.nature);
 }
 
 export function formatDurationMinutes(totalMinutes: number): string {

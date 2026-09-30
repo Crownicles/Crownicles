@@ -9,6 +9,7 @@ import {HealAction, HealOffer, healOffer, PendingAction, useBuyHeal} from "@/src
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
 import {activeEffect, effectLock, PlayerEffect} from "@/src/display/CommandRejection";
 import {useReportView} from "@/src/store/useReportActions";
+import {useLeagueRewardToClaim} from "@/src/store/useClaimables";
 import {gameRules} from "@/src/rules/GameRules";
 import {FightReq} from "ws-packets/src/fromClient/FightReq";
 import {FightErrorRes} from "ws-packets/src/fromServer/fight/FightRes";
@@ -106,8 +107,14 @@ function ArenaLinks({pages, onSelect, leagueId, classId}: {pages: readonly Arena
 		if (page === "classes" && classId !== undefined) return AppIcons.getIcon(`classes.${classId}`);
 		return AppIcons.getIcon(ARENA_ICONS[page]);
 	};
+	const leagueRewardToClaim = useLeagueRewardToClaim();
 	return <View style={styles.links}><QuickActions>
-		{pages.map(page => <QuickAction key={page} icon={icon(page)} onPress={(): void => onSelect(page)}>{i18n.t(`app:arena.pages.${page}`)}</QuickAction>)}
+		{pages.map(page => <QuickAction
+			key={page}
+			icon={icon(page)}
+			badge={page === "leagues" ? leagueRewardToClaim : 0}
+			onPress={(): void => onSelect(page)}
+		>{i18n.t(`app:arena.pages.${page}`)}</QuickAction>)}
 	</QuickActions></View>;
 }
 

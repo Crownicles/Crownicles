@@ -9,6 +9,7 @@ const mockOpen = jest.fn().mockResolvedValue(undefined);
 jest.mock("expo-router", () => ({useRouter: (): object => ({push: jest.fn()})}));
 jest.mock("@/src/store/usePlayerProfile", () => ({usePlayerProfile: jest.fn()}));
 jest.mock("@/src/store/useReportActions", () => ({useReportView: jest.fn()}));
+jest.mock("@/src/store/useClaimables", () => ({useLeagueRewardToClaim: (): number => 0}));
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: (): object => ({answerWithoutShowing: jest.fn()})}));
 jest.mock("@/src/store/useInventoryMenus", () => ({useCommandMenus: (): object => ({pending: false, message: null, open: mockOpen})}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));

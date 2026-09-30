@@ -6,7 +6,7 @@ import {InventoryItemCard} from "@/src/components/InventoryItemCard";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
 import {
-	EQUIPPED_SLOT, givesDailyBonus, InventoryItem, InventoryItemActions, itemActions, ItemKind, useInventoryItemActions
+	EQUIPPED_SLOT, InventoryItem, InventoryItemActions, itemActions, ItemKind, useInventoryItemActions
 } from "@/src/store/useInventoryItemActions";
 import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
@@ -15,7 +15,7 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {Clock3} from "@/src/design/FightIcons";
 import {formatNumber} from "@/src/display/Amounts";
-import {formatDurationMinutes} from "@/src/display/ItemEffects";
+import {formatDurationMinutes, givesDailyBonus} from "@/src/display/ItemEffects";
 import {materialName, plantName} from "@/src/display/Resources";
 import {EntryRow, ExpandableList, Fact, Lock} from "@/src/design/Sections";
 

@@ -8,6 +8,7 @@ import {TwemojiText} from "@/src/design/TwemojiText";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {KeyboardRevealProvider, useKeyboardAvoidance} from "@/src/design/KeyboardAvoidance";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
+import {i18n} from "@/src/translations/i18n";
 
 /** The scroll offset only feeds the keyboard reveal, which needs no finer grain than a frame. */
 const SCROLL_EVENT_THROTTLE_MS = 16;
@@ -189,6 +190,9 @@ const buttonStylesOf = (colors: Palette) => StyleSheet.create({
 	}
 });
 
+/** The red pill counting what waits to be collected behind a tab or a tile. */
+const COUNT_BADGE = {height: 20, padding: 5, border: 2, max: 9} as const;
+
 const quickActionStylesOf = (colors: Palette) => StyleSheet.create({
 	quickActions: {
 		flexDirection: "row",
@@ -213,6 +217,25 @@ const quickActionStylesOf = (colors: Palette) => StyleSheet.create({
 		backgroundColor: colors.wash
 	},
 	quickActionSlot: {flex: 1},
+	quickActionBadge: {position: "absolute", top: -COUNT_BADGE.height / 3, right: -COUNT_BADGE.height / 3},
+	countBadge: {
+		minWidth: COUNT_BADGE.height,
+		height: COUNT_BADGE.height,
+		paddingHorizontal: COUNT_BADGE.padding,
+		borderRadius: COUNT_BADGE.height / 2,
+		borderWidth: COUNT_BADGE.border,
+		borderColor: colors.paper,
+		backgroundColor: colors.red,
+		alignItems: "center",
+		justifyContent: "center"
+	},
+	countBadgeText: {
+		color: colors.selectionInk,
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.eyebrow,
+		lineHeight: COUNT_BADGE.height - COUNT_BADGE.border * 2,
+		fontVariant: ["tabular-nums"]
+	},
 	quickActionLabel: {
 		color: colors.ink,
 		fontFamily: Theme.fonts.semiBold,
@@ -250,6 +273,9 @@ type QuickActionProps = {
 	children: string;
 	onPress?: () => void;
 	disabled?: boolean;
+
+	/** How many rewards wait behind the tile, drawn as a pill on its corner. */
+	badge?: number;
 };
 
 const buttonVariantStyles = {
@@ -421,17 +447,31 @@ export function PendingMotion({children}: {children: ReactNode}): ReactNode {
 	return <Animated.View style={style} testID="pending-motion">{children}</Animated.View>;
 }
 
-function QuickActionContent({icon, label, iconScale}: {icon: string; label: string; iconScale?: Animated.Value}): ReactNode {
+/** Counts what waits to be collected, so the player follows the pills down to it; nothing when nothing waits. */
+export function CountBadge({count, testID}: {count: number; testID?: string}): ReactNode {
+	const styles = useStyles();
+	if (count <= 0) return null;
+	return <View
+		style={styles.countBadge}
+		accessibilityLabel={i18n.t("app:common.toCollect", {count})}
+		testID={testID ?? "count-badge"}
+	>
+		<Text style={styles.countBadgeText}>{count > COUNT_BADGE.max ? `${COUNT_BADGE.max}+` : String(count)}</Text>
+	</View>;
+}
+
+function QuickActionContent({icon, label, iconScale, badge}: {icon: string; label: string; iconScale?: Animated.Value; badge?: number}): ReactNode {
 	const styles = useStyles();
 	return <>
 		<Animated.View style={iconScale ? {transform: [{scale: iconScale}]} : undefined}>
 			<TwemojiIcon emoji={icon} size={Theme.dimensions.quickActionIcon} />
 		</Animated.View>
 		<Text style={styles.quickActionLabel}>{label}</Text>
+		{badge ? <View style={styles.quickActionBadge}><CountBadge count={badge} /></View> : null}
 	</>;
 }
 
-function PressableQuickAction({icon, children, onPress, disabled}: Required<QuickActionProps>): ReactNode {
+function PressableQuickAction({icon, children, onPress, disabled, badge}: Required<Omit<QuickActionProps, "badge">> & Pick<QuickActionProps, "badge">): ReactNode {
 	const styles = useStyles();
 	const {scale, iconScale, handlers} = usePressMotion(onPress);
 	return (
@@ -448,20 +488,20 @@ function PressableQuickAction({icon, children, onPress, disabled}: Required<Quic
 				disabled && styles.rowDisabled,
 				{transform: [{scale}]}
 			]}>
-				<QuickActionContent icon={icon} label={children} iconScale={iconScale} />
+				<QuickActionContent icon={icon} label={children} iconScale={iconScale} {...badge ? {badge} : {}} />
 			</Animated.View>}
 		</Pressable>
 	);
 }
 
-export function QuickAction({icon, children, onPress, disabled = false}: QuickActionProps): ReactNode {
+export function QuickAction({icon, children, onPress, disabled = false, badge}: QuickActionProps): ReactNode {
 	const styles = useStyles();
 	if (!onPress) {
 		return <View style={[styles.quickAction, disabled && styles.rowDisabled]}>
-			<QuickActionContent icon={icon} label={children} />
+			<QuickActionContent icon={icon} label={children} {...badge ? {badge} : {}} />
 		</View>;
 	}
-	return <PressableQuickAction icon={icon} onPress={onPress} disabled={disabled}>{children}</PressableQuickAction>;
+	return <PressableQuickAction icon={icon} onPress={onPress} disabled={disabled} {...badge ? {badge} : {}}>{children}</PressableQuickAction>;
 }
 
 export function EmptyState({ children }: { children: string }): ReactNode {

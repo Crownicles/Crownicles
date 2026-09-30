@@ -67,6 +67,7 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
 import {formatDurationMinutes} from "@/src/display/ItemEffects";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {useMissionsToClaim} from "@/src/store/useClaimables";
 import {useTravelAdvicesShown} from "@/src/preferences/TravelAdvicePreference";
 import {WorldMap} from "@/src/components/WorldMap";
 import {DetailScreen} from "@/src/design/DetailScreen";
@@ -716,9 +717,10 @@ function isAdventureTool(value: unknown): value is AdventureTool {
 
 /** Side trips that belong to the journey screen itself, never on top of an open menu. */
 function AdventureTools({onOpen}: {onOpen: (tool: AdventureTool) => void}): ReactNode {
+	const missionsToClaim = useMissionsToClaim();
 	return <QuickActions>
 		<QuickAction icon={AppIcons.getIcon("expedition.map")} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.MAP)}>{i18n.t("app:map.title")}</QuickAction>
-		<QuickAction icon={AppIcons.getIcon("missions.campaign")} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.MISSIONS)}>{i18n.t("app:profile.titles.missions")}</QuickAction>
+		<QuickAction icon={AppIcons.getIcon("missions.campaign")} badge={missionsToClaim} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.MISSIONS)}>{i18n.t("app:profile.titles.missions")}</QuickAction>
 	</QuickActions>;
 }
 

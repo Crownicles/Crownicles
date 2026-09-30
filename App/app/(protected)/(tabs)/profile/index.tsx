@@ -9,6 +9,7 @@ import {EmptyState, QuickAction, QuickActions, Screen} from "@/src/design/Primit
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {useDailyBonusToClaim} from "@/src/store/useClaimables";
 import {useContest} from "@/src/onboarding/Contest";
 import {GuideTip} from "@/src/onboarding/GuideTip";
 import {ONBOARDING_MOMENTS, useOnboardingMoments} from "@/src/onboarding/OnboardingStore";
@@ -47,10 +48,16 @@ function ProfileDetails({profile, onPage}: {profile: ProfileRes; onPage: (page: 
 	// Bailing other players out means nothing yet to someone still discovering the game.
 	const beginner = useJourney().nextStep !== null;
 	const pages = beginner ? PROFILE_PAGES.filter(entry => entry.page !== "unlock") : PROFILE_PAGES;
+	const dailyBonusToClaim = useDailyBonusToClaim();
 	return <ProfileView profile={profile} onPage={onPage} lead={<>
 		<ProfileGuide />
 		<QuickActions>
-			{pages.map(entry => <QuickAction key={entry.page} icon={AppIcons.getIcon(entry.icon)} onPress={(): void => onPage(entry.page)}>{i18n.t(`app:profile.titles.${entry.page}`)}</QuickAction>)}
+			{pages.map(entry => <QuickAction
+				key={entry.page}
+				icon={AppIcons.getIcon(entry.icon)}
+				badge={entry.page === "inventory" ? dailyBonusToClaim : 0}
+				onPress={(): void => onPage(entry.page)}
+			>{i18n.t(`app:profile.titles.${entry.page}`)}</QuickAction>)}
 		</QuickActions>
 	</>} />;
 }

@@ -56,4 +56,17 @@ describe("CapsuleTabBar", () => {
 
 		expect(screen.getAllByTestId("progress-ring", {includeHiddenElements: true})).toHaveLength(2);
 	});
+
+	it("counts on its icon what waits behind a tab, even the open one, and says it to assistive technologies", async () => {
+		const tabs = TABS.map(tab => tab.name === "pet" ? {...tab, badge: 12} : tab.name === "profile" ? {...tab, badge: 1} : tab);
+		await render(<CapsuleTabBar tabs={tabs} focused="profile" position={new Animated.Value(1)} onSelect={jest.fn()} />);
+		await laidOut();
+
+		expect(screen.getByTestId("tab-badge-profile", {includeHiddenElements: true})).toHaveTextContent("1");
+		expect(screen.getByTestId("tab-badge-pet", {includeHiddenElements: true})).toHaveTextContent("9+");
+		expect(screen.queryByTestId("tab-badge-index", {includeHiddenElements: true})).toBeNull();
+		// The pill already draws the eye: the new-tab dot would only crowd the same corner.
+		expect(screen.queryByTestId("tab-new-mark", {includeHiddenElements: true})).toBeNull();
+		expect(screen.getByRole("tab", {name: "Familier"})).toHaveAccessibilityValue({text: "12 à récupérer"});
+	});
 });

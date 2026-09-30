@@ -89,7 +89,8 @@
     "yes": "Oui",
     "no": "Non",
     "connectionError": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
-    "reconnect": "Se reconnecter"
+    "reconnect": "Se reconnecter",
+    "toCollect": "{{count}} à récupérer"
   },
   "inputIssues": {
     "forbiddenCharacter": "Le caractère {{character}} n'est pas autorisé.",

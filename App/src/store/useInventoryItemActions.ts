@@ -3,9 +3,8 @@ import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {DAILY_BONUS_REACTION_KINDS, DRINK_REACTION_KINDS, ReactionCollectorReaction, SELL_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {EQUIP_ACTIONS, EQUIP_ERRORS, EquipAction} from "ws-packets/src/objects/EquipCategoryData";
-import {ItemNature} from "ws-packets/src/objects/ItemNature";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
-import {SupportItem} from "ws-packets/src/objects/SupportItem";
+import {givesDailyBonus, isDrinkable} from "@/src/display/ItemEffects";
 import {CommandMenu, INVENTORY_MENUS, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {useEquipmentActions} from "@/src/store/useEquipmentActions";
 import type {Lock} from "@/src/design/Sections";
@@ -37,21 +36,6 @@ export type ItemActionChoice = {action: ItemAction; lock?: Lock};
 type EquipmentAction = typeof ITEM_ACTIONS.EQUIP | typeof ITEM_ACTIONS.DEPOSIT;
 type MenuAction = Exclude<ItemAction, EquipmentAction>;
 type ReactionMatcher = (reaction: ReactionCollectorReaction, entry: InventoryItem) => boolean;
-
-/** Natures only a fight can use: such a potion cannot be drunk and such an object gives no daily bonus. */
-const FIGHT_NATURES: ReadonlySet<ItemNature> = new Set([ItemNature.ATTACK, ItemNature.DEFENSE, ItemNature.SPEED]);
-
-function isSupportItem(item: ItemWithDetails): item is SupportItem {
-	return "nature" in item;
-}
-
-function isDrinkable(item: ItemWithDetails): boolean {
-	return isSupportItem(item) && !FIGHT_NATURES.has(item.nature);
-}
-
-export function givesDailyBonus(item: ItemWithDetails): boolean {
-	return isSupportItem(item) && item.nature !== ItemNature.NONE && !FIGHT_NATURES.has(item.nature);
-}
 
 /** Potions are never bought back: selling one only throws it away. */
 function saleAction(entry: InventoryItem): ItemActionChoice {

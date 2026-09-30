@@ -1,12 +1,8 @@
 import {ReactNode} from "react";
 import {useLocalSearchParams, useRouter} from "expo-router";
-import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
-import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
-import {GameClient} from "@/src/networking/GameClient";
-import {GAME_ENTITIES} from "@/src/store/GameEntities";
-import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
+import {RequestState} from "@/src/store/useGameQuery";
+import {useOwnInventory} from "@/src/store/useClaimables";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {Badges, Blessing, Guide} from "@/src/components/CharacterReference";
 import {Rankings} from "@/src/components/Rankings";
@@ -38,11 +34,7 @@ function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNo
 }
 
 function ProfileInventory(): ReactNode {
-	const state = useGameQuery<InventoryRes>(
-		GAME_ENTITIES.INVENTORY,
-		() => GameClient.request(makeFromClientPacket(InventoryReq, {askedPlayer: {}}), InventoryRes, [PlayerNotFound])
-	);
-	return <InventorySection state={state} />;
+	return <InventorySection state={useOwnInventory()} />;
 }
 
 function ProfilePageContent({page}: {page: ProfilePageName}): ReactNode {

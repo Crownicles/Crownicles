@@ -1,13 +1,14 @@
 import {ReactNode, useState} from "react";
 import {Pressable, StyleProp, Text, View, ViewStyle} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {FightHistoryReq, LeagueInfoReq, LeagueRewardReq} from "ws-packets/src/fromClient/RankingsReq";
+import {FightHistoryReq, LeagueRewardReq} from "ws-packets/src/fromClient/RankingsReq";
 import {FightHistoryRes, LeagueInfoRes, LeagueRewardRes} from "ws-packets/src/fromServer/fight/RankingsRes";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {EloGameResult, FightHistoryEntry, LeagueInfo, LeagueRewardAvailability} from "ws-packets/src/objects/Rankings";
 import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
+import {useLeagueInfo} from "@/src/store/useClaimables";
 import {GameClient} from "@/src/networking/GameClient";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
@@ -240,6 +241,6 @@ export function LeaguesContent({data}: {data: LeagueInfoRes}): ReactNode {
 }
 
 export function Leagues(): ReactNode {
-	const state = useGameQuery(GAME_ENTITIES.LEAGUES, () => GameClient.request(makeFromClientPacket(LeagueInfoReq, {}), LeagueInfoRes));
+	const state = useLeagueInfo();
 	return <GameQueryContent state={state} entity={GAME_ENTITIES.LEAGUES}>{packet => <LeaguesContent data={packet} />}</GameQueryContent>;
 }

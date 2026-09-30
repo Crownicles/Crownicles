@@ -15,6 +15,7 @@ import {Castle, Compass, LucideIcon, PawPrint, Swords, UserRound} from "@/src/de
 import {CapsuleTabBar, RING_TICK_MS} from "@/src/components/CapsuleTabBar";
 import {reportWaitProgress} from "@/src/display/ReportTiming";
 import {useCurrentTime} from "@/src/store/useCurrentTime";
+import {useTabClaimables} from "@/src/store/useClaimables";
 import {useTravelDashing} from "@/src/store/TravelDashStore";
 import {useOwnPet} from "@/src/store/useKnownPet";
 import {expeditionProgress} from "@/src/display/PetExpedition";
@@ -100,16 +101,19 @@ function NavigatorTabBar({state, position, navigation, journey}: NavigatorTabBar
 		[JOURNEY_TABS.PET]: useExpeditionProgress(currentTime),
 		[JOURNEY_TABS.ARENA]: useEnergyProgress(state.routes.some(route => route.name === JOURNEY_TABS.ARENA))
 	};
+	const claimables = useTabClaimables();
 	const tabs = state.routes.flatMap(route => {
 		const tab = TABS.find(candidate => candidate.name === route.name);
 		if (!tab) return [];
 		const ring = progress[tab.name];
+		const badge = claimables[tab.name] ?? 0;
 		return [{
 			name: tab.name,
 			title: i18n.t(tab.title),
 			Icon: tab.icon,
 			isNew: journey.isNew(tab.name),
-			...(ring === undefined ? {} : {progress: ring})
+			...(ring === undefined ? {} : {progress: ring}),
+			...(badge > 0 ? {badge} : {})
 		}];
 	});
 	const select = (name: string): void => {
