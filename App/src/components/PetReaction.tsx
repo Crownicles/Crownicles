@@ -32,7 +32,8 @@ const MOTE_SIZES = [14, 10, 16] as const;
 const MOTE_DRIFTS = [-6, 4, 10] as const;
 
 const useStyles = createStyles(() => ({
-	feast: {height: 78, alignItems: "center", justifyContent: "center"},
+	/** Room above the pet for the sparkles it gives off. */
+	feast: {height: 96, paddingTop: 18, alignItems: "center", justifyContent: "center"},
 	stage: {alignItems: "center", justifyContent: "center"},
 	bowlScene: {flexDirection: "row", alignItems: "flex-end", justifyContent: "center", gap: Theme.spacing.lg, paddingVertical: Theme.spacing.md},
 	brokenHeart: {position: "absolute", top: -6, right: -10},

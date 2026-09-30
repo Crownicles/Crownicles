@@ -162,12 +162,14 @@ function TabPager({journey}: {journey: Journey}): ReactNode {
 	const detailOpen = useSwipeBackOpen();
 	const held = useAdventureHoldsTabs();
 	// A lone tab needs no bar: the newcomer only sees the adventure until something else opens.
-	const showBar = journey.tabs.length > 1 && !held;
+	const hasTabs = journey.tabs.length > 1;
+	// An event holds the player on the adventure tab only: from anywhere else, the way back must stay open.
+	const heldOn = (routeName: string): boolean => held && routeName === JOURNEY_TABS.ADVENTURE;
 	return (
 		<TopTabs
 			tabBarPosition="bottom"
-			tabBar={(props: NavigatorTabBarProps) => showBar ? <NavigatorTabBar {...props} journey={journey} /> : null}
-			screenOptions={{swipeEnabled: !detailOpen && !held && journey.tabs.length > 1}}
+			tabBar={(props: NavigatorTabBarProps) => hasTabs && !heldOn(props.state.routes[props.state.index].name) ? <NavigatorTabBar {...props} journey={journey} /> : null}
+			screenOptions={({route}: {route: {name: string}}) => ({swipeEnabled: !detailOpen && hasTabs && !heldOn(route.name)})}
 			screenListeners={({route}: {route: {name: string}}) => ({focus: (): void => {
 				if (isJourneyTab(route.name)) journey.visit(route.name);
 			}})}

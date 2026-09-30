@@ -32,26 +32,26 @@ function feedMessage(outcome: Outcome): string {
 	return plainStory(i18n.t(`commands:petFeed.${ERROR_KEYS[outcome.error]}`, {pet}));
 }
 
-type FeedScene = {emblem: ReactNode; title: string; subtitle: string; stage?: ReactNode; hint?: string};
+type FeedScene = {title: string; subtitle: string; stage?: ReactNode; hint?: string};
 
+/** The pet's reaction plays centred above the story: squeezed into the title's emblem, its dance had no room. */
 function feedScene(outcome: Outcome, pet: OwnedPet | undefined, play: number, pseudo: string): FeedScene {
 	if (outcome.success) {
 		return {
-			emblem: pet ? <PetFeast pet={pet} result={outcome.result} play={play} /> : null,
+			...pet ? {stage: <PetFeast pet={pet} result={outcome.result} play={play} />} : {},
 			title: plainStory(i18n.t("commands:petFeed.resultTitle", {pseudo})),
 			subtitle: feedMessage(outcome)
 		};
 	}
 	if (outcome.error === PET_FEED_ERRORS.EMPTY_STORAGE) {
 		return {
-			emblem: null,
 			stage: <PetEmptyBowl pet={pet} play={play} />,
 			title: i18n.t("app:pet.feed.empty.title"),
 			subtitle: i18n.t("app:pet.feed.empty.description", {pet: pet ? petName(pet) : i18n.t("app:pet.eyebrow")}),
 			hint: i18n.t("app:pet.feed.empty.refill")
 		};
 	}
-	return {emblem: null, title: i18n.t("app:pet.feed.unavailable"), subtitle: feedMessage(outcome)};
+	return {title: i18n.t("app:pet.feed.unavailable"), subtitle: feedMessage(outcome)};
 }
 
 export function PetFeedOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
@@ -59,12 +59,12 @@ export function PetFeedOutcome({outcome, onContinue}: {outcome: Outcome; onConti
 	const pseudo = usePlayerPseudo();
 	/** The sheet rises over the feeding menu, so the dance waits for it to settle rather than play while it moves. */
 	const [play, setPlay] = useState(0);
-	const {emblem, title, subtitle, stage, hint} = feedScene(outcome, pet, play, pseudo);
+	const {title, subtitle, stage, hint} = feedScene(outcome, pet, play, pseudo);
 	return <BottomSheet onClose={onContinue} onShown={(): void => setPlay(1)}>
-		<JournalEntry plain {...emblem ? {emblem} : {}} title={title} effects={[]}>
+		{stage}
+		<JournalEntry plain title={title} effects={[]}>
 			<Story>{subtitle}</Story>
 		</JournalEntry>
-		{stage}
 		{hint ? <Note>{hint}</Note> : null}
 		<ActionBanner icon={PawPrint} label={i18n.t("app:pet.feed.continue")} onPress={onContinue} />
 	</BottomSheet>;
