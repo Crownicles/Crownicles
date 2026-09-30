@@ -2,39 +2,41 @@ import {ReactNode, useState} from "react";
 import {View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS, ReactionCollectorData} from "ws-packets/src/fromServer/collectors";
+import {ExpeditionProgress} from "ws-packets/src/objects/PetExpedition";
 import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
-import {ActionBanner, EntryRow, ExpandableEntry, ExpandableList, Fact, ModalSurface, SheetModal, Standing} from "@/src/design/Sections";
-import {Check, Flag} from "@/src/design/FightIcons";
+import {
+	ActionBanner, Effect, EFFECT_TONES, ExpandableList, Fact, JournalEntry, ModalSurface, SheetModal, Standing
+} from "@/src/design/Sections";
+import {Check, Flag, PawPrint} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Story} from "@/src/design/Story";
 import {Theme} from "@/src/design/Theme";
 import {createStyles} from "@/src/design/ThemeContext";
-import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
-import {ExpeditionOptionRow, ExpeditionProgressDetails} from "@/src/components/ExpeditionDetails";
+import {ExpeditionOptionRow} from "@/src/components/ExpeditionDetails";
 import {ImpatientPet} from "@/src/components/PetReaction";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
-import {isChoosable, reactionLabel} from "@/src/collectors/CollectorLabels";
 import {useCollectorAnswer} from "@/src/collectors/useCollectorAnswer";
 import {expeditionLocationName, expeditionPetIcon, expeditionPetName, expeditionRisk} from "@/src/display/PetExpedition";
 import {formatNumber} from "@/src/display/Amounts";
+import {missionDate} from "@/src/display/Missions";
+import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
 
 const PET_EMBLEM_SIZE = 34;
 
 const useStyles = createStyles(() => ({
 	options: {gap: Theme.spacing.sm, marginBottom: Theme.spacing.lg},
-	intro: {marginBottom: Theme.spacing.lg}
+	intro: {marginBottom: Theme.spacing.lg},
+	actions: {gap: Theme.spacing.sm}
 }));
 
 type ExpeditionData = Extract<ReactionCollectorData, {type: typeof EXPEDITION_DATA_KINDS[keyof typeof EXPEDITION_DATA_KINDS]}>;
 const EXPEDITION_KINDS = new Set<ReactionCollectorData["type"]>(Object.values(EXPEDITION_DATA_KINDS));
-type Unfolding = ExpandedEntry<number>;
 type MenuProps = {
 	collector: ReactionCollectorCreation;
 	data: ExpeditionData;
 	locked: boolean;
 	onChoose: (index: number) => void;
-	unfolding: Unfolding;
 };
 
 export function isExpeditionCollector(data: ReactionCollectorData): data is ExpeditionData {
@@ -57,7 +59,6 @@ function ExpeditionDataDetails({data}: {data: ExpeditionData}): ReactNode {
 	if (data.type === EXPEDITION_DATA_KINDS.CHOICE) return <View style={styles.intro}>
 		<Story>{i18n.t("commands:petExpedition.chooseExpedition", {petDisplay: `**${expeditionPetName(data.data.pet)}**`})}</Story>
 	</View>;
-	if (data.type === EXPEDITION_DATA_KINDS.PROGRESS) return <ExpeditionProgressDetails data={data.data} />;
 	return <ExpandableList>
 		<Fact label={i18n.t("app:expedition.destination")} value={expeditionLocationName(data.data)} />
 		<Fact label={i18n.t("app:expedition.risk")} value={expeditionRisk(data.data.riskCategory)} />
@@ -65,46 +66,48 @@ function ExpeditionDataDetails({data}: {data: ExpeditionData}): ReactNode {
 	</ExpandableList>;
 }
 
-/** A choice is confirmed where it was made: recalling states its price on the row itself. */
-function ExpeditionChoice({label, index, locked, unfolding, onChoose, confirmLabel, children}: {
-	label: string;
-	index: number;
-	locked: boolean;
-	unfolding: Unfolding;
-	onChoose: (index: number) => void;
-	confirmLabel: string;
-	children: ReactNode;
-}): ReactNode {
-	return <ExpandableEntry
-		label={label}
-		dimmed={locked}
-		expanded={unfolding.isExpanded(index)}
-		onToggle={(): void => unfolding.toggle(index)}
-	>
-		{children}
-		<ActionBanner icon={Check} label={confirmLabel} pending={locked} onPress={(): void => onChoose(index)} />
-	</ExpandableEntry>;
+function neutral(label: string, value: string, emoji: string): Effect {
+	return {label, value, tone: EFFECT_TONES.NEUTRAL, emoji};
 }
 
-function RecallChoices({collector, locked, onChoose, unfolding}: Omit<MenuProps, "data">): ReactNode {
-	// A reaction is known by its index: that is what the answer sends back.
-	const choices = collector.reactions.map((reaction, index) => ({reaction, index}));
-	return <ExpandableList>{choices.map(({reaction, index}) => reaction.type === EXPEDITION_REACTION_KINDS.RECALL
-		? <ExpeditionChoice
-			key={index}
-			label={reactionLabel(reaction, collector.data)}
-			index={index}
-			locked={locked}
-			unfolding={unfolding}
-			onChoose={onChoose}
-			confirmLabel={i18n.t("app:expedition.confirmRecall")}
-		><Note>{i18n.t("app:expedition.recallWarning")}</Note></ExpeditionChoice>
-		: <EntryRow
-			key={index}
-			title={reactionLabel(reaction, collector.data)}
-			disabled={locked || !isChoosable(reaction, collector.data)}
-			onPress={(): void => onChoose(index)}
-		/>)}</ExpandableList>;
+/** What Discord lists under the trip, as the chips an event result wears. */
+function progressEffects(data: ExpeditionProgress): Effect[] {
+	return [
+		neutral(i18n.t("app:expedition.risk"), i18n.t(`commands:petExpedition.riskCategories.${data.riskCategory}`), AppIcons.getIcon(`expedition.risk.${data.riskCategory}`)),
+		neutral(i18n.t("app:expedition.returnAt"), missionDate(data.returnTime), AppIcons.getIcon("expedition.duration")),
+		...data.foodConsumed ? [neutral(i18n.t("app:expedition.foodConsumed"), formatNumber(data.foodConsumed), AppIcons.getIcon("expedition.food"))] : []
+	];
+}
+
+/** The trip reads as an entry of the journal; leaving it is the way on, recalling the pet asks twice. */
+function ExpeditionInProgress({collector, data, locked, onChoose}: {collector: ReactionCollectorCreation; data: ExpeditionProgress; locked: boolean; onChoose: (index: number) => void}): ReactNode {
+	const styles = useStyles();
+	const [confirming, setConfirming] = useState(false);
+	const recallIndex = collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.RECALL);
+	const closeIndex = collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CLOSE);
+	const petDisplay = `**${expeditionPetName(data.pet)}**`;
+	return <>
+		<JournalEntry
+			emblem={<TwemojiIcon emoji={expeditionPetIcon(data.pet)} size={Theme.dimensions.headerIcon} />}
+			title={i18n.t(`app:expedition.titles.${EXPEDITION_DATA_KINDS.PROGRESS}`)}
+			effects={progressEffects(data)}
+		>
+			<Story>{i18n.t("commands:petExpedition.inProgressDescription.intro", {petDisplay})}</Story>
+			<Story>{i18n.t("commands:petExpedition.inProgressDescription.destination", {location: expeditionLocationName(data)})}</Story>
+		</JournalEntry>
+		<View style={styles.actions}>
+			{closeIndex >= 0 ? <ActionBanner icon={PawPrint} label={i18n.t("app:common.back")} pending={locked} onPress={(): void => onChoose(closeIndex)} /> : null}
+			{confirming ? <>
+				<Note>{i18n.t("app:expedition.recallWarning")}</Note>
+				<ActionBanner icon={Check} label={i18n.t("app:expedition.confirmRecall")} pending={locked} onPress={(): void => onChoose(recallIndex)} />
+			</> : null}
+		</View>
+		{recallIndex >= 0 ? <ButtonRow><Button
+			emoji={AppIcons.getIcon("expedition.recall")}
+			disabled={locked}
+			onPress={(): void => setConfirming(!confirming)}
+		>{i18n.t("app:expedition.recall")}</Button></ButtonRow> : null}
+	</>;
 }
 
 /** The three destinations fit on one screen: a tap picks one, the single button below sends the pet there. */
@@ -131,13 +134,19 @@ function DestinationChoices({collector, data, locked, onChoose}: {collector: Rea
 	</>;
 }
 
-function ExpeditionOptions({collector, data, locked, onChoose, unfolding}: MenuProps): ReactNode {
-	if (data.type === EXPEDITION_DATA_KINDS.PROGRESS) return <RecallChoices collector={collector} locked={locked} onChoose={onChoose} unfolding={unfolding} />;
+function ExpeditionOptions({collector, data, locked, onChoose}: MenuProps): ReactNode {
 	if (data.type !== EXPEDITION_DATA_KINDS.CHOICE) return <CollectorChoices collector={collector} onChoose={onChoose} submitting={locked} />;
 	return <DestinationChoices collector={collector} data={data.data} locked={locked} onChoose={onChoose} />;
 }
 
 function ExpeditionMenu({secondsLeft, ...props}: MenuProps & {secondsLeft: number}): ReactNode {
+	const timeLeft = props.data.type !== EXPEDITION_DATA_KINDS.FINISHED ? <Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note> : null;
+	if (props.data.type === EXPEDITION_DATA_KINDS.PROGRESS) {
+		return <Screen>
+			<ExpeditionInProgress collector={props.collector} data={props.data.data} locked={props.locked} onChoose={props.onChoose} />
+			{timeLeft}
+		</Screen>;
+	}
 	return <Screen>
 		<Standing
 			emblem={props.data.type === EXPEDITION_DATA_KINDS.CHOICE
@@ -149,16 +158,14 @@ function ExpeditionMenu({secondsLeft, ...props}: MenuProps & {secondsLeft: numbe
 		/>
 		<ExpeditionDataDetails data={props.data} />
 		<ExpeditionOptions {...props} />
-		{props.data.type !== EXPEDITION_DATA_KINDS.FINISHED ? <Note>{i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}</Note> : null}
+		{timeLeft}
 	</Screen>;
 }
 
 export function PetExpeditionCollector({collector, onChoose, submitting}: {collector: ReactionCollectorCreation; onChoose: (index: number) => void; submitting: boolean}): ReactNode {
-	const unfolding = useExpandedEntry<number>();
 	const {answer, locked, secondsLeft} = useCollectorAnswer(collector, onChoose, submitting);
 	const choose = (index: number): void => {
 		if (locked || index < 0) return;
-		unfolding.collapse();
 		answer(index);
 	};
 	const close = (): void => answer(collector.reactions.findIndex(reaction => reaction.type === EXPEDITION_REACTION_KINDS.CANCEL || reaction.type === EXPEDITION_REACTION_KINDS.CLOSE));
@@ -170,7 +177,6 @@ export function PetExpeditionCollector({collector, onChoose, submitting}: {colle
 				data={collector.data}
 				locked={locked}
 				onChoose={choose}
-				unfolding={unfolding}
 				secondsLeft={secondsLeft}
 			/>
 		</ModalSurface>

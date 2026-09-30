@@ -1,14 +1,15 @@
 import {ReactNode, useState} from "react";
-import {View} from "react-native";
 import {PetExpeditionResolveRes} from "ws-packets/src/fromServer/pet/PetExpeditionRes";
 import {ExpeditionRewards} from "ws-packets/src/objects/PetExpedition";
 import {ExpeditionOutcome} from "@/src/store/useExpeditionOutcome";
 import {Button, ButtonRow, Note, Screen} from "@/src/design/Primitives";
-import {Effect, EFFECT_TONES, Effects, ModalSurface, SheetModal, Standing, Toast} from "@/src/design/Sections";
+import {
+	ActionBanner, Effect, EFFECT_TONES, JournalEntry, ModalSurface, SheetModal, Standing, Toast
+} from "@/src/design/Sections";
+import {BookOpen} from "@/src/design/FightIcons";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Story} from "@/src/design/Story";
 import {Theme} from "@/src/design/Theme";
-import {createStyles} from "@/src/design/ThemeContext";
 import {ExpeditionStarted, ExpeditionStatus} from "@/src/components/ExpeditionJourney";
 import {LetDownPet, TriumphantPet} from "@/src/components/PetReaction";
 import {expeditionLocationName, expeditionPetIcon, expeditionPetName} from "@/src/display/PetExpedition";
@@ -18,13 +19,7 @@ import {randomTranslation} from "@/src/translations/RandomTranslation";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
 
-const PET_EMBLEM_SIZE = 40;
 const TOAST_EMBLEM_SIZE = 24;
-
-const useStyles = createStyles(() => ({
-	story: {paddingVertical: Theme.spacing.lg}
-}));
-
 
 type ResolvedPacket = PetExpeditionResolveRes;
 const EXPEDITION_RESULTS = {SUCCESS: "success", PARTIAL: "partial", FAILURE: "failure"} as const;
@@ -83,12 +78,12 @@ function resolvedStory(packet: ResolvedPacket, result: ExpeditionResult): string
 	return `${told}${i18n.t(`commands:petExpedition.${love(packet.loveChange)}`)}${liked}`;
 }
 
-function ExpeditionResolved({packet}: {packet: ResolvedPacket}): ReactNode {
-	const styles = useStyles();
-	const effects = resolvedEffects(packet);
+function ExpeditionResolved({packet, emblem}: {packet: ResolvedPacket; emblem: ReactNode}): ReactNode {
+	const result = expeditionResult(packet);
 	return <>
-		{effects.length > 0 ? <Effects items={effects} /> : null}
-		<View style={styles.story}><Story>{resolvedStory(packet, expeditionResult(packet))}</Story></View>
+		<JournalEntry emblem={emblem} title={i18n.t(`app:expedition.resolvedTitles.${result}`)} effects={resolvedEffects(packet)}>
+			<Story>{resolvedStory(packet, result)}</Story>
+		</JournalEntry>
 		{packet.rewards?.itemGiven ? <Note>{i18n.t("app:expedition.itemFound")}</Note> : null}
 		{packet.badgeEarned ? <Note>{i18n.t("app:expedition.badge", {badge: i18n.t(`app:reference.badges.names.${packet.badgeEarned}`)})}</Note> : null}
 	</>;
@@ -101,49 +96,56 @@ function isForgiven(outcome: LoveLossOutcome): boolean {
 }
 
 /** Discord's own account of the pet's disappointment, with what it cost in trust. */
-function ExpeditionLetDown({outcome}: {outcome: LoveLossOutcome}): ReactNode {
-	const styles = useStyles();
+function ExpeditionLetDown({outcome, emblem}: {outcome: LoveLossOutcome; emblem: ReactNode}): ReactNode {
 	const {pet, loveLost} = outcome.packet;
 	const key = outcome.kind === "recalled" ? "recalled" : isForgiven(outcome) ? "freeCancelled" : "cancelled";
-	return <>
-		{loveLost > 0 ? <Effects items={[{label: i18n.t("app:expedition.love"), value: `-${formatNumber(loveLost)}`, tone: EFFECT_TONES.LOSS, emoji: AppIcons.getIcon("expedition.disliked")}]} /> : null}
-		<View style={styles.story}>
-			<Story>{i18n.t(`commands:petExpedition.${key}`, {petDisplay: `**${expeditionPetName(pet)}**`, context: pet.petSex === "f" ? "female" : "male"})}</Story>
-		</View>
-	</>;
+	const effects: Effect[] = loveLost > 0 ? [{label: i18n.t("app:expedition.love"), value: `-${formatNumber(loveLost)}`, tone: EFFECT_TONES.LOSS, emoji: AppIcons.getIcon("expedition.disliked")}] : [];
+	return <JournalEntry emblem={emblem} title={i18n.t(`app:expedition.outcomes.${outcome.kind}`)} effects={effects}>
+		<Story>{i18n.t(`commands:petExpedition.${key}`, {petDisplay: `**${expeditionPetName(pet)}**`, context: pet.petSex === "f" ? "female" : "male"})}</Story>
+	</JournalEntry>;
 }
 
-function OutcomeContent({outcome}: {outcome: ExpeditionOutcome}): ReactNode {
+type JournalOutcome = Extract<ExpeditionOutcome, {kind: "resolved" | "cancelled" | "recalled"}>;
+type PlainOutcome = Exclude<ExpeditionOutcome, JournalOutcome>;
+
+function isJournalOutcome(outcome: ExpeditionOutcome): outcome is JournalOutcome {
+	return outcome.kind === "resolved" || outcome.kind === "cancelled" || outcome.kind === "recalled";
+}
+
+function OutcomeContent({outcome}: {outcome: PlainOutcome}): ReactNode {
 	switch (outcome.kind) {
 		case "status": return <ExpeditionStatus packet={outcome.packet} />;
 		case "started": return <ExpeditionStarted packet={outcome.packet} />;
-		case "resolved": return <ExpeditionResolved packet={outcome.packet} />;
-		case "error": return <Note>{i18n.t(`app:expedition.errors.${outcome.packet.errorCode}`)}</Note>;
-		default: return <ExpeditionLetDown outcome={outcome} />;
+		default: return <Note>{i18n.t(`app:expedition.errors.${outcome.packet.errorCode}`)}</Note>;
 	}
 }
 
-function outcomeEmblem(outcome: ExpeditionOutcome, play: number): ReactNode {
-	if (outcome.kind === "resolved") {
-		const emoji = expeditionPetIcon(outcome.packet.pet);
-		const result = expeditionResult(outcome.packet);
-		return result === EXPEDITION_RESULTS.SUCCESS
-			? <TriumphantPet emoji={emoji} size={PET_EMBLEM_SIZE} play={play} />
-			: <LetDownPet emoji={emoji} size={PET_EMBLEM_SIZE} play={play} forgiving={result === EXPEDITION_RESULTS.PARTIAL} />;
-	}
-	if (outcome.kind !== "cancelled" && outcome.kind !== "recalled") return undefined;
-	return <LetDownPet emoji={expeditionPetIcon(outcome.packet.pet)} size={PET_EMBLEM_SIZE} play={play} forgiving={isForgiven(outcome)} />;
+/** The pet cheers when the trip went well, sulks otherwise, and forgives a free cancellation or a half success. */
+function outcomeEmblem(outcome: JournalOutcome, play: number): ReactNode {
+	const size = Theme.dimensions.headerIcon;
+	const emoji = expeditionPetIcon(outcome.packet.pet);
+	if (outcome.kind !== "resolved") return <LetDownPet emoji={emoji} size={size} play={play} forgiving={isForgiven(outcome)} />;
+	const result = expeditionResult(outcome.packet);
+	return result === EXPEDITION_RESULTS.SUCCESS
+		? <TriumphantPet emoji={emoji} size={size} play={play} />
+		: <LetDownPet emoji={emoji} size={size} play={play} forgiving={result === EXPEDITION_RESULTS.PARTIAL} />;
 }
 
-function outcomeHeading(outcome: ExpeditionOutcome): {caption: string; title: string} {
-	if (outcome.kind === "resolved") return {caption: expeditionLocationName(outcome.packet.expedition), title: i18n.t(`app:expedition.resolvedTitles.${expeditionResult(outcome.packet)}`)};
-	return {caption: i18n.t("app:pet.eyebrow"), title: i18n.t(`app:expedition.outcomes.${outcome.kind}`)};
+/** A homecoming or a let-down is told like an event of the journey: its journal entry, then a single way on. */
+function OutcomeJournal({outcome, play, onContinue}: {outcome: JournalOutcome; play: number; onContinue: () => void}): ReactNode {
+	const emblem = outcomeEmblem(outcome, play);
+	return <Screen>
+		{outcome.kind === "resolved"
+			? <ExpeditionResolved packet={outcome.packet} emblem={emblem} />
+			: <ExpeditionLetDown outcome={outcome} emblem={emblem} />}
+		<ActionBanner icon={BookOpen} label={i18n.t("app:expedition.continue")} onPress={onContinue} />
+	</Screen>;
 }
 
 function OutcomeMenu({outcome, play, onContinue}: {outcome: ExpeditionOutcome; play: number; onContinue: () => void}): ReactNode {
-	const emblem = outcomeEmblem(outcome, play);
+	if (isJournalOutcome(outcome)) return <OutcomeJournal outcome={outcome} play={play} onContinue={onContinue} />;
 	return <Screen>
-		<Standing {...emblem ? {emblem} : {}} {...outcomeHeading(outcome)} />
+		<Standing caption={i18n.t("app:pet.eyebrow")} title={i18n.t(`app:expedition.outcomes.${outcome.kind}`)} />
 		<OutcomeContent outcome={outcome} />
 		<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:common.back")}</Button></ButtonRow>
 	</Screen>;

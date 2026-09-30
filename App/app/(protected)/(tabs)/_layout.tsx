@@ -31,9 +31,18 @@ import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const NEW_MARK_SIZE = 8;
+const ACTIVE_PILL = {width: 52, height: 28} as const;
+const INACTIVE_ICON_OPACITY = 0.45;
 const useTabStyles = createStyles(colors => ({
-	icon: {alignItems: "center", justifyContent: "center"},
-	mark: {position: "absolute", top: -Theme.spacing.xs, left: "100%", marginLeft: -Theme.spacing.xs},
+	// Both states keep the pill's size: the tab bar cross-fades them on top of each other.
+	icon: {...ACTIVE_PILL, borderRadius: ACTIVE_PILL.height / 2, alignItems: "center", justifyContent: "center"},
+	active: {backgroundColor: colors.goldWash},
+	mark: {
+		position: "absolute",
+		top: (ACTIVE_PILL.height - Theme.dimensions.tabBarIcon) / 2 - Theme.spacing.xs,
+		left: "50%",
+		marginLeft: Theme.dimensions.tabBarIcon / 2 - Theme.spacing.xs
+	},
 	newMark: {
 		width: NEW_MARK_SIZE,
 		height: NEW_MARK_SIZE,
@@ -62,8 +71,8 @@ function tabMark(tab: JourneyTab, journey: Journey): ReactElement | null {
 
 function TabIconView({path, mark, focused}: {path: string; mark: ReactElement | null; focused: boolean}): ReactElement {
 	const tabStyles = useTabStyles();
-	return <View style={tabStyles.icon}>
-		<TwemojiIcon emoji={AppIcons.getIcon(path)} size={Theme.dimensions.tabBarIcon} opacity={focused ? 1 : 0.55} />
+	return <View style={[tabStyles.icon, focused && tabStyles.active]}>
+		<TwemojiIcon emoji={AppIcons.getIcon(path)} size={Theme.dimensions.tabBarIcon} opacity={focused ? 1 : INACTIVE_ICON_OPACITY} />
 		{mark ? <View style={tabStyles.mark}>{mark}</View> : null}
 	</View>;
 }

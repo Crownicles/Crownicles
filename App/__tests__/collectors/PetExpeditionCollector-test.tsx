@@ -36,7 +36,7 @@ describe("expedition collectors", () => {
 		await render(<PetExpeditionCollector collector={collector} onChoose={onChoose} submitting={false} />);
 		await fireEvent.press(screen.getByText("app:expedition.recall"));
 		expect(onChoose).not.toHaveBeenCalled();
-		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
+		await fireEvent.press(screen.getByText("app:expedition.recall"));
 		expect(screen.queryByText("app:expedition.confirmRecall")).toBeNull();
 		await fireEvent.press(screen.getByText("app:expedition.recall"));
 		expect(onChoose).not.toHaveBeenCalled();
