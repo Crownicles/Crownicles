@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Animated, Easing, Pressable, Text, View} from "react-native";
+import {Animated, Easing, Modal, Pressable, Text, View} from "react-native";
 import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
 import {AppIcons} from "@/src/AppIcons";
 import {ActionBanner} from "@/src/design/Sections";
@@ -9,7 +9,7 @@ import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {journeyStepLevel, JourneyStep} from "@/src/journey/Journey";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
-import {isAdventureScreenCollector} from "@/src/collectors/CollectorRouting";
+import {holdsAdventureTab} from "@/src/collectors/CollectorRouting";
 import {
 	useAutomaticSmallEventOutcome, useBigEventOutcome, useHealOutcome, useLotteryOutcome, useShopResult,
 	useSmallEventChoiceOutcome, useTokenOutcome, useWitchOutcome
@@ -70,12 +70,26 @@ function between(value: Animated.Value, input: [number, number], output: [number
 	return value.interpolate({inputRange: input, outputRange: output, extrapolate: "clamp"});
 }
 
+type CelebrationProps = {
+	icon: string;
+	eyebrow: string;
+	title: string;
+	description?: string;
+	children: ReactNode;
+	testID?: string;
+};
+
 /** The stories the adventure tab is telling, read before moving on. */
 function useAdventureStories(): unknown[] {
 	return [
 		useBigEventOutcome(), useLotteryOutcome(), useWitchOutcome(), useSmallEventChoiceOutcome(),
 		useAutomaticSmallEventOutcome(), useShopResult()
 	];
+}
+
+/** Whether the adventure tab is telling a story the player has not read to the end yet. */
+export function useAdventureTelling(): boolean {
+	return useAdventureStories().some(outcome => outcome !== null);
 }
 
 /** Whether the adventure tab is telling a story or asking something, which an unlock must not cover. */
@@ -88,8 +102,8 @@ export function useAdventureBusy(): boolean {
 /** Whether an event holds the player on the adventure tab; a heal or a token spent is too quick to hide the tabs for. */
 export function useAdventureHoldsTabs(): boolean {
 	const {open} = useCollectors();
-	const stories = useAdventureStories();
-	return open.some(isAdventureScreenCollector) || stories.some(outcome => outcome !== null);
+	const telling = useAdventureTelling();
+	return open.some(holdsAdventureTab) || telling;
 }
 
 /** The emblem of what just opened pops out of a golden ring while sparks fly away from it. */
@@ -124,14 +138,7 @@ function eyebrow(step: JourneyStep, level: number): string {
 }
 
 /** A card that bursts in over a dimmed screen, for the moments the game wants the player to stop on. */
-export function Celebration({icon, eyebrow: caption, title, description, children, testID}: {
-	icon: string;
-	eyebrow: string;
-	title: string;
-	description?: string;
-	children: ReactNode;
-	testID?: string;
-}): ReactNode {
+export function Celebration({icon, eyebrow: caption, title, description, children, testID}: CelebrationProps): ReactNode {
 	const styles = useStyles();
 	const reducedMotion = useReducedMotion();
 	const [shown] = useState(() => new Animated.Value(reducedMotion ? 1 : 0));
@@ -158,6 +165,13 @@ export function Celebration({icon, eyebrow: caption, title, description, childre
 			<View style={styles.actions}>{children}</View>
 		</Animated.View>
 	</View>;
+}
+
+/** The celebration in its own window over the whole app, the way every celebration outside the tabs' layer opens. */
+export function CelebrationModal({onClose, ...celebration}: CelebrationProps & {onClose: () => void}): ReactNode {
+	return <Modal transparent animationType="none" statusBarTranslucent onRequestClose={onClose}>
+		<Celebration {...celebration} />
+	</Modal>;
 }
 
 /**

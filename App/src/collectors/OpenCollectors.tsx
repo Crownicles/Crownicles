@@ -3,6 +3,7 @@ import {View} from "react-native";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {isAdventureCollector, isFoundItemCollector} from "@/src/collectors/CollectorRouting";
+import {useAdventureTelling} from "@/src/components/UnlockCelebration";
 import {ItemAcceptCollector, ItemChoiceCollector} from "@/src/collectors/ItemRewardCollector";
 import {BottomSheet, FULL_SCREEN_KINDS, FullScreen} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
@@ -134,9 +135,11 @@ function PendingOutcomes(): ReactNode {
 		{state: inventoryOutcome, node: <PendingOutcome state={inventoryOutcome} Content={InventoryOutcome} />}
 	];
 	const current = outcomes.find(entry => entry.state.outcome !== null);
+	// A small or big event that brought the item is told first: the player learns why before choosing.
+	const telling = useAdventureTelling();
 	return <>
 		{current?.node ?? null}
-		<FoundItemCollector waiting={current !== undefined} />
+		<FoundItemCollector waiting={current !== undefined || telling} />
 	</>;
 }
 

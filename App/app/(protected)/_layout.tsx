@@ -2,7 +2,7 @@ import {Redirect, Stack} from "expo-router";
 import React from "react";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {SafeAreaProvider, useSafeAreaInsets} from "react-native-safe-area-context";
-import {ActivityIndicator, Modal, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, StyleSheet, Text, View} from "react-native";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {Theme} from "@/src/design/Theme";
 import {Button as DesignButton} from "@/src/design/Primitives";
@@ -53,17 +53,16 @@ const OUTDATED_NOTICES: Partial<Record<AuthStateEnum, {message: string; canRetry
 	[AuthStateEnum.SERVER_OUTDATED]: {message: "app:boot.serverOutdated", canRetry: true}
 };
 
+/** Rendered instead of the whole app, so it is a page of its own rather than a window over it. */
 function BlockingNotice({message, onRetry}: {message: string; onRetry?: () => void}): React.ReactElement {
 	const styles = useStyles();
 	return (
-		<Modal visible transparent animationType="fade">
-			<View style={styles.overlay} pointerEvents="auto">
-				<View style={styles.indicatorContainer}>
-					<Text style={styles.blockingText}>{message}</Text>
-					{onRetry ? <DesignButton variant="primary" onPress={onRetry}>{i18n.t("app:common.reconnect")}</DesignButton> : null}
-				</View>
+		<View style={styles.overlay} pointerEvents="auto">
+			<View style={styles.indicatorContainer}>
+				<Text style={styles.blockingText}>{message}</Text>
+				{onRetry ? <DesignButton variant="primary" onPress={onRetry}>{i18n.t("app:common.reconnect")}</DesignButton> : null}
 			</View>
-		</Modal>
+		</View>
 	);
 }
 

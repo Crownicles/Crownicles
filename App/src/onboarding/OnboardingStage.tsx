@@ -1,5 +1,5 @@
 import {ReactNode, useCallback, useEffect, useRef, useState} from "react";
-import {Modal, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {usePathname, useRouter} from "expo-router";
 import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
@@ -9,7 +9,7 @@ import {ActionBanner, Toast} from "@/src/design/Sections";
 import {Bell, Check, Footprints} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {Celebration} from "@/src/components/UnlockCelebration";
+import {CelebrationModal} from "@/src/components/UnlockCelebration";
 import {clockTime} from "@/src/display/Clock";
 import {reportOpensAt} from "@/src/display/ReportTiming";
 import {reportNotificationsAllowed, requestReportNotifications} from "@/src/notifications/ReportNotifications";
@@ -79,37 +79,35 @@ export function DepartureFork({travel, onClose}: {travel: ReportTravelSummaryRes
 	const notify = (): void => {
 		requestReportNotifications().catch(error => console.warn("Report notifications not allowed:", error)).finally(onClose);
 	};
-	return <Modal transparent animationType="none" statusBarTranslucent onRequestClose={onClose}>
-		<Celebration
-			icon="other.walking"
-			eyebrow={i18n.t("app:contest.fork.eyebrow")}
-			title={i18n.t("app:contest.fork.title")}
-			description={i18n.t("app:contest.fork.description", {destination: destinationName(travel), arrival: clockTime(travel.arriveTime)})}
-			testID="departure-fork"
-		>
-			<View style={styles.actions}>
-				<ActionBanner icon={Footprints} label={i18n.t("app:contest.fork.continue")} onPress={onClose} testID="departure-fork-continue" />
-				{allowed === false
-					? <ActionBanner icon={Bell} label={i18n.t("app:contest.fork.notify")} onPress={notify} testID="departure-fork-notify" />
-					: allowed ? <Text style={styles.notified}>{i18n.t("app:contest.fork.notified")}</Text> : null}
-			</View>
-		</Celebration>
-	</Modal>;
+	return <CelebrationModal
+		onClose={onClose}
+		icon="other.walking"
+		eyebrow={i18n.t("app:contest.fork.eyebrow")}
+		title={i18n.t("app:contest.fork.title")}
+		description={i18n.t("app:contest.fork.description", {destination: destinationName(travel), arrival: clockTime(travel.arriveTime)})}
+		testID="departure-fork"
+	>
+		<View style={styles.actions}>
+			<ActionBanner icon={Footprints} label={i18n.t("app:contest.fork.continue")} onPress={onClose} testID="departure-fork-continue" />
+			{allowed === false
+				? <ActionBanner icon={Bell} label={i18n.t("app:contest.fork.notify")} onPress={notify} testID="departure-fork-notify" />
+				: allowed ? <Text style={styles.notified}>{i18n.t("app:contest.fork.notified")}</Text> : null}
+		</View>
+	</CelebrationModal>;
 }
 
 /** The royal seal closes the contest: the player learns the real rhythm of the journey starts now. */
 export function ContestSeal({onClose}: {onClose: () => void}): ReactNode {
-	return <Modal transparent animationType="none" statusBarTranslucent onRequestClose={onClose}>
-		<Celebration
-			icon="other.seal"
-			eyebrow={i18n.t("app:contest.seal.eyebrow")}
-			title={i18n.t("app:contest.seal.title")}
-			description={i18n.t("app:contest.seal.description")}
-			testID="contest-seal"
-		>
-			<ActionBanner icon={Check} label={i18n.t("app:contest.seal.continue")} onPress={onClose} testID="contest-seal-continue" />
-		</Celebration>
-	</Modal>;
+	return <CelebrationModal
+		onClose={onClose}
+		icon="other.seal"
+		eyebrow={i18n.t("app:contest.seal.eyebrow")}
+		title={i18n.t("app:contest.seal.title")}
+		description={i18n.t("app:contest.seal.description")}
+		testID="contest-seal"
+	>
+		<ActionBanner icon={Check} label={i18n.t("app:contest.seal.continue")} onPress={onClose} testID="contest-seal-continue" />
+	</CelebrationModal>;
 }
 
 type StopWatch = {ready: boolean; opensAt: number | null};

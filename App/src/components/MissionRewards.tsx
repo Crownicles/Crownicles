@@ -1,5 +1,5 @@
 import {ReactNode, useCallback, useEffect, useState} from "react";
-import {Modal, StyleSheet, View} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {useRouter} from "expo-router";
 import {CompletedMission, MissionType} from "ws-packets/src/objects/Mission";
 import {RecipeDisplay} from "ws-packets/src/objects/RecipeDisplay";
@@ -9,7 +9,7 @@ import {ActionBanner, Card, Effect, Effects, EntryRow, Toast} from "@/src/design
 import {Check, Gift} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {Celebration} from "@/src/components/UnlockCelebration";
+import {CelebrationModal} from "@/src/components/UnlockCelebration";
 import {useToastTurn} from "@/src/components/useToastTurn";
 import {amountEffect, gainEffect, presentEffects} from "@/src/display/OutcomeEffects";
 import {missionDescription, missionRewardTotal, missionRows} from "@/src/display/Missions";
@@ -51,22 +51,21 @@ function MissionRewardsReveal({rewards, onClose}: {rewards: MissionRewards; onCl
 	const [first] = rewards.missions;
 	const count = rewards.missions.length;
 	const effects = rewardEffects(rewards);
-	return <Modal transparent animationType="none" statusBarTranslucent onRequestClose={onClose}>
-		<Celebration
-			icon={`missions.${first.mission.missionType}`}
-			eyebrow={i18n.t("app:missions.rewards.completed", {count})}
-			title={count === 1 ? missionDescription(first.mission, now) : i18n.t("app:missions.rewards.title")}
-			testID="mission-rewards-reveal"
-		>
-			<View style={styles.rewards}>
-				{effects.length > 0 ? <Effects items={effects} /> : <Note>{i18n.t("app:missions.rewards.none")}</Note>}
-			</View>
-			{rewards.nextCampaignMission
-				? <Note>{i18n.t("app:missions.rewards.nextCampaign", {mission: missionDescription(rewards.nextCampaignMission, now)})}</Note>
-				: null}
-			<ActionBanner icon={Check} label={i18n.t("app:missions.rewards.continue")} onPress={onClose} testID="mission-rewards-continue" />
-		</Celebration>
-	</Modal>;
+	return <CelebrationModal
+		onClose={onClose}
+		icon={`missions.${first.mission.missionType}`}
+		eyebrow={i18n.t("app:missions.rewards.completed", {count})}
+		title={count === 1 ? missionDescription(first.mission, now) : i18n.t("app:missions.rewards.title")}
+		testID="mission-rewards-reveal"
+	>
+		<View style={styles.rewards}>
+			{effects.length > 0 ? <Effects items={effects} /> : <Note>{i18n.t("app:missions.rewards.none")}</Note>}
+		</View>
+		{rewards.nextCampaignMission
+			? <Note>{i18n.t("app:missions.rewards.nextCampaign", {mission: missionDescription(rewards.nextCampaignMission, now)})}</Note>
+			: null}
+		<ActionBanner icon={Check} label={i18n.t("app:missions.rewards.continue")} onPress={onClose} testID="mission-rewards-continue" />
+	</CelebrationModal>;
 }
 
 function UnclaimedMissionRow({completed, now}: {completed: CompletedMission; now: number}): ReactNode {

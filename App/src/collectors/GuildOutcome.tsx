@@ -1,7 +1,6 @@
 import {ReactNode} from "react";
-import {Modal} from "react-native";
 import {AppIcons} from "@/src/AppIcons";
-import {Celebration} from "@/src/components/UnlockCelebration";
+import {CelebrationModal} from "@/src/components/UnlockCelebration";
 import {ArrowRight} from "@/src/design/FightIcons";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {GuildCommandRes} from "ws-packets/src/fromServer/guild/GuildRes";
@@ -75,11 +74,9 @@ function acknowledgement(outcome: GuildCommandOutcome): {title: string; subtitle
 
 /** A new banner is raised: the moment takes the whole screen, like a part of the game opening. */
 function GuildFounded({name, onContinue}: {name: string; onContinue: () => void}): ReactNode {
-	return <Modal transparent visible animationType="none" onRequestClose={onContinue}>
-		<Celebration icon="navigation.guild" eyebrow={i18n.t("app:guild.founded.eyebrow")} title={name} description={i18n.t("app:guild.founded.description")} testID="guild-founded">
-			<ActionBanner icon={ArrowRight} emoji={AppIcons.getIcon("navigation.guild")} label={i18n.t("app:guild.founded.enter")} onPress={onContinue} />
-		</Celebration>
-	</Modal>;
+	return <CelebrationModal onClose={onContinue} icon="navigation.guild" eyebrow={i18n.t("app:guild.founded.eyebrow")} title={name} description={i18n.t("app:guild.founded.description")} testID="guild-founded">
+		<ActionBanner icon={ArrowRight} emoji={AppIcons.getIcon("navigation.guild")} label={i18n.t("app:guild.founded.enter")} onPress={onContinue} />
+	</CelebrationModal>;
 }
 
 export function GuildOutcome({outcome, onContinue}: {outcome: GuildCommandOutcome; onContinue: () => void}): ReactNode {

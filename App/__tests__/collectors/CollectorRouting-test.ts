@@ -1,6 +1,6 @@
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {ITEM_DATA_KINDS, SMALL_EVENT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
-import {isAdventureCollector, isAdventureScreenCollector, isFoundItemCollector} from "@/src/collectors/CollectorRouting";
+import {BIG_EVENT_DATA_KINDS, CITY_DATA_KINDS, ITEM_DATA_KINDS, SMALL_EVENT_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {holdsAdventureTab, isAdventureCollector, isAdventureScreenCollector, isFoundItemCollector} from "@/src/collectors/CollectorRouting";
 
 function collectorOf(type: string): ReactionCollectorCreation {
 	return {id: type, endTime: Date.now() + 60_000, data: {type, data: {}}, reactions: []} as ReactionCollectorCreation;
@@ -15,5 +15,10 @@ describe("CollectorRouting", () => {
 		const collector = collectorOf(type);
 		expect(isFoundItemCollector(collector)).toBe(true);
 		expect(isAdventureScreenCollector(collector)).toBe(false);
+	});
+
+	it("lets the player leave a city for another tab, but not an event", () => {
+		expect(holdsAdventureTab(collectorOf(CITY_DATA_KINDS.CITY))).toBe(false);
+		expect(holdsAdventureTab(collectorOf(BIG_EVENT_DATA_KINDS.COLLECTOR))).toBe(true);
 	});
 });

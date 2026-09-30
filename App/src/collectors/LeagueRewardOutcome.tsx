@@ -1,7 +1,7 @@
 import {ReactNode} from "react";
-import {Modal, StyleSheet, View} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {LeagueRewardOutcome as Outcome} from "ws-packets/src/objects/Rankings";
-import {Celebration} from "@/src/components/UnlockCelebration";
+import {CelebrationModal} from "@/src/components/UnlockCelebration";
 import {formatGlory, formatNumber} from "@/src/display/Amounts";
 import {missionDate} from "@/src/display/Missions";
 import {amountEffect, infoEffect, presentEffects} from "@/src/display/OutcomeEffects";
@@ -36,10 +36,8 @@ function refusal(outcome: Exclude<Outcome, Success>): string {
 /** The week's league reward is a moment: the league it was earned in, and what it brought, in bubbles. */
 export function LeagueRewardOutcome({outcome, onContinue}: {outcome: Outcome; onContinue: () => void}): ReactNode {
 	if (outcome.type !== "success") return <Toast title={i18n.t("app:arena.leagues.reward")} subtitle={refusal(outcome)} onDismiss={onContinue} />;
-	return <Modal transparent visible animationType="none" statusBarTranslucent onRequestClose={onContinue}>
-		<Celebration icon={`leagues.${outcome.oldLeagueId}`} eyebrow={i18n.t("app:arena.leagues.reward")} title={i18n.t(`models:leagues.${outcome.oldLeagueId}`)} testID="league-reward">
-			<View style={styles.rewards}><Effects items={rewardEffects(outcome)} /></View>
-			<ActionBanner icon={Check} label={i18n.t("app:common.continue")} onPress={onContinue} />
-		</Celebration>
-	</Modal>;
+	return <CelebrationModal onClose={onContinue} icon={`leagues.${outcome.oldLeagueId}`} eyebrow={i18n.t("app:arena.leagues.reward")} title={i18n.t(`models:leagues.${outcome.oldLeagueId}`)} testID="league-reward">
+		<View style={styles.rewards}><Effects items={rewardEffects(outcome)} /></View>
+		<ActionBanner icon={Check} label={i18n.t("app:common.continue")} onPress={onContinue} />
+	</CelebrationModal>;
 }

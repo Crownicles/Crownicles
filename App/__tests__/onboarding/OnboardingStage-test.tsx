@@ -13,7 +13,7 @@ jest.mock("expo-router", () => ({
 	usePathname: (): string => "/profile"
 }));
 jest.mock("@/src/components/Missions", () => ({}));
-jest.mock("@/src/components/UnlockCelebration", () => ({Celebration: (): null => null}));
+jest.mock("@/src/components/UnlockCelebration", () => ({CelebrationModal: (): null => null}));
 jest.mock("@/src/notifications/ReportNotifications", () => ({}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (path: string): string => `icon:${path}`}}));

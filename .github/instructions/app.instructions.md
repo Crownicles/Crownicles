@@ -142,6 +142,23 @@ Rules that decide the rest:
 - **Numbers are `tabular-nums`**, bounded values are `FightGauge`, and a screen declares no colour or
   spacing of its own: it composes `Theme`.
 
+## Screen formats
+
+`App/docs/adr/0001-formats-ecran.html` is the decision record for how a screen is displayed. The app
+has **8 formats** — tab home, toast, bottom sheet, journal, celebration, page, full screen, page state —
+each carried by one primitive (`BottomSheet`/`QuestionSheet`, `FullScreen`, `Page`, `Toast`,
+`JournalEntry`, `CelebrationModal`...). Open the ADR before adding or reworking a screen.
+
+- **Pick the format with the ADR's decision tree** and stay within its budget. Never open a window by
+  hand: ESLint rejects `Modal` and `Alert` from `react-native`, and `SheetModal`/`ModalSurface`, outside
+  the primitives.
+- **A screen that is added or changes format updates the ADR in the same pull request**: its row in
+  "Écran par écran", with the reason. A need no format covers is argued in the ADR first, then built as
+  a primitive in `src/design` — never as a one-off screen.
+- A blocking full screen (`FULL_SCREEN_KINDS.BLOCKING`) is for what the player must not ignore or
+  leave mid-way (fight, found item, expedition loot). A place the player stays in (a city) keeps the
+  tab bar.
+
 ## Before opening a pull request
 
 ```bash

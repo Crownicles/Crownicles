@@ -49,3 +49,8 @@ export function isFoundItemCollector(collector: ReactionCollectorCreation): bool
 export function isAdventureScreenCollector(collector: ReactionCollectorCreation): boolean {
 	return isAdventureCollector(collector) && !isTokenUseCollector(collector) && !isBuyHealCollector(collector) && !isFoundItemCollector(collector);
 }
+
+/** A city is a place to stay, browsed at leisure: unlike an event, it does not hold the player on the adventure tab. */
+export function holdsAdventureTab(collector: ReactionCollectorCreation): boolean {
+	return isAdventureScreenCollector(collector) && collector.data.type !== CITY_DATA_KINDS.CITY;
+}

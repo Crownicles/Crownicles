@@ -16,4 +16,25 @@ module.exports = defineConfig([
       'no-void': 'error',
     },
   },
+  // Screen formats are decided in docs/adr/0001-formats-ecran.html: windows are opened by the design primitives only.
+  {
+    files: ['src/**/*.{ts,tsx}', 'app/**/*.{ts,tsx}'],
+    ignores: ['src/design/**', 'src/components/UnlockCelebration.tsx', 'src/components/MapViewer.tsx', 'src/components/WorldMap.tsx'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: [
+          {
+            name: 'react-native',
+            importNames: ['Modal', 'Alert'],
+            message: 'Use a screen format primitive (BottomSheet, QuestionSheet, FullScreen, Page, Toast, CelebrationModal): see App/docs/adr/0001-formats-ecran.html.',
+          },
+          {
+            name: '@/src/design/Sections',
+            importNames: ['SheetModal', 'ModalSurface'],
+            message: 'These build the primitives; use FullScreen or BottomSheet instead: see App/docs/adr/0001-formats-ecran.html.',
+          },
+        ],
+      }],
+    },
+  },
 ]);

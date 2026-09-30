@@ -1,7 +1,6 @@
 import {ReactNode} from "react";
-import {Modal} from "react-native";
 import {ClassOutcome as Outcome} from "@/src/store/useClassOutcome";
-import {Celebration} from "@/src/components/UnlockCelebration";
+import {CelebrationModal} from "@/src/components/UnlockCelebration";
 import {ActionBanner, Toast} from "@/src/design/Sections";
 import {Check} from "@/src/design/FightIcons";
 import {missionDate} from "@/src/display/Missions";
@@ -19,9 +18,7 @@ export function ClassOutcome({outcome, onContinue}: {outcome: Outcome; onContinu
 			onDismiss={onContinue}
 		/>;
 	}
-	return <Modal transparent visible animationType="none" statusBarTranslucent onRequestClose={onContinue}>
-		<Celebration icon={`classes.${outcome.classId}`} eyebrow={i18n.t("app:classes.outcomes.success")} title={i18n.t(`models:classes.${outcome.classId}`)} testID="class-changed">
-			<ActionBanner icon={Check} label={i18n.t("app:common.continue")} onPress={onContinue} />
-		</Celebration>
-	</Modal>;
+	return <CelebrationModal onClose={onContinue} icon={`classes.${outcome.classId}`} eyebrow={i18n.t("app:classes.outcomes.success")} title={i18n.t(`models:classes.${outcome.classId}`)} testID="class-changed">
+		<ActionBanner icon={Check} label={i18n.t("app:common.continue")} onPress={onContinue} />
+	</CelebrationModal>;
 }
