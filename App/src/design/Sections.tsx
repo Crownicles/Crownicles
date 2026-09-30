@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useMemo, useState} from "react";
-import {Animated, Modal, ModalProps, Pressable, StyleSheet, Text, TextStyle, View, ViewStyle} from "react-native";
+import {Animated, Easing, Modal, ModalProps, Pressable, ScrollView, StyleSheet, Text, TextStyle, useWindowDimensions, View, ViewStyle} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
@@ -53,6 +53,7 @@ const useStyles = createStyles(colors => ({
 	detailGrabber: {alignSelf: "center", width: 40, height: 4, borderRadius: 2, backgroundColor: colors.line},
 	detailHead: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
 	detailBody: {gap: Theme.spacing.md},
+	sheetScroll: {flexGrow: 0},
 	back: {alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: Theme.spacing.xs, height: 34, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: colors.wash, marginBottom: Theme.spacing.lg},
 	backLabel: {color: colors.ink, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body},
 	/** The icon set only ships a downward chevron; a quarter turn points it back. */
@@ -88,9 +89,9 @@ const useStyles = createStyles(colors => ({
 	toastSubtitle: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.faint},
 	toastAmount: {fontFamily: Theme.fonts.extraBold, fontSize: Theme.fontSize.title, color: colors.paper, fontVariant: ["tabular-nums"]},
 	effects: {flexDirection: "row", flexWrap: "wrap", gap: Theme.spacing.sm},
-	effect: {flexDirection: "row", alignItems: "center", gap: 6, paddingVertical: 6, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius},
+	effect: {maxWidth: "100%", flexDirection: "row", alignItems: "center", gap: 6, paddingVertical: 6, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius},
 	effectLabel: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
-	effectValue: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, fontVariant: ["tabular-nums"]},
+	effectValue: {flexShrink: 1, fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, fontVariant: ["tabular-nums"]},
 	effectGain: {color: colors.green},
 	effectLoss: {color: colors.red},
 	effectNeutral: {color: colors.ink},
@@ -347,6 +348,28 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 			</SwipeBack>
 		</ModalSurface>
 	</SheetModal>;
+}
+
+const SHEET_RISE_MS = 280;
+
+/** A page that rises over the screen instead of replacing it: a tap above it or the back gesture puts it away. */
+export function BottomSheet({onClose, children}: {onClose: () => void; children: ReactNode}): ReactNode {
+	const styles = useStyles();
+	const insets = useSafeAreaInsets();
+	const {height} = useWindowDimensions();
+	const [rise] = useState(() => new Animated.Value(height));
+	useEffect(() => {
+		Animated.timing(rise, {toValue: 0, duration: SHEET_RISE_MS, easing: Easing.out(Easing.cubic), useNativeDriver: true}).start();
+	}, [rise]);
+	return <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+		<View style={styles.detailBackdrop}>
+			<Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:common.back")} style={StyleSheet.absoluteFill} onPress={onClose} />
+			<Animated.View style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl, transform: [{translateY: rise}]}]}>
+				<View style={styles.detailGrabber} />
+				<ScrollView style={styles.sheetScroll}>{children}</ScrollView>
+			</Animated.View>
+		</View>
+	</Modal>;
 }
 
 /** One headline number, with the game emoji of its unit when it has one. */

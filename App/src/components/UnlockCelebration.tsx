@@ -38,7 +38,7 @@ const FILL = {position: "absolute", top: 0, right: 0, bottom: 0, left: 0} as con
 const useStyles = createStyles(colors => ({
 	layer: {...FILL, justifyContent: "center", padding: Theme.spacing.xxl},
 	backdrop: {...FILL, backgroundColor: colors.overlay},
-	card: {alignItems: "center", paddingTop: Theme.spacing.xl, paddingBottom: Theme.spacing.lg, paddingHorizontal: Theme.spacing.xl, borderRadius: Theme.radius, backgroundColor: colors.paper},
+	card: {alignItems: "center", paddingTop: Theme.spacing.xl, paddingBottom: Theme.spacing.xl, paddingHorizontal: Theme.spacing.xl, borderRadius: Theme.radius, backgroundColor: colors.paper},
 	burst: {position: "absolute", alignItems: "center", justifyContent: "center"},
 	ring: {position: "absolute", width: CELEBRATION_MOTION.ring, height: CELEBRATION_MOTION.ring, borderRadius: CELEBRATION_MOTION.ring / 2, borderWidth: 3, borderColor: colors.gold},
 	eyebrow: {

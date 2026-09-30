@@ -50,7 +50,7 @@ import {SmallEventChoiceOutcome as SmallEventChoiceOutcomeScreen} from "@/src/co
 import {ShopResultScreen} from "@/src/collectors/ShopResultScreen";
 import {AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen} from "@/src/collectors/AutomaticSmallEventOutcome";
 import {EmptyState, Note, QuickAction, QuickActions, Screen} from "@/src/design/Primitives";
-import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
+import {ActionBanner, BottomSheet, Figure, Figures, Standing} from "@/src/design/Sections";
 import {Entrance} from "@/src/design/Entrance";
 import {CureEmblem, Cure, HappyEmblem} from "@/src/components/CureEmblem";
 import {acceptAnswer, canCure, celebrate, HealAction, PendingAction, useBuyHeal} from "@/src/components/HealAction";
@@ -986,6 +986,9 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 
 function AdventureToolScreen({tool, onClose}: {tool: AdventureTool; onClose: () => void}): ReactNode {
 	const {title, content: Content} = ADVENTURE_TOOLS[tool];
+	if (tool === ADVENTURE_TOOL_NAMES.MAP) {
+		return <BottomSheet onClose={onClose}><Content /></BottomSheet>;
+	}
 	return <DetailScreen overlay title={i18n.t(title)} eyebrow={i18n.t("app:adventure.eyebrow")} onClose={onClose}><Content /></DetailScreen>;
 }
 

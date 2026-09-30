@@ -1,4 +1,5 @@
 import {ReactNode, useState} from "react";
+import {StyleSheet, View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, ITEM_DATA_KINDS, ITEM_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
@@ -11,7 +12,12 @@ import {plainStory} from "@/src/display/Markdown";
 import {Button, ButtonRow, Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, Card, ExpandableEntry} from "@/src/design/Sections";
 import {Check, Droplets} from "@/src/design/FightIcons";
+import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
+
+const styles = StyleSheet.create({
+	banners: {gap: Theme.spacing.sm}
+});
 
 type ItemRewardProps = {
 	collector: ReactionCollectorCreation;
@@ -35,24 +41,30 @@ function FoundItemJournal({item}: {item: ItemWithDetails}): ReactNode {
 }
 
 /** Drinking the find on the spot, or leaving it: the two ways out that do not touch the inventory. */
-function FoundItemExits({collector, foundItem, drinkType, refuseType, choose, locked}: {
+function FoundItemExits({collector, foundItem, drinkType, refuseType, choose, locked, children}: {
 	collector: ReactionCollectorCreation;
 	foundItem: ItemWithDetails;
 	drinkType: string;
 	refuseType: string;
 	choose: (index: number) => void;
 	locked: boolean;
+
+	/** An action shown above the drink one, in the same stack. */
+	children?: ReactNode;
 }): ReactNode {
 	const drinkIndex = reactionIndex(collector, drinkType);
 	const refuseIndex = reactionIndex(collector, refuseType);
 	const isPotion = isPotionCategory(foundItem.itemCategory);
 	return <>
-		{drinkIndex >= 0 ? <ActionBanner
-			icon={Droplets}
-			label={i18n.t("app:collector.choices.drinkPotion")}
-			pending={locked}
-			onPress={(): void => choose(drinkIndex)}
-		/> : null}
+		<View style={styles.banners}>
+			{children}
+			{drinkIndex >= 0 ? <ActionBanner
+				icon={Droplets}
+				label={i18n.t("app:collector.choices.drinkPotion")}
+				pending={locked}
+				onPress={(): void => choose(drinkIndex)}
+			/> : null}
+		</View>
 		{refuseIndex >= 0 ? <ButtonRow><Button
 			emoji={AppIcons.getIcon(isPotion ? "collectors.refuse" : "unitValues.money")}
 			disabled={locked}
@@ -126,12 +138,6 @@ export function ItemAcceptCollector({collector, onChoose, submitting}: ItemRewar
 				? "commands:inventory.randomItemAcceptTitlePotion"
 				: "commands:inventory.randomItemAcceptTitle")}</SectionHeader>
 			<Card><InventoryItemRow item={itemWithDetails} /></Card>
-			{acceptIndex >= 0 ? <ActionBanner
-				icon={Check}
-				label={i18n.t("app:collector.item.replaceWith", {item: itemDisplayName(foundItem)})}
-				pending={locked}
-				onPress={(): void => choose(acceptIndex)}
-			/> : null}
 			<FoundItemExits
 				collector={collector}
 				foundItem={foundItem}
@@ -139,7 +145,14 @@ export function ItemAcceptCollector({collector, onChoose, submitting}: ItemRewar
 				refuseType={GENERIC_REACTION_KINDS.REFUSE}
 				choose={choose}
 				locked={locked}
-			/>
+			>
+				{acceptIndex >= 0 ? <ActionBanner
+					icon={Check}
+					label={i18n.t("app:collector.item.replaceWith", {item: itemDisplayName(foundItem)})}
+					pending={locked}
+					onPress={(): void => choose(acceptIndex)}
+				/> : null}
+			</FoundItemExits>
 			{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
 		</Screen>
 	);

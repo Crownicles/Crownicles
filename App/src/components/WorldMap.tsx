@@ -1,5 +1,5 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Image, Pressable} from "react-native";
+import {ActivityIndicator, Image, Pressable, StyleSheet, View} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {MapReq} from "ws-packets/src/fromClient/MapReq";
 import {MapRes} from "ws-packets/src/fromServer/report/MapRes";
@@ -15,17 +15,20 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
-import {createStyles} from "@/src/design/ThemeContext";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
 
 const DEFAULT_MAP_RATIO = 4 / 3;
 const useStyles = createStyles(colors => ({
 	map: {width: "100%", backgroundColor: colors.wash},
-	frame: {borderRadius: 12, borderWidth: 1, borderColor: colors.line, overflow: "hidden", backgroundColor: colors.wash}
+	frame: {borderRadius: 12, borderWidth: 1, borderColor: colors.line, overflow: "hidden", backgroundColor: colors.wash},
+	loading: {...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center"}
 }));
 
 export function MapImage({packet}: {packet: MapRes}): ReactNode {
 	const styles = useStyles();
+	const colors = useColors();
 	const [uri, setUri] = useState(packet.imageUrl);
+	const [loadedUri, setLoadedUri] = useState<string>();
 	const [failed, setFailed] = useState(false);
 	const [expanded, setExpanded] = useState(false);
 	const [ratio, setRatio] = useState(DEFAULT_MAP_RATIO);
@@ -44,11 +47,12 @@ export function MapImage({packet}: {packet: MapRes}): ReactNode {
 	};
 	if (failed) return <>
 		<Note>{i18n.t("app:map.imageError")}</Note>
-		<Button onPress={(): void => {setFailed(false); setUri(packet.imageUrl);}}>{i18n.t("app:common.retry")}</Button>
+		<Button onPress={(): void => {setFailed(false); setLoadedUri(undefined); setUri(packet.imageUrl);}}>{i18n.t("app:common.retry")}</Button>
 	</>;
 	return <>
 		<Pressable style={styles.frame} accessibilityRole="button" accessibilityLabel={i18n.t("app:map.expand")} onPress={(): void => setExpanded(true)}>
-			<Image accessibilityLabel={i18n.t("app:map.image")} source={{uri}} style={[styles.map, {aspectRatio: ratio}]} resizeMode="contain" onError={fail} />
+			<Image accessibilityLabel={i18n.t("app:map.image")} source={{uri}} style={[styles.map, {aspectRatio: ratio}]} resizeMode="contain" onError={fail} onLoadEnd={(): void => setLoadedUri(uri)} />
+			{loadedUri === uri ? null : <View style={styles.loading}><ActivityIndicator size="large" color={colors.muted} /></View>}
 		</Pressable>
 		<LockHint lock={{reason: i18n.t("app:map.expandHint"), icon: Maximize2}} />
 		<SheetModal visible={expanded} onRequestClose={(): void => setExpanded(false)}>
