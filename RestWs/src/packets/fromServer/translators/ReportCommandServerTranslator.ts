@@ -16,6 +16,7 @@ export default class ReportCommandServerTranslator {
 			endMap: packet.endMap,
 			startTime: packet.startTime,
 			arriveTime: packet.arriveTime,
+			lastStopTime: packet.lastStopTime,
 			nextStopTime: packet.nextStopTime,
 			isOnBoat: packet.isOnBoat,
 			...packet.effect === undefined ? {} : { effect: packet.effect },

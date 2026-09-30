@@ -73,6 +73,7 @@ interface TravelSummaryData {
 	arriveTime: number;
 	effectEndTime: number | null;
 	effectDuration: number;
+	lastStopTime: number;
 	nextSmallEventTime: number;
 	lastSmallEventId: string | null;
 	isOnBoat: boolean;
@@ -91,6 +92,7 @@ async function buildTravelSummaryData(player: Player, date: Date, effectId: stri
 		arriveTime: timeData.travelEndTime,
 		effectEndTime: effectId ? timeData.effectEndTime : null,
 		effectDuration: timeData.effectDuration,
+		lastStopTime: timeData.lastStopTime,
 		nextSmallEventTime: timeData.nextSmallEventTime,
 		lastSmallEventId: lastMiniEvent ? lastMiniEvent.eventType : null,
 		isOnBoat: Maps.isOnBoat(player)
@@ -253,6 +255,7 @@ export async function buildTravelSummary(
 			id: endMap?.id ?? 0,
 			type: endMap?.type ?? ""
 		},
+		lastStopTime: travelSummaryData.lastStopTime,
 		nextStopTime: travelSummaryData.nextSmallEventTime,
 		lastSmallEventId: travelSummaryData.lastSmallEventId ?? undefined,
 		startMap: {

@@ -62,6 +62,9 @@ export class CommandReportTravelSummaryRes extends CrowniclesPacket {
 
 	arriveTime!: number;
 
+	/** What the next stop counts from: the departure, the last small event or the end of an alteration. */
+	lastStopTime!: number;
+
 	nextStopTime!: number;
 
 	isOnBoat!: boolean;

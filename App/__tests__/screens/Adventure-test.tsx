@@ -105,6 +105,7 @@ function report(showEnergy = false): ReportTravelSummaryRes {
 		endMap: {id: 2, type: "main"},
 		startTime: Date.now() - 60_000,
 		arriveTime: Date.now() + 3_600_000,
+		lastStopTime: Date.now() - 60_000,
 		nextStopTime: Date.now() + 600_000,
 		isOnBoat: false,
 		points: {show: true, cumulated: 42},

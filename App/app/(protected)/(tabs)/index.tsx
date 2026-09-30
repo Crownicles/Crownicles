@@ -55,6 +55,8 @@ import {Entrance} from "@/src/design/Entrance";
 import {CureEmblem, Cure, HappyEmblem} from "@/src/components/CureEmblem";
 import {acceptAnswer, canCure, celebrate, HealAction, PendingAction, useBuyHeal} from "@/src/components/HealAction";
 import {isAlterationReport, reportReadyAt} from "@/src/display/ReportTiming";
+import {useCurrentTime} from "@/src/store/useCurrentTime";
+import {TRAVEL_DASH_MS, travelDashStore} from "@/src/store/TravelDashStore";
 import {plainStory} from "@/src/display/Markdown";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {SilentAnswer, useReportShortcut} from "@/src/store/useReportShortcut";
@@ -93,8 +95,8 @@ const NO_PROGRESS = 0;
 const PERCENTAGE_SCALE = 100;
 const REPORT_READY_PULSE = {fromScale: 0.96, damping: 18, stiffness: 220, mass: 0.8} as const;
 
-/** The run to the next stop once tokens are spent: long enough to be seen, short enough not to be waited for. */
-const TRAVEL_DASH = {durationMs: 1_100, strideMs: 110, hop: -7, lean: "10deg"} as const;
+/** The run to the next stop once tokens are spent. */
+const TRAVEL_DASH = {durationMs: TRAVEL_DASH_MS, strideMs: 110, hop: -7, lean: "10deg"} as const;
 
 /** Where the runner dashes to, and what happens once it is there. */
 type TravelDash = {to: number; onDone: () => void};
@@ -163,19 +165,6 @@ const useStyles = createStyles(colors => ({
 function Centered({ children }: { children: ReactNode }): ReactNode {
 	const styles = useStyles();
   return <View style={styles.centered}>{children}</View>;
-}
-
-function useCurrentTime(): number {
-  const [currentTime, setCurrentTime] = useState(0);
-
-  useEffect((): (() => void) => {
-    const updateCurrentTime = (): void => setCurrentTime(Date.now());
-    updateCurrentTime();
-    const intervalId = setInterval(updateCurrentTime, MILLISECONDS_PER_SECOND);
-    return (): void => clearInterval(intervalId);
-  }, []);
-
-  return currentTime;
 }
 
 function requestTokenAdvance(): Promise<GameAnswer<ReactionCollectorCreation>> {
@@ -861,8 +850,13 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 	const healOutcome = useHealOutcome();
 	const shopResult = useShopResult();
 	const pveFightOutcome = usePveFightOutcome();
-	const currentTime = useCurrentTime();
+	const currentTime = useCurrentTime(MILLISECONDS_PER_SECOND);
 	const moments = useOnboardingMoments();
+
+	useEffect(() => {
+		travelDashStore.set(dash !== null);
+		return (): void => travelDashStore.set(false);
+	}, [dash]);
 
 	useEffect(() => {
 		if (!tokenOutcome || tokenOutcomeNeedsAcknowledgement(tokenOutcome)) {

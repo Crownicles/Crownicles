@@ -14,3 +14,20 @@ export function reportOpensAt(packet: ReportTravelSummaryRes): number {
 export function reportReadyAt(packet: ReportTravelSummaryRes): number | undefined {
 	return packet.isInCity ? packet.effectEndTime : reportOpensAt(packet);
 }
+
+/** Where the wait for the next report started: the alteration holding it, or else the last stop. */
+function reportWaitStart(packet: ReportTravelSummaryRes): number {
+	return isAlterationReport(packet) && packet.effectEndTime !== undefined && packet.effectDuration !== undefined
+		? packet.effectEndTime - packet.effectDuration
+		: packet.lastStopTime;
+}
+
+/** How much of the wait for the next report, stop, arrival or end of an alteration, has gone by. */
+export function reportWaitProgress(packet: ReportTravelSummaryRes, currentTime: number): number | undefined {
+	const readyAt = reportReadyAt(packet);
+	if (readyAt === undefined) return undefined;
+	const start = reportWaitStart(packet);
+	const wait = readyAt - start;
+	if (wait <= 0) return 1;
+	return Math.min(Math.max((currentTime - start) / wait, 0), 1);
+}

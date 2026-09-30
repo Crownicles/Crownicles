@@ -26,6 +26,7 @@ function travel(overrides: Partial<ReportTravelSummaryRes> = {}): ReportTravelSu
 		endMap: {id: 2, type: "main"},
 		startTime: 0,
 		arriveTime: 1_700_000_600_000,
+		lastStopTime: 0,
 		nextStopTime: 1_700_000_300_000,
 		isOnBoat: false,
 		points: {show: false, cumulated: 0},

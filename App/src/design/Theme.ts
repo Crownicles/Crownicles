@@ -89,7 +89,6 @@ export const Theme = {
 		buttonHorizontal: 20,
 		quickActionVertical: 11,
 		noticeGap: 11,
-		tabBarVertical: 7,
 		vitalsBottom: 8,
 		walletBottom: 10,
 		chipVertical: 5,
@@ -101,7 +100,6 @@ export const Theme = {
 		itemHeight: 80,
 		itemMinHeight: 68,
 		actionButtonMinWidth: 60,
-		tabBarIcon: 18,
 		headerIcon: 24,
 		travelTrackHeight: 5,
 		vitalBarHeight: 5,
@@ -129,7 +127,6 @@ export const Theme = {
 		rowTitle: 14,
 		rowSubtitle: 12.5,
 		button: 14.5,
-		tabLabel: 10.5,
 		vitalLabel: 11,
 		chevron: 22
 	},

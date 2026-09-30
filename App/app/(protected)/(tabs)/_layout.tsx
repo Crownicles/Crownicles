@@ -1,4 +1,4 @@
-import {ReactElement, ReactNode, useEffect, useState} from "react";
+import {ReactNode, useEffect, useState} from "react";
 import {useRouter} from "expo-router";
 /** Expo SDK 57 no longer accepts react-navigation directly, so the top tabs come from its own copy. */
 import {TopTabs} from "expo-router/js-top-tabs";
@@ -7,14 +7,17 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {AppIcons} from "@/src/AppIcons";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
-import {useNavigationStyles, tabBarOptionsOf} from "@/src/design/Navigation";
+import {useNavigationStyles} from "@/src/design/Navigation";
 import {SwipeBackBoundary, useSwipeBackOpen} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {Castle, Compass, LucideIcon, PawPrint, Swords, UserRound} from "@/src/design/FightIcons";
-import {useReducedMotion} from "@/src/store/useReducedMotion";
+import {CapsuleTabBar, RING_TICK_MS} from "@/src/components/CapsuleTabBar";
+import {reportWaitProgress} from "@/src/display/ReportTiming";
+import {useCurrentTime} from "@/src/store/useCurrentTime";
+import {useTravelDashing} from "@/src/store/TravelDashStore";
 import {DeathScreen} from "@/src/components/DeathScreen";
-import {UnlockCelebration, useAdventureBusy} from "@/src/components/UnlockCelebration";
+import {UnlockCelebration, useAdventureBusy, useAdventureHoldsTabs} from "@/src/components/UnlockCelebration";
 import {usePlayerIsDead} from "@/src/store/usePlayerIsDead";
 import {isJourneyTab, JOURNEY_TABS, JourneyTab} from "@/src/journey/Journey";
 import {Journey, useJourney} from "@/src/journey/useJourney";
@@ -30,110 +33,54 @@ import {ContestSeal, DepartureFork, forkDue, sealDue, stageMoment, StopArrivedTo
 import {RoyalLetter} from "@/src/onboarding/RoyalLetter";
 import {useRoyalLetter} from "@/src/store/RoyalLetterStore";
 import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
-import {createStyles, useColors} from "@/src/design/ThemeContext";
-
-const NEW_MARK_SIZE = 8;
-const TAB_ICON_SIZE = {active: 26, idle: 22} as const;
-/** Breathing room between the selected tile and its tab's edges. */
-const TILE_INSET = {horizontal: 6, vertical: 3} as const;
-/** Halfway between two tabs the tile stretches towards the next one and flattens, then settles back. */
-const TILE_STRETCH = {scaleX: 1.4, scaleY: 0.86} as const;
-const TILE_SHADOW = {opacity: 0.28, radius: 8, offsetY: 4, elevation: 6} as const;
-const useTabStyles = createStyles(colors => ({
-	// Both states keep the same size: the tab bar cross-fades them on top of each other.
-	icon: {width: TAB_ICON_SIZE.active, height: TAB_ICON_SIZE.active, alignItems: "center", justifyContent: "center"},
-	tile: {
-		position: "absolute",
-		top: TILE_INSET.vertical,
-		paddingHorizontal: TILE_INSET.horizontal
-	},
-	tileFill: {
-		flex: 1,
-		borderRadius: Theme.radius,
-		backgroundColor: colors.selection,
-		shadowColor: colors.shadow,
-		shadowOpacity: TILE_SHADOW.opacity,
-		shadowRadius: TILE_SHADOW.radius,
-		shadowOffset: {width: 0, height: TILE_SHADOW.offsetY},
-		elevation: TILE_SHADOW.elevation
-	},
-	mark: {
-		position: "absolute",
-		top: (TAB_ICON_SIZE.active - TAB_ICON_SIZE.idle) / 2 - Theme.spacing.xs,
-		left: "50%",
-		marginLeft: TAB_ICON_SIZE.idle / 2 - Theme.spacing.xs
-	},
-	newMark: {
-		width: NEW_MARK_SIZE,
-		height: NEW_MARK_SIZE,
-		borderRadius: NEW_MARK_SIZE / 2,
-		backgroundColor: colors.gold
-	}
-}));
+import {useColors} from "@/src/design/ThemeContext";
 
 /** Every tab of the app, in the order of the bar; the journey decides which of them are open. */
 const TABS: readonly {name: JourneyTab; title: string; icon: LucideIcon}[] = [
 	{name: JOURNEY_TABS.ADVENTURE, title: "app:tabs.adventure", icon: Compass},
 	{name: JOURNEY_TABS.PROFILE, title: "app:tabs.profile", icon: UserRound},
 	{name: JOURNEY_TABS.PET, title: "app:tabs.pet", icon: PawPrint},
-	{name: JOURNEY_TABS.GUILD, title: "app:tabs.guild", icon: Castle},
-	{name: JOURNEY_TABS.ARENA, title: "app:tabs.arena", icon: Swords}
+	{name: JOURNEY_TABS.ARENA, title: "app:tabs.arena", icon: Swords},
+	{name: JOURNEY_TABS.GUILD, title: "app:tabs.guild", icon: Castle}
 ];
 
-function NewMark(): ReactElement {
-	const tabStyles = useTabStyles();
-	return <View style={tabStyles.newMark} testID="tab-new-mark" />;
+/** How much of the wait for the next report has gone by; full once it can be opened, or while tokens rush there. */
+function useTravelProgress(): number | undefined {
+	const report = useReportView();
+	const currentTime = useCurrentTime(RING_TICK_MS);
+	const dashing = useTravelDashing();
+	if (report.status !== "ready" || !report.data.travel || currentTime === 0) return undefined;
+	return report.data.reportReady || dashing ? 1 : reportWaitProgress(report.data.travel, currentTime);
 }
 
-function tabMark(tab: JourneyTab, journey: Journey): ReactElement | null {
-	return journey.isNew(tab) ? <NewMark /> : null;
-}
-
-type TabIconProps = {focused: boolean; color: string};
-
-function TabIconView({Icon, mark, focused, color}: TabIconProps & {Icon: LucideIcon; mark: ReactElement | null}): ReactElement {
-	const tabStyles = useTabStyles();
-	return <View style={tabStyles.icon}>
-		<Icon size={focused ? TAB_ICON_SIZE.active : TAB_ICON_SIZE.idle} color={color} />
-		{mark ? <View style={tabStyles.mark}>{mark}</View> : null}
-	</View>;
-}
-
-type TabTileProps = {
+type NavigatorTabBarProps = {
+	state: {index: number; routes: readonly {key: string; name: string; params?: object}[]};
 	position: Animated.AnimatedInterpolation<number>;
-	getTabWidth: (index: number) => number;
-	state: {routes: readonly unknown[]};
+	navigation: {
+		emit: (event: {type: "tabPress"; target: string; canPreventDefault: true}) => {defaultPrevented: boolean};
+		navigate: (name: string, params?: object) => void;
+	};
 };
 
-/** Rests at 1 on every tab and reaches `peak` halfway to the next one. */
-function stretchBetweenTabs(position: Animated.AnimatedInterpolation<number>, last: number, peak: number): Animated.AnimatedInterpolation<number> {
-	const inputRange = Array.from({length: last * 2 + 1}, (_, step) => step / 2);
-	return position.interpolate({inputRange, outputRange: inputRange.map((_, step) => step % 2 === 0 ? 1 : peak), extrapolate: "clamp"});
-}
-
-/** Slides under the tabs with the swipe, from one tab to the next. */
-function TabTile({position, getTabWidth, state}: TabTileProps): ReactElement {
-	const tabStyles = useTabStyles();
-	const insets = useSafeAreaInsets();
-	const width = getTabWidth(0);
-	const last = Math.max(state.routes.length - 1, 1);
-	const translateX = position.interpolate({inputRange: [0, last], outputRange: [0, last * width], extrapolate: "clamp"});
-	const transform = useReducedMotion() ? [{translateX}] : [
-		{translateX},
-		{scaleX: stretchBetweenTabs(position, last, TILE_STRETCH.scaleX)},
-		{scaleY: stretchBetweenTabs(position, last, TILE_STRETCH.scaleY)}
-	];
-	return <Animated.View style={[tabStyles.tile, {width, bottom: insets.bottom + TILE_INSET.vertical, transform}]} testID="tab-tile">
-		<View style={tabStyles.tileFill} />
-	</Animated.View>;
-}
-
-/** The mark rides on the icon: a badge of the tab itself drifts to the screen edge when few tabs share the bar. */
-function tabIcon(Icon: LucideIcon, mark: ReactElement | null): (props: TabIconProps) => ReactElement {
-	// The navigator calls this as a plain function, so the hook lives in the component it returns.
-	const TabIcon = (props: TabIconProps): ReactElement => <TabIconView {...props} Icon={Icon} mark={mark} />;
-	TabIcon.displayName = "TabIcon";
-	return TabIcon;
+function NavigatorTabBar({state, position, navigation, journey}: NavigatorTabBarProps & {journey: Journey}): ReactNode {
+	const travelProgress = useTravelProgress();
+	const tabs = state.routes.flatMap(route => {
+		const tab = TABS.find(candidate => candidate.name === route.name);
+		return tab ? [{
+			name: tab.name,
+			title: i18n.t(tab.title),
+			Icon: tab.icon,
+			isNew: journey.isNew(tab.name),
+			...(tab.name === JOURNEY_TABS.ADVENTURE && travelProgress !== undefined ? {progress: travelProgress} : {})
+		}] : [];
+	});
+	const select = (name: string): void => {
+		const route = state.routes.find(candidate => candidate.name === name);
+		if (!route) return;
+		const event = navigation.emit({type: "tabPress", target: route.key, canPreventDefault: true});
+		if (!event.defaultPrevented) navigation.navigate(route.name, route.params);
+	};
+	return <CapsuleTabBar tabs={tabs} focused={state.routes[state.index].name} position={position} onSelect={select} />;
 }
 
 const ProfileHeader = (): ReactNode => {
@@ -176,32 +123,21 @@ function TabsHeader(): ReactNode {
 }
 
 function TabPager({journey}: {journey: Journey}): ReactNode {
-	const insets = useSafeAreaInsets();
 	const detailOpen = useSwipeBackOpen();
-	const adventureBusy = useAdventureBusy();
-	const tabBarOptions = tabBarOptionsOf(useColors());
+	const held = useAdventureHoldsTabs();
 	// A lone tab needs no bar: the newcomer only sees the adventure until something else opens.
-	const tabBarStyle = journey.tabs.length > 1 && !adventureBusy
-		? {...tabBarOptions.tabBarStyle, paddingBottom: insets.bottom + Theme.spacing.tabBarVertical}
-		: {display: "none" as const};
+	const showBar = journey.tabs.length > 1 && !held;
 	return (
 		<TopTabs
 			tabBarPosition="bottom"
-			screenOptions={{
-				...tabBarOptions,
-				tabBarIndicator: TabTile,
-				swipeEnabled: !detailOpen && !adventureBusy && journey.tabs.length > 1,
-				tabBarStyle
-			}}
+			tabBar={(props: NavigatorTabBarProps) => showBar ? <NavigatorTabBar {...props} journey={journey} /> : null}
+			screenOptions={{swipeEnabled: !detailOpen && !held && journey.tabs.length > 1}}
 			screenListeners={({route}: {route: {name: string}}) => ({focus: (): void => {
 				if (isJourneyTab(route.name)) journey.visit(route.name);
 			}})}
 		>
 			{TABS.map(tab => <TopTabs.Protected key={tab.name} guard={journey.tabs.includes(tab.name)}>
-				<TopTabs.Screen
-					name={tab.name}
-					options={{title: i18n.t(tab.title), tabBarIcon: tabIcon(tab.icon, tabMark(tab.name, journey))}}
-				/>
+				<TopTabs.Screen name={tab.name} options={{title: i18n.t(tab.title)}} />
 			</TopTabs.Protected>)}
 		</TopTabs>
 	);

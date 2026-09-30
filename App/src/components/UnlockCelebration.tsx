@@ -9,6 +9,7 @@ import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {journeyStepLevel, JourneyStep} from "@/src/journey/Journey";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
+import {isAdventureScreenCollector} from "@/src/collectors/CollectorRouting";
 import {
 	useAutomaticSmallEventOutcome, useBigEventOutcome, useHealOutcome, useLotteryOutcome, useShopResult,
 	useSmallEventChoiceOutcome, useTokenOutcome, useWitchOutcome
@@ -69,14 +70,26 @@ function between(value: Animated.Value, input: [number, number], output: [number
 	return value.interpolate({inputRange: input, outputRange: output, extrapolate: "clamp"});
 }
 
+/** The stories the adventure tab is telling, read before moving on. */
+function useAdventureStories(): unknown[] {
+	return [
+		useBigEventOutcome(), useLotteryOutcome(), useWitchOutcome(), useSmallEventChoiceOutcome(),
+		useAutomaticSmallEventOutcome(), useShopResult()
+	];
+}
+
 /** Whether the adventure tab is telling a story or asking something, which an unlock must not cover. */
 export function useAdventureBusy(): boolean {
 	const {open} = useCollectors();
-	const outcomes = [
-		useBigEventOutcome(), useLotteryOutcome(), useWitchOutcome(), useSmallEventChoiceOutcome(),
-		useAutomaticSmallEventOutcome(), useTokenOutcome(), useHealOutcome(), useShopResult()
-	];
+	const outcomes = [...useAdventureStories(), useTokenOutcome(), useHealOutcome()];
 	return open.length > 0 || outcomes.some(outcome => outcome !== null);
+}
+
+/** Whether an event holds the player on the adventure tab; a heal or a token spent is too quick to hide the tabs for. */
+export function useAdventureHoldsTabs(): boolean {
+	const {open} = useCollectors();
+	const stories = useAdventureStories();
+	return open.some(isAdventureScreenCollector) || stories.some(outcome => outcome !== null);
 }
 
 /** The emblem of what just opened pops out of a golden ring while sparks fly away from it. */
