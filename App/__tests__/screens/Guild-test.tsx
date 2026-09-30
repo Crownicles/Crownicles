@@ -20,7 +20,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();
 const mockReplace = jest.fn();
-jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: (): object => ({push: mockPush, navigate: mockNavigate, replace: mockReplace})}));
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useSegments: (): string[] => ["(protected)", "(tabs)", "guild"], useRouter: (): object => ({push: mockPush, navigate: mockNavigate, replace: mockReplace})}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
 const mockTrack = jest.fn();
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: mockTrack})}));
@@ -238,7 +238,7 @@ describe("guild screens", () => {
 		await render(<GuildOverview guild={guildData({members: [SELF, mate]})} onPage={jest.fn()} />);
 		await fireEvent.press(screen.getByText("Marin"));
 		await fireEvent.press(screen.getByText("app:guild.openProfile"));
-		expect(mockPush).toHaveBeenCalledWith({pathname: "/player/[ref]", params: {ref: "opaque-marin"}});
+		expect(mockPush).toHaveBeenCalledWith({pathname: "/guild/player/[ref]", params: {ref: "opaque-marin"}});
 		await fireEvent.press(screen.getByText("Aventurier"));
 		await fireEvent.press(screen.getByText("app:guild.openProfile"));
 		expect(mockNavigate).toHaveBeenCalledWith("/profile");
@@ -255,7 +255,7 @@ describe("guild screens", () => {
 		await render(<GuildOverview guild={foreign} />);
 		expect(screen.queryByText(formatNumber(MEMBERSHIP.treasury))).toBeNull();
 		await fireEvent.press(screen.getByText("Marin"));
-		expect(mockPush).toHaveBeenCalledWith({pathname: "/player/[ref]", params: {ref: "opaque-marin"}});
+		expect(mockPush).toHaveBeenCalledWith({pathname: "/guild/player/[ref]", params: {ref: "opaque-marin"}});
 		expect(screen.queryByText("app:utilities.boat")).toBeNull();
 	});
 	it.each([

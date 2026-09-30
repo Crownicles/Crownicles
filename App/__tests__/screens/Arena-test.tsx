@@ -9,7 +9,7 @@ import {TopDataType, TopTiming, EloGameResult} from "ws-packets/src/objects/Rank
 
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();
-jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: (): object => ({push: mockPush, navigate: mockNavigate})}));
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useSegments: (): string[] => ["(protected)", "(tabs)", "arena", "[page]"], useRouter: (): object => ({push: mockPush, navigate: mockNavigate})}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: jest.fn()})}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
@@ -31,12 +31,12 @@ describe("arena references", () => {
 		{
 			board: "player", dataType: TopDataType.GLORY, label: "app:arena.rankings.openProfile", ownTab: "/profile",
 			other: {name: "Kyusaor", playerRef: "opaque-kyusaor"}, own: {name: "Aventurier", playerRef: "opaque-self"},
-			opened: {pathname: "/player/[ref]", params: {ref: "opaque-kyusaor"}}
+			opened: {pathname: "/arena/player/[ref]", params: {ref: "opaque-kyusaor"}}
 		},
 		{
 			board: "guild", dataType: TopDataType.GUILD, label: "app:arena.rankings.openGuild", ownTab: "/guild",
 			other: {name: "Aurore"}, own: {name: "Bananes"},
-			opened: {pathname: "/guilds/[name]", params: {name: "Aurore"}}
+			opened: {pathname: "/arena/guilds/[name]", params: {name: "Aurore"}}
 		}
 	])("opens a ranked $board, and the player's own row on their own tab", async scenario => {
 		const page = Object.assign(new TopRes(), {dataType: scenario.dataType, timing: TopTiming.ALL_TIME, canBeRanked: true, totalElements: 2, elementsPerPage: 10, pageNumber: 1, elements: [

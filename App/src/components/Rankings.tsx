@@ -1,6 +1,7 @@
 import {ReactNode, useState} from "react";
 import {Pressable, Text, View, type StyleProp, type ViewStyle} from "react-native";
 import {useRouter} from "expo-router";
+import {useOpenGuild, useOpenPlayer} from "@/src/navigation/OtherProfiles";
 import {TopDataType, TopTiming, RankingEntry} from "ws-packets/src/objects/Rankings";
 import {TopRes} from "ws-packets/src/fromServer/fight/RankingsRes";
 import {RankingSelection, useRankings} from "@/src/store/useRankings";
@@ -88,29 +89,33 @@ function RankingStanding({data, onPage}: {data: TopRes; onPage: (page: number) =
 }
 
 type RankingLink = {label: string; open: () => void};
+type RankingNavigation = {router: ReturnType<typeof useRouter>; openPlayer: (playerRef: string) => void; openGuild: (name: string) => void};
 
 /** Where a row leads: one's own row goes to one's own tab, with everything only they can do there. */
-function rankingLink(entry: RankingEntry, dataType: TopDataType, router: ReturnType<typeof useRouter>): RankingLink | undefined {
+function rankingLink(entry: RankingEntry, dataType: TopDataType, {router, openPlayer, openGuild}: RankingNavigation): RankingLink | undefined {
 	if (dataType === TopDataType.GUILD) {
 		if (!entry.name) return undefined;
+		const name = entry.name;
 		return {
-			label: i18n.t("app:arena.rankings.openGuild", {name: entry.name}),
-			open: (): void => entry.sameContext ? router.navigate("/guild") : router.push({pathname: "/guilds/[name]", params: {name: entry.name}})
+			label: i18n.t("app:arena.rankings.openGuild", {name}),
+			open: (): void => entry.sameContext ? router.navigate("/guild") : openGuild(name)
 		};
 	}
 	const {playerRef} = entry;
 	if (!playerRef) return undefined;
 	return {
 		label: i18n.t("app:arena.rankings.openProfile", {name: entry.name || i18n.t("app:arena.unknownPlayer")}),
-		open: (): void => entry.sameContext ? router.navigate("/profile") : router.push({pathname: "/player/[ref]", params: {ref: playerRef}})
+		open: (): void => entry.sameContext ? router.navigate("/profile") : openPlayer(playerRef)
 	};
 }
 
 function RankingRow({entry, dataType}: {entry: RankingEntry; dataType: TopDataType}): ReactNode {
 	const styles = useStyles();
 	const router = useRouter();
+	const openPlayer = useOpenPlayer();
+	const openGuild = useOpenGuild();
 	const podium = entry.rank <= PODIUM_LAST_RANK;
-	const link = rankingLink(entry, dataType, router);
+	const link = rankingLink(entry, dataType, {router, openPlayer, openGuild});
 	const row = <>
 		<View style={[styles.rankBadge, podium && styles.rankBadgePodium]}>
 			<Text style={[styles.rank, podium && styles.rankPodium]} numberOfLines={1}>{formatNumber(entry.rank)}</Text>

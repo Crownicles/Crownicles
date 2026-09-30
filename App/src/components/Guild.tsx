@@ -1,6 +1,7 @@
 import {ReactNode, useState} from "react";
 import {Text, View} from "react-native";
 import {useRouter} from "expo-router";
+import {useOpenPlayer} from "@/src/navigation/OtherProfiles";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {GuildCreateReq, GuildDailyReq, GuildStorageReq} from "ws-packets/src/fromClient/GuildReq";
 import {GuildDescriptionReq, GuildLeaveReq} from "ws-packets/src/fromClient/GuildManagementReq";
@@ -121,9 +122,10 @@ type MemberEntryProps = {member: GuildMember; guild: GuildData; expanded: boolea
 
 function useOpenMemberProfile(): (member: GuildMember) => void {
 	const router = useRouter();
+	const openPlayer = useOpenPlayer();
 	return (member): void => member.isSelf
 		? router.navigate("/profile")
-		: router.push({pathname: "/player/[ref]", params: {ref: member.playerRef}});
+		: openPlayer(member.playerRef);
 }
 
 function MemberEntry({member, guild, expanded, onToggle}: MemberEntryProps): ReactNode {
