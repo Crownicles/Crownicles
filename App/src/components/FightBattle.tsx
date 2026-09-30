@@ -2,6 +2,7 @@ import {ReactNode, useRef, useState} from "react";
 import {ActivityIndicator, ScrollView, Text, View, useWindowDimensions} from "react-native";
 import {CircleAlert} from "@/src/design/FightIcons";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import {FightEnd} from "ws-packets/src/objects/Fight";
 import {Button, ButtonRow, Note} from "@/src/design/Primitives";
 import {QuestionSheet} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
@@ -40,7 +41,7 @@ function fightPhase(props: FightLiveProps, playback: FightPlayback): FightPhase 
 	return props.collector ? FIGHT_PHASES.SELF : FIGHT_PHASES.OPPONENT;
 }
 
-function FightTurn({fight, playback, collector, onChoose, submitting, navigation, speed}: FightContentProps): ReactNode {
+function FightTurn({fight, playback, collector, onChoose, submitting, speed}: FightContentProps): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
 	const status = playback.status;
@@ -53,14 +54,24 @@ function FightTurn({fight, playback, collector, onChoose, submitting, navigation
 	</View>;
 }
 
-function FightContent(props: FightContentProps): ReactNode {
+function FightFailure({fight, navigation}: FightContentProps): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
-	const {fight, playback, navigation} = props;
 	const closeLabel = i18n.t(fight.introduction?.opponent.monsterId ? "app:adventure.continueReport" : "app:battle.returnToArena");
-	if (fight.error) return <View style={styles.loading}><CircleAlert size={38} color={colors.muted} /><Note>{i18n.t(`app:arena.errors.${fight.error}`)}</Note><Button onPress={navigation.onClose}>{closeLabel}</Button></View>;
+	return <View style={styles.loading}><CircleAlert size={38} color={colors.muted} /><Note>{i18n.t(`app:arena.errors.${fight.error}`)}</Note><Button onPress={navigation.onClose}>{closeLabel}</Button></View>;
+}
+
+function FinishedFight({fight, navigation, result}: FightContentProps & {result: FightEnd}): ReactNode {
+	const styles = useStyles();
+	const closeLabel = i18n.t(fight.introduction?.opponent.monsterId ? "app:adventure.continueReport" : "app:battle.returnToArena");
+	return <View style={styles.body}><FightResult result={result} reward={fight.reward} monsterReward={fight.monsterReward} /><View style={styles.resultActions}><ButtonRow><Button variant="primary" onPress={navigation.onClose}>{closeLabel}</Button><Button onPress={navigation.onJournal}>{i18n.t("app:arena.log")}</Button></ButtonRow></View></View>;
+}
+
+function FightContent(props: FightContentProps): ReactNode {
+	const {fight, playback} = props;
+	if (fight.error) return <FightFailure {...props} />;
 	if (!fight.result || playback.record) return <FightTurn {...props} />;
-	return <View style={styles.body}><FightResult result={fight.result} reward={fight.reward} monsterReward={fight.monsterReward} /><View style={styles.resultActions}><ButtonRow><Button variant="primary" onPress={navigation.onClose}>{closeLabel}</Button><Button onPress={navigation.onJournal}>{i18n.t("app:arena.log")}</Button></ButtonRow></View></View>;
+	return <FinishedFight {...props} result={fight.result} />;
 }
 
 function FightJournal({entries, onClose}: {entries: FightLogRecord[]; onClose: () => void}): ReactNode {

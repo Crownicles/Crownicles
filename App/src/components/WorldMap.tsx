@@ -28,7 +28,7 @@ export function MapImage({packet}: {packet: MapRes}): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
 	const [uri, setUri] = useState(packet.imageUrl);
-	const [loadedUri, setLoadedUri] = useState<string>();
+	const [loadedUri, setLoadedUri] = useState<string | null>(null);
 	const [failed, setFailed] = useState(false);
 	const [expanded, setExpanded] = useState(false);
 	const [ratio, setRatio] = useState(DEFAULT_MAP_RATIO);
@@ -47,7 +47,7 @@ export function MapImage({packet}: {packet: MapRes}): ReactNode {
 	};
 	if (failed) return <>
 		<Note>{i18n.t("app:map.imageError")}</Note>
-		<Button onPress={(): void => {setFailed(false); setLoadedUri(undefined); setUri(packet.imageUrl);}}>{i18n.t("app:common.retry")}</Button>
+		<Button onPress={(): void => {setFailed(false); setLoadedUri(null); setUri(packet.imageUrl);}}>{i18n.t("app:common.retry")}</Button>
 	</>;
 	return <>
 		<Pressable style={styles.frame} accessibilityRole="button" accessibilityLabel={i18n.t("app:map.expand")} onPress={(): void => setExpanded(true)}>

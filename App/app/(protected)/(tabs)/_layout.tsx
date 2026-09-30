@@ -40,6 +40,8 @@ import {ContestSeal, DepartureFork, forkDue, sealDue, stageMoment, StopArrivedTo
 import {RoyalLetter} from "@/src/onboarding/RoyalLetter";
 import {useRoyalLetter} from "@/src/store/RoyalLetterStore";
 import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
+import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
+import {RequestState} from "@/src/store/useGameQuery";
 import {useColors} from "@/src/design/ThemeContext";
 
 /** Every tab of the app, in the order of the bar; the journey decides which of them are open. */
@@ -52,11 +54,16 @@ const TABS: readonly {name: JourneyTab; title: string; icon: LucideIcon}[] = [
 ];
 
 /** How much of the wait for the next report has gone by; full once it can be opened, or while tokens rush there. */
+function travelProgress(report: RequestState<ReportViewRes>, currentTime: number, dashing: boolean): number | undefined {
+	if (report.status !== "ready") return undefined;
+	if (!report.data.travel || currentTime === 0) return undefined;
+	return report.data.reportReady || dashing ? 1 : reportWaitProgress(report.data.travel, currentTime);
+}
+
 function useTravelProgress(currentTime: number): number | undefined {
 	const report = useReportView();
 	const dashing = useTravelDashing();
-	if (report.status !== "ready" || !report.data.travel || currentTime === 0) return undefined;
-	return report.data.reportReady || dashing ? 1 : reportWaitProgress(report.data.travel, currentTime);
+	return travelProgress(report, currentTime, dashing);
 }
 
 /** How far the pet's expedition has gone; full once it is back, until its finds are claimed. */
@@ -125,6 +132,18 @@ function NavigatorTabBar({state, position, navigation, journey}: NavigatorTabBar
 	return <CapsuleTabBar tabs={tabs} focused={state.routes[state.index].name} position={position} onSelect={select} />;
 }
 
+function ProfileIdentity({profile}: {profile: ProfileRes | null}): ReactNode {
+	const navigationStyles = useNavigationStyles();
+	const classIcon = profile ? AppIcons.getIconOrNull(`classes.${profile.classId}`) : null;
+	return <>
+		{classIcon ? <View style={navigationStyles.profileClassIcon}><TwemojiIcon emoji={classIcon} size={Theme.fontSize.hero} /></View> : null}
+		<View style={navigationStyles.profileIdentity}>
+			<Text style={navigationStyles.profileName}>{profile?.pseudo}</Text>
+			{profile ? <Text style={navigationStyles.profileLevel}>{i18n.t("app:profile.level", {level: profile.level})}</Text> : null}
+		</View>
+	</>;
+}
+
 const ProfileHeader = (): ReactNode => {
 	const navigationStyles = useNavigationStyles();
 	/*
@@ -137,14 +156,9 @@ const ProfileHeader = (): ReactNode => {
 	const profile = state.status === "ready" ? state.data : null;
 	// The class emblem leads to the class comparison, once the arena that hosts it is open.
 	const showClassInfo = journey.tabs.includes(JOURNEY_TABS.ARENA) ? (): void => router.push("/arena/classes") : undefined;
-	const classIcon = profile ? AppIcons.getIconOrNull(`classes.${profile.classId}`) : null;
 	return (
 		<TouchableOpacity disabled={!showClassInfo} onPress={showClassInfo} style={navigationStyles.profileHeader}>
-			{classIcon ? <View style={navigationStyles.profileClassIcon}><TwemojiIcon emoji={classIcon} size={Theme.fontSize.hero} /></View> : null}
-			<View style={navigationStyles.profileIdentity}>
-				<Text style={navigationStyles.profileName}>{profile?.pseudo}</Text>
-				{profile ? <Text style={navigationStyles.profileLevel}>{i18n.t("app:profile.level", {level: profile.level})}</Text> : null}
-			</View>
+			<ProfileIdentity profile={profile} />
 		</TouchableOpacity>
 	);
 };

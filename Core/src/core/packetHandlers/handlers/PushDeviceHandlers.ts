@@ -19,7 +19,8 @@ export default class PushDeviceHandlers {
 	/** The app's settings decide what is pushed: they are created here if the player never opened them. */
 	@packetHandler(CommandPushDeviceRegisterReq)
 	async register(response: CrowniclesPacket[], context: PacketContext, packet: CommandPushDeviceRegisterReq): Promise<void> {
-		if (!isPushToken(packet.token) || !isPushPlatform(packet.platform) || typeof packet.sandbox !== "boolean" || !isLanguage(packet.language)) {
+		const validDevice = isPushToken(packet.token) && isPushPlatform(packet.platform) && typeof packet.sandbox === "boolean";
+		if (!validDevice || !isLanguage(packet.language)) {
 			PacketUtils.pushInternalError(response, "Invalid push device");
 			return;
 		}

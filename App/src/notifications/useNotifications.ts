@@ -26,6 +26,12 @@ export function reportReminder(view: ReportViewRes): ReportReminder | null {
 	return {readyAt, destination, arrival: readyAt >= travel.arriveTime};
 }
 
+function localReportReminder(view: ReportViewRes, pushed: boolean): ReportReminder | null {
+	const reminder = reportReminder(view);
+	if (pushed && reminder?.arrival) return null;
+	return reminder;
+}
+
 /**
  * Keeps the report notification in step with the report the server last described and with the player's setting.
  * The server pushes the arrival itself once it can reach the device: the app then only reminds of the stops.
@@ -34,8 +40,7 @@ export function useReportNotification(): void {
 	const state = useReportView();
 	const enabled = isNotificationEnabled(useNotificationPreferences(), NOTIFICATION_TYPES.REPORT);
 	const pushed = usePushActive();
-	const reminder = enabled && state.status === "ready" ? reportReminder(state.data) : null;
-	const wanted = reminder && !(pushed && reminder.arrival) ? reminder : null;
+	const wanted = enabled && state.status === "ready" ? localReportReminder(state.data, pushed) : null;
 	const readyAt = wanted?.readyAt;
 	const destination = wanted?.destination;
 	useEffect(() => {

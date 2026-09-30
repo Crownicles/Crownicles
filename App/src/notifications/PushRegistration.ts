@@ -73,19 +73,23 @@ async function send(token: string, platform: PushPlatform, language: string): Pr
 	if (answer.kind === "answer") setRegistered({token, language});
 }
 
-function register(token: DevicePushToken): Promise<void> {
-	const platform = platformOf(token);
-	const language = i18n.language;
-	if (!platform || typeof token.data !== "string") return Promise.resolve();
-	if (registered?.token === token.data && registered.language === language) return Promise.resolve();
-	const key = `${token.data}/${language}`;
+function pendingRegistration(token: string, platform: PushPlatform, language: string): Promise<void> {
+	const key = `${token}/${language}`;
 	if (pending?.key !== key) {
-		const done = send(token.data, platform, language).finally(() => {
+		const done = send(token, platform, language).finally(() => {
 			if (pending?.done === done) pending = null;
 		});
 		pending = {key, done};
 	}
 	return pending.done;
+}
+
+function register(token: DevicePushToken): Promise<void> {
+	const platform = platformOf(token);
+	const language = i18n.language;
+	if (!platform || typeof token.data !== "string") return Promise.resolve();
+	if (registered?.token === token.data && registered.language === language) return Promise.resolve();
+	return pendingRegistration(token.data, platform, language);
 }
 
 /** Gives the server this device's token, once the player allowed notifications; asking is left to the screens that explain why. */

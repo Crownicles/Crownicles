@@ -149,7 +149,8 @@ export class ApnsClient implements PushSender {
 
 	private session(sandbox: boolean): ClientHttp2Session {
 		const existing = this.sessions.get(sandbox);
-		if (existing && !existing.closed && !existing.destroyed) {
+		const reusable = existing && !existing.closed && !existing.destroyed;
+		if (reusable) {
 			return existing;
 		}
 		const session = connect(sandbox ? APNS_HOSTS.sandbox : APNS_HOSTS.production);

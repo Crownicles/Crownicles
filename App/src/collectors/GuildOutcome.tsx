@@ -26,14 +26,25 @@ function creationMessage(status: GuildCreationStatus): string {
 	return i18n.t("app:guild.errors.missingMoney", {money: formatMoney(status.missingMoney ?? 0)});
 }
 
+function DailyPetReward({pet}: {pet: GuildDailyReward["pet"]}): ReactNode {
+	if (!pet) return null;
+	return <Note>{i18n.t("app:guild.rewards.pet", {pet: i18n.t(`models:pets.${pet.typeId}`, {context: pet.isFemale ? "female" : "male"})})}</Note>;
+}
+
+function DailyRewardExtras({reward}: {reward: GuildDailyReward}): ReactNode {
+	return <>
+		{reward.advanceTime !== undefined ? <Note>{i18n.t("app:guild.rewards.advanceTime", {duration: formatDurationMinutes(reward.advanceTime * MINUTES_PER_HOUR)})}</Note> : null}
+		{reward.alteration ? <Note>{i18n.t("app:guild.rewards.alteration", {health: reward.alteration.healAmount ?? 0})}</Note> : null}
+		<DailyPetReward pet={reward.pet} />
+	</>;
+}
+
 function DailyReward({reward}: {reward: GuildDailyReward}): ReactNode {
 	return <>
 		<Note>{reward.guildName}</Note>
 		{DAILY_NUMBERS.filter(key => reward[key] !== undefined).map(key => <Fact key={key} label={i18n.t(`app:guild.rewards.${key}`)} value={formatNumber(reward[key]!)} />)}
 		{DAILY_FLAGS.filter(key => reward[key]).map(key => <Note key={key}>{i18n.t(`app:guild.rewards.${key}`)}</Note>)}
-		{reward.advanceTime !== undefined ? <Note>{i18n.t("app:guild.rewards.advanceTime", {duration: formatDurationMinutes(reward.advanceTime * MINUTES_PER_HOUR)})}</Note> : null}
-		{reward.alteration ? <Note>{i18n.t("app:guild.rewards.alteration", {health: reward.alteration.healAmount ?? 0})}</Note> : null}
-		{reward.pet ? <Note>{i18n.t("app:guild.rewards.pet", {pet: i18n.t(`models:pets.${reward.pet.typeId}`, {context: reward.pet.isFemale ? "female" : "male"})})}</Note> : null}
+		<DailyRewardExtras reward={reward} />
 	</>;
 }
 

@@ -34,7 +34,9 @@ export function useLeagueInfo(): RequestState<LeagueInfoRes> {
 export function dailyBonusClaimable(state: RequestState<InventoryRes>, now: number): boolean {
 	if (state.status !== "ready" || now === 0) return false;
 	const {data, dailyBonusAvailableAt} = state.data;
-	if (!data || dailyBonusAvailableAt === undefined || dailyBonusAvailableAt > now) return false;
+	if (!data) return false;
+	const waiting = dailyBonusAvailableAt === undefined || dailyBonusAvailableAt > now;
+	if (waiting) return false;
 	return givesDailyBonus(data.object) || data.backupObjects.some(entry => givesDailyBonus(entry.display));
 }
 

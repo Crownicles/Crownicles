@@ -521,6 +521,15 @@ function useRefusalShake(): {offset: Animated.Value; shake: () => void} {
 	};
 }
 
+type BannerAvailability = {blocked: boolean; refusable: boolean};
+
+function bannerAvailability(pending: boolean, disabled: boolean, lock: Lock | undefined): BannerAvailability {
+	return {
+		blocked: pending || disabled || Boolean(lock),
+		refusable: Boolean(lock) && !pending && !disabled
+	};
+}
+
 export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false, disabled = false, lock, hint, testID}: {
 	icon: LucideIcon;
 
@@ -540,8 +549,7 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 }): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
-	const blocked = pending || disabled || Boolean(lock);
-	const refusable = Boolean(lock) && !pending && !disabled;
+	const {blocked, refusable} = bannerAvailability(pending, disabled, lock);
 	const {scale, iconScale, handlers} = usePressMotion(onPress);
 	const {offset, shake} = useRefusalShake();
 	const glyph = emoji ? <TwemojiIcon emoji={emoji} size={BANNER_EMOJI_SIZE} /> : <Icon size={20} color={colors.paper} />;

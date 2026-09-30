@@ -65,13 +65,24 @@ function identityEmblem(profile: ProfileRes, cure: Cure | null): ReactNode {
 	return icon ? <TwemojiIcon emoji={icon} size={IDENTITY_EMBLEM_SIZE} /> : null;
 }
 
-function ArenaProfile({profile, cure}: {profile: ProfileRes; cure: Cure | null}): ReactNode {
+function ArenaIdentity({profile, cure}: {profile: ProfileRes; cure: Cure | null}): ReactNode {
 	const styles = useStyles();
+	return <View style={styles.identity}>{identityEmblem(profile, cure)}<View><Text style={styles.name}>{profile.pseudo}</Text>{profile.classId === undefined ? null : <Text style={styles.className}>{i18n.t(`models:classes.${profile.classId}`)} · {i18n.t("app:battle.level", {level: profile.level})}</Text>}</View></View>;
+}
+
+function ArenaRanking({profile}: {profile: ProfileRes}): ReactNode {
+	const styles = useStyles();
+	const ranking = profile.fightRanking;
+	if (!ranking) return null;
+	return <View style={styles.ranking}><View style={styles.rank}><Text style={styles.rankLabel}>{i18n.t("app:arena.glory")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{formatGlory(ranking.glory)}</TwemojiText></View><View style={[styles.rank, styles.rankEnd]}><Text style={styles.rankLabel}>{i18n.t("app:arena.league")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{leagueName(ranking.league)}</TwemojiText></View></View>;
+}
+
+function ArenaProfile({profile, cure}: {profile: ProfileRes; cure: Cure | null}): ReactNode {
 	const colors = useColors();
 	return <>
-		<View style={styles.identity}>{identityEmblem(profile, cure)}<View><Text style={styles.name}>{profile.pseudo}</Text>{profile.classId === undefined ? null : <Text style={styles.className}>{i18n.t(`models:classes.${profile.classId}`)} · {i18n.t("app:battle.level", {level: profile.level})}</Text>}</View></View>
+		<ArenaIdentity profile={profile} cure={cure} />
 		{profile.stats ? <FightGauge label={i18n.t("app:arena.energy")} icon={Zap} value={profile.stats.energy.value} max={profile.stats.energy.max} color={colors.green} /> : null}
-		{profile.fightRanking ? <View style={styles.ranking}><View style={styles.rank}><Text style={styles.rankLabel}>{i18n.t("app:arena.glory")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{formatGlory(profile.fightRanking.glory)}</TwemojiText></View><View style={[styles.rank, styles.rankEnd]}><Text style={styles.rankLabel}>{i18n.t("app:arena.league")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{leagueName(profile.fightRanking.league)}</TwemojiText></View></View> : null}
+		<ArenaRanking profile={profile} />
 	</>;
 }
 
@@ -180,14 +191,23 @@ function useArenaFight(): {ongoing: boolean; startError: FightError | null; pend
 	};
 }
 
+type ArenaEligibility = {canFight: boolean; blocking: PlayerEffect | null};
+
+function arenaEligibility(profile: ProfileRes | null, ongoing: boolean): ArenaEligibility {
+	return {
+		canFight: !profile || profile.level >= gameRules().journeyLevels.fights,
+		blocking: profile && !ongoing ? activeEffect(profile) : null
+	};
+}
+
 export default function Arena(): ReactNode {
 	const router = useRouter();
 	const styles = useStyles();
 	const state = usePlayerProfile();
 	const {ongoing, startError, pending, message, start} = useArenaFight();
-	const canFight = state.status !== "ready" || state.data.level >= gameRules().journeyLevels.fights;
+	const profile = state.status === "ready" ? state.data : null;
 	// A fight already under way can always be resumed.
-	const blocking = state.status === "ready" && !ongoing ? activeEffect(state.data) : null;
+	const {canFight, blocking} = arenaEligibility(profile, ongoing);
 	const {offer, action: heal, cure} = useArenaCure(blocking);
 	return <Screen>
 		<ArenaHeader />
@@ -195,7 +215,7 @@ export default function Arena(): ReactNode {
 		{message ? <Note>{message}</Note> : null}
 		{offer
 			? <View style={styles.start}><HealAction heal={offer} action={heal} /></View>
-			: <ArenaStart pending={pending} ongoing={ongoing} lock={ongoing ? undefined : startLock(canFight, blocking, state.status === "ready" ? state.data : null)} onStart={start} />}
+			: <ArenaStart pending={pending} ongoing={ongoing} lock={ongoing ? undefined : startLock(canFight, blocking, profile)} onStart={start} />}
 		{startError ? <ArenaStartError error={startError} /> : null}
 		<ArenaLinks pages={canFight ? ARENA_PAGES : BEFORE_FIGHTS_PAGES} onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
 	</Screen>;

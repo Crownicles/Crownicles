@@ -52,7 +52,9 @@ export function AppNotificationToast(): ReactNode {
 	const packet = usePushedAnnouncement(appNotificationStore);
 	const myTurn = useAnnouncementTurn();
 	const blessing = useBlessingAnnouncement();
-	if (!myTurn || blessing || !packet) return null;
+	const waiting = !myTurn || Boolean(blessing);
+	if (waiting) return null;
+	if (!packet) return null;
 	return <Toast
 		emblem={<TwemojiIcon emoji={AppIcons.getIcon(`notifications.types.${packet.notificationType}`)} size={TOAST_EMBLEM_SIZE} />}
 		title={packet.title}

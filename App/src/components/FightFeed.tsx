@@ -97,6 +97,16 @@ function turnOf(record: FightLogRecord): number | undefined {
 	return record.before?.numberOfTurn;
 }
 
+function FeedEntry({record, previous, latest}: {record: FightLogRecord; previous: FightLogRecord | undefined; latest: number | undefined}): ReactNode {
+	const styles = useStyles();
+	const turn = turnOf(record);
+	const newTurn = turn !== undefined && (!previous || turnOf(previous) !== turn);
+	return <View style={styles.entry}>
+		{newTurn ? <Text style={styles.turn}>{i18n.t("app:battle.shortTurn", {turn})}</Text> : null}
+		<FeedBubble record={record} latest={record.sequence === latest} />
+	</View>;
+}
+
 /**
  * The fight told as an exchange: each action on its fighter's side, grouped by turn, the latest at the
  * bottom just above the action buttons. Scrolling back reads the whole fight.
@@ -116,14 +126,7 @@ export function FightFeed({entries, opponentThinking, ownTurn}: {entries: FightL
 		testID="fight-feed"
 	>
 		{entries.length === 0 && !opponentThinking ? <Text style={styles.empty}>{i18n.t(ownTurn ? "app:battle.ready" : "app:battle.opening")}</Text> : null}
-		{entries.map((record, index) => {
-			const turn = turnOf(record);
-			const newTurn = turn !== undefined && (index === 0 || turnOf(entries[index - 1]) !== turn);
-			return <View key={record.sequence} style={styles.entry}>
-				{newTurn ? <Text style={styles.turn}>{i18n.t("app:battle.shortTurn", {turn})}</Text> : null}
-				<FeedBubble record={record} latest={record.sequence === latest} />
-			</View>;
-		})}
+		{entries.map((record, index) => <FeedEntry key={record.sequence} record={record} previous={entries[index - 1]} latest={latest} />)}
 		{opponentThinking ? <OpponentThinking /> : null}
 	</ScrollView>;
 }

@@ -11,6 +11,7 @@ import type { CrowniclesPacket } from "../../../Lib/src/packets/CrowniclesPacket
 import { OnboardingConstants } from "../../../Lib/src/constants/OnboardingConstants";
 
 type RoyalMailModule = typeof import("../../src/core/onboarding/RoyalMail");
+type CampaignModule = typeof import("../../src/core/missions/Campaign");
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const RACERS = 5;
@@ -54,7 +55,11 @@ describe("royal mail", () => {
 			keycloakId: `newcomer-${Date.now()}-${Math.random()}`, tokens: STARTING_TOKENS, money: 0
 		});
 		await PlayerMissionsInfo.create({
-			playerId: player.id, campaignBlob: "0".repeat(149), lastRoyalLetterAt, royalLettersReceived
+			playerId: player.id,
+			campaignBlob: "1".repeat(loadProductionModule<CampaignModule>("core/missions/Campaign").Campaign.getMaxCampaignNumber()),
+			campaignProgression: 0,
+			lastRoyalLetterAt,
+			royalLettersReceived
 		});
 		return player;
 	}

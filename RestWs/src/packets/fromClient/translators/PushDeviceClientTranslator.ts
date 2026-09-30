@@ -17,7 +17,8 @@ import {
 export default class PushDeviceClientTranslator {
 	@fromClientTranslator(PushDeviceRegisterReq)
 	public static register(_context: PacketContext, packet: PushDeviceRegisterReq): Promise<CommandPushDeviceRegisterReq> {
-		if (!isPushToken(packet.token) || !isPushPlatform(packet.platform) || typeof packet.sandbox !== "boolean" || !isLanguage(packet.language)) {
+		const validDevice = isPushToken(packet.token) && isPushPlatform(packet.platform) && typeof packet.sandbox === "boolean";
+		if (!validDevice || !isLanguage(packet.language)) {
 			throw new InvalidClientPacketError("Invalid push device");
 		}
 		return asyncMakePacket(CommandPushDeviceRegisterReq, {
