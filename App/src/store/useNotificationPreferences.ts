@@ -12,8 +12,20 @@ import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {commandRejectionMessage} from "@/src/display/CommandRejection";
 import {i18n} from "@/src/translations/i18n";
 
-/** Every kind reaches the app, pushed by the server: each gets its setting. */
-export const DELIVERED_NOTIFICATION_TYPES: readonly NotificationType[] = Object.values(NOTIFICATION_TYPES);
+/** The settings, gathered by the part of the game they come from; together they hold every kind once. */
+export const NOTIFICATION_GROUPS = [
+	{key: "adventure", types: [NOTIFICATION_TYPES.REPORT, NOTIFICATION_TYPES.PLAYER_FREED_FROM_JAIL, NOTIFICATION_TYPES.DAILY_BONUS]},
+	{key: "arena", types: [NOTIFICATION_TYPES.ENERGY, NOTIFICATION_TYPES.FIGHT_CHALLENGE, NOTIFICATION_TYPES.TOURNAMENT]},
+	{key: "pet", types: [NOTIFICATION_TYPES.PET_EXPEDITION]},
+	{key: "guild", types: [NOTIFICATION_TYPES.GUILD_DAILY, NOTIFICATION_TYPES.GUILD_KICK, NOTIFICATION_TYPES.GUILD_STATUS_CHANGE]}
+] as const satisfies readonly {key: string; types: readonly NotificationType[]}[];
+
+/** How many kinds are on, out of all of them; nothing until the server answered. */
+export function enabledCount(state: RequestState<NotificationPreferencesRes>): {enabled: number; total: number} | null {
+	if (state.status !== "ready") return null;
+	const values = Object.values(NOTIFICATION_TYPES).map(type => state.data.preferences[type]);
+	return {enabled: values.filter(Boolean).length, total: values.length};
+}
 
 export type NotificationPreferenceChange = {type: NotificationType; enabled: boolean};
 

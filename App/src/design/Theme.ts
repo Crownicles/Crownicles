@@ -99,6 +99,8 @@ export const Theme = {
 	dimensions: {
 		itemHeight: 80,
 		itemMinHeight: 68,
+		/** A row with a name only, no emblem nor caption: a settings line. */
+		compactRowMinHeight: 52,
 		actionButtonMinWidth: 60,
 		headerIcon: 24,
 		travelTrackHeight: 5,

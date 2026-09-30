@@ -1,60 +1,18 @@
 import React from "react";
 import {useRouter} from "expo-router";
-import {Text, View} from "react-native";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {readFullStoredToken} from "@/src/authentication/TokenStorage";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {RestApi} from "@/src/networking/RestApi";
 import {forgetPushDevice} from "@/src/notifications/PushRegistration";
-import {Theme} from "@/src/design/Theme";
-import {BackButton, Refusal} from "@/src/design/Sections";
-import {Button as DesignButton, Screen} from "@/src/design/Primitives";
+import {Page} from "@/src/design/DetailScreen";
+import {LockHint, Refusal, Standing} from "@/src/design/Sections";
+import {Button as DesignButton, Note, SectionHeader} from "@/src/design/Primitives";
+import {Check} from "@/src/design/FightIcons";
 import {TextField} from "@/src/design/Inputs";
 import {FormBlock} from "@/src/design/KeyboardAvoidance";
 import {i18n} from "@/src/translations/i18n";
-import {createStyles} from "@/src/design/ThemeContext";
-
-const useStyles = createStyles(colors => ({
-	container: {
-		flex: 1,
-		backgroundColor: colors.wash,
-	},
-	title: {
-		fontFamily: Theme.fonts.bold,
-		fontSize: Theme.fontSize.hero,
-		color: colors.ink,
-		marginBottom: Theme.spacing.lg,
-	},
-	warning: {
-		fontFamily: Theme.fonts.semiBold,
-		fontSize: Theme.fontSize.body,
-		color: colors.ink,
-		marginBottom: Theme.spacing.lg,
-	},
-	paragraph: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.body,
-		color: colors.ink,
-		marginBottom: Theme.spacing.lg,
-	},
-	stepTitle: {
-		fontFamily: Theme.fonts.semiBold,
-		fontSize: Theme.fontSize.body,
-		color: colors.ink,
-		marginTop: Theme.spacing.lg,
-		marginBottom: Theme.spacing.sm,
-	},
-	notice: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.body,
-		color: colors.green,
-		marginBottom: Theme.spacing.lg,
-	},
-	action: {
-		marginBottom: Theme.spacing.sm,
-	},
-}));
 
 /** Reads the session from the keychain, refreshing it when it is about to expire. */
 async function currentAccessToken(): Promise<string | null> {
@@ -70,12 +28,10 @@ async function currentAccessToken(): Promise<string | null> {
 
 /** Each step ends on its own irreversible button, kept apart from what follows. */
 function DangerAction({label, disabled, onPress}: {label: string; disabled: boolean; onPress: () => void}): React.ReactElement {
-	const styles = useStyles();
-	return <View style={styles.action}><DesignButton variant="danger" disabled={disabled} onPress={onPress}>{label}</DesignButton></View>;
+	return <DesignButton variant="danger" disabled={disabled} onPress={onPress}>{label}</DesignButton>;
 }
 
 export default function DeleteAccount(): React.ReactElement {
-	const styles = useStyles();
 	const router = useRouter();
 	const authState = React.useContext(AuthContext);
 	const [code, setCode] = React.useState("");
@@ -127,35 +83,37 @@ export default function DeleteAccount(): React.ReactElement {
 	});
 
 	return (
-		<View style={styles.container}>
-			<Screen>
-				<BackButton label={i18n.t("app:common.back")} onClose={router.back} />
-				<Text style={styles.title}>{i18n.t("app:settings.deleteAccount.title")}</Text>
-				<Text style={styles.warning}>{i18n.t("app:settings.deleteAccount.warning")}</Text>
-				<Text style={styles.paragraph}>{i18n.t("app:settings.deleteAccount.removed")}</Text>
-				<Text style={styles.paragraph}>{i18n.t("app:settings.deleteAccount.kept")}</Text>
+		<Page
+			onClose={router.back}
+			heading={<Standing
+				caption={i18n.t("app:settings.sections.account")}
+				title={i18n.t("app:settings.deleteAccount.title")}
+				subtitle={i18n.t("app:settings.deleteAccount.warning")}
+			/>}
+		>
+			<Note>{i18n.t("app:settings.deleteAccount.removed")}</Note>
+			<Note>{i18n.t("app:settings.deleteAccount.kept")}</Note>
 
-				<Text style={styles.stepTitle}>{i18n.t("app:settings.deleteAccount.requestStep")}</Text>
-				<Text style={styles.paragraph}>{i18n.t("app:settings.deleteAccount.requestExplanation")}</Text>
-				{requested && <Text style={styles.notice}>{i18n.t("app:settings.deleteAccount.requested")}</Text>}
-				{failure === "request" && <Refusal>{i18n.t("app:settings.deleteAccount.requestError")}</Refusal>}
-				<DangerAction label={i18n.t("app:settings.deleteAccount.ask")} disabled={pending} onPress={requestDeletion} />
+			<SectionHeader>{i18n.t("app:settings.deleteAccount.requestStep")}</SectionHeader>
+			<Note>{i18n.t("app:settings.deleteAccount.requestExplanation")}</Note>
+			{requested && <LockHint lock={{reason: i18n.t("app:settings.deleteAccount.requested"), icon: Check}} />}
+			{failure === "request" && <Refusal>{i18n.t("app:settings.deleteAccount.requestError")}</Refusal>}
+			<DangerAction label={i18n.t("app:settings.deleteAccount.ask")} disabled={pending} onPress={requestDeletion} />
 
-				<Text style={styles.stepTitle}>{i18n.t("app:settings.deleteAccount.confirmStep")}</Text>
-				<Text style={styles.paragraph}>{i18n.t("app:settings.deleteAccount.confirmExplanation")}</Text>
-				<FormBlock>
-					<TextField
-						label={i18n.t("app:settings.deleteAccount.codeLabel")}
-						value={code}
-						onChangeText={setCode}
-						autoCapitalize="characters"
-						autoCorrect={false}
-						editable={!pending}
-						refusal={failure === "code" ? i18n.t("app:settings.deleteAccount.codeError") : null}
-					/>
-					<DangerAction label={i18n.t("app:settings.deleteAccount.confirm")} disabled={pending || code.trim().length === 0} onPress={confirmDeletion} />
-				</FormBlock>
-			</Screen>
-		</View>
+			<SectionHeader>{i18n.t("app:settings.deleteAccount.confirmStep")}</SectionHeader>
+			<Note>{i18n.t("app:settings.deleteAccount.confirmExplanation")}</Note>
+			<FormBlock>
+				<TextField
+					label={i18n.t("app:settings.deleteAccount.codeLabel")}
+					value={code}
+					onChangeText={setCode}
+					autoCapitalize="characters"
+					autoCorrect={false}
+					editable={!pending}
+					refusal={failure === "code" ? i18n.t("app:settings.deleteAccount.codeError") : null}
+				/>
+				<DangerAction label={i18n.t("app:settings.deleteAccount.confirm")} disabled={pending || code.trim().length === 0} onPress={confirmDeletion} />
+			</FormBlock>
+		</Page>
 	);
 }

@@ -5,8 +5,9 @@ import {TestListRes} from "ws-packets/src/fromServer/test/TestRes";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {TestResult, testCommandSuggestions, useTestConsole} from "@/src/store/useTestCommands";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
-import {ActionBanner, BackButton, EntryRow, ExpandableList, Standing} from "@/src/design/Sections";
-import {Note, Screen, SectionHeader} from "@/src/design/Primitives";
+import {ActionBanner, EntryRow, ExpandableList, Standing} from "@/src/design/Sections";
+import {Page} from "@/src/design/DetailScreen";
+import {Note, SectionHeader} from "@/src/design/Primitives";
 import {TextField} from "@/src/design/Inputs";
 import {FormBlock} from "@/src/design/KeyboardAvoidance";
 import {Play} from "@/src/design/FightIcons";
@@ -60,9 +61,10 @@ function TestConsoleForm({list, run}: {list: TestListRes; run: (command: string)
 export default function TestCommands(): ReactNode {
 	const router = useRouter();
 	const {list, results, run, clear} = useTestConsole();
-	return <Screen>
-		<BackButton label={i18n.t("app:common.back")} onClose={router.back} />
-		<Standing caption={i18n.t("app:settings.developerMode")} title={i18n.t("app:settings.testCommands.title")} subtitle={i18n.t("app:settings.testCommands.hint")} />
+	return <Page
+		onClose={router.back}
+		heading={<Standing caption={i18n.t("app:settings.developerMode")} title={i18n.t("app:settings.testCommands.title")} subtitle={i18n.t("app:settings.testCommands.hint")} />}
+	>
 		<GameQueryContent state={list} entity={GAME_ENTITIES.TEST_COMMANDS}>{data => <TestConsoleForm list={data} run={run} />}</GameQueryContent>
 		{results.length > 0
 			? <>
@@ -70,5 +72,5 @@ export default function TestCommands(): ReactNode {
 				{results.map(result => <ResultLine key={result.id} result={result} />)}
 			</>
 			: null}
-	</Screen>;
+	</Page>;
 }

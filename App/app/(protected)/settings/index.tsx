@@ -1,239 +1,178 @@
-import {SegmentedControl} from "@/src/design/SegmentedControl";
-import {useFightSpeed} from "@/src/store/useFightSpeed";
-import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
-import React, {PropsWithChildren} from "react";
+import React, {ReactNode, useContext, useState} from "react";
 import {useRouter} from "expo-router";
-import {ActivityIndicator, ScrollView, Switch, Text, View} from "react-native";
-import {WebSocketClient} from "@/src/networking/WebSocketClient";
+import {makeFromClientPacket} from "ws-packets/src/MakePackets";
+import {VersionReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
+import {VersionRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {PreferencesContext} from "@/src/preferences/PreferencesContext";
-import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {PingReq} from "ws-packets/src/fromClient/PingReq";
-import {PingRes} from "ws-packets/src/fromServer/ping/PingRes";
-import {VersionReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
-import {VersionRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
+import {travelAdvicePreference, useTravelAdvicesShown} from "@/src/preferences/TravelAdvicePreference";
 import {GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
-import {Theme} from "@/src/design/Theme";
-import {THEME_PREFERENCES} from "@/src/design/ThemePreference";
-import {BackButton} from "@/src/design/Sections";
-import {Button as DesignButton} from "@/src/design/Primitives";
+import {useFightSpeed} from "@/src/store/useFightSpeed";
+import {usePing} from "@/src/store/usePing";
+import {enabledCount, useNotificationPreferences} from "@/src/store/useNotificationPreferences";
+import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
 import {cancelReportNotification} from "@/src/notifications/ReportNotifications";
 import {forgetPushDevice} from "@/src/notifications/PushRegistration";
 import {NOTIFICATION_PERMISSIONS, useNotificationPermission} from "@/src/notifications/NotificationPermission";
-import {DELIVERED_NOTIFICATION_TYPES, useNotificationPreferenceChange, useNotificationPreferences} from "@/src/store/useNotificationPreferences";
+import {Page} from "@/src/design/DetailScreen";
+import {SectionHeader} from "@/src/design/Primitives";
+import {ActionBanner, ChoiceRow, EntryRow, ExpandableList, QuestionSheet, Standing, SwitchRow} from "@/src/design/Sections";
+import {SegmentedControl} from "@/src/design/SegmentedControl";
+import {THEME_PREFERENCES} from "@/src/design/ThemePreference";
+import {useTheme} from "@/src/design/ThemeContext";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {LogOut} from "@/src/design/FightIcons";
+import {Theme} from "@/src/design/Theme";
+import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
-import {travelAdvicePreference, useTravelAdvicesShown} from "@/src/preferences/TravelAdvicePreference";
-import {createStyles, useTheme} from "@/src/design/ThemeContext";
 
-const useStyles = createStyles(colors => ({
-	combatPreference: {marginBottom: Theme.spacing.lg},
-	preferenceLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body, color: colors.ink},
-	container: {
-		flex: 1,
-		padding: Theme.spacing.xl,
-		backgroundColor: colors.wash,
-	},
-	header: {
-		fontFamily: Theme.fonts.bold,
-		fontSize: Theme.fontSize.hero,
-		marginBottom: Theme.spacing.xl,
-		color: colors.ink,
-	},
-	item: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		marginBottom: Theme.spacing.xl,
-	},
-	listItem: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		padding: Theme.spacing.lg,
-		marginBottom: Theme.spacing.sm,
-		backgroundColor: colors.paper,
-		borderRadius: Theme.radius,
-		borderWidth: 1,
-		borderColor: colors.line,
-	},
-	loadingIndicator: {
-		marginLeft: Theme.spacing.sm
-	},
-	pingValue: {
-		marginLeft: Theme.spacing.sm,
-		fontFamily: Theme.fonts.regular,
-		color: colors.muted
-	},
-	label: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.body,
-		color: colors.ink
-	},
-	typeLabel: {
-		flex: 1,
-		marginRight: Theme.spacing.md
-	},
-	hint: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.note,
-		color: colors.muted,
-		marginVertical: Theme.spacing.sm
-	},
-}));
+const ROW_EMBLEM_SIZE = 24;
 
-const ListItem = ({ children }: PropsWithChildren) => {
-	const styles = useStyles();
-	return <View style={styles.listItem}>
-		{children}
-	</View>;
-};
-
-/** Settings are pointless while the phone forbids the app to notify: the way to allow it comes first. */
-function NotificationPermissionNotice(): React.JSX.Element | null {
-	const styles = useStyles();
-	const {permission, allow} = useNotificationPermission();
-	if (permission === null || permission === NOTIFICATION_PERMISSIONS.GRANTED) return null;
-	return (
-		<View>
-			<Text style={styles.hint}>{i18n.t("app:settings.notifications.permission.off")}</Text>
-			<DesignButton onPress={allow}>
-				{i18n.t(permission === NOTIFICATION_PERMISSIONS.BLOCKED ? "app:settings.notifications.permission.openSettings" : "app:settings.notifications.permission.allow")}
-			</DesignButton>
-		</View>
-	);
+function rowEmblem(path: string): ReactNode {
+	return <TwemojiIcon emoji={AppIcons.getIcon(path)} size={ROW_EMBLEM_SIZE} />;
 }
 
-/** One switch per kind the app sends; Discord's settings are separate and are not touched here. */
-function NotificationSettings(): React.JSX.Element {
-	const styles = useStyles();
-	const state = useNotificationPreferences();
-	const change = useNotificationPreferenceChange();
-	return (
-		<View style={styles.combatPreference}>
-			<Text style={styles.preferenceLabel}>{i18n.t("app:settings.notifications.label")}</Text>
-			<Text style={styles.hint}>{i18n.t("app:settings.notifications.independent")}</Text>
-			<NotificationPermissionNotice />
-			{DELIVERED_NOTIFICATION_TYPES.map(type => (
-				<ListItem key={type}>
-					<Text style={[styles.label, styles.typeLabel]}>{i18n.t(`app:settings.notifications.types.${type}`)}</Text>
-					{state.status === "ready"
-						? <Switch
-							accessibilityLabel={i18n.t(`app:settings.notifications.types.${type}`)}
-							value={state.data.preferences[type]}
-							disabled={change.pending}
-							onValueChange={(enabled): void => {
-								change.submit({type, enabled}).then();
-							}}
-						/>
-						: <ActivityIndicator size="small" style={styles.loadingIndicator} />}
-				</ListItem>
-			))}
-			{change.message ? <Text style={styles.hint}>{change.message}</Text> : null}
-		</View>
-	);
-}
-
-function TravelAdviceSetting(): React.JSX.Element {
-	const styles = useStyles();
-	const shown = useTravelAdvicesShown();
-	return (
-		<View style={styles.combatPreference}>
-			<ListItem>
-				<Text style={styles.label}>{i18n.t("app:settings.travelAdvices.label")}</Text>
-				<Switch accessibilityLabel={i18n.t("app:settings.travelAdvices.label")} value={shown} onValueChange={travelAdvicePreference.set} />
-			</ListItem>
-			<Text style={styles.hint}>{i18n.t("app:settings.travelAdvices.hint")}</Text>
-		</View>
-	);
-}
-
-export default function Index() {
-	const styles = useStyles();
-	const router = useRouter();
-	const preferences = React.useContext(PreferencesContext);
-	const authState = React.useContext(AuthContext);
+function GameSettings(): ReactNode {
 	const {speed, setSpeed} = useFightSpeed();
+	const travelAdvices = useTravelAdvicesShown();
+	return <>
+		<SectionHeader first>{i18n.t("app:settings.sections.game")}</SectionHeader>
+		<ExpandableList>
+			<ChoiceRow label={i18n.t("app:battle.speed.label")}>
+				<SegmentedControl label={i18n.t("app:battle.speed.label")} value={speed} onChange={setSpeed} options={[
+					{value: FIGHT_SPEEDS.NORMAL, label: i18n.t("app:battle.speed.normal")},
+					{value: FIGHT_SPEEDS.FAST, label: i18n.t("app:battle.speed.fast")}
+				]} />
+			</ChoiceRow>
+			<SwitchRow
+				label={i18n.t("app:settings.travelAdvices.label")}
+				caption={i18n.t("app:settings.travelAdvices.hint")}
+				value={travelAdvices}
+				onChange={travelAdvicePreference.set}
+			/>
+		</ExpandableList>
+	</>;
+}
+
+function DisplaySettings(): ReactNode {
 	const theme = useTheme();
-	const [pingLoading, setPingLoading] = React.useState(false);
-	const [pingTime, setPingTime] = React.useState<number | null>(null);
-	const version = useGameQuery(GAME_ENTITIES.VERSION, () => GameClient.request(makeFromClientPacket(VersionReq, {}), VersionRes));
+	return <>
+		<SectionHeader>{i18n.t("app:settings.sections.display")}</SectionHeader>
+		<ExpandableList>
+			<ChoiceRow label={i18n.t("app:settings.theme.label")}>
+				<SegmentedControl label={i18n.t("app:settings.theme.label")} value={theme.preference} onChange={theme.setPreference} options={[
+					{value: THEME_PREFERENCES.SYSTEM, label: i18n.t("app:settings.theme.system")},
+					{value: THEME_PREFERENCES.LIGHT, label: i18n.t("app:settings.theme.light")},
+					{value: THEME_PREFERENCES.DARK, label: i18n.t("app:settings.theme.dark")}
+				]} />
+			</ChoiceRow>
+		</ExpandableList>
+	</>;
+}
 
-	const handlePing = () => {
-		setPingLoading(true);
-		setPingTime(null);
-		const startTime = Date.now();
-		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(PingReq, { time: startTime }), {
-			[PingRes.wireName]: (packet: PingRes) => {
-				const elapsed = Date.now() - packet.time;
-				setPingTime(elapsed);
-				setPingLoading(false);
-			},
-		});
+/** The phone's refusal comes first: the settings chosen in the app do nothing while it lasts. */
+function notificationSummary(permission: ReturnType<typeof useNotificationPermission>["permission"], count: ReturnType<typeof enabledCount>): string | undefined {
+	if (permission === NOTIFICATION_PERMISSIONS.BLOCKED || permission === NOTIFICATION_PERMISSIONS.ASKABLE) {
+		return i18n.t("app:settings.notifications.summary.off");
+	}
+	return count ? i18n.t("app:settings.notifications.summary.count", count) : undefined;
+}
+
+function NotificationsEntry(): ReactNode {
+	const router = useRouter();
+	const {permission} = useNotificationPermission();
+	const summary = notificationSummary(permission, enabledCount(useNotificationPreferences()));
+	return <>
+		<SectionHeader>{i18n.t("app:settings.sections.notifications")}</SectionHeader>
+		<ExpandableList>
+			<EntryRow
+				emblem={rowEmblem("notifications.bell")}
+				title={i18n.t("app:settings.notifications.entry")}
+				{...summary ? {subtitle: summary} : {}}
+				onPress={(): void => router.push("/settings/notifications")}
+			/>
+		</ExpandableList>
+	</>;
+}
+
+/** Leaving is confirmed in place: the session and this device's notifications go with it. */
+function LogoutSheet({onClose}: {onClose: () => void}): ReactNode {
+	const authState = useContext(AuthContext);
+	const logout = (): void => {
+		cancelReportNotification();
+		forgetPushDevice();
+		authState.setState(AuthStateEnum.NO_TOKEN);
+		authState.clearToken().catch(error => console.error("Failed to clear token:", error));
 	};
+	return <QuestionSheet
+		caption={i18n.t("app:settings.sections.account")}
+		title={i18n.t("app:settings.logoutConfirm.title")}
+		subtitle={i18n.t("app:settings.logoutConfirm.subtitle")}
+		onClose={onClose}
+		testID="logout-sheet"
+	>
+		<ActionBanner icon={LogOut} label={i18n.t("app:settings.logout")} onPress={logout} />
+	</QuestionSheet>;
+}
 
-	return (
-		<View style={styles.container}>
-			<ScrollView>
-				<BackButton label={i18n.t("app:common.back")} onClose={router.back} />
-				<View style={styles.combatPreference}>
-					<Text style={styles.preferenceLabel}>{i18n.t("app:battle.speed.label")}</Text>
-					<SegmentedControl label={i18n.t("app:battle.speed.label")} value={speed} onChange={setSpeed} options={[
-						{value: FIGHT_SPEEDS.NORMAL, label: i18n.t("app:battle.speed.normal")},
-						{value: FIGHT_SPEEDS.FAST, label: i18n.t("app:battle.speed.fast")}
-					]} />
-				</View>
-				<View style={styles.combatPreference}>
-					<Text style={styles.preferenceLabel}>{i18n.t("app:settings.theme.label")}</Text>
-					<SegmentedControl label={i18n.t("app:settings.theme.label")} value={theme.preference} onChange={theme.setPreference} options={[
-						{value: THEME_PREFERENCES.SYSTEM, label: i18n.t("app:settings.theme.system")},
-						{value: THEME_PREFERENCES.LIGHT, label: i18n.t("app:settings.theme.light")},
-						{value: THEME_PREFERENCES.DARK, label: i18n.t("app:settings.theme.dark")}
-					]} />
-				</View>
-				<NotificationSettings />
-				<TravelAdviceSetting />
-				<ListItem>
-					<Text style={styles.label}>{i18n.t("app:settings.coreVersion")}</Text>
-					<Text style={styles.pingValue}>{version.status === "ready" ? version.data.coreVersion : i18n.t("app:common.loading")}</Text>
-				</ListItem>
-				<ListItem>
-					<Text style={styles.label}>{i18n.t("app:settings.developerMode")}</Text>
-					<Switch value={preferences.getDevMode()} onValueChange={preferences.setDevMode} />
-				</ListItem>
-				{preferences.getDevMode() && (
-					<ListItem>
-							<DesignButton onPress={handlePing} disabled={pingLoading} variant="primary">{i18n.t("app:settings.ping")}</DesignButton>
-						{pingLoading ? (
-							<ActivityIndicator size="small" style={styles.loadingIndicator} />
-						) : pingTime !== null ? (
-							<Text style={styles.pingValue}>{pingTime} ms</Text>
-						) : null}
-					</ListItem>
-				)}
-				{preferences.getDevMode() && (
-					<ListItem>
-						<DesignButton onPress={() => router.push("/settings/test-commands")}>{i18n.t("app:settings.testCommands.title")}</DesignButton>
-					</ListItem>
-				)}
-				<ListItem>
-					<DesignButton variant="danger" onPress={() => {
-						cancelReportNotification();
-						forgetPushDevice();
-						authState.setState(AuthStateEnum.NO_TOKEN);
-						authState.clearToken().then().catch((err) => {
-							console.error("Failed to clear token:", err);
-						});
-					}}>{i18n.t("app:settings.logout")}</DesignButton>
-				</ListItem>
-				<ListItem>
-					<DesignButton variant="danger" onPress={() => router.push("/settings/delete-account")}>
-						{i18n.t("app:settings.deleteAccount.entry")}
-					</DesignButton>
-				</ListItem>
-			</ScrollView>
-		</View>
-	);
+function AccountSettings(): ReactNode {
+	const router = useRouter();
+	const [leaving, setLeaving] = useState(false);
+	return <>
+		<SectionHeader>{i18n.t("app:settings.sections.account")}</SectionHeader>
+		<ExpandableList>
+			<EntryRow title={i18n.t("app:settings.logout")} onPress={(): void => setLeaving(true)} />
+			<EntryRow title={i18n.t("app:settings.deleteAccount.entry")} danger onPress={(): void => router.push("/settings/delete-account")} />
+		</ExpandableList>
+		{leaving ? <LogoutSheet onClose={(): void => setLeaving(false)} /> : null}
+	</>;
+}
+
+function DeveloperTools(): ReactNode {
+	const router = useRouter();
+	const ping = usePing();
+	const latency = ping.latency === null ? undefined : i18n.t("app:settings.pingValue", {value: ping.latency});
+	return <>
+		<EntryRow
+			title={i18n.t("app:settings.ping")}
+			{...latency ? {end: latency} : {}}
+			disabled={ping.pending}
+			onPress={ping.measure}
+		/>
+		<EntryRow title={i18n.t("app:settings.testCommands.title")} onPress={(): void => router.push("/settings/test-commands")} />
+	</>;
+}
+
+function AboutSettings(): ReactNode {
+	const preferences = useContext(PreferencesContext);
+	const version = useGameQuery(GAME_ENTITIES.VERSION, () => GameClient.request(makeFromClientPacket(VersionReq, {}), VersionRes));
+	return <>
+		<SectionHeader>{i18n.t("app:settings.sections.about")}</SectionHeader>
+		<ExpandableList>
+			<EntryRow title={i18n.t("app:settings.coreVersion")} end={version.status === "ready" ? version.data.coreVersion : i18n.t("app:common.loading")} />
+			<SwitchRow label={i18n.t("app:settings.developerMode")} value={preferences.getDevMode()} onChange={preferences.setDevMode} />
+			{preferences.getDevMode() ? <DeveloperTools /> : null}
+		</ExpandableList>
+	</>;
+}
+
+export default function Settings(): ReactNode {
+	const router = useRouter();
+	return <Page
+		onClose={router.back}
+		heading={<Standing
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon("other.gear")} size={Theme.dimensions.headerIcon} />}
+			caption={i18n.t("app:settings.eyebrow")}
+			title={i18n.t("app:settings.title")}
+		/>}
+	>
+		<GameSettings />
+		<DisplaySettings />
+		<NotificationsEntry />
+		<AccountSettings />
+		<AboutSettings />
+	</Page>;
 }

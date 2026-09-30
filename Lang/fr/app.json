@@ -224,26 +224,63 @@
     },
     "coreVersion": "Version du moteur",
     "ping": "Ping",
+    "pingValue": "{{value}} ms",
     "logout": "Se déconnecter",
+    "title": "Réglages",
+    "eyebrow": "Application",
+    "sections": {
+      "game": "Jeu",
+      "display": "Affichage",
+      "notifications": "Notifications",
+      "account": "Compte",
+      "about": "À propos"
+    },
+    "logoutConfirm": {
+      "title": "Se déconnecter ?",
+      "subtitle": "Votre progression reste enregistrée : il suffira de vous reconnecter pour reprendre l'aventure."
+    },
     "notifications": {
       "label": "Notifications",
+      "entry": "Ce qui vous est signalé",
       "independent": "Ces réglages ne concernent que l'application : ceux de Discord restent inchangés.",
+      "summary": {
+        "count": "{{enabled}} sur {{total}} activées",
+        "off": "Bloquées par le téléphone"
+      },
       "permission": {
         "off": "Votre téléphone n'autorise pas l'application à vous notifier : rien ne vous sera signalé tant qu'elle est fermée.",
         "allow": "Autoriser les notifications",
         "openSettings": "Ouvrir les réglages du téléphone"
       },
+      "groups": {
+        "adventure": "Aventure",
+        "arena": "Arène",
+        "pet": "Familier",
+        "guild": "Guilde"
+      },
       "types": {
-        "report": "Suite du voyage",
-        "dailyBonus": "Bonus journalier disponible",
+        "report": "Arrivée à destination",
+        "dailyBonus": "Bonus journalier",
         "energy": "Énergie au maximum",
-        "guildDaily": "Bonus de guilde récupéré",
+        "guildDaily": "Bonus de guilde",
         "guildKick": "Exclusion de la guilde",
-        "guildStatusChange": "Changement de rôle dans la guilde",
+        "guildStatusChange": "Rôle dans la guilde",
         "playerFreedFromJail": "Libération de prison",
-        "fightChallenge": "Attaque dans l'arène",
-        "petExpedition": "Retour d'expédition du familier",
+        "fightChallenge": "Attaque",
+        "petExpedition": "Retour d'expédition",
         "tournament": "Tournois"
+      },
+      "captions": {
+        "report": "Quand votre voyage vous mène à destination",
+        "dailyBonus": "Quand vous pouvez de nouveau le récupérer",
+        "energy": "Quand votre énergie est de nouveau pleine",
+        "guildDaily": "Quand un membre récupère le bonus de la guilde",
+        "guildKick": "Quand vous êtes exclu de votre guilde",
+        "guildStatusChange": "Promotion, rétrogradation ou nouveau chef",
+        "playerFreedFromJail": "Quand un joueur vous fait sortir de prison",
+        "fightChallenge": "Quand un joueur vous attaque dans l'arène",
+        "petExpedition": "Quand votre familier rentre d'expédition",
+        "tournament": "Début, fin imminente et résultats"
       }
     },
     "deleteAccount": {

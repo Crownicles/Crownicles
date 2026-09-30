@@ -1,6 +1,6 @@
 import {ReactNode, useEffect, useMemo, useRef, useState} from "react";
 import {
-	Animated, Easing, KeyboardAvoidingView, Modal, ModalProps, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextStyle, useWindowDimensions, View, ViewStyle
+	Animated, ActivityIndicator, Easing, KeyboardAvoidingView, Modal, ModalProps, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
 } from "react-native";
 import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -46,12 +46,15 @@ const useStyles = createStyles(colors => ({
 	pressed: {opacity: 0.7},
 	/** Rows sit together on one card: the card and the spacing group them, no rule is drawn between them. */
 	list: {backgroundColor: colors.paper, borderRadius: Theme.radius, overflow: "hidden"},
+	choice: {paddingTop: Theme.spacing.md, paddingBottom: Theme.spacing.xs, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"},
 	entryHeader: {minHeight: 72, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"},
 	expanded: {backgroundColor: colors.wash},
+	compact: {minHeight: Theme.dimensions.compactRowMinHeight},
 	highlighted: {borderLeftColor: colors.green},
 	dimmed: {opacity: 0.45},
 	entryEmblem: {width: 32, height: 32, flexShrink: 0, alignItems: "center", justifyContent: "center"},
 	entryLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: colors.ink},
+	dangerLabel: {color: colors.red},
 	detailBackdrop: {flex: 1, justifyContent: "flex-end", backgroundColor: colors.overlay},
 	detailCard: {backgroundColor: colors.paper, borderTopLeftRadius: Theme.radius * 2, borderTopRightRadius: Theme.radius * 2, paddingHorizontal: Theme.spacing.xl, paddingTop: Theme.spacing.md, gap: Theme.spacing.lg, maxHeight: "85%"},
 	detailGrabber: {alignSelf: "center", width: 40, height: 4, borderRadius: 2, backgroundColor: colors.line},
@@ -584,15 +587,15 @@ function EntryChevronIcon({chevron}: {chevron: EntryChevron}): ReactNode {
 	return <ChevronRight size={16} color={chevron === ENTRY_CHEVRONS.FORWARD ? colors.faint : colors.muted} />;
 }
 
-type EntryHeadingProps = {emblem?: ReactNode; label: string; caption?: ReactNode};
+type EntryHeadingProps = {emblem?: ReactNode; label: string; caption?: ReactNode; danger?: boolean};
 
 /** The emblem, name and caption a line shows, repeated on top of its details so the player knows what they are reading. */
-function EntryHeading({emblem, label, caption}: EntryHeadingProps): ReactNode {
+function EntryHeading({emblem, label, caption, danger = false}: EntryHeadingProps): ReactNode {
 	const styles = useStyles();
 	return <>
 		{emblem ? <View style={styles.entryEmblem}>{emblem}</View> : null}
 		<View style={styles.body}>
-			<TwemojiText textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
+			<TwemojiText textStyle={danger ? [styles.entryLabel, styles.dangerLabel] : styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
 			{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{caption}</TwemojiText> : caption}
 		</View>
 	</>;
@@ -604,13 +607,13 @@ function DetailSheet({heading, onClose, children, testID}: {heading: ReactNode; 
 	return <BottomSheet onClose={onClose} heading={<View style={styles.detailHead}>{heading}</View>} {...testID ? {testID} : {}}>{children}</BottomSheet>;
 }
 
-type EntryLook = {expanded: boolean; highlighted: boolean; dimmed: boolean};
+type EntryLook = {expanded: boolean; highlighted: boolean; dimmed: boolean; compact: boolean};
 
-function entryHeaderStyle(styles: SectionStyles, {expanded, highlighted, dimmed}: EntryLook, pressed: boolean): object[] {
-	return [styles.entryHeader, expanded && styles.expanded, highlighted && styles.highlighted, dimmed && !expanded && styles.dimmed, pressed && styles.pressed].filter(Boolean) as object[];
+function entryHeaderStyle(styles: SectionStyles, {expanded, highlighted, dimmed, compact}: EntryLook, pressed: boolean): object[] {
+	return [styles.entryHeader, compact && styles.compact, expanded && styles.expanded, highlighted && styles.highlighted, dimmed && !expanded && styles.dimmed, pressed && styles.pressed].filter(Boolean) as object[];
 }
 
-export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle, chevron = ENTRY_CHEVRONS.EXPAND, highlighted = false, dimmed = false, children, testID}: EntryHeadingProps & {
+export function ExpandableEntry({emblem, label, caption, danger = false, end, expanded, onToggle, chevron = ENTRY_CHEVRONS.EXPAND, highlighted = false, dimmed = false, children, testID}: EntryHeadingProps & {
 	end?: ReactNode;
 	expanded: boolean;
 	onToggle: () => void;
@@ -621,14 +624,14 @@ export function ExpandableEntry({emblem, label, caption, end, expanded, onToggle
 	testID?: string;
 }): ReactNode {
 	const styles = useStyles();
-	const heading = <EntryHeading emblem={emblem} label={label} caption={caption} />;
+	const heading = <EntryHeading emblem={emblem} label={label} caption={caption} danger={danger} />;
 	return <View>
 		<Pressable
 			accessibilityRole="button"
 			accessibilityLabel={label}
 			accessibilityState={{selected: expanded, expanded}}
 			onPress={onToggle}
-			style={({pressed}): object[] => entryHeaderStyle(styles, {expanded, highlighted, dimmed}, pressed)}
+			style={({pressed}): object[] => entryHeaderStyle(styles, {expanded, highlighted, dimmed, compact: !emblem && !caption}, pressed)}
 		>
 			{heading}
 			{end}
@@ -663,7 +666,7 @@ function rowTrailing(styles: SectionStyles, end: ReactNode): ReactNode {
 		: end;
 }
 
-/** A row that leads somewhere rather than unfolding, written in the same hand as the entries. */
+/** A row that leads somewhere rather than unfolding, written in the same hand as the entries; `danger` writes it in red, for what cannot be undone. */
 export function EntryRow({title, subtitle, end, emblem, onPress, disabled = false, danger = false, testID}: {
 	title: string;
 	subtitle?: string;
@@ -682,10 +685,64 @@ export function EntryRow({title, subtitle, end, emblem, onPress, disabled = fals
 		{...subtitle === undefined ? {} : {caption: subtitle}}
 		{...trailing === undefined ? {} : {end: trailing}}
 		{...testID === undefined ? {} : {testID}}
-		dimmed={disabled || danger}
+		dimmed={disabled}
+		danger={danger}
 		expanded={false}
 		onToggle={(): void => action?.()}
 		chevron={action ? ENTRY_CHEVRONS.FORWARD : ENTRY_CHEVRONS.NONE}
+	/>;
+}
+
+/**
+ * A setting chosen among a few options, as a row of a list: its name above, the options below, so a
+ * segmented control never stands alone without saying what it sets.
+ */
+export function ChoiceRow({label, caption, children}: {label: string; caption?: string; children: ReactNode}): ReactNode {
+	const styles = useStyles();
+	return <View style={styles.choice}>
+		<View>
+			<Text style={styles.entryLabel}>{label}</Text>
+			{caption ? <Text style={styles.caption}>{caption}</Text> : null}
+		</View>
+		{children}
+	</View>;
+}
+
+/**
+ * A setting turned on or off, written like the rows around it: the whole line toggles it, not only the switch.
+ * An unknown value, still on its way from the server, shows a spinner rather than a guess.
+ */
+export function SwitchRow({label, caption, emblem, value, onChange, disabled = false, testID}: {
+	label: string;
+	caption?: string;
+	emblem?: ReactNode;
+	value: boolean | undefined;
+	onChange: (value: boolean) => void;
+	disabled?: boolean;
+	testID?: string;
+}): ReactNode {
+	const colors = useColors();
+	const known = value !== undefined;
+	const toggle = (): void => {
+		if (known && !disabled) onChange(!value);
+	};
+	return <ExpandableEntry
+		{...emblem ? {emblem} : {}}
+		label={label}
+		{...caption === undefined ? {} : {caption}}
+		{...testID === undefined ? {} : {testID}}
+		end={known
+			? <Switch
+				accessibilityLabel={label}
+				value={value}
+				disabled={disabled}
+				onValueChange={onChange}
+				trackColor={{false: colors.line, true: colors.green}}
+			/>
+			: <ActivityIndicator size="small" color={colors.muted} />}
+		expanded={false}
+		onToggle={toggle}
+		chevron={ENTRY_CHEVRONS.NONE}
 	/>;
 }
 

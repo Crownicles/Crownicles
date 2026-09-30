@@ -122,6 +122,7 @@ locally: a screen that declares its own `standing`, `entry` or dark-banner style
 | `ActionBanner` | the one main action, as a dark pressable bar |
 | `LockHint` | the single line saying why something is closed |
 | `ExpandableList` / `ExpandableEntry` | any list whose items have details |
+| `SwitchRow` / `ChoiceRow` | a setting in a list: on/off (the whole row toggles), or one option among a few with its name above |
 
 Rules that decide the rest:
 
