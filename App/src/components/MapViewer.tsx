@@ -77,13 +77,15 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 
 	// Two fingers also drag: the move of their midpoint is added to the zoom around it.
 	const pinch = Gesture.Pinch()
+		.withTestId("map-pinch")
 		.onStart(event => {
 			stop();
 			focal.value = fromCentre(event.focalX, event.focalY);
 		})
 		.onChange(event => {
+			if (event.numberOfPointers !== 2) return;
 			const point = fromCentre(event.focalX, event.focalY);
-			const zoomed = zoomAround({scale: scale.value, x: x.value, y: y.value}, point, resistedScale(scale.value, event.scaleChange));
+			const zoomed = zoomAround({scale: scale.value, x: x.value, y: y.value}, focal.value, resistedScale(scale.value, event.scaleChange));
 			scale.value = zoomed.scale;
 			x.value = zoomed.x + point.x - focal.value.x;
 			y.value = zoomed.y + point.y - focal.value.y;
@@ -92,6 +94,7 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 		.onEnd(settle);
 
 	const pan = Gesture.Pan()
+		.withTestId("map-pan")
 		.maxPointers(1)
 		.onStart(stop)
 		.onChange(event => {
@@ -99,7 +102,8 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 			x.value = moved.x;
 			y.value = moved.y;
 		})
-		.onEnd(event => {
+		.onEnd((event, success) => {
+			if (!success) return;
 			const limits = panLimits(layout, scale.value);
 			x.value = withDecay({velocity: event.velocityX, deceleration: DECAY_DECELERATION, clamp: [-limits.x, limits.x], rubberBandEffect: true});
 			y.value = withDecay({velocity: event.velocityY, deceleration: DECAY_DECELERATION, clamp: [-limits.y, limits.y], rubberBandEffect: true});
@@ -124,6 +128,7 @@ export function MapViewer({uri, onClose, onError, ratio}: {
 		{/* Race, not Exclusive: pinching and dragging must not wait for the double tap to fail first. */}
 		<GestureDetector gesture={Gesture.Race(Gesture.Simultaneous(pinch, pan), doubleTap)}>
 			<View
+				testID="map-stage"
 				style={styles.stage}
 				onLayout={(event: LayoutChangeEvent): void => setFrame(event.nativeEvent.layout)}
 			>
