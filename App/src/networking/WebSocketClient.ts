@@ -125,6 +125,17 @@ export class WebSocketClient {
 		 * its promise can never settle.
 		 */
 		const packetId = this.registerResponseHandlers(responseHandlers);
+		this.enqueuePacket(packet, packetId, timeout);
+
+		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+			console.warn("WebSocket is not open. Packet will be queued.");
+			this.setState?.(AuthStateEnum.RECONNECTING_PACKET_QUEUE);
+			return;
+		}
+		this.processPacketQueue();
+	}
+
+	private enqueuePacket(packet: FromClientPacket, packetId: string | null, timeout?: PacketTimeout): void {
 		if (packetId && timeout) {
 			this.scheduleResponseHandlerCleanup(packetId, timeout);
 		}
@@ -133,13 +144,6 @@ export class WebSocketClient {
 			expiresAt: Date.now() + (timeout?.time ?? AppConstants.PACKET_TIMEOUT),
 			...(packetId ? { id: packetId } : {})
 		});
-
-		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-			console.warn("WebSocket is not open. Packet will be queued.");
-			this.setState?.(AuthStateEnum.RECONNECTING_PACKET_QUEUE);
-			return;
-		}
-		this.processPacketQueue();
 	}
 
 	private registerResponseHandlers(responseHandlers: {

@@ -106,7 +106,8 @@ describe("WebSocket session ownership", () => {
 
 	it.each([
 		null, 1, "text", [], {name: "command", data: null}, {name: "command", data: []},
-		{name: {}, data: {}}, {name: "command", data: {}, id: 1}
+		{name: {}, data: {}}, {name: "command", data: {}, id: 1},
+		{data: {}}, {name: "", data: {}}, {name: "command", data: 1}, {name: "command", data: {}, id: null}
 	].map(envelope => ({envelope})))("ignores malformed envelopes without publishing or rejecting the message handler ($envelope)", async ({envelope}): Promise<void> => {
 		const socket = new SocketStub();
 		await connect(socket);

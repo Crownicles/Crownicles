@@ -129,6 +129,10 @@ export class ReactionCollectorInstance {
 		return this.visiblePlayerKeycloakIds.includes(keycloakId);
 	}
 
+	private isReactionLimitReached(): boolean {
+		return this.reactionsHistory.length >= this.reactionLimit && this.reactionLimit > 0;
+	}
+
 	public async react(keycloakId: string, index: number, response: CrowniclesPacket[]): Promise<void> {
 		if (!this._creationPacket) {
 			throw "Reaction collector has not been built yet";
@@ -150,7 +154,7 @@ export class ReactionCollectorInstance {
 		if (this.collectCallback) {
 			await this.collectCallback(this, reaction.data, keycloakId, response);
 		}
-		if (this.reactionsHistory.length >= this.reactionLimit && this.reactionLimit > 0) {
+		if (this.isReactionLimitReached()) {
 			await this.end(response);
 		}
 	}

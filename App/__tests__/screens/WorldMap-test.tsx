@@ -28,29 +28,34 @@ describe("world map", () => {
 		});
 	});
 	afterEach(() => jest.restoreAllMocks());
-	it("keeps the map in place when one finger leaves a pinch", async () => {
+	it.each([
+		{
+			name: "keeps the map in place when one finger leaves a pinch",
+			gestures: [
+				{state: State.ACTIVE, numberOfPointers: 2, scale: 3, focalX: 200, focalY: 200},
+				{state: State.ACTIVE, numberOfPointers: 1, scale: 3, focalX: 280, focalY: 200},
+				{state: State.END, numberOfPointers: 1, scale: 3, focalX: 280, focalY: 200}
+			],
+			targets: [3, 0, 0]
+		},
+		{
+			name: "keeps the same map point under a moving pinch",
+			gestures: [
+				{state: State.ACTIVE, numberOfPointers: 2, scale: 2, focalX: 240, focalY: 220},
+				{state: State.ACTIVE, numberOfPointers: 2, scale: 3, focalX: 260, focalY: 230},
+				{state: State.END, numberOfPointers: 1, scale: 3, focalX: 260, focalY: 230}
+			],
+			targets: [3, 60, 30]
+		}
+	])("$name", async ({gestures, targets}): Promise<void> => {
 		const spring = jest.spyOn(Reanimated, "withSpring");
 		await openMapViewer();
 		await act(() => fireGestureHandler(getByGestureTestId("map-pinch"), [
 			{state: State.BEGAN, numberOfPointers: 2, scale: 1, focalX: 200, focalY: 200},
 			{state: State.ACTIVE, numberOfPointers: 2, scale: 1, focalX: 200, focalY: 200},
-			{state: State.ACTIVE, numberOfPointers: 2, scale: 3, focalX: 200, focalY: 200},
-			{state: State.ACTIVE, numberOfPointers: 1, scale: 3, focalX: 280, focalY: 200},
-			{state: State.END, numberOfPointers: 1, scale: 3, focalX: 280, focalY: 200}
+			...gestures
 		]));
-		expect(spring.mock.calls.map(([target]) => target)).toEqual([3, 0, 0]);
-	});
-	it("keeps the same map point under a moving pinch", async () => {
-		const spring = jest.spyOn(Reanimated, "withSpring");
-		await openMapViewer();
-		await act(() => fireGestureHandler(getByGestureTestId("map-pinch"), [
-			{state: State.BEGAN, numberOfPointers: 2, scale: 1, focalX: 200, focalY: 200},
-			{state: State.ACTIVE, numberOfPointers: 2, scale: 1, focalX: 200, focalY: 200},
-			{state: State.ACTIVE, numberOfPointers: 2, scale: 2, focalX: 240, focalY: 220},
-			{state: State.ACTIVE, numberOfPointers: 2, scale: 3, focalX: 260, focalY: 230},
-			{state: State.END, numberOfPointers: 1, scale: 3, focalX: 260, focalY: 230}
-		]));
-		expect(spring.mock.calls.map(([target]) => target)).toEqual([3, 60, 30]);
+		expect(spring.mock.calls.map(([target]) => target)).toEqual(targets);
 	});
 	it.each([
 		{name: "finished", state: State.END, decays: 2},

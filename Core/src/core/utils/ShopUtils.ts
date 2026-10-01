@@ -74,54 +74,16 @@ export abstract class ShopUtils {
 		shop: ShopInformations
 	): Promise<void> {
 		const {
-			shopCategories, player, logger, cityId, shopId, onClose
+			shopCategories, player, shopId
 		} = shop;
 		const additionalShopData = shop.additionalShopData ?? {};
 		additionalShopData.currency ??= ShopCurrency.MONEY;
 		const interestingPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 		const availableCurrency = interestingPlayerInfo instanceof Player ? interestingPlayerInfo.money : interestingPlayerInfo.gems;
 		const collectorShop = new ReactionCollectorShop(shopCategories, availableCurrency, additionalShopData, shopId);
-		const endCallback: EndCallback = async (collector, response) => {
-			const reaction = collector.getFirstReaction();
-
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SHOP);
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SHOP_CONFIRMATION);
-			if (!reaction || reaction.reaction.type === ReactionCollectorShopCloseReaction.name) {
-				if (onClose) {
-					await onClose(response);
-				}
-				else {
-					response.push(makePacket(CommandShopClosed, {}));
-				}
-				return;
-			}
-			const reactionInstance = reaction.reaction.data as ReactionCollectorShopItemReaction;
-			const locks = await this.getAdditionalPurchaseLocks(player, reactionInstance.shopItemId);
-			let purchased = false;
-			const purchaseResponse: CrowniclesPacket[] = [];
-			try {
-				purchased = await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
-					if (reactionInstance.shopItemId === ShopItemType.LOVE_POINTS_VALUE && lockedPlayer.petId !== player.petId) {
-						purchaseResponse.push(makePacket(CommandShopClosed, {}));
-						return false;
-					}
-					return await this.buyItemUnderLock(context, purchaseResponse, lockedPlayer, {
-						shop: {
-							...shop, additionalShopData
-						},
-						reaction: reactionInstance
-					});
-				}, locks);
-			}
-			catch (error) {
-				ReactionCollectorController.discardUnpublishedCollectors(purchaseResponse);
-				throw error;
-			}
-			response.push(...purchaseResponse);
-			if (purchased) {
-				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount, cityId).then();
-			}
-		};
+		const endCallback: EndCallback = (collector, response): Promise<void> => this.handleShopReaction(context, response, {
+			...shop, additionalShopData
+		}, collector);
 
 		const packet = new ReactionCollectorInstance(
 			collectorShop,
@@ -135,6 +97,57 @@ export abstract class ShopUtils {
 			.build();
 
 		response.push(packet);
+	}
+
+	private static async handleShopReaction(context: PacketContext, response: CrowniclesPacket[], shop: ShopInformations, collector: ReactionCollectorInstance): Promise<void> {
+		const {
+			player, onClose
+		} = shop;
+		const reaction = collector.getFirstReaction();
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SHOP);
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SHOP_CONFIRMATION);
+		if (!reaction || reaction.reaction.type === ReactionCollectorShopCloseReaction.name) {
+			if (onClose) {
+				await onClose(response);
+			}
+			else {
+				response.push(makePacket(CommandShopClosed, {}));
+			}
+			return;
+		}
+		await this.processPurchase(context, response, {
+			shop,
+			reaction: reaction.reaction.data as ReactionCollectorShopItemReaction
+		});
+	}
+
+	private static async processPurchase(context: PacketContext, response: CrowniclesPacket[], purchase: ShopPurchase): Promise<void> {
+		const {
+			shop, reaction
+		} = purchase;
+		const {
+			player, logger, cityId
+		} = shop;
+		const locks = await this.getAdditionalPurchaseLocks(player, reaction.shopItemId);
+		let purchased = false;
+		const purchaseResponse: CrowniclesPacket[] = [];
+		try {
+			purchased = await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
+				if (reaction.shopItemId === ShopItemType.LOVE_POINTS_VALUE && lockedPlayer.petId !== player.petId) {
+					purchaseResponse.push(makePacket(CommandShopClosed, {}));
+					return false;
+				}
+				return await this.buyItemUnderLock(context, purchaseResponse, lockedPlayer, purchase);
+			}, locks);
+		}
+		catch (error) {
+			ReactionCollectorController.discardUnpublishedCollectors(purchaseResponse);
+			throw error;
+		}
+		response.push(...purchaseResponse);
+		if (purchased) {
+			logger?.(player.keycloakId, reaction.shopItemId, reaction.amount, cityId).then();
+		}
 	}
 
 	private static async getAdditionalPurchaseLocks(player: Player, itemType: ShopItemType): Promise<LockKey[]> {

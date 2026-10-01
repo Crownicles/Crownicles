@@ -41,6 +41,32 @@ type FailedClientPacket = {
 	packetName: string;
 };
 
+function isClientRecord(value: unknown): value is Record<string, unknown> {
+	if (value === null) {
+		return false;
+	}
+	if (typeof value !== "object") {
+		return false;
+	}
+	return !Array.isArray(value);
+}
+
+function isClientMessage(value: unknown): value is ClientMessage {
+	if (!isClientRecord(value)) {
+		return false;
+	}
+	if (typeof value.name !== "string") {
+		return false;
+	}
+	if (value.name.length === 0) {
+		return false;
+	}
+	if (!isClientRecord(value.data)) {
+		return false;
+	}
+	return !("id" in value) || typeof value.id === "string";
+}
+
 /**
  * Parse a raw client message, or return null when it is not a packet
  * @param message
@@ -55,17 +81,14 @@ function parseClientMessage(message: string): ClientMessage | null {
 		return null;
 	}
 
-	if (typeof parsedMessage !== "object" || parsedMessage === null || Array.isArray(parsedMessage)
-		|| !("name" in parsedMessage) || typeof parsedMessage.name !== "string" || !parsedMessage.name
-		|| !("data" in parsedMessage) || typeof parsedMessage.data !== "object" || parsedMessage.data === null || Array.isArray(parsedMessage.data)
-		|| ("id" in parsedMessage && typeof parsedMessage.id !== "string")) {
+	if (!isClientMessage(parsedMessage)) {
 		CrowniclesLogger.debug("Invalid message format", { parsedMessage });
 		return null;
 	}
 	return {
 		name: parsedMessage.name,
 		data: parsedMessage.data,
-		..."id" in parsedMessage && typeof parsedMessage.id === "string" ? { id: parsedMessage.id } : {}
+		...typeof parsedMessage.id === "string" ? { id: parsedMessage.id } : {}
 	};
 }
 

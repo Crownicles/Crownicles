@@ -44,7 +44,7 @@ function stopPacketOf(packets: CrowniclesPacket[]): ReactionCollectorStopPacket 
 	return stop as ReactionCollectorStopPacket;
 }
 
-function buildCollector(): {
+function buildCollector(reactionLimit = 1): {
 	collector: ReactionCollectorInstance;
 	closingPackets: CrowniclesPacket[];
 } {
@@ -54,6 +54,7 @@ function buildCollector(): {
 		context(),
 		{
 			time: COLLECTOR_TIME,
+			reactionLimit,
 			allowedPlayerKeycloakIds: [PLAYER]
 		},
 		(_collector, packets) => {
@@ -87,6 +88,20 @@ describe("ReactionCollectorInstance closing reason", () => {
 		await collector.react(PLAYER, 0, []);
 
 		expect(stopPacketOf(closingPackets).reason).toBe(REACTION_COLLECTOR_STOP_REASONS.RESOLVED);
+	});
+
+	it.each([
+		{reactionLimit: 2, expectedStops: 1},
+		{reactionLimit: 0, expectedStops: 0},
+		{reactionLimit: -1, expectedStops: 0}
+	])("resolves only after the configured number of answers (limit: $reactionLimit)", async ({reactionLimit, expectedStops}): Promise<void> => {
+		const {collector, closingPackets} = buildCollector(reactionLimit);
+		await collector.react(PLAYER, 0, []);
+		expect(closingPackets).toEqual([]);
+		await collector.react(PLAYER, 0, []);
+		expect(collector.getReactionsHistory()).toHaveLength(2);
+		expect(closingPackets.filter(packet => packet instanceof ReactionCollectorStopPacket)).toHaveLength(expectedStops);
+		await collector.end([]);
 	});
 
 	it("accepts only one of two simultaneous frontend answers to a single-choice collector", async () => {
