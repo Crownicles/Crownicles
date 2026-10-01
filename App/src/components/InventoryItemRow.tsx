@@ -10,6 +10,9 @@ import {consumableDescription} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
 import {joinFacts} from "@/src/display/Facts";
 import {EntryRow} from "@/src/design/Sections";
+import {formatNumber} from "@/src/display/Amounts";
+
+export const MAIN_ITEM_STATS = ["attack", "defense", "speed"] as const;
 
 export function statValue(stat: MainItemStat): number {
 	return Math.min(stat.baseValue + stat.upgradeValue, stat.maxValue);
@@ -20,11 +23,9 @@ export function isMainItem(item: ItemWithDetails): item is MainItem {
 }
 
 function mainItemStats(item: MainItem): string {
-	return joinFacts([
-		i18n.t("items:attack", {value: statValue(item.attack)}),
-		i18n.t("items:defense", {value: statValue(item.defense)}),
-		i18n.t("items:speed", {value: statValue(item.speed)})
-	]);
+	return joinFacts(MAIN_ITEM_STATS.map(stat => i18n.t("app:inventory.statValue", {
+		stat: i18n.t(`app:equipment.stats.${stat}`), value: formatNumber(statValue(item[stat]))
+	})));
 }
 
 export function inventoryItemDetails(item: ItemWithDetails): string {

@@ -18,6 +18,8 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {i18n} from "@/src/translations/i18n";
 import {joinParagraphs} from "@/src/display/Paragraphs";
+import {consumableDescription} from "@/src/display/ItemEffects";
+import {ItemDetails} from "@/src/components/ItemDetails";
 
 const ROW_EMBLEM_SIZE = 26;
 
@@ -118,12 +120,14 @@ type ShelfContext = {collector: ReactionCollectorCreation; data: ShopData; locke
 function ArticleConfirmation({article, context, onCancel}: {article: ShopArticle; context: ShelfContext; onCancel: () => void}): ReactNode {
 	const sectionStyles = useSectionStyles();
 	const {data, locked, choose} = context;
+	const potion = shopItemKey({shopItemId: article.shopItemId}) === "dailyPotion" ? data.additionalShopData?.dailyPotion : undefined;
 	const info = shopText(`shopItems.${shopItemKey({shopItemId: article.shopItemId})}.info`, {
 		kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio ?? 0,
 		thousandPoints: data.additionalShopData?.thousandPoints ?? 0
 	});
 	return <View style={styles.confirmation}>
 		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption}>{`${AppIcons.getIconOrNull("collectors.warning") ?? ""} ${info}`}</TwemojiText>
+		{potion ? <ItemDetails item={potion} /> : null}
 		{article.offers.map(offer => {
 			const lock = missingMoneyLock(offer.reaction.data.price, data.availableCurrency, data.currency)
 				?? (isChoosable(offer.reaction, context.collector.data) ? undefined : {reason: i18n.t("app:city.locks.unavailable")});
@@ -148,9 +152,14 @@ function ShopArticleRow({article, context, expanded, onToggle}: {article: ShopAr
 	const cheapest = Math.min(...article.offers.map(offer => offer.reaction.data.price));
 	const lock = missingMoneyLock(cheapest, data.availableCurrency, data.currency);
 	const price = <TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption}>{priceLine(article, data.currency)}</TwemojiText>;
+	const potion = shopItemKey({shopItemId: article.shopItemId}) === "dailyPotion" ? data.additionalShopData?.dailyPotion : undefined;
 	return <ExpandableEntry
 		label={articleName(article.shopItemId, data)}
-		caption={lock && !expanded ? <View>{price}<LockHint lock={lock} /></View> : price}
+		caption={<View>
+			{price}
+			{potion ? <TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption}>{consumableDescription(potion)}</TwemojiText> : null}
+			{lock && !expanded ? <LockHint lock={lock} /> : null}
+		</View>}
 		end={expanded ? undefined : <Button variant="primary">{shopText("buyButton")}</Button>}
 		chevron={ENTRY_CHEVRONS.NONE}
 		dimmed={locked || Boolean(lock)}

@@ -6,9 +6,11 @@ import {UnitIcon} from "@/src/components/UnitIcon";
 import {itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {formatNumber} from "@/src/display/Amounts";
 import {consumableDescription, effectAmount, natureUnit} from "@/src/display/ItemEffects";
+import {joinFacts} from "@/src/display/Facts";
 import {ArrowRight, Coins, Droplets, Gift, LucideIcon, Swords, X} from "@/src/design/FightIcons";
 import {Button, ButtonRow, Note} from "@/src/design/Primitives";
-import {ActionBanner, ExpandableEntry, Fact, Figures, LockHint, useSectionStyles} from "@/src/design/Sections";
+import {ActionBanner, ExpandableEntry, LockHint, useSectionStyles} from "@/src/design/Sections";
+import {ItemDetails} from "@/src/components/ItemDetails";
 import {ExpandedEntry} from "@/src/design/useExpandedEntry";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
@@ -17,7 +19,6 @@ import {
 } from "@/src/store/useInventoryItemActions";
 import {i18n} from "@/src/translations/i18n";
 
-const MAIN_STATS = ["attack", "defense", "speed"] as const;
 const HEADLINE_UNIT_SIZE = 12;
 
 const ACTION_ICONS: Record<ItemAction, LucideIcon> = {
@@ -64,18 +65,6 @@ function ItemHeadline({entry}: {entry: InventoryItem}): ReactNode {
 	</View>;
 }
 
-function ItemStats({item}: {item: ItemWithDetails}): ReactNode {
-	if (!isMainItem(item)) return <Fact label={i18n.t("app:equipment.stats.effect")} value={consumableDescription(item)} />;
-	return <>
-		<Figures items={MAIN_STATS.map(stat => ({
-			caption: i18n.t(`app:equipment.stats.${stat}`),
-			value: formatNumber(statValue(item[stat])),
-			unit: stat
-		}))} />
-		{item.itemEnchantmentId ? <Fact label={i18n.t("app:inventory.enchantment")} value={i18n.t(`items:enchantments.${item.itemEnchantmentId}`)} /> : null}
-	</>;
-}
-
 /** Multi-use potions tell on the closed row how many sips they have left. */
 function itemDetails(item: ItemWithDetails): string | null {
 	if (isMainItem(item)) return i18n.t("app:inventory.level", {level: item.itemLevel});
@@ -83,10 +72,10 @@ function itemDetails(item: ItemWithDetails): string | null {
 	return i18n.t("app:inventory.usages", {usages: item.usages ?? item.maxUsages, max: item.maxUsages});
 }
 
-/** A caption short enough to hold on one line: the numbers live at the end of the row and in the unfolded panel. */
+/** Effects and remaining uses stay readable even while the item is folded. */
 function itemSummary(item: ItemWithDetails): string {
 	const rarity = i18n.t(`items:rarities.${item.rarity}`);
-	const details = itemDetails(item);
+	const details = joinFacts([itemDetails(item), isMainItem(item) ? null : consumableDescription(item)]);
 	return details ? i18n.t("app:inventory.itemSummary", {rarity, details}) : rarity;
 }
 
@@ -95,7 +84,7 @@ function ItemCaption({item, choices, expanded}: {item: ItemWithDetails; choices:
 	const sectionStyles = useSectionStyles();
 	const lock = expanded ? undefined : choices.find(choice => choice.lock && choice.action !== ITEM_ACTIONS.DEPOSIT)?.lock;
 	return <>
-		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.rowSubtitle} numberOfLines={1}>{itemSummary(item)}</TwemojiText>
+		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{itemSummary(item)}</TwemojiText>
 		{lock ? <LockHint lock={lock} /> : null}
 	</>;
 }
@@ -176,7 +165,7 @@ export function InventoryItemCard({entry, choices, actions, unfolding}: {
 		onToggle={(): void => unfolding.toggle(key)}
 		testID={`inventory-item-${key}`}
 	>
-		<ItemStats item={entry.item} />
+		<ItemDetails item={entry.item} />
 		{choices.length > 0 ? <ItemActions entry={entry} choices={choices} actions={actions} onDone={unfolding.collapse} /> : null}
 	</ExpandableEntry>;
 }

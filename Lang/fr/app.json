@@ -140,8 +140,10 @@
     "views": {"equipped": "Équipement", "reserve": "Réserve", "materials": "Matériaux", "plants": "Plantes"},
     "actions": {"equip": "Équiper", "deposit": "Ranger", "drink": "Boire", "daily": "Bonus journalier", "sell": "Vendre", "discard": "Jeter", "confirm": "Confirmer"},
     "itemSummary": "{{rarity}} · {{details}}",
+    "statValue": "{{stat}} : {{value}}",
     "level": "Niveau {{level}}",
     "usages": "{{usages}}/{{max}} utilisations",
+    "remainingUsages": "Utilisations restantes",
     "enchantment": "Enchantement",
     "noMaterials": "Vous ne transportez aucun matériau.",
     "noPlants": "Vous ne transportez aucune plante ni graine.",
@@ -152,6 +154,7 @@
     "artifacts": {"title": "Artefacts", "expedition": "Talisman d'ancrage", "clone": "Talisman de clonage", "harvest": "Cœur sylvestre"}
   },
   "inventoryActions": {
+    "foundDetails": "{{item}} : {{details}}",
     "gain": "+{{amount}}",
     "noPotion": "Vous ne possédez aucune potion utilisable hors combat.",
     "drinkTitle": "Boire une potion",

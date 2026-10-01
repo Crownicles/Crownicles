@@ -10,6 +10,7 @@ import {EventJournal} from "@/src/collectors/EventOutcomeScreen";
 import {Button} from "@/src/design/Primitives";
 import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
 import {inventoryItemEmblem} from "@/src/components/InventoryItemRow";
+import {ItemDetails} from "@/src/components/ItemDetails";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {Page} from "@/src/design/DetailScreen";
 import {ShoppingBag} from "@/src/design/FightIcons";
@@ -80,6 +81,7 @@ export function SmallEventShopCollector({collector, onChoose, submitting}: {
 	return (
 		<Page onClose={leave} backLabel={i18n.t("app:collector.refuse")} heading={<EventJournal emoji={eventPromptIcon(data)} story={collectorDescription(data) ?? ""} />}>
 			<OfferedItem item={data.data.item} />
+			<ItemDetails item={data.data.item} />
 			<Figures items={itemFigures(data)} />
 			<MerchantOfferActions
 				item={itemDisplayName(data.data.item)}

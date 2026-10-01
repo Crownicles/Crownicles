@@ -11,6 +11,7 @@ import {Toast, ToastValue} from "@/src/design/Sections";
 import {formatNumber} from "@/src/display/Amounts";
 import {effectAmount, formatDurationMinutes, itemEffect, natureUnit} from "@/src/display/ItemEffects";
 import {i18n} from "@/src/translations/i18n";
+import {inventoryItemDetails} from "@/src/components/InventoryItemRow";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 const MILLISECONDS_PER_HOUR = 60 * MILLISECONDS_PER_MINUTE;
@@ -55,7 +56,7 @@ function outcomeToast(outcome: Outcome, pseudo: string): OutcomeToast {
 			return {
 				unit: NO_GAIN_UNIT,
 				title: i18n.t("app:inventoryActions.found"),
-				subtitle: itemDisplayName(outcome.packet.item),
+				subtitle: i18n.t("app:inventoryActions.foundDetails", {item: itemDisplayName(outcome.packet.item), details: inventoryItemDetails(outcome.packet.item)}),
 				...iconPath ? {icon: AppIcons.getIconOrNull(iconPath) ?? undefined} : {}
 			};
 		}

@@ -32,7 +32,8 @@ describe("items found on the road", () => {
 		await renderWithGameQuery(<LatestOutcome />);
 		await findFromCore(true);
 		expect(screen.getByText("app:inventoryActions.found")).toBeTruthy();
-		expect(screen.getByText("models:potions.7")).toBeTruthy();
+		expect(screen.getByRole("alert")).toHaveTextContent(/models:potions\.7/);
+		expect(screen.getByRole("alert")).toHaveTextContent(/potionsNaturesWithoutEmote.1.*20/);
 	});
 
 	it("leaves a find that did not fit to the choice that follows it", async () => {
@@ -53,6 +54,8 @@ describe("daily bonus and potion outcomes", () => {
 		const choose = jest.fn();
 		await render(<ConsumableCollector collector={collector} onChoose={choose} submitting={false} />);
 		expect(screen.getAllByText("models:objects.3")).toHaveLength(2);
+		expect(screen.getAllByText(/objectsNaturesWithoutEmote.5/)).toHaveLength(2);
+		expect(screen.queryByText(/potionsNaturesWithoutEmote.5/)).toBeNull();
 		await fireEvent.press(screen.getAllByRole("button", {name: "models:objects.3"})[1]);
 		await fireEvent.press(screen.getByRole("button", {name: "app:dailyBonus.claim"}));
 		expect(choose).toHaveBeenCalledTimes(1);

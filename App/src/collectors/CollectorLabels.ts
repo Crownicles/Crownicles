@@ -26,7 +26,7 @@ import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {PetSex} from "ws-packets/src/objects/OwnedPet";
 import {i18n} from "@/src/translations/i18n";
 import {joinParagraphs} from "@/src/display/Paragraphs";
-import {formatDurationMinutes} from "@/src/display/ItemEffects";
+import {formatDurationMinutes, itemTypeFromCategory} from "@/src/display/ItemEffects";
 import {randomTranslation} from "@/src/translations/RandomTranslation";
 import {AppIcons} from "@/src/AppIcons";
 import {shopItemName} from "@/src/collectors/ShopLabels";
@@ -40,12 +40,7 @@ const SEX_CONTEXTS = {
 	FEMALE: "female"
 } as const;
 
-const ITEM_TYPES_BY_CATEGORY = [
-	"weapon",
-	"armor",
-	"potion",
-	"object"
-] as const;
+export {isPotionCategory} from "@/src/display/ItemEffects";
 
 const BAD_PET_ACTIONS_WITH_SEX = new Set<SmallEventBadPetActionId>([
 	"intimidate",
@@ -122,14 +117,6 @@ function fightPetPrompt(collector: ReactionCollectorDataOf<typeof SMALL_EVENT_DA
 		adjective: randomTranslation("smallEvents:fightPet.adjectives", {context, petId})
 	});
 	return `${promptIntro(collector)}${randomTranslation("smallEvents:fightPet.intro", {context, feralPet})} ${randomTranslation("smallEvents:fightPet.situation", {petId})}`;
-}
-
-function itemTypeFromCategory(category: number): typeof ITEM_TYPES_BY_CATEGORY[number] | null {
-	return ITEM_TYPES_BY_CATEGORY[category] ?? null;
-}
-
-export function isPotionCategory(category: number): boolean {
-	return itemTypeFromCategory(category) === "potion";
 }
 
 export function itemCategoryLabel(category: number): string {

@@ -4,7 +4,17 @@ import {SupportItem} from "ws-packets/src/objects/SupportItem";
 import {i18n} from "@/src/translations/i18n";
 import {formatNumber} from "@/src/display/Amounts";
 
+const ITEM_TYPES_BY_CATEGORY = ["weapon", "armor", "potion", "object"] as const;
+
 const MINUTES_PER_HOUR = 60;
+
+export function itemTypeFromCategory(category: number): typeof ITEM_TYPES_BY_CATEGORY[number] | null {
+	return ITEM_TYPES_BY_CATEGORY[category] ?? null;
+}
+
+export function isPotionCategory(category: number): boolean {
+	return itemTypeFromCategory(category) === "potion";
+}
 
 /** The game emoji each effect is counted in; an item without effect has none. */
 const NATURE_UNITS: Partial<Record<ItemNature, string>> = {
@@ -56,5 +66,7 @@ export function itemEffect(nature: ItemNature, value: number): string {
 }
 
 export function consumableDescription(item: ItemWithDetails): string {
-	return "nature" in item ? itemEffect(item.nature, item.power) : i18n.t(`items:raritiesWithoutEmote.${item.rarity}`);
+	if (!("nature" in item)) return i18n.t(`items:raritiesWithoutEmote.${item.rarity}`);
+	const key = isPotionCategory(item.itemCategory) ? "potionsNaturesWithoutEmote" : "objectsNaturesWithoutEmote";
+	return i18n.t(`items:${key}.${item.nature}`, {power: effectAmount(item.nature, item.power)});
 }

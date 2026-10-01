@@ -52,7 +52,7 @@ describe("inventory views", () => {
 		const data = inventory();
 		data.potion = {...data.potion, usages: 2, maxUsages: 3};
 		await renderWithGameQuery(<Inventory inventoryData={data} />);
-		expect(screen.getByText("2/3 uses")).toBeTruthy();
+		expect(screen.getByText("2/3 uses · items:potionsNaturesWithoutEmote.3")).toBeTruthy();
 	});
 
 	it("heads each reserve row with the value the item is worn for and excludes the equipped slot from capacity", async () => {

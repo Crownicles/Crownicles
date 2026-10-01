@@ -8,6 +8,7 @@ import {isPotionCategory, itemDisplayName, itemIconPath} from "@/src/collectors/
 import {EventJournal, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {useChooseOnce} from "@/src/collectors/ShopCollector";
 import {inventoryItemDetails, inventoryItemEmblem, InventoryItemRow} from "@/src/components/InventoryItemRow";
+import {ItemDetails} from "@/src/components/ItemDetails";
 import {plainStory} from "@/src/display/Markdown";
 import {Button, ButtonRow, Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, Card, ExpandableEntry} from "@/src/design/Sections";
@@ -88,6 +89,7 @@ export function ItemChoiceCollector({collector, onChoose, submitting}: ItemRewar
 	return (
 		<Screen>
 			<FoundItemJournal item={foundItem} />
+			<ItemDetails item={foundItem} />
 			<SectionHeader>{i18n.t("commands:inventory.chooseItemToReplaceTitle")}</SectionHeader>
 			<Card>{collector.reactions.map((reaction, index) => {
 				if (reaction.type !== ITEM_REACTION_KINDS.CHOICE_ITEM) return null;
@@ -101,6 +103,7 @@ export function ItemChoiceCollector({collector, onChoose, submitting}: ItemRewar
 					expanded={openIndex === index}
 					onToggle={(): void => setOpenIndex(openIndex === index ? undefined : index)}
 				>
+					<ItemDetails item={item} />
 					<ActionBanner
 						icon={Check}
 						label={i18n.t("app:collector.item.replaceWith", {item: found})}
@@ -134,6 +137,7 @@ export function ItemAcceptCollector({collector, onChoose, submitting}: ItemRewar
 	return (
 		<Screen>
 			<FoundItemJournal item={foundItem} />
+			<ItemDetails item={foundItem} />
 			<SectionHeader>{i18n.t(isPotionCategory(foundItem.itemCategory)
 				? "commands:inventory.randomItemAcceptTitlePotion"
 				: "commands:inventory.randomItemAcceptTitle")}</SectionHeader>
