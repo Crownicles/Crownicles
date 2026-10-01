@@ -98,6 +98,7 @@ function AuthenticatedContent({ state }: { state: AuthStateEnum }): React.ReactE
 	const insets = useSafeAreaInsets();
 	return (
 		<View style={styles.authenticatedRoot}>
+			<ConnectionStatus state={state} topInset={insets.top} />
 			<View style={styles.authenticatedRoot}>
 				{/* The tabs draw their own header under the status bar; every page pushed over them starts below it. */}
 				<Stack screenOptions={{headerShown: false, contentStyle: {paddingTop: insets.top, backgroundColor: colors.wash}}}>
@@ -106,7 +107,6 @@ function AuthenticatedContent({ state }: { state: AuthStateEnum }): React.ReactE
 				{state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && <ReconnectingOverlay />}
 				<OpenCollectors />
 			</View>
-			<ConnectionStatus state={state} bottomInset={insets.bottom} />
 		</View>
 	);
 }

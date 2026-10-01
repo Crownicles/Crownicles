@@ -1,41 +1,45 @@
 import {ReactElement} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
-import {Check, CircleAlert} from "@/src/design/FightIcons";
+import {CircleAlert} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 import {i18n} from "@/src/translations/i18n";
 
 const useStyles = createStyles(colors => ({
+	banner: {
+		backgroundColor: colors.redWash,
+		borderBottomWidth: StyleSheet.hairlineWidth,
+		borderBottomColor: colors.red
+	},
 	row: {
 		flexDirection: "row",
 		alignItems: "center",
-		justifyContent: "center",
-		gap: Theme.spacing.xs,
+		gap: Theme.spacing.sm,
 		paddingHorizontal: Theme.spacing.md,
-		paddingTop: Theme.spacing.xs,
-		backgroundColor: colors.paper,
-		borderTopWidth: StyleSheet.hairlineWidth,
-		borderTopColor: colors.line
+		paddingVertical: Theme.spacing.md
 	},
 	label: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.caption,
-		lineHeight: Theme.lineHeight.note,
-		color: colors.muted,
+		fontFamily: Theme.fonts.medium,
+		fontSize: Theme.fontSize.body,
+		lineHeight: Theme.lineHeight.body,
+		color: colors.ink,
 		flexShrink: 1
 	}
 }));
 
-export function ConnectionStatus({state, bottomInset}: {state: AuthStateEnum; bottomInset: number}): ReactElement {
+export function ConnectionStatus({state, topInset}: {state: AuthStateEnum; topInset: number}): ReactElement | null {
 	const styles = useStyles();
 	const colors = useColors();
-	const connected = state === AuthStateEnum.LOGGED_IN;
-	const Icon = connected ? Check : CircleAlert;
-	return <View style={[styles.row, {paddingBottom: Math.max(bottomInset, Theme.spacing.xs)}]}>
-		<Icon size={Theme.fontSize.body} color={connected ? colors.green : colors.red} />
-		<Text accessibilityLiveRegion="polite" style={styles.label}>
-			{i18n.t(connected ? "app:common.connected" : "app:common.reconnecting")}
-		</Text>
+	if (state !== AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE && state !== AuthStateEnum.RECONNECTING_PACKET_QUEUE) {
+		return null;
+	}
+	return <View style={[styles.banner, {paddingTop: topInset}]}>
+		<View style={styles.row}>
+			<CircleAlert size={Theme.dimensions.headerIcon} color={colors.red} />
+			<Text accessibilityLiveRegion="polite" style={styles.label}>
+				{i18n.t("app:common.reconnecting")}
+			</Text>
+		</View>
 	</View>;
 }

@@ -90,7 +90,6 @@
     "no": "Non",
     "connectionError": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
     "reconnect": "Se reconnecter",
-    "connected": "Connecté au serveur",
     "reconnecting": "Hors ligne · reconnexion en cours",
     "waitingForConnection": "Connexion interrompue. En attente du serveur.",
     "toCollect": "{{count}} à récupérer"
