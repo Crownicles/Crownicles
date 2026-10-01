@@ -25,6 +25,8 @@ describe("CollectorsStore", () => {
 		collectorsStore.reset();
 	});
 
+	afterEach(() => collectorsStore.reset());
+
 	it("deduplicates a collector and notifies subscribers when it is removed", () => {
 		const listener = jest.fn();
 		const unsubscribe = collectorsStore.subscribe(listener);
@@ -181,6 +183,52 @@ describe("CollectorsStore", () => {
 
 		expect(collectorsStore.getSnapshot()).toEqual([]);
 		expect(collectorsStore.isAnswerPending(item.id)).toBe(false);
+		sendPacket.mockRestore();
+	});
+
+	it("ignores the old account's collectors returned after a session reset", () => {
+		const sendPacket = jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();
+		sendPacket.mockClear();
+		collectorsStore.syncCurrent();
+		const handlers = sendPacket.mock.calls[0][1];
+		collectorsStore.reset();
+		const current = collector("new-account-collector");
+		collectorsStore.track(current);
+		const oldResponse = new CommandGetCurrentReactionCollectorsRes();
+		oldResponse.collectors = [collector("old-account-collector")];
+		handlers[CommandGetCurrentReactionCollectorsRes.wireName](oldResponse as never);
+		expect(collectorsStore.getSnapshot()).toEqual([current]);
+		sendPacket.mockRestore();
+	});
+
+	it("does not show an old account's pushed collector deferred across a session reset", () => {
+		jest.useFakeTimers();
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(ReactionCollectorCreation.wireName, collector("deferred-old-account"));
+		collectorsStore.reset();
+		jest.runOnlyPendingTimers();
+		expect(collectorsStore.getSnapshot()).toEqual([]);
+		jest.useRealTimers();
+	});
+
+	it("ignores a previous account's answer callback instead of resolving the new account's menu", () => {
+		const sendPacket = jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();
+		sendPacket.mockClear();
+		const resolution = jest.fn();
+		const unsubscribe = collectorsStore.subscribeToResolution(resolution);
+		const previous = collector("same-menu");
+		collectorsStore.track(previous);
+		collectorsStore.react(previous.id, 0);
+		const handlers = sendPacket.mock.calls[0][1];
+		collectorsStore.reset();
+		const current = collector("same-menu");
+		collectorsStore.track(current);
+		collectorsStore.react(current.id, 0);
+		handlers[ReactionCollectorEnded.wireName](new ReactionCollectorEnded() as never);
+		expect(collectorsStore.getSnapshot()).toEqual([current]);
+		expect(collectorsStore.isAnswerPending(current.id)).toBe(true);
+		expect(resolution).not.toHaveBeenCalled();
+		unsubscribe();
 		sendPacket.mockRestore();
 	});
 });

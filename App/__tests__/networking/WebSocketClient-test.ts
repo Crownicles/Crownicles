@@ -278,4 +278,41 @@ describe("WebSocketClient", () => {
 			jest.useRealTimers();
 		}
 	});
+
+	it("does not save or reconnect the old account after its refresh finishes during an account switch", async () => {
+		jest.useFakeTimers();
+		const {client} = clientWithSocket();
+		client.disconnect();
+		const originalSocket = globalThis.WebSocket;
+		const originalUrl = process.env.EXPO_PUBLIC_WEBSOCKET_URL;
+		const socket = {readyState: 0, send: jest.fn(), close: jest.fn()};
+		const socketConstructor = jest.fn(() => socket);
+		Object.assign(socketConstructor, {OPEN: OPEN_STATE, CONNECTING: 0});
+		Reflect.set(globalThis, "WebSocket", socketConstructor);
+		process.env.EXPO_PUBLIC_WEBSOCKET_URL = "ws://local-test";
+		try {
+			const previous = new AuthToken({accessToken: "old-account", refreshToken: "old-refresh", accessTokenExpiresAt: new Date(Date.now() + 60_000), refreshTokenExpiresAt: "never"});
+			const current = new AuthToken({accessToken: "new-account", refreshToken: "new-refresh", accessTokenExpiresAt: new Date(Date.now() + 60_000), refreshTokenExpiresAt: "never"});
+			let finishRefresh!: (refreshed: boolean) => void;
+			jest.spyOn(previous, "refreshIfNeeded").mockReturnValueOnce(new Promise<boolean>(resolve => { finishRefresh = resolve; }));
+			const previousState = jest.fn();
+			const savePrevious = jest.fn().mockResolvedValue(undefined);
+			const pending = client.init(previous, previousState, savePrevious);
+			client.disconnect();
+			await client.init(current, jest.fn(), jest.fn().mockResolvedValue(undefined));
+			finishRefresh(true);
+			await pending;
+			expect(socketConstructor).toHaveBeenCalledTimes(1);
+			expect(socketConstructor).toHaveBeenCalledWith(expect.stringContaining("token=new-account"));
+			expect(savePrevious).not.toHaveBeenCalled();
+			expect(Reflect.get(client, "socket")).toBe(socket);
+		}
+		finally {
+			client.disconnect();
+			Reflect.set(globalThis, "WebSocket", originalSocket);
+			if (originalUrl === undefined) delete process.env.EXPO_PUBLIC_WEBSOCKET_URL;
+			else process.env.EXPO_PUBLIC_WEBSOCKET_URL = originalUrl;
+			jest.useRealTimers();
+		}
+	});
 });

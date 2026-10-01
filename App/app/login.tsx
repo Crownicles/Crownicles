@@ -2,7 +2,7 @@ import {
 	StyleSheet, View
 } from "react-native";
 import {Image} from "expo-image";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import crowniclesLogo from "@/assets/images/icon.png";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {
@@ -16,7 +16,7 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {Theme} from "@/src/design/Theme";
-import {Note, Screen} from "@/src/design/Primitives";
+import {Button, Note, Screen} from "@/src/design/Primitives";
 import {
 	ActionBanner, Refusal, Standing
 } from "@/src/design/Sections";
@@ -42,6 +42,22 @@ const styles = StyleSheet.create({
 });
 
 type LoginAuthState = React.ContextType<typeof AuthContext>;
+type Authorize = () => Promise<KeycloakOAuth2Token>;
+
+const LOGIN_ENTRIES = {
+	QUESTION: "question",
+	DISCORD: "discord",
+	ACCOUNT: "account"
+} as const;
+
+type LoginEntry = typeof LOGIN_ENTRIES[keyof typeof LOGIN_ENTRIES];
+
+type LoginChoicesProps = {
+	entry: LoginEntry;
+	connecting: boolean;
+	onChoose: (entry: LoginEntry) => void;
+	onAuthorize: (authorize: Authorize) => void;
+};
 
 /** Why the player is on this screen again, said on the screen itself rather than in a system alert. */
 type LoginNotice = {title: string; detail?: string};
@@ -54,20 +70,17 @@ function useExpiredSession(authState: LoginAuthState, onExpired: (notice: LoginN
 			return;
 		}
 		onExpired({title: i18n.t("app:auth.sessionExpired")});
-		setState(AuthStateEnum.NO_TOKEN);
 		clearToken().catch((error: unknown) => {
 			console.error("Failed to clear token:", error);
-		});
+		}).finally((): void => setState(AuthStateEnum.NO_TOKEN));
 	}, [state, setState, clearToken, onExpired]);
 }
 
-async function handleLogin(authState: LoginAuthState, authorize: () => Promise<KeycloakOAuth2Token>, onRefused: (notice: LoginNotice) => void): Promise<void> {
+async function handleLogin(authState: LoginAuthState, authorize: Authorize, onRefused: (notice: LoginNotice) => void): Promise<void> {
 	try {
 		const authToken = AuthToken.fromKeycloakOAuth2Token(await authorize());
 
-		authState.saveToken(authToken).catch((error: unknown) => {
-			console.error("Failed to save token:", error);
-		});
+		await authState.saveToken(authToken);
 
 		await WebSocketClient.getInstance()
 			.init(authToken, authState.setState, authState.saveToken)
@@ -91,18 +104,53 @@ async function handleLogin(authState: LoginAuthState, authorize: () => Promise<K
 	}
 }
 
+function LoginChoices({entry, connecting, onChoose, onAuthorize}: LoginChoicesProps): React.ReactElement {
+	if (entry === LOGIN_ENTRIES.QUESTION) {
+		return <>
+			<ActionBanner icon={MessageCircle} label={i18n.t("app:auth.existingDiscord")} pending={connecting} onPress={(): void => onChoose(LOGIN_ENTRIES.DISCORD)} testID="login-choose-discord" />
+			<ActionBanner icon={AtSign} label={i18n.t("app:auth.withoutDiscord")} pending={connecting} onPress={(): void => onChoose(LOGIN_ENTRIES.ACCOUNT)} testID="login-choose-account" />
+		</>;
+	}
+	if (entry === LOGIN_ENTRIES.DISCORD) {
+		return <ActionBanner
+			icon={MessageCircle}
+			label={connecting ? i18n.t("app:auth.connecting") : i18n.t("app:auth.withDiscord")}
+			pending={connecting}
+			onPress={(): void => onAuthorize(() => KeycloakAuth.login(IDENTITY_PROVIDERS.DISCORD))}
+			testID="login-discord"
+		/>;
+	}
+	return <>
+		<ActionBanner icon={AtSign} label={i18n.t("app:auth.withAccount")} pending={connecting} onPress={(): void => onAuthorize(() => KeycloakAuth.login())} testID="login-account" />
+		<ActionBanner icon={UserPlus} label={i18n.t("app:auth.createAccount")} pending={connecting} onPress={(): void => onAuthorize(() => KeycloakAuth.register())} testID="login-register" />
+	</>;
+}
+
 export default function LoginScreen(): React.ReactElement {
 	const authState = React.useContext(AuthContext);
-	const connecting = authState.state === AuthStateEnum.CONNECTING;
+	const [authorizing, setAuthorizing] = useState(false);
+	const authorizationPending = useRef(false);
+	const connecting = authorizing || authState.state === AuthStateEnum.CONNECTING || authState.state === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED;
 	const [notice, setNotice] = useState<LoginNotice | null>(null);
+	const [entry, setEntry] = useState<LoginEntry>(LOGIN_ENTRIES.QUESTION);
 
 	useExpiredSession(authState, setNotice);
 
-	const start = (authorize: () => Promise<KeycloakOAuth2Token>): void => {
+	const start = (authorize: Authorize): void => {
+		if (authorizationPending.current || connecting) return;
+		authorizationPending.current = true;
+		setAuthorizing(true);
 		setNotice(null);
 		handleLogin(authState, authorize, setNotice).catch((error: unknown) => {
 			console.error("Login error:", error);
+		}).finally((): void => {
+			authorizationPending.current = false;
+			setAuthorizing(false);
 		});
+	};
+	const chooseEntry = (chosenEntry: LoginEntry): void => {
+		setEntry(chosenEntry);
+		if (chosenEntry === LOGIN_ENTRIES.DISCORD) start(() => KeycloakAuth.login(IDENTITY_PROVIDERS.DISCORD));
 	};
 
 	return (
@@ -111,37 +159,16 @@ export default function LoginScreen(): React.ReactElement {
 				emblem={<Image source={crowniclesLogo} style={styles.emblem} contentFit="cover" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />}
 				caption={i18n.t("app:auth.caption")}
 				title={i18n.t("app:auth.title")}
+				subtitle={entry === LOGIN_ENTRIES.QUESTION ? i18n.t("app:auth.alreadyOnDiscord") : i18n.t("app:auth.chooseAccount")}
 			/>
 			{notice ? <Refusal>{notice.title}</Refusal> : null}
 			{notice?.detail ? <Note>{notice.detail}</Note> : null}
 			<View style={styles.choices}>
-				<ActionBanner
-					icon={MessageCircle}
-					label={connecting ? i18n.t("app:auth.connecting") : i18n.t("app:auth.withDiscord")}
-					pending={connecting}
-					onPress={(): void => {
-						start(() => KeycloakAuth.login(IDENTITY_PROVIDERS.DISCORD));
-					}}
-					testID="login-discord"
-				/>
-				<ActionBanner
-					icon={AtSign}
-					label={i18n.t("app:auth.withAccount")}
-					pending={connecting}
-					onPress={(): void => {
-						start(() => KeycloakAuth.login());
-					}}
-					testID="login-account"
-				/>
-				<ActionBanner
-					icon={UserPlus}
-					label={i18n.t("app:auth.createAccount")}
-					pending={connecting}
-					onPress={(): void => {
-						start(() => KeycloakAuth.register());
-					}}
-					testID="login-register"
-				/>
+				<LoginChoices entry={entry} connecting={connecting} onChoose={chooseEntry} onAuthorize={start} />
+				{entry !== LOGIN_ENTRIES.QUESTION ? <Button disabled={connecting} onPress={(): void => {
+					setNotice(null);
+					setEntry(LOGIN_ENTRIES.QUESTION);
+				}}>{i18n.t("app:common.back")}</Button> : null}
 			</View>
 		</Screen>
 	);

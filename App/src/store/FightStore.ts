@@ -17,6 +17,7 @@ const EMPTY_FIGHT: FightSnapshot = {introduction: null, status: null, logs: [], 
 class FightStore {
 	private snapshot: FightSnapshot = EMPTY_FIGHT;
 	private sequence = 0;
+	private sessionVersion = 0;
 	private readonly listeners = new Set<Listener>();
 
 	public constructor() {
@@ -76,10 +77,16 @@ class FightStore {
 		if (sequence <= this.snapshot.playedSequence) return;
 		this.update({playedSequence: sequence});
 	};
-	public readonly reset = (): void => {this.snapshot = EMPTY_FIGHT; this.update({});};
+	public readonly reset = (): void => {
+		this.sessionVersion++;
+		this.snapshot = EMPTY_FIGHT;
+		this.update({});
+	};
 	public readonly syncCurrent = (): void => {
+		const sessionVersion = this.sessionVersion;
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(FightResumeReq, {}), {
 			[FightResumeRes.wireName]: (packet: FightResumeRes): void => {
+				if (sessionVersion !== this.sessionVersion) return;
 				if (packet.active) return;
 				if (this.snapshot.result || this.snapshot.error) return;
 				this.reset();

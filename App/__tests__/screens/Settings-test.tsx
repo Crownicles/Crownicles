@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor} from "@testing-library/react-native";
+import {act, fireEvent, render, screen, waitFor} from "@testing-library/react-native";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import {NotificationPreferencesRes} from "ws-packets/src/fromServer/settings/NotificationPreferencesRes";
@@ -11,6 +11,7 @@ import {GameClient} from "@/src/networking/GameClient";
 import {forgetPushDevice} from "@/src/notifications/PushRegistration";
 
 const mockPush = jest.fn();
+const mockDisconnect = jest.fn();
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: () => ({back: jest.fn(), push: mockPush})}));
 jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
@@ -18,7 +19,7 @@ jest.mock("expo-notifications", () => ({getPermissionsAsync: jest.fn(), requestP
 jest.mock("@/src/notifications/PushRegistration", () => ({registerForPush: jest.fn(() => Promise.resolve()), forgetPushDevice: jest.fn()}));
 jest.mock("@/src/notifications/ReportNotifications", () => ({cancelReportNotification: jest.fn()}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
-jest.mock("@/src/networking/WebSocketClient", () => ({WebSocketClient: {getInstance: () => ({registerPushedPacketHandler: (): () => void => (): void => {}})}}));
+jest.mock("@/src/networking/WebSocketClient", () => ({WebSocketClient: {getInstance: () => ({disconnect: mockDisconnect, registerPushedPacketHandler: (): () => void => (): void => {}})}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: object): string => options ? `${key} ${JSON.stringify(options)}` : key}}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (path: string): string => `icon:${path}`}}));
 
@@ -73,5 +74,41 @@ describe("settings", () => {
 		expect(forgetPushDevice).toHaveBeenCalled();
 		expect(auth.setState).toHaveBeenCalledWith(AuthStateEnum.NO_TOKEN);
 		expect(auth.clearToken).toHaveBeenCalled();
+	});
+
+	it("changes account directly without a confirmation, after forgetting the token and this device", async () => {
+		const auth = await renderSettings();
+		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
+		await waitFor(() => expect(auth.setState).toHaveBeenCalledWith(AuthStateEnum.NO_TOKEN));
+		expect(auth.clearToken).toHaveBeenCalledTimes(1);
+		expect(forgetPushDevice).toHaveBeenCalledTimes(1);
+		expect(mockDisconnect).toHaveBeenCalledTimes(1);
+		expect(screen.queryByText("app:settings.logoutConfirm.title")).toBeNull();
+	});
+
+	it("does not expose the next login or delete the token twice while session cleanup is pending", async () => {
+		let finish!: () => void;
+		const clearing = new Promise<void>(resolve => { finish = resolve; });
+		const auth = await renderSettings({setState: jest.fn(), clearToken: jest.fn(() => clearing)});
+		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
+		await waitFor(() => expect(auth.clearToken).toHaveBeenCalledTimes(1));
+		expect(screen.getByText("app:settings.leavingAccount")).toBeTruthy();
+		expect(mockDisconnect).toHaveBeenCalledTimes(1);
+		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
+		expect(auth.clearToken).toHaveBeenCalledTimes(1);
+		expect(auth.setState).not.toHaveBeenCalled();
+		await act(async (): Promise<void> => { finish(); });
+		await waitFor(() => expect(auth.setState).toHaveBeenCalledWith(AuthStateEnum.NO_TOKEN));
+	});
+
+	it("keeps the current session recoverable when cleanup fails, then allows retrying", async () => {
+		const auth = {setState: jest.fn(), clearToken: jest.fn().mockRejectedValueOnce(new Error("keychain unavailable")).mockResolvedValue(undefined)};
+		await renderSettings(auth);
+		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
+		await waitFor(() => expect(screen.getByText("app:settings.changeAccountFailed")).toBeTruthy());
+		expect(auth.setState).not.toHaveBeenCalled();
+		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
+		await waitFor(() => expect(auth.setState).toHaveBeenCalledWith(AuthStateEnum.NO_TOKEN));
+		expect(auth.clearToken).toHaveBeenCalledTimes(2);
 	});
 });

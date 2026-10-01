@@ -36,6 +36,7 @@ class CollectorsStore {
 	private readonly resolutionListeners = new Set<ResolutionListener>();
 
 	private snapshot: ReactionCollectorCreation[] = [];
+	private sessionVersion = 0;
 
 	public constructor() {
 		const client = WebSocketClient.getInstance();
@@ -63,6 +64,7 @@ class CollectorsStore {
 	public readonly isAnswerPending = (collectorId: CollectorId): boolean => this.answering.has(collectorId);
 
 	public readonly reset = (): void => {
+		this.sessionVersion++;
 		for (const timer of this.timers.values()) {
 			clearTimeout(timer);
 		}
@@ -82,10 +84,12 @@ class CollectorsStore {
 	 * adventure tab empty even though the player is still in a city (or has a pending event).
 	 */
 	public readonly syncCurrent = (): void => {
+		const sessionVersion = this.sessionVersion;
 		WebSocketClient.getInstance().sendPacket(
 			makeFromClientPacket(CommandGetCurrentReactionCollectorsReq, {}),
 			{
 				[CommandGetCurrentReactionCollectorsRes.wireName]: (packet: CommandGetCurrentReactionCollectorsRes): void => {
+					if (sessionVersion !== this.sessionVersion) return;
 					for (const collector of packet.collectors) {
 						this.track(collector);
 					}
@@ -148,15 +152,20 @@ class CollectorsStore {
 	 * answer it itself: waiting one tick lets that answer hide it instead of flashing its window.
 	 */
 	private readonly trackPushed = (collector: ReactionCollectorCreation): void => {
-		setTimeout(() => this.track(collector), 0);
+		const sessionVersion = this.sessionVersion;
+		setTimeout((): void => {
+			if (sessionVersion === this.sessionVersion) this.track(collector);
+		}, 0);
 	};
 
 	private readonly send = (collectorId: CollectorId, reactionIndex: number): void => {
+		const sessionVersion = this.sessionVersion;
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(ReactionCollectorReactReq, {
 			collectorId,
 			reactionIndex
 		}), {
 			[ReactionCollectorEnded.wireName]: (): void => {
+				if (sessionVersion !== this.sessionVersion) return;
 				const answeredKind = this.answeredKinds.get(collectorId);
 				this.finished.add(collectorId);
 				this.forget(collectorId);

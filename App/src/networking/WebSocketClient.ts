@@ -51,6 +51,7 @@ export class WebSocketClient {
 	private socket: WebSocket | null = null;
 
 	private connectionAttempts = 0;
+	private connectionVersion = 0;
 
 	private maxConnectionAttempts = 20;
 
@@ -86,6 +87,7 @@ export class WebSocketClient {
 	}
 
 	public disconnect(): void {
+		this.connectionVersion++;
 		const socket = this.socket;
 		this.socket = null;
 		socket?.close();
@@ -96,11 +98,13 @@ export class WebSocketClient {
 	}
 
 	public async init(authToken: AuthToken, setState: (newState: AuthStateEnum) => void, saveToken: (token: AuthToken) => Promise<void>): Promise<void> {
+		const connectionVersion = ++this.connectionVersion;
 		this.setState = setState;
 		this.saveToken = saveToken;
 
 		this.setState?.(AuthStateEnum.CONNECTING);
 		await this.connect(authToken, true);
+		if (connectionVersion !== this.connectionVersion) return;
 
 		if (this.processPacketQueueIntervalId === null) {
 			this.processPacketQueueIntervalId = setInterval((): void => {
@@ -188,11 +192,14 @@ export class WebSocketClient {
 		return webSocketUrl;
 	}
 
-	private async getAccessToken(authToken: AuthToken): Promise<string | null> {
-		if (await authToken.refreshIfNeeded()) {
+	private async getAccessToken(authToken: AuthToken, connectionVersion: number): Promise<string | null> {
+		const refreshed = await authToken.refreshIfNeeded();
+		if (connectionVersion !== this.connectionVersion) return null;
+		if (refreshed) {
 			console.debug("Token refreshed successfully");
 			await this.saveToken?.(authToken);
 		}
+		if (connectionVersion !== this.connectionVersion) return null;
 
 		const accessToken = authToken.getAccessToken();
 		if (!accessToken) {
@@ -204,6 +211,7 @@ export class WebSocketClient {
 	}
 
 	private async connect(authToken: AuthToken, firstConnection: boolean): Promise<void> {
+		const connectionVersion = this.connectionVersion;
 		if (this.socket) {
 			if (this.socket.readyState === WebSocket.OPEN) {
 				this.setState?.(AuthStateEnum.LOGGED_IN);
@@ -215,7 +223,8 @@ export class WebSocketClient {
 		}
 
 		const webSocketUrl = this.getWebSocketUrl();
-		const accessToken = await this.getAccessToken(authToken);
+		const accessToken = await this.getAccessToken(authToken, connectionVersion);
+		if (connectionVersion !== this.connectionVersion) return;
 		if (!accessToken) {
 			return;
 		}

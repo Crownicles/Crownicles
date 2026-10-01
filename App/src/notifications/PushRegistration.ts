@@ -21,6 +21,7 @@ import {i18n} from "@/src/translations/i18n";
 
 /** The token the server was last given for this device, and in which language, while the player is logged in. */
 let registered: {token: string; language: string} | null = null;
+let sessionVersion = 0;
 
 function platformOf(token: DevicePushToken): PushPlatform | null {
 	if (token.type === "ios") return PUSH_PLATFORMS.IOS;
@@ -42,31 +43,41 @@ async function ensureChannels(): Promise<void> {
 }
 
 /** The registration under way, so the start of the app and its coming back to the front share it. */
-let pending: {key: string; done: Promise<void>} | null = null;
+let pending: {key: string; token: string; done: Promise<void>} | null = null;
 
-async function send(token: string, platform: PushPlatform, language: string): Promise<void> {
+function resetRegistration(): void {
+	sessionVersion++;
+	registered = null;
+	pending = null;
+}
+
+async function send(token: string, platform: PushPlatform, language: string, version: number): Promise<void> {
 	await ensureChannels();
+	const sandbox = await isSandbox(platform);
+	if (version !== sessionVersion) return;
 	const answer = await GameClient.request(makeFromClientPacket(PushDeviceRegisterReq, {
 		token,
 		platform,
-		sandbox: await isSandbox(platform),
+		sandbox,
 		language
 	}), PushDeviceRegisteredRes);
+	if (version !== sessionVersion) return;
 	if (answer.kind === "answer") registered = {token, language};
 }
 
 function pendingRegistration(token: string, platform: PushPlatform, language: string): Promise<void> {
 	const key = `${token}/${language}`;
 	if (pending?.key !== key) {
-		const done = send(token, platform, language).finally(() => {
+		const done = send(token, platform, language, sessionVersion).finally(() => {
 			if (pending?.done === done) pending = null;
 		});
-		pending = {key, done};
+		pending = {key, token, done};
 	}
 	return pending.done;
 }
 
-function register(token: DevicePushToken): Promise<void> {
+function register(token: DevicePushToken, version: number = sessionVersion): Promise<void> {
+	if (version !== sessionVersion) return Promise.resolve();
 	const platform = platformOf(token);
 	const language = i18n.language;
 	if (!platform || typeof token.data !== "string") return Promise.resolve();
@@ -76,8 +87,9 @@ function register(token: DevicePushToken): Promise<void> {
 
 /** Gives the server this device's token, once the player allowed notifications; asking is left to the screens that explain why. */
 export async function registerForPush(): Promise<void> {
+	const version = sessionVersion;
 	if (!(await getPermissionsAsync()).granted) return;
-	await register(await getDevicePushTokenAsync());
+	await register(await getDevicePushTokenAsync(), version);
 }
 
 function registerQuietly(): void {
@@ -86,9 +98,10 @@ function registerQuietly(): void {
 
 /** Before logging out: the next player on this device must not receive this one's notifications. */
 export function forgetPushDevice(): void {
-	if (!registered) return;
-	WebSocketClient.getInstance().sendPacket(makeFromClientPacket(PushDeviceUnregisterReq, {token: registered.token}), {});
-	registered = null;
+	const token = registered?.token ?? pending?.token;
+	resetRegistration();
+	if (!token) return;
+	WebSocketClient.getInstance().sendPacket(makeFromClientPacket(PushDeviceUnregisterReq, {token}), {});
 }
 
 /**
@@ -98,19 +111,20 @@ export function forgetPushDevice(): void {
  */
 export function usePushRegistration(): void {
 	useEffect(() => {
+		const version = sessionVersion;
 		cancelScheduledNotificationAsync(LEGACY_TRAVEL_NOTIFICATION_ID).catch(error => console.warn("Legacy travel notification not cancelled:", error));
 		registerQuietly();
 		const appState = AppState.addEventListener("change", state => {
 			if (state === "active") registerQuietly();
 		});
 		const tokens = addPushTokenListener(token => {
-			register(token).catch(error => console.warn("Push token not renewed:", error));
+			register(token, version).catch(error => console.warn("Push token not renewed:", error));
 		});
 		return (): void => {
 			appState.remove();
 			tokens.remove();
 			// Whoever logs in next registers again, even with the same token
-			registered = null;
+			resetRegistration();
 		};
 	}, []);
 }

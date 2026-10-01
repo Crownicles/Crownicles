@@ -1,5 +1,5 @@
 import {ReactElement} from "react";
-import {render, screen, waitFor} from "@testing-library/react-native";
+import {act, render, screen, waitFor} from "@testing-library/react-native";
 import {Text} from "react-native";
 import {useQuery} from "@tanstack/react-query";
 import {MissionsCompletedRes} from "ws-packets/src/fromServer/missions/MissionsCompletedRes";
@@ -66,5 +66,23 @@ describe("GameQueryProvider", () => {
 		await waitFor(() => expect(screen.getByText("next campaign mission")).toBeTruthy());
 		expect(read).toHaveBeenCalledTimes(2);
 		view.unmount();
+	});
+
+	it("loads the next account without showing a previous account's late cached response", async () => {
+		let finishPrevious!: (name: string) => void;
+		let finishCurrent!: (name: string) => void;
+		const previous = jest.fn(() => new Promise<string>(resolve => { finishPrevious = resolve; }));
+		const current = jest.fn(() => new Promise<string>(resolve => { finishCurrent = resolve; }));
+		const view = await render(<GameQueryProvider authState={AuthStateEnum.LOGGED_IN}><MissionReader read={previous} /></GameQueryProvider>);
+		await waitFor(() => expect(previous).toHaveBeenCalledTimes(1));
+		await view.rerender(<Text>signed out</Text>);
+		await view.rerender(<GameQueryProvider authState={AuthStateEnum.LOGGED_IN}><MissionReader read={current} /></GameQueryProvider>);
+		await waitFor(() => expect(current).toHaveBeenCalledTimes(1));
+		await act(async (): Promise<void> => { finishPrevious("previous account's missions"); });
+		expect(screen.queryByText("previous account's missions")).toBeNull();
+		await act(async (): Promise<void> => { finishCurrent("current account's missions"); });
+		await waitFor(() => expect(screen.getByText("current account's missions")).toBeTruthy());
+		expect(screen.queryByText("previous account's missions")).toBeNull();
+		await view.unmount();
 	});
 });

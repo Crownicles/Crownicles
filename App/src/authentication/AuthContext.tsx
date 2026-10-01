@@ -1,9 +1,12 @@
 import React, {PropsWithChildren, useEffect} from "react";
 import {useRouter} from "expo-router";
-import {deleteStoredToken, readFullStoredToken, readStoredToken, writeStoredToken} from "@/src/authentication/TokenStorage";
+import {deleteStoredToken, readFullStoredToken, readStoredToken, TOKEN_STORAGE_KEY_TEMPLATE, writeStoredToken} from "@/src/authentication/TokenStorage";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
+import {collectorsStore} from "@/src/collectors/CollectorsStore";
+import {reportEventStore} from "@/src/collectors/ReportEventStore";
+import {fightStore} from "@/src/store/FightStore";
 
 type AuthState = {
 	state: AuthStateEnum;
@@ -27,17 +30,22 @@ export const AuthContext = React.createContext<AuthState>({
 	}
 });
 
-const tokenStorageKeyTemplate = "auth-token-"; // This key is used to store the authentication token in local storage
-
 export function AuthProvider({ children }: PropsWithChildren): React.ReactElement {
 	const [state, setState] = React.useState(AuthStateEnum.NOT_READY); // Persist state: https://youtu.be/yNaOaR2kIa0?t=649
+	const currentState = React.useRef(state);
+	const tokenEdits = React.useRef<Promise<void>>(Promise.resolve());
 	const router = useRouter();
 	const initialNavigationTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-	const navigateToAuthenticatedRoot = (): void => {
+	const cancelPendingNavigation = (): void => {
 		if (initialNavigationTimer.current !== null) {
 			clearTimeout(initialNavigationTimer.current);
+			initialNavigationTimer.current = null;
 		}
+	};
+
+	const navigateToAuthenticatedRoot = (): void => {
+		cancelPendingNavigation();
 
 		// AuthProvider is mounted just above the root navigator. A direct replace from the first
 		// websocket callback can therefore run before Expo Router has mounted its navigation ref.
@@ -56,20 +64,15 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 		initialNavigationTimer.current = setTimeout(attempt, 100);
 	};
 
-	const clearToken = async (): Promise<void> => {
+	const clearStoredToken = async (): Promise<void> => {
 		let shouldContinue = true;
 		let count = 1;
 		while (shouldContinue) {
-			const tokenStorageKey = `${tokenStorageKeyTemplate}${count}`;
+			const tokenStorageKey = `${TOKEN_STORAGE_KEY_TEMPLATE}${count}`;
 			count++;
-			const result = await readStoredToken(tokenStorageKey).catch((error) => {
-				console.error("Failed to load token for clearing:", error);
-				return null;
-			});
+			const result = await readStoredToken(tokenStorageKey);
 			if (result) {
-				await deleteStoredToken(tokenStorageKey).catch((error) => {
-					console.error("Failed to clear token part:", error);
-				});
+				await deleteStoredToken(tokenStorageKey);
 			}
 			else {
 				shouldContinue = false; // Stop if no more token parts are found
@@ -77,7 +80,15 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 		}
 	}
 
-	const saveToken = async (token: AuthToken): Promise<void> => {
+	const runTokenEdit = (edit: () => Promise<void>): Promise<void> => {
+		const done = tokenEdits.current.then(edit);
+		tokenEdits.current = done.catch((): void => undefined);
+		return done;
+	};
+
+	const clearToken = (): Promise<void> => runTokenEdit(clearStoredToken);
+
+	const saveToken = (token: AuthToken): Promise<void> => runTokenEdit(async (): Promise<void> => {
 		console.debug("Saving token");
 
 		if (!token) {
@@ -85,7 +96,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 			return;
 		}
 
-		await clearToken();
+		await clearStoredToken();
 
 		const tokenString = token.toJsonString();
 
@@ -96,12 +107,10 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 		}
 
 		for (let i = 0; i < tokenParts.length; i++) {
-			const tokenStorageKey = `${tokenStorageKeyTemplate}${i + 1}`;
-			await writeStoredToken(tokenStorageKey, tokenParts[i]).catch((error) => {
-				console.error("Failed to save token part:", error);
-			});
+			const tokenStorageKey = `${TOKEN_STORAGE_KEY_TEMPLATE}${i + 1}`;
+			await writeStoredToken(tokenStorageKey, tokenParts[i]);
 		}
-	}
+	});
 
 	const startAuthenticationFlow = async (onStateChange: (newState: AuthStateEnum) => void): Promise<void> => {
 		const token = await readFullStoredToken().catch((error) => {
@@ -123,14 +132,15 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 
 		await WebSocketClient.getInstance().init(authToken, onStateChange, saveToken).catch((error) => {
 			console.error("Failed to initialize WebSocketClient:", error);
-			if (state === AuthStateEnum.CONNECTING) {
+			if (currentState.current === AuthStateEnum.CONNECTING) {
 				onStateChange(AuthStateEnum.CONNECTION_ERROR);
 			}
 		});
 	}
 
 	const setStateInternal = (newState: AuthStateEnum): void => {
-		const previousState = state;
+		const previousState = currentState.current;
+		currentState.current = newState;
 		const isInitialLogin = newState === AuthStateEnum.LOGGED_IN
 			&& previousState !== AuthStateEnum.LOGGED_IN
 			&& previousState !== AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE
@@ -146,6 +156,10 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 		}
 		else if (shouldRedirectToLogin) {
 			WebSocketClient.getInstance().disconnect();
+			cancelPendingNavigation();
+			collectorsStore.reset();
+			reportEventStore.reset();
+			fightStore.reset();
 			router.replace("/login");
 		}
 		else if (shouldRestartAuthentication) {
@@ -165,11 +179,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 			});
 	}, []);
 
-	useEffect(() => (): void => {
-		if (initialNavigationTimer.current !== null) {
-			clearTimeout(initialNavigationTimer.current);
-		}
-	}, []);
+	useEffect(() => cancelPendingNavigation, []);
 
 	return (
 			<AuthContext.Provider value={{ state, setState: setStateInternal, saveToken, clearToken }}>

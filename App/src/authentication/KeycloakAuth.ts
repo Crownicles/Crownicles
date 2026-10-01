@@ -27,6 +27,14 @@ export const IDENTITY_PROVIDERS = {
 
 export type IdentityProvider = typeof IDENTITY_PROVIDERS[keyof typeof IDENTITY_PROVIDERS];
 
+const AUTH_PROMPTS = {
+	LOGIN: "login",
+	REGISTER: "create"
+} as const;
+
+type AuthPrompt = typeof AUTH_PROMPTS[keyof typeof AUTH_PROMPTS];
+type AuthorizationParameters = {prompt: AuthPrompt; kc_idp_hint?: IdentityProvider};
+
 /**
  * Dressing of the in-app browser that shows the Keycloak pages.
  *
@@ -35,12 +43,13 @@ export type IdentityProvider = typeof IDENTITY_PROVIDERS[keyof typeof IDENTITY_P
  * chrome would otherwise announce a website in the middle of the game.
  */
 /** Read when the browser opens: the auth pages live outside the React tree, so they take the palette of the moment. */
-function browserPresentation(): AuthRequestPromptOptions {
+function browserPresentation(prompt: AuthPrompt): AuthRequestPromptOptions {
 	const colors = PALETTES[resolveScheme(storedThemePreference(), Appearance.getColorScheme())];
 	return {
 		toolbarColor: colors.paper,
 		controlsColor: colors.ink,
-		showTitle: false
+		showTitle: false,
+		...prompt === AUTH_PROMPTS.LOGIN ? {preferEphemeralSession: true} : {}
 	};
 }
 
@@ -94,7 +103,10 @@ function hasCompleteToken(token: KeycloakOAuth2Token): boolean {
  */
 export class KeycloakAuth {
 	public static login(identityProvider?: IdentityProvider): Promise<KeycloakOAuth2Token> {
-		return KeycloakAuth.authorize(identityProvider ? {kc_idp_hint: identityProvider} : {});
+		return KeycloakAuth.authorize({
+			prompt: AUTH_PROMPTS.LOGIN,
+			...identityProvider ? {kc_idp_hint: identityProvider} : {}
+		});
 	}
 
 	/**
@@ -102,10 +114,10 @@ export class KeycloakAuth {
 	 * same browser session, so the player comes back signed in.
 	 */
 	public static register(): Promise<KeycloakOAuth2Token> {
-		return KeycloakAuth.authorize({prompt: "create"});
+		return KeycloakAuth.authorize({prompt: AUTH_PROMPTS.REGISTER});
 	}
 
-	private static async authorize(entryParams: Record<string, string>): Promise<KeycloakOAuth2Token> {
+	private static async authorize(entryParams: AuthorizationParameters): Promise<KeycloakOAuth2Token> {
 		const redirectUri = getRedirectUri();
 		// Typed as a string, but i18next answers nothing until it has loaded its resources, and
 		// login is reachable before that.
@@ -124,7 +136,7 @@ export class KeycloakAuth {
 			}
 		});
 
-		const result = await request.promptAsync(getDiscovery(), browserPresentation());
+		const result = await request.promptAsync(getDiscovery(), browserPresentation(entryParams.prompt));
 
 		if (result.type !== "success") {
 			throw failureOfAuthResult(result);

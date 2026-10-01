@@ -1,6 +1,6 @@
 import {fightStore} from "@/src/store/FightStore";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
-import {FightIntroductionRes, FightLogRes, FightEndRes, FightRewardRes, FightStatusRes, FightErrorRes} from "ws-packets/src/fromServer/fight/FightRes";
+import {FightIntroductionRes, FightLogRes, FightEndRes, FightRewardRes, FightStatusRes, FightErrorRes, FightResumeRes} from "ws-packets/src/fromServer/fight/FightRes";
 import {FightIntroduction, FightEnd, FightStatus, FIGHT_ERRORS} from "ws-packets/src/objects/Fight";
 import {act, renderHook, waitFor} from "@testing-library/react-native";
 import {useFightPlayback} from "@/src/store/useFightPlayback";
@@ -141,5 +141,18 @@ describe("fight session", () => {
 		expect(fightStore.getSnapshot().reward).toMatchObject({points: 31, money: 71});
 		fightStore.reset();
 		expect(fightStore.getSnapshot()).toMatchObject({introduction: null, result: null, reward: null, logs: []});
+	});
+	it("does not let an old account's resume response clear the new account's fight", () => {
+		const sendPacket = jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();
+		sendPacket.mockClear();
+		fightStore.syncCurrent();
+		const handlers = sendPacket.mock.calls[0][1];
+		fightStore.reset();
+		const current = {...INTRO, fightId: "new-account-duel"};
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightIntroductionRes.wireName, {introduction: current});
+		handlers[FightResumeRes.wireName](Object.assign(new FightResumeRes(), {active: false}) as never);
+		expect(fightStore.getSnapshot()).toMatchObject({introduction: current, visible: true});
+		sendPacket.mockRestore();
 	});
 });

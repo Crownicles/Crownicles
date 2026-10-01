@@ -71,7 +71,8 @@ describe("KeycloakAuth", () => {
 
 		await KeycloakAuth.login(IDENTITY_PROVIDERS.DISCORD);
 
-		expect(mockAuthRequestConfigs.at(-1)).toMatchObject({extraParams: {kc_idp_hint: "discord"}});
+		expect(mockAuthRequestConfigs.at(-1)).toMatchObject({extraParams: {kc_idp_hint: "discord", prompt: "login"}});
+		expect(mockPromptAsync).toHaveBeenCalledWith(expect.any(Object), expect.objectContaining({preferEphemeralSession: true}));
 	});
 
 	it("leaves the choice to Keycloak when no provider is named", async () => {
@@ -84,6 +85,7 @@ describe("KeycloakAuth", () => {
 		await KeycloakAuth.login();
 
 		expect(mockAuthRequestConfigs.at(-1)?.extraParams).not.toHaveProperty("kc_idp_hint");
+		expect(mockAuthRequestConfigs.at(-1)).toMatchObject({extraParams: {prompt: "login"}});
 	});
 
 	it("opens the sign-up page and returns the token of the account just created", async () => {
@@ -95,6 +97,7 @@ describe("KeycloakAuth", () => {
 
 		await expect(KeycloakAuth.register()).resolves.toEqual(offlineToken());
 		expect(mockAuthRequestConfigs.at(-1)).toMatchObject({extraParams: {prompt: "create", ui_locales: "fr"}, usePKCE: true});
+		expect(mockPromptAsync.mock.calls.at(-1)?.[1]).not.toHaveProperty("preferEphemeralSession");
 	});
 
 	it("asks Keycloak for the pages in the language of the app", async () => {

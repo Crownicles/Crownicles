@@ -1,4 +1,4 @@
-import React, {ReactNode, useContext, useState} from "react";
+import React, {ReactNode, useContext, useRef, useState} from "react";
 import {useRouter} from "expo-router";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {VersionReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
@@ -8,6 +8,7 @@ import {AuthContext} from "@/src/authentication/AuthContext";
 import {PreferencesContext} from "@/src/preferences/PreferencesContext";
 import {travelAdvicePreference, useTravelAdvicesShown} from "@/src/preferences/TravelAdvicePreference";
 import {GameClient} from "@/src/networking/GameClient";
+import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useFightSpeed} from "@/src/store/useFightSpeed";
@@ -18,13 +19,13 @@ import {cancelReportNotification} from "@/src/notifications/ReportNotifications"
 import {forgetPushDevice} from "@/src/notifications/PushRegistration";
 import {NOTIFICATION_PERMISSIONS, useNotificationPermission} from "@/src/notifications/NotificationPermission";
 import {Page} from "@/src/design/DetailScreen";
-import {SectionHeader} from "@/src/design/Primitives";
-import {ActionBanner, ChoiceRow, EntryRow, ExpandableList, QuestionSheet, Standing, SwitchRow} from "@/src/design/Sections";
+import {Note, SectionHeader} from "@/src/design/Primitives";
+import {ActionBanner, ChoiceRow, EntryRow, ExpandableList, QuestionSheet, Refusal, Standing, SwitchRow} from "@/src/design/Sections";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {THEME_PREFERENCES} from "@/src/design/ThemePreference";
 import {useTheme} from "@/src/design/ThemeContext";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {LogOut} from "@/src/design/FightIcons";
+import {LogOut, UserRound} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
@@ -98,15 +99,43 @@ function NotificationsEntry(): ReactNode {
 	</>;
 }
 
-/** Leaving is confirmed in place: the session and this device's notifications go with it. */
-function LogoutSheet({onClose}: {onClose: () => void}): ReactNode {
+async function endSession(authState: React.ContextType<typeof AuthContext>): Promise<void> {
+	await cancelReportNotification();
+	forgetPushDevice();
+	WebSocketClient.getInstance().disconnect();
+	await authState.clearToken();
+	authState.setState(AuthStateEnum.NO_TOKEN);
+}
+
+type SessionExit = {
+	pending: boolean;
+	failed: boolean;
+	leave: () => void;
+};
+
+function useSessionExit(): SessionExit {
 	const authState = useContext(AuthContext);
-	const logout = (): void => {
-		cancelReportNotification();
-		forgetPushDevice();
-		authState.setState(AuthStateEnum.NO_TOKEN);
-		authState.clearToken().catch(error => console.error("Failed to clear token:", error));
+	const leaving = useRef(false);
+	const [pending, setPending] = useState(false);
+	const [failed, setFailed] = useState(false);
+	const leave = (): void => {
+		if (leaving.current) return;
+		leaving.current = true;
+		setPending(true);
+		setFailed(false);
+		endSession(authState).catch((error: unknown): void => {
+			console.warn("Failed to end session:", error);
+			setFailed(true);
+		}).finally((): void => {
+			leaving.current = false;
+			setPending(false);
+		});
 	};
+	return {pending, failed, leave};
+}
+
+/** Leaving is confirmed in place: the session and this device's notifications go with it. */
+function LogoutSheet({onClose, sessionExit}: {onClose: () => void; sessionExit: SessionExit}): ReactNode {
 	return <QuestionSheet
 		caption={i18n.t("app:settings.sections.account")}
 		title={i18n.t("app:settings.logoutConfirm.title")}
@@ -114,20 +143,27 @@ function LogoutSheet({onClose}: {onClose: () => void}): ReactNode {
 		onClose={onClose}
 		testID="logout-sheet"
 	>
-		<ActionBanner icon={LogOut} label={i18n.t("app:settings.logout")} onPress={logout} />
+		{sessionExit.failed ? <Refusal>{i18n.t("app:settings.changeAccountFailed")}</Refusal> : null}
+		<ActionBanner icon={LogOut} label={sessionExit.pending ? i18n.t("app:settings.leavingAccount") : i18n.t("app:settings.logout")} pending={sessionExit.pending} onPress={sessionExit.leave} />
 	</QuestionSheet>;
 }
 
 function AccountSettings(): ReactNode {
 	const router = useRouter();
 	const [leaving, setLeaving] = useState(false);
+	const sessionExit = useSessionExit();
 	return <>
 		<SectionHeader>{i18n.t("app:settings.sections.account")}</SectionHeader>
+		{sessionExit.pending ? <Note>{i18n.t("app:settings.leavingAccount")}</Note> : null}
 		<ExpandableList>
-			<EntryRow title={i18n.t("app:settings.logout")} onPress={(): void => setLeaving(true)} />
-			<EntryRow title={i18n.t("app:settings.deleteAccount.entry")} danger onPress={(): void => router.push("/settings/delete-account")} />
+			<EntryRow emblem={<UserRound size={ROW_EMBLEM_SIZE} />} title={i18n.t("app:settings.changeAccount")} disabled={sessionExit.pending} onPress={sessionExit.leave} />
+			<EntryRow title={i18n.t("app:settings.logout")} disabled={sessionExit.pending} onPress={(): void => setLeaving(true)} />
+			<EntryRow title={i18n.t("app:settings.deleteAccount.entry")} disabled={sessionExit.pending} danger onPress={(): void => router.push("/settings/delete-account")} />
 		</ExpandableList>
-		{leaving ? <LogoutSheet onClose={(): void => setLeaving(false)} /> : null}
+		{sessionExit.failed && !leaving ? <Refusal>{i18n.t("app:settings.changeAccountFailed")}</Refusal> : null}
+		{leaving ? <LogoutSheet sessionExit={sessionExit} onClose={(): void => {
+			if (!sessionExit.pending) setLeaving(false);
+		}} /> : null}
 	</>;
 }
 

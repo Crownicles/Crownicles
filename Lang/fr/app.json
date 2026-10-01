@@ -115,6 +115,10 @@
   "auth": {
     "caption": "Crownicles",
     "title": "Le royaume vous attend",
+    "alreadyOnDiscord": "Vous jouez déjà sur Discord ?",
+    "existingDiscord": "Retrouver mon personnage Discord",
+    "withoutDiscord": "Continuer sans Discord",
+    "chooseAccount": "Choisissez le compte associé à votre aventure.",
     "withDiscord": "Continuer avec Discord",
     "withAccount": "Utiliser un compte Crownicles",
     "createAccount": "Créer un compte",
@@ -232,6 +236,9 @@
     "ping": "Ping",
     "pingValue": "{{value}} ms",
     "logout": "Se déconnecter",
+    "changeAccount": "Changer de compte",
+    "leavingAccount": "Fermeture de la session en cours…",
+    "changeAccountFailed": "La session n'a pas pu être fermée. Réessayez dans un instant.",
     "title": "Réglages",
     "eyebrow": "Application",
     "sections": {

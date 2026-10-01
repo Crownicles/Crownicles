@@ -107,4 +107,36 @@ describe("push registration", () => {
 		expect(mocked.cancelScheduledNotificationAsync).toHaveBeenCalledWith("report-ready");
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalledWith(expect.any(PushDeviceRegisterReq), PushDeviceRegisteredRes));
 	});
+
+	it("drops a device token read that finishes after changing account", async () => {
+		permission(true);
+		let finish!: () => void;
+		mocked.getDevicePushTokenAsync.mockReturnValueOnce(new Promise(resolve => { finish = (): void => resolve({type: "ios", data: IOS_TOKEN}); }));
+		const previous = registerForPush();
+		await waitFor(() => expect(mocked.getDevicePushTokenAsync).toHaveBeenCalledTimes(1));
+		forgetPushDevice();
+		finish();
+		await previous;
+		expect(GameClient.request).not.toHaveBeenCalled();
+		await registerForPush();
+		expect(GameClient.request).toHaveBeenCalledTimes(1);
+	});
+
+	it("registers the next account independently and ignores a late confirmation from the old account", async () => {
+		permission(true);
+		let finish!: () => void;
+		jest.mocked(GameClient.request).mockReturnValueOnce(new Promise(resolve => { finish = (): void => resolve({kind: "answer", packet: new PushDeviceRegisteredRes()}); }));
+		const previous = registerForPush();
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalledTimes(1));
+		forgetPushDevice();
+		expect(mockSendPacket).toHaveBeenCalledWith(expect.any(PushDeviceUnregisterReq), {});
+		const nextToken = "d".repeat(64);
+		mocked.getDevicePushTokenAsync.mockResolvedValue({type: "ios", data: nextToken});
+		await registerForPush();
+		expect(GameClient.request).toHaveBeenCalledTimes(2);
+		finish();
+		await previous;
+		await registerForPush();
+		expect(GameClient.request).toHaveBeenCalledTimes(2);
+	});
 });
