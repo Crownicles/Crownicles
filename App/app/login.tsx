@@ -48,7 +48,7 @@ type LoginAuthState = React.ContextType<typeof AuthContext>;
 type Authorize = () => Promise<KeycloakOAuth2Token>;
 
 const LOGIN_ENTRIES = {
-	QUESTION: "question",
+	WELCOME: "welcome",
 	DISCORD: "discord",
 	ACCOUNT: "account"
 } as const;
@@ -108,10 +108,10 @@ async function handleLogin(authState: LoginAuthState, authorize: Authorize, onRe
 }
 
 function LoginChoices({entry, connecting, onChoose, onAuthorize}: LoginChoicesProps): React.ReactElement {
-	if (entry === LOGIN_ENTRIES.QUESTION) {
+	if (entry === LOGIN_ENTRIES.WELCOME) {
 		return <>
-			<ActionBanner icon={MessageCircle} label={i18n.t("app:auth.existingDiscord")} pending={connecting} onPress={(): void => onChoose(LOGIN_ENTRIES.DISCORD)} testID="login-choose-discord" />
-			<ActionBanner icon={AtSign} label={i18n.t("app:auth.withoutDiscord")} pending={connecting} onPress={(): void => onChoose(LOGIN_ENTRIES.ACCOUNT)} testID="login-choose-account" />
+			<ActionBanner icon={UserPlus} label={i18n.t("app:auth.createAccount")} pending={connecting} onPress={(): void => onAuthorize(() => KeycloakAuth.register())} testID="login-register" />
+			<Button disabled={connecting} onPress={(): void => onChoose(LOGIN_ENTRIES.ACCOUNT)}>{i18n.t("app:auth.alreadyHaveAccount")}</Button>
 		</>;
 	}
 	if (entry === LOGIN_ENTRIES.DISCORD) {
@@ -125,7 +125,7 @@ function LoginChoices({entry, connecting, onChoose, onAuthorize}: LoginChoicesPr
 	}
 	return <>
 		<ActionBanner icon={AtSign} label={i18n.t("app:auth.withAccount")} pending={connecting} onPress={(): void => onAuthorize(() => KeycloakAuth.login())} testID="login-account" />
-		<ActionBanner icon={UserPlus} label={i18n.t("app:auth.createAccount")} pending={connecting} onPress={(): void => onAuthorize(() => KeycloakAuth.register())} testID="login-register" />
+		<Button disabled={connecting} onPress={(): void => onChoose(LOGIN_ENTRIES.DISCORD)}>{i18n.t("app:auth.withDiscord")}</Button>
 	</>;
 }
 
@@ -135,7 +135,7 @@ export default function LoginScreen(): React.ReactElement {
 	const authorizationPending = useRef(false);
 	const connecting = authorizing || authState.state === AuthStateEnum.CONNECTING || authState.state === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED;
 	const [notice, setNotice] = useState<LoginNotice | null>(null);
-	const [entry, setEntry] = useState<LoginEntry>(LOGIN_ENTRIES.QUESTION);
+	const [entry, setEntry] = useState<LoginEntry>(authState.state === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED ? LOGIN_ENTRIES.ACCOUNT : LOGIN_ENTRIES.WELCOME);
 	const [collision, setCollision] = useState<AccountCollisionLoginState | null>(null);
 
 	useExpiredSession(authState, setNotice);
@@ -170,7 +170,7 @@ export default function LoginScreen(): React.ReactElement {
 
 	if (collision) return <AccountCollisionScreen state={collision} onAuthenticated={(token): Promise<void> => connectAuthenticatedAccount(authState, token)} onCancel={(): void => {
 		setCollision(null);
-		setEntry(LOGIN_ENTRIES.QUESTION);
+		setEntry(LOGIN_ENTRIES.WELCOME);
 		authState.clearToken().then(() => authState.setState(AuthStateEnum.NO_TOKEN)).catch((error: unknown) => console.warn("Could not leave collision", error));
 	}} />;
 
@@ -178,17 +178,17 @@ export default function LoginScreen(): React.ReactElement {
 		<Screen contentContainerStyle={styles.screen}>
 			<Standing
 				emblem={<Image source={crowniclesLogo} style={styles.emblem} contentFit="cover" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />}
-				caption={i18n.t("app:auth.caption")}
-				title={i18n.t("app:auth.title")}
-				subtitle={entry === LOGIN_ENTRIES.QUESTION ? i18n.t("app:auth.alreadyOnDiscord") : i18n.t("app:auth.chooseAccount")}
+				caption={i18n.t(entry === LOGIN_ENTRIES.WELCOME ? "app:auth.caption" : "app:auth.title")}
+				title={i18n.t(entry === LOGIN_ENTRIES.WELCOME ? "app:auth.title" : "app:auth.loginTitle")}
+				subtitle={i18n.t(entry === LOGIN_ENTRIES.WELCOME ? "app:auth.welcome" : "app:auth.chooseAccount")}
 			/>
 			{notice ? <Refusal>{notice.title}</Refusal> : null}
 			{notice?.detail ? <Note>{notice.detail}</Note> : null}
 			<View style={styles.choices}>
 				<LoginChoices entry={entry} connecting={connecting} onChoose={chooseEntry} onAuthorize={start} />
-				{entry !== LOGIN_ENTRIES.QUESTION ? <Button disabled={connecting} onPress={(): void => {
+				{entry !== LOGIN_ENTRIES.WELCOME ? <Button disabled={connecting} onPress={(): void => {
 					setNotice(null);
-					setEntry(LOGIN_ENTRIES.QUESTION);
+					setEntry(LOGIN_ENTRIES.WELCOME);
 				}}>{i18n.t("app:common.back")}</Button> : null}
 			</View>
 		</Screen>

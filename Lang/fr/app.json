@@ -113,15 +113,15 @@
     "serverOutdated": "Le royaume est en cours de mise à jour. Réessayez dans quelques instants."
   },
   "auth": {
-    "caption": "Crownicles",
-    "title": "Le royaume vous attend",
-    "alreadyOnDiscord": "Vous jouez déjà sur Discord ?",
-    "existingDiscord": "Retrouver mon personnage Discord",
-    "withoutDiscord": "Continuer sans Discord",
-    "chooseAccount": "Choisissez le compte associé à votre aventure.",
+    "caption": "Bienvenue",
+    "title": "Crownicles",
+    "welcome": "Le royaume vous attend.",
+    "alreadyHaveAccount": "J'ai déjà un compte",
+    "loginTitle": "Se connecter",
+    "chooseAccount": "Reprenez votre aventure avec votre compte.",
     "withDiscord": "Continuer avec Discord",
-    "withAccount": "Utiliser un compte Crownicles",
-    "createAccount": "Créer un compte",
+    "withAccount": "Se connecter par e-mail",
+    "createAccount": "Commencer l'aventure",
     "connecting": "Connexion en cours",
     "collision": {
       "title": "Deux comptes pour la même adresse",
@@ -147,7 +147,7 @@
       }
     },
     "sessionExpired": "Votre session a expiré. Reconnectez-vous pour reprendre votre aventure.",
-    "loginFailed": "Connexion impossible",
+    "loginFailed": "Impossible de continuer",
     "failures": {
       "denied": "L'autorisation a été refusée. Acceptez de partager votre identité pour rejoindre le royaume.",
       "unreachable": "Le royaume est injoignable. Vérifiez votre connexion, puis réessayez.",

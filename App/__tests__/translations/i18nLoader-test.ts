@@ -4,6 +4,7 @@ import {i18n} from "@/src/translations/i18n";
 import {applyServerBundle} from "@/src/translations/i18nLoader";
 import {fakeGameRules} from "@/src/testing/fakeGameRules";
 import {gameRules} from "@/src/rules/GameRules";
+import frenchApp from "../../../Lang/fr/app.json";
 
 const rules = fakeGameRules;
 
@@ -21,7 +22,7 @@ describe("i18n loader", () => {
 		});
 
 		expect(i18n.t("app:auth.title")).toBe("Titre corrigé côté serveur");
-		expect(i18n.t("app:auth.caption")).toBe("Crownicles");
+		expect(i18n.t("app:auth.caption")).toBe(frenchApp.auth.caption);
 	});
 
 	it("falls back to the embedded French resource for a non-French bundle", async () => {
@@ -29,7 +30,7 @@ describe("i18n loader", () => {
 		await changeLanguage("en");
 
 		expect(i18n.t("app:auth.title")).toBe("The kingdom awaits");
-		expect(i18n.t("app:auth.caption")).toBe("Crownicles");
+		expect(i18n.t("app:auth.caption")).toBe(frenchApp.auth.caption);
 	});
 
 	it("merges repeated server bundles without discarding earlier keys", () => {
