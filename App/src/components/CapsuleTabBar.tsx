@@ -208,7 +208,6 @@ export function CapsuleTabBar({tabs, focused, position, onSelect}: CapsuleTabBar
 	const pillX = useMemo(() => alongTabs(position, tabs.length, focus => focus * slots.idle), [position, slots, tabs.length]);
 	const focusIndex = Math.max(tabs.findIndex(tab => tab.name === focused), 0);
 	const select = (tab: CapsuleTab): void => {
-		if (tab.name === focused) return;
 		selectionAsync().catch(() => undefined);
 		onSelect(tab.name);
 	};

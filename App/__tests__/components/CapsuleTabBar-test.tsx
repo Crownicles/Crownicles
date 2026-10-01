@@ -30,15 +30,16 @@ describe("CapsuleTabBar", () => {
 		expect(screen.getByRole("tab", {name: "Familier"})).not.toBeSelected();
 	});
 
-	it("opens another tab when pressed, but does nothing on the tab already open", async () => {
+	it("forwards presses on both the active tab and another tab to the navigator", async () => {
 		const onSelect = jest.fn();
 		await render(bar("profile", onSelect));
 
 		await fireEvent.press(screen.getByRole("tab", {name: "Profil"}));
-		expect(onSelect).not.toHaveBeenCalled();
+		expect(onSelect).toHaveBeenCalledWith("profile");
 
 		await fireEvent.press(screen.getByRole("tab", {name: "Familier"}));
-		expect(onSelect).toHaveBeenCalledWith("pet");
+		expect(onSelect).toHaveBeenLastCalledWith("pet");
+		expect(onSelect).toHaveBeenCalledTimes(2);
 	});
 
 	it("dots a newly opened tab until it is the one shown", async () => {

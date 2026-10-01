@@ -9,7 +9,7 @@ import {TopDataType, TopTiming, EloGameResult} from "ws-packets/src/objects/Rank
 
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();
-jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useSegments: (): string[] => ["(protected)", "(tabs)", "arena", "[page]"], useRouter: (): object => ({push: mockPush, navigate: mockNavigate})}));
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useSegments: (): string[] => ["(protected)", "(tabs)", "arena", "[page]"], useNavigation: (): object => ({getState: (): object => ({type: "stack", index: 0, routes: [{name: "[page]"}]})}), useRouter: (): object => ({push: mockPush, navigate: mockNavigate})}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: jest.fn()})}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));

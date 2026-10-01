@@ -20,7 +20,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();
 const mockReplace = jest.fn();
-jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useSegments: (): string[] => ["(protected)", "(tabs)", "guild"], useRouter: (): object => ({push: mockPush, navigate: mockNavigate, replace: mockReplace})}));
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useSegments: (): string[] => ["(protected)", "(tabs)", "guild"], useNavigation: (): object => ({getState: (): object => ({type: "stack", index: 0, routes: [{name: "index"}]})}), useRouter: (): object => ({push: mockPush, navigate: mockNavigate, replace: mockReplace})}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
 const mockTrack = jest.fn();
 jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: mockTrack})}));
