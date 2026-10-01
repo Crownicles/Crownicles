@@ -9,6 +9,7 @@ import {
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { PlayerMissionsInfo as PlayerMissionsInfoType } from "../../src/core/database/game/models/PlayerMissionsInfo";
 import type { CrowniclesPacket, PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
+import type { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ShopCurrency } from "../../../Lib/src/constants/ShopConstants";
 
 type MissionShopItemsModule = typeof import("../../src/core/utils/MissionShopItems");
@@ -93,7 +94,6 @@ describe("MissionShopItems.getMoneyShopItem race", () => {
 		});
 		const {ShopUtils} = loadProductionModule<typeof import("../../src/core/utils/ShopUtils")>("core/utils/ShopUtils");
 		const {ReactionCollectorController} = loadProductionModule<typeof import("../../src/core/utils/ReactionsCollector")>("core/utils/ReactionsCollector");
-		const collectorPackets = loadProductionModule<typeof import("../../../Lib/src/packets/interaction/ReactionCollectorPacket")>("../../Lib/src/packets/interaction/ReactionCollectorPacket");
 		const moneyPackets = loadProductionModule<typeof import("../../../Lib/src/packets/commands/CommandMissionShopPacket")>("../../Lib/src/packets/commands/CommandMissionShopPacket");
 		const menus = await runAllOrThrow(Array.from({length: N_CONCURRENT}, async (_unused, index): Promise<string> => {
 			const stalePlayer = (await Player.findByPk(player.id))!;
@@ -105,7 +105,7 @@ describe("MissionShopItems.getMoneyShopItem race", () => {
 			await ShopUtils.createAndSendShopCollector(context, response, {
 				player: stalePlayer, shopCategories: [{id: "conversion", items: [item]}], additionalShopData: {currency: ShopCurrency.GEM}
 			});
-			return (response[0] as InstanceType<typeof collectorPackets.ReactionCollectorCreationPacket>).id;
+			return (response[0] as ReactionCollectorCreationPacket).id;
 		}));
 		const responses = await runAllOrThrow(menus.map(async (id): Promise<CrowniclesPacket[]> => {
 			const response: CrowniclesPacket[] = [];

@@ -78,7 +78,7 @@ export abstract class ShopUtils {
 		} = shop;
 		const additionalShopData = shop.additionalShopData ?? {};
 		additionalShopData.currency ??= ShopCurrency.MONEY;
-		const interestingPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
+		const interestingPlayerInfo = await this.getCurrencyHolder(player, additionalShopData.currency);
 		const availableCurrency = interestingPlayerInfo instanceof Player ? interestingPlayerInfo.money : interestingPlayerInfo.gems;
 		const collectorShop = new ReactionCollectorShop(shopCategories, availableCurrency, additionalShopData, shopId);
 		const endCallback: EndCallback = (collector, response): Promise<void> => this.handleShopReaction(context, response, {
@@ -150,6 +150,13 @@ export abstract class ShopUtils {
 		}
 	}
 
+	private static async getCurrencyHolder(player: Player, currency: ShopCurrency): Promise<Player | PlayerMissionsInfo> {
+		if (currency === ShopCurrency.MONEY) {
+			return player;
+		}
+		return await PlayerMissionsInfos.getOfPlayer(player.id);
+	}
+
 	private static async getAdditionalPurchaseLocks(player: Player, itemType: ShopItemType): Promise<LockKey[]> {
 		if (itemType === ShopItemType.PLANT_SLOT_EXTENSION) {
 			await InventoryInfos.getOfPlayer(player.id);
@@ -167,7 +174,7 @@ export abstract class ShopUtils {
 		} = purchase;
 		const data = shop.additionalShopData ?? {};
 		const currency = data.currency ?? ShopCurrency.MONEY;
-		const payer = currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
+		const payer = await this.getCurrencyHolder(player, currency);
 		if (!this.canBuyItem(payer, reaction, currency, response)) {
 			return false;
 		}
@@ -179,7 +186,7 @@ export abstract class ShopUtils {
 			return false;
 		}
 		await player.reload();
-		const currentPayer = currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
+		const currentPayer = await this.getCurrencyHolder(player, currency);
 		await this.manageCurrencySpendingUnderLock(currentPayer, reaction, response);
 		await parsed.postPurchase?.();
 		if (isDetailedResult) {
