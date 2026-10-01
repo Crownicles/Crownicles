@@ -5,6 +5,7 @@ import {TopRes, TopEmptyRes} from "ws-packets/src/fromServer/fight/RankingsRes";
 import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {GameRequestTimeout, RequestState} from "@/src/store/useGameQuery";
+import {gameServicesStore} from "@/src/gameServices/GameServices";
 
 export type RankingSelection = Pick<TopReq, "dataType" | "timing" | "page">;
 
@@ -28,6 +29,7 @@ export function useRankings(selection: RankingSelection): RequestState<TopRes> {
 		queryFn: async () => {
 			const answer = await GameClient.request(makeFromClientPacket<TopReq>(TopReq, selection), TopRes, [TopEmptyRes]);
 			if (answer.kind === "timeout") throw new GameRequestTimeout();
+			if (answer.kind === "answer") gameServicesStore.recordRanking(answer.packet).catch((error: unknown): void => {console.warn("Unable to record the topweek score:", error);});
 			return answer;
 		}
 	});

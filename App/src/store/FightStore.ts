@@ -4,6 +4,7 @@ import {FightResumeReq} from "ws-packets/src/fromClient/FightReq";
 import {FightIntroductionRes, FightStatusRes, FightLogRes, FightEndRes, FightRewardRes, FightWaitRes, FightErrorRes, FightResumeRes, FightMonsterRewardRes} from "ws-packets/src/fromServer/fight/FightRes";
 import {FightIntroduction, FightStatus, FightLogEntry, FightEnd, FightReward, FightError, FIGHT_ERRORS, MonsterReward} from "ws-packets/src/objects/Fight";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
+import {gameServicesStore} from "@/src/gameServices/GameServices";
 
 type Listener = () => void;
 export type FightLogRecord = {sequence: number; entry: FightLogEntry; before?: FightStatus; after?: FightStatus};
@@ -26,10 +27,15 @@ class FightStore {
 		client.registerPushedPacketHandler<FightStatusRes>(FightStatusRes.wireName, packet => this.updateStatus(packet.status));
 		client.registerPushedPacketHandler<FightLogRes>(FightLogRes.wireName, packet => this.addLog(packet.entry));
 		client.registerPushedPacketHandler<FightWaitRes>(FightWaitRes.wireName, () => this.update({waiting: true}));
-		client.registerPushedPacketHandler<FightEndRes>(FightEndRes.wireName, packet => this.update({result: packet.result, waiting: false, visible: true}));
+		client.registerPushedPacketHandler<FightEndRes>(FightEndRes.wireName, packet => this.finish(packet.result));
 		client.registerPushedPacketHandler<FightRewardRes>(FightRewardRes.wireName, packet => this.update({reward: packet.reward, waiting: false, visible: true}));
 		client.registerPushedPacketHandler<FightMonsterRewardRes>(FightMonsterRewardRes.wireName, packet => this.update({monsterReward: packet.reward}));
 		client.registerPushedPacketHandler<FightErrorRes>(FightErrorRes.wireName, packet => this.fail(packet.error));
+	}
+
+	private finish(result: FightEnd): void {
+		this.update({result, waiting: false, visible: true});
+		gameServicesStore.recordFightEnd(result).catch((error: unknown): void => {console.warn("Unable to record the PvP achievement:", error);});
 	}
 
 	/**

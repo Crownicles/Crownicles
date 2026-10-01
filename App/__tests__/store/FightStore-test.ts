@@ -5,6 +5,7 @@ import {FightIntroduction, FightEnd, FightStatus, FIGHT_ERRORS} from "ws-packets
 import {act, renderHook, waitFor} from "@testing-library/react-native";
 import {useFightPlayback} from "@/src/store/useFightPlayback";
 import {FIGHT_SPEEDS} from "@/src/display/FightMotion";
+import {gameServicesStore} from "@/src/gameServices/GameServices";
 
 const INTRO: FightIntroduction = {fightId: "duel", initiator: {isSelf: true}, opponent: {isSelf: false, name: "Adversaire"}, initiatorActions: [["rest", 0]], opponentActions: [["simpleAttack", 2]]};
 const END: FightEnd = {winner: {isSelf: true, finalEnergy: 123, maxEnergy: 300}, loser: {isSelf: false, finalEnergy: 0, maxEnergy: 200}, draw: false, turns: 4, maxTurns: 30};
@@ -141,6 +142,17 @@ describe("fight session", () => {
 		expect(fightStore.getSnapshot().reward).toMatchObject({points: 31, money: 71});
 		fightStore.reset();
 		expect(fightStore.getSnapshot()).toMatchObject({introduction: null, result: null, reward: null, logs: []});
+	});
+	it("records a finished fight independently of rendering or changing Crownicles accounts", () => {
+		const record = jest.spyOn(gameServicesStore, "recordFightEnd").mockResolvedValue(undefined);
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightEndRes.wireName, {result: END});
+		fightStore.reset();
+		registry.dispatch(FightEndRes.wireName, {result: {...END, draw: true}});
+		expect(record).toHaveBeenCalledTimes(2);
+		expect(record).toHaveBeenNthCalledWith(1, END);
+		expect(record).toHaveBeenNthCalledWith(2, {...END, draw: true});
+		record.mockRestore();
 	});
 	it("does not let an old account's resume response clear the new account's fight", () => {
 		const sendPacket = jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();

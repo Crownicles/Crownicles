@@ -12,6 +12,7 @@ import {CollectorsProvider} from "@/src/collectors/CollectorsContext";
 import {OpenCollectors} from "@/src/collectors/OpenCollectors";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
 import {ConnectionStatus} from "@/src/components/ConnectionStatus";
+import {GameServicesLifecycle} from "@/src/gameServices/GameServicesLifecycle";
 
 const useStyles = createStyles(colors => ({
 	overlay: {
@@ -115,6 +116,7 @@ function AuthenticatedLayout({ state }: { state: AuthStateEnum }): React.ReactEl
 	return (
 		<SafeAreaProvider>
 			<GameQueryProvider authState={state}>
+				<GameServicesLifecycle authState={state} />
 				<CollectorsProvider authState={state}>
 					<AuthenticatedContent state={state} />
 				</CollectorsProvider>

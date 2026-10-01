@@ -16,6 +16,9 @@
       "bundleIdentifier": "com.crownicles.app",
       "appleTeamId": "WJS86RD78F",
       "buildNumber": "2",
+      "entitlements": {
+        "com.apple.developer.game-center": true
+      },
       "infoPlist": {
         "UIApplicationSceneManifest": {
           "UIApplicationSupportsMultipleScenes": false,
@@ -77,7 +80,8 @@
         }
       ],
       "./plugins/withSceneLifecycle",
-      "./plugins/withAndroidReleaseSigning"
+      "./plugins/withAndroidReleaseSigning",
+      "./plugins/withGameServices"
     ],
     "experiments": {
       "typedRoutes": true

@@ -29,6 +29,7 @@ import {LogOut, UserRound} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
+import {GameServicesSettings} from "@/src/gameServices/GameServicesSettings";
 
 const ROW_EMBLEM_SIZE = 24;
 
@@ -208,6 +209,7 @@ export default function Settings(): ReactNode {
 		<GameSettings />
 		<DisplaySettings />
 		<NotificationsEntry />
+		<GameServicesSettings />
 		<AccountSettings />
 		<AboutSettings />
 	</Page>;

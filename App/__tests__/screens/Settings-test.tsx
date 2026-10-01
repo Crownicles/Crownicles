@@ -9,6 +9,8 @@ import {AuthContext} from "@/src/authentication/AuthContext";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {GameClient} from "@/src/networking/GameClient";
 import {forgetPushDevice} from "@/src/notifications/PushRegistration";
+import {gameServicesStore, useGameServices} from "@/src/gameServices/GameServices";
+import {GAME_SERVICE_AVAILABILITY, GAME_SERVICE_PROVIDERS} from "@/src/gameServices/GameServicesTypes";
 
 const mockPush = jest.fn();
 const mockDisconnect = jest.fn();
@@ -22,6 +24,10 @@ jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()
 jest.mock("@/src/networking/WebSocketClient", () => ({WebSocketClient: {getInstance: () => ({disconnect: mockDisconnect, registerPushedPacketHandler: (): () => void => (): void => {}})}}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: object): string => options ? `${key} ${JSON.stringify(options)}` : key}}));
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (path: string): string => `icon:${path}`}}));
+jest.mock("@/src/gameServices/GameServices", () => ({
+	useGameServices: jest.fn(),
+	gameServicesStore: {connect: jest.fn(() => Promise.resolve()), showAchievements: jest.fn(() => Promise.resolve()), showTopweekLeaderboard: jest.fn(() => Promise.resolve()), refresh: jest.fn(() => Promise.resolve())}
+}));
 
 const preferences = {
 	report: true, dailyBonus: false, energy: true, guildDaily: true, guildKick: true,
@@ -46,6 +52,7 @@ async function renderSettings(auth = {setState: jest.fn(), clearToken: jest.fn((
 describe("settings", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		jest.mocked(useGameServices).mockReturnValue({provider: GAME_SERVICE_PROVIDERS.UNSUPPORTED, availability: GAME_SERVICE_AVAILABILITY.UNSUPPORTED, player: null, bestTopweekScore: 0, busy: false, syncFailed: false});
 		jest.mocked(GameClient.request).mockImplementation(answers as typeof GameClient.request);
 		jest.mocked(Notifications.getPermissionsAsync).mockResolvedValue({granted: true, canAskAgain: true} as Awaited<ReturnType<typeof Notifications.getPermissionsAsync>>);
 	});
@@ -61,6 +68,31 @@ describe("settings", () => {
 		jest.mocked(Notifications.getPermissionsAsync).mockResolvedValue({granted: false, canAskAgain: false} as Awaited<ReturnType<typeof Notifications.getPermissionsAsync>>);
 		await renderSettings();
 		await waitFor(() => expect(screen.getByText("app:settings.notifications.summary.off")).toBeTruthy());
+	});
+	it("opens the platform achievements and the best topweek leaderboard", async () => {
+		jest.mocked(useGameServices).mockReturnValue({provider: GAME_SERVICE_PROVIDERS.GAME_CENTER, availability: GAME_SERVICE_AVAILABILITY.AVAILABLE, player: {id: "platform-player", displayName: "Profil plateforme"}, bestTopweekScore: 500, busy: false, syncFailed: false});
+		await renderSettings();
+		expect(screen.getByText("Profil plateforme")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:settings.gameServices.achievements"));
+		await fireEvent.press(screen.getByText("app:settings.gameServices.leaderboard"));
+		expect(gameServicesStore.showAchievements).toHaveBeenCalledTimes(1);
+		expect(gameServicesStore.showTopweekLeaderboard).toHaveBeenCalledTimes(1);
+	});
+
+	it("offers platform authentication without changing the Crownicles account", async () => {
+		jest.mocked(useGameServices).mockReturnValue({provider: GAME_SERVICE_PROVIDERS.GAME_CENTER, availability: GAME_SERVICE_AVAILABILITY.AVAILABLE, player: null, bestTopweekScore: 0, busy: false, syncFailed: false});
+		const auth = await renderSettings();
+		await fireEvent.press(screen.getByText(`app:settings.gameServices.connect ${JSON.stringify({provider: "app:settings.gameServices.providers.gameCenter"})}`));
+		expect(gameServicesStore.connect).toHaveBeenCalledTimes(1);
+		expect(auth.clearToken).not.toHaveBeenCalled();
+		expect(mockDisconnect).not.toHaveBeenCalled();
+	});
+
+	it("explains missing platform configuration before offering any action", async () => {
+		jest.mocked(useGameServices).mockReturnValue({provider: GAME_SERVICE_PROVIDERS.PLAY_GAMES, availability: GAME_SERVICE_AVAILABILITY.NOT_CONFIGURED, player: null, bestTopweekScore: 0, busy: false, syncFailed: false});
+		await renderSettings();
+		expect(screen.getByText("app:settings.gameServices.unavailable.notConfigured")).toBeTruthy();
+		expect(screen.queryByText("app:settings.gameServices.achievements")).toBeNull();
 	});
 
 	it("asks before logging out, then forgets this device and ends the session", async () => {

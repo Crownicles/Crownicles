@@ -12,6 +12,21 @@ const GOOGLE_SERVICES_FILE = [
 	path.join(os.homedir(), ".crownicles", "google-services.json")
 ].find(file => file && fs.existsSync(file));
 
-module.exports = ({config}) => (GOOGLE_SERVICES_FILE
-	? {...config, android: {...config.android, googleServicesFile: GOOGLE_SERVICES_FILE}}
-	: config);
+module.exports = ({config}) => ({
+	...config,
+	...(GOOGLE_SERVICES_FILE ? {android: {...config.android, googleServicesFile: GOOGLE_SERVICES_FILE}} : {}),
+	extra: {
+		...config.extra,
+		gameServices: {
+			gameCenter: {
+				pvpAchievementId: process.env.EXPO_PUBLIC_GAME_CENTER_PVP_ACHIEVEMENT_ID || "com.crownicles.app.pvp_fight_completed",
+				topweekLeaderboardId: process.env.EXPO_PUBLIC_GAME_CENTER_TOPWEEK_LEADERBOARD_ID || "com.crownicles.app.topweek_best"
+			},
+			playGames: {
+				appId: process.env.EXPO_PUBLIC_PLAY_GAMES_APP_ID || "",
+				pvpAchievementId: process.env.EXPO_PUBLIC_PLAY_GAMES_PVP_ACHIEVEMENT_ID || "",
+				topweekLeaderboardId: process.env.EXPO_PUBLIC_PLAY_GAMES_TOPWEEK_LEADERBOARD_ID || ""
+			}
+		}
+	}
+});

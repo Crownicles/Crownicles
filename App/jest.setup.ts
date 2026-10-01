@@ -6,6 +6,8 @@ import {loadGameRules} from "./src/rules/GameRules";
 // Outside the app shell no assets bundle is downloaded: screens read the rules a server would send.
 loadGameRules(fakeGameRules);
 
+jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
+
 // Tests render screens outside the app shell, where the real provider would have no window to measure.
 jest.mock("react-native-safe-area-context", () => jest.requireActual("react-native-safe-area-context/jest/mock").default);
 

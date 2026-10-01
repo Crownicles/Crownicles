@@ -271,6 +271,24 @@
       "account": "Compte",
       "about": "À propos"
     },
+    "gameServices": {
+      "providers": {
+        "gameCenter": "Game Center",
+        "playGames": "Google Play Games"
+      },
+      "connect": "Se connecter à {{provider}}",
+      "profile": "Profil",
+      "record": "Record topweek",
+      "achievements": "Succès",
+      "leaderboard": "Classement des records topweek",
+      "pending": "Synchronisation en cours...",
+      "failed": "La synchronisation a échoué. Vos succès et votre record restent enregistrés sur cet appareil.",
+      "retry": "Réessayer la synchronisation",
+      "unavailable": {
+        "notConfigured": "Les services de jeu ne sont pas encore configurés pour cette version.",
+        "nativeUnavailable": "Les services de jeu ne sont pas disponibles dans cette version de l'application."
+      }
+    },
     "logoutConfirm": {
       "title": "Se déconnecter ?",
       "subtitle": "Votre progression reste enregistrée : il suffira de vous reconnecter pour reprendre l'aventure."

@@ -120,6 +120,78 @@ linked from the repository (`link:../WsPackets`).
 Anything edited by hand in there is lost on the next generation, so a native change belongs in a
 config plugin declared in `app.json`.
 
+## Game Center and Google Play Games
+
+These are optional cosmetic services, not Crownicles login providers. Achievements belong to the
+device's Game Center or Play Games profile, independently of Keycloak and of the character being
+played. Changing or deleting a Crownicles account does not reset them. Apple and Google remain
+separate profiles; this integration does not transfer achievements between the two ecosystems.
+
+The app decides and stores achievement conditions locally. The first achievement unlocks after a
+finished PvP fight, including a defeat or a draw; monster fights and refused/interrupted fights do
+not unlock it. Nothing is granted by Core and no in-game reward depends on the SDK's result.
+
+The leaderboard keeps the highest **weekly score observed by the app**, across weeks and
+Crownicles accounts, without adding different characters' scores together. It reads the current
+player's own weekly score from the existing `TopReq`/`TopRes` contract at login, on relevant game
+cache invalidations and once a minute while foregrounded. This is not a historical server record:
+a week entirely played outside the app cannot be recovered after its reset. Scores are submitted
+by the client; this is not an anti-cheat guarantee for a competitive reward system.
+
+Progress is saved before submitting to the platform. Failed submissions are retried on reconnect,
+foregrounding, new progress or the retry action in Settings. Storage and pending submissions are
+isolated by platform player ID, never by Crownicles account. Progress earned before platform login
+is adopted by the first profile that connects on that device. Reinstalling the app removes unsent
+local progress; achievements already accepted by Apple/Google remain on that platform profile.
+
+### Create the first resources
+
+| Resource | Configuration |
+| --- | --- |
+| Achievement | `Premier duel`, standard/non-incremental, visible, non-repeatable, 10 points |
+| Locked description | `Terminer un combat contre un autre joueur.` |
+| Unlocked description | `Un combat contre un autre joueur a ete termine.` |
+| Leaderboard | `Record topweek`, integer points, highest score first, keep the best score, permanent/all-time |
+
+In App Store Connect, enable Game Center for `com.crownicles.app`, then create:
+
+- Achievement ID: `com.crownicles.app.pvp_fight_completed`.
+- Classic leaderboard ID: `com.crownicles.app.topweek_best`. Do not use a recurring weekly
+   leaderboard: the value represents a player's best week, not the current week's score.
+- French metadata and artwork required by the console. Add the achievement/leaderboard to the
+   app version before submitting that version. Enable the capability for the App ID and regenerate
+   its provisioning profile; the app entitlement is already declared.
+
+In Play Console, create/link Play Games Services to the app's Google Cloud project, then:
+
+- Link the Android package `com.crownicles.app` to the appropriate OAuth credentials. Register
+   the **Play app-signing** SHA-1 for store builds, and the debug/local-release SHA-1 for local builds.
+   The upload certificate is not the certificate Google uses to sign installed store builds.
+- Create the standard achievement and a descending integer leaderboard using the table above.
+- Copy the numeric project APP_ID and the generated achievement/leaderboard IDs to the public
+   variables listed in `.env.example`. They are not secrets; no server OAuth credential is needed.
+- Add the device's Google account to the Play Games test list (or enable the internal-test track).
+   Publish the Play Games configuration before making a production app version available.
+
+Game Center identifiers have useful defaults in `app.config.js`; Google identifiers must come
+from Play Console and cannot be invented. Restart Metro after changing configuration. Run
+`pnpm exec expo prebuild` and rebuild the native app when the APP_ID or a native dependency changes.
+No EAS account is needed. Old native clients and Expo Go show an unavailable state instead of
+pretending an achievement was submitted. Web does not initialize either SDK.
+
+### Test on a device
+
+1. Use a newly rebuilt native app and a platform account authorized for testing.
+2. Open Settings and connect the platform profile if it is not already connected.
+3. Finish a PvP fight in the app. Open Settings > Achievements and verify `Premier duel` is earned.
+4. Read the topweek, then open its native record leaderboard. Resetting the week or changing to
+    a character with a lower weekly score must not reduce that record.
+5. Repeat the fight, restart the app and change Crownicles accounts: the achievement stays earned.
+    Use a different platform profile to verify pending submissions do not migrate to another person.
+
+The Android dependency is patched in `patches/` to use `unlockImmediate` and `submitScoreImmediate`:
+the local outbox is acknowledged only after Google responds, not when the wrapper schedules a call.
+
 Only a change to the native dependencies or to `app.json` calls for a new build. Everything written
 in TypeScript is served by Metro and reloads on the fly.
 
