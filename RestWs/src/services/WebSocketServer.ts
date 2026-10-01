@@ -21,7 +21,7 @@ import {
 } from "ws";
 
 type ClientMessage = {
-	id: string;
+	id?: string;
 	name: string;
 	data: FromClientPacket;
 };
@@ -46,7 +46,7 @@ type FailedClientPacket = {
  * @param message
  */
 function parseClientMessage(message: string): ClientMessage | null {
-	let parsedMessage;
+	let parsedMessage: unknown;
 	try {
 		parsedMessage = JSON.parse(message);
 	}
@@ -55,11 +55,18 @@ function parseClientMessage(message: string): ClientMessage | null {
 		return null;
 	}
 
-	if (!parsedMessage.name || !parsedMessage.data) {
+	if (typeof parsedMessage !== "object" || parsedMessage === null || Array.isArray(parsedMessage)
+		|| !("name" in parsedMessage) || typeof parsedMessage.name !== "string" || !parsedMessage.name
+		|| !("data" in parsedMessage) || typeof parsedMessage.data !== "object" || parsedMessage.data === null || Array.isArray(parsedMessage.data)
+		|| ("id" in parsedMessage && typeof parsedMessage.id !== "string")) {
 		CrowniclesLogger.debug("Invalid message format", { parsedMessage });
 		return null;
 	}
-	return parsedMessage;
+	return {
+		name: parsedMessage.name,
+		data: parsedMessage.data,
+		..."id" in parsedMessage && typeof parsedMessage.id === "string" ? { id: parsedMessage.id } : {}
+	};
 }
 
 /**
@@ -88,6 +95,9 @@ function handleClientMessage(ws: WebSocket, {
 	keycloakId, groups
 }: ConnectedPlayer): void {
 	ws.on("message", async (message: string) => {
+		if (!WebSocketServer.isActiveConnection(keycloakId, ws)) {
+			return;
+		}
 		const parsedMessage = parseClientMessage(message);
 		if (!parsedMessage) {
 			return;
@@ -120,7 +130,10 @@ function handleClientMessage(ws: WebSocket, {
 			};
 
 			// todo verify that all properties are present in the message
-			MqttManager.globalMqttClient.sendToBackEnd(context, await translator(context, parsedMessage.data));
+			const packet = await translator(context, parsedMessage.data);
+			if (WebSocketServer.isActiveConnection(keycloakId, ws)) {
+				MqttManager.globalMqttClient.sendToBackEnd(context, packet);
+			}
 		}
 		catch (error) {
 			logClientPacketFailure(error, {
@@ -188,7 +201,7 @@ export class WebSocketServer {
 			try {
 				// Verify the client connection and get the keycloakId and groups
 				const connectionData = await WebSocketServer.verifyClientConnection(ws, req);
-				if (!connectionData) {
+				if (!connectionData || ws.readyState !== WebSocket.OPEN) {
 					return;
 				}
 				const { keycloakId } = connectionData;
@@ -210,10 +223,14 @@ export class WebSocketServer {
 
 	private static replaceConnection(keycloakId: KeycloakId, ws: WebSocket): void {
 		const currConnection = WebSocketServer.keycloakIdToClients.get(keycloakId);
+		WebSocketServer.keycloakIdToClients.set(keycloakId, ws);
 		if (currConnection && currConnection.readyState !== WebSocket.CLOSED) {
 			currConnection.close(1008, WEBSOCKET_SESSION_REPLACED_REASON);
 		}
-		WebSocketServer.keycloakIdToClients.set(keycloakId, ws);
+	}
+
+	static isActiveConnection(keycloakId: KeycloakId, ws: WebSocket): boolean {
+		return ws.readyState === WebSocket.OPEN && WebSocketServer.keycloakIdToClients.get(keycloakId) === ws;
 	}
 
 	private static handleClose(ws: WebSocket, req: IncomingMessage, keycloakId: KeycloakId): void {

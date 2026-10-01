@@ -13,7 +13,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	EndCallback, ReactionCollectorInstance
+	EndCallback, ReactionCollectorController, ReactionCollectorInstance
 } from "./ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "./BlockingUtils";
@@ -23,6 +23,19 @@ import {
 } from "../../../../Lib/src/constants/LogsConstants";
 import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import {
+	InventoryInfo, InventoryInfos
+} from "../database/game/models/InventoryInfo";
+import { PetEntity } from "../database/game/models/PetEntity";
+import {
+	LockKey, Locked
+} from "../../../../Lib/src/locks/withLockedEntities";
+import { withLockedPlayerAndMissions } from "./withLockedPlayerAndMissions";
+
+type ShopPurchase = {
+	shop: ShopInformations;
+	reaction: ReactionCollectorShopItemReaction;
+};
 
 /**
  * Callback fired when a shop collector is closed by the player or expires
@@ -58,16 +71,12 @@ export abstract class ShopUtils {
 	public static async createAndSendShopCollector(
 		context: PacketContext,
 		response: CrowniclesPacket[],
-		{
-			shopCategories,
-			player,
-			additionalShopData = {},
-			logger,
-			cityId,
-			shopId,
-			onClose
-		}: ShopInformations
+		shop: ShopInformations
 	): Promise<void> {
+		const {
+			shopCategories, player, logger, cityId, shopId, onClose
+		} = shop;
+		const additionalShopData = shop.additionalShopData ?? {};
 		additionalShopData.currency ??= ShopCurrency.MONEY;
 		const interestingPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 		const availableCurrency = interestingPlayerInfo instanceof Player ? interestingPlayerInfo.money : interestingPlayerInfo.gems;
@@ -87,28 +96,29 @@ export abstract class ShopUtils {
 				return;
 			}
 			const reactionInstance = reaction.reaction.data as ReactionCollectorShopItemReaction;
-			if (!this.canBuyItem(interestingPlayerInfo, reactionInstance, collectorShop.currency, response)) {
-				return;
+			const locks = await this.getAdditionalPurchaseLocks(player, reactionInstance.shopItemId);
+			let purchased = false;
+			const purchaseResponse: CrowniclesPacket[] = [];
+			try {
+				purchased = await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
+					if (reactionInstance.shopItemId === ShopItemType.LOVE_POINTS_VALUE && lockedPlayer.petId !== player.petId) {
+						purchaseResponse.push(makePacket(CommandShopClosed, {}));
+						return false;
+					}
+					return await this.buyItemUnderLock(context, purchaseResponse, lockedPlayer, {
+						shop: {
+							...shop, additionalShopData
+						},
+						reaction: reactionInstance
+					});
+				}, locks);
 			}
-			const buyResult = await shopCategories
-				.find(category => category.id === reactionInstance.shopCategoryId)!.items
-				.find(item => item.id === reactionInstance.shopItemId)!.buyCallback(response, player.id, context, reactionInstance.amount);
-			const isDetailedResult = typeof buyResult !== "boolean";
-			const parsed: ShopUtilsBuyCallbackResult = isDetailedResult ? buyResult as ShopUtilsBuyCallbackResult : { success: buyResult as boolean };
-			if (parsed.success) {
-				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
-				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
-				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
-				await parsed.postPurchase?.();
-				if (isDetailedResult) {
-					const translationParams = this.getTranslationParams(reactionInstance.shopItemId, additionalShopData);
-					response.push(makePacket(CommandShopGenericPurchase, {
-						shopItemId: reactionInstance.shopItemId,
-						amount: reactionInstance.amount,
-						materials: parsed.materials,
-						translationParams
-					}));
-				}
+			catch (error) {
+				ReactionCollectorController.discardUnpublishedCollectors(purchaseResponse);
+				throw error;
+			}
+			response.push(...purchaseResponse);
+			if (purchased) {
 				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount, cityId).then();
 			}
 		};
@@ -125,6 +135,49 @@ export abstract class ShopUtils {
 			.build();
 
 		response.push(packet);
+	}
+
+	private static async getAdditionalPurchaseLocks(player: Player, itemType: ShopItemType): Promise<LockKey[]> {
+		if (itemType === ShopItemType.PLANT_SLOT_EXTENSION) {
+			await InventoryInfos.getOfPlayer(player.id);
+			return [InventoryInfo.lockKey(player.id)];
+		}
+		if (itemType === ShopItemType.LOVE_POINTS_VALUE && player.petId !== null) {
+			return [PetEntity.lockKey(player.petId)];
+		}
+		return [];
+	}
+
+	private static async buyItemUnderLock(context: PacketContext, response: CrowniclesPacket[], player: Locked<Player>, purchase: ShopPurchase): Promise<boolean> {
+		const {
+			shop, reaction
+		} = purchase;
+		const data = shop.additionalShopData ?? {};
+		const currency = data.currency ?? ShopCurrency.MONEY;
+		const payer = currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
+		if (!this.canBuyItem(payer, reaction, currency, response)) {
+			return false;
+		}
+		const item = shop.shopCategories.find(category => category.id === reaction.shopCategoryId)!.items.find(candidate => candidate.id === reaction.shopItemId)!;
+		const buyResult = await item.buyCallback(response, player.id, context, reaction.amount);
+		const isDetailedResult = typeof buyResult !== "boolean";
+		const parsed: ShopUtilsBuyCallbackResult = isDetailedResult ? buyResult : { success: buyResult };
+		if (!parsed.success) {
+			return false;
+		}
+		await player.reload();
+		const currentPayer = currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
+		await this.manageCurrencySpendingUnderLock(currentPayer, reaction, response);
+		await parsed.postPurchase?.();
+		if (isDetailedResult) {
+			response.push(makePacket(CommandShopGenericPurchase, {
+				shopItemId: reaction.shopItemId,
+				amount: reaction.amount,
+				materials: parsed.materials,
+				translationParams: this.getTranslationParams(reaction.shopItemId, data)
+			}));
+		}
+		return true;
 	}
 
 	private static canBuyItem(
@@ -144,8 +197,8 @@ export abstract class ShopUtils {
 		return true;
 	}
 
-	private static async manageCurrencySpending(
-		player: Player | PlayerMissionsInfo,
+	private static async manageCurrencySpendingUnderLock(
+		player: Locked<Player> | Locked<PlayerMissionsInfo>,
 		reactionInstance: ReactionCollectorShopItemReaction,
 		response: CrowniclesPacket[]
 	): Promise<void> {

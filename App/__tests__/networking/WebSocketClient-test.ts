@@ -141,6 +141,91 @@ describe("WebSocketClient", () => {
 		warnSpy.mockRestore();
 	});
 
+	it("does not send an expired request after a prolonged disconnection", () => {
+		jest.useFakeTimers();
+		const warnSpy = jest.spyOn(console, "warn").mockImplementation();
+		try {
+			const {client, socket} = clientWithSocket({readyState: 0, send: jest.fn(), close: jest.fn()});
+			const timeoutCallback = jest.fn();
+			client.sendPacket(new TestRequest(), {[TestResponse.wireName]: jest.fn() as never}, {time: 1000, callback: timeoutCallback});
+			jest.advanceTimersByTime(60_000);
+			socket.readyState = OPEN_STATE;
+			handleSocketOpen(client, socket);
+			handleSocketOpen(client, socket);
+			expect(timeoutCallback).toHaveBeenCalledTimes(1);
+			expect(socket.send).not.toHaveBeenCalled();
+			expect(queuedPackets(client)).toEqual([]);
+		}
+		finally {
+			warnSpy.mockRestore();
+			jest.useRealTimers();
+		}
+	});
+
+	it("never replays a sent request when the connection opens again without its response", () => {
+		const {client, socket} = clientWithSocket();
+		client.sendPacket(new TestRequest(), {[TestResponse.wireName]: jest.fn() as never});
+		handleSocketOpen(client, socket);
+		handleSocketOpen(client, socket);
+		expect(socket.send).toHaveBeenCalledTimes(1);
+		expect(queuedPackets(client)).toEqual([]);
+	});
+
+	it("expires even uncorrelated packets when resuming with suspended timers", () => {
+		jest.useFakeTimers();
+		try {
+			const {client, socket} = clientWithSocket({readyState: 0, send: jest.fn(), close: jest.fn()});
+			client.sendPacket(new TestRequest(), {});
+			jest.setSystemTime(Date.now() + 60_000);
+			socket.readyState = OPEN_STATE;
+			handleSocketOpen(client, socket);
+			expect(socket.send).not.toHaveBeenCalled();
+			expect(queuedPackets(client)).toEqual([]);
+		}
+		finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it("recovers from a socket error and sends the queued request once on the new connection", async () => {
+		jest.useFakeTimers();
+		const {client, socket} = clientWithSocket();
+		const onStateChange = jest.fn();
+		const responseHandler = jest.fn();
+		Reflect.set(client, "setState", onStateChange);
+		const replacementSocket = {readyState: 0, send: jest.fn(), close: jest.fn()};
+		const originalSocket = globalThis.WebSocket;
+		const originalUrl = process.env.EXPO_PUBLIC_WEBSOCKET_URL;
+		const socketConstructor = jest.fn(() => replacementSocket);
+		Object.assign(socketConstructor, {OPEN: OPEN_STATE, CONNECTING: 0});
+		Reflect.set(globalThis, "WebSocket", socketConstructor);
+		process.env.EXPO_PUBLIC_WEBSOCKET_URL = "ws://local-test";
+		try {
+			const token = new AuthToken({accessToken: "local-test", refreshToken: "local-refresh", accessTokenExpiresAt: new Date(Date.now() + 60_000), refreshTokenExpiresAt: "never"});
+			Reflect.get(client, "handleSocketError").call(client, socket, {});
+			Reflect.get(client, "handleSocketClose").call(client, socket, {reason: ""}, token, false);
+			client.sendPacket(new TestRequest(), {[TestResponse.wireName]: responseHandler as never});
+			await jest.advanceTimersByTimeAsync(1000);
+			replacementSocket.readyState = OPEN_STATE;
+			Reflect.get(replacementSocket, "onopen")();
+			handleSocketOpen(client, replacementSocket);
+			const sentPacket = JSON.parse(replacementSocket.send.mock.calls[0][0] as string) as {id: string};
+			handleSocketMessage(client, replacementSocket, {id: sentPacket.id, name: TestResponse.wireName, packet: {value: "recovered"}});
+			expect(socket.close).toHaveBeenCalledTimes(1);
+			expect(replacementSocket.send).toHaveBeenCalledTimes(1);
+			expect(responseHandler).toHaveBeenCalledWith({value: "recovered"});
+			expect(onStateChange).not.toHaveBeenCalledWith(AuthStateEnum.CONNECTION_ERROR);
+			expect(onStateChange).toHaveBeenLastCalledWith(AuthStateEnum.LOGGED_IN);
+		}
+		finally {
+			client.disconnect();
+			Reflect.set(globalThis, "WebSocket", originalSocket);
+			if (originalUrl === undefined) delete process.env.EXPO_PUBLIC_WEBSOCKET_URL;
+			else process.env.EXPO_PUBLIC_WEBSOCKET_URL = originalUrl;
+			jest.useRealTimers();
+		}
+	});
+
 	it("drops the previous session socket and pending requests on disconnect", () => {
 		const warnSpy = jest.spyOn(console, "warn").mockImplementation();
 		const {client, socket} = clientWithSocket({

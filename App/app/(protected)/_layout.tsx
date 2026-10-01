@@ -11,6 +11,7 @@ import {GameQueryProvider} from "@/src/store/GameQueryProvider";
 import {CollectorsProvider} from "@/src/collectors/CollectorsContext";
 import {OpenCollectors} from "@/src/collectors/OpenCollectors";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
+import {ConnectionStatus} from "@/src/components/ConnectionStatus";
 
 const useStyles = createStyles(colors => ({
 	overlay: {
@@ -85,6 +86,7 @@ function ReconnectingOverlay(): React.ReactElement {
 		<View style={styles.overlay} pointerEvents="auto">
 			<View style={styles.indicatorContainer}>
 				<ActivityIndicator size="large" color={colors.ink} />
+				<Text style={styles.blockingText}>{i18n.t("app:common.waitingForConnection")}</Text>
 			</View>
 		</View>
 	);
@@ -96,12 +98,15 @@ function AuthenticatedContent({ state }: { state: AuthStateEnum }): React.ReactE
 	const insets = useSafeAreaInsets();
 	return (
 		<View style={styles.authenticatedRoot}>
-			{/* The tabs draw their own header under the status bar; every page pushed over them starts below it. */}
-			<Stack screenOptions={{headerShown: false, contentStyle: {paddingTop: insets.top, backgroundColor: colors.wash}}}>
-				<Stack.Screen name="(tabs)" options={{headerShown: false, contentStyle: {paddingTop: 0}}} />
-			</Stack>
-			{state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && <ReconnectingOverlay />}
-			<OpenCollectors />
+			<View style={styles.authenticatedRoot}>
+				{/* The tabs draw their own header under the status bar; every page pushed over them starts below it. */}
+				<Stack screenOptions={{headerShown: false, contentStyle: {paddingTop: insets.top, backgroundColor: colors.wash}}}>
+					<Stack.Screen name="(tabs)" options={{headerShown: false, contentStyle: {paddingTop: 0}}} />
+				</Stack>
+				{state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && <ReconnectingOverlay />}
+				<OpenCollectors />
+			</View>
+			<ConnectionStatus state={state} bottomInset={insets.bottom} />
 		</View>
 	);
 }

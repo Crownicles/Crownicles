@@ -22,6 +22,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { keepPendingReveals } from "../appState/AppState";
+import { scheduleAfterCommit } from "../../../../Lib/src/locks/scheduleAfterCommit";
 
 export type CollectCallback = (collector: ReactionCollectorInstance, reaction: ReactionCollectorReaction, keycloakId: string, response: CrowniclesPacket[]) => void | Promise<void>;
 
@@ -43,6 +44,11 @@ export type ReactionInfo = {
 		type: string;
 		data: ReactionCollectorReaction;
 	};
+};
+
+type CollectorBlock = {
+	keycloakId: string;
+	reason: BlockingReason;
 };
 
 export function createDefaultFilter(allowedPlayerKeycloakIds: string[]): FilterFunction {
@@ -71,6 +77,8 @@ export class ReactionCollectorInstance {
 	private readonly reactionLimit: number;
 
 	private reactionsHistory: ReactionInfo[] = [];
+
+	private readonly ownedBlocks: CollectorBlock[] = [];
 
 	private readonly mainPacket: boolean;
 
@@ -132,7 +140,7 @@ export class ReactionCollectorInstance {
 		}
 
 		const reaction = this._creationPacket.reactions[index];
-		if (!await this.filter(this, keycloakId, index)) {
+		if (!await this.filter(this, keycloakId, index) || this.hasEnded) {
 			return;
 		}
 		this.reactionsHistory.push({
@@ -174,9 +182,33 @@ export class ReactionCollectorInstance {
 		}
 	}
 
+	private scheduleActivation(task: () => void): void {
+		scheduleAfterCommit(() => new Promise<void>(resolve => {
+			if (!this.hasEnded) {
+				task();
+			}
+			resolve();
+		}), error => CrowniclesLogger.errorWithObj("Failed to activate reaction collector", error));
+	}
+
 	public block(keycloakId: string, reason: BlockingReason): this {
-		BlockingUtils.blockPlayerUntil(keycloakId, reason, this.endTime);
+		this.scheduleActivation(() => BlockingUtils.blockPlayerUntil(keycloakId, reason, this.endTime));
+		this.ownedBlocks.push({
+			keycloakId, reason
+		});
 		return this;
+	}
+
+	public discardUnpublished(): void {
+		if (this.hasEnded) {
+			return;
+		}
+		this.hasEnded = true;
+		clearTimeout(this.endTimeout);
+		collectors.delete(this.id);
+		for (const block of this.ownedBlocks) {
+			BlockingUtils.unblockPlayer(block.keycloakId, block.reason);
+		}
 	}
 
 	public getReactionsHistory(): ReactionInfo[] {
@@ -192,12 +224,12 @@ export class ReactionCollectorInstance {
 			throw "Reaction collector has already been built";
 		}
 
-		// Register
 		this.id = RandomUtils.crowniclesRandom.uuid4();
-		collectors.set(this.id, this);
-		this.endTimeout = setTimeout(this.endByTime.bind(this), this.endTime - Date.now());
-
 		this._creationPacket = makePacket(ReactionCollectorCreationPacket, this.model.creationPacket(this.id, this.endTime, this.mainPacket));
+		this.scheduleActivation(() => {
+			collectors.set(this.id, this);
+			this.endTimeout = setTimeout(this.endByTime.bind(this), this.endTime - Date.now());
+		});
 		return this._creationPacket;
 	}
 
@@ -213,6 +245,14 @@ export class ReactionCollectorInstance {
 }
 
 export abstract class ReactionCollectorController {
+	public static discardUnpublishedCollectors(packets: readonly CrowniclesPacket[]): void {
+		for (const packet of packets) {
+			if (packet instanceof ReactionCollectorCreationPacket) {
+				collectors.get(packet.id)?.discardUnpublished();
+			}
+		}
+	}
+
 	public static async reactPacket(response: CrowniclesPacket[], packet: ReactionCollectorReactPacket): Promise<void> {
 		const collector = collectors.get(packet.id);
 		if (!collector || collector.hasEnded) {

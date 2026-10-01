@@ -1,6 +1,7 @@
 import uuid from "react-native-uuid";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthToken} from "@/src/authentication/AuthToken";
+import {AppConstants} from "@/src/AppConstants";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {wireNameOf} from "ws-packets/src/MakePackets";
@@ -20,6 +21,12 @@ export type WebSocketPacketResponseHandler<T extends FromServerPacket> = (packet
 interface PacketTimeout {
 	time: number;
 	callback?: () => void;
+}
+
+interface QueuedPacket {
+	id?: string;
+	packet: FromClientPacket;
+	expiresAt: number;
 }
 
 interface IncomingPacket {
@@ -47,9 +54,7 @@ export class WebSocketClient {
 
 	private maxConnectionAttempts = 20;
 
-	private packetQueue: {
-		id?: string; packet: FromClientPacket;
-	}[] = [];
+	private packetQueue: QueuedPacket[] = [];
 
 	private responseHandlers = new Map<string, ResponseHandlerGroup>();
 
@@ -125,6 +130,7 @@ export class WebSocketClient {
 		}
 		this.packetQueue.push({
 			packet,
+			expiresAt: Date.now() + (timeout?.time ?? AppConstants.PACKET_TIMEOUT),
 			...(packetId ? { id: packetId } : {})
 		});
 
@@ -162,13 +168,11 @@ export class WebSocketClient {
 				return;
 			}
 
-			for (const packetName of responseHandlerGroup.handlers.keys()) {
-				responseHandlerGroup.handlers.delete(packetName);
-			}
+			this.packetQueue = this.packetQueue.filter(queuedPacket => queuedPacket.id !== packetId);
+			this.responseHandlers.delete(packetId);
 			if (timeout.callback && !responseHandlerGroup.received) {
 				timeout.callback();
 			}
-			this.responseHandlers.delete(packetId);
 		}, timeout.time);
 	}
 
@@ -304,8 +308,6 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 		}
 		console.info("WebSocket error:", error);
 		socket.close();
-		this.setState?.(AuthStateEnum.CONNECTION_ERROR);
-		this.clearIntervals();
 	}
 
 	private handleSocketClose(socket: WebSocket, error: CloseEvent, authToken: AuthToken, firstConnection: boolean): void {
@@ -373,7 +375,7 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 		while (this.packetQueue.length > 0) {
 			if (this.socket && this.socket.readyState === WebSocket.OPEN) {
 				const queuedPacket = this.packetQueue.shift();
-				if (queuedPacket) {
+				if (queuedPacket && queuedPacket.expiresAt > Date.now()) {
 					this.socket.send(JSON.stringify({
 						id: queuedPacket.id,
 						name: wireNameOf(queuedPacket.packet),
