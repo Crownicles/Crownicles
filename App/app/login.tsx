@@ -24,6 +24,9 @@ import {
 	AtSign, MessageCircle, UserPlus
 } from "@/src/design/FightIcons";
 import {i18n} from "@/src/translations/i18n";
+import {RestApi} from "@/src/networking/RestApi";
+import {AccountCollisionLoginState, AccountCollisionScreen} from "@/src/authentication/AccountCollisionScreen";
+import {readFullStoredToken} from "@/src/authentication/TokenStorage";
 
 const styles = StyleSheet.create({
 	screen: {
@@ -76,20 +79,20 @@ function useExpiredSession(authState: LoginAuthState, onExpired: (notice: LoginN
 	}, [state, setState, clearToken, onExpired]);
 }
 
-async function handleLogin(authState: LoginAuthState, authorize: Authorize, onRefused: (notice: LoginNotice) => void): Promise<void> {
+async function connectAuthenticatedAccount(authState: LoginAuthState, authToken: AuthToken): Promise<void> {
+	await authState.saveToken(authToken);
+	await WebSocketClient.getInstance().init(authToken, authState.setState, authState.saveToken);
+}
+
+async function handleLogin(authState: LoginAuthState, authorize: Authorize, onRefused: (notice: LoginNotice) => void, onCollision: (state: AccountCollisionLoginState) => void): Promise<void> {
 	try {
 		const authToken = AuthToken.fromKeycloakOAuth2Token(await authorize());
-
-		await authState.saveToken(authToken);
-
-		await WebSocketClient.getInstance()
-			.init(authToken, authState.setState, authState.saveToken)
-			.catch((error: unknown) => {
-				console.error("Failed to initialize WebSocketClient:", error);
-				if (authState.state === AuthStateEnum.CONNECTING) {
-					authState.setState(AuthStateEnum.CONNECTION_ERROR);
-				}
-			});
+		const collision = await RestApi.checkAccountCollision(authToken.getAccessToken() ?? "");
+		if (collision.collision || collision.pending) {
+			onCollision({token: authToken, check: collision});
+			return;
+		}
+		await connectAuthenticatedAccount(authState, authToken);
 	}
 	catch (error) {
 		const reason = reasonOfUnknownError(error);
@@ -133,15 +136,27 @@ export default function LoginScreen(): React.ReactElement {
 	const connecting = authorizing || authState.state === AuthStateEnum.CONNECTING || authState.state === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED;
 	const [notice, setNotice] = useState<LoginNotice | null>(null);
 	const [entry, setEntry] = useState<LoginEntry>(LOGIN_ENTRIES.QUESTION);
+	const [collision, setCollision] = useState<AccountCollisionLoginState | null>(null);
 
 	useExpiredSession(authState, setNotice);
+	useEffect(() => {
+		if (authState.state !== AuthStateEnum.ACCOUNT_COLLISION) return;
+		readFullStoredToken().then(async (stored): Promise<void> => {
+			const token = AuthToken.fromJsonString(stored);
+			const check = await RestApi.checkAccountCollision(token.getAccessToken() ?? "");
+			setCollision({token, check});
+		}).catch((error: unknown): void => {
+			setNotice({title: i18n.t("app:auth.loginFailed"), detail: i18n.t("app:auth.collision.errors.unavailable")});
+			console.warn("Could not restore account collision", error);
+		});
+	}, [authState.state]);
 
 	const start = (authorize: Authorize): void => {
 		if (authorizationPending.current || connecting) return;
 		authorizationPending.current = true;
 		setAuthorizing(true);
 		setNotice(null);
-		handleLogin(authState, authorize, setNotice).catch((error: unknown) => {
+		handleLogin(authState, authorize, setNotice, setCollision).catch((error: unknown) => {
 			console.error("Login error:", error);
 		}).finally((): void => {
 			authorizationPending.current = false;
@@ -152,6 +167,12 @@ export default function LoginScreen(): React.ReactElement {
 		setEntry(chosenEntry);
 		if (chosenEntry === LOGIN_ENTRIES.DISCORD) start(() => KeycloakAuth.login(IDENTITY_PROVIDERS.DISCORD));
 	};
+
+	if (collision) return <AccountCollisionScreen state={collision} onAuthenticated={(token): Promise<void> => connectAuthenticatedAccount(authState, token)} onCancel={(): void => {
+		setCollision(null);
+		setEntry(LOGIN_ENTRIES.QUESTION);
+		authState.clearToken().then(() => authState.setState(AuthStateEnum.NO_TOKEN)).catch((error: unknown) => console.warn("Could not leave collision", error));
+	}} />;
 
 	return (
 		<Screen contentContainerStyle={styles.screen}>

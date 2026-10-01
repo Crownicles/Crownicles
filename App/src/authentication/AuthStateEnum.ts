@@ -9,4 +9,5 @@ export enum AuthStateEnum {
 	LOGGED_IN,
 	APP_OUTDATED,
 	SERVER_OUTDATED,
+	ACCOUNT_COLLISION,
 }

@@ -9,8 +9,11 @@ const mocks = vi.hoisted(() => ({
 	publish: vi.fn(),
 	translator: vi.fn(),
 	checkToken: vi.fn(),
-	getGroups: vi.fn()
+	getGroups: vi.fn(),
+	collision: vi.fn()
 }));
+
+vi.mock("../../src/services/AccountCollisionService", () => ({AccountCollisionService: class { check = mocks.collision; }}));
 
 vi.mock("ws", async importOriginal => ({
 	...await importOriginal<typeof import("ws")>(),
@@ -52,6 +55,7 @@ describe("WebSocket session ownership", () => {
 		mocks.checkToken.mockResolvedValue({isError: false, payload: {keycloakId: PLAYER}});
 		mocks.getGroups.mockResolvedValue({isError: false, payload: {groups: []}});
 		mocks.translator.mockResolvedValue({translated: true});
+		mocks.collision.mockResolvedValue({collision: null});
 		WebSocketServer.start(0);
 	});
 
@@ -121,5 +125,14 @@ describe("WebSocket session ownership", () => {
 		await connect(socket);
 		await send(socket, JSON.stringify({name: "command", data: {}}));
 		expect(mocks.publish).toHaveBeenCalledTimes(1);
+	});
+
+	it("does not let a custom client enter the game while its collision is unresolved", async (): Promise<void> => {
+		mocks.collision.mockResolvedValue({collision: {email: "same@example.test"}});
+		const socket = new SocketStub();
+		await connect(socket);
+		expect(socket.close).toHaveBeenCalledWith(1008, "Account collision requires resolution");
+		expect(socket.on.mock.calls.some(([event]) => event === "message")).toBe(false);
+		expect(mocks.publish).not.toHaveBeenCalled();
 	});
 });

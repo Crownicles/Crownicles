@@ -6,11 +6,12 @@ import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {wireNameOf} from "ws-packets/src/MakePackets";
 import {PushedPacketHandler, PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
-import {WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON} from "ws-packets/src/WebSocketCloseReasons";
+import {WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON, WEBSOCKET_ACCOUNT_COLLISION_REASON} from "ws-packets/src/WebSocketCloseReasons";
 import {APP_PROTOCOL_QUERY_PARAMETER, APP_PROTOCOL_VERSION} from "ws-packets/src/AppCompatibility";
 
 /** Closes that reconnecting cannot fix: another session took over, or the app and server speak different protocols. */
 const FINAL_CLOSE_STATES: Partial<Record<string, AuthStateEnum>> = {
+	[WEBSOCKET_ACCOUNT_COLLISION_REASON]: AuthStateEnum.ACCOUNT_COLLISION,
 	[WEBSOCKET_SESSION_REPLACED_REASON]: AuthStateEnum.CONNECTION_ERROR,
 	[WEBSOCKET_APP_OUTDATED_REASON]: AuthStateEnum.APP_OUTDATED,
 	[WEBSOCKET_SERVER_OUTDATED_REASON]: AuthStateEnum.SERVER_OUTDATED

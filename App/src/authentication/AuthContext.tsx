@@ -7,6 +7,7 @@ import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {collectorsStore} from "@/src/collectors/CollectorsStore";
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
 import {fightStore} from "@/src/store/FightStore";
+import {RestApi} from "@/src/networking/RestApi";
 
 type AuthState = {
 	state: AuthStateEnum;
@@ -130,6 +131,15 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 			await saveToken(authToken); // Save the refreshed token
 		}
 
+		const accessToken = authToken.getAccessToken();
+		if (accessToken) {
+			const collision = await RestApi.checkAccountCollision(accessToken);
+			if (collision.collision || collision.pending) {
+				onStateChange(AuthStateEnum.ACCOUNT_COLLISION);
+				return;
+			}
+		}
+
 		await WebSocketClient.getInstance().init(authToken, onStateChange, saveToken).catch((error) => {
 			console.error("Failed to initialize WebSocketClient:", error);
 			if (currentState.current === AuthStateEnum.CONNECTING) {
@@ -145,7 +155,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 			&& previousState !== AuthStateEnum.LOGGED_IN
 			&& previousState !== AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE
 			&& previousState !== AuthStateEnum.RECONNECTING_PACKET_QUEUE;
-		const shouldRedirectToLogin = newState === AuthStateEnum.NO_TOKEN || newState === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED;
+		const shouldRedirectToLogin = newState === AuthStateEnum.NO_TOKEN || newState === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED || newState === AuthStateEnum.ACCOUNT_COLLISION;
 		const shouldRestartAuthentication = newState === AuthStateEnum.NOT_READY;
 
 		setState(newState);

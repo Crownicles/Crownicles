@@ -82,5 +82,16 @@ describe("setupCoreForTests smoke", () => {
 		const item = mod.getMoneyShopItem();
 		expect(typeof item.buyCallback).toBe("function");
 	});
+
+	it("keeps historical progress when authentication resolves to the original Keycloak subject", async () => {
+		const Players = loadProductionModule<typeof import("../../src/core/database/game/models/Player")>("core/database/game/models/Player").Players;
+		const historical = await Player.create({keycloakId: "historical-keycloak-subject", score: 12345, level: 42, money: 6789});
+		const emailAccount = await Player.create({keycloakId: "new-email-subject", score: 0, money: 0});
+		const resolved = await Players.getOrRegister(historical.keycloakId);
+		expect(resolved.id).toBe(historical.id);
+		expect(resolved).toMatchObject({score: 12345, level: 42, money: 6789});
+		expect(await Player.count({where: {keycloakId: historical.keycloakId}})).toBe(1);
+		expect(await Player.findByPk(emailAccount.id)).toMatchObject({keycloakId: emailAccount.keycloakId, score: 0, money: 0});
+	});
 });
 

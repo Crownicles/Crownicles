@@ -123,6 +123,29 @@
     "withAccount": "Utiliser un compte Crownicles",
     "createAccount": "Créer un compte",
     "connecting": "Connexion en cours",
+    "collision": {
+      "title": "Deux comptes pour la même adresse",
+      "warning": "Choisissez le compte à conserver. L'accès à l'autre compte sera supprimé après votre confirmation.",
+      "keptData": "Les données de jeu du compte écarté restent conservées, comme lors d'une suppression de compte. Elles ne seront pas transférées au compte conservé.",
+      "verifyEmail": "Vérifier le compte Crownicles",
+      "verifyDiscord": "Vérifier le compte Discord",
+      "choose": "Compte à conserver",
+      "discord": "Discord : {{name}}",
+      "email": "Crownicles : {{name}}",
+      "chooseFirst": "Choisissez le compte à conserver avant de confirmer.",
+      "confirm": "Conserver ce compte et supprimer l'autre accès",
+      "pending": "Vérification et résolution en cours…",
+      "resumeTitle": "Terminer le choix de compte",
+      "resume": "Reprendre la résolution confirmée",
+      "errors": {
+        "unauthorized": "Connectez-vous au compte demandé pour confirmer que les deux comptes vous appartiennent.",
+        "unverifiedEmail": "L'adresse doit être vérifiée avant de résoudre cette collision.",
+        "accountChanged": "Les comptes ne correspondent plus à cette vérification. Recommencez la connexion.",
+        "proofExpired": "La vérification a expiré. Recommencez la connexion.",
+        "conflict": "Un autre rattachement empêche cette résolution. Votre choix déjà confirmé peut être repris ; sinon contactez le support.",
+        "unavailable": "La résolution n'a pas pu être terminée. Réessayez ; aucune autre identité ne sera choisie automatiquement."
+      }
+    },
     "sessionExpired": "Votre session a expiré. Reconnectez-vous pour reprendre votre aventure.",
     "loginFailed": "Connexion impossible",
     "failures": {

@@ -134,6 +134,76 @@ address no longer captures their Discord identity.
 > the load-bearing assumption here. Replay both cases against a real Keycloak before deploying: a
 > legacy `discord-<id>` account, and an account holding a password.
 
+## Historical Discord Accounts and Email Collisions
+
+The game owns progress by the Keycloak user ID, not by email. A bot-created user
+named `discord-<id>` can have neither email nor federated identity. An unrelated
+email registration can then win the first-broker-login email lookup before the
+historical username is considered. Confirming ownership does not merge game data.
+
+New bot accounts now include their Discord federated identity in the user creation
+request. Existing accounts require an explicit backfill. Only users whose managed
+`discordId` attribute matches their historical username are eligible. Existing
+conflicting links are never removed or reassigned, and player rows are not updated.
+
+This backfill only establishes the historical identity. It does not resolve a
+collision by letting both accounts remain selectable. When the authenticated
+Discord email is already owned by a distinct Crownicles account, the app stops
+before opening the game and requires authentication of the second account. The
+player then chooses one account and confirms removal of the other Keycloak user.
+The losing account's game data stays retained under the existing deletion policy;
+no progress, items or currencies are merged into the kept character.
+
+Discord email and its verified flag are managed IdP attributes, not editable user
+fields. The current provider is exposed through a session-note protocol mapper.
+The resolver rechecks both accounts before deletion, persists the confirmed choice
+on the kept identity and can resume it after an interruption. HTTP requests cannot
+provide an arbitrary account ID to delete. The discarded WebSocket is closed and
+unresolved collisions cannot open a game WebSocket.
+
+Resolution is serialized in the RestWs process. Run one resolving RestWs instance;
+multi-instance resolution needs a shared coordinator before horizontal scaling.
+Do not run other administrative reassignment operations concurrently.
+
+Keeping both accounts is a separate, intentional path: sign in to the email
+account, change and verify its email first, then sign in through Discord once the
+old address is free. Email change is tracked separately in
+[#4892](https://github.com/Crownicles/Crownicles/issues/4892), not implemented here.
+
+The Discord provider uses `IMPORT`, not `FORCE`: forcing the remote email onto an
+already-linked historical user fails when another user owns that address. The
+`gameUsername` mapper remains `FORCE`. `VERIFY_PROFILE` is explicitly disabled to
+avoid retroactive email requirements on historical accounts. Email remains required
+by the registration profile and `verifyEmail` stays enabled.
+
+Deployment order:
+
+1. Back up the realm and user data. Put login, registration and bot account creation
+  into maintenance so identity ownership cannot change during the operation.
+2. Apply the targeted provider and required-action changes to the deployed realm.
+  Do not replace the live realm with this template: it contains placeholders and
+  does not contain live users, keys or service-client configuration.
+3. Compile Lib with `pnpm --dir Lib run tsc`. Provide `KEYCLOAK_URL`,
+  `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID` and `KEYCLOAK_CLIENT_SECRET` through the
+  operator's environment, using a service account with query/view/manage-users.
+4. Run `node keycloak/scripts/linkLegacyDiscordAccounts.mjs` for a read-only audit.
+  Resolve every conflict manually before applying. Never use email alone as proof
+  that two game accounts should be merged.
+5. Run the same command with `--apply`, then repeat the read-only audit. Conflicts
+  produce a nonzero exit code; repeated successful links are no-ops.
+6. Test a historical player and a distinct email account before leaving maintenance.
+
+The reproducible laboratory test is
+`node --test keycloak/tests/discord-identity.integration.test.mjs`, after compiling
+Lib and RestWs and installing App dependencies for its existing DOM/cookie parsers. It expects
+an isolated Keycloak 26.7.4 on `127.0.0.1:18180` with the synthetic bootstrap account
+`proof-admin` / `local-proof-only-password`. It only recreates the dedicated
+`crownicles-discord-identity-proof` realm and uses a synthetic OAuth provider on
+port 18181; it must not run against a shared or deployed Keycloak. It proves the
+broker/token identity, conflict refusal, backfill behavior, both choices with real
+PKCE tokens, losing-identity deletion, subsequent Discord login, and registration
+email constraints; not a live Discord consent screen or mail delivery.
+
 ## Sending mail
 
 Opening the Crownicles account ([#4768](https://github.com/Crownicles/Crownicles/issues/4768)) makes

@@ -1,11 +1,21 @@
 import type {AssetsBundle, AssetsBundleLanguage} from "../../../WsPackets/src/objects/AssetsBundle";
 import {APP_PROTOCOL_VERSION, AppCompatibility, AppCompatibilityStatus, compareProtocolVersions} from "../../../WsPackets/src/AppCompatibility";
+import {
+	ACCOUNT_COLLISION_ENDPOINTS, ACCOUNT_COLLISION_ERRORS, AccountCollisionCheck, AccountCollisionChoice,
+	AccountCollisionError, AccountCollisionProof, AccountCollisionResolution
+} from "../../../WsPackets/src/objects/AccountCollision";
 
 export const REST_TIMEOUT_MS = 15_000;
 
 export type AssetsBundleResponse =
 	| {status: "notModified"}
 	| {status: "ok"; bundle: AssetsBundle; etag: string};
+
+export class AccountCollisionRequestFailure extends Error {
+	public constructor(public readonly reason: AccountCollisionError) {
+		super(reason);
+	}
+}
 
 export class RestApi {
 	private static getBaseUrl(): string {
@@ -114,5 +124,30 @@ export class RestApi {
 		}, REST_TIMEOUT_MS);
 
 		return response.ok;
+	}
+
+	private static async accountCollisionRequest<T>(endpoint: string, accessToken: string, body?: object): Promise<T> {
+		const response = await RestApi.fetchWithTimeout(`${RestApi.getBaseUrl()}${endpoint}`, {
+			method: body ? "POST" : "GET",
+			headers: {"Content-Type": "application/json", "Authorization": `Bearer ${accessToken}`},
+			...body ? {body: JSON.stringify(body)} : {}
+		}, REST_TIMEOUT_MS);
+		if (!response.ok) {
+			const failure = await response.json() as {error?: AccountCollisionError};
+			throw new AccountCollisionRequestFailure(failure.error ?? ACCOUNT_COLLISION_ERRORS.UNAVAILABLE);
+		}
+		return response.json() as Promise<T>;
+	}
+
+	public static checkAccountCollision(accessToken: string): Promise<AccountCollisionCheck> {
+		return RestApi.accountCollisionRequest(ACCOUNT_COLLISION_ENDPOINTS.CHECK, accessToken);
+	}
+
+	public static verifyAccountCollision(discordToken: string, emailToken: string): Promise<AccountCollisionProof> {
+		return RestApi.accountCollisionRequest(ACCOUNT_COLLISION_ENDPOINTS.VERIFY, discordToken, {emailToken});
+	}
+
+	public static resolveAccountCollision(accessToken: string, proof: string, keep: AccountCollisionChoice): Promise<AccountCollisionResolution> {
+		return RestApi.accountCollisionRequest(ACCOUNT_COLLISION_ENDPOINTS.RESOLVE, accessToken, {proof, keep});
 	}
 }

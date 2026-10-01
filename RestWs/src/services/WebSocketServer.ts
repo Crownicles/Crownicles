@@ -9,8 +9,9 @@ import { IncomingMessage } from "http";
 import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../packets/fromClient/FromClientTranslator";
 import { InvalidClientPacketError } from "../packets/fromClient/InvalidClientPacketError";
+import { AccountCollisionService } from "./AccountCollisionService";
 import {
-	WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON, WebSocketCloseReason
+	WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON, WEBSOCKET_ACCOUNT_COLLISION_REASON, WebSocketCloseReason
 } from "../../../WsPackets/src/WebSocketCloseReasons";
 import {
 	APP_COMPATIBILITY_STATUSES, APP_PROTOCOL_QUERY_PARAMETER, APP_PROTOCOL_VERSION, compareProtocolVersions
@@ -301,6 +302,17 @@ export class WebSocketServer {
 			return null;
 		}
 		const keycloakId = checkToken.payload.keycloakId;
+		try {
+			const collision = await new AccountCollisionService(keycloakConfig).check(token);
+			if (collision.collision || collision.pending) {
+				ws.close(1008, WEBSOCKET_ACCOUNT_COLLISION_REASON);
+				return null;
+			}
+		}
+		catch {
+			ws.close(1008, WEBSOCKET_ACCOUNT_COLLISION_REASON);
+			return null;
+		}
 
 		// Get the groups of the user
 		const groups = await KeycloakUtils.getUserGroups(keycloakConfig, keycloakId);

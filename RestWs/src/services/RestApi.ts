@@ -4,6 +4,7 @@ import fastify, {
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { setupAssetsRoutes } from "./routes/AssetsRoute";
 import { setupAccountDeletionRoutes } from "./routes/AccountDeletionRoute";
+import { setupAccountCollisionRoutes } from "./routes/AccountCollisionRoute";
 import { setupAppCompatibilityRoutes } from "./routes/AppCompatibilityRoute";
 import { AccountDeletionConfig } from "../config/RestWsConfig";
 
@@ -76,6 +77,7 @@ export class RestApi {
 
 		setupAppCompatibilityRoutes(this.server);
 		setupAccountDeletionRoutes(this.server, this.accountDeletion);
+		setupAccountCollisionRoutes(this.server);
 		await setupAssetsRoutes(this.server, this.debugMode);
 	}
 

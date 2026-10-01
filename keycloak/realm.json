@@ -953,6 +953,22 @@
       },
       "optionalClientScopes": [
         "offline_access"
+      ],
+      "protocolMappers": [
+        {
+          "name": "Current identity provider",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "identity_provider",
+            "claim.name": "identity_provider",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
       ]
     }
   ],
@@ -1526,7 +1542,7 @@
         "tokenUrl": "https://discord.com/api/oauth2/token",
         "clientAuthMethod": "client_secret_post",
         "authorizationUrl": "https://discord.com/oauth2/authorize",
-        "syncMode": "FORCE",
+        "syncMode": "IMPORT",
         "fullNameClaim": "global_name",
         "userIDClaim": "id",
         "clientSecret": "TO_REPLACE_WITH_YOUR_DISCORD_CLIENT_SECRET",
@@ -1541,6 +1557,26 @@
     }
   ],
   "identityProviderMappers": [
+    {
+      "name": "Verified Discord email for collision detection",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claim": "email",
+        "user.attribute": "discordEmail"
+      }
+    },
+    {
+      "name": "Discord email verification for collision detection",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claim": "verified",
+        "user.attribute": "discordEmailVerified"
+      }
+    },
     {
       "name": "discordId",
       "identityProviderAlias": "discord",
@@ -2302,6 +2338,15 @@
     }
   ],
   "requiredActions": [
+    {
+      "alias": "VERIFY_PROFILE",
+      "name": "Verify Profile",
+      "providerId": "VERIFY_PROFILE",
+      "enabled": false,
+      "defaultAction": false,
+      "priority": 5,
+      "config": {}
+    },
     {
       "alias": "CONFIGURE_TOTP",
       "name": "Configure OTP",
