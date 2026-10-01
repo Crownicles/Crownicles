@@ -31,7 +31,7 @@ import {BlessingActivatedToast} from "@/src/components/BlessingActivatedToast";
 import {AppNotificationToast, useAppNotificationRefresh} from "@/src/components/AppNotificationToast";
 import {usePushRegistration} from "@/src/notifications/PushRegistration";
 import {LevelUpToast} from "@/src/components/LevelUpToast";
-import {useNotificationNavigation, useReportNotification} from "@/src/notifications/useNotifications";
+import {useNotificationNavigation} from "@/src/notifications/useNotifications";
 import {allowPermissionPrompt} from "@/src/notifications/ReportNotifications";
 import {useReportView} from "@/src/store/useReportActions";
 import {ContestView, useContest} from "@/src/onboarding/Contest";
@@ -272,7 +272,6 @@ export default function TabLayout(): ReactNode {
 	const dead = usePlayerIsDead();
 	const journey = useJourney();
 	const colors = useColors();
-	useReportNotification();
 	useNotificationNavigation();
 	usePushRegistration();
 	useAppNotificationRefresh();

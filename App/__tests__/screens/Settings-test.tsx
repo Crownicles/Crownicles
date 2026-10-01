@@ -2,6 +2,7 @@ import {fireEvent, render, screen, waitFor} from "@testing-library/react-native"
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import {NotificationPreferencesRes} from "ws-packets/src/fromServer/settings/NotificationPreferencesRes";
+import {NOTIFICATION_TYPES} from "ws-packets/src/objects/NotificationPreferences";
 import {VersionRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
 import Settings from "@/app/(protected)/settings/index";
 import {AuthContext} from "@/src/authentication/AuthContext";
@@ -50,7 +51,7 @@ describe("settings", () => {
 
 	it("sums up the notifications and opens their page", async () => {
 		await renderSettings();
-		await waitFor(() => expect(screen.getByText(`app:settings.notifications.summary.count ${JSON.stringify({enabled: 8, total: 10})}`)).toBeTruthy());
+		await waitFor(() => expect(screen.getByText(`app:settings.notifications.summary.count ${JSON.stringify({enabled: 8, total: Object.values(NOTIFICATION_TYPES).length})}`)).toBeTruthy());
 		await fireEvent.press(screen.getByText("app:settings.notifications.entry"));
 		expect(mockPush).toHaveBeenCalledWith("/settings/notifications");
 	});

@@ -1,8 +1,6 @@
 import * as Notifications from "expo-notifications";
-import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
-import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
-import {scheduleReportNotification} from "@/src/notifications/ReportNotifications";
-import {reportReminder} from "@/src/notifications/useNotifications";
+import {allowPermissionPrompt, cancelReportNotification, requestReportNotifications} from "@/src/notifications/ReportNotifications";
+import {registerForPush} from "@/src/notifications/PushRegistration";
 
 jest.mock("expo-notifications", () => ({
 	setNotificationHandler: jest.fn(),
@@ -17,78 +15,47 @@ jest.mock("expo-notifications", () => ({
 }));
 jest.mock("expo-router", () => ({useRouter: jest.fn(), useFocusEffect: jest.fn()}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
+jest.mock("@/src/notifications/PushRegistration", () => ({registerForPush: jest.fn(() => Promise.resolve())}));
 
 const mocked = jest.mocked(Notifications);
 
-function travel(overrides: Partial<ReportTravelSummaryRes> = {}): ReportTravelSummaryRes {
-	return {
-		startMap: {id: 1, type: "main"},
-		endMap: {id: 2, type: "main"},
-		startTime: 0,
-		arriveTime: 1_700_000_600_000,
-		lastStopTime: 0,
-		nextStopTime: 1_700_000_300_000,
-		isOnBoat: false,
-		points: {show: false, cumulated: 0},
-		energy: {show: false, current: 0, max: 0},
-		isInCity: false,
-		...overrides
-	};
+function allowed(granted: boolean, canAskAgain = false): void {
+	mocked.getPermissionsAsync.mockResolvedValue({granted, canAskAgain} as Awaited<ReturnType<typeof Notifications.getPermissionsAsync>>);
 }
 
-function view(fields: Partial<ReportViewRes>): ReportViewRes {
-	return Object.assign(new ReportViewRes(), {reportReady: false, ...fields});
-}
-
-function allowed(granted: boolean): void {
-	mocked.getPermissionsAsync.mockResolvedValue({granted, canAskAgain: false} as Awaited<ReturnType<typeof Notifications.getPermissionsAsync>>);
-}
-
-describe("report notification", () => {
+describe("server-only travel notifications", () => {
 	beforeEach(() => jest.clearAllMocks());
 
-	it("reminds of a report still to wait for, at the moment it opens", () => {
-		expect(reportReminder(view({travel: travel()}))).toEqual({readyAt: 1_700_000_300_000, destination: "models:map_locations.2.name", arrival: false});
-	});
-
-	it("tells the arrival apart from a stop, since the server pushes the arrival itself", () => {
-		expect(reportReminder(view({travel: travel({nextStopTime: 1_700_000_900_000})}))).toEqual({readyAt: 1_700_000_600_000, destination: "models:map_locations.2.name", arrival: true});
-	});
-
-	it("has nothing to remind once the report is ready, in a city, or before the first journey", () => {
-		expect(reportReminder(view({travel: travel(), reportReady: true}))).toBeNull();
-		expect(reportReminder(view({travel: travel(), city: {} as ReportViewRes["city"]}))).toBeNull();
-		expect(reportReminder(view({}))).toBeNull();
-	});
-
-	it("schedules the notification for when the report opens, leading back to the adventure", async () => {
+	it("registers an allowed device without scheduling a local reminder", async () => {
 		allowed(true);
-		const readyAt = Date.now() + 60_000;
-
-		scheduleReportNotification(readyAt, "Ville");
-
-		await waitForCalls(mocked.scheduleNotificationAsync);
-		expect(mocked.cancelScheduledNotificationAsync).toHaveBeenCalledWith("report-ready");
-		expect(mocked.scheduleNotificationAsync).toHaveBeenCalledWith(expect.objectContaining({
-			identifier: "report-ready",
-			content: expect.objectContaining({data: {notificationType: "report"}}),
-			trigger: expect.objectContaining({date: new Date(readyAt)})
-		}));
+		expect(await requestReportNotifications()).toBe(true);
+		expect(registerForPush).toHaveBeenCalledTimes(1);
+		expect(mocked.scheduleNotificationAsync).not.toHaveBeenCalled();
 	});
 
-	it("schedules nothing when the player refused notifications or the report is about to open", async () => {
+	it("neither registers nor schedules when notifications are refused", async () => {
 		allowed(false);
-		scheduleReportNotification(Date.now() + 60_000, "Ville");
-		scheduleReportNotification(Date.now() + 1_000, "Ville");
+		expect(await requestReportNotifications()).toBe(false);
+		expect(registerForPush).not.toHaveBeenCalled();
+		expect(mocked.scheduleNotificationAsync).not.toHaveBeenCalled();
+	});
 
-		await waitForCalls(mocked.cancelScheduledNotificationAsync, 2);
+	it("removes the old scheduled travel reminder instead of creating another", async () => {
+		await cancelReportNotification();
+		expect(mocked.cancelScheduledNotificationAsync).toHaveBeenCalledWith("report-ready");
+		expect(mocked.scheduleNotificationAsync).not.toHaveBeenCalled();
+	});
+
+	it("does not ask before onboarding allows the permission prompt", () => {
+		allowPermissionPrompt(false);
+		expect(mocked.getPermissionsAsync).not.toHaveBeenCalled();
+	});
+
+	it("registers server pushes after the player accepts the permission", async () => {
+		allowed(false, true);
+		mocked.requestPermissionsAsync.mockResolvedValue({granted: true, canAskAgain: true} as Awaited<ReturnType<typeof Notifications.requestPermissionsAsync>>);
+		expect(await requestReportNotifications()).toBe(true);
+		expect(registerForPush).toHaveBeenCalledTimes(1);
 		expect(mocked.scheduleNotificationAsync).not.toHaveBeenCalled();
 	});
 });
-
-/** Scheduling runs in a queue: wait until the mocked step has run. */
-async function waitForCalls(mock: jest.Mock | jest.MockedFunction<(...args: never[]) => unknown>, count = 1): Promise<void> {
-	for (let attempt = 0; attempt < 50 && mock.mock.calls.length < count; attempt++) {
-		await new Promise<void>(resolve => setImmediate(() => resolve()));
-	}
-}

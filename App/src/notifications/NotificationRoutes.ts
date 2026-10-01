@@ -4,6 +4,8 @@ import {NOTIFICATION_TYPES, NotificationType} from "ws-packets/src/objects/Notif
 /** Where a notification is carried in the data of a push, local or remote. */
 export const NOTIFICATION_TYPE_KEY = "notificationType";
 
+export const LEGACY_TRAVEL_NOTIFICATION_ID = "report-ready";
+
 /** The screen each kind of notification opens when tapped: the place where the player can act on it. */
 export const NOTIFICATION_ROUTES: Record<NotificationType, Href> = {
 	[NOTIFICATION_TYPES.REPORT]: "/",

@@ -1376,10 +1376,6 @@
       "petExpedition": "Expéditions du familier",
       "tournament": "Tournois"
     },
-    "reportReady": {
-      "title": "Votre aventure continue",
-      "body": "La suite de votre voyage vers {{destination}} est prête à être découverte."
-    },
     "push": {
       "report": {
         "title": "Arrivée à destination",

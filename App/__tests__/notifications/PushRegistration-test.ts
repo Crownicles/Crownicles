@@ -1,15 +1,18 @@
 import {Platform} from "react-native";
+import {renderHook, waitFor} from "@testing-library/react-native";
 import * as Notifications from "expo-notifications";
 import * as Application from "expo-application";
 import {PushDeviceRegisterReq, PushDeviceUnregisterReq} from "ws-packets/src/fromClient/PushDeviceReq";
 import {PushDeviceRegisteredRes} from "ws-packets/src/fromServer/settings/PushDeviceRegisteredRes";
+import {NOTIFICATION_TYPES} from "ws-packets/src/objects/NotificationPreferences";
 import {GameClient} from "@/src/networking/GameClient";
-import {forgetPushDevice, registerForPush} from "@/src/notifications/PushRegistration";
+import {forgetPushDevice, registerForPush, usePushRegistration} from "@/src/notifications/PushRegistration";
 
 const mockSendPacket = jest.fn();
 
 jest.mock("expo-notifications", () => ({
 	getPermissionsAsync: jest.fn(),
+	cancelScheduledNotificationAsync: jest.fn(() => Promise.resolve()),
 	getDevicePushTokenAsync: jest.fn(),
 	setNotificationChannelAsync: jest.fn(() => Promise.resolve()),
 	addPushTokenListener: jest.fn(() => ({remove: jest.fn()})),
@@ -93,8 +96,15 @@ describe("push registration", () => {
 		Platform.OS = "android";
 		mocked.getDevicePushTokenAsync.mockResolvedValue({type: "android", data: "fcm:token"});
 		await registerForPush();
-		expect(mocked.setNotificationChannelAsync).toHaveBeenCalledTimes(10);
+		expect(mocked.setNotificationChannelAsync).toHaveBeenCalledTimes(Object.values(NOTIFICATION_TYPES).length);
 		expect(mocked.setNotificationChannelAsync).toHaveBeenCalledWith("guildKick", expect.objectContaining({name: "app:notifications.channels.guildKick"}));
 		expect(registeredWith()).toEqual(expect.objectContaining({platform: "android", sandbox: false}));
+	});
+
+	it("cancels old local reminders at startup and keeps registering for remote pushes", async () => {
+		permission(true);
+		await renderHook(usePushRegistration);
+		expect(mocked.cancelScheduledNotificationAsync).toHaveBeenCalledWith("report-ready");
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalledWith(expect.any(PushDeviceRegisterReq), PushDeviceRegisteredRes));
 	});
 });

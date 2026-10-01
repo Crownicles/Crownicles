@@ -45,11 +45,6 @@ export function useNotificationPreferences(): RequestState<NotificationPreferenc
 	return useGameQuery(GAME_ENTITIES.NOTIFICATION_PREFERENCES, requestNotificationPreferences);
 }
 
-/** Whether the player wants this kind in the app; unknown until the server answered, so nothing is sent before. */
-export function isNotificationEnabled(state: RequestState<NotificationPreferencesRes>, type: NotificationType): boolean {
-	return state.status === "ready" && state.data.preferences[type];
-}
-
 export function useNotificationPreferenceChange(): GameMutation<NotificationPreferenceChange> {
 	const queryClient = useQueryClient();
 	return useGameMutation(async (change: NotificationPreferenceChange): Promise<string | null> => {

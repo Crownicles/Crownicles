@@ -1,8 +1,9 @@
-import {useEffect, useSyncExternalStore} from "react";
+import {useEffect} from "react";
 import {AppState, Platform} from "react-native";
 import {
 	addPushTokenListener,
 	AndroidImportance,
+	cancelScheduledNotificationAsync,
 	DevicePushToken,
 	getDevicePushTokenAsync,
 	getPermissionsAsync,
@@ -15,30 +16,11 @@ import {PushDeviceRegisteredRes} from "ws-packets/src/fromServer/settings/PushDe
 import {PUSH_PLATFORMS, PushPlatform} from "ws-packets/src/objects/PushDevices";
 import {GameClient} from "@/src/networking/GameClient";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
-import {ALL_NOTIFICATION_TYPES} from "@/src/notifications/NotificationRoutes";
+import {ALL_NOTIFICATION_TYPES, LEGACY_TRAVEL_NOTIFICATION_ID} from "@/src/notifications/NotificationRoutes";
 import {i18n} from "@/src/translations/i18n";
 
 /** The token the server was last given for this device, and in which language, while the player is logged in. */
 let registered: {token: string; language: string} | null = null;
-
-const listeners = new Set<() => void>();
-
-function setRegistered(value: typeof registered): void {
-	registered = value;
-	for (const listener of listeners) listener();
-}
-
-function subscribe(listener: () => void): () => void {
-	listeners.add(listener);
-	return (): void => {
-		listeners.delete(listener);
-	};
-}
-
-/** Whether the server can reach this device with the app closed; until then the app reminds the player itself. */
-export function usePushActive(): boolean {
-	return useSyncExternalStore(subscribe, () => registered !== null, () => registered !== null);
-}
 
 function platformOf(token: DevicePushToken): PushPlatform | null {
 	if (token.type === "ios") return PUSH_PLATFORMS.IOS;
@@ -70,7 +52,7 @@ async function send(token: string, platform: PushPlatform, language: string): Pr
 		sandbox: await isSandbox(platform),
 		language
 	}), PushDeviceRegisteredRes);
-	if (answer.kind === "answer") setRegistered({token, language});
+	if (answer.kind === "answer") registered = {token, language};
 }
 
 function pendingRegistration(token: string, platform: PushPlatform, language: string): Promise<void> {
@@ -99,7 +81,6 @@ export async function registerForPush(): Promise<void> {
 }
 
 function registerQuietly(): void {
-	// A build without push credentials, such as a local Android one, has no token: the app reminds the player itself
 	registerForPush().catch(error => console.warn("Push notifications unavailable:", error));
 }
 
@@ -107,7 +88,7 @@ function registerQuietly(): void {
 export function forgetPushDevice(): void {
 	if (!registered) return;
 	WebSocketClient.getInstance().sendPacket(makeFromClientPacket(PushDeviceUnregisterReq, {token: registered.token}), {});
-	setRegistered(null);
+	registered = null;
 }
 
 /**
@@ -117,6 +98,7 @@ export function forgetPushDevice(): void {
  */
 export function usePushRegistration(): void {
 	useEffect(() => {
+		cancelScheduledNotificationAsync(LEGACY_TRAVEL_NOTIFICATION_ID).catch(error => console.warn("Legacy travel notification not cancelled:", error));
 		registerQuietly();
 		const appState = AppState.addEventListener("change", state => {
 			if (state === "active") registerQuietly();
@@ -128,7 +110,7 @@ export function usePushRegistration(): void {
 			appState.remove();
 			tokens.remove();
 			// Whoever logs in next registers again, even with the same token
-			setRegistered(null);
+			registered = null;
 		};
 	}, []);
 }

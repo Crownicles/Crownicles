@@ -66,6 +66,13 @@ describe("notification settings", () => {
 		expect(jest.mocked(GameClient.request).mock.calls.at(-1)?.[0]).toEqual(expect.objectContaining({type: "energy", enabled: false}));
 	});
 
+	it("keeps the server arrival setting without a switch for unsent mini-events", async () => {
+		permission(true);
+		await renderSettings();
+		await waitFor(() => expect(screen.getByRole("switch", {name: "app:settings.notifications.types.report"})).toHaveProp("value", true));
+		expect(screen.queryByRole("switch", {name: "app:settings.notifications.types.smallEvent"})).toBeNull();
+	});
+
 	it("puts the way to allow notifications first while the phone refuses them", async () => {
 		permission(false);
 		await renderSettings();

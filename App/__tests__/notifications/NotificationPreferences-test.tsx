@@ -1,14 +1,11 @@
 import {act, renderHook, waitFor} from "@testing-library/react-native";
 import React, {PropsWithChildren} from "react";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {ReportViewRes} from "ws-packets/src/fromServer/report/ReportViewRes";
 import {NotificationPreferencesRes} from "ws-packets/src/fromServer/settings/NotificationPreferencesRes";
 import {NotificationPreferences} from "ws-packets/src/objects/NotificationPreferences";
 import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {GameClient} from "@/src/networking/GameClient";
-import {cancelReportNotification, scheduleReportNotification} from "@/src/notifications/ReportNotifications";
-import {useReportNotification} from "@/src/notifications/useNotifications";
-import {useNotificationPreferenceChange} from "@/src/store/useNotificationPreferences";
+import {useNotificationPreferenceChange, useNotificationPreferences} from "@/src/store/useNotificationPreferences";
 
 const mockPushed = new Map<string, (packet: unknown) => void>();
 
@@ -22,13 +19,6 @@ jest.mock("@/src/networking/WebSocketClient", () => ({WebSocketClient: {getInsta
 		return (): void => {mockPushed.delete(name);};
 	}
 })}}));
-jest.mock("@/src/notifications/ReportNotifications", () => ({
-	cancelReportNotification: jest.fn(),
-	scheduleReportNotification: jest.fn()
-}));
-const mockPushActive = jest.fn(() => false);
-jest.mock("@/src/notifications/PushRegistration", () => ({usePushActive: (): boolean => mockPushActive()}));
-
 const ALL_ON: NotificationPreferences = {
 	report: true, dailyBonus: true, energy: true, guildDaily: true, guildKick: true,
 	guildStatusChange: true, playerFreedFromJail: true, fightChallenge: true, petExpedition: true, tournament: true
@@ -38,20 +28,8 @@ function preferences(report: boolean): NotificationPreferencesRes {
 	return Object.assign(new NotificationPreferencesRes(), {preferences: {...ALL_ON, report}});
 }
 
-function travelling(nextStopIn = 300_000): ReportViewRes {
-	return Object.assign(new ReportViewRes(), {
-		reportReady: false,
-		travel: {
-			startMap: {id: 1, type: "main"}, endMap: {id: 2, type: "main"}, startTime: 0,
-			arriveTime: Date.now() + 600_000, nextStopTime: Date.now() + nextStopIn, isOnBoat: false,
-			points: {show: false, cumulated: 0}, energy: {show: false, current: 0, max: 0}, isInCity: false
-		}
-	});
-}
-
-function cacheWith(report: boolean, view = travelling()): QueryClient {
+function cacheWith(report: boolean): QueryClient {
 	const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity, staleTime: Infinity}}});
-	client.setQueryData(gameKey(GAME_ENTITIES.REPORT), {kind: "answer", packet: view});
 	client.setQueryData(gameKey(GAME_ENTITIES.NOTIFICATION_PREFERENCES), {kind: "answer", packet: preferences(report)});
 	return client;
 }
@@ -64,50 +42,31 @@ describe("app notification settings", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		mockPushed.clear();
-		mockPushActive.mockReturnValue(false);
-	});
-
-	it("leaves the arrival to the server once it can push to the device, but still reminds of a stop", async () => {
-		mockPushActive.mockReturnValue(true);
-		await renderHook(useReportNotification, {wrapper: wrapper(cacheWith(true, travelling(900_000)))});
-		expect(cancelReportNotification).toHaveBeenCalled();
-		expect(scheduleReportNotification).not.toHaveBeenCalled();
-
-		await renderHook(useReportNotification, {wrapper: wrapper(cacheWith(true))});
-		expect(scheduleReportNotification).toHaveBeenCalled();
-	});
-
-	it("reminds of the arrival itself while the server cannot reach the device", async () => {
-		await renderHook(useReportNotification, {wrapper: wrapper(cacheWith(true, travelling(900_000)))});
-		expect(scheduleReportNotification).toHaveBeenCalled();
-	});
-
-	it("sends no report notification once the player turned it off in the app", async () => {
-		await renderHook(useReportNotification, {wrapper: wrapper(cacheWith(false))});
-		expect(cancelReportNotification).toHaveBeenCalled();
-		expect(scheduleReportNotification).not.toHaveBeenCalled();
 	});
 
 	it("follows the settings the server pushes after taking over Discord's", async () => {
-		await renderHook(useReportNotification, {wrapper: wrapper(cacheWith(false))});
-
+		const client = cacheWith(false);
+		await renderHook(useNotificationPreferences, {wrapper: wrapper(client)});
 		await act(async () => mockPushed.get(NotificationPreferencesRes.wireName)!(preferences(true)));
-
-		await waitFor(() => expect(scheduleReportNotification).toHaveBeenCalledWith(expect.any(Number), "models:map_locations.2.name"));
+		await waitFor(() => expect(client.getQueryData(gameKey(GAME_ENTITIES.NOTIFICATION_PREFERENCES))).toMatchObject({packet: {preferences: {report: true}}}));
 	});
 
-	it("cancels the pending notification as soon as the switch is turned off", async () => {
+	it("updates the arrival setting only after the server confirms it", async () => {
 		const client = cacheWith(true);
-		const {result} = await renderHook(() => {
-			useReportNotification();
-			return useNotificationPreferenceChange();
-		}, {wrapper: wrapper(client)});
-		expect(scheduleReportNotification).toHaveBeenCalled();
+		const {result} = await renderHook(useNotificationPreferenceChange, {wrapper: wrapper(client)});
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: preferences(false)});
 
 		await act(() => result.current.submit({type: "report", enabled: false}));
 
 		expect(GameClient.request).toHaveBeenCalledWith(expect.objectContaining({type: "report", enabled: false}), NotificationPreferencesRes);
-		expect(cancelReportNotification).toHaveBeenCalled();
+		expect(client.getQueryData(gameKey(GAME_ENTITIES.NOTIFICATION_PREFERENCES))).toMatchObject({packet: {preferences: {report: false, energy: true}}});
+	});
+
+	it("preserves the server preference when the update times out", async () => {
+		const client = cacheWith(true);
+		const {result} = await renderHook(useNotificationPreferenceChange, {wrapper: wrapper(client)});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		await act(() => result.current.submit({type: "report", enabled: false}));
+		expect(client.getQueryData(gameKey(GAME_ENTITIES.NOTIFICATION_PREFERENCES))).toMatchObject({packet: {preferences: {report: true}}});
 	});
 });
