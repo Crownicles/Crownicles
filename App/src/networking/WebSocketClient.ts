@@ -66,9 +66,9 @@ export class WebSocketClient {
 
 	private saveToken?: (token: AuthToken) => Promise<void>;
 
-	private processPacketQueueIntervalId: number | null = null;
+	private processPacketQueueIntervalId: ReturnType<typeof setInterval> | null = null;
 
-	private cleanResponseHandlersIntervalId: number | null = null;
+	private cleanResponseHandlersIntervalId: ReturnType<typeof setInterval> | null = null;
 
 	private reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
 

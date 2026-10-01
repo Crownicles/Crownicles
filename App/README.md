@@ -173,7 +173,8 @@ In Play Console, create/link Play Games Services to the app's Google Cloud proje
 - Add the device's Google account to the Play Games test list (or enable the internal-test track).
    Publish the Play Games configuration before making a production app version available.
 
-Game Center identifiers have useful defaults in `app.config.js`; Google identifiers must come
+Game Center is disabled by default. Set `EXPO_PUBLIC_GAME_CENTER_MODE=production` only for a build
+that uses the real services and real game data. Its identifiers have defaults in `app.config.js`; Google identifiers must come
 from Play Console and cannot be invented. Restart Metro after changing configuration. Run
 `pnpm exec expo prebuild` and rebuild the native app when the APP_ID or a native dependency changes.
 No EAS account is needed. Old native clients and Expo Go show an unavailable state instead of
@@ -191,6 +192,44 @@ pretending an achievement was submitted. Web does not initialize either SDK.
 
 The Android dependency is patched in `patches/` to use `unlockImmediate` and `submitScoreImmediate`:
 the local outbox is acknowledged only after Google responds, not when the wrapper schedules a call.
+
+### Local GameKit on iPhone
+
+This profile tests the native SDK before publication without sending scores to public resources.
+It requires Xcode 16.3 or newer and a physical iPhone running iOS 18.4 or newer.
+
+```sh
+pnpm gamekit:prepare
+pnpm gamekit:metro
+```
+
+The preparation regenerates iOS, installs CocoaPods, copies the tracked catalog from
+`game-services/CrowniclesLocal.gamekit` and creates the shared `CrowniclesGameKitLocal` scheme.
+The local scheme enables GameKit Debug Mode, has no archive action and sets the native launch
+marker. The normal `Crownicles` scheme is unchanged. The source-build workaround already required
+by this project's React Native development client is preserved by the local plugin.
+
+Open `ios/Crownicles.xcworkspace` in Xcode, select **CrowniclesGameKitLocal** and the physical iPhone,
+then use **Product > Run**. Running the normal scheme, launching the app icon or using
+`expo run:ios` alone does not activate this local GameKit session. The developer client may ask for
+the Metro URL; use the LAN address displayed by `pnpm gamekit:metro` on port 8084.
+
+Open **Debug > GameKit > Manage Game Progress** in Xcode and select the device and app. The catalog
+contains `com.crownicles.app.local.pvp_fight_completed` and
+`com.crownicles.app.local.topweek_best`, never the public IDs. In the app, Settings shows
+**Profil de test local**; connect Game Center there if needed, then finish a PvP fight and inspect
+the progress in Xcode. Also verify the topweek record and the native achievements/leaderboard views.
+Do not manually set the achievement to 100% when checking the fight trigger.
+
+The native launch marker is authoritative: even stale Metro metadata cannot choose public resource
+IDs in this profile. Local progress uses a separate storage namespace; legacy unscoped data is not
+adopted into either local or production iPhone progress. The local SDK patch exposes this marker
+as an Expo native property. Android's current profile is unchanged.
+
+To repeat an achievement test, reset its progress in Game Progress Manager, then use
+**Effacer le suivi local de test** in the app's Settings before finishing another fight. Resetting
+only Xcode progress leaves the app's acknowledgement in place. A new topweek read can restore the
+current weekly score after a reset; this is expected and never alters the production namespace.
 
 Only a change to the native dependencies or to `app.json` calls for a new build. Everything written
 in TypeScript is served by Metro and reloads on the fly.

@@ -7,10 +7,14 @@ import {createPlatformGames as iosGames} from "@/src/gameServices/PlatformGames.
 import {createPlatformGames as androidGames} from "@/src/gameServices/PlatformGames.android";
 import {GAME_ACHIEVEMENTS} from "@/src/gameServices/Achievements";
 import {GAME_SERVICE_AVAILABILITY} from "@/src/gameServices/GameServicesTypes";
+import localCatalog from "../../game-services/CrowniclesLocal.gamekit/gameCenterResources.json";
+import Constants from "expo-constants";
+import {createLocalGameKitScheme} from "../../plugins/withGameCenterLocal";
+import {parseStringPromise} from "xml2js";
 
 jest.mock("expo", () => ({requireOptionalNativeModule: jest.fn()}));
 jest.mock("expo-constants", () => ({__esModule: true, default: {expoConfig: {extra: {gameServices: {
-	gameCenter: {pvpAchievementId: "apple-pvp", topweekLeaderboardId: "apple-topweek"},
+	gameCenter: {mode: "production", pvpAchievementId: "apple-pvp", topweekLeaderboardId: "apple-topweek"},
 	playGames: {appId: "123456789", pvpAchievementId: "google-pvp", topweekLeaderboardId: "google-topweek"}
 }}}}}));
 jest.mock("react-native-google-play-games", () => ({__esModule: true, default: {
@@ -25,6 +29,31 @@ function manifest(): AndroidConfig.Manifest.AndroidManifest {
 }
 
 describe("game services native configuration", () => {
+	it("generates a runnable local scheme with Debug Mode, its native marker and no archive action", async () => {
+		const source = `<?xml version="1.0"?><Scheme><BuildAction><BuildActionEntries><BuildActionEntry buildForArchiving="YES" /></BuildActionEntries></BuildAction><LaunchAction buildConfiguration="Release"><BuildableProductRunnable /></LaunchAction><ArchiveAction buildConfiguration="Release" /></Scheme>`;
+		const local = await parseStringPromise(await createLocalGameKitScheme(source));
+		expect(local.Scheme.LaunchAction[0].$).toMatchObject({buildConfiguration: "Debug", enableGameKitDebugMode: "YES"});
+		expect(local.Scheme.LaunchAction[0].EnvironmentVariables[0].EnvironmentVariable).toEqual([{$: {key: "CROWNICLES_GAMEKIT_LOCAL_TEST", value: "1", isEnabled: "YES"}}]);
+		expect(local.Scheme.ArchiveAction).toBeUndefined();
+		expect(local.Scheme.BuildAction[0].BuildActionEntries[0].BuildActionEntry[0].$.buildForArchiving).toBe("NO");
+		const repeated = await parseStringPromise(await createLocalGameKitScheme(await createLocalGameKitScheme(source)));
+		expect(repeated.Scheme.LaunchAction[0].EnvironmentVariables[0].EnvironmentVariable).toHaveLength(1);
+		const normal = await parseStringPromise(source);
+		expect(normal.Scheme.LaunchAction[0].$.enableGameKitDebugMode).toBeUndefined();
+	});
+
+	it("defines only local, non-repeatable PvP progress and a permanent descending best-score board", () => {
+		const achievement = localCatalog.resources.achievements[0];
+		const leaderboard = localCatalog.resources.leaderboards[0];
+		expect(localCatalog.resources.achievements).toHaveLength(1);
+		expect(localCatalog.resources.leaderboards).toHaveLength(1);
+		expect(achievement).toMatchObject({repeatable: false, showBeforeEarned: true, vendorIdentifier: "com.crownicles.app.local.pvp_fight_completed"});
+		expect(leaderboard).toMatchObject({scoreSortType: "DESC", submissionType: "BEST_SCORE", vendorIdentifier: "com.crownicles.app.local.topweek_best"});
+		expect(leaderboard).not.toHaveProperty("recurrenceRule");
+		expect(Object.keys(localCatalog.resources.achievementLocalizations)).toEqual([achievement.vendorIdentifier]);
+		expect(Object.keys(localCatalog.resources.leaderboardLocalizations)).toEqual([leaderboard.vendorIdentifier]);
+	});
+
 	it("removes the automatic Play Games initializer until the project is configured", () => {
 		const configured = configurePlayGamesManifest(manifest(), "");
 		expect(configured.manifest.application[0].provider).toEqual([{$: {"android:name": "com.reactnativegoogleplaygames.GooglePlayGamesInitProvider", "tools:node": "remove"}}]);
@@ -48,7 +77,37 @@ describe("game services native configuration", () => {
 });
 
 describe("native game services SDK contracts", () => {
-	afterEach(() => {jest.clearAllMocks(); jest.restoreAllMocks();});
+	afterEach(() => {Constants.expoConfig!.extra!.gameServices.gameCenter.mode = "production"; jest.clearAllMocks(); jest.restoreAllMocks();});
+
+	it("refuses local SDK calls unless launched with the local Xcode scheme marker", async () => {
+		Constants.expoConfig!.extra!.gameServices.gameCenter.mode = "local";
+		const native = {reportAchievement: jest.fn(() => Promise.resolve(true)), submitScore: jest.fn(() => Promise.resolve(true))};
+		jest.mocked(requireOptionalNativeModule).mockReturnValue(native);
+		const games = iosGames();
+		expect(games.availability).toBe(GAME_SERVICE_AVAILABILITY.NOT_CONFIGURED);
+		await expect(games.unlockAchievement(GAME_ACHIEVEMENTS.PVP_FIGHT_COMPLETED)).rejects.toThrow("gameServicesUnavailable");
+		expect(native.reportAchievement).not.toHaveBeenCalled();
+	});
+
+	it("uses only local IDs inside the local scheme even if Metro returns a production configuration", async () => {
+		const native = {crowniclesLocalTestLaunch: true, reportAchievement: jest.fn(() => Promise.resolve(true)), submitScore: jest.fn(() => Promise.resolve(true))};
+		jest.mocked(requireOptionalNativeModule).mockReturnValue(native);
+		const games = iosGames();
+		expect(games.availability).toBe(GAME_SERVICE_AVAILABILITY.AVAILABLE);
+		await games.unlockAchievement(GAME_ACHIEVEMENTS.PVP_FIGHT_COMPLETED);
+		await games.submitTopweekScore(500);
+		expect(native.reportAchievement).toHaveBeenCalledWith("com.crownicles.app.local.pvp_fight_completed", 100);
+		expect(native.submitScore).toHaveBeenCalledWith(500, "com.crownicles.app.local.topweek_best");
+	});
+
+	it("allows local GameKit only with matching app mode and native launch marker", async () => {
+		Constants.expoConfig!.extra!.gameServices.gameCenter.mode = "local";
+		jest.mocked(requireOptionalNativeModule).mockReturnValue({crowniclesLocalTestLaunch: true, reportAchievement: jest.fn(() => Promise.resolve(true))});
+		const games = iosGames();
+		expect(games.availability).toBe(GAME_SERVICE_AVAILABILITY.AVAILABLE);
+		expect(games.storageScope).toBe("local");
+		await games.unlockAchievement(GAME_ACHIEVEMENTS.PVP_FIGHT_COMPLETED);
+	});
 
 	it("reports full achievement completion and sends score then ID to Game Center", async () => {
 		const native = {reportAchievement: jest.fn(() => Promise.resolve(true)), submitScore: jest.fn(() => Promise.resolve(true))};

@@ -3,7 +3,7 @@ import type {FightEnd} from "ws-packets/src/objects/Fight";
 import type {TopRes} from "ws-packets/src/fromServer/fight/RankingsRes";
 import {TopDataType, TopTiming} from "ws-packets/src/objects/Rankings";
 import {achievementsForFightEnd, GAME_ACHIEVEMENTS, GameAchievementId} from "./Achievements";
-import {GAME_SERVICE_AVAILABILITY, GamePlatformPlayer, GameServiceAvailability, GameServiceProvider, PlatformGames} from "./GameServicesTypes";
+import {GAME_SERVICE_AVAILABILITY, GAME_SERVICE_PROVIDERS, GAME_SERVICE_SCOPES, GamePlatformPlayer, GameServiceAvailability, GameServiceProvider, GameServiceScope, PlatformGames} from "./GameServicesTypes";
 
 type GameServicesStorage = Pick<typeof AsyncStorage, "getItem" | "setItem">;
 type Progress = {unlocked: GameAchievementId[]; reported: GameAchievementId[]; bestTopweekScore: number; reportedTopweekScore: number};
@@ -11,6 +11,7 @@ type Listener = () => void;
 export type GameServicesSnapshot = {
 	provider: GameServiceProvider;
 	availability: GameServiceAvailability;
+	storageScope?: GameServiceScope;
 	player: GamePlatformPlayer | null;
 	bestTopweekScore: number;
 	busy: boolean;
@@ -19,8 +20,8 @@ export type GameServicesSnapshot = {
 
 const UNASSIGNED_PROFILE = "unassigned";
 
-export function gameProgressKey(provider: GameServiceProvider, playerId: string): string {
-	return `gameServices:${provider}:${playerId}`;
+export function gameProgressKey(provider: GameServiceProvider, playerId: string, scope?: GameServiceScope): string {
+	return scope ? `gameServices:${provider}:${scope}:${playerId}` : `gameServices:${provider}:${playerId}`;
 }
 
 function emptyProgress(): Progress {
@@ -60,7 +61,7 @@ export class GameServicesStore {
 	private readonly listeners = new Set<Listener>();
 
 	public constructor(private readonly platform: PlatformGames, private readonly storage: GameServicesStorage) {
-		this.snapshot = {provider: platform.provider, availability: platform.availability, player: null, bestTopweekScore: 0, busy: false, syncFailed: false};
+		this.snapshot = {provider: platform.provider, availability: platform.availability, ...(platform.storageScope ? {storageScope: platform.storageScope} : {}), player: null, bestTopweekScore: 0, busy: false, syncFailed: false};
 	}
 
 	public readonly getSnapshot = (): GameServicesSnapshot => this.snapshot;
@@ -93,11 +94,11 @@ export class GameServicesStore {
 	}
 
 	private load(playerId: string): Promise<Progress> {
-		return this.storage.getItem(gameProgressKey(this.platform.provider, playerId)).then(readProgress);
+		return this.storage.getItem(gameProgressKey(this.platform.provider, playerId, this.platform.storageScope)).then(readProgress);
 	}
 
 	private save(playerId: string, progress: Progress): Promise<void> {
-		return this.storage.setItem(gameProgressKey(this.platform.provider, playerId), JSON.stringify(progress));
+		return this.storage.setItem(gameProgressKey(this.platform.provider, playerId, this.platform.storageScope), JSON.stringify(progress));
 	}
 
 	private async currentPlayer(): Promise<GamePlatformPlayer | null> {
@@ -149,6 +150,10 @@ export class GameServicesStore {
 		await this.save(player.id, progress);
 	}
 
+	private acceptsProgress(): boolean {
+		return this.platform.provider !== GAME_SERVICE_PROVIDERS.GAME_CENTER || this.platform.availability !== GAME_SERVICE_AVAILABILITY.NOT_CONFIGURED;
+	}
+
 	public refresh(): Promise<void> {
 		return this.enqueue(async (): Promise<void> => {
 			const player = await this.currentPlayer();
@@ -169,6 +174,7 @@ export class GameServicesStore {
 	}
 
 	public recordFightEnd(result: FightEnd): Promise<void> {
+		if (!this.acceptsProgress()) return Promise.resolve();
 		const achievements = achievementsForFightEnd(result);
 		if (!achievements.length) return Promise.resolve();
 		const owner = this.currentPlayer();
@@ -182,6 +188,7 @@ export class GameServicesStore {
 	}
 
 	public recordRanking(ranking: TopRes): Promise<void> {
+		if (!this.acceptsProgress()) return Promise.resolve();
 		if (ranking.dataType !== TopDataType.SCORE || ranking.timing !== TopTiming.WEEK) return Promise.resolve();
 		const score = ranking.elements.find(entry => entry.sameContext)?.value;
 		if (!validScore(score)) return Promise.resolve();
@@ -209,5 +216,15 @@ export class GameServicesStore {
 
 	public showTopweekLeaderboard(): Promise<void> {
 		return this.present(this.platform.showTopweekLeaderboard);
+	}
+
+	public resetLocalProgress(): Promise<void> {
+		if (this.platform.storageScope !== GAME_SERVICE_SCOPES.LOCAL) return Promise.resolve();
+		return this.enqueue(async (): Promise<void> => {
+			const player = await this.currentPlayer();
+			if (player) await this.save(player.id, emptyProgress());
+			await this.save(UNASSIGNED_PROFILE, emptyProgress());
+			this.update({player, bestTopweekScore: 0});
+		});
 	}
 }

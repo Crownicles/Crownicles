@@ -5,7 +5,7 @@ import {Swords, Trophy, UserRound} from "@/src/design/FightIcons";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 import {gameServicesStore, useGameServices} from "./GameServices";
-import {GAME_SERVICE_AVAILABILITY, GAME_SERVICE_PROVIDERS} from "./GameServicesTypes";
+import {GAME_SERVICE_AVAILABILITY, GAME_SERVICE_PROVIDERS, GAME_SERVICE_SCOPES} from "./GameServicesTypes";
 
 const ICON_SIZE = 24;
 
@@ -19,6 +19,7 @@ export function GameServicesSettings(): ReactNode {
 	const provider = i18n.t(`app:settings.gameServices.providers.${state.provider}`);
 	return <>
 		<SectionHeader>{provider}</SectionHeader>
+		{state.storageScope === GAME_SERVICE_SCOPES.LOCAL ? <Note>{i18n.t("app:settings.gameServices.localTest")}</Note> : null}
 		{state.availability !== GAME_SERVICE_AVAILABILITY.AVAILABLE
 			? <LockHint lock={{reason: i18n.t(`app:settings.gameServices.unavailable.${state.availability}`)}} />
 			: <>
@@ -45,6 +46,12 @@ export function GameServicesSettings(): ReactNode {
 						{...state.busy ? {subtitle: i18n.t("app:settings.gameServices.pending")} : {}}
 						onPress={(): void => openPlatform(gameServicesStore.showTopweekLeaderboard.bind(gameServicesStore))}
 					/>
+					{state.storageScope === GAME_SERVICE_SCOPES.LOCAL ? <EntryRow
+						title={i18n.t("app:settings.gameServices.resetLocal")}
+						disabled={state.busy}
+						{...state.busy ? {subtitle: i18n.t("app:settings.gameServices.pending")} : {}}
+						onPress={(): void => openPlatform(gameServicesStore.resetLocalProgress.bind(gameServicesStore))}
+					/> : null}
 				</ExpandableList>}
 				{state.syncFailed ? <>
 					<Refusal>{i18n.t("app:settings.gameServices.failed")}</Refusal>

@@ -1,6 +1,6 @@
 import {GameServicesStore, gameProgressKey} from "@/src/gameServices/GameServicesStore";
 import {GAME_ACHIEVEMENTS} from "@/src/gameServices/Achievements";
-import {GAME_SERVICE_AVAILABILITY, GAME_SERVICE_PROVIDERS, GamePlatformPlayer} from "@/src/gameServices/GameServicesTypes";
+import {GAME_SERVICE_AVAILABILITY, GAME_SERVICE_PROVIDERS, GAME_SERVICE_SCOPES, GamePlatformPlayer} from "@/src/gameServices/GameServicesTypes";
 import {TopRes} from "ws-packets/src/fromServer/fight/RankingsRes";
 import {TopDataType, TopTiming} from "ws-packets/src/objects/Rankings";
 import type {FightEnd} from "ws-packets/src/objects/Fight";
@@ -164,5 +164,68 @@ describe("device game services progress", () => {
 		platform.getPlayer.mockResolvedValue(PLAYER);
 		await store.refresh();
 		expect(platform.unlockAchievement).toHaveBeenCalledTimes(1);
+	});
+
+	it("does not replay local pending progress into production for the same platform profile", async () => {
+		const {platform, storage} = harness();
+		const local = new GameServicesStore({...platform, storageScope: GAME_SERVICE_SCOPES.LOCAL}, storage);
+		platform.unlockAchievement.mockRejectedValueOnce(new Error("local test unavailable"));
+		await local.recordFightEnd(END);
+		platform.submitTopweekScore.mockRejectedValueOnce(new Error("local test unavailable"));
+		await local.recordRanking(ranking(90000));
+		platform.unlockAchievement.mockClear();
+		platform.submitTopweekScore.mockClear();
+		const production = new GameServicesStore({...platform, storageScope: GAME_SERVICE_SCOPES.PRODUCTION}, storage);
+		await production.refresh();
+		expect(production.getSnapshot().bestTopweekScore).toBe(0);
+		expect(platform.unlockAchievement).not.toHaveBeenCalled();
+		expect(platform.submitTopweekScore).not.toHaveBeenCalled();
+		await production.recordRanking(ranking(100));
+		expect(platform.submitTopweekScore).toHaveBeenCalledWith(100);
+		expect(local.getSnapshot().bestTopweekScore).toBe(90000);
+	});
+
+	it("does not adopt unscoped historical data into either new iPhone scope", async () => {
+		const {platform, storage, persisted} = harness();
+		const previous = JSON.stringify({unlocked: [GAME_ACHIEVEMENTS.PVP_FIGHT_COMPLETED], reported: [], bestTopweekScore: 99999, reportedTopweekScore: 0});
+		persisted.set(gameProgressKey(platform.provider, PLAYER.id), previous);
+		persisted.set(gameProgressKey(platform.provider, "unassigned"), previous);
+		for (const storageScope of Object.values(GAME_SERVICE_SCOPES)) {
+			const scoped = new GameServicesStore({...platform, storageScope}, storage);
+			await scoped.refresh();
+			expect(scoped.getSnapshot().bestTopweekScore).toBe(0);
+		}
+		expect(platform.unlockAchievement).not.toHaveBeenCalled();
+		expect(platform.submitTopweekScore).not.toHaveBeenCalled();
+	});
+
+	it("can reset local acknowledgements to repeat a test without resetting production progress", async () => {
+		const {platform, storage} = harness();
+		const local = new GameServicesStore({...platform, storageScope: GAME_SERVICE_SCOPES.LOCAL}, storage);
+		const production = new GameServicesStore({...platform, storageScope: GAME_SERVICE_SCOPES.PRODUCTION}, storage);
+		await local.recordRanking(ranking(90000));
+		await local.recordFightEnd(END);
+		await production.recordRanking(ranking(500));
+		await local.resetLocalProgress();
+		expect(local.getSnapshot().bestTopweekScore).toBe(0);
+		await production.refresh();
+		expect(production.getSnapshot().bestTopweekScore).toBe(500);
+		await production.resetLocalProgress();
+		expect(production.getSnapshot().bestTopweekScore).toBe(500);
+		platform.unlockAchievement.mockClear();
+		await local.recordFightEnd(END);
+		expect(platform.unlockAchievement).toHaveBeenCalledTimes(1);
+	});
+
+	it("does not accumulate iPhone progress when its Game Center profile is disabled or incorrectly launched", async () => {
+		const {platform, storage, persisted} = harness();
+		for (const storageScope of Object.values(GAME_SERVICE_SCOPES)) {
+			const disabled = new GameServicesStore({...platform, storageScope, availability: GAME_SERVICE_AVAILABILITY.NOT_CONFIGURED}, storage);
+			await disabled.recordFightEnd(END);
+			await disabled.recordRanking(ranking(99999));
+		}
+		expect(persisted.size).toBe(0);
+		expect(platform.unlockAchievement).not.toHaveBeenCalled();
+		expect(platform.submitTopweekScore).not.toHaveBeenCalled();
 	});
 });

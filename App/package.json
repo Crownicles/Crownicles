@@ -8,6 +8,8 @@
     "start:iphone:dev": "zsh ./scripts/start-iphone.sh --dev-client",
     "start:iphone:usb": "zsh ./scripts/start-iphone.sh --usb",
     "start:iphone:usb:dev": "zsh ./scripts/start-iphone.sh --usb --dev-client",
+    "gamekit:prepare": "node ./scripts/gamekit-local.mjs prepare",
+    "gamekit:metro": "node ./scripts/gamekit-local.mjs metro",
     "start:android": "zsh ./scripts/start-android.sh",
     "start:android:dev": "zsh ./scripts/start-android.sh --dev-client",
     "start:android:usb": "zsh ./scripts/start-android.sh --usb",
@@ -100,16 +102,19 @@
     "@types/jest": "29.5.14",
     "@types/markdown-it": "^14.2.0",
     "@types/react": "~19.2.18",
+    "@types/xml2js": "0.4.14",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~57.0.1",
     "jest": "~29.7.0",
     "jest-expo": "~57.0.4",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "xml2js": "0.6.2"
   },
   "private": true,
   "pnpm": {
     "patchedDependencies": {
-      "react-native-google-play-games@0.4.0": "patches/react-native-google-play-games@0.4.0.patch"
+      "react-native-google-play-games@0.4.0": "patches/react-native-google-play-games@0.4.0.patch",
+      "expo-game-center@1.0.1": "patches/expo-game-center@1.0.1.patch"
     }
   },
   "reanimated": {

@@ -26,7 +26,7 @@ jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: o
 jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (path: string): string => `icon:${path}`}}));
 jest.mock("@/src/gameServices/GameServices", () => ({
 	useGameServices: jest.fn(),
-	gameServicesStore: {connect: jest.fn(() => Promise.resolve()), showAchievements: jest.fn(() => Promise.resolve()), showTopweekLeaderboard: jest.fn(() => Promise.resolve()), refresh: jest.fn(() => Promise.resolve())}
+	gameServicesStore: {connect: jest.fn(() => Promise.resolve()), showAchievements: jest.fn(() => Promise.resolve()), showTopweekLeaderboard: jest.fn(() => Promise.resolve()), refresh: jest.fn(() => Promise.resolve()), resetLocalProgress: jest.fn(() => Promise.resolve())}
 }));
 
 const preferences = {
@@ -93,6 +93,14 @@ describe("settings", () => {
 		await renderSettings();
 		expect(screen.getByText("app:settings.gameServices.unavailable.notConfigured")).toBeTruthy();
 		expect(screen.queryByText("app:settings.gameServices.achievements")).toBeNull();
+	});
+
+	it("exposes the reset only for the native local iPhone profile", async () => {
+		jest.mocked(useGameServices).mockReturnValue({provider: GAME_SERVICE_PROVIDERS.GAME_CENTER, availability: GAME_SERVICE_AVAILABILITY.AVAILABLE, storageScope: "local", player: {id: "platform-player", displayName: "Profil local"}, bestTopweekScore: 500, busy: false, syncFailed: false});
+		await renderSettings();
+		expect(screen.getByText("app:settings.gameServices.localTest")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:settings.gameServices.resetLocal"));
+		expect(gameServicesStore.resetLocalProgress).toHaveBeenCalledTimes(1);
 	});
 
 	it("asks before logging out, then forgets this device and ends the session", async () => {

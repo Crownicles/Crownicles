@@ -1,4 +1,5 @@
 const {AndroidConfig, withAndroidManifest, withStringsXml} = require("expo/config-plugins");
+const withGameCenterLocal = require("./withGameCenterLocal");
 
 const PLAY_GAMES = {
 	APP_ID_META: "com.google.android.gms.games.APP_ID",
@@ -25,6 +26,7 @@ function configurePlayGamesManifest(androidManifest, appId) {
 }
 
 function withGameServices(config) {
+	config = withGameCenterLocal(config);
 	const appId = (config.extra?.gameServices?.playGames?.appId || "").trim();
 	if (appId && !/^\d+$/.test(appId)) throw new Error("EXPO_PUBLIC_PLAY_GAMES_APP_ID must be a numeric Play Games project ID.");
 	config = withAndroidManifest(config, mod => {
