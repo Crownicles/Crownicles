@@ -6,6 +6,7 @@ export const ONBOARDING_TRIAL_IDS = {
 
 export const ONBOARDING_MISSION_IDS = {
 	COMMAND_REPORT: "commandReport",
+	SPEND_TOKENS: "spendTokens",
 	COMMAND_MISSION: "commandMission",
 	EARN_MONEY: "earnMoney",
 	FIND_OR_BUY_ITEM: "findOrBuyItem",

@@ -9,6 +9,9 @@ import {
 	down, up
 } from "../../src/core/database/game/migrations/075-onboarding-campaign-reorder";
 import { CampaignData } from "../../src/data/Campaign";
+import {
+	down as restoreReportMission, up as migrateSpendTokenMission
+} from "../../src/core/database/game/migrations/081-campaign-spend-token";
 
 const CAMPAIGN_LENGTH = 149;
 
@@ -18,6 +21,11 @@ type Row = {
 	missionId: string;
 	missionVariant: number;
 	numberDone: number;
+	missionObjective: number;
+	gemsToWin: number;
+	xpToWin: number;
+	moneyToWin: number;
+	saveBlob: string | null;
 };
 
 let env: IntegrationTestEnvironment;
@@ -39,7 +47,8 @@ async function insertPlayer(id: number, player: { level: number; classId: number
 
 async function row(id: number): Promise<Row> {
 	const [rows] = await env.sequelize.query(`
-		SELECT pmi.campaignProgression, pmi.campaignBlob, ms.missionId, ms.missionVariant, ms.numberDone
+		SELECT pmi.campaignProgression, pmi.campaignBlob, ms.missionId, ms.missionVariant, ms.numberDone,
+		       ms.missionObjective, ms.gemsToWin, ms.xpToWin, ms.moneyToWin, ms.saveBlob
 		FROM player_missions_info pmi JOIN mission_slots ms ON ms.playerId = pmi.playerId AND ms.expiresAt IS NULL
 		WHERE pmi.playerId = ${id}
 	`);
@@ -146,5 +155,55 @@ describe("075-onboarding-campaign-reorder migration", () => {
 		expect(result.campaignProgression).toBe(5);
 		expect(result.missionId).toBe("reachLevel");
 		expect(result.numberDone).toBe(3);
+	});
+
+	describe("081-campaign-spend-token migration", () => {
+		it("replaces only the active second mission while keeping rewards and campaign completion state", async () => {
+			await insertPlayer(10, {
+				level: 1, classId: 0, progression: 2, blob: blob("1"), slot: {missionId: "commandReport", missionVariant: 0, numberDone: 0}
+			});
+			const before = await row(10);
+			await migrateSpendTokenMission({context: context()});
+			expect(await row(10)).toEqual({...before, missionId: "spendTokens", numberDone: 0, saveBlob: null});
+		});
+
+		it("does not reopen completed campaigns or change another active mission", async () => {
+			await insertPlayer(11, {
+				level: 100, classId: 3, progression: 0, blob: "1".repeat(CAMPAIGN_LENGTH), slot: {missionId: "commandReport", missionVariant: 0, numberDone: 1}
+			});
+			await insertPlayer(12, {
+				level: 2, classId: 0, progression: 3, blob: blob("11"), slot: {missionId: "earnMoney", missionVariant: 0, missionObjective: 100, numberDone: 60}
+			});
+			const finished = await row(11);
+			const other = await row(12);
+			await migrateSpendTokenMission({context: context()});
+			expect(await row(11)).toEqual(finished);
+			expect(await row(12)).toEqual(other);
+		});
+
+		it("preserves secondary report missions and already converted campaign missions", async () => {
+			await insertPlayer(13, {
+				level: 1, classId: 0, progression: 2, blob: blob("1"), slot: {missionId: "spendTokens", missionVariant: 0, numberDone: 0}
+			});
+			await env.sequelize.query(`INSERT INTO mission_slots (playerId, missionId, missionVariant, missionObjective, numberDone, gemsToWin, xpToWin, moneyToWin, saveBlob, expiresAt)
+				VALUES (13, 'commandReport', 0, 1, 0, 2, 20, 30, 'secondary', '2030-01-01 00:00:00')`);
+			const before = await row(13);
+			await migrateSpendTokenMission({context: context()});
+			expect(await row(13)).toEqual(before);
+			const [secondary] = await env.sequelize.query("SELECT missionId, numberDone, saveBlob FROM mission_slots WHERE expiresAt IS NOT NULL");
+			expect(secondary).toEqual([{missionId: "commandReport", numberDone: 0, saveBlob: "secondary"}]);
+		});
+
+		it("can be run again without resetting progress and restores the report mission on rollback", async () => {
+			await insertPlayer(14, {
+				level: 1, classId: 0, progression: 2, blob: blob("1"), slot: {missionId: "commandReport", missionVariant: 0, numberDone: 0}
+			});
+			await migrateSpendTokenMission({context: context()});
+			await env.sequelize.query("UPDATE mission_slots SET numberDone = 1 WHERE playerId = 14");
+			await migrateSpendTokenMission({context: context()});
+			expect((await row(14)).numberDone).toBe(1);
+			await restoreReportMission({context: context()});
+			expect(await row(14)).toMatchObject({missionId: "commandReport", missionVariant: 0, missionObjective: 1, numberDone: 0, campaignProgression: 2, campaignBlob: blob("1")});
+		});
 	});
 });

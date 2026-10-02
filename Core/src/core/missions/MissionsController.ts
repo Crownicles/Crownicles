@@ -542,11 +542,16 @@ export abstract class MissionsController {
 		});
 		const tokens = totalizer(m => m.tokensToWin ?? 0);
 		if (tokens > 0) {
-			player = await player.addTokens({
+			let remainingTokens = await player.addTokensAndGetActualGain({
 				amount: tokens,
 				response,
 				reason: NumberChangeReason.MISSION_FINISHED
 			});
+			for (const mission of completedMissions.filter(mission => (mission.tokensToWin ?? 0) > 0)) {
+				const grantedTokens = Math.min(mission.tokensToWin ?? 0, remainingTokens);
+				mission.tokensToWin = grantedTokens;
+				remainingTokens -= grantedTokens;
+			}
 		}
 
 		return player;

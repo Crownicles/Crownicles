@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
+import type { CampaignMission } from "../../../src/data/Campaign";
 
 const MISSIONS_PATH = join(__dirname, "../../../resources/missions");
 
@@ -19,6 +20,47 @@ interface MissionData {
 	expirations?: number[];
 	dailyIndexes?: number[];
 }
+
+describe("Campaign onboarding missions", () => {
+	const missions: CampaignMission[] = JSON.parse(readFileSync(join(__dirname, "../../../resources/campaign.json"), "utf-8")).missions;
+
+	it("keeps the initial token and adds the introductory token reward", () => {
+		expect(missions[0]).toMatchObject({
+			missionId: "commandMission",
+			gemsToWin: 1,
+			xpToWin: 10,
+			moneyToWin: 0,
+			tokensToWin: 4
+		});
+	});
+
+	it("asks to spend one token as the second campaign mission", () => {
+		expect(missions[1]).toMatchObject({
+			missionId: "spendTokens",
+			missionVariant: 0,
+			missionObjective: 1,
+			gemsToWin: 1,
+			xpToWin: 10,
+			moneyToWin: 0,
+			tokensToWin: 3
+		});
+	});
+
+	it("rewards between three and ten tokens for every campaign mission", () => {
+		for (const [index, mission] of missions.entries()) {
+			expect(Number.isInteger(mission.tokensToWin), `Campaign mission ${index + 1}`).toBe(true);
+			expect(mission.tokensToWin, `Campaign mission ${index + 1}`).toBeGreaterThanOrEqual(3);
+			expect(mission.tokensToWin, `Campaign mission ${index + 1}`).toBeLessThanOrEqual(10);
+		}
+	});
+
+	it("increases token rewards as level milestones and expedition durations become harder", () => {
+		const levelRewards = missions.filter(mission => mission.missionId === "reachLevel").map(mission => mission.tokensToWin);
+		expect(levelRewards).toEqual([...levelRewards].sort((first, second) => first! - second!));
+		const expeditionRewards = missions.filter(mission => mission.missionId === "longExpedition").map(mission => mission.tokensToWin);
+		expect(expeditionRewards[1]).toBeGreaterThan(expeditionRewards[0]!);
+	});
+});
 
 describe("Mission JSON files validation", () => {
 	const missionFiles = readdirSync(MISSIONS_PATH).filter(file => file.endsWith(".json"));

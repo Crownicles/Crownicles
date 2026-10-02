@@ -7,7 +7,7 @@ export const ONBOARDING_TRIALS = [
 		id: "audience",
 		missions: [
 			"commandMission",
-			"commandReport",
+			"spendTokens",
 			"earnMoney"
 		]
 	},

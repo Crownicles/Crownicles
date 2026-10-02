@@ -7,15 +7,16 @@
       "gemsToWin": 1,
       "xpToWin": 10,
       "moneyToWin": 0,
-      "tokensToWin": 1
+      "tokensToWin": 4
     },
     {
-      "missionId": "commandReport",
+      "missionId": "spendTokens",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 10,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "earnMoney",
@@ -23,7 +24,8 @@
       "missionObjective": 100,
       "gemsToWin": 1,
       "xpToWin": 10,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "findOrBuyItem",
@@ -31,7 +33,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 15,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "drinkPotion",
@@ -39,7 +42,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 15,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "commandMap",
@@ -47,7 +51,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 15,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "visitCityNpc",
@@ -55,7 +60,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 15,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "chooseClass",
@@ -63,7 +69,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "travelHours",
@@ -71,7 +78,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "sleepInInn",
@@ -79,7 +87,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "sellItems",
@@ -87,7 +96,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "recoverAlteration",
@@ -95,7 +105,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "reachLevel",
@@ -103,7 +114,8 @@
       "missionObjective": 5,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "travelHours",
@@ -111,7 +123,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 75,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "goToPlace",
@@ -119,7 +132,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "reachLevel",
@@ -127,7 +141,8 @@
       "missionObjective": 8,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "anyFight",
@@ -135,7 +150,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "reachScore",
@@ -143,7 +159,8 @@
       "missionObjective": 10000,
       "gemsToWin": 3,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "buyHome",
@@ -151,7 +168,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "depositChestItem",
@@ -159,7 +177,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "reachLevel",
@@ -167,7 +186,8 @@
       "missionObjective": 10,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "haveItemRarity",
@@ -175,7 +195,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "spendGems",
@@ -183,7 +204,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "earnMoney",
@@ -191,7 +213,8 @@
       "missionObjective": 3000,
       "gemsToWin": 2,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "joinGuild",
@@ -199,7 +222,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "guildDaily",
@@ -207,7 +231,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 75,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "reachLevel",
@@ -215,7 +240,8 @@
       "missionObjective": 20,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "upgradeHomeLevel",
@@ -223,7 +249,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "goToPlace",
@@ -231,7 +258,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "reachGlory",
@@ -239,7 +267,8 @@
       "missionObjective": 100,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "commandFightHistory",
@@ -247,7 +276,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 30,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "chooseClassTier",
@@ -255,7 +285,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "enchantItem",
@@ -263,7 +294,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 75,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "meetVelanna",
@@ -271,7 +303,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "havePet",
@@ -279,7 +312,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "earnXP",
@@ -287,7 +321,8 @@
       "missionObjective": 1000,
       "gemsToWin": 2,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "petCaress",
@@ -295,7 +330,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 75,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "petAssistedFight",
@@ -303,7 +339,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 225,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "plantSeed",
@@ -311,7 +348,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "joinPVEIsland",
@@ -319,7 +357,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 300,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "upgradeItem",
@@ -327,7 +366,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "guildLevel",
@@ -335,7 +375,8 @@
       "missionObjective": 5,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "tamedPet",
@@ -343,7 +384,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 125,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "earnPoints",
@@ -351,7 +393,8 @@
       "missionObjective": 7500,
       "gemsToWin": 2,
       "xpToWin": 250,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "buyApartment",
@@ -359,7 +402,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 135,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "goToPlace",
@@ -367,7 +411,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "anyFight",
@@ -375,7 +420,8 @@
       "missionObjective": 5,
       "gemsToWin": 2,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "havePotions",
@@ -383,7 +429,8 @@
       "missionObjective": 2,
       "gemsToWin": 2,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "travelHours",
@@ -391,7 +438,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "sellItems",
@@ -399,7 +447,8 @@
       "missionObjective": 3,
       "gemsToWin": 2,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "trainedPet",
@@ -407,7 +456,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "collectRent",
@@ -415,7 +465,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "meetTalvar",
@@ -423,7 +474,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "showPetsToTalvar",
@@ -431,7 +483,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "doExpeditions",
@@ -439,7 +492,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "buyTokensFromShop",
@@ -447,7 +501,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "gainRage",
@@ -455,7 +510,8 @@
       "missionObjective": 3,
       "gemsToWin": 2,
       "xpToWin": 120,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "meetGruffo",
@@ -463,7 +519,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "guildDaily",
@@ -471,7 +528,8 @@
       "missionObjective": 2,
       "gemsToWin": 2,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "joinGuildHouse",
@@ -479,7 +537,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "reachLevel",
@@ -487,7 +546,8 @@
       "missionObjective": 40,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "meetOracle",
@@ -495,7 +555,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "cookRecipes",
@@ -503,7 +564,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 120,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "contributeToBlessing",
@@ -511,7 +573,8 @@
       "missionObjective": 100,
       "gemsToWin": 3,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "haveGardenTalisman",
@@ -519,7 +582,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "joinMemberOnBoat",
@@ -527,7 +591,8 @@
       "missionObjective": 1,
       "gemsToWin": 6,
       "xpToWin": 350,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "buyTokensFromShop",
@@ -535,7 +600,8 @@
       "missionObjective": 5,
       "gemsToWin": 3,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "drinkAlcohol",
@@ -543,7 +609,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "earnLifePoints",
@@ -551,7 +618,8 @@
       "missionObjective": 40,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "replaceMission",
@@ -559,7 +627,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "dangerousExpedition",
@@ -567,7 +636,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 300,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "winBoss",
@@ -575,7 +645,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "haveItemRarity",
@@ -583,7 +654,8 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "fightMinTurns",
@@ -591,7 +663,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 250,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "goToPlace",
@@ -599,7 +672,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "reachGlory",
@@ -607,7 +681,8 @@
       "missionObjective": 800,
       "gemsToWin": 3,
       "xpToWin": 450,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "sellItemWithGivenCost",
@@ -615,7 +690,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "meetDifferentPlayers",
@@ -623,7 +699,8 @@
       "missionObjective": 5,
       "gemsToWin": 3,
       "xpToWin": 80,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "buyUltimateSoups",
@@ -631,7 +708,8 @@
       "missionObjective": 2,
       "gemsToWin": 1,
       "xpToWin": 120,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "sellOrTradePet",
@@ -639,7 +717,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 175,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "meetSirRowan",
@@ -647,7 +726,8 @@
       "missionObjective": 5,
       "gemsToWin": 4,
       "xpToWin": 450,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "contributeToBlessing",
@@ -655,7 +735,8 @@
       "missionObjective": 6500,
       "gemsToWin": 15,
       "xpToWin": 400,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "fightHealthPercent",
@@ -663,7 +744,8 @@
       "missionObjective": 1,
       "gemsToWin": 7,
       "xpToWin": 250,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "winAnyBossWithDifferentClasses",
@@ -671,7 +753,8 @@
       "missionObjective": 2,
       "gemsToWin": 13,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "exploreDifferentPlaces",
@@ -679,7 +762,8 @@
       "missionObjective": 10,
       "gemsToWin": 4,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "guildHasPoints",
@@ -687,7 +771,8 @@
       "missionObjective": 5000,
       "gemsToWin": 10,
       "xpToWin": 400,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "doExpeditions",
@@ -695,7 +780,8 @@
       "missionObjective": 5,
       "gemsToWin": 3,
       "xpToWin": 250,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "reachLevel",
@@ -703,7 +789,8 @@
       "missionObjective": 60,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "drinkPotionWithoutEffect",
@@ -711,7 +798,8 @@
       "missionObjective": 3,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "chooseClassTier",
@@ -719,7 +807,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "fromPlaceToPlace",
@@ -727,7 +816,8 @@
       "missionObjective": 1,
       "gemsToWin": 6,
       "xpToWin": 120,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "sellItems",
@@ -735,7 +825,8 @@
       "missionObjective": 5,
       "gemsToWin": 3,
       "xpToWin": 75,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "fightMinTurns",
@@ -743,7 +834,8 @@
       "missionObjective": 1,
       "gemsToWin": 4,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "guildDailyFromSomeoneElse",
@@ -751,7 +843,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 85,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "drinkPotionRarity",
@@ -759,7 +852,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 55,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "kingsMoneyValue",
@@ -767,7 +861,8 @@
       "missionObjective": 1,
       "gemsToWin": 19,
       "xpToWin": 300,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 9
     },
     {
       "missionId": "gainRage",
@@ -775,7 +870,8 @@
       "missionObjective": 25,
       "gemsToWin": 3,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "goToPlace",
@@ -783,7 +879,8 @@
       "missionObjective": 1,
       "gemsToWin": 4,
       "xpToWin": 250,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "bigFeast",
@@ -791,7 +888,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 120,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "unlock",
@@ -799,7 +897,8 @@
       "missionObjective": 1,
       "gemsToWin": 6,
       "xpToWin": 250,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "dailyPotionsStock",
@@ -807,7 +906,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 25,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "winBoss",
@@ -815,7 +915,8 @@
       "missionObjective": 8,
       "gemsToWin": 8,
       "xpToWin": 800,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "petEarnHealth",
@@ -823,7 +924,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "fightStreak",
@@ -831,7 +933,8 @@
       "missionObjective": 5,
       "gemsToWin": 5,
       "xpToWin": 350,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "longExpedition",
@@ -839,7 +942,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 350,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "earnPoints",
@@ -847,7 +951,8 @@
       "missionObjective": 30000,
       "gemsToWin": 4,
       "xpToWin": 400,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "fromPlaceToPlace",
@@ -855,7 +960,8 @@
       "missionObjective": 1,
       "gemsToWin": 6,
       "xpToWin": 375,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "guildLevel",
@@ -863,7 +969,8 @@
       "missionObjective": 30,
       "gemsToWin": 1,
       "xpToWin": 125,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "reachLevel",
@@ -871,7 +978,8 @@
       "missionObjective": 80,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "reachGlory",
@@ -879,7 +987,8 @@
       "missionObjective": 1200,
       "gemsToWin": 5,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "reachCookingLevel",
@@ -887,7 +996,8 @@
       "missionObjective": 31,
       "gemsToWin": 4,
       "xpToWin": 250,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "contributeToBlessing",
@@ -895,7 +1005,8 @@
       "missionObjective": 16300,
       "gemsToWin": 25,
       "xpToWin": 600,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 9
     },
     {
       "missionId": "wealthyPayForPVEIsland",
@@ -903,7 +1014,8 @@
       "missionObjective": 1,
       "gemsToWin": 40,
       "xpToWin": 225,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 10
     },
     {
       "missionId": "drinkEnergyPotion",
@@ -911,7 +1023,8 @@
       "missionObjective": 3,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 3
     },
     {
       "missionId": "longExpedition",
@@ -919,7 +1032,8 @@
       "missionObjective": 1,
       "gemsToWin": 7,
       "xpToWin": 500,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "winAnyBossWithDifferentClasses",
@@ -927,7 +1041,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "anyFight",
@@ -935,7 +1050,8 @@
       "missionObjective": 10,
       "gemsToWin": 2,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "fightMinTurns",
@@ -943,7 +1059,8 @@
       "missionObjective": 1,
       "gemsToWin": 9,
       "xpToWin": 250,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 9
     },
     {
       "missionId": "exploreDifferentPlaces",
@@ -951,7 +1068,8 @@
       "missionObjective": 15,
       "gemsToWin": 7,
       "xpToWin": 400,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "goToPlace",
@@ -959,7 +1077,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 300,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "doExpeditions",
@@ -967,7 +1086,8 @@
       "missionObjective": 25,
       "gemsToWin": 5,
       "xpToWin": 400,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "guildLevel",
@@ -975,7 +1095,8 @@
       "missionObjective": 60,
       "gemsToWin": 1,
       "xpToWin": 220,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "haveItemRarity",
@@ -983,7 +1104,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 75,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "spendMoney",
@@ -991,7 +1113,8 @@
       "missionObjective": 10000,
       "gemsToWin": 3,
       "xpToWin": 100,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "meetHermit",
@@ -999,7 +1122,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 225,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "fromPlaceToPlace",
@@ -1007,7 +1131,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 350,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "meetAllOracles",
@@ -1015,7 +1140,8 @@
       "missionObjective": 2,
       "gemsToWin": 6,
       "xpToWin": 300,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "earnXP",
@@ -1023,7 +1149,8 @@
       "missionObjective": 7000,
       "gemsToWin": 5,
       "xpToWin": 0,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "expeditionStreak",
@@ -1031,7 +1158,8 @@
       "missionObjective": 3,
       "gemsToWin": 4,
       "xpToWin": 250,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "maxTokensReached",
@@ -1039,7 +1167,8 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 150,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 4
     },
     {
       "missionId": "drinkPotionRarity",
@@ -1047,7 +1176,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 175,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 5
     },
     {
       "missionId": "getAncestralTrees",
@@ -1055,7 +1185,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 300,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "cookPotionRarity",
@@ -1063,7 +1194,8 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 300,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "chooseClassTier",
@@ -1071,7 +1203,8 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 50,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 8
     },
     {
       "missionId": "showPetsToTalvar",
@@ -1079,7 +1212,8 @@
       "missionObjective": 10,
       "gemsToWin": 8,
       "xpToWin": 200,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 9
     },
     {
       "missionId": "buyTokensFromShop",
@@ -1087,7 +1221,8 @@
       "missionObjective": 10,
       "gemsToWin": 5,
       "xpToWin": 300,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "buyItemFromAlderic",
@@ -1095,7 +1230,8 @@
       "missionObjective": 1,
       "gemsToWin": 4,
       "xpToWin": 275,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "sellItemWithGivenCost",
@@ -1103,7 +1239,8 @@
       "missionObjective": 1,
       "gemsToWin": 4,
       "xpToWin": 355,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 6
     },
     {
       "missionId": "dangerousExpedition",
@@ -1111,7 +1248,8 @@
       "missionObjective": 1,
       "gemsToWin": 7,
       "xpToWin": 400,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 9
     },
     {
       "missionId": "spendMoney",
@@ -1119,7 +1257,8 @@
       "missionObjective": 25000,
       "gemsToWin": 6,
       "xpToWin": 500,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 7
     },
     {
       "missionId": "fightHealthPercent",
@@ -1127,7 +1266,8 @@
       "missionObjective": 1,
       "gemsToWin": 12,
       "xpToWin": 450,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 10
     },
     {
       "missionId": "reachLevel",
@@ -1135,7 +1275,8 @@
       "missionObjective": 100,
       "gemsToWin": 8,
       "xpToWin": 500,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 9
     },
     {
       "missionId": "exploreDifferentPlaces",
@@ -1143,7 +1284,8 @@
       "missionObjective": 20,
       "gemsToWin": 7,
       "xpToWin": 520,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 9
     },
     {
       "missionId": "showCloneToTalvar",
@@ -1151,7 +1293,8 @@
       "missionObjective": 1,
       "gemsToWin": 10,
       "xpToWin": 500,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 10
     },
     {
       "missionId": "fromPlaceToPlace",
@@ -1159,7 +1302,8 @@
       "missionObjective": 1,
       "gemsToWin": 12,
       "xpToWin": 400,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 10
     },
     {
       "missionId": "upgradeEpicItemLevel5",
@@ -1167,7 +1311,8 @@
       "missionObjective": 1,
       "gemsToWin": 15,
       "xpToWin": 350,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 10
     },
     {
       "missionId": "winBossWithDifferentClasses",
@@ -1175,7 +1320,8 @@
       "missionObjective": 4,
       "gemsToWin": 28,
       "xpToWin": 350,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 10
     },
     {
       "missionId": "buyApartments",
@@ -1183,7 +1329,8 @@
       "missionObjective": 5,
       "gemsToWin": 30,
       "xpToWin": 500,
-      "moneyToWin": 0
+      "moneyToWin": 0,
+      "tokensToWin": 10
     },
     {
       "missionId": "depositPetInShelter",
@@ -1192,7 +1339,8 @@
       "gemsToWin": 15,
       "xpToWin": 300,
       "moneyToWin": 0,
-      "petRewardTypeId": 102
+      "petRewardTypeId": 102,
+      "tokensToWin": 8
     }
   ]
 }

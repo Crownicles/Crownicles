@@ -40,11 +40,12 @@ describe("royal contest onboarding", () => {
 		expect(OnboardingConstants.CAMPAIGN_LENGTH).toBe(trialMissions.length);
 	});
 
-	it("hands a newcomer, who starts without any, their first token with the first mission only", () => {
+	it("hands a newcomer the first tokens before the spending mission and rewards later campaign missions too", () => {
 		expect(PlayersConstants.PLAYER_DEFAULT_VALUES.TOKENS).toBe(0);
 		const [first, ...others] = CampaignData.getMissions();
-		expect(first).toMatchObject({ missionId: "commandMission", tokensToWin: 1 });
-		expect(others.filter(mission => mission.tokensToWin)).toEqual([]);
+		expect(first).toMatchObject({ missionId: "commandMission", tokensToWin: 4 });
+		expect(others.every(mission => (mission.tokensToWin ?? 0) >= 3)).toBe(true);
+		expect(currentOnboardingMission(atPosition(2))).toBe("spendTokens");
 	});
 
 	it("never leads a newcomer to the token merchant in the king's castle, only to tokens they can spend", () => {

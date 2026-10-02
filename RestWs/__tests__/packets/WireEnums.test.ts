@@ -48,6 +48,8 @@ import {NOTIFICATION_TYPES as LibNotificationTypes} from "../../../Lib/src/types
 import {NOTIFICATION_TYPES} from "../../../WsPackets/src/objects/NotificationPreferences";
 import {PUSH_PLATFORMS as LibPushPlatforms} from "../../../Lib/src/types/PushDevices";
 import {PUSH_PLATFORMS} from "../../../WsPackets/src/objects/PushDevices";
+import {ONBOARDING_TRIALS} from "../../../Lib/src/constants/OnboardingConstants";
+import {ONBOARDING_MISSION_IDS, ONBOARDING_TRIAL_IDS} from "../../../WsPackets/src/objects/Onboarding";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -56,6 +58,13 @@ import {PUSH_PLATFORMS} from "../../../WsPackets/src/objects/PushDevices";
  * installed client. These tests are that missing link.
  */
 describe("wire enums mirror their back-end counterpart", () => {
+	it("accepts every royal trial and campaign mission sent by Core", () => {
+		expect(Object.values(ONBOARDING_TRIAL_IDS)).toEqual(ONBOARDING_TRIALS.map(trial => trial.id));
+		for (const mission of ONBOARDING_TRIALS.flatMap(trial => [...trial.missions])) {
+			expect(Object.values(ONBOARDING_MISSION_IDS)).toContain(mission);
+		}
+	});
+
 	it.each([
 		["ReportCityActionResults", REPORT_CITY_ACTION_RESULTS, CoreCityActionResults],
 		["GardenOperations", GARDEN_OPERATIONS, CoreGardenOperations],

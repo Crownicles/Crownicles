@@ -59,6 +59,10 @@ describe("royal contest", () => {
 		expect(contestView(ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM, ROAD_START)).toEqual({running: true, trialId: ONBOARDING_TRIAL_IDS.ROAD, missionId: ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM});
 	});
 
+	it("recognizes spending a token as the second audience mission", () => {
+		expect(contestView(ONBOARDING_MISSION_IDS.SPEND_TOKENS, 2)).toEqual({running: true, trialId: ONBOARDING_TRIAL_IDS.AUDIENCE, missionId: ONBOARDING_MISSION_IDS.SPEND_TOKENS});
+	});
+
 	it("is over once its last mission is done, and for a completed campaign", () => {
 		expect(contestView(ONBOARDING_MISSION_IDS.CHOOSE_CLASS, contestLength()).running).toBe(true);
 		expect(contestView("travelHours", contestLength() + 1)).toEqual({running: false, trialId: null, missionId: null});
