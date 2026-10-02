@@ -17,6 +17,8 @@ import { Maps } from "../../core/maps/Maps";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { CityDataController } from "../../data/City";
+import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 
 type MapImage = {
 	name: string;
@@ -33,14 +35,20 @@ function destinationImage(destination: MapLocation, language: Language): MapImag
 }
 
 function arrivedImage(mapLink: MapLink, departure: MapLocation, destination: MapLocation, language: Language): MapImage {
-	return {
-		name: mapLink.forcedImage && departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED
-			? `${mapLink.forcedImage}_${language}`
-			: `${language}_${destination.id}_`,
-
-		fallback: mapLink.forcedImage ? undefined : `en_${destination.id}_`,
-		forced: Boolean(destination.forcedImage)
-	};
+	// Forced pictures live in maps/, not among the cursor maps: they must be flagged as forced to be found.
+	if (mapLink.forcedImage && departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED) {
+		return {
+			name: `${mapLink.forcedImage}_${language}`,
+			forced: true
+		};
+	}
+	if (destination.forcedImage) {
+		return {
+			name: destination.forcedImage,
+			forced: true
+		};
+	}
+	return destinationImage(destination, language);
 }
 
 function roadImage(mapLink: MapLink, departure: MapLocation, destination: MapLocation, language: Language): MapImage {
@@ -87,7 +95,9 @@ export class MapCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandMapPacketReq): Promise<void> {
-		const hasArrived = Maps.isArrived(player, new Date());
+		// The arrival event restarts the clock on the finished link: while the next road is chosen, the player still stands at its end.
+		const hasArrived = Maps.isArrived(player, new Date())
+			|| BlockingUtils.isPlayerBlockedWithReason(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
 		const destinationMap = player.getDestination()!;
 
 		const mapInformation = getMapInformation(player, destinationMap, hasArrived, packet.language);
