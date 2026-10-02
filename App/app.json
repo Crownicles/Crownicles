@@ -15,7 +15,7 @@
       },
       "bundleIdentifier": "com.crownicles.app",
       "appleTeamId": "WJS86RD78F",
-      "buildNumber": "2",
+      "buildNumber": "3",
       "entitlements": {
         "com.apple.developer.game-center": true
       },
@@ -39,7 +39,7 @@
         "backgroundColor": "#B95E4B"
       },
       "package": "com.crownicles.app",
-      "versionCode": 7
+      "versionCode": 8
     },
     "web": {
       "bundler": "metro",
