@@ -169,8 +169,6 @@
     "stat": "{{emoji}} {{value}}",
     "level": "Niveau {{level}}",
     "usages": "{{usages}}/{{max}} utilisations",
-    "remainingUsages": "Utilisations restantes",
-    "enchantment": "Enchantement",
     "noMaterials": "Vous ne transportez aucun matériau.",
     "noPlants": "Vous ne transportez aucune plante ni graine.",
     "seed": "Graine",
@@ -215,8 +213,7 @@
     "stats": {
       "attack": "Attaque",
       "defense": "Défense",
-      "speed": "Vitesse",
-      "effect": "Effet"
+      "speed": "Vitesse"
     },
     "noEquippedItem": "Aucun objet porté dans cette catégorie.",
     "emptyReserve": "Aucun objet en réserve.",

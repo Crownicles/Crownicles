@@ -7,7 +7,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {isPotionCategory, itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
 import {EventJournal, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {useChooseOnce} from "@/src/collectors/ShopCollector";
-import {inventoryItemDetails, inventoryItemEmblem, InventoryItemRow} from "@/src/components/InventoryItemRow";
+import {inventoryItemDetails, inventoryItemEmblem, InventoryItemRow, isMainItem} from "@/src/components/InventoryItemRow";
 import {ItemDetails} from "@/src/components/ItemDetails";
 import {plainStory} from "@/src/display/Markdown";
 import {Note, Screen, SectionHeader} from "@/src/design/Primitives";
@@ -43,6 +43,7 @@ function FoundItemJournal({item}: {item: ItemWithDetails}): ReactNode {
 
 /** The find's figures, each with what it wins or loses against the item it would replace. */
 function FoundAgainst({found, current}: {found: ItemWithDetails; current: ItemWithDetails}): ReactNode {
+	if (!isMainItem(found) || !isMainItem(current)) return null;
 	return <>
 		<Note>{i18n.t("app:collector.item.comparedTo", {found: itemDisplayName(found), item: itemDisplayName(current)})}</Note>
 		<ItemDetails item={found} reference={current} />

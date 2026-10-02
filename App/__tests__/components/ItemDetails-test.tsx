@@ -1,5 +1,6 @@
 import {render, screen} from "@testing-library/react-native";
 import {ItemDetails} from "@/src/components/ItemDetails";
+import {inventoryItemDetails} from "@/src/components/InventoryItemRow";
 import {SmallEventShopCollector} from "@/src/collectors/SmallEventShopCollector";
 import {ItemAcceptCollector} from "@/src/collectors/ItemRewardCollector";
 import {ShopCollector} from "@/src/collectors/ShopCollector";
@@ -29,9 +30,9 @@ describe("item details before a decision", () => {
 		{item: {...POTION, itemCategory: 3, nature: ItemNature.ATTACK}, effect: "Attaque + 20 pendant les combats"},
 		{item: {...POTION, itemCategory: 3, nature: ItemNature.MONEY}, effect: "Argent + 20 par jour"}
 	])("states the actual usage of the support item: $effect", async ({item, effect}): Promise<void> => {
+		expect(inventoryItemDetails(item)).toContain(effect);
 		await render(<ItemDetails item={item} />);
-		expect(screen.getByText("Effet")).toBeTruthy();
-		expect(screen.getByText(effect)).toBeTruthy();
+		expect(screen.queryByTestId("item-details")).toBeNull();
 	});
 
 	it("shows only the statistics the item gives, the capped value struck out as Discord does", async (): Promise<void> => {
@@ -52,11 +53,13 @@ describe("item details before a decision", () => {
 		expect(screen.getByText("Vitesse")).toBeTruthy();
 	});
 
-	it("shows remaining uses alongside the potion's effect", async (): Promise<void> => {
-		await render(<ItemDetails item={{...POTION, usages: 2, maxUsages: 3}} />);
-		expect(screen.getByText("Vie + 20")).toBeTruthy();
-		expect(screen.getByText("Utilisations restantes")).toBeTruthy();
-		expect(screen.getByText("2/3 utilisations")).toBeTruthy();
+	it("shows remaining uses alongside the potion's effect", (): void => {
+		expect(inventoryItemDetails({...POTION, usages: 2, maxUsages: 3})).toMatch(/Vie \+ 20 · 2\/3 utilisations$/);
+	});
+
+	it("repeats nothing the caption already says", async (): Promise<void> => {
+		await render(<ItemDetails item={{...WEAPON, attack: {baseValue: 20, upgradeValue: 0, maxValue: 25}}} />);
+		expect(screen.queryByTestId("item-details")).toBeNull();
 	});
 
 	it.each([
@@ -71,7 +74,7 @@ describe("item details before a decision", () => {
 			onChoose={choose}
 			submitting={false}
 		/>);
-		expect(screen.getByText("Argent + 20 par jour")).toBeTruthy();
+		expect(screen.getByText(/Argent \+ 20 par jour/)).toBeTruthy();
 		expect(choose).not.toHaveBeenCalled();
 	});
 
@@ -84,7 +87,7 @@ describe("item details before a decision", () => {
 			onChoose={choose}
 			submitting={false}
 		/>);
-		expect(screen.getByText("Argent + 20 par jour")).toBeTruthy();
+		expect(screen.getByText(/Argent \+ 20 par jour/)).toBeTruthy();
 		expect(choose).not.toHaveBeenCalled();
 	});
 
