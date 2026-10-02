@@ -1,6 +1,8 @@
 import React, {ReactNode, useContext, useRef, useState} from "react";
 import {Linking} from "react-native";
 import {useRouter} from "expo-router";
+import {nativeApplicationVersion, nativeBuildVersion} from "expo-application";
+import Constants from "expo-constants";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {VersionReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
 import {VersionRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
@@ -38,6 +40,14 @@ type LegalPageUrl = typeof AppConstants.LEGAL_URLS[keyof typeof AppConstants.LEG
 
 function rowEmblem(path: string): ReactNode {
 	return <TwemojiIcon emoji={AppIcons.getIcon(path)} size={ROW_EMBLEM_SIZE} />;
+}
+
+/** The installed binary is the reference; the web preview has none and falls back to the declared version. */
+function appVersion(): string {
+	const version = nativeApplicationVersion ?? Constants.expoConfig?.version ?? "?";
+	return nativeApplicationVersion && nativeBuildVersion
+		? i18n.t("app:settings.appVersionValue", {version, build: nativeBuildVersion})
+		: version;
 }
 
 function GameSettings(): ReactNode {
@@ -199,6 +209,7 @@ function AboutSettings(): ReactNode {
 		<ExpandableList>
 			<EntryRow emblem={<Shield size={ROW_EMBLEM_SIZE} />} title={i18n.t("app:settings.legal.privacy")} onPress={(): void => openLegalPage(AppConstants.LEGAL_URLS.PRIVACY)} />
 			<EntryRow emblem={<BookOpen size={ROW_EMBLEM_SIZE} />} title={i18n.t("app:settings.legal.terms")} onPress={(): void => openLegalPage(AppConstants.LEGAL_URLS.TERMS)} />
+			<EntryRow title={i18n.t("app:settings.appVersion")} end={appVersion()} />
 			<EntryRow title={i18n.t("app:settings.coreVersion")} end={version.status === "ready" ? version.data.coreVersion : i18n.t("app:common.loading")} />
 			<SwitchRow label={i18n.t("app:settings.developerMode")} value={preferences.getDevMode()} onChange={preferences.setDevMode} />
 			{preferences.getDevMode() ? <DeveloperTools /> : null}

@@ -255,6 +255,8 @@
       "clear": "Effacer",
       "disabled": "Ce serveur n'est pas en mode test : les commandes test y sont désactivées."
     },
+    "appVersion": "Version de l'application",
+    "appVersionValue": "{{version}} ({{build}})",
     "coreVersion": "Version du moteur",
     "legal": {
       "privacy": "Politique de confidentialité",
@@ -1355,6 +1357,7 @@
     "availableInHours_other": "Disponible dans {{count}} heures",
     "cooldownAfter": "Après un changement, le prochain sera disponible dans {{duration}}.",
     "confirm": "Choisir la classe {{name}} ?",
+    "choose": "Choisir cette classe",
     "availableAt": "Un nouveau changement sera possible le {{date}}.",
     "outcomes": {"success": "Classe modifiée", "cooldown": "Changement indisponible"},
     "kinds": {"basic": "Polyvalente", "attack": "Attaque", "defense": "Défense", "other": "Spécialisée"}

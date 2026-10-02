@@ -19,6 +19,7 @@ const mockDisconnect = jest.fn();
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: () => ({back: jest.fn(), push: mockPush})}));
 jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
 jest.mock("expo-notifications", () => ({getPermissionsAsync: jest.fn(), requestPermissionsAsync: jest.fn()}));
+jest.mock("expo-application", () => ({nativeApplicationVersion: "6.0.5", nativeBuildVersion: "3"}));
 jest.mock("@/src/notifications/PushRegistration", () => ({registerForPush: jest.fn(() => Promise.resolve()), forgetPushDevice: jest.fn()}));
 jest.mock("@/src/notifications/ReportNotifications", () => ({cancelReportNotification: jest.fn()}));
 jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
@@ -81,6 +82,12 @@ describe("settings", () => {
 		await fireEvent.press(screen.getByRole("button", {name: "app:settings.legal.privacy"}));
 		expect(Linking.openURL).toHaveBeenCalledTimes(2);
 		expect(screen.queryByText("app:settings.legal.openFailed")).toBeNull();
+	});
+
+	it("shows the installed app version next to the engine version", async () => {
+		await renderSettings();
+		expect(screen.getByText(`app:settings.appVersionValue ${JSON.stringify({version: "6.0.5", build: "3"})}`)).toBeTruthy();
+		await waitFor(() => expect(screen.getByText("6.0.4")).toBeTruthy());
 	});
 
 	it("sums up the notifications and opens their page", async () => {
