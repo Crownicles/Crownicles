@@ -10,9 +10,9 @@ import {useChooseOnce} from "@/src/collectors/ShopCollector";
 import {inventoryItemDetails, inventoryItemEmblem, InventoryItemRow} from "@/src/components/InventoryItemRow";
 import {ItemDetails} from "@/src/components/ItemDetails";
 import {plainStory} from "@/src/display/Markdown";
-import {Button, ButtonRow, Note, Screen, SectionHeader} from "@/src/design/Primitives";
+import {Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, Card, ExpandableEntry} from "@/src/design/Sections";
-import {Check, Droplets} from "@/src/design/FightIcons";
+import {Check, Coins, Droplets, X} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 
@@ -41,39 +41,58 @@ function FoundItemJournal({item}: {item: ItemWithDetails}): ReactNode {
 	/>;
 }
 
+/** The find's figures, each with what it wins or loses against the item it would replace. */
+function FoundAgainst({found, current}: {found: ItemWithDetails; current: ItemWithDetails}): ReactNode {
+	return <>
+		<Note>{i18n.t("app:collector.item.comparedTo", {found: itemDisplayName(found), item: itemDisplayName(current)})}</Note>
+		<ItemDetails item={found} reference={current} />
+	</>;
+}
+
+/** One way out, named by the item the player keeps, with what goes in exchange written under it before the press. */
+function KeepChoice({kept, given, onPress, locked}: {kept: string; given: ItemWithDetails; onPress: () => void; locked: boolean}): ReactNode {
+	const potion = isPotionCategory(given.itemCategory);
+	return <ActionBanner
+		icon={Check}
+		label={kept}
+		hint={{reason: i18n.t(potion ? "app:collector.item.thrown" : "app:collector.item.sold", {item: itemDisplayName(given)}), icon: potion ? X : Coins}}
+		pending={locked}
+		onPress={onPress}
+	/>;
+}
+
 /** Drinking the find on the spot, or leaving it: the two ways out that do not touch the inventory. */
-function FoundItemExits({collector, foundItem, drinkType, refuseType, choose, locked, children}: {
+function FoundItemExits({collector, foundItem, keepCurrent, drinkType, refuseType, choose, locked, children}: {
 	collector: ReactionCollectorCreation;
 	foundItem: ItemWithDetails;
+
+	/** The refusal, named by what the player keeps instead of the find. */
+	keepCurrent: string;
 	drinkType: string;
 	refuseType: string;
 	choose: (index: number) => void;
 	locked: boolean;
 
-	/** An action shown above the drink one, in the same stack. */
+	/** The choice keeping the find, shown first. */
 	children?: ReactNode;
 }): ReactNode {
 	const drinkIndex = reactionIndex(collector, drinkType);
 	const refuseIndex = reactionIndex(collector, refuseType);
-	const isPotion = isPotionCategory(foundItem.itemCategory);
-	return <>
-		<View style={styles.banners}>
-			{children}
-			{drinkIndex >= 0 ? <ActionBanner
-				icon={Droplets}
-				label={i18n.t("app:collector.choices.drinkPotion")}
-				pending={locked}
-				onPress={(): void => choose(drinkIndex)}
-			/> : null}
-		</View>
-		{refuseIndex >= 0 ? <ButtonRow><Button
-			emoji={AppIcons.getIcon(isPotion ? "collectors.refuse" : "unitValues.money")}
-			disabled={locked}
+	return <View style={styles.banners}>
+		{children}
+		{refuseIndex >= 0 ? <KeepChoice
+			kept={keepCurrent}
+			given={foundItem}
+			locked={locked}
 			onPress={(): void => choose(refuseIndex)}
-		>
-			{i18n.t(isPotion ? "app:collector.item.throwFound" : "app:collector.item.sellFound")}
-		</Button></ButtonRow> : null}
-	</>;
+		/> : null}
+		{drinkIndex >= 0 ? <ActionBanner
+			icon={Droplets}
+			label={i18n.t("app:collector.choices.drinkPotion")}
+			pending={locked}
+			onPress={(): void => choose(drinkIndex)}
+		/> : null}
+	</View>;
 }
 
 /** The inventory is full: every item of the same kind is listed, and the one given away is confirmed in place. */
@@ -89,8 +108,7 @@ export function ItemChoiceCollector({collector, onChoose, submitting}: ItemRewar
 	return (
 		<Screen>
 			<FoundItemJournal item={foundItem} />
-			<ItemDetails item={foundItem} />
-			<SectionHeader>{i18n.t("commands:inventory.chooseItemToReplaceTitle")}</SectionHeader>
+			<SectionHeader>{i18n.t("app:collector.item.chooseToSell", {item: found})}</SectionHeader>
 			<Card>{collector.reactions.map((reaction, index) => {
 				if (reaction.type !== ITEM_REACTION_KINDS.CHOICE_ITEM) return null;
 				const item = reaction.data.itemWithDetails;
@@ -103,11 +121,11 @@ export function ItemChoiceCollector({collector, onChoose, submitting}: ItemRewar
 					expanded={openIndex === index}
 					onToggle={(): void => setOpenIndex(openIndex === index ? undefined : index)}
 				>
-					<ItemDetails item={item} />
-					<ActionBanner
-						icon={Check}
-						label={i18n.t("app:collector.item.replaceWith", {item: found})}
-						pending={locked}
+					<FoundAgainst found={foundItem} current={item} />
+					<KeepChoice
+						kept={i18n.t("app:collector.item.keep", {item: found})}
+						given={item}
+						locked={locked}
 						onPress={(): void => choose(index)}
 					/>
 				</ExpandableEntry>;
@@ -115,6 +133,7 @@ export function ItemChoiceCollector({collector, onChoose, submitting}: ItemRewar
 			<FoundItemExits
 				collector={collector}
 				foundItem={foundItem}
+				keepCurrent={i18n.t("app:collector.item.keepAll")}
 				drinkType={ITEM_REACTION_KINDS.CHOICE_DRINK_POTION}
 				refuseType={ITEM_REACTION_KINDS.CHOICE_REFUSE}
 				choose={choose}
@@ -137,23 +156,23 @@ export function ItemAcceptCollector({collector, onChoose, submitting}: ItemRewar
 	return (
 		<Screen>
 			<FoundItemJournal item={foundItem} />
-			<ItemDetails item={foundItem} />
-			<SectionHeader>{i18n.t(isPotionCategory(foundItem.itemCategory)
-				? "commands:inventory.randomItemAcceptTitlePotion"
-				: "commands:inventory.randomItemAcceptTitle")}</SectionHeader>
+			<SectionHeader>{i18n.t("app:collector.item.current")}</SectionHeader>
 			<Card><InventoryItemRow item={itemWithDetails} /></Card>
+			<FoundAgainst found={foundItem} current={itemWithDetails} />
+			<SectionHeader>{i18n.t("app:collector.item.whichToKeep")}</SectionHeader>
 			<FoundItemExits
 				collector={collector}
 				foundItem={foundItem}
+				keepCurrent={i18n.t("app:collector.item.keep", {item: itemDisplayName(itemWithDetails)})}
 				drinkType={ITEM_REACTION_KINDS.ACCEPT_DRINK_POTION}
 				refuseType={GENERIC_REACTION_KINDS.REFUSE}
 				choose={choose}
 				locked={locked}
 			>
-				{acceptIndex >= 0 ? <ActionBanner
-					icon={Check}
-					label={i18n.t("app:collector.item.replaceWith", {item: itemDisplayName(foundItem)})}
-					pending={locked}
+				{acceptIndex >= 0 ? <KeepChoice
+					kept={i18n.t("app:collector.item.keep", {item: itemDisplayName(foundItem)})}
+					given={itemWithDetails}
+					locked={locked}
 					onPress={(): void => choose(acceptIndex)}
 				/> : null}
 			</FoundItemExits>

@@ -1,12 +1,7 @@
 import {ReactNode, useState} from "react";
-import {Text, View} from "react-native";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
-import {inventoryItemEmblem, isMainItem, statValue} from "@/src/components/InventoryItemRow";
-import {UnitIcon} from "@/src/components/UnitIcon";
+import {inventoryItemDetails, inventoryItemEmblem} from "@/src/components/InventoryItemRow";
 import {itemDisplayName} from "@/src/collectors/CollectorLabels";
-import {formatNumber} from "@/src/display/Amounts";
-import {consumableDescription, effectAmount, natureUnit} from "@/src/display/ItemEffects";
-import {joinFacts} from "@/src/display/Facts";
 import {ArrowRight, Coins, Droplets, Gift, LucideIcon, Swords, X} from "@/src/design/FightIcons";
 import {Button, ButtonRow, CountBadge, Note} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, LockHint, useSectionStyles} from "@/src/design/Sections";
@@ -18,8 +13,6 @@ import {
 	InventoryItem, InventoryItemActions, ITEM_ACTIONS, ItemAction, ItemActionChoice
 } from "@/src/store/useInventoryItemActions";
 import {i18n} from "@/src/translations/i18n";
-
-const HEADLINE_UNIT_SIZE = 12;
 
 const ACTION_ICONS: Record<ItemAction, LucideIcon> = {
 	[ITEM_ACTIONS.EQUIP]: Swords,
@@ -44,48 +37,12 @@ export function inventoryItemKey(entry: InventoryItem): string {
 	return `${entry.kind}-${entry.slot}`;
 }
 
-/** The one number the item is worn for, so rows compare at a glance without unfolding. */
-function headline({item, kind}: InventoryItem): {value: string; unit: string} | null {
-	if (isMainItem(item)) {
-		const stat = kind === "armor" ? "defense" : "attack";
-		return {value: formatNumber(statValue(item[stat])), unit: stat};
-	}
-	const unit = natureUnit(item.nature);
-	if (!unit) return null;
-	return {value: effectAmount(item.nature, item.power), unit};
-}
-
-function ItemHeadline({entry, badge}: {entry: InventoryItem; badge: number}): ReactNode {
-	const sectionStyles = useSectionStyles();
-	const value = headline(entry);
-	if (!value) return null;
-	return <View style={sectionStyles.value}>
-		<Text style={sectionStyles.amount} numberOfLines={1}>{value.value}</Text>
-		<UnitIcon unit={value.unit} size={HEADLINE_UNIT_SIZE} />
-		<CountBadge count={badge} />
-	</View>;
-}
-
-/** Multi-use potions tell on the closed row how many sips they have left. */
-function itemDetails(item: ItemWithDetails): string | null {
-	if (isMainItem(item)) return i18n.t("app:inventory.level", {level: item.itemLevel});
-	if (!item.maxUsages || item.maxUsages <= 1) return null;
-	return i18n.t("app:inventory.usages", {usages: item.usages ?? item.maxUsages, max: item.maxUsages});
-}
-
-/** Effects and remaining uses stay readable even while the item is folded. */
-function itemSummary(item: ItemWithDetails): string {
-	const rarity = i18n.t(`items:rarities.${item.rarity}`);
-	const details = joinFacts([itemDetails(item), isMainItem(item) ? null : consumableDescription(item)]);
-	return details ? i18n.t("app:inventory.itemSummary", {rarity, details}) : rarity;
-}
-
 /** What the item is, and on the closed row already, why one of its actions is refused; a full reserve only shows once unfolded. */
 function ItemCaption({item, choices, expanded}: {item: ItemWithDetails; choices: ItemActionChoice[]; expanded: boolean}): ReactNode {
 	const sectionStyles = useSectionStyles();
 	const lock = expanded ? undefined : choices.find(choice => choice.lock && choice.action !== ITEM_ACTIONS.DEPOSIT)?.lock;
 	return <>
-		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{itemSummary(item)}</TwemojiText>
+		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{inventoryItemDetails(item)}</TwemojiText>
 		{lock ? <LockHint lock={lock} /> : null}
 	</>;
 }
@@ -164,7 +121,7 @@ export function InventoryItemCard({entry, choices, actions, unfolding, badge = 0
 		emblem={inventoryItemEmblem(entry.item)}
 		label={itemDisplayName(entry.item)}
 		caption={<ItemCaption item={entry.item} choices={choices} expanded={expanded} />}
-		end={<ItemHeadline entry={entry} badge={badge} />}
+		end={badge > 0 ? <CountBadge count={badge} /> : undefined}
 		expanded={expanded}
 		onToggle={(): void => unfolding.toggle(key)}
 		testID={`inventory-item-${key}`}

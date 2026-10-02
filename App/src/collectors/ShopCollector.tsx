@@ -18,7 +18,7 @@ import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {i18n} from "@/src/translations/i18n";
 import {joinParagraphs} from "@/src/display/Paragraphs";
-import {consumableDescription} from "@/src/display/ItemEffects";
+import {inventoryItemDetails} from "@/src/components/InventoryItemRow";
 import {ItemDetails} from "@/src/components/ItemDetails";
 
 const ROW_EMBLEM_SIZE = 26;
@@ -157,7 +157,7 @@ function ShopArticleRow({article, context, expanded, onToggle}: {article: ShopAr
 		label={articleName(article.shopItemId, data)}
 		caption={<View>
 			{price}
-			{potion ? <TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption}>{consumableDescription(potion)}</TwemojiText> : null}
+			{potion ? <TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption}>{inventoryItemDetails(potion)}</TwemojiText> : null}
 			{lock && !expanded ? <LockHint lock={lock} /> : null}
 		</View>}
 		end={expanded ? undefined : <Button variant="primary">{shopText("buyButton")}</Button>}

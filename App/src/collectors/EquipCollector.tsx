@@ -4,82 +4,24 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {EQUIP_DATA_KINDS, EQUIP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {EQUIP_ACTIONS, EquipCategoryData} from "ws-packets/src/objects/EquipCategoryData";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
-import {MainItem} from "ws-packets/src/objects/MainItem";
-import {MainItemStat} from "ws-packets/src/objects/MainItemStat";
 import {EquipActionReq} from "ws-packets/src/fromClient/EquipActionReq";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {useEquipmentActions} from "@/src/store/useEquipmentActions";
 import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
 import {Segment, SegmentedControl} from "@/src/design/SegmentedControl";
-import {Theme} from "@/src/design/Theme";
-import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {
-	ActionBanner, ExpandableEntry, ExpandableList, Fact, Figure, Figures, useSectionStyles, Sheet
+	ActionBanner, ExpandableEntry, ExpandableList, useSectionStyles, Sheet
 } from "@/src/design/Sections";
 import {ArrowRight, Check} from "@/src/design/FightIcons";
 import {ExpandedEntry, useExpandedEntry} from "@/src/design/useExpandedEntry";
 import {AppIcons} from "@/src/AppIcons";
-import {itemDisplayName, itemIconPath, itemCategoryLabel} from "@/src/collectors/CollectorLabels";
-import {consumableDescription} from "@/src/display/ItemEffects";
+import {itemDisplayName, itemCategoryLabel} from "@/src/collectors/CollectorLabels";
+import {inventoryItemDetails, inventoryItemEmblem} from "@/src/components/InventoryItemRow";
+import {ItemDetails} from "@/src/components/ItemDetails";
 import {i18n} from "@/src/translations/i18n";
 
 type EquipCollectorPacket = ReactionCollectorCreation & {data: Extract<ReactionCollectorCreation["data"], {type: typeof EQUIP_DATA_KINDS.COLLECTOR}>};
 type EquipmentSelection = {request: EquipActionReq; item: ItemWithDetails};
-
-/** The three numbers a weapon or an armour is judged on, in the order the rest of the game shows them. */
-const MAIN_STATS = ["attack", "defense", "speed"] as const;
-
-function statValue(stat: MainItemStat): number {
-	return Math.min(stat.baseValue + stat.upgradeValue, stat.maxValue);
-}
-
-function isMainItem(item: ItemWithDetails): item is MainItem {
-	return !("nature" in item);
-}
-
-function itemEmblem(item: ItemWithDetails): ReactNode {
-	const path = itemIconPath(item);
-	const icon = path ? AppIcons.getIconOrNull(path) : null;
-	return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : undefined;
-}
-
-/** What is being worn right now, as the headline numbers of the category. */
-function equippedFigures(item: ItemWithDetails): Figure[] {
-	if (isMainItem(item)) {
-		return MAIN_STATS.map(stat => ({
-			caption: i18n.t(`app:equipment.stats.${stat}`),
-			value: String(statValue(item[stat])),
-			unit: stat
-		}));
-	}
-	return [{caption: i18n.t("app:equipment.stats.effect"), value: consumableDescription(item)}];
-}
-
-/** Signed, so the row reads as a change rather than as a second set of numbers to compare by hand. */
-function formatDifference(difference: number): string {
-	return difference > 0 ? `+${difference}` : String(difference);
-}
-
-/**
- * What swapping would change, said before the swap happens.
- *
- * Comparing two lists of numbers is exactly the work a phone should do for the player, so the row
- * states the difference instead of showing the candidate's raw statistics next to the worn ones.
- */
-function ComparedStats({candidate, equipped}: {candidate: ItemWithDetails; equipped: ItemWithDetails | null}): ReactNode {
-	if (!isMainItem(candidate)) return <Fact label={i18n.t("app:equipment.stats.effect")} value={consumableDescription(candidate)} />;
-	const worn = equipped && isMainItem(equipped) ? equipped : null;
-	return <>{MAIN_STATS.map(stat => {
-		const value = statValue(candidate[stat]);
-		const difference = worn ? value - statValue(worn[stat]) : 0;
-		return <Fact
-			key={stat}
-			label={i18n.t(`app:equipment.stats.${stat}`)}
-			value={difference === 0 ? String(value) : i18n.t("app:equipment.stats.change", {value, difference: formatDifference(difference)})}
-			unit={stat}
-		/>;
-	})}</>;
-}
 
 /** An item is equipped from its own row: a window over the list would hide what is being swapped. */
 function ReserveEntry({item, slot, equipped, locked, expanded, category, onToggle, onConfirm}: {
@@ -94,15 +36,15 @@ function ReserveEntry({item, slot, equipped, locked, expanded, category, onToggl
 }): ReactNode {
 	const sectionStyles = useSectionStyles();
 	return <ExpandableEntry
-		emblem={itemEmblem(item)}
+		emblem={inventoryItemEmblem(item)}
 		label={itemDisplayName(item)}
-		caption={i18n.t(`items:rarities.${item.rarity}`)}
+		caption={inventoryItemDetails(item)}
 		end={<Text style={sectionStyles.caption}>{i18n.t("app:equipment.slot", {slot})}</Text>}
 		dimmed={locked}
 		expanded={expanded}
 		onToggle={onToggle}
 	>
-		<ComparedStats candidate={item} equipped={equipped} />
+		<ItemDetails item={item} {...equipped ? {reference: equipped} : {}} />
 		<ActionBanner
 			icon={Check}
 			label={i18n.t(`app:equipment.confirm.${EQUIP_ACTIONS.EQUIP}`)}
@@ -126,13 +68,13 @@ function EquippedSection({category, locked, expanded, onToggle, onConfirm}: {
 	const equipped = category.equippedItem;
 	if (!equipped) return <ExpandableList><EmptyState>{i18n.t("app:equipment.noEquippedItem")}</EmptyState></ExpandableList>;
 	return <>
-		<Figures items={equippedFigures(equipped.details)} />
+		<ItemDetails item={equipped.details} />
 		<ExpandableList>
 			<ExpandableEntry
-				emblem={itemEmblem(equipped.details)}
+				emblem={inventoryItemEmblem(equipped.details)}
 				label={itemDisplayName(equipped.details)}
 				caption={category.canDeposit
-					? i18n.t(`items:rarities.${equipped.details.rarity}`)
+					? inventoryItemDetails(equipped.details)
 					: i18n.t("app:equipment.errors.reserveFull")}
 				end={<Text style={sectionStyles.caption}>{i18n.t("app:equipment.equipped")}</Text>}
 				dimmed={locked || !category.canDeposit}

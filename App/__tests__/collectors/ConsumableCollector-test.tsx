@@ -33,7 +33,7 @@ describe("items found on the road", () => {
 		await findFromCore(true);
 		expect(screen.getByText("app:inventoryActions.found")).toBeTruthy();
 		expect(screen.getByRole("alert")).toHaveTextContent(/models:potions\.7/);
-		expect(screen.getByRole("alert")).toHaveTextContent(/potionsNaturesWithoutEmote.1.*20/);
+		expect(screen.getByRole("alert")).toHaveTextContent(/potionsNatures.1.*20/);
 	});
 
 	it("leaves a find that did not fit to the choice that follows it", async () => {
@@ -54,8 +54,8 @@ describe("daily bonus and potion outcomes", () => {
 		const choose = jest.fn();
 		await render(<ConsumableCollector collector={collector} onChoose={choose} submitting={false} />);
 		expect(screen.getAllByText("models:objects.3")).toHaveLength(2);
-		expect(screen.getAllByText(/objectsNaturesWithoutEmote.5/)).toHaveLength(2);
-		expect(screen.queryByText(/potionsNaturesWithoutEmote.5/)).toBeNull();
+		expect(screen.getAllByText(/objectsNatures.5/)).toHaveLength(2);
+		expect(screen.queryByText(/potionsNatures.5/)).toBeNull();
 		await fireEvent.press(screen.getAllByRole("button", {name: "models:objects.3"})[1]);
 		await fireEvent.press(screen.getByRole("button", {name: "app:dailyBonus.claim"}));
 		expect(choose).toHaveBeenCalledTimes(1);

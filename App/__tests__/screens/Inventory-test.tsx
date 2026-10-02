@@ -21,6 +21,7 @@ jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string, options?: {
 	if (key === "items:attack") return `attack ${Number(options?.value)}`;
 	if (key === "app:inventory.itemSummary") return options?.details ?? key;
 	if (key === "app:inventory.usages") return `${options?.usages}/${options?.max} uses`;
+	if (key === "app:inventory.stat") return String(options?.value);
 	return key;
 }}}));
 
@@ -45,32 +46,33 @@ describe("inventory views", () => {
 		expect(screen.getByText("models:weapons.7")).toBeTruthy();
 		expect(screen.getAllByText("app:inventory.owned")).toHaveLength(2);
 		expect(screen.getByText("app:inventory.absent")).toBeTruthy();
-		expect(screen.getByText("20")).toBeTruthy();
-		expect(screen.getByText("60")).toBeTruthy();
+		expect(screen.getByText(/items:potionsNatures\.3/)).toBeTruthy();
+		expect(screen.getByText(/items:objectsNatures\.6/)).toBeTruthy();
 	});
 
 	it("tells on the closed row how many uses a multi-use potion has left", async () => {
 		const data = inventory();
 		data.potion = {...data.potion, usages: 2, maxUsages: 3};
 		await renderWithGameQuery(<Inventory inventoryData={data} />);
-		expect(screen.getByText("2/3 uses · items:potionsNaturesWithoutEmote.3")).toBeTruthy();
+		expect(screen.getByText("items:rarities.1 · items:potionsNatures.3 · 2/3 uses")).toBeTruthy();
 	});
 
-	it("heads each reserve row with the value the item is worn for and excludes the equipped slot from capacity", async () => {
+	it("writes each reserve row as Discord does and excludes the equipped slot from capacity", async () => {
 		await renderWithGameQuery(<Inventory inventoryData={inventory()} />);
 		await fireEvent.press(screen.getByRole("tab", {name: "app:inventory.views.reserve"}));
-		expect(screen.getByText("6")).toBeTruthy();
+		expect(screen.getByText("items:rarities.1 · app:inventory.level · 6")).toBeTruthy();
 		expect(screen.queryByText("app:equipment.slot")).toBeNull();
 		expect(screen.getByText("1 / 2")).toBeTruthy();
 		expect(screen.getAllByText("0 / 0")).toHaveLength(3);
 	});
-	it("formats large capped statistics only once", async () => {
+	it("formats large capped statistics once, the full value struck out in the details", async () => {
 		const data = inventory();
 		data.weapon.attack = {baseValue: 1400, upgradeValue: 100, maxValue: 1250};
 		await renderWithGameQuery(<Inventory inventoryData={data} />);
-		expect(screen.getByText((1250).toLocaleString())).toBeTruthy();
+		expect(screen.getByText(`items:rarities.1 · app:inventory.level · ${(1250).toLocaleString()}`)).toBeTruthy();
 		await fireEvent.press(screen.getByRole("button", {name: "models:weapons.7"}));
-		expect(screen.getAllByText((1250).toLocaleString())).toHaveLength(2);
+		expect(screen.getByText((1250).toLocaleString())).toBeTruthy();
+		expect(screen.getByText((1500).toLocaleString())).toHaveStyle({textDecorationLine: "line-through"});
 		expect(screen.queryByText(/NaN/)).toBeNull();
 	});
 

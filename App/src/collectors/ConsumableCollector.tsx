@@ -4,7 +4,7 @@ import {DAILY_BONUS_DATA_KINDS, DAILY_BONUS_REACTION_KINDS, DRINK_REACTION_KINDS
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {countdownLabel, useSecondsLeft} from "@/src/collectors/CollectorPrompt";
 import {itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
-import {consumableDescription} from "@/src/display/ItemEffects";
+import {inventoryItemDetails} from "@/src/components/InventoryItemRow";
 import {Clock3, Droplets, Gift} from "@/src/design/FightIcons";
 import {Note} from "@/src/design/Primitives";
 import {ActionBanner, ENTRY_CHEVRONS, ExpandableEntry, ExpandableList, QuestionSheet} from "@/src/design/Sections";
@@ -38,7 +38,7 @@ function ConsumableList({options, selected, onSelect}: {options: ConsumableOptio
 		key={option.index}
 		emblem={<ConsumableEmblem item={option.item} />}
 		label={itemDisplayName(option.item)}
-		caption={consumableDescription(option.item)}
+		caption={inventoryItemDetails(option.item)}
 		expanded={selected === option.index}
 		highlighted={selected === option.index}
 		chevron={ENTRY_CHEVRONS.NONE}

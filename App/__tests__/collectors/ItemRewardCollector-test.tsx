@@ -43,17 +43,19 @@ function choiceCollector(): ReactionCollectorCreation {
 }
 
 describe("ItemChoiceCollector", () => {
-	it("shows the find with Discord's texts and replaces only after the in-place confirmation", async () => {
+	it("shows the find and keeps it only after the in-place confirmation, saying which item is sold", async () => {
 		const onChoose = jest.fn();
 		await render(<ItemChoiceCollector collector={choiceCollector()} onChoose={onChoose} submitting={false} />);
 
 		expect(screen.getByText("commands:inventory.randomItemTitle")).toBeTruthy();
-		expect(screen.getByText("commands:inventory.chooseItemToReplaceTitle")).toBeTruthy();
+		expect(screen.getByText("app:collector.item.chooseToSell:models:weapons.9")).toBeTruthy();
 
 		await fireEvent.press(screen.getByLabelText("models:weapons.4"));
 		expect(onChoose).not.toHaveBeenCalled();
+		expect(screen.getByTestId("item-details")).toBeTruthy();
+		expect(screen.getByText("app:collector.item.sold:models:weapons.4")).toBeTruthy();
 
-		await fireEvent.press(screen.getByText("app:collector.item.replaceWith:models:weapons.9"));
+		await fireEvent.press(screen.getByText("app:collector.item.keep:models:weapons.9"));
 		expect(onChoose).toHaveBeenCalledWith(1);
 	});
 
@@ -61,13 +63,33 @@ describe("ItemChoiceCollector", () => {
 		const onChoose = jest.fn();
 		await render(<ItemChoiceCollector collector={choiceCollector()} onChoose={onChoose} submitting={false} />);
 
-		await fireEvent.press(screen.getByText("app:collector.item.sellFound"));
+		expect(screen.getByText("app:collector.item.sold:models:weapons.9")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:collector.item.keepAll"));
 		expect(onChoose).toHaveBeenCalledWith(2);
 	});
 });
 
 describe("ItemAcceptCollector", () => {
-	it("asks Discord's question about the held potion and offers to drink the find", async () => {
+	it("names both choices by the item kept, and what each one sells", async () => {
+		const onChoose = jest.fn();
+		await render(<ItemAcceptCollector
+			collector={{
+				id: "item-accept",
+				endTime: Date.now() + 60_000,
+				data: {type: ITEM_DATA_KINDS.ACCEPT, data: {itemWithDetails: weapon(3), foundItem: weapon(9)}},
+				reactions: [{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}}, {type: GENERIC_REACTION_KINDS.REFUSE, data: {}}]
+			}}
+			onChoose={onChoose}
+			submitting={false}
+		/>);
+
+		expect(screen.getByText("app:collector.item.sold:models:weapons.3")).toBeTruthy();
+		expect(screen.getByText("app:collector.item.sold:models:weapons.9")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:collector.item.keep:models:weapons.3"));
+		expect(onChoose).toHaveBeenCalledWith(1);
+	});
+
+	it("throws a potion rather than selling it, and offers to drink the find", async () => {
 		const onChoose = jest.fn();
 		const potion = {id: 5, rarity: 1, itemCategory: 2, nature: 1, power: 10, maxPower: 10, maxUsages: 1};
 		await render(<ItemAcceptCollector
@@ -85,8 +107,7 @@ describe("ItemAcceptCollector", () => {
 			submitting={false}
 		/>);
 
-		expect(screen.getByText("commands:inventory.randomItemAcceptTitlePotion")).toBeTruthy();
-		expect(screen.getByText("app:collector.item.throwFound")).toBeTruthy();
+		expect(screen.getByText("app:collector.item.thrown:models:potions.5")).toBeTruthy();
 
 		await fireEvent.press(screen.getByText("app:collector.choices.drinkPotion"));
 		expect(onChoose).toHaveBeenCalledWith(1);

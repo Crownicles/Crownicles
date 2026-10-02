@@ -34,14 +34,22 @@ describe("item details before a decision", () => {
 		expect(screen.getByText(effect)).toBeTruthy();
 	});
 
-	it("names the equipment statistics and uses their server-provided caps", async (): Promise<void> => {
-		await render(<ItemDetails item={WEAPON} />);
+	it("shows only the statistics the item gives, the capped value struck out as Discord does", async (): Promise<void> => {
+		await render(<ItemDetails item={{...WEAPON, speed: {baseValue: 0, upgradeValue: 0, maxValue: 5}}} />);
 		expect(screen.getByText("Attaque")).toBeTruthy();
-		expect(screen.getByText("Vitesse")).toBeTruthy();
+		expect(screen.queryByText("Vitesse")).toBeNull();
 		expect(screen.getByText("25")).toBeTruthy();
+		expect(screen.getByText("30")).toHaveStyle({textDecorationLine: "line-through"});
 		expect(screen.getByText("3")).toBeTruthy();
-		expect(screen.getByText("1")).toBeTruthy();
-		expect(screen.queryByText("30")).toBeNull();
+	});
+
+	it("says what each statistic wins or loses against the item it would replace", async (): Promise<void> => {
+		const worn = {...WEAPON, attack: {baseValue: 20, upgradeValue: 0, maxValue: 25}, speed: {baseValue: 0, upgradeValue: 0, maxValue: 5}};
+		await render(<ItemDetails item={{...WEAPON, defense: {baseValue: 0, upgradeValue: 0, maxValue: 5}}} reference={worn} />);
+		expect(screen.getByText("+5")).toBeTruthy();
+		expect(screen.getByText("Défense")).toBeTruthy();
+		expect(screen.getByText("-3")).toBeTruthy();
+		expect(screen.getByText("Vitesse")).toBeTruthy();
 	});
 
 	it("shows remaining uses alongside the potion's effect", async (): Promise<void> => {
@@ -92,7 +100,7 @@ describe("item details before a decision", () => {
 			onChoose={choose}
 			submitting={false}
 		/>);
-		expect(screen.getByText("Vie + 20")).toBeTruthy();
+		expect(screen.getByText(/Vie \+ 20/)).toBeTruthy();
 		expect(choose).not.toHaveBeenCalled();
 	});
 });

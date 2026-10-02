@@ -9,7 +9,7 @@ import {collectorDescription, eventPromptIcon, itemDisplayName} from "@/src/coll
 import {EventJournal} from "@/src/collectors/EventOutcomeScreen";
 import {Button} from "@/src/design/Primitives";
 import {ActionBanner, Figure, Figures, Standing} from "@/src/design/Sections";
-import {inventoryItemEmblem} from "@/src/components/InventoryItemRow";
+import {inventoryItemDetails, inventoryItemEmblem} from "@/src/components/InventoryItemRow";
 import {ItemDetails} from "@/src/components/ItemDetails";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {Page} from "@/src/design/DetailScreen";
@@ -39,7 +39,7 @@ function OfferedItem({item}: {item: ItemWithDetails}): ReactNode {
 		{...emblem ? {emblem} : {}}
 		caption={i18n.tArray("smallEvents:shop.types")[item.itemCategory] ?? ""}
 		title={itemDisplayName(item)}
-		subtitle={i18n.t(`items:rarities.${item.rarity}`)}
+		subtitle={inventoryItemDetails(item)}
 	/>;
 }
 

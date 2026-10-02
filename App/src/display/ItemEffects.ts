@@ -70,3 +70,10 @@ export function consumableDescription(item: ItemWithDetails): string {
 	const key = isPotionCategory(item.itemCategory) ? "potionsNaturesWithoutEmote" : "objectsNaturesWithoutEmote";
 	return i18n.t(`items:${key}.${item.nature}`, {power: effectAmount(item.nature, item.power)});
 }
+
+/** The effect as Discord writes it, behind the emoji of its nature. */
+export function consumableEffect(item: SupportItem): string {
+	const key = isPotionCategory(item.itemCategory) ? "potionsNatures" : "objectsNatures";
+	// These keys format the number themselves: a pre-formatted "1 250" would read as NaN.
+	return i18n.t(`items:${key}.${item.nature}`, {power: item.nature === ItemNature.TIME_SPEEDUP ? formatDurationMinutes(item.power) : item.power});
+}

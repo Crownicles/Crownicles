@@ -166,8 +166,7 @@
   "inventory": {
     "views": {"equipped": "Équipement", "reserve": "Réserve", "materials": "Matériaux", "plants": "Plantes"},
     "actions": {"equip": "Équiper", "deposit": "Ranger", "drink": "Boire", "daily": "Bonus journalier", "sell": "Vendre", "discard": "Jeter", "confirm": "Confirmer"},
-    "itemSummary": "{{rarity}} · {{details}}",
-    "statValue": "{{stat}} : {{value}}",
+    "stat": "{{emoji}} {{value}}",
     "level": "Niveau {{level}}",
     "usages": "{{usages}}/{{max}} utilisations",
     "remainingUsages": "Utilisations restantes",
@@ -217,8 +216,7 @@
       "attack": "Attaque",
       "defense": "Défense",
       "speed": "Vitesse",
-      "effect": "Effet",
-      "change": "{{value}} ({{difference}})"
+      "effect": "Effet"
     },
     "noEquippedItem": "Aucun objet porté dans cette catégorie.",
     "emptyReserve": "Aucun objet en réserve.",
@@ -420,9 +418,14 @@
       }
     },
     "item": {
-      "replaceWith": "Remplacer par {{item}}",
-      "sellFound": "Vendre l'objet trouvé",
-      "throwFound": "Jeter la potion trouvée"
+      "keep": "Garder {{item}}",
+      "keepAll": "Garder mes objets actuels",
+      "sold": "En échange, vous vendez {{item}}.",
+      "thrown": "En échange, vous jetez {{item}}.",
+      "current": "Votre objet actuel",
+      "whichToKeep": "Quel objet garder ?",
+      "chooseToSell": "Quel objet vendre pour garder {{item}} ?",
+      "comparedTo": "{{found}} comparé à {{item}}"
     },
     "choices": {
       "altarContribute": "Offrir {{amount}} {emote:unitValues.money}",
