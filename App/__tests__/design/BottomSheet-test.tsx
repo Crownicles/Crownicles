@@ -1,6 +1,7 @@
 import {act, render, screen, fireEvent, waitFor} from "@testing-library/react-native";
 import {Animated, PanResponder, PanResponderCallbacks, PanResponderGestureState, StyleSheet, Text} from "react-native";
 import {BottomSheet, sheetDragStarts} from "@/src/design/Sections";
+import {SwipeBack} from "@/src/design/SwipeBack";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
 jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
@@ -24,6 +25,7 @@ describe("bottom sheet dismissal", () => {
 	it.each([
 		{label: "downward", gesture: drag(), scroll: 0, expected: true},
 		{label: "horizontal", gesture: drag({dx: 180}), scroll: 0, expected: false},
+		{label: "sideways with a downward drift", gesture: drag({dx: 12, dy: 16}), scroll: 0, expected: false},
 		{label: "upward", gesture: drag({dy: -120}), scroll: 0, expected: false},
 		{label: "pinch", gesture: drag({numberActiveTouches: 2}), scroll: 0, expected: false},
 		{label: "still scrolled", gesture: drag(), scroll: 100, expected: false},
@@ -57,6 +59,24 @@ describe("bottom sheet dismissal", () => {
 		const spring = jest.spyOn(Animated, "spring");
 		responders[0].onPanResponderRelease?.(undefined as never, drag({dy: 30, vy: 1.2}));
 		expect(spring).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({velocity: 1200}));
+	});
+
+	it.each([
+		{label: "open", visible: true, claims: false},
+		{label: "put away", visible: false, claims: true}
+	])("leaves the edge swipe of the page underneath to a sheet $label", async ({visible, claims}) => {
+		await render(<SwipeBack onClose={jest.fn()}><BottomSheet onClose={jest.fn()} visible={visible}><Text>Content</Text></BottomSheet></SwipeBack>);
+		const edgeSwipe = drag({x0: 10, dx: 60, dy: 0});
+		expect(responders[0].onMoveShouldSetPanResponderCapture?.(undefined as never, edgeSwipe)).toBe(claims);
+	});
+
+	it("stays open when a drag taken over ends up as a sideways swipe", async () => {
+		const close = jest.fn();
+		await render(<BottomSheet onClose={close}><Text>Content</Text></BottomSheet>);
+		responders[1].onPanResponderGrant?.(undefined as never, drag());
+		responders[1].onPanResponderRelease?.(undefined as never, drag({dx: 220, dy: 60, vy: 1.5}));
+		await act(async () => undefined);
+		expect(close).not.toHaveBeenCalled();
 	});
 
 	it("comes back up when its owner keeps it open, instead of lingering off screen", async () => {

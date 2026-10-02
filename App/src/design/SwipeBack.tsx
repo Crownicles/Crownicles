@@ -54,6 +54,27 @@ const useStyles = createStyles(colors => ({
 
 const SwipeBackDepth = createContext<((delta: number) => void) | null>(null);
 const SwipeBackOpen = createContext(false);
+const SwipeBackSuspension = createContext<(() => () => void) | null>(null);
+
+/** How many sheets currently stand over the view; read by the gesture, which outlives every render. */
+class Suspensions {
+	private count = 0;
+
+	public get active(): boolean {return this.count > 0;}
+	public readonly add = (): () => void => {
+		this.count += 1;
+		return (): void => {this.count -= 1;};
+	};
+}
+
+/**
+ * A sheet is a modal, yet its touches still travel through the views it was opened from:
+ * while it is open, a drag from its left edge must not take the whole view away under it.
+ */
+export function useSuspendSwipeBack(active: boolean): void {
+	const suspend = useContext(SwipeBackSuspension);
+	useEffect(() => active && suspend ? suspend() : undefined, [active, suspend]);
+}
 
 /** Tab paging and the back gesture both live on a horizontal drag, so only one of them may listen at a time. */
 export function SwipeBackBoundary({children}: {children: ReactNode}): ReactNode {
@@ -72,6 +93,7 @@ export function SwipeBack({onClose, overlay, children}: {onClose: () => void; ov
 	const styles = useStyles();
 	const {width} = useWindowDimensions();
 	const [translateX] = useState(() => new Animated.Value(0));
+	const [suspensions] = useState(() => new Suspensions());
 	const reportDepth = useContext(SwipeBackDepth);
 	useEffect(() => {
 		reportDepth?.(1);
@@ -94,7 +116,7 @@ export function SwipeBack({onClose, overlay, children}: {onClose: () => void; ov
 		};
 		return PanResponder.create({
 			/** Claimed on capture, otherwise the scrolling content underneath keeps the finger for itself. */
-			onMoveShouldSetPanResponderCapture: (_event, gesture) => edgeSwipeStarts(gesture),
+			onMoveShouldSetPanResponderCapture: (_event, gesture) => !suspensions.active && edgeSwipeStarts(gesture),
 			onPanResponderMove: (_event, gesture) => translateX.setValue(Math.max(0, gesture.dx)),
 			onPanResponderRelease: (_event, gesture) => {
 				if (edgeSwipeCloses(gesture, width)) {
@@ -109,6 +131,8 @@ export function SwipeBack({onClose, overlay, children}: {onClose: () => void; ov
 			},
 			onPanResponderTerminate: settle
 		});
-	}, [onClose, translateX, width]);
-	return <Animated.View testID="swipe-back" style={[overlay ? styles.overlay : styles.sheet, {transform: [{translateX}]}]} {...responder.panHandlers}>{children}</Animated.View>;
+	}, [onClose, suspensions, translateX, width]);
+	return <Animated.View testID="swipe-back" style={[overlay ? styles.overlay : styles.sheet, {transform: [{translateX}]}]} {...responder.panHandlers}>
+		<SwipeBackSuspension.Provider value={suspensions.add}>{children}</SwipeBackSuspension.Provider>
+	</Animated.View>;
 }

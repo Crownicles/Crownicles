@@ -9,7 +9,7 @@ import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
 import {CountBadge, PendingMotion, Screen, usePressMotion} from "@/src/design/Primitives";
-import {SwipeBack} from "@/src/design/SwipeBack";
+import {SwipeBack, useSuspendSwipeBack} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -433,7 +433,7 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 
 /** Settles quickly with a hint of bounce, like a sheet dropped on a table. */
 const SHEET_SPRING = {damping: 22, stiffness: 220, mass: 0.9, useNativeDriver: true} as const;
-const SHEET_DISMISS = {distance: 90, velocity: 0.8, slop: 4, pull: 70} as const;
+const SHEET_DISMISS = {distance: 90, velocity: 0.8, slop: 10, verticalRatio: 2, pull: 70} as const;
 const SHEET_LEAVE = {returnAfterMs: 1_500} as const;
 /** Stiff and clamped: the sheet keeps the finger's momentum and leaves without bouncing at the bottom. */
 const SHEET_LEAVE_SPRING = {stiffness: 260, damping: 30, mass: 1, overshootClamping: true, useNativeDriver: true} as const;
@@ -443,7 +443,7 @@ const SHEET_SCROLL_THROTTLE_MS = 16;
 type SheetDrag = Pick<PanResponderGestureState, "dx" | "dy" | "numberActiveTouches">;
 
 export function sheetDragStarts(gesture: SheetDrag, scrollOffset = 0): boolean {
-	return gesture.numberActiveTouches === 1 && scrollOffset <= 0 && gesture.dy > SHEET_DISMISS.slop && gesture.dy > Math.abs(gesture.dx);
+	return gesture.numberActiveTouches === 1 && scrollOffset <= 0 && gesture.dy > SHEET_DISMISS.slop && gesture.dy > Math.abs(gesture.dx) * SHEET_DISMISS.verticalRatio;
 }
 
 class SheetGestureState {
@@ -459,8 +459,9 @@ class SheetGestureState {
 		if (touches > 1) this.interrupted = true;
 		return !this.interrupted;
 	}
-	public closes(gesture: Pick<PanResponderGestureState, "dy" | "vy">): boolean {
-		return !this.interrupted && (gesture.dy > SHEET_DISMISS.distance || gesture.vy > SHEET_DISMISS.velocity);
+	// A drag that ends up sideways is a swipe across the content, never a request to close.
+	public closes(gesture: Pick<PanResponderGestureState, "dx" | "dy" | "vy">): boolean {
+		return !this.interrupted && gesture.dy > Math.abs(gesture.dx) && (gesture.dy > SHEET_DISMISS.distance || gesture.vy > SHEET_DISMISS.velocity);
 	}
 }
 
@@ -527,6 +528,7 @@ export function BottomSheet({onClose, onShown, onDismissed, visible = true, head
 	const [offset] = useState(() => new Animated.Value(height));
 	const [gestureState] = useState(() => new SheetGestureState());
 	const leave = useSheetLeave(offset, height, onClose);
+	useSuspendSwipeBack(visible);
 	const shown = useRef(onShown);
 	useEffect(() => {
 		shown.current = onShown;
