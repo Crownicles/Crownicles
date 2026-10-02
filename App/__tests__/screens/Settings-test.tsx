@@ -1,4 +1,5 @@
 import {act, fireEvent, render, screen, waitFor} from "@testing-library/react-native";
+import {Linking} from "react-native";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import {NotificationPreferencesRes} from "ws-packets/src/fromServer/settings/NotificationPreferencesRes";
@@ -52,9 +53,34 @@ async function renderSettings(auth = {setState: jest.fn(), clearToken: jest.fn((
 describe("settings", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
+		jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
 		jest.mocked(useGameServices).mockReturnValue({provider: GAME_SERVICE_PROVIDERS.UNSUPPORTED, availability: GAME_SERVICE_AVAILABILITY.UNSUPPORTED, player: null, bestTopweekScore: 0, busy: false, syncFailed: false});
 		jest.mocked(GameClient.request).mockImplementation(answers as typeof GameClient.request);
 		jest.mocked(Notifications.getPermissionsAsync).mockResolvedValue({granted: true, canAskAgain: true} as Awaited<ReturnType<typeof Notifications.getPermissionsAsync>>);
+	});
+
+	afterEach(() => jest.restoreAllMocks());
+
+	it.each([
+		{label: "app:settings.legal.privacy", url: "https://crownicles.com/confidentialite/"},
+		{label: "app:settings.legal.terms", url: "https://crownicles.com/conditionsutilisation/"}
+	])("opens the public document from the settings: $label", async ({label, url}) => {
+		const auth = await renderSettings();
+		await fireEvent.press(screen.getByRole("button", {name: label}));
+		expect(Linking.openURL).toHaveBeenCalledWith(url);
+		expect(auth.clearToken).not.toHaveBeenCalled();
+		expect(mockDisconnect).not.toHaveBeenCalled();
+	});
+
+	it("keeps legal links recoverable after a browser opening failure", async () => {
+		jest.mocked(Linking.openURL).mockRejectedValueOnce(new Error("browser unavailable"));
+		await renderSettings();
+		await fireEvent.press(screen.getByRole("button", {name: "app:settings.legal.privacy"}));
+		await waitFor(() => expect(screen.getByText("app:settings.legal.openFailed")).toBeTruthy());
+
+		await fireEvent.press(screen.getByRole("button", {name: "app:settings.legal.privacy"}));
+		expect(Linking.openURL).toHaveBeenCalledTimes(2);
+		expect(screen.queryByText("app:settings.legal.openFailed")).toBeNull();
 	});
 
 	it("sums up the notifications and opens their page", async () => {

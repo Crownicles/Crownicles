@@ -1,4 +1,5 @@
 import React, {ReactNode, useContext, useRef, useState} from "react";
+import {Linking} from "react-native";
 import {useRouter} from "expo-router";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {VersionReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
@@ -25,13 +26,15 @@ import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {THEME_PREFERENCES} from "@/src/design/ThemePreference";
 import {useTheme} from "@/src/design/ThemeContext";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {LogOut, UserRound} from "@/src/design/FightIcons";
+import {BookOpen, LogOut, Shield, UserRound} from "@/src/design/FightIcons";
+import {AppConstants} from "@/src/AppConstants";
 import {Theme} from "@/src/design/Theme";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
 import {GameServicesSettings} from "@/src/gameServices/GameServicesSettings";
 
 const ROW_EMBLEM_SIZE = 24;
+type LegalPageUrl = typeof AppConstants.LEGAL_URLS[keyof typeof AppConstants.LEGAL_URLS];
 
 function rowEmblem(path: string): ReactNode {
 	return <TwemojiIcon emoji={AppIcons.getIcon(path)} size={ROW_EMBLEM_SIZE} />;
@@ -185,14 +188,22 @@ function DeveloperTools(): ReactNode {
 
 function AboutSettings(): ReactNode {
 	const preferences = useContext(PreferencesContext);
+	const [legalLinkFailed, setLegalLinkFailed] = useState(false);
 	const version = useGameQuery(GAME_ENTITIES.VERSION, () => GameClient.request(makeFromClientPacket(VersionReq, {}), VersionRes));
+	const openLegalPage = (url: LegalPageUrl): void => {
+		setLegalLinkFailed(false);
+		Linking.openURL(url).catch(() => setLegalLinkFailed(true));
+	};
 	return <>
 		<SectionHeader>{i18n.t("app:settings.sections.about")}</SectionHeader>
 		<ExpandableList>
+			<EntryRow emblem={<Shield size={ROW_EMBLEM_SIZE} />} title={i18n.t("app:settings.legal.privacy")} onPress={(): void => openLegalPage(AppConstants.LEGAL_URLS.PRIVACY)} />
+			<EntryRow emblem={<BookOpen size={ROW_EMBLEM_SIZE} />} title={i18n.t("app:settings.legal.terms")} onPress={(): void => openLegalPage(AppConstants.LEGAL_URLS.TERMS)} />
 			<EntryRow title={i18n.t("app:settings.coreVersion")} end={version.status === "ready" ? version.data.coreVersion : i18n.t("app:common.loading")} />
 			<SwitchRow label={i18n.t("app:settings.developerMode")} value={preferences.getDevMode()} onChange={preferences.setDevMode} />
 			{preferences.getDevMode() ? <DeveloperTools /> : null}
 		</ExpandableList>
+		{legalLinkFailed ? <Refusal>{i18n.t("app:settings.legal.openFailed")}</Refusal> : null}
 	</>;
 }
 

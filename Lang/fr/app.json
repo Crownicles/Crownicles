@@ -256,6 +256,11 @@
       "disabled": "Ce serveur n'est pas en mode test : les commandes test y sont désactivées."
     },
     "coreVersion": "Version du moteur",
+    "legal": {
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions d'utilisation",
+      "openFailed": "Impossible d'ouvrir le document. Réessayez en sélectionnant le lien."
+    },
     "ping": "Ping",
     "pingValue": "{{value}} ms",
     "logout": "Se déconnecter",
