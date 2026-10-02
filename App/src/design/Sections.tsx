@@ -1,6 +1,6 @@
 import {ReactNode, useEffect, useMemo, useRef, useState} from "react";
 import {
-	Animated, ActivityIndicator, Easing, KeyboardAvoidingView, Modal, ModalProps, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
+	Animated, ActivityIndicator, Easing, GestureResponderEvent, KeyboardAvoidingView, Modal, ModalProps, PanResponder, PanResponderGestureState, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
 } from "react-native";
 import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -60,7 +60,7 @@ const useStyles = createStyles(colors => ({
 	detailGrabber: {alignSelf: "center", width: 40, height: 4, borderRadius: 2, backgroundColor: colors.line},
 	detailHead: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
 	detailBody: {gap: Theme.spacing.md},
-	sheetHandle: {gap: Theme.spacing.lg},
+	sheetHandle: {gap: Theme.spacing.lg, minHeight: Theme.dimensions.compactRowMinHeight},
 	sheetScroll: {flexGrow: 0},
 	back: {alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: Theme.spacing.xs, height: 34, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: colors.wash, marginBottom: Theme.spacing.lg},
 	backLabel: {color: colors.ink, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body},
@@ -408,10 +408,35 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 /** Settles quickly with a hint of bounce, like a sheet dropped on a table. */
 const SHEET_SPRING = {damping: 22, stiffness: 220, mass: 0.9, useNativeDriver: true} as const;
 const SHEET_DISMISS = {distance: 90, velocity: 0.8, slop: 4} as const;
+const SHEET_SCROLL_THROTTLE_MS = 16;
+
+type SheetDrag = Pick<PanResponderGestureState, "dx" | "dy" | "numberActiveTouches">;
+
+export function sheetDragStarts(gesture: SheetDrag, scrollOffset = 0): boolean {
+	return gesture.numberActiveTouches === 1 && scrollOffset <= 0 && gesture.dy > SHEET_DISMISS.slop && gesture.dy > Math.abs(gesture.dx);
+}
+
+class SheetGestureState {
+	private scrollOffset = 0;
+	private scrollAtTouchStart = 0;
+	private interrupted = false;
+
+	public updateScroll(offset: number): void {this.scrollOffset = offset;}
+	public beginTouch(): void {this.scrollAtTouchStart = this.scrollOffset;}
+	public starts(gesture: SheetDrag): boolean {return sheetDragStarts(gesture, this.scrollAtTouchStart);}
+	public beginDrag(): void {this.interrupted = false;}
+	public acceptsMove(touches: number): boolean {
+		if (touches > 1) this.interrupted = true;
+		return !this.interrupted;
+	}
+	public closes(gesture: Pick<PanResponderGestureState, "dy" | "vy">): boolean {
+		return !this.interrupted && (gesture.dy > SHEET_DISMISS.distance || gesture.vy > SHEET_DISMISS.velocity);
+	}
+}
 
 /**
  * Everything that rises from the bottom: the detail of a line, a quick question, a short result.
- * A tap above it, a drag of its top edge or the back gesture puts it away.
+ * A tap above it or a downward drag of its header or unscrolled content puts it away.
  */
 export function BottomSheet({onClose, onShown, heading, children, testID}: {
 	onClose: () => void;
@@ -426,6 +451,7 @@ export function BottomSheet({onClose, onShown, heading, children, testID}: {
 	const insets = useSafeAreaInsets();
 	const {height} = useWindowDimensions();
 	const [offset] = useState(() => new Animated.Value(height));
+	const [gestureState] = useState(() => new SheetGestureState());
 	const shown = useRef(onShown);
 	useEffect(() => {
 		shown.current = onShown;
@@ -435,24 +461,52 @@ export function BottomSheet({onClose, onShown, heading, children, testID}: {
 			if (finished) shown.current?.();
 		});
 	}, [offset]);
-	const drag = useMemo(() => PanResponder.create({
-		onMoveShouldSetPanResponder: (_event, gesture) => gesture.dy > SHEET_DISMISS.slop && Math.abs(gesture.dy) > Math.abs(gesture.dx),
-		onPanResponderMove: (_event, gesture) => offset.setValue(Math.max(0, gesture.dy)),
-		onPanResponderRelease: (_event, gesture) => {
-			if (gesture.dy > SHEET_DISMISS.distance || gesture.vy > SHEET_DISMISS.velocity) onClose();
+	const dragHandlers = useMemo(() => ({
+		onPanResponderGrant: (): void => {
+			gestureState.beginDrag();
+			offset.stopAnimation();
+		},
+		onPanResponderMove: (_event: GestureResponderEvent, gesture: PanResponderGestureState): void => {
+			if (!gestureState.acceptsMove(gesture.numberActiveTouches)) {
+				Animated.spring(offset, {toValue: 0, ...SHEET_SPRING}).start();
+				return;
+			}
+			offset.setValue(Math.max(0, gesture.dy));
+		},
+		onPanResponderRelease: (_event: GestureResponderEvent, gesture: PanResponderGestureState): void => {
+			if (gestureState.closes(gesture)) onClose();
 			// A sheet that cannot be dismissed yet settles back instead of staying where the finger left it.
 			Animated.spring(offset, {toValue: 0, ...SHEET_SPRING}).start();
-		}
-	}), [offset, onClose]);
+		},
+		onPanResponderTerminate: (): void => {Animated.spring(offset, {toValue: 0, ...SHEET_SPRING}).start();}
+	}), [gestureState, offset, onClose]);
+	const headerDrag = useMemo(() => PanResponder.create({
+		onMoveShouldSetPanResponderCapture: (_event, gesture): boolean => sheetDragStarts(gesture),
+		...dragHandlers
+	}), [dragHandlers]);
+	const contentDrag = useMemo(() => PanResponder.create({
+		onStartShouldSetPanResponderCapture: (): boolean => {
+			gestureState.beginTouch();
+			return false;
+		},
+		onMoveShouldSetPanResponderCapture: (_event, gesture): boolean => gestureState.starts(gesture),
+		...dragHandlers
+	}), [dragHandlers, gestureState]);
 	return <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
 		<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.detailBackdrop}>
 			<Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:common.back")} style={StyleSheet.absoluteFill} onPress={onClose} testID="detail-sheet-backdrop" />
-			<Animated.View style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl, transform: [{translateY: offset}]}]} testID={testID}>
-				<View {...drag.panHandlers} style={styles.sheetHandle}>
+			<Animated.View {...contentDrag.panHandlers} style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl, transform: [{translateY: offset}]}]} testID={testID}>
+				<View {...headerDrag.panHandlers} style={styles.sheetHandle} testID="bottom-sheet-handle">
 					<View style={styles.detailGrabber} />
 					{heading}
 				</View>
-				<ScrollView style={styles.sheetScroll} contentContainerStyle={styles.detailBody} keyboardShouldPersistTaps="handled">{children}</ScrollView>
+				<ScrollView
+					style={styles.sheetScroll}
+					contentContainerStyle={styles.detailBody}
+					keyboardShouldPersistTaps="handled"
+					onScroll={event => gestureState.updateScroll(event.nativeEvent.contentOffset.y)}
+					scrollEventThrottle={SHEET_SCROLL_THROTTLE_MS}
+				>{children}</ScrollView>
 			</Animated.View>
 		</KeyboardAvoidingView>
 	</Modal>;
