@@ -34,6 +34,7 @@ import {Check} from "@/src/design/FightIcons";
 import {EventJournal, EventOutcomeScreen, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {plainStory} from "@/src/display/Markdown";
 import {TokenMerchantAway} from "@/src/components/TokenMerchantAway";
+import {DestinationMap} from "@/src/components/WorldMap";
 import {
 	amountEffect, gainEffect, lossEffect, lostAmountEffect, presentEffects
 } from "@/src/display/OutcomeEffects";
@@ -312,7 +313,9 @@ export function AdventureCollector(props: AdventureCollectorProps): ReactNode {
 				caption={eventEyebrow(props.collector)}
 				title={collectorTitle(props.collector.data)}
 				subtitle={description}
-			/>
+			>
+				{isDestination(props.collector) ? <DestinationMap /> : null}
+			</Standing>
 			{isDestination(props.collector) ? <DestinationGuide collector={props.collector} /> : null}
 			<CollectorChoices {...props} />
 		</Screen>

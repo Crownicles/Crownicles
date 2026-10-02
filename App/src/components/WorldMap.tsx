@@ -5,7 +5,7 @@ import {MapReq} from "ws-packets/src/fromClient/MapReq";
 import {MapRes} from "ws-packets/src/fromServer/report/MapRes";
 import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
-import {useGameQuery} from "@/src/store/useGameQuery";
+import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {MapViewer} from "@/src/components/MapViewer";
 import {Button, Note} from "@/src/design/Primitives";
@@ -74,7 +74,17 @@ export function WorldMapContent({packet}: {packet: MapRes}): ReactNode {
 	</Standing>;
 }
 
+function useMapQuery(): RequestState<MapRes> {
+	return useGameQuery(GAME_ENTITIES.MAP, () => GameClient.request(makeFromClientPacket(MapReq, {language: i18n.language}), MapRes));
+}
+
 export function WorldMap(): ReactNode {
-	const state = useGameQuery(GAME_ENTITIES.MAP, () => GameClient.request(makeFromClientPacket(MapReq, {language: i18n.language}), MapRes));
+	const state = useMapQuery();
 	return <GameQueryContent state={state} entity={GAME_ENTITIES.MAP}>{packet => <WorldMapContent packet={packet} />}</GameQueryContent>;
+}
+
+/** Only a help to choose: the answer must stay possible, so a missing map shows nothing rather than an error. */
+export function DestinationMap(): ReactNode {
+	const state = useMapQuery();
+	return state.status === "ready" ? <MapImage key={state.data.imageUrl} packet={state.data} /> : null;
 }

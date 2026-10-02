@@ -1,5 +1,6 @@
 import type {ReactElement} from "react";
 import {fireEvent, render, screen} from "@testing-library/react-native";
+import {Image} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
 	BIG_EVENT_DATA_KINDS, BIG_EVENT_REACTION_KINDS, GENERIC_REACTION_KINDS,
@@ -53,6 +54,25 @@ jest.mock("@/src/translations/i18n", () => ({
 jest.mock("@/src/store/usePlayerProfile", () => ({
 	usePlayerProfile: (): object => ({status: "ready", data: {pseudo: "Drapht"}})
 }));
+
+const mockMapState = jest.fn();
+jest.mock("@/src/store/useGameQuery", () => ({
+	useGameQuery: (): unknown => mockMapState()
+}));
+
+const MAP_IMAGE_URL = "https://crownicles.com/map-fr.jpg";
+
+function destinationCollector(): ReactionCollectorCreation {
+	return {
+		id: "destination",
+		endTime: Date.now() + 60_000,
+		data: {type: REPORT_COLLECTOR_DATA_KINDS.DESTINATION, data: {}},
+		reactions: [
+			{type: REPORT_COLLECTOR_REACTION_KINDS.DESTINATION, data: {mapId: 2, mapTypeId: "fo", tripDurationMinutes: 60}},
+			{type: REPORT_COLLECTOR_REACTION_KINDS.DESTINATION, data: {mapId: 3, mapTypeId: "mo", tripDurationMinutes: 90}}
+		]
+	};
+}
 
 function smallEvent(): ReactionCollectorCreation {
 	return {
@@ -590,6 +610,28 @@ describe("AdventureCollector", () => {
 
 	it.each(outcomeScenarios)("$name", async scenario => {
 		await continueOutcome(scenario.renderOutcome, scenario.continueText, scenario.assertView);
+	});
+
+	it("shows the map above the destination choices", async () => {
+		mockMapState.mockReturnValue({status: "ready", data: {mapId: 1, mapType: "ci", hasArrived: true, imageUrl: MAP_IMAGE_URL}});
+		jest.spyOn(Image, "getSize").mockImplementationOnce(() => Promise.resolve({width: 4096, height: 2744}));
+		const onChoose = jest.fn();
+		await render(<AdventureCollector collector={destinationCollector()} onChoose={onChoose} submitting={false} />);
+
+		expect(screen.getByLabelText("app:map.image").props.source).toEqual({uri: MAP_IMAGE_URL});
+		await fireEvent.press(screen.getAllByText(REPORT_COLLECTOR_REACTION_KINDS.DESTINATION)[1]);
+		expect(onChoose).toHaveBeenCalledWith(1);
+	});
+
+	it("keeps the destination choices answerable when the map cannot be loaded", async () => {
+		mockMapState.mockReturnValue({status: "error"});
+		const onChoose = jest.fn();
+		await render(<AdventureCollector collector={destinationCollector()} onChoose={onChoose} submitting={false} />);
+
+		expect(screen.queryByLabelText("app:map.image")).toBeNull();
+		expect(screen.queryByText("app:common.error")).toBeNull();
+		await fireEvent.press(screen.getAllByText(REPORT_COLLECTOR_REACTION_KINDS.DESTINATION)[0]);
+		expect(onChoose).toHaveBeenCalledWith(0);
 	});
 });
 
