@@ -1,4 +1,5 @@
 import {ReactNode, useEffect, useMemo, useRef, useState} from "react";
+import {parse} from "@twemoji/parser";
 import {
 	Animated, ActivityIndicator, Easing, GestureResponderEvent, KeyboardAvoidingView, Modal, ModalProps, PanResponder, PanResponderGestureState, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
 } from "react-native";
@@ -151,6 +152,8 @@ export function ChoiceAction({label, disabled = false, onPress}: {
 	onPress: () => void;
 }): ReactNode {
 	const styles = useStyles();
+	const leadingEmoji = parse(label).find(entity => entity.indices[0] === 0);
+	const text = leadingEmoji ? label.slice(leadingEmoji.indices[1]).trimStart() : label;
 	return <Pressable
 		accessibilityRole="button"
 		accessibilityLabel={label}
@@ -158,7 +161,8 @@ export function ChoiceAction({label, disabled = false, onPress}: {
 		onPress={onPress}
 		style={({pressed}): object[] => [styles.choiceAction, disabled && styles.disabled, pressed && styles.pressed].filter(Boolean) as object[]}
 	>
-		<TwemojiText containerStyle={styles.choiceActionLabel} textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
+		{leadingEmoji ? <TwemojiIcon emoji={leadingEmoji.text} size={Theme.fontSize.rowTitle} /> : null}
+		<TwemojiText containerStyle={styles.choiceActionLabel} textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{text}</TwemojiText>
 		<ArrowRight size={20} />
 	</Pressable>;
 }
