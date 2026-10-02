@@ -89,6 +89,15 @@ describe("classes screen", () => {
 		expect(screen.getByText("-15")).toBeTruthy();
 	});
 
+	it("still ranks and measures against the player's class when it belongs to a lower tier", async () => {
+		const formerTier: ClassDetails = {...DETAILS, id: 2, stats: {...DETAILS.stats, health: 120, classGroup: 0}};
+		await render(<ClassesContent classes={[DETAILS, TANK]} currentClass={2} outsideTier={formerTier} />);
+		expect(rowOrder()).toEqual(["models:classes.8", "models:classes.2", "models:classes.7"]);
+		expect(screen.getByText("app:classes.current")).toBeTruthy();
+		expect(screen.getByText("+20")).toBeTruthy();
+		expect(screen.getByText("-21")).toBeTruthy();
+	});
+
 	it("holds the choice back while the sheet is still leaving", async () => {
 		await chooseTank();
 		// On iOS, a celebration opened while the sheet is still leaving is lost and freezes every touch.

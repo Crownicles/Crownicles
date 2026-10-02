@@ -2,11 +2,14 @@ import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
+	ClassInfo,
 	CommandClassesInfoPacketReq,
 	CommandClassesInfoPacketRes
 } from "../../../../Lib/src/packets/commands/CommandClassesInfoPacket";
 
-import { ClassDataController } from "../../data/Class";
+import {
+	Class, ClassDataController
+} from "../../data/Class";
 import { FightActionDataController } from "../../data/FightAction";
 import {
 	commandRequires, CommandUtils
@@ -15,6 +18,18 @@ import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import Player from "../../core/database/game/models/Player";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { classChangeCooldownUntil } from "./ClassChangeCooldown";
+
+function classInfo(classToShow: Class, level: number): ClassInfo {
+	const attackStats = FightActionDataController.instance.getListById(classToShow.fightActionsIds);
+	return {
+		id: classToShow.id,
+		stats: classToShow.getClassStats(level),
+		attacks: classToShow.fightActionsIds.map(attack => ({
+			id: attack,
+			cost: attackStats.find(attackStat => attackStat.id === attack)!.breath
+		}))
+	};
+}
 
 export default class ClassesInfoCommand {
 	@commandRequires(CommandClassesInfoPacketReq, {
@@ -26,33 +41,14 @@ export default class ClassesInfoCommand {
 	async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
 		const classGroup = player.getClassGroup();
 		const classes = ClassDataController.instance.getByGroup(classGroup);
-
-		const classesLineDisplay = [];
-		for (const classToShow of classes) {
-			const stats = classToShow.getClassStats(player.level);
-
-			const attacks = classToShow.fightActionsIds;
-			const attackStats = FightActionDataController.instance.getListById(attacks);
-
-			const attackList = [];
-			for (const attack of attacks) {
-				const attackStat = attackStats.find(attackStat => attackStat.id === attack)!;
-				attackList.push({
-					id: attack,
-					cost: attackStat.breath
-				});
-			}
-			classesLineDisplay.push({
-				id: classToShow.id,
-				stats,
-				attacks: attackList
-			});
-		}
+		const playerClass = ClassDataController.instance.getById(player.class);
+		const outsideTier = playerClass && !classes.some(offered => offered.id === playerClass.id) ? playerClass : null;
 
 		const nextChangeTimestamp = await classChangeCooldownUntil(player);
 		response.push(makePacket(CommandClassesInfoPacketRes, {
 			data: {
-				classesStats: classesLineDisplay,
+				classesStats: classes.map(classToShow => classInfo(classToShow, player.level)),
+				...outsideTier ? { currentClass: classInfo(outsideTier, player.level) } : {},
 				...nextChangeTimestamp === null ? {} : { nextChangeTimestamp }
 			}
 		}));

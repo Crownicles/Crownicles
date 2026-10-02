@@ -95,7 +95,7 @@ function classTier(details: ClassDetails): string {
 	return i18n.t("app:classes.tierKind", {tier: details.stats.classGroup + 1, kind: i18n.t(`app:classes.kinds.${details.stats.classKind}`)});
 }
 
-/** The player's class may belong to a lower tier than the classes offered, whose figures the server does not send. */
+/** Without its figures, the player's class could not be measured against the others. */
 function ClassStanding({classId, details}: {classId: number; details?: ClassDetails}): ReactNode {
 	return <Standing
 		testID="class-standing"
@@ -202,13 +202,15 @@ function criterionOf(field: string): ClassStatField {
 }
 
 /** Ranks the classes on one figure at a time, so the player sees at a glance which one is best at what. */
-export function ClassesContent({classes, currentClass, change}: {classes: ClassDetails[]; currentClass?: number; change?: ClassChange}): ReactNode {
+export function ClassesContent({classes, currentClass, outsideTier, change}: {classes: ClassDetails[]; currentClass?: number; outsideTier?: ClassDetails; change?: ClassChange}): ReactNode {
 	const [selected, setSelected] = useState<number | undefined>();
 	const [criterion, setCriterion] = useState<ClassStatField>(CLASS_STAT_FIELDS[0]);
 	if (classes.length === 0) return <EmptyState>{i18n.t("app:classes.empty")}</EmptyState>;
-	const current = classes.find(entry => entry.id === currentClass);
-	const comparison: Comparison = {criterion, best: Math.max(...classes.map(entry => entry.stats[criterion.field])), ...current ? {reference: current} : {}};
-	const ranked = [...classes].sort((first, second) => second.stats[criterion.field] - first.stats[criterion.field]);
+	// A class left in a lower tier cannot be chosen again, but it stays the measure of every other one.
+	const compared = outsideTier ? [...classes, outsideTier] : classes;
+	const current = compared.find(entry => entry.id === currentClass);
+	const comparison: Comparison = {criterion, best: Math.max(...compared.map(entry => entry.stats[criterion.field])), ...current ? {reference: current} : {}};
+	const ranked = [...compared].sort((first, second) => second.stats[criterion.field] - first.stats[criterion.field]);
 	const criterionLabel = (stat: ClassStatField): string => i18n.t(`app:profile.fields.${stat.unit}`);
 	return <>
 		{currentClass === undefined ? null : <ClassStanding classId={currentClass} {...current ? {details: current} : {}} />}
@@ -238,7 +240,12 @@ export function ClassesContent({classes, currentClass, change}: {classes: ClassD
 function ClassesReady({info, currentClass, effect}: {info: ClassesInfoRes; currentClass: number | undefined; effect: PlayerEffect | null}): ReactNode {
 	const change = useClassChange(info.data?.nextChangeTimestamp, effect);
 	if (!info.data) return <EmptyState>{i18n.t("app:classes.empty")}</EmptyState>;
-	return <ClassesContent classes={info.data.classesStats} change={change} {...(currentClass === undefined ? {} : {currentClass})} />;
+	return <ClassesContent
+		classes={info.data.classesStats}
+		change={change}
+		{...(currentClass === undefined ? {} : {currentClass})}
+		{...(info.data.currentClass ? {outsideTier: info.data.currentClass} : {})}
+	/>;
 }
 
 export function Classes(): ReactNode {
