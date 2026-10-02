@@ -228,6 +228,7 @@ export function LeaguesContent({data}: {data: LeagueInfoRes}): ReactNode {
 			icon={Trophy}
 			label={i18n.t("app:arena.leagues.claim")}
 			pending={pending}
+			badge={lock ? 0 : 1}
 			{...lock ? {lock} : {}}
 			onPress={(): void => {
 				open(REWARD_MENU).catch(console.error);

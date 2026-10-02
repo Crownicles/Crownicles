@@ -1,4 +1,4 @@
-import {fireEvent, render, screen, waitFor} from "@testing-library/react-native";
+import {act, fireEvent, render, screen, waitFor, within} from "@testing-library/react-native";
 import {GuildOverview, GuildCreation, GuildDeparture} from "@/src/components/Guild";
 import {GuildData, GuildMember, GuildMembership} from "ws-packets/src/objects/Guild";
 import {GameClient} from "@/src/networking/GameClient";
@@ -170,6 +170,7 @@ describe("guild screens", () => {
 	])("refuses the daily reward and says why when $case", async scenario => {
 		await render(<GuildOverview guild={guildData({membership: {...MEMBERSHIP, daily: scenario.daily}})} onPage={jest.fn()} />);
 		expect(screen.getByText(scenario.lock)).toBeTruthy();
+		expect(within(screen.getByRole("button", {name: "app:guild.daily"})).queryByTestId("count-badge")).toBeNull();
 		await fireEvent.press(screen.getByText("app:guild.daily"));
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
@@ -177,8 +178,40 @@ describe("guild screens", () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
 		await render(<GuildOverview guild={guildData()} onPage={jest.fn()} />);
 		expect(screen.queryByTestId("guild-daily-lock")).toBeNull();
+		expect(within(screen.getByRole("button", {name: "app:guild.daily"})).getByTestId("count-badge")).toHaveTextContent("1");
 		await fireEvent.press(screen.getByText("app:guild.daily"));
 		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
+	});
+	it("unlocks the daily reward when its delay ends while the page remains open", async () => {
+		jest.useFakeTimers();
+		try {
+			const daily = {availableAt: Date.now() + 60_000, blockedByIsland: false};
+			await render(<GuildOverview guild={guildData({membership: {...MEMBERSHIP, daily}})} onPage={jest.fn()} />);
+			expect(screen.getByRole("button", {name: "app:guild.daily"})).toBeDisabled();
+			expect(screen.getByText("app:guild.dailyLocks.cooldown")).toBeTruthy();
+			expect(screen.queryByTestId("count-badge")).toBeNull();
+
+			await act(async () => {
+				await jest.advanceTimersByTimeAsync(60_000);
+			});
+
+			expect(screen.getByRole("button", {name: "app:guild.daily"})).toBeEnabled();
+			expect(screen.queryByText("app:guild.dailyLocks.cooldown")).toBeNull();
+			expect(within(screen.getByRole("button", {name: "app:guild.daily"})).getByTestId("count-badge")).toHaveTextContent("1");
+			expect(GameClient.request).not.toHaveBeenCalled();
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+	it("removes the daily action badge when the refreshed guild reports a new cooldown", async () => {
+		const view = await render(<GuildOverview guild={guildData()} onPage={jest.fn()} />);
+		expect(within(screen.getByRole("button", {name: "app:guild.daily"})).getByTestId("count-badge")).toBeTruthy();
+
+		const daily = {availableAt: Date.now() + 3_600_000, blockedByIsland: false};
+		await view.rerender(<GuildOverview guild={guildData({membership: {...MEMBERSHIP, daily}})} onPage={jest.fn()} />);
+		expect(screen.getByRole("button", {name: "app:guild.daily"})).toBeDisabled();
+		expect(screen.queryByTestId("count-badge")).toBeNull();
+		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 	it("sends the entered guild name without a client identity", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});

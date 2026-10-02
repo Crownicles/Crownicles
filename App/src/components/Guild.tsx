@@ -13,6 +13,8 @@ import {checkText} from "@/src/rules/InputChecks";
 import {GameClient} from "@/src/networking/GameClient";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useGameQuery} from "@/src/store/useGameQuery";
+import {CLAIMABLES_TICK_MS} from "@/src/store/useClaimables";
+import {useCurrentTime} from "@/src/store/useCurrentTime";
 import {useCommandMenus, CommandMenu} from "@/src/store/useInventoryMenus";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {FightGauge} from "@/src/components/FightGauge";
@@ -266,9 +268,10 @@ function GuildStanding({guild, membership}: {guild: GuildData; membership?: Guil
 }
 
 /** Why the shared reward cannot be claimed, in the order Core enforces it. */
-function dailyLock(membership: GuildMembership): Lock | undefined {
+function dailyLock(membership: GuildMembership, now: number): Lock | undefined {
 	if (membership.daily.blockedByIsland) return {reason: i18n.t("app:guild.dailyLocks.island")};
-	const remaining = membership.daily.availableAt - Date.now();
+	if (now === 0) return {reason: i18n.t("app:common.loading")};
+	const remaining = membership.daily.availableAt - now;
 	if (remaining <= 0) return undefined;
 	return {reason: i18n.t("app:guild.dailyLocks.cooldown", {duration: formatDurationMinutes(remaining / MILLISECONDS_PER_MINUTE)}), icon: Clock3};
 }
@@ -291,14 +294,16 @@ function GuildLinks({isChief, onPage}: GuildLinksProps): ReactNode {
 
 function GuildMemberTools({guild, membership, onPage}: {guild: GuildData; membership: GuildMembership; onPage: (page: GuildPage) => void}): ReactNode {
 	const {pending, message, open} = useCommandMenus();
+	const now = useCurrentTime(CLAIMABLES_TICK_MS);
 	const isChief = guild.members.some(member => member.isSelf && member.id === guild.chiefId);
-	const daily = dailyLock(membership);
+	const daily = dailyLock(membership, now);
 	return <>
 		{message ? <Refusal>{message}</Refusal> : null}
 		<ActionBanner
 			icon={Gift}
 			label={i18n.t("app:guild.daily")}
 			pending={pending}
+			badge={daily ? 0 : 1}
 			{...daily ? {lock: daily} : {}}
 			onPress={(): void => {
 				open(DAILY_MENU).catch(console.error);

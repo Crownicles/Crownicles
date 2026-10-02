@@ -15,7 +15,7 @@ import {useCurrentTime} from "@/src/store/useCurrentTime";
 import {JOURNEY_TABS, JourneyTab} from "@/src/journey/Journey";
 
 /** A daily bonus or a guild reward becomes available on its own: the pills look at the clock this often. */
-const CLAIMABLES_TICK_MS = 30_000;
+export const CLAIMABLES_TICK_MS = 30_000;
 
 /** The player's own inventory, one query shared by every screen that needs it. */
 export function useOwnInventory(): RequestState<InventoryRes> {

@@ -104,6 +104,7 @@ describe("arena references", () => {
 	it("selects another league without claiming a reward until explicitly requested", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "LeagueRewardRes", packet: {}});
 		await render(<LeaguesContent data={LEAGUES} />);
+		expect(within(screen.getByRole("button", {name: "app:arena.leagues.claim"})).getByTestId("count-badge")).toHaveTextContent("1");
 		expect(within(screen.getByTestId("league-standing")).getByLabelText("models:leagues.1")).toHaveProp("accessibilityValue", {now: 123, max: 300});
 		expect(screen.queryByTestId("league-rewards-0")).toBeNull();
 		await fireEvent.press(screen.getByRole("button", {name: "models:leagues.1"}));
@@ -129,7 +130,18 @@ describe("arena references", () => {
 		expect(screen.getByText("app:arena.leagues.nextClaim")).toBeTruthy();
 		const claim = screen.getByRole("button", {name: "app:arena.leagues.claim"});
 		expect(claim).toHaveProp("accessibilityState", {disabled: true, busy: false});
+		expect(within(claim).queryByTestId("count-badge")).toBeNull();
 		await fireEvent.press(claim);
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+	it("removes the league action badge after the server reports the reward as claimed", async () => {
+		const view = await render(<LeaguesContent data={LEAGUES} />);
+		expect(within(screen.getByRole("button", {name: "app:arena.leagues.claim"})).getByTestId("count-badge")).toBeTruthy();
+
+		await view.rerender(<LeaguesContent data={{...LEAGUES, rewardAvailability: {type: "alreadyClaimed"}}} />);
+		const claim = screen.getByRole("button", {name: "app:arena.leagues.claim"});
+		expect(claim).toBeDisabled();
+		expect(within(claim).queryByTestId("count-badge")).toBeNull();
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 	it("keeps the highest league visible without inventing another threshold", async () => {
