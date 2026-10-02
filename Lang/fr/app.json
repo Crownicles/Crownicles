@@ -367,7 +367,9 @@
     "unknownChoice": "Choix indisponible dans cette version",
     "pending": "Une action est en attente",
     "answering": "Votre choix est envoyé…",
-    "timeLeft": "{{seconds}} s",
+    "yourAction": "Votre action",
+    "replyBefore": "Répondre avant {{time}}",
+    "timeLeft": "Délai pour répondre : {{seconds}} s",
     "expired": "Le temps imparti est écoulé",
     "titles": {
       "drink": "Quelle potion boire ?",

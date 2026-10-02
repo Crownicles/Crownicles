@@ -54,6 +54,8 @@ const useStyles = createStyles(colors => ({
 	dimmed: {opacity: 0.45},
 	entryEmblem: {width: 32, height: 32, flexShrink: 0, alignItems: "center", justifyContent: "center"},
 	entryLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: colors.ink},
+	choiceAction: {minHeight: Theme.dimensions.compactRowMinHeight, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg, borderWidth: 1, borderColor: colors.line, borderRadius: Theme.radius, backgroundColor: colors.wash},
+	choiceActionLabel: {flex: 1, minWidth: 0},
 	dangerLabel: {color: colors.red},
 	detailBackdrop: {flex: 1, justifyContent: "flex-end", backgroundColor: colors.overlay},
 	detailCard: {backgroundColor: colors.paper, borderTopLeftRadius: Theme.radius * 2, borderTopRightRadius: Theme.radius * 2, paddingHorizontal: Theme.spacing.xl, paddingTop: Theme.spacing.md, gap: Theme.spacing.lg, maxHeight: "85%"},
@@ -142,6 +144,24 @@ type SectionStyles = ReturnType<typeof useStyles>;
 
 /** Why an action cannot be taken, so the screen can say it instead of letting the player find out. */
 export type Lock = {reason: string; icon?: LucideIcon};
+
+export function ChoiceAction({label, disabled = false, onPress}: {
+	label: string;
+	disabled?: boolean;
+	onPress: () => void;
+}): ReactNode {
+	const styles = useStyles();
+	return <Pressable
+		accessibilityRole="button"
+		accessibilityLabel={label}
+		disabled={disabled}
+		onPress={onPress}
+		style={({pressed}): object[] => [styles.choiceAction, disabled && styles.disabled, pressed && styles.pressed].filter(Boolean) as object[]}
+	>
+		<TwemojiText containerStyle={styles.choiceActionLabel} textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
+		<ArrowRight size={20} />
+	</Pressable>;
+}
 
 /** A hint only explains what is closed; a refusal says what the player did is wrong, in red. */
 export const HINT_TONES = {HINT: "hint", REFUSAL: "refusal"} as const;

@@ -9,10 +9,11 @@ import {i18n} from "@/src/translations/i18n";
 import {
 	collectorDescription, collectorTitle, isChoosable, reactionLabel
 } from "@/src/collectors/CollectorLabels";
-import {ActionBanner, EntryRow, ExpandableList} from "@/src/design/Sections";
+import {ActionBanner, ChoiceAction} from "@/src/design/Sections";
 import {Check, LucideIcon} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {createStyles} from "@/src/design/ThemeContext";
+import {clockTime} from "@/src/display/Clock";
 
 export function useSecondsLeft(endTime: number): number {
 	const [secondsLeft, setSecondsLeft] = useState(() => Math.max(0, Math.ceil((endTime - Date.now()) / 1000)));
@@ -36,6 +37,11 @@ const useDecisionStyles = createStyles(colors => ({
 	cancel: {alignItems: "center", paddingVertical: Theme.spacing.md},
 	cancelLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.bodySmall, color: colors.muted},
 	pressed: {opacity: 0.6}
+}));
+
+const useChoiceStyles = createStyles(() => ({
+	choices: {gap: Theme.spacing.md},
+	actions: {gap: Theme.spacing.sm}
 }));
 
 /** A yes-or-no collector inside a popup: the answer the screen is about stands out, backing out stays discreet. */
@@ -87,17 +93,17 @@ function CollectorChoiceRow({choice, collector, locked, onChoose}: {
 }): ReactNode {
 	const choosable = isChoosable(choice.reaction, collector.data);
 	const disabled = locked || !choosable;
-	return <EntryRow
+	return <ChoiceAction
 		key={choice.key}
 		disabled={disabled}
-		onPress={disabled ? undefined : (): void => onChoose(choice)}
-		title={reactionLabel(choice.reaction, collector.data)} 
+		onPress={(): void => {if (!disabled) onChoose(choice);}}
+		label={reactionLabel(choice.reaction, collector.data)}
 	/>;
 }
 
 /**
  * Renders any collector: a statement, the choices in the order the server sent them, and a
- * countdown. Answering means sending back the position of the choice, so the order must never be
+ * reply deadline. Answering means sending back the position of the choice, so the order must never be
  * altered here.
  * @param collector Collector to display
  * @param onChoose Called with the index of the chosen reaction
@@ -107,6 +113,7 @@ export function CollectorChoices({collector, onChoose, submitting = false}: {
 	onChoose: (reactionIndex: number) => void;
 	submitting?: boolean;
 }): ReactNode {
+	const styles = useChoiceStyles();
 	const secondsLeft = useSecondsLeft(collector.endTime);
 	const [answeredCollectorId, setAnsweredCollectorId] = useState<string | null>(null);
 	const locked = answeredCollectorId === collector.id || submitting || secondsLeft === 0;
@@ -116,16 +123,21 @@ export function CollectorChoices({collector, onChoose, submitting = false}: {
 	};
 
 	return (
-		<ExpandableList>
-			{visibleChoices(collector).map(choice => <CollectorChoiceRow
+		<View style={styles.choices}>
+			<SectionHeader>{i18n.t("app:collector.yourAction")}</SectionHeader>
+			<View style={styles.actions}>{visibleChoices(collector).map(choice => <CollectorChoiceRow
 				key={choice.key}
 				choice={choice}
 				collector={collector}
 				locked={locked}
 				onChoose={choose}
-			/>)}
-			<Note>{countdownLabel(secondsLeft, submitting)}</Note>
-		</ExpandableList>
+			/>)}</View>
+			<Note>{submitting || answeredCollectorId === collector.id
+				? i18n.t("app:collector.answering")
+				: secondsLeft === 0
+					? i18n.t("app:collector.expired")
+					: i18n.t("app:collector.replyBefore", {time: clockTime(collector.endTime)})}</Note>
+		</View>
 	);
 }
 
