@@ -140,7 +140,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 			}
 		}
 
-		await WebSocketClient.getInstance().init(authToken, onStateChange, saveToken).catch((error) => {
+		await WebSocketClient.getInstance().init(authToken, onStateChange, saveToken, clearToken).catch((error) => {
 			console.error("Failed to initialize WebSocketClient:", error);
 			if (currentState.current === AuthStateEnum.CONNECTING) {
 				onStateChange(AuthStateEnum.CONNECTION_ERROR);

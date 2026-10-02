@@ -37,10 +37,10 @@ function describeRequest(request: DeletionRequest): string {
  * @param request
  * @param config
  */
-async function sendMail(request: DeletionRequest, config: AccountDeletionConfig): Promise<void> {
+async function sendMail(request: DeletionRequest, config: AccountDeletionConfig): Promise<boolean> {
 	const { SMTP } = config;
-	if (!SMTP.HOST || !SMTP.TO) {
-		return;
+	if (!SMTP.HOST || !SMTP.TO || !(SMTP.FROM || SMTP.USERNAME)) {
+		return false;
 	}
 
 	const transport = createTransport({
@@ -60,6 +60,7 @@ async function sendMail(request: DeletionRequest, config: AccountDeletionConfig)
 		subject: `Crownicles - account deletion requested by ${request.username}`,
 		text: describeRequest(request)
 	});
+	return true;
 }
 
 /**
@@ -67,9 +68,9 @@ async function sendMail(request: DeletionRequest, config: AccountDeletionConfig)
  * @param request
  * @param config
  */
-async function sendWebhook(request: DeletionRequest, config: AccountDeletionConfig): Promise<void> {
+async function sendWebhook(request: DeletionRequest, config: AccountDeletionConfig): Promise<boolean> {
 	if (!config.WEBHOOK_URL) {
-		return;
+		return false;
 	}
 
 	const res = await fetch(config.WEBHOOK_URL, {
@@ -81,6 +82,7 @@ async function sendWebhook(request: DeletionRequest, config: AccountDeletionConf
 	if (!res.ok) {
 		throw new Error(`Discord webhook answered ${res.status}`);
 	}
+	return true;
 }
 
 /**
@@ -91,7 +93,7 @@ async function sendWebhook(request: DeletionRequest, config: AccountDeletionConf
  * @param request
  * @param config
  */
-export async function notifyDeletionRequest(request: DeletionRequest, config: AccountDeletionConfig): Promise<void> {
+export async function notifyDeletionRequest(request: DeletionRequest, config: AccountDeletionConfig): Promise<boolean> {
 	CrowniclesLogger.info("Account deletion requested", {
 		keycloakId: request.keycloakId,
 		username: request.username
@@ -103,4 +105,5 @@ export async function notifyDeletionRequest(request: DeletionRequest, config: Ac
 			CrowniclesLogger.errorWithObj("Could not warn about an account deletion request", result.reason);
 		}
 	}
+	return results.some(result => result.status === "fulfilled" && result.value);
 }

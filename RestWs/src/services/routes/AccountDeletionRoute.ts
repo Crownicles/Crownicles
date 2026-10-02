@@ -11,6 +11,8 @@ import {
 } from "fastify";
 import { getRequestLoggerMetadata } from "../RestApi";
 
+const ACCOUNT_DELETION_ERRORS = { UNAVAILABLE: "Account deletion unavailable" } as const;
+
 /**
  * Resolves the account the request is made for.
  *
@@ -47,6 +49,10 @@ function setupDeletionRequestRoute(server: FastifyInstance, config: AccountDelet
 		if (!keycloakId) {
 			return;
 		}
+		if (!config.SECRET) {
+			reply.status(503).send({ error: ACCOUNT_DELETION_ERRORS.UNAVAILABLE });
+			return;
+		}
 
 		const account = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
 		if (account.isError) {
@@ -60,12 +66,17 @@ function setupDeletionRequestRoute(server: FastifyInstance, config: AccountDelet
 		}
 
 		const { user } = account.payload;
-		await notifyDeletionRequest({
+		const discordId = user.attributes?.discordId?.[0];
+		const notified = await notifyDeletionRequest({
 			keycloakId,
-			username: user.attributes.gameUsername[0],
+			username: user.attributes?.gameUsername?.[0] ?? user.username,
 			...user.email ? { email: user.email } : {},
-			...user.attributes.discordId ? { discordId: user.attributes.discordId[0] } : {}
+			...discordId ? { discordId } : {}
 		}, config);
+		if (!notified) {
+			reply.status(503).send({ error: ACCOUNT_DELETION_ERRORS.UNAVAILABLE });
+			return;
+		}
 
 		reply.send({ message: "Deletion request registered" });
 	});
@@ -77,8 +88,8 @@ function setupDeletionRequestRoute(server: FastifyInstance, config: AccountDelet
  * @param code
  * @param secret
  */
-function isValidDeletionCode(keycloakId: string, code: string | undefined, secret: string): boolean {
-	if (!secret || !code) {
+function isValidDeletionCode(keycloakId: string, code: unknown, secret: string): boolean {
+	if (!secret || typeof code !== "string" || !code) {
 		return false;
 	}
 	return verifyDeletionCode(keycloakId, code, secret);
@@ -95,8 +106,12 @@ function setupDeletionRoute(server: FastifyInstance, config: AccountDeletionConf
 		if (!keycloakId) {
 			return;
 		}
+		if (!config.SECRET) {
+			reply.status(503).send({ error: ACCOUNT_DELETION_ERRORS.UNAVAILABLE });
+			return;
+		}
 
-		const { code } = (request.body ?? {}) as { code?: string };
+		const { code } = (request.body ?? {}) as { code?: unknown };
 		if (!isValidDeletionCode(keycloakId, code, config.SECRET)) {
 			reply.status(403).send({ error: "Invalid deletion code" });
 			return;

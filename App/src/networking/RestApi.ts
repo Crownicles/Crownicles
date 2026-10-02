@@ -7,6 +7,19 @@ import {
 
 export const REST_TIMEOUT_MS = 15_000;
 
+export const ACCOUNT_DELETION_FAILURES = {
+	UNAUTHORIZED: "unauthorized",
+	INVALID_CODE: "invalidCode",
+	UNAVAILABLE: "unavailable"
+} as const;
+export type AccountDeletionFailure = typeof ACCOUNT_DELETION_FAILURES[keyof typeof ACCOUNT_DELETION_FAILURES];
+
+export class AccountDeletionRequestFailure extends Error {
+	public constructor(public readonly reason: AccountDeletionFailure) {
+		super(reason);
+	}
+}
+
 export type AssetsBundleResponse =
 	| {status: "notModified"}
 	| {status: "ok"; bundle: AssetsBundle; etag: string};
@@ -99,31 +112,32 @@ export class RestApi {
 		return {status: "ok", bundle, etag: responseEtag};
 	}
 
-	/** The account removed is the one the token belongs to: nothing identifies it in the request. */
-	public static async deleteAccount(accessToken: string, code: string): Promise<boolean> {
-		const response = await RestApi.fetchWithTimeout(`${RestApi.getBaseUrl()}/account`, {
-			method: "DELETE",
+	private static async accountDeletionRequest(accessToken: string, code?: string): Promise<boolean> {
+		const response = await RestApi.fetchWithTimeout(`${RestApi.getBaseUrl()}/account${code === undefined ? "/deletion-request" : ""}`, {
+			method: code === undefined ? "POST" : "DELETE",
 			headers: {
 				"Content-Type": "application/json",
 				"Authorization": `Bearer ${accessToken}`
 			},
-			body: JSON.stringify({ code })
+			...code === undefined ? {} : {body: JSON.stringify({code: code.trim().toUpperCase()})}
 		}, REST_TIMEOUT_MS);
+		if (response.ok) return true;
+		const reason = response.status === 401
+			? ACCOUNT_DELETION_FAILURES.UNAUTHORIZED
+			: response.status === 403 && code !== undefined
+				? ACCOUNT_DELETION_FAILURES.INVALID_CODE
+				: ACCOUNT_DELETION_FAILURES.UNAVAILABLE;
+		throw new AccountDeletionRequestFailure(reason);
+	}
 
-		return response.ok;
+	/** The account removed is the one the token belongs to: nothing identifies it in the request. */
+	public static deleteAccount(accessToken: string, code: string): Promise<boolean> {
+		return RestApi.accountDeletionRequest(accessToken, code);
 	}
 
 	/** Asks an administrator for a deletion code; the account is only removed once it is confirmed. */
-	public static async requestAccountDeletion(accessToken: string): Promise<boolean> {
-		const response = await RestApi.fetchWithTimeout(`${RestApi.getBaseUrl()}/account/deletion-request`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"Authorization": `Bearer ${accessToken}`
-			}
-		}, REST_TIMEOUT_MS);
-
-		return response.ok;
+	public static requestAccountDeletion(accessToken: string): Promise<boolean> {
+		return RestApi.accountDeletionRequest(accessToken);
 	}
 
 	private static async accountCollisionRequest<T>(endpoint: string, accessToken: string, body?: object): Promise<T> {

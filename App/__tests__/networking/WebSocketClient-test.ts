@@ -1,9 +1,11 @@
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
-import {WEBSOCKET_SESSION_REPLACED_REASON} from "ws-packets/src/WebSocketCloseReasons";
+import {WEBSOCKET_SESSION_REPLACED_REASON, WEBSOCKET_ACCOUNT_DELETED_REASON} from "ws-packets/src/WebSocketCloseReasons";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthToken} from "@/src/authentication/AuthToken";
+import {KeycloakAuth} from "@/src/authentication/KeycloakAuth";
+import type {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 
 // The identifiers deliberately differ from the class names: a minified bundle mangles the latter.
 class TestRequest extends FromClientPacket {
@@ -54,6 +56,90 @@ function queuedPackets(client: WebSocketClient): unknown[] {
 }
 
 describe("WebSocketClient", () => {
+	it("shares and persists a rotated token before exposing it to concurrent HTTP callers", async () => {
+		const {client} = clientWithSocket();
+		const token = new AuthToken({accessToken: "old-access", refreshToken: "old-refresh", accessTokenExpiresAt: new Date(Date.now() - 1), refreshTokenExpiresAt: "never"});
+		let finish!: (refreshed: KeycloakOAuth2Token) => void;
+		const refresh = jest.spyOn(KeycloakAuth, "refresh").mockReturnValue(new Promise<KeycloakOAuth2Token>(resolve => {finish = resolve;}));
+		const save = jest.fn().mockResolvedValue(undefined);
+		Reflect.set(client, "activeAuthToken", token);
+		Reflect.set(client, "saveToken", save);
+		const first = client.getCurrentAccessToken();
+		const second = client.getCurrentAccessToken();
+		expect(save).not.toHaveBeenCalled();
+		finish({access_token: "new-access", refresh_token: "new-refresh", expires_in: 60, refresh_expires_in: 120, token_type: "Bearer", session_state: "test-session", scope: "openid"});
+		await expect(Promise.all([first, second])).resolves.toEqual(["new-access", "new-access"]);
+		expect(refresh).toHaveBeenCalledTimes(1);
+		expect(save).toHaveBeenCalledTimes(1);
+		expect(save).toHaveBeenCalledWith(token);
+		client.disconnect();
+		refresh.mockRestore();
+	});
+
+	it("retries persistence before using a token whose rotation outlived a secure storage failure", async () => {
+		const {client} = clientWithSocket();
+		const token = new AuthToken({accessToken: "old-access", refreshToken: "old-refresh", accessTokenExpiresAt: new Date(Date.now() - 1), refreshTokenExpiresAt: "never"});
+		const refresh = jest.spyOn(KeycloakAuth, "refresh").mockResolvedValue({access_token: "new-access", refresh_token: "new-refresh", expires_in: 60, refresh_expires_in: 120, token_type: "Bearer", session_state: "test-session", scope: "openid"});
+		const save = jest.fn().mockRejectedValueOnce(new Error("storage unavailable")).mockResolvedValue(undefined);
+		Reflect.set(client, "activeAuthToken", token);
+		Reflect.set(client, "saveToken", save);
+		await expect(client.getCurrentAccessToken()).rejects.toThrow("storage unavailable");
+		await expect(client.getCurrentAccessToken()).resolves.toBe("new-access");
+		expect(refresh).toHaveBeenCalledTimes(1);
+		expect(save).toHaveBeenCalledTimes(2);
+		client.disconnect();
+		refresh.mockRestore();
+	});
+
+	it("does not expose the previous account token after a disconnect during its refresh", async () => {
+		const {client} = clientWithSocket();
+		const token = new AuthToken({accessToken: "old-access", refreshToken: "old-refresh", accessTokenExpiresAt: new Date(Date.now() + 60_000), refreshTokenExpiresAt: "never"});
+		let finish!: (refreshed: boolean) => void;
+		const refresh = jest.spyOn(token, "refreshIfNeeded").mockReturnValue(new Promise<boolean>(resolve => {finish = resolve;}));
+		const save = jest.fn().mockResolvedValue(undefined);
+		Reflect.set(client, "activeAuthToken", token);
+		Reflect.set(client, "saveToken", save);
+		const pending = client.getCurrentAccessToken();
+		client.disconnect();
+		finish(true);
+		await expect(pending).resolves.toBeNull();
+		expect(save).not.toHaveBeenCalled();
+		refresh.mockRestore();
+	});
+
+	it("clears the stored token and never reconnects after the account is deleted", async () => {
+		jest.useFakeTimers();
+		try {
+			const {client, socket} = clientWithSocket();
+			const state = jest.fn();
+			const clear = jest.fn().mockResolvedValue(undefined);
+			Reflect.set(client, "setState", state);
+			Reflect.set(client, "clearToken", clear);
+			Reflect.get(client, "handleSocketClose").call(client, socket, {reason: WEBSOCKET_ACCOUNT_DELETED_REASON}, new AuthToken({accessToken: "old-access", refreshToken: "old-refresh", accessTokenExpiresAt: new Date(Date.now() + 60_000), refreshTokenExpiresAt: "never"}), false);
+			await jest.runOnlyPendingTimersAsync();
+			expect(clear).toHaveBeenCalledTimes(1);
+			expect(state).toHaveBeenCalledWith(AuthStateEnum.NO_TOKEN);
+			expect(Reflect.get(client, "reconnectTimeoutId")).toBeNull();
+			await expect(client.getCurrentAccessToken()).resolves.toBeNull();
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it("does not clear another session started before the deletion cleanup runs", async () => {
+		const {client, socket} = clientWithSocket();
+		const state = jest.fn();
+		const clear = jest.fn().mockResolvedValue(undefined);
+		Reflect.set(client, "setState", state);
+		Reflect.set(client, "clearToken", clear);
+		Reflect.get(client, "handleSocketClose").call(client, socket, {reason: WEBSOCKET_ACCOUNT_DELETED_REASON}, new AuthToken({accessToken: "old-access", refreshToken: "old-refresh", accessTokenExpiresAt: new Date(Date.now() + 60_000), refreshTokenExpiresAt: "never"}), false);
+		Reflect.set(client, "connectionVersion", Reflect.get(client, "connectionVersion") + 1);
+		await Promise.resolve();
+		await Promise.resolve();
+		expect(clear).not.toHaveBeenCalled();
+		expect(state).not.toHaveBeenCalled();
+	});
+
 	it("correlates a response with the request packet id", () => {
 		const {client, socket} = clientWithSocket();
 		const responseHandler = jest.fn();

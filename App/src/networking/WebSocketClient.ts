@@ -6,11 +6,12 @@ import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
 import {wireNameOf} from "ws-packets/src/MakePackets";
 import {PushedPacketHandler, PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
-import {WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON, WEBSOCKET_ACCOUNT_COLLISION_REASON} from "ws-packets/src/WebSocketCloseReasons";
+import {WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON, WEBSOCKET_ACCOUNT_COLLISION_REASON, WEBSOCKET_ACCOUNT_DELETED_REASON} from "ws-packets/src/WebSocketCloseReasons";
 import {APP_PROTOCOL_QUERY_PARAMETER, APP_PROTOCOL_VERSION} from "ws-packets/src/AppCompatibility";
 
 /** Closes that reconnecting cannot fix: another session took over, or the app and server speak different protocols. */
 const FINAL_CLOSE_STATES: Partial<Record<string, AuthStateEnum>> = {
+	[WEBSOCKET_ACCOUNT_DELETED_REASON]: AuthStateEnum.NO_TOKEN,
 	[WEBSOCKET_ACCOUNT_COLLISION_REASON]: AuthStateEnum.ACCOUNT_COLLISION,
 	[WEBSOCKET_SESSION_REPLACED_REASON]: AuthStateEnum.CONNECTION_ERROR,
 	[WEBSOCKET_APP_OUTDATED_REASON]: AuthStateEnum.APP_OUTDATED,
@@ -65,6 +66,10 @@ export class WebSocketClient {
 	private setState?: (newState: AuthStateEnum) => void;
 
 	private saveToken?: (token: AuthToken) => Promise<void>;
+	private clearToken?: () => Promise<void>;
+	private activeAuthToken: AuthToken | null = null;
+	private accessTokenRequest: Promise<string | null> | null = null;
+	private tokenNeedsSaving = false;
 
 	private processPacketQueueIntervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -89,6 +94,9 @@ export class WebSocketClient {
 
 	public disconnect(): void {
 		this.connectionVersion++;
+		this.activeAuthToken = null;
+		this.accessTokenRequest = null;
+		this.tokenNeedsSaving = false;
 		const socket = this.socket;
 		this.socket = null;
 		socket?.close();
@@ -98,10 +106,14 @@ export class WebSocketClient {
 		this.clearIntervals();
 	}
 
-	public async init(authToken: AuthToken, setState: (newState: AuthStateEnum) => void, saveToken: (token: AuthToken) => Promise<void>): Promise<void> {
+	public async init(authToken: AuthToken, setState: (newState: AuthStateEnum) => void, saveToken: (token: AuthToken) => Promise<void>, clearToken?: () => Promise<void>): Promise<void> {
 		const connectionVersion = ++this.connectionVersion;
+		this.activeAuthToken = authToken;
+		this.accessTokenRequest = null;
+		this.tokenNeedsSaving = false;
 		this.setState = setState;
 		this.saveToken = saveToken;
+		this.clearToken = clearToken;
 
 		this.setState?.(AuthStateEnum.CONNECTING);
 		await this.connect(authToken, true);
@@ -193,12 +205,31 @@ export class WebSocketClient {
 		return webSocketUrl;
 	}
 
-	private async getAccessToken(authToken: AuthToken, connectionVersion: number): Promise<string | null> {
+	public getCurrentAccessToken(): Promise<string | null> {
+		return this.activeAuthToken ? this.getAccessToken(this.activeAuthToken, this.connectionVersion) : Promise.resolve(null);
+	}
+
+	private getAccessToken(authToken: AuthToken, connectionVersion: number): Promise<string | null> {
+		if (connectionVersion !== this.connectionVersion) return Promise.resolve(null);
+		if (this.accessTokenRequest) return this.accessTokenRequest;
+		const request = this.refreshAccessToken(authToken, connectionVersion);
+		this.accessTokenRequest = request;
+		return request.finally((): void => {
+			if (this.accessTokenRequest === request) this.accessTokenRequest = null;
+		});
+	}
+
+	private async refreshAccessToken(authToken: AuthToken, connectionVersion: number): Promise<string | null> {
 		const refreshed = await authToken.refreshIfNeeded();
 		if (connectionVersion !== this.connectionVersion) return null;
 		if (refreshed) {
 			console.debug("Token refreshed successfully");
+			this.tokenNeedsSaving = true;
+		}
+		if (this.tokenNeedsSaving) {
 			await this.saveToken?.(authToken);
+			if (connectionVersion !== this.connectionVersion) return null;
+			this.tokenNeedsSaving = false;
 		}
 		if (connectionVersion !== this.connectionVersion) return null;
 
@@ -332,7 +363,21 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 		const finalState = FINAL_CLOSE_STATES[error.reason];
 		if (finalState !== undefined) {
 			this.disconnect();
-			this.setState?.(finalState);
+			if (finalState === AuthStateEnum.NO_TOKEN) {
+				const connectionVersion = this.connectionVersion;
+				const clearToken = this.clearToken;
+				const updateState = (): void => {
+					if (connectionVersion === this.connectionVersion) this.setState?.(finalState);
+				};
+				Promise.resolve().then(() => {
+					if (connectionVersion === this.connectionVersion) return clearToken?.();
+					return undefined;
+				}).then(updateState).catch((): void => {
+					if (connectionVersion === this.connectionVersion) this.setState?.(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
+				});
+			} else {
+				this.setState?.(finalState);
+			}
 			return;
 		}
 		if (error.reason === "Unauthorized") {
