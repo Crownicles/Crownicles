@@ -1,4 +1,4 @@
-import {ReactNode, useEffect, useMemo, useRef, useState} from "react";
+import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {parse} from "@twemoji/parser";
 import {
 	Animated, ActivityIndicator, Easing, GestureResponderEvent, KeyboardAvoidingView, Modal, ModalProps, PanResponder, PanResponderGestureState, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
@@ -58,13 +58,15 @@ const useStyles = createStyles(colors => ({
 	choiceAction: {minHeight: Theme.dimensions.compactRowMinHeight, flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg, borderWidth: 1, borderColor: colors.line, borderRadius: Theme.radius, backgroundColor: colors.wash},
 	choiceActionLabel: {flex: 1, minWidth: 0},
 	dangerLabel: {color: colors.red},
-	detailBackdrop: {flex: 1, justifyContent: "flex-end", backgroundColor: colors.overlay},
+	detailBackdrop: {flex: 1, justifyContent: "flex-end"},
+	detailVeil: {...StyleSheet.absoluteFill, backgroundColor: colors.overlay},
 	detailCard: {backgroundColor: colors.paper, borderTopLeftRadius: Theme.radius * 2, borderTopRightRadius: Theme.radius * 2, paddingHorizontal: Theme.spacing.xl, paddingTop: Theme.spacing.md, gap: Theme.spacing.lg, maxHeight: "85%"},
 	detailGrabber: {alignSelf: "center", width: 40, height: 4, borderRadius: 2, backgroundColor: colors.line},
 	detailHead: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
-	detailBody: {gap: Theme.spacing.md},
+	detailBody: {gap: Theme.spacing.md, paddingHorizontal: Theme.spacing.xl},
 	sheetHandle: {gap: Theme.spacing.lg, minHeight: Theme.dimensions.compactRowMinHeight},
-	sheetScroll: {flexGrow: 0},
+	// Spans the card's margins so the scroll indicator runs in them, not over right-aligned values.
+	sheetScroll: {flexGrow: 0, marginHorizontal: -Theme.spacing.xl},
 	back: {alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: Theme.spacing.xs, height: 34, paddingLeft: Theme.spacing.sm, paddingRight: Theme.spacing.md, borderRadius: Theme.pillRadius, backgroundColor: colors.wash, marginBottom: Theme.spacing.lg},
 	backLabel: {color: colors.ink, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.body},
 	/** The icon set only ships a downward chevron; a quarter turn points it back. */
@@ -431,7 +433,11 @@ export function Sheet({caption, title, subtitle, emblem, closeLabel, onClose, on
 
 /** Settles quickly with a hint of bounce, like a sheet dropped on a table. */
 const SHEET_SPRING = {damping: 22, stiffness: 220, mass: 0.9, useNativeDriver: true} as const;
-const SHEET_DISMISS = {distance: 90, velocity: 0.8, slop: 4} as const;
+const SHEET_DISMISS = {distance: 90, velocity: 0.8, slop: 4, pull: 70} as const;
+const SHEET_LEAVE = {returnAfterMs: 1_500} as const;
+/** Stiff and clamped: the sheet keeps the finger's momentum and leaves without bouncing at the bottom. */
+const SHEET_LEAVE_SPRING = {stiffness: 260, damping: 30, mass: 1, overshootClamping: true, useNativeDriver: true} as const;
+const MILLISECONDS_PER_SECOND = 1_000;
 const SHEET_SCROLL_THROTTLE_MS = 16;
 
 type SheetDrag = Pick<PanResponderGestureState, "dx" | "dy" | "numberActiveTouches">;
@@ -459,14 +465,58 @@ class SheetGestureState {
 }
 
 /**
+ * Closing slides the sheet down before its owner removes it. A sheet its owner keeps open (a question
+ * that must be answered) comes back up rather than linger off screen, swallowing every touch.
+ */
+function useSheetLeave(offset: Animated.Value, height: number, onClose: () => void): (velocity?: number) => void {
+	const reducedMotion = useReducedMotion();
+	const leaving = useRef(false);
+	const close = useRef(onClose);
+	const comeBack = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const mounted = useRef(true);
+	useEffect(() => {
+		close.current = onClose;
+	}, [onClose]);
+	useEffect(() => {
+		mounted.current = true;
+		return (): void => {
+			mounted.current = false;
+			clearTimeout(comeBack.current);
+		};
+	}, []);
+	return useCallback((velocity = 0): void => {
+		if (leaving.current) return;
+		leaving.current = true;
+		const closed = (): void => {
+			if (!mounted.current) return;
+			close.current();
+			comeBack.current = setTimeout(() => {
+				leaving.current = false;
+				Animated.spring(offset, {toValue: 0, ...SHEET_SPRING}).start();
+			}, SHEET_LEAVE.returnAfterMs);
+		};
+		if (reducedMotion) {
+			closed();
+			return;
+		}
+		// The gesture measures pixels per millisecond, the spring pixels per second.
+		Animated.spring(offset, {toValue: height, velocity: velocity * MILLISECONDS_PER_SECOND, ...SHEET_LEAVE_SPRING}).start(closed);
+	}, [height, offset, reducedMotion]);
+}
+
+/**
  * Everything that rises from the bottom: the detail of a line, a quick question, a short result.
  * A tap above it or a downward drag of its header or unscrolled content puts it away.
  */
-export function BottomSheet({onClose, onShown, heading, children, testID}: {
+export function BottomSheet({onClose, onShown, onDismissed, visible = true, heading, children, testID}: {
 	onClose: () => void;
 
 	/** Once the sheet has settled, for an animation that should not play while it is still rising. */
 	onShown?: () => void;
+
+	/** Once iOS has fully put the sheet away, after `visible` turned false. */
+	onDismissed?: () => void;
+	visible?: boolean;
 	heading?: ReactNode;
 	children: ReactNode;
 	testID?: string;
@@ -476,6 +526,7 @@ export function BottomSheet({onClose, onShown, heading, children, testID}: {
 	const {height} = useWindowDimensions();
 	const [offset] = useState(() => new Animated.Value(height));
 	const [gestureState] = useState(() => new SheetGestureState());
+	const leave = useSheetLeave(offset, height, onClose);
 	const shown = useRef(onShown);
 	useEffect(() => {
 		shown.current = onShown;
@@ -498,12 +549,15 @@ export function BottomSheet({onClose, onShown, heading, children, testID}: {
 			offset.setValue(Math.max(0, gesture.dy));
 		},
 		onPanResponderRelease: (_event: GestureResponderEvent, gesture: PanResponderGestureState): void => {
-			if (gestureState.closes(gesture)) onClose();
+			if (gestureState.closes(gesture)) {
+				leave(gesture.vy);
+				return;
+			}
 			// A sheet that cannot be dismissed yet settles back instead of staying where the finger left it.
 			Animated.spring(offset, {toValue: 0, ...SHEET_SPRING}).start();
 		},
 		onPanResponderTerminate: (): void => {Animated.spring(offset, {toValue: 0, ...SHEET_SPRING}).start();}
-	}), [gestureState, offset, onClose]);
+	}), [gestureState, offset, leave]);
 	const headerDrag = useMemo(() => PanResponder.create({
 		onMoveShouldSetPanResponderCapture: (_event, gesture): boolean => sheetDragStarts(gesture),
 		...dragHandlers
@@ -516,9 +570,11 @@ export function BottomSheet({onClose, onShown, heading, children, testID}: {
 		onMoveShouldSetPanResponderCapture: (_event, gesture): boolean => gestureState.starts(gesture),
 		...dragHandlers
 	}), [dragHandlers, gestureState]);
-	return <Modal visible transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+	return <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={(): void => leave()} {...onDismissed ? {onDismiss: onDismissed} : {}}>
 		<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.detailBackdrop}>
-			<Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:common.back")} style={StyleSheet.absoluteFill} onPress={onClose} testID="detail-sheet-backdrop" />
+			{/* The veil lightens as the sheet goes down, so a drag or a close reads as one movement. */}
+			<Animated.View pointerEvents="none" style={[styles.detailVeil, {opacity: offset.interpolate({inputRange: [0, height], outputRange: [1, 0], extrapolate: "clamp"})}]} />
+			<Pressable accessibilityRole="button" accessibilityLabel={i18n.t("app:common.back")} style={StyleSheet.absoluteFill} onPress={(): void => leave()} testID="detail-sheet-backdrop" />
 			<Animated.View {...contentDrag.panHandlers} style={[styles.detailCard, {paddingBottom: insets.bottom + Theme.spacing.xl, transform: [{translateY: offset}]}]} testID={testID}>
 				<View {...headerDrag.panHandlers} style={styles.sheetHandle} testID="bottom-sheet-handle">
 					<View style={styles.detailGrabber} />
@@ -529,6 +585,11 @@ export function BottomSheet({onClose, onShown, heading, children, testID}: {
 					contentContainerStyle={styles.detailBody}
 					keyboardShouldPersistTaps="handled"
 					onScroll={event => gestureState.updateScroll(event.nativeEvent.contentOffset.y)}
+					// iOS hands the pull to the scroll view: released far enough past the top, the content takes the sheet away.
+					alwaysBounceVertical
+					onScrollEndDrag={event => {
+						if (event.nativeEvent.contentOffset.y < -SHEET_DISMISS.pull) leave();
+					}}
 					scrollEventThrottle={SHEET_SCROLL_THROTTLE_MS}
 				>{children}</ScrollView>
 			</Animated.View>
@@ -691,9 +752,50 @@ function EntryHeading({emblem, label, caption, danger = false}: EntryHeadingProp
 }
 
 /** The details of a line rise over the screen rather than push the rest of the list down. */
-function DetailSheet({heading, onClose, children, testID}: {heading: ReactNode; onClose: () => void; children: ReactNode; testID: string | undefined}): ReactNode {
+function DetailSheet({heading, onClose, children, testID, dismissal}: {heading: ReactNode; onClose: () => void; children: ReactNode; testID: string | undefined; dismissal: SheetDismissal}): ReactNode {
 	const styles = useStyles();
-	return <BottomSheet onClose={onClose} heading={<View style={styles.detailHead}>{heading}</View>} {...testID ? {testID} : {}}>{children}</BottomSheet>;
+	return <BottomSheet
+		onClose={onClose}
+		visible={dismissal.visible}
+		{...dismissal.onDismissed ? {onDismissed: dismissal.onDismissed} : {}}
+		heading={<View style={styles.detailHead}>{heading}</View>}
+		{...testID ? {testID} : {}}
+	>{children}</BottomSheet>;
+}
+
+type SheetDismissal = {mounted: boolean; visible: boolean; onDismissed?: () => void};
+
+/**
+ * iOS shows one modal at a time: a window opened while a sheet is still leaving gets lost and leaves an
+ * invisible layer swallowing every touch. Given `onDismissed`, the sheet stays mounted until iOS has put it away.
+ */
+function useSheetDismissal(expanded: boolean, onDismissed?: () => void): SheetDismissal {
+	const [closing, setClosing] = useState(false);
+	const [wasExpanded, setWasExpanded] = useState(expanded);
+	// Elsewhere the modal reports no dismissal: closings are counted and answered once committed.
+	const [closings, setClosings] = useState(0);
+	const dismissed = useRef(onDismissed);
+	useEffect(() => {
+		dismissed.current = onDismissed;
+	}, [onDismissed]);
+	if (expanded !== wasExpanded) {
+		setWasExpanded(expanded);
+		if (!expanded && onDismissed) {
+			if (Platform.OS === "ios") setClosing(true);
+			else setClosings(count => count + 1);
+		}
+	}
+	useEffect(() => {
+		if (closings > 0) dismissed.current?.();
+	}, [closings]);
+	return {
+		mounted: expanded || closing,
+		visible: expanded,
+		...onDismissed ? {onDismissed: (): void => {
+			setClosing(false);
+			onDismissed();
+		}} : {}
+	};
 }
 
 type EntryLook = {expanded: boolean; highlighted: boolean; dimmed: boolean; compact: boolean};
@@ -702,10 +804,13 @@ function entryHeaderStyle(styles: SectionStyles, {expanded, highlighted, dimmed,
 	return [styles.entryHeader, compact && styles.compact, expanded && styles.expanded, highlighted && styles.highlighted, dimmed && !expanded && styles.dimmed, pressed && styles.pressed].filter(Boolean) as object[];
 }
 
-export function ExpandableEntry({emblem, label, caption, danger = false, end, expanded, onToggle, chevron = ENTRY_CHEVRONS.EXPAND, highlighted = false, dimmed = false, children, testID}: EntryHeadingProps & {
+export function ExpandableEntry({emblem, label, caption, danger = false, end, expanded, onToggle, onDismissed, chevron = ENTRY_CHEVRONS.EXPAND, highlighted = false, dimmed = false, children, testID}: EntryHeadingProps & {
 	end?: ReactNode;
 	expanded: boolean;
 	onToggle: () => void;
+
+	/** Once the details are fully put away, for an action that opens another window. */
+	onDismissed?: () => void;
 	chevron?: EntryChevron;
 	highlighted?: boolean;
 	dimmed?: boolean;
@@ -713,6 +818,7 @@ export function ExpandableEntry({emblem, label, caption, danger = false, end, ex
 	testID?: string;
 }): ReactNode {
 	const styles = useStyles();
+	const dismissal = useSheetDismissal(expanded, onDismissed);
 	const heading = <EntryHeading emblem={emblem} label={label} caption={caption} danger={danger} />;
 	return <View>
 		<Pressable
@@ -726,7 +832,7 @@ export function ExpandableEntry({emblem, label, caption, danger = false, end, ex
 			{end}
 			<EntryChevronIcon chevron={chevron} />
 		</Pressable>
-		{expanded && children ? <DetailSheet heading={heading} onClose={onToggle} testID={testID}>{children}</DetailSheet> : null}
+		{dismissal.mounted && children ? <DetailSheet heading={heading} onClose={onToggle} testID={testID} dismissal={dismissal}>{children}</DetailSheet> : null}
 	</View>;
 }
 

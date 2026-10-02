@@ -117,7 +117,7 @@ describe("arena references", () => {
 		expect(standing.getByText("models:leagues.0")).toBeTruthy();
 		expect(standing.getByText("123")).toBeTruthy();
 		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
-		expect(screen.queryByTestId("league-rewards-1")).toBeNull();
+		await waitFor(() => expect(screen.queryByTestId("league-rewards-1")).toBeNull());
 		expect(screen.getByRole("button", {name: "models:leagues.1", selected: false})).toHaveProp("accessibilityState", {selected: false, expanded: false});
 		expect(GameClient.request).not.toHaveBeenCalled();
 		await fireEvent.press(screen.getByText("app:arena.leagues.claim"));

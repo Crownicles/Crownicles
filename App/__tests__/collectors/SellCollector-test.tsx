@@ -1,4 +1,4 @@
-import {fireEvent, render, screen} from "@testing-library/react-native";
+import {fireEvent, render, screen, waitFor} from "@testing-library/react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, SELL_DATA_KINDS, SELL_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {SellCollector} from "@/src/collectors/SellCollector";
@@ -34,7 +34,7 @@ describe("sale confirmation", () => {
 		await fireEvent.press(screen.getByText("models:potions.43"));
 		expect(screen.getByText("app:sale.confirmDiscard")).toBeTruthy();
 		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
-		expect(screen.queryByText("app:sale.confirmDiscard")).toBeNull();
+		await waitFor(() => expect(screen.queryByText("app:sale.confirmDiscard")).toBeNull());
 		expect(choose).not.toHaveBeenCalled();
 	});
 

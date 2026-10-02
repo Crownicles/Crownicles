@@ -37,7 +37,7 @@ describe("equipment menu", () => {
 		expect(screen.getByText("app:equipment.confirm.equip")).toBeTruthy();
 		expect(request).not.toHaveBeenCalled();
 		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
-		expect(screen.queryByText("app:equipment.confirm.equip")).toBeNull();
+		await waitFor(() => expect(screen.queryByText("app:equipment.confirm.equip")).toBeNull());
 		expect(request).not.toHaveBeenCalled();
 	});
 

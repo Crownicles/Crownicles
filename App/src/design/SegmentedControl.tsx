@@ -20,17 +20,21 @@ const useStyles = createStyles(colors => ({
 
 const SEGMENT_ICON_SIZE = 18;
 
-export function SegmentedControl<Value extends string>({options, value, onChange, label}: {
+export function SegmentedControl<Value extends string>({options, value, onChange, label, iconsOnly = false}: {
 	options: readonly Segment<Value>[];
 	value: Value;
 	onChange: (value: Value) => void;
 	label: string;
+
+	/** Too many segments for their names: each shows its emoji, and the screen names the chosen one. */
+	iconsOnly?: boolean;
 }): ReactNode {
 	const styles = useStyles();
 	return <View accessibilityRole="tablist" accessibilityLabel={label} style={styles.container}>
 		{options.map(option => <Pressable
 			key={option.value}
 			accessibilityRole="tab"
+			{...iconsOnly ? {accessibilityLabel: option.label} : {}}
 			{...option.badge && option.badge > 0 ? {accessibilityLabel: option.label, accessibilityHint: i18n.t("app:common.toCollect", {count: option.badge})} : {}}
 			accessibilityState={{selected: option.value === value}}
 			style={[styles.segment, option.value === value && styles.selected]}
@@ -40,7 +44,7 @@ export function SegmentedControl<Value extends string>({options, value, onChange
 				{option.icon ? <TwemojiIcon emoji={option.icon} size={SEGMENT_ICON_SIZE} /> : null}
 				<CountBadge count={option.badge ?? 0} />
 			</View> : null}
-			<Text style={[styles.label, option.value === value && styles.selectedLabel]}>{option.label}</Text>
+			{iconsOnly ? null : <Text style={[styles.label, option.value === value && styles.selectedLabel]}>{option.label}</Text>}
 		</Pressable>)}
 	</View>;
 }

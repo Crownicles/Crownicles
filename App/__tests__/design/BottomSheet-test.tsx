@@ -1,4 +1,4 @@
-import {render, screen, fireEvent} from "@testing-library/react-native";
+import {act, render, screen, fireEvent, waitFor} from "@testing-library/react-native";
 import {Animated, PanResponder, PanResponderCallbacks, PanResponderGestureState, StyleSheet, Text} from "react-native";
 import {BottomSheet, sheetDragStarts} from "@/src/design/Sections";
 
@@ -39,7 +39,45 @@ describe("bottom sheet dismissal", () => {
 		content.onStartShouldSetPanResponderCapture?.(undefined as never, drag());
 		expect(content.onMoveShouldSetPanResponderCapture?.(undefined as never, drag())).toBe(true);
 		content.onPanResponderRelease?.(undefined as never, drag());
-		expect(close).toHaveBeenCalledTimes(1);
+		await waitFor(() => expect(close).toHaveBeenCalledTimes(1));
+	});
+
+	it("slides down out of sight before its owner removes it", async () => {
+		const close = jest.fn();
+		await render(<BottomSheet onClose={close}><Text>Content</Text></BottomSheet>);
+		const spring = jest.spyOn(Animated, "spring");
+		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
+		expect(close).not.toHaveBeenCalled();
+		expect(spring).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({toValue: expect.any(Number), overshootClamping: true}));
+		await waitFor(() => expect(close).toHaveBeenCalledTimes(1));
+	});
+
+	it("keeps the finger's momentum when a flick closes it", async () => {
+		await render(<BottomSheet onClose={jest.fn()}><Text>Content</Text></BottomSheet>);
+		const spring = jest.spyOn(Animated, "spring");
+		responders[0].onPanResponderRelease?.(undefined as never, drag({dy: 30, vy: 1.2}));
+		expect(spring).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({velocity: 1200}));
+	});
+
+	it("comes back up when its owner keeps it open, instead of lingering off screen", async () => {
+		jest.useFakeTimers();
+		await render(<BottomSheet onClose={jest.fn()}><Text>Content</Text></BottomSheet>);
+		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
+		const spring = jest.spyOn(Animated, "spring");
+		await act(async () => jest.advanceTimersByTime(5_000));
+		expect(spring).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({toValue: 0}));
+		jest.useRealTimers();
+	});
+
+	it.each([
+		{label: "pulled past the top", offset: -90, closes: 1},
+		{label: "barely bounced", offset: -20, closes: 0},
+		{label: "scrolled inside", offset: 150, closes: 0}
+	])("closes when the content is released $label only if pulled far enough", async ({offset, closes}) => {
+		const close = jest.fn();
+		await render(<BottomSheet onClose={close}><Text>Content</Text></BottomSheet>);
+		await fireEvent(screen.getByText("Content"), "scrollEndDrag", {nativeEvent: {contentOffset: {x: 0, y: offset}}});
+		await waitFor(() => expect(close).toHaveBeenCalledTimes(closes));
 	});
 
 	it("lets the content scroll without jumping into dismissal halfway through the same touch", async () => {
@@ -67,7 +105,7 @@ describe("bottom sheet dismissal", () => {
 		await render(<BottomSheet onClose={close}><Text>Content</Text></BottomSheet>);
 		expect(StyleSheet.flatten(screen.getByTestId("bottom-sheet-handle").props.style).minHeight).toBeGreaterThanOrEqual(44);
 		responders[0].onPanResponderRelease?.(undefined as never, drag({dy: 30, vy: 1}));
-		expect(close).toHaveBeenCalledTimes(1);
+		await waitFor(() => expect(close).toHaveBeenCalledTimes(1));
 	});
 
 	it("does not close when a second finger interrupts an already active drag", async () => {

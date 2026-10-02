@@ -53,14 +53,13 @@ const useStyles = createStyles(colors => ({
 	title: {marginTop: Theme.spacing.xs, fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.title, textAlign: "center", color: colors.ink},
 	description: {
 		marginTop: Theme.spacing.sm,
-		marginBottom: Theme.spacing.xl,
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.body,
 		lineHeight: Theme.lineHeight.body,
 		textAlign: "center",
 		color: colors.muted
 	},
-	actions: {alignSelf: "stretch", gap: Theme.spacing.sm},
+	actions: {alignSelf: "stretch", gap: Theme.spacing.sm, marginTop: Theme.spacing.xl},
 	later: {flexDirection: "row", alignItems: "center", justifyContent: "center", gap: Theme.spacing.xs, paddingVertical: Theme.spacing.md},
 	laterLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.bodySmall, color: colors.muted},
 	pressed: {opacity: 0.6}
