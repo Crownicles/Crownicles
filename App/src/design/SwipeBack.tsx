@@ -95,10 +95,11 @@ export function SwipeBack({onClose, overlay, children}: {onClose: () => void; ov
 	const [translateX] = useState(() => new Animated.Value(0));
 	const [suspensions] = useState(() => new Suspensions());
 	const reportDepth = useContext(SwipeBackDepth);
-	useEffect(() => {
+	// A sub-page left open in another tab must not hold the paging of the tab on screen.
+	useFocusEffect(useCallback(() => {
 		reportDepth?.(1);
 		return (): void => reportDepth?.(-1);
-	}, [reportDepth]);
+	}, [reportDepth]));
 	useFocusEffect(useCallback(() => {
 		const listener = BackHandler.addEventListener("hardwareBackPress", () => {
 			onClose();
