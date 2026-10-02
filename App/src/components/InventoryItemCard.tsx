@@ -8,7 +8,7 @@ import {formatNumber} from "@/src/display/Amounts";
 import {consumableDescription, effectAmount, natureUnit} from "@/src/display/ItemEffects";
 import {joinFacts} from "@/src/display/Facts";
 import {ArrowRight, Coins, Droplets, Gift, LucideIcon, Swords, X} from "@/src/design/FightIcons";
-import {Button, ButtonRow, Note} from "@/src/design/Primitives";
+import {Button, ButtonRow, CountBadge, Note} from "@/src/design/Primitives";
 import {ActionBanner, ExpandableEntry, LockHint, useSectionStyles} from "@/src/design/Sections";
 import {ItemDetails} from "@/src/components/ItemDetails";
 import {ExpandedEntry} from "@/src/design/useExpandedEntry";
@@ -55,13 +55,14 @@ function headline({item, kind}: InventoryItem): {value: string; unit: string} | 
 	return {value: effectAmount(item.nature, item.power), unit};
 }
 
-function ItemHeadline({entry}: {entry: InventoryItem}): ReactNode {
+function ItemHeadline({entry, badge}: {entry: InventoryItem; badge: number}): ReactNode {
 	const sectionStyles = useSectionStyles();
 	const value = headline(entry);
 	if (!value) return null;
 	return <View style={sectionStyles.value}>
 		<Text style={sectionStyles.amount} numberOfLines={1}>{value.value}</Text>
 		<UnitIcon unit={value.unit} size={HEADLINE_UNIT_SIZE} />
+		<CountBadge count={badge} />
 	</View>;
 }
 
@@ -95,11 +96,12 @@ function actionLabel(action: ItemAction, confirming: boolean): string {
 
 type ActionPress = {confirming: ItemAction | null; pending: boolean; press: (action: ItemAction) => void};
 
-function MainItemAction({choice, pending, press}: {choice: ItemActionChoice; pending: boolean; press: (action: ItemAction) => void}): ReactNode {
+function MainItemAction({choice, pending, press, badge}: {choice: ItemActionChoice; pending: boolean; press: (action: ItemAction) => void; badge: number}): ReactNode {
 	return <ActionBanner
 		icon={ACTION_ICONS[choice.action]}
 		label={actionLabel(choice.action, false)}
 		pending={pending}
+		badge={badge}
 		{...choice.lock ? {lock: choice.lock} : {}}
 		onPress={(): void => press(choice.action)}
 	/>;
@@ -125,11 +127,12 @@ function OtherItemActions({choices, state}: {choices: ItemActionChoice[]; state:
 }
 
 /** The most likely action as the dark bar, the others as buttons under it; parting with the item asks twice. */
-function ItemActions({entry, choices, actions, onDone}: {
+function ItemActions({entry, choices, actions, onDone, badge}: {
 	entry: InventoryItem;
 	choices: ItemActionChoice[];
 	actions: InventoryItemActions;
 	onDone: () => void;
+	badge: number;
 }): ReactNode {
 	const [confirming, setConfirming] = useState<ItemAction | null>(null);
 	const press = (action: ItemAction): void => {
@@ -142,17 +145,18 @@ function ItemActions({entry, choices, actions, onDone}: {
 	};
 	const main = isIrreversible(choices[0].action) ? undefined : choices[0];
 	return <>
-		{main ? <MainItemAction choice={main} pending={actions.pending} press={press} /> : null}
+		{main ? <MainItemAction choice={main} pending={actions.pending} press={press} badge={badge} /> : null}
 		<OtherItemActions choices={main ? choices.slice(1) : choices} state={{confirming, pending: actions.pending, press}} />
 	</>;
 }
 
 /** An item of the inventory, which unfolds to show what it is worth and what can be done with it. */
-export function InventoryItemCard({entry, choices, actions, unfolding}: {
+export function InventoryItemCard({entry, choices, actions, unfolding, badge = 0}: {
 	entry: InventoryItem;
 	choices: ItemActionChoice[];
 	actions: InventoryItemActions;
 	unfolding: ExpandedEntry<string>;
+	badge?: number;
 }): ReactNode {
 	const key = inventoryItemKey(entry);
 	const expanded = unfolding.isExpanded(key);
@@ -160,12 +164,12 @@ export function InventoryItemCard({entry, choices, actions, unfolding}: {
 		emblem={inventoryItemEmblem(entry.item)}
 		label={itemDisplayName(entry.item)}
 		caption={<ItemCaption item={entry.item} choices={choices} expanded={expanded} />}
-		end={<ItemHeadline entry={entry} />}
+		end={<ItemHeadline entry={entry} badge={badge} />}
 		expanded={expanded}
 		onToggle={(): void => unfolding.toggle(key)}
 		testID={`inventory-item-${key}`}
 	>
 		<ItemDetails item={entry.item} />
-		{choices.length > 0 ? <ItemActions entry={entry} choices={choices} actions={actions} onDone={unfolding.collapse} /> : null}
+		{choices.length > 0 ? <ItemActions entry={entry} choices={choices} actions={actions} onDone={unfolding.collapse} badge={badge} /> : null}
 	</ExpandableEntry>;
 }

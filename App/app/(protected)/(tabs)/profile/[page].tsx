@@ -2,7 +2,7 @@ import {ReactNode} from "react";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {RequestState} from "@/src/store/useGameQuery";
-import {useOwnInventory} from "@/src/store/useClaimables";
+import {useDailyBonusToClaim, useOwnInventory} from "@/src/store/useClaimables";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {Badges, Blessing, Guide} from "@/src/components/CharacterReference";
 import {Rankings} from "@/src/components/Rankings";
@@ -18,7 +18,7 @@ function isProfilePage(page: string | string[] | undefined): page is ProfilePage
 	return typeof page === "string" && (PROFILE_PAGES as readonly string[]).includes(page);
 }
 
-function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNode {
+function InventorySection({state, dailyBonusToClaim}: {state: RequestState<InventoryRes>; dailyBonusToClaim: number}): ReactNode {
 	const inventory = state.status === "ready" ? state.data : null;
 	const inventoryData: InventoryData | null = inventory?.data ?? null;
 	const emptyMessage = state.status === "failed"
@@ -29,12 +29,14 @@ function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNo
 	return inventoryData ? <Inventory
 		inventoryData={inventoryData}
 		artifacts={inventory ?? {}}
+		dailyBonusToClaim={dailyBonusToClaim}
 		{...inventory?.dailyBonusAvailableAt === undefined ? {} : {dailyBonusAvailableAt: inventory.dailyBonusAvailableAt}}
 	/> : <EmptyState>{emptyMessage}</EmptyState>;
 }
 
 function ProfileInventory(): ReactNode {
-	return <InventorySection state={useOwnInventory()} />;
+	const dailyBonusToClaim = useDailyBonusToClaim();
+	return <InventorySection state={useOwnInventory()} dailyBonusToClaim={dailyBonusToClaim} />;
 }
 
 function ProfilePageContent({page}: {page: ProfilePageName}): ReactNode {

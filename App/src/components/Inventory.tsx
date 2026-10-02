@@ -6,7 +6,7 @@ import {InventoryItemCard} from "@/src/components/InventoryItemCard";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
 import {
-	EQUIPPED_SLOT, InventoryItem, InventoryItemActions, itemActions, ItemKind, useInventoryItemActions
+	EQUIPPED_SLOT, InventoryItem, InventoryItemActions, itemActions, ItemKind, ITEM_ACTIONS, useInventoryItemActions
 } from "@/src/store/useInventoryItemActions";
 import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
@@ -159,7 +159,7 @@ function dailyBonusLock(availableAt: number | undefined): Lock | undefined {
 /** Draws an item row, which knows from the whole inventory what the item allows. */
 type ItemRows = {render: (entry: InventoryItem, category: InventoryCategory) => ReactNode};
 
-function useItemRows(data: InventoryData, dailyBonusAvailableAt: number | undefined, actions: InventoryItemActions): ItemRows {
+function useItemRows(data: InventoryData, dailyBonusAvailableAt: number | undefined, actions: InventoryItemActions, dailyBonusToClaim: number): ItemRows {
 	const unfolding = useExpandedEntry<string>();
 	const dailyLock = dailyBonusLock(dailyBonusAvailableAt);
 	const equippedObjectGivesDaily = givesDailyBonus(data.object);
@@ -167,36 +167,46 @@ function useItemRows(data: InventoryData, dailyBonusAvailableAt: number | undefi
 		render: (entry, category): ReactNode => {
 			if (entry.item.id === 0) return <InventoryItemRow item={entry.item} />;
 			const reserveFull = data[category.reserve].length >= reserveCapacity(data, category);
+			const choices = itemActions(entry, {reserveFull, dailyLock, equippedObjectGivesDaily});
 			return <InventoryItemCard
 				entry={entry}
-				choices={itemActions(entry, {reserveFull, dailyLock, equippedObjectGivesDaily})}
+				choices={choices}
 				actions={actions}
 				unfolding={unfolding}
+				badge={choices.some(choice => choice.action === ITEM_ACTIONS.DAILY && !choice.lock) ? dailyBonusToClaim : 0}
 			/>;
 		}
 	};
 }
 
-function InventoryScreen({data, artifacts, dailyBonusAvailableAt}: {
+function InventoryScreen({data, artifacts, dailyBonusAvailableAt, dailyBonusToClaim}: {
 	data: InventoryData;
 	artifacts: InventoryArtifacts | undefined;
 	dailyBonusAvailableAt: number | undefined;
+	dailyBonusToClaim: number;
 }): ReactNode {
 	const [view, setView] = useState<InventoryView>("equipped");
 	const actions = useInventoryItemActions();
-	const rows = useItemRows(data, dailyBonusAvailableAt, actions);
+	const rows = useItemRows(data, dailyBonusAvailableAt, actions, dailyBonusToClaim);
+	const dailyBonusView: InventoryView = givesDailyBonus(data.object) ? "equipped" : "reserve";
 	return <>
-		<SegmentedControl options={INVENTORY_VIEWS.map(value => ({value, label: i18n.t(`app:inventory.views.${value}`), ...AppIcons.getIconOrNull(VIEW_ICONS[value]) === null ? {} : {icon: AppIcons.getIcon(VIEW_ICONS[value])}}))} value={view} onChange={setView} label={i18n.t("app:profile.titles.inventory")} />
+		<SegmentedControl options={INVENTORY_VIEWS.map(value => ({
+			value,
+			label: i18n.t(`app:inventory.views.${value}`),
+			...value === dailyBonusView && dailyBonusToClaim > 0 ? {badge: dailyBonusToClaim} : {},
+			...AppIcons.getIconOrNull(VIEW_ICONS[value]) === null ? {} : {icon: AppIcons.getIcon(VIEW_ICONS[value])}
+		}))} value={view} onChange={setView} label={i18n.t("app:profile.titles.inventory")} />
 		{actions.message ? <Note>{actions.message}</Note> : null}
 		<InventoryContent view={view} data={data} artifacts={artifacts} rows={rows} />
 	</>;
 }
 
-export function Inventory({inventoryData, artifacts, dailyBonusAvailableAt}: {
+export function Inventory({inventoryData, artifacts, dailyBonusAvailableAt, dailyBonusToClaim = 0}: {
 	inventoryData: InventoryData | null;
 	artifacts?: InventoryArtifacts;
 	dailyBonusAvailableAt?: number;
+	dailyBonusToClaim?: number;
 }): ReactNode {
 	if (!inventoryData) return <Note>{i18n.t("app:common.loading")}</Note>;
-	return <InventoryScreen data={inventoryData} artifacts={artifacts} dailyBonusAvailableAt={dailyBonusAvailableAt} />;
+	return <InventoryScreen data={inventoryData} artifacts={artifacts} dailyBonusAvailableAt={dailyBonusAvailableAt} dailyBonusToClaim={dailyBonusToClaim} />;
 }

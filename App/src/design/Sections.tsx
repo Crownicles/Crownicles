@@ -7,7 +7,7 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
 import {UnitIcon} from "@/src/components/UnitIcon";
 import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/src/design/FightIcons";
-import {PendingMotion, Screen, usePressMotion} from "@/src/design/Primitives";
+import {CountBadge, PendingMotion, Screen, usePressMotion} from "@/src/design/Primitives";
 import {SwipeBack} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
@@ -604,7 +604,7 @@ function bannerAvailability(pending: boolean, disabled: boolean, lock: Lock | un
 	};
 }
 
-export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false, disabled = false, lock, hint, testID}: {
+export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false, disabled = false, lock, hint, badge = 0, testID}: {
 	icon: LucideIcon;
 
 	/** A game emoji drawn instead of `icon`, when the action spends or earns something the game draws. */
@@ -619,6 +619,7 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 
 	/** What the player should know before pressing, without preventing the press. */
 	hint?: Lock;
+	badge?: number;
 	testID?: string;
 }): ReactNode {
 	const styles = useStyles();
@@ -633,6 +634,7 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 		<Pressable accessible={false} {...refusable ? {onPress: shake} : {}}>
 			<Pressable
 				accessibilityRole="button"
+				{...badge > 0 ? {accessibilityLabel: label, accessibilityHint: i18n.t("app:common.toCollect", {count: badge})} : {}}
 				accessibilityState={{disabled: blocked, busy: pending}}
 				disabled={blocked}
 				{...handlers}
@@ -642,6 +644,7 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 					{pending ? <PendingMotion>{glyph}</PendingMotion> : <Animated.View style={{transform: [{scale: iconScale}]}}>{glyph}</Animated.View>}
 				</View>
 				<TwemojiText containerStyle={styles.bannerLabelBox} textStyle={styles.bannerLabel} emojiSize={Theme.fontSize.button} numberOfLines={BANNER_LABEL_LINES}>{label}</TwemojiText>
+				<CountBadge count={badge} />
 				<ArrowRight size={18} color={colors.paper} />
 			</Animated.View>}
 			</Pressable>

@@ -1,4 +1,4 @@
-import {fireEvent, screen, waitFor} from "@testing-library/react-native";
+import {fireEvent, render, screen, waitFor, within} from "@testing-library/react-native";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {GameClient} from "@/src/networking/GameClient";
 import {EquipActionReq} from "ws-packets/src/fromClient/EquipActionReq";
@@ -10,6 +10,7 @@ import {EQUIP_ACTIONS} from "ws-packets/src/objects/EquipCategoryData";
 import {ItemNature} from "ws-packets/src/objects/ItemNature";
 import {PlantId} from "ws-packets/src/objects/PlantId";
 import {renderWithGameQuery} from "@/src/testing/testUtils";
+import {GameQueryProvider} from "@/src/store/GameQueryProvider";
 
 const mockTrack = jest.fn();
 const mockAnswer = jest.fn();
@@ -132,15 +133,51 @@ describe("inventory views", () => {
 	it("says on the worn object that the daily bonus is on cooldown, folded or not", async () => {
 		await renderWithGameQuery(<Inventory inventoryData={inventory()} dailyBonusAvailableAt={Date.now() + 3_600_000} />);
 		expect(screen.getByText("app:dailyBonus.locked")).toBeTruthy();
+		expect(within(screen.getByRole("button", {name: "models:objects.2"})).queryByText("1")).toBeNull();
 		await fireEvent.press(screen.getByRole("button", {name: "models:objects.2"}));
 		expect(screen.getByText("app:dailyBonus.locked")).toBeTruthy();
 		expect(screen.getByRole("button", {name: "app:inventory.actions.daily"})).toBeDisabled();
 	});
 
 	it("leaves the daily bonus open once its delay has run out", async () => {
-		await renderWithGameQuery(<Inventory inventoryData={inventory()} dailyBonusAvailableAt={Date.now() - 1} />);
+		await renderWithGameQuery(<Inventory inventoryData={inventory()} dailyBonusAvailableAt={Date.now() - 1} dailyBonusToClaim={1} />);
+		expect(within(screen.getByRole("tab", {name: "app:inventory.views.equipped"})).getByTestId("count-badge")).toBeTruthy();
+		expect(within(screen.getByRole("button", {name: "models:objects.2"})).getByText("1")).toBeTruthy();
 		await fireEvent.press(screen.getByRole("button", {name: "models:objects.2"}));
 		expect(screen.queryByText("app:dailyBonus.locked")).toBeNull();
 		expect(screen.getByRole("button", {name: "app:inventory.actions.daily"})).toBeEnabled();
+		expect(within(screen.getByRole("button", {name: "app:inventory.actions.daily"})).getByTestId("count-badge")).toBeTruthy();
+	});
+
+	it("guides to the reserve instead when only a stored object gives the daily bonus", async () => {
+		const data = inventory();
+		data.backupObjects = [{display: data.object, slot: 1}];
+		data.object = {...data.object, id: 3, nature: ItemNature.ATTACK};
+		await renderWithGameQuery(<Inventory inventoryData={data} dailyBonusAvailableAt={Date.now() - 1} dailyBonusToClaim={1} />);
+		expect(within(screen.getByRole("tab", {name: "app:inventory.views.equipped"})).queryByTestId("count-badge")).toBeNull();
+		const reserve = screen.getByRole("tab", {name: "app:inventory.views.reserve"});
+		expect(within(reserve).getByTestId("count-badge")).toBeTruthy();
+		await fireEvent.press(reserve);
+		expect(within(screen.getByRole("button", {name: "models:objects.2"})).getByTestId("count-badge")).toBeTruthy();
+		await fireEvent.press(screen.getByRole("button", {name: "models:objects.2"}));
+		expect(within(screen.getByRole("button", {name: "app:inventory.actions.daily"})).getByTestId("count-badge")).toBeTruthy();
+	});
+
+	it("does not show claim guidance until the reward counter is known", async () => {
+		await renderWithGameQuery(<Inventory inventoryData={inventory()} />);
+		expect(screen.queryByTestId("count-badge")).toBeNull();
+		await fireEvent.press(screen.getByRole("button", {name: "models:objects.2"}));
+		expect(screen.queryByTestId("count-badge")).toBeNull();
+	});
+
+	it("removes the entire guidance when the refreshed bonus goes back on cooldown", async () => {
+		const data = inventory();
+		const view = await render(<Inventory inventoryData={data} dailyBonusAvailableAt={Date.now() - 1} dailyBonusToClaim={1} />, {wrapper: GameQueryProvider});
+		await fireEvent.press(screen.getByRole("button", {name: "models:objects.2"}));
+		expect(screen.getAllByTestId("count-badge")).toHaveLength(3);
+
+		await view.rerender(<Inventory inventoryData={data} dailyBonusAvailableAt={Date.now() + 3_600_000} dailyBonusToClaim={0} />);
+		expect(screen.queryByTestId("count-badge")).toBeNull();
+		expect(screen.getByRole("button", {name: "app:inventory.actions.daily"})).toBeDisabled();
 	});
 });
