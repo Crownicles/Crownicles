@@ -203,6 +203,12 @@ pnpm gamekit:prepare
 pnpm gamekit:metro
 ```
 
+The GameKit launcher reuses `scripts/start-mobile.sh`: REST, WebSocket and Keycloak target the local
+Mac hostname by default, not the NAS alpha deployment. Start Core and RestWs on the Mac first;
+MariaDB, MQTT and Keycloak must also be available locally. Explicit endpoint overrides use the same
+`CROWNICLES_REST_API_URL`, `CROWNICLES_WEBSOCKET_URL` and `CROWNICLES_KEYCLOAK_URL` variables as the
+normal mobile launcher. Use `pnpm gamekit:metro --dry-run` to check the resolved URLs.
+
 The preparation regenerates iOS, installs CocoaPods, copies the tracked catalog from
 `game-services/CrowniclesLocal.gamekit` and creates the shared `CrowniclesGameKitLocal` scheme.
 The local scheme enables GameKit Debug Mode, has no archive action and sets the native launch

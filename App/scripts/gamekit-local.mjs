@@ -9,11 +9,8 @@ const environment = {
 	...process.env,
 	NODE_ENV: "development",
 	EXPO_PUBLIC_GAME_CENTER_MODE: "local",
-	EXPO_PUBLIC_REST_API_URL: process.env.EXPO_PUBLIC_REST_API_URL || "https://alpha-api.crownicles.com",
-	EXPO_PUBLIC_WEBSOCKET_URL: process.env.EXPO_PUBLIC_WEBSOCKET_URL || "wss://alpha-ws.crownicles.com",
-	EXPO_PUBLIC_KEYCLOAK_URL: process.env.EXPO_PUBLIC_KEYCLOAK_URL || "https://alpha-auth.crownicles.com",
-	EXPO_PUBLIC_KEYCLOAK_REALM: process.env.EXPO_PUBLIC_KEYCLOAK_REALM || "Crownicles",
-	EXPO_PUBLIC_KEYCLOAK_CLIENT_ID: process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID || "crownicles-app"
+	CROWNICLES_EXPO_HOST: process.env.CROWNICLES_EXPO_HOST || "lan",
+	CROWNICLES_EXPO_PORT: LOCAL_PORT
 };
 
 function run(command, args) {
@@ -29,7 +26,7 @@ if (action === ACTIONS.PREPARE) {
 	console.log("Ready: open ios/Crownicles.xcworkspace in Xcode, choose CrowniclesGameKitLocal and run on a physical iPhone.");
 }
 else if (action === ACTIONS.METRO) {
-	run("pnpm", ["exec", "expo", "start", "--dev-client", "--lan", "--port", LOCAL_PORT]);
+	run("zsh", ["scripts/start-mobile.sh", "--ios", "--dev-client", ...process.argv.slice(3)]);
 }
 else {
 	console.error("Usage: node scripts/gamekit-local.mjs prepare|metro");

@@ -11,6 +11,8 @@ import localCatalog from "../../game-services/CrowniclesLocal.gamekit/gameCenter
 import Constants from "expo-constants";
 import {createLocalGameKitScheme} from "../../plugins/withGameCenterLocal";
 import {parseStringPromise} from "xml2js";
+import {execFileSync} from "node:child_process";
+import path from "node:path";
 
 jest.mock("expo", () => ({requireOptionalNativeModule: jest.fn()}));
 jest.mock("expo-constants", () => ({__esModule: true, default: {expoConfig: {extra: {gameServices: {
@@ -29,6 +31,27 @@ function manifest(): AndroidConfig.Manifest.AndroidManifest {
 }
 
 describe("game services native configuration", () => {
+	it("routes the GameKit iPhone launcher to the Mac even with stale alpha Expo URLs", () => {
+		const output = execFileSync(process.execPath, ["scripts/gamekit-local.mjs", "metro", "--dry-run"], {
+			cwd: path.resolve(__dirname, "../.."),
+			encoding: "utf8",
+			env: {
+				...process.env,
+				CROWNICLES_DEVICE_HOST: "iphone-dev.local",
+				CROWNICLES_REST_API_URL: "",
+				CROWNICLES_WEBSOCKET_URL: "",
+				CROWNICLES_KEYCLOAK_URL: "",
+				EXPO_PUBLIC_REST_API_URL: "https://alpha-api.example.invalid",
+				EXPO_PUBLIC_WEBSOCKET_URL: "wss://alpha-ws.example.invalid",
+				EXPO_PUBLIC_KEYCLOAK_URL: "https://alpha-auth.example.invalid"
+			}
+		});
+		expect(output).toContain("REST API: http://iphone-dev.local:10500");
+		expect(output).toContain("WebSocket: ws://iphone-dev.local:10501");
+		expect(output).toContain("Keycloak: http://iphone-dev.local:8080");
+		expect(output).not.toContain("example.invalid");
+	});
+
 	it("generates a runnable local scheme with Debug Mode, its native marker and no archive action", async () => {
 		const source = `<?xml version="1.0"?><Scheme><BuildAction><BuildActionEntries><BuildActionEntry buildForArchiving="YES" /></BuildActionEntries></BuildAction><LaunchAction buildConfiguration="Release"><BuildableProductRunnable /></LaunchAction><ArchiveAction buildConfiguration="Release" /></Scheme>`;
 		const local = await parseStringPromise(await createLocalGameKitScheme(source));

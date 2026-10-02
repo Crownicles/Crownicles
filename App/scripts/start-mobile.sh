@@ -136,6 +136,9 @@ if $dry_run; then
 fi
 
 expo_args=(--host "$expo_host" --clear)
+if [[ -n "${CROWNICLES_EXPO_PORT:-}" ]]; then
+	expo_args+=(--port "$CROWNICLES_EXPO_PORT")
+fi
 if $dev_client; then
 	expo_args+=(--dev-client)
 else
