@@ -39,6 +39,17 @@ export function iconForPath(iconPath: string): ReactNode | undefined {
 	return emoji ? <TwemojiIcon emoji={emoji} size={Theme.fontSize.rowTitle} /> : undefined;
 }
 
+/** The icon of what the reaction offers, when the game names one for it. */
+function offerIconPath(reaction: ReactionCollectorReaction): string | undefined {
+	switch (reaction.type) {
+		case CITY_REACTION_KINDS.SHOP: return `city.shops.${reaction.data.shopId}`;
+		case CITY_REACTION_KINDS.INN_MEAL: return `meals.${reaction.data.mealId}`;
+		case CITY_REACTION_KINDS.INN_ROOM: return `rooms.${reaction.data.roomId}`;
+		default: return undefined;
+	}
+}
+
 export function cityIconPath(reaction: ReactionCollectorReaction): string | undefined {
-	return reaction.type === CITY_REACTION_KINDS.SHOP ? `city.shops.${reaction.data.shopId}` : CITY_ICON_PATHS[reaction.type];
+	const offer = offerIconPath(reaction);
+	return offer && AppIcons.getIconOrNull(offer) ? offer : CITY_ICON_PATHS[reaction.type];
 }

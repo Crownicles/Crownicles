@@ -464,8 +464,8 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 	[SHOP_REACTION_KINDS.BUY_SLOT_CATEGORY]: makeReactionHandler(SHOP_REACTION_KINDS.BUY_SLOT_CATEGORY, reaction =>
 		withIcon(`itemKinds.${reaction.data.categoryId}`, plainStory(i18n.t(`commands:shop.slotCategoriesKind.${reaction.data.categoryId}`)))),
 	[CITY_REACTION_KINDS.EXIT]: makeReactionHandler(CITY_REACTION_KINDS.EXIT, () => withIcon("other.walking", i18n.t("commands:report.city.reactions.exit.label"))),
-	[CITY_REACTION_KINDS.INN_MEAL]: makeReactionHandler(CITY_REACTION_KINDS.INN_MEAL, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.inns.meals.${reaction.data.mealId}`))} · ${i18n.t("commands:report.city.inns.mealDescription", reaction.data)}`),
-	[CITY_REACTION_KINDS.INN_ROOM]: makeReactionHandler(CITY_REACTION_KINDS.INN_ROOM, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.inns.rooms.${reaction.data.roomId}`))} · ${i18n.t("commands:report.city.inns.roomDescription", reaction.data)}`),
+	[CITY_REACTION_KINDS.INN_MEAL]: makeReactionHandler(CITY_REACTION_KINDS.INN_MEAL, reaction => `${withIcon(`meals.${reaction.data.mealId}`, i18n.t(`commands:report.city.inns.meals.${reaction.data.mealId}`))} · ${i18n.t("commands:report.city.inns.mealDescription", reaction.data)}`),
+	[CITY_REACTION_KINDS.INN_ROOM]: makeReactionHandler(CITY_REACTION_KINDS.INN_ROOM, reaction => `${withIcon(`rooms.${reaction.data.roomId}`, i18n.t(`commands:report.city.inns.rooms.${reaction.data.roomId}`))} · ${i18n.t("commands:report.city.inns.roomDescription", reaction.data)}`),
 	[CITY_REACTION_KINDS.ENCHANT]: makeReactionHandler(CITY_REACTION_KINDS.ENCHANT, () => cityReactionLabel("enchant")),
 	[CITY_REACTION_KINDS.SHOP]: makeReactionHandler(CITY_REACTION_KINDS.SHOP, reaction => withIcon(`city.shops.${reaction.data.shopId}`, cityServiceLabel(reaction.data.shopId))),
 	[CITY_REACTION_KINDS.BUY_HOME]: makeReactionHandler(CITY_REACTION_KINDS.BUY_HOME, () => cityReactionLabel("buyHome")),

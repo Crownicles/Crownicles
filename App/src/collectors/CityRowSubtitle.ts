@@ -47,9 +47,9 @@ function shopSubtitle(reaction: ReactionCollectorReaction): string {
 }
 
 function innSubtitle(reaction: ReactionCollectorReaction): string {
-	const data = reaction.data as {innId: string; mealId?: string; roomId?: string; price?: number; energy?: number; health?: number};
+	const data = reaction.data as {energy?: number; health?: number};
 	const detailKey = reaction.type === CITY_REACTION_KINDS.INN_MEAL ? "app:city.subtitles.mealDetails" : "app:city.subtitles.roomDetails";
-	return `${i18n.t(`commands:report.city.inns.names.${data.innId}`)} · ${i18n.t(detailKey, data)}`;
+	return i18n.t(detailKey, data);
 }
 
 function homeBedSubtitle(snapshot: CityMobileSnapshot | undefined, reaction: ReactionCollectorReaction): string | undefined {
