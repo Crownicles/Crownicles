@@ -1,6 +1,6 @@
 import type {ReactElement} from "react";
 import {fireEvent, render, screen} from "@testing-library/react-native";
-import {Image} from "react-native";
+import {Image, Platform} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
 	BIG_EVENT_DATA_KINDS, BIG_EVENT_REACTION_KINDS, GENERIC_REACTION_KINDS,
@@ -571,21 +571,22 @@ describe("AdventureCollector", () => {
 		expect(onChoose).not.toHaveBeenCalled();
 	});
 
-	it("tells a commerce on its own journal page and says what the purchase does before buying", async () => {
+	it("presents a commerce with its purse and says what the purchase does before buying", async () => {
+		const platform = jest.replaceProperty(Platform, "OS", "android");
 		const onChoose = jest.fn();
 		const collector = shopCollector("veterinarian", {availableCurrency: 51, shopId: "veterinarian"}, VETERINARIAN_TREATMENT);
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
 		expect(screen.getByText("commands:report.city.shops.veterinarian.label")).toBeTruthy();
-		expect(screen.getByText(/commands:shop\.greeting/)).toBeTruthy();
-		expect(screen.getByText("commands:shop.itemPrice")).toBeTruthy();
+		expect(screen.getByText("app:city.shop.balance.gem")).toBeTruthy();
 
-		await fireEvent.press(screen.getByText("commands:shop.buyButton"));
+		await fireEvent.press(screen.getByText("commands:shop.shopItems.lovePointsValue.name"));
 		expect(onChoose).not.toHaveBeenCalled();
 		expect(screen.getByText(/commands:shop\.shopItems\.lovePointsValue\.info/)).toBeTruthy();
 
-		await fireEvent.press(screen.getByText("commands:shop.confirmButton"));
+		await fireEvent.press(screen.getByText("app:city.shop.buyFor"));
 		expect(onChoose).toHaveBeenCalledWith(0);
+		platform.restore();
 	});
 
 	it("leaves a commerce through the back chevron", async () => {
@@ -603,8 +604,8 @@ describe("AdventureCollector", () => {
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
 		expect(screen.getByText("app:city.locks.missingMoney")).toBeTruthy();
-		await fireEvent.press(screen.getByText("commands:shop.buyButton"));
-		await fireEvent.press(screen.getByText("commands:shop.confirmButton"));
+		await fireEvent.press(screen.getByText("commands:shop.shopItems.slotExtension.name"));
+		expect(screen.getByRole("button", {name: "app:city.shop.buyFor", disabled: true})).toBeTruthy();
 		expect(onChoose).not.toHaveBeenCalled();
 	});
 

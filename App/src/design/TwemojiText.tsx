@@ -54,6 +54,14 @@ export function twemojiParts({text, textStyle, emojiSize, iosEmojiVerticalOffset
 	return parts;
 }
 
+/** Game texts open with their emoji: split it off so it can take an icon slot and the rest a title style. */
+export function splitLeadingEmoji(label: string): {emoji?: string; text: string} {
+	const trimmed = label.trimStart();
+	const [first] = parse(trimmed);
+	if (first?.indices[0] !== 0) return {text: trimmed};
+	return {emoji: first.text, text: trimmed.slice(first.indices[1]).trimStart()};
+}
+
 /** Laid out as one paragraph, so a long label wraps its words after the emoji instead of pushing the text below it. */
 export function TwemojiText({children, textStyle, containerStyle, emojiSize, iosEmojiVerticalOffset = Theme.emoji.iosFieldOffset, numberOfLines}: {
 	children: string;

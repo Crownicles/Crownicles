@@ -805,6 +805,40 @@
       "close": "Fermer la boutique",
       "slotsLeft": "Encore {{count}} emplacement disponible sur {{limit}}",
       "slotsLeft_other": "Encore {{count}} emplacements disponibles sur {{limit}}",
+      "tokens": "Jetons",
+      "balance": {
+        "money": "Votre argent",
+        "gem": "Vos gemmes"
+      },
+      "stock_zero": "Épuisé",
+      "stock_one": "{{count}} en stock",
+      "stock_other": "{{count}} en stock",
+      "soldOut": "Épuisé pour aujourd'hui, revenez demain.",
+      "perUnit": "l'unité",
+      "amount": "×{{amount, number}}",
+      "bundles": "Par lots : {{amounts}}",
+      "quantity": "Quantité",
+      "fields": {
+        "price": "Prix",
+        "lotPrice": "Prix du lot",
+        "after": "Après l'achat"
+      },
+      "buyFor": "Acheter pour {{price}}",
+      "skipMission": {
+        "eyebrow": "Change-mission",
+        "title": "Quelle mission changer ?",
+        "description": "La mission choisie est abandonnée et une nouvelle, tirée au hasard, prend sa place.",
+        "list": "Vos missions en cours",
+        "warning": "Sa progression sera perdue, et la mission qui la remplace ne se choisit pas.",
+        "confirm": "Changer cette mission"
+      },
+      "buySlot": {
+        "eyebrow": "Nouvel emplacement",
+        "title": "Quelle réserve agrandir ?",
+        "description": "L'emplacement est payé et ajouté à la catégorie choisie.",
+        "list": "Catégories d'inventaire",
+        "confirm": "Ajouter l'emplacement ici"
+      },
       "result": {
         "eyebrow": "Au comptoir",
         "done": "Transaction réussie",

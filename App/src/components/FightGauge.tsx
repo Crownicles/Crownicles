@@ -1,10 +1,9 @@
 import {ReactNode, useEffect, useState} from "react";
 import {Animated, Easing, Text, View} from "react-native";
-import {parse} from "@twemoji/parser";
 import {LucideIcon} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
-import {TwemojiText} from "@/src/design/TwemojiText";
+import {splitLeadingEmoji, TwemojiText} from "@/src/design/TwemojiText";
 import {formatNumber} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 import {createStyles} from "@/src/design/ThemeContext";
@@ -27,10 +26,8 @@ const LABEL_EMOJI_SIZE = 12;
 /** Game texts open with their emoji: a line icon replaces it, otherwise it takes the icon slot, and the label its title style. */
 function GaugeLabel({label, color, icon: Icon, emoji}: {label: string; color: string; icon?: LucideIcon; emoji?: string}): ReactNode {
 	const styles = useStyles();
-	const [first] = parse(label);
-	const leading = first?.indices[0] === 0 ? first : undefined;
-	const drawn = Icon ? undefined : emoji ?? leading?.text;
-	const text = leading ? label.slice(leading.indices[1]).trimStart() : label;
+	const {emoji: leading, text} = splitLeadingEmoji(label);
+	const drawn = Icon ? undefined : emoji ?? leading;
 	return <View style={styles.meterLabel}>
 		{Icon ? <Icon size={LABEL_ICON_SIZE} color={color} /> : null}
 		{drawn ? <TwemojiIcon emoji={drawn} size={LABEL_ICON_SIZE} /> : null}

@@ -1,5 +1,4 @@
 import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {parse} from "@twemoji/parser";
 import {
 	Animated, ActivityIndicator, Easing, GestureResponderEvent, KeyboardAvoidingView, Modal, ModalProps, PanResponder, PanResponderGestureState, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
 } from "react-native";
@@ -11,7 +10,7 @@ import {ArrowRight, ChevronDown, ChevronRight, CircleAlert, LucideIcon} from "@/
 import {CountBadge, PendingMotion, Screen, usePressMotion} from "@/src/design/Primitives";
 import {SwipeBack, useSuspendSwipeBack} from "@/src/design/SwipeBack";
 import {Theme} from "@/src/design/Theme";
-import {TwemojiText} from "@/src/design/TwemojiText";
+import {splitLeadingEmoji, TwemojiText} from "@/src/design/TwemojiText";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
 import {createStyles, useColors} from "@/src/design/ThemeContext";
@@ -154,8 +153,7 @@ export function ChoiceAction({label, disabled = false, onPress}: {
 	onPress: () => void;
 }): ReactNode {
 	const styles = useStyles();
-	const leadingEmoji = parse(label).find(entity => entity.indices[0] === 0);
-	const text = leadingEmoji ? label.slice(leadingEmoji.indices[1]).trimStart() : label;
+	const {emoji: leadingEmoji, text} = splitLeadingEmoji(label);
 	return <Pressable
 		accessibilityRole="button"
 		accessibilityLabel={label}
@@ -163,7 +161,7 @@ export function ChoiceAction({label, disabled = false, onPress}: {
 		onPress={onPress}
 		style={({pressed}): object[] => [styles.choiceAction, disabled && styles.disabled, pressed && styles.pressed].filter(Boolean) as object[]}
 	>
-		{leadingEmoji ? <TwemojiIcon emoji={leadingEmoji.text} size={Theme.fontSize.rowTitle} /> : null}
+		{leadingEmoji ? <TwemojiIcon emoji={leadingEmoji} size={Theme.fontSize.rowTitle} /> : null}
 		<TwemojiText containerStyle={styles.choiceActionLabel} textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{text}</TwemojiText>
 		<ArrowRight size={20} />
 	</Pressable>;
