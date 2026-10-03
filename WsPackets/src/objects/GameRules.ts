@@ -33,6 +33,13 @@ export type GameRules = {
 		sellPrice: NumberRange;
 	};
 
+	/** How long, in hours, before each city service can be used again. */
+	cooldownHours: {
+		innMeal: number;
+		innRoom: number;
+		gardenWatering: number;
+	};
+
 	/** The royal contest trials, in campaign order. */
 	onboardingTrials: OnboardingTrial[];
 };

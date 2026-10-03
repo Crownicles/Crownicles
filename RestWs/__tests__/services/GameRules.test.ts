@@ -39,3 +39,11 @@ describe("text rules sent to the app", () => {
 		expect(TEXT_ISSUES).toEqual(CORE_TEXT_ISSUES);
 	});
 });
+
+describe("city cooldowns sent to the app", () => {
+	it("are whole hours, as the city notes word them", () => {
+		for (const hours of Object.values(buildGameRules().cooldownHours)) {
+			expect(Number.isInteger(hours) && hours > 0, String(hours)).toBe(true);
+		}
+	});
+});

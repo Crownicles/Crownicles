@@ -11,6 +11,10 @@ import { FightConstants } from "../../../Lib/src/constants/FightConstants";
 import { ONBOARDING_TRIALS } from "../../../Lib/src/constants/OnboardingConstants";
 import { PetSellConstants } from "../../../Lib/src/constants/PetSellConstants";
 import { PVEConstants } from "../../../Lib/src/constants/PVEConstants";
+import { PlayersConstants } from "../../../Lib/src/constants/PlayersConstants";
+import { HomeConstants } from "../../../Lib/src/constants/HomeConstants";
+import { GardenConstants } from "../../../Lib/src/constants/GardenConstants";
+import { TimeConstants } from "../../../Lib/src/constants/TimeConstants";
 
 function toWireTextRule(rule: TextRule): WireTextRule {
 	return {
@@ -47,6 +51,11 @@ export function buildGameRules(): GameRules {
 				min: PetSellConstants.SELL_PRICE.MIN,
 				max: PetSellConstants.SELL_PRICE.MAX
 			}
+		},
+		cooldownHours: {
+			innMeal: PlayersConstants.MEAL_COOLDOWN / TimeConstants.MS_TIME.HOUR,
+			innRoom: HomeConstants.BED_COOLDOWN_MS / TimeConstants.MS_TIME.HOUR,
+			gardenWatering: GardenConstants.WATERING_COOLDOWN_MS / TimeConstants.MS_TIME.HOUR
 		},
 		onboardingTrials: ONBOARDING_TRIALS.map(trial => ({
 			id: trial.id,
