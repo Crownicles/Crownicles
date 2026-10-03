@@ -19,7 +19,7 @@ export function createPlatformGames(): PlatformGames {
 	return {
 		provider: GAME_SERVICE_PROVIDERS.PLAY_GAMES,
 		availability: platformAvailability(configured, native !== null),
-		getPlayer: async () => usable ? authenticatedPlayer() : null,
+		getPlayer: () => usable ? authenticatedPlayer() : Promise.resolve(null),
 		connect: async () => playerIdentity(await GooglePlayGames.isAuthenticated() ? await GooglePlayGames.getPlayer() : await GooglePlayGames.signIn()),
 		unlockAchievement: async achievement => {await GooglePlayGames.unlockAchievement(config.achievements[achievement]);},
 		submitTopweekScore: async score => {await GooglePlayGames.submitScore(config.topweekLeaderboardId, score);},

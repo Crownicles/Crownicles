@@ -26,13 +26,17 @@ function applyRequested() {
 	return process.argv.includes(APPLY_FLAG);
 }
 
+function payloadOf(result, action) {
+	if (result.isError) throw new Error(`Could not ${action}: HTTP ${result.status}`);
+	return result.payload;
+}
+
 async function* allUsers(config) {
 	for (let first = 0; ;) {
-		const page = await KeycloakUtils.getUsersPage(config, first, PAGE_SIZE);
-		if (page.isError) throw new Error(`Could not read users: HTTP ${page.status}`);
-		if (!page.payload.users.length) return;
-		yield* page.payload.users;
-		first += page.payload.users.length;
+		const {users} = payloadOf(await KeycloakUtils.getUsersPage(config, first, PAGE_SIZE), "read users");
+		if (!users.length) return;
+		yield* users;
+		first += users.length;
 	}
 }
 
@@ -55,16 +59,18 @@ async function run() {
 	if (totals.conflicts) process.exitCode = 1;
 }
 
-async function inspectCandidate(config, user) {
-	const discordId = user.attributes.discordId[0];
-	const links = await KeycloakUtils.getFederatedIdentities(config, user.id);
-	if (links.isError) throw new Error(`Could not inspect identities: HTTP ${links.status}`);
-	const owners = await KeycloakUtils.getDiscordIdentityOwners(config, discordId);
-	if (owners.isError) throw new Error(`Could not inspect identity ownership: HTTP ${owners.status}`);
-	if (owners.payload.users.some(owner => owner.id !== user.id)) return "conflicts";
-	const existing = links.payload.identities.find(identity => identity.identityProvider === KeycloakConstants.IDENTITY_PROVIDERS.DISCORD);
+function discordLinkState(identities, discordId) {
+	const existing = identities.find(identity => identity.identityProvider === KeycloakConstants.IDENTITY_PROVIDERS.DISCORD);
 	if (!existing) return "needsLink";
 	return existing.userId === discordId ? "alreadyLinked" : "conflicts";
+}
+
+async function inspectCandidate(config, user) {
+	const discordId = user.attributes.discordId[0];
+	const {identities} = payloadOf(await KeycloakUtils.getFederatedIdentities(config, user.id), "inspect identities");
+	const {users} = payloadOf(await KeycloakUtils.getDiscordIdentityOwners(config, discordId), "inspect identity ownership");
+	if (users.some(owner => owner.id !== user.id)) return "conflicts";
+	return discordLinkState(identities, discordId);
 }
 
 async function processCandidate(config, user, {apply, totals}) {

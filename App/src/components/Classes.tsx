@@ -164,14 +164,14 @@ function ClassDetailsPanel({details, reference, change, onChoose}: {details: Cla
 	</View>;
 }
 
-type ClassChoiceProps = {details: ClassDetails; comparison: Comparison; selected: boolean; onSelect: (id: number | undefined) => void; change?: ClassChange};
+type ClassChoiceProps = {details: ClassDetails; comparison: Comparison; selected: boolean; onSelect: (id?: number) => void; change?: ClassChange};
 
 function ClassChoice({details, comparison, selected, onSelect, change}: ClassChoiceProps): ReactNode {
 	const current = comparison.reference?.id === details.id;
 	const chosen = useRef(false);
 	const choose = (): void => {
 		chosen.current = true;
-		onSelect(undefined);
+		onSelect();
 	};
 	// The celebration that answers the choice must not open while the sheet is still leaving.
 	const sendChoice = (): void => {

@@ -472,7 +472,7 @@ function useSheetLeave(offset: Animated.Value, height: number, onClose: () => vo
 	const reducedMotion = useReducedMotion();
 	const leaving = useRef(false);
 	const close = useRef(onClose);
-	const comeBack = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const comeBack = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const mounted = useRef(true);
 	useEffect(() => {
 		close.current = onClose;
@@ -481,7 +481,7 @@ function useSheetLeave(offset: Animated.Value, height: number, onClose: () => vo
 		mounted.current = true;
 		return (): void => {
 			mounted.current = false;
-			clearTimeout(comeBack.current);
+			if (comeBack.current) clearTimeout(comeBack.current);
 		};
 	}, []);
 	return useCallback((velocity = 0): void => {

@@ -17,7 +17,7 @@ function refreshPlatform(): void {
 export function GameServicesLifecycle({authState}: {authState: AuthStateEnum}): null {
 	const queryClient = useQueryClient();
 	useEffect(() => {
-		if (authState !== AuthStateEnum.LOGGED_IN || gameServicesStore.getSnapshot().provider === GAME_SERVICE_PROVIDERS.UNSUPPORTED) return;
+		if (authState !== AuthStateEnum.LOGGED_IN || gameServicesStore.getSnapshot().provider === GAME_SERVICE_PROVIDERS.UNSUPPORTED) return undefined;
 		const tracker = new TopweekRecordTracker(gameServicesStore.recordRanking.bind(gameServicesStore));
 		refreshPlatform();
 		if (AppState.currentState !== "background" && AppState.currentState !== "inactive") tracker.start();

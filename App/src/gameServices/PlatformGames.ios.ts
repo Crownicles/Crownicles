@@ -2,7 +2,7 @@ import {requireOptionalNativeModule} from "expo";
 import type {GameCenterModule, GameCenterPlayer} from "expo-game-center";
 import {GameServicesConfiguration, gameServicesConfiguration} from "./GameServicesConfig";
 import {ACHIEVEMENT_COMPLETION_PERCENT, GAME_ACHIEVEMENTS, GameAchievementId} from "./Achievements";
-import {GAME_CENTER_MODES, GAME_SERVICE_ERRORS, GAME_SERVICE_PROVIDERS, GAME_SERVICE_SCOPES, GamePlatformPlayer, PlatformGames, platformAvailability} from "./GameServicesTypes";
+import {GAME_CENTER_MODES, GAME_SERVICE_ERRORS, GAME_SERVICE_PROVIDERS, GAME_SERVICE_SCOPES, GamePlatformPlayer, GameServiceScope, PlatformGames, platformAvailability} from "./GameServicesTypes";
 import localCatalog from "../../game-services/CrowniclesLocal.gamekit/gameCenterResources.json";
 
 type ScopedGameCenterModule = GameCenterModule & {crowniclesLocalTestLaunch?: boolean};
@@ -21,6 +21,19 @@ function usable(client: GameCenterModule | null): GameCenterModule {
 	return client;
 }
 
+async function localPlayer(client: GameCenterModule | null): Promise<GamePlatformPlayer | null> {
+	return client ? playerIdentity(await client.getLocalPlayer()) : null;
+}
+
+async function authenticatedPlayer(client: GameCenterModule | null): Promise<GamePlatformPlayer | null> {
+	return client && await client.authenticateLocalPlayer() ? localPlayer(client) : null;
+}
+
+/** Progress made against the local GameKit catalog never mixes with the real one */
+function storageScope(localLaunch: boolean, config: GameServicesConfiguration): GameServiceScope {
+	return localLaunch || config.gameCenterMode === GAME_CENTER_MODES.LOCAL ? GAME_SERVICE_SCOPES.LOCAL : GAME_SERVICE_SCOPES.PRODUCTION;
+}
+
 /** A local GameKit test launch reads the bundled catalog instead of App Store Connect */
 function gameCenterIdentifiers(localLaunch: boolean, config: GameServicesConfiguration): GameCenterIdentifiers {
 	if (!localLaunch) return {achievements: config.achievements, leaderboardId: config.topweekLeaderboardId};
@@ -35,15 +48,14 @@ export function createPlatformGames(): PlatformGames {
 	const native = requireOptionalNativeModule<ScopedGameCenterModule>("ExpoGameCenter");
 	const localLaunch = native?.crowniclesLocalTestLaunch === true;
 	const configured = localLaunch || config.gameCenterMode === GAME_CENTER_MODES.PRODUCTION;
-	const local = localLaunch || config.gameCenterMode === GAME_CENTER_MODES.LOCAL;
 	const {achievements, leaderboardId} = gameCenterIdentifiers(localLaunch, config);
 	const client = configured ? native : null;
 	return {
 		provider: GAME_SERVICE_PROVIDERS.GAME_CENTER,
 		availability: platformAvailability(configured, native !== null),
-		storageScope: local ? GAME_SERVICE_SCOPES.LOCAL : GAME_SERVICE_SCOPES.PRODUCTION,
-		getPlayer: async () => client ? playerIdentity(await client.getLocalPlayer()) : null,
-		connect: async () => client && await client.authenticateLocalPlayer() ? playerIdentity(await client.getLocalPlayer()) : null,
+		storageScope: storageScope(localLaunch, config),
+		getPlayer: () => localPlayer(client),
+		connect: () => authenticatedPlayer(client),
 		unlockAchievement: async achievement => {
 			submitted(await usable(client).reportAchievement(achievements[achievement], ACHIEVEMENT_COMPLETION_PERCENT));
 		},

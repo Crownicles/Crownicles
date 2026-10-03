@@ -102,20 +102,37 @@ function ResolveBanner({resumed, chosen, pending, onPress}: {resumed: boolean; c
 	return <ActionBanner icon={Check} label={i18n.t(resumed ? "app:auth.collision.resume" : "app:auth.collision.confirm")} pending={pending} onPress={onPress} {...!chosen ? {lock: {reason: i18n.t("app:auth.collision.chooseFirst"), icon: Check}} : {}} />;
 }
 
-export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
-	state: AccountCollisionLoginState;
-	onAuthenticated: (token: AuthToken) => Promise<void>;
-	onCancel: () => void;
-}): ReactElement {
+function TaskStatus({failure, pending}: {failure: string | null; pending: boolean}): ReactElement {
+	return <>
+		{failure ? <Refusal>{failure}</Refusal> : null}
+		{pending ? <Note>{i18n.t("app:auth.collision.pending")}</Note> : null}
+	</>;
+}
+
+function keptAccount(choice: AccountCollisionChoice | "", confirmed: AuthToken | null, verified: VerifiedAccounts | null): AuthToken | undefined {
+	return choice ? confirmed ?? verified?.[choice] : undefined;
+}
+
+type CollisionChoiceFlow = {
+	verified: VerifiedAccounts | null;
+	confirmed: AuthToken | null;
+	choice: AccountCollisionChoice | "";
+	setChoice: (choice: AccountCollisionChoice | "") => void;
+	startedFromEmail: boolean;
+	pending: boolean;
+	failure: string | null;
+	verify: () => void;
+	resolve: () => void;
+};
+
+/** Proves both accounts, then keeps the chosen one; a choice already confirmed resumes without asking again */
+function useCollisionChoice(state: AccountCollisionLoginState, onAuthenticated: (token: AuthToken) => Promise<void>): CollisionChoiceFlow {
 	const auth = useContext(AuthContext);
 	const [verified, setVerified] = useState<VerifiedAccounts | null>(null);
 	const [choice, setChoice] = useState<AccountCollisionChoice | "">(state.check.pending ?? "");
 	const [confirmed, setConfirmed] = useState<AuthToken | null>(state.check.pending ? state.token : null);
 	const {pending, failure, run} = useExclusiveTask();
-	const collision = state.check.collision;
 	const startedFromEmail = state.check.current === ACCOUNT_COLLISION_CHOICES.EMAIL;
-	const verifying = !verified && !confirmed;
-	const choosable = verified && !confirmed ? collision : null;
 
 	const verify = (): void => run(async (): Promise<void> => {
 		setVerified(await verifiedAccounts(state.token, startedFromEmail));
@@ -128,26 +145,36 @@ export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
 	};
 
 	const resolve = (): void => run(async (): Promise<void> => {
-		if (!choice) return;
-		const kept = confirmed ?? verified?.[choice];
-		if (!kept) return;
+		const kept = keptAccount(choice, confirmed, verified);
+		if (!choice || !kept) return;
 		await auth.saveToken(kept);
 		setConfirmed(kept);
 		await sendChoice(kept, choice, {proof: verified?.proof.proof ?? "", onStale: restart});
 		await onAuthenticated(kept);
 	});
 
+	return {verified, confirmed, choice, setChoice, startedFromEmail, pending, failure, verify, resolve};
+}
+
+export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
+	state: AccountCollisionLoginState;
+	onAuthenticated: (token: AuthToken) => Promise<void>;
+	onCancel: () => void;
+}): ReactElement {
+	const flow = useCollisionChoice(state, onAuthenticated);
+	const collision = state.check.collision;
+	const verifying = !flow.verified && !flow.confirmed;
+	const choosable = flow.verified && !flow.confirmed ? collision : null;
 	return <Screen>
-		<Standing caption={i18n.t("app:auth.caption")} title={i18n.t(confirmed ? "app:auth.collision.resumeTitle" : "app:auth.collision.title")} {...collision ? {subtitle: collision.email} : {}} />
+		<Standing caption={i18n.t("app:auth.caption")} title={i18n.t(flow.confirmed ? "app:auth.collision.resumeTitle" : "app:auth.collision.title")} {...collision ? {subtitle: collision.email} : {}} />
 		<View style={{gap: Theme.spacing.lg}}>
 			<Note>{i18n.t("app:auth.collision.warning")}</Note>
 			<Note>{i18n.t("app:auth.collision.keptData")}</Note>
-			{failure ? <Refusal>{failure}</Refusal> : null}
-			{pending ? <Note>{i18n.t("app:auth.collision.pending")}</Note> : null}
-			{verifying ? <VerifyBanner startedFromEmail={startedFromEmail} pending={pending} onPress={verify} /> : null}
-			{choosable ? <ChoiceSelector collision={choosable} choice={choice} onChange={setChoice} /> : null}
-			{verifying ? null : <ResolveBanner resumed={confirmed !== null} chosen={choice !== ""} pending={pending} onPress={resolve} />}
-			{!confirmed ? <Button disabled={pending} onPress={onCancel}>{i18n.t("app:common.back")}</Button> : null}
+			<TaskStatus failure={flow.failure} pending={flow.pending} />
+			{verifying ? <VerifyBanner startedFromEmail={flow.startedFromEmail} pending={flow.pending} onPress={flow.verify} /> : null}
+			{choosable ? <ChoiceSelector collision={choosable} choice={flow.choice} onChange={flow.setChoice} /> : null}
+			{verifying ? null : <ResolveBanner resumed={flow.confirmed !== null} chosen={flow.choice !== ""} pending={flow.pending} onPress={flow.resolve} />}
+			{flow.confirmed ? null : <Button disabled={flow.pending} onPress={onCancel}>{i18n.t("app:common.back")}</Button>}
 		</View>
 	</Screen>;
 }

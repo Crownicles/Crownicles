@@ -50,7 +50,7 @@ type KeycloakCallStatus = {
 	isError: boolean; status: number;
 };
 export class AccountCollisionFailure extends Error {
-	public constructor(public readonly reason: AccountCollisionError, public readonly status: number = 409) {
+	public constructor(public readonly reason: AccountCollisionError, public readonly status = 409) {
 		super(reason);
 	}
 }
@@ -58,7 +58,7 @@ function normalizedEmail(email: EmailAddress): EmailAddress {
 	return email.trim().toLowerCase();
 }
 function accountName(user: KeycloakUser): string {
-	return user.attributes?.gameUsername?.[0] ?? user.username;
+	return attribute(user, "gameUsername") ?? user.username;
 }
 function viewOf(pair: CollisionPair): AccountCollision {
 	return {
@@ -69,7 +69,10 @@ function lockKey(accounts: ResolvedAccounts): string {
 	return [accounts.keptId, accounts.deletedId].sort().join("/");
 }
 function hasVerifiedDiscordEmail(user: KeycloakUser): boolean {
-	return user.attributes?.discordEmailVerified?.[0] === "true";
+	return attribute(user, "discordEmailVerified") === "true";
+}
+function attribute(user: KeycloakUser, name: keyof KeycloakUser["attributes"]): string | undefined {
+	return user.attributes?.[name]?.[0];
 }
 function failedBeyondMissing(result: KeycloakCallStatus): boolean {
 	return result.isError && result.status !== NOT_FOUND;
@@ -97,7 +100,7 @@ function parseIntent(raw: string): ResolutionIntent | null {
 	}
 }
 function readIntent(user: KeycloakUser): ResolutionIntent | null {
-	const raw = user.attributes?.accountCollisionResolution?.[0];
+	const raw = attribute(user, "accountCollisionResolution");
 	if (!raw) {
 		return null;
 	}
@@ -110,8 +113,8 @@ function readIntent(user: KeycloakUser): ResolutionIntent | null {
 
 /** Discord's address on its account, usable only once Discord has verified it. */
 function discordContact(discord: KeycloakUser): DiscordContact | null {
-	const email = discord.attributes?.discordEmail?.[0];
-	const discordId = discord.attributes?.discordId?.[0];
+	const email = attribute(discord, "discordEmail");
+	const discordId = attribute(discord, "discordId");
 	if (!email || !discordId) {
 		return null;
 	}
@@ -136,7 +139,7 @@ function stillOwnsEmail(account: KeycloakUser, pair: CollisionPair): boolean {
 
 /** Since the proof was given, neither account moved away from the collision it proves. */
 function pairUnchanged(pair: CollisionPair, discord: KeycloakUser, emailAccount: KeycloakUser): boolean {
-	const discordUnchanged = normalizedEmail(discord.attributes.discordEmail?.[0] ?? "") === pair.email && discord.attributes.discordId?.[0] === pair.discordId;
+	const discordUnchanged = normalizedEmail(attribute(discord, "discordEmail") ?? "") === pair.email && attribute(discord, "discordId") === pair.discordId;
 	return discordUnchanged && stillOwnsEmail(emailAccount, pair) && Boolean(emailAccount.emailVerified);
 }
 function isInPair(user: KeycloakUser, pair: CollisionPair): boolean {
@@ -255,15 +258,16 @@ export class AccountCollisionService {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE, 503);
 		}
 		const account = soleAccount(candidates.payload.users.filter(candidate => candidate.id !== userId && hasVerifiedDiscordEmail(candidate)));
-		const discordId = account?.attributes.discordId?.[0];
-		if (account && !discordId) {
+		if (!account) {
+			return null;
+		}
+		const discordId = attribute(account, "discordId");
+		if (!discordId) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
 		}
-		return account && discordId
-			? {
-				account, discordId
-			}
-			: null;
+		return {
+			account, discordId
+		};
 	}
 
 	private async checkEmailAccount(user: KeycloakUser): Promise<AccountCollisionCheck> {

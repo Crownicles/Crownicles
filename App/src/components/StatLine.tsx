@@ -32,13 +32,19 @@ const useStyles = createStyles(colors => ({
 /** One column per item compared: its emoji heads the column of its values, the gap column stays unnamed. */
 export type StatColumn = {emoji: string | null; name: string};
 
+function StatColumnHead({column}: {column: StatColumn}): ReactNode {
+	const styles = useStyles();
+	return <View style={styles.columnHead} accessible accessibilityLabel={column.name}>
+		{column.emoji ? <TwemojiIcon emoji={column.emoji} size={COLUMN_EMOJI_SIZE} /> : <Text style={styles.label} numberOfLines={1}>{column.name}</Text>}
+	</View>;
+}
+
 export function StatColumns({compared, shown}: {compared: StatColumn; shown: StatColumn}): ReactNode {
 	const styles = useStyles();
 	return <View style={styles.columns}>
 		<View style={styles.columnsLabel} />
-		{[compared, shown].map((column, index) => <View key={index} style={styles.columnHead} accessible accessibilityLabel={column.name}>
-			{column.emoji ? <TwemojiIcon emoji={column.emoji} size={COLUMN_EMOJI_SIZE} /> : <Text style={styles.label} numberOfLines={1}>{column.name}</Text>}
-		</View>)}
+		<StatColumnHead column={compared} />
+		<StatColumnHead column={shown} />
 		<View style={styles.deltaHead} />
 	</View>;
 }
