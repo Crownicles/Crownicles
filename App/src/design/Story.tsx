@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {Text} from "react-native";
+import {Platform, Text} from "react-native";
 import {parse} from "@twemoji/parser";
 import {StorySpan, storySpans} from "@/src/display/Markdown";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -24,6 +24,8 @@ const useStyles = createStyles(colors => ({
 	emphasis: {fontStyle: "italic"}
 }));
 
+const EMOJI_OFFSET = Platform.OS === "ios" ? Theme.emoji.iosFieldOffset : Theme.emoji.androidStoryOffset;
+
 function inlineSpan(styles: ReturnType<typeof useStyles>, span: StorySpan, key: string): ReactNode[] {
 	const style = [span.strong && styles.strong, span.emphasis && styles.emphasis];
 	const parts: ReactNode[] = [];
@@ -31,7 +33,7 @@ function inlineSpan(styles: ReturnType<typeof useStyles>, span: StorySpan, key: 
 	for (const entity of parse(span.text)) {
 		const [start, end] = entity.indices;
 		if (start > lastIndex) parts.push(<Text key={`${key}-${lastIndex}`} style={style}>{span.text.slice(lastIndex, start)}</Text>);
-		parts.push(<TwemojiIcon key={`${key}-emoji-${start}`} emoji={entity.text} size={Theme.fontSize.story} verticalOffset={Theme.emoji.iosFieldOffset} />);
+		parts.push(<TwemojiIcon key={`${key}-emoji-${start}`} emoji={entity.text} size={Theme.fontSize.story} verticalOffset={EMOJI_OFFSET} />);
 		lastIndex = end;
 	}
 	if (lastIndex < span.text.length) parts.push(<Text key={`${key}-${lastIndex}`} style={style}>{span.text.slice(lastIndex)}</Text>);
@@ -40,7 +42,8 @@ function inlineSpan(styles: ReturnType<typeof useStyles>, span: StorySpan, key: 
 
 export function Story({children}: {children: string}): ReactNode {
 	const styles = useStyles();
-	return <Text style={styles.text}>{children.split("\n").flatMap((line, lineIndex) => [
+	// Android places inline emojis from a greedy layout: a balanced one moves the words but not the emojis.
+	return <Text style={styles.text} textBreakStrategy="simple">{children.split("\n").flatMap((line, lineIndex) => [
 		...lineIndex > 0 ? ["\n"] : [],
 		...storySpans(line).flatMap(span => inlineSpan(styles, span, `${lineIndex}-${span.id}`))
 	])}</Text>;
