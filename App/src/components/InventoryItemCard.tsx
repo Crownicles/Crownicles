@@ -42,7 +42,7 @@ function ItemCaption({item, choices, expanded}: {item: ItemWithDetails; choices:
 	const sectionStyles = useSectionStyles();
 	const lock = expanded ? undefined : choices.find(choice => choice.lock && choice.action !== ITEM_ACTIONS.DEPOSIT)?.lock;
 	return <>
-		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.rowSubtitle}>{inventoryItemDetails(item)}</TwemojiText>
+		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption} iosEmojiVerticalOffset={Theme.emoji.iosCaptionOffset}>{inventoryItemDetails(item)}</TwemojiText>
 		{lock ? <LockHint lock={lock} /> : null}
 	</>;
 }

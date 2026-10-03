@@ -3,11 +3,10 @@ import {StyleSheet, View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {GENERIC_REACTION_KINDS, ITEM_DATA_KINDS, ITEM_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
-import {AppIcons} from "@/src/AppIcons";
-import {isPotionCategory, itemDisplayName, itemIconPath} from "@/src/collectors/CollectorLabels";
+import {isPotionCategory, itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {EventJournal, usePlayerPseudo} from "@/src/collectors/EventOutcomeScreen";
 import {useChooseOnce} from "@/src/collectors/ShopCollector";
-import {inventoryItemDetails, inventoryItemEmblem, InventoryItemRow, isMainItem} from "@/src/components/InventoryItemRow";
+import {inventoryItemDetails, inventoryItemEmblem, InventoryItemRow, isMainItem, itemEmoji} from "@/src/components/InventoryItemRow";
 import {ItemDetails} from "@/src/components/ItemDetails";
 import {plainStory} from "@/src/display/Markdown";
 import {Note, Screen, SectionHeader} from "@/src/design/Primitives";
@@ -33,9 +32,8 @@ function reactionIndex(collector: ReactionCollectorCreation, type: string): numb
 /** Discord posts the find on its own before asking anything: the item, with the stats it comes with. */
 function FoundItemJournal({item}: {item: ItemWithDetails}): ReactNode {
 	const pseudo = usePlayerPseudo();
-	const path = itemIconPath(item);
 	return <EventJournal
-		emoji={path ? AppIcons.getIconOrNull(path) ?? undefined : undefined}
+		emoji={itemEmoji(item) ?? undefined}
 		title={plainStory(i18n.t("commands:inventory.randomItemTitle", {pseudo}))}
 		story={`**${itemDisplayName(item)}**\n${inventoryItemDetails(item)}`}
 	/>;
@@ -50,12 +48,14 @@ function FoundAgainst({found, current}: {found: ItemWithDetails; current: ItemWi
 	</>;
 }
 
-/** One way out, named by the item the player keeps, with what goes in exchange written under it before the press. */
-function KeepChoice({kept, given, onPress, locked}: {kept: string; given: ItemWithDetails; onPress: () => void; locked: boolean}): ReactNode {
+/** One way out, named and drawn by the item the player keeps, with what goes in exchange written under it before the press. */
+function KeepChoice({kept, given, onPress, locked}: {kept: {label: string; item?: ItemWithDetails}; given: ItemWithDetails; onPress: () => void; locked: boolean}): ReactNode {
 	const potion = isPotionCategory(given.itemCategory);
+	const emoji = kept.item ? itemEmoji(kept.item) : null;
 	return <ActionBanner
 		icon={Check}
-		label={kept}
+		{...emoji ? {emoji} : {}}
+		label={kept.label}
 		hint={{reason: i18n.t(potion ? "app:collector.item.thrown" : "app:collector.item.sold", {item: itemDisplayName(given)}), icon: potion ? X : Coins}}
 		pending={locked}
 		onPress={onPress}
@@ -68,7 +68,7 @@ function FoundItemExits({collector, foundItem, keepCurrent, drinkType, refuseTyp
 	foundItem: ItemWithDetails;
 
 	/** The refusal, named by what the player keeps instead of the find. */
-	keepCurrent: string;
+	keepCurrent: {label: string; item?: ItemWithDetails};
 	drinkType: string;
 	refuseType: string;
 	choose: (index: number) => void;
@@ -124,7 +124,7 @@ export function ItemChoiceCollector({collector, onChoose, submitting}: ItemRewar
 				>
 					<FoundAgainst found={foundItem} current={item} />
 					<KeepChoice
-						kept={i18n.t("app:collector.item.keep", {item: found})}
+						kept={{label: i18n.t("app:collector.item.keep", {item: found}), item: foundItem}}
 						given={item}
 						locked={locked}
 						onPress={(): void => choose(index)}
@@ -134,7 +134,7 @@ export function ItemChoiceCollector({collector, onChoose, submitting}: ItemRewar
 			<FoundItemExits
 				collector={collector}
 				foundItem={foundItem}
-				keepCurrent={i18n.t("app:collector.item.keepAll")}
+				keepCurrent={{label: i18n.t("app:collector.item.keepAll")}}
 				drinkType={ITEM_REACTION_KINDS.CHOICE_DRINK_POTION}
 				refuseType={ITEM_REACTION_KINDS.CHOICE_REFUSE}
 				choose={choose}
@@ -164,14 +164,14 @@ export function ItemAcceptCollector({collector, onChoose, submitting}: ItemRewar
 			<FoundItemExits
 				collector={collector}
 				foundItem={foundItem}
-				keepCurrent={i18n.t("app:collector.item.keep", {item: itemDisplayName(itemWithDetails)})}
+				keepCurrent={{label: i18n.t("app:collector.item.keep", {item: itemDisplayName(itemWithDetails)}), item: itemWithDetails}}
 				drinkType={ITEM_REACTION_KINDS.ACCEPT_DRINK_POTION}
 				refuseType={GENERIC_REACTION_KINDS.REFUSE}
 				choose={choose}
 				locked={locked}
 			>
 				{acceptIndex >= 0 ? <KeepChoice
-					kept={i18n.t("app:collector.item.keep", {item: itemDisplayName(foundItem)})}
+					kept={{label: i18n.t("app:collector.item.keep", {item: itemDisplayName(foundItem)}), item: foundItem}}
 					given={itemWithDetails}
 					locked={locked}
 					onPress={(): void => choose(acceptIndex)}

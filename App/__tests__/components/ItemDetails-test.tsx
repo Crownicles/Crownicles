@@ -4,6 +4,7 @@ import {inventoryItemDetails} from "@/src/components/InventoryItemRow";
 import {SmallEventShopCollector} from "@/src/collectors/SmallEventShopCollector";
 import {ItemAcceptCollector} from "@/src/collectors/ItemRewardCollector";
 import {ShopCollector} from "@/src/collectors/ShopCollector";
+import {itemDisplayName} from "@/src/collectors/CollectorLabels";
 import {ItemNature} from "ws-packets/src/objects/ItemNature";
 import {MainItem} from "ws-packets/src/objects/MainItem";
 import {SupportItem} from "ws-packets/src/objects/SupportItem";
@@ -51,6 +52,16 @@ describe("item details before a decision", () => {
 		expect(screen.getByText("Défense")).toBeTruthy();
 		expect(screen.getByText("-3")).toBeTruthy();
 		expect(screen.getByText("Vitesse")).toBeTruthy();
+	});
+
+	it("heads each column with the item whose values it holds, the compared item first", async (): Promise<void> => {
+		const worn = {...WEAPON, id: 2, attack: {baseValue: 20, upgradeValue: 0, maxValue: 25}};
+		await render(<ItemDetails item={WEAPON} reference={worn} />);
+		const [wornColumn, foundColumn] = screen.getAllByLabelText(/.+/).filter(element => element.props.accessible);
+		expect(wornColumn.props.accessibilityLabel).toBe(itemDisplayName(worn));
+		expect(foundColumn.props.accessibilityLabel).toBe(itemDisplayName(WEAPON));
+		expect(screen.getByText("20")).toBeTruthy();
+		expect(screen.getByText("25")).toBeTruthy();
 	});
 
 	it("shows remaining uses alongside the potion's effect", (): void => {

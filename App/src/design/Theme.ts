@@ -110,7 +110,9 @@ export const Theme = {
 	},
 	emoji: {
 		iosHeroOffset: 2,
-		iosFieldOffset: -2
+		iosFieldOffset: -2,
+		/** A caption's line leaves no room above the emoji: lifted, iOS cuts its top. */
+		iosCaptionOffset: 0
 	},
 	radius: 14,
 	pillRadius: 999,

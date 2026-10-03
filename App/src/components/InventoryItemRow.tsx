@@ -59,9 +59,13 @@ export function inventoryItemDetails(item: ItemWithDetails): string {
 	]);
 }
 
-export function inventoryItemEmblem(item: ItemWithDetails): ReactNode {
+export function itemEmoji(item: ItemWithDetails): string | null {
 	const path = itemIconPath(item);
-	const icon = path ? AppIcons.getIconOrNull(path) : null;
+	return path ? AppIcons.getIconOrNull(path) : null;
+}
+
+export function inventoryItemEmblem(item: ItemWithDetails): ReactNode {
+	const icon = itemEmoji(item);
 	return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : undefined;
 }
 
