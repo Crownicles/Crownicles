@@ -2,7 +2,7 @@ import {ReactNode} from "react";
 import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
 import type {CitySubmenu, CityEntry, CityNavigationItem, CityMenuData} from "@/src/collectors/CityCollector";
 import {AppIcons} from "@/src/AppIcons";
-import {CitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
+import {useCitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
 import {citySnapshotNote} from "@/src/collectors/CitySnapshotNote";
 import {gardenPlotItems, homeFeatureItems, homeIconPath} from "@/src/collectors/CityHomeItems";
 import {enchantmentCatalogItems} from "@/src/collectors/CityGuildItems";
@@ -56,12 +56,13 @@ export function CitySubmenuView({view, innId, entries, collector, snapshot, onCh
 		...overlay ? {overlay} : {}
 	};
 	const InteractiveSubmenu = INTERACTIVE_SUBMENUS[view];
+	const summary = useCitySnapshotSummary(view, snapshot);
 	if (InteractiveSubmenu) return <Page {...page}><InteractiveSubmenu /></Page>;
 	const sections = submenuSections(view, entries, snapshot, {homeFeatureItems, gardenPlotItems, enchantmentCatalogItems});
 	const visibleSections = sections.filter(section => section.items.length > 0);
 	return <Page {...page}>
-			<CitySnapshotSummary view={view} snapshot={snapshot} />
-			{visibleSections.map((section, index) => <CitySection key={section.title} title={section.title} items={section.items} collector={collector} onChoose={onChoose} onNavigate={onNavigate} locked={locked} first={index === 0} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={cityRowSubtitle} rowEnd={cityRowEnd} reactionAvailable={cityReactionAvailable} />)}
+			{summary}
+			{visibleSections.map((section, index) => <CitySection key={section.title} title={section.title} items={section.items} collector={collector} onChoose={onChoose} onNavigate={onNavigate} locked={locked} first={index === 0 && summary === null} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={cityRowSubtitle} rowEnd={cityRowEnd} reactionAvailable={cityReactionAvailable} />)}
 			{citySnapshotNote(view, snapshot)}
 		{visibleSections.length === 0 ? <Note>{i18n.t("app:city.subtitles.noActions")}</Note> : null}
 	</Page>;

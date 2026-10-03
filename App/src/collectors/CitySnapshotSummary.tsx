@@ -215,7 +215,8 @@ const SUMMARY_RENDERERS: Partial<Record<CitySubmenu, SummaryRenderer>> = {
 	guild: renderGuildSummary
 };
 
-export function CitySnapshotSummary({view, snapshot}: {view: CitySubmenu; snapshot?: CityMobileSnapshot}): ReactNode {
+/** The figures heading a submenu, or null when it has none: the first section then opens the page. */
+export function useCitySnapshotSummary(view: CitySubmenu, snapshot?: CityMobileSnapshot): ReactNode {
 	const colors = useColors();
 	return snapshot ? SUMMARY_RENDERERS[view]?.(snapshot, colors) ?? null : null;
 }
