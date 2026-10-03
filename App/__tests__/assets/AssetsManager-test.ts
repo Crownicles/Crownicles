@@ -98,6 +98,14 @@ describe("AssetsManager", () => {
 		expect(mockedDeleteAsync).toHaveBeenCalledWith(`${documentDirectory}i18n/bundle-fr.json`, {idempotent: true});
 	});
 
+	it("drops a cache saved before a rule section was added, rather than letting a screen read it", async () => {
+		mockedGetInfoAsync.mockResolvedValue({exists: true, uri: `${documentDirectory}i18n/bundle-fr.json`, isDirectory: false, size: 1, modificationTime: 0});
+		const {apartment: _apartment, ...olderRules} = fakeGameRules;
+		mockedReadAsStringAsync.mockResolvedValue(JSON.stringify({...cached, bundle: {...bundle, rules: olderRules}}));
+
+		await expect(AssetsManager.loadCachedBundle("fr")).resolves.toBeNull();
+	});
+
 	it("revalidates cached bundles with their ETag without writing a new cache", async () => {
 		mockedGetAssetsBundle.mockResolvedValue({status: "notModified"});
 

@@ -9,6 +9,7 @@ import {
 	writeAsStringAsync
 } from "expo-file-system/legacy";
 import {RestApi} from "@/src/networking/RestApi";
+import {hasEveryGameRule} from "@/src/rules/GameRules";
 import type {AssetsBundle, AssetsBundleLanguage} from "../../../WsPackets/src/objects/AssetsBundle";
 
 export interface CachedBundle {
@@ -29,7 +30,8 @@ function isAssetsBundle(value: unknown, language: AssetsBundleLanguage): value i
 		&& value.language === language
 		&& isRecord(value.namespaces)
 		&& isRecord(value.icons)
-		&& isRecord(value.rules);
+		&& isRecord(value.rules)
+		&& hasEveryGameRule(value.rules);
 }
 
 export class AssetsManager {
