@@ -1,7 +1,8 @@
 import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {
-	Animated, ActivityIndicator, Easing, GestureResponderEvent, KeyboardAvoidingView, Modal, ModalProps, PanResponder, PanResponderGestureState, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
+	Animated, ActivityIndicator, Easing, GestureResponderEvent, KeyboardAvoidingView, ModalProps, PanResponder, PanResponderGestureState, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
 } from "react-native";
+import {NativeWindow} from "@/src/design/NativeWindow";
 import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useReducedMotion} from "@/src/store/useReducedMotion";
@@ -316,7 +317,7 @@ export function Toast({emblem, title, subtitle, value, onDismiss, onPress}: {
 /** React Native paints a full-screen modal white until its content lays out: the palette avoids a flash in dark mode. */
 export function SheetModal(props: Omit<ModalProps, "animationType" | "backdropColor">): ReactNode {
 	const colors = useColors();
-	return <Modal animationType="slide" backdropColor={colors.paper} {...props} />;
+	return <NativeWindow animationType="slide" backdropColor={colors.paper} {...props} />;
 }
 
 /** A full-screen modal is its own window on iOS, where `SafeAreaView` measures nothing: apply the insets here. */
@@ -570,7 +571,7 @@ export function BottomSheet({onClose, onShown, onDismissed, visible = true, head
 		onMoveShouldSetPanResponderCapture: (_event, gesture): boolean => gestureState.starts(gesture),
 		...dragHandlers
 	}), [dragHandlers, gestureState]);
-	return <Modal visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={(): void => leave()} {...onDismissed ? {onDismiss: onDismissed} : {}}>
+	return <NativeWindow visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={(): void => leave()} {...onDismissed ? {onDismiss: onDismissed} : {}}>
 		<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.detailBackdrop}>
 			{/* The veil lightens as the sheet goes down, so a drag or a close reads as one movement. */}
 			<Animated.View pointerEvents="none" style={[styles.detailVeil, {opacity: offset.interpolate({inputRange: [0, height], outputRange: [1, 0], extrapolate: "clamp"})}]} />
@@ -594,7 +595,7 @@ export function BottomSheet({onClose, onShown, onDismissed, visible = true, head
 				>{children}</ScrollView>
 			</Animated.View>
 		</KeyboardAvoidingView>
-	</Modal>;
+	</NativeWindow>;
 }
 
 /** A short question or result in a bottom sheet, headed like a page so the player knows what it is about. */

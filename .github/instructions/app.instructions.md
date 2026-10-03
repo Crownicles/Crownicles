@@ -152,7 +152,9 @@ each carried by one primitive (`BottomSheet`/`QuestionSheet`, `FullScreen`, `Pag
 
 - **Pick the format with the ADR's decision tree** and stay within its budget. Never open a window by
   hand: ESLint rejects `Modal` and `Alert` from `react-native`, and `SheetModal`/`ModalSurface`, outside
-  the primitives.
+  the primitives. Inside `src/design`, every native window goes through `NativeWindow`: iOS loses a window
+  presented while another one appears or leaves, or while the app wakes up from a notification, and leaves
+  an invisible layer that swallows every touch.
 - **A screen that is added or changes format updates the ADR in the same pull request**: its row in
   "Écran par écran", with the reason. A need no format covers is argued in the ADR first, then built as
   a primitive in `src/design` — never as a one-off screen.

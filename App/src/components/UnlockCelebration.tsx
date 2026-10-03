@@ -1,6 +1,7 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Animated, Easing, Modal, Pressable, Text, View} from "react-native";
+import {Animated, Easing, Pressable, Text, View} from "react-native";
 import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
+import {NativeWindow} from "@/src/design/NativeWindow";
 import {AppIcons} from "@/src/AppIcons";
 import {ActionBanner} from "@/src/design/Sections";
 import {FarewellEmblem, useMotionLoop} from "@/src/design/Farewell";
@@ -168,9 +169,9 @@ export function Celebration({icon, eyebrow: caption, title, description, childre
 
 /** The celebration in its own window over the whole app, the way every celebration outside the tabs' layer opens. */
 export function CelebrationModal({onClose, ...celebration}: CelebrationProps & {onClose: () => void}): ReactNode {
-	return <Modal transparent animationType="none" statusBarTranslucent onRequestClose={onClose}>
+	return <NativeWindow transparent animationType="none" statusBarTranslucent onRequestClose={onClose}>
 		<Celebration {...celebration} />
-	</Modal>;
+	</NativeWindow>;
 }
 
 /**

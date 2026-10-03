@@ -25,7 +25,7 @@ module.exports = defineConfig([
   // Screen formats are decided in docs/adr/0001-formats-ecran.html: windows are opened by the design primitives only.
   {
     files: ['src/**/*.{ts,tsx}', 'app/**/*.{ts,tsx}'],
-    ignores: ['src/design/**', 'src/components/UnlockCelebration.tsx', 'src/components/MapViewer.tsx', 'src/components/WorldMap.tsx'],
+    ignores: ['src/design/**', 'src/components/MapViewer.tsx', 'src/components/WorldMap.tsx'],
     rules: {
       'no-restricted-imports': ['error', {
         paths: [
@@ -38,6 +38,22 @@ module.exports = defineConfig([
             name: '@/src/design/Sections',
             importNames: ['SheetModal', 'ModalSurface'],
             message: 'These build the primitives; use FullScreen or BottomSheet instead: see App/docs/adr/0001-formats-ecran.html.',
+          },
+        ],
+      }],
+    },
+  },
+  // iOS loses a window opened while another one moves or while the app wakes up: every native window waits its turn in NativeWindow.
+  {
+    files: ['src/design/**/*.{ts,tsx}'],
+    ignores: ['src/design/NativeWindow.tsx'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        paths: [
+          {
+            name: 'react-native',
+            importNames: ['Modal'],
+            message: 'Open native windows through NativeWindow, which waits for the app to be active and for the other windows to settle.',
           },
         ],
       }],

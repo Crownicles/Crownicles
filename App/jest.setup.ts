@@ -17,6 +17,9 @@ jest.mock("expo-router", () => ({
 	useFocusEffect: (effect: EffectCallback): void => jest.requireActual("react").useEffect(effect, [effect])
 }));
 
+// The test renderer has no app state nor window transitions to wait for: windows open as asked (NativeWindow-test covers the wait).
+jest.mock("@/src/design/NativeWindow", () => ({NativeWindow: jest.requireActual("react-native").Modal}));
+
 // Reanimated drives its values from a native worklet runtime the test environment does not have.
 jest.mock("react-native-reanimated", () => {
 	const {View} = jest.requireActual("react-native");
