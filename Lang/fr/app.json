@@ -618,11 +618,16 @@
   },
   "city": {
     "staleAction": "La situation a changé. Les actions de la ville ont été actualisées.",
+    "missionBoard": {
+      "title": "Tableau des missions",
+      "description": "Vos missions en cours et leurs récompenses"
+    },
     "titles": {
       "eyebrow": "Vous êtes en ville",
       "housing": "Votre logement",
       "services": "Services",
       "shops": "Commerces",
+      "missions": "Missions",
       "guild": "Guilde",
       "quit": "Quitter",
       "meals": "Repas",

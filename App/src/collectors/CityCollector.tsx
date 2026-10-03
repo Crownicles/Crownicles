@@ -19,6 +19,7 @@ import {
 } from "@/src/collectors/CityRowPresentation";
 import {groupCityEntries} from "@/src/collectors/CityMenuModel";
 import {CitySection} from "@/src/collectors/CityRows";
+import {CityMissionBoard} from "@/src/components/CityMissionBoard";
 import {Note, Screen} from "@/src/design/Primitives";
 import {Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -110,7 +111,8 @@ function cityOverview({collector, model, locationName, locationDescription, mapI
 	const sections = citySectionDefinitions().filter(section => model.groups[section.key].length > 0);
 	return <Screen>
 		<Standing {...mapIcon ? {emblem: mapIcon} : {}} caption={i18n.t("app:city.titles.eyebrow")} title={locationName} subtitle={locationDescription} />
-		{sections.map((section, index) => <CitySection key={section.key} title={section.title} hint={section.hint} items={model.groups[section.key]} collector={collector} onChoose={choose} onNavigate={navigate} locked={locked} first={index === 0} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={renderCityRowSubtitle} rowEnd={renderCityRowEnd} reactionAvailable={cityReactionAvailable} />)}
+		<CityMissionBoard />
+		{sections.map(section => <CitySection key={section.key} title={section.title} hint={section.hint} items={model.groups[section.key]} collector={collector} onChoose={choose} onNavigate={navigate} locked={locked} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={renderCityRowSubtitle} rowEnd={renderCityRowEnd} reactionAvailable={cityReactionAvailable} />)}
 		{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
 	</Screen>;
 }

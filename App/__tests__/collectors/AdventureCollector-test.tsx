@@ -18,13 +18,17 @@ import {
 import {CityMenu} from "@/src/collectors/CityCollector";
 import {PveFightOutcomeScreen} from "@/src/collectors/PveFightCollector";
 import {PVE_FIGHT_OUTCOMES} from "@/src/collectors/ReportEventStore";
+import {ADVENTURE_MISSIONS} from "@/src/navigation/AdventureTools";
 
 const mockPush = jest.fn();
-jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: () => ({push: mockPush})}));
+const mockNavigate = jest.fn();
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn(), useRouter: () => ({push: mockPush, navigate: mockNavigate})}));
 
 jest.mock("@/src/onboarding/Contest", () => ({
 	useContest: (): null => null
 }));
+
+jest.mock("@/src/store/AppState", () => require("@/src/testing/fakeAppState").fakeAppState.hooks);
 
 jest.mock("@/src/AppIcons", () => ({
 	AppIcons: {
@@ -495,6 +499,15 @@ describe("AdventureCollector", () => {
 
 		await fireEvent.press(screen.getByText("app:adventure.tokens.merchant.confirm"));
 		expect(onChoose).toHaveBeenCalledWith(0);
+	});
+
+	it("opens the missions from the city's notice board, without answering the city", async () => {
+		const onChoose = jest.fn();
+		await render(<AdventureCollector collector={cityCollector()} onChoose={onChoose} submitting={false} />);
+
+		await fireEvent.press(screen.getByText("app:city.missionBoard.title"));
+		expect(mockNavigate).toHaveBeenCalledWith(ADVENTURE_MISSIONS);
+		expect(onChoose).not.toHaveBeenCalled();
 	});
 
 	it("opens a city top-level menu locally before submitting a nested action", async () => {
