@@ -375,6 +375,23 @@ describe("BlessingManager", () => {
 			expect(PacketUtils.announce).toHaveBeenLastCalledWith(announcement, "test/topic");
 			expect(PacketUtils.broadcast).toHaveBeenLastCalledWith(announcement, "test/websocket-topic");
 		});
+
+		it("keeps showing who filled the pool while the blessing it triggered runs", async () => {
+			const manager = createManager(createMockBlessing({
+				poolAmount: 4000,
+				poolThreshold: 5000,
+				poolStartedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+			}));
+
+			await manager.contribute(300, "first-contributor");
+			await manager.contribute(800, "second-contributor");
+
+			expect(manager.hasActiveBlessing()).toBe(true);
+			expect(manager.getTotalContributors()).toBe(2);
+			expect(manager.getTopContributor()).toEqual({
+				keycloakId: "second-contributor", amount: 800
+			});
+		});
 	});
 
 	describe("forceReset", () => {
