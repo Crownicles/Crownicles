@@ -1,0 +1,90 @@
+import {ReactNode, useEffect, useState} from "react";
+import {ActivityIndicator, Image, Pressable, StyleSheet, View} from "react-native";
+import {makeFromClientPacket} from "ws-packets/src/MakePackets";
+import {MapReq} from "ws-packets/src/fromClient/MapReq";
+import {MapRes} from "ws-packets/src/fromServer/report/MapRes";
+import {GameClient} from "@/src/networking/GameClient";
+import {GAME_ENTITIES} from "@/src/store/GameEntities";
+import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
+import {GameQueryContent} from "@/src/components/GameQueryContent";
+import {MapViewer} from "@/src/components/MapViewer";
+import {Button, Note} from "@/src/design/Primitives";
+import {LockHint, SheetModal, Standing} from "@/src/design/Sections";
+import {Maximize2} from "@/src/design/FightIcons";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {Theme} from "@/src/design/Theme";
+import {i18n} from "@/src/translations/i18n";
+import {AppIcons} from "@/src/AppIcons";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
+
+const DEFAULT_MAP_RATIO = 4 / 3;
+const useStyles = createStyles(colors => ({
+	map: {width: "100%", backgroundColor: colors.wash},
+	frame: {borderRadius: 12, borderWidth: 1, borderColor: colors.line, overflow: "hidden", backgroundColor: colors.wash},
+	loading: {...StyleSheet.absoluteFill, alignItems: "center", justifyContent: "center"}
+}));
+
+export function MapImage({packet}: {packet: MapRes}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
+	const [uri, setUri] = useState(packet.imageUrl);
+	const [loadedUri, setLoadedUri] = useState<string | null>(null);
+	const [failed, setFailed] = useState(false);
+	const [expanded, setExpanded] = useState(false);
+	const [ratio, setRatio] = useState(DEFAULT_MAP_RATIO);
+	useEffect(() => {
+		let active = true;
+		Image.getSize(uri, (width, height): void => {
+			if (!active) return;
+			if (width <= 0 || height <= 0) return;
+			setRatio(width / height);
+		}, () => undefined);
+		return (): void => {active = false;};
+	}, [uri]);
+	const fail = (): void => {
+		if (packet.fallbackImageUrl && uri !== packet.fallbackImageUrl) setUri(packet.fallbackImageUrl);
+		else setFailed(true);
+	};
+	if (failed) return <>
+		<Note>{i18n.t("app:map.imageError")}</Note>
+		<Button onPress={(): void => {setFailed(false); setLoadedUri(null); setUri(packet.imageUrl);}}>{i18n.t("app:common.retry")}</Button>
+	</>;
+	return <>
+		<Pressable style={styles.frame} accessibilityRole="button" accessibilityLabel={i18n.t("app:map.expand")} onPress={(): void => setExpanded(true)}>
+			<Image accessibilityLabel={i18n.t("app:map.image")} source={{uri}} style={[styles.map, {aspectRatio: ratio}]} resizeMode="contain" onError={fail} onLoadEnd={(): void => setLoadedUri(uri)} />
+			{loadedUri === uri ? null : <View style={styles.loading}><ActivityIndicator size="large" color={colors.muted} /></View>}
+		</Pressable>
+		<LockHint lock={{reason: i18n.t("app:map.expandHint"), icon: Maximize2}} />
+		<SheetModal visible={expanded} onRequestClose={(): void => setExpanded(false)}>
+			<MapViewer uri={uri} ratio={ratio} onClose={(): void => setExpanded(false)} onError={fail} />
+		</SheetModal>
+	</>;
+}
+
+/** The map is one picture of one place: the banner names it, the picture shows it, nothing else. */
+export function WorldMapContent({packet}: {packet: MapRes}): ReactNode {
+	const emblem = AppIcons.getIconOrNull(`mapTypes.${packet.mapType}`);
+	return <Standing
+		{...emblem ? {emblem: <TwemojiIcon emoji={emblem} size={Theme.dimensions.headerIcon} />} : {}}
+		caption={i18n.t(packet.hasArrived ? "app:map.position" : "app:map.destination")}
+		title={i18n.t(`models:map_locations.${packet.mapId}.name`)}
+		subtitle={i18n.t(`models:map_locations.${packet.mapId}.description`)}
+	>
+		<MapImage key={packet.imageUrl} packet={packet} />
+	</Standing>;
+}
+
+function useMapQuery(): RequestState<MapRes> {
+	return useGameQuery(GAME_ENTITIES.MAP, () => GameClient.request(makeFromClientPacket(MapReq, {language: i18n.language}), MapRes));
+}
+
+export function WorldMap(): ReactNode {
+	const state = useMapQuery();
+	return <GameQueryContent state={state} entity={GAME_ENTITIES.MAP}>{packet => <WorldMapContent packet={packet} />}</GameQueryContent>;
+}
+
+/** Only a help to choose: the answer must stay possible, so a missing map shows nothing rather than an error. */
+export function DestinationMap(): ReactNode {
+	const state = useMapQuery();
+	return state.status === "ready" ? <MapImage key={state.data.imageUrl} packet={state.data} /> : null;
+}

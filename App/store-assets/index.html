@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f4f0e7">
+<title>Crownicles · visuels Google Play</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#171817;--muted:#686a64;--paper:#f4f0e7;--white:#fffefa;--line:#d9d3c6;--red:#b95e4b;--gold:#d3a350;--teal:#446d68;--serif:"DM Serif Display",Georgia,serif;--sans:Inter,"Helvetica Neue",sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}a{color:inherit}
+.topbar{height:72px;padding:0 max(24px,calc((100vw - 1160px)/2));display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:11px;text-decoration:none}.brand img{width:40px;height:40px;border-radius:12px}.brand b{font-size:14px}.brand small{display:block;margin-top:-2px;color:var(--muted);font-size:10px}.topbar>a:last-child{font-size:11px;font-weight:700;text-decoration:none;border-bottom:1px solid var(--gold);padding-bottom:3px}
+main{max-width:1160px;margin:0 auto;padding:48px 24px 72px}.intro{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:28px;animation:rise .55s both}.eyebrow{display:flex;align-items:center;gap:9px;color:#8f4338;font-size:10px;font-weight:800;text-transform:uppercase}.eyebrow:before{content:"";width:20px;height:1px;background:currentColor}h1{font:400 43px/1.02 var(--serif);letter-spacing:0;margin:12px 0 7px}.intro p{max-width:600px;margin:0;color:var(--muted);font-size:13px}.badge{white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:10px;font-weight:700;color:var(--muted)}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 12px}.section-head h2{margin:0;font:400 24px/1.1 var(--serif)}.section-head p{margin:0;color:var(--muted);font-size:10px}
+.feature-wrap{padding:0;background:transparent;overflow:hidden}.feature{display:grid;grid-template-columns:40% 60%;position:relative;overflow:hidden;width:min(1024px,100%);aspect-ratio:1024/500;margin:auto;background:#fff;color:var(--ink)}
+.copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:18px;padding:clamp(12px,4vw,42px);background:#fff;z-index:1}.feature h2{margin:0;color:var(--ink);font:800 clamp(17px,4.5vw,48px)/1.05 var(--sans);letter-spacing:0}.brandmark{display:block;width:clamp(40px,8vw,82px);aspect-ratio:1;object-fit:cover;border-radius:22%}.feature-art{height:100%;min-width:0;overflow:hidden}.feature-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:54% 50%}
+.meta{display:flex;justify-content:space-between;gap:10px;padding:10px 3px;color:var(--muted);font-size:10px}.meta a{text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:3px;font-weight:700}
+.gallery{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:34px;align-items:start}.actual-shot{width:min(100%,390px);padding:9px;border:1px solid #ded4c2;background:#e6decf;border-radius:4px}.actual-shot img{display:block;width:100%;height:auto}.caption{margin:9px 0 0;color:var(--muted);font-size:10px}.requirements{padding-top:16px}.requirements h3{margin:0 0 12px;font:400 22px/1.1 var(--serif)}.requirements p{margin:0 0 12px;color:var(--muted);font-size:12px}.requirement{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:11px}.requirement span:last-child{color:var(--muted);text-align:right}.status{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:7px 9px;border:1px solid #c7ae71;color:#67542e;background:#efe5ca;font-size:9px;font-weight:800;text-transform:uppercase}.status:before{content:"";width:6px;height:6px;background:#c4933c;border-radius:50%}
+.note{margin-top:40px;padding:17px 19px;border-left:3px solid var(--gold);background:#e9e2d6;color:var(--muted);font-size:11px}.note strong{color:var(--ink)}footer{display:flex;justify-content:space-between;gap:16px;margin-top:42px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:10px}
+.capture-mode{background:#fff}.capture-mode .topbar,body.capture-mode footer{display:none}.capture-mode main{display:block;position:fixed;inset:0;max-width:none;margin:0;padding:0}.capture-mode #feature{display:grid;position:fixed;inset:0;width:1024px;height:500px;aspect-ratio:auto;z-index:9999}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@media(max-width:680px){.topbar{height:64px;padding:0 16px}main{padding:35px 16px 48px}.intro{align-items:start;flex-direction:column}.intro h1{font-size:36px}.badge{font-size:9px}.feature{grid-template-columns:44% 56%}.feature .copy{width:auto;padding:clamp(12px,4vw,42px);gap:clamp(8px,2vw,18px)}.feature h2{font-size:clamp(14px,4.5vw,48px);margin:0}.brandmark{width:clamp(36px,9vw,82px);padding:0}.section-head{align-items:start;flex-direction:column}.gallery{grid-template-columns:1fr;gap:20px}.actual-shot{width:min(100%,390px);margin:auto}.requirements{padding-top:0}footer{font-size:9px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="#top"><img src="../assets/images/icon.png" alt=""><span><b>Crownicles</b><small>Visuels de lancement · Google Play</small></span></a><a href="#capture">Les captures réelles ↓</a></header>
+<main id="top">
+  <section class="intro"><div><div class="eyebrow">Premier dossier de présentation</div><h1>Le royaume vous attend.</h1><p>Une direction visuelle pour la fiche Google Play, construite autour de l’identité Crownicles et des écrans capturés sur le vrai simulateur iPhone.</p></div><div class="badge">FR · Android · septembre 2026</div></section>
+  <section aria-labelledby="feature-title"><div class="section-head"><h2 id="feature-title">Visuel de présentation</h2><p>1024 × 500 px · bannière originale</p></div>
+    <div class="feature-wrap"><div class="feature" id="feature" aria-label="Bannière Crownicles"><div class="copy"><img class="brandmark" src="../assets/images/icon.png" alt=""><h2>Crownicles</h2></div><div class="feature-art"><img src="game-map.jpg" alt="Carte officielle du monde de Crownicles"></div></div></div>
+    <div class="meta"><span>Logo du jeu et carte officielle.</span><a href="feature-graphic.png">Télécharger la bannière PNG</a></div>
+  </section>
+  <section class="section" id="capture"><div class="section-head"><h2>Capture du simulateur</h2><p>Source : app Crownicles · iPhone 17 · 1206 × 2622 px</p></div>
+    <div class="gallery"><div><a class="actual-shot" href="screenshot-welcome.png"><img src="screenshot-welcome.png" alt="Écran d’accueil de Crownicles capturé dans le simulateur iPhone"></a><p class="caption">Écran d’accueil réel, recadré au ratio 2:1 pour la présentation. Appuyer pour ouvrir l’image en taille réelle.</p></div>
+      <aside class="requirements"><h3>Prêt pour la suite</h3><p>La bannière est exportée aux dimensions de la fiche. La première capture vient de l’application installée dans le simulateur, pas de la maquette HTML.</p><div class="requirement"><span>Icône d’application</span><span><a href="app-icon-512.png">512 × 512 · prête</a></span></div><div class="requirement"><span>Bannière Play</span><span>1024 × 500 · prête</span></div><div class="requirement"><span>Captures téléphone</span><span>1 écran réel · autres à ajouter après connexion au compte haut niveau</span></div><div class="status">Captures de jeu en attente du compte</div></aside>
+    </div>
+  </section>
+  <aside class="note"><strong>À propos des captures.</strong> L’écran affiché est celui du véritable binaire iOS dans le simulateur. Les onglets de jeu sont protégés par la progression et le compte actuellement connecté est neuf. Aucune action de jeu n’a été envoyée; il faudra une session haut niveau pour capturer les écrans de combat, profil et aventure.</aside>
+  <footer><span>Crownicles · atelier de lancement · 2026</span><span>Prévisualisation locale · aucun contenu de maquette</span></footer>
+</main>
+<script>
+if (new URLSearchParams(location.search).get("capture") === "feature") document.body.classList.add("capture-mode");
+</script>
+</body>
+</html>

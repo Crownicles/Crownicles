@@ -4,6 +4,8 @@ import {
 import { EloGameResult } from "../../types/EloGameResult";
 
 export type FightHistoryItem = {
+	id: number;
+
 	initiator: boolean;
 
 	opponentKeycloakId: string;

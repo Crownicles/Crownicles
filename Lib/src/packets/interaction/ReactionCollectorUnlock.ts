@@ -8,6 +8,8 @@ import {
 
 export class ReactionCollectorUnlockData extends ReactionCollectorData {
 	unlockedKeycloakId!: string;
+
+	price!: number;
 }
 
 export type ReactionCollectorUnlockPacket = AcceptRefusePacket<ReactionCollectorUnlockData>;
@@ -15,7 +17,7 @@ export type ReactionCollectorUnlockPacket = AcceptRefusePacket<ReactionCollector
 export class ReactionCollectorUnlock extends ReactionCollector {
 	private readonly unlockedKeycloakId: string;
 
-	constructor(unlockedKeycloakId: string) {
+	constructor(unlockedKeycloakId: string, private readonly price: number) {
 		super();
 		this.unlockedKeycloakId = unlockedKeycloakId;
 	}
@@ -29,7 +31,8 @@ export class ReactionCollectorUnlock extends ReactionCollector {
 				this.buildReaction(ReactionCollectorRefuseReaction, {})
 			],
 			data: this.buildData(ReactionCollectorUnlockData, {
-				unlockedKeycloakId: this.unlockedKeycloakId
+				unlockedKeycloakId: this.unlockedKeycloakId,
+				price: this.price
 			})
 		};
 	}

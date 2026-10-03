@@ -1,0 +1,43 @@
+import type {EffectCallback} from "react";
+import {clearTestQueryClients} from "./src/testing/testUtils";
+import {fakeGameRules} from "./src/testing/fakeGameRules";
+import {loadGameRules} from "./src/rules/GameRules";
+
+// Outside the app shell no assets bundle is downloaded: screens read the rules a server would send.
+loadGameRules(fakeGameRules);
+
+jest.mock("@react-native-async-storage/async-storage", () => jest.requireActual("@react-native-async-storage/async-storage/jest/async-storage-mock"));
+
+// Tests render screens outside the app shell, where the real provider would have no window to measure.
+jest.mock("react-native-safe-area-context", () => jest.requireActual("react-native-safe-area-context/jest/mock").default);
+
+// Screens are also rendered outside the router, where focus has no meaning: run the effect once.
+jest.mock("expo-router", () => ({
+	...jest.requireActual("expo-router"),
+	useFocusEffect: (effect: EffectCallback): void => jest.requireActual("react").useEffect(effect, [effect])
+}));
+
+// The test renderer has no app state nor window transitions to wait for: windows open as asked (NativeWindow-test covers the wait).
+jest.mock("@/src/design/NativeWindow", () => ({NativeWindow: jest.requireActual("react-native").Modal}));
+
+// Reanimated drives its values from a native worklet runtime the test environment does not have.
+jest.mock("react-native-reanimated", () => {
+	const {View} = jest.requireActual("react-native");
+	return {
+		__esModule: true,
+		default: {
+			View,
+			createAnimatedComponent: (component: unknown) => component
+		},
+		useSharedValue: (value: unknown) => ({value}),
+		useAnimatedStyle: (style: () => object) => style(),
+		withTiming: (value: unknown) => value,
+		withSpring: (value: unknown) => value,
+		withDecay: () => 0,
+		cancelAnimation: () => undefined
+	};
+});
+
+afterEach((): void => {
+	clearTestQueryClients();
+});

@@ -22,7 +22,7 @@ import {
 	ReactionCollectorChooseDestinationReaction,
 	ReactionCollectorStayInCityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
-import { MapCache } from "../maps/MapCache";
+import { revealsTripDuration } from "./TripDurationReveal";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { PlayersConstants } from "../../../../Lib/src/constants/PlayersConstants";
@@ -130,18 +130,18 @@ async function automaticChooseDestination(forcedLink: MapLink | null, player: Pl
  * Build the map reaction options for the destination collector
  */
 function buildMapReactions(player: Player, destinationMaps: number[]): ReactionCollectorChooseDestinationReaction[] {
+	const startingMapId = player.getDestinationId()!;
 	return destinationMaps.map(mapId => {
-		const mapLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
+		const mapLink = MapLinkDataController.instance.getLinkByLocations(startingMapId, mapId);
 		const mapLocation = MapLocationDataController.instance.getById(mapId);
 		if (!mapLink || !mapLocation) {
-			throw new Error(`No map link or location found for destination ${player.getDestinationId()} -> ${mapId}`);
+			throw new Error(`No map link or location found for destination ${startingMapId} -> ${mapId}`);
 		}
-		const isPveMap = MapCache.allPveMapLinks.includes(mapLink.id);
 
 		return {
 			mapId,
 			mapTypeId: mapLocation.type,
-			tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : undefined
+			tripDuration: revealsTripDuration(startingMapId, mapLink.id) ? mapLink.tripDuration : undefined
 		};
 	});
 }

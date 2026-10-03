@@ -10,6 +10,8 @@ import { ItemWithDetails } from "../../types/ItemWithDetails";
 
 export class ReactionCollectorItemAcceptData extends ReactionCollectorData {
 	itemWithDetails!: ItemWithDetails;
+
+	foundItem!: ItemWithDetails;
 }
 
 export class ReactionCollectorItemAcceptDrinkPotionReaction extends ReactionCollectorReaction {}
@@ -21,13 +23,13 @@ export type ReactionCollectorItemAcceptPacket = ReactionCollectorCreationPacket<
 >;
 
 export class ReactionCollectorItemAccept extends ReactionCollector {
-	private readonly itemWithDetails: ItemWithDetails;
+	private readonly data: ReactionCollectorItemAcceptData;
 
 	private readonly canDrink: boolean;
 
-	constructor(itemWithDetails: ItemWithDetails, canDrink: boolean) {
+	constructor(data: ReactionCollectorItemAcceptData, canDrink: boolean) {
 		super();
-		this.itemWithDetails = itemWithDetails;
+		this.data = data;
 		this.canDrink = canDrink;
 	}
 
@@ -44,9 +46,7 @@ export class ReactionCollectorItemAccept extends ReactionCollector {
 			id,
 			endTime,
 			reactions,
-			data: this.buildData(ReactionCollectorItemAcceptData, {
-				itemWithDetails: this.itemWithDetails
-			}),
+			data: this.buildData(ReactionCollectorItemAcceptData, this.data),
 			mainPacket
 		};
 	}

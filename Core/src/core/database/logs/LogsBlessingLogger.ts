@@ -128,14 +128,30 @@ export class LogsBlessingLogger {
 	 * Used to rebuild the in-memory contributionsTracker after a restart
 	 */
 	async getContributionsSince(since: Date): Promise<Map<string, number>> {
+		return await this.contributionsByPlayer({ [Op.gte]: dateToLogs(since) });
+	}
+
+	/**
+	 * Get the contributions of the pool that triggered the blessing activated at the given date:
+	 * everything after the previous activation or pool expiry, since no one can contribute while a blessing runs
+	 */
+	async getContributionsOfCompletedPool(triggeredAt: Date): Promise<Map<string, number>> {
+		const previousCycleEnd = await LogsBlessings.max("date", {
+			where: {
+				action: { [Op.in]: ["activate", "pool_expire"] },
+				date: { [Op.lt]: dateToLogs(triggeredAt) }
+			}
+		}) as number | null;
+		return await this.contributionsByPlayer({ [Op.gt]: previousCycleEnd ?? 0 });
+	}
+
+	private async contributionsByPlayer(date: { [Op.gte]: number } | { [Op.gt]: number }): Promise<Map<string, number>> {
 		const results = await LogsBlessingsContributions.findAll({
 			attributes: [
 				"playerId",
 				[fn("SUM", col("amount")), "totalAmount"]
 			],
-			where: {
-				date: { [Op.gte]: dateToLogs(since) }
-			},
+			where: { date },
 			group: ["playerId"],
 			raw: true
 		}) as unknown as {

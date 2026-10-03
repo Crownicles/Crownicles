@@ -1,6 +1,24 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import {
+	GardenSnapshot, GardenCompostOffer, GardenOperation
+} from "../../types/Garden";
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandGardenInfoReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandGardenActionReq extends CrowniclesPacket {
+	operation!: GardenOperation;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandGardenInfoRes extends CrowniclesPacket {
+	garden!: GardenSnapshot;
+
+	compostOffers!: GardenCompostOffer[];
+}
 
 /**
  * Reasons why the /garden command cannot grant access to a garden.

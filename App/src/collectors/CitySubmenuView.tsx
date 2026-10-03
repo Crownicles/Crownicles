@@ -1,0 +1,70 @@
+import {ReactNode} from "react";
+import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
+import type {CitySubmenu, CityEntry, CityNavigationItem, CityMenuData} from "@/src/collectors/CityCollector";
+import {AppIcons} from "@/src/AppIcons";
+import {useCitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
+import {citySnapshotNote} from "@/src/collectors/CitySnapshotNote";
+import {gardenPlotItems, homeFeatureItems, homeIconPath} from "@/src/collectors/CityHomeItems";
+import {enchantmentCatalogItems} from "@/src/collectors/CityGuildItems";
+import {cityRowEnd, cityRowSubtitle} from "@/src/collectors/CityRowDetails";
+import {cityRowDetails} from "@/src/collectors/CityRowExtras";
+import {cityReactionAvailable, cityRowIcon, cityRowTitle, iconForPath} from "@/src/collectors/CityRowPresentation";
+import {cityNavigationMeta, submenuTitle} from "@/src/collectors/CityMenuModel";
+import {CitySection} from "@/src/collectors/CityRows";
+import {submenuSections} from "@/src/collectors/CitySubmenuSections";
+import {plainStory} from "@/src/display/Markdown";
+import {Note} from "@/src/design/Primitives";
+import {Standing} from "@/src/design/Sections";
+import {Page} from "@/src/design/DetailScreen";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {GuildDomain} from "@/src/components/GuildDomain";
+import {i18n} from "@/src/translations/i18n";
+
+const SUBMENU_EMBLEM_SIZE = 34;
+
+type SubmenuProps = {
+	view: CitySubmenu; innId?: string; entries: CityEntry[]; collector: CityMenuData; snapshot?: CityMobileSnapshot;
+	onChoose: (index: number) => void; onNavigate: (item: CityNavigationItem) => void; onBack: () => void; locked: boolean; backLabel?: string; overlay?: boolean;
+};
+
+function submenuIcon(view: CitySubmenu, snapshot?: CityMobileSnapshot): string | null {
+	if (view === "inn") return AppIcons.getIconOrNull("city.inn");
+	if (view === "home") return AppIcons.getIconOrNull(homeIconPath(snapshot?.home?.owned?.level));
+	return AppIcons.getIconOrNull(cityNavigationMeta(view).iconPath);
+}
+
+const INTERACTIVE_SUBMENUS: Partial<Record<CitySubmenu, () => ReactNode>> = {guild: GuildDomain};
+
+function SubmenuHeading({view, snapshot, innId}: {view: CitySubmenu; snapshot?: CityMobileSnapshot; innId?: string}): ReactNode {
+	const details = submenuTitle(view, innId);
+	const icon = submenuIcon(view, snapshot);
+	return <Standing
+		{...icon ? {emblem: <TwemojiIcon emoji={icon} size={SUBMENU_EMBLEM_SIZE} />} : {}}
+		caption={details.eyebrow}
+		title={plainStory(details.title)}
+		{...details.subtitle ? {subtitle: plainStory(details.subtitle)} : {}}
+	/>;
+}
+
+export function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, onNavigate, onBack, locked, backLabel, overlay}: SubmenuProps): ReactNode {
+	const leave = (): void => {
+		if (!locked) onBack();
+	};
+	const page = {
+		onClose: leave,
+		backLabel: backLabel ?? i18n.t("app:city.actions.back"),
+		heading: <SubmenuHeading view={view} snapshot={snapshot} innId={innId} />,
+		...overlay ? {overlay} : {}
+	};
+	const InteractiveSubmenu = INTERACTIVE_SUBMENUS[view];
+	const summary = useCitySnapshotSummary(view, snapshot);
+	if (InteractiveSubmenu) return <Page {...page}><InteractiveSubmenu /></Page>;
+	const sections = submenuSections(view, entries, snapshot, {homeFeatureItems, gardenPlotItems, enchantmentCatalogItems});
+	const visibleSections = sections.filter(section => section.items.length > 0);
+	return <Page {...page}>
+			{summary}
+			{visibleSections.map((section, index) => <CitySection key={section.title} title={section.title} items={section.items} collector={collector} onChoose={onChoose} onNavigate={onNavigate} locked={locked} first={index === 0 && summary === null} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={cityRowSubtitle} rowEnd={cityRowEnd} rowDetails={cityRowDetails} reactionAvailable={cityReactionAvailable} />)}
+			{citySnapshotNote(view, snapshot)}
+		{visibleSections.length === 0 ? <Note>{i18n.t("app:city.subtitles.noActions")}</Note> : null}
+	</Page>;
+}

@@ -1731,6 +1731,13 @@ export class LogsDatabase extends Database {
 	}
 
 	/**
+	 * Get the contributions of the pool that triggered the blessing activated at the given date
+	 */
+	public getContributionsOfCompletedPool(triggeredAt: Date): Promise<Map<string, number>> {
+		return this.blessingLogger.getContributionsOfCompletedPool(triggeredAt);
+	}
+
+	/**
 	 * Log when a player eats a meal at a city inn
 	 */
 	public logInnMeal(params: InnMealLogParams): Promise<void> {

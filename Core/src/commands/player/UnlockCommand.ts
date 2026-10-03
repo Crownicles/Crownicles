@@ -155,7 +155,8 @@ export default class UnlockCommand {
 
 		// Send collector
 		const collector = new ReactionCollectorUnlock(
-			freedPlayer.keycloakId
+			freedPlayer.keycloakId,
+			UnlockConstants.PRICE_FOR_UNLOCK
 		);
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {

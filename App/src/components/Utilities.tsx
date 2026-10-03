@@ -1,0 +1,38 @@
+import {ReactNode, useState} from "react";
+import {makeFromClientPacket} from "ws-packets/src/MakePackets";
+import {RespawnReq, UnlockReq} from "ws-packets/src/fromClient/PlayerUtilityReq";
+import {PlayerUtilityRes} from "ws-packets/src/fromServer/common/PlayerUtilityRes";
+import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
+import {CommandMenu, useCommandMenus} from "@/src/store/useInventoryMenus";
+import {Button, ButtonRow} from "@/src/design/Primitives";
+import {TextField} from "@/src/design/Inputs";
+import {FormBlock} from "@/src/design/KeyboardAvoidance";
+import {utilityPacketRefusal} from "@/src/collectors/PlayerUtilityCollector";
+import {checkWholeNumber, RANK_RANGE} from "@/src/rules/InputChecks";
+import {i18n} from "@/src/translations/i18n";
+
+const UTILITY_MENUS = {
+	respawn: {request: RespawnReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [PlayerUtilityRes], refusal: utilityPacketRefusal},
+	unlock: {request: UnlockReq, emptyPacket: PlayerNotFound, emptyMessage: "app:profile.notFound", outcomePackets: [PlayerUtilityRes], refusal: utilityPacketRefusal}
+} satisfies Record<string, CommandMenu>;
+
+/** Sends the respawn request; the death screen states its cost before the player presses. */
+export function useRespawn(): {pending: boolean; message: string | null; respawn: () => void} {
+	const {pending, message, open} = useCommandMenus();
+	return {pending, message, respawn: (): void => {
+		open(UTILITY_MENUS.respawn).catch(console.error);
+	}};
+}
+
+export function PrisonerRelease(): ReactNode {
+	const [rank, setRank] = useState("");
+	const {pending, message, open, clearMessage} = useCommandMenus();
+	const prisonerRank = checkWholeNumber(rank, RANK_RANGE);
+	return <FormBlock>
+		<TextField label={i18n.t("app:utilities.prisonerRank")} value={rank} onChangeText={(value): void => {
+			setRank(value);
+			clearMessage();
+		}} keyboardType="number-pad" lock={prisonerRank.lock} refusal={message} />
+		<ButtonRow><Button disabled={pending || prisonerRank.lock !== null} onPress={(): Promise<void> => open(UTILITY_MENUS.unlock, makeFromClientPacket(UnlockReq, {rank: prisonerRank.value}))}>{i18n.t("app:utilities.unlock")}</Button></ButtonRow>
+	</FormBlock>;
+}

@@ -19,6 +19,8 @@ import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeat
 import { PlayerLeavePveIslandPacket } from "../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
 import { PlayerLevelUpPacket } from "../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { PlayerReceivePetPacket } from "../../../../Lib/src/packets/events/PlayerReceivePetPacket";
+import { RoyalLetterPacket } from "../../../../Lib/src/packets/events/RoyalLetterPacket";
+import { StringUtils } from "../../utils/StringUtils";
 import { buildRecipeDiscoveryMessage } from "../../utils/CookingDisplayUtils";
 
 import { GiveFoodToGuildPacket } from "../../../../Lib/src/packets/utils/GiveFoodToGuildPacket";
@@ -39,6 +41,7 @@ type MissionRewardTotals = {
 	points: number;
 	money: number;
 	xp: number;
+	tokens: number;
 };
 
 /**
@@ -54,13 +57,14 @@ function buildCompletedMissionData(missions: CompletedMission[], lng: Language):
 		[MissionType.NORMAL]: []
 	};
 	const totals: MissionRewardTotals = {
-		gems: 0, points: 0, money: 0, xp: 0
+		gems: 0, points: 0, money: 0, xp: 0, tokens: 0
 	};
 	for (const mission of missions) {
 		totals.gems += mission.gemsToWin;
 		totals.points += mission.pointsToWin;
 		totals.money += mission.moneyToWin;
 		totals.xp += mission.xpToWin;
+		totals.tokens += mission.tokensToWin ?? 0;
 		missionLists[mission.missionType].push(MissionUtils.formatCompletedMission(mission, lng));
 	}
 	return {
@@ -84,6 +88,9 @@ function buildTotalRewardsLines(totals: MissionRewardTotals, lng: Language): str
 		},
 		{
 			value: totals.xp, key: "xp"
+		},
+		{
+			value: totals.tokens, key: "tokens"
 		}
 	];
 	const lines = rewards
@@ -415,6 +422,49 @@ export default class EventsHandlers {
 		await interaction.channel.send({
 			embeds: [embed]
 		});
+	}
+
+	@packetHandler(RoyalLetterPacket)
+	async royalLetter(context: PacketContext, packet: RoyalLetterPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+
+		const lng = interaction.userLanguage;
+		const embed = await buildPlayerNotificationEmbed(packet.keycloakId, "royal letter", pseudo => i18n.t("notifications:royalMail.title", {
+			lng,
+			pseudo
+		}));
+		if (!embed) {
+			return;
+		}
+
+		const gifts = ([
+			"tokens",
+			"money",
+			"gems"
+		] as const)
+			.filter(gift => packet[gift] > 0)
+			.map(gift => i18n.t(`notifications:royalMail.gift.${gift}`, {
+				lng,
+				count: packet[gift]
+			}));
+		embed.setDescription(StringUtils.joinParagraphs([
+			i18n.t("notifications:royalMail.progress", {
+				lng,
+				letter: packet.letter,
+				letters: packet.letters
+			}),
+			i18n.t(`notifications:royalMail.letters.${packet.letter}`, { lng }),
+			gifts.length > 0 && StringUtils.joinLines([i18n.t("notifications:royalMail.gifts", { lng }), ...gifts]),
+			packet.rank !== undefined && i18n.t("notifications:royalMail.rank", {
+				lng,
+				rank: packet.rank,
+				rankedPlayers: packet.rankedPlayers
+			})
+		]));
+		await interaction.channel.send({ embeds: [embed] });
 	}
 
 	@packetHandler(PlayerReceivePetPacket)

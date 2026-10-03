@@ -131,7 +131,7 @@ async function buyTokens(
 }
 
 /**
- * Gift free tokens to a broke player with no tokens, at most once per week.
+ * Gift free tokens to a player with no tokens and little money, at most once per week.
  *
  * Concurrency: the check-then-grant sequence runs inside `withLockedPlayerAndMissions`
  * so two concurrent calls for the same player are serialized. The weekly
@@ -207,14 +207,20 @@ function createTokenMerchantCollector(
 
 /**
  * Entry point: an eligible player tried to advance with tokens but lacks
- * enough of them. Offer the token merchant, or — when the player has no
- * tokens and cannot even afford one — gift a few tokens once per week.
+ * enough of them. A player with no tokens and little money is gifted a few
+ * tokens once per week; otherwise the merchant offers what can be bought.
  */
 export async function openTokenMerchant(
 	player: Player,
 	context: PacketContext,
 	response: CrowniclesPacket[]
 ): Promise<void> {
+	const needsCharity = player.tokens === 0 && player.money < TokensConstants.MERCHANT_CHARITY_MONEY_THRESHOLD;
+	if (needsCharity && await LogsReadRequests.getTokenCharityCountReceivedByPlayerThisWeek(player.keycloakId) === 0) {
+		await giveCharity(player, response);
+		return;
+	}
+
 	const { maxTokensToAdd } = await computeAllowance(player);
 	const amounts = buildPurchasableAmounts(player, maxTokensToAdd);
 

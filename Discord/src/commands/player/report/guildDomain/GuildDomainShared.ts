@@ -75,23 +75,26 @@ export const BUILDING_MENU_IDS: Record<GuildBuilding, string> = {
 	[GuildBuilding.SHOP]: ReportCityMenuIds.GUILD_DOMAIN_SHOP_MENU,
 	[GuildBuilding.SHELTER]: ReportCityMenuIds.GUILD_DOMAIN_SHELTER_MENU,
 	[GuildBuilding.PANTRY]: ReportCityMenuIds.GUILD_DOMAIN_PANTRY_MENU,
-	[GuildBuilding.TRAINING_GROUND]: ReportCityMenuIds.GUILD_DOMAIN_TRAINING_MENU
+	[GuildBuilding.TRAINING_GROUND]: ReportCityMenuIds.GUILD_DOMAIN_TRAINING_MENU,
+	[GuildBuilding.RECRUITMENT_OFFICE]: ReportCityMenuIds.GUILD_DOMAIN_RECRUITMENT_MENU
 };
 
 export const BUILDING_ICONS: Record<GuildBuilding, string> = {
 	[GuildBuilding.SHOP]: CrowniclesIcons.city.guildDomain.shop,
 	[GuildBuilding.SHELTER]: CrowniclesIcons.city.guildDomain.shelter,
 	[GuildBuilding.PANTRY]: CrowniclesIcons.city.guildDomain.pantry,
-	[GuildBuilding.TRAINING_GROUND]: CrowniclesIcons.city.guildDomain.trainingGround
+	[GuildBuilding.TRAINING_GROUND]: CrowniclesIcons.city.guildDomain.trainingGround,
+	[GuildBuilding.RECRUITMENT_OFFICE]: CrowniclesIcons.city.guildDomain.recruitmentOffice
 };
 
-type BuildingLevelField = "shopLevel" | "shelterLevel" | "pantryLevel" | "trainingGroundLevel";
+type BuildingLevelField = "shopLevel" | "shelterLevel" | "pantryLevel" | "trainingGroundLevel" | "recruitmentOfficeLevel";
 
 const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, BuildingLevelField> = {
 	[GuildBuilding.SHOP]: "shopLevel",
 	[GuildBuilding.SHELTER]: "shelterLevel",
 	[GuildBuilding.PANTRY]: "pantryLevel",
-	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
+	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel",
+	[GuildBuilding.RECRUITMENT_OFFICE]: "recruitmentOfficeLevel"
 };
 
 export function getBuildingLevel(data: GuildDomainData, building: GuildBuilding): number {
@@ -364,28 +367,28 @@ export function addUpgradeSection(container: ContainerBuilder, building: GuildBu
 	);
 }
 
-export function getBuildingSummary(building: GuildBuilding, level: number, lng: Language): string {
-	switch (building) {
-		case GuildBuilding.SHOP:
-			return level === 0
-				? i18n.t("commands:report.city.guildDomain.buildingSummary.shop.locked", { lng })
-				: i18n.t("commands:report.city.guildDomain.buildingSummary.shop.built", { lng });
-		case GuildBuilding.SHELTER:
-			return i18n.t("commands:report.city.guildDomain.buildingSummary.shelter", {
-				lng,
-				slots: GuildDomainConstants.getShelterSlots(level)
+const BUILDING_SUMMARIES: Record<GuildBuilding, (level: number, lng: Language) => string> = {
+	[GuildBuilding.SHOP]: (level, lng) => level === 0
+		? i18n.t("commands:report.city.guildDomain.buildingSummary.shop.locked", { lng })
+		: i18n.t("commands:report.city.guildDomain.buildingSummary.shop.built", { lng }),
+	[GuildBuilding.SHELTER]: (level, lng) => i18n.t("commands:report.city.guildDomain.buildingSummary.shelter", {
+		lng,
+		slots: GuildDomainConstants.getShelterSlots(level)
+	}),
+	[GuildBuilding.PANTRY]: (_level, lng) => i18n.t("commands:report.city.guildDomain.buildingSummary.pantry", { lng }),
+	[GuildBuilding.TRAINING_GROUND]: (level, lng) => {
+		const love = GuildDomainConstants.getTrainingLovePerDay(level);
+		return love === 0
+			? i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.inactive", { lng })
+			: i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.active", {
+				lng, love
 			});
-		case GuildBuilding.PANTRY:
-			return i18n.t("commands:report.city.guildDomain.buildingSummary.pantry", { lng });
-		case GuildBuilding.TRAINING_GROUND: {
-			const love = GuildDomainConstants.getTrainingLovePerDay(level);
-			return love === 0
-				? i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.inactive", { lng })
-				: i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.active", {
-					lng, love
-				});
-		}
-		default:
-			return "";
-	}
+	},
+	[GuildBuilding.RECRUITMENT_OFFICE]: (level, lng) => level === 0
+		? i18n.t("commands:report.city.guildDomain.buildingSummary.recruitmentOffice.locked", { lng })
+		: i18n.t("commands:report.city.guildDomain.buildingSummary.recruitmentOffice.built", { lng })
+};
+
+export function getBuildingSummary(building: GuildBuilding, level: number, lng: Language): string {
+	return BUILDING_SUMMARIES[building](level, lng);
 }

@@ -1,8 +1,13 @@
 import { KeycloakConfig } from "./KeycloakConfig";
 import { KeycloakUserToRegister } from "./KeycloakUserToRegister";
 import { KeycloakUser } from "./KeycloakUser";
-import { Language } from "../Language";
-import { KeycloakOAuth2Token } from "./KeycloakOAuth2Token";
+import { KeycloakRegisterEvent } from "./KeycloakRegisterEvent";
+import { KeycloakFederalIdentity } from "./KeycloakFederalIdentity";
+import { KeycloakSessionIdentity } from "./KeycloakSessionIdentity";
+import { KeycloakConstants } from "../constants/KeycloakConstants";
+import {
+	Language, LANGUAGE
+} from "../Language";
 
 /**
  * Return type of keycloak API call
@@ -18,6 +23,8 @@ type ApiCallReturnType<T extends object> =
 		status: number;
 		payload: T;
 	};
+
+export type DiscordIdentityLinkResult = { changed: boolean };
 
 /**
  * Format the response of an API call as an error
@@ -51,12 +58,71 @@ function formatApiCallOk<T extends object>(res: Response, payload: T): ApiCallRe
 	};
 }
 
+type DiscordLinkError = typeof KeycloakConstants.DISCORD_LINK_ERRORS[keyof typeof KeycloakConstants.DISCORD_LINK_ERRORS];
+
+function discordLinkError<T extends object>(status: number, reason: DiscordLinkError): ApiCallReturnType<T> {
+	return {
+		isError: true, status, payload: { error: { reason } }
+	};
+}
+
+function unchangedLink(status: number): ApiCallReturnType<DiscordIdentityLinkResult> {
+	return {
+		isError: false, status, payload: { changed: false }
+	};
+}
+
+function emptyOk(status: number): ApiCallReturnType<Record<string, never>> {
+	return {
+		isError: false, status, payload: {}
+	};
+}
+
+function discordIdentityOf(identities: KeycloakFederalIdentity[]): KeycloakFederalIdentity | undefined {
+	return identities.find(identity => identity.identityProvider === KeycloakConstants.IDENTITY_PROVIDERS.DISCORD);
+}
+
+/**
+ * The Discord ID of an account created by the Discord bot before the identity provider existed
+ * @param user
+ */
+function legacyDiscordId(user: KeycloakUser): string | undefined {
+	const discordId = user.attributes?.discordId?.[0];
+	return discordId && user.username === `discord-${discordId}` ? discordId : undefined;
+}
+
+function sameEmail(user: KeycloakUser, email: string): boolean {
+	return user.attributes?.discordEmail?.[0]?.trim().toLowerCase() === email.trim().toLowerCase();
+}
+
+function registrationBody(registerParams: KeycloakUserToRegister): object {
+	const { discordId } = registerParams;
+	return {
+		username: registerParams.keycloakUsername,
+		attributes: {
+			language: [registerParams.language],
+			gameUsername: [registerParams.gameUsername],
+			...discordId ? { discordId: [discordId] } : {}
+		},
+		enabled: true,
+		...discordId
+			? {
+				federatedIdentities: [
+					{
+						identityProvider: KeycloakConstants.IDENTITY_PROVIDERS.DISCORD,
+						userId: discordId,
+						userName: registerParams.keycloakUsername
+					}
+				]
+			}
+			: {}
+	};
+}
+
 export abstract class KeycloakUtils {
 	private static keycloakToken: string | null = null;
 
 	private static keycloakTokenExpirationDate: number | null = null;
-
-	private static keycloakDiscordToIdMap = new Map<string, string>();
 
 	private static keycloakUserGroupsMap = new Map<string, string[]>();
 
@@ -146,7 +212,7 @@ export abstract class KeycloakUtils {
 			return checkAndQueryToken;
 		}
 
-		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users?username=${username}`, {
+		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users?username=${encodeURIComponent(username)}&exact=true`, {
 			method: "GET",
 			headers: {
 				"Authorization": `Bearer ${this.keycloakToken}`,
@@ -168,6 +234,101 @@ export abstract class KeycloakUtils {
 	}
 
 	/**
+	 * Read a resource of the admin API
+	 * @param keycloakConfig
+	 * @param path - Path under the realm admin API
+	 * @param toPayload - Shape of the payload returned for the response body
+	 */
+	private static async adminGet<Body, T extends object>(keycloakConfig: KeycloakConfig, path: string, toPayload: (body: Body) => T): Promise<ApiCallReturnType<T>> {
+		const token = await this.checkAndQueryToken(keycloakConfig);
+		if (token.isError) {
+			return token;
+		}
+		const response = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/${path}`, {
+			headers: { Authorization: `Bearer ${this.keycloakToken}` }
+		});
+		if (!response.ok) {
+			return formatApiCallError(response);
+		}
+		return formatApiCallOk(response, toPayload(await response.json() as Body));
+	}
+
+	private static searchUsers(keycloakConfig: KeycloakConfig, query: URLSearchParams): Promise<ApiCallReturnType<{ users: KeycloakUser[] }>> {
+		return this.adminGet(keycloakConfig, `users?${query}`, (users: KeycloakUser[]) => ({ users }));
+	}
+
+	public static getUsersByEmail(keycloakConfig: KeycloakConfig, email: string): Promise<ApiCallReturnType<{ users: KeycloakUser[] }>> {
+		return this.searchUsers(keycloakConfig, new URLSearchParams({
+			email,
+			exact: "true"
+		}));
+	}
+
+	public static async updateUser(keycloakConfig: KeycloakConfig, user: KeycloakUser): Promise<ApiCallReturnType<Record<string, never>>> {
+		const token = await this.checkAndQueryToken(keycloakConfig);
+		if (token.isError) {
+			return token;
+		}
+		const response = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${user.id}`, {
+			method: "PUT",
+			headers: {
+				"Authorization": `Bearer ${this.keycloakToken}`,
+				"Content-Type": "application/json"
+			},
+
+			// The whole account goes back: Keycloak erases the address and the names a partial update omits
+			body: JSON.stringify(user)
+		});
+		if (!response.ok) {
+			return formatApiCallError(response);
+		}
+		return formatApiCallOk(response, {});
+	}
+
+	public static getUsersByDiscordEmail(keycloakConfig: KeycloakConfig, email: string): Promise<ApiCallReturnType<{ users: KeycloakUser[] }>> {
+		return this.adminGet(keycloakConfig, `users?${new URLSearchParams({ q: `discordEmail:${email}` })}`, (users: KeycloakUser[]) => ({ users: users.filter(user => sameEmail(user, email)) }));
+	}
+
+	public static async linkDiscordIdentity(keycloakConfig: KeycloakConfig, user: KeycloakUser, discordId: string): Promise<ApiCallReturnType<DiscordIdentityLinkResult>> {
+		const owners = await this.getDiscordIdentityOwners(keycloakConfig, discordId);
+		if (owners.isError) {
+			return owners;
+		}
+		if (owners.payload.users.some(owner => owner.id !== user.id)) {
+			return discordLinkError(409, KeycloakConstants.DISCORD_LINK_ERRORS.CONFLICT);
+		}
+		const identities = await this.getFederatedIdentities(keycloakConfig, user.id);
+		if (identities.isError) {
+			return identities;
+		}
+		const existing = discordIdentityOf(identities.payload.identities);
+		if (!existing) {
+			return this.createDiscordIdentity(keycloakConfig, user, discordId);
+		}
+		return existing.userId === discordId
+			? unchangedLink(identities.status)
+			: discordLinkError(409, KeycloakConstants.DISCORD_LINK_ERRORS.CONFLICT);
+	}
+
+	/**
+	 * Refuse to register a Discord account whose identity already has an owner
+	 * @param keycloakConfig
+	 * @param discordId
+	 */
+	private static async ensureDiscordIdentityFree(keycloakConfig: KeycloakConfig, discordId: string | undefined): Promise<ApiCallReturnType<Record<string, never>>> {
+		if (!discordId) {
+			return emptyOk(200);
+		}
+		const owners = await this.getDiscordIdentityOwners(keycloakConfig, discordId);
+		if (owners.isError) {
+			return owners;
+		}
+		return owners.payload.users.length > 0
+			? discordLinkError(409, KeycloakConstants.DISCORD_LINK_ERRORS.CONFLICT)
+			: emptyOk(owners.status);
+	}
+
+	/**
 	 * Register a user in Keycloak
 	 * @param keycloakConfig
 	 * @param registerParams
@@ -177,13 +338,9 @@ export abstract class KeycloakUtils {
 		if (checkAndQueryToken.isError) {
 			return checkAndQueryToken;
 		}
-
-		// Populate attributes
-		const attributes: { [key: string]: string[] } = {};
-		attributes.language = [registerParams.language];
-		attributes.gameUsername = [registerParams.gameUsername];
-		if (registerParams.discordId) {
-			attributes.discordId = [registerParams.discordId];
+		const identityFree = await this.ensureDiscordIdentityFree(keycloakConfig, registerParams.discordId);
+		if (identityFree.isError) {
+			return identityFree;
 		}
 
 		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users`, {
@@ -192,20 +349,7 @@ export abstract class KeycloakUtils {
 				"Authorization": `Bearer ${this.keycloakToken}`,
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({
-				username: registerParams.keycloakUsername,
-				attributes,
-				enabled: true,
-				credentials: registerParams.password
-					? [
-						{
-							type: "password",
-							value: registerParams.password,
-							temporary: false
-						}
-					]
-					: undefined
-			})
+			body: JSON.stringify(registrationBody(registerParams))
 		});
 
 		if (!res.ok) {
@@ -219,6 +363,88 @@ export abstract class KeycloakUtils {
 		}
 
 		return formatApiCallOk(res, { user: getUser.payload.user! });
+	}
+
+	public static getUsersPage(keycloakConfig: KeycloakConfig, first: number, max: number): Promise<ApiCallReturnType<{ users: KeycloakUser[] }>> {
+		return this.searchUsers(keycloakConfig, new URLSearchParams({
+			first: String(first), max: String(max)
+		}));
+	}
+
+	public static getFederatedIdentities(keycloakConfig: KeycloakConfig, userId: string): Promise<ApiCallReturnType<{ identities: KeycloakFederalIdentity[] }>> {
+		return this.adminGet(keycloakConfig, `users/${userId}/federated-identity`, (identities: KeycloakFederalIdentity[]) => ({ identities }));
+	}
+
+	public static linkLegacyDiscordUser(keycloakConfig: KeycloakConfig, user: KeycloakUser): Promise<ApiCallReturnType<DiscordIdentityLinkResult>> {
+		const discordId = legacyDiscordId(user);
+		if (!discordId) {
+			return Promise.resolve(discordLinkError(400, KeycloakConstants.DISCORD_LINK_ERRORS.NOT_LEGACY));
+		}
+		return this.linkDiscordIdentity(keycloakConfig, user, discordId);
+	}
+
+	public static getDiscordIdentityOwners(keycloakConfig: KeycloakConfig, discordId: string): Promise<ApiCallReturnType<{ users: KeycloakUser[] }>> {
+		return this.searchUsers(keycloakConfig, new URLSearchParams({
+			idpAlias: KeycloakConstants.IDENTITY_PROVIDERS.DISCORD, idpUserId: discordId
+		}));
+	}
+
+	/**
+	 * The Discord ID a fresh read of the account links to, if it could be read
+	 * @param keycloakConfig
+	 * @param user
+	 */
+	private static async reloadedDiscordId(keycloakConfig: KeycloakConfig, user: KeycloakUser): Promise<string | undefined> {
+		const reloaded = await this.getFederatedIdentities(keycloakConfig, user.id);
+		return reloaded.isError ? undefined : discordIdentityOf(reloaded.payload.identities)?.userId;
+	}
+
+	private static async createDiscordIdentity(keycloakConfig: KeycloakConfig, user: KeycloakUser, discordId: string): Promise<ApiCallReturnType<DiscordIdentityLinkResult>> {
+		const response = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${user.id}/federated-identity/${KeycloakConstants.IDENTITY_PROVIDERS.DISCORD}`, {
+			method: "POST",
+			headers: {
+				"Authorization": `Bearer ${this.keycloakToken}`,
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				identityProvider: KeycloakConstants.IDENTITY_PROVIDERS.DISCORD, userId: discordId, userName: user.username
+			})
+		});
+		if (response.ok) {
+			return formatApiCallOk(response, { changed: true });
+		}
+
+		// A concurrent request may have created the very same link first
+		if (response.status === 409 && await this.reloadedDiscordId(keycloakConfig, user) === discordId) {
+			return unchangedLink(200);
+		}
+		return formatApiCallError(response);
+	}
+
+	/**
+	 * Get the most recent account creations, as long as the realm keeps its `REGISTER` events
+	 * @param keycloakConfig
+	 * @param max
+	 */
+	public static async getRegisterEvents(keycloakConfig: KeycloakConfig, max: number): Promise<ApiCallReturnType<{ events: KeycloakRegisterEvent[] }>> {
+		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
+		if (checkAndQueryToken.isError) {
+			return checkAndQueryToken;
+		}
+
+		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/events?type=REGISTER&first=0&max=${max}`, {
+			method: "GET",
+			headers: {
+				"Authorization": `Bearer ${this.keycloakToken}`,
+				"Content-Type": "application/json"
+			}
+		});
+
+		if (!res.ok) {
+			return formatApiCallError(res);
+		}
+
+		return formatApiCallOk(res, { events: await res.json() as KeycloakRegisterEvent[] });
 	}
 
 	/**
@@ -252,8 +478,6 @@ export abstract class KeycloakUtils {
 			if (gameUsername && user.attributes.gameUsername[0] !== gameUsername) {
 				await KeycloakUtils.updateGameUsername(user, gameUsername, keycloakConfig);
 			}
-
-			KeycloakUtils.keycloakDiscordToIdMap.set(discordId, user.id);
 		}
 
 		return formatApiCallOk(res, { user });
@@ -300,7 +524,6 @@ export abstract class KeycloakUtils {
 			}
 		}
 
-		KeycloakUtils.keycloakDiscordToIdMap.set(discordId, user.id);
 
 		return formatApiCallOk(res, { user });
 	}
@@ -312,15 +535,6 @@ export abstract class KeycloakUtils {
 	 * @param gameUsername
 	 */
 	public static async getKeycloakIdFromDiscordId(keycloakConfig: KeycloakConfig, discordId: string, gameUsername: string | null): Promise<ApiCallReturnType<{ keycloakId?: string }>> {
-		const cachedId = KeycloakUtils.keycloakDiscordToIdMap.get(discordId);
-		if (cachedId) {
-			return {
-				status: 200,
-				payload: { keycloakId: cachedId },
-				isError: false
-			};
-		}
-
 		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
 		if (checkAndQueryToken.isError) {
 			return checkAndQueryToken;
@@ -337,8 +551,6 @@ export abstract class KeycloakUtils {
 		const id = user?.id;
 
 		if (user && id) {
-			KeycloakUtils.keycloakDiscordToIdMap.set(discordId, id);
-
 			if (gameUsername && user.attributes.gameUsername[0] !== gameUsername) {
 				await KeycloakUtils.updateGameUsername(user, gameUsername, keycloakConfig);
 			}
@@ -355,34 +567,19 @@ export abstract class KeycloakUtils {
 		if (checkAndQueryToken.isError) {
 			return checkAndQueryToken;
 		}
-
-		// Update the language attribute
-		const attributes = user.attributes;
-		attributes.language = [newLanguage];
-
-		// Send the update request to Keycloak
-		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${user.id}`, {
-			method: "PUT",
-			headers: {
-				"Authorization": `Bearer ${this.keycloakToken}`,
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({ attributes })
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		return formatApiCallOk(res, {});
+		user.attributes.language = [newLanguage];
+		return this.updateUser(keycloakConfig, user);
 	}
 
 	/**
 	 * Get the language of a user from its attributes
+	 *
+	 * Accounts created through the Discord identity provider have no language attribute:
+	 * only discordId and gameUsername are mapped when the account is federated.
 	 * @param user
 	 */
 	public static getUserLanguage(user: KeycloakUser): Language {
-		return user.attributes.language[0];
+		return user.attributes.language?.[0] ?? LANGUAGE.DEFAULT_LANGUAGE;
 	}
 
 	/**
@@ -412,94 +609,6 @@ export abstract class KeycloakUtils {
 	}
 
 	/**
-	 * Check if a user exists in Keycloak
-	 * @param keycloakConfig
-	 * @param username
-	 */
-	public static async userExists(keycloakConfig: KeycloakConfig, username: string): Promise<ApiCallReturnType<{ exists: boolean }>> {
-		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
-		if (checkAndQueryToken.isError) {
-			return checkAndQueryToken;
-		}
-
-		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users?username=${username}`, {
-			method: "GET",
-			headers: {
-				"Authorization": `Bearer ${this.keycloakToken}`,
-				"Content-Type": "application/json"
-			}
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		const obj = await res.json() as KeycloakUser[];
-
-		return formatApiCallOk(res, { exists: obj.length > 0 });
-	}
-
-	/**
-	 * Login a user with the Keycloak API
-	 * @param keycloakConfig
-	 * @param username
-	 * @param password
-	 */
-	public static async loginUser(keycloakConfig: KeycloakConfig, username: string, password: string): Promise<ApiCallReturnType<KeycloakOAuth2Token>> {
-		const res = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: new URLSearchParams({
-				// Keycloak api naming conventions
-				/* eslint-disable camelcase */
-				client_id: keycloakConfig.clientId,
-				client_secret: keycloakConfig.clientSecret,
-				username,
-				password,
-				grant_type: "password",
-				scope: "openid"
-				/* eslint-enable camelcase */
-			})
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		return formatApiCallOk(res, await res.json() as KeycloakOAuth2Token);
-	}
-
-	/**
-	 * Check if a user has a valid access token
-	 * @param keycloakConfig
-	 * @param accessToken
-	 */
-	public static async checkUserAccessToken(keycloakConfig: KeycloakConfig, accessToken: string): Promise<ApiCallReturnType<{ valid: boolean }>> {
-		const res = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/token/introspect`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: new URLSearchParams({
-				// Keycloak api naming conventions
-				/* eslint-disable camelcase */
-				client_id: keycloakConfig.clientId,
-				client_secret: keycloakConfig.clientSecret,
-				token: accessToken
-				/* eslint-enable camelcase */
-			})
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		return formatApiCallOk(res, { valid: true });
-	}
-
-	/**
 	 * Check if a token is valid and get the keycloak ID from it
 	 * @param keycloakConfig
 	 * @param accessToken
@@ -520,70 +629,20 @@ export abstract class KeycloakUtils {
 		return formatApiCallOk(res, { keycloakId: (await res.json() as { sub: string }).sub });
 	}
 
-	/**
-	 * Refresh the user token
-	 * @param keycloakConfig
-	 * @param refreshToken
-	 */
-	public static async refreshUserToken(keycloakConfig: KeycloakConfig, refreshToken: string): Promise<ApiCallReturnType<KeycloakOAuth2Token>> {
-		const res = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: new URLSearchParams({
-				// Keycloak api naming conventions
-				/* eslint-disable camelcase */
-				client_id: keycloakConfig.clientId,
-				client_secret: keycloakConfig.clientSecret,
-				refresh_token: refreshToken,
-				grant_type: "refresh_token"
-				/* eslint-enable camelcase */
-			})
+	public static async getSessionIdentity(keycloakConfig: KeycloakConfig, accessToken: string): Promise<ApiCallReturnType<{ identity: KeycloakSessionIdentity }>> {
+		const response = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/userinfo`, {
+			headers: { Authorization: `Bearer ${accessToken}` }
 		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
+		if (!response.ok) {
+			return formatApiCallError(response);
 		}
-
-		return formatApiCallOk(res, await res.json() as KeycloakOAuth2Token);
-	}
-
-	/**
-	 * Get an access token for user with keycloak ID
-	 * @param keycloakConfig
-	 * @param keycloakId
-	 */
-	public static async getUserAccessToken(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<ApiCallReturnType<KeycloakOAuth2Token>> {
-		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
-		if (checkAndQueryToken.isError) {
-			return checkAndQueryToken;
+		const identity = await response.json() as KeycloakSessionIdentity;
+		if (typeof identity.sub !== "string" || !identity.sub) {
+			return {
+				isError: true, status: 401, payload: {}
+			};
 		}
-
-		const res = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: new URLSearchParams({
-				// Keycloak api naming conventions
-				/* eslint-disable camelcase */
-				client_id: keycloakConfig.clientId,
-				client_secret: keycloakConfig.clientSecret,
-				grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
-				subject_token: this.keycloakToken!,
-				subject_token_type: "urn:ietf:params:oauth:token-type:access_token",
-				requested_subject: keycloakId,
-				scope: "openid"
-				/* eslint-enable camelcase */
-			})
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		return formatApiCallOk(res, await res.json() as KeycloakOAuth2Token);
+		return formatApiCallOk(response, { identity });
 	}
 
 	private static async checkAndQueryToken(keycloakConfig: KeycloakConfig): Promise<ApiCallReturnType<Record<string, never>>> {
@@ -620,14 +679,23 @@ export abstract class KeycloakUtils {
 		};
 	}
 
-	private static async updateGameUsername(user: KeycloakUser, newGameUsername: string, keycloakConfig: KeycloakConfig): Promise<ApiCallReturnType<Record<string, never>>> {
+	/**
+	 * Replace the name shown in game, keeping the other attributes of the account
+	 * @param user
+	 * @param newGameUsername
+	 * @param keycloakConfig
+	 */
+	public static async updateGameUsername(user: KeycloakUser, newGameUsername: string, keycloakConfig: KeycloakConfig): Promise<ApiCallReturnType<Record<string, never>>> {
 		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
 		if (checkAndQueryToken.isError) {
 			return checkAndQueryToken;
 		}
 
-		const attributes = user.attributes;
-		attributes.gameUsername = [newGameUsername];
+		// An account created from the sign-up page carries no attribute at all until it gets one
+		user.attributes = {
+			...user.attributes,
+			gameUsername: [newGameUsername]
+		};
 
 		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${user.id}`, {
 			method: "PUT",
@@ -635,7 +703,9 @@ export abstract class KeycloakUtils {
 				"Authorization": `Bearer ${this.keycloakToken}`,
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({ attributes })
+
+			// The whole account goes back: Keycloak erases the address and the names a partial update omits
+			body: JSON.stringify(user)
 		});
 
 		if (!res.ok) {
@@ -670,7 +740,7 @@ export abstract class KeycloakUtils {
 		}
 
 		// Clear the cache before deleting
-		await this.clearUserFromCache(keycloakConfig, keycloakId);
+		this.keycloakUserGroupsMap.delete(keycloakId);
 
 		// Delete the user from Keycloak
 		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${keycloakId}`, {
@@ -693,24 +763,6 @@ export abstract class KeycloakUtils {
 		}
 
 		return formatApiCallOk(res, {});
-	}
-
-	/**
-	 * Clear user from internal cache before deletion
-	 */
-	private static async clearUserFromCache(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<void> {
-		const userResult = await this.getUserByKeycloakId(keycloakConfig, keycloakId);
-		if (userResult.isError || !("user" in userResult.payload)) {
-			return;
-		}
-
-		const oldDiscordId = userResult.payload.user.attributes?.discordId?.[0];
-		if (oldDiscordId && oldDiscordId !== "0") {
-			KeycloakUtils.keycloakDiscordToIdMap.delete(oldDiscordId);
-		}
-
-		// Clear any cached group information for this user
-		KeycloakUtils.keycloakUserGroupsMap.delete(keycloakId);
 	}
 
 	/**

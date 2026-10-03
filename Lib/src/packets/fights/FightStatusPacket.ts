@@ -1,42 +1,19 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import {
+	FightFighterSnapshot, FightStatusSnapshot
+} from "../../types/FightStatusSnapshot";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandFightStatusPacket extends CrowniclesPacket {
+export class CommandFightStatusPacket extends CrowniclesPacket implements FightStatusSnapshot {
 	fightId!: string;
 
 	numberOfTurn!: number;
 
 	maxNumberOfTurn!: number;
 
-	activeFighter!: {
-		keycloakId?: string;
-		monsterId?: string;
-		glory?: number;
-		stats: {
-			power: number;
-			attack: number;
-			defense: number;
-			speed: number;
-			breath: number;
-			maxBreath: number;
-			breathRegen: number;
-		};
-	};
+	activeFighter!: FightFighterSnapshot;
 
-	defendingFighter!: {
-		keycloakId?: string;
-		monsterId?: string;
-		glory?: number;
-		stats: {
-			power: number;
-			attack: number;
-			defense: number;
-			speed: number;
-			breath: number;
-			maxBreath: number;
-			breathRegen: number;
-		};
-	};
+	defendingFighter!: FightFighterSnapshot;
 }
