@@ -443,6 +443,9 @@ export class CommandReportApartmentBuyRes extends CrowniclesPacket implements Ap
 	mapLocationId!: number;
 
 	cost!: number;
+
+	/** Rented out from the start, because the player's home stands in the same city. */
+	isRented!: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

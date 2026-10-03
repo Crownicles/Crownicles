@@ -1,11 +1,8 @@
 import {ReactNode} from "react";
-import {Text, View} from "react-native";
 import {CITY_REACTION_KINDS, CityMobileSnapshot, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
 import {HOME_UPGRADE_CHANGES, HomeUpgradeChange} from "ws-packets/src/objects/HomeUpgrade";
-import {AppIcons} from "@/src/AppIcons";
-import {Theme} from "@/src/design/Theme";
-import {createStyles} from "@/src/design/ThemeContext";
-import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {apartmentBenefits, apartmentRentedHere} from "@/src/collectors/ApartmentBenefits";
+import {Benefit, Benefits} from "@/src/components/Benefits";
 import {i18n} from "@/src/translations/i18n";
 
 const UPGRADE_CHANGE_ICONS: Record<HomeUpgradeChange, string> = {
@@ -22,37 +19,31 @@ const UPGRADE_CHANGE_ICONS: Record<HomeUpgradeChange, string> = {
 	[HOME_UPGRADE_CHANGES.BETTER_COOKING_STATION]: "city.homeUpgrades.cooking"
 };
 
-const TILE_SIZE = 40;
-const TILE_EMOJI_SIZE = 22;
-
-const useStyles = createStyles(colors => ({
-	list: {gap: Theme.spacing.md},
-	row: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md},
-	tile: {width: TILE_SIZE, height: TILE_SIZE, flexShrink: 0, alignItems: "center", justifyContent: "center", borderRadius: Theme.radius, backgroundColor: colors.wash},
-	body: {flex: 1, minWidth: 0, gap: 2},
-	title: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: colors.ink},
-	description: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted}
-}));
-
-function UpgradeChangeRow({change}: {change: HomeUpgradeChange}): ReactNode {
-	const styles = useStyles();
-	const emoji = AppIcons.getIconOrNull(UPGRADE_CHANGE_ICONS[change]);
-	return <View style={styles.row} testID="home-upgrade-change">
-		<View style={styles.tile}>{emoji ? <TwemojiIcon emoji={emoji} size={TILE_EMOJI_SIZE} /> : null}</View>
-		<View style={styles.body}>
-			<Text style={styles.title}>{i18n.t(`app:city.upgradeChanges.${change}.title`)}</Text>
-			<Text style={styles.description}>{i18n.t(`app:city.upgradeChanges.${change}.description`)}</Text>
-		</View>
-	</View>;
+function upgradeBenefits(changes: HomeUpgradeChange[]): Benefit[] {
+	return changes.map(change => ({
+		key: change,
+		iconPath: UPGRADE_CHANGE_ICONS[change],
+		title: i18n.t(`app:city.upgradeChanges.${change}.title`),
+		description: i18n.t(`app:city.upgradeChanges.${change}.description`)
+	}));
 }
 
-function UpgradeChanges({changes}: {changes: HomeUpgradeChange[]}): ReactNode {
-	const styles = useStyles();
-	return <View style={styles.list}>{changes.map(change => <UpgradeChangeRow key={change} change={change} />)}</View>;
+function rowBenefits(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): Benefit[] {
+	switch (reaction.type) {
+		case CITY_REACTION_KINDS.UPGRADE_HOME: return upgradeBenefits(snapshot?.home?.manage?.upgradeChanges ?? []);
+		case CITY_REACTION_KINDS.APARTMENT_BUY: {
+			const elsewhere = snapshot?.home?.elsewhere;
+			return apartmentBenefits(apartmentRentedHere(snapshot), {
+				...snapshot?.apartmentNotary?.forSale ? {price: snapshot.apartmentNotary.forSale.price} : {},
+				...elsewhere ? {home: elsewhere} : {}
+			});
+		}
+		default: return [];
+	}
 }
 
-/** What the player weighs before confirming: every advantage a home upgrade brings. */
+/** What the player weighs before confirming: everything a home upgrade or an apartment brings. */
 export function cityRowDetails(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): ReactNode {
-	const changes = reaction.type === CITY_REACTION_KINDS.UPGRADE_HOME ? snapshot?.home?.manage?.upgradeChanges ?? [] : [];
-	return changes.length > 0 ? <UpgradeChanges changes={changes} /> : null;
+	const benefits = rowBenefits(reaction, snapshot);
+	return benefits.length > 0 ? <Benefits items={benefits} /> : null;
 }

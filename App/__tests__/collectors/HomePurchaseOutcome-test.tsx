@@ -25,4 +25,20 @@ describe("home purchase celebration", () => {
 		await fireEvent.press(screen.getByText("app:common.continue"));
 		expect(onContinue).toHaveBeenCalled();
 	});
+
+	it("announces the apartments with a first home, when they become buyable", async () => {
+		await render(<HomePurchaseOutcome outcome={purchase({purchase: HOME_PURCHASES.HOME, cost: 1000, homeLevel: 1})} onContinue={jest.fn()} />);
+		expect(screen.getByText("app:city.firstHome.apartments.title")).toBeTruthy();
+	});
+
+	it("tells what a foothold opens, and what a let apartment earns", async () => {
+		const view = await render(<HomePurchaseOutcome outcome={purchase({purchase: HOME_PURCHASES.APARTMENT, cost: 12000, mapLocationId: 23, isRented: false})} onContinue={jest.fn()} />);
+		expect(screen.getByText(/app:city\.apartmentBenefits\.chest\.title/)).toBeTruthy();
+		expect(screen.queryByText(/app:city\.apartmentBenefits\.rent\.title/)).toBeNull();
+
+		await view.rerender(<HomePurchaseOutcome outcome={purchase({purchase: HOME_PURCHASES.APARTMENT, cost: 12000, mapLocationId: 23, isRented: true})} onContinue={jest.fn()} />);
+		expect(screen.getByText("app:city.purchases.apartmentRented")).toBeTruthy();
+		expect(screen.getByText(/app:city\.apartmentBenefits\.rent\.title/)).toBeTruthy();
+		expect(screen.queryByText(/app:city\.apartmentBenefits\.chest\.title/)).toBeNull();
+	});
 });

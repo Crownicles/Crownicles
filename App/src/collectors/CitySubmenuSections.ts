@@ -71,7 +71,25 @@ function homeUpgradeLimit(snapshot: CityMobileSnapshot | undefined): CityListIte
 	}];
 }
 
+/** An apartment a beginner cannot buy yet: shown with its reason, so the notary teaches it exists. */
+function apartmentRequiringHome(snapshot: CityMobileSnapshot | undefined): CityListItem[] {
+	if (snapshot?.apartmentNotary?.requiresHomePrice === undefined) return [];
+	return [{
+		kind: "info",
+		key: "apartment-requires-home",
+		iconPath: "city.apartmentNotary.buy",
+		title: i18n.t("commands:report.city.homes.apartmentNotary.buyButtonLabel"),
+		subtitle: i18n.t("app:city.subtitles.buyApartmentFoothold"),
+		lock: {reason: i18n.t("app:city.locks.apartmentRequiresHome")}
+	}];
+}
+
 export function submenuSections(view: CitySubmenu, entries: CityEntry[], snapshot: CityMobileSnapshot | undefined, deps: SubmenuDependencies): CitySubmenuSection[] {
-	if (view === "notary") return groupedSections(view, entries, {"app:city.titles.yourHome": homeUpgradeLimit(snapshot)}).filter(notarySection => notarySection.items.length > 0);
+	if (view === "notary") {
+		return groupedSections(view, entries, {
+			"app:city.titles.yourHome": homeUpgradeLimit(snapshot),
+			"app:city.titles.apartments": apartmentRequiringHome(snapshot)
+		}).filter(notarySection => notarySection.items.length > 0);
+	}
 	return simpleSections(view, entries, snapshot, deps) ?? groupedSections(view, entries);
 }

@@ -57,6 +57,11 @@ export function buildGameRules(): GameRules {
 			innRoom: HomeConstants.BED_COOLDOWN_MS / TimeConstants.MS_TIME.HOUR,
 			gardenWatering: GardenConstants.WATERING_COOLDOWN_MS / TimeConstants.MS_TIME.HOUR
 		},
+		apartment: {
+			dailyRent: HomeConstants.DAILY_RENT,
+			minRentToClaim: HomeConstants.MIN_RENT_TO_CLAIM,
+			bedLevelCap: HomeConstants.APARTMENT_BED_LEVEL_CAP
+		},
 		onboardingTrials: ONBOARDING_TRIALS.map(trial => ({
 			id: trial.id,
 			missions: [...trial.missions]

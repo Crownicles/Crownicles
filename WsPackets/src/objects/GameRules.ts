@@ -40,6 +40,13 @@ export type GameRules = {
 		gardenWatering: number;
 	};
 
+	/** What an apartment yields: a rent where the home stands, a capped bed elsewhere. */
+	apartment: {
+		dailyRent: number;
+		minRentToClaim: number;
+		bedLevelCap: number;
+	};
+
 	/** The royal contest trials, in campaign order. */
 	onboardingTrials: OnboardingTrial[];
 };

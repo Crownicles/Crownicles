@@ -22,4 +22,7 @@ export class HomePurchaseRes extends FromServerPacket {
 
 	/** Where the apartment stands; only for an apartment. */
 	mapLocationId?: number;
+
+	/** Whether the apartment is rented out (the home stands in the same city); only for an apartment. */
+	isRented?: boolean;
 }

@@ -627,9 +627,50 @@
       "home": "Nouvelle maison",
       "upgrade": "Maison améliorée",
       "move": "Déménagement réussi",
-      "apartment": "Nouveau logis",
+      "apartment": "Nouveau pied-à-terre",
+      "apartmentRented": "Nouveau logis loué",
       "homeLevel": "Maison de niveau {{level}}",
       "cost": "Pour {{cost}}"
+    },
+    "firstHome": {
+      "bed": {
+        "title": "Un lit",
+        "description": "Pour vous soigner chez vous"
+      },
+      "chest": {
+        "title": "Un coffre",
+        "description": "Pour garder vos affaires en sûreté"
+      },
+      "apartments": {
+        "title": "Des logis dans d'autres villes",
+        "description": "Le notaire en vend : votre coffre et un lit, partout où vous en avez un"
+      }
+    },
+    "apartmentBenefits": {
+      "rent": {
+        "title": "Une rente de {{rent}} par jour",
+        "description": "Le notaire vous la verse dès {{min}} accumulés"
+      },
+      "payback": {
+        "title": "Remboursé en {{days}} jours",
+        "description": "Ensuite, chaque loyer est un pur bénéfice"
+      },
+      "chest": {
+        "title": "Le coffre de votre maison",
+        "description": "Déposez et reprenez vos affaires ici aussi"
+      },
+      "cooking": {
+        "title": "Votre fourneau",
+        "description": "Cuisinez ici comme chez vous"
+      },
+      "bed": {
+        "title": "Un lit pour vous soigner",
+        "description": "Aussi reposant que celui d'une maison de niveau {{level}} au plus"
+      },
+      "laterRent": {
+        "title": "Une rente si vous emménagez ici",
+        "description": "{{rent}} par jour dès que votre maison sera dans cette ville"
+      }
     },
     "upgradeChanges": {
       "chest": {
@@ -712,7 +753,9 @@
       "buyHome": "Votre première demeure, dans cette ville",
       "upgradeHome": "Plus de confort et de nouveaux services chez vous",
       "moveHome": "Votre maison s'installe dans cette ville",
-      "buyApartment": "Un pied-à-terre, ou une rente si votre maison est proche",
+      "buyApartmentRented": "Loué dès l'achat : il vous rapporte chaque jour",
+      "buyApartmentFoothold": "Un pied-à-terre : votre coffre et un lit, ici aussi",
+      "notaryRent": "{{amount}} de loyer vous attendent",
       "noActions": "Aucune action disponible pour le moment.",
       "upgradeDetails": "Niveau {{from}} → {{to}} · {{materials}}{{missingMaterials}}",
       "disenchantDetails": "{{enchantment}} · retirer l'enchantement",
@@ -815,7 +858,11 @@
       "nothingToHarvest": "Aucune plante n'est prête à être récoltée.",
       "alreadyWatered": "Le jardin a déjà été arrosé récemment.",
       "nothingToCompost": "Aucune plante à composter.",
-      "noRent": "Aucune rente n'a encore été accumulée.",
+      "notRented": "Ne rapporte rien : c'est votre pied-à-terre tant que votre maison est ailleurs.",
+      "rentTooLow": "{{current}} de loyer accumulé, il en faut {{min}} pour le retirer.",
+      "apartmentRequiresHome": "Il faut d'abord posséder une maison.",
+      "homeElsewhere": "Elle se trouve $t(models:map_locations.{{mapLocationId}}.inParticle) $t(models:map_locations.{{mapLocationId}}.name).",
+      "homeElsewhereApartment": "Elle se trouve $t(models:map_locations.{{mapLocationId}}.inParticle) $t(models:map_locations.{{mapLocationId}}.name). Un logis ici vous ouvrirait son coffre et un lit.",
       "playerLevel": "Il faut être niveau {{level}} pour cette amélioration.",
       "homeMaxLevel": "Votre maison est déjà au niveau maximum.",
       "unavailable": "Cette action n'est pas disponible pour le moment."

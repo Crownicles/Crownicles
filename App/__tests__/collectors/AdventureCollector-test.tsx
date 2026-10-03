@@ -598,6 +598,40 @@ describe("AdventureCollector", () => {
 		expect(screen.getByText("app:city.locks.playerLevel")).toBeTruthy();
 	});
 
+	it("says where the home stands in a city without it, and that an apartment here would open it", async () => {
+		const collector = cityCollector();
+		if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected a city collector fixture");
+		collector.data.data.snapshot = {
+			...collector.data.data.snapshot,
+			home: {elsewhere: {mapLocationId: 23, level: 2, hasCooking: true}},
+			apartmentNotary: {forSale: {price: 9_000, canAfford: true}, ownedApartments: [], ownedCount: 0, accumulatedRent: 0}
+		};
+		collector.reactions = collector.reactions.filter(reaction => reaction.type !== CITY_REACTION_KINDS.HOME_MENU);
+		await render(<CityMenu collector={collector} onChoose={jest.fn()} submitting={false} />);
+
+		expect(screen.getByText("app:city.labels.home")).toBeTruthy();
+		expect(screen.getByText("app:city.locks.homeElsewhereApartment")).toBeTruthy();
+	});
+
+	it("tells on the notary's row that rent waits, so collecting it teaches what apartments earn", async () => {
+		const collector = cityHomePurchase();
+		if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected a city collector fixture");
+		collector.data.data.snapshot = {...collector.data.data.snapshot, apartmentNotary: {ownedApartments: [{apartmentId: 1, mapLocationId: 23, accumulatedRent: 424, isRented: true, canClaim: true}], ownedCount: 1, accumulatedRent: 424}};
+		await render(<CityMenu collector={collector} onChoose={jest.fn()} submitting={false} />);
+		expect(screen.getByText("app:city.subtitles.notaryRent")).toBeTruthy();
+	});
+
+	it("shows a homeless player the apartment the notary will sell once they own a home", async () => {
+		const collector = cityHomePurchase();
+		if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected a city collector fixture");
+		collector.data.data.snapshot = {...collector.data.data.snapshot, apartmentNotary: {ownedApartments: [], ownedCount: 0, accumulatedRent: 0, requiresHomePrice: 6_000}};
+		await render(<CityMenu collector={collector} onChoose={jest.fn()} submitting={false} />);
+
+		await fireEvent.press(screen.getByText("app:city.actions.notary"));
+		expect(screen.getByText("commands:report.city.homes.apartmentNotary.buyButtonLabel")).toBeTruthy();
+		expect(screen.getByText("app:city.locks.apartmentRequiresHome")).toBeTruthy();
+	});
+
 	it("says on the row why an unaffordable home cannot be bought", async () => {
 		const onChoose = jest.fn();
 		const collector = cityHomePurchase(5_000, false);

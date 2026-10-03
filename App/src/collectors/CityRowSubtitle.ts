@@ -6,6 +6,7 @@ import {
 	ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
+import {apartmentRentedHere} from "@/src/collectors/ApartmentBenefits";
 import {compactCityDescription, materialSummary} from "@/src/collectors/CityText";
 import {formatMoney} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
@@ -25,7 +26,6 @@ const CITY_SUBTITLE_KEYS: Partial<Record<ReactionCollectorReaction["type"], stri
 	[CITY_REACTION_KINDS.BUY_HOME]: "app:city.subtitles.buyHome",
 	[CITY_REACTION_KINDS.UPGRADE_HOME]: "app:city.subtitles.upgradeHome",
 	[CITY_REACTION_KINDS.MOVE_HOME]: "app:city.subtitles.moveHome",
-	[CITY_REACTION_KINDS.APARTMENT_BUY]: "app:city.subtitles.buyApartment",
 	[CITY_REACTION_KINDS.HOME_MENU]: "commands:report.city.homes.goToOwnedHomeDescription",
 	[CITY_REACTION_KINDS.HOME_BED]: "commands:report.city.homes.bed.menuDescription"
 };
@@ -64,7 +64,8 @@ const CONTEXTUAL_RESOLVERS: Partial<Record<ReactionCollectorReaction["type"], Co
 	[CITY_REACTION_KINDS.INN_MEAL]: reaction => innSubtitle(reaction),
 	[CITY_REACTION_KINDS.INN_ROOM]: reaction => innSubtitle(reaction),
 	[CITY_REACTION_KINDS.HOME_BED]: (reaction, snapshot) => homeBedSubtitle(snapshot, reaction),
-	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: (reaction, snapshot) => apartmentRentSubtitle(reaction, snapshot)
+	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: (reaction, snapshot) => apartmentRentSubtitle(reaction, snapshot),
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: (_, snapshot) => i18n.t(apartmentRentedHere(snapshot) ? "app:city.subtitles.buyApartmentRented" : "app:city.subtitles.buyApartmentFoothold")
 };
 
 function contextualSubtitle(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): string | undefined {

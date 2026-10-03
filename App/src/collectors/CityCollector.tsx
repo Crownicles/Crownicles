@@ -70,6 +70,13 @@ export type CityGroupingOptions = {
 	innIds?: string[];
 	homeOwned?: NonNullable<CityMobileSnapshot["home"]>["owned"];
 	homeManage?: NonNullable<CityMobileSnapshot["home"]>["manage"];
+	homeElsewhere?: NonNullable<CityMobileSnapshot["home"]>["elsewhere"];
+
+	/** Whether this city sells an apartment the player could buy, which would open the home here. */
+	apartmentForSale?: boolean;
+
+	/** The rent the notary can hand over now, across every apartment the player owns. */
+	rentToClaim?: number;
 	shops?: CityMobileSnapshot["shops"];
 	guildFoodShop?: CityMobileSnapshot["guildFoodShop"];
 };
@@ -130,8 +137,14 @@ function cityServiceOptions(data: CityCollectorData): Pick<CityGroupingOptions, 
 	};
 }
 
-function cityHomeOptions(snapshot: CityMobileSnapshot | undefined): Pick<CityGroupingOptions, "homeOwned" | "homeManage"> {
-	return {homeOwned: snapshot?.home?.owned, homeManage: snapshot?.home?.manage};
+function cityHomeOptions(snapshot: CityMobileSnapshot | undefined): Pick<CityGroupingOptions, "homeOwned" | "homeManage" | "homeElsewhere" | "apartmentForSale" | "rentToClaim"> {
+	return {
+		homeOwned: snapshot?.home?.owned,
+		homeManage: snapshot?.home?.manage,
+		homeElsewhere: snapshot?.home?.elsewhere,
+		apartmentForSale: snapshot?.apartmentNotary?.forSale !== undefined,
+		rentToClaim: snapshot?.apartmentNotary?.ownedApartments.filter(apartment => apartment.canClaim).reduce((total, apartment) => total + apartment.accumulatedRent, 0)
+	};
 }
 
 function cityGroupingOptions(data: CityCollectorData): Parameters<typeof groupCityEntries>[1] {

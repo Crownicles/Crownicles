@@ -16,6 +16,7 @@ import type {
 } from "@/src/collectors/CityCollector";
 import {compactCityDescription} from "@/src/collectors/CityRowDetails";
 import {homeIconPath} from "@/src/collectors/CityHomeItems";
+import {formatMoney} from "@/src/display/Amounts";
 import {i18n} from "@/src/translations/i18n";
 
 export type {CityGroupingOptions, CityNavigationItem};
@@ -208,8 +209,11 @@ function addInnServices(state: CityGroupingState, innIds: string[] | undefined):
 	}
 }
 
-function addNotaryService(state: CityGroupingState): void {
-	if (state.hasNotary) state.groups.housing.push(navigationItem("notary", "notary"));
+/** A rent waiting at the notary is said on his row, so collecting it is how the player learns apartments pay. */
+function addNotaryService(state: CityGroupingState, rentToClaim: number | undefined): void {
+	if (!state.hasNotary) return;
+	const notary = navigationItem("notary", "notary");
+	state.groups.housing.push(rentToClaim ? {...notary, subtitle: i18n.t("app:city.subtitles.notaryRent", {amount: formatMoney(rentToClaim)})} : notary);
 }
 
 function addGuildService(state: CityGroupingState): void {
@@ -228,7 +232,7 @@ function addBossArchivistService(state: CityGroupingState, availableServices: st
 }
 
 function addAvailableServices(state: CityGroupingState, options: CityGroupingOptions): void {
-	addNotaryService(state);
+	addNotaryService(state, options.rentToClaim);
 	addGuildService(state);
 	addEnchanterService(state, options.availableServices);
 	addBossArchivistService(state, options.availableServices);
@@ -251,6 +255,20 @@ function decorateHomeNavigation(state: CityGroupingState, home: CityGroupingOpti
 	state.groups.housing = state.groups.housing.map(item => item.kind === "navigation" && item.view === "home" ? {...item, iconPath: homeIconPath(home.level), subtitle: i18n.t("app:city.subtitles.homeDetails", {level: home.level, services: [home.hasBed ? i18n.t("app:city.summary.bed") : null, home.hasChest ? i18n.t("app:city.summary.chest") : null, home.hasGarden ? i18n.t("app:city.summary.garden") : null, home.hasCooking ? i18n.t("app:city.summary.cooking") : null, home.hasUpgradeStation ? i18n.t("app:city.summary.forge") : null].filter(Boolean).join(", ")})} : item);
 }
 
+/** The home the player cannot reach from here, and the apartment that would open it when the city sells one. */
+function addHomeElsewhere(model: CityMenuModel, {homeElsewhere, apartmentForSale}: CityGroupingOptions): void {
+	if (!homeElsewhere) return;
+	const values = {mapLocationId: homeElsewhere.mapLocationId};
+	model.groups.housing.unshift({
+		kind: "info",
+		key: "home-elsewhere",
+		iconPath: homeIconPath(homeElsewhere.level),
+		title: i18n.t("app:city.labels.home"),
+		subtitle: "",
+		lock: {reason: i18n.t(apartmentForSale ? "app:city.locks.homeElsewhereApartment" : "app:city.locks.homeElsewhere", values)}
+	});
+}
+
 function sortCityModel(state: CityGroupingState): CityMenuModel {
 	for (const group of Object.values(state.groups)) group.sort(sortCityItems);
 	for (const submenu of Object.values(state.submenus)) submenu.sort((left, right) => (CITY_REACTION_ORDER[left.reaction.type] ?? Number.MAX_SAFE_INTEGER) - (CITY_REACTION_ORDER[right.reaction.type] ?? Number.MAX_SAFE_INTEGER));
@@ -265,7 +283,9 @@ export function groupCityEntries(entries: CityEntry[], options: CityGroupingOpti
 	addEmptyShops(state, options.shops);
 	addGuildFoodShop(state, options.guildFoodShop);
 	decorateHomeNavigation(state, options.homeOwned);
-	return sortCityModel(state);
+	const model = sortCityModel(state);
+	addHomeElsewhere(model, options);
+	return model;
 }
 
 export function submenuTitle(view: CitySubmenu, innId?: string): {eyebrow: string; title: string; subtitle?: string} {

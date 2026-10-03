@@ -68,6 +68,13 @@ export type CityMobileSnapshot = {
 			requiredPlayerLevelForUpgrade?: number;
 			isMaxLevel?: boolean;
 		};
+
+		/** The player's home, when it stands in another city and no apartment opens it here. */
+		elsewhere?: {
+			mapLocationId: number;
+			level: number;
+			hasCooking: boolean;
+		};
 	};
 	enchanter?: {
 		enchantmentId: string;
@@ -118,6 +125,9 @@ export type CityMobileSnapshot = {
 		}[];
 		ownedCount: number;
 		accumulatedRent: number;
+
+		/** The price of this city's apartment, sent instead of `forSale` while the player owns no home yet. */
+		requiresHomePrice?: number;
 	};
 };
 

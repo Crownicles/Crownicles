@@ -218,6 +218,13 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 			/** Whether the home is at max level */
 			isMaxLevel?: boolean;
 		};
+
+		/** The player's home, when it stands in another city and no apartment opens it here. */
+		elsewhere?: {
+			mapLocationId: number;
+			level: number;
+			hasCooking: boolean;
+		};
 	};
 
 	/**
@@ -397,6 +404,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 		/** Apartments owned by the player, with their current accumulated rent. */
 		ownedApartments: OwnedApartmentSummary[];
+
+		/** The price of this city's apartment, sent instead of `forSale` while the player owns no home yet. */
+		requiresHomePrice?: number;
 	};
 }
 

@@ -39,7 +39,7 @@ export default class HomePurchaseServerTranslator {
 	@fromServerTranslator(CommandReportApartmentBuyRes, HomePurchaseRes)
 	public static apartment(_context: PacketContext, packet: CommandReportApartmentBuyRes): Promise<HomePurchaseRes> {
 		return asyncMakeFromServerPacket(HomePurchaseRes, {
-			purchase: HOME_PURCHASES.APARTMENT, cost: packet.cost, mapLocationId: packet.mapLocationId
+			purchase: HOME_PURCHASES.APARTMENT, cost: packet.cost, mapLocationId: packet.mapLocationId, isRented: packet.isRented
 		});
 	}
 }

@@ -1232,9 +1232,9 @@
         "moveHomeDescriptionWithRent": "Félicitations ! Vous avez déménagé avec succès dans une nouvelle maison dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** pour ce transfert, dont **{{rentDeducted}} {emote:unitValues.money}** déduits grâce au loyer de votre ancien logis. Profitez bien de votre nouveau chez-vous !",
         "apartmentNotary": {
           "sectionTitle": "{emote:city.apartmentNotary.menu} Le notaire feuillette son grand registre des logis.",
-          "forSaleDescription": "{emote:city.apartmentNotary.buy} Un logis à céder dans cette ville pour **{{price}} {emote:unitValues.money}**. Une fois en votre possession, il vous servira de point d'attache si votre maison est loin ou vous pourrez percevoir une rente si vous avez déjà une demeure proche.",
+          "forSaleDescription": "{emote:city.apartmentNotary.buy} Un logis à céder dans cette ville pour **{{price}} {emote:unitValues.money}**. Une fois en votre possession, il vous servira de pied-à-terre si votre maison est dans une autre ville, ou il sera loué et vous rapportera une rente si votre maison se trouve dans cette ville.",
           "buyNotEnoughMoney": "{emote:city.apartmentNotary.buy} Un logis est à céder dans cette ville pour **{{cost}} {emote:unitValues.money}**, mais votre bourse est trop maigre de **{{missingMoney}} {emote:unitValues.money}**.",
-          "buyConfirmDescription": "{emote:collectors.warning} Cette validation achètera ce logis pour **{{price}} {emote:unitValues.money}**. Il servira de point d'attache dans cette ville ou générera une rente si votre maison est déjà proche.",
+          "buyConfirmDescription": "{emote:collectors.warning} Cette validation achètera ce logis pour **{{price}} {emote:unitValues.money}**. Il servira de pied-à-terre si votre maison est dans une autre ville, ou générera une rente si votre maison se trouve dans cette ville.",
           "buyButtonLabel": "Acquérir ce logis",
           "ownedHeader": "{emote:city.apartmentNotary.menu} **Vos logis** ({{count}}) :",
           "ownedLineRented": "**$t(models:map_locations.{{mapLocationId}}.name)** — occupé, **{{rent}} {emote:unitValues.money}** de loyer accumulé.",

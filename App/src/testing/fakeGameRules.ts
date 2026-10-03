@@ -27,6 +27,7 @@ export const fakeGameRules: GameRules = {
 	fight: {minimalEnergyRatio: 0.8},
 	pet: {sellPrice: {min: 100, max: 50_000}},
 	cooldownHours: {innMeal: 12, innRoom: 24, gardenWatering: 12},
+	apartment: {dailyRent: 212, minRentToClaim: 100, bedLevelCap: 4},
 	onboardingTrials: [
 		{id: ONBOARDING_TRIAL_IDS.AUDIENCE, missions: [ONBOARDING_MISSION_IDS.COMMAND_MISSION, ONBOARDING_MISSION_IDS.SPEND_TOKENS, ONBOARDING_MISSION_IDS.EARN_MONEY]},
 		{id: ONBOARDING_TRIAL_IDS.ROAD, missions: [ONBOARDING_MISSION_IDS.FIND_OR_BUY_ITEM, ONBOARDING_MISSION_IDS.DRINK_POTION, ONBOARDING_MISSION_IDS.COMMAND_MAP, ONBOARDING_MISSION_IDS.VISIT_CITY_NPC]},

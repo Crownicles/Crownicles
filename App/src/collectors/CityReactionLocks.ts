@@ -5,6 +5,7 @@ import {itemSnapshotForReaction} from "@/src/collectors/CityItemPresentation";
 import {formatMoney} from "@/src/display/Amounts";
 import {CircleAlert, Clock3, Coins} from "@/src/design/FightIcons";
 import type {Lock} from "@/src/design/Sections";
+import {gameRules} from "@/src/rules/GameRules";
 import {i18n} from "@/src/translations/i18n";
 
 const missingMoney = (amount: number): Lock => ({reason: i18n.t("app:city.locks.missingMoney", {amount: formatMoney(Math.max(0, amount))}), icon: Coins});
@@ -26,7 +27,6 @@ const DIRECT_LOCKS: Partial<Record<ReactionCollectorReaction["type"], LockResolv
 		const forSale = snapshot?.apartmentNotary?.forSale;
 		return forSale ? missingMoney(forSale.missingMoney ?? forSale.price) : blocked("app:city.locks.unavailable");
 	},
-	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: () => ({reason: i18n.t("app:city.locks.noRent"), icon: Clock3}),
 	[CITY_REACTION_KINDS.BUY_HOME]: snapshot => homeLock(snapshot, snapshot?.home?.manage?.newPrice),
 	[CITY_REACTION_KINDS.UPGRADE_HOME]: snapshot => homeLock(snapshot, snapshot?.home?.manage?.upgradePrice),
 	[CITY_REACTION_KINDS.MOVE_HOME]: snapshot => homeLock(snapshot, snapshot?.home?.manage?.movePrice),
@@ -62,7 +62,16 @@ function equipmentLock(reaction: ReactionCollectorReaction, snapshot: CityMobile
 	return resolver(snapshot, candidate => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory);
 }
 
+/** A foothold earns nothing, which waiting would not change; a let apartment only needs time. */
+function rentLock(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): Lock {
+	const apartmentId = (reaction.data as {apartmentId?: number}).apartmentId;
+	const apartment = snapshot?.apartmentNotary?.ownedApartments.find(candidate => candidate.apartmentId === apartmentId);
+	if (apartment && !apartment.isRented) return blocked("app:city.locks.notRented");
+	return {reason: i18n.t("app:city.locks.rentTooLow", {current: formatMoney(apartment?.accumulatedRent ?? 0), min: formatMoney(gameRules().apartment.minRentToClaim)}), icon: Clock3};
+}
+
 /** Why a row the player can see cannot be pressed, so the refusal is readable before the tap. */
 export function cityReactionLock(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): Lock | undefined {
+	if (reaction.type === CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT) return rentLock(reaction, snapshot);
 	return DIRECT_LOCKS[reaction.type]?.(snapshot) ?? equipmentLock(reaction, snapshot);
 }

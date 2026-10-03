@@ -128,7 +128,8 @@ function mapApartmentNotary(data: ReactionCollectorCityData["apartmentNotary"]):
 			apartmentId: apartment.apartmentId, mapLocationId: apartment.mapLocationId, accumulatedRent: apartment.accumulatedRent, isRented: apartment.isRented, canClaim: apartment.canClaim
 		})),
 		ownedCount: data.ownedApartments.length,
-		accumulatedRent: data.ownedApartments.reduce((total, apartment) => total + apartment.accumulatedRent, 0)
+		accumulatedRent: data.ownedApartments.reduce((total, apartment) => total + apartment.accumulatedRent, 0),
+		...data.requiresHomePrice === undefined ? {} : { requiresHomePrice: data.requiresHomePrice }
 	};
 }
 
@@ -198,7 +199,9 @@ export function mapCitySnapshot(data: ReactionCollectorCityData): CityMobileSnap
 			shopId: shop.shopId, isEmpty: Boolean(shop.isEmpty)
 		})),
 		home: {
-			owned: data.home.owned ? mapOwnedHome(data.home.owned) : undefined, manage: data.home.manage ? mapHomeManage(data.home.manage) : undefined
+			owned: data.home.owned ? mapOwnedHome(data.home.owned) : undefined,
+			manage: data.home.manage ? mapHomeManage(data.home.manage) : undefined,
+			...data.home.elsewhere === undefined ? {} : { elsewhere: { ...data.home.elsewhere } }
 		},
 		apartmentNotary: mapApartmentNotary(data.apartmentNotary)
 	};
