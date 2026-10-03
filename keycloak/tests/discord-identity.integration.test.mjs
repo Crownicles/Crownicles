@@ -66,9 +66,7 @@ function providerRequest(request, response) {
 	response.end("{}");
 }
 
-async function authorize(register = false, credentials) {
-	const verifier = randomUUID().replaceAll("-", "").repeat(2);
-	const state = randomUUID();
+function authorizationUrl({register, credentials, state, verifier}) {
 	const url = new URL(`${BASE}/realms/${REALM}/protocol/openid-connect/auth`);
 	url.search = new URLSearchParams({client_id: "proof-app", redirect_uri: CALLBACK, response_type: "code", scope: "openid", kc_idp_hint: "discord", prompt: "login", state, code_challenge_method: "S256", code_challenge: createHash("sha256").update(verifier).digest("base64url")}).toString();
 	if (register) {
@@ -76,41 +74,61 @@ async function authorize(register = false, credentials) {
 		url.searchParams.set("prompt", "create");
 	}
 	if (credentials) url.searchParams.delete("kc_idp_hint");
+	return url.href;
+}
+
+async function exchangeCode(current, {state, verifier}) {
+	const callback = new URL(current);
+	assert.equal(callback.searchParams.get("state"), state);
+	const token = await fetch(`${BASE}/realms/${REALM}/protocol/openid-connect/token`, {
+		method: "POST",
+		body: new URLSearchParams({client_id: "proof-app", grant_type: "authorization_code", code: callback.searchParams.get("code"), redirect_uri: CALLBACK, code_verifier: verifier})
+	});
+	assert.equal(token.status, 200);
+	const payload = await token.json();
+	const userInfo = await fetch(`${BASE}/realms/${REALM}/protocol/openid-connect/userinfo`, {headers: {Authorization: `Bearer ${payload.access_token}`}}).then(response => response.json());
+	return {sub: userInfo.sub, provider: userInfo.identity_provider, accessToken: payload.access_token};
+}
+
+async function browse(jar, current, formBody) {
+	const response = await fetch(current, {method: formBody ? "POST" : "GET", redirect: "manual", headers: {Cookie: await jar.getCookieString(current, {secure: current.startsWith(BASE)})}, ...(formBody ? {body: formBody} : {})});
+	for (const cookie of response.headers.getSetCookie()) await jar.setCookie(cookie, current);
+	return response;
+}
+
+function loginSubmission(document, credentials, current) {
+	const form = document.querySelector("form");
+	if (!form) return null;
+	const formBody = new URLSearchParams([...form.querySelectorAll("input[name]")].map(input => [input.name, input.value]));
+	formBody.set("username", credentials.username);
+	formBody.set("password", credentials.password);
+	return {current: new URL(form.action, current).href, formBody};
+}
+
+function landingPage(document, {status, url, jar}) {
+	return {document, status, url, jar, cookies: jar.serializeSync().cookies.map(({key, domain, path, secure}) => ({key, domain, path, secure}))};
+}
+
+async function authorize(register = false, credentials) {
+	const proof = {verifier: randomUUID().replaceAll("-", "").repeat(2), state: randomUUID()};
 	const jar = new CookieJar();
-	let current = url.href;
+	let current = authorizationUrl({register, credentials, ...proof});
 	let formBody;
-	let submittedCredentials = false;
+	let pendingCredentials = credentials;
 	for (let redirectCount = 0; redirectCount < MAX_REDIRECTS; redirectCount++) {
-		if (current.startsWith(CALLBACK)) {
-			const callback = new URL(current);
-			assert.equal(callback.searchParams.get("state"), state);
-			const token = await fetch(`${BASE}/realms/${REALM}/protocol/openid-connect/token`, {
-				method: "POST",
-				body: new URLSearchParams({client_id: "proof-app", grant_type: "authorization_code", code: callback.searchParams.get("code"), redirect_uri: CALLBACK, code_verifier: verifier})
-			});
-			assert.equal(token.status, 200);
-			const payload = await token.json();
-			const userInfo = await fetch(`${BASE}/realms/${REALM}/protocol/openid-connect/userinfo`, {headers: {Authorization: `Bearer ${payload.access_token}`}}).then(response => response.json());
-			return {sub: userInfo.sub, provider: userInfo.identity_provider, accessToken: payload.access_token};
-		}
-		const response = await fetch(current, {method: formBody ? "POST" : "GET", redirect: "manual", headers: {Cookie: await jar.getCookieString(current, {secure: current.startsWith(BASE)})}, ...(formBody ? {body: formBody} : {})});
+		if (current.startsWith(CALLBACK)) return exchangeCode(current, proof);
+		const response = await browse(jar, current, formBody);
 		formBody = undefined;
-		for (const cookie of response.headers.getSetCookie()) await jar.setCookie(cookie, current);
 		const redirect = response.headers.get("location");
-		if (redirect) current = new URL(redirect, current).href;
-		else {
-			const document = new JSDOM(await response.text()).window.document;
-			const form = document.querySelector("form");
-			if (credentials && !submittedCredentials && form) {
-				formBody = new URLSearchParams([...form.querySelectorAll("input[name]")].map(input => [input.name, input.value]));
-				formBody.set("username", credentials.username);
-				formBody.set("password", credentials.password);
-				current = new URL(form.action, current).href;
-				submittedCredentials = true;
-				continue;
-			}
-			return {document, status: response.status, url: current, jar, cookies: jar.serializeSync().cookies.map(({key, domain, path, secure}) => ({key, domain, path, secure}))};
+		if (redirect) {
+			current = new URL(redirect, current).href;
+			continue;
 		}
+		const document = new JSDOM(await response.text()).window.document;
+		const login = pendingCredentials ? loginSubmission(document, pendingCredentials, current) : null;
+		if (!login) return landingPage(document, {status: response.status, url: current, jar});
+		({current, formBody} = login);
+		pendingCredentials = undefined;
 	}
 	throw new Error("Too many authentication redirects");
 }

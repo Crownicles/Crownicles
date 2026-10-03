@@ -20,6 +20,25 @@ const useStyles = createStyles(colors => ({
 
 const SEGMENT_ICON_SIZE = 18;
 
+function badgeOf(option: Segment<string>): number {
+	return option.badge ?? 0;
+}
+
+/** A segment shown as an emoji alone, or holding rewards, needs its name said aloud */
+function segmentAccessibility(option: Segment<string>, iconsOnly: boolean): {accessibilityLabel?: string; accessibilityHint?: string} {
+	if (badgeOf(option) > 0) return {accessibilityLabel: option.label, accessibilityHint: i18n.t("app:common.toCollect", {count: badgeOf(option)})};
+	return iconsOnly ? {accessibilityLabel: option.label} : {};
+}
+
+function SegmentHeading({option}: {option: Segment<string>}): ReactNode {
+	const styles = useStyles();
+	if (!option.icon && badgeOf(option) === 0) return null;
+	return <View style={styles.heading}>
+		{option.icon ? <TwemojiIcon emoji={option.icon} size={SEGMENT_ICON_SIZE} /> : null}
+		<CountBadge count={badgeOf(option)} />
+	</View>;
+}
+
 export function SegmentedControl<Value extends string>({options, value, onChange, label, iconsOnly = false}: {
 	options: readonly Segment<Value>[];
 	value: Value;
@@ -34,16 +53,12 @@ export function SegmentedControl<Value extends string>({options, value, onChange
 		{options.map(option => <Pressable
 			key={option.value}
 			accessibilityRole="tab"
-			{...iconsOnly ? {accessibilityLabel: option.label} : {}}
-			{...option.badge && option.badge > 0 ? {accessibilityLabel: option.label, accessibilityHint: i18n.t("app:common.toCollect", {count: option.badge})} : {}}
+			{...segmentAccessibility(option, iconsOnly)}
 			accessibilityState={{selected: option.value === value}}
 			style={[styles.segment, option.value === value && styles.selected]}
 			onPress={(): void => onChange(option.value)}
 		>
-			{option.icon || (option.badge ?? 0) > 0 ? <View style={styles.heading}>
-				{option.icon ? <TwemojiIcon emoji={option.icon} size={SEGMENT_ICON_SIZE} /> : null}
-				<CountBadge count={option.badge ?? 0} />
-			</View> : null}
+			<SegmentHeading option={option} />
 			{iconsOnly ? null : <Text style={[styles.label, option.value === value && styles.selectedLabel]}>{option.label}</Text>}
 		</Pressable>)}
 	</View>;

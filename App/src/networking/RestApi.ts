@@ -30,6 +30,22 @@ export class AccountCollisionRequestFailure extends Error {
 	}
 }
 
+/** A Keycloak access token: the account it belongs to is the one every request acts on */
+type AccessToken = string;
+type DeletionCode = string;
+type CollisionProof = string;
+type AccountCollisionEndpoint = typeof ACCOUNT_COLLISION_ENDPOINTS[keyof typeof ACCOUNT_COLLISION_ENDPOINTS];
+
+/** Whether the account still waits for the player to choose between two accounts sharing an email */
+export function isAccountCollisionOpen(check: AccountCollisionCheck): boolean {
+	return Boolean(check.collision || check.pending);
+}
+
+function deletionFailure(status: number, confirming: boolean): AccountDeletionFailure {
+	if (status === 401) return ACCOUNT_DELETION_FAILURES.UNAUTHORIZED;
+	return status === 403 && confirming ? ACCOUNT_DELETION_FAILURES.INVALID_CODE : ACCOUNT_DELETION_FAILURES.UNAVAILABLE;
+}
+
 export class RestApi {
 	private static getBaseUrl(): string {
 		const url = process.env.EXPO_PUBLIC_REST_API_URL;
@@ -112,35 +128,31 @@ export class RestApi {
 		return {status: "ok", bundle, etag: responseEtag};
 	}
 
-	private static async accountDeletionRequest(accessToken: string, code?: string): Promise<boolean> {
-		const response = await RestApi.fetchWithTimeout(`${RestApi.getBaseUrl()}/account${code === undefined ? "/deletion-request" : ""}`, {
-			method: code === undefined ? "POST" : "DELETE",
+	private static async accountDeletionRequest(accessToken: AccessToken, code?: DeletionCode): Promise<boolean> {
+		const confirming = code !== undefined;
+		const response = await RestApi.fetchWithTimeout(`${RestApi.getBaseUrl()}/account${confirming ? "" : "/deletion-request"}`, {
+			method: confirming ? "DELETE" : "POST",
 			headers: {
 				"Content-Type": "application/json",
 				"Authorization": `Bearer ${accessToken}`
 			},
-			...code === undefined ? {} : {body: JSON.stringify({code: code.trim().toUpperCase()})}
+			...confirming ? {body: JSON.stringify({code: code.trim().toUpperCase()})} : {}
 		}, REST_TIMEOUT_MS);
 		if (response.ok) return true;
-		const reason = response.status === 401
-			? ACCOUNT_DELETION_FAILURES.UNAUTHORIZED
-			: response.status === 403 && code !== undefined
-				? ACCOUNT_DELETION_FAILURES.INVALID_CODE
-				: ACCOUNT_DELETION_FAILURES.UNAVAILABLE;
-		throw new AccountDeletionRequestFailure(reason);
+		throw new AccountDeletionRequestFailure(deletionFailure(response.status, confirming));
 	}
 
 	/** The account removed is the one the token belongs to: nothing identifies it in the request. */
-	public static deleteAccount(accessToken: string, code: string): Promise<boolean> {
+	public static deleteAccount(accessToken: AccessToken, code: DeletionCode): Promise<boolean> {
 		return RestApi.accountDeletionRequest(accessToken, code);
 	}
 
 	/** Asks an administrator for a deletion code; the account is only removed once it is confirmed. */
-	public static requestAccountDeletion(accessToken: string): Promise<boolean> {
+	public static requestAccountDeletion(accessToken: AccessToken): Promise<boolean> {
 		return RestApi.accountDeletionRequest(accessToken);
 	}
 
-	private static async accountCollisionRequest<T>(endpoint: string, accessToken: string, body?: object): Promise<T> {
+	private static async accountCollisionRequest<T>(endpoint: AccountCollisionEndpoint, accessToken: AccessToken, body?: object): Promise<T> {
 		const response = await RestApi.fetchWithTimeout(`${RestApi.getBaseUrl()}${endpoint}`, {
 			method: body ? "POST" : "GET",
 			headers: {"Content-Type": "application/json", "Authorization": `Bearer ${accessToken}`},
@@ -153,15 +165,15 @@ export class RestApi {
 		return response.json() as Promise<T>;
 	}
 
-	public static checkAccountCollision(accessToken: string): Promise<AccountCollisionCheck> {
+	public static checkAccountCollision(accessToken: AccessToken): Promise<AccountCollisionCheck> {
 		return RestApi.accountCollisionRequest(ACCOUNT_COLLISION_ENDPOINTS.CHECK, accessToken);
 	}
 
-	public static verifyAccountCollision(discordToken: string, emailToken: string): Promise<AccountCollisionProof> {
+	public static verifyAccountCollision(discordToken: AccessToken, emailToken: AccessToken): Promise<AccountCollisionProof> {
 		return RestApi.accountCollisionRequest(ACCOUNT_COLLISION_ENDPOINTS.VERIFY, discordToken, {emailToken});
 	}
 
-	public static resolveAccountCollision(accessToken: string, proof: string, keep: AccountCollisionChoice): Promise<AccountCollisionResolution> {
+	public static resolveAccountCollision(accessToken: AccessToken, proof: CollisionProof, keep: AccountCollisionChoice): Promise<AccountCollisionResolution> {
 		return RestApi.accountCollisionRequest(ACCOUNT_COLLISION_ENDPOINTS.RESOLVE, accessToken, {proof, keep});
 	}
 }

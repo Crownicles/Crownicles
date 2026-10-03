@@ -4,7 +4,10 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { verifyDeletionCode } from "../../../../Lib/src/utils/AccountDeletionCode";
 import { WebSocketServer } from "../WebSocketServer";
 import { WEBSOCKET_ACCOUNT_DELETED_REASON } from "../../../../WsPackets/src/WebSocketCloseReasons";
-import { notifyDeletionRequest } from "../AccountDeletionNotifier";
+import {
+	DeletionRequest, notifyDeletionRequest
+} from "../AccountDeletionNotifier";
+import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { AccountDeletionConfig } from "../../config/RestWsConfig";
 import {
 	FastifyInstance, FastifyReply, FastifyRequest
@@ -39,18 +42,47 @@ async function authenticate(request: FastifyRequest, reply: FastifyReply): Promi
 }
 
 /**
+ * The account asking, once its token is checked and deletion is open
+ * @param request
+ * @param reply
+ * @param config
+ */
+async function deletionApplicant(request: FastifyRequest, reply: FastifyReply, config: AccountDeletionConfig): Promise<string | null> {
+	const keycloakId = await authenticate(request, reply);
+	if (!keycloakId) {
+		return null;
+	}
+	if (!config.SECRET) {
+		reply.status(503).send({ error: ACCOUNT_DELETION_ERRORS.UNAVAILABLE });
+		return null;
+	}
+	return keycloakId;
+}
+
+/**
+ * Who asks, as shown to the administrator handling the request
+ * @param keycloakId
+ * @param user
+ */
+function deletionRequestOf(keycloakId: string, user: KeycloakUser): DeletionRequest {
+	const discordId = user.attributes?.discordId?.[0];
+	return {
+		keycloakId,
+		username: user.attributes?.gameUsername?.[0] ?? user.username,
+		...user.email ? { email: user.email } : {},
+		...discordId ? { discordId } : {}
+	};
+}
+
+/**
  * Registers the deletion request of a player and warns the administrator about it.
  * @param server
  * @param config
  */
 function setupDeletionRequestRoute(server: FastifyInstance, config: AccountDeletionConfig): void {
 	server.post("/account/deletion-request", async (request, reply) => {
-		const keycloakId = await authenticate(request, reply);
+		const keycloakId = await deletionApplicant(request, reply, config);
 		if (!keycloakId) {
-			return;
-		}
-		if (!config.SECRET) {
-			reply.status(503).send({ error: ACCOUNT_DELETION_ERRORS.UNAVAILABLE });
 			return;
 		}
 
@@ -65,21 +97,17 @@ function setupDeletionRequestRoute(server: FastifyInstance, config: AccountDelet
 			return;
 		}
 
-		const { user } = account.payload;
-		const discordId = user.attributes?.discordId?.[0];
-		const notified = await notifyDeletionRequest({
-			keycloakId,
-			username: user.attributes?.gameUsername?.[0] ?? user.username,
-			...user.email ? { email: user.email } : {},
-			...discordId ? { discordId } : {}
-		}, config);
-		if (!notified) {
+		if (!await notifyDeletionRequest(deletionRequestOf(keycloakId, account.payload.user), config)) {
 			reply.status(503).send({ error: ACCOUNT_DELETION_ERRORS.UNAVAILABLE });
 			return;
 		}
 
 		reply.send({ message: "Deletion request registered" });
 	});
+}
+
+function isFilledString(value: unknown): value is string {
+	return typeof value === "string" && value.length > 0;
 }
 
 /**
@@ -89,7 +117,7 @@ function setupDeletionRequestRoute(server: FastifyInstance, config: AccountDelet
  * @param secret
  */
 function isValidDeletionCode(keycloakId: string, code: unknown, secret: string): boolean {
-	if (!secret || typeof code !== "string" || !code) {
+	if (!secret || !isFilledString(code)) {
 		return false;
 	}
 	return verifyDeletionCode(keycloakId, code, secret);
@@ -102,12 +130,8 @@ function isValidDeletionCode(keycloakId: string, code: unknown, secret: string):
  */
 function setupDeletionRoute(server: FastifyInstance, config: AccountDeletionConfig): void {
 	server.delete("/account", async (request, reply) => {
-		const keycloakId = await authenticate(request, reply);
+		const keycloakId = await deletionApplicant(request, reply, config);
 		if (!keycloakId) {
-			return;
-		}
-		if (!config.SECRET) {
-			reply.status(503).send({ error: ACCOUNT_DELETION_ERRORS.UNAVAILABLE });
 			return;
 		}
 

@@ -2,18 +2,31 @@ import { randomUUID } from "crypto";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { KeycloakConfig } from "../../../Lib/src/keycloak/KeycloakConfig";
 import { KeycloakUser } from "../../../Lib/src/keycloak/KeycloakUser";
+import { KeycloakFederalIdentity } from "../../../Lib/src/keycloak/KeycloakFederalIdentity";
+import { KeycloakSessionIdentity } from "../../../Lib/src/keycloak/KeycloakSessionIdentity";
 import { AsyncLock } from "../../../Lib/src/locks/AsyncLock";
 import {
 	ACCOUNT_COLLISION_CHOICES, ACCOUNT_COLLISION_ERRORS, AccountCollision, AccountCollisionCheck, AccountCollisionChoice, AccountCollisionError, AccountCollisionProof, AccountCollisionResolution
 } from "../../../WsPackets/src/objects/AccountCollision";
 import { KeycloakConstants } from "../../../Lib/src/constants/KeycloakConstants";
+
 const PROOF_TTL_MS = 15 * 60 * 1000;
 const RESOLUTION_VERSION = 1;
-type CollisionPair = {
+const NOT_FOUND = 404;
+
+type AccessToken = string;
+type KeycloakId = string;
+type CollisionProofId = string;
+type EmailAddress = string;
+
+/** The address and the Discord account it was verified on. */
+type DiscordContact = {
+	email: EmailAddress;
+	discordId: string;
+};
+type CollisionPair = DiscordContact & {
 	discord: KeycloakUser;
 	emailAccount: KeycloakUser;
-	email: string;
-	discordId: string;
 };
 type VerifiedPair = {
 	pair: CollisionPair;
@@ -23,20 +36,25 @@ type VerifiedPair = {
 type PairLock = {
 	lock: AsyncLock; pending: number;
 };
-type ResolutionIntent = {
+
+/** The two accounts a resolution touches: the one kept and the one deleted. */
+type ResolvedAccounts = {
+	keptId: KeycloakId;
+	deletedId: KeycloakId;
+};
+type ResolutionIntent = ResolvedAccounts & DiscordContact & {
 	version: number;
-	keptId: string;
-	deletedId: string;
-	discordId: string;
-	email: string;
 	choice: AccountCollisionChoice;
+};
+type KeycloakCallStatus = {
+	isError: boolean; status: number;
 };
 export class AccountCollisionFailure extends Error {
 	public constructor(public readonly reason: AccountCollisionError, public readonly status: number = 409) {
 		super(reason);
 	}
 }
-function normalizedEmail(email: string): string {
+function normalizedEmail(email: EmailAddress): EmailAddress {
 	return email.trim().toLowerCase();
 }
 function accountName(user: KeycloakUser): string {
@@ -47,44 +65,137 @@ function viewOf(pair: CollisionPair): AccountCollision {
 		email: pair.email, discord: { name: accountName(pair.discord) }, emailAccount: { name: accountName(pair.emailAccount) }
 	};
 }
-function lockKey(first: string, second: string): string {
-	return [first, second].sort().join("/");
+function lockKey(accounts: ResolvedAccounts): string {
+	return [accounts.keptId, accounts.deletedId].sort().join("/");
+}
+function hasVerifiedDiscordEmail(user: KeycloakUser): boolean {
+	return user.attributes?.discordEmailVerified?.[0] === "true";
+}
+function failedBeyondMissing(result: KeycloakCallStatus): boolean {
+	return result.isError && result.status !== NOT_FOUND;
+}
+
+/** A stored intent must be this account's, well formed and for a known choice, or the resolution is refused. */
+function isIntentOf(intent: ResolutionIntent | null, userId: KeycloakId): intent is ResolutionIntent {
+	if (intent === null || typeof intent !== "object") {
+		return false;
+	}
+	const owned = intent.version === RESOLUTION_VERSION && intent.keptId === userId && intent.deletedId !== userId;
+	const wellFormed = [
+		intent.deletedId,
+		intent.discordId,
+		intent.email
+	].every(value => typeof value === "string");
+	return owned && wellFormed && Object.values(ACCOUNT_COLLISION_CHOICES).includes(intent.choice);
+}
+function parseIntent(raw: string): ResolutionIntent | null {
+	try {
+		return JSON.parse(raw) as ResolutionIntent;
+	}
+	catch {
+		return null;
+	}
 }
 function readIntent(user: KeycloakUser): ResolutionIntent | null {
 	const raw = user.attributes?.accountCollisionResolution?.[0];
 	if (!raw) {
 		return null;
 	}
-	try {
-		const intent = JSON.parse(raw) as ResolutionIntent;
-		if (intent.version !== RESOLUTION_VERSION || intent.keptId !== user.id || intent.deletedId === user.id
-            || typeof intent.deletedId !== "string" || typeof intent.discordId !== "string" || typeof intent.email !== "string"
-            || !Object.values(ACCOUNT_COLLISION_CHOICES).includes(intent.choice)) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
-		}
-		return intent;
-	}
-	catch {
+	const intent = parseIntent(raw);
+	if (!isIntentOf(intent, user.id)) {
 		throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
 	}
+	return intent;
+}
+
+/** Discord's address on its account, usable only once Discord has verified it. */
+function discordContact(discord: KeycloakUser): DiscordContact | null {
+	const email = discord.attributes?.discordEmail?.[0];
+	const discordId = discord.attributes?.discordId?.[0];
+	if (!email || !discordId) {
+		return null;
+	}
+	if (!hasVerifiedDiscordEmail(discord)) {
+		throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNVERIFIED_EMAIL);
+	}
+	return {
+		email: normalizedEmail(email), discordId
+	};
+}
+
+/** At most one other account may hold the address: more is a conflict only a person can settle. */
+function soleAccount(users: KeycloakUser[]): KeycloakUser | null {
+	if (users.length > 1) {
+		throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
+	}
+	return users[0] ?? null;
+}
+function stillOwnsEmail(account: KeycloakUser, pair: CollisionPair): boolean {
+	return account.id === pair.emailAccount.id && normalizedEmail(account.email ?? "") === pair.email;
+}
+
+/** Since the proof was given, neither account moved away from the collision it proves. */
+function pairUnchanged(pair: CollisionPair, discord: KeycloakUser, emailAccount: KeycloakUser): boolean {
+	const discordUnchanged = normalizedEmail(discord.attributes.discordEmail?.[0] ?? "") === pair.email && discord.attributes.discordId?.[0] === pair.discordId;
+	return discordUnchanged && stillOwnsEmail(emailAccount, pair) && Boolean(emailAccount.emailVerified);
+}
+function isInPair(user: KeycloakUser, pair: CollisionPair): boolean {
+	return user.id === pair.discord.id || user.id === pair.emailAccount.id;
+}
+function linksAnotherDiscord(identity: KeycloakFederalIdentity, discordId: string): boolean {
+	return identity.identityProvider === KeycloakConstants.IDENTITY_PROVIDERS.DISCORD && identity.userId !== discordId;
+}
+function resolvedAccounts(pair: CollisionPair, choice: AccountCollisionChoice): ResolvedAccounts {
+	return choice === ACCOUNT_COLLISION_CHOICES.DISCORD
+		? {
+			keptId: pair.discord.id, deletedId: pair.emailAccount.id
+		}
+		: {
+			keptId: pair.emailAccount.id, deletedId: pair.discord.id
+		};
+}
+
+/** The kept account once resolved: it holds the Discord identity and the verified address. */
+function resolvedUser(kept: KeycloakUser, intent: ResolutionIntent): KeycloakUser {
+	const attributes = {
+		...kept.attributes,
+		discordId: [intent.discordId] as [
+			string
+		],
+		discordEmail: [intent.email] as [
+			string
+		],
+		discordEmailVerified: ["true"] as [
+			string
+		]
+	};
+	delete attributes.accountCollisionResolution;
+	return {
+		...kept, email: intent.email, emailVerified: true, attributes
+	};
 }
 export class AccountCollisionService {
 	private readonly proofs = new Map<string, VerifiedPair>();
 
 	private readonly locks = new Map<string, PairLock>();
 
-	public constructor(private readonly config: KeycloakConfig, private readonly onIdentityDeleted: (id: string) => void = (): void => undefined) {
+	public constructor(private readonly config: KeycloakConfig, private readonly onIdentityDeleted: (id: KeycloakId) => void = (): void => undefined) {
 	}
 
-	private async authenticatedUser(token: string): Promise<KeycloakUser> {
+	private async sessionIdentity(token: AccessToken): Promise<KeycloakSessionIdentity> {
 		const session = await KeycloakUtils.getSessionIdentity(this.config, token);
 		if (session.isError) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAUTHORIZED, 401);
 		}
-		return this.userById(session.payload.identity.sub);
+		return session.payload.identity;
 	}
 
-	private async userById(id: string): Promise<KeycloakUser> {
+	private async authenticatedUser(token: AccessToken): Promise<KeycloakUser> {
+		const identity = await this.sessionIdentity(token);
+		return this.userById(identity.sub);
+	}
+
+	private async userById(id: KeycloakId): Promise<KeycloakUser> {
 		const result = await KeycloakUtils.getUserByKeycloakId(this.config, id);
 		if (result.isError) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.ACCOUNT_CHANGED);
@@ -92,40 +203,33 @@ export class AccountCollisionService {
 		return result.payload.user;
 	}
 
-	private async findPair(token: string): Promise<CollisionPair | null> {
-		const session = await KeycloakUtils.getSessionIdentity(this.config, token);
-		if (session.isError) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAUTHORIZED, 401);
-		}
-		if (session.payload.identity.identity_provider !== KeycloakConstants.IDENTITY_PROVIDERS.DISCORD) {
-			return null;
-		}
-		const discord = await this.userById(session.payload.identity.sub);
-		const email = discord.attributes?.discordEmail?.[0];
-		const discordId = discord.attributes?.discordId?.[0];
-		if (!email || !discordId) {
-			return null;
-		}
-		if (discord.attributes.discordEmailVerified?.[0] !== "true") {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNVERIFIED_EMAIL);
-		}
-		const result = await KeycloakUtils.getUsersByEmail(this.config, normalizedEmail(email));
+	private async otherAccountWithEmail(email: EmailAddress, discordUserId: KeycloakId): Promise<KeycloakUser | null> {
+		const result = await KeycloakUtils.getUsersByEmail(this.config, email);
 		if (result.isError) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE, 503);
 		}
-		const others = result.payload.users.filter(user => user.id !== discord.id);
-		if (others.length === 0) {
-			return null;
-		}
-		if (others.length !== 1) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
-		}
-		return {
-			discord, emailAccount: others[0], email: normalizedEmail(email), discordId
-		};
+		return soleAccount(result.payload.users.filter(user => user.id !== discordUserId));
 	}
 
-	public async check(token: string): Promise<AccountCollisionCheck> {
+	private async findPair(token: AccessToken): Promise<CollisionPair | null> {
+		const identity = await this.sessionIdentity(token);
+		if (identity.identity_provider !== KeycloakConstants.IDENTITY_PROVIDERS.DISCORD) {
+			return null;
+		}
+		const discord = await this.userById(identity.sub);
+		const contact = discordContact(discord);
+		if (!contact) {
+			return null;
+		}
+		const emailAccount = await this.otherAccountWithEmail(contact.email, discord.id);
+		return emailAccount
+			? {
+				discord, emailAccount, ...contact
+			}
+			: null;
+	}
+
+	public async check(token: AccessToken): Promise<AccountCollisionCheck> {
 		const user = await this.authenticatedUser(token);
 		const intent = readIntent(user);
 		if (intent) {
@@ -142,50 +246,73 @@ export class AccountCollisionService {
 		return this.checkEmailAccount(user);
 	}
 
+	/** The one Discord account that verified this address, with its Discord identifier, if there is one. */
+	private async discordAccountWithEmail(email: EmailAddress, userId: KeycloakId): Promise<{
+		account: KeycloakUser; discordId: string;
+	} | null> {
+		const candidates = await KeycloakUtils.getUsersByDiscordEmail(this.config, email);
+		if (candidates.isError) {
+			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE, 503);
+		}
+		const account = soleAccount(candidates.payload.users.filter(candidate => candidate.id !== userId && hasVerifiedDiscordEmail(candidate)));
+		const discordId = account?.attributes.discordId?.[0];
+		if (account && !discordId) {
+			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
+		}
+		return account && discordId
+			? {
+				account, discordId
+			}
+			: null;
+	}
+
 	private async checkEmailAccount(user: KeycloakUser): Promise<AccountCollisionCheck> {
 		if (!user.email || !user.emailVerified) {
 			return { collision: null };
 		}
-		const candidates = await KeycloakUtils.getUsersByDiscordEmail(this.config, normalizedEmail(user.email));
-		if (candidates.isError) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE, 503);
-		}
-		const others = candidates.payload.users.filter(candidate => candidate.id !== user.id && candidate.attributes.discordEmailVerified?.[0] === "true");
-		if (others.length === 0) {
+		const email = normalizedEmail(user.email);
+		const discord = await this.discordAccountWithEmail(email, user.id);
+		if (!discord) {
 			return { collision: null };
-		}
-		if (others.length !== 1 || !others[0].attributes.discordId?.[0]) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
 		}
 		return {
 			collision: viewOf({
-				discord: others[0], emailAccount: user, email: normalizedEmail(user.email), discordId: others[0].attributes.discordId[0]
+				discord: discord.account, emailAccount: user, email, discordId: discord.discordId
 			}),
 			current: ACCOUNT_COLLISION_CHOICES.EMAIL
 		};
 	}
 
-	public async verify(discordToken: string, emailToken: string): Promise<AccountCollisionProof> {
-		const pair = await this.findPair(discordToken);
-		if (!pair) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.ACCOUNT_CHANGED);
-		}
-		const emailSession = await KeycloakUtils.getSessionIdentity(this.config, emailToken);
-		if (emailSession.isError || emailSession.payload.identity.identity_provider === KeycloakConstants.IDENTITY_PROVIDERS.DISCORD) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAUTHORIZED, 401);
-		}
-		const emailAccount = await this.userById(emailSession.payload.identity.sub);
-		if (emailAccount.id !== pair.emailAccount.id || !emailAccount.email || normalizedEmail(emailAccount.email) !== pair.email) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.ACCOUNT_CHANGED);
-		}
-		if (!emailAccount.emailVerified) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNVERIFIED_EMAIL);
-		}
+	private forgetExpiredProofs(): void {
 		for (const [proof, value] of this.proofs) {
 			if (value.expiresAt <= Date.now()) {
 				this.proofs.delete(proof);
 			}
 		}
+	}
+
+	/** The account signed in with its address and password, never through Discord. */
+	private async emailSessionUser(token: AccessToken): Promise<KeycloakUser> {
+		const identity = await this.sessionIdentity(token);
+		if (identity.identity_provider === KeycloakConstants.IDENTITY_PROVIDERS.DISCORD) {
+			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAUTHORIZED, 401);
+		}
+		return this.userById(identity.sub);
+	}
+
+	public async verify(discordToken: AccessToken, emailToken: AccessToken): Promise<AccountCollisionProof> {
+		const pair = await this.findPair(discordToken);
+		if (!pair) {
+			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.ACCOUNT_CHANGED);
+		}
+		const emailAccount = await this.emailSessionUser(emailToken);
+		if (!stillOwnsEmail(emailAccount, pair)) {
+			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.ACCOUNT_CHANGED);
+		}
+		if (!emailAccount.emailVerified) {
+			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNVERIFIED_EMAIL);
+		}
+		this.forgetExpiredProofs();
 		const proof = randomUUID();
 		this.proofs.set(proof, {
 			pair: {
@@ -205,58 +332,58 @@ export class AccountCollisionService {
 		}
 	}
 
-	private async preflight(pair: CollisionPair, kept: KeycloakUser): Promise<void> {
+	private async ensureDiscordIdentityFree(pair: CollisionPair): Promise<void> {
 		const owners = await KeycloakUtils.getDiscordIdentityOwners(this.config, pair.discordId);
-		if (owners.isError || owners.payload.users.some(owner => owner.id !== pair.discord.id && owner.id !== pair.emailAccount.id)) {
+		const strangers = owners.isError ? null : owners.payload.users.filter(owner => !isInPair(owner, pair));
+		if (!strangers || strangers.length > 0) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
 		}
+	}
+
+	private async ensureNoOtherDiscordLink(pair: CollisionPair, kept: KeycloakUser): Promise<void> {
 		const identities = await KeycloakUtils.getFederatedIdentities(this.config, kept.id);
 		if (identities.isError) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE, 503);
 		}
-		if (identities.payload.identities.some(identity => identity.identityProvider === KeycloakConstants.IDENTITY_PROVIDERS.DISCORD && identity.userId !== pair.discordId)) {
+		if (identities.payload.identities.some(identity => linksAnotherDiscord(identity, pair.discordId))) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
+		}
+	}
+
+	private async preflight(pair: CollisionPair, kept: KeycloakUser): Promise<void> {
+		await this.ensureDiscordIdentityFree(pair);
+		await this.ensureNoOtherDiscordLink(pair, kept);
+	}
+
+	/** Deletes the discarded account, which an interrupted resolution may already have deleted. */
+	private async deleteDiscarded(id: KeycloakId): Promise<void> {
+		const discarded = await KeycloakUtils.getUserByKeycloakId(this.config, id);
+		if (failedBeyondMissing(discarded)) {
+			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE, 503);
+		}
+		if (discarded.isError) {
+			return;
+		}
+		const deletion = await KeycloakUtils.deleteUser(this.config, id);
+		if (failedBeyondMissing(deletion)) {
+			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE, 503);
 		}
 	}
 
 	private async finish(intent: ResolutionIntent): Promise<AccountCollisionResolution> {
 		const kept = await this.userById(intent.keptId);
-		const discarded = await KeycloakUtils.getUserByKeycloakId(this.config, intent.deletedId);
-		if (discarded.isError && discarded.status !== 404) {
-			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE, 503);
-		}
-		if (!discarded.isError) {
-			const deletion = await KeycloakUtils.deleteUser(this.config, intent.deletedId);
-			if (deletion.isError && deletion.status !== 404) {
-				throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE, 503);
-			}
-		}
+		await this.deleteDiscarded(intent.deletedId);
 		this.onIdentityDeleted(intent.deletedId);
 		const identities = await KeycloakUtils.linkDiscordIdentity(this.config, kept, intent.discordId);
 		if (identities.isError) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.CONFLICT);
 		}
-		const attributes = {
-			...kept.attributes,
-			discordId: [intent.discordId] as [
-				string
-			],
-			discordEmail: [intent.email] as [
-				string
-			],
-			discordEmailVerified: ["true"] as [
-				string
-			]
-		};
-		delete attributes.accountCollisionResolution;
-		await this.persist({
-			...kept, email: intent.email, emailVerified: true, attributes
-		});
+		await this.persist(resolvedUser(kept, intent));
 		return { kept: intent.choice };
 	}
 
-	private async underPairLock<T>(first: string, second: string, task: () => Promise<T>): Promise<T> {
-		const key = lockKey(first, second);
+	private async underPairLock<T>(accounts: ResolvedAccounts, task: () => Promise<T>): Promise<T> {
+		const key = lockKey(accounts);
 		let entry = this.locks.get(key);
 		if (!entry) {
 			entry = {
@@ -278,44 +405,48 @@ export class AccountCollisionService {
 		}
 	}
 
-	public async resolve(token: string, proof: string, choice: AccountCollisionChoice): Promise<AccountCollisionResolution> {
-		const user = await this.authenticatedUser(token);
-		const pending = readIntent(user);
-		if (pending) {
-			return this.underPairLock(pending.keptId, pending.deletedId, () => this.finish(pending));
-		}
+	private validProof(proof: CollisionProofId): CollisionPair {
 		const verified = this.proofs.get(proof);
 		if (!verified || verified.expiresAt <= Date.now()) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.PROOF_EXPIRED);
 		}
-		const { pair } = verified;
-		const keptId = choice === ACCOUNT_COLLISION_CHOICES.DISCORD ? pair.discord.id : pair.emailAccount.id;
-		const deletedId = choice === ACCOUNT_COLLISION_CHOICES.DISCORD ? pair.emailAccount.id : pair.discord.id;
-		if (user.id !== keptId) {
+		return verified.pair;
+	}
+
+	/** Writes the intent on the kept account before deleting anything, so an interrupted resolution can be finished. */
+	private async recordAndFinish(pair: CollisionPair, intent: ResolutionIntent, proof: CollisionProofId): Promise<AccountCollisionResolution> {
+		const discord = await this.userById(pair.discord.id);
+		const emailAccount = await this.userById(pair.emailAccount.id);
+		if (!pairUnchanged(pair, discord, emailAccount)) {
+			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.ACCOUNT_CHANGED);
+		}
+		const kept = await this.userById(intent.keptId);
+		await this.preflight(pair, kept);
+		await this.persist({
+			...kept,
+			attributes: {
+				...kept.attributes, accountCollisionResolution: [JSON.stringify(intent)]
+			}
+		});
+		const result = await this.finish(intent);
+		this.proofs.delete(proof);
+		return result;
+	}
+
+	public async resolve(token: AccessToken, proof: CollisionProofId, choice: AccountCollisionChoice): Promise<AccountCollisionResolution> {
+		const user = await this.authenticatedUser(token);
+		const pending = readIntent(user);
+		if (pending) {
+			return this.underPairLock(pending, () => this.finish(pending));
+		}
+		const pair = this.validProof(proof);
+		const accounts = resolvedAccounts(pair, choice);
+		if (user.id !== accounts.keptId) {
 			throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.UNAUTHORIZED, 401);
 		}
-		return this.underPairLock(keptId, deletedId, async () => {
-			const discord = await this.userById(pair.discord.id);
-			const emailAccount = await this.userById(pair.emailAccount.id);
-			if (normalizedEmail(discord.attributes.discordEmail?.[0] ?? "") !== pair.email
-                || discord.attributes.discordId?.[0] !== pair.discordId
-                || normalizedEmail(emailAccount.email ?? "") !== pair.email || !emailAccount.emailVerified) {
-				throw new AccountCollisionFailure(ACCOUNT_COLLISION_ERRORS.ACCOUNT_CHANGED);
-			}
-			const kept = await this.userById(keptId);
-			await this.preflight(pair, kept);
-			const intent: ResolutionIntent = {
-				version: RESOLUTION_VERSION, keptId, deletedId, discordId: pair.discordId, email: pair.email, choice
-			};
-			await this.persist({
-				...kept,
-				attributes: {
-					...kept.attributes, accountCollisionResolution: [JSON.stringify(intent)]
-				}
-			});
-			const result = await this.finish(intent);
-			this.proofs.delete(proof);
-			return result;
-		});
+		const intent: ResolutionIntent = {
+			version: RESOLUTION_VERSION, keptId: accounts.keptId, deletedId: accounts.deletedId, discordId: pair.discordId, email: pair.email, choice
+		};
+		return this.underPairLock(accounts, () => this.recordAndFinish(pair, intent, proof));
 	}
 }

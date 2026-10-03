@@ -25,18 +25,27 @@ function configurePlayGamesManifest(androidManifest, appId) {
 	return androidManifest;
 }
 
-function withGameServices(config) {
-	config = withGameCenterLocal(config);
+function playGamesAppId(config) {
 	const appId = (config.extra?.gameServices?.playGames?.appId || "").trim();
 	if (appId && !/^\d+$/.test(appId)) throw new Error("EXPO_PUBLIC_PLAY_GAMES_APP_ID must be a numeric Play Games project ID.");
-	config = withAndroidManifest(config, mod => {
-		mod.modResults = configurePlayGamesManifest(mod.modResults, appId);
-		return mod;
-	});
+	return appId;
+}
+
+function withPlayGamesAppIdString(config, appId) {
 	return withStringsXml(config, mod => {
 		if (appId) mod.modResults = AndroidConfig.Strings.setStringItem([{$: {name: PLAY_GAMES.APP_ID_RESOURCE, translatable: "false"}, _: appId}], mod.modResults);
 		return mod;
 	});
+}
+
+function withGameServices(config) {
+	config = withGameCenterLocal(config);
+	const appId = playGamesAppId(config);
+	config = withAndroidManifest(config, mod => {
+		mod.modResults = configurePlayGamesManifest(mod.modResults, appId);
+		return mod;
+	});
+	return withPlayGamesAppIdString(config, appId);
 }
 
 module.exports = withGameServices;

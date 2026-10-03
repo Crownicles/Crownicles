@@ -14,7 +14,10 @@ import {
 const mockInit = jest.fn().mockResolvedValue(undefined);
 const mockSaveToken = jest.fn().mockResolvedValue(undefined);
 const mockClearToken = jest.fn().mockResolvedValue(undefined);
-jest.mock("@/src/networking/RestApi", () => ({RestApi: {checkAccountCollision: jest.fn(() => Promise.resolve({collision: null}))}}));
+jest.mock("@/src/networking/RestApi", () => ({
+	...jest.requireActual<typeof import("@/src/networking/RestApi")>("@/src/networking/RestApi"),
+	RestApi: {checkAccountCollision: jest.fn(() => Promise.resolve({collision: null}))}
+}));
 
 jest.mock("expo-router", () => ({useRouter: (): object => ({replace: jest.fn()})}));
 jest.mock("@/src/authentication/TokenStorage", () => ({

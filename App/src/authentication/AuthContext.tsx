@@ -7,7 +7,27 @@ import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {collectorsStore} from "@/src/collectors/CollectorsStore";
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
 import {fightStore} from "@/src/store/FightStore";
-import {RestApi} from "@/src/networking/RestApi";
+import {isAccountCollisionOpen, RestApi} from "@/src/networking/RestApi";
+
+/** States of a session already shown to the player: logging in again from them is not a first arrival */
+const SESSION_STATES: ReadonlySet<AuthStateEnum> = new Set([AuthStateEnum.LOGGED_IN, AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE, AuthStateEnum.RECONNECTING_PACKET_QUEUE]);
+
+/** States that send the player back to the login screen */
+const LOGIN_STATES: ReadonlySet<AuthStateEnum> = new Set([AuthStateEnum.NO_TOKEN, AuthStateEnum.TOKEN_INVALID_OR_EXPIRED, AuthStateEnum.ACCOUNT_COLLISION]);
+
+async function loadStoredToken(): Promise<AuthToken | null> {
+	const token = await readFullStoredToken().catch((error) => {
+		console.error("Failed to load token:", error);
+		return "";
+	});
+	return token ? AuthToken.fromJsonString(token) : null;
+}
+
+/** Whether two accounts sharing an email must be settled before the session can open */
+async function collisionBlocks(authToken: AuthToken): Promise<boolean> {
+	const accessToken = authToken.getAccessToken();
+	return accessToken ? isAccountCollisionOpen(await RestApi.checkAccountCollision(accessToken)) : false;
+}
 
 type AuthState = {
 	state: AuthStateEnum;
@@ -114,30 +134,21 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 	});
 
 	const startAuthenticationFlow = async (onStateChange: (newState: AuthStateEnum) => void): Promise<void> => {
-		const token = await readFullStoredToken().catch((error) => {
-			console.error("Failed to load token:", error);
-			return "";
-		});
-
-		if (!token || token.length === 0) {
+		const authToken = await loadStoredToken();
+		if (!authToken) {
 			console.log("No token found, setting state to NO_TOKEN");
 			onStateChange(AuthStateEnum.NO_TOKEN);
 			return;
 		}
 
-		const authToken = AuthToken.fromJsonString(token);
 		if (await authToken.refreshIfNeeded()) {
 			console.debug("Token refreshed successfully");
 			await saveToken(authToken); // Save the refreshed token
 		}
 
-		const accessToken = authToken.getAccessToken();
-		if (accessToken) {
-			const collision = await RestApi.checkAccountCollision(accessToken);
-			if (collision.collision || collision.pending) {
-				onStateChange(AuthStateEnum.ACCOUNT_COLLISION);
-				return;
-			}
+		if (await collisionBlocks(authToken)) {
+			onStateChange(AuthStateEnum.ACCOUNT_COLLISION);
+			return;
 		}
 
 		await WebSocketClient.getInstance().init(authToken, onStateChange, saveToken, clearToken).catch((error) => {
@@ -148,36 +159,38 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 		});
 	}
 
+	const returnToLogin = (): void => {
+		WebSocketClient.getInstance().disconnect();
+		cancelPendingNavigation();
+		collectorsStore.reset();
+		reportEventStore.reset();
+		fightStore.reset();
+		router.replace("/login");
+	};
+
+	// Happens when the connection cannot be established
+	const restartAuthentication = (onStateChange: (newState: AuthStateEnum) => void): void => {
+		startAuthenticationFlow(onStateChange).then().catch(err => {
+			console.error("Error during authentication flow restart:", err);
+			onStateChange(AuthStateEnum.NO_TOKEN);
+		});
+		router.replace("/");
+	};
+
 	const setStateInternal = (newState: AuthStateEnum): void => {
 		const previousState = currentState.current;
 		currentState.current = newState;
-		const isInitialLogin = newState === AuthStateEnum.LOGGED_IN
-			&& previousState !== AuthStateEnum.LOGGED_IN
-			&& previousState !== AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE
-			&& previousState !== AuthStateEnum.RECONNECTING_PACKET_QUEUE;
-		const shouldRedirectToLogin = newState === AuthStateEnum.NO_TOKEN || newState === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED || newState === AuthStateEnum.ACCOUNT_COLLISION;
-		const shouldRestartAuthentication = newState === AuthStateEnum.NOT_READY;
-
 		setState(newState);
 		console.log("Auth state changed from", previousState, "to", newState);
 
-		if (isInitialLogin) {
+		if (newState === AuthStateEnum.LOGGED_IN && !SESSION_STATES.has(previousState)) {
 			navigateToAuthenticatedRoot();
 		}
-		else if (shouldRedirectToLogin) {
-			WebSocketClient.getInstance().disconnect();
-			cancelPendingNavigation();
-			collectorsStore.reset();
-			reportEventStore.reset();
-			fightStore.reset();
-			router.replace("/login");
+		else if (LOGIN_STATES.has(newState)) {
+			returnToLogin();
 		}
-		else if (shouldRestartAuthentication) {
-			startAuthenticationFlow(setStateInternal).then().catch(err => {
-				console.error("Error during authentication flow restart:", err);
-				setStateInternal(AuthStateEnum.NO_TOKEN);
-			}); // Restart the authentication flow if the state is not ready (happens when the connection cannot be established)
-			router.replace("/");
+		else if (newState === AuthStateEnum.NOT_READY) {
+			restartAuthentication(setStateInternal);
 		}
 	}
 

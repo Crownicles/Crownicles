@@ -20,25 +20,36 @@ function configuration() {
 	}));
 }
 
-async function run() {
+function applyRequested() {
 	const unknown = process.argv.slice(2).filter(argument => argument !== APPLY_FLAG);
 	if (unknown.length) throw new Error("Only --apply is supported; default is read-only");
-	const apply = process.argv.includes(APPLY_FLAG);
-	const config = configuration();
-	const totals = {scanned: 0, candidates: 0, alreadyLinked: 0, needsLink: 0, linked: 0, conflicts: 0};
-	let first = 0;
-	while (true) {
+	return process.argv.includes(APPLY_FLAG);
+}
+
+async function* allUsers(config) {
+	for (let first = 0; ;) {
 		const page = await KeycloakUtils.getUsersPage(config, first, PAGE_SIZE);
 		if (page.isError) throw new Error(`Could not read users: HTTP ${page.status}`);
-		if (!page.payload.users.length) break;
-		for (const user of page.payload.users) {
-			totals.scanned++;
-			const discordId = user.attributes?.discordId?.[0];
-			if (!discordId || user.username !== `discord-${discordId}`) continue;
-			totals.candidates++;
-			await processCandidate(config, user, {apply, totals});
-		}
+		if (!page.payload.users.length) return;
+		yield* page.payload.users;
 		first += page.payload.users.length;
+	}
+}
+
+function isLegacyCandidate(user) {
+	const discordId = user.attributes?.discordId?.[0];
+	return Boolean(discordId) && user.username === `discord-${discordId}`;
+}
+
+async function run() {
+	const apply = applyRequested();
+	const config = configuration();
+	const totals = {scanned: 0, candidates: 0, alreadyLinked: 0, needsLink: 0, linked: 0, conflicts: 0};
+	for await (const user of allUsers(config)) {
+		totals.scanned++;
+		if (!isLegacyCandidate(user)) continue;
+		totals.candidates++;
+		await processCandidate(config, user, {apply, totals});
 	}
 	console.log(JSON.stringify({mode: apply ? "apply" : "read-only", ...totals}, null, 2));
 	if (totals.conflicts) process.exitCode = 1;
@@ -60,14 +71,13 @@ async function processCandidate(config, user, {apply, totals}) {
 	const outcome = await inspectCandidate(config, user);
 	totals[outcome]++;
 	if (outcome !== "needsLink" || !apply) return;
-	const result = await KeycloakUtils.linkLegacyDiscordUser(config, user);
-	if (result.isError) {
-		if (result.status !== 409) throw new Error(`Could not link a historical identity: HTTP ${result.status}`);
-		totals.conflicts++;
-		return;
-	}
-	if (result.payload.changed) totals.linked++;
-	else totals.alreadyLinked++;
+	totals[linkOutcome(await KeycloakUtils.linkLegacyDiscordUser(config, user))]++;
+}
+
+function linkOutcome(result) {
+	if (!result.isError) return result.payload.changed ? "linked" : "alreadyLinked";
+	if (result.status !== 409) throw new Error(`Could not link a historical identity: HTTP ${result.status}`);
+	return "conflicts";
 }
 
 run().catch(error => {

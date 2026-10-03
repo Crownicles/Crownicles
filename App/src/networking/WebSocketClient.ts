@@ -219,19 +219,27 @@ export class WebSocketClient {
 		});
 	}
 
+	private isCurrent(connectionVersion: number): boolean {
+		return connectionVersion === this.connectionVersion;
+	}
+
+	/** Saves a refreshed token; whether the connection it was refreshed for is still the current one. */
+	private async saveRefreshedToken(authToken: AuthToken, connectionVersion: number): Promise<boolean> {
+		if (!this.tokenNeedsSaving) return true;
+		await this.saveToken?.(authToken);
+		if (!this.isCurrent(connectionVersion)) return false;
+		this.tokenNeedsSaving = false;
+		return true;
+	}
+
 	private async refreshAccessToken(authToken: AuthToken, connectionVersion: number): Promise<string | null> {
 		const refreshed = await authToken.refreshIfNeeded();
-		if (connectionVersion !== this.connectionVersion) return null;
+		if (!this.isCurrent(connectionVersion)) return null;
 		if (refreshed) {
 			console.debug("Token refreshed successfully");
 			this.tokenNeedsSaving = true;
 		}
-		if (this.tokenNeedsSaving) {
-			await this.saveToken?.(authToken);
-			if (connectionVersion !== this.connectionVersion) return null;
-			this.tokenNeedsSaving = false;
-		}
-		if (connectionVersion !== this.connectionVersion) return null;
+		if (!await this.saveRefreshedToken(authToken, connectionVersion)) return null;
 
 		const accessToken = authToken.getAccessToken();
 		if (!accessToken) {
@@ -355,6 +363,26 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 		socket.close();
 	}
 
+	/** The session ended on the server: the stored token goes first, then the state says so, unless a new session began meanwhile. */
+	private endSession(finalState: AuthStateEnum): void {
+		const connectionVersion = this.connectionVersion;
+		const clearToken = this.clearToken;
+		Promise.resolve().then(() => {
+			if (this.isCurrent(connectionVersion)) return clearToken?.();
+			return undefined;
+		}).then((): void => {
+			if (this.isCurrent(connectionVersion)) this.setState?.(finalState);
+		}).catch((): void => {
+			if (this.isCurrent(connectionVersion)) this.setState?.(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
+		});
+	}
+
+	private handleFinalClose(finalState: AuthStateEnum): void {
+		this.disconnect();
+		if (finalState === AuthStateEnum.NO_TOKEN) this.endSession(finalState);
+		else this.setState?.(finalState);
+	}
+
 	private handleSocketClose(socket: WebSocket, error: CloseEvent, authToken: AuthToken, firstConnection: boolean): void {
 		if (this.socket !== socket) {
 			return;
@@ -362,22 +390,7 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 		console.log("WebSocket connection closed.");
 		const finalState = FINAL_CLOSE_STATES[error.reason];
 		if (finalState !== undefined) {
-			this.disconnect();
-			if (finalState === AuthStateEnum.NO_TOKEN) {
-				const connectionVersion = this.connectionVersion;
-				const clearToken = this.clearToken;
-				const updateState = (): void => {
-					if (connectionVersion === this.connectionVersion) this.setState?.(finalState);
-				};
-				Promise.resolve().then(() => {
-					if (connectionVersion === this.connectionVersion) return clearToken?.();
-					return undefined;
-				}).then(updateState).catch((): void => {
-					if (connectionVersion === this.connectionVersion) this.setState?.(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
-				});
-			} else {
-				this.setState?.(finalState);
-			}
+			this.handleFinalClose(finalState);
 			return;
 		}
 		if (error.reason === "Unauthorized") {

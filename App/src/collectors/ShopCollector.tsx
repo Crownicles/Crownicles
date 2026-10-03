@@ -186,6 +186,29 @@ function ArticleCaption({summary, lock}: {summary?: string; lock?: Lock}): React
 	</View>;
 }
 
+/** The row heading, repeated on top of the sheet, already says why: the button only greys out. */
+function purchaseLockProps(lock: Lock | undefined, rowLock: Lock | undefined): {disabled?: boolean; lock?: Lock} {
+	if (!lock) return {};
+	return lock.reason === rowLock?.reason ? {disabled: true} : {lock};
+}
+
+function ArticleInfo({article, data}: {article: ShopArticle; data: ShopData}): ReactNode {
+	return <Story>{i18n.t(`commands:shop.shopItems.${shopItemKey({shopItemId: article.shopItemId})}.info`, {
+		kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio ?? 0,
+		thousandPoints: data.additionalShopData?.thousandPoints ?? 0
+	})}</Story>;
+}
+
+function QuantityChoice({article, chosen, onChoose}: {article: ShopArticle; chosen: number; onChoose: (position: number) => void}): ReactNode {
+	if (article.offers.length <= 1) return null;
+	return <SegmentedControl
+		label={i18n.t("app:city.shop.quantity")}
+		value={String(chosen)}
+		onChange={(value): void => onChoose(Number(value))}
+		options={article.offers.map((entry, position) => ({value: String(position), label: quantityLabel(entry)}))}
+	/>;
+}
+
 /** The article's sheet: what it does, the quantity when it comes in bundles, what it costs, then the purchase. */
 function ArticleSheet({article, context, rowLock, onBuy}: {article: ShopArticle; context: ShelfContext; rowLock?: Lock; onBuy: (index: number) => void}): ReactNode {
 	const styles = useStyles();
@@ -195,20 +218,10 @@ function ArticleSheet({article, context, rowLock, onBuy}: {article: ShopArticle;
 	const price = offer.reaction.data.price;
 	const lock = offerLock(offer, article, data);
 	const potion = dailyPotionOf(article, data);
-	// The row heading, repeated on top of the sheet, already says why: the button only greys out.
-	const lockProps = lock && lock.reason === rowLock?.reason ? {disabled: true} : lock ? {lock} : {};
 	return <View style={styles.panel}>
 		{potion ? <ItemDetails item={potion} /> : null}
-		<Story>{i18n.t(`commands:shop.shopItems.${shopItemKey({shopItemId: article.shopItemId})}.info`, {
-			kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio ?? 0,
-			thousandPoints: data.additionalShopData?.thousandPoints ?? 0
-		})}</Story>
-		{article.offers.length > 1 ? <SegmentedControl
-			label={i18n.t("app:city.shop.quantity")}
-			value={String(chosen)}
-			onChange={(value): void => setChosen(Number(value))}
-			options={article.offers.map((entry, position) => ({value: String(position), label: quantityLabel(entry)}))}
-		/> : null}
+		<ArticleInfo article={article} data={data} />
+		<QuantityChoice article={article} chosen={chosen} onChoose={setChosen} />
 		<ExpandableList>
 			<Fact label={i18n.t(isSingleUnit(article) ? "app:city.shop.fields.price" : "app:city.shop.fields.lotPrice")} value={formatNumber(price)} unit={data.currency} />
 			{lock ? null : <Fact label={i18n.t("app:city.shop.fields.after")} value={formatNumber(data.availableCurrency - price)} unit={data.currency} />}
@@ -218,7 +231,7 @@ function ArticleSheet({article, context, rowLock, onBuy}: {article: ShopArticle;
 			label={i18n.t("app:city.shop.buyFor", {price: formatAmount(price, data.currency)})}
 			pending={locked}
 			onPress={(): void => onBuy(offer.index)}
-			{...lockProps}
+			{...purchaseLockProps(lock, rowLock)}
 		/>
 	</View>;
 }

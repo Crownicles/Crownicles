@@ -24,7 +24,7 @@ import {
 	AtSign, MessageCircle, UserPlus
 } from "@/src/design/FightIcons";
 import {i18n} from "@/src/translations/i18n";
-import {RestApi} from "@/src/networking/RestApi";
+import {isAccountCollisionOpen, RestApi} from "@/src/networking/RestApi";
 import {AccountCollisionLoginState, AccountCollisionScreen} from "@/src/authentication/AccountCollisionScreen";
 import {readFullStoredToken} from "@/src/authentication/TokenStorage";
 
@@ -88,7 +88,7 @@ async function handleLogin(authState: LoginAuthState, authorize: Authorize, onRe
 	try {
 		const authToken = AuthToken.fromKeycloakOAuth2Token(await authorize());
 		const collision = await RestApi.checkAccountCollision(authToken.getAccessToken() ?? "");
-		if (collision.collision || collision.pending) {
+		if (isAccountCollisionOpen(collision)) {
 			onCollision({token: authToken, check: collision});
 			return;
 		}
@@ -129,67 +129,95 @@ function LoginChoices({entry, connecting, onChoose, onAuthorize}: LoginChoicesPr
 	</>;
 }
 
-export default function LoginScreen(): React.ReactElement {
-	const authState = React.useContext(AuthContext);
-	const [authorizing, setAuthorizing] = useState(false);
-	const authorizationPending = useRef(false);
-	const connecting = authorizing || authState.state === AuthStateEnum.CONNECTING || authState.state === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED;
-	const [notice, setNotice] = useState<LoginNotice | null>(null);
-	const [entry, setEntry] = useState<LoginEntry>(authState.state === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED ? LOGIN_ENTRIES.ACCOUNT : LOGIN_ENTRIES.WELCOME);
-	const [collision, setCollision] = useState<AccountCollisionLoginState | null>(null);
+/** States during which a login is already under way */
+const CONNECTING_STATES: ReadonlySet<AuthStateEnum> = new Set([AuthStateEnum.CONNECTING, AuthStateEnum.TOKEN_INVALID_OR_EXPIRED]);
 
-	useExpiredSession(authState, setNotice);
+/** Reopens the choice between two accounts after the app was closed in the middle of it */
+function useCollisionRestore(state: AuthStateEnum, onRestored: (collision: AccountCollisionLoginState) => void, onFailed: (notice: LoginNotice) => void): void {
 	useEffect(() => {
-		if (authState.state !== AuthStateEnum.ACCOUNT_COLLISION) return;
+		if (state !== AuthStateEnum.ACCOUNT_COLLISION) return;
 		readFullStoredToken().then(async (stored): Promise<void> => {
 			const token = AuthToken.fromJsonString(stored);
 			const check = await RestApi.checkAccountCollision(token.getAccessToken() ?? "");
-			setCollision({token, check});
+			onRestored({token, check});
 		}).catch((error: unknown): void => {
-			setNotice({title: i18n.t("app:auth.loginFailed"), detail: i18n.t("app:auth.collision.errors.unavailable")});
+			onFailed({title: i18n.t("app:auth.loginFailed"), detail: i18n.t("app:auth.collision.errors.unavailable")});
 			console.warn("Could not restore account collision", error);
 		});
-	}, [authState.state]);
+	}, [state, onRestored, onFailed]);
+}
 
+/** Runs one authorization at a time, clearing the previous notice */
+function useAuthorization(authState: LoginAuthState, onNotice: (notice: LoginNotice | null) => void, onCollision: (state: AccountCollisionLoginState) => void): {connecting: boolean; start: (authorize: Authorize) => void} {
+	const [authorizing, setAuthorizing] = useState(false);
+	const authorizationPending = useRef(false);
+	const connecting = authorizing || CONNECTING_STATES.has(authState.state);
 	const start = (authorize: Authorize): void => {
 		if (authorizationPending.current || connecting) return;
 		authorizationPending.current = true;
 		setAuthorizing(true);
-		setNotice(null);
-		handleLogin(authState, authorize, setNotice, setCollision).catch((error: unknown) => {
+		onNotice(null);
+		handleLogin(authState, authorize, onNotice, onCollision).catch((error: unknown) => {
 			console.error("Login error:", error);
 		}).finally((): void => {
 			authorizationPending.current = false;
 			setAuthorizing(false);
 		});
 	};
+	return {connecting, start};
+}
+
+function LoginStanding({welcome}: {welcome: boolean}): React.ReactElement {
+	return <Standing
+		emblem={<Image source={crowniclesLogo} style={styles.emblem} contentFit="cover" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />}
+		caption={i18n.t(welcome ? "app:auth.caption" : "app:auth.title")}
+		title={i18n.t(welcome ? "app:auth.title" : "app:auth.loginTitle")}
+		subtitle={i18n.t(welcome ? "app:auth.welcome" : "app:auth.chooseAccount")}
+	/>;
+}
+
+function LoginNoticeView({notice}: {notice: LoginNotice | null}): React.ReactElement | null {
+	if (!notice) return null;
+	return <>
+		<Refusal>{notice.title}</Refusal>
+		{notice.detail ? <Note>{notice.detail}</Note> : null}
+	</>;
+}
+
+export default function LoginScreen(): React.ReactElement {
+	const authState = React.useContext(AuthContext);
+	const [notice, setNotice] = useState<LoginNotice | null>(null);
+	const [entry, setEntry] = useState<LoginEntry>(authState.state === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED ? LOGIN_ENTRIES.ACCOUNT : LOGIN_ENTRIES.WELCOME);
+	const [collision, setCollision] = useState<AccountCollisionLoginState | null>(null);
+	const {connecting, start} = useAuthorization(authState, setNotice, setCollision);
+
+	useExpiredSession(authState, setNotice);
+	useCollisionRestore(authState.state, setCollision, setNotice);
+
 	const chooseEntry = (chosenEntry: LoginEntry): void => {
 		setEntry(chosenEntry);
 		if (chosenEntry === LOGIN_ENTRIES.DISCORD) start(() => KeycloakAuth.login(IDENTITY_PROVIDERS.DISCORD));
 	};
-
-	if (collision) return <AccountCollisionScreen state={collision} onAuthenticated={(token): Promise<void> => connectAuthenticatedAccount(authState, token)} onCancel={(): void => {
+	const leaveCollision = (): void => {
 		setCollision(null);
 		setEntry(LOGIN_ENTRIES.WELCOME);
 		authState.clearToken().then(() => authState.setState(AuthStateEnum.NO_TOKEN)).catch((error: unknown) => console.warn("Could not leave collision", error));
-	}} />;
+	};
+	const backToWelcome = (): void => {
+		setNotice(null);
+		setEntry(LOGIN_ENTRIES.WELCOME);
+	};
 
+	if (collision) return <AccountCollisionScreen state={collision} onAuthenticated={(token): Promise<void> => connectAuthenticatedAccount(authState, token)} onCancel={leaveCollision} />;
+
+	const welcome = entry === LOGIN_ENTRIES.WELCOME;
 	return (
 		<Screen contentContainerStyle={styles.screen}>
-			<Standing
-				emblem={<Image source={crowniclesLogo} style={styles.emblem} contentFit="cover" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />}
-				caption={i18n.t(entry === LOGIN_ENTRIES.WELCOME ? "app:auth.caption" : "app:auth.title")}
-				title={i18n.t(entry === LOGIN_ENTRIES.WELCOME ? "app:auth.title" : "app:auth.loginTitle")}
-				subtitle={i18n.t(entry === LOGIN_ENTRIES.WELCOME ? "app:auth.welcome" : "app:auth.chooseAccount")}
-			/>
-			{notice ? <Refusal>{notice.title}</Refusal> : null}
-			{notice?.detail ? <Note>{notice.detail}</Note> : null}
+			<LoginStanding welcome={welcome} />
+			<LoginNoticeView notice={notice} />
 			<View style={styles.choices}>
 				<LoginChoices entry={entry} connecting={connecting} onChoose={chooseEntry} onAuthorize={start} />
-				{entry !== LOGIN_ENTRIES.WELCOME ? <Button disabled={connecting} onPress={(): void => {
-					setNotice(null);
-					setEntry(LOGIN_ENTRIES.WELCOME);
-				}}>{i18n.t("app:common.back")}</Button> : null}
+				{welcome ? null : <Button disabled={connecting} onPress={backToWelcome}>{i18n.t("app:common.back")}</Button>}
 			</View>
 		</Screen>
 	);

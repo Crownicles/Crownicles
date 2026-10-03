@@ -39,7 +39,12 @@ function describeRequest(request: DeletionRequest): string {
  */
 async function sendMail(request: DeletionRequest, config: AccountDeletionConfig): Promise<boolean> {
 	const { SMTP } = config;
-	if (!SMTP.HOST || !SMTP.TO || !(SMTP.FROM || SMTP.USERNAME)) {
+	const sender = SMTP.FROM || SMTP.USERNAME;
+	if ([
+		SMTP.HOST,
+		SMTP.TO,
+		sender
+	].some(field => !field)) {
 		return false;
 	}
 
@@ -55,7 +60,7 @@ async function sendMail(request: DeletionRequest, config: AccountDeletionConfig)
 	});
 
 	await transport.sendMail({
-		from: SMTP.FROM || SMTP.USERNAME,
+		from: sender,
 		to: SMTP.TO,
 		subject: `Crownicles - account deletion requested by ${request.username}`,
 		text: describeRequest(request)

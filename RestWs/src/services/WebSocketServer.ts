@@ -273,6 +273,43 @@ export class WebSocketServer {
 		}
 	}
 
+	private static refuse(ws: WebSocket, reason: string): null {
+		ws.close(1008, reason);
+		return null;
+	}
+
+	/**
+	 * Why an app speaking another protocol version cannot play, if it does
+	 * @param query
+	 */
+	private static outdatedReason(query: URLSearchParams): string | null {
+		// An app without the parameter predates the check, so it is outdated too
+		const compatibility = compareProtocolVersions(Number(query.get(APP_PROTOCOL_QUERY_PARAMETER)), APP_PROTOCOL_VERSION);
+		if (compatibility === APP_COMPATIBILITY_STATUSES.UP_TO_DATE) {
+			return null;
+		}
+		return compatibility === APP_COMPATIBILITY_STATUSES.APP_OUTDATED ? WEBSOCKET_APP_OUTDATED_REASON : WEBSOCKET_SERVER_OUTDATED_REASON;
+	}
+
+	private static async tokenOwner(token: string): Promise<KeycloakId | null> {
+		const checkToken = await KeycloakUtils.checkTokenAndGetKeycloakId(keycloakConfig, token);
+		return checkToken.isError ? null : checkToken.payload.keycloakId;
+	}
+
+	/**
+	 * Two accounts sharing an email must be settled first; when that cannot be checked, the session waits too
+	 * @param token
+	 */
+	private static async collisionBlocks(token: string): Promise<boolean> {
+		try {
+			const collision = await new AccountCollisionService(keycloakConfig).check(token);
+			return Boolean(collision.collision || collision.pending);
+		}
+		catch {
+			return true;
+		}
+	}
+
 	/**
 	 * Verify the client connection and get the keycloakId and groups
 	 * @param ws
@@ -280,45 +317,24 @@ export class WebSocketServer {
 	 */
 	static async verifyClientConnection(ws: WebSocket, req: IncomingMessage): Promise<ConnectedPlayer | null> {
 		const query = new URL(req.url ?? "", "ws://localhost").searchParams;
-
-		// An app without the parameter predates the check, so it is outdated too
-		const compatibility = compareProtocolVersions(Number(query.get(APP_PROTOCOL_QUERY_PARAMETER)), APP_PROTOCOL_VERSION);
-		if (compatibility !== APP_COMPATIBILITY_STATUSES.UP_TO_DATE) {
-			ws.close(1008, compatibility === APP_COMPATIBILITY_STATUSES.APP_OUTDATED ? WEBSOCKET_APP_OUTDATED_REASON : WEBSOCKET_SERVER_OUTDATED_REASON);
-			return null;
+		const outdated = WebSocketServer.outdatedReason(query);
+		if (outdated) {
+			return WebSocketServer.refuse(ws, outdated);
 		}
 
-		// Check if the request has a token
 		const token = query.get("token");
-		if (!token) {
-			ws.close(1008, "Unauthorized");
-			return null;
+		const keycloakId = token ? await WebSocketServer.tokenOwner(token) : null;
+		if (!token || !keycloakId) {
+			return WebSocketServer.refuse(ws, "Unauthorized");
 		}
-
-		// Check if the token is valid and get the keycloakId
-		const checkToken = await KeycloakUtils.checkTokenAndGetKeycloakId(keycloakConfig, token);
-		if (!checkToken || checkToken.isError) {
-			ws.close(1008, "Unauthorized");
-			return null;
-		}
-		const keycloakId = checkToken.payload.keycloakId;
-		try {
-			const collision = await new AccountCollisionService(keycloakConfig).check(token);
-			if (collision.collision || collision.pending) {
-				ws.close(1008, WEBSOCKET_ACCOUNT_COLLISION_REASON);
-				return null;
-			}
-		}
-		catch {
-			ws.close(1008, WEBSOCKET_ACCOUNT_COLLISION_REASON);
-			return null;
+		if (await WebSocketServer.collisionBlocks(token)) {
+			return WebSocketServer.refuse(ws, WEBSOCKET_ACCOUNT_COLLISION_REASON);
 		}
 
 		// Get the groups of the user
 		const groups = await KeycloakUtils.getUserGroups(keycloakConfig, keycloakId);
 		if (groups.isError) {
-			ws.close(1008, "Error while getting user groups");
-			return null;
+			return WebSocketServer.refuse(ws, "Error while getting user groups");
 		}
 
 		// Log the connection

@@ -2,7 +2,7 @@ import Constants from "expo-constants";
 import {GAME_ACHIEVEMENTS, GameAchievementId} from "./Achievements";
 import {GAME_CENTER_MODES, GameCenterMode, GAME_SERVICE_PROVIDERS, GameServiceProvider} from "./GameServicesTypes";
 
-type GameServicesConfiguration = {
+export type GameServicesConfiguration = {
 	appId: string;
 	gameCenterMode: GameCenterMode;
 	achievements: Record<GameAchievementId, string>;

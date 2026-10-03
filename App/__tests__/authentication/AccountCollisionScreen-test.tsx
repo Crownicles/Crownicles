@@ -25,6 +25,18 @@ function token(accessToken: string): AuthToken {
 	return new AuthToken({accessToken, refreshToken: "synthetic-refresh", accessTokenExpiresAt: new Date(Date.now() + 60_000), refreshTokenExpiresAt: "never"});
 }
 
+function keycloakLogin(accessToken: string): Awaited<ReturnType<typeof KeycloakAuth.login>> {
+	return {access_token: accessToken, refresh_token: "synthetic-refresh", expires_in: 300, refresh_expires_in: 0, token_type: "Bearer", session_state: "test-session", scope: "openid"};
+}
+
+/** Verifies the email account, then confirms the account labelled `label` */
+async function verifyAndConfirm(label: string): Promise<void> {
+	await fireEvent.press(screen.getByText("app:auth.collision.verifyEmail"));
+	await waitFor(() => expect(screen.getByText("app:auth.collision.choose")).toBeTruthy());
+	await fireEvent.press(screen.getByText(new RegExp(`^app:auth.collision.${label} `)));
+	await fireEvent.press(screen.getByText("app:auth.collision.confirm"));
+}
+
 async function renderCollision(check: AccountCollisionCheck = {collision, current: ACCOUNT_COLLISION_CHOICES.DISCORD}, primary = "discord-access"): Promise<void> {
 	const auth: React.ContextType<typeof AuthContext> = {state: AuthStateEnum.NO_TOKEN, setState: jest.fn(), saveToken, clearToken: jest.fn().mockResolvedValue(undefined)};
 	await render(<AuthContext.Provider value={auth}><AccountCollisionScreen state={{token: token(primary), check}} onAuthenticated={authenticated} onCancel={jest.fn()} /></AuthContext.Provider>);
@@ -33,7 +45,7 @@ async function renderCollision(check: AccountCollisionCheck = {collision, curren
 describe("account collision choice", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		jest.mocked(KeycloakAuth.login).mockResolvedValue({access_token: "email-access", refresh_token: "synthetic-refresh", expires_in: 300, refresh_expires_in: 0, token_type: "Bearer", session_state: "test-session", scope: "openid"});
+		jest.mocked(KeycloakAuth.login).mockResolvedValue(keycloakLogin("email-access"));
 		jest.mocked(RestApi.verifyAccountCollision).mockResolvedValue({proof: "verified-proof", collision});
 		jest.mocked(RestApi.resolveAccountCollision).mockResolvedValue({kept: ACCOUNT_COLLISION_CHOICES.DISCORD});
 		jest.mocked(RestApi.checkAccountCollision).mockResolvedValue({collision, current: ACCOUNT_COLLISION_CHOICES.DISCORD});
@@ -55,10 +67,7 @@ describe("account collision choice", () => {
 		{choice: ACCOUNT_COLLISION_CHOICES.EMAIL, label: "email", access: "email-access"}
 	])("saves only the chosen account and confirms exactly that choice ($choice)", async ({choice, label, access}) => {
 		await renderCollision();
-		await fireEvent.press(screen.getByText("app:auth.collision.verifyEmail"));
-		await waitFor(() => expect(screen.getByText("app:auth.collision.choose")).toBeTruthy());
-		await fireEvent.press(screen.getByText(new RegExp(`^app:auth.collision.${label} `)));
-		await fireEvent.press(screen.getByText("app:auth.collision.confirm"));
+		await verifyAndConfirm(label);
 		await waitFor(() => expect(authenticated).toHaveBeenCalledTimes(1));
 		expect(RestApi.verifyAccountCollision).toHaveBeenCalledWith("discord-access", "email-access");
 		expect(RestApi.resolveAccountCollision).toHaveBeenCalledWith(access, "verified-proof", choice);
@@ -67,7 +76,7 @@ describe("account collision choice", () => {
 	});
 
 	it("authenticates Discord as the second account when starting from email", async () => {
-		jest.mocked(KeycloakAuth.login).mockResolvedValueOnce({access_token: "discord-access", refresh_token: "synthetic-refresh", expires_in: 300, refresh_expires_in: 0, token_type: "Bearer", session_state: "test-session", scope: "openid"});
+		jest.mocked(KeycloakAuth.login).mockResolvedValueOnce(keycloakLogin("discord-access"));
 		await renderCollision({collision, current: ACCOUNT_COLLISION_CHOICES.EMAIL}, "email-access");
 		await fireEvent.press(screen.getByText("app:auth.collision.verifyDiscord"));
 		await waitFor(() => expect(RestApi.verifyAccountCollision).toHaveBeenCalled());
@@ -87,10 +96,7 @@ describe("account collision choice", () => {
 	it("does not offer a different choice after a confirmed resolution fails", async () => {
 		jest.mocked(RestApi.resolveAccountCollision).mockRejectedValueOnce(new AccountCollisionRequestFailure(ACCOUNT_COLLISION_ERRORS.UNAVAILABLE));
 		await renderCollision();
-		await fireEvent.press(screen.getByText("app:auth.collision.verifyEmail"));
-		await waitFor(() => expect(screen.getByText("app:auth.collision.choose")).toBeTruthy());
-		await fireEvent.press(screen.getByText(/^app:auth.collision.discord /));
-		await fireEvent.press(screen.getByText("app:auth.collision.confirm"));
+		await verifyAndConfirm("discord");
 		await waitFor(() => expect(screen.getByText("app:auth.collision.errors.unavailable")).toBeTruthy());
 		expect(screen.queryByText("app:auth.collision.choose")).toBeNull();
 		expect(authenticated).not.toHaveBeenCalled();
@@ -101,10 +107,7 @@ describe("account collision choice", () => {
 	it("returns to verification if the proof expires before any choice was started on the server", async () => {
 		jest.mocked(RestApi.resolveAccountCollision).mockRejectedValueOnce(new AccountCollisionRequestFailure(ACCOUNT_COLLISION_ERRORS.PROOF_EXPIRED));
 		await renderCollision();
-		await fireEvent.press(screen.getByText("app:auth.collision.verifyEmail"));
-		await waitFor(() => expect(screen.getByText("app:auth.collision.choose")).toBeTruthy());
-		await fireEvent.press(screen.getByText(/^app:auth.collision.discord /));
-		await fireEvent.press(screen.getByText("app:auth.collision.confirm"));
+		await verifyAndConfirm("discord");
 		await waitFor(() => expect(screen.getByText("app:auth.collision.errors.proofExpired")).toBeTruthy());
 		expect(screen.getByText("app:auth.collision.verifyEmail")).toBeTruthy();
 		expect(screen.getByText("app:common.back")).toBeTruthy();

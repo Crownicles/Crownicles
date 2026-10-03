@@ -32,6 +32,11 @@ export const GAME_SERVICE_AVAILABILITY = {
 export type GameServiceAvailability = typeof GAME_SERVICE_AVAILABILITY[keyof typeof GAME_SERVICE_AVAILABILITY];
 export type GamePlatformPlayer = {id: string; displayName: string};
 
+export function platformAvailability(configured: boolean, nativeAvailable: boolean): GameServiceAvailability {
+	if (!configured) return GAME_SERVICE_AVAILABILITY.NOT_CONFIGURED;
+	return nativeAvailable ? GAME_SERVICE_AVAILABILITY.AVAILABLE : GAME_SERVICE_AVAILABILITY.NATIVE_UNAVAILABLE;
+}
+
 export interface PlatformGames {
 	readonly provider: GameServiceProvider;
 	readonly availability: GameServiceAvailability;

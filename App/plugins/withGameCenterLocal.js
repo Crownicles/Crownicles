@@ -11,10 +11,8 @@ const LOCAL_GAME_KIT = {
 	FILE_TYPE: "com.apple.dt.gamekit"
 };
 
-async function createLocalGameKitScheme(source) {
-	const document = await parseStringPromise(source);
-	const launch = document.Scheme?.LaunchAction?.[0];
-	if (!launch?.$ || !launch.BuildableProductRunnable) throw new Error("GameKit local testing requires a runnable app scheme.");
+/** Launches in debug with GameKit's local mode, and marks the launch so the app reads the bundled catalog */
+function configureLaunch(launch) {
 	launch.$.buildConfiguration = "Debug";
 	launch.$.enableGameKitDebugMode = "YES";
 	const variables = launch.EnvironmentVariables?.[0]?.EnvironmentVariable || [];
@@ -22,10 +20,23 @@ async function createLocalGameKitScheme(source) {
 		...variables.filter(variable => variable.$?.key !== LOCAL_GAME_KIT.LAUNCH_MARKER),
 		{$: {key: LOCAL_GAME_KIT.LAUNCH_MARKER, value: "1", isEnabled: "YES"}}
 	]}];
-	for (const entry of document.Scheme.BuildAction?.[0]?.BuildActionEntries?.[0]?.BuildActionEntry || []) {
+}
+
+/** The local scheme can never produce an archive that would reach the stores */
+function preventArchiving(scheme) {
+	const entries = scheme.BuildAction?.[0]?.BuildActionEntries?.[0]?.BuildActionEntry || [];
+	for (const entry of entries) {
 		entry.$.buildForArchiving = "NO";
 	}
-	delete document.Scheme.ArchiveAction;
+	delete scheme.ArchiveAction;
+}
+
+async function createLocalGameKitScheme(source) {
+	const document = await parseStringPromise(source);
+	const launch = document.Scheme?.LaunchAction?.[0];
+	if (!launch?.$ || !launch.BuildableProductRunnable) throw new Error("GameKit local testing requires a runnable app scheme.");
+	configureLaunch(launch);
+	preventArchiving(document.Scheme);
 	return new Builder().buildObject(document);
 }
 

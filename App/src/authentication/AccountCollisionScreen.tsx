@@ -4,14 +4,14 @@ import {AuthContext} from "@/src/authentication/AuthContext";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AUTH_FAILURES, reasonOfUnknownError} from "@/src/authentication/AuthFailure";
 import {IDENTITY_PROVIDERS, KeycloakAuth} from "@/src/authentication/KeycloakAuth";
-import {AccountCollisionRequestFailure, RestApi} from "@/src/networking/RestApi";
+import {AccountCollisionRequestFailure, isAccountCollisionOpen, RestApi} from "@/src/networking/RestApi";
 import {Button, Note, Screen} from "@/src/design/Primitives";
 import {ActionBanner, ChoiceRow, Refusal, Standing} from "@/src/design/Sections";
 import {SegmentedControl} from "@/src/design/SegmentedControl";
 import {AtSign, Check, MessageCircle} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
-import {ACCOUNT_COLLISION_CHOICES, ACCOUNT_COLLISION_ERRORS, AccountCollisionCheck, AccountCollisionChoice, AccountCollisionError, AccountCollisionProof} from "ws-packets/src/objects/AccountCollision";
+import {ACCOUNT_COLLISION_CHOICES, ACCOUNT_COLLISION_ERRORS, AccountCollision, AccountCollisionCheck, AccountCollisionChoice, AccountCollisionError, AccountCollisionProof} from "ws-packets/src/objects/AccountCollision";
 
 const REVERIFIABLE_ERRORS: ReadonlySet<AccountCollisionError> = new Set([ACCOUNT_COLLISION_ERRORS.PROOF_EXPIRED, ACCOUNT_COLLISION_ERRORS.ACCOUNT_CHANGED]);
 
@@ -31,21 +31,43 @@ function failureText(error: unknown): string | null {
 	return i18n.t("app:auth.collision.errors.unavailable");
 }
 
-export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
-	state: AccountCollisionLoginState;
-	onAuthenticated: (token: AuthToken) => Promise<void>;
-	onCancel: () => void;
-}): ReactElement {
-	const auth = useContext(AuthContext);
-	const [verified, setVerified] = useState<VerifiedAccounts | null>(null);
-	const [choice, setChoice] = useState<AccountCollisionChoice | "">(state.check.pending ?? "");
-	const [confirmed, setConfirmed] = useState<AuthToken | null>(state.check.pending ? state.token : null);
+function isReverifiable(error: unknown): boolean {
+	return error instanceof AccountCollisionRequestFailure && REVERIFIABLE_ERRORS.has(error.reason);
+}
+
+/** Whether the collision outlived a refused resolution: a concurrent one may have settled it already */
+async function collisionRemains(kept: AuthToken): Promise<boolean> {
+	const current = await RestApi.checkAccountCollision(await accessToken(kept));
+	return isAccountCollisionOpen(current);
+}
+
+/** Signs in to the other account, then proves both belong to the player */
+async function verifiedAccounts(token: AuthToken, startedFromEmail: boolean): Promise<VerifiedAccounts> {
+	const second = AuthToken.fromKeycloakOAuth2Token(await KeycloakAuth.login(startedFromEmail ? IDENTITY_PROVIDERS.DISCORD : undefined));
+	const [discord, email] = startedFromEmail ? [second, token] : [token, second];
+	const proof = await RestApi.verifyAccountCollision(await accessToken(discord), await accessToken(email));
+	return {discord, email, proof};
+}
+
+/** Sends the choice; a stale proof restarts the verification unless the account got settled meanwhile */
+async function sendChoice(kept: AuthToken, choice: AccountCollisionChoice, {proof, onStale}: {proof: string; onStale: () => void}): Promise<void> {
+	try {
+		await RestApi.resolveAccountCollision(await accessToken(kept), proof, choice);
+	}
+	catch (error) {
+		if (!isReverifiable(error)) throw error;
+		if (await collisionRemains(kept)) {
+			onStale();
+			throw error;
+		}
+	}
+}
+
+/** Runs one task at a time and keeps the last failure to show */
+function useExclusiveTask(): {pending: boolean; failure: string | null; run: (task: () => Promise<void>) => void} {
 	const [pending, setPending] = useState(false);
 	const [failure, setFailure] = useState<string | null>(null);
 	const running = useRef(false);
-	const collision = state.check.collision;
-	const startedFromEmail = state.check.current === ACCOUNT_COLLISION_CHOICES.EMAIL;
-
 	const run = (task: () => Promise<void>): void => {
 		if (running.current) return;
 		running.current = true;
@@ -56,14 +78,54 @@ export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
 			setPending(false);
 		});
 	};
+	return {pending, failure, run};
+}
+
+function ChoiceSelector({collision, choice, onChange}: {
+	collision: AccountCollision;
+	choice: AccountCollisionChoice | "";
+	onChange: (choice: AccountCollisionChoice | "") => void;
+}): ReactElement {
+	return <ChoiceRow label={i18n.t("app:auth.collision.choose")}>
+		<SegmentedControl label={i18n.t("app:auth.collision.choose")} value={choice} onChange={onChange} options={[
+			{value: ACCOUNT_COLLISION_CHOICES.DISCORD, label: i18n.t("app:auth.collision.discord", {name: collision.discord.name})},
+			{value: ACCOUNT_COLLISION_CHOICES.EMAIL, label: i18n.t("app:auth.collision.email", {name: collision.emailAccount.name})}
+		]} />
+	</ChoiceRow>;
+}
+
+function VerifyBanner({startedFromEmail, pending, onPress}: {startedFromEmail: boolean; pending: boolean; onPress: () => void}): ReactElement {
+	return <ActionBanner icon={startedFromEmail ? MessageCircle : AtSign} label={i18n.t(startedFromEmail ? "app:auth.collision.verifyDiscord" : "app:auth.collision.verifyEmail")} pending={pending} onPress={onPress} />;
+}
+
+function ResolveBanner({resumed, chosen, pending, onPress}: {resumed: boolean; chosen: boolean; pending: boolean; onPress: () => void}): ReactElement {
+	return <ActionBanner icon={Check} label={i18n.t(resumed ? "app:auth.collision.resume" : "app:auth.collision.confirm")} pending={pending} onPress={onPress} {...!chosen ? {lock: {reason: i18n.t("app:auth.collision.chooseFirst"), icon: Check}} : {}} />;
+}
+
+export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
+	state: AccountCollisionLoginState;
+	onAuthenticated: (token: AuthToken) => Promise<void>;
+	onCancel: () => void;
+}): ReactElement {
+	const auth = useContext(AuthContext);
+	const [verified, setVerified] = useState<VerifiedAccounts | null>(null);
+	const [choice, setChoice] = useState<AccountCollisionChoice | "">(state.check.pending ?? "");
+	const [confirmed, setConfirmed] = useState<AuthToken | null>(state.check.pending ? state.token : null);
+	const {pending, failure, run} = useExclusiveTask();
+	const collision = state.check.collision;
+	const startedFromEmail = state.check.current === ACCOUNT_COLLISION_CHOICES.EMAIL;
+	const verifying = !verified && !confirmed;
+	const choosable = verified && !confirmed ? collision : null;
 
 	const verify = (): void => run(async (): Promise<void> => {
-		const second = AuthToken.fromKeycloakOAuth2Token(await KeycloakAuth.login(startedFromEmail ? IDENTITY_PROVIDERS.DISCORD : undefined));
-		const discord = startedFromEmail ? second : state.token;
-		const email = startedFromEmail ? state.token : second;
-		const proof = await RestApi.verifyAccountCollision(await accessToken(discord), await accessToken(email));
-		setVerified({discord, email, proof});
+		setVerified(await verifiedAccounts(state.token, startedFromEmail));
 	});
+
+	const restart = (): void => {
+		setConfirmed(null);
+		setVerified(null);
+		setChoice("");
+	};
 
 	const resolve = (): void => run(async (): Promise<void> => {
 		if (!choice) return;
@@ -71,22 +133,7 @@ export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
 		if (!kept) return;
 		await auth.saveToken(kept);
 		setConfirmed(kept);
-		try {
-			await RestApi.resolveAccountCollision(await accessToken(kept), verified?.proof.proof ?? "", choice);
-		}
-		catch (error) {
-			if (error instanceof AccountCollisionRequestFailure && REVERIFIABLE_ERRORS.has(error.reason)) {
-				const current = await RestApi.checkAccountCollision(await accessToken(kept));
-				if (!current.collision && !current.pending) {
-					await onAuthenticated(kept);
-					return;
-				}
-				setConfirmed(null);
-				setVerified(null);
-				setChoice("");
-			}
-			throw error;
-		}
+		await sendChoice(kept, choice, {proof: verified?.proof.proof ?? "", onStale: restart});
 		await onAuthenticated(kept);
 	});
 
@@ -97,14 +144,9 @@ export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
 			<Note>{i18n.t("app:auth.collision.keptData")}</Note>
 			{failure ? <Refusal>{failure}</Refusal> : null}
 			{pending ? <Note>{i18n.t("app:auth.collision.pending")}</Note> : null}
-			{!verified && !confirmed ? <ActionBanner icon={startedFromEmail ? MessageCircle : AtSign} label={i18n.t(startedFromEmail ? "app:auth.collision.verifyDiscord" : "app:auth.collision.verifyEmail")} pending={pending} onPress={verify} /> : null}
-			{verified && collision && !confirmed ? <ChoiceRow label={i18n.t("app:auth.collision.choose")}>
-				<SegmentedControl label={i18n.t("app:auth.collision.choose")} value={choice} onChange={setChoice} options={[
-					{value: ACCOUNT_COLLISION_CHOICES.DISCORD, label: i18n.t("app:auth.collision.discord", {name: collision.discord.name})},
-					{value: ACCOUNT_COLLISION_CHOICES.EMAIL, label: i18n.t("app:auth.collision.email", {name: collision.emailAccount.name})}
-				]} />
-			</ChoiceRow> : null}
-			{verified || confirmed ? <ActionBanner icon={Check} label={i18n.t(confirmed ? "app:auth.collision.resume" : "app:auth.collision.confirm")} pending={pending} onPress={resolve} {...!choice ? {lock: {reason: i18n.t("app:auth.collision.chooseFirst"), icon: Check}} : {}} /> : null}
+			{verifying ? <VerifyBanner startedFromEmail={startedFromEmail} pending={pending} onPress={verify} /> : null}
+			{choosable ? <ChoiceSelector collision={choosable} choice={choice} onChange={setChoice} /> : null}
+			{verifying ? null : <ResolveBanner resumed={confirmed !== null} chosen={choice !== ""} pending={pending} onPress={resolve} />}
 			{!confirmed ? <Button disabled={pending} onPress={onCancel}>{i18n.t("app:common.back")}</Button> : null}
 		</View>
 	</Screen>;

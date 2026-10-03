@@ -18,22 +18,43 @@ const GOOGLE_SERVICES_FILE = [
 	path.join(os.homedir(), ".crownicles", "google-services.json")
 ].find(file => file && fs.existsSync(file));
 
+function env(name, fallback = "") {
+	return process.env[name] || fallback;
+}
+
+/** A local GameKit build reads its identifiers from the bundled catalog instead of App Store Connect */
+function gameCenterConfig(mode) {
+	if (mode === "local") {
+		const {achievements, leaderboards} = localGameKitCatalog.resources;
+		return {mode, pvpAchievementId: achievements[0].vendorIdentifier, topweekLeaderboardId: leaderboards[0].vendorIdentifier};
+	}
+	return {
+		mode,
+		pvpAchievementId: env("EXPO_PUBLIC_GAME_CENTER_PVP_ACHIEVEMENT_ID", "com.crownicles.app.pvp_fight_completed"),
+		topweekLeaderboardId: env("EXPO_PUBLIC_GAME_CENTER_TOPWEEK_LEADERBOARD_ID", "com.crownicles.app.topweek_best")
+	};
+}
+
+function playGamesConfig() {
+	return {
+		appId: env("EXPO_PUBLIC_PLAY_GAMES_APP_ID"),
+		pvpAchievementId: env("EXPO_PUBLIC_PLAY_GAMES_PVP_ACHIEVEMENT_ID"),
+		topweekLeaderboardId: env("EXPO_PUBLIC_PLAY_GAMES_TOPWEEK_LEADERBOARD_ID")
+	};
+}
+
+function androidConfig(android) {
+	return GOOGLE_SERVICES_FILE ? {android: {...android, googleServicesFile: GOOGLE_SERVICES_FILE}} : {};
+}
+
 module.exports = ({config}) => ({
 	...config,
-	...(GOOGLE_SERVICES_FILE ? {android: {...config.android, googleServicesFile: GOOGLE_SERVICES_FILE}} : {}),
+	...androidConfig(config.android),
 	extra: {
 		...config.extra,
 		gameServices: {
-			gameCenter: {
-				mode: gameCenterMode,
-				pvpAchievementId: gameCenterMode === "local" ? localGameKitCatalog.resources.achievements[0].vendorIdentifier : process.env.EXPO_PUBLIC_GAME_CENTER_PVP_ACHIEVEMENT_ID || "com.crownicles.app.pvp_fight_completed",
-				topweekLeaderboardId: gameCenterMode === "local" ? localGameKitCatalog.resources.leaderboards[0].vendorIdentifier : process.env.EXPO_PUBLIC_GAME_CENTER_TOPWEEK_LEADERBOARD_ID || "com.crownicles.app.topweek_best"
-			},
-			playGames: {
-				appId: process.env.EXPO_PUBLIC_PLAY_GAMES_APP_ID || "",
-				pvpAchievementId: process.env.EXPO_PUBLIC_PLAY_GAMES_PVP_ACHIEVEMENT_ID || "",
-				topweekLeaderboardId: process.env.EXPO_PUBLIC_PLAY_GAMES_TOPWEEK_LEADERBOARD_ID || ""
-			}
+			gameCenter: gameCenterConfig(gameCenterMode),
+			playGames: playGamesConfig()
 		}
 	}
 });

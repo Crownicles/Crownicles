@@ -28,6 +28,24 @@ export class TopweekRecordTracker {
 		this.dirty = false;
 	}
 
+	private isCurrent(generation: number): boolean {
+		return this.active && generation === this.generation;
+	}
+
+	private async recordRanking(generation: number): Promise<void> {
+		const answer = await GameClient.request(makeFromClientPacket(TopReq, {dataType: TopDataType.SCORE, timing: TopTiming.WEEK}), TopRes, [TopEmptyRes]);
+		if (this.isCurrent(generation) && answer.kind === "answer") await this.record(answer.packet);
+	}
+
+	/** A refresh asked while the previous one ran is replayed once it ends */
+	private settle(generation: number): void {
+		if (generation !== this.generation) return;
+		this.inFlight = false;
+		if (!this.dirty) return;
+		this.dirty = false;
+		this.refresh();
+	}
+
 	public refresh(): void {
 		if (!this.active) return;
 		if (this.inFlight) {
@@ -36,17 +54,8 @@ export class TopweekRecordTracker {
 		}
 		const generation = this.generation;
 		this.inFlight = true;
-		GameClient.request(makeFromClientPacket(TopReq, {dataType: TopDataType.SCORE, timing: TopTiming.WEEK}), TopRes, [TopEmptyRes]).then(async answer => {
-			if (!this.active || generation !== this.generation || answer.kind !== "answer") return;
-			await this.record(answer.packet);
-		}).catch((error: unknown): void => {
+		this.recordRanking(generation).catch((error: unknown): void => {
 			console.warn("Unable to read the topweek record:", error);
-		}).finally((): void => {
-			if (generation !== this.generation) return;
-			this.inFlight = false;
-			if (!this.dirty) return;
-			this.dirty = false;
-			this.refresh();
-		});
+		}).finally((): void => this.settle(generation));
 	}
 }
