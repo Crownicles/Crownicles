@@ -156,6 +156,16 @@ function useCollisionChoice(state: AccountCollisionLoginState, onAuthenticated: 
 	return {verified, confirmed, choice, setChoice, startedFromEmail, pending, failure, verify, resolve};
 }
 
+/** Both accounts are proven first; then the choice, unless it was already confirmed and only resumes */
+function CollisionActions({flow, collision}: {flow: CollisionChoiceFlow; collision: AccountCollision | null}): ReactElement {
+	if (!flow.verified && !flow.confirmed) return <VerifyBanner startedFromEmail={flow.startedFromEmail} pending={flow.pending} onPress={flow.verify} />;
+	const choosable = flow.confirmed ? null : collision;
+	return <>
+		{choosable ? <ChoiceSelector collision={choosable} choice={flow.choice} onChange={flow.setChoice} /> : null}
+		<ResolveBanner resumed={flow.confirmed !== null} chosen={flow.choice !== ""} pending={flow.pending} onPress={flow.resolve} />
+	</>;
+}
+
 export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
 	state: AccountCollisionLoginState;
 	onAuthenticated: (token: AuthToken) => Promise<void>;
@@ -163,17 +173,13 @@ export function AccountCollisionScreen({state, onAuthenticated, onCancel}: {
 }): ReactElement {
 	const flow = useCollisionChoice(state, onAuthenticated);
 	const collision = state.check.collision;
-	const verifying = !flow.verified && !flow.confirmed;
-	const choosable = flow.verified && !flow.confirmed ? collision : null;
 	return <Screen>
 		<Standing caption={i18n.t("app:auth.caption")} title={i18n.t(flow.confirmed ? "app:auth.collision.resumeTitle" : "app:auth.collision.title")} {...collision ? {subtitle: collision.email} : {}} />
 		<View style={{gap: Theme.spacing.lg}}>
 			<Note>{i18n.t("app:auth.collision.warning")}</Note>
 			<Note>{i18n.t("app:auth.collision.keptData")}</Note>
 			<TaskStatus failure={flow.failure} pending={flow.pending} />
-			{verifying ? <VerifyBanner startedFromEmail={flow.startedFromEmail} pending={flow.pending} onPress={flow.verify} /> : null}
-			{choosable ? <ChoiceSelector collision={choosable} choice={flow.choice} onChange={flow.setChoice} /> : null}
-			{verifying ? null : <ResolveBanner resumed={flow.confirmed !== null} chosen={flow.choice !== ""} pending={flow.pending} onPress={flow.resolve} />}
+			<CollisionActions flow={flow} collision={collision} />
 			{flow.confirmed ? null : <Button disabled={flow.pending} onPress={onCancel}>{i18n.t("app:common.back")}</Button>}
 		</View>
 	</Screen>;
