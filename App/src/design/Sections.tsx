@@ -560,6 +560,8 @@ export function BottomSheet({onClose, onShown, onDismissed, visible = true, head
 		onPanResponderTerminate: (): void => {Animated.spring(offset, {toValue: 0, ...SHEET_SPRING}).start();}
 	}), [gestureState, offset, leave]);
 	const headerDrag = useMemo(() => PanResponder.create({
+		// The native window claims every touch nobody inside takes at its start, and its descendants are then never asked again: the header takes it first.
+		onStartShouldSetPanResponder: (): boolean => true,
 		onMoveShouldSetPanResponderCapture: (_event, gesture): boolean => sheetDragStarts(gesture),
 		...dragHandlers
 	}), [dragHandlers]);

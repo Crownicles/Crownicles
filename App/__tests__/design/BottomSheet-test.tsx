@@ -34,6 +34,11 @@ describe("bottom sheet dismissal", () => {
 		expect(sheetDragStarts(gesture, scroll)).toBe(expected);
 	});
 
+	it("takes a touch that starts on its header, which the native window would otherwise keep from every later move", async () => {
+		await render(<BottomSheet onClose={jest.fn()} heading={<Text>Acquérir ce logis</Text>}><Text>Content</Text></BottomSheet>);
+		expect(responders[0].onStartShouldSetPanResponder?.(undefined as never, drag({dy: 0}))).toBe(true);
+	});
+
 	it("closes from the content when it was already at the top", async () => {
 		const close = jest.fn();
 		await render(<BottomSheet onClose={close}><Text>Content</Text></BottomSheet>);
