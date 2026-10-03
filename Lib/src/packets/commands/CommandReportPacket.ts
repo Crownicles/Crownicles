@@ -298,16 +298,22 @@ export class CommandReportItemEnchantedRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportBuyHomeRes extends CrowniclesPacket {
 	cost!: number;
+
+	level!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportUpgradeHomeRes extends CrowniclesPacket {
 	cost!: number;
+
+	level!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportMoveHomeRes extends CrowniclesPacket {
 	cost!: number;
+
+	level!: number;
 
 	/** Amount of accumulated apartment rent applied as discount on the move price. Omitted when 0. */
 	rentDeducted?: number;

@@ -3,12 +3,20 @@ import {itemSnapshotForReaction} from "@/src/collectors/CityItemPresentation";
 
 type AvailabilityResolver = (snapshot: CityMobileSnapshot | undefined) => boolean;
 
+type HomeManage = NonNullable<NonNullable<CityMobileSnapshot["home"]>["manage"]>;
+
+/** Core only sends the eligibility it grants: once the notary's offer is known, a missing flag is a refusal. */
+function homeManageAvailability(snapshot: CityMobileSnapshot | undefined, granted: (manage: HomeManage) => boolean | undefined): boolean {
+	const manage = snapshot?.home?.manage;
+	return manage ? granted(manage) === true : true;
+}
+
 const DIRECT_AVAILABILITY: Partial<Record<ReactionCollectorReaction["type"], AvailabilityResolver>> = {
 	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: snapshot => snapshot?.guildDomainNotary?.canAfford ?? true,
 	[CITY_REACTION_KINDS.APARTMENT_BUY]: snapshot => snapshot?.apartmentNotary?.forSale?.canAfford ?? true,
-	[CITY_REACTION_KINDS.BUY_HOME]: snapshot => snapshot?.home?.manage?.canBuy ?? true,
-	[CITY_REACTION_KINDS.UPGRADE_HOME]: snapshot => snapshot?.home?.manage?.canUpgrade ?? true,
-	[CITY_REACTION_KINDS.MOVE_HOME]: snapshot => snapshot?.home?.manage?.canMove ?? true,
+	[CITY_REACTION_KINDS.BUY_HOME]: snapshot => homeManageAvailability(snapshot, manage => manage.canBuy),
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: snapshot => homeManageAvailability(snapshot, manage => manage.canUpgrade),
+	[CITY_REACTION_KINDS.MOVE_HOME]: snapshot => homeManageAvailability(snapshot, manage => manage.canMove),
 	[CITY_REACTION_KINDS.GARDEN_HARVEST]: snapshot => snapshot?.home?.owned?.garden?.eligibility.canHarvest ?? true,
 	[CITY_REACTION_KINDS.GARDEN_WATER]: snapshot => snapshot?.home?.owned?.garden?.eligibility.canWaterGarden ?? true,
 	[CITY_REACTION_KINDS.GARDEN_COMPOST]: snapshot => snapshot?.home?.owned?.garden?.eligibility.canCompost ?? true

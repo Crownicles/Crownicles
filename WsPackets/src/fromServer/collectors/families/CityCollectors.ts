@@ -1,6 +1,7 @@
 import {
 	GuildDomainSnapshot, GuildFoodShop
 } from "../../../objects/GuildDomain";
+import { HomeUpgradeChange } from "../../../objects/HomeUpgrade";
 
 import {
 	ReactionCollectorDataKind,
@@ -54,11 +55,18 @@ export type CityMobileSnapshot = {
 		manage?: {
 			newPrice?: number;
 			upgradePrice?: number;
+
+			/** What the upgrade brings, as keys of `commands:report.city.homes.upgradeChanges`. */
+			upgradeChanges?: HomeUpgradeChange[];
 			movePrice?: number;
 			currentMoney: number;
 			canBuy?: boolean;
 			canUpgrade?: boolean;
 			canMove?: boolean;
+
+			/** Sent when the next upgrade exists but the player is not experienced enough for it. */
+			requiredPlayerLevelForUpgrade?: number;
+			isMaxLevel?: boolean;
 		};
 	};
 	enchanter?: {

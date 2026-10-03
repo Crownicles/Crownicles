@@ -273,6 +273,10 @@ export const CrowniclesIcons: {
 		shops: { [shopId: string]: string };
 		home: { [level: number]: string };
 		manageHome: string;
+		homePurchases: {
+			buy: string;
+			move: string;
+		};
 		guildDomain: {
 			menu: string;
 			shop: string;
@@ -2758,6 +2762,10 @@ export const CrowniclesIcons: {
 			8: "🏡"
 		},
 		manageHome: "🧑‍💼",
+		homePurchases: {
+			buy: "🏠",
+			move: "📦"
+		},
 		guildDomain: {
 			menu: "🏰",
 			shop: "🛒",

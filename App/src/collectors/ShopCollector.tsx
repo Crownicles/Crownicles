@@ -1,4 +1,5 @@
-import {ReactNode, useRef, useState} from "react";
+import {ReactNode, useState} from "react";
+import {useAfterDismissal} from "@/src/design/useAfterDismissal";
 import {Text, View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ReactionCollectorDataOf, SHOP_DATA_KINDS, SHOP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
@@ -143,24 +144,6 @@ function articleSummary(article: ShopArticle, data: ShopData): string | undefine
 	if (potion) return inventoryItemDetails(potion);
 	if (isSingleUnit(article)) return undefined;
 	return i18n.t("app:city.shop.bundles", {amounts: article.offers.map(quantityLabel).join(" · ")});
-}
-
-/**
- * iOS shows one window at a time: a choice made in a sheet is sent once the sheet is put away, so the
- * window the server answers with is not lost behind it.
- */
-function useAfterDismissal(): {defer: (action: () => void) => void; onDismissed: () => void} {
-	const pending = useRef<(() => void) | null>(null);
-	return {
-		defer: (action): void => {
-			pending.current = action;
-		},
-		onDismissed: (): void => {
-			const action = pending.current;
-			pending.current = null;
-			action?.();
-		}
-	};
 }
 
 type ShelfContext = {data: ShopData; locked: boolean; choose: (index: number) => void};

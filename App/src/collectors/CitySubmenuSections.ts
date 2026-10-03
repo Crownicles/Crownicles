@@ -43,15 +43,35 @@ function groupedTitleKey(view: CitySubmenu, type: string): string {
 	return "app:city.titles.actions";
 }
 
-function groupedSections(view: CitySubmenu, entries: CityEntry[]): CitySubmenuSection[] {
-	const groups: Record<string, CityEntry[]> = {};
+function groupedSections(view: CitySubmenu, entries: CityEntry[], pinned: Record<string, CityListItem[]> = {}): CitySubmenuSection[] {
+	const groups: Record<string, CityListItem[]> = Object.fromEntries(Object.entries(pinned).map(([titleKey, items]) => [titleKey, [...items]]));
 	for (const entry of entries) {
 		const titleKey = groupedTitleKey(view, entry.reaction.type);
-		(groups[titleKey] ??= []).push(entry);
+		(groups[titleKey] ??= []).push({kind: "reaction", entry});
 	}
-	return Object.entries(groups).map(([titleKey, groupedEntries]) => section(titleKey, reactionItems(groupedEntries)));
+	return Object.entries(groups).map(([titleKey, items]) => section(titleKey, items));
+}
+
+/** The upgrade Core does not offer yet, or no longer: said on a greyed row rather than silently left out. */
+function homeUpgradeLimit(snapshot: CityMobileSnapshot | undefined): CityListItem[] {
+	const manage = snapshot?.home?.manage;
+	const level = snapshot?.home?.owned?.level;
+	const reason = manage?.requiredPlayerLevelForUpgrade === undefined
+		? manage?.isMaxLevel ? i18n.t("app:city.locks.homeMaxLevel") : undefined
+		: i18n.t("app:city.locks.playerLevel", {level: manage.requiredPlayerLevelForUpgrade});
+	if (!reason) return [];
+	const nextLevel = level === undefined || manage?.isMaxLevel ? level : level + 1;
+	return [{
+		kind: "info",
+		key: "home-upgrade-limit",
+		iconPath: nextLevel === undefined ? "city.manageHome" : `city.home.${nextLevel}`,
+		title: i18n.t("app:city.reactions.upgradeHome"),
+		subtitle: i18n.t("app:city.subtitles.upgradeHome"),
+		lock: {reason}
+	}];
 }
 
 export function submenuSections(view: CitySubmenu, entries: CityEntry[], snapshot: CityMobileSnapshot | undefined, deps: SubmenuDependencies): CitySubmenuSection[] {
+	if (view === "notary") return groupedSections(view, entries, {"app:city.titles.yourHome": homeUpgradeLimit(snapshot)}).filter(notarySection => notarySection.items.length > 0);
 	return simpleSections(view, entries, snapshot, deps) ?? groupedSections(view, entries);
 }

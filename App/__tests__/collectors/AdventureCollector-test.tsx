@@ -548,6 +548,7 @@ describe("AdventureCollector", () => {
 	});
 
 	it("confirms a paid city action inside its own row", async () => {
+		jest.replaceProperty(Platform, "OS", "android");
 		const onChoose = jest.fn();
 		const collector = cityHomePurchase();
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
@@ -557,10 +558,23 @@ describe("AdventureCollector", () => {
 		expect(onChoose).not.toHaveBeenCalled();
 
 		await fireEvent.press(screen.getByText("app:collector.accept"));
+		expect(screen.queryByText("app:collector.accept")).toBeNull();
 		expect(onChoose).toHaveBeenCalledWith(1);
 	});
 
+	it("waits for iOS to put a city confirmation away before sending it, so the celebration that answers is not lost behind it", async () => {
+		jest.replaceProperty(Platform, "OS", "ios");
+		const onChoose = jest.fn();
+		await render(<AdventureCollector collector={cityHomePurchase()} onChoose={onChoose} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:city.actions.notary"));
+		await fireEvent.press(screen.getByText(CITY_REACTION_KINDS.BUY_HOME));
+
+		await fireEvent.press(screen.getByText("app:collector.accept"));
+		expect(onChoose).not.toHaveBeenCalled();
+	});
+
 	it("submits the offer the unfolded row is showing after a refresh", async () => {
+		jest.replaceProperty(Platform, "OS", "android");
 		const staleChoice = jest.fn();
 		const refreshedChoice = jest.fn();
 		await render(<CityMenu collector={cityHomePurchase()} onChoose={staleChoice} submitting={false} />);
@@ -570,6 +584,18 @@ describe("AdventureCollector", () => {
 		await fireEvent.press(screen.getByText("app:collector.accept"));
 		expect(refreshedChoice).toHaveBeenCalledWith(1);
 		expect(staleChoice).not.toHaveBeenCalled();
+	});
+
+	it("shows the next home upgrade greyed with the level it needs, instead of leaving it out", async () => {
+		const collector = cityHomePurchase();
+		if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected a city collector fixture");
+		collector.data.data.snapshot = {...collector.data.data.snapshot, home: {manage: {currentMoney: 2_000, requiredPlayerLevelForUpgrade: 70}}};
+		collector.reactions = collector.reactions.filter(reaction => reaction.type !== CITY_REACTION_KINDS.BUY_HOME);
+		await render(<CityMenu collector={collector} onChoose={jest.fn()} submitting={false} />);
+
+		await fireEvent.press(screen.getByText("app:city.actions.notary"));
+		expect(screen.getByText("app:city.reactions.upgradeHome")).toBeTruthy();
+		expect(screen.getByText("app:city.locks.playerLevel")).toBeTruthy();
 	});
 
 	it("says on the row why an unaffordable home cannot be bought", async () => {

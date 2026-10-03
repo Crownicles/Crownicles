@@ -21,7 +21,7 @@ import {groupCityEntries} from "@/src/collectors/CityMenuModel";
 import {CitySection} from "@/src/collectors/CityRows";
 import {CityMissionBoard} from "@/src/components/CityMissionBoard";
 import {Note, Screen} from "@/src/design/Primitives";
-import {Standing} from "@/src/design/Sections";
+import {Lock, Standing} from "@/src/design/Sections";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
 import {HOME_SERVICE_DESTINATIONS} from "@/src/navigation/HomeServices";
@@ -56,9 +56,12 @@ export type CityInfoItem = {
 	iconPath: string;
 	title: string;
 	subtitle: string;
+
+	/** An action the player cannot take yet, written in grey with the reason on the row. */
+	lock?: Lock;
 };
 
-type CityReactionItem = {kind: "reaction"; entry: CityEntry};
+export type CityReactionItem = {kind: "reaction"; entry: CityEntry};
 export type CityListItem = CityNavigationItem | CityInfoItem | CityReactionItem;
 export type CityGroup = "housing" | "services" | "shops" | "guild" | "quit";
 export type CityMenuModel = {groups: Record<CityGroup, CityListItem[]>; submenus: Record<CitySubmenu, CityEntry[]>};

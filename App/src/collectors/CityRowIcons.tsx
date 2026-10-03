@@ -23,8 +23,23 @@ function itemReactionIcon(reaction: ReactionCollectorReaction, snapshot: CityMob
 	return item ? iconForPath(cityItemIconPath(item)) : undefined;
 }
 
+/** An upgrade shows the home it leads to; buying or moving, what the notary hands over. */
+function homePurchaseIconPath(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): string | undefined {
+	switch (reaction.type) {
+		case CITY_REACTION_KINDS.BUY_HOME: return "city.homePurchases.buy";
+		case CITY_REACTION_KINDS.MOVE_HOME: return "city.homePurchases.move";
+		case CITY_REACTION_KINDS.UPGRADE_HOME: return snapshot?.home?.owned ? `city.home.${snapshot.home.owned.level + 1}` : undefined;
+		default: return undefined;
+	}
+}
+
+function homePurchaseIcon(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): ReactNode | undefined {
+	const iconPath = homePurchaseIconPath(reaction, snapshot);
+	return iconPath ? iconForPath(iconPath) : undefined;
+}
+
 export function cityRowIcon(reaction: ReactionCollectorReaction, snapshot?: CityMobileSnapshot): ReactNode | undefined {
-	return disenchantIcon(reaction, snapshot) ?? itemReactionIcon(reaction, snapshot) ?? (() => {
+	return disenchantIcon(reaction, snapshot) ?? itemReactionIcon(reaction, snapshot) ?? homePurchaseIcon(reaction, snapshot) ?? (() => {
 		const iconPath = cityIconPath(reaction);
 		return iconPath ? iconForPath(iconPath) : undefined;
 	})();

@@ -1,4 +1,5 @@
 import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { homeUpgradeChanges } from "../../../../../../Lib/src/utils/HomeUpgradeChanges";
 import type {
 	CityMobileDisenchantItem,
 	CityMobileItem,
@@ -100,12 +101,19 @@ function mapOwnedHome(ownedHome: NonNullable<ReactionCollectorCityData["home"]["
 function mapHomeManage(manage: NonNullable<ReactionCollectorCityData["home"]["manage"]>): CityMobileHomeManage {
 	return {
 		...manage.newPrice === undefined ? {} : { newPrice: manage.newPrice },
-		...manage.upgrade === undefined ? {} : { upgradePrice: manage.upgrade.price },
+		...manage.upgrade === undefined
+			? {}
+			: {
+				upgradePrice: manage.upgrade.price,
+				upgradeChanges: homeUpgradeChanges(manage.upgrade.oldFeatures, manage.upgrade.newFeatures)
+			},
 		...manage.movePrice === undefined ? {} : { movePrice: manage.movePrice },
 		currentMoney: manage.currentMoney,
 		...manage.canBuy === undefined ? {} : { canBuy: manage.canBuy },
 		...manage.canUpgrade === undefined ? {} : { canUpgrade: manage.canUpgrade },
-		...manage.canMove === undefined ? {} : { canMove: manage.canMove }
+		...manage.canMove === undefined ? {} : { canMove: manage.canMove },
+		...manage.requiredPlayerLevelForUpgrade === undefined ? {} : { requiredPlayerLevelForUpgrade: manage.requiredPlayerLevelForUpgrade },
+		...manage.isMaxLevel ? { isMaxLevel: true } : {}
 	};
 }
 

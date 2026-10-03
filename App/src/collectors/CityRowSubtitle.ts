@@ -22,9 +22,10 @@ const CITY_SUBTITLE_KEYS: Partial<Record<ReactionCollectorReaction["type"], stri
 	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: "commands:report.city.royalBlacksmith.menuDescription",
 	[CITY_REACTION_KINDS.GUILD_DOMAIN_MENU]: "commands:report.city.guildDomain.description",
 	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: "commands:report.city.guildDomain.notaryDescription",
-	[CITY_REACTION_KINDS.BUY_HOME]: "commands:report.city.homes.manageHomeDescriptionNew",
-	[CITY_REACTION_KINDS.UPGRADE_HOME]: "commands:report.city.homes.manageHomeDescriptionUpgrade",
-	[CITY_REACTION_KINDS.MOVE_HOME]: "commands:report.city.homes.manageHomeDescriptionMove",
+	[CITY_REACTION_KINDS.BUY_HOME]: "app:city.subtitles.buyHome",
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: "app:city.subtitles.upgradeHome",
+	[CITY_REACTION_KINDS.MOVE_HOME]: "app:city.subtitles.moveHome",
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: "app:city.subtitles.buyApartment",
 	[CITY_REACTION_KINDS.HOME_MENU]: "commands:report.city.homes.goToOwnedHomeDescription",
 	[CITY_REACTION_KINDS.HOME_BED]: "commands:report.city.homes.bed.menuDescription"
 };
@@ -56,11 +57,6 @@ function homeBedSubtitle(snapshot: CityMobileSnapshot | undefined, reaction: Rea
 	return snapshot?.home?.owned ? i18n.t("commands:report.city.homes.bed.menuDescription", {health: snapshot.home.owned.bedHealthRegeneration}) : defaultSubtitle(reaction);
 }
 
-function apartmentBuySubtitle(snapshot: CityMobileSnapshot | undefined, reaction: ReactionCollectorReaction): string | undefined {
-	const sale = snapshot?.apartmentNotary?.forSale;
-	return sale ? i18n.t(sale.canAfford ? "commands:report.city.homes.apartmentNotary.forSaleDescription" : "commands:report.city.homes.apartmentNotary.buyNotEnoughMoney", {price: sale.price, cost: sale.price, missingMoney: sale.missingMoney ?? 0}) : defaultSubtitle(reaction);
-}
-
 type ContextualResolver = (reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined) => string | undefined;
 
 const CONTEXTUAL_RESOLVERS: Partial<Record<ReactionCollectorReaction["type"], ContextualResolver>> = {
@@ -68,7 +64,6 @@ const CONTEXTUAL_RESOLVERS: Partial<Record<ReactionCollectorReaction["type"], Co
 	[CITY_REACTION_KINDS.INN_MEAL]: reaction => innSubtitle(reaction),
 	[CITY_REACTION_KINDS.INN_ROOM]: reaction => innSubtitle(reaction),
 	[CITY_REACTION_KINDS.HOME_BED]: (reaction, snapshot) => homeBedSubtitle(snapshot, reaction),
-	[CITY_REACTION_KINDS.APARTMENT_BUY]: (reaction, snapshot) => apartmentBuySubtitle(snapshot, reaction),
 	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: (reaction, snapshot) => apartmentRentSubtitle(reaction, snapshot)
 };
 

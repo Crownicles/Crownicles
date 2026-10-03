@@ -17,6 +17,10 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {ClassesCollector} from "@/src/collectors/ClassesCollector";
 import {ClassOutcome} from "@/src/collectors/ClassOutcome";
 import {useClassOutcome} from "@/src/store/useClassOutcome";
+import {HomePurchaseOutcome} from "@/src/collectors/HomePurchaseOutcome";
+import {useHomePurchaseOutcome} from "@/src/store/useHomePurchaseOutcome";
+import {NotEnoughMoneyOutcome} from "@/src/collectors/NotEnoughMoneyOutcome";
+import {useNotEnoughMoneyOutcome} from "@/src/store/useNotEnoughMoneyOutcome";
 import {usePetFeedOutcome} from "@/src/store/usePetFeedOutcome";
 import {PetFeedCollector} from "@/src/collectors/PetFeedCollector";
 import {PetFeedOutcome} from "@/src/collectors/PetFeedOutcome";
@@ -115,6 +119,8 @@ function FoundItemCollector({waiting}: {waiting: boolean}): ReactNode {
 function PendingOutcomes(): ReactNode {
 	const inventoryOutcome = useInventoryOutcome();
 	const classOutcome = useClassOutcome();
+	const homePurchase = useHomePurchaseOutcome();
+	const notEnoughMoney = useNotEnoughMoneyOutcome();
 	const feedOutcome = usePetFeedOutcome();
 	const expeditionOutcome = useExpeditionOutcome();
 	const managementOutcome = usePetManagementOutcome();
@@ -132,6 +138,8 @@ function PendingOutcomes(): ReactNode {
 		{state: expeditionOutcome, node: <PendingOutcome state={expeditionOutcome} Content={PetExpeditionOutcome} />},
 		{state: feedOutcome, node: <PendingOutcome state={feedOutcome} Content={PetFeedOutcome} />},
 		{state: classOutcome, node: <PendingOutcome state={classOutcome} Content={ClassOutcome} />},
+		{state: homePurchase, node: <PendingOutcome state={homePurchase} Content={HomePurchaseOutcome} />},
+		{state: notEnoughMoney, node: <PendingOutcome state={notEnoughMoney} Content={NotEnoughMoneyOutcome} />},
 		{state: inventoryOutcome, node: <PendingOutcome state={inventoryOutcome} Content={InventoryOutcome} />}
 	];
 	const current = outcomes.find(entry => entry.state.outcome !== null);

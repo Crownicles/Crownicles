@@ -618,9 +618,64 @@
   },
   "city": {
     "staleAction": "La situation a changé. Les actions de la ville ont été actualisées.",
+    "notEnoughMoney": "Pas assez d'argent",
     "missionBoard": {
       "title": "Tableau des missions",
       "description": "Vos missions en cours et leurs récompenses"
+    },
+    "purchases": {
+      "home": "Nouvelle maison",
+      "upgrade": "Maison améliorée",
+      "move": "Déménagement réussi",
+      "apartment": "Nouveau logis",
+      "homeLevel": "Maison de niveau {{level}}",
+      "cost": "Pour {{cost}}"
+    },
+    "upgradeChanges": {
+      "chest": {
+        "title": "Un coffre",
+        "description": "Pour y ranger vos affaires"
+      },
+      "biggerChest": {
+        "title": "Un coffre plus grand",
+        "description": "Encore plus de place pour vos affaires"
+      },
+      "inventoryBonus": {
+        "title": "Un inventaire plus grand",
+        "description": "Des emplacements supplémentaires, pour de bon"
+      },
+      "upgradeItemStation": {
+        "title": "Un établi",
+        "description": "Pour améliorer vos armes et armures"
+      },
+      "betterUpgradeItemStation": {
+        "title": "Un meilleur établi",
+        "description": "Pour améliorer des armes et armures plus puissantes"
+      },
+      "betterBed": {
+        "title": "Un meilleur lit",
+        "description": "Pour un sommeil plus réparateur"
+      },
+      "garden": {
+        "title": "Un jardin",
+        "description": "Pour cultiver des plantes"
+      },
+      "biggerGarden": {
+        "title": "Un jardin plus grand",
+        "description": "Pour cultiver encore plus de plantes"
+      },
+      "betterGardenEarth": {
+        "title": "Une meilleure terre",
+        "description": "Pour que les plantes poussent plus vite"
+      },
+      "cookingStation": {
+        "title": "Un fourneau",
+        "description": "Pour préparer des potions et de la nourriture pour familiers"
+      },
+      "betterCookingStation": {
+        "title": "Un meilleur fourneau",
+        "description": "Avec plus d'emplacements de cuisson"
+      }
     },
     "titles": {
       "eyebrow": "Vous êtes en ville",
@@ -654,6 +709,10 @@
       "mealDetails": "Énergie +{{energy}} {emote:unitValues.energy}",
       "roomDetails": "Vie +{{health}} {emote:unitValues.health}",
       "notary": "Acheter, améliorer ou déplacer un logement",
+      "buyHome": "Votre première demeure, dans cette ville",
+      "upgradeHome": "Plus de confort et de nouveaux services chez vous",
+      "moveHome": "Votre maison s'installe dans cette ville",
+      "buyApartment": "Un pied-à-terre, ou une rente si votre maison est proche",
       "noActions": "Aucune action disponible pour le moment.",
       "upgradeDetails": "Niveau {{from}} → {{to}} · {{materials}}{{missingMaterials}}",
       "disenchantDetails": "{{enchantment}} · retirer l'enchantement",
@@ -757,6 +816,8 @@
       "alreadyWatered": "Le jardin a déjà été arrosé récemment.",
       "nothingToCompost": "Aucune plante à composter.",
       "noRent": "Aucune rente n'a encore été accumulée.",
+      "playerLevel": "Il faut être niveau {{level}} pour cette amélioration.",
+      "homeMaxLevel": "Votre maison est déjà au niveau maximum.",
       "unavailable": "Cette action n'est pas disponible pour le moment."
     },
     "notes": {

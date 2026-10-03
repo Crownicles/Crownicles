@@ -7,6 +7,7 @@ import {citySnapshotNote} from "@/src/collectors/CitySnapshotNote";
 import {gardenPlotItems, homeFeatureItems, homeIconPath} from "@/src/collectors/CityHomeItems";
 import {enchantmentCatalogItems} from "@/src/collectors/CityGuildItems";
 import {cityRowEnd, cityRowSubtitle} from "@/src/collectors/CityRowDetails";
+import {cityRowDetails} from "@/src/collectors/CityRowExtras";
 import {cityReactionAvailable, cityRowIcon, cityRowTitle, iconForPath} from "@/src/collectors/CityRowPresentation";
 import {cityNavigationMeta, submenuTitle} from "@/src/collectors/CityMenuModel";
 import {CitySection} from "@/src/collectors/CityRows";
@@ -62,7 +63,7 @@ export function CitySubmenuView({view, innId, entries, collector, snapshot, onCh
 	const visibleSections = sections.filter(section => section.items.length > 0);
 	return <Page {...page}>
 			{summary}
-			{visibleSections.map((section, index) => <CitySection key={section.title} title={section.title} items={section.items} collector={collector} onChoose={onChoose} onNavigate={onNavigate} locked={locked} first={index === 0 && summary === null} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={cityRowSubtitle} rowEnd={cityRowEnd} reactionAvailable={cityReactionAvailable} />)}
+			{visibleSections.map((section, index) => <CitySection key={section.title} title={section.title} items={section.items} collector={collector} onChoose={onChoose} onNavigate={onNavigate} locked={locked} first={index === 0 && summary === null} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={cityRowSubtitle} rowEnd={cityRowEnd} rowDetails={cityRowDetails} reactionAvailable={cityReactionAvailable} />)}
 			{citySnapshotNote(view, snapshot)}
 		{visibleSections.length === 0 ? <Note>{i18n.t("app:city.subtitles.noActions")}</Note> : null}
 	</Page>;
