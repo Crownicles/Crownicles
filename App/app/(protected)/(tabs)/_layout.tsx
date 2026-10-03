@@ -101,7 +101,7 @@ type NavigatorTabBarProps = {
 	};
 };
 
-function NavigatorTabBar({state, position, navigation, journey}: NavigatorTabBarProps & {journey: Journey}): ReactNode {
+function NavigatorTabBar({state, position, navigation, journey, hidden}: NavigatorTabBarProps & {journey: Journey; hidden: boolean}): ReactNode {
 	const currentTime = useCurrentTime(RING_TICK_MS);
 	const progress: Partial<Record<JourneyTab, number | undefined>> = {
 		[JOURNEY_TABS.ADVENTURE]: useTravelProgress(currentTime),
@@ -129,7 +129,7 @@ function NavigatorTabBar({state, position, navigation, journey}: NavigatorTabBar
 		const event = navigation.emit({type: "tabPress", target: route.key, canPreventDefault: true});
 		if (!event.defaultPrevented) navigation.navigate(route.name, route.params);
 	};
-	return <CapsuleTabBar tabs={tabs} focused={state.routes[state.index].name} position={position} onSelect={select} />;
+	return <CapsuleTabBar tabs={tabs} focused={state.routes[state.index].name} position={position} onSelect={select} hidden={hidden} />;
 }
 
 function ProfileIdentity({profile}: {profile: ProfileRes | null}): ReactNode {
@@ -188,7 +188,7 @@ function TabPager({journey}: {journey: Journey}): ReactNode {
 	return (
 		<TopTabs
 			tabBarPosition="bottom"
-			tabBar={(props: NavigatorTabBarProps) => hasTabs && !heldOn(props.state.routes[props.state.index].name) ? <NavigatorTabBar {...props} journey={journey} /> : null}
+			tabBar={(props: NavigatorTabBarProps) => <NavigatorTabBar {...props} journey={journey} hidden={!hasTabs || heldOn(props.state.routes[props.state.index].name)} />}
 			screenOptions={({route}: {route: {name: string}}) => ({swipeEnabled: !detailOpen && hasTabs && !heldOn(route.name)})}
 			screenListeners={({route}: {route: {name: string}}) => ({focus: (): void => {
 				if (isJourneyTab(route.name)) journey.visit(route.name);

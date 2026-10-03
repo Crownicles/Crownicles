@@ -29,6 +29,7 @@ type CapsuleTabBarProps = {
 	/** The pager's position, fractional while a swipe is under way: the bar follows it frame by frame. */
 	position: Animated.AnimatedInterpolation<number>;
 	onSelect: (name: string) => void;
+	hidden?: boolean;
 };
 
 const CAPSULE = {height: 62, padding: 7, sideInset: 14, gapAbove: 8, minBottom: 12} as const;
@@ -86,6 +87,8 @@ const useStyles = createStyles(colors => ({
 		color: colors.selectionInk
 	},
 	hitArea: {position: "absolute", top: 0, height: PILL_HEIGHT},
+	anchor: {position: "absolute", width: 0, height: 0},
+	hidden: {display: "none"},
 	badge: {position: "absolute", top: -BADGE_OFFSET, right: -BADGE_OFFSET},
 	newMark: {
 		position: "absolute",
@@ -199,8 +202,11 @@ function TabContent({tab, index, count, slots, position, focused}: TabContentPro
 	</>;
 }
 
-/** A capsule floating above the screen's foot: the open tab widens into a pill that names it, following the swipe. */
-export function CapsuleTabBar({tabs, focused, position, onSelect}: CapsuleTabBarProps): ReactElement {
+/**
+ * A capsule floating above the screen's foot: the open tab widens into a pill that names it, following the swipe.
+ * Hidden, never unmounted: a position nothing reads loses its native node, and the pager keeps writing to the dropped one.
+ */
+export function CapsuleTabBar({tabs, focused, position, onSelect, hidden = false}: CapsuleTabBarProps): ReactElement {
 	const styles = useStyles();
 	const insets = useSafeAreaInsets();
 	const [width, setWidth] = useState(0);
@@ -211,7 +217,9 @@ export function CapsuleTabBar({tabs, focused, position, onSelect}: CapsuleTabBar
 		selectionAsync().catch(() => undefined);
 		onSelect(tab.name);
 	};
-	return <View style={[styles.bar, {paddingBottom: Math.max(insets.bottom, CAPSULE.minBottom)}]}>
+	return <View style={[styles.bar, {paddingBottom: Math.max(insets.bottom, CAPSULE.minBottom)}, hidden && styles.hidden]} testID="capsule-bar">
+		{/* Reads the position whatever the width, while the pill's nodes come and go with the layout. */}
+		<Animated.View pointerEvents="none" style={[styles.anchor, {transform: [{translateX: position}]}]} />
 		<View style={styles.capsule}>
 			<View style={styles.track} accessibilityRole="tablist" testID="capsule-track" onLayout={(event): void => setWidth(event.nativeEvent.layout.width)}>
 				{width > 0 ? <>

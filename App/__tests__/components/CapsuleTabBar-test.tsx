@@ -1,5 +1,5 @@
 import {Animated} from "react-native";
-import {fireEvent, render, screen} from "@testing-library/react-native";
+import {act, fireEvent, render, screen} from "@testing-library/react-native";
 import {CapsuleTab, CapsuleTabBar} from "@/src/components/CapsuleTabBar";
 import {Compass, PawPrint, UserRound} from "@/src/design/FightIcons";
 
@@ -69,5 +69,21 @@ describe("CapsuleTabBar", () => {
 		// The pill already draws the eye: the new-tab dot would only crowd the same corner.
 		expect(screen.queryByTestId("tab-new-mark", {includeHiddenElements: true})).toBeNull();
 		expect(screen.getByRole("tab", {name: "Familier"})).toHaveAccessibilityValue({text: "12 à récupérer"});
+	});
+
+	it("keeps reading the pager's position while hidden, so the bar still follows it once shown again", async () => {
+		const position = new Animated.Value(0);
+		const detach = jest.spyOn(position as Animated.Value & {__detach: () => void}, "__detach");
+		const shown = (hidden: boolean): React.JSX.Element => <CapsuleTabBar tabs={TABS} focused="index" position={position} onSelect={jest.fn()} hidden={hidden} />;
+		const {rerender} = await render(shown(false));
+		await laidOut();
+
+		await rerender(shown(true));
+		await fireEvent(screen.getByTestId("capsule-track", {includeHiddenElements: true}), "layout", {nativeEvent: {layout: {width: 0, height: 0}}});
+		await rerender(shown(false));
+		await act(async (): Promise<void> => { await Promise.resolve(); });
+
+		expect(detach).not.toHaveBeenCalled();
+		expect(screen.getByTestId("capsule-bar")).not.toHaveStyle({display: "none"});
 	});
 });
