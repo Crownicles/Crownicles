@@ -171,6 +171,11 @@ function findPetKey(data: Data): string {
 	return data.isPetFood === true ? "food" : "noFood";
 }
 
+function anyAdvice(): string {
+	const advices = i18n.tArrayWithoutCommands("advices:advices");
+	return advices[Math.floor(Math.random() * advices.length)] ?? "";
+}
+
 function otherPlayerDetails(details: Data): Record<string, unknown> {
 	const petId = num(details, "petId");
 	const hasPet = Boolean(petId) && Boolean(details.petSex);
@@ -179,7 +184,7 @@ function otherPlayerDetails(details: Data): Record<string, unknown> {
 	return {
 		level: num(details, "level"),
 		...classDisplays(details),
-		advice: anyTranslation("advices:advices"),
+		advice: anyAdvice(),
 		petEmote: hasPet ? petIcon({typeId: petId!, sex: sex(details.petSex)}) : "",
 		petName: hasPet ? petName({typeId: petId!, sex: sex(details.petSex), ...str(details, "petName") ? {nickname: str(details, "petName")} : {}}) : "",
 		guildName: str(details, "guildName"),

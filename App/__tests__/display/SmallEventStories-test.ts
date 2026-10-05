@@ -5,6 +5,7 @@ jest.mock("@/src/translations/i18n", () => ({
 	i18n: {
 		t: (key: string, options?: Record<string, unknown>): string => `${key}${options && Object.keys(options).length > 0 ? JSON.stringify(options) : ""}`,
 		tArray: (): string[] => [],
+		tArrayWithoutCommands: (): string[] => [],
 		tRecord: (): Record<string, string> => ({}),
 		language: "fr"
 	}

@@ -342,7 +342,7 @@ function hasNextStop(packet: ReportTravelSummaryRes): boolean {
  * Reaching a stop brings a new one.
  */
 function travelAdvice(stopTime: number): string {
-	const advices = i18n.tArray("advices:advices").filter(advice => !/(?:^|\s)\/[a-z][\w-]*/i.test(advice));
+	const advices = i18n.tArrayWithoutCommands("advices:advices");
 	return advices.length === 0 ? "" : plainStory(advices[Math.abs(stopTime) % advices.length]);
 }
 

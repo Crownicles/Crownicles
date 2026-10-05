@@ -1750,7 +1750,7 @@
       },
       "moneyMouthBadge": {
         "name": "{emote:shopItems.moneyMouthBadge} Badge \"Money Mouth\"",
-        "info": "Vous recevrez le badge automatiquement après le paiement. Pour plus d'informations sur les badges, utilisez la commande {command:help}.\n\n{emote:unitValues.gem} **Cours du jour des gemmes** : `{{kingsMoneyAmount, number}}` {emote:unitValues.money} par gemme au Marché royal."
+        "info": "Vous recevrez le badge automatiquement après le paiement. Pour plus d'informations sur les badges, consultez {command:badges}.\n\n{emote:unitValues.gem} **Cours du jour des gemmes** : `{{kingsMoneyAmount, number}}` {emote:unitValues.money} par gemme au Marché royal."
       },
       "slotExtension": {
         "name": "{emote:shopItems.inventoryExtension} Nouvel emplacement d'inventaire",
@@ -2242,7 +2242,7 @@
       },
       "questMasterBadge": {
         "name": "{emote:badges.mission_completer} Badge \"Maître des quêtes\"",
-        "info": "Vous recevrez le badge dans les heures qui suivront le paiement. Pour plus d'informations sur les badges utilisez la commande {command:help}."
+        "info": "Vous recevrez le badge dans les heures qui suivront le paiement. Pour plus d'informations sur les badges, consultez {command:badges}."
       }
     }
   },
@@ -2776,7 +2776,7 @@
     "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être nourri.",
     "noMoney": "Vous n'avez pas assez d'argent pour effectuer cet achat...",
     "notHungry": "Il semblerait que **{{pet}}** n'ait pas faim...",
-    "guildStorageEmpty": "L'entrepôt de nourriture de votre guilde est vide. Ravitaillez votre guilde en ville avec {command:report}.",
+    "guildStorageEmpty": "L'entrepôt de nourriture de votre guilde est vide. Ravitaillez votre guilde en ville depuis {command:report}.",
     "situationChanged": "Votre familier a changé pendant que vous le nourrissiez. Veuillez réessayer.",
     "cancelled": "Nourrissage annulé !",
     "resultTitle": "{{pseudo}}, repas servi !",

@@ -90,7 +90,8 @@ jest.mock("@/src/AppIcons", () => ({
 jest.mock("@/src/translations/i18n", () => ({
 	i18n: {
 		t: (key: string): string => key,
-		tArray: jest.fn((key: string): string[] => [`${key}:only`])
+		tArray: jest.fn((key: string): string[] => [`${key}:only`]),
+		tArrayWithoutCommands: jest.fn((key: string): string[] => [`${key}:only`])
 	}
 }));
 
@@ -165,6 +166,7 @@ describe("Adventure screen", () => {
 		jest.clearAllMocks();
 		fakeAppState.reset();
 		jest.mocked(i18n.tArray).mockImplementation((key: string): string[] => [`${key}:only`]);
+		jest.mocked(i18n.tArrayWithoutCommands).mockImplementation((key: string): string[] => [`${key}:only`]);
 		jest.mocked(useMissions).mockReturnValue({status: "loading"});
 		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: profile()});
 		mockedUseCollectors.mockReturnValue({open: [], track: jest.fn(), react: jest.fn(), isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()});
@@ -369,7 +371,8 @@ describe("Adventure screen", () => {
 	});
 
 	it("does not suggest Discord commands in the travel advice", async () => {
-		jest.mocked(i18n.tArray).mockReturnValue(["Utilisez la commande /idea !", "Garder de l'argent de côté est judicieux."]);
+		jest.mocked(i18n.tArray).mockReturnValue(["Utilisez la commande /idea !"]);
+		jest.mocked(i18n.tArrayWithoutCommands).mockReturnValue(["Garder de l'argent de côté est judicieux."]);
 		mockReport();
 
 		await render(<Adventure />);

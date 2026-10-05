@@ -27,12 +27,18 @@ function convertEmoteFormat(str: string): string {
 	return str.replace(/{emote:(.*?)}/g, (_match, emote) => getEmote(emote) ?? `EMOTE NOT FOUND : ${emote}`);
 }
 
+const COMMAND_MENTION = /{command:(.*?)}/g;
+
 /**
- * Discord renders "{command:...}" as a mention of the slash command; the app writes the same "/name".
+ * Discord renders "{command:...}" as a mention of the slash command. The app has no commands: it names the screen
+ * offering the same thing, and only a command without an app equivalent keeps its Discord "/name".
  * @param str
  */
 function convertCommandFormat(str: string): string {
-	return str.replace(/{command:(.*?)}/g, (_match, command) => `/${command}`);
+	return str.replace(COMMAND_MENTION, (_match, command: string) => {
+		const key = `app:commandMentions.${command}`;
+		return i18next.exists(key) ? String(i18next.t(key)) : `/${command}`;
+	});
 }
 
 /**
@@ -131,7 +137,7 @@ export class I18nCrownicles {
 	/**
 	 * Translate the given key with the given options
 	 * Override of the i18next.t function to allow the following :
-	 * - replace the "{command:...}" format by the corresponding discord command
+	 * - replace the "{command:...}" format by the app screen offering the same thing
 	 * - force lng to be a Language value and being required
 	 * - force the return type to be a string (and not a never)
 	 * @param key
@@ -158,6 +164,12 @@ export class I18nCrownicles {
 			return [crowniclesFormat(value)];
 		}
 		return [];
+	}
+
+	/** Variants written around a Discord command explain that command: the app keeps only the others. */
+	static tArrayWithoutCommands(key: string, options?: i18next.TOptions): string[] {
+		const value: unknown = i18next.t(key, {...options, returnObjects: true});
+		return Array.isArray(value) ? value.filter(variant => typeof variant === "string" && variant.search(COMMAND_MENTION) === -1).map(crowniclesFormat) : [];
 	}
 
 	/** Return a keyed translation object, as Discord's `tRecord` does. */

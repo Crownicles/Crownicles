@@ -85,18 +85,18 @@
       "Une île est composée d'un nombre fini de lieux. Une fois le dernier lieu visité, vous serez ramené sur le continent principal",
       "L'île mystérieuse change chaque semaine",
       "Lors d'un combat contre un monstre, si le maximum de tour est dépassé, le monstre deviendra très vite très puissant",
-      "Si un membre de votre guilde souhaite vous rejoindre sur le bateau, il peut exécuter {command:joinboat}",
+      "Si un membre de votre guilde souhaite vous rejoindre sur le bateau, il peut le faire depuis {command:joinboat}",
       "Les actions disponibles pendant les combats contre des animaux dépendent de vos statistiques, vos objets, vos familiers etc",
       "L'hostilité de l'île ne vous fera pas de cadeau vis-à-vis des péripéties. Mais en y allant à plusieurs avec des membres de votre guilde, vous serez bien plus forts ensembles",
-      "La commande {command:map} permet de voir la carte de l'île",
+      "La carte de l'île est visible depuis {command:map}",
       "Vous pouvez choisir de quitter l'île après chaque combat de monstre. Si votre énergie est faible, il est plus intéressant de partir en étant encore conscient",
       "Certaines actions comme boire une potion, accéder au magasin ou encore obtenir les bonus quotidiens sont indisponibles sur l'île",
       "Votre niveau n'influence pas le nombre de points de guilde, mais influence les autres récompenses",
       "Gagner contre un monstre plus loin dans l'île rapportera plus de points de guilde que ceux du début",
       "On raconte que si plusieurs membres d'une même guilde sont sur l'île en même temps, il est possible de combiner les forces de chacun pour faire une attaque dévastatrice",
       "Les membres de votre guilde peuvent vous aider à combattre les monstres lorsque vous vous rendez sur une île mystérieuse",
-      "Il est possible de voir les membres de votre guilde qui sont sur une île mystérieuse à l'aide de la commande {command:guild}",
-      "La commande {command:guild} vous permet de voir le nombre d'alliés qui vous aideront sur l'île mystérieuse",
+      "Il est possible de voir les membres de votre guilde qui sont sur une île mystérieuse depuis {command:guild}",
+      "Le nombre d'alliés qui vous aideront sur l'île mystérieuse est visible depuis {command:guild}",
       "Un \"allié\" est un membre de votre guilde qui est actuellement sur l'île mystérieuse ou qui en est récemment parti"
     ]
   },
@@ -515,8 +515,8 @@
     ],
     "reward": "{emote:unitValues.money} Argent: **{{money, number}}**\n{emote:unitValues.xp} XP : **{{xp, number}}**\n{emote:unitValues.score} Points : **Le nombre de points dépendra de votre classement final.**\n{emote:rewards.item} Un équipement aléatoire.",
     "endMessage": "\n\n{emote:commands.report} \"À l'aventurier appartenant à la {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}}) qui trouvera ce texte, **si vous maintenez votre gloire jusqu'à la fin de la saison**, vous pourrez remporter ces récompenses :\n\n{{rewards}}\"\n\nVous reprenez votre route, tout en vous réjouissant de pouvoir récupérer votre bonus {{time}}.",
-    "notEnoughFight": "\n\n{emote:commands.report} \"À l'aventurier appartenant à la {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}}) qui trouvera ce texte, **si vous réalisez quelques combats à l'aide de la commande {command:fight}**, vous pourrez remporter ces récompenses :\n\n{{rewards}}\"\n\nVous reprenez vite votre route, craignant de ne pas parvenir à combattre suffisamment de joueurs avant la fin de la saison {{time}}.",
-    "rewardToday": "\n\n{emote:commands.report} \"**Les récompenses de ligues sont disponibles !** Récupérez votre récompense avant la fin de la semaine grâce à la commande {command:leaguebonus} !\"\n\nVous reprenez votre route, tout en vous réjouissant de pouvoir récupérer votre bonus."
+    "notEnoughFight": "\n\n{emote:commands.report} \"À l'aventurier appartenant à la {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}}) qui trouvera ce texte, **si vous réalisez quelques combats depuis {command:fight}**, vous pourrez remporter ces récompenses :\n\n{{rewards}}\"\n\nVous reprenez vite votre route, craignant de ne pas parvenir à combattre suffisamment de joueurs avant la fin de la saison {{time}}.",
+    "rewardToday": "\n\n{emote:commands.report} \"**Les récompenses de ligues sont disponibles !** Récupérez votre récompense avant la fin de la semaine depuis {command:leaguebonus} !\"\n\nVous reprenez votre route, tout en vous réjouissant de pouvoir récupérer votre bonus."
   },
   "winGuildXP": {
     "stories": [
@@ -2610,7 +2610,7 @@
       ]
     },
     "talismanReceived": [
-      "Velanna vous observe en silence pendant de longues secondes. Puis, lentement, elle extrait de sa sacoche un pendentif de pierre noire veinée d'or. Le $t(models:talisman.anchor) pulse d'une lueur douce. Vous avez fait vos preuves : prenez soin de **{{pet}}**, car le lien entre un maître et sa bête est sacré. Elle pose le talisman dans votre main et referme vos doigts dessus, vous invitant à explorer le monde.\n\nVous recevez le $t(models:talisman.anchor) ! Vous pouvez désormais envoyer votre familier en expédition depuis la commande {command:pet}."
+      "Velanna vous observe en silence pendant de longues secondes. Puis, lentement, elle extrait de sa sacoche un pendentif de pierre noire veinée d'or. Le $t(models:talisman.anchor) pulse d'une lueur douce. Vous avez fait vos preuves : prenez soin de **{{pet}}**, car le lien entre un maître et sa bête est sacré. Elle pose le talisman dans votre main et referme vos doigts dessus, vous invitant à explorer le monde.\n\nVous recevez le $t(models:talisman.anchor) ! Vous pouvez désormais envoyer votre familier en expédition depuis {command:pet}."
     ],
     "expeditionBonus": {
       "points": "Velanna surgit des ombres et pose une main sur votre épaule. Elle perçoit la présence de **{{pet}}** à des lieues d'ici et sourit, un spectacle rare. Votre familier explore courageusement et le $t(models:talisman.anchor) renforce votre lien. Votre persévérance paie. Vous gagnez **{{bonusPoints}} {emote:unitValues.score}** !",
@@ -2679,7 +2679,7 @@
       "Vous restez immobile, perdu dans vos pensées. L'oracle attend patiemment, puis, constatant votre absence de réaction, se détourne vers l'autel et reprend sa veille silencieuse.",
       "Le silence s'étire entre vous et l'oracle. Celui-ci finit par baisser les mains et retourne à sa contemplation des runes, vous laissant poursuivre votre route."
     ],
-    "firstEncounter": "une lueur dorée à travers le brouillard vous attire vers un autel de pierre recouvert de runes anciennes. Un oracle au visage voilé se tient immobile devant l'édifice.\n\nD'un geste lent, il désigne l'autel : les runes racontent l'histoire des bénédictions, ces forces ancestrales que les voyageurs peuvent éveiller en unissant leurs offrandes. Lorsque la cagnotte collective atteint son seuil, une bénédiction se répand sur tous les aventuriers du monde, leur conférant un pouvoir temporaire.\n\nL'oracle s'approche et trace du bout des doigts une marque runique sur votre poignet. La peau picote là où les lignes incandescentes se gravent, puis la sensation s'apaise. Cette marque vous lie désormais aux mystères de l'autel. Vous pourrez consulter l'état des bénédictions à tout moment grâce à la commande {command:blessing}."
+    "firstEncounter": "une lueur dorée à travers le brouillard vous attire vers un autel de pierre recouvert de runes anciennes. Un oracle au visage voilé se tient immobile devant l'édifice.\n\nD'un geste lent, il désigne l'autel : les runes racontent l'histoire des bénédictions, ces forces ancestrales que les voyageurs peuvent éveiller en unissant leurs offrandes. Lorsque la cagnotte collective atteint son seuil, une bénédiction se répand sur tous les aventuriers du monde, leur conférant un pouvoir temporaire.\n\nL'oracle s'approche et trace du bout des doigts une marque runique sur votre poignet. La peau picote là où les lignes incandescentes se gravent, puis la sensation s'apaise. Cette marque vous lie désormais aux mystères de l'autel. Vous pourrez consulter l'état des bénédictions à tout moment depuis {command:blessing}."
   },
   "farmer": {
     "stories": [
