@@ -409,8 +409,6 @@
     "shop": {
       "refuse": "Passer son chemin",
       "fields": {
-        "rarity": "Rareté",
-        "level": "Niveau",
         "price": "Prix"
       }
     },

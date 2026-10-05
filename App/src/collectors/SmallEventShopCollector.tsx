@@ -25,14 +25,12 @@ type ShopSmallEventData = Extract<ReactionCollectorData, {
 	type: typeof SMALL_EVENT_DATA_KINDS.SHOP | typeof SMALL_EVENT_DATA_KINDS.EPIC_SHOP;
 }>;
 
+/** The level and stats are already in the item's caption, so the price is the only figure left. */
 function itemFigures(data: ShopSmallEventData): Figure[] {
-	return [
-		...("itemLevel" in data.data.item ? [{caption: i18n.t("app:collector.shop.fields.level"), value: String(data.data.item.itemLevel)}] : []),
-		{caption: i18n.t("app:collector.shop.fields.price"), value: formatNumber(data.data.price), unit: "money"}
-	];
+	return [{caption: i18n.t("app:collector.shop.fields.price"), value: formatNumber(data.data.price), unit: "money"}];
 }
 
-/** The item's name first; its kind and rarity only qualify it. */
+/** The item's name first, then the caption every item wears: rarity, level, stats, enchantment. */
 function OfferedItem({item}: {item: ItemWithDetails}): ReactNode {
 	const emblem = inventoryItemEmblem(item);
 	return <Standing
