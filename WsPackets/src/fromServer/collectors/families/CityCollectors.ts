@@ -20,6 +20,11 @@ export type CityMobileSnapshot = {
 		current: number; max: number;
 	};
 	inns?: { innId: string }[];
+
+	/** When an inn serves the player a meal or a room again, as absolute timestamps; absent once it already can. */
+	innCooldowns?: {
+		mealAvailableAt?: number; roomAvailableAt?: number;
+	};
 	shops?: {
 		shopId: string; isEmpty: boolean;
 	}[];

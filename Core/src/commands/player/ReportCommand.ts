@@ -635,6 +635,24 @@ function buildCityInns(city: City): ReactionCollectorCityData["inns"] {
 
 type CityGuildServices = Pick<ReactionCollectorCityData, "guildDomain" | "guildFoodShop" | "guildDomainNotary">;
 
+/**
+ * Lets a frontend refuse a meal or a room before it is asked for, with the time left;
+ * the inn handlers still check the cooldowns themselves.
+ */
+function buildInnCooldowns(player: Player, city: City, now: number): Pick<ReactionCollectorCityData, "innCooldowns"> {
+	if (city.inns.length === 0) {
+		return {};
+	}
+	const mealAvailableAt = player.nextMealAvailableAt();
+	const roomAvailableAt = player.nextBedAvailableAt();
+	return {
+		innCooldowns: {
+			...mealAvailableAt > now ? { mealAvailableAt } : {},
+			...roomAvailableAt > now ? { roomAvailableAt } : {}
+		}
+	};
+}
+
 async function buildCityGuildServices(player: Player, city: City): Promise<CityGuildServices> {
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
 	const inDomainCity = guild?.domainCityId === city.id;
@@ -701,6 +719,7 @@ export async function buildCitySnapshot(
 		mapLocationId: player.getDestinationId()!,
 		availableServices: buildCityAvailableServices(city, craftServices, enchanter),
 		inns: buildCityInns(city),
+		...buildInnCooldowns(player, city, Date.now()),
 		shops: await buildCityShops(player, city),
 		energy: {
 			current: player.getCumulativeEnergy(playerActiveObjects),

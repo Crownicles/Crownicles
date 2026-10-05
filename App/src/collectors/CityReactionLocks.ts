@@ -3,6 +3,7 @@ import {
 } from "ws-packets/src/fromServer/collectors";
 import {itemSnapshotForReaction} from "@/src/collectors/CityItemPresentation";
 import {formatMoney} from "@/src/display/Amounts";
+import {formatTimeUntil} from "@/src/display/ItemEffects";
 import {CircleAlert, Clock3, Coins} from "@/src/design/FightIcons";
 import type {Lock} from "@/src/design/Sections";
 import {gameRules} from "@/src/rules/GameRules";
@@ -10,6 +11,7 @@ import {i18n} from "@/src/translations/i18n";
 
 const missingMoney = (amount: number): Lock => ({reason: i18n.t("app:city.locks.missingMoney", {amount: formatMoney(Math.max(0, amount))}), icon: Coins});
 const blocked = (key: string): Lock => ({reason: i18n.t(key), icon: CircleAlert});
+const waiting = (key: string, availableAt: number | undefined): Lock => ({reason: i18n.t(key, {time: formatTimeUntil(availableAt ?? Date.now())}), icon: Clock3});
 
 type LockResolver = (snapshot: CityMobileSnapshot | undefined) => Lock | undefined;
 
@@ -19,6 +21,8 @@ function homeLock(snapshot: CityMobileSnapshot | undefined, price: number | unde
 }
 
 const DIRECT_LOCKS: Partial<Record<ReactionCollectorReaction["type"], LockResolver>> = {
+	[CITY_REACTION_KINDS.INN_MEAL]: snapshot => waiting("app:city.locks.mealCooldown", snapshot?.innCooldowns?.mealAvailableAt),
+	[CITY_REACTION_KINDS.INN_ROOM]: snapshot => waiting("app:city.locks.roomCooldown", snapshot?.innCooldowns?.roomAvailableAt),
 	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: snapshot => {
 		const notary = snapshot?.guildDomainNotary;
 		return notary ? {reason: i18n.t("app:city.locks.guildTreasury", {amount: formatMoney(notary.cost)}), icon: Coins} : blocked("app:city.locks.unavailable");

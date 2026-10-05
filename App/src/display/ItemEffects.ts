@@ -56,6 +56,13 @@ export function formatDurationMinutes(totalMinutes: number): string {
 		: i18n.t("app:adventure.duration.hoursMinutes", {hours, minutes});
 }
 
+const MILLISECONDS_PER_MINUTE = 60_000;
+
+/** The time left before a moment the server sent as an absolute timestamp. */
+export function formatTimeUntil(timestamp: number): string {
+	return formatDurationMinutes((timestamp - Date.now()) / MILLISECONDS_PER_MINUTE);
+}
+
 /** The power of an effect as a bare amount: a duration for time, a number otherwise. */
 export function effectAmount(nature: ItemNature, value: number): string {
 	return nature === ItemNature.TIME_SPEEDUP ? formatDurationMinutes(value) : formatNumber(value);

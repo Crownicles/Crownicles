@@ -195,6 +195,7 @@ export function mapCitySnapshot(data: ReactionCollectorCityData): CityMobileSnap
 		energy: data.energy,
 		health: data.health,
 		inns: data.inns?.map(inn => ({ innId: inn.innId })),
+		...data.innCooldowns === undefined ? {} : { innCooldowns: { ...data.innCooldowns } },
 		shops: data.shops?.map(shop => ({
 			shopId: shop.shopId, isEmpty: Boolean(shop.isEmpty)
 		})),

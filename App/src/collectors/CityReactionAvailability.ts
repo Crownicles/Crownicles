@@ -11,7 +11,14 @@ function homeManageAvailability(snapshot: CityMobileSnapshot | undefined, grante
 	return manage ? granted(manage) === true : true;
 }
 
+/** Core only sends when an inn serves again while that moment is still to come; it may have passed since. */
+function servedNow(availableAt: number | undefined): boolean {
+	return availableAt === undefined || availableAt <= Date.now();
+}
+
 const DIRECT_AVAILABILITY: Partial<Record<ReactionCollectorReaction["type"], AvailabilityResolver>> = {
+	[CITY_REACTION_KINDS.INN_MEAL]: snapshot => servedNow(snapshot?.innCooldowns?.mealAvailableAt),
+	[CITY_REACTION_KINDS.INN_ROOM]: snapshot => servedNow(snapshot?.innCooldowns?.roomAvailableAt),
 	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: snapshot => snapshot?.guildDomainNotary?.canAfford ?? true,
 	[CITY_REACTION_KINDS.APARTMENT_BUY]: snapshot => snapshot?.apartmentNotary?.forSale?.canAfford ?? true,
 	[CITY_REACTION_KINDS.BUY_HOME]: snapshot => homeManageAvailability(snapshot, manage => manage.canBuy),

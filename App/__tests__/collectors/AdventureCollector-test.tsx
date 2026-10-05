@@ -210,6 +210,17 @@ function cityHomePurchase(price = 950, canBuy = true): ReactionCollectorCreation
 	return collector;
 }
 
+/** A city with one inn serving a meal and a room, possibly still waiting to serve them again. */
+function cityInn(innCooldowns?: {mealAvailableAt?: number; roomAvailableAt?: number}): ReactionCollectorCreation {
+	const collector = cityCollector();
+	if (collector.data.type !== CITY_DATA_KINDS.CITY) throw new Error("Expected a city collector fixture");
+	collector.data.data.snapshot = {...collector.data.data.snapshot, inns: [{innId: "goldenInn"}], ...innCooldowns ? {innCooldowns} : {}};
+	collector.reactions.splice(1, 0,
+		{type: CITY_REACTION_KINDS.INN_MEAL, data: {innId: "goldenInn", mealId: "soup", price: 20, energy: 40}},
+		{type: CITY_REACTION_KINDS.INN_ROOM, data: {innId: "goldenInn", roomId: "suite", price: 50, health: 60}});
+	return collector;
+}
+
 /** A shop selling one item, closed by the reaction right after it. */
 function shopCollector(id: string, data: {availableCurrency: number; shopId?: string}, item: {shopItemId: number; shopCategoryId: string}): ReactionCollectorCreation {
 	return {
@@ -571,6 +582,39 @@ describe("AdventureCollector", () => {
 
 		await fireEvent.press(screen.getByText("app:collector.accept"));
 		expect(onChoose).not.toHaveBeenCalled();
+	});
+
+	it("puts an inn confirmation away once the meal is confirmed, and sends it", async () => {
+		jest.replaceProperty(Platform, "OS", "android");
+		const onChoose = jest.fn();
+		await render(<CityMenu collector={cityInn()} onChoose={onChoose} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:city.labels.inn"));
+		await fireEvent.press(screen.getByText("commands:report.city.inns.meals.soup"));
+		expect(screen.getByText("app:collector.accept")).toBeTruthy();
+
+		await fireEvent.press(screen.getByText("app:collector.accept"));
+		expect(screen.queryByText("app:collector.accept")).toBeNull();
+		expect(onChoose).toHaveBeenCalledWith(1);
+	});
+
+	it("tells on the closed inn rows why a meal or a room must wait, and refuses them", async () => {
+		jest.replaceProperty(Platform, "OS", "android");
+		const onChoose = jest.fn();
+		const hour = 3_600_000;
+		await render(<CityMenu collector={cityInn({mealAvailableAt: Date.now() + 3 * hour, roomAvailableAt: Date.now() + 5 * hour})} onChoose={onChoose} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:city.labels.inn"));
+		expect(screen.getByText("app:city.locks.mealCooldown")).toBeTruthy();
+		expect(screen.getByText("app:city.locks.roomCooldown")).toBeTruthy();
+
+		await fireEvent.press(screen.getByText("commands:report.city.inns.meals.soup"));
+		await fireEvent.press(screen.getByText("app:collector.accept"));
+		expect(onChoose).not.toHaveBeenCalled();
+	});
+
+	it("serves an inn meal again once the time Core sent has passed", async () => {
+		await render(<CityMenu collector={cityInn({mealAvailableAt: Date.now() - 1_000})} onChoose={jest.fn()} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:city.labels.inn"));
+		expect(screen.queryByText("app:city.locks.mealCooldown")).toBeNull();
 	});
 
 	it("submits the offer the unfolded row is showing after a refresh", async () => {

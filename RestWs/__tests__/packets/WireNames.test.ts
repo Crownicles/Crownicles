@@ -14,7 +14,7 @@ import { join } from "path";
  */
 const WIRE_NAMES = [
 	"AppStateReq", "AppStateRes",
-	"ReportViewReq", "ReportViewRes", "ReportCityActionReq", "ReportCityActionRes",
+	"ReportViewReq", "ReportViewRes", "ReportCityActionReq", "ReportCityActionRes", "InnRes",
 	"GardenInfoReq", "GardenActionReq", "GardenRes",
 	"CookingMenuReq", "CookingIgniteReq", "CookingReviveReq", "CookingWoodConfirmReq", "CookingCraftReq", "CookingPinReq", "CookingUnpinReq", "CookingRes",
 	"HomeChestInfoReq", "HomeChestActionReq", "HomePlantTransferReq", "HomeChestRes", "HomePlantTransferRes", "HomePurchaseRes", "NotEnoughMoneyRes",

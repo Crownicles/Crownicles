@@ -64,6 +64,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		}[];
 	}[];
 
+	/** When the inns serve the player a meal or a room again (ms timestamps); a field is absent once it already can. */
+	innCooldowns?: {
+		mealAvailableAt?: number;
+		roomAvailableAt?: number;
+	};
+
 	shops?: {
 		shopId: string;
 		isEmpty?: boolean;

@@ -60,6 +60,7 @@ import { Constants } from "../../../../../../Lib/src/constants/Constants";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
 import { PVEConstants } from "../../../../../../Lib/src/constants/PVEConstants";
 import { PlayersConstants } from "../../../../../../Lib/src/constants/PlayersConstants";
+import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
 import { EntityConstants } from "../../../../../../Lib/src/constants/EntityConstants";
 import { ClassInfoConstants } from "../../../../../../Lib/src/constants/ClassInfoConstants";
 import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstants";
@@ -1475,6 +1476,13 @@ export class Player extends Model {
 			return Date.now();
 		}
 		return this.lastMealAt.valueOf() + PlayersConstants.MEAL_COOLDOWN;
+	}
+
+	/**
+	 * Timestamp (ms) at which any bed (home, apartment or inn room) heals the player again. Returns 0 if never used.
+	 */
+	public nextBedAvailableAt(): number {
+		return this.lastBedUsedAt ? this.lastBedUsedAt.valueOf() + HomeConstants.BED_COOLDOWN_MS : 0;
 	}
 
 	/**
