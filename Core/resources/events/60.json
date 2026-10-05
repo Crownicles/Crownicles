@@ -4,7 +4,11 @@
       "outcomes": {
         "0": {
           "money": 1500,
-          "tokens": 15
+          "tokens": 15,
+          "mapTypesExcludeDestination": [
+            "castleEntrance",
+            "castleThrone"
+          ]
         }
       }
     },
