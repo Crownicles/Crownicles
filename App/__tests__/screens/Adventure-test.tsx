@@ -10,7 +10,7 @@ import {ReportReq} from "ws-packets/src/fromClient/ReportReq";
 import {ReportUseTokensReq} from "ws-packets/src/fromClient/ReportUseTokensReq";
 import {ReportBuyHealReq} from "ws-packets/src/fromClient/ReportBuyHealReq";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {GAME_ENTITIES} from "@/src/store/GameEntities";
+import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
 import {GameClient} from "@/src/networking/GameClient";
 import {
 	CITY_DATA_KINDS, CITY_REACTION_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, SMALL_EVENT_DATA_KINDS
@@ -23,6 +23,7 @@ import {reportEventStore} from "@/src/collectors/ReportEventStore";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {ReportUseTokensAcceptedRes} from "ws-packets/src/fromServer/report/ReportTokenRes";
 import {ReportBuyHealAcceptedRes} from "ws-packets/src/fromServer/report/ReportHealRes";
+import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {MissionsRes} from "ws-packets/src/fromServer/missions/MissionsRes";
 import {MISSION_TYPES} from "ws-packets/src/objects/Mission";
 import {useMissions} from "@/src/components/Missions";
@@ -76,8 +77,10 @@ jest.mock("@/src/components/Missions", () => ({
 
 jest.mock("expo-secure-store", () => ({getItem: (): null => null, setItem: jest.fn()}));
 
+const mockQueryClient = {invalidateQueries: jest.fn(() => Promise.resolve())};
+
 jest.mock("@tanstack/react-query", () => ({
-	useQueryClient: (): {invalidateQueries: jest.Mock} => ({invalidateQueries: jest.fn(() => Promise.resolve())})
+	useQueryClient: (): typeof mockQueryClient => mockQueryClient
 }));
 
 jest.mock("@/src/AppIcons", () => ({
@@ -588,6 +591,22 @@ describe("Adventure screen", () => {
 		expect(request.mock.calls[0][0]).toBeInstanceOf(ReportBuyHealReq);
 		expect(mockedUseCollectors.mock.results[0].value.answerWithoutShowing).toHaveBeenCalledWith("buy-heal", 1);
 		expect(screen.queryByText("app:adventure.heal.use.title")).toBeNull();
+	});
+
+	it("reloads the journey once the player leaves an event, which may have rerouted it after its collector closed", async () => {
+		mockReport();
+		const outcome: ReportBigEventResultRes = {
+			eventId: 60, possibilityId: "end", outcomeId: "0", score: 0, experience: 0, health: 0, money: 1_500, energy: 0, gems: 0, tokens: 15, oneshot: false
+		};
+
+		await render(<Adventure />);
+		await act(async () => pushFromCore(ReportBigEventResultRes.wireName, outcome));
+		mockQueryClient.invalidateQueries.mockClear();
+		await fireEvent.press(screen.getByText("app:adventure.event.continue"));
+
+		expect(reportEventStore.getSnapshot()).toBeNull();
+		expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({queryKey: gameKey(GAME_ENTITIES.REPORT)});
+		expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({queryKey: gameKey(GAME_ENTITIES.PROFILE)});
 	});
 
 	it("plays the cure on the emblem before opening the heal result", async () => {

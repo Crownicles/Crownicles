@@ -398,6 +398,7 @@ type CollectorOutcomeViewProps = {
 	shopResult: ReturnType<typeof useShopResult>;
 	reactToCollector: (collectorId: string, reactionIndex: number) => void;
 	isAnswerPending: (collectorId: string) => boolean;
+	continueAfterBigEvent: () => void;
 	continueAfterTokenOutcome: () => void;
 	continueAfterHealOutcome: () => void;
 };
@@ -420,11 +421,11 @@ function collectorScreen(
 	/>;
 }
 
-function storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome, pveFightOutcome}: Pick<
+function storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome, pveFightOutcome, continueAfterBigEvent}: Pick<
 	CollectorOutcomeViewProps,
-	"bigEventOutcome" | "lotteryOutcome" | "witchOutcome" | "choiceOutcome" | "automaticOutcome" | "pveFightOutcome"
+	"bigEventOutcome" | "lotteryOutcome" | "witchOutcome" | "choiceOutcome" | "automaticOutcome" | "pveFightOutcome" | "continueAfterBigEvent"
 >): ReactNode {
-	if (bigEventOutcome) return <BigEventOutcomeScreen outcome={bigEventOutcome} onContinue={reportEventStore.clear} />;
+	if (bigEventOutcome) return <BigEventOutcomeScreen outcome={bigEventOutcome} onContinue={continueAfterBigEvent} />;
 	if (lotteryOutcome) return <LotteryOutcomeScreen outcome={lotteryOutcome} onContinue={reportEventStore.clearLottery} />;
 	if (witchOutcome) return <WitchOutcomeScreen outcome={witchOutcome} onContinue={reportEventStore.clearWitch} />;
 	if (choiceOutcome) return <SmallEventChoiceOutcomeScreen outcome={choiceOutcome} onContinue={reportEventStore.clearChoice} />;
@@ -459,13 +460,14 @@ function CollectorOutcomeView({
 	pveFightOutcome,
 	reactToCollector,
 	isAnswerPending,
+	continueAfterBigEvent,
 	continueAfterTokenOutcome,
 	continueAfterHealOutcome
 }: CollectorOutcomeViewProps): ReactNode {
 	if (bigEventCollector) {
 		return collectorScreen(bigEventCollector, reactToCollector, isAnswerPending);
 	}
-	const eventOutcome = storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome, pveFightOutcome});
+	const eventOutcome = storedEventOutcome({bigEventOutcome, lotteryOutcome, witchOutcome, choiceOutcome, automaticOutcome, pveFightOutcome, continueAfterBigEvent});
 	if (eventOutcome) return eventOutcome;
 	const recoveryOutcome = storedRecoveryOutcome({tokenOutcome, healOutcome, shopResult, continueAfterTokenOutcome, continueAfterHealOutcome});
 	if (recoveryOutcome) return recoveryOutcome;
@@ -889,22 +891,28 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 		});
 	};
 
-	const continueAfterTokenOutcome = (): void => {
-		reportEventStore.clearTokens();
+	const refreshReport = (action: string): void => {
 		for (const entity of [GAME_ENTITIES.PROFILE, GAME_ENTITIES.REPORT]) {
 			queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(error => {
-				console.error(`Failed to refresh ${entity} after token action:`, error);
+				console.error(`Failed to refresh ${entity} after ${action}:`, error);
 			});
 		}
 	};
 
+	// An expired event reroutes the journey after its collector stop has already refreshed the report.
+	const continueAfterBigEvent = (): void => {
+		reportEventStore.clear();
+		refreshReport("big event");
+	};
+
+	const continueAfterTokenOutcome = (): void => {
+		reportEventStore.clearTokens();
+		refreshReport("token action");
+	};
+
 	const continueAfterHealOutcome = (): void => {
 		reportEventStore.clearHeal();
-		for (const entity of [GAME_ENTITIES.PROFILE, GAME_ENTITIES.REPORT]) {
-			queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(error => {
-				console.error(`Failed to refresh ${entity} after heal action:`, error);
-			});
-		}
+		refreshReport("heal action");
 	};
 
   const collectorOutcome = CollectorOutcomeView({
@@ -921,6 +929,7 @@ function AdventureBody({tools}: {tools: ReactNode}): ReactNode {
 		pveFightOutcome,
 		reactToCollector,
 		isAnswerPending,
+		continueAfterBigEvent,
 		continueAfterTokenOutcome,
 		continueAfterHealOutcome
   });
