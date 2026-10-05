@@ -1,6 +1,7 @@
 import {act, render, screen, fireEvent, waitFor} from "@testing-library/react-native";
+import {ReactElement} from "react";
 import {Animated, PanResponder, PanResponderCallbacks, PanResponderGestureState, StyleSheet, Text} from "react-native";
-import {BottomSheet, sheetDragStarts} from "@/src/design/Sections";
+import {BottomSheet, SheetScrollView, sheetDragStarts} from "@/src/design/Sections";
 import {SwipeBack} from "@/src/design/SwipeBack";
 
 jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
@@ -141,5 +142,44 @@ describe("bottom sheet dismissal", () => {
 		header.onPanResponderMove?.(undefined as never, drag({dy: 100, numberActiveTouches: 2}));
 		header.onPanResponderRelease?.(undefined as never, drag({dy: 120, vy: 1}));
 		expect(close).not.toHaveBeenCalled();
+	});
+
+	describe("with a scroller of its own, like the fight journal", () => {
+		const journal = (close: () => void, startAtEnd = false): ReactElement => <BottomSheet onClose={close} heading={<Text>Journal</Text>}>
+			<SheetScrollView startAtEnd={startAtEnd} testID="journal"><Text>Turn 1</Text></SheetScrollView>
+		</BottomSheet>;
+
+		it("reads back a journal scrolled halfway instead of closing, while its header still takes it away", async () => {
+			const close = jest.fn();
+			await render(journal(close));
+			await fireEvent.scroll(screen.getByTestId("journal"), {nativeEvent: {contentOffset: {x: 0, y: 400}}});
+			const [header, content] = responders;
+			content.onStartShouldSetPanResponderCapture?.(undefined as never, drag({dy: 0}));
+			expect(content.onMoveShouldSetPanResponderCapture?.(undefined as never, drag())).toBe(false);
+
+			expect(header.onMoveShouldSetPanResponderCapture?.(undefined as never, drag())).toBe(true);
+			header.onPanResponderRelease?.(undefined as never, drag());
+			await waitFor(() => expect(close).toHaveBeenCalledTimes(1));
+		});
+
+		it("counts a journal opened on its latest lines as scrolled", async () => {
+			await render(journal(jest.fn(), true));
+			const scroller = screen.getByTestId("journal");
+			await fireEvent(scroller, "layout", {nativeEvent: {layout: {x: 0, y: 0, width: 320, height: 300}}});
+			await fireEvent(scroller, "contentSizeChange", 320, 1_200);
+			const content = responders[1];
+			content.onStartShouldSetPanResponderCapture?.(undefined as never, drag({dy: 0}));
+			expect(content.onMoveShouldSetPanResponderCapture?.(undefined as never, drag())).toBe(false);
+		});
+
+		it("still closes from the journal once it is back at its top when the drag starts", async () => {
+			await render(journal(jest.fn()));
+			const scroller = screen.getByTestId("journal");
+			await fireEvent.scroll(scroller, {nativeEvent: {contentOffset: {x: 0, y: 400}}});
+			await fireEvent.scroll(scroller, {nativeEvent: {contentOffset: {x: 0, y: 0}}});
+			const content = responders[1];
+			content.onStartShouldSetPanResponderCapture?.(undefined as never, drag({dy: 0}));
+			expect(content.onMoveShouldSetPanResponderCapture?.(undefined as never, drag())).toBe(true);
+		});
 	});
 });

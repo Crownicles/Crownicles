@@ -1,6 +1,6 @@
-import {ReactNode, useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {
-	Animated, ActivityIndicator, Easing, GestureResponderEvent, KeyboardAvoidingView, ModalProps, PanResponder, PanResponderGestureState, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
+	Animated, ActivityIndicator, Easing, GestureResponderEvent, KeyboardAvoidingView, ModalProps, PanResponder, PanResponderGestureState, Platform, Pressable, ScrollView, StyleProp, StyleSheet, Switch, Text, TextStyle, useWindowDimensions, View, ViewStyle
 } from "react-native";
 import {NativeWindow} from "@/src/design/NativeWindow";
 import {notificationAsync, NotificationFeedbackType} from "expo-haptics";
@@ -447,11 +447,13 @@ export function sheetDragStarts(gesture: SheetDrag, scrollOffset = 0): boolean {
 
 class SheetGestureState {
 	private scrollOffset = 0;
+	private nestedScrollOffset = 0;
 	private scrollAtTouchStart = 0;
 	private interrupted = false;
 
 	public updateScroll(offset: number): void {this.scrollOffset = offset;}
-	public beginTouch(): void {this.scrollAtTouchStart = this.scrollOffset;}
+	public updateNestedScroll(offset: number): void {this.nestedScrollOffset = offset;}
+	public beginTouch(): void {this.scrollAtTouchStart = Math.max(this.scrollOffset, this.nestedScrollOffset);}
 	public starts(gesture: SheetDrag): boolean {return sheetDragStarts(gesture, this.scrollAtTouchStart);}
 	public beginDrag(): void {this.interrupted = false;}
 	public acceptsMove(touches: number): boolean {
@@ -503,6 +505,9 @@ function useSheetLeave(offset: Animated.Value, height: number, onClose: () => vo
 		Animated.spring(offset, {toValue: height, velocity: velocity * MILLISECONDS_PER_SECOND, ...SHEET_LEAVE_SPRING}).start(closed);
 	}, [height, offset, reducedMotion]);
 }
+
+/** Where a scroller nested in a sheet reports how far down it is, so the sheet knows when a downward drag is a scroll. */
+const SheetScrollContext = createContext<(offset: number) => void>(() => undefined);
 
 /**
  * Everything that rises from the bottom: the detail of a line, a quick question, a short result.
@@ -573,6 +578,7 @@ export function BottomSheet({onClose, onShown, onDismissed, visible = true, head
 		onMoveShouldSetPanResponderCapture: (_event, gesture): boolean => gestureState.starts(gesture),
 		...dragHandlers
 	}), [dragHandlers, gestureState]);
+	const reportNestedScroll = useCallback((offset: number): void => gestureState.updateNestedScroll(offset), [gestureState]);
 	return <NativeWindow visible={visible} transparent animationType="fade" statusBarTranslucent onRequestClose={(): void => leave()} {...onDismissed ? {onDismiss: onDismissed} : {}}>
 		<KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={styles.detailBackdrop}>
 			{/* The veil lightens as the sheet goes down, so a drag or a close reads as one movement. */}
@@ -594,10 +600,51 @@ export function BottomSheet({onClose, onShown, onDismissed, visible = true, head
 						if (event.nativeEvent.contentOffset.y < -SHEET_DISMISS.pull) leave();
 					}}
 					scrollEventThrottle={SHEET_SCROLL_THROTTLE_MS}
-				>{children}</ScrollView>
+				><SheetScrollContext.Provider value={reportNestedScroll}>{children}</SheetScrollContext.Provider></ScrollView>
 			</Animated.View>
 		</KeyboardAvoidingView>
 	</NativeWindow>;
+}
+
+/**
+ * A scroller of its own inside a sheet, for a long list kept to part of the screen. Dragging down its
+ * scrolled content reads it back instead of taking the sheet away. Started at the end, it opens on the latest lines.
+ */
+export function SheetScrollView({style, startAtEnd = false, children, testID}: {
+	style?: StyleProp<ViewStyle>;
+	startAtEnd?: boolean;
+	children: ReactNode;
+	testID?: string;
+}): ReactNode {
+	const report = useContext(SheetScrollContext);
+	const scroll = useRef<ScrollView>(null);
+	const size = useRef({viewport: 0, content: 0, positioned: false, endPending: false});
+	// Not every platform reports the jump to the end as a scroll: the offset it lands on is reported here.
+	const reportEnd = (): void => {
+		const {viewport, content, endPending} = size.current;
+		if (!endPending || viewport <= 0) return;
+		size.current.endPending = false;
+		report(Math.max(0, content - viewport));
+	};
+	return <ScrollView
+		ref={scroll}
+		style={style}
+		scrollEventThrottle={SHEET_SCROLL_THROTTLE_MS}
+		onScroll={(event): void => report(event.nativeEvent.contentOffset.y)}
+		onLayout={(event): void => {
+			size.current.viewport = event.nativeEvent.layout.height;
+			reportEnd();
+		}}
+		onContentSizeChange={(_width, height): void => {
+			size.current.content = height;
+			if (!startAtEnd || size.current.positioned) return;
+			size.current.positioned = true;
+			size.current.endPending = true;
+			scroll.current?.scrollToEnd({animated: false});
+			reportEnd();
+		}}
+		{...testID ? {testID} : {}}
+	>{children}</ScrollView>;
 }
 
 /** A short question or result in a bottom sheet, headed like a page so the player knows what it is about. */

@@ -1,10 +1,10 @@
-import {ReactNode, useRef, useState} from "react";
-import {ActivityIndicator, ScrollView, Text, View, useWindowDimensions} from "react-native";
+import {ReactNode, useState} from "react";
+import {ActivityIndicator, Text, View, useWindowDimensions} from "react-native";
 import {CircleAlert} from "@/src/design/FightIcons";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {FightEnd} from "ws-packets/src/objects/Fight";
 import {Button, ButtonRow, Note} from "@/src/design/Primitives";
-import {QuestionSheet} from "@/src/design/Sections";
+import {QuestionSheet, SheetScrollView} from "@/src/design/Sections";
 import {Theme} from "@/src/design/Theme";
 import {FightActions, FightActionsWaiting} from "@/src/collectors/FightActionCollector";
 import {FightSnapshot, FightLogRecord} from "@/src/store/FightStore";
@@ -77,18 +77,11 @@ function FightContent(props: FightContentProps): ReactNode {
 function FightJournal({entries, onClose}: {entries: FightLogRecord[]; onClose: () => void}): ReactNode {
 	const styles = useStyles();
 	const {height} = useWindowDimensions();
-	const scroll = useRef<ScrollView>(null);
-	const positioned = useRef(false);
-	const showLatest = (): void => {
-		if (positioned.current) return;
-		positioned.current = true;
-		scroll.current?.scrollToEnd({animated: false});
-	};
 	return <QuestionSheet
 		caption={i18n.t("app:arena.eyebrow")}
 		title={i18n.t("app:arena.log")}
 		onClose={onClose}
-	><ScrollView ref={scroll} style={[styles.journal, {maxHeight: height * 0.6}]} onContentSizeChange={showLatest}><FightLog entries={entries} /></ScrollView></QuestionSheet>;
+	><SheetScrollView startAtEnd style={[styles.journal, {maxHeight: height * 0.6}]} testID="fight-journal-scroll"><FightLog entries={entries} /></SheetScrollView></QuestionSheet>;
 }
 
 /** Measures the room the battle really has, so the layout adapts to the device instead of guessing. */
