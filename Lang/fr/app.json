@@ -415,8 +415,8 @@
     "item": {
       "keep": "Garder {{item}}",
       "keepAll": "Garder mes objets actuels",
-      "sold": "En échange, vous vendez {{item}}.",
-      "thrown": "En échange, vous jetez {{item}}.",
+      "sold": "et vendre {{item}}",
+      "thrown": "et jeter {{item}}",
       "current": "Votre objet actuel",
       "whichToKeep": "Quel objet garder ?",
       "chooseToSell": "Quel objet vendre pour garder {{item}} ?",

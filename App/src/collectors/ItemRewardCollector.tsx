@@ -11,7 +11,7 @@ import {ItemDetails} from "@/src/components/ItemDetails";
 import {plainStory} from "@/src/display/Markdown";
 import {Note, Screen, SectionHeader} from "@/src/design/Primitives";
 import {ActionBanner, Card, ExpandableEntry} from "@/src/design/Sections";
-import {Check, Coins, Droplets, X} from "@/src/design/FightIcons";
+import {Check, Droplets} from "@/src/design/FightIcons";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 
@@ -48,7 +48,7 @@ function FoundAgainst({found, current}: {found: ItemWithDetails; current: ItemWi
 	</>;
 }
 
-/** One way out, named and drawn by the item the player keeps, with what goes in exchange written under it before the press. */
+/** One way out, named by the item the player keeps, with what goes in exchange written inside the same button. */
 function KeepChoice({kept, given, onPress, locked}: {kept: {label: string; item?: ItemWithDetails}; given: ItemWithDetails; onPress: () => void; locked: boolean}): ReactNode {
 	const potion = isPotionCategory(given.itemCategory);
 	const emoji = kept.item ? itemEmoji(kept.item) : null;
@@ -56,7 +56,7 @@ function KeepChoice({kept, given, onPress, locked}: {kept: {label: string; item?
 		icon={Check}
 		{...emoji ? {emoji} : {}}
 		label={kept.label}
-		hint={{reason: i18n.t(potion ? "app:collector.item.thrown" : "app:collector.item.sold", {item: itemDisplayName(given)}), icon: potion ? X : Coins}}
+		detail={i18n.t(potion ? "app:collector.item.thrown" : "app:collector.item.sold", {item: itemDisplayName(given)})}
 		pending={locked}
 		onPress={onPress}
 	/>;

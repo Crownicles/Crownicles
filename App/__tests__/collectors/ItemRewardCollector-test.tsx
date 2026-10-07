@@ -1,4 +1,4 @@
-import {fireEvent, render, screen} from "@testing-library/react-native";
+import {fireEvent, render, screen, within} from "@testing-library/react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
 	GENERIC_REACTION_KINDS, ITEM_DATA_KINDS, ITEM_REACTION_KINDS
@@ -85,6 +85,9 @@ describe("ItemAcceptCollector", () => {
 
 		expect(screen.getByText("app:collector.item.sold:models:weapons.3")).toBeTruthy();
 		expect(screen.getByText("app:collector.item.sold:models:weapons.9")).toBeTruthy();
+		// Each consequence sits inside the choice it belongs to, so it cannot be read as the next one's.
+		within(screen.getByRole("button", {name: "app:collector.item.keep:models:weapons.9"})).getByText("app:collector.item.sold:models:weapons.3");
+		within(screen.getByRole("button", {name: "app:collector.item.keep:models:weapons.3"})).getByText("app:collector.item.sold:models:weapons.9");
 		await fireEvent.press(screen.getByText("app:collector.item.keep:models:weapons.3"));
 		expect(onChoose).toHaveBeenCalledWith(1);
 	});

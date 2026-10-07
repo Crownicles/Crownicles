@@ -40,6 +40,7 @@ const useStyles = createStyles(colors => ({
 	bannerIcon: {width: 24, height: 24, alignItems: "center", justifyContent: "center"},
 	bannerLabelBox: {flex: 1},
 	bannerLabel: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.button, lineHeight: Theme.lineHeight.body, color: colors.paper},
+	bannerDetail: {fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.faint},
 	lock: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.sm, paddingTop: Theme.spacing.md},
 	lockText: {flex: 1, fontFamily: Theme.fonts.medium, fontSize: Theme.fontSize.caption, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
 	lockRefusal: {color: colors.red},
@@ -719,12 +720,15 @@ function bannerAvailability(pending: boolean, disabled: boolean, lock: Lock | un
 	};
 }
 
-export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false, disabled = false, lock, hint, badge = 0, testID}: {
+export function ActionBanner({icon: Icon, emoji, label, detail, onPress, pending = false, disabled = false, lock, hint, badge = 0, testID}: {
 	icon: LucideIcon;
 
 	/** A game emoji drawn instead of `icon`, when the action spends or earns something the game draws. */
 	emoji?: string;
 	label: string;
+
+	/** What pressing also does, written inside the banner so it cannot be read as belonging to the next one. */
+	detail?: string;
 	onPress: () => void;
 	pending?: boolean;
 
@@ -750,6 +754,7 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 			<Pressable
 				accessibilityRole="button"
 				{...badge > 0 ? {accessibilityLabel: label, accessibilityHint: i18n.t("app:common.toCollect", {count: badge})} : {}}
+				{...detail ? {accessibilityLabel: label, accessibilityHint: detail} : {}}
 				accessibilityState={{disabled: blocked, busy: pending}}
 				disabled={blocked}
 				{...handlers}
@@ -758,7 +763,10 @@ export function ActionBanner({icon: Icon, emoji, label, onPress, pending = false
 				<View style={styles.bannerIcon}>
 					{pending ? <PendingMotion>{glyph}</PendingMotion> : <Animated.View style={{transform: [{scale: iconScale}]}}>{glyph}</Animated.View>}
 				</View>
-				<TwemojiText containerStyle={styles.bannerLabelBox} textStyle={styles.bannerLabel} emojiSize={Theme.fontSize.button} numberOfLines={BANNER_LABEL_LINES}>{label}</TwemojiText>
+				<View style={styles.bannerLabelBox}>
+					<TwemojiText textStyle={styles.bannerLabel} emojiSize={Theme.fontSize.button} numberOfLines={BANNER_LABEL_LINES}>{label}</TwemojiText>
+					{detail ? <Text style={styles.bannerDetail} numberOfLines={BANNER_LABEL_LINES}>{detail}</Text> : null}
+				</View>
 				<CountBadge count={badge} />
 				<ArrowRight size={18} color={colors.paper} />
 			</Animated.View>}
