@@ -9,7 +9,7 @@
   "rewardFactor": 0.65,
   "attacks": [
     {
-      "id": "poisonousAttack",
+      "id": "spiderPoisonAttack",
       "minLevel": 40,
       "weight": 4
     },

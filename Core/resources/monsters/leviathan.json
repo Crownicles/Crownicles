@@ -1,11 +1,11 @@
 {
   "baseEnergyValue": 700,
-  "attackRatio": 250,
+  "attackRatio": 235,
   "defenseRatio": 70,
-  "speedRatio": 200,
+  "speedRatio": 180,
   "breath": 10,
   "maxBreath": 60,
-  "breathRegen": 12,
+  "breathRegen": 10,
   "rewardFactor": 1.6,
   "attacks": [
     {

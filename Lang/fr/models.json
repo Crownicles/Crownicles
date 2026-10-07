@@ -415,6 +415,10 @@
       "name_one": "Attaque maudite",
       "name_other": "Attaques maudites"
     },
+    "skeletonCursedAttack": {
+      "name_one": "Sortilège mortel",
+      "name_other": "Sortilèges mortels"
+    },
     "cursedByTheSea": {
       "name": "damné par la mer",
       "new": "est damné par la mer...",
@@ -492,6 +496,10 @@
       "description": "Brûle l'adversaire. L'altération \"brûlé\" inflige des dégâts à votre adversaire sur la durée.",
       "name_one": "Attaque feu",
       "name_other": "Attaques feu"
+    },
+    "titanFireAttack": {
+      "name_one": "Boule de feu",
+      "name_other": "Boules de feu"
     },
     "fishProtectAgainstFire": {
       "afraid": "demande à **{{petNickname}}** de l'aider à ne pas brûler mais **{{petNickname}}** est trop effrayé pour aider.",
@@ -746,6 +754,10 @@
       "name_one": "Attaque empoisonnée",
       "name_other": "Attaques empoisonnées"
     },
+    "spiderPoisonAttack": {
+      "name_one": "Jet de poison",
+      "name_other": "Jets de poison"
+    },
     "poisonousBite": {
       "generalEffect": "a besoin de **{{petNickname}}**, l'animal a besoin de temps pour se préparer...",
       "success": "reçoit le soutien de **{{petNickname}}** qui décide de mordre son adversaire... Ce dernier ne se sent soudainement pas très bien."
@@ -754,6 +766,10 @@
       "description": "Cette attaque a 25 % de chance de faire plus de dégâts, au prix d'un étourdissement de l'attaquant. Réduit la vitesse de l'adversaire. Après 3 utilisations, les dégâts de l'attaque sont réduits de 70%.",
       "name_one": "Attaque puissante",
       "name_other": "Attaques puissantes"
+    },
+    "guardianPowerfulAttack": {
+      "name_one": "Attaque tranchante",
+      "name_other": "Attaques tranchantes"
     },
     "protectAgainstCold": {
       "success": "est protégé du froid par **{{petNickname}}**."
@@ -832,10 +848,22 @@
       "name_one": "Attaque bouclier",
       "name_other": "Attaques boucliers"
     },
+    "skeletonShieldAttack": {
+      "name_one": "Cuirasse osseuse",
+      "name_other": "Cuirasses osseuses"
+    },
     "simpleAttack": {
       "description": "Une attaque simple.",
       "name_one": "Attaque simple",
       "name_other": "Attaques simples"
+    },
+    "skeletonSimpleAttack": {
+      "name_one": "Frappe osseuse",
+      "name_other": "Frappes osseuses"
+    },
+    "elementaryPiercingAttack": {
+      "name_one": "Éclat élémentaire",
+      "name_other": "Éclats élémentaires"
     },
     "sing": {
       "customMessage": "se met à chanter.",
