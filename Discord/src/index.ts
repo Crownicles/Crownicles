@@ -11,13 +11,14 @@ import { connect } from "mqtt";
 import { MqttConstants } from "../../Lib/src/constants/MqttConstants";
 import { MqttTopicUtils } from "../../Lib/src/utils/MqttTopicUtils";
 import { DiscordConstants } from "./DiscordConstants";
+import { ShardSpawnSupervisor } from "./utils/ShardSpawnSupervisor";
 
 const shardCount = "auto";
 
 // As shardingManager overrides old shards with the same IDs, we need to keep track of the spawned shards
 let spawnedShards: Shard[] = [];
 
-function startShardingManagerMqtt(config: CrowniclesConfig, shardingManager: ShardingManager): void {
+function startShardingManagerMqtt(config: CrowniclesConfig, shardingManager: ShardingManager, shardSpawnSupervisor: ShardSpawnSupervisor): void {
 	const mqttClient = connect(discordConfig.MQTT_HOST, {
 		connectTimeout: MqttConstants.CONNECTION_TIMEOUT
 	});
@@ -35,36 +36,44 @@ function startShardingManagerMqtt(config: CrowniclesConfig, shardingManager: Sha
 			const messageParts = messageString.split(":");
 			const shardId = parseInt(messageParts[1], 10);
 			CrowniclesLogger.info(`Shard ${shardId} is duplicated, killing all its instances`);
+			let canReplaceShards = true;
+			shardSpawnSupervisor.cancelRetry(shardId);
 
 			// Kill all shards with the same ID
-			spawnedShards.forEach(shard => {
-				if (shard.id === shardId) {
-					const pid = shard.process!.pid;
-					CrowniclesLogger.info(`Killing shard ${shardId} with PID ${pid}...`);
-					try {
-						shard.kill();
-						CrowniclesLogger.info(`Shard ${shardId} with PID ${pid} killed`);
-					}
-					catch (e) {
-						CrowniclesLogger.errorWithObj(`Error while killing shard ${shardId} with PID ${pid}. Kill the whole process to clean everything up.`, e);
-						process.exit(1);
-					}
+			spawnedShards.filter(shard => shard.id === shardId).forEach(shard => {
+				if (!shard.process && !shard.worker) {
+					return;
+				}
+
+				CrowniclesLogger.info(`Killing shard ${shardId}...`);
+				if (shardSpawnSupervisor.killIntentionally(shard)) {
+					CrowniclesLogger.info(`Shard ${shardId} killed`);
+				}
+				else {
+					canReplaceShards = false;
 				}
 			});
+			if (!canReplaceShards) {
+				CrowniclesLogger.error(`Unable to replace duplicated shard ${shardId}; keeping the current instances`);
+				return;
+			}
 
 			// Clean up spawned shards
 			spawnedShards = spawnedShards.filter(shard => shard.id !== shardId);
 
 			// Create a new shard with the same ID
 			CrowniclesLogger.info(`Creating a new shard ${shardId}...`);
+			let newShard: Shard | undefined;
 			try {
-				const newShard = shardingManager.createShard(shardId);
+				newShard = shardingManager.createShard(shardId);
 				await newShard.spawn();
 				CrowniclesLogger.info(`New shard ${shardId} created`);
 			}
 			catch (e) {
-				CrowniclesLogger.errorWithObj(`Error while creating shard ${shardId}. Kill the whole process to clean everything up.`, e);
-				process.exit(1);
+				CrowniclesLogger.errorWithObj(`Error while creating shard ${shardId}`, e);
+				if (newShard) {
+					shardSpawnSupervisor.handleSpawnFailure(newShard);
+				}
 			}
 		}
 	});
@@ -85,17 +94,25 @@ function main(): void {
 
 	const shardingManager = new ShardingManager("./dist/Discord/src/bot/CrowniclesShard.js", {
 		totalShards: shardCount,
+		respawn: false,
 
 		// Needed as in auto mode it has to make a request to know the needed number of shards
 		token: config.DISCORD_CLIENT_TOKEN
 	});
+	const shardSpawnSupervisor = new ShardSpawnSupervisor(config.DISCORD_CLIENT_TOKEN);
 
-	startShardingManagerMqtt(config, shardingManager);
+	startShardingManagerMqtt(config, shardingManager, shardSpawnSupervisor);
 
 	shardingManager.on("shardCreate", shard => {
+		shardSpawnSupervisor.watch(shard);
 		shard.on("ready", () => CrowniclesLogger.info("Shard connected to Discord's Gateway"));
+		shard.on("death", () => {
+			spawnedShards = spawnedShards.filter(spawnedShard => spawnedShard !== shard);
+		});
 		shard.on("spawn", () => {
-			spawnedShards.push(shard);
+			if (!spawnedShards.includes(shard)) {
+				spawnedShards.push(shard);
+			}
 			CrowniclesLogger.info(`Shard ${shard.id} created`);
 			shard.send({
 				type: "shardId",
@@ -106,7 +123,6 @@ function main(): void {
 			})
 				.then();
 		});
-		shard.on("death", () => CrowniclesLogger.error(`Shard ${shard.id} exited`));
 		shard.on("disconnect", () => {
 			/*
 			 * Recreate the shard because it often creates duplications
