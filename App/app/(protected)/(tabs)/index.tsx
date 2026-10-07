@@ -72,6 +72,7 @@ import {useTravelAdvicesShown} from "@/src/preferences/TravelAdvicePreference";
 import {WorldMap} from "@/src/components/WorldMap";
 import {DetailScreen} from "@/src/design/DetailScreen";
 import {Missions} from "@/src/components/Missions";
+import {AdventureJournal} from "@/src/components/AdventureJournal";
 import {DeathScreen} from "@/src/components/DeathScreen";
 import {GameQueryContent} from "@/src/components/GameQueryContent";
 import {AdventureWelcome} from "@/src/components/AdventureWelcome";
@@ -709,7 +710,8 @@ function JourneyAction({packet, reportReady, reportAction, advance}: {
 
 const ADVENTURE_TOOLS: Record<AdventureToolName, {title: string; content: () => ReactNode}> = {
 	[ADVENTURE_TOOL_NAMES.MAP]: {title: "app:map.title", content: WorldMap},
-	[ADVENTURE_TOOL_NAMES.MISSIONS]: {title: "app:profile.titles.missions", content: Missions}
+	[ADVENTURE_TOOL_NAMES.MISSIONS]: {title: "app:profile.titles.missions", content: Missions},
+	[ADVENTURE_TOOL_NAMES.JOURNAL]: {title: "app:adventure.journal.title", content: AdventureJournal}
 };
 type AdventureTool = AdventureToolName;
 
@@ -723,6 +725,7 @@ function AdventureTools({onOpen}: {onOpen: (tool: AdventureTool) => void}): Reac
 	return <QuickActions>
 		<QuickAction icon={AppIcons.getIcon("expedition.map")} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.MAP)}>{i18n.t("app:map.title")}</QuickAction>
 		<QuickAction icon={AppIcons.getIcon("missions.campaign")} badge={missionsToClaim} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.MISSIONS)}>{i18n.t("app:profile.titles.missions")}</QuickAction>
+		<QuickAction icon={AppIcons.getIcon("commands.report")} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.JOURNAL)}>{i18n.t("app:adventure.journal.title")}</QuickAction>
 	</QuickActions>;
 }
 

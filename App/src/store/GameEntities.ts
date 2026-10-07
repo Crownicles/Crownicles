@@ -22,6 +22,7 @@ export const GAME_ENTITIES = {
 	MISSIONS: "missions",
 	CLASSES: "classes",
 	FIGHT_HISTORY: "fightHistory",
+	ADVENTURE_HISTORY: "adventureHistory",
 	LEAGUES: "leagues",
 	RANKINGS: "rankings",
 	RARITY: "rarity",

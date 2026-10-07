@@ -642,7 +642,17 @@
     "onTheRoad": "Progression sur la route",
     "unknownLocation": "Lieu inconnu",
     "empty": "Aucun rapport de voyage disponible",
-    "ownJournal": "Votre journal"
+    "ownJournal": "Votre journal",
+    "journal": {
+      "title": "Souvenirs",
+      "window": "Vos souvenirs remontent jusqu’au {{date}}.",
+      "empty": "Aucun souvenir pour le moment : vos prochaines aventures s’inscriront ici.",
+      "noAnswer": "Aucune réponse donnée",
+      "situation": "La situation",
+      "outcome": "Ce qui s’est passé",
+      "more": "Voir les souvenirs plus anciens",
+      "unavailable": "Les souvenirs n’ont pas pu être récupérés."
+    }
   },
   "city": {
     "staleAction": "La situation a changé. Les actions de la ville ont été actualisées.",
