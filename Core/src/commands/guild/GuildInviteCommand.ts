@@ -7,6 +7,7 @@ import {
 	CommandGuildInviteInvitedPlayerIsOnPveIsland,
 	CommandGuildInviteInvitingPlayerNotInGuild,
 	CommandGuildInviteLevelTooLow,
+	CommandGuildInvitePendingPacket,
 	CommandGuildInvitePacketReq,
 	CommandGuildInvitePlayerNotFound,
 	CommandGuildInviteRefusePacketRes
@@ -29,16 +30,21 @@ import {
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket.js";
 import { BlockingUtils } from "../../core/utils/BlockingUtils.js";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants.js";
-import { LogsDatabase } from "../../core/database/logs/LogsDatabase.js";
-import { MissionsController } from "../../core/missions/MissionsController.js";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils.js";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { PacketUtils } from "../../core/utils/PacketUtils";
+import {
+	createGuildInvitationCollector, notifyInvitationAuthor
+} from "../../core/utils/GuildInvitationCollector";
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import {
 	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	attachMemberUnderLock, GUILD_ATTACH_RESULTS, GuildAttachResult
+} from "../../core/utils/GuildJoinUtils";
 
 export default class GuildInviteCommand {
 	@commandRequires(CommandGuildInvitePacketReq, {
@@ -49,7 +55,9 @@ export default class GuildInviteCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildInvitePacketReq, context: PacketContext): Promise<void> {
-		const invitedPlayer = await Players.getByKeycloakId(packet.invitedPlayerKeycloakId);
+		const invitedPlayer = packet.invitedPlayerRank === undefined
+			? await Players.getByKeycloakId(packet.invitedPlayerKeycloakId)
+			: await Players.getByRank(packet.invitedPlayerRank);
 		if (!invitedPlayer) {
 			response.push(makePacket(CommandGuildInvitePlayerNotFound, {}));
 			return;
@@ -75,24 +83,30 @@ export default class GuildInviteCommand {
 					invitedPlayerKeycloakId: invitedPlayer.keycloakId,
 					guildName: guild!.name
 				}));
+				notifyInvitationAuthor(context, response);
 				return;
 			}
 			await runAcceptInvitationUnderLock(invitedPlayer, player, guild!, response);
+			notifyInvitationAuthor(context, response);
 		};
 
-		const collectorPacket = new ReactionCollectorInstance(
+		const collectorPacket = createGuildInvitationCollector(
 			collector,
 			context,
-			{
-				allowedPlayerKeycloakIds: [player.keycloakId, invitedPlayer.keycloakId],
-				reactionLimit: 1
-			},
+			invitedPlayer.keycloakId,
 			endCallback
 		)
 			.block(invitedPlayer.keycloakId, BlockingConstants.REASONS.GUILD_ADD)
 			.block(player.keycloakId, BlockingConstants.REASONS.GUILD_ADD)
 			.build();
 
+		if (context.webSocket) {
+			PacketUtils.sendPackets(PacketUtils.webSocketContextForPlayer(context, invitedPlayer.keycloakId), [collectorPacket]);
+			response.push(makePacket(CommandGuildInvitePendingPacket, {
+				invitedPlayerKeycloakId: invitedPlayer.keycloakId, guildName: guild!.name
+			}));
+			return;
+		}
 		response.push(collectorPacket);
 	}
 }
@@ -141,56 +155,32 @@ async function canSendInvite(invitedPlayer: Player, guild: Guild | null, respons
 	return true;
 }
 
-type GuildInviteReason = "OK" | "alreadyInGuild" | "guildFull";
-
 type GuildInviteLocked = {
-	invited: Player; guild: Guild;
+	invited: Locked<Player>; guild: Locked<Guild>;
 };
 
 /**
- * In-lock body for the invite-accept flow. Re-validates that the
- * invited player has not joined another guild and that the guild
- * still has room before atomically attaching the invited player.
+ * In-lock body for the invite-accept flow: attaches the invited player,
+ * then confirms it to both sides.
  */
 async function applyLockedAcceptInvitation(
 	response: CrowniclesPacket[],
 	locked: GuildInviteLocked,
 	invitingPlayer: Player
-): Promise<GuildInviteReason> {
+): Promise<GuildAttachResult> {
 	const {
 		invited, guild
 	} = locked;
-
-	if (invited.hasAGuild()) {
-		return "alreadyInGuild";
+	const result = await attachMemberUnderLock(response, {
+		member: invited, guild
+	}, invitingPlayer.keycloakId);
+	if (result === GUILD_ATTACH_RESULTS.OK) {
+		response.push(makePacket(CommandGuildInviteAcceptPacketRes, {
+			guildName: guild.name,
+			invitedPlayerKeycloakId: invited.keycloakId
+		}));
 	}
-
-	const memberCount = (await Players.getByGuild(guild.id)).length;
-	if (memberCount >= GuildConstants.MAX_GUILD_MEMBERS) {
-		return "guildFull";
-	}
-
-	invited.guildId = guild.id;
-	guild.updateLastDailyAt();
-	await Promise.all([
-		invited.save(),
-		guild.save()
-	]);
-
-	LogsDatabase.logGuildJoin(guild, invited.keycloakId, invitingPlayer.keycloakId)
-		.then();
-	await MissionsController.update(invited, response, { missionId: "joinGuild" });
-	await MissionsController.update(invited, response, {
-		missionId: "guildLevel",
-		count: guild.level,
-		set: true
-	});
-
-	response.push(makePacket(CommandGuildInviteAcceptPacketRes, {
-		guildName: guild.name,
-		invitedPlayerKeycloakId: invited.keycloakId
-	}));
-	return "OK";
+	return result;
 }
 
 /**
@@ -226,9 +216,9 @@ async function runAcceptInvitationUnderLock(
 			)
 		);
 
-		if (reason !== "OK") {
+		if (reason !== GUILD_ATTACH_RESULTS.OK) {
 			response.push(makePacket(
-				reason === "guildFull"
+				reason === GUILD_ATTACH_RESULTS.GUILD_FULL
 					? CommandGuildInviteGuildIsFull
 					: CommandGuildInviteAlreadyInAGuild,
 				packetData

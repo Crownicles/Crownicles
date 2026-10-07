@@ -69,13 +69,22 @@ export class SlashCommandBuilderGenerator {
 	}
 
 	/**
+	 * The name Discord knows an option by: reading it through this keeps working when a translation renames it
+	 * @param commandSectionName Command section name in the translation files
+	 * @param optionSectionName Option section name in the translation files
+	 */
+	static optionName(commandSectionName: string, optionSectionName: string): string {
+		return getValidDiscordName(i18n.t(`discordBuilder:${commandSectionName}.options.${optionSectionName}.name`, { lng: LANGUAGE.ENGLISH }), optionSectionName);
+	}
+
+	/**
 	 * Generate a generic option
 	 * @param commandSectionName Command section name in the translation files
 	 * @param optionSectionName Option section name in the translation files
 	 * @param option Option to populate
 	 */
 	static generateOption<T extends ApplicationCommandOptionBase>(commandSectionName: string, optionSectionName: string, option: T): T {
-		const englishName = getValidDiscordName(i18n.t(`discordBuilder:${commandSectionName}.options.${optionSectionName}.name`, { lng: LANGUAGE.ENGLISH }), optionSectionName);
+		const englishName = SlashCommandBuilderGenerator.optionName(commandSectionName, optionSectionName);
 		const frenchName = getValidDiscordName(i18n.t(`discordBuilder:${commandSectionName}.options.${optionSectionName}.name`, { lng: LANGUAGE.FRENCH }), optionSectionName);
 
 		return option.setName(englishName)

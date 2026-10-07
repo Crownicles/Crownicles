@@ -2,7 +2,9 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import { OwnedPet } from "../../types/OwnedPet";
-import { ExpeditionLocationType } from "../../constants/ExpeditionConstants";
+import {
+	ExpeditionLocationType, ExpeditionStartBlocker
+} from "../../constants/ExpeditionConstants";
 
 /**
  * Data for an expedition in progress, used in /pet display
@@ -38,9 +40,19 @@ export class CommandPetPacketRes extends CrowniclesPacket {
 	hasTalisman?: boolean;
 
 	/**
+	 * When the pet is hungry again, as an absolute timestamp, so the front can refuse a meal before it is asked for.
+	 */
+	feedAvailableAt?: number;
+
+	/**
 	 * Current expedition in progress, if any
 	 */
 	expeditionInProgress?: PetExpeditionInfo;
+
+	/**
+	 * Why the pet cannot leave on an expedition right now; absent when it can, or while it is away
+	 */
+	expeditionBlocker?: ExpeditionStartBlocker;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -49,4 +61,8 @@ export class CommandPetPetNotFound extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandPetCaressPacketReq extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandPetCaressPacketRes extends CrowniclesPacket {
 }

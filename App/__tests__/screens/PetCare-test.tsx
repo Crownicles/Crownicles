@@ -1,0 +1,276 @@
+import {fireEvent, render, screen, waitFor} from "@testing-library/react-native";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {PetNickname} from "@/src/components/PetNickname";
+import {PetFeedCollector} from "@/src/collectors/PetFeedCollector";
+import {PetSellCollector} from "@/src/collectors/PetSellCollector";
+import {PetSale} from "@/src/components/PetSale";
+import {PetOverview} from "@/src/components/PetCare";
+import {PetCaress} from "@/src/components/PetReaction";
+import {PetFeedOutcome} from "@/src/collectors/PetFeedOutcome";
+import {GuildShelter} from "@/src/components/PetManagement";
+import {PET_DANCES, caressDance, caressFrames, feastDance, feastFrames} from "@/src/display/PetDance";
+import {PET_PATIENCE} from "@/src/store/usePetPatience";
+import {GAME_ENTITIES, gameKey} from "@/src/store/GameEntities";
+import {PET_FEED_ERRORS, PET_FEED_RESULTS} from "ws-packets/src/objects/PetFood";
+import {PetSellReq} from "ws-packets/src/fromClient/PetManagementReq";
+import {GuildShelterReq} from "ws-packets/src/fromClient/PetManagementReq";
+import {GuildShelterRes} from "ws-packets/src/fromServer/pet/PetManagementRes";
+import {PetExpeditionReq} from "ws-packets/src/fromClient/PetExpeditionReq";
+import {PetReq} from "ws-packets/src/fromClient/PetReq";
+import {PetRes} from "ws-packets/src/fromServer/pet/PetRes";
+import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
+import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import {PetCaressReq, PetNickReq} from "ws-packets/src/fromClient/PetCareReq";
+import {PetCaressRes, PetNickRes} from "ws-packets/src/fromServer/pet/PetCareRes";
+import {GameClient} from "@/src/networking/GameClient";
+
+const mockAnswerWithoutShowing = jest.fn();
+jest.mock("expo-router", () => ({useFocusEffect: jest.fn()}));
+jest.mock("@/src/networking/GameClient", () => ({GameClient: {request: jest.fn()}}));
+jest.mock("@/src/collectors/CollectorsContext", () => ({useCollectors: () => ({track: jest.fn(), answerWithoutShowing: mockAnswerWithoutShowing})}));
+jest.mock("@/src/AppIcons", () => ({AppIcons: {getIcon: (): string => "", getIconOrNull: (): null => null}}));
+jest.mock("@/src/translations/i18n", () => ({i18n: {t: (key: string): string => key}}));
+
+const PET = {typeId: 1, nickname: "Aster", rarity: 1, sex: "m" as const, loveLevel: 3, force: 10, feedDelay: 2};
+const BOARDER = {typeId: 8, nickname: null, rarity: 2, sex: "f" as const, loveLevel: 1, force: 20, feedDelay: 2};
+const NO_EFFECT = {effect: "none", healed: false, timeLeft: 0, hasTimeDisplay: false};
+
+/** The overview also reads the player's alteration; it is served from the cache so only the pet's own requests reach the server. */
+async function renderOverview(pet: Partial<PetRes>, effect = NO_EFFECT): Promise<jest.Mock> {
+	const onPage = jest.fn();
+	const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity, staleTime: Infinity}}});
+	client.setQueryData(gameKey(GAME_ENTITIES.PROFILE), {kind: "answer", packet: Object.assign(new ProfileRes(), {effect})});
+	await render(<QueryClientProvider client={client}><PetOverview packet={Object.assign(new PetRes(), {pet: PET, hasTalisman: true}, pet)} onPage={onPage} /></QueryClientProvider>);
+	return onPage;
+}
+
+describe("pet care screens", () => {
+	beforeEach(() => jest.clearAllMocks());
+
+	it.each([
+		{blocker: "noTalisman" as const},
+		{blocker: "insufficientLove" as const},
+		{blocker: "petHungry" as const},
+		{blocker: "notOnContinent" as const}
+	])("refuses an expedition Core would turn down ($blocker) and says why", async ({blocker}) => {
+		await renderOverview({hasTalisman: blocker !== "noTalisman", expeditionBlocker: blocker});
+		expect(screen.getByText(`app:expedition.errors.${blocker}`)).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:expedition.open"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+
+	it("keeps feeding and selling out of reach while the player is occupied, and says for how long", async () => {
+		const onPage = await renderOverview({}, {effect: "occupied", healed: false, timeLeft: 90 * 60_000, hasTimeDisplay: true});
+		expect(screen.getByText("app:requirements.effect")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:pet.care.feedPet"));
+		await fireEvent.press(screen.getByText("app:pet.sale.title"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+		expect(onPage).not.toHaveBeenCalled();
+	});
+
+	it("opens the expedition once nothing keeps the pet home", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		await renderOverview({});
+		expect(screen.queryByTestId("pet-expedition-lock")).toBeNull();
+		await fireEvent.press(screen.getByText("app:expedition.open"));
+		await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(PetExpeditionReq));
+	});
+
+	it("follows the expedition right on the pet page instead of the meal, with the recall under it", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "timeout"});
+		const expedition = {startTime: Date.now(), endTime: Date.now() + 60_000, riskRate: 1, difficulty: 1, locationType: "forest" as const, mapLocationId: 3, foodConsumed: 6, riskCategory: "low"};
+		const onPage = await renderOverview({expeditionInProgress: expedition});
+		expect(screen.getByTestId("pet-expedition-journey")).toBeTruthy();
+		expect(screen.getByText("app:expedition.away.exploring")).toBeTruthy();
+		expect(screen.queryByTestId("pet-standing")).toBeNull();
+		expect(screen.queryByText("app:pet.care.feedPet")).toBeNull();
+		expect(screen.queryByText("app:pet.care.caress")).toBeNull();
+		expect(screen.queryByText("app:pet.sale.title")).toBeNull();
+		expect(screen.queryByText("app:pet.management.free")).toBeNull();
+		await fireEvent.press(screen.getByText("app:pet.care.rename"));
+		expect(onPage).toHaveBeenCalledWith("rename");
+		await fireEvent.press(screen.getByText("app:expedition.recall"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+		expect(screen.getByText("app:expedition.recallWarning")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:expedition.confirmRecall"));
+		await waitFor(() => expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(PetExpeditionReq));
+	});
+
+	it("recalls the pet without showing Core's question once the page confirmed it", async () => {
+		const progress = Object.assign(new ReactionCollectorCreation(), {id: "progress", endTime: Date.now() + 60_000, data: {type: "expeditionProgress", data: {pet: {petTypeId: 1, petSex: "m"}, locationType: "forest", returnTime: Date.now() + 60_000, riskCategory: "low"}}, reactions: [{type: "expeditionRecall", data: {}}, {type: "expeditionClose", data: {}}]});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: progress});
+		const expedition = {startTime: Date.now(), endTime: Date.now() + 60_000, riskRate: 1, difficulty: 1, locationType: "forest" as const, mapLocationId: 3, foodConsumed: 6, riskCategory: "low"};
+		await renderOverview({expeditionInProgress: expedition});
+		await fireEvent.press(screen.getByText("app:expedition.recall"));
+		await fireEvent.press(screen.getByText("app:expedition.confirmRecall"));
+		await waitFor(() => expect(mockAnswerWithoutShowing).toHaveBeenCalledWith("progress", 0));
+	});
+
+	it("offers to claim the rewards once the pet is due back, and claims them without another question", async () => {
+		const finished = Object.assign(new ReactionCollectorCreation(), {id: "finished", endTime: Date.now() + 60_000, data: {type: "expeditionFinished", data: {pet: {petTypeId: 1, petSex: "m"}, locationType: "forest", riskCategory: "low"}}, reactions: [{type: "unknown", data: {serverType: "future"}}, {type: "expeditionClaim", data: {}}]});
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: finished});
+		const expedition = {startTime: Date.now() - 120_000, endTime: Date.now() - 1_000, riskRate: 1, difficulty: 1, locationType: "forest" as const, mapLocationId: 3, foodConsumed: 6, riskCategory: "low"};
+		await renderOverview({expeditionInProgress: expedition});
+		expect(screen.getByText("app:expedition.away.back")).toBeTruthy();
+		expect(screen.queryByText("app:expedition.recall")).toBeNull();
+		await fireEvent.press(screen.getByText("app:expedition.claim"));
+		await waitFor(() => expect(mockAnswerWithoutShowing).toHaveBeenCalledWith("finished", 1));
+	});
+
+	it("offers a pet to the chosen rank without changing the price", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "alternative", packetName: "PetManagementRes", packet: {}});
+		await render(<PetSale pet={PET} />);
+		await fireEvent.changeText(screen.getByLabelText("app:pet.sale.rank"), "12");
+		await fireEvent.changeText(screen.getByLabelText("app:pet.sale.price"), "321");
+		await fireEvent.press(screen.getByText("app:pet.sale.offer"));
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
+		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toEqual(Object.assign(new PetSellReq(), {rank: 12, price: 321}));
+	});
+
+	it("says a price is outside what the server accepts and keeps the offer from being sent", async () => {
+		await render(<PetSale pet={PET} />);
+		await fireEvent.changeText(screen.getByLabelText("app:pet.sale.rank"), "12");
+		await fireEvent.changeText(screen.getByLabelText("app:pet.sale.price"), "50");
+		expect(screen.getByText("app:inputIssues.belowMin")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:pet.sale.offer"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+
+	it.each(["seller", "buyer"])("offers only the authenticated %s controls with original indices", async role => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {id: "sale", endTime: Date.now() + 60_000, data: {type: "petSell", data: {pet: PET, price: 321, role}}, reactions: [{type: "unknown", data: {serverType: "future"}}, {type: "accept", data: {}}, {type: "refuse", data: {}}]});
+		const onChoose = jest.fn();
+		await render(<PetSellCollector collector={collector} onChoose={onChoose} submitting={false} />);
+		if (role === "seller") {
+			expect(screen.queryByText("app:pet.sale.buy")).toBeNull();
+			await fireEvent.press(screen.getByText("app:pet.sale.cancel"));
+			expect(onChoose).toHaveBeenCalledWith(2);
+		}
+		else {
+			await fireEvent.press(screen.getByText("app:pet.sale.buy"));
+			expect(onChoose).toHaveBeenCalledWith(1);
+		}
+	});
+
+	it("submits a nickname and reports the server validation error", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: Object.assign(new PetNickRes(), {foundPet: true, nickNameIsAcceptable: false, newNickname: "Brume"})});
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><PetNickname pet={PET} /></QueryClientProvider>);
+		await fireEvent.changeText(screen.getByLabelText("app:pet.care.newNickname"), " Brume ");
+		await fireEvent.press(screen.getByText("app:pet.care.save"));
+		await waitFor(() => expect(screen.getByText("app:pet.care.invalidNickname")).toBeTruthy());
+		expect(GameClient.request).toHaveBeenCalledWith(expect.any(PetNickReq), expect.any(Function), expect.any(Array));
+		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({newNickname: "Brume"});
+	});
+
+	it("says why a typed nickname is refused and keeps it from being sent", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><PetNickname pet={PET} /></QueryClientProvider>);
+		await fireEvent.changeText(screen.getByLabelText("app:pet.care.newNickname"), "Rex!!");
+		expect(screen.getByText("app:inputIssues.doublePunctuation")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:pet.care.save"));
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+
+	it("clears the nickname only after the server confirms it", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({kind: "answer", packet: Object.assign(new PetNickRes(), {foundPet: true, nickNameIsAcceptable: true, newNickname: ""})});
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><PetNickname pet={PET} /></QueryClientProvider>);
+		await fireEvent.press(screen.getByText("app:pet.care.clear"));
+		await waitFor(() => expect(screen.getByDisplayValue("")).toBeTruthy());
+		expect(screen.getByText("app:pet.care.cleared")).toBeTruthy();
+	});
+
+	it("keeps the feed confirmation's original index when unknown choices exist", async () => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {id: "feed", endTime: Date.now() + 60_000, data: {type: "petFeedPersonal", data: {pet: PET, food: "commonFood", price: 42}}, reactions: [{type: "unknown", data: {serverType: "future"}}, {type: "accept", data: {}}, {type: "refuse", data: {}}]});
+		const onChoose = jest.fn();
+		await render(<PetFeedCollector collector={collector} onChoose={onChoose} submitting={false} />);
+		await fireEvent.press(screen.getByText("app:pet.care.feed"));
+		expect(onChoose).toHaveBeenCalledWith(1);
+	});
+
+	it("gives a species the same dance whatever it ate, and turns away from a meal it disliked", () => {
+		expect(feastDance(PET, PET_FEED_RESULTS.HAPPY)).toBe(feastDance({...PET, nickname: "Autre", loveLevel: 5}, PET_FEED_RESULTS.VERY_VERY_HAPPY));
+		expect(feastDance(PET, PET_FEED_RESULTS.DISLIKE)).toBe(PET_DANCES.HUFF);
+	});
+
+	it("answers a stroke with another move than a meal, and refuses both the same way", () => {
+		expect(caressDance(PET)).toBe(caressDance({...PET, nickname: "Autre"}));
+		expect(caressFrames(PET)).not.toEqual(feastFrames(PET, PET_FEED_RESULTS.HAPPY));
+		expect(caressFrames(PET, true)).toEqual(feastFrames(PET, PET_FEED_RESULTS.DISLIKE));
+	});
+
+	it.each([
+		{case: "on a stroke", hadEnough: false, hearts: true},
+		{case: "once the pet has had enough", hadEnough: true, hearts: false}
+	])("floats hearts $case", async scenario => {
+		await render(<PetCaress pet={PET} size={40} strokes={1} hadEnough={scenario.hadEnough} />);
+		expect(screen.queryByTestId("pet-motes", {includeHiddenElements: true}) !== null).toBe(scenario.hearts);
+	});
+
+	it("walks the pet off after one stroke too many", async () => {
+		jest.mocked(GameClient.request).mockImplementation(request => Promise.resolve(request instanceof PetCaressReq
+			? {kind: "answer", packet: new PetCaressRes()}
+			: {kind: "answer", packet: Object.assign(new ProfileRes(), {effect: NO_EFFECT})}));
+		await renderOverview({});
+		for (let stroke = 0; stroke < PET_PATIENCE.STROKES; stroke++) {
+			await fireEvent.press(screen.getByText("app:pet.care.caress"));
+		}
+		await waitFor(() => expect(screen.getByTestId("pet-caress-lock")).toBeTruthy());
+		const strokesSent = jest.mocked(GameClient.request).mock.calls.length;
+		await fireEvent.press(screen.getByText("app:pet.care.caress"));
+		expect(jest.mocked(GameClient.request).mock.calls).toHaveLength(strokesSent);
+	});
+
+	it("dances the pet the client already knows once the meal succeeds", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		client.setQueryData(gameKey(GAME_ENTITIES.PET), {kind: "answer", packet: Object.assign(new PetRes(), {pet: PET})});
+		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: true, result: PET_FEED_RESULTS.VERY_HAPPY}} onContinue={jest.fn()} /></QueryClientProvider>);
+		expect(screen.getByTestId("pet-feast", {includeHiddenElements: true})).toBeTruthy();
+	});
+
+	it("leaves a refused meal without a celebration", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		client.setQueryData(gameKey(GAME_ENTITIES.PET), {kind: "answer", packet: Object.assign(new PetRes(), {pet: PET})});
+		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: false, error: PET_FEED_ERRORS.NO_MONEY}} onContinue={jest.fn()} /></QueryClientProvider>);
+		expect(screen.queryByTestId("pet-feast", {includeHiddenElements: true})).toBeNull();
+		expect(screen.getByText("commands:petFeed.noMoney")).toBeTruthy();
+	});
+
+	it("shows the pet at its empty bowl, and how the storage fills up, when the guild has no food left", async () => {
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		client.setQueryData(gameKey(GAME_ENTITIES.PET), {kind: "answer", packet: Object.assign(new PetRes(), {pet: PET})});
+		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: false, error: PET_FEED_ERRORS.EMPTY_STORAGE}} onContinue={jest.fn()} /></QueryClientProvider>);
+		expect(screen.getByTestId("pet-empty-bowl", {includeHiddenElements: true})).toBeTruthy();
+		expect(screen.getByText("app:pet.feed.empty.title")).toBeTruthy();
+		expect(screen.getByText("app:pet.feed.empty.refill")).toBeTruthy();
+		expect(screen.queryByText("commands:petFeed.guildStorageEmpty")).toBeNull();
+	});
+
+	it("gives the meal result a way back to the game", async () => {
+		const onContinue = jest.fn();
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><PetFeedOutcome outcome={{success: true, result: PET_FEED_RESULTS.HAPPY}} onContinue={onContinue} /></QueryClientProvider>);
+		await fireEvent.press(screen.getByText("app:pet.feed.continue"));
+		expect(onContinue).toHaveBeenCalled();
+	});
+
+	it("swaps a boarder from the shelter itself, on the reaction the server attached to it", async () => {
+		const transfer = Object.assign(new ReactionCollectorCreation(), {
+			id: "transfer",
+			endTime: Date.now() + 60_000,
+			data: {type: "petTransfer", data: {ownPet: PET, shelterPets: [{petEntityId: 4, pet: BOARDER}]}},
+			reactions: [{type: "petDeposit", data: {}}, {type: "petSwitch", data: {petEntityId: 4}}, {type: "refuse", data: {}}]
+		});
+		jest.mocked(GameClient.request).mockImplementation(async request => request instanceof GuildShelterReq
+			? {kind: "answer", packet: Object.assign(new GuildShelterRes(), {guildName: "Les Veilleurs", pets: [BOARDER], maxCount: 6})}
+			: request instanceof PetReq
+				? {kind: "answer", packet: Object.assign(new PetRes(), {pet: PET, hasTalisman: false})}
+				: {kind: "answer", packet: transfer});
+		const client = new QueryClient({defaultOptions: {queries: {retry: false, gcTime: Infinity}}});
+		await render(<QueryClientProvider client={client}><GuildShelter /></QueryClientProvider>);
+		await waitFor(() => expect(screen.getByText("models:pets:8")).toBeTruthy());
+		await fireEvent.press(screen.getByText("models:pets:8"));
+		await fireEvent.press(screen.getByText("app:pet.management.switch"));
+		await waitFor(() => expect(mockAnswerWithoutShowing).toHaveBeenCalledWith("transfer", 1));
+	});
+});

@@ -1,0 +1,514 @@
+import uuid from "react-native-uuid";
+import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
+import {AuthToken} from "@/src/authentication/AuthToken";
+import {AppConstants} from "@/src/AppConstants";
+import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
+import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
+import {wireNameOf} from "ws-packets/src/MakePackets";
+import {PushedPacketHandler, PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
+import {WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON, WEBSOCKET_ACCOUNT_COLLISION_REASON, WEBSOCKET_ACCOUNT_DELETED_REASON} from "ws-packets/src/WebSocketCloseReasons";
+import {APP_PROTOCOL_QUERY_PARAMETER, APP_PROTOCOL_VERSION} from "ws-packets/src/AppCompatibility";
+
+/** Closes that reconnecting cannot fix: another session took over, or the app and server speak different protocols. */
+const FINAL_CLOSE_STATES: Partial<Record<string, AuthStateEnum>> = {
+	[WEBSOCKET_ACCOUNT_DELETED_REASON]: AuthStateEnum.NO_TOKEN,
+	[WEBSOCKET_ACCOUNT_COLLISION_REASON]: AuthStateEnum.ACCOUNT_COLLISION,
+	[WEBSOCKET_SESSION_REPLACED_REASON]: AuthStateEnum.CONNECTION_ERROR,
+	[WEBSOCKET_APP_OUTDATED_REASON]: AuthStateEnum.APP_OUTDATED,
+	[WEBSOCKET_SERVER_OUTDATED_REASON]: AuthStateEnum.SERVER_OUTDATED
+};
+
+export type WebSocketPacketResponseHandler<T extends FromServerPacket> = (packet: T) => void;
+
+interface PacketTimeout {
+	time: number;
+	callback?: () => void;
+}
+
+interface QueuedPacket {
+	id?: string;
+	packet: FromClientPacket;
+	expiresAt: number;
+}
+
+interface IncomingPacket {
+	id?: string;
+	name?: string;
+	packet?: FromServerPacket;
+}
+
+interface ResponseHandler {
+	cleanTime: Date;
+	callback: WebSocketPacketResponseHandler<never>;
+}
+
+interface ResponseHandlerGroup {
+	handlers: Map<string, ResponseHandler>;
+	received?: boolean;
+}
+
+export class WebSocketClient {
+	private static instance: WebSocketClient;
+
+	private socket: WebSocket | null = null;
+
+	private connectionAttempts = 0;
+	private connectionVersion = 0;
+
+	private maxConnectionAttempts = 20;
+
+	private packetQueue: QueuedPacket[] = [];
+
+	private responseHandlers = new Map<string, ResponseHandlerGroup>();
+
+	private readonly pushedPacketRegistry = new PushedPacketRegistry();
+
+	private setState?: (newState: AuthStateEnum) => void;
+
+	private saveToken?: (token: AuthToken) => Promise<void>;
+	private clearToken?: () => Promise<void>;
+	private activeAuthToken: AuthToken | null = null;
+	private accessTokenRequest: Promise<string | null> | null = null;
+	private tokenNeedsSaving = false;
+
+	private processPacketQueueIntervalId: ReturnType<typeof setInterval> | null = null;
+
+	private cleanResponseHandlersIntervalId: ReturnType<typeof setInterval> | null = null;
+
+	private reconnectTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+	private constructor() {
+		// Singleton construction is restricted to getInstance().
+	}
+
+	public static getInstance(): WebSocketClient {
+		if (!WebSocketClient.instance) {
+			WebSocketClient.instance = new WebSocketClient();
+		}
+		return WebSocketClient.instance;
+	}
+
+	public registerPushedPacketHandler<Packet extends FromServerPacket>(packetName: string, callback: PushedPacketHandler<Packet>): () => void {
+		return this.pushedPacketRegistry.register(packetName, callback);
+	}
+
+	public disconnect(): void {
+		this.connectionVersion++;
+		this.activeAuthToken = null;
+		this.accessTokenRequest = null;
+		this.tokenNeedsSaving = false;
+		const socket = this.socket;
+		this.socket = null;
+		socket?.close();
+		this.connectionAttempts = 0;
+		this.packetQueue = [];
+		this.responseHandlers.clear();
+		this.clearIntervals();
+	}
+
+	public async init(authToken: AuthToken, setState: (newState: AuthStateEnum) => void, saveToken: (token: AuthToken) => Promise<void>, clearToken?: () => Promise<void>): Promise<void> {
+		const connectionVersion = ++this.connectionVersion;
+		this.activeAuthToken = authToken;
+		this.accessTokenRequest = null;
+		this.tokenNeedsSaving = false;
+		this.setState = setState;
+		this.saveToken = saveToken;
+		this.clearToken = clearToken;
+
+		this.setState?.(AuthStateEnum.CONNECTING);
+		await this.connect(authToken, true);
+		if (connectionVersion !== this.connectionVersion) return;
+
+		if (this.processPacketQueueIntervalId === null) {
+			this.processPacketQueueIntervalId = setInterval((): void => {
+				this.processPacketQueue();
+			}, 1000);
+		}
+
+		if (this.cleanResponseHandlersIntervalId === null) {
+			this.cleanResponseHandlersIntervalId = setInterval((): void => {
+				this.cleanResponseHandlers();
+			}, 60 * 1000); // Clean response handlers every minute
+		}
+	}
+
+	public sendPacket(packet: FromClientPacket, responseHandlers: {
+		[packetName: string]: WebSocketPacketResponseHandler<never>;
+	}, timeout?: PacketTimeout): void {
+		if (__DEV__) console.debug("Sending packet:", packet);
+		/*
+		 * A screen may make its initial request while the socket is reconnecting. Register the
+		 * response before queuing it, otherwise the request is eventually sent without an id and
+		 * its promise can never settle.
+		 */
+		const packetId = this.registerResponseHandlers(responseHandlers);
+		this.enqueuePacket(packet, packetId, timeout);
+
+		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+			console.warn("WebSocket is not open. Packet will be queued.");
+			this.setState?.(AuthStateEnum.RECONNECTING_PACKET_QUEUE);
+			return;
+		}
+		this.processPacketQueue();
+	}
+
+	private enqueuePacket(packet: FromClientPacket, packetId: string | null, timeout?: PacketTimeout): void {
+		if (packetId && timeout) {
+			this.scheduleResponseHandlerCleanup(packetId, timeout);
+		}
+		this.packetQueue.push({
+			packet,
+			expiresAt: Date.now() + (timeout?.time ?? AppConstants.PACKET_TIMEOUT),
+			...(packetId ? { id: packetId } : {})
+		});
+	}
+
+	private registerResponseHandlers(responseHandlers: {
+		[packetName: string]: WebSocketPacketResponseHandler<never>;
+	}): string | null {
+		if (Object.keys(responseHandlers).length === 0) {
+			return null;
+		}
+
+		const packetId = uuid.v4();
+		const handlers = new Map<string, ResponseHandler>();
+		this.responseHandlers.set(packetId, { handlers });
+		for (const [packetName, callback] of Object.entries(responseHandlers)) {
+			handlers.set(packetName, {
+				cleanTime: new Date(Date.now() + 10 * 60 * 60 * 1000),
+				callback
+			});
+		}
+		return packetId;
+	}
+
+	private scheduleResponseHandlerCleanup(packetId: string, timeout: PacketTimeout): void {
+		setTimeout((): void => {
+			const responseHandlerGroup = this.responseHandlers.get(packetId);
+			if (!responseHandlerGroup) {
+				return;
+			}
+
+			this.packetQueue = this.packetQueue.filter(queuedPacket => queuedPacket.id !== packetId);
+			this.responseHandlers.delete(packetId);
+			if (timeout.callback && !responseHandlerGroup.received) {
+				timeout.callback();
+			}
+		}, timeout.time);
+	}
+
+	private getWebSocketUrl(): string {
+		const webSocketUrl = process.env.EXPO_PUBLIC_WEBSOCKET_URL;
+		if (!webSocketUrl) {
+			throw new Error("WebSocket URL is not defined in environment variables.");
+		}
+		return webSocketUrl;
+	}
+
+	public getCurrentAccessToken(): Promise<string | null> {
+		return this.activeAuthToken ? this.getAccessToken(this.activeAuthToken, this.connectionVersion) : Promise.resolve(null);
+	}
+
+	private getAccessToken(authToken: AuthToken, connectionVersion: number): Promise<string | null> {
+		if (connectionVersion !== this.connectionVersion) return Promise.resolve(null);
+		if (this.accessTokenRequest) return this.accessTokenRequest;
+		const request = this.refreshAccessToken(authToken, connectionVersion);
+		this.accessTokenRequest = request;
+		return request.finally((): void => {
+			if (this.accessTokenRequest === request) this.accessTokenRequest = null;
+		});
+	}
+
+	private isCurrent(connectionVersion: number): boolean {
+		return connectionVersion === this.connectionVersion;
+	}
+
+	/** Saves a refreshed token; whether the connection it was refreshed for is still the current one. */
+	private async saveRefreshedToken(authToken: AuthToken, connectionVersion: number): Promise<boolean> {
+		if (!this.tokenNeedsSaving) return true;
+		await this.saveToken?.(authToken);
+		if (!this.isCurrent(connectionVersion)) return false;
+		this.tokenNeedsSaving = false;
+		return true;
+	}
+
+	private async refreshAccessToken(authToken: AuthToken, connectionVersion: number): Promise<string | null> {
+		const refreshed = await authToken.refreshIfNeeded();
+		if (!this.isCurrent(connectionVersion)) return null;
+		if (refreshed) {
+			console.debug("Token refreshed successfully");
+			this.tokenNeedsSaving = true;
+		}
+		if (!await this.saveRefreshedToken(authToken, connectionVersion)) return null;
+
+		const accessToken = authToken.getAccessToken();
+		if (!accessToken) {
+			console.error("No access token available for WebSocket connection.");
+			this.setState?.(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
+			return null;
+		}
+		return accessToken;
+	}
+
+	private async connect(authToken: AuthToken, firstConnection: boolean): Promise<void> {
+		const connectionVersion = this.connectionVersion;
+		if (this.socket) {
+			if (this.socket.readyState === WebSocket.OPEN) {
+				this.setState?.(AuthStateEnum.LOGGED_IN);
+				return;
+			}
+			if (this.socket.readyState === WebSocket.CONNECTING) {
+				return;
+			}
+		}
+
+		const webSocketUrl = this.getWebSocketUrl();
+		const accessToken = await this.getAccessToken(authToken, connectionVersion);
+		if (connectionVersion !== this.connectionVersion) return;
+		if (!accessToken) {
+			return;
+		}
+
+		let firstConnectionFlag = firstConnection;
+		const socket = new WebSocket(`${webSocketUrl}?${APP_PROTOCOL_QUERY_PARAMETER}=${APP_PROTOCOL_VERSION}&token=${accessToken}`);
+		this.socket = socket;
+
+		socket.onopen = (): void => {
+			if (this.socket !== socket) {
+				return;
+			}
+			this.handleSocketOpen(socket);
+			firstConnectionFlag = false;
+		};
+
+		socket.onmessage = (event): void => this.handleSocketMessage(socket, event);
+
+		socket.onerror = (error): void => this.handleSocketError(socket, error);
+
+		socket.onclose = (error): void => this.handleSocketClose(socket, error, authToken, firstConnectionFlag);
+	}
+
+	private handleSocketOpen(socket: WebSocket): void {
+		if (this.socket !== socket) {
+			return;
+		}
+		console.log("WebSocket connection established.");
+		this.connectionAttempts = 0;
+		this.setState?.(AuthStateEnum.LOGGED_IN);
+		this.processPacketQueue();
+	}
+
+	private handleSocketMessage(socket: WebSocket, event: MessageEvent): void {
+		if (this.socket !== socket) {
+			return;
+		}
+		this.handleMessage(event);
+	}
+
+	private handleMessage(event: MessageEvent): void {
+		try {
+			const packets = JSON.parse(event.data) as IncomingPacket[];
+			if (!Array.isArray(packets)) {
+				console.warn("Received non-array packet data:", packets);
+				return;
+			}
+
+			for (const packet of packets) {
+				this.handleIncomingPacket(packet);
+			}
+		}
+		catch (error) {
+			console.error("Error processing WebSocket message:", error);
+		}
+	}
+
+private handleCorrelatedPacket(packetId: string | undefined, packetName: string, packetData: FromServerPacket): boolean {
+		if (!packetId) {
+			return false;
+		}
+
+		const responseHandlerGroup = this.responseHandlers.get(packetId);
+		if (!responseHandlerGroup?.handlers.has(packetName)) {
+			return false;
+		}
+
+		this.handleResponse(packetId, packetName, packetData);
+		return true;
+	}
+
+	private handleIncomingPacket(packet: IncomingPacket): void {
+		if (!packet.name || !packet.packet) {
+			console.warn("Received malformed packet:", packet);
+			return;
+		}
+
+		if (__DEV__) console.debug("Received packet:", JSON.stringify(packet));
+		const packetId = packet.id;
+		const packetName = packet.name;
+		const packetData = packet.packet;
+
+		const handledAsResponse = this.handleCorrelatedPacket(packetId, packetName, packetData);
+
+		const handledAsPushedPacket = this.pushedPacketRegistry.dispatch(packetName, packetData, {answersRequest: handledAsResponse});
+		if (!handledAsResponse && !handledAsPushedPacket) {
+			this.pushedPacketRegistry.reportUnhandled(packetName);
+		}
+	}
+
+	private handleSocketError(socket: WebSocket, error: Event): void {
+		if (this.socket !== socket) {
+			return;
+		}
+		console.info("WebSocket error:", error);
+		socket.close();
+	}
+
+	/** The session ended on the server: the stored token goes first, then the state says so, unless a new session began meanwhile. */
+	private endSession(finalState: AuthStateEnum): void {
+		const connectionVersion = this.connectionVersion;
+		const clearToken = this.clearToken;
+		Promise.resolve().then(() => {
+			if (this.isCurrent(connectionVersion)) return clearToken?.();
+			return undefined;
+		}).then((): void => {
+			if (this.isCurrent(connectionVersion)) this.setState?.(finalState);
+		}).catch((): void => {
+			if (this.isCurrent(connectionVersion)) this.setState?.(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
+		});
+	}
+
+	private handleFinalClose(finalState: AuthStateEnum): void {
+		this.disconnect();
+		if (finalState === AuthStateEnum.NO_TOKEN) this.endSession(finalState);
+		else this.setState?.(finalState);
+	}
+
+	private handleSocketClose(socket: WebSocket, error: CloseEvent, authToken: AuthToken, firstConnection: boolean): void {
+		if (this.socket !== socket) {
+			return;
+		}
+		console.log("WebSocket connection closed.");
+		const finalState = FINAL_CLOSE_STATES[error.reason];
+		if (finalState !== undefined) {
+			this.handleFinalClose(finalState);
+			return;
+		}
+		if (error.reason === "Unauthorized") {
+			this.handleUnauthorizedClose();
+			return;
+		}
+
+		this.socket = null;
+		if (firstConnection || this.connectionAttempts >= this.maxConnectionAttempts) {
+			this.handleReconnectFailure(firstConnection);
+			return;
+		}
+
+		this.setReconnectingState();
+		this.scheduleReconnect(authToken);
+	}
+
+	private handleUnauthorizedClose(): void {
+		console.error("WebSocket authentication failed.");
+		this.setState?.(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
+		this.clearIntervals();
+	}
+
+	private handleReconnectFailure(firstConnection: boolean): void {
+		if (!firstConnection) {
+			console.error("Max connection attempts reached. Stopping reconnection attempts.");
+		}
+		this.connectionAttempts = 0;
+		this.socket = null;
+		this.packetQueue = [];
+		this.setState?.(AuthStateEnum.CONNECTION_ERROR);
+		this.clearIntervals();
+	}
+
+	private setReconnectingState(): void {
+		const state = this.packetQueue.length > 0
+			? AuthStateEnum.RECONNECTING_PACKET_QUEUE
+			: AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE;
+		this.setState?.(state);
+	}
+
+	private scheduleReconnect(authToken: AuthToken): void {
+		this.reconnectTimeoutId = setTimeout((): void => {
+			this.reconnectTimeoutId = null;
+			console.log("Attempting to reconnect WebSocket...");
+			this.connectionAttempts++;
+			this.connect(authToken, false).catch((error) => {
+				console.error("Failed to reconnect WebSocket:", error);
+			});
+		}, 1000);
+	}
+
+	private processPacketQueue(): void {
+		while (this.packetQueue.length > 0) {
+			if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+				const queuedPacket = this.packetQueue.shift();
+				if (queuedPacket && queuedPacket.expiresAt > Date.now()) {
+					this.socket.send(JSON.stringify({
+						id: queuedPacket.id,
+						name: wireNameOf(queuedPacket.packet),
+						data: queuedPacket.packet
+					}));
+				}
+			}
+			else {
+				console.warn("WebSocket is not open. Cannot process packet queue.");
+				break;
+			}
+		}
+	}
+
+	private cleanResponseHandlers(): void {
+		const now = new Date();
+		for (const [packetId, responseHandlerGroup] of this.responseHandlers) {
+			for (const [packetName, handler] of responseHandlerGroup.handlers) {
+				if (handler && handler.cleanTime < now) {
+					responseHandlerGroup.handlers.delete(packetName);
+				}
+			}
+			if (responseHandlerGroup.handlers.size === 0) {
+				this.responseHandlers.delete(packetId);
+			}
+		}
+	}
+
+	private handleResponse(packetId: string, packetName: string, packet: FromServerPacket): void {
+		const responseHandlerGroup = this.responseHandlers.get(packetId);
+		if (responseHandlerGroup) {
+			responseHandlerGroup.received = true;
+			const handler = responseHandlerGroup.handlers.get(packetName);
+			if (handler) {
+				handler.callback(packet as never);
+				responseHandlerGroup.handlers.delete(packetName);
+				if (responseHandlerGroup.handlers.size === 0) {
+					this.responseHandlers.delete(packetId);
+				}
+			}
+			else {
+				console.warn(`No response handler found for packet ID: ${packetId}, Name: ${packetName}`);
+			}
+		}
+		else {
+			console.warn(`No response handlers found for packet ID: ${packetId}`);
+		}
+	}
+
+	private clearIntervals(): void {
+		if (this.reconnectTimeoutId !== null) {
+			clearTimeout(this.reconnectTimeoutId);
+			this.reconnectTimeoutId = null;
+		}
+		if (this.processPacketQueueIntervalId !== null) {
+			clearInterval(this.processPacketQueueIntervalId);
+			this.processPacketQueueIntervalId = null;
+		}
+		if (this.cleanResponseHandlersIntervalId !== null) {
+			clearInterval(this.cleanResponseHandlersIntervalId);
+			this.cleanResponseHandlersIntervalId = null;
+		}
+	}
+}

@@ -1,6 +1,5 @@
 import { parse } from "toml";
 import { readFileSync } from "fs";
-import { DiscordSsoConfig } from "./DiscordSsoConfig";
 import {
 	createMqttPrefix, MqttPrefix
 } from "../../../Lib/src/utils/MqttTopicUtils";
@@ -19,24 +18,55 @@ export interface RestWsConfig {
 	LOKI_HOST?: string;
 	LOKI_USERNAME?: string;
 	LOKI_PASSWORD?: string;
-	REST_API_ALLOW_NEW_USERS_REGISTERING: boolean;
 	REST_API_PORT: number;
-	REST_API_DISCORD_SSO?: DiscordSsoConfig;
-	REST_API_BETA_LOGIN: boolean;
 	WEB_SOCKET_PORT: number;
 	PREFIX: MqttPrefix;
+	DEBUG: boolean;
+	ACCOUNT_DELETION: AccountDeletionConfig;
+	PUSH: PushConfig;
+}
+
+/**
+ * How notifications reach the app while it is closed. An empty path leaves that push service off.
+ */
+export interface PushConfig {
+	APNS: {
+		KEY_PATH: string;
+		KEY_ID: string;
+		TEAM_ID: string;
+		BUNDLE_ID: string;
+	};
+	FCM: {
+		SERVICE_ACCOUNT_PATH: string;
+	};
+}
+
+/**
+ * How a deletion request is authenticated, and who gets warned about it
+ */
+export interface AccountDeletionConfig {
+	SECRET: string;
+	WEBHOOK_URL: string;
+	SMTP: {
+		HOST: string;
+		PORT: number;
+		USERNAME: string;
+		PASSWORD: string;
+		FROM: string;
+		TO: string;
+	};
 }
 
 /**
  * Represents the structure of the config file
  */
 type ConfigStructure = {
-	global: { prefix: string };
+	global: {
+		prefix: string;
+		debug: boolean;
+	};
 	restApi: {
-		allowRegister: boolean;
 		port: number;
-		discordSso?: DiscordSsoConfig;
-		betaLogin: boolean;
 	};
 	webSocket: { port: number };
 	keycloak: {
@@ -46,6 +76,29 @@ type ConfigStructure = {
 		clientSecret: string;
 	};
 	mqtt: { host: string };
+	accountDeletion?: {
+		secret?: string;
+		webhookUrl?: string;
+		smtp?: {
+			host?: string;
+			port?: number;
+			username?: string;
+			password?: string;
+			from?: string;
+			to?: string;
+		};
+	};
+	push?: {
+		apns?: {
+			keyPath?: string;
+			keyId?: string;
+			teamId?: string;
+			bundleId?: string;
+		};
+		fcm?: {
+			serviceAccountPath?: string;
+		};
+	};
 	logs: {
 		level: string;
 		locations: string[];
@@ -56,6 +109,43 @@ type ConfigStructure = {
 		};
 	};
 };
+
+const DEFAULT_SMTP_PORT = 587;
+
+/**
+ * The account deletion section is optional: a missing value leaves the matching warning channel off
+ */
+function loadAccountDeletionConfig(section: ConfigStructure["accountDeletion"] = {}): AccountDeletionConfig {
+	const smtp = section.smtp ?? {};
+	return {
+		SECRET: section.secret ?? "",
+		WEBHOOK_URL: section.webhookUrl ?? "",
+		SMTP: {
+			HOST: smtp.host ?? "",
+			PORT: smtp.port ?? DEFAULT_SMTP_PORT,
+			USERNAME: smtp.username ?? "",
+			PASSWORD: smtp.password ?? "",
+			FROM: smtp.from ?? "",
+			TO: smtp.to ?? ""
+		}
+	};
+}
+
+const DEFAULT_BUNDLE_ID = "com.crownicles.app";
+
+function loadPushConfig(section: ConfigStructure["push"] = {}): PushConfig {
+	return {
+		APNS: {
+			KEY_PATH: section.apns?.keyPath ?? "",
+			KEY_ID: section.apns?.keyId ?? "",
+			TEAM_ID: section.apns?.teamId ?? "",
+			BUNDLE_ID: section.apns?.bundleId ?? DEFAULT_BUNDLE_ID
+		},
+		FCM: {
+			SERVICE_ACCOUNT_PATH: section.fcm?.serviceAccountPath ?? ""
+		}
+	};
+}
 
 /**
  * Loads the config from the config file
@@ -74,18 +164,12 @@ export function loadConfig(): RestWsConfig {
 		LOKI_HOST: config.logs.loki?.host,
 		LOKI_USERNAME: config.logs.loki?.username,
 		LOKI_PASSWORD: config.logs.loki?.password,
-		REST_API_ALLOW_NEW_USERS_REGISTERING: config.restApi.allowRegister,
 		REST_API_PORT: config.restApi.port,
-		REST_API_DISCORD_SSO: config.restApi.discordSso
-			? {
-				clientId: config.restApi.discordSso.clientId,
-				clientSecret: config.restApi.discordSso.clientSecret,
-				callbackUrl: config.restApi.discordSso.callbackUrl
-			}
-			: undefined,
-		REST_API_BETA_LOGIN: config.restApi.betaLogin,
 		WEB_SOCKET_PORT: config.webSocket.port,
-		PREFIX: createMqttPrefix(config.global.prefix)
+		PREFIX: createMqttPrefix(config.global.prefix),
+		DEBUG: config.global.debug,
+		ACCOUNT_DELETION: loadAccountDeletionConfig(config.accountDeletion),
+		PUSH: loadPushConfig(config.push)
 	};
 }
 

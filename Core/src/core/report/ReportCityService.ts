@@ -151,6 +151,7 @@ export async function buildApartmentNotaryData(
 		...canShowForSale
 			? { forSale: buildForSaleData(city.apartmentPrice, player.money) }
 			: {},
+		...city.apartmentPrice && !home ? { requiresHomePrice: city.apartmentPrice } : {},
 		ownedApartments: summaries
 	};
 }
@@ -322,9 +323,25 @@ export async function buildHomeData(
 		player, home, homeLevel, city
 	});
 
+	const elsewhere = owned ? undefined : buildElsewhereHome(home, homeLevel);
+
 	return {
 		...owned ? { owned } : {},
-		...manage ? { manage } : {}
+		...manage ? { manage } : {},
+		...elsewhere ? { elsewhere } : {}
+	};
+}
+
+/** The home a player owns in another city, for the cities where no apartment opens it. */
+function buildElsewhereHome(home: Home | null, homeLevel: HomeLevel | null): HomeData["elsewhere"] {
+	const mapLocationId = home ? CityDataController.instance.getById(home.cityId)?.maps[0] : undefined;
+	if (!home || !homeLevel || mapLocationId === undefined) {
+		return undefined;
+	}
+	return {
+		mapLocationId,
+		level: home.level,
+		hasCooking: homeLevel.features.cookingSlots > 0
 	};
 }
 

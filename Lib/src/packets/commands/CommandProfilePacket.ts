@@ -50,6 +50,9 @@ export class CommandProfilePacketRes extends CrowniclesPacket {
 			timeLeft: number;
 			effect: string;
 			hasTimeDisplay: boolean;
+
+			/** Score a respawn would take away, sent only while the player is dead. */
+			respawnScoreLoss?: number;
 		};
 		classId?: number;
 		fightRanking?: {

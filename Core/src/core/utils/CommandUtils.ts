@@ -18,6 +18,7 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { MapCache } from "../maps/MapCache";
 import { RequirementWherePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementWherePacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { AsyncLock } from "../../../../Lib/src/locks/AsyncLock";
 import { verifyCommandAccess } from "../tournaments/TournamentAccess";
 import type { TournamentCommandAccess } from "../tournaments/TournamentTypes";
 
@@ -305,6 +306,32 @@ type WithPlayerPacketListenerCallbackServer = (...args: any[]) => void | Promise
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type WithoutPlayerPacketListenerCallbackServer = (...args: any[]) => void | Promise<void>;
 
+type PlayerCommandLock = {
+	lock: AsyncLock;
+	pending: number;
+};
+
+const pendingPlayerCommands = new Map<string, PlayerCommandLock>();
+
+async function runPlayerCommand(keycloakId: string, body: () => Promise<void>): Promise<void> {
+	const entry = pendingPlayerCommands.get(keycloakId) ?? {
+		lock: new AsyncLock(), pending: 0
+	};
+	entry.pending++;
+	pendingPlayerCommands.set(keycloakId, entry);
+	const release = await entry.lock.acquire();
+	try {
+		await body();
+	}
+	finally {
+		release();
+		entry.pending--;
+		if (entry.pending === 0) {
+			pendingPlayerCommands.delete(keycloakId);
+		}
+	}
+}
+
 /**
  * Core command decorator to register a command handler with its requirements
  * @param packet
@@ -315,37 +342,40 @@ export const commandRequires = <T extends CrowniclesPacket>(packet: PacketLike<T
 	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<any>): void => {
 		const originalMethod = descriptor.value as WithPlayerPacketListenerCallbackServer;
 		crowniclesInstance!.packetListener.addPacketListener<T>(packet, async (response: CrowniclesPacket[], context: PacketContext, packet: T): Promise<void> => {
-			if (!context.keycloakId) {
+			const keycloakId = context.keycloakId;
+			if (!keycloakId) {
 				return;
 			}
-			let player = await Players.getByKeycloakId(context.keycloakId);
+			await runPlayerCommand(keycloakId, async (): Promise<void> => {
+				let player = await Players.getByKeycloakId(keycloakId);
 
-			// If the player is not registered, verify if the command is allowed to be executed and register the player if it is
-			if (!player) {
-				if (!CommandUtils.verifyNotStartedWithoutPlayerInstance(requirements, response)) {
+				// If the player is not registered, verify if the command is allowed to be executed and register the player if it is
+				if (!player) {
+					if (!CommandUtils.verifyNotStartedWithoutPlayerInstance(requirements, response)) {
+						return;
+					}
+
+					player = await Players.getOrRegister(keycloakId);
+				}
+
+				if (player.banned) {
+					response.push(makePacket(ErrorBannedPacket, {}));
+					return;
+				}
+				if (player.insideCity) {
+					await player.markActive();
+				}
+
+				// Warning: order of the checks is important, as appendBlockedPacket can add a packet to the response
+				if (requirements.notBlocked && player.keycloakId && BlockingUtils.appendBlockedPacket(player.keycloakId, response)) {
 					return;
 				}
 
-				player = await Players.getOrRegister(context.keycloakId);
-			}
-
-			if (player.banned) {
-				response.push(makePacket(ErrorBannedPacket, {}));
-				return;
-			}
-			if (player.insideCity) {
-				await player.markActive();
-			}
-
-			// Warning: order of the checks is important, as appendBlockedPacket can add a packet to the response
-			if (requirements.notBlocked && player.keycloakId && BlockingUtils.appendBlockedPacket(player.keycloakId, response)) {
-				return;
-			}
-
-			if (!await CommandUtils.verifyCommandRequirements(player, context, response, requirements)) {
-				return;
-			}
-			await originalMethod(response, player, packet, context);
+				if (!await CommandUtils.verifyCommandRequirements(player, context, response, requirements)) {
+					return;
+				}
+				await originalMethod(response, player, packet, context);
+			});
 		});
 		CrowniclesLogger.info(`[${packet.name}] Registered packet handler (function '${prop}' in class '${(target as { constructor: { name: string } }).constructor.name}')`);
 	};

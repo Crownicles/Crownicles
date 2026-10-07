@@ -1,0 +1,194 @@
+// skipcq: JS-C1003 - i18next does not expose itself as an ES Module.
+import * as i18next from "i18next";
+import {Language} from "@/src/translations/Language";
+import {AppIcons} from "@/src/AppIcons";
+import {currentLanguage} from "@/src/translations/i18nLoader";
+
+/**
+ * Get the corresponding to emote for the given emote name
+ * @param path
+ */
+function getEmote(path: string): string | null {
+	const emote = AppIcons.getIconOrNull(path);
+
+	if (emote === null) {
+		console.error(`Missing emote: ${emote}:`);
+		return null;
+	}
+
+	return emote;
+}
+
+/**
+ * Replace in the given string all occurences of "{emote:...}" by the corresponding discord emote
+ * @param str
+ */
+function convertEmoteFormat(str: string): string {
+	return str.replace(/{emote:(.*?)}/g, (_match, emote) => getEmote(emote) ?? `EMOTE NOT FOUND : ${emote}`);
+}
+
+const COMMAND_MENTION = /{command:(.*?)}/g;
+
+/**
+ * Discord renders "{command:...}" as a mention of the slash command. The app has no commands: it names the screen
+ * offering the same thing, and only a command without an app equivalent keeps its Discord "/name".
+ * @param str
+ */
+function convertCommandFormat(str: string): string {
+	return str.replace(COMMAND_MENTION, (_match, command: string) => {
+		const key = `app:commandMentions.${command}`;
+		return i18next.exists(key) ? String(i18next.t(key)) : `/${command}`;
+	});
+}
+
+/**
+ * Apply all the crownicles formatting to the given string
+ * @param str
+ */
+function crowniclesFormat(value: unknown): string {
+	if (typeof value !== "string") {
+		return value == null ? "" : String(value);
+	}
+	return convertCommandFormat(convertEmoteFormat(value));
+}
+
+function fallbackTranslation(key: string | string[], options?: i18next.TOptions): string | string[] | Record<string, string> {
+	if (options?.returnObjects) {
+		return Array.isArray(key) ? [] : {};
+	}
+	return Array.isArray(key) ? key[0] : key;
+}
+
+function formatObjectTranslation(value: object): Record<string, string> {
+	return Object.entries(value)
+		.reduce((acc, [key, entry]) => {
+			acc[key] = crowniclesFormat(entry);
+			return acc;
+		}, {} as Record<string, string>);
+}
+
+function formatSimpleTranslation(value: string | string[]): string | string[] {
+	if (Array.isArray(value)) {
+		return value.map(crowniclesFormat);
+	}
+	return crowniclesFormat(value);
+}
+
+function translationObject(value: string | string[] | object): object | null {
+	if (Array.isArray(value)) {
+		return null;
+	}
+	if (typeof value === "object") {
+		return value;
+	}
+	return null;
+}
+
+function formatRequestedTranslation(value: string | string[] | object): string | string[] | Record<string, string> {
+	const objectValue = translationObject(value);
+	if (objectValue) {
+		return formatObjectTranslation(objectValue);
+	}
+	return formatSimpleTranslation(value as string | string[]);
+}
+
+function formatTranslation(value: string | string[] | object, options?: i18next.TOptions): string | string[] | Record<string, string> {
+	if (options?.returnObjects) {
+		return formatRequestedTranslation(value);
+	}
+	return formatSimpleTranslation(value as string | string[]);
+}
+
+export class I18nCrownicles {
+	/**
+	 * Translate the given key with the given options and returns all the objects found
+	 * @param key
+	 * @param options
+	 */
+	static t(key: string | string[], options: {
+		returnObjects: true;
+	} & i18next.TOptions): string[];
+
+	/**
+	 * Translate the given key with the given options
+	 * @param key
+	 * @param options
+	 */
+	static t(key: string | string[], options: {
+		returnObjects?: false;
+	} & i18next.TOptions): string;
+
+	/**
+	 * Translate the given key with the given options
+	 * @param key
+	 * @param options
+	 */
+	static t(key: string | string[], options: {
+		returnObjects: true;
+	} & i18next.TOptions): Record<string, string>;
+
+	/**
+	 * Translate the given key with the given options
+	 * @param key
+	 * @param options
+	 */
+	static t(key: string | string[], options?: i18next.TOptions): string;
+
+	/**
+	 * Translate the given key with the given options
+	 * Override of the i18next.t function to allow the following :
+	 * - replace the "{command:...}" format by the app screen offering the same thing
+	 * - force lng to be a Language value and being required
+	 * - force the return type to be a string (and not a never)
+	 * @param key
+	 * @param options
+	 */
+	static t(key: string | string[], options?: i18next.TOptions): string | string[] | Record<string, string> {
+		const value: string | string[] | object | undefined = i18next.t(key, options);
+		if (value === undefined || value === null) {
+			return fallbackTranslation(key, options);
+		}
+		return formatTranslation(value, options);
+	}
+
+	/**
+	 * Return all variants of an array translation. Discord uses the same helper
+	 * for small-event stories, so the app can reuse those resources safely.
+	 */
+	static tArray(key: string, options?: i18next.TOptions): string[] {
+		const value = i18next.t(key, {...options, returnObjects: true});
+		if (Array.isArray(value)) {
+			return value.map(crowniclesFormat);
+		}
+		if (typeof value === "string") {
+			return [crowniclesFormat(value)];
+		}
+		return [];
+	}
+
+	/** Variants written around a Discord command explain that command: the app keeps only the others. */
+	static tArrayWithoutCommands(key: string, options?: i18next.TOptions): string[] {
+		const value: unknown = i18next.t(key, {...options, returnObjects: true});
+		return Array.isArray(value) ? value.filter(variant => typeof variant === "string" && variant.search(COMMAND_MENTION) === -1).map(crowniclesFormat) : [];
+	}
+
+	/** Return a keyed translation object, as Discord's `tRecord` does. */
+	static tRecord(key: string, options?: i18next.TOptions): Record<string, string> {
+		const value: unknown = i18next.t(key, {...options, returnObjects: true});
+		return typeof value === "object" && value !== null && !Array.isArray(value) ? formatObjectTranslation(value) : {};
+	}
+
+	static async changeLanguage(language: Language): Promise<void> {
+		await i18next.changeLanguage(language);
+	}
+
+	/**
+	 * Language keys are currently resolved in. Number and date formatting follow it so they match
+	 * the text around them.
+	 */
+	static get language(): string {
+		return currentLanguage();
+	}
+}
+
+export const i18n = I18nCrownicles;

@@ -526,6 +526,33 @@ export function buildTrainingGroundContainer(ctx: GuildDomainMenuContext, status
 	});
 }
 
+export function buildRecruitmentOfficeContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
+	const {
+		data, lng
+	} = ctx;
+	return buildSimpleBuildingContainer({
+		ctx,
+		building: GuildBuilding.RECRUITMENT_OFFICE,
+		titleKey: "commands:report.city.guildDomain.subMenus.recruitmentOffice.title",
+		body: container => {
+			container.addTextDisplayComponents(new TextDisplayBuilder().setContent(recruitmentOfficeDescription(data, lng)));
+		},
+		statusMessage
+	});
+}
+
+function recruitmentOfficeDescription(data: GuildDomainMenuContext["data"], lng: Language): string {
+	if (data.recruitmentOfficeLevel === 0) {
+		return i18n.t("commands:report.city.guildDomain.subMenus.recruitmentOffice.descriptionLocked", { lng });
+	}
+	return i18n.t(data.recruitment.open
+		? "commands:report.city.guildDomain.subMenus.recruitmentOffice.descriptionOpen"
+		: "commands:report.city.guildDomain.subMenus.recruitmentOffice.descriptionClosed", {
+		lng,
+		minScore: data.recruitment.minScore
+	});
+}
+
 export function buildBuildingContainer(building: GuildBuilding, ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
 	switch (building) {
 		case GuildBuilding.SHOP:
@@ -536,6 +563,8 @@ export function buildBuildingContainer(building: GuildBuilding, ctx: GuildDomain
 			return buildPantryContainer(ctx, statusMessage);
 		case GuildBuilding.TRAINING_GROUND:
 			return buildTrainingGroundContainer(ctx, statusMessage);
+		case GuildBuilding.RECRUITMENT_OFFICE:
+			return buildRecruitmentOfficeContainer(ctx, statusMessage);
 		default:
 			return new ContainerBuilder();
 	}

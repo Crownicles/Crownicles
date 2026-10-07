@@ -1,5 +1,8 @@
 import { MqttConstants } from "../../../Lib/src/constants/MqttConstants";
 import { GlobalMqttClient } from "./GlobalMqttClient";
+import { BlessingAnnouncementMqttClient } from "./BlessingAnnouncementMqttClient";
+import { AppNotificationsMqttClient } from "./AppNotificationsMqttClient";
+import { PushServices } from "../push/PushServices";
 import { restWsConfig } from "../index";
 
 /**
@@ -19,9 +22,21 @@ export class MqttManager {
 	static globalMqttClient: GlobalMqttClient;
 
 	/**
+	 * Relays blessings to every connected player
+	 */
+	static blessingAnnouncementMqttClient: BlessingAnnouncementMqttClient;
+
+	/**
+	 * Delivers notifications to the app, open or closed
+	 */
+	static appNotificationsMqttClient: AppNotificationsMqttClient;
+
+	/**
 	 * Connects the MQTT clients
 	 */
 	static connectClients(): void {
 		MqttManager.globalMqttClient = new GlobalMqttClient(restWsConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
+		MqttManager.blessingAnnouncementMqttClient = new BlessingAnnouncementMqttClient(restWsConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
+		MqttManager.appNotificationsMqttClient = new AppNotificationsMqttClient(restWsConfig.MQTT_HOST, PushServices.fromConfig(restWsConfig.PUSH));
 	}
 }

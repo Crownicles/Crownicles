@@ -13,8 +13,16 @@ export class FightAction extends Data<string> {
 
 	public readonly type!: FightActionType;
 
+	public readonly minimumOpponentEnergy?: number;
+
 	private _weightForRandomSelection!: number;
 
+	public capOpponentDamage(result: FightActionResult, receiver: Fighter): void {
+		if (this.minimumOpponentEnergy === undefined || result.damages === undefined) {
+			return;
+		}
+		result.damages = Math.min(result.damages, Math.max(0, receiver.getEnergy() - this.minimumOpponentEnergy));
+	}
 
 	public use(sender: Fighter, receiver: Fighter, turn: number, fight: FightController): FightActionResult {
 		const fightActionFunc = FightActionDataController.getFightActionFunction(this.id);
@@ -23,13 +31,13 @@ export class FightAction extends Data<string> {
 		}
 		const result = fightActionFunc(sender, receiver, this, turn, fight);
 
-		FightAction.applyResistanceAndReflect(result, sender, receiver, this.type);
+		FightAction.applyResistanceAndReflect(result, sender, receiver, this);
 		receiver.damage(result.damages ?? 0);
 
 		if (result.usedAction) {
 			const usedAction = FightActionDataController.instance.getById(result.usedAction.id);
 			if (usedAction) {
-				FightAction.applyResistanceAndReflect(result.usedAction.result, sender, receiver, usedAction.type);
+				FightAction.applyResistanceAndReflect(result.usedAction.result, sender, receiver, usedAction);
 			}
 			receiver.damage(result.usedAction.result.damages ?? 0);
 		}
@@ -37,7 +45,7 @@ export class FightAction extends Data<string> {
 		return result;
 	}
 
-	private static applyResistanceAndReflect(result: FightActionResult, sender: Fighter, receiver: Fighter, type: FightActionType): void {
+	private static applyResistanceAndReflect(result: FightActionResult, sender: Fighter, receiver: Fighter, action: FightAction): void {
 		if (result.damages === undefined) {
 			return;
 		}
@@ -47,9 +55,10 @@ export class FightAction extends Data<string> {
 
 		// originalDamages (used for reflected damage) is intentionally taken after the enchantment scaling above
 		const originalDamages = result.damages;
-		result.damages = Math.round(result.damages * receiver.getResistanceMultiplier(type));
+		result.damages = Math.round(result.damages * receiver.getResistanceMultiplier(action.type));
+		action.capOpponentDamage(result, receiver);
 
-		const reflectedDamage = receiver.getReflectedDamage(type, originalDamages);
+		const reflectedDamage = receiver.getReflectedDamage(action.type, originalDamages);
 		if (reflectedDamage > 0) {
 			sender.damage(reflectedDamage);
 			result.reflectedDamages = (result.reflectedDamages ?? 0) + reflectedDamage;

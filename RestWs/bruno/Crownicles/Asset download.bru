@@ -1,0 +1,19 @@
+meta {
+  name: Asset download
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{URL}}/assets/download?file=Lang/fr/bot.json
+  body: none
+  auth: inherit
+}
+
+params:query {
+  file: Lang/fr/bot.json
+}
+
+settings {
+  encodeUrl: true
+}

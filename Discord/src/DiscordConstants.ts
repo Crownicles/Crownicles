@@ -1,3 +1,5 @@
+import { ACCOUNT_DELETION_CODE_LENGTH } from "../../Lib/src/utils/AccountDeletionCode";
+
 export abstract class DiscordConstants {
 	static MAX_BUTTONS_PER_ROW = 5;
 
@@ -72,7 +74,7 @@ export abstract class DiscordConstants {
 		/**
 		 * Length of the deletion code in hexadecimal characters
 		 */
-		CODE_LENGTH: 16,
+		CODE_LENGTH: ACCOUNT_DELETION_CODE_LENGTH,
 
 		/**
 		 * Maximum allowed failed attempts before temporary block

@@ -1,0 +1,213 @@
+import {ReactNode, useState} from "react";
+import {Pressable, Text, View, type StyleProp, type ViewStyle} from "react-native";
+import {useRouter} from "expo-router";
+import {useOpenGuild, useOpenPlayer} from "@/src/navigation/OtherProfiles";
+import {TopDataType, TopTiming, RankingEntry} from "ws-packets/src/objects/Rankings";
+import {TopRes} from "ws-packets/src/fromServer/fight/RankingsRes";
+import {RankingSelection, useRankings} from "@/src/store/useRankings";
+import {GAME_ENTITIES} from "@/src/store/GameEntities";
+import {GameQueryContent} from "@/src/components/GameQueryContent";
+import {UnitIcon} from "@/src/components/UnitIcon";
+import {EmptyState, Note, SectionHeader} from "@/src/design/Primitives";
+import {ExpandableList, Standing} from "@/src/design/Sections";
+import {SegmentedControl} from "@/src/design/SegmentedControl";
+import {ChevronDown} from "@/src/design/FightIcons";
+import {Theme} from "@/src/design/Theme";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
+import {AppIcons} from "@/src/AppIcons";
+import {formatNumber} from "@/src/display/Amounts";
+import {i18n} from "@/src/translations/i18n";
+import {joinFacts} from "@/src/display/Facts";
+import {createStyles, useColors} from "@/src/design/ThemeContext";
+
+/** Each board counts its own currency, and shows the emoji the rest of the game gives it. */
+const RANKING_UNITS: Record<TopDataType, string> = {
+	[TopDataType.SCORE]: "score",
+	[TopDataType.GLORY]: "glory",
+	[TopDataType.GUILD]: "guildPoint"
+};
+const PODIUM_LAST_RANK = 3;
+
+const useStyles = createStyles(colors => ({
+	entry: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, minHeight: 64, paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"},
+	entrySelf: {backgroundColor: colors.wash, borderLeftColor: colors.green},
+	rankBadge: {minWidth: 38, height: 30, flexShrink: 0, alignItems: "center", justifyContent: "center", paddingHorizontal: Theme.spacing.sm, backgroundColor: colors.wash, borderRadius: 10},
+	rankBadgePodium: {backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.gold},
+	rank: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowSubtitle, color: colors.muted, fontVariant: ["tabular-nums"]},
+	rankPodium: {color: colors.gold},
+	body: {flex: 1, minWidth: 0, gap: 3},
+	name: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, color: colors.ink},
+	meta: {flexDirection: "row", alignItems: "center", gap: 5},
+	metaText: {flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted},
+	end: {alignItems: "flex-end", maxWidth: "40%", gap: 3, flexShrink: 1},
+	value: {flexDirection: "row", alignItems: "center", gap: 4, flexShrink: 1},
+	valueText: {fontFamily: Theme.fonts.bold, fontSize: Theme.fontSize.rowTitle, color: colors.ink, fontVariant: ["tabular-nums"], flexShrink: 1},
+	self: {fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: colors.green},
+	pagination: {flexDirection: "row", alignItems: "center", gap: Theme.spacing.md, paddingBottom: Theme.spacing.md},
+	pageLabel: {flex: 1, minHeight: 40, justifyContent: "center"},
+	page: {textAlign: "center", fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.caption, color: colors.muted},
+	pageAction: {color: colors.blue},
+	pageButton: {width: 40, height: 40, alignItems: "center", justifyContent: "center", backgroundColor: colors.wash, borderRadius: Theme.pillRadius},
+	pageButtonDisabled: {opacity: 0.35},
+	pressed: {opacity: 0.7},
+	previousArrow: {transform: [{rotate: "90deg"}]},
+	nextArrow: {transform: [{rotate: "-90deg"}]}
+}));
+
+/** The badges a ranked player carries: their league, where they travel, what ails them. */
+function entryIcons(entry: RankingEntry): string[] {
+	const paths: string[] = [];
+	if (entry.leagueId !== undefined) paths.push(`leagues.${entry.leagueId}`);
+	if (entry.mapType) paths.push(`mapTypes.${entry.mapType}`);
+	if (entry.effectId) paths.push(`effects.${entry.effectId}`);
+	return paths.map(path => AppIcons.getIconOrNull(path)).filter(icon => icon !== null);
+}
+
+function entryMeta(entry: RankingEntry): string {
+	const labels = [i18n.t("app:guild.level", {level: entry.level})];
+	if (entry.leagueId !== undefined) labels.push(i18n.t(`models:leagues.${entry.leagueId}`));
+	if (entry.afk) labels.push(i18n.t("app:arena.rankings.inactive"));
+	return joinFacts(labels);
+}
+
+/** The page the player sits on, so the list can jump straight to it instead of being paged through. */
+function playerPage(data: TopRes): number | undefined {
+	return data.contextRank ? Math.ceil(data.contextRank / data.elementsPerPage) : undefined;
+}
+
+function RankingStanding({data, onPage}: {data: TopRes; onPage: (page: number) => void}): ReactNode {
+	const target = playerPage(data);
+	const reachable = target !== undefined && target !== data.pageNumber;
+	return <Standing
+		testID="ranking-standing"
+		emblem={<UnitIcon unit={RANKING_UNITS[data.dataType]} size={30} />}
+		caption={i18n.t("app:arena.rankings.yourPlace")}
+		title={data.contextRank ? formatNumber(data.contextRank) : i18n.t("app:profile.values.unranked")}
+		subtitle={i18n.t("app:arena.rankings.ofTotal", {total: formatNumber(data.totalElements)})}
+		{...reachable ? {onPress: (): void => onPage(target), accessibilityLabel: i18n.t("app:arena.rankings.goToMyPage")} : {}}
+	/>;
+}
+
+type RankingLink = {label: string; open: () => void};
+type RankingNavigation = {router: ReturnType<typeof useRouter>; openPlayer: (playerRef: string) => void; openGuild: (name: string) => void};
+
+/** Where a row leads: one's own row goes to one's own tab, with everything only they can do there. */
+function rankingLink(entry: RankingEntry, dataType: TopDataType, {router, openPlayer, openGuild}: RankingNavigation): RankingLink | undefined {
+	if (dataType === TopDataType.GUILD) {
+		if (!entry.name) return undefined;
+		const name = entry.name;
+		return {
+			label: i18n.t("app:arena.rankings.openGuild", {name}),
+			open: (): void => entry.sameContext ? router.navigate("/guild") : openGuild(name)
+		};
+	}
+	const {playerRef} = entry;
+	if (!playerRef) return undefined;
+	return {
+		label: i18n.t("app:arena.rankings.openProfile", {name: entry.name || i18n.t("error:unknownPlayer")}),
+		open: (): void => entry.sameContext ? router.navigate("/profile") : openPlayer(playerRef)
+	};
+}
+
+function RankingRow({entry, dataType}: {entry: RankingEntry; dataType: TopDataType}): ReactNode {
+	const styles = useStyles();
+	const router = useRouter();
+	const openPlayer = useOpenPlayer();
+	const openGuild = useOpenGuild();
+	const podium = entry.rank <= PODIUM_LAST_RANK;
+	const link = rankingLink(entry, dataType, {router, openPlayer, openGuild});
+	const row = <>
+		<View style={[styles.rankBadge, podium && styles.rankBadgePodium]}>
+			<Text style={[styles.rank, podium && styles.rankPodium]} numberOfLines={1}>{formatNumber(entry.rank)}</Text>
+		</View>
+		<View style={styles.body}>
+			<Text style={styles.name} numberOfLines={1}>{entry.name || i18n.t("error:unknownPlayer")}</Text>
+			<View style={styles.meta}>
+				{entryIcons(entry).map(icon => <TwemojiIcon key={icon} emoji={icon} size={12} />)}
+				<Text style={styles.metaText} numberOfLines={1}>{entryMeta(entry)}</Text>
+			</View>
+		</View>
+		<View style={styles.end}>
+			<View style={styles.value}>
+				<Text style={styles.valueText} numberOfLines={1}>{formatNumber(entry.value)}</Text>
+				<UnitIcon unit={RANKING_UNITS[dataType]} size={12} />
+			</View>
+			{entry.sameContext ? <Text style={styles.self}>{i18n.t("app:arena.you")}</Text> : null}
+		</View>
+	</>;
+	if (!link) return <View style={[styles.entry, entry.sameContext && styles.entrySelf]}>{row}</View>;
+	return <Pressable
+		accessibilityRole="button"
+		accessibilityLabel={link.label}
+		onPress={link.open}
+		style={({pressed}): StyleProp<ViewStyle> => [styles.entry, entry.sameContext && styles.entrySelf, pressed && styles.pressed]}
+	>{row}</Pressable>;
+}
+
+function PageArrow({label, arrow, disabled, onPress}: {label: string; arrow: StyleProp<ViewStyle>; disabled: boolean; onPress: () => void}): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
+	return <Pressable
+		accessibilityRole="button"
+		accessibilityLabel={label}
+		accessibilityState={{disabled}}
+		disabled={disabled}
+		onPress={onPress}
+		style={({pressed}) => [styles.pageButton, disabled && styles.pageButtonDisabled, pressed && styles.pressed]}
+	><View style={arrow}><ChevronDown size={18} color={colors.ink} /></View></Pressable>;
+}
+
+function RankingPagination({page, lastPage, onPage}: {page: number; lastPage: number; onPage: (page: number) => void}): ReactNode {
+	const styles = useStyles();
+	const atStart = page <= 1;
+	return <View style={styles.pagination}>
+		<PageArrow label={i18n.t("app:arena.rankings.previous")} arrow={styles.previousArrow} disabled={atStart} onPress={(): void => onPage(page - 1)} />
+		<Pressable
+			accessibilityRole="button"
+			accessibilityLabel={i18n.t("app:arena.rankings.backToFirst")}
+			accessibilityState={{disabled: atStart}}
+			disabled={atStart}
+			onPress={(): void => onPage(1)}
+			style={styles.pageLabel}
+		><Text style={[styles.page, !atStart && styles.pageAction]}>{i18n.t(atStart ? "app:arena.rankings.page" : "app:arena.rankings.pageWithReset", {page, total: lastPage})}</Text></Pressable>
+		<PageArrow label={i18n.t("app:arena.rankings.next")} arrow={styles.nextArrow} disabled={page >= lastPage} onPress={(): void => onPage(page + 1)} />
+	</View>;
+}
+
+export function RankingsContent({data, onPage}: {data: TopRes; onPage: (page: number) => void}): ReactNode {
+	const lastPage = Math.max(1, Math.ceil(data.totalElements / data.elementsPerPage));
+	return <>
+		<RankingStanding data={data} onPage={onPage} />
+		{data.needFight ? <Note>{i18n.t("app:arena.rankings.needFight", {count: data.needFight})}</Note> : null}
+		{!data.contextRank && !data.canBeRanked ? <Note>{i18n.t("app:arena.rankings.unavailable")}</Note> : null}
+		<SectionHeader first>{i18n.t("app:arena.rankings.positions")}</SectionHeader>
+		{lastPage > 1 ? <RankingPagination page={data.pageNumber} lastPage={lastPage} onPage={onPage} /> : null}
+		{data.elements.length
+			? <ExpandableList>{data.elements.map(entry => <RankingRow key={entry.rank} entry={entry} dataType={data.dataType} />)}</ExpandableList>
+			: <ExpandableList><EmptyState>{i18n.t("app:arena.rankings.empty")}</EmptyState></ExpandableList>}
+	</>;
+}
+
+/** Glory is a weekly race; the other boards open on the all-time standings. */
+function selectionFor(dataType: TopDataType): RankingSelection {
+	return {dataType, timing: dataType === TopDataType.GLORY ? TopTiming.WEEK : TopTiming.ALL_TIME};
+}
+
+export function Rankings({initialType = TopDataType.SCORE}: {initialType?: TopDataType}): ReactNode {
+	const [selection, setSelection] = useState<RankingSelection>(() => selectionFor(initialType));
+	const state = useRankings(selection);
+	const selectType = (dataType: TopDataType): void => setSelection(selectionFor(dataType));
+	return <>
+		<SegmentedControl label={i18n.t("app:arena.rankings.title")} value={selection.dataType} onChange={selectType} options={Object.values(TopDataType).map(value => ({value, label: i18n.t(`app:arena.rankings.types.${value}`), icon: AppIcons.getIcon(`unitValues.${RANKING_UNITS[value]}`)}))} />
+		{selection.dataType === TopDataType.SCORE ? <SegmentedControl label={i18n.t("app:arena.rankings.period")} value={selection.timing} onChange={(timing): void => setSelection({dataType: selection.dataType, timing})} options={Object.values(TopTiming).map(value => ({value, label: i18n.t(`app:arena.rankings.timings.${value}`)}))} /> : null}
+		<GameQueryContent state={state} entity={GAME_ENTITIES.RANKINGS}>{packet => <RankingsContent data={packet} onPage={(page): void => setSelection({...selection, page})} />}</GameQueryContent>
+	</>;
+}
+
+export function GloryRankings(): ReactNode {
+	return <Rankings initialType={TopDataType.GLORY} />;
+}
+
+export function GuildRankings(): ReactNode {
+	return <Rankings initialType={TopDataType.GUILD} />;
+}

@@ -1,9 +1,9 @@
 import {
-	CrowniclesPacket
+	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
 import {
-	CommandPetCaressPacketReq
+	CommandPetCaressPacketReq, CommandPetCaressPacketRes
 } from "../../../../Lib/src/packets/commands/CommandPetPacket";
 import {
 	commandRequires, CommandUtils
@@ -18,5 +18,6 @@ export default class PetCaressCommand {
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetCaressPacketReq): Promise<void> {
 		await MissionsController.update(player, response, { missionId: "petCaress" });
+		response.push(makePacket(CommandPetCaressPacketRes, {}));
 	}
 }

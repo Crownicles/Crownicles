@@ -4,6 +4,10 @@ import {
 	toCSV, GDPRCsvFiles
 } from "../CSVUtils";
 import { Players } from "../../../../core/database/game/models/Player";
+import {
+	AppNotificationPreferences, preferencesOf
+} from "../../../../core/database/game/models/AppNotificationPreference";
+import { AppPushDevices } from "../../../../core/database/game/models/AppPushDevice";
 import { PlayerBadges } from "../../../../core/database/game/models/PlayerBadges";
 import { InventorySlots } from "../../../../core/database/game/models/InventorySlot";
 import { InventoryInfo } from "../../../../core/database/game/models/InventoryInfo";
@@ -134,6 +138,10 @@ async function exportMissionData(
 				dailyMissionBlob: missionsInfo.dailyMissionBlob?.toString("base64"),
 				campaignProgression: missionsInfo.campaignProgression,
 				campaignBlob: missionsInfo.campaignBlob,
+				royalLettersReceived: missionsInfo.royalLettersReceived,
+				lastRoyalLetterAt: missionsInfo.lastRoyalLetterAt,
+				appSeen: missionsInfo.appSeen,
+				pendingReveals: missionsInfo.pendingReveals,
 				createdAt: missionsInfo.createdAt,
 				updatedAt: missionsInfo.updatedAt
 			}
@@ -185,6 +193,31 @@ async function exportPetData(
 			hasCloneTalismanBonus: exp.hasCloneTalismanBonus,
 			createdAt: exp.createdAt,
 			updatedAt: exp.updatedAt
+		})));
+	}
+}
+
+async function exportAppNotificationPreferences(player: NonNullable<Player>, csvFiles: GDPRCsvFiles): Promise<void> {
+	const preferences = await AppNotificationPreferences.find(player.keycloakId);
+	if (preferences) {
+		csvFiles["27_app_notification_preferences.csv"] = toCSV([
+			{
+				...preferencesOf(preferences),
+				createdAt: preferences.createdAt,
+				updatedAt: preferences.updatedAt
+			}
+		]);
+	}
+}
+
+/** The token addresses the device for its push service: only what it is and since when is exported. */
+async function exportAppPushDevices(player: NonNullable<Player>, csvFiles: GDPRCsvFiles): Promise<void> {
+	const devices = await AppPushDevices.ofPlayer(player.keycloakId);
+	if (devices.length > 0) {
+		csvFiles["28_app_push_devices.csv"] = toCSV(devices.map(device => ({
+			platform: device.platform,
+			createdAt: device.createdAt,
+			updatedAt: device.updatedAt
 		})));
 	}
 }
@@ -303,6 +336,8 @@ async function exportMiscData(
 	}
 
 	await exportScheduledNotifications(player, csvFiles);
+	await exportAppNotificationPreferences(player, csvFiles);
+	await exportAppPushDevices(player, csvFiles);
 	await exportCurrentBlessing(player, csvFiles);
 	await exportPlayerMaterials(player.id, csvFiles);
 
@@ -578,6 +613,7 @@ export async function exportPlayerData(
 			furnacePosition: player.furnacePosition,
 			pinnedCookingRecipeId: player.pinnedCookingRecipeId,
 			lastGardenWatered: player.lastGardenWatered,
+			guildJoinedAt: player.guildJoinedAt,
 			createdAt: player.createdAt,
 			updatedAt: player.updatedAt
 		}

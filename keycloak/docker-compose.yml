@@ -15,12 +15,17 @@ services:
     ports:
       - 3307:3306
   keycloak:
-    image: quay.io/keycloak/keycloak
+    # Pinned rather than `latest`: an authentication server has to be a known version, both to know
+    # which advisories apply and to avoid a silent major upgrade on the next `docker compose up`.
+    image: quay.io/keycloak/keycloak:26.7.4
     container_name: keycloak
     ports:
       - 8080:8080
     volumes:
       -  ../../keycloak/data:/opt/keycloak/data
+      # Mounted as a single theme rather than over the themes directory, which would hide the
+      # built-in ones this theme inherits from.
+      - ./theme:/opt/keycloak/themes/crownicles
     deploy:
       resources:
         limits:
@@ -34,6 +39,10 @@ services:
       # JAVA_OPTS: -XX:UseSVE=0 # Uncomment for macOS due to a keycloak bug https://github.com/keycloak/keycloak/issues/36008
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      # Pins the issuer and the identity provider redirect URIs to a single address, so that a token
+      # stays valid whichever address a service uses to reach Keycloak. Override it in keycloak/.env
+      # with the LAN address when a phone or another machine has to sign in.
+      KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-http://localhost:8080}
       DB_VENDOR: mariadb
       DB_ADDR: 127.0.0.1:3307
       DB_DATABASE: keycloak

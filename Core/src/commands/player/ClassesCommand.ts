@@ -12,7 +12,6 @@ import {
 	CommandClassesPacketReq
 } from "../../../../Lib/src/packets/commands/CommandClassesPacket";
 import { ClassDataController } from "../../data/Class";
-import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
@@ -27,10 +26,10 @@ import { MissionsController } from "../../core/missions/MissionsController";
 import { crowniclesInstance } from "../../app";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
-import {
-	secondsToMilliseconds
-} from "../../../../Lib/src/utils/TimeUtils";
 import { withLockedPlayerAndMissionsSafe } from "../../core/utils/withLockedPlayerAndMissionsSafe";
+import {
+	CLASS_CHOICE_MISSION, classChangeCooldownUntil
+} from "./ClassChangeCooldown";
 
 function getEndCallback(player: Player) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -53,7 +52,7 @@ function getEndCallback(player: Player) {
 				const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
 				await lockedPlayer.changeClass(selectedClass, playerActiveObjects, response);
 				await lockedPlayer.save();
-				await MissionsController.update(lockedPlayer, response, { missionId: "chooseClass" });
+				await MissionsController.update(lockedPlayer, response, { missionId: CLASS_CHOICE_MISSION });
 				await MissionsController.update(lockedPlayer, response, {
 					missionId: "chooseClassTier",
 					params: { tier: newClass.classGroup }
@@ -84,10 +83,10 @@ export default class ClassesCommand {
 			.filter(c => c.id !== player.class);
 		const currentClass = ClassDataController.instance.getById(player.class);
 		const currentClassGroup = currentClass!.classGroup;
-		const lastTimeThePlayerHasEditedHisClass = await LogsReadRequests.getLastTimeThePlayerHasEditedHisClass(player.keycloakId);
-		if (Date.now() - lastTimeThePlayerHasEditedHisClass.getTime() < secondsToMilliseconds(ClassConstants.TIME_BEFORE_CHANGE_CLASS[currentClassGroup])) {
+		const cooldownUntil = await classChangeCooldownUntil(player);
+		if (cooldownUntil !== null) {
 			response.push(makePacket(CommandClassesCooldownErrorPacket, {
-				timestamp: lastTimeThePlayerHasEditedHisClass.valueOf() + secondsToMilliseconds(ClassConstants.TIME_BEFORE_CHANGE_CLASS[currentClassGroup])
+				timestamp: cooldownUntil
 			}));
 			return;
 		}

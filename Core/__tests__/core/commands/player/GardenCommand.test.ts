@@ -9,13 +9,14 @@ import { MapLocationDataController } from "../../../../src/data/MapLocation";
 import { TravelTime } from "../../../../src/core/maps/TravelTime";
 import { BlockingUtils } from "../../../../src/core/utils/BlockingUtils";
 import {
-	buildGardenData, handleGardenCompostReaction
+	buildGardenData, handleGardenCompostReaction, handleGardenHarvest, handleGardenWater, handleGardenPlant
 } from "../../../../src/core/report/ReportGardenService";
 import {
-	CommandGardenClosedRes, CommandGardenNoAccessRes, GardenNoAccessReason
+	CommandGardenClosedRes, CommandGardenNoAccessRes, GardenNoAccessReason, CommandGardenInfoRes
 } from "../../../../../Lib/src/packets/commands/CommandGardenPacket";
 import { GardenAccessMode } from "../../../../../Lib/src/types/GardenAccessMode";
 import { ReactionCollectorGardenCompostReaction } from "../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import {GardenOperation} from "../../../../../Lib/src/types/Garden";
 
 const reactionCollectorMockState = vi.hoisted(() => ({
 	endCallback: undefined as ((collector: {
@@ -27,6 +28,14 @@ const reactionCollectorMockState = vi.hoisted(() => ({
 		} | null;
 	}, response: unknown[]) => unknown) | undefined
 }));
+
+const gardenLockMockState = vi.hoisted(() => ({player: undefined as unknown}));
+
+vi.mock("../../../../../Lib/src/locks/withLockedEntities", async importOriginal => ({
+	...await importOriginal<object>(),
+	withLockedEntities: vi.fn((_keys: unknown, body: (models: unknown[]) => unknown) => body([gardenLockMockState.player]))
+}));
+vi.mock("../../../../src/core/database/game/models/PlayerMissionsInfo", () => ({default: {lockKey: vi.fn()}, PlayerMissionsInfos: {getOfPlayer: vi.fn()}}));
 
 vi.mock("../../../../src/core/utils/CommandUtils", () => ({
 	commandRequires: () => (_target: unknown, _propertyKey: string, descriptor: PropertyDescriptor) => descriptor,
@@ -49,7 +58,10 @@ vi.mock("../../../../src/core/maps/TravelTime");
 vi.mock("../../../../src/core/utils/BlockingUtils");
 vi.mock("../../../../src/core/report/ReportGardenService", () => ({
 	buildGardenData: vi.fn(),
-	handleGardenCompostReaction: vi.fn()
+	handleGardenCompostReaction: vi.fn(),
+	handleGardenHarvest: vi.fn(),
+	handleGardenWater: vi.fn(),
+	handleGardenPlant: vi.fn()
 }));
 vi.mock("../../../../src/core/utils/ReactionsCollector", () => ({
 	ReactionCollectorInstance: class {
@@ -99,6 +111,7 @@ describe("GardenCommand", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
+		gardenLockMockState.player = player;
 		reactionCollectorMockState.endCallback = undefined;
 		talismans.hasRemoteHarvestTalisman = false;
 		player.startTravelDate = new Date(0);
@@ -119,7 +132,8 @@ describe("GardenCommand", () => {
 			seedPlantId: 0,
 			totalPlots: 1,
 			accessMode: GardenAccessMode.FULL,
-			wateringAvailableAt: null
+			wateringAvailableAt: null,
+			eligibility: {canHarvest: false, canWaterGarden: false, canPlantSeed: false, canCompost: true}
 		} as never);
 		vi.mocked(BlockingUtils.unblockPlayer).mockResolvedValue();
 	});
@@ -269,5 +283,35 @@ describe("GardenCommand", () => {
 		);
 		expect(handleGardenCompostReaction).toHaveBeenCalledWith(player, 1, 1, response);
 		expect(response).not.toContainEqual(expect.objectContaining({ type: CommandGardenClosedRes.name }));
+	});
+
+	it("returns explicit home access errors for direct garden reads", async () => {
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(null);
+		const response: unknown[] = [];
+		await new GardenCommand().info(response as never, player as never);
+		expect(response).toEqual([{type: CommandGardenNoAccessRes.name, data: {reason: GardenNoAccessReason.NO_HOME}}]);
+	});
+
+	it("builds only affordable compost quantities from actual plant storage", async () => {
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue({id: 1, level: 2, cityId: "coco", getLevel: () => ({features: {gardenPlots: 1}})} as never);
+		player.getCurrentCityId.mockReturnValue("coco");
+		const garden = await buildGardenData({} as never, {} as never, player as never);
+		vi.mocked(buildGardenData).mockResolvedValue({...garden, plantStorage: [{plantId: 1, quantity: 2, maxCapacity: 8}, {plantId: 2, quantity: 6, maxCapacity: 8}]});
+		const response: unknown[] = [];
+		await new GardenCommand().info(response as never, player as never);
+		expect(response).toEqual([expect.objectContaining({type: CommandGardenInfoRes.name, data: expect.objectContaining({compostOffers: [{plantId: 1, quantity: 1}, {plantId: 2, quantity: 1}, {plantId: 2, quantity: 5}]})})]);
+	});
+
+	it.each<GardenOperation>([{type: "water"}, {type: "plant", gardenSlot: 0}, {type: "compost", plantId: 1, quantity: 1}])("refuses $type remotely even with the harvest talisman", async operation => {
+		talismans.hasRemoteHarvestTalisman = true;
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue({id: 1, level: 2, cityId: "coco", getLevel: () => ({features: {gardenPlots: 1}})} as never);
+		player.getCurrentCityId.mockReturnValue("other-city");
+		const response: unknown[] = [];
+		await new GardenCommand().action(response as never, player as never, {operation});
+		expect(response).toContainEqual(expect.objectContaining({data: {error: "notAtHome"}}));
+		expect(handleGardenPlant).not.toHaveBeenCalled();
+		expect(handleGardenWater).not.toHaveBeenCalled();
+		expect(handleGardenCompostReaction).not.toHaveBeenCalled();
+		expect(handleGardenHarvest).not.toHaveBeenCalled();
 	});
 });

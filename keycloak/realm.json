@@ -19,7 +19,7 @@
   "clientOfflineSessionIdleTimeout": 0,
   "clientOfflineSessionMaxLifespan": 0,
   "accessCodeLifespan": 60,
-  "accessCodeLifespanUserAction": 300,
+  "accessCodeLifespanUserAction": 900,
   "accessCodeLifespanLogin": 1800,
   "actionTokenGeneratedByAdminLifespan": 43200,
   "actionTokenGeneratedByUserLifespan": 300,
@@ -27,22 +27,23 @@
   "oauth2DevicePollingInterval": 5,
   "enabled": true,
   "sslRequired": "external",
-  "registrationAllowed": false,
+  "registrationAllowed": true,
   "registrationEmailAsUsername": false,
   "rememberMe": false,
-  "verifyEmail": false,
+  "verifyEmail": true,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
-  "resetPasswordAllowed": false,
+  "resetPasswordAllowed": true,
   "editUsernameAllowed": false,
-  "bruteForceProtected": false,
+  "bruteForceProtected": true,
   "permanentLockout": false,
   "maxFailureWaitSeconds": 900,
   "minimumQuickLoginWaitSeconds": 60,
   "waitIncrementSeconds": 60,
   "quickLoginCheckMilliSeconds": 1000,
   "maxDeltaTimeSeconds": 43200,
-  "failureFactor": 30,
+  "failureFactor": 10,
+  "passwordPolicy": "length(10) and notUsername(undefined) and notEmail(undefined)",
   "roles": {
     "realm": [
       {
@@ -73,13 +74,7 @@
             "offline_access",
             "uma_authorization",
             "user"
-          ],
-          "client": {
-            "account": [
-              "view-profile",
-              "manage-account"
-            ]
-          }
+          ]
         },
         "clientRole": false,
         "containerId": "2d04d5d6-9aa5-441c-8141-42cb343e7cc2",
@@ -586,7 +581,7 @@
       "rootUrl": "${authBaseUrl}",
       "baseUrl": "/realms/Crownicles/account/",
       "surrogateAuthRequired": false,
-      "enabled": true,
+      "enabled": false,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
@@ -649,7 +644,7 @@
       "consentRequired": false,
       "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
       "publicClient": true,
       "frontchannelLogout": false,
@@ -734,7 +729,7 @@
       "consentRequired": false,
       "standardFlowEnabled": true,
       "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": true,
       "authorizationServicesEnabled": true,
       "publicClient": false,
@@ -916,6 +911,64 @@
         "phone",
         "offline_access",
         "microprofile-jwt"
+      ]
+    },
+    {
+      "clientId": "crownicles-app",
+      "name": "Crownicles mobile app",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "http://localhost:8081/auth*",
+        "crownicles://auth*",
+        "exp://*/--/auth*"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": false,
+      "protocol": "openid-connect",
+      "attributes": {
+        "realm_client": "false",
+        "post.logout.redirect.uris": "crownicles://*##exp://*",
+        "pkce.code.challenge.method": "S256"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "access": {
+        "view": true,
+        "configure": true,
+        "manage": true
+      },
+      "optionalClientScopes": [
+        "offline_access"
+      ],
+      "protocolMappers": [
+        {
+          "name": "Current identity provider",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "identity_provider",
+            "claim.name": "identity_provider",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
       ]
     }
   ],
@@ -1451,17 +1504,122 @@
     "xXSSProtection": "1; mode=block",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
-  "smtpServer": {},
-  "eventsEnabled": false,
+  "smtpServer": {
+    "host": "smtp-relay.brevo.com",
+    "port": "587",
+    "starttls": "true",
+    "ssl": "false",
+    "auth": "true",
+    "user": "TO_REPLACE_WITH_YOUR_BREVO_SMTP_LOGIN",
+    "password": "TO_REPLACE_WITH_YOUR_BREVO_SMTP_KEY",
+    "from": "contact@crownicles.com",
+    "fromDisplayName": "Crownicles",
+    "replyTo": "contact@crownicles.com",
+    "replyToDisplayName": "Crownicles",
+    "envelopeFrom": ""
+  },
+  "eventsEnabled": true,
+  "eventsExpiration": 86400,
   "eventsListeners": [
     "jboss-logging"
   ],
-  "enabledEventTypes": [],
+  "enabledEventTypes": [
+    "REGISTER"
+  ],
   "adminEventsEnabled": false,
   "adminEventsDetailsEnabled": false,
-  "identityProviders": [],
-  "identityProviderMappers": [],
+  "identityProviders": [
+    {
+      "alias": "discord",
+      "displayName": "Discord",
+      "providerId": "oauth2",
+      "enabled": true,
+      "trustEmail": true,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "userInfoUrl": "https://discord.com/api/users/@me",
+        "clientId": "TO_REPLACE_WITH_YOUR_DISCORD_CLIENT_ID",
+        "tokenUrl": "https://discord.com/api/oauth2/token",
+        "clientAuthMethod": "client_secret_post",
+        "authorizationUrl": "https://discord.com/oauth2/authorize",
+        "syncMode": "IMPORT",
+        "fullNameClaim": "global_name",
+        "userIDClaim": "id",
+        "clientSecret": "TO_REPLACE_WITH_YOUR_DISCORD_CLIENT_SECRET",
+        "userNameClaim": "id",
+        "emailClaim": "email",
+        "defaultScope": "identify email"
+      },
+      "types": [
+        "USER_AUTHENTICATION",
+        "EXCHANGE_EXTERNAL_TOKEN"
+      ]
+    }
+  ],
+  "identityProviderMappers": [
+    {
+      "name": "Verified Discord email for collision detection",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claim": "email",
+        "user.attribute": "discordEmail"
+      }
+    },
+    {
+      "name": "Discord email verification for collision detection",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claim": "verified",
+        "user.attribute": "discordEmailVerified"
+      }
+    },
+    {
+      "name": "discordId",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "INHERIT",
+        "claim": "id",
+        "user.attribute": "discordId"
+      }
+    },
+    {
+      "name": "gameUsername",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "syncMode": "FORCE",
+        "claim": "global_name",
+        "user.attribute": "gameUsername"
+      }
+    },
+    {
+      "name": "username",
+      "identityProviderAlias": "discord",
+      "identityProviderMapper": "oidc-username-idp-mapper",
+      "config": {
+        "template": "discord-${CLAIM.id}",
+        "syncMode": "INHERIT",
+        "target": "LOCAL"
+      }
+    }
+  ],
   "components": {
+    "org.keycloak.userprofile.UserProfileProvider": [
+      {
+        "providerId": "declarative-user-profile",
+        "subComponents": {},
+        "config": {
+          "kc.user.profile.config": [
+            "{\"attributes\":[{\"name\":\"username\",\"displayName\":\"${username}\",\"validations\":{\"length\":{\"min\":3,\"max\":32},\"username-prohibited-characters\":{},\"up-username-not-idn-homograph\":{}},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false},{\"name\":\"email\",\"displayName\":\"${email}\",\"validations\":{\"email\":{},\"length\":{\"max\":255}},\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"multivalued\":false}],\"groups\":[{\"name\":\"user-metadata\",\"displayHeader\":\"User metadata\",\"displayDescription\":\"Attributes, which refer to user metadata\"}],\"unmanagedAttributePolicy\":\"ADMIN_EDIT\"}"
+          ]
+        }
+      }
+    ],
     "org.keycloak.services.clientregistration.policy.ClientRegistrationPolicy": [
       {
         "id": "540cf124-00aa-4917-a333-1268b7277767",
@@ -1622,13 +1780,23 @@
       }
     ]
   },
-  "internationalizationEnabled": false,
-  "supportedLocales": [],
+  "loginTheme": "crownicles",
+  "emailTheme": "crownicles",
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "de",
+    "en",
+    "es",
+    "fr",
+    "it",
+    "pt"
+  ],
+  "defaultLocale": "fr",
   "authenticationFlows": [
     {
       "id": "14b1dc80-0385-40f5-a6c9-800c71942343",
       "alias": "Account verification options",
-      "description": "Method with which to verity the existing account",
+      "description": "Comment prouver la possession du compte existant. Dernier recours idp-auto-link : un compte cree par le bot Discord n'a ni adresse ni mot de passe, il n'a donc rien a prouver et rien a voler.",
       "providerId": "basic-flow",
       "topLevel": false,
       "builtIn": true,
@@ -1643,10 +1811,18 @@
         },
         {
           "authenticatorFlow": true,
-          "requirement": "ALTERNATIVE",
+          "requirement": "CONDITIONAL",
           "priority": 20,
           "autheticatorFlow": true,
           "flowAlias": "Verify Existing Account by Re-authentication",
+          "userSetupAllowed": false
+        },
+        {
+          "authenticator": "idp-auto-link",
+          "authenticatorFlow": false,
+          "requirement": "ALTERNATIVE",
+          "priority": 30,
+          "autheticatorFlow": false,
           "userSetupAllowed": false
         }
       ]
@@ -1811,11 +1987,19 @@
     {
       "id": "7c7df4a1-b03d-4253-bb63-bc28f5e07d15",
       "alias": "Verify Existing Account by Re-authentication",
-      "description": "Reauthentication of existing account",
+      "description": "Reauthentication of existing account, ignoree si le compte n'a pas de mot de passe a ressaisir",
       "providerId": "basic-flow",
       "topLevel": false,
       "builtIn": true,
       "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-configured",
+          "authenticatorFlow": false,
+          "requirement": "REQUIRED",
+          "priority": 5,
+          "autheticatorFlow": false,
+          "userSetupAllowed": false
+        },
         {
           "authenticator": "idp-username-password-form",
           "authenticatorFlow": false,
@@ -2059,14 +2243,6 @@
           "userSetupAllowed": false
         },
         {
-          "authenticator": "registration-profile-action",
-          "authenticatorFlow": false,
-          "requirement": "REQUIRED",
-          "priority": 40,
-          "autheticatorFlow": false,
-          "userSetupAllowed": false
-        },
-        {
           "authenticator": "registration-password-action",
           "authenticatorFlow": false,
           "requirement": "REQUIRED",
@@ -2157,11 +2333,20 @@
       "id": "b48077a3-8907-430d-a3c0-72a47c077b73",
       "alias": "review profile config",
       "config": {
-        "update.profile.on.first.login": "missing"
+        "update.profile.on.first.login": "off"
       }
     }
   ],
   "requiredActions": [
+    {
+      "alias": "VERIFY_PROFILE",
+      "name": "Verify Profile",
+      "providerId": "VERIFY_PROFILE",
+      "enabled": false,
+      "defaultAction": false,
+      "priority": 5,
+      "config": {}
+    },
     {
       "alias": "CONFIGURE_TOTP",
       "name": "Configure OTP",
@@ -2258,7 +2443,8 @@
     "oauth2DevicePollingInterval": "5",
     "parRequestUriLifespan": "60",
     "cibaInterval": "5",
-    "realmReusableOtpCode": "false"
+    "realmReusableOtpCode": "false",
+    "actionTokenGeneratedByUserLifespan.verify-email": "900"
   },
   "keycloakVersion": "22.0.3",
   "userManagedAccessAllowed": false,

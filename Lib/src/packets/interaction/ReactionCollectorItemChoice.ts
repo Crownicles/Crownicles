@@ -4,11 +4,10 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
-import { Item } from "../../types/Item";
 import { ItemWithDetails } from "../../types/ItemWithDetails";
 
 export class ReactionCollectorItemChoiceData extends ReactionCollectorData {
-	item!: Item;
+	foundItem!: ItemWithDetails;
 }
 
 export class ReactionCollectorItemChoiceItemReaction extends ReactionCollectorReaction {

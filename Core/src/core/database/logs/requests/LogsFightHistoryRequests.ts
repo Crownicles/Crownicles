@@ -87,6 +87,7 @@ export abstract class LogsFightHistoryRequests {
 
 		// Build the fight history item
 		return {
+			id: fight.id,
 			initiator: isInitiator,
 			opponentKeycloakId: isInitiator ? fight.LogsPlayer2.keycloakId : fight.LogsPlayer1.keycloakId,
 			date: secondsToMilliseconds(asSeconds(fight.date)),

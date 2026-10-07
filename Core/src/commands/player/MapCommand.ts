@@ -7,13 +7,70 @@ import {
 import { Player } from "../../core/database/game/models/Player";
 import { MapLocation } from "../../data/MapLocation";
 import { Language } from "../../../../Lib/src/Language";
-import { MapLinkDataController } from "../../data/MapLink";
+import {
+	MapLink, MapLinkDataController
+} from "../../data/MapLink";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { Maps } from "../../core/maps/Maps";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
+import { CityDataController } from "../../data/City";
+import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
+
+type MapImage = {
+	name: string;
+	fallback?: string;
+	forced: boolean;
+};
+
+function destinationImage(destination: MapLocation, language: Language): MapImage {
+	return {
+		name: `${language}_${destination.id}_`,
+		fallback: `en_${destination.id}_`,
+		forced: false
+	};
+}
+
+function arrivedImage(mapLink: MapLink, departure: MapLocation, destination: MapLocation, language: Language): MapImage {
+	// Forced pictures live in maps/, not among the cursor maps: they must be flagged as forced to be found.
+	if (mapLink.forcedImage && departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED) {
+		return {
+			name: `${mapLink.forcedImage}_${language}`,
+			forced: true
+		};
+	}
+	if (destination.forcedImage) {
+		return {
+			name: destination.forcedImage,
+			forced: true
+		};
+	}
+	return destinationImage(destination, language);
+}
+
+function roadImage(mapLink: MapLink, departure: MapLocation, destination: MapLocation, language: Language): MapImage {
+	if (mapLink.forcedImage) {
+		return {
+			name: departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED ? `${mapLink.forcedImage}_${language}` : mapLink.forcedImage,
+			forced: true
+		};
+	}
+
+	// The road out of the reception room has no picture of its own: it shows where it leads.
+	if (departure.id === MapConstants.LOCATIONS_IDS.RECEPTION_ROOM) {
+		return destinationImage(destination, language);
+	}
+
+	const [first, second] = destination.id < departure.id ? [destination.id, departure.id] : [departure.id, destination.id];
+	return {
+		name: `${language}_${first}_${second}_`,
+		fallback: `en_${first}_${second}_`,
+		forced: false
+	};
+}
 
 /**
  * Get the map information for the player
@@ -22,53 +79,13 @@ import { MissionsController } from "../../core/missions/MissionsController";
  * @param hasArrived
  * @param language
  */
-function getMapInformation(player: Player, destination: MapLocation, hasArrived: boolean, language: Language): {
-	name: string;
-	fallback?: string;
-	forced: boolean;
-} {
+function getMapInformation(player: Player, destination: MapLocation, hasArrived: boolean, language: Language): MapImage {
 	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId);
-	const departure = player.getPreviousMap()!;
-
 	if (!mapLink) {
-		return {
-			name: `${language}_${destination.id}_`,
-			fallback: `en_${destination.id}_`,
-			forced: false
-		};
+		return destinationImage(destination, language);
 	}
-
-	if (!hasArrived && mapLink.forcedImage) {
-		return {
-			name: departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED ? `${mapLink.forcedImage}_${language}` : mapLink.forcedImage,
-			forced: true
-		};
-	}
-
-	if (hasArrived) {
-		return {
-			name: mapLink.forcedImage && departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED
-				? `${mapLink.forcedImage}_${language}`
-				: `${language}_${destination.id}_`,
-
-			fallback: mapLink.forcedImage ? undefined : `en_${destination.id}_`,
-			forced: Boolean(destination.forcedImage)
-		};
-	}
-
-	if (destination.id < departure.id) {
-		return {
-			name: `${language}_${destination.id}_${departure.id}_`,
-			fallback: `en_${destination.id}_${departure.id}_`,
-			forced: false
-		};
-	}
-
-	return {
-		name: `${language}_${departure.id}_${destination.id}_`,
-		fallback: `en_${departure.id}_${destination.id}_`,
-		forced: false
-	};
+	const departure = player.getPreviousMap()!;
+	return hasArrived ? arrivedImage(mapLink, departure, destination, language) : roadImage(mapLink, departure, destination, language);
 }
 
 export class MapCommand {
@@ -78,12 +95,18 @@ export class MapCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandMapPacketReq): Promise<void> {
-		const hasArrived = Maps.isArrived(player, new Date());
+		// The arrival event restarts the clock on the finished link: while the next road is chosen, the player still stands at its end.
+		const hasArrived = Maps.isArrived(player, new Date())
+			|| BlockingUtils.isPlayerBlockedWithReason(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
 		const destinationMap = player.getDestination()!;
 
 		const mapInformation = getMapInformation(player, destinationMap, hasArrived, packet.language);
 
 		response.push(makePacket(CommandMapDisplayRes, {
+			cities: CityDataController.instance.getAllValues().filter(city => city.maps.length > 0)
+				.map(city => ({
+					id: city.id, mapLocationId: city.maps[0], services: city.services, shops: city.shops ?? []
+				})),
 			mapId: destinationMap.id,
 			mapLink: mapInformation,
 			mapType: destinationMap.type,

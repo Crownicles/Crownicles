@@ -2,7 +2,8 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandGardenClosedRes, CommandGardenNoAccessRes, CommandGardenPacketReq, GardenNoAccessReason
+	CommandGardenClosedRes, CommandGardenNoAccessRes, CommandGardenPacketReq, GardenNoAccessReason,
+	CommandGardenInfoReq, CommandGardenInfoRes, CommandGardenActionReq
 } from "../../../../Lib/src/packets/commands/CommandGardenPacket";
 import { Player } from "../../core/database/game/models/Player";
 import {
@@ -23,7 +24,7 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import {
-	buildGardenData, handleGardenCompostReaction
+	buildGardenData, handleGardenCompostReaction, handleGardenHarvest, handleGardenWater, handleGardenPlant
 } from "../../core/report/ReportGardenService";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
@@ -32,6 +33,15 @@ import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { Maps } from "../../core/maps/Maps";
+import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
+import {
+	GARDEN_OPERATIONS, GardenOperation
+} from "../../../../Lib/src/types/Garden";
+import { CommandReportGardenErrorRes } from "../../../../Lib/src/packets/commands/CommandReportPacket";
+import {
+	Locked, LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 
 type GardenHomeResolution = {
 	home: Home;
@@ -87,6 +97,53 @@ function isGardenAvailable(homeLevel: HomeLevel | null): homeLevel is HomeLevel 
 		return false;
 	}
 	return homeLevel.features.gardenPlots > 0;
+}
+
+async function resolveGardenContext(player: Player): Promise<GardenCollectorDataParams | { reason: GardenNoAccessReason }> {
+	const gardenHome = await resolveGardenHome(player);
+	if ("reason" in gardenHome) {
+		return gardenHome;
+	}
+	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+	const accessMode = resolveGardenAccess(player, gardenHome.home.cityId, talismans.hasRemoteHarvestTalisman);
+	return accessMode
+		? {
+			player, ...gardenHome, accessMode
+		}
+		: { reason: GardenNoAccessReason.NO_TALISMAN };
+}
+
+async function executeGardenOperationUnderLock(player: Locked<Player>, operation: GardenOperation, response: CrowniclesPacket[]): Promise<void> {
+	switch (operation.type) {
+		case GARDEN_OPERATIONS.HARVEST:
+			await handleGardenHarvest(player.keycloakId, {}, response);
+			return;
+		case GARDEN_OPERATIONS.WATER:
+			response.push(await handleGardenWater(player.keycloakId, {}));
+			return;
+		case GARDEN_OPERATIONS.PLANT:
+			await handleGardenPlant(player.keycloakId, { gardenSlot: operation.gardenSlot }, response);
+			return;
+		default:
+			if (!GardenConstants.COMPOST_QUANTITIES.some(quantity => quantity === operation.quantity)) {
+				response.push(makePacket(CommandReportGardenErrorRes, { error: GardenConstants.GARDEN_ERRORS.INVALID_ACTION }));
+				return;
+			}
+			await handleGardenCompostReaction(player, operation.plantId, operation.quantity, response);
+	}
+}
+
+async function runGardenActionUnderLock(player: Locked<Player>, operation: GardenOperation, response: CrowniclesPacket[]): Promise<void> {
+	const context = await resolveGardenContext(player);
+	if ("reason" in context) {
+		response.push(makePacket(CommandGardenNoAccessRes, context));
+		return;
+	}
+	if (context.accessMode === GardenAccessMode.READ_ONLY && operation.type !== GARDEN_OPERATIONS.HARVEST) {
+		response.push(makePacket(CommandReportGardenErrorRes, { error: GardenConstants.GARDEN_ERRORS.NOT_AT_HOME }));
+		return;
+	}
+	await executeGardenOperationUnderLock(player, operation, response);
 }
 
 async function buildGardenCollectorData(params: GardenCollectorDataParams): Promise<ReactionCollectorCityData> {
@@ -166,6 +223,59 @@ function buildGardenCollectorPacket(
 }
 
 export class GardenCommand {
+	@commandRequires(CommandGardenInfoReq, {
+		notBlocked: false,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
+		whereAllowed: [WhereAllowed.CONTINENT]
+	})
+	async info(response: CrowniclesPacket[], player: Player): Promise<void> {
+		const context = await resolveGardenContext(player);
+		if ("reason" in context) {
+			response.push(makePacket(CommandGardenNoAccessRes, context));
+			return;
+		}
+		const garden = await buildGardenData(context.home, context.homeLevel, player, context.accessMode);
+		const compostOffers = garden.eligibility.canCompost
+			? garden.plantStorage.flatMap(plant =>
+				GardenConstants.COMPOST_QUANTITIES.filter(quantity => quantity <= plant.quantity).map(quantity => ({
+					plantId: plant.plantId, quantity
+				})))
+			: [];
+		response.push(makePacket(CommandGardenInfoRes, {
+			garden, compostOffers
+		}));
+	}
+
+	@commandRequires(CommandGardenActionReq, {
+		notBlocked: false,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
+		whereAllowed: [WhereAllowed.CONTINENT]
+	})
+	async action(response: CrowniclesPacket[], player: Player, packet: CommandGardenActionReq): Promise<void> {
+		const home = await Homes.getOfPlayer(player.id);
+		if (!home) {
+			response.push(makePacket(CommandGardenNoAccessRes, { reason: GardenNoAccessReason.NO_HOME }));
+			return;
+		}
+		await PlayerMissionsInfos.getOfPlayer(player.id);
+		try {
+			await withLockedEntities(
+				[
+					Player.lockKey(player.id),
+					Home.lockKey(home.id),
+					PlayerMissionsInfo.lockKey(player.id)
+				] as const,
+				([lockedPlayer]) => runGardenActionUnderLock(lockedPlayer, packet.operation, response)
+			);
+		}
+		catch (error) {
+			if (!(error instanceof LockedRowNotFoundError)) {
+				throw error;
+			}
+			response.push(makePacket(CommandGardenNoAccessRes, { reason: GardenNoAccessReason.NO_HOME }));
+		}
+	}
+
 	@commandRequires(CommandGardenPacketReq, {
 		notBlocked: true,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
@@ -177,25 +287,13 @@ export class GardenCommand {
 		_packet: CommandGardenPacketReq,
 		context: PacketContext
 	): Promise<void> {
-		const gardenHome = await resolveGardenHome(player);
-		if ("reason" in gardenHome) {
-			response.push(makePacket(CommandGardenNoAccessRes, { reason: gardenHome.reason }));
+		const gardenContext = await resolveGardenContext(player);
+		if ("reason" in gardenContext) {
+			response.push(makePacket(CommandGardenNoAccessRes, gardenContext));
 			return;
 		}
 
-		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
-		const accessMode = resolveGardenAccess(player, gardenHome.home.cityId, talismans.hasRemoteHarvestTalisman);
-		if (!accessMode) {
-			response.push(makePacket(CommandGardenNoAccessRes, { reason: GardenNoAccessReason.NO_TALISMAN }));
-			return;
-		}
-
-		const collectorData = await buildGardenCollectorData({
-			player,
-			home: gardenHome.home,
-			homeLevel: gardenHome.homeLevel,
-			accessMode
-		});
+		const collectorData = await buildGardenCollectorData(gardenContext);
 		response.push(buildGardenCollectorPacket(collectorData, player, context));
 	}
 }

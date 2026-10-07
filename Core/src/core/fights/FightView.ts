@@ -28,6 +28,9 @@ import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights
 import { BuggedFightPacket } from "../../../../Lib/src/packets/fights/BuggedFightPacket";
 import { PetAssistanceResult } from "../../../../Lib/src/types/PetAssistanceResult";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
+import {
+	FightFighterSnapshot, FightStatusSnapshot
+} from "../../../../Lib/src/types/FightStatusSnapshot";
 
 export class FightView {
 	public context: PacketContext;
@@ -37,6 +40,29 @@ export class FightView {
 	public constructor(context: PacketContext, fightController: FightController) {
 		this.context = context;
 		this.fightController = fightController;
+	}
+
+	private fighterStatus(fighter: PlayerFighter | AiPlayerFighter | MonsterFighter): FightFighterSnapshot {
+		const identity = fighter instanceof MonsterFighter
+			? { monsterId: fighter.monster.id }
+			: {
+				keycloakId: fighter.player.keycloakId, classId: fighter.player.class, glory: fighter.getDisplayedGloryPoints()
+			};
+		return {
+			...identity,
+			level: fighter.level,
+			...fighter.alteration ? { alteration: fighter.alteration.id } : {},
+			stats: {
+				power: Math.max(0, fighter.getEnergy()),
+				maxEnergy: fighter.getMaxEnergy(),
+				attack: fighter.getAttack(),
+				defense: fighter.getDefense(),
+				speed: fighter.getSpeed(),
+				breath: fighter.getBreath(),
+				maxBreath: fighter.getMaxBreath(),
+				breathRegen: fighter.getRegenBreath()
+			}
+		};
 	}
 
 	/**
@@ -70,48 +96,29 @@ export class FightView {
 	/**
 	 * Summarize current fight status, displaying fighter's stats
 	 */
+	private statusSnapshot(): FightStatusSnapshot | undefined {
+		const playingFighter = this.fightController.getPlayingFighter();
+		const defendingFighter = this.fightController.getDefendingFighter();
+		if (!playingFighter || !defendingFighter) {
+			return undefined;
+		}
+		return {
+			fightId: this.fightController.id,
+			numberOfTurn: this.fightController.turn,
+			maxNumberOfTurn: FightConstants.MAX_TURNS,
+			activeFighter: this.fighterStatus(playingFighter),
+			defendingFighter: this.fighterStatus(defendingFighter)
+		};
+	}
+
 	displayFightStatus(response: CrowniclesPacket[]): void {
 		if (this.fightController.isSilentMode()) {
 			return;
 		}
-		const playingFighter = this.fightController.getPlayingFighter();
-		const defendingFighter = this.fightController.getDefendingFighter();
-		if (!playingFighter || !defendingFighter) {
-			return;
+		const snapshot = this.statusSnapshot();
+		if (snapshot) {
+			response.push(makePacket(CommandFightStatusPacket, snapshot));
 		}
-		response.push(makePacket(CommandFightStatusPacket, {
-			fightId: this.fightController.id,
-			numberOfTurn: this.fightController.turn,
-			maxNumberOfTurn: FightConstants.MAX_TURNS,
-			activeFighter: {
-				keycloakId: playingFighter instanceof MonsterFighter ? undefined : playingFighter.player.keycloakId,
-				monsterId: playingFighter instanceof MonsterFighter ? playingFighter.monster.id : undefined,
-				glory: playingFighter instanceof MonsterFighter ? undefined : playingFighter.getDisplayedGloryPoints(),
-				stats: {
-					power: playingFighter.getEnergy(),
-					attack: playingFighter.getAttack(),
-					defense: playingFighter.getDefense(),
-					speed: playingFighter.getSpeed(),
-					breath: playingFighter.getBreath(),
-					maxBreath: playingFighter.getMaxBreath(),
-					breathRegen: playingFighter.getRegenBreath()
-				}
-			},
-			defendingFighter: {
-				keycloakId: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.player.keycloakId,
-				monsterId: defendingFighter instanceof MonsterFighter ? defendingFighter.monster.id : undefined,
-				glory: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.getDisplayedGloryPoints(),
-				stats: {
-					power: defendingFighter.getEnergy(),
-					attack: defendingFighter.getAttack(),
-					defense: defendingFighter.getDefense(),
-					speed: defendingFighter.getSpeed(),
-					breath: defendingFighter.getBreath(),
-					maxBreath: defendingFighter.getMaxBreath(),
-					breathRegen: defendingFighter.getRegenBreath()
-				}
-			}
-		}));
 	}
 
 	/**
@@ -194,8 +201,10 @@ export class FightView {
 		};
 		const usedFightActionId = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction!.id : undefined;
 		fightActionResult = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction!.result : fightActionResult;
+		const stateAfter = this.statusSnapshot();
 		response.push(makePacket(CommandFightHistoryItemPacket, {
 			fightId: this.fightController.id,
+			...stateAfter ? { stateAfter } : {},
 			fighterKeycloakId: fighter instanceof MonsterFighter ? undefined : fighter.player.keycloakId,
 			monsterId: fighter instanceof MonsterFighter ? fighter.monster.id : undefined,
 
