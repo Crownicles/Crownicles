@@ -1,5 +1,6 @@
 {
   "breath": 4,
   "missionVariant": 13,
-  "type": "physical"
+  "type": "physical",
+  "minimumOpponentEnergy": 1
 }

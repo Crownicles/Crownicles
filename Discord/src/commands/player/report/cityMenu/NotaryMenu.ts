@@ -17,10 +17,8 @@ import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Language } from "../../../../../../Lib/src/Language";
 import { StringUtils } from "../../../../utils/StringUtils";
-import {
-	ChestSlotsPerCategory, HomeFeatures
-} from "../../../../../../Lib/src/types/HomeFeatures";
-import { ItemRarity } from "../../../../../../Lib/src/constants/ItemConstants";
+import { HomeFeatures } from "../../../../../../Lib/src/types/HomeFeatures";
+import { homeUpgradeChanges } from "../../../../../../Lib/src/utils/HomeUpgradeChanges";
 import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenuCollector,
@@ -53,81 +51,10 @@ type NotaryConfirmationDetails = {
 	reactionType: string;
 };
 
-function hasSlotsChanged(oldSlots: ChestSlotsPerCategory, newSlots: ChestSlotsPerCategory): boolean {
-	return oldSlots.weapon !== newSlots.weapon
-		|| oldSlots.armor !== newSlots.armor
-		|| oldSlots.object !== newSlots.object
-		|| oldSlots.potion !== newSlots.potion;
-}
-
-function totalSlots(slots: ChestSlotsPerCategory): number {
-	return slots.weapon + slots.armor + slots.object + slots.potion;
-}
-
-interface UpgradeCheck {
-	hasChanged: (oldF: HomeFeatures, newF: HomeFeatures) => boolean;
-	isNew: (oldF: HomeFeatures) => boolean;
-	newKey: string;
-	upgradeKey: string;
-}
-
-const UPGRADE_CHECKS: UpgradeCheck[] = [
-	{
-		hasChanged: (o, n): boolean => hasSlotsChanged(o.chestSlots, n.chestSlots),
-		isNew: (o): boolean => totalSlots(o.chestSlots) === 0,
-		newKey: "chest",
-		upgradeKey: "biggerChest"
-	},
-	{
-		hasChanged: (o, n): boolean => hasSlotsChanged(o.inventoryBonus, n.inventoryBonus),
-		isNew: (): boolean => false,
-		newKey: "inventoryBonus",
-		upgradeKey: "inventoryBonus"
-	},
-	{
-		hasChanged: (o, n): boolean => o.upgradeItemMaximumRarity !== n.upgradeItemMaximumRarity,
-		isNew: (o): boolean => o.upgradeItemMaximumRarity === ItemRarity.BASIC,
-		newKey: "upgradeItemStation",
-		upgradeKey: "betterUpgradeItemStation"
-	},
-	{
-		hasChanged: (o, n): boolean => o.bedHealthRegeneration !== n.bedHealthRegeneration,
-		isNew: (): boolean => false,
-		newKey: "betterBed",
-		upgradeKey: "betterBed"
-	},
-	{
-		hasChanged: (o, n): boolean => o.gardenPlots !== n.gardenPlots,
-		isNew: (o): boolean => o.gardenPlots === 0,
-		newKey: "garden",
-		upgradeKey: "biggerGarden"
-	},
-	{
-		hasChanged: (o, n): boolean => o.gardenEarthQuality !== n.gardenEarthQuality,
-		isNew: (): boolean => false,
-		newKey: "betterGardenEarth",
-		upgradeKey: "betterGardenEarth"
-	},
-	{
-		hasChanged: (o, n): boolean => o.cookingSlots !== n.cookingSlots,
-		isNew: (o): boolean => o.cookingSlots === 0,
-		newKey: "cookingStation",
-		upgradeKey: "betterCookingStation"
-	}
-];
-
-const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFeatures, lng: Language): string => {
-	const changes: string[] = [];
-
-	for (const check of UPGRADE_CHECKS) {
-		if (check.hasChanged(oldFeatures, newFeatures)) {
-			const key = check.isNew(oldFeatures) ? check.newKey : check.upgradeKey;
-			changes.push(i18n.t(`commands:report.city.homes.upgradeChanges.${key}`, { lng }));
-		}
-	}
-
-	return changes.map(change => `- ${change}`).join("\n");
-};
+const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFeatures, lng: Language): string =>
+	homeUpgradeChanges(oldFeatures, newFeatures)
+		.map(key => `- ${i18n.t(`commands:report.city.homes.upgradeChanges.${key}`, { lng })}`)
+		.join("\n");
 
 type SimpleCostNotaryParams = {
 	cost: number;

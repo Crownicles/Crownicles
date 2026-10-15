@@ -53,6 +53,18 @@ export class PlayerMissionsInfo extends Model {
 
 	declare campaignBlob: string;
 
+	/** Letters of the king already delivered during the newcomer's first week. */
+	declare royalLettersReceived: number;
+
+	/** When the last letter came, or when the royal mail started counting days for this player. */
+	declare lastRoyalLetterAt: Date | null;
+
+	/** Bitmask of what the app has already shown this character, see `APP_STATE_FLAGS`. */
+	declare appSeen: number;
+
+	/** JSON list of the rewards told to the app and not seen there yet. */
+	declare pendingReveals: string | null;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -166,6 +178,24 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		campaignBlob: {
 			type: DataTypes.STRING
+		},
+		royalLettersReceived: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		lastRoyalLetterAt: {
+			type: DataTypes.DATE,
+			defaultValue: null
+		},
+		appSeen: {
+			type: DataTypes.INTEGER.UNSIGNED,
+			allowNull: false,
+			defaultValue: 0
+		},
+		pendingReveals: {
+			type: DataTypes.TEXT,
+			allowNull: true,
+			defaultValue: null
 		},
 		updatedAt: {
 			type: DataTypes.DATE,

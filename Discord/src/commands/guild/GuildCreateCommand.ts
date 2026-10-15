@@ -27,7 +27,7 @@ import { escapeUsername } from "../../utils/StringUtils";
  * Create a new guild
  */
 function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): CommandGuildCreatePacketReq {
-	const askedGuildName = <string>interaction.options.get("name", true).value;
+	const askedGuildName = <string>interaction.options.get(SlashCommandBuilderGenerator.optionName("guildCreate", "guildName"), true).value;
 	return makePacket(CommandGuildCreatePacketReq, {
 		keycloakId: user.id,
 		askedGuildName

@@ -2,7 +2,8 @@ export enum GuildBuilding {
 	SHOP = "shop",
 	SHELTER = "shelter",
 	PANTRY = "pantry",
-	TRAINING_GROUND = "trainingGround"
+	TRAINING_GROUND = "trainingGround",
+	RECRUITMENT_OFFICE = "recruitmentOffice"
 }
 
 export const GUILD_DOMAIN_ERROR = {
@@ -106,6 +107,17 @@ export abstract class GuildDomainConstants {
 				{
 					guildLevel: 150,
 					cost: 600_000
+				}
+			]
+		},
+
+		// Makes the guild discoverable by players looking for one to join.
+		[GuildBuilding.RECRUITMENT_OFFICE]: {
+			maxLevel: 1,
+			levels: [
+				{
+					guildLevel: 5,
+					cost: 10_000
 				}
 			]
 		}

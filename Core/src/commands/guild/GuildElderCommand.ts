@@ -184,7 +184,9 @@ export default class GuildElderCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildElderPacketReq, context: PacketContext): Promise<void> {
-		const promotedPlayer = await Players.getAskedPlayer({ keycloakId: packet.askedPlayerKeycloakId }, player);
+		const promotedPlayer = await Players.getAskedPlayer(packet.askedPlayerRank === undefined
+			? { keycloakId: packet.askedPlayerKeycloakId }
+			: { rank: packet.askedPlayerRank }, player);
 
 		if (!await isEligible(player, promotedPlayer, response)) {
 			return;

@@ -5,6 +5,8 @@ import {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandGuildInvitePacketReq extends CrowniclesPacket {
 	invitedPlayerKeycloakId!: string;
+
+	invitedPlayerRank?: number;
 }
 
 @sendablePacket(PacketDirection.NONE)
@@ -12,6 +14,10 @@ export class CommandGuildInviteErrorPacket extends CrowniclesPacket {
 	invitedPlayerKeycloakId!: string;
 
 	guildName!: string;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandGuildInvitePendingPacket extends CommandGuildInviteErrorPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

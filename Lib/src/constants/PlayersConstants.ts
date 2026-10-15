@@ -8,7 +8,9 @@ export abstract class PlayersConstants {
 		LEVEL: 0,
 		EXPERIENCE: 0,
 		MONEY: 0,
-		TOKENS: 10,
+
+		// The first campaign mission hands over the first token, to teach what it does.
+		TOKENS: 0,
 		CLASS: 0,
 		BADGES: "",
 		GUILD_ID: null as unknown as number,

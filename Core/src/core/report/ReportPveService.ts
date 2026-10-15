@@ -51,6 +51,9 @@ import {
 } from "../utils/MaterialLootUtils";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { LogsPveFightProgressionRequests } from "../database/logs/requests/LogsPveFightProgressionRequests";
+import { LogsPveBossRecordsRequests } from "../database/logs/requests/LogsPveBossRecordsRequests";
+import { PveBossNewRecord } from "../../../../Lib/src/types/PveBossRecord";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 /**
  * PVE fight rewards structure
@@ -69,6 +72,11 @@ interface GuildRewardsResult {
 	guildXp: number;
 	guildPoints: number;
 }
+
+type PveBossOpponent = {
+	id: string;
+	level: number;
+};
 
 /**
  * Handle pet love points change for the winner of a PVE fight
@@ -194,9 +202,10 @@ function sendMonsterRewardPacket(
 	rewards: PveFightRewards,
 	guildResult: GuildRewardsResult,
 	fight: FightController,
-	loot: {
+	extras: {
 		materialLoot?: MaterialQuantity[];
 		discoveredRecipe?: RecipeDisplayInfo;
+		bossRecord?: PveBossNewRecord;
 	}
 ): void {
 	endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
@@ -213,9 +222,37 @@ function sendMonsterRewardPacket(
 				petNickname: fight.petReactionData.petNickname
 			}
 			: undefined,
-		...loot.materialLoot && loot.materialLoot.length > 0 ? { materialLoot: loot.materialLoot } : {},
-		...loot.discoveredRecipe ? { discoveredRecipe: loot.discoveredRecipe } : {}
+		...extras
 	}));
+}
+
+/**
+ * The record a final boss win sets, or null if this class already beat the boss as high; a failed lookup only skips sharing.
+ */
+export async function finalBossNewRecord(player: Player, monster: PveBossOpponent): Promise<PveBossNewRecord | null> {
+	if (!LogsPveBossRecordsRequests.isFinalBossId(monster.id)) {
+		return null;
+	}
+	try {
+		const previousLevel = await LogsPveBossRecordsRequests.getBestWinLevel({
+			playerKeycloakId: player.keycloakId,
+			monsterId: monster.id,
+			classId: player.class
+		});
+		if (previousLevel !== null && previousLevel >= monster.level) {
+			return null;
+		}
+		return {
+			monsterId: monster.id,
+			monsterLevel: monster.level,
+			classId: player.class,
+			...previousLevel === null ? {} : { previousLevel }
+		};
+	}
+	catch (error) {
+		CrowniclesLogger.errorWithObj("Failed to compare the final boss win with the player's record", error);
+		return null;
+	}
 }
 
 /**
@@ -236,7 +273,22 @@ type ApplyPveBossWinRewardsCtx = {
 	rewards: ReturnType<Monster["getRewards"]>;
 	endFightResponse: CrowniclesPacket[];
 	mapId: number;
+	monster: PveBossOpponent;
 };
+
+/** What a boss win adds to the reward packet: its loot, and on a final boss a recipe and maybe a record. */
+async function bossRewardExtras(ctx: ApplyPveBossWinRewardsCtx, materialLoot: MaterialQuantity[], isFinalBoss: boolean): Promise<Parameters<typeof sendMonsterRewardPacket>[4]> {
+	const {
+		fight, player, mapId, monster
+	} = ctx;
+	const bossRecipe = isFinalBoss ? await RecipeDiscoveryService.discoverFromBoss(player, mapId) : null;
+	const bossRecord = isFinalBoss && !fight.isADraw() ? await finalBossNewRecord(player, monster) : null;
+	return {
+		...materialLoot.length > 0 ? { materialLoot } : {},
+		...bossRecipe ? { discoveredRecipe: RecipeDiscoveryService.toDisplayInfo(bossRecipe) } : {},
+		...bossRecord ? { bossRecord } : {}
+	};
+}
 
 async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<void> {
 	const {
@@ -252,12 +304,7 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
 	}
 
 	const isFinalBoss = Maps.isAtFinalPveBoss(player);
-	const bossRecipe = isFinalBoss ? await RecipeDiscoveryService.discoverFromBoss(player, mapId) : null;
-
-	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, {
-		materialLoot,
-		...bossRecipe ? { discoveredRecipe: RecipeDiscoveryService.toDisplayInfo(bossRecipe) } : {}
-	});
+	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, await bossRewardExtras(ctx, materialLoot, isFinalBoss));
 	await MissionsController.update(player, endFightResponse, {
 		missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS satisfies PveBossMissionId
 	});
@@ -379,7 +426,14 @@ export async function doPVEBoss(
 
 			if (isWinOrDraw) {
 				await applyPveBossWinRewards({
-					fight, player, rewards, endFightResponse, mapId
+					fight,
+					player,
+					rewards,
+					endFightResponse,
+					mapId,
+					monster: {
+						id: monsterObj.id, level: randomLevel
+					}
 				});
 			}
 

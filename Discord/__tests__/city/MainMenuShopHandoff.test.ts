@@ -179,6 +179,7 @@ describe("city services", () => {
 		data.blacksmith = {
 			upgradeableItems: [],
 			disenchantableItems: [],
+			beyondReachItems: [],
 			playerMoney: 0
 		};
 

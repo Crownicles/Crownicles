@@ -24,3 +24,13 @@ export type PveBossLeaderboardEntry = PveBossRecordBase & {
 };
 
 export type PveBossFightRecord = PveBossPersonalRecord & PveBossLeaderboardEntry;
+
+/** A final island boss beaten above the best level the player's class had ever beaten it at. */
+export type PveBossNewRecord = {
+	monsterId: FinalPveBossId;
+	monsterLevel: number;
+	classId: number;
+
+	/** Absent the first time this class beats the boss. */
+	previousLevel?: number;
+};

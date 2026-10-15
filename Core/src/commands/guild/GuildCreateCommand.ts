@@ -12,7 +12,10 @@ import {
 	CommandGuildCreatePacketRes,
 	CommandGuildCreateRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildCreatePacket";
-import { checkNameString } from "../../../../Lib/src/utils/StringUtils";
+import {
+	findTextIssue, normalizeText
+} from "../../../../Lib/src/utils/TextRuleUtils";
+import { TextRuleConstants } from "../../../../Lib/src/constants/TextRuleConstants";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { ReactionCollectorGuildCreate } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildCreate";
 import {
@@ -62,7 +65,7 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
 		return false;
 	}
 
-	if (!checkNameString(guildName, GuildConstants.GUILD_NAME_LENGTH_RANGE)) {
+	if (findTextIssue(guildName, TextRuleConstants.GUILD_NAME) !== null) {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
 			foundGuild: false,
 			guildNameIsAvailable: true,
@@ -210,19 +213,21 @@ export default class GuildCreateCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildCreatePacketReq, context: PacketContext): Promise<void> {
-		if (!await canCreateGuild(player, packet.askedGuildName, response)) {
+		const guildName = normalizeText(packet.askedGuildName);
+		if (!await canCreateGuild(player, guildName, response)) {
 			return;
 		}
 
 		// Send collector
 		const collector = new ReactionCollectorGuildCreate(
-			packet.askedGuildName
+			guildName,
+			GuildCreateConstants.PRICE
 		);
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-				await acceptGuildCreate(player, packet.askedGuildName, response);
+				await acceptGuildCreate(player, guildName, response);
 			}
 			else {
 				response.push(makePacket(CommandGuildCreateRefusePacketRes, {}));

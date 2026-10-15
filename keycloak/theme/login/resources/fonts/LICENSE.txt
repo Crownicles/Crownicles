@@ -1,0 +1,9 @@
+Inter is licensed under the SIL Open Font License, Version 1.1.
+
+Copyright (c) 2016 The Inter Project Authors (https://github.com/rsms/inter)
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+https://openfontlicense.org
+
+The file in this directory is the latin subset of the variable font, as served by Google Fonts.

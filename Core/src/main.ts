@@ -17,6 +17,7 @@ import {
 } from "../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
 import { CoreConstants } from "./core/CoreConstants";
+import { keepPendingReveals } from "./core/appState/AppState";
 
 mqttClient.on("connect", () => {
 	mqttClient.subscribe(MqttTopicUtils.getCoreTopic(botConfig.PREFIX), err => {
@@ -117,6 +118,7 @@ mqttClient.on("message", async (topic, message) => {
 		await dispatchPacket(response, context, dataJson);
 	}
 
+	await keepPendingReveals(context, response);
 	PacketUtils.sendPackets(context, response);
 });
 

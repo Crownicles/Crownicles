@@ -225,6 +225,7 @@ async function executeRoyalUpgradeUnderLock(params: {
 
 	response.push(makePacket(CommandReportRoyalBlacksmithUpgradeRes, {
 		itemCategory: reaction.itemCategory,
+		itemId: inventorySlot.itemId,
 		upgradeCost: item.upgradeCost,
 		materialsCost: execution.materialsExtraCost,
 		gemCost: execution.gemCost,

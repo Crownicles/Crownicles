@@ -84,6 +84,13 @@ export class Guild extends Model {
 
 	declare trainingGroundLevel: number;
 
+	declare recruitmentOfficeLevel: number;
+
+	/** Only meaningful once the recruitment office is built. */
+	declare recruitmentOpen: boolean;
+
+	declare recruitmentMinScore: number;
+
 	declare creationDate: Date;
 
 	declare updatedAt: Date;
@@ -504,6 +511,18 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: 0
 		},
 		trainingGroundLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		recruitmentOfficeLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		recruitmentOpen: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false
+		},
+		recruitmentMinScore: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0
 		},

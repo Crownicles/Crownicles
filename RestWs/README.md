@@ -7,5 +7,6 @@ Don't forget to setup keycloak password policy
 In terms of performances, it is better to use a reverse proxy than integrate SSL in the application (https://fastify.dev/docs/latest/Guides/Recommendations/#use-a-reverse-proxy)
 
 For being able to log in Discord user:
-- Add the following feature to keycloak using this environment variable: `KC_FEATURES: token-exchange`
-- the client must have the role "impersonation"
+- Discord is brokered by Keycloak as an identity provider, so this service never handles Discord credentials nor issues tokens itself. It only validates the tokens it receives. See [the Keycloak README](../keycloak/README.md) for the provider setup.
+
+In keycloak client scopes, add "openid" and inside it enable "Include in token scope"

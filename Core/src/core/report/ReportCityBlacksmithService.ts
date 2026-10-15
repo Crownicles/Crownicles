@@ -344,6 +344,7 @@ async function executeUpgradeItemUnderLock(params: {
 
 	response.push(makePacket(CommandReportUpgradeItemRes, {
 		itemCategory: reaction.itemCategory,
+		itemId: inventorySlot.itemId,
 		newItemLevel: itemToUpgrade.nextLevel
 	}));
 
@@ -447,6 +448,7 @@ async function executeBlacksmithUpgrade(params: {
 
 	response.push(makePacket(CommandReportBlacksmithUpgradeRes, {
 		itemCategory: reaction.itemCategory,
+		itemId: inventorySlot.itemId,
 		newItemLevel: itemToUpgrade.nextLevel,
 		totalCost: executionData.totalCost,
 		boughtMaterials: executionData.boughtMaterials

@@ -43,3 +43,11 @@ jobs:
         file: ./Discord/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/discord-beta:latest,${{ secrets.DOCKER_HUB_USERNAME }}/discord-beta:${{ steps.date.outputs.date }}
+    -
+      name: Build and push RestWs
+      uses: docker/build-push-action@v7
+      with:
+        context: .
+        file: ./RestWs/Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/restws-beta:latest,${{ secrets.DOCKER_HUB_USERNAME }}/restws-beta:${{ steps.date.outputs.date }}

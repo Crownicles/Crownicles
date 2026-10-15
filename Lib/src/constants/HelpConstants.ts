@@ -326,6 +326,18 @@ export abstract class HelpConstants {
 			"entrepotdeguild",
 			"entrepot"
 		],
+		GUILD_RECRUITMENT: [
+			"guildrecruitment",
+			"grecruit",
+			"recrutement",
+			"recrutementguilde"
+		],
+		GUILD_JOIN: [
+			"guildjoin",
+			"gjoin",
+			"rejoindre",
+			"rejoindreguilde"
+		],
 		UPDATE: [
 			"update",
 			"changelog",
@@ -747,6 +759,18 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":pencil:",
 				NAME: "guildstorage",
+				CATEGORY: "guild"
+			},
+		GUILD_RECRUITMENT:
+			{
+				EMOTE: ":loudspeaker:",
+				NAME: "guildrecruitment",
+				CATEGORY: "guild"
+			},
+		GUILD_JOIN:
+			{
+				EMOTE: ":raising_hand:",
+				NAME: "guildjoin",
 				CATEGORY: "guild"
 			},
 		UPDATE:

@@ -13,4 +13,7 @@ export type ScrapDealerItem = {
 
 export type ScrapDealerData = {
 	recyclableItems: ScrapDealerItem[];
+
+	/** Reserve weapons and armors the scrap dealer refuses until their enchantment is removed at the blacksmith. */
+	enchantedItems: Omit<ScrapDealerItem, "recoveredMaterials" | "recoveredMoney">[];
 };

@@ -1,0 +1,51 @@
+name: Keycloak integration
+
+# Runs the account flows against a real, disposable Keycloak built with the repository's extensions,
+# realm flows and theme: none of it is covered by the unit tests, which mock Keycloak.
+on:
+  pull_request:
+    branches: [ '**' ]
+    paths: [ keycloak/**, Lib/src/keycloak/**, RestWs/src/services/**, .github/workflows/keycloak-integration.yml ]
+  push:
+    branches: [ develop, master ]
+    paths: [ keycloak/**, Lib/src/keycloak/**, RestWs/src/services/**, .github/workflows/keycloak-integration.yml ]
+  workflow_dispatch:
+
+jobs:
+  keycloak-integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Setup PNPM
+        run: |
+          npm install --global corepack@latest
+          corepack enable
+          corepack prepare pnpm@10.26.0 --activate
+
+      - name: Cache PNPM dependencies
+        uses: actions/cache@v6
+        with:
+          path: |
+            Lib/node_modules
+            RestWs/node_modules
+            App/node_modules
+          key: ${{ runner.os }}-keycloak-integration-deps-${{ hashFiles('Lib/pnpm-lock.yaml', 'RestWs/pnpm-lock.yaml', 'App/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-keycloak-integration-deps-
+
+      # App only provides the DOM and cookie parsers the test drives the login pages with
+      - name: Install dependencies
+        run: |
+          pnpm --dir ./Lib install --frozen-lockfile
+          pnpm --dir ./RestWs install --frozen-lockfile
+          pnpm --dir ./App install --frozen-lockfile
+
+      - name: Run Keycloak integration tests
+        run: bash keycloak/tests/run-integration.sh

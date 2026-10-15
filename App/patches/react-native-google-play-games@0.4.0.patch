@@ -1,0 +1,34 @@
+diff --git a/android/src/main/java/com/reactnativegoogleplaygames/GooglePlayGamesModule.kt b/android/src/main/java/com/reactnativegoogleplaygames/GooglePlayGamesModule.kt
+index e76fd103bdaddce1606f5774e1e40b8262d1d907..ce6d981d4dbfcb06091dbe175edfd5ca0d563964 100644
+--- a/android/src/main/java/com/reactnativegoogleplaygames/GooglePlayGamesModule.kt
++++ b/android/src/main/java/com/reactnativegoogleplaygames/GooglePlayGamesModule.kt
+@@ -94,9 +94,11 @@ class GooglePlayGamesModule(reactContext: ReactApplicationContext) :
+     withActivity(promise) { activity ->
+       PlayGames
+         .getAchievementsClient(activity)
+-        .unlock(achievementId)
+-
+-      promise.resolve(null)
++        .unlockImmediate(achievementId)
++        .addOnSuccessListener { promise.resolve(null) }
++        .addOnFailureListener { error ->
++          rejectPromise(promise, "E_UNLOCK_ACHIEVEMENT_FAILED", error)
++        }
+     }
+   }
+ 
+@@ -172,9 +174,11 @@ class GooglePlayGamesModule(reactContext: ReactApplicationContext) :
+     withActivity(promise) { activity ->
+       PlayGames
+         .getLeaderboardsClient(activity)
+-        .submitScore(leaderboardId, score.toLong())
+-
+-      promise.resolve(null)
++        .submitScoreImmediate(leaderboardId, score.toLong())
++        .addOnSuccessListener { promise.resolve(null) }
++        .addOnFailureListener { error ->
++          rejectPromise(promise, "E_SUBMIT_SCORE_FAILED", error)
++        }
+     }
+   }
+ 

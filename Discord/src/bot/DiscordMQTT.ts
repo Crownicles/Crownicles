@@ -28,6 +28,7 @@ import { DiscordConstants } from "../DiscordConstants";
 import { CommandTestListPacketReq } from "../../../Lib/src/packets/commands/CommandTestListPacket";
 import { PacketUtils } from "../utils/PacketUtils";
 import { installCustomIdGuard } from "../utils/CustomIdGuard";
+import { answerNotificationPreferencesRequest } from "../notifications/NotificationPreferencesExport";
 
 const DEFAULT_MQTT_CLIENT_OPTIONS = {
 	connectTimeout: MqttConstants.CONNECTION_TIMEOUT
@@ -47,6 +48,8 @@ export class DiscordMQTT {
 	static releaseGiftAnnouncementMqttClient: MqttClient;
 
 	static blessingAnnouncementMqttClient: MqttClient;
+
+	static notificationPreferencesMqttClient?: MqttClient;
 
 	static packetListener: PacketListenerClient = new PacketListenerClient();
 
@@ -84,6 +87,7 @@ export class DiscordMQTT {
 		);
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
+			this.connectAndAnswerNotificationPreferencesRequests();
 			if (discordConfig.TEST_MODE) {
 				this.requestTestCommandsList();
 			}
@@ -152,6 +156,9 @@ export class DiscordMQTT {
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.topWeekAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(discordConfig.PREFIX), "top week announcement");
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.topWeekFightAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX), "top week fight announcement");
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.blessingAnnouncementMqttClient, MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), "blessing announcement");
+		if (DiscordMQTT.notificationPreferencesMqttClient) {
+			DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.notificationPreferencesMqttClient, MqttTopicUtils.getDiscordNotificationPreferencesRequestTopic(discordConfig.PREFIX), "notification preferences");
+		}
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.christmasBonusAnnouncementMqttClient, MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), "christmas bonus announcement");
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.releaseGiftAnnouncementMqttClient, MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(discordConfig.PREFIX), "release gift announcement");
 	}
@@ -295,6 +302,23 @@ export class DiscordMQTT {
 		});
 
 		return client;
+	}
+
+	/**
+	 * Core asks the main shard for a player's Discord notification settings when the app reads its own for the first time.
+	 * The topic is not retained: a request missed while Discord is down is asked again on the app's next read.
+	 */
+	private static connectAndAnswerNotificationPreferencesRequests(): void {
+		const topic = MqttTopicUtils.getDiscordNotificationPreferencesRequestTopic(discordConfig.PREFIX);
+		const client = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
+		client.on("connect", () => {
+			DiscordMQTT.subscribeTo(client, topic, false);
+		});
+		client.on("message", (_topic, message) => {
+			answerNotificationPreferencesRequest(message.toString())
+				.catch(error => CrowniclesLogger.errorWithObj("Failed to answer a notification settings request", error));
+		});
+		DiscordMQTT.notificationPreferencesMqttClient = client;
 	}
 
 	private static handleNotificationMqttMessage(): void {

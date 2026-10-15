@@ -23,6 +23,18 @@ export abstract class FightsManager {
 		return FightsManager.fights.get(uuid) ?? null;
 	}
 
+	public static getActiveFightOf(keycloakId: string): FightController | null {
+		for (const fight of FightsManager.fights.values()) {
+			if (fight.isSilentMode() || fight.hadEnded()) {
+				continue;
+			}
+			if (fight.fightInitiator.player.keycloakId === keycloakId) {
+				return fight;
+			}
+		}
+		return null;
+	}
+
 	private static purgeFights(): void {
 		for (const [uuid, fight] of FightsManager.fights.entries()) {
 			try {

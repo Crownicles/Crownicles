@@ -6,8 +6,10 @@ import {
 	CommandPetNickPacketReq,
 	CommandPetNickPacketRes
 } from "../../../../Lib/src/packets/commands/CommandPetNickPacket";
-import { checkNameString } from "../../../../Lib/src/utils/StringUtils";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import {
+	findTextIssue, normalizeText
+} from "../../../../Lib/src/utils/TextRuleUtils";
+import { TextRuleConstants } from "../../../../Lib/src/constants/TextRuleConstants";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
@@ -84,8 +86,8 @@ export default class PetNickCommand {
 			return;
 		}
 
-		const newPetNickName = packet.newNickname;
-		if (newPetNickName && !checkNameString(newPetNickName, PetConstants.NICKNAME_LENGTH_RANGE)) {
+		const newPetNickName = packet.newNickname === undefined ? undefined : normalizeText(packet.newNickname);
+		if (newPetNickName && findTextIssue(newPetNickName, TextRuleConstants.PET_NICKNAME) !== null) {
 			response.push(makePacket(CommandPetNickPacketRes, {
 				foundPet: true,
 				newNickname: newPetNickName,

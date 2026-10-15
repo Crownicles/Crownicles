@@ -108,6 +108,7 @@ export class FightController {
 			this.invertFighters();
 		}
 		this.state = FightState.RUNNING;
+		this._fightView.displayFightStatus(response);
 		await this.prepareNextTurn(response);
 	}
 
@@ -116,6 +117,18 @@ export class FightController {
 	 */
 	public isSilentMode(): boolean {
 		return this.silentMode;
+	}
+
+	public sendCurrentState(response: CrowniclesPacket[]): void {
+		if (this.state !== FightState.RUNNING || this.silentMode) {
+			return;
+		}
+		const opponent = this.getNonFightInitiatorFighter();
+		if (!(opponent instanceof MonsterFighter) && !(opponent instanceof AiPlayerFighter)) {
+			return;
+		}
+		this._fightView.introduceFight(response, this.fightInitiator, opponent);
+		this._fightView.displayFightStatus(response);
 	}
 
 	/**

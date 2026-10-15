@@ -38,6 +38,10 @@ vi.mock("../src/core/blessings/BlessingManager", () => ({
 	}
 }));
 
+vi.mock("../src/core/onboarding/OnboardingExperience", () => ({
+	reportExperience: (_player: unknown, amount: number): number => amount
+}));
+
 describe("applyPossibilityOutcome", () => {
 	it("persists money lost before experience reloads the player", async () => {
 		let persistedMoney = 1000;

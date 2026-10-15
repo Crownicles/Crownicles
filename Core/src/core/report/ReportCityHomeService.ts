@@ -131,7 +131,8 @@ async function runBuyHomeUnderLock(params: {
 	await lockedPlayer.save();
 
 	response.push(makePacket(CommandReportBuyHomeRes, {
-		cost: newPrice
+		cost: newPrice,
+		level: HomeLevel.getInitialLevel().level
 	}));
 
 	return {
@@ -237,7 +238,8 @@ async function runUpgradeHomeUnderLock(params: {
 	]);
 
 	response.push(makePacket(CommandReportUpgradeHomeRes, {
-		cost: upgradePrice
+		cost: upgradePrice,
+		level: newLevel.level
 	}));
 
 	return {
@@ -500,6 +502,7 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 			}
 			response.push(makePacket(CommandReportMoveHomeRes, {
 				cost: result.effectivePrice,
+				level: lockedHome.level,
 				...result.rentApplied > 0 ? { rentDeducted: result.rentApplied } : {}
 			}));
 

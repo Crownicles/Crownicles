@@ -7,7 +7,7 @@ import {
 	CommandReportGuildDomainDepositTreasuryRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	GUILD_DOMAIN_ERROR, GuildDomainConstants
+	GUILD_DOMAIN_ERROR, GuildDomainConstants, GuildDomainError
 } from "../../../../Lib/src/constants/GuildDomainConstants";
 import Player, {
 	Players
@@ -57,6 +57,12 @@ async function runTreasuryDepositUnderLock(
 			PlayerMissionsInfo.lockKey(player.id)
 		] as const,
 		async ([lockedGuild, lockedPlayer]) => {
+			if (lockedPlayer.guildId !== guildId) {
+				return {
+					packet: makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.CANNOT_BUY }), logParams: null
+				};
+			}
+
 			/*
 			 * Re-validate against the locked rows. Another concurrent
 			 * handler (a parallel deposit, a shop purchase, …) may have
@@ -99,26 +105,26 @@ async function runTreasuryDepositUnderLock(
 	);
 }
 
+function validateDeposit(player: Player, packet: CommandReportGuildDomainDepositTreasuryReq, grossAmount: number): GuildDomainError | null {
+	if (packet.expectedGuildId !== undefined && player.guildId !== packet.expectedGuildId) {
+		return GUILD_DOMAIN_ERROR.CANNOT_BUY;
+	}
+	if (!Number.isFinite(grossAmount) || grossAmount <= 0) {
+		return GUILD_DOMAIN_ERROR.INVALID_AMOUNT;
+	}
+	return player.money < grossAmount ? GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY : null;
+}
+
 export async function handleGuildDomainDepositTreasury(keycloakId: string, packet: CommandReportGuildDomainDepositTreasuryReq, response: CrowniclesPacket[]): Promise<void> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player || !player.guildId) {
 		response.push(makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD }));
 		return;
 	}
-
 	const grossAmount = Math.floor(packet.amount);
-	if (!Number.isFinite(grossAmount) || grossAmount <= 0) {
-		response.push(makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_AMOUNT }));
-		return;
-	}
-
-	/*
-	 * Fast-fail outside the lock so we don't pay for a transaction round
-	 * trip when the player obviously can't afford the deposit. The check
-	 * is repeated *inside* the lock against a freshly-loaded row.
-	 */
-	if (player.money < grossAmount) {
-		response.push(makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY }));
+	const error = validateDeposit(player, packet, grossAmount);
+	if (error) {
+		response.push(makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error }));
 		return;
 	}
 

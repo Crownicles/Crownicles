@@ -194,7 +194,15 @@ export function buildScrapDealerData(
 	return {
 		recyclableItems: playerInventory
 			.map(inventorySlot => buildRecyclableItem(inventorySlot, player))
-			.filter((item): item is ScrapDealerItem => item !== null)
+			.filter((item): item is ScrapDealerItem => item !== null),
+		enchantedItems: playerInventory
+			.filter(inventorySlot => !inventorySlot.isEquipped() && inventorySlot.itemEnchantmentId !== null && getBlacksmithItemData(inventorySlot) !== null)
+			.map(inventorySlot => ({
+				slot: inventorySlot.slot,
+				category: inventorySlot.itemCategory,
+				itemId: inventorySlot.itemId,
+				details: inventorySlot.itemWithDetails(player) as MainItemDetails
+			}))
 	};
 }
 
@@ -233,11 +241,12 @@ function logRecycle(player: Locked<Player>, reaction: ReactionCollectorScrapDeal
 async function grantRecycleRewardsUnderLock(params: {
 	player: Locked<Player>;
 	item: MainItem;
+	recycled: Pick<CommandReportScrapDealerRecycleRes, "itemId" | "itemCategory" | "itemLevel">;
 	materialLoot: MaterialQuantity[];
 	response: CrowniclesPacket[];
 }): Promise<void> {
 	const {
-		player, item, materialLoot, response
+		player, item, recycled, materialLoot, response
 	} = params;
 
 	await applyMaterialLoot(player.id, materialLoot);
@@ -253,6 +262,7 @@ async function grantRecycleRewardsUnderLock(params: {
 	await player.save();
 
 	response.push(makePacket(CommandReportScrapDealerRecycleRes, {
+		...recycled,
 		materialLoot,
 		moneyGained
 	}));
@@ -291,6 +301,9 @@ async function applyScrapDealerRecycleUnderLock(
 	await grantRecycleRewardsUnderLock({
 		player,
 		item: itemData,
+		recycled: {
+			itemId: reaction.itemId, itemCategory: reaction.itemCategory, itemLevel
+		},
 		materialLoot,
 		response
 	});

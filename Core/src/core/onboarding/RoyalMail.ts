@@ -1,0 +1,123 @@
+import {
+	Player, Players
+} from "../database/game/models/Player";
+import {
+	PlayerMissionsInfo, PlayerMissionsInfos
+} from "../database/game/models/PlayerMissionsInfo";
+import {
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { RoyalLetterPacket } from "../../../../Lib/src/packets/events/RoyalLetterPacket";
+import { OnboardingConstants } from "../../../../Lib/src/constants/OnboardingConstants";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { hoursToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asHours, dateToMs
+} from "../../../../Lib/src/types/TimeTypes";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
+
+const { ROYAL_MAIL } = OnboardingConstants;
+
+type RoyalLetterClaim = {
+	letter: number; tokens: number;
+};
+
+/** The next letter, once its delay since the previous one has passed. */
+export function dueRoyalLetter(info: Pick<PlayerMissionsInfo, "royalLettersReceived" | "lastRoyalLetterAt">, now: Date): number | null {
+	if (info.royalLettersReceived >= ROYAL_MAIL.LETTERS || !info.lastRoyalLetterAt) {
+		return null;
+	}
+	const delay = hoursToMilliseconds(asHours(ROYAL_MAIL.DELAYS_HOURS[info.royalLettersReceived]));
+	return dateToMs(now) - dateToMs(info.lastRoyalLetterAt) >= delay ? info.royalLettersReceived + 1 : null;
+}
+
+/** Whether this report may start the count or bring a letter. */
+function royalMailPending(info: Pick<PlayerMissionsInfo, "royalLettersReceived" | "lastRoyalLetterAt">, now: Date): boolean {
+	return info.lastRoyalLetterAt ? dueRoyalLetter(info, now) !== null : info.royalLettersReceived < ROYAL_MAIL.LETTERS;
+}
+
+/** The letter and its gifts commit together; the first report only starts the count. */
+async function claimRoyalLetterUnderLock(
+	player: Locked<Player>,
+	info: Locked<PlayerMissionsInfo>,
+	response: CrowniclesPacket[],
+	now: Date
+): Promise<RoyalLetterClaim | null> {
+	if (!royalMailPending(info, now)) {
+		return null;
+	}
+	if (!info.lastRoyalLetterAt) {
+		info.lastRoyalLetterAt = now;
+		await info.save();
+		return null;
+	}
+	const letter = dueRoyalLetter(info, now)!;
+	const tokens = await player.addTokensAndGetActualGain({
+		amount: ROYAL_MAIL.TOKENS,
+		response,
+		reason: NumberChangeReason.ROYAL_MAIL
+	});
+	await player.addMoney({
+		amount: ROYAL_MAIL.MONEY,
+		response,
+		reason: NumberChangeReason.ROYAL_MAIL,
+		ignoreBlessing: true
+	});
+	await info.reload();
+	if (letter === ROYAL_MAIL.LETTERS) {
+		await info.addGems(ROYAL_MAIL.FINAL_GEMS, player.keycloakId, NumberChangeReason.ROYAL_MAIL);
+	}
+	info.royalLettersReceived = letter;
+	info.lastRoyalLetterAt = now;
+	await info.save();
+	return {
+		letter, tokens
+	};
+}
+
+/** Delivers the king's next letter to a newcomer, with its gifts, during their first week. */
+export async function deliverRoyalLetter(player: Player, response: CrowniclesPacket[], now = new Date()): Promise<void> {
+	// Every report comes here: settle the veterans and the rest of the day without taking a lock.
+	if (!royalMailPending(await PlayerMissionsInfos.getOfPlayer(player.id), now)) {
+		return;
+	}
+	const rewardPackets: CrowniclesPacket[] = [];
+	const delivered = await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
+		const info = await PlayerMissionsInfos.getOfPlayer(player.id);
+		const claim = await claimRoyalLetterUnderLock(lockedPlayer, info, rewardPackets, now);
+		return claim
+			? {
+				...claim, updatedPlayer: lockedPlayer
+			}
+			: null;
+	});
+	if (!delivered) {
+		return;
+	}
+	Object.assign(player, delivered.updatedPlayer);
+	response.push(...rewardPackets);
+	let placement: {
+		rank: number; rankedPlayers: number;
+	} | undefined;
+	try {
+		const [rank, rankedPlayers] = await Promise.all([Players.getRankById(player.id), Players.getNbPlayersHaveStartedTheAdventure()]);
+		if (rank <= rankedPlayers) {
+			placement = {
+				rank, rankedPlayers
+			};
+		}
+	}
+	catch (error) {
+		console.warn("Could not include the contest ranking in the royal letter:", error);
+	}
+	response.push(makePacket(RoyalLetterPacket, {
+		keycloakId: player.keycloakId,
+		letter: delivered.letter,
+		letters: ROYAL_MAIL.LETTERS,
+		tokens: delivered.tokens,
+		money: ROYAL_MAIL.MONEY,
+		gems: delivered.letter === ROYAL_MAIL.LETTERS ? ROYAL_MAIL.FINAL_GEMS : 0,
+		...placement ? placement : {}
+	}));
+}

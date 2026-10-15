@@ -28,6 +28,10 @@ interface ResolvedFoodShop {
 	pricePerUnit: number;
 }
 
+export type GuildFoodPurchase = {
+	guildId: number; amount: number;
+};
+
 /**
  * Resolve the (player, guild) pair from the request author and verify
  * the guild has a working shop. Pulled out of {@link resolveFoodShopRequest}
@@ -121,11 +125,11 @@ function computeAffordableAmount(guild: Guild, request: ResolvedFoodShop): numbe
 	return Math.min(request.amount, maxStorable, maxAffordable);
 }
 
-export async function handleFoodShopBuy(keycloakId: string, packet: CommandReportFoodShopBuyReq, response: CrowniclesPacket[]): Promise<void> {
+export async function handleFoodShopBuy(keycloakId: string, packet: CommandReportFoodShopBuyReq, response: CrowniclesPacket[]): Promise<GuildFoodPurchase | null> {
 	const resolved = await resolveFoodShopRequest(keycloakId, packet);
 	if (typeof resolved === "string") {
 		response.push(makePacket(CommandReportFoodShopBuyErrorRes, { error: resolved }));
-		return;
+		return null;
 	}
 
 	/*
@@ -144,7 +148,8 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 		if (actualAmount <= 0) {
 			return {
 				packet: makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.CANNOT_BUY }),
-				amountBought: 0
+				amountBought: 0,
+				totalCost: 0
 			};
 		}
 
@@ -171,7 +176,8 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 				amountBought: actualAmount,
 				totalCost
 			}),
-			amountBought: actualAmount
+			amountBought: actualAmount,
+			totalCost
 		};
 	});
 
@@ -199,4 +205,9 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 			});
 		}
 	}
+	return result.amountBought > 0
+		? {
+			guildId: resolved.guildId, amount: result.totalCost
+		}
+		: null;
 }

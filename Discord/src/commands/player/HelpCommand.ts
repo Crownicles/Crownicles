@@ -9,7 +9,7 @@ import {
 	LANGUAGE, Language
 } from "../../../../Lib/src/Language";
 import { AutocompleteInteraction } from "discord.js";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { PetSellConstants } from "../../../../Lib/src/constants/PetSellConstants";
 import { HelpConstants } from "../../../../Lib/src/constants/HelpConstants";
 import {
 	crowniclesClient, discordConfig
@@ -249,8 +249,8 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 		)
 			.setDescription(i18n.t(`commands:help.commands.${command}.description`, {
 				lng: interaction.userLanguage,
-				petSellMinPrice: PetConstants.SELL_PRICE.MIN,
-				petSellMaxPrice: PetConstants.SELL_PRICE.MAX
+				petSellMinPrice: PetSellConstants.SELL_PRICE.MIN,
+				petSellMaxPrice: PetSellConstants.SELL_PRICE.MAX
 			}))
 			.addFields({
 				name: i18n.t("commands:help.usageFieldTitle", { lng }),

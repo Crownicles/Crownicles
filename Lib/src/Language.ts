@@ -21,3 +21,7 @@ export class LANGUAGE {
 		return LANGUAGE.ENGLISH;
 	}
 }
+
+export function isLanguage(value: unknown): value is Language {
+	return typeof value === "string" && (LANGUAGE.LANGUAGES as string[]).includes(value);
+}

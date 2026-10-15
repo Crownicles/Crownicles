@@ -41,6 +41,9 @@ export abstract class MissionUtils {
 			},
 			{
 				value: mission.xpToWin, key: "xpDisplay"
+			},
+			{
+				value: mission.tokensToWin ?? 0, key: "tokensDisplay"
 			}
 		];
 

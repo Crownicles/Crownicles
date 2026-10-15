@@ -174,11 +174,6 @@ export abstract class PetConstants {
 		TRAINED: 5
 	};
 
-	static readonly SELL_PRICE = {
-		MIN: 100,
-		MAX: 50000
-	};
-
 	static readonly POST_FIGHT_LOVE_GAIN_RANGE = {
 		MIN: 0,
 		MAX: 2

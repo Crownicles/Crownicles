@@ -7,6 +7,7 @@ export type CampaignMission = {
 	gemsToWin: number;
 	xpToWin: number;
 	moneyToWin: number;
+	tokensToWin?: number;
 	petRewardTypeId?: number;
 };
 

@@ -2,6 +2,8 @@ import { TimeConstants } from "./TimeConstants";
 
 export type ChestAction = typeof HomeConstants.CHEST_ACTIONS[keyof typeof HomeConstants.CHEST_ACTIONS];
 
+export type UpgradeStationLimit = typeof HomeConstants.UPGRADE_STATION_LIMITS[keyof typeof HomeConstants.UPGRADE_STATION_LIMITS];
+
 export abstract class HomeConstants {
 	/**
 	 * Flat price (in coins) to move an existing home to a different city.
@@ -37,6 +39,13 @@ export abstract class HomeConstants {
 		STORAGE_FULL: "storageFull",
 		NO_EMPTY_SLOT: "noEmptySlot",
 		NOT_FOUND: "notFound"
+	} as const;
+
+	/** Why the home's upgrade station hands a weapon or armor back. */
+	public static readonly UPGRADE_STATION_LIMITS = {
+		HOME_LEVEL: "homeLevel",
+		RARITY: "rarity",
+		MAXED: "maxed"
 	} as const;
 
 	/**

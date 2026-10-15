@@ -66,8 +66,8 @@ describe("DiscordBuilder translations", () => {
 
 	// Mentions are resolved against the registered (English) names: a mismatch renders "COMMAND NOT FOUND" (#4864)
 	it("should only mention registered commands in /help and in the French translations", () => {
-		const englishBuilder: Record<string, { name: string }> = JSON.parse(readFileSync(resolve(LANG_DIR, "en", "discordBuilder.json"), "utf8"));
-		const registeredNames = new Set(Object.values(englishBuilder).map(command => command.name));
+		const frenchBuilder: Record<string, unknown> = JSON.parse(readFileSync(resolve(LANG_DIR, "fr", "discordBuilder.json"), "utf8"));
+		const registeredNames = new Set(Object.keys(frenchBuilder).map(section => SlashCommandBuilderGenerator.generateBaseCommand(section).toJSON().name));
 
 		const frenchMentions = readdirSync(resolve(LANG_DIR, "fr"))
 			.flatMap(file => [...readFileSync(resolve(LANG_DIR, "fr", file), "utf8").matchAll(/\{command:([^} ]+)/gu)]

@@ -9,4 +9,7 @@ export interface GuildMember {
 		isPveIslandAlly: boolean;
 		cannotBeJoinedOnBoat: boolean;
 	};
+
+	/** Set while the member is on probation and cannot take pets out of the shelter. */
+	probationEndsAt?: number;
 }

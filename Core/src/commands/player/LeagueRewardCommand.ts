@@ -17,9 +17,7 @@ import {
 	generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../../core/utils/ItemUtils";
 import { crowniclesInstance } from "../../app";
-import {
-	getNextSaturdayMidnight, todayIsSunday
-} from "../../../../Lib/src/utils/TimeUtils";
+import { LEAGUE_REWARD_BLOCKERS } from "../../../../Lib/src/types/LeagueRewardAvailability";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
@@ -32,13 +30,14 @@ export default class LeagueRewardCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	static async execute(response: CrowniclesPacket[], player: Player, _packet: CommandLeagueRewardPacketReq, context: PacketContext, ignoreDate = false): Promise<void> {
-		if (!ignoreDate && !todayIsSunday()) {
+		const schedule = player.getLeagueRewardSchedule(ignoreDate);
+		if (schedule?.type === LEAGUE_REWARD_BLOCKERS.NOT_SUNDAY) {
 			response.push(makePacket(CommandLeagueRewardNotSundayPacketRes, {
-				nextSunday: getNextSaturdayMidnight()
+				nextSunday: schedule.nextSunday
 			}));
 			return;
 		}
-		if (player.gloryPointsLastSeason === 0) {
+		if (schedule?.type === LEAGUE_REWARD_BLOCKERS.NO_POINTS) {
 			response.push(makePacket(CommandLeagueRewardNoPointsPacketRes, {}));
 			return;
 		}

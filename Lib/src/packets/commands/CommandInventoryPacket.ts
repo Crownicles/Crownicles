@@ -68,4 +68,10 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 	 * Whether the player has the Heart of the Sylvan talisman (remote garden harvest)
 	 */
 	hasRemoteHarvestTalisman?: boolean;
+
+	/**
+	 * When the daily bonus may be claimed again, so a front end can say beforehand why it cannot be
+	 * claimed right now instead of letting the player find out by asking for it
+	 */
+	dailyBonusAvailableAt?: number;
 }

@@ -29,7 +29,9 @@ import {
 	calculateEffectiveRisk,
 	determineExpeditionOutcome
 } from "../../core/expeditions/ExpeditionService";
-import { validateExpeditionPrerequisites } from "../../core/expeditions/ExpeditionValidation";
+import {
+	expeditionStartBlocker, validateExpeditionPrerequisites
+} from "../../core/expeditions/ExpeditionValidation";
 import { applyExpeditionRewards } from "../../core/expeditions/ExpeditionRewardApplicator";
 import { PendingExpeditionsCache } from "../../core/expeditions/PendingExpeditionsCache";
 import { Maps } from "../../core/maps/Maps";
@@ -240,19 +242,8 @@ function checkStartRequirements(
 	petEntity: PetEntity,
 	petModel: NonNullable<ReturnType<typeof PetDataController.instance.getById>>
 ): CommandPetExpeditionPacketRes | null {
-	if (petEntity.lovePoints < ExpeditionConstants.REQUIREMENTS.MIN_LOVE_POINTS) {
-		return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.INSUFFICIENT_LOVE, true, petEntity);
-	}
-
-	if (petEntity.getFeedCooldown(petModel) <= 0) {
-		return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.PET_HUNGRY, true, petEntity);
-	}
-
-	if (!Maps.isOnContinent(player)) {
-		return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.NOT_ON_CONTINENT, true, petEntity);
-	}
-
-	return null;
+	const blocker = expeditionStartBlocker(player, petEntity, petModel);
+	return blocker ? buildCannotStartResponse(blocker, true, petEntity) : null;
 }
 
 /**

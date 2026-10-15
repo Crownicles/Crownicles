@@ -96,6 +96,9 @@ export class ReactionCollectorShopData extends ReactionCollectorData {
 	currency!: ShopCurrency;
 
 	additionalShopData!: additionalShopData;
+
+	/** Which commerce the player walked into, for frontends that title the screen themselves. */
+	shopId?: string;
 }
 
 export class ReactionCollectorShopItemReaction extends ReactionCollectorReaction {
@@ -118,6 +121,7 @@ export type additionalShopData = {
 	gemToMoneyRatio?: number;
 	remainingTokens?: number;
 	weeklyPlants?: PlantId[];
+	thousandPoints?: number;
 };
 
 type ShopReaction = ReactionCollectorShopItemReaction | ReactionCollectorShopCloseReaction;
@@ -135,18 +139,22 @@ export class ReactionCollectorShop extends ReactionCollector {
 
 	private readonly additionalShopData!: additionalShopData;
 
+	private readonly shopId?: string;
+
 	constructor(
 		shopCategories: ShopCategory[],
 		availableCurrency: number,
 		additionalShopData: additionalShopData & {
 			currency?: ShopCurrency;
-		} = {}
+		} = {},
+		shopId?: string
 	) {
 		super();
 		this.shopCategories = shopCategories;
 		this.availableCurrency = availableCurrency;
 		this.currency = additionalShopData.currency ?? ShopCurrency.MONEY;
 		this.additionalShopData = additionalShopData;
+		this.shopId = shopId;
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorShopPacket {
@@ -173,7 +181,8 @@ export class ReactionCollectorShop extends ReactionCollector {
 			data: this.buildData(ReactionCollectorShopData, {
 				availableCurrency: this.availableCurrency,
 				currency: this.currency,
-				additionalShopData: this.additionalShopData
+				additionalShopData: this.additionalShopData,
+				...this.shopId === undefined ? {} : { shopId: this.shopId }
 			})
 		};
 	}

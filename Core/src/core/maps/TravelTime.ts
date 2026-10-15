@@ -56,6 +56,7 @@ export abstract class TravelTime {
 		effectDuration: Millisecond;
 		effectRemainingTime: Millisecond;
 		playerTravelledTime: Millisecond;
+		lastStopTime: Millisecond;
 		nextSmallEventTime: Millisecond;
 	}> {
 		const data = this.getTravelDataSimplified(player, date);
@@ -64,11 +65,12 @@ export abstract class TravelTime {
 		const timeBetweenSmallEvents = Maps.isOnPveIsland(player) ? PVEConstants.TIME_BETWEEN_SMALL_EVENTS : Constants.REPORT.TIME_BETWEEN_MINI_EVENTS;
 
 		// The next small event in 9min45 after the last thing that happened between the last start of the travel, small event (if there's one since the start of the travel) and end of alteration
-		const nextSmallEventTime = asMilliseconds(Math.max(
+		const lastStopTime = asMilliseconds(Math.max(
 			data.travelStartTime,
 			lastSmallEvent ? lastSmallEvent.time : -1,
 			data.effectEndTime
-		) + timeBetweenSmallEvents);
+		));
+		const nextSmallEventTime = asMilliseconds(lastStopTime + timeBetweenSmallEvents);
 
 		return {
 			travelStartTime: data.travelStartTime,
@@ -78,6 +80,7 @@ export abstract class TravelTime {
 			effectDuration: data.effectDuration,
 			effectRemainingTime: data.effectRemainingTime,
 			playerTravelledTime: data.playerTravelledTime,
+			lastStopTime,
 			nextSmallEventTime
 		};
 	}

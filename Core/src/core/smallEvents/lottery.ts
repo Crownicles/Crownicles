@@ -29,6 +29,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import { reportExperience } from "../onboarding/OnboardingExperience";
 
 type LotteryProperties = {
 	successRate: {
@@ -99,16 +100,18 @@ async function giveRewardToPlayer(
 	}: RewardParams
 ): Promise<void> {
 	switch (rewardType) {
-		case SmallEventConstants.LOTTERY.REWARD_TYPES.XP:
+		case SmallEventConstants.LOTTERY.REWARD_TYPES.XP: {
+			const experience = reportExperience(player, SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient);
 			await player.addExperience({
-				amount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient,
+				amount: experience,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
 			});
 			pushWinPacket(response, {
-				amount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient, type: SmallEventConstants.LOTTERY.REWARD_TYPES.XP
+				amount: experience, type: SmallEventConstants.LOTTERY.REWARD_TYPES.XP
 			}, lostTime, levelKey);
 			break;
+		}
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.MONEY:
 			await player.addMoney({
 				amount: SmallEventConstants.LOTTERY.REWARDS.MONEY * coefficient,

@@ -11,6 +11,9 @@ export class PlayerBadges extends Model {
 
 	declare badge: Badge;
 
+	/** Whether the app already celebrated this badge, on any of the player's devices. */
+	declare revealedInApp: boolean;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -66,16 +69,54 @@ export class PlayerBadgesManager {
 	 * @param badges
 	 */
 	public static async setBadges(playerId: number, badges: Badge[]): Promise<void> {
-		await PlayerBadges.destroy({
-			where: { playerId }
-		});
-		if (badges.length > 0) {
+		const owned = await PlayerBadgesManager.getOfPlayer(playerId);
+		const removed = owned.filter(badge => !badges.includes(badge));
+		if (removed.length > 0) {
+			await PlayerBadges.destroy({
+				where: {
+					playerId, badge: removed
+				}
+			});
+		}
+
+		// Badges kept keep their row, so the app does not celebrate them a second time.
+		const added = badges.filter(badge => !owned.includes(badge));
+		if (added.length > 0) {
 			await PlayerBadges.bulkCreate(
-				badges.map(badge => ({
+				added.map(badge => ({
 					playerId, badge
 				}))
 			);
 		}
+	}
+
+	/**
+	 * The badges the app has not celebrated yet, on any of the player's devices
+	 * @param playerId
+	 */
+	public static async getUnrevealedInApp(playerId: number): Promise<Badge[]> {
+		const badges = await PlayerBadges.findAll({
+			where: {
+				playerId, revealedInApp: false
+			}
+		});
+		return badges.map(b => b.badge);
+	}
+
+	/**
+	 * Record that the app celebrated these badges, so no other device celebrates them again
+	 * @param playerId
+	 * @param badges
+	 */
+	public static async markRevealedInApp(playerId: number, badges: Badge[]): Promise<void> {
+		if (badges.length === 0) {
+			return;
+		}
+		await PlayerBadges.update({ revealedInApp: true }, {
+			where: {
+				playerId, badge: badges
+			}
+		});
 	}
 }
 
@@ -88,6 +129,11 @@ export function initModel(sequelize: Sequelize): void {
 		badge: {
 			type: DataTypes.STRING(32), // eslint-disable-line new-cap
 			primaryKey: true
+		},
+		revealedInApp: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
 		},
 		updatedAt: {
 			type: DataTypes.DATE,

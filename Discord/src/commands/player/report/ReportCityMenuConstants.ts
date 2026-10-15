@@ -111,6 +111,9 @@ export const ReportCityMenuIds = {
 	/** Guild domain training ground sub-menu */
 	GUILD_DOMAIN_TRAINING_MENU: "GUILD_DOMAIN_TRAINING_MENU",
 
+	/** Guild domain recruitment office sub-menu */
+	GUILD_DOMAIN_RECRUITMENT_MENU: "GUILD_DOMAIN_RECRUITMENT_MENU",
+
 	/** Prefix for the per-food-type buttons on the shop main menu (followed by foodType) */
 	GUILD_DOMAIN_SHOP_FOOD_OPEN_PREFIX: "GUILD_DOMAIN_SHOP_FOODOPEN_",
 

@@ -7,7 +7,7 @@ import {
 	attackInfo, statsInfo
 } from "../../FightActionController";
 
-const use: FightActionFunc = (sender, receiver) => {
+const use: FightActionFunc = (sender, receiver, fightAction) => {
 	const result = simpleDamageFightAction(
 		{
 			sender,
@@ -23,10 +23,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		}
 	);
 
-	// This attack cannot kill the receiver
-	if (result.damages! >= receiver.getEnergy()) {
-		result.damages = receiver.getEnergy() - 1;
-	}
+	fightAction.capOpponentDamage(result, receiver);
 
 	// The sender has to rest for 1 turn
 	sender.nextFightAction = FightActionDataController.instance.getById("resting") ?? null;

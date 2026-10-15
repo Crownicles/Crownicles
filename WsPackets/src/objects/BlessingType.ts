@@ -1,0 +1,12 @@
+export enum BlessingType {
+	NONE = 0,
+	AMPLIFIED_RAGE = 1,
+	FIGHT_LOOT = 2,
+	ENERGY_REGEN = 3,
+	MONEY_BOOST = 4,
+	SCORE_BOOST = 5,
+	PET_LOVE = 6,
+	HEAL_ALL = 7,
+	EXPEDITION_TOKEN = 8,
+	DAILY_MISSION = 9
+}

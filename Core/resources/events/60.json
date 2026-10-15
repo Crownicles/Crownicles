@@ -3,16 +3,20 @@
     "end": {
       "outcomes": {
         "0": {
-          "money": 15000,
-          "tokens": 150
+          "money": 1500,
+          "tokens": 15,
+          "mapTypesExcludeDestination": [
+            "castleEntrance",
+            "castleThrone"
+          ]
         }
       }
     },
     "start": {
       "outcomes": {
         "0": {
-          "money": 15000,
-          "tokens": 150
+          "money": 1500,
+          "tokens": 15
         }
       }
     }

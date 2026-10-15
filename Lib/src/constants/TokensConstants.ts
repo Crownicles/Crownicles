@@ -24,8 +24,11 @@ export abstract class TokensConstants {
 		MAX_COST: 5
 	};
 
-	/** Number of tokens gifted by the report token merchant to a player with no tokens and not enough money (max once per week) */
+	/** Number of tokens gifted by the report token merchant to a player with no tokens and little money (max once per week) */
 	static readonly MERCHANT_CHARITY_AMOUNT = 10;
+
+	/** Below this much money, a player with no tokens is gifted tokens rather than asked to buy them */
+	static readonly MERCHANT_CHARITY_MONEY_THRESHOLD = 5000;
 
 	/**
 	 * SQL expression refilling the `tokens` column of every player, mirroring `computeNewTokens`:

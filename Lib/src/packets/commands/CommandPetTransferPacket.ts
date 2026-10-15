@@ -26,6 +26,12 @@ export class CommandPetTransferFeistyErrorPacket extends CrowniclesPacket {}
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandPetTransferPetOnExpeditionErrorPacket extends CrowniclesPacket {}
 
+/** A newcomer on probation, with nothing to deposit, has no transfer left to make until then. */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandPetTransferProbationErrorPacket extends CrowniclesPacket {
+	probationEndsAt!: number;
+}
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandPetTransferSuccessPacket extends CrowniclesPacket {
 	oldPet?: OwnedPet;

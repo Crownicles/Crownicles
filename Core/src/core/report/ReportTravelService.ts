@@ -17,6 +17,7 @@ import {
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { CityDataController } from "../../data/City";
+import { hidesTokenOffer } from "../onboarding/OnboardingTokens";
 
 /**
  * Token cost calculation result
@@ -72,6 +73,7 @@ interface TravelSummaryData {
 	arriveTime: number;
 	effectEndTime: number | null;
 	effectDuration: number;
+	lastStopTime: number;
 	nextSmallEventTime: number;
 	lastSmallEventId: string | null;
 	isOnBoat: boolean;
@@ -90,6 +92,7 @@ async function buildTravelSummaryData(player: Player, date: Date, effectId: stri
 		arriveTime: timeData.travelEndTime,
 		effectEndTime: effectId ? timeData.effectEndTime : null,
 		effectDuration: timeData.effectDuration,
+		lastStopTime: timeData.lastStopTime,
 		nextSmallEventTime: timeData.nextSmallEventTime,
 		lastSmallEventId: lastMiniEvent ? lastMiniEvent.eventType : null,
 		isOnBoat: Maps.isOnBoat(player)
@@ -173,9 +176,14 @@ function buildTokenData(
 		return undefined;
 	}
 
+	const canAfford = player.tokens >= tokenCostResult.cost;
+	if (hidesTokenOffer(player, canAfford)) {
+		return undefined;
+	}
+
 	return {
 		cost: tokenCostResult.cost,
-		canAfford: player.tokens >= tokenCostResult.cost
+		canAfford
 	};
 }
 
@@ -217,14 +225,13 @@ function isStationaryInCity(player: Player): boolean {
 }
 
 /**
- * Send the location where the player is currently staying on the road
+ * Build the location where the player is currently staying on the road
  */
-export async function sendTravelPath(
+export async function buildTravelSummary(
 	player: Player,
-	response: CrowniclesPacket[],
 	date: Date,
 	effectId: string | null
-): Promise<void> {
+): Promise<CommandReportTravelSummaryRes> {
 	const timeData = await TravelTime.getTravelData(player, date);
 	const showEnergy = Maps.isOnPveIsland(player) || Maps.isOnBoat(player);
 	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
@@ -236,7 +243,7 @@ export async function sendTravelPath(
 	// Calculate token cost
 	const tokenCostResult = calculateTokenCost(effectId ?? Effect.NO_EFFECT.id, timeData.effectRemainingTime);
 
-	response.push(makePacket(CommandReportTravelSummaryRes, {
+	return makePacket(CommandReportTravelSummaryRes, {
 		effect: travelSummaryData.effect ?? undefined,
 		startTime: travelSummaryData.startTime,
 		arriveTime: travelSummaryData.arriveTime,
@@ -248,6 +255,7 @@ export async function sendTravelPath(
 			id: endMap?.id ?? 0,
 			type: endMap?.type ?? ""
 		},
+		lastStopTime: travelSummaryData.lastStopTime,
 		nextStopTime: travelSummaryData.nextSmallEventTime,
 		lastSmallEventId: travelSummaryData.lastSmallEventId ?? undefined,
 		startMap: {
@@ -258,5 +266,14 @@ export async function sendTravelPath(
 		tokens: buildTokenData(tokenCostResult, player),
 		heal: buildHealData(player, effectId),
 		isInCity: isStationaryInCity(player)
-	}));
+	});
+}
+
+export async function sendTravelPath(
+	player: Player,
+	response: CrowniclesPacket[],
+	date: Date,
+	effectId: string | null
+): Promise<void> {
+	response.push(await buildTravelSummary(player, date, effectId));
 }

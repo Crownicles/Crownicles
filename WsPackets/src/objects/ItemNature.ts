@@ -1,0 +1,10 @@
+export enum ItemNature {
+	NONE,
+	HEALTH,
+	SPEED,
+	ATTACK,
+	DEFENSE,
+	TIME_SPEEDUP,
+	MONEY,
+	ENERGY
+}

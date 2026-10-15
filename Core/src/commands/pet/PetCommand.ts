@@ -10,15 +10,55 @@ import {
 	CommandPetPetNotFound,
 	PetExpeditionInfo
 } from "../../../../Lib/src/packets/commands/CommandPetPacket";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
+import {
+	PetEntities, PetEntity
+} from "../../core/database/game/models/PetEntity";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
 import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
+import { PetDataController } from "../../data/Pet";
+import { expeditionStartBlocker } from "../../core/expeditions/ExpeditionValidation";
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
+
+type OwnPetDetails = Pick<CommandPetPacketRes, "hasTalisman" | "feedAvailableAt" | "expeditionInProgress" | "expeditionBlocker">;
+
+async function getExpeditionInProgress(player: Player): Promise<PetExpeditionInfo | undefined> {
+	const currentExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+	if (currentExpedition?.status !== ExpeditionConstants.STATUS.IN_PROGRESS) {
+		return undefined;
+	}
+	return {
+		endTime: currentExpedition.endDate.getTime(),
+		startTime: currentExpedition.startDate.getTime(),
+		riskRate: currentExpedition.riskRate,
+		difficulty: currentExpedition.difficulty,
+		locationType: currentExpedition.locationType as ExpeditionLocationType,
+		mapLocationId: currentExpedition.mapLocationId,
+		foodConsumed: currentExpedition.foodConsumed
+	};
+}
+
+/**
+ * What only the owner gets to see about their own pet: the expedition in progress, the talisman, the feeding cooldown
+ * and what keeps the pet from leaving
+ */
+async function getOwnPetDetails(player: Player, pet: PetEntity): Promise<OwnPetDetails> {
+	const expeditionInProgress = await getExpeditionInProgress(player);
+	const petModel = PetDataController.instance.getById(pet.typeId)!;
+	const feedCooldown = pet.getFeedCooldown(petModel);
+	const hasTalisman = (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman;
+	const blocker = hasTalisman ? expeditionStartBlocker(player, pet, petModel) : ExpeditionConstants.ERROR_CODES.NO_TALISMAN;
+	return {
+		hasTalisman,
+		...feedCooldown > 0 ? { feedAvailableAt: Date.now() + feedCooldown } : {},
+		...expeditionInProgress ? { expeditionInProgress } : {},
+		...blocker && !expeditionInProgress ? { expeditionBlocker: blocker } : {}
+	};
+}
 
 export default class PetCommand {
 	@commandRequires(CommandPetPacketReq, {
@@ -45,35 +85,10 @@ export default class PetCommand {
 			return;
 		}
 
-		// Check if the player being viewed has an expedition in progress
-		const isOwnerViewingOwnPet = toCheckPlayer.id === player.id;
-		let expeditionInfo: PetExpeditionInfo | undefined;
-
-		if (isOwnerViewingOwnPet) {
-			const currentExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
-			if (currentExpedition && currentExpedition.status === ExpeditionConstants.STATUS.IN_PROGRESS) {
-				expeditionInfo = {
-					endTime: currentExpedition.endDate.getTime(),
-					startTime: currentExpedition.startDate.getTime(),
-					riskRate: currentExpedition.riskRate,
-					difficulty: currentExpedition.difficulty,
-					locationType: currentExpedition.locationType as ExpeditionLocationType,
-					mapLocationId: currentExpedition.mapLocationId,
-					foodConsumed: currentExpedition.foodConsumed
-				};
-			}
-		}
-
-		// Get talisman status if viewing own pet
-		const hasTalisman = isOwnerViewingOwnPet
-			? (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman
-			: undefined;
-
 		response.push(makePacket(CommandPetPacketRes, {
-			askedKeycloakId: toCheckPlayer?.keycloakId,
+			askedKeycloakId: toCheckPlayer.keycloakId,
 			pet: pet.asOwnedPet(),
-			hasTalisman,
-			expeditionInProgress: expeditionInfo
+			...toCheckPlayer.id === player.id ? await getOwnPetDetails(player, pet) : {}
 		}));
 	}
 }
