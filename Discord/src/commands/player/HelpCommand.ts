@@ -235,7 +235,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	const isDm = !interaction.inGuild();
 
 	const aliasedCommand = askedCommand ? resolveAliasedCommand(askedCommand) : null;
-	const skipHelpDm = !!askedCommand && aliasedCommand === null;
+	const skipHelpDm = Boolean(askedCommand) && aliasedCommand === null;
 
 	if (aliasedCommand) {
 		buildSpecificCommandEmbed(helpMessage, aliasedCommand, lng, interaction.userLanguage);
