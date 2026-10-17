@@ -8,7 +8,9 @@ import { BotUtils } from "../../utils/BotUtils";
 import {
 	LANGUAGE, Language
 } from "../../../../Lib/src/Language";
-import { AutocompleteInteraction } from "discord.js";
+import {
+	APIEmbedField, AutocompleteInteraction
+} from "discord.js";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { HelpConstants } from "../../../../Lib/src/constants/HelpConstants";
 import {
@@ -22,6 +24,8 @@ import { DiscordConstants } from "../../DiscordConstants";
 import {
 	searchAutocomplete, toDiscordChoices, AutocompleteSearchItem
 } from "../../utils/AutocompleteUtils";
+
+type HelpCommandKey = keyof typeof HelpConstants.COMMANDS_DATA;
 
 const dmHelpCooldowns: Map<string, Date> = new Map<string, Date>();
 
@@ -144,12 +148,13 @@ function generateGenericHelpMessage(helpMessage: CrowniclesEmbed, interaction: C
 /**
  * Get all the accepted words when searching the help for the commands
  */
-function getCommandAliasMap(): Map<string, string> {
-	const helpAlias: Map<string, string> = new Map<string, string>();
+function getCommandAliasMap(): Map<string, HelpCommandKey> {
+	const helpAlias: Map<string, HelpCommandKey> = new Map<string, HelpCommandKey>();
 	Object.entries(HelpConstants.ACCEPTED_SEARCH_WORDS)
 		.forEach(commands => {
 			for (const alias of commands[1]) {
-				helpAlias.set(alias, commands[0]);
+				// Object.entries widens keys to string; every ACCEPTED_SEARCH_WORDS key is a COMMANDS_DATA key
+				helpAlias.set(alias, commands[0] as HelpCommandKey);
 			}
 		});
 	return helpAlias;
@@ -207,6 +212,22 @@ function sendHelpDm(interaction: CrowniclesInteraction, lng: Language): void {
 }
 
 /**
+ * Build the embed field appended to /help replies when the command is invoked
+ * in DM. Reminds the player that Crownicles is meant to be played on a server
+ * and points them to the official server.
+ * @param lng
+ */
+function buildDmNoticeField(lng: Language): APIEmbedField {
+	return {
+		name: i18n.t("commands:help.dmNoticeTitle", { lng }),
+		value: i18n.t("commands:help.dmNoticeValue", {
+			lng,
+			inviteLink: HelpConstants.HELP_INVITE_LINK
+		})
+	};
+}
+
+/**
  * Get the list of available commands and information about what they do
  */
 async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
@@ -214,61 +235,76 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	const command = interaction.options.get(i18n.t("discordBuilder:help.options.commandName.name", { lng: LANGUAGE.ENGLISH }));
 	const askedCommand = command ? command.value as string : null;
 	const lng = interaction.userLanguage;
+	const isDm = !interaction.inGuild();
 
-	if (!askedCommand) {
-		generateGenericHelpMessage(helpMessage, interaction);
-		await interaction.reply({
-			embeds: [helpMessage]
-		});
+	const aliasedCommand = askedCommand ? resolveAliasedCommand(askedCommand) : null;
+	const skipHelpDm = Boolean(askedCommand) && aliasedCommand === null;
+
+	if (aliasedCommand) {
+		buildSpecificCommandEmbed(helpMessage, aliasedCommand, lng);
 	}
 	else {
-		const helpAlias = getCommandAliasMap();
-		const command = helpAlias.get(askedCommand.toLowerCase()
-			.replace(" ", ""));
-		if (!command) {
-			generateGenericHelpMessage(helpMessage, interaction);
-			await interaction.reply({
-				embeds: [helpMessage]
-			});
-			return null;
-		}
-
-		const commandMention = BotUtils.commandsMentions.get(HelpConstants.COMMANDS_DATA[command as keyof typeof HelpConstants.COMMANDS_DATA].NAME);
-		const commandMentionString: string = commandMention ? commandMention : i18n.t("error:commandDoesntExist", { lng });
-
-
-		if (command === "FIGHT") {
-			helpMessage.setImage(i18n.t("commands:help.commands.FIGHT.image", { lng }));
-		}
-
-		helpMessage.setTitle(
-			i18n.t("commands:help.commandEmbedTitle", {
-				lng,
-				emote: HelpConstants.COMMANDS_DATA[command as keyof typeof HelpConstants.COMMANDS_DATA].EMOTE
-			})
-		)
-			.setDescription(i18n.t(`commands:help.commands.${command}.description`, {
-				lng: interaction.userLanguage,
-				petSellMinPrice: PetConstants.SELL_PRICE.MIN,
-				petSellMaxPrice: PetConstants.SELL_PRICE.MAX
-			}))
-			.addFields({
-				name: i18n.t("commands:help.usageFieldTitle", { lng }),
-				value: commandMentionString,
-				inline: true
-			});
-		await interaction.reply({
-			embeds: [helpMessage]
-		});
+		generateGenericHelpMessage(helpMessage, interaction);
 	}
 
-	// Send help DM if the user is not in the main server
-	const dmCooldown = dmHelpCooldowns.get(interaction.user.id);
-	if (!dmCooldown || dmCooldown && dmCooldown.valueOf() < Date.now()) {
-		sendHelpDm(interaction, lng);
+	if (isDm) {
+		helpMessage.addFields([buildDmNoticeField(lng)]);
+	}
+	await interaction.reply({
+		embeds: [helpMessage]
+	});
+
+	// Send help DM if the user is not in the main server (skipped when already in DM or when the command was unknown)
+	if (!isDm && !skipHelpDm) {
+		const dmCooldown = dmHelpCooldowns.get(interaction.user.id);
+		if (!dmCooldown || dmCooldown && dmCooldown.valueOf() < Date.now()) {
+			sendHelpDm(interaction, lng);
+		}
 	}
 
 	return null;
+}
+
+/**
+ * Resolve an asked command name to a known command key via the alias map, or null if unknown.
+ * @param askedCommand
+ */
+function resolveAliasedCommand(askedCommand: string): HelpCommandKey | null {
+	return getCommandAliasMap().get(askedCommand.toLowerCase()
+		.replace(" ", "")) ?? null;
+}
+
+/**
+ * Build the embed body for a specific command help (title, description and usage field).
+ * @param helpMessage
+ * @param command
+ * @param lng
+ */
+function buildSpecificCommandEmbed(helpMessage: CrowniclesEmbed, command: HelpCommandKey, lng: Language): void {
+	const commandData = HelpConstants.COMMANDS_DATA[command];
+	const commandMention = BotUtils.commandsMentions.get(commandData.NAME);
+	const commandMentionString: string = commandMention ? commandMention : i18n.t("error:commandDoesntExist", { lng });
+
+	if (command === "FIGHT") {
+		helpMessage.setImage(i18n.t("commands:help.commands.FIGHT.image", { lng }));
+	}
+
+	helpMessage.setTitle(
+		i18n.t("commands:help.commandEmbedTitle", {
+			lng,
+			emote: commandData.EMOTE
+		})
+	)
+		.setDescription(i18n.t(`commands:help.commands.${command}.description`, {
+			lng,
+			petSellMinPrice: PetConstants.SELL_PRICE.MIN,
+			petSellMaxPrice: PetConstants.SELL_PRICE.MAX
+		}))
+		.addFields({
+			name: i18n.t("commands:help.usageFieldTitle", { lng }),
+			value: commandMentionString,
+			inline: true
+		});
 }
 
 /**
@@ -323,5 +359,6 @@ export const commandInfo: ICommand = {
 			.setAutocomplete(true)) as SlashCommandBuilder,
 	getPacket,
 	handleAutocomplete,
-	mainGuildCommand: false
+	mainGuildCommand: false,
+	allowedInDM: true
 };

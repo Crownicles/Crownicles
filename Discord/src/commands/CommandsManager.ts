@@ -66,6 +66,7 @@ import {
 	CHANNEL_PERMISSION_ERRORS, getThreadSendAccessError
 } from "./ChannelPermissionUtils";
 import { checkTournamentCommandAccess } from "./tournament/TournamentCommandGuard";
+import { buildCommandRegistrationBody } from "./CommandRegistrationUtils";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -345,11 +346,11 @@ export class CommandsManager {
 			}
 			this.commands.set(commandInfo.slashCommandBuilder.name, commandInfo);
 			if (commandInfo.mainGuildCommand || discordConfig.TEST_MODE) {
-				guildsCommandsToRegister.push(commandInfo.slashCommandBuilder.toJSON());
+				guildsCommandsToRegister.push(buildCommandRegistrationBody(commandInfo));
 				CrowniclesLogger.info(`Registering guild command ${category}/${commandFile}`);
 			}
 			else {
-				globalCommandsToRegister.push(commandInfo.slashCommandBuilder.toJSON());
+				globalCommandsToRegister.push(buildCommandRegistrationBody(commandInfo));
 				CrowniclesLogger.info(`Registering global command ${category}/${commandFile}`);
 			}
 		}
@@ -480,7 +481,14 @@ export class CommandsManager {
 					.finally(() => null);
 				return;
 			}
-			if (!interaction.member) { // If in DM, shouldn't happen
+			if (!interaction.member) { // If in DM
+				const commandInfo = CommandsManager.commands.get(discordInteraction.commandName);
+				if (commandInfo?.allowedInDM) {
+					// DM channels are not role-restricted, so the per-channel guild permission checks are skipped
+					CommandsManager.executeCommand(interaction, getUser.payload.user, commandInfo)
+						.then();
+					return;
+				}
 				CommandsManager.handlePrivateMessage(discordInteraction)
 					.finally(() => null);
 				return;
@@ -629,6 +637,16 @@ export class CommandsManager {
 			return;
 		}
 
+		await this.executeCommand(interaction, user, commandInfo);
+	}
+
+	/**
+	 * Execute a command once the channel checks have passed, in a guild or in DM
+	 * @param interaction
+	 * @param user
+	 * @param commandInfo
+	 */
+	private static async executeCommand(interaction: CrowniclesInteraction, user: KeycloakUser, commandInfo: ICommand): Promise<void> {
 		DiscordCache.cacheInteraction(interaction);
 		const packetContext = await PacketUtils.createPacketContext(interaction, user);
 		if (!await checkTournamentCommandAccess(interaction, packetContext)) {
