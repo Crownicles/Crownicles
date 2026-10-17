@@ -7,6 +7,7 @@ import {
 	ActionRowBuilder, ButtonBuilder, Collector, Message
 } from "discord.js";
 import { CrowniclesInteraction } from "./CrowniclesInteraction";
+import { editNestedMenuMessage } from "./CrowniclesNestedMenuEditUtils";
 import { disableRows } from "../utils/DiscordCollectorUtils";
 import { StringUtils } from "../utils/StringUtils";
 
@@ -110,6 +111,8 @@ export class CrowniclesNestedMenus {
 
 	private _message: Message | undefined;
 
+	private _interaction: CrowniclesInteraction | undefined;
+
 	private _currentCollector: CrowniclesNestedMenuCollector | undefined;
 
 	private readonly _onChangeMenu: (() => void) | undefined;
@@ -141,6 +144,7 @@ export class CrowniclesNestedMenus {
 	}
 
 	public async send(interaction: CrowniclesInteraction): Promise<Message> {
+		this._interaction = interaction;
 		const menu = this._mainMenu;
 		if (isV2Menu(menu)) {
 			this._isV2 = true;
@@ -196,6 +200,16 @@ export class CrowniclesNestedMenus {
 	}
 
 	/**
+	 * Another set of menus now renders this message: stop listening to it and never edit it again
+	 */
+	public handOverMessage(): void {
+		this._messageHandoffPending = true;
+		this._messageHandoffConfirmed = true;
+		this._currentCollector?.stop();
+		this._currentCollector = undefined;
+	}
+
+	/**
 	 * Stops the current collector and (by default) edits the underlying message to disable its components.
 	 *
 	 * Pass `{ editMessage: false }` when the next packet handler is going to replace the message anyway
@@ -220,7 +234,7 @@ export class CrowniclesNestedMenus {
 			const menu = this._currentMenu;
 			if (isV2Menu(menu)) {
 				disableV2Containers(menu.containers);
-				await this._message.edit({
+				await editNestedMenuMessage(this._message, this._interaction, {
 					components: menu.containers,
 					flags: ["IsComponentsV2"]
 				});
@@ -229,7 +243,7 @@ export class CrowniclesNestedMenus {
 				// Message is V2 but current menu is embed — auto-convert
 				const container = embedMenuToV2Container(menu);
 				disableV2Containers([container]);
-				await this._message.edit({
+				await editNestedMenuMessage(this._message, this._interaction, {
 					components: [container],
 					flags: ["IsComponentsV2"]
 				});
@@ -237,7 +251,7 @@ export class CrowniclesNestedMenus {
 			else {
 				const components = menu.components;
 				disableRows(components);
-				await this._message.edit({
+				await editNestedMenuMessage(this._message, this._interaction, {
 					components
 				});
 			}
@@ -250,7 +264,7 @@ export class CrowniclesNestedMenus {
 		}
 		if (isV2Menu(menu)) {
 			this._isV2 = true;
-			await this._message.edit({
+			await editNestedMenuMessage(this._message, this._interaction, {
 				embeds: [],
 				components: menu.containers,
 				flags: ["IsComponentsV2"]
@@ -259,14 +273,14 @@ export class CrowniclesNestedMenus {
 		else if (this._isV2) {
 			// Message is already V2, can't switch back to embed — auto-convert
 			const container = embedMenuToV2Container(menu);
-			await this._message.edit({
+			await editNestedMenuMessage(this._message, this._interaction, {
 				embeds: [],
 				components: [container],
 				flags: ["IsComponentsV2"]
 			});
 		}
 		else {
-			await this._message.edit({
+			await editNestedMenuMessage(this._message, this._interaction, {
 				embeds: [menu.embed],
 				components: menu.components,
 				flags: [] as const

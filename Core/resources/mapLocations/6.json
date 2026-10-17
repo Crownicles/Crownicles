@@ -1,6 +1,8 @@
 {
   "type": "vi",
-  "expeditionType": "cave",
+  "biomes": [
+    "plains"
+  ],
   "tags": [
     "detA"
   ],

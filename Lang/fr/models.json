@@ -415,6 +415,10 @@
       "name_one": "Attaque maudite",
       "name_other": "Attaques maudites"
     },
+    "skeletonCursedAttack": {
+      "name_one": "Sortilège mortel",
+      "name_other": "Sortilèges mortels"
+    },
     "cursedByTheSea": {
       "name": "damné par la mer",
       "new": "est damné par la mer...",
@@ -492,6 +496,10 @@
       "description": "Brûle l'adversaire. L'altération \"brûlé\" inflige des dégâts à votre adversaire sur la durée.",
       "name_one": "Attaque feu",
       "name_other": "Attaques feu"
+    },
+    "titanFireAttack": {
+      "name_one": "Boule de feu",
+      "name_other": "Boules de feu"
     },
     "fishProtectAgainstFire": {
       "afraid": "demande à **{{petNickname}}** de l'aider à ne pas brûler mais **{{petNickname}}** est trop effrayé pour aider.",
@@ -746,6 +754,10 @@
       "name_one": "Attaque empoisonnée",
       "name_other": "Attaques empoisonnées"
     },
+    "spiderPoisonAttack": {
+      "name_one": "Jet de poison",
+      "name_other": "Jets de poison"
+    },
     "poisonousBite": {
       "generalEffect": "a besoin de **{{petNickname}}**, l'animal a besoin de temps pour se préparer...",
       "success": "reçoit le soutien de **{{petNickname}}** qui décide de mordre son adversaire... Ce dernier ne se sent soudainement pas très bien."
@@ -754,6 +766,10 @@
       "description": "Cette attaque a 25 % de chance de faire plus de dégâts, au prix d'un étourdissement de l'attaquant. Réduit la vitesse de l'adversaire. Après 3 utilisations, les dégâts de l'attaque sont réduits de 70%.",
       "name_one": "Attaque puissante",
       "name_other": "Attaques puissantes"
+    },
+    "guardianPowerfulAttack": {
+      "name_one": "Attaque tranchante",
+      "name_other": "Attaques tranchantes"
     },
     "protectAgainstCold": {
       "success": "est protégé du froid par **{{petNickname}}**."
@@ -832,10 +848,22 @@
       "name_one": "Attaque bouclier",
       "name_other": "Attaques boucliers"
     },
+    "skeletonShieldAttack": {
+      "name_one": "Cuirasse osseuse",
+      "name_other": "Cuirasses osseuses"
+    },
     "simpleAttack": {
       "description": "Une attaque simple.",
       "name_one": "Attaque simple",
       "name_other": "Attaques simples"
+    },
+    "skeletonSimpleAttack": {
+      "name_one": "Frappe osseuse",
+      "name_other": "Frappes osseuses"
+    },
+    "elementaryPiercingAttack": {
+      "name_one": "Éclat élémentaire",
+      "name_other": "Éclats élémentaires"
     },
     "sing": {
       "customMessage": "se met à chanter.",
@@ -1033,7 +1061,7 @@
       "atParticle": "à la"
     },
     "10": {
-      "description": "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ravagée par l'ancienne guerre il ne reste qu'une dizaine de maisons et paysans. Le reste de l'ancienne fortification n'est que ruine.",
+      "description": "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ravagée par l'ancienne guerre, il ne reste qu'une dizaine de maisons et de paysans. Le reste des anciennes fortifications est en ruines, et sous les remparts effondrés, d'anciennes galeries souterraines s'enfoncent dans la roche.",
       "name": "Ville Forte",
       "particle": "vers la",
       "atParticle": "à la",
@@ -1177,13 +1205,13 @@
       "atParticle": "à la"
     },
     "14": {
-      "description": "Un grand lac où les familles aiment bien se réunir. La rivière Vacarme vient s'y jeter.",
+      "description": "Un grand lac où les familles aiment bien se réunir. La rivière Vacarme vient s'y jeter, et ses rives les plus reculées se perdent en marécages couverts de roseaux.",
       "name": "Lac Mirage",
       "particle": "vers le",
       "atParticle": "au"
     },
     "15": {
-      "description": "Le Mont Celestrum est la montagne dominante de la région. Haute de plusieurs kilomètres, Celestrum est visible de tous. On raconte qu'elle porte le nom de l'ancienne déesse. Par ailleurs, une seule personne est parvenue à grimper jusqu'au sommet. On ne retient d'elle que ses initiales : M-B.",
+      "description": "Le Mont Celestrum est la montagne dominante de la région. Haute de plusieurs kilomètres, Celestrum est visible de tous. On raconte qu'elle porte le nom de l'ancienne déesse. Par ailleurs, une seule personne est parvenue à grimper jusqu'au sommet. On ne retient d'elle que ses initiales : M-B. Ses flancs sont percés de grottes dont personne n'a jamais trouvé le fond.",
       "name": "Mont Célestrum",
       "particle": "vers le",
       "atParticle": "au"
@@ -1195,7 +1223,7 @@
       "atParticle": "au"
     },
     "17": {
-      "description": "Village oasis prisé par les nobles de la Vallée des Rois en quête de fraîcheur. Les noix de coco qu'on y récolte sont réputées dans tout le pays et s'échangent à prix d'or sur les marchés du royaume. La rareté des terrains constructibles autour de la source en fait l'un des lieux les plus convoités.",
+      "description": "Village-oasis prisé par les nobles de la Vallée des Rois en quête de fraîcheur. Les noix de coco qu'on y récolte sont réputées dans tout le pays et s'échangent à prix d'or sur les marchés du royaume. La rareté des terrains constructibles autour de la source en fait l'un des lieux les plus convoités.",
       "name": "Village Coco",
       "particle": "vers le",
       "atParticle": "au",
@@ -1232,7 +1260,7 @@
       "atParticle": "à la"
     },
     "22": {
-      "description": "Forêt mal famée au bord de Claire de Ville, Bois Hurlant a une très mauvaise réputation. Repaire de bandits et hors la loi en tout genre, elle tient surtout son nom de ces pratiques douteuses il y a de ça des centaines d'années.",
+      "description": "Forêt mal famée au bord de Claire de Ville, Bois Hurlant a une très mauvaise réputation. Repaire de bandits et hors la loi en tout genre, elle tient surtout son nom de ces pratiques douteuses il y a de ça des centaines d'années. Les brigands se terrent encore dans les grottes qui creusent ses collines.",
       "name": "Bois Hurlant",
       "particle": "vers le",
       "atParticle": "au"
@@ -1336,7 +1364,7 @@
       "inParticle": "dans"
     },
     "7": {
-      "description": "Désert de sable chaud nommé en l'honneur des anciens rois de la région.",
+      "description": "Désert de sable chaud nommé en l'honneur des anciens rois de la région. Leurs tombeaux à demi ensevelis parsèment encore les dunes.",
       "name": "Vallée des Rois",
       "particle": "vers la",
       "atParticle": "à la"
@@ -1471,27 +1499,20 @@
       "name": "",
       "prefix": "de la"
     },
-    "forest": {
-      "name": "Forêt"
-    },
-    "mountain": {
-      "name": "Montagne"
-    },
-    "desert": {
-      "name": "Désert"
-    },
-    "swamp": {
-      "name": "Marais"
-    },
-    "cave": {
-      "name": "Grotte"
-    },
-    "plains": {
-      "name": "Plaine"
-    },
-    "coast": {
-      "name": "Côte"
+    "mistyPath": {
+      "name": "",
+      "prefix": "du"
     }
+  },
+  "biomes": {
+    "forest": "Forêt",
+    "mountain": "Montagne",
+    "desert": "Désert",
+    "swamp": "Marais",
+    "ruins": "Ruines",
+    "cave": "Grotte",
+    "plains": "Plaine",
+    "coast": "Côte"
   },
   "missions": {
     "anyFight_one": "Faire {{count}} combat",
@@ -2163,6 +2184,7 @@
     "0": "Poing",
     "1": "Foudre de Zeus",
     "10": "Épée en bois",
+    "100": "Sentence de la Faucheuse",
     "11": "Pistolet vide",
     "12": "Seringue infectée",
     "13": "Bombe",

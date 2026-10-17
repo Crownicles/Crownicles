@@ -49,6 +49,19 @@ export abstract class RandomUtils {
 	};
 
 	/**
+	 * Pick a random element, each one being drawn proportionally to its weight
+	 * @param values - Elements to pick from, at least one having a positive weight
+	 * @param weightOf - Weight of an element
+	 */
+	public static weightedPick = <T>(values: readonly T[], weightOf: (value: T) => number): T => {
+		let roll = RandomUtils.crowniclesRandom.real(0, values.reduce((total, value) => total + weightOf(value), 0));
+		return values.find(value => {
+			roll -= weightOf(value);
+			return roll < 0;
+		}) ?? values[values.length - 1];
+	};
+
+	/**
 	 * Deterministic Fisher-Yates shuffle using a simple LCG seeded PRNG.
 	 * Always produces the same output for the same input array and seed.
 	 */

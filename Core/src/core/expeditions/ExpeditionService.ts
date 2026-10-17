@@ -13,9 +13,7 @@ import {
 	calculateRewardIndex, calculateRewards, ExpeditionRewardDataWithItem
 } from "./ExpeditionRewardCalculator";
 import { MapLinkDataController } from "../../data/MapLink";
-import {
-	MapLocation, MapLocationDataController
-} from "../../data/MapLocation";
+import { MapLocationDataController } from "../../data/MapLocation";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { MathUtils } from "../utils/MathUtils";
 
@@ -23,25 +21,6 @@ import { MathUtils } from "../utils/MathUtils";
  * Counter to ensure unique expedition IDs even when generated in the same millisecond
  */
 let expeditionIdCounter = 0;
-
-/**
- * Get expedition location type from map location
- * Uses expeditionType override if defined, otherwise derives from map type
- * @param mapLocation - The map location (can be null/undefined)
- * @returns The corresponding expedition location type
- */
-function getExpeditionTypeFromMapLocation(mapLocation: MapLocation | null): ExpeditionLocationType {
-	if (!mapLocation) {
-		return ExpeditionConstants.EXPEDITION_LOCATION_TYPES.PLAINS;
-	}
-
-	// Use explicit expeditionType if defined, otherwise derive from map type
-	if (mapLocation.expeditionType) {
-		return mapLocation.expeditionType;
-	}
-
-	return ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[mapLocation.type] ?? ExpeditionConstants.EXPEDITION_LOCATION_TYPES.PLAINS;
-}
 
 /**
  * Generate a unique expedition ID
@@ -156,7 +135,7 @@ function generateLocalExpeditions(
 	for (let i = 0; i < ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT && i < localMapLocationIds.length; i++) {
 		const mapLocationId = localMapLocationIds[i];
 		const mapLocation = MapLocationDataController.instance.getById(mapLocationId)!;
-		const locationType = getExpeditionTypeFromMapLocation(mapLocation);
+		const locationType = mapLocation.pickBiome();
 
 		const expedition = generateExpeditionWithConstraints({
 			durationRange: durationRanges[i],
@@ -246,7 +225,7 @@ function generateDistantExpedition(
 ): ExpeditionData {
 	const distantMapLocationId = getRandomDistantMapLocation(localMapLocationIds);
 	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId)!;
-	const distantLocationType = getExpeditionTypeFromMapLocation(distantMapLocation);
+	const distantLocationType = distantMapLocation.pickBiome();
 
 	return generateExpeditionWithConstraints({
 		durationRange: durationRanges[ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT],

@@ -1,4 +1,4 @@
-/* @lockInherited — player write paths run under loadAndExecuteSmallEvents withLockedPlayerAndMissions; guild writes use Guild.withLocked. */
+/* @lockInherited — player write paths run under loadAndExecuteSmallEvents withLockedPlayerAndMissions; guild writes use Guild.withLocked after that transaction commits. */
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
@@ -18,6 +18,7 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Guild } from "../database/game/models/Guild";
 import { LockedRowNotFoundError } from "../../../../Lib/src/locks/withLockedEntities";
+import { runAfterCommit } from "../../../../Lib/src/locks/scheduleAfterCommit";
 
 enum Outcome {
 	EXPERIENCE = "experience",
@@ -45,15 +46,6 @@ async function hasEnoughMemberOnPVEIsland(player: Player): Promise<boolean> {
 	return (await Maps.getGuildMembersOnPveIsland(player)).length >= RandomUtils.randInt(1, 4);
 }
 
-type RewardResult = {
-	amount: number;
-	isExperienceGain: boolean;
-};
-
-type Winnings = RewardResult & {
-	emoteKey: SmallEventBonusGuildPVEIslandEmote;
-};
-
 function getEmoteKey(rewardKind: Outcome, isExperienceGain: boolean): SmallEventBonusGuildPVEIslandEmote {
 	switch (rewardKind) {
 		case Outcome.EXPERIENCE:
@@ -73,20 +65,23 @@ function getEmoteKey(rewardKind: Outcome, isExperienceGain: boolean): SmallEvent
 	}
 }
 
-async function manageGuildReward(response: CrowniclesPacket[], player: Player, result: RewardResult): Promise<void> {
-	if (!player.guildId) {
-		return;
-	}
-
+/**
+ * Credit the guild reward in its own critical section on the guild row, once the reporter's transaction has committed.
+ * Guild members are usually all active on the island at the same time: locking the guild row late from the reporter's
+ * transaction failed with ER_CHECKREAD under MariaDB snapshot isolation whenever another member had just updated it (#4924).
+ * The packet is already in the response but not sent yet, so it is adjusted if the guild reached its max level meanwhile.
+ */
+async function manageGuildReward(response: CrowniclesPacket[], guildId: number, packet: SmallEventBonusGuildPVEIslandPacket): Promise<void> {
 	try {
-		await Guild.withLocked(player.guildId, async guild => {
-			if (guild.isAtMaxLevel()) {
-				result.isExperienceGain = false;
+		await Guild.withLocked(guildId, async guild => {
+			if (guild.isAtMaxLevel() && packet.isExperienceGain) {
+				packet.isExperienceGain = false;
+				packet.emoteKey = getEmoteKey(Outcome.EXP_OR_POINTS_GUILD, false);
 			}
 			const params = {
-				amount: result.amount, response, reason: NumberChangeReason.SMALL_EVENT
+				amount: packet.amount, response, reason: NumberChangeReason.SMALL_EVENT
 			};
-			if (result.isExperienceGain) {
+			if (packet.isExperienceGain) {
 				await guild.addExperience(params);
 			}
 			else {
@@ -103,26 +98,26 @@ async function manageGuildReward(response: CrowniclesPacket[], player: Player, r
 	}
 }
 
-async function manageClassicReward(response: CrowniclesPacket[], player: Player, result: RewardResult, rewardKind: Outcome): Promise<void> {
+async function manageClassicReward(response: CrowniclesPacket[], player: Player, amount: number, rewardKind: Outcome): Promise<void> {
 	const reason = NumberChangeReason.SMALL_EVENT;
 	switch (rewardKind) {
 		case Outcome.MONEY:
 			await player.addMoney({
-				amount: -result.amount,
+				amount: -amount,
 				response,
 				reason
 			});
 			break;
 		case Outcome.LIFE:
 			await player.addHealth({
-				amount: -result.amount,
+				amount: -amount,
 				response,
 				reason
 			});
 			break;
 		case Outcome.EXPERIENCE:
 			await player.addExperience({
-				amount: result.amount,
+				amount,
 				response,
 				reason
 			});
@@ -135,27 +130,21 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 async function applyPossibility(
 	player: Player,
 	response: CrowniclesPacket[],
-	issue: SmallEventBonusGuildPVEIslandResultType,
+	packet: SmallEventBonusGuildPVEIslandPacket,
 	rewardKind: Outcome
-): Promise<Winnings> {
+): Promise<void> {
 	const rewardRange = SmallEventDataController.instance.getById("bonusGuildPVEIsland")!
 		.getProperties<BonusGuildPVEIslandProperties>().ranges[rewardKind];
-	const isExperienceGain = rewardKind === Outcome.EXP_OR_POINTS_GUILD && RandomUtils.crowniclesRandom.bool();
-	const result = {
-		amount: RandomUtils.randInt(rewardRange.min, rewardRange.max),
-		isExperienceGain
-	};
-	if (issue === SmallEventBonusGuildPVEIslandResultType.SUCCESS && player.hasAGuild()) {
-		await manageGuildReward(response, player, result);
+	packet.amount = RandomUtils.randInt(rewardRange.min, rewardRange.max);
+	packet.isExperienceGain = rewardKind === Outcome.EXP_OR_POINTS_GUILD && RandomUtils.crowniclesRandom.bool();
+	packet.emoteKey = getEmoteKey(rewardKind, packet.isExperienceGain);
+	if (packet.result === SmallEventBonusGuildPVEIslandResultType.SUCCESS && player.guildId) {
+		const guildId = player.guildId;
+		await runAfterCommit(() => manageGuildReward(response, guildId, packet));
+		return;
 	}
-	else {
-		await manageClassicReward(response, player, result, rewardKind);
-		await player.save();
-	}
-	return {
-		...result,
-		emoteKey: getEmoteKey(rewardKind, result.isExperienceGain)
-	};
+	await manageClassicReward(response, player, packet.amount, rewardKind);
+	await player.save();
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
@@ -172,7 +161,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				? SmallEventBonusGuildPVEIslandResultType.ESCAPE
 				: SmallEventBonusGuildPVEIslandResultType.LOSE;
 
-		response.push(makePacket(SmallEventBonusGuildPVEIslandPacket, {
+		const packet = makePacket(SmallEventBonusGuildPVEIslandPacket, {
 			event,
 			result: issue,
 			surrounding: player.hasAGuild()
@@ -180,16 +169,16 @@ export const smallEventFuncs: SmallEventFuncs = {
 					? SmallEventBonusGuildPVEIslandOutcomeSurrounding.SOLO_WITH_GUILD
 					: SmallEventBonusGuildPVEIslandOutcomeSurrounding.WITH_GUILD
 				: SmallEventBonusGuildPVEIslandOutcomeSurrounding.SOLO,
-			...issue === SmallEventBonusGuildPVEIslandResultType.ESCAPE
-				? {
-					amount: 0,
-					isExperienceGain: false
-				}
-				: await applyPossibility(player, response, issue, bonusGuildPVEIslandProperties.events[event][issue][
-					player.hasAGuild()
-						? SmallEventBonusGuildPVEIslandOutcomeSurrounding.WITH_GUILD
-						: SmallEventBonusGuildPVEIslandOutcomeSurrounding.SOLO
-				])
-		}));
+			amount: 0,
+			isExperienceGain: false
+		});
+		if (issue !== SmallEventBonusGuildPVEIslandResultType.ESCAPE) {
+			await applyPossibility(player, response, packet, bonusGuildPVEIslandProperties.events[event][issue][
+				player.hasAGuild()
+					? SmallEventBonusGuildPVEIslandOutcomeSurrounding.WITH_GUILD
+					: SmallEventBonusGuildPVEIslandOutcomeSurrounding.SOLO
+			]);
+		}
+		response.push(packet);
 	}
 };

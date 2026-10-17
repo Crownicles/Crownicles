@@ -254,6 +254,11 @@ export const FAILURE_RATE_PER_EXTRA_LEVEL = 0.15;
 export const NO_XP_LEVEL_THRESHOLD = 3;
 
 /**
+ * Cooking level granting the master chef badge
+ */
+export const MASTER_CHEF_BADGE_COOKING_LEVEL = 100;
+
+/**
  * Chance of receiving a consolation no-effect potion when a craft fails
  */
 export const FAILED_CRAFT_CONSOLATION_CHANCE = 0.3;

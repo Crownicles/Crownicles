@@ -38,6 +38,7 @@ import { MapLocationDataController } from "../../../data/MapLocation";
 import { LogsExpeditions } from "./models/LogsExpeditions";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import { getPveIslandLeaveDates } from "./requests/LogsPveIslandRequests";
+import { LogsKingGuardFightsRequests } from "./requests/LogsKingGuardFightsRequests";
 
 export type RankedFightResult = {
 	won: number;
@@ -368,10 +369,13 @@ export class LogsReadRequests {
 			]
 		});
 
+		// King guard fights share the daily money cap of ranked fights
+		const kingGuardSummary = await LogsKingGuardFightsRequests.getDailySummary(playerKeycloakId);
+
 		return {
-			played: fights.length,
-			won: fights.filter(fight => fight.winner === 1).length,
-			draw: fights.filter(fight => fight.winner === 0).length
+			played: fights.length + kingGuardSummary.played,
+			won: fights.filter(fight => fight.winner === 1).length + kingGuardSummary.won,
+			draw: fights.filter(fight => fight.winner === 0).length + kingGuardSummary.draw
 		};
 	}
 

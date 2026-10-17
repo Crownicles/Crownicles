@@ -158,6 +158,21 @@ export abstract class TravelTime {
 	}
 
 	/**
+	 * Move the start of the current trip or city stay with the effect, so that the time travel is rewarded except the part spent under the effect
+	 * @param player
+	 * @param timeMs The time in milliseconds in the future (negative for the past)
+	 */
+	private static moveStayStart(player: Player, timeMs: Millisecond): void {
+		// 0 is the sentinel value meaning "no travel in progress"
+		if (Maps.isTravelling(player)) {
+			player.startTravelDate = new Date(Math.max(player.startTravelDate.valueOf() - timeMs, 0));
+		}
+		else if (player.insideCity && player.cityArrivalDate) {
+			player.cityArrivalDate = new Date(player.cityArrivalDate.valueOf() - timeMs);
+		}
+	}
+
+	/**
 	 * Move travel-related timers by a duration expressed in milliseconds.
 	 *
 	 * @param player The player
@@ -172,11 +187,7 @@ export abstract class TravelTime {
 
 		// Move the end date of the effect
 		player.effectEndDate = new Date(Math.max(player.effectEndDate.valueOf() - adjustedTimeMs, 0));
-
-		// Move the start date, unless the player is not travelling: 0 is the sentinel value meaning "no travel in progress"
-		if (Maps.isTravelling(player)) {
-			player.startTravelDate = new Date(Math.max(player.startTravelDate.valueOf() - adjustedTimeMs, 0));
-		}
+		TravelTime.moveStayStart(player, adjustedTimeMs);
 
 		// If the effect is not active anymore and was active before
 		if ((player.effectEndDate.valueOf() < currentTime) && (initialEffectEndDate > currentTime)) {
@@ -225,6 +236,34 @@ export abstract class TravelTime {
 	}
 
 	/**
+	 * Time of the current city stay spent under the effect of the player: like the effect period of a trip, it does not count as time spent in the city
+	 * @param player
+	 * @param date
+	 */
+	static getCityStayTimeUnderEffect(player: Player, date: Date): Millisecond {
+		const cityArrivalDate = player.insideCity ? player.cityArrivalDate : null;
+		if (!cityArrivalDate || !player.effectEndDate) {
+			return asMilliseconds(0);
+		}
+		const effectEndTime = player.effectEndDate.valueOf();
+		const effectStartTime = effectEndTime - minutesToMilliseconds(asMinutes(player.effectDuration));
+		const overlapStart = Math.max(effectStartTime, cityArrivalDate.valueOf());
+		const overlapEnd = Math.min(effectEndTime, date.valueOf());
+		return asMilliseconds(Math.max(overlapEnd - overlapStart, 0));
+	}
+
+	/**
+	 * Like a trip, a city stay does not earn the time spent under an effect being removed
+	 * @param player
+	 */
+	private static excludeCityStayTimeUnderEffect(player: Player): void {
+		const timeUnderEffect = TravelTime.getCityStayTimeUnderEffect(player, new Date());
+		if (player.cityArrivalDate && timeUnderEffect > 0) {
+			player.cityArrivalDate = new Date(player.cityArrivalDate.valueOf() + timeUnderEffect);
+		}
+	}
+
+	/**
 	 * Removes the effect of a player
 	 * @param player
 	 * @param reason
@@ -235,12 +274,11 @@ export abstract class TravelTime {
 
 		// Move the start of the travel because the effect will have a duration of 0
 		if (Maps.isTravelling(player)) {
-			// Clamped to now: an effect started before the current travel (e.g. while staying in a city) never delayed it
-			player.startTravelDate = new Date(Math.min(
-				player.startTravelDate.valueOf() + minutesToMilliseconds(asMinutes(player.effectDuration)),
-				nowMs()
-			));
+			// Only the part of the effect overlapping the travel delayed it (#4633, #4859)
+			const { effectDuration } = TravelTime.getTravelDataSimplified(player, new Date());
+			player.startTravelDate = new Date(player.startTravelDate.valueOf() + effectDuration);
 		}
+		TravelTime.excludeCityStayTimeUnderEffect(player);
 
 		// Now we can safely remove the effect, as the player is after the effect
 		player.effectId = Effect.NO_EFFECT.id;

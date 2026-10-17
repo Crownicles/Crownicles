@@ -47,5 +47,23 @@
     "success": "L'export RGPD a été généré avec succès.\n\n**ID anonymisé du joueur :** `{{anonymizedId}}`\n**Fichiers générés :** {{fileCount}}\n\nLe fichier ZIP est disponible en pièce jointe.",
     "error": "Une erreur s'est produite lors de l'export RGPD : {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
+  },
+  "tournament": {
+    "started": "{emote:notifications.types.tournament} Les combats du tournoi sont ouverts jusqu'au {{combatEndsAt}} dans la catégorie {{category}}. Utilisez {command:fight} dans le salon du tournoi.",
+    "ending": "{emote:notifications.types.tournament} Le tournoi se termine {{combatEndsIn}} : il reste peu de temps pour gagner de la gloire dans la catégorie {{category}}.",
+    "ended_one": "{emote:notifications.types.tournament} Le tournoi est terminé. Votre rang dans la catégorie {{category}} : **{{rank}}**. Vainqueur : {{winner}}.\nUtilisez {command:tournament} pour récupérer vos récompenses : {{xp}} XP, {{money}} pièces et {{count}} objet.",
+    "ended_other": "{emote:notifications.types.tournament} Le tournoi est terminé. Votre rang dans la catégorie {{category}} : **{{rank}}**. Vainqueur : {{winner}}.\nUtilisez {command:tournament} pour récupérer vos récompenses : {{xp}} XP, {{money}} pièces et {{count}} objets.",
+    "cancelled": {
+      "tooFewParticipants": "{emote:notifications.types.tournament} Le tournoi est annulé car le nombre minimum d'inscrits n'a pas été atteint.",
+      "manual": "{emote:notifications.types.tournament} Le tournoi a été annulé par un administrateur du serveur."
+    },
+    "paused": "{emote:notifications.types.tournament} Le tournoi est en pause : le bot n'a plus accès à son salon. Le temps restant est conservé jusqu'à sa reprise.",
+    "defense": {
+      "won": "{emote:notifications.types.tournament} {{attacker}} vous a défié en tournoi et vous avez gagné le duel ({{gloryChange}} gloire de tournoi).",
+      "lost": "{emote:notifications.types.tournament} {{attacker}} vous a défié en tournoi et vous avez perdu le duel ({{gloryChange}} gloire de tournoi).",
+      "draw": "{emote:notifications.types.tournament} {{attacker}} vous a défié en tournoi et le duel s'est terminé par une égalité ({{gloryChange}} gloire de tournoi)."
+    },
+    "noWinner": "aucun vainqueur",
+    "unranked": "non classé"
   }
 }

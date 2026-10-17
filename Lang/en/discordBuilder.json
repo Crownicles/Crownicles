@@ -63,7 +63,7 @@
   },
   "petNick": {
     "description": "Give a nickname to your pet.",
-    "name": "pet nickname",
+    "name": "petnickname",
     "options": {
       "nickname": {
         "description": "The nickname you want to give your pet. (Leave blank to delete the nickname)",
@@ -77,7 +77,7 @@
     "options": {
       "guildName": {
         "description": "The name of the guild.",
-        "name": "description"
+        "name": "name"
       }
     }
   },
@@ -93,7 +93,7 @@
   },
   "guildInvite": {
     "description": "Invite a new member in your guild.",
-    "name": "guild invite",
+    "name": "guildinvite",
     "options": {
       "user": {
         "description": "The user to be recruited.",
@@ -215,7 +215,7 @@
   },
   "guildKick": {
     "description": "Kick a player from the guild.",
-    "name": "guild kick",
+    "name": "guildkick",
     "options": {
       "rank": {
         "description": "The rank of the player who must be kicked from the guild.",
@@ -233,7 +233,7 @@
   },
   "guildElder": {
     "description": "Promote a guild member to elder.",
-    "name": "guild elder",
+    "name": "guildelder",
     "options": {
       "user": {
         "description": "The user who will be promoted as an elder.",
@@ -303,6 +303,20 @@
     "description": "Start a fight.",
     "name": "fight"
   },
+  "friendlyFight": {
+    "description": "Start a friendly fight without any consequence against another player controlled by an AI.",
+    "name": "friendlyfight",
+    "options": {
+      "rank": {
+        "description": "The rank of the player to fight.",
+        "name": "rank"
+      },
+      "user": {
+        "description": "The player to fight.",
+        "name": "user"
+      }
+    }
+  },
   "equip": {
     "name": "equip",
     "description": "Manage your equipment: equip, store or swap your items."
@@ -312,7 +326,7 @@
     "description": "Drink a potion."
   },
   "petSell": {
-    "name": "pet sell",
+    "name": "petsell",
     "description": "Sell a pet to another player.",
     "options": {
       "price": {
@@ -354,11 +368,11 @@
     "description": "Display the contents of the guild warehouse."
   },
   "joinBoat": {
-    "name": "join boat",
+    "name": "joinboat",
     "description": "Join the boat if a member of your guild is on it."
   },
   "giveBadge": {
-    "name": "give badge",
+    "name": "givebadge",
     "description": "Give a badge to a player.",
     "options": {
       "user": {
@@ -394,5 +408,17 @@
   "blessing": {
     "name": "blessing",
     "description": "See the current state of the global blessing."
+  },
+  "tournament": {
+    "name": "tournament",
+    "description": "Consulter votre tournoi ou vous y inscrire automatiquement."
+  },
+  "tournament-admin": {
+    "name": "tournament-admin",
+    "description": "Ouvrir la gestion du tournoi dans ce serveur."
+  },
+  "tournament-owner": {
+    "name": "tournament-owner",
+    "description": "Ouvrir les opérations owner du tournoi."
   }
 }

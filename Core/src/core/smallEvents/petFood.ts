@@ -2,7 +2,9 @@
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
-import { MapLocationDataController } from "../../data/MapLocation";
+import {
+	MapLocation, MapLocationDataController
+} from "../../data/MapLocation";
 import { MapLinkDataController } from "../../data/MapLink";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
@@ -37,30 +39,12 @@ import { TravelTime } from "../maps/TravelTime";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { Maps } from "../maps/Maps";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { MapLocationType } from "../../../../Lib/src/constants/MapLocationConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { PetUtils } from "../utils/PetUtils";
 import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
-
-const LOCATION_PROBABILITY_MAPPING = [
-	{
-		types: SmallEventConstants.PET_FOOD.BAD_SMELL_TYPES,
-		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.BAD_SMELL
-	},
-	{
-		types: SmallEventConstants.PET_FOOD.VEGETARIAN_TYPES,
-		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.VEGETARIAN
-	},
-	{
-		types: SmallEventConstants.PET_FOOD.MEAT_TYPES,
-		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.MEAT
-	},
-	{
-		types: SmallEventConstants.PET_FOOD.GOOD_SMELL_TYPES,
-		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.GOOD_SMELL
-	}
-] as const;
 
 const REACTION_HANDLERS: Record<string, ReactionHandler> = {
 	[ReactionCollectorPetFoodInvestigateReaction.name]: handleInvestigateReaction,
@@ -89,15 +73,14 @@ type PetFoodProperties = {
 };
 
 /**
- * Get food type probabilities based on map location type
- * @param type
+ * Get the food probabilities of a map location: cooked food smells good in settlements, otherwise it depends on the biome
+ * @param mapLocation
  */
-function getProbabilities(type: string): { [key: string]: number } {
-	const locationCategory = LOCATION_PROBABILITY_MAPPING.find(entry => (entry.types as readonly string[]).includes(type));
-	if (!locationCategory) {
-		return SmallEventConstants.PET_FOOD.PROBABILITIES.DEFAULT;
+function getProbabilities(mapLocation: MapLocation): { [key: string]: number } {
+	if ((SmallEventConstants.PET_FOOD.GOOD_SMELL_TYPES as readonly MapLocationType[]).includes(mapLocation.type)) {
+		return SmallEventConstants.PET_FOOD.PROBABILITIES.GOOD_SMELL;
 	}
-	return locationCategory.probabilities;
+	return SmallEventConstants.PET_FOOD.PROBABILITIES[SmallEventConstants.PET_FOOD.BIOME_PROBABILITY_PROFILES[mapLocation.pickBiome()]];
 }
 
 /**
@@ -117,7 +100,7 @@ export function getFoodType(player: Player): string {
 	const selectedMap = RandomUtils.crowniclesRandom.realZeroToOneInclusive() < TravelTime.getTravelProgress(player)
 		? endMap
 		: startMap;
-	const probabilities = getProbabilities(selectedMap.type);
+	const probabilities = getProbabilities(selectedMap);
 	const rand = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
 	let cumulativeProbability = 0;
 	for (const [foodType, probability] of Object.entries(probabilities)) {

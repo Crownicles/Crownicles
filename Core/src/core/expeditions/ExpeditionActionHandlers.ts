@@ -449,11 +449,18 @@ export async function handleExpeditionRecall(
 				}));
 
 				return {
-					keycloakId: lockedPlayer.keycloakId,
-					petGameId: lockedPet.id,
-					mapLocationId: lockedExpedition.mapLocationId,
-					locationType: lockedExpedition.locationType,
-					loveChange
+					identifier: {
+						keycloakId: lockedPlayer.keycloakId,
+						petGameId: lockedPet.id
+					},
+					params: {
+						mapLocationId: lockedExpedition.mapLocationId,
+						locationType: lockedExpedition.locationType,
+						durationMinutes: lockedExpedition.getDurationMinutes(),
+						foodConsumed: lockedExpedition.foodConsumed,
+						rewardIndex: lockedExpedition.rewardIndex,
+						loveChange
+					}
 				};
 			}
 		);
@@ -463,16 +470,7 @@ export async function handleExpeditionRecall(
 			return;
 		}
 
-		crowniclesInstance.logsDatabase.logExpeditionRecall(
-			{
-				keycloakId: recallLog.keycloakId, petGameId: recallLog.petGameId
-			},
-			{
-				mapLocationId: recallLog.mapLocationId,
-				locationType: recallLog.locationType,
-				loveChange: recallLog.loveChange
-			}
-		).then();
+		crowniclesInstance.logsDatabase.logExpeditionRecall(recallLog.identifier, recallLog.params).then();
 	}
 	catch (error) {
 		if (error instanceof LockedRowNotFoundError) {

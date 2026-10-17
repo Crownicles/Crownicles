@@ -247,10 +247,6 @@ function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | 
 		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
 	}
 
-	if (outcome.goBackToPreviousMap) {
-		return Maps.getGoBackMapLink(player);
-	}
-
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
 		return getMapTypesDestinationLink(outcome, player);
 	}
@@ -438,12 +434,6 @@ export interface PossibilityOutcome {
 	 * Forced map link
 	 */
 	mapLink?: number;
-
-	/**
-	 * Send the player back to the map they are coming from. Requires the `canGoBack`
-	 * possibility condition so the choice is never offered when the U-turn is impossible.
-	 */
-	goBackToPreviousMap?: boolean;
 
 	/**
 	 * Force the player to stay in the city after the outcome: the destination

@@ -1,5 +1,8 @@
 {
   "type": "cavern",
+  "biomes": [
+    "ruins"
+  ],
   "canBeGoToPlaceMissionDestination": false,
   "attribute": "pve_island"
 }

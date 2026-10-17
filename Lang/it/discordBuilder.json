@@ -394,5 +394,17 @@
   "blessing": {
     "name": "benedizione",
     "description": "Vedere lo stato attuale della benedizione globale."
+  },
+  "tournament": {
+    "name": "tournament",
+    "description": "Consulter votre tournoi ou vous y inscrire automatiquement."
+  },
+  "tournament-admin": {
+    "name": "tournament-admin",
+    "description": "Ouvrir la gestion du tournoi dans ce serveur."
+  },
+  "tournament-owner": {
+    "name": "tournament-owner",
+    "description": "Ouvrir les opérations owner du tournoi."
   }
 }

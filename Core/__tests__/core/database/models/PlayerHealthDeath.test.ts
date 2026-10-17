@@ -24,7 +24,10 @@ function buildPlayer(params: {
 	health: number;
 	fightPointsLost?: number;
 }): Player {
-	const player = Object.create(Player.prototype) as Player;
+	const player = Object.assign(Object.create(Player.prototype) as Player, {
+		// Saves are mocked: the fixture has no Sequelize change tracking.
+		changed: vi.fn().mockReturnValue(false)
+	});
 	player.level = params.level;
 	player.class = params.classId;
 	player.health = params.health;

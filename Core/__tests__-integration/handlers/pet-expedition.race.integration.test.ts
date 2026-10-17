@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, loadProductionModule, runAllOrThrow, setupCoreForTests
+	CoreTestEnvironment, createNoopLogsDatabase, loadProductionModule, runAllOrThrow, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { Guild as GuildType } from "../../src/core/database/game/models/Guild";
@@ -13,6 +13,8 @@ import type { PlayerTalismans as PlayerTalismansType } from "../../src/core/data
 import type { ScheduledExpeditionNotification as ScheduledExpeditionNotificationType } from "../../src/core/database/game/models/ScheduledExpeditionNotification";
 import { ExpeditionConstants } from "../../../Lib/src/constants/ExpeditionConstants";
 import type { ExpeditionData } from "../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
+import { minutesToMilliseconds } from "../../../Lib/src/utils/TimeUtils";
+import { asMinutes } from "../../../Lib/src/types/TimeTypes";
 
 type ExpeditionActionHandlersModule = typeof import("../../src/core/expeditions/ExpeditionActionHandlers");
 type PendingExpeditionsCacheModule = typeof import("../../src/core/expeditions/PendingExpeditionsCache");
@@ -180,5 +182,54 @@ describe("pet expedition races", () => {
 		expect(await PetExpedition.findByPk(activeExpedition.id)).toBeTruthy();
 		const freshPet = await PetEntity.findByPk(pet.id);
 		expect(freshPet!.lovePoints).toBe(50);
+	});
+
+	it("logs a recall with every column required by logs_expeditions", async () => {
+		const durationMinutes = 60;
+		const recallLogs: unknown[][] = [];
+		env.crownicles.setLogsDatabaseForTests(createNoopLogsDatabase((method, args) => {
+			if (method === "logExpeditionRecall") {
+				recallLogs.push(args);
+			}
+		}));
+		const guild = await Guild.create({
+			name: "LoggedRecallGuild", chiefId: 1
+		});
+		const {
+			player, pet
+		} = await seedPlayer("expedition-logged-recall", guild.id);
+		const startDate = new Date(Date.now() - minutesToMilliseconds(asMinutes(durationMinutes / 2)));
+		await PetExpedition.create({
+			playerId: player.id,
+			petId: pet.id,
+			startDate,
+			endDate: new Date(startDate.getTime() + minutesToMilliseconds(asMinutes(durationMinutes))),
+			riskRate: 10,
+			difficulty: 10,
+			wealthRate: 1,
+			locationType: ExpeditionConstants.EXPEDITION_LOCATION_TYPES.FOREST,
+			mapLocationId: 1,
+			status: ExpeditionConstants.STATUS.IN_PROGRESS,
+			foodConsumed: FOOD_PER_EXPEDITION,
+			rewardIndex: 2
+		});
+
+		await handlers.handleExpeditionRecall(player, []);
+		env.crownicles.setLogsDatabaseForTests(createNoopLogsDatabase());
+
+		expect(recallLogs).toEqual([
+			[
+				{
+					keycloakId: player.keycloakId, petGameId: pet.id
+				},
+				expect.objectContaining({
+					mapLocationId: 1,
+					locationType: ExpeditionConstants.EXPEDITION_LOCATION_TYPES.FOREST,
+					durationMinutes,
+					foodConsumed: FOOD_PER_EXPEDITION,
+					rewardIndex: 2
+				})
+			]
+		]);
 	});
 });

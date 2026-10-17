@@ -32,9 +32,10 @@ export interface CoreTestEnvironment {
 /**
  * Build a noop LogsDatabase replacement. Every accessed property
  * resolves to a fire-and-forget async no-op so race tests don't have
- * to provision a second schema for log models.
+ * to provision a second schema for log models. `onCall` lets a test
+ * observe which log methods were invoked and with which arguments.
  */
-function createNoopLogsDatabase(): LogsDatabase {
+export function createNoopLogsDatabase(onCall?: (method: string, args: unknown[]) => void): LogsDatabase {
 	return new Proxy({} as LogsDatabase, {
 		get(_target, prop: string | symbol) {
 			if (typeof prop !== "string") {
@@ -44,7 +45,10 @@ function createNoopLogsDatabase(): LogsDatabase {
 				// Avoid being mis-detected as a thenable by callers.
 				return undefined;
 			}
-			return (): Promise<void> => Promise.resolve();
+			return (...args: unknown[]): Promise<void> => {
+				onCall?.(prop, args);
+				return Promise.resolve();
+			};
 		}
 	});
 }

@@ -5,9 +5,9 @@ import * as path from "node:path";
 import models from "../../../../Lang/fr/models.json";
 import {describe, expect, it} from "vitest";
 import {CrowniclesIcons} from "../../../../Lib/src/CrowniclesIcons";
-import {PVEConstants} from "../../../../Lib/src/constants/PVEConstants";
 import {ExpeditionConstants} from "../../../../Lib/src/constants/ExpeditionConstants";
 import {MaterialLootConstants} from "../../../../Lib/src/constants/MaterialLootConstants";
+import {MaterialRarity} from "../../../../Lib/src/types/MaterialRarity";
 
 // Helper to get material ID from filename (without extension)
 const getMaterialIdFromFile = (fileName: string): string => {
@@ -200,81 +200,82 @@ describe("Materials consistency", () => {
 		}
 	});
 
-	it("boss loot tables only reference valid material IDs", () => {
-		const materialsDir = path.join(__dirname, "../../../../Core/resources/materials");
-		const materialFiles = readdirSync(materialsDir).filter((file) => file.endsWith(".json"));
-		const validMaterialIds = new Set(materialFiles.map((f) => parseInt(getMaterialIdFromFile(f), 10)));
-
-		const lootTables: Record<number, readonly number[]> = PVEConstants.BOSS_LOOT_TABLES;
-
-		const errors: string[] = [];
-		for (const [mapIdStr, materialIds] of Object.entries(lootTables) as [string, readonly number[]][]) {
-			for (const materialId of materialIds) {
-				if (!validMaterialIds.has(materialId)) {
-					errors.push(`Map ${mapIdStr}: material ID ${materialId} does not exist`);
-				}
-			}
-			if (materialIds.length < MaterialLootConstants.LOOT_TABLE_MIN_SIZE || materialIds.length > MaterialLootConstants.LOOT_TABLE_MAX_SIZE) {
-				errors.push(`Map ${mapIdStr}: expected ${MaterialLootConstants.LOOT_TABLE_MIN_SIZE}-${MaterialLootConstants.LOOT_TABLE_MAX_SIZE} materials, found ${materialIds.length}`);
-			}
-		}
-
-		if (errors.length > 0) {
-			throw new Error(`Invalid boss loot table entries:\n${errors.join("\n")}`);
-		}
-	});
-
-	it("every boss monster map has a loot table entry", () => {
+	const readMonsterLoots = (): { file: string; materialLoot: unknown }[] => {
 		const monstersDir = path.join(__dirname, "../../../../Core/resources/monsters");
-		const monsterFiles = readdirSync(monstersDir).filter((file) => file.endsWith(".json"));
+		return readdirSync(monstersDir)
+			.filter((file) => file.endsWith(".json"))
+			.map((file) => ({
+				file,
+				materialLoot: (loadJsonFile(monstersDir, file) as { materialLoot?: unknown }).materialLoot
+			}));
+	};
 
-		const lootTableMapIds = new Set(
-			Object.keys(PVEConstants.BOSS_LOOT_TABLES).map((id) => parseInt(id, 10))
-		);
-
-		const missing: string[] = [];
-		for (const file of monsterFiles) {
-			const monster = loadJsonFile(monstersDir, file) as { maps?: unknown };
-			if (!Array.isArray(monster.maps)) {
-				throw new Error(`Monster '${file}' is missing a valid 'maps' array`);
-			}
-			for (const mapId of monster.maps as number[]) {
-				if (!lootTableMapIds.has(mapId)) {
-					missing.push(`${file} -> map ${mapId}`);
-				}
-			}
+	const getLootTableErrors = (label: string, materialIds: readonly number[], validMaterialIds: Set<number>): string[] => {
+		const errors = materialIds
+			.filter((materialId) => !validMaterialIds.has(materialId))
+			.map((materialId) => `${label}: material ID ${materialId} does not exist`);
+		if (new Set(materialIds).size !== materialIds.length) {
+			errors.push(`${label}: duplicated material IDs`);
 		}
-
-		if (missing.length > 0) {
-			throw new Error(
-				`Boss monsters reference maps with no entry in PVEConstants.BOSS_LOOT_TABLES (forgot to add loot for a new island/boss?):\n${missing
-					.sort()
-					.join("\n")}`
-			);
+		if (materialIds.length < MaterialLootConstants.LOOT_TABLE_MIN_SIZE || materialIds.length > MaterialLootConstants.LOOT_TABLE_MAX_SIZE) {
+			errors.push(`${label}: expected ${MaterialLootConstants.LOOT_TABLE_MIN_SIZE}-${MaterialLootConstants.LOOT_TABLE_MAX_SIZE} materials, found ${materialIds.length}`);
 		}
+		return errors;
+	};
+
+	const readValidMaterialIds = (): Set<number> => {
+		const materialsDir = path.join(__dirname, "../../../../Core/resources/materials");
+		return new Set(readdirSync(materialsDir)
+			.filter((file) => file.endsWith(".json"))
+			.map((file) => parseInt(getMaterialIdFromFile(file), 10)));
+	};
+
+	it("every boss monster declares a valid material loot table", () => {
+		const validMaterialIds = readValidMaterialIds();
+		const errors = readMonsterLoots().flatMap(({ file, materialLoot }) => (Array.isArray(materialLoot)
+			? getLootTableErrors(`Monster ${file}`, materialLoot as number[], validMaterialIds)
+			: [`Monster ${file}: missing 'materialLoot' array`]));
+
+		expect(errors).toEqual([]);
 	});
 
-	it("expedition loot tables only reference valid material IDs", () => {
+	const readBiomeLoots = (): [string, readonly number[]][] => {
+		const biomesDir = path.join(__dirname, "../../../../Core/resources/biomes");
+		return readdirSync(biomesDir)
+			.filter((file) => file.endsWith(".json"))
+			.map((file) => [path.parse(file).name, (loadJsonFile(biomesDir, file) as { materialLoot: readonly number[] }).materialLoot]);
+	};
+
+	it("every biome has exactly one loot data file", () => {
+		expect(readBiomeLoots().map(([biome]) => biome).sort()).toEqual(Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES).sort());
+	});
+
+	it("biome loot tables only reference valid material IDs", () => {
+		const validMaterialIds = readValidMaterialIds();
+		const errors = readBiomeLoots()
+			.flatMap(([biome, materialIds]) => getLootTableErrors(`Biome ${biome}`, materialIds, validMaterialIds));
+
+		expect(errors).toEqual([]);
+	});
+
+	it("every biome loot table offers each material rarity to the find material small event", () => {
 		const materialsDir = path.join(__dirname, "../../../../Core/resources/materials");
-		const materialFiles = readdirSync(materialsDir).filter((file) => file.endsWith(".json"));
-		const validMaterialIds = new Set(materialFiles.map((f) => parseInt(getMaterialIdFromFile(f), 10)));
+		const rarities = [MaterialRarity.COMMON, MaterialRarity.UNCOMMON, MaterialRarity.RARE];
+		const missing = readBiomeLoots().flatMap(([biome, materialIds]) => {
+			const tableRarities = new Set(materialIds.map((materialId) => (loadMaterial(materialsDir, `${materialId}.json`) as { rarity: MaterialRarity }).rarity));
+			return rarities.filter((rarity) => !tableRarities.has(rarity)).map((rarity) => `${biome}: no ${MaterialRarity[rarity]} material`);
+		});
 
-		const lootTables = ExpeditionConstants.EXPEDITION_LOOT_TABLES;
+		expect(missing).toEqual([]);
+	});
 
-		const errors: string[] = [];
-		for (const [locationType, materialIds] of Object.entries(lootTables) as [string, readonly number[]][]) {
-			for (const materialId of materialIds) {
-				if (!validMaterialIds.has(materialId)) {
-					errors.push(`Location ${locationType}: material ID ${materialId} does not exist`);
-				}
-			}
-			if (materialIds.length < MaterialLootConstants.LOOT_TABLE_MIN_SIZE || materialIds.length > MaterialLootConstants.LOOT_TABLE_MAX_SIZE) {
-				errors.push(`Location ${locationType}: expected ${MaterialLootConstants.LOOT_TABLE_MIN_SIZE}-${MaterialLootConstants.LOOT_TABLE_MAX_SIZE} materials, found ${materialIds.length}`);
-			}
-		}
+	it("every material can be looted from at least one boss or biome", () => {
+		const lootableIds = new Set<number>([
+			...readMonsterLoots().flatMap(({ materialLoot }) => (Array.isArray(materialLoot) ? materialLoot as number[] : [])),
+			...readBiomeLoots().flatMap(([, materialIds]) => materialIds)
+		]);
 
-		if (errors.length > 0) {
-			throw new Error(`Invalid expedition loot table entries:\n${errors.join("\n")}`);
-		}
+		const unlootable = [...readValidMaterialIds()].filter((id) => !lootableIds.has(id)).sort((a, b) => a - b);
+		expect(unlootable).toEqual([]);
 	});
 });

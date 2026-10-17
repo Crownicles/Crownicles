@@ -1,5 +1,5 @@
 import {
-	Client, GuildMember, Guild, IntentsBitField, Options, Partials, TextChannel
+	Client, GuildMember, Guild, IntentsBitField, NonThreadGuildBasedChannel, Options, Partials, PermissionsBitField, TextChannel
 } from "discord.js";
 import { Constants } from "../../../Lib/src/constants/Constants";
 import { loadConfig } from "../config/DiscordConfig";
@@ -15,6 +15,10 @@ import { DiscordDatabase } from "../database/discord/DiscordDatabase";
 import { CrowniclesDiscordWebServer } from "./CrowniclesDiscordWebServer";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { DiscordConstants } from "../DiscordConstants";
+import { CommandTournamentPausePacketReq } from "../../../Lib/src/packets/commands/CommandTournamentPacket";
+import { PacketUtils } from "../utils/PacketUtils";
+import { PacketConstants } from "../../../Lib/src/constants/PacketConstants";
+import { makePacket } from "../../../Lib/src/packets/CrowniclesPacket";
 import "source-map-support/register";
 
 process.on("uncaughtException", error => {
@@ -98,6 +102,43 @@ export abstract class Intents {
 			 * IntentsBitField.Flags.GuildScheduledEvents // We do not need to see a guild's events
 			 */
 		];
+}
+
+function pauseTournamentForChannel(guildId: string, channelId: string): void {
+	PacketUtils.sendPacketToBackend({
+		frontEndOrigin: PacketConstants.FRONT_END_ORIGINS.DISCORD,
+		frontEndSubOrigin: guildId,
+		discord: {
+			user: "",
+			interaction: "",
+			channel: channelId,
+			language: LANGUAGE.ENGLISH,
+			shardId
+		}
+	}, makePacket(CommandTournamentPausePacketReq, {
+		discordGuildId: guildId,
+		discordChannelId: channelId
+	}));
+}
+
+function hasTournamentChannelPermissions(channel: NonThreadGuildBasedChannel): boolean {
+	const permissions = channel.permissionsFor(crowniclesClient.user!.id);
+	return permissions?.has([
+		PermissionsBitField.Flags.ViewChannel,
+		PermissionsBitField.Flags.SendMessages,
+		PermissionsBitField.Flags.SendMessagesInThreads,
+		PermissionsBitField.Flags.AddReactions,
+		PermissionsBitField.Flags.EmbedLinks,
+		PermissionsBitField.Flags.AttachFiles,
+		PermissionsBitField.Flags.ReadMessageHistory
+	]) ?? false;
+}
+
+function shouldPauseTournamentForChannelUpdate(channel: NonThreadGuildBasedChannel): boolean {
+	return Boolean(channel.guildId)
+		&& !channel.isThread()
+		&& Boolean(crowniclesClient.user)
+		&& !hasTournamentChannelPermissions(channel);
 }
 
 /**
@@ -190,6 +231,20 @@ async function connectAndStartBot(): Promise<void> {
 	client.on("ready", () => console.log("Bot is ready"));
 	client.on("guildCreate", onDiscordGuildCreate);
 	client.on("guildDelete", onDiscordGuildDelete);
+	client.on("channelDelete", channel => {
+		if (!("guildId" in channel) || !channel.guildId) {
+			return;
+		}
+		pauseTournamentForChannel(channel.guildId, channel.id);
+	});
+	client.on("channelUpdate", (_oldChannel, newChannel) => {
+		if (!("guildId" in newChannel) || !shouldPauseTournamentForChannelUpdate(newChannel)) {
+			return;
+		}
+		if (!hasTournamentChannelPermissions(newChannel)) {
+			pauseTournamentForChannel(newChannel.guildId, newChannel.id);
+		}
+	});
 
 	crowniclesClient = client;
 

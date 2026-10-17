@@ -44,7 +44,9 @@ import {
 import { getGuildFoodShopMenu } from "./guildFoodShop/GuildFoodShopMenu";
 import { getMainMenu } from "./cityMenu/MainMenu";
 import { getInnMenu } from "./cityMenu/InnMenu";
-import { getEnchanterMenu } from "./cityMenu/EnchanterMenu";
+import {
+	getEnchanterDisenchantMenu, getEnchanterMenu
+} from "./cityMenu/EnchanterMenu";
 import { getManageHomeMenu } from "./cityMenu/NotaryMenu";
 import { getBossArchivistMenus } from "./cityMenu/BossArchivistMenu";
 import { registerCityMessageOwner } from "./CityMessageHandoff";
@@ -201,6 +203,9 @@ function addEnchanterSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: H
 		return;
 	}
 	menus.set(ReportCityMenuIds.ENCHANTER_MENU, getEnchanterMenu(params));
+	if (cityData.enchanter.disenchantableItems.length > 0) {
+		menus.set(ReportCityMenuIds.ENCHANTER_DISENCHANT_MENU, getEnchanterDisenchantMenu(params));
+	}
 }
 
 function addBlacksmithSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {

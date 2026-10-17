@@ -27,6 +27,7 @@ import {
 	CookingXpConstants,
 	FAILURE_RATE_PER_EXTRA_LEVEL,
 	NO_XP_LEVEL_THRESHOLD,
+	MASTER_CHEF_BADGE_COOKING_LEVEL,
 	CookingOutputType,
 	SECRET_RECIPE_PLACEHOLDER,
 	SLOT_CONFIGS
@@ -41,6 +42,8 @@ import {
 	CookingSlotData, RecipeSlotData, PinnedRecipeInfo, RecipeIngredients, RecipeDisplayInfo
 } from "../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
+import { Badge } from "../../../../Lib/src/types/Badge";
 import {
 	getDayNumber
 } from "../../../../Lib/src/utils/TimeUtils";
@@ -63,6 +66,7 @@ export interface CraftResult {
 	levelUp: boolean;
 	newLevel?: number;
 	newGrade?: string;
+	masterChefBadgeEarned: boolean;
 	discoveredRecipes: RecipeDisplayInfo[];
 	bonusOutput: boolean;
 }
@@ -81,6 +85,7 @@ interface CookingLevelUpResult {
 	levelUp: boolean;
 	newLevel?: number;
 	newGrade?: string;
+	masterChefBadgeEarned: boolean;
 }
 
 /**
@@ -381,10 +386,16 @@ export class CookingService {
 		}
 
 		await player.save();
+
+		// Also checked without level up so players already past the threshold get the badge on their next craft
+		const masterChefBadgeEarned = player.cookingLevel >= MASTER_CHEF_BADGE_COOKING_LEVEL
+			&& await PlayerBadgesManager.addBadge(player.id, Badge.MASTER_CHEF);
+
 		return {
 			levelUp,
 			newLevel,
-			newGrade
+			newGrade,
+			masterChefBadgeEarned
 		};
 	}
 

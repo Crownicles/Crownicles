@@ -457,6 +457,9 @@
         "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
         "image": "https://crownicles.com/public/ressources/fighthelp/fr/5.1.7.png"
       },
+      "FRIENDLY_FIGHT": {
+        "description": "Permet d'affronter un autre joueur, choisi en le mentionnant ou grâce à son classement, dans un combat amical. Le joueur affronté est contrôlé par une IA. Ce combat n'a aucune conséquence : aucune gloire, aucune récompense, aucune énergie perdue et aucune progression de mission."
+      },
       "GLORY_TOP": {
         "description": "Affiche le classement glorieux du jeu par tranche de 15 joueurs. La ligue des joueurs est également affichée. Les joueurs dans le même serveur que vous sont marqués par une pastille bleue."
       },
@@ -705,7 +708,8 @@
       "animal_lover": "Personne ayant montré tous les familiers à Talvar le nain",
       "expert_expediteur": "Personne ayant réussi de nombreuses expéditions avec son familier",
       "oracle_patron": "Protecteur de l'Oracle, ayant contribué généreusement à de nombreuses bénédictions",
-      "sentimental_crafter": "Personne ayant tenu à faire améliorer une humble relique jusqu'au sommet par le forgeron royal"
+      "sentimental_crafter": "Personne ayant tenu à faire améliorer une humble relique jusqu'au sommet par le forgeron royal",
+      "master_chef": "Cuisinier émérite ayant atteint le niveau 100 de cuisine"
     },
     "fightRanked": {
       "fieldName": "Gloire et ligue :",
@@ -781,6 +785,8 @@
     "choseMapMinutes_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
     "choseMap_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{time}} heure**.",
     "choseMap_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{time}} heures**.",
+    "cityStayScore_one": "{emote:unitValues.score} Votre séjour en ville vous a rapporté **{{count, number}}** point.",
+    "cityStayScore_other": "{emote:unitValues.score} Votre séjour en ville vous a rapporté **{{count, number}}** points.",
     "goBackMapMinutes_one": "Vous rebroussez chemin en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, d'où vous veniez. Ce retour durera environ **{{timeDisplay}}**.",
     "goBackMapMinutes_other": "Vous rebroussez chemin en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, d'où vous veniez. Ce retour durera environ **{{timeDisplay}}**.",
     "goBackMap_one": "Vous rebroussez chemin en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, d'où vous veniez. Ce retour durera environ **{{time}} heure**.",
@@ -828,6 +834,8 @@
       "placeholder": "Choisissez quelque chose à faire",
       "title": "{{pseudo}}, vous êtes en ville !",
       "description": "{emote:commands.report} Vous avez rejoint **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)**.\n\nLes rues pavées s'animent autour de vous : marchands, aventuriers et artisans vaquent à leurs occupations. De nombreux services s'offrent à vous, mais la route, elle, n'attend personne.",
+      "minimumStayScore_one": "{emote:unitValues.score} Votre séjour en ville vous rapportera au moins **{{count, number}}** point à votre départ.",
+      "minimumStayScore_other": "{emote:unitValues.score} Votre séjour en ville vous rapportera au moins **{{count, number}}** points à votre départ.",
       "buttons": {
         "enter": "Entrer",
         "visit": "Visiter",
@@ -860,6 +868,8 @@
       "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
       "stayInCityChoice": "{emote:mapTypes.ci} Entrer en ville",
       "shopEmptyDescription": "Aucun service à proposer pour le moment.",
+      "equipmentChangedTitle": "{{pseudo}}, l'équipement a changé !",
+      "equipmentChangedDescription": "L'équipement choisi n'est plus le même à cet emplacement de l'inventaire : il a été déplacé depuis l'ouverture du menu. Rien n'a été dépensé et le menu a été mis à jour avec votre inventaire actuel.",
       "exitInn": "Sortir de l'auberge",
       "reactions": {
         "exit": {
@@ -876,7 +886,7 @@
         },
         "enchanter": {
           "label": "Aller voir l'enchanteur",
-          "description": "Un voyageur aux mains couvertes d'enchantements lumineux attire votre attention. Il prétend pouvoir enchanter n'importe quelle arme ou pièce d'armure."
+          "description": "Un voyageur aux mains couvertes d'enchantements lumineux attire votre attention. Il prétend pouvoir enchanter n'importe quelle arme ou pièce d'armure, et en effacer les enchantements sans rien demander en retour."
         },
         "blacksmith": {
           "label": "Aller chez le forgeron",
@@ -998,7 +1008,7 @@
         "runeForWeaponOnlyArmorAvailableStory_other": "{emote:city.services.enchanter} Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées. Aujourd'hui, son enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** ne fonctionne que sur les armes. Vous n'avez que des armes déjà enchantées ou des pièces d'armure à lui présenter : il vous toise avec dédain et soupire que vous lui faites perdre son temps. Mieux vaut repasser un autre jour, ou avec une lame vierge digne de recevoir un enchantement.",
         "runeForArmorOnlyWeaponAvailableStory_one": "{emote:city.services.enchanter} Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées. Aujourd'hui, son enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** ne fonctionne que sur les pièces d'armure. Vous n'avez qu'une armure déjà enchantée ou des armes à lui présenter : il pince les lèvres et grommelle que vous perdez tous les deux votre temps. Revenez avec une protection vierge à enchanter, ou un autre jour quand son enchantement sera différent.",
         "runeForArmorOnlyWeaponAvailableStory_other": "{emote:city.services.enchanter} Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées. Aujourd'hui, son enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** ne fonctionne que sur les pièces d'armure. Vous n'avez que des armures déjà enchantées ou des armes à lui présenter : il pince les lèvres et grommelle que vous perdez tous les deux votre temps. Revenez avec une protection vierge à enchanter, ou un autre jour quand son enchantement sera différent.",
-        "allEnchantedStory": "{emote:city.services.enchanter} Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il examine vos équipements puis secoue la tête, agacé : tout ce que vous portez est déjà enchanté. Il vous rappelle sèchement que ce sont les forgerons qui retirent les enchantements existants, pas lui, et qu'il refuse catégoriquement de toucher à ces objets déjà runiques. Revenez avec un équipement vierge, ou tentez votre chance demain.",
+        "allEnchantedStory": "{emote:city.services.enchanter} Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il examine vos équipements puis secoue la tête, agacé : tout ce que vous possédez est déjà enchanté et il ne peut rien y ajouter. Il consent toutefois à effacer gratuitement les enchantements qui ne vous conviennent plus, afin que vous lui présentiez enfin un équipement vierge digne de son talent.",
         "story": "{emote:city.services.enchanter} Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées, et qu'il peut améliorer vos équipements grâce à la magie des enchantements.",
         "tomorrowStory": "Vous prenez le temps de réfléchir à sa proposition. Avant votre départ, Mernil vous révèle la prochaine étape de son voyage : **{{nextCity}}**, où il proposera l'enchantement {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Vous avez tout intérêt à le rejoindre avant qu'il ne reparte.",
         "tomorrowSameCityStory": "Vous prenez le temps de réfléchir à sa proposition. Mernil annonce qu'il prolonge son séjour : **{{nextCity}}** l'accueillera encore demain, avec l'enchantement {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Profitez-en pour préparer votre équipement avant qu'il ne reprenne la route.",
@@ -1017,7 +1027,14 @@
           "frozenDamage": "Mernil révèle les propriétés de cet enchantement : il amplifie les dégâts de gel infligés et atténue les dégâts de brûlure subis.",
           "poisonedDamage": "Mernil révèle les propriétés de cet enchantement : il amplifie les dégâts de poison infligés et atténue les dégâts de poison subis."
         },
-        "hasAtLeastOneEnchantedItem": "De plus, en voyant vos équipements déjà enchantés, Mernil fronce les sourcils. Il dit que c'est le travail des forgerons de désenchanter les objets, pas le sien, et qu'il ne les touchera pas.",
+        "disenchantOffer": "Mernil remarque aussi vos équipements déjà enchantés. Pour un maître de son rang, effacer des runes n'est qu'une formalité : il propose de les retirer **gratuitement**, ne serait-ce que pour débarrasser le monde d'enchantements qu'il juge indignes de son art.",
+        "disenchantTitle": "{{pseudo}}, désenchantement chez Mernil",
+        "disenchantSelectDescription": "{emote:city.blacksmith.disenchant} Mernil fait craquer ses doigts d'un air suffisant. À l'en croire, effacer un enchantement est un jeu d'enfant qui ne mérite pas la moindre pièce. Il attend que vous lui désigniez l'équipement à libérer de ses runes.",
+        "disenchantItemPreview": "{{item}}\n{emote:enchantmentTypes.{{enchantmentType}}} $t(items:enchantments.{{enchantmentId}})",
+        "disenchantConfirmDescription": "{emote:collectors.warning} Cette validation retirera définitivement l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** de l'équipement suivant :\n{{item}}\n\nCoût : **gratuit**.",
+        "disenchantSuccessTitle": "{{pseudo}}, désenchantement réussi !",
+        "disenchantSuccessStory": "{emote:city.services.enchanter} Mernil effleure votre équipement du bout des doigts en murmurant une formule. La lueur de l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** vacille puis s'éteint. Il vous rend l'objet, redevenu vierge, avec l'air satisfait de quelqu'un qui vient de rendre un immense service sans rien demander en retour.",
+        "backToEnchanter": "Retour auprès de Mernil",
         "confirmDescription": "{emote:collectors.warning} Cette validation appliquera l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** sur l'équipement suivant :\n{{item}}\n\nCoût : **{{price}}**.\n{{balance}}",
         "acceptStory": "Il prend de suite votre équipement et murmure quelques incantations en agitant un cristal enchanté au-dessus... Après quelques instants, il vous rend l'objet en vous disant que c'est fait ! Votre équipement est maintenant enchanté avec {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Faites-en bon usage !",
         "acceptTitle": "{{pseudo}}, enchantement réussi !",
@@ -1260,9 +1277,11 @@
           "noStoredItems": "Aucun objet rangé dans cette catégorie.",
           "depositSection": "{emote:city.chestActions.deposit} **Déposer dans le coffre :**",
           "withdrawSection": "{emote:city.chestActions.withdraw} **Retirer du coffre :**",
-          "chestFull": "Coffre plein pour cette catégorie",
-          "inventoryFullLabel": "Inventaire plein",
+          "chestFull": "{emote:collectors.warning} *Coffre plein pour cette catégorie*",
+          "inventoryFullLabel": "{emote:collectors.warning} *Inventaire plein*",
           "swapSection": "{emote:city.chestActions.swap} **Intervertir avec le coffre :**",
+          "chestContentSection": "{emote:city.homeUpgrades.chest} **Contenu du coffre :**",
+          "chestContentLine": "• {{item}}",
           "swapHeader": "{emote:city.chestActions.swap} **Échanger** {{item}} **avec :**",
           "errors": {
             "chestFull": "Votre coffre est plein pour cette catégorie ! Améliorez votre maison pour obtenir plus d'emplacements.",
@@ -1360,6 +1379,7 @@
           "levelUp": "Vous êtes passé au **niveau {{level}}** de cuisine !",
           "levelUpWithGrade": "Vous êtes passé au **niveau {{level}}** de cuisine ! Nouveau grade : **{{grade}}**",
           "levelUpTitle": "{emote:city.homeUpgrades.cooking} {{pseudo}}, niveau de cuisine augmenté !",
+          "masterChefBadgeEarned": "\n{emote:badges.master_chef} Vos efforts aux fourneaux sont enfin reconnus : un badge vous a été offert, **Chef cuisinier** !",
           "materialSaved": "{emote:messages.validate} Grâce à votre expertise, un **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** a été économisé !",
           "bonusOutput": "{emote:city.homeUpgrades.cooking} **Super réussite !** Votre maîtrise vous a permis de doubler l'XP gagnée et d'améliorer le résultat de cette préparation !",
           "petFoodStored": "{emote:messages.validate} **{{quantity}} {{food}}** ont été ajoutées au stockage de votre guilde.",
@@ -2223,7 +2243,8 @@
       "guildStatusChange": "Changement de statut au sein de la guilde",
       "energy": "Énergie régénérée",
       "dailyBonus": "Bonus journalier",
-      "petExpedition": "Expédition de familier terminée"
+      "petExpedition": "Expédition de familier terminée",
+      "tournament": "Tournoi"
     },
     "enableDisable": "Activer/Désactiver",
     "sendLocationField": "Endroit d'envoi :",
@@ -2365,6 +2386,7 @@
     "notEnoughEnergy": "Vous n'avez pas assez d'énergie pour démarrer un combat !",
     "monsterNotFound": "Aucun monstre n'a été trouvé pour vous affronter. Veuillez signaler cet incident à notre support (discord.gg/AP3Wmzb).",
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | Un combat est lancé entre {{fightInitiator}} et {{opponent}} !",
+    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Un combat amical est lancé entre {{fightInitiator}} et {{opponent}} ! Il n'aura aucune conséquence.",
     "actionsOf": "**Attaques de {{pseudo}} :**",
     "petOf": "**Familier de {{pseudo}} :**",
     "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
@@ -2570,6 +2592,21 @@
         "Ce match a été très serré avec des tactiques astucieuses des deux côtés.",
         "Les spectateurs ont assisté à un match épique entre deux joueurs talentueux qui se sont affrontés à armes égales."
       ]
+    },
+    "kingGuard": {
+      "name": "Garde du roi",
+      "recap": {
+        "win": "Aucun adversaire n'était disponible : {{player}} a affronté un garde du roi et l'a vaincu. Aucune gloire n'était en jeu lors de ce combat.",
+        "draw": "Aucun adversaire n'était disponible : {{player}} a affronté un garde du roi sans parvenir à le départager. Aucune gloire n'était en jeu lors de ce combat.",
+        "loss": "Aucun adversaire n'était disponible : {{player}} a affronté un garde du roi et a été vaincu. Aucune gloire n'était en jeu lors de ce combat."
+      }
+    }
+  },
+  "friendlyFight": {
+    "errors": {
+      "opponentNotFound": "Ce joueur est introuvable ou n'a pas encore commencé l'aventure.",
+      "selfFight": "Vous ne pouvez pas lancer un combat amical contre vous-même. Mentionnez un autre joueur ou indiquez son classement.",
+      "opponentLevelTooLow": "Ce joueur n'a pas encore débloqué les combats."
     }
   },
   "equip": {
@@ -2805,6 +2842,7 @@
     "noHistory": "Vous n'avez pas encore de combats dans votre historique.",
     "title": "{{pseudo}}, historique des combats",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Résultat :** {{resultSentence}}\n**Votre gloire :** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Gloire adverse :** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
+    "kingGuardHistoryLine": "{{date}}\n{emote:fightCommand.crossedSwords} Aucun adversaire n'était disponible : vous avez affronté un **garde du roi** de niveau {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Résultat :** {{resultSentence}}\n**Gloire :** {emote:unitValues.glory} aucune gloire n'était en jeu",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Vous avez attaqué **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} Vous avez été attaqué par **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
@@ -2860,6 +2898,197 @@
         "name": "Ménagerie",
         "description": "Niveau {{level, number}}/{{maxLevel, number}}\nLes familiers au refuge gagnent des points d'amour quotidiennement."
       }
+    }
+  },
+  "tournament": {
+    "authorizationTitle": "Autorisation de tournoi",
+    "authorizationGranted": "Ce serveur peut désormais organiser un tournoi : un administrateur peut le créer avec {command:tournament-admin} dans le salon de son choix. L'autorisation est valable une seule fois, jusqu'au {{expiresAt}}.",
+    "createTitle": "Tournoi créé",
+    "created": "Le tournoi se déroule dans {{channel}} et une annonce y a été publiée. Les inscriptions se terminent le {{registrationEndsAt}} et les combats le {{combatEndsAt}}.\nRègle de niveau : {{levelRule}}.",
+    "statusTitle": "{emote:notifications.types.tournament} Tournoi : {{status}}",
+    "registrationChanges": {
+      "registered": "{emote:collectors.accept} Votre inscription est confirmée dans la catégorie **{{category}}**, avec **{{totalGloryPoints}}** gloire de tournoi.",
+      "unregistered": "{emote:collectors.refuse} Votre inscription a été annulée. Il reste possible de se réinscrire jusqu'à la fin des inscriptions."
+    },
+    "tournamentField": {
+      "fieldName": "Le tournoi :",
+      "fieldValue": "{emote:fightCommand.crossedSwords} {{channel}} | {emote:unitValues.timeGain} {{phaseEnd}}\nRègle de niveau : {{levelRule}}"
+    },
+    "participantsField": {
+      "fieldName": "Participants :",
+      "fieldValue_one": "{emote:guild.membersCount} **{{count, number}}** joueur inscrit",
+      "fieldValue_other": "{emote:guild.membersCount} **{{count, number}}** joueurs inscrits"
+    },
+    "thresholds": {
+      "fieldName": "Inscriptions nécessaires au lancement des combats :",
+      "fieldValue": "{{progress}}\n-# Si ces seuils ne sont pas atteints à la fin des inscriptions, le tournoi est annulé.",
+      "totalLine": "{emote:guild.membersCount} Total : **{{count, number}}** / {{required, number}}",
+      "categoryLine": "{{category}} : **{{count, number}}** / {{required, number}}",
+      "summaryPerCategory": "au moins {{total}} inscrits, dont {{perCategory}} dans chaque catégorie",
+      "summarySingleCategory": "au moins {{total}} inscrits dans la catégorie {{category}}"
+    },
+    "participationField": {
+      "fieldName": "Votre participation :",
+      "fieldValue": "{{category}} | {emote:announcements.trophy} {{rank}} / {{categoryParticipantCount, number}} | {emote:unitValues.glory} **{{totalGloryPoints}}**{{lateRegistration}}{{record}}",
+      "lateRegistration": " · inscription tardive",
+      "record": "\nVictoires : **{{wins}}** · Défaites : **{{losses}}** · Égalités : **{{draws}}**"
+    },
+    "notRegisteredField": {
+      "fieldName": "Votre participation :",
+      "canRegister": "Vous n'êtes pas inscrit. Le bouton ci-dessous permet de rejoindre le tournoi.",
+      "registerInChannel": "Vous n'êtes pas inscrit. Les inscriptions se font avec {command:tournament} dans {{channel}}.",
+      "notParticipating": "Vous n'avez pas participé à ce tournoi."
+    },
+    "lateRegistrationField": {
+      "fieldName": "Inscription tardive :",
+      "fieldValue": "Les combats ont déjà commencé : une inscription maintenant démarre avec **{{lateGlory}}** gloire de tournoi au lieu de **{{normalGlory}}**, car la gloire de défense part de zéro."
+    },
+    "howToField": {
+      "fieldName": "Déroulement :",
+      "registration": "Les combats commenceront le {{combatStart}}. Il suffira alors d'utiliser {command:fight} dans {{channel}} pour affronter un participant de sa catégorie.",
+      "combat": "Utilisez {command:fight} dans {{channel}} pour affronter un participant de votre catégorie. Un même duel se joue en {{maxGames}} manches au plus : le premier à {{winsToFinish}} victoires l'emporte. Les combats ne consomment pas d'énergie, les potions sont désactivées et le classement est visible avec {command:top}.",
+      "paused": "Le tournoi est en pause car le bot n'a plus les permissions nécessaires dans son salon. Une fois les permissions rétablies, un administrateur du serveur peut le reprendre avec {command:tournament-admin}. Le temps restant est conservé.",
+      "completed": "Le tournoi est terminé. Les récompenses sont créditées en utilisant {command:tournament}.",
+      "cancelled": "Le tournoi a été annulé : aucune récompense n'est distribuée."
+    },
+    "rewardField": {
+      "fieldName": "Votre récompense :",
+      "granted_one": "{emote:unitValues.xp} **{{xp}}** XP | {emote:unitValues.money} **{{money}}** | {emote:rewards.item} {{count}} objet",
+      "granted_other": "{emote:unitValues.xp} **{{xp}}** XP | {emote:unitValues.money} **{{money}}** | {emote:rewards.item} {{count}} objets",
+      "pending_one": "{emote:unitValues.xp} **{{xp}}** XP | {emote:unitValues.money} **{{money}}** | {emote:rewards.item} {{count}} objet\nEn attente : libérez une place dans votre inventaire puis utilisez à nouveau {command:tournament}.",
+      "pending_other": "{emote:unitValues.xp} **{{xp}}** XP | {emote:unitValues.money} **{{money}}** | {emote:rewards.item} {{count}} objets\nEn attente : libérez une place dans votre inventaire puis utilisez à nouveau {command:tournament}."
+    },
+    "phaseEndRegistration": "fin des inscriptions {{date}}",
+    "phaseEndCombat": "fin des combats {{date}}",
+    "phaseEndPaused": "tournoi en pause",
+    "phaseEndOver": "tournoi terminé",
+    "registerButton": "S'inscrire",
+    "unregisterButton": "Se désinscrire",
+    "resumeTitle": "Tournoi repris",
+    "resumed": "Le tournoi reprend dans {{channel}} avec son temps restant. Une annonce y a été publiée.",
+    "cancelTitle": "Tournoi annulé",
+    "cancelled": "Le tournoi a été annulé et les participants en ont été informés. Aucune récompense ne sera distribuée.",
+    "announcement": {
+      "title": "{emote:notifications.types.tournament} Tournoi",
+      "created": "Un tournoi est organisé dans ce salon ! Les inscriptions sont ouvertes jusqu'au {{registrationEndsAt}} avec {command:tournament}, puis les combats se dérouleront jusqu'au {{combatEndsAt}}.\nRègle de niveau : {{levelRule}}.\nPour que les combats aient lieu, il faut {{thresholds}}.\n-# Pendant le tournoi, seules les commandes {command:tournament}, {command:fight} et {command:top} sont disponibles dans ce salon.",
+      "resumed": "Le tournoi reprend dans ce salon, avec le temps qu'il lui restait.",
+      "started": "Les combats sont ouverts jusqu'au {{combatEndsAt}} ! Les participants peuvent utiliser {command:fight} dans ce salon et suivre le classement avec {command:top}.",
+      "completed": "Le tournoi est terminé !\n{{winners}}\nLes participants récupèrent leurs récompenses avec {command:tournament}.",
+      "winnerLine": "{emote:announcements.trophy} {{category}} : **{{winner}}**",
+      "noWinner": "Aucun vainqueur n'a pu être désigné.",
+      "cancelled": {
+        "tooFewParticipants": "Le tournoi est annulé : le nombre minimum d'inscrits n'a pas été atteint.",
+        "manual": "Le tournoi a été annulé par un administrateur du serveur."
+      }
+    },
+    "topTitle": "Classement du tournoi (page {{pageNumber}}/{{totalPages}})",
+    "topCategory": "**{{category}}** ({{totalParticipants}} participants)\nVotre rang : {{yourRank}}\n{{entries}}",
+    "topEntry": "{{rank}}. **{{pseudo}}** · {{totalGloryPoints}} gloire de tournoi, niveau effectif {{effectiveLevel}}",
+    "unranked": "non classé",
+    "emptyCategory": "Aucun participant dans cette catégorie.",
+    "categories": {
+      "level50": "Niveaux {{minLevel}} à {{maxLevel}}",
+      "level100": "Niveaux {{minLevel}} et plus"
+    },
+    "statuses": {
+      "registration": "inscriptions",
+      "combat": "combats",
+      "paused": "en pause",
+      "completed": "terminé",
+      "cancelled": "annulé"
+    },
+    "levelModes": {
+      "category": "chaque joueur combat au niveau {{lowCategoryCap}} au plus dans la catégorie basse, et au niveau {{highCategoryCap}} au plus dans la catégorie haute",
+      "unlimited": "chaque joueur combat à son vrai niveau, sans plafond",
+      "cap": "chaque joueur combat au niveau {{levelCap}} au plus",
+      "reject": "réservé aux joueurs de niveau {{levelCap}} ou moins"
+    },
+    "menu": {
+      "adminTitle": "Gestion des tournois",
+      "adminDescription_one": "{{count}} tournoi en cours ou en pause sur ce serveur.",
+      "adminDescription_other": "{{count}} tournois en cours ou en pause sur ce serveur.",
+      "createTitle": "Créer un tournoi",
+      "createDescription": "Organiser un tournoi dans ce salon : durées et règle de niveau.",
+      "createUnavailable": "Ce serveur n'a pas d'autorisation de tournoi disponible. Les autorisations sont accordées par l'équipe de Crownicles.",
+      "createButton": "Configurer",
+      "cancelTitle": "Annuler un tournoi",
+      "cancelDescription": "Fermer un tournoi en cours, sans distribuer de récompenses.",
+      "cancelUnavailable": "Aucun tournoi en cours sur ce serveur.",
+      "cancelButton": "Choisir",
+      "cancelListTitle": "Tournoi à annuler",
+      "cancelListDescription": "Les participants seront prévenus de l'annulation.",
+      "cancelConfirmTitle": "Confirmer l'annulation",
+      "cancelConfirmDescription": "L'annulation du {{tournament}} le ferme définitivement, sans distribuer de récompenses.",
+      "cancelConfirmButton": "Annuler ce tournoi",
+      "ownerTitle": "Tournois : propriétaire du bot",
+      "ownerDescription": "Actions réservées au propriétaire du bot, pour ce serveur.",
+      "authorizeTitle": "Autoriser un tournoi",
+      "authorizeDescription": "Permettre aux administrateurs de ce serveur d'organiser un tournoi.",
+      "authorizeButton": "Autoriser",
+      "resumeTitle": "Reprendre un tournoi",
+      "resumeDescription": "Relancer un tournoi mis en pause, dans ce salon.",
+      "resumeUnavailable": "Aucun tournoi en pause sur ce serveur.",
+      "resumeButton": "Choisir",
+      "resumeListTitle": "Tournoi à reprendre",
+      "resumeListDescription": "La phase en cours et le temps restant sont conservés.",
+      "resumeConfirmTitle": "Confirmer la reprise",
+      "resumeConfirmDescription": "Le {{tournament}} reprendra dans {{currentChannel}}, avec son temps restant. Les autres commandes du bot y seront bloquées jusqu'à la fin du tournoi.",
+      "resumeConfirmButton": "Reprendre ici",
+      "tournamentLabel": "Tournoi de {{channel}}",
+      "tournamentSummary_one": "{{status}} · {{count}} participant · {{phaseEnd}}",
+      "tournamentSummary_other": "{{status}} · {{count}} participants · {{phaseEnd}}",
+      "chooseButton": "Choisir",
+      "registrationDuration": "Durée des inscriptions",
+      "combatDuration": "Durée des combats",
+      "levelMode": "Règle de niveau",
+      "levelModeCategory": "Par catégorie",
+      "levelModeUnlimited": "Sans plafond",
+      "levelModeCap": "Plafonner le niveau",
+      "levelModeReject": "Refuser au-dessus du plafond",
+      "levelCap": "Plafond de niveau",
+      "levelModeSelected": "-# Règle choisie : {{levelRule}}.",
+      "levelCapMissing": "-# Choisissez un plafond de niveau.",
+      "createWizardTitle": "Nouveau tournoi",
+      "createWizardDescription": "Le tournoi se déroulera dans {{channel}} : jusqu'à sa fin, seules les commandes {command:tournament}, {command:fight} et {command:top} y seront utilisables.\nPour que les combats aient lieu, il faudra {{thresholds}} à la fin des inscriptions.",
+      "createMissingDurations": "-# Choisissez la durée des inscriptions et celle des combats pour continuer.",
+      "createMissingLevelCap": "-# Choisissez un plafond de niveau pour continuer.",
+      "createConfirmButton": "Créer le tournoi",
+      "day": "{{count}} jour",
+      "days": "{{count}} jours",
+      "paused": "en pause",
+      "back": "Retour",
+      "close": "Fermer"
+    },
+    "fightReward": {
+      "title": "Résultat d'un duel de tournoi",
+      "draw": "{{player1}} et {{player2}} font égalité.\n{{player1}} : {{player1GloryChange}} gloire de tournoi\n{{player2}} : {{player2GloryChange}} gloire de tournoi",
+      "result": "{{winner}} remporte le duel.\n{{player1}} : {{player1GloryChange}} gloire de tournoi\n{{player2}} : {{player2GloryChange}} gloire de tournoi"
+    },
+    "errorTitle": "Tournoi indisponible",
+    "errors": {
+      "notFound": "Aucun tournoi n'est organisé sur ce serveur.",
+      "accessDenied": "Un tournoi a lieu dans ce salon : seules les commandes {command:tournament}, {command:fight} et {command:top} y sont disponibles.",
+      "invalidPhase": "Cette action n'est pas disponible pendant la phase actuelle du tournoi.",
+      "alreadyRegistered": "Vous êtes déjà inscrit à ce tournoi.",
+      "invalidCode": "Ce serveur n'a pas d'autorisation de tournoi valide.",
+      "expiredCode": "L'autorisation de tournoi de ce serveur a expiré.",
+      "usedCode": "L'autorisation de tournoi de ce serveur a déjà été utilisée.",
+      "codeGuildMismatch": "Ce tournoi appartient à un autre serveur.",
+      "guildTooSmall": "Le serveur doit compter au moins {{minMembers, number}} membres.",
+      "invalidDuration": "Les durées doivent être comprises entre {{minDays}} et {{maxDays}} jours.",
+      "invalidChannel": "Cette commande doit être exécutée dans un salon texte valide.",
+      "invalidLevelLimit": "La règle de niveau est invalide : un plafond doit être un niveau entier d'au moins {{minLevel}}.",
+      "levelTooHigh": "Votre niveau dépasse le plafond fixé pour ce tournoi.",
+      "noOpponent": "Aucun adversaire n'est disponible pour le moment : les participants qui viennent de défendre se reposent quelques minutes, et un duel contre un même adversaire se joue en {{maxGames}} manches au plus. Réessayez plus tard.",
+      "paused": "Le tournoi est actuellement en pause.",
+      "notRegistered": "Vous devez être inscrit au tournoi pour utiliser cette commande dans ce salon. L'inscription se fait avec {command:tournament}.",
+      "combatNotStarted": "Les combats n'ont pas encore commencé. {command:tournament} indique leur date d'ouverture.",
+      "channelAlreadyUsed": "Un tournoi est déjà en cours dans ce salon.",
+      "unexpected": "Une erreur inattendue est survenue. Réessayez dans quelques instants.",
+      "guildOnly": "Cette commande doit être utilisée sur un serveur Discord.",
+      "ownerOnly": "Cette commande est réservée au propriétaire du bot.",
+      "administratorOnly": "Cette commande est réservée aux administrateurs du serveur.",
+      "missingChannelPermissions": "Le bot n'a pas toutes les permissions nécessaires dans ce salon."
     }
   }
 }

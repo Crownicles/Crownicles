@@ -6,6 +6,7 @@ import { LogsFightsResults } from "../../../../core/database/logs/models/LogsFig
 import { LogsFightsActionsUsed } from "../../../../core/database/logs/models/LogsFightsActionsUsed";
 import { LogsPveFightsResults } from "../../../../core/database/logs/models/LogsPveFightsResults";
 import { LogsPveFightsActionsUsed } from "../../../../core/database/logs/models/LogsPveFightsActionsUsed";
+import { LogsKingGuardFightsResults } from "../../../../core/database/logs/models/LogsKingGuardFightsResults";
 import { Op } from "sequelize";
 
 type WinnerResult = "me" | "opponent" | "draw";
@@ -156,7 +157,32 @@ async function exportPveFights(
 }
 
 /**
- * Exports fights data from logs database (files 45-48)
+ * Exports fights against king guards
+ */
+async function exportKingGuardFights(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const kingGuardFightsCsv = await streamToCSV(
+		LogsKingGuardFightsResults,
+		{ playerId: logsPlayerId },
+		f => ({
+			id: f.id,
+			classId: f.classId,
+			guardClassId: f.guardClassId,
+			guardLevel: f.guardLevel,
+			turns: f.turn,
+			winner: f.winner,
+			date: f.date
+		})
+	);
+	if (kingGuardFightsCsv) {
+		csvFiles["logs/101_king_guard_fights.csv"] = kingGuardFightsCsv;
+	}
+}
+
+/**
+ * Exports fights data from logs database (files 45-48 and 101)
  */
 export async function exportLogsFights(
 	logsPlayerId: number,
@@ -169,4 +195,7 @@ export async function exportLogsFights(
 
 	// 47-48. PvE Fights and actions
 	await exportPveFights(logsPlayerId, csvFiles);
+
+	// 101. King guard fights
+	await exportKingGuardFights(logsPlayerId, csvFiles);
 }

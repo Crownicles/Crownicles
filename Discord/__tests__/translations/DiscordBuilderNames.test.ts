@@ -2,8 +2,12 @@ import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "fs";
 import { resolve } from "path";
 import { SlashCommandBuilderGenerator } from "../../src/commands/SlashCommandBuilderGenerator";
+import { HelpConstants } from "../../../Lib/src/constants/HelpConstants";
 
 const LANG_DIR = resolve(__dirname, "../../../Lang");
+
+// Discord's naming rule for commands and options: https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-naming
+const DISCORD_NAME_PATTERN = /^[-_\p{Ll}\p{Lm}\p{Lo}\p{N}\p{sc=Devanagari}\p{sc=Thai}]{1,32}$/u;
 
 /**
  * Recursively find all "name" fields in the discordBuilder JSON structure.
@@ -44,10 +48,32 @@ describe("DiscordBuilder translations", () => {
 		});
 	}
 
-	it("should fall back to the command key when a translated name is invalid", () => {
-		const command = SlashCommandBuilderGenerator.generateBaseCommand("giveBadge").toJSON();
+	// Discord only registers the English names with their French localization, and rejects the whole command list on a single invalid name
+	for (const lang of ["en", "fr"]) {
+		it(`should only have names accepted by Discord in ${lang}`, () => {
+			const names = findAllNameFields(JSON.parse(readFileSync(resolve(LANG_DIR, lang, "discordBuilder.json"), "utf8")));
 
-		expect(command.name).toBe("givebadge");
-		expect(command.name_localizations?.fr).toBe("donnerbadge");
+			expect(names.filter(name => !DISCORD_NAME_PATTERN.test(name.value))).toEqual([]);
+		});
+	}
+
+	it("should register the pet nickname command under its historical name (#4864)", () => {
+		const command = SlashCommandBuilderGenerator.generateBaseCommand("petNick").toJSON();
+
+		expect(command.name).toBe("petnickname");
+		expect(command.name_localizations?.fr).toBe("surnomfamilier");
+	});
+
+	// Mentions are resolved against the registered (English) names: a mismatch renders "COMMAND NOT FOUND" (#4864)
+	it("should only mention registered commands in /help and in the French translations", () => {
+		const englishBuilder: Record<string, { name: string }> = JSON.parse(readFileSync(resolve(LANG_DIR, "en", "discordBuilder.json"), "utf8"));
+		const registeredNames = new Set(Object.values(englishBuilder).map(command => command.name));
+
+		const frenchMentions = readdirSync(resolve(LANG_DIR, "fr"))
+			.flatMap(file => [...readFileSync(resolve(LANG_DIR, "fr", file), "utf8").matchAll(/\{command:([^} ]+)/gu)]
+				.map(match => match[1]));
+		const helpNames = Object.values(HelpConstants.COMMANDS_DATA).map(command => command.NAME.split(" ")[0]);
+
+		expect([...new Set([...frenchMentions, ...helpNames])].filter(name => !registeredNames.has(name))).toEqual([]);
 	});
 });

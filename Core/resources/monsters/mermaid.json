@@ -7,6 +7,16 @@
   "maxBreath": 20,
   "breathRegen": 4,
   "rewardFactor": 0.65,
+  "materialLoot": [
+    68,
+    77,
+    34,
+    53,
+    78,
+    33,
+    67,
+    75
+  ],
   "attacks": [
     {
       "id": "sing",

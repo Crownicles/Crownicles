@@ -3,11 +3,12 @@ import { QueryTypes } from "sequelize";
 import { MapLinkDataController } from "./MapLink";
 import Player from "../core/database/game/models/Player";
 import { Data } from "./Data";
+import { MapLocationType } from "../../../Lib/src/constants/MapLocationConstants";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
-import { ExpeditionLocationType } from "../../../Lib/src/constants/ExpeditionConstants";
+import { Biome } from "../../../Lib/src/types/Biome";
 
 export class MapLocation extends Data<number> {
-	declare readonly type: string;
+	declare readonly type: MapLocationType;
 
 	declare readonly canBeGoToPlaceMissionDestination: boolean;
 
@@ -21,10 +22,17 @@ export class MapLocation extends Data<number> {
 	declare readonly cityId: number | null;
 
 	/**
-	 * Optional override for expedition type. If not set, the expedition type is derived from the map type.
+	 * Biomes of this map location (terrains used for expeditions and material loot), independent of its structural type.
+	 * A location can mix several terrains, e.g. a mountain whose flanks are riddled with caves.
 	 */
-	declare readonly expeditionType?: ExpeditionLocationType;
+	declare readonly biomes: readonly Biome[];
 
+	/**
+	 * Pick one of the biomes of this map location
+	 */
+	public pickBiome(): Biome {
+		return RandomUtils.crowniclesRandom.pick(this.biomes);
+	}
 
 	/**
 	 * Count all players that have the given map as their current map of origin

@@ -68,6 +68,26 @@ function shouldShowHomeSection(data: ReactionCollectorCityData): boolean {
 	return Boolean(data.home.owned) || shouldShowManageHomeMenu(data);
 }
 
+function addDescriptionSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			StringUtils.joinParagraphs([
+				i18n.t("commands:report.city.description", {
+					lng,
+					mapLocationId: data.mapLocationId,
+					mapTypeId: data.mapTypeId
+				}),
+				data.minimumCityStayScore
+					? i18n.t("commands:report.city.minimumStayScore", {
+						lng,
+						count: data.minimumCityStayScore
+					})
+					: null
+			])
+		)
+	);
+}
+
 function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
 	if (!shouldShowHomeSection(data)) {
 		return;
@@ -467,16 +487,7 @@ export function getMainMenu(params: CityMenuParams): CrowniclesNestedMenu {
 		)
 	);
 
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.description", {
-				lng,
-				mapLocationId: data.mapLocationId,
-				mapTypeId: data.mapTypeId
-			})
-		)
-	);
-
+	addDescriptionSection(container, data, lng);
 	addHomeSection(container, data, lng);
 	addServicesSection(container, data, lng);
 	addShopsSection(container, data, lng);

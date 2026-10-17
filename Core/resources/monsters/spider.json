@@ -7,9 +7,19 @@
   "maxBreath": 20,
   "breathRegen": 4,
   "rewardFactor": 0.65,
+  "materialLoot": [
+    70,
+    21,
+    1,
+    44,
+    90,
+    23,
+    4,
+    75
+  ],
   "attacks": [
     {
-      "id": "poisonousAttack",
+      "id": "spiderPoisonAttack",
       "minLevel": 40,
       "weight": 4
     },

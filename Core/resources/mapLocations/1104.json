@@ -1,5 +1,8 @@
 {
   "type": "icePeak",
+  "biomes": [
+    "mountain"
+  ],
   "canBeGoToPlaceMissionDestination": false,
   "attribute": "pve_island"
 }

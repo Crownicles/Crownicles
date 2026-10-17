@@ -25,6 +25,7 @@ import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenus
 } from "../../src/messages/CrowniclesNestedMenus";
+import { registerCityMessageOwner } from "../../src/commands/player/report/CityMessageHandoff";
 
 function createPacket(): ReactionCollectorCreationPacket {
 	return {
@@ -128,6 +129,29 @@ describe("city shop message handoff", () => {
 		expect(message.edit).not.toHaveBeenCalled();
 	});
 
+	it("leaves the message to a city rebuilt by Core (#4789)", async () => {
+		const collector = { stop: vi.fn() };
+		const message = {
+			edit: vi.fn(),
+			createMessageComponentCollector: vi.fn(() => collector)
+		} as unknown as Message;
+		const menu = {
+			containers: [],
+			createCollector: vi.fn(() => collector)
+		} as CrowniclesNestedMenu;
+		const interaction = { editReply: vi.fn().mockResolvedValue(message) };
+		const previousCity = new CrowniclesNestedMenus(menu, new Map());
+		await previousCity.send(interaction as never);
+		registerCityMessageOwner(interaction as never, previousCity);
+
+		registerCityMessageOwner(interaction as never, new CrowniclesNestedMenus(menu, new Map()));
+		await previousCity.stopCurrentCollector();
+
+		expect(collector.stop).toHaveBeenCalled();
+		expect(message.edit).not.toHaveBeenCalled();
+		expect(interaction.editReply).toHaveBeenCalledOnce();
+	});
+
 	it("disables the city message when an unconfirmed handoff expires", async () => {
 		const collector = { stop: vi.fn() };
 		const message = {
@@ -145,6 +169,29 @@ describe("city shop message handoff", () => {
 		await nestedMenus.stopCurrentCollector();
 
 		expect(message.edit).toHaveBeenCalledOnce();
+	});
+
+	it("edits an ephemeral menu through the interaction", async () => {
+		const collector = { stop: vi.fn() };
+		const message = {
+			flags: { has: vi.fn().mockReturnValue(true) },
+			edit: vi.fn(),
+			createMessageComponentCollector: vi.fn(() => collector)
+		} as unknown as Message;
+		const interaction = {
+			editReply: vi.fn().mockResolvedValue(message)
+		};
+		const menu = {
+			containers: [],
+			createCollector: vi.fn(() => collector)
+		} as CrowniclesNestedMenu;
+		const nestedMenus = new CrowniclesNestedMenus(menu, new Map());
+
+		await nestedMenus.send(interaction as never);
+		await nestedMenus.stopCurrentCollector();
+
+		expect(interaction.editReply).toHaveBeenCalledTimes(2);
+		expect(message.edit).not.toHaveBeenCalled();
 	});
 });
 

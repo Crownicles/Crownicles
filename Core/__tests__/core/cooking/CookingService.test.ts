@@ -4,8 +4,11 @@ import {
 import { CookingService } from "../../../src/core/cooking/CookingService";
 import {
 	getCookingGrade, CookingXpConstants, FAILURE_RATE_PER_EXTRA_LEVEL,
-	PLANT_COOKING_XP, MATERIAL_RARITY_COOKING_XP
+	PLANT_COOKING_XP, MATERIAL_RARITY_COOKING_XP, MASTER_CHEF_BADGE_COOKING_LEVEL
 } from "../../../../Lib/src/constants/CookingConstants";
+import Player from "../../../src/core/database/game/models/Player";
+import { PlayerBadgesManager } from "../../../src/core/database/game/models/PlayerBadges";
+import { Badge } from "../../../../Lib/src/types/Badge";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 import { PlantId } from "../../../../Lib/src/constants/PlantConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
@@ -402,6 +405,57 @@ describe("CookingService - pure functions", () => {
 
 			storageSpy.mockRestore();
 			slotsSpy.mockRestore();
+		});
+	});
+
+	describe("addCookingXp - master chef badge", () => {
+		const makePlayer = (cookingLevel: number): Player => ({
+			id: 42,
+			cookingLevel,
+			cookingExperience: 0,
+			save: vi.fn().mockResolvedValue(undefined)
+		}) as unknown as Player;
+
+		it("should grant the badge when the player reaches the threshold level", async () => {
+			const player = makePlayer(MASTER_CHEF_BADGE_COOKING_LEVEL - 1);
+			const addBadgeSpy = vi.spyOn(PlayerBadgesManager, "addBadge").mockResolvedValue(true);
+
+			const result = await CookingService.addCookingXp({
+				player,
+				xp: CookingService.getXpNeededForLevel(MASTER_CHEF_BADGE_COOKING_LEVEL - 1)
+			});
+
+			expect(player.cookingLevel).toBe(MASTER_CHEF_BADGE_COOKING_LEVEL);
+			expect(addBadgeSpy).toHaveBeenCalledWith(42, Badge.MASTER_CHEF);
+			expect(result.masterChefBadgeEarned).toBe(true);
+			addBadgeSpy.mockRestore();
+		});
+
+		it("should grant the badge on the next craft to a player already past the threshold, announcing it only once", async () => {
+			const addBadgeSpy = vi.spyOn(PlayerBadgesManager, "addBadge").mockResolvedValue(false);
+
+			const result = await CookingService.addCookingXp({
+				player: makePlayer(MASTER_CHEF_BADGE_COOKING_LEVEL + 4),
+				xp: 1
+			});
+
+			expect(result.levelUp).toBe(false);
+			expect(addBadgeSpy).toHaveBeenCalledWith(42, Badge.MASTER_CHEF);
+			expect(result.masterChefBadgeEarned).toBe(false);
+			addBadgeSpy.mockRestore();
+		});
+
+		it("should not grant the badge below the threshold level", async () => {
+			const addBadgeSpy = vi.spyOn(PlayerBadgesManager, "addBadge");
+
+			const result = await CookingService.addCookingXp({
+				player: makePlayer(MASTER_CHEF_BADGE_COOKING_LEVEL - 2),
+				xp: 1
+			});
+
+			expect(addBadgeSpy).not.toHaveBeenCalled();
+			expect(result.masterChefBadgeEarned).toBe(false);
+			addBadgeSpy.mockRestore();
 		});
 	});
 });

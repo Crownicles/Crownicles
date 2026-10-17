@@ -4,7 +4,6 @@ import {
 import {
 	asDays, asHours
 } from "../types/TimeTypes";
-import { MapLocationConstants } from "./MapLocationConstants";
 
 /**
  * Constants for the Pet Expedition system
@@ -108,11 +107,6 @@ export abstract class ExpeditionConstants {
 	static readonly DEFAULT_MAP_LOCATION_ID = 1;
 
 	/**
-	 * Default map type code when not specified
-	 */
-	static readonly DEFAULT_MAP_TYPE = MapLocationConstants.TYPES.ROAD;
-
-	/**
 	 * Number of local expeditions generated (based on player's current map link)
 	 */
 	static readonly LOCAL_EXPEDITIONS_COUNT = 2;
@@ -131,26 +125,6 @@ export abstract class ExpeditionConstants {
 	 * Rounding factor for display duration (rounds to nearest 10 minutes)
 	 */
 	static readonly DURATION_DISPLAY_ROUNDING = 10;
-
-	/**
-	 * Mapping from map location types to expedition location types
-	 */
-	static readonly MAP_TYPE_TO_EXPEDITION_TYPE: Record<string, ExpeditionLocationType> = {
-		[MapLocationConstants.TYPES.FOREST]: "forest",
-		[MapLocationConstants.TYPES.MOUNTAIN]: "mountain",
-		[MapLocationConstants.TYPES.DESERT]: "desert",
-		[MapLocationConstants.TYPES.RUINS]: "ruins",
-		[MapLocationConstants.TYPES.BEACH]: "coast",
-		[MapLocationConstants.TYPES.RIVER]: "coast",
-		[MapLocationConstants.TYPES.LAKE]: "swamp",
-		[MapLocationConstants.TYPES.PLAINS]: "plains",
-		[MapLocationConstants.TYPES.ROAD]: "plains",
-		[MapLocationConstants.TYPES.VILLAGE]: "plains",
-		[MapLocationConstants.TYPES.CITY]: "cave",
-		[MapLocationConstants.TYPES.CASTLE_ENTRANCE]: "ruins",
-		[MapLocationConstants.TYPES.CASTLE_THRONE]: "ruins",
-		[MapLocationConstants.TYPES.CONTINENT]: "plains"
-	};
 
 	/**
 	 * Reward index categories for display purposes
@@ -570,78 +544,6 @@ export abstract class ExpeditionConstants {
 		 * Minimum reward index required to receive material loot
 		 */
 		MIN_REWARD_INDEX_FOR_MATERIAL_LOOT: 1
-	};
-
-	/**
-	 * Material loot tables by location type
-	 * Each location has 6 materials with a mix of rarities
-	 * Prioritizes materials not obtainable from boss loot
-	 */
-	static readonly EXPEDITION_LOOT_TABLES: Record<(typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES)[keyof typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES], readonly number[]> = {
-		forest: [
-			14,
-			20,
-			29,
-			45,
-			6,
-			40
-		],
-		mountain: [
-			32,
-			34,
-			44,
-			47,
-			11,
-			31
-		],
-		desert: [
-			54,
-			55,
-			49,
-			50,
-			61,
-			65
-		],
-		swamp: [
-			63,
-			64,
-			53,
-			60,
-			67,
-			72
-		],
-		ruins: [
-			77,
-			79,
-			66,
-			71,
-			75,
-			76
-		],
-		cave: [
-			82,
-			89,
-			74,
-			78,
-			83,
-			84
-		],
-		plains: [
-			35,
-			42,
-			80,
-			81,
-			85,
-			86
-		],
-		coast: [
-			52,
-			58,
-			70,
-			2,
-			88,
-			90
-		]
 	};
 
 	/**

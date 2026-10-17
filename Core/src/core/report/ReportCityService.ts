@@ -23,9 +23,10 @@ import {
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import {
-	ReactionCollectorCityData
+	EnchanterTomorrowData, ReactionCollectorCityData
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { WeaponDataController } from "../../data/Weapon";
+import { MapLocationDataController } from "../../data/MapLocation";
 import { ArmorDataController } from "../../data/Armor";
 import { Material } from "../../data/Material";
 
@@ -40,12 +41,15 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { OwnedApartmentSummary } from "../../../../Lib/src/types/ApartmentLocation";
 import { Settings } from "../database/game/models/Setting";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
+import { buildDisenchantableItems } from "./ReportBlacksmithService";
 
 // Re-exports for backward compatibility
 export {
 	handleInnMealReaction, handleInnRoomReaction
 } from "./ReportCityInnService";
-export { handleEnchantReaction } from "./ReportCityEnchanterService";
+export {
+	handleEnchantReaction, handleEnchanterDisenchantReaction
+} from "./ReportCityEnchanterService";
 export {
 	handleBuyHomeReaction, handleUpgradeHomeReaction, handleMoveHomeReaction, handleHomeBedReaction
 } from "./ReportCityHomeService";
@@ -164,7 +168,7 @@ export async function buildEnchanterData(
 		enchantment: ItemEnchantment;
 		enchantmentId: string;
 		isPlayerMage: boolean;
-		tomorrow?: EnchanterData["tomorrow"];
+		tomorrow?: EnchanterTomorrowData;
 	}
 ): Promise<EnchanterData> {
 	const {
@@ -176,16 +180,15 @@ export async function buildEnchanterData(
 
 	const enchantableItems: EnchanterData["enchantableItems"] = [];
 	let equipmentCount = 0;
-	let hasEnchantedItem = false;
 	let unenchantedItemsInOtherSlotCount = 0;
 
 	for (const item of playerInventory) {
 		if (item.isPrimaryEquipment()) {
 			equipmentCount++;
 			if (item.itemEnchantmentId) {
-				hasEnchantedItem = true;
+				continue;
 			}
-			else if (item.itemCategory === enchantment.kind.slot) {
+			if (item.itemCategory === enchantment.kind.slot) {
 				enchantableItems.push({
 					category: item.itemCategory,
 					slot: item.slot,
@@ -203,7 +206,7 @@ export async function buildEnchanterData(
 	return {
 		enchantableItems,
 		isInventoryEmpty: equipmentCount === 0,
-		hasAtLeastOneEnchantedItem: hasEnchantedItem,
+		disenchantableItems: buildDisenchantableItems(playerInventory, player),
 		unenchantedItemsInOtherSlotCount,
 		enchantmentId,
 		enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
@@ -213,6 +216,31 @@ export async function buildEnchanterData(
 		mageReduction: isPlayerMage,
 		playerMoney: player.money,
 		playerGems: playerMissionsInfo.gems
+	};
+}
+
+/**
+ * Build Mernil's next stop (city and enchantment), or undefined if the next enchanter settings are invalid
+ */
+async function buildEnchanterTomorrowData(): Promise<EnchanterTomorrowData | undefined> {
+	const nextEnchantmentId = await Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.getValue();
+	const nextEnchantment = ItemEnchantment.getById(nextEnchantmentId);
+	const nextCityId = await Settings.NEXT_ENCHANTER_CITY.getValue();
+	const nextCityMapLocationId = CityDataController.instance.getById(nextCityId)?.maps[0];
+	const nextCityMapLocation = nextCityMapLocationId === undefined ? undefined : MapLocationDataController.instance.getById(nextCityMapLocationId);
+	if (!nextEnchantment || !nextCityMapLocation) {
+		CrowniclesLogger.error("Invalid next enchanter setting. Cannot display Mernil's next destination.", {
+			nextCityId,
+			nextEnchantmentId
+		});
+		return undefined;
+	}
+
+	return {
+		cityMapLocationId: nextCityMapLocation.id,
+		cityMapTypeId: nextCityMapLocation.type,
+		enchantmentId: nextEnchantmentId,
+		enchantmentType: nextEnchantment.kind.type.id
 	};
 }
 
@@ -230,31 +258,11 @@ export async function buildAvailableEnchanterData(
 		return undefined;
 	}
 
-	const nextEnchantmentId = await Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.getValue();
-	const nextEnchantment = ItemEnchantment.getById(nextEnchantmentId);
-	const nextCityId = await Settings.NEXT_ENCHANTER_CITY.getValue();
-	const nextCity = CityDataController.instance.getById(nextCityId);
-	const nextCityMapLocationId = nextCity?.maps[0];
-	if (!nextEnchantment || nextCityMapLocationId === undefined) {
-		CrowniclesLogger.error("Invalid next enchanter setting. Cannot display Mernil's next destination.", {
-			nextCityId,
-			nextEnchantmentId
-		});
-	}
-
 	return buildEnchanterData(playerData, {
 		enchantment,
 		enchantmentId,
 		isPlayerMage: playerData.player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE,
-		...nextEnchantment && nextCityMapLocationId !== undefined
-			? {
-				tomorrow: {
-					cityMapLocationId: nextCityMapLocationId,
-					enchantmentId: nextEnchantmentId,
-					enchantmentType: nextEnchantment.kind.type.id
-				}
-			}
-			: {}
+		tomorrow: await buildEnchanterTomorrowData()
 	});
 }
 

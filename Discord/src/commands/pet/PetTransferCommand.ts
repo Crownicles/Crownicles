@@ -237,8 +237,53 @@ function getWithdrawComponents(
 	return rows;
 }
 
+async function showMenu(
+	interaction: MessageComponentInteraction,
+	embed: CrowniclesEmbed,
+	components: ActionRowBuilder<MessageActionRowComponentBuilder>[]
+): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> {
+	await interaction.update({
+		embeds: [embed],
+		components
+	});
+	return components;
+}
+
+async function sendButtonReaction(
+	interaction: MessageComponentInteraction,
+	packet: ReactionCollectorPetTransferPacket,
+	context: PacketContext,
+	reaction: ReactionMap
+): Promise<void> {
+	await interaction.deferReply();
+	DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, interaction, reaction.index);
+}
+
+async function sendSelectedPetReaction(
+	interaction: StringSelectMenuInteraction,
+	packet: ReactionCollectorPetTransferPacket,
+	context: PacketContext,
+	display: {
+		embed: CrowniclesEmbed;
+		components: ActionRowBuilder<MessageActionRowComponentBuilder>[];
+	}
+): Promise<void> {
+	await interaction.deferUpdate();
+	DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, interaction, parseInt(interaction.values[0], 10));
+
+	// Immediately disable all components to prevent further clicks
+	disableRows(display.components);
+	await interaction.editReply({
+		embeds: [display.embed],
+		components: display.components
+	});
+}
+
+/**
+ * Dispatch on the interaction itself rather than on the menu shown when it was clicked:
+ * a stale or double click can deliver a main menu button while a sub menu is displayed
+ */
 async function handlePetTransferCollect(
-	inMainMenu: boolean,
 	packet: ReactionCollectorPetTransferPacket,
 	context: PacketContext,
 	reactions: {
@@ -251,95 +296,37 @@ async function handlePetTransferCollect(
 		switchComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 		withdrawComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 		mainMenuComponents: ActionRowBuilder<ButtonBuilder>[];
-	},
-	currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[]
-): Promise<{
-	inMainMenu: boolean;
-	currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
-}> {
-	let updatedComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[] = currentComponents;
-
-	if (inMainMenu) {
-		const customId = discord.collectedInteraction.customId;
-
-		switch (customId) {
-			case depositCustomId:
-				await discord.collectedInteraction.deferReply();
-				DiscordCollectorUtils.sendReaction(
-					packet,
-					context,
-					context.keycloakId!,
-					discord.collectedInteraction,
-					reactions.depositReaction!.index
-				);
-				break;
-
-			case switchCustomId:
-				await discord.collectedInteraction.update({
-					embeds: [discord.mainMenuEmbed],
-					components: discord.switchComponents
-				});
-				inMainMenu = false;
-				updatedComponents = discord.switchComponents;
-				break;
-
-			case withdrawCustomId:
-				await discord.collectedInteraction.update({
-					embeds: [discord.mainMenuEmbed],
-					components: discord.withdrawComponents
-				});
-				inMainMenu = false;
-				updatedComponents = discord.withdrawComponents;
-				break;
-
-			case refuseCustomId:
-				await discord.collectedInteraction.deferReply();
-				DiscordCollectorUtils.sendReaction(
-					packet,
-					context,
-					context.keycloakId!,
-					discord.collectedInteraction,
-					reactions.refuseReaction!.index
-				);
-				break;
-
-			default:
-				break;
-		}
+		currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 	}
-	else if (discord.collectedInteraction.customId === backCustomId) {
-		await discord.collectedInteraction.update({
-			embeds: [discord.mainMenuEmbed],
-			components: discord.mainMenuComponents
-		});
-		inMainMenu = true;
-		updatedComponents = discord.mainMenuComponents;
-	}
-	else {
-		await discord.collectedInteraction.deferUpdate();
-		DiscordCollectorUtils.sendReaction(
-			packet,
-			context,
-			context.keycloakId!,
-			discord.collectedInteraction,
-			parseInt((discord.collectedInteraction as StringSelectMenuInteraction).values[0], 10)
-		);
+): Promise<ActionRowBuilder<MessageActionRowComponentBuilder>[]> {
+	const {
+		collectedInteraction: interaction, currentComponents
+	} = discord;
 
-		// Immediately disable all components to prevent further clicks
-		disableRows(currentComponents);
-
-		// Update the original message to reflect the disabled state
-		await discord.collectedInteraction.editReply({
-			embeds: [discord.mainMenuEmbed],
+	if (interaction.isStringSelectMenu()) {
+		await sendSelectedPetReaction(interaction, packet, context, {
+			embed: discord.mainMenuEmbed,
 			components: currentComponents
 		});
-
-		updatedComponents = currentComponents;
+		return currentComponents;
 	}
 
-	return {
-		inMainMenu, currentComponents: updatedComponents
-	};
+	switch (interaction.customId) {
+		case depositCustomId:
+			await sendButtonReaction(interaction, packet, context, reactions.depositReaction!);
+			return currentComponents;
+		case refuseCustomId:
+			await sendButtonReaction(interaction, packet, context, reactions.refuseReaction!);
+			return currentComponents;
+		case switchCustomId:
+			return await showMenu(interaction, discord.mainMenuEmbed, discord.switchComponents);
+		case withdrawCustomId:
+			return await showMenu(interaction, discord.mainMenuEmbed, discord.withdrawComponents);
+		case backCustomId:
+			return await showMenu(interaction, discord.mainMenuEmbed, discord.mainMenuComponents);
+		default:
+			return currentComponents;
+	}
 }
 
 
@@ -392,7 +379,6 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 	}) as Message;
 
 	let currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[] = mainMenuComponents;
-	let inMainMenu = true;
 
 	const msgCollector = msg.createMessageComponentCollector({
 		time: packet.endTime - Date.now()
@@ -404,8 +390,7 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 			return;
 		}
 
-		const result = await handlePetTransferCollect(
-			inMainMenu,
+		currentComponents = await handlePetTransferCollect(
 			packet,
 			context,
 			{
@@ -417,13 +402,10 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 				mainMenuEmbed,
 				switchComponents,
 				withdrawComponents,
-				mainMenuComponents
-			},
-			currentComponents
+				mainMenuComponents,
+				currentComponents
+			}
 		);
-
-		inMainMenu = result.inMainMenu;
-		currentComponents = result.currentComponents;
 	});
 
 

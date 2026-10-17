@@ -5,6 +5,8 @@ import { EnchanterCityData } from "../../../Lib/src/packets/interaction/Reaction
 import { LANGUAGE } from "../../../Lib/src/Language";
 import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
 import { ItemEnchantment } from "../../../Lib/src/types/ItemEnchantment";
+import { MapLocationConstants } from "../../../Lib/src/constants/MapLocationConstants";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
 	buildEnchantmentDescription, buildTomorrowStory
 } from "../../src/commands/player/report/cityMenu/EnchanterMenu";
@@ -13,13 +15,14 @@ function createEnchanterData(enchantmentId: string): EnchanterCityData {
 	return {
 		enchantableItems: [],
 		isInventoryEmpty: true,
-		hasAtLeastOneEnchantedItem: false,
+		disenchantableItems: [],
 		unenchantedItemsInOtherSlotCount: 0,
 		enchantmentId,
 		enchantmentType: "magic",
 		enchantmentSlot: ItemCategory.WEAPON,
 		tomorrow: {
 			cityMapLocationId: 23,
+			cityMapTypeId: MapLocationConstants.TYPES.CITY,
 			enchantmentId: ItemEnchantment.DEFENSE_1.id,
 			enchantmentType: ItemEnchantment.DEFENSE_1.kind.type.id
 		},
@@ -57,6 +60,20 @@ describe("enchanter enchantment descriptions", () => {
 		expect(story).toContain("Claire de Ville");
 		expect(story).toContain("Défense I");
 		expect(story).toContain("prochaine étape de son voyage");
+	});
+
+	it("displays the next city with the icon of its own map type", () => {
+		const data = createEnchanterData(ItemEnchantment.PVP_ATTACK_1.id);
+		data.tomorrow = {
+			...data.tomorrow!,
+			cityMapLocationId: 6,
+			cityMapTypeId: MapLocationConstants.TYPES.VILLAGE
+		};
+
+		const story = buildTomorrowStory(data, LANGUAGE.FRENCH, 26);
+
+		expect(story).toContain(`${CrowniclesIcons.mapTypes.vi} Boug-Coton`);
+		expect(story).not.toContain(CrowniclesIcons.mapTypes.ci);
 	});
 
 	it("uses a warmer story when Mernil stays in the same city", () => {

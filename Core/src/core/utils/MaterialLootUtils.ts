@@ -8,6 +8,7 @@ import { MaterialLootConstants } from "../../../../Lib/src/constants/MaterialLoo
 import { MissionsController } from "../missions/MissionsController";
 import { Player } from "../database/game/models/Player";
 import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { Monster } from "../../data/Monster";
 
 /**
  * Generate weighted material loot from a pool of material IDs, where each
@@ -103,14 +104,9 @@ export async function applyMaterialLoot(playerId: number, loot: MaterialQuantity
 }
 
 /**
- * Generate boss material loot from a boss's loot table, weighted by material rarity.
+ * Generate the material loot of a defeated boss from its loot table, weighted by material rarity.
  */
-export function generateBossLoot(mapId: number): MaterialQuantity[] {
-	const lootTable = PVEConstants.BOSS_LOOT_TABLES[mapId];
-	if (!lootTable || lootTable.length === 0) {
-		return [];
-	}
-
+export function generateBossLoot(monster: Monster): MaterialQuantity[] {
 	const totalDrops = RandomUtils.randInt(PVEConstants.BOSS_LOOT.MIN_DROPS, PVEConstants.BOSS_LOOT.MAX_DROPS + 1);
-	return generateWeightedMaterialLoot(lootTable, totalDrops, MaterialLootConstants.RARITY_WEIGHTS);
+	return generateWeightedMaterialLoot(monster.materialLoot, totalDrops, MaterialLootConstants.RARITY_WEIGHTS);
 }

@@ -11,6 +11,7 @@ import { LogsBlacksmithUpgrades } from "../../../../core/database/logs/models/Lo
 import { LogsBlacksmithDisenchants } from "../../../../core/database/logs/models/LogsBlacksmithDisenchants";
 import { LogsScrapDealerRecycles } from "../../../../core/database/logs/models/LogsScrapDealerRecycles";
 import { LogsEnchanterUses } from "../../../../core/database/logs/models/LogsEnchanterUses";
+import { LogsEnchanterDisenchants } from "../../../../core/database/logs/models/LogsEnchanterDisenchants";
 import { LogsHomePurchases } from "../../../../core/database/logs/models/LogsHomePurchases";
 import { LogsHomeUpgrades } from "../../../../core/database/logs/models/LogsHomeUpgrades";
 import { LogsHomeMoves } from "../../../../core/database/logs/models/LogsHomeMoves";
@@ -148,6 +149,19 @@ export async function exportLogsCity(
 			moneyPrice: use.moneyPrice,
 			gemsPrice: use.gemsPrice,
 			date: use.date
+		})
+	});
+	await exportLogTable({
+		logsPlayerId,
+		csvFiles,
+		filePath: "logs/101_enchanter_disenchants.csv",
+		model: LogsEnchanterDisenchants,
+		transform: disenchant => ({
+			cityId: disenchant.cityId,
+			itemCategory: disenchant.itemCategory,
+			slot: disenchant.slot,
+			enchantmentId: disenchant.enchantmentId,
+			date: disenchant.date
 		})
 	});
 	await exportLogTable({

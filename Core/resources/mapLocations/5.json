@@ -1,6 +1,8 @@
 {
   "type": "ro",
-  "expeditionType": "ruins",
+  "biomes": [
+    "forest"
+  ],
   "tags": [
     "detAu"
   ],

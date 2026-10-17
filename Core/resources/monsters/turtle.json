@@ -7,6 +7,14 @@
   "maxBreath": 20,
   "breathRegen": 4,
   "rewardFactor": 0.2,
+  "materialLoot": [
+    68,
+    54,
+    8,
+    78,
+    67,
+    84
+  ],
   "attacks": [
     {
       "id": "retreat",

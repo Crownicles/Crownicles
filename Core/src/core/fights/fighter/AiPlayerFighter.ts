@@ -21,6 +21,8 @@ import { ItemConstants } from "../../../../../Lib/src/constants/ItemConstants";
 
 type AiPlayerFighterOptions = {
 	allowPotionConsumption?: boolean;
+	effectiveLevel?: number;
+	withoutConsequences?: boolean;
 	preloadedActiveObjects?: PlayerActiveObjects;
 	preloadedPetEntity?: PetEntity | null;
 };
@@ -38,16 +40,19 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 
 	private readonly allowPotionConsumption: boolean;
 
+	private readonly withoutConsequences: boolean;
+
 	private readonly preloadedActiveObjects?: PlayerActiveObjects;
 
 	private readonly preloadedPetEntity?: PetEntity | null;
 
 	public constructor(player: Player, playerClass: Class, options: AiPlayerFighterOptions = {}) {
-		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
+		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds), options.effectiveLevel);
 		this.fightRole = FightConstants.FIGHT_ROLES.DEFENDER;
 		this.class = playerClass;
 		this.classBehavior = getAiClassBehavior(playerClass.id);
 		this.allowPotionConsumption = options.allowPotionConsumption ?? true;
+		this.withoutConsequences = options.withoutConsequences ?? false;
 		this.preloadedActiveObjects = options.preloadedActiveObjects;
 		this.preloadedPetEntity = options.preloadedPetEntity;
 	}
@@ -70,13 +75,13 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 	 * Load the pet entity for the fighter based on availability
 	 */
 	private async loadPetEntity(): Promise<void> {
-		if (!this.player.petId) {
-			this.pet = undefined;
+		if (this.preloadedPetEntity !== undefined) {
+			this.pet = this.preloadedPetEntity ?? undefined;
 			return;
 		}
 
-		if (this.preloadedPetEntity !== undefined) {
-			this.pet = this.preloadedPetEntity ?? undefined;
+		if (!this.player.petId) {
+			this.pet = undefined;
 			return;
 		}
 
@@ -94,11 +99,11 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 	 */
 	public async loadStats(isPvE = false): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = this.preloadedActiveObjects ?? await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.energy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
-		this.loadCombatStats(playerActiveObjects, isPvE);
+		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects, this.level);
+		this.stats.energy = this.stats.maxEnergy;
+		this.loadCombatStats(playerActiveObjects, isPvE, !this.withoutConsequences);
 		this.glory = this.player.getGloryPoints();
-		this.metallicItemCount = await InventorySlots.countObjectsOfPlayer(this.player.id, ItemConstants.TAGS.METALLIC);
+		this.metallicItemCount = await this.countItemsWithTag(ItemConstants.TAGS.METALLIC);
 		await this.loadPetEntity();
 	}
 

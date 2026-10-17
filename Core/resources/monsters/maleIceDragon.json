@@ -7,6 +7,16 @@
   "maxBreath": 50,
   "breathRegen": 5,
   "rewardFactor": 1.4,
+  "materialLoot": [
+    70,
+    24,
+    77,
+    90,
+    53,
+    76,
+    4,
+    87
+  ],
   "attacks": [
     {
       "id": "clawAttack",

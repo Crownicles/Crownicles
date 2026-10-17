@@ -7,13 +7,13 @@ import {
 import {
 	EnchanterCityData,
 	ReactionCollectorCityData,
+	ReactionCollectorEnchanterDisenchantReaction,
 	ReactionCollectorEnchantReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
 import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
-import { MapLocationConstants } from "../../../../../../Lib/src/constants/MapLocationConstants";
 import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenuCollector,
@@ -41,9 +41,11 @@ type EnchanterHandlerParams = CityCollectorHandlerParams & Pick<CityMenuParams, 
 
 type EnchanterCollectorParams = CityMenuParams & { data: EnchanterCityData };
 
-function parseEnchantItemIndex(selectedValue: string, data: EnchanterCityData): number | null {
-	const index = parseInt(selectedValue.replace(ReportCityMenuIds.ENCHANT_ITEM_PREFIX, ""), 10);
-	return index >= 0 && index < data.enchantableItems.length ? index : null;
+type ListedItem = EnchanterCityData["enchantableItems"][number];
+
+function parseListedItemIndex(selectedValue: string, prefix: string, itemCount: number): number | null {
+	const index = parseInt(selectedValue.replace(prefix, ""), 10);
+	return index >= 0 && index < itemCount ? index : null;
 }
 
 function buildEnchantmentPrice(data: EnchanterCityData, lng: Language): string {
@@ -66,27 +68,30 @@ function buildEnchantmentBalance(data: EnchanterCityData, lng: Language): string
 		});
 }
 
-function sendEnchantReaction(params: EnchanterHandlerParams, index: number): void {
+/**
+ * Send the reaction of the given type that targets the listed item
+ */
+function sendListedItemReaction(
+	params: EnchanterHandlerParams,
+	reactionType: string,
+	item: ListedItem
+): void {
 	const {
-		selectedValue, buttonInteraction, context, packet, data
+		buttonInteraction, context, packet
 	} = params;
-	const item = data.enchantableItems[index];
-	if (!item || !selectedValue.startsWith(ReportCityMenuIds.ENCHANT_ITEM_PREFIX)) {
-		return;
-	}
-
-	const reactionIndex = packet.reactions.findIndex(
-		reaction => reaction.type === ReactionCollectorEnchantReaction.name
-			&& (reaction.data as ReactionCollectorEnchantReaction).slot === item.slot
-			&& (reaction.data as ReactionCollectorEnchantReaction).itemCategory === item.category
-	);
+	const reactionIndex = packet.reactions.findIndex(reaction => {
+		const reactionData = reaction.data as ReactionCollectorEnchantReaction | ReactionCollectorEnchanterDisenchantReaction;
+		return reaction.type === reactionType
+			&& reactionData.slot === item.slot
+			&& reactionData.itemCategory === item.category;
+	});
 	if (reactionIndex !== -1) {
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
 	}
 }
 
 async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promise<void> {
-	const index = parseEnchantItemIndex(params.selectedValue, params.data);
+	const index = parseListedItemIndex(params.selectedValue, ReportCityMenuIds.ENCHANT_ITEM_PREFIX, params.data.enchantableItems.length);
 	if (index === null) {
 		await params.buttonInteraction.deferUpdate();
 		return;
@@ -112,12 +117,48 @@ async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promi
 		confirmEmoji: CrowniclesIcons.city.services.enchanter,
 		backMenuId: ReportCityMenuIds.ENCHANTER_MENU,
 		confirmAck: "reply",
-		onConfirm: async action => {
-			await sendEnchantReaction({
+		onConfirm: action => {
+			sendListedItemReaction({
 				...params,
 				buttonInteraction: action.buttonInteraction,
 				nestedMenus: action.nestedMenus
-			}, index);
+			}, ReactionCollectorEnchantReaction.name, item);
+			return Promise.resolve();
+		}
+	});
+}
+
+async function handleDisenchantItemSelection(params: EnchanterHandlerParams): Promise<void> {
+	await params.buttonInteraction.deferUpdate();
+	const index = parseListedItemIndex(params.selectedValue, ReportCityMenuIds.ENCHANTER_DISENCHANT_ITEM_PREFIX, params.data.disenchantableItems.length);
+	if (index === null) {
+		return;
+	}
+	const item = params.data.disenchantableItems[index];
+	const lng = params.interaction.userLanguage;
+	await openCityConfirmation(params.nestedMenus, {
+		interaction: params.interaction,
+		collectorTime: params.collectorTime,
+		lng,
+		pseudo: params.pseudo
+	}, {
+		description: i18n.t("commands:report.city.enchanter.disenchantConfirmDescription", {
+			lng,
+			item: DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng),
+			enchantmentId: item.enchantmentId,
+			enchantmentType: item.enchantmentType
+		}),
+		confirmLabel: i18n.t("commands:report.city.buttons.disenchant", { lng }),
+		confirmEmoji: CrowniclesIcons.city.blacksmith.disenchant,
+		backMenuId: ReportCityMenuIds.ENCHANTER_DISENCHANT_MENU,
+		confirmAck: "reply",
+		onConfirm: action => {
+			sendListedItemReaction({
+				...params,
+				buttonInteraction: action.buttonInteraction,
+				nestedMenus: action.nestedMenus
+			}, ReactionCollectorEnchanterDisenchantReaction.name, item);
+			return Promise.resolve();
 		}
 	});
 }
@@ -136,6 +177,12 @@ async function handleEnchanterCollectorInteraction(params: EnchanterHandlerParam
 	if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 		await buttonInteraction.deferUpdate();
 		handleStayInCityInteraction(packet, context, buttonInteraction);
+		return;
+	}
+
+	if (selectedValue === ReportCityMenuIds.ENCHANTER_DISENCHANT_MENU) {
+		await buttonInteraction.deferUpdate();
+		await nestedMenus.changeMenu(ReportCityMenuIds.ENCHANTER_DISENCHANT_MENU);
 		return;
 	}
 
@@ -194,8 +241,6 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language, currentCity
 		}),
 		buildEnchantmentDescription(data, lng),
 		buildEnchantmentBalance(data, lng),
-		data.hasAtLeastOneEnchantedItem
-			&& i18n.t("commands:report.city.enchanter.hasAtLeastOneEnchantedItem", { lng }),
 		buildTomorrowStory(data, lng, currentCityMapLocationId)
 	]);
 }
@@ -210,7 +255,7 @@ export function buildTomorrowStory(data: EnchanterCityData, lng: Language, curre
 		: "commands:report.city.enchanter.tomorrowStory";
 	return i18n.t(translationKey, {
 		lng,
-		nextCity: DisplayUtils.getMapLocationDisplay(MapLocationConstants.TYPES.CITY, data.tomorrow.cityMapLocationId, lng),
+		nextCity: DisplayUtils.getMapLocationDisplay(data.tomorrow.cityMapTypeId, data.tomorrow.cityMapLocationId, lng),
 		nextEnchantmentId: data.tomorrow.enchantmentId,
 		nextEnchantmentType: data.tomorrow.enchantmentType
 	});
@@ -268,6 +313,21 @@ function addEnchantableItemsSection(container: ContainerBuilder, data: Enchanter
 	}
 }
 
+function addDisenchantOfferSection(container: ContainerBuilder, data: EnchanterCityData, lng: Language): void {
+	if (data.disenchantableItems.length === 0) {
+		return;
+	}
+
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	addCitySection({
+		container,
+		text: i18n.t("commands:report.city.enchanter.disenchantOffer", { lng }),
+		customId: ReportCityMenuIds.ENCHANTER_DISENCHANT_MENU,
+		buttonLabel: i18n.t("commands:report.city.buttons.disenchant", { lng }),
+		emoji: CrowniclesIcons.city.blacksmith.disenchant
+	});
+}
+
 function addEnchanterNavigation(container: ContainerBuilder, lng: Language): void {
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
@@ -290,6 +350,7 @@ export function getEnchanterMenu(params: CityMenuParams): CrowniclesNestedMenu {
 	const container = new ContainerBuilder();
 	addEnchanterTitle(container, lng, params.pseudo);
 	addEnchantableItemsSection(container, data, lng, cityData.mapLocationId);
+	addDisenchantOfferSection(container, data, lng);
 	addEnchanterNavigation(container, lng);
 
 	return {
@@ -301,6 +362,91 @@ export function getEnchanterMenu(params: CityMenuParams): CrowniclesNestedMenu {
 			data,
 			collectorTime: params.collectorTime,
 			pseudo: params.pseudo
+		})
+	};
+}
+
+async function handleEnchanterDisenchantCollectorInteraction(params: EnchanterHandlerParams): Promise<void> {
+	const {
+		selectedValue, buttonInteraction, nestedMenus, context, packet
+	} = params;
+
+	if (selectedValue === ReportCityMenuIds.BACK_TO_ENCHANTER) {
+		await buttonInteraction.deferUpdate();
+		await nestedMenus.changeMenu(ReportCityMenuIds.ENCHANTER_MENU);
+		return;
+	}
+
+	if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
+		await buttonInteraction.deferUpdate();
+		handleStayInCityInteraction(packet, context, buttonInteraction);
+		return;
+	}
+
+	if (selectedValue.startsWith(ReportCityMenuIds.ENCHANTER_DISENCHANT_ITEM_PREFIX)) {
+		await handleDisenchantItemSelection(params);
+	}
+}
+
+function addDisenchantableItemsSection(container: ContainerBuilder, data: EnchanterCityData, lng: Language): void {
+	for (let i = 0; i < data.disenchantableItems.length; i++) {
+		const item = data.disenchantableItems[i];
+
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		addCitySection({
+			container,
+			text: i18n.t("commands:report.city.enchanter.disenchantItemPreview", {
+				lng,
+				item: DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng),
+				enchantmentId: item.enchantmentId,
+				enchantmentType: item.enchantmentType
+			}),
+			customId: `${ReportCityMenuIds.ENCHANTER_DISENCHANT_ITEM_PREFIX}${i}`,
+			buttonLabel: i18n.t("commands:report.city.buttons.disenchant", { lng }),
+			emoji: CrowniclesIcons.city.blacksmith.disenchant
+		});
+	}
+}
+
+/**
+ * Sub-menu where the enchanter removes an enchantment for free
+ */
+export function getEnchanterDisenchantMenu(params: CityMenuParams): CrowniclesNestedMenu {
+	const data = (params.packet.data.data as ReactionCollectorCityData).enchanter!;
+	const lng = params.interaction.userLanguage;
+
+	const container = new ContainerBuilder();
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			StringUtils.formatHeader(i18n.t("commands:report.city.enchanter.disenchantTitle", {
+				lng, pseudo: params.pseudo
+			}))
+		),
+		new TextDisplayBuilder().setContent(i18n.t("commands:report.city.enchanter.disenchantSelectDescription", { lng }))
+	);
+	addDisenchantableItemsSection(container, data, lng);
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(ReportCityMenuIds.BACK_TO_ENCHANTER)
+				.setLabel(i18n.t("commands:report.city.enchanter.backToEnchanter", { lng }))
+				.setEmoji(CrowniclesIcons.city.back)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
+		)
+	);
+
+	return {
+		containers: [container],
+		createCollector: createCityCollector(params.interaction, params.collectorTime, async (customId, buttonInteraction, nestedMenus) => {
+			await handleEnchanterDisenchantCollectorInteraction({
+				...params,
+				selectedValue: customId,
+				buttonInteraction,
+				nestedMenus,
+				data
+			});
 		})
 	};
 }

@@ -20,7 +20,7 @@ const fillPlantStorageTestCommand: ExecuteTestCommandLike = async player => {
 		throw new Error("Vous n'avez pas de maison !");
 	}
 
-	const maxCapacity = home.level;
+	const maxCapacity = home.getLevel()!.features.gardenPlantStorageCapacity;
 
 	await HomePlantStorages.initializeStorage(home.id);
 

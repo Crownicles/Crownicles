@@ -48,6 +48,33 @@ export default defineConfig([
 					"setHealthNoCheck",
 					"setPet",
 					"setWeeklyScore"
+				],
+				// `Player` methods that overwrite the instance with a freshly locked row (#4829).
+				// Receivers matching `nonPlayerReceiver` hold a `Guild` (`addExperience`, `addScore`); suffix-anchored so `guildChief` stays checked.
+				nonPlayerReceiver: "[Gg]uild$",
+				playerReloaders: [
+					"addExperience",
+					"addHealth",
+					"addLevelUpPacket",
+					"addMoney",
+					"addRage",
+					"addScore",
+					"addTokens",
+					"addTokensAndGetActualGain",
+					"applyHealthDelta",
+					"changeClass",
+					"earnTokens",
+					"getAndApplyLostRessourcesOnPveFaint",
+					"leavePVEIslandIfNoEnergy",
+					"levelUpIfNeeded",
+					"mutateLocked",
+					"mutateWithMission",
+					"mutateWithMissions",
+					"processLevelUps",
+					"setGloryPoints",
+					"setRage",
+					"spendMoney",
+					"useTokens"
 				]
 			}]
 		}

@@ -6,11 +6,23 @@ import { LogsPlayers } from "../models/LogsPlayers";
 import { LogsDatabase } from "../LogsDatabase";
 import { LogsPlayersGloryPoints } from "../models/LogsPlayersGloryPoints";
 import { LeagueDataController } from "../../../../data/League";
-import { FightHistoryItem } from "../../../../../../Lib/src/packets/commands/CommandFightHistoryPacket";
+import {
+	FightHistoryItem, KingGuardFightHistoryItem, PlayerFightHistoryItem
+} from "../../../../../../Lib/src/packets/commands/CommandFightHistoryPacket";
 import {
 	asSeconds, getDateLogs, secondsToMilliseconds, weeksToSeconds
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../../../../Lib/src/types/EloGameResult";
+import {
+	KING_GUARD_FIGHT_WINNER, KingGuardFightWinner, LogsKingGuardFightsResults
+} from "../models/LogsKingGuardFightsResults";
+import { LogsKingGuardFightsRequests } from "./LogsKingGuardFightsRequests";
+
+const KING_GUARD_FIGHT_RESULTS: Record<KingGuardFightWinner, EloGameResult> = {
+	[KING_GUARD_FIGHT_WINNER.DRAW]: EloGameResult.DRAW,
+	[KING_GUARD_FIGHT_WINNER.PLAYER]: EloGameResult.WIN,
+	[KING_GUARD_FIGHT_WINNER.GUARD]: EloGameResult.LOSS
+};
 
 type HistoryCombinedLogsFightsResults = LogsFightsResults & {
 	LogsPlayer1: {
@@ -28,8 +40,27 @@ export abstract class LogsFightHistoryRequests {
 	 * @param count - Number of fights to get
 	 */
 	static async getFightHistory(keycloakId: string, count: number): Promise<FightHistoryItem[]> {
-		// Get the fights of the player
 		const logPlayer = (await LogsDatabase.findOrCreatePlayer(keycloakId))!;
+		const [playerFights, kingGuardFights] = await Promise.all([
+			LogsFightHistoryRequests.getPlayerFightHistory(logPlayer, count),
+			LogsKingGuardFightsRequests.getLastFightsOfPlayer(logPlayer.id, count)
+		]);
+
+		// King guard fights are logged apart from the ranked fights, so both histories are merged by date
+		return [
+			...playerFights,
+			...kingGuardFights.map(LogsFightHistoryRequests.buildKingGuardFightHistoryItem)
+		]
+			.sort((a, b) => b.date - a.date)
+			.slice(0, count);
+	}
+
+	/**
+	 * Get the history of the fights of a player against other players
+	 * @param logPlayer
+	 * @param count - Number of fights to get
+	 */
+	private static async getPlayerFightHistory(logPlayer: LogsPlayers, count: number): Promise<PlayerFightHistoryItem[]> {
 		const lastFights = await LogsFightHistoryRequests.getLastFightsOfPlayer(logPlayer.id, count);
 		const fightsIds = lastFights.map(fight => fight.id);
 
@@ -47,12 +78,30 @@ export abstract class LogsFightHistoryRequests {
 	}
 
 	/**
+	 * Build a fight history item from a king guard fight
+	 * @param fight
+	 */
+	private static buildKingGuardFightHistoryItem(fight: LogsKingGuardFightsResults): KingGuardFightHistoryItem {
+		return {
+			date: secondsToMilliseconds(asSeconds(fight.date)),
+			result: KING_GUARD_FIGHT_RESULTS[fight.winner],
+			classes: {
+				me: fight.classId,
+				opponent: fight.guardClassId
+			},
+			kingGuard: {
+				level: fight.guardLevel
+			}
+		};
+	}
+
+	/**
 	 * Build a fight history item from the logs fights glory points and the fight
 	 * @param logsFightsGloryPoints
 	 * @param fight
 	 * @param logPlayer
 	 */
-	private static buildFightHistoryItem(logsFightsGloryPoints: LogsPlayersGloryPoints[], fight: HistoryCombinedLogsFightsResults, logPlayer: LogsPlayers): FightHistoryItem {
+	private static buildFightHistoryItem(logsFightsGloryPoints: LogsPlayersGloryPoints[], fight: HistoryCombinedLogsFightsResults, logPlayer: LogsPlayers): PlayerFightHistoryItem {
 		const logsGloryPoints = logsFightsGloryPoints.filter(logsGloryPoint => logsGloryPoint.fightId === fight.id);
 
 		// Something is wrong if we don't have 2 glory points changes

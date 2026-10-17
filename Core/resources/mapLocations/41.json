@@ -1,5 +1,8 @@
 {
   "type": "ci",
+  "biomes": [
+    "plains"
+  ],
   "tags": [
     "detALa"
   ],

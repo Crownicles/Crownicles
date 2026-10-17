@@ -47,17 +47,12 @@
       }
     },
     "goBack": {
-      "condition": {
-        "canGoBack": true
-      },
       "outcomes": {
         "0": {
-          "money": 150,
-          "goBackToPreviousMap": true
+          "money": 150
         },
         "1": {
-          "money": -250,
-          "goBackToPreviousMap": true
+          "money": -250
         }
       }
     }

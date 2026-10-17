@@ -15,6 +15,7 @@ import { MathUtils } from "../utils/MathUtils";
 import { MaterialLootConstants } from "../../../../Lib/src/constants/MaterialLootConstants";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { generateWeightedMaterialLoot } from "../utils/MaterialLootUtils";
+import { BiomeDataController } from "../../data/Biome";
 
 /**
  * Extended reward data with item details for Core-side use
@@ -282,8 +283,8 @@ function generateMaterialLoot(locationType: ExpeditionLocationType, rewardIndex:
 		return [];
 	}
 
-	const lootTable = ExpeditionConstants.EXPEDITION_LOOT_TABLES[locationType];
-	if (!lootTable || lootTable.length === 0) {
+	const lootTable = BiomeDataController.instance.getMaterialLoot(locationType);
+	if (lootTable.length === 0) {
 		return [];
 	}
 

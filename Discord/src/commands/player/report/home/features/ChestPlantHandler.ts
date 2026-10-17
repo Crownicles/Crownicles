@@ -11,6 +11,7 @@ import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
+import { StringUtils } from "../../../../../utils/StringUtils";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
 import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -203,10 +204,11 @@ export class ChestPlantHandler {
 		description: string; rows: ActionRowBuilder<ButtonBuilder>[];
 	} {
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
-		let description = i18n.t("commands:report.city.homes.chest.plantHeader", {
+		const header = i18n.t("commands:report.city.homes.chest.plantHeader", {
 			lng: ctx.lng,
 			max: maxCapacity
 		});
+		const sections: string[][] = [];
 		let currentSection: "deposit" | "withdraw" | null = null;
 		let emoteIndex = 0;
 
@@ -214,14 +216,15 @@ export class ChestPlantHandler {
 			if (entry.section !== currentSection) {
 				currentSection = entry.section;
 				const sectionKey = entry.section === "deposit" ? "plantDepositSection" : "plantWithdrawSection";
-				description += `\n\n${i18n.t(`commands:report.city.homes.chest.${sectionKey}`, { lng: ctx.lng })}`;
+				sections.push([i18n.t(`commands:report.city.homes.chest.${sectionKey}`, { lng: ctx.lng })]);
 			}
+			const sectionLines = sections[sections.length - 1];
 			const plantType = PlantConstants.getPlantById(entry.plantId)!;
 			const plantName = i18n.t(`models:plants.${plantType.id}`, { lng: ctx.lng });
 			const icon = CrowniclesIcons.plants[plantType.id];
 
 			if (entry.section === "deposit") {
-				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`;
+				sectionLines.push(`${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`);
 				addButtonToRow(rows, this.buildItemButton({
 					emoteIndex,
 					customId: `${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${entry.plantId}_${entry.slot}`,
@@ -229,7 +232,7 @@ export class ChestPlantHandler {
 				}));
 			}
 			else {
-				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName} (${entry.quantity}/${maxCapacity})`;
+				sectionLines.push(`${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName} (${entry.quantity}/${maxCapacity})`);
 				addButtonToRow(rows, this.buildItemButton({
 					emoteIndex,
 					customId: `${HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX}${entry.plantId}`,
@@ -239,9 +242,11 @@ export class ChestPlantHandler {
 			emoteIndex++;
 		}
 
-		if (pageEntries.length === 0) {
-			description += `\n\n${i18n.t("commands:report.city.homes.chest.plantEmpty", { lng: ctx.lng })}`;
-		}
+		const description = StringUtils.joinParagraphs([
+			header,
+			...sections.map(lines => StringUtils.joinLines(lines)),
+			pageEntries.length === 0 && i18n.t("commands:report.city.homes.chest.plantEmpty", { lng: ctx.lng })
+		]);
 		return {
 			description, rows
 		};

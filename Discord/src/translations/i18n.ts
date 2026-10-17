@@ -24,22 +24,23 @@ function getI18nOptions(): i18next.InitOptions<unknown> {
 		resources[language] = resourceFiles;
 	}
 
-	const format: i18next.FormatFunction = (value, format, lng): string => {
-		if (format === "number" && Number.isFinite(value)) {
-			return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
-		}
-		return String(value);
-	};
-	const interpolation = {
-		escapeValue: false,
-		format
-	};
-
 	return {
 		fallbackLng: LANGUAGE.DEFAULT_LANGUAGE,
-		interpolation,
+		interpolation: { escapeValue: false },
 		resources
 	};
+}
+
+/**
+ * Keep preformatted values (e.g. a capped power "~~87~~ 80") intact where a translation applies the number format
+ */
+function formatNumber(value: unknown, lng: string | undefined, options: Intl.NumberFormatOptions): string {
+	return typeof value === "number"
+		? new Intl.NumberFormat(lng, {
+			...options,
+			useGrouping: true
+		}).format(value)
+		: String(value);
 }
 
 
@@ -116,6 +117,7 @@ function isTranslationRecord(value: string[] | Record<string, string>): value is
 
 i18next.init(getI18nOptions())
 	.then();
+i18next.default.services.formatter?.add("number", formatNumber);
 
 export class I18nCrownicles {
 	/**

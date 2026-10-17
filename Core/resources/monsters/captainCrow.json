@@ -7,6 +7,18 @@
   "maxBreath": 30,
   "breathRegen": 5,
   "rewardFactor": 0.6,
+  "materialLoot": [
+    21,
+    14,
+    25,
+    43,
+    44,
+    81,
+    47,
+    35,
+    56,
+    12
+  ],
   "attacks": [
     {
       "id": "breathTakingAttack",

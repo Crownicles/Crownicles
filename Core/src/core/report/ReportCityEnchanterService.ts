@@ -4,10 +4,14 @@ import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
+	ReactionCollectorCityData,
+	ReactionCollectorEnchanterDisenchantReaction,
 	ReactionCollectorEnchantReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import {
+	CommandReportEnchanterDisenchantRes,
 	CommandReportEnchantNotEnoughCurrenciesRes,
+	CommandReportEquipmentChangedRes,
 	CommandReportItemCannotBeEnchantedRes,
 	CommandReportItemEnchantedRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
@@ -20,6 +24,8 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
+import { DisenchantableItem } from "../../../../Lib/src/types/DisenchantableItem";
+import { removeListedEnchantmentUnderLock } from "./ReportListedEquipment";
 
 /**
  * Parameters for the enchantItem function
@@ -85,18 +91,40 @@ function pushMissingCurrenciesResponse(params: {
 	}));
 }
 
+/**
+ * Whether the slot still holds the equipment the enchanter listed when the city was opened
+ */
+function holdsListedItem(
+	item: InventorySlot | null,
+	reaction: ReactionCollectorEnchantReaction,
+	data: ReactionCollectorCityData
+): item is InventorySlot {
+	const listedItem = data.enchanter?.enchantableItems.find(listed => listed.slot === reaction.slot && listed.category === reaction.itemCategory);
+	return Boolean(listedItem && item?.holdsItem(listedItem.details));
+}
+
+function canBeEnchanted(item: InventorySlot, enchantment: ItemEnchantment): boolean {
+	return item.isWeaponOrArmor()
+		&& !item.itemEnchantmentId
+		&& item.itemCategory === enchantment.kind.slot;
+}
+
 async function getEnchantableItem(
 	player: Player,
 	reaction: ReactionCollectorEnchantReaction,
-	enchantment: ItemEnchantment,
+	context: {
+		enchantment: ItemEnchantment;
+		data: ReactionCollectorCityData;
+	},
 	response: CrowniclesPacket[]
 ): Promise<InventorySlot | null> {
 	const itemToEnchant = await InventorySlots.getItem(player.id, reaction.slot, reaction.itemCategory);
-	const canBeEnchanted = itemToEnchant?.isWeaponOrArmor()
-		&& !itemToEnchant.itemEnchantmentId
-		&& itemToEnchant.itemCategory === enchantment.kind.slot;
+	if (!holdsListedItem(itemToEnchant, reaction, context.data)) {
+		response.push(makePacket(CommandReportEquipmentChangedRes, {}));
+		return null;
+	}
 
-	if (!canBeEnchanted) {
+	if (!canBeEnchanted(itemToEnchant, context.enchantment)) {
 		CrowniclesLogger.error("Player tried to enchant an item that doesn't exist or cannot be enchanted. It shouldn't happen because the player must not be able to switch items while in the collector.");
 		response.push(makePacket(CommandReportItemCannotBeEnchantedRes, {}));
 		return null;
@@ -111,6 +139,7 @@ async function getEnchantableItem(
 async function checkEnchantmentConditions(
 	player: Player,
 	reaction: ReactionCollectorEnchantReaction,
+	data: ReactionCollectorCityData,
 	response: CrowniclesPacket[]
 ): Promise<{
 	enchantment: ItemEnchantment;
@@ -139,7 +168,10 @@ async function checkEnchantmentConditions(
 		return null;
 	}
 
-	const itemToEnchant = await getEnchantableItem(player, reaction, pricingData.enchantment, response);
+	const itemToEnchant = await getEnchantableItem(player, reaction, {
+		enchantment: pricingData.enchantment,
+		data
+	}, response);
 	if (!itemToEnchant) {
 		return null;
 	}
@@ -271,8 +303,13 @@ async function enchantItem(params: EnchantItemParams): Promise<void> {
 /**
  * Handle enchant reaction — player enchants an item at the enchanter
  */
-export async function handleEnchantReaction(player: Player, reaction: ReactionCollectorEnchantReaction, response: CrowniclesPacket[]): Promise<void> {
-	const conditions = await checkEnchantmentConditions(player, reaction, response);
+export async function handleEnchantReaction(
+	player: Player,
+	reaction: ReactionCollectorEnchantReaction,
+	data: ReactionCollectorCityData,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	const conditions = await checkEnchantmentConditions(player, reaction, data, response);
 	if (!conditions) {
 		return;
 	}
@@ -284,5 +321,55 @@ export async function handleEnchantReaction(player: Player, reaction: ReactionCo
 		playerMissionsInfo: conditions.playerMissionsInfo,
 		itemToEnchant: conditions.itemToEnchant,
 		response
+	});
+}
+
+function getListedDisenchantableItem(
+	player: Player,
+	reaction: ReactionCollectorEnchanterDisenchantReaction,
+	data: ReactionCollectorCityData
+): DisenchantableItem | null {
+	const listedItem = data.enchanter?.disenchantableItems.find(item => item.slot === reaction.slot && item.category === reaction.itemCategory);
+	if (!listedItem) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to disenchant an item that the enchanter did not list.`);
+		return null;
+	}
+	return listedItem;
+}
+
+/**
+ * Handle enchanter disenchant reaction — the enchanter removes an enchantment for free
+ */
+export async function handleEnchanterDisenchantReaction(
+	player: Player,
+	reaction: ReactionCollectorEnchanterDisenchantReaction,
+	data: ReactionCollectorCityData,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	const listedItem = getListedDisenchantableItem(player, reaction, data);
+	if (!listedItem) {
+		return;
+	}
+
+	await withLockedEntities([Player.lockKey(player.id)] as const, async ([lockedPlayer]) => {
+		if (!await removeListedEnchantmentUnderLock(lockedPlayer, reaction, listedItem.details, response)) {
+			return;
+		}
+
+		response.push(makePacket(CommandReportEnchanterDisenchantRes, {
+			enchantmentId: listedItem.enchantmentId,
+			enchantmentType: listedItem.enchantmentType
+		}));
+
+		const cityId = lockedPlayer.getCurrentCityId();
+		if (cityId) {
+			crowniclesInstance?.logsDatabase.logEnchanterDisenchant({
+				keycloakId: lockedPlayer.keycloakId,
+				cityId,
+				itemCategory: reaction.itemCategory,
+				slot: reaction.slot,
+				enchantmentId: listedItem.enchantmentId
+			}).then();
+		}
 	});
 }

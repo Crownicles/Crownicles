@@ -29,5 +29,6 @@ export enum Badge {
 	ANIMAL_LOVER = "animal_lover",
 	EXPERT_EXPEDITEUR = "expert_expediteur",
 	ORACLE_PATRON = "oracle_patron",
-	SENTIMENTAL_CRAFTER = "sentimental_crafter"
+	SENTIMENTAL_CRAFTER = "sentimental_crafter",
+	MASTER_CHEF = "master_chef"
 }

@@ -4,6 +4,7 @@ import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
 import { botConfig } from "../../../bootstrap";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 import { CoreConstants } from "../../CoreConstants";
+import { DatabaseConstants } from "../../../../../Lib/src/constants/DatabaseConstants";
 
 export class GameDatabase extends Database {
 	constructor() {
@@ -17,7 +18,7 @@ export class GameDatabase extends Database {
 		 * back to `__dirname`.
 		 */
 		const baseDir = process.env[CoreConstants.DB_BASE_DIR_ENV_VAR] ?? __dirname;
-		super(getDatabaseConfiguration(botConfig, "game"), `${baseDir}/models`, `${baseDir}/migrations`);
+		super(getDatabaseConfiguration(botConfig, "game", DatabaseConstants.POOLS.GAME), `${baseDir}/models`, `${baseDir}/migrations`);
 	}
 
 	/**

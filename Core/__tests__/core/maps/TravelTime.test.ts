@@ -10,6 +10,7 @@ import {Maps} from '../../../src/core/maps/Maps';
 import {TravelTime} from '../../../src/core/maps/TravelTime';
 import {Effect} from '../../../../Lib/src/types/Effect';
 import {asMilliseconds} from '../../../../Lib/src/utils/TimeUtils';
+import {getRewardedCityStayMinutes} from '../../../src/core/report/ReportCityStayScoreService';
 
 // Use fake timers so that `Date.now()` and `new Date()` both return our controlled `now`
 vi.useFakeTimers();
@@ -177,7 +178,7 @@ describe('TravelTime', () => {
 		expect(Maps.isTravelling(player)).toBe(false);
 	});
 
-	it('removeEffect never pushes the travel start into the future', async () => {
+	it('removeEffect never delays a travel with an alteration consumed before it started', async () => {
 		vi.spyOn(TravelTime, 'timeTravelMilliseconds').mockResolvedValue();
 		const player: any = {
 			effectRemainingTime: () => 0,
@@ -191,7 +192,29 @@ describe('TravelTime', () => {
 
 		await TravelTime.removeEffect(player, 0);
 
-		expect(player.startTravelDate.valueOf()).toBe(now);
+		expect(player.startTravelDate.valueOf()).toBe(now - 60_000);
+	});
+
+	it('removeEffect does not move back a long travel when spending tokens after an old alteration (#4859)', async () => {
+		const fiftyMinutes = 50 * 60_000;
+		const player: any = {
+			// 30 minutes occupied in the city, then a travel started 50 minutes ago: the alteration never delayed it
+			effectRemainingTime: () => asMilliseconds(0),
+			effectDuration: 30,
+			startTravelDate: new Date(now - fiftyMinutes),
+			effectEndDate: new Date(now - fiftyMinutes - 20 * 60_000),
+			effectId: Effect.OCCUPIED.id,
+			mapLinkId: 1,
+			id: 1,
+			keycloakId: 'user123',
+			save: vi.fn().mockResolvedValue(undefined)
+		};
+		const travelEndBefore = TravelTime.getTravelDataSimplified(player, new Date(now)).travelEndTime;
+
+		await TravelTime.removeEffect(player, 0);
+
+		expect(player.startTravelDate.valueOf()).toBe(now - fiftyMinutes);
+		expect(TravelTime.getTravelDataSimplified(player, new Date(now)).travelEndTime).toBe(travelEndBefore);
 	});
 
 	it('removeEffect never delays a travel started after the alteration when it is healed early', async () => {
@@ -233,6 +256,109 @@ describe('TravelTime', () => {
 		await TravelTime.removeEffect(player, 0);
 
 		expect(player.startTravelDate.valueOf()).toBe(now);
+	});
+
+	it('removeEffect does not reward the elapsed part of an alteration taken in the city', async () => {
+		const thirtyMinutes = 30 * 60_000;
+		const player: any = {
+			// Staying in the city for 30 minutes under a 60 minutes alteration taken on arrival
+			effectRemainingTime: () => asMilliseconds(thirtyMinutes),
+			effectDuration: 60,
+			startTravelDate: new Date(0),
+			effectEndDate: new Date(now + thirtyMinutes),
+			insideCity: true,
+			cityArrivalDate: new Date(now - thirtyMinutes),
+			id: 1,
+			keycloakId: 'user123',
+			save: vi.fn().mockResolvedValue(undefined)
+		};
+
+		await TravelTime.removeEffect(player, 0);
+
+		expect(player.cityArrivalDate.valueOf()).toBe(now);
+		expect(TravelTime.getCityStayTimeUnderEffect(player, new Date(now))).toBe(0);
+	});
+
+	it('removeEffect keeps the city arrival when the alteration ended before it', async () => {
+		const player: any = {
+			effectRemainingTime: () => asMilliseconds(0),
+			effectDuration: 60,
+			startTravelDate: new Date(0),
+			effectEndDate: new Date(now - 90 * 60_000),
+			insideCity: true,
+			cityArrivalDate: new Date(now - 30 * 60_000),
+			id: 1,
+			keycloakId: 'user123',
+			save: vi.fn().mockResolvedValue(undefined)
+		};
+
+		await TravelTime.removeEffect(player, 0);
+
+		expect(player.cityArrivalDate.valueOf()).toBe(now - 30 * 60_000);
+	});
+
+	function createPlayerInCity(stayMinutes: number, effectEndMinutes: number, effectDuration: number): any {
+		return {
+			id: 1,
+			keycloakId: 'user123',
+			startTravelDate: new Date(0),
+			insideCity: true,
+			cityArrivalDate: new Date(now - stayMinutes * 60_000),
+			effectId: Effect.SLEEPING.id,
+			effectDuration,
+			effectEndDate: new Date(now + effectEndMinutes * 60_000)
+		};
+	}
+
+	it('a time bonus in a city is rewarded and keeps the alteration taken on arrival excluded', async () => {
+		// 120 minutes in the city, the first 60 under an alteration
+		const player = createPlayerInCity(120, -60, 60);
+		expect(getRewardedCityStayMinutes(player, new Date(now))).toBe(60);
+
+		await TravelTime.timeTravel(player, 120, 0);
+
+		expect(getRewardedCityStayMinutes(player, new Date(now))).toBe(180);
+	});
+
+	it('a time bonus in a city rewards nothing while it only shortens a running alteration', async () => {
+		// 30 minutes in the city under a 60 minutes alteration taken on arrival
+		const player = createPlayerInCity(30, 30, 60);
+
+		await TravelTime.timeTravel(player, 20, 0);
+
+		expect(getRewardedCityStayMinutes(player, new Date(now))).toBe(0);
+		expect(player.effectEndDate.valueOf()).toBe(now + 10 * 60_000);
+		// The 10 remaining minutes stay excluded, the following 20 are rewarded
+		expect(getRewardedCityStayMinutes(player, new Date(now + 30 * 60_000))).toBe(20);
+	});
+
+	it('a time bonus in a city longer than the alteration rewards the part beyond it', async () => {
+		const player = createPlayerInCity(30, 30, 60);
+
+		await TravelTime.timeTravel(player, 60, 0);
+
+		expect(getRewardedCityStayMinutes(player, new Date(now))).toBe(30);
+		expect(getRewardedCityStayMinutes(player, new Date(now + 10 * 60_000))).toBe(40);
+	});
+
+	it('a time bonus in a city is rewarded like the same time really spent there', async () => {
+		// 10 minutes in the city under a 180 minutes alteration taken on arrival
+		const player = createPlayerInCity(10, 170, 180);
+
+		await TravelTime.timeTravel(player, 60, 0);
+		expect(getRewardedCityStayMinutes(player, new Date(now))).toBe(0);
+
+		await TravelTime.timeTravel(player, 140, 0);
+		expect(getRewardedCityStayMinutes(player, new Date(now))).toBe(30);
+		expect(getRewardedCityStayMinutes(createPlayerInCity(210, -30, 180), new Date(now))).toBe(30);
+	});
+
+	it('a time bonus does not move the city arrival of a player who left the city', async () => {
+		const player = {...createPlayerInCity(10, 0, 0), insideCity: false};
+
+		await TravelTime.timeTravel(player, 60, 0);
+
+		expect(player.cityArrivalDate.valueOf()).toBe(now - 10 * 60_000);
 	});
 
 	it('timeTravel keeps a non travelling player stationary', async () => {		const player: any = {

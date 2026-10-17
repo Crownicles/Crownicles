@@ -1,6 +1,5 @@
 import { MapLocationConstants } from "./MapLocationConstants";
-import { MaterialType } from "../types/MaterialType";
-import type { ExpeditionLocationType } from "./ExpeditionConstants";
+import type { Biome } from "../types/Biome";
 
 export abstract class SmallEventConstants {
 	static readonly HEALTH = {
@@ -372,30 +371,25 @@ export abstract class SmallEventConstants {
 		MIN_PROBABILITY: 0.1,
 		MAX_PROBABILITY: 1.0,
 
-		// Map location types that affect food type probabilities
-		BAD_SMELL_TYPES: [MapLocationConstants.TYPES.DESERT, MapLocationConstants.TYPES.MOUNTAIN],
-
-		// Map location types where vegetarian food is more likely
-		VEGETARIAN_TYPES: [
-			MapLocationConstants.TYPES.FOREST,
-			MapLocationConstants.TYPES.PLAINS,
-			MapLocationConstants.TYPES.ROAD
-		],
-
-		// Map location types where meat is more likely
-		MEAT_TYPES: [
-			MapLocationConstants.TYPES.RIVER,
-			MapLocationConstants.TYPES.BEACH,
-			MapLocationConstants.TYPES.LAKE
-		],
-
-		// Map location types where good smelling food is more likely
+		// Settlement map types where cooked food smells good, whatever the biome
 		GOOD_SMELL_TYPES: [
 			MapLocationConstants.TYPES.VILLAGE,
 			MapLocationConstants.TYPES.CITY,
 			MapLocationConstants.TYPES.CASTLE_ENTRANCE,
 			MapLocationConstants.TYPES.CASTLE_THRONE
 		],
+
+		// Food probability profile (key of PROBABILITIES) of each biome, outside settlements
+		BIOME_PROBABILITY_PROFILES: {
+			desert: "BAD_SMELL",
+			mountain: "BAD_SMELL",
+			forest: "VEGETARIAN",
+			plains: "VEGETARIAN",
+			coast: "MEAT",
+			swamp: "MEAT",
+			cave: "DEFAULT",
+			ruins: "DEFAULT"
+		} as const satisfies Record<Biome, string>,
 		FOOD_TYPES: {
 			BAD_SMELL: "badSmell",
 			VEGETARIAN: "vegetarian",
@@ -553,48 +547,7 @@ export abstract class SmallEventConstants {
 			PROBABILITY: 0.2,
 			MIN: 2,
 			MAX: 4
-		},
-		BIOME_MATERIAL_TYPES: {
-			forest: [
-				MaterialType.WOOD,
-				MaterialType.NATURE,
-				MaterialType.LEATHER
-			],
-			mountain: [
-				MaterialType.METAL,
-				MaterialType.ALLOY
-			],
-			desert: [
-				MaterialType.POISON,
-				MaterialType.EXPLOSIVE,
-				MaterialType.SPIRITUAL
-			],
-			swamp: [
-				MaterialType.POISON,
-				MaterialType.NATURE,
-				MaterialType.ROPE
-			],
-			ruins: [
-				MaterialType.SPIRITUAL,
-				MaterialType.MAGIC,
-				MaterialType.ALLOY
-			],
-			cave: [
-				MaterialType.METAL,
-				MaterialType.ALLOY,
-				MaterialType.EXPLOSIVE
-			],
-			plains: [
-				MaterialType.NATURE,
-				MaterialType.ROPE,
-				MaterialType.LEATHER
-			],
-			coast: [
-				MaterialType.ROPE,
-				MaterialType.NATURE,
-				MaterialType.LEATHER
-			]
-		} satisfies Record<ExpeditionLocationType, readonly MaterialType[]>
+		}
 	} as const;
 
 	static readonly INTERACT_OTHER_PLAYERS = {

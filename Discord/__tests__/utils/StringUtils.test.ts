@@ -111,4 +111,14 @@ describe('StringUtils', () => {
 			expect(StringUtils.capitalizeFirstLetter('!test')).toBe('!test');
 		});
 	});
+
+	describe('joinLines', () => {
+		it('should join lines with a single line break and skip falsy entries', () => {
+			expect(StringUtils.joinLines(['a', false, null, undefined, '', 'b'])).toBe('a\nb');
+		});
+
+		it('should return an empty string when every entry is falsy', () => {
+			expect(StringUtils.joinLines([false, null])).toBe('');
+		});
+	});
 });

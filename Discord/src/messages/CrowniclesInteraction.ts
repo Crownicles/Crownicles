@@ -88,6 +88,7 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 		discordInteraction.editReply = CrowniclesInteraction.prototype.editReply.bind(discordInteraction);
 
 		const interaction = discordInteraction as unknown as CrowniclesInteraction;
+		interaction.isComponentsV2 = CrowniclesInteraction.prototype.isComponentsV2.bind(interaction);
 		interaction._channel = CrowniclesChannel.cast(discordInteraction.channel as GuildTextBasedChannel);
 		if (discordInteraction.isCommand() && "options" in discordInteraction) {
 			interaction.options = this.properCastOptions(discordInteraction.options as CommandInteractionOptionResolver);
@@ -246,6 +247,10 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 
 	private _isV2 = false;
 
+	public isComponentsV2(): boolean {
+		return this._isV2;
+	}
+
 	private static isV2FlaggedOptions(options: string | MessagePayload | InteractionEditReplyOptions): boolean {
 		return typeof options === "object"
 			&& !(options instanceof MessagePayload)
@@ -369,6 +374,8 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 export class CrowniclesChannel extends ChannelTypeWithoutSend {
 	// @ts-expect-error - Property 'language' starts undefined and is initialized if we are sure the channel is a valid channel
 	public language: Language;
+
+	public readonly parentId!: string | null;
 
 	/**
 	 * Cast a GuildTextBasedChannel to a CrowniclesChannel

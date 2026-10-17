@@ -67,9 +67,9 @@ async function applyChiefPromotesElder(
 		chief, elder, guild
 	} = locked;
 
-	crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, elder.id)
+	crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, elder.keycloakId)
 		.then();
-	crowniclesInstance?.logsDatabase.logGuildChiefChange(guild, elder.id)
+	crowniclesInstance?.logsDatabase.logGuildChiefChange(guild, elder.keycloakId)
 		.then();
 
 	chief.guildId = null;
@@ -109,7 +109,7 @@ async function applyMemberLeavesGuild(
 	} = locked;
 
 	if (guild.elderId === player.id) {
-		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId)
+		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, player.keycloakId)
 			.then();
 		guild.elderId = null;
 	}

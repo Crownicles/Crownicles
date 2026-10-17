@@ -4,6 +4,7 @@ import { LogsBlacksmithUpgrades } from "./models/LogsBlacksmithUpgrades";
 import { LogsBlacksmithDisenchants } from "./models/LogsBlacksmithDisenchants";
 import { LogsScrapDealerRecycles } from "./models/LogsScrapDealerRecycles";
 import { LogsEnchanterUses } from "./models/LogsEnchanterUses";
+import { LogsEnchanterDisenchants } from "./models/LogsEnchanterDisenchants";
 import { LogsHomePurchases } from "./models/LogsHomePurchases";
 import { LogsHomeUpgrades } from "./models/LogsHomeUpgrades";
 import { LogsHomeMoves } from "./models/LogsHomeMoves";
@@ -145,6 +146,17 @@ export interface EnchanterUseLogParams {
 	enchantmentType: string;
 	moneyPrice: number;
 	gemsPrice: number;
+}
+
+/**
+ * Parameters for logging a free disenchant at the enchanter
+ */
+export interface EnchanterDisenchantLogParams {
+	keycloakId: string;
+	cityId: string;
+	itemCategory: number;
+	slot: number;
+	enchantmentId: string;
 }
 
 /**
@@ -442,6 +454,19 @@ export class LogsCityLogger {
 		keycloakId, ...fields
 	}: EnchanterUseLogParams): Promise<void> {
 		await createDatedLogEntry(keycloakId, (playerId, date) => LogsEnchanterUses.create({
+			playerId,
+			...fields,
+			date
+		}));
+	}
+
+	/**
+	 * Log when a player removes an enchantment for free at the city enchanter.
+	 */
+	async logEnchanterDisenchant({
+		keycloakId, ...fields
+	}: EnchanterDisenchantLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsEnchanterDisenchants.create({
 			playerId,
 			...fields,
 			date

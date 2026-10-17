@@ -12,7 +12,8 @@ import {
 	handleCommandFightRefusePacketRes,
 	handleCommandFightUpdateStatusRes,
 	handleEndOfFight,
-	handleFightReward
+	handleFightReward,
+	handleKingGuardFightReward
 } from "../../commands/player/FightCommand";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
@@ -22,6 +23,7 @@ import { AIFightActionChoosePacket } from "../../../../Lib/src/packets/fights/AI
 import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights/EndOfFightPacket";
 import { BuggedFightPacket } from "../../../../Lib/src/packets/fights/BuggedFightPacket";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
+import { KingGuardFightRewardPacket } from "../../../../Lib/src/packets/fights/KingGuardFightRewardPacket";
 
 export default class FightHandler {
 	@packetHandler(CommandFightRefusePacketRes)
@@ -72,5 +74,10 @@ export default class FightHandler {
 	@packetHandler(FightRewardPacket)
 	async fightReward(context: PacketContext, packet: FightRewardPacket): Promise<void> {
 		await handleFightReward(context, packet);
+	}
+
+	@packetHandler(KingGuardFightRewardPacket)
+	async kingGuardFightReward(context: PacketContext, packet: KingGuardFightRewardPacket): Promise<void> {
+		await handleKingGuardFightReward(context, packet);
 	}
 }

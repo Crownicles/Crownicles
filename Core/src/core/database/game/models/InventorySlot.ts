@@ -22,6 +22,7 @@ import Player from "./Player";
 import moment from "moment";
 import { InventoryConstants } from "../../../../../../Lib/src/constants/InventoryConstants";
 import { ItemWithDetails } from "../../../../../../Lib/src/types/ItemWithDetails";
+import { MainItemDetails } from "../../../../../../Lib/src/types/MainItemDetails";
 import { toItemWithDetails } from "../../../utils/ItemUtils";
 
 type DepositCandidate = {
@@ -97,6 +98,15 @@ export class InventorySlot extends Model {
 
 	itemWithDetails(player: Player): ItemWithDetails {
 		return toItemWithDetails(player, this.getItem()!, this.itemLevel, this.itemEnchantmentId, this.remainingPotionUsages);
+	}
+
+	/**
+	 * Whether this slot still holds the exact equipment described by a menu built earlier
+	 */
+	holdsItem(details: MainItemDetails): boolean {
+		return this.itemId === details.id
+			&& this.itemLevel === details.itemLevel
+			&& (this.itemEnchantmentId ?? undefined) === details.itemEnchantmentId;
 	}
 }
 

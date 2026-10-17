@@ -6,6 +6,8 @@
  * to one of these values, and Discord must register a menu with the matching ID.
  */
 export const HomeNestedMenuIds = {
+	HOME: "HOME_MENU",
+	UPGRADE_STATION: "HOME_UPGRADE_STATION_MENU",
 	GARDEN: "HOME_GARDEN_MENU"
 } as const;
 

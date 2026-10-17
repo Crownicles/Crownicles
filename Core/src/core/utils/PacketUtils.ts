@@ -4,8 +4,9 @@ import {
 import { botConfig } from "../../bootstrap";
 import { mqttClient } from "../../mqttClient";
 import { AnnouncementPacket } from "../../../../Lib/src/packets/announcements/AnnouncementPacket";
-import { NotificationPacket } from "../../../../Lib/src/packets/notifications/NotificationPacket";
-import { NotificationsSerializedPacket } from "../../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
+import {
+	NotificationsSerializedPacket, SerializableNotification
+} from "../../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
 import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeathPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
@@ -103,7 +104,7 @@ export abstract class PacketUtils {
 		return mqttClient.connected;
 	}
 
-	static sendNotifications(notifications: NotificationPacket[]): void {
+	static sendNotifications(notifications: SerializableNotification[]): void {
 		const serializedPackets: NotificationsSerializedPacket = {
 			notifications: notifications.map(notification => ({
 				type: notification.constructor.name,

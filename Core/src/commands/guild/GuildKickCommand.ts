@@ -71,7 +71,7 @@ async function applyLockedAcceptGuildKick(
 	kicked.guildId = null;
 
 	if (guild.elderId === kicked.id) {
-		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId)
+		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, kicked.keycloakId)
 			.then();
 		guild.elderId = null;
 	}

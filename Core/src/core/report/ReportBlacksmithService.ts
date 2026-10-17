@@ -13,6 +13,7 @@ import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialRarityQuantity } from "../../../../Lib/src/types/MaterialRarityQuantity";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { DisenchantableItem } from "../../../../Lib/src/types/DisenchantableItem";
 
 type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
 type BlacksmithItemData = ReturnType<typeof WeaponDataController.instance.getById> | ReturnType<typeof ArmorDataController.instance.getById> | null;
@@ -119,36 +120,49 @@ function buildBlacksmithUpgradeableItems(
 }
 
 /**
+ * Build the list of the player's enchanted weapons and armors
+ */
+export function buildDisenchantableItems(
+	playerInventory: InventorySlot[],
+	player: Player
+): DisenchantableItem[] {
+	const disenchantableItems: DisenchantableItem[] = [];
+
+	for (const inventorySlot of playerInventory) {
+		if (!inventorySlot.isPrimaryEquipment() || !inventorySlot.itemEnchantmentId) {
+			continue;
+		}
+
+		const enchantment = ItemEnchantment.getById(inventorySlot.itemEnchantmentId);
+		if (enchantment) {
+			disenchantableItems.push({
+				slot: inventorySlot.slot,
+				category: inventorySlot.itemCategory,
+				details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+				enchantmentId: inventorySlot.itemEnchantmentId,
+				enchantmentType: enchantment.kind.type.id
+			});
+		}
+	}
+
+	return disenchantableItems;
+}
+
+/**
  * Build the list of items that can be disenchanted at the blacksmith
  */
 function buildBlacksmithDisenchantableItems(
 	playerInventory: InventorySlot[],
 	player: Player
 ): BlacksmithData["disenchantableItems"] {
-	const disenchantableItems: BlacksmithData["disenchantableItems"] = [];
-
-	for (const inventorySlot of playerInventory) {
-		const itemData = getBlacksmithItemData(inventorySlot);
-		if (!itemData || !inventorySlot.itemEnchantmentId) {
-			continue;
-		}
-
-		const enchantment = ItemEnchantment.getById(inventorySlot.itemEnchantmentId);
-		if (enchantment) {
-			const disenchantCost = getDisenchantPrice(itemData.rarity);
-			disenchantableItems.push({
-				slot: inventorySlot.slot,
-				category: inventorySlot.itemCategory,
-				details: inventorySlot.itemWithDetails(player) as MainItemDetails,
-				enchantmentId: inventorySlot.itemEnchantmentId,
-				enchantmentType: enchantment.kind.type.id,
-				disenchantCost,
-				canDisenchant: player.money >= disenchantCost
-			});
-		}
-	}
-
-	return disenchantableItems;
+	return buildDisenchantableItems(playerInventory, player).map(item => {
+		const disenchantCost = getDisenchantPrice(item.details.rarity);
+		return {
+			...item,
+			disenchantCost,
+			canDisenchant: player.money >= disenchantCost
+		};
+	});
 }
 
 /**

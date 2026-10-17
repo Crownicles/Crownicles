@@ -303,6 +303,20 @@
     "description": "Lancer un combat.",
     "name": "combat"
   },
+  "friendlyFight": {
+    "description": "Lancer un combat amical sans aucune conséquence contre un autre joueur contrôlé par une IA.",
+    "name": "combatamical",
+    "options": {
+      "rank": {
+        "description": "Le classement du joueur à affronter.",
+        "name": "classement"
+      },
+      "user": {
+        "description": "L'utilisateur à affronter.",
+        "name": "utilisateur"
+      }
+    }
+  },
   "equip": {
     "name": "equiper",
     "description": "Gérer votre équipement : équiper, ranger ou intervertir vos objets."
@@ -394,5 +408,17 @@
   "blessing": {
     "name": "benediction",
     "description": "Voir l'état actuel de la bénédiction globale."
+  },
+  "tournament": {
+    "name": "tournoi",
+    "description": "Consulter le tournoi du serveur et s'y inscrire."
+  },
+  "tournament-admin": {
+    "name": "tournoi-admin",
+    "description": "Créer, annuler ou reprendre un tournoi sur ce serveur."
+  },
+  "tournament-owner": {
+    "name": "tournoi-proprietaire",
+    "description": "Autoriser ou reprendre un tournoi (propriétaire du bot)."
   }
 }

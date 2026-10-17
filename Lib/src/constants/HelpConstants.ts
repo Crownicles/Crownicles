@@ -57,6 +57,13 @@ export abstract class HelpConstants {
 			"combat",
 			"duel"
 		],
+		FRIENDLY_FIGHT: [
+			"friendlyfight",
+			"ff",
+			"combatamical",
+			"amical",
+			"friendly"
+		],
 		LANGUAGE: [
 			"language",
 			"langage",
@@ -609,6 +616,12 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":crossed_swords:",
 				NAME: "fight",
+				CATEGORY: "player"
+			},
+		FRIENDLY_FIGHT:
+			{
+				EMOTE: ":handshake:",
+				NAME: "friendlyfight",
 				CATEGORY: "player"
 			},
 		HELP:

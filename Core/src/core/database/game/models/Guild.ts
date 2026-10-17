@@ -23,6 +23,8 @@ import { GuildDomainConstants } from "../../../../../../Lib/src/constants/GuildD
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
+import { runAfterCommit } from "../../../../../../Lib/src/locks/scheduleAfterCommit";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import moment from "moment";
@@ -214,15 +216,34 @@ export class Guild extends Model {
 			guildName: this.name,
 			level: this.level
 		}));
-		for (const member of await Players.getByGuild(this.id)) {
-			await MissionsController.update(member, response, {
-				missionId: "guildLevel",
-				count: this.level,
-				set: true
-			});
-		}
+		await this.setMembersMissionAfterCommit(response, "guildLevel", this.level);
 
 		await this.levelUpIfNeeded(response);
+	}
+
+	/**
+	 * Set a guild-wide mission of every member to `count`, once the caller's transaction has committed.
+	 * Each member is updated in its own short critical section: locking every member from the caller's
+	 * transaction would invert the canonical lock order against their own transactions, and fails with
+	 * ER_CHECKREAD under MariaDB snapshot isolation as soon as one of them commits concurrently (#4924).
+	 * A failure on one member is logged and does not prevent the others from being updated.
+	 */
+	private async setMembersMissionAfterCommit(response: CrowniclesPacket[], missionId: string, count: number): Promise<void> {
+		const guildId = this.id;
+		await runAfterCommit(async () => {
+			for (const member of await Players.getByGuild(guildId)) {
+				try {
+					await MissionsController.update(member, response, {
+						missionId,
+						count,
+						set: true
+					});
+				}
+				catch (error) {
+					CrowniclesLogger.errorWithObj(`Failed to update mission ${missionId} of member ${member.id} of guild ${guildId}`, error);
+				}
+			}
+		});
 	}
 
 	/**
@@ -328,13 +349,7 @@ export class Guild extends Model {
 		this.score += parameters.amount;
 		if (parameters.amount > 0) {
 			this.treasury += parameters.amount;
-			for (const member of await Players.getByGuild(this.id)) {
-				await MissionsController.update(member, parameters.response, {
-					missionId: "guildHasPoints",
-					count: this.score,
-					set: true
-				});
-			}
+			await this.setMembersMissionAfterCommit(parameters.response, "guildHasPoints", this.score);
 		}
 		crowniclesInstance?.logsDatabase.logGuildPointsChange(this, parameters.reason)
 			.then();

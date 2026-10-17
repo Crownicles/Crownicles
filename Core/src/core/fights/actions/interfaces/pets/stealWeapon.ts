@@ -8,7 +8,6 @@ import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/F
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { RealPlayerFighter } from "../../../fighter/RealPlayerFighter";
 import { AiPlayerFighter } from "../../../fighter/AiPlayerFighter";
-import { InventorySlots } from "../../../../database/game/models/InventorySlot";
 
 const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Execute at the start of the fight
@@ -24,7 +23,7 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 
 	// Check if the opponent is a player or an AI player
 	if (opponent instanceof RealPlayerFighter || opponent instanceof AiPlayerFighter) {
-		const memberActiveObjects = await InventorySlots.getMainSlotsItems(opponent.player.id);
+		const memberActiveObjects = await opponent.getMainActiveObjects();
 		weaponDamages = memberActiveObjects.weapon.item.getAttack(memberActiveObjects.weapon.itemLevel);
 		weaponDefense = memberActiveObjects.weapon.item.getDefense(memberActiveObjects.weapon.itemLevel);
 		weaponSpeed = memberActiveObjects.weapon.item.getSpeed(memberActiveObjects.weapon.itemLevel);

@@ -1,5 +1,8 @@
 {
   "type": "volcano",
+  "biomes": [
+    "cave"
+  ],
   "canBeGoToPlaceMissionDestination": false,
   "attribute": "pve_island"
 }

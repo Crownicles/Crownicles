@@ -7,6 +7,15 @@
   "maxBreath": 18,
   "breathRegen": 5,
   "rewardFactor": 0.5,
+  "materialLoot": [
+    68,
+    77,
+    34,
+    33,
+    53,
+    5,
+    69
+  ],
   "attacks": [
     {
       "id": "glacialBreathAttack",

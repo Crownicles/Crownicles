@@ -363,6 +363,13 @@ export class DisplayUtils {
 		return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
 	}
 
+	static formatSignedNumber(value: number, lng: Language): string {
+		return new Intl.NumberFormat(lng, {
+			useGrouping: true,
+			signDisplay: "exceptZero"
+		}).format(value);
+	}
+
 	/**
 	 * Clone item details with unlimited maxValue for display purposes.
 	 * Only applies to MainItemDetails (weapons/armors); support items are returned as-is.

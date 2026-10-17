@@ -18,7 +18,9 @@ import { Language } from "../../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { getSlotCountForCategory } from "../../../../../../../Lib/src/types/HomeFeatures";
 import { ItemWithDetails } from "../../../../../../../Lib/src/types/ItemWithDetails";
-import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
+import {
+	addButtonToRow, DiscordCollectorUtils
+} from "../../../../../utils/DiscordCollectorUtils";
 import { DiscordConstants } from "../../../../../DiscordConstants";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
 import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -30,6 +32,8 @@ import {
 import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConstants";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
 import { ChestPlantHandler } from "./ChestPlantHandler";
+import { ReactionCollectorCreationPacket } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorHomeChestCloseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 
 type ItemSlotDisplay = {
 	slot: number;
@@ -55,6 +59,9 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		createChestCollector: this.createChestCollector.bind(this),
 		refreshChestCategoriesMenu: this.refreshChestCategoriesMenu.bind(this)
 	});
+
+	/** City visits whose inventory changed through the chest: every service lists stale equipment until the city is rebuilt */
+	private readonly citiesWithMovedEquipment = new WeakSet<ReactionCollectorCreationPacket>();
 
 	private hasAnyChestSlots(ctx: HomeFeatureHandlerContext): boolean {
 		const slots = ctx.homeData.features.chestSlots;
@@ -101,6 +108,12 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
+		if (selectedValue === HomeMenuIds.BACK_TO_HOME && this.citiesWithMovedEquipment.has(ctx.packet)) {
+			await componentInteraction.deferUpdate();
+			await this.closeChest(ctx, componentInteraction, nestedMenus);
+			return true;
+		}
+
 		// Exact match navigation
 		const navigationTargets: Record<string, string> = {
 			[HomeMenuIds.BACK_TO_HOME]: HomeMenuIds.HOME_MENU,
@@ -115,6 +128,22 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		// Prefix-based action routing
 		return this.handlePrefixAction(ctx, selectedValue, componentInteraction, nestedMenus);
+	}
+
+	/**
+	 * Leave the chest after moving equipment: Core sends the city again, rebuilt from the current inventory
+	 */
+	private async closeChest(
+		ctx: HomeFeatureHandlerContext,
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		const reactionIndex = ctx.packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorHomeChestCloseReaction.name);
+		if (reactionIndex === -1) {
+			await nestedMenus.changeMenu(HomeMenuIds.HOME_MENU);
+			return;
+		}
+		DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, componentInteraction, reactionIndex);
 	}
 
 	private async handlePrefixAction(
@@ -188,6 +217,13 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
+	 * Display an item with its stats, without the stat caps irrelevant to storage.
+	 */
+	private formatChestItem(details: ItemWithDetails, category: ItemCategory, lng: Language): string {
+		return DisplayUtils.getItemDisplayWithStats(DisplayUtils.withUnlimitedMaxValue(details, category), lng);
+	}
+
+	/**
 	 * Build a button for an item action (deposit/withdraw/swap).
 	 */
 	private buildItemButton(params: {
@@ -202,7 +238,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 	/**
 	 * Add a section of items with buttons.
-	 * Returns the updated emote index after adding all items.
+	 * Returns one line per displayed item and the updated emote index.
 	 */
 	private addItemSectionWithButtons(params: {
 		items: ItemSlotDisplay[];
@@ -213,9 +249,9 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		disabled: boolean;
 		lng: Language;
 	}): {
-		description: string; emoteIndex: number;
+		lines: string[]; emoteIndex: number;
 	} {
-		let description = "";
+		const lines: string[] = [];
 		let { emoteIndex } = params;
 
 		for (const item of params.items) {
@@ -223,9 +259,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				break;
 			}
 
-			const details = DisplayUtils.withUnlimitedMaxValue(item.details, params.category);
-			const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, params.lng);
-			description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${itemDisplay}`;
+			const itemDisplay = this.formatChestItem(item.details, params.category, params.lng);
+			lines.push(`${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${itemDisplay}`);
 
 			const button = this.buildItemButton({
 				emoteIndex,
@@ -238,7 +273,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 
 		return {
-			description, emoteIndex
+			lines, emoteIndex
 		};
 	}
 
@@ -400,7 +435,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
 
 		// Build header
-		let text = i18n.t("commands:report.city.homes.chest.categoryHeader", {
+		const header = i18n.t("commands:report.city.homes.chest.categoryHeader", {
 			lng: ctx.lng,
 			category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng }),
 			count: categoryChestItems.length,
@@ -413,30 +448,30 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const maxBackup = Math.max(getSlotCountForCategory(chest.inventoryCapacity, catInfo.category) - 1, 0);
 		const isInventoryFull = activeItem !== undefined && backupCount >= maxBackup;
 
-		text += `\n${i18n.t("commands:report.city.homes.chest.inventoryInfo", {
+		const inventoryInfo = i18n.t("commands:report.city.homes.chest.inventoryInfo", {
 			lng: ctx.lng,
 			equipped: activeItem ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse,
 			backupCount,
 			maxBackup
-		})}`;
+		});
 
-		// Warning banners
-		text += this.buildWarningBanners(ctx.lng, hasEmptySlots, isInventoryFull);
-
-		// Build sections based on state
-		text += this.buildCategorySections(
-			ctx,
-			catInfo,
-			{
-				chestItems: categoryChestItems,
-				depositableItems: categoryDepositableItems
-			},
-			{
-				hasEmptySlots,
-				isInventoryFull
-			},
-			rows
-		);
+		const text = StringUtils.joinParagraphs([
+			StringUtils.joinLines([header, inventoryInfo]),
+			this.buildWarningBanners(ctx.lng, hasEmptySlots, isInventoryFull),
+			...this.buildCategorySections(
+				ctx,
+				catInfo,
+				{
+					chestItems: categoryChestItems,
+					depositableItems: categoryDepositableItems
+				},
+				{
+					hasEmptySlots,
+					isInventoryFull
+				},
+				rows
+			)
+		]);
 
 		// Back button
 		addButtonToRow(rows, new ButtonBuilder()
@@ -453,18 +488,14 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 * Build warning banners for chest/inventory full states.
 	 */
 	private buildWarningBanners(lng: Language, hasEmptySlots: boolean, isInventoryFull: boolean): string {
-		let text = "";
-		if (!hasEmptySlots) {
-			text += `\n\n${CrowniclesIcons.collectors.warning} *${i18n.t("commands:report.city.homes.chest.chestFull", { lng })}*`;
-		}
-		if (isInventoryFull) {
-			text += `\n${CrowniclesIcons.collectors.warning} *${i18n.t("commands:report.city.homes.chest.inventoryFullLabel", { lng })}*`;
-		}
-		return text;
+		return StringUtils.joinLines([
+			!hasEmptySlots && i18n.t("commands:report.city.homes.chest.chestFull", { lng }),
+			isInventoryFull && i18n.t("commands:report.city.homes.chest.inventoryFullLabel", { lng })
+		]);
 	}
 
 	/**
-	 * Build deposit/withdraw/swap sections with buttons.
+	 * Build deposit/withdraw/swap sections with buttons, one paragraph per section.
 	 */
 	private buildCategorySections(
 		ctx: HomeFeatureHandlerContext,
@@ -472,35 +503,35 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		items: ChestItemLists,
 		capacity: ChestCapacityFlags,
 		rows: ActionRowBuilder<ButtonBuilder>[]
-	): string {
+	): string[] {
 		const {
 			chestItems, depositableItems
 		} = items;
 
 		const bothFull = !capacity.hasEmptySlots && capacity.isInventoryFull;
 		const isSwapMode = bothFull && chestItems.length > 0 && depositableItems.length > 0;
-		const text = isSwapMode
-			? this.buildChestSwapSection(ctx, catInfo, depositableItems, rows)
+		const sections = isSwapMode
+			? this.buildChestSwapSection(ctx, catInfo, items, rows)
 			: this.buildChestDepositWithdrawSections(ctx, catInfo, items, capacity, rows);
 
 		// When nothing was displayed at all, no section could add an emote, so a dedicated hint is shown
 		const hasNoItems = chestItems.length === 0 && depositableItems.length === 0;
 		if (hasNoItems) {
-			return `${text}\n\n${i18n.t("commands:report.city.homes.chest.noStoredItems", { lng: ctx.lng })}`;
+			return [...sections, i18n.t("commands:report.city.homes.chest.noStoredItems", { lng: ctx.lng })];
 		}
 
-		return text;
+		return sections;
 	}
 
 	private buildChestSwapSection(
 		ctx: HomeFeatureHandlerContext,
 		catInfo: typeof CATEGORY_INFO[number],
-		depositableItems: ItemSlotDisplay[],
+		items: ChestItemLists,
 		rows: ActionRowBuilder<ButtonBuilder>[]
-	): string {
-		// Swap mode: only show inventory items to initiate swap
+	): string[] {
+		// Swap mode: inventory items initiate the swap, chest items stay visible so the player can pick knowingly
 		const result = this.addItemSectionWithButtons({
-			items: depositableItems,
+			items: items.depositableItems,
 			category: catInfo.category,
 			rows,
 			emoteIndex: 0,
@@ -508,7 +539,27 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			disabled: false,
 			lng: ctx.lng
 		});
-		return `\n\n${i18n.t("commands:report.city.homes.chest.swapSection", { lng: ctx.lng })}${result.description}`;
+		return [
+			StringUtils.joinLines([i18n.t("commands:report.city.homes.chest.swapSection", { lng: ctx.lng }), ...result.lines]),
+			this.buildChestContentSection(ctx, catInfo, items.chestItems)
+		];
+	}
+
+	/**
+	 * Build a read-only list of the items stored in the chest for a category.
+	 */
+	private buildChestContentSection(
+		ctx: HomeFeatureHandlerContext,
+		catInfo: typeof CATEGORY_INFO[number],
+		chestItems: ItemSlotDisplay[]
+	): string {
+		return StringUtils.joinLines([
+			i18n.t("commands:report.city.homes.chest.chestContentSection", { lng: ctx.lng }),
+			...chestItems.map(item => i18n.t("commands:report.city.homes.chest.chestContentLine", {
+				lng: ctx.lng,
+				item: this.formatChestItem(item.details, catInfo.category, ctx.lng)
+			}))
+		]);
 	}
 
 	private buildChestDepositWithdrawSections(
@@ -517,16 +568,15 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		items: ChestItemLists,
 		capacity: ChestCapacityFlags,
 		rows: ActionRowBuilder<ButtonBuilder>[]
-	): string {
+	): string[] {
 		const {
 			chestItems, depositableItems
 		} = items;
-		let text = "";
+		const sections: string[] = [];
 		let emoteIndex = 0;
 
 		// Normal mode: deposit + withdraw sections
 		if (depositableItems.length > 0) {
-			text += `\n\n${i18n.t("commands:report.city.homes.chest.depositSection", { lng: ctx.lng })}`;
 			const result = this.addItemSectionWithButtons({
 				items: depositableItems,
 				category: catInfo.category,
@@ -536,12 +586,11 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				disabled: !capacity.hasEmptySlots,
 				lng: ctx.lng
 			});
-			text += result.description;
+			sections.push(StringUtils.joinLines([i18n.t("commands:report.city.homes.chest.depositSection", { lng: ctx.lng }), ...result.lines]));
 			emoteIndex = result.emoteIndex;
 		}
 
 		if (chestItems.length > 0) {
-			text += `\n\n${i18n.t("commands:report.city.homes.chest.withdrawSection", { lng: ctx.lng })}`;
 			const result = this.addItemSectionWithButtons({
 				items: chestItems,
 				category: catInfo.category,
@@ -551,10 +600,10 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				disabled: capacity.isInventoryFull,
 				lng: ctx.lng
 			});
-			text += result.description;
+			sections.push(StringUtils.joinLines([i18n.t("commands:report.city.homes.chest.withdrawSection", { lng: ctx.lng }), ...result.lines]));
 		}
 
-		return text;
+		return sections;
 	}
 
 	private async handleChestActionByPrefix({
@@ -621,21 +670,20 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const selectedItem = categoryDepositableItems.find(item => item.slot === inventorySlot);
 		const menuId = `${HomeMenuIds.CHEST_SWAP_MENU_PREFIX}${categoryIndex}_${inventorySlot}`;
 
-		let description = i18n.t("commands:report.city.homes.chest.swapHeader", {
+		const swapHeader = i18n.t("commands:report.city.homes.chest.swapHeader", {
 			lng: ctx.lng,
 			item: selectedItem
-				? DisplayUtils.getItemDisplayWithStats(DisplayUtils.withUnlimitedMaxValue(selectedItem.details, catInfo.category), ctx.lng)
+				? this.formatChestItem(selectedItem.details, catInfo.category, ctx.lng)
 				: "?"
 		});
-		description += "\n";
 
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
+		const targetLines: string[] = [];
 
 		// Build swap target buttons using helper
 		for (let j = 0; j < categoryChestItems.length && j < CrowniclesIcons.choiceEmotes.length; j++) {
 			const chestItem = categoryChestItems[j];
-			const details = DisplayUtils.withUnlimitedMaxValue(chestItem.details, catInfo.category);
-			description += `\n${CrowniclesIcons.choiceEmotes[j]} - ${DisplayUtils.getItemDisplayWithStats(details, ctx.lng)}`;
+			targetLines.push(`${CrowniclesIcons.choiceEmotes[j]} - ${this.formatChestItem(chestItem.details, catInfo.category, ctx.lng)}`);
 
 			const button = this.buildItemButton({
 				emoteIndex: j,
@@ -657,7 +705,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 					i18n.t("commands:report.city.homes.chest.title", {
 						lng: ctx.lng, pseudo: ctx.pseudo
 					}),
-					description,
+					StringUtils.joinParagraphs([swapHeader, StringUtils.joinLines(targetLines)]),
 					rows
 				)
 			],
@@ -700,9 +748,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 					ctx.homeData.chest.slotsPerCategory = response.slotsPerCategory;
 					ctx.homeData.chest.inventoryCapacity = response.inventoryCapacity;
 				}
-				if (ctx.homeData.upgradeStation && response.upgradeStation) {
-					ctx.homeData.upgradeStation = response.upgradeStation;
-				}
+				this.citiesWithMovedEquipment.add(ctx.packet);
 
 				// Re-register the chest categories menu with updated counts
 				this.refreshChestCategoriesMenu(ctx, nestedMenus);

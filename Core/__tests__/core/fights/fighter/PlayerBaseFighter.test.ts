@@ -10,18 +10,19 @@ import { CrowniclesPacket } from '../../../../../Lib/src/packets/CrowniclesPacke
 import { PlayerActiveObjects } from '../../../../src/core/database/game/models/PlayerActiveObjects';
 import { FightAlterations } from '../../../../src/core/fights/actions/FightAlterations';
 import { EnchantmentConstants } from '../../../../../Lib/src/constants/EnchantmentConstants';
+import { ClassDataController } from '../../../../src/data/Class';
 
 class TestPlayerBaseFighter extends PlayerBaseFighter {
-	constructor(player: Player) {
-		super(player, []);
+	constructor(player: Player, effectiveLevel = player.level) {
+		super(player, [], effectiveLevel);
 	}
 
 	public callApplyWeaponAlterationEnchantment(playerActiveObjects: PlayerActiveObjects): void {
 		this.applyWeaponAlterationEnchantment(playerActiveObjects);
 	}
 
-	public callLoadCombatStats(playerActiveObjects: PlayerActiveObjects, isPvE: boolean): void {
-		this.loadCombatStats(playerActiveObjects, isPvE);
+	public callLoadCombatStats(playerActiveObjects: PlayerActiveObjects, isPvE: boolean, includePotion = true): void {
+		this.loadCombatStats(playerActiveObjects, isPvE, includePotion);
 	}
 
 	async chooseAction(_fightView: FightView, _response: CrowniclesPacket[]): Promise<void> {}
@@ -193,6 +194,37 @@ describe('PlayerBaseFighter', () => {
 
 			expect(fighter.getEnchantmentDamageTakenMultiplier()).toBeCloseTo(1 / EnchantmentConstants.DEFENSE_MULTIPLIER[2]);
 			expect(fighter.getEnchantmentDamageTakenMultiplier()).toBeLessThan(1);
+		});
+	});
+
+	describe('effective level', () => {
+		it('uses the effective level for stats without mutating the player', () => {
+			const player = buildPlayer(99, 0);
+			const fighter = new TestPlayerBaseFighter(player, 50);
+			const activeObjects = buildZeroStatActiveObjects({});
+
+			fighter.callLoadCombatStats(activeObjects, false);
+
+			expect(fighter.level).toBe(50);
+			expect(player.level).toBe(99);
+			expect(fighter.getAttack()).toBe(ClassDataController.instance.getById(0)!.getAttackValue(50));
+		});
+
+		it('can exclude potion stats for tournament fights', () => {
+			const player = buildPlayer(50, 0);
+			const fighter = new TestPlayerBaseFighter(player);
+			const activeObjects = buildZeroStatActiveObjects({});
+			activeObjects.potion.item = {
+				getAttack: () => 100,
+				getDefense: () => 100,
+				getSpeed: () => 100
+			} as PlayerActiveObjects['potion']['item'];
+
+			fighter.callLoadCombatStats(activeObjects, false, false);
+
+			expect(fighter.getAttack()).toBe(ClassDataController.instance.getById(0)!.getAttackValue(50));
+			expect(fighter.getDefense()).toBe(ClassDataController.instance.getById(0)!.getDefenseValue(50));
+			expect(fighter.getSpeed()).toBe(ClassDataController.instance.getById(0)!.getSpeedValue(50));
 		});
 	});
 });

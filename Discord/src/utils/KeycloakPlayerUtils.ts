@@ -6,6 +6,7 @@ import {
 } from "../bot/CrowniclesShard";
 import { escapeUsername } from "./StringUtils";
 import { User } from "discord.js";
+import { FightConstants } from "../../../Lib/src/constants/FightConstants";
 
 /**
  * Resolve a keycloak ID to a player display name, with a fallback for unknown players
@@ -13,6 +14,9 @@ import { User } from "discord.js";
 export async function resolveKeycloakPlayerName(keycloakId: string | undefined | null, lng: Language): Promise<string> {
 	if (!keycloakId) {
 		return i18n.t("error:unknownPlayer", { lng });
+	}
+	if (keycloakId === FightConstants.KING_GUARD.KEYCLOAK_ID) {
+		return i18n.t("commands:fight.kingGuard.name", { lng });
 	}
 	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
 	if (!getUser.isError && getUser.payload.user.attributes.gameUsername) {

@@ -4,6 +4,8 @@ import { CrowniclesNestedMenus } from "../../../messages/CrowniclesNestedMenus";
 const cityMenusByInteraction = new WeakMap<CrowniclesInteraction, CrowniclesNestedMenus>();
 
 export function registerCityMessageOwner(interaction: CrowniclesInteraction, nestedMenus: CrowniclesNestedMenus): void {
+	// Core rebuilt the city on the same message: the previous menus must not disable it when their collector stops
+	cityMenusByInteraction.get(interaction)?.handOverMessage();
 	cityMenusByInteraction.set(interaction, nestedMenus);
 }
 

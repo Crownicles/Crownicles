@@ -7,6 +7,16 @@
   "maxBreath": 50,
   "breathRegen": 6,
   "rewardFactor": 1.2,
+  "materialLoot": [
+    82,
+    35,
+    21,
+    23,
+    44,
+    86,
+    62,
+    56
+  ],
   "attacks": [
     {
       "id": "eruptionAttack",
@@ -19,7 +29,7 @@
       "weight": 5
     },
     {
-      "id": "fireAttack",
+      "id": "titanFireAttack",
       "minLevel": 0,
       "weight": 2
     },

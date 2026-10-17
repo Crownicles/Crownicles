@@ -7,6 +7,16 @@
   "maxBreath": 15,
   "breathRegen": 4,
   "rewardFactor": 0.3,
+  "materialLoot": [
+    58,
+    51,
+    59,
+    2,
+    88,
+    31,
+    18,
+    40
+  ],
   "attacks": [
     {
       "id": "chargeClubSmashAttack",

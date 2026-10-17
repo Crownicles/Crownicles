@@ -8,23 +8,38 @@ import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/F
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { PlayerFighter } from "../../../fighter/PlayerFighter";
 import { AiPlayerFighter } from "../../../fighter/AiPlayerFighter";
-import { InventorySlots } from "../../../../database/game/models/InventorySlot";
+
+type ArmorStatPart = {
+	stat: FightStatBuffed;
+	total: number;
+	armor: number;
+};
+
+/**
+ * Multiplier removing the armor share of a stat, or `null` when it cannot be computed:
+ * a stat already at 0 would otherwise become `0 * Infinity = NaN` and cancel every attack using it (#4883)
+ */
+function getArmorRemovalMultiplier({
+	total, armor
+}: ArmorStatPart): number | null {
+	if (armor === 0 || total <= 0) {
+		return null;
+	}
+	return Math.max(0, (total - armor) / total);
+}
 
 const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Execute at the start of the fight
 	if (turn > 2) {
 		return null;
 	}
-	const totalDamage = opponent.getAttack();
-	const totalDefense = opponent.getDefense();
-	const totalSpeed = opponent.getSpeed();
 	let armorDamages = 0;
 	let armorDefense = 0;
 	let armorSpeed = 0;
 
 	// Check if the opponent is a player or an AI player
 	if (opponent instanceof PlayerFighter || opponent instanceof AiPlayerFighter) {
-		const memberActiveObjects = await InventorySlots.getMainSlotsItems(opponent.player.id);
+		const memberActiveObjects = await opponent.getMainActiveObjects();
 		armorDamages = memberActiveObjects.armor.item.getAttack(memberActiveObjects.armor.itemLevel);
 		armorDefense = memberActiveObjects.armor.item.getDefense(memberActiveObjects.armor.itemLevel);
 		armorSpeed = memberActiveObjects.armor.item.getSpeed(memberActiveObjects.armor.itemLevel);
@@ -41,30 +56,28 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 		assistanceStatus: PetAssistanceState.SUCCESS
 	};
 
-	// Lower the opponent's defense because it has no armor anymore
-	FightActionController.applyBuff(result, {
-		selfTarget: false,
-		stat: FightStatBuffed.DEFENSE,
-		operator: FightStatModifierOperation.MULTIPLIER,
-		value: (totalDefense - armorDefense) / totalDefense
-	}, opponent, undefined);
-
-	// If the opponent had an armor that impacts attack or speed, update the stats accordingly
-	if (armorDamages !== 0) {
-		FightActionController.applyBuff(result, {
-			selfTarget: false,
-			stat: FightStatBuffed.ATTACK,
-			operator: FightStatModifierOperation.MULTIPLIER,
-			value: (totalDamage - armorDamages) / totalDamage
-		}, opponent, undefined);
-	}
-	if (armorSpeed !== 0) {
-		FightActionController.applyBuff(result, {
-			selfTarget: false,
-			stat: FightStatBuffed.SPEED,
-			operator: FightStatModifierOperation.MULTIPLIER,
-			value: (totalSpeed - armorSpeed) / totalSpeed
-		}, opponent, undefined);
+	// Lower the opponent's stats by the share its armor was providing
+	const armorStatParts: ArmorStatPart[] = [
+		{
+			stat: FightStatBuffed.DEFENSE, total: opponent.getDefense(), armor: armorDefense
+		},
+		{
+			stat: FightStatBuffed.ATTACK, total: opponent.getAttack(), armor: armorDamages
+		},
+		{
+			stat: FightStatBuffed.SPEED, total: opponent.getSpeed(), armor: armorSpeed
+		}
+	];
+	for (const part of armorStatParts) {
+		const multiplier = getArmorRemovalMultiplier(part);
+		if (multiplier !== null) {
+			FightActionController.applyBuff(result, {
+				selfTarget: false,
+				stat: part.stat,
+				operator: FightStatModifierOperation.MULTIPLIER,
+				value: multiplier
+			}, opponent, null);
+		}
 	}
 
 	return Promise.resolve(result);

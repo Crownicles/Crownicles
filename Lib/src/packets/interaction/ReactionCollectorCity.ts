@@ -28,6 +28,18 @@ import { GardenAccessMode } from "../../types/GardenAccessMode";
 import { GardenConstants } from "../../constants/GardenConstants";
 import { CityService } from "../../constants/CityServiceConstants";
 import { ScrapDealerData } from "../../types/ScrapDealerData";
+import { DisenchantableItem } from "../../types/DisenchantableItem";
+import { MapLocationType } from "../../constants/MapLocationConstants";
+
+/**
+ * Mernil's next stop: the city where he will be tomorrow and the enchantment he will offer there
+ */
+export type EnchanterTomorrowData = {
+	cityMapLocationId: number;
+	cityMapTypeId: MapLocationType;
+	enchantmentId: string;
+	enchantmentType: string;
+};
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -50,6 +62,11 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	 * The collector reuses the city payload schema but is conceptually a garden-only window.
 	 */
 	gardenOnly?: boolean;
+
+	/**
+	 * Points the player is guaranteed to receive when leaving the city, the random bonus being drawn on exit
+	 */
+	minimumCityStayScore?: number;
 
 	inns?: {
 		innId: string;
@@ -87,16 +104,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 			details: MainItemDetails;
 		}[];
 		isInventoryEmpty: boolean; // If true, the inventory is empty, and we can't enchant anything. It is used to display the right message.
-		hasAtLeastOneEnchantedItem: boolean; // If true, the player has at least one enchanted item, so the enchanter must say that it cannot remove enchantments.
+		disenchantableItems: DisenchantableItem[]; // Enchanted equipment the enchanter removes the enchantment from for free.
 		unenchantedItemsInOtherSlotCount: number; // Number of unenchanted items the player has in the wrong slot for today's enchantment (used for plural rendering in stories).
 		enchantmentId: string;
 		enchantmentType: string;
 		enchantmentSlot: ItemCategory; // The slot (WEAPON or ARMOR) that today's enchantment can be applied to.
-		tomorrow?: {
-			cityMapLocationId: number;
-			enchantmentId: string;
-			enchantmentType: string;
-		};
+		tomorrow?: EnchanterTomorrowData;
 		enchantmentCost: {
 			money: number;
 			gems: number;
@@ -259,19 +272,14 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		}[];
 
 		/** Items that can be disenchanted at the blacksmith */
-		disenchantableItems: {
-			slot: number;
-			category: ItemCategory;
-			details: MainItemDetails;
-			enchantmentId: string;
-			enchantmentType: string;
+		disenchantableItems: (DisenchantableItem & {
 
 			/** Gold cost to disenchant this item */
 			disenchantCost: number;
 
 			/** Core-authoritative eligibility: player has enough gold to disenchant */
 			canDisenchant: boolean;
-		}[];
+		})[];
 
 		/** Current player money for UI display */
 		playerMoney: number;
@@ -511,6 +519,13 @@ export class ReactionCollectorEnchantReaction extends ReactionCollectorReaction 
 	itemCategory!: ItemCategory;
 }
 
+/** Reaction for removing an enchantment for free at the enchanter */
+export class ReactionCollectorEnchanterDisenchantReaction extends ReactionCollectorReaction {
+	slot!: number;
+
+	itemCategory!: ItemCategory;
+}
+
 export class ReactionCollectorCityShopReaction extends ReactionCollectorReaction {
 	shopId!: string;
 }
@@ -524,6 +539,9 @@ export class ReactionCollectorCityMoveHomeReaction extends ReactionCollectorReac
 export class ReactionCollectorHomeMenuReaction extends ReactionCollectorReaction {}
 
 export class ReactionCollectorHomeBedReaction extends ReactionCollectorReaction {}
+
+/** Leaving the chest after moving equipment: the city is rebuilt so every service lists the current inventory */
+export class ReactionCollectorHomeChestCloseReaction extends ReactionCollectorReaction {}
 
 export class ReactionCollectorUpgradeItemReaction extends ReactionCollectorReaction {
 	slot!: number;
@@ -614,11 +632,13 @@ type CityReaction =
 	| ReactionCollectorInnMealReaction
 	| ReactionCollectorInnRoomReaction
 	| ReactionCollectorEnchantReaction
+	| ReactionCollectorEnchanterDisenchantReaction
 	| ReactionCollectorCityShopReaction
 	| ReactionCollectorCityBuyHomeReaction
 	| ReactionCollectorCityUpgradeHomeReaction
 	| ReactionCollectorCityMoveHomeReaction
 	| ReactionCollectorHomeMenuReaction
+	| ReactionCollectorHomeChestCloseReaction
 	| ReactionCollectorUpgradeItemReaction
 	| ReactionCollectorBlacksmithMenuReaction
 	| ReactionCollectorBlacksmithUpgradeReaction
@@ -680,14 +700,21 @@ export class ReactionCollectorCity extends ReactionCollector {
 	private buildEnchanterReactions(): {
 		type: string; data: ReactionCollectorReaction;
 	}[] {
-		if (!this.data.enchanter?.enchantableItems) {
+		if (!this.data.enchanter) {
 			return [];
 		}
-		return this.data.enchanter.enchantableItems.map(item =>
-			this.buildReaction(ReactionCollectorEnchantReaction, {
-				slot: item.slot,
-				itemCategory: item.category
-			}));
+		return [
+			...this.data.enchanter.enchantableItems.map(item =>
+				this.buildReaction(ReactionCollectorEnchantReaction, {
+					slot: item.slot,
+					itemCategory: item.category
+				})),
+			...this.data.enchanter.disenchantableItems.map(item =>
+				this.buildReaction(ReactionCollectorEnchanterDisenchantReaction, {
+					slot: item.slot,
+					itemCategory: item.category
+				}))
+		];
 	}
 
 	private buildShopReactions(): {
@@ -743,12 +770,16 @@ export class ReactionCollectorCity extends ReactionCollector {
 			})) ?? [];
 
 		const gardenReactions = this.buildGardenReactions();
+		const chestCloseReactions = this.data.home.owned.chest
+			? [this.buildReaction(ReactionCollectorHomeChestCloseReaction, {})]
+			: [];
 
 		return [
 			homeMenuReaction,
 			...homeBedReactions,
 			...upgradeItemReactions,
-			...gardenReactions
+			...gardenReactions,
+			...chestCloseReactions
 		];
 	}
 

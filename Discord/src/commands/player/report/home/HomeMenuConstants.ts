@@ -10,13 +10,13 @@ export const HomeMenuIds = {
 	MAIN_MENU: "HOME_MAIN_MENU",
 
 	/** Home menu (navigation key) */
-	HOME_MENU: "HOME_MENU",
+	HOME_MENU: HomeNestedMenuIds.HOME,
 
 	/** Manage home menu (notary) */
 	MANAGE_HOME_MENU: "MANAGE_HOME_MENU",
 
 	/** Upgrade station feature menu */
-	UPGRADE_STATION_MENU: "HOME_UPGRADE_STATION_MENU",
+	UPGRADE_STATION_MENU: HomeNestedMenuIds.UPGRADE_STATION,
 
 	// --- Navigation ---
 	/** Option to leave the home and return to city */

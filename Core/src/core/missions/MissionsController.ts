@@ -44,10 +44,14 @@ import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingCons
 
 export type LockedPlayerMutation = (lockedPlayer: Player) => void;
 
-const MISSION_UPDATE_CALLERS = {
+// Methods that overwrite a caller `Player` instance with a freshly locked row.
+export const PLAYER_RESYNC_CALLERS = {
 	UPDATE: "MissionsController.update",
-	UPDATE_MULTIPLE: "MissionsController.updateMultiple"
+	UPDATE_MULTIPLE: "MissionsController.updateMultiple",
+	MUTATE_LOCKED: "Player.mutateLocked"
 } as const;
+
+export type PlayerResyncCaller = typeof PLAYER_RESYNC_CALLERS[keyof typeof PLAYER_RESYNC_CALLERS];
 
 export type MissionInformations = {
 	missionId: string;
@@ -119,20 +123,24 @@ type MissionLockContext = {
 };
 
 export class UnsavedPlayerChangesError extends Error {
-	constructor(caller: string, playerId: number, changedFields: string[]) {
+	constructor(caller: PlayerResyncCaller, playerId: number, changedFields: string[]) {
 		super(`${caller}: player ${playerId} has unsaved changes: ${changedFields.join(", ")}`);
 		this.name = "UnsavedPlayerChangesError";
 	}
 }
 
-export abstract class MissionsController {
-	private static assertPlayerHasNoPendingChanges(player: Player, caller: string): void {
-		const changedFields = player.changed();
-		if (changedFields) {
-			throw new UnsavedPlayerChangesError(caller, player.id, changedFields);
-		}
+/**
+ * Reject a caller instance that is about to be overwritten by a freshly locked one:
+ * its pending changes would be silently lost (#4207, #4817, #4829).
+ */
+export function assertPlayerHasNoPendingChanges(player: Player, caller: PlayerResyncCaller): void {
+	const changedFields = player.changed();
+	if (changedFields) {
+		throw new UnsavedPlayerChangesError(caller, player.id, changedFields);
 	}
+}
 
+export abstract class MissionsController {
 	private static synchronizeCaller(player: Player, updatedPlayer: Player): Player {
 		Object.assign(player, updatedPlayer);
 		return player;
@@ -295,7 +303,7 @@ export abstract class MissionsController {
 	 */
 	private static async runUnderMissionLock(
 		player: Player,
-		caller: string,
+		caller: PlayerResyncCaller,
 		body: (lockedPlayer: Player, lockedMissionInfo: PlayerMissionsInfo, dailyMission: DailyMission) => Promise<Player>
 	): Promise<Player> {
 		const dailyMission = await DailyMissions.getOrGenerate();
@@ -340,10 +348,10 @@ export abstract class MissionsController {
 			applyOnLockedPlayer
 		}: MissionInformations
 	): Promise<Player> {
-		MissionsController.assertPlayerHasNoPendingChanges(player, MISSION_UPDATE_CALLERS.UPDATE);
+		assertPlayerHasNoPendingChanges(player, PLAYER_RESYNC_CALLERS.UPDATE);
 		const updatedPlayer = await MissionsController.runUnderMissionLock(
 			player,
-			MISSION_UPDATE_CALLERS.UPDATE,
+			PLAYER_RESYNC_CALLERS.UPDATE,
 			(lockedPlayer, lockedMissionInfo, dailyMission) => MissionsController.runSingleUpdateUnderLock({
 				player: lockedPlayer,
 				missionInfo: lockedMissionInfo,
@@ -422,10 +430,10 @@ export abstract class MissionsController {
 		response: CrowniclesPacket[],
 		missionInformationsList: MissionInformations[]
 	): Promise<Player> {
-		MissionsController.assertPlayerHasNoPendingChanges(player, MISSION_UPDATE_CALLERS.UPDATE_MULTIPLE);
+		assertPlayerHasNoPendingChanges(player, PLAYER_RESYNC_CALLERS.UPDATE_MULTIPLE);
 		const updatedPlayer = await MissionsController.runUnderMissionLock(
 			player,
-			MISSION_UPDATE_CALLERS.UPDATE_MULTIPLE,
+			PLAYER_RESYNC_CALLERS.UPDATE_MULTIPLE,
 			(lockedPlayer, lockedMissionInfo, dailyMission) =>
 				MissionsController.runBatchUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, missionInformationsList, dailyMission)
 		);

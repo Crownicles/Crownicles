@@ -71,6 +71,7 @@ describe("Mission chain state synchronization", () => {
 			setScore: vi.fn().mockResolvedValue(undefined),
 			needLevelUp: vi.fn().mockReturnValue(false),
 			save: vi.fn().mockResolvedValue(undefined),
+			changed: vi.fn().mockReturnValue(false),
 			toJSON: function() {
 				return { ...this };
 			}

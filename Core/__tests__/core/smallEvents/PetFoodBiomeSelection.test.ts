@@ -8,7 +8,10 @@ import Player from "../../../src/core/database/game/models/Player";
 import { TravelTime } from "../../../src/core/maps/TravelTime";
 import { getFoodType } from "../../../src/core/smallEvents/petFood";
 import { MapLinkDataController } from "../../../src/data/MapLink";
-import { MapLocationDataController } from "../../../src/data/MapLocation";
+import {
+	MapLocation, MapLocationDataController
+} from "../../../src/data/MapLocation";
+import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 
 const player = { mapLinkId: 12 } as Player;
 const startMapId = MapConstants.LOCATIONS_IDS.ROAD_OF_WONDERS + 1;
@@ -21,10 +24,11 @@ describe("pet food biome selection", () => {
 			startMap: startMapId,
 			endMap: endMapId
 		} as never);
-		vi.spyOn(MapLocationDataController.instance, "getById").mockImplementation(mapId => ({
+		vi.spyOn(MapLocationDataController.instance, "getById").mockImplementation(mapId => Object.assign(new MapLocation(), {
 			id: mapId,
-			type: mapId === startMapId ? MapLocationConstants.TYPES.FOREST : MapLocationConstants.TYPES.RIVER
-		}) as never);
+			type: mapId === startMapId ? MapLocationConstants.TYPES.FOREST : MapLocationConstants.TYPES.RIVER,
+			biomes: [mapId === startMapId ? ExpeditionConstants.EXPEDITION_LOCATION_TYPES.FOREST : ExpeditionConstants.EXPEDITION_LOCATION_TYPES.COAST]
+		}));
 	});
 
 	afterEach(() => {
@@ -47,6 +51,34 @@ describe("pet food biome selection", () => {
 			.mockReturnValueOnce(0.5);
 
 		expect(getFoodType(player)).toBe("meat");
+	});
+
+	it("smells cooked food in settlements whatever their biome", () => {
+		vi.spyOn(MapLocationDataController.instance, "getById").mockImplementation(mapId => Object.assign(new MapLocation(), {
+			id: mapId,
+			type: MapLocationConstants.TYPES.VILLAGE,
+			biomes: [ExpeditionConstants.EXPEDITION_LOCATION_TYPES.DESERT]
+		}));
+		vi.spyOn(TravelTime, "getTravelProgress").mockReturnValue(0.8);
+		vi.spyOn(RandomUtils.crowniclesRandom, "realZeroToOneInclusive")
+			.mockReturnValueOnce(0.7)
+			.mockReturnValueOnce(0.5);
+
+		expect(getFoodType(player)).toBe("goodSmell");
+	});
+
+	it("uses the biome of the location outside settlements", () => {
+		vi.spyOn(MapLocationDataController.instance, "getById").mockImplementation(mapId => Object.assign(new MapLocation(), {
+			id: mapId,
+			type: MapLocationConstants.TYPES.ROAD,
+			biomes: [ExpeditionConstants.EXPEDITION_LOCATION_TYPES.DESERT]
+		}));
+		vi.spyOn(TravelTime, "getTravelProgress").mockReturnValue(0.8);
+		vi.spyOn(RandomUtils.crowniclesRandom, "realZeroToOneInclusive")
+			.mockReturnValueOnce(0.7)
+			.mockReturnValueOnce(0.5);
+
+		expect(getFoodType(player)).toBe("badSmell");
 	});
 
 	it("keeps the Route des Merveilles soup outcome", () => {

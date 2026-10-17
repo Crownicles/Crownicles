@@ -1,4 +1,5 @@
 import { Database } from "../../../../../Lib/src/database/Database";
+import { DatabaseConstants } from "../../../../../Lib/src/constants/DatabaseConstants";
 import { LogsPlayersMoney } from "./models/LogsPlayersMoney";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
@@ -103,6 +104,10 @@ import { FightController } from "../../fights/FightController";
 import { PlayerFighter } from "../../fights/fighter/PlayerFighter";
 import { PlayerBaseFighter } from "../../fights/fighter/PlayerBaseFighter";
 import { MonsterFighter } from "../../fights/fighter/MonsterFighter";
+import type { KingGuardFighter } from "../../fights/fighter/KingGuardFighter";
+import {
+	KING_GUARD_FIGHT_WINNER, LogsKingGuardFightsResults
+} from "./models/LogsKingGuardFightsResults";
 import { Effect } from "../../../../../Lib/src/types/Effect";
 import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
 import { botConfig } from "../../../bootstrap";
@@ -125,6 +130,7 @@ import {
 	BlacksmithDisenchantLogParams,
 	ScrapDealerRecycleLogParams,
 	EnchanterUseLogParams,
+	EnchanterDisenchantLogParams,
 	HomePurchaseLogParams,
 	HomeUpgradeLogParams,
 	HomeMoveLogParams,
@@ -198,9 +204,7 @@ export interface ExpeditionRewards {
 /**
  * Parameters for logging expedition recall
  */
-export interface ExpeditionRecallParams {
-	mapLocationId: number;
-	locationType: string;
+export interface ExpeditionRecallParams extends ExpeditionStartParams {
 	loveChange: number;
 }
 
@@ -215,7 +219,7 @@ export class LogsDatabase extends Database {
 	private readonly cityLogger = new LogsCityLogger();
 
 	constructor() {
-		super(getDatabaseConfiguration(botConfig, "logs"), `${__dirname}/models`, `${__dirname}/migrations`);
+		super(getDatabaseConfiguration(botConfig, "logs", DatabaseConstants.POOLS.LOGS), `${__dirname}/models`, `${__dirname}/migrations`);
 	}
 
 	/**
@@ -1200,15 +1204,11 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when an elder is demoted
 	 * @param guild
-	 * @param removedPlayerId
+	 * @param removedElderKeycloakId
 	 */
-	public async logGuildElderRemove(guild: Guild, removedPlayerId: number): Promise<void> {
+	public async logGuildElderRemove(guild: Guild, removedElderKeycloakId: string): Promise<void> {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
-		const removedPlayer = await Players.getById(removedPlayerId);
-		if (!removedPlayer) {
-			return;
-		}
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(removedPlayer.keycloakId);
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(removedElderKeycloakId);
 		if (!logPlayer) {
 			return;
 		}
@@ -1222,15 +1222,11 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when a guild's chief is changed
 	 * @param guild
-	 * @param newChiefId
+	 * @param newChiefKeycloakId
 	 */
-	public async logGuildChiefChange(guild: Guild, newChiefId: number): Promise<void> {
+	public async logGuildChiefChange(guild: Guild, newChiefKeycloakId: string): Promise<void> {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
-		const newChief = await Players.getById(newChiefId);
-		if (!newChief) {
-			return;
-		}
-		const logNewChief = await LogsDatabase.findOrCreatePlayer(newChief.keycloakId);
+		const logNewChief = await LogsDatabase.findOrCreatePlayer(newChiefKeycloakId);
 		if (!logNewChief) {
 			return;
 		}
@@ -1377,6 +1373,30 @@ export class LogsDatabase extends Database {
 				});
 			}
 		}
+	}
+
+	/**
+	 * Log the result of a fight against a king guard
+	 * @param fight
+	 * @param guard
+	 */
+	public async logKingGuardFight(fight: FightController, guard: KingGuardFighter): Promise<void> {
+		const player = fight.fightInitiator;
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(player.player.keycloakId);
+		if (!logPlayer) {
+			return;
+		}
+		await LogsKingGuardFightsResults.create({
+			playerId: logPlayer.id,
+			classId: player.player.class,
+			guardClassId: guard.player.class,
+			guardLevel: guard.level,
+			turn: fight.turn,
+			winner: fight.isADraw()
+				? KING_GUARD_FIGHT_WINNER.DRAW
+				: fight.getWinnerFighter() === player ? KING_GUARD_FIGHT_WINNER.PLAYER : KING_GUARD_FIGHT_WINNER.GUARD,
+			date: getDateLogs()
+		});
 	}
 
 	/**
@@ -1770,6 +1790,13 @@ export class LogsDatabase extends Database {
 	 */
 	public logEnchanterUse(params: EnchanterUseLogParams): Promise<void> {
 		return this.cityLogger.logEnchanterUse(params);
+	}
+
+	/**
+	 * Log when a player removes an enchantment for free at the city enchanter
+	 */
+	public logEnchanterDisenchant(params: EnchanterDisenchantLogParams): Promise<void> {
+		return this.cityLogger.logEnchanterDisenchant(params);
 	}
 
 	/** Log when a player buys a home in a city */

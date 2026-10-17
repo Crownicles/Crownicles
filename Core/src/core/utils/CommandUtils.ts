@@ -18,8 +18,12 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { MapCache } from "../maps/MapCache";
 import { RequirementWherePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementWherePacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { verifyCommandAccess } from "../tournaments/TournamentAccess";
+import {
+	TournamentAccessResults, type TournamentCommandAccess
+} from "../tournaments/TournamentTypes";
 
-type Requirements = {
+export type CommandRequirements = {
 	disallowedEffects?: Effect[];
 	allowedEffects?: Effect[];
 	level?: number;
@@ -28,9 +32,71 @@ type Requirements = {
 	guildRoleNeeded?: GuildRole;
 	notBlocked: boolean;
 	whereAllowed: WhereAllowed[];
+	tournamentAccess?: TournamentCommandAccess;
 };
 
-type RequirementsWithoutBlocked = Omit<Requirements, "notBlocked">;
+type RequirementsWithoutBlocked = Omit<CommandRequirements, "notBlocked">;
+
+type RequirementCheck = () => boolean | Promise<boolean>;
+
+function verifyLevelRequirement(player: Player, response: CrowniclesPacket[], requiredLevel?: number): boolean {
+	if (requiredLevel && player.level < requiredLevel) {
+		response.push(makePacket(RequirementLevelPacket, {
+			requiredLevel
+		}));
+		return false;
+	}
+	return true;
+}
+
+function verifyRightGroupRequirement(context: PacketContext, response: CrowniclesPacket[], rightGroup?: RightGroup): boolean {
+	if (rightGroup && (!context.rightGroups || !context.rightGroups.includes(rightGroup))) {
+		response.push(makePacket(RequirementRightPacket, {}));
+		return false;
+	}
+	return true;
+}
+
+function verifyWhereRequirement(player: Player, response: CrowniclesPacket[], whereAllowed: WhereAllowed[]): boolean {
+	return CommandUtils.verifyWhereAllowed(player.mapLinkId, response, whereAllowed);
+}
+
+async function verifyGuildRequirement(player: Player, response: CrowniclesPacket[], requirements: RequirementsWithoutBlocked): Promise<boolean> {
+	if (!requirements.guildNeeded && !requirements.guildRoleNeeded) {
+		return true;
+	}
+	return await CommandUtils.verifyGuildRequirements(player, response, requirements.guildRoleNeeded ?? GuildRole.MEMBER);
+}
+
+async function runRequirementChecks(
+	player: Player,
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	requirements: RequirementsWithoutBlocked
+): Promise<boolean> {
+	const tournamentAccess = await verifyCommandAccess(player, context, response, requirements.tournamentAccess ?? "none");
+	if (tournamentAccess === TournamentAccessResults.DENIED) {
+		return false;
+	}
+	const inTournamentFight = tournamentAccess === TournamentAccessResults.TOURNAMENT_FIGHT;
+	const checks: RequirementCheck[] = [
+		inTournamentFight
+			? CommandUtils.checkEffects.bind(CommandUtils, player, response, [], CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD)
+			: CommandUtils.checkEffects.bind(CommandUtils, player, response, requirements.allowedEffects ?? [], requirements.disallowedEffects ?? []),
+		verifyLevelRequirement.bind(undefined, player, response, requirements.level),
+		verifyRightGroupRequirement.bind(undefined, context, response, requirements.rightGroup),
+		inTournamentFight
+			? (): boolean => true
+			: verifyWhereRequirement.bind(undefined, player, response, requirements.whereAllowed),
+		verifyGuildRequirement.bind(undefined, player, response, requirements)
+	];
+	for (const check of checks) {
+		if (!await check()) {
+			return false;
+		}
+	}
+	return true;
+}
 
 export abstract class CommandUtils {
 	static readonly DISALLOWED_EFFECTS = {
@@ -132,33 +198,7 @@ export abstract class CommandUtils {
 	 * @param requirements
 	 */
 	static async verifyCommandRequirements(player: Player, context: PacketContext, response: CrowniclesPacket[], requirements: RequirementsWithoutBlocked): Promise<boolean> {
-		if (!CommandUtils.checkEffects(player, response, requirements.allowedEffects ?? [], requirements.disallowedEffects ?? [])) {
-			return false;
-		}
-
-		if (requirements.level && player.level < requirements.level) {
-			response.push(makePacket(RequirementLevelPacket, {
-				requiredLevel: requirements.level
-			}));
-			return false;
-		}
-
-		if (requirements.rightGroup && (!context.rightGroups || !context.rightGroups.includes(requirements.rightGroup))) {
-			response.push(makePacket(RequirementRightPacket, {}));
-			return false;
-		}
-
-		if (!CommandUtils.verifyWhereAllowed(player.mapLinkId, response, requirements.whereAllowed)) {
-			return false;
-		}
-
-		if (requirements.guildNeeded || requirements.guildRoleNeeded) {
-			if (!await CommandUtils.verifyGuildRequirements(player, response, requirements.guildRoleNeeded ?? GuildRole.MEMBER)) {
-				return false;
-			}
-		}
-
-		return true;
+		return await runRequirementChecks(player, context, response, requirements);
 	}
 
 	/**
@@ -251,7 +291,7 @@ export abstract class CommandUtils {
 		return allowed;
 	}
 
-	static verifyNotStartedWithoutPlayerInstance(requirements: Requirements, response: CrowniclesPacket[]): boolean {
+	static verifyNotStartedWithoutPlayerInstance(requirements: CommandRequirements, response: CrowniclesPacket[]): boolean {
 		if (requirements.disallowedEffects?.includes(Effect.NOT_STARTED) || (requirements.allowedEffects && !requirements.allowedEffects.includes(Effect.NOT_STARTED))
 		) {
 			response.push(makePacket(RequirementEffectPacket, {
@@ -280,7 +320,7 @@ type WithoutPlayerPacketListenerCallbackServer = (...args: any[]) => void | Prom
  * @param packet
  * @param requirements
  */
-export const commandRequires = <T extends CrowniclesPacket>(packet: PacketLike<T>, requirements: Requirements) =>
+export const commandRequires = <T extends CrowniclesPacket>(packet: PacketLike<T>, requirements: CommandRequirements) =>
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Decorator needs flexible signature to accept methods with varying parameter counts
 	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<any>): void => {
 		const originalMethod = descriptor.value as WithPlayerPacketListenerCallbackServer;

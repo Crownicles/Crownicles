@@ -33,6 +33,7 @@ import {
 	CommandReportBedCooldownRes,
 	CommandReportItemCannotBeEnchantedRes,
 	CommandReportItemEnchantedRes,
+	CommandReportEnchanterDisenchantRes,
 	CommandReportMonsterRewardRes,
 	CommandReportMoveHomeRes,
 	CommandReportNotEnoughMoneyRes,
@@ -42,6 +43,7 @@ import {
 	CommandReportTravelSummaryRes,
 	CommandReportUpgradeHomeRes,
 	CommandReportUpgradeItemMaxLevelRes,
+	CommandReportEquipmentChangedRes,
 	CommandReportUpgradeItemMissingMaterialsRes,
 	CommandReportUpgradeItemRes,
 	CommandReportUseTokensAcceptPacketRes,
@@ -196,6 +198,19 @@ export default class ReportCommandPacketHandlers {
 		});
 	}
 
+	@packetHandler(CommandReportEnchanterDisenchantRes)
+	async reportEnchanterDisenchantRes(context: PacketContext, packet: CommandReportEnchanterDisenchantRes): Promise<void> {
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.enchanter.disenchantSuccessTitle",
+			descriptionKey: "commands:report.city.enchanter.disenchantSuccessStory",
+			descriptionParams: {
+				enchantmentId: packet.enchantmentId,
+				enchantmentType: packet.enchantmentType
+			}
+		});
+	}
+
 	@packetHandler(CommandReportItemCannotBeEnchantedRes)
 	async reportItemCannotBeEnchantedRes(context: PacketContext, _packet: CommandReportItemCannotBeEnchantedRes): Promise<void> {
 		await handleClassicError(context, "commands:report.city.enchanter.cantEnchant");
@@ -339,6 +354,15 @@ export default class ReportCommandPacketHandlers {
 			context,
 			titleKey: "commands:report.city.homes.upgradeItemMaxLevelTitle",
 			descriptionKey: "commands:report.city.homes.upgradeItemMaxLevelDescription"
+		});
+	}
+
+	@packetHandler(CommandReportEquipmentChangedRes)
+	async reportEquipmentChangedRes(context: PacketContext, _packet: CommandReportEquipmentChangedRes): Promise<void> {
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.equipmentChangedTitle",
+			descriptionKey: "commands:report.city.equipmentChangedDescription"
 		});
 	}
 

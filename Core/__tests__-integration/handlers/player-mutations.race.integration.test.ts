@@ -185,4 +185,54 @@ describe("Player mutations race", () => {
 			experience: 25
 		});
 	});
+
+	it("rejects a dirty player before a re-entrant locked mutation can overwrite it (#4829)", async () => {
+		const player = await Player.create({
+			keycloakId: "dirty-reentrant-mutation",
+			class: 1,
+			money: 100
+		});
+		await PlayerMissionsInfo.create({ playerId: player.id });
+
+		await expect(playerMod.Player.withLocked(player.id, async lockedPlayer => {
+			lockedPlayer.class = 2;
+			await lockedPlayer.addMoney({
+				amount: -10,
+				response: [],
+				reason: NumberChangeReason.TEST
+			});
+		})).rejects.toThrow("Player.mutateLocked: player");
+
+		const freshPlayer = await Player.findByPk(player.id);
+		expect(freshPlayer).toMatchObject({
+			class: 1,
+			money: 100
+		});
+	});
+
+	it("applies the same clean-caller contract with and without mission progress", async () => {
+		const player = await Player.create({
+			keycloakId: "dirty-mutation-contract",
+			class: 1,
+			money: 100
+		});
+		await PlayerMissionsInfo.create({ playerId: player.id });
+		player.class = 2;
+
+		// A gain goes through `MissionsController.update`, a loss through `mutateLocked`.
+		for (const amount of [10, -10]) {
+			await expect(player.addMoney({
+				amount,
+				response: [],
+				reason: NumberChangeReason.TEST,
+				ignoreBlessing: true
+			})).rejects.toThrow("has unsaved changes: class");
+		}
+
+		expect(player.class).toBe(2);
+		expect(await Player.findByPk(player.id)).toMatchObject({
+			class: 1,
+			money: 100
+		});
+	});
 });

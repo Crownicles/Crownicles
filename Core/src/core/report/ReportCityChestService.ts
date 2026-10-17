@@ -22,7 +22,7 @@ import {
 } from "../database/game/models/HomeChestSlot";
 import InventoryInfo from "../database/game/models/InventoryInfo";
 import {
-	buildChestData, buildUpgradeStationData
+	buildChestData
 } from "./ReportCityService";
 import {
 	Locked, withLockedEntities
@@ -35,7 +35,6 @@ import { updateHaveItemRarityMission } from "../utils/ItemUtils";
 import {
 	clearItemSlotData, copyItemSlotData, findFirstFreeBackupSlot, ItemSlotData
 } from "../utils/ItemSlotUtils";
-import { Materials } from "../database/game/models/Material";
 
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
@@ -198,16 +197,13 @@ async function runChestActionUnderLock(
 	// Build refreshed chest data
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const refreshedData = await buildChestData(home, homeLevel, playerInventory, player);
-	const playerMaterials = await Materials.getPlayerMaterials(player.id);
-	const playerMaterialMap = new Map(playerMaterials.map(material => [material.materialId, material.quantity]));
 
 	return {
 		success: true,
 		chestItems: refreshedData.chestItems,
 		depositableItems: refreshedData.depositableItems,
 		slotsPerCategory: refreshedData.slotsPerCategory,
-		inventoryCapacity: refreshedData.inventoryCapacity,
-		upgradeStation: buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel, player)
+		inventoryCapacity: refreshedData.inventoryCapacity
 	};
 }
 

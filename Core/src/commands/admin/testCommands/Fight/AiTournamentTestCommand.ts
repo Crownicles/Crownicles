@@ -328,7 +328,7 @@ interface MatchupCsvRowInput {
 
 export const commandInfo: ITestCommand = {
 	name: "aitournament",
-	aliases: ["ait", "tournament"],
+	aliases: ["ait"],
 	commandFormat: "[fightsPerPair:3-10000] [showDetails:true/false]",
 	typeWaited: {
 		fightsPerPair: TypeKey.INTEGER,
@@ -659,9 +659,11 @@ async function executeSingleFight(params: {
 			fighter1,
 			fighter2
 		},
-		FightOvertimeBehavior.END_FIGHT_DRAW,
-		context,
-		true // Silent mode
+		{
+			overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+			context,
+			silentMode: true
+		}
 	);
 
 	let result = {

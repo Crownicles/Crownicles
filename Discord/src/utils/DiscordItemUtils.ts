@@ -119,14 +119,24 @@ export class DiscordItemUtils {
 			lng,
 			power: nature === ItemNature.TIME_SPEEDUP
 				? minutesDisplayIntl(power, lng)
-				: FightItemNatures.includes(nature) && maxPower < power
-					? i18n.t("items:statNerf", {
-						lng,
-						oldDisplay: power,
-						max: maxPower
-					})
+				: FightItemNatures.includes(nature)
+					? DiscordItemUtils.getFightObjectPowerDisplay(power, maxPower, lng)
 					: power
 		});
+	}
+
+	/**
+	 * Fight object natures are interpolated as text, since a nerfed power is not a number
+	 */
+	private static getFightObjectPowerDisplay(power: number, maxPower: number, lng: Language): string {
+		const powerDisplay = DisplayUtils.formatNumber(power, lng);
+		return maxPower < power
+			? i18n.t("items:statNerf", {
+				lng,
+				oldDisplay: powerDisplay,
+				max: DisplayUtils.formatNumber(maxPower, lng)
+			})
+			: powerDisplay;
 	}
 
 	static getPotionNatureDisplay(nature: ItemNature, power: number, lng: Language): string {

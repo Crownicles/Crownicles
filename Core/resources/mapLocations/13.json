@@ -1,6 +1,8 @@
 {
   "type": "ro",
-  "expeditionType": "swamp",
+  "biomes": [
+    "swamp"
+  ],
   "tags": [
     "detALa"
   ],

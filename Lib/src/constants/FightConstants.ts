@@ -109,6 +109,8 @@ export abstract class FightConstants {
 				AERIAL_DIVE_ATTACK: "aerialDiveAttack",
 				BLIZZARD_RAGE_ATTACK: "blizzardRageAttack",
 				BOULDER_TOSS_ATTACK: "boulderTossAttack",
+				ELEMENTARY_PIERCING_ATTACK: "elementaryPiercingAttack",
+				GUARDIAN_POWERFUL_ATTACK: "guardianPowerfulAttack",
 				CHARGE_CHARGE_RADIANT_BLAST_ATTACK: "chargeChargeRadiantBlastAttack",
 				CHARGE_CLUB_SMASH_ATTACK: "chargeClubSmashAttack",
 				CHARGE_RADIANT_BLAST_ATTACK: "chargeRadiantBlastAttack",
@@ -138,9 +140,13 @@ export abstract class FightConstants {
 				RADIANT_BLAST_ATTACK: "radiantBlastAttack",
 				ROAR_ATTACK: "roarAttack",
 				ROCK_SHIELD_ATTACK: "rockShieldAttack",
+				SKELETON_CURSED_ATTACK: "skeletonCursedAttack",
+				SKELETON_SHIELD_ATTACK: "skeletonShieldAttack",
+				SKELETON_SIMPLE_ATTACK: "skeletonSimpleAttack",
 				SLAM_ATTACK: "slamAttack",
 				SPECTRAL_REVENGE_ATTACK: "spectralRevengeAttack",
 				START_POLAR_EMBRACE_ATTACK: "startPolarEmbraceAttack",
+				SPIDER_POISON_ATTACK: "spiderPoisonAttack",
 				STEALTH: "stealth",
 				STONE_SKIN_ATTACK: "stoneSkinAttack",
 				SUMMON_ATTACK: "summonAttack",
@@ -168,6 +174,7 @@ export abstract class FightConstants {
 				SEPULCRAL_HUNGER: "sepulcralHunger",
 				AQUEOUS_EVASION: "aqueousEvasion",
 				TENTACLE_SHIELD: "tentacleShield",
+				TITAN_FIRE_ATTACK: "titanFireAttack",
 				ABYSSAL_AURA: "abyssalAura"
 			},
 			PET: {
@@ -374,6 +381,38 @@ export abstract class FightConstants {
 		ATTACKER: "attacker",
 		DEFENDER: "defender"
 	} as const;
+
+	/**
+	 * King guards are generated on the fly when /fight finds no opponent
+	 */
+	static readonly KING_GUARD = {
+		// Reserved identifier sent instead of a keycloak id: a king guard has no account
+		KEYCLOAK_ID: "kingGuard",
+
+		// Same rule as the PvE bosses: a lost fight lowers the next guard level by this amount
+		FAILED_FIGHT_LEVEL_REDUCTION: 10,
+
+		// Calibrated on real players' equipment: about one rarity every 16 levels, starting from common, give or take one
+		EQUIPMENT_RARITY: {
+			AT_LEVEL_ZERO: 1,
+			LEVELS_PER_RARITY: 16,
+			SPREAD: 1
+		},
+
+		// Share of real players equipped with a fight potion
+		FIGHT_POTION_PROBABILITY: 0.2,
+
+		/*
+		 * Upgrades and enchantments grow from the required fight level up to this level:
+		 * the weapon and the armor get an upgrade level up to a cap growing to the maximum,
+		 * and an enchantment chance growing from the loot chance to the given maximum
+		 */
+		FULLY_EQUIPPED_LEVEL: 120,
+		ENCHANTMENT_PROBABILITY: {
+			MIN: 0.05,
+			MAX: 0.75
+		}
+	};
 
 	/**
 	 * Monster IDs for the final PvE bosses that players can beat

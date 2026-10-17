@@ -63,7 +63,7 @@ async function applyLockedAcceptElderRemove(
 	guild.elderId = null;
 	await guild.save();
 
-	crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, demotedElderId)
+	crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, demotedKeycloakId)
 		.then();
 
 	response.push(makePacket(CommandGuildElderRemoveAcceptPacketRes, {

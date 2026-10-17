@@ -37,7 +37,9 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import Player from "../database/game/models/Player";
 import { MaterialDataController } from "../../data/Material";
-import { Materials } from "../database/game/models/Material";
+import {
+	applyMaterialLoot, updateCollectMaterialsMission
+} from "../utils/MaterialLootUtils";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -509,7 +511,7 @@ async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 	return GARDENER_ADVICE.TIP_GENERIC;
 }
 
-async function handleFallback(_response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey, targetSeedId: PlantId | 0 = 0): Promise<SmallEventGardenerPacket> {
+async function handleFallback(response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey, targetSeedId: PlantId | 0 = 0): Promise<SmallEventGardenerPacket> {
 	const roll = RandomUtils.crowniclesRandom.real(0, 1);
 
 	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.ADVICE) {
@@ -529,7 +531,7 @@ async function handleFallback(_response: CrowniclesPacket[], player: Player, con
 		return await handlePlantGift(player);
 	}
 
-	return await handleMaterialGift(player);
+	return await handleMaterialGift(response, player);
 }
 
 async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket> {
@@ -548,13 +550,20 @@ async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket
 	});
 }
 
-async function handleMaterialGift(player: Player): Promise<SmallEventGardenerPacket> {
+async function handleMaterialGift(response: CrowniclesPacket[], player: Player): Promise<SmallEventGardenerPacket> {
 	const material = MaterialDataController.instance.getRandomMaterialFromRarity(MaterialRarity.COMMON)
 		?? MaterialDataController.instance.getRandomMaterialFromRarity(MaterialRarity.UNCOMMON);
 
 	if (material) {
 		const materialId = parseInt(material.id, 10);
-		await Materials.giveMaterial(player.id, materialId, 1);
+		const loot = [
+			{
+				materialId,
+				quantity: 1
+			}
+		];
+		await applyMaterialLoot(player.id, loot);
+		await updateCollectMaterialsMission(player, response, loot);
 		return makeGardenerPacket({
 			interactionName: GARDENER_INTERACTIONS.MATERIAL, conditionKey: SEED_CONDITION_FAILURE.NONE, materialId
 		});

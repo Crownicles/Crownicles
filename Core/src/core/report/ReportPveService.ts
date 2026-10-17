@@ -236,16 +236,17 @@ type ApplyPveBossWinRewardsCtx = {
 	rewards: ReturnType<Monster["getRewards"]>;
 	endFightResponse: CrowniclesPacket[];
 	mapId: number;
+	monster: Monster;
 };
 
 async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<void> {
 	const {
-		fight, player, rewards, endFightResponse, mapId
+		fight, player, rewards, endFightResponse, mapId, monster
 	} = ctx;
 	const result = await handlePveFightRewards(fight, player, rewards, endFightResponse);
 
 	// Generate and apply material loot from boss
-	const materialLoot = generateBossLoot(mapId);
+	const materialLoot = generateBossLoot(monster);
 	if (materialLoot.length > 0) {
 		await applyMaterialLoot(player.id, materialLoot);
 		await updateCollectMaterialsMission(player, endFightResponse, materialLoot);
@@ -285,7 +286,7 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
  * the freshly-locked instance to avoid lost-update on concurrent writers and
  * to dodge the latent clobber-by-Object.assign on the local `player`.
  */
-async function persistPveBossPostFightUnderLock(
+export async function persistPveBossPostFightUnderLock(
 	player: Locked<Player>,
 	initialFightPointsLost: number,
 	isWinOrDraw: boolean,
@@ -306,10 +307,10 @@ async function persistPveBossPostFightUnderLock(
 		await lockedPlayer.save();
 
 		/*
-		 * Reflect the persisted state on the local instance for downstream readers
-		 * (`leavePVEIslandIfNoEnergy` below reads `player.fightPointsLost`).
+		 * Resync the local instance for `leavePVEIslandIfNoEnergy` below: a mirrored field would leave it
+		 * dirty and make its locked money loss reject it (#4829).
 		 */
-		player.fightPointsLost = lockedPlayer.fightPointsLost;
+		Object.assign(player, lockedPlayer);
 	});
 }
 
@@ -379,7 +380,7 @@ export async function doPVEBoss(
 
 			if (isWinOrDraw) {
 				await applyPveBossWinRewards({
-					fight, player, rewards, endFightResponse, mapId
+					fight, player, rewards, endFightResponse, mapId, monster: monsterObj
 				});
 			}
 
@@ -429,8 +430,10 @@ export async function doPVEBoss(
 				fighter1: playerFighter,
 				fighter2: monsterFighter
 			},
-			FightOvertimeBehavior.INCREASE_DAMAGE_PVE,
-			context
+			{
+				overtimeBehavior: FightOvertimeBehavior.INCREASE_DAMAGE_PVE,
+				context
+			}
 		);
 		fight.setEndCallback(fightCallback);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.START_BOSS_FIGHT);

@@ -14,7 +14,6 @@ import {
 	BuyCallbackResult,
 	CommandShopNoGardenForRemoteHarvestTalisman,
 	CommandShopNoPlantSlotAvailable,
-	MaterialDistribution,
 	ShopCategory
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
@@ -50,7 +49,9 @@ import {
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { Materials } from "../database/game/models/Material";
+import {
+	applyMaterialLoot, updateCollectMaterialsMission
+} from "../utils/MaterialLootUtils";
 import { getVeterinarianShopItem } from "../utils/VeterinarianShopItems";
 import {
 	getMissionSkipShopItem, getQuestMasterBadgeShopItem
@@ -468,19 +469,32 @@ export async function openHerbalist({
 }
 
 /**
- * Distribute a total quantity randomly among a list of materials and give them to the player.
+ * Distribute a total quantity randomly among a list of materials.
  */
-async function distributeMaterialsRandomly(playerId: number, materials: Material[], totalQuantity: number): Promise<MaterialDistribution> {
+function pickMaterialsRandomly(materials: Material[], totalQuantity: number): Map<number, number> {
 	const distribution = new Map<number, number>();
 	for (let i = 0; i < totalQuantity; i++) {
 		const picked = RandomUtils.crowniclesRandom.pick(materials);
 		const materialId = parseInt(picked.id as string, 10);
 		distribution.set(materialId, (distribution.get(materialId) ?? 0) + 1);
 	}
-	for (const [materialId, quantity] of distribution) {
-		await Materials.giveMaterial(playerId, materialId, quantity);
-	}
-	return Object.fromEntries([...distribution].map(([k, v]) => [String(k), v]));
+	return distribution;
+}
+
+/**
+ * Give the bought materials to the player: like any other way of obtaining materials, it counts for the collectMaterials mission.
+ */
+async function grantPurchasedMaterials(player: Player, buyResponse: CrowniclesPacket[], distribution: Map<number, number>): Promise<BuyCallbackResult> {
+	const loot = [...distribution].map(([materialId, quantity]) => ({
+		materialId,
+		quantity
+	}));
+	await applyMaterialLoot(player.id, loot);
+	await updateCollectMaterialsMission(player, buyResponse, loot);
+	return {
+		success: true,
+		materials: Object.fromEntries(loot.map(entry => [String(entry.materialId), entry.quantity]))
+	};
 }
 
 /**
@@ -497,19 +511,15 @@ export async function openLumberjack({
 					id: ShopItemType.WOOD_COMMON_BUNDLE,
 					price: ShopConstants.LUMBERJACK_PRICES.COMMON,
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
-						success: true,
-						materials: await distributeMaterialsRandomly(playerId, getMaterialsByTypeAndRarity(MaterialType.WOOD, MaterialRarity.COMMON), amount)
-					})
+					buyCallback: (buyResponse: CrowniclesPacket[], _playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> =>
+						grantPurchasedMaterials(player, buyResponse, pickMaterialsRandomly(getMaterialsByTypeAndRarity(MaterialType.WOOD, MaterialRarity.COMMON), amount))
 				},
 				{
 					id: ShopItemType.WOOD_UNCOMMON_BUNDLE,
 					price: ShopConstants.LUMBERJACK_PRICES.UNCOMMON,
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
-						success: true,
-						materials: await distributeMaterialsRandomly(playerId, getMaterialsByTypeAndRarity(MaterialType.WOOD, MaterialRarity.UNCOMMON), amount)
-					})
+					buyCallback: (buyResponse: CrowniclesPacket[], _playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> =>
+						grantPurchasedMaterials(player, buyResponse, pickMaterialsRandomly(getMaterialsByTypeAndRarity(MaterialType.WOOD, MaterialRarity.UNCOMMON), amount))
 				}
 			]
 		}
@@ -550,18 +560,6 @@ export async function openVeterinarian({
 }
 
 /**
- * Generate a random material following natural drop rates and give it to the player.
- * Drop rates: 60% common, 30% uncommon, 10% rare.
- */
-async function generateRandomMaterialsForPlayer(playerId: number, totalQuantity: number): Promise<MaterialDistribution> {
-	const distribution = pickMaterialDistribution(totalQuantity);
-	for (const [materialId, quantity] of distribution) {
-		await Materials.giveMaterial(playerId, materialId, quantity);
-	}
-	return Object.fromEntries([...distribution].map(([k, v]) => [String(k), v]));
-}
-
-/**
  * Open the material merchant shop for the player (random material packs)
  */
 export async function openMaterialMerchant({
@@ -575,10 +573,8 @@ export async function openMaterialMerchant({
 					id: ShopItemType.RANDOM_MATERIAL_PACK,
 					price: ShopConstants.MATERIAL_MERCHANT_PRICE_PER_UNIT,
 					amounts: ShopConstants.MATERIAL_MERCHANT_AMOUNTS,
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
-						success: true,
-						materials: await generateRandomMaterialsForPlayer(playerId, amount)
-					})
+					buyCallback: (buyResponse: CrowniclesPacket[], _playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> =>
+						grantPurchasedMaterials(player, buyResponse, pickMaterialDistribution(amount))
 				}
 			]
 		}

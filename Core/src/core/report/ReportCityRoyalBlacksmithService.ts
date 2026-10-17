@@ -5,9 +5,6 @@ import {
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import { Materials } from "../database/game/models/Material";
 import {
-	InventorySlot, InventorySlots
-} from "../database/game/models/InventorySlot";
-import {
 	ReactionCollectorCityData,
 	ReactionCollectorRoyalBlacksmithUpgradeReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
@@ -34,6 +31,7 @@ import {
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { updateUpgradeMissionsUnderLock } from "./ReportCityBlacksmithService";
+import { getListedInventorySlotUnderLock } from "./ReportListedEquipment";
 import { crowniclesInstance } from "../../app";
 
 type RoyalBlacksmithData = NonNullable<ReactionCollectorCityData["royalBlacksmith"]>;
@@ -196,8 +194,8 @@ async function executeRoyalUpgradeUnderLock(params: {
 		lockedPlayer, lockedMissionsInfo, item, execution, reaction, response
 	} = params;
 
-	const inventorySlot = await validateRoyalUpgradeUnderLock(lockedPlayer, lockedMissionsInfo, execution, reaction, response);
-	if (!inventorySlot) {
+	const inventorySlot = await getListedInventorySlotUnderLock(lockedPlayer, reaction, item.details, response);
+	if (!inventorySlot || !hasRoyalUpgradeFundsUnderLock(lockedPlayer, lockedMissionsInfo, execution, response)) {
 		return;
 	}
 
@@ -241,38 +239,24 @@ async function executeRoyalUpgradeUnderLock(params: {
 }
 
 /**
- * Reload and validate the target slot and the player's funds before any spending.
- * Runs inside the caller's player lock; returns the validated slot or null (after
- * pushing the relevant error packet) when the upgrade must be aborted.
+ * Validate the player's funds against the locked rows before any spending; pushes the
+ * relevant error packet and returns false when the upgrade must be aborted.
  */
-async function validateRoyalUpgradeUnderLock(
+function hasRoyalUpgradeFundsUnderLock(
 	lockedPlayer: Locked<Player>,
 	lockedMissionsInfo: Locked<PlayerMissionsInfo>,
 	execution: ExecutionData,
-	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction,
 	response: CrowniclesPacket[]
-): Promise<InventorySlot | null> {
-	/*
-	 * Reload and validate the target slot BEFORE any spending: a stale menu replayed
-	 * after a first successful upgrade would otherwise pay again and re-set an
-	 * already-upgraded item, so abort if it is no longer at the upgradeable level.
-	 */
-	const slots = await InventorySlots.getOfPlayer(lockedPlayer.id);
-	const inventorySlot = slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory);
-	if (!inventorySlot || inventorySlot.itemLevel !== RoyalBlacksmithConstants.TARGET_LEVEL - 1) {
-		CrowniclesLogger.error(`Player ${lockedPlayer.keycloakId} Royal Blacksmith upgrade: target slot is no longer upgradeable (stale menu replay).`);
-		return null;
-	}
-
+): boolean {
 	if (lockedPlayer.money < execution.totalMoneyCost) {
 		pushMissingMoney(response, execution.totalMoneyCost, lockedPlayer.money);
-		return null;
+		return false;
 	}
 	if (lockedMissionsInfo.gems < execution.gemCost) {
 		pushMissingGems(response, execution.gemCost, lockedMissionsInfo.gems);
-		return null;
+		return false;
 	}
-	return inventorySlot;
+	return true;
 }
 
 /**

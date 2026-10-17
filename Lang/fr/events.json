@@ -70,7 +70,7 @@
       "forest": {
         "outcomes": {
           "0": "Vous vous perdez pendant plusieurs heures dans la forêt mais finissez par en sortir sans dégâts.",
-          "1": "Vous perdez beaucoup de temps à avancer dans la forêt mais vous finissez par parvenir à la traverser ! En sortant, vous ramassez un objet qui pourra peut être vous être utile !",
+          "1": "Vous perdez beaucoup de temps à avancer dans la forêt mais vous finissez par parvenir à la traverser ! En sortant, vous ramassez un objet qui pourra peut-être vous être utile !",
           "2": "En traversant la forêt, vous faites une grosse chute dans un fossé. La blessure est profonde, il faut absolument vous soigner !"
         },
         "text": "Traverser quand même la forêt."
@@ -631,20 +631,20 @@
         "text": "S'interposer et empêcher cet homme de mourir."
       }
     },
-    "text": "En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'église\"."
+    "text": "En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'Église\"."
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
           "0": "Vous observez bêtement l'objet pendant 20 minutes, avant de détourner le regard.",
-          "1": "Vous observez, penché au dessus du puits, l'objet. C'est alors que vous basculez. Heureusement, vous arrivez rapidement à remonter, non sans vous être sévèrement blessé."
+          "1": "Vous observez, penché au-dessus du puits, l'objet. C'est alors que vous basculez. Heureusement, vous arrivez rapidement à remonter, non sans vous être sévèrement blessé."
         }
       },
       "goDown": {
         "outcomes": {
           "0": "Vous vous blessez grièvement lors de la descente et restez un moment bloqué au fond avant que quelqu'un ne vous retrouve.",
-          "1": "Vous arrivez en bas sans soucis et récupérez l'objet.",
+          "1": "Vous arrivez en bas sans souci et récupérez l'objet.",
           "2": "Vous sautez dans le puits mais n'y trouvez rien. Vous remontez donc bredouille.",
           "3": "Une fois en bas, vous découvrez une grande quantité de pièces d'or que vous récupérez avec joie."
         },
@@ -936,7 +936,7 @@
       "food": {
         "outcomes": {
           "0": "L'un d'entre eux vous tend une soupe plutôt appétissante. Vous la buvez sans vous méfier. Ces malandrins vous ont tendu un piège ! Attendant depuis longtemps de vous mettre à mal pour vous piller, le breuvage contenait juste assez d'amanite tue-mouches pour rendre malade. Vous vous sentez partir tout en voyant vos poches se faire dépouiller, impuissant.",
-          "1": "Ces passants ont cuisiné pour vous un met des plus savoureux, digne d'une potion de gaulois. En regardant de plus près, vous apercevez un objet laissé au fond du bol. Il pourrait bien vous être utile pour la suite.",
+          "1": "Ces passants ont cuisiné pour vous un mets des plus savoureux, digne d'une potion gauloise. En regardant de plus près, vous apercevez un objet laissé au fond du bol. Il pourrait bien vous être utile pour la suite.",
           "2": "Ravis de vous rendre service, le groupe part vous acheter la spécialité du coin. Voyant le plat arriver, vous faites bonne figure mais la dégustez avec un certain dégoût : vous n'aimez pas les champignons ! Non sans mal, vous terminez le plat."
         },
         "text": "Cadeau alimentaire."
@@ -985,8 +985,8 @@
       },
       "steal": {
         "outcomes": {
-          "0": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans soucis, mais la quatrième vous remarque et crie au voleur. Vous prenez la fuite.",
-          "1": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans soucis, mais la quatrième vous remarque et crie au voleur. Vous finissez la nuit en prison et dédommagez ces gens."
+          "0": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous prenez la fuite.",
+          "1": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous finissez la nuit en prison et dédommagez ces gens."
         },
         "text": "Refuser, et tenter de voler des gens."
       },
@@ -1195,10 +1195,10 @@
       },
       "goBack": {
         "outcomes": {
-          "0": "Vous décidez de repartir par là d'où vous venez. Sur le chemin, vous trouvez quelques pièces par terre, à côté d'une bourse trouée.",
-          "1": "Vous repartez, lorsque vous trouvez un homme blessé. En essayant de l'aider, vous découvrez qu'il s'agit d'une embuscade ! Des hommes surgissent et vous dépouillent avant de repartir."
+          "0": "Vous décidez de laisser l'ermite tranquille et de poursuivre votre route. Sur le chemin, vous trouvez quelques pièces par terre, à côté d'une bourse trouée.",
+          "1": "Vous poursuivez votre route, lorsque vous trouvez un homme blessé. En essayant de l'aider, vous découvrez qu'il s'agit d'une embuscade ! Des hommes surgissent et vous dépouillent avant de repartir."
         },
-        "text": "Repartir par là d'où vous venez."
+        "text": "Continuer votre route."
       }
     },
     "text": "Vous vous enfoncez dans une forêt sombre, et apercevez la silhouette d'un homme au loin. Vous décidez de vous approcher et comprenez que c'est un ermite, sorti pour la cueillette. Vous vous approchez de sa maison, sur laquelle vous lisez l'inscription \"Xetrix\", ce qui est probablement son nom. Vous réfléchissez encore à quoi faire..."
@@ -1407,13 +1407,13 @@
       },
       "talk": {
         "outcomes": {
-          "0": "Vous passez près de 30 minutes à prendre des informations sur ce sanctuaire, informations qui ne s'avèreront pas utiles.",
+          "0": "Vous passez près de 30 minutes à prendre des informations sur ce sanctuaire, informations qui ne s'avéreront pas utiles.",
           "1": "Le groupe ne veut tout simplement pas discuter, et il vous le fait bien savoir."
         },
         "text": "Discuter avec le groupe."
       }
     },
-    "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au Sud, et le départ a lieu dans 30 minutes."
+    "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au sud, et le départ a lieu dans 30 minutes."
   },
   "46": {
     "possibilities": {
@@ -1630,8 +1630,8 @@
       },
       "leave": {
         "outcomes": {
-          "0": "Après vous être bien reposé, vous décidez de repartir, sans garder la moindre cerne sur le visage.",
-          "1": "Alors que vous vous apprêtiez à repartir, vous vous rendez compte que le groupe de villageois se dirige vers vous, il se mettent alors à vous racketter et vous leur donnez de l'argent pour qu'ils vous laissent tranquille.",
+          "0": "Après vous être bien reposé, vous décidez de repartir, sans la moindre trace de fatigue sur le visage.",
+          "1": "Alors que vous vous apprêtiez à repartir, vous vous rendez compte que le groupe de villageois se dirige vers vous, ils se mettent alors à vous racketter et vous leur donnez de l'argent pour qu'ils vous laissent tranquille.",
           "2": "Vous décidez de repartir, sans un regard, vous quittez le village Coco afin de continuer votre quête."
         },
         "text": "Quitter le village sans plus attendre."
@@ -1645,7 +1645,7 @@
         "text": "Continuer votre sieste au pied de l'arbre."
       }
     },
-    "text": "Lors de votre périple, vous atteignez un petit hameau du nom de village Coco, il fait très chaud et vous avez besoin de vous reposer. Les lieux ne vous semblant pas hostiles, vous faites donc une halte dans cette oasis. Alors que vous vous reposez au pied d'un cocotier, vous apercevez un groupe de villageois escaladant les arbres pour attraper des fruits que vous n'aviez jamais vu auparavant, ils sont ronds comme des ballons et durs comme du bois et ne vous semblent pas appétissants."
+    "text": "Lors de votre périple, vous atteignez un petit hameau du nom de village Coco, il fait très chaud et vous avez besoin de vous reposer. Les lieux ne vous semblant pas hostiles, vous faites donc une halte dans cette oasis. Alors que vous vous reposez au pied d'un cocotier, vous apercevez un groupe de villageois escaladant les arbres pour attraper des fruits que vous n'aviez jamais vus auparavant, ils sont ronds comme des ballons et durs comme du bois et ne vous semblent pas appétissants."
   },
   "51": {
     "possibilities": {
@@ -1991,7 +1991,7 @@
       "goDeeper": {
         "outcomes": {
           "0": "Vous vous perdez rapidement dans ce labyrinthe, mais vous finissez par en ressortir au bout de quelques heures !",
-          "1": "Vous passez quelques minutes à explorer la grotte de fond en comble et trouvez un objet qui pourra peut être vous servir...",
+          "1": "Vous passez quelques minutes à explorer la grotte de fond en comble et trouvez un objet qui pourra peut-être vous servir...",
           "2": "La grotte se révèle rapidement être un cul de sac, mais, en ressortant, vous vous cognez la tête au plafond et tombez étourdi ! Il faudra vous soigner !"
         },
         "text": "Entrer plus profondément dans la grotte."
@@ -2356,9 +2356,9 @@
       "check": {
         "outcomes": {
           "0": "En forçant la porte, vous vous blessez profondément. Il faut absolument vous soigner !",
-          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En vous éloignant du seuil, vous trouvez un objet qui pourra peut être vous être utile !",
+          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En vous éloignant du seuil, vous trouvez un objet qui pourra peut-être vous être utile !",
           "2": "Vous entrez dans la maison et posez vos affaires pour vous reposer. Pris d'un profond sommeil, vous vous écroulez sur un lit poussiéreux qui traînait dans un coin.",
-          "3": "Vous entrez dans la maison et fouillez autour de vous pendant une quinzaine de minutes. En sortant vous trouvez un objet qui pourra peut être vous être utile !",
+          "3": "Vous entrez dans la maison et fouillez autour de vous pendant une quinzaine de minutes. En sortant vous trouvez un objet qui pourra peut-être vous être utile !",
           "4": "Vous entrez dans la maison et fouillez autour de vous pendant une quinzaine de minutes. Vous finissez par abandonner vos recherches sans avoir rien trouvé."
         },
         "text": "Aller visiter l'intérieur."
@@ -2896,7 +2896,7 @@
       "help": {
         "outcomes": {
           "0": "Après un quart d'heure à chercher, vous retrouvez la fourche à côté d'un tas de foin. Pour vous remercier, le paysan vous offre quelques pièces.",
-          "1": "Après une demi-heure de recherches, vous ne trouvez pas la fourche. Vous découvrez cependant un objet qui pourra peut être vous être utile !",
+          "1": "Après une demi-heure de recherches, vous ne trouvez pas la fourche. Vous découvrez cependant un objet qui pourra peut-être vous être utile !",
           "2": "En cherchant la fourche, vous marchez dessus et vous faites une vilaine entaille.",
           "3": "Vous cherchez la fourche pendant presque une heure, mais vous ne parvenez pas à la retrouver. Vous quittez poliment le paysan et continuez votre route."
         },

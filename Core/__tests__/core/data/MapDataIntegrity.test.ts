@@ -4,6 +4,17 @@ import {
 } from "fs";
 import { resolve } from "path";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
+import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
+import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+
+type MapLocationData = {
+	type: string;
+	attribute: string;
+	biomes?: string[];
+	biome?: string;
+	expeditionType?: string;
+};
 
 type MapLinkData = {
 	startMap: number;
@@ -11,6 +22,7 @@ type MapLinkData = {
 };
 
 const mapLocationsPath = resolve(__dirname, "../../../resources/mapLocations");
+const frenchModelsPath = resolve(__dirname, "../../../../Lang/fr/models.json");
 const mapLinksPath = resolve(__dirname, "../../../resources/mapLinks");
 
 function readIds(path: string): number[] {
@@ -25,6 +37,10 @@ function readMapLinks(): Map<number, MapLinkData> {
 		links.set(id, JSON.parse(readFileSync(resolve(mapLinksPath, `${id}.json`), "utf-8")) as MapLinkData);
 	}
 	return links;
+}
+
+function readMapLocation(id: number): MapLocationData {
+	return JSON.parse(readFileSync(resolve(mapLocationsPath, `${id}.json`), "utf-8")) as MapLocationData;
 }
 
 describe("Map data integrity", () => {
@@ -67,5 +83,65 @@ describe("Map data integrity", () => {
 		const unreachable = [...mapLocationIds].filter(id => !reachable.has(id));
 
 		expect(unreachable).toEqual([]);
+	});
+
+	it("every map location type is declared in MapLocationConstants.TYPES", () => {
+		const knownTypes: readonly string[] = Object.values(MapLocationConstants.TYPES);
+		const unknown = [...mapLocationIds]
+			.map(id => ({
+				id,
+				type: readMapLocation(id).type
+			}))
+			.filter(({ type }) => !knownTypes.includes(type))
+			.map(({ id, type }) => `${id} (type '${type}')`);
+
+		expect(unknown).toEqual([]);
+	});
+
+	it("every map location declares a non-empty list of distinct and valid biomes", () => {
+		const biomes: readonly string[] = Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES);
+		const invalid = [...mapLocationIds]
+			.map(id => ({
+				id,
+				mapLocation: readMapLocation(id)
+			}))
+			.filter(({ mapLocation }) => !Array.isArray(mapLocation.biomes)
+				|| mapLocation.biomes.length === 0
+				|| new Set(mapLocation.biomes).size !== mapLocation.biomes.length
+				|| mapLocation.biomes.some(biome => !biomes.includes(biome))
+				|| mapLocation.biome !== undefined
+				|| mapLocation.expeditionType !== undefined)
+			.map(({ id, mapLocation }) => `${id} (biomes ${JSON.stringify(mapLocation.biomes)})`);
+
+		expect(invalid).toEqual([]);
+	});
+
+	it("every biome can be reached by expeditions on the main continent", () => {
+		const continentBiomes = new Set([...mapLocationIds]
+			.map(readMapLocation)
+			.filter(mapLocation => mapLocation.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1)
+			.flatMap(mapLocation => mapLocation.biomes ?? []));
+
+		const missing = Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES).filter(biome => !continentBiomes.has(biome));
+
+		expect(missing).toEqual([]);
+	});
+
+	it("every map location type has a French name, a prefix and an icon", () => {
+		const mapTypeTranslations = (JSON.parse(readFileSync(frenchModelsPath, "utf-8")) as {
+			map_types: Record<string, { name?: string; prefix?: string } | undefined>;
+		}).map_types;
+		const icons: Record<string, string | undefined> = CrowniclesIcons.mapTypes;
+
+		const incomplete = Object.values(MapLocationConstants.TYPES)
+			.filter(type => mapTypeTranslations[type]?.name === undefined || !mapTypeTranslations[type]?.prefix || !icons[type]);
+
+		expect(incomplete).toEqual([]);
+	});
+
+	it("every map location type has its own icon", () => {
+		const icons = Object.values(MapLocationConstants.TYPES).map(type => CrowniclesIcons.mapTypes[type]);
+
+		expect(new Set(icons).size).toBe(icons.length);
 	});
 });

@@ -9,7 +9,7 @@ export const commandInfo: ITestCommand = {
 	aliases: ["atravel"],
 	commandFormat: "<time>",
 	typeWaited: { time: TypeKey.INTEGER },
-	description: "Fait avancer le temps de voyage du joueur de X minutes. Permet de simuler la fin d'un déplacement sans attendre"
+	description: "Fait avancer le temps de voyage du joueur de X minutes, ou son séjour en ville s'il y est arrêté. Permet de simuler la fin d'un déplacement ou un long séjour en ville sans attendre"
 };
 
 /**
@@ -18,7 +18,9 @@ export const commandInfo: ITestCommand = {
 const advanceTravelTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	await TravelTime.timeTravel(player, parseInt(args[0], 10), NumberChangeReason.TEST);
 	await player.save();
-	return `Vous avez avancé votre voyage de ${args[0]} minutes !`;
+	return player.insideCity
+		? `Vous avez avancé votre séjour en ville de ${args[0]} minutes !`
+		: `Vous avez avancé votre voyage de ${args[0]} minutes !`;
 };
 
 commandInfo.execute = advanceTravelTestCommand;

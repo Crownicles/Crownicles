@@ -30,6 +30,11 @@ export class Monster extends Data<string> {
 
 	public readonly maps!: number[];
 
+	/**
+	 * Material IDs this boss can drop when defeated, weighted by their rarity
+	 */
+	public readonly materialLoot!: readonly number[];
+
 
 	/**
 	 * Get the rewards of the monster

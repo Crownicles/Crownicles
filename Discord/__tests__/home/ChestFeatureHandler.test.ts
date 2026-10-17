@@ -54,6 +54,17 @@ vi.mock("../../../Discord/src/utils/ErrorUtils", async (importOriginal) => {
 	};
 });
 
+vi.mock("../../../Discord/src/utils/DiscordCollectorUtils", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("../../src/utils/DiscordCollectorUtils")>();
+	return {
+		...actual,
+		DiscordCollectorUtils: {
+			...actual.DiscordCollectorUtils,
+			sendReaction: vi.fn()
+		}
+	};
+});
+
 // ===== Imports =====
 
 import { ChestFeatureHandler } from "../../src/commands/player/report/home/features/ChestFeatureHandler";
@@ -62,13 +73,42 @@ import {
 	createHandlerContext,
 	createHomeData,
 	createMockComponentInteraction,
-	createMockNestedMenus
+	createMockNestedMenus,
+	createMockPacket
 } from "./homeTestUtils";
 import { DiscordMQTT } from "../../src/bot/DiscordMQTT";
-import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
+import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
 import {
-	ActionRowBuilder, ContainerBuilder
+	ReactionCollectorHomeChestCloseReaction, ReactionCollectorHomeMenuReaction
+} from "../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import {
+	ItemCategory, ItemRarity
+} from "../../../Lib/src/constants/ItemConstants";
+import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
+import {
+	ActionRowBuilder, ContainerBuilder, TextDisplayBuilder
 } from "discord.js";
+
+/**
+ * Create valid weapon details so that the item display helpers render its name and stats.
+ */
+function createWeaponDetails(id: number, attack: number): MainItemDetails {
+	return {
+		id,
+		rarity: ItemRarity.COMMON,
+		itemCategory: ItemCategory.WEAPON,
+		itemLevel: 0,
+		attack: {
+			baseValue: attack, upgradeValue: 0, maxValue: attack
+		},
+		defense: {
+			baseValue: 0, upgradeValue: 0, maxValue: 0
+		},
+		speed: {
+			baseValue: 0, upgradeValue: 0, maxValue: 0
+		}
+	};
+}
 
 /**
  * Create home data with chest configuration.
@@ -369,18 +409,18 @@ describe("ChestFeatureHandler", () => {
 					chestItems: [{
 						slot: 1,
 						category: ItemCategory.WEAPON,
-						details: { itemId: 1, attack: 10, defense: 0, speed: 0, level: 1 }
+						details: createWeaponDetails(1, 21)
 					}],
 					depositableItems: [
 						{
 							slot: 0,
 							category: ItemCategory.WEAPON,
-							details: { itemId: 2, attack: 15, defense: 0, speed: 0, level: 1 }
+							details: createWeaponDetails(2, 15)
 						},
 						{
 							slot: 1,
 							category: ItemCategory.WEAPON,
-							details: { itemId: 3, attack: 12, defense: 0, speed: 0, level: 1 }
+							details: createWeaponDetails(3, 12)
 						}
 					]
 				})
@@ -401,6 +441,38 @@ describe("ChestFeatureHandler", () => {
 				.filter((component): component is ActionRowBuilder<any> => component instanceof ActionRowBuilder)
 				.flatMap(row => row.components);
 			expect(buttons.some(button => button.data.custom_id?.startsWith(HomeMenuIds.CHEST_SWAP_SELECT_PREFIX))).toBe(true);
+
+			// The chest content must stay visible without first selecting an inventory item
+			const text = container.components
+				.filter((component): component is TextDisplayBuilder => component instanceof TextDisplayBuilder)
+				.map(component => component.data.content)
+				.join("\n");
+			const chestContentStart = text.indexOf("commands:report.city.homes.chest.chestContentSection");
+			expect(chestContentStart).toBeGreaterThan(-1);
+			const swapSection = text.slice(0, chestContentStart);
+			const chestContentSection = text.slice(chestContentStart);
+			expect(chestContentSection.match(/commands:report\.city\.homes\.chest\.chestContentLine/g)).toHaveLength(1);
+
+			// The read-only section shows the chest item (name and stats) and not the inventory items
+			expect(chestContentSection).toContain("models:weapons.1");
+			expect(chestContentSection).toMatch(/items:stat\|\{\\*"value\\*":21\}/);
+			expect(chestContentSection).not.toContain("models:weapons.2");
+			expect(chestContentSection).not.toContain("models:weapons.3");
+			expect(swapSection).not.toContain("models:weapons.1");
+			expect(buttons.some(button => button.data.custom_id?.startsWith(HomeMenuIds.CHEST_WITHDRAW_PREFIX))).toBe(false);
+
+			// One paragraph per block: header + inventory info, warnings, swap choices, chest content
+			const description = (container.components.filter(component => component instanceof TextDisplayBuilder)[1] as TextDisplayBuilder).data.content!;
+			const paragraphs = description.split("\n\n");
+			expect(paragraphs).toHaveLength(4);
+			expect(paragraphs[1].split("\n")).toEqual([
+				"commands:report.city.homes.chest.chestFull",
+				"commands:report.city.homes.chest.inventoryFullLabel"
+			]);
+			expect(paragraphs[2].split("\n")).toHaveLength(3);
+			expect(paragraphs[2].startsWith("commands:report.city.homes.chest.swapSection")).toBe(true);
+			expect(paragraphs[3].split("\n")).toHaveLength(2);
+			expect(paragraphs[3].startsWith("commands:report.city.homes.chest.chestContentSection")).toBe(true);
 		});
 	});
 
@@ -461,47 +533,47 @@ describe("ChestFeatureHandler", () => {
 			expect(mockSendPacket).toHaveBeenCalledOnce();
 		});
 
-		it("should refresh the upgrade station after an inventory mutation", async () => {
-			const previousUpgradeStation = {
-				upgradeableItems: [],
-				maxUpgradeableRarity: 1
-			};
-			const refreshedUpgradeStation = {
-				upgradeableItems: [],
-				maxUpgradeableRarity: 2
-			};
+		it("should rebuild the city when leaving the chest after moving equipment (#4789)", async () => {
 			const ctx = createHandlerContext({
 				homeData: createChestHomeData({
-					upgradeStation: previousUpgradeStation,
 					chestItems: [{
 						slot: 1,
 						category: ItemCategory.WEAPON,
 						details: { itemId: 1, attack: 10, defense: 0, speed: 0, level: 1 }
 					}]
-				})
+				}),
+				packet: createMockPacket([{ type: ReactionCollectorHomeMenuReaction.name }, { type: ReactionCollectorHomeChestCloseReaction.name }])
 			});
-			const interaction = createMockComponentInteraction();
 			const menus = createMockNestedMenus();
-			const mockSendPacket = vi.mocked(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse);
-			mockSendPacket.mockImplementation(async (context, _packet, callback) => {
+			vi.mocked(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse).mockImplementation(async (context, _packet, callback) => {
 				await callback(context, "CommandReportHomeChestActionRes", {
 					success: true,
 					chestItems: [],
 					depositableItems: [],
 					slotsPerCategory: { weapon: 1, armor: 1, object: 1, potion: 1 },
-					inventoryCapacity: { weapon: 2, armor: 1, object: 1, potion: 1 },
-					upgradeStation: refreshedUpgradeStation
+					inventoryCapacity: { weapon: 2, armor: 1, object: 1, potion: 1 }
 				} as never);
 			});
+			await handler.handleSubMenuSelection(ctx, `${HomeMenuIds.CHEST_WITHDRAW_PREFIX}${ItemCategory.WEAPON}_1`, createMockComponentInteraction() as never, menus as never);
+			vi.mocked(menus.changeMenu).mockClear();
 
-			await handler.handleSubMenuSelection(
-				ctx,
-				`${HomeMenuIds.CHEST_WITHDRAW_PREFIX}${ItemCategory.WEAPON}_1`,
-				interaction as never,
-				menus as never
-			);
+			await handler.handleSubMenuSelection(ctx, HomeMenuIds.BACK_TO_HOME, createMockComponentInteraction(HomeMenuIds.BACK_TO_HOME) as never, menus as never);
 
-			expect(ctx.homeData.upgradeStation).toBe(refreshedUpgradeStation);
+			expect(DiscordCollectorUtils.sendReaction).toHaveBeenCalledWith(ctx.packet, ctx.context, ctx.context.keycloakId, expect.anything(), 1);
+			expect(menus.changeMenu).not.toHaveBeenCalled();
+		});
+
+		it("should simply go back home when no equipment moved", async () => {
+			const ctx = createHandlerContext({
+				homeData: createChestHomeData(),
+				packet: createMockPacket([{ type: ReactionCollectorHomeChestCloseReaction.name }])
+			});
+			const menus = createMockNestedMenus();
+
+			await handler.handleSubMenuSelection(ctx, HomeMenuIds.BACK_TO_HOME, createMockComponentInteraction(HomeMenuIds.BACK_TO_HOME) as never, menus as never);
+
+			expect(menus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.HOME_MENU);
+			expect(DiscordCollectorUtils.sendReaction).not.toHaveBeenCalled();
 		});
 
 		it("should send plant deposit MQTT packet", async () => {

@@ -1,8 +1,8 @@
 import { NotificationsSerializedPacket } from "../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
 import {
-	AttachmentBuilder,
-	BaseGuildTextChannel, TextChannel, User
+	AttachmentBuilder, User
 } from "discord.js";
+import { sendInGuildChannelFromAnyShard } from "../utils/ShardChannelUtils";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import { Language } from "../../../Lib/src/Language";
@@ -32,6 +32,14 @@ import { GDPRExportCompleteNotificationPacket } from "../../../Lib/src/packets/n
 import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
 import { ZipArchive } from "archiver";
 import { DiscordConstants } from "../DiscordConstants";
+import { TournamentNotificationPacket } from "../../../Lib/src/packets/notifications/TournamentNotificationPacket";
+import { TournamentDefenseNotificationPacket } from "../../../Lib/src/packets/notifications/TournamentDefenseNotificationPacket";
+import { TournamentChannelAnnouncementPacket } from "../../../Lib/src/packets/notifications/TournamentChannelAnnouncementPacket";
+import { NotificationPacket } from "../../../Lib/src/packets/notifications/NotificationPacket";
+import { postTournamentChannelAnnouncement } from "../commands/tournament/TournamentAnnouncements";
+import {
+	getTournamentDefenseNotificationContent, getTournamentNotificationContent
+} from "../commands/tournament/TournamentNotificationContents";
 
 /**
  * Create a ZIP buffer from CSV files
@@ -80,6 +88,135 @@ async function sendGDPRErrorEmbed(user: User, lng: Language, errorMessage: strin
 	});
 }
 
+type NotificationRendering = {
+	content: string;
+	type: NotificationType;
+};
+
+type NotificationRenderer = (packet: NotificationPacket, lng: Language) => NotificationRendering | Promise<NotificationRendering>;
+
+function getGuildStatusChangeKey(packet: GuildStatusChangeNotificationPacket): string {
+	if (packet.becomeChief) {
+		return "becomeChief";
+	}
+	return packet.becomeElder ? "becomeElder" : "becomeMember";
+}
+
+function renderPetExpedition(packet: ExpeditionFinishedNotificationPacket, lng: Language): NotificationRendering {
+	const petIcon = DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort);
+	const petName = DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng);
+	return {
+		content: i18n.t("bot:notificationPetExpedition", {
+			lng,
+			petDisplay: `${petIcon} **${petName}**`
+		}),
+		type: NotificationsTypes.PET_EXPEDITION
+	};
+}
+
+const NOTIFICATION_RENDERERS: Record<string, NotificationRenderer> = {
+	[ReachDestinationNotificationPacket.name]: (packet, lng) => {
+		const {
+			mapType, mapId
+		} = packet as ReachDestinationNotificationPacket;
+		return {
+			content: i18n.t("bot:notificationReachDestination", {
+				lng,
+				destination: DisplayUtils.getMapLocationDisplay(mapType, mapId, lng)
+			}),
+			type: NotificationsTypes.REPORT
+		};
+	},
+	[DailyBonusNotificationPacket.name]: (_packet, lng) => ({
+		content: i18n.t("bot:notificationDailyBonus", { lng }),
+		type: NotificationsTypes.DAILY_BONUS
+	}),
+	[EnergyFullNotificationPacket.name]: (_packet, lng) => ({
+		content: i18n.t("bot:notificationEnergyFull", { lng }),
+		type: NotificationsTypes.ENERGY
+	}),
+	[GuildDailyNotificationPacket.name]: async (packet, lng) => {
+		const {
+			keycloakIdOfExecutor, reward
+		} = packet as GuildDailyNotificationPacket;
+		return {
+			content: i18n.t("bot:notificationGuildDaily", {
+				lng,
+				pseudo: await DisplayUtils.getEscapedUsername(keycloakIdOfExecutor, lng),
+				rewards: getCommandGuildDailyRewardPacketString(reward, lng)
+			}),
+			type: NotificationsTypes.GUILD_DAILY
+		};
+	},
+	[GuildKickNotificationPacket.name]: async (packet, lng) => {
+		const {
+			keycloakIdOfExecutor, guildName
+		} = packet as GuildKickNotificationPacket;
+		return {
+			content: i18n.t("bot:notificationGuildKick", {
+				lng,
+				pseudo: await DisplayUtils.getEscapedUsername(keycloakIdOfExecutor, lng),
+				guildName
+			}),
+			type: NotificationsTypes.GUILD_KICK
+		};
+	},
+	[GuildStatusChangeNotificationPacket.name]: (packet, lng) => {
+		const statusChange = packet as GuildStatusChangeNotificationPacket;
+		return {
+			content: i18n.t(`bot:notificationGuildStatusChange.${getGuildStatusChangeKey(statusChange)}`, {
+				lng,
+				guildName: statusChange.guildName
+			}),
+			type: NotificationsTypes.GUILD_STATUS_CHANGE
+		};
+	},
+	[PlayerFreedFromJailNotificationPacket.name]: async (packet, lng) => ({
+		content: i18n.t("notifications:playerFreedFromJail.description", {
+			lng,
+			freedByPlayer: await DisplayUtils.getEscapedUsername((packet as PlayerFreedFromJailNotificationPacket).freedByPlayerKeycloakId, lng)
+		}),
+		type: NotificationsTypes.PLAYER_FREED_FROM_JAIL
+	}),
+	[PlayerWasAttackedNotificationPacket.name]: async (packet, lng) => ({
+		content: i18n.t("notifications:fightChallenge.description", {
+			lng,
+			attackerPseudo: await DisplayUtils.getEscapedUsername((packet as PlayerWasAttackedNotificationPacket).attackedByPlayerKeycloakId, lng)
+		}),
+		type: NotificationsTypes.FIGHT_CHALLENGE
+	}),
+	[ExpeditionFinishedNotificationPacket.name]: (packet, lng) => renderPetExpedition(packet as ExpeditionFinishedNotificationPacket, lng),
+	[TournamentNotificationPacket.name]: async (packet, lng) => ({
+		content: await getTournamentNotificationContent(packet as TournamentNotificationPacket, lng),
+		type: NotificationsTypes.TOURNAMENT
+	}),
+	[TournamentDefenseNotificationPacket.name]: async (packet, lng) => ({
+		content: await getTournamentDefenseNotificationContent(packet as TournamentDefenseNotificationPacket, lng),
+		type: NotificationsTypes.TOURNAMENT
+	})
+};
+
+type NotificationRecipient = {
+	discordId: string;
+	lng: Language;
+};
+
+async function getNotificationRecipient(keycloakId: string): Promise<NotificationRecipient> {
+	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
+	const missingRecipientError = `Keycloak user with id ${keycloakId} not found or missing discordId`;
+	if (getUser.isError) {
+		throw missingRecipientError;
+	}
+	const discordId = getUser.payload.user.attributes.discordId?.[0];
+	if (!discordId || discordId === "0") {
+		throw missingRecipientError;
+	}
+	return {
+		discordId,
+		lng: getUser.payload.user.attributes.language[0] as Language
+	};
+}
+
 export abstract class NotificationsHandler {
 	/**
 	 * This function is called to send a batch of notifications
@@ -87,127 +224,47 @@ export abstract class NotificationsHandler {
 	 */
 	static sendNotifications(notificationSerializedPacket: NotificationsSerializedPacket): void {
 		for (const notification of notificationSerializedPacket.notifications) {
-			this._processSingleNotification(notification)
-				.catch(error => {
-					CrowniclesLogger.error(`Failed to process notification: ${error}`);
+			const processing = notification.type === TournamentChannelAnnouncementPacket.name
+				? postTournamentChannelAnnouncement(notification.packet as TournamentChannelAnnouncementPacket)
+				: this._processSingleNotification({
+					type: notification.type,
+					packet: notification.packet as NotificationPacket
 				});
+			processing.catch(error => {
+				CrowniclesLogger.error(`Failed to process notification: ${error}`);
+			});
 		}
 	}
 
-	private static async _processSingleNotification(notification: NotificationsSerializedPacket["notifications"][0]): Promise<void> {
+	private static async _processSingleNotification(notification: {
+		type: string;
+		packet: NotificationPacket;
+	}): Promise<void> {
 		const keycloakId = notification.packet.keycloakId;
 
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
+		const {
+			discordId, lng
+		} = await getNotificationRecipient(keycloakId);
 
-		if (getUser.isError || !getUser.payload.user.attributes.discordId || getUser.payload.user.attributes.discordId[0] === "0") {
-			throw `Keycloak user with id ${keycloakId} not found or missing discordId`;
+		if (notification.type === GDPRExportCompleteNotificationPacket.name) {
+			// GDPR export is handled separately - send DM directly with ZIP attachment
+			const gdprDiscordUser = await crowniclesClient.users.fetch(discordId);
+			await NotificationsHandler.handleGDPRExportComplete(gdprDiscordUser, notification.packet as GDPRExportCompleteNotificationPacket, lng);
+			return;
 		}
-		const discordId = getUser.payload.user.attributes.discordId[0];
-		const lng = getUser.payload.user.attributes.language[0] as Language;
 
-		let notificationContent: string;
-		let notificationType: NotificationType;
-
-		switch (notification.type) {
-			case ReachDestinationNotificationPacket.name: {
-				const packet = notification.packet as ReachDestinationNotificationPacket;
-				notificationContent = i18n.t("bot:notificationReachDestination", {
-					lng,
-					destination: DisplayUtils.getMapLocationDisplay(packet.mapType, packet.mapId, lng)
-				});
-				notificationType = NotificationsTypes.REPORT;
-				break;
-			}
-			case DailyBonusNotificationPacket.name: {
-				notificationContent = i18n.t("bot:notificationDailyBonus", {
-					lng
-				});
-				notificationType = NotificationsTypes.DAILY_BONUS;
-				break;
-			}
-			case EnergyFullNotificationPacket.name: {
-				notificationContent = i18n.t("bot:notificationEnergyFull", {
-					lng
-				});
-				notificationType = NotificationsTypes.ENERGY;
-				break;
-			}
-			case GuildDailyNotificationPacket.name: {
-				const packet = notification.packet as GuildDailyNotificationPacket;
-				notificationContent = i18n.t("bot:notificationGuildDaily", {
-					lng,
-					pseudo: await DisplayUtils.getEscapedUsername(packet.keycloakIdOfExecutor, lng),
-					rewards: getCommandGuildDailyRewardPacketString((notification.packet as GuildDailyNotificationPacket).reward, lng)
-				});
-				notificationType = NotificationsTypes.GUILD_DAILY;
-				break;
-			}
-			case GuildKickNotificationPacket.name: {
-				const packet = notification.packet as GuildKickNotificationPacket;
-				notificationContent = i18n.t("bot:notificationGuildKick", {
-					lng,
-					pseudo: await DisplayUtils.getEscapedUsername(packet.keycloakIdOfExecutor, lng),
-					guildName: packet.guildName
-				});
-				notificationType = NotificationsTypes.GUILD_KICK;
-				break;
-			}
-			case GuildStatusChangeNotificationPacket.name: {
-				const packet = notification.packet as GuildStatusChangeNotificationPacket;
-				const keyNotification = packet.becomeChief ? "becomeChief" : packet.becomeElder ? "becomeElder" : "becomeMember";
-				notificationContent = i18n.t(`bot:notificationGuildStatusChange.${keyNotification}`, {
-					lng,
-					guildName: packet.guildName
-				});
-				notificationType = NotificationsTypes.GUILD_STATUS_CHANGE;
-				break;
-			}
-			case PlayerFreedFromJailNotificationPacket.name: {
-				const packet = notification.packet as PlayerFreedFromJailNotificationPacket;
-				notificationContent = i18n.t("notifications:playerFreedFromJail.description", {
-					lng,
-					freedByPlayer: await DisplayUtils.getEscapedUsername(packet.freedByPlayerKeycloakId, lng)
-				});
-				notificationType = NotificationsTypes.PLAYER_FREED_FROM_JAIL;
-				break;
-			}
-			case PlayerWasAttackedNotificationPacket.name: {
-				const packet = notification.packet as PlayerWasAttackedNotificationPacket;
-				notificationContent = i18n.t("notifications:fightChallenge.description", {
-					lng,
-					attackerPseudo: await DisplayUtils.getEscapedUsername(packet.attackedByPlayerKeycloakId, lng)
-				});
-				notificationType = NotificationsTypes.FIGHT_CHALLENGE;
-				break;
-			}
-			case ExpeditionFinishedNotificationPacket.name: {
-				const packet = notification.packet as ExpeditionFinishedNotificationPacket;
-				const petIcon = DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort);
-				const petName = DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng);
-				notificationContent = i18n.t("bot:notificationPetExpedition", {
-					lng,
-					petDisplay: `${petIcon} **${petName}**`
-				});
-				notificationType = NotificationsTypes.PET_EXPEDITION;
-				break;
-			}
-			case GDPRExportCompleteNotificationPacket.name: {
-				// GDPR export is handled separately - send DM directly with ZIP attachment
-				const gdprPacket = notification.packet as GDPRExportCompleteNotificationPacket;
-				const gdprDiscordUser = await crowniclesClient.users.fetch(discordId);
-				await NotificationsHandler.handleGDPRExportComplete(gdprDiscordUser, gdprPacket, lng);
-				return; // Don't use standard notification flow
-			}
-			default:
-				throw `Unknown notification type: ${notification.type}`;
+		const renderNotification = NOTIFICATION_RENDERERS[notification.type];
+		if (!renderNotification) {
+			throw `Unknown notification type: ${notification.type}`;
 		}
+		const rendering = await renderNotification(notification.packet, lng);
 
 		const discordUser = await crowniclesClient.users.fetch(discordId);
 		await NotificationsHandler.sendNotification(
 			discordUser,
 			await NotificationsConfigurations.getOrRegister(discordId),
-			notificationType,
-			i18n.t(notificationContent, { lng }),
+			rendering.type,
+			i18n.t(rendering.content, { lng }),
 			lng
 		);
 	}
@@ -291,26 +348,12 @@ export abstract class NotificationsHandler {
 
 		const notificationTypeValue = notificationType.value(notificationConfiguration);
 
-		const channelAccess = await crowniclesClient.shard!.broadcastEval((client, context) =>
-			client.channels.fetch(context.channel)
-				.then(channel => {
-					if ((<BaseGuildTextChannel>channel).guild.shardId === client.shard!.ids[0]) {
-						(<TextChannel>channel).send(context.embedNotification);
-						return true;
-					}
-					return false;
-				})
-				.catch(() => false), {
-			context: {
-				channel: notificationTypeValue.channelId!,
-				embedNotification: {
-					content: getMention(user.id),
-					embeds: [embed]
-				}
-			}
+		const posted = await sendInGuildChannelFromAnyShard(notificationTypeValue.channelId!, {
+			content: getMention(user.id),
+			embeds: [embed.toJSON()]
 		});
 
-		if (!channelAccess.includes(true)) {
+		if (!posted) {
 			notificationType.changeSendTypeCallback(notificationConfiguration, NotificationSendTypeEnum.DM, "");
 			await notificationConfiguration.save();
 

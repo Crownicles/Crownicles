@@ -7,6 +7,17 @@
   "maxBreath": 35,
   "breathRegen": 7,
   "rewardFactor": 1.5,
+  "materialLoot": [
+    20,
+    14,
+    47,
+    49,
+    78,
+    38,
+    28,
+    57,
+    67
+  ],
   "attacks": [
     {
       "id": "inkJet",
