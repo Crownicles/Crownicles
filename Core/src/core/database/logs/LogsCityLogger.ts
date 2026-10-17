@@ -1,7 +1,7 @@
 import { LogsInnMeals } from "./models/LogsInnMeals";
 import { LogsInnRooms } from "./models/LogsInnRooms";
 import { LogsBlacksmithUpgrades } from "./models/LogsBlacksmithUpgrades";
-import { LogsBlacksmithDisenchants } from "./models/LogsBlacksmithDisenchants";
+import { LogsBlacksmithEnchantmentTransfers } from "./models/LogsBlacksmithEnchantmentTransfers";
 import { LogsScrapDealerRecycles } from "./models/LogsScrapDealerRecycles";
 import { LogsEnchanterUses } from "./models/LogsEnchanterUses";
 import { LogsEnchanterDisenchants } from "./models/LogsEnchanterDisenchants";
@@ -112,13 +112,15 @@ export interface BlacksmithUpgradeLogParams {
 }
 
 /**
- * Parameters for logging a blacksmith disenchant
+ * Parameters for logging an enchantment moved from one equipment to another at the blacksmith
  */
-export interface BlacksmithDisenchantLogParams {
+export interface BlacksmithEnchantmentTransferLogParams {
 	keycloakId: string;
 	cityId: string;
 	itemCategory: number;
-	slot: number;
+	sourceSlot: number;
+	targetSlot: number;
+	enchantmentId: string;
 	cost: number;
 }
 
@@ -422,12 +424,12 @@ export class LogsCityLogger {
 	}
 
 	/**
-	 * Log when a player removes an enchantment from an item at the city blacksmith.
+	 * Log when a player moves an enchantment from one equipment to another at the city blacksmith.
 	 */
-	async logBlacksmithDisenchant({
+	async logBlacksmithEnchantmentTransfer({
 		keycloakId, ...fields
-	}: BlacksmithDisenchantLogParams): Promise<void> {
-		await createDatedLogEntry(keycloakId, (playerId, date) => LogsBlacksmithDisenchants.create({
+	}: BlacksmithEnchantmentTransferLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsBlacksmithEnchantmentTransfers.create({
 			playerId,
 			...fields,
 			date

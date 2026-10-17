@@ -361,11 +361,14 @@ export class CommandReportBlacksmithNotEnoughMoneyRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportBlacksmithMissingMaterialsRes extends CrowniclesPacket {}
 
+/** The blacksmith moved an enchantment from one equipment to another */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportBlacksmithDisenchantRes extends CrowniclesPacket {
-	itemCategory!: number;
+export class CommandReportBlacksmithEnchantmentTransferRes extends CrowniclesPacket {
+	enchantmentId!: string;
 
-	/** Gold cost paid for disenchanting */
+	enchantmentType!: string;
+
+	/** Gold cost paid for the transfer */
 	cost!: number;
 }
 

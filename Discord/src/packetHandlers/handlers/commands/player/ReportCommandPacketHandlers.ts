@@ -6,7 +6,7 @@ import {
 	CommandReportApartmentClaimRentTooLowRes,
 	CommandReportApartmentRequiresHomeRes,
 	CommandReportBigEventResultRes,
-	CommandReportBlacksmithDisenchantRes,
+	CommandReportBlacksmithEnchantmentTransferRes,
 	CommandReportBlacksmithMissingMaterialsRes,
 	CommandReportBlacksmithNotEnoughMoneyRes,
 	CommandReportBlacksmithUpgradeRes,
@@ -64,7 +64,9 @@ import {
 	reportResult,
 	stayInCity
 } from "../../../../commands/player/ReportCommand";
-import { sendBlacksmithReply } from "../../../../commands/player/report/blacksmith/BlacksmithHandlers";
+import {
+	sendBlacksmithReply, sendEnchantmentReply
+} from "../../../../commands/player/report/blacksmith/BlacksmithHandlers";
 import { handleScrapDealerRecycle } from "../../../../commands/player/report/scrapDealer/ScrapDealerHandlers";
 import {
 	handleBuyHealAccept,
@@ -187,28 +189,18 @@ export default class ReportCommandPacketHandlers {
 
 	@packetHandler(CommandReportItemEnchantedRes)
 	async reportItemEnchantedRes(context: PacketContext, packet: CommandReportItemEnchantedRes): Promise<void> {
-		await sendBlacksmithReply({
-			context,
+		await sendEnchantmentReply(context, {
 			titleKey: "commands:report.city.enchanter.acceptTitle",
-			descriptionKey: "commands:report.city.enchanter.acceptStory",
-			descriptionParams: {
-				enchantmentId: packet.enchantmentId,
-				enchantmentType: packet.enchantmentType
-			}
-		});
+			descriptionKey: "commands:report.city.enchanter.acceptStory"
+		}, packet);
 	}
 
 	@packetHandler(CommandReportEnchanterDisenchantRes)
 	async reportEnchanterDisenchantRes(context: PacketContext, packet: CommandReportEnchanterDisenchantRes): Promise<void> {
-		await sendBlacksmithReply({
-			context,
+		await sendEnchantmentReply(context, {
 			titleKey: "commands:report.city.enchanter.disenchantSuccessTitle",
-			descriptionKey: "commands:report.city.enchanter.disenchantSuccessStory",
-			descriptionParams: {
-				enchantmentId: packet.enchantmentId,
-				enchantmentType: packet.enchantmentType
-			}
-		});
+			descriptionKey: "commands:report.city.enchanter.disenchantSuccessStory"
+		}, packet);
 	}
 
 	@packetHandler(CommandReportItemCannotBeEnchantedRes)
@@ -397,13 +389,12 @@ export default class ReportCommandPacketHandlers {
 		});
 	}
 
-	@packetHandler(CommandReportBlacksmithDisenchantRes)
-	async reportBlacksmithDisenchantRes(context: PacketContext, _packet: CommandReportBlacksmithDisenchantRes): Promise<void> {
-		await sendBlacksmithReply({
-			context,
-			titleKey: "commands:report.city.blacksmith.disenchantTitle",
-			descriptionKey: "commands:report.city.blacksmith.disenchantSuccess"
-		});
+	@packetHandler(CommandReportBlacksmithEnchantmentTransferRes)
+	async reportBlacksmithEnchantmentTransferRes(context: PacketContext, packet: CommandReportBlacksmithEnchantmentTransferRes): Promise<void> {
+		await sendEnchantmentReply(context, {
+			titleKey: "commands:report.city.blacksmith.enchantmentTransferTitle",
+			descriptionKey: "commands:report.city.blacksmith.enchantmentTransferSuccess"
+		}, packet);
 	}
 
 	@packetHandler(CommandReportScrapDealerRecycleRes)

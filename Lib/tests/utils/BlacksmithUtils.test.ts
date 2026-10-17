@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BlacksmithConstants } from "../../src/constants/BlacksmithConstants";
 import {
-	getDisenchantPrice, getMaterialsPurchasePrice, getUpgradePrice
+	getEnchantmentTransferPrice, getMaterialsPurchasePrice, getUpgradePrice
 } from "../../src/utils/BlacksmithUtils";
 import { ItemRarity } from "../../src/constants/ItemConstants";
 import { MaterialRarity } from "../../src/types/MaterialRarity";
@@ -111,16 +111,16 @@ describe("BlacksmithUtils", () => {
 		});
 	});
 
-	describe("getDisenchantPrice", () => {
+	describe("getEnchantmentTransferPrice", () => {
 		it("should return 0 for BASIC rarity", () => {
-			expect(getDisenchantPrice(ItemRarity.BASIC)).toBe(0);
+			expect(getEnchantmentTransferPrice(ItemRarity.BASIC)).toBe(0);
 		});
 
 		it("should increase price with higher rarity", () => {
 			const rarities = Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[];
 			for (let i = 1; i < rarities.length; i++) {
-				const lowerPrice = getDisenchantPrice(rarities[i - 1]);
-				const higherPrice = getDisenchantPrice(rarities[i]);
+				const lowerPrice = getEnchantmentTransferPrice(rarities[i - 1]);
+				const higherPrice = getEnchantmentTransferPrice(rarities[i]);
 				expect(higherPrice).toBeGreaterThanOrEqual(lowerPrice);
 			}
 		});
@@ -128,7 +128,7 @@ describe("BlacksmithUtils", () => {
 		it("should return a defined number for every item rarity", () => {
 			const rarities = Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[];
 			for (const rarity of rarities) {
-				const price = getDisenchantPrice(rarity);
+				const price = getEnchantmentTransferPrice(rarity);
 				expect(price).toBeDefined();
 				expect(typeof price).toBe("number");
 			}

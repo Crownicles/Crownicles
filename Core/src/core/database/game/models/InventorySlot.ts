@@ -23,6 +23,7 @@ import moment from "moment";
 import { InventoryConstants } from "../../../../../../Lib/src/constants/InventoryConstants";
 import { ItemWithDetails } from "../../../../../../Lib/src/types/ItemWithDetails";
 import { MainItemDetails } from "../../../../../../Lib/src/types/MainItemDetails";
+import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
 import { toItemWithDetails } from "../../../utils/ItemUtils";
 
 type DepositCandidate = {
@@ -98,6 +99,15 @@ export class InventorySlot extends Model {
 
 	itemWithDetails(player: Player): ItemWithDetails {
 		return toItemWithDetails(player, this.getItem()!, this.itemLevel, this.itemEnchantmentId, this.remainingPotionUsages);
+	}
+
+	/**
+	 * Whether this slot holds an unenchanted equipment of the category the enchantment is made for
+	 */
+	canReceiveEnchantment(enchantment: ItemEnchantment): boolean {
+		return this.isPrimaryEquipment()
+			&& !this.itemEnchantmentId
+			&& this.itemCategory === enchantment.kind.slot;
 	}
 
 	/**

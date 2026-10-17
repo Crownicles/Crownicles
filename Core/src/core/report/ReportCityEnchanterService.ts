@@ -103,12 +103,6 @@ function holdsListedItem(
 	return Boolean(listedItem && item?.holdsItem(listedItem.details));
 }
 
-function canBeEnchanted(item: InventorySlot, enchantment: ItemEnchantment): boolean {
-	return item.isWeaponOrArmor()
-		&& !item.itemEnchantmentId
-		&& item.itemCategory === enchantment.kind.slot;
-}
-
 async function getEnchantableItem(
 	player: Player,
 	reaction: ReactionCollectorEnchantReaction,
@@ -124,7 +118,7 @@ async function getEnchantableItem(
 		return null;
 	}
 
-	if (!canBeEnchanted(itemToEnchant, context.enchantment)) {
+	if (!itemToEnchant.canReceiveEnchantment(context.enchantment)) {
 		CrowniclesLogger.error("Player tried to enchant an item that doesn't exist or cannot be enchanted. It shouldn't happen because the player must not be able to switch items while in the collector.");
 		response.push(makePacket(CommandReportItemCannotBeEnchantedRes, {}));
 		return null;

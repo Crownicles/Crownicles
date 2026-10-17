@@ -20,7 +20,6 @@ import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	ReactionCollectorBlacksmithDisenchantReaction,
 	ReactionCollectorBlacksmithUpgradeReaction,
 	ReactionCollectorCityData
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
@@ -36,6 +35,7 @@ import {
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 import { buildUpgradeDetailDescription } from "./BlacksmithUpgradeDetailHelper";
+import { registerEnchantmentTransferMenus } from "./BlacksmithEnchantmentTransferMenu";
 
 export interface BlacksmithMenuParams {
 	context: PacketContext;
@@ -46,8 +46,6 @@ export interface BlacksmithMenuParams {
 }
 
 type BlacksmithUpgradeableItem = NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"][number];
-
-type BlacksmithDisenchantableItem = NonNullable<ReactionCollectorCityData["blacksmith"]>["disenchantableItems"][number];
 
 /**
  * Type guard to check if a reaction is a blacksmith upgrade reaction
@@ -65,42 +63,27 @@ function isBlacksmithUpgradeReaction(reaction: {
 }
 
 /**
- * Type guard to check if a reaction is a blacksmith disenchant reaction
- */
-function isBlacksmithDisenchantReaction(reaction: {
-	type: string; data: unknown;
-}): reaction is {
-	type: string; data: ReactionCollectorBlacksmithDisenchantReaction;
-} {
-	if (reaction.type !== ReactionCollectorBlacksmithDisenchantReaction.name) {
-		return false;
-	}
-	const data = reaction.data as Record<string, unknown>;
-	return typeof data.slot === "number" && typeof data.itemCategory === "number";
-}
-
-/**
  * Get the translation key for the blacksmith menu description based on available services
  */
 function getDescriptionKeyBlacksmithMenu(blacksmith: NonNullable<ReactionCollectorCityData["blacksmith"]>): string {
 	const hasUpgrades = blacksmith.upgradeableItems.length > 0;
-	const hasDisenchants = blacksmith.disenchantableItems.length > 0;
+	const hasTransfers = blacksmith.enchantmentTransfers.length > 0;
 
-	if (hasUpgrades && hasDisenchants) {
+	if (hasUpgrades && hasTransfers) {
 		return "commands:report.city.blacksmith.descriptionBoth";
 	}
 	if (hasUpgrades) {
 		return "commands:report.city.blacksmith.descriptionUpgradeOnly";
 	}
-	if (hasDisenchants) {
-		return "commands:report.city.blacksmith.descriptionDisenchantOnly";
+	if (hasTransfers) {
+		return "commands:report.city.blacksmith.descriptionEnchantmentTransferOnly";
 	}
 	return "commands:report.city.blacksmith.descriptionNoItems";
 }
 
 /**
  * Build the collector factory for the main blacksmith menu: routes to the
- * upgrade / disenchant sub-menus and the back/stay shortcuts.
+ * upgrade / enchantment transfer sub-menus and the back/stay shortcuts.
  */
 function createBlacksmithMainCollector(params: BlacksmithMenuParams): CrowniclesNestedMenuCollectorFactory {
 	const {
@@ -124,8 +107,8 @@ function createBlacksmithMainCollector(params: BlacksmithMenuParams): Crownicles
 			if (selectedValue === BlacksmithMenuIds.UPGRADE_MENU) {
 				await nestedMenus.changeMenu(BlacksmithMenuIds.UPGRADE_MENU);
 			}
-			else if (selectedValue === BlacksmithMenuIds.DISENCHANT_MENU) {
-				await nestedMenus.changeMenu(BlacksmithMenuIds.DISENCHANT_MENU);
+			else if (selectedValue === BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU) {
+				await nestedMenus.changeMenu(BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU);
 			}
 			else if (selectedValue === BlacksmithMenuIds.BACK_TO_CITY) {
 				await nestedMenus.changeToMainMenu();
@@ -180,16 +163,15 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 		});
 	}
 
-	// Add disenchant option if there are disenchantable items
-	if (blacksmith.disenchantableItems.length > 0) {
+	if (blacksmith.enchantmentTransfers.length > 0) {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 		addCitySection({
 			container,
-			emote: CrowniclesIcons.city.blacksmith.disenchant,
-			title: i18n.t("commands:report.city.blacksmith.disenchantLabel", { lng }),
-			description: i18n.t("commands:report.city.blacksmith.disenchantDescription", { lng }),
-			customId: BlacksmithMenuIds.DISENCHANT_MENU,
-			buttonLabel: i18n.t("commands:report.city.buttons.disenchant", { lng })
+			emote: CrowniclesIcons.city.blacksmith.enchantmentTransfer,
+			title: i18n.t("commands:report.city.blacksmith.enchantmentTransferLabel", { lng }),
+			description: i18n.t("commands:report.city.blacksmith.enchantmentTransferDescription", { lng }),
+			customId: BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU,
+			buttonLabel: i18n.t("commands:report.city.buttons.transfer", { lng })
 		});
 	}
 
@@ -495,246 +477,6 @@ export function getBlacksmithUpgradeDetailMenu(
 }
 
 /**
- * Build the collector factory for the disenchant item list: routes back to the
- * blacksmith, opens an item detail menu or the stay shortcut.
- */
-function createBlacksmithDisenchantListCollector(params: BlacksmithMenuParams): CrowniclesNestedMenuCollectorFactory {
-	const {
-		context, interaction, packet, collectorTime
-	} = params;
-	const lng = interaction.userLanguage;
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({
-			time: collectorTime
-		});
-
-		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			await buttonInteraction.deferUpdate();
-			const selectedValue = buttonInteraction.customId;
-
-			if (selectedValue === BlacksmithMenuIds.BACK_TO_BLACKSMITH) {
-				await nestedMenus.changeMenu(BlacksmithMenuIds.BLACKSMITH_MENU);
-			}
-			else if (selectedValue.startsWith(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX)) {
-				const itemIndex = Number.parseInt(selectedValue.slice(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX.length), 10);
-				if (!Number.isNaN(itemIndex)) {
-					await nestedMenus.changeMenu(`${BlacksmithMenuIds.DISENCHANT_MENU}_DETAIL_${itemIndex}`);
-				}
-			}
-			else if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-			}
-		});
-
-		return collector;
-	};
-}
-
-/**
- * Get the blacksmith disenchant item selection menu
- */
-export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): CrowniclesNestedMenu {
-	const {
-		interaction, packet, pseudo
-	} = params;
-	const data = packet.data.data as ReactionCollectorCityData;
-	const lng = interaction.userLanguage;
-	const blacksmith = data.blacksmith!;
-
-	const container = new ContainerBuilder();
-
-	// Title
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.disenchantTitle", {
-				lng, pseudo
-			}))
-		)
-	);
-
-	// Description with player money
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.blacksmith.disenchantSelectDescription", {
-				lng,
-				money: blacksmith.playerMoney
-			})
-		)
-	);
-
-	// Add each disenchantable item as a section
-	for (let i = 0; i < blacksmith.disenchantableItems.length; i++) {
-		const item = blacksmith.disenchantableItems[i];
-		const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
-
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection({
-			container,
-			text: `${itemDisplay}\n${i18n.t("commands:report.city.blacksmith.itemDisenchantPreview", {
-				lng,
-				enchantmentType: item.enchantmentType,
-				enchantmentId: item.enchantmentId,
-				cost: item.disenchantCost
-			})}`,
-			customId: `${BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX}${i}`,
-			buttonLabel: i18n.t("commands:report.city.buttons.disenchant", { lng }),
-			emoji: CrowniclesIcons.city.blacksmith.disenchant
-		});
-	}
-
-	// Back to blacksmith + Stay in city buttons
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(
-			new ButtonBuilder()
-				.setCustomId(BlacksmithMenuIds.BACK_TO_BLACKSMITH)
-				.setLabel(i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }))
-				.setEmoji(CrowniclesIcons.city.back)
-				.setStyle(ButtonStyle.Secondary),
-			createStayInCityButton(lng)
-		)
-	);
-
-	return {
-		containers: [container],
-		createCollector: createBlacksmithDisenchantListCollector(params)
-	};
-}
-
-/**
- * Build the collector factory for the disenchant detail view: routes back/stay
- * shortcuts and triggers the disenchant reaction.
- */
-function createBlacksmithDisenchantDetailCollector(
-	params: BlacksmithMenuParams,
-	item: BlacksmithDisenchantableItem
-): CrowniclesNestedMenuCollectorFactory {
-	const {
-		context, interaction, packet, collectorTime
-	} = params;
-	const lng = interaction.userLanguage;
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({
-			time: collectorTime
-		});
-
-		collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			if (buttonInteraction.customId === BlacksmithMenuIds.BACK_TO_DISENCHANT_LIST) {
-				await buttonInteraction.deferUpdate();
-				await nestedMenus.changeMenu(BlacksmithMenuIds.DISENCHANT_MENU);
-				return;
-			}
-
-			if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-				await buttonInteraction.deferUpdate();
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-				return;
-			}
-
-			if (buttonInteraction.customId === BlacksmithMenuIds.CONFIRM_DISENCHANT) {
-				await buttonInteraction.deferReply();
-
-				// Find the reaction and send it
-				const reactionIndex = packet.reactions.findIndex(
-					r => isBlacksmithDisenchantReaction(r)
-						&& r.data.slot === item.slot
-						&& r.data.itemCategory === item.category
-				);
-
-				if (reactionIndex !== -1) {
-					DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-				}
-				else {
-					CrowniclesLogger.error(`Blacksmith disenchant reaction not found for slot ${item.slot}, category ${item.category}`);
-					await buttonInteraction.deleteReply();
-				}
-			}
-		});
-
-		return collector;
-	};
-}
-
-/**
- * Get the disenchant item detail menu with confirm button
- */
-export function getBlacksmithDisenchantDetailMenu(
-	params: BlacksmithMenuParams,
-	itemIndex: number
-): CrowniclesNestedMenu {
-	const {
-		interaction, packet, pseudo
-	} = params;
-	const data = packet.data.data as ReactionCollectorCityData;
-	const lng = interaction.userLanguage;
-	const blacksmith = data.blacksmith!;
-	const item = blacksmith.disenchantableItems[itemIndex];
-
-	const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
-	const description = i18n.t("commands:report.city.blacksmith.disenchantItemDetails", {
-		lng,
-		itemDisplay,
-		cost: item.disenchantCost
-	});
-
-	const container = new ContainerBuilder();
-
-	// Title
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.disenchantTitle", {
-				lng, pseudo
-			}))
-		)
-	);
-
-	// Description
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(description)
-	);
-
-	// Build buttons
-	const { canDisenchant } = item;
-	const buttons: ButtonBuilder[] = [
-		new ButtonBuilder()
-			.setCustomId(BlacksmithMenuIds.CONFIRM_DISENCHANT)
-			.setLabel(i18n.t("commands:report.city.blacksmith.confirmDisenchant", {
-				lng,
-				cost: item.disenchantCost
-			}))
-			.setStyle(canDisenchant ? ButtonStyle.Danger : ButtonStyle.Secondary)
-			.setDisabled(!canDisenchant)
-			.setEmoji(CrowniclesIcons.city.blacksmith.disenchant),
-		new ButtonBuilder()
-			.setCustomId(BlacksmithMenuIds.BACK_TO_DISENCHANT_LIST)
-			.setLabel(i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
-			.setEmoji(CrowniclesIcons.city.back)
-			.setStyle(ButtonStyle.Secondary),
-		createStayInCityButton(lng)
-	];
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)
-	);
-
-	return {
-		containers: [container],
-		createCollector: createBlacksmithDisenchantDetailCollector(params, item)
-	};
-}
-
-/**
  * Parameters for registering sub-menus
  */
 interface RegisterSubMenusParams {
@@ -783,13 +525,7 @@ export function getBlacksmithMenus(params: BlacksmithMenuParams): Map<string, Cr
 		detailMenuFactory: i => getBlacksmithUpgradeDetailMenu(params, i)
 	});
 
-	registerSubMenus({
-		menus,
-		items: blacksmith.disenchantableItems,
-		mainKey: BlacksmithMenuIds.DISENCHANT_MENU,
-		mainMenu: getBlacksmithDisenchantMenu(params),
-		detailMenuFactory: i => getBlacksmithDisenchantDetailMenu(params, i)
-	});
+	registerEnchantmentTransferMenus(params, menus);
 
 	return menus;
 }

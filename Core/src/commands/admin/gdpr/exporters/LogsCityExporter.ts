@@ -9,6 +9,7 @@ import { LogsInnMeals } from "../../../../core/database/logs/models/LogsInnMeals
 import { LogsInnRooms } from "../../../../core/database/logs/models/LogsInnRooms";
 import { LogsBlacksmithUpgrades } from "../../../../core/database/logs/models/LogsBlacksmithUpgrades";
 import { LogsBlacksmithDisenchants } from "../../../../core/database/logs/models/LogsBlacksmithDisenchants";
+import { LogsBlacksmithEnchantmentTransfers } from "../../../../core/database/logs/models/LogsBlacksmithEnchantmentTransfers";
 import { LogsScrapDealerRecycles } from "../../../../core/database/logs/models/LogsScrapDealerRecycles";
 import { LogsEnchanterUses } from "../../../../core/database/logs/models/LogsEnchanterUses";
 import { LogsEnchanterDisenchants } from "../../../../core/database/logs/models/LogsEnchanterDisenchants";
@@ -119,6 +120,21 @@ export async function exportLogsCity(
 			slot: disenchant.slot,
 			cost: disenchant.cost,
 			date: disenchant.date
+		})
+	});
+	await exportLogTable({
+		logsPlayerId,
+		csvFiles,
+		filePath: "logs/102_blacksmith_enchantment_transfers.csv",
+		model: LogsBlacksmithEnchantmentTransfers,
+		transform: transfer => ({
+			cityId: transfer.cityId,
+			itemCategory: transfer.itemCategory,
+			sourceSlot: transfer.sourceSlot,
+			targetSlot: transfer.targetSlot,
+			enchantmentId: transfer.enchantmentId,
+			cost: transfer.cost,
+			date: transfer.date
 		})
 	});
 	await exportLogTable({

@@ -5,13 +5,13 @@ import {
 	ReactionCollectorCityData,
 	ReactionCollectorUpgradeItemReaction,
 	ReactionCollectorBlacksmithUpgradeReaction,
-	ReactionCollectorBlacksmithDisenchantReaction
+	ReactionCollectorBlacksmithEnchantmentTransferReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandReportBlacksmithDisenchantRes,
+	CommandReportBlacksmithEnchantmentTransferRes,
 	CommandReportBlacksmithMissingMaterialsRes,
 	CommandReportBlacksmithNotEnoughMoneyRes,
 	CommandReportBlacksmithUpgradeRes,
@@ -30,9 +30,12 @@ import { MissionsController } from "../missions/MissionsController";
 import { Homes } from "../database/game/models/Home";
 import { buildUpgradeStationData } from "./ReportCityService";
 import {
-	EquipmentSlotReaction, findInventorySlotForReaction, getListedInventorySlotUnderLock, removeListedEnchantmentUnderLock
+	EquipmentSlotReaction, findInventorySlotForReaction, getListedInventorySlotUnderLock
 } from "./ReportListedEquipment";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	EnchantmentTransferSource, EnchantmentTransferTarget
+} from "../../../../Lib/src/types/EnchantmentTransfer";
 
 export interface UpgradeItemValidationResult {
 	itemToUpgrade?: {
@@ -52,7 +55,10 @@ type InventoryMaterialStock = Map<number, number>;
 
 type BlacksmithUpgradeItem = NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"][number];
 
-type BlacksmithDisenchantItem = NonNullable<ReactionCollectorCityData["blacksmith"]>["disenchantableItems"][number];
+type ListedEnchantmentTransfer = {
+	source: EnchantmentTransferSource;
+	target: EnchantmentTransferTarget;
+};
 
 type BlacksmithUpgradeExecutionData = {
 	totalCost: number;
@@ -79,42 +85,44 @@ function logMissingInventoryItem(player: Player, action: string): null {
 	return null;
 }
 
-function getBlacksmithItem(
+function getBlacksmithUpgradeItem(
 	player: Player,
 	reaction: ReactionCollectorBlacksmithUpgradeReaction,
-	data: ReactionCollectorCityData,
-	action: "upgrade"
-): BlacksmithUpgradeItem | null;
-function getBlacksmithItem(
-	player: Player,
-	reaction: ReactionCollectorBlacksmithDisenchantReaction,
-	data: ReactionCollectorCityData,
-	action: "disenchant"
-): BlacksmithDisenchantItem | null;
-function getBlacksmithItem(
-	player: Player,
-	reaction: {
-		slot: number;
-		itemCategory: number;
-	},
-	data: ReactionCollectorCityData,
-	action: "upgrade" | "disenchant"
-): BlacksmithUpgradeItem | BlacksmithDisenchantItem | null {
+	data: ReactionCollectorCityData
+): BlacksmithUpgradeItem | null {
 	const blacksmith = getBlacksmithData(player, data);
 	if (!blacksmith) {
 		return null;
 	}
 
-	const items = action === "upgrade" ? blacksmith.upgradeableItems : blacksmith.disenchantableItems;
-	const found = items.find(
+	const found = blacksmith.upgradeableItems.find(
 		item => item.slot === reaction.slot && item.category === reaction.itemCategory
 	);
 	if (!found) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to ${action} an item that doesn't exist in the blacksmith.`);
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in the blacksmith.`);
 		return null;
 	}
 
 	return found;
+}
+
+function getListedEnchantmentTransfer(
+	player: Player,
+	reaction: ReactionCollectorBlacksmithEnchantmentTransferReaction,
+	data: ReactionCollectorCityData
+): ListedEnchantmentTransfer | null {
+	const source = getBlacksmithData(player, data)?.enchantmentTransfers.find(
+		listed => listed.slot === reaction.sourceSlot && listed.category === reaction.itemCategory
+	);
+	const target = source?.targets.find(listed => listed.slot === reaction.targetSlot);
+	if (!source || !target) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried an enchantment transfer that the blacksmith did not list.`);
+		return null;
+	}
+
+	return {
+		source, target
+	};
 }
 
 async function getPlayerMaterialStock(playerId: number): Promise<InventoryMaterialStock> {
@@ -354,7 +362,7 @@ export async function handleBlacksmithUpgradeReaction(
 ): Promise<void> {
 	await player.reload();
 
-	const itemToUpgrade = getBlacksmithItem(player, reaction, data, "upgrade");
+	const itemToUpgrade = getBlacksmithUpgradeItem(player, reaction, data);
 	if (!itemToUpgrade) {
 		return;
 	}
@@ -457,61 +465,93 @@ async function executeBlacksmithUpgrade(params: {
 }
 
 /**
- * Handle blacksmith disenchant reaction — player removes an enchantment at the blacksmith
+ * Move the enchantment of the listed source onto the listed target and charge the transfer.
+ * Both slots are re-checked against the menu: a concurrent transfer, the chest or an inventory switch
+ * may have changed either of them since, and the listed price would no longer apply.
+ */
+async function transferEnchantmentUnderLock(
+	lockedPlayer: Locked<Player>,
+	reaction: ReactionCollectorBlacksmithEnchantmentTransferReaction,
+	transfer: ListedEnchantmentTransfer,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	const {
+		source, target
+	} = transfer;
+	if (lockedPlayer.money < target.cost) {
+		pushBlacksmithMissingMoneyResponse(response, target.cost, lockedPlayer.money);
+		return;
+	}
+
+	const sourceSlot = await getListedInventorySlotUnderLock(lockedPlayer, {
+		slot: reaction.sourceSlot,
+		itemCategory: reaction.itemCategory
+	}, source.details, response);
+	const targetSlot = sourceSlot && await getListedInventorySlotUnderLock(lockedPlayer, {
+		slot: reaction.targetSlot,
+		itemCategory: reaction.itemCategory
+	}, target.details, response);
+	if (!sourceSlot || !targetSlot) {
+		return;
+	}
+
+	targetSlot.itemEnchantmentId = sourceSlot.itemEnchantmentId;
+	sourceSlot.itemEnchantmentId = null;
+	await lockedPlayer.spendMoney({
+		response,
+		amount: target.cost,
+		reason: NumberChangeReason.BLACKSMITH_ENCHANTMENT_TRANSFER
+	});
+	await Promise.all([
+		sourceSlot.save(),
+		targetSlot.save(),
+		lockedPlayer.save()
+	]);
+
+	response.push(makePacket(CommandReportBlacksmithEnchantmentTransferRes, {
+		enchantmentId: source.enchantmentId,
+		enchantmentType: source.enchantmentType,
+		cost: target.cost
+	}));
+
+	const cityId = lockedPlayer.getCurrentCityId();
+	if (cityId) {
+		crowniclesInstance?.logsDatabase.logBlacksmithEnchantmentTransfer({
+			keycloakId: lockedPlayer.keycloakId,
+			cityId,
+			itemCategory: reaction.itemCategory,
+			sourceSlot: reaction.sourceSlot,
+			targetSlot: reaction.targetSlot,
+			enchantmentId: source.enchantmentId,
+			cost: target.cost
+		}).then();
+	}
+}
+
+/**
+ * Handle blacksmith enchantment transfer reaction — the enchantment of an equipment is moved onto another
+ * unenchanted equipment of the same category, for a price depending on the rarity of the receiving equipment
  *
  * Concurrency: same `withLockedPlayerAndMissions` rationale as
- * `handleBlacksmithUpgradeReaction`.
+ * `handleBlacksmithUpgradeReaction`; both inventory slots are saved in the same transaction.
  */
-export async function handleBlacksmithDisenchantReaction(
+export async function handleBlacksmithEnchantmentTransferReaction(
 	player: Player,
-	reaction: ReactionCollectorBlacksmithDisenchantReaction,
+	reaction: ReactionCollectorBlacksmithEnchantmentTransferReaction,
 	data: ReactionCollectorCityData,
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	await player.reload();
 
-	const itemToDisenchant = getBlacksmithItem(player, reaction, data, "disenchant");
-	if (!itemToDisenchant) {
+	const transfer = getListedEnchantmentTransfer(player, reaction, data);
+	if (!transfer) {
 		return;
 	}
 
-	if (player.money < itemToDisenchant.disenchantCost) {
-		pushBlacksmithMissingMoneyResponse(response, itemToDisenchant.disenchantCost, player.money);
+	if (player.money < transfer.target.cost) {
+		pushBlacksmithMissingMoneyResponse(response, transfer.target.cost, player.money);
 		return;
 	}
 
-	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
-		// Re-validate against the freshly-locked row.
-		if (lockedPlayer.money < itemToDisenchant.disenchantCost) {
-			pushBlacksmithMissingMoneyResponse(response, itemToDisenchant.disenchantCost, lockedPlayer.money);
-			return;
-		}
-
-		if (!await removeListedEnchantmentUnderLock(lockedPlayer, reaction, itemToDisenchant.details, response)) {
-			return;
-		}
-
-		await lockedPlayer.spendMoney({
-			response,
-			amount: itemToDisenchant.disenchantCost,
-			reason: NumberChangeReason.BLACKSMITH_DISENCHANT
-		});
-		await lockedPlayer.save();
-
-		response.push(makePacket(CommandReportBlacksmithDisenchantRes, {
-			itemCategory: reaction.itemCategory,
-			cost: itemToDisenchant.disenchantCost
-		}));
-
-		const cityId = lockedPlayer.getCurrentCityId();
-		if (cityId) {
-			crowniclesInstance?.logsDatabase.logBlacksmithDisenchant({
-				keycloakId: lockedPlayer.keycloakId,
-				cityId,
-				itemCategory: reaction.itemCategory,
-				slot: reaction.slot,
-				cost: itemToDisenchant.disenchantCost
-			}).then();
-		}
-	});
+	await withLockedPlayerAndMissions(player.id, lockedPlayer => transferEnchantmentUnderLock(lockedPlayer, reaction, transfer, response));
 }

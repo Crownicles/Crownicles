@@ -18,7 +18,7 @@ export type ItemLevel = 0 | ItemUpgradeLevel;
  * Constants for the blacksmith NPC found in cities
  * The blacksmith can:
  * - Upgrade items from level 0 to MAX_UPGRADE_LEVEL
- * - Disenchant items to remove enchantments
+ * - Transfer an enchantment from one equipment to another
  * - Sell missing materials for upgrades
  */
 export abstract class BlacksmithConstants {
@@ -71,10 +71,10 @@ export abstract class BlacksmithConstants {
 	static readonly MATERIAL_BULK_PRICE_INCREASE_PERCENT = 10;
 
 	/**
-	 * Price to disenchant an item at the blacksmith
-	 * May vary by item rarity (indexed by ItemRarity)
+	 * Price to transfer an enchantment from one equipment to another at the blacksmith,
+	 * indexed by the rarity of the equipment receiving the enchantment
 	 */
-	static readonly DISENCHANT_PRICE: Record<ItemRarity, number> = {
+	static readonly ENCHANTMENT_TRANSFER_PRICE: Record<ItemRarity, number> = {
 		[ItemRarity.BASIC]: 0,
 		[ItemRarity.COMMON]: 50,
 		[ItemRarity.UNCOMMON]: 100,

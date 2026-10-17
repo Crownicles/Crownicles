@@ -29,3 +29,23 @@ export async function sendBlacksmithReply(config: BlacksmithReplyConfig): Promis
 		embeds: [embed]
 	});
 }
+
+/**
+ * Result of a city service acting on an enchantment: every field of the packet is a parameter of the description
+ */
+type EnchantmentReplyPacket = {
+	enchantmentId: string;
+	enchantmentType: string;
+};
+
+export async function sendEnchantmentReply(
+	context: PacketContext,
+	keys: Pick<BlacksmithReplyConfig, "titleKey" | "descriptionKey">,
+	packet: EnchantmentReplyPacket
+): Promise<void> {
+	await sendBlacksmithReply({
+		context,
+		...keys,
+		descriptionParams: { ...packet }
+	});
+}

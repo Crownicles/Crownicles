@@ -29,6 +29,7 @@ import { GardenConstants } from "../../constants/GardenConstants";
 import { CityService } from "../../constants/CityServiceConstants";
 import { ScrapDealerData } from "../../types/ScrapDealerData";
 import { DisenchantableItem } from "../../types/DisenchantableItem";
+import { EnchantmentTransferSource } from "../../types/EnchantmentTransfer";
 import { MapLocationType } from "../../constants/MapLocationConstants";
 
 /**
@@ -236,7 +237,7 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 	/**
 	 * Blacksmith data - available in most cities
-	 * Allows upgrading items to level 4 and disenchanting
+	 * Allows upgrading items to level 4 and transferring enchantments
 	 */
 	blacksmith?: {
 
@@ -271,15 +272,8 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 			canBuyAndUpgrade: boolean;
 		}[];
 
-		/** Items that can be disenchanted at the blacksmith */
-		disenchantableItems: (DisenchantableItem & {
-
-			/** Gold cost to disenchant this item */
-			disenchantCost: number;
-
-			/** Core-authoritative eligibility: player has enough gold to disenchant */
-			canDisenchant: boolean;
-		})[];
+		/** Enchanted equipment whose enchantment can be moved onto another equipment of the same category */
+		enchantmentTransfers: EnchantmentTransferSource[];
 
 		/** Current player money for UI display */
 		playerMoney: number;
@@ -562,11 +556,13 @@ export class ReactionCollectorBlacksmithUpgradeReaction extends ReactionCollecto
 	buyMaterials!: boolean;
 }
 
-/** Reaction for disenchanting an item at the blacksmith */
-export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionCollectorReaction {
-	slot!: number;
-
+/** Reaction for moving the enchantment of an equipment onto another equipment of the same category at the blacksmith */
+export class ReactionCollectorBlacksmithEnchantmentTransferReaction extends ReactionCollectorReaction {
 	itemCategory!: ItemCategory;
+
+	sourceSlot!: number;
+
+	targetSlot!: number;
 }
 
 export class ReactionCollectorScrapDealerMenuReaction extends ReactionCollectorReaction {}
@@ -642,7 +638,7 @@ type CityReaction =
 	| ReactionCollectorUpgradeItemReaction
 	| ReactionCollectorBlacksmithMenuReaction
 	| ReactionCollectorBlacksmithUpgradeReaction
-	| ReactionCollectorBlacksmithDisenchantReaction
+	| ReactionCollectorBlacksmithEnchantmentTransferReaction
 	| ReactionCollectorScrapDealerMenuReaction
 	| ReactionCollectorScrapDealerRecycleReaction
 	| ReactionCollectorRoyalBlacksmithMenuReaction
@@ -847,16 +843,18 @@ export class ReactionCollectorCity extends ReactionCollector {
 			})
 		]);
 
-		const disenchantReactions = this.data.blacksmith.disenchantableItems.map(item =>
-			this.buildReaction(ReactionCollectorBlacksmithDisenchantReaction, {
-				slot: item.slot,
-				itemCategory: item.category
-			}));
+		const transferReactions = this.data.blacksmith.enchantmentTransfers.flatMap(source =>
+			source.targets.map(target =>
+				this.buildReaction(ReactionCollectorBlacksmithEnchantmentTransferReaction, {
+					itemCategory: source.category,
+					sourceSlot: source.slot,
+					targetSlot: target.slot
+				})));
 
 		return [
 			menuReaction,
 			...upgradeReactions,
-			...disenchantReactions
+			...transferReactions
 		];
 	}
 

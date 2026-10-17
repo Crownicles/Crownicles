@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { BlacksmithConstants } from "../../src/constants/BlacksmithConstants";
-import { getUpgradePrice, getMaterialsPurchasePrice, getDisenchantPrice } from "../../src/utils/BlacksmithUtils";
+import { getUpgradePrice, getMaterialsPurchasePrice, getEnchantmentTransferPrice } from "../../src/utils/BlacksmithUtils";
 import { ItemRarity } from "../../src/constants/ItemConstants";
 import { MaterialRarity } from "../../src/types/MaterialRarity";
 
@@ -124,22 +124,22 @@ describe("BlacksmithConstants", () => {
 		});
 	});
 
-	describe("getDisenchantPrice", () => {
+	describe("getEnchantmentTransferPrice", () => {
 		it("should return 0 for BASIC rarity", () => {
-			expect(getDisenchantPrice(ItemRarity.BASIC)).toBe(0);
+			expect(getEnchantmentTransferPrice(ItemRarity.BASIC)).toBe(0);
 		});
 
-		it("should return the correct price from the DISENCHANT_PRICE table", () => {
-			expect(getDisenchantPrice(ItemRarity.COMMON)).toBe(50);
-			expect(getDisenchantPrice(ItemRarity.EPIC)).toBe(1500);
-			expect(getDisenchantPrice(ItemRarity.MYTHICAL)).toBe(6000);
+		it("should return the correct price from the ENCHANTMENT_TRANSFER_PRICE table", () => {
+			expect(getEnchantmentTransferPrice(ItemRarity.COMMON)).toBe(50);
+			expect(getEnchantmentTransferPrice(ItemRarity.EPIC)).toBe(1500);
+			expect(getEnchantmentTransferPrice(ItemRarity.MYTHICAL)).toBe(6000);
 		});
 
 		it("should increase price with higher rarity", () => {
 			const rarities = Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[];
 			for (let i = 1; i < rarities.length; i++) {
-				const lowerPrice = getDisenchantPrice(rarities[i - 1]);
-				const higherPrice = getDisenchantPrice(rarities[i]);
+				const lowerPrice = getEnchantmentTransferPrice(rarities[i - 1]);
+				const higherPrice = getEnchantmentTransferPrice(rarities[i]);
 				expect(higherPrice).toBeGreaterThanOrEqual(lowerPrice);
 			}
 		});
@@ -147,7 +147,7 @@ describe("BlacksmithConstants", () => {
 		it("should have a defined price for every item rarity", () => {
 			const rarities = Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[];
 			for (const rarity of rarities) {
-				const price = getDisenchantPrice(rarity);
+				const price = getEnchantmentTransferPrice(rarity);
 				expect(price).toBeDefined();
 				expect(typeof price).toBe("number");
 			}

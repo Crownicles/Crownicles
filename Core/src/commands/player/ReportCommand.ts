@@ -53,7 +53,7 @@ import {
 	ReactionCollectorUpgradeItemReaction,
 	ReactionCollectorBlacksmithMenuReaction,
 	ReactionCollectorBlacksmithUpgradeReaction,
-	ReactionCollectorBlacksmithDisenchantReaction,
+	ReactionCollectorBlacksmithEnchantmentTransferReaction,
 	ReactionCollectorScrapDealerMenuReaction,
 	ReactionCollectorScrapDealerRecycleReaction,
 	ReactionCollectorRoyalBlacksmithMenuReaction,
@@ -115,7 +115,7 @@ const CITY_REACTION_MENU_MASK = new Map<string, number>([
 	[ReactionCollectorInnRoomReaction.name, CityMenuMask.INN],
 	[ReactionCollectorBlacksmithMenuReaction.name, CityMenuMask.BLACKSMITH],
 	[ReactionCollectorBlacksmithUpgradeReaction.name, CityMenuMask.BLACKSMITH],
-	[ReactionCollectorBlacksmithDisenchantReaction.name, CityMenuMask.BLACKSMITH],
+	[ReactionCollectorBlacksmithEnchantmentTransferReaction.name, CityMenuMask.BLACKSMITH],
 	[ReactionCollectorScrapDealerMenuReaction.name, CityMenuMask.SCRAP_DEALER],
 	[ReactionCollectorScrapDealerRecycleReaction.name, CityMenuMask.SCRAP_DEALER],
 	[ReactionCollectorRoyalBlacksmithMenuReaction.name, CityMenuMask.ROYAL_BLACKSMITH],
@@ -148,7 +148,7 @@ import {
 	buildHomeData,
 	buildScrapDealerData,
 	buildApartmentNotaryData,
-	handleBlacksmithDisenchantReaction,
+	handleBlacksmithEnchantmentTransferReaction,
 	handleBlacksmithUpgradeReaction,
 	handleScrapDealerRecycleReaction,
 	handleBuyHomeReaction,
@@ -562,10 +562,10 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 		}
 	],
 	[
-		ReactionCollectorBlacksmithDisenchantReaction.name, async (params): Promise<void> => {
-			await runListedEquipmentAction(params, CityNestedMenuIds.BLACKSMITH, () => handleBlacksmithDisenchantReaction(
+		ReactionCollectorBlacksmithEnchantmentTransferReaction.name, async (params): Promise<void> => {
+			await runListedEquipmentAction(params, CityNestedMenuIds.BLACKSMITH, () => handleBlacksmithEnchantmentTransferReaction(
 				params.player,
-				params.reactionData as ReactionCollectorBlacksmithDisenchantReaction,
+				params.reactionData as ReactionCollectorBlacksmithEnchantmentTransferReaction,
 				params.collectorData as ReactionCollectorCityData,
 				params.response
 			));

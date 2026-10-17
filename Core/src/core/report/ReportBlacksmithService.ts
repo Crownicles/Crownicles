@@ -6,7 +6,7 @@ import {
 	BlacksmithConstants, ItemUpgradeLevel
 } from "../../../../Lib/src/constants/BlacksmithConstants";
 import {
-	getDisenchantPrice, getMaterialsPurchasePrice, getUpgradePrice
+	getEnchantmentTransferPrice, getMaterialsPurchasePrice, getUpgradePrice
 } from "../../../../Lib/src/utils/BlacksmithUtils";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
@@ -14,6 +14,9 @@ import { MaterialRarityQuantity } from "../../../../Lib/src/types/MaterialRarity
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { DisenchantableItem } from "../../../../Lib/src/types/DisenchantableItem";
+import {
+	EnchantmentTransferSource, EnchantmentTransferTarget
+} from "../../../../Lib/src/types/EnchantmentTransfer";
 
 type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
 type BlacksmithItemData = ReturnType<typeof WeaponDataController.instance.getById> | ReturnType<typeof ArmorDataController.instance.getById> | null;
@@ -119,6 +122,42 @@ function buildBlacksmithUpgradeableItems(
 	return upgradeableItems;
 }
 
+type EnchantedEquipment = {
+	inventorySlot: InventorySlot;
+	enchantment: ItemEnchantment;
+};
+
+/**
+ * The player's weapons and armors carrying a known enchantment
+ */
+function getEnchantedEquipments(playerInventory: InventorySlot[]): EnchantedEquipment[] {
+	return playerInventory.flatMap(inventorySlot => {
+		const enchantment = inventorySlot.isPrimaryEquipment() && inventorySlot.itemEnchantmentId
+			? ItemEnchantment.getById(inventorySlot.itemEnchantmentId)
+			: null;
+		return enchantment
+			? [
+				{
+					inventorySlot, enchantment
+				}
+			]
+			: [];
+	});
+}
+
+function toDisenchantableItem(enchantedEquipment: EnchantedEquipment, player: Player): DisenchantableItem {
+	const {
+		inventorySlot, enchantment
+	} = enchantedEquipment;
+	return {
+		slot: inventorySlot.slot,
+		category: inventorySlot.itemCategory,
+		details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+		enchantmentId: enchantment.id,
+		enchantmentType: enchantment.kind.type.id
+	};
+}
+
 /**
  * Build the list of the player's enchanted weapons and armors
  */
@@ -126,48 +165,49 @@ export function buildDisenchantableItems(
 	playerInventory: InventorySlot[],
 	player: Player
 ): DisenchantableItem[] {
-	const disenchantableItems: DisenchantableItem[] = [];
-
-	for (const inventorySlot of playerInventory) {
-		if (!inventorySlot.isPrimaryEquipment() || !inventorySlot.itemEnchantmentId) {
-			continue;
-		}
-
-		const enchantment = ItemEnchantment.getById(inventorySlot.itemEnchantmentId);
-		if (enchantment) {
-			disenchantableItems.push({
-				slot: inventorySlot.slot,
-				category: inventorySlot.itemCategory,
-				details: inventorySlot.itemWithDetails(player) as MainItemDetails,
-				enchantmentId: inventorySlot.itemEnchantmentId,
-				enchantmentType: enchantment.kind.type.id
-			});
-		}
-	}
-
-	return disenchantableItems;
+	return getEnchantedEquipments(playerInventory).map(enchantedEquipment => toDisenchantableItem(enchantedEquipment, player));
 }
 
 /**
- * Build the list of items that can be disenchanted at the blacksmith
+ * The player's unenchanted equipments able to receive the given enchantment, with the price of the transfer onto each of them
  */
-function buildBlacksmithDisenchantableItems(
+function buildEnchantmentTransferTargets(
+	playerInventory: InventorySlot[],
+	enchantment: ItemEnchantment,
+	player: Player
+): EnchantmentTransferTarget[] {
+	return playerInventory
+		.filter(inventorySlot => inventorySlot.canReceiveEnchantment(enchantment))
+		.map(inventorySlot => {
+			const details = inventorySlot.itemWithDetails(player) as MainItemDetails;
+			const cost = getEnchantmentTransferPrice(details.rarity);
+			return {
+				slot: inventorySlot.slot,
+				details,
+				cost,
+				canAfford: player.money >= cost
+			};
+		});
+}
+
+/**
+ * Build the list of enchanted equipments whose enchantment the blacksmith can move onto another equipment
+ */
+function buildBlacksmithEnchantmentTransfers(
 	playerInventory: InventorySlot[],
 	player: Player
-): BlacksmithData["disenchantableItems"] {
-	return buildDisenchantableItems(playerInventory, player).map(item => {
-		const disenchantCost = getDisenchantPrice(item.details.rarity);
-		return {
-			...item,
-			disenchantCost,
-			canDisenchant: player.money >= disenchantCost
-		};
-	});
+): EnchantmentTransferSource[] {
+	return getEnchantedEquipments(playerInventory)
+		.map(enchantedEquipment => ({
+			...toDisenchantableItem(enchantedEquipment, player),
+			targets: buildEnchantmentTransferTargets(playerInventory, enchantedEquipment.enchantment, player)
+		}))
+		.filter(source => source.targets.length > 0);
 }
 
 /**
  * Build blacksmith data for the city collector.
- * The blacksmith allows upgrading items beyond home level and disenchanting items.
+ * The blacksmith allows upgrading items beyond home level and moving an enchantment from one equipment to another.
  */
 export function buildBlacksmithData(
 	playerInventory: InventorySlot[],
@@ -176,7 +216,7 @@ export function buildBlacksmithData(
 ): BlacksmithData {
 	return {
 		upgradeableItems: buildBlacksmithUpgradeableItems(playerInventory, playerMaterialMap, player),
-		disenchantableItems: buildBlacksmithDisenchantableItems(playerInventory, player),
+		enchantmentTransfers: buildBlacksmithEnchantmentTransfers(playerInventory, player),
 		playerMoney: player.money
 	};
 }

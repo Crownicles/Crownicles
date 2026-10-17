@@ -348,8 +348,8 @@
     "Un équipement rare coûte plus cher à améliorer qu'un équipement commun : la rareté de l'objet influence fortement le prix de la forge.",
     "Certains équipements très rares comme les légendaires demandent une fortune pour être améliorés au niveau suivant.",
     "Avant d'engager une amélioration coûteuse, vérifiez dans votre inventaire si vous possédez déjà tous les matériaux nécessaires.",
-    "Le désenchantement retire la magie d'un équipement enchanté : le forgeron facture cette délicate opération, tandis que l'enchanteur itinérant Mernil s'en charge gratuitement.",
-    "Chez le forgeron, les coûts de désenchantement sont plus élevés pour les équipements et les runes puissants, car l'opération demande plus de compétences.",
+    "Le désenchantement retire la magie d'un équipement enchanté : l'enchanteur itinérant Mernil s'en charge gratuitement.",
+    "Chez le forgeron, transférer un enchantement coûte plus cher lorsque l'équipement qui le reçoit est rare, car l'opération demande plus de savoir-faire.",
     "Une fois désenchanté, votre équipement perd son enchantement et redevient ordinaire, mais l'arme ou l'armure elle-même survit à l'opération.",
     "L'enchanteur visite différentes villes et ne propose qu'une seule rune à la fois, changeant son offre d'un jour à l'autre.",
     "Les gemmes sont rares et précieuses : économisez-les.",
@@ -459,7 +459,7 @@
     "Le bouton Rester en ville vous permet de continuer à explorer les services proposés sans avoir à reprendre votre route vers une nouvelle destination.",
     "Si vous avez mangé récemment, le message indique l'heure précise à laquelle vous pourrez manger de nouveau.",
     "Les temps d'attente des services (repas, sommeil, enchantements) sont affichés avec des horaires Discord qui se mettent à jour automatiquement dans votre fuseau horaire.",
-    "Le forgeron améliore le niveau de vos équipements, tandis que l'enchanteur leur ajoute de nouvelles propriétés. Tous deux savent retirer un enchantement : leurs rôles sont complémentaires.",
+    "Le forgeron améliore le niveau de vos équipements et sait déplacer un enchantement de l'un à l'autre, tandis que l'enchanteur leur ajoute de nouvelles propriétés ou les en débarrasse : leurs rôles sont complémentaires.",
     "Certaines missions ou événements vous obligent à rester en ville pour progresser, tandis que d'autres exigent que vous continuiez votre route : lisez les objectifs attentivement.",
     "Les auberges proposent des repas différents chaque jour selon une sélection rotative, ce qui signifie que certains bonus d'énergie ne sont disponibles qu'à des jours précis.",
     "Allumer ou relancer le fourneau de votre cuisine consomme un matériau de type bois, en priorisant les ressources les plus communes.",
@@ -478,6 +478,7 @@
     "La Bourse de Claire de Ville offre un service de spéculation.",
     "Les gemmes peuvent être échangées contre des récompenses uniques au château du roi.",
     "Si vous cherchez des matériaux, visitez la Ville Forte : un marchand peut vous en vendre.",
-    "Un herboriste s'est installé au Village Coco."
+    "Un herboriste s'est installé au Village Coco.",
+    "Une meilleure arme ou armure vient de tomber entre vos mains ? Le forgeron peut y transférer l'enchantement de l'ancienne, à condition qu'elle n'en porte pas déjà un."
   ]
 }

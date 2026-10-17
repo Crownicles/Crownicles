@@ -157,7 +157,7 @@ export function getScrapDealerMoney(item: MainItem): number {
 	return BlessingManager.getInstance().applyMoneyBlessing(Math.round(getItemValue(item) * ScrapDealerConstants.MONEY_VALUE_RATIO));
 }
 
-/** An enchanted equipment must be disenchanted first (blacksmith or enchanter), so its enchantment is never silently destroyed. */
+/** An enchanted equipment must be disenchanted (enchanter) or have its enchantment moved away (blacksmith) first, so its enchantment is never silently destroyed. */
 function isRecyclable(inventorySlot: InventorySlot): boolean {
 	return !inventorySlot.isEquipped() && inventorySlot.itemEnchantmentId === null;
 }

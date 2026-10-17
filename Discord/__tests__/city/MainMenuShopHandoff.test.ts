@@ -202,7 +202,7 @@ describe("city services", () => {
 		data.availableServices = [CITY_SERVICES.BOSS_ARCHIVIST];
 		data.blacksmith = {
 			upgradeableItems: [],
-			disenchantableItems: [],
+			enchantmentTransfers: [],
 			playerMoney: 0
 		};
 

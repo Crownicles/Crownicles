@@ -127,7 +127,7 @@ import {
 	InnMealLogParams,
 	InnRoomLogParams,
 	BlacksmithUpgradeLogParams,
-	BlacksmithDisenchantLogParams,
+	BlacksmithEnchantmentTransferLogParams,
 	ScrapDealerRecycleLogParams,
 	EnchanterUseLogParams,
 	EnchanterDisenchantLogParams,
@@ -1772,10 +1772,10 @@ export class LogsDatabase extends Database {
 	}
 
 	/**
-	 * Log when a player removes an enchantment at the city blacksmith
+	 * Log when a player moves an enchantment from one equipment to another at the city blacksmith
 	 */
-	public logBlacksmithDisenchant(params: BlacksmithDisenchantLogParams): Promise<void> {
-		return this.cityLogger.logBlacksmithDisenchant(params);
+	public logBlacksmithEnchantmentTransfer(params: BlacksmithEnchantmentTransferLogParams): Promise<void> {
+		return this.cityLogger.logBlacksmithEnchantmentTransfer(params);
 	}
 
 	/**

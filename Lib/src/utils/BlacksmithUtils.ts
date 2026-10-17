@@ -40,10 +40,10 @@ export function getMaterialsPurchasePrice(materials: MaterialRarityQuantity[]): 
 }
 
 /**
- * Get the disenchant price for a specific item rarity
- * @param itemRarity The rarity of the item being disenchanted
- * @returns The gold cost to disenchant the item
+ * Get the price to transfer an enchantment onto an equipment
+ * @param targetRarity The rarity of the equipment receiving the enchantment
+ * @returns The gold cost of the transfer
  */
-export function getDisenchantPrice(itemRarity: ItemRarity): number {
-	return BlacksmithConstants.DISENCHANT_PRICE[itemRarity];
+export function getEnchantmentTransferPrice(targetRarity: ItemRarity): number {
+	return BlacksmithConstants.ENCHANTMENT_TRANSFER_PRICE[targetRarity];
 }
