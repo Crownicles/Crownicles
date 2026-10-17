@@ -15,9 +15,16 @@ const WOUNDED_ENERGY_RATIO = 0.5;
 
 const WOUNDED_HEAL_MULTIPLIER = 1.5;
 
+/**
+ * Heal multiplier of the regrowth depending on how wounded the sender is
+ * @param sender
+ */
+export function getRegrowthMultiplier(sender: Fighter): number {
+	return sender.getEnergy() < sender.getMaxEnergy() * WOUNDED_ENERGY_RATIO ? WOUNDED_HEAL_MULTIPLIER : 1;
+}
+
 const use: FightActionFunc = (sender, _receiver, fightAction) => {
-	const woundedMultiplier = sender.getEnergy() < sender.getMaxEnergy() * WOUNDED_ENERGY_RATIO ? WOUNDED_HEAL_MULTIPLIER : 1;
-	const recoveredEnergy = Math.round(FightActionController.getAttackDamage(getStatsInfo(sender), sender, getAttackInfo(), true) * woundedMultiplier);
+	const recoveredEnergy = Math.round(FightActionController.getAttackDamage(getStatsInfo(sender), sender, getAttackInfo(), true) * getRegrowthMultiplier(sender));
 
 	const result = customMessageActionResult();
 	FightActionController.applyBuff(result, {

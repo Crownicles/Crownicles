@@ -10,7 +10,7 @@ import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/F
 /**
  * Share of the damage dealt that the leech drains back as energy
  */
-const DRAINED_DAMAGE_RATIO = 0.5;
+export const DRAINED_DAMAGE_RATIO = 0.5;
 
 const use: FightActionFunc = (sender, receiver, fightAction) => {
 	const result = simpleDamageFightAction(
