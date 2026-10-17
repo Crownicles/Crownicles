@@ -1814,6 +1814,34 @@
     "leviathan": {
       "name": "Léviathan",
       "description": "Le seigneur incontesté des océans, capable d'invoquer la foudre céleste et de déchaîner des déluges apocalyptiques. Ses crocs acérés déchirent tout sur leur passage, et sa faim sépulcrale est insatiable. Parfois emporté par une fureur aveugle, il engendre alors un maelström si violent qu'il ne laisse derrière lui qu'un sillage de débris et de silence."
+    },
+    "giantLeech": {
+      "name": "Sangsue géante",
+      "description": "Un ver visqueux long comme un homme, tapi dans la vase de la mangrove. Il se colle à ses proies, plante ses mâchoires circulaires dans leur chair et aspire leur énergie pour refermer ses propres plaies. Il aime aussi se dissimuler dans la boue pour mieux surprendre ses victimes."
+    },
+    "swampHydra": {
+      "name": "Hydre des marais",
+      "description": "Une créature reptilienne aux cous innombrables qui hante les tourbières fumantes. Chaque fois qu'elle puise dans la tourbe pour se régénérer, de nouvelles têtes repoussent et ses morsures deviennent plus redoutables. Il faut l'abattre vite, avant qu'elle ne soit devenue une forêt de crocs."
+    },
+    "mycelialLord": {
+      "name": "Seigneur mycélien",
+      "description": "Un champignon colossal dont le réseau de filaments s'étend sous tout le Fongarium. Il relâche des nuages de spores qui empoisonnent ou égarent l'esprit de ses adversaires, se régénère grâce à l'humus et peut faire surgir du sol des alliés fongiques pour l'épauler."
+    },
+    "orchidMantis": {
+      "name": "Mante orchidée",
+      "description": "Une mante gigantesque aux couleurs d'orchidée, presque invisible parmi les fleurs qui poussent sur les racines tordues. Elle guette patiemment, puis fend l'air de ses faux avec une vitesse et une précision redoutables, laissant derrière elle des plaies béantes."
+    },
+    "corruptedSylvan": {
+      "name": "Sylvain corrompu",
+      "description": "Un ancien gardien de la forêt, mi-homme mi-arbre, dont l'écorce a noirci sous l'emprise de la corruption. Lent mais presque indestructible, il immobilise ses adversaires sous ses racines, se couvre d'une écorce toujours plus épaisse et les écrase de ses bras noueux."
+    },
+    "featheredSerpent": {
+      "name": "Serpent à plumes",
+      "description": "Un serpent ailé aux écailles émeraude et aux plumes chatoyantes qui règne sur la canopée. Plus rapide que le vent, il fond sur ses proies depuis les cimes et les crible de plumes acérées qui ralentissent leurs mouvements."
+    },
+    "motherTree": {
+      "name": "Arbre-Mère corrompu",
+      "description": "Le cœur millénaire de l'île, un arbre si gigantesque que son tronc pourrait abriter une ville entière. Rongé par une corruption venue des profondeurs, il crible ses ennemis d'épines, les enracine sur place et les noie sous ses spores. Il puise dans sa sève pour se régénérer, et plus il est blessé, plus la colère de la forêt qu'il déchaîne devient terrible."
     }
   },
   "objects": {

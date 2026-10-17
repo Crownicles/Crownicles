@@ -439,6 +439,11 @@
       "{{playerDisplay}} vous raconte sobrement avoir terrassé le Léviathan au niveau **{{bossLevel, number}}**. Les vagues ne semblent plus pouvoir l'engloutir.",
       "Vous croisez {{playerDisplay}}, qui a fait taire à jamais le rugissement du Léviathan au niveau **{{bossLevel, number}}**. Le silence des mers profondes vous saisit."
     ],
+    "beaten_mother_tree": [
+      "Des échardes d'écorce et des traces de sève sont encore accrochées à l'armure de {{playerDisplay}} : il a abattu l'Arbre-Mère corrompu au niveau **{{bossLevel, number}}**. La forêt elle-même s'incline devant lui.",
+      "{{playerDisplay}} porte encore l'odeur de l'humus et des spores. Il a vaincu l'Arbre-Mère corrompu au niveau **{{bossLevel, number}}** et en est revenu pour le raconter !",
+      "Vous croisez {{playerDisplay}}, un aventurier ayant gravi la canopée jusqu'au cœur de l'Arbre-Mère corrompu pour le terrasser au niveau **{{bossLevel, number}}**. Une feuille dorée pend encore à sa cape."
+    ],
     "effect": {
       "sick": [
         "Vous entendez un bruit au loin... C'est {{playerDisplay}} qui vomit dans un buisson... Vous reprenez votre route bouleversé.",

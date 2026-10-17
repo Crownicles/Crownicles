@@ -435,7 +435,8 @@ export abstract class FightConstants {
 		MALE_ICE_DRAGON: "maleIceDragon",
 		FEMALE_ICE_DRAGON: "femaleIceDragon",
 		KRAKEN: "kraken",
-		LEVIATHAN: "leviathan"
+		LEVIATHAN: "leviathan",
+		MOTHER_TREE: "motherTree"
 	} as const;
 }
 

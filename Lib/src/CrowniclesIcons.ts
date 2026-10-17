@@ -1617,7 +1617,14 @@ export const CrowniclesIcons: {
 		mermaid: "🧜‍♀️",
 		kraken: "🦑",
 		captainCrow: "🏴‍☠️",
-		leviathan: "🐉"
+		leviathan: "🐉",
+		giantLeech: "🪱",
+		swampHydra: "🐍",
+		mycelialLord: "🍄",
+		orchidMantis: "🦗",
+		corruptedSylvan: "🌲",
+		featheredSerpent: "🪶",
+		motherTree: "🌳"
 	},
 	armors: {
 		0: "⬛",
