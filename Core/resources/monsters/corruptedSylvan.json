@@ -1,0 +1,46 @@
+{
+  "baseEnergyValue": 640,
+  "attackRatio": 70,
+  "defenseRatio": 160,
+  "speedRatio": 20,
+  "breath": 10,
+  "maxBreath": 25,
+  "breathRegen": 4,
+  "rewardFactor": 0.7,
+  "materialLoot": [
+    58,
+    51,
+    64,
+    2,
+    9,
+    31,
+    18,
+    84,
+    12
+  ],
+  "attacks": [
+    {
+      "id": "rootBind",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "slamAttack",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "barkArmor",
+      "minLevel": 0,
+      "weight": 2
+    },
+    {
+      "id": "grabAndThrowAttack",
+      "minLevel": 40,
+      "weight": 2
+    }
+  ],
+  "maps": [
+    1305
+  ]
+}

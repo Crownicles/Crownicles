@@ -1,0 +1,9 @@
+{
+  "type": "delta",
+  "biomes": [
+    "swamp",
+    "coast"
+  ],
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "pve_island_entry"
+}

@@ -1,0 +1,8 @@
+{
+  "type": "canopy",
+  "biomes": [
+    "forest"
+  ],
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "pve_island"
+}

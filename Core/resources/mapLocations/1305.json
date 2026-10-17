@@ -1,0 +1,9 @@
+{
+  "type": "hollowTrunk",
+  "biomes": [
+    "forest",
+    "cave"
+  ],
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "pve_island"
+}
