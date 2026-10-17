@@ -66,6 +66,7 @@ import {
 	CHANNEL_PERMISSION_ERRORS, getThreadSendAccessError
 } from "./ChannelPermissionUtils";
 import { checkTournamentCommandAccess } from "./tournament/TournamentCommandGuard";
+import { buildCommandRegistrationBody } from "./CommandRegistrationUtils";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -345,11 +346,11 @@ export class CommandsManager {
 			}
 			this.commands.set(commandInfo.slashCommandBuilder.name, commandInfo);
 			if (commandInfo.mainGuildCommand || discordConfig.TEST_MODE) {
-				guildsCommandsToRegister.push(commandInfo.slashCommandBuilder.toJSON());
+				guildsCommandsToRegister.push(buildCommandRegistrationBody(commandInfo));
 				CrowniclesLogger.info(`Registering guild command ${category}/${commandFile}`);
 			}
 			else {
-				globalCommandsToRegister.push(commandInfo.slashCommandBuilder.toJSON());
+				globalCommandsToRegister.push(buildCommandRegistrationBody(commandInfo));
 				CrowniclesLogger.info(`Registering global command ${category}/${commandFile}`);
 			}
 		}
@@ -483,7 +484,8 @@ export class CommandsManager {
 			if (!interaction.member) { // If in DM
 				const commandInfo = CommandsManager.commands.get(discordInteraction.commandName);
 				if (commandInfo?.allowedInDM) {
-					CommandsManager.handleDMCommand(interaction, getUser.payload.user, commandInfo)
+					// DM channels are not role-restricted, so the per-channel guild permission checks are skipped
+					CommandsManager.executeCommand(interaction, getUser.payload.user, commandInfo)
 						.then();
 					return;
 				}
@@ -614,24 +616,6 @@ export class CommandsManager {
 	}
 
 	/**
-	 * Handle a slash command issued in a DM channel for commands that opt
-	 * into being available outside of guilds (`allowedInDM`). The per-channel
-	 * guild permission validation is skipped because DM channels are not
-	 * role-restricted: the bot can always reply through interactions.
-	 * @param interaction
-	 * @param user
-	 * @param commandInfo
-	 */
-	private static async handleDMCommand(interaction: CrowniclesInteraction, user: KeycloakUser, commandInfo: ICommand): Promise<void> {
-		DiscordCache.cacheInteraction(interaction);
-		const packet = await commandInfo.getPacket(interaction, user);
-		if (packet) {
-			const context = await PacketUtils.createPacketContext(interaction, user);
-			PacketUtils.sendPacketToBackend(context, packet);
-		}
-	}
-
-	/**
 	 * Checks for the maintenance mode
 	 * @param interaction the interaction to reply to
 	 * @param user
@@ -653,6 +637,16 @@ export class CommandsManager {
 			return;
 		}
 
+		await this.executeCommand(interaction, user, commandInfo);
+	}
+
+	/**
+	 * Execute a command once the channel checks have passed, in a guild or in DM
+	 * @param interaction
+	 * @param user
+	 * @param commandInfo
+	 */
+	private static async executeCommand(interaction: CrowniclesInteraction, user: KeycloakUser, commandInfo: ICommand): Promise<void> {
 		DiscordCache.cacheInteraction(interaction);
 		const packetContext = await PacketUtils.createPacketContext(interaction, user);
 		if (!await checkTournamentCommandAccess(interaction, packetContext)) {

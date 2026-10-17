@@ -19,9 +19,9 @@ export interface ICommand {
 
 	/**
 	 * Whether the command is allowed in DMs (default: false).
-	 * When true, the slash command is registered with both Guild and BotDM
-	 * contexts, and the CommandsManager will execute it in DM channels
-	 * without performing the per-channel guild permission checks.
+	 * This is the single source of truth for DM availability: when true, the slash command is registered
+	 * with both Guild and BotDM contexts (see CommandRegistrationUtils), and the CommandsManager executes it
+	 * in DM channels without performing the per-channel guild permission checks.
 	 */
 	allowedInDM?: boolean;
 
