@@ -70,7 +70,7 @@
       "forest": {
         "outcomes": {
           "0": "Vi perdete nella foresta per diverse ore, ma alla fine ne uscite indenni.",
-          "1": "Perdi molto tempo per attraversare la foresta, ma alla fine ce la fai! All'uscita, raccogliete un oggetto che potrebbe tornarvi utile!",
+          "1": "Vous perdez beaucoup de temps à avancer dans la forêt mais vous finissez par parvenir à la traverser ! En sortant, vous ramassez un objet qui pourra peut-être vous être utile !",
           "2": "Mentre cavalcate nella foresta, cadete pesantemente in un fosso. La ferita è profonda e deve essere assolutamente curata!"
         },
         "text": "Attraversate comunque la foresta."
@@ -631,20 +631,20 @@
         "text": "Per intervenire e impedire che quest'uomo muoia."
       }
     },
-    "text": "Arrivando in un villaggio, notate un gruppo di persone. Avvicinandovi, vi rendete subito conto che è in corso un'impiccagione. Dopo aver raccolto alcune informazioni, venite a sapere che quella persona è stata condannata a morte per «dichiarazioni contrarie ai valori della Chiesa»."
+    "text": "En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'Église\"."
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
           "0": "Si osserva stupidamente l'oggetto per 20 minuti, prima di distogliere lo sguardo.",
-          "1": "Sporgendosi dal pozzo, si osserva l'oggetto. In quel momento ci si ribalta. Fortunatamente riuscite a risalire, ma non senza aver riportato gravi ferite."
+          "1": "Vous observez, penché au-dessus du puits, l'objet. C'est alors que vous basculez. Heureusement, vous arrivez rapidement à remonter, non sans vous être sévèrement blessé."
         }
       },
       "goDown": {
         "outcomes": {
           "0": "Durante la discesa subisci un grave infortunio e rimani bloccato sul fondo per un po' prima che qualcuno ti ritrovi.",
-          "1": "Arrivate giù senza problemi e recuperate l'oggetto.",
+          "1": "Vous arrivez en bas sans souci et récupérez l'objet.",
           "2": "Vi tuffate nel pozzo, ma non trovate nulla. Quindi risalite a mani vuote.",
           "3": "Una volta giunti giù, scoprite una grande quantità di monete d'oro che raccogliete con gioia."
         },
@@ -936,7 +936,7 @@
       "food": {
         "outcomes": {
           "0": "Uno di loro vi porge una zuppa piuttosto appetitosa. La bevete ignari. Questi furfanti vi hanno teso una trappola! Stavano aspettando da tempo di depredarti e la bevanda conteneva abbastanza agarico per farti ammalare. Vi sentite scivolare via mentre assistete impotenti al prelievo delle vostre tasche.",
-          "1": "Questi passanti vi hanno cucinato un piatto delizioso, degno di una pozione gallica. A un esame più attento, notate un oggetto lasciato sul fondo della ciotola. Potrebbe tornarvi utile in seguito.",
+          "1": "Ces passants ont cuisiné pour vous un mets des plus savoureux, digne d'une potion gauloise. En regardant de plus près, vous apercevez un objet laissé au fond du bol. Il pourrait bien vous être utile pour la suite.",
           "2": "Felici di farvi un favore, il gruppo va a comprarvi la specialità del posto. Quando vedete arrivare il piatto, fate buon viso a cattivo gioco, ma lo gustate con un certo disgusto: non vi piacciono i funghi! Non senza fatica, finite il piatto."
         },
         "text": "Regalo alimentare."
@@ -985,8 +985,8 @@
       },
       "steal": {
         "outcomes": {
-          "0": "Spieghi che non vuoi essere la sua cavia e il barman, con aria delusa, ti lascia. Così vi mettete all'opera per svolgere il compito che desideravate fare da quando siete entrati nel bar: borseggiare discretamente i clienti. Prendete le tasche di tre persone senza problemi, ma la quarta si accorge di voi e grida \"ladro\". Si fugge.",
-          "1": "Spieghi che non vuoi essere la sua cavia e il barman, con aria delusa, ti lascia. Così vi mettete all'opera per svolgere il compito che desideravate fare da quando siete entrati nel bar: borseggiare discretamente i clienti. Prendete le tasche di tre persone senza problemi, ma la quarta si accorge di voi e grida \"ladro\". Finisci per passare la notte in prigione e risarcisci queste persone."
+          "0": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous prenez la fuite.",
+          "1": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous finissez la nuit en prison et dédommagez ces gens."
         },
         "text": "Rifiutate e cercate di derubare le persone."
       },
@@ -1195,10 +1195,10 @@
       },
       "goBack": {
         "outcomes": {
-          "0": "Decidete di tornare indietro per la strada che avete percorso. Durante il tragitto, trovate alcune monete per terra, accanto a un borsellino con un buco.",
-          "1": "Ripartite quando trovate un uomo ferito. Mentre cercate di aiutarlo, scoprite di essere caduti in un'imboscata! Alcuni uomini appaiono e vi derubano prima di ripartire."
+          "0": "Vous décidez de laisser l'ermite tranquille et de poursuivre votre route. Sur le chemin, vous trouvez quelques pièces par terre, à côté d'une bourse trouée.",
+          "1": "Vous poursuivez votre route, lorsque vous trouvez un homme blessé. En essayant de l'aider, vous découvrez qu'il s'agit d'une embuscade ! Des hommes surgissent et vous dépouillent avant de repartir."
         },
-        "text": "Tornate indietro da dove siete venuti."
+        "text": "Continuate il vostro cammino."
       }
     },
     "text": "Vi addentrate in una foresta buia e vedete la sagoma di un uomo in lontananza. Decidete di avvicinarvi e vi rendete conto che si tratta di un eremita, in cerca di cibo. Vi avvicinate alla sua casa, sulla quale leggete la scritta \"Xetrix\", che probabilmente è il suo nome. State ancora pensando a cosa fare..."
@@ -1407,13 +1407,13 @@
       },
       "talk": {
         "outcomes": {
-          "0": "Passate quasi 30 minuti a raccogliere informazioni su questo santuario, informazioni che non si riveleranno utili.",
+          "0": "Vous passez près de 30 minutes à prendre des informations sur ce sanctuaire, informations qui ne s'avéreront pas utiles.",
           "1": "Il gruppo semplicemente non vuole parlare e ve lo fa sapere."
         },
         "text": "Discutere con il gruppo."
       }
     },
-    "text": "Arrivando alle porte di un vivace villaggio, sentite un gruppo di persone parlare di un santuario che si dice sia infestato dai fantasmi. Da persone curiose quali siete, tendete l’orecchio. Il santuario si troverebbe a un’ora di macchina verso sud, e la partenza è prevista tra 30 minuti."
+    "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au sud, et le départ a lieu dans 30 minutes."
   },
   "46": {
     "possibilities": {
@@ -1630,8 +1630,8 @@
       },
       "leave": {
         "outcomes": {
-          "0": "Dopo una buona notte di riposo, decidete di ripartire, senza nemmeno un cerchio scuro sul viso.",
-          "1": "Proprio mentre state per ripartire, vi accorgete che un gruppo di abitanti del villaggio si sta dirigendo verso di voi. Cominciano a bacchettarvi e voi date loro dei soldi perché vi lascino in pace.",
+          "0": "Après vous être bien reposé, vous décidez de repartir, sans la moindre trace de fatigue sur le visage.",
+          "1": "Alors que vous vous apprêtiez à repartir, vous vous rendez compte que le groupe de villageois se dirige vers vous, ils se mettent alors à vous racketter et vous leur donnez de l'argent pour qu'ils vous laissent tranquille.",
           "2": "Decidete di ripartire, lasciando il villaggio dei Coco per continuare la vostra ricerca."
         },
         "text": "Lasciamo il villaggio senza ulteriori indugi."
@@ -1645,7 +1645,7 @@
         "text": "Continuate la vostra siesta ai piedi dell'albero."
       }
     },
-    "text": "Durante il viaggio, raggiungete un piccolo villaggio chiamato Village Coco. Fa molto caldo e avete bisogno di riposare. Il posto non sembra ostile, quindi ci si ferma in questa oasi. Mentre vi riposate ai piedi di un albero di cocco, vedete un gruppo di abitanti del villaggio che si arrampica sugli alberi per prendere un frutto che non avete mai visto prima: rotondo come un pallone e duro come il legno, non sembra appetitoso."
+    "text": "Lors de votre périple, vous atteignez un petit hameau du nom de village Coco, il fait très chaud et vous avez besoin de vous reposer. Les lieux ne vous semblant pas hostiles, vous faites donc une halte dans cette oasis. Alors que vous vous reposez au pied d'un cocotier, vous apercevez un groupe de villageois escaladant les arbres pour attraper des fruits que vous n'aviez jamais vus auparavant, ils sont ronds comme des ballons et durs comme du bois et ne vous semblent pas appétissants."
   },
   "51": {
     "possibilities": {
@@ -1991,7 +1991,7 @@
       "goDeeper": {
         "outcomes": {
           "0": "Vi perderete rapidamente in questo labirinto, ma alla fine ne uscirete dopo qualche ora!",
-          "1": "Passate qualche minuto ad esplorare la grotta da cima a fondo e trovate un oggetto che potrebbe tornarvi utile...",
+          "1": "Vous passez quelques minutes à explorer la grotte de fond en comble et trouvez un objet qui pourra peut-être vous servir...",
           "2": "La caverna si rivela presto un vicolo cieco, ma mentre emergete sbattete la testa sul soffitto e cadete a terra storditi! Avrete bisogno di cure mediche!"
         },
         "text": "Andate più a fondo nella grotta."
@@ -2356,9 +2356,9 @@
       "check": {
         "outcomes": {
           "0": "Forzando la porta, vi state ferendo profondamente. Dovete assolutamente prendervi cura di voi stessi!",
-          "1": "Dopo aver passato quasi un'ora a cercare di entrare in casa, alla fine rinunciate. Allontanandovi dalla soglia, trovate un oggetto che potrebbe tornarvi utile!",
+          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En vous éloignant du seuil, vous trouvez un objet qui pourra peut-être vous être utile !",
           "2": "Entrate in casa e posate le vostre cose per riposarvi. Presi da un sonno profondo, vi accasciate su un letto polveroso che giaceva in un angolo.",
-          "3": "Entrate in casa e cercate in giro per circa quindici minuti. Quando si esce, si trova un oggetto che potrebbe essere utile!",
+          "3": "Vous entrez dans la maison et fouillez autour de vous pendant une quinzaine de minutes. En sortant vous trouvez un objet qui pourra peut-être vous être utile !",
           "4": "Entrate in casa e cercate in giro per circa quindici minuti. Alla fine rinunciate alla ricerca senza aver trovato nulla."
         },
         "text": "Visitate l'interno."
@@ -2896,7 +2896,7 @@
       "help": {
         "outcomes": {
           "0": "Dopo 15 minuti di ricerca, trovate il forcone accanto a un mucchio di fieno. Per ringraziarvi, il contadino vi offre qualche moneta.",
-          "1": "Dopo mezz'ora di ricerche, non riuscite a trovare la forchetta. Tuttavia, scoprite un oggetto che potrebbe esservi utile!",
+          "1": "Après une demi-heure de recherches, vous ne trouvez pas la fourche. Vous découvrez cependant un objet qui pourra peut-être vous être utile !",
           "2": "Cercando la forchetta, la calpestate e vi procurate un brutto taglio.",
           "3": "Cercate il forcone per quasi un'ora, ma non lo trovate. Lasciate gentilmente il contadino e continuate per la vostra strada."
         },

@@ -70,7 +70,7 @@
       "forest": {
         "outcomes": {
           "0": "Sie verschwenden mehrere Stunden im Wald, aber beenden Sie sie, ohne Schaden zu nehmen.",
-          "1": "Sie verlieren viel Zeit, um in den Wald vorzudringen, aber schließlich schaffen Sie es, ihn zu durchqueren! Auf dem Weg nach draußen heben Sie einen Gegenstand auf, der Ihnen vielleicht nützlich sein kann!",
+          "1": "Vous perdez beaucoup de temps à avancer dans la forêt mais vous finissez par parvenir à la traverser ! En sortant, vous ramassez un objet qui pourra peut-être vous être utile !",
           "2": "Auf dem Weg durch den Wald stürzen Sie schwer in einen Graben. Die Wunde ist tief, Sie müssen sich unbedingt behandeln lassen!"
         },
         "text": "Sie müssen trotzdem den Wald überqueren."
@@ -631,20 +631,20 @@
         "text": "Wenn wir diesen Mann aufhalten und daran hindern, zu sterben."
       }
     },
-    "text": "Als Sie in einem Dorf ankommen, fällt Ihnen eine Menschenansammlung auf. Beim Näherkommen stellen Sie schnell fest, dass gerade eine Hinrichtung durch Erhängen stattfindet. Nach einigen Nachfragen erfahren Sie, dass diese Person wegen „Äußerungen, die den Werten der Kirche zuwiderlaufen“ zum Tode verurteilt wurde."
+    "text": "En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'Église\"."
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
           "0": "Man starrt das Objekt 20 Minuten lang gedankenverloren an, bevor man den Blick abwendet.",
-          "1": "Sie beugen sich über den Brunnen und beobachten das Objekt. Dann kippen Sie um. Glücklicherweise gelingt es Ihnen schnell, wieder nach oben zu klettern, allerdings nicht ohne sich dabei schwer zu verletzen."
+          "1": "Vous observez, penché au-dessus du puits, l'objet. C'est alors que vous basculez. Heureusement, vous arrivez rapidement à remonter, non sans vous être sévèrement blessé."
         }
       },
       "goDown": {
         "outcomes": {
           "0": "Sie verletzen sich bei der Abfahrt schwer und sitzen eine Weile am Grund fest, bevor Sie jemand findet.",
-          "1": "Sie gelangen problemlos nach unten und holen den Gegenstand ab.",
+          "1": "Vous arrivez en bas sans souci et récupérez l'objet.",
           "2": "Ihr springt in den Brunnen, findet dort aber nichts. Also steigt ihr mit leeren Händen wieder heraus.",
           "3": "Unten angekommen, entdeckt ihr eine große Menge Goldmünzen, die ihr freudig einsammelt."
         },
@@ -936,7 +936,7 @@
       "food": {
         "outcomes": {
           "0": "Das eine von ihnen ist eine ziemlich aufregende Suppe. Sie trinken sie, ohne zu misstrauen. Diese Ungärten haben eine Falle gestellt. Seit langer Zeit, um Sie zu plündern, enthielt die Sklaverei nur genug Affe, um krank zu werden. Sie fühlen sich, wie Sie Ihre Taschen abgestempeln, machtlos.",
-          "1": "Diese Passanten haben gekocht, um Ihnen einen Geschmack zu machen, der einen Gedicht von Gusgesetzen verdient. Wenn Sie sich näher ansehen, sehen Sie ein Objekt, das am Boden der Schale hinterlassen wurde. Er könnte für die Suite hilfreich sein.",
+          "1": "Ces passants ont cuisiné pour vous un mets des plus savoureux, digne d'une potion gauloise. En regardant de plus près, vous apercevez un objet laissé au fond du bol. Il pourrait bien vous être utile pour la suite.",
           "2": "Die Gruppe freut sich, Ihnen einen Gefallen zu tun, und macht sich auf den Weg, um die lokale Spezialität für Sie zu besorgen. Als das Gericht serviert wird, setzen Sie gute Miene zum bösen Spiel, essen es aber mit gewissem Ekel – Sie mögen nämlich keine Pilze! Mit einiger Mühe schaffen Sie es, das Gericht aufzuessen."
         },
         "text": "Nahrungsmittelvorhang."
@@ -985,8 +985,8 @@
       },
       "steal": {
         "outcomes": {
-          "0": "Sie erklären ihr, dass Sie nicht zu viel wollen, um sie als Cobayan zu benutzen, also der Barkeeper scheint enttäuscht zu sein, Sie überlassen es. Sie sind also an der Arbeit interessiert, die Sie aus Ihrer Einreise in die Bar gepackt haben: Sie können die Kunden diskret ausziehen. Sie haben die Taschen mit drei Personen ohne Probleme, aber die vierte bemerkte und schreien den Dieb. Sie nehmen das Leck.",
-          "1": "Sie erklären ihr, dass Sie nicht zu viel wollen, um sie als Cobayan zu benutzen, also der Barkeeper scheint enttäuscht zu sein, Sie überlassen es. Sie sind also an der Arbeit interessiert, die Sie aus Ihrer Einreise in die Bar gepackt haben: Sie können die Kunden diskret ausziehen. Sie haben die Taschen mit drei Personen ohne Probleme, aber die vierte bemerkte und schreien den Dieb. Sie beenden die Nacht im Knast und schaden diesen Menschen."
+          "0": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous prenez la fuite.",
+          "1": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous finissez la nuit en prison et dédommagez ces gens."
         },
         "text": "Verweigern, und versuchen, Leute zu stehlen."
       },
@@ -1195,10 +1195,10 @@
       },
       "goBack": {
         "outcomes": {
-          "0": "Sie beschließen, den Weg zurückzugehen, von dem Sie gekommen sind. Auf dem Weg dorthin finden Sie einige Münzen auf dem Boden neben einem löchrigen Geldbeutel.",
-          "1": "Sie machen sich auf den Rückweg, als Sie einen verletzten Mann finden. Als Sie versuchen, ihm zu helfen, stellen Sie fest, dass er in einen Hinterhalt geraten ist. Einige Männer tauchen auf und nehmen Sie aus, bevor sie weiterziehen."
+          "0": "Vous décidez de laisser l'ermite tranquille et de poursuivre votre route. Sur le chemin, vous trouvez quelques pièces par terre, à côté d'une bourse trouée.",
+          "1": "Vous poursuivez votre route, lorsque vous trouvez un homme blessé. En essayant de l'aider, vous découvrez qu'il s'agit d'une embuscade ! Des hommes surgissent et vous dépouillent avant de repartir."
         },
-        "text": "Von hier aus, wo Sie herkommen."
+        "text": "Fahren Sie weiter fort."
       }
     },
     "text": "Sie stechen in einen dunklen Wald, und sehen Sie die Silhouette eines Mannes aus der Ferne. Sie entscheiden sich, sich zu nähern, und verstehen Sie, dass es ein Ermite ist, für die Sammler. Sie nähern sich dem Haus, auf dem Sie die \"Xetrix\" -Registrierung lesen, was wahrscheinlich sein Name ist. Sie denken immer noch darüber nach, was zu tun ist."
@@ -1407,13 +1407,13 @@
       },
       "talk": {
         "outcomes": {
-          "0": "Sie verbringen fast 30 Minuten Zeit, um Informationen über diesen Zufluchtsort zu erhalten, Informationen, die sich nicht als nützlich erweisen.",
+          "0": "Vous passez près de 30 minutes à prendre des informations sur ce sanctuaire, informations qui ne s'avéreront pas utiles.",
           "1": "Die Gruppe will einfach nicht darüber reden, und er macht Sie das sehr gut."
         },
         "text": "Diskutieren mit der Gruppe."
       }
     },
-    "text": "Als ihr am Rande eines lebhaften Dorfes ankommt, hört ihr eine Gruppe von Leuten über einen Schrein sprechen, der angeblich heimgesucht wird. Neugierig wie ihr seid, spitzt ihr die Ohren. Der Schrein soll eine Autostunde südlich liegen, und die Abfahrt ist in 30 Minuten."
+    "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au sud, et le départ a lieu dans 30 minutes."
   },
   "46": {
     "possibilities": {
@@ -1630,8 +1630,8 @@
       },
       "leave": {
         "outcomes": {
-          "0": "Nachdem Sie sich gut gestellt haben, entscheiden Sie sich zu gehen, ohne die geringste Hirn auf dem Gesicht zu behalten.",
-          "1": "Während Sie sich freuen, wieder zu gehen, werden Sie feststellen, dass sich die Dorfgruppe zu Ihnen bewegt, dann werden Sie sich zurückziehen und Ihnen Geld geben, damit sie Sie in Ruhe lassen können.",
+          "0": "Après vous être bien reposé, vous décidez de repartir, sans la moindre trace de fatigue sur le visage.",
+          "1": "Alors que vous vous apprêtiez à repartir, vous vous rendez compte que le groupe de villageois se dirige vers vous, ils se mettent alors à vous racketter et vous leur donnez de l'argent pour qu'ils vous laissent tranquille.",
           "2": "Sie entscheiden sich zu verlassen, ohne einen Blick, verlassen Sie das Dorf Coco, um Ihre Suche fortzusetzen."
         },
         "text": "Das Dorf zu verlassen, ohne zu warten."
@@ -1645,7 +1645,7 @@
         "text": "Setzen Sie Ihr Nickerchen am Fuß des Baums fort."
       }
     },
-    "text": "In Ihrer Reise erreichen Sie ein kleines Dorf namens Coco, es ist sehr warm, und Sie müssen sich ausruhen. Die Orte sind nicht feindselig, also machen Sie einen Zwischenstopp in dieser Oase. Während Sie sich am Fuße eines Kokotieres ruhen lassen, entspannen Sie eine Dorfgruppe, die die Bäume umklettern kann, um Früchte zu fangen, die Sie vorher noch nie gesehen hatten, sie sind wie Holzballons und Harte wie Holz und scheinen nicht köstlich zu sein."
+    "text": "Lors de votre périple, vous atteignez un petit hameau du nom de village Coco, il fait très chaud et vous avez besoin de vous reposer. Les lieux ne vous semblant pas hostiles, vous faites donc une halte dans cette oasis. Alors que vous vous reposez au pied d'un cocotier, vous apercevez un groupe de villageois escaladant les arbres pour attraper des fruits que vous n'aviez jamais vus auparavant, ils sont ronds comme des ballons et durs comme du bois et ne vous semblent pas appétissants."
   },
   "51": {
     "possibilities": {
@@ -1991,7 +1991,7 @@
       "goDeeper": {
         "outcomes": {
           "0": "Sie vergeuden sich in diesem Labyrinth schnell, aber Sie werden am Ende um ein paar Stunden wieder herauskommen.",
-          "1": "Sie verbringen ein paar Minuten damit, die Höhle im Koma zu erkunden, und finden Sie ein Objekt, das Sie vielleicht benutzen können ...",
+          "1": "Vous passez quelques minutes à explorer la grotte de fond en comble et trouvez un objet qui pourra peut-être vous servir...",
           "2": "Die Höhle entpuppt sich schnell als Sackgasse, aber als Sie wieder herauskommen, stoßen Sie mit dem Kopf an die Decke und fallen schwindelig um! Sie müssen sich heilen!"
         },
         "text": "Ich muss tiefer in die Höhle eindringen."
@@ -2356,9 +2356,9 @@
       "check": {
         "outcomes": {
           "0": "Wenn Sie die Tür aufbrechen, verletzen Sie sich zutiefst. Sie müssen unbedingt behandelt werden!",
-          "1": "Nachdem Sie fast eine Stunde lang versucht haben, ins Haus zu gelangen, geben Sie schließlich auf. Als Sie sich von der Türschwelle entfernen, finden Sie einen Gegenstand, der Ihnen vielleicht nützlich sein könnte!",
+          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En vous éloignant du seuil, vous trouvez un objet qui pourra peut-être vous être utile !",
           "2": "Du betrittst das Haus und legst deine Sachen ab, um dich auszuruhen. Von einem tiefen Schlaf überwältigt, lässt du dich auf ein staubiges Bett fallen, das in einer Ecke herumstand.",
-          "3": "Sie gehen in das Haus und durchsuchen Sie rund ein paar Minuten um Sie herum. Wenn Sie herauskommen, finden Sie ein Objekt, das Ihnen vielleicht nützlich sein kann!",
+          "3": "Vous entrez dans la maison et fouillez autour de vous pendant une quinzaine de minutes. En sortant vous trouvez un objet qui pourra peut-être vous être utile !",
           "4": "Sie gehen in das Haus und durchsuchen Sie rund ein paar Minuten um Sie herum. Sie beenden Ihre Forschung, ohne dass Sie etwas gefunden haben."
         },
         "text": "Bitte besuchen Sie die Innenseite."
@@ -2896,7 +2896,7 @@
       "help": {
         "outcomes": {
           "0": "Nach einer Viertelstunde, die Sie suchen, finden Sie die Gabel neben einem Haufen Fin. Um Ihnen zu danken, bietet Ihnen der Bauer ein paar Münzen an.",
-          "1": "Nach einer halben Stunde Nachforschungen finden Sie die Gabel nicht. Sie entdecken jedoch ein Objekt, das Ihnen vielleicht nützlich sein kann!",
+          "1": "Après une demi-heure de recherches, vous ne trouvez pas la fourche. Vous découvrez cependant un objet qui pourra peut-être vous être utile !",
           "2": "Wenn Sie die Gabel suchen, gehen Sie nach oben und Sie haben eine böse Kerbe.",
           "3": "Sie suchen fast eine Stunde lang nach der Mistgabel, aber Sie können sie nicht finden. Sie verlassen den Bauern höflich und setzen Ihren Weg fort."
         },

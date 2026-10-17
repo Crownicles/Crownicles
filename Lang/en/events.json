@@ -70,7 +70,7 @@
       "forest": {
         "outcomes": {
           "0": "You get lost for several hours in the forest but find your way out unscathed.",
-          "1": "You waste a lot of time moving through the forest, but you managed to cross it! On your way out, you pick up an item that may be useful to you!",
+          "1": "Vous perdez beaucoup de temps à avancer dans la forêt mais vous finissez par parvenir à la traverser ! En sortant, vous ramassez un objet qui pourra peut-être vous être utile !",
           "2": "While crossing the forest, you take a big fall into a pit. The wound is deep, you'll absolutely have to heal yourself!"
         },
         "text": "Cross the forest anyway."
@@ -631,20 +631,20 @@
         "text": "Intervene and prevent the man from dying."
       }
     },
-    "text": "Upon arriving in a village, you notice a crowd of people. As you get closer, you quickly realize that a hanging is taking place. After asking around, you learn that this person has been sentenced to death for “remarks contrary to the values of the church.”"
+    "text": "En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'Église\"."
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
           "0": "You just stare at the object for 20 minutes before looking away.",
-          "1": "Leaning over the well, you observe the object. That's when you tip over. Fortunately, you soon manage to climb back up, but not without serious injury."
+          "1": "Vous observez, penché au-dessus du puits, l'objet. C'est alors que vous basculez. Heureusement, vous arrivez rapidement à remonter, non sans vous être sévèrement blessé."
         }
       },
       "goDown": {
         "outcomes": {
           "0": "You are seriously injured during the descent and are stranded at the bottom for a while before someone finds you.",
-          "1": "You make it to the bottom without any trouble and retrieve the item.",
+          "1": "Vous arrivez en bas sans souci et récupérez l'objet.",
           "2": "You jump into the well but find nothing there. So you climb back up empty-handed.",
           "3": "Once you reach the bottom, you discover a large number of gold coins, which you happily collect."
         },
@@ -936,7 +936,7 @@
       "food": {
         "outcomes": {
           "0": "One of them hands you a rather appetizing soup. You drink it carelessly. Those scoundrels set up a trap for you! They had waited for a long time to plunder you; the drink contained just enough fly agaric to make you sick. You feel yourself fading while helplessly watching your pockets being stripped.",
-          "1": "These passers-by cooked a tasty dish for you, worthy of a Gallic potion. As you look closer, you see an object laying at the bottom of the bowl. It could be useful in the future.",
+          "1": "Ces passants ont cuisiné pour vous un mets des plus savoureux, digne d'une potion gauloise. En regardant de plus près, vous apercevez un objet laissé au fond du bol. Il pourrait bien vous être utile pour la suite.",
           "2": "Happy to help, the group goes out to buy you the local specialty. When the dish arrives, you put on a brave face but eat it with some distaste: you don't like mushrooms! With some effort, you finish the dish."
         },
         "text": "Food gift."
@@ -985,8 +985,8 @@
       },
       "steal": {
         "outcomes": {
-          "0": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts thief! You flee.",
-          "1": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts \"Stop thief!\" You end up the night in jail and compensate these people."
+          "0": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous prenez la fuite.",
+          "1": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous finissez la nuit en prison et dédommagez ces gens."
         },
         "text": "Refuse, and try to rob people."
       },
@@ -1195,10 +1195,10 @@
       },
       "goBack": {
         "outcomes": {
-          "0": "You decide to go back the way you came. On the way, you find a few coins on the ground, next to a purse with a hole in it.",
-          "1": "You set off again, only to find an injured man. As you try to help him, you discover that you've been ambushed! Some men appear and rob you before setting off again."
+          "0": "Vous décidez de laisser l'ermite tranquille et de poursuivre votre route. Sur le chemin, vous trouvez quelques pièces par terre, à côté d'une bourse trouée.",
+          "1": "Vous poursuivez votre route, lorsque vous trouvez un homme blessé. En essayant de l'aider, vous découvrez qu'il s'agit d'une embuscade ! Des hommes surgissent et vous dépouillent avant de repartir."
         },
-        "text": "Go back the way you came."
+        "text": "Continue on your way."
       }
     },
     "text": "As you go deep into a dark forest, you see the silhouette of a man in the distance. While moving closer, you realize he's a hermit, out foraging. You approach his house, on which you read the inscription \"Xetrix\", which is probably his name. You're thinking about what to do..."
@@ -1407,13 +1407,13 @@
       },
       "talk": {
         "outcomes": {
-          "0": "You spend nearly 30 minutes gathering information on this sanctuary, information that will not prove useful.",
+          "0": "Vous passez près de 30 minutes à prendre des informations sur ce sanctuaire, informations qui ne s'avéreront pas utiles.",
           "1": "The group shrugs off your attempts to discuss the shrine with them and makes it very clear with their body language that they have no interest in having you around."
         },
         "text": "Discuss with the group."
       }
     },
-    "text": "As you approach a bustling village, you hear a group of people talking about a shrine that is said to be haunted. Being curious, you listen in. The shrine is reportedly an hour’s drive to the south, and the tour departs in 30 minutes."
+    "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au sud, et le départ a lieu dans 30 minutes."
   },
   "46": {
     "possibilities": {
@@ -1630,8 +1630,8 @@
       },
       "leave": {
         "outcomes": {
-          "0": "After you have rested well, you decide to leave, without a trace of fatigue on your face.",
-          "1": "As you are about to leave, you realize that the group of villagers is heading towards you, they then begin to extort money from you and you give them money so that they leave you alone.",
+          "0": "Après vous être bien reposé, vous décidez de repartir, sans la moindre trace de fatigue sur le visage.",
+          "1": "Alors que vous vous apprêtiez à repartir, vous vous rendez compte que le groupe de villageois se dirige vers vous, ils se mettent alors à vous racketter et vous leur donnez de l'argent pour qu'ils vous laissent tranquille.",
           "2": "You decide to leave, without a glance, you leave the Coco village to continue your quest."
         },
         "text": "Leave the village without further delay."
@@ -1645,7 +1645,7 @@
         "text": "Continue your nap at the foot of the tree."
       }
     },
-    "text": "During your trip, you reach a small hamlet named Coco Village, it is very hot and you need to rest. The places do not seem hostile to you, so you make a stop in this oasis. While you are resting at the foot of a coconut tree, you see a group of villagers climbing trees to catch fruits you've never seen before, they are round like balloons and hard like wood and do not seem appealing."
+    "text": "Lors de votre périple, vous atteignez un petit hameau du nom de village Coco, il fait très chaud et vous avez besoin de vous reposer. Les lieux ne vous semblant pas hostiles, vous faites donc une halte dans cette oasis. Alors que vous vous reposez au pied d'un cocotier, vous apercevez un groupe de villageois escaladant les arbres pour attraper des fruits que vous n'aviez jamais vus auparavant, ils sont ronds comme des ballons et durs comme du bois et ne vous semblent pas appétissants."
   },
   "51": {
     "possibilities": {
@@ -1991,7 +1991,7 @@
       "goDeeper": {
         "outcomes": {
           "0": "You get quickly lost in this maze, but you end up coming out of it after a few hours!",
-          "1": "You spend a few minutes exploring the cave from top to bottom and find an object that may be useful...",
+          "1": "Vous passez quelques minutes à explorer la grotte de fond en comble et trouvez un objet qui pourra peut-être vous servir...",
           "2": "The cave soon turns out to be a cul de sac, but as you emerge, you hit your head on the ceiling and fall dizzy! You'll need medical attention!"
         },
         "text": "Delve deeper into the cave."
@@ -2356,9 +2356,9 @@
       "check": {
         "outcomes": {
           "0": "By forcing the door open, you're hurting yourself deeply. You absolutely must take care of yourself!",
-          "1": "After spending nearly an hour trying to get into the house, you finally give up. As you walk away from the doorway, you find an object that might come in handy!",
+          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En vous éloignant du seuil, vous trouvez un objet qui pourra peut-être vous être utile !",
           "2": "You walk into the house and set your things down to rest. Overcome by a deep sleep, you collapse onto a dusty bed that was lying in a corner.",
-          "3": "You enter the house and search around for about fifteen minutes. On your way out, you find an object that might come in handy!",
+          "3": "Vous entrez dans la maison et fouillez autour de vous pendant une quinzaine de minutes. En sortant vous trouvez un objet qui pourra peut-être vous être utile !",
           "4": "You enter the house and search around for about fifteen minutes. You finally give up your search without having found anything."
         },
         "text": "Check inside."
@@ -2896,7 +2896,7 @@
       "help": {
         "outcomes": {
           "0": "After a quarter of an hour's searching, you find the pitchfork next to a pile of hay. To thank you, the farmer offers you a few coins.",
-          "1": "After half an hour's searching, you can't find the pitchfork. You do, however, discover an object that may be of use to you!",
+          "1": "Après une demi-heure de recherches, vous ne trouvez pas la fourche. Vous découvrez cependant un objet qui pourra peut-être vous être utile !",
           "2": "Looking for the pitchfork, you step on it and give yourself a nasty gash.",
           "3": "You search for the pitchfork for almost an hour, but can't find it. You politely leave the farmer and continue on your way."
         },

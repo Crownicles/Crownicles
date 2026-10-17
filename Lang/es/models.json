@@ -415,6 +415,10 @@
       "name_one": "Ataque maldito",
       "name_other": "Ataques malditos"
     },
+    "skeletonCursedAttack": {
+      "name_one": "Sortilège mortel",
+      "name_other": "Sortilèges mortels"
+    },
     "cursedByTheSea": {
       "name": "condenados por el mar",
       "new": "está condenado por el mar...",
@@ -492,6 +496,10 @@
       "description": "Quema a tu oponente. La alteración \"quemado\" inflige daño a tu oponente a lo largo del tiempo.",
       "name_one": "Ataque de fuego",
       "name_other": "Ataques con fuego"
+    },
+    "titanFireAttack": {
+      "name_one": "Boule de feu",
+      "name_other": "Boules de feu"
     },
     "fishProtectAgainstFire": {
       "afraid": "le pide a **{{petNickname}}** que le ayude a no quemarse pero **{{petNickname}}** está demasiado asustado para ayudarle.",
@@ -746,6 +754,10 @@
       "name_one": "Ataque envenenado",
       "name_other": "Ataques envenenados"
     },
+    "spiderPoisonAttack": {
+      "name_one": "Jet de poison",
+      "name_other": "Jets de poison"
+    },
     "poisonousBite": {
       "generalEffect": "necesita **{{petNickname}}**, el animal necesita tiempo para prepararse...",
       "success": "recibe el apoyo de **{{petNickname}}** que decide morder a su oponente... Este último de repente no se siente muy bien."
@@ -754,6 +766,10 @@
       "description": "Este ataque tiene un 25% de posibilidades de hacer más daño, a costa de aturdir al atacante. Reduce la velocidad del adversario. Tras 3 usos, el daño del ataque se reduce un 70%.",
       "name_one": "Poderoso ataque",
       "name_other": "Poderosos ataques"
+    },
+    "guardianPowerfulAttack": {
+      "name_one": "Attaque tranchante",
+      "name_other": "Attaques tranchantes"
     },
     "protectAgainstCold": {
       "success": "está protegido del frío por **{{petNickname}}**."
@@ -832,10 +848,22 @@
       "name_one": "Ataque con escudo",
       "name_other": "Ataques con escudo"
     },
+    "skeletonShieldAttack": {
+      "name_one": "Cuirasse osseuse",
+      "name_other": "Cuirasses osseuses"
+    },
     "simpleAttack": {
       "description": "Un ataque simple.",
       "name_one": "Ataque simple",
       "name_other": "Ataques simples"
+    },
+    "skeletonSimpleAttack": {
+      "name_one": "Frappe osseuse",
+      "name_other": "Frappes osseuses"
+    },
+    "elementaryPiercingAttack": {
+      "name_one": "Éclat élémentaire",
+      "name_other": "Éclats élémentaires"
     },
     "sing": {
       "customMessage": "empieza a cantar.",
@@ -1033,7 +1061,7 @@
       "atParticle": "a la"
     },
     "10": {
-      "description": "Antaño una gran ciudad fortificada, Ville Forte es ahora una sombra de lo que fue. Asolada por la antigua guerra, sólo quedan una docena de casas y campesinos. El resto de las antiguas fortificaciones está en ruinas.",
+      "description": "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ravagée par l'ancienne guerre, il ne reste qu'une dizaine de maisons et de paysans. Le reste des anciennes fortifications est en ruines, et sous les remparts effondrés, d'anciennes galeries souterraines s'enfoncent dans la roche.",
       "name": "Ciudad fuerte",
       "particle": "a la",
       "atParticle": "a la",
@@ -1177,13 +1205,13 @@
       "atParticle": "a la"
     },
     "14": {
-      "description": "Un gran lago donde a las familias les gusta reunirse. En él desemboca el río Vacarme.",
+      "description": "Un grand lac où les familles aiment bien se réunir. La rivière Vacarme vient s'y jeter, et ses rives les plus reculées se perdent en marécages couverts de roseaux.",
       "name": "Lago Mirage",
       "particle": "a la",
       "atParticle": "en"
     },
     "15": {
-      "description": "El monte Celestrum es la montaña dominante de la región. Con varios kilómetros de altura, Celestrum es visible para todos. Se dice que lleva el nombre de la antigua diosa. De hecho, sólo una persona ha conseguido escalar hasta la cima. De ella sólo quedan sus iniciales: M-B.",
+      "description": "Le Mont Celestrum est la montagne dominante de la région. Haute de plusieurs kilomètres, Celestrum est visible de tous. On raconte qu'elle porte le nom de l'ancienne déesse. Par ailleurs, une seule personne est parvenue à grimper jusqu'au sommet. On ne retient d'elle que ses initiales : M-B. Ses flancs sont percés de grottes dont personne n'a jamais trouvé le fond.",
       "name": "Monte Celestrum",
       "particle": "a la",
       "atParticle": "en"
@@ -1195,7 +1223,7 @@
       "atParticle": "en"
     },
     "17": {
-      "description": "Cálido pueblo que bordea el Valle de los Reyes. Es un cálido oasis para los viajeros en tránsito.",
+      "description": "Village-oasis prisé par les nobles de la Vallée des Rois en quête de fraîcheur. Les noix de coco qu'on y récolte sont réputées dans tout le pays et s'échangent à prix d'or sur les marchés du royaume. La rareté des terrains constructibles autour de la source en fait l'un des lieux les plus convoités.",
       "name": "Coco Village",
       "particle": "a la",
       "atParticle": "en",
@@ -1232,7 +1260,7 @@
       "atParticle": "a la"
     },
     "22": {
-      "description": "Bois Hurlant, un bosque tristemente célebre situado en las afueras de Claire de Ville, tiene muy mala reputación. Refugio de bandidos y forajidos de todo tipo, su nombre se debe principalmente a las dudosas prácticas de hace cientos de años.",
+      "description": "Forêt mal famée au bord de Claire de Ville, Bois Hurlant a une très mauvaise réputation. Repaire de bandits et hors la loi en tout genre, elle tient surtout son nom de ces pratiques douteuses il y a de ça des centaines d'années. Les brigands se terrent encore dans les grottes qui creusent ses collines.",
       "name": "Bosque aullador",
       "particle": "a la",
       "atParticle": "en"
@@ -1336,7 +1364,7 @@
       "inParticle": "en"
     },
     "7": {
-      "description": "Un desierto arenoso y caluroso que debe su nombre a los antiguos reyes de la región.",
+      "description": "Désert de sable chaud nommé en l'honneur des anciens rois de la région. Leurs tombeaux à demi ensevelis parsèment encore les dunes.",
       "name": "Valle de los Reyes",
       "particle": "a la",
       "atParticle": "a la"
@@ -1471,27 +1499,20 @@
       "name": "",
       "prefix": "de la"
     },
-    "forest": {
-      "name": "Bosque"
-    },
-    "mountain": {
-      "name": "Montaña"
-    },
-    "desert": {
-      "name": "Desierto"
-    },
-    "swamp": {
-      "name": "Marsh"
-    },
-    "cave": {
-      "name": "Gruta"
-    },
-    "plains": {
-      "name": "Llanura"
-    },
-    "coast": {
-      "name": "Costa"
+    "mistyPath": {
+      "name": "",
+      "prefix": "de"
     }
+  },
+  "biomes": {
+    "forest": "Bosque",
+    "mountain": "Montaña",
+    "desert": "Desierto",
+    "swamp": "Marais",
+    "ruins": "Ruinas",
+    "cave": "Grotte",
+    "plains": "Llanura",
+    "coast": "Côte"
   },
   "missions": {
     "anyFight_one": "{{count}} Combatir",
@@ -2163,6 +2184,7 @@
     "0": "Puño",
     "1": "Relámpago de Zeus",
     "10": "Espada de madera",
+    "100": "Sentence de la Faucheuse",
     "11": "Pistola vacía",
     "12": "Jeringa infectada",
     "13": "Bomba",

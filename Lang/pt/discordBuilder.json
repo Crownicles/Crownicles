@@ -303,6 +303,20 @@
     "description": "Começar uma luta.",
     "name": "combate"
   },
+  "friendlyFight": {
+    "description": "Lancer un combat amical sans aucune conséquence contre un autre joueur contrôlé par une IA.",
+    "name": "combatamical",
+    "options": {
+      "rank": {
+        "description": "Le classement du joueur à affronter.",
+        "name": "classificação"
+      },
+      "user": {
+        "description": "L'utilisateur à affronter.",
+        "name": "utilizador"
+      }
+    }
+  },
   "equip": {
     "name": "equipar",
     "description": "Gerir o seu equipamento: equipar, guardar ou trocar os seus objectos."
@@ -396,15 +410,15 @@
     "description": "Ver o estado atual da bênção global."
   },
   "tournament": {
-    "name": "tournament",
-    "description": "Consulter votre tournoi ou vous y inscrire automatiquement."
+    "name": "tournoi",
+    "description": "Consulter le tournoi du serveur et s'y inscrire."
   },
   "tournament-admin": {
-    "name": "tournament-admin",
-    "description": "Ouvrir la gestion du tournoi dans ce serveur."
+    "name": "tournoi-admin",
+    "description": "Créer, annuler ou reprendre un tournoi sur ce serveur."
   },
   "tournament-owner": {
-    "name": "tournament-owner",
-    "description": "Ouvrir les opérations owner du tournoi."
+    "name": "tournoi-proprietaire",
+    "description": "Autoriser ou reprendre un tournoi (propriétaire du bot)."
   }
 }

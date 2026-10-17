@@ -415,6 +415,10 @@
       "name_one": "Verfluchung",
       "name_other": "Verfluchungen"
     },
+    "skeletonCursedAttack": {
+      "name_one": "Sortilège mortel",
+      "name_other": "Sortilèges mortels"
+    },
     "cursedByTheSea": {
       "name": "vom Meer verdammt",
       "new": "wird vom Meer verdammt",
@@ -492,6 +496,10 @@
       "description": "Verbrennt den Gegner. Die Veränderung \"Verbrannt\" fügt deinem Gegner über einen längeren Zeitraum Schaden zu.",
       "name_one": "Feuerangriff",
       "name_other": "Feuerangriffe"
+    },
+    "titanFireAttack": {
+      "name_one": "Boule de feu",
+      "name_other": "Boules de feu"
     },
     "fishProtectAgainstFire": {
       "afraid": "bittet **{{petNickname}}**, ihm zu helfen, nicht zu verbrennen, aber **{{petNickname}}** ist zu ängstlich, um zu helfen.",
@@ -746,6 +754,10 @@
       "name_one": "Vergiftete Attacke",
       "name_other": "Vergiftete Attacken"
     },
+    "spiderPoisonAttack": {
+      "name_one": "Jet de poison",
+      "name_other": "Jets de poison"
+    },
     "poisonousBite": {
       "generalEffect": "braucht **{{petNickname}}**, das Tier braucht Zeit, um sich vorzubereiten...",
       "success": "erhält Unterstützung von **{{petNickname}}**, der beschließt, seinen Gegner zu beißen... Dieser fühlt sich plötzlich nicht mehr wohl."
@@ -754,6 +766,10 @@
       "description": "Dieser Angriff hat eine 25%ige Chance, mehr Schaden zu verursachen, auf Kosten einer Betäubung des Angreifers. Verringert die Geschwindigkeit des Gegners. Nach 3-maliger Anwendung wird der Schaden des Angriffs um 70 % reduziert.",
       "name_one": "Power-Attap",
       "name_other": "Ansteigende Attacken"
+    },
+    "guardianPowerfulAttack": {
+      "name_one": "Attaque tranchante",
+      "name_other": "Attaques tranchantes"
     },
     "protectAgainstCold": {
       "success": "wird von **{{petNickname}}** vor Kälte geschützt."
@@ -832,10 +848,22 @@
       "name_one": "Schutzschild",
       "name_other": "Schutzschilder"
     },
+    "skeletonShieldAttack": {
+      "name_one": "Cuirasse osseuse",
+      "name_other": "Cuirasses osseuses"
+    },
     "simpleAttack": {
       "description": "Ein einfacher Angriff.",
       "name_one": "Einfache Attacke",
       "name_other": "Einfache Attacken"
+    },
+    "skeletonSimpleAttack": {
+      "name_one": "Frappe osseuse",
+      "name_other": "Frappes osseuses"
+    },
+    "elementaryPiercingAttack": {
+      "name_one": "Éclat élémentaire",
+      "name_other": "Éclats élémentaires"
     },
     "sing": {
       "customMessage": "beginnt zu singen.",
@@ -1033,7 +1061,7 @@
       "atParticle": "an die"
     },
     "10": {
-      "description": "Die große Stadt der Stadt, die Stadt Forte, ist nicht mehr nur der Schatten von sich selbst. Es gibt nur ein Dutzend von Häusern und Bauern, die von dem alten Krieg zurückgeschwungen wurden. Der Rest der früheren Pauschalschmiede ist nur ein Ruin.",
+      "description": "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ravagée par l'ancienne guerre, il ne reste qu'une dizaine de maisons et de paysans. Le reste des anciennes fortifications est en ruines, et sous les remparts effondrés, d'anciennes galeries souterraines s'enfoncent dans la roche.",
       "name": "Stadt Forte",
       "particle": "in Richtung",
       "atParticle": "an die",
@@ -1177,13 +1205,13 @@
       "atParticle": "an die"
     },
     "14": {
-      "description": "Ein großer See, in dem die Familien gerne zusammenkommen. Der Fluss Vacwaffe hat sich geworfen.",
+      "description": "Un grand lac où les familles aiment bien se réunir. La rivière Vacarme vient s'y jeter, et ses rives les plus reculées se perdent en marécages couverts de roseaux.",
       "name": "Lac Mirage",
       "particle": "in Richtung",
       "atParticle": "unter"
     },
     "15": {
-      "description": "Der Berg Celestrum ist der dominierende Berg der Region. Der mehrere Kilometer hohe Celestrum ist für jeden sichtbar. Man erzählt sich, dass er nach einer antiken Göttin benannt wurde. Nur einer einzigen Person ist es gelungen, bis zum Gipfel zu klettern. Von ihr sind nur ihre Initialen bekannt: M-B.",
+      "description": "Le Mont Celestrum est la montagne dominante de la région. Haute de plusieurs kilomètres, Celestrum est visible de tous. On raconte qu'elle porte le nom de l'ancienne déesse. Par ailleurs, une seule personne est parvenue à grimper jusqu'au sommet. On ne retient d'elle que ses initiales : M-B. Ses flancs sont percés de grottes dont personne n'a jamais trouvé le fond.",
       "name": "Mont Célestrum",
       "particle": "in Richtung",
       "atParticle": "unter"
@@ -1195,7 +1223,7 @@
       "atParticle": "unter"
     },
     "17": {
-      "description": "Heißes Village, das das Könige-Tal umgeht. Es ist eine warme Oase für Reisende im Transit.",
+      "description": "Village-oasis prisé par les nobles de la Vallée des Rois en quête de fraîcheur. Les noix de coco qu'on y récolte sont réputées dans tout le pays et s'échangent à prix d'or sur les marchés du royaume. La rareté des terrains constructibles autour de la source en fait l'un des lieux les plus convoités.",
       "name": "Coco Village",
       "particle": "in Richtung",
       "atParticle": "unter",
@@ -1232,7 +1260,7 @@
       "atParticle": "an die"
     },
     "22": {
-      "description": "Unbeliebter Wald am Rand von Claire de Ville, Bois Hurlant hat einen sehr schlechten Ruf. Repazile Banditen und außerhalb des Gesetzes, sie hält vor allem ihren Namen aus diesen dubiosen Praktiken vor hunderten Jahren.",
+      "description": "Forêt mal famée au bord de Claire de Ville, Bois Hurlant a une très mauvaise réputation. Repaire de bandits et hors la loi en tout genre, elle tient surtout son nom de ces pratiques douteuses il y a de ça des centaines d'années. Les brigands se terrent encore dans les grottes qui creusent ses collines.",
       "name": "Bois Hurlant",
       "particle": "in Richtung",
       "atParticle": "unter"
@@ -1336,7 +1364,7 @@
       "inParticle": "in"
     },
     "7": {
-      "description": "Es ist ein warmer, heißer Sand, der in der Ehre der alten Könige der Region genannt wird.",
+      "description": "Désert de sable chaud nommé en l'honneur des anciens rois de la région. Leurs tombeaux à demi ensevelis parsèment encore les dunes.",
       "name": "Vallée de Rois",
       "particle": "in Richtung",
       "atParticle": "an die"
@@ -1471,27 +1499,20 @@
       "name": "",
       "prefix": "von"
     },
-    "forest": {
-      "name": "Wälder"
-    },
-    "mountain": {
-      "name": "Berg"
-    },
-    "desert": {
-      "name": "Dessert"
-    },
-    "swamp": {
-      "name": "Sumpf"
-    },
-    "cave": {
-      "name": "Höhle"
-    },
-    "plains": {
-      "name": "Plain"
-    },
-    "coast": {
-      "name": "Küste"
+    "mistyPath": {
+      "name": "",
+      "prefix": "von"
     }
+  },
+  "biomes": {
+    "forest": "Wälder",
+    "mountain": "Montagne",
+    "desert": "Dessert",
+    "swamp": "Marais",
+    "ruins": "Ruinen",
+    "cave": "Grotte",
+    "plains": "Plain",
+    "coast": "Côte"
   },
   "missions": {
     "anyFight_one": "Machen {{count}} Kampf",
@@ -2163,6 +2184,7 @@
     "0": "Poing",
     "1": "Zeus-Foudre",
     "10": "Schwert aus Holz",
+    "100": "Sentence de la Faucheuse",
     "11": "Leere Pistole",
     "12": "Infizierte Spritze",
     "13": "Bombe",
