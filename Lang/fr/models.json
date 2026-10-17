@@ -1038,6 +1038,49 @@
     "webShotAttack": {
       "name_one": "Attaque jet de toile",
       "name_other": "Attaques jets de toile"
+    },
+    "leechBite": {
+      "name_one": "Morsure sangsue",
+      "name_other": "Morsures sangsue"
+    },
+    "multiHeadBite": {
+      "name_one": "Morsure aux mille têtes",
+      "name_other": "Morsures aux mille têtes"
+    },
+    "regrowth": {
+      "customMessage": "puise dans la sève et l'humus pour refermer ses blessures.",
+      "name_one": "Repousse",
+      "name_other": "Repousses"
+    },
+    "sporeCloud": {
+      "name_one": "Nuage de spores",
+      "name_other": "Nuages de spores"
+    },
+    "mantisScythes": {
+      "name_one": "Attaque faux de mante",
+      "name_other": "Attaques faux de mante"
+    },
+    "rootBind": {
+      "name_one": "Enracinement",
+      "name_other": "Enracinements"
+    },
+    "barkArmor": {
+      "customMessage": "se couvre d'une écorce épaisse et durcie.",
+      "name_one": "Armure d'écorce",
+      "name_other": "Armures d'écorce"
+    },
+    "featherStorm": {
+      "name_one": "Tempête de plumes",
+      "name_other": "Tempêtes de plumes"
+    },
+    "thornBarrage": {
+      "name_one": "Salve d'épines",
+      "name_other": "Salves d'épines"
+    },
+    "wrathOfTheForest": {
+      "customMessage": "laisse éclater la colère de la forêt : branches, racines et lianes s'abattent sur son adversaire avec une violence d'autant plus grande que ses blessures sont profondes.",
+      "name_one": "Colère de la forêt",
+      "name_other": "Colères de la forêt"
     }
   },
   "leagues": {
