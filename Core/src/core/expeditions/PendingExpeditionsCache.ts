@@ -1,5 +1,7 @@
 import { ExpeditionData } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
-import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMinutes, minutesToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
 
 /**
  * Cache entry for pending expeditions
@@ -12,12 +14,12 @@ interface PendingExpeditionEntry {
 /**
  * Cache cleanup interval (5 minutes)
  */
-const CACHE_CLEANUP_INTERVAL = minutesToMilliseconds(5);
+const CACHE_CLEANUP_INTERVAL = minutesToMilliseconds(asMinutes(5));
 
 /**
  * Cache expiry time (10 minutes)
  */
-const CACHE_EXPIRY_TIME = minutesToMilliseconds(10);
+const CACHE_EXPIRY_TIME = minutesToMilliseconds(asMinutes(10));
 
 /**
  * Cache for storing generated expeditions until the player makes a choice

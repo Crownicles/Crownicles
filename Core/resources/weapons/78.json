@@ -2,5 +2,7 @@
   "rarity": 3,
   "rawAttack": 3,
   "speed": 15,
-  "defense": 20
+  "defense": 20,
+  "type": "spiritual",
+  "materialCategory": 15
 }

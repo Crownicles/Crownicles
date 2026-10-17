@@ -163,9 +163,9 @@
     "description": "Afficher la carte pour indiquer où vous allez.",
     "name": "carte"
   },
-  "shop": {
-    "description": "Afficher le magasin.",
-    "name": "magasin"
+  "garden": {
+    "description": "Accéder à votre jardin, à distance si vous possédez le Cœur Sylvestre.",
+    "name": "jardin"
   },
   "classesInfo": {
     "description": "Afficher des informations sur les classes sélectionnables pour votre personnage.",
@@ -212,10 +212,6 @@
         "name": "utilisateur"
       }
     }
-  },
-  "guildShop": {
-    "description": "Afficher le magasin de guilde.",
-    "name": "magasinguilde"
   },
   "guildKick": {
     "description": "Exclure un membre de la guilde.",
@@ -271,10 +267,6 @@
       }
     }
   },
-  "missionsshop": {
-    "description": "Afficher le magasin de missions.",
-    "name": "magasinmissions"
-  },
   "top": {
     "description": "Afficher les classements du jeu.",
     "name": "classement",
@@ -311,13 +303,23 @@
     "description": "Lancer un combat.",
     "name": "combat"
   },
-  "switch": {
-    "name": "intervertir",
-    "description": "Intervertir l'objet actif avec l'un des objets présent dans votre réserve."
+  "friendlyFight": {
+    "description": "Lancer un combat amical sans aucune conséquence contre un autre joueur contrôlé par une IA.",
+    "name": "combatamical",
+    "options": {
+      "rank": {
+        "description": "Le classement du joueur à affronter.",
+        "name": "classement"
+      },
+      "user": {
+        "description": "L'utilisateur à affronter.",
+        "name": "utilisateur"
+      }
+    }
   },
-  "deposit": {
-    "name": "deposer",
-    "description": "Déposer un de vos objets actifs."
+  "equip": {
+    "name": "equiper",
+    "description": "Gérer votre équipement : équiper, ranger ou intervertir vos objets."
   },
   "drink": {
     "name": "boire",
@@ -406,5 +408,17 @@
   "blessing": {
     "name": "benediction",
     "description": "Voir l'état actuel de la bénédiction globale."
+  },
+  "tournament": {
+    "name": "tournoi",
+    "description": "Consulter le tournoi du serveur et s'y inscrire."
+  },
+  "tournament-admin": {
+    "name": "tournoi-admin",
+    "description": "Créer, annuler ou reprendre un tournoi sur ce serveur."
+  },
+  "tournament-owner": {
+    "name": "tournoi-proprietaire",
+    "description": "Autoriser ou reprendre un tournoi (propriétaire du bot)."
   }
 }

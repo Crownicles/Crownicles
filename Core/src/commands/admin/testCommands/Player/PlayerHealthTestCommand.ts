@@ -20,7 +20,7 @@ const playerHealthTestCommand: ExecuteTestCommandLike = async (player, args, res
 		throw new Error("Erreur vie : vie donnée inférieure à 0 interdit !");
 	}
 	await player.addHealth({
-		amount: parseInt(args[0], 10) - player.health,
+		amount: parseInt(args[0], 10) - player.getHealthValue(),
 		response,
 		reason: NumberChangeReason.TEST,
 		missionHealthParameter: {
@@ -30,7 +30,7 @@ const playerHealthTestCommand: ExecuteTestCommandLike = async (player, args, res
 	});
 	await player.save();
 
-	return `Vous avez maintenant ${player.health} :heart:!`;
+	return `Vous avez maintenant ${player.getHealthValue()} :heart:!`;
 };
 
 commandInfo.execute = playerHealthTestCommand;

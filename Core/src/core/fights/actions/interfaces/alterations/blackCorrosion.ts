@@ -12,7 +12,9 @@ import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionR
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 
 const use: FightAlterationFunc = (affected, fightAlteration, opponent) => {
-	if (affected.alterationTurn > 3 || (affected.alterationTurn > 1 && RandomUtils.crowniclesRandom.bool(0.2))) {
+	const alterationEndsNow = affected.alterationTurn > 3
+		|| (affected.alterationTurn > 1 && RandomUtils.crowniclesRandom.bool(0.2));
+	if (alterationEndsNow) {
 		affected.removeSpeedModifiers(fightAlteration);
 		affected.removeAttackModifiers(fightAlteration);
 		return defaultHealFightAlterationResult(affected);
@@ -39,7 +41,7 @@ const use: FightAlterationFunc = (affected, fightAlteration, opponent) => {
 		}, affected, fightAlteration);
 	}
 
-	result.damages = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), affected, getAttackInfo(), true);
+	result.damages = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), opponent, getAttackInfo(), true);
 	return result;
 };
 

@@ -1,9 +1,10 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
-import {
-	ItemNature, ItemRarity
-} from "../../constants/ItemConstants";
+import { MainItemDetails } from "../../types/MainItemDetails";
+import { SupportItemDetails } from "../../types/SupportItemDetails";
+import { MaterialQuantity } from "../../types/MaterialQuantity";
+import { PlantId } from "../../constants/PlantConstants";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandInventoryPacketReq extends CrowniclesPacket {
@@ -13,40 +14,45 @@ export class CommandInventoryPacketReq extends CrowniclesPacket {
 	};
 }
 
-export interface MainItemDisplayPacket {
-	id: number;
-	rarity: ItemRarity;
-	itemCategory: number;
-	attack: {
-		value: number;
-		maxValue: number;
-	};
-	defense: {
-		value: number;
-		maxValue: number;
-	};
-	speed: {
-		value: number;
-		maxValue: number;
-	};
-}
-
-export interface SupportItemDisplayPacket {
-	id: number;
-	rarity: number;
-	nature: ItemNature;
-	power: number;
-	maxPower: number;
-	itemCategory: number;
-	usages?: number;
-	maxUsages?: number;
-}
-
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandInventoryPacketRes extends CrowniclesPacket {
 	foundPlayer!: boolean;
 
 	keycloakId?: string;
+
+	data?: {
+		weapon: MainItemDetails;
+		armor: MainItemDetails;
+		potion: SupportItemDetails;
+		object: SupportItemDetails;
+		backupWeapons: {
+			display: MainItemDetails; slot: number;
+		}[];
+		backupArmors: {
+			display: MainItemDetails; slot: number;
+		}[];
+		backupPotions: {
+			display: SupportItemDetails; slot: number;
+		}[];
+		backupObjects: {
+			display: SupportItemDetails; slot: number;
+		}[];
+		slots: {
+			weapons: number;
+			armors: number;
+			potions: number;
+			objects: number;
+		};
+		materials: MaterialQuantity[];
+		plants?: {
+			seed?: PlantId;
+			plantSlots: {
+				plantId: PlantId;
+				slot: number;
+			}[];
+			maxPlantSlots: number;
+		};
+	};
 
 	/**
 	 * Whether the player has the expedition talisman
@@ -58,28 +64,8 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 	 */
 	hasCloneTalisman?: boolean;
 
-	data?: {
-		weapon: MainItemDisplayPacket;
-		armor: MainItemDisplayPacket;
-		potion: SupportItemDisplayPacket;
-		object: SupportItemDisplayPacket;
-		backupWeapons: {
-			display: MainItemDisplayPacket; slot: number;
-		}[];
-		backupArmors: {
-			display: MainItemDisplayPacket; slot: number;
-		}[];
-		backupPotions: {
-			display: SupportItemDisplayPacket; slot: number;
-		}[];
-		backupObjects: {
-			display: SupportItemDisplayPacket; slot: number;
-		}[];
-		slots: {
-			weapons: number;
-			armors: number;
-			potions: number;
-			objects: number;
-		};
-	};
+	/**
+	 * Whether the player has the Heart of the Sylvan talisman (remote garden harvest)
+	 */
+	hasRemoteHarvestTalisman?: boolean;
 }

@@ -21,7 +21,7 @@ const petFreeTestCommand: ExecuteTestCommandLike = async player => {
 	if (!playerPet) {
 		throw new Error("Erreur petfree : pet introuvable !");
 	}
-	LogsDatabase.logPetFree(playerPet).then();
+	LogsDatabase.logPetFree(playerPet, player.keycloakId).then();
 	await playerPet.destroy();
 	(player.petId as number | null) = null;
 	await player.save();

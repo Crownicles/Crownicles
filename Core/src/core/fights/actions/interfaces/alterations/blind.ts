@@ -46,6 +46,9 @@ const use: FightAlterationFunc = (affected, fightAlteration, _opponent) => {
 		affected.nextFightAction = FightActionDataController.instance.getNone();
 		result.state = FightAlterationState.NO_ACTION;
 	}
+	else if (result.state === FightAlterationState.ACTIVE) {
+		affected.nextFightAction = affected.getRandomAvailableFightAction();
+	}
 
 	return result;
 };

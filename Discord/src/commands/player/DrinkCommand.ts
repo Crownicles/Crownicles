@@ -10,27 +10,31 @@ import {
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import {
+	ReactionCollectorCreationPacket,
+	ReactionCollectorRefuseReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import {
-	ReactionCollectorDrinkPacket,
-	ReactionCollectorDrinkReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
+import { ReactionCollectorDrinkReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
+import { minutesDisplayIntl } from "../../../../Lib/src/utils/TimeUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
 import {
-	ActionRowBuilder, parseEmoji, StringSelectMenuBuilder,
-	StringSelectMenuInteraction, StringSelectMenuOptionBuilder
+	ActionRowBuilder,
+	parseEmoji,
+	StringSelectMenuBuilder,
+	StringSelectMenuInteraction,
+	StringSelectMenuOptionBuilder
 } from "discord.js";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import {
-	ItemConstants,
-	ItemNature
+	ItemConstants, ItemNature
 } from "../../../../Lib/src/constants/ItemConstants";
+import { SupportItemDetails } from "../../../../Lib/src/types/SupportItemDetails";
 
 /**
  * Get the daily bonus packet to send to the server
@@ -41,7 +45,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandDri
 	return makePacket(CommandDrinkPacketReq, {});
 }
 
-export async function drinkAcceptCollector(context: PacketContext, packet: ReactionCollectorDrinkPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function drinkAcceptCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	if (!interaction) {
 		return null;
@@ -90,13 +94,16 @@ export async function drinkAcceptCollector(context: PacketContext, packet: React
 			...potions.map((reaction, i) => new StringSelectMenuOptionBuilder()
 				.setEmoji(DisplayUtils.getItemIcon({
 					id: reaction.potion.id,
-					category: reaction.potion.category
+					category: reaction.potion.itemCategory
 				}))
-				.setLabel(DisplayUtils.getSimpleItemName(reaction.potion, lng))
+				.setLabel(DisplayUtils.getSimpleItemName({
+					id: reaction.potion.id,
+					category: reaction.potion.itemCategory
+				}, lng))
 				.setValue(i.toString(10))
 				.setDescription(DiscordItemUtils.getPotionNatureDisplay(
-					reaction.potion.detailsSupportItem!.nature,
-					reaction.potion.detailsSupportItem!.power,
+					(reaction.potion as SupportItemDetails)!.nature,
+					(reaction.potion as SupportItemDetails)!.power,
 					lng
 				))),
 			new StringSelectMenuOptionBuilder()
@@ -164,7 +171,7 @@ export async function handleDrinkConsumePotion(context: PacketContext, packet: C
 				}), interaction.user)
 				.setDescription(
 					i18n.t(`commands:drink.${keyDesc}`, {
-						value: packet.itemNature === ItemNature.TIME_SPEEDUP ? i18n.formatDuration(packet.value, lng) : packet.value,
+						value: packet.itemNature === ItemNature.TIME_SPEEDUP ? minutesDisplayIntl(packet.value, lng) : packet.value,
 						nature: ItemConstants.NATURE_ID_TO_NAME[packet.itemNature],
 						lng
 					})

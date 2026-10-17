@@ -9,6 +9,9 @@ import {
 	giveItemToPlayer, getItemByIdAndCategory
 } from "../utils/ItemUtils";
 import { MissionsController } from "../missions/MissionsController";
+import {
+	applyMaterialLoot, updateCollectMaterialsMission
+} from "../utils/MaterialLootUtils";
 
 /**
  * Apply a currency reward to the player if amount is positive
@@ -51,20 +54,17 @@ async function applyTokensReward(player: Player, response: CrowniclesPacket[], a
 	if (amount <= 0) {
 		return 0;
 	}
-	const previousTokens = player.tokens;
-	await player.addTokens({
+	const actualChange = await player.addTokensAndGetActualGain({
 		amount, response, reason: NumberChangeReason.EXPEDITION
 	});
-	const actualChange = player.tokens - previousTokens;
 
 	if (actualChange > 0) {
 		// Track mission for earning tokens in a single expedition (set: true replaces progression instead of incrementing)
-		const newPlayer = await MissionsController.update(player, response, {
+		await MissionsController.update(player, response, {
 			missionId: "earnTokensInOneExpedition",
 			count: actualChange,
 			set: true
 		});
-		Object.assign(player, newPlayer);
 	}
 
 	return actualChange;
@@ -122,5 +122,10 @@ export async function applyExpeditionRewards(
 		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 		talismans.hasCloneTalisman = true;
 		await talismans.save();
+	}
+
+	if (rewards.materialLoot) {
+		await applyMaterialLoot(player.id, rewards.materialLoot);
+		await updateCollectMaterialsMission(player, response, rewards.materialLoot);
 	}
 }

@@ -1,6 +1,8 @@
 import {
 	additionalShopData,
+	BuyCallbackResult,
 	CommandShopClosed,
+	CommandShopGenericPurchase,
 	CommandShopNotEnoughCurrency,
 	ReactionCollectorShop,
 	ReactionCollectorShopCloseReaction,
@@ -22,11 +24,33 @@ import {
 import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 
+/**
+ * Callback fired when a shop collector is closed by the player or expires
+ * without any purchase. Lets callers chain another collector instead of
+ * sending the default `CommandShopClosed` terminator (#4268).
+ */
+export type OnShopCloseCallback = (response: CrowniclesPacket[]) => Promise<void>;
+
 export type ShopInformations = {
 	shopCategories: ShopCategory[];
 	player: Player;
 	additionalShopData?: additionalShopData & { currency?: ShopCurrency };
-	logger: (keycloakId: string, shopItemName: ShopItemType, amount?: number) => Promise<void>;
+	logger?: (keycloakId: string, shopItemName: ShopItemType, amount?: number, cityId?: string) => Promise<void>;
+	cityId?: string;
+
+	/*
+	 * Optional hook invoked when the shop is closed by the player (close
+	 * button) or expires without any purchase. When provided, the helper
+	 * replaces the default `CommandShopClosed` packet so callers (e.g. the
+	 * city shop flow) can re-open a parent collector — for instance to
+	 * bring the player back to the main city menu instead of dismissing
+	 * the UI entirely (#4268).
+	 */
+	onClose?: OnShopCloseCallback;
+};
+
+type ShopUtilsBuyCallbackResult = BuyCallbackResult & {
+	postPurchase?: () => Promise<void>;
 };
 
 export abstract class ShopUtils {
@@ -37,7 +61,9 @@ export abstract class ShopUtils {
 			shopCategories,
 			player,
 			additionalShopData = {},
-			logger
+			logger,
+			cityId,
+			onClose
 		}: ShopInformations
 	): Promise<void> {
 		additionalShopData.currency ??= ShopCurrency.MONEY;
@@ -50,7 +76,12 @@ export abstract class ShopUtils {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SHOP);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SHOP_CONFIRMATION);
 			if (!reaction || reaction.reaction.type === ReactionCollectorShopCloseReaction.name) {
-				response.push(makePacket(CommandShopClosed, {}));
+				if (onClose) {
+					await onClose(response);
+				}
+				else {
+					response.push(makePacket(CommandShopClosed, {}));
+				}
 				return;
 			}
 			const reactionInstance = reaction.reaction.data as ReactionCollectorShopItemReaction;
@@ -60,11 +91,23 @@ export abstract class ShopUtils {
 			const buyResult = await shopCategories
 				.find(category => category.id === reactionInstance.shopCategoryId)!.items
 				.find(item => item.id === reactionInstance.shopItemId)!.buyCallback(response, player.id, context, reactionInstance.amount);
-			if (buyResult) {
+			const isDetailedResult = typeof buyResult !== "boolean";
+			const parsed: ShopUtilsBuyCallbackResult = isDetailedResult ? buyResult as ShopUtilsBuyCallbackResult : { success: buyResult as boolean };
+			if (parsed.success) {
 				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
 				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
-				logger(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
+				await parsed.postPurchase?.();
+				if (isDetailedResult) {
+					const translationParams = this.getTranslationParams(reactionInstance.shopItemId, additionalShopData);
+					response.push(makePacket(CommandShopGenericPurchase, {
+						shopItemId: reactionInstance.shopItemId,
+						amount: reactionInstance.amount,
+						materials: parsed.materials,
+						translationParams
+					}));
+				}
+				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount, cityId).then();
 			}
 		};
 
@@ -82,10 +125,10 @@ export abstract class ShopUtils {
 		response.push(packet);
 	}
 
-	private static canBuyItem<T extends ShopCurrency>(
-		player: T extends ShopCurrency.MONEY ? Player : PlayerMissionsInfo,
+	private static canBuyItem(
+		player: Player | PlayerMissionsInfo,
 		reactionInstance: ReactionCollectorShopItemReaction,
-		currency: T,
+		currency: ShopCurrency,
 		response: CrowniclesPacket[]
 	): boolean {
 		const valueToCheck = player instanceof Player ? player.money : player.gems;
@@ -99,8 +142,8 @@ export abstract class ShopUtils {
 		return true;
 	}
 
-	private static async manageCurrencySpending<T extends ShopCurrency>(
-		player: T extends ShopCurrency.MONEY ? Player : PlayerMissionsInfo,
+	private static async manageCurrencySpending(
+		player: Player | PlayerMissionsInfo,
 		reactionInstance: ReactionCollectorShopItemReaction,
 		response: CrowniclesPacket[]
 	): Promise<void> {
@@ -115,5 +158,16 @@ export abstract class ShopUtils {
 			await player.spendGems(reactionInstance.price, response, NumberChangeReason.MISSION_SHOP);
 		}
 		await player.save();
+	}
+
+	private static getTranslationParams(shopItemId: ShopItemType, shopData: additionalShopData): Record<string, string> | undefined {
+		if (shopItemId >= ShopItemType.WEEKLY_PLANT_TIER_1 && shopItemId <= ShopItemType.WEEKLY_PLANT_TIER_3) {
+			const tierIndex = shopItemId - ShopItemType.WEEKLY_PLANT_TIER_1;
+			const plantId = shopData.weeklyPlants?.[tierIndex];
+			if (plantId) {
+				return { plantId: String(plantId) };
+			}
+		}
+		return undefined;
 	}
 }

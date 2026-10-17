@@ -1,6 +1,8 @@
 {
   "type": "ci",
-  "expeditionType": "plains",
+  "biomes": [
+    "plains"
+  ],
   "tags": [
     "detA"
   ],

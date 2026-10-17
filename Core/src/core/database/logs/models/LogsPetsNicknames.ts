@@ -3,6 +3,8 @@ import {
 } from "sequelize";
 
 export class LogsPetsNicknames extends Model {
+	declare readonly playerId: number | null;
+
 	declare readonly petId: number;
 
 	declare readonly name: string;
@@ -12,6 +14,10 @@ export class LogsPetsNicknames extends Model {
 
 export function initModel(sequelize: Sequelize): void {
 	LogsPetsNicknames.init({
+		playerId: {
+			type: DataTypes.INTEGER,
+			allowNull: true
+		},
 		petId: {
 			type: DataTypes.INTEGER,
 			allowNull: false

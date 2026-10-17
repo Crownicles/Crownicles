@@ -1,22 +1,16 @@
 import { PacketListenerServer } from "../../../../Lib/src/packets/PacketListener";
 import { GameDatabase } from "../database/game/GameDatabase";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
-import {
-	botConfig, crowniclesInstance
-} from "../../index";
-import { Settings } from "../database/game/models/Setting";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { botConfig } from "../../bootstrap";
+import { crowniclesInstance } from "../../app";
 import {
 	Op, Sequelize
 } from "sequelize";
-import PetEntity from "../database/game/models/PetEntity";
-import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { PotionDataController } from "../../data/Potion";
 import {
-	daysToMilliseconds, hoursToMilliseconds, minutesToMilliseconds
+	asWeeks, minutesToMilliseconds, weeksToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
-import { ChristmasConstants } from "../../../../Lib/src/constants/ChristmasConstants";
+import { asMilliseconds } from "../../../../Lib/src/types/TimeTypes";
 import { MapCache } from "../maps/MapCache";
 import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
 import { CommandsTest } from "../CommandsTest";
@@ -24,41 +18,53 @@ import Player from "../database/game/models/Player";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { PacketUtils } from "../utils/PacketUtils";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
+import { Settings } from "../database/game/models/Setting";
 import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
-import PlayerMissionsInfo from "../database/game/models/PlayerMissionsInfo";
-import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
-import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
-import { MapLocationDataController } from "../../data/MapLocation";
+import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
+import { Badge } from "../../../../Lib/src/types/Badge";
+import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
+import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 // skipcq: JS-C1003 - fs does not expose itself as an ES Module.
 import * as fs from "fs";
-import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { initializeAllClassBehaviors } from "../fights/AiBehaviorController";
 import { initializeAllPetBehaviors } from "../fights/PetAssistManager";
 import { CrowniclesCoreWebServer } from "./CrowniclesCoreWebServer";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { Badge } from "../../../../Lib/src/types/Badge";
 import { FightsManager } from "../fights/FightsManager";
 import { BlessingManager } from "../blessings/BlessingManager";
-import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
-import {
-	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob, setYearlyCronJob, shouldRunYearlyEventImmediately
-} from "../utils/CronInterface";
 import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
-import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
-import { ExpeditionFinishedNotificationPacket } from "../../../../Lib/src/packets/notifications/ExpeditionFinishedNotificationPacket";
-import { ChristmasBonusAnnouncementPacket } from "../../../../Lib/src/packets/announcements/ChristmasBonusAnnouncementPacket";
-import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
+import { processDueExpeditionNotifications } from "./ExpeditionNotifications";
+import { processDueReportNotifications } from "./ReportNotifications";
+import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
+import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
+import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
+import { CrowniclesEach10Minutes } from "./cronJobs/CrowniclesEach10Minutes";
+import { CrowniclesChristmas } from "./cronJobs/CrowniclesChristmas";
+import { ReleaseGift } from "./ReleaseGift";
+import {
+	PERIODIC_LOOPS, startResilientLoop
+} from "./ResilientLoop";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
 
 	public readonly gameDatabase: GameDatabase;
 
-	public readonly logsDatabase: LogsDatabase;
+	public logsDatabase: LogsDatabase;
+
+	/**
+	 * Test-only helper. Replaces {@link logsDatabase} with a stub so
+	 * integration tests don't have to provision the logs schema.
+	 *
+	 * Must only be called from `__tests__-integration/_coreSetup.ts`.
+	 */
+	public setLogsDatabaseForTests(stub: LogsDatabase): void {
+		this.logsDatabase = stub;
+	}
 
 	constructor() {
 		// Register commands
@@ -67,71 +73,6 @@ export class Crownicles {
 		// Databases
 		this.gameDatabase = new GameDatabase();
 		this.logsDatabase = new LogsDatabase();
-	}
-
-	/**
-	 * Execute all the daily tasks
-	 */
-	static async dailyTimeout(): Promise<void> {
-		/*
-		 * First program the daily immediately at +1 day
-		 * Then wait a bit before setting the next date, so we are sure to be past the date
-		 *
-		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
-		 */
-		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + daysToMilliseconds(1));
-
-		await Player.update(
-			{
-				tokens: Sequelize.literal(`LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY})`)
-			},
-			{ where: {} }
-		);
-
-		Crownicles.randomPotion()
-			.finally(() => null);
-		Crownicles.randomLovePointsLoose()
-			.then(petLoveChange => crowniclesInstance.logsDatabase.logDailyTimeout(petLoveChange)
-				.then());
-		crowniclesInstance.logsDatabase.log15BestTopWeek()
-			.then();
-	}
-
-	/**
-	 * Update the random potion sold in the shop
-	 */
-	static async randomPotion(): Promise<void> {
-		CrowniclesLogger.info("Daily timeout");
-		const previousPotionId = await Settings.SHOP_POTION.getValue();
-		const newPotionId = PotionDataController.instance.randomShopPotion(previousPotionId).id;
-		await Settings.SHOP_POTION.setValue(newPotionId);
-		CrowniclesLogger.info("New potion in shop", { newPotionId });
-		crowniclesInstance.logsDatabase.logDailyPotion(newPotionId)
-			.then();
-	}
-
-	/**
-	 * Make some pet lose some love points
-	 */
-	static async randomLovePointsLoose(): Promise<boolean> {
-		if (!RandomUtils.crowniclesRandom.bool()) {
-			return false;
-		}
-
-		const [affectedCount] = await PetEntity.update(
-			{
-				lovePoints: Sequelize.literal(`GREATEST(0, lovePoints - ${PetConstants.DAILY_LOVE_LOSS})`)
-			},
-			{
-				where: {
-					lovePoints: { [Op.gt]: 0 }
-				}
-			}
-		);
-
-		CrowniclesLogger.info("Applied daily love loss to pets", { affectedPets: affectedCount });
-
-		return true;
 	}
 
 	/**
@@ -152,15 +93,14 @@ export class Crownicles {
 		 * so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date
 		 * (at 1 s max of difference)
 		 */
-		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + daysToMilliseconds(7));
+		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + weeksToMilliseconds(asWeeks(1)));
 
-		crowniclesInstance.logsDatabase.log15BestSeason()
+		crowniclesInstance?.logsDatabase.log15BestSeason()
 			.then();
 		const winner = await Crownicles.findSeasonWinner();
 		if (winner !== null) {
 			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
 			await PlayerBadgesManager.addBadge(winner.id, Badge.TOP_GLORY);
-			await winner.save();
 		}
 		else {
 			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
@@ -168,7 +108,7 @@ export class Crownicles {
 		await Crownicles.seasonEndQueries();
 
 		CrowniclesLogger.info("Season has been ended !");
-		crowniclesInstance.logsDatabase.logSeasonEnd()
+		crowniclesInstance?.logsDatabase.logSeasonEnd()
 			.then();
 	}
 
@@ -176,7 +116,7 @@ export class Crownicles {
 	 * End the top week
 	 */
 	static async topWeekEnd(): Promise<void> {
-		crowniclesInstance.logsDatabase.log15BestTopWeek()
+		crowniclesInstance?.logsDatabase.log15BestTopWeek()
 			.then();
 		const winner = await Player.findOne({
 			where: {
@@ -191,7 +131,6 @@ export class Crownicles {
 		if (winner !== null) {
 			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
 			await PlayerBadgesManager.addBadge(winner.id, Badge.TOP_WEEK);
-			await winner.save();
 		}
 		else {
 			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
@@ -200,8 +139,110 @@ export class Crownicles {
 		CrowniclesLogger.info("Weekly leaderboard has been reset !");
 		await PlayerMissionsInfo.resetShopBuyout();
 		CrowniclesLogger.info("All players can now buy again points from the mission shop !");
-		crowniclesInstance.logsDatabase.logTopWeekEnd()
+		crowniclesInstance?.logsDatabase.logTopWeekEnd()
 			.then();
+	}
+
+	/**
+	 * Choose a new pve island
+	 */
+	static async newPveIsland(): Promise<void> {
+		const newMapLink = MapCache.randomPveBoatLinkId(await Settings.PVE_ISLAND.getValue());
+		CrowniclesLogger.info("New pve island map link of the week", { newMapLink });
+		await Settings.PVE_ISLAND.setValue(newMapLink);
+	}
+
+	/**
+	 * Update the fight points of the entities that lost some
+	 */
+	static async fightPowerRegenerationLoop(): Promise<void> {
+		const regenAmount = FightConstants.POINTS_REGEN_AMOUNT * BlessingManager.getInstance()
+			.getEnergyRegenMultiplier();
+
+		const notifications = await Player.findAll(
+			{
+				where: {
+					[Op.and]: [
+						{ fightPointsLost: { [Op.lte]: regenAmount } },
+						{ fightPointsLost: { [Op.ne]: 0 } },
+						{ mapLinkId: { [Op.in]: MapCache.regenEnergyMapLinks } }
+					]
+				}
+			}
+		);
+
+		if (notifications.length > 0) {
+			PacketUtils.sendNotifications(notifications.map(notification => makePacket(EnergyFullNotificationPacket, {
+				keycloakId: notification.keycloakId
+			})));
+		}
+
+		await Player.update(
+			{
+				fightPointsLost: Sequelize.literal(
+					`CASE WHEN fightPointsLost - ${regenAmount} < 0 THEN 0 ELSE fightPointsLost - ${regenAmount} END`
+				)
+			},
+			{
+				where: {
+					fightPointsLost: { [Op.not]: 0 },
+					mapLinkId: { [Op.in]: MapCache.regenEnergyMapLinks }
+				}
+			}
+		);
+	}
+
+	/**
+	 * Execute all the daily tasks
+	 */
+	static async weeklyTimeout(): Promise<void> {
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
+			setTimeout(Crownicles.weeklyTimeout, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
+			return;
+		}
+
+		/*
+		 * First program the next weekly end immediately at +7 days
+		 * Then wait a bit before setting the next date, so we are sure to be past the date
+		 *
+		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
+		 */
+		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + weeksToMilliseconds(asWeeks(1)));
+		Crownicles.topWeekEnd()
+			.then();
+		Crownicles.newPveIsland()
+			.then();
+	}
+
+	static async reportNotifications(): Promise<void> {
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
+			return;
+		}
+		await processDueReportNotifications();
+	}
+
+	static async dailyBonusNotifications(): Promise<void> {
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error(`MQTT is not connected, can't do daily bonus notifications. Trying again in ${TimeoutFunctionsConstants.DAILY_TIMEOUT} ms`);
+			return;
+		}
+		const notifications = await ScheduledDailyBonusNotifications.getNotificationsBeforeDate(new Date());
+		if (notifications.length !== 0) {
+			PacketUtils.sendNotifications(notifications.map(notification => makePacket(DailyBonusNotificationPacket, {
+				keycloakId: notification.keycloakId
+			})));
+			await ScheduledDailyBonusNotifications.bulkDelete(notifications);
+		}
+	}
+
+	static async expeditionNotifications(): Promise<void> {
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error(`MQTT is not connected, can't do expedition notifications. Trying again in ${TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS} ms`);
+			return;
+		}
+		await processDueExpeditionNotifications();
 	}
 
 	/**
@@ -250,8 +291,8 @@ export class Crownicles {
 	/**
 	 * Find the winner of the season
 	 */
-	private static async findSeasonWinner(): Promise<Player> {
-		return (await Player.findOne({
+	private static async findSeasonWinner(): Promise<Player | null> {
+		return await Player.findOne({
 			where: {
 				fightCountdown: {
 					[Op.lte]: FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
@@ -263,196 +304,8 @@ export class Crownicles {
 				["score", "DESC"]
 			],
 			limit: 1
-		}))!;
+		});
 	}
-
-	/**
-	 * Choose a new pve island
-	 */
-	static async newPveIsland(): Promise<void> {
-		const newMapLink = MapCache.randomPveBoatLinkId(await Settings.PVE_ISLAND.getValue());
-		CrowniclesLogger.info("New pve island map link of the week", { newMapLink });
-		await Settings.PVE_ISLAND.setValue(newMapLink);
-	}
-
-	/**
-	 * Update the fight points of the entities that lost some
-	 */
-	static async fightPowerRegenerationLoop(): Promise<void> {
-		const regenAmount = FightConstants.POINTS_REGEN_AMOUNT * BlessingManager.getInstance().getEnergyRegenMultiplier();
-
-		const notifications = await Player.findAll(
-			{
-				where: {
-					[Op.and]: [
-						{ fightPointsLost: { [Op.lte]: regenAmount } },
-						{ fightPointsLost: { [Op.ne]: 0 } },
-						{ mapLinkId: { [Op.in]: MapCache.regenEnergyMapLinks } }
-					]
-				}
-			}
-		);
-
-		if (notifications.length > 0) {
-			PacketUtils.sendNotifications(notifications.map(notification => makePacket(EnergyFullNotificationPacket, {
-				keycloakId: notification.keycloakId
-			})));
-		}
-
-		Player.update(
-			{
-				fightPointsLost: Sequelize.literal(
-					`CASE WHEN fightPointsLost - ${regenAmount} < 0 THEN 0 ELSE fightPointsLost - ${regenAmount} END`
-				)
-			},
-			{
-				where: {
-					fightPointsLost: { [Op.not]: 0 },
-					mapLinkId: { [Op.in]: MapCache.regenEnergyMapLinks }
-				}
-			}
-		)
-			.finally(() => null);
-		setTimeout(
-			Crownicles.fightPowerRegenerationLoop,
-			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
-		);
-	}
-
-	/**
-	 * Execute all the daily tasks
-	 */
-	static async weeklyTimeout(): Promise<void> {
-		if (!PacketUtils.isMqttConnected()) {
-			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
-			setTimeout(Crownicles.weeklyTimeout, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
-			return;
-		}
-
-		/*
-		 * First program the next weekly end immediately at +7 days
-		 * Then wait a bit before setting the next date, so we are sure to be past the date
-		 *
-		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
-		 */
-		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + daysToMilliseconds(7));
-		Crownicles.topWeekEnd()
-			.then();
-		Crownicles.newPveIsland()
-			.then();
-	}
-
-	static async reportNotifications(): Promise<void> {
-		if (PacketUtils.isMqttConnected()) {
-			const notifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
-			if (notifications.length !== 0) {
-				PacketUtils.sendNotifications(notifications.map(notification => makePacket(ReachDestinationNotificationPacket, {
-					keycloakId: notification.keycloakId,
-					mapType: MapLocationDataController.instance.getById(notification.mapId)!.type,
-					mapId: notification.mapId
-				})));
-				await ScheduledReportNotifications.bulkDelete(notifications);
-			}
-		}
-		else {
-			CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
-		}
-
-		setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
-	}
-
-	static async dailyBonusNotifications(): Promise<void> {
-		if (PacketUtils.isMqttConnected()) {
-			const notifications = await ScheduledDailyBonusNotifications.getNotificationsBeforeDate(new Date());
-			if (notifications.length !== 0) {
-				PacketUtils.sendNotifications(notifications.map(notification => makePacket(DailyBonusNotificationPacket, {
-					keycloakId: notification.keycloakId
-				})));
-				await ScheduledDailyBonusNotifications.bulkDelete(notifications);
-			}
-		}
-		else {
-			CrowniclesLogger.error(`MQTT is not connected, can't do daily bonus notifications. Trying again in ${TimeoutFunctionsConstants.DAILY_TIMEOUT} ms`);
-		}
-
-		setTimeout(Crownicles.dailyBonusNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
-	}
-
-	static async expeditionNotifications(): Promise<void> {
-		if (PacketUtils.isMqttConnected()) {
-			const notifications = await ScheduledExpeditionNotifications.getNotificationsBeforeDate(new Date());
-			if (notifications.length !== 0) {
-				PacketUtils.sendNotifications(notifications.map(notification => makePacket(ExpeditionFinishedNotificationPacket, {
-					keycloakId: notification.keycloakId,
-					petId: notification.petId,
-					petSex: notification.petSex,
-					petNickname: notification.petNickname
-				})));
-				await ScheduledExpeditionNotifications.bulkDelete(notifications);
-			}
-		}
-		else {
-			CrowniclesLogger.error(`MQTT is not connected, can't do expedition notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
-		}
-
-		setTimeout(Crownicles.expeditionNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
-	}
-
-	/**
-	 * Send a pre-announcement for the Christmas bonus (a few hours before)
-	 */
-	static christmasPreAnnouncement(): void {
-		if (!PacketUtils.isMqttConnected()) {
-			CrowniclesLogger.error("MQTT is not connected, can't announce Christmas bonus. Trying again in 1 minute");
-			setTimeout(Crownicles.christmasPreAnnouncement, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
-			return;
-		}
-
-		CrowniclesLogger.info("Sending Christmas pre-announcement...");
-		PacketUtils.announce(
-			makePacket(ChristmasBonusAnnouncementPacket, { isPreAnnouncement: true }),
-			MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(botConfig.PREFIX)
-		);
-	}
-
-	/**
-	 * Apply the Christmas bonus: set all players' tokens to max and announce it
-	 */
-	static async christmasBonus(): Promise<void> {
-		if (!PacketUtils.isMqttConnected()) {
-			CrowniclesLogger.error("MQTT is not connected, can't apply Christmas bonus. Trying again in 1 minute");
-			setTimeout(Crownicles.christmasBonus, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
-			return;
-		}
-
-		// Check if we already applied the bonus this year
-		const currentYear = new Date().getFullYear();
-		const lastBonusYear = await Settings.LAST_CHRISTMAS_BONUS_YEAR.getValue();
-		if (lastBonusYear >= currentYear) {
-			CrowniclesLogger.info(`Christmas bonus already applied for year ${currentYear}, skipping...`);
-			return;
-		}
-
-		CrowniclesLogger.info("Applying Christmas token bonus to all players...");
-
-		// Set all players' tokens to maximum
-		await Player.update(
-			{ tokens: TokensConstants.MAX },
-			{ where: {} }
-		);
-
-		// Save the year to prevent duplicate execution
-		await Settings.LAST_CHRISTMAS_BONUS_YEAR.setValue(currentYear);
-
-		// Announce the bonus
-		PacketUtils.announce(
-			makePacket(ChristmasBonusAnnouncementPacket, { isPreAnnouncement: false }),
-			MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(botConfig.PREFIX)
-		);
-
-		CrowniclesLogger.info("Christmas token bonus applied to all players!");
-	}
-
 
 	/**
 	 * Sets the maintenance mode of the bot
@@ -492,72 +345,47 @@ export class Crownicles {
 		await this.logsDatabase.init(true);
 		await MapCache.init();
 		FightsManager.init();
-		await BlessingManager.getInstance().init();
+		await BlessingManager.getInstance()
+			.init();
 		if (botConfig.TEST_MODE) {
 			await CommandsTest.init();
 		}
 
-		await Crownicles.programTimeouts();
+		await CrowniclesDaily.programCronJob();
+		await CrowniclesSunday.programCronJob();
+		await CrowniclesMonday.programCronJob();
+		await CrowniclesEach10Minutes.programCronJob();
+		await CrowniclesChristmas.programCronJob();
 
-		Crownicles.reportNotifications()
+		startResilientLoop(
+			PERIODIC_LOOPS.REPORT_NOTIFICATIONS,
+			Crownicles.reportNotifications,
+			asMilliseconds(TimeoutFunctionsConstants.REPORT_NOTIFICATIONS),
+			{ startImmediately: true }
+		);
+
+		startResilientLoop(
+			PERIODIC_LOOPS.DAILY_BONUS_NOTIFICATIONS,
+			Crownicles.dailyBonusNotifications,
+			asMilliseconds(TimeoutFunctionsConstants.DAILY_TIMEOUT),
+			{ startImmediately: true }
+		);
+
+		startResilientLoop(
+			PERIODIC_LOOPS.EXPEDITION_NOTIFICATIONS,
+			Crownicles.expeditionNotifications,
+			asMilliseconds(TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS),
+			{ startImmediately: true }
+		);
+
+		ReleaseGift.apply()
 			.then();
 
-		Crownicles.dailyBonusNotifications()
-			.then();
-
-		Crownicles.expeditionNotifications()
-			.then();
-
-		setTimeout(
+		startResilientLoop(
+			PERIODIC_LOOPS.ENERGY_REGEN,
 			Crownicles.fightPowerRegenerationLoop,
-			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
+			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES),
+			{ startImmediately: false }
 		);
-	}
-
-	private static async programTimeouts(): Promise<void> {
-		await setDailyCronJob(Crownicles.dailyTimeout, await Settings.NEXT_DAILY_RESET.getValue() < Date.now());
-		await setWeeklyCronJob(Crownicles.seasonEnd, await Settings.NEXT_SEASON_RESET.getValue() < Date.now(), DayOfTheWeek.SUNDAY);
-		await setWeeklyCronJob(Crownicles.weeklyTimeout, await Settings.NEXT_WEEKLY_RESET.getValue() < Date.now(), DayOfTheWeek.MONDAY);
-
-		/*
-		 * Christmas bonus events (yearly - both on Dec 25th: announcement at 12:00, bonus at 16:00)
-		 * Check if we already applied the bonus this year before deciding to run immediately
-		 */
-		const currentYear = new Date().getFullYear();
-		const lastBonusYear = await Settings.LAST_CHRISTMAS_BONUS_YEAR.getValue();
-		const alreadyDoneThisYear = lastBonusYear >= currentYear;
-
-		const shouldRunPreAnnouncement = !alreadyDoneThisYear && shouldRunYearlyEventImmediately(ChristmasConstants.PRE_ANNOUNCEMENT_SCHEDULE);
-		const shouldRunBonus = !alreadyDoneThisYear && shouldRunYearlyEventImmediately(ChristmasConstants.BONUS_SCHEDULE);
-
-		if (alreadyDoneThisYear) {
-			CrowniclesLogger.info(`Christmas bonus already applied for year ${currentYear}, skipping immediate execution`);
-		}
-
-		await setYearlyCronJob(
-			Crownicles.christmasPreAnnouncement,
-			shouldRunPreAnnouncement,
-			ChristmasConstants.PRE_ANNOUNCEMENT_SCHEDULE
-		);
-
-		// If both events should run immediately, delay the bonus by 4 hours after the announcement
-		if (shouldRunPreAnnouncement && shouldRunBonus) {
-			CrowniclesLogger.info(`Christmas bonus will be applied in ${ChristmasConstants.IMMEDIATE_DELAY_HOURS} hours (delayed from immediate execution)`);
-			setTimeout(Crownicles.christmasBonus, hoursToMilliseconds(ChristmasConstants.IMMEDIATE_DELAY_HOURS));
-
-			// Still set up the yearly cron for future years, but don't run immediately
-			await setYearlyCronJob(
-				Crownicles.christmasBonus,
-				false, // Don't run immediately, we already scheduled it with setTimeout
-				ChristmasConstants.BONUS_SCHEDULE
-			);
-		}
-		else {
-			await setYearlyCronJob(
-				Crownicles.christmasBonus,
-				shouldRunBonus,
-				ChristmasConstants.BONUS_SCHEDULE
-			);
-		}
 	}
 }

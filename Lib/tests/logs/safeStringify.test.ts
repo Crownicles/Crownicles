@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { safeStringify } from "../../src/logs/CrowniclesLogger";
+import {describe, expect, it} from "vitest";
+import {safeStringify} from "../../src/logs/CrowniclesLogger";
 
 describe("safeStringify", () => {
 	it("should stringify simple objects", () => {
@@ -42,8 +42,7 @@ describe("safeStringify", () => {
 
 	it("should handle circular references in nested objects", () => {
 		const parent: Record<string, unknown> = { name: "parent" };
-		const child: Record<string, unknown> = { name: "child", parent };
-		parent.child = child;
+		parent.child = {name: "child", parent};
 
 		const result = safeStringify(parent);
 		expect(result).toContain('"name":"parent"');

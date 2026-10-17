@@ -20,4 +20,6 @@ export class CommandFightIntroduceFightersPacket extends CrowniclesPacket {
 	fightInitiatorPet?: OwnedPet;
 
 	fightOpponentPet?: OwnedPet;
+
+	friendly?: boolean;
 }

@@ -8,9 +8,6 @@ import { CommandMissionsPacketReq } from "../../../../../../Lib/src/packets/comm
 import { CommandTopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandTopPacket";
 import { CommandReportPacketReq } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CommandDailyBonusPacketReq } from "../../../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
-import { CommandGuildShopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildShopPacket";
-import { CommandSwitchPacketReq } from "../../../../../../Lib/src/packets/commands/CommandSwitchPacket";
-import { CommandShopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandShopPacket";
 import { CommandUpdatePacketReq } from "../../../../../../Lib/src/packets/commands/CommandUpdatePacket";
 import { CommandGuildLeavePacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
 import { CommandGuildDescriptionPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
@@ -35,7 +32,6 @@ import { CommandGuildShelterPacketReq } from "../../../../../../Lib/src/packets/
 import { CommandGuildDailyPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildDailyPacket";
 import { CommandGuildStoragePacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildStoragePacket";
 import { CommandSellPacketReq } from "../../../../../../Lib/src/packets/commands/CommandSellPacket";
-import { CommandMissionShopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { CommandClassesPacketReq } from "../../../../../../Lib/src/packets/commands/CommandClassesPacket";
 import { CommandPetTransferPacketReq } from "../../../../../../Lib/src/packets/commands/CommandPetTransferPacket";
 import { CommandPetNickPacketReq } from "../../../../../../Lib/src/packets/commands/CommandPetNickPacket";
@@ -43,6 +39,7 @@ import { CommandMaintenancePacketReq } from "../../../../../../Lib/src/packets/c
 import { CommandLeagueRewardPacketReq } from "../../../../../../Lib/src/packets/commands/CommandLeagueRewardPacket";
 import { CommandJoinBoatPacketReq } from "../../../../../../Lib/src/packets/commands/CommandJoinBoatPacket";
 import { CommandFightPacketReq } from "../../../../../../Lib/src/packets/commands/CommandFightPacket";
+import { CommandEquipPacketReq } from "../../../../../../Lib/src/packets/commands/CommandEquipPacket";
 
 const commandsToPacketNames: Map<string, string> = new Map([
 	["profile", CommandProfilePacketReq.name],
@@ -56,10 +53,11 @@ const commandsToPacketNames: Map<string, string> = new Map([
 	["language", "[OLD] language"], // Front end command now
 	["dailybonus", CommandDailyBonusPacketReq.name],
 	["petfeed", CommandPetFeedPacketReq.name],
-	["guildshop", CommandGuildShopPacketReq.name],
+	["guildshop", "[OLD] guildshop"], // Command removed — migrated to domain shop
 	["guilddailybonus", CommandGuildDailyPacketReq.name],
-	["switch", CommandSwitchPacketReq.name],
-	["shop", CommandShopPacketReq.name],
+	["switch", "[OLD] switch"],
+	["equip", CommandEquipPacketReq.name],
+	["shop", "[OLD] shop"], // /shop command removed — migrated to city shops
 	["update", CommandUpdatePacketReq.name],
 	["guildleave", CommandGuildLeavePacketReq.name],
 	["guilddescription", CommandGuildDescriptionPacketReq.name],
@@ -74,7 +72,7 @@ const commandsToPacketNames: Map<string, string> = new Map([
 	["prefix", "[OLD] prefix"], // Removed command
 	["classesinfo", CommandClassesInfoPacketReq.name],
 	["map", CommandMapPacketReq.name],
-	["missionsshop", CommandMissionShopPacketReq.name],
+	["missionsshop", "[OLD] missionsshop"], // Command removed — migrated to missionManager city shop
 	["invitedraftbot", "[OLD] invitedraftbot"], // Front end command now
 	["vote", "[OLD] vote"], // Front end command now
 	["idea", "[OLD] idea"], // Front end command now

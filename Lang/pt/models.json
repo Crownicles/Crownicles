@@ -706,7 +706,7 @@
       "failure": "chama **{{petNickname}}** que tenta morder o seu adversário, mas o seu alvo parece ser imune a este tipo de ataque."
     },
     "petPetrified": {
-      "success": "é ajudado por **{{petNickname}}** que olha mais para o seu adversário e o petrifica.",
+      "success": "é ajudado por **{{petNickname}}** que olha para o seu adversário e o petrifica.",
       "failure": "é assistido por **{{petNickname}}** que olha para o seu adversário, mas isto não tem qualquer efeito contra esse adversário."
     },
     "petPoison": {
@@ -1029,119 +1029,137 @@
     "1": {
       "description": "Uma grande praia de areia na periferia da cidade.",
       "name": "Praia da Sentinela",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "10": {
       "description": "Outrora uma grande cidade fortificada, Ville Forte é atualmente uma sombra do que foi. Devastada pela antiga guerra, restam apenas uma dezena de casas e camponeses. O resto das antigas fortificações estão em ruínas.",
       "name": "Cidade forte",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o",
+      "inParticle": "no"
     },
     "1000": {
       "description": "Uma grande praia de areia vulcânica preta. O seu nome deve-se à sua cor caraterística. Os primeiros homens a pisar a praia negra temiam uma grande maldição. É evidente que não é esse o caso. No entanto, é preciso ter cuidado, pois a areia preta mancha os pés e a roupa.",
       "name": "Praia negra",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "1001": {
       "description": "Uma imensa floresta que cobre praticamente toda a ilha. As finas partículas de cinza que caem do vulcão Grondant dificultam a visibilidade desta floresta. Por isso, raramente é explorada.",
       "name": "Floresta do Crepúsculo",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "1002": {
       "description": "Uma pequena aldeia de cerca de vinte casas, parcialmente destruída, perto da Floresta do Crepúsculo. Ninguém sabe exatamente porque é que a aldeia está em ruínas. Muitos acreditam que é a aldeia dos antigos habitantes que morreram nas escoadas de lava do vulcão Grondant. Mas outros defendem a teoria de uma doença, a peste e numerosos ratos. Não resta aqui um único habitante...",
       "name": "Aldeia em ruínas",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "1003": {
       "description": "Esta velha mina abandonada passa por baixo do caminho íngreme e das montanhas. É tão grande e labiríntica que acaba no coração do vulcão. No entanto, é difícil lá chegar. Mas tenha cuidado para não escorregar, pois algumas pessoas dizem ter encontrado restos de bananas velhas na mina enevoada.",
       "name": "Rosto enevoado",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "1004": {
       "description": "Este é o único caminho real para o cume do vulcão Grondant. É muito difícil de utilizar e, sobretudo, muito perigoso. Muitos homens morreram ao tentar escalá-lo. É por vossa conta e risco.",
       "name": "Caminho íngreme",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "1005": {
       "description": "O centro da ilha vulcânica, este vulcão ainda está ativo. Despeja várias toneladas de cinzas por ano sobre esta pequena ilha, que não pára de crescer. A quantidade de lava que flui do seu centro é tal que um canal subterrâneo, conhecido como Canal Lavique, se estende por vários quilómetros. A partir de barcos na água, é possível ver este canal a ferver água profundamente abaixo da superfície. Diz-se mesmo que este vulcão é o criador de várias pequenas ilhas na zona, incluindo a Ilha do Gelo.",
       "name": "Vulcão em erupção",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "11": {
       "description": "Esta foi a última estrada real a contornar o Monte Celestrum a partir do norte, e ainda hoje é muito utilizada, sobretudo por salteadores.",
       "name": "Grande Machado",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "1100": {
       "description": "Esta margem é a primeira coisa que se vê quando se chega à ilha de gelo. O seu nome deve-se ao barulho que os marinheiros fizeram quando desembarcaram. Obviamente, eles estavam a regressar da ilha vulcânica onde a temperatura é muito mais quente.",
       "name": "Gla-gla litoral",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "1101": {
       "description": "Uma extensão de terra gelada onde o clima é impiedoso. Uma tempestade de neve permanente dificulta o progresso e a cartografia da zona. Todos os tipos de animais do Ártico podem ser vistos aqui.",
       "name": "Tundra",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "1102": {
       "description": "Uma grande caverna em que o mais pequeno raio de sol que entra é multiplicado pelos cristais, tornando-a muito luminosa. Estalactites e estalagmites pontiagudas, sinónimo de ferimentos graves ou mesmo mortais se uma delas cair em cima de nós ou se dermos um passo em falso, formam o pano de fundo da caverna. Se se atrever a aventurar-se mais, terá de escolher entre subir ao topo do pico coberto de neve ou ir ainda mais fundo.",
       "name": "Gruta de cristal",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "1103": {
       "description": "Duas portas majestosas encontram-se no topo de uma longa série de degraus. Subi-las não será fácil. Diz-se que foram construídas por uma antiga civilização em honra de uma divindade.",
       "name": "Portas sagradas",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "1104": {
       "description": "Este pico da cordilheira destaca-se pela violência das suas tempestades de neve e pela velocidade dos seus ventos. A altitude é tão elevada que o oxigénio é escasso e o risco de morrer congelado é elevado, se ainda não tiver sucumbido aos animais selvagens…",
       "name": "Pico nevado",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "1105": {
       "description": "Um grande lago no coração das montanhas, a sua travessia não é isenta de riscos. Como a temperatura é muito baixa, o facto de não estar congelado permanece um mistério. Ninguém conhece a sua profundidade nem a sua fauna.",
       "name": "Lago subterrâneo",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "1106": {
       "description": "Uma aldeia rica e abandonada da qual só restam ruínas e desolação. O telhado de uma casa senhorial pode ser visto a dobrar-se sob o peso do sino da igreja que ruiu. Um silêncio pesado reina aqui, ocasionalmente interrompido pelos gritos de sofrimento das almas perdidas.",
       "name": "Aldeia devastada",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "1107": {
       "description": "Ainda ninguém se aventurou tão longe. Ao longe, vê-se uma silhueta gigantesca reflectida numa parede de gelo.",
       "name": "Ninho congelado",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
-    "1108": {
+    "1200": {
       "description": "Uma praia paradisíaca coberta de conchas de todas as cores. Diz-se que cada concha contém um eco do oceano. A areia branca e fina contrasta com as águas azul-turquesa da lagoa próxima. Cuidado onde pisa, algumas conchas são tão afiadas como lâminas.",
       "name": "Praia das conchas",
       "particle": "para o"
     },
-    "1109": {
+    "1201": {
       "description": "Uma lagoa azul cristalina protegida por um recife de coral. Por detrás da limpidez das ondas, correntes tortuosas, nascidas do bater do oceano, aguardam o mais pequeno descuido para arrastar os perdidos em direção ao abismo. Neste frágil cenário marinho, as tartarugas milenares vêm procurar um descanso que a agitação do mar alto lhes nega.",
       "name": "Creux du Lagon",
       "particle": "para o"
     },
-    "1110": {
+    "1202": {
       "description": "Uma caverna marítima que só pode ser conquistada na maré baixa, revelando uma fossa calcária com paredes gotejantes. No interior, brilhos etéreos emergem da rocha, lançando reflexos azuis sobre as abóbadas. Entre as ondas e as sombras, silhuetas de névoa e espuma dançam um bailado silencioso, como se a alma do próprio mar se tivesse refugiado neste santuário.",
       "name": "Caverna do mar",
       "particle": "para o"
     },
-    "1111": {
+    "1203": {
       "description": "Uma enseada isolada com recifes que parecem lâminas de granito negro, mal escondidos por uma onda espumosa que nunca acalma. À noite, fantasmas azuis flutuam sobre as ondas como as almas de marinheiros perdidos, executando uma dança macabra. Uma aura sinistra paira sobre este lugar amaldiçoado.",
       "name": "Crise do Vencimento",
       "particle": "para o"
     },
-    "1112": {
+    "1204": {
       "description": "Uma catedral subaquática esculpida para amplificar o sopro das marés num coração encantador. Não é o vento, é o apelo de uma canção melodiosa que fala diretamente à nossa alma. Nesta penumbra sónica, a fronteira entre os nossos próprios pensamentos e os murmúrios da rocha desvanece-se suavemente, e aqueles que aí permanecem nunca saem completamente sós.",
       "name": "Gruta dos murmúrios",
       "particle": "para o"
     },
-    "1113": {
+    "1205": {
       "description": "À medida que se aproxima da margem, a água torna-se negra como tinta, um espelho escuro que reflecte apenas o seu próprio medo. Ocasionalmente, uma ondulação desproporcionada rompe a superfície, a passagem fugaz de um tentáculo gigante que se ergue das profundezas antes de se afundar de novo no esquecimento. Ninguém jamais sondou o coração desse poço, pois o Abismo não aceita testemunhas.",
       "name": "Gouffre des Profondeurs",
       "particle": "para o"
     },
-    "1114": {
+    "1206": {
       "description": "O ponto mais profundo destas águas, uma ravina submarina que mergulha na escuridão absoluta. A pressão aqui é tal que poucas criaturas conseguem sobreviver. Há rumores de que uma besta primordial dormiu lá desde o início dos tempos, guardiã dos segredos mais antigos do mundo. Apenas os mais ousados se atrevem a aproximar-se dela.",
       "name": "Ravina dos Abismos",
       "particle": "para o"
@@ -1149,122 +1167,137 @@
     "12": {
       "description": "Uma vasta e vazia planície setentrional de pouco interesse.",
       "name": "A Expansão",
-      "particle": "para"
+      "particle": "para",
+      "atParticle": "à"
     },
     "13": {
       "description": "Uma estrada difícil, lamacenta e húmida. A estrada do pântano liga a Expansão ao rio Crab.",
       "name": "Estrada pantanosa",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "14": {
       "description": "Um grande lago onde as famílias gostam de se reunir. O rio Vacarme desagua nele.",
       "name": "Lago Mirage",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "15": {
       "description": "O monte Celestrum é a montanha dominante da região. Com vários quilómetros de altura, o Celestrum é visível para todos. Diz-se que tem o nome de uma antiga deusa. De facto, apenas uma pessoa conseguiu subir até ao cume. Tudo o que resta dela são as suas iniciais: M-B.",
       "name": "Monte Celestrum",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "16": {
       "description": "Pequeno caminho perigoso ao longo das margens do rio Vacarme. Cuidado para não cair.",
       "name": "Caminho dos Lobos",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "17": {
       "description": "Aldeia acolhedora que faz fronteira com o Vale dos Reis. É um oásis acolhedor para os viajantes em trânsito.",
       "name": "Aldeia do Coco",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em",
+      "inParticle": "no"
     },
     "18": {
       "description": "Este rio deve o seu nome ao ruído produzido pela sua forte corrente, que já custou a vida a muitos habitantes.",
       "name": "Rio Vacarme",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "19": {
-      "description": "Uma praia criada pelos ventos fortes do Vale dos Reis. A duna protege as planícies do Contre Bois do calor e traz a água do rio Vacarme.",
+      "description": "Praia formada pelos ventos fortes do Vale dos Reis. A duna protege as terras vizinhas do calor e conduz a água do rio Vacarme.",
       "name": "A Duna",
-      "particle": "para"
+      "particle": "para",
+      "atParticle": "à"
     },
     "1999": {
       "description": "Um velho barco de madeira, parece estar a aguentar-se bem graças às reparações efectuadas pelos trabalhadores. Está pronto para partir, à espera da sua chegada.",
       "name": "Barco para sair da ilha",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "2": {
       "description": "Uma pequena estrada que conduz ao campo a partir de Mergagnan e vice-versa.",
       "name": "Caminho rural",
-      "particle": "para o"
-    },
-    "20": {
-      "description": "Uma vasta e pacífica planície agrícola.",
-      "name": "Planícies do Contre Bois",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "21": {
       "description": "Uma estrada muito utilizada pelos habitantes da aldeia. Muitos pequenos vendedores ambulantes instalam-se aqui durante um dia, criando um enorme mercado.",
       "name": "Rota das Merveiras",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "22": {
       "description": "Uma floresta notória nos limites de Claire de Ville, Bois Hurlant tem uma reputação muito má. Antro de bandidos e marginais de todo o género, o seu nome deriva sobretudo das práticas duvidosas de há centenas de anos.",
       "name": "Madeira Uivante",
-      "particle": "para o"
-    },
-    "22222": {
-      "description": "Uma zona de teste para os monstros. Não é suposto aparecerem no jogo.",
-      "name": "Área de teste de monstros",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "23": {
       "description": "Grande cidade mercantil e cruzamento económico, Claire de Ville nem sempre foi tão acolhedora. Inicialmente muito pobre, desenvolveu-se rapidamente graças às suas numerosas lojas e hotéis que oferecem uma vasta escolha aos viajantes da região. Claire de Ville é também conhecida pela sua calma e respeito pela ordem.",
       "name": "Claire de Ville",
-      "particle": "para"
+      "particle": "para",
+      "atParticle": "à",
+      "inParticle": "em"
     },
     "24": {
       "description": "Uma estrada muito íngreme que leva a Claire de Ville. Tudo depende da direção que se toma.",
       "name": "Estrada de escalada",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "25": {
       "description": "Está tudo no nome. Um rio muito apreciado pelas peixarias de Claire de Ville.",
       "name": "Rio dos Caranguejos",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "26": {
       "description": "Uma cidade tranquila nas margens da Plage Sentinelle.",
       "name": "Mergagnan",
-      "particle": "para"
+      "particle": "para",
+      "atParticle": "à",
+      "inParticle": "em"
     },
     "27": {
       "description": "Uma floresta à beira do Monte Celestrum.",
       "name": "Floresta de Celestrum",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "28": {
       "description": "Entrada do castelo do Rei. Rodeado por uma espessa muralha, parece capaz de resistir a todos os ataques possíveis.",
       "name": "Portões do castelo",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "29": {
       "description": "Uma sala enorme adornada com numerosas obras de arte.",
       "name": "Sala de receção",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "3": {
       "description": "Grande planície no oeste do país, delimitada por uma grande floresta e atravessada por uma estrada principal.",
       "name": "O Berceau",
-      "particle": "para"
+      "particle": "para",
+      "atParticle": "em"
     },
     "32": {
       "description": "A estrada que conduz ao castelo do Rei.",
       "name": "Caminho para o castelo do rei",
-      "particle": "para"
+      "particle": "para",
+      "atParticle": "à"
     },
     "33": {
       "description": "",
       "name": "Continente principal",
-      "particle": "para"
+      "particle": "para",
+      "atParticle": "em"
     },
     "39": {
       "description": "Um caminho afogado em névoa espessa, imóvel e sem origem. Não há pontos de referência ou formas que identifiquem este lugar.",
@@ -1276,35 +1309,49 @@
       "name": "Casa assombrada",
       "particle": "para o"
     },
+    "41": {
+      "description": "Esplanada pavimentada que liga Boug-Coton às portas do castelo real. Os mensageiros passam uns pelos outros a caminho dos apartamentos do rei.",
+      "name": "Pátio do Castelo",
+      "particle": "para o",
+      "atParticle": "para o",
+      "inParticle": "no"
+    },
     "4": {
       "description": "Uma vasta floresta a sul do Berço. Diz-se que muitos viajantes se perderam aqui.",
       "name": "Floresta do Vieillard",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "5": {
       "description": "A alcunha do caminho deve-se ao facto de se cruzar na parte sul da Floresta do Velho.",
       "name": "Caminho do Dédale",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "6": {
       "description": "Uma aldeia tranquila conhecida pela sua pousada acolhedora.",
       "name": "Boug-Cotton",
-      "particle": "para"
+      "particle": "para",
+      "atParticle": "à",
+      "inParticle": "em"
     },
     "7": {
       "description": "Um deserto de areia quente que recebeu o nome dos antigos reis da região.",
       "name": "Vale dos Reis",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     },
     "8": {
       "description": "Um cruzamento importante que liga as principais estradas a oeste do Monte Celestrum.",
       "name": "Encruzilhada do destino",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "em"
     },
     "9": {
       "description": "Outrora uma importante via comercial que ligava o Berceau e a Ville Forte, tudo o que resta da Grande Rue são algumas pedras velhas e lascadas.",
       "name": "Grande Rue",
-      "particle": "para o"
+      "particle": "para o",
+      "atParticle": "para o"
     }
   },
   "map_types": {
@@ -1450,17 +1497,37 @@
     "anyFight_one": "{{count}} Combater",
     "anyFight_other": "{{count}} Lutar",
     "bigFeast": "Assistir a um grande banquete",
+    "buyApartment": "Ter uma casa própria",
+    "buyHome": "Comprar uma casa",
+    "buyApartments": "Possuir {{count}} habitação",
+    "buyGuildPetFood_one": "Comprar {{count}} ração para animais de estimação",
+    "buyGuildPetFood_other": "Comprar {{count}} ração para animais de estimação",
     "buyItemFromAlderic": "Comprar um artigo de Aldéric",
-    "buyTokensFromShop_one": "Comprar ficha {{count}} {emote:unitValues.token} na loja",
-    "buyTokensFromShop_other": "Comprar fichas {{count}} {emote:unitValues.token} na loja",
+    "buyTokensFromShop_one": "Comprar {{count}} token {emote:unitValues.token} na loja de tokens",
+    "buyTokensFromShop_other": "Comprar {{count}} tokens {emote:unitValues.token} na loja de tokens",
     "buyUltimateSoups_one": "{{count}} Comprar pelo menos a última sopa",
     "buyUltimateSoups_other": "{{count}} Comprar pelo menos as últimas sopas",
     "chooseClass": "{emote:classes.0} Escolha uma classe diferente de Recruta",
     "chooseClassTier": "{{variantText}} Ter um nível de classe igual ou superior a",
-    "commandFightHistory": "Ver o historial das pessoas que o atacaram",
+    "collectMaterials_one": "Recolher {{count}} material de raridade {{variantText}} ou mais",
+    "collectMaterials_other": "Recolher {{count}} materiais raros {{variantText}} ou mais",
+    "collectRent": "Cobrar a renda de uma habitação",
+    "commandFightHistory": "Ver o histórico dos combates",
+    "commandMap": "Executar o comando {command:map}",
     "commandMission": "{command:missions}Para encomendar",
     "commandReport": "{command:report}Para encomendar",
+    "cookPotionRarity": "Preparar uma poção de raridade {{variantText}} ou superior",
+    "cookRecipes_one": "Fazer a receita de « {{count}}»",
+    "cookRecipes_other": "Preparar receitas do site {{count}}",
+    "cultivatePlants_one": "Colher {{count}} planta",
+    "cultivatePlants_other": "Colher {{count}} plantas",
+    "getAncestralTrees_one": "Colher ou comprar {{count}} brotos de uma árvore ancestral",
+    "getAncestralTrees_other": "Colher ou comprar {{count}} rebentos de árvores ancestrais",
     "dailyPotionsStock": "Comprar o stock de poções do dia",
+    "depositChestItem_one": "Colocar o objeto « {{count}} » no cofre da sua casa",
+    "depositChestItem_other": "Guardar {{count}} objetos no cofre da sua casa",
+    "depositGuildTreasury_one": "Fazer um depósito em {{count}} no tesouro da vossa guilda",
+    "depositGuildTreasury_other": "Fazer {{count}} depósitos no tesouro da sua guilda",
     "doReports_one": "{{count}} Reportar a",
     "doReports_other": "{{count}} Elaborar relatórios",
     "drinkAlcohol": "Beber uma bebida alcoólica",
@@ -1480,6 +1547,7 @@
     "earnTokensInOneExpedition_one": "Ganhe {{count}} {emote:unitValues.token} tokens num único envio",
     "earnTokensInOneExpedition_other": "Ganhe tokens {{count}} {emote:unitValues.token} num único envio",
     "earnXP": "Ganhar {{count, number}} {emote:unitValues.xp}",
+    "enchantItem": "Encantar uma arma ou um escudo",
     "exploreDifferentPlaces": "{{count}} Explorar diferentes locais",
     "fightAttacks": "{{count}} {{variantText}} Fazer em combates",
     "fightHealthPercent_one": "{{count}} {{variantText}}Ganhar com menos de % da sua vida restante",
@@ -1501,11 +1569,17 @@
     "guildLevel": "Fazer parte de uma guilda de nível {{count, number}} ou superior",
     "haveItemRarity": "{{variantText}} Equipamento raro ou melhor",
     "havePet": "Ter um animal de estimação consigo",
+    "haveGardenTalisman": "Possuir o $t(models:talisman.remoteHarvest)",
     "depositPetInShelter": "Deixar ou libertar o seu animal de estimação",
     "petCaress": "Acariciar o seu animal de estimação",
     "petAssistedFight": "Obter ajuda do seu animal de estimação em combate",
     "havePotions": "{{count}} Possuir poções ao mesmo tempo",
+    "healInBed_one": "Tratar-se {{count}} vezes numa cama",
+    "healInBed_other": "Tratar-se {{count}} vezes numa cama",
+    "innMeal_one": "Comer {{count}} refeições na pousada",
+    "innMeal_other": "Comer {{count}} refeições na pousada",
     "joinGuild": "Aderir ou criar uma guilda",
+    "joinGuildHouse": "Fazer parte de um domínio de guilda",
     "joinMemberOnBoat": "Juntar-se a um membro na ilha",
     "joinPVEIsland": "Chegar à ilha misteriosa",
     "kingsMoneyValue": "{emote:unitValues.money} Receber menos de 6.500 em dinheiro do rei",
@@ -1523,8 +1597,8 @@
     "meetAllOracles": "Conheça os dois oráculos",
     "contributeToBlessing_one": "Contribuir {{count, number}} {emote:unitValues.money} para uma bênção",
     "contributeToBlessing_other": "Contribuir {{count, number}} {emote:unitValues.money} para as bênçãos",
-    "doExpeditions_one": "{{count}} envio",
-    "doExpeditions_other": "{{count}} carregamentos",
+    "doExpeditions_one": "Concluir com sucesso {{count}} a expedição do animal de estimação",
+    "doExpeditions_other": "Concluir com sucesso {{count}} expedições de mascotes",
     "longExpedition": "Uma expedição bem sucedida de, pelo menos, {{variantText}}",
     "dangerousExpedition": "Uma expedição bem sucedida de nível de perigo \"{{variantText}}\" ou superior",
     "expeditionStreak_one": "Uma expedição {{count}} bem sucedida consecutivamente",
@@ -1533,11 +1607,14 @@
     "dailyStreak_other": "Completar a missão diária {{count}} dias seguidos",
     "showCloneToTalvar": "Mostrar um clone a Talvar",
     "petEarnHealth": "Obter vida de um animal de estimação",
+    "plantSeed": "Plantar uma semente no seu jardim",
+    "reachCookingLevel": "Tornar-se um « $t(models:cooking.grades.roaster) » na cozinha",
     "reachGlory": "{{count}} pontos de glória {emote:unitValues.glory} ou mais",
     "reachLevel": "{{count}}Atingir o nível",
     "reachScore": "{{count}} {emote:unitValues.score}Pontuação acima",
     "recoverAlteration_one": "{{count}} Recuperação de",
     "recoverAlteration_other": "{{count}} Recuperação de",
+    "replaceMission": "Substituir uma missão",
     "sellItemWithGivenCost_one": "{{count}} {{variantText}} {emote:unitValues.money}Vender equipamento por mais de",
     "sellItemWithGivenCost_other": "{{count}} {{variantText}} {emote:unitValues.money}Vender equipamento por mais de",
     "sellItems_one": "Vender {{count}}",
@@ -1545,20 +1622,23 @@
     "sellOrTradePet": "Vender uma mascote a outro jogador",
     "showPetsToTalvar_one": "Mostrando {{count}} para Talvar",
     "showPetsToTalvar_other": "Mostrar {{count}} animais a Talvar",
-    "spendGems": "Gastar gemas {emote:unitValues.gem} na loja de missões",
+    "sleepInInn": "Dormir numa pousada",
+    "spendGems": "Gastar gemas {emote:unitValues.gem}",
     "spendMoney": "Gastar {{count, number}} {emote:unitValues.money}",
     "spendTokens_one": "Gastar {{count}} token {emote:unitValues.token}",
     "spendTokens_other": "Gastar {{count}} {emote:unitValues.token}",
     "tamedPet": "Ter um animal de estimação domesticado ou treinado",
     "trainedPet": "Ter um animal de estimação treinado",
-    "travelHours_one": "{{count}} {{variantText}} Fazer uma viagem de pelo menos uma hora",
-    "travelHours_other": "{{count}} {{variantText}} Fazer viagens de pelo menos horas",
+    "travelHours_one": "Fazer {{count}} uma viagem de, pelo menos, {{variantText}}",
+    "travelHours_other": "Fazer {{count}} viagens de, pelo menos, {{variantText}}",
     "unlock": "Libertação de uma pessoa da prisão",
-    "useTokens_one": "Utilizar {{count}} {emote:unitValues.token} para avançar",
-    "useTokens_other": "Utilizar {{count}} {emote:unitValues.token} para avançar",
+    "upgradeHomeLevel": "Melhorar a sua casa em termos de {{variantText}}",
+    "upgradeItem": "Melhorar uma arma ou um escudo",
+    "upgradeEpicItemLevel5": "Melhorar uma arma ou um escudo de raridade épica ou superior até ao nível 5",
+    "visitCityNpc": "Visitar a loja geral de uma cidade",
     "wealthyPayForPVEIsland": "Comprar uma viagem a uma ilha misteriosa ao preço máximo",
-    "winBoss_one": "{{count}} Vencer batalha de chefe",
-    "winBoss_other": "{{count}} Vencer lutas contra chefes",
+    "winBoss_one": "Derrotar {{count}} monstro",
+    "winBoss_other": "Derrotar {{count}} monstros",
     "winAnyBossWithDifferentClasses_one": "Derrotar o chefe {{count}}",
     "winAnyBossWithDifferentClasses_other": "Derrote os chefes usando {{count}} classes diferentes",
     "winBossWithDifferentClasses_one": "Derrotar um boss da ilha final (apenas o último boss de cada ilha conta)",
@@ -1566,7 +1646,10 @@
   },
   "missionVariants": {
     "default": "{{variant}}",
+    "collectMaterials": "$t(models:materialRarityNames.{{variant}})",
+    "visitCityNpc": "$t(models:cityNpcNames.{{variant}})",
     "drinkPotionRarity": "$t(items:rarities.{{variant}})",
+    "cookPotionRarity": "$t(items:rarities.{{variant}})",
     "haveItemRarity": "$t(items:rarities.{{variant}})",
     "fightMinTurns": "{{variant}}",
     "fromPlaceToPlace_order": "{{place1}}{{place2}} {{time}} Fazer - em menos de horas",
@@ -1575,6 +1658,21 @@
     "goToPlace": "{emote:mapTypes.{{mapType}} $t(models:map_locations.{{variant}}.name)}",
     "fightAttacks": "{emote:fightActions.{{variant}} $t(models:fight_actions.{{variant}}.name, {\"count\": {{count}}})}",
     "finishWithAttack": "{emote:fightActions.{{variant}} $t(models:fight_actions.{{variant}}.name, {\"count\": {{count}}})}"
+  },
+  "materialRarityNames": {
+    "1": "município",
+    "2": "pouco comum",
+    "3": "raro"
+  },
+  "cityNpcNames": {
+    "1": "$t(commands:report.city.shops.royalMarket.label)",
+    "2": "$t(commands:report.city.shops.generalShop.label)",
+    "3": "$t(commands:report.city.shops.stockExchange.label)",
+    "4": "$t(commands:report.city.shops.tanner.label)",
+    "5": "$t(commands:report.city.shops.herbalist.label)",
+    "6": "$t(commands:report.city.shops.lumberjack.label)",
+    "7": "$t(commands:report.city.shops.veterinarian.label)",
+    "8": "$t(commands:report.city.shops.materialMerchant.label)"
   },
   "monsters": {
     "forestTroll": {
@@ -1760,6 +1858,8 @@
     "101_female": "Vampiro",
     "102_male": "Féetaud",
     "102_female": "Fada",
+    "103_male": "Ouriço-do-mar",
+    "103_female": "Ouriço-do-mar",
     "10_female": "Galinha",
     "10_male": "Coq",
     "11_female": "Ave",
@@ -2055,7 +2155,9 @@
     "92": "Lodo de troll",
     "93": "Lágrima de Titã",
     "94": "Barra ChocoChoc",
-    "95": "Poção de velocidade mega incrível"
+    "95": "Poção de velocidade mega incrível",
+    "96": "Chá de ervas quente",
+    "97": "Infusão rápida"
   },
   "weapons": {
     "0": "Punho",
@@ -2182,7 +2284,8 @@
   },
   "talisman": {
     "anchor": "{emote:expedition.talisman} **Talismã de Ancoragem",
-    "clone": "{emote:expedition.cloneTalisman} **Talismã de clonagem"
+    "clone": "{emote:expedition.cloneTalisman} **Talismã de clonagem",
+    "remoteHarvest": "{emote:city.gardenStatus.remoteHarvestTalisman} **Sylvester Heart**"
   },
   "ordinals": {
     "get_feminine_ordinal_one": "1º",
@@ -2214,7 +2317,6 @@
         "classTier": "{emote:commands.classes} | Classes de nível {{tier}} desbloqueadas! Para obter mais informações sobre as classes, utilize os comandos {command:classesinfo} e {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Nova slot de missão desbloqueada! Para mais informações sobre as tuas missões, utiliza o comando {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Acesso a ilhas remotas desbloqueadas! Encontra-te num bar para novas aventuras!",
-        "tokensUnlocked": "{emote:unitValues.token} | Tokens desbloqueados! Agora podes usar os teus tokens para avançar mais rapidamente com o comando {command:report}.",
         "statsIncreased": "{emote:other.increase} | Estatísticas melhoradas."
       }
     }
@@ -2263,23 +2365,249 @@
     "1107": {
       "femaleIceDragon": "Percorremos esta região inexplorada, guiados por uma curiosidade misturada com apreensão. A parede de gelo diante de ti reflecte uma figura tão imponente que desafia a imaginação. Quanto mais nos aproximamos na escuridão gelada, mais nos apercebemos da dimensão da criatura que se esconde por detrás desta barreira. De repente, surgem fendas no gelo, que se espalham como teias de aranha. Um rugido surdo faz vibrar as paredes rochosas. A parede explode com um estrondo apocalítico, atirando para o ar enormes blocos de gelo. Através desta cortina de cristais estilhaçados emerge a mais majestosa das criaturas: um dragão de gelo de proporções faraónicas. A sua presença parece imponente, as suas asas dobradas quase tocam as abóbadas de pedra. Tem uma beleza aterradora, as suas escamas iridescentes captam a luz ténue em arco-íris gelados. Os seus olhos, de um azul profundo como o abismo, brilham com sabedoria antiga e fúria maternal. Atrás dela, podes ver um ovo gigantesco com um brilho perolado, pulsando com um brilho misterioso. Acabaste de entrar no seu berçário, e nenhum intruso ficará impune no santuário da Rainha do Gelo..."
     },
-    "1109": {
+    "1201": {
       "turtle": "Chega-se perto de uma piscina natural protegida por um recife de coral. A calma do local incita-o a aproximar-se para admirar o fundo do mar. Repara então numa imponente rocha coberta de algas no centro da piscina. De repente, começa a mexer-se. Surge uma cabeça enorme, seguida de quatro patas colossais. Uma tartaruga gigante surge diante de ti, com um tamanho equivalente ao de um pequeno navio. Os seus grandes olhos fitam-te com uma sabedoria ancestral. Depois abre a boca e um poderoso jato de água roça em ti, fazendo-te saber que esta lagoa pacífica é o seu território..."
     },
-    "1110": {
+    "1202": {
       "waterSpirit": "Entramos numa gruta marítima na maré baixa. Ecos estranhos ecoam nas profundezas e luzes azuladas dançam na escuridão, atraindo-o ainda mais para dentro. De repente, a água estagnada começa a rodopiar e miríades de gotículas nas paredes convergem para um ponto central. Uma forma translúcida ganha vida à tua frente, metade névoa, metade água. O Espírito dos Mares olha para ti com os seus olhos azuis abismais. Antes que possas reagir, ele desaparece e reaparece nas tuas costas. Este guardião evanescente não te vai deixar sair do seu santuário tão facilmente..."
     },
-    "1111": {
+    "1203": {
       "captainCrow": "O nevoeiro adensa-se à medida que nos aproximamos da Crique du Revenant. O sol já se pôs há muito tempo e apenas alguns vapores iluminam o vosso caminho. Avançam cautelosamente sobre os seixos molhados, enquanto o vosso olhar capta as carcaças de vários navios esventrados, com os seus cascos apodrecidos a serem constantemente banhados pelo fluxo e refluxo das ondas. De repente, a névoa condensa-se numa forma humanoide alguns metros à vossa frente. Os olhos aparecem, duas brasas incandescentes no vazio. O Capitão Corvo, o espetro do pirata mais temido dos mares, materializa-se à tua frente, com a sua espada a crepitar de energia amaldiçoada. Ele ainda não acabou de reclamar almas."
     },
-    "1112": {
+    "1204": {
       "mermaid": "Estás a explorar uma caverna subaquática e quanto mais avanças, mais ouves uma melodia assombrosa. Apesar de tudo, as tuas pernas levam-te até à sua origem. Ao virar de uma passagem, descobres uma piscina de água azul-turquesa. E ali, sentada numa rocha, ela espera por si. Metade mulher, metade peixe, a sereia observa-te com olhos hipnóticos. A sua beleza é impressionante, mas o seu sorriso é de gelar o sangue. As suas garras afiadas batem na pedra, marcando um ritmo monótono que reverbera contra as paredes. A sua canção muda de tom: já não procura seduzir-te, mas ressoar com a própria estrutura da caverna. É uma armadilha, e está a aproximar-se de ti..."
     },
-    "1113": {
+    "1205": {
       "kraken": "Estás à beira de um abismo oceânico, a olhar para a água negra e escura. Nada parece mover-se neste abismo sem fundo. Então as bolhas começam a subir à superfície. Primeiro algumas, depois centenas. A água começa a borbulhar violentamente. De repente, um enorme tentáculo irrompe das profundezas, tão largo como um tronco de árvore. Depois outro. E mais outro. O Kraken emerge do seu covil, os seus olhos amarelos brilham com uma inteligência malévola. As suas ventosas batem contra a rocha com uma força primordial e esmagadora de ossos. O abismo subiu à superfície e está esfomeado..."
     },
-    "1114": {
+    "1206": {
       "leviathan": "Desces a uma ravina submarina onde já não há luz. A escuridão envolve-te, o silêncio é opressivo. Depois, sente-o antes de o ver: uma presença titânica que emite uma vibração baixa que faz tremer todos os ossos do seu corpo. Duas pupilas abrem-se, tão largas como escudos, de um azul elétrico que brilha na água negra. O Leviatã desperta, desdobrando-se lentamente, com um tamanho que desafia qualquer crença. Um relâmpago começa a crepitar entre as suas presas enquanto a água se agita num turbilhão nascente. Acabaste de cometer o erro de o acordar..."
+    }
+  },
+  "materials": {
+    "1": "Clorato de potássio",
+    "2": "Tábua de acácia",
+    "3": "Célula extraterrestre",
+    "4": "Alumínio",
+    "5": "Cristal de ametista",
+    "6": "Amoníaco",
+    "7": "Bronze antigo",
+    "8": "Caule de bambu",
+    "9": "Casca de faia",
+    "10": "Belladona",
+    "11": "Couro de búfalo",
+    "12": "Corda de cânhamo entrançada",
+    "13": "Latão",
+    "14": "Bronze",
+    "15": "Cato",
+    "16": "Aço ao carbono",
+    "17": "Sementes de rícino",
+    "18": "Madeira de cedro",
+    "19": "Cipó Celeste",
+    "20": "Pedaço de tecido",
+    "21": "Pó de carvão",
+    "22": "Metal compósito",
+    "23": "Gás comprimido",
+    "24": "Cobre",
+    "25": "Algodão",
+    "26": "Couro de vaca",
+    "27": "Pele de crocodilo",
+    "28": "Petróleo bruto",
+    "29": "Couro de camurça",
+    "30": "Alfazema seca",
+    "31": "Casca de ébano",
+    "32": "Bagas de sabugueiro",
+    "33": "Lágrimas elementares",
+    "34": "Runa encantada",
+    "35": "Chama eterna",
+    "36": "Cogumelo extremamente venenoso",
+    "37": "Fios de linho",
+    "38": "Tetrodotoxina de Fugu",
+    "39": "Aço galvanizado",
+    "40": "Erva fantasma",
+    "41": "Raiz de gengibre",
+    "42": "Pele de cabra",
+    "43": "Latão banhado a ouro",
+    "44": "Pólvora",
+    "45": "Fibra de cânhamo",
+    "46": "Peróxido de hidrogénio",
+    "47": "Corda de juta",
+    "48": "Pele de borrego",
+    "49": "Corda entrançada de couro",
+    "50": "Alumínio leve",
+    "51": "Folha de ácer",
+    "52": "Erva dos prados",
+    "53": "Pedra da Lua",
+    "54": "Tapete de espuma",
+    "55": "Cogumelo",
+    "56": "Nitroglicerina",
+    "57": "Fio de nylon",
+    "58": "Ramo de carvalho",
+    "59": "Folha de carvalho",
+    "60": "Resina de oud",
+    "61": "Livro filosófico",
+    "62": "Pena de fénix",
+    "63": "Couro de porco",
+    "64": "Pinhão",
+    "65": "Plutónio 239",
+    "66": "Cogumelo venenoso",
+    "67": "Pedra preciosa",
+    "68": "Água purificada",
+    "69": "Quartzo arco-íris",
+    "70": "Ferro em bruto",
+    "71": "Cobre vermelho",
+    "72": "Incenso sagrado",
+    "73": "Incenso de salva",
+    "74": "Sândalo",
+    "75": "Malha de seda",
+    "76": "Escama de dragão prateada",
+    "77": "Pó de prata",
+    "78": "Pele de cobra",
+    "79": "Aço inoxidável",
+    "80": "Poeira estelar",
+    "81": "Aço",
+    "82": "Enxofre",
+    "83": "Couro sintético",
+    "84": "Tábua de teca",
+    "85": "Aço temperado",
+    "86": "Titânio",
+    "87": "Rosa de nada",
+    "88": "Ramo de noz",
+    "89": "Vela branca",
+    "90": "Zinco"
+  },
+  "plants": {
+    "1": "Erva comum",
+    "2": "Trevo dourado",
+    "3": "Musgo lunar",
+    "4": "Raiz de ferro",
+    "5": "Cogumelo noturno",
+    "6": "Folha venenosa",
+    "7": "Lâmpada de incandescência",
+    "8": "Fábrica de carnes",
+    "9": "Flor de cristal",
+    "10": "Árvore genealógica"
+  },
+  "cooking": {
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+    "grades": {
+      "kitchenHelper": "Ajudante de cozinha",
+      "scullion": "Marmitão",
+      "cook": "Cozinheiro",
+      "roaster": "Torradeira",
+      "saucier": "Saucier",
+      "steward": "Mestre do tribunal",
+      "tableChef": "Chefe de mesa",
+      "stoveChef": "Chefe de cozinha",
+      "kitchenMaster": "Mestre de cozinhas",
+      "royalGrandChef": "Chefe de cozinha real"
+    },
+    "stations": {
+      "0": "Ser",
+      "1": "Caldeirão",
+      "2": "Fundição",
+      "3": "Ainda assim",
+      "4": "Braseiro"
+    },
+    "recipes": {
+      "potion_health_1": "Poção de cura básica",
+      "potion_health_2": "Poção de cura ligeira",
+      "potion_health_3": "Poção de cura",
+      "potion_health_4": "Poção de cura melhorada",
+      "potion_health_5": "Poção de cura poderosa",
+      "potion_health_6": "Poção de cura superior",
+      "potion_health_7": "Elixir da vida",
+      "potion_health_8": "O grande elixir da vida",
+      "potion_energy_1": "Poção de vigor básica",
+      "potion_energy_2": "Poção de vigor ligeiro",
+      "potion_energy_3": "Poção do vigor",
+      "potion_energy_4": "Poção de vigor melhorada",
+      "potion_energy_5": "Poção de vigor poderosa",
+      "potion_energy_6": "Poção de vigor superior",
+      "potion_energy_7": "Elixir energético",
+      "potion_energy_8": "Grande elixir energético",
+      "potion_time_speedup_1": "Poção de velocidade básica",
+      "potion_time_speedup_2": "Poção da velocidade da luz",
+      "potion_time_speedup_3": "Poção de velocidade",
+      "potion_time_speedup_4": "Poção de velocidade melhorada",
+      "potion_time_speedup_5": "Poção de velocidade poderosa",
+      "potion_time_speedup_6": "Poção de velocidade superior",
+      "potion_time_speedup_7": "O elixir do tempo",
+      "potion_time_speedup_8": "Elixir do Tempo Maior",
+      "potion_defense_1": "Poção de proteção básica",
+      "potion_defense_2": "Poção de proteção contra a luz",
+      "potion_defense_3": "Poção de proteção",
+      "potion_defense_4": "Poção de proteção melhorada",
+      "potion_defense_5": "Poção de proteção poderosa",
+      "potion_defense_6": "Poção de proteção superior",
+      "potion_defense_7": "Elixir da guarda",
+      "potion_defense_8": "Elixir dos grandes cuidados",
+      "potion_attack_1": "Poção de força básica",
+      "potion_attack_2": "Poção de força ligeira",
+      "potion_attack_3": "Poção de força",
+      "potion_attack_4": "Poção de força melhorada",
+      "potion_attack_5": "Poção de força poderosa",
+      "potion_attack_6": "Poção de força superior",
+      "potion_attack_7": "Elixir de poder",
+      "potion_attack_8": "Elixir de poder maior",
+      "potion_speed_1": "Poção de velocidade básica",
+      "potion_speed_2": "Poção de velocidade da luz",
+      "potion_speed_3": "Poção de velocidade",
+      "potion_speed_4": "Poção de velocidade melhorada",
+      "potion_speed_5": "Poção de velocidade poderosa",
+      "potion_speed_6": "Poção de velocidade superior",
+      "potion_speed_7": "Elixir da velocidade",
+      "potion_speed_8": "Elixir de grande velocidade",
+      "petfood_salad_1": "Salada simples",
+      "petfood_salad_2": "Salada mista",
+      "petfood_salad_3": "Salada gourmet",
+      "petfood_salad_4": "Salada real",
+      "petfood_salad_5": "Salada lendária",
+      "petfood_candy_1": "Doces artesanais",
+      "petfood_candy_2": "Doces doces",
+      "petfood_candy_3": "Doces requintados",
+      "petfood_candy_4": "Doces refinados",
+      "petfood_candy_5": "Doces divinos",
+      "petfood_meat_1": "Carne grelhada",
+      "petfood_meat_2": "Carne marinada",
+      "petfood_meat_3": "Carne temperada",
+      "petfood_meat_4": "Carne gourmet",
+      "petfood_meat_5": "Carne lendária",
+      "petfood_ultimate_1": "Sopa de viajante",
+      "petfood_ultimate_2": "Sopa nutritiva",
+      "petfood_ultimate_3": "Festa do campeão",
+      "petfood_ultimate_4": "Banquete real",
+      "petfood_ultimate_5": "Festa dos deuses",
+      "material_metal_1": "Metal fundido",
+      "material_metal_2": "Liga metálica reforçada",
+      "material_metal_3": "Lingote de metal antigo",
+      "material_alloy_1": "Liga forjada",
+      "material_alloy_2": "Ligas compostas",
+      "material_alloy_3": "Liga lendária",
+      "material_nature_1": "Essência natural concentrada",
+      "material_nature_2": "Destilado natural",
+      "material_nature_3": "Cristal de natureza pura",
+      "material_spiritual_1": "Éter espiritual condensado",
+      "material_spiritual_2": "Fragmento de alma",
+      "material_spiritual_3": "Essência espiritual suprema",
+      "material_magic_1": "Pó mágico cristalizado",
+      "material_magic_2": "Cristal arcano",
+      "material_magic_3": "Pedra mágica ancestral",
+      "material_leather_1": "Couro curtido reforçado",
+      "material_leather_2": "Couro de elite",
+      "material_leather_3": "Couro dracónico",
+      "material_rope_1": "Corda entrançada reforçada",
+      "material_rope_2": "Corda encantada",
+      "material_rope_3": "Corda lendária",
+      "material_poison_1": "Toxina concentrada",
+      "material_poison_2": "Veneno destilado",
+      "material_poison_3": "Veneno das Sombras",
+      "material_explosive_1": "Pólvora explosiva refinada",
+      "material_explosive_2": "Carga explosiva melhorada",
+      "material_explosive_3": "Detonador ancestral",
+      "material_wood_1": "Madeira petrificada",
+      "material_wood_2": "Madeira encantada",
+      "material_wood_3": "Madeira de árvore mundial"
     }
   }
 }

@@ -7,6 +7,16 @@
   "maxBreath": 14,
   "breathRegen": 3,
   "rewardFactor": 0.5,
+  "materialLoot": [
+    70,
+    24,
+    54,
+    90,
+    41,
+    67,
+    86,
+    5
+  ],
   "attacks": [
     {
       "id": "boulderTossAttack",

@@ -9,7 +9,7 @@ import {
 } from "../../../FightController";
 
 const use: FightAlterationFunc = (affected, fightAlteration) => {
-	if (affected.alterationTurn > 2) { // This effect heals after two turns
+	if (affected.alterationTurn > 1) { // This effect heals after one turn
 		affected.removeDefenseModifiers(fightAlteration);
 		return defaultHealFightAlterationResult(affected);
 	}

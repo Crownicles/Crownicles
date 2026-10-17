@@ -1,5 +1,8 @@
 {
   "type": "iceBeach",
+  "biomes": [
+    "coast"
+  ],
   "canBeGoToPlaceMissionDestination": false,
   "attribute": "pve_island_entry"
 }

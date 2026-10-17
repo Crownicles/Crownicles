@@ -11,13 +11,13 @@ export class CommandGuildCreatePacketReq extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandGuildCreatePacketRes extends CrowniclesPacket {
-	playerMoney!: number;
-
 	foundGuild!: boolean;
 
 	guildNameIsAvailable?: boolean;
 
 	guildNameIsAcceptable?: boolean;
+
+	missingMoney?: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

@@ -21,6 +21,8 @@ import { ItemConstants } from "../../../../../Lib/src/constants/ItemConstants";
 
 type AiPlayerFighterOptions = {
 	allowPotionConsumption?: boolean;
+	effectiveLevel?: number;
+	withoutConsequences?: boolean;
 	preloadedActiveObjects?: PlayerActiveObjects;
 	preloadedPetEntity?: PetEntity | null;
 };
@@ -38,23 +40,26 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 
 	private readonly allowPotionConsumption: boolean;
 
+	private readonly withoutConsequences: boolean;
+
 	private readonly preloadedActiveObjects?: PlayerActiveObjects;
 
 	private readonly preloadedPetEntity?: PetEntity | null;
 
 	public constructor(player: Player, playerClass: Class, options: AiPlayerFighterOptions = {}) {
-		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
+		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds), options.effectiveLevel);
 		this.fightRole = FightConstants.FIGHT_ROLES.DEFENDER;
 		this.class = playerClass;
 		this.classBehavior = getAiClassBehavior(playerClass.id);
 		this.allowPotionConsumption = options.allowPotionConsumption ?? true;
+		this.withoutConsequences = options.withoutConsequences ?? false;
 		this.preloadedActiveObjects = options.preloadedActiveObjects;
 		this.preloadedPetEntity = options.preloadedPetEntity;
 	}
 
 	/**
 	 * Function called when the fight starts
-	 * @param fightView The fight view
+	 * @param _fightView
 	 * @param startStatus The first status of a player
 	 * @param response The response packets
 	 */
@@ -70,13 +75,13 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 	 * Load the pet entity for the fighter based on availability
 	 */
 	private async loadPetEntity(): Promise<void> {
-		if (!this.player.petId) {
-			this.pet = undefined;
+		if (this.preloadedPetEntity !== undefined) {
+			this.pet = this.preloadedPetEntity ?? undefined;
 			return;
 		}
 
-		if (this.preloadedPetEntity !== undefined) {
-			this.pet = this.preloadedPetEntity ?? undefined;
+		if (!this.player.petId) {
+			this.pet = undefined;
 			return;
 		}
 
@@ -90,19 +95,15 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 
 	/**
 	 * The fighter loads its various stats
+	 * @param isPvE True if the fight is against a monster (PVE), false against another player (PVP)
 	 */
-	public async loadStats(): Promise<void> {
+	public async loadStats(isPvE = false): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = this.preloadedActiveObjects ?? await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.energy = this.player.getMaxCumulativeEnergy();
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy();
-		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects);
-		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
-		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
-		this.stats.breath = this.player.getBaseBreath();
-		this.stats.maxBreath = this.player.getMaxBreath();
-		this.stats.breathRegen = this.player.getBreathRegen();
+		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects, this.level);
+		this.stats.energy = this.stats.maxEnergy;
+		this.loadCombatStats(playerActiveObjects, isPvE, !this.withoutConsequences);
 		this.glory = this.player.getGloryPoints();
-		this.metallicItemCount = await InventorySlots.countObjectsOfPlayer(this.player.id, ItemConstants.TAGS.METALLIC);
+		this.metallicItemCount = await this.countItemsWithTag(ItemConstants.TAGS.METALLIC);
 		await this.loadPetEntity();
 	}
 

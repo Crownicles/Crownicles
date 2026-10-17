@@ -4,5 +4,7 @@
   "tags": [
     "ranged",
     "metallic"
-  ]
+  ],
+  "type": "alloy",
+  "materialCategory": 13
 }

@@ -1,13 +1,14 @@
 import { GDPRAnonymizer } from "../GDPRAnonymizer";
 import {
-	GDPRCsvFiles, streamToCSV, toCSV
+	GDPRCsvFiles, streamToCSV
 } from "../CSVUtils";
 import { LogsPetsSells } from "../../../../core/database/logs/models/LogsPetsSells";
 import { LogsExpeditions } from "../../../../core/database/logs/models/LogsExpeditions";
 import { LogsUnlocks } from "../../../../core/database/logs/models/LogsUnlocks";
 import { LogsPetsNicknames } from "../../../../core/database/logs/models/LogsPetsNicknames";
-import { LogsPlayersNewPets } from "../../../../core/database/logs/models/LogsPlayersNewPets";
-import { Op } from "sequelize";
+import { LogsPetsFrees } from "../../../../core/database/logs/models/LogsPetsFrees";
+import { LogsPetsLovesChanges } from "../../../../core/database/logs/models/LogsPetsLovesChanges";
+import { LogsPetsTransfers } from "../../../../core/database/logs/models/LogsPetsTransfers";
 
 /**
  * Exports pet trade transactions (sold and bought)
@@ -79,13 +80,67 @@ async function exportUnlockTransactions(
 	}
 }
 
+async function exportPetHistory(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const playerIdWhere = { playerId: logsPlayerId };
+	const nicknamesCsv = await streamToCSV(
+		LogsPetsNicknames,
+		playerIdWhere,
+		nickname => ({
+			petId: nickname.petId,
+			name: nickname.name,
+			date: nickname.date
+		})
+	);
+	if (nicknamesCsv) {
+		csvFiles["logs/73_pet_nicknames.csv"] = nicknamesCsv;
+	}
+
+	const freesCsv = await streamToCSV(
+		LogsPetsFrees,
+		playerIdWhere,
+		petFree => ({
+			petId: petFree.petId,
+			date: petFree.date
+		})
+	);
+	if (freesCsv) {
+		csvFiles["logs/96_pets_freed.csv"] = freesCsv;
+	}
+
+	const loveChangesCsv = await streamToCSV(
+		LogsPetsLovesChanges,
+		playerIdWhere,
+		change => ({
+			petId: change.petId,
+			lovePoints: change.lovePoints,
+			reason: change.reason,
+			date: change.date
+		})
+	);
+	if (loveChangesCsv) {
+		csvFiles["logs/97_pet_love_changes.csv"] = loveChangesCsv;
+	}
+
+	const transfersCsv = await streamToCSV(
+		LogsPetsTransfers,
+		playerIdWhere,
+		transfer => ({
+			playerPetId: transfer.playerPetId,
+			guildPetId: transfer.guildPetId,
+			date: transfer.date
+		})
+	);
+	if (transfersCsv) {
+		csvFiles["logs/98_pet_transfers.csv"] = transfersCsv;
+	}
+}
+
 /**
  * Exports pets and expeditions data from logs database (files 68-73)
  */
 export async function exportLogsPets(
 	logsPlayerId: number,
 	anonymizer: GDPRAnonymizer,
-	newPets: LogsPlayersNewPets[],
 	csvFiles: GDPRCsvFiles
 ): Promise<void> {
 	// 68-69. Pet trades
@@ -101,12 +156,14 @@ export async function exportLogsPets(
 			locationType: e.locationType,
 			action: e.action,
 			durationMinutes: e.durationMinutes,
+			rewardIndex: e.rewardIndex,
 			foodConsumed: e.foodConsumed,
 			success: e.success,
 			money: e.money,
 			experience: e.experience,
 			points: e.points,
 			tokens: e.tokens,
+			cloneTalismanFound: e.cloneTalismanFound,
 			loveChange: e.loveChange,
 			date: e.date
 		})
@@ -118,14 +175,6 @@ export async function exportLogsPets(
 	// 71-72. Unlock transactions
 	await exportUnlockTransactions(logsPlayerId, anonymizer, csvFiles);
 
-	// 73. Pet nicknames (for pets owned by player)
-	const playerPetIds = newPets.map(p => p.petId);
-	if (playerPetIds.length > 0) {
-		const petNicknames = await LogsPetsNicknames.findAll({ where: { petId: { [Op.in]: playerPetIds } } });
-		if (petNicknames.length > 0) {
-			csvFiles["logs/73_pet_nicknames.csv"] = toCSV(petNicknames.map(n => ({
-				petId: n.petId, name: n.name, date: n.date
-			})));
-		}
-	}
+	// 73, 96-98. History directly attributed to the acting player
+	await exportPetHistory(logsPlayerId, csvFiles);
 }

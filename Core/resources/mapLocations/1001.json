@@ -1,5 +1,8 @@
 {
   "type": "fo",
+  "biomes": [
+    "forest"
+  ],
   "canBeGoToPlaceMissionDestination": false,
   "attribute": "pve_island"
 }

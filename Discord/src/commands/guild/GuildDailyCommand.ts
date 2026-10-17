@@ -14,8 +14,10 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { StringConstants } from "../../../../Lib/src/constants/StringConstants";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 
-function getPacket(): CommandGuildDailyPacketReq {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandGuildDailyPacketReq> {
+	await interaction.deferReply();
 	return makePacket(CommandGuildDailyPacketReq, {});
 }
 
@@ -53,6 +55,13 @@ export function getCommandGuildDailyRewardPacketString(packet: CommandGuildDaily
 			context: packet.pet.isFemale ? StringConstants.SEX.FEMALE.long : StringConstants.SEX.MALE.long,
 			pet: DisplayUtils.getPetDisplay(packet.pet.typeId, packet.pet.isFemale ? StringConstants.SEX.FEMALE.short : StringConstants.SEX.MALE.short, lng),
 			petId: packet.pet.typeId
+		})}\n`;
+	}
+
+	if (packet.guildPoints) {
+		desc += `${i18n.t("commands:guildDaily.rewards.guildPoints", {
+			lng,
+			quantity: packet.guildPoints
 		})}\n`;
 	}
 

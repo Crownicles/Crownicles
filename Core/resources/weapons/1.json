@@ -4,5 +4,7 @@
   "tags": [
     "holy",
     "ranged"
-  ]
+  ],
+  "type": "magic",
+  "materialCategory": 9
 }

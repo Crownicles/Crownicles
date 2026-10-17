@@ -59,11 +59,9 @@ export class CommandPetSellInitiatorSituationChangedErrorPacket extends Crownicl
 export class CommandPetSellSuccessPacket extends CrowniclesPacket {
 	guildName!: string;
 
-	xpEarned!: number;
+	treasuryEarned!: number;
 
 	pet!: OwnedPet;
-
-	isGuildMax!: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

@@ -5,7 +5,7 @@ import { Language } from "../../../Lib/src/Language";
 import i18n from "../translations/i18n";
 import { MissionUtils as MissionUtilsLib } from "../../../Lib/src/utils/MissionUtils";
 import {
-	dateDisplay, hoursToMilliseconds
+	asHours, dateDisplay, hoursToMilliseconds, hoursToMinutes
 } from "../../../Lib/src/utils/TimeUtils";
 import { getTranslatedRiskCategoryNameWithEmoji } from "../commands/pet/expedition/ExpeditionDisplayUtils";
 
@@ -82,7 +82,8 @@ export abstract class MissionUtils {
 		fromPlaceToPlace: (mission, lng) => MissionUtils.manageFromPlaceToPlaceVariant(mission, lng),
 		chooseClassTier: mission => String(mission.missionVariant + 1),
 		dangerousExpedition: (mission, lng) => getTranslatedRiskCategoryNameWithEmoji(mission.missionVariant, lng),
-		longExpedition: (mission, lng) => i18n.formatDuration(mission.missionVariant, lng)
+		longExpedition: (mission, lng) => i18n.formatDuration(mission.missionVariant, lng),
+		travelHours: (mission, lng) => i18n.formatDuration(hoursToMinutes(asHours(mission.missionVariant)), lng)
 	};
 
 	/**
@@ -126,7 +127,7 @@ export abstract class MissionUtils {
 	private static manageFromPlaceToPlaceVariant(mission: BaseMission, lng: Language): string {
 		const params = MissionUtilsLib.fromPlaceToPlaceParamsFromVariant(mission.missionVariant);
 		const saveData = mission.saveBlob ? MissionUtilsLib.fromPlaceToPlaceDataFromSaveBlob(Buffer.from(mission.saveBlob, "binary")) : null;
-		if (!saveData || saveData.startTimestamp + hoursToMilliseconds(params.time) < Date.now()) {
+		if (!saveData || saveData.startTimestamp + hoursToMilliseconds(asHours(params.time)) < Date.now()) {
 			return i18n.t("models:missionVariants.fromPlaceToPlace", {
 				lng,
 				place1: i18n.t(`models:map_locations.${params.fromMap}.name`, { lng }),
@@ -138,7 +139,7 @@ export abstract class MissionUtils {
 		return i18n.t("models:missionVariants.fromPlaceToPlace_secondPart", {
 			lng,
 			place: i18n.t(`models:map_locations.${saveData.startMap === params.fromMap ? params.toMap : params.fromMap}.name`, { lng }),
-			time: dateDisplay(new Date(saveData.startTimestamp + hoursToMilliseconds(params.time)))
+			time: dateDisplay(new Date(saveData.startTimestamp + hoursToMilliseconds(asHours(params.time))))
 		});
 	}
 }

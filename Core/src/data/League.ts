@@ -11,6 +11,12 @@ export class League extends Data<number> {
 
 	public readonly maxGloryPoints!: number;
 
+	/**
+	 * Get the amount of money awarded for a PvP fight win
+	 */
+	public getFightWinMoneyReward(): number {
+		return LeagueInfoConstants.FIGHT_WIN_MONEY_REWARDS[this.id];
+	}
 
 	/**
 	 * Get the amount of money to award to the player

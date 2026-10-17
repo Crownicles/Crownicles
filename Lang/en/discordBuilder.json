@@ -58,7 +58,7 @@
     }
   },
   "petFree": {
-    "description": "Release a pet.",
+    "description": "Free a pet.",
     "name": "petfree"
   },
   "petNick": {
@@ -163,9 +163,9 @@
     "description": "Show map to indicate where you're going.",
     "name": "map"
   },
-  "shop": {
-    "description": "Show store.",
-    "name": "shop"
+  "garden": {
+    "description": "Access to your garden, at a distance if you own the Heart of Sylvestre.",
+    "name": "garden"
   },
   "classesInfo": {
     "description": "Display information on the classes selectable for your character.",
@@ -176,7 +176,7 @@
     "name": "respawn"
   },
   "notifications": {
-    "description": "Manage your notifications.",
+    "description": "Manage the bot's notifications.",
     "name": "notifications",
     "options": {
       "toggle": {
@@ -212,10 +212,6 @@
         "name": "user"
       }
     }
-  },
-  "guildShop": {
-    "description": "Display the guild store.",
-    "name": "guildshop"
   },
   "guildKick": {
     "description": "Kick a player from the guild.",
@@ -262,7 +258,7 @@
     "name": "unlock",
     "options": {
       "rank": {
-        "description": "The rank of the player who must be unlocked.",
+        "description": "The player rank to be unlocked.",
         "name": "rank"
       },
       "user": {
@@ -270,10 +266,6 @@
         "name": "user"
       }
     }
-  },
-  "missionsshop": {
-    "description": "Display mission store.",
-    "name": "missionsshop"
   },
   "top": {
     "description": "Display game rankings.",
@@ -295,10 +287,10 @@
     "options": {
       "timing": {
         "description": "The timing of the displayed ranking (All time by default).",
-        "name": "timing"
+        "name": "duration"
       },
       "page": {
-        "description": "The page of the ranking to display.",
+        "description": "The ranking page to display.",
         "name": "page"
       }
     },
@@ -311,13 +303,23 @@
     "description": "Start a fight.",
     "name": "fight"
   },
-  "switch": {
-    "name": "switch",
-    "description": "Switch the active item with one of the items in your item stock."
+  "friendlyFight": {
+    "description": "Start a friendly fight without any consequence against another player controlled by an AI.",
+    "name": "friendlyfight",
+    "options": {
+      "rank": {
+        "description": "The rank of the player to fight.",
+        "name": "rank"
+      },
+      "user": {
+        "description": "The player to fight.",
+        "name": "user"
+      }
+    }
   },
-  "deposit": {
-    "name": "deposit",
-    "description": "Deposit one of your active items."
+  "equip": {
+    "name": "equip",
+    "description": "Manage your equipment: equip, store or swap your items."
   },
   "drink": {
     "name": "drink",
@@ -343,7 +345,7 @@
   },
   "sell": {
     "name": "sell",
-    "description": "Sell an equipment."
+    "description": "Sell equipment."
   },
   "petTransfer": {
     "name": "pettransfer",
@@ -406,5 +408,17 @@
   "blessing": {
     "name": "blessing",
     "description": "See the current state of the global blessing."
+  },
+  "tournament": {
+    "name": "tournament",
+    "description": "Consulter votre tournoi ou vous y inscrire automatiquement."
+  },
+  "tournament-admin": {
+    "name": "tournament-admin",
+    "description": "Ouvrir la gestion du tournoi dans ce serveur."
+  },
+  "tournament-owner": {
+    "name": "tournament-owner",
+    "description": "Ouvrir les opérations owner du tournoi."
   }
 }

@@ -1,0 +1,73 @@
+{
+  "possibilities": {
+    "capture": {
+      "outcomes": {
+        "0": {
+          "randomItem": {
+            "category": 2,
+            "rarity": {
+              "min": 4,
+              "max": 5
+            }
+          }
+        },
+        "1": {
+          "money": 400
+        },
+        "2": {
+          "effect": "sick",
+          "health": -65
+        },
+        "3": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "givePet": {
+            "petIds": [
+              44
+            ]
+          }
+        }
+      }
+    },
+    "crush": {
+      "outcomes": {
+        "0": {
+          "effect": "confounded",
+          "health": -20
+        },
+        "1": {
+          "effect": "hurt",
+          "health": -10
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 10,
+          "health": 10,
+          "money": 50,
+          "randomItem": {}
+        }
+      }
+    },
+    "ignore": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15,
+          "health": 10
+        },
+        "1": {}
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {}
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 7
+    }
+  ]
+}

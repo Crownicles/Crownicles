@@ -706,7 +706,7 @@
       "failure": "ruft **{{petNickname}}** auf, der versucht, seinen Gegner zu beißen, aber sein Ziel scheint gegen diese Art von Angriff unempfindlich zu sein."
     },
     "petPetrified": {
-      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner am meisten ansieht und ihn versteinern lässt.",
+      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner anschaut und ihn versteinern lässt.",
       "failure": "wird von **{{petNickname}}** unterstützt, der seinen Gegner anschaut, aber das hat keine Wirkung gegen diesen Gegner."
     },
     "petPoison": {
@@ -1029,119 +1029,137 @@
     "1": {
       "description": "Ein großer Sandstrand, der am Rande der Stadt endet.",
       "name": "Bereich Sentinelle",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "10": {
       "description": "Die große Stadt der Stadt, die Stadt Forte, ist nicht mehr nur der Schatten von sich selbst. Es gibt nur ein Dutzend von Häusern und Bauern, die von dem alten Krieg zurückgeschwungen wurden. Der Rest der früheren Pauschalschmiede ist nur ein Ruin.",
       "name": "Stadt Forte",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die",
+      "inParticle": "in der"
     },
     "1000": {
       "description": "Ein großer, schwarzer Vulkan-Sand-Strand. Sie hat ihren Namen in ihrer ganz besonderen Farbe. Die ersten Männer, die den Fuß auf den dunklen Strand gelegt hatten, hatten einen großen Fluch. Das ist natürlich nicht der Bericht. Seien Sie vorsichtig, der schwarze Sand tackt auf die Füße und die Kleider.",
       "name": "Schwarzer Bereich",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "1001": {
       "description": "Ein riesiger Wald, der praktisch die gesamte Insel abdeckt. Feine Teilchen aus Asche fallen aus dem Vulkan Gronant, was die Sichtbarkeit in diesem Wald ziemlich schwierig macht. Das ist eine Tatsache, die sehr wenig erforscht ist.",
       "name": "Dunkle Schmiede",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "1002": {
       "description": "Ein kleines Dorf mit etwa 20 Häusern, teilweise zerstört, das sich in der Nähe des Regenwaldes befindet. Niemand weiß genau, warum dieses Dorf in Trümmern ist. Viele glauben, dass es sich um das Dorf der ehemaligen Einheimischen handelt, die den Lavasediten des Volcan Gronant erlegen wären. Aber die Theorie von einer Krankheit, der Pest und vielen Ratten, die andere sind, kommen voran. Es ist nicht mehr ein einziger Einwohner hier ...",
       "name": "Village in Ruinen",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "1003": {
       "description": "Diese alte, verlassene Mine verläuft unter dem steilen Weg und den Bergen hindurch. Sie ist so groß und labyrinthisch, dass sie im Herzen des Vulkans endet. Es ist jedoch schwierig, bis dorthin zu gelangen. Achte jedoch darauf, nicht auszurutschen, da einige Leute angeblich alte Bananenreste in der nebligen Mine gefunden haben.",
       "name": "Mine Brumeuse",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "1004": {
       "description": "Dieser Weg ist der einzig richtige Weg, um bis zum Gipfel von Volcan Gronant zu gehen. Es ist sehr schwierig, sie zu verwenden und vor allem sehr gefährlich. Viele Männer starben, als sie sie klettern wollten. Auf eigene Gefahr.",
       "name": "Päkaler Pfad",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "1005": {
       "description": "Der Vulkan der vulkanischen Insel ist immer noch aktiv. Es vergießt mehrere Tonnen Asche pro Jahr auf diese kleine Insel, die diese Tatsache nur erwachsen wird. Die Lava, die in ihr Zentrum fließt, ist so groß, dass ein unterirdischer Kanal, den wir Kanal Lavique nennen, über mehrere Kilometer fließt. Von den Wasserbooten kann man diesen Kanal sehen, um das Wasser tief in die Tiefe zu kochen. Dieser Vulkan wäre sogar der Schöpfer einiger kleiner Inseln in der Nähe wie die Eisinsel.",
       "name": "Volcan gronant",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "11": {
       "description": "Die letzte echte Route, die es noch erlaubt, das Mont Celestrum aus dem Norden zu umgehen, die große Achse wird heute noch immer sehr genutzt, vor allem durch die Brigditen.",
       "name": "Große Achse",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "1100": {
       "description": "Dieses Ufer ist das Erste, was man sieht, wenn man auf die Eisinsel kommt. Seinen Namen hat er von dem Geräusch, das die Seeleute machten, als sie an Land gingen. Offensichtlich kamen sie von der Vulkaninsel zurück, wo die Temperaturen viel wärmer sind.",
       "name": "Gletscher Ravela",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "1101": {
       "description": "Eine gefrorene Landfläche, auf der das Klima erbarmungslos ist. Ein ständiger Schneesturm erschwert das Vorankommen und die Kartierung des Ortes. Hier kann man allen Arten von arktischen Tieren begegnen.",
       "name": "Tundra",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "1102": {
       "description": "Eine große Höhle, in der jeder einfallende Sonnenstrahl durch die Kristalle vervielfacht wird, wodurch die Höhle sehr hell ist. Die Höhle ist mit spitzen Stalaktiten und scharfkantigen Stalagmiten ausgestattet, die schwere oder tödliche Verletzungen verursachen können, wenn sie auf dich fallen oder du einen falschen Schritt machst. Wenn Sie sich weiter vorwagen, müssen Sie sich entscheiden, ob Sie zum Gipfel des schneebedeckten Gipfels hinausgehen oder noch tiefer in die Höhle eindringen wollen.",
       "name": "Kristallkerker",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "1103": {
       "description": "Zwei majestätische Türen stehen am Ende einer langen Reihe von Stufen. Sie zu besteigen ist nicht einfach. Es wird erzählt, dass sie von einer alten Zivilisation zu Ehren einer Gottheit errichtet wurden.",
       "name": "Heilige Tore",
-      "particle": "in die"
+      "particle": "in die",
+      "atParticle": "an"
     },
     "1104": {
       "description": "In der Bergkette sticht dieser Gipfel durch die Heftigkeit seiner Schneestürme und die Geschwindigkeit seiner Winde hervor. Er ist so hoch, dass der Sauerstoff knapp ist und die Gefahr zu erfrieren groß ist, wenn Sie nicht schon den wilden Tieren erlegen sind…",
       "name": "Pic Lenneiß",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "1105": {
       "description": "Ein großer See im Herzen der Berge, dessen Überquerung nicht ganz ungefährlich ist. Da die Temperatur eisig ist, bleibt es ein Rätsel, warum er nicht gefroren ist. Niemand weiß, wie tief er ist und welche Tiere es dort gibt.",
       "name": "Unterirdischer See",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "1106": {
       "description": "Ein reiches, verlassenes Dorf, von dem nur noch Ruinen und Trostlosigkeit übrig sind. Man kann dort das Dach eines Herrenhauses sehen, das sich unter dem Gewicht der eingestürzten Kirchenglocke gebogen hat. Es herrscht eine bedrückende Stille, die manchmal von den Schmerzensschreien der verirrten Seelen unterbrochen wird.",
       "name": "Verwüstetes Dorf",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "1107": {
       "description": "Bisher hat sich noch niemand bis dorthin gewagt. In der Ferne siehst du eine riesige Silhouette, die sich an einer Eiswand spiegelt.",
       "name": "Eisiges Nest",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
-    "1108": {
+    "1200": {
       "description": "Ein paradiesischer Strand, der mit Muscheln in allen Farben bedeckt ist. Man sagt, dass jede Muschel das Echo des Ozeans in sich trägt. Der feine, weiße Sand steht im Kontrast zum türkisfarbenen Wasser der nahe gelegenen Lagune. Passen Sie auf, wo Sie hintreten, denn einige Muscheln sind scharf wie Klingen.",
       "name": "Muschelstrand",
       "particle": "in Richtung"
     },
-    "1109": {
+    "1201": {
       "description": "Eine Lagune mit kristallklarem, blauem Wasser, das von einem Korallenriff geschützt wird. Hinter den klaren Wellen lauern heimtückische Strömungen, die durch das Schlagen des Ozeans entstehen, auf die geringste Unvorsichtigkeit, um die Verirrten in den Abgrund zu ziehen. In diesem zerbrechlichen Meereskästchen suchen tausendjährige Schildkröten Ruhe, die ihnen die Hektik des Meeres verwehrt.",
       "name": "Lagon Hollow",
       "particle": "in Richtung"
     },
-    "1110": {
+    "1202": {
       "description": "Eine Meereshöhle, die nur bei Ebbe erobert werden kann und ein Kalksteinmaul mit triefenden Wänden enthüllt. Im Inneren entspringt ein ätherischer Schimmer aus dem Gestein und wirft azurblaue Reflexe auf die Gewölbe. Zwischen den Wellen und Schatten tanzen Silhouetten aus Nebel und Schaum ein stummes Ballett, als ob die Seele des Meeres selbst in diesem Heiligtum Zuflucht gesucht hätte.",
       "name": "Maritime Höhle",
       "particle": "in Richtung"
     },
-    "1111": {
+    "1203": {
       "description": "Eine einsame Bucht, die ihre Riffe wie schwarze Granitklingen ausbreitet, die kaum von der schäumenden Brandung verdeckt werden, die niemals abflaut. Nachts schweben gespenstisch blaue Irrlichter über den Wellen, wie die Seelen verlorener Seeleute, die einen Totentanz aufführen. Eine unheimliche Aura liegt über diesem verfluchten Ort.",
       "name": "Revenant-Bucht",
       "particle": "in Richtung"
     },
-    "1112": {
+    "1204": {
       "description": "Eine Unterwasserkathedrale, die geformt wurde, um den Atem der Gezeiten zu einem betörenden Herzen zu verstärken. Das ist kein Wind, das ist der Ruf eines melodischen Gesangs, der sich direkt an Ihre Seele wendet. In diesem klangvollen Halbdunkel verschwimmt die Grenze zwischen Ihren eigenen Gedanken und dem Flüstern des Felsens sanft, und wer hier verweilt, kommt nie wieder ganz allein heraus.",
       "name": "Flüsterkeller",
       "particle": "in Richtung"
     },
-    "1113": {
+    "1205": {
       "description": "Je näher du dem Ufer kommst, desto tintenschwarzer wird das Wasser, ein dunkler Spiegel, der nur deine eigene Angst widerspiegelt. Manchmal durchbricht eine übergroße Welle die Oberfläche, der flüchtige Durchgang eines riesigen Tentakels, der aus der Tiefe aufsteigt und dann wieder in die Vergessenheit versinkt. Niemand hat je das Herz dieser Grube erforscht, denn der Schlund akzeptiert keine Zeugen.",
       "name": "Schlucht der Tiefe",
       "particle": "in Richtung"
     },
-    "1114": {
+    "1206": {
       "description": "Der tiefste Punkt dieser Gewässer ist eine Unterwasserschlucht, die in absolute Finsternis stürzt. Der Druck dort ist so hoch, dass nur wenige Lebewesen überleben können. Man munkelt, dass dort seit Anbeginn der Zeit eine Urbestie schlummert, die die ältesten Geheimnisse dieser Welt hütet. Nur die Mutigsten wagen es, sich ihr zu nähern.",
       "name": "Schlucht des Abgrunds",
       "particle": "in Richtung"
@@ -1149,122 +1167,137 @@
     "12": {
       "description": "Ein großes, leeres, nordisches Plädot ohne großes Interesse.",
       "name": "Bereich",
-      "particle": "in"
+      "particle": "in",
+      "atParticle": "à"
     },
     "13": {
       "description": "Ein schwieriges, feuer und feuchter Weg. Die Marécageuse-Route verbindet die angespannte Rivière-Rivière-Route mit den Krabben.",
       "name": "Route Marécageuse",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "14": {
       "description": "Ein großer See, in dem die Familien gerne zusammenkommen. Der Fluss Vacwaffe hat sich geworfen.",
       "name": "Lac Mirage",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "15": {
       "description": "Der Berg Celestrum ist der dominierende Berg der Region. Der mehrere Kilometer hohe Celestrum ist für jeden sichtbar. Man erzählt sich, dass er nach einer antiken Göttin benannt wurde. Nur einer einzigen Person ist es gelungen, bis zum Gipfel zu klettern. Von ihr sind nur ihre Initialen bekannt: M-B.",
       "name": "Mont Célestrum",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "16": {
       "description": "Ein kleiner gefährlicher Weg, der den Fluss Vacwaffe umgeht. Seien Sie vorsichtig, nicht zu fallen.",
       "name": "Pfad zu den Wölfen",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "17": {
       "description": "Heißes Village, das das Könige-Tal umgeht. Es ist eine warme Oase für Reisende im Transit.",
       "name": "Coco Village",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter",
+      "inParticle": "in der"
     },
     "18": {
       "description": "Dieser Fluss muss seinen Namen für das Geräusch machen, das durch seine starke Strömung erzeugt wurde, die vielen Dorfbewohnern das Leben gekostet hat.",
       "name": "Rivière Vacwaffe",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "19": {
-      "description": "Ein Bereich, der durch die starken Winde des Tal der Könige geschaffen wurde. La Dune schützt die Plaines des Bois der Hitze und bring das Wasser aus dem Fluss Vacwaffe.",
+      "description": "Diese Düne entstand durch die starken Winde im Tal der Könige. Sie schützt die umliegenden Gebiete vor der Hitze und leitet das Wasser des Flusses Vacarme weiter.",
       "name": "La Dune",
-      "particle": "in"
+      "particle": "in",
+      "atParticle": "à"
     },
     "1999": {
       "description": "Ein altes Holzschiff, es hat die Luft, durch die Reparaturen der Arbeiter zu halten. Er ist bereit zu gehen und wartet nur noch auf Ihre Ankunft.",
       "name": "Zum Verlassen der Insel Bateau",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "2": {
       "description": "Eine kleine Route, die es erlaubt, die Kampagne von Mergagnan zu besuchen und umgekehrt.",
       "name": "Feldweg",
-      "particle": "in Richtung"
-    },
-    "20": {
-      "description": "Ein großes, friedliches und landwirtschaftliches Pläzierchen.",
-      "name": "Plaines des Bois-Kontre",
-      "particle": "in die"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "21": {
       "description": "Eine Straße, die von den Dorfbewohnern sehr geliehen wird. Viele der ambulanten kleinen Verkäufer installieren die Tageszeit, um einen riesigen Markt zu schaffen.",
       "name": "Route der Merwachles",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "22": {
       "description": "Unbeliebter Wald am Rand von Claire de Ville, Bois Hurlant hat einen sehr schlechten Ruf. Repazile Banditen und außerhalb des Gesetzes, sie hält vor allem ihren Namen aus diesen dubiosen Praktiken vor hunderten Jahren.",
       "name": "Bois Hurlant",
-      "particle": "in Richtung"
-    },
-    "22222": {
-      "description": "Ein Testgebiet für Monster. Sollte nie im Spiel auftauchen.",
-      "name": "Teszone für Monster",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "23": {
       "description": "In der großen Handelsstadt Claire de Ville war es nicht immer so gastfreundlich, wie es die Stadt war. Zu Beginn sehr arm, hat sie sich schnell dank ihrer vielen Geschäfte und Hotels entwickelt, die den Reisenden in der Region eine große Auswahl bieten. Claire de Ville ist auch bekannt für die Ruhe und die Befolgung des Ortes.",
       "name": "Claire de Ville",
-      "particle": "in"
+      "particle": "in",
+      "atParticle": "à",
+      "inParticle": "in"
     },
     "24": {
       "description": "Eine sehr steigere Straße, die nach Claire de Ville führt. Alles hängt davon ab, in welche Richtung Sie sich einschlagen.",
       "name": "Straße Grimpante",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "25": {
       "description": "Es ist alles im Namen. Ein sehr beliebter Fluss von Claires De-Ville-Giissbänner.",
       "name": "Rivière in Crabes",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "26": {
       "description": "Eine ruhige Stadt am Rande des Sentinellen-Bereichs.",
       "name": "Mergagnan",
-      "particle": "in"
+      "particle": "in",
+      "atParticle": "à",
+      "inParticle": "in"
     },
     "27": {
       "description": "Ein Wald am Rande des Mont Célestrum.",
       "name": "Wälder Célestrum",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "28": {
       "description": "Eingang zum Schloss des Königs. Umgeben von einer dicken Mauer scheint es jedem erdenklichen Angriff standhalten zu können.",
       "name": "Burg-Portes",
-      "particle": "in die"
+      "particle": "in die",
+      "atParticle": "an"
     },
     "29": {
       "description": "Riesige Halle, die mit zahlreichen Kunstwerken geschmückt ist.",
       "name": "Empfangsraum",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "3": {
       "description": "Eine große westliche Ebene, die von einem großen Wald überquert und von einer großen Straße überquert wird.",
       "name": "Die Wiege",
-      "particle": "in"
+      "particle": "in",
+      "atParticle": "unter"
     },
     "32": {
       "description": "Die Straße, die zum Schloss des Königs führt.",
       "name": "Straße zum Schloss des Königs",
-      "particle": "in"
+      "particle": "in",
+      "atParticle": "à"
     },
     "33": {
       "description": "",
       "name": "Primäre Continent",
-      "particle": "in"
+      "particle": "in",
+      "atParticle": "unter"
     },
     "39": {
       "description": "Ein in dichtem Nebel versunkener Pfad, der unbeweglich ist und keinen Ursprung hat. Weder Markierungen noch Formen erlauben es, diesen Ort zu lokalisieren.",
@@ -1276,35 +1309,49 @@
       "name": "Spukhaus",
       "particle": "in Richtung"
     },
+    "41": {
+      "description": "Gepflasterte Esplanade, die Boug-Coton mit den Toren des Königsschlosses verbindet. Hier kreuzen sich die Wege der Boten, bevor sie zu den Gemächern des Königs gelangen.",
+      "name": "Hof des Schlosses",
+      "particle": "in Richtung",
+      "atParticle": "an die",
+      "inParticle": "in der"
+    },
     "4": {
       "description": "Ein riesiger Wald südlich der Wiege. Man sagt, dass viele Reisende verloren gegangen sind.",
       "name": "Der Wald des Alten Mannes",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "5": {
       "description": "Pfad, der seinen Spitznamen mit seinem Nachnamen in der Natur im Süden des Waldes des Alten Mannes auszieht.",
       "name": "Pfad für Dedale",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "6": {
       "description": "Ein friedliches Dorf, das für seine Gastfreundschaft bekannt ist.",
       "name": "Boug-Coton",
-      "particle": "in"
+      "particle": "in",
+      "atParticle": "à",
+      "inParticle": "in"
     },
     "7": {
       "description": "Es ist ein warmer, heißer Sand, der in der Ehre der alten Könige der Region genannt wird.",
       "name": "Vallée de Rois",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     },
     "8": {
       "description": "Eine sehr große Kreuzung, die die wichtigsten Pfade im Westen von Mont Célestrum verbindet.",
       "name": "Aufforstung der Destins",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "unter"
     },
     "9": {
       "description": "Die größte Handelsroute zwischen der Wiege und dem Starken Ville ist nur noch von der Großen Straße übrig, die von Altmoränen gepflasterten Mooren übrig ist.",
       "name": "Große Straße",
-      "particle": "in Richtung"
+      "particle": "in Richtung",
+      "atParticle": "an die"
     }
   },
   "map_types": {
@@ -1450,17 +1497,37 @@
     "anyFight_one": "Machen {{count}} Kampf",
     "anyFight_other": "Machen {{count}} Kämpfe",
     "bigFeast": "Es ist ein großer Festmahl.",
+    "buyApartment": "Eine Wohnung besitzen",
+    "buyHome": "Ein Haus kaufen",
+    "buyApartments": "{{count}} -Wohnungen besitzen",
+    "buyGuildPetFood_one": "{{count}} -Futter für Haustiere kaufen",
+    "buyGuildPetFood_other": "{{count}} -Futter für Begleiter kaufen",
     "buyItemFromAlderic": "Kaufe einen Gegenstand von Alderic",
-    "buyTokensFromShop_one": "Kaufe {{count}} Token {emote:unitValues.token} im Geschäft",
-    "buyTokensFromShop_other": "Kaufen Sie {{count}} Tokens {emote:unitValues.token} im Geschäft",
+    "buyTokensFromShop_one": "{{count}} -Token {emote:unitValues.token} beim Token-Händler kaufen",
+    "buyTokensFromShop_other": "{{count}} -Token {emote:unitValues.token} beim Token-Händler kaufen",
     "buyUltimateSoups_one": "Kaufen Sie mindestens {{count}} ultimative Suppe",
     "buyUltimateSoups_other": "Kaufen Sie mindestens {{count}} Ultimative Suppen",
     "chooseClass": "Wählen Sie eine andere Klasse als {emote:classes.0} Rekrut",
     "chooseClassTier": "Eine Klasse der Ebene {{variantText}} oder höher haben",
-    "commandFightHistory": "Die Historie der Personen einsehen, die Sie angegriffen haben",
+    "collectMaterials_one": "Sammeln {{count}} Seltenes Material {{variantText}} oder mehr",
+    "collectMaterials_other": "{{count}} Seltene Materialien sammeln {{variantText}} oder mehr",
+    "collectRent": "Die Miete für eine Wohnung einziehen",
+    "commandFightHistory": "Kampfverlauf anzeigen",
+    "commandMap": "Den Befehl {command:map} ausführen",
     "commandMission": "Machen Sie die Bestellung {command:missions}",
     "commandReport": "Machen Sie die Bestellung {command:report}",
+    "cookPotionRarity": "Einen Zaubertrank der Seltenheitsstufe „ {{variantText}} “ oder höher brauen",
+    "cookRecipes_one": "Zubereitung von „ {{count}} “ – Rezept",
+    "cookRecipes_other": "{{count}} -Rezepte zubereiten",
+    "cultivatePlants_one": "Ernten {{count}} Pflanze",
+    "cultivatePlants_other": "{{count}} -Pflanzen ernten",
+    "getAncestralTrees_one": "Ernten oder kaufen: {{count}} Triebe eines uralten Baumes",
+    "getAncestralTrees_other": "{{count}} -Sprossen des Urbaums ernten oder kaufen",
     "dailyPotionsStock": "Den gesamten Pot-Bestand des Tages kaufen",
+    "depositChestItem_one": "Legen Sie den Gegenstand „ {{count}} “ in den Tresor Ihres Hauses ab",
+    "depositChestItem_other": "{{count}} Gegenstände in den Tresor Ihres Hauses legen",
+    "depositGuildTreasury_one": "Eine Einzahlung unter {{count}} in die Gildenkasse vornehmen",
+    "depositGuildTreasury_other": "{{count}} -Einzahlungen in die Gildenkasse vornehmen",
     "doReports_one": "Machen {{count}} Bericht",
     "doReports_other": "Machen {{count}} Berichte",
     "drinkAlcohol": "Ein alkoholisches Getränk trinken",
@@ -1480,6 +1547,7 @@
     "earnTokensInOneExpedition_one": "Verdienen Sie {{count}} Token {emote:unitValues.token} in einer einzigen Sendung",
     "earnTokensInOneExpedition_other": "Verdienen Sie {{count}} Tokens {emote:unitValues.token} in einer einzigen Sendung",
     "earnXP": "Gewinnen {{count, number}} {emote:unitValues.xp}",
+    "enchantItem": "Eine Waffe oder einen Schild verzaubern",
     "exploreDifferentPlaces": "Erkunde {{count}} verschiedene Orte",
     "fightAttacks": "Machen {{count}} {{variantText}} in Kämpfen",
     "fightHealthPercent_one": "Gewinnen Sie {{count}} Kampf mit weniger als {{variantText}}% Ihrer verbleibenden Lebensenergie.",
@@ -1501,11 +1569,17 @@
     "guildLevel": "Mitglied einer Gilde Stufe {{count, number}} oder höher sein",
     "haveItemRarity": "Ein Gerät mit einer Knappheit von {{variantText}} oder besser",
     "havePet": "Mit einem Vertrauten vertraut sein",
+    "haveGardenTalisman": "Das besitzen $t(models:talisman.remoteHarvest)",
     "depositPetInShelter": "Vertrautes ablegen oder freigeben",
     "petCaress": "Ihren Vertrauten streicheln",
     "petAssistedFight": "Sich im Kampf von Ihrem Vertrauten helfen lassen",
     "havePotions": "Besitze {{count}} Tränke zur gleichen Zeit",
+    "healInBed_one": "Sich im Bett {{count}} mal pflegen",
+    "healInBed_other": "Sich im Bett {{count}} mal pflegen",
+    "innMeal_one": "Essen {{count}} Mahlzeit im Gasthaus",
+    "innMeal_other": "Essen {{count}} Mahlzeit im Gasthaus",
     "joinGuild": "Verknüpfen oder Erstellen einer Gilde",
+    "joinGuildHouse": "Einem Gildenbereich angehören",
     "joinMemberOnBoat": "Mitglied auf der Insel beitreten",
     "joinPVEIsland": "Wiedererreichen der mysteriösen Insel",
     "kingsMoneyValue": "Erhalten Sie weniger als 6500 {emote:unitValues.money} im Geld des Königs",
@@ -1523,8 +1597,8 @@
     "meetAllOracles": "Den beiden Orakeln begegnen",
     "contributeToBlessing_one": "Einen Beitrag {{count, number}} {emote:unitValues.money} zu einem Segen leisten",
     "contributeToBlessing_other": "Beitragen {{count, number}} {emote:unitValues.money} zu Segnungen",
-    "doExpeditions_one": "Erfolgreich {{count}} Versand",
-    "doExpeditions_other": "Erfolgreich {{count}} Sendungen",
+    "doExpeditions_one": "Erfolgreich abschließen: „ {{count}} “ – Begleiter-Expedition",
+    "doExpeditions_other": "Erfolgreiche {{count}} Begleiter-Expeditionen",
     "longExpedition": "Erfolgreiche Expedition von mindestens {{variantText}}",
     "dangerousExpedition": "Erfolgreiche Durchführung einer Expedition mit der Gefährlichkeit \"{{variantText}}\" oder höher",
     "expeditionStreak_one": "Erfolgreich {{count}} Expedition in Folge",
@@ -1533,11 +1607,14 @@
     "dailyStreak_other": "Erfüllen Sie die tägliche Aufgabe {{count}} Tage hintereinander",
     "showCloneToTalvar": "Talvar einen Klon zeigen",
     "petEarnHealth": "Leben mit Hilfe eines Begleiter",
+    "plantSeed": "Einen Samen im eigenen Garten einpflanzen",
+    "reachCookingLevel": "Ein „ $t(models:cooking.grades.roaster) “ in der Küche werden",
     "reachGlory": "Haben {{count}} Ruhmespunkte {emote:unitValues.glory} oder mehr",
     "reachLevel": "Erreichen der Stufe {{count}}",
     "reachScore": "Eine Punktzahl von mehr als {{count}} {emote:unitValues.score}haben",
     "recoverAlteration_one": "Sich von {{count}} Zustandsveränderung erholen",
     "recoverAlteration_other": "Sich von {{count}} Zustandsveränderungen erholen",
+    "replaceMission": "Eine Aufgabe ersetzen",
     "sellItemWithGivenCost_one": "Verkaufen Sie {{count}} Ausrüstung für mehr als {{variantText}} {emote:unitValues.money}",
     "sellItemWithGivenCost_other": "Verkaufen Sie {{count}} Ausrüstungen für mehr als {{variantText}} {emote:unitValues.money}",
     "sellItems_one": "Verkaufen {{count}} Objekt",
@@ -1545,20 +1622,23 @@
     "sellOrTradePet": "Einen Vertrauten an einen anderen Spieler verkaufen",
     "showPetsToTalvar_one": "Talvar {{count}} Tier gezeigt zu haben",
     "showPetsToTalvar_other": "{{count}} Tiere in Talvar gezeigt zu haben",
-    "spendGems": "Geben Sie Edelsteine {emote:unitValues.gem} im Missionsladen aus.",
+    "sleepInInn": "In einer Herberge übernachten",
+    "spendGems": "{emote:unitValues.gem} Edelsteine ausgeben",
     "spendMoney": "Ausgeben {{count, number}} {emote:unitValues.money}",
     "spendTokens_one": "Geben Sie {{count}} Token aus {emote:unitValues.token}",
     "spendTokens_other": "Geben Sie {{count}} Tokens aus {emote:unitValues.token}",
     "tamedPet": "Ein vertrauter oder aufrichtigeter Begleiter",
     "trainedPet": "Ein aufrechter Begleiter",
-    "travelHours_one": "Machen Sie {{count}} Reise von mindestens {{variantText}} Stunde",
-    "travelHours_other": "Machen Sie {{count}} Reisen von mindestens {{variantText}} Stunden.",
+    "travelHours_one": "Eine Reise über {{count}} von mindestens {{variantText}}",
+    "travelHours_other": "{{count}} -Reisen mit einer Dauer von mindestens {{variantText}}",
     "unlock": "Jemand aus dem Gefängnis freizulassen",
-    "useTokens_one": "Verwende {{count}} Token {emote:unitValues.token} , um voranzukommen",
-    "useTokens_other": "Verwende {{count}} Tokens {emote:unitValues.token} , um voranzukommen",
+    "upgradeHomeLevel": "Ihr Zuhause auf ein höheres Niveau bringen {{variantText}}",
+    "upgradeItem": "Eine Waffe oder einen Schild verbessern",
+    "upgradeEpicItemLevel5": "Eine Waffe oder einen Schild der Seltenheitsstufe „Episch“ oder höher auf Stufe 5 verbessern",
+    "visitCityNpc": "Den Gemischtwarenladen einer Stadt besuchen",
     "wealthyPayForPVEIsland": "Eine Reise zu einer mysteriösen Insel zu einem Höchstpreis kaufen",
-    "winBoss_one": "Gewinnt {{count}} Bosskampf",
-    "winBoss_other": "Gewinnen Sie {{count}} Bosskämpfe",
+    "winBoss_one": "{{count}} -Monster besiegen",
+    "winBoss_other": "{{count}} -Monster besiegen",
     "winAnyBossWithDifferentClasses_one": "Bezwinge {{count}} boss",
     "winAnyBossWithDifferentClasses_other": "Besiege Bosse mithilfe von {{count}} verschiedenen Klassen.",
     "winBossWithDifferentClasses_one": "Besiege den Endboss einer Insel (nur der letzte Endboss jeder Insel zählt)",
@@ -1566,7 +1646,10 @@
   },
   "missionVariants": {
     "default": "{{variant}}",
+    "collectMaterials": "$t(models:materialRarityNames.{{variant}})",
+    "visitCityNpc": "$t(models:cityNpcNames.{{variant}})",
     "drinkPotionRarity": "$t(items:rarities.{{variant}})",
+    "cookPotionRarity": "$t(items:rarities.{{variant}})",
     "haveItemRarity": "$t(items:rarities.{{variant}})",
     "fightMinTurns": "{{variant}}",
     "fromPlaceToPlace_order": "Mache {{place1}}-{{place2}} in weniger als {{time}} Stunden",
@@ -1575,6 +1658,21 @@
     "goToPlace": "{emote:mapTypes.{{mapType}}} $t(models:map_locations.{{variant}}.name)",
     "fightAttacks": "{emote:fightActions.{{variant}}} $t(models:fight_actions.{{variant}}.name, {\"count\": {{count}}})",
     "finishWithAttack": "{emote:fightActions.{{variant}}} $t(models:fight_actions.{{variant}}.name, {\"count\": {{count}}})"
+  },
+  "materialRarityNames": {
+    "1": "Gemeinde",
+    "2": "ungewöhnlich",
+    "3": "selten"
+  },
+  "cityNpcNames": {
+    "1": "$t(commands:report.city.shops.royalMarket.label)",
+    "2": "$t(commands:report.city.shops.generalShop.label)",
+    "3": "$t(commands:report.city.shops.stockExchange.label)",
+    "4": "$t(commands:report.city.shops.tanner.label)",
+    "5": "$t(commands:report.city.shops.herbalist.label)",
+    "6": "$t(commands:report.city.shops.lumberjack.label)",
+    "7": "$t(commands:report.city.shops.veterinarian.label)",
+    "8": "$t(commands:report.city.shops.materialMerchant.label)"
   },
   "monsters": {
     "forestTroll": {
@@ -1760,6 +1858,8 @@
     "101_female": "Vampire",
     "102_male": "Féetaud",
     "102_female": "Fee",
+    "103_male": "Seeigel",
+    "103_female": "Seeigel",
     "10_female": "Henne",
     "10_male": "Hahn",
     "11_female": "Vogel",
@@ -2055,7 +2155,9 @@
     "92": "Bave de Troll",
     "93": "Titan-Listole",
     "94": "ChocoChoc-Tafel",
-    "95": "Erstaunlicher Mega-Geschwindigkeitstrank"
+    "95": "Erstaunlicher Mega-Geschwindigkeitstrank",
+    "96": "Lauwarmer Kräutertee",
+    "97": "Schnelles Aufbrühen"
   },
   "weapons": {
     "0": "Poing",
@@ -2182,7 +2284,8 @@
   },
   "talisman": {
     "anchor": "{emote:expedition.talisman} **Talisman der Verankerung**.",
-    "clone": "{emote:expedition.cloneTalisman} **Klon-Talisman**"
+    "clone": "{emote:expedition.cloneTalisman} **Klon-Talisman**",
+    "remoteHarvest": "{emote:city.gardenStatus.remoteHarvestTalisman} **Herz Sylvester**"
   },
   "ordinals": {
     "get_feminine_ordinal_one": "1.",
@@ -2214,7 +2317,6 @@
         "classTier": "{emote:commands.classes} | Stufenklassen {{tier}} freigeschaltet! Weitere Informationen zu den Klassen finden Sie mit den Befehlen {command:classesinfo} und {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Neuer Missionsplatz freigeschaltet! Weitere Informationen zu Ihren Missionen erhalten Sie mit dem Befehl {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Zugang zu freigeschalteten entfernten Inseln! Treffen Sie sich an einem Wasserloch, um neue Abenteuer zu erleben!",
-        "tokensUnlocked": "{emote:unitValues.token} | Token freigeschaltet! Sie können nun Ihre Token verwenden, um schneller voranzukommen, mit dem Befehl {command:report}.",
         "statsIncreased": "{emote:other.increase} | Verbesserte Statistiken."
       }
     }
@@ -2263,23 +2365,249 @@
     "1107": {
       "femaleIceDragon": "Sie dringen in diese unerforschte Region vor, geleitet von einer Mischung aus Neugier und Angst. Die Eiswand, die sich vor Ihnen erhebt, spiegelt eine Silhouette wider, die so gewaltig ist, dass sie sich jeder Vorstellungskraft entzieht. Je näher Sie in der eisigen Dunkelheit kommen, desto mehr wird Ihnen das Ausmaß der Kreatur bewusst, die sich hinter dieser Barriere verbirgt. Plötzlich tauchen Risse im Eis auf, die sich wie Spinnweben ausbreiten. Ein dumpfes Grollen lässt die Felswände vibrieren. Die Mauer explodiert mit einem apokalyptischen Krachen und schleudert massive Eisblöcke durch die Luft. Durch diesen Vorhang aus zerbrochenen Kristallen taucht die majestätischste aller Kreaturen auf: ein Eisdrache von pharaonischen Ausmaßen. Ihre Präsenz ist gewaltig, ihre gefalteten Flügel berühren fast die steinernen Gewölbe. Sie ist von erschreckender Schönheit, denn ihre schillernden Schuppen fangen das schwache Licht in eisigen Regenbögen ein. Ihre Augen, tiefblau wie der Abgrund, strahlen uralte Weisheit und mütterlichen Zorn aus. Hinter ihr erblicken Sie ein riesiges, perlmuttfarbenes Ei, das in einem geheimnisvollen Licht pulsiert. Sie haben soeben ihre Kinderstube betreten und kein Eindringen in das Heiligtum der Eiskönigin wird ungestraft bleiben..."
     },
-    "1109": {
+    "1201": {
       "turtle": "Sie kommen in der Nähe eines natürlichen Beckens an, das durch ein Korallenriff geschützt ist. Die Ruhe des Ortes verleitet Sie dazu, näher heranzugehen, um den Meeresboden zu bewundern. In der Mitte des Beckens befindet sich ein großer, mit Algen bewachsener Felsen. Plötzlich setzt er sich in Bewegung. Ein großer Kopf ragt aus ihm heraus, gefolgt von vier riesigen Beinen. Eine Riesenschildkröte erhebt sich vor Ihnen, deren Größe mit der eines kleinen Schiffes konkurrieren kann. Ihre großen Augen starren Sie mit uralter Weisheit an. Dann öffnet sie ihr Maul und ein kräftiger Wasserstrahl streift Sie und macht Ihnen klar, dass diese friedliche Lagune ihr Territorium ist..."
     },
-    "1110": {
+    "1202": {
       "waterSpirit": "Sie betreten bei Ebbe eine Meereshöhle. Seltsame Echos hallen in der Tiefe wider und ein bläulicher Schimmer tanzt in der Dunkelheit und zieht Sie weiter nach unten. Plötzlich beginnt das stehende Wasser zu wirbeln und Myriaden von Tröpfchen an den Wänden laufen in diesem zentralen Punkt zusammen. Eine durchscheinende Gestalt erwacht vor Ihnen zum Leben, halb Blätter, halb Wasser. Der Geist der Meere starrt Sie aus seinen abgrundtief blauen Augen an. Bevor Sie reagieren können, verschwindet er und taucht hinter Ihrem Rücken wieder auf. Dieser verschwommene Wächter wird Sie nicht so leicht aus seinem Heiligtum lassen ..."
     },
-    "1111": {
+    "1203": {
       "captainCrow": "Der Nebel wird immer dichter, je näher Sie der Revenant Creek kommen. Die Sonne ist schon lange untergegangen und nur ein paar Irrlichter beleuchten Ihren Weg. Sie gehen vorsichtig über die nassen Kieselsteine, während Ihr Blick an den Wracks mehrerer Schiffe hängen bleibt, deren verrottete Rümpfe immer wieder von der Ebbe und Flut der Wellen abgeleckt werden. Plötzlich verdichtet sich der Nebel zu einer humanoiden Gestalt, die sich nur wenige Meter vor Ihnen befindet. Augen zeichnen sich ab, zwei glühende Kohlen im Nichts. Kapitän Crow, der Geist des gefürchtetsten Piraten der Meere, materialisiert seine Silhouette vor Ihnen, sein Schwert knistert mit verfluchter Energie. Er ist noch nicht fertig damit, Seelen zu fordern."
     },
-    "1112": {
+    "1204": {
       "mermaid": "Sie erforschen eine Unterwasserhöhle und je weiter Sie vordringen, desto mehr hören Sie eine eindringliche Melodie. Ihre Beine tragen Sie unwillkürlich zu ihrer Quelle. An einer Stelle entdecken Sie ein Becken mit türkisfarbenem Wasser. Dort sitzt sie auf einem Felsen und wartet auf Sie. Die Meerjungfrau, halb Frau, halb Fisch, beobachtet Sie mit ihren hypnotischen Augen. Ihre Schönheit ist atemberaubend, aber ihr Lächeln lässt Ihnen das Blut in den Adern gefrieren. Ihre scharfen Krallen klopfen auf den Stein und markieren einen dumpfen Takt, der von den Wänden widerhallt. Sein Gesang ändert die Tonlage: Er will Sie nicht mehr verführen, sondern mit der Struktur der Höhle selbst in Resonanz treten. Es ist eine Falle, und sie schnappt zu..."
     },
-    "1113": {
+    "1205": {
       "kraken": "Sie stehen am Rand eines Meeresabgrunds und blicken in das tintenschwarze Wasser. Nichts scheint sich in diesem bodenlosen Abgrund zu bewegen. Dann beginnen Blasen an die Oberfläche zu steigen. Erst ein paar, dann Hunderte. Das Wasser beginnt heftig zu brodeln. Plötzlich schießt ein massiver Tentakel aus der Tiefe, so breit wie ein Baumstamm. Dann noch einer. Und noch ein weiterer. Der Krake taucht aus seiner Höhle auf, seine gelben Augen glühen mit bösartiger Intelligenz. Seine Saugnäpfe klatschen mit einer Kraft gegen den Fels, die Knochen zermalmen kann, eine Urkraft. Der Abgrund ist an die Oberfläche gekommen, und er ist hungrig..."
     },
-    "1114": {
+    "1206": {
       "leviathan": "Sie steigen in eine Unterwasserschlucht hinab, in der es kein Licht mehr gibt. Die Dunkelheit umhüllt Sie, die Stille ist bedrückend. Dann spüren Sie es, bevor Sie es sehen: eine titanische Präsenz, die eine tiefe Vibration aussendet, die jeden Knochen in Ihrem Körper erzittern lässt. Zwei Pupillen öffnen sich, groß wie Schilde, in einem elektrischen Blau, das im schwarzen Wasser zischt. Der Leviathan erwacht, er entfaltet sich langsam, seine Größe trotzt jeder Vorstellungskraft. Blitze beginnen zwischen seinen Fängen zu knistern, während das Wasser in einem aufkommenden Mahlstrom herumwirbelt. Sie haben gerade den Fehler begangen, ihn zu wecken..."
+    }
+  },
+  "materials": {
+    "1": "Kaliumchlorat",
+    "2": "Akazienbrett",
+    "3": "Außerirdische Zelle",
+    "4": "Aluminium",
+    "5": "Amethyst-Kristall",
+    "6": "Ammoniak",
+    "7": "Antike Bronze",
+    "8": "Bambusrohr",
+    "9": "Buchenrinde",
+    "10": "Belladonna",
+    "11": "Bisonleder",
+    "12": "Geflochtenes Hanfseil",
+    "13": "Messing",
+    "14": "Bronze",
+    "15": "Kaktus",
+    "16": "Kohlenstoffstahl",
+    "17": "Rizinus-Samen",
+    "18": "Zedernholz",
+    "19": "Himmlische Liane",
+    "20": "Stoffstück",
+    "21": "Kohlepulver",
+    "22": "Komposit-Metall",
+    "23": "Komprimiertes Gas",
+    "24": "Kupfer",
+    "25": "Baumwolle",
+    "26": "Rindsleder",
+    "27": "Krokodil-Leder",
+    "28": "Rohöl",
+    "29": "Wildleder",
+    "30": "Getrockneter Lavendel",
+    "31": "Ebenholzrinde",
+    "32": "Holunderbeeren",
+    "33": "Elementarträne",
+    "34": "Verzauberte Rune",
+    "35": "Ewige Flamme",
+    "36": "Extrem giftiger Pilz",
+    "37": "Leinenfaden",
+    "38": "Fugu-Tetrodotoxin",
+    "39": "Verzinkter Stahl",
+    "40": "Geistergras",
+    "41": "Ingwerwurzel",
+    "42": "Ziegenleder",
+    "43": "Goldmessing",
+    "44": "Schießpulver",
+    "45": "Hanffaser",
+    "46": "Wasserstoffperoxid",
+    "47": "Jutekordel",
+    "48": "Lammleder",
+    "49": "Geflochtenes Seil aus Leder",
+    "50": "Leichtes Aluminium",
+    "51": "Ahornblatt",
+    "52": "Präriegras",
+    "53": "Mondstein",
+    "54": "Schaumstoffmatte",
+    "55": "Pilz",
+    "56": "Nitroglyzerin",
+    "57": "Nylonfaden",
+    "58": "Eichenzweig",
+    "59": "Eichenblatt",
+    "60": "Oud-Harz",
+    "61": "Philosophisches Buch",
+    "62": "Phönixfeder",
+    "63": "Schweinsleder",
+    "64": "Kiefernzahnrad",
+    "65": "Plutonium 239",
+    "66": "Giftiger Pilz",
+    "67": "Edelstein",
+    "68": "Gereinigtes Wasser",
+    "69": "Regenbogenquarz",
+    "70": "Roheisen",
+    "71": "Rotes Kupfer",
+    "72": "Heilige Räucherstäbchen",
+    "73": "Salbei-Weihrauch",
+    "74": "Sandelholz",
+    "75": "Seidenmasche",
+    "76": "Silberne Drachenschuppe",
+    "77": "Silberstaub",
+    "78": "Schlangenleder",
+    "79": "Rostfreier Stahl",
+    "80": "Sternenstaub",
+    "81": "Stahl",
+    "82": "Schwefel",
+    "83": "Synthetisches Leder",
+    "84": "Teakholzbrett",
+    "85": "Gehärteter Stahl",
+    "86": "Titanium",
+    "87": "Rose aus dem Nichts",
+    "88": "Walnusszweig",
+    "89": "Weiße Kerze",
+    "90": "Zink"
+  },
+  "plants": {
+    "1": "Gewöhnliches Kraut",
+    "2": "Goldklee",
+    "3": "Mondmoos",
+    "4": "Eisenwurzel",
+    "5": "Nachtaktiver Pilz",
+    "6": "Giftiges Blatt",
+    "7": "Feuerkugel",
+    "8": "Fleischpflanze",
+    "9": "Kristallblume",
+    "10": "Uralter Baum"
+  },
+  "cooking": {
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Stufe {{level}})",
+    "grades": {
+      "kitchenHelper": "Küchenhilfe",
+      "scullion": "Marmiton",
+      "cook": "Koch",
+      "roaster": "Rôtisseur",
+      "saucier": "Saucier",
+      "steward": "Amtsmeister",
+      "tableChef": "Tischvorsteher",
+      "stoveChef": "Chefkoch",
+      "kitchenMaster": "Meister der Küche",
+      "royalGrandChef": "Königlicher Großkoch"
+    },
+    "stations": {
+      "0": "Sein",
+      "1": "Kessel",
+      "2": "Gießerei",
+      "3": "Destilliergerät",
+      "4": "Brasier"
+    },
+    "recipes": {
+      "potion_health_1": "Grundlegender Heiltrank",
+      "potion_health_2": "Leichter Heiltrank",
+      "potion_health_3": "Pflege",
+      "potion_health_4": "Verbesserter Heiltrank",
+      "potion_health_5": "Starker Heiltrank",
+      "potion_health_6": "Überlegener Heiltrank",
+      "potion_health_7": "Elixier des Lebens",
+      "potion_health_8": "Wichtiges Lebenselixier",
+      "potion_energy_1": "Basischer Krafttrank",
+      "potion_energy_2": "Leichter Krafttrank",
+      "potion_energy_3": "Trank der Stärke",
+      "potion_energy_4": "Verbesserter Krafttrank",
+      "potion_energy_5": "Mächtiger Krafttrank",
+      "potion_energy_6": "Trank der überlegenen Kraft",
+      "potion_energy_7": "Energie-Elixier",
+      "potion_energy_8": "Hauptenergieelixier",
+      "potion_time_speedup_1": "Grundlegender Beschleunigungstrank",
+      "potion_time_speedup_2": "Leichter Beschleunigungstrank",
+      "potion_time_speedup_3": "Trank der Schnelligkeit",
+      "potion_time_speedup_4": "Verbesserter Beschleunigungstrank",
+      "potion_time_speedup_5": "Mächtiger Beschleunigungstrank",
+      "potion_time_speedup_6": "Trank der höheren Beschleunigung",
+      "potion_time_speedup_7": "Elixier der Zeit",
+      "potion_time_speedup_8": "Dur-Zeit-Elixier",
+      "potion_defense_1": "Grundlegender Schutztrank",
+      "potion_defense_2": "Leichter Schutztrank",
+      "potion_defense_3": "Trank des Schutzes",
+      "potion_defense_4": "Verbesserter Schutztrank",
+      "potion_defense_5": "Mächtiger Schutztrank",
+      "potion_defense_6": "Überlegener Schutztrank",
+      "potion_defense_7": "Wach-Elixier",
+      "potion_defense_8": "Major Guard Elixier",
+      "potion_attack_1": "Grundlegender Krafttrank",
+      "potion_attack_2": "Trank der leichten Stärke",
+      "potion_attack_3": "Kraft-Potion",
+      "potion_attack_4": "Verbesserter Krafttrank",
+      "potion_attack_5": "Trank der mächtigen Kraft",
+      "potion_attack_6": "Trank der überlegenen Stärke",
+      "potion_attack_7": "Elixier der Macht",
+      "potion_attack_8": "Major Power Elixier",
+      "potion_speed_1": "Basic Velocity Potion",
+      "potion_speed_2": "Leichter Schnelligkeitstrank",
+      "potion_speed_3": "Schnelligkeitstrank",
+      "potion_speed_4": "Verbesserter Schnelligkeitstrank",
+      "potion_speed_5": "Mächtiger Schnelligkeitstrank",
+      "potion_speed_6": "Trank der höheren Geschwindigkeit",
+      "potion_speed_7": "Elixier der Schnelligkeit",
+      "potion_speed_8": "Major Rapidity Elixier",
+      "petfood_salad_1": "Einfacher Salat",
+      "petfood_salad_2": "Gemischter Salat",
+      "petfood_salad_3": "Feinschmecker-Salat",
+      "petfood_salad_4": "Königlicher Salat",
+      "petfood_salad_5": "Legendärer Salat",
+      "petfood_candy_1": "Handgemachte Bonbons",
+      "petfood_candy_2": "Süßes Bonbon",
+      "petfood_candy_3": "Exquisite Bonbons",
+      "petfood_candy_4": "Raffinierte Süßigkeit",
+      "petfood_candy_5": "Göttliches Bonbon",
+      "petfood_meat_1": "Gegrilltes Fleisch",
+      "petfood_meat_2": "Mariniertes Fleisch",
+      "petfood_meat_3": "Gewürztes Fleisch",
+      "petfood_meat_4": "Gourmet-Fleisch",
+      "petfood_meat_5": "Legendäres Fleisch",
+      "petfood_ultimate_1": "Suppe des Reisenden",
+      "petfood_ultimate_2": "Nahrhafte Suppe",
+      "petfood_ultimate_3": "Festmahl des Champions",
+      "petfood_ultimate_4": "Königliches Bankett",
+      "petfood_ultimate_5": "Festmahl der Götter",
+      "material_metal_1": "Metallguss",
+      "material_metal_2": "Verstärkte Metalllegierung",
+      "material_metal_3": "Antiker Metallbarren",
+      "material_alloy_1": "Schmiedelegierung",
+      "material_alloy_2": "Verbundlegierung",
+      "material_alloy_3": "Legendäre Legierung",
+      "material_nature_1": "Konzentrierte natürliche Essenz",
+      "material_nature_2": "Destillat der Natur",
+      "material_nature_3": "Kristall der reinen Natur",
+      "material_spiritual_1": "Kondensierter geistiger Äther",
+      "material_spiritual_2": "Seelenfragment",
+      "material_spiritual_3": "Höchste spirituelle Essenz",
+      "material_magic_1": "Kristallisiertes magisches Pulver",
+      "material_magic_2": "Arkaner Kristall",
+      "material_magic_3": "Stein der uralten Magie",
+      "material_leather_1": "Verstärktes gegerbtes Leder",
+      "material_leather_2": "Elite-Leder",
+      "material_leather_3": "Drakonisches Leder",
+      "material_rope_1": "Verstärktes geflochtenes Seil",
+      "material_rope_2": "Verzaubertes Garn",
+      "material_rope_3": "Legendäre Besaitung",
+      "material_poison_1": "Konzentriertes Toxin",
+      "material_poison_2": "Destilliertes Gift",
+      "material_poison_3": "Gift des Schattens",
+      "material_explosive_1": "Raffiniertes explosives Pulver",
+      "material_explosive_2": "Verbesserte Sprengladung",
+      "material_explosive_3": "Uralter Zünder",
+      "material_wood_1": "Versteinertes Holz",
+      "material_wood_2": "Verwunschener Wald",
+      "material_wood_3": "Wald des Weltenbaums"
     }
   }
 }

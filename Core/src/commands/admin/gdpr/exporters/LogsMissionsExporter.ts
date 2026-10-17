@@ -1,5 +1,5 @@
 import {
-	streamToCSV, fetchWithPagination, GDPRCsvFiles
+	streamToCSV, GDPRCsvFiles
 } from "../CSVUtils";
 import { LogsPlayersNewPets } from "../../../../core/database/logs/models/LogsPlayersNewPets";
 import { LogsPlayersCommands } from "../../../../core/database/logs/models/LogsPlayersCommands";
@@ -11,13 +11,6 @@ import { LogsMissionsFinished } from "../../../../core/database/logs/models/Logs
 import { LogsMissionsFailed } from "../../../../core/database/logs/models/LogsMissionsFailed";
 import { LogsMissionsDailyFinished } from "../../../../core/database/logs/models/LogsMissionsDailyFinished";
 import { LogsMissionsCampaignProgresses } from "../../../../core/database/logs/models/LogsMissionsCampaignProgresses";
-
-/**
- * Result containing new pets data for use by other exporters
- */
-export interface LogsMissionsExportResult {
-	newPets: LogsPlayersNewPets[];
-}
 
 /**
  * Exports player rankings and achievements (files 37-39)
@@ -127,13 +120,8 @@ async function exportMissionLogs(
 export async function exportLogsMissions(
 	logsPlayerId: number,
 	csvFiles: GDPRCsvFiles
-): Promise<LogsMissionsExportResult> {
+): Promise<void> {
 	// 35. New pets obtained
-	const newPets = await fetchWithPagination(
-		LogsPlayersNewPets,
-		{ playerId: logsPlayerId },
-		p => p
-	);
 	const petsCsv = await streamToCSV(
 		LogsPlayersNewPets,
 		{ playerId: logsPlayerId },
@@ -150,7 +138,10 @@ export async function exportLogsMissions(
 		LogsPlayersCommands,
 		{ playerId: logsPlayerId },
 		c => ({
-			commandId: c.commandId, date: c.date
+			commandId: c.commandId,
+			originId: c.originId,
+			subOriginId: c.subOriginId,
+			date: c.date
 		})
 	);
 	if (commandsCsv) {
@@ -162,6 +153,4 @@ export async function exportLogsMissions(
 
 	// 40-44. Mission logs
 	await exportMissionLogs(logsPlayerId, csvFiles);
-
-	return { newPets };
 }

@@ -106,6 +106,22 @@ describe("Mission JSON files validation", () => {
 			}
 		});
 
+		it("should reward gems for every daily variant", () => {
+			const dailyIndexes = missionData.dailyIndexes;
+			const gems = missionData.gems;
+
+			if (!dailyIndexes || !gems) {
+				return;
+			}
+
+			for (const index of dailyIndexes) {
+				expect(
+					gems[index],
+					`dailyIndexes contains ${index} but gems[${index}] does not reward any gem`
+				).toBeGreaterThan(0);
+			}
+		});
+
 		it("should have non-negative values in reward arrays", () => {
 			const numericFields = ["objectives", "gems", "xp", "points", "money", "expirations"] as const;
 

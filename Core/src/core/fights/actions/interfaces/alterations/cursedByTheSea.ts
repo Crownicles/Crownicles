@@ -16,7 +16,7 @@ import { FightAlterations } from "../../FightAlterations";
 const use: FightAlterationFunc = (affected, _fightAlteration, opponent, turn) => {
 	if ((Math.random() < 0.4 && affected.alterationTurn > 2) || affected.alterationTurn > 4) {
 		const result = defaultHealFightAlterationResult(affected);
-		let damageDealt = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), affected, getAttackInfo(), true);
+		let damageDealt = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), opponent, getAttackInfo(), true);
 		damageDealt += MathUtils.getIntervalValue(0, damageDealt * 2, (affected.alterationTurn - 2) / 3);
 		damageDealt += MathUtils.getIntervalValue(0, damageDealt, Math.min(turn, FightConstants.MAX_TURNS) / FightConstants.MAX_TURNS);
 		result.damages = Math.round(damageDealt);

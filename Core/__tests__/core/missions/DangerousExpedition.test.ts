@@ -203,9 +203,9 @@ describe("dangerousExpedition mission", () => {
 			expect(result).toBe(58);
 		});
 
-		it("should return 72 for HARD difficulty (veryHigh risk)", () => {
+		it("should return 72 or 90 for HARD difficulty (veryHigh or desperate risk)", () => {
 			const result = missionInterface.generateRandomVariant(MissionDifficulty.HARD, null as never);
-			expect(result).toBe(72);
+			expect([72, 90]).toContain(result);
 		});
 	});
 

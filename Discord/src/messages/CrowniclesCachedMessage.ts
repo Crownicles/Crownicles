@@ -4,8 +4,11 @@ import {
 import {
 	CrowniclesPacket, PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
-import { minutesToMilliseconds } from "../../../Lib/src/utils/TimeUtils";
+import {
+	asMinutes, minutesToMilliseconds
+} from "../../../Lib/src/utils/TimeUtils";
 import { DiscordCache } from "../bot/DiscordCache";
+import { crowniclesClient } from "../bot/CrowniclesShard";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
 export abstract class CrowniclesCachedMessage<T extends CrowniclesPacket = CrowniclesPacket> {
@@ -14,6 +17,9 @@ export abstract class CrowniclesCachedMessage<T extends CrowniclesPacket = Crown
 
 	// The id of the original message
 	readonly originalMessageId: string;
+
+	// The id of the channel the message lives in, used as a fallback to (re)send through the bot token when the cached interaction is gone (e.g. after a shard reconnect or interaction expiry)
+	channelId?: string;
 
 	// Message linked to this cached message
 	storedMessage?: Message;
@@ -36,10 +42,16 @@ export abstract class CrowniclesCachedMessage<T extends CrowniclesPacket = Crown
 	abstract updateMessage(packet: T, context: PacketContext): Promise<ReactionCollectorReturnTypeOrNull>;
 
 	async update(packet: T, context: PacketContext): Promise<ReactionCollectorReturnTypeOrNull> {
+		if (context.discord?.channel) {
+			this.channelId = context.discord.channel;
+		}
 		return await this.updateMessage(packet, context);
 	}
 
-	async post(options: BaseMessageOptions): Promise<Message | null> {
+	async post(options: BaseMessageOptions, fallbackChannelId?: string): Promise<Message | null> {
+		if (fallbackChannelId) {
+			this.channelId = fallbackChannelId;
+		}
 		if (this.reuploadMessage) {
 			this.storedMessage?.delete().then();
 			this.storedMessage = undefined;
@@ -49,10 +61,30 @@ export abstract class CrowniclesCachedMessage<T extends CrowniclesPacket = Crown
 			return await this.storedMessage.edit(options);
 		}
 		const mainMessage = DiscordCache.getInteraction(this.originalMessageId);
-		if (!mainMessage) {
+		if (mainMessage) {
+			const message = await mainMessage.channel.send(options) as Message;
+			this.storedMessage = message;
+			return message;
+		}
+
+		/*
+		 * Fallback: the cached interaction is gone (e.g. shard reconnect or 15-min interaction expiry).
+		 * Re-send through the channel using the bot token, which does not depend on the interaction,
+		 * so the fight display keeps working transparently for the player.
+		 */
+		return await this.postThroughChannel(options);
+	}
+
+	private async postThroughChannel(options: BaseMessageOptions): Promise<Message | null> {
+		if (!this.channelId) {
 			return null;
 		}
-		const message = await mainMessage.channel.send(options) as Message;
+		const channel = await crowniclesClient.channels.fetch(this.channelId)
+			.catch(() => null);
+		if (!channel?.isSendable()) {
+			return null;
+		}
+		const message = await channel.send(options);
 		this.storedMessage = message;
 		return message;
 	}
@@ -74,7 +106,7 @@ export abstract class CrowniclesCachedMessages {
 		CrowniclesCachedMessages.cachedMessages.set(message.cacheKey, message);
 		setTimeout(() => {
 			CrowniclesCachedMessages.remove(message.cacheKey);
-		}, minutesToMilliseconds(message.duration));
+		}, minutesToMilliseconds(asMinutes(message.duration)));
 	}
 
 	/**

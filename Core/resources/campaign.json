@@ -17,11 +17,11 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "findOrBuyItem",
+      "missionId": "earnMoney",
       "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 2,
-      "xpToWin": 20,
+      "missionObjective": 100,
+      "gemsToWin": 1,
+      "xpToWin": 25,
       "moneyToWin": 0
     },
     {
@@ -41,11 +41,11 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "earnMoney",
+      "missionId": "findOrBuyItem",
       "missionVariant": 0,
-      "missionObjective": 250,
-      "gemsToWin": 1,
-      "xpToWin": 25,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 20,
       "moneyToWin": 0
     },
     {
@@ -73,11 +73,27 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "commandMap",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 40,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "goToPlace",
       "missionVariant": 3,
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "visitCityNpc",
+      "missionVariant": 2,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 30,
       "moneyToWin": 0
     },
     {
@@ -90,6 +106,14 @@
     },
     {
       "missionId": "sellItems",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 25,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "sleepInInn",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
@@ -118,6 +142,22 @@
       "missionObjective": 10000,
       "gemsToWin": 3,
       "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "buyHome",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 150,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "depositChestItem",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 25,
       "moneyToWin": 0
     },
     {
@@ -177,6 +217,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "upgradeHomeLevel",
+      "missionVariant": 2,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "goToPlace",
       "missionVariant": 15,
       "missionObjective": 1,
@@ -206,6 +254,14 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "enchantItem",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 75,
       "moneyToWin": 0
     },
     {
@@ -249,11 +305,27 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "plantSeed",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "joinPVEIsland",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "upgradeItem",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 50,
       "moneyToWin": 0
     },
     {
@@ -278,6 +350,14 @@
       "missionObjective": 7500,
       "gemsToWin": 2,
       "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "buyApartment",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 135,
       "moneyToWin": 0
     },
     {
@@ -329,6 +409,30 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "collectRent",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "meetTalvar",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "showPetsToTalvar",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "doExpeditions",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -369,19 +473,19 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "joinGuildHouse",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 150,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "reachLevel",
       "missionVariant": 0,
       "missionObjective": 40,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "meetTalvar",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 1,
-      "xpToWin": 100,
       "moneyToWin": 0
     },
     {
@@ -393,11 +497,27 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "cookRecipes",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 120,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "contributeToBlessing",
       "missionVariant": 0,
       "missionObjective": 100,
       "gemsToWin": 3,
       "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "haveGardenTalisman",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 150,
       "moneyToWin": 0
     },
     {
@@ -430,6 +550,22 @@
       "missionObjective": 40,
       "gemsToWin": 1,
       "xpToWin": 50,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "replaceMission",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 25,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "dangerousExpedition",
+      "missionVariant": 30,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 300,
       "moneyToWin": 0
     },
     {
@@ -697,27 +833,19 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "meetDifferentPlayers",
-      "missionVariant": 1,
-      "missionObjective": 5,
-      "gemsToWin": 3,
-      "xpToWin": 200,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "longExpedition",
-      "missionVariant": 120,
+      "missionVariant": 720,
       "missionObjective": 1,
-      "gemsToWin": 3,
-      "xpToWin": 200,
+      "gemsToWin": 5,
+      "xpToWin": 350,
       "moneyToWin": 0
     },
     {
       "missionId": "earnPoints",
       "missionVariant": 0,
-      "missionObjective": 15000,
-      "gemsToWin": 2,
-      "xpToWin": 250,
+      "missionObjective": 30000,
+      "gemsToWin": 4,
+      "xpToWin": 400,
       "moneyToWin": 0
     },
     {
@@ -753,6 +881,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "reachCookingLevel",
+      "missionVariant": 0,
+      "missionObjective": 31,
+      "gemsToWin": 4,
+      "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "contributeToBlessing",
       "missionVariant": 5,
       "missionObjective": 16300,
@@ -778,10 +914,10 @@
     },
     {
       "missionId": "longExpedition",
-      "missionVariant": 300,
+      "missionVariant": 2160,
       "missionObjective": 1,
-      "gemsToWin": 5,
-      "xpToWin": 350,
+      "gemsToWin": 7,
+      "xpToWin": 500,
       "moneyToWin": 0
     },
     {
@@ -790,22 +926,6 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 200,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "doExpeditions",
-      "missionVariant": 6,
-      "missionObjective": 25,
-      "gemsToWin": 5,
-      "xpToWin": 400,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "dangerousExpedition",
-      "missionVariant": 30,
-      "missionObjective": 1,
-      "gemsToWin": 5,
-      "xpToWin": 300,
       "moneyToWin": 0
     },
     {
@@ -838,6 +958,14 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "doExpeditions",
+      "missionVariant": 6,
+      "missionObjective": 25,
+      "gemsToWin": 5,
+      "xpToWin": 400,
       "moneyToWin": 0
     },
     {
@@ -921,6 +1049,22 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "getAncestralTrees",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "cookPotionRarity",
+      "missionVariant": 6,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "chooseClassTier",
       "missionVariant": 3,
       "missionObjective": 1,
@@ -962,7 +1106,7 @@
     },
     {
       "missionId": "dangerousExpedition",
-      "missionVariant": 50,
+      "missionVariant": 73,
       "missionObjective": 1,
       "gemsToWin": 7,
       "xpToWin": 400,
@@ -988,8 +1132,8 @@
       "missionId": "reachLevel",
       "missionVariant": 0,
       "missionObjective": 100,
-      "gemsToWin": 1,
-      "xpToWin": 50,
+      "gemsToWin": 8,
+      "xpToWin": 500,
       "moneyToWin": 0
     },
     {
@@ -1017,11 +1161,27 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "upgradeEpicItemLevel5",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 15,
+      "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "winBossWithDifferentClasses",
       "missionVariant": 0,
       "missionObjective": 4,
       "gemsToWin": 28,
       "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "buyApartments",
+      "missionVariant": 0,
+      "missionObjective": 5,
+      "gemsToWin": 30,
+      "xpToWin": 500,
       "moneyToWin": 0
     },
     {

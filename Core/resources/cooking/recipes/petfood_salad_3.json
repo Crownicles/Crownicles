@@ -1,0 +1,32 @@
+{
+  "level": 4,
+  "recipeType": "PETFOOD_SALAD",
+  "plants": [
+    {
+      "plantId": 1,
+      "quantity": 4
+    },
+    {
+      "plantId": 2,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 64,
+      "quantity": 1
+    },
+    {
+      "materialId": 8,
+      "quantity": 1
+    }
+  ],
+  "outputType": "petFood",
+  "discoveredByDefault": false,
+  "discoverySource": "FARMER",
+  "petFood": {
+    "type": "herbivorousFood",
+    "quantity": 4,
+    "lovePoints": 12
+  }
+}

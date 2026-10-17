@@ -1,0 +1,40 @@
+{
+  "level": 7,
+  "recipeType": "PETFOOD_MEAT",
+  "plants": [
+    {
+      "plantId": 8,
+      "quantity": 3
+    },
+    {
+      "plantId": 4,
+      "quantity": 1
+    },
+    {
+      "plantId": 5,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 63,
+      "quantity": 1
+    },
+    {
+      "materialId": 78,
+      "quantity": 1
+    },
+    {
+      "materialId": 11,
+      "quantity": 1
+    }
+  ],
+  "outputType": "petFood",
+  "discoveredByDefault": false,
+  "discoverySource": "COOKING_LEVEL",
+  "petFood": {
+    "type": "carnivorousFood",
+    "quantity": 7,
+    "lovePoints": 21
+  }
+}

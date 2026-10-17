@@ -1,5 +1,8 @@
 {
   "rarity": 5,
   "power": 618,
-  "nature": 7
+  "nature": 7,
+  "tags": [
+    "fire"
+  ]
 }

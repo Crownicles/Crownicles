@@ -3,7 +3,7 @@ import {
 } from "sequelize";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { NotificationSendTypeEnum } from "../../../notifications/NotificationSendType";
 
 export class NotificationsConfiguration extends Model {
@@ -62,6 +62,12 @@ export class NotificationsConfiguration extends Model {
 	declare petExpeditionSendType: number;
 
 	declare petExpeditionChannelId?: string;
+
+	declare tournamentEnabled: boolean;
+
+	declare tournamentSendType: number;
+
+	declare tournamentChannelId?: string;
 
 	declare updatedAt: Date;
 
@@ -188,6 +194,18 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: NotificationSendTypeEnum.DM
 		},
 		petExpeditionChannelId: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(32)
+		},
+		tournamentEnabled: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: true
+		},
+		tournamentSendType: {
+			type: DataTypes.INTEGER,
+			defaultValue: NotificationSendTypeEnum.DM
+		},
+		tournamentChannelId: {
 			// eslint-disable-next-line new-cap
 			type: DataTypes.STRING(32)
 		},

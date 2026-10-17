@@ -6,6 +6,7 @@ import {
 } from "../../constants/ExpeditionConstants";
 import { PetFood } from "../../constants/PetConstants";
 import { PetBasicInfo } from "../../types/PetBasicInfo";
+import { MaterialQuantity } from "../../types/MaterialQuantity";
 
 /**
  * Reason why food was insufficient for expedition
@@ -300,6 +301,11 @@ export interface ExpeditionRewardData {
 	 * Whether an item was given during this expedition
 	 */
 	itemGiven?: boolean;
+
+	/**
+	 * Material loot earned during the expedition
+	 */
+	materialLoot?: MaterialQuantity[];
 }
 
 /**

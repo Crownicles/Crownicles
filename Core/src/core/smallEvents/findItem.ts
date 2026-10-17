@@ -1,5 +1,5 @@
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
@@ -13,7 +13,10 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const itemGenerated = generateRandomItem({
 			maxRarity: ItemRarity.EPIC
 		});
-		await giveItemToPlayer(response, context, player, itemGenerated);
+		await giveItemToPlayer(response, context, player, itemGenerated, {
+			itemLevel: generateRandomLootLevel(),
+			itemEnchantmentId: generateRandomLootEnchantment(itemGenerated)
+		});
 		response.push(makePacket(SmallEventFindItemPacket, {}));
 	}
 };

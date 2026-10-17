@@ -22,7 +22,7 @@ export class BigEvent extends Data<number> {
 	/**
 	 * Big event tags
 	 */
-	public readonly tags!: string[];
+	public declare readonly tags: string[];
 
 	/**
 	 * The possibility condition is checked to choose to allow the possibility or not

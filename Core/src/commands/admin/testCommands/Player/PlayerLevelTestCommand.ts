@@ -1,7 +1,7 @@
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 
 export const commandInfo: ITestCommand = {
 	name: "playerlevel",
@@ -20,7 +20,7 @@ const playerLevelTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		throw new Error("Erreur level : niveau donné doit être compris entre 1 et 1000 !");
 	}
 	player.level = lvl;
-	crowniclesInstance.logsDatabase.logLevelChange(player.keycloakId, player.level).then();
+	crowniclesInstance?.logsDatabase.logLevelChange(player.keycloakId, player.level).then();
 	await player.save();
 
 	return `Vous êtes maintenant niveau ${player.level} !`;

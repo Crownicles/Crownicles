@@ -1,6 +1,9 @@
 {
   "type": "vi",
-  "expeditionType": "ruins",
+  "biomes": [
+    "ruins",
+    "cave"
+  ],
   "tags": [
     "detA"
   ],

@@ -30,7 +30,99 @@ export default defineConfig([
 		},
 		rules: {
 			...customRules,
-			"crownicles/single-line-short-single-property-object": ["error", { maxLength: 40 }]
+			"crownicles/single-line-short-single-property-object": ["error", { maxLength: 40 }],
+			"crownicles/no-this-in-packet-handler": "error",
+			"crownicles/no-response-push-through-return": "error",
+
+			// `Player` methods that leave the instance dirty, so a pending call to one of
+			// them before a mission update is a lost write (or an `UnsavedPlayerChangesError`).
+			// The rule reports on the model itself when this list falls behind.
+			"crownicles/no-unsaved-player-before-mission-update": ["error", {
+				playerModelFile: "src/core/database/game/models/Player.ts",
+				playerMutators: [
+					"addEnergy",
+					"addWeeklyScore",
+					"changeClass",
+					"eatMeal",
+					"setEnergyLost",
+					"setHealthNoCheck",
+					"setPet",
+					"setWeeklyScore"
+				],
+				// `Player` methods that overwrite the instance with a freshly locked row (#4829).
+				// Receivers matching `nonPlayerReceiver` hold a `Guild` (`addExperience`, `addScore`); suffix-anchored so `guildChief` stays checked.
+				nonPlayerReceiver: "[Gg]uild$",
+				playerReloaders: [
+					"addExperience",
+					"addHealth",
+					"addLevelUpPacket",
+					"addMoney",
+					"addRage",
+					"addScore",
+					"addTokens",
+					"addTokensAndGetActualGain",
+					"applyHealthDelta",
+					"changeClass",
+					"earnTokens",
+					"getAndApplyLostRessourcesOnPveFaint",
+					"leavePVEIslandIfNoEnergy",
+					"levelUpIfNeeded",
+					"mutateLocked",
+					"mutateWithMission",
+					"mutateWithMissions",
+					"processLevelUps",
+					"setGloryPoints",
+					"setRage",
+					"spendMoney",
+					"useTokens"
+				]
+			}]
+		}
+	},
+	{
+		// Concurrency hardening sweep (PR-E … PR-H): the orchestration
+		// files below sit at the top of every gameplay flow and route
+		// state mutations through `withLockedEntities` /
+		// `withLockedPlayerSafe`. Any new `.save()` introduced into one
+		// of these files without going through a lock helper is a
+		// regression — the rule below catches that statically.
+		// See §10 of the review checklist for the rationale, patterns
+		// and the `*UnderLock` naming convention.
+		// Scope is intentionally narrow: many leaf helpers (small
+		// events, command handlers) are reached from a locked
+		// orchestration path but the rule cannot trace that across
+		// files. They are protected at the call site, not at the leaf.
+		files: [
+			"src/core/missions/MissionsController.ts",
+			"src/core/report/ReportSmallEventService.ts",
+			"src/core/report/ReportPveService.ts",
+			"src/core/report/ReportCookingService.ts",
+			"src/core/report/ReportCityChestService.ts",
+			"src/core/report/ReportBigEventService.ts",
+			"src/core/expeditions/ExpeditionFoodService.ts",
+			"src/commands/player/FightCommand.ts",
+			"src/commands/player/DailyBonusCommand.ts",
+			"src/core/missions/Campaign.ts",
+			"src/commands/player/UnlockCommand.ts",
+			"src/core/utils/TannerShopItems.ts",
+			"src/core/utils/MissionShopItems.ts",
+			"src/core/database/game/models/Guild.ts",
+			"src/core/utils/withLockedPlayerSafe.ts",
+			"src/core/utils/withLockedPlayerAndMissions.ts",
+			"src/core/utils/withLockedPlayerAndMissionsSafe.ts",
+			"src/core/utils/withLockedEntitiesSafe.ts",
+			"src/core/smallEvents/**/*.ts"
+		],
+		rules: {
+			"crownicles/no-unguarded-save": ["error", {
+				lockHelpers: [
+					"withLockedEntities",
+					"withLockedEntitiesSafe",
+					"withLockedPlayerSafe",
+					"withLockedPlayerAndMissions",
+					"withLockedPlayerAndMissionsSafe"
+				]
+			}]
 		}
 	},
 	{

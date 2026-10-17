@@ -2,7 +2,9 @@
   "rarity": 3,
   "rawAttack": 5,
   "speed": -10,
+  "type": "metal",
   "tags": [
     "metallic"
-  ]
+  ],
+  "materialCategory": 2
 }

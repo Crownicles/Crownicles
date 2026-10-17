@@ -1,3 +1,5 @@
+import { TimeConstants } from "./TimeConstants";
+
 export abstract class PVEConstants {
 	static readonly TIME_AFTER_INACTIVITY_ON_BOAT_IS_NOT_ACCEPTED = 24 * 3 * 3600 * 1000; // 3 days;
 
@@ -18,7 +20,21 @@ export abstract class PVEConstants {
 
 	static readonly MIN_LEVEL = 20;
 
-	static readonly MONSTER_LEVEL_RANDOM_RANGE = 10;
+	static readonly MIN_MONSTER_LEVEL = 1;
+
+	static readonly NON_FINAL_BOSS_MONSTER_LEVEL_RANDOM_OFFSET = {
+		MIN: -20,
+		MAX: 5
+	} as const;
+
+	static readonly NON_FINAL_BOSS_MONSTER_LEVEL_ABOVE_RECORD_PROBABILITY = 0.12;
+
+	static readonly FINAL_BOSS_MONSTER_LEVEL_RANDOM_OFFSET = {
+		MIN: -10,
+		MAX: 5
+	} as const;
+
+	static readonly FINAL_BOSS_MONSTER_LEVEL_ABOVE_RECORD_PROBABILITY = 0.18;
 
 	/**
 	 * The formula is
@@ -62,7 +78,7 @@ export abstract class PVEConstants {
 
 	static readonly RAGE_MIN_MULTIPLIER = 1;
 
-	static readonly MINUTES_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND = 60;
+	static readonly TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND = TimeConstants.MS_TIME.HOUR;
 
 	static readonly RAGE_MAX_DAMAGE = 250;
 
@@ -77,4 +93,9 @@ export abstract class PVEConstants {
 	static readonly GUILD_POINTS_LOST_ON_DEATH = 150;
 
 	static readonly RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH = 20;
+
+	static readonly BOSS_LOOT = {
+		MIN_DROPS: 8,
+		MAX_DROPS: 18
+	};
 }

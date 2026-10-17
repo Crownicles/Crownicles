@@ -7,6 +7,15 @@
   "maxBreath": 20,
   "breathRegen": 3,
   "rewardFactor": 0.45,
+  "materialLoot": [
+    55,
+    54,
+    32,
+    66,
+    17,
+    36,
+    3
+  ],
   "attacks": [
     {
       "id": "magicMimicAttack",

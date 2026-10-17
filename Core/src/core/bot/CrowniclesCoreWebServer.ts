@@ -1,15 +1,14 @@
-import {
+import express, {
 	Express, Request, Response
 } from "express";
+import { botConfig } from "../../bootstrap";
+import { crowniclesInstance } from "../../app";
+import { mqttClient } from "../../mqttClient";
 import {
-	botConfig, crowniclesInstance, mqttClient
-} from "../../index";
-import {
-	CrowniclesCoreMetrics, crowniclesMetricsRegistry
+	CrowniclesCoreMetrics, crowniclesMetricsRegistry, MONITORED_DATABASES
 } from "./CrowniclesCoreMetrics";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import * as express from "express";
 
 export abstract class CrowniclesCoreWebServer {
 	static start(): void {
@@ -36,14 +35,26 @@ export abstract class CrowniclesCoreWebServer {
 		});
 
 		app.get("/metrics", async (_req: Request, res: Response) => {
-			CrowniclesCoreMetrics.computeSporadicMetrics();
+			CrowniclesCoreMetrics.computeSporadicMetrics(
+				[
+					{
+						name: MONITORED_DATABASES.GAME,
+						sequelize: crowniclesInstance!.gameDatabase.sequelize
+					},
+					{
+						name: MONITORED_DATABASES.LOGS,
+						sequelize: crowniclesInstance!.logsDatabase.sequelize
+					}
+				],
+				botConfig.MODE_MAINTENANCE
+			);
 			res.setHeader("Content-Type", crowniclesMetricsRegistry.contentType);
 			res.end(await crowniclesMetricsRegistry.metrics());
 		});
 
 		app.post("/maintenance", (req: Request, res: Response) => {
 			const enabled = req.query.enabled === "1";
-			crowniclesInstance.setMaintenance(enabled, false);
+			crowniclesInstance!.setMaintenance(enabled, false);
 			CrowniclesLogger.info("Maintenance mode changed", { enabled });
 			res.status(200).send("OK");
 		});

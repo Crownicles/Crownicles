@@ -1,7 +1,11 @@
+import {
+	asMinutes, minutesToMilliseconds
+} from "../utils/TimeUtils";
+
 export abstract class HelpConstants {
 	static readonly HELP_INVITE_LINK = "https://discord.gg/USnCxg4";
 
-	static readonly HELP_DM_COOLDOWN_TIME_MINUTES = 5;
+	static readonly HELP_DM_COOLDOWN_TIME = minutesToMilliseconds(asMinutes(5));
 
 	static readonly COMMAND_SEPARATOR_FOR_GENERAL_DESCRIPTION = " • ";
 
@@ -11,7 +15,6 @@ export abstract class HelpConstants {
 		"report",
 		"fight",
 		"inventory",
-		"shop",
 		"guild",
 		"pet",
 		"daily"
@@ -48,20 +51,18 @@ export abstract class HelpConstants {
 			"me",
 			"info"
 		],
-		SWITCH: [
-			"switch",
-			"sw",
-			"échanger",
-			"echanger",
-			"échange",
-			"echange",
-			"intervertir"
-		],
 		FIGHT: [
 			"fight",
 			"f",
 			"combat",
 			"duel"
+		],
+		FRIENDLY_FIGHT: [
+			"friendlyfight",
+			"ff",
+			"combatamical",
+			"amical",
+			"friendly"
 		],
 		LANGUAGE: [
 			"language",
@@ -136,6 +137,13 @@ export abstract class HelpConstants {
 			"game",
 			"jouer"
 		],
+		GARDEN: [
+			"garden",
+			"jardin",
+			"jardiner",
+			"coeursylvestre",
+			"coeur sylvestre"
+		],
 		SELL: ["sell", "vendre"],
 		DAILY_BONUS: [
 			"daily",
@@ -175,12 +183,6 @@ export abstract class HelpConstants {
 			"boire",
 			"boir",
 			"br"
-		],
-		SHOP: [
-			"shop",
-			"s",
-			"magasin",
-			"buy"
 		],
 		GUILD_CREATE: [
 			"guildcreate",
@@ -330,15 +332,6 @@ export abstract class HelpConstants {
 			"entrepotdeguild",
 			"entrepotdeguild",
 			"entrepot"
-		],
-		GUILD_SHOP: [
-			"guildshop",
-			"guildeshop",
-			"gs",
-			"magasindeguilde",
-			"magasindeguild",
-			"guildemagasin",
-			"guildmagasin"
 		],
 		UPDATE: [
 			"update",
@@ -568,23 +561,6 @@ export abstract class HelpConstants {
 			"quêtes",
 			"quetes"
 		],
-		MISSIONS_SHOP: [
-			"missionshop",
-			"ms",
-			"mshop",
-			"questshop",
-			"missionsshop",
-			"questsshop",
-			"qs",
-			"shopmissions",
-			"shopmission",
-			"magasindemissions",
-			"magasindemission",
-			"missionmagasin",
-			"missionsmagasin",
-			"magasinmissions",
-			"magasinmission"
-		],
 		LEAGUE_BONUS: [
 			"leaguereward",
 			"leaguerewards",
@@ -636,16 +612,16 @@ export abstract class HelpConstants {
 				NAME: "profile",
 				CATEGORY: "player"
 			},
-		SWITCH:
-			{
-				EMOTE: ":repeat:",
-				NAME: "switch",
-				CATEGORY: "player"
-			},
 		FIGHT:
 			{
 				EMOTE: ":crossed_swords:",
 				NAME: "fight",
+				CATEGORY: "player"
+			},
+		FRIENDLY_FIGHT:
+			{
+				EMOTE: ":handshake:",
+				NAME: "friendlyfight",
 				CATEGORY: "player"
 			},
 		HELP:
@@ -690,6 +666,12 @@ export abstract class HelpConstants {
 				NAME: "report",
 				CATEGORY: "player"
 			},
+		GARDEN:
+			{
+				EMOTE: ":seedling:",
+				NAME: "garden",
+				CATEGORY: "player"
+			},
 		SELL:
 			{
 				EMOTE: ":moneybag:",
@@ -718,12 +700,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":tropical_drink:",
 				NAME: "drink",
-				CATEGORY: "player"
-			},
-		SHOP:
-			{
-				EMOTE: ":shopping_cart:",
-				NAME: "shop",
 				CATEGORY: "player"
 			},
 		GUILD_CREATE:
@@ -784,12 +760,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":pencil:",
 				NAME: "guildstorage",
-				CATEGORY: "guild"
-			},
-		GUILD_SHOP:
-			{
-				EMOTE: ":shopping_cart:",
-				NAME: "guildshop",
 				CATEGORY: "guild"
 			},
 		UPDATE:
@@ -892,12 +862,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":scroll:",
 				NAME: "missions",
-				CATEGORY: "mission"
-			},
-		MISSIONS_SHOP:
-			{
-				EMOTE: ":shopping_cart:",
-				NAME: "missionsshop",
 				CATEGORY: "mission"
 			},
 		LEAGUE_BONUS:

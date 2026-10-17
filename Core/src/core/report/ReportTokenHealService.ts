@@ -10,12 +10,15 @@ import {
 	CommandReportUseTokensRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { Player } from "../database/game/models/Player";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
 import { TravelTime } from "../maps/TravelTime";
 import { Maps } from "../maps/Maps";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import { Millisecond } from "../../../../Lib/src/types/TimeTypes";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
+import { asMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
@@ -32,106 +35,121 @@ import {
 	canUseTokensAtLocation
 } from "./ReportTravelService";
 import {
-	HEAL_VALIDATION_REASONS, HealValidationReason
+	HEAL_VALIDATION_REASONS, HealValidationReason, USE_TOKENS_VALIDATION_REASONS, UseTokensValidationReason
 } from "./ReportValidationConstants";
 import { MissionsController } from "../missions/MissionsController";
 
 /**
  * Execute the token usage after confirmation
+ *
+ * Concurrency: the read-validate-spend-save sequence on
+ * `player.tokens` runs inside `withLockedPlayerAndMissions` so two concurrent
+ * use-tokens confirmations cannot both pass the affordability check on
+ * the same stale snapshot and cause a lost-update on the player's
+ * tokens.
  */
 async function acceptUseTokens(
 	player: Player,
 	tokenCost: number,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	await player.reload();
+	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
+		// If player no longer has enough tokens, abort.
+		if (lockedPlayer.tokens < tokenCost) {
+			return;
+		}
 
-	// If player no longer has enough tokens, abort
-	if (player.tokens < tokenCost) {
-		return;
-	}
+		// Spend the tokens (use original cost for clarity to the user)
+		await lockedPlayer.useTokens({
+			amount: tokenCost,
+			response,
+			reason: NumberChangeReason.REPORT_TOKENS
+		});
 
-	// Spend the tokens (use original cost for clarity to the user)
-	await player.useTokens({
-		amount: tokenCost,
-		response,
-		reason: NumberChangeReason.REPORT_TOKENS
+		// If player has occupied alteration, remove it
+		if (lockedPlayer.effectId === Effect.OCCUPIED.id) {
+			await TravelTime.removeEffect(lockedPlayer, NumberChangeReason.REPORT_TOKENS);
+
+			// Update mission for recovering from alteration
+			await MissionsController.update(lockedPlayer, response, { missionId: "recoverAlteration" });
+		}
+
+		// Recalculate travel data AFTER removing the effect to get the correct next small event time
+		const updatedDate = new Date();
+		const updatedTimeData = await TravelTime.getTravelData(lockedPlayer, updatedDate);
+		const timeToNextSmallEvent = Math.max(updatedTimeData.nextSmallEventTime - updatedDate.valueOf(), 0);
+
+		// Make the player time travel to the next small event
+		await TravelTime.timeTravelMilliseconds(
+			lockedPlayer,
+			asMilliseconds(timeToNextSmallEvent),
+			NumberChangeReason.REPORT_TOKENS
+		);
+
+		await lockedPlayer.save();
+
+		// Check if player arrived at destination
+		const newDate = new Date();
+		const isArrived = Maps.isArrived(lockedPlayer, newDate);
+
+		response.push(makePacket(CommandReportUseTokensAcceptPacketRes, {
+			tokensSpent: tokenCost,
+			isArrived
+		}));
 	});
-
-	// If player has occupied alteration, remove it
-	if (player.effectId === Effect.OCCUPIED.id) {
-		await TravelTime.removeEffect(player, NumberChangeReason.REPORT_TOKENS);
-
-		// Update mission for recovering from alteration
-		await MissionsController.update(player, response, { missionId: "recoverAlteration" });
-	}
-
-	// Recalculate travel data AFTER removing the effect to get the correct next small event time
-	const updatedDate = new Date();
-	const updatedTimeData = await TravelTime.getTravelData(player, updatedDate);
-
-	// Make the player time travel to the next small event
-	await TravelTime.timeTravel(
-		player,
-		updatedTimeData.nextSmallEventTime - updatedDate.valueOf(),
-		NumberChangeReason.REPORT_TOKENS,
-		true
-	);
-
-	await player.save();
-
-	// Check if player arrived at destination
-	const newDate = new Date();
-	const isArrived = Maps.isArrived(player, newDate);
-
-	response.push(makePacket(CommandReportUseTokensAcceptPacketRes, {
-		tokensSpent: tokenCost,
-		isArrived
-	}));
 }
 
 /**
  * Execute the heal purchase after confirmation
+ *
+ * Concurrency: the read-validate-spend-heal sequence on `player.money`
+ * runs inside `withLockedPlayerAndMissions` so two concurrent buy-heal
+ * confirmations cannot both pass the affordability check on the same
+ * stale snapshot and cause a lost-update on the player's wallet.
  */
 async function acceptBuyHeal(
 	player: Player,
 	healPrice: number,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	await player.reload();
-	const currentDate = new Date();
+	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
+		const currentDate = new Date();
 
-	// Check if player can be healed
-	const healCheck = canHealAlteration(player, currentDate);
-	if (!healCheck.canHeal) {
-		if (healCheck.reason === HEAL_VALIDATION_REASONS.NO_ALTERATION) {
-			response.push(makePacket(CommandReportBuyHealNoAlterationPacketRes, {}));
+		/*
+		 * Check if player can be healed (re-validated against the
+		 * freshly-locked row).
+		 */
+		const healCheck = canHealAlteration(lockedPlayer, currentDate);
+		if (!healCheck.canHeal) {
+			if (healCheck.reason === HEAL_VALIDATION_REASONS.NO_ALTERATION) {
+				response.push(makePacket(CommandReportBuyHealNoAlterationPacketRes, {}));
+			}
+			else if (healCheck.reason === HEAL_VALIDATION_REASONS.OCCUPIED) {
+				response.push(makePacket(CommandReportBuyHealCannotHealOccupiedPacketRes, {}));
+			}
+			return;
 		}
-		else if (healCheck.reason === HEAL_VALIDATION_REASONS.OCCUPIED) {
-			response.push(makePacket(CommandReportBuyHealCannotHealOccupiedPacketRes, {}));
+
+		// If player no longer has enough money, abort.
+		if (lockedPlayer.money < healPrice) {
+			return;
 		}
-		return;
-	}
 
-	// If player no longer has enough money, abort
-	if (player.money < healPrice) {
-		return;
-	}
+		// Spend the money (use original price for clarity to the user)
+		await lockedPlayer.spendMoney({
+			amount: healPrice,
+			response,
+			reason: NumberChangeReason.SHOP
+		});
 
-	// Spend the money (use original price for clarity to the user)
-	await player.spendMoney({
-		amount: healPrice,
-		response,
-		reason: NumberChangeReason.SHOP
+		// Heal and advance the player
+		const isArrived = await healAlterationAndAdvance(lockedPlayer, currentDate, NumberChangeReason.SHOP, response);
+
+		response.push(makePacket(CommandReportBuyHealAcceptPacketRes, {
+			healPrice,
+			isArrived
+		}));
 	});
-
-	// Heal and advance the player
-	const isArrived = await healAlterationAndAdvance(player, currentDate, NumberChangeReason.SHOP, response);
-
-	response.push(makePacket(CommandReportBuyHealAcceptPacketRes, {
-		healPrice,
-		isArrived
-	}));
 }
 
 /**
@@ -224,9 +242,16 @@ interface ValidTokenCostResult {
 
 /**
  * Invalid token cost result
+ *
+ * `reason` distinguishes a player who simply cannot use tokens here
+ * (`NOT_ELIGIBLE`) from an eligible player who lacks the tokens to pay
+ * (`INSUFFICIENT_TOKENS`). The latter is offered the token merchant; in
+ * that case `tokenCost` carries the price (in tokens) to advance.
  */
 interface InvalidTokenCostResult {
 	valid: false;
+	reason: UseTokensValidationReason;
+	tokenCost?: number;
 }
 
 /**
@@ -235,21 +260,31 @@ interface InvalidTokenCostResult {
 export function validateUseTokensRequest(
 	player: Player,
 	effectId: string,
-	effectRemainingTime: number
+	effectRemainingTime: Millisecond
 ): ValidTokenCostResult | InvalidTokenCostResult {
 	// Check if the player can use tokens at their current location
 	if (!canUseTokensAtLocation(player)) {
-		return { valid: false };
+		return {
+			valid: false,
+			reason: USE_TOKENS_VALIDATION_REASONS.NOT_ELIGIBLE
+		};
 	}
 
 	const tokenCostResult = calculateTokenCost(effectId, effectRemainingTime);
 
 	if (!tokenCostResult.canUseTokens) {
-		return { valid: false };
+		return {
+			valid: false,
+			reason: USE_TOKENS_VALIDATION_REASONS.NOT_ELIGIBLE
+		};
 	}
 
 	if (player.tokens < tokenCostResult.cost) {
-		return { valid: false };
+		return {
+			valid: false,
+			reason: USE_TOKENS_VALIDATION_REASONS.INSUFFICIENT_TOKENS,
+			tokenCost: tokenCostResult.cost
+		};
 	}
 
 	return {

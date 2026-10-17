@@ -1,0 +1,34 @@
+{
+  "level": 8,
+  "recipeType": "POTION_HEALTH",
+  "plants": [
+    {
+      "plantId": 1,
+      "quantity": 3
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 54,
+      "quantity": 1
+    },
+    {
+      "materialId": 41,
+      "quantity": 1
+    },
+    {
+      "materialId": 5,
+      "quantity": 1
+    },
+    {
+      "materialId": 37,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 1,
+  "potionRarity": 7,
+  "discoveredByDefault": false,
+  "discoverySource": "ISLAND_BOSS",
+  "petFood": null
+}

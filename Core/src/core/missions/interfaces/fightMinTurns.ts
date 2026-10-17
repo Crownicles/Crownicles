@@ -33,9 +33,9 @@ export const missionInterface: IMission = {
 			22,
 			21,
 			25,
-			26,
-			30,
-			40
+			15,
+			25,
+			29
 		];
 		return thresholds[randomIndex] ?? 20;
 	},

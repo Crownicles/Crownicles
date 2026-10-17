@@ -10,6 +10,7 @@ import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { ReactionCollectorWitchPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorWitch";
 import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
+import { buildRecipeDiscoveryMessage } from "../utils/CookingDisplayUtils";
 import { StringUtils } from "../utils/StringUtils";
 import { SmallEventWitchResultPacket } from "../../../Lib/src/packets/smallEvents/SmallEventWitchPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -98,11 +99,17 @@ export async function witchResult(packet: SmallEventWitchResultPacket, context: 
 		return;
 	}
 	const lng = context.discord!.language;
+	let description = buildWitchResultDescription(packet, lng);
+
+	if (packet.discoveredRecipe) {
+		description += `\n\n${buildRecipeDiscoveryMessage([packet.discoveredRecipe], lng)}`;
+	}
+
 	await (interaction.isRepliable() ? interaction.followUp : interaction.editReply).bind(interaction)({
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"witch",
-				buildWitchResultDescription(packet, lng),
+				description,
 				interaction.user,
 				lng
 			)

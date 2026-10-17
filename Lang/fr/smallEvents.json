@@ -429,6 +429,16 @@
       "Le regard de {{playerDisplay}} trahit une expérience hors du commun : il a terrassé la Reine des glaces au niveau **{{bossLevel, number}}** ! Peu peuvent se vanter d'un tel exploit.",
       "Vous croisez {{playerDisplay}}, qui a accompli l'impossible en battant la Reine des glaces au niveau **{{bossLevel, number}}**. Vous vous inclinez respectueusement."
     ],
+    "beaten_kraken": [
+      "Les tentacules sectionnés accrochés à la cape de {{playerDisplay}} attestent de son combat contre le Kraken au niveau **{{bossLevel, number}}**. Une victoire arrachée aux abysses !",
+      "{{playerDisplay}} sent encore l'iode et l'encre noire : il a terrassé le Kraken au niveau **{{bossLevel, number}}** ! Les océans ne lui font plus peur.",
+      "Vous rencontrez {{playerDisplay}}, un aventurier ayant survécu aux profondeurs et vaincu le terrible Kraken au niveau **{{bossLevel, number}}**. Son regard porte le poids des abysses."
+    ],
+    "beaten_leviathan": [
+      "Les écailles colossales accrochées à l'armure de {{playerDisplay}} proviennent de son combat contre le Léviathan au niveau **{{bossLevel, number}}**. Une légende vivante !",
+      "{{playerDisplay}} vous raconte sobrement avoir terrassé le Léviathan au niveau **{{bossLevel, number}}**. Les vagues ne semblent plus pouvoir l'engloutir.",
+      "Vous croisez {{playerDisplay}}, qui a fait taire à jamais le rugissement du Léviathan au niveau **{{bossLevel, number}}**. Le silence des mers profondes vous saisit."
+    ],
     "effect": {
       "sick": [
         "Vous entendez un bruit au loin... C'est {{playerDisplay}} qui vomit dans un buisson... Vous reprenez votre route bouleversé.",
@@ -647,6 +657,7 @@
       "Elle est voûtée, squelettique, mais son regard vous paraît malicieux. ",
       "Elle est vêtue de lambeaux de tissus ternes et sales. ",
       "Vous vous souvenez de rumeurs concernant une sorcière maladroite qui se baladerait à travers le royaume. ",
+      "On murmure que sa maladresse lui a déjà valu des ennuis avec quelques nobles peu indulgents. ",
       "Complètement muette, elle parait abimée par les années, elle est fine, osseuse et sa peau presque grise. ",
       "Elle semble ne pas comprendre ce que vous lui dites. "
     ],
@@ -699,8 +710,8 @@
             "Malgré votre intervention, la potion n'a pas l'air d'avoir été améliorée. Vous vous sentez mal à l'aise... {emote:effects.sick}"
           ],
           "freezing": [
-            "Vous décidez de goûter à la potion qui est très froide. La sensation de froid ne disparait cependant pas et vous ressentez impuissant chacun de vos membres se refroidir... {emote:effects.freezing}",
-            "Alors que vous alliez terminer la potion, vous trébuchez et tombez dans le gouffre rempli de glace dans lequel vous prévoyiez de déposer la marmite. {emote:effects.freezing}"
+            "Vous goûtez la potion, glaciale. Même une fois avalée, le froid ne vous quitte plus et, impuissant, vous sentez vos membres s'engourdir un à un... {emote:effects.freezing}",
+            "La sorcière vous charge de maintenir la marmite dans un bac de glace pilée le temps que la potion se stabilise. Lorsque vous la relâchez enfin, vous ne sentez plus vos doigts. {emote:effects.freezing}"
           ],
           "hurt": [
             "La potion se met à bouillonner violemment et vous éclabousse. La brûlure est intense et vous regrettez amèrement votre choix. {emote:effects.hurt}",
@@ -712,12 +723,12 @@
           ]
         },
         "3": [
-          "Une fois la potion terminée, la sorcière vous tend un verre. Encore brulant, vous l'échappez maladroitement sur votre pied. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "Une fois la potion terminée, la sorcière vous tend un verre. Encore brûlant, il vous échappe des mains et se renverse sur votre pied. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
           "Alors que vous alliez terminer la potion, vous êtes victime de la maladresse de la vieille sorcière qui échappe le chaudron sur vous. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
           "Malgré la bonne odeur de la potion, cette dernière n'est pas aussi bonne pour la santé que ce que vous auriez pu espérer. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-          "Le goût de la potion est très étrange. Peut être auriez vous du écouter votre instinct et ne pas y goûter... Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "Le goût de la potion est très étrange. Peut-être auriez-vous dû écouter votre instinct et ne pas y goûter... Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
           "Les vapeurs de la potion auront suffi à vous rendre malade. Vous partez sans demander votre reste mais non sans avoir subi les conséquences de l'inhalation de ces vapeurs. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-          "Alors que la vieille dame s'apprête à verser la dernière goute dans la marmite un bruit sourd se fait entendre. Il semblerait que le chaudron ait explosé. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**."
+          "Alors que la vieille dame s'apprête à verser la dernière goutte dans la marmite, un bruit sourd se fait entendre. Il semblerait que le chaudron ait explosé. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**."
         ],
         "4": [
           "Malheureusement, la potion semble complètement carbonisée et imbuvable. Vous décidez de ne pas prendre le risque de la boire et repartez rapidement.",
@@ -1382,15 +1393,15 @@
         "success": {
           "withGuild": "Grâce à l'aide de vos camarades de guilde, vous parvenez à vous hisser hors de cette crevasse et à les sauver à leur tour. Cette épreuve surmontée a renforcé vos liens, votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Ne perdant pas votre sang-froid, vous appliquez immédiatement les enseignements de votre guilde et parvenez aisément à escalader la paroi. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Ne perdant pas votre sang-froid, vous appliquez ce que vous avez appris durant vos aventures et parvenez aisément à escalader la paroi. Vous recevez **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Ne perdant pas votre sang-froid, vous appliquez ce que vous avez appris durant vos aventures et parvenez aisément à escalader la paroi. Vous recevez **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "Ne perdant pas de temps, vous et vos compagnons se pressent d'examiner cette crevasse, qui s'avère être une grotte. Un peu de marche à l'aveugle plus tard, vous parvenez à ressortir de ce trou plus loin.",
           "solo": "Désespéré, seul au fond de cette crevasse, vous ne remarquez l'étroit conduit à votre gauche qu'au bout de quelques minutes. Après vous être démené contre cette terre qui avait décidé de vous enfermer, vous ressortez à l'air libre."
         },
         "lose": {
-          "withGuild": "Grâce à l'aide de vos camarades de guilde, vous parvenez à vous hisser hors de cette crevasse et à les sauver à leur tour. Cependant, celui qui avait votre bourse est remonté en dernier, et a malencontreusement laissé tomber l'argent durant l'escalade. Vous perdez **{{amount, number}} {emote:unitValues.lostMoney}**.",
-          "solo": "Alors que vous tentez d'escalader la paroi, la terre s'effrite sous vos doigts et vos pieds et provoque un éboulement. Grâce à lui, vous parvenez à sortir de cette crevasse mais vous êtes bien amoché. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Grâce à l'aide de vos camarades de guilde, vous parvenez à vous hisser hors de cette crevasse et à les sauver à leur tour. Cependant, celui qui avait votre bourse est remonté en dernier, et a malencontreusement laissé tomber l'argent durant l'escalade. Vous perdez **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Alors que vous tentez d'escalader la paroi, la terre s'effrite sous vos doigts et vos pieds et provoque un éboulement. Grâce à lui, vous parvenez à sortir de cette crevasse mais vous êtes bien amoché. Vous perdez **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -1398,15 +1409,15 @@
         "success": {
           "withGuild": "Cependant, vous vous agrippez les uns les autres, afin d'éviter qu'une potentielle crevasse fasse tomber l'un d'entre vous. La secousse se termine, et vous êtes tous sains et saufs. Votre guilde gagne **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Vous suivez les instructions qui vous ont été données en cas de séisme par votre guilde, et décidez de vous abriter sous une structure qui, heureusement, ne s'est pas écroulée sur vous. Sain et sauf, vous vous promettez de remercier votre guilde dès votre retour de votre expédition. Votre guilde gagne **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Vous essayez de tenir malgré la secousse. Heureusement, elle n'a causé aucun dégât autour, vous continuez à vous reposer un peu en admirant le ciel et les environs. Vous recevez **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Vous essayez de tenir malgré la secousse. Heureusement, elle n'a causé aucun dégât autour, vous continuez à vous reposer un peu en admirant le ciel et les environs. Vous recevez **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "Pris de panique, votre guilde tente de trouver un endroit plus sûr afin d'éviter tout dégât sur l'un d'entre vous. Après plusieurs minutes à tourner en rond car au moins l'un des membres pense que tel lieu n'est pas sûr, vous ne ressentez plus la secousse. Néanmoins, vous essayez de vous regagner de la confiance pour ce qui va suivre dans votre parcours de l'île...",
           "solo": "Paniqué, vous essayez d'esquiver les dégâts potentiels du séisme. Après quelques instants, la secousse ne se ressent plus. Au retour à l'endroit où vous vouliez vous reposer, vous constatez les dégâts du séisme. Heureusement que vous n'y étiez pas resté..."
         },
         "lose": {
-          "withGuild": "Vous vous dites que ce séisme sera court, et demandez au reste de la guilde de braver celui-ci. Quelle erreur ! Un rocher s'écrase sur vous et vous assomme. Vous perdez **{{amount, number}} {emote:unitValues.energy}**.",
-          "solo": "Vous disant qu'il n'y aura que peu de dégâts, vous continuez à vous reposer. Cependant, une crevasse se forme sous votre corps. Par peur de tomber dedans, vous essayez de courir le plus loin possible, mais vous trébuchez et vous entaillez le bras. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Vous vous dites que ce séisme sera court, et demandez au reste de la guilde de braver celui-ci. Quelle erreur ! Un rocher s'écrase sur vous et vous assomme. Vous perdez **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Vous disant qu'il n'y aura que peu de dégâts, vous continuez à vous reposer. Cependant, une crevasse se forme sous votre corps. Par peur de tomber dedans, vous essayez de courir le plus loin possible, mais vous trébuchez et vous entaillez le bras. Vous perdez **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -1469,8 +1480,8 @@
           "solo": "Heureusement pour vous, ce n'était qu'un malaise passager, et vous parvenez à reprendre votre route après quelques minutes de repos."
         },
         "lose": {
-          "withGuild": "Face à ce soudain malaise, vos compagnons de guilde, ne sachant comment vous aider, décident de vous porter jusqu'à la prochaine étape, mais l'épuisement vous harcèle et vous vous évanouissez. Vous perdez **{{amount, number}} {emote:unitValues.energy}**.",
-          "solo": "Complètement épuisé, le ciel se met à tourner autour de vous. Vous tentez de vous relever, mais les forces vous manquant et ayant l'impression d'être sur une mer déchaînée, vous vous évanouissez au beau milieu du chemin. Vous perdez **{{amount, number}} {emote:unitValues.energy}**."
+          "withGuild": "Face à ce soudain malaise, vos compagnons de guilde, ne sachant comment vous aider, décident de vous porter jusqu'à la prochaine étape, mais l'épuisement vous harcèle et vous vous évanouissez. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**.",
+          "solo": "Complètement épuisé, le ciel se met à tourner autour de vous. Vous tentez de vous relever, mais les forces vous manquant et ayant l'impression d'être sur une mer déchaînée, vous vous évanouissez au beau milieu du chemin. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       }
     ]
@@ -1835,6 +1846,14 @@
       "Vous déclinez l'offre et reprenez votre chemin."
     ]
   },
+  "recipeShop": {
+    "offer": {
+      "farmer": "Avant que vous ne repreniez votre route, la fermière s'essuie les mains sur son tablier et vous confie, l'œil malicieux, qu'elle garde précieusement une vieille recette de famille. Elle accepte de vous transmettre la recette {{recipe}} contre {{price}} {emote:unitValues.money}.",
+      "gaspardJo": "Avant de remonter dans sa roulotte, Gaspard-Jo farfouille sous une pile de victuailles et en extirpe un vieux grimoire de cuisine tout corné. Avec un sourire complice, il vous propose de vous céder la recette {{recipe}} pour {{price}} {emote:unitValues.money}."
+    },
+    "refused": "Vous déclinez poliment l'offre et reprenez votre route, la recette restant un mystère pour une autre fois.",
+    "notEnoughMoney": "Vous fouillez vos poches à la recherche de quelques pièces, mais force est de constater que vous n'avez pas de quoi payer la recette. Dépité, vous reprenez votre chemin."
+  },
   "dwarfPetFan": {
     "intro": [
       "Sur le chemin serpentant dans l'ombre majestueuse du Mont Célestrum, une silhouette rabougrie émerge des terres rocailleuses. Talvar le Sage, vénérable nain aux cheveux d'argent, s'avance vers vous. Sa barbe tressée de fils d'or descend jusqu'à sa ceinture, et ses yeux verts pétillent d'une passion ancestrale pour toutes les créatures de ce monde.",
@@ -2006,6 +2025,7 @@
       "{emote:fightActions.concentration} La concentration, voilà une technique mentale que tout vétéran doit maîtriser ! Attention cependant : elle échoue si vous l'utilisez alors que vous êtes affecté par une altération d'état. Si elle réussit, l'altération \"concentré\" augmente considérablement les dégâts que vous infligerez lors du prochain tour.",
       "{emote:fightActions.counterAttack} L'attaque riposte, l'essence même du combat tactique ! Cette technique réplique avec la même action que celle que vient de jouer votre adversaire. Mais attention : elle ne fonctionne pas contre certaines attaques. Il vous faudra de l'expérience pour apprendre quelles attaques peuvent être contrées mais j'ai toujours dit que l'observation était la clé du combat.",
       "{emote:fightActions.cursedAttack} L'attaque maudite, une technique que j'ai vue employée par des adversaires particulièrement retors, un sort né de l'accumulation de toute la rancœur de ce monde. Elle maudit l'adversaire pour qu'il en subisse les conséquences dans le futur. Fait remarquable : elle vous soigne si l'adversaire a encore beaucoup d'énergie au moment où l'attaque est utilisée.",
+      "{emote:fightActions.skeletonCursedAttack} Le sortilège mortel du squelette maudit sa cible et peut échouer. Contrairement à l'attaque maudite des combattants, il ne soigne pas le lanceur.",
       "{emote:fightActions.darkAttack} L'attaque sombre, redoutable et imprévisible ! Ce sort est né de l'accumulation des forces les plus obscures de ce monde, et seul un combattant ayant plongé ses yeux dans l'abîme de la magie peut espérer l'utiliser. Elle utilise la puissance de l'adversaire pour se renforcer tout en ignorant sa défense. Elle peut vous rendre une partie de votre souffle perdu ou aveugler l'ennemi. L'aveuglement rend parfois l'adversaire incapable d'attaquer, tout en réduisant sa défense et sa vitesse.",
       "{emote:fightActions.defenseBuff} Le renforcement de défense, une technique d'accumulation que j'ai souvent enseignée à mes recrues ! Plus cette action est effectuée à la suite, plus le bonus de défense devient important. La persévérance paye toujours en matière de protection.",
       "{emote:fightActions.divineAttack} L'attaque divine, puissante mais exigeante ! Seuls les combattants ayant éprouvé leur patience et leur persévérance auprès des dieux pourront goûter la pleine saveur de son pouvoir magique. Sa précision augmente avec la durée du combat. Elle fait partie du groupe des \"actions des dieux\" et échoue si deux actions divines ont déjà été effectuées dans le combat.",
@@ -2013,6 +2033,7 @@
       "{emote:fightActions.eruptionAttack} L'éruption, une démonstration à distance d'une puissance élémentaire impressionnante ! Elle fait entrer en éruption le volcan qui crache des rochers en fusion. D'après mon expérience, seuls les plus rapides pourront éviter les dégâts de cette catastrophe contrôlée.",
       "{emote:fightActions.familyMealAttack} Le repas de famille, une technique physique pour le moins... originale ! Elle appelle des alliés pour s'acharner sur l'adversaire et l'empoisonner. Le lanceur devient alors repu, remplaçant une potentielle altération d'état dont il serait victime. J'ai vu bien des choses étranges au combat, mais celle-ci reste mémorable !",
       "{emote:fightActions.fireAttack} L'attaque feu est une des compétences les plus redoutables qu'il m'ait été donné de contrer. Ce pur concentré infernal de puissance et de chaleur se déverse sur l'adversaire, le calcinant ensuite sur un ou plusieurs tours supplémentaires grâce à l'altération \"brûlé\". Méfiez-vous des combattants qui maîtrisent ce sort ! Si c'est vous qui la maîtrisez, utilisez cette attaque si vous êtes gelé pour vous réchauffer !",
+      "{emote:fightActions.titanFireAttack} La boule de feu du Titan est une version plus contenue de l'attaque des mages : elle peut brûler l'adversaire, mais ses coups critiques sont moins fréquents et sa puissance ne traverse pas sa défense.",
       "{emote:fightActions.grabAndThrowAttack} L'attaque projection, une technique de corps à corps que j'ai souvent vue en action ! Si le défenseur a eu l'audace d'utiliser une attaque physique, l'attaquant peut l'attraper et le plaquer sur le rocher le plus proche, ce qui peut l'étourdir en plus de lui infliger des dégâts. Le timing est crucial pour cette manœuvre.",
       "{emote:fightActions.guildAttack} L'attaque de guilde, l'illustration parfaite de la force du groupe ! Les membres de la guilde se réunissent pour réaliser une attaque groupée d'une puissance remarquable, se ruant sur l'adversaire. Cela me rappelle les formations de ma garde royale.",
       "{emote:fightActions.hardBiteAttack} La morsure puissante, physique, brutale et directe ! Elle inflige des dégâts tout en faisant saigner l'adversaire. J'ai appris à me méfier de toute créature capable d'une telle férocité primitive. Si jamais vous vous mettez à saigner, un peu de repos vous soignera.",
@@ -2025,10 +2046,13 @@
       "{emote:fightActions.magmaBathAttack} Le bain de magma, technique de récupération pour le moins... extrême ! Le lanceur se repose dans la lave et récupère son énergie. Attention cependant : son pouvoir curatif est fortement diminué après quatre utilisations.",
       "{emote:fightActions.mudShotAttack} Le tir de boue, une attaque à distance simple mais efficace ! Elle inflige des dégâts tout en rendant l'adversaire sale. C'est une technique que j'ai souvent vue employée par les monstres des marais. La saleté peut être un atout dans un combat, car elle augmente les dégâts légèrement et vous protège d'autres altérations d'état mais elle rend également plus vulnérable à certaines attaques.",
       "{emote:fightActions.outrageAttack} La colère, technique émotionnelle puissante mais risquée ! Elle échoue si vous l'utilisez alors que vous avez une altération d'état. L'altération \"en colère\" double l'attaque mais baisse la défense. Au bout de deux tours, l'effet disparaît et l'attaquant devient confus. J'ai vu beaucoup de combats perdus à cause d'une colère mal maîtrisée.",
-      "{emote:fightActions.petrificationAttack} La pétrification est une technique de contrôle de longue portée redoutable, car elle pétrifie la cible pendant deux tours tout en doublant sa défense. Un adversaire immobilisé mais renforcé - il faut savoir en tirer parti intelligemment.",
+      "{emote:fightActions.petrificationAttack} La pétrification est une technique de contrôle de longue portée redoutable, car elle pétrifie la cible pendant un tour tout en doublant sa défense. Un adversaire immobilisé mais renforcé - il faut savoir en tirer parti intelligemment.",
       "{emote:fightActions.piercingAttack} L'attaque perçante, la spécialité des fins stratèges ! Grâce à leur sens de l'observation, cette technique de corps à corps ignore presque complètement la défense de l'adversaire. L'attaquant a une probabilité de réduire légèrement la défense de son adversaire. Chaque coup compte dans cette technique.",
+      "{emote:fightActions.elementaryPiercingAttack} L'éclat élémentaire est une attaque précise qui peut légèrement affaiblir la défense adverse. L'élémentaire l'utilise sans bénéficier des futurs ajustements réservés aux classes de joueurs.",
       "{emote:fightActions.poisonousAttack} L'attaque empoisonnée a été développée par les alchimistes les plus doués du royaume. J'ai pu apprendre dans les archives de la cour que son poison est tiré du venin de nombreux animaux, mais sa composition exacte reste un mystère. Après une confrontation directe avec l'adversaire, elle l'empoisonne avec une altération qui dure au moins trois tours et inflige des dégâts sur la durée. J'ai aussi pu remarquer que cette attaque est beaucoup plus efficace en début de combat !",
+      "{emote:fightActions.spiderPoisonAttack} Le jet de poison de l'araignée est moins fiable que l'attaque empoisonnée des joueurs : il peut échouer et ses coups critiques restent modérés, mais il inflige toujours l'altération \"empoisonné\" lorsqu'il touche.",
       "{emote:fightActions.powerfulAttack} L'attaque puissante, risquée mais potentiellement dévastatrice ! Cette attaque physique réduit la vitesse de l'adversaire et peut faire plus de dégâts, au prix d'un étourdissement de l'attaquant. Avec beaucoup d'expérience vous apprendrez à réussir cette attaque plus souvent. Attention : après trois utilisations, les dégâts de l'attaque sont réduits. Il faut donc apprendre à l'utiliser au bon moment pour optimiser son efficacité.",
+      "{emote:fightActions.guardianPowerfulAttack} L'attaque tranchante du Gardien réduit la vitesse de sa cible et peut échouer. Elle ne profite pas des risques ni des bonus de dégâts de l'attaque puissante des joueurs.",
       "{emote:fightActions.protection} La protection, technique défensive que j'ai enseignée à tous mes fantassins ! Elle échoue si vous l'utilisez alors que vous avez une altération d'état. L'altération \"protégé\" dure trois tours et vous empêche d'être victime d'une autre altération tout en offrant un boost de défense.",
       "{emote:fightActions.quickAttack} L'attaque rapide, parfaite contre les adversaires lents ! J'ai souvent eu affaire à de vils assassins qui en voulaient à ma vie, et j'ai régulièrement eu à faire face à cette technique de corps à corps. Elle n'échoue jamais sur un adversaire plus lent et plus celui-ci est lent, plus cette attaque lui fera des dégâts. La vitesse a toujours été un atout majeur au combat.",
       "{emote:fightActions.rageExplosion} L'explosion de rage, libération brutale d'une colère accumulée ! Elle laisse exploser la rage accumulée en vous durant le trajet, projetée directement sur l'ennemi. J'ai vu des guerriers transformer leur frustration en arme redoutable.",
@@ -2038,7 +2062,9 @@
       "{emote:fightActions.rockShieldAttack} Le bouclier de roche, protection temporaire mais efficace, sur laquelle je me suis souvent cassé les dents. Il réduit de moitié les dégâts de la prochaine attaque subie. Une technique défensive que j'ai vue sauver bien des monstres, et qui m'a bien des fois surprise par son étonnante efficacité.",
       "{emote:fightActions.sabotageAttack} L'attaque sabotage, une technique de corps à corps sournoise mais efficace ! Elle ignore complètement la défense de l'adversaire et fonctionne mieux sur un adversaire ayant peu d'attaque. Peu coûteuse en souffle mais peut paralyser le lanceur - si c'est le cas, les dégâts sont augmentés.",
       "{emote:fightActions.shieldAttack} L'attaque bouclier, technique physique que j'ai perfectionnée durant mes années de service ! Elle utilise la défense de l'attaquant pour combattre, affaiblissant l'adversaire et divisant son attaque par trois durant deux tours. La meilleure défense, c'est l'attaque !",
+      "{emote:fightActions.skeletonShieldAttack} La cuirasse osseuse du squelette utilise sa défense pour frapper et affaiblir son adversaire. Ses dégâts sont volontairement limités et l'attaque peut échouer, contrairement à l'attaque bouclier des joueurs.",
       "{emote:fightActions.simpleAttack} L'attaque simple... Une attaque simple et physique, rien de plus à en dire. Parfois, jeune aventurier, les bases restent les plus fiables.",
+      "{emote:fightActions.skeletonSimpleAttack} La frappe osseuse est une attaque simple propre au squelette. Elle conserve un comportement basique sans dépendre des équilibrages des classes.",
       "{emote:fightActions.slamAttack} L'attaque impact, une technique de ralentissement efficace ! C'est une attaque à distance de puissance faible qui réduit la vitesse de l'adversaire. Ralentir son ennemi peut souvent être plus précieux que lui infliger de gros dégâts.",
       "{emote:fightActions.stealth} La discrétion, un art de l'ombre que j'ai appris à respecter ! Elle permet de se cacher discrètement pour doubler les dégâts de la prochaine attaque. L'effet de surprise ne doit jamais être sous-estimé, car il peut renverser le plus inégal des combats.",
       "{emote:fightActions.stoneSkinAttack} La peau de roche, technique de renforcement défensif ! Plus cette action est effectuée à la suite, plus le bonus de défense devient important. La persévérance transforme la chair en pierre, littéralement.",
@@ -2540,6 +2566,25 @@
       }
     }
   },
+  "findMaterial": {
+    "typesStories": {
+      "wood":  "vous tombez sur un bosquet d'arbres aux troncs robustes et aux branches souples, parfaits pour la collecte de bois. Vous prenez votre hache et commencez à couper du bois.",
+      "metal": "vous découvrez une veine de minerai scintillant incrustée dans une paroi rocheuse, idéale pour l'extraction de métal. Vous sortez votre pioche et commencez à extraire le minerai de la paroi rocheuse.",
+      "alloy": "vous apercevez un amas de débris métalliques et de fragments d'alliages divers, propice à la récupération de matériaux composites. Vous rassemblez les débris métalliques et commencez à trier les fragments d'alliages divers.",
+      "rope": "vous trouvez des plantes fibreuses aux tiges longues et résistantes, parfaites pour tresser des cordes et des tissus. Vous prenez votre couteau et commencez à couper les plantes fibreuses.",
+      "magic": "vous sentez un lieu chargé d'énergie, où la magie semble imprégner l'air et les objets environnants, idéal pour la collecte de composants magiques. Vous fouillez les environs à la recherche de composants magiques.",
+      "poison": "vous repérez des plantes vénéneuses aux feuilles luisantes et aux fleurs colorées, ainsi qu'un point d'eau, parfaits pour la récolte de substances toxiques. Vous récoltez les éléments empoisonnés avec précaution.",
+      "explosive": "vous découvrez des cristaux instables et des plantes aux propriétés explosives, propices à la collecte de matériaux dangereux. Vous manipulez les éléments instables avec soin pour éviter toute explosion accidentelle.",
+      "leather": "vous tombez sur des carcasses d'animaux récemment abattus, offrant une source précieuse de cuir et de peaux. Vous récupérez les peaux et le cuir des carcasses d'animaux.",
+      "nature": "vous trouvez une zone riche en éléments naturels, avec des plantes, des minéraux et des ressources organiques variées, idéale pour la collecte de matériaux de la nature. Vous collectez divers éléments naturels dans la zone environnante.",
+      "spiritual": "vous trouvez un endroit empreint de sérénité, où l'atmosphère est paisible et propice à votre bien être. Vous fouillez les environs à la recherche d'éléments ou d'objets."
+    },
+    "foundStories": {
+      "1": "Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} commun).",
+      "2": "Belle trouvaille ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} peu commun).",
+      "3": "Quelle chance inouïe ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
+    }
+  },
   "expeditionAdvice": {
     "talismanIntro": [
       "Vous tombez nez à nez avec une femme au visage balafré, assise sur un grand rocher. Son armure de cuir usée porte les marques de dizaines de combats. Elle nettoie méthodiquement une dague à la lame noircie où est gravé son nom : Velanna. Sans lever les yeux, elle grogne quelque chose à propos d'un artefact ancien capable de créer des liens entre un maître et sa bête... le $t(models:talisman.anchor). Elle se lève et s'éloigne sans rien ajouter.",
@@ -2664,5 +2709,154 @@
         "La fermière constate que votre réserve de salades est déjà pleine à craquer. Épatée, elle disparaît dans sa remise et revient avec **un objet poussiéreux** qu'elle vous tend avec un clin d'œil."
       ]
     }
+  },
+  "gardener": {
+    "stories": {
+      "first": [
+        "un vieil homme au tablier terreux et aux mains calleuses vous interpelle depuis un petit lopin de terre au bord du chemin. Il se présente comme Théobald, jardinier itinérant, et vous invite à admirer ses plants avec une fierté non dissimulée. ",
+        "vous apercevez un homme agenouillé au pied d'un arbre, les doigts plongés dans la terre. Il se relève en vous voyant, époussetant ses genoux, et vous salue chaleureusement. Il dit s'appeler Théobald et consacrer sa vie à l'art du jardinage. ",
+        "une odeur de terre humide et de feuilles fraîches vous attire vers un petit campement improvisé au bord du sentier. Un jardinier nommé Théobald, arrosoir à la main et chapeau fleuri sur la tête, vous accueille avec un grand sourire. ",
+        "vous manquez de marcher sur un semis soigneusement disposé en bordure du chemin. Un vieillard surgit d'un buisson voisin, l'air faussement outré, avant d'éclater de rire. Il se présente comme Théobald, maître jardinier ambulant. ",
+        "un homme au visage buriné par le soleil vous fait signe depuis un petit jardin aménagé en bord de route. Cet homme, un certain Théobald, semble connaître chaque plante par son nom et insiste pour partager son savoir avec les voyageurs. "
+      ],
+      "recurring": [
+        "un vieil homme au tablier terreux et aux mains calleuses vous interpelle depuis un petit lopin de terre au bord du chemin. Vous reconnaissez Théobald, le jardinier itinérant, qui vous invite à admirer ses plants avec une fierté non dissimulée. ",
+        "vous apercevez un homme agenouillé au pied d'un arbre, les doigts plongés dans la terre. Théobald se relève en vous voyant, époussette ses genoux et vous salue chaleureusement. ",
+        "une odeur de terre humide et de feuilles fraîches vous attire vers un petit campement improvisé au bord du sentier. Théobald, arrosoir à la main et chapeau fleuri sur la tête, vous accueille avec un grand sourire. ",
+        "vous manquez de marcher sur un semis soigneusement disposé en bordure du chemin. Théobald surgit d'un buisson voisin, l'air faussement outré, avant d'éclater de rire en vous reconnaissant. ",
+        "un homme au visage buriné par le soleil vous fait signe depuis un petit jardin aménagé en bord de route. Théobald, fidèle à son habitude, semble connaître chaque plante par son nom et insiste pour partager son savoir avec vous. "
+      ]
+    },
+    "rewards": {
+      "seed": {
+        "free": [
+          "Le vieux Théobald fouille dans sa sacoche et en sort une petite graine qu'il vous tend. Il vous explique que c'est parfait pour débuter et apprendre les bases du jardinage. Vous recevez une **graine** {emote:smallEvents.gardener}."
+        ],
+        "paid": [
+          "Théobald vous montre une graine qu'il examine à la lumière. Il accepte de vous la céder contre **{{cost}} {emote:unitValues.money}**."
+        ],
+        "paidAccepted": [
+          "Théobald vous montre une graine qu'il examine à la lumière. Après avoir déboursé **{{cost}} {emote:unitValues.money}**, vous rangez précieusement cette **graine** {emote:smallEvents.gardener} dans votre sac."
+        ],
+        "moon": [
+          "Théobald lève les yeux vers le ciel nocturne et sourit en voyant la lune briller. Il sort précautionneusement une graine de sa sacoche en murmurant que cette plante ne peut être confiée que sous un clair de lune suffisant. Vous recevez une **graine** {emote:smallEvents.gardener}."
+        ],
+        "night": [
+          "Théobald scrute le ciel assombri avec satisfaction. La nuit est idéale pour confier cette graine, car la plante a besoin de l'obscurité pour s'épanouir. Vous recevez une **graine** {emote:smallEvents.gardener}."
+        ],
+        "herbivorePet": [
+          "Le jardinier observe votre familier herbivore avec admiration, impressionné par le lien évident qui vous unit. Seuls ceux qui prennent soin de la nature méritent une telle plante, confie-t-il en vous tendant une **graine** {emote:smallEvents.gardener}."
+        ],
+        "mage": [
+          "Théobald remarque votre aura de mage et hoche la tête avec respect. Votre maîtrise de la magie saura faire prospérer cette plante ardente, dit-il en vous confiant une **graine** {emote:smallEvents.gardener}."
+        ],
+        "firePet": [
+          "Le jardinier écarquille les yeux devant votre familier au souffle ardent et s'exclame qu'il n'en avait pas vu depuis des décennies. Il vous confie avec émotion une **graine** {emote:smallEvents.gardener}, convaincu que les flammes de votre compagnon l'aideront à grandir."
+        ],
+        "fireItem": [
+          "Théobald repère votre équipement forgé dans le feu et acquiesce. L'affinité avec les flammes est essentielle pour cultiver cette plante ardente, explique-t-il en vous offrant une **graine** {emote:smallEvents.gardener}."
+        ],
+        "carnivorePet": [
+          "Le jardinier observe votre impressionnant familier carnivore avec un mélange de respect et de prudence. Votre compagnon saura veiller à ce que cette plante ne manque de rien, conclut-il en vous tendant une **graine** {emote:smallEvents.gardener}."
+        ],
+        "legendaryHerbivorePet": [
+          "Le jardinier écarquille les yeux en voyant votre familier herbivore épique, visiblement ému par le lien extraordinaire qui vous unit. D'une main tremblante, il sort sa dernière graine {emote:smallEvents.gardener}. Seule une personne ayant tissé un lien aussi fort avec la nature peut cultiver un tel trésor, murmure-t-il."
+        ]
+      },
+      "advice": {
+        "needLevel": [
+          "Le jardinier vous examine de la tête aux pieds et secoue la tête. Vous n'avez pas encore assez d'expérience pour sa prochaine graine. Revenez quand vous aurez atteint le **niveau {{level}}**, conseille-t-il.",
+          "Théobald fronce les sourcils en évaluant votre stature. La nature exige un minimum de maturité pour mériter cette graine, et il vous faudra atteindre le **niveau {{level}}**."
+        ],
+        "needGarden": [
+          "Théobald penche la tête en apprenant que vous n'avez pas de jardin. Il vous conseille d'investir dans une **maison avec un jardin** avant de revenir le voir.",
+          "Le jardinier soupire. Sans jardin, inutile de s'encombrer de nouvelles graines. Procurez-vous une **maison avec un espace de jardinage**, puis revenez."
+        ],
+        "needMoney": [
+          "Théobald vous montre la prochaine graine mais la range aussitôt. Il vous faudra **{{cost}} {emote:unitValues.money}** pour l'obtenir, et vous n'avez pas assez sur vous.",
+          "Le jardinier fait miroiter une graine devant vos yeux avant de la ranger précieusement. Son prix est de **{{cost}} {emote:unitValues.money}**, revenez quand vous aurez les moyens."
+        ],
+        "needHerbivorePet": [
+          "Le jardinier scrute les alentours et remarque que vous n'avez pas de familier herbivore dressé à vos côtés. Il vous faudrait un **familier herbivore avec un lien de confiance maximal**.",
+          "Théobald secoue la tête. La prochaine graine nécessite un compagnon proche de la nature. Revenez avec un **familier herbivore** que vous aurez **apprivoisé complètement**."
+        ],
+        "needNight": [
+          "Théobald regarde le soleil encore haut dans le ciel et soupire. La prochaine graine ne peut être offerte qu'à la **tombée de la nuit**. Revenez quand le soleil se sera couché.",
+          "Le jardinier observe le ciel lumineux et secoue la tête. Cette graine particulière ne se confie que dans l'**obscurité de la nuit**."
+        ],
+        "needMoonlight": [
+          "Le jardinier observe le ciel avec déception. La **lune n'est pas assez visible** pour confier cette graine. Revenez quand elle brillera davantage dans le ciel nocturne.",
+          "Théobald scrute le firmament en plissant les yeux. Cette graine exige un **puissant clair de lune** pour être offerte. Revenez lors d'une nuit plus lumineuse."
+        ],
+        "needFireAffinity": [
+          "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **familier lié au feu** ou porter un **équipement forgé dans les flammes**.",
+          "Le jardinier vous regarde pensivement. Cette graine ardente ne peut être cultivée que par quelqu'un lié au feu : un **mage**, un maître de **familier des flammes**, ou un porteur d'**arme enflammée**."
+        ],
+        "needCarnivorePet": [
+          "Le jardinier vous explique que la prochaine graine nécessite un compagnon carnivore particulièrement puissant. Il vous faudrait un **familier carnivore de rareté épique ou supérieure**.",
+          "Théobald vous confie que cette graine singulière se nourrit de viande. Seul un **familier carnivore d'exception** pourrait veiller à sa croissance."
+        ],
+        "needLegendaryHerbivorePet": [
+          "Théobald vous confie avec gravité que sa dernière graine est la plus précieuse. Il ne la confiera qu'à quelqu'un accompagné d'un **familier herbivore épique** avec un **lien de confiance maximal**.",
+          "Le vieil homme murmure que ce qu'il garde est le trésor d'une vie. Seul un aventurier ayant noué un lien exceptionnel avec un **familier herbivore de rareté épique** pourra le mériter."
+        ],
+        "seedSlotFull": [
+          "Le jardinier remarque que vous avez déjà une graine sur vous. **Plantez-la d'abord** dans votre jardin, puis revenez le voir.",
+          "Théobald secoue la tête en voyant votre sacoche pleine. **Plantez votre graine actuelle** avant de lui en demander une nouvelle."
+        ],
+        "allSeedsObtained": [
+          "Théobald vous félicite avec fierté en voyant toutes les plantes de votre jardin. Vous avez déjà obtenu **toutes ses graines** et il n'a plus rien à vous offrir, mais il est très fier de votre jardin.",
+          "Le vieux jardinier vous serre chaleureusement la main. Vous avez accompli tout ce qu'il pouvait vous enseigner. Votre jardin est un **chef-d'œuvre**, dit-il les larmes aux yeux."
+        ],
+        "noPlantSpace": [
+          "Théobald voulait vous offrir une plante, mais votre inventaire est déjà plein. Il hausse les épaules avec un sourire et vous souhaite bonne route.",
+          "Le jardinier fouille dans ses réserves mais constate que vous n'avez **plus de place** pour transporter de plante. Il vous conseille de libérer un emplacement."
+        ],
+        "refused": [
+          "Vous déclinez poliment l'offre de Théobald. Le jardinier range la graine dans sa sacoche avec un sourire compréhensif et vous souhaite bonne route.",
+          "Vous n'avez pas les moyens pour le moment. Théobald hoche la tête et vous invite à revenir quand vous serez prêt."
+        ],
+        "tipBuyHome": [
+          "Théobald vous observe un instant et vous demande si vous avez un endroit bien à vous. Devant votre silence, il vous conseille d'acquérir une **maison** pour y aménager un jardin.",
+          "Le jardinier s'étonne que vous n'ayez pas encore de maison. Il vous recommande d'en **acheter une** dès que possible pour pouvoir cultiver votre propre jardin."
+        ],
+        "tipUpgradeForGarden": [
+          "Théobald jette un regard désolé en apprenant que votre maison ne dispose pas encore de jardin. Il vous conseille d'**améliorer votre logement** pour y ajouter quelques parcelles.",
+          "Le jardinier vous suggère d'**agrandir votre maison** afin d'y aménager un espace de culture. Un bon jardin demande un bon terrain, dit-il."
+        ],
+        "tipPlantSeed": [
+          "Le jardinier remarque que vous transportez encore une graine. Il vous encourage à la **planter dès que possible** dans votre jardin pour qu'elle commence à pousser.",
+          "Théobald fronce les sourcils en voyant la graine dans votre sac. Il ne faut pas la laisser dormir, **plantez-la dans votre jardin** au plus vite, insiste-t-il."
+        ],
+        "tipHarvestReady": [
+          "Théobald renifle l'air et sourit. Il sent que certaines de vos plantes sont **prêtes à être récoltées**. Passez chez vous les cueillir avant qu'elles ne fanent, conseille-t-il.",
+          "Le jardinier, d'un air entendu, vous assure que votre jardin nécessite votre attention. Certaines plantes sont **mûres et prêtes à être récoltées**."
+        ],
+        "tipEmptyPlots": [
+          "Théobald vous rappelle que votre jardin comporte encore des **parcelles vides**. Il vous encourage à obtenir de nouvelles graines et à les planter pour remplir votre potager.",
+          "Le jardinier secoue la tête en pensant à vos parcelles inoccupées. Un bon jardinier ne laisse jamais la terre en friche, il vous conseille de **remplir vos emplacements vides**."
+        ],
+        "tipUpgradeSoil": [
+          "Théobald vous confie que la qualité de votre terre laisse à désirer. **Améliorez votre maison** pour obtenir une terre plus riche qui fera pousser vos plantes plus rapidement.",
+          "Le jardinier goûte un peu de terre imaginaire et grimace. Votre terre est pauvre, vos plantes poussent lentement. **Améliorez votre maison** pour enrichir votre sol, conseille-t-il."
+        ],
+        "tipGeneric": [
+          "Théobald s'assied un instant et vous partage un de ses secrets : la patience est la clé du jardinage. Les plantes les plus précieuses sont celles qui mettent le plus de temps à pousser.",
+          "Le jardinier contemple l'horizon et murmure que chaque plante raconte une histoire. Il vous invite à prendre soin de votre jardin régulièrement."
+        ]
+      },
+      "plant": [
+        "Impressionné par votre passage, le jardinier fouille dans ses réserves et vous offre généreusement une de ses plantes cultivées :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Théobald sort une plante de son chariot et vous la tend avec un clin d'œil malicieux :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Le jardinier, ne pouvant vous donner de graine, vous offre généreusement une de ses plantes en souvenir de votre rencontre :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
+      ],
+      "material": [
+        "Théobald fouille dans sa besace et en sort un matériau qu'il a trouvé en retournant la terre de son jardin. Il vous l'offre avec un sourire bienveillant :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+        "Le jardinier sort de sa poche un matériau qu'il a déterré en bêchant ce matin. Il vous le tend en vous expliquant qu'il n'en a pas l'utilité :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+      ]
+    },
+    "menu": [
+      "\n\nAcceptez-vous son offre ?"
+    ]
   }
 }

@@ -4,8 +4,7 @@ import {
 import { ItemDataController } from "./DataController";
 import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
-import { ObjectItem } from "./ObjectItem";
-import { SupportItemDisplayPacket } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
+import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 import {
 	NO_STAT_COMPARISON, StatValues
 } from "../../../Lib/src/types/StatValues";
@@ -28,14 +27,8 @@ export class Potion extends SupportItem {
 		return this.power;
 	}
 
-	public getDisplayPacket(_maxStatsValue: StatValues = NO_STAT_COMPARISON, itemUsages?: number): SupportItemDisplayPacket {
-		let usagesToDisplay: number | undefined;
-		let maxUsagesToDisplay: number | undefined;
-		if (this.isFightPotion()) {
-			maxUsagesToDisplay = this.usages || 1;
-			usagesToDisplay = (itemUsages !== undefined && itemUsages !== null) ? itemUsages : maxUsagesToDisplay;
-		}
-
+	public getDisplayPacket(_maxStatsValue: StatValues = NO_STAT_COMPARISON, itemUsages?: number): SupportItemDetails {
+		const maxUsages = this.isFightPotion() ? this.usages || 1 : undefined;
 		return {
 			itemCategory: this.getCategory(),
 			maxPower: this.power,
@@ -43,8 +36,12 @@ export class Potion extends SupportItem {
 			power: this.power,
 			rarity: this.rarity,
 			id: this.id,
-			usages: usagesToDisplay,
-			maxUsages: maxUsagesToDisplay
+			...maxUsages === undefined
+				? {}
+				: {
+					usages: itemUsages ?? maxUsages,
+					maxUsages
+				}
 		};
 	}
 }
@@ -56,9 +53,13 @@ export class PotionDataController extends ItemDataController<Potion> {
 		return new Potion();
 	}
 
-	public randomItem(nature: number, rarity: number): ObjectItem {
-		return RandomUtils.crowniclesRandom.pick(this.getValuesArray()
-			.filter(item => item.nature === nature && item.rarity === rarity));
+	public randomItem(nature: number, rarity: number): Potion {
+		const candidates = this.getValuesArray()
+			.filter(item => item.nature === nature && item.rarity === rarity);
+		if (candidates.length === 0) {
+			throw new Error(`No potion found for nature=${nature} rarity=${rarity}`);
+		}
+		return RandomUtils.crowniclesRandom.pick(candidates);
 	}
 
 	/**

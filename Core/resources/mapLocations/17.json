@@ -1,6 +1,8 @@
 {
   "type": "vi",
-  "expeditionType": "desert",
+  "biomes": [
+    "desert"
+  ],
   "tags": [
     "detAu"
   ],

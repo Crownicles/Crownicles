@@ -1,10 +1,15 @@
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
-import { MapLocationDataController } from "../../data/MapLocation";
+import {
+	MapLocation, MapLocationDataController
+} from "../../data/MapLocation";
 import { MapLinkDataController } from "../../data/MapLink";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToHours, nowMs
+} from "../../../../Lib/src/utils/TimeUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
@@ -34,29 +39,12 @@ import { TravelTime } from "../maps/TravelTime";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { Maps } from "../maps/Maps";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { MapLocationType } from "../../../../Lib/src/constants/MapLocationConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { PetUtils } from "../utils/PetUtils";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
-
-const LOCATION_PROBABILITY_MAPPING = [
-	{
-		types: SmallEventConstants.PET_FOOD.BAD_SMELL_TYPES,
-		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.BAD_SMELL
-	},
-	{
-		types: SmallEventConstants.PET_FOOD.VEGETARIAN_TYPES,
-		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.VEGETARIAN
-	},
-	{
-		types: SmallEventConstants.PET_FOOD.MEAT_TYPES,
-		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.MEAT
-	},
-	{
-		types: SmallEventConstants.PET_FOOD.GOOD_SMELL_TYPES,
-		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.GOOD_SMELL
-	}
-] as const;
 
 const REACTION_HANDLERS: Record<string, ReactionHandler> = {
 	[ReactionCollectorPetFoodInvestigateReaction.name]: handleInvestigateReaction,
@@ -67,7 +55,6 @@ const REACTION_HANDLERS: Record<string, ReactionHandler> = {
 type PetFoodProperties = {
 	probabilities: {
 		badSmell: {
-			plus: number;
 			minus: number;
 			nothing: number;
 		};
@@ -76,7 +63,6 @@ type PetFoodProperties = {
 	};
 	love: {
 		badSmell: {
-			plus: number;
 			minus: number;
 		};
 		goodSmell: number;
@@ -87,23 +73,22 @@ type PetFoodProperties = {
 };
 
 /**
- * Get food type probabilities based on map location type
- * @param type
+ * Get the food probabilities of a map location: cooked food smells good in settlements, otherwise it depends on the biome
+ * @param mapLocation
  */
-function getProbabilities(type: string): { [key: string]: number } {
-	const locationCategory = LOCATION_PROBABILITY_MAPPING.find(entry => (entry.types as readonly string[]).includes(type));
-	if (!locationCategory) {
-		return SmallEventConstants.PET_FOOD.PROBABILITIES.DEFAULT;
+function getProbabilities(mapLocation: MapLocation): { [key: string]: number } {
+	if ((SmallEventConstants.PET_FOOD.GOOD_SMELL_TYPES as readonly MapLocationType[]).includes(mapLocation.type)) {
+		return SmallEventConstants.PET_FOOD.PROBABILITIES.GOOD_SMELL;
 	}
-	return locationCategory.probabilities;
+	return SmallEventConstants.PET_FOOD.PROBABILITIES[SmallEventConstants.PET_FOOD.BIOME_PROBABILITY_PROFILES[mapLocation.pickBiome()]];
 }
 
 /**
- * Determine the type of food found based on the player's current map location
+ * Determine the type of food found from the origin or destination biome, weighted by travel progress.
  * @param player - The player finding the food
  * @returns The food type identifier
  */
-function getFoodType(player: Player): string {
+export function getFoodType(player: Player): string {
 	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId)!;
 	const endMap = MapLocationDataController.instance.getById(mapLink.endMap)!;
 	const startMap = MapLocationDataController.instance.getById(mapLink.startMap)!;
@@ -112,7 +97,10 @@ function getFoodType(player: Player): string {
 		return SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP;
 	}
 
-	const probabilities = getProbabilities(endMap.type);
+	const selectedMap = RandomUtils.crowniclesRandom.realZeroToOneInclusive() < TravelTime.getTravelProgress(player)
+		? endMap
+		: startMap;
+	const probabilities = getProbabilities(selectedMap);
 	const rand = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
 	let cumulativeProbability = 0;
 	for (const [foodType, probability] of Object.entries(probabilities)) {
@@ -133,13 +121,8 @@ function getFoodType(player: Player): string {
  */
 const LOVE_CHANGE_HANDLERS: Record<string, (properties: PetFoodProperties, petModel: Pet) => number> = {
 	[SmallEventConstants.PET_FOOD.FOOD_TYPES.BAD_SMELL]: (properties: PetFoodProperties): number => {
-		const rand = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
-		const plusThreshold = properties.probabilities.badSmell.plus;
-		const totalThreshold = plusThreshold + properties.probabilities.badSmell.minus;
-		if (rand < plusThreshold) {
-			return properties.love.badSmell.plus;
-		}
-		if (rand < totalThreshold) {
+		// Rotten/foul food never strengthens the bond: at best the pet ignores it, at worst it is put off (love loss)
+		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < properties.probabilities.badSmell.minus) {
 			return properties.love.badSmell.minus;
 		}
 		return SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE;
@@ -200,11 +183,13 @@ async function applyOutcome(
 		await petEntity.save();
 	}
 
+	const timeLost = wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined;
+
 	response.push(makePacket(SmallEventPetFoodPacket, {
 		outcome,
 		foodType,
 		loveChange,
-		timeLost: wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined,
+		timeLost,
 		petSex: petEntity.sex
 	}));
 }
@@ -231,10 +216,10 @@ async function handleSendPetReaction(player: Player): Promise<string> {
 	// Pet existence is guaranteed by canBeExecuted
 	const petEntity = (await PetEntity.findByPk(player.petId!))!;
 	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
-	const now = Date.now();
+	const now = nowMs();
 	const hungrySince = petEntity.hungrySince ? new Date(petEntity.hungrySince).getTime() : now;
-	const diffHours = millisecondsToHours(now - hungrySince);
-	const feedDelay = millisecondsToHours(PetConstants.BREED_COOLDOWN * (petModel.feedDelay ?? 1));
+	const diffHours = millisecondsToHours(asMilliseconds(now - hungrySince));
+	const feedDelay = millisecondsToHours(asMilliseconds(PetConstants.BREED_COOLDOWN * (petModel.feedDelay ?? 1)));
 
 	let probability;
 	if (diffHours < feedDelay) {
@@ -263,6 +248,7 @@ async function handleSendPetReaction(player: Player): Promise<string> {
 
 /**
  * Handle the continue reaction outcome
+ * @param _player
  * @param properties
  */
 function handleContinueReaction(_player: Player, properties: PetFoodProperties): Promise<string> {
@@ -280,19 +266,21 @@ function handleContinueReaction(_player: Player, properties: PetFoodProperties):
  */
 function getEndCallback(player: Player, foodType: string, properties: PetFoodProperties): EndCallback {
 	return async (collector, response) => {
-		const reactionType = collector.getFirstReaction()?.reaction.type;
-		const handler = reactionType ? REACTION_HANDLERS[reactionType] : undefined;
-		const outcome = handler
-			? await handler(player, properties)
-			: SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING;
-
-		// Check if the player chose to investigate (which applies the time penalty)
-		const wasInvestigating = reactionType === ReactionCollectorPetFoodInvestigateReaction.name;
-
-		await applyOutcome(player, {
-			foodType, outcome, properties, wasInvestigating
-		}, response);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FOOD_SMALL_EVENT);
+		await withLockedPlayerSafe(player, "petFood endCallback", async lockedPlayer => {
+			const reactionType = collector.getFirstReaction()?.reaction.type;
+			const handler = reactionType ? REACTION_HANDLERS[reactionType] : undefined;
+			const outcome = handler
+				? await handler(lockedPlayer, properties)
+				: SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING;
+
+			// Check if the player chose to investigate (which applies the time penalty)
+			const wasInvestigating = reactionType === ReactionCollectorPetFoodInvestigateReaction.name;
+
+			await applyOutcome(lockedPlayer, {
+				foodType, outcome, properties, wasInvestigating
+			}, response);
+		});
 	};
 }
 

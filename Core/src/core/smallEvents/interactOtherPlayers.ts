@@ -33,14 +33,17 @@ import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { PetUtils } from "../utils/PetUtils";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
-import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { PetDataController } from "../../data/Pet";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
 import { LogsPveFightsResults } from "../database/logs/models/LogsPveFightsResults";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
-import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Check top interactions
@@ -147,7 +150,7 @@ function checkTopWeek(otherPlayerWeeklyRank: number, interactionsList: InteractO
  * @param interactionsList
  */
 function checkHealth(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	const healthPercentage = otherPlayer.health / otherPlayer.getMaxHealth();
+	const healthPercentage = otherPlayer.getHealth() / otherPlayer.getMaxHealth();
 	if (healthPercentage < SmallEventConstants.INTERACT_OTHER_PLAYERS.HEALTH.LOW_HP_THRESHOLD) {
 		interactionsList.push(InteractOtherPlayerInteraction.LOW_HP);
 	}
@@ -313,12 +316,12 @@ function checkGems(gems: number, interactionsList: InteractOtherPlayerInteractio
 }
 
 /**
- * Check token interactions, interaction not permitted if player is below level 5.
+ * Check token interactions
  * @param otherPlayer
  * @param interactionsList
  */
 function checkTokens(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK && otherPlayer.tokens >= SmallEventConstants.INTERACT_OTHER_PLAYERS.MANY_TOKENS_MIN) {
+	if (otherPlayer.tokens >= SmallEventConstants.INTERACT_OTHER_PLAYERS.MANY_TOKENS_MIN) {
 		interactionsList.push(InteractOtherPlayerInteraction.MANY_TOKENS);
 	}
 }
@@ -344,10 +347,16 @@ function checkTalismans(hasTalisman: boolean, hasCloneTalisman: boolean, interac
  * @param otherPet
  * @param interactionsList
  */
-const PET_TYPE_TO_INTERACTION = new Map<number, InteractOtherPlayerInteraction>([
-	...PetConstants.FLYING_PETS.map(id => [id, InteractOtherPlayerInteraction.FLYING_PET] as [number, InteractOtherPlayerInteraction]),
-	...PetConstants.AQUATIC_PETS.map(id => [id, InteractOtherPlayerInteraction.AQUATIC_PET] as [number, InteractOtherPlayerInteraction])
-]);
+function getPetTypeInteraction(petTypeId: number): InteractOtherPlayerInteraction | null {
+	const petData = PetDataController.instance.getById(petTypeId);
+	if (petData?.hasTag(PetConstants.TAGS.FLYING)) {
+		return InteractOtherPlayerInteraction.FLYING_PET;
+	}
+	if (petData?.hasTag(PetConstants.TAGS.AQUATIC)) {
+		return InteractOtherPlayerInteraction.AQUATIC_PET;
+	}
+	return null;
+}
 
 function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, interactionsList: InteractOtherPlayerInteraction[]): void {
 	if (!otherPet) {
@@ -362,7 +371,7 @@ function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, i
 			interactionsList.splice(petIndex, 1);
 		}
 	}
-	const petInteraction = PET_TYPE_TO_INTERACTION.get(otherPet.typeId);
+	const petInteraction = getPetTypeInteraction(otherPet.typeId);
 	if (petInteraction) {
 		interactionsList.push(petInteraction);
 	}
@@ -371,13 +380,17 @@ function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, i
 const FINAL_BOSS_IDS = [
 	FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN,
 	FightConstants.FINAL_BOSS_MONSTER_IDS.MALE_ICE_DRAGON,
-	FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON
+	FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON,
+	FightConstants.FINAL_BOSS_MONSTER_IDS.KRAKEN,
+	FightConstants.FINAL_BOSS_MONSTER_IDS.LEVIATHAN
 ] as const;
 
 const BOSS_INTERACTION_MAP: Record<string, InteractOtherPlayerInteraction> = {
 	[FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN]: InteractOtherPlayerInteraction.BEATEN_MAGMA_TITAN,
 	[FightConstants.FINAL_BOSS_MONSTER_IDS.MALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_MALE_ICE_DRAGON,
-	[FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_FEMALE_ICE_DRAGON
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_FEMALE_ICE_DRAGON,
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.KRAKEN]: InteractOtherPlayerInteraction.BEATEN_KRAKEN,
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.LEVIATHAN]: InteractOtherPlayerInteraction.BEATEN_LEVIATHAN
 };
 
 /**
@@ -536,28 +549,62 @@ function buildPoorInteractionResponse(
 }
 
 /**
- * Send a coin from the current player to the interacted one
- * @param otherPlayer
- * @param player
- * @param response
+ * Send a coin from the current player to the interacted one.
+ *
+ * Critical section: lock both player rows so a concurrent money
+ * sink can't drain `player.money` below zero, and a concurrent
+ * deletion of `otherPlayer` can't strand the credit.
  */
 async function sendACoin(otherPlayer: Player, player: Player, response: CrowniclesPacket[]): Promise<void> {
-	await Promise.all([
-		otherPlayer.addMoney({
-			amount: 1,
-			response,
-			reason: NumberChangeReason.RECEIVE_COIN
-		}),
-		player.spendMoney({
-			amount: 1,
-			response,
-			reason: NumberChangeReason.SMALL_EVENT
-		})
-	]);
-	await Promise.all([
-		otherPlayer.save(),
-		player.save()
-	]);
+	try {
+		await Promise.all([
+			PlayerMissionsInfos.getOfPlayer(otherPlayer.id),
+			PlayerMissionsInfos.getOfPlayer(player.id)
+		]);
+		await withLockedEntities(
+			[
+				Player.lockKey(otherPlayer.id),
+				Player.lockKey(player.id),
+				PlayerMissionsInfo.lockKey(otherPlayer.id),
+				PlayerMissionsInfo.lockKey(player.id)
+			] as const,
+			async ([lockedOther, lockedSelf]) => {
+				if (lockedSelf.money < 1) {
+					/*
+					 * Player no longer has a coin to give; silently
+					 * abort — the calling collector already pushed
+					 * the AcceptToGivePoor packet, but no transfer
+					 * actually happens.
+					 */
+					return;
+				}
+
+				await Promise.all([
+					lockedOther.addMoney({
+						amount: 1,
+						response,
+						reason: NumberChangeReason.RECEIVE_COIN
+					}),
+					lockedSelf.spendMoney({
+						amount: 1,
+						response,
+						reason: NumberChangeReason.SMALL_EVENT
+					})
+				]);
+				await Promise.all([
+					lockedOther.save(),
+					lockedSelf.save()
+				]);
+			}
+		);
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			// One of the player rows vanished concurrently; skip.
+			return;
+		}
+		throw error;
+	}
 }
 
 export const smallEventFuncs: SmallEventFuncs = {

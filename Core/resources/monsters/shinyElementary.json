@@ -7,6 +7,16 @@
   "maxBreath": 15,
   "breathRegen": 4,
   "rewardFactor": 0.5,
+  "materialLoot": [
+    77,
+    34,
+    33,
+    53,
+    80,
+    5,
+    69,
+    67
+  ],
   "attacks": [
     {
       "id": "petrificationAttack",
@@ -14,7 +24,7 @@
       "weight": 1
     },
     {
-      "id": "piercingAttack",
+      "id": "elementaryPiercingAttack",
       "minLevel": 0,
       "weight": 2
     },
@@ -26,7 +36,7 @@
     {
       "id": "lightRayAttack",
       "minLevel": 0,
-      "weight": 2
+      "weight": 1
     },
     {
       "id": "crystalShardAttack",

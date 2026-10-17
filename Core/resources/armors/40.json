@@ -1,5 +1,7 @@
 {
   "rarity": 2,
   "rawDefense": 10,
-  "speed": -10
+  "speed": -10,
+  "type": "nature",
+  "materialCategory": 10
 }

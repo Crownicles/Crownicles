@@ -3,7 +3,7 @@ import {
 } from "../../../../core/CommandsTest";
 import { LogsDatabase } from "../../../../core/database/logs/LogsDatabase";
 import { GameDatabase } from "../../../../core/database/game/GameDatabase";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 
 export const commandInfo: ITestCommand = {
 	name: "migration",
@@ -17,10 +17,10 @@ export const commandInfo: ITestCommand = {
 
 function getDatabaseFromName(databaseName: string): LogsDatabase | GameDatabase {
 	if (databaseName === "logs") {
-		return crowniclesInstance.logsDatabase;
+		return crowniclesInstance!.logsDatabase!;
 	}
 	else if (databaseName === "game") {
-		return crowniclesInstance.gameDatabase;
+		return crowniclesInstance!.gameDatabase;
 	}
 	throw new Error(`Unknown database name "${databaseName}"`);
 }

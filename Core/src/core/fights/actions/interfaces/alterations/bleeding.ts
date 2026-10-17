@@ -34,7 +34,7 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 	if (affected.alterationTurn > turnsToHeal || (affected.alterationTurn > 1 && affected.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)) {
 		return defaultHealFightAlterationResult(affected);
 	}
-	return defaultDamageFightAlterationResult(affected, getStatsInfo(affected, opponent), getAttackInfo(affected.alterationTurn));
+	return defaultDamageFightAlterationResult(opponent, getStatsInfo(affected, opponent), getAttackInfo(affected.alterationTurn));
 };
 
 export default use;

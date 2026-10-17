@@ -6,7 +6,7 @@ import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
-import { ErrorPacket } from "../../../Lib/src/packets/commands/ErrorPacket";
+import { ErrorInternalPacket } from "../../../Lib/src/packets/commands/ErrorPacket";
 import {
 	connect, MqttClient
 } from "mqtt";
@@ -15,17 +15,19 @@ import { DiscordAnnouncement } from "../announcements/DiscordAnnouncement";
 import { NotificationsHandler } from "../notifications/NotificationsHandler";
 import { NotificationsSerializedPacket } from "../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
 import { LANGUAGE } from "../../../Lib/src/Language";
-import { TextChannel } from "discord.js";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import { MqttTopicUtils } from "../../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesDiscordMetrics } from "./CrowniclesDiscordMetrics";
-import { millisecondsToSeconds } from "../../../Lib/src/utils/TimeUtils";
+import {
+	millisecondsToSeconds, msDiff, nowMs
+} from "../../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { AsyncCorePacketSender } from "./AsyncCorePacketSender";
 import { DiscordConstants } from "../DiscordConstants";
 import { CommandTestListPacketReq } from "../../../Lib/src/packets/commands/CommandTestListPacket";
 import { PacketUtils } from "../utils/PacketUtils";
+import { installCustomIdGuard } from "../utils/CustomIdGuard";
 
 const DEFAULT_MQTT_CLIENT_OPTIONS = {
 	connectTimeout: MqttConstants.CONNECTION_TIMEOUT
@@ -42,6 +44,8 @@ export class DiscordMQTT {
 
 	static christmasBonusAnnouncementMqttClient: MqttClient;
 
+	static releaseGiftAnnouncementMqttClient: MqttClient;
+
 	static blessingAnnouncementMqttClient: MqttClient;
 
 	static packetListener: PacketListenerClient = new PacketListenerClient();
@@ -49,14 +53,35 @@ export class DiscordMQTT {
 	static asyncPacketSender: AsyncCorePacketSender = new AsyncCorePacketSender();
 
 	static async init(isMainShard: boolean): Promise<void> {
+		installCustomIdGuard();
 		await registerAllPacketHandlers();
 
 		this.connectSubscribeAndHandleGlobal();
-		this.connectSubscribeAndHandleTopWeekAnnouncement();
-		this.connectSubscribeAndHandleTopWeekFightAnnouncement();
-		this.connectSubscribeAndHandleChristmasBonusAnnouncement();
-		this.connectSubscribeAndHandleBlessingAnnouncement();
-
+		DiscordMQTT.topWeekAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceTopWeek(JSON.parse(payload)),
+			"No top week announcement in the MQTT topic"
+		);
+		DiscordMQTT.topWeekFightAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceTopWeekFight(JSON.parse(payload)),
+			"No top week fight announcement in the MQTT topic"
+		);
+		DiscordMQTT.christmasBonusAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceChristmasBonus(JSON.parse(payload)),
+			"No Christmas bonus announcement in the MQTT topic"
+		);
+		DiscordMQTT.releaseGiftAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceReleaseGift(JSON.parse(payload)),
+			"No release gift announcement in the MQTT topic"
+		);
+		DiscordMQTT.blessingAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceBlessing(JSON.parse(payload)),
+			"No blessing announcement in the MQTT topic"
+		);
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
 			if (discordConfig.TEST_MODE) {
@@ -128,6 +153,7 @@ export class DiscordMQTT {
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.topWeekFightAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX), "top week fight announcement");
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.blessingAnnouncementMqttClient, MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), "blessing announcement");
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.christmasBonusAnnouncementMqttClient, MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), "christmas bonus announcement");
+		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.releaseGiftAnnouncementMqttClient, MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(discordConfig.PREFIX), "release gift announcement");
 	}
 
 	/**
@@ -180,31 +206,46 @@ export class DiscordMQTT {
 
 				let listener = DiscordMQTT.packetListener.getListener(packet.name);
 				if (!listener) {
-					packet.packet = makePacket(ErrorPacket, { message: `No packet listener found for received packet '${packet.name}'.\n\nData:\n${JSON.stringify(packet.packet)}` });
-					listener = DiscordMQTT.packetListener.getListener("ErrorPacket")!;
+					const reason = `No packet listener found for received packet '${packet.name}'.`;
+					CrowniclesLogger.error(reason, { packet: packet.packet });
+					packet.packet = makePacket(ErrorInternalPacket, { reason });
+					listener = DiscordMQTT.packetListener.getListener("ErrorInternalPacket")!;
 				}
-				const startTime = Date.now();
+				const startTime = nowMs();
 				await listener(context as PacketContext, packet.packet as CrowniclesPacket);
-				CrowniclesDiscordMetrics.observePacketTime(packet.name, millisecondsToSeconds(Date.now() - startTime));
+				CrowniclesDiscordMetrics.observePacketTime(packet.name, millisecondsToSeconds(msDiff(nowMs(), startTime)));
 			}
 			catch (error) {
 				CrowniclesLogger.errorWithObj("Error while handling packet", error);
 				CrowniclesDiscordMetrics.incrementPacketErrorCount(packet.name);
 
-				const context = dataJson.context as PacketContext;
-				const lng = context.discord?.language ?? LANGUAGE.ENGLISH;
-				if (context.discord?.channel) {
-					const channel = await crowniclesClient.channels.fetch(context.discord.channel);
-					if (channel instanceof TextChannel) {
-						await channel.send({ embeds: [
-							new CrowniclesEmbed()
-								.setErrorColor()
-								.setTitle(i18n.t("error:errorOccurredTitle", { lng }))
-								.setDescription(i18n.t("error:errorOccurred", { lng }))
-						] });
-					}
-				}
+				await DiscordMQTT.notifyErrorInChannel(context);
 			}
+		}
+	}
+
+	/**
+	 * Warn the player in the channel where the command was launched that an error occurred
+	 * @param context
+	 */
+	private static async notifyErrorInChannel(context: PacketContext): Promise<void> {
+		if (!context.discord?.channel) {
+			return;
+		}
+		const lng = context.discord.language ?? LANGUAGE.ENGLISH;
+		try {
+			const channel = await crowniclesClient.channels.fetch(context.discord.channel);
+			if (channel?.isTextBased() && channel.isSendable()) {
+				await channel.send({ embeds: [
+					new CrowniclesEmbed()
+						.setErrorColor()
+						.setTitle(i18n.t("error:errorOccurredTitle", { lng }))
+						.setDescription(i18n.t("error:errorOccurred", { lng }))
+				] });
+			}
+		}
+		catch (error) {
+			CrowniclesLogger.errorWithObj(`Unable to send the error message in channel ${context.discord.channel}`, error);
 		}
 	}
 
@@ -224,68 +265,36 @@ export class DiscordMQTT {
 		});
 	}
 
-	private static handleTopWeekAnnouncementMqttMessage(): void {
-		DiscordMQTT.topWeekAnnouncementMqttClient.on("message", async (_topic, message) => {
+	/**
+	 * Connect an MQTT client dedicated to an announcement topic, subscribe to it and post the announcement when received.
+	 * The message is cleared from the retained topic once handled so it is not processed twice.
+	 */
+	private static connectAndHandleAnnouncement(
+		topic: string,
+		announce: (payload: string) => Promise<void>,
+		emptyTopicLog: string
+	): MqttClient {
+		const client = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
+
+		client.on("connect", () => {
+			DiscordMQTT.subscribeTo(client, topic, false);
+		});
+
+		client.on("message", async (_topic, message) => {
 			if (message.toString() === "") {
-				CrowniclesLogger.debug("No top week announcement in the MQTT topic");
+				CrowniclesLogger.debug(emptyTopicLog);
 				return;
 			}
 
 			if (await DiscordAnnouncement.canAnnounce()) {
-				await DiscordAnnouncement.announceTopWeek(JSON.parse(message.toString()));
+				await announce(message.toString());
 
 				// Clear the announcement so it doesn't get processed again
-				DiscordMQTT.topWeekAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
+				client.publish(topic, "", { retain: true });
 			}
 		});
-	}
 
-	private static handleTopWeekFightAnnouncementMqttMessage(): void {
-		DiscordMQTT.topWeekFightAnnouncementMqttClient.on("message", async (_topic, message) => {
-			if (message.toString() === "") {
-				CrowniclesLogger.debug("No top week fight announcement in the MQTT topic");
-				return;
-			}
-
-			if (await DiscordAnnouncement.canAnnounce()) {
-				await DiscordAnnouncement.announceTopWeekFight(JSON.parse(message.toString()));
-
-				// Clear the announcement so it doesn't get processed again
-				DiscordMQTT.topWeekFightAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
-			}
-		});
-	}
-
-	private static handleChristmasBonusAnnouncementMqttMessage(): void {
-		DiscordMQTT.christmasBonusAnnouncementMqttClient.on("message", async (_topic, message) => {
-			if (message.toString() === "") {
-				CrowniclesLogger.debug("No Christmas bonus announcement in the MQTT topic");
-				return;
-			}
-
-			if (await DiscordAnnouncement.canAnnounce()) {
-				await DiscordAnnouncement.announceChristmasBonus(JSON.parse(message.toString()));
-
-				// Clear the announcement so it doesn't get processed again
-				DiscordMQTT.christmasBonusAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
-			}
-		});
-	}
-
-	private static handleBlessingAnnouncementMqttMessage(): void {
-		DiscordMQTT.blessingAnnouncementMqttClient.on("message", async (_topic, message) => {
-			if (message.toString() === "") {
-				CrowniclesLogger.debug("No blessing announcement in the MQTT topic");
-				return;
-			}
-
-			if (await DiscordAnnouncement.canAnnounce()) {
-				await DiscordAnnouncement.announceBlessing(JSON.parse(message.toString()));
-
-				// Clear the announcement so it doesn't get processed again
-				DiscordMQTT.blessingAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
-			}
-		});
+		return client;
 	}
 
 	private static handleNotificationMqttMessage(): void {
@@ -328,46 +337,6 @@ export class DiscordMQTT {
 		});
 
 		this.handleGlobalMqttMessage();
-	}
-
-	private static connectSubscribeAndHandleTopWeekAnnouncement(): void {
-		DiscordMQTT.topWeekAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
-
-		DiscordMQTT.topWeekAnnouncementMqttClient.on("connect", () => {
-			DiscordMQTT.subscribeTo(DiscordMQTT.topWeekAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(discordConfig.PREFIX), false);
-		});
-
-		this.handleTopWeekAnnouncementMqttMessage();
-	}
-
-	private static connectSubscribeAndHandleTopWeekFightAnnouncement(): void {
-		DiscordMQTT.topWeekFightAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
-
-		DiscordMQTT.topWeekFightAnnouncementMqttClient.on("connect", () => {
-			DiscordMQTT.subscribeTo(DiscordMQTT.topWeekFightAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX), false);
-		});
-
-		this.handleTopWeekFightAnnouncementMqttMessage();
-	}
-
-	private static connectSubscribeAndHandleChristmasBonusAnnouncement(): void {
-		DiscordMQTT.christmasBonusAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
-
-		DiscordMQTT.christmasBonusAnnouncementMqttClient.on("connect", () => {
-			DiscordMQTT.subscribeTo(DiscordMQTT.christmasBonusAnnouncementMqttClient, MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), false);
-		});
-
-		this.handleChristmasBonusAnnouncementMqttMessage();
-	}
-
-	private static connectSubscribeAndHandleBlessingAnnouncement(): void {
-		DiscordMQTT.blessingAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
-
-		DiscordMQTT.blessingAnnouncementMqttClient.on("connect", () => {
-			DiscordMQTT.subscribeTo(DiscordMQTT.blessingAnnouncementMqttClient, MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), false);
-		});
-
-		this.handleBlessingAnnouncementMqttMessage();
 	}
 
 	private static connectSubscribeAndHandleNotifications(): void {

@@ -1,5 +1,7 @@
 import { FightConstants } from "./FightConstants";
 import { ItemRarity } from "./ItemConstants";
+import { asMinutes } from "../types/TimeTypes";
+import { minutesToMilliseconds } from "../utils/TimeUtils";
 
 export type PetInteraction = {
 	name: string;
@@ -138,7 +140,7 @@ export abstract class PetConstants {
 		}
 	};
 
-	static readonly BREED_COOLDOWN = 30 * 60 * 1000; // 30 minutes
+	static readonly BREED_COOLDOWN = minutesToMilliseconds(asMinutes(30));
 
 	static readonly MAX_LOVE_POINTS = 110;
 
@@ -313,7 +315,8 @@ export abstract class PetConstants {
 		JACK_O_LANTERN: 99,
 		GHOST: 100,
 		VAMPIRE: 101,
-		FAIRY: 102
+		FAIRY: 102,
+		SEA_URCHIN: 103
 	};
 
 	static readonly PET_BEHAVIORS = [
@@ -491,7 +494,10 @@ export abstract class PetConstants {
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.MEDUSE_PARALYZE
 		},
 		{
-			petIds: [PetConstants.PETS.HEDGEHOG],
+			petIds: [
+				PetConstants.PETS.HEDGEHOG,
+				PetConstants.PETS.SEA_URCHIN
+			],
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.REVENGE
 		},
 		{
@@ -620,39 +626,11 @@ export abstract class PetConstants {
 		5
 	];
 
-	static readonly FLYING_PETS = [
-		PetConstants.PETS.BIRD,
-		PetConstants.PETS.DUCK,
-		PetConstants.PETS.OWL,
-		PetConstants.PETS.BAT,
-		PetConstants.PETS.SWAN,
-		PetConstants.PETS.FLAMINGO,
-		PetConstants.PETS.PARROT,
-		PetConstants.PETS.EAGLE,
-		PetConstants.PETS.DOVE,
-		PetConstants.PETS.DRAGON,
-		PetConstants.PETS.SCARLET_DUCK,
-		PetConstants.PETS.BLACK_BIRD,
-		PetConstants.PETS.RAVEN,
-		PetConstants.PETS.PHOENIX,
-		PetConstants.PETS.FAIRY
-	];
-
-	static readonly AQUATIC_PETS = [
-		PetConstants.PETS.OCTOPUS,
-		PetConstants.PETS.FISH,
-		PetConstants.PETS.TROPICAL_FISH,
-		PetConstants.PETS.PUFFERFISH,
-		PetConstants.PETS.JELLYFISH,
-		PetConstants.PETS.SHARK,
-		PetConstants.PETS.WHALE,
-		PetConstants.PETS.WHALE_2,
-		PetConstants.PETS.SHRIMP,
-		PetConstants.PETS.LOBSTER,
-		PetConstants.PETS.DOLPHIN,
-		PetConstants.PETS.CRAB,
-		PetConstants.PETS.SNAIL
-	];
+	static readonly TAGS = {
+		FIRE: "fire",
+		FLYING: "flying",
+		AQUATIC: "aquatic"
+	} as const;
 
 	static SEX = {
 		MALE: "m",

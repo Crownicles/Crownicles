@@ -3,7 +3,7 @@ import {
 } from "sequelize";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 
 export class PlayerTalismans extends Model {
 	declare readonly playerId: number;
@@ -11,6 +11,8 @@ export class PlayerTalismans extends Model {
 	declare hasTalisman: boolean;
 
 	declare hasCloneTalisman: boolean;
+
+	declare hasRemoteHarvestTalisman: boolean;
 
 	declare updatedAt: Date;
 
@@ -43,6 +45,10 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: false
 		},
 		hasCloneTalisman: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false
+		},
+		hasRemoteHarvestTalisman: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
 		},

@@ -128,7 +128,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Visitate la città per molte ore prima di continuare per la vostra strada."
+          "0": "Visitate la città per diverse ore, passeggiando senza fretta da un vicolo all’altro."
         }
       },
       "goAway": {
@@ -140,32 +140,32 @@
       },
       "goForge": {
         "outcomes": {
-          "0": "Non c'è nulla d'interessante in questa fucina... Lasciate rapidamente il locale e proseguite per la vostra strada.",
+          "0": "Non c'è nulla di interessante in questa fucina... Vi allontanate rapidamente dal luogo.",
           "1": "Provando una spada, rompete la finestra della fucina e il fabbro vi chiede un rimborso!",
-          "2": "Non c'è nessuno nella fucina, che sembra abbandonata da anni. Prima di uscire, però, notate un oggetto che potrebbe esservi utile per il resto della vostra avventura...",
-          "3": "La fucina sembra essere abbandonata da anni. Così ripartite.",
-          "4": "Entrate e salutate il fabbro. Dopo una rapida ispezione del suo lavoro, vi rendete conto che non troverete nulla d'interessante qui. Continuate per la vostra strada."
+          "2": "Nella fucina, che sembra abbandonata da anni, non c'è nessuno. Prima di uscire, però, notate un oggetto che potrebbe tornarvi utile nel prosieguo della vostra avventura...",
+          "3": "La fucina sembra abbandonata da anni. Quindi ne uscite a mani vuote.",
+          "4": "Entrate e salutate il fabbro. Dopo una rapida occhiata al suo lavoro, vi rendete conto che qui non troverete nulla di interessante. Scambiate qualche parola e uscite."
         },
         "text": "Andate alla fucina."
       },
       "goInn": {
         "outcomes": {
-          "0": "Dopo aver parlato per due ore con l'oste, finalmente scoprite che non ci sono camere disponibili per la notte! Ripartite, frustrati per non essere riusciti a riposare bene.",
-          "1": "Pagate una stanza per la notte e cadete sfinito sul letto. Dovrete dormire prima di riprendere l'avventura.",
-          "2": "La locanda sembra essere abbandonata da diversi anni... Continuate per la vostra strada senza farvi più domande."
+          "0": "Dopo aver discusso per due ore con il gestore della locanda, alla fine scoprite che non c'è nessuna camera disponibile per la notte! Uscite dalla locanda, frustrati per non aver potuto godervi una buona notte di riposo.",
+          "1": "Pagate una camera per la notte e vi lasciate cadere esausto sul letto. Dovrete dormire prima di poter riprendere l'avventura.",
+          "2": "La locanda sembra abbandonata da diversi anni... Uscite senza porvi ulteriori domande."
         },
         "text": "Andare all'ostello."
       },
       "goMarket": {
         "outcomes": {
           "0": "Esplorate il mercato in 30 minuti prima di scoprire un piccolo oggetto a terra che potrebbe esservi utile...",
-          "1": "Dopo aver perso 60 minuti a girovagare tra le bancarelle, finite per lasciare la città senza aver trovato alcunché d'interessante.",
-          "2": "Mentre la vostra attenzione era al minimo nel mercato, ricevete un violento colpo alla nuca e crollate a terra... Dopo quel momento, non ricordate più nulla. Dovrete essere curato prima di poter continuare ad andare avanti!"
+          "1": "Dopo aver perso 60 minuti a gironzolare tra le bancarelle, alla fine vi ritrovate a lasciare il mercato senza aver trovato nulla di interessante.",
+          "2": "Proprio mentre la tua attenzione era ai minimi sul mercato, ricevi un colpo violento alla nuca e crolli a terra... Dopo quel momento, non hai più alcun ricordo. Dovrai curarti prima di poter riprendere l'avventura!"
         },
         "text": "Andare al mercato."
       }
     },
-    "text": "Dopo aver trascorso diverse settimane a camminare senza incontrare un solo essere umano, arrivate, infine, in una piccola borgata che sembra piuttosto vivace."
+    "text": "Dopo aver trascorso diverse settimane camminando senza incontrare anima viva, ora state passeggiando per i vicoli di un piccolo paesino piuttosto vivace."
   },
   "14": {
     "possibilities": {
@@ -325,12 +325,12 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Si osserva il sito per qualche minuto, poi ci si rende conto che è davvero deserto. Si riparte."
+          "0": "Osservi il cantiere per qualche minuto, poi ti rendi conto che è davvero deserto. È evidente che non c'è nulla da ricavarne."
         }
       },
       "searchScaffolding": {
         "outcomes": {
-          "0": "Si sale in cima all'impalcatura, ma ad eccezione di un magnifico paesaggio, non si trova nulla. Dopo aver trascorso qualche minuto ad ammirarlo, si riparte.",
+          "0": "Salite fino in cima alle impalcature, ma a parte un magnifico panorama non trovate nulla. Trascorrete qualche minuto ad ammirarlo prima di ridiscendere.",
           "1": "Salendo sulla struttura instabile, scoprirete una vista mozzafiato sulla regione! Approfittate della vista per individuare un oggetto sottostante.",
           "2": "Si sale sulla scala, ma a metà strada un piolo si rompe e si cade a terra! Stordito dalla caduta, riprendi lentamente i sensi."
         },
@@ -346,13 +346,13 @@
       },
       "skip": {
         "outcomes": {
-          "0": "Decidete di ignorare questo sito e di continuare per la vostra strada.",
-          "1": "Si guarda il cantiere da lontano, senza vedere il piccone a terra. Ti sei tagliato un piede mentre uscivi."
+          "0": "Decidete di ignorare quella situazione e di non soffermarvi oltre su di essa.",
+          "1": "Girate intorno al cantiere e lo osservate da lontano, senza vedere il piccone appoggiato a terra. Ci inciampate sopra e vi ferite al piede."
         },
-        "text": "Continuate il vostro viaggio senza preoccuparvi del mondo."
+        "text": "Ignora questo progetto."
       }
     },
-    "text": "Arrivate in una città, ma non c'è anima viva in vista. Attraversandola, si vede un cantiere che sembra altrettanto deserto."
+    "text": "La città in cui vi trovate sembra deserta, senza anima viva. Percorrendone le strade, il vostro sguardo si posa su un cantiere che sembra altrettanto abbandonato."
   },
   "19": {
     "possibilities": {
@@ -424,16 +424,16 @@
       },
       "end": {
         "outcomes": {
-          "0": "Continuate per la vostra strada senza prestare attenzione alla guardia.",
-          "1": "Stupiti, fissate la scena per cinque minuti. Alla fine la guardia si accorge di voi e voi vi affrettate a proseguire."
+          "0": "Vi allontanate senza prestare attenzione alla guardia.",
+          "1": "Sbalordito, osservate la scena, paralizzato, per cinque minuti. Alla fine la guardia vi nota, e voi vi affrettate a svignarvela."
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Quindi si ignora la situazione e si continua per la propria strada.",
-          "1": "Al suo passaggio, inciampa e cade a terra."
+          "0": "Quindi non presti attenzione alla situazione e te ne vai tranquillamente.",
+          "1": "Mentre vi allontanate, inciampate e cadete a terra."
         },
-        "text": "Andare avanti."
+        "text": "Non intervenire."
       },
       "surpriseAttack": {
         "outcomes": {
@@ -444,7 +444,7 @@
         "text": "Attaccate la guardia di sorpresa per aiutare la donna."
       }
     },
-    "text": "Mentre passeggiate in un villaggio, notate con la coda dell'occhio una guardia che ruba una povera donna."
+    "text": "Appena arrivati in un villaggio, con la coda dell’occhio notate una guardia che picchia una povera donna."
   },
   "21": {
     "possibilities": {
@@ -604,26 +604,26 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Dopo aver trascorso 15 minuti ad osservare questa scena, ve ne andate, scioccati, ma continuate la vostra avventura."
+          "0": "Dopo aver trascorso 15 minuti a osservare quella scena, vi allontanate dalla piazza, ancora sconvolti da ciò che avete appena visto."
         }
       },
       "goAway": {
         "outcomes": {
-          "0": "Inorriditi da questo atto barbarico, proseguite rapidamente per la vostra strada.",
-          "1": "Mentre vi allontanate, vedete una scatola in lontananza. Dopo qualche minuto di cammino, la raggiungete, la aprite e scoprite una borsa piena di soldi."
+          "0": "Inorridito da quell’atto di barbarie, vi allontanate rapidamente dalla piazza, con il cuore ancora stretto.",
+          "1": "Allontanandovi dalla folla, scorgete una cassetta abbandonata in un vicolo. Incuriositi, vi avvicinate, la aprite e scoprite una borsa piena di soldi."
         },
-        "text": "Lontano dal massacro."
+        "text": "Allontanarsi dall'esecuzione."
       },
       "steal": {
         "outcomes": {
-          "0": "Dopo aver derubato un po' di persone, ti ritrovi con qualcosa che sembra molto interessante! Dopo aver camminato per circa trenta minuti, decidete di vedere di cosa si tratta.",
-          "1": "State cercando di derubare un residente quando improvvisamente si gira e vi afferra con forza prima di picchiarvi. Dopo aver lottato, siete fuggiti."
+          "0": "Dopo aver derubato alcune persone, vi allontanate di soppiatto con un oggetto che sembra davvero interessante! Lontano dalla folla, finalmente guardate di cosa si tratta.",
+          "1": "Stai cercando di derubare un abitante quando questi si gira all’improvviso, ti afferra con forza e inizia a picchiarti. Dopo aver lottato, riesci a sfuggirgli nella calca."
         },
-        "text": "Derubare i passanti mentre assistono al massacro."
+        "text": "Derubare i passanti che assistono all'esecuzione."
       },
       "trySave": {
         "outcomes": {
-          "0": "Dopo aver lottato tra la folla, intervenite il più rapidamente possibile e riuscite a trascinare fuori l'uomo. Dopo aver corso per il villaggio, l'uomo vi è molto grato e vi dona un oggetto che potrete utilizzare per il resto della vostra avventura.",
+          "0": "Dopo esserti fatto strada a fatica tra la folla, intervieni al più presto e riesci a portare via quell’uomo da lì. Una volta al riparo da sguardi indiscreti, quell’uomo, molto riconoscente, ti offre un oggetto che ti tornerà utile nel prosieguo della tua avventura.",
           "1": "Mentre vi fate strada tra la folla per cercare di impedire l'omicidio, venite spinti con forza e cadete a terra.",
           "2": "Dopo essere riusciti a fuggire con l'uomo, venite catturati e picchiati da un gruppo di persone. Una volta in piedi, vi accorgete che queste persone vi hanno derubato.",
           "3": "Dopo aver cercato violentemente di intervenire, il boia vi afferra con la forza. Vi dimenate, ma non c'è niente da fare. Anche voi siete condannati a morte."
@@ -631,42 +631,42 @@
         "text": "Per intervenire e impedire che quest'uomo muoia."
       }
     },
-    "text": "Camminando per un villaggio, notate un gruppo di persone riunite. Avvicinandosi, ci si rende subito conto che è in corso un'impiccagione. Dopo aver fatto alcune indagini, sapete che questa persona è stata condannata a morte per \"osservazioni contrarie ai valori della Chiesa\"."
+    "text": "Arrivando in un villaggio, notate un gruppo di persone. Avvicinandovi, vi rendete subito conto che è in corso un'impiccagione. Dopo aver raccolto alcune informazioni, venite a sapere che quella persona è stata condannata a morte per «dichiarazioni contrarie ai valori della Chiesa»."
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Si fissa l'oggetto per 20 minuti e poi ci si allontana.",
+          "0": "Si osserva stupidamente l'oggetto per 20 minuti, prima di distogliere lo sguardo.",
           "1": "Sporgendosi dal pozzo, si osserva l'oggetto. In quel momento ci si ribalta. Fortunatamente riuscite a risalire, ma non senza aver riportato gravi ferite."
         }
       },
       "goDown": {
         "outcomes": {
-          "0": "Durante la discesa vi siete feriti gravemente e siete rimasti bloccati sul fondo per diverse ore prima che qualcuno vi trovasse.",
-          "1": "Raggiungete il fondo senza problemi, raccogliete l'oggetto e proseguite il vostro cammino.",
-          "2": "Si salta nel pozzo ma non si trova nulla. Quindi si risale senza perdere altro tempo.",
-          "3": "Una volta arrivati in fondo, scoprirete una grande quantità di monete d'oro, che potrete raccogliere prima di continuare il vostro viaggio."
+          "0": "Durante la discesa subisci un grave infortunio e rimani bloccato sul fondo per un po' prima che qualcuno ti ritrovi.",
+          "1": "Arrivate giù senza problemi e recuperate l'oggetto.",
+          "2": "Vi tuffate nel pozzo, ma non trovate nulla. Quindi risalite a mani vuote.",
+          "3": "Una volta giunti giù, scoprite una grande quantità di monete d'oro che raccogliete con gioia."
         },
         "text": "Cercate di scendere per recuperare l'oggetto."
       },
       "skip": {
         "outcomes": {
-          "0": "Non c'è tempo da perdere! Continuate per la vostra strada senza prestare la minima attenzione a questo.",
-          "1": "Continuate a camminare, ma dopo un'ora di cammino vi trovate di fronte a un gruppo di persone vestite di nero. Dopo una dura lotta, riuscite ad andarvene, ma siete stati derubati."
+          "0": "Non c'è tempo da perdere! Distogliete lo sguardo senza prestare la minima attenzione a questo.",
+          "1": "Ti allontani dal pozzo, ma all’imbocco di un vicolo ti ritrovi faccia a faccia con un gruppo di persone vestite di nero. Dopo aver lottato con tutte le tue forze, riesci a sfuggirgli, ma sei stato derubato."
         },
-        "text": "Continuate il vostro cammino."
+        "text": "Ignora il pozzo."
       },
       "useBucket": {
         "outcomes": {
           "0": "Dopo un'ora di tentativi, finalmente si ottiene questo oggetto, che si rivela essere solo un pezzo di metallo di scarto.",
           "1": "Concentrati sul vostro obiettivo, non vi accorgete che un giovane abitante del villaggio vi ha afferrato e spinto nel pozzo. Storditi, vi risvegliate solo alcuni minuti dopo.",
-          "2": "Recuperate rapidamente il denaro dal fondo e proseguite per la vostra strada."
+          "2": "In men che non si dica, recuperate il denaro che si trovava in fondo al pozzo."
         },
         "text": "Cercate di prendere l'oggetto con il secchio nel pozzo."
       }
     },
-    "text": "Camminando per il piccolo villaggio che avete trovato, notate un pozzo con un piccolo oggetto luccicante sul fondo."
+    "text": "Arrivando in un piccolo villaggio, notate un pozzo con un piccolo oggetto luccicante sul fondo."
   },
   "28": {
     "possibilities": {
@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "Quando non rispondete, il gruppo di amici decide di andare a prendervi un regalo. Mentre li aspettate educatamente, diventate sempre più ansiosi al pensiero di perdere tempo. Il rischio di non riuscire a salvare la principessa vi ossessiona, vi fa persino star male... e finite per svenire. Trovandovi senza vita sulla via del ritorno, gli uomini onesti vi appoggiano a un albero per farvi riposare e vi lasciano questo dono prima di ripartire.",
-          "1": "Di fronte alla vostra mancanza di reazione, non insistono. Continuate per la vostra strada senza prestare loro attenzione.",
-          "2": "Vedendo che esitate troppo, i giovani decidono finalmente di offrirvi del denaro per comprare qualche gingillo. Li ringraziate prima di proseguire per la vostra strada."
+          "1": "Visto che non reagite, i passanti non insistono e se ne vanno.",
+          "2": "Vedendovi esitare troppo a lungo, i giovani decidono infine di offrirvi un po’ di soldi per permettervi di comprare qualche ninnolo. Li ringraziate per il loro gesto."
         }
       },
       "food": {
         "outcomes": {
           "0": "Uno di loro vi porge una zuppa piuttosto appetitosa. La bevete ignari. Questi furfanti vi hanno teso una trappola! Stavano aspettando da tempo di depredarti e la bevanda conteneva abbastanza agarico per farti ammalare. Vi sentite scivolare via mentre assistete impotenti al prelievo delle vostre tasche.",
           "1": "Questi passanti vi hanno cucinato un piatto delizioso, degno di una pozione gallica. A un esame più attento, notate un oggetto lasciato sul fondo della ciotola. Potrebbe tornarvi utile in seguito.",
-          "2": "Felici di avervi fatto un favore, il gruppo va a comprare la specialità locale. Vedendo arrivare il piatto, vi fate coraggio ma lo assaggiate con un certo disgusto: non vi piacciono i funghi! Non senza difficoltà, continuate per la vostra strada."
+          "2": "Felici di farvi un favore, il gruppo va a comprarvi la specialità del posto. Quando vedete arrivare il piatto, fate buon viso a cattivo gioco, ma lo gustate con un certo disgusto: non vi piacciono i funghi! Non senza fatica, finite il piatto."
         },
         "text": "Regalo alimentare."
       },
       "health": {
         "outcomes": {
-          "0": "Il gruppo vi accompagnerà nella valle, dove vi offrirà un trattamento rinvigorente nelle acque termali. Ringiovaniti, sarete pronti a rimettervi in viaggio.",
+          "0": "Il gruppo vi accompagna nella valle, dove vi offre un trattamento rigenerante nelle acque termali. Rinvigoriti, vi sentite di nuovo in piena forma.",
           "1": "Le poche persone vi offrono un trattamento in un centro massaggi vicino. Mentre vi massaggiano, una delle candele appese alla parete cade nel barattolo degli oli essenziali, incendiando l'intera struttura. Riuscite, non senza difficoltà, a uscire dall'inferno che si sprigiona dall'edificio.",
-          "2": "Non si aspettavano questo tipo di richiesta e non sanno come rispondere. Non volendo lasciare che il malessere si aggravi, continuate per la vostra strada."
+          "2": "Non si aspettavano una richiesta del genere e sono ancora indecisi su come rispondervi. Per non lasciare che il disagio si protragga, li ringraziate comunque e chiudete la conversazione."
         },
         "text": "Un regalo sano."
       },
       "kind": {
         "outcomes": {
-          "0": "Il gruppo di amici vi dice che sono andati alla ricerca del regalo perfetto. Purtroppo, non hanno trovato nulla di vostro gradimento. Delusi, continuate per la vostra strada.",
-          "1": "Questi bambini intelligenti hanno deciso di farvi uno scherzo e di farvi un regalo cattivo. Ma non pensavano che una tavola con chiodi sporgenti sarebbe stata pericolosa da scartare. Con le dita che sanguinano, vi mettete furiosamente a curarvi.",
+          "0": "Il gruppo di amici vi racconta di essere andato alla ricerca del regalo perfetto. Purtroppo, non hanno trovato nulla che potesse piacervi. Delusi, li ringraziate comunque.",
+          "1": "Quei furbetti hanno deciso di farvi uno scherzo e di regalarvi un regalo meschino. Non avevano però pensato che una tavola con chiodi sporgenti potesse essere pericolosa da scartare. Con le dita insanguinate, vi allontanate furiosi per medicarvi.",
           "2": "I vostri generosi donatori sono orgogliosi delle loro scoperte sul mercato. Vi consegnano un oggetto che, a prima vista, vi interessa molto."
         },
         "text": "Dono in natura."
@@ -966,7 +966,7 @@
         "text": "Il dono nel cambiamento."
       }
     },
-    "text": "All'angolo della strada, alcuni passanti vi riconoscono e vi avvicinano. Ricordano perfettamente l'aiuto che avete dato loro e insistono per ringraziarvi con un regalo. Vi chiedono cosa vi farebbe più piacere."
+    "text": "Appena arrivati al villaggio, alcuni passanti vi riconoscono e vi avvicinano. Ricordano perfettamente l’aiuto che avete dato loro e insistono per ringraziarvi offrendovi un regalo. Vi chiedono cosa vi farebbe più piacere."
   },
   "35": {
     "possibilities": {
@@ -1005,8 +1005,8 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Aspettate a lungo nella piazza e poi, all'improvviso, i mercanti iniziano a fare acquisti. È il vostro giorno fortunato! È un mercato e le mele costano pochissimo. Ne comprate un po' e vi mettete in cammino.",
-          "1": "Si aspetta in piazza per un po', poi ci si rende conto che non c'è nulla di veramente interessante da fare e si riparte."
+          "0": "Aspettate a lungo in questa piazza e, all’improvviso, i venditori iniziano a sistemarsi. È il vostro giorno fortunato! Si tratta di un mercato, e le mele costano pochissimo. Ne comprate alcune e le gustate lì sul posto.",
+          "1": "Aspettate un po’ in questa piazza, poi vi rendete conto che qui non c’è nulla di particolarmente interessante da fare."
         }
       },
       "goAway": {
@@ -1017,28 +1017,28 @@
       },
       "goInn": {
         "outcomes": {
-          "0": "Arrivate all'ostello e recuperate le energie con un buon pasto e una meritata siesta.",
-          "1": "Arrivate all'ostello, che purtroppo è pieno. Si mangia comunque e si prosegue per la strada.",
-          "2": "Purtroppo la locanda è chiusa e decidete di proseguire il vostro cammino, affamati e stanchi."
+          "0": "Un abitante del villaggio dal cuore grande vi offre alloggio e vitto. Ritrovate un po’ di energia grazie a un buon pasto e a un meritato riposo nella tranquillità del suo fienile.",
+          "1": "Un abitante del villaggio non ha molto spazio da offrirvi, ma condivide comunque volentieri il suo pasto con voi, prima che voi lo ringraziate calorosamente.",
+          "2": "Purtroppo, nessuno sembra disposto ad accogliervi; voi restate lì, stanchi e a stomaco vuoto."
         },
-        "text": "Andate all'ostello per riposare."
+        "text": "Accettare l'ospitalità di un abitante del villaggio."
       },
       "stealJeweler": {
         "outcomes": {
-          "0": "Ti fidi delle tue capacità di infiltrazione. Entrate e fortunatamente il vecchio non è lì. Riuscite a rubare il contenuto della cassa e ve ne andate.",
-          "1": "Arrivate al negozio ed entrate per rapinare il gioielliere. Mentre prendete i soldi del gioielliere, una guardia personale vi fa perdere i sensi. Ci si risveglia qualche ora dopo lungo un sentiero."
+          "0": "Hai fiducia nelle tue capacità di infiltrazione. Ti metti all’opera e, per fortuna, il vecchio era assente. Riesci a rubare il contenuto della cassa e te ne vai di soppiatto.",
+          "1": "Arrivate davanti al negozio ed entrate con l'intenzione di rapinare il gioielliere. Mentre state prendendo i soldi del gioielliere, una guardia del corpo vi mette fuori combattimento. Vi risvegliate qualche ora dopo, in un vicolo appartato."
         },
         "text": "Tentano di rapinare il gioielliere."
       },
       "talkJeweler": {
         "outcomes": {
           "0": "Si parla con il gioielliere e si instaura un'amicizia. Lui vi regala un oggetto come segno di questa nuova amicizia.",
-          "1": "Decidete di provare a contrattare per comprare uno dei gioielli a un piccolo prezzo. Discutete a lungo, ma il vecchio è un ottimo mercante e non cede. Ve ne andate, rendendovi conto che non ha intenzione di abbassare i prezzi."
+          "1": "Decidete di provare a contrattare per acquistare uno dei gioielli a un prezzo conveniente. Discutete a lungo, ma il vecchio è un ottimo venditore e non cede. Vi congedate dopo aver capito che non ha intenzione di abbassare i prezzi."
         },
         "text": "Andate dal gioielliere e fate due chiacchiere."
       }
     },
-    "text": "Nel corso del vostro lunghissimo viaggio, arrivate in un incantevole paesino. Raggiungete il centro del paese, ma si rivela molto piccolo e ci sono solo due negozi: una gioielleria e una locanda. Da un passante scoprite che la gioielleria è gestita da un uomo anziano che realizza magnifici gioielli e collane. La locanda, invece, è gestita da una coppia e si dice che abbia un grande successo."
+    "text": "Nel corso del vostro lunghissimo viaggio, arrivate alle porte di un piccolo villaggio davvero incantevole. Il luogo è così modesto che, con una semplice occhiata, intuite che ci sono solo due attività commerciali: una gioielleria e una locanda. Un passante vi dice che la gioielleria è gestita da un anziano che realizza magnifici gioielli e collane. Quanto alla locanda, è gestita da una coppia e sembra che abbia un grande successo."
   },
   "37": {
     "possibilities": {
@@ -1120,14 +1120,14 @@
       },
       "end": {
         "outcomes": {
-          "0": "Passate qualche minuto a chiacchierare con Price, poi ripartite.",
+          "0": "Rimanete a chiacchierare qualche minuto con Price, prima di lasciarlo tornare alle sue faccende.",
           "1": "Dopo aver chiacchierato un po', le vostre strade si separano. Qualche strada più avanti, venite aggrediti da un gruppo di persone dall'aspetto poco gentile che vi sfilano la borsa sotto la minaccia di una pistola."
         }
       },
       "meal": {
         "outcomes": {
           "0": "Chiedete a Price di mangiare qualcosa insieme e lui accetta. Chiacchierate per un po', bevete qualche drink, ridete molto, vi scambiate consigli e vi conoscete meglio. Con un po' di rammarico, Price vi saluta dopo qualche ora, perché ha un contratto da rispettare.",
-          "1": "Chiedete a Price se vuole venire a mangiare con voi nella taverna locale. Lui rifiuta, dicendo che ha del lavoro da fare, e se ne va."
+          "1": "Proponi a Price di conoscersi meglio a cena. Lui rifiuta, dicendo di avere da fare, e se ne va."
         },
         "text": "Conoscersi davanti a un buon pasto."
       },
@@ -1375,8 +1375,8 @@
     "possibilities": {
       "askJoin": {
         "outcomes": {
-          "0": "Il gruppo è stato molto accogliente, così avete fatto il viaggio tutti insieme. Quando si arriva al santuario, la guida passa quasi 2 ore a raccontare la storia.",
-          "1": "Il gruppo si limita a rifiutare. Quindi continuate per la vostra strada.",
+          "0": "Il gruppo si dimostra molto accogliente, quindi farete il viaggio tutti insieme. Una volta arrivati al santuario, la guida trascorrerà circa due ore a raccontarvi la sua storia, prima di tornare al villaggio.",
+          "1": "Il gruppo vi esclude senza tanti complimenti e prosegue per la sua strada senza di voi.",
           "2": "Il gruppo pensa che siate un ladro e vi picchia di conseguenza."
         },
         "text": "Chiedete al gruppo di unirsi a loro."
@@ -1384,25 +1384,26 @@
       "end": {
         "outcomes": {
           "0": "Il gruppo, pensando di essere spiato, vi colpisce violentemente.",
-          "1": "Dopo 15 minuti senza alcuna reazione, si riprende il cammino."
-        }
+          "1": "Dopo 15 minuti senza alcuna reazione da parte tua, il gruppo alla fine se ne va senza di te."
+        },
+        "text": "Non prestare attenzione al gruppo."
       },
       "goAlone": {
         "outcomes": {
-          "0": "Decidete di andare al santuario da soli. Dopo 30 minuti di strada, il terreno cede improvvisamente sotto i vostri piedi e cadete violentemente.",
-          "1": "Decidete di andare al santuario da soli. Quando arrivate sul posto, sentite uno strano rumore. Preso dal panico, correte e inciampate. Si procura un brutto graffio sulla gamba, che presto si infetta.",
-          "2": "Decidete di andare al santuario da soli. Durante il tragitto, trovate un oggetto che potrebbe esservi utile. Quando si arriva, si scopre che il santuario è una grotta. Decidete di non andare oltre.",
-          "3": "Decidete di andare al santuario da soli. Una volta arrivati, scoprite un magnifico santuario, la cui bellezza contemplate per 30 minuti.",
-          "4": "Vedendo il tempo peggiorare, cambiate la vostra decisione e continuate il vostro cammino."
+          "0": "Decidi di andare al santuario da solo. Dopo 30 minuti di viaggio, il terreno cede improvvisamente sotto i tuoi piedi e cadi violentemente. Torni al villaggio per farti medicare.",
+          "1": "Decidi di andare al santuario da solo. Una volta arrivato sul posto, senti uno strano rumore. Preso dal panico, corri e inciampi. Ti procuri un brutto graffio alla gamba, che non tarda a infettarsi. Torni al villaggio per farti medicare.",
+          "2": "Decidi di recarti al santuario da solo. Lungo la strada trovi un oggetto che potrebbe tornarti utile. Una volta arrivato sul posto, scopri che il santuario è in realtà una grotta. Decidi di non addentrarti oltre e torni al villaggio.",
+          "3": "Decidi di andare al santuario da solo. Una volta arrivato lì, scopri un magnifico santuario, di cui ammiri la bellezza per 30 minuti, prima di tornare al villaggio.",
+          "4": "Vedendo che il tempo sta peggiorando, cambiate idea e rinunciate ad andare al santuario, preferendo restare al villaggio."
         },
         "text": "Andare al santuario da soli."
       },
       "skip": {
         "outcomes": {
-          "0": "Continuate il vostro cammino, preferendo andare al villaggio successivo.",
-          "1": "Si prosegue per la strada. Pochi minuti dopo, vi rendete conto di aver preso la strada sbagliata. Nella fretta di recuperare il tempo perduto, inciampate in una pietra e le vostre cose si disperdono."
+          "0": "Non ci fate caso, preferendo dedicarvi alle vostre faccende nel villaggio.",
+          "1": "Vi allontanate senza più preoccuparvi del gruppo. Mentre vi fate strada tra i vicoli affollati, inciampate in una pietra e le vostre cose si sparpagliano per terra."
         },
-        "text": "Continuate il vostro cammino."
+        "text": "Non preoccupatevi del gruppo."
       },
       "talk": {
         "outcomes": {
@@ -1412,7 +1413,7 @@
         "text": "Discutere con il gruppo."
       }
     },
-    "text": "Mentre attraversate un villaggio affollato, sentite un gruppo di persone parlare di un santuario che si dice sia infestato. Incuriositi, continuate ad ascoltare. Si dice che il santuario sia a un'ora di macchina verso sud e che la partenza sia prevista tra 30 minuti."
+    "text": "Arrivando alle porte di un vivace villaggio, sentite un gruppo di persone parlare di un santuario che si dice sia infestato dai fantasmi. Da persone curiose quali siete, tendete l’orecchio. Il santuario si troverebbe a un’ora di macchina verso sud, e la partenza è prevista tra 30 minuti."
   },
   "46": {
     "possibilities": {
@@ -1528,7 +1529,7 @@
           "2": "Pronti a combattere, ma conoscendo poco il vostro avversario, vi avvicinate a lui con il pretesto di voler discutere un accordo. Abbastanza vicini al nemico, estraete la spada e lo stordite con il pomo. Perquisite la guardia e trovate subito una chiave. Aprite la porta. Una volta dentro, non avete problemi a trovare il manufatto. Dopo un'ora di ricerche, trovate un mercante. Egli vi compra il manufatto per la modica cifra di cinquecento monete d'oro.",
           "3": "Pronti a combattere, ma conoscendo poco il vostro avversario, lo avvicinate con il pretesto di voler discutere un accordo. Vicino al nemico, estraete la spada e lo stordite con il pomo. Cercate quindi di aprire la porta della torre, ma è chiusa a chiave... Perquisite la guardia e trovate subito la chiave. Aprite la porta e trovate il manufatto all'interno. Quindi vi mettete alla ricerca di un mercante, che trovate facilmente. Lui ruba il manufatto con un'abile mossa, ma anche voi riuscite a rubargli qualcosa. Sperando che questo sia di valore, cercate di capire di cosa si tratta.",
           "4": "Conoscendo poco il vostro avversario, vi avvicinate a lui con il pretesto di voler discutere un accordo. Una volta che foste abbastanza vicini al vostro nemico, sguainaste la spada e lo stordiste con il pomo. Purtroppo per voi, il cavaliere era molto più forte e veloce di voi. Si fiondò su di voi, vi agganciò con il piede destro e vi sferrò un calcio nello stomaco prima di sferrare un potente montante. A terra, sul punto di svenire, non riuscite ad alzarvi.",
-          "5": "Il cavaliere brandisce la spada per intimidirvi. Di fronte a questo colosso, esitate a fuggire, ma decidete di restare. Combatterete contro questo cavaliere anche se le possibilità di sconfiggerlo sono scarse. Il vostro avversario para senza sforzo i vostri colpi, uno dopo l'altro, prima di farvi cadere a terra. A terra, disarmati, sapete che il combattimento è finito. È allora che il cavaliere vi dice: \"Siete molto coraggiosi, ecco la vostra ricompensa\". Vi dà un oggetto prima di spostarsi all'ingresso della torre.",
+          "5": "Il cavaliere brandisce la spada per intimidirvi. Di fronte a quel colosso, esitate a fuggire, ma decidete di restare. Combatterete contro quel cavaliere anche se le vostre possibilità di sconfiggerlo sono scarse. Il vostro avversario para i vostri colpi uno ad uno senza il minimo sforzo, prima di buttarvi a terra. A terra, disarmato, sai che il combattimento è finito. È allora che il cavaliere ti dice che hai dato prova di grande coraggio e che ti ricompenserà. Ti consegna un oggetto prima di posizionarsi all’ingresso della torre.",
           "6": "Pronti a combattere, vi lanciate rapidamente verso il vostro avversario, sguainando la spada. Il cavaliere ebbe appena il tempo di estrarre la sua arma prima che voi lo caricaste. In quel momento vi rendete conto del vostro errore. Lui ha un'armatura, ma voi no. Così cercate di colpirlo più volte con il pomo della spada. Sembra che l'abbia disorientato, così vi preparate a riprovare. Ma prima di riuscirci, il vostro avversario vi ferisce alla gamba. Siete a terra, incapaci di alzarvi. Il cavaliere si trova sopra di voi e alza la spada. Chiudete gli occhi e sentite il vostro stesso urlo."
         },
         "text": "Combattere il cavaliere."
@@ -1615,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Vi spiegano che sono noci di cocco, che la loro polpa viene mangiata quando si apre il guscio e che il loro succo è famoso in tutto il Paese. Gli abitanti del villaggio vi offrono un assaggio e voi non rifiutate. Il succo è rinfrescante e la polpa placa l'appetito. Dopo aver ringraziato gli abitanti del villaggio per la loro scoperta con qualche moneta, vi mettete in cammino.",
-          "1": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Mentre uno di loro spiega, gli altri iniziano ad avvicinarsi a voi. All'improvviso, qualcuno vi blocca il braccio e gli altri si avventano su di voi per rubare le vostre cose. Dopo essere stati picchiati in precedenza, continuate il vostro cammino.",
-          "2": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Ci spiegano che sono noci di cocco, che la loro polpa viene mangiata quando si apre il guscio e che il loro succo è rinomato in tutto il Paese. Con queste preziose informazioni in mano, si riparte."
+          "0": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Vi spiegano che si tratta di noci di cocco e che la loro polpa si mangia una volta aperto il guscio, mentre il loro succo è famoso in tutto il paese. Gli abitanti del villaggio vi propongono di assaggiarle e voi non rifiutate l’offerta. In effetti, il succo è rinfrescante e la polpa placa il vostro appetito. Ringraziate gli abitanti del villaggio per questa scoperta dando loro qualche moneta.",
+          "1": "Vi avvicinate agli abitanti del villaggio e li interrogate su questi strani frutti. Mentre uno di loro vi sta spiegando, gli altri cominciano ad avvicinarsi a voi. All’improvviso, qualcuno vi blocca il braccio con una presa, mentre gli altri vi si avventano addosso per rubarvi le vostre cose. Dopo essere stato picchiato, riprendete faticosamente conoscenza.",
+          "2": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Vi spiegano che si tratta di noci di cocco e che la loro polpa si mangia una volta aperto il guscio, mentre il loro succo è famoso in tutto il paese. Li ringraziate per queste preziose informazioni."
         },
         "text": "Avvicinatevi agli abitanti del villaggio per porre loro delle domande."
       },
       "end": {
         "outcomes": {
-          "0": "Osservate per un po' gli abitanti del villaggio mentre raccolgono questi frutti insoliti e poi proseguite il vostro cammino sotto il sole cocente.",
-          "1": "Uno dei frutti cade accanto a voi. Lo prendete tra le mani e lo esaminate attentamente prima di proseguire il cammino."
+          "0": "Rimanete a guardare per un po’ lo spettacolo degli abitanti del villaggio intenti a raccogliere questi frutti particolari sotto il sole cocente.",
+          "1": "Uno di quei frutti cade proprio accanto a voi. Lo prendete tra le mani e lo esaminate con attenzione."
         }
       },
       "leave": {
@@ -1638,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "Continuate a dormire, ma uno dei frutti si stacca e vi colpisce alla testa. Siete feriti e sanguinate molto. Alcuni abitanti del villaggio vi vedono e vi soccorrono, ma ci vorrà un po' di tempo prima che vi riprendiate.",
-          "1": "Si dorme per un po'. Quando ci si sveglia e il sole inizia a tramontare e la temperatura si abbassa, si riparte rinvigoriti.",
-          "2": "Decidete di continuare a dormire. Quando vi svegliate, vi alzate, pronti per uscire, e notate che manca qualcosa dalle vostre tasche: il portafoglio. Decidete di andarvene, delusi."
+          "1": "Dormi per un po’. Quando ti svegli, ti accorgi che il sole sta cominciando a tramontare e che la temperatura sta calando. Ti alzi, pieno di energia.",
+          "2": "Decidi di continuare il tuo pisolino. Quando ti svegli, ti alzi e ti accorgi che ti manca qualcosa dalle tasche: il portafoglio. Fai fatica a farti una ragione."
         },
         "text": "Continuate la vostra siesta ai piedi dell'albero."
       }
@@ -1657,11 +1658,11 @@
       },
       "goBack": {
         "outcomes": {
-          "0": "Poco dopo essere tornati indietro, vi imbattete in un bambino spaventato che piange sul ciglio della strada. Vi dice di essere scappato da un attacco di banditi al carro dei suoi genitori. Siete pronti a offrire il vostro aiuto e il ragazzo accetta immediatamente. Dopo aver camminato per due lunghe ore, trovate i genitori del bambino vivi ma feriti. Mentre li salutate, la madre del bambino vi dà una borsa piena d'oro.",
-          "1": "Poco dopo essere tornati indietro, vi imbattete in un bambino spaventato che piange sul ciglio della strada. Vi dice di essere scappato da un attacco di banditi al carro merci dei suoi genitori. Siete pronti a offrire il vostro aiuto e il ragazzo accetta immediatamente. Dopo aver camminato per qualche minuto, un gruppo di banditi pesantemente armati vi sorprende. La trappola non è fatale, ma nella fuga si perdono molte monete d'oro.",
-          "2": "Poco dopo essere tornati indietro, sentite il rumore di pentole e padelle che vi vengono incontro. È una viaggiatrice in cerca di nuove delizie culinarie, che sta per accamparsi per riposare. Nel corso della conservazione, scoprite il suo nome di battesimo: Lucya. Vi offre una torta che delizia il vostro palato. Sazi, riposati e deliziati dall'incontro casuale, decidete di ripartire."
+          "0": "Poco dopo aver rinunciato a salire le scale, incontrate un ragazzino in lacrime e spaventato sul ciglio di un sentiero. Vi spiega di essere scappato durante un’incursione di banditi contro il carro merci dei suoi genitori. Vi affrettate a offrirgli il vostro aiuto e il bambino accetta immediatamente. Dopo aver camminato per due lunghe ore, ritrovate i genitori del bambino vivi, ma feriti. Mentre vi congedate da loro, la madre del bambino vi consegna una borsa piena d’oro.",
+          "1": "Poco dopo aver rinunciato a salire le scale, incontrate un ragazzino in lacrime e spaventato sul ciglio di un sentiero. Vi spiega di essere scappato durante un’aggressione da parte di banditi contro il carro merci dei suoi genitori. Vi affrettate a offrirgli il vostro aiuto e il bambino accetta immediatamente. Dopo aver camminato per qualche minuto, un gruppo di banditi pesantemente armati vi attacca di sorpresa. Questa trappola non vi è costata la vita, ma durante la fuga avete perso numerose monete d’oro.",
+          "2": "Poco dopo aver rinunciato a salire le scale, sentite il rumore di pentole che sbattono l’una contro l’altra e si avvicinano a voi. Si tratta di una viaggiatrice alla ricerca di nuovi sapori culinari che stava per accamparsi per riposarsi. Nel corso della conversazione, scoprite il suo nome: Lucya. Vi offre una torta salata che delizia il vostro palato. Sazio, riposato e felice di questo incontro fortuito, decidete comunque di riprendere il vostro cammino."
         },
-        "text": "Girare intorno."
+        "text": "Rinunciare alla scalata e proseguire il cammino."
       },
       "search": {
         "outcomes": {
@@ -1686,23 +1687,23 @@
     "possibilities": {
       "deny": {
         "outcomes": {
-          "0": "Se non volete giocare con i bambini, andate per la vostra strada.",
+          "0": "Vi rifiutate di giocare con i bambini e li lasciate fare quello che vogliono.",
           "1": "Vi rifiutate, il che irrita i bambini, che raccolgono pietre da terra e ve le tirano addosso. Mentre le macerie piovono, siete costretti a fuggire, fuori dalla portata dei bambini. Vi rendete conto di essere stati colpiti alla testa e che la ferita sanguina copiosamente; avrete bisogno di cure.",
-          "2": "Voi rifiutate e i bambini si arrabbiano. Vedendo che la situazione potrebbe degenerare, si riparte rapidamente."
+          "2": "Voi vi rifiutate, e i bambini si arrabbiano. Vedendo che la situazione rischia di degenerare, vi allontanate rapidamente da loro."
         },
         "text": "Rifiutate e andate avanti."
       },
       "end": {
         "outcomes": {
-          "0": "La vostra mancanza di risposta fa sì che i bambini perdano interesse per voi e vadano a giocare altrove. Così vi rimettete in cammino.",
+          "0": "Di fronte alla vostra mancanza di reattività, i bambini perdono interesse nei vostri confronti e vanno a giocare altrove.",
           "1": "Vedendoti perso nei tuoi pensieri, i bambini ti legano i lacci delle scarpe. Quando esci da questo stato di trance, inciampi e cadi a faccia in giù.",
-          "2": "Rimanete lì per ore e, quando tornate in voi, vi rendete conto che la vostra borsa è scomparsa. Proseguite per la vostra strada, sconfortati."
+          "2": "Rimani lì immobile per ore e, quando riprendi i sensi, ti accorgi che il portafoglio è sparito. Questa disavventura ti lascia sconcertato."
         }
       },
       "play": {
         "outcomes": {
-          "0": "Poiché non capite bene le regole del gioco, venite subito messi da parte e ve ne andate senza che i bambini vi prestino attenzione.",
-          "1": "Giocate con loro finché non arrivano i loro genitori, che vi trovano sospettosi e minacciano di espellervi dal loro villaggio. Si riparte senza chiedere aiuto.",
+          "0": "Non capendo bene le regole del gioco, venite subito messi da parte, senza che i bambini si curino più di tanto di voi.",
+          "1": "Giochi con loro finché non arrivano i genitori, che, ritenendoti sospetto, ti respingono minacciandoti. Ti allontani da loro senza fare storie.",
           "2": "Nel ruolo del corridore, siete inseguiti dai bambini. Guardandovi alle spalle per misurare la distanza che vi separa da loro, inciampate in una radice e vi ferite. I bambini vi abbandonano al vostro destino quando si rendono conto che non potete continuare a giocare. Avrete bisogno di cure."
         },
         "text": "Giocare a fare il corridore e la guardia."
@@ -1719,8 +1720,8 @@
       "teach": {
         "outcomes": {
           "0": "Mentre spiegate ai bambini come posizionarsi al meglio per effettuare il tiro, uno di loro, poco distante, riesce a tendere l'arco e, prima che possiate fare qualcosa, sgancia la freccia che si conficca nella vostra gamba. Feriti, li lasciate per cercare un posto dove guarire.",
-          "1": "Spiegate ai bambini come posizionarsi per tirare e loro se la cavano molto bene. Trascorrete il resto della giornata addestrandoli al tiro con l'arco. Prima di andar via, i vostri apprendisti vi ringraziano calorosamente con un piccolo dono per la giornata. Si riparte, felici di essersi resi utili.",
-          "2": "Ben presto ci si rende conto che i bambini non sono ancora abbastanza forti per tendere la corda. Allora dite loro che tornerete ad allenarli quando saranno più grandi e ripartite."
+          "1": "Spiegate ai bambini come posizionarsi per tirare e loro se la cavano molto bene. Trascorrete il resto della giornata ad addestrarli al tiro con l’arco. Prima di salutarli, ricevete un caloroso ringraziamento sotto forma di un piccolo regalo dai vostri allievi di oggi. Vi sentite felici di esservi potuti rendere utili.",
+          "2": "Ben presto vi rendete conto che i bambini non sono ancora abbastanza forti per tendere la corda. Quindi dite loro che tornerete ad allenarli quando saranno più grandi."
         },
         "text": "Insegnare loro a tirare con l'arco."
       }
@@ -1772,51 +1773,51 @@
           "0": "Si decide di organizzare delle scommesse, ma nessuno partecipa perché tutti sanno chi sarà il vincitore.",
           "1": "Decidete di organizzare un gioco di scommesse e di scommettere che il cavaliere non vincerà. Tutti vengono a scommettere perché sanno che non perderà, ma voi avete un piano in mente. Vi offrite di combattere per il signore locale. Lui accetta prontamente la vostra offerta. Come previsto, vincete l'incontro e vincete le scommesse. Si tratta di un sacco di soldi.",
           "2": "Decidete di organizzare un gioco di scommesse e di scommettere che il cavaliere non vincerà. Tutti vengono a scommettere perché sanno che non perderà, ma voi avete un piano in mente. Vi offrite di combattere per il signore locale. Lui accetta prontamente la vostra offerta. Come previsto, vincete l'incontro. Quando chiedete i soldi ai giocatori, questi sono dispiaciuti e decidono di prendere i soldi che avevate scommesso.",
-          "3": "Decidete di organizzare un gioco di scommesse e di scommettere che il cavaliere non vincerà. Tutti vengono a scommettere perché sanno che non perderà, ma voi avete un piano in mente. Vi offrite di combattere per il signore locale. Lui accetta prontamente la vostra offerta. Perdi l'incontro, ma ti rifiuti di dargli i tuoi soldi. Gli abitanti del villaggio iniziano a seguirvi e a lanciarvi vari oggetti. Una volta allontanatosi dal villaggio, sente dolori dappertutto. Vi siete anche feriti a una gamba, quindi dovete riposare prima di continuare il vostro cammino.",
+          "3": "Decidi di organizzare delle scommesse e scommetti che il cavaliere non vincerà. Tutti vengono a scommettere, perché sanno che lui non perderà, ma tu hai un piano in mente. Proponi al signore del luogo di combattere per lui. Questi accetta volentieri la tua offerta. Perdi il duello, ma ti rifiuti di consegnare il denaro. Gli abitanti del villaggio iniziano a seguirti e a lanciarti oggetti di ogni tipo. Riesci a sfuggirgli intrufolandoti nei vicoli, ma ti fa male dappertutto. Hai anche una ferita alla gamba e ogni tuo passo ti strappa una smorfia di dolore.",
           "4": "Si scommette che il cavaliere non vincerà. Molte persone vengono a scommettere, perché sanno che non perderà. Le guardie vi sorvegliano per assicurarsi che non rubiate il denaro. Vi offrite di andare a vedere il duello con loro, tranne alcuni che faranno la guardia. Cominciano a discutere su chi debba rimanere e voi ne approfittate per prendere un po' di soldi e scappare a tutta velocità. Ti inseguono ma alla fine si arrendono, rendendosi conto che non possono prenderti. Abbassate lo sguardo sul denaro che avete raccolto, compiacendovi di voi stessi.",
-          "5": "Si scommette che il cavaliere non vincerà. Molte persone vengono a scommettere, perché sanno che non perderà, ma voi avete un piano in mente. Vi offrite di combattere per il signore locale. Lui accetta prontamente la vostra offerta. Come previsto, vincete il combattimento e andate a riscuotere i soldi delle scommesse. Un abitante del villaggio vi attacca mentre state uscendo dal villaggio, probabilmente per rubarvi i soldi. Dopo una dura lotta, riuscite a fuggire, ma non senza essere gravemente feriti. Ora è necessario riposare.",
-          "6": "Si scommette che il cavaliere non vincerà. Molte persone vengono a scommettere, perché sanno che non perderà, ma voi avete un piano in mente. Vi offrite di combattere per il signore locale. Lui accetta prontamente la vostra offerta. Perderete l'incontro, ma non avete intenzione di perdere i vostri soldi in questo modo. Così vi precipitate nell'area delle scommesse e rubate quanto più denaro possibile, inseguiti dagli abitanti del villaggio, prima di fuggire dal paese."
+          "5": "Organizzate delle scommesse e puntate sul fatto che il cavaliere non vincerà. Molti vengono a scommettere, perché tutti sanno che lui non perderà, ma tu hai un piano in mente. Proponi al signore del luogo di combattere per lui. Questi accetta volentieri la tua offerta. Come previsto, vinci il combattimento e vai a riscuotere i soldi delle scommesse. All’uscita dal villaggio, un abitante del posto vi attacca, sicuramente con l’intenzione di rubarvi i soldi. Dopo un duro combattimento, riuscite a sfuggirgli, non senza essere stati gravemente feriti. Senza fiato, vi portate la mano alle ferite ancora fresche.",
+          "6": "Organizzate delle scommesse e puntate sul fatto che il cavaliere non vincerà. Molti vengono a scommettere, perché tutti sanno che lui non perderà, ma voi avete un piano in mente. Proponete al signore del luogo di combattere per lui. Questi accetta volentieri la vostra offerta. Perdi il duello, ma non hai alcuna intenzione di perdere i tuoi soldi in questo modo. Ti precipiti quindi verso il luogo delle scommesse e rubi tutto il denaro che riesci, inseguito dagli abitanti del villaggio, prima di seminare la scia nel labirinto dei vicoli."
         },
         "text": "Organizzazione delle scommesse."
       },
       "end": {
         "outcomes": {
-          "0": "Incuriositi dalle discussioni, decidete di assistere al duello. Il duello si conclude rapidamente, con la vittoria del cavaliere straniero. Delusi, vi rimettete in viaggio.",
+          "0": "Le discussioni hanno stuzzicato la tua curiosità e decidi di assistere al duello. Il duello si conclude molto rapidamente, con la vittoria del cavaliere straniero. Deluso, ti allontani dall'arena.",
           "1": "Le discussioni hanno suscitato la vostra curiosità, così avete deciso di assistere al duello. Il duello finisce molto presto. Delusi, vi offrite di rigiocare il duello, ma questa volta sarete voi a combattere. La vostra proposta viene accettata e in pochi secondi venite disarmati e buttati a terra. Il vostro avversario si prende gioco di voi, dichiarando che siete un combattente patetico. In preda alla rabbia, vi scagliate contro di lui per picchiarlo, ma il cavaliere vi abbatte con il pomo della sua spada.",
-          "2": "Disinteressati al duello, decidete di ignorarlo e di proseguire per la vostra strada.",
-          "3": "Le discussioni hanno suscitato la vostra curiosità, così avete deciso di assistere al duello. Nelle vicinanze notate che si stanno facendo delle scommesse. Decidete di partecipare. Naturalmente, prima di partecipare al duello, puntate sul cavaliere straniero. Il cavaliere vince, ma quando tornate per riscuotere la vostra vincita, non c'è più nulla. Non contenti di essere stati ingannati in questo modo, proseguite per la vostra strada.",
-          "4": "Le discussioni hanno suscitato la vostra curiosità, così decidete di assistere al duello, che si conclude rapidamente. Vi offrite di combattere di nuovo il duello e la vostra proposta viene accettata. Non ci vuole molto per sconfiggere il vostro avversario, tutto il villaggio vi acclama e il signore vi offre un buon pasto, che accettate volentieri. Una volta mangiato a sazietà, il signore vi offre un cavalierato, che voi gentilmente rifiutate e ringraziate per il delizioso pasto. Ora vi sentite molto meglio."
+          "2": "Poco interessato a questo duello, decidete di non prestargli attenzione e di dedicarvi alle vostre faccende nel villaggio.",
+          "3": "Le chiacchiere hanno stuzzicato la vostra curiosità, così decidete di assistere al duello. Avvicinandovi, notate che si stanno facendo delle scommesse. Decidete quindi di partecipare. Naturalmente, scommettete sul cavaliere straniero prima di andare ad assistere al duello. È proprio lui il vincitore, ma quando tornate a ritirare la vostra vincita, tutto è sparito. Insoddisfatti di esservi fatti fregare in questo modo, voltate le spalle all’arena.",
+          "4": "Le discussioni hanno stuzzicato la tua curiosità, così decidi di assistere al duello, che si conclude rapidamente. Proponi di ripeterlo con te come combattente, e la tua proposta viene accettata. Non ci metti molto a sconfiggere il tuo avversario; ora l’intero villaggio ti acclama e il signore ti invita a un ricevimento organizzato in tuo onore, che accetti volentieri. Una volta terminati i festeggiamenti, il signore vi propone di diventare cavaliere; rifiutate cortesemente la sua offerta e lo ringraziate per la calorosa accoglienza. Ora vi sentite molto meglio."
         }
       },
       "help": {
         "outcomes": {
-          "0": "Comprendendo l'angoscia del signore, vi offrite di partecipare al duello. Lui accetta prontamente. Il combattimento inizia e sapete di non avere la minima possibilità di sconfiggere il vostro avversario, ma cercate di resistere lo stesso. Gli basta un minuto per sconfiggervi. Si riparte, vergognandosi della sconfitta.",
+          "0": "Comprendendo l'angoscia del signore, gli proponete di partecipare al duello. Lui accetta volentieri. Il combattimento ha inizio; sapete di non avere la minima possibilità di sconfiggere il vostro avversario, ma cercate comunque di resistere. Gli basta un minuto per sconfiggervi. Lasciate l’arena, mortificati per la vostra sconfitta.",
           "1": "Comprendendo l'angoscia del signore, gli offrite il vostro aiuto. Siete quindi equipaggiati prima dell'inizio del duello. Combattete valorosamente, ma venite superati altrettanto facilmente dal vostro avversario. È quando il vostro avversario vi colpisce con la sua lama che vi pentite amaramente di aver offerto il vostro aiuto. Dopo tutto, è una lotta all'ultimo sangue. E voi l'avete appena persa. Chiudete gli occhi e il dolore scompare. Vi svegliate inaspettatamente alcune ore dopo, gravemente feriti.",
-          "2": "Comprendendo l'angoscia del signore, gli offrite il vostro aiuto. Prima dell'inizio del duello, vi viene fornita un'armatura. Consapevoli di non avere alcuna possibilità, vi difendete come meglio potete. Il vostro avversario, impaziente, abbassa la guardia e voi ne approfittate per attaccarlo. Riuscite a metterlo al tappeto prima di disarmarlo. Lasciate l'arena vittoriosi e il signore vi viene incontro per darvi una borsa piena d'oro. Lo ringraziate prima di proseguire per la vostra strada.",
-          "3": "Comprendendo l'angoscia del signore, vi offrite di risolvere il conflitto usando le vostre parole. Egli vi promette una ricompensa se ci riuscirete. Determinati, andate a incontrare il cavaliere una volta arrivato al villaggio e gli dite che volete negoziare con il suo signore. Lui accetta e vi porta da lui. Subito vi mostrate comprensivi e gli chiedete di annullare il duello. Gli dite anche che si può negoziare per risolvere il conflitto. Lui accetta e voi tornate a Boug-Coton per dare la notizia. Il signore vi consegna una borsa piena d'oro in segno di ringraziamento.",
+          "2": "Comprendendo la situazione disperata del signore, gli offrite il vostro aiuto. Vi viene quindi fornita un’armatura prima che il duello abbia inizio. Consapevoli di non avere la minima possibilità, vi difendete come meglio potete. Il tuo avversario, impaziente, abbassa la guardia e tu ne approfitti per attaccarlo. Riesci a metterlo al tappeto prima di disarmarlo. Esci vittorioso dall’arena; il signore viene incontro a te per consegnarti una borsa piena d’oro. Lo ringrazi calorosamente per la sua generosità.",
+          "3": "Comprendendo l'angoscia del signore, gli proponete di risolvere il conflitto con le vostre parole. Egli vi promette una ricompensa se ci riuscirete. Determinato, andate incontro al cavaliere non appena questi arriva al villaggio e gli dite che desiderate negoziare con il suo signore. Lui accetta e vi accompagna da lui. Entrate subito in sintonia e gli chiedete di annullare il duello. Gli dici anche che, una volta fatto ciò, potranno avere luogo delle trattative per risolvere il conflitto. Lui accetta e voi tornate al centro del villaggio per annunciare la notizia. Il signore vi porge una borsa piena d’oro in segno di ringraziamento.",
           "4": "Comprendendo l'angoscia del signore, vi offrite di risolvere il conflitto usando le vostre parole. Egli vi promette una ricompensa se ci riuscirete. Incontrate il cavaliere perché vi porti dal suo signore. Una volta lì, fate subito amicizia con lui. Purtroppo, non sembra aver deciso di annullare il duello, anche se gli piacete. Tornate al villaggio con il cavaliere per annunciare che il duello avrà luogo.",
-          "5": "Comprendendo l'angoscia del signore, vi offrite di risolvere il conflitto usando le vostre parole. Egli vi promette una ricompensa se ci riuscirete. Incontrate il cavaliere perché vi porti dal suo signore. Una volta lì, cercate di negoziare con lui per diverse ore, senza successo. Poiché i vostri sforzi sono vani, pensate di andarvene. Ma prima di farlo, il signore vi dichiara il suo apprezzamento, aggiungendo che è rimasto colpito dal fatto che non vi siate arresi. Vi offre un cavalierato, ma voi declinate gentilmente l'offerta e proseguite per la vostra strada."
+          "5": "Comprendendo l'angoscia del signore, gli proponete di risolvere il conflitto con le vostre parole. Egli vi promette una ricompensa se ci riuscirete. Incontrate il cavaliere affinché vi conduca dal suo signore. Una volta lì, cercate di negoziare con lui per diverse ore, senza grande successo. Visti i vostri sforzi vani, pensate di andarvene. Ma prima che lo facciate, il signore dichiara di apprezzarvi; aggiunge infatti di essere rimasto impressionato dal fatto che non vi siate arresi. Vi propone di diventare cavaliere, ma voi rifiutate cortesemente la sua offerta e tornate a Boug-Coton."
         },
         "text": "Offrite il vostro aiuto al Signore di Boug-Coton."
       },
       "look": {
         "outcomes": {
-          "0": "Decidete di assistere al duello. Il cavaliere straniero vince in pochi secondi. Ve ne andate subito, delusi dalla mediocre prestazione del perdente.",
-          "1": "Decidete di assistere al duello. Il cavaliere straniero vince in pochi secondi. Vista la mediocre prestazione del perdente, vi offrite di rigiocare il duello, ma questa volta sarete voi a combattere. La vostra proposta viene accettata e potete combattere. Il vostro avversario, troppo sicuro di sé, abbassa la guardia mentre voi combattete. Non aspettate un secondo per approfittarne. Alla fine sconfiggete il cavaliere e annunciate la vostra vittoria, trionfando. Il signore del maniero vi offre un cavalierato, ma voi rifiutate gentilmente e proseguite per la vostra strada.",
-          "2": "Decidete di assistere al duello. Il cavaliere straniero vince in pochi secondi. Vista la mediocre prestazione del perdente, vi offrite di rigiocare il duello, ma questa volta sarete voi a combattere. La proposta viene accettata. Il combattimento inizia e, nonostante i vostri sforzi, riuscite a resistere solo per una decina di secondi.",
+          "0": "Decidi di assistere al duello. Il cavaliere straniero vince in pochi secondi. Non tardi a lasciare l’arena, deluso dalla mediocre prestazione del perdente.",
+          "1": "Decidi di assistere al duello. Il cavaliere straniero vince in pochi secondi. Vista la prestazione mediocre del perdente, proponi di ripetere il duello, ma questa volta sarai tu a combattere. La tua proposta viene accettata, puoi combattere. Il tuo avversario, troppo sicuro di sé, abbassa la guardia mentre combattete. Non esiti un secondo ad approfittarne e a prendere così il sopravvento. Alla fine sconfiggi il cavaliere e annunci la tua vittoria, trionfante. Il signore del luogo ti propone di diventare cavaliere, ma tu rifiuti cortesemente la sua offerta.",
+          "2": "Decidi di assistere al duello. Il cavaliere straniero vince in pochi secondi. Di fronte alla mediocre prestazione del perdente, proponi di ripetere il duello, ma questa volta sarai tu a combattere. La tua proposta viene accettata. Il combattimento ha inizio e, nonostante tutti i tuoi sforzi, riesci a resistere solo una decina di secondi prima di essere disarmato e scaraventato a terra tra le risate del pubblico.",
           "3": "Decidete di guardare il duello. Finisce in pochi secondi. Vista la mediocre prestazione del perdente, vi offrite di rigiocare il duello, ma questa volta sarete voi a combattere. La vostra proposta viene accettata e potete combattere. Il vostro avversario, troppo sicuro di sé, abbassa la guardia mentre voi combattete. Non aspettate un secondo per approfittarne. Alla fine sconfiggete il cavaliere e annunciate la vostra vittoria, trionfando. Il signore del maniero vi offre una borsa piena d'oro, che accettate volentieri.",
-          "4": "Decidete di guardare il duello. È finito in pochi secondi. Descrivete il perdente come un incompetente e vi offrite di rigiocare il duello, ma questa volta sarete voi a combattere. Il perdente si offre di venire a combattere con lui prima di criticare. Accettate la sua richiesta, ben sapendo che non avrete problemi a sconfiggerlo. Essendo troppo sicuro di sé, il vostro avversario riesce a disarmarvi prima di buttarvi a terra. Poi vi picchia fino a farvi svenire. Ferito gravemente, avrà bisogno di molto riposo.",
+          "4": "Decidete di assistere al duello. Il duello si conclude in pochi secondi. Definite il perdente un incapace e proponete di ripetere il duello, ma questa volta sarete voi a combattere. Il perdente vi propone di venire a combattere contro di lui prima di criticarlo. Accettate la sua richiesta, sapendo perfettamente che non avrete alcuna difficoltà a sconfiggerlo. Essendo troppo sicuro di te, il tuo avversario riesce a disarmarti prima di buttarti a terra. Ti picchia poi fino a farti svenire. Gravemente ferito, impieghi molto tempo a riprendere conoscenza, con il corpo coperto di lividi.",
           "5": "Decidete di guardare il duello. Finisce in pochi secondi. Vista la prestazione mediocre del perdente, vi offrite di rigiocare il duello, ma questa volta sarete voi a combattere. La proposta viene accettata. Il combattimento inizia e, nonostante i vostri sforzi, riuscite a resistere solo per una decina di secondi. Il cavaliere decide di colpirvi ancora e ancora, per farvi capire che siete solo un insetto contro di lui. Dopo averti ferito gravemente, si ferma e se ne va.",
-          "6": "Decidete di assistere al duello. Il cavaliere straniero vince in pochi secondi. Vista la mediocre prestazione del perdente, proponete di rigiocare il duello, ma questa volta sarete voi a combattere. Il duello viene vinto dopo pochi minuti di lotta. Il signore del maniero vi propone di fare due chiacchiere davanti a un buon pasto. Accettate volentieri, perché il cibo è delizioso e abbondante. Dopo aver mangiato a sazietà, il signore vi offre un cavalierato. Declinate gentilmente la sua offerta."
+          "6": "Decidete di assistere al duello. Il cavaliere straniero vince in pochi secondi. Di fronte alla mediocre prestazione del perdente, proponete di ripetere il duello, ma questa volta sarete voi a combattere. Vincete il duello dopo alcuni minuti di combattimento. Il signore del luogo vi invita a festeggiare la vostra vittoria in sua compagnia. Accettate volentieri e venite onorato come si deve nel cuore del villaggio in festa. Una volta terminati i festeggiamenti, il signore vi propone di nominarvi cavaliere. Rifiutate cortesemente la sua offerta."
         },
         "text": "Guardate il duello."
       },
       "visit": {
         "outcomes": {
-          "0": "Visitate il villaggio ma, non vedendo nulla di interessante, ve ne andate senza ulteriori indugi.",
+          "0": "Visitate il paese, ma non ci trovate nulla di particolarmente interessante.",
           "1": "Visitate il villaggio. Non vedendo nulla di interessante, decidete di andare a vedere il duello.",
           "2": "Mentre visitate il villaggio, il signore di passaggio vi nota come avventuriero. Vi spiega la situazione e vi prega di partecipare al duello. Vi offrirà una borsa piena d'oro se vincerete. Accettate volentieri la sua offerta e andate al duello. Ma una volta iniziato il combattimento, vi rendete conto che non avete alcuna possibilità di sconfiggere il vostro avversario. Il cavaliere vi ferisce alla gamba con la sua spada e voi cadete miseramente a terra, feriti. Non riuscendo a rialzarvi, avete perso il duello.",
-          "3": "Visitate il villaggio e notate un oggetto in fondo al pozzo. Raccoglietelo e proseguite per la vostra strada."
+          "3": "Mentre visitate il villaggio, scorgete un oggetto in fondo al pozzo. Lo raccogliete, felici della vostra scoperta."
         },
         "text": "Visitare Boug-Coton."
       }
@@ -2284,39 +2285,39 @@
     "possibilities": {
       "checkDate": {
         "outcomes": {
-          "0": "Guardate il calendario e scoprite che presto inizierà un torneo! Decidete di partecipare e raggiungete la finale dopo alcune ore di combattimento. Tuttavia, il vostro avversario vi domina e perdete l'ultima battaglia. Come finalista, vinci comunque un borsellino pieno d'oro prima di riprendere la tua strada.",
-          "1": "Guardate il calendario e vedete che è Laponaire, il 6° mese dell'anno, così decidete di uscire e mangiare una galette in una bancarella vicina. Questo cibo vi avrà saziato! Ripartite, sazi e soddisfatti.",
-          "2": "Quando vedete il calendario, vi ricordate dei manifesti per le strade che parlavano di una caccia al tesoro. Decidete di partecipare. Dopo due ore di ricerca, non riuscite a trovare nulla. Decidete quindi di tornare indietro.",
-          "3": "Guardate il calendario e alla data di oggi vedete: gara di idromele! Sentendo la resistenza all'alcol, decidete di tentare la fortuna. Vincete la gara e un premio! Tuttavia, vi ritrovate completamente ubriachi."
+          "0": "Guardate il calendario e scoprite che sta per iniziare un torneo! Decidete quindi di partecipare e, dopo alcune ore di combattimento, riuscite ad arrivare in finale. Tuttavia, il vostro avversario ha la meglio su di voi e perdete l’ultima battaglia. Pur essendo arrivato in finale, vinci comunque una borsa piena d’oro come ricompensa per i tuoi sforzi.",
+          "1": "Guardate il calendario e vi rendete conto che siamo nel mese di Laponaire, il sesto mese dell’anno. Una nota scarabocchiata a margine indica che è la stagione degli erboristi. Incuriosito, sfogli un almanacco che si trova lì vicino e scopri come preparare un infuso rinvigorente. Lo prepari subito: la bevanda calda ti fa un gran bene.",
+          "2": "Vedendo il calendario, vi ricordate dei manifesti affissi per le strade che parlavano di una caccia al tesoro. Decidete quindi di partecipare. Dopo due ore di ricerche, non riuscite a trovare nulla. Rinunciate quindi alla caccia al tesoro e tornate in centro, a mani vuote.",
+          "3": "Guardate il calendario e, alla data di oggi, vedete scritto: Fiera dei narratori! La piazza della città ospita proprio questo concorso in cui si recitano antiche storie davanti alla folla, con un corno di idromele in mano. Forte di tutte le avventure che avete vissuto, tentate la fortuna e vincete il concorso, oltre a un premio! A forza di brindare alla vostra vittoria, però, finite per ubriacarvi completamente."
         },
         "text": "Guardate il calendario."
       },
       "end": {
         "outcomes": {
-          "0": "Si sta in biblioteca e non ci si accorge dei minuti che passano. Quando chiude, si esce e ci si rende conto che è già tardi. Si riparte senza ulteriori indugi.",
-          "1": "Si rimane stupiti dal numero di libri e dalla ricchezza del sapere che si sprigiona da questi locali. Poco dopo, il bibliotecario segnala che l'edificio sta per chiudere. Delusi, tornate indietro per continuare le vostre avventure.",
-          "2": "Rimanete nella biblioteca per diversi minuti, stupiti da tutta questa conoscenza. Vi sedete, pensierosi. All'improvviso, un lettore disturba i vostri pensieri, con in mano il libro \"Hansel e Gretel\" dei fratelli Grimm. Vi chiede di andarvene, perché siete seduti al suo posto preferito in biblioteca. Confuso, te ne vai, senza alcuna nuova conoscenza."
+          "0": "Ti ritrovi a bighellonare in biblioteca, senza nemmeno accorgerti che il tempo vola. All’ora di chiusura, esci e ti rendi conto che è già tardi. Gironzoli per un po’ per le strade della città, con la mente ancora immersa nelle tue letture.",
+          "1": "Rimani sbalordito dal numero di libri e dalla mole di conoscenze che trasuda da questi luoghi. Poco dopo, la bibliotecaria ti fa cenno: l’edificio sta per chiudere. Deluso, ti allontani dagli scaffali e torni nelle vivaci strade della città.",
+          "2": "Rimani in biblioteca per diversi minuti, stupito da tutto quel sapere. Ti siedi, pensieroso. All’improvviso, un lettore viene a turbare i tuoi pensieri, con in mano il libro «Hansel e Gretel» dei fratelli Grimm. Ti chiede gentilmente di cedergli il posto, poiché sei seduto al suo posto preferito in biblioteca. Confuso, ti alzi e te ne vai, senza aver acquisito alcuna nuova conoscenza."
         }
       },
       "read": {
         "outcomes": {
-          "0": "Decidete di leggere un libro. Parla di cucina e di preparazione di piatti deliziosi. Scrivete la ricetta prima di andare a cercare gli ingredienti. Una volta trovati gli ingredienti, si seguono alla lettera le istruzioni. Si assaggia il piatto prima di sperimentarne i benefici, poi si parte per il viaggio.",
-          "1": "Prendete un libro e iniziate a leggerlo. Il libro parla di aritmetica. Ma non è mai stato il vostro punto di forza: dopo quasi 10 minuti, decidete di posare il libro e di continuare per la vostra strada.",
-          "2": "State leggendo un libro di cucina. Parla di un piatto delizioso. Eccitati, decidete di preparare il piatto. Tuttavia, non seguite esattamente le istruzioni e, dopo aver mangiato, non vi sentite bene...",
+          "0": "Decidete di leggere un libro. Il libro tratta dei rimedi e delle proprietà curative delle piante. Vi scoprite la ricetta per preparare un balsamo rinvigorente e ne annotate attentamente il procedimento. Dopo aver raccolto le poche erbe necessarie, segui alla lettera le istruzioni e applichi il rimedio sulle tue vecchie ferite. Ne percepisci immediatamente i benefici.",
+          "1": "Prendete un libro e iniziate a leggerlo. Il libro tratta di aritmetica. Tuttavia, questa materia non è mai stata il vostro forte: circa 10 minuti dopo, decidete di rimettere il libro sullo scaffale, delusi.",
+          "2": "Prendete da uno scaffale un vecchio grimorio le cui pagine, ricoperte di muffa, emanano un odore acre. Assorto nella lettura, inspirate a lungo quei sentori polverosi. A poco a poco, ti si stringe la gola e ti gira la testa: non ti senti affatto bene...",
           "3": "Prendi il primo libro che vedi. Parla di alchimia e dei benefici delle piante. Dopo averne studiato attentamente il contenuto, lo rimettete giù, certi che vi sarà utile per le vostre prossime avventure."
         },
         "text": "Leggere un libro."
       },
       "steal": {
         "outcomes": {
-          "0": "Riuscite a rubare un vecchio libro impolverato e a sgattaiolare fuori dall'edificio per trovare un acquirente nelle strade della città. Tuttavia, notate che nessuno è interessato al libro, soprattutto perché è molto danneggiato e ha persino le pagine strappate. Così lo abbandonate prima di proseguire il vostro cammino.",
-          "1": "Siete usciti di nascosto dalla biblioteca senza che nessuno vi notasse. Siete riusciti a rubare un libro e state cercando di venderlo ai passanti. Un uomo decide di comprarlo per poche monete d'oro. Una volta completata la transazione, continuate per la vostra strada.",
+          "0": "Riesci a rubare un vecchio libro impolverato e esci di soppiatto dall'edificio, con l'intenzione di trovare un acquirente nei grandi viali della città. Tuttavia, ti accorgi che nessuno è interessato a quel libro, soprattutto perché è molto malridotto e presenta persino delle pagine strappate. Lo abbandonate quindi in un angolo di un vicolo, deluso.",
+          "1": "Esci di soppiatto dalla biblioteca senza che nessuno ti noti. Sei riuscito a rubare un libro e cerchi di venderlo ai passanti. Un uomo decide di comprarlo per qualche moneta d’oro. Una volta conclusa la transazione, intaschi le monete e ti confondi tra la folla della città.",
           "2": "Cercate di rubare un libro d'oro con discrezione, ma la bibliotecaria vi coglie in flagrante. Pretende che le restituiate il prezioso libro e, allo stesso tempo, un risarcimento! Deluso e imbarazzato, restituisci il libro e la compensi con una grossa parte dei tuoi risparmi per evitare di finire in prigione..."
         },
         "text": "Tentativo di rubare un libro per rivenderlo."
       }
     },
-    "text": "Dopo aver passeggiato per le strade di Claire de Ville, ci si imbatte in un edificio il cui ingresso è incorniciato da due statue di gufi in pietra. Avvicinandosi, ci si rende conto che si tratta della biblioteca della città. Decidete di entrare nell'edificio per passare il tempo. Su una delle pareti dell'ingresso è appeso un calendario fatto di grandi foglie legate insieme da una cinghia di cuoio."
+    "text": "Arrivando a Claire de Ville, lo sguardo è attirato da un edificio il cui ingresso è incorniciato da due statue di gufi in pietra. Avvicinandosi, ci si rende conto che si tratta della biblioteca comunale. Dalla porta socchiusa si intravedono innumerevoli scaffali colmi di libri e, appeso a una parete dell’ingresso, un calendario composto da ampi fogli legati tra loro da un laccio di cuoio."
   },
   "69": {
     "possibilities": {
@@ -2355,8 +2356,8 @@
       "check": {
         "outcomes": {
           "0": "Forzando la porta, vi state ferendo profondamente. Dovete assolutamente prendervi cura di voi stessi!",
-          "1": "Dopo aver passato quasi un'ora a cercare di entrare in casa, finalmente vi arrendete. Mentre ve ne andate, trovate qualcosa che potrebbe tornarvi utile!",
-          "2": "Entrate in casa e posate le vostre cose per riposare. Dopo essere caduti in un sonno profondo, avete bisogno di riposare prima di continuare la vostra avventura.",
+          "1": "Dopo aver passato quasi un'ora a cercare di entrare in casa, alla fine rinunciate. Allontanandovi dalla soglia, trovate un oggetto che potrebbe tornarvi utile!",
+          "2": "Entrate in casa e posate le vostre cose per riposarvi. Presi da un sonno profondo, vi accasciate su un letto polveroso che giaceva in un angolo.",
           "3": "Entrate in casa e cercate in giro per circa quindici minuti. Quando si esce, si trova un oggetto che potrebbe essere utile!",
           "4": "Entrate in casa e cercate in giro per circa quindici minuti. Alla fine rinunciate alla ricerca senza aver trovato nulla."
         },
@@ -2364,17 +2365,17 @@
       },
       "end": {
         "outcomes": {
-          "0": "Siete rimasti fermi per quasi quindici minuti, è ora di ripartire!"
+          "0": "È rimasto immobile per quasi quindici minuti, è ora di scuotersi dal torpore!"
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Continuate per la vostra strada senza preoccuparvi della casa."
+          "0": "Vi lasciate la casa abbandonata alle spalle, senza preoccuparvene più di tanto."
         },
-        "text": "Non fermatevi e continuate ad andare avanti."
+        "text": "Non fermarsi davanti a questa casa."
       }
     },
-    "text": "Avete scoperto una casa! Sembra abbandonata..."
+    "text": "Tra le rovine di Ville Forte, scoprite una casa ancora in piedi. Sembra abbandonata..."
   },
   "70": {
     "possibilities": {
@@ -2651,11 +2652,11 @@
       },
       "flee": {
         "outcomes": {
-          "0": "Preferendo evitare qualsiasi pericolo, tornate indietro per prendere un percorso alternativo. La vostra prudenza ha un prezzo: perdete tempo e finite per perdervi su questo nuovo percorso, ma almeno evitate potenziali problemi.",
-          "1": "Mentre tornate indietro, inciampate nella fretta e vi ferite leggermente. Il rumore allerta i due uomini che interrompono la discussione per guardare nella vostra direzione, ma non vi inseguono.",
-          "2": "La vostra ritirata vi porta per caso su un sentiero dimenticato dove scoprite i resti di un antico accampamento. Tra i detriti, trovate un oggetto ancora utilizzabile abbandonato dai viaggiatori precedenti."
+          "0": "Preferendo evitare qualsiasi pericolo, aggirate la radura per imboccare un sentiero alternativo. La vostra prudenza ha un prezzo: perdete tempo e finite per smarrirvi su questo nuovo sentiero, ma almeno sfuggite a potenziali problemi.",
+          "1": "Mentre vi allontanate, nella fretta inciampate e vi fate un po’ male. Il rumore attira l’attenzione dei due uomini, che smettono di litigare per guardare nella vostra direzione, ma non vi inseguono.",
+          "2": "La vostra deviazione vi porta per caso su un sentiero dimenticato, dove scoprite i resti di un antico accampamento. Tra le macerie trovate un oggetto ancora utilizzabile, abbandonato da viaggiatori precedenti."
         },
-        "text": "Tornare indietro ed evitare il confronto."
+        "text": "Aggirare la radura ed evitare lo scontro."
       }
     },
     "text": "Mentre percorrete un sentiero tortuoso nella Foresta di Celestrum, sentite improvvisamente delle voci forti provenire da una radura vicina. Incuriositi, vi avvicinate con discrezione e scoprite due uomini nel bel mezzo di una discussione. Sono in piedi, faccia a faccia, gesticolano selvaggiamente, evidentemente in disaccordo su qualcosa di importante. Uno indossa un mantello rattoppato, l'altro una giacca di pelle logora. Tra loro, a terra, giace una scatola di legno che ognuno di loro sembra reclamare."
@@ -2848,6 +2849,43 @@
     },
     "text": "Si varca la soglia di una vecchia casa dall'aspetto fatiscente. La fitta nebbia che la circonda sembra inghiottire i contorni del mondo esterno, come se la casa esistesse al di fuori di ogni realtà. L'aria è fredda e stagnante e ogni passo fa gemere le vecchie assi del pavimento. Una strana presenza sembra osservarvi dalle ombre dei corridoi."
   },
+  "82": {
+    "possibilities": {
+      "enterOpening": {
+        "outcomes": {
+          "0": "Ti infili nella fessura e i tuoi occhi, abituandosi all’oscurità, scoprono un gigantesco nido di pipistrelli! Esci il più velocemente possibile e raggiungi la porta principale. Sicuramente nessuno era passato di lì da molto tempo.",
+          "1": "Avanzate a piccoli passi in questo stretto tunnel, guidati dalle vostre mani, e raggiungete una maniglia: spingete l’anta della porta e vi ritrovate in piena via commerciale. Quel tunnel doveva servire per alcune transazioni tutt’altro che legali, motivo per cui decidi di allontanarti rapidamente, con in tasca le poche monete trovate nel sotterraneo.",
+          "2": "Ti infili nella fessura e i tuoi occhi, abituandosi all’oscurità, scorgono una frana a pochi metri di distanza. Ti districhi a fatica da quel vicolo cieco e ti dirigi verso l’ingresso principale della fortezza.",
+          "3": "Vi infilate nell'apertura e cominciate a procedere a fatica lungo lo stretto tunnel. Dopo qualche metro, notate un oggetto abbandonato in un angolo. Mentre lo raccogliete, vi rendete conto con orrore che era appoggiato accanto a delle ossa! Scappi via in fretta, notando a malapena i graffi causati dalle pareti strette."
+        },
+        "text": "Superare l'apertura"
+      },
+      "alertGuards": {
+        "outcomes": {
+          "0": "Corri verso il cancello per avvertire le guardie del deterioramento delle mura, ma i tuoi avvertimenti suscitano solo risate sprezzanti, seguite da un calcio ben assestato che ti scaraventa lontano dai cancelli reali...",
+          "1": "Vi avvicinate alla porta e avvisate le guardie. Ma per quanto insistiate sulla gravità di questo deterioramento, nessuno vi presta attenzione. Alla fine ve ne andate, maledicendo in silenzio quegli incapaci.",
+          "2": "Segnalate alle guardie questa preoccupante breccia e indicate loro con precisione il punto compromesso. Senza esitare, raccolgono del materiale di fortuna e si mettono al lavoro per ripararla. Il vostro prezioso aiuto accelera notevolmente i lavori. Dopo lunghe ore di fatica, venite invitati alla tavola dei soldati per condividere un banchetto ben meritato."
+        },
+        "text": "Avvisare le guardie"
+      },
+      "moveOn": {
+        "outcomes": {
+          "0": "Avete la sensazione che dietro a tutto questo ci sia qualcosa di losco e non volete esserne coinvolti. Vi allontanate dal luogo e tornate all'ingresso principale.",
+          "1": "Vi allontanate rapidamente dal luogo, ma una guardia vi scorge e, notando la fessura, vi ferma per interrogarvi. Dopo lunghe ore trascorse a giustificarvi, venite infine rilasciati, in mancanza di prove a vostro carico.",
+          "2": "Tornate sui vostri passi, ma una mano vi si posa all’improvviso sulla spalla. Vi voltate, in preda al panico, ma si tratta solo di Price, il mercenario che vi ha riconosciuto da lontano. Iniziate quindi un'accesa discussione sull'andamento dei prezzi delle gemme e sull'inflazione degli affitti, che concludete con un buon pasto al padiglione reale."
+        },
+        "text": "Andare avanti"
+      },
+      "end": {
+        "outcomes": {
+          "0": "State per andarvene quando un uomo emerge dall'apertura. Il suo volto vi è familiare: si tratta di Price, il mercenario, che rimane immobile per un attimo prima di riconoscervi. Ti mette un braccio intorno al collo e ti offre qualche moneta in cambio del tuo silenzio; tu accetti immediatamente.",
+          "1": "State per andarvene quando un uomo mascherato spunta dall’apertura. Preso dal panico, il brigante estrae la lama, si scaglia contro di voi e vi ferisce gravemente, prima che possiate fare il minimo gesto. Lo guardate fuggire, sommersi dal vostro sangue.",
+          "2": "Mentre osservate l'apertura, un bagliore dorato attira la vostra attenzione. I raggi del sole mettono in luce alcune monete abbandonate nel tunnel, oltre a un oggetto che vi affrettate a raccogliere. Ripartite, felici di questa scoperta."
+        }
+      }
+    },
+    "text": "Mentre vi avvicinate all'imponente muraglia che circonda la città reale, notate che una fessura scende lungo le mura e conduce a un'apertura nell'edificio. Vi sembra abbastanza grande da permettere il passaggio di un uomo..."
+  },
   "9": {
     "possibilities": {
       "end": {
@@ -2873,5 +2911,270 @@
       }
     },
     "text": "Incontrate un contadino in mezzo a un campo. Ha perso il forcone..."
+  },
+  "83": {
+    "possibilities": {
+      "observe": {
+        "outcomes": {
+          "0": "Non sentendo bene, vi avvicinate alla porta. Un usciere del castello vi nota subito e vi invita a farvi gli affari vostri. Senza insistere, riprendete il vostro cammino.",
+          "1": "Appena cominciate a tendere l'orecchio, sembra che la strega abbia finito. Di lei si sentono ormai solo dei borbottii indistinti in lontananza, e riemerge appena 5 minuti dopo. Senza sapere bene perché, fate in modo che non vi noti mentre esce.",
+          "2": "Decidete di osservare la scena da lontano. La situazione degenera rapidamente e la strega tira fuori dalla borsa diverse fiale che frantuma sul pavimento. Immediatamente si diffonde una grande nuvola di gas scuro e nauseabondo. Si dissipa rapidamente e notate con sgomento che la strega è scomparsa e che tutti gli altri presenti nella sala hanno perso conoscenza. Anche voi risentite degli effetti del gas, nonostante la distanza, e vi sentite piuttosto male."
+        },
+        "text": "Tendere l'orecchio con discrezione."
+      },
+      "help": {
+        "outcomes": {
+          "0": "Vi avvicinate per cercare di capire meglio la situazione e vedere se potete dare una mano. Vi viene però subito fatto capire che non siete i benvenuti in questa faccenda, quindi riprendete il vostro cammino.",
+          "1": "Ti avvicini per cercare di capire meglio la situazione e vedere se puoi dare una mano. Si scopre che un signore la accusa di aver aggravato le condizioni del figlio malato somministrandogli uno dei suoi preparati; con voce molto flebile, lei giura di aver solo cercato di dargli sollievo dopo il fallimento dei medici del castello. Vi avvicinate a lei e cercate di convincere il balivo che i rimedi delle streghe, sia nei metodi che negli effetti, non hanno nulla a che vedere con gli unguenti dei ciarlatani, e che non si può ritenerla responsabile di un male che ha cercato di curare. Il vostro interlocutore non vuole sentire ragioni: giudicare la legittimità della stregoneria, dice, spetta esclusivamente al re. Capendo di non poter ottenere nulla qui, vi ritirate. Prima che tu lasci la sala, la strega ti infila discretamente in mano una delle sue pozioni, per ringraziarti di aver voluto aiutarla.",
+          "2": "Vi avvicinate per cercare di capire meglio la situazione e vedere se potete dare una mano. Capisci che la accusano di aver avvelenato il figlio di un signore con il pretesto di curarlo, e che la persona di fronte a lei sembra convinta che non sia altro che una pericolosa ciarlatana. Non sapete nemmeno voi stessi se credete alla stregoneria, né se questa donna sia davvero una strega, quindi decidete di rinunciare all’idea di intervenire. Rimanete ad ascoltare lo scambio di battute per un po’, poi riprendete il vostro cammino."
+        },
+        "text": "Cercare di aiutare il vostro conoscente."
+      },
+      "accuse": {
+        "outcomes": {
+          "0": "Vi fate avanti e confermate le parole del signore, affermando che i preparati di quella donna vi sono sempre sembrati sospetti. Il balivo vi ascolta con attenzione e il signore, grato di aver trovato un sostegno, vi passa discretamente una borsa come ricompensa per la vostra testimonianza prima di allontanarsi.",
+          "1": "Prendete la parola contro la strega e la vostra testimonianza ha un peso determinante. Il signore, sollevato nel vedere che la vicenda sta prendendo una piega a suo favore, vi ringrazia calorosamente e vi offre uno degli oggetti che aveva con sé in segno di gratitudine.",
+          "2": "Decidete di testimoniare contro di lei e dichiarate ad alta voce di dubitare dei suoi presunti poteri. La strega si volta lentamente verso di voi, con lo sguardo che brucia di tradimento. I suoi occhi sembrano brillare per un istante. Riprendete il vostro cammino, ma, curiosamente, nonostante quella parte del castello sia strutturata in modo del tutto intuitivo, vi perdete più volte per ore.",
+          "3": "Vi unite all'accusa, ma il balivo vi impone di mettere per iscritto la vostra testimonianza in forma regolare. Ne segue una serie interminabile di domande e moduli, e quando finalmente siete liberati da questa seccatura, è già trascorsa buona parte della giornata."
+        },
+        "text": "Testimoniare contro di lei."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Rimanete indecisi per alcuni lunghi istanti. Venite strappati dai vostri pensieri da un passante che vi riconosce e si presenta come uno dei vostri ammiratori, sperando un giorno di diventare un avventuriero impressionante quanto voi. Ti offre alcuni doni per festeggiare il vostro incontro, chiacchierate un po’, poi vi salutate. Noti che la strega non è più nella sala, quindi riprendi il tuo cammino.",
+          "1": "Rimani lì immobile per diversi minuti, completamente incerto su come comportarti. All’improvviso arrivano numerose guardie. Afferrano la strega, che si dimena in silenzio e agita le braccia come per proclamare la propria innocenza. Vedendoti, ti implora con lo sguardo di testimoniare la sua buona fede. Le guardie decidono di considerarti suo complice in questa vicenda, quindi ti portano in prigione insieme a lei, senza nemmeno lasciarti dire nulla."
+        }
+      }
+    },
+    "text": "Mentre attraversate l'ala ovest del castello, delle voci alterate vi fanno voltare la testa. Una porta è rimasta aperta sulla sala dove il balivo amministra la giustizia per conto del signore, e da lì si sente il tono alzarsi contro un'imputata. La riconoscete senza difficoltà: è la vecchia strega che avete aiutato così spesso a preparare le sue pozioni. Non è la prima volta che viene trascinata in questo modo davanti alla giustizia, e probabilmente non sarà nemmeno l’ultima; finora, però, se l’è sempre cavata senza troppi danni."
+  },
+  "84": {
+    "possibilities": {
+      "compete": {
+        "outcomes": {
+          "0": "Passano alcuni minuti e il vostro secchio comincia a riempirsi di piccoli granchi. All’improvviso spunta una chela enorme: un magnifico granchio nero afferra la vostra esca. Riuscite a tirarlo su e, orgogliosi di voi stessi, vi voltate per mostrarlo al pubblico. È allora che vi pizzica violentemente la mano. Il dolore vi fa mollare la lenza e, in una caduta goffa, finite nell’acqua fredda dove perdete il portafoglio. Il pescatore dai capelli rossi vi aiuta a uscire dall’acqua e vi infila tra le mani un boccale di rum per riscaldarvi.",
+          "1": "Prendete il filo, con l'esca all'estremità, e lo immergete delicatamente nell'acqua scura del porto. Un grosso granchio nero abbocca, ma tirate la lenza così bruscamente che vi sfugge, e nella manovra rovesciate il secchio, che si frantuma sui ciottoli. I granchietti si disperdono in tutte le direzioni, suscitando le risate degli spettatori. Il maestro, con tono un po’ beffardo, ti invita a riprovare un altro giorno.",
+          "2": "All’improvviso, una leggera trazione… poi più forte. Tirate lentamente su la lenza quando un mostruoso granchio nero schiocca le chele. Riesci a tirarlo fuori a fatica, ma ti sfugge scivolando tra le dita proprio prima di consegnarlo al capitano. Quest’ultimo ride e ti offre comunque un boccale di rum per lo sforzo. Hai fatto bella figura e i curiosi ti lanciano qualche moneta.",
+          "3": "Un grosso granchio nero, largo quasi quanto uno scudo, sbuca all’improvviso da un angolo buio del molo e afferra la vostra esca: è Maurice, la bestia rara, ed è spaventoso! Tu mantieni comunque la calma e, dopo una lunga e incredibile lotta, riesci a tirarlo fuori con abilità. Il pubblico applaude, il maestro ti congratula calorosamente e ti consegna un imponente boccale di rum e un sacchettino di monete d’oro. Come bonus, vi regala un oggetto misterioso trovato di recente nelle reti. Conquistate la fiducia di alcuni pescatori influenti, uno dei quali vi invita a condividere una buona cena."
+        },
+        "text": "Accettare la sfida e pescare i granchi con la lenza."
+      },
+      "cheat": {
+        "outcomes": {
+          "0": "Troppo sicuro di te, ti chini verso il cesto di un concorrente distratto e afferri il granchio più grosso, pronto a farlo passare per tuo. Ma una mano callosa ti afferra il polso. Il pescatore furioso ti sferra un pugno terribile proprio sul mento. Cadi all’indietro, con la mascella intorpidita e un sapore metallico sulla lingua. La folla si avvicina, scoppiano le risate e il responsabile della gara esige un risarcimento prima di bandirti dal molo con un gesto secco.",
+          "1": "Mentre cercate di infilare di nascosto un granchio preso in prestito nel vostro secchio, un anziano dallo sguardo penetrante osserva l’intera scena da una certa distanza. Non dice nulla, ma si avvicina al responsabile della gara e gli sussurra qualche parola all’orecchio. Vieni escluso dalla classifica senza alcuna spiegazione, e l’atmosfera intorno a te si fa improvvisamente pesante. I mormorii ti seguono fino alla fine del molo.",
+          "2": "Un ragazzino vi si avvicina con discrezione, orgoglioso della sua enorme preda. Qualche moneta scambiata sotto una rete rovesciata, e l’affare è concluso. Mettete delicatamente il granchio nel vostro secchio, insieme alle altre prede. Al momento della valutazione, i giudici rimangono incantati dal suo carapace marmorizzato. Non vinci il primo premio, ma ti viene offerto un bel premio, e i pescatori d’ora in poi ti guardano con un certo rispetto.",
+          "3": "Poco prima dell’inizio della gara, scambiate discretamente il vostro pezzo di pesce con una rara esca gelatinosa sottratta a un pescatore esperto. Il granchio che catturate in questo modo è di dimensioni eccezionali, al punto che molti concorrenti si allontanano in silenzio. Il granchio nero gigante viene pesato, acclamato, e il maestro pescatore vi proclama vincitore senza alcuna discussione. Oltre alla coppa d’argento, un commerciante del porto, entusiasta della vostra audacia, vi offre un oggetto."
+        },
+        "text": "Cercare di barare con discrezione."
+      },
+      "observe": {
+        "outcomes": {
+          "0": "Pensavi di essere al sicuro, nascosto vicino a una scalinata di pietra, ma la tua disattenzione ti costa cara. Mentre osservavi attentamente i pescatori, un ragazzino scalzo ti si è intrufolato alle spalle per frugarti nella borsa. In lontananza scorgete una sagoma che scompare dietro un muretto: troppo tardi per reagire. Ringhiate, amareggiato, mentre richiudete la borsa.",
+          "1": "Rimanendo all'ombra delle botti, assistete a diverse manovre: scambi, cesti truccati, alleanze... Quando una lite tra due pescatori attira l’attenzione della folla, ne approfittate per avvicinarvi a un secchio e rubare un grosso granchio, che vi affrettate a rivendere al mercato.",
+          "2": "Avete preferito osservare da lontano, seduti su una vecchia cassa da trasporto. Al tuo fianco, un pescatore dalla pelle bruciata dal sale e dagli anni condivide qualche commento discreto su come i partecipanti barino o si rendano ridicoli. Tu sorridi, e ben presto la conversazione si fa più animata, le risate esplodono senza ritegno e il frastuono del porto sembra per un istante lontano. Vedendo che non hai nulla da mangiare, apre la sua borsa di tela e ne estrae una pagnotta, una scatoletta di sardine alla griglia e una bottiglia di vino, che condivide senza esitare, come se ti conoscesse da sempre."
+        },
+        "text": "Osservare i partecipanti da una certa distanza."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Ti siedi su una pila di reti asciutte, con lo sguardo rivolto verso l’orizzonte. Per qualche minuto lasci che il sole ti riscaldi il viso, con i muscoli rilassati e il profumo della salsedine nelle narici. Un gabbiano lancia un grido rauco. Quanto tempo hai passato a sognare così?",
+          "1": "Mentre le urla di entusiasmo e gli applausi risuonano alle tue spalle, prendi un’altra strada e ti allontani dal trambusto della gara dei granchi. Qui non hai nulla da dimostrare: stai cercando qualcos’altro. L’avventura continua."
+        }
+      }
+    },
+    "text": "Mentre passeggiate lungo le rumorose banchine, notate un uomo tarchiato con la barba rossa,  arrampicato su una cassa capovolta, che si rivolge ai passanti: promette un boccale di rum per ogni granchio pescato e una sorpresa a chi tirerà fuori l’esemplare più grosso. La gara è semplice: i granchi non si catturano né con le nasse né con il retino, ma si attirano con la lenza, usando come esca avanzi di pesce. Ciò richiede pazienza, destrezza e un po’ di fortuna."
+  },
+  "85": {
+    "possibilities": {
+      "forceChains": {
+        "outcomes": {
+          "0": "Con un grido di sfida, afferrate le pesanti catene arrugginite e tirate con tutte le vostre forze. Le maglie cigolano, oppongono resistenza… poi cedono con un fragore metallico. Un arciere cerca di prendervi di mira, ma la sua freccia rimbalza contro la roccia. Ti liberi dalla trappola, senza fiato ma illeso, e metti le mani su una borsa di cuoio contenente alcune monete prima di svignartela.",
+          "1": "Un barlume di rabbia ancestrale vi attraversa. Tirate con forza le catene, che si spezzano di colpo, sollevando una nuvola di polvere e schegge di metallo. I tuoi nemici si danno alla fuga, presi dal panico di fronte alla tua potenza. Nella fuga, uno dei banditi lascia cadere una borsa e un oggetto.",
+          "2": "Ti lanci contro le catene e cerchi di strapparle via, ma resistono. Prima che tu possa riprovare, una freccia ti sfiora la guancia, poi un’altra ti si conficca nella spalla. I banditi scendono ridacchiando, ti strappano la borsa e poi scompaiono."
+        },
+        "text": "Forzare le catene arrugginite per liberarvi."
+      },
+      "attackArcher": {
+        "outcomes": {
+          "0": "Fai un passo indietro per balzare verso la parete e ti arrampichi con facilità, aggrappandoti con agilità alle sporgenze. Manchi di poco l’arciere più vicino. Ti lanci contro di lui e gli dai una spallata che lo fa precipitare nel vuoto; l’impatto è fatale. Hai appena il tempo di parare la freccia del secondo arciere con il tuo scudo. I due banditi si scambiano allora uno sguardo preoccupato prima di fuggire zigzagando tra le rocce. Scendi per perquisire l’uomo a terra e recuperi tutti i suoi averi.",
+          "1": "Senza perdere tempo, vi girate, aggirate l’arco e vi arrampicate su una parete rocciosa adiacente. Vi lanciate in avanti emettendo un urlo selvaggio che fa vacillare la sicurezza dell’arciere. Colto alla sprovvista, scocca una freccia che vi sibila alle orecchie. Gli piombi addosso e, con un movimento secco, lo sbatti a terra e lo neutralizzi. La sua bisaccia scivola nella polvere, rivelando alcune monete. Testimoni del tuo assalto fulmineo, gli altri due banditi esitano, poi battono in ritirata senza pensarci due volte.",
+          "2": "Dopo aver individuato un varco in una nicchia rocciosa, vi arrampicate rapidamente e vi lanciate contro l’arciere. Ma l’uomo con la corazza si frappone con una destrezza inquietante. L’impatto è brutale: il suo scudo vi colpisce con violenza alle costole e vi scaraventa contro la parete. Cercate di contrattaccare, ma è un combattente tenace e metodico, che vi lascia a malapena un varco. Alla fine riesci a liberarti rotolando a terra, malconcio e senza fiato, mentre i tuoi nemici si allontanano ridacchiando. Sei vivo, ma gravemente ferito."
+        },
+        "text": "Carica l'arciere più vicino."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Anziché agire in modo affrettato, decidete di ritirarvi con cautela. Riuscite a ritrovare la strada senza perdere tempo.",
+          "1": "Fai marcia indietro, preferendo non correre alcun rischio. Forse non è una scelta gloriosa, ma conservi le tue forze e, soprattutto, la vita. Riparti lungo una strada più lunga, frustrato, ma tutto intero."
+        }
+      }
+    },
+    "text": "Vi addentrate in un corridoio fiancheggiato da pareti rocciose ricoperte di muschio. Un tempo percorso dai mercanti, il passaggio è oggi abbandonato, troppo spesso frequentato da animali selvatici. Mentre passate sotto un arco naturale, un rumore metallico vi gela il sangue: catene arrugginite cadono da una sporgenza e ostruiscono l’uscita. Una figura corazzata emerge su un promontorio, affiancata da due arcieri incappucciati. Siete in trappola."
+  },
+  "86": {
+    "possibilities": {
+      "ponton": {
+        "outcomes": {
+          "0": "Avanzate lentamente sul pontile, mentre la nebbia vi avvolge a poco a poco e i vostri passi fanno scricchiolare il legno fradicio. Mentre vi chinate per toccare l’acqua, un’asse tarlata cede sotto i vostri piedi e cadete in avanti nell’acqua gelida. Riesci a uscire dall’acqua, fradicio e tremante, e perdi tempo prezioso ad asciugare le tue cose al sole.",
+          "1": "Una volta giunti alla fine del pontile, potrete godervi una magnifica vista sul lago. Notate allora una forma che galleggia sulla superficie. Allungando un bastone, recuperate una piccola cassetta di legno verniciato, probabilmente caduta da una barca. Contiene una bottiglia di acquavite e una bella borsa piena d’oro.",
+          "2": "Una vecchia barca abbandonata è ancora ormeggiata al pontile. Decidete di usarla per attraversare il lago e risparmiare tempo. Ma la nebbia si fa rapidamente più fitta e vi ritrovate sperduti in mezzo al lago. Remate a lungo per tornare infine al punto di partenza. Nel momento in cui state per scendere dall’imbarcazione, scorgete un oggetto incastrato tra due assi."
+        },
+        "text": "Raggiungere il pontile nella nebbia."
+      },
+      "herbs": {
+        "outcomes": {
+          "0": "Selezionate con cura i rami più robusti e le foglie intatte. Il loro profumo ricorda quello della menta selvatica mescolata alla lavanda. Queste piante endemiche sono rare e ricercate per le loro proprietà medicinali: le venderete a un buon prezzo in un negozio di erbe medicinali.",
+          "1": "Appena avete strappato la terza pianta, un liquido biancastro vi cola sulle dita. Un attimo dopo, delle macchie rosse vi salgono fino ai polsi e le braccia vi prudono in modo atroce. Dovete sciacquarvi a lungo nel lago per lenire il dolore.",
+          "2": "Stropicciando le foglie tra le dita, vi avvolge un profumo stranamente familiare. Vi riporta alla mente un vago ricordo d’infanzia: un vasto campo inondato dal sole, una mano delicata che vi porgeva un mazzo di fiori..."
+        },
+        "text": "Raccogli le strane erbe vicino alla riva."
+      },
+      "fish": {
+        "outcomes": {
+          "0": "Dopo una lunga attesa, che vi ha dato il tempo di rifocillarvi per bene, sentite finalmente qualcosa che tira. Tirate su lentamente e scoprite un vecchio stivale pieno di fango. Decidete di ripartire, delusi dalla vostra scarsa abilità nella pesca.",
+          "1": "Attaccate un amo improvvisato a un pezzo di spago e trovate un'esca. Tirate lo spago dietro di voi per lanciarlo il più lontano possibile, ma l’amo vi si conficca nella spalla. Soffocate un grido, impiegate un bel po’ di tempo a estrarlo e poi a disinfettare la ferita con un po’ d’acqua torbida del lago. Non proprio una battuta di pesca da ricordare.",
+          "2": "La lenza si tende all’improvviso. Tirate, pensando che sia un pesce qualsiasi, ma ciò che tirate fuori dall’acqua è una strana creatura luccicante, dalle squame blu perlacee. Vi fissa per un istante, poi sputa una moneta d’oro prima di rituffarsi. Rimani lì, stordito, con la moneta in mano."
+        },
+        "text": "Provare a pescare nel lago."
+      },
+      "reflect": {
+        "outcomes": {
+          "0": "Chiudete gli occhi e lasciate che il vostro respiro si armonizzi con lo sciabordio quasi impercettibile del lago. Quando li riaprite, il paesaggio vi appare più nitido, più vivo. Una sensazione di profonda calma vi pervade, come se il lago vi avesse accolto per un attimo. Vi sentite meravigliosamente bene.",
+          "1": "Il vostro riflesso vi fissa con un'intensità insolita. Un battito di ciglia. Poi un sorriso... che non è il vostro. All’improvviso, una sagoma indistinta emerge dalla superficie e giureresti di aver visto una mano sfiorarti la caviglia. Fai un balzo all’indietro, con il cuore che batte all’impazzata. Il corpo gonfio d’acqua si avvicina lentamente mentre tu scappi via di corsa.",
+          "2": "L'acqua sembra risucchiarvi. La vostra immagine ondeggia, si deforma. Per lunghi minuti vi perdete nei vostri pensieri, come stregati. Quando tornate in voi, il sole si è spostato e avete le gambe intorpidite. Un oggetto brilla sulla superficie: una fiala contenente un liquido ambrato. Senza nemmeno rendervene conto, bevete quella bevanda sconosciuta e sentite tornare tutte le vostre forze."
+        },
+        "text": "Contemplare il proprio riflesso nell'acqua."
+      },
+      "cabin": {
+        "outcomes": {
+          "0": "Allontanandovi un po’ dalla riva, scoprite una capanna con la porta storta. All’interno: reti ammuffite, barattoli vuoti e un taccuino fradicio su un tavolo traballante. Sfogliandolo con delicatezza, riuscite a decifrare alcune parole che raccomandano di non pescare con la luna piena e un riflesso che sembrerebbe parlare. Rabbrividite improvvisamente e qualcosa scivola fuori dal taccuino...",
+          "1": "Spostando una mensola crollata contro il muro, scorgete una grande scatola di latta arrugginita. All’interno si trova un oggetto che sembra essere stato conservato con cura nonostante il luogo sia in stato di abbandono, forse più prezioso di quanto sembri.",
+          "2": "Forzando una cassa ammuffita, si sprigiona un forte odore di marciume. All’interno, scoprite un ammasso di stracci umidi e il corpo raggrinzito di una creatura acquatica, parzialmente dissolto. La sua forma quasi umanoide vi lascia un’impressione inquietante. Con il cuore in gola, esci barcollando, con la nausea che ti sale alle labbra."
+        },
+        "text": "Esplorare la capanna abbandonata."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vi allontanate dalla riva in silenzio. La strana quiete del lago vi ha fatto venire un leggero brivido, ma la strada vi aspetta.",
+          "1": "Lasciate le rive del Lago Mirage senza voltarvi indietro, preferendo i sentieri più sicuri."
+        }
+      }
+    },
+    "text": "Dopo una lunga e faticosa camminata, vi ritrovate in una radura silenziosa dove si estende un vasto specchio d’acqua dai riflessi cangianti. Il Lago Mirage rende bene il suo nome: la sua superficie scintillante sembra vibrare, ora limpida, ora velata come un sogno incerto. L'erba alta ondeggia dolcemente sulle rive e, in alcuni punti, sale una sottile nebbia che nasconde ciò che potrebbe essere un pontile, una capanna abbandonata... o presenze meno rassicuranti. Il luogo è tranquillo, quasi troppo tranquillo, come sospeso nel tempo."
+  },
+  "87": {
+    "possibilities": {
+      "climb": {
+        "outcomes": {
+          "0": "Raggiungete il piano superiore e scoprite una borsa dimenticata dietro un mucchio di macerie. All’interno: qualche moneta e una razione secca ancora commestibile. Recuperate le forze, soddisfatti di questa modesta ma gradita scoperta.",
+          "1": "Vi arrampicate senza fare rumore, scrutando ogni angolo. Sotto una lastra staccata, trovate un nascondiglio contenente delle monete, nascoste lì molto tempo fa da uno sconosciuto. Le infilate con cautela nella vostra borsa.",
+          "2": "Un gradino, ormai logoro dal tempo, cede sotto il vostro peso. La gamba urta violentemente contro la pietra e un dolore acuto vi attraversa il corpo. Perdete tempo a disinfettare la ferita e a fasciarla con un lembo di stoffa strappata."
+        },
+        "text": "Salire con cautela per ispezionare il piano della torre."
+      },
+      "throwStone": {
+        "outcomes": {
+          "0": "Lanciate la pietra, ma non succede nulla. Tuttavia, il rumore attira un gruppo di piccoli animali curiosi che si arrampicano rapidamente verso di voi. Uno di loro inizia a frugare nella vostra borsa e vi morde quando cercate di allontanarlo. Perdi tempo a liberarti di queste piccole creature.",
+          "1": "Lanciate una grossa pietra verso la torre. Colpisce una trave traballante… che fa cadere un vecchio nido di corvi! Questi ultimi, furiosi, vi piombano addosso gracchiando come se aveste insultato la loro madre. Scappi agitando le braccia, inciampando su ogni sassolino come un ubriaco. Dopo un lasso di tempo che ti sembra interminabile, finalmente ti lasciano in pace e volano via portando con sé la tua dignità.",
+          "2": "Mentre vi chinate per raccogliere un sasso, notate un oggetto lì vicino. Guardate a sinistra, poi a destra: non c’è nessuno! Lo raccogliete in fretta, lo infilate nella bisaccia e ve ne andate di corsa."
+        },
+        "text": "Lanciare un sasso per vedere se qualcosa reagisce."
+      },
+      "walkAround": {
+        "outcomes": {
+          "0": "Fate il giro della torre con calma. Notate diverse pietre cadute ai piedi della torre e segni di artigli su un tratto di muro. Rimanete all’erta, ma non si muove nulla.",
+          "1": "Girate intorno alla torre, ma non si intravede alcuna apertura praticabile. Il silenzio del luogo, rotto solo dal vento, vi mette a disagio. Ripartite senza incidenti, ma con maggiore diffidenza."
+        },
+        "text": "Fare il giro della torre senza entrarci."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Passi un bel quarto d'ora a riflettere, combattuto tra la curiosità e la paura del pericolo. Alla fine decidi di proseguire il cammino, lasciandoti la torre alle spalle. Il percorso è impervio, ma avanzi senza intoppi, concentrato sul tuo obiettivo.",
+          "1": "La torre vi evoca diverse immagini: una principessa che avrebbe potuto esservi rinchiusa, un cavaliere che vi sarebbe potuto morire. Questo pensiero vi strappa un sorriso. Ripartite e, poco più avanti, ai margini del sentiero, notate un oggetto incastrato tra due radici."
+        }
+      }
+    },
+    "text": "Il sentiero si snoda tra le rocce, impervio e ripido. Con il fiato corto, salite sotto un cielo grigio quando, dietro una curva, scorgete una torre solitaria, semidistrutta. Le sue pietre annerite sembrano abbandonate da anni, ma un riflesso metallico proveniente dal piano superiore vi ha abbagliato per un istante. È un’illusione? Un’arma? O qualcosa di peggio?"
+  },
+  "88": {
+    "possibilities": {
+      "capture": {
+        "outcomes": {
+          "0": "Svuotate la borsa e la posate delicatamente davanti allo scorpione, con un lato sollevato per mantenerne l’apertura spalancata. Diffidente, l’animale esita un istante, poi si lascia attirare dall’ombra della borsa e vi si infila dentro: la chiudi immediatamente, soddisfatto della tua bella preda. Questa specie di scorpione è famosa per il suo veleno, molto ricercato nella preparazione di pozioni rare; una volta tornato tra le bancarelle, non avrai alcuna difficoltà a scambiarlo con una di esse.",
+          "1": "Fai scivolare la lama della tua spada sotto lo scorpione. Poiché questo non reagisce, con un gesto abile riporti la spada verso la tua bisaccia prima di lasciarla cadere al suo interno. È un esemplare davvero splendido: al mercato ne ricaverai un buon prezzo.",
+          "2": "Fai scivolare lentamente la spada sotto lo scorpione prima di sollevarla. Preso dal panico, lo scorpione risale rapidamente fino all’elsa e ti punge. Con una smorfia di dolore, stringi con forza il polso appena sopra la puntura, poi aspiri il veleno con un gesto rapido, sputando il liquido amaro a terra nella speranza di rallentare la diffusione del veleno.",
+          "3": "Riesci a infilare lo scorpione nella tua bisaccia, svuotata apposta per l’occasione, richiudendone l’apertura prima che pensi di uscirne. È una bella preda, e per un istante pensate al prezzo che potreste ricavarne al mercato. Ma vedendolo rannicchiarsi tranquillamente tra le vostre cose, provate un certo affetto per quella piccola bestiola corazzata: piuttosto che venderla, decidete di tenerla con voi come fedele compagna."
+        },
+        "text": "Cercare di catturare lo scorpione."
+      },
+      "crush": {
+        "outcomes": {
+          "0": "Alzi bruscamente il piede e cerca di schiacciarlo. Troppo tardi: lo scorpione ti ha visto arrivare e ti conficca il pungiglione nella caviglia. Il dolore è lancinante. Cadi in ginocchio, mentre il veleno comincia già a farti delirare.",
+          "1": "Raccogliete la prima pietra piatta che trovate nelle vicinanze per schiacciarlo. Grave errore! Riscaldata a bianco dal sole, vi brucia la mano. La lasci andare di scatto imprecando, ma ormai il danno è fatto: passi un po’ di tempo a fare una fasciatura robusta per proteggere la ferita, mentre lo scorpione se ne va senza prestarti attenzione. ",
+          "2": "Senza nemmeno pensarci, gli lanciate addosso la vostra bisaccia e gli saltate sopra con entrambi i piedi come un pazzo. Ne è prova la poltiglia verdastra che ora macchia la vostra borsa: non c’è dubbio, è proprio morto! Questa scarica di adrenalina sembra avervi ridato le forze per proseguire il vostro cammino. Appena ripartito, scorgete un oggetto luccicante semisepolto nella sabbia, insieme a una manciata di monete."
+        },
+        "text": "Cercare di schiacciare lo scorpione."
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "Ti allontani lentamente per allontanarti da lui senza allarmarlo. Ti prendi quindi il tempo necessario per dissetarti per bene. Sentendoti meglio, riprendi il cammino con cautela, senza incidenti.",
+          "1": "Rimanete perfettamente immobili, trattenendo il respiro, finché lo scorpione non si infila rapidamente sotto un’altra pietra."
+        },
+        "text": "Ignorate lo scorpione e proseguite per la vostra strada."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Distogli lo sguardo, ritenendo che lo scorpione non valga il rischio. Prosegui il tuo cammino nel deserto."
+        }
+      }
+    },
+    "text": "La sabbia rovente affonda sotto i vostri passi mentre avanzate a fatica, con il foulard stretto sul viso per filtrare il vento caldo carico di polvere. All’orizzonte, nient’altro che dune. Ti inginocchi un attimo per riprendere fiato, ma un movimento attira il tuo sguardo: uno scorpione nero, grande quanto un pugno, esce lentamente da sotto una pietra, con la coda ricurva che brilla alla luce..."
+  },
+  "89": {
+    "possibilities": {
+      "stepAside": {
+        "outcomes": {
+          "0": "Vi allontanate dalla strada principale per liberare il centro della via. Ma la folla, fitta e che ha seguito il vostro esempio, vi spinge contro il muro di una casa. Mentre le guardie sfilano, fate fatica a respirare, con il torace compresso. È con profondo sollievo che finalmente scorgete l’ultimo soldato della coorte.",
+          "1": "Mentre la folla si dirada dal centro del viale, vi ritrovate stretti tra tanti passanti. Approfittate di questa promiscuità per sottrarre discretamente qualche moneta ai vostri vicini.",
+          "2": "Mentre la folla si dirada dal centro del viale, vi ritrovate stretti tra tanti passanti. Solo dopo il passaggio della Guardia Reale vi accorgete che un teppista ha approfittato di quella calca per rubarvi il portafoglio."
+        },
+        "text": "Allontanarsi rapidamente."
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "Continuate ad avanzare senza curarvi dell'ordine ricevuto e vi ritrovate di fronte a una coorte di una trentina di soldati che vi fissano con ostilità. Presi dal panico, vi allontanate il più velocemente possibile balbettando delle scuse.",
+          "1": "Ignorate completamente l'intimazione e proseguite ostinatamente per la vostra strada, finché non urtate uno dei soldati della parata. Confuso, vi scusate, ma l'uomo vi afferra, vi picchia selvaggiamente e poi vi scaraventa sul ciglio della strada. Umiliato e malconcio, subisci le risate beffarde degli altri soldati e ti trascini fino a un vicolo vicino per medicarti le ferite.",
+          "2": "Continui tranquillamente la tua passeggiata, ignorando i mormorii dei cittadini scandalizzati dalla tua insolenza, finché non ti ritrovi di fronte a una trentina di guardie dallo sguardo ostile. Prima ancora di poter reagire, vieni afferrato e sbattuto in prigione con l’accusa di oltraggio alla Guardia Reale.",
+          "3": "Avanzate senza curarvi dell’ordine ricevuto, fino a scontrarvi con un soldato dell’avanguardia. Mentre lui alza il pugno per reagire, gli afferrate il braccio, lo sbattete a terra e lo immobilizzate in un lampo. Una risata divertita si diffonde tra le file della coorte e il re si fa avanti, in sella a un grande cavallo bianco. Impressionato dalla tua prodezza di fronte all’élite dei suoi soldati, ti ricompensa con una bella somma, ma ti intima di lasciare la città."
+        },
+        "text": "Ignorare l'intimazione."
+      },
+      "bow": {
+        "outcomes": {
+          "0": "Come tutti i passanti, vi fate da parte e lasciate sfilare la colonna di cavalieri. Alla vista della sontuosa carrozza che li segue, vi inchinate insieme al resto della popolazione. Quando la carrozza vi passa accanto, alzate discretamente lo sguardo e intravedete, per un istante, le dita affusolate della principessa del regno che salutano il suo popolo. Questa visione basta a ridarvi coraggio.",
+          "1": "Vi mettete di lato sulla strada e vi inchinate rispettosamente al passaggio dei soldati, gesto presto imitato da numerosi cittadini. A quella vista, le guardie gonfiano il petto e sfilano con orgoglio. Dopo qualche minuto vi rialzate, pervaso dal senso di appartenenza e di fedeltà che la vostra iniziativa ha suscitato nella popolazione.",
+          "2": "Non appena ricevete l’ordine, vi inginocchiate, chinate il capo e vi inchinate davanti ai soldati. Vi rendete però subito conto della vostra solitudine in quel gesto di sottomissione: si trattava solo di una semplice pattuglia. Quando vi raggiungono, i soldati vi spintonano ridendo, e voi ve ne andate, mortificato."
+        },
+        "text": "Inchinarsi al passaggio della Guardia."
+      },
+      "otherAlley": {
+        "outcomes": {
+          "0": "Mentre percorrete un vicolo trasversale, intravedete per un attimo un movimento sui tetti. Insospettito, scali un muro per accertarti della situazione e scopri un uomo nascosto, che punta una freccia di balestra verso la carrozza che sfilava in mezzo ai soldati: un tentativo di assassinio contro la famiglia reale! Senza esitare, ti lanci sull’aggressore, gli strappi l’arma e riesci a immobilizzarlo. Il trambusto attira i cavalieri, ai quali consegni il criminale prima di scendere dal tetto. Allertato, il re si avvicina e ti propone di entrare a far parte della Guardia. Nonostante il tuo rifiuto, ti offre un equipaggiamento proveniente dal Tesoro reale e un famiglio di grande rarità, in segno di buona intesa con la corona. Riconoscente, ti inchini rispettosamente tra le acclamazioni della folla.",
+          "1": "Mentre percorrete un vicolo trasversale, intravedete per un attimo un movimento sui tetti. Insospettito, scali un muro per accertarti della situazione e scopri un uomo nascosto, che punta una freccia di balestra verso la carrozza che sfilava in mezzo ai soldati: un tentativo di assassinio contro la famiglia reale! Senza esitare, vi lanciate sull’aggressore, gli strappate l’arma e riuscite a immobilizzarlo. Il trambusto attira i cavalieri, ai quali consegnate il criminale prima di scendere dal tetto. Allertato, il re si avvicina e vi propone di entrare a far parte della Guardia. Nonostante il tuo rifiuto, ti offre un’armatura proveniente dal Tesoro reale e una generosa borsa d’oro, in segno di buona intesa con la corona. Riconoscente, ti inchini rispettosamente tra le acclamazioni della folla.",
+          "2": "Mentre vi addentrate in un vicolo vicino e deserto, vi giunge una voce. Dai pochi frammenti che riuscite a cogliere, venite a sapere che si sta preparando un attentato contro la famiglia reale! Senza pensarci un solo istante, ti precipiti nel viale adiacente, con la pistola in pugno, prima di renderti conto della tua imprudenza: i tuoi nemici sono davvero troppi. Combatti valorosamente e riesci a ferirne alcuni, ma finisci sopraffatto e lasciato lì, in fin di vita.",
+          "3": "Prendete la prima strada trasversale e aggirate la processione. Approfittate di un piccolo negozio locale per comprare qualcosa da mangiare e un po’ di attrezzatura a buon prezzo.",
+          "4": "Mentre percorrete un vicolo parallelo e deserto, da una casa si sentono delle voci. Spinti dalla curiosità, vi avvicinate e tendete l’orecchio alla porta, cogliendo solo qualche frammento: merce, qualcuno da eliminare, un passaggio, una rete. Nel momento in cui state per andarvene, non volendo essere coinvolti in questa faccenda losca, riconoscete con stupore, in una delle voci, quella del mercenario Price! Proseguite per la vostra strada, sconvolti."
+        },
+        "text": "Prendere un altro vicolo."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vi allontanate dal centro del viale e proseguite il vostro cammino costeggiando i muri delle case.",
+          "1": "Rimani fermo in mezzo al viale, ma alla fine la folla ti spinge di lato. Aspetti quindi che finisca questa processione militare prima di riprendere la tua passeggiata per le strade della capitale."
+        }
+      }
+    },
+    "text": "Camminate tranquillamente per le strade della città che circondano il castello reale. I passanti chiacchierano e l’atmosfera è allegra; sentite persino un gatto miagolare in lontananza. All’improvviso, dal fondo della strada si leva un clamore: un soldato, con voce tonante, ordina a tutti di allontanarsi immediatamente."
   }
 }

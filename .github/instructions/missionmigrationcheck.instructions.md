@@ -55,18 +55,18 @@ If two new missions are consecutive in the final campaign (e.g., positions 40 an
 
 Given new missions at final positions: 26, 40, 41, 78, 86, 87, 95, 96, 102, 106
 
-| Final Pos | Mission | New missions before | Original Pos |
-|-----------|---------|---------------------|--------------|
-| 26 | meetVelanna | 0 | 26 |
-| 40 | doExpeditions | 1 | 39 |
-| 41 | buyTokensFromShop | 2 | 39 ← SAME! |
-| 78 | longExpedition 120 | 3 | 75 |
-| 86 | longExpedition 300 | 4 | 82 |
-| 87 | dangerousExpedition 30 | 5 | 82 ← SAME! |
-| 95 | expeditionStreak | 6 | 89 |
-| 96 | maxTokensReached | 7 | 89 ← SAME! |
-| 102 | dangerousExpedition 50 | 8 | 94 |
-| 106 | showCloneToTalvar | 9 | 97 |
+| Final Pos | Mission                | New missions before | Original Pos |
+|-----------|------------------------|---------------------|--------------|
+| 26        | meetVelanna            | 0                   | 26           |
+| 40        | doExpeditions          | 1                   | 39           |
+| 41        | buyTokensFromShop      | 2                   | 39 ← SAME!   |
+| 78        | longExpedition 120     | 3                   | 75           |
+| 86        | longExpedition 300     | 4                   | 82           |
+| 87        | dangerousExpedition 30 | 5                   | 82 ← SAME!   |
+| 95        | expeditionStreak       | 6                   | 89           |
+| 96        | maxTokensReached       | 7                   | 89 ← SAME!   |
+| 102       | dangerousExpedition 50 | 8                   | 94           |
+| 106       | showCloneToTalvar      | 9                   | 97           |
 
 ## Simulation Script
 

@@ -13,6 +13,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandClassesPacket";
 import { ClassDataController } from "../../data/Class";
 import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
@@ -22,61 +23,52 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
-import { secondsToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	secondsToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
+import { withLockedPlayerAndMissionsSafe } from "../../core/utils/withLockedPlayerAndMissionsSafe";
 
 function getEndCallback(player: Player) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CLASS);
-
-		const firstReaction = collector.getFirstReaction();
-		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
-			response.push(makePacket(CommandClassesCancelErrorPacket, {}));
-			return;
-		}
-
-		await player.reload();
-		const selectedClass = (firstReaction.reaction.data as ReactionCollectorChangeClassReaction).classId;
-		const oldClass = ClassDataController.instance.getById(player.class);
-		const newClass = ClassDataController.instance.getById(selectedClass);
-		const level = player.level;
-
-		if (!oldClass || !newClass) {
-			response.push(makePacket(CommandClassesCancelErrorPacket, {}));
-			return;
-		}
-
-		player.class = selectedClass;
-		await player.addHealth({
-			amount: Math.ceil(
-				player.health / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
-			) - player.health,
-			response,
-			reason: NumberChangeReason.CLASS,
-			missionHealthParameter: {
-				shouldPokeMission: false,
-				overHealCountsForMission: false
+		try {
+			const firstReaction = collector.getFirstReaction();
+			if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+				response.push(makePacket(CommandClassesCancelErrorPacket, {}));
+				return;
 			}
-		});
-		player.setEnergyLost(Math.ceil(
-			player.fightPointsLost / oldClass.getMaxCumulativeEnergyValue(level) * newClass.getMaxCumulativeEnergyValue(level)
-		), NumberChangeReason.CLASS);
-		await MissionsController.update(player, response, { missionId: "chooseClass" });
-		await MissionsController.update(player, response, {
-			missionId: "chooseClassTier",
-			params: { tier: newClass.classGroup }
-		});
-		await player.save();
-		crowniclesInstance.logsDatabase.logPlayerClassChange(player.keycloakId, newClass.id)
-			.then();
 
-		response.push(makePacket(CommandClassesChangeSuccessPacket, {
-			classId: selectedClass
-		}));
+			await withLockedPlayerAndMissionsSafe(player, "class change", async lockedPlayer => {
+				const selectedClass = (firstReaction.reaction.data as ReactionCollectorChangeClassReaction).classId;
+				const newClass = ClassDataController.instance.getById(selectedClass);
+
+				if (!newClass) {
+					response.push(makePacket(CommandClassesCancelErrorPacket, {}));
+					return;
+				}
+
+				const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
+				await lockedPlayer.changeClass(selectedClass, playerActiveObjects, response);
+				await lockedPlayer.save();
+				await MissionsController.update(lockedPlayer, response, { missionId: "chooseClass" });
+				await MissionsController.update(lockedPlayer, response, {
+					missionId: "chooseClassTier",
+					params: { tier: newClass.classGroup }
+				});
+				crowniclesInstance?.logsDatabase.logPlayerClassChange(lockedPlayer.keycloakId, newClass.id)
+					.then();
+
+				response.push(makePacket(CommandClassesChangeSuccessPacket, {
+					classId: selectedClass
+				}));
+			});
+		}
+		finally {
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CLASS);
+		}
 	};
 }
 

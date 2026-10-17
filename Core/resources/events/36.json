@@ -3,6 +3,7 @@
     "end": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "health": 20,
           "lostTime": 60
@@ -16,23 +17,27 @@
     "goAway": {
       "outcomes": {
         "0": {
-          "health": 5
+          "health": 5,
+          "mapTypesDestination": ["ro"]
         }
       }
     },
     "goInn": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "health": 20,
           "lostTime": 60
         },
         "1": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "health": 10,
           "lostTime": 30
         },
         "2": {
+          "forceStayInCity": true,
           "health": -15
         }
       }

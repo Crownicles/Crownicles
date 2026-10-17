@@ -3,7 +3,7 @@ import {
 } from "sequelize";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 
 export class ScheduledReportNotification extends Model {
 	declare readonly playerId: number;
@@ -37,14 +37,35 @@ export abstract class ScheduledReportNotifications {
 		});
 	}
 
-	static async bulkDelete(notifications: ScheduledReportNotification[]): Promise<void> {
-		await ScheduledReportNotification.destroy({
-			where: {
-				playerId: {
-					[Op.in]: notifications.map(notification => notification.playerId)
-				}
-			}
+	/**
+	 * Update the pending notification of a player, if any.
+	 *
+	 * Never creates a row: once the arrival of a travel has been notified, any later change of the
+	 * travel timers (an alteration granted by the arrival big event, for instance) must not schedule
+	 * a second arrival notification for a travel that is already over (issue #4626).
+	 */
+	static async rescheduleNotification(playerId: number, mapId: number, scheduledAt: Date): Promise<void> {
+		await ScheduledReportNotification.update({
+			mapId,
+			scheduledAt
+		}, { where: { playerId } });
+	}
+
+	/**
+	 * Atomically claim (delete) the scheduled notification of a player.
+	 *
+	 * The row acts as a single-use token: the DELETE is serialised by the
+	 * database on the primary key, so exactly one of the concurrent callers
+	 * (the periodic poller in {@link processDueReportNotifications} and the
+	 * `Player.afterSave` hook) receives `true` and is allowed to dispatch the
+	 * notification. Every other caller receives `false` and must stay silent.
+	 * This is what prevents the duplicate arrival notification (issue #4562).
+	 */
+	static async claimNotification(playerId: number): Promise<boolean> {
+		const deletedRows = await ScheduledReportNotification.destroy({
+			where: { playerId }
 		});
+		return deletedRows > 0;
 	}
 
 	static async getPendingNotification(playerId: number): Promise<ScheduledReportNotification | null> {

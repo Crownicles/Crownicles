@@ -20,3 +20,9 @@ export class Possibility {
 	 */
 	public readonly tags!: string[];
 }
+
+/**
+ * Tuple representing a possibility keyed by its id alongside its data.
+ * Used everywhere possibilities are passed around `Object.entries`-style.
+ */
+export type PossibilityEntry = [string, Possibility];

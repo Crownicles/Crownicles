@@ -3,21 +3,45 @@ import {
 } from "sequelize";
 import { datesAreOnSameDay } from "../../../../../../Lib/src/utils/TimeUtils";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { Campaign } from "../../../missions/Campaign";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { MissionsController } from "../../../missions/MissionsController";
 import { Players } from "./Player";
 import { CrowniclesPacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 export class PlayerMissionsInfo extends Model {
+	/**
+	 * Build a {@link LockKey} for this PlayerMissionsInfo row so it
+	 * can participate in a `withLockedEntities([...])` composite
+	 * critical section. The primary key is `playerId`.
+	 */
+	static lockKey(playerId: number): LockKey<PlayerMissionsInfo> {
+		return {
+			model: PlayerMissionsInfo, id: playerId
+		};
+	}
+
+	/**
+	 * Convenience helper for locking a single PlayerMissionsInfo row.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(playerId: number, fn: (info: PlayerMissionsInfo) => Promise<R>): Promise<R> {
+		return withLockedEntities([PlayerMissionsInfo.lockKey(playerId)], ([info]) => fn(info));
+	}
+
 	declare readonly playerId: number;
 
 	declare gems: number;
 
 	declare hasBoughtPointsThisWeek: boolean;
+
+	declare missionSkipsUsedThisWeek: number;
 
 	declare dailyMissionNumberDone: number;
 
@@ -35,7 +59,8 @@ export class PlayerMissionsInfo extends Model {
 
 	static async resetShopBuyout(): Promise<void> {
 		await PlayerMissionsInfo.update({
-			hasBoughtPointsThisWeek: false
+			hasBoughtPointsThisWeek: false,
+			missionSkipsUsedThisWeek: 0
 		}, { where: {} });
 	}
 
@@ -43,10 +68,18 @@ export class PlayerMissionsInfo extends Model {
 		return this.lastDailyMissionCompleted && datesAreOnSameDay(this.lastDailyMissionCompleted, new Date());
 	}
 
+	/**
+	 * The column is nullable in database and only defaulted in memory by
+	 * {@link PlayerMissionsInfos.getOfPlayer}, so a freshly locked row can still hold NULL.
+	 */
+	public getCampaignBlob(): string {
+		return this.campaignBlob || Campaign.getDefaultCampaignBlob();
+	}
+
 	public async addGems(amount: number, keycloakId: string, reason: NumberChangeReason): Promise<void> {
 		this.gems += amount;
 		await this.save();
-		crowniclesInstance.logsDatabase.logGemsChange(keycloakId, this.gems, reason)
+		crowniclesInstance?.logsDatabase.logGemsChange(keycloakId, this.gems, reason)
 			.then();
 	}
 
@@ -66,13 +99,33 @@ export abstract class PlayerMissionsInfos {
 	 * @param playerId
 	 */
 	public static async getOfPlayer(playerId: number): Promise<PlayerMissionsInfo> {
-		const missionsInfo = (await PlayerMissionsInfo.findOrCreate({
-			where: { playerId }
-		}))[0];
+		const missionsInfo = await PlayerMissionsInfos.ensurePlayerMissionsInfo(playerId);
 		if (!missionsInfo.campaignBlob) {
 			missionsInfo.campaignBlob = Campaign.getDefaultCampaignBlob();
 		}
 		return missionsInfo;
+	}
+
+	/**
+	 * Ensure the row exists when concurrent callers race before acquiring locks.
+	 * MariaDB may report a database error instead of a unique constraint error;
+	 * after a failed create, re-read the row created by the winning caller.
+	 */
+	private static async ensurePlayerMissionsInfo(playerId: number): Promise<PlayerMissionsInfo> {
+		const existing = await PlayerMissionsInfo.findOne({ where: { playerId } });
+		if (existing) {
+			return existing;
+		}
+		try {
+			return await PlayerMissionsInfo.create({ playerId });
+		}
+		catch (error) {
+			const createdConcurrently = await PlayerMissionsInfo.findOne({ where: { playerId } });
+			if (createdConcurrently) {
+				return createdConcurrently;
+			}
+			throw error;
+		}
 	}
 }
 
@@ -89,6 +142,11 @@ export function initModel(sequelize: Sequelize): void {
 		hasBoughtPointsThisWeek: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
+		},
+		missionSkipsUsedThisWeek: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0,
+			allowNull: false
 		},
 		dailyMissionNumberDone: {
 			type: DataTypes.INTEGER,

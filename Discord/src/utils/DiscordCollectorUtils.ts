@@ -78,6 +78,18 @@ export function disableRows(rows: ActionRowBuilder<MessageActionRowComponentBuil
 	});
 }
 
+/**
+ * Add a button to the last row, creating a new row if the current one is full (max 5 buttons per row).
+ * @param rows - Array of action rows to add the button to
+ * @param button - The button to add
+ */
+export function addButtonToRow(rows: ActionRowBuilder<ButtonBuilder>[], button: ButtonBuilder): void {
+	if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+		rows.push(new ActionRowBuilder<ButtonBuilder>());
+	}
+	rows[rows.length - 1].addComponents(button);
+}
+
 export abstract class DiscordCollectorUtils {
 	private static choiceListEmotes = [
 		"1⃣",
@@ -90,6 +102,13 @@ export abstract class DiscordCollectorUtils {
 		"8⃣",
 		"9⃣"
 	];
+
+	/**
+	 * Add a button to the last row, creating a new row if the current one is full.
+	 */
+	static addButtonToRow(rows: ActionRowBuilder<ButtonBuilder>[], button: ButtonBuilder): void {
+		addButtonToRow(rows, button);
+	}
 
 	static sendReaction(
 		packet: ReactionCollectorCreationPacket,
@@ -288,6 +307,7 @@ export abstract class DiscordCollectorUtils {
 				emoji?: string;
 			}[];
 			sendManners?: SendManner[];
+			deferUpdate?: boolean;
 		}
 	): Promise<ReactionCollectorReturnTypeOrNull> {
 		if (items.length > DiscordCollectorUtils.choiceListEmotes.length) {
@@ -304,20 +324,14 @@ export abstract class DiscordCollectorUtils {
 				.setCustomId(i.toString())
 				.setStyle(ButtonStyle.Secondary);
 
-			if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-				rows.push(new ActionRowBuilder<ButtonBuilder>());
-			}
-			rows[rows.length - 1].addComponents(button);
+			DiscordCollectorUtils.addButtonToRow(rows, button);
 
 			choiceDesc += `${DiscordCollectorUtils.choiceListEmotes[i]} - ${items[i]}\n`;
 		}
 
 		if (options.additionalButtons) {
 			for (const additionalButton of options.additionalButtons) {
-				if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-					rows.push(new ActionRowBuilder<ButtonBuilder>());
-				}
-				rows[rows.length - 1].addComponents(additionalButton.button);
+				DiscordCollectorUtils.addButtonToRow(rows, additionalButton.button);
 				if (additionalButton.text && additionalButton.emoji) {
 					choiceDesc += `${additionalButton.emoji} - ${additionalButton.text}\n`;
 				}
@@ -330,10 +344,7 @@ export abstract class DiscordCollectorUtils {
 				.setCustomId("refuse")
 				.setStyle(ButtonStyle.Secondary);
 
-			if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-				rows.push(new ActionRowBuilder<ButtonBuilder>());
-			}
-			rows[rows.length - 1].addComponents(buttonRefuse);
+			DiscordCollectorUtils.addButtonToRow(rows, buttonRefuse);
 		}
 
 		// Add a choice description to the embed
@@ -383,7 +394,12 @@ export abstract class DiscordCollectorUtils {
 				return;
 			}
 
-			await buttonInteraction.deferReply();
+			if (options.deferUpdate) {
+				await buttonInteraction.deferUpdate();
+			}
+			else {
+				await buttonInteraction.deferReply();
+			}
 			if (buttonInteraction.customId !== "refuse") {
 				DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, parseInt(buttonInteraction.customId, 10));
 			}

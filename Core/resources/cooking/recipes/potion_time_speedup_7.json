@@ -1,0 +1,34 @@
+{
+  "level": 7,
+  "recipeType": "POTION_TIME_SPEEDUP",
+  "plants": [
+    {
+      "plantId": 3,
+      "quantity": 3
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 35,
+      "quantity": 1
+    },
+    {
+      "materialId": 74,
+      "quantity": 1
+    },
+    {
+      "materialId": 61,
+      "quantity": 1
+    },
+    {
+      "materialId": 30,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 5,
+  "potionRarity": 6,
+  "discoveredByDefault": false,
+  "discoverySource": "ISLAND_BOSS",
+  "petFood": null
+}

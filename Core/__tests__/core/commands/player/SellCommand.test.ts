@@ -6,7 +6,7 @@ import { BlockingUtils } from "../../../../src/core/utils/BlockingUtils";
 import {
 	countNbOfPotions, getItemByIdAndCategory, getItemValue, sortPlayerItemList
 } from "../../../../src/core/utils/ItemUtils";
-import { crowniclesInstance } from "../../../../src";
+import { crowniclesInstance } from "../../../../src/app";
 import { ItemCategory } from "../../../../../Lib/src/constants/ItemConstants";
 import { BlessingManager } from "../../../../src/core/blessings/BlessingManager";
 
@@ -25,7 +25,7 @@ vi.mock("../../../../src/core/database/game/models/InventorySlot");
 vi.mock("../../../../src/core/missions/MissionsController");
 vi.mock("../../../../src/core/utils/BlockingUtils");
 vi.mock("../../../../src/core/utils/ItemUtils");
-vi.mock("../../../../src", () => ({
+vi.mock("../../../../src/app", () => ({
 	crowniclesInstance: {
 		logsDatabase: {
 			logItemSell: vi.fn().mockResolvedValue(undefined)

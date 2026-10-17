@@ -1,6 +1,9 @@
 {
   "type": "de",
-  "expeditionType": "ruins",
+  "biomes": [
+    "desert",
+    "ruins"
+  ],
   "tags": [
     "detALa"
   ],

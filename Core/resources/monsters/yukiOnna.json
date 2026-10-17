@@ -7,6 +7,15 @@
   "maxBreath": 18,
   "breathRegen": 5,
   "rewardFactor": 0.4,
+  "materialLoot": [
+    20,
+    7,
+    43,
+    9,
+    88,
+    75,
+    18
+  ],
   "attacks": [
     {
       "id": "heatDrainAttack",

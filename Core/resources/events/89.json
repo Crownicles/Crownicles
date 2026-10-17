@@ -1,0 +1,99 @@
+{
+  "possibilities": {
+    "stepAside": {
+      "outcomes": {
+        "0": {
+          "health": -8,
+          "effect": "confounded"
+        },
+        "1": {
+          "money": 250
+        },
+        "2": {
+          "money": -180
+        }
+      }
+    },
+    "ignore": {
+      "outcomes": {
+        "0": {
+          "effect": "scared"
+        },
+        "1": {
+          "health": -30,
+          "effect": "hurt"
+        },
+        "2": {
+          "effect": "jailed"
+        },
+        "3": {
+          "money": 2000
+        }
+      }
+    },
+    "bow": {
+      "outcomes": {
+        "0": {
+          "health": 15
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "2": {
+          "health": -10
+        }
+      }
+    },
+    "otherAlley": {
+      "outcomes": {
+        "0": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 5
+            }
+          },
+          "randomPet": {
+            "rarity": {
+              "min": 4
+            }
+          }
+        },
+        "1": {
+          "randomItem": {},
+          "money": 1200
+        },
+        "2": {
+          "health": -100,
+          "effect": "injured"
+        },
+        "3": {
+          "health": 8,
+          "randomItem": {},
+          "money": -113,
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "4": {}
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "effect": "occupied",
+          "lostTime": 20
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 41
+    }
+  ]
+}

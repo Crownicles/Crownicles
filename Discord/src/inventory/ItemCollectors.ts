@@ -77,7 +77,7 @@ export async function itemAcceptCollector(context: PacketContext, packet: Reacti
 
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(
-			data.itemWithDetails.category === ItemCategory.POTION
+			data.itemWithDetails.itemCategory === ItemCategory.POTION
 				? i18n.t("commands:inventory.randomItemAcceptTitlePotion", { lng })
 				: i18n.t("commands:inventory.randomItemAcceptTitle", { lng }),
 			interaction.user

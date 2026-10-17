@@ -10,7 +10,9 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import {
+	InventorySlot, InventorySlots
+} from "../../core/database/game/models/InventorySlot";
 import { Potion } from "../../data/Potion";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -26,7 +28,17 @@ import {
 	ReactionCollectorDrinkReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 
+async function getDrinkablePotions(player: Player): Promise<InventorySlot[]> {
+	return (await InventorySlots.getOfPlayer(player.id)).filter(item => {
+		const potion = item.getItem() as Potion;
+		return item.itemId !== 0
+			&& item.isPotion()
+			&& !potion.isFightPotion()
+			&& (potion.nature !== ItemNature.TIME_SPEEDUP || !player.insideCity);
+	});
+}
 
 export default class DrinkCommand {
 	@commandRequires(CommandDrinkPacketReq, {
@@ -35,14 +47,14 @@ export default class DrinkCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
-		const potions = (await InventorySlots.getOfPlayer(player.id)).filter(item => item.itemId !== 0 && item.isPotion() && !(item.getItem() as Potion).isFightPotion());
+		const potions = await getDrinkablePotions(player);
 
 		if (potions.length === 0) {
 			response.push(makePacket(CommandDrinkNoAvailablePotion, {}));
 			return;
 		}
 
-		const collector = new ReactionCollectorDrink(potions.map(i => toItemWithDetails(i.getItem()!)));
+		const collector = new ReactionCollectorDrink(potions.map(i => toItemWithDetails(player, i.getItem()!, i.itemLevel, i.itemEnchantmentId)));
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DRINK);
@@ -54,13 +66,9 @@ export default class DrinkCommand {
 			}
 
 			const potionDetails = (reaction.reaction.data as ReactionCollectorDrinkReaction).potion;
-			const potionSlot = potions.find(p => p.itemId === potionDetails.id && p.itemCategory === potionDetails.category);
-			if (!potionSlot) {
-				response.push(makePacket(CommandDrinkCancelDrink, {}));
-				return;
-			}
+			const potionSlot = potions.find(p => p.itemId === potionDetails.id && p.itemCategory === potionDetails.itemCategory)!;
 			const potion = potionSlot.getItem() as Potion;
-			await consumePotion(response, potion, player);
+			await consumePotion(response, potion, player, await InventorySlots.getPlayerActiveObjects(player.id));
 			await player.drinkPotion(potionSlot.slot);
 			await player.save();
 			await checkDrinkPotionMissions(response, player, potion, await InventorySlots.getOfPlayer(player.id));

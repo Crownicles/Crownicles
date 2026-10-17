@@ -68,11 +68,25 @@ export abstract class Fighter {
 
 	private resistances: FightTypeResistance[];
 
-	private ready: boolean;
-
 	private damageMultipliers: FightDamageMultiplier[];
 
+	private alterationsMultipliers: Map<string, number>;
+
+	private alterationResistanceMultipliers: Map<string, number>;
+
 	private breathRegenModifiers: FightBreathRegenModifier[];
+
+	/**
+	 * Multiplier applied to the effective damage this fighter deals, granted by its weapon attack enchantments.
+	 * Defaults to 1 (no enchantment); set once at fight start for player fighters.
+	 */
+	private enchantmentDamageDealtMultiplier = 1;
+
+	/**
+	 * Multiplier applied to the effective damage this fighter receives, granted by its armor defense enchantment.
+	 * A value below 1 reduces incoming damage. Defaults to 1 (no enchantment); set once at fight start for player fighters.
+	 */
+	private enchantmentDamageTakenMultiplier = 1;
 
 	protected constructor(level: number, availableFightActions: FightAction[]) {
 		this.stats = {
@@ -88,7 +102,6 @@ export abstract class Fighter {
 		this.attackModifiers = [];
 		this.defenseModifiers = [];
 		this.speedModifiers = [];
-		this.ready = false;
 		this.nextFightAction = null;
 		this.fightActionsHistory = [];
 		this.status = FighterStatus.NOT_STARTED_PLAYER;
@@ -96,6 +109,8 @@ export abstract class Fighter {
 		this.alterationTurn = 0;
 		this.level = level;
 		this.damageMultipliers = [];
+		this.alterationsMultipliers = new Map();
+		this.alterationResistanceMultipliers = new Map();
 		this.breathRegenModifiers = [];
 		this.resistances = [];
 
@@ -125,6 +140,7 @@ export abstract class Fighter {
 	 * @param winner Indicate if the fighter is the winner
 	 * @param response
 	 * @param bug - Indicate if the fighter is buggy
+	 * @param turnCount
 	 */
 	abstract endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void>;
 
@@ -337,6 +353,36 @@ export abstract class Fighter {
 		}
 
 		return multiplier;
+	}
+
+	/**
+	 * Set the multiplier applied to the effective damage this fighter deals (weapon attack enchantments)
+	 * @param multiplier
+	 */
+	public setEnchantmentDamageDealtMultiplier(multiplier: number): void {
+		this.enchantmentDamageDealtMultiplier = multiplier;
+	}
+
+	/**
+	 * Get the multiplier applied to the effective damage this fighter deals (weapon attack enchantments)
+	 */
+	public getEnchantmentDamageDealtMultiplier(): number {
+		return this.enchantmentDamageDealtMultiplier;
+	}
+
+	/**
+	 * Set the multiplier applied to the effective damage this fighter receives (armor defense enchantment)
+	 * @param multiplier
+	 */
+	public setEnchantmentDamageTakenMultiplier(multiplier: number): void {
+		this.enchantmentDamageTakenMultiplier = multiplier;
+	}
+
+	/**
+	 * Get the multiplier applied to the effective damage this fighter receives (armor defense enchantment)
+	 */
+	public getEnchantmentDamageTakenMultiplier(): number {
+		return this.enchantmentDamageTakenMultiplier;
 	}
 
 	public getResistanceMultiplier(type: FightActionType): number {
@@ -579,5 +625,40 @@ export abstract class Fighter {
 		}
 
 		return Math.round(value);
+	}
+
+	/**
+	 * Set the alteration multiplier for an alteration id. The multiplier is applied on the opponents damage
+	 * @param alterationId
+	 * @param multiplier
+	 */
+	protected setAlterationMultiplier(alterationId: string, multiplier: number): void {
+		this.alterationsMultipliers.set(alterationId, multiplier);
+	}
+
+	/**
+	 * Get the alteration multiplier for an alteration id. If no multiplier is set, return 1. The multiplier is applied on the opponents damage
+	 * @param alterationId
+	 */
+	public getAlterationMultiplier(alterationId: string): number {
+		return this.alterationsMultipliers.get(alterationId) ?? 1;
+	}
+
+	/**
+	 * Set the resistance multiplier applied to the damage of an alteration this fighter suffers.
+	 * Granted by a weapon damage enchantment protecting against the opposite element. Below 1 reduces the damage taken.
+	 * @param alterationId
+	 * @param multiplier
+	 */
+	protected setAlterationResistanceMultiplier(alterationId: string, multiplier: number): void {
+		this.alterationResistanceMultipliers.set(alterationId, multiplier);
+	}
+
+	/**
+	 * Get the resistance multiplier applied to the damage of an alteration this fighter suffers. Returns 1 if none is set.
+	 * @param alterationId
+	 */
+	public getAlterationResistanceMultiplier(alterationId: string): number {
+		return this.alterationResistanceMultipliers.get(alterationId) ?? 1;
 	}
 }

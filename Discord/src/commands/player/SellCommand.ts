@@ -34,8 +34,7 @@ import {
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import {
-	DiscordCollectorUtils,
-	disableRows
+	disableRows, DiscordCollectorUtils
 } from "../../utils/DiscordCollectorUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { ReactionCollectorResetTimerPacketReq } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
@@ -67,7 +66,7 @@ export async function handleCommandSellSuccessPacket(packet: CommandSellItemSucc
 			: "commands:sell.soldMessage",
 		{
 			lng,
-			item: DisplayUtils.getItemDisplay(packet.item, lng),
+			item: DisplayUtils.getSimpleItemDisplay(packet.item, lng),
 			value: packet.price
 		}
 	);
@@ -97,7 +96,7 @@ async function validateSell(
 		}), interaction.user)
 		.setDescription(i18n.t(reactionsInfo.reaction.item.category === ItemCategory.POTION && reactionsInfo.reaction.price === 0 ? "commands:sell.confirmThrowAway" : "commands:sell.confirmSell", {
 			lng,
-			item: DisplayUtils.getItemDisplay(reactionsInfo.reaction.item, lng),
+			item: DisplayUtils.getSimpleItemDisplay(reactionsInfo.reaction.item, lng),
 			value: reactionsInfo.reaction.price
 		}));
 

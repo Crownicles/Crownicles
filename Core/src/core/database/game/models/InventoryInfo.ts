@@ -4,17 +4,40 @@ import {
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { ScheduledDailyBonusNotifications } from "./ScheduledDailyBonusNotification";
 import {
-	hoursToMilliseconds,
-	millisecondsToHours
+	asMilliseconds, hoursToMilliseconds,
+	millisecondsToHours, msDiff, nowMs
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { DailyConstants } from "../../../../../../Lib/src/constants/DailyConstants";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Players } from "./Player";
+import { scheduleAfterCommit } from "../../../../../../Lib/src/locks/scheduleAfterCommit";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 export class InventoryInfo extends Model {
+	/**
+	 * Build a {@link LockKey} for this InventoryInfo row so it
+	 * can participate in a `withLockedEntities([...])` composite
+	 * critical section. The primary key is `playerId`.
+	 */
+	static lockKey(playerId: number): LockKey<InventoryInfo> {
+		return {
+			model: InventoryInfo, id: playerId
+		};
+	}
+
+	/**
+	 * Convenience helper for locking a single InventoryInfo row.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(playerId: number, fn: (info: InventoryInfo) => Promise<R>): Promise<R> {
+		return withLockedEntities([InventoryInfo.lockKey(playerId)], ([info]) => fn(info));
+	}
+
 	declare readonly playerId: number;
 
 	declare lastDailyAt: Date;
@@ -26,6 +49,8 @@ export class InventoryInfo extends Model {
 	declare potionSlots: number;
 
 	declare objectSlots: number;
+
+	declare plantSlots: number;
 
 	declare updatedAt: Date;
 
@@ -118,6 +143,10 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			defaultValue: 1
 		},
+		plantSlots: {
+			type: DataTypes.INTEGER,
+			defaultValue: 1
+		},
 		updatedAt: {
 			type: DataTypes.DATE,
 			defaultValue: moment()
@@ -139,7 +168,7 @@ export function initModel(sequelize: Sequelize): void {
 			.toDate();
 	});
 
-	InventoryInfo.afterSave(instance => {
+	InventoryInfo.afterSave((instance, options) => {
 		const handleNotifications = async (): Promise<void> => {
 			// DailyBonus Notification
 			const pendingDailyBonusNotification = await ScheduledDailyBonusNotifications.getPendingNotification(instance.playerId);
@@ -150,7 +179,7 @@ export function initModel(sequelize: Sequelize): void {
 			const lastDailyTimestamp = instance.getLastDailyAtTimestamp();
 			const player = await Players.getById(instance.playerId);
 
-			if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
+			if (millisecondsToHours(msDiff(nowMs(), asMilliseconds(lastDailyTimestamp))) < DailyConstants.TIME_BETWEEN_DAILIES) {
 				await ScheduledDailyBonusNotifications.scheduleNotification(
 					instance.playerId,
 					player.keycloakId,
@@ -159,11 +188,9 @@ export function initModel(sequelize: Sequelize): void {
 			}
 		};
 
-		handleNotifications()
-			.then()
-			.catch(error => {
-				CrowniclesLogger.errorWithObj("Error while handling notifications", error);
-			});
+		scheduleAfterCommit(handleNotifications, error => {
+			CrowniclesLogger.errorWithObj("Error while handling notifications", error);
+		}, options.transaction);
 	});
 }
 

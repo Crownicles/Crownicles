@@ -1,5 +1,8 @@
 {
   "type": "mistyPath",
+  "biomes": [
+    "forest"
+  ],
   "canBeGoToPlaceMissionDestination": false,
   "attribute": "haunted"
 }

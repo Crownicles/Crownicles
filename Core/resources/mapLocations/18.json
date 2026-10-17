@@ -1,5 +1,8 @@
 {
   "type": "ri",
+  "biomes": [
+    "coast"
+  ],
   "tags": [
     "detALa"
   ],

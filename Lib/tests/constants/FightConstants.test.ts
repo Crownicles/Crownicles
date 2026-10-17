@@ -1,8 +1,30 @@
 import {describe, expect, it} from "vitest";
 import {FightConstants} from "../../src/constants/FightConstants";
+import {LeagueInfoConstants} from "../../src/constants/LeagueInfoConstants";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import {CrowniclesIcons} from "../../src/CrowniclesIcons";
+
+describe("FightConstants PvP rewards", () => {
+	it("scales win rewards progressively from Wood to Royal league", () => {
+		const winRewards = LeagueInfoConstants.FIGHT_WIN_MONEY_REWARDS;
+
+		expect(winRewards).toHaveLength(LeagueInfoConstants.MONEY_TO_AWARD.length);
+		expect(winRewards[0]).toBe(200);
+		expect(winRewards[LeagueInfoConstants.ROYAL_LEAGUE_ID]).toBe(750);
+		for (let leagueId = 1; leagueId < LeagueInfoConstants.ROYAL_LEAGUE_ID; leagueId++) {
+			expect(winRewards[leagueId] - winRewards[leagueId - 1]).toBe(50);
+		}
+		expect(winRewards[LeagueInfoConstants.ROYAL_LEAGUE_ID] - winRewards[LeagueInfoConstants.ROYAL_LEAGUE_ID - 1]).toBe(100);
+	});
+
+	it("does not make intentional losses or draws more profitable than a Wood league win", () => {
+		const rewards = FightConstants.REWARDS;
+
+		expect(rewards.LOSS_MONEY_BONUS * rewards.MAX_REWARDED_WINS).toBeLessThan(LeagueInfoConstants.FIGHT_WIN_MONEY_REWARDS[0]);
+		expect(rewards.DRAW_MONEY_BONUS).toBeLessThan(LeagueInfoConstants.FIGHT_WIN_MONEY_REWARDS[0]);
+	});
+});
 
 describe("FightConstants fight_actions models.json validation", () => {
 	const modelsPath = path.join(__dirname, "../../../Lang/fr/models.json");

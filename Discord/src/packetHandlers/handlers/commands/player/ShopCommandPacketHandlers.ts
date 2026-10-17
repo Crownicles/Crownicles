@@ -3,37 +3,28 @@ import {
 	CommandShopAlreadyHaveBadge,
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
-	CommandShopBoughtTooMuchTokens,
-	CommandShopCannotHealOccupied,
 	CommandShopClosed,
-	CommandShopEnergyHeal,
-	CommandShopFullRegen,
+	CommandShopGenericPurchase,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
-	CommandShopNoEnergyToHeal,
-	CommandShopNotEnoughCurrency,
-	CommandShopTokensBought,
-	CommandShopTokensFull,
-	CommandShopTooManyEnergyBought
+	CommandShopNoGardenForRemoteHarvestTalisman,
+	CommandShopNoPlantSlotAvailable,
+	CommandShopNotEnoughCurrency
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleCommandShopAlreadyHaveBadge,
 	handleCommandShopBadgeBought,
 	handleCommandShopBoughtTooMuchDailyPotions,
-	handleCommandShopBoughtTooMuchTokens,
-	handleCommandShopCannotHealOccupied,
 	handleCommandShopClosed,
-	handleCommandShopEnergyHeal,
-	handleCommandShopFullRegen,
+	handleCommandShopGenericPurchase,
 	handleCommandShopHealAlterationDone,
 	handleCommandShopNoAlterationToHeal,
-	handleCommandShopNoEnergyToHeal,
+	handleCommandShopNoGardenForRemoteHarvestTalisman,
+	handleCommandShopNoPlantSlotAvailable,
 	handleCommandShopNotEnoughMoney,
-	handleCommandShopTokensBought,
-	handleCommandShopTokensFull,
-	handleCommandShopTooManyEnergyBought, handleReactionCollectorBuyCategorySlotBuySuccess
-} from "../../../../commands/player/ShopCommand";
+	handleReactionCollectorBuyCategorySlotBuySuccess
+} from "../../../../utils/ShopDisplayUtils";
 import { ReactionCollectorBuyCategorySlotBuySuccess } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
 
 export default class ShopCommandPacketHandlers {
@@ -47,29 +38,9 @@ export default class ShopCommandPacketHandlers {
 		await handleCommandShopNoAlterationToHeal(context);
 	}
 
-	@packetHandler(CommandShopCannotHealOccupied)
-	async shopCannotHealOccupied(context: PacketContext, _packet: CommandShopCannotHealOccupied): Promise<void> {
-		await handleCommandShopCannotHealOccupied(context);
-	}
-
 	@packetHandler(CommandShopHealAlterationDone)
 	async shopHealAlterationDone(context: PacketContext, _packet: CommandShopHealAlterationDone): Promise<void> {
 		await handleCommandShopHealAlterationDone(context);
-	}
-
-	@packetHandler(CommandShopTooManyEnergyBought)
-	async shopTooManyEnergyBought(context: PacketContext, _packet: CommandShopTooManyEnergyBought): Promise<void> {
-		await handleCommandShopTooManyEnergyBought(context);
-	}
-
-	@packetHandler(CommandShopNoEnergyToHeal)
-	async shopNoEnergyToHeal(context: PacketContext, _packet: CommandShopNoEnergyToHeal): Promise<void> {
-		await handleCommandShopNoEnergyToHeal(context);
-	}
-
-	@packetHandler(CommandShopFullRegen)
-	async shopFullRegen(context: PacketContext, _packet: CommandShopFullRegen): Promise<void> {
-		await handleCommandShopFullRegen(context);
 	}
 
 	@packetHandler(CommandShopAlreadyHaveBadge)
@@ -87,19 +58,14 @@ export default class ShopCommandPacketHandlers {
 		await handleCommandShopBoughtTooMuchDailyPotions(context);
 	}
 
-	@packetHandler(CommandShopBoughtTooMuchTokens)
-	async shopBoughtTooMuchTokens(context: PacketContext, _packet: CommandShopBoughtTooMuchTokens): Promise<void> {
-		await handleCommandShopBoughtTooMuchTokens(context);
+	@packetHandler(CommandShopNoPlantSlotAvailable)
+	async shopNoPlantSlotAvailable(context: PacketContext, _packet: CommandShopNoPlantSlotAvailable): Promise<void> {
+		await handleCommandShopNoPlantSlotAvailable(context);
 	}
 
-	@packetHandler(CommandShopTokensBought)
-	async shopTokensBought(context: PacketContext, packet: CommandShopTokensBought): Promise<void> {
-		await handleCommandShopTokensBought(context, packet.amount);
-	}
-
-	@packetHandler(CommandShopTokensFull)
-	async shopTokensFull(context: PacketContext, _packet: CommandShopTokensFull): Promise<void> {
-		await handleCommandShopTokensFull(context);
+	@packetHandler(CommandShopNoGardenForRemoteHarvestTalisman)
+	async shopNoGardenForRemoteHarvestTalisman(context: PacketContext, _packet: CommandShopNoGardenForRemoteHarvestTalisman): Promise<void> {
+		await handleCommandShopNoGardenForRemoteHarvestTalisman(context);
 	}
 
 	@packetHandler(CommandShopNotEnoughCurrency)
@@ -112,8 +78,8 @@ export default class ShopCommandPacketHandlers {
 		await handleReactionCollectorBuyCategorySlotBuySuccess(context);
 	}
 
-	@packetHandler(CommandShopEnergyHeal)
-	async shopEnergyHeal(context: PacketContext, _packet: CommandShopEnergyHeal): Promise<void> {
-		await handleCommandShopEnergyHeal(context);
+	@packetHandler(CommandShopGenericPurchase)
+	async shopGenericPurchase(context: PacketContext, packet: CommandShopGenericPurchase): Promise<void> {
+		await handleCommandShopGenericPurchase(packet, context);
 	}
 }

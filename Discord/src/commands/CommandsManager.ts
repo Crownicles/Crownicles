@@ -1,7 +1,6 @@
 import { ICommand } from "./ICommand";
 import {
 	ActionRowBuilder,
-	AnyThreadChannel,
 	ApplicationCommand,
 	ApplicationCommandOptionType,
 	Attachment,
@@ -60,6 +59,13 @@ import {
 	setPendingDeletion,
 	verifyDeletionCode
 } from "../utils/AccountDeletionUtils";
+import {
+	getCommandModuleImportPath, isCommandModuleFile
+} from "./CommandDiscoveryUtils";
+import {
+	CHANNEL_PERMISSION_ERRORS, getThreadSendAccessError
+} from "./ChannelPermissionUtils";
+import { checkTournamentCommandAccess } from "./tournament/TournamentCommandGuard";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -327,12 +333,12 @@ export class CommandsManager {
 		guildsCommandsToRegister: RESTPostAPIChatInputApplicationCommandsJSONBody[]
 	): Promise<void> {
 		let commandsFiles = readdirSync(`dist/Discord/src/commands/${category}`)
-			.filter(command => command.endsWith(".js"));
+			.filter(isCommandModuleFile);
 		if (!discordConfig.TEST_MODE) {
 			commandsFiles = commandsFiles.filter(command => !command.startsWith("Test"));
 		}
 		for (const commandFile of commandsFiles) {
-			const commandInfo = (await import(`./${category}/${commandFile}`)).commandInfo as ICommand;
+			const commandInfo = (await import(getCommandModuleImportPath(category, commandFile))).commandInfo as ICommand;
 			if (!commandInfo?.slashCommandBuilder) {
 				CrowniclesLogger.error(`Command dist/Discord/src/commands/${category}/${commandFile} is not a slash command`);
 				continue;
@@ -648,6 +654,10 @@ export class CommandsManager {
 		}
 
 		DiscordCache.cacheInteraction(interaction);
+		const packetContext = await PacketUtils.createPacketContext(interaction, user);
+		if (!await checkTournamentCommandAccess(interaction, packetContext)) {
+			return;
+		}
 		const packet = await commandInfo.getPacket(interaction, user);
 		if (packet) {
 			const context = await PacketUtils.createPacketContext(interaction, user);
@@ -663,44 +673,43 @@ export class CommandsManager {
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.ViewChannel)) {
 			CrowniclesLogger.error(`No way to access the channel where the command has been executed : ${channel.guildId}/${channel.id}`);
-			return [false, "noChannelAccess"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_CHANNEL_ACCESS];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.SendMessages)) {
 			CrowniclesLogger.error(`No way to send messages in the channel where the command has been executed : ${channel.guildId}/${channel.id}`);
-			return [false, "noSpeakPermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_SPEAK_PERMISSION];
 		}
 
-		if (!channel.permissionsFor(crowniclesClient!.user!)
-			?.has(PermissionsBitField.Flags.SendMessagesInThreads) && channel.isThread()) {
-			const thread = channel as AnyThreadChannel;
-			CrowniclesLogger.error(`No way to send messages in the thread where the command has been executed : ${thread.guildId}/${thread.id}`);
-			return [false, "noSpeakInThreadPermission"];
+		const threadSendAccessError = getThreadSendAccessError(channel);
+		if (threadSendAccessError) {
+			CrowniclesLogger.error(`No way to send messages in the thread where the command has been executed : ${channel.guildId}/${channel.id}`);
+			return [false, threadSendAccessError];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.AddReactions)) {
 			CrowniclesLogger.error(`No perms to show i can't react in server / channel : ${channel.guildId}/${channel.id}`);
-			return [false, "noReacPermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_REACTION_PERMISSION];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.EmbedLinks)) {
 			CrowniclesLogger.error(`No perms to show i can't embed in server / channel : ${channel.guildId}/${channel.id}`);
-			return [false, "noEmbedPermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_EMBED_PERMISSION];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.AttachFiles)) {
 			CrowniclesLogger.error(`No perms to show i can't attach files in server / channel : ${channel.guildId}/${channel.id}`);
-			return [false, "noFilePermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_FILE_PERMISSION];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.ReadMessageHistory)) {
 			CrowniclesLogger.error(`No perms to show i can't see messages history in server / channel : ${channel.guildId}/${channel.id}`);
-			return [false, "noHistoryPermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_HISTORY_PERMISSION];
 		}
 
 		return [true, ""];

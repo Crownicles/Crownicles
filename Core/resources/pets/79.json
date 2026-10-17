@@ -3,5 +3,6 @@
   "diet": "carnivorous",
   "force": 30,
   "feedDelay": 4,
-  "speed": 17
+  "speed": 17,
+  "tags": ["aquatic"]
 }

@@ -11,6 +11,9 @@ import { FightAction } from "../../../data/FightAction";
 import {
 	FightConstants, FightRole
 } from "../../../../../Lib/src/constants/FightConstants";
+import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
+import { EnchantmentUtils } from "../../utils/EnchantmentUtils";
+import { EnchantmentConstants } from "../../../../../Lib/src/constants/EnchantmentConstants";
 
 /**
  * Base class for player fighters (human-controlled or AI)
@@ -19,15 +22,40 @@ import {
 export abstract class PlayerBaseFighter extends Fighter {
 	public player: Player;
 
+	public tournamentGloryPoints?: number;
+
 	public pet?: PetEntity;
 
 	public metallicItemCount = 0;
 
 	protected fightRole: FightRole = FightConstants.FIGHT_ROLES.ATTACKER;
 
-	protected constructor(player: Player, availableFightActions: FightAction[]) {
-		super(player.level, availableFightActions);
+	protected constructor(player: Player, availableFightActions: FightAction[], effectiveLevel = player.level) {
+		super(effectiveLevel, availableFightActions);
 		this.player = player;
+	}
+
+	/**
+	 * Get the glory value that should be displayed for this fighter.
+	 * Tournament fighters expose their isolated rating instead of the normal player rating.
+	 */
+	public getDisplayedGloryPoints(): number | undefined {
+		return this.tournamentGloryPoints ?? this.player.getGloryPoints();
+	}
+
+	/**
+	 * Get the weapon, armor, potion and object currently equipped by the fighter
+	 */
+	public async getMainActiveObjects(): Promise<PlayerActiveObjects> {
+		return await InventorySlots.getMainSlotsItems(this.player.id);
+	}
+
+	/**
+	 * Count the items of the fighter having the given tag
+	 * @param tag
+	 */
+	protected async countItemsWithTag(tag: string): Promise<number> {
+		return await InventorySlots.countObjectsOfPlayer(this.player.id, tag);
 	}
 
 	/**
@@ -37,6 +65,42 @@ export abstract class PlayerBaseFighter extends Fighter {
 	 */
 	public setFightRole(role: FightRole): void {
 		this.fightRole = role;
+	}
+
+	/**
+	 * Apply the alteration damage multiplier granted by the equipped weapon's enchantment, if any
+	 * (burned/frozen/poisoned damage-over-time boosts), and the matching resistance against the opposite
+	 * element's alteration (e.g. a fire enchantment boosts burned damage and resists frozen damage).
+	 * @param playerActiveObjects
+	 */
+	protected applyWeaponAlterationEnchantment(playerActiveObjects: PlayerActiveObjects): void {
+		const match = EnchantmentUtils.getWeaponAlterationEnchantment(playerActiveObjects.weapon.itemEnchantmentId);
+		if (match) {
+			this.setAlterationMultiplier(match.alterationId, match.multiplier);
+			this.setAlterationResistanceMultiplier(match.protectedAlterationId, EnchantmentConstants.DOT_ENCHANT_RESISTANCE_MULTIPLIER);
+		}
+	}
+
+	/**
+	 * Load the combat stats shared by human-controlled and AI-controlled player fighters
+	 * (attack, defense, speed, breath, breath regen and weapon alteration enchantment).
+	 * Energy is loaded separately by each subclass, as it is computed differently for AI fighters.
+	 * @param playerActiveObjects
+	 * @param isPvE True if the fight is against a monster (PVE), false against another player (PVP)
+	 */
+	protected loadCombatStats(playerActiveObjects: PlayerActiveObjects, isPvE: boolean, includePotion = true): void {
+		const {
+			player, stats
+		} = this;
+		stats.attack = player.getCumulativeAttack(playerActiveObjects, this.level, includePotion);
+		stats.defense = player.getCumulativeDefense(playerActiveObjects, this.level, includePotion);
+		stats.speed = player.getCumulativeSpeed(playerActiveObjects, this.level, includePotion);
+		stats.breath = player.getBaseBreath(playerActiveObjects);
+		stats.maxBreath = player.getMaxBreath(playerActiveObjects);
+		stats.breathRegen = player.getBreathRegen();
+		this.setEnchantmentDamageDealtMultiplier(EnchantmentUtils.getOutgoingDamageMultiplier(playerActiveObjects, isPvE));
+		this.setEnchantmentDamageTakenMultiplier(EnchantmentUtils.getIncomingDamageMultiplier(playerActiveObjects));
+		this.applyWeaponAlterationEnchantment(playerActiveObjects);
 	}
 
 	/**

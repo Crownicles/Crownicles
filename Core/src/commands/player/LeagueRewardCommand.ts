@@ -13,8 +13,10 @@ import {
 	CommandLeagueRewardSuccessPacketRes
 } from "../../../../Lib/src/packets/commands/CommandLeagueRewardPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { giveItemToPlayer } from "../../core/utils/ItemUtils";
-import { crowniclesInstance } from "../../index";
+import {
+	generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
+} from "../../core/utils/ItemUtils";
+import { crowniclesInstance } from "../../app";
 import {
 	getNextSaturdayMidnight, todayIsSunday
 } from "../../../../Lib/src/utils/TimeUtils";
@@ -73,10 +75,13 @@ export default class LeagueRewardCommand {
 				reason: NumberChangeReason.LEAGUE_REWARD
 			});
 			const item = leagueLastSeason.generateRewardItem();
-			await giveItemToPlayer(response, context, player, item);
+			await giveItemToPlayer(response, context, player, item, {
+				itemLevel: generateRandomLootLevel(),
+				itemEnchantmentId: generateRandomLootEnchantment(item)
+			});
 
 			// Log the reward claim synchronously to ensure it's recorded before unblock
-			await crowniclesInstance.logsDatabase.logPlayerLeagueReward(player.keycloakId, leagueLastSeason.id);
+			await crowniclesInstance?.logsDatabase.logPlayerLeagueReward(player.keycloakId, leagueLastSeason.id);
 			await player.save();
 
 			response.push(makePacket(CommandLeagueRewardSuccessPacketRes, {

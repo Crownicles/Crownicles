@@ -1,4 +1,6 @@
 {
   "rarity": 0,
-  "rawAttack": 0
+  "rawAttack": 0,
+  "type": null,
+  "materialCategory": 15
 }

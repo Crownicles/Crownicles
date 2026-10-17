@@ -30,6 +30,10 @@ export class CommandPetFeedNoMoneyFeedErrorPacket extends CrowniclesPacket {}
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandPetFeedGuildStorageEmptyErrorPacket extends CrowniclesPacket {}
 
+/** The pet owned by the player changed while the feed menu was open */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandPetFeedSituationChangedErrorPacket extends CrowniclesPacket {}
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandPetFeedCancelErrorPacket extends CrowniclesPacket {}
 

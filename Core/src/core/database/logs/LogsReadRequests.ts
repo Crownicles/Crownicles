@@ -12,15 +12,18 @@ import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
 import { LogsPlayersSmallEvents } from "./models/LogsPlayersSmallEvents";
 import { LogsSmallEvents } from "./models/LogsSmallEvents";
 import {
+	asMinutes,
+	asSeconds,
 	dateToLogs,
-	daysToMilliseconds,
 	getNextSaturdayMidnight,
 	getNextSundayMidnight,
 	getTodayMidnight,
-	hoursToMilliseconds,
 	millisecondsToSeconds,
-	minutesToMilliseconds
+	minutesToMilliseconds,
+	msDiff, nowMs
 } from "../../../../../Lib/src/utils/TimeUtils";
+import { Second } from "../../../../../Lib/src/types/TimeTypes";
+import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsMapLinks } from "./models/LogsMapLinks";
 import { MapConstants } from "../../../../../Lib/src/constants/MapConstants";
 import { LogsFightsResults } from "./models/LogsFightsResults";
@@ -28,14 +31,14 @@ import { LogsSeasonEnd } from "./models/LogsSeasonEnd";
 import { LogsPlayerLeagueReward } from "./models/LogsPlayerLeagueReward";
 import { LogsPlayersClassChanges } from "./models/LogsPlayersClassChanges";
 import Player from "../game/models/Player";
-import { MapCache } from "../../maps/MapCache";
 import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
-import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsGuildsJoins } from "./models/LogsGuildJoins";
 import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
 import { LogsExpeditions } from "./models/LogsExpeditions";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
+import { getPveIslandLeaveDates } from "./requests/LogsPveIslandRequests";
+import { LogsKingGuardFightsRequests } from "./requests/LogsKingGuardFightsRequests";
 
 export type RankedFightResult = {
 	won: number;
@@ -47,6 +50,11 @@ export type PersonalFightDailySummary = {
 	won: number;
 	draw: number;
 	played: number;
+};
+
+export type WeeklyShopBuyoutScope = {
+	playerId: number;
+	startOfWeek: Second;
 };
 
 /**
@@ -108,30 +116,66 @@ export class LogsReadRequests {
 	}
 
 	/**
+	 * Resolve the shared scope (log player id + start-of-week timestamp) used by the
+	 * weekly shop buyout aggregations. Returns null when no log player could be found or
+	 * created for the given keycloak id.
+	 * @param playerKeycloakId - The keycloak id of the player we want to check on
+	 */
+	private static async resolveWeeklyShopBuyoutScope(playerKeycloakId: string): Promise<WeeklyShopBuyoutScope | null> {
+		const startOfWeek = asSeconds(Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK))));
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return null;
+		}
+		return {
+			playerId: logPlayer.id,
+			startOfWeek
+		};
+	}
+
+	/**
 	 * Get the amount of tokens a specific player has bought this week
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
 	static async getAmountOfTokensBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
-		const startOfWeek = Math.floor(millisecondsToSeconds(getNextSundayMidnight() - daysToMilliseconds(TimeConstants.DAYS_IN_WEEK)));
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
-		if (!logPlayer) {
+		const scope = await LogsReadRequests.resolveWeeklyShopBuyoutScope(playerKeycloakId);
+		if (!scope) {
 			return 0;
 		}
 		return await LogsClassicalShopBuyouts.sum("amount", {
 			where: {
-				playerId: logPlayer.id,
+				playerId: scope.playerId,
 				shopItem: ShopItemType.TOKEN,
-				date: { [Op.gt]: startOfWeek }
+				date: { [Op.gt]: scope.startOfWeek }
 			}
 		}) ?? 0;
 	}
 
 	/**
-	 * Get all the members of the player's guild on the pve island
+	 * Get the number of times a specific player has received the token merchant charity this week
+	 * @param playerKeycloakId - The keycloak id of the player we want to check on
+	 */
+	static async getTokenCharityCountReceivedByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
+		const scope = await LogsReadRequests.resolveWeeklyShopBuyoutScope(playerKeycloakId);
+		if (!scope) {
+			return 0;
+		}
+		return LogsClassicalShopBuyouts.count({
+			where: {
+				playerId: scope.playerId,
+				shopItem: ShopItemType.TOKEN_CHARITY,
+				date: { [Op.gt]: scope.startOfWeek }
+			}
+		});
+	}
+
+	/**
+	 * Get the members of the player's guild that left the pve island recently enough to still be considered as allies.
+	 * Members still on the island have no leave date and are handled by the caller.
 	 */
 	static async getGuildMembersThatWereOnPveIsland(player: Player): Promise<Player[]> {
-		if (!player.guildId) { // Player has no guild
-			return Promise.resolve([]);
+		if (!player.guildId) {
+			return [];
 		}
 
 		// Get all the players in the guild excluding the player
@@ -142,53 +186,21 @@ export class LogsReadRequests {
 			}
 		});
 
-		// Extract ids from players
-		const ids = playersInGuild.map(player => player.keycloakId);
-
 		// Convert the players to log players
 		const logsPlayers = await LogsPlayers.findAll({
-			where: { keycloakId: { [Op.in]: ids } }
+			where: { keycloakId: { [Op.in]: playersInGuild.map(guildMember => guildMember.keycloakId) } }
 		});
 
-		// Extract ids from players
-		const logsPlayersIds = logsPlayers.map(logsPlayer => logsPlayer.id);
+		const leaveTravels = await getPveIslandLeaveDates(logsPlayers.map(logsPlayer => logsPlayer.id));
+		const oldestAcceptedLeaveDate = dateToLogs(new Date(Date.now() - PVEConstants.TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND));
+		const recentlyLeftLogsPlayerIds = new Set(leaveTravels
+			.filter(travel => travel.leaveDate > oldestAcceptedLeaveDate)
+			.map(travel => travel.playerId));
+		const recentlyLeftKeycloakIds = new Set(logsPlayers
+			.filter(logsPlayer => recentlyLeftLogsPlayerIds.has(logsPlayer.id))
+			.map(logsPlayer => logsPlayer.keycloakId));
 
-		// Get travels from the last hours of guildsMembers
-		const travelsInPveIsland = await LogsPlayersTravels.findAll({
-			where: {
-				mapLinkId: {
-					[Op.in]: MapCache.logsPveIslandMapLinks
-				},
-				playerId: {
-					[Op.in]: logsPlayersIds
-				},
-				date: {
-					[Op.gt]: Math.floor((Date.now() - minutesToMilliseconds(PVEConstants.MINUTES_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND)) / 1000)
-				}
-			},
-			group: ["playerId"],
-			include: [
-				{
-					model: LogsPlayers,
-					association: new HasOne(LogsPlayersTravels, LogsPlayers, {
-						sourceKey: "playerId",
-						foreignKey: "id",
-						as: "LogsPlayer1"
-					})
-				}
-			]
-		}) as unknown as {
-			LogsPlayer1: {
-				keycloakId: string;
-			};
-		}[];
-		return await Player.findAll({
-			where: {
-				keycloakId: {
-					[Op.in]: travelsInPveIsland.map(travelsInPveIsland => travelsInPveIsland.LogsPlayer1.keycloakId)
-				}
-			}
-		});
+		return playersInGuild.filter(guildMember => recentlyLeftKeycloakIds.has(guildMember.keycloakId));
 	}
 
 	/**
@@ -270,7 +282,7 @@ export class LogsReadRequests {
 	 * @param keycloakId
 	 * @param guildId
 	 */
-	static async getCountPVEIslandThisWeek(keycloakId: string, guildId: number): Promise<number> {
+	static async getCountPVEIslandThisWeek(keycloakId: string, guildId: number | null): Promise<number> {
 		if (guildId && await this.joinGuildThisWeekRequest(keycloakId, guildId)) {
 			return PVEConstants.TRAVEL_COST.length;
 		}
@@ -298,7 +310,7 @@ export class LogsReadRequests {
 			attributes: [],
 			where: {
 				date: {
-					[Op.gt]: Math.floor((Date.now() - minutesToMilliseconds(minutes)) / 1000)
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), minutesToMilliseconds(asMinutes(minutes)))))
 				},
 				friendly: false
 			},
@@ -357,10 +369,13 @@ export class LogsReadRequests {
 			]
 		});
 
+		// King guard fights share the daily money cap of ranked fights
+		const kingGuardSummary = await LogsKingGuardFightsRequests.getDailySummary(playerKeycloakId);
+
 		return {
-			played: fights.length,
-			won: fights.filter(fight => fight.winner === 1).length,
-			draw: fights.filter(fight => fight.winner === 0).length
+			played: fights.length + kingGuardSummary.played,
+			won: fights.filter(fight => fight.winner === 1).length + kingGuardSummary.won,
+			draw: fights.filter(fight => fight.winner === 0).length + kingGuardSummary.draw
 		};
 	}
 
@@ -382,7 +397,7 @@ export class LogsReadRequests {
 				"$LogsPlayer1.keycloakId$": attackerKeycloakId,
 				"$LogsPlayer2.keycloakId$": { [Op.in]: defenderKeycloakIds },
 				"date": {
-					[Op.gt]: Math.floor((getNextSaturdayMidnight() - 7 * 24 * 60 * 60 * 1000) / 1000)
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSaturdayMidnight(), TimeConstants.MS_TIME.WEEK)))
 				},
 				"friendly": false
 			},
@@ -457,7 +472,7 @@ export class LogsReadRequests {
 			where: {
 				"$LogsPlayer.keycloakId$": keycloakId,
 				"date": {
-					[Op.gt]: Math.floor((getNextSundayMidnight() - hoursToMilliseconds(7 * 24)) / 1000)
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)))
 				},
 				"$LogsMapLink.start$": MapLocationDataController.instance.getWithAttributes([MapConstants.MAP_ATTRIBUTES.MAIN_CONTINENT])[0].id,
 				"$LogsMapLink.end$": {
@@ -494,7 +509,7 @@ export class LogsReadRequests {
 				"$LogsPlayer.keycloakId$": keycloakId,
 				"$LogsGuild.gameId$": guildId,
 				"date": {
-					[Op.gt]: Math.floor((getNextSundayMidnight() - hoursToMilliseconds(7 * 24)) / 1000)
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)))
 				}
 			},
 			include: [

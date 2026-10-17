@@ -1,7 +1,7 @@
 import Player from "../../core/database/game/models/Player";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../../core/utils/ItemUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerSmallEvents } from "../../core/database/game/models/PlayerSmallEvent";
@@ -20,10 +20,16 @@ import { TravelTime } from "../../core/maps/TravelTime";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PossibilityOutcomeCondition } from "./PossibilityOutcomeCondition";
 import { BigEventConstants } from "../../../../Lib/src/constants/BigEventConstants";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
+import {
+	asMinutes, minutesToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
-	const scoreChange = TravelTime.timeTravelledToScore(time)
+	const scoreChange = TravelTime.timeTravelledToScore(minutesToMilliseconds(asMinutes(time)))
 		+ await PlayerSmallEvents.calculateCurrentScore(player)
 		+ (outcome.bonusPoints ?? 0);
 	const scoreParameters = {
@@ -103,7 +109,7 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
-async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
+async function applyOutcomeMoneyUnderLock(outcome: PossibilityOutcome, time: number, player: Locked<Player>, response: CrowniclesPacket[]): Promise<number> {
 	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.crowniclesRandom.integer(0, time / 10 + player.level / 5 - 1));
 	if (outcome.money && outcome.money < 0 && moneyChange > 0) {
 		moneyChange = Math.floor(outcome.money / 2);
@@ -127,12 +133,15 @@ async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, play
 			reason: NumberChangeReason.BIG_EVENT
 		});
 	}
+	if (!isMoneyChangePositive) {
+		await player.save();
+	}
 	return BlessingManager.getInstance().applyMoneyBlessing(moneyChange);
 }
 
-function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player): number {
+function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects): number {
 	if (outcome.energy && outcome.energy !== 0) {
-		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT);
+		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT, playerActiveObjects);
 		return outcome.energy;
 	}
 	return 0;
@@ -147,15 +156,33 @@ async function applyOutcomeGems(outcome: PossibilityOutcome, player: Player): Pr
 	return 0;
 }
 
+async function applyOutcomeTokens(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	if (outcome.tokens && outcome.tokens !== 0) {
+		const previousTokens = player.tokens;
+		await player.addTokens({
+			response,
+			amount: outcome.tokens,
+			reason: NumberChangeReason.BIG_EVENT
+		});
+		return player.tokens - previousTokens;
+	}
+	return 0;
+}
+
 async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
 	if (!outcome.randomItem) {
 		return;
 	}
-	await giveItemToPlayer(response, context, player, generateRandomItem({
+	const item = generateRandomItem({
 		itemCategory: outcome.randomItem.category,
 		minRarity: outcome.randomItem.rarity?.min,
 		maxRarity: outcome.randomItem.rarity?.max
-	}), 1, false);
+	});
+	await giveItemToPlayer(response, context, player, item, {
+		canDrinkImmediately: false,
+		itemLevel: generateRandomLootLevel(),
+		itemEnchantmentId: generateRandomLootEnchantment(item)
+	});
 }
 
 async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
@@ -180,7 +207,7 @@ async function applyOutcomeGivePet(outcome: PossibilityOutcome, player: Player, 
 async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.oneshot === true) {
 		await player.addHealth({
-			amount: -player.health,
+			amount: -player.getHealthValue(),
 			response,
 			reason: NumberChangeReason.BIG_EVENT
 		});
@@ -193,36 +220,50 @@ function applyOutcomeNextEvent(outcome: PossibilityOutcome, player: Player): voi
 	}
 }
 
+function getMapTypesDestinationLink(outcome: PossibilityOutcome, player: Player): MapLink {
+	const {
+		mapTypesDestination, mapTypesExcludeDestination
+	} = outcome;
+
+	let allowedMapTypes = Maps.getConnectedMapTypes(player, !mapTypesDestination);
+	if (mapTypesDestination) {
+		allowedMapTypes = allowedMapTypes.filter(mapType => mapTypesDestination.includes(mapType));
+	}
+	if (mapTypesExcludeDestination) {
+		allowedMapTypes = allowedMapTypes.filter(mapType => !mapTypesExcludeDestination.includes(mapType));
+	}
+
+	return RandomUtils.crowniclesRandom.pick(
+		MapLinkDataController.instance.getMapLinksWithMapTypes(
+			allowedMapTypes,
+			player.getDestinationId() ?? -1,
+			mapTypesDestination ? -1 : player.getPreviousMapId() ?? -1
+		)
+	);
+}
+
 function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | null {
 	if (outcome.mapLink) {
 		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
 	}
 
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
-		let allowedMapTypes = Maps.getConnectedMapTypes(player, !outcome.mapTypesDestination);
-		if (outcome.mapTypesDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => outcome.mapTypesDestination!.includes(mapType));
-		}
-		if (outcome.mapTypesExcludeDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => !outcome.mapTypesExcludeDestination!.includes(mapType));
-		}
-
-		return RandomUtils.crowniclesRandom.pick(
-			MapLinkDataController.instance.getMapLinksWithMapTypes(
-				allowedMapTypes,
-				player.getDestinationId() ?? -1,
-				!outcome.mapTypesDestination ? player.getPreviousMapId() ?? -1 : -1
-			)
-		);
+		return getMapTypesDestinationLink(outcome, player);
 	}
 
 	return null;
 }
 
+/**
+ * Tuple representing a possibility outcome keyed by its id alongside its data.
+ * Used everywhere outcomes are passed around `Object.entries`-style.
+ */
+export type PossibilityOutcomeEntry = [string, PossibilityOutcome];
+
 type ApplyOutcome = {
 	eventId: number;
 	possibilityName: string;
-	outcome: [string, PossibilityOutcome];
+	outcome: PossibilityOutcomeEntry;
 	time: number;
 };
 
@@ -234,23 +275,29 @@ type ApplyOutcome = {
  * @param response
  */
 export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<MapLink | null> {
+	// Get player active objects for energy changes
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 	// Score
 	const score = await applyOutcomeScore(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
 	// Money
-	const money = await applyOutcomeMoney(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
+	const money = await applyOutcomeMoneyUnderLock(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
+
+	// Gems
+	const gems = await applyOutcomeGems(possibilityOutcome.outcome[1], player);
+
+	// Tokens
+	const tokens = await applyOutcomeTokens(possibilityOutcome.outcome[1], player, response);
+
+	// Experience
+	const experience = await applyOutcomeExperience(possibilityOutcome.outcome[1], player, response);
 
 	// Health
 	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
 
 	// Energy
-	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player);
-
-	// Gems
-	const gems = await applyOutcomeGems(possibilityOutcome.outcome[1], player);
-
-	// Experience
-	const experience = await applyOutcomeExperience(possibilityOutcome.outcome[1], player, response);
+	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player, playerActiveObjects);
 
 	// Effect + lost time
 	const effect = await applyOutcomeEffect(possibilityOutcome.outcome[1], player);
@@ -264,6 +311,7 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 		health,
 		energy,
 		gems,
+		tokens,
 		experience,
 		effect,
 		oneshot: possibilityOutcome.outcome[1].oneshot ?? false
@@ -325,6 +373,11 @@ export interface PossibilityOutcome {
 	gems?: number;
 
 	/**
+	 * Tokens won (reward-like, may push the player above the normal token cap)
+	 */
+	tokens?: number;
+
+	/**
 	 * Bonus experience (will be added to calculated experience)
 	 */
 	bonusExperience?: number;
@@ -381,6 +434,20 @@ export interface PossibilityOutcome {
 	 * Forced map link
 	 */
 	mapLink?: number;
+
+	/**
+	 * Force the player to stay in the city after the outcome: the destination
+	 * menu is skipped and the player enters the city directly, until they
+	 * explicitly leave via the report command. Ignored when a forced map link
+	 * is set or when the player is not on a city map location.
+	 */
+	forceStayInCity?: boolean;
+
+	/**
+	 * Prevent the player from staying in the city after the outcome while still
+	 * allowing them to choose their next destination.
+	 */
+	forceLeaveCity?: boolean;
 
 	/**
 	 * Tags

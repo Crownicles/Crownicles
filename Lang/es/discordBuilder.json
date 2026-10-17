@@ -163,9 +163,9 @@
     "description": "Visualiza el mapa para saber hacia dónde te diriges.",
     "name": "tarjeta"
   },
-  "shop": {
-    "description": "Muestra la tienda.",
-    "name": "tienda"
+  "garden": {
+    "description": "Accede a tu jardín, a distancia si tienes el Corazón del Bosque.",
+    "name": "jardín"
   },
   "classesInfo": {
     "description": "Muestra información sobre las clases que puedes seleccionar para tu personaje.",
@@ -212,10 +212,6 @@
         "name": "usuario"
       }
     }
-  },
-  "guildShop": {
-    "description": "Muestra la tienda del gremio.",
-    "name": "tiendagremio"
   },
   "guildKick": {
     "description": "Excluir a un miembro del gremio.",
@@ -271,10 +267,6 @@
       }
     }
   },
-  "missionsshop": {
-    "description": "Mostrar la tienda de la misión.",
-    "name": "tienda"
-  },
   "top": {
     "description": "Mostrar la clasificación de los partidos.",
     "name": "clasificación",
@@ -311,13 +303,9 @@
     "description": "Empezar una pelea.",
     "name": "combate"
   },
-  "switch": {
-    "name": "cambiar",
-    "description": "Cambia el objeto activo por uno de los objetos de tu reserva."
-  },
-  "deposit": {
-    "name": "depositar",
-    "description": "Deposita uno de tus objetos activos."
+  "equip": {
+    "name": "equipar",
+    "description": "Gestiona tu equipamiento: equipa, guarda o intercambia tus objetos."
   },
   "drink": {
     "name": "beber",
@@ -406,5 +394,17 @@
   "blessing": {
     "name": "bendición",
     "description": "Vea el estado actual de la bendición global."
+  },
+  "tournament": {
+    "name": "tournament",
+    "description": "Consulter votre tournoi ou vous y inscrire automatiquement."
+  },
+  "tournament-admin": {
+    "name": "tournament-admin",
+    "description": "Ouvrir la gestion du tournoi dans ce serveur."
+  },
+  "tournament-owner": {
+    "name": "tournament-owner",
+    "description": "Ouvrir les opérations owner du tournoi."
   }
 }

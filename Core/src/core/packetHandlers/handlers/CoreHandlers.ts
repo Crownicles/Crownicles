@@ -1,7 +1,7 @@
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { packetHandler } from "../PacketHandler";
 import {
-	CrowniclesPacket, PacketContext
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorController } from "../../utils/ReactionsCollector";
 import { ChangeBlockingReasonPacket } from "../../../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
@@ -9,6 +9,57 @@ import { BlockingUtils } from "../../utils/BlockingUtils";
 import {
 	ReactionCollectorResetTimerPacketReq
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
+import {
+	CommandReportHomeChestActionReq,
+	CommandReportGardenHarvestReq,
+	CommandReportGardenPlantReq,
+	CommandReportGardenWaterReq,
+	CommandReportPlantTransferReq,
+	CommandReportCookingIgniteReq,
+	CommandReportCookingWoodConfirmRes,
+	CommandReportCookingReviveReq,
+	CommandReportCookingCraftReq,
+	CommandReportCookingMenuReq,
+	CommandReportCookingPinReq,
+	CommandReportCookingUnpinReq,
+	CommandReportBossPersonalRecordsReq,
+	CommandReportBossPersonalRecordsRes,
+	CommandReportBossLeaderboardReq,
+	CommandReportBossLeaderboardRes,
+	CommandReportGuildDomainUpgradeReq,
+	CommandReportFoodShopBuyReq,
+	CommandReportGuildDomainDepositTreasuryReq
+} from "../../../../../Lib/src/packets/commands/CommandReportPacket";
+import {
+	handleChestAction
+} from "../../report/ReportCityService";
+import {
+	handleGardenHarvest, handleGardenPlant, handleGardenWater, handlePlantTransfer
+} from "../../report/ReportGardenService";
+import {
+	handleCookingIgnite, handleCookingWoodConfirm, handleCookingRevive, handleCookingCraft,
+	handleCookingMenu, handleCookingPin, handleCookingUnpin
+} from "../../report/ReportCookingService";
+import {
+	handleGuildDomainUpgrade
+} from "../../report/ReportCityGuildDomainService";
+import { handleFoodShopBuy } from "../../report/ReportCityFoodShopService";
+import { handleGuildDomainDepositTreasury } from "../../report/ReportCityGuildDomainShopService";
+import {
+	CommandEquipActionReq, CommandEquipActionRes
+} from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
+import { handleEquipAction } from "../../utils/EquipActionService";
+import { LogsPveBossRecordsRequests } from "../../database/logs/requests/LogsPveBossRecordsRequests";
+import Player, { Players } from "../../database/game/models/Player";
+import { CityDataController } from "../../../data/City";
+import { CITY_SERVICES } from "../../../../../Lib/src/constants/CityServiceConstants";
+
+async function getPlayerAtBossArchivist(keycloakId: string): Promise<Player | null> {
+	const player = await Players.getOrRegister(keycloakId);
+	const destinationId = player.getDestinationId();
+	const city = destinationId === null ? undefined : CityDataController.instance.getCityByMapId(destinationId);
+	return player.insideCity && city?.hasService(CITY_SERVICES.BOSS_ARCHIVIST) ? player : null;
+}
 
 export default class CoreHandlers {
 	@packetHandler(ReactionCollectorReactPacket)
@@ -24,5 +75,105 @@ export default class CoreHandlers {
 	@packetHandler(ReactionCollectorResetTimerPacketReq)
 	reactionCollectorResetTimer(response: CrowniclesPacket[], _context: PacketContext, packet: ReactionCollectorResetTimerPacketReq): void {
 		ReactionCollectorController.resetTimer(response, packet);
+	}
+
+	@packetHandler(CommandReportHomeChestActionReq)
+	async homeChestAction(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportHomeChestActionReq): Promise<void> {
+		await handleChestAction(context.keycloakId!, packet, response);
+	}
+
+	@packetHandler(CommandEquipActionReq)
+	async equipAction(response: CrowniclesPacket[], context: PacketContext, packet: CommandEquipActionReq): Promise<void> {
+		const result = await handleEquipAction(context.keycloakId!, packet);
+		response.push(makePacket(CommandEquipActionRes, result));
+	}
+
+	@packetHandler(CommandReportGardenHarvestReq)
+	async gardenHarvest(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenHarvestReq): Promise<void> {
+		await handleGardenHarvest(context.keycloakId!, packet, response);
+	}
+
+	@packetHandler(CommandReportGardenPlantReq)
+	async gardenPlant(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenPlantReq): Promise<void> {
+		await handleGardenPlant(context.keycloakId!, packet, response);
+	}
+
+	@packetHandler(CommandReportGardenWaterReq)
+	async gardenWater(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenWaterReq): Promise<void> {
+		response.push(await handleGardenWater(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportPlantTransferReq)
+	async plantTransfer(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportPlantTransferReq): Promise<void> {
+		response.push(await handlePlantTransfer(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingIgniteReq)
+	async cookingIgnite(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingIgniteReq): Promise<void> {
+		response.push(...await handleCookingIgnite(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingWoodConfirmRes)
+	async cookingWoodConfirm(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingWoodConfirmRes): Promise<void> {
+		response.push(...await handleCookingWoodConfirm(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingReviveReq)
+	async cookingRevive(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingReviveReq): Promise<void> {
+		response.push(...await handleCookingRevive(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingCraftReq)
+	async cookingCraft(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingCraftReq): Promise<void> {
+		response.push(...await handleCookingCraft(context.keycloakId!, packet, context));
+	}
+
+	@packetHandler(CommandReportCookingMenuReq)
+	async cookingMenu(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingMenuReq): Promise<void> {
+		response.push(...await handleCookingMenu(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingPinReq)
+	async cookingPin(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingPinReq): Promise<void> {
+		response.push(...await handleCookingPin(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingUnpinReq)
+	async cookingUnpin(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingUnpinReq): Promise<void> {
+		response.push(...await handleCookingUnpin(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportBossPersonalRecordsReq)
+	async bossPersonalRecords(response: CrowniclesPacket[], context: PacketContext, _packet: CommandReportBossPersonalRecordsReq): Promise<void> {
+		const player = await getPlayerAtBossArchivist(context.keycloakId!);
+		response.push(makePacket(CommandReportBossPersonalRecordsRes, {
+			personalRecords: player ? await LogsPveBossRecordsRequests.getPersonalRecords(player.keycloakId) : [],
+			maximumTierClassIds: player ? LogsPveBossRecordsRequests.getMaximumTierClassIds() : []
+		}));
+	}
+
+	@packetHandler(CommandReportBossLeaderboardReq)
+	async bossLeaderboard(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportBossLeaderboardReq): Promise<void> {
+		const player = await getPlayerAtBossArchivist(context.keycloakId!);
+		response.push(makePacket(CommandReportBossLeaderboardRes, {
+			monsterId: packet.monsterId,
+			classId: packet.classId,
+			entries: player ? await LogsPveBossRecordsRequests.getLeaderboard(packet.monsterId, packet.classId) : []
+		}));
+	}
+
+	@packetHandler(CommandReportGuildDomainUpgradeReq)
+	async guildDomainUpgrade(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainUpgradeReq): Promise<void> {
+		await handleGuildDomainUpgrade(context.keycloakId!, packet, response);
+	}
+
+	@packetHandler(CommandReportFoodShopBuyReq)
+	async foodShopBuy(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportFoodShopBuyReq): Promise<void> {
+		await handleFoodShopBuy(context.keycloakId!, packet, response);
+	}
+
+	@packetHandler(CommandReportGuildDomainDepositTreasuryReq)
+	async guildDomainDepositTreasury(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainDepositTreasuryReq): Promise<void> {
+		await handleGuildDomainDepositTreasury(context.keycloakId!, packet, response);
 	}
 }

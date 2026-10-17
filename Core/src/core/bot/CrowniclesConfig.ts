@@ -1,6 +1,8 @@
 import { parse } from "toml";
 import { readFileSync } from "fs";
-import { DatabaseConfiguration } from "../../../../Lib/src/database/DatabaseConfiguration";
+import {
+	DatabaseConfiguration, DatabasePoolConfiguration
+} from "../../../../Lib/src/database/DatabaseConfiguration";
 import {
 	createMqttPrefix, MqttPrefix
 } from "../../../../Lib/src/utils/MqttTopicUtils";
@@ -79,7 +81,7 @@ export function loadConfig(): CrowniclesConfig {
 	};
 }
 
-export function getDatabaseConfiguration(config: CrowniclesConfig, databaseName: string): DatabaseConfiguration {
+export function getDatabaseConfiguration(config: CrowniclesConfig, databaseName: string, pool: DatabasePoolConfiguration): DatabaseConfiguration {
 	return {
 		host: config.MARIADB_HOST,
 		port: config.MARIADB_PORT,
@@ -88,6 +90,7 @@ export function getDatabaseConfiguration(config: CrowniclesConfig, databaseName:
 		user: config.MARIADB_USER,
 		userPassword: config.MARIADB_PASSWORD,
 		databaseName,
-		prefix: config.PREFIX
+		prefix: config.PREFIX,
+		pool
 	};
 }

@@ -21,6 +21,7 @@ import { exportLogsShop } from "./exporters/LogsShopExporter";
 import { exportLogsGuild } from "./exporters/LogsGuildExporter";
 import { exportLogsPets } from "./exporters/LogsPetsExporter";
 import { exportLogsBlessings } from "./exporters/LogsBlessingsExporter";
+import { exportLogsCity } from "./exporters/LogsCityExporter";
 import { PacketUtils } from "../../../core/utils/PacketUtils";
 import { GDPRExportCompleteNotificationPacket } from "../../../../../Lib/src/packets/notifications/GDPRExportCompleteNotificationPacket";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
@@ -56,7 +57,7 @@ async function exportLogsData(
 	await yieldToEventLoop();
 
 	// Export missions and achievements (files 35-44)
-	const { newPets } = await exportLogsMissions(logsPlayerId, csvFiles);
+	await exportLogsMissions(logsPlayerId, csvFiles);
 	await yieldToEventLoop();
 
 	// Export fights data (files 45-48)
@@ -72,11 +73,15 @@ async function exportLogsData(
 	await yieldToEventLoop();
 
 	// Export pets and expeditions data (files 68-73)
-	await exportLogsPets(logsPlayerId, anonymizer, newPets, csvFiles);
+	await exportLogsPets(logsPlayerId, anonymizer, csvFiles);
 	await yieldToEventLoop();
 
 	// Export blessings data (files 75-76)
 	await exportLogsBlessings(logsPlayerId, anonymizer, csvFiles);
+	await yieldToEventLoop();
+
+	// Export city interaction data (files 78-79, more in next phases)
+	await exportLogsCity(logsPlayerId, anonymizer, csvFiles);
 	await yieldToEventLoop();
 }
 
@@ -169,11 +174,11 @@ export default class ExportGDPRCommand {
 		try {
 			CrowniclesLogger.info(`Starting GDPR export for player ${anonymizer.getAnonymizedPlayerId()}`);
 
-			// Export player core data (files 01-14)
+			// Export player core data (files 01-22)
 			await exportPlayerData(player, anonymizer, csvFiles);
 			await yieldToEventLoop();
 
-			// Export logs database data (files 15-76)
+			// Export logs database data (files logs/15-logs/76)
 			await exportLogsData(player, anonymizer, csvFiles);
 
 			// Add metadata file - calculate count before adding metadata

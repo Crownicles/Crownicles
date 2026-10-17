@@ -3,5 +3,6 @@
   "diet": "herbivorous",
   "force": 1,
   "feedDelay": 5,
-  "speed": 1
+  "speed": 1,
+  "tags": ["aquatic"]
 }

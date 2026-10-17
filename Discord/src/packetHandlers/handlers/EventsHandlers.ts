@@ -9,7 +9,9 @@ import {
 	crowniclesClient, keycloakConfig
 } from "../../bot/CrowniclesShard";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { minutesToHours } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMinutes, minutesToHours
+} from "../../../../Lib/src/utils/TimeUtils";
 import { GuildLevelUpPacket } from "../../../../Lib/src/packets/events/GuildLevelUpPacket";
 import { MissionsCompletedPacket } from "../../../../Lib/src/packets/events/MissionsCompletedPacket";
 import { MissionsExpiredPacket } from "../../../../Lib/src/packets/events/MissionsExpiredPacket";
@@ -17,15 +19,109 @@ import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeat
 import { PlayerLeavePveIslandPacket } from "../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
 import { PlayerLevelUpPacket } from "../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { PlayerReceivePetPacket } from "../../../../Lib/src/packets/events/PlayerReceivePetPacket";
+import { buildRecipeDiscoveryMessage } from "../../utils/CookingDisplayUtils";
+
 import { GiveFoodToGuildPacket } from "../../../../Lib/src/packets/utils/GiveFoodToGuildPacket";
 import { NoFoodSpaceInGuildPacket } from "../../../../Lib/src/packets/utils/NoFoodSpaceInGuildPacket";
 import { MissionUtils } from "../../utils/MissionUtils";
-import { MissionType } from "../../../../Lib/src/types/CompletedMission";
+import {
+	CompletedMission, MissionType
+} from "../../../../Lib/src/types/CompletedMission";
+import { Language } from "../../../../Lib/src/Language";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
+import { StringUtils } from "../../utils/StringUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+
+type MissionRewardTotals = {
+	gems: number;
+	points: number;
+	money: number;
+	xp: number;
+};
+
+/**
+ * Group completed missions by type (formatted) and sum their rewards.
+ */
+function buildCompletedMissionData(missions: CompletedMission[], lng: Language): {
+	missionLists: Record<MissionType, string[]>;
+	totals: MissionRewardTotals;
+} {
+	const missionLists: Record<MissionType, string[]> = {
+		[MissionType.CAMPAIGN]: [],
+		[MissionType.DAILY]: [],
+		[MissionType.NORMAL]: []
+	};
+	const totals: MissionRewardTotals = {
+		gems: 0, points: 0, money: 0, xp: 0
+	};
+	for (const mission of missions) {
+		totals.gems += mission.gemsToWin;
+		totals.points += mission.pointsToWin;
+		totals.money += mission.moneyToWin;
+		totals.xp += mission.xpToWin;
+		missionLists[mission.missionType].push(MissionUtils.formatCompletedMission(mission, lng));
+	}
+	return {
+		missionLists, totals
+	};
+}
+
+/**
+ * Build the lines summarizing the total rewards, or the "no rewards" line when everything is zero.
+ */
+function buildTotalRewardsLines(totals: MissionRewardTotals, lng: Language): string[] {
+	const rewards = [
+		{
+			value: totals.gems, key: "gems"
+		},
+		{
+			value: totals.points, key: "points"
+		},
+		{
+			value: totals.money, key: "money"
+		},
+		{
+			value: totals.xp, key: "xp"
+		}
+	];
+	const lines = rewards
+		.filter(reward => reward.value > 0)
+		.map(reward => i18n.t(`notifications:missions.completed.totalDisplay.${reward.key}`, {
+			count: reward.value,
+			lng
+		}));
+	return lines.length === 0
+		? [i18n.t("notifications:missions.completed.noRewards", { lng })]
+		: lines;
+}
+
+/**
+ * Build a notification embed authored by the target player, falling back to a plain title
+ * when their Discord user is not cached. Returns null when the Keycloak user is gone.
+ */
+async function buildPlayerNotificationEmbed(
+	keycloakId: string,
+	notificationName: string,
+	buildTitle: (pseudo: string) => string
+): Promise<CrowniclesEmbed | null> {
+	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
+	if (getUser.isError) {
+		// User may have been deleted from Keycloak, skip this notification
+		CrowniclesLogger.warn(`Keycloak user with id ${keycloakId} not found, skipping ${notificationName} notification`);
+		return null;
+	}
+	const user = getUser.payload.user;
+	const discordId = user.attributes.discordId?.[0] ?? null;
+	const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
+	const titleText = buildTitle(escapeUsername(user.attributes.gameUsername[0]));
+
+	return discordUser
+		? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
+		: new CrowniclesEmbed().setTitle(titleText);
+}
 
 export default class EventsHandlers {
 	@packetHandler(CommandReportChooseDestinationRes)
@@ -46,26 +142,34 @@ export default class EventsHandlers {
 		const timeDisplay = i18n.formatDuration(packet.tripDuration, lng);
 		let i18nTr: string;
 		if (time < 60) {
-			i18nTr = "commands:report.choseMapMinutes";
+			i18nTr = packet.isGoingBack ? "commands:report.goBackMapMinutes" : "commands:report.choseMapMinutes";
 		}
 		else {
-			time = Math.round(minutesToHours(packet.tripDuration));
-			i18nTr = "commands:report.choseMap";
+			time = Math.round(minutesToHours(asMinutes(packet.tripDuration)));
+			i18nTr = packet.isGoingBack ? "commands:report.goBackMap" : "commands:report.choseMap";
 		}
-		embed.setDescription(i18n.t(i18nTr, {
-			count: time,
-			lng,
-			mapPrefix: i18n.t(`models:map_types.${packet.mapTypeId}.prefix`, { lng }),
-			mapType: (i18n.t(`models:map_types.${packet.mapTypeId}.name`, { lng }) as string).toLowerCase(),
-			mapEmote: CrowniclesIcons.mapTypes[packet.mapTypeId],
-			mapName: i18n.t(`models:map_locations.${packet.mapId}.name`, { lng }),
-			time,
-			timeDisplay
-		}));
+		embed.setDescription(StringUtils.joinParagraphs([
+			i18n.t(i18nTr, {
+				count: time,
+				lng,
+				mapPrefix: i18n.t(`models:map_types.${packet.mapTypeId}.prefix`, { lng }),
+				mapType: (i18n.t(`models:map_types.${packet.mapTypeId}.name`, { lng }) as string).toLowerCase(),
+				mapEmote: CrowniclesIcons.mapTypes[packet.mapTypeId],
+				mapName: i18n.t(`models:map_locations.${packet.mapId}.name`, { lng }),
+				time,
+				timeDisplay
+			}),
+			packet.cityStayScore
+				? i18n.t("commands:report.cityStayScore", {
+					lng,
+					count: packet.cityStayScore
+				})
+				: null
+		]));
 		try {
 			if (context.discord!.buttonInteraction) {
 				await DiscordCache.getButtonInteraction(context.discord!.buttonInteraction)
-					?.editReply({ embeds: [embed] });
+					?.followUp({ embeds: [embed] });
 				return;
 			}
 		}
@@ -106,42 +210,20 @@ export default class EventsHandlers {
 		if (!interaction) {
 			return;
 		}
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
-		if (getUser.isError) {
-			// User may have been deleted from Keycloak, skip this notification
-			CrowniclesLogger.warn(`Keycloak user with id ${packet.keycloakId} not found, skipping missions completed notification`);
-			return;
-		}
-		const user = getUser.payload.user;
-		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
-		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
 
 		const lng = interaction.userLanguage;
-		const titleText = i18n.t("notifications:missions.completed.title", {
+		const completedMissionsEmbed = await buildPlayerNotificationEmbed(packet.keycloakId!, "missions completed", pseudo => i18n.t("notifications:missions.completed.title", {
 			lng,
 			count: packet.missions.length,
-			pseudo: escapeUsername(user.attributes.gameUsername[0])
-		});
-		const completedMissionsEmbed = discordUser
-			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
-			: new CrowniclesEmbed().setTitle(titleText);
-
-		const missionLists: Record<MissionType, string[]> = {
-			[MissionType.CAMPAIGN]: [],
-			[MissionType.DAILY]: [],
-			[MissionType.NORMAL]: []
-		};
-		let totalGems = 0;
-		let totalPoints = 0;
-		let totalMoney = 0;
-		let totalXP = 0;
-		for (const mission of packet.missions) {
-			totalGems += mission.gemsToWin;
-			totalPoints += mission.pointsToWin;
-			totalMoney += mission.moneyToWin;
-			totalXP += mission.xpToWin;
-			missionLists[mission.missionType].push(MissionUtils.formatCompletedMission(mission, lng));
+			pseudo
+		}));
+		if (!completedMissionsEmbed) {
+			return;
 		}
+
+		const {
+			missionLists, totals
+		} = buildCompletedMissionData(packet.missions, lng);
 		for (const [missionType, missions] of Object.entries(missionLists)
 			.filter(entry => entry[1].length !== 0)) {
 			completedMissionsEmbed.addFields({
@@ -153,38 +235,19 @@ export default class EventsHandlers {
 			});
 		}
 		if (packet.missions.length > 1) {
-			const totalRewardsLines: string[] = [];
-			if (totalGems > 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.gems", {
-					count: totalGems,
-					lng
-				}));
-			}
-			if (totalPoints > 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.points", {
-					count: totalPoints,
-					lng
-				}));
-			}
-			if (totalMoney > 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.money", {
-					count: totalMoney,
-					lng
-				}));
-			}
-			if (totalXP > 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.xp", {
-					count: totalXP,
-					lng
-				}));
-			}
-			if (totalRewardsLines.length === 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.noRewards", { lng }));
-			}
 			completedMissionsEmbed.addFields({
 				name: i18n.t("notifications:missions.completed.totalRewards", { lng }),
-				value: totalRewardsLines.join("\n")
+				value: buildTotalRewardsLines(totals, lng).join("\n")
 			});
+		}
+		if (packet.nextCampaignMission) {
+			completedMissionsEmbed.addFields({
+				name: i18n.t("notifications:missions.completed.nextCampaignMission", { lng }),
+				value: MissionUtils.formatBaseMission(packet.nextCampaignMission, lng)
+			});
+		}
+		if (packet.discoveredRecipes) {
+			completedMissionsEmbed.setDescription(buildRecipeDiscoveryMessage(packet.discoveredRecipes, lng));
 		}
 		await interaction.channel.send({ embeds: [completedMissionsEmbed] });
 	}
@@ -195,30 +258,22 @@ export default class EventsHandlers {
 		if (!interaction) {
 			return;
 		}
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
-		if (getUser.isError) {
-			// User may have been deleted from Keycloak, skip this notification
-			CrowniclesLogger.warn(`Keycloak user with id ${packet.keycloakId} not found, skipping missions expired notification`);
-			return;
-		}
-		const user = getUser.payload.user;
-		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
-		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
 
 		const lng = interaction.userLanguage;
+		const embed = await buildPlayerNotificationEmbed(packet.keycloakId!, "missions expired", pseudo => i18n.t("notifications:missions.expired.title", {
+			count: packet.missions.length,
+			lng,
+			pseudo
+		}));
+		if (!embed) {
+			return;
+		}
+
 		let missionsExpiredDescription = "";
 		for (const mission of packet.missions) {
 			missionsExpiredDescription += `- ${MissionUtils.formatBaseMission(mission, lng)} (${mission.numberDone}/${mission.missionObjective})\n`;
 		}
 
-		const titleText = i18n.t("notifications:missions.expired.title", {
-			count: packet.missions.length,
-			lng,
-			pseudo: escapeUsername(user.attributes.gameUsername[0])
-		});
-		const embed = discordUser
-			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
-			: new CrowniclesEmbed().setTitle(titleText);
 		embed.setDescription(i18n.t("notifications:missions.expired.description", {
 			lng,
 			count: packet.missions.length,
@@ -304,20 +359,17 @@ export default class EventsHandlers {
 			return;
 		}
 
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
-		if (getUser.isError) {
-			// User may have been deleted from Keycloak, skip this notification
-			CrowniclesLogger.warn(`Keycloak user with id ${packet.keycloakId} not found, skipping level up notification`);
+		const lng = interaction.userLanguage;
+		const embed = await buildPlayerNotificationEmbed(packet.keycloakId!, "level up", pseudo => i18n.t("models:players.levelUp.title", {
+			lng,
+			pseudo
+		}));
+		if (!embed) {
 			return;
 		}
-		const user = getUser.payload.user;
-		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
-		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
-
-		const lng = interaction.userLanguage;
 
 		const rewards: {
-			[key in keyof Omit<PlayerLevelUpPacket, "level" | "keycloakId">]: {
+			[key in keyof Omit<PlayerLevelUpPacket, "level" | "keycloakId" | "discoveredRecipeIds">]: {
 				tr: string; replacements?: object;
 			}
 		} = {
@@ -346,7 +398,6 @@ export default class EventsHandlers {
 			},
 			missionSlotUnlocked: { tr: "newMissionSlot" },
 			pveUnlocked: { tr: "pveUnlocked" },
-			tokensUnlocked: { tr: "tokensUnlocked" },
 			statsIncreased: { tr: "statsIncreased" }
 		};
 
@@ -364,13 +415,10 @@ export default class EventsHandlers {
 			}
 		}
 
-		const titleText = i18n.t("models:players.levelUp.title", {
-			lng,
-			pseudo: escapeUsername(user.attributes.gameUsername[0])
-		});
-		const embed = discordUser
-			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
-			: new CrowniclesEmbed().setTitle(titleText);
+		if (packet.discoveredRecipes) {
+			desc += `\n${buildRecipeDiscoveryMessage(packet.discoveredRecipes, lng)}`;
+		}
+
 		embed.setDescription(desc);
 
 		await interaction.channel.send({

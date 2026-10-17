@@ -4,6 +4,7 @@ import {
 	ButtonInteraction,
 	Client,
 	CommandInteraction,
+	CommandInteractionOptionResolver,
 	DiscordjsError,
 	DiscordjsErrorCodes,
 	GuildTextBasedChannel,
@@ -16,18 +17,22 @@ import {
 	MessagePayload,
 	StringSelectMenuInteraction
 } from "discord.js";
-import {
-	RawInteractionData, RawWebhookData
-} from "discord.js/typings/rawDataTypes";
 import i18n from "../translations/i18n";
 import {
 	LANGUAGE, Language
 } from "../../../Lib/src/Language";
-import { CommandInteractionOptionResolver } from "discord.js/typings";
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
-import { MessageFlags } from "discord-api-types/v10";
+import {
+	MessageFlags,
+	type APIWebhook,
+	type GatewayInteractionCreateDispatchData,
+	type RESTGetAPIWebhookWithTokenResult
+} from "discord-api-types/v10";
 import { DiscordConstants } from "../DiscordConstants";
+
+type RawInteractionData = GatewayInteractionCreateDispatchData;
+type RawWebhookData = APIWebhook | RESTGetAPIWebhookWithTokenResult | (Partial<APIWebhook> & Required<Pick<APIWebhook, "id" | "guild_id">>);
 
 type CrowniclesInteractionWithoutSendCommands = new(client: Client<true>, data: RawInteractionData) => Omit<CommandInteraction, "reply" | "followUp" | "channel" | "editReply">;
 const CrowniclesInteractionWithoutSendCommands: CrowniclesInteractionWithoutSendCommands = CommandInteraction as unknown as CrowniclesInteractionWithoutSendCommands;
@@ -83,6 +88,7 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 		discordInteraction.editReply = CrowniclesInteraction.prototype.editReply.bind(discordInteraction);
 
 		const interaction = discordInteraction as unknown as CrowniclesInteraction;
+		interaction.isComponentsV2 = CrowniclesInteraction.prototype.isComponentsV2.bind(interaction);
 		interaction._channel = CrowniclesChannel.cast(discordInteraction.channel as GuildTextBasedChannel);
 		if (discordInteraction.isCommand() && "options" in discordInteraction) {
 			interaction.options = this.properCastOptions(discordInteraction.options as CommandInteractionOptionResolver);
@@ -239,8 +245,35 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 		) as Message;
 	}
 
+	private _isV2 = false;
+
+	public isComponentsV2(): boolean {
+		return this._isV2;
+	}
+
+	private static isV2FlaggedOptions(options: string | MessagePayload | InteractionEditReplyOptions): boolean {
+		return typeof options === "object"
+			&& !(options instanceof MessagePayload)
+			&& "flags" in options
+			&& Array.isArray(options.flags)
+			&& options.flags.includes("IsComponentsV2");
+	}
+
 	public async editReply(options: string | MessagePayload | InteractionEditReplyOptions, fallback?: () => void | Promise<void>): Promise<Message | null> {
 		this._replyEdited = true;
+
+		// Track V2 state — once set, the flag cannot be removed from the message
+		if (CrowniclesInteraction.isV2FlaggedOptions(options)) {
+			this._isV2 = true;
+		}
+
+		/*
+		 * When message is V2 and caller sends legacy content, use followUp instead
+		 * to avoid conflicts — V2 flag is permanent and cannot be removed
+		 */
+		if (this._isV2 && !CrowniclesInteraction.isV2FlaggedOptions(options)) {
+			return await this.followUp(options as InteractionReplyOptions, fallback);
+		}
 		return await (CrowniclesInteraction.prototype.commonSendCommand<string | MessagePayload | InteractionEditReplyOptions>).call(
 			this,
 			CommandInteraction.prototype.editReply.bind(this),
@@ -341,6 +374,8 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 export class CrowniclesChannel extends ChannelTypeWithoutSend {
 	// @ts-expect-error - Property 'language' starts undefined and is initialized if we are sure the channel is a valid channel
 	public language: Language;
+
+	public readonly parentId!: string | null;
 
 	/**
 	 * Cast a GuildTextBasedChannel to a CrowniclesChannel

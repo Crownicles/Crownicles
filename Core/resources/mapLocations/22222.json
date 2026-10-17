@@ -1,6 +1,0 @@
-{
-  "type": "testZone",
-  "canBeGoToPlaceMissionDestination": false,
-  "attribute": "pve_island",
-  "forcedImage": "road_to_boat"
-}

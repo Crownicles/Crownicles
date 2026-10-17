@@ -3,7 +3,9 @@
   "rawDefense": 8,
   "attack": 0,
   "speed": -20,
+  "type": "metal",
   "tags": [
     "metallic"
-  ]
+  ],
+  "materialCategory": 6
 }

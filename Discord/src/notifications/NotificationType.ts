@@ -178,6 +178,24 @@ export abstract class NotificationsTypes {
 		}
 	};
 
+	static TOURNAMENT: NotificationType = {
+		emote: CrowniclesIcons.notifications.types.tournament,
+		customId: "tournament",
+		i18nKey: "commands:notifications.types.tournament",
+		value: notificationsConfiguration => ({
+			enabled: notificationsConfiguration.tournamentEnabled,
+			sendType: notificationsConfiguration.tournamentSendType,
+			channelId: notificationsConfiguration.tournamentChannelId
+		}),
+		toggleCallback: (notificationsConfiguration): void => {
+			notificationsConfiguration.tournamentEnabled = !notificationsConfiguration.tournamentEnabled;
+		},
+		changeSendTypeCallback: (notificationsConfiguration, sendType, channelId): void => {
+			notificationsConfiguration.tournamentSendType = sendType;
+			notificationsConfiguration.tournamentChannelId = channelId;
+		}
+	};
+
 	static ALL: NotificationType[] = [
 		NotificationsTypes.REPORT,
 		NotificationsTypes.GUILD_DAILY,
@@ -187,6 +205,7 @@ export abstract class NotificationsTypes {
 		NotificationsTypes.GUILD_STATUS_CHANGE,
 		NotificationsTypes.ENERGY,
 		NotificationsTypes.DAILY_BONUS,
-		NotificationsTypes.PET_EXPEDITION
+		NotificationsTypes.PET_EXPEDITION,
+		NotificationsTypes.TOURNAMENT
 	];
 }

@@ -1,0 +1,71 @@
+{
+  "possibilities": {
+    "enterOpening": {
+      "outcomes": {
+        "0": {
+          "effect": "scared"
+        },
+        "1": {
+          "money": 200
+        },
+        "2": {},
+        "3": {
+          "randomItem": {},
+          "health": -10
+        }
+      }
+    },
+    "alertGuards": {
+      "outcomes": {
+        "0": {
+          "health": -5,
+          "effect": "confounded"
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 5
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 240,
+          "health": 30
+        }
+      }
+    },
+    "moveOn": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "effect": "occupied",
+          "lostTime": 180
+        },
+        "2": {
+          "health": 15,
+          "money": -130,
+          "effect": "occupied",
+          "lostTime": 45
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "money": 300
+        },
+        "1": {
+          "effect": "injured",
+          "health": -75
+        },
+        "2": {
+          "randomItem": {},
+          "money": 200
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 41
+    }
+  ]
+}

@@ -7,6 +7,14 @@
   "maxBreath": 10,
   "breathRegen": 4,
   "rewardFactor": 0.25,
+  "materialLoot": [
+    54,
+    48,
+    42,
+    29,
+    26,
+    11
+  ],
   "attacks": [
     {
       "id": "hardBiteAttack",

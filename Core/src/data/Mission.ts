@@ -59,7 +59,7 @@ export class MissionDataController extends DataControllerString<Mission> {
 
 		return RandomUtils.crowniclesRandom.pick(
 			this.getValuesArray()
-				.filter(mission => filter(mission) && mission.campaignOnly === false && mission.id !== (exception ?? ""))
+				.filter(mission => filter(mission) && !mission.campaignOnly && mission.id !== (exception ?? ""))
 		);
 	}
 

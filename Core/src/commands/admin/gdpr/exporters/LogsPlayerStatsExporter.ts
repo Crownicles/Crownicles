@@ -85,7 +85,20 @@ async function exportCurrencyStats(logsPlayerId: number, csvFiles: GDPRCsvFiles)
 	await exportStatWithReason(LogsPlayersGems, logsPlayerId, "logs/21_gems_history.csv", csvFiles);
 	await exportStatWithReason(LogsPlayersRage, logsPlayerId, "logs/22_rage_history.csv", csvFiles);
 	await exportStatWithReason(LogsPlayersTokens, logsPlayerId, "logs/23_tokens_history.csv", csvFiles);
-	await exportStatWithReason(LogsPlayersGloryPoints, logsPlayerId, "logs/24_glory_points_history.csv", csvFiles);
+	const gloryPointsCsv = await streamToCSV(
+		LogsPlayersGloryPoints,
+		playerIdWhere(logsPlayerId),
+		glory => ({
+			value: glory.value,
+			reason: glory.reason,
+			fightId: glory.fightId,
+			isDefense: glory.isDefense,
+			date: glory.date
+		})
+	);
+	if (gloryPointsCsv) {
+		csvFiles["logs/24_glory_points_history.csv"] = gloryPointsCsv;
+	}
 }
 
 /**

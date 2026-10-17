@@ -31,11 +31,14 @@
         "1": {
           "effect": "sleeping"
         },
-        "2": {},
+        "2": {
+          "forceStayInCity": true
+        },
         "3": {
           "money": -200
         },
         "4": {
+          "forceStayInCity": true,
           "health": 30
         }
       }
@@ -77,18 +80,22 @@
           "health": -50
         },
         "6": {
+          "forceStayInCity": true,
           "health": 20
         }
       }
     },
     "visit": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "forceStayInCity": true
+        },
         "1": {},
         "2": {
           "effect": "hurt"
         },
         "3": {
+          "forceStayInCity": true,
           "randomItem": {}
         }
       }

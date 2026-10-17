@@ -15,9 +15,11 @@ import { HelpConstants } from "../../../../Lib/src/constants/HelpConstants";
 import {
 	crowniclesClient, discordConfig
 } from "../../bot/CrowniclesShard";
-import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+} from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { escapeUsername } from "../../utils/StringUtils";
+import { DiscordConstants } from "../../DiscordConstants";
 import {
 	searchAutocomplete, toDiscordChoices, AutocompleteSearchItem
 } from "../../utils/AutocompleteUtils";
@@ -107,7 +109,7 @@ function generateGenericHelpMessage(helpMessage: CrowniclesEmbed, interaction: C
 	helpMessage.setDescription(
 		`${i18n.t("commands:help.helpEmbedDescription", {
 			lng
-		})}\n\u200b`
+		})}\n${DiscordConstants.EMBED.EMPTY_FIELD_NAME}`
 	);
 	helpMessage.addFields([
 		{
@@ -131,7 +133,7 @@ function generateGenericHelpMessage(helpMessage: CrowniclesEmbed, interaction: C
 		{
 			name: i18n.t("commands:help.petCommands", { lng }),
 			value: `${petCommands.sort()
-				.join(HelpConstants.COMMAND_SEPARATOR_FOR_GENERAL_DESCRIPTION)} \n\u200b`
+				.join(HelpConstants.COMMAND_SEPARATOR_FOR_GENERAL_DESCRIPTION)} \n${DiscordConstants.EMBED.EMPTY_FIELD_NAME}`
 		},
 		{
 			name: i18n.t("commands:help.forMoreHelp", { lng }),
@@ -198,7 +200,7 @@ function sendHelpDm(interaction: CrowniclesInteraction, lng: Language): void {
 					});
 			}
 
-			dmHelpCooldowns.set(interaction.user.id, new Date(Date.now() + minutesToMilliseconds(HelpConstants.HELP_DM_COOLDOWN_TIME_MINUTES)));
+			dmHelpCooldowns.set(interaction.user.id, new Date(Date.now() + HelpConstants.HELP_DM_COOLDOWN_TIME));
 		})
 		.catch(error => {
 			CrowniclesLogger.errorWithObj("Error while broadcasting the message in help command", error);

@@ -6,6 +6,7 @@ import { LogsFightsResults } from "../../../../core/database/logs/models/LogsFig
 import { LogsFightsActionsUsed } from "../../../../core/database/logs/models/LogsFightsActionsUsed";
 import { LogsPveFightsResults } from "../../../../core/database/logs/models/LogsPveFightsResults";
 import { LogsPveFightsActionsUsed } from "../../../../core/database/logs/models/LogsPveFightsActionsUsed";
+import { LogsKingGuardFightsResults } from "../../../../core/database/logs/models/LogsKingGuardFightsResults";
 import { Op } from "sequelize";
 
 type WinnerResult = "me" | "opponent" | "draw";
@@ -41,6 +42,14 @@ async function exportPvpFights(
 			opponentId: anonymizer.anonymizePlayerId(f.player2Id, false),
 			myPoints: f.fightInitiatorPoints,
 			opponentPoints: f.player2Points,
+			myInitialDefenseGlory: f.fightInitiatorInitialDefenseGlory,
+			myInitialAttackGlory: f.fightInitiatorInitialAttackGlory,
+			myClassId: f.fightInitiatorClassId,
+			myPetTypeId: f.fightInitiatorPetTypeId,
+			opponentInitialDefenseGlory: f.player2InitialDefenseGlory,
+			opponentInitialAttackGlory: f.player2InitialAttackGlory,
+			opponentClassId: f.player2ClassId,
+			opponentPetTypeId: f.player2PetTypeId,
 			turns: f.turn,
 			winner: getWinnerResult(f.winner, 1),
 			friendly: f.friendly,
@@ -58,6 +67,14 @@ async function exportPvpFights(
 			opponentId: anonymizer.anonymizePlayerId(f.fightInitiatorId, false),
 			myPoints: f.player2Points,
 			opponentPoints: f.fightInitiatorPoints,
+			myInitialDefenseGlory: f.player2InitialDefenseGlory,
+			myInitialAttackGlory: f.player2InitialAttackGlory,
+			myClassId: f.player2ClassId,
+			myPetTypeId: f.player2PetTypeId,
+			opponentInitialDefenseGlory: f.fightInitiatorInitialDefenseGlory,
+			opponentInitialAttackGlory: f.fightInitiatorInitialAttackGlory,
+			opponentClassId: f.fightInitiatorClassId,
+			opponentPetTypeId: f.fightInitiatorPetTypeId,
 			turns: f.turn,
 			winner: getWinnerResult(f.winner, 2),
 			friendly: f.friendly,
@@ -104,7 +121,13 @@ async function exportPveFights(
 		{ playerId: logsPlayerId },
 		f => ({
 			id: f.id,
+			classId: f.classId,
 			monsterId: f.monsterId,
+			monsterLevel: f.monsterLevel,
+			monsterFightPoints: f.monsterFightPoints,
+			monsterAttack: f.monsterAttack,
+			monsterDefense: f.monsterDefense,
+			monsterSpeed: f.monsterSpeed,
 			turns: f.turn,
 			winner: f.winner,
 			date: f.date
@@ -134,7 +157,32 @@ async function exportPveFights(
 }
 
 /**
- * Exports fights data from logs database (files 45-48)
+ * Exports fights against king guards
+ */
+async function exportKingGuardFights(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const kingGuardFightsCsv = await streamToCSV(
+		LogsKingGuardFightsResults,
+		{ playerId: logsPlayerId },
+		f => ({
+			id: f.id,
+			classId: f.classId,
+			guardClassId: f.guardClassId,
+			guardLevel: f.guardLevel,
+			turns: f.turn,
+			winner: f.winner,
+			date: f.date
+		})
+	);
+	if (kingGuardFightsCsv) {
+		csvFiles["logs/101_king_guard_fights.csv"] = kingGuardFightsCsv;
+	}
+}
+
+/**
+ * Exports fights data from logs database (files 45-48 and 101)
  */
 export async function exportLogsFights(
 	logsPlayerId: number,
@@ -147,4 +195,7 @@ export async function exportLogsFights(
 
 	// 47-48. PvE Fights and actions
 	await exportPveFights(logsPlayerId, csvFiles);
+
+	// 101. King guard fights
+	await exportKingGuardFights(logsPlayerId, csvFiles);
 }

@@ -172,7 +172,7 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 		getCampaignMissionPart(packet, lng),
 		getDailyMissionPart(packet, lng),
 		getSideMissionsPart(packet, lng)
-	].join("\n"));
+	].filter(Boolean).join("\n"));
 	await interaction.reply({
 		embeds: [missionCommandEmbed]
 	});

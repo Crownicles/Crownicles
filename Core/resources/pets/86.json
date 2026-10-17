@@ -2,5 +2,6 @@
   "rarity": 4,
   "force": 3,
   "feedDelay": 3,
-  "speed": 7
+  "speed": 7,
+  "tags": ["aquatic"]
 }

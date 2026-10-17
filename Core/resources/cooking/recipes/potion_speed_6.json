@@ -1,0 +1,30 @@
+{
+  "level": 6,
+  "recipeType": "POTION_SPEED",
+  "plants": [
+    {
+      "plantId": 6,
+      "quantity": 2
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 1,
+      "quantity": 1
+    },
+    {
+      "materialId": 23,
+      "quantity": 1
+    },
+    {
+      "materialId": 56,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 2,
+  "potionRarity": 5,
+  "discoveredByDefault": false,
+  "discoverySource": "PLAYER_LEVEL_MILESTONE",
+  "petFood": null
+}

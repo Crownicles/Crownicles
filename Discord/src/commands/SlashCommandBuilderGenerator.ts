@@ -8,7 +8,6 @@ import { InteractionContextType } from "discord-api-types/v10";
 import i18n from "../translations/i18n";
 import { LANGUAGE } from "../../../Lib/src/Language";
 
-
 export class SlashCommandBuilderGenerator {
 	/**
 	 * This is used to avoid having to write the same code for each command this method create a base command with a name and a description from the translation modules of the command
@@ -20,23 +19,39 @@ export class SlashCommandBuilderGenerator {
 	 * @param commandSectionName Command section name in the translation files
 	 */
 	static generateBaseCommand(commandSectionName: string): SlashCommandBuilder {
+		const nameKey = `discordBuilder:${commandSectionName}.name`;
+		const descriptionKey = `discordBuilder:${commandSectionName}.description`;
+		const frenchDescription = i18n.t(descriptionKey, {
+			lng: LANGUAGE.FRENCH,
+			defaultValue: commandSectionName
+		});
+		const englishName = i18n.t(nameKey, { lng: LANGUAGE.ENGLISH });
+		const frenchName = i18n.t(nameKey, { lng: LANGUAGE.FRENCH });
+
 		return new SlashCommandBuilder()
-			.setName(i18n.t(`discordBuilder:${commandSectionName}.name`, { lng: LANGUAGE.ENGLISH }))
+			.setName(englishName)
 			.setNameLocalizations({
-				fr: i18n.t(`discordBuilder:${commandSectionName}.name`, { lng: LANGUAGE.FRENCH })
+				fr: frenchName
 			})
-			.setDescription(i18n.t(`discordBuilder:${commandSectionName}.description`, { lng: LANGUAGE.ENGLISH }))
+			.setDescription(i18n.t(descriptionKey, {
+				lng: LANGUAGE.ENGLISH,
+				defaultValue: frenchDescription
+			}))
 			.setDescriptionLocalizations({
-				fr: i18n.t(`discordBuilder:${commandSectionName}.description`, { lng: LANGUAGE.FRENCH })
+				fr: frenchDescription
 			})
 			.setContexts(InteractionContextType.Guild) as SlashCommandBuilder;
 	}
 
 	static generateSubCommand(commandSectionName: string, subCommandSectionName: string): SlashCommandSubcommandBuilder {
+		const nameKey = `discordBuilder:${commandSectionName}.subcommands.${subCommandSectionName}.name`;
+		const englishName = i18n.t(nameKey, { lng: LANGUAGE.ENGLISH });
+		const frenchName = i18n.t(nameKey, { lng: LANGUAGE.FRENCH });
+
 		return new SlashCommandSubcommandBuilder()
-			.setName(i18n.t(`discordBuilder:${commandSectionName}.subcommands.${subCommandSectionName}.name`, { lng: LANGUAGE.ENGLISH }))
+			.setName(englishName)
 			.setNameLocalizations({
-				fr: i18n.t(`discordBuilder:${commandSectionName}.subcommands.${subCommandSectionName}.name`, { lng: LANGUAGE.FRENCH })
+				fr: frenchName
 			})
 			.setDescription(i18n.t(`discordBuilder:${commandSectionName}.subcommands.${subCommandSectionName}.description`, { lng: LANGUAGE.ENGLISH }))
 			.setDescriptionLocalizations({
@@ -51,9 +66,13 @@ export class SlashCommandBuilderGenerator {
 	 * @param option Option to populate
 	 */
 	static generateOption<T extends ApplicationCommandOptionBase>(commandSectionName: string, optionSectionName: string, option: T): T {
-		return option.setName(i18n.t(`discordBuilder:${commandSectionName}.options.${optionSectionName}.name`, { lng: LANGUAGE.ENGLISH }))
+		const nameKey = `discordBuilder:${commandSectionName}.options.${optionSectionName}.name`;
+		const englishName = i18n.t(nameKey, { lng: LANGUAGE.ENGLISH });
+		const frenchName = i18n.t(nameKey, { lng: LANGUAGE.FRENCH });
+
+		return option.setName(englishName)
 			.setNameLocalizations({
-				fr: i18n.t(`discordBuilder:${commandSectionName}.options.${optionSectionName}.name`, { lng: LANGUAGE.FRENCH })
+				fr: frenchName
 			})
 			.setDescription(i18n.t(`discordBuilder:${commandSectionName}.options.${optionSectionName}.description`, { lng: LANGUAGE.ENGLISH }))
 			.setDescriptionLocalizations({

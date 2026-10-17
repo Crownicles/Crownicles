@@ -128,7 +128,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Se visita la ciudad durante varias horas antes de continuar el camino."
+          "0": "Visitas la ciudad durante varias horas, paseando sin prisas de una callejuela a otra."
         }
       },
       "goAway": {
@@ -140,32 +140,32 @@
       },
       "goForge": {
         "outcomes": {
-          "0": "No hay nada de interés en esta forja... Rápidamente abandonas el local y continúas tu camino.",
+          "0": "No hay nada interesante en esta herrería... Te vas rápidamente de allí.",
           "1": "Pruebas una espada, rompes la ventana de la forja y el herrero te exige que le devuelvas el dinero.",
-          "2": "No hay nadie en la herrería, que parece abandonada desde hace años. Sin embargo, antes de irte, observas un objeto que podría serte útil para el resto de tu aventura...",
-          "3": "La forja parece haber estado abandonada durante años. Así que te pones en marcha de nuevo.",
-          "4": "Entras y saludas al herrero. Tras una rápida inspección de su trabajo, te das cuenta de que aquí no encontrarás nada de interés. Continúas tu camino."
+          "2": "No hay nadie en la forja, que parece estar abandonada desde hace años. Sin embargo, antes de salir, te fijas en un objeto que podría serte útil para el resto de tu aventura...",
+          "3": "La herrería parece estar abandonada desde hace años. Así que te vas con las manos vacías.",
+          "4": "Entras y saludas al herrero. Tras echar un vistazo rápido a su trabajo, te das cuenta de que aquí no vas a encontrar nada interesante. Intercambias unas palabras con él y sales."
         },
         "text": "Ve a la forja."
       },
       "goInn": {
         "outcomes": {
-          "0": "Después de hablar con el posadero durante 2 horas, por fin te enteras de que no hay habitaciones disponibles para esa noche. Te pones de nuevo en camino, frustrado por no haber podido disfrutar de una buena noche de descanso.",
-          "1": "Pagas una habitación para pasar la noche y caes rendido en la cama. Necesitas dormir un poco antes de reanudar tu aventura.",
-          "2": "La posada parece abandonada desde hace varios años... Continúas tu camino sin hacer más preguntas."
+          "0": "Tras hablar durante dos horas con el dueño del albergue, ¡al final te enteras de que no hay ninguna habitación disponible para pasar la noche! Sales del albergue, frustrado por no haber podido disfrutar de una buena noche de descanso.",
+          "1": "Pagas una habitación para pasar la noche y te dejas caer exhausto en la cama. Tendrás que dormir antes de poder retomar la aventura.",
+          "2": "La posada parece estar abandonada desde hace varios años... Sales de allí sin hacerte más preguntas."
         },
         "text": "Ve al albergue."
       },
       "goMarket": {
         "outcomes": {
           "0": "Tardas 30 minutos en explorar el mercado antes de descubrir un pequeño objeto en el suelo que podría resultarte útil...",
-          "1": "Después de perder 60 minutos deambulando por los puestos, acabas abandonando la ciudad sin haber encontrado nada de interés.",
-          "2": "Justo cuando tu estado de alerta era mínimo en el mercado, recibes un violento golpe en la nuca y te desplomas al suelo... Después de ese momento, no recuerdas nada. Tendrás que recibir tratamiento antes de poder seguir adelante."
+          "1": "Después de perder 60 minutos dando una vuelta por los puestos, acabas saliendo del mercado sin haber encontrado nada interesante.",
+          "2": "Justo cuando tu atención estaba en su punto más bajo en el mercado, recibes un fuerte golpe en la nuca y caes al suelo... A partir de ese momento, no recuerdas nada. ¡Tendrás que recuperarte antes de poder retomar la aventura!"
         },
         "text": "Ir al mercado."
       }
     },
-    "text": "Después de pasar varias semanas caminando sin encontrar a un solo ser humano, por fin llegas a una pequeña ciudad que parece bastante animada."
+    "text": "Después de pasar varias semanas caminando sin encontrarte con nadie, ahora recorres las callejuelas de un pueblecito bastante animado."
   },
   "14": {
     "possibilities": {
@@ -325,12 +325,12 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Observas el lugar durante unos minutos y te das cuenta de que está realmente desierto. Te pones de nuevo en marcha."
+          "0": "Observas la obra durante unos minutos y luego te das cuenta de que está completamente desierta. Es evidente que no hay nada que sacar de allí."
         }
       },
       "searchScaffolding": {
         "outcomes": {
-          "0": "Subes a lo alto del andamio, pero a excepción de un magnífico paisaje, no encuentras nada. Tras pasar unos minutos admirándolo, te pones de nuevo en marcha.",
+          "0": "Subes hasta lo alto de los andamios, pero, salvo un magnífico paisaje, no encuentras nada. Te pasas unos minutos admirándolo antes de bajar.",
           "1": "Al subir a la inestable estructura, descubrirá una vista impresionante de la región. Aprovecha la vista para divisar un objeto debajo.",
           "2": "Subes la escalera, pero a mitad de camino un peldaño se rompe y caes al suelo. Aturdido por la caída, recuperas lentamente el sentido."
         },
@@ -346,13 +346,13 @@
       },
       "skip": {
         "outcomes": {
-          "0": "Decides ignorar este sitio y continuar tu camino.",
-          "1": "Miras el lugar desde lejos, sin ver el pico en el suelo. Te cortas el pie al salir."
+          "0": "Decides hacer caso omiso de ese asunto y no darle más vueltas.",
+          "1": "Rodeas la obra y la observas desde lejos, sin ver el pico que hay en el suelo. Tropiezas con él y te haces un corte en el pie."
         },
-        "text": "Continúa tu viaje sin preocuparte de nada."
+        "text": "Ignorar esta obra."
       }
     },
-    "text": "Llegas a un pueblo, pero no hay ni un alma a la vista. Al atravesarlo, ves una obra en construcción que parece igual de desierta."
+    "text": "La ciudad a la que llegas parece desierta, sin un alma. Mientras recorres sus calles, tu mirada se detiene en una obra que parece igualmente abandonada."
   },
   "19": {
     "possibilities": {
@@ -424,16 +424,16 @@
       },
       "end": {
         "outcomes": {
-          "0": "Continúa su camino sin prestar atención al guardia.",
-          "1": "Atónito, te quedas mirando la escena durante cinco minutos. El guardia por fin repara en ti, así que te apresuras a seguir tu camino."
+          "0": "Te alejas sin prestarle atención al guardia.",
+          "1": "Atónito, te quedas mirando la escena, paralizado, durante cinco minutos. El guardia acaba por fijarse en ti, así que te das prisa en desaparecer."
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Así que ignoras la situación y continúas tu camino.",
-          "1": "Al pasar, tropiezas y caes al suelo."
+          "0": "Así que no prestas atención a la situación y te alejas tranquilamente.",
+          "1": "Al alejarte, tropiezas y te caes al suelo."
         },
-        "text": "Muévete."
+        "text": "No intervenga."
       },
       "surpriseAttack": {
         "outcomes": {
@@ -444,7 +444,7 @@
         "text": "Ataca al guardia por sorpresa para ayudar a la mujer."
       }
     },
-    "text": "Mientras paseas por un pueblo, observas de reojo que un guardia roba a una pobre mujer."
+    "text": "Al llegar a un pueblo, ves de reojo a un guardia que está maltratando a una pobre mujer."
   },
   "21": {
     "possibilities": {
@@ -604,26 +604,26 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Tras pasar 15 minutos observando esta escena, te marchas, conmocionado, pero continúas tu aventura."
+          "0": "Tras pasar 15 minutos observando esa escena, te alejas de la plaza, todavía conmovido por lo que acabas de ver."
         }
       },
       "goAway": {
         "outcomes": {
-          "0": "Horrorizado por este acto bárbaro, continúas rápidamente tu camino.",
-          "1": "Mientras te alejas, ves una caja a lo lejos. Tras caminar unos minutos, llegas hasta ella, la abres y descubres una bolsa llena de dinero."
+          "0": "Horrorizado por ese acto de barbarie, te alejas rápidamente de la plaza, con el corazón aún oprimido.",
+          "1": "Al apartarte de la multitud, ves una caja abandonada en un callejón. Intrigado, te acercas a ella, la abres y descubres una bolsa llena de dinero."
         },
-        "text": "Lejos de la masacre."
+        "text": "Alejarse de la ejecución."
       },
       "steal": {
         "outcomes": {
-          "0": "Después de robar a unas cuantas personas, te llevas algo que parece muy interesante. Después de caminar durante unos treinta minutos, decides ver qué es.",
-          "1": "Estás intentando robar a un residente cuando de repente se da la vuelta y te agarra con fuerza antes de darte una paliza. Tras forcejear, huyes."
+          "0": "Después de robar a unas cuantas personas, te escabulles discretamente con un objeto que parece muy interesante. Lejos de la multitud, por fin miras qué es.",
+          "1": "Intentas robar a un vecino cuando este se da la vuelta de repente, te agarra con fuerza y te da una paliza. Tras forcejear, consigues escapar entre el tumulto."
         },
-        "text": "Robar a los transeúntes mientras observan la masacre."
+        "text": "Robar a los transeúntes que presencian la ejecución."
       },
       "trySave": {
         "outcomes": {
-          "0": "Tras forcejear para abrirte paso entre la multitud, intervienes lo más rápido posible y consigues sacar al hombre a rastras. Tras correr por el pueblo, el hombre se muestra muy agradecido y te da un objeto que podrás utilizar durante el resto de tu aventura.",
+          "0": "Tras abrirte paso a duras penas entre la multitud, intervienes lo antes posible y consigues sacar a ese hombre de allí. Una vez a salvo de las miradas, ese hombre, muy agradecido, te ofrece un objeto que te será útil para el resto de tu aventura.",
           "1": "Mientras te abres paso entre la multitud para intentar detener el asesinato, recibes un fuerte empujón y caes al suelo.",
           "2": "Tras conseguir huir con el hombre, eres atrapado y golpeado por un grupo de personas. Una vez arriba, te das cuenta de que estas personas te han robado.",
           "3": "Tras intentar intervenir violentamente, el verdugo te agarra por la fuerza. Luchas, pero no se puede hacer nada. También tú eres condenado a muerte."
@@ -631,42 +631,42 @@
         "text": "Para intervenir y evitar que este hombre muera."
       }
     },
-    "text": "Caminando por un pueblo, te das cuenta de que hay un grupo de personas reunidas. Al acercarse, se da cuenta de que están ahorcando a una persona. Tras hacer algunas averiguaciones, sabes que esa persona ha sido condenada a muerte por \"comentarios contrarios a los valores de la Iglesia\"."
+    "text": "Al llegar a un pueblo, ves un grupo de personas. Al acercarte, te das cuenta enseguida de que se está llevando a cabo un ahorcamiento. Tras preguntar un poco, te enteras de que esa persona ha sido condenada a muerte por «declaraciones contrarias a los valores de la Iglesia»."
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Te quedas mirando el objeto durante 20 minutos y luego te alejas.",
+          "0": "Te quedas mirando fijamente el objeto durante 20 minutos, antes de apartar la mirada.",
           "1": "Inclinado sobre el pozo, observas el objeto. Es entonces cuando vuelcas. Afortunadamente, pronto consigues volver a subir, pero no sin sufrir graves heridas."
         }
       },
       "goDown": {
         "outcomes": {
-          "0": "Resultó gravemente herido durante el descenso y permaneció atrapado en el fondo durante varias horas antes de que alguien lo encontrara.",
-          "1": "Llegarás al fondo sano y salvo, recogerás el objeto y continuarás tu camino.",
-          "2": "Saltas al pozo pero no encuentras nada. Así que vuelves a subir sin perder más tiempo.",
-          "3": "Una vez abajo, descubrirás una gran cantidad de monedas de oro, que podrás recoger antes de continuar tu viaje."
+          "0": "Te lesionas gravemente durante el descenso y te quedas atrapado un rato en el fondo hasta que alguien te encuentra.",
+          "1": "Llegas abajo sin problemas y recoges el objeto.",
+          "2": "Te tiras al pozo, pero no encuentras nada. Así que subes con las manos vacías.",
+          "3": "Una vez abajo, descubres una gran cantidad de monedas de oro que recoges con alegría."
         },
         "text": "Intenta bajar para recuperar el objeto."
       },
       "skip": {
         "outcomes": {
-          "0": "¡No hay tiempo que perder! Continúas tu camino sin prestar la menor atención a esto.",
-          "1": "Continúas tu camino, pero tras una hora de marcha, te encuentras cara a cara con un grupo de personas vestidas de negro. Tras un agrio forcejeo, consigues marcharte, pero te han robado."
+          "0": "¡No hay tiempo que perder! Apartas la mirada sin prestarle la más mínima atención a esto.",
+          "1": "Te alejas del pozo, pero al doblar una callejuela te topas de frente con un grupo de personas vestidas de negro. Tras luchar con ahínco, consigues escapar de ellos, pero te han despojado de tus pertenencias."
         },
-        "text": "Continúe su camino."
+        "text": "Ignora el pozo."
       },
       "useBucket": {
         "outcomes": {
           "0": "Tras una hora intentándolo, por fin consigues este objeto, que resulta ser sólo un trozo de chatarra.",
           "1": "Concentrado en tu objetivo, no te das cuenta de que un joven aldeano te ha agarrado y empujado al pozo. Aturdido, no despiertas hasta varios minutos después.",
-          "2": "Rápidamente recuperas el dinero del fondo y continúas tu camino."
+          "2": "Enseguida recuperas el dinero que había en el fondo del pozo."
         },
         "text": "Intenta coger el objeto con el cubo en el pozo."
       }
     },
-    "text": "Caminando por el pequeño pueblo que has encontrado, observas un pozo con un pequeño objeto brillante en el fondo."
+    "text": "Al llegar a un pueblecito, ves un pozo con un pequeño objeto brillante en el fondo."
   },
   "28": {
     "possibilities": {
@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "Como no respondes, el grupo de amigos decide ir a buscarte un regalo. Mientras les esperas educadamente, cada vez te angustia más la idea de perder el tiempo. Te obsesiona el riesgo de no poder salvar a la princesa, incluso te enferma... y acabas desmayándote. Al encontrarte sin vida en el camino de vuelta, los hombres honrados te apoyan contra un árbol para que puedas descansar, y te dejan este regalo antes de emprender de nuevo la marcha.",
-          "1": "Ante tu falta de reacción, no insisten. Sigues tu camino sin prestarles atención.",
-          "2": "Al verte dudar demasiado, los jóvenes deciden finalmente ofrecerte algo de dinero para comprar algunas baratijas. Les das las gracias y continúas tu camino."
+          "1": "Ante tu falta de reacción, los transeúntes no insisten y se alejan.",
+          "2": "Al ver que te lo pensabas demasiado, los jóvenes deciden finalmente ofrecerte un poco de dinero para que puedas comprarte algunas baratijas. Les das las gracias por su gesto."
         }
       },
       "food": {
         "outcomes": {
           "0": "Uno de ellos te da una sopa bastante apetitosa. Te la bebes sin sospechar nada. Estos bribones te han tendido una trampa. Llevan mucho tiempo esperando para saquearte, y la bebida contenía suficiente agárico de mosca para enfermarte. Sientes que se te escapa mientras observas impotente cómo te roban los bolsillos.",
           "1": "Estos transeúntes te han preparado un plato delicioso, digno de una poción gala. Mirando más de cerca, te das cuenta de que han dejado un objeto en el fondo del cuenco. Puede ser útil más adelante.",
-          "2": "Encantados de hacerle un favor, el grupo va a comprarle la especialidad local. Al ver llegar el plato, pones cara de valiente pero lo pruebas con cierto disgusto: ¡no te gustan las setas! No sin dificultad, continúas tu camino."
+          "2": "Encantados de haceros un favor, el grupo sale a compraros la especialidad de la zona. Al ver llegar el plato, ponéis buena cara, pero lo probáis con cierto asco: ¡no os gustan las setas! Con bastante esfuerzo, os acabáis el plato."
         },
         "text": "Regalo de comida."
       },
       "health": {
         "outcomes": {
-          "0": "El grupo le acompañará al valle, donde le ofrecerán un tratamiento tonificante en las aguas termales. Rejuvenecido, estarás listo para volver a la carretera.",
+          "0": "El grupo de personas te acompaña hasta el valle, donde te ofrecen un tratamiento revitalizante en las aguas termales. Con las energías renovadas, te sientes de nuevo en plena forma.",
           "1": "Unas personas te ofrecen un tratamiento en un centro de masajes cercano. Mientras te dan el masaje, una de las velas que cuelgan de la pared cae en el frasco de aceites esenciales, prendiendo fuego a todo el establecimiento. Consigues, no sin dificultad, salir del infierno que emana del edificio.",
-          "2": "No esperaban este tipo de petición y no están seguros de cómo responder. No queriendo dejar que el malestar se encone, continúas tu camino."
+          "2": "No se esperaban una petición de este tipo y no saben muy bien qué respuesta darte. Para no dejar que se instale el malestar, les das las gracias de todos modos y pones fin a la conversación."
         },
         "text": "Regalo saludable."
       },
       "kind": {
         "outcomes": {
-          "0": "El grupo de amigos te dice que han ido a buscar el regalo perfecto. Por desgracia, no han encontrado nada que te guste. Decepcionado, continúas tu camino.",
-          "1": "Estos niños tan listos han decidido gastarte una broma y hacerte un regalo malvado. Pero no pensaron que una tabla con clavos salientes sería peligrosa de desenvolver. Con los dedos sangrando, te lanzas furioso a darte un capricho.",
+          "0": "El grupo de amigos te cuenta que se fue a buscar el regalo perfecto. Por desgracia, no encontraron nada que pudiera gustarte. Decepcionado, les das las gracias de todos modos.",
+          "1": "Esos listillos han decidido gastarte una broma y hacerte un regalo mezquino. Sin embargo, no pensaron que sería peligroso desenvolver una tabla con clavos que sobresalían. Con los dedos ensangrentados, te alejas furioso para curarte.",
           "2": "Sus generosos donantes están orgullosos de sus hallazgos en el mercado. Te entregan un objeto que, a primera vista, te interesa mucho."
         },
         "text": "Regalo en especie."
@@ -966,7 +966,7 @@
         "text": "Regalo en el cambio."
       }
     },
-    "text": "En una esquina, unos transeúntes te reconocen y se acercan a ti. Recuerdan perfectamente la ayuda que les prestaste e insisten en agradecértelo con un regalo. Te preguntan qué es lo que más te gustaría."
+    "text": "Al llegar al pueblo, algunos transeúntes te reconocen y se acercan a ti. Recuerdan perfectamente la ayuda que les prestaste e insisten en darte las gracias ofreciéndote un regalo. Te preguntan qué es lo que más te gustaría recibir."
   },
   "35": {
     "possibilities": {
@@ -1005,8 +1005,8 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Esperas un buen rato en la plaza y, de repente, los comerciantes empiezan a montar sus tiendas. Es tu día de suerte. Es un mercado y las manzanas están muy baratas. Compras unas cuantas y te pones en camino.",
-          "1": "Esperas un rato en la plaza, luego te das cuenta de que no hay nada realmente interesante que hacer y te pones en marcha de nuevo."
+          "0": "Llevas un buen rato esperando en esta plaza y, de repente, empiezan a instalarse los vendedores. ¡Es tu día de suerte! Se trata de un mercado, y las manzanas son muy baratas. Compras unas cuantas y te las comes allí mismo.",
+          "1": "Esperas un rato en esta plaza y luego te das cuenta de que aquí no hay nada interesante que hacer."
         }
       },
       "goAway": {
@@ -1017,28 +1017,28 @@
       },
       "goInn": {
         "outcomes": {
-          "0": "Llegas al albergue y recuperas energías con una buena comida y una merecida siesta.",
-          "1": "Llegas al albergue, que por desgracia está lleno. Comes algo de todos modos y continúas tu camino.",
-          "2": "Por desgracia, la posada está cerrada y decides continuar tu camino, hambriento y cansado."
+          "0": "Un aldeano de gran corazón te ofrece alojamiento y comida. Recuperas fuerzas gracias a una buena comida y a una siesta bien merecida en la tranquilidad de su granero.",
+          "1": "Un aldeano no tiene mucho espacio que ofrecerte, pero aun así comparte de buen grado su comida contigo antes de que tú le des las gracias de todo corazón.",
+          "2": "Por desgracia, parece que nadie está dispuesto a acogerte; te quedas ahí, cansado y con el estómago vacío."
         },
-        "text": "Ve al albergue a descansar."
+        "text": "Aceptar la hospitalidad de un aldeano."
       },
       "stealJeweler": {
         "outcomes": {
-          "0": "Confías en tus habilidades de infiltración. Entras y, afortunadamente, el viejo no está allí. Consigues robar el contenido de la caja y te marchas.",
-          "1": "Llegas a la tienda y entras para robar al joyero. Mientras coges el dinero del joyero, un guardia personal te deja inconsciente. Te despiertas unas horas más tarde en un camino."
+          "0": "Confías en tus habilidades de infiltración. Te lanzas a la aventura y, por suerte, el anciano no estaba allí. Consigues robar el contenido de la caja y te escabulles discretamente.",
+          "1": "Llegas a la tienda y entras con la intención de robar al joyero. Justo cuando te estás llevando el dinero del joyero, un guardaespaldas te deja inconsciente. Te despiertas unas horas más tarde, en un callejón apartado."
         },
         "text": "Intentando robar al joyero."
       },
       "talkJeweler": {
         "outcomes": {
           "0": "Hablas con el joyero y entablas amistad. Te regala un objeto como muestra de esta nueva amistad.",
-          "1": "Decides intentar regatear para comprar una de las joyas por poco dinero. Discutes durante largo rato, pero el viejo es muy buen regateador y no cede. Te marchas, dándote cuenta de que no tiene intención de bajar los precios."
+          "1": "Decides intentar regatear para comprarte una de las joyas a buen precio. Discutes con él durante un buen rato, pero el anciano es un excelente vendedor y no cede. Te despides tras darte cuenta de que no tiene intención de bajar los precios."
         },
         "text": "Ve a ver al joyero y habla con él."
       }
     },
-    "text": "En el transcurso de tu larguísimo viaje, llegas a un pueblecito encantador. Llegas al centro del pueblo, pero resulta ser muy pequeño y sólo hay dos tiendas: una joyería y una posada. Te enteras por un transeúnte de que la joyería está regentada por un anciano que fabrica magníficas joyas y collares. La posada, por su parte, está regentada por una pareja, y se dice que tiene un gran éxito."
+    "text": "Durante vuestro larguísimo viaje, llegáis a las afueras de un pueblecito con mucho encanto. El lugar es tan modesto que, con solo echar un vistazo, os dais cuenta de que solo cuenta con dos establecimientos: una joyería y una posada. Un transeúnte te cuenta que la joyería la regenta un anciano que crea magníficas joyas y collares. En cuanto a la posada, la dirigen una pareja y parece que tiene mucho éxito."
   },
   "37": {
     "possibilities": {
@@ -1120,14 +1120,14 @@
       },
       "end": {
         "outcomes": {
-          "0": "Pasas unos minutos charlando con Price y vuelves a ponerte en marcha.",
+          "0": "Te quedas charlando unos minutos con Price, antes de dejar que se ocupe de sus asuntos.",
           "1": "Después de charlar un rato, cada uno sigue su camino. Unas calles más adelante, te asalta un grupo de gente de aspecto poco amable que te aligera el bolso a punta de pistola."
         }
       },
       "meal": {
         "outcomes": {
           "0": "Le pides a Price que coman algo juntos y él acepta. Charláis un rato, tomáis unas copas, os reís mucho, intercambiáis consejos y os conocéis. Al cabo de unas horas, Price se despide de ti con un poco de pena, ya que tiene un contrato que cumplir.",
-          "1": "Le preguntas a Price si quiere ir a comer contigo a la taberna local. Él se niega, diciendo que tiene trabajo que hacer, y se va."
+          "1": "Le propones a Price que se conozcan mejor durante una comida. Él se niega, alegando que tiene trabajo, y se marcha."
         },
         "text": "Conocerse durante una buena comida."
       },
@@ -1375,8 +1375,8 @@
     "possibilities": {
       "askJoin": {
         "outcomes": {
-          "0": "El grupo era muy acogedor, así que hacían el viaje todos juntos. Cuando llegas al santuario, el guía se pasa casi 2 horas contándote la historia.",
-          "1": "La banda simplemente te rechaza. Así que sigues tu camino.",
+          "0": "El grupo se muestra muy acogedor, así que hacéis el viaje todos juntos. Al llegar al santuario, el guía dedica casi dos horas a contaros su historia, antes de volver al pueblo.",
+          "1": "El grupo, sencillamente, os rechaza y sigue su camino sin vosotros.",
           "2": "El grupo piensa que eres un ladrón y te da una paliza en consecuencia."
         },
         "text": "Pide al grupo que se una a ellos."
@@ -1384,25 +1384,26 @@
       "end": {
         "outcomes": {
           "0": "El grupo, pensando que les están espiando, le golpea violentamente.",
-          "1": "Después de 15 minutos sin ninguna reacción, vuelves a tu camino."
-        }
+          "1": "Tras 15 minutos sin que tú dieras ninguna señal, el grupo acabó marchándose sin ti."
+        },
+        "text": "No prestes atención al grupo."
       },
       "goAlone": {
         "outcomes": {
-          "0": "Decides ir al santuario por tu cuenta. Tras 30 minutos de camino, de repente el suelo se derrumba bajo tus pies y caes violentamente.",
-          "1": "Decides ir al santuario por tu cuenta. Cuando llegas al lugar, oyes un ruido extraño. Presa del pánico, corres y tropiezas. Te haces un feo rasguño en la pierna, que pronto se infecta.",
-          "2": "Decides ir al santuario por tu cuenta. De camino, encuentras un objeto que podría serte útil. Cuando llegas, descubres que el santuario es una cueva. Decides no seguir adelante.",
-          "3": "Decides ir al santuario por tu cuenta. Una vez allí, descubres un magnífico santuario, cuya belleza contemplas durante 30 minutos.",
-          "4": "Al ver que el tiempo empeora, cambias de decisión y continúas tu camino."
+          "0": "Decides ir al santuario tú solo. Tras 30 minutos de viaje, el suelo se hunde de repente bajo tus pies y caes violentamente. Vuelves al pueblo para curarte.",
+          "1": "Decides ir al santuario tú solo. Al llegar al lugar, oyes un ruido extraño. Presa del pánico, echas a correr y tropiezas. Te haces un feo rasguño en la pierna, que no tarda en infectarse. Vuelves al pueblo para curarte.",
+          "2": "Decides ir al santuario tú solo. Por el camino, encuentras un objeto que podría resultarte útil. Al llegar al lugar, descubres que el santuario es en realidad una cueva. Decides no seguir adelante y regresas al pueblo.",
+          "3": "Decides ir al santuario tú solo. Al llegar allí, descubres un magnífico santuario, cuya belleza contemplas durante 30 minutos, antes de volver al pueblo.",
+          "4": "Al ver que el tiempo empeora, cambias de opinión y decides no ir al santuario, prefiriendo quedarte en el pueblo."
         },
         "text": "Ir solo al santuario."
       },
       "skip": {
         "outcomes": {
-          "0": "Continúas tu camino, prefiriendo ir a la siguiente aldea.",
-          "1": "Continúa su camino. Unos minutos más tarde, te das cuenta de que te has equivocado de camino. En su afán por recuperar el tiempo perdido, tropieza con una piedra y sus pertenencias se desparraman."
+          "0": "No le prestáis atención, ya que preferís dedicaros a vuestras quehaceres en el pueblo.",
+          "1": "Te das la vuelta sin preocuparte ya por el grupo. Mientras te abres paso por las callejuelas abarrotadas, tropiezas con una piedra y tus cosas se esparcen por el suelo."
         },
-        "text": "Continúe su camino."
+        "text": "No te preocupes por el grupo."
       },
       "talk": {
         "outcomes": {
@@ -1412,7 +1413,7 @@
         "text": "Debate con el grupo."
       }
     },
-    "text": "Mientras atraviesas un pueblo bullicioso, oyes a un grupo de personas hablar de un santuario que, según dicen, está encantado. Curioso, sigues escuchando. Dicen que el santuario está a una hora en coche hacia el sur y que la salida es dentro de 30 minutos."
+    "text": "Al llegar a las afueras de un animado pueblo, oyes a un grupo de personas hablar de un santuario que, al parecer, está embrujado. Como eres curioso, aguzas el oído. Al parecer, el santuario se encuentra a una hora en coche hacia el sur, y la salida es dentro de 30 minutos."
   },
   "46": {
     "possibilities": {
@@ -1528,7 +1529,7 @@
           "2": "Listo para luchar, pero conociendo poco a tu adversario, te acercas a él con el pretexto de querer discutir un acuerdo. Lo suficientemente cerca de tu enemigo, desenvainas tu espada y le golpeas con el pomo. Registras al guardia y pronto encuentras una llave. Abres la puerta. Una vez dentro, no te cuesta encontrar el artefacto. Tras una hora de búsqueda, encuentras a un mercader. Te compra el artefacto por la módica suma de quinientas monedas de oro.",
           "3": "Listo para luchar, pero conociendo poco a tu adversario, te acercas a él con el pretexto de querer discutir un acuerdo. Cerca de tu enemigo, desenvainas tu espada y le golpeas con el pomo. A continuación, intentas abrir la puerta de la torre, pero está cerrada... Registras al guardia y pronto encuentras la llave. Abres la puerta y encuentras el artefacto dentro. Entonces sales en busca de un mercader, al que encuentras fácilmente. Te roba el artefacto con un hábil movimiento, pero tú también consigues robarle algo. Esperando que éste sea valioso, miras a ver qué es.",
           "4": "Conociendo poco a tu adversario, te acercas a él con el pretexto de querer discutir un acuerdo. Una vez que estuviste lo suficientemente cerca de tu enemigo, desenvainaste tu espada y lo aturdiste con el pomo. Por desgracia para ti, el caballero era mucho más fuerte y rápido que tú. Se abalanzó sobre ti, te enganchó con el pie derecho y te propinó una patada en el estómago antes de descargar un potente uppercut. En el suelo, a punto de desmayarte, no puedes levantarte.",
-          "5": "El caballero blande su espada para intimidarte. Ante este coloso, dudas si huir, pero decides quedarte. Lucharás contra este caballero aunque tus posibilidades de derrotarle sean escasas. Tu adversario esquiva uno a uno tus golpes sin esfuerzo antes de tirarte al suelo. En el suelo, desarmado, sabes que el combate ha terminado. Es entonces cuando el caballero te dice: \"Eres muy valiente, así que aquí tienes tu recompensa\". Te da un objeto antes de dirigirse a la entrada de la torre.",
+          "5": "El caballero blande su espada para intimidarte. Ante ese coloso, dudas si huir, pero decides quedarte. Lucharás contra ese caballero aunque tus posibilidades de vencerlo sean escasas. Tu adversario bloquea tus golpes uno a uno sin el más mínimo esfuerzo antes de derribarte al suelo. En el suelo, desarmado, sabes que el combate ha terminado. Es entonces cuando el caballero te dice que has demostrado un gran valor y que te va a recompensar. Te entrega un objeto antes de situarse a la entrada de la torre.",
           "6": "Listo para luchar, te abalanzas rápidamente sobre tu oponente, desenvainando tu espada. El caballero apenas tuvo tiempo de desenvainar su arma antes de que tú cargaras contra él. En ese momento, te das cuenta de tu error. Él tiene armadura, pero tú no. Así que intentas golpearle varias veces con el pomo de tu espada. Parece que le ha desorientado, así que te preparas para intentarlo de nuevo. Pero antes de que puedas, tu oponente te hiere en una pierna. Estás en el suelo, incapaz de levantarte. El caballero se coloca sobre ti y levanta su espada. Cierras los ojos y oyes tu propio grito."
         },
         "text": "Lucha contra el caballero."
@@ -1615,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Te acercas a los aldeanos y les preguntas por esos extraños frutos. Te explican que son cocos y que su pulpa se come cuando se abre la cáscara, y que su zumo es famoso en todo el país. Los aldeanos te ofrecen probarlos y no dices que no. El zumo es refrescante y la pulpa calma el apetito. Tras agradecer a los aldeanos su descubrimiento con unas monedas, emprendes el camino.",
-          "1": "Te acercas a los aldeanos y les preguntas por esas extrañas frutas. Mientras uno de ellos te explica, los demás empiezan a acercarse a ti. De repente, alguien te da un golpe en el brazo y los demás se abalanzan sobre ti para robarte tus pertenencias. Tras recibir una paliza previa, continúas tu camino.",
-          "2": "Te acercas a los aldeanos y les preguntas por esos extraños frutos. Te explican que son cocos, que su pulpa se come al abrir la cáscara y que su zumo es famoso en todo el país. Con esta valiosa información en la mano, te pones de nuevo en camino."
+          "0": "Te acercas a los aldeanos y les preguntas por esas extrañas frutas. Te explican que son cocos y que su pulpa se come una vez abierta la cáscara, y que su zumo es famoso en todo el país. Los aldeanos te invitan a probarlas y no rechazas la oferta. De hecho, el zumo es refrescante y la pulpa sacia tu apetito. Agradeces a los aldeanos este descubrimiento dándoles unas monedas.",
+          "1": "Te acercas a los aldeanos y les preguntas por esas extrañas frutas. Mientras uno de ellos te da explicaciones, los demás empiezan a acercarse a ti. De repente, alguien te hace una llave de brazo mientras los demás se abalanzan sobre ti para robarte tus pertenencias. Tras recibir una paliza, recuperas el sentido con dificultad.",
+          "2": "Te acercas a los aldeanos y les preguntas por esas extrañas frutas. Te explican que son cocos y que su pulpa se come una vez abierta la cáscara, y que su zumo es famoso en todo el país. Les das las gracias por esta valiosa información."
         },
         "text": "Acércate a los aldeanos para hacerles preguntas."
       },
       "end": {
         "outcomes": {
-          "0": "Observas durante un rato cómo los aldeanos recogen estos frutos insólitos y luego continúas tu camino bajo el sol abrasador.",
-          "1": "Una de las frutas cae a tu lado. La coges en tus manos y la examinas detenidamente antes de continuar tu camino."
+          "0": "Te quedas un rato contemplando el espectáculo de los aldeanos mientras recogen esos frutos tan singulares bajo el sol abrasador.",
+          "1": "Una de esas frutas cae a tu lado. La coges con las manos y la examinas con atención."
         }
       },
       "leave": {
@@ -1638,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "Sigues durmiendo la siesta, pero una de las frutas se suelta y te golpea la cabeza. Estás herido y sangrando mucho. Algunos aldeanos te ven y acuden en tu ayuda, pero tardarás en recuperarte.",
-          "1": "Duermes un rato. Cuando te despiertas y ves que el sol empieza a ponerse y la temperatura desciende, te pones en marcha de nuevo, lleno de energía.",
-          "2": "Decides continuar con la siesta. Cuando te despiertas, te levantas, dispuesto a irte, y notas que te falta algo en los bolsillos: la cartera. Decides marcharte, decepcionado."
+          "1": "Duermes un rato. Cuando te despiertas, te das cuenta de que el sol empieza a ponerse y que la temperatura está bajando. Te levantas, con las pilas recargadas.",
+          "2": "Decides seguir durmiendo la siesta. Al despertarte, te levantas y te das cuenta de que te falta algo en los bolsillos: tu monedero. Te cuesta mucho asimilarlo."
         },
         "text": "Continúa la siesta al pie del árbol."
       }
@@ -1657,11 +1658,11 @@
       },
       "goBack": {
         "outcomes": {
-          "0": "Poco después de dar media vuelta, te cruzas con un niño asustado que llora junto a la carretera. Te cuenta que ha huido del ataque de unos bandidos al carro de mercancías de sus padres. Te apresuras a ofrecerle tu ayuda, que el niño acepta de inmediato. Después de caminar durante dos largas horas, encuentras a los padres del niño vivos pero heridos. Al despedirte de ellos, la madre del niño te entrega un monedero lleno de oro.",
-          "1": "Poco después de dar media vuelta, te cruzas con un niño asustado que llora junto a la carretera. Te cuenta que ha huido del ataque de unos bandidos al carro de mercancías de sus padres. Te apresuras a ofrecerle tu ayuda, que el niño acepta de inmediato. Tras caminar unos minutos, un grupo de bandidos fuertemente armados te sorprende. La trampa no es mortal, pero pierdes muchas monedas de oro mientras huyes.",
-          "2": "Poco después de darse la vuelta, oye el estruendo de ollas y sartenes que se acercan a usted. Es una viajera en busca de nuevas delicias culinarias, a punto de montar el campamento para descansar. En el transcurso de la conservación, descubres su nombre de pila: Lucya. Te ofrece un pastel que deleita tu paladar. Lleno, descansado y encantado por tu encuentro fortuito, decides continuar tu camino."
+          "0": "Poco después de haber descartado subir las escaleras, te encuentras con un niño pequeño que llora y está asustado al borde de un camino. Te cuenta que se escapó durante un asalto de unos bandidos al carro de mercancías de sus padres. Te apresuras a ofrecerle tu ayuda y el niño acepta de inmediato. Tras caminar dos largas horas, encuentras a los padres del niño con vida, aunque heridos. Mientras te despides de ellos, la madre del niño te entrega una bolsa llena de oro.",
+          "1": "Poco después de haber descartado subir por la escalera, te encuentras con un niño pequeño que llora y está asustado al borde de un camino. Te explica que se escapó durante un ataque de bandidos contra la carreta de mercancías de sus padres. Te apresuras a ofrecerle tu ayuda y el niño acepta de inmediato. Tras caminar unos minutos, un grupo de bandidos fuertemente armados os ataca por sorpresa. Esta trampa no te ha resultado fatal, pero pierdes muchas monedas de oro durante la huida.",
+          "2": "Poco después de haber renunciado a subir las escaleras, oyes el ruido de cacerolas que chocan entre sí y se acercan a ti. Se trata de una viajera en busca de nuevos sabores culinarios que se disponía a montar su campamento para descansar. A medida que avanzáis en la conversación, descubres su nombre: Lucya. Te ofrece un pastel que te deleita el paladar. Saciado, descansado y encantado con vuestro fortuito encuentro, decides, aun así, retomar tu camino."
         },
-        "text": "Da la vuelta."
+        "text": "Renunciar a la ascensión y seguir tu camino."
       },
       "search": {
         "outcomes": {
@@ -1686,23 +1687,23 @@
     "possibilities": {
       "deny": {
         "outcomes": {
-          "0": "Si no quieres jugar con niños, tendrás que seguir adelante.",
+          "0": "Te niegas a jugar con los niños y los dejas a lo suyo.",
           "1": "Te niegas, lo que irrita a los niños, que recogen piedras del suelo y te las lanzan. Mientras llueven los escombros, te ves obligado a huir, fuera del alcance de los niños. Te das cuenta de que te han golpeado en la cabeza y de que la herida sangra profusamente; necesitarás tratamiento.",
-          "2": "Te niegas y los niños se enfadan. Viendo que la situación puede torcerse, te pones rápidamente en camino."
+          "2": "Te niegas, y los niños se enfadan. Al ver que la situación puede ponerse fea, te alejas rápidamente de ellos."
         },
         "text": "Recházalo y sigue adelante."
       },
       "end": {
         "outcomes": {
-          "0": "Tu falta de respuesta hace que los niños pierdan el interés por ti y se vayan a jugar a otra parte. Así que te pones en marcha de nuevo.",
+          "0": "Ante tu falta de respuesta, los niños pierden el interés por ti y se van a jugar a otra parte.",
           "1": "Al verte perdido en tus pensamientos, los chicos te atan los cordones de los zapatos. Cuando sales de este trance, tropiezas y caes boca abajo.",
-          "2": "Permaneces allí durante horas y, cuando recuperas el sentido, te das cuenta de que tu bolso ha desaparecido. Continúas tu camino, abatido."
+          "2": "Te quedas ahí parado durante horas y, cuando vuelves en ti, te das cuenta de que tu cartera ha desaparecido. Este percance te deja desanimado."
         }
       },
       "play": {
         "outcomes": {
-          "0": "Como no acabas de entender las reglas del juego, te marginan rápidamente y te vas sin que los niños te hagan caso.",
-          "1": "Juegas con ellos hasta que llegan sus padres, que te encuentran sospechoso y amenazan con expulsarte de su pueblo. Te pones de nuevo en camino sin pedir ayuda.",
+          "0": "Como no entiendes muy bien las reglas del juego, enseguida te dejan de lado, sin que los niños se preocupen lo más mínimo por ti.",
+          "1": "Juegas con ellos hasta que llegan sus padres, quienes, al considerarte sospechoso, te rechazan y te amenazan. Te alejas de ellos sin pensártelo dos veces.",
           "2": "En el papel de corredor, te persiguen los niños. Al mirar por encima del hombro para medir la distancia que te separa de ellos, tropiezas con una raíz y te haces daño. Los niños te abandonan a tu suerte cuando se dan cuenta de que no puedes seguir jugando. Necesitarás tratamiento."
         },
         "text": "Haciendo de corredor y de guardia."
@@ -1719,8 +1720,8 @@
       "teach": {
         "outcomes": {
           "0": "Mientras explicas a los niños la mejor manera de colocarse para efectuar el disparo, uno de ellos, un poco alejado, consigue tensar su arco y, antes de que puedas hacer nada, suelta la flecha que se clava directamente en tu pierna. Herido, los dejas para que busquen un lugar donde curarse.",
-          "1": "Les explicas a los niños cómo colocarse para disparar y lo hacen muy bien. Pasas el resto del día entrenándoles en el tiro con arco. Antes de despedirte, tus aprendices te dan las gracias con un pequeño obsequio. Te pones de nuevo en camino, contento de haber sido útil.",
-          "2": "Pronto te das cuenta de que los niños aún no tienen fuerza suficiente para estirar la cuerda. Así que les dices que volverás a entrenarlos cuando sean mayores y te pones en marcha de nuevo."
+          "1": "Les explicas a los niños cómo colocarse para disparar y se les da muy bien. Pasas el resto del día entrenándolos en el tiro con arco. Antes de despedirte de ellos, tus aprendices de hoy te dan las gracias con un pequeño detalle. Te sientes feliz de haber podido ser de ayuda.",
+          "2": "Enseguida te das cuenta de que los niños aún no tienen la fuerza suficiente para tensar la cuerda. Así que les dices que volverás a entrenarlos cuando sean más mayores."
         },
         "text": "Enseñándoles a disparar arcos."
       }
@@ -1772,51 +1773,51 @@
           "0": "Decides organizar apuestas, pero nadie participa porque todo el mundo sabe quién será el ganador.",
           "1": "Decides organizar una quiniela y apostar a que el caballero no ganará. Todos acuden a hacer sus apuestas porque saben que no perderá, pero tú tienes un plan en mente. Te ofreces a luchar por el señor local. Él acepta tu oferta. Como era de esperar, ganas la pelea y ganas las apuestas. Es mucho dinero.",
           "2": "Decides organizar una quiniela y apostar a que el caballero no ganará. Todos acuden a hacer sus apuestas porque saben que no perderá, pero tú tienes un plan en mente. Te ofreces a luchar por el señor local. Él acepta tu oferta. Como era de esperar, ganas el combate. Cuando pides el dinero a los apostantes, éstos se disgustan y deciden quitarte el dinero que habías apostado.",
-          "3": "Decides organizar una quiniela y apostar a que el caballero no ganará. Todos acuden a hacer sus apuestas porque saben que no perderá, pero tú tienes un plan en mente. Te ofreces a luchar por el señor local. Él acepta de buen grado tu oferta. Pierdes el combate, pero te niegas a darle tu dinero. Los aldeanos empiezan a seguirte y a lanzarte diversos objetos. Cuando te alejas del pueblo, te duele todo el cuerpo. También te has herido en una pierna, por lo que necesitas descansar antes de continuar tu camino.",
+          "3": "Decides organizar unas apuestas y apuestas a que el caballero no ganará. Todo el mundo viene a apostar, porque todos saben que él no perderá, pero tú tienes un plan en mente. Le propones al señor del lugar que luches por él. Este acepta de buen grado tu oferta. Pierdes el combate, pero te niegas a entregar tu dinero. Los aldeanos empiezan a perseguirte y a lanzarte todo tipo de objetos. Consigues escapar de ellos escabulléndote por las callejuelas, pero te duele todo el cuerpo. Además, tienes una herida en la pierna, y cada paso que das te hace hacer una mueca de dolor.",
           "4": "Se hacen apuestas a que el caballero no ganará. Mucha gente viene a apostar, porque todos saben que no perderá. Los guardias te vigilan para asegurarse de que no robas el dinero. Te ofreces a ir a ver el duelo con ellos, excepto unos pocos que vigilarán el lugar. Empiezan a discutir sobre quién debe quedarse, y tú aprovechas para coger parte del dinero y huir a toda velocidad. Te persiguen, pero acaban desistiendo al darse cuenta de que no pueden atraparte. Miras el dinero que has cogido, encantado de ti mismo.",
-          "5": "Haces apuestas a que el caballero no ganará. Mucha gente viene a apostar, porque todos saben que no perderá, pero tú tienes un plan en mente. Te ofreces a luchar por el señor local. Él acepta de buen grado tu oferta. Como era de esperar, ganas el combate y vas a recoger el dinero de las apuestas. Un aldeano te ataca a la salida del pueblo, probablemente para robarte el dinero. Tras una dura lucha, consigues escapar, pero no sin resultar gravemente herido. Ahora necesitas descansar.",
-          "6": "Haces apuestas a que el caballero no ganará. Mucha gente viene a hacer sus apuestas, porque todos saben que no perderá, pero tú tienes un plan en mente. Te ofreces a luchar por el señor local. Él acepta de buen grado tu oferta. Pierdes el combate, pero no tienes intención de perder así tu dinero. Así que sales corriendo hacia la zona de apuestas y robas todo el dinero que puedes, perseguido por los aldeanos, antes de huir del pueblo."
+          "5": "Organizas unas apuestas y apuestas a que el caballero no ganará. Muchos acuden a apostar, pues todos saben que él no perderá, pero tú tienes un plan en mente. Le propones al señor del lugar que luches por él. Este acepta de buen grado tu oferta. Tal y como esperabas, ganas el combate y vas a recoger el dinero de las apuestas. Un aldeano te ataca a la salida del pueblo, seguramente con la intención de robarte el dinero. Tras un duro combate, consigues escapar de él, aunque no sin sufrir heridas graves. Sin aliento, te llevas la mano a las heridas aún recientes.",
+          "6": "Organizas unas apuestas y apuestas a que el caballero no ganará. Muchos acuden a apostar, pues todos saben que él no perderá, pero tú tienes un plan en mente. Le propones al señor del lugar que luches por él. Este acepta de buen grado tu oferta. Pierdes el combate, pero no estás dispuesto a perder tu dinero así. Así que te lanzas hacia el lugar de las apuestas y robas todo el dinero que puedes, perseguido por los aldeanos, antes de despistarlos en el laberinto de callejuelas."
         },
         "text": "Organizar apuestas."
       },
       "end": {
         "outcomes": {
-          "0": "Las discusiones despiertan tu curiosidad y decides asistir al duelo. El duelo concluye rápidamente, con el caballero extranjero como vencedor. Decepcionado, te pones de nuevo en camino.",
+          "0": "Las conversaciones han despertado tu curiosidad, así que decides asistir al duelo. Este concluye muy rápidamente, con el caballero extranjero como vencedor. Decepcionado, te alejas de la arena.",
           "1": "Las discusiones han despertado tu curiosidad, así que decides asistir al duelo. Termina muy pronto. Decepcionado, te ofreces a repetir el duelo, pero esta vez serás tú quien luche. Tu propuesta es aceptada, y en pocos segundos eres desarmado y derribado al suelo. Tu oponente se burla de ti, declarando que eres un luchador patético. Loco de rabia, arremetes contra él para golpearle, pero el caballero te derriba con el pomo de su espada.",
-          "2": "Desinteresado por el duelo, decides ignorarlo y continuar tu camino.",
-          "3": "Las discusiones han despertado tu curiosidad, así que decides asistir al duelo. Cerca de allí, te das cuenta de que se están haciendo apuestas. Decides participar. Naturalmente, apuestas por el caballero extranjero antes de asistir al duelo. En efecto, gana, pero cuando vuelves para recoger tus ganancias, todo ha desaparecido. Descontento por haber sido engañado de esa manera, sigues tu camino.",
-          "4": "Las discusiones han despertado tu curiosidad, así que decides asistir al duelo, que concluye rápidamente. Te ofreces a batirte de nuevo en duelo, y tu propuesta es aceptada. No tardas mucho en derrotar a tu oponente, todo el pueblo te aclama y el señor te ofrece una buena comida, que aceptas encantado. Una vez saciado, el señor te ofrece el título de caballero, que rechazas amablemente y le das las gracias por la deliciosa comida. Ahora te sientes mucho mejor."
+          "2": "Como no te interesa mucho ese duelo, decides no prestarle atención y seguir con tus quehaceres en el pueblo.",
+          "3": "Las conversaciones han despertado tu curiosidad, así que decides asistir al duelo. Al acercarte, te das cuenta de que se están haciendo apuestas. Así que decides participar. Como es lógico, apuestas por el caballero extranjero antes de ir a ver el duelo. Efectivamente, él es el ganador, pero cuando vuelves a recoger tus ganancias, todo ha desaparecido. Molesto por haberte dejado engañar de esa manera, le das la espalda a la arena.",
+          "4": "Las conversaciones han despertado tu curiosidad, así que decides asistir al duelo, que concluye rápidamente. Propones volver a disputarlo con tú como combatiente, y tu propuesta es aceptada. No tardas mucho en derrotar a tu adversario; ahora todo el pueblo te aclama y el señor te invita a una recepción ofrecida en tu honor, a la que aceptas de buen grado. Una vez terminadas las celebraciones, el señor te propone que te conviertas en caballero; rechazas educadamente su oferta y le das las gracias por su cálida acogida. Ahora te sientes mucho mejor."
         }
       },
       "help": {
         "outcomes": {
-          "0": "Comprendiendo la angustia del señor, le ofreces participar en el duelo. Él acepta. Comienza el combate, y sabes que no tienes la más mínima posibilidad de derrotar a tu oponente, pero intentas resistir de todos modos. Sólo tarda un minuto en derrotarte. Te pones de nuevo en marcha, avergonzado por tu derrota.",
+          "0": "Consciente de la angustia del señor, le propones participar en el duelo. Él acepta de buen grado. Comienza el combate; sabes que no tienes la más mínima posibilidad de vencer a tu adversario, pero, a pesar de todo, intentas resistir. Solo tarda un minuto en derrotarte. Abandonas la arena, avergonzado por tu derrota.",
           "1": "Comprendiendo la angustia del señor, le ofreces tu ayuda. Te equipas antes de que comience el duelo. Luchas valientemente, pero tu oponente te vence con la misma facilidad. Es cuando tu oponente arremete contra ti con su espada cuando te arrepientes amargamente de haber ofrecido tu ayuda. Después de todo, es una lucha a muerte. Y acabas de perderla. Cierras los ojos y el dolor desaparece. Te despiertas inesperadamente varias horas después, gravemente herido.",
-          "2": "Comprendiendo la angustia del señor, le ofreces tu ayuda. A continuación, te equipas con una armadura antes de que comience el duelo. Consciente de que no tienes ninguna posibilidad, te defiendes lo mejor que puedes. Tu adversario, impaciente, baja la guardia y tú aprovechas para atacarle. Consigues derribarle antes de desarmarle. Abandonas la arena victorioso, el señor sale a tu encuentro para entregarte una bolsa llena de oro. Le das las gracias y continúas tu camino.",
-          "3": "Comprendiendo la angustia del señor, le ofreces resolver el conflicto con tus palabras. Te promete una recompensa si lo consigues. Decidido, vas al encuentro del caballero una vez que ha llegado a la aldea y le dices que deseas negociar con su señor. Acepta y te lleva ante él. Rápidamente simpatizas con él y le pides que suspenda el duelo. También le dices que se puede negociar para resolver el conflicto. Acepta y vuelves a Boug-Coton para darle la noticia. El señor te entrega una bolsa llena de oro en señal de agradecimiento.",
+          "2": "Al comprender la angustia del señor, le ofreces tu ayuda. Entonces te equipan con una armadura antes de que comience el duelo. Consciente de que no tienes la más mínima posibilidad, te defiendes lo mejor que puedes. Tu adversario, impaciente, baja la guardia y tú aprovechas para atacarle. Consigues derribarle antes de desarmarle. Sales victorioso de la arena y el señor se acerca a ti para entregarte una bolsa llena de oro. Le das las gracias efusivamente por su generosidad.",
+          "3": "Consciente de la angustia del señor, le propones resolver el conflicto con tus palabras. Él te promete una recompensa si lo consigues. Decidido, te diriges a reunirte con el caballero en cuanto este llega al pueblo y le dices que deseas negociar con su señor. Él acepta y te lleva ante él. Enseguida entablas una buena relación con él y le pides que anule el duelo. También le dices que, tras ello, podrán tener lugar negociaciones para resolver el conflicto. Él acepta, y regresas al centro del pueblo para anunciar la noticia. El señor te entrega una bolsa llena de oro en señal de agradecimiento.",
           "4": "Comprendiendo la angustia del señor, le ofreces resolver el conflicto con tus palabras. Te promete una recompensa si lo consigues. Te reúnes con el caballero para que te lleve ante su señor. Una vez allí, no tardas en entablar amistad con él. Por desgracia, no parece haberse decidido a cancelar el duelo, aunque le caes bien. Vuelves a la aldea con el caballero para anunciar que el duelo tendrá lugar.",
-          "5": "Comprendiendo la angustia del señor, le ofreces resolver el conflicto con tus palabras. Te promete una recompensa si lo consigues. Te reúnes con el caballero para que te lleve ante su señor. Una vez allí, intentas negociar con él durante varias horas, sin mucho éxito. Como tus esfuerzos son en vano, piensas en marcharte. Pero antes de hacerlo, el señor te expresa su aprecio y añade que le impresiona que no te hayas rendido. Te ofrece el título de caballero, pero tú lo rechazas cortésmente y sigues tu camino."
+          "5": "Consciente de la angustia del señor, le propones resolver el conflicto con tus palabras. Él te promete una recompensa si lo consigues. Te reúnes con el caballero para que te lleve ante su señor. Una vez allí, intentas negociar con él durante varias horas, sin mucho éxito. Al ver que tus esfuerzos son en vano, piensas en marcharte. Pero antes de eso, el señor te dice que te aprecia; de hecho, añade que le ha impresionado que no te hayas rendido. Te propone convertirte en caballero, pero rechazas educadamente su oferta y regresas a Boug-Coton."
         },
         "text": "Ofrece tu ayuda al Señor de Boug-Coton."
       },
       "look": {
         "outcomes": {
-          "0": "Decides observar el duelo. El caballero extranjero gana en pocos segundos. Pronto te marchas, decepcionado por la mediocre actuación del perdedor.",
-          "1": "Decides observar el duelo. El caballero extranjero gana en pocos segundos. En vista de la mediocre actuación del perdedor, te ofreces a repetir el duelo, pero esta vez lucharás tú. Tu propuesta es aceptada y podéis luchar. Tu oponente, demasiado confiado, baja la guardia mientras lucháis. No esperas ni un segundo para aprovecharte. Finalmente derrotas al caballero y anuncias tu victoria, triunfante. El señor de la mansión te ofrece el título de caballero, pero tú declinas cortésmente y sigues tu camino.",
-          "2": "Decides observar el duelo. El caballero extranjero gana en pocos segundos. En vista de la mediocre actuación del perdedor, te ofreces a repetir el duelo, pero esta vez lucharás tú. Tu propuesta es aceptada. Comienza el combate y, a pesar de tus esfuerzos, sólo consigues resistir unos diez segundos.",
+          "0": "Decides asistir al duelo. El caballero extranjero gana en tan solo unos segundos. No tardas en abandonar la arena, decepcionado por la mediocre actuación del perdedor.",
+          "1": "Decides asistir al duelo. El caballero extranjero gana en tan solo unos segundos. Ante la mediocre actuación del perdedor, propones volver a disputar el duelo, pero esta vez serás tú quien luche. Tu propuesta es aceptada, puedes luchar. Tu adversario, demasiado seguro de sí mismo, baja la guardia mientras lucháis. No esperas ni un segundo para aprovecharlo y así tomar la ventaja. Acabas derrotando al caballero y anuncias tu victoria, triunfante. El señor del lugar te propone convertirte en caballero, pero rechazas educadamente su oferta.",
+          "2": "Decides asistir al duelo. El caballero extranjero gana en tan solo unos segundos. Ante la mediocre actuación del perdedor, propones volver a disputar el duelo, pero esta vez serás tú quien luche. Tu propuesta es aceptada. Comienza el combate y, a pesar de todos tus esfuerzos, solo consigues resistir unos diez segundos antes de que te desarmen y te tiren al suelo entre las risas del público.",
           "3": "Decides ver el duelo. Termina en cuestión de segundos. En vista de la mediocre actuación del perdedor, te ofreces a repetir el duelo, pero esta vez tú lucharás. Tu propuesta es aceptada y podéis luchar. Tu oponente, demasiado confiado, baja la guardia mientras tú peleas. No esperas ni un segundo para aprovecharte. Finalmente derrotas al caballero y anuncias tu victoria, triunfante. El señor de la mansión te ofrece una bolsa llena de oro, que aceptas encantado.",
-          "4": "Decides ver el duelo. Termina en cuestión de segundos. Describes al perdedor como un incompetente y le ofreces repetir el duelo, pero esta vez serás tú quien luche. El perdedor se ofrece a pelear con él antes de criticarle. Aceptas su propuesta, sabiendo que no tendrás problemas para derrotarle. Tu adversario, demasiado confiado, consigue desarmarte antes de tirarte al suelo. Te golpea hasta que te desmayas. Gravemente herido, necesitarás mucho reposo.",
+          "4": "Decides asistir al duelo. Este termina en unos segundos. Tildas al perdedor de incompetente y propones volver a disputar el duelo, pero esta vez serás tú quien luche. El perdedor te propone que te enfrentes a él antes de criticarle. Aceptas su petición, sabiendo perfectamente que no te costará nada derrotarle. Como te has confiado demasiado, tu adversario consigue desarmarte antes de derribarte. A continuación, te da una paliza hasta que pierdes el conocimiento. Gravemente herido, tardas mucho tiempo en recuperar el conocimiento, con el cuerpo cubierto de moratones.",
           "5": "Decides ver el duelo. Termina en cuestión de segundos. En vista de la mediocre actuación del perdedor, te ofreces a repetir el duelo, pero esta vez lucharás tú. Tu propuesta es aceptada. Comienza el combate y, a pesar de tus esfuerzos, sólo consigues resistir unos diez segundos. El caballero decide golpearte una y otra vez, para hacerte comprender que contra él no eres más que un insecto. Tras herirte gravemente, se detiene y se marcha.",
-          "6": "Decides ver el duelo. El caballero extranjero gana en pocos segundos. En vista de la mediocre actuación del perdedor, propones que se repita el duelo, pero esta vez serás tú quien luche. Ganas el duelo tras unos minutos de lucha. El señor de la mansión te propone charlar durante una buena comida. Aceptas encantado, ya que la comida es deliciosa y abundante. Una vez saciados, el señor te ofrece el título de caballero. Rechazas amablemente la oferta."
+          "6": "Decides asistir al duelo. El caballero extranjero gana en tan solo unos segundos. Ante la mediocre actuación del perdedor, propones volver a disputar el duelo, pero esta vez serás tú quien luche. Ganas el duelo tras unos minutos de combate. El señor del lugar te invita a celebrar tu victoria en su compañía. Aceptas de buen grado y te honran como es debido en el corazón del pueblo, que está de fiesta. Una vez terminadas las celebraciones, el señor te propone nombrarte caballero. Rechazas educadamente su oferta."
         },
         "text": "Mira el duelo."
       },
       "visit": {
         "outcomes": {
-          "0": "Visitas el pueblo pero, al no ver nada de interés, te marchas sin más.",
+          "0": "Visitas el pueblo, pero no ves nada que te parezca interesante.",
           "1": "Visitas el pueblo. Al no ver nada de interés, decides ir a ver el duelo.",
           "2": "Mientras visitas el pueblo, el señor que pasa por allí se fija en que eres un aventurero. Te explica la situación y te ruega que participes en el duelo. Te ofrecerá una bolsa llena de oro si ganas. Aceptas encantado su oferta y acudes al duelo. Pero una vez que comienza el combate, te das cuenta de que no tienes ninguna posibilidad de derrotar a tu oponente. El caballero te hiere en la pierna con su espada y caes miserablemente al suelo, herido. Incapaz de levantarte, has perdido el duelo.",
-          "3": "Visita el pueblo y localiza un objeto en el fondo del pozo. Recógelo y continúa tu camino."
+          "3": "Estás visitando el pueblo y ves un objeto en el fondo del pozo. Lo recoges, encantado con tu hallazgo."
         },
         "text": "Visite Boug-Coton."
       }
@@ -2284,39 +2285,39 @@
     "possibilities": {
       "checkDate": {
         "outcomes": {
-          "0": "Miras el calendario y descubres que pronto empieza un torneo. Decides participar y llegar a la final tras unas horas de lucha. Sin embargo, tu oponente te domina y pierdes el último combate. Aun así, como finalista, ganas una bolsa llena de oro antes de seguir tu camino.",
-          "1": "Miras el calendario y ves que es Laponaire, el 6º mes del año, así que decides salir a comer una galette en un puesto cercano. ¡Esta comida te habrá llenado! Te pones de nuevo en camino, lleno y satisfecho.",
-          "2": "Cuando ves el calendario, te acuerdas de los carteles en la calle que hablaban de una búsqueda del tesoro. Decides participar. Tras dos horas de búsqueda, no encuentras nada. Así que decides dar media vuelta.",
-          "3": "Miras el calendario, y en la fecha de hoy ves: ¡Concurso de hidromiel! Sintiéndote resistente al alcohol, decides probar suerte. Ganas el concurso y un premio. Sin embargo, acabas completamente borracho."
+          "0": "¡Miras el calendario y descubres que hay un torneo que va a empezar en breve! Así que decides participar y consigues llegar a la final tras unas horas de combate. Sin embargo, tu rival te supera y pierdes tu última batalla. A pesar de todo, como finalista, ganas una bolsa llena de oro como recompensa por tu esfuerzo.",
+          "1": "Miras el calendario y te das cuenta de que estamos en laponaire, el sexto mes del año. Una nota garabateada en el margen indica que es la temporada de los herbolarios. Intrigado, hojeas un almanaque que hay cerca y descubres cómo preparar una infusión revitalizante. La preparas enseguida: la bebida caliente te sienta de maravilla.",
+          "2": "Al ver el calendario, te acuerdas de los carteles que hay por las calles en los que se anuncia una búsqueda del tesoro. Entonces decides participar. Tras dos horas de búsqueda, no consigues encontrar nada. Así que abandonas la búsqueda y regresas al centro de la ciudad con las manos vacías.",
+          "3": "Miras el calendario y, en la fecha de hoy, ves escrito: ¡Feria de los narradores! La plaza de la ciudad acoge precisamente este concurso en el que se recitan viejas historias ante la multitud, con un cuerno de hidromiel en la mano. Con toda la experiencia de las aventuras que has vivido, te arriesgas y ganas el concurso, ¡además de una recompensa! Sin embargo, de tanto brindar por tu victoria, acabas completamente borracho."
         },
         "text": "Mira el calendario."
       },
       "end": {
         "outcomes": {
-          "0": "Te quedas en la biblioteca y no te das cuenta de que pasan los minutos. Cuando cierra, sales y te das cuenta de que ya es tarde. Sales de nuevo sin más dilación.",
-          "1": "Te asombra la cantidad de libros y la riqueza de conocimientos que emanan de estas instalaciones. Poco después, el bibliotecario te indica que el edificio está a punto de cerrar. Decepcionado, das media vuelta para continuar tus aventuras.",
-          "2": "Permaneces de pie en la biblioteca durante varios minutos, asombrado por todos estos conocimientos. Te sientas, pensativo. De repente, un lector perturba tus pensamientos, con el libro \"Hansel y Gretel\" de los hermanos Grimm en la mano. Te pide que te marches, ya que estás sentado en su sitio favorito de la biblioteca. Confundido, te marchas, sin ningún conocimiento nuevo."
+          "0": "Estás pasando el rato en la biblioteca y ni te das cuenta de cómo pasan los minutos. Cuando cierran, sales y te das cuenta de que ya es tarde. Deambulas un rato por las calles de la ciudad, con la mente aún sumergida en tus lecturas.",
+          "1": "Te quedas boquiabierto ante la cantidad de libros y el bagaje de conocimientos que emana de estos lugares. Poco después, la bibliotecaria te hace una señal: el edificio está a punto de cerrar. Decepcionado, te alejas de las estanterías y regresas a las animadas calles de la ciudad.",
+          "2": "Te quedas en la biblioteca varios minutos, asombrado por todo ese saber. Te sientas, pensativo. De repente, un lector viene a interrumpir tus pensamientos, con el libro «Hansel y Gretel», de los hermanos Grimm, en la mano. Te pide que le cedas el sitio, ya que estás sentado en su sitio favorito de la biblioteca. Desconcertado, te levantas y te marchas, sin haber adquirido ningún nuevo conocimiento."
         }
       },
       "read": {
         "outcomes": {
-          "0": "Decides leer un libro. Trata de cocinar y preparar platos deliciosos. Anotas la receta antes de ir a buscar los ingredientes. Una vez que los has encontrado, sigues las instrucciones al pie de la letra. Pruebas tu plato antes de experimentar sus beneficios, y luego te pones en camino.",
-          "1": "Coges un libro y empiezas a leer. El libro trata de aritmética. Pero ese nunca ha sido tu punto fuerte, y casi 10 minutos después decides dejar el libro y continuar tu camino.",
-          "2": "Estás leyendo un libro de cocina. Habla de un plato delicioso. Entusiasmado, decides prepararlo. Sin embargo, no sigues las instrucciones al pie de la letra y, después de comer, no te encuentras bien...",
+          "0": "Decides leer un libro. Trata sobre los remedios y las propiedades curativas de las plantas. En él descubres cómo preparar un bálsamo revitalizante y anotas con cuidado el método. Tras reunir las pocas hierbas necesarias, sigues las instrucciones al pie de la letra y te aplicas el remedio en tus viejas heridas. Notas sus beneficios de inmediato.",
+          "1": "Coges un libro y empiezas a leerlo. El libro trata sobre aritmética. Sin embargo, eso nunca se te ha dado bien: casi 10 minutos después, decides volver a dejar el libro en la estantería, desanimado.",
+          "2": "Sacas de una estantería un viejo grimorio cuyas páginas, cubiertas de moho, desprenden un olor acre. Absorto en su lectura, respiras profundamente esos aromas a polvo. Poco a poco, se te oprime la garganta y empiezas a marearte: no te encuentras nada bien...",
           "3": "Coges el primer libro que ves. Habla de alquimia y de los beneficios de las plantas. Tras estudiar detenidamente su contenido, vuelves a dejarlo en el suelo, seguro de que te será útil en tus próximas aventuras."
         },
         "text": "Lee un libro."
       },
       "steal": {
         "outcomes": {
-          "0": "Consigues robar un libro viejo y polvoriento y sales a hurtadillas del edificio para encontrar un comprador en las calles principales de la ciudad. Sin embargo, te das cuenta de que el libro no interesa a nadie, sobre todo porque está muy estropeado e incluso tiene las páginas rotas. Así que lo abandonas antes de continuar tu camino.",
-          "1": "Te escapas de la biblioteca sin que nadie se dé cuenta. Has conseguido robar un libro e intentas venderlo a los transeúntes. Un hombre decide comprártelo por unas monedas de oro. Una vez completada la transacción, continúas tu camino.",
+          "0": "Consigues robar un viejo libro polvoriento y sales discretamente del edificio para buscar un comprador en las grandes avenidas de la ciudad. Sin embargo, te das cuenta de que nadie está interesado en ese libro, sobre todo porque está muy estropeado e incluso tiene páginas rotas. Así que, desanimado, lo abandonas en un rincón de un callejón.",
+          "1": "Sales a hurtadillas de la biblioteca sin que nadie se dé cuenta. Has conseguido robar un libro e intentas vendérselo a los transeúntes. Un hombre decide comprártelo por unas cuantas monedas de oro. Una vez realizada la transacción, te guardas las monedas en el bolsillo y te pierdes entre la multitud de la ciudad.",
           "2": "Intentas robar un libro de oro discretamente, pero la bibliotecaria te pilla con las manos en la masa. Te exige que le devuelvas el preciado libro y, al mismo tiempo, ¡una indemnización! Decepcionado y avergonzado, devuelves el libro y la compensas con un buen puñado de tus ahorros para evitar ir a la cárcel..."
         },
         "text": "Intentar robar un libro para revenderlo."
       }
     },
-    "text": "Tras pasear por las calles de Claire de Ville, te topas con un edificio cuya entrada está enmarcada por dos estatuas de búho de piedra. Al acercarte, te das cuenta de que se trata de la biblioteca de la ciudad. Decides entrar en el edificio para pasar el rato. En una de las paredes de la entrada cuelga un calendario hecho con grandes hojas unidas por una correa de cuero."
+    "text": "Al llegar a Claire de Ville, tu mirada se ve atraída por un edificio cuya entrada está flanqueada por dos estatuas de búhos de piedra. Al acercarte, te das cuenta de que se trata de la biblioteca de la ciudad. A través de la puerta entreabierta, distingues innumerables estanterías repletas de libros y, colgado de una pared de la entrada, un calendario formado por hojas grandes unidas entre sí por una tira de cuero."
   },
   "69": {
     "possibilities": {
@@ -2355,8 +2356,8 @@
       "check": {
         "outcomes": {
           "0": "Al forzar la puerta, te estás haciendo mucho daño. ¡Tienes que cuidarte!",
-          "1": "Después de pasar casi 1 hora intentando entrar en la casa, finalmente te rindes. Al salir, ¡encuentras algo que puede serte útil!",
-          "2": "Entras en la casa y dejas tus cosas para descansar. Tras haber caído en un profundo sueño, necesitarás descansar antes de continuar tu aventura.",
+          "1": "Después de pasar casi una hora intentando entrar en la casa, acabas por rendirte. Al alejarte del umbral, encuentras un objeto que quizá te resulte útil.",
+          "2": "Entras en la casa y dejas tus cosas para descansar. Abatido por un sueño profundo, te desplomas sobre una cama polvorienta que había tirada en un rincón.",
           "3": "Entras en la casa y buscas durante unos quince minutos. Cuando sales, ¡encuentras un objeto que puede ser útil!",
           "4": "Entras en la casa y buscas durante unos quince minutos. Finalmente abandonas la búsqueda sin haber encontrado nada."
         },
@@ -2364,17 +2365,17 @@
       },
       "end": {
         "outcomes": {
-          "0": "Llevas casi quince minutos parado, ¡así que es hora de volver a ponerse en marcha!"
+          "0": "Llevas casi quince minutos sin moverte, ¡ya es hora de salir de tu letargo!"
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Continúa su camino sin preocuparse por la casa."
+          "0": "Dejas atrás la casa abandonada, sin preocuparte más por ella."
         },
-        "text": "No te detengas y sigue adelante."
+        "text": "No te detengas en esta casa."
       }
     },
-    "text": "¡Has descubierto una casa! Parece abandonada..."
+    "text": "Entre las ruinas de Ville Forte, descubres una casa que aún se mantiene en pie. Parece abandonada..."
   },
   "70": {
     "possibilities": {
@@ -2651,11 +2652,11 @@
       },
       "flee": {
         "outcomes": {
-          "0": "Prefieres evitar cualquier peligro y das media vuelta para tomar una ruta alternativa. Tu prudencia tiene un precio: pierdes tiempo y acabas perdiéndote por este nuevo camino, pero al menos evitas posibles problemas.",
-          "1": "Al dar media vuelta, tropiezas con las prisas y te haces una pequeña herida. El ruido alerta a los dos hombres, que detienen su discusión para mirar en tu dirección, pero no te persiguen.",
-          "2": "Tu retirada te lleva por casualidad a un camino olvidado donde descubres los restos de un antiguo campamento. Entre los escombros, encuentras un objeto aún utilizable abandonado por anteriores viajeros."
+          "0": "Para evitar cualquier peligro, rodeas el claro y tomas un camino alternativo. Tu prudencia tiene un precio: pierdes tiempo y acabas perdiéndote por ese nuevo sendero, pero al menos te libras de posibles problemas.",
+          "1": "Al alejarte, tropiezas por las prisas y te haces un pequeño rasguño. El ruido llama la atención de los dos hombres, que dejan de discutir para mirar en tu dirección, pero no te persiguen.",
+          "2": "Tu desvío te lleva por casualidad a un sendero olvidado, donde descubres los restos de un antiguo campamento. Entre los escombros, encuentras un objeto aún utilizable que habían abandonado viajeros anteriores."
         },
-        "text": "Da media vuelta y evita la confrontación."
+        "text": "Rodear el claro y evitar el enfrentamiento."
       }
     },
     "text": "Mientras avanzas por un sinuoso sendero del bosque de Celestrum, oyes de repente unas voces procedentes de un claro cercano. Intrigado, te acercas discretamente y descubres a dos hombres en medio de una discusión. Están frente a frente, gesticulando salvajemente, obviamente en desacuerdo sobre algo importante. Uno lleva una capa remendada, el otro una chaqueta de cuero desgastada. Entre ellos, en el suelo, hay una caja de madera que cada uno parece reclamar."
@@ -2848,6 +2849,43 @@
     },
     "text": "Cruzas el umbral de una vieja casa de aspecto ruinoso. La espesa niebla que la rodea parece tragarse los contornos del mundo exterior, como si la casa existiera fuera de toda realidad. El aire es frío y estancado, y cada paso hace gemir las viejas tablas del suelo. Una extraña presencia parece observarte desde las sombras de los pasillos."
   },
+  "82": {
+    "possibilities": {
+      "enterOpening": {
+        "outcomes": {
+          "0": "Te cuelas por el hueco y tus ojos, al adaptarse a la oscuridad, descubren un gigantesco nido de murciélagos. Sales tan rápido como puedes y te diriges a la puerta principal. Sin duda, hacía mucho tiempo que nadie había pasado por allí.",
+          "1": "Avanzas poco a poco por ese estrecho túnel, guiándote con las manos, y llegas a una puerta: empujas la hoja y sales a plena calle comercial. Este túnel debía de servir para algunas transacciones poco legales, por lo que decides alejarte rápidamente de allí, con las pocas monedas que has encontrado en el subterráneo en el bolsillo.",
+          "2": "Te cuelas por el hueco y tus ojos, al adaptarse a la oscuridad, descubren un desprendimiento a unos metros de distancia. Te abres paso con dificultad por ese callejón sin salida y te diriges hacia la entrada principal de la fortaleza.",
+          "3": "Te cuelas por la abertura y empiezas a avanzar con dificultad por el estrecho túnel. Tras unos metros, ves un objeto tirado en un rincón. Al recogerlo, te das cuenta con horror de que estaba junto a unos huesos. Sales corriendo rápidamente, sin apenas darte cuenta de los rasguños que te han hecho las estrechas paredes."
+        },
+        "text": "Cruzar la abertura"
+      },
+      "alertGuards": {
+        "outcomes": {
+          "0": "Corres hacia la puerta para avisar a los guardias de que la muralla se está deteriorando, pero tus advertencias solo provocan risas burlonas, seguidas de una patada bien dada que te lanza lejos de las puertas reales...",
+          "1": "Te diriges hacia la puerta y avisas a los guardias. Pero por mucho que insistas en la gravedad de este deterioro, nadie te hace caso. Al final te marchas, maldiciendo en silencio a esos incompetentes.",
+          "2": "Avisas a los guardias de esta inquietante brecha y les muestras exactamente el lugar afectado. Sin dudarlo, reúnen material improvisado y se ponen manos a la obra para repararla. Tu inestimable ayuda acelera considerablemente los trabajos. Tras largas horas de esfuerzo, te invitan a sentarte a la mesa de los soldados para compartir un merecido festín."
+        },
+        "text": "Avisar a los guardias"
+      },
+      "moveOn": {
+        "outcomes": {
+          "0": "Intuyes que hay algo sospechoso detrás de todo esto y no quieres meterte en el asunto. Abandonas el lugar y regresas a la puerta principal.",
+          "1": "Te marchas rápidamente del lugar, pero un guardia te ve y, al darse cuenta de que la puerta está abierta, te detiene para interrogarte. Tras pasar largas horas dando explicaciones, finalmente te dejan en libertad, al no haber pruebas que te incriminen.",
+          "2": "Das media vuelta, pero una mano se posa de repente sobre tu hombro. Te giras, presa del pánico, pero solo es Price, el mercenario, que te ha reconocido desde lejos. Entonces entablas una acalorada conversación sobre la evolución del precio de las gemas y la inflación de los alquileres, que termináis con una buena comida en el pabellón real."
+        },
+        "text": "Muévete"
+      },
+      "end": {
+        "outcomes": {
+          "0": "Estás a punto de marcharte cuando un hombre sale a rastras por la abertura. Su rostro te resulta familiar: se trata de Price, el mercenario, que se queda paralizado un instante antes de reconocerte. Te rodea el cuello con el brazo y te ofrece unas monedas a cambio de tu silencio; aceptas de inmediato.",
+          "1": "Estás a punto de marcharte cuando un hombre enmascarado sale a rastras por la abertura. Presa del pánico, el bandido saca su espada, se abalanza sobre ti y te hiere gravemente, antes de que puedas hacer el más mínimo gesto. Lo ves huir, sumido en tu propia sangre.",
+          "2": "Mientras observas la entrada, un destello dorado te llama la atención. Los rayos del sol revelan algunas piezas abandonadas en el túnel, así como un objeto que te apresuras a recoger. Te marchas, contento con este hallazgo."
+        }
+      }
+    },
+    "text": "Al acercarte a la imponente muralla que rodea la ciudad real, te das cuenta de que hay una grieta que recorre las paredes y conduce a una abertura en el edificio. Te parece lo suficientemente grande como para que quepa un hombre..."
+  },
   "9": {
     "possibilities": {
       "end": {
@@ -2873,5 +2911,270 @@
       }
     },
     "text": "Te encuentras con un granjero en medio del campo. Ha perdido su horca..."
+  },
+  "83": {
+    "possibilities": {
+      "observe": {
+        "outcomes": {
+          "0": "Como no oyes bien, te acercas a la puerta. Un ujier del castillo se da cuenta enseguida y te pide que te metas en tus asuntos. Sin insistir, sigues tu camino.",
+          "1": "Apenas empiezas a aguzar el oído cuando la bruja parece haber terminado. Ya solo se oyen unos murmullos indistintos a cierta distancia, y sale apenas cinco minutos después. Sin saber muy bien por qué, te aseguras de que no te vea al salir.",
+          "2": "Decides observar la discusión desde lejos. La situación se agrava rápidamente y la bruja saca de su bolsa varios frascos que rompe contra el suelo. Al instante, se extiende una gran nube de gas oscuro y nauseabundo. Se disipa rápidamente, y observas con espanto que la bruja ha desaparecido y que todos los demás ocupantes de la sala han perdido el conocimiento. Tú también te ves afectado por el gas, a pesar de la distancia, y te sientes bastante mal."
+        },
+        "text": "Escuchar con discreción."
+      },
+      "help": {
+        "outcomes": {
+          "0": "Te acercas para intentar comprender mejor la situación y ver si puedes ayudar. Sin embargo, enseguida te dejan claro que no eres bienvenido en este asunto, así que sigues tu camino.",
+          "1": "Te acercas para intentar comprender mejor la situación y ver si puedes ayudar. Resulta que un señor la acusa de haber empeorado el estado de su hijo enfermo al administrarle uno de sus preparados; con voz muy débil, ella jura que solo intentó aliviarlo tras el fracaso de los médicos del castillo. Te acercas a ella e intentas convencer al bailío de que los remedios de las brujas, tanto en sus métodos como en sus efectos, no tienen nada que ver con los ungüentos de los charlatanes, y que no se le puede considerar responsable de un mal que ella ha intentado curar. Tu interlocutor no quiere saber nada: juzgar la legitimidad de la brujería, dice, es competencia exclusiva del rey. Al comprender que no vas a conseguir nada aquí, te retiras. Antes de que salgas de la sala, la bruja te desliza discretamente en la mano una de sus pociones, para agradecerte que hayas querido ayudarla.",
+          "2": "Te acercas para intentar comprender mejor la situación y ver si puedes ayudar. Entiendes que la acusan de haber envenenado al hijo de un señor con el pretexto de curarlo, y que la persona que tiene delante parece convencida de que no es más que una charlatana peligrosa. Tú mismo no sabes si crees en la brujería, ni si esta mujer es realmente una bruja, así que decides descartar la idea de intervenir. Te quedas escuchando la conversación un rato y luego sigues tu camino."
+        },
+        "text": "Intenta ayudar a tu conocido."
+      },
+      "accuse": {
+        "outcomes": {
+          "0": "Te adelantas y corroboras las palabras del señor, afirmando que los preparados de esa mujer siempre te han parecido dudosos. El bailío te escucha con atención, y el señor, agradecido por haber encontrado apoyo, te desliza discretamente una bolsa a cambio de tu testimonio antes de abandonar el lugar.",
+          "1": "Tomas la palabra contra la bruja, y tu testimonio tiene un gran peso en la balanza. El señor, aliviado al ver que el asunto se resuelve a su favor, te da las gracias efusivamente y te ofrece uno de los objetos que llevaba consigo como muestra de gratitud.",
+          "2": "Decides testificar en su contra y declaras en voz alta que dudas de sus supuestos poderes. La bruja se vuelve lentamente hacia ti, con una mirada ardiente de traición. Sus ojos parecen brillar por un instante. Retomas tu camino, pero, curiosamente, aunque esa parte del castillo está dispuesta de forma que resulta muy intuitivo recorrerla, te pierdes varias veces durante horas.",
+          "3": "Te unes a la acusación, pero el alguacil te exige que dejes constancia de tu testimonio por escrito. A continuación, te espera una interminable serie de preguntas y formularios, y cuando por fin te liberas de esa tarea, ya ha transcurrido buena parte del día."
+        },
+        "text": "Testificar en su contra."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Te quedas indeciso durante unos largos instantes. Te saca de tus pensamientos un transeúnte que te reconoce y se presenta como uno de tus admiradores, con la esperanza de llegar a ser algún día un aventurero tan impresionante como tú. Te entrega unos regalos para celebrar vuestro encuentro, charláis un rato y luego os despedís. Te das cuenta de que la bruja ya no está en la sala, así que reanudas tu camino.",
+          "1": "Te quedas allí paralizado durante varios minutos, sin saber en absoluto cómo actuar. De repente, llegan numerosos guardias. Detienen a la bruja, que se resiste en silencio y agita los brazos como para proclamar su inocencia. Al verte, te suplica con la mirada que des fe de su buena fe. Los guardias deciden considerarte su cómplice en este asunto, por lo que te llevan a la cárcel junto con ella, sin siquiera dejarte decir nada."
+        }
+      }
+    },
+    "text": "Mientras atraviesas el ala oeste del castillo, unas voces enaltecidas te hacen volver la cabeza. Una puerta se ha quedado abierta en la sala donde el bailío imparte justicia en nombre del señor, y desde allí se oye cómo se eleva el tono contra una acusada. La reconoces sin dificultad: es la vieja bruja a la que tantas veces has ayudado a preparar sus pociones. No es la primera vez que la llevan así ante la justicia, y seguramente no será la última; sin embargo, hasta ahora siempre se ha salido con la suya sin demasiados problemas."
+  },
+  "84": {
+    "possibilities": {
+      "compete": {
+        "outcomes": {
+          "0": "Pasan unos minutos y tu cubo empieza a llenarse de cangrejos pequeños. De repente, aparece una enorme pinza: un magnífico cangrejo negro se abalanza sobre tu cebo. Consigues sacarlo del agua y, orgulloso de ti mismo, te das la vuelta para enseñárselo al público. Es entonces cuando te pellizca violentamente la mano. El dolor te hace soltar el sedal y, en una torpe caída, acabas en el agua fría, donde pierdes tu monedero. El pescador pelirrojo te ayuda a salir del agua y te desliza una jarra de ron entre las manos para que entres en calor.",
+          "1": "Coges el hilo, con el cebo en el extremo, y lo sumerges suavemente en las oscuras aguas del puerto. Un gran cangrejo negro se engancha, pero tiras del sedal con tanta brusquedad que se te escapa y, en el forcejeo, vuelcas el cubo, que se hace añicos contra los adoquines. Los cangrejos pequeños se dispersan en todas direcciones, provocando las risas de los espectadores. El maestro, con un tono un poco burlón, te invita a volver a intentarlo otro día.",
+          "2": "De repente, un ligero tirón... que se hace más fuerte. Vas recogiendo lentamente el sedal cuando un cangrejo negro gigantesco chasquea sus pinzas. Consigues sacarlo como puedes, pero se te escapa resbalándose entre los dedos justo antes de entregárselo al patrón. Este se ríe y, aun así, te ofrece una jarra de ron por el esfuerzo. Has causado buena impresión, y los curiosos te lanzan unas monedas.",
+          "3": "Un gran cangrejo negro, casi tan ancho como un escudo, surge de repente de un rincón oscuro del muelle y muerde el cebo: ¡es Maurice, la criatura rara, y da miedo! Sin embargo, mantienes la calma y, tras una larga e increíble lucha, consigues sacarlo con destreza. El público aplaude, el maestro te felicita calurosamente y te entrega una imponente jarra de ron, así como una pequeña bolsa de monedas de oro. Además, te regala un objeto misterioso que ha encontrado recientemente en las redes. Te ganas la confianza de algunos pescadores influyentes, uno de los cuales te invita a compartir una buena cena."
+        },
+        "text": "Aceptar el reto y pescar cangrejos con caña."
+      },
+      "cheat": {
+        "outcomes": {
+          "0": "Demasiado seguro de ti mismo, te inclinas hacia la cesta de un competidor distraído y coges el cangrejo más grande, dispuesto a hacerlo pasar por tuyo. Pero una mano callosa te agarra de la muñeca. El pescador, furioso, te lanza un puñetazo terrible en plena barbilla. Caes hacia atrás, con la mandíbula entumecida y un sabor metálico en la lengua. La multitud se acerca, estallan las risas, y el organizador del concurso exige una compensación antes de expulsarte del muelle con un gesto seco.",
+          "1": "Mientras intentas meter a escondidas un cangrejo prestado en tu cubo, un anciano de mirada penetrante observa toda la escena desde cierta distancia. No dice nada, pero se acerca al organizador del concurso y le susurra unas palabras al oído. Te retiran de la clasificación sin dar explicaciones, y de repente el ambiente a tu alrededor se vuelve opresivo. Los murmullos te persiguen hasta el final del muelle.",
+          "2": "Un niño se te acerca discretamente, orgulloso de su enorme captura. Unas monedas intercambiadas bajo una red volcada, y el trato está cerrado. Deslizas suavemente el cangrejo en tu cubo, junto al resto de tus capturas. En la evaluación, los jueces se maravillan ante su caparazón veteado. No ganas el gran premio, pero te ofrecen una buena recompensa, y los pescadores te miran ahora con cierto respeto.",
+          "3": "Justo antes de que comience el concurso, cambias discretamente tu trozo de pescado por un cebo gelatinoso muy escaso que le has robado a un pescador experimentado. El cangrejo que capturas de este modo es de un tamaño excepcional, hasta tal punto que varios competidores se apartan en silencio. El cangrejo negro gigante se pesa, es aclamado y el maestro pescador te proclama ganador sin lugar a dudas. Además de la jarra de plata, un comerciante del puerto, encantado con tu audacia, te ofrece un objeto."
+        },
+        "text": "Intentar hacer trampa sin que se note."
+      },
+      "observe": {
+        "outcomes": {
+          "0": "Creías estar a salvo, apartado junto a una escalera de piedra, pero tu falta de vigilancia te sale cara. Mientras observabas atentamente a los pescadores, un chaval descalzo se cuela por detrás para rebuscar en tu bolsa. Divisas a lo lejos una silueta que desaparece tras un murete: ya es demasiado tarde para reaccionar. Gruñes, amargado, mientras cierras tu bolsa.",
+          "1": "Mientras permaneces a la sombra de los barriles, eres testigo de varias artimañas: intercambios, cestas amañadas, alianzas... Cuando una disputa entre dos pescadores llama la atención de la multitud, aprovechas para acercarte a un cubo y robar un cangrejo grande que te apresuras a revender en el mercado.",
+          "2": "Has preferido observar desde un lado, sentado en una vieja caja de transporte. A tu lado, un pescador con la piel curtida por la sal y los años comparte algunos comentarios discretos sobre cómo los participantes hacen trampa o se ponen en ridículo. Sonríes, y muy pronto la conversación se anima, las risas brotan sin freno y el bullicio del puerto parece, por un instante, lejano. Al ver que no tienes nada que comer, abre su bolsa de lona y saca una barra de pan, una lata de sardinas a la parrilla y una botella de vino, que comparte sin dudarlo, como si te conociera de toda la vida."
+        },
+        "text": "Observar a los participantes desde un segundo plano."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Te sientas sobre una pila de redes secas, de cara al horizonte. Durante unos minutos, dejas que el sol te caliente la cara, con los músculos relajados y el olor de la brisa marina en la nariz. Una gaviota lanza un grito ronco. ¿Cuánto tiempo has pasado soñando así?",
+          "1": "Mientras los gritos de emoción y los aplausos resuenan a tus espaldas, tomas otro camino y te alejas del bullicio de la carrera de cangrejos. Aquí no tienes nada que demostrar: buscas otra cosa. La aventura continúa."
+        }
+      }
+    },
+    "text": "Mientras paseas por los bulliciosos muelles, ves a un hombre fornido con barba pelirroja,  encaramado a una caja volcada, que arenga a los transeúntes: promete una jarra de ron por cada cangrejo pescado y una sorpresa para quien saque el más grande. El concurso es sencillo: los cangrejos no se capturan ni con nasas ni con redes, sino que se atraen con sedal, cebados con restos de pescado. Esto requiere paciencia, destreza y un poco de suerte."
+  },
+  "85": {
+    "possibilities": {
+      "forceChains": {
+        "outcomes": {
+          "0": "Con un grito de desafío, te aferras a las pesadas cadenas oxidadas y tiras con todas tus fuerzas. Los eslabones chirrían, se resisten… y luego ceden con un estruendo metálico. Un arquero intenta apuntarte, pero su flecha rebota contra la roca. Te liberas de la trampa, sin aliento pero ileso, y te haces con una bolsa de cuero que contiene unas cuantas monedas antes de desaparecer.",
+          "1": "Un destello de ira ancestral te recorre el cuerpo. Tiras con fuerza de las cadenas y estas se rompen de golpe, levantando una nube de polvo y fragmentos de metal. Tus enemigos huyen, presa del pánico ante tu poderío. En su huida, uno de los bandidos deja caer una bolsa y un objeto.",
+          "2": "Te abalanzas sobre las cadenas e intentas arrancarlas, pero se mantienen firmes. Antes de que puedas volver a intentarlo, una flecha te roza la mejilla y, a continuación, otra se te clava en el hombro. Los bandidos bajan riéndose burlonamente, te arrebatan la bolsa y desaparecen."
+        },
+        "text": "Rompe las cadenas oxidadas para liberarte."
+      },
+      "attackArcher": {
+        "outcomes": {
+          "0": "Retrocedes para lanzarte hacia la pared y trepas con facilidad, agarrándote a las protuberancias con agilidad. Por poco no alcanzas al arquero más cercano. Te abalanzas sobre él y le das un empujón con el hombro que lo hace caer al vacío; el impacto es mortal. Apenas tienes tiempo de parar la flecha del segundo arquero con tu escudo. Los dos bandidos intercambian entonces una mirada inquieta antes de huir zigzagueando entre las rocas. Vuelves a bajar para registrar al hombre que yace en el suelo y te quedas con todas sus pertenencias.",
+          "1": "Sin perder tiempo, te giras, rodeas el arco y trepas por una pared rocosa adyacente. Te lanzas al ataque lanzando un grito salvaje que hace tambalear la seguridad del arquero. Pilado por sorpresa, dispara una flecha que silba junto a tus oídos. Llegas hasta él y, con un movimiento brusco, lo derribas al suelo y lo inmovilizas. Su alforja se desliza por el polvo, dejando al descubierto algunas monedas. Al ser testigos de tu fulgurante ataque, los otros dos bandidos dudan un instante y luego se dan a la fuga sin pensárselo dos veces.",
+          "2": "Tras detectar una abertura en un hueco rocoso, trepas rápidamente y te abalanzas sobre el arquero. Pero el hombre con coraza se interpone con una destreza inquietante. El impacto es brutal: su escudo te golpea con fuerza en las costillas y te lanza contra la pared. Intentas contraatacar, pero es un luchador duro y metódico que apenas te deja ningún hueco. Finalmente, consigues zafarte rodando por el suelo, magullado y sin aliento, mientras tus enemigos se alejan riéndose con sorna. Estás vivo, pero gravemente herido."
+        },
+        "text": "Ataca al arquero más cercano."
+      },
+      "end": {
+        "outcomes": {
+          "0": "En lugar de actuar precipitadamente, decides retirarte con prudencia. Consigues volver a encontrar el camino sin perder tiempo.",
+          "1": "Das media vuelta, prefiriendo no correr ningún riesgo. Quizá no sea muy glorioso, pero conservas tus fuerzas y, sobre todo, la vida. Retomas el camino por una ruta más larga, frustrado, pero sano y salvo."
+        }
+      }
+    },
+    "text": "Te adentras en un pasadizo flanqueado por paredes rocosas cubiertas de musgo. Este paso, por el que antaño transitaban los mercaderes, está hoy abandonado, ya que lo frecuentan con demasiada frecuencia las bestias salvajes. Mientras pasáis por debajo de un arco natural, un chasquido metálico os hiela la sangre: unas cadenas oxidadas caen de un saliente y bloquean la salida. Una silueta con armadura surge en un promontorio, flanqueada por dos arqueros encapuchados. Estáis atrapados."
+  },
+  "86": {
+    "possibilities": {
+      "ponton": {
+        "outcomes": {
+          "0": "Avanzas lentamente por el embarcadero, mientras la niebla te envuelve poco a poco y tus pasos hacen crujir la madera empapada. Cuando te inclinas para tocar el agua, una tabla carcomida cede bajo tus pies y caes de bruces al agua helada. Consigues salir, empapado y temblando de frío, y pierdes un tiempo precioso secando tus cosas al sol.",
+          "1": "Al llegar al final del embarcadero, podrás disfrutar de unas magníficas vistas del lago. Entonces ves una forma flotando en la superficie. Al estirar un palo, recoges una pequeña caja de madera barnizada, que probablemente se haya caído de una barca. Contiene una botella de aguardiente y una bonita bolsa llena de oro.",
+          "2": "Una vieja barca abandonada sigue amarrada al embarcadero. Decides subirte a ella para cruzar el lago y ahorrar tiempo. Pero la niebla se espesa rápidamente y te encuentras perdido en medio del lago. Remas durante un buen rato hasta que, finalmente, regresas al punto de partida. Al bajar de la embarcación, ves un objeto atascado entre dos tablas."
+        },
+        "text": "Llegar hasta el embarcadero entre la niebla."
+      },
+      "herbs": {
+        "outcomes": {
+          "0": "Selecciona cuidadosamente los tallos más robustos y las hojas intactas. Su aroma recuerda al de la menta silvestre mezclada con lavanda. Estas plantas endémicas son escasas y muy apreciadas por sus propiedades medicinales: las venderás a buen precio en una herboristería.",
+          "1": "Apenas has arrancado la tercera planta cuando un líquido blanquecino empieza a brotar por tus dedos. Al instante siguiente, te aparecen manchas rojas que te suben hasta las muñecas y te pican terriblemente los brazos. Tienes que enjuagarte a fondo en el lago para aliviar el dolor.",
+          "2": "Al arrugar las hojas entre los dedos, te invade un aroma extrañamente familiar. Te trae a la memoria un recuerdo difuso de la infancia: un extenso campo bañado por el sol, una mano delicada que te ofrecía un ramo de flores..."
+        },
+        "text": "Recoge las hierbas extrañas que hay cerca de la orilla."
+      },
+      "fish": {
+        "outcomes": {
+          "0": "Tras una larga espera que te ha dado tiempo para comer bien, por fin sientes que algo tira. Levantas el sedal lentamente y descubres una vieja bota llena de lodo. Decides marcharte, decepcionado por tu escaso talento para la pesca.",
+          "1": "Ata un anzuelo improvisado a un trozo de cordel y busca un cebo. Tira del hilo hacia atrás para lanzarlo lo más lejos posible, pero el anzuelo se te clava en el hombro. Contienes un grito, pasas un buen rato sacándolo y luego desinfectando la herida con un poco de agua turbia del lago. No es precisamente una pesca gloriosa.",
+          "2": "El hilo se tensa de repente. Tiras de él, pensando que es un pez cualquiera, pero lo que sacas del agua es una extraña criatura brillante, con escamas azules nacaradas. Te mira fijamente un instante y luego escupe una moneda de oro antes de volver a sumergirse. Te quedas allí, atónito, con la moneda en la mano."
+        },
+        "text": "Intentar pescar en el lago."
+      },
+      "reflect": {
+        "outcomes": {
+          "0": "Cierras los ojos y dejas que tu respiración se sincronice con el murmullo casi imperceptible del lago. Cuando los vuelves a abrir, el paisaje parece más nítido, más vivo. Te invade una sensación de profunda calma, como si el lago te hubiera acogido por un instante. Te sientes maravillosamente bien.",
+          "1": "Tu reflejo te mira fijamente con una intensidad inusual. Un parpadeo. Luego, una sonrisa... que no es la tuya. De repente, una silueta borrosa emerge de debajo de la superficie y jurarías haber visto una mano rozándote el tobillo. Das un salto hacia atrás, con el corazón a mil. El cuerpo hinchado por el agua se acerca lentamente mientras tú sales corriendo.",
+          "2": "El agua parece absorberte. Tu imagen se ondula, se deforma. Durante largos minutos, te pierdes en tus pensamientos, como hechizado. Cuando vuelves en ti, el sol ya se ha desplazado y tienes las piernas entumecidas. Un objeto brilla en la superficie: un frasco que contiene un líquido ámbar. Sin darte cuenta siquiera, bebes el brebaje desconocido y sientes cómo recuperas todas tus fuerzas."
+        },
+        "text": "Contempla tu reflejo en el agua."
+      },
+      "cabin": {
+        "outcomes": {
+          "0": "Al alejarte un poco de la orilla, descubres una cabaña cuya puerta cuelga torcida. En el interior: redes mohosas, tarros vacíos y un cuaderno empapado sobre una mesa desvencijada. Al hojearlo con delicadeza, consigues descifrar algunas palabras que advierten de no pescar con luna llena y de un reflejo que hablaría. Te estremezcas de repente y algo se desliza del cuaderno...",
+          "1": "Al apartar una estantería derrumbada contra la pared, divisas una gran caja de hierro oxidada. En su interior hay un objeto que parece haber sido cuidadosamente conservado a pesar del estado de abandono del lugar, quizá más valioso de lo que parece.",
+          "2": "Al forzar una caja mohosa, se desprende un intenso olor a podredumbre. En su interior, descubres un montón de trapos húmedos y el cuerpo arrugado de una criatura acuática, parcialmente disuelta. Su forma casi humanoide te produce una sensación inquietante. Con el corazón en un puño, sales tambaleándote, con las náuseas a punto de brotar de tus labios."
+        },
+        "text": "Explorar la cabaña abandonada."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Te alejas de la orilla en silencio. La extraña calma del lago te ha provocado un ligero escalofrío, pero el camino te espera.",
+          "1": "Te alejas de las orillas del lago Mirage sin mirar atrás, prefiriendo los caminos más seguros."
+        }
+      }
+    },
+    "text": "Tras una larga y agotadora caminata, llegas a un claro silencioso donde se extiende una vasta masa de agua con reflejos cambiantes. El Lago Mirage hace honor a su nombre: su superficie espejada parece vibrar, a veces cristalina, a veces velada como un sueño incierto. Las altas hierbas se mecen suavemente en las orillas, y una fina niebla se eleva en algunos puntos, ocultando lo que podría ser un embarcadero, una cabaña abandonada... o presencias menos tranquilizadoras. El lugar está en calma, casi demasiado en calma, como suspendido en el tiempo."
+  },
+  "87": {
+    "possibilities": {
+      "climb": {
+        "outcomes": {
+          "0": "Llegas a la planta superior y descubres una mochila olvidada detrás de un montón de escombros. En su interior hay unas monedas y una ración de comida seca que aún se puede consumir. Recuperas fuerzas, satisfecho con este hallazgo modesto pero bienvenido.",
+          "1": "Subes en silencio, escudriñando cada rincón. Bajo una losa suelta, encuentras un escondite con unas monedas, ocultadas allí hace mucho tiempo por un desconocido. Las guardas con cuidado en tu bolsa.",
+          "2": "Un escalón, deteriorado por el paso de los años, se derrumba bajo tu peso. Tu pierna golpea con fuerza la piedra y te invade un dolor agudo. Pierdes tiempo desinfectando la herida y vendándola con un trozo de tela rasgada."
+        },
+        "text": "Sube con cuidado para inspeccionar la planta superior de la torre."
+      },
+      "throwStone": {
+        "outcomes": {
+          "0": "Lanzas la piedra, pero no pasa nada. Sin embargo, el ruido atrae a un grupo de animalitos curiosos que trepan rápidamente hasta ti. Uno de ellos empieza a hurgar en tu mochila y te muerde cuando intentas apartarlo. Pierdes tiempo intentando deshacerte de estas pequeñas criaturas.",
+          "1": "Lanzas una piedra grande hacia la torre. Esta golpea una viga desvencijada... ¡y hace caer un viejo nido de cuervos! Estos, furiosos, se abalanzan sobre ti graznando como si hubieras insultado a su madre. Huyes agitando los brazos, tropezando con cada guijarro como un borracho. Tras un lapso de tiempo que te parece interminable, por fin te dejan en paz y se llevan volando tu dignidad.",
+          "2": "Al agacharte para recoger una piedra, ves un objeto no muy lejos. Miras a la izquierda, a la derecha: ¡no hay nadie! Lo recoges rápidamente, lo guardas en tu bolsa y te marchas a toda prisa."
+        },
+        "text": "Lanzar una piedra para ver si hay alguna reacción."
+      },
+      "walkAround": {
+        "outcomes": {
+          "0": "Das una vuelta lentamente. Observas varias piedras desprendidas al pie de la torre y marcas de garras en un trozo de pared. Te mantienes alerta, pero nada se mueve.",
+          "1": "Rodeas la torre, pero no ves ninguna abertura por la que se pueda pasar. El silencio del lugar, solo interrumpido por el viento, te inquieta. Te marchas sin incidentes, pero con una mayor desconfianza."
+        },
+        "text": "Dar la vuelta a la torre sin entrar en ella."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Te pasas un buen cuarto de hora reflexionando, dividido entre tu curiosidad y tu miedo al peligro. Finalmente, decides seguir tu camino, dejando la torre atrás. El camino es duro, pero avanzas sin contratiempos, concentrado en tu objetivo.",
+          "1": "La torre te evoca varias imágenes: una princesa que podría haber estado encerrada allí, un caballero que podría haber perecido en ella. Ese pensamiento te arranca una sonrisa. Sigues tu camino y, un poco más adelante, al borde del sendero, ves un objeto atascado entre dos raíces."
+        }
+      }
+    },
+    "text": "El sendero serpentea entre las rocas, accidentado y escarpado. Con el aliento entrecortado, subes bajo un cielo gris cuando, al doblar una curva, divisas una torre solitaria, medio derruida. Sus piedras ennegrecidas parecen llevar años abandonadas, pero un reflejo metálico te ha deslumbrado brevemente desde el piso superior. ¿Es una ilusión? ¿Un arma? ¿O algo peor?"
+  },
+  "88": {
+    "possibilities": {
+      "capture": {
+        "outcomes": {
+          "0": "Vacías tu bolsa y la colocas con cuidado delante del escorpión, con un lado levantado para mantenerla bien abierta. Desconfiado, el animal duda un instante, pero luego se deja tentar por la sombra de la bolsa y se adentra en ella: la cierras de inmediato, encantado con tu magnífica captura. Esta especie de escorpión es famosa por su veneno, muy codiciado para la elaboración de pociones raras; de vuelta entre los puestos, no te cuesta nada cambiarlo por una de ellas.",
+          "1": "Deslizas la hoja de tu espada por debajo del escorpión. Como este no reacciona, con un movimiento hábil llevas la espada hacia tu alforja antes de dejarla caer en ella. Es un ejemplar precioso: lo venderás a buen precio en el mercado.",
+          "2": "Deslizas lentamente tu espada por debajo del escorpión antes de levantarla. Presa del pánico, este se desliza rápidamente hasta la empuñadura y te pica. Haciendo una mueca de dolor, te aprietas con fuerza la muñeca justo por encima de la picadura y, a continuación, aspiras el veneno con un movimiento rápido, escupiendo el líquido amargo al suelo con la esperanza de frenar el avance del veneno.",
+          "3": "Consigues meter al escorpión en tu bolsa, que has vaciado para la ocasión, y cierras la abertura antes de que se le ocurra salir. Es una buena captura, y por un instante piensas en lo que te reportaría en el mercado. Pero al verlo acurrucarse tranquilamente entre tus pertenencias, sientes afecto por la pequeña criatura acorazada: en lugar de venderlo, decides quedártelo a tu lado como fiel compañero."
+        },
+        "text": "Intentar atrapar al escorpión."
+      },
+      "crush": {
+        "outcomes": {
+          "0": "Levantas bruscamente el pie e intentas aplastarlo. Demasiado tarde: el escorpión te ha visto venir y te clava su aguijón en el tobillo. El dolor es fulminante. Caes de rodillas, mientras el veneno ya empieza a hacerte delirar.",
+          "1": "Recoges la primera piedra plana que encuentras cerca para aplastarla. ¡Grave error! Calentada al rojo vivo por el sol, te quema la mano. La sueltas de un tirón mientras sueltas un taco, pero el daño ya está hecho: te pasas un buen rato haciéndote un vendaje resistente para proteger la herida, mientras el escorpión se marcha sin prestarte atención. ",
+          "2": "Sin pensarlo dos veces, le lanzas tu bolsa y te abalanzas sobre él con ambos pies como un histérico. La papilla verdosa que ahora mancha tu bolsa lo demuestra: ¡no hay duda, está bien muerto! Esa descarga de adrenalina parece haberte devuelto las fuerzas para seguir tu camino. Apenas has vuelto a ponerte en marcha, divisas un objeto brillante medio enterrado en la arena, junto con un puñado de monedas."
+        },
+        "text": "Intentar aplastar al escorpión."
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "Retrocedes lentamente para alejarte de él sin que se dé cuenta. A continuación, te tomas tu tiempo para saciar bien tu sed. Al sentirte mejor, reanudas tu camino con precaución, sin incidentes.",
+          "1": "Te quedas completamente inmóvil, conteniendo la respiración, hasta que el escorpión se escabulle rápidamente bajo otra piedra."
+        },
+        "text": "No le hagas caso al escorpión y sigue tu camino."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Apartas la mirada, pensando que el escorpión no merece la pena correr el riesgo. Sigues tu camino por el desierto."
+        }
+      }
+    },
+    "text": "La arena ardiente se hunde bajo tus pasos mientras avanzas con dificultad, con el pañuelo bien ajustado al rostro para protegerte del viento cálido cargado de polvo. En el horizonte, nada más que dunas. Te arrodillas un instante para recuperar el aliento, pero un movimiento te llama la atención: un escorpión negro, del tamaño de un puño, sale lentamente de debajo de una piedra, con la cola arqueada brillando a la luz..."
+  },
+  "89": {
+    "possibilities": {
+      "stepAside": {
+        "outcomes": {
+          "0": "Te apartas de la vía principal para despejar el centro de la calle. Pero la multitud, densa y que ha seguido tu ejemplo, te empuja contra la pared de una casa. Mientras desfilan los guardias, te cuesta respirar, con el pecho oprimido. Con un profundo alivio, por fin divisas al último soldado de la cohorte.",
+          "1": "Mientras la multitud se retira del centro de la avenida, te ves apretujado entre un montón de gente. Aprovechas ese hacinamiento para robar discretamente unas monedas a tus vecinos.",
+          "2": "Mientras la multitud se retira del centro de la avenida, te ves apretujado entre un montón de gente. Solo después de que haya pasado la Guardia Real te das cuenta de que un delincuente ha aprovechado ese momento de aglomeración para robarte la cartera."
+        },
+        "text": "Apartarse rápidamente."
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "Sigues avanzando sin hacer caso de la orden recibida y acabas encontrándote frente a una cohorte de unos treinta soldados que te miran con hostilidad. Presa del pánico, te apartas lo más rápido posible mientras balbuceas excusas.",
+          "1": "Ignoras por completo la advertencia y sigues tu camino, obstinado, hasta chocar contra uno de los soldados del desfile. Desconcertado, te disculpas, pero el hombre te agarra, te da una paliza y luego te arroja al arcén. Avergonzado y magullado, soportas las risas burlonas de los demás soldados y te arrastras hasta un callejón cercano para curarte las heridas.",
+          "2": "Sigues caminando tranquilamente, sin hacer caso de los murmullos de los ciudadanos escandalizados por tu insolencia, hasta que te encuentras frente a una treintena de guardias con miradas hostiles. Antes incluso de que puedas reaccionar, te agarran y te meten en la cárcel por desacato a la Guardia Real.",
+          "3": "Avanzas sin hacer caso de la orden recibida, hasta que chocas con un soldado de la vanguardia. Cuando este levanta el puño para contraatacar, le agarras del brazo, lo tiras al suelo y lo inmovilizas en un santiamén. Una risa divertida recorre la cohorte y el rey se acerca, montado en un gran caballo blanco. Impresionado por tu hazaña frente a la élite de sus soldados, te recompensa con una generosa suma, pero te ordena que abandones la ciudad."
+        },
+        "text": "Ignorar la notificación."
+      },
+      "bow": {
+        "outcomes": {
+          "0": "Al igual que todos los transeúntes, te apartas del camino y dejas pasar a la columna de caballeros. Al ver la lujosa carroza que les sigue, te inclinas junto con el resto de la gente. Cuando llega a tu altura, levantas discretamente la cabeza y vislumbras, por un instante, los delicados dedos de la princesa del reino saludando a su pueblo. Esa visión basta para devolverte el ánimo.",
+          "1": "Te apartas a un lado de la calle y te inclinas respetuosamente ante el paso de los soldados, gesto que pronto imitan muchos ciudadanos. Al ver esto, los guardias sacan pecho y desfilan con orgullo. Te levantas al cabo de unos minutos, embargado por el sentimiento de pertenencia y lealtad que tu iniciativa ha despertado en la población.",
+          "2": "En cuanto recibes la orden, te arrodillas, bajas la cabeza y te inclinas ante los soldados. Sin embargo, enseguida te das cuenta de tu soledad en ese gesto de sumisión: no se trataba más que de una simple patrulla. Al llegar a tu altura, los soldados te empujan entre risas y tú te alejas, avergonzado."
+        },
+        "text": "Hacer una reverencia ante el paso de la Guardia."
+      },
+      "otherAlley": {
+        "outcomes": {
+          "0": "Mientras te adentras por un callejón transversal, vislumbras por un instante un movimiento en los tejados. Desconfiado, trepas por una pared para salir de dudas y descubres a un hombre oculto, apuntando con una ballesta hacia el carruaje que desfila entre los soldados: ¡un intento de asesinato contra la familia real! Sin dudarlo, te abalanzas sobre el agresor, le arrebatas el arma y consigues reducirlo. El alboroto atrae a los caballeros, a quienes entregas al criminal antes de bajar del tejado. Alertado, el rey se acerca y te propone unirte a la Guardia. A pesar de tu negativa, te ofrece un equipo del Tesoro Real, así como una mascota de gran rareza, como muestra de buena relación con la corona. Agradecido, te inclinas respetuosamente entre los vítores de la multitud.",
+          "1": "Mientras te adentras por un callejón transversal, vislumbras por un instante un movimiento en los tejados. Desconfiado, trepas por una pared para salir de dudas y descubres a un hombre oculto, apuntando con una ballesta hacia el carruaje que desfila entre los soldados: ¡un intento de asesinato contra la familia real! Sin dudarlo, te abalanzas sobre el agresor, le arrebatas el arma y consigues reducirlo. El alboroto atrae a los caballeros, a quienes entregas al criminal antes de bajar del tejado. Alertado, el rey se acerca y te propone unirte a la Guardia. A pesar de tu negativa, te ofrece un equipo del Tesoro Real, así como una generosa bolsa de oro, como muestra de buena relación con la corona. Agradecido, te inclinas respetuosamente entre los vítores de la multitud.",
+          "2": "Al llegar a un callejón cercano y desierto, te llega una voz. ¡Los pocos fragmentos que captas te revelan que se está preparando un atentado contra la familia real! Sin pensarlo ni un instante, te lanzas a la avenida cercana, con el arma en la mano, antes de darte cuenta de tu imprudencia: tus enemigos son demasiados. Luchas valientemente y consigues herir a algunos, pero acabas abrumado y dado por muerto.",
+          "3": "Tomas la primera calle transversal y rodeas la procesión. Aprovechas para pasar por una pequeña tienda local y comprar algo de comida y algo de equipamiento a buen precio.",
+          "4": "Mientras recorres un callejón paralelo y desierto, te llegan unas voces procedentes de una casa. Llevado por la curiosidad, te acercas y escuchas a la puerta, pero solo captas algunos fragmentos: mercancías, alguien a quien eliminar, un pasadizo, una red. Justo cuando estás a punto de marcharte, sin querer verte envuelto en este asunto sospechoso, reconoces con asombro, en una de las voces, ¡la del mercenario Price! Sigues tu camino, consternado."
+        },
+        "text": "Toma otra callejuela."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Te alejas del centro de la avenida y sigues tu camino bordeando las paredes de las casas.",
+          "1": "Te quedas clavado en medio del paseo, pero la multitud acaba empujándote hacia un lado. Así que esperas a que termine esa procesión militar antes de reanudar tu paseo por las calles de la capital."
+        }
+      }
+    },
+    "text": "Avanzas tranquilamente por las calles de la ciudad que rodean el castillo real. Los transeúntes charlan y el ambiente es alegre; incluso oyes maullar a un gato a lo lejos. De repente, se oye un alboroto al final de la calle: un soldado, con voz atronadora, ordena a todo el mundo que se aparte de inmediato."
   }
 }

@@ -27,6 +27,13 @@ export async function setWeeklyCronJob(
 	await setCronJob(`0 0 * * ${dayOfTheWeek}`, toExecute, shouldRunImmediately);
 }
 
+export async function set10MinutesCronJob(
+	toExecute: Executable,
+	shouldRunImmediately: boolean
+): Promise<void> {
+	await setCronJob("0 */10 * * * *", toExecute, shouldRunImmediately);
+}
+
 interface YearlySchedule {
 	month: number;
 	day: number;

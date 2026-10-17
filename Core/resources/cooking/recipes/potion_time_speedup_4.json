@@ -1,0 +1,29 @@
+{
+  "level": 4,
+  "recipeType": "POTION_TIME_SPEEDUP",
+  "plants": [
+    {
+      "plantId": 3,
+      "quantity": 2
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 89,
+      "quantity": 1
+    },
+    {
+      "materialId": 73,
+      "quantity": 1
+    },
+    {
+      "materialId": 60,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 5,
+  "potionRarity": 3,
+  "discoveredByDefault": true,
+  "petFood": null
+}

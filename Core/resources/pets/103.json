@@ -1,0 +1,8 @@
+{
+  "rarity": 4,
+  "diet": "herbivorous",
+  "force": 1,
+  "speed": 6,
+  "feedDelay": 4,
+  "tags": ["aquatic"]
+}

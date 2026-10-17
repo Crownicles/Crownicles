@@ -1,14 +1,15 @@
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
 import Player from "../database/game/models/Player";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	Guild, Guilds
 } from "../database/game/models/Guild";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { giveFoodToGuild } from "../utils/FoodUtils";
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
 import {
 	CrowniclesPacket, makePacket, PacketContext
@@ -17,8 +18,14 @@ import { SmallEventUltimateFoodMerchantPacket } from "../../../../Lib/src/packet
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
 import { Constants } from "../../../../Lib/src/constants/Constants";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { PacketUtils } from "../utils/PacketUtils";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import {
+	GASPARD_JO_RECIPE_COSTS, RecipeDiscoverySource
+} from "../../../../Lib/src/constants/CookingConstants";
+import { openRecipeShopOffer } from "./recipeShopOffer";
+import { RecipeShopSource } from "../../../../Lib/src/packets/interaction/ReactionCollectorRecipeShopSmallEvent";
 
 /**
  * Return the min rarity the player can get on an item
@@ -42,12 +49,13 @@ function maxRarity(player: Player): number {
  * @param currentFoodLevel
  * @param ultimate
  */
-function foodAmount(player: Player, currentFoodLevel: number, ultimate: boolean): number {
+function foodAmount(player: Player, currentFoodLevel: number, ultimate: boolean, guild: Guild): number {
 	const food = ultimate ? SmallEventConstants.ULTIMATE_FOOD_MERCHANT.ULTIMATE_FOOD : SmallEventConstants.ULTIMATE_FOOD_MERCHANT.COMMON_FOOD;
+	const cap = guild.getFoodCapacityFor(ultimate ? PetConstants.PET_FOOD.ULTIMATE_FOOD : PetConstants.PET_FOOD.COMMON_FOOD);
 	return Math.max(Math.min(
 		Math.ceil(food.MULTIPLIER * Math.tanh(player.level / 100))
 		+ RandomUtils.variationInt(food.VARIATION),
-		(ultimate ? GuildConstants.MAX_ULTIMATE_PET_FOOD : GuildConstants.MAX_COMMON_PET_FOOD) - currentFoodLevel
+		cap - currentFoodLevel
 	), 1);
 }
 
@@ -62,13 +70,13 @@ function generateReward(player: Player, guild: Guild | null): string {
 	}
 	if (player.level >= SmallEventConstants.ULTIMATE_FOOD_MERCHANT.MINIMUM_LEVEL_GOOD_PLAYER) {
 		return RandomUtils.crowniclesRandom.bool()
-			? guild.ultimateFood < GuildConstants.MAX_ULTIMATE_PET_FOOD
+			? guild.ultimateFood < guild.getFoodCapacityFor(PetConstants.PET_FOOD.ULTIMATE_FOOD)
 				? SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD
 				: SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.FULL_ULTIMATE_FOOD
 			: SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ITEM;
 	}
 
-	if (GuildConstants.MAX_COMMON_PET_FOOD > guild.commonFood) {
+	if (guild.getFoodCapacityFor(PetConstants.PET_FOOD.COMMON_FOOD) > guild.commonFood) {
 		return SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD;
 	}
 
@@ -86,17 +94,22 @@ function generateReward(player: Player, guild: Guild | null): string {
 async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response: CrowniclesPacket[], context: PacketContext, player: Player, guild: Guild | null): Promise<void> {
 	switch (packet.interactionName) {
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD:
-			packet.amount = foodAmount(player, guild!.ultimateFood, true);
+			packet.amount = foodAmount(player, guild!.ultimateFood, true, guild!);
 			await giveFoodToGuild(response, player, SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 			break;
-		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ITEM:
-			await giveItemToPlayer(response, context, player, generateRandomItem({
+		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ITEM: {
+			const item = generateRandomItem({
 				minRarity: minRarity(player),
 				maxRarity: maxRarity(player)
-			}));
+			});
+			await giveItemToPlayer(response, context, player, item, {
+				itemLevel: generateRandomLootLevel(),
+				itemEnchantmentId: generateRandomLootEnchantment(item)
+			});
 			break;
+		}
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD:
-			packet.amount = foodAmount(player, guild!.commonFood, false);
+			packet.amount = foodAmount(player, guild!.commonFood, false, guild!);
 			await giveFoodToGuild(response, player, SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 			break;
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.MONEY:
@@ -132,9 +145,29 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const packet: SmallEventUltimateFoodMerchantPacket = { interactionName: generateReward(player, guild) };
 		await giveReward(packet, response, context, player, guild);
 		if (packet.interactionName === Constants.DEFAULT_ERROR) {
-			response.push(makePacket(ErrorPacket, { message: "SmallEvent Ultimate Food Merchant : cannot determine an interaction for the user" }));
+			PacketUtils.pushInternalError(response, "Small event ultimate food merchant: cannot determine an interaction", {
+				context: { keycloakId: player.keycloakId }
+			});
 			return;
 		}
+
+		// Gaspard Jo, the ultimate food merchant, may also sell a cooking recipe if one is available and the player can afford it
+		const offer = await RecipeDiscoveryService.peekNextDiscovery(player, RecipeDiscoverySource.GASPARD_JO, GASPARD_JO_RECIPE_COSTS);
+		if (offer && player.money >= offer.cost) {
+			openRecipeShopOffer({
+				response,
+				player,
+				context,
+				source: RecipeShopSource.GASPARD_JO,
+				offer,
+				ultimateFoodMerchant: {
+					interactionName: packet.interactionName,
+					amount: packet.amount
+				}
+			});
+			return;
+		}
+
 		response.push(makePacket(SmallEventUltimateFoodMerchantPacket, packet));
 	}
 };

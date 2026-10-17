@@ -4,5 +4,7 @@
   "tags": [
     "holy",
     "metallic"
-  ]
+  ],
+  "type": "metal",
+  "materialCategory": 5
 }

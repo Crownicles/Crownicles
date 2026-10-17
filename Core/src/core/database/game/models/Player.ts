@@ -1,16 +1,21 @@
 import {
-	DataTypes, Model, Op, QueryTypes, Sequelize
+	col, DataTypes, fn, Model, Op, QueryTypes, Sequelize
 } from "sequelize";
 import InventorySlot, { InventorySlots } from "./InventorySlot";
 import PetEntity from "./PetEntity";
 import MissionSlot from "./MissionSlot";
 import { InventoryInfos } from "./InventoryInfo";
-import { MissionsController } from "../../../missions/MissionsController";
+import {
+	assertPlayerHasNoPendingChanges, LockedPlayerMutation, MissionInformationsWithoutMutation, MissionsController, PLAYER_RESYNC_CALLERS
+} from "../../../missions/MissionsController";
 import { PlayerActiveObjects } from "./PlayerActiveObjects";
 import {
+	asMilliseconds,
 	daysToMilliseconds,
 	getOneDayAgo,
+	Millisecond,
 	millisecondsToSeconds,
+	asMinutes,
 	minutesToHours
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { TravelTime } from "../../../maps/TravelTime";
@@ -27,17 +32,19 @@ import { PlayerDeathPacket } from "../../../../../../Lib/src/packets/events/Play
 import { PlayerLeavePveIslandPacket } from "../../../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
 import { PlayerLevelUpPacket } from "../../../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { MapLinkDataController } from "../../../../data/MapLink";
-import {
-	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
-} from "../EditValueParameters";
+import { scheduleAfterCommit } from "../../../../../../Lib/src/locks/scheduleAfterCommit";
 import {
 	MapLocation, MapLocationDataController
 } from "../../../../data/MapLocation";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { GenericItem } from "../../../../data/GenericItem";
 import {
 	Class, ClassDataController
 } from "../../../../data/Class";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
+import { getCrowniclesNamespace } from "../../../../../../Lib/src/locks/CLSNamespace";
 import {
 	League, LeagueDataController
 } from "../../../../data/League";
@@ -53,19 +60,29 @@ import { ClassInfoConstants } from "../../../../../../Lib/src/constants/ClassInf
 import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstants";
 import { MapConstants } from "../../../../../../Lib/src/constants/MapConstants";
 import { Effect } from "../../../../../../Lib/src/types/Effect";
-import { ScheduledReportNotifications } from "./ScheduledReportNotification";
-import { PacketUtils } from "../../../utils/PacketUtils";
+import { dispatchOrRescheduleArrivalNotification } from "../../../bot/ReportNotifications";
 import { StatValues } from "../../../../../../Lib/src/types/StatValues";
-import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
 import { MathUtils } from "../../../utils/MathUtils";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
-import { Potion } from "../../../../data/Potion";
+import { CityDataController } from "../../../../data/City";
+import { ItemEnchantmentKind } from "../../../../../../Lib/src/types/ItemEnchantment";
+import { EnchantmentConstants } from "../../../../../../Lib/src/constants/EnchantmentConstants";
+import { EnchantmentUtils } from "../../../utils/EnchantmentUtils";
+import {
+	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
+} from "../EditValueParameters";
 import { BlessingManager } from "../../../blessings/BlessingManager";
+import { Homes } from "./Home";
+import { getSlotCountForCategory } from "../../../../../../Lib/src/types/HomeFeatures";
+import { RecipeDiscoveryService } from "../../../cooking/RecipeDiscoveryService";
+import { RecipeDisplayInfo } from "../../../../../../Lib/src/types/CookingTypes";
+import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/CookingConstants";
+import { buildNewItemSlotData } from "../../../utils/ItemSlotUtils";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -79,12 +96,71 @@ type ressourcesLostOnPveFaint = {
 	guildPointsLost: number;
 };
 
+/**
+ * Reasons whose token gains are allowed to push the player above the normal
+ * token cap. These are rare, reward-like sources (pet expeditions and the
+ * one-time new player boost handed out during the tutorial big events).
+ */
+const OVER_CAP_TOKEN_REASONS: ReadonlySet<NumberChangeReason> = new Set([
+	NumberChangeReason.EXPEDITION,
+	NumberChangeReason.BIG_EVENT
+]);
+
+const PLAYERS_LEVELING_UP_CONTEXT_KEY = "playersLevelingUp" as const;
+
+/**
+ * Compute the new token count after applying `amount` to `currentTokens`, honoring
+ * the MAX cap, the over-cap reward rule, and the lower bound at 0. Used both
+ * by `addTokens` to decide whether to trigger the update and by the locked
+ * mutation callback to recompute against the freshly locked DB value (so a
+ * concurrent token write between the caller's read and the lock acquisition is
+ * never silently clobbered).
+ */
+function computeNewTokens(currentTokens: number, amount: number, reason: NumberChangeReason): number {
+	if (amount <= 0) {
+		// When spending or doing a no-op, don't clamp to MAX (preserve over-cap tokens from expeditions)
+		return Math.max(0, currentTokens + amount);
+	}
+	if (currentTokens >= TokensConstants.MAX) {
+		// Block all gains when already at or above max (including over-cap reward sources)
+		return currentTokens;
+	}
+	if (OVER_CAP_TOKEN_REASONS.has(reason)) {
+		// Reward sources can exceed the max cap, but only when current tokens are below MAX
+		return currentTokens + amount;
+	}
+	return MathUtils.clamp(currentTokens + amount, 0, TokensConstants.MAX);
+}
+
 export class Player extends Model {
+	/**
+	 * Build a {@link LockKey} for this player so it can participate in a
+	 * `withLockedEntities([...])` composite critical section.
+	 *
+	 * @param id Primary key of the player to lock.
+	 */
+	static lockKey(id: number): LockKey<Player> {
+		return {
+			model: Player, id
+		};
+	}
+
+	/**
+	 * Convenience helper for the common case of locking a single player.
+	 * Opens a Sequelize transaction, acquires `SELECT … FOR UPDATE` on the
+	 * row, re-fetches it, and passes the fresh instance to `fn`. Any
+	 * `player.save()` inside `fn` (directly or transitively) inherits the
+	 * transaction through the shared CLS namespace.
+	 */
+	static withLocked<R>(id: number, fn: (player: Player) => Promise<R>): Promise<R> {
+		return withLockedEntities([Player.lockKey(id)], ([player]) => fn(player));
+	}
+
 	declare readonly id: number;
 
 	declare keycloakId: string;
 
-	declare health: number;
+	declare private health: number;
 
 	declare fightPointsLost: number;
 
@@ -104,7 +180,7 @@ export class Player extends Model {
 
 	declare guildId: number | null;
 
-	declare nextEvent: number;
+	declare nextEvent: number | null;
 
 	declare petId: number | null;
 
@@ -120,6 +196,12 @@ export class Player extends Model {
 
 	declare startTravelDate: Date;
 
+	declare insideCity: boolean;
+
+	declare cityArrivalDate: Date | null;
+
+	declare lastActivityAt: Date;
+
 	declare defenseGloryPoints: number;
 
 	declare attackGloryPoints: number;
@@ -132,6 +214,20 @@ export class Player extends Model {
 
 	declare banned: boolean;
 
+	declare lastMealAt: Date;
+
+	declare cookingLevel: number;
+
+	declare cookingExperience: number;
+
+	declare lastBedUsedAt: Date | null;
+
+	declare lastGardenWatered: Date | null;
+
+	declare furnacePosition: number;
+
+	declare pinnedCookingRecipeId: string | null;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -142,6 +238,15 @@ export class Player extends Model {
 	getDestinationId(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
 		return link ? link.endMap : null;
+	}
+
+	/**
+	 * Get the id of the city the player is currently in (the destination of the
+	 * player's current map link is a city map), or `null` if not in a city.
+	 */
+	getCurrentCityId(): string | null {
+		const destinationId = this.getDestinationId();
+		return destinationId === null ? null : CityDataController.instance.getCityByMapId(destinationId)?.id ?? null;
 	}
 
 	/**
@@ -173,7 +278,7 @@ export class Player extends Model {
 	 */
 	public getCurrentTripDuration(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
-		return link ? minutesToHours(link.tripDuration) : null;
+		return link ? minutesToHours(asMinutes(link.tripDuration)) : null;
 	}
 
 	/**
@@ -187,6 +292,46 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Apply a gameplay mutation and its mission progress against the same freshly
+	 * locked player, then synchronize this caller instance with the committed state.
+	 */
+	private async mutateWithMission(
+		response: CrowniclesPacket[],
+		mission: MissionInformationsWithoutMutation,
+		mutate: LockedPlayerMutation
+	): Promise<void> {
+		await MissionsController.update(this, response, {
+			...mission,
+			applyOnLockedPlayer: mutate
+		});
+	}
+
+	private async mutateWithMissions(
+		response: CrowniclesPacket[],
+		missions: MissionInformationsWithoutMutation[],
+		mutate: LockedPlayerMutation
+	): Promise<void> {
+		const [firstMission, ...otherMissions] = missions;
+		await MissionsController.updateMultiple(this, response, [
+			{
+				...firstMission,
+				applyOnLockedPlayer: mutate
+			},
+			...otherMissions
+		]);
+	}
+
+	private async mutateLocked(mutate: LockedPlayerMutation): Promise<void> {
+		assertPlayerHasNoPendingChanges(this, PLAYER_RESYNC_CALLERS.MUTATE_LOCKED);
+		const updatedPlayer = await Player.withLocked(this.id, async lockedPlayer => {
+			mutate(lockedPlayer);
+			await lockedPlayer.save();
+			return lockedPlayer;
+		});
+		Object.assign(this, updatedPlayer);
+	}
+
+	/**
 	 * Add or remove points from the score of a player
 	 * @param parameters
 	 */
@@ -194,18 +339,28 @@ export class Player extends Model {
 		if (parameters.amount > 0 && !parameters.ignoreBlessing) {
 			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getScoreMultiplier());
 		}
-		this.score += parameters.amount;
-		if (parameters.amount > 0) {
-			const newPlayer = await MissionsController.update(this, parameters.response, {
-				missionId: "earnPoints",
-				count: parameters.amount
-			});
-			Object.assign(this, newPlayer);
-		}
-		await this.setScore(this.score, parameters.response);
-		crowniclesInstance.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
+		const delta = parameters.amount;
+		const scoreMissions: MissionInformationsWithoutMutation[] = [
+			...delta > 0
+				? [
+					{
+						missionId: "earnPoints",
+						count: delta
+					}
+				]
+				: [],
+			{
+				missionId: "reachScore",
+				count: locked => locked.score,
+				set: true
+			}
+		];
+		await this.mutateWithMissions(parameters.response, scoreMissions, locked => {
+			locked.score = Math.max(0, locked.score + delta);
+			locked.addWeeklyScore(delta);
+		});
+		crowniclesInstance?.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
 			.then();
-		this.addWeeklyScore(parameters.amount);
 		return this;
 	}
 
@@ -217,21 +372,21 @@ export class Player extends Model {
 		if (!parameters.ignoreBlessing) {
 			parameters.amount = BlessingManager.getInstance().applyMoneyBlessing(parameters.amount);
 		}
-		this.money += parameters.amount;
-		if (parameters.amount > 0) {
-			const newPlayer = await MissionsController.update(this, parameters.response, {
+		const delta = parameters.amount;
+		if (delta > 0) {
+			await this.mutateWithMission(parameters.response, {
 				missionId: "earnMoney",
-				count: parameters.amount
+				count: delta
+			}, locked => {
+				locked.money = Math.max(0, locked.money + delta);
 			});
-
-			/*
-			 * Clone the mission entity and player to this player model and the entity instance passed in the parameters
-			 * As the money and experience may have changed, we update the models of the caller
-			 */
-			Object.assign(this, newPlayer);
 		}
-		this.setMoney(this.money);
-		crowniclesInstance.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
+		else {
+			await this.mutateLocked(locked => {
+				locked.money = Math.max(0, locked.money + delta);
+			});
+		}
+		crowniclesInstance?.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
 			.then();
 		return this;
 	}
@@ -241,12 +396,61 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async spendMoney(parameters: EditValueParameters): Promise<Player> {
-		await MissionsController.update(this, parameters.response, {
+		const amount = Math.abs(parameters.amount);
+		await this.mutateWithMission(parameters.response, {
 			missionId: "spendMoney",
-			count: parameters.amount
+			count: amount
+		}, locked => {
+			locked.money = Math.max(0, locked.money - amount);
 		});
-		parameters.amount = -parameters.amount;
-		return this.addMoney(parameters);
+		crowniclesInstance?.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
+			.then();
+		return this;
+	}
+
+	/**
+	 * Apply a token gain under lock and report how many tokens were actually
+	 * granted, which can be less than requested because of the token cap.
+	 */
+	private async earnTokens(parameters: EditValueParameters): Promise<number> {
+		let actualChange = 0;
+		await this.mutateWithMissions(parameters.response, [
+			{
+				missionId: "earnTokens",
+				count: (): number => actualChange
+			},
+			{
+				missionId: "maxTokensReached",
+				count: (locked): number => locked.tokens >= TokensConstants.MAX ? 1 : 0,
+				set: true
+			}
+		], locked => {
+			const previousTokens = locked.tokens;
+			locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason);
+			actualChange = locked.tokens - previousTokens;
+		});
+		return actualChange;
+	}
+
+	/**
+	 * Add tokens to the player and return the actual gain applied.
+	 *
+	 * The returned value must be used when the value shown to the player depends
+	 * on the capped token mutation. It is calculated on the locked instance,
+	 * rather than from this caller's synchronized Sequelize instance.
+	 * This is only valid for positive amounts.
+	 * @param parameters
+	 */
+	public async addTokensAndGetActualGain(parameters: EditValueParameters): Promise<number> {
+		if (parameters.amount <= 0) {
+			throw new Error("addTokensAndGetActualGain requires a positive amount");
+		}
+		const gainedTokens = await this.earnTokens(parameters);
+		if (gainedTokens === 0) {
+			return 0;
+		}
+		await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
+		return gainedTokens;
 	}
 
 	/**
@@ -254,59 +458,15 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addTokens(parameters: EditValueParameters): Promise<Player> {
-		const previousTokens = this.tokens;
-
-		let newTokens;
-		if (parameters.amount <= 0) {
-			// When spending or doing a no-op, don't clamp to MAX (preserve over-cap tokens from expeditions)
-			newTokens = Math.max(0, this.tokens + parameters.amount);
-		}
-		else if (this.tokens >= TokensConstants.MAX) {
-			// Block all gains when already at or above max (including expeditions)
-			return this;
-		}
-		else if (parameters.reason === NumberChangeReason.EXPEDITION) {
-			// Expedition rewards can exceed the max cap, but only when current tokens are below MAX
-			newTokens = this.tokens + parameters.amount;
+		if (parameters.amount > 0) {
+			await this.addTokensAndGetActualGain(parameters);
 		}
 		else {
-			newTokens = MathUtils.clamp(
-				this.tokens + parameters.amount,
-				0,
-				TokensConstants.MAX
-			);
-		}
-
-		if (newTokens === previousTokens) {
-			return this;
-		}
-
-		this.setTokens(newTokens);
-		await crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
-
-		// Track missions for earning tokens
-		const actualChange = newTokens - previousTokens;
-		if (actualChange > 0) {
-			let newPlayer = await MissionsController.update(this, parameters.response, {
-				missionId: "earnTokens",
-				count: actualChange
+			await this.mutateLocked(locked => {
+				locked.tokens = computeNewTokens(locked.tokens, parameters.amount, parameters.reason);
 			});
-
-			/*
-			 * Clone the mission entity and player to this player model and the entity instance passed in the parameters
-			 * As the money and experience may have changed, we update the models of the caller
-			 */
-			Object.assign(this, newPlayer);
-
-			// Check if max tokens reached
-			if (this.tokens >= TokensConstants.MAX) {
-				newPlayer = await MissionsController.update(this, parameters.response, {
-					missionId: "maxTokensReached"
-				});
-				Object.assign(this, newPlayer);
-			}
+			await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
 		}
-
 		return this;
 	}
 
@@ -317,21 +477,14 @@ export class Player extends Model {
 	public async useTokens(parameters: EditValueParameters): Promise<Player> {
 		const tokensToUse = Math.abs(parameters.amount);
 
-		// Track missions for using tokens
-		let newPlayer = await MissionsController.update(this, parameters.response, {
-			missionId: "useTokens",
-			count: tokensToUse
-		});
-		Object.assign(this, newPlayer);
-
-		newPlayer = await MissionsController.update(this, parameters.response, {
+		await this.mutateWithMission(parameters.response, {
 			missionId: "spendTokens",
 			count: tokensToUse
+		}, locked => {
+			locked.tokens = computeNewTokens(locked.tokens, -tokensToUse, parameters.reason);
 		});
-		Object.assign(this, newPlayer);
-
-		parameters.amount = -tokensToUse;
-		return this.addTokens(parameters);
+		await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
+		return this;
 	}
 
 	/**
@@ -367,7 +520,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param newLevel
 	 */
-	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number): Promise<void> {
+	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number, discoveredRecipes: RecipeDisplayInfo[]): Promise<void> {
 		const healthRestored = newLevel % 10 === 0;
 
 		const packet = makePacket(PlayerLevelUpPacket, {
@@ -381,15 +534,15 @@ export class Player extends Model {
 			classesTier3Unlocked: newLevel === ClassConstants.GROUP2LEVEL,
 			classesTier4Unlocked: newLevel === ClassConstants.GROUP3LEVEL,
 			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
-			missionSlotUnlocked: newLevel === Constants.MISSIONS.SLOT_2_LEVEL || newLevel === Constants.MISSIONS.SLOT_3_LEVEL,
+			missionSlotUnlocked: Player.isMissionSlotUnlockedAtLevel(newLevel),
 			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
-			tokensUnlocked: newLevel === TokensConstants.LEVEL_TO_UNLOCK,
-			statsIncreased: true
+			statsIncreased: true,
+			...discoveredRecipes.length > 0 ? { discoveredRecipes } : {}
 		});
 
 		if (healthRestored) {
 			await this.addHealth({
-				amount: this.getMaxHealth() - this.health,
+				amount: this.getMaxHealth() - this.getHealth(),
 				response,
 				reason: NumberChangeReason.LEVEL_UP,
 				missionHealthParameter: {
@@ -407,26 +560,56 @@ export class Player extends Model {
 	 * @param response
 	 */
 	public async levelUpIfNeeded(response: CrowniclesPacket[]): Promise<void> {
+		const namespace = getCrowniclesNamespace();
+		const playersLevelingUp = namespace.get(PLAYERS_LEVELING_UP_CONTEXT_KEY) as ReadonlySet<number> | undefined;
+		if (playersLevelingUp?.has(this.id)) {
+			return;
+		}
+		await namespace.runPromise(async () => {
+			namespace.set(PLAYERS_LEVELING_UP_CONTEXT_KEY, new Set([
+				...playersLevelingUp ?? [],
+				this.id
+			]));
+			await this.processLevelUps(response);
+		});
+	}
+
+	private async processLevelUps(response: CrowniclesPacket[]): Promise<void> {
 		if (!this.needLevelUp()) {
 			return;
 		}
 
-		const xpNeeded = this.getExperienceNeededToLevelUp();
-		this.experience -= xpNeeded;
-		crowniclesInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
-			.then();
-		const newLevel = ++this.level;
-		crowniclesInstance.logsDatabase.logLevelChange(this.keycloakId, this.level)
-			.then();
-		Object.assign(this, await MissionsController.update(this, response, {
+		let didLevelUp = false;
+		await this.mutateWithMission(response, {
 			missionId: "reachLevel",
-			count: newLevel,
+			count: locked => locked.level,
 			set: true
-		}));
+		}, locked => {
+			/*
+			 * Re-evaluate against the freshly-locked row in case a concurrent
+			 * transaction already advanced the level: only apply the level-up
+			 * if `locked` still has enough XP for its current level.
+			 */
+			if (!locked.needLevelUp()) {
+				return;
+			}
+			locked.experience -= locked.getExperienceNeededToLevelUp();
+			locked.level += 1;
+			didLevelUp = true;
+		});
+		if (!didLevelUp) {
+			return;
+		}
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
+			.then();
+		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
+			.then();
 
-		await this.addLevelUpPacket(response, newLevel);
+		const discoveredRecipes = await RecipeDiscoveryService.syncProgressionRecipes(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE, this.level);
 
-		await this.levelUpIfNeeded(response);
+		await this.addLevelUpPacket(response, this.level, discoveredRecipes);
+
+		await this.processLevelUps(response);
 	}
 
 	/**
@@ -442,32 +625,23 @@ export class Player extends Model {
 
 	/**
 	 * Check if we need to kill the player (mouahaha)
-	 * This method is idempotent - calling it multiple times when the player is already dead will not duplicate effects
+	 * Idempotent: the death effect is (re)applied as long as the player has no health left, but a single
+	 * {@link PlayerDeathPacket} is pushed per response, even when several health changes reach 0 in the same flow
+	 * (e.g. a big event outcome that damages the player and then overwrites their effect).
 	 * @param response
 	 * @param reason
+	 * @returns true if the player is dead
 	 */
 	public async killIfNeeded(response: CrowniclesPacket[], reason: NumberChangeReason): Promise<boolean> {
 		if (this.health > 0) {
 			return false;
 		}
-
-		// Check if already dead to avoid duplicate effects/packets
-		if (this.effectId === Effect.DEAD.id) {
-			/*
-			 * A previous lethal change may already have pushed a PlayerDeathPacket into the response.
-			 * To preserve idempotency while allowing callers to control ordering, move any existing
-			 * PlayerDeathPacket to the end of the response array without duplicating it.
-			 */
-			const existingIndex = response.findIndex(packet => packet instanceof PlayerDeathPacket);
-			if (existingIndex !== -1 && existingIndex !== response.length - 1) {
-				const [deathPacket] = response.splice(existingIndex, 1);
-				response.push(deathPacket);
-			}
-			return true;
+		if (this.effectId !== Effect.DEAD.id) {
+			await TravelTime.applyEffect(this, Effect.DEAD, 0, new Date(), reason);
 		}
-		await TravelTime.applyEffect(this, Effect.DEAD, 0, new Date(), reason);
-		const packet = makePacket(PlayerDeathPacket, {});
-		response.push(packet);
+		if (!response.some(packet => packet instanceof PlayerDeathPacket)) {
+			response.push(makePacket(PlayerDeathPacket, {}));
+		}
 		return true;
 	}
 
@@ -475,7 +649,20 @@ export class Player extends Model {
 	 * Check if the player has played recently
 	 */
 	public isInactive(): boolean {
-		return this.startTravelDate.valueOf() + TopConstants.FIFTEEN_DAYS < Date.now();
+		const lastActivityAt = this.insideCity ? this.lastActivityAt : this.startTravelDate;
+		return lastActivityAt.valueOf() + TopConstants.FIFTEEN_DAYS < Date.now();
+	}
+
+	public async markActive(): Promise<void> {
+		const lastActivityAt = new Date(Date.now());
+		await Player.update({ lastActivityAt: fn("GREATEST", col("lastActivityAt"), lastActivityAt) }, {
+			silent: true,
+			where: { id: this.id }
+		});
+		this.lastActivityAt = lastActivityAt;
+
+		// The value above is already persisted by the bulk update: clearing the dirty flag keeps the instance eligible for mission updates
+		this.changed("lastActivityAt", false);
 	}
 
 	/**
@@ -489,7 +676,7 @@ export class Player extends Model {
 	 * Check if the player is in guild
 	 */
 	public hasAGuild(): boolean {
-		return Boolean(this.guildId);
+		return this.guildId !== null;
 	}
 
 	/**
@@ -512,18 +699,18 @@ export class Player extends Model {
 	/**
 	 * Get the amount of time remaining before the effect ends
 	 */
-	public effectRemainingTime(): number {
+	public effectRemainingTime(): Millisecond {
 		let remainingTime = 0;
 		if (Effect.getById(this.effectId)) {
 			if (!this.effectEndDate || this.effectEndDate.valueOf() === 0) {
-				return 0;
+				return asMilliseconds(0);
 			}
 			remainingTime = this.effectEndDate.valueOf() - Date.now();
 		}
 		if (remainingTime < 0) {
 			remainingTime = 0;
 		}
-		return remainingTime;
+		return asMilliseconds(remainingTime);
 	}
 
 	/**
@@ -548,7 +735,7 @@ export class Player extends Model {
 	 * Get the travel cost of a player this week
 	 */
 	public async getTravelCostThisWeek(): Promise<number> {
-		const wentCount = await LogsReadRequests.getCountPVEIslandThisWeek(this.keycloakId, this.guildId!);
+		const wentCount = await LogsReadRequests.getCountPVEIslandThisWeek(this.keycloakId, this.guildId);
 		return PVEConstants.TRAVEL_COST[wentCount >= PVEConstants.TRAVEL_COST.length ? PVEConstants.TRAVEL_COST.length - 1 : wentCount];
 	}
 
@@ -564,7 +751,8 @@ export class Player extends Model {
 	 */
 	public async getNbPlayersOnYourMap(): Promise<number> {
 		const oppositeLink = MapLinkDataController.instance.getInverseLinkOf(this.mapLinkId);
-		if (!oppositeLink) {
+
+		if (!oppositeLink || !Player.sequelize) {
 			return 0;
 		}
 
@@ -590,21 +778,16 @@ export class Player extends Model {
 	/**
 	 * Gives an item to the player
 	 * @param item
+	 * @param itemLevel - Optional level for the item (only applied to weapons/armors)
 	 */
-	public async giveItem(item: GenericItem): Promise<boolean> {
+	public async giveItem(item: GenericItem, itemLevel = 0, itemEnchantmentId: string | null = null): Promise<boolean> {
 		const invSlots = await InventorySlots.getOfPlayer(this.id);
 		const invInfo = await InventoryInfos.getOfPlayer(this.id);
 		const category = item.getCategory();
-		let initialUsages = null;
-		if (item instanceof Potion && item.isFightPotion()) {
-			initialUsages = item.usages || 1;
-		}
 		const equippedItem = invSlots.filter(slot => slot.itemCategory === category && slot.isEquipped())[0];
+		const slotData = buildNewItemSlotData(item, itemLevel, itemEnchantmentId);
 		if (equippedItem && equippedItem.itemId === 0) {
-			await InventorySlot.update({
-				itemId: item.id,
-				remainingPotionUsages: initialUsages
-			}, {
+			await InventorySlot.update(slotData, {
 				where: {
 					playerId: this.id,
 					itemCategory: category,
@@ -613,7 +796,9 @@ export class Player extends Model {
 			});
 			return true;
 		}
-		const slotsLimit = invInfo.slotLimitForCategory(category);
+		const home = await Homes.getOfPlayer(this.id);
+		const homeBonus = home?.getLevel()?.features.inventoryBonus;
+		const slotsLimit = invInfo.slotLimitForCategory(category) + (homeBonus ? getSlotCountForCategory(homeBonus, category) : 0);
 		const items = invSlots.filter(slot => slot.itemCategory === category && slot.slot < slotsLimit);
 		if (items.length >= slotsLimit) {
 			return false;
@@ -623,9 +808,8 @@ export class Player extends Model {
 				await InventorySlot.create({
 					playerId: this.id,
 					itemCategory: category,
-					itemId: item.id,
 					slot: i,
-					remainingPotionUsages: initialUsages
+					...slotData
 				});
 				return true;
 			}
@@ -646,17 +830,13 @@ export class Player extends Model {
 		})
 			.then(async item => {
 				if (item) {
-					const itemData = item.getItem();
-					if (itemData) {
-						await crowniclesInstance.logsDatabase.logItemSell(this.keycloakId, itemData);
-					}
+					await crowniclesInstance?.logsDatabase.logItemSell(this.keycloakId, item.getItem()!);
 				}
 			});
 		if (itemSlot === 0) {
 			await InventorySlot.update(
 				{
-					itemId: InventoryConstants.POTION_DEFAULT_ID,
-					remainingPotionUsages: null
+					itemId: InventoryConstants.POTION_DEFAULT_ID
 				},
 				{
 					where: {
@@ -678,12 +858,17 @@ export class Player extends Model {
 		});
 	}
 
-	public getMaxStatsValue(): StatValues {
-		const playerClass = ClassDataController.instance.getById(this.class)!;
+	public getMaxStatsValue(level = this.level): StatValues {
+		const playerClass = ClassDataController.instance.getById(this.class);
+		if (!playerClass) {
+			return {
+				attack: 0, defense: 0, speed: 0
+			};
+		}
 		return {
-			attack: playerClass.getAttackValue(this.level),
-			defense: playerClass.getDefenseValue(this.level),
-			speed: playerClass.getSpeedValue(this.level)
+			attack: playerClass.getAttackValue(level),
+			defense: playerClass.getDefenseValue(level),
+			speed: playerClass.getSpeedValue(level)
 		};
 	}
 
@@ -699,31 +884,47 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addExperience(parameters: EditValueParameters): Promise<Player> {
-		this.experience += parameters.amount;
-		crowniclesInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
-			.then();
-		if (parameters.amount > 0) {
-			const newPlayer = await MissionsController.update(this, parameters.response, {
+		const delta = parameters.amount;
+		if (delta > 0) {
+			await this.mutateWithMission(parameters.response, {
 				missionId: "earnXP",
-				count: parameters.amount
+				count: delta
+			}, locked => {
+				locked.experience += delta;
 			});
-
-			/*
-			 * Clone the mission entity and player to this player model, and the entity instance passed in the parameters
-			 * As the money and experience may have changed, we update the models of the caller
-			 */
-			Object.assign(this, newPlayer);
 		}
+		else {
+			await this.mutateLocked(locked => {
+				locked.experience += delta;
+			});
+		}
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
+			.then();
 
 		await this.levelUpIfNeeded(parameters.response);
 		return this;
 	}
 
 	/**
+	 * Whether reaching the given level unlocks a new secondary mission slot
+	 * @param level
+	 */
+	public static isMissionSlotUnlockedAtLevel(level: number): boolean {
+		return level === Constants.MISSIONS.SLOT_2_LEVEL
+			|| level === Constants.MISSIONS.SLOT_3_LEVEL;
+	}
+
+	/**
 	 * Get the number of secondary missions a player can have at maximum
 	 */
 	public getMissionSlotsNumber(): number {
-		return this.level >= Constants.MISSIONS.SLOT_3_LEVEL ? 3 : this.level >= Constants.MISSIONS.SLOT_2_LEVEL ? 2 : 1;
+		if (this.level >= Constants.MISSIONS.SLOT_3_LEVEL) {
+			return 3;
+		}
+		if (this.level >= Constants.MISSIONS.SLOT_2_LEVEL) {
+			return 2;
+		}
+		return 1;
 	}
 
 	/**
@@ -732,144 +933,214 @@ export class Player extends Model {
 	 */
 	public setPet(petEntity: PetEntity): void {
 		this.petId = petEntity.id;
-		crowniclesInstance.logsDatabase.logPlayerNewPet(this.keycloakId, petEntity)
+		crowniclesInstance?.logsDatabase.logPlayerNewPet(this.keycloakId, petEntity)
 			.then();
 	}
 
 	/**
-	 * Calculate the cumulative attack of the player
+	 * Calculate the cumulative attack of the player.
+	 * Attack enchantments are not applied here: they act as a multiplier on the effective damage dealt
+	 * in fights (see {@link EnchantmentUtils.getOutgoingDamageMultiplier}), not on the raw attack stat.
 	 * @param playerActiveObjects
 	 */
-	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects): number {
-		const playerAttack = ClassDataController.instance.getById(this.class)!
-			.getAttackValue(this.level);
+	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, level = this.level, includePotion = true): number {
+		const playerAttack = this.getMaxStatsValue(level).attack;
+		const weaponAttack = playerActiveObjects.weapon.item.getAttack(playerActiveObjects.weapon.itemLevel);
+		const armorAttack = playerActiveObjects.armor.item.getAttack(playerActiveObjects.armor.itemLevel);
+		const objectAttack = playerActiveObjects.object.item.getAttack();
 		const attack = playerAttack
-			+ (playerActiveObjects.weapon.getAttack() < playerAttack
-				? playerActiveObjects.weapon.getAttack()
+			+ (weaponAttack < playerAttack
+				? weaponAttack
 				: playerAttack)
-			+ (playerActiveObjects.armor.getAttack() < playerAttack
-				? playerActiveObjects.armor.getAttack()
+			+ (armorAttack < playerAttack
+				? armorAttack
 				: playerAttack)
-			+ (playerActiveObjects.object.getAttack() / 2 < playerAttack
-				? playerActiveObjects.object.getAttack()
+			+ (objectAttack / 2 < playerAttack
+				? objectAttack
 				: playerAttack * 2)
-			+ playerActiveObjects.potion.getAttack();
-		return attack > 0 ? attack : 0;
+			+ (includePotion ? playerActiveObjects.potion.item.getAttack() : 0);
+		return attack > 0 ? Math.round(attack) : 0;
 	}
 
 	/**
-	 * Calculate the cumulative defense of the player
+	 * Calculate the cumulative defense of the player.
+	 * The defense enchantment is not applied here: it acts as a multiplier on the effective damage received
+	 * in fights (see {@link EnchantmentUtils.getIncomingDamageMultiplier}), not on the raw defense stat.
 	 * @param playerActiveObjects
 	 */
-	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects): number {
-		const playerDefense = ClassDataController.instance.getById(this.class)!
-			.getDefenseValue(this.level);
+	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects, level = this.level, includePotion = true): number {
+		const playerDefense = this.getMaxStatsValue(level).defense;
 		const defense = playerDefense
-			+ (playerActiveObjects.weapon.getDefense() < playerDefense
-				? playerActiveObjects.weapon.getDefense()
+			+ (playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel) < playerDefense
+				? playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel)
 				: playerDefense)
-			+ (playerActiveObjects.armor.getDefense() < playerDefense
-				? playerActiveObjects.armor.getDefense()
+			+ (playerActiveObjects.armor.item.getDefense(playerActiveObjects.armor.itemLevel) < playerDefense
+				? playerActiveObjects.armor.item.getDefense(playerActiveObjects.armor.itemLevel)
 				: playerDefense)
-			+ (playerActiveObjects.object.getDefense() / 2 < playerDefense
-				? playerActiveObjects.object.getDefense()
+			+ (playerActiveObjects.object.item.getDefense() / 2 < playerDefense
+				? playerActiveObjects.object.item.getDefense()
 				: playerDefense * 2)
-			+ playerActiveObjects.potion.getDefense();
-		return defense > 0 ? defense : 0;
+			+ (includePotion ? playerActiveObjects.potion.item.getDefense() : 0);
+		return defense > 0 ? Math.round(defense) : 0;
 	}
 
 	/**
 	 * Calculate the cumulative speed of the player
 	 * @param playerActiveObjects
 	 */
-	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects): number {
-		const playerSpeed = ClassDataController.instance.getById(this.class)!
-			.getSpeedValue(this.level);
+	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects, level = this.level, includePotion = true): number {
+		const playerSpeed = this.getMaxStatsValue(level).speed;
 		const speed = playerSpeed
-			+ (playerActiveObjects.weapon.getSpeed() < playerSpeed
-				? playerActiveObjects.weapon.getSpeed()
+			+ (playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel) < playerSpeed
+				? playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel)
 				: playerSpeed)
-			+ (playerActiveObjects.armor.getSpeed() < playerSpeed
-				? playerActiveObjects.armor.getSpeed()
+			+ (playerActiveObjects.armor.item.getSpeed(playerActiveObjects.armor.itemLevel) < playerSpeed
+				? playerActiveObjects.armor.item.getSpeed(playerActiveObjects.armor.itemLevel)
 				: playerSpeed)
-			+ (playerActiveObjects.object.getSpeed() / 2 < playerSpeed
-				? playerActiveObjects.object.getSpeed()
+			+ (playerActiveObjects.object.item.getSpeed() / 2 < playerSpeed
+				? playerActiveObjects.object.item.getSpeed()
 				: playerSpeed * 2)
-			+ playerActiveObjects.potion.getSpeed();
-		return speed > 0 ? speed : 0;
+			+ (includePotion ? playerActiveObjects.potion.item.getSpeed() : 0);
+		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.SPEED, EnchantmentConstants.SPEED_MULTIPLIER);
+		const enchantedSpeed = Math.round(speed * multiplier);
+		return enchantedSpeed > 0 ? enchantedSpeed : 0;
 	}
 
 	/**
 	 * Get the player cumulative energy
 	 */
-	public getCumulativeEnergy(): number {
-		const maxEnergy = this.getMaxCumulativeEnergy();
-		return MathUtils.clamp(maxEnergy - this.fightPointsLost, 0, maxEnergy);
+	public getCumulativeEnergy(playerActiveObjects: PlayerActiveObjects): number {
+		const maxEnergy = this.getMaxCumulativeEnergy(playerActiveObjects);
+		return Math.max(0, Math.min(maxEnergy - this.fightPointsLost, maxEnergy));
 	}
 
-	public getRatioCumulativeEnergy(): number {
-		return this.getCumulativeEnergy() / this.getMaxCumulativeEnergy();
+	public getRatioCumulativeEnergy(playerActiveObjects: PlayerActiveObjects): number {
+		return this.getCumulativeEnergy(playerActiveObjects) / this.getMaxCumulativeEnergy(playerActiveObjects);
 	}
 
 	/**
 	 * Return the player max health
 	 */
 	public getMaxHealth(): number {
-		const playerClass = ClassDataController.instance.getById(this.class)!;
-		return playerClass.getMaxHealthValue(this.level);
+		const playerClass = ClassDataController.instance.getById(this.class);
+		return playerClass?.getMaxHealthValue(this.level) ?? 100;
 	}
 
 	/**
 	 * Get the player max cumulative energy
 	 */
-	public getMaxCumulativeEnergy(): number {
-		const playerClass = ClassDataController.instance.getById(this.class)!;
-		return playerClass.getMaxCumulativeEnergyValue(this.level);
+	public getMaxCumulativeEnergy(playerActiveObjects: PlayerActiveObjects, level = this.level): number {
+		const playerClass = ClassDataController.instance.getById(this.class);
+		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.MAX_ENERGY, EnchantmentConstants.MAX_ENERGY_MULTIPLIER);
+
+		return Math.round((playerClass?.getMaxCumulativeEnergyValue(level) ?? FightConstants.PLAYER_MAX_ENERGY) * multiplier);
 	}
 
 	/**
 	 * Add health to the player
-	 * Note: This method automatically calls killIfNeeded after updating health
-	 * @param parameters - Health edit parameters including amount, response, reason, and optional mission parameters
-	 * @returns true if the player is dead after the update, false otherwise
+	 * Note: this method automatically calls {@link killIfNeeded} after updating the health, so no code path can
+	 * leave the player alive with 0 health (#4597). A lethal change therefore persists the player through
+	 * {@link TravelTime.applyEffect}: callers must hold the player lock.
+	 * @param parameters - Object containing amount, response, reason and optional missionHealthParameter
 	 */
-	public async addHealth(parameters: HealthEditValueParameters): Promise<boolean> {
-		const missionHealthParameter = parameters.missionHealthParameter ?? {
+	public async addHealth(parameters: HealthEditValueParameters): Promise<void> {
+		const missionParam: MissionHealthParameter = parameters.missionHealthParameter ?? {
 			overHealCountsForMission: true,
 			shouldPokeMission: true
 		};
-		await this.setHealth(this.health + parameters.amount, parameters.response, missionHealthParameter);
-		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
+
+		await this.applyHealthDelta(parameters.amount, parameters.response, missionParam);
+
+		crowniclesInstance?.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
 			.then();
-		return await this.killIfNeeded(parameters.response, parameters.reason);
+		await this.killIfNeeded(parameters.response, parameters.reason);
+	}
+
+	/**
+	 * Change the class of the player, rescaling their health and energy so they keep the same ratios.
+	 *
+	 * Both maximums depend on the class, so they have to be read before the class actually changes: computing the
+	 * health target on the old scale while {@link addHealth} applies the delta on the new one made the difference be
+	 * subtracted twice and dropped players to 0 health (#4597).
+	 * @param newClassId
+	 * @param playerActiveObjects
+	 * @param response
+	 */
+	public async changeClass(newClassId: number, playerActiveObjects: PlayerActiveObjects, response: CrowniclesPacket[]): Promise<void> {
+		const previousMaxHealth = this.getMaxHealth();
+		const previousHealth = Math.min(this.getHealthValue(), previousMaxHealth);
+		const previousEnergyLostRatio = this.fightPointsLost / this.getMaxCumulativeEnergy(playerActiveObjects);
+
+		this.class = newClassId;
+
+		/*
+		 * Persist the selected class before the health rescale. `addHealth` may re-fetch this player under the
+		 * current transaction; without this flush, that nested lock reads the former class and synchronizes it
+		 * back onto this instance, silently cancelling the class change (#4817).
+		 */
+		await this.save();
+
+		const targetHealth = Math.ceil(previousHealth / previousMaxHealth * this.getMaxHealth());
+		await this.addHealth({
+			amount: targetHealth - this.getHealth(),
+			response,
+			reason: NumberChangeReason.CLASS,
+			missionHealthParameter: {
+				shouldPokeMission: false,
+				overHealCountsForMission: false
+			}
+		});
+		this.setEnergyLost(
+			Math.ceil(previousEnergyLostRatio * this.getMaxCumulativeEnergy(playerActiveObjects)),
+			NumberChangeReason.CLASS,
+			playerActiveObjects
+		);
+	}
+
+	/**
+	 * Get the raw health value of the player (without max capping)
+	 * Use getHealth() when the value should be capped to the max health
+	 */
+	public getHealthValue(): number {
+		return this.health;
+	}
+
+	/**
+	 * Get the health of the player (capped to max health)
+	 */
+	public getHealth(): number {
+		return Math.min(this.health, this.getMaxHealth());
 	}
 
 	/**
 	 * Add and logs energy gain
 	 * @param energy
 	 * @param reason
+	 * @param playerActiveObjects
 	 */
-	public addEnergy(energy: number, reason: NumberChangeReason): void {
-		this.setEnergyLost(Math.max(0, this.fightPointsLost - energy), reason);
+	public addEnergy(energy: number, reason: NumberChangeReason, playerActiveObjects: PlayerActiveObjects): void {
+		this.setEnergyLost(Math.max(0, this.fightPointsLost - energy), reason, playerActiveObjects);
 	}
 
 	/**
 	 * Set the energy lost of the player to a specific value
 	 * @param energy
 	 * @param reason
+	 * @param playerActiveObjects
 	 */
-	public setEnergyLost(energy: number, reason: NumberChangeReason): void {
-		this.fightPointsLost = Math.min(energy, this.getMaxCumulativeEnergy());
-		crowniclesInstance.logsDatabase.logEnergyChange(this.keycloakId, this.fightPointsLost, reason)
+	public setEnergyLost(energy: number, reason: NumberChangeReason, playerActiveObjects: PlayerActiveObjects): void {
+		this.fightPointsLost = Math.min(energy, this.getMaxCumulativeEnergy(playerActiveObjects));
+		crowniclesInstance?.logsDatabase.logEnergyChange(this.keycloakId, this.fightPointsLost, reason)
 			.then();
 	}
 
 	/**
 	 * Leave the PVE island if no energy left
 	 * @param response
+	 * @param playerActiveObjects
 	 */
-	public async leavePVEIslandIfNoEnergy(response: CrowniclesPacket[]): Promise<boolean> {
-		if (!(Maps.isOnPveIsland(this) && this.fightPointsLost >= this.getMaxCumulativeEnergy())) {
+	public async leavePVEIslandIfNoEnergy(response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<boolean> {
+		if (!(Maps.isOnPveIsland(this) && this.fightPointsLost >= this.getMaxCumulativeEnergy(playerActiveObjects))) {
 			return false;
 		}
 		const {
@@ -882,11 +1153,14 @@ export class Player extends Model {
 		});
 		response.push(packet);
 		await Maps.stopTravel(this);
-		await Maps.startTravel(
-			this,
-			MapLinkDataController.instance.getById(MapConstants.WATER_MAP_LINKS[RandomUtils.randInt(0, MapConstants.WATER_MAP_LINKS.length)])!,
-			Date.now()
-		);
+		const mapLink = MapLinkDataController.instance.getById(MapConstants.WATER_MAP_LINKS[RandomUtils.randInt(0, MapConstants.WATER_MAP_LINKS.length)]);
+		if (mapLink) {
+			await Maps.startTravel(
+				this,
+				mapLink,
+				Date.now()
+			);
+		}
 		await TravelTime.applyEffect(this, Effect.CONFOUNDED, 0, new Date(), NumberChangeReason.PVE_ISLAND);
 		await PlayerSmallEvents.removeSmallEventsOfPlayer(this.id);
 		return true;
@@ -894,26 +1168,38 @@ export class Player extends Model {
 
 	/**
 	 * Get the amount of breath a player has at the beginning of a fight
+	 * @param playerActiveObjects When provided, the base breath enchantment bonus is taken into account
 	 */
-	public getBaseBreath(): number {
-		const playerClass = ClassDataController.instance.getById(this.class)!;
-		return playerClass.baseBreath;
+	public getBaseBreath(playerActiveObjects?: PlayerActiveObjects): number {
+		const playerClass = ClassDataController.instance.getById(this.class);
+		const baseBreath = playerClass?.baseBreath ?? FightConstants.DEFAULT_BASE_BREATH;
+		if (!playerActiveObjects) {
+			return baseBreath;
+		}
+		const baseBreathEnchantLevel = EnchantmentUtils.getEnchantmentLevel(playerActiveObjects.weapon.itemEnchantmentId, ItemEnchantmentKind.BASE_BREATH);
+		return baseBreath + baseBreathEnchantLevel * EnchantmentConstants.BASE_BREATH_BONUS;
 	}
 
 	/**
 	 * Get the max amount of breath a player can have
+	 * @param playerActiveObjects When provided, the max breath enchantment bonus is taken into account
 	 */
-	public getMaxBreath(): number {
-		const playerClass = ClassDataController.instance.getById(this.class)!;
-		return playerClass.maxBreath;
+	public getMaxBreath(playerActiveObjects?: PlayerActiveObjects): number {
+		const playerClass = ClassDataController.instance.getById(this.class);
+		const maxBreath = playerClass?.maxBreath ?? FightConstants.DEFAULT_MAX_BREATH;
+		if (!playerActiveObjects) {
+			return maxBreath;
+		}
+		const hasMaxBreathEnchant = EnchantmentUtils.hasEnchantmentOfKind(playerActiveObjects.armor.itemEnchantmentId, ItemEnchantmentKind.MAX_BREATH);
+		return hasMaxBreathEnchant ? maxBreath + EnchantmentConstants.MAX_BREATH_BONUS : maxBreath;
 	}
 
 	/**
 	 * Get the amount of breath a player will get at the end of each turn
 	 */
 	public getBreathRegen(): number {
-		const playerClass = ClassDataController.instance.getById(this.class)!;
-		return playerClass.breathRegen;
+		const playerClass = ClassDataController.instance.getById(this.class);
+		return playerClass?.breathRegen ?? FightConstants.DEFAULT_BREATH_REGEN;
 	}
 
 	/**
@@ -949,21 +1235,31 @@ export class Player extends Model {
 	 * @param response
 	 * @param fightId
 	 */
-	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: CrowniclesPacket[], fightId?: number): Promise<void> {
+	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: CrowniclesPacket[], fightId: number | null = null): Promise<void> {
 		if (isDefense) {
-			this.defenseGloryPoints = gloryPoints;
-			await crowniclesInstance.logsDatabase.logPlayersDefenseGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
+			await crowniclesInstance?.logsDatabase.logPlayersDefenseGloryPoints(this.keycloakId, gloryPoints, reason, fightId ?? undefined);
 		}
 		else {
-			this.attackGloryPoints = gloryPoints;
-			await crowniclesInstance.logsDatabase.logPlayersAttackGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
+			await crowniclesInstance?.logsDatabase.logPlayersAttackGloryPoints(this.keycloakId, gloryPoints, reason, fightId ?? undefined);
 		}
-
-		Object.assign(this, await MissionsController.update(this, response, {
+		await this.mutateWithMission(response, {
 			missionId: "reachGlory",
-			count: this.getGloryPoints(),
+
+			/*
+			 * Compute the total from the locked row AFTER applyOnLockedPlayer has
+			 * written the new glory value, so a concurrent attack/defense glory
+			 * update is included rather than overwritten.
+			 */
+			count: locked => locked.attackGloryPoints + locked.defenseGloryPoints,
 			set: true
-		}));
+		}, locked => {
+			if (isDefense) {
+				locked.defenseGloryPoints = gloryPoints;
+			}
+			else {
+				locked.attackGloryPoints = gloryPoints;
+			}
+		});
 	}
 
 	/**
@@ -994,27 +1290,36 @@ export class Player extends Model {
 		const amount = parameters.amount > 0 && BlessingManager.getInstance().isRageAmplified()
 			? parameters.amount * 2
 			: parameters.amount;
-		await this.setRage(this.rage + amount, parameters.reason);
 		if (parameters.amount > 0) {
-			await MissionsController.update(this, parameters.response, {
+			await this.mutateWithMission(parameters.response, {
 				missionId: "gainRage",
 				count: parameters.amount
+			}, locked => {
+				locked.rage += amount;
 			});
 		}
+		else {
+			await this.mutateLocked(locked => {
+				locked.rage += amount;
+			});
+		}
+		crowniclesInstance?.logsDatabase.logRageChange(this.keycloakId, this.rage, parameters.reason)
+			.then();
 	}
 
 	public async setRage(rage: number, reason: NumberChangeReason): Promise<void> {
-		this.rage = rage;
-		crowniclesInstance.logsDatabase.logRageChange(this.keycloakId, this.rage, reason)
+		await this.mutateLocked(locked => {
+			locked.rage = rage;
+		});
+		crowniclesInstance?.logsDatabase.logRageChange(this.keycloakId, this.rage, reason)
 			.then();
-		await this.save();
 	}
 
 	/**
 	 * Check if the player has enough energy to join the island or fight
 	 */
-	hasEnoughEnergyToFight(): boolean {
-		return this.getCumulativeEnergy() / this.getMaxCumulativeEnergy() >= PVEConstants.MINIMAL_ENERGY_RATIO;
+	hasEnoughEnergyToFight(playerActiveObjects: PlayerActiveObjects): boolean {
+		return this.getCumulativeEnergy(playerActiveObjects) / this.getMaxCumulativeEnergy(playerActiveObjects) >= PVEConstants.MINIMAL_ENERGY_RATIO;
 	}
 
 	/**
@@ -1043,7 +1348,9 @@ export class Player extends Model {
 					guildPointsLost = playerGuild.score;
 				}
 				await playerGuild.addScore({
-					amount: -guildPointsLost, response, reason: NumberChangeReason.PVE_ISLAND
+					amount: -guildPointsLost,
+					response,
+					reason: NumberChangeReason.PVE_ISLAND
 				});
 				await playerGuild.save();
 			}
@@ -1052,47 +1359,6 @@ export class Player extends Model {
 			moneyLost,
 			guildPointsLost: this.hasAGuild() ? guildPointsLost : 0
 		};
-	}
-
-	/**
-	 * Allow to set the score of a player to a specific value this is only called from addScore
-	 * @param score
-	 * @param response
-	 */
-	private async setScore(score: number, response: CrowniclesPacket[]): Promise<void> {
-		await MissionsController.update(this, response, {
-			missionId: "reachScore",
-			count: score,
-			set: true
-		});
-		if (score > 0) {
-			this.score = score;
-		}
-		else {
-			this.score = 0;
-		}
-	}
-
-	/**
-	 * Allow to set the money of a player to a specific value this is only called from addMoney
-	 * @param money
-	 */
-	private setMoney(money: number): void {
-		if (money > 0) {
-			this.money = money;
-		}
-		else {
-			this.money = 0;
-		}
-	}
-
-	/**
-	 * Set the tokens of a player. Callers are responsible for the upper bound; expedition rewards
-	 * are allowed to push tokens above TokensConstants.MAX, so this only enforces the lower bound.
-	 * @param tokens
-	 */
-	private setTokens(tokens: number): void {
-		this.tokens = Math.max(0, tokens);
 	}
 
 	/**
@@ -1118,32 +1384,36 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Set the player health
-	 * @param health
+	 * Apply a health delta to the player
+	 * @param healthDelta
 	 * @param response
 	 * @param missionHealthParameter
 	 */
-	private async setHealth(health: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
+	private async applyHealthDelta(healthDelta: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,
 		shouldPokeMission: true
 	}): Promise<void> {
-		const difference = (health > this.getMaxHealth() && !missionHealthParameter.overHealCountsForMission ? this.getMaxHealth() : health < 0 ? 0 : health)
-			- this.health;
-		if (difference > 0 && missionHealthParameter.shouldPokeMission) {
-			await MissionsController.update(this, response, {
+		if (healthDelta > 0 && missionHealthParameter.shouldPokeMission) {
+			let lockedDifference = 0;
+			await this.mutateWithMission(response, {
 				missionId: "earnLifePoints",
-				count: difference
+				count: () => lockedDifference
+			}, locked => {
+				const lockedMaxHealth = locked.getMaxHealth();
+				const lockedHealth = Math.min(locked.health, lockedMaxHealth);
+				const requestedHealth = lockedHealth + healthDelta;
+				lockedDifference = (requestedHealth > lockedMaxHealth && !missionHealthParameter.overHealCountsForMission
+					? lockedMaxHealth
+					: requestedHealth < 0 ? 0 : requestedHealth) - lockedHealth;
+				locked.health = MathUtils.clamp(requestedHealth, 0, lockedMaxHealth);
 			});
+			return;
 		}
-		if (health < 0) {
-			this.health = 0;
-		}
-		else if (health > this.getMaxHealth()) {
-			this.health = this.getMaxHealth();
-		}
-		else {
-			this.health = health;
-		}
+		await this.mutateLocked(locked => {
+			const lockedMaxHealth = locked.getMaxHealth();
+			const lockedHealth = Math.min(locked.health, lockedMaxHealth);
+			locked.health = MathUtils.clamp(lockedHealth + healthDelta, 0, lockedMaxHealth);
+		});
 	}
 
 	/**
@@ -1153,12 +1423,44 @@ export class Player extends Model {
 	public hasStartedToPlay(): boolean {
 		return this.effectId !== Effect.NOT_STARTED.id;
 	}
+
+	/**
+	 * Mark that the player has eaten a meal now
+	 */
+	public eatMeal(): void {
+		this.lastMealAt = new Date();
+	}
+
+	/**
+	 * Check if the player can eat a meal now
+	 */
+	public canEat(): boolean {
+		return !this.lastMealAt || this.lastMealAt.valueOf() + PlayersConstants.MEAL_COOLDOWN < Date.now();
+	}
+
+	/**
+	 * Timestamp (ms) at which the player will be able to eat again. Returns `Date.now()` if already available.
+	 */
+	public nextMealAvailableAt(): number {
+		if (!this.lastMealAt) {
+			return Date.now();
+		}
+		return this.lastMealAt.valueOf() + PlayersConstants.MEAL_COOLDOWN;
+	}
+
+	/**
+	 * Set the health of the player without any check or other operation
+	 * @param health
+	 */
+	public setHealthNoCheck(health: number): void {
+		this.health = health;
+	}
 }
 
 /**
  * This class is used to store information about players
  */
-export abstract class Players {
+export class Players {
 	/**
 	 * Get or create a player
 	 * @param keycloakId
@@ -1208,7 +1510,7 @@ export abstract class Players {
 			? askedPlayer.keycloakId === originalPlayer.keycloakId
 				? originalPlayer
 				: await Players.getByKeycloakId(askedPlayer.keycloakId)
-			: await Players.getByRank(askedPlayer.rank!);
+			: await Players.getByRank(askedPlayer.rank ?? 1);
 	}
 
 	/**
@@ -1255,7 +1557,7 @@ export abstract class Players {
 		               FROM (SELECT id, RANK() OVER (ORDER BY ${orderBy} desc, level desc) ranking
 		                     FROM players ${condition}) subquery
 		               WHERE subquery.id = ${playerId}`;
-		return ((await Player.sequelize!.query(query, { type: QueryTypes.SELECT }))[0] as {
+		return ((await Player.sequelize!.query(query))[0][0] as {
 			ranking: number;
 		}).ranking;
 	}
@@ -1269,7 +1571,8 @@ export abstract class Players {
 		               FROM players
 		               WHERE players.${weekOnly ? "weeklyScore" : "score"}
 			                     > ${Constants.MINIMAL_PLAYER_SCORE}`;
-		return ((await Player.sequelize!.query(query, { type: QueryTypes.SELECT }))[0] as {
+		const queryResult = await Player.sequelize!.query(query);
+		return (queryResult[0][0] as {
 			nbPlayers: number;
 		}).nbPlayers;
 	}
@@ -1282,7 +1585,8 @@ export abstract class Players {
 		               FROM players
 		               WHERE players.fightCountdown
 			                     <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE}`;
-		return ((await Player.sequelize!.query(query, { type: QueryTypes.SELECT }))[0] as {
+		const queryResult = await Player.sequelize!.query(query);
+		return (queryResult[0][0] as {
 			nbPlayers: number;
 		}).nbPlayers;
 	}
@@ -1659,6 +1963,19 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.DATE,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.START_TRAVEL_DATE
 		},
+		insideCity: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false
+		},
+		cityArrivalDate: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
+		},
+		lastActivityAt: {
+			type: DataTypes.DATE,
+			defaultValue: DataTypes.NOW
+		},
 		attackGloryPoints: {
 			type: DataTypes.INTEGER,
 			defaultValue: FightConstants.ELO.DEFAULT_ELO
@@ -1683,6 +2000,38 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
 		},
+		lastMealAt: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
+		},
+		cookingLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		cookingExperience: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		lastBedUsedAt: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
+		},
+		lastGardenWatered: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
+		},
+		furnacePosition: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		pinnedCookingRecipeId: {
+			type: DataTypes.STRING(64), // eslint-disable-line new-cap
+			allowNull: true,
+			defaultValue: null
+		},
 		updatedAt: {
 			type: DataTypes.DATE,
 			defaultValue: moment()
@@ -1704,42 +2053,15 @@ export function initModel(sequelize: Sequelize): void {
 			.toDate();
 	});
 
-	Player.afterSave(instance => {
-		if (!instance.mapLinkId) {
+	Player.afterSave((instance, options) => {
+		if (!instance.mapLinkId || !MapLinkDataController.instance.getById(instance.mapLinkId)) {
+			// No resolvable map link: nothing to notify, and getTravelDataSimplified would throw on the missing link.
 			return;
 		}
 
-		const handleNotifications = async (): Promise<void> => {
-			// Report Notification
-			const now = new Date();
-			const travelEndDate = new Date(TravelTime.getTravelDataSimplified(instance, now).travelEndTime);
-			const destinationId = instance.getDestinationId();
-			const pendingReportNotification = await ScheduledReportNotifications.getPendingNotification(instance.id);
-			if (pendingReportNotification) {
-				await ScheduledReportNotifications.bulkDelete([pendingReportNotification]);
-			}
-
-			if (destinationId !== null && travelEndDate > now) {
-				await ScheduledReportNotifications.scheduleNotification(instance.id, instance.keycloakId, destinationId, travelEndDate);
-				return;
-			}
-
-			if (pendingReportNotification && destinationId === pendingReportNotification.mapId) {
-				PacketUtils.sendNotifications([
-					makePacket(ReachDestinationNotificationPacket, {
-						keycloakId: pendingReportNotification.keycloakId,
-						mapType: MapLocationDataController.instance.getById(pendingReportNotification.mapId)!.type,
-						mapId: pendingReportNotification.mapId
-					})
-				]);
-			}
-		};
-
-		handleNotifications()
-			.then()
-			.catch(error => {
-				CrowniclesLogger.errorWithObj("Error while handling notifications", error);
-			});
+		scheduleAfterCommit(() => dispatchOrRescheduleArrivalNotification(instance), error => {
+			CrowniclesLogger.errorWithObj("Error while handling notifications", error);
+		}, options.transaction);
 	});
 }
 

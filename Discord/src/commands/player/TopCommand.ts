@@ -1,5 +1,4 @@
 import {
-	CommandTopInvalidPagePacket,
 	CommandTopPacketReq,
 	CommandTopPacketRes,
 	CommandTopPacketResGlory,
@@ -21,7 +20,6 @@ import {
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { TopTiming } from "../../../../Lib/src/types/TopTimings";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { ICommand } from "../ICommand";
@@ -33,12 +31,15 @@ import {
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { escapeUsername } from "../../utils/StringUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { CrowniclesPaginatedEmbed } from "../../messages/CrowniclesPaginatedEmbed";
+import { DiscordMQTT } from "../../bot/DiscordMQTT";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandTopPacketReq> {
 	await interaction.deferReply();
 
 	const subCommand = interaction.options.getSubcommand();
-	const timing = interaction.options.getString("timing") as TopTiming ?? TopTiming.ALL_TIME;
+	const timing = interaction.options.getString("duration") as TopTiming ?? TopTiming.ALL_TIME;
 	const page = interaction.options.getInteger("page") ?? undefined;
 
 	return makePacket(CommandTopPacketReq, {
@@ -113,24 +114,12 @@ export const commandInfo: ICommand = {
 };
 
 function getBadgeForPosition(rank: number, sameContext: boolean, contextElementPosition?: number): string {
-	switch (rank) {
-		case 1:
-			return CrowniclesIcons.top.badges.first;
-		case 2:
-			return CrowniclesIcons.top.badges.second;
-		case 3:
-			return CrowniclesIcons.top.badges.third;
-		case 4:
-			return CrowniclesIcons.top.badges.fourth;
-		case 5:
-			return CrowniclesIcons.top.badges.fifth;
-		default:
-			return sameContext
-				? contextElementPosition === rank
-					? CrowniclesIcons.top.badges.self
-					: CrowniclesIcons.top.badges.sameContext
-				: CrowniclesIcons.top.badges.default;
-	}
+	return DisplayUtils.getRankMedalBadge(rank)
+		?? (sameContext
+			? contextElementPosition === rank
+				? CrowniclesIcons.top.badges.self
+				: CrowniclesIcons.top.badges.sameContext
+			: CrowniclesIcons.top.badges.default);
 }
 
 function formatScoreAttributes(element: TopElement<TopElementScoreFirstType, number, number>, lng: Language): string {
@@ -177,43 +166,48 @@ function formatGuildAttributes(element: TopElement<number, number, undefined>, l
 type TopTextKeys = {
 	title: string;
 	yourRankTitle: string;
+	yourRankFirst: string;
 	yourRank: string;
 	yourRankNone: {
 		key: string; replacements: { [key: string]: unknown };
 	};
-	youRankAtPage: string;
 	nobodyInTop: {
 		key: string; replacements: { [key: string]: unknown };
 	};
 	cantBeRanked?: string;
-	overriddenElementTexts?: string[];
 };
 
-function getTopDescription<TopElementKind extends TopElement<T, U, V>, T, U, V>(
-	packet: CommandTopPacketRes<TopElementKind, T, U, V>,
+type TopRenderConfig<TopElementKind extends TopElement<unknown, unknown, unknown>> = {
+	textKeys: TopTextKeys;
+	formatAttributes: (element: TopElementKind, lng: Language) => string;
+	needsUsernameResolution: boolean;
+	dataType: TopDataType;
+	expectedResponseName: string;
+};
+
+const PLAYER_RANK_KEYS = {
+	yourRankTitle: "commands:top.yourRankTitle",
+	yourRankFirst: "commands:top.yourRankFirst",
+	yourRank: "commands:top.yourRank"
+} as const;
+
+const GUILD_RANK_KEYS = {
+	yourRankTitle: "commands:top.yourRankGuildTitle",
+	yourRankFirst: "commands:top.yourRankGuildFirst",
+	yourRank: "commands:top.yourRankGuild"
+} as const;
+
+function buildYourRankSection<TopElementKind extends TopElement<unknown, unknown, unknown>>(
+	packet: CommandTopPacketRes<TopElementKind>,
 	textKeys: TopTextKeys,
-	formatAttributes: (element: TopElementKind, lng: Language) => string,
 	lng: Language,
 	playerUsername: string
 ): string {
-	if (packet.elements.length <= 0) {
-		return i18n.t(textKeys.nobodyInTop.key, {
-			lng,
-			...textKeys.nobodyInTop.replacements
-		});
-	}
-	let desc = "";
-	for (let i = 0; i < packet.elements.length; i++) {
-		const element = packet.elements[i];
-		desc += `${getBadgeForPosition(element.rank, element.sameContext, packet.contextRank)} ${
-			textKeys.overriddenElementTexts ? textKeys.overriddenElementTexts[i] : element.text
-		} | ${formatAttributes(element, lng)}\n`;
-	}
-
-	desc += `\n${i18n.t(textKeys.yourRankTitle, { lng })}\n`;
+	let desc = `\n${i18n.t(textKeys.yourRankTitle, { lng })}\n`;
 
 	if (packet.contextRank) {
-		desc += i18n.t(textKeys.yourRank, {
+		const yourRankKey = packet.contextRank === 1 ? textKeys.yourRankFirst : textKeys.yourRank;
+		desc += i18n.t(yourRankKey, {
 			lng,
 			badge: getBadgeForPosition(packet.contextRank, true, packet.contextRank),
 			pseudo: playerUsername,
@@ -221,13 +215,6 @@ function getTopDescription<TopElementKind extends TopElement<T, U, V>, T, U, V>(
 			total: packet.totalElements,
 			count: packet.totalElements
 		});
-		if (packet.contextRank < packet.minRank || packet.contextRank > packet.maxRank) {
-			desc += ` ${i18n.t(textKeys.youRankAtPage, {
-				lng,
-				page: Math.ceil(packet.contextRank / packet.elementsPerPage),
-				maxPage: Math.ceil(packet.totalElements / packet.elementsPerPage)
-			})}`;
-		}
 	}
 	else if (packet.canBeRanked) {
 		desc += i18n.t(textKeys.yourRankNone.key, {
@@ -242,28 +229,21 @@ function getTopDescription<TopElementKind extends TopElement<T, U, V>, T, U, V>(
 	return desc;
 }
 
-async function handleGenericTopPacketRes<TopElementKind extends TopElement<T, U, V>, T, U, V>(
-	context: PacketContext,
-	packet: CommandTopPacketRes<TopElementKind, T, U, V>,
-	textKeys: TopTextKeys,
-	formatAttributes: (element: TopElementKind, lng: Language) => string
-): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
-
-	const lng = interaction.userLanguage;
-	const title = i18n.t(textKeys.title, {
-		lng,
-		minRank: packet.minRank,
-		maxRank: packet.maxRank
-	});
-
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setTitle(title)
-				.setDescription(getTopDescription(packet, textKeys, formatAttributes, lng, await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)))
-		]
-	});
+function buildPageElementsDescription<TopElementKind extends TopElement<unknown, unknown, unknown>>(
+	elements: TopElementKind[],
+	formatAttributes: (element: TopElementKind, lng: Language) => string,
+	lng: Language,
+	contextRank: number | undefined,
+	overriddenElementTexts?: string[]
+): string {
+	let desc = "";
+	for (let i = 0; i < elements.length; i++) {
+		const element = elements[i];
+		desc += `${getBadgeForPosition(element.rank, element.sameContext, contextRank)} ${
+			overriddenElementTexts ? overriddenElementTexts[i] : element.text
+		} | ${formatAttributes(element, lng)}\n`;
+	}
+	return desc;
 }
 
 async function getOverriddenPlayersUsernames<U, V, W>(elements: TopElement<U, V, W>[], lng: Language): Promise<string[]> {
@@ -276,81 +256,171 @@ async function getOverriddenPlayersUsernames<U, V, W>(elements: TopElement<U, V,
 		.map(u => u ? escapeUsername(u.attributes.gameUsername[0]) : unknownUsername);
 }
 
+/**
+ * Fetch a single page of a top from the Core through the request/response MQTT mechanism.
+ * Resolves with the page elements, or null when the response does not match the expected kind.
+ * @param context - The packet context to reuse for the follow-up request (preserves the interaction)
+ * @param dataType - Which top to query (score / glory / guild)
+ * @param timing - The timing of the score top (all time / weekly)
+ * @param page - The 1-based page to fetch
+ * @param expectedResponseName - The expected response packet name for this top kind
+ */
+function requestTopPageElements<TopElementKind extends TopElement<unknown, unknown, unknown>>(
+	context: PacketContext,
+	dataType: TopDataType,
+	timing: TopTiming,
+	page: number,
+	expectedResponseName: string
+): Promise<TopElementKind[] | null> {
+	return new Promise(resolve => {
+		DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+			context,
+			makePacket(CommandTopPacketReq, {
+				dataType,
+				timing,
+				page
+			}),
+			(_responseContext, packetName, responsePacket) => {
+				resolve(packetName === expectedResponseName
+					? (responsePacket as CommandTopPacketRes<TopElementKind>).elements
+					: null);
+			}
+		).catch((error: unknown) => {
+			// A failed send must not leave the paginated embed awaiting forever: fall back to an empty page.
+			CrowniclesLogger.errorWithObj("Failed to request a top page from the Core", error);
+			resolve(null);
+		});
+	});
+}
+
+async function handleGenericTopPacketRes<TopElementKind extends TopElement<unknown, unknown, unknown>>(
+	context: PacketContext,
+	packet: CommandTopPacketRes<TopElementKind>,
+	config: TopRenderConfig<TopElementKind>
+): Promise<void> {
+	const {
+		textKeys,
+		formatAttributes,
+		needsUsernameResolution,
+		dataType,
+		expectedResponseName
+	} = config;
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
+	const lng = interaction.userLanguage;
+	const playerUsername = await DisplayUtils.getEscapedUsername(context.keycloakId!, lng);
+	const {
+		elementsPerPage,
+		totalElements,
+		timing
+	} = packet;
+	const pagesCount = Math.ceil(totalElements / elementsPerPage);
+	const selectedPageIndex = packet.pageNumber - 1;
+
+	// The "your rank" section is a snapshot of the requester's situation, stable across pages.
+	const yourRankSection = buildYourRankSection(packet, textKeys, lng, playerUsername);
+
+	// Cache of pages already fetched from the Core (0-based page index -> elements), seeded with the first response.
+	const pageCache = new Map<number, TopElementKind[]>();
+	pageCache.set(selectedPageIndex, packet.elements);
+
+	await new CrowniclesPaginatedEmbed({
+		lng,
+		pagesCount,
+		selectedPageIndex,
+		titleBuilder: (pageIndex: number): string => {
+			const minRank = pageIndex * elementsPerPage + 1;
+			const maxRank = Math.min((pageIndex + 1) * elementsPerPage, totalElements);
+			return i18n.t(textKeys.title, {
+				lng,
+				minRank,
+				maxRank
+			});
+		},
+		pageBuilder: async (pageIndex: number): Promise<string> => {
+			let pageElements = pageCache.get(pageIndex);
+			if (!pageElements) {
+				pageElements = await requestTopPageElements<TopElementKind>(context, dataType, timing, pageIndex + 1, expectedResponseName) ?? [];
+				pageCache.set(pageIndex, pageElements);
+			}
+
+			const overriddenTexts = needsUsernameResolution
+				? await getOverriddenPlayersUsernames(pageElements, lng)
+				: undefined;
+
+			return buildPageElementsDescription(
+				pageElements, formatAttributes, lng, packet.contextRank, overriddenTexts
+			) + yourRankSection;
+		}
+	}).send(interaction);
+}
+
 export async function handleCommandTopPacketResScore(context: PacketContext, packet: CommandTopPacketResScore): Promise<void> {
 	await handleGenericTopPacketRes(context, packet, {
-		title: packet.timing === TopTiming.ALL_TIME
-			? "commands:top.titleScoreAllTime"
-			: "commands:top.titleScoreWeekly",
-		yourRankTitle: "commands:top.yourRankTitle",
-		yourRank: packet.contextRank === 1 ? "commands:top.yourRankFirst" : "commands:top.yourRank",
-		yourRankNone: {
-			key: "commands:top.yourRankNoneScore",
-			replacements: {}
+		textKeys: {
+			title: packet.timing === TopTiming.ALL_TIME
+				? "commands:top.titleScoreAllTime"
+				: "commands:top.titleScoreWeekly",
+			...PLAYER_RANK_KEYS,
+			yourRankNone: {
+				key: "commands:top.yourRankNoneScore",
+				replacements: {}
+			},
+			nobodyInTop: {
+				key: "commands:top.nobodyInTopPlayers", replacements: {}
+			}
 		},
-		youRankAtPage: "commands:top.yourRankAtPage",
-		nobodyInTop: {
-			key: "commands:top.nobodyInTopPlayers", replacements: {}
-		},
-		overriddenElementTexts: await getOverriddenPlayersUsernames(packet.elements, context.discord!.language!)
-	}, formatScoreAttributes);
+		formatAttributes: formatScoreAttributes,
+		needsUsernameResolution: true,
+		dataType: TopDataType.SCORE,
+		expectedResponseName: CommandTopPacketResScore.name
+	});
 }
 
 export async function handleCommandTopPacketResGlory(context: PacketContext, packet: CommandTopPacketResGlory): Promise<void> {
 	await handleGenericTopPacketRes(context, packet, {
-		title: "commands:top.titleGlory",
-		yourRankTitle: "commands:top.yourRankTitle",
-		yourRank: packet.contextRank === 1 ? "commands:top.yourRankFirst" : "commands:top.yourRank",
-		yourRankNone: {
-			key: "commands:top.yourRankNoneGlory",
-			replacements: {
-				needFight: packet.needFight,
-				count: packet.needFight
+		textKeys: {
+			title: "commands:top.titleGlory",
+			...PLAYER_RANK_KEYS,
+			yourRankNone: {
+				key: "commands:top.yourRankNoneGlory",
+				replacements: {
+					needFight: packet.needFight,
+					count: packet.needFight
+				}
+			},
+			nobodyInTop: {
+				key: "commands:top.nobodyInTopGlory",
+				replacements: {
+					needFight: packet.needFight
+				}
 			}
 		},
-		youRankAtPage: "commands:top.yourRankAtPage",
-		nobodyInTop: {
-			key: "commands:top.nobodyInTopGlory",
-			replacements: {
-				needFight: packet.needFight
-			}
-		},
-		overriddenElementTexts: await getOverriddenPlayersUsernames(packet.elements, context.discord!.language!)
-	}, formatGloryAttributes);
+		formatAttributes: formatGloryAttributes,
+		needsUsernameResolution: true,
+		dataType: TopDataType.GLORY,
+		expectedResponseName: CommandTopPacketResGlory.name
+	});
 }
 
 export async function handleCommandTopPacketResGuild(context: PacketContext, packet: CommandTopPacketResGuild): Promise<void> {
 	await handleGenericTopPacketRes(context, packet, {
-		title: "commands:top.titleGuild",
-		yourRankTitle: "commands:top.yourRankGuildTitle",
-		yourRank: packet.contextRank === 1 ? "commands:top.yourRankGuildFirst" : "commands:top.yourRankGuild",
-		yourRankNone: {
-			key: "commands:top.yourRankNoneGuild",
-			replacements: {}
+		textKeys: {
+			title: "commands:top.titleGuild",
+			...GUILD_RANK_KEYS,
+			yourRankNone: {
+				key: "commands:top.yourRankNoneGuild",
+				replacements: {}
+			},
+			nobodyInTop: {
+				key: "commands:top.nobodyInTopGuilds",
+				replacements: {}
+			},
+			cantBeRanked: "commands:top.noGuild"
 		},
-		youRankAtPage: "commands:top.yourRankAtPageGuild",
-		nobodyInTop: {
-			key: "commands:top.nobodyInTopGuilds",
-			replacements: {}
-		},
-		cantBeRanked: "commands:top.noGuild"
-	}, formatGuildAttributes);
-}
-
-export async function handleCommandTopInvalidPagePacket(context: PacketContext, packet: CommandTopInvalidPagePacket): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
-
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesErrorEmbed(
-				interaction.user,
-				context, interaction,
-				i18n.t("commands:top.invalidPage", {
-					lng: interaction.userLanguage,
-					minPage: packet.minPage,
-					maxPage: packet.maxPage
-				})
-			)
-		]
+		formatAttributes: formatGuildAttributes,
+		needsUsernameResolution: false,
+		dataType: TopDataType.GUILD,
+		expectedResponseName: CommandTopPacketResGuild.name
 	});
 }
 

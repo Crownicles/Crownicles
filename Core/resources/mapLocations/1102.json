@@ -1,5 +1,8 @@
 {
   "type": "crystalCavern",
+  "biomes": [
+    "ruins"
+  ],
   "canBeGoToPlaceMissionDestination": false,
   "attribute": "pve_island"
 }

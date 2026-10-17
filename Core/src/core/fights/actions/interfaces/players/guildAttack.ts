@@ -34,9 +34,11 @@ function getAttackInfo(): attackInfo {
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	let cumulatedAttack = sender.getAttack();
 	let cumulatedSpeed = sender.getSpeed();
-	for (const member of (sender as PlayerFighter).getPveMembersOnIsland()) {
-		cumulatedAttack += member.attack;
-		cumulatedSpeed += member.speed;
+	if (sender instanceof PlayerFighter) {
+		for (const member of sender.getPveMembersOnIsland()) {
+			cumulatedAttack += member.attack;
+			cumulatedSpeed += member.speed;
+		}
 	}
 
 	return {

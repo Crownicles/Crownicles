@@ -47,4 +47,35 @@ export abstract class RandomUtils {
 		const randomIndex = RandomUtils.randInt(0, enumValues.length);
 		return enumValues[randomIndex];
 	};
+
+	/**
+	 * Pick a random element, each one being drawn proportionally to its weight
+	 * @param values - Elements to pick from, at least one having a positive weight
+	 * @param weightOf - Weight of an element
+	 */
+	public static weightedPick = <T>(values: readonly T[], weightOf: (value: T) => number): T => {
+		let roll = RandomUtils.crowniclesRandom.real(0, values.reduce((total, value) => total + weightOf(value), 0));
+		return values.find(value => {
+			roll -= weightOf(value);
+			return roll < 0;
+		}) ?? values[values.length - 1];
+	};
+
+	/**
+	 * Deterministic Fisher-Yates shuffle using a simple LCG seeded PRNG.
+	 * Always produces the same output for the same input array and seed.
+	 */
+	static deterministicShuffle<T>(array: T[], seed: number): T[] {
+		const result = [...array];
+		let lcgState = seed >>> 0;
+		if (lcgState === 0) {
+			lcgState = 1;
+		}
+		for (let i = result.length - 1; i > 0; i--) {
+			lcgState = (lcgState * 1103515245 + 12345) >>> 0;
+			const j = lcgState % (i + 1);
+			[result[i], result[j]] = [result[j], result[i]];
+		}
+		return result;
+	}
 }

@@ -15,7 +15,7 @@ import {
 import { PetDataController } from "../../../../data/Pet";
 import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 
 const SETUP_DEFAULTS = {
 	level: 30,
@@ -39,6 +39,14 @@ export const commandInfo: ITestCommand = {
 const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, response, _context) => {
 	const results: string[] = [];
 
+	// Money
+	await player.addMoney({
+		amount: SETUP_DEFAULTS.money - player.money,
+		response,
+		reason: NumberChangeReason.TEST
+	});
+	results.push(`${SETUP_DEFAULTS.money} :moneybag:`);
+
 	// Level & stats
 	player.level = SETUP_DEFAULTS.level;
 	player.score = SETUP_DEFAULTS.score;
@@ -48,17 +56,9 @@ const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, res
 	player.attackGloryPoints = SETUP_DEFAULTS.gloryPoints;
 	player.effectEndDate = new Date();
 	player.effectDuration = 0;
-	player.health = player.getMaxHealth();
+	player.setHealthNoCheck(player.getMaxHealth());
 	crowniclesInstance.logsDatabase.logLevelChange(player.keycloakId, player.level).then();
 	results.push(`Niveau ${SETUP_DEFAULTS.level}, ${SETUP_DEFAULTS.score} points`);
-
-	// Money
-	await player.addMoney({
-		amount: SETUP_DEFAULTS.money - player.money,
-		response,
-		reason: NumberChangeReason.TEST
-	});
-	results.push(`${SETUP_DEFAULTS.money} :moneybag:`);
 
 	// Gems
 	const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
@@ -80,6 +80,7 @@ const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, res
 	const pet = PetEntities.createPet(petId, petSex, "");
 	await pet.save();
 	player.setPet(pet);
+	await player.save();
 	await MissionsController.update(player, response, { missionId: "havePet" });
 	results.push(`Pet #${petId} (${petSex})`);
 

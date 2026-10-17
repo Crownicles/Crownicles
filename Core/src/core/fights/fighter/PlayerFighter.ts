@@ -24,20 +24,34 @@ import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../utils/PetUtils";
 import { ItemConstants } from "../../../../../Lib/src/constants/ItemConstants";
 
+export type PveMemberStats = {
+	attack: number; speed: number;
+};
+
+type PlayerFighterOptions = {
+	effectiveLevel?: number;
+
+	// Full energy, no potion, no energy loss and no missions (tournament and friendly fights)
+	withoutConsequences?: boolean;
+};
+
 /**
  * Fighter
  * Class representing a human-controlled player in a fight
  */
 export class PlayerFighter extends PlayerBaseFighter {
-	private pveMembers!: {
-		attack: number; speed: number;
-	}[];
+	protected pveMembers: PveMemberStats[] = [];
 
-	private petAssisted: boolean;
+	protected pveMembersLoaded = false;
 
-	public constructor(player: Player, playerClass: Class) {
-		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
+	protected petAssisted: boolean;
+
+	private readonly withoutConsequences: boolean;
+
+	public constructor(player: Player, playerClass: Class, options: PlayerFighterOptions = {}) {
+		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds), options.effectiveLevel);
 		this.petAssisted = false;
+		this.withoutConsequences = options.withoutConsequences ?? false;
 	}
 
 	/**
@@ -56,14 +70,16 @@ export class PlayerFighter extends PlayerBaseFighter {
 
 	/**
 	 * Function called when the fight starts
-	 * @param fightView The fight view
+	 * @param _fightView The fight view
 	 * @param startStatus The first status of a player
 	 * @param response The response packets
 	 */
 	async startFight(_fightView: FightView, startStatus: FighterStatus, response: CrowniclesPacket[]): Promise<void> {
 		this.status = startStatus;
 
-		await this.consumeFightPotionIfNeeded(response, FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER);
+		if (!this.withoutConsequences) {
+			await this.consumeFightPotionIfNeeded(response, FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER);
+		}
 		this.block();
 	}
 
@@ -75,8 +91,12 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 * @param turnCount The number of turns that the fight lasted
 	 */
 	async endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void> {
+		if (this.withoutConsequences) {
+			return;
+		}
 		await this.player.reload();
-		this.player.setEnergyLost(this.stats.maxEnergy! - this.stats.energy!, NumberChangeReason.FIGHT);
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
+		this.player.setEnergyLost(this.stats.maxEnergy! - this.stats.energy!, NumberChangeReason.FIGHT, playerActiveObjects);
 		await this.player.save();
 
 		if (bug) {
@@ -120,18 +140,16 @@ export class PlayerFighter extends PlayerBaseFighter {
 
 	/**
 	 * The fighter loads its various stats
+	 * @param isPvE True if the fight is against a monster (PVE), false against another player (PVP)
 	 */
-	public async loadStats(): Promise<void> {
+	public async loadStats(isPvE = false): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.energy = this.player.getCumulativeEnergy();
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy();
-		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects);
-		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
-		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
-		this.stats.breath = this.player.getBaseBreath();
-		this.stats.maxBreath = this.player.getMaxBreath();
-		this.stats.breathRegen = this.player.getBreathRegen();
-		this.metallicItemCount = await InventorySlots.countObjectsOfPlayer(this.player.id, ItemConstants.TAGS.METALLIC);
+		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects, this.level);
+		this.stats.energy = this.withoutConsequences
+			? this.stats.maxEnergy
+			: this.player.getCumulativeEnergy(playerActiveObjects);
+		this.loadCombatStats(playerActiveObjects, isPvE, !this.withoutConsequences);
+		this.metallicItemCount = await this.countItemsWithTag(ItemConstants.TAGS.METALLIC);
 		if (this.player.petId) {
 			// Check if pet is available based on fight role
 			const petAvailabilityContext = this.fightRole === FightConstants.FIGHT_ROLES.ATTACKER
@@ -161,9 +179,9 @@ export class PlayerFighter extends PlayerBaseFighter {
 
 		// Add guild attack if on PVE island and members are here
 		if (Maps.isOnPveIsland(this.player)) {
-			if (!this.pveMembers) {
+			if (!this.pveMembersLoaded) {
+				this.pveMembersLoaded = true;
 				const members = await Maps.getGuildMembersOnPveIsland(this.player);
-				this.pveMembers = [];
 				for (const member of members) {
 					const memberActiveObjects = await InventorySlots.getMainSlotsItems(member.id);
 					this.pveMembers.push({
@@ -183,9 +201,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 	/**
 	 * Get the members of the player's guild on the island of the fighter
 	 */
-	public getPveMembersOnIsland(): {
-		attack: number; speed: number;
-	}[] {
+	public getPveMembersOnIsland(): PveMemberStats[] {
 		return this.pveMembers;
 	}
 
@@ -193,7 +209,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 * Check the fight action history of a fighter
 	 * @param response
 	 */
-	private async checkFightActionHistory(response: CrowniclesPacket[]): Promise<void> {
+	protected async checkFightActionHistory(response: CrowniclesPacket[]): Promise<void> {
 		const playerFightActionsHistory: Map<string, number> = this.getFightActionCount();
 
 		// Iterate on each action in the history
@@ -210,7 +226,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 * Manage the mission of a fighter
 	 * @param response
 	 */
-	private async manageMissionsOf(response: CrowniclesPacket[]): Promise<void> {
+	protected async manageMissionsOf(response: CrowniclesPacket[]): Promise<void> {
 		await this.checkFightActionHistory(response);
 
 		await MissionsController.update(this.player, response, { missionId: "anyFight" });

@@ -8,12 +8,12 @@ import {
 	ExpeditionData, ExpeditionInProgressData
 } from "../../../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
-	millisecondsToMinutes, minutesToMilliseconds
+	asMinutes, dateToMs, millisecondsToMinutes, minutesToMilliseconds, msDiff
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { PetBasicInfo } from "../../../../../../Lib/src/types/PetBasicInfo";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 
 export class PetExpedition extends Model {
 	declare readonly id: number;
@@ -57,7 +57,7 @@ export class PetExpedition extends Model {
 	 * Returns the absolute value to prevent negative durations
 	 */
 	public getDurationMinutes(): number {
-		return Math.max(0, millisecondsToMinutes(this.endDate.getTime() - this.startDate.getTime()));
+		return Math.max(0, millisecondsToMinutes(msDiff(dateToMs(this.endDate), dateToMs(this.startDate))));
 	}
 
 	/**
@@ -163,7 +163,7 @@ export abstract class PetExpeditions {
 			playerId, petId, expeditionData, durationMinutes, foodConsumed, rewardIndex
 		} = params;
 		const startDate = new Date();
-		const endDate = new Date(startDate.getTime() + minutesToMilliseconds(durationMinutes));
+		const endDate = new Date(startDate.getTime() + minutesToMilliseconds(asMinutes(durationMinutes)));
 
 		return PetExpedition.build({
 			playerId,

@@ -1,15 +1,16 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { crowniclesInstance } from "../../../../src";
-import { TravelTime } from "../../../../src/core/maps/TravelTime";
-import { Effect } from "../../../../../Lib/src/types/Effect";
-import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstants";
-import { MapLinkDataController } from "../../../../src/data/MapLink";
-import { PlayerSmallEvents } from "../../../../src/core/database/game/models/PlayerSmallEvent";
-import { Maps } from "../../../../src/core/maps/Maps";
-import { Constants } from "../../../../../Lib/src/constants/Constants";
-import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
-import { PlayerSmallEvent } from "../../../../src/core/database/game/models/PlayerSmallEvent";
-import { canUseTokensAtLocation } from "../../../../src/core/report/ReportTravelService";
+import {beforeEach, describe, expect, it, vi} from "vitest";
+import {crowniclesInstance} from "../../../../src/app";
+import {TravelTime} from "../../../../src/core/maps/TravelTime";
+import {Effect} from "../../../../../Lib/src/types/Effect";
+import {TokensConstants} from "../../../../../Lib/src/constants/TokensConstants";
+import {MapLinkDataController} from "../../../../src/data/MapLink";
+import {PlayerSmallEvent, PlayerSmallEvents} from "../../../../src/core/database/game/models/PlayerSmallEvent";
+import {Maps} from "../../../../src/core/maps/Maps";
+import {Constants} from "../../../../../Lib/src/constants/Constants";
+import {NumberChangeReason} from "../../../../../Lib/src/constants/LogsConstants";
+import {canUseTokensAtLocation} from "../../../../src/core/report/ReportTravelService";
+import {asMilliseconds} from "../../../../../Lib/src/utils/TimeUtils";
+import {PlayersConstants} from "../../../../../Lib/src/constants/PlayersConstants";
 
 // Use fake timers so that `Date.now()` and `new Date()` both return our controlled `now`
 vi.useFakeTimers();
@@ -60,7 +61,7 @@ interface MockPlayer {
  */
 function createMockPlayer(overrides: Partial<MockPlayer> = {}): MockPlayer {
 	const now = Date.now();
-	const player: MockPlayer = {
+	return {
 		id: 1,
 		keycloakId: "test-user-123",
 		tokens: 10,
@@ -87,7 +88,6 @@ function createMockPlayer(overrides: Partial<MockPlayer> = {}): MockPlayer {
 		}),
 		...overrides
 	};
-	return player;
 }
 
 describe("Tokens Usage", () => {
@@ -438,7 +438,7 @@ describe("Tokens Usage", () => {
 				const timeToNextEvent = updatedTimeData.nextSmallEventTime - updatedDate.valueOf();
 
 				// Time travel to the next event
-				await TravelTime.timeTravel(player, timeToNextEvent, NumberChangeReason.REPORT_TOKENS, true);
+				await TravelTime.timeTravelMilliseconds(player, asMilliseconds(timeToNextEvent), NumberChangeReason.REPORT_TOKENS);
 
 				// Verify player was moved forward in time
 				expect(crowniclesInstance.logsDatabase.logTimeWarp).toHaveBeenCalled();
@@ -464,7 +464,7 @@ describe("Tokens Usage", () => {
 
 				// Time travel to next event
 				const timeToNextEvent = timeData.nextSmallEventTime - now;
-				await TravelTime.timeTravel(player, timeToNextEvent, NumberChangeReason.REPORT_TOKENS, true);
+				await TravelTime.timeTravelMilliseconds(player, asMilliseconds(timeToNextEvent), NumberChangeReason.REPORT_TOKENS);
 
 				// Should only have one time warp logged
 				expect(crowniclesInstance.logsDatabase.logTimeWarp).toHaveBeenCalledTimes(1);
@@ -529,22 +529,13 @@ describe("Tokens Usage", () => {
 			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
 		});
 
-		it("should allow tokens on the main continent at level 5 or above", () => {
-			const player = createMockPlayer({ mapLinkId: 1, level: TokensConstants.LEVEL_TO_UNLOCK });
+		it("should allow tokens on the main continent from the starting level", () => {
+			const player = createMockPlayer({ mapLinkId: 1, level: PlayersConstants.PLAYER_DEFAULT_VALUES.LEVEL });
 			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
 			vi.spyOn(Maps, "isOnBoat").mockReturnValue(false);
 			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
 
 			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(true);
-		});
-
-		it("should deny tokens when player level is below unlock threshold", () => {
-			const player = createMockPlayer({ mapLinkId: 1, level: TokensConstants.LEVEL_TO_UNLOCK - 1 });
-			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
-			vi.spyOn(Maps, "isOnBoat").mockReturnValue(false);
-			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
-
-			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(false);
 		});
 
 		it("should deny tokens when not on continent", () => {

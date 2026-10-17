@@ -41,6 +41,19 @@ async function exportGuildMembershipEvents(
 		csvFiles["logs/61_guilds_joined.csv"] = guildsJoinedCsv;
 	}
 
+	const membersAddedCsv = await streamToCSV(
+		LogsGuildsJoins,
+		{ adderId: logsPlayerId },
+		g => ({
+			guildId: anonymizer.anonymizeGuildId(g.guildId),
+			addedPlayerId: anonymizer.anonymizePlayerId(g.addedId, false),
+			date: g.date
+		})
+	);
+	if (membersAddedCsv) {
+		csvFiles["logs/99_guild_members_added.csv"] = membersAddedCsv;
+	}
+
 	const guildsKickedCsv = await streamToCSV(
 		LogsGuildsKicks,
 		{ kickedPlayer: logsPlayerId },

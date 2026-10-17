@@ -7,14 +7,25 @@
   "maxBreath": 20,
   "breathRegen": 5,
   "rewardFactor": 0.65,
+  "materialLoot": [
+    14,
+    7,
+    20,
+    24,
+    13,
+    29,
+    81,
+    16,
+    83
+  ],
   "attacks": [
     {
-      "id": "simpleAttack",
+      "id": "skeletonSimpleAttack",
       "minLevel": 0,
       "weight": 6
     },
     {
-      "id": "shieldAttack",
+      "id": "skeletonShieldAttack",
       "minLevel": 0,
       "weight": 4
     },
@@ -24,7 +35,7 @@
       "weight": 2
     },
     {
-      "id": "cursedAttack",
+      "id": "skeletonCursedAttack",
       "minLevel": 50,
       "weight": 2
     },

@@ -4,8 +4,20 @@ import { Potion } from "../../../../data/Potion";
 import { ObjectItem } from "../../../../data/ObjectItem";
 
 export interface PlayerActiveObjects {
-	weapon: Weapon;
-	armor: Armor;
-	potion: Potion;
-	object: ObjectItem;
+	weapon: {
+		item: Weapon;
+		itemLevel: number;
+		itemEnchantmentId: string | null;
+	};
+	armor: {
+		item: Armor;
+		itemLevel: number;
+		itemEnchantmentId: string | null;
+	};
+	potion: {
+		item: Potion;
+	};
+	object: {
+		item: ObjectItem;
+	};
 }

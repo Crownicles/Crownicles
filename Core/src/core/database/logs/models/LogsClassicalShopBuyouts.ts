@@ -5,8 +5,12 @@ import {
 	LogsShopBuyouts, logsShopLoggingAttributes
 } from "./LogsShopBuyouts";
 
+/* eslint-disable new-cap */
+
 export class LogsClassicalShopBuyouts extends LogsShopBuyouts {
 	declare readonly amount: number;
+
+	declare readonly cityId: string | null;
 }
 
 export function initModel(sequelize: Sequelize): void {
@@ -16,6 +20,10 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.TINYINT.UNSIGNED,
 			allowNull: false,
 			defaultValue: 1
+		},
+		cityId: {
+			type: DataTypes.STRING(32),
+			allowNull: true
 		}
 	}, {
 		sequelize,

@@ -1,11 +1,17 @@
 import { Database } from "../../../../../Lib/src/database/Database";
+import { DatabaseConstants } from "../../../../../Lib/src/constants/DatabaseConstants";
 import { LogsPlayersMoney } from "./models/LogsPlayersMoney";
 import { LogsPlayers } from "./models/LogsPlayers";
+import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
+import { findOrCreateLogsGuild } from "./LogsGuildResolver";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
-	Model, ModelStatic
+	Model, ModelStatic, Sequelize, Transaction
 } from "sequelize";
+import {
+	CLS_TRANSACTION_KEY
+} from "../../../../../Lib/src/locks/CLSNamespace";
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
 import { LogsPlayersGems } from "./models/LogsPlayersGems";
@@ -51,7 +57,6 @@ import {
 import { LogsGuildsKicks } from "./models/LogsGuildsKicks";
 import { LogsDailyPotions } from "./models/LogsDailyPotions";
 import { LogsClassicalShopBuyouts } from "./models/LogsClassicalShopBuyouts";
-import { LogsGuildShopBuyouts } from "./models/LogsGuildShopBuyouts";
 import { LogsMissionShopBuyouts } from "./models/LogsMissionShopBuyouts";
 import { LogsDailyTimeouts } from "./models/LogsDailyTimeouts";
 import { LogsTopWeekEnd } from "./models/LogsTopWeekEnd";
@@ -99,9 +104,13 @@ import { FightController } from "../../fights/FightController";
 import { PlayerFighter } from "../../fights/fighter/PlayerFighter";
 import { PlayerBaseFighter } from "../../fights/fighter/PlayerBaseFighter";
 import { MonsterFighter } from "../../fights/fighter/MonsterFighter";
+import type { KingGuardFighter } from "../../fights/fighter/KingGuardFighter";
+import {
+	KING_GUARD_FIGHT_WINNER, LogsKingGuardFightsResults
+} from "./models/LogsKingGuardFightsResults";
 import { Effect } from "../../../../../Lib/src/types/Effect";
 import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
-import { botConfig } from "../../../index";
+import { botConfig } from "../../../bootstrap";
 import { GuildLikeType } from "../../types/GuildLikeType";
 import { LogsCommandOrigins } from "./models/LogsCommandOrigins";
 import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
@@ -113,6 +122,30 @@ import {
 import {
 	LogsBlessingLogger, BlessingActivationParams, BlessingContributionParams
 } from "./LogsBlessingLogger";
+import {
+	LogsCityLogger,
+	InnMealLogParams,
+	InnRoomLogParams,
+	BlacksmithUpgradeLogParams,
+	BlacksmithDisenchantLogParams,
+	ScrapDealerRecycleLogParams,
+	EnchanterUseLogParams,
+	HomePurchaseLogParams,
+	HomeUpgradeLogParams,
+	HomeMoveLogParams,
+	HomeBedUseLogParams,
+	ApartmentPurchaseLogParams,
+	ApartmentRentClaimLogParams,
+	GuildDomainPurchaseLogParams,
+	GuildDomainUpgradeLogParams,
+	GuildTreasuryDepositLogParams,
+	GuildFoodShopBuyLogParams,
+	CookingUseLogParams,
+	GardenActionLogParams,
+	CityVisitLogParams
+} from "./LogsCityLogger";
+import { transactionBelongsToSequelize } from "./LogsForeignTransactionGuard";
+import { MapCache } from "../../maps/MapCache";
 
 /**
  * Data structure for expedition log entries
@@ -170,9 +203,7 @@ export interface ExpeditionRewards {
 /**
  * Parameters for logging expedition recall
  */
-export interface ExpeditionRecallParams {
-	mapLocationId: number;
-	locationType: string;
+export interface ExpeditionRecallParams extends ExpeditionStartParams {
 	loveChange: number;
 }
 
@@ -184,17 +215,149 @@ export class LogsDatabase extends Database {
 
 	private readonly blessingLogger = new LogsBlessingLogger();
 
+	private readonly cityLogger = new LogsCityLogger();
+
 	constructor() {
-		super(getDatabaseConfiguration(botConfig, "logs"), `${__dirname}/models`, `${__dirname}/migrations`);
+		super(getDatabaseConfiguration(botConfig, "logs", DatabaseConstants.POOLS.LOGS), `${__dirname}/models`, `${__dirname}/migrations`);
+	}
+
+	/**
+	 * Override of {@link Database.init} to install a defensive Sequelize-hook
+	 * boundary that prevents the logs sequelize instance from picking up a
+	 * transaction belonging to **another** sequelize instance via the shared
+	 * CLS namespace.
+	 *
+	 * ### Why this exists
+	 *
+	 * `Sequelize.useCLS(ns)` is a **static** method on the `Sequelize`
+	 * constructor (see {@link useCLSOnSequelize} and the v6 docs). pnpm
+	 * resolves a single physical copy of `sequelize`, so both
+	 * {@link GameDatabase} and `LogsDatabase` share the **same** CLS
+	 * namespace — there is no per-instance opt-out.
+	 *
+	 * As a consequence, when game-side code opens a transaction inside
+	 * `withLockedEntities`, that transaction is stored in CLS under the
+	 * `"transaction"` key. Any subsequent **fire-and-forget**
+	 * `crowniclesInstance.logsDatabase.logXxx(...).then()` call performed in
+	 * the same async context inherits that transaction and routes its
+	 * INSERT through the **game** connection pool — hitting
+	 * `draftbot_X_game` instead of `draftbot_X_logs` and raising
+	 * `ER_NO_SUCH_TABLE` (1146). The resulting unhandled rejection corrupts
+	 * the game-side commit/rollback sequencing and leaves row locks
+	 * orphaned, eventually surfacing as `ER_LOCK_WAIT_TIMEOUT` (1205) on a
+	 * later `/rapport`.
+	 *
+	 * The hook strips any inherited `options.transaction` that does not
+	 * belong to the logs Sequelize instance, restoring the expected
+	 * "each DB owns its own transactions" invariant. Logs writes always
+	 * run with `transaction: undefined` from the perspective of game-side
+	 * TXs, which is the correct behaviour — they target a different
+	 * physical database.
+	 *
+	 * Remove this override only after Sequelize gains per-instance CLS
+	 * support (or after migrating off the static `useCLS` API entirely).
+	 *
+	 * @param doMigrations Forwarded to {@link Database.init}.
+	 */
+	public override async init(doMigrations: boolean): Promise<void> {
+		await super.init(doMigrations);
+		this.installForeignTransactionGuard();
+	}
+
+	/**
+	 * Wraps `this.sequelize.query` so that any `options.transaction`
+	 * inherited from the shared CLS namespace but belonging to **another**
+	 * Sequelize instance is forced to `null` before the original `query`
+	 * runs.
+	 *
+	 * ### Why instance-level wrapping (not hooks)
+	 *
+	 * Looking at the Sequelize v6 `Sequelize#query` body:
+	 *
+	 * ```js
+	 * // 1. CLS lookup populates options.transaction
+	 * if (options.transaction === undefined && this.constructor._cls) {
+	 *   options.transaction = this.constructor._cls.get("transaction");
+	 * }
+	 * // 2. Connection is resolved from that transaction
+	 * const connection = await (options.transaction
+	 *   ? options.transaction.connection
+	 *   : this.connectionManager.getConnection(...));
+	 * // 3. ONLY THEN beforeQuery fires
+	 * await this.runHooks("beforeQuery", options, query);
+	 * ```
+	 *
+	 * Both the `beforeCreate/beforeFind/...` model hooks (fire before step
+	 * 1) and the `beforeQuery` sequelize hook (fires after step 2) are
+	 * unusable: the foreign connection is already locked in by the time
+	 * any hook runs. The only way to neutralise the foreign transaction
+	 * is to intercept **before** `Sequelize#query` is entered — which
+	 * means wrapping `this.sequelize.query` itself.
+	 *
+	 * Setting `options.transaction = null` (not `undefined`) prevents the
+	 * subsequent CLS lookup inside the original `query`: Sequelize only
+	 * consults CLS when the value is strictly `undefined`. `null` is
+	 * treated as "explicitly no transaction" and forces the connection
+	 * manager to pick a fresh connection from this instance's pool —
+	 * hitting `draftbot_X_logs` instead of `draftbot_X_game`.
+	 *
+	 * `findOrCreate` needs one extra guard: Sequelize may create an
+	 * internal savepoint transaction whose `sequelize` is the logs instance,
+	 * while its parent/connection still belongs to the game transaction. We
+	 * therefore walk the whole parent chain before trusting a transaction.
+	 *
+	 * The wrapper is installed once per instance, after `super.init()`
+	 * has created `this.sequelize`. It shadows the prototype method via
+	 * an own property, so the game-side Sequelize (a different instance)
+	 * keeps its unmodified `query` method.
+	 */
+	private installForeignTransactionGuard(): void {
+		const ownSequelize = this.sequelize;
+		const originalQuery = ownSequelize.query.bind(ownSequelize);
+		const clsHolder = Sequelize as unknown as { _cls?: { get: (key: string) => unknown } };
+
+		/*
+		 * We replace `ownSequelize.query` with a wrapper that filters out foreign
+		 * transactions before forwarding to the original implementation. The cast
+		 * at the end is needed because `query` is a heavily overloaded function
+		 * (multiple return-type signatures depending on `options.type`), and a
+		 * plain arrow function returning `Promise<unknown>` cannot be inferred as
+		 * matching every overload — TypeScript only widens the call site to the
+		 * last overload of an intersection.
+		 */
+		const patchedQuery = ((sql: Parameters<typeof originalQuery>[0], rawOptions?: Parameters<typeof originalQuery>[1]): Promise<unknown> => {
+			const opts: { transaction?: Transaction | null | undefined } & Record<string, unknown> = { ...rawOptions ?? {} };
+
+			let transaction = opts.transaction;
+			if (transaction === undefined && clsHolder._cls) {
+				transaction = clsHolder._cls.get(CLS_TRANSACTION_KEY) as Transaction | undefined;
+			}
+			if (transaction && !transactionBelongsToSequelize(transaction, ownSequelize)) {
+				/*
+				 * Foreign transaction (from a different Sequelize instance, e.g. the
+				 * game DB) leaked into this logs-DB query via the shared CLS
+				 * namespace. Force `null` to bypass the CLS lookup inside the
+				 * original `query` so a fresh connection from this instance's pool
+				 * is used instead of the foreign transaction's connection.
+				 */
+				opts.transaction = null;
+			}
+
+			return originalQuery(sql, opts as Parameters<typeof originalQuery>[1]);
+		}) as typeof ownSequelize.query;
+		ownSequelize.query = patchedQuery;
 	}
 
 	/**
 	 * Log when a pet is freed
 	 * @param freedPet
+	 * @param keycloakId
 	 */
-	public static async logPetFree(freedPet: PetEntity): Promise<void> {
+	public static async logPetFree(freedPet: PetEntity, keycloakId?: string): Promise<void> {
 		const logPetEntity = await LogsDatabase.findOrCreatePetEntity(freedPet);
+		const player = keycloakId ? await LogsDatabase.findOrCreatePlayer(keycloakId) : null;
 		await LogsPetsFrees.create({
+			playerId: player?.id ?? null,
 			petId: logPetEntity.id,
 			date: getDateLogs()
 		});
@@ -246,13 +409,8 @@ export class LogsDatabase extends Database {
 	 * @param keycloakId
 	 * @returns The player or null if keycloakId is invalid
 	 */
-	static async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
-		if (!keycloakId) {
-			return null;
-		}
-		return (await LogsPlayers.findOrCreate({
-			where: { keycloakId }
-		}))[0];
+	static findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
+		return findOrCreateLogsPlayer(keycloakId);
 	}
 
 	/**
@@ -312,13 +470,7 @@ export class LogsDatabase extends Database {
 	 * @param guild
 	 */
 	private static async findOrCreateGuild(guild: Guild | GuildLikeType): Promise<LogsGuilds> {
-		return (await LogsGuilds.findOrCreate({
-			where: {
-				gameId: guild.id,
-				creationTimestamp: dateToLogs(guild.creationDate)
-			},
-			defaults: { name: guild.name }
-		}))[0];
+		return await findOrCreateLogsGuild(guild);
 	}
 
 	/**
@@ -749,12 +901,15 @@ export class LogsDatabase extends Database {
 		if (!player) {
 			return;
 		}
-		const [maplinkLog] = await LogsMapLinks.findOrCreate({
+		const [maplinkLog, created] = await LogsMapLinks.findOrCreate({
 			where: {
 				start: mapLink.startMap,
 				end: mapLink.endMap
 			}
 		});
+		if (created && MapCache.pveIslandMapLinks.includes(mapLink.id)) {
+			MapCache.logsPveIslandMapLinks.push(maplinkLog.id);
+		}
 		await LogsPlayersTravels.create({
 			playerId: player.id,
 			mapLinkId: maplinkLog.id,
@@ -865,10 +1020,16 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when a player renames its pet
 	 * @param petRenamed
+	 * @param keycloakId
 	 */
-	public async logPetNickname(petRenamed: PetEntity): Promise<void> {
+	public async logPetNickname(petRenamed: PetEntity, keycloakId: string): Promise<void> {
 		const pet = await LogsDatabase.findOrCreatePetEntity(petRenamed);
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPetsNicknames.create({
+			playerId: player.id,
 			petId: pet.id,
 			name: petRenamed.nickname,
 			date: getDateLogs()
@@ -909,8 +1070,9 @@ export class LogsDatabase extends Database {
 	 * @param keycloakId
 	 * @param shopItem
 	 * @param amount - Number of items bought (defaults to 1)
+	 * @param cityId - Slug of the city the shop is in (omit for city-less shops, e.g. mission/guild gem shops)
 	 */
-	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount = 1): Promise<void> {
+	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount = 1, cityId?: string): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!logPlayer) {
 			return;
@@ -919,29 +1081,10 @@ export class LogsDatabase extends Database {
 			playerId: logPlayer.id,
 			shopItem,
 			amount,
+			cityId: cityId ?? null,
 			date: getDateLogs()
 		});
 	}
-
-	/**
-	 * Log when anything is bought from the guild shop
-	 * @param keycloakId
-	 * @param shopItem
-	 * @param amount
-	 */
-	public async logGuildShopBuyout(keycloakId: string, shopItem: ShopItemType, amount: number): Promise<void> {
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		if (!logPlayer) {
-			return;
-		}
-		await LogsGuildShopBuyouts.create({
-			playerId: logPlayer.id,
-			shopItem,
-			amount,
-			date: getDateLogs()
-		});
-	}
-
 
 	/**
 	 * Log when a daily ti
@@ -976,8 +1119,10 @@ export class LogsDatabase extends Database {
 	 * Log when anything is bought from the mission shop
 	 * @param keycloakId
 	 * @param shopItem
+	 * @param _amount - Ignored (kept for ShopUtils logger contract compatibility; mission shop items are one-shot)
+	 * @param cityId - Slug of the city the gem shop is in (omit for non-city call sites)
 	 */
-	public async logMissionShopBuyout(keycloakId: string, shopItem: ShopItemType): Promise<void> {
+	public async logMissionShopBuyout(keycloakId: string, shopItem: ShopItemType, _amount?: number, cityId?: string): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!logPlayer) {
 			return;
@@ -985,6 +1130,7 @@ export class LogsDatabase extends Database {
 		await LogsMissionShopBuyouts.create({
 			playerId: logPlayer.id,
 			shopItem,
+			cityId: cityId ?? null,
 			date: getDateLogs()
 		});
 	}
@@ -1009,11 +1155,17 @@ export class LogsDatabase extends Database {
 	 * Log a pet transfer
 	 * @param guildPet
 	 * @param playerPet
+	 * @param keycloakId
 	 */
-	public async logPetTransfer(guildPet: PetEntity, playerPet: PetEntity): Promise<void> {
+	public async logPetTransfer(guildPet: PetEntity | null, playerPet: PetEntity | null, keycloakId: string): Promise<void> {
 		const logGuildPet = guildPet ? await LogsDatabase.findOrCreatePetEntity(guildPet) : null;
 		const logPlayerPet = playerPet ? await LogsDatabase.findOrCreatePetEntity(playerPet) : null;
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPetsTransfers.create({
+			playerId: player.id,
 			playerPetId: logPlayerPet ? logPlayerPet.id : null,
 			guildPetId: logGuildPet ? logGuildPet.id : null,
 			date: getDateLogs()
@@ -1026,7 +1178,7 @@ export class LogsDatabase extends Database {
 	 * @param members
 	 * @param guildPetsEntities
 	 */
-	public async logGuildDestroy(guild: Guild, members: Player[], guildPetsEntities: PetEntity[]): Promise<void> {
+	public async logGuildDestroy(guild: Guild, members: Player[], guildPetsEntities: PetEntity[], destroyedByKeycloakId: string): Promise<void> {
 		const guildInfo: GuildLikeType = {
 			id: guild.id,
 			name: guild.name,
@@ -1040,7 +1192,7 @@ export class LogsDatabase extends Database {
 			}
 		}
 		for (const guildPetEntity of guildPetsEntities) {
-			await LogsDatabase.logPetFree(guildPetEntity);
+			await LogsDatabase.logPetFree(guildPetEntity, destroyedByKeycloakId);
 		}
 		await LogsGuildsDestroys.create({
 			guildId: logGuild.id,
@@ -1051,15 +1203,11 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when an elder is demoted
 	 * @param guild
-	 * @param removedPlayerId
+	 * @param removedElderKeycloakId
 	 */
-	public async logGuildElderRemove(guild: Guild, removedPlayerId: number): Promise<void> {
+	public async logGuildElderRemove(guild: Guild, removedElderKeycloakId: string): Promise<void> {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
-		const removedPlayer = await Players.getById(removedPlayerId);
-		if (!removedPlayer) {
-			return;
-		}
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(removedPlayer.keycloakId);
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(removedElderKeycloakId);
 		if (!logPlayer) {
 			return;
 		}
@@ -1073,15 +1221,11 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when a guild's chief is changed
 	 * @param guild
-	 * @param newChiefId
+	 * @param newChiefKeycloakId
 	 */
-	public async logGuildChiefChange(guild: Guild, newChiefId: number): Promise<void> {
+	public async logGuildChiefChange(guild: Guild, newChiefKeycloakId: string): Promise<void> {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
-		const newChief = await Players.getById(newChiefId);
-		if (!newChief) {
-			return;
-		}
-		const logNewChief = await LogsDatabase.findOrCreatePlayer(newChief.keycloakId);
+		const logNewChief = await LogsDatabase.findOrCreatePlayer(newChiefKeycloakId);
 		if (!logNewChief) {
 			return;
 		}
@@ -1194,6 +1338,7 @@ export class LogsDatabase extends Database {
 			const winner = fight.getWinnerFighter();
 			const fightResult = await LogsPveFightsResults.create({
 				playerId,
+				classId: player.player.class,
 				monsterId: monster.monster.id,
 				monsterLevel: monster.level,
 				monsterFightPoints: monsterStats.maxEnergy,
@@ -1227,6 +1372,30 @@ export class LogsDatabase extends Database {
 				});
 			}
 		}
+	}
+
+	/**
+	 * Log the result of a fight against a king guard
+	 * @param fight
+	 * @param guard
+	 */
+	public async logKingGuardFight(fight: FightController, guard: KingGuardFighter): Promise<void> {
+		const player = fight.fightInitiator;
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(player.player.keycloakId);
+		if (!logPlayer) {
+			return;
+		}
+		await LogsKingGuardFightsResults.create({
+			playerId: logPlayer.id,
+			classId: player.player.class,
+			guardClassId: guard.player.class,
+			guardLevel: guard.level,
+			turn: fight.turn,
+			winner: fight.isADraw()
+				? KING_GUARD_FIGHT_WINNER.DRAW
+				: fight.getWinnerFighter() === player ? KING_GUARD_FIGHT_WINNER.PLAYER : KING_GUARD_FIGHT_WINNER.GUARD,
+			date: getDateLogs()
+		});
 	}
 
 	/**
@@ -1282,10 +1451,16 @@ export class LogsDatabase extends Database {
 	 * Log when a pet has its love changed
 	 * @param petEntity
 	 * @param reason
+	 * @param keycloakId
 	 */
-	public async logPetLoveChange(petEntity: PetEntity, reason: NumberChangeReason): Promise<void> {
+	public async logPetLoveChange(petEntity: PetEntity, reason: NumberChangeReason, keycloakId: string): Promise<void> {
 		const logPet = await LogsDatabase.findOrCreatePetEntity(petEntity);
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPetsLovesChanges.create({
+			playerId: player.id,
 			petId: logPet.id,
 			lovePoints: petEntity.lovePoints,
 			reason,
@@ -1525,10 +1700,10 @@ export class LogsDatabase extends Database {
 	}
 
 	/**
-	 * Count the number of expedition cancellations (cancel + recall) for a player in the last N days
+	 * Count the number of expedition cancellations (cancel + recall) for a player during the current week
 	 */
-	public countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
-		return this.expeditionLogger.countRecentExpeditionCancellations(keycloakId, days);
+	public countExpeditionCancellationsThisWeek(keycloakId: string): Promise<number> {
+		return this.expeditionLogger.countExpeditionCancellationsThisWeek(keycloakId);
 	}
 
 	/**
@@ -1572,5 +1747,112 @@ export class LogsDatabase extends Database {
 	 */
 	public getContributionsSince(since: Date): Promise<Map<string, number>> {
 		return this.blessingLogger.getContributionsSince(since);
+	}
+
+	/**
+	 * Log when a player eats a meal at a city inn
+	 */
+	public logInnMeal(params: InnMealLogParams): Promise<void> {
+		return this.cityLogger.logInnMeal(params);
+	}
+
+	/**
+	 * Log when a player rents a room at a city inn
+	 */
+	public logInnRoom(params: InnRoomLogParams): Promise<void> {
+		return this.cityLogger.logInnRoom(params);
+	}
+
+	/**
+	 * Log when a player upgrades an item at the city blacksmith
+	 */
+	public logBlacksmithUpgrade(params: BlacksmithUpgradeLogParams): Promise<void> {
+		return this.cityLogger.logBlacksmithUpgrade(params);
+	}
+
+	/**
+	 * Log when a player removes an enchantment at the city blacksmith
+	 */
+	public logBlacksmithDisenchant(params: BlacksmithDisenchantLogParams): Promise<void> {
+		return this.cityLogger.logBlacksmithDisenchant(params);
+	}
+
+	/**
+	 * Log when a player scraps an equipment at the city scrap dealer
+	 */
+	public logScrapDealerRecycle(params: ScrapDealerRecycleLogParams): Promise<void> {
+		return this.cityLogger.logScrapDealerRecycle(params);
+	}
+
+	/**
+	 * Log when a player enchants an item at the city enchanter
+	 */
+	public logEnchanterUse(params: EnchanterUseLogParams): Promise<void> {
+		return this.cityLogger.logEnchanterUse(params);
+	}
+
+	/** Log when a player buys a home in a city */
+	public logHomePurchase(params: HomePurchaseLogParams): Promise<void> {
+		return this.cityLogger.logHomePurchase(params);
+	}
+
+	/** Log when a player upgrades their home level */
+	public logHomeUpgrade(params: HomeUpgradeLogParams): Promise<void> {
+		return this.cityLogger.logHomeUpgrade(params);
+	}
+
+	/** Log when a player moves their home to another city */
+	public logHomeMove(params: HomeMoveLogParams): Promise<void> {
+		return this.cityLogger.logHomeMove(params);
+	}
+
+	/** Log when a player uses their home bed to heal */
+	public logHomeBedUse(params: HomeBedUseLogParams): Promise<void> {
+		return this.cityLogger.logHomeBedUse(params);
+	}
+
+	/** Log when a player buys an apartment in a city */
+	public logApartmentPurchase(params: ApartmentPurchaseLogParams): Promise<void> {
+		return this.cityLogger.logApartmentPurchase(params);
+	}
+
+	/** Log when a player claims accumulated rent from an apartment they own */
+	public logApartmentRentClaim(params: ApartmentRentClaimLogParams): Promise<void> {
+		return this.cityLogger.logApartmentRentClaim(params);
+	}
+
+	/** Log when a guild chief buys or relocates the guild domain at the city notary */
+	public logGuildDomainPurchase(params: GuildDomainPurchaseLogParams): Promise<void> {
+		return this.cityLogger.logGuildDomainPurchase(params);
+	}
+
+	/** Log when a guild chief upgrades a guild building */
+	public logGuildDomainUpgrade(params: GuildDomainUpgradeLogParams): Promise<void> {
+		return this.cityLogger.logGuildDomainUpgrade(params);
+	}
+
+	/** Log a deposit (or chief reimbursement) into the guild treasury */
+	public logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams): Promise<void> {
+		return this.cityLogger.logGuildTreasuryDeposit(params);
+	}
+
+	/** Log when a guild member buys pet food from the guild food shop */
+	public logGuildFoodShopBuy(params: GuildFoodShopBuyLogParams): Promise<void> {
+		return this.cityLogger.logGuildFoodShopBuy(params);
+	}
+
+	/** Log a cooking craft attempt (success or failure) */
+	public logCookingUse(params: CookingUseLogParams): Promise<void> {
+		return this.cityLogger.logCookingUse(params);
+	}
+
+	/** Log a garden action (plant/water/compost/harvest) */
+	public logGardenAction(params: GardenActionLogParams): Promise<void> {
+		return this.cityLogger.logGardenAction(params);
+	}
+
+	/** Log a passive city visit (entry, exit, opened-menus bitmask) */
+	public logCityVisit(params: CityVisitLogParams): Promise<void> {
+		return this.cityLogger.logCityVisit(params);
 	}
 }

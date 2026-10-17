@@ -1,11 +1,12 @@
 import { LogsExpeditions } from "./models/LogsExpeditions";
 import { LogsPetEntities } from "./models/LogsPetEntities";
-import { LogsPlayers } from "./models/LogsPlayers";
+import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
 import { Op } from "sequelize";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import {
-	daysToSeconds, getDateLogs
+	getDateLogs, getNextSundayMidnight, millisecondsToSeconds, msDiff
 } from "../../../../../Lib/src/utils/TimeUtils";
+import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import {
 	ExpeditionCompleteParams,
 	ExpeditionLogData,
@@ -39,18 +40,6 @@ export interface ExpeditionLogIdentifier {
  */
 export class LogsExpeditionLogger {
 	/**
-	 * Find or create a player in the logs database by keycloak ID
-	 */
-	private async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
-		if (keycloakId === "") {
-			return null;
-		}
-		return (await LogsPlayers.findOrCreate({
-			where: { keycloakId }
-		}))[0];
-	}
-
-	/**
 	 * Find or create a pet entity in the log database by game id
 	 */
 	private async findOrCreatePetEntityByGameId(gameId: number): Promise<LogsPetEntities> {
@@ -79,7 +68,7 @@ export class LogsExpeditionLogger {
 		petGameId: number,
 		data: Partial<ExpeditionLogData>
 	): Promise<void> {
-		const player = await this.findOrCreatePlayer(keycloakId);
+		const player = await findOrCreateLogsPlayer(keycloakId);
 		if (!player) {
 			return;
 		}
@@ -158,21 +147,24 @@ export class LogsExpeditionLogger {
 	}
 
 	/**
-	 * Count the number of expedition cancellations (cancel + recall) for a player in the last N days
+	 * Count the number of expedition cancellations (cancel + recall) for a player during the current week
 	 * Both cancelling during preparation and recalling during expedition count towards the progressive penalty
 	 */
-	async countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
-		const logPlayer = await this.findOrCreatePlayer(keycloakId);
+	async countExpeditionCancellationsThisWeek(keycloakId: string): Promise<number> {
+		const logPlayer = await findOrCreateLogsPlayer(keycloakId);
 		if (!logPlayer) {
 			return 0;
 		}
-		const cutoffDate = getDateLogs() - daysToSeconds(days);
+		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(
+			getNextSundayMidnight(),
+			TimeConstants.MS_TIME.WEEK
+		)));
 
 		return LogsExpeditions.count({
 			where: {
 				playerId: logPlayer.id,
 				action: { [Op.in]: [ExpeditionConstants.LOG_ACTION.CANCEL, ExpeditionConstants.LOG_ACTION.RECALL] },
-				date: { [Op.gte]: cutoffDate }
+				date: { [Op.gt]: startOfWeek }
 			}
 		});
 	}

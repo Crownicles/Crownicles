@@ -4,7 +4,9 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandFightHistoryPacketReq,
 	CommandFightHistoryPacketRes,
-	FightHistoryItem
+	FightHistoryItem,
+	KingGuardFightHistoryItem,
+	PlayerFightHistoryItem
 } from "../../../../Lib/src/packets/commands/CommandFightHistoryPacket";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import {
@@ -47,43 +49,77 @@ function getLeagueChange(
 }
 
 /**
+ * Get the sentence describing the result of a fight
+ * @param result
+ * @param lng
+ */
+function getResultSentence(result: EloGameResult, lng: Language): string {
+	return i18n.t(result === EloGameResult.LOSS
+		? "commands:fightHistory.resultSentence.lost"
+		: result === EloGameResult.WIN
+			? "commands:fightHistory.resultSentence.won"
+			: "commands:fightHistory.resultSentence.draw", {
+		lng
+	});
+}
+
+/**
+ * Build the history line of a fight against another player
+ * @param fight
+ * @param lng
+ */
+async function buildPlayerFightHistoryLine(fight: PlayerFightHistoryItem, lng: Language): Promise<string> {
+	const isViewerInitiator = fight.initiator;
+	const attackSentence = i18n.t(isViewerInitiator ? "commands:fightHistory.attackSentence.attacker" : "commands:fightHistory.attackSentence.defender", {
+		opponentClassId: fight.classes.opponent,
+		opponent: await DisplayUtils.getEscapedUsername(fight.opponentKeycloakId, lng),
+		lng
+	});
+	const leagueChange = isViewerInitiator ? fight.glory.leaguesChanges.me : fight.glory.leaguesChanges.opponent;
+	return i18n.t("commands:fightHistory.historyLine", {
+		lng,
+		date: dateDisplay(new Date(fight.date)),
+		attackSentence,
+		resultSentence: getResultSentence(fight.result, lng),
+		meInitialGlory: fight.glory.initial.me,
+		meFinalGlory: fight.glory.initial.me + fight.glory.change.me,
+		opponentInitialGlory: fight.glory.initial.opponent,
+		opponentFinalGlory: fight.glory.initial.opponent + fight.glory.change.opponent,
+		meLeagueChange: getLeagueChange(lng, leagueChange)
+	});
+}
+
+/**
+ * Build the history line of a fight against a king guard
+ * @param fight
+ * @param lng
+ */
+function buildKingGuardFightHistoryLine(fight: KingGuardFightHistoryItem, lng: Language): string {
+	return i18n.t("commands:fightHistory.kingGuardHistoryLine", {
+		lng,
+		date: dateDisplay(new Date(fight.date)),
+		guardLevel: fight.kingGuard.level,
+		guardClassId: fight.classes.opponent,
+		resultSentence: getResultSentence(fight.result, lng)
+	});
+}
+
+/**
  * Build the fight history description from start to end indexes
  * @param history - The fight history
  * @param start - The start index
  * @param end - The end index
  * @param lng - The language
  */
-async function buildPacketHistoryDescription(history: FightHistoryItem[], start: number, end: number, lng: Language): Promise<string> {
+export async function buildPacketHistoryDescription(history: FightHistoryItem[], start: number, end: number, lng: Language): Promise<string> {
 	let desc = "";
 
 	for (let i = end - 1; i >= start; i--) {
 		const fight = history[i];
-		const isViewerInitiator = fight.initiator;
-		const attackSentence = i18n.t(isViewerInitiator ? "commands:fightHistory.attackSentence.attacker" : "commands:fightHistory.attackSentence.defender", {
-			opponentClassId: fight.classes.opponent,
-			opponent: await DisplayUtils.getEscapedUsername(fight.opponentKeycloakId, lng),
-			lng
-		});
-		const resultSentence = i18n.t(fight.result === EloGameResult.LOSS
-			? "commands:fightHistory.resultSentence.lost"
-			: fight.result === EloGameResult.WIN
-				? "commands:fightHistory.resultSentence.won"
-				: "commands:fightHistory.resultSentence.draw", {
-			lng
-		});
-		const leagueChange = isViewerInitiator ? fight.glory.leaguesChanges.me : fight.glory.leaguesChanges.opponent;
-		const meLeagueChange = getLeagueChange(lng, leagueChange);
-		desc += `${i18n.t("commands:fightHistory.historyLine", {
-			lng,
-			date: dateDisplay(new Date(fight.date)),
-			attackSentence,
-			resultSentence,
-			meInitialGlory: fight.glory.initial.me,
-			meFinalGlory: fight.glory.initial.me + fight.glory.change.me,
-			opponentInitialGlory: fight.glory.initial.opponent,
-			opponentFinalGlory: fight.glory.initial.opponent + fight.glory.change.opponent,
-			meLeagueChange
-		})}\n\n`;
+		const line = "kingGuard" in fight
+			? buildKingGuardFightHistoryLine(fight, lng)
+			: await buildPlayerFightHistoryLine(fight, lng);
+		desc += `${line}\n\n`;
 	}
 
 	return desc;

@@ -5,24 +5,20 @@ import Player from "../core/database/game/models/Player";
 import {
 	CrowniclesPacket, PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
+import { PlayerActiveObjects } from "../core/database/game/models/PlayerActiveObjects";
 
 export class SmallEvent extends Data<string> {
 	public readonly rarity!: number;
 
 	private readonly properties!: { [key: string]: unknown };
 
-	async execute(context: PacketContext, response: CrowniclesPacket[], player: Player): Promise<void> {
-		const smallEventFunction = SmallEventDataController.getSmallEventFunction(this.id);
-		await smallEventFunction.executeSmallEvent(response, player, context);
-	}
-
 	getProperties<T>(): T {
 		return <T> this.properties;
 	}
 }
 
-export type CanBeExecutedLike = (player: Player) => boolean | Promise<boolean>;
-export type ExecuteSmallEventLike = (response: CrowniclesPacket[], player: Player, context: PacketContext, testArgs?: string[]) => void | Promise<void>;
+export type CanBeExecutedLike = (player: Player, playerActiveObjects: PlayerActiveObjects) => boolean | Promise<boolean>;
+export type ExecuteSmallEventLike = (response: CrowniclesPacket[], player: Player, context: PacketContext, playerActiveObjects: PlayerActiveObjects, testArgs?: string[]) => void | Promise<void>;
 
 export type SmallEventFuncs = {
 	canBeExecuted: CanBeExecutedLike;
@@ -52,8 +48,14 @@ export class SmallEventDataController extends DataControllerString<SmallEvent> {
 		for (const file of files) {
 			if (file.endsWith(".js")) {
 				const smallEventFuncs = (<{
-					smallEventFuncs: SmallEventFuncs;
+					smallEventFuncs?: SmallEventFuncs;
 				}>require(`${relativePath}/${file.substring(0, file.length - 3)}`)).smallEventFuncs;
+
+				// Skip helper files in the folder that are not actual small events (they don't export smallEventFuncs)
+				if (!smallEventFuncs) {
+					continue;
+				}
+
 				SmallEventDataController.smallEventsFunctionsCache!.set(
 					file.substring(0, file.length - 3),
 					smallEventFuncs

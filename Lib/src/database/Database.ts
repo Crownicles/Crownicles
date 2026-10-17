@@ -8,11 +8,13 @@ import { promises } from "fs";
 import { createConnection } from "mariadb";
 import { DatabaseConfiguration } from "./DatabaseConfiguration";
 import { CrowniclesLogger } from "../logs/CrowniclesLogger";
+import { useCLSOnSequelize } from "../locks/CLSNamespace";
 import TYPES = Transaction.TYPES;
 
 const DB_RETRY_MAX_ATTEMPTS = 10;
 const DB_RETRY_BASE_DELAY_MS = 1000;
 const DB_RETRY_MAX_DELAY_MS = 30000;
+const DB_CONNECT_TIMEOUT_MS = 5000;
 
 export abstract class Database {
 	/**
@@ -68,6 +70,15 @@ export abstract class Database {
 			return;
 		}
 
+		/*
+		 * Wire the shared CLS namespace into Sequelize so transactions opened
+		 * by `withLockedEntities` automatically propagate to nested
+		 * `model.save()` calls. Must run before any `new Sequelize(...)`.
+		 * The ctor is passed explicitly: pnpm may resolve several physical
+		 * copies of `sequelize` and `useCLS` only affects the one we hand it.
+		 */
+		useCLSOnSequelize(Sequelize);
+
 		const dbName = `${this.databaseConfiguration.prefix}_${this.databaseConfiguration.databaseName}`;
 
 		for (let attempt = 1; attempt <= DB_RETRY_MAX_ATTEMPTS; attempt++) {
@@ -101,6 +112,13 @@ export abstract class Database {
 					host: this.databaseConfiguration.host,
 					port: this.databaseConfiguration.port,
 					logging: false,
+
+					// Copied: Sequelize fills its own defaults into the object it receives, which is a shared constant.
+					pool: { ...this.databaseConfiguration.pool },
+					dialectOptions: {
+						// mariadb defaults to one second, which is too short for transient production network stalls.
+						connectTimeout: DB_CONNECT_TIMEOUT_MS
+					},
 					transactionType: TYPES.IMMEDIATE
 				});
 				await sequelize.authenticate();
@@ -158,7 +176,7 @@ export abstract class Database {
 		if (modelSplit[1] !== "js" || modelSplit.length !== 2) {
 			return;
 		}
-		const model = await import(`${this.modelsPath}/${modelName}`);
+		const model = await import(`${this.modelsPath}/${modelName}.js`);
 		models.push(model);
 		if (model.initModel) {
 			await model.initModel(this.sequelize);

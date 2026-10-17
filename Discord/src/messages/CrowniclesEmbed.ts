@@ -22,6 +22,15 @@ export class CrowniclesEmbed extends EmbedBuilder {
 	}
 
 	/**
+	 * Set the author with the user's avatar when a user is provided, otherwise fall back to a plain title
+	 * @param title
+	 * @param user
+	 */
+	formatAuthorOrTitle(title: string, user: User | null): this {
+		return user ? this.formatAuthor(title, user) : this.setTitle(title);
+	}
+
+	/**
 	 *Set the color of the embed to the error color
 	 */
 	setErrorColor(): this {

@@ -30,7 +30,9 @@ export default defineConfig([
 		},
 		rules: {
 			...customRules,
-			"crownicles/single-line-short-single-property-object": ["error", { maxLength: 40 }]
+			"crownicles/single-line-short-single-property-object": ["error", { maxLength: 40 }],
+			"crownicles/no-this-in-packet-handler": "error",
+			"crownicles/no-response-push-through-return": "error"
 		}
 	},
 	{

@@ -1,0 +1,170 @@
+---
+applyTo: '**'
+---
+# Code Review Checklist
+
+Generic review procedure to catch common issues before submitting a PR. Based on recurring patterns found during code reviews.
+
+---
+
+## 0. Reporting Rules (for AI agents performing reviews)
+
+- [ ] **Never post review comments on GitHub** (no `gh pr comment`, no `gh pr review`, no inline review threads). Reviews produced by an AI agent are intended for the human author only.
+- [ ] **Always deliver review findings via the `ask_user` channel** — write the full findings (bug analysis, checklist results, suggestions, CI status) directly in the `ask_user` message, never in an external system.
+- [ ] If a previous run accidentally posted a review on GitHub, mention it in the `ask_user` message so the author can delete it.
+
+---
+
+## 0.5 Architecture & System Boundaries
+
+Apply this section when a change has a non-local blast radius: a shared abstraction or utility, persisted state or migration, cache, packet/API contract, authorization, asynchronous callback/job, transaction, or cross-module flow. Do not turn it into ceremony for a leaf UI/text-only change.
+
+- [ ] **Write a short architecture note before approving** — name the 1–3 invariants that must remain true, the canonical source of truth for each affected state, the components/boundaries crossed, and the observable test that proves it. Example: “a successful class choice is persisted before any health recalculation; the database and response expose the same class”.
+- [ ] **Trace the complete changed path, not only the diff** — follow input/event → orchestration → model/service → persistence/cache/external side effect → packet/job. At every `await`, callback, reload, retry, event publication, or transaction boundary, state which data may have changed and which object/store is authoritative afterwards.
+- [ ] **Search the reverse dependencies and parallel flows** — before changing shared behavior, inspect every caller, implementation, sibling feature, background job, and protocol consumer with `rg`. Check compatibility, duplicated business rules, and alternate paths that bypass the proposed invariant.
+- [ ] **Give each state transition one owner** — do not let a stale in-memory object, cache, database row, packet payload, or background job independently overwrite another source of truth. A refresh, merge, retry, invalidation, or synchronization must have an explicit ownership rule and preserve all fields it does not own.
+- [ ] **Review failure and time dimensions deliberately** — cover partial success, exceptions after a side effect, duplicate/retried delivery, cancellation, concurrent execution, and stale reads whenever the flow can encounter them. The required property is explicit: idempotence, compensation, serialization, or a user-visible recoverable failure.
+- [ ] **Ask for one adversarial counterexample from a fresh review context** — the reviewer must try to break an invariant through a different caller, an old persisted state, an interrupted/retried operation, or two executions in a different order. Do not accept “looks correct”; record why the counterexample cannot occur or add the regression test it exposes.
+- [ ] **Test the invariant at an observable boundary** — tests must assert persisted state, externally returned packets/API, or a conserved domain value after the full flow. A unit test of the new helper alone is insufficient for a cross-boundary change.
+
+---
+
+## 1. Magic Strings & Constants
+
+- [ ] **No hardcoded strings** used as identifiers, action names, or error codes — use `as const` objects (e.g., `CHEST_ACTIONS.DEPOSIT`, `EQUIP_ERRORS.INVALID`)
+- [ ] **No hardcoded emojis** in code or translations — use `CrowniclesIcons.*` with `{emote:path}` pattern in translations
+- [ ] **No hardcoded timezones or locale formats** — use system time aligned with game reset (e.g., `new Date().getHours()`), never `"Europe/Paris"` or `Intl.DateTimeFormat` with hardcoded locale
+- [ ] **Data tags over hardcoded ID lists** — when items share a property (e.g., fire affinity), add a tag to the data JSON files (e.g., `"tags": ["fire"]`) and check via `ItemConstants.TAGS.X` instead of maintaining a static list of IDs in constants
+- [ ] **No new boolean flag per variant** — when a set of variants already has a shared typed key list (`CITY_SERVICES`, `ItemConstants.TAGS`, ...), declare membership as a list in the data files (`"services": ["blacksmith", "scrapDealer"]`) instead of adding yet another `hasXxx?: boolean` field with its `xxxAvailable` getter and its manual mapping to the shared key. The data files, the transferred packet and the front-end display should all key off the same union
+- [ ] **No implicit defaults in game data** — avoid `this.hasFoo !== false` (defaults to true) sitting next to `this.hasBar === true` (defaults to false): the polarity is invisible in the JSON and silently drifts between fields. Make the data explicit, and back it with a data-integrity test asserting every resource file declares the field with valid values
+- [ ] **Bitmask and persisted enum values fit their column** — before adding a flag to a bitmask or a value to a persisted enum, check the column type in the migration: `TINYINT UNSIGNED` caps at 255 (8 flags), `SMALLINT UNSIGNED` at 65535 (16 flags). Overflow is silent. Document the ceiling next to the mask definition
+- [ ] **Constants in the right location** — shared constants go in `Lib/src/constants/`, not duplicated across services
+- [ ] **No duplicate constants** — search for similar values already defined elsewhere before creating new ones
+- [ ] **Magic numbers as named constants** — any numeric literal in algorithms (primes, multipliers, masks) must be a named constant. Trivial values (0, 1, -1) in obvious contexts are acceptable
+- [ ] **Pre-compute derived constants** — when a constant is always used in a derived form (e.g., hours -> milliseconds), compute the derived value at the constant definition level (`FOO_MS = FOO_HOURS * 3_600_000`) and use that directly. Don't repeat the conversion formula at every call site
+- [ ] **No redundant unit conversion round-trips** — chains like `millisecondsToHours(asMilliseconds(x))` cancel out and reveal that `x` is already in the target unit (or that the conversion functions are misused). Use the unit-typed helpers from `Lib/src/utils/TimeUtils` / `TimeTypes` directly, and avoid hardcoding raw factors like `3600000` next to them — combine them with the existing helpers (`asMilliseconds(Hour(remainingHours))`, etc.)
+
+## 2. TypeScript Types
+
+- [ ] **Explicit return types** on all functions (enforced by ESLint `@typescript-eslint/explicit-function-return-type`)
+- [ ] **Derived union types** from `as const` objects using `typeof Object[keyof typeof Object]` — avoid raw `string` when a finite set of values exists
+- [ ] **Type aliases for repeated inline types** — if an inline type `{ slot: number; category: ItemCategory }` appears 2+ times, extract it to a named type. When one of those occurrences is the parameter of a shared `Lib` helper, the alias belongs in `Lib/src/types/` and the helper signature must use it — otherwise every caller keeps re-declaring the same shape
+- [ ] **Extract nested type accessors** — avoid repeating `SomeType["nested"]["field"][number]` across functions; extract to a `type Alias = SomeType["nested"]["field"][number]` and reference the alias
+- [ ] **Shared types in `Lib/src/types/`** — types used across multiple packets or services must be extracted to a dedicated file in `Lib/src/types/`, not defined inline in packet files or duplicated across consumers
+- [ ] **No `any`** — use proper types or generics
+- [ ] **No unnecessary type assertions** — don't cast to `readonly T[]` or force types when the type is already correctly inferred; let TypeScript's inference do the work
+- [ ] **No `as unknown as T` double-casts** — these are a code smell. Before writing one, try: (1) **module augmentation** for missing fields on third-party types (e.g. `declare module "sequelize" { interface Transaction { sequelize: Sequelize; } }` instead of `(tx as unknown as { sequelize: Sequelize }).sequelize`), (2) **tighter generics** so TS narrows the type at the call site, (3) a **type guard** that returns `value is T`. If the double-cast is truly unavoidable (e.g. mapped types over heterogeneous tuples that TS cannot express), leave an inline comment explaining *why* TS cannot infer the type.
+- [ ] **Avoid `NonNullable<Awaited<ReturnType<...>>>`** — when a concrete model type exists (e.g., `Player`, `Home`, `Guild`), import and use it directly instead of deriving the type from a function's return type
+- [ ] **Replace `null` with semantic values** — when `null` has a specific meaning (e.g., "not applicable"), use a named enum/constant (e.g., `NON_APPLICABLE = -3`) instead of `| null` everywhere
+- [ ] **No explicit `: undefined` for optional fields** — when a property is typed as optional (`field?: T`) and the value may be absent, prefer **conditional spread** to omit the key entirely instead of writing `field: cond ? value : undefined`. Example: `...(items.length > 0 ? { items } : {})` rather than `items: items.length > 0 ? items : undefined`. The omitting form is cleaner, avoids leaking `undefined` keys in JSON serialization, and keeps consumers honest about presence checks
+- [ ] **Parameter object pattern** for functions with too many arguments — group **logically related** parameters into small, named domain sub-objects (e.g. `member`, `healingInfos: { needsHeal, healthWon, now }`, `response`). **Do NOT dump every argument into one catch-all `params: {...}` blob**: an object that simply mirrors the full argument list bypasses the point of the rule (surfacing a missing abstraction / low cohesion) and is a review reject. Only group when 2–3 arguments share a real concept; otherwise leave them positional. Also prefer deriving a value inside the callee over passing it (e.g. compute `bothFull`/`currentEffectFinished` from already-passed inputs instead of adding a parameter)
+- [ ] **De-primitivize types (use the domain, not primitives or ad-hoc shapes)** — replace inline structural types with the real domain type (e.g. `Material[]` instead of `{ id: string }[]` when the value comes from `getUpgradeMaterials()`); type id-like `string` parameters as the union derived from their `as const` source (e.g. `ReportCityMenuId`) rather than raw `string`; use the branded time types (`Second`, `Millisecond`, `Hour`) instead of raw `number` for durations/timestamps. Beware the brand-stripping pitfall: `Math.floor(millisecondsToSeconds(x))` returns a plain `number` — re-wrap with `asSeconds(...)` to keep the `Second` brand
+- [ ] **Extract inline return types into named aliases** — a function returning `Promise<{ playerId: number; startOfWeek: Second } | null>` should return a named `WeeklyShopBuyoutScope | null`. Applies even when the type is used only once (a named result type documents intent and is reusable)
+- [ ] **Extract a multiply-cast / deep-accessed object into one typed local** — when the same value is cast or deep-accessed several times (e.g. `(reaction.object as SupportItemDetails).nature`, `.power`, `.power`), bind it once: `const object = reaction.object as SupportItemDetails;`. Giving the local the right type often removes the cast entirely and avoids repeating it
+- [ ] **Group related optional fields into sub-objects** — instead of flat `petFoodType?`, `petFoodQuantity?`, `petFoodLovePoints?`, group into `petFood?: { type; quantity; lovePoints }`. This makes the relationship explicit and simplifies partial updates and spread operations
+- [ ] **Use TypeScript overloads** when a function accepts multiple input types and returns a correspondingly typed output (e.g., `buildResponse(IgniteRes, params): IgniteRes` / `buildResponse(ReviveRes, params): ReviveRes`)
+
+## 3. Code Complexity
+
+- [ ] **No nested conditionals deeper than 2 levels** (CodeScene "Bumpy Road Ahead") — use `Array.find()`, early returns, or guard clauses to flatten
+- [ ] **Cyclomatic complexity under threshold** (CodeScene "Complex Method") — extract helper functions for distinct logical sections
+- [ ] **Functions do one thing** — if a function builds UI + handles interactions + processes data, split it into separate functions
+- [ ] **Data-driven over sequential if-branches** — when 4+ similar if-blocks check different fields with the same pattern (e.g., comparing old vs new values), use a declarative array of checks iterated in a loop
+- [ ] **Inline collectors extracted** — `createCollector` callbacks in menu builders should be extracted to named functions, not defined inline in the return object
+- [ ] **Large files split by responsibility** — files with big switch statements covering many cases (e.g., one case per shop reaction) should be split into one file per case/handler
+- [ ] **Max 4 function arguments** (CodeScene "Excess Number of Function Arguments") — reduce by grouping **logically related** parameters into named sub-objects (see the Parameter object pattern in §2). Never collapse the whole argument list into a single catch-all `params` blob just to satisfy the counter — that hides the smell instead of fixing it
+- [ ] **Early null checks / guard clauses** — when a nullable value is checked in 2+ downstream functions, validate it once at the top and pass guaranteed non-null values to sub-functions. Don't repeat the same `if (!x) return` in every helper
+- [ ] **Use spread for field forwarding** — when passing 3+ fields from one object to another with the same keys, use `...obj` spread instead of listing fields one by one. Also prefer destructuring `const { unwanted, ...rest } = obj` to separate fields
+- [ ] **Consistent parameter order across sibling functions** — related functions (e.g., handlers for the same feature) should use the same parameter order (e.g., `context, player, recipe` not `player, context, recipe` in one and `context, player` in another)
+- [ ] **No boolean expression bugs** — watch for `x === null || undefined` (always truthy) instead of `x === null` or `x == null`. These are subtle bugs that TypeScript may not catch
+
+## 4. Imports & Module Organization
+
+- [ ] **No dynamic imports when static is possible** — `await import(...)` should only be used for genuine lazy-loading, not as a habit
+- [ ] **No duplicate imports** — merge multiple imports from the same module (ESLint `no-duplicate-imports`)
+- [ ] **Variables/functions defined before usage** — no "used before defined" anti-patterns (JS-0357)
+
+## 5. Code Duplication
+
+- [ ] **No repeated code blocks** — if 2+ places share similar logic (e.g., creating collectors, building menus), extract a shared helper
+- [ ] **No repeated field-level operations** — if the same 3+ field assignments appear in multiple places (e.g., copying `itemId`, `itemLevel`, `itemEnchantmentId`), extract a `copyX` / `clearX` helper function
+- [ ] **Shared utilities in appropriate scope** — helper used by one class -> private method; used across files -> utility function; used across services -> Lib
+- [ ] **Cross-file duplicate functions** — search for identical or near-identical private functions across command files (e.g., `withUnlimitedMaxValue` in both EquipCommand and ChestFeatureHandler) and move to a shared utility class
+- [ ] **New feature mirroring an existing one reuses its helpers** — when adding a service/command that parallels an existing one (blacksmith -> scrap dealer, shop -> guild shop), read the sibling module *first*: helpers like `getBlacksmithItemData` are often already exported and reused by a third module. Re-deriving a copy with cosmetic differences (`itemCategory === WEAPON` instead of `isWeapon()`) is the usual symptom
+- [ ] **TypeScript overloads over duplicated functions** — when two functions differ only by type parameters/return types (e.g., `getBlacksmithUpgradeItem`/`getBlacksmithDisenchantItem`), use TypeScript function overloads with a single implementation
+- [ ] **Reuse existing Lib utilities** — before implementing utility logic (e.g., `frac()`, `getWeekNumber()`), check if a shared function already exists in `Lib/src/utils/`
+- [ ] **Map/Set cache key construction in a dedicated helper** — when a `Map<string, T>` or `Set<string>` uses a string key built from multiple values (e.g., `` `${type}_${rarity}` ``), extract a `buildXxxKey(...)` helper used for **both** `get` and `set` (and any `has`/`delete`). This keeps the key format in one place, prevents subtle drift between read and write sites, and documents the invariant
+- [ ] **Domain logic belongs on the model** — if a check or computation is intrinsic to an entity (e.g., `isFoodCompatibleWithPet` belongs on `Pet`), place it as a method on the model class rather than in an unrelated service
+- [ ] **Translation keys shared when appropriate** — if multiple commands use the same labels (e.g., category names), put them in a shared namespace (`items.json` not `commands.json`)
+
+## 6. Translations (i18n)
+
+- [ ] **Only modify French translations** (`Lang/fr/`) — other languages are synced via Crowdin
+- [ ] **No direct speech** — all text should be narrative/descriptive, never dialogue with quotes
+- [ ] **Emojis in translations use `{emote:path}` interpolation** — never hardcode emoji characters in translation files
+- [ ] **Entity IDs as i18n parameters** — pass entity IDs (plantId, materialId, etc.) as interpolation parameters to translation keys instead of concatenating strings or emoji names in code
+- [ ] **Never post-process the result of `i18n.t(...)`** — no `.replace()`, regex substitution or emoji swapping on an already-rendered translation to compensate for a wrong or outdated wording. Fix the French key and pass the variable part as an interpolation parameter; the other languages follow via Crowdin. Such patches are silently wrong (they rewrite the first match anywhere in the sentence) and hide the real problem
+- [ ] **No dead/unused translation keys** — remove keys that are no longer referenced in code
+- [ ] **No duplicate translation keys** — check if a similar key already exists before adding a new one
+- [ ] **No hardcoded Markdown formatting around translations** — Discord markdown tokens (`###`, `**`, `__`, `*`, backticks, etc.) used as **structural formatting** (headers, separators) must NOT be hardcoded in TS code around `i18n.t(...)` calls. Either include the formatting inside the translation value itself (so translators control it) or go through a typed helper (e.g. `formatHeader(title)`, `formatSeparator()`). Inline emphasis that is part of a sentence (e.g. wrapping a single dynamic value in `**...**` for visual highlight) is acceptable when consistent across the codebase.
+- [ ] **No hardcoded `\n` / `\n\n` between translation calls** — line breaks that act as paragraph separators around `i18n.t(...)` results should live inside the translation keys (trailing/leading newline in the value) or be applied via a `joinParagraphs([...])` helper. Concatenating `` `${i18n.t("a")}\n\n${i18n.t("b")}` `` couples French-specific layout to TS code and prevents translators from adjusting spacing per language.
+
+## 7. Dead Code & Cleanup
+
+- [ ] **Remove unused imports, variables, and functions** — don't leave commented-out code or unreachable paths
+- [ ] **Remove useless wrapper functions** — if a function only forwards to another with the exact same arguments and adds no logic, remove the wrapper and call the target directly
+- [ ] **No pass-through callback wrappers** — when a callback only invokes another function with the same arguments and returns its result, pass the function reference directly (e.g. `run: CrowniclesDaily.randomPotion` instead of `run: () => CrowniclesDaily.randomPotion()`). Keep the wrapper when adapting arguments or results, performing extra work, or preserving a required `this` binding
+- [ ] **No useless constant aliases** — don't create a local alias for an imported constant that adds no semantic value (e.g., `const RECIPES = CookingConstants.RECIPES;`); use the original directly
+- [ ] **No pass-through local variables** — don't assign a constant (or any value that doesn't depend on local context/computation) to a local variable just to reference it 1–N times. Inline the constant at every call site instead. Only keep a local binding when it is the result of a non-trivial computation, a renamed/narrowed value, or genuinely improves readability of a long expression.
+- [ ] **Update related comments** when code changes — don't leave outdated "TODO" or "Future features" comments
+- [ ] **Remove default cases that are unreachable** — if a switch exhausts all enum values, the default clause is dead code (or use it for the last case)
+- [ ] **Every field added to a transferred object is consumed** — a field added to a packet or a `ReactionCollector*Data` must actually be read by the front-end. A computed-and-serialized-but-never-displayed field is dead code that costs CPU per listed entry and payload size, and it usually reveals a half-finished feature: the narrative announces something ("a share of the value is also given back in coins") that no screen ever shows. Either display it or drop it
+
+## 8. ESLint & Style
+
+- [ ] **ESLint passes with zero errors** — run `pnpm eslint` in all modified services (Core, Discord, Lib)
+- [ ] **Auto-fixable issues resolved** — run `pnpm eslintFix` before manual review
+- [ ] **`async` only when needed** — don't mark functions `async` if they contain no `await` (ESLint `require-await`)
+- [ ] **Consistent object formatting** — multi-property objects/destructuring on separate lines (`@stylistic/object-curly-newline`)
+
+## 9. Tests
+
+- [ ] **All existing tests pass** — run `pnpm test` in Core, Discord, and Lib
+- [ ] **New logic has test coverage** where applicable — especially for utility functions and data transformations
+- [ ] **No tautological new tests** — new tests must verify observable behavior, state changes, packets, rendered UI, or regression cases. Avoid tests that only mirror the implementation, assert mocked return values, or check that a function returns the same fixture it was given
+- [ ] **No test regressions** — verify test count hasn't dropped
+
+## 10. Concurrency (DB writes)
+
+- [ ] **Every `.save()` on `Player` / `Guild` / `Home` / `PetEntity` / `PlayerMissionsInfo` / `GuildPet` runs under a row-level lock** — wrap the read-validate-save sequence in `withLockedEntities([...])` (multi-entity), `withLockedPlayerSafe(player, ctx, body)` (single-player, warn-and-skip on `LockedRowNotFoundError`), or `<Model>.withLocked(id, body)`. Same for `addMoney` / `addExperience` / `setEnergyLost` / `MissionsController.update` chains that ultimately persist.
+- [ ] **Helpers extracted from a locked critical section are named `*UnderLock`** (e.g. `runUpdateUnderLock`, `applyLockedPetSell`). The `crownicles/no-unguarded-save` rule whitelists this suffix.
+- [ ] **Model parameters of `*UnderLock` helpers are typed `Locked<M>`** — the transparent alias from `Lib/src/locks/withLockedEntities.ts` documents, in the signature, that the instance comes from a `withLockedEntities` critical section. It enforces nothing; enforcement stays with the ESLint rule and the naming convention.
+- [ ] **Cross-file lock inheritance is documented** — if a file's saves are guarded by a lock acquired in a caller, add a `@lockInherited` block comment as the very first comment of the file (file-level only — the rule rejects per-function placement) explaining the chain, and ensure the file is in the rule's scope in `Core/eslint.config.mjs`.
+- [ ] **Lock keys are sorted by `(tableName, id)`** — handled automatically by `withLockedEntities`. Never acquire locks manually in a different order (deadlock risk).
+- [ ] **`LockedRowNotFoundError` is handled** — for fire-and-forget callbacks (small events, fight callbacks, scheduled tasks) use `withLockedPlayerSafe` which warn-and-skips. For user-facing handlers, surface a sensible error reply.
+- [ ] **Race integration test added when bringing a flow under lock** — `Core/__tests__-integration/handlers/<flow>.race.test.ts` with N concurrent invocations and an assertion on the conserved invariant (no negative balance, exactly-once consumption, etc.). MariaDB Docker is required (`pnpm test:integration`).
+- [ ] **No new per-line `eslint-disable crownicles/no-unguarded-save`** — the only accepted justification is a documented `*UnderLock` chain the rule cannot follow syntactically; "fresh INSERT" (still races on unique keys / concurrent contradictory inserts), "single-field UI preference" (still a lost update from the user's perspective) and "TODO: lock later" are *not* accepted — fix them by renaming the helper `*UnderLock`, by adding a file-level `@lockInherited` marker, or by wrapping the call site in `withLockedEntities` / `withLockedPlayerSafe` instead.
+- [ ] **No `Player` method leaves the instance dirty** — when a value is written out of band (bulk `Player.update(...)`, raw query) and then mirrored onto the instance, clear the tracking with `this.changed("field", false)`. A dirty instance makes the next `MissionsController.update` throw `UnsavedPlayerChangesError` (#4621). `crownicles/no-unsaved-player-before-mission-update` forces every dirtying method to be declared in `playerMutators`, but it cannot link a mutation done in the `commandRequires` decorator to the mission update done in the command body — cover that with an integration test.
+
+## 11. Rewards & Game Economy
+
+- [ ] **A reward amount is computed once** — compute the final value (blessings, multipliers, rounding included) in a single place, then persist *that* value and send *that* value to the front. Beware of modifiers applied on both sides: `addMoney` already calls `applyMoneyBlessing` unless `ignoreBlessing: true` is passed, so re-applying it on the raw amount for the packet only works by coincidence and drifts as soon as one side changes
+- [ ] **The previewed value equals the granted value** — when a confirmation screen announces a reward before the player commits, it must show the same figure that will actually be credited (same modifiers applied)
+- [ ] **A new resource conversion does not close a profitable loop** — when adding a way to turn one resource into another (scrapping, crafting, refunds, buyouts), compare the output value against *every* existing way to acquire the input, not just the local one. If the conversion outputs materials worth several times the item purchase price, buying the item becomes strictly better than buying the materials
+- [ ] **Exploit mitigations are not bypassable by travelling** — disabling a shop only in the city hosting the exploitable service closes nothing: the player buys elsewhere and walks over, while every non-exploiting player loses the shop. Cap the sink itself (daily/weekly limit à la `MAX_DAILY_POTION_BUYOUTS`, eligibility condition, lower multiplier) rather than one of its sources
+
+---
+
+## Quick Pre-PR Verification
+
+```bash
+# Run in each modified service directory (Core, Discord, Lib)
+pnpm eslint        # Zero errors
+pnpm test          # All tests pass
+
+# Check for common issues
+grep -rn "await import(" src/             # Dynamic imports to review
+grep -rn "\"✅\|\"❌\|\"⚠️\|\"🔥" src/   # Hardcoded emojis
+grep -rn "Europe/Paris\|Intl.DateTimeFormat" src/  # Hardcoded timezones
+grep -rn "readonly has[A-Z][A-Za-z]*?: boolean" src/data/  # Per-variant boolean flags (prefer a typed list)
+```

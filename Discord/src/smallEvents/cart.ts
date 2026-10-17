@@ -68,7 +68,9 @@ function getGainScoreText(story: CartStory, packet: SmallEventCartPacket, lng: L
 }
 
 export async function cartResult(packet: SmallEventCartPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = context.discord?.buttonInteraction
+		? DiscordCache.getButtonInteraction(context.discord.buttonInteraction)
+		: DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return;
 	}

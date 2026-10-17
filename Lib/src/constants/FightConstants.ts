@@ -1,3 +1,7 @@
+import {
+	asDays, asMinutes, Day, Minute
+} from "../types/TimeTypes";
+
 export abstract class FightConstants {
 	static readonly RARE_SUB_TEXT_INTRO = 0.001; // Chance of having a rare subtext in the fight intro message (1=100%)
 
@@ -5,7 +9,7 @@ export abstract class FightConstants {
 
 	static readonly REQUIRED_LEVEL = 8;
 
-	static readonly POINTS_REGEN_MINUTES = 7;
+	static readonly POINTS_REGEN_MINUTES: Minute = asMinutes(7);
 
 	static readonly POINTS_REGEN_AMOUNT = 130;
 
@@ -13,10 +17,9 @@ export abstract class FightConstants {
 	static readonly REWARDS = {
 		NUMBER_OF_WIN_THAT_AWARD_SCORE_BONUS: 3,
 		SCORE_BONUS_AWARD: 35,
-		WIN_MONEY_BONUS: 50,
-		DRAW_MONEY_BONUS: 30,
-		LOSS_MONEY_BONUS: 15,
-		MAX_MONEY_BONUS: 200
+		DRAW_MONEY_BONUS: 150,
+		LOSS_MONEY_BONUS: 10,
+		MAX_REWARDED_WINS: 5
 	};
 
 	static readonly POTION_NO_DRINK_PROBABILITY = {
@@ -41,6 +44,16 @@ export abstract class FightConstants {
 
 	// Out-of-breath attack failure probability
 	static readonly OUT_OF_BREATH_FAILURE_PROBABILITY = 0.8;
+
+	// Default breath values (fallback when player class is not found)
+	static readonly DEFAULT_BASE_BREATH = 4;
+
+	static readonly DEFAULT_MAX_BREATH = 10;
+
+	static readonly DEFAULT_BREATH_REGEN = 4;
+
+	// Default player max cumulative energy (fallback when player class is not found)
+	static readonly PLAYER_MAX_ENERGY = 100;
 
 	// Divider of the damage a fight action will deal if it is a miss
 	static readonly FAILURE_DIVIDERS = [
@@ -96,6 +109,8 @@ export abstract class FightConstants {
 				AERIAL_DIVE_ATTACK: "aerialDiveAttack",
 				BLIZZARD_RAGE_ATTACK: "blizzardRageAttack",
 				BOULDER_TOSS_ATTACK: "boulderTossAttack",
+				ELEMENTARY_PIERCING_ATTACK: "elementaryPiercingAttack",
+				GUARDIAN_POWERFUL_ATTACK: "guardianPowerfulAttack",
 				CHARGE_CHARGE_RADIANT_BLAST_ATTACK: "chargeChargeRadiantBlastAttack",
 				CHARGE_CLUB_SMASH_ATTACK: "chargeClubSmashAttack",
 				CHARGE_RADIANT_BLAST_ATTACK: "chargeRadiantBlastAttack",
@@ -125,9 +140,13 @@ export abstract class FightConstants {
 				RADIANT_BLAST_ATTACK: "radiantBlastAttack",
 				ROAR_ATTACK: "roarAttack",
 				ROCK_SHIELD_ATTACK: "rockShieldAttack",
+				SKELETON_CURSED_ATTACK: "skeletonCursedAttack",
+				SKELETON_SHIELD_ATTACK: "skeletonShieldAttack",
+				SKELETON_SIMPLE_ATTACK: "skeletonSimpleAttack",
 				SLAM_ATTACK: "slamAttack",
 				SPECTRAL_REVENGE_ATTACK: "spectralRevengeAttack",
 				START_POLAR_EMBRACE_ATTACK: "startPolarEmbraceAttack",
+				SPIDER_POISON_ATTACK: "spiderPoisonAttack",
 				STEALTH: "stealth",
 				STONE_SKIN_ATTACK: "stoneSkinAttack",
 				SUMMON_ATTACK: "summonAttack",
@@ -155,6 +174,7 @@ export abstract class FightConstants {
 				SEPULCRAL_HUNGER: "sepulcralHunger",
 				AQUEOUS_EVASION: "aqueousEvasion",
 				TENTACLE_SHIELD: "tentacleShield",
+				TITAN_FIRE_ATTACK: "titanFireAttack",
 				ABYSSAL_AURA: "abyssalAura"
 			},
 			PET: {
@@ -322,7 +342,7 @@ export abstract class FightConstants {
 
 
 	// Time needed to wait before being able to fight again after a ranked fight as a defender
-	static DEFENDER_COOLDOWN_MINUTES = 30;
+	static DEFENDER_COOLDOWN_MINUTES: Minute = asMinutes(30);
 
 	// Maximum offset for opponent search
 	static MAX_OFFSET_FOR_OPPONENT_SEARCH = 5;
@@ -352,7 +372,7 @@ export abstract class FightConstants {
 	static HISTORY_DISPLAY_LIMIT = 5;
 
 	// Time limit for a player to be considered active for opponent search (in days)
-	static readonly ACTIVE_PLAYER_TIME_LIMIT_DAYS = 14;
+	static readonly ACTIVE_PLAYER_TIME_LIMIT_DAYS: Day = asDays(14);
 
 	/**
 	 * Fight roles for determining pet availability during expedition
@@ -363,12 +383,46 @@ export abstract class FightConstants {
 	} as const;
 
 	/**
+	 * King guards are generated on the fly when /fight finds no opponent
+	 */
+	static readonly KING_GUARD = {
+		// Reserved identifier sent instead of a keycloak id: a king guard has no account
+		KEYCLOAK_ID: "kingGuard",
+
+		// Same rule as the PvE bosses: a lost fight lowers the next guard level by this amount
+		FAILED_FIGHT_LEVEL_REDUCTION: 10,
+
+		// Calibrated on real players' equipment: about one rarity every 16 levels, starting from common, give or take one
+		EQUIPMENT_RARITY: {
+			AT_LEVEL_ZERO: 1,
+			LEVELS_PER_RARITY: 16,
+			SPREAD: 1
+		},
+
+		// Share of real players equipped with a fight potion
+		FIGHT_POTION_PROBABILITY: 0.2,
+
+		/*
+		 * Upgrades and enchantments grow from the required fight level up to this level:
+		 * the weapon and the armor get an upgrade level up to a cap growing to the maximum,
+		 * and an enchantment chance growing from the loot chance to the given maximum
+		 */
+		FULLY_EQUIPPED_LEVEL: 120,
+		ENCHANTMENT_PROBABILITY: {
+			MIN: 0.05,
+			MAX: 0.75
+		}
+	};
+
+	/**
 	 * Monster IDs for the final PvE bosses that players can beat
 	 */
 	static readonly FINAL_BOSS_MONSTER_IDS = {
 		MAGMA_TITAN: "magmaTitan",
 		MALE_ICE_DRAGON: "maleIceDragon",
-		FEMALE_ICE_DRAGON: "femaleIceDragon"
+		FEMALE_ICE_DRAGON: "femaleIceDragon",
+		KRAKEN: "kraken",
+		LEVIATHAN: "leviathan"
 	} as const;
 }
 

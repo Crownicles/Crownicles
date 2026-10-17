@@ -5,5 +5,7 @@
   "speed": 20,
   "tags": [
     "ranged"
-  ]
+  ],
+  "type": "rope",
+  "materialCategory": 4
 }

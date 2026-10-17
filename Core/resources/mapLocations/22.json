@@ -1,6 +1,9 @@
 {
   "type": "fo",
-  "expeditionType": "cave",
+  "biomes": [
+    "forest",
+    "cave"
+  ],
   "tags": [
     "detAu"
   ],

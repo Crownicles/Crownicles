@@ -2,12 +2,18 @@
   "possibilities": {
     "end": {
       "outcomes": {
-        "0": {}
+        "0": {
+          "money": 15000,
+          "tokens": 150
+        }
       }
     },
     "start": {
       "outcomes": {
-        "0": {}
+        "0": {
+          "money": 15000,
+          "tokens": 150
+        }
       }
     }
   },

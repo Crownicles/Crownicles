@@ -3,12 +3,21 @@ import {
 } from "../CrowniclesPacket";
 import { EloGameResult } from "../../types/EloGameResult";
 
-export type FightHistoryItem = {
+type FightHistoryItemBase = {
+	result: EloGameResult;
+
+	classes: {
+		me: number;
+		opponent: number;
+	};
+
+	date: number;
+};
+
+export type PlayerFightHistoryItem = FightHistoryItemBase & {
 	initiator: boolean;
 
 	opponentKeycloakId: string;
-
-	result: EloGameResult;
 
 	glory: {
 		initial: {
@@ -30,14 +39,18 @@ export type FightHistoryItem = {
 			};
 		};
 	};
-
-	classes: {
-		me: number;
-		opponent: number;
-	};
-
-	date: number;
 };
+
+/**
+ * Fight against a king guard: always initiated by the player, no glory at stake
+ */
+export type KingGuardFightHistoryItem = FightHistoryItemBase & {
+	kingGuard: {
+		level: number;
+	};
+};
+
+export type FightHistoryItem = PlayerFightHistoryItem | KingGuardFightHistoryItem;
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandFightHistoryPacketReq extends CrowniclesPacket {}

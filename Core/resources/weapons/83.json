@@ -1,4 +1,6 @@
 {
   "rarity": 1,
-  "rawAttack": 9
+  "rawAttack": 9,
+  "type": "spiritual",
+  "materialCategory": 15
 }

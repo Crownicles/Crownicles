@@ -13,7 +13,28 @@ import i18n from "../translations/i18n";
  * Options for the paginated embed
  */
 export type CrowniclesPaginatedEmbedOptions = {
-	pages: string[];
+
+	/**
+	 * Pre-built page descriptions
+	 * Use this OR pageBuilder, not both
+	 */
+	pages?: string[];
+
+	/**
+	 * Lazy page builder function, called on-demand when a page is displayed.
+	 * Use this OR pages, not both. Requires pagesCount to be set.
+	 */
+	pageBuilder?: (pageIndex: number) => Promise<string>;
+
+	/**
+	 * Dynamic title builder, called per page. Overrides setTitle.
+	 */
+	titleBuilder?: (pageIndex: number) => string;
+
+	/**
+	 * Total number of pages (required when using pageBuilder)
+	 */
+	pagesCount?: number;
 
 	lng: Language;
 
@@ -43,9 +64,34 @@ export type CrowniclesPaginatedEmbedOptions = {
 export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 	private readonly options: CrowniclesPaginatedEmbedOptions;
 
+	private readonly pageCache: Map<number, string> = new Map();
+
 	constructor(options: CrowniclesPaginatedEmbedOptions) {
 		super();
 		this.options = options;
+	}
+
+	private applyTitle(pageIndex: number): void {
+		if (this.options.titleBuilder) {
+			this.setTitle(this.options.titleBuilder(pageIndex));
+		}
+	}
+
+	private getTotalPages(): number {
+		return this.options.pages ? this.options.pages.length : this.options.pagesCount!;
+	}
+
+	private async getPage(index: number): Promise<string> {
+		if (this.options.pages) {
+			return this.options.pages[index];
+		}
+		const cached = this.pageCache.get(index);
+		if (cached !== undefined) {
+			return cached;
+		}
+		const page = await this.options.pageBuilder!(index);
+		this.pageCache.set(index, page);
+		return page;
 	}
 
 	/**
@@ -54,6 +100,7 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 	 */
 	async send(originalInteraction: CrowniclesInteraction): Promise<void> {
 		let currentPage = this.options.selectedPageIndex ?? 0;
+		const totalPages = this.getTotalPages();
 
 		const previousCustomId = "previous";
 		const nextCustomId = "next";
@@ -66,9 +113,12 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 			.setCustomId(nextCustomId)
 			.setStyle(ButtonStyle.Secondary);
 
+		const firstPageContent = await this.getPage(currentPage);
+		this.applyTitle(currentPage);
+
 		const msg = await originalInteraction.editReply({
-			embeds: [this.setDescription(this.options.pages[currentPage]).setFooter(CrowniclesPaginatedEmbed.getPageFooter(currentPage, this.options.pages.length, this.options.lng))],
-			components: CrowniclesPaginatedEmbed.getPageComponents(currentPage, this.options.pages.length, previousButton, nextButton)
+			embeds: [this.setDescription(firstPageContent).setFooter(CrowniclesPaginatedEmbed.getPageFooter(currentPage, totalPages, this.options.lng))],
+			components: CrowniclesPaginatedEmbed.getPageComponents(currentPage, totalPages, previousButton, nextButton)
 		});
 
 		if (!msg) {
@@ -95,9 +145,12 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 				currentPage++;
 			}
 
+			const pageContent = await this.getPage(currentPage);
+			this.applyTitle(currentPage);
+
 			await buttonInteraction.update({
-				embeds: [this.setDescription(this.options.pages[currentPage]).setFooter(CrowniclesPaginatedEmbed.getPageFooter(currentPage, this.options.pages.length, this.options.lng))],
-				components: CrowniclesPaginatedEmbed.getPageComponents(currentPage, this.options.pages.length, previousButton, nextButton)
+				embeds: [this.setDescription(pageContent).setFooter(CrowniclesPaginatedEmbed.getPageFooter(currentPage, totalPages, this.options.lng))],
+				components: CrowniclesPaginatedEmbed.getPageComponents(currentPage, totalPages, previousButton, nextButton)
 			});
 		});
 

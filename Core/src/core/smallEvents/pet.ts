@@ -22,7 +22,9 @@ import {
 } from "../../../../Lib/src/constants/PetConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { PacketUtils } from "../utils/PacketUtils";
+import { InventorySlots } from "../database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { MissionsController } from "../missions/MissionsController";
 import { giveFoodToGuild } from "../utils/FoodUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
@@ -41,6 +43,7 @@ interface InteractionContext {
 	context: PacketContext;
 	player: Player;
 	petEntity: PetEntity;
+	playerActiveObjects: PlayerActiveObjects;
 }
 
 /**
@@ -107,10 +110,10 @@ const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
 		canExecute: ({ player }) => player.fightPointsLost > 0,
 		range: SmallEventConstants.PET.ENERGY,
 		execute: ({
-			packet, player
+			packet, player, playerActiveObjects
 		}, amount) => {
 			packet.amount = amount;
-			player.addEnergy(amount!, NumberChangeReason.SMALL_EVENT);
+			player.addEnergy(amount!, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 		}
 	},
 	[PetConstants.PET_INTERACTIONS_NAMES.WIN_FOOD]: {
@@ -164,7 +167,9 @@ const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
 	},
 	[PetConstants.PET_INTERACTIONS_NAMES.WIN_HEALTH]: createStatInteraction({
 		range: SmallEventConstants.PET.HEALTH,
-		canExecute: ({ player }) => player.health < player.getMaxHealth(),
+		canExecute: ({
+			player
+		}) => player.getHealthValue() < player.getMaxHealth(),
 		apply: ({
 			response, player
 		}, amount) => player.addHealth({
@@ -227,10 +232,14 @@ const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
 		execute: async ({
 			player, petEntity, response
 		}) => {
-			LogsDatabase.logPetFree(petEntity).then();
+			LogsDatabase.logPetFree(petEntity, player.keycloakId).then();
 			await petEntity.destroy();
-			player.petId = null;
-			await MissionsController.update(player, response, { missionId: "depositPetInShelter" });
+			await MissionsController.update(player, response, {
+				missionId: "depositPetInShelter",
+				applyOnLockedPlayer: lockedPlayer => {
+					lockedPlayer.petId = null;
+				}
+			});
 		}
 	}
 };
@@ -296,8 +305,9 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 		return;
 	}
 
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	const ctx: InteractionContext = {
-		packet, response, context, player, petEntity
+		packet, response, context, player, petEntity, playerActiveObjects
 	};
 
 	// Check if the interaction can be executed
@@ -346,7 +356,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const petEntity = await PetEntities.getById(player.petId);
 		if (!petEntity) {
-			response.push(makePacket(ErrorPacket, { message: "SmallEvent Pet : pet entity not found" }));
+			PacketUtils.pushInternalError(response, "Small event pet: pet entity not found", {
+				context: {
+					keycloakId: player.keycloakId, petId: player.petId
+				}
+			});
 			return;
 		}
 		const pet = PetDataController.instance.getById(petEntity.typeId)!;
@@ -361,7 +375,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 			randomPetSex: randomPet.sex as SexTypeShort
 		};
 		if (packet.interactionName === Constants.DEFAULT_ERROR) {
-			response.push(makePacket(ErrorPacket, { message: "SmallEvent Pet : cannot determine an interaction for the user" }));
+			PacketUtils.pushInternalError(response, "Small event pet: cannot determine an interaction", {
+				context: { keycloakId: player.keycloakId }
+			});
 			return;
 		}
 		await managePickedInteraction(packet, response, context, player, petEntity);

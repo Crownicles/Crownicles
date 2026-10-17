@@ -6,15 +6,17 @@ import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import Player from "../../core/database/game/models/Player";
+import Player, { Players } from "../../core/database/game/models/Player";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
-import { Guilds } from "../../core/database/game/models/Guild";
-import { crowniclesInstance } from "../../index";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
+import { crowniclesInstance } from "../../app";
 import { ReactionCollectorGuildDescription } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
 import {
 	CommandGuildDescriptionAcceptPacketRes,
@@ -25,22 +27,85 @@ import {
 	CommandGuildDescriptionRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
 import { checkNameString } from "../../../../Lib/src/utils/StringUtils";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+
+/**
+ * Outcome of the in-lock description-edit flow.
+ */
+type GuildDescriptionOutcome = "OK" | "noGuild" | "notAnElder";
+
+type GuildDescriptionLocked = {
+	player: Player; guild: Guild;
+};
+
+/**
+ * In-lock body for the description-edit flow. Re-validates that
+ * the locked author still leads the locked guild before
+ * committing the description change.
+ */
+async function applyLockedAcceptGuildDescription(
+	locked: GuildDescriptionLocked,
+	expectedGuildId: number,
+	description: string
+): Promise<GuildDescriptionOutcome> {
+	const {
+		player, guild
+	} = locked;
+
+	if (player.guildId !== expectedGuildId) {
+		return "noGuild";
+	}
+	if (!guild.isChiefOrElder(player)) {
+		return "notAnElder";
+	}
+
+	guild.guildDescription = description;
+	await guild.save();
+
+	crowniclesInstance?.logsDatabase.logGuildDescriptionChange(player.keycloakId, guild)
+		.then();
+
+	return "OK";
+}
 
 async function acceptGuildDescription(player: Player, description: string, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
-	if (!player.guildId) {
+	const fresh = await Players.getById(player.id);
+	if (!fresh.guildId) {
 		response.push(makePacket(CommandGuildDescriptionNoGuildPacket, {}));
 		return;
 	}
-	const guild = (await Guilds.getById(player.guildId))!;
-	if (!guild.isChiefOrElder(player)) {
-		response.push(makePacket(CommandGuildDescriptionNotAnElderPacket, {}));
-		return;
+
+	try {
+		const outcome = await withLockedEntities(
+			[Player.lockKey(fresh.id), Guild.lockKey(fresh.guildId)] as const,
+			async ([lockedPlayer, lockedGuild]) => await applyLockedAcceptGuildDescription(
+				{
+					player: lockedPlayer, guild: lockedGuild
+				},
+				fresh.guildId!,
+				description
+			)
+		);
+
+		if (outcome === "noGuild") {
+			response.push(makePacket(CommandGuildDescriptionNoGuildPacket, {}));
+		}
+		else if (outcome === "notAnElder") {
+			response.push(makePacket(CommandGuildDescriptionNotAnElderPacket, {}));
+		}
+		else {
+			response.push(makePacket(CommandGuildDescriptionAcceptPacketRes, {}));
+		}
 	}
-	guild.guildDescription = description;
-	response.push(makePacket(CommandGuildDescriptionAcceptPacketRes, {}));
-	await guild.save();
-	crowniclesInstance.logsDatabase.logGuildDescriptionChange(player.keycloakId, guild).then();
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			response.push(makePacket(CommandGuildDescriptionNoGuildPacket, {}));
+			return;
+		}
+		throw error;
+	}
 }
 
 function endCallback(player: Player, description: string): EndCallback {

@@ -7,6 +7,18 @@ vi.mock('mqtt', () => ({
 	}),
 }));
 
+vi.mock('./src/bootstrap', () => ({
+	botConfig: {} as any,
+}));
+
+vi.mock('./src/mqttClient', () => ({
+	mqttClient: {
+		on: () => {},
+		subscribe: () => {},
+		publish: () => {},
+	},
+}));
+
 vi.mock('./src/core/bot/Crownicles', () => {
 	return {
 		Crownicles: class {

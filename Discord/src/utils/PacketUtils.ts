@@ -14,6 +14,9 @@ import { MqttTopicUtils } from "../../../Lib/src/utils/MqttTopicUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { PacketConstants } from "../../../Lib/src/constants/PacketConstants";
 import { RightGroup } from "../../../Lib/src/types/RightGroup";
+import {
+	ChannelType, PermissionsBitField
+} from "discord.js";
 
 export type AskedPlayer = {
 	keycloakId?: string;
@@ -64,17 +67,31 @@ export abstract class PacketUtils {
 			throw new Error("Error while getting user groups");
 		}
 
+		const isThread = [
+			ChannelType.PublicThread,
+			ChannelType.PrivateThread,
+			ChannelType.AnnouncementThread
+		].includes(interaction.channel.type);
+		const discordContext: NonNullable<PacketContext["discord"]> = {
+			user: interaction.user.id,
+			channel: interaction.channel.id,
+			interaction: interaction.id,
+			language: interaction.userLanguage,
+			shardId,
+			isGuildAdministrator: interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator) ?? false,
+			isBotOwner: interaction.user.id === discordConfig.OWNER_ID
+		};
+		if (isThread && interaction.channel.parentId) {
+			discordContext.parentChannel = interaction.channel.parentId;
+		}
+		if (interaction.guild) {
+			discordContext.guildMemberCount = interaction.guild.memberCount;
+		}
 		return {
 			frontEndOrigin: PacketConstants.FRONT_END_ORIGINS.DISCORD,
 			frontEndSubOrigin: interaction.guild?.id ?? PacketConstants.FRONT_END_SUB_ORIGINS.UNKNOWN,
 			keycloakId: user.id,
-			discord: {
-				user: interaction.user.id,
-				channel: interaction.channel.id,
-				interaction: interaction.id,
-				language: interaction.userLanguage,
-				shardId
-			},
+			discord: discordContext,
 			rightGroups: groups.payload.groups as RightGroup[]
 		};
 	}

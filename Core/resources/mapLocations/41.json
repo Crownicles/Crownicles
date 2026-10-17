@@ -1,0 +1,11 @@
+{
+  "type": "ci",
+  "biomes": [
+    "plains"
+  ],
+  "tags": [
+    "detALa"
+  ],
+  "canBeGoToPlaceMissionDestination": true,
+  "attribute": "continent1"
+}

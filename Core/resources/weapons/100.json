@@ -1,0 +1,11 @@
+{
+  "rarity": 7,
+  "rawAttack": 1,
+  "attack": 3,
+  "speed": 60,
+  "type": "spiritual",
+  "tags": [
+    "metallic"
+  ],
+  "materialCategory": 14
+}

@@ -1,6 +1,8 @@
 export abstract class DiscordConstants {
 	static MAX_BUTTONS_PER_ROW = 5;
 
+	static MAX_BUTTON_LABEL_LENGTH = 80;
+
 	static MAX_SELECT_MENU_OPTIONS = 25;
 
 	static COMMAND_TIMEOUT_MS = 3000;
@@ -120,5 +122,21 @@ export abstract class DiscordConstants {
 		 * Number of bytes in a megabyte (used for size calculations)
 		 */
 		BYTES_PER_MB: 1024 * 1024
+	};
+
+	/**
+	 * Discord embed field limits
+	 */
+	static EMBED = {
+		/**
+		 * Maximum length of an embed field value (Discord limit)
+		 */
+		FIELD_VALUE_MAX_LENGTH: 1024,
+
+		/**
+		 * Zero-width space used as an empty field name in embeds.
+		 * Discord rejects truly empty field names, so this invisible character is used instead.
+		 */
+		EMPTY_FIELD_NAME: "\u200B"
 	};
 }

@@ -11,7 +11,9 @@ import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CommandFightPacketReq } from "../../../../Lib/src/packets/commands/CommandFightPacket";
-import { ReactionCollectorFightPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
+import {
+	ReactionCollectorFightData, ReactionCollectorFightPacket
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
@@ -26,8 +28,11 @@ import { CommandFightHistoryItemPacket } from "../../../../Lib/src/packets/fight
 import { CrowniclesHistoryCachedMessage } from "../../messages/CrowniclesHistoryCachedMessage";
 import { CrowniclesActionChooseCachedMessage } from "../../messages/CrowniclesActionChooseCachedMessage";
 import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights/EndOfFightPacket";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToMinutes, msDiff, nowMs
+} from "../../../../Lib/src/utils/TimeUtils";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
+import { KingGuardFightRewardPacket } from "../../../../Lib/src/packets/fights/KingGuardFightRewardPacket";
 import {
 	resolveKeycloakPlayerName
 } from "../../utils/KeycloakPlayerUtils";
@@ -43,8 +48,46 @@ import { DiscordConstants } from "../../DiscordConstants";
 import { PetUtils } from "../../utils/PetUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { ReactionCollectorFightChooseActionPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
+import { deferFightInteraction } from "./FightInteractionUtils";
 
 const buggedFights = new Set<string>();
+
+type FightConfirmationSubTextKey = "common" | "rare";
+
+export function buildFightConfirmationDescription(
+	lng: Language,
+	pseudo: string,
+	data: ReactionCollectorFightData,
+	subTextKey: FightConfirmationSubTextKey
+): string {
+	return i18n.t("commands:fight.confirmDesc", {
+		lng,
+		pseudo,
+		confirmSubText: i18n.t(`commands:fight.confirmSubTexts.${subTextKey}`, { lng }),
+		glory: data.playerStats.fightRanking.glory,
+		className: i18n.t("commands:fight:information.class", {
+			lng,
+			id: data.playerStats.classId
+		}),
+		pet: data.playerStats.pet?.petTypeId
+			? i18n.t(data.playerStats.pet.isOnExpedition ? "commands:fight.petOnExpedition" : "commands:fight.pet", {
+				lng,
+				petInfo: PetUtils.petToShortString(lng, data.playerStats.pet.petNickname, data.playerStats.pet.petTypeId, data.playerStats.pet.petSex)
+			})
+			: "",
+		stats: i18n.t("commands:fight:information.stats", {
+			lng,
+			baseBreath: data.playerStats.breath.base,
+			breathRegen: data.playerStats.breath.regen,
+			cumulativeAttack: data.playerStats.attack,
+			cumulativeDefense: data.playerStats.defense,
+			cumulativeHealth: data.playerStats.energy.value,
+			cumulativeSpeed: data.playerStats.speed,
+			cumulativeMaxHealth: data.playerStats.energy.max,
+			maxBreath: data.playerStats.breath.max
+		})
+	});
+}
 
 /**
  * Mark a fight as bugged and request cancellation from the backend
@@ -67,7 +110,7 @@ function fightBugged(context: PacketContext, fightId: string): void {
  */
 export async function createFightCollector(context: PacketContext, packet: ReactionCollectorFightPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	await interaction.deferReply();
+	await deferFightInteraction(interaction);
 	const lng = interaction.userLanguage;
 	const data = packet.data.data;
 	const subTextKey = RandomUtils.crowniclesRandom.bool(FightConstants.RARE_SUB_TEXT_INTRO) ? "rare" : "common";
@@ -75,38 +118,12 @@ export async function createFightCollector(context: PacketContext, packet: React
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
-		.setDescription(
-			i18n.t("commands:fight.confirmDesc", {
-				lng,
-				pseudo: escapeUsername(interaction.user.displayName),
-				confirmSubText: i18n.t(`commands:fight.confirmSubTexts.${subTextKey}`, { lng }),
-				glory: i18n.t("commands:fight:information.glory", {
-					lng,
-					gloryPoints: data.playerStats.fightRanking.glory
-				}),
-				className: i18n.t("commands:fight:information.class", {
-					lng,
-					id: data.playerStats.classId
-				}),
-				pet: data.playerStats.pet?.petTypeId
-					? i18n.t(data.playerStats.pet.isOnExpedition ? "commands:fight.petOnExpedition" : "commands:fight.pet", {
-						lng,
-						petInfo: PetUtils.petToShortString(lng, data.playerStats.pet.petNickname, data.playerStats.pet.petTypeId, data.playerStats.pet.petSex)
-					})
-					: "",
-				stats: i18n.t("commands:fight:information.stats", {
-					lng,
-					baseBreath: data.playerStats.breath.base,
-					breathRegen: data.playerStats.breath.regen,
-					cumulativeAttack: data.playerStats.attack,
-					cumulativeDefense: data.playerStats.defense,
-					cumulativeHealth: data.playerStats.energy.value,
-					cumulativeSpeed: data.playerStats.speed,
-					cumulativeMaxHealth: data.playerStats.energy.max,
-					maxBreath: data.playerStats.breath.max
-				})
-			})
-		);
+		.setDescription(buildFightConfirmationDescription(
+			lng,
+			escapeUsername(interaction.user.displayName),
+			data,
+			subTextKey
+		));
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context, {
 		emojis: {
@@ -191,6 +208,58 @@ function addFightProfileFor(introEmbed: CrowniclesEmbed, lng: Language, fighterN
  * @param context
  * @param packet
  */
+/**
+ * Resolve the display name of the fight opponent (player, monster or fallback).
+ * @param packet
+ * @param lng
+ */
+async function resolveOpponentDisplayName(packet: CommandFightIntroduceFightersPacket, lng: Language): Promise<string> {
+	if (packet.fightOpponentKeycloakId === FightConstants.KING_GUARD.KEYCLOAK_ID) {
+		return i18n.t("commands:fight.kingGuard.name", { lng });
+	}
+	if (packet.fightOpponentKeycloakId) {
+		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.fightOpponentKeycloakId);
+		if (getUser && !getUser.isError) {
+			return getUser.payload.user.attributes.gameUsername[0];
+		}
+	}
+	if (packet.fightOpponentMonsterId) {
+		return i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
+	}
+
+	// Fallback for test players or unknown opponents
+	return packet.fightOpponentKeycloakId ?? "???";
+}
+
+async function buildFightIntroEmbed(interaction: CrowniclesInteraction, packet: CommandFightIntroduceFightersPacket): Promise<CrowniclesEmbed> {
+	const lng = interaction.userLanguage;
+	const initiatorName = escapeUsername(interaction.user.displayName);
+	const opponentName = escapeUsername(await resolveOpponentDisplayName(packet, lng));
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t(packet.friendly ? "commands:fight.friendlyFightIntroTitle" : "commands:fight.fightIntroTitle", {
+		lng,
+		fightInitiator: initiatorName,
+		opponent: opponentName
+	}), interaction.user);
+
+	addFightProfileFor(embed, lng, initiatorName, packet.fightInitiatorActions, packet.fightOpponentActions.length, packet.fightInitiatorPet);
+	addFightProfileFor(embed, lng, opponentName, packet.fightOpponentActions, packet.fightInitiatorActions.length, packet.fightOpponentPet);
+	return embed;
+}
+
+/**
+ * Show the fight intro in place of the confirmation, or of the deferred command for friendly fights which have none
+ */
+async function displayFightIntro(context: PacketContext, interaction: CrowniclesInteraction, packet: CommandFightIntroduceFightersPacket): Promise<void> {
+	const embed = await buildFightIntroEmbed(interaction, packet);
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	if (buttonInteraction) {
+		await buttonInteraction.editReply({ embeds: [embed] });
+	}
+	else if (packet.friendly) {
+		await interaction.editReply({ embeds: [embed] });
+	}
+}
+
 export async function handleCommandFightIntroduceFightersRes(context: PacketContext, packet: CommandFightIntroduceFightersPacket): Promise<void> {
 	if (buggedFights.has(packet.fightId)) {
 		return;
@@ -198,39 +267,13 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 
 	try {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-		const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-		const lng = interaction.userLanguage;
-		const getUser = packet.fightOpponentKeycloakId ? await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.fightOpponentKeycloakId) : undefined;
-
-		let opponentDisplayName: string;
-		if (getUser && !getUser.isError) {
-			opponentDisplayName = getUser.payload.user.attributes.gameUsername[0];
-		}
-		else if (packet.fightOpponentMonsterId) {
-			opponentDisplayName = i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
-		}
-		else {
-			// Fallback for test players or unknown opponents
-			opponentDisplayName = packet.fightOpponentKeycloakId ?? "???";
-		}
-		const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.fightIntroTitle", {
-			lng,
-			fightInitiator: escapeUsername(interaction.user.displayName),
-			opponent: escapeUsername(opponentDisplayName)
-		}), interaction.user);
-
-		addFightProfileFor(embed, lng, escapeUsername(interaction.user.displayName), packet.fightInitiatorActions, packet.fightOpponentActions.length, packet.fightInitiatorPet);
-		addFightProfileFor(embed, lng, escapeUsername(opponentDisplayName), packet.fightOpponentActions, packet.fightInitiatorActions.length, packet.fightOpponentPet);
-
-		if (buttonInteraction) {
-			await buttonInteraction.editReply({ embeds: [embed] });
-		}
+		await displayFightIntro(context, interaction, packet);
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesHistoryCachedMessage)
-			.post({ content: DiscordConstants.EMPTY_MESSAGE });
+			.post({ content: DiscordConstants.EMPTY_MESSAGE }, context.discord?.channel);
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesFightStatusCachedMessage)
-			.post({ content: DiscordConstants.EMPTY_MESSAGE });
+			.post({ content: DiscordConstants.EMPTY_MESSAGE }, context.discord?.channel);
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesActionChooseCachedMessage)
-			.post({ content: DiscordConstants.EMPTY_MESSAGE });
+			.post({ content: DiscordConstants.EMPTY_MESSAGE }, context.discord?.channel);
 	}
 	catch (e) {
 		CrowniclesLogger.errorWithObj("Fight introduction failed", e);
@@ -285,9 +328,9 @@ export async function handleCommandFightAIFightActionChoose(context: PacketConte
 	}
 
 	try {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+		const lng = DiscordCache.getInteraction(context.discord!.interaction)?.userLanguage ?? context.discord!.language;
 		await CrowniclesCachedMessages.getOrCreate(context.discord.interaction, CrowniclesActionChooseCachedMessage)
-			.post({ embeds: [new CrowniclesEmbed().setDescription(i18n.t("commands:fight.actions.aiChoose", { lng: interaction.userLanguage }))] });
+			.post({ embeds: [new CrowniclesEmbed().setDescription(i18n.t("commands:fight.actions.aiChoose", { lng }))] }, context.discord.channel);
 		await new Promise(f => setTimeout(f, packet.ms));
 	}
 	catch (e) {
@@ -356,7 +399,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 		lng,
 		turn: packet.turns,
 		maxTurn: packet.maxTurns,
-		time: i18n.formatDuration(millisecondsToMinutes(new Date().valueOf() - interaction.createdTimestamp), lng)
+		time: i18n.formatDuration(millisecondsToMinutes(msDiff(nowMs(), asMilliseconds(interaction.createdTimestamp))), lng)
 	});
 
 	// Add fighter statistics for both fighters
@@ -404,7 +447,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
  * @param lng
  * @param player1Username
  */
-function generateFightRewardField(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string): void {
+function generateFightRewardField(embed: CrowniclesEmbed, packet: Pick<FightRewardPacket, "money" | "points">, lng: Language, player1Username: string): void {
 	// Ne pas afficher le field si aucune récompense n'a été gagnée
 	if (packet.money <= 0 && packet.points <= 0) {
 		return;
@@ -440,7 +483,7 @@ function generateFightRewardField(embed: CrowniclesEmbed, packet: FightRewardPac
  * @param lng
  * @param player1Username
  */
-function generatePetLoveChangeField(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string): void {
+function generatePetLoveChangeField(embed: CrowniclesEmbed, packet: Pick<FightRewardPacket, "petLoveChange">, lng: Language, player1Username: string): void {
 	if (packet.petLoveChange && packet.petLoveChange.loveChange > 0) {
 		const petDisplay = PetUtils.petToShortString(lng, packet.petLoveChange.petNickname ?? undefined, packet.petLoveChange.petId, packet.petLoveChange.petSex as SexTypeShort);
 		embed.addFields({
@@ -621,6 +664,32 @@ export async function handleFightReward(context: PacketContext, packet: FightRew
 }
 
 /**
+ * Display the rewards of a fight against a king guard, where no glory is at stake
+ * @param context
+ * @param packet
+ */
+export async function handleKingGuardFightReward(context: PacketContext, packet: KingGuardFightRewardPacket): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+	const playerUsername = escapeUsername(interaction.user.displayName);
+	const result = packet.draw ? "draw" : packet.won ? "win" : "loss";
+
+	const embed = new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:fight.fightReward.title", { lng }))
+		.setDescription(i18n.t(`commands:fight.kingGuard.recap.${result}`, {
+			lng,
+			player: playerUsername
+		}));
+	generateFightRewardField(embed, packet, lng, playerUsername);
+	generatePetLoveChangeField(embed, packet, lng, playerUsername);
+
+	await interaction.channel?.send({ embeds: [embed] });
+}
+
+/**
  * Prepare the fight command packet for the requested player
  * @param interaction - The Discord interaction
  * @param user - The Keycloak user initiating the fight
@@ -631,6 +700,7 @@ async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser)
 	if (!player || !player.keycloakId) {
 		return null;
 	}
+	await deferFightInteraction(interaction);
 	return makePacket(CommandFightPacketReq, { playerKeycloakId: player.keycloakId });
 }
 

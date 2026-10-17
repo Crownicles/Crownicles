@@ -2,5 +2,6 @@
   "rarity": 3,
   "force": 2,
   "feedDelay": 3,
-  "speed": 10
+  "speed": 10,
+  "tags": ["flying"]
 }

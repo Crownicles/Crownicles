@@ -4,7 +4,7 @@ import { FightView } from "../FightView";
 import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
-import { PlayerFighter } from "../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { getUsedGodMoves } from "../FightController";
@@ -22,7 +22,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	 * @returns The chosen fight action.
 	 */
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as PlayerFighter | AiPlayerFighter; // AI will never fight monsters
+		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
 		const usedGodMoves = getUsedGodMoves(me, opponent);
 		const usedUltimateAttacks = me.fightActionsHistory.filter(action => action.id === FightConstants.FIGHT_ACTIONS.PLAYER.ULTIMATE_ATTACK).length;
 		const divineAndUltimateAttacksUsed = usedGodMoves >= 2 && usedUltimateAttacks > 0;
@@ -65,7 +65,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	private shouldUseDivineAttack(
 		me: AiPlayerFighter,
 		fightView: FightView,
-		opponent: PlayerFighter | AiPlayerFighter,
+		opponent: RealPlayerFighter | AiPlayerFighter,
 		usedGodMoves: number,
 		usedUltimateAttacks: number
 	): boolean {
@@ -126,7 +126,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	 */
 	private shouldUseShieldAttack(
 		me: AiPlayerFighter,
-		opponent: PlayerFighter | AiPlayerFighter,
+		opponent: RealPlayerFighter | AiPlayerFighter,
 		divineAndUltimateAttacksUsed: boolean
 	): boolean {
 		const breathRange = Math.round(opponent.getBreath() / opponent.getMaxBreath() * 3);
@@ -162,7 +162,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	 */
 	private shouldUseRamAttack(
 		me: AiPlayerFighter,
-		opponent: PlayerFighter | AiPlayerFighter,
+		opponent: RealPlayerFighter | AiPlayerFighter,
 		divineAndUltimateAttacksUsed: boolean
 	): boolean {
 		const ramAttackBreathCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK);

@@ -429,6 +429,16 @@
       "L'espressione del volto di {{playerDisplay}} tradisce un'esperienza straordinaria: ha battuto la Regina dei Ghiacci al livello **{{bossLevel, number}}**! Pochi possono vantare una simile impresa.",
       "Si passa davanti a {{playerDisplay}}, che ha raggiunto l'impossibile battendo la Regina dei Ghiacci al livello **{{bossLevel, number}}**. Vi inchinate rispettosamente."
     ],
+    "beaten_kraken": [
+      "I tentacoli mozzati che pendono dal mantello di {{playerDisplay}} testimoniano la sua battaglia contro il Kraken al livello **{{bossLevel, number}}**. Una vittoria strappata all'abisso!",
+      "{{playerDisplay}} profuma ancora di iodio e inchiostro nero: ha sconfitto il Kraken al livello **{{bossLevel, number}}**! Gli oceani non lo spaventano più.",
+      "Incontrate {{playerDisplay}}, un avventuriero che è sopravvissuto agli abissi e ha sconfitto il terribile Kraken al livello **{{bossLevel, number}}**. I suoi occhi portano il peso dell'abisso."
+    ],
+    "beaten_leviathan": [
+      "Le squame colossali attaccate all'armatura di {{playerDisplay}} provengono dalla sua battaglia con il Leviatano al livello **{{bossLevel, number}}**. Una leggenda vivente!",
+      "{{{playerDisplay}} ti dice sobriamente che ha sconfitto il Leviatano al livello **{{bossLevel, number}}**. Le onde non sembrano più in grado di inghiottirlo.",
+      "Superate {{playerDisplay}}, che ha messo a tacere per sempre il ruggito del Leviatano a **{{bossLevel, number}}**. Il silenzio dei mari profondi vi coglie."
+    ],
     "effect": {
       "sick": [
         "Si sente un rumore in lontananza... {{playerDisplay}} Sta vomitando in un cespuglio... Si prosegue per la strada, sconvolti.",
@@ -476,7 +486,7 @@
         "Si vede {{playerDisplay}} che è piuttosto alticcio, per usare un eufemismo. Sembra che si stia divertendo... da solo. Fate il possibile per ignorarlo e continuate per la vostra strada."
       ],
       "scared": [
-        "Passate davanti a {{playerDisplay}} , che sembra correre verso di voi. È inseguito dai rapinatori che cercano i suoi soldi. Lo accompagnate lungo la strada per aiutarlo a ritrovare la calma. Una volta rassicurato, lo lasciate e continuate il vostro cammino.",
+        "Passate davanti a {{playerDisplay}} , che sembra correre verso di voi. È inseguito dai rapinatori che cercano i suoi soldi. Lo accompagnate lungo la strada per aiutarlo a ritrovare la calma. Una volta rassicurato, lo lasciate e ripartite.",
         "In lontananza, vedete {{playerDisplay}} che corre a tutta velocità per sfuggire a un branco di lupi. Accorrete in suo aiuto e costringete le bestie selvatiche a ritirarsi.",
         "Incontri {{playerDisplay}}. Sembra completamente in preda al panico. Gli chiedete perché è così sconvolto. Vi dice che è stato appena inseguito da un drago, ma che è riuscito a scappare, perdendo qualche capello."
       ],
@@ -647,6 +657,7 @@
       "È china e scheletrica, ma si vede la malizia nei suoi occhi. ",
       "È vestita con brandelli di tessuto opaco e sporco. ",
       "Ricorderete le voci su una strega maldestra che vagava per il regno. ",
+      "Si mormora che la sua goffaggine gli abbia già causato dei guai con alcuni nobili poco indulgenti. ",
       "Completamente muta, sembra danneggiata dagli anni, magra e ossuta, con la pelle quasi grigia. ",
       "Sembra che non capisca quello che dici. "
     ],
@@ -1290,7 +1301,7 @@
         "{{count}} Le porge ** zuppe definitive**, che lei mette via con cura."
       ],
       "fullUltimateFood": [
-        "Vorrebbe offrirvi le sue preziose zuppe definitive, ma ispezionando il vostro magazzino si rende conto che non è rimasto nemmeno un posto. Scrolla le spalle e vi augura buon viaggio."
+        "Vi offre le zuppe più buone. Purtroppo il suo magazzino è pieno e deve restituirle."
       ],
       "item": [
         "Vi offre **un oggetto** che pensa possiate trovare utile."
@@ -1382,15 +1393,15 @@
         "success": {
           "withGuild": "Con l'aiuto dei tuoi compagni di gilda, riesci a tirarti fuori dal crepaccio e a salvarli a tua volta. Questa prova ha rafforzato il vostro legame e la vostra gilda riceve **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Non perdendo la calma, applicate immediatamente gli insegnamenti della vostra gilda e riuscite facilmente a scalare il muro. La tua gilda riceve **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Mantenendo la calma, applichi ciò che hai imparato nelle tue avventure e riesci a scalare la parete con facilità. Ricevi **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Senza perdere la calma, metti in pratica ciò che hai imparato durante le tue avventure e riesci facilmente a scalare la parete. Ricevi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "Senza perdere tempo, voi e i vostri compagni vi affrettate a esaminare questo crepaccio, che si rivela essere una grotta. Dopo un po' di cammino alla cieca, riuscite a emergere dal buco più avanti.",
           "solo": "Disperati, soli in fondo a questo crepaccio, notate solo dopo qualche minuto lo stretto passaggio alla vostra sinistra. Dopo aver lottato contro la terra che aveva deciso di confinarvi, emergete all'aria aperta."
         },
         "lose": {
-          "withGuild": "Con l'aiuto dei vostri compagni di gilda, riuscite a tirarvi fuori dal crepaccio e a salvare anche loro. Tuttavia, quello che aveva la borsa si è arrampicato per ultimo e ha fatto accidentalmente cadere i soldi durante la scalata. Si perde **{{amount, number}} {emote:unitValues.lostMoney}**.",
-          "solo": "Mentre cercate di arrampicarvi sulla parete, la terra si sgretola sotto le vostre dita e i vostri piedi, provocando una frana. Grazie a lui, riuscite a uscire dal crepaccio, ma siete gravemente feriti. Si perde **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Grazie all'aiuto dei tuoi compagni di gilda, riesci a tirarti fuori da quel crepaccio e a salvarli a tua volta. Tuttavia, colui che aveva la tua borsa è risalito per ultimo e, sfortunatamente, ha fatto cadere i soldi durante la scalata. Perdi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Mentre cercate di scalare la parete, il terreno si sgretola sotto le vostre dita e i vostri piedi, provocando una frana. Grazie a questo, riuscite a uscire da quel crepaccio, ma siete piuttosto malconci. Perdi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -1398,15 +1409,15 @@
         "success": {
           "withGuild": "Tuttavia, vi aggrappate l'uno all'altro per evitare un potenziale crepaccio che potrebbe far cadere uno di voi. La scossa termina e siete tutti sani e salvi. La vostra gilda vince **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Seguite le istruzioni impartite dalla vostra gilda in caso di terremoto e decidete di ripararvi sotto una struttura che, fortunatamente, non è crollata su di voi. Sani e salvi, promettete di ringraziare la vostra gilda non appena tornerete dalla spedizione. La vostra gilda vince **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Cercate di resistere nonostante la scossa. Fortunatamente non ha causato danni intorno a voi, quindi continuate a riposare per un po', ammirando il cielo e l'area circostante. Ricevi un **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Cerchi di mantenerti in piedi nonostante la scossa. Per fortuna non ha causato alcun danno nei dintorni, quindi continui a riposarti un po' ammirando il cielo e il paesaggio circostante. Ricevi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "In preda al panico, la vostra gilda cerca di trovare un posto più sicuro per evitare danni a chiunque di voi. Dopo aver girato in tondo per diversi minuti perché almeno uno dei membri ritiene che un determinato posto non sia sicuro, non sentite più la scossa. Ciononostante, cercate di recuperare la fiducia in voi stessi per ciò che vi aspetta mentre vi fate strada sull'isola...",
           "solo": "Presi dal panico, cercate di schivare i potenziali danni del terremoto. Dopo qualche istante, non sentite più la scossa. Quando tornate nel luogo in cui volevate riposare, notate i danni causati dal terremoto. È un bene che non siate rimasti lì..."
         },
         "lose": {
-          "withGuild": "Vi dite che questo terremoto sarà di breve durata e chiedete al resto della gilda di affrontarlo. Ma che errore! Una roccia si abbatte su di voi e vi fa perdere i sensi. Perdi **{{amount, number}} {emote:unitValues.energy}**.",
-          "solo": "Dicendo a se stessi che i danni saranno minimi, si continua a riposare. Tuttavia, sotto il vostro corpo si forma un crepaccio. Temendo di caderci dentro, si cerca di correre il più lontano possibile, ma si inciampa e ci si taglia il braccio. Si perde **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Pensate che questo terremoto durerà poco e chiedete al resto della gilda di affrontarlo. Che errore! Un masso vi cade addosso e vi stordisce. Perdete **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Pensando che i danni saranno minimi, continui a riposarti. Tuttavia, sotto di te si sta formando una crepa. Per paura di cadervi dentro, cerchi di correre il più lontano possibile, ma inciampi e ti tagli il braccio. Perdi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -1834,6 +1845,14 @@
     "refused": [
       "Declinate l'offerta e proseguite per la vostra strada."
     ]
+  },
+  "recipeShop": {
+    "offer": {
+      "farmer": "Prima che riprendiate il vostro cammino, la contadina si asciuga le mani sul grembiule e vi confida, con uno sguardo malizioso, che custodisce gelosamente una vecchia ricetta di famiglia. Accetta di darvi la ricetta {{recipe}} in cambio di {{price}} {emote:unitValues.money}.",
+      "gaspardJo": "Prima di risalire sulla sua roulotte, Gaspard-Jo fruga sotto una pila di provviste e ne tira fuori un vecchio ricettario tutto sgualcito. Con un sorriso complice, vi propone di cedere la ricetta {{recipe}} per {{price}} {emote:unitValues.money}."
+    },
+    "refused": "Rifiutate gentilmente l'offerta e riprendete il vostro cammino, lasciando che la ricetta rimanga un mistero per un'altra occasione.",
+    "notEnoughMoney": "Ti frughi nelle tasche alla ricerca di qualche spicciolo, ma devi ammettere che non hai abbastanza soldi per pagare il conto. Deluso, riprendi la tua strada."
   },
   "dwarfPetFan": {
     "intro": [
@@ -2540,6 +2559,25 @@
       }
     }
   },
+  "findMaterial": {
+    "typesStories": {
+      "wood": "si incontra un boschetto di alberi con tronchi robusti e rami flessibili, perfetti per raccogliere legna. Prendete l'ascia e iniziate a tagliare.",
+      "metal": "Scoprite una vena di minerale scintillante incastonata in una parete rocciosa, ideale per estrarre il metallo. Tirate fuori il piccone e iniziate a estrarre il minerale dalla parete rocciosa.",
+      "alloy": "si vede un mucchio di detriti metallici e frammenti di varie leghe, ideali per il recupero di materiali compositi. Raccogliete i detriti metallici e iniziate a selezionare i frammenti di varie leghe.",
+      "rope": "Troverete piante fibrose con steli lunghi e resistenti, perfette per intrecciare corde e tessuti. Prendete il coltello e iniziate a tagliare le piante fibrose.",
+      "magic": "Percepisci un luogo carico di energia, dove la magia sembra permeare l'aria e gli oggetti circostanti, ideale per raccogliere componenti magiche. Perlustrate l'area circostante alla ricerca di componenti magici.",
+      "poison": "si individuano piante velenose con foglie lucide e fiori colorati, oltre a una pozza d'acqua, perfetta per raccogliere le sostanze tossiche. Raccogliete con cura gli elementi velenosi.",
+      "explosive": "scoprirete cristalli instabili e piante con proprietà esplosive, ideali per raccogliere materiali pericolosi. Maneggiate gli elementi instabili con cura per evitare esplosioni accidentali.",
+      "leather": "Ci si imbatte nelle carcasse di animali macellati di recente, che offrono una preziosa fonte di pelli e cuoio. Raccogliete pelli e cuoio dalle carcasse di animali.",
+      "nature": "Troverete un'area ricca di elementi naturali, con piante, minerali e una varietà di risorse organiche, ideale per raccogliere materiali dalla natura. Raccogliete vari elementi naturali dall'area circostante.",
+      "spiritual": "si trova un luogo di serenità, dove l'atmosfera è pacifica e favorevole al benessere. Si cerca nell'ambiente circostante qualche oggetto."
+    },
+    "foundStories": {
+      "1": "Tornerete con {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} comune).",
+      "2": "Che bella scoperta! Vi portate a casa {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} piuttosto insolito).",
+      "3": "Che fortuna incredibile! Vi portate a casa {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} raro)."
+    }
+  },
   "expeditionAdvice": {
     "talismanIntro": [
       "Vi trovate di fronte a una donna dal volto sfregiato, seduta su una grande roccia. La sua armatura di cuoio logoro porta i segni di decine di battaglie. Sta pulendo metodicamente un pugnale con una lama annerita su cui è inciso il suo nome: Velanna. Senza alzare lo sguardo, brontola qualcosa a proposito di un antico manufatto in grado di creare un legame tra un padrone e la sua bestia... $t(models:talisman.anchor). Si alza e si allontana senza dire altro.",
@@ -2664,5 +2702,154 @@
         "La contadina vede che la vostra scorta di insalata è già piena fino a scoppiare. Stupito, scompare nel suo capanno e torna con **un oggetto polveroso**, che vi porge con un occhiolino."
       ]
     }
+  },
+  "gardener": {
+    "stories": {
+      "first": [
+        "Un vecchio con un grembiule terroso e le mani callose vi chiama da un piccolo appezzamento di terreno sul ciglio della strada. Si presenta come Théobald, un giardiniere itinerante, e vi invita ad ammirare le sue piante con non celato orgoglio. ",
+        "vedete un uomo inginocchiato ai piedi di un albero, con le dita affondate nella terra. Quando vi vede si alza, si spolvera le ginocchia e vi saluta calorosamente. Dice di chiamarsi Theobald e di aver dedicato la sua vita all'arte del giardinaggio. ",
+        "L'odore della terra umida e delle foglie fresche vi attira in un piccolo accampamento improvvisato ai lati del sentiero. Un giardiniere di nome Théobald, con l'annaffiatoio in mano e il cappello a fiori in testa, vi accoglie con un grande sorriso. ",
+        "Quasi calpestate una piantina accuratamente posizionata ai margini del sentiero. Da un cespuglio vicino emerge un vecchio che sembra falsamente indignato, prima di scoppiare a ridere. Si presenta come Theobald, un maestro giardiniere itinerante. ",
+        "Un uomo con il volto bruciato dal sole ci chiama da un piccolo giardino sul ciglio della strada. Quest'uomo, un certo Théobald, sembra conoscere ogni pianta per nome e insiste per condividere le sue conoscenze con i viaggiatori. "
+      ],
+      "recurring": [
+        "Un vecchio con un grembiule terroso e le mani callose vi chiama da un piccolo appezzamento di terreno sul ciglio della strada. Riconoscete Théobald, il giardiniere ambulante, che vi invita ad ammirare le sue piante con non celato orgoglio. ",
+        "vedete un uomo inginocchiato ai piedi di un albero, con le dita affondate nella terra. Theobald si alza quando vi vede, si spolvera le ginocchia e vi saluta calorosamente. ",
+        "L'odore di terra umida e di foglie fresche vi attira in un piccolo accampamento improvvisato ai lati del sentiero. Théobald, annaffiatoio in mano e cappello a fiori in testa, vi accoglie con un grande sorriso. ",
+        "Quasi calpestate una piantina accuratamente posizionata ai margini del sentiero. Theobald emerge da un cespuglio vicino, con aria falsamente indignata, prima di scoppiare a ridere quando vi riconosce. ",
+        "un uomo con il volto bruciato dal sole ci chiama da un piccolo giardino sul ciglio della strada. Théobald, fedele alla sua forma, sembra conoscere ogni pianta per nome e insiste per condividere la sua conoscenza con voi. "
+      ]
+    },
+    "rewards": {
+      "seed": {
+        "free": [
+          "Il vecchio Théobald frugò nella sua bisaccia e tirò fuori un piccolo seme, che vi consegnò. Spiega che è perfetto per iniziare e imparare le basi del giardinaggio. Ricevi un **seme** {emote:smallEvents.gardener}."
+        ],
+        "paid": [
+          "Théobald vi mostra un seme che sta esaminando alla luce. Accetta di darvelo per **{{cost}} {emote:unitValues.money}**."
+        ],
+        "paidAccepted": [
+          "Théobald vi mostra un seme che esamina alla luce. Dopo aver pagato **{{cost}} {emote:unitValues.money}**, metti con cura questo **seme** {emote:smallEvents.gardener} nella tua borsa."
+        ],
+        "moon": [
+          "Théobald guarda il cielo notturno e sorride alla luce della luna. Estrae con cura un seme dalla sua bisaccia, mormorando che questa pianta potrà essere affidata a lui solo quando ci sarà sufficiente luce lunare. Ricevi un **seme** {emote:smallEvents.gardener}."
+        ],
+        "night": [
+          "Théobald scruta soddisfatto il cielo che si sta oscurando. La notte è il momento ideale per affidare questo seme, poiché la pianta ha bisogno dell'oscurità per fiorire. Ricevi un **seme** {emote:smallEvents.gardener}."
+        ],
+        "herbivorePet": [
+          "Il giardiniere guarda il vostro animale erbivoro con ammirazione, colpito dall'evidente legame che vi unisce. Solo chi si prende cura della natura merita una pianta come questa\", dice, porgendoti un **seme** {emote:smallEvents.gardener}."
+        ],
+        "mage": [
+          "Théobald nota la tua aura da mago e annuisce con rispetto. La tua padronanza della magia farà fiorire questa pianta infuocata\", dice, porgendoti un **seme** {emote:smallEvents.gardener}."
+        ],
+        "firePet": [
+          "Il giardiniere spalanca gli occhi davanti al vostro animale domestico dal respiro infuocato ed esclama che non ne vedeva uno del genere da decenni. Con grande emozione vi consegna un **seme** {emote:smallEvents.gardener}, convinto che le fiamme del vostro compagno lo aiuteranno a crescere."
+        ],
+        "fireItem": [
+          "Théobald nota il vostro equipaggiamento forgiato col fuoco e annuisce. L'affinità con le fiamme è essenziale per coltivare questa pianta infuocata\", spiega, offrendoti un **seme** {emote:smallEvents.gardener}."
+        ],
+        "carnivorePet": [
+          "Il giardiniere osserva il vostro imponente animale carnivoro con un misto di rispetto e cautela. Il tuo compagno farà in modo che a questa pianta non manchi nulla\", conclude, porgendoti un **seme** {emote:smallEvents.gardener}."
+        ],
+        "legendaryHerbivorePet": [
+          "Gli occhi del giardiniere si allargano alla vista del vostro epico animale erbivoro, chiaramente commosso dallo straordinario legame che condividete. Con mano tremante, estrae il suo ultimo seme {emote:smallEvents.gardener}. Solo chi ha stretto un legame così forte con la natura può coltivare un tale tesoro\", mormora."
+        ]
+      },
+      "advice": {
+        "needLevel": [
+          "Il giardiniere vi esamina dalla testa ai piedi e scuote la testa. Non hai ancora abbastanza esperienza per il prossimo seme. Torna quando avrai raggiunto il **livello {{level}}**, consiglia.",
+          "Théobald aggrotta le sopracciglia mentre valuta la tua statura. La natura richiede un minimo di maturità per meritare questo seme, e tu dovrai raggiungere il **livello {{level}}**."
+        ],
+        "needGarden": [
+          "Théobald crolla la testa quando sente che non avete un giardino. Le consiglia di investire in una **casa con giardino** prima di tornare a trovarlo.",
+          "Il giardiniere sospira. Senza un giardino, non ha senso preoccuparsi di nuovi semi. Si procuri una **casa con un'area per il giardinaggio**, poi torni."
+        ],
+        "needMoney": [
+          "Théobald vi mostra il prossimo seme, ma lo mette subito da parte. Per ottenerlo ti serve **{{cost}} {emote:unitValues.money}** e non ne hai abbastanza con te.",
+          "Il giardiniere fa penzolare un seme davanti ai vostri occhi prima di riporlo con cura. Il suo prezzo è **{{cost}} {emote:unitValues.money}**, torna quando potrai permettertelo."
+        ],
+        "needHerbivorePet": [
+          "Il giardiniere scruta l'ambiente circostante e nota che non hai un animale erbivoro addestrato al tuo fianco. Avresti bisogno di un **animale erbivoro con un legame di fiducia massimo**.",
+          "Théobald scuote la testa. Il prossimo seme ha bisogno di un compagno vicino alla natura. Torna con un **familiare** erbivoro che hai **completamente addomesticato**."
+        ],
+        "needNight": [
+          "Théobald guarda il sole ancora alto nel cielo e sospira. Il prossimo seme può essere offerto solo al **tramonto**. Torna quando il sole è tramontato.",
+          "Il giardiniere guarda il cielo luminoso e scuote la testa. Questo particolare seme confida solo nel **buio della notte**."
+        ],
+        "needMoonlight": [
+          "Il giardiniere alza lo sguardo deluso. La **luna non è abbastanza visibile** per affidare questo seme. Tornate quando brillerà di più nel cielo notturno.",
+          "Théobald strizzò gli occhi al cielo. Per offrire questo seme è necessaria una **luce lunare potente**. Torna in una notte più luminosa."
+        ],
+        "needFireAffinity": [
+          "Teobaldo scuote la testa. Il prossimo seme richiede un'affinità con il fuoco. Dovreste essere **maghi**, possedere un **familiare legato al fuoco** o indossare un **equipaggiamento forgiato tra le fiamme**.",
+          "Il giardiniere ti guarda pensieroso. Questo seme ardente può essere coltivato solo da qualcuno legato al fuoco: un **mago**, un maestro di **familiari delle fiamme** o un portatore di **arma infuocata**."
+        ],
+        "needCarnivorePet": [
+          "Il giardiniere spiega che il prossimo seme richiede una compagna carnivora particolarmente potente. È necessario un **compagno carnivoro di rarità epica o superiore**.",
+          "Théobald vi dice che questo insolito seme si nutre di carne. Solo un **familiare** carnivoro d'eccezione potrebbe provvedere alla sua crescita."
+        ],
+        "needLegendaryHerbivorePet": [
+          "Théobald vi dice in tutta serietà che il suo ultimo seme è il più prezioso. Lo affiderà solo a qualcuno accompagnato da un **epico cacciatore erbivoro** con un **massimo livello di fiducia**.",
+          "Il vecchio sussurra che ciò che custodisce è il tesoro di una vita. Solo un avventuriero che abbia stretto un legame eccezionale con un **familiare erbivoro di epica rarità** potrà guadagnarselo."
+        ],
+        "seedSlotFull": [
+          "Il giardiniere si accorge che avete già un seme con voi. **Piantatelo prima** nel vostro giardino, poi tornate a trovarlo.",
+          "Théobald scuote la testa alla vista della tua borsa piena. **Pianta il tuo seme attuale** prima di chiedergliene uno nuovo."
+        ],
+        "allSeedsObtained": [
+          "Teobaldo si congratula con voi con orgoglio vedendo tutte le piante del vostro giardino. Avete già ricevuto **tutti i suoi semi** e lui non ha più nulla da offrirvi, ma è molto orgoglioso del vostro giardino.",
+          "Il vecchio giardiniere vi stringe la mano con calore. Hai fatto tutto quello che poteva insegnarti. Il tuo giardino è un **pezzo forte**\", dice, con le lacrime agli occhi."
+        ],
+        "noPlantSpace": [
+          "Théobald voleva offrirti una pianta, ma il tuo inventario è già pieno. Fa spallucce con un sorriso e vi augura buon viaggio.",
+          "Il giardiniere cerca tra le sue scorte, ma scopre che non avete **più spazio** per trasportare le piante. Vi consiglia di liberare uno spazio."
+        ],
+        "refused": [
+          "Declinate gentilmente l'offerta di Théobald. Il giardiniere ripone il seme nella sua bisaccia con un sorriso comprensivo e vi augura buon viaggio.",
+          "Al momento non potete permettervelo. Théobald annuisce e la invita a tornare quando sarà pronto."
+        ],
+        "tipBuyHome": [
+          "Théobald vi osserva per un momento e vi chiede se avete una casa vostra. In risposta al vostro silenzio, vi consiglia di comprare una **casa** e di costruirci intorno un giardino.",
+          "Il giardiniere è sorpreso che non abbiate ancora una casa. Vi consiglia di **comprarne una** al più presto per poter coltivare il vostro giardino."
+        ],
+        "tipUpgradeForGarden": [
+          "Théobald ha uno sguardo di scusa quando sente che la vostra casa non ha ancora un giardino. Ti consiglia di **migliorare la tua casa** per aggiungere qualche terreno.",
+          "Il giardiniere suggerisce di **ampliare la casa** per creare un'area di coltivazione. Un buon giardino ha bisogno di un buon terreno\", dice."
+        ],
+        "tipPlantSeed": [
+          "Il giardiniere si accorge che avete ancora un seme in mano. Vi incoraggia a **piantarlo il prima possibile** nel vostro giardino, in modo che possa iniziare a crescere.",
+          "Théobald si acciglia quando vede il seme nella borsa. Non lasciatelo in giro, **piantatelo nel vostro giardino** il prima possibile, insiste."
+        ],
+        "tipHarvestReady": [
+          "Théobald annusa l'aria e sorride. Sente che alcune delle vostre piante sono **pronte per essere raccolte**. Venite a raccoglierle prima che appassiscano\", consiglia.",
+          "Il giardiniere, con uno sguardo complice, vi assicura che il vostro giardino ha bisogno delle vostre attenzioni. Alcune piante sono **mature e pronte per essere raccolte**."
+        ],
+        "tipEmptyPlots": [
+          "Théobald vi ricorda che nel vostro orto ci sono ancora **trame vuote**. Vi incoraggia a procurarvi nuovi semi e a piantarli per riempire il vostro orto.",
+          "Il giardiniere scuote la testa quando pensa ai vostri appezzamenti non occupati. Un buon giardiniere non lascia mai la terra incolta, vi consiglia di **riempire i vostri appezzamenti vuoti**."
+        ],
+        "tipUpgradeSoil": [
+          "Théobald vi dice che la qualità del vostro terreno lascia a desiderare. **Migliorate la vostra casa** per ottenere un terreno più ricco che aiuterà le vostre piante a crescere più velocemente.",
+          "Il giardiniere assaggia un po' di terra immaginaria e fa una smorfia. Il vostro terreno è povero, le vostre piante crescono lentamente. **Migliora la tua casa** per arricchire il tuo terreno, consiglia."
+        ],
+        "tipGeneric": [
+          "Théobald si siede per un momento e condivide con voi uno dei suoi segreti: la pazienza è la chiave del giardinaggio. Le piante più preziose sono quelle che impiegano più tempo a crescere.",
+          "Il giardiniere contempla l'orizzonte e sussurra che ogni pianta racconta una storia. Vi invita a prendervi cura del vostro giardino con regolarità."
+        ]
+      },
+      "plant": [
+        "Colpito dalla vostra visita, il giardiniere scava nelle sue riserve e vi offre generosamente una delle sue piante coltivate:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Théobald prende una pianta dal suo carrello e ve la porge con un occhiolino malizioso:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Il giardiniere, non potendo darvi dei semi, vi offre generosamente una delle sue piante come ricordo del vostro incontro:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
+      ],
+      "material": [
+        "Théobald ficca la mano nella sua borsa e tira fuori un materiale che ha trovato mentre rivoltava la terra del suo giardino. Ve lo offre con un sorriso benevolo:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+        "Il giardiniere tira fuori dalla tasca un materiale che ha trovato questa mattina scavando. Lo consegna a voi, spiegando che non ne ha alcun uso:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+      ]
+    },
+    "menu": [
+      "\n\nAccetterete la sua offerta?"
+    ]
   }
 }
