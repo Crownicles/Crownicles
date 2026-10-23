@@ -4,7 +4,8 @@ services:
     image: mariadb:12.3
     container_name: mariadb_keycloak
     volumes:
-      - ../../keycloak/mariadb:/var/lib/mysql
+      # A named volume rather than a host folder: on a case-insensitive filesystem (macOS), MariaDB mixes up the upper case Keycloak tables
+      - keycloak_mariadb:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: keycloak
@@ -12,9 +13,11 @@ services:
       MYSQL_PASSWORD: password
       # Runs mariadb-upgrade on startup when the data directory comes from an older version
       MARIADB_AUTO_UPGRADE: "1"
-    # Copy-pasted from https://github.com/docker-library/mariadb/issues/94
+    # The image no longer ships mysqladmin: use its own healthcheck script
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "--silent" ]
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 5s
+      retries: 20
     ports:
       - 3307:3306
   keycloak:
@@ -22,8 +25,6 @@ services:
     container_name: keycloak
     ports:
       - 8080:8080
-    volumes:
-      -  ../../keycloak/data:/opt/keycloak/data
     deploy:
       resources:
         limits:
@@ -35,17 +36,21 @@ services:
       # ExitOnOutOfMemoryError ensures clean shutdown instead of hanging on OOM
       JAVA_OPTS_APPEND: -Xms256m -Xmx768m -XX:MaxMetaspaceSize=192m -XX:+ExitOnOutOfMemoryError
       # JAVA_OPTS: -XX:UseSVE=0 # Uncomment for macOS due to a keycloak bug https://github.com/keycloak/keycloak/issues/36008
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      DB_VENDOR: mariadb
-      DB_ADDR: 127.0.0.1:3307
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_PASSWORD: password
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      # Without KC_DB, Keycloak silently falls back to its embedded H2 database
+      KC_DB: mariadb
+      KC_DB_URL: jdbc:mariadb://mariadb_keycloak:3306/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
       JGROUPS_DISCOVERY_PROTOCOL: JDBC_PING
       QUARKUS_TRANSACTION_MANAGER_OBJECT_STORE_DIRECTORY: /tmp
       QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY: true
     depends_on:
-      - mariadb_keycloak
+      mariadb_keycloak:
+        condition: service_healthy
     command:
       - start-dev
+
+volumes:
+  keycloak_mariadb:
