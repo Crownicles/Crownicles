@@ -50,7 +50,8 @@ export abstract class BlockingConstants {
 		BAD_PET_SMALL_EVENT: "badPetSmallEvent",
 		SKIP_MISSION: "skipMission",
 		SLOT_EXTENSION: "slotExtension",
-		ALTAR_SMALL_EVENT: "altarSmallEvent"
+		ALTAR_SMALL_EVENT: "altarSmallEvent",
+		MESSAGE_RECIPIENT_CHOOSE: "messageRecipientChoose"
 	} as const;
 }
 

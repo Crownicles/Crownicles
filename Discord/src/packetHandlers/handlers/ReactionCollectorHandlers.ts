@@ -59,6 +59,8 @@ import { ReactionCollectorGuildKickData } from "../../../../Lib/src/packets/inte
 import { createGuildKickCollector } from "../../commands/guild/GuildKickCommand";
 import { ReactionCollectorGobletsGameData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGobletsGame";
 import { gobletsGameCollector } from "../../smallEvents/gobletsGame";
+import { ReactionCollectorMessageRecipientData } from "../../../../Lib/src/packets/interaction/ReactionCollectorMessageRecipient";
+import { messageRecipientCollector } from "../../smallEvents/messageRecipient";
 import { createUnlockCollector } from "../../commands/player/UnlockCommand";
 import { ReactionCollectorUnlockData } from "../../../../Lib/src/packets/interaction/ReactionCollectorUnlock";
 import { smallShopCollector } from "../../smallEvents/shop";
@@ -175,6 +177,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorFightPetData.name, fightPetCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildInviteData.name, createGuildInviteCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGobletsGameData.name, gobletsGameCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorMessageRecipientData.name, messageRecipientCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorUnlockData.name, createUnlockCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorShopSmallEventData.name, smallShopCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFoodSmallEventData.name, petFoodCollector);

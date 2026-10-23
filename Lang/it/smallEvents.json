@@ -2858,5 +2858,37 @@
     "menu": [
       "\n\nAccetterete la sua offerta?"
     ]
+  },
+  "message": {
+    "intro": "A breathless messenger stops you in a hurry: \"Please, deliver this secret message to my friend in {{destination}}! The message is: {{emoji}}. Remember it well, it will vanish shortly!\"",
+    "introVanished": "A breathless messenger had stopped you to deliver a secret message to their friend in {{destination}}... But the message has vanished! Hope you have a great memory!",
+    "alreadyActive": "You cross paths with the messenger again. He glares at you: \"What?! You still haven't delivered my message to {{destination}}? Hurry up, what are you waiting for!\""
+  },
+  "messageRecipient": {
+    "intro": "You meet the messenger's friend in {{destination}}. They eye you with suspicion: \"You came on their behalf? What is the secret message you were given?\"",
+    "emojis": {
+      "apple": "An apple",
+      "key": "A key",
+      "gem": "A gem",
+      "cat": "A cat",
+      "lightning": "A lightning bolt",
+      "star": "A star",
+      "mushroom": "A mushroom",
+      "pizza": "A pizza",
+      "bomb": "A bomb",
+      "poop": "A pile of poo",
+      "heart": "A heart",
+      "clock": "A clock"
+    },
+    "results": {
+      "success": "You convey the message {{emoji}}. The recipient's face lights up: \"That is indeed our agreed signal! Thank you so much for your discretion, here is your payment.\" You receive **{{money, number}} {emote:unitValues.money}** and **{{xp, number}} {emote:unitValues.experience}**!",
+      "wrongGeneric": "You say the message is {{emoji}}. The recipient frowns: \"What? That is definitely not our signal. Are you trying to trick me? Get lost!\" You leave empty-handed.",
+      "wrongBomb": "You mysteriously whisper the message {{emoji}}. The recipient panics: \"A BOMB?! AN ATTACK!\" In a sheer panic, they hit you with a stick and run away screaming! You lose **{{health, number}} {emote:unitValues.lostHealth}**.",
+      "wrongPoo": "You solemnly announce {{emoji}}. The recipient stares in sheer disgust: \"Are you mocking me?! That is revolting!\" They slap you across the face and walk away muttering curses.",
+      "wrongLove": "You tenderly whisper {{emoji}} with a wink. The recipient turns bright red, thoroughly flustered: \"Uh... that's very flattering, but... we barely know each other, and I'm married!\" They scurry away awkwardly.",
+      "wrongTime": "You suggest {{emoji}}. The recipient lets out a heavy sigh: \"Ah, time... Let me tell you about time!\" They trap you in an endless monologue about punctuality and existence. You lose **{{time}} {emote:unitValues.time}**.",
+      "timeout": "You hesitate for too long without saying anything. Tired of waiting, the recipient sighs and disappears into the crowd. You leave empty-handed."
+    }
   }
 }
+

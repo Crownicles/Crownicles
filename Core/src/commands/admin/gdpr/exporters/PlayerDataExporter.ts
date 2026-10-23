@@ -26,6 +26,7 @@ import { HomeChestSlots } from "../../../../core/database/game/models/HomeChestS
 import { HomeGardenSlots } from "../../../../core/database/game/models/HomeGardenSlot";
 import { HomePlantStorages } from "../../../../core/database/game/models/HomePlantStorage";
 import { PlayerCookingRecipe } from "../../../../core/database/game/models/PlayerCookingRecipe";
+import { PlayerMessageDeliveries } from "../../../../core/database/game/models/PlayerMessageDelivery";
 import { GlobalBlessing } from "../../../../core/database/game/models/GlobalBlessing";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
@@ -324,6 +325,23 @@ async function exportMiscData(
 
 	// Player cooking recipes discovered
 	await exportPlayerCookingRecipes(player.id, csvFiles);
+
+	// Player message delivery errand
+	await exportPlayerMessageDelivery(player.id, csvFiles);
+}
+
+async function exportPlayerMessageDelivery(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const delivery = await PlayerMessageDeliveries.getOfPlayer(playerId);
+	if (delivery) {
+		csvFiles["24_message_delivery.csv"] = toCSV([
+			{
+				destinationLocationId: delivery.destinationLocationId,
+				secretEmoji: delivery.secretEmoji,
+				createdAt: delivery.createdAt,
+				updatedAt: delivery.updatedAt
+			}
+		]);
+	}
 }
 
 async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {

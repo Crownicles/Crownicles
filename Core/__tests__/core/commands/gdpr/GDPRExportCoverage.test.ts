@@ -134,6 +134,7 @@ const EXPORTED_TABLES = {
 	"Apartment": "21_apartments.csv",
 	"PlayerCookingRecipe": "22_cooking_recipes.csv",
 	"GlobalBlessing": "23_current_blessing.csv",
+	"PlayerMessageDelivery": "24_message_delivery.csv",
 
 	// ============ LOGS DATABASE - Player Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersScore": "logs/15_score_history.csv",
@@ -450,6 +451,12 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"lastBlessingTriggeredAt",
 		"createdAt",
 		"updatedAt"
+	],
+	"PlayerMessageDelivery": [
+		"destinationLocationId",
+		"secretEmoji",
+		"createdAt",
+		"updatedAt"
 	]
 } as const;
 
@@ -496,7 +503,8 @@ const PLAYER_DATA_MODEL_IGNORED_FIELDS = {
 	"GlobalBlessing": [
 		"id",
 		"lastTriggeredByKeycloakId"
-	]
+	],
+	"PlayerMessageDelivery": ["playerId"]
 } as const;
 
 const LOG_DATA_EXPORT_FIELD_COVERAGE = {
