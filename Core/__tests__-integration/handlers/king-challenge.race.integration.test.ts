@@ -27,6 +27,8 @@ const N_CONCURRENT_GAINS = 10;
 
 const ENCLOSING_GEMS = 5;
 
+const EXPEDITION_TOKENS = 3;
+
 const FIRST_GEM_TIER = KingChallengeConstants.REWARDS.findIndex(reward => reward.gems > 0) + 1;
 
 function tierReachedPackets(response: CrowniclesPacket[]): KingChallengeTierReachedPacket[] {
@@ -194,7 +196,6 @@ describe("king's challenge", () => {
 
 	it("pays both the expedition tokens and the tier its score crosses when the expedition brings the player to the cap", async () => {
 		const initialTokens = TokensConstants.MAX - 1;
-		const expeditionTokens = 3;
 
 		// Both orders: the tier tokens reaching the cap before the expedition tokens, and the reverse
 		for (const [keycloakId, tokensFirst] of [["king-expedition-score-first", false], ["king-expedition-tokens-first", true]] as const) {
@@ -204,11 +205,11 @@ describe("king's challenge", () => {
 			await withLockedPlayerAndMissions(player.id, lockedPlayer => lockedPlayer.runWithTokenCapReference(async () => {
 				const grantExpeditionTokens = (): Promise<number> => lockedPlayer.addTokensAndGetActualGain({
 					response,
-					amount: expeditionTokens,
+					amount: EXPEDITION_TOKENS,
 					reason: NumberChangeReason.EXPEDITION
 				});
 				if (tokensFirst) {
-					expect(await grantExpeditionTokens()).toBe(expeditionTokens);
+					expect(await grantExpeditionTokens()).toBe(EXPEDITION_TOKENS);
 				}
 				await lockedPlayer.addScore({
 					response,
@@ -217,25 +218,26 @@ describe("king's challenge", () => {
 					ignoreBlessing: true
 				});
 				if (!tokensFirst) {
-					expect(await grantExpeditionTokens()).toBe(expeditionTokens);
+					expect(await grantExpeditionTokens()).toBe(EXPEDITION_TOKENS);
 				}
 			}));
 
-			await expectRewarded(player.id, 1, initialTokens, KingChallengeConstants.REWARDS[0].tokens + expeditionTokens);
+			await expectRewarded(player.id, 1, initialTokens, KingChallengeConstants.REWARDS[0].tokens + EXPEDITION_TOKENS);
 		}
 	});
 
 	it("pays no tier tokens once an earlier action brought the player to the cap", async () => {
-		const player = await seed("king-capped-before", THRESHOLDS[0] - 1, TokensConstants.MAX - 1);
+		const initialTokens = TokensConstants.MAX - 1;
+		const player = await seed("king-capped-before", THRESHOLDS[0] - 1, initialTokens);
 		await withLockedPlayerAndMissions(player.id, lockedPlayer => lockedPlayer.addTokens({
 			response: [],
-			amount: 3,
+			amount: EXPEDITION_TOKENS,
 			reason: NumberChangeReason.EXPEDITION
 		}));
 
 		await gainScore(player.id, 1);
 
-		await expectRewarded(player.id, 1, TokensConstants.MAX + 2, 0);
+		await expectRewarded(player.id, 1, initialTokens + EXPEDITION_TOKENS, 0);
 	});
 
 	it(`pays a tier exactly once when ${N_CONCURRENT_GAINS} score gains race to cross it`, async () => {
