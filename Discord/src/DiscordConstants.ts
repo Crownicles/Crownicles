@@ -1,3 +1,7 @@
+import {
+	asMilliseconds, Millisecond
+} from "../../Lib/src/types/TimeTypes";
+
 export abstract class DiscordConstants {
 	static MAX_BUTTONS_PER_ROW = 5;
 
@@ -18,10 +22,10 @@ export abstract class DiscordConstants {
 	 * Delays after which the action message of a fight turn is read back from Discord, to display the turn again when Discord
 	 * wrote an older state of the message over it (#5046). Each check is skipped once the fighter has played.
 	 */
-	static FIGHT_ACTION_DISPLAY_CHECK_DELAYS_MS = [
-		3_000,
-		15_000,
-		45_000
+	static FIGHT_ACTION_DISPLAY_CHECK_DELAYS: Millisecond[] = [
+		asMilliseconds(3_000),
+		asMilliseconds(15_000),
+		asMilliseconds(45_000)
 	];
 
 	/**
