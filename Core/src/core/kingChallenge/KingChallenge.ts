@@ -88,10 +88,14 @@ async function rewardKingChallengeTiersUnderLock(lockedPlayer: Locked<Player>, r
 		/*
 		 * Built before granting anything: the rewards can complete a mission whose points cross the next tier,
 		 * which would make the remaining points of this crossing negative. It is also announced before those missions.
-		 * The tokens of the challenge ignore the cap, so the granted amount is the reward itself, and they are credited
-		 * first so that a next tier crossed by the missions of the other rewards counts them in its owned tokens.
+		 * The tokens are only granted below the cap, so the announced amount is the one the cap lets through, and they are
+		 * credited first so that a next tier crossed by the missions of the other rewards counts them in its owned tokens.
 		 */
-		const reward = KingChallengeConstants.sumRewards(previousTier, reachedTier);
+		const tierRewards = KingChallengeConstants.sumRewards(previousTier, reachedTier);
+		const reward = {
+			...tierRewards,
+			tokens: lockedPlayer.getTokenGain(tierRewards.tokens, NumberChangeReason.KING_CHALLENGE)
+		};
 		rewardResponse.push(makePacket(KingChallengeTierReachedPacket, {
 			keycloakId: lockedPlayer.keycloakId,
 			tier: reachedTier,
@@ -101,11 +105,13 @@ async function rewardKingChallengeTiersUnderLock(lockedPlayer: Locked<Player>, r
 			ownedTokens: lockedPlayer.tokens + reward.tokens
 		}));
 
-		await lockedPlayer.addTokens({
-			response: rewardResponse,
-			amount: reward.tokens,
-			reason: NumberChangeReason.KING_CHALLENGE
-		});
+		if (reward.tokens > 0) {
+			await lockedPlayer.addTokens({
+				response: rewardResponse,
+				amount: reward.tokens,
+				reason: NumberChangeReason.KING_CHALLENGE
+			});
+		}
 		await lockedPlayer.addMoney({
 			response: rewardResponse,
 			amount: reward.money,

@@ -29,7 +29,7 @@ export abstract class TokensConstants {
 
 	/**
 	 * SQL expression refilling the `tokens` column of every player, mirroring `computeNewTokens`:
-	 * a player above the cap (expedition and big event rewards) keeps their tokens instead of being cut down to MAX.
+	 * a player above the cap (expedition, big event and king's challenge rewards) keeps their tokens instead of being cut down to MAX.
 	 * @param dailyGain Tokens granted on top of the current balance, capped at MAX. Omit to only top up to MAX.
 	 */
 	static buildRefillExpression(dailyGain?: number): string {

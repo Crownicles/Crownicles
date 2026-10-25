@@ -99,21 +99,27 @@ type ressourcesLostOnPveFaint = {
 
 /**
  * Reasons whose token gains are allowed to push the player above the normal
- * token cap. These are rare, reward-like sources (pet expeditions and the
- * one-time new player boost handed out during the tutorial big events).
+ * token cap, as long as the player was below it. These are rare, reward-like sources
+ * (pet expeditions, the one-time new player boost handed out during the tutorial
+ * big events and the king's challenge tiers).
  */
 const OVER_CAP_TOKEN_REASONS: ReadonlySet<NumberChangeReason> = new Set([
 	NumberChangeReason.EXPEDITION,
-	NumberChangeReason.BIG_EVENT
+	NumberChangeReason.BIG_EVENT,
+	NumberChangeReason.KING_CHALLENGE
 ]);
 
-/**
- * Reasons whose token gains ignore the cap entirely, even when the player already holds more than the cap:
- * the reward would otherwise be silently lost for the many players who hoard their tokens.
- */
-const UNCAPPED_TOKEN_REASONS: ReadonlySet<NumberChangeReason> = new Set([NumberChangeReason.KING_CHALLENGE]);
-
 const PLAYERS_LEVELING_UP_CONTEXT_KEY = "playersLevelingUp" as const;
+
+/**
+ * Tokens owned by each player, keyed by player id, when the action currently running for them started.
+ * See {@link Player.runWithTokenCapReference}.
+ */
+const TOKEN_CAP_REFERENCES_CONTEXT_KEY = "tokenCapReferences" as const;
+
+function getTokenCapReferences(): ReadonlyMap<number, number> | undefined {
+	return getCrowniclesNamespace().get(TOKEN_CAP_REFERENCES_CONTEXT_KEY) as ReadonlyMap<number, number> | undefined;
+}
 
 /**
  * Compute the new token count after applying `amount` to `currentTokens`, honoring
@@ -122,22 +128,24 @@ const PLAYERS_LEVELING_UP_CONTEXT_KEY = "playersLevelingUp" as const;
  * mutation callback to recompute against the freshly locked DB value (so a
  * concurrent token write between the caller's read and the lock acquisition is
  * never silently clobbered).
+ * @param currentTokens
+ * @param amount
+ * @param reason
+ * @param tokensBeforeAction Tokens owned when the action granting this gain started: an over-cap reward is still paid
+ * when an earlier reward of the same action already brought the player to the cap
  */
-function computeNewTokens(currentTokens: number, amount: number, reason: NumberChangeReason): number {
+function computeNewTokens(currentTokens: number, amount: number, reason: NumberChangeReason, tokensBeforeAction = currentTokens): number {
 	if (amount <= 0) {
 		// When spending or doing a no-op, don't clamp to MAX (preserve over-cap tokens from expeditions)
 		return Math.max(0, currentTokens + amount);
 	}
-	if (UNCAPPED_TOKEN_REASONS.has(reason)) {
-		return currentTokens + amount;
+	if (OVER_CAP_TOKEN_REASONS.has(reason)) {
+		// Reward sources can exceed the max cap, but only when the player was below MAX
+		return Math.min(currentTokens, tokensBeforeAction) < TokensConstants.MAX ? currentTokens + amount : currentTokens;
 	}
 	if (currentTokens >= TokensConstants.MAX) {
-		// Block all gains when already at or above max (including over-cap reward sources)
+		// Block all gains when already at or above max
 		return currentTokens;
-	}
-	if (OVER_CAP_TOKEN_REASONS.has(reason)) {
-		// Reward sources can exceed the max cap, but only when current tokens are below MAX
-		return currentTokens + amount;
 	}
 	return MathUtils.clamp(currentTokens + amount, 0, TokensConstants.MAX);
 }
@@ -447,10 +455,39 @@ export class Player extends Model {
 			}
 		], locked => {
 			const previousTokens = locked.tokens;
-			locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason);
+			locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason, getTokenCapReferences()?.get(locked.id));
 			actualChange = locked.tokens - previousTokens;
 		});
 		return actualChange;
+	}
+
+	/**
+	 * Tokens a gain of `amount` would actually grant to this player now, given the token cap.
+	 * Only meaningful on a locked instance, before granting the gain.
+	 * @param amount
+	 * @param reason
+	 */
+	public getTokenGain(amount: number, reason: NumberChangeReason): number {
+		return computeNewTokens(this.tokens, amount, reason, getTokenCapReferences()?.get(this.id)) - this.tokens;
+	}
+
+	/**
+	 * Run an action whose rewards are judged against the tokens this player owns when it starts: every reward source
+	 * allowed to exceed the cap (e.g. an expedition and the king's challenge tier its score crosses) is paid as long as
+	 * the player was below the cap before the action, even when another reward of the action already reached it.
+	 * Must be called on a locked instance. A nested call keeps the reference of the outermost action.
+	 * @param body
+	 */
+	public async runWithTokenCapReference<T>(body: () => Promise<T>): Promise<T> {
+		const references = getTokenCapReferences();
+		if (references?.has(this.id)) {
+			return await body();
+		}
+		const namespace = getCrowniclesNamespace();
+		return await namespace.runPromise(async () => {
+			namespace.set(TOKEN_CAP_REFERENCES_CONTEXT_KEY, new Map([...references ?? [], [this.id, this.tokens]]));
+			return await body();
+		});
 	}
 
 	/**

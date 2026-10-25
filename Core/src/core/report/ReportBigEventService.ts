@@ -244,14 +244,14 @@ async function doPossibility(
 				PlayerMissionsInfo.lockKey(freshPlayer.id)
 			] as const,
 			async ([lockedPlayer]) => {
-				await applyLockedOutcomeUnderLock(
+				await lockedPlayer.runWithTokenCapReference(() => applyLockedOutcomeUnderLock(
 					lockedPlayer,
 					{
 						event, possibility, randomOutcome, time
 					},
 					context,
 					response
-				);
+				));
 			}
 		);
 	}
