@@ -474,6 +474,19 @@ export class LogsDatabase extends Database {
 		return await findOrCreateLogsGuild(guild);
 	}
 
+	private static async findOrCreateLogsMapLink(mapLink: MapLink): Promise<LogsMapLinks> {
+		const [logsMapLink, created] = await LogsMapLinks.findOrCreate({
+			where: {
+				start: mapLink.startMap,
+				end: mapLink.endMap
+			}
+		});
+		if (created && MapCache.pveIslandMapLinks.includes(mapLink.id)) {
+			MapCache.logsPveIslandMapLinks.push(logsMapLink.id);
+		}
+		return logsMapLink;
+	}
+
 	/**
 	 * Allow to log a number that comes from a player but only for small numbers like his class, his level or campaign level
 	 * @param keycloakId
@@ -902,15 +915,9 @@ export class LogsDatabase extends Database {
 		if (!player) {
 			return;
 		}
-		const [maplinkLog, created] = await LogsMapLinks.findOrCreate({
-			where: {
-				start: mapLink.startMap,
-				end: mapLink.endMap
-			}
-		});
-		if (created && MapCache.pveIslandMapLinks.includes(mapLink.id)) {
-			MapCache.logsPveIslandMapLinks.push(maplinkLog.id);
-		}
+
+		const maplinkLog = await LogsDatabase.findOrCreateLogsMapLink(mapLink);
+
 		await LogsPlayersTravels.create({
 			playerId: player.id,
 			mapLinkId: maplinkLog.id,
@@ -1650,18 +1657,25 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when a player is teleported
 	 * @param keycloakId
-	 * @param originMapLinkId
-	 * @param newMapLinkId
+	 * @param originMapLink
+	 * @param newMapLink
 	 */
-	public async logTeleportation(keycloakId: string, originMapLinkId: number, newMapLinkId: number): Promise<void> {
+	public async logTeleportation(keycloakId: string, originMapLink: MapLink, newMapLink: MapLink): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+
 		if (!player) {
 			return;
 		}
+
+		const [originMapLinkLog, newMapLinkLog] = await Promise.all([
+			LogsDatabase.findOrCreateLogsMapLink(originMapLink),
+			LogsDatabase.findOrCreateLogsMapLink(newMapLink)
+		]);
+
 		await LogsPlayersTeleportations.create({
 			playerId: player.id,
-			originMapLinkId,
-			newMapLinkId,
+			originMapLinkId: originMapLinkLog.id,
+			newMapLinkId: newMapLinkLog.id,
 			date: getDateLogs()
 		});
 	}
