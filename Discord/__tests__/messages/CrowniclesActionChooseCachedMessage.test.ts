@@ -35,7 +35,7 @@ vi.mock("../../../Lib/src/logs/CrowniclesLogger", () => ({
 }));
 
 import {
-	ActionRowBuilder, ButtonBuilder, ComponentType, Message
+	ActionRowBuilder, APIActionRowComponent, APIButtonComponent, APIEmbed, ButtonBuilder, ComponentType, Message
 } from "discord.js";
 import { CrowniclesActionChooseCachedMessage } from "../../src/messages/CrowniclesActionChooseCachedMessage";
 import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
@@ -121,9 +121,14 @@ type DisplayedActionMessage = {
 };
 
 type MessageEdit = {
-	embeds?: CrowniclesEmbed[];
-	components?: ActionRowBuilder<ButtonBuilder>[];
+	embeds?: (CrowniclesEmbed | APIEmbed)[];
+	components?: (ActionRowBuilder<ButtonBuilder> | APIActionRowComponent<APIButtonComponent>)[];
 };
+
+// Like discord.js, the message accepts builders as well as their JSON
+function asJson<T>(value: T | { toJSON: () => T }): T {
+	return typeof value === "object" && value !== null && "toJSON" in value ? value.toJSON() : value;
+}
 
 const AI_CHOOSE_DESCRIPTION = "commands:fight.actions.aiChoose";
 const TURN_DESCRIPTION = "commands:fight.fightActionChoose.turnIndicationDescription";
@@ -144,9 +149,9 @@ class DiscordActionMessage {
 
 	apply(options: MessageEdit): void {
 		this.state = {
-			description: options.embeds ? options.embeds[0].data.description : this.state.description,
+			description: options.embeds ? asJson<APIEmbed>(options.embeds[0]).description : this.state.description,
 			buttons: options.components
-				? options.components.flatMap(row => row.toJSON().components.map(button => ({
+				? options.components.flatMap(row => asJson<APIActionRowComponent<APIButtonComponent>>(row).components.map(button => ({
 					id: (button as { custom_id: string }).custom_id,
 					disabled: button.disabled ?? false
 				})))
