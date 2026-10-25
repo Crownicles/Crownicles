@@ -23,6 +23,11 @@ import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { DisplayUtils } from "../utils/DisplayUtils";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { Language } from "../../../Lib/src/Language";
+import { Millisecond } from "../../../Lib/src/types/TimeTypes";
+
+function errorReason(error: unknown): string {
+	return error instanceof Error ? error.message : String(error);
+}
 
 /**
  * Acknowledge the click and disable the action buttons; failures are only logged so the chosen action still reaches Core.
@@ -36,7 +41,7 @@ async function acknowledgeActionClick(buttonInteraction: ButtonInteraction, rows
 	}
 	catch (error) {
 		CrowniclesLogger.warn("Fight action choice could not be acknowledged, sending it anyway", {
-			reason: error instanceof Error ? error.message : String(error),
+			reason: errorReason(error),
 			interactionAgeMs: Date.now() - buttonInteraction.createdTimestamp
 		});
 	}
@@ -45,7 +50,7 @@ async function acknowledgeActionClick(buttonInteraction: ButtonInteraction, rows
 	}
 	catch (error) {
 		CrowniclesLogger.warn("Fight action buttons could not be disabled, sending the choice anyway", {
-			reason: error instanceof Error ? error.message : String(error)
+			reason: errorReason(error)
 		});
 	}
 }
@@ -117,7 +122,7 @@ function isTurnOver(displayedTurn: DisplayedTurn): boolean {
  * Discord can persist an edit of a message after the following one, even though both requests completed in order: the
  * "opponent is choosing" display then replaced the turn of the fighter, whose disabled buttons made them lose by inactivity.
  */
-async function checkDisplayedTurn(displayedTurn: DisplayedTurn, expectedState: string, checkDelayMs: number): Promise<void> {
+async function checkDisplayedTurn(displayedTurn: DisplayedTurn, expectedState: string, checkDelay: Millisecond): Promise<void> {
 	if (isTurnOver(displayedTurn)) {
 		return;
 	}
@@ -127,7 +132,7 @@ async function checkDisplayedTurn(displayedTurn: DisplayedTurn, expectedState: s
 	}
 	CrowniclesLogger.warn("Discord replaced the fight action message with an older state, displaying the turn again", {
 		messageId: displayedTurn.message.id,
-		checkDelayMs,
+		checkDelayMs: checkDelay,
 		storedState
 	});
 	await displayedTurn.message.edit(displayedTurn.options);
@@ -135,14 +140,14 @@ async function checkDisplayedTurn(displayedTurn: DisplayedTurn, expectedState: s
 
 function watchDisplayedTurn(displayedTurn: DisplayedTurn): void {
 	const expectedState = displayedState(displayedTurn.message);
-	for (const checkDelayMs of DiscordConstants.FIGHT_ACTION_DISPLAY_CHECK_DELAYS_MS) {
+	for (const checkDelay of DiscordConstants.FIGHT_ACTION_DISPLAY_CHECK_DELAYS) {
 		setTimeout(() => {
-			checkDisplayedTurn(displayedTurn, expectedState, checkDelayMs).catch(error => {
+			checkDisplayedTurn(displayedTurn, expectedState, checkDelay).catch(error => {
 				CrowniclesLogger.warn("Fight action message could not be checked", {
-					reason: error instanceof Error ? error.message : String(error)
+					reason: errorReason(error)
 				});
 			});
-		}, checkDelayMs);
+		}, checkDelay);
 	}
 }
 
