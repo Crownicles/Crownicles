@@ -434,14 +434,14 @@ export default class PetExpeditionCommand {
 					PetEntity.lockKey(petEntity.id),
 					PlayerMissionsInfo.lockKey(player.id)
 				] as const,
-				async ([lockedPlayer, lockedPet]) => await applyLockedResolveExpedition(
+				async ([lockedPlayer, lockedPet]) => await lockedPlayer.runWithTokenCapReference(() => applyLockedResolveExpedition(
 					response,
 					context,
 					{
 						player: lockedPlayer, pet: lockedPet
 					},
 					activeExpedition.id
-				)
+				))
 			);
 		}
 		catch (error) {
