@@ -11,6 +11,9 @@ const ETENDUE = 12;
 const LAKE_MIRAGE = 14;
 const CRAB_RIVER = 25;
 const GENERATIONS_PER_CASE = 20;
+
+// Enough draws for the independence of twin expeditions to show up with an overwhelming probability
+const TWIN_GENERATIONS = 100;
 const TRIP_START = 0.2;
 const TRIP_END = 0.8;
 const ARRIVED = 1;
@@ -80,18 +83,20 @@ describe("expedition choices", () => {
 		}
 	});
 
-	it("gives the biomes of a location the same outing, only the terrain driven risk changing", () => {
-		for (let i = 0; i < GENERATIONS_PER_CASE; i++) {
-			const [coast, swamp] = expeditionChoices(ETENDUE, LAKE_MIRAGE, ARRIVED);
+	it("draws the expeditions of the biomes of a location independently", () => {
+		const twins = Array.from({ length: TWIN_GENERATIONS }, () => expeditionChoices(ETENDUE, LAKE_MIRAGE, ARRIVED).slice(0, 2));
 
-			expect(swamp.durationMinutes).toBe(coast.durationMinutes);
-			expect(swamp.difficulty).toBe(coast.difficulty);
-			expect(swamp.wealthRate).toBe(coast.wealthRate);
+		for (const [coast, swamp] of twins) {
+			expect(coast.locationType).toBe(COAST);
+			expect(swamp.locationType).toBe(SWAMP);
 			expect(swamp.id).not.toBe(coast.id);
-
-			// The swamp is a more dangerous terrain than the coast
-			expect(swamp.riskRate).toBeGreaterThanOrEqual(coast.riskRate);
 		}
+		expect(twins.some(([coast, swamp]) => swamp.durationMinutes !== coast.durationMinutes)).toBe(true);
+		expect(twins.some(([coast, swamp]) => swamp.difficulty !== coast.difficulty)).toBe(true);
+		expect(twins.some(([coast, swamp]) => swamp.wealthRate !== coast.wealthRate)).toBe(true);
+
+		// With a shared risk roll the swamp, a more dangerous terrain, would never be safer than the coast
+		expect(twins.some(([coast, swamp]) => swamp.riskRate < coast.riskRate)).toBe(true);
 	});
 
 	it("offers every biome of both ends when they are both mixed", () => {
