@@ -68,12 +68,12 @@ async function runCartEndCallbackUnderLock(
 			await player.addScore(scoreParameters);
 			await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
 			packet.pointsWon = scoreParameters.amount;
-			const newMapLinkId = destination.isScam ? destination.scamDestination!.id : destination.destination.id;
-			crowniclesInstance?.logsDatabase.logTeleportation(player.keycloakId, player.mapLinkId, newMapLinkId).then();
+			const newMapLink = destination.isScam ? destination.scamDestination! : destination.destination;
+			crowniclesInstance?.logsDatabase.logTeleportation(player.keycloakId, MapLinkDataController.instance.getById(player.mapLinkId)!, newMapLink).then();
 			await player.spendMoney({
 				amount: destination.price, response, reason: NumberChangeReason.SMALL_EVENT
 			});
-			player.mapLinkId = newMapLinkId;
+			player.mapLinkId = newMapLink.id;
 		}
 		response.push(makePacket(SmallEventCartPacket, packet));
 	}
