@@ -96,7 +96,9 @@ type DisplayedActionChoice = {
  */
 type DisplayedTurn = {
 	message: Message;
-	options: BaseMessageOptions;
+
+	// Serialized when the turn is displayed, as the click disables the buttons of the same builders
+	display: BaseMessageOptions;
 	collector: InteractionCollector<ButtonInteraction>;
 	turn: ActionTurnState;
 };
@@ -135,7 +137,7 @@ async function checkDisplayedTurn(displayedTurn: DisplayedTurn, expectedState: s
 		checkDelayMs: checkDelay,
 		storedState
 	});
-	await displayedTurn.message.edit(displayedTurn.options);
+	await displayedTurn.message.edit(displayedTurn.display);
 }
 
 function watchDisplayedTurn(displayedTurn: DisplayedTurn): void {
@@ -225,7 +227,10 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 		}));
 		watchDisplayedTurn({
 			message: msg,
-			options,
+			display: {
+				embeds: options.embeds.map(turnEmbed => turnEmbed.toJSON()),
+				components: options.components.map(row => row.toJSON())
+			},
 			collector: buttonCollector,
 			turn
 		});
