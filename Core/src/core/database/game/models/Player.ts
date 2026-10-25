@@ -122,6 +122,13 @@ function getTokenCapReferences(): ReadonlyMap<number, number> | undefined {
 }
 
 /**
+ * Tokens owned by the player when the action currently running for them started, if any
+ */
+function getTokensBeforeAction(playerId: number): number | undefined {
+	return getTokenCapReferences()?.get(playerId);
+}
+
+/**
  * Compute the new token count after applying `amount` to `currentTokens`, honoring
  * the MAX cap, the over-cap reward rule, and the lower bound at 0. Used both
  * by `addTokens` to decide whether to trigger the update and by the locked
@@ -455,7 +462,7 @@ export class Player extends Model {
 			}
 		], locked => {
 			const previousTokens = locked.tokens;
-			locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason, getTokenCapReferences()?.get(locked.id));
+			locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason, getTokensBeforeAction(locked.id));
 			actualChange = locked.tokens - previousTokens;
 		});
 		return actualChange;
@@ -468,7 +475,7 @@ export class Player extends Model {
 	 * @param reason
 	 */
 	public getTokenGain(amount: number, reason: NumberChangeReason): number {
-		return computeNewTokens(this.tokens, amount, reason, getTokenCapReferences()?.get(this.id)) - this.tokens;
+		return computeNewTokens(this.tokens, amount, reason, getTokensBeforeAction(this.id)) - this.tokens;
 	}
 
 	/**
