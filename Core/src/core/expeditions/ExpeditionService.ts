@@ -43,69 +43,44 @@ interface DurationRange {
 }
 
 /**
- * Random draw of an outing to a map location. The biomes of a location share the same outing:
- * only the terrain changes, which drives the risk, the kind of rewards and the loot.
- */
-interface ExpeditionOuting {
-	durationMinutes: number;
-	difficulty: number;
-	wealthRate: number;
-
-	/**
-	 * Uniform roll turned into a risk by the difficulty curve of each terrain
-	 */
-	riskRoll: number;
-}
-
-/**
  * Parameters for generating an expedition
  */
 interface ExpeditionGenerationParams {
-	outing: ExpeditionOuting;
+	durationRange: DurationRange;
 	locationType: ExpeditionLocationType;
 	mapLocationId?: number;
 	isDistantExpedition?: boolean;
 }
 
 /**
- * Draw an outing whose duration is in the given range
+ * Draw the wealth rate of an expedition
  */
-function rollExpeditionOuting(durationRange: DurationRange): ExpeditionOuting {
-	const durationMinutes = RandomUtils.crowniclesRandom.integer(
-		durationRange.min,
-		durationRange.max
-	);
-	const riskRoll = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
-	const difficulty = RandomUtils.rangedInt(ExpeditionConstants.DIFFICULTY);
+function rollWealthRate(): number {
 	const wealthRate = RandomUtils.crowniclesRandom.realZeroToOneInclusive()
 		* (ExpeditionConstants.WEALTH_RATE.MAX - ExpeditionConstants.WEALTH_RATE.MIN)
 		+ ExpeditionConstants.WEALTH_RATE.MIN;
-
-	return {
-		durationMinutes,
-		difficulty,
-		wealthRate: Math.round(wealthRate * ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION) / ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION,
-		riskRoll
-	};
+	return Math.round(wealthRate * ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION) / ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION;
 }
 
 /**
- * Generate an expedition of the given outing in the given terrain
+ * Generate an expedition in the given terrain, whose duration is in the given range.
+ * Every expedition is drawn independently, even when several biomes of the same location are offered.
  */
 function generateExpedition(params: ExpeditionGenerationParams): ExpeditionData {
 	const {
-		outing, locationType, mapLocationId, isDistantExpedition
+		durationRange, locationType, mapLocationId, isDistantExpedition
 	} = params;
+	const durationMinutes = RandomUtils.crowniclesRandom.integer(durationRange.min, durationRange.max);
 
 	const expeditionData: ExpeditionData = {
 		id: generateExpeditionId(),
-		durationMinutes: outing.durationMinutes,
-		displayDurationMinutes: Math.round(outing.durationMinutes / ExpeditionConstants.DURATION_DISPLAY_ROUNDING) * ExpeditionConstants.DURATION_DISPLAY_ROUNDING,
+		durationMinutes,
+		displayDurationMinutes: Math.round(durationMinutes / ExpeditionConstants.DURATION_DISPLAY_ROUNDING) * ExpeditionConstants.DURATION_DISPLAY_ROUNDING,
 
 		// Terrain-based risk using the location type's difficulty curve
-		riskRate: generateTerrainBasedRisk(locationType, outing.riskRoll),
-		difficulty: outing.difficulty,
-		wealthRate: outing.wealthRate,
+		riskRate: generateTerrainBasedRisk(locationType, RandomUtils.crowniclesRandom.realZeroToOneInclusive()),
+		difficulty: RandomUtils.rangedInt(ExpeditionConstants.DIFFICULTY),
+		wealthRate: rollWealthRate(),
 		locationType,
 		mapLocationId,
 		isDistantExpedition
@@ -161,7 +136,7 @@ function getRandomDistantMapLocation(excludeIds: number[]): number {
 
 /**
  * Generate local expeditions based on map locations from player's current link, the closest one being the shortest.
- * A location mixing several biomes offers one expedition per biome, so the player picks the terrain suiting their pet.
+ * A location mixing several biomes offers one independently drawn expedition per biome, in the duration range of the location.
  */
 function generateLocalExpeditions(
 	localMapLocationIds: number[],
@@ -172,11 +147,10 @@ function generateLocalExpeditions(
 	for (let i = 0; i < ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT && i < localMapLocationIds.length; i++) {
 		const mapLocationId = localMapLocationIds[i];
 		const mapLocation = MapLocationDataController.instance.getById(mapLocationId)!;
-		const outing = rollExpeditionOuting(durationRanges[i]);
 
 		for (const locationType of mapLocation.biomes) {
 			expeditions.push(generateExpedition({
-				outing,
+				durationRange: durationRanges[i],
 				locationType,
 				mapLocationId,
 				isDistantExpedition: false
@@ -197,7 +171,7 @@ function fillMissingLocalExpeditions(
 	while (expeditions.length < ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT) {
 		const allLocationTypes = Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES) as ExpeditionLocationType[];
 		const expedition = generateExpedition({
-			outing: rollExpeditionOuting(durationRanges[expeditions.length]),
+			durationRange: durationRanges[expeditions.length],
 			locationType: RandomUtils.crowniclesRandom.pick(allLocationTypes)
 		});
 
@@ -264,7 +238,7 @@ function generateDistantExpedition(
 	const distantLocationType = distantMapLocation.pickBiome();
 
 	return generateExpedition({
-		outing: rollExpeditionOuting(durationRanges[ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT]),
+		durationRange: durationRanges[ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT],
 		locationType: distantLocationType,
 		mapLocationId: distantMapLocationId,
 		isDistantExpedition: true
