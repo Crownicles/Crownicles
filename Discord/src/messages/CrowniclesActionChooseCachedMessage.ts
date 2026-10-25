@@ -31,9 +31,9 @@ function errorReason(error: unknown): string {
 
 /**
  * Acknowledge the click and disable the action buttons; failures are only logged so the chosen action still reaches Core.
- * The buttons are not disabled through the interaction response: Discord can apply an UPDATE_MESSAGE response after the
- * following edits of the message, which then shows the next turn with disabled buttons (#5024). A message edit shares the
- * REST queue of every later edit of this message, so the next turn display always lands after it.
+ * The buttons are disabled through a message edit rather than the interaction response, so that this edit shares the REST
+ * queue of every later edit of this message and is sent before the next turn display. Discord can still persist an older
+ * edit over a later one: watchDisplayedTurn repairs the turn when that happens (#5046).
  */
 async function acknowledgeActionClick(buttonInteraction: ButtonInteraction, rows: ActionRowBuilder<ButtonBuilder>[]): Promise<void> {
 	try {
