@@ -35,13 +35,14 @@ vi.mock("../../../Lib/src/logs/CrowniclesLogger", () => ({
 }));
 
 import {
-	ActionRowBuilder, ButtonBuilder, Message
+	ActionRowBuilder, ButtonBuilder, ComponentType, Message
 } from "discord.js";
 import { CrowniclesActionChooseCachedMessage } from "../../src/messages/CrowniclesActionChooseCachedMessage";
 import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
 import { ReactionCollectorFightChooseActionPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { CrowniclesEmbed } from "../../src/messages/CrowniclesEmbed";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 
 type CollectHandler = (interaction: unknown) => Promise<void>;
 
@@ -89,6 +90,8 @@ async function openActionChoice(): Promise<CollectHandler> {
 	};
 	const cachedMessage = new CrowniclesActionChooseCachedMessage("interaction-id");
 	vi.spyOn(cachedMessage, "post").mockResolvedValue({
+		embeds: [],
+		components: [],
 		createMessageComponentCollector: vi.fn(() => collector)
 	} as unknown as Message);
 
@@ -137,6 +140,8 @@ class DiscordActionMessage {
 
 	collectHandlers: CollectHandler[] = [];
 
+	fetchCount = 0;
+
 	apply(options: MessageEdit): void {
 		this.state = {
 			description: options.embeds ? options.embeds[0].data.description : this.state.description,
@@ -154,10 +159,27 @@ class DiscordActionMessage {
 			this.apply(options);
 			return Promise.resolve(this.asMessage());
 		};
+		const fetch = (): Promise<Message> => {
+			this.fetchCount++;
+			return Promise.resolve(this.asMessage());
+		};
 		return {
+			id: "action-message-id",
+			embeds: [{ description: this.state.description }],
+			components: [
+				{
+					type: ComponentType.ActionRow,
+					components: this.state.buttons.map(button => ({
+						customId: button.id,
+						disabled: button.disabled
+					}))
+				}
+			],
 			edit,
+			fetch,
 			createMessageComponentCollector: (): unknown => {
 				const collector = {
+					ended: false,
 					on: (event: string, handler: CollectHandler): unknown => {
 						if (event === "collect") {
 							this.collectHandlers.push(handler);
@@ -258,6 +280,67 @@ describe("CrowniclesActionChooseCachedMessage", () => {
 				]
 			});
 			expect(DiscordCollectorUtils.sendReaction).toHaveBeenCalledOnce();
+		});
+	});
+
+	describe("when Discord writes an older state of the message over the next turn (#5046)", () => {
+		beforeEach(() => {
+			vi.useFakeTimers();
+		});
+
+		afterEach(() => {
+			vi.useRealTimers();
+		});
+
+		async function playUntilOpponentChose(discordMessage: DiscordActionMessage, cachedMessage: CrowniclesActionChooseCachedMessage): Promise<DisplayedActionMessage> {
+			discordChannel.send.mockImplementation((options: MessageEdit) => {
+				discordMessage.apply(options);
+				return Promise.resolve(discordMessage.asMessage());
+			});
+			await cachedMessage.update(actionChoicePacket("turn-1"), context);
+			await discordMessage.collectHandlers[0](discordMessage.clickWithLateUpdateResponse("quickAttack", 0));
+			await cachedMessage.post({ embeds: [new CrowniclesEmbed().setDescription(AI_CHOOSE_DESCRIPTION)] });
+			return structuredClone(discordMessage.state);
+		}
+
+		it("displays the turn again", async () => {
+			const discordMessage = new DiscordActionMessage();
+			const cachedMessage = new CrowniclesActionChooseCachedMessage("interaction-id");
+			const opponentChoosingState = await playUntilOpponentChose(discordMessage, cachedMessage);
+
+			await vi.advanceTimersByTimeAsync(1500);
+			await cachedMessage.update(actionChoicePacket("turn-3"), context);
+
+			// The edit showing the opponent choosing is persisted again after the display of the next turn, as seen in production
+			await vi.advanceTimersByTimeAsync(500);
+			discordMessage.state = opponentChoosingState;
+			await vi.advanceTimersByTimeAsync(3000);
+
+			expect(discordMessage.state).toEqual({
+				description: TURN_DESCRIPTION,
+				buttons: [
+					{
+						id: "simpleAttack",
+						disabled: false
+					},
+					{
+						id: "quickAttack",
+						disabled: false
+					}
+				]
+			});
+			expect(CrowniclesLogger.warn).toHaveBeenCalledOnce();
+		});
+
+		it("stops checking the turn once the fighter has played", async () => {
+			const discordMessage = new DiscordActionMessage();
+			const cachedMessage = new CrowniclesActionChooseCachedMessage("interaction-id");
+			await playUntilOpponentChose(discordMessage, cachedMessage);
+
+			await vi.advanceTimersByTimeAsync(60_000);
+
+			expect(discordMessage.fetchCount).toBe(0);
+			expect(CrowniclesLogger.warn).not.toHaveBeenCalled();
 		});
 	});
 });
