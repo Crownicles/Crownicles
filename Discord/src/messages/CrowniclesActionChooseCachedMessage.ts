@@ -5,7 +5,8 @@ import { crowniclesClient } from "../bot/CrowniclesShard";
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
+	ActionRowBuilder, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType, InteractionCollector, Message,
+	parseEmoji
 } from "discord.js";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
@@ -67,6 +68,13 @@ function buildActionRows(actions: ReactionCollectorFightChooseActionReaction[]):
 }
 
 /**
+ * Progress of one turn of the fighter, shared by the click handler and the checks of the displayed turn
+ */
+type ActionTurnState = {
+	actionSent: boolean;
+};
+
+/**
  * Action buttons displayed to the fighter for one turn
  */
 type DisplayedActionChoice = {
@@ -75,16 +83,76 @@ type DisplayedActionChoice = {
 	actions: ReactionCollectorFightChooseActionReaction[];
 	rows: ActionRowBuilder<ButtonBuilder>[];
 	lng: Language;
+	turn: ActionTurnState;
 };
+
+/**
+ * Turn displayed on the action message, and what is needed to display it again
+ */
+type DisplayedTurn = {
+	message: Message;
+	options: BaseMessageOptions;
+	collector: InteractionCollector<ButtonInteraction>;
+	turn: ActionTurnState;
+};
+
+/**
+ * What the fighter sees of the action message: its text and the state of each button
+ */
+function displayedState(message: Message): string {
+	return JSON.stringify({
+		description: message.embeds[0]?.description ?? null,
+		buttons: message.components
+			.flatMap(row => row.type === ComponentType.ActionRow ? row.components : [])
+			.map(component => [component.customId, component.disabled])
+	});
+}
+
+function isTurnOver(displayedTurn: DisplayedTurn): boolean {
+	return displayedTurn.turn.actionSent || displayedTurn.collector.ended;
+}
+
+/**
+ * Read the action message back from Discord and display the turn again if an older state of the message was written over it.
+ * Discord can persist an edit of a message after the following one, even though both requests completed in order: the
+ * "opponent is choosing" display then replaced the turn of the fighter, whose disabled buttons made them lose by inactivity.
+ */
+async function checkDisplayedTurn(displayedTurn: DisplayedTurn, expectedState: string, checkDelayMs: number): Promise<void> {
+	if (isTurnOver(displayedTurn)) {
+		return;
+	}
+	const storedState = displayedState(await displayedTurn.message.fetch(true));
+	if (storedState === expectedState || isTurnOver(displayedTurn)) {
+		return;
+	}
+	CrowniclesLogger.warn("Discord replaced the fight action message with an older state, displaying the turn again", {
+		messageId: displayedTurn.message.id,
+		checkDelayMs,
+		storedState
+	});
+	await displayedTurn.message.edit(displayedTurn.options);
+}
+
+function watchDisplayedTurn(displayedTurn: DisplayedTurn): void {
+	const expectedState = displayedState(displayedTurn.message);
+	for (const checkDelayMs of DiscordConstants.FIGHT_ACTION_DISPLAY_CHECK_DELAYS_MS) {
+		setTimeout(() => {
+			checkDisplayedTurn(displayedTurn, expectedState, checkDelayMs).catch(error => {
+				CrowniclesLogger.warn("Fight action message could not be checked", {
+					reason: error instanceof Error ? error.message : String(error)
+				});
+			});
+		}, checkDelayMs);
+	}
+}
 
 /**
  * Collect handler forwarding the first click of the fighter to Core
  */
 function createActionClickHandler(choice: DisplayedActionChoice): (buttonInteraction: ButtonInteraction) => Promise<void> {
 	const {
-		packet, context, actions, rows, lng
+		packet, context, actions, rows, lng, turn
 	} = choice;
-	let actionSent = false;
 	return async (buttonInteraction: ButtonInteraction): Promise<void> => {
 		if (buttonInteraction.user.id !== context.discord?.user) {
 			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
@@ -92,11 +160,11 @@ function createActionClickHandler(choice: DisplayedActionChoice): (buttonInterac
 		}
 
 		// Clicks queued while the shard was lagging: only the first one is the chosen action
-		if (actionSent) {
+		if (turn.actionSent) {
 			await buttonInteraction.deferUpdate().catch(() => null);
 			return;
 		}
-		actionSent = true;
+		turn.actionSent = true;
 
 		disableRows(rows);
 		await acknowledgeActionClick(buttonInteraction, rows);
@@ -129,23 +197,33 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 			.setDescription(i18n.t("commands:fight.fightActionChoose.turnIndicationDescription", { lng }));
 		const actions = packet.reactions.map(reaction => reaction.data as ReactionCollectorFightChooseActionReaction);
 		const rows = buildActionRows(actions);
-		const msg = await this.post({
+		const options = {
 			embeds: [embed],
 			components: rows
-		}, context.discord!.channel);
+		};
+		const msg = await this.post(options, context.discord!.channel);
 		if (!msg) {
 			return null;
 		}
 		const buttonCollector = msg.createMessageComponentCollector({
+			componentType: ComponentType.Button,
 			time: packet.endTime - Date.now()
 		});
+		const turn: ActionTurnState = { actionSent: false };
 		buttonCollector.on("collect", createActionClickHandler({
 			packet,
 			context,
 			actions,
 			rows,
-			lng
+			lng,
+			turn
 		}));
+		watchDisplayedTurn({
+			message: msg,
+			options,
+			collector: buttonCollector,
+			turn
+		});
 		return [buttonCollector];
 	};
 }

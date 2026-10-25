@@ -15,6 +15,16 @@ export abstract class DiscordConstants {
 	static EMPTY_MESSAGE = "_ _";
 
 	/**
+	 * Delays after which the action message of a fight turn is read back from Discord, to display the turn again when Discord
+	 * wrote an older state of the message over it (#5046). Each check is skipped once the fighter has played.
+	 */
+	static FIGHT_ACTION_DISPLAY_CHECK_DELAYS_MS = [
+		3_000,
+		15_000,
+		45_000
+	];
+
+	/**
 	 * Discord.js cache configuration for RAM optimization
 	 */
 	static CACHE = {
