@@ -2,9 +2,17 @@ import {
 	beforeEach, describe, expect, it, vi
 } from "vitest";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { crowniclesInstance } from "../../../src/app";
+import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
+import type { PlayerActiveObjects } from "../../../src/core/database/game/models/PlayerActiveObjects";
+import type { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import type { Player } from "../../../src/core/database/game/models/Player";
-import { MapLinkDataController } from "../../../src/data/MapLink";
-import { MapLocationDataController } from "../../../src/data/MapLocation";
+import {
+	MapLink, MapLinkDataController
+} from "../../../src/data/MapLink";
+import {
+	MapLocation, MapLocationDataController
+} from "../../../src/data/MapLocation";
 import { smallEventFuncs } from "../../../src/core/smallEvents/cart";
 import { PlayerSmallEvents } from "../../../src/core/database/game/models/PlayerSmallEvent";
 import { withLockedPlayerAndMissionsSafe } from "../../../src/core/utils/withLockedPlayerAndMissionsSafe";
@@ -56,7 +64,8 @@ vi.mock("../../../src/core/utils/withLockedPlayerAndMissionsSafe", () => ({
 vi.mock("../../../src/data/MapLink", () => ({
 	MapLinkDataController: {
 		instance: {
-			generateRandomMapLinkDifferentOfCurrent: vi.fn()
+			generateRandomMapLinkDifferentOfCurrent: vi.fn(),
+			getById: vi.fn()
 		}
 	}
 }));
@@ -77,6 +86,12 @@ vi.mock("../../../../Lib/src/utils/RandomUtils", () => ({
 	}
 }));
 
+const ORIGIN_MAP_LINK = {
+	id: 1,
+	startMap: 1,
+	endMap: 2
+};
+
 describe("cart small event", () => {
 	const player = {
 		id: 1,
@@ -87,6 +102,8 @@ describe("cart small event", () => {
 		spendMoney: vi.fn(),
 		save: vi.fn().mockResolvedValue(undefined)
 	};
+
+	const playerStub = player as unknown as Player;
 
 	beforeEach(() => {
 		capturedEndCallback = undefined;
@@ -99,17 +116,18 @@ describe("cart small event", () => {
 		vi.mocked(MapLinkDataController.instance.generateRandomMapLinkDifferentOfCurrent).mockReturnValue({
 			id: 2,
 			endMap: 3
-		} as never);
-		vi.mocked(MapLocationDataController.instance.getById).mockReturnValue({ type: "plain" } as never);
+		} as MapLink);
+		vi.mocked(MapLinkDataController.instance.getById).mockReturnValue(ORIGIN_MAP_LINK as MapLink);
+		vi.mocked(MapLocationDataController.instance.getById).mockReturnValue({ type: MapLocationConstants.TYPES.PLAINS } as MapLocation);
 		vi.mocked(PlayerSmallEvents.calculateCurrentScore).mockResolvedValue(0);
 		vi.mocked(PlayerSmallEvents.removeSmallEventsOfPlayer).mockResolvedValue(undefined);
 		vi.mocked(withLockedPlayerAndMissionsSafe).mockImplementation(async (_player, _caller, callback) => {
-			await callback(player as Player);
+			await callback(playerStub);
 		});
 	});
 
 	it("applies the destination after spendMoney reloads the player", async () => {
-		smallEventFuncs.executeSmallEvent([], player as Player, {} as never);
+		smallEventFuncs.executeSmallEvent([], playerStub, {} as PacketContext, {} as PlayerActiveObjects);
 
 		if (!capturedEndCallback) {
 			throw new Error("Expected cart collector callback to be set");
@@ -121,6 +139,12 @@ describe("cart small event", () => {
 		}, []);
 
 		expect(player.mapLinkId).toBe(2);
+		expect(MapLinkDataController.instance.getById).toHaveBeenCalledWith(1);
+		expect(crowniclesInstance?.logsDatabase.logTeleportation).toHaveBeenCalledWith(
+			player.keycloakId,
+			ORIGIN_MAP_LINK,
+			expect.objectContaining({ id: 2 })
+		);
 		expect(player.spendMoney.mock.invocationCallOrder[0])
 			.toBeLessThan(player.save.mock.invocationCallOrder[0]);
 	});
