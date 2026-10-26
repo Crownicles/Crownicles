@@ -276,7 +276,8 @@ export default class ReactionCollectorHandler {
 	async collectorResetTimer(_context: PacketContext, packet: ReactionCollectorResetTimerPacketRes): Promise<void> {
 		const collector = ReactionCollectorHandler.collectorsCache.get(packet.reactionCollectorId);
 		if (!collector) {
-			CrowniclesLogger.warn(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but no collector was found with this ID`);
+			// Expected when the collectors already ended on their own before Core's reset answer arrived
+			CrowniclesLogger.debug(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but no collector was found with this ID`);
 			return;
 		}
 		collector.forEach(c => {

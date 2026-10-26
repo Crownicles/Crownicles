@@ -1,5 +1,6 @@
 import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import { Constants } from "../../../Lib/src/constants/Constants";
+import { DiscordConstants } from "../DiscordConstants";
 import {
 	CrowniclesDiscordMetrics, DISCORD_MONITORED_CACHES
 } from "./CrowniclesDiscordMetrics";
@@ -15,8 +16,6 @@ type CachedInteraction<T> = {
 type InteractionCache<T> = Map<string, CachedInteraction<T>>;
 
 export class DiscordCache {
-	private static readonly PURGE_INTERVAL_MS = 60000;
-
 	private static initialized = false;
 
 	private static interactionsCache: InteractionCache<CrowniclesInteraction> = new Map();
@@ -33,7 +32,7 @@ export class DiscordCache {
 
 	private static init(): void {
 		if (!DiscordCache.initialized) {
-			setInterval(() => DiscordCache.purge(), DiscordCache.PURGE_INTERVAL_MS).unref();
+			setInterval(() => DiscordCache.purge(), DiscordConstants.CACHE.INTERACTIONS_PURGE_INTERVAL).unref();
 			DiscordCache.initialized = true;
 		}
 	}
