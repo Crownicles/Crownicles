@@ -88,45 +88,58 @@ function getFallbackMoonIllumination(): number {
 	return (1 - Math.cos(2 * Math.PI * phase)) / 2;
 }
 
+function buildMoonApiUrl(now: Date): string {
+	const year = now.getFullYear();
+	const month = String(now.getMonth() + 1)
+		.padStart(2, "0");
+	const day = String(now.getDate())
+		.padStart(2, "0");
+	const today = `${year}-${month}-${day}`;
+
+	const timezoneOffsetMinutes = -now.getTimezoneOffset();
+	const offsetSign = timezoneOffsetMinutes >= 0 ? "+" : "-";
+	const absMinutes = Math.abs(timezoneOffsetMinutes);
+	const offsetHours = String(Math.floor(absMinutes / 60))
+		.padStart(2, "0");
+	const offsetMins = String(absMinutes % 60)
+		.padStart(2, "0");
+	const offset = `${offsetSign}${offsetHours}:${offsetMins}`;
+
+	return `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=${offset}`;
+}
+
+/**
+ * Fetch the current moon phase in degrees, or null when the API answers with an error or an unexpected payload
+ */
+async function fetchMoonPhase(): Promise<number | null> {
+	const response = await fetch(buildMoonApiUrl(new Date()), {
+		headers: { "User-Agent": PlantConstants.MOON_API.USER_AGENT }
+	});
+
+	if (!response.ok) {
+		// An unread body keeps its connection and buffers alive
+		await response.body?.cancel();
+		CrowniclesLogger.error("Moon API returned non-OK status", { status: response.status });
+		return null;
+	}
+
+	const data = await response.json() as { properties?: { moonphase?: number } };
+	const moonphase = data.properties?.moonphase;
+	if (typeof moonphase !== "number") {
+		CrowniclesLogger.error("Moon API returned unexpected data format");
+		return null;
+	}
+	return moonphase;
+}
+
 async function getMoonIllumination(): Promise<number> {
 	if (moonCache && Date.now() - moonCache.fetchedAt < PlantConstants.MOON_API.CACHE_DURATION) {
 		return moonCache.illumination;
 	}
 
 	try {
-		const now = new Date();
-		const year = now.getFullYear();
-		const month = String(now.getMonth() + 1)
-			.padStart(2, "0");
-		const day = String(now.getDate())
-			.padStart(2, "0");
-		const today = `${year}-${month}-${day}`;
-
-		const timezoneOffsetMinutes = -now.getTimezoneOffset();
-		const offsetSign = timezoneOffsetMinutes >= 0 ? "+" : "-";
-		const absMinutes = Math.abs(timezoneOffsetMinutes);
-		const offsetHours = String(Math.floor(absMinutes / 60))
-			.padStart(2, "0");
-		const offsetMins = String(absMinutes % 60)
-			.padStart(2, "0");
-		const offset = `${offsetSign}${offsetHours}:${offsetMins}`;
-
-		const url = `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=${offset}`;
-		const response = await fetch(url, {
-			headers: { "User-Agent": PlantConstants.MOON_API.USER_AGENT }
-		});
-
-		if (!response.ok) {
-			await response.body?.cancel();
-			CrowniclesLogger.error("Moon API returned non-OK status", { status: response.status });
-			return getFallbackMoonIllumination();
-		}
-
-		const data = await response.json() as { properties?: { moonphase?: number } };
-		const moonphase = data.properties?.moonphase;
-
-		if (typeof moonphase !== "number") {
-			CrowniclesLogger.error("Moon API returned unexpected data format");
+		const moonphase = await fetchMoonPhase();
+		if (moonphase === null) {
 			return getFallbackMoonIllumination();
 		}
 
