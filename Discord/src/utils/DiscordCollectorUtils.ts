@@ -17,7 +17,8 @@ import {
 	Message,
 	MessageActionRowComponentBuilder,
 	MessageComponentInteraction,
-	parseEmoji
+	parseEmoji,
+	ReactionCollector
 } from "discord.js";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
@@ -102,6 +103,24 @@ export abstract class DiscordCollectorUtils {
 		"8⃣",
 		"9⃣"
 	];
+
+	/**
+	 * Time left before Core's deadline for the collector, never zero so that discord.js still arms its timer
+	 */
+	static getRemainingCollectorTime(packet: ReactionCollectorCreationPacket): number {
+		return Math.max(packet.endTime - Date.now(), DiscordConstants.MIN_COLLECTOR_TIME);
+	}
+
+	/**
+	 * Create a collector that only follows the lifetime of the Core reaction collector, for menus handling their components
+	 * with their own collectors. Core's stop packet ends it and Core's timer resets push its deadline back, but its own
+	 * deadline still ends it when the stop packet is lost, so the collectors cache releases it and the menus it captures
+	 */
+	static createCoreLifecycleCollector(message: Message, packet: ReactionCollectorCreationPacket): ReactionCollector {
+		return message.createReactionCollector({
+			time: DiscordCollectorUtils.getRemainingCollectorTime(packet)
+		});
+	}
 
 	/**
 	 * Add a button to the last row, creating a new row if the current one is full.

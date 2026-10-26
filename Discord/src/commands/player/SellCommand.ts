@@ -80,14 +80,29 @@ export async function handleCommandSellSuccessPacket(packet: CommandSellItemSucc
 	});
 }
 
+type SellSending = {
+	packet: ReactionCollectorSellPacket;
+	context: PacketContext;
+};
+
+/**
+ * Ask the player to confirm the sale of an item
+ * @param sending - Collector packet and context the reactions are sent with
+ * @param interaction - Interaction whose reply displays the confirmation
+ * @param reactionsInfo - Reactions sent to Core when the player accepts or refuses
+ * @param collectorTime - Lifetime of the confirmation collector when it is cached on its own, omitted when the selection collector stops it
+ */
 async function validateSell(
-	packet: ReactionCollectorSellPacket,
-	context: PacketContext,
+	sending: SellSending,
 	interaction: CrowniclesInteraction | StringSelectMenuInteraction,
 	reactionsInfo: {
 		reaction: ReactionCollectorSellItemReaction; reactionIndex: number; refuseReactionIndex: number;
-	}
+	},
+	collectorTime?: number
 ): Promise<ReactionCollectorReturnTypeOrNull> {
+	const {
+		packet, context
+	} = sending;
 	const lng = context.discord!.language;
 	const validateClassChangeEmbed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:sell.sellTitle", {
@@ -118,7 +133,7 @@ async function validateSell(
 		components: [validateRow]
 	}) as Message;
 
-	const validateCollector = validateMsg.createMessageComponentCollector();
+	const validateCollector = validateMsg.createMessageComponentCollector({ time: collectorTime });
 
 	validateCollector.on("collect", async (validateInteraction: ButtonInteraction) => {
 		if (validateInteraction.user.id !== context.discord?.user) {
@@ -173,15 +188,18 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 	const refuseReactionIndex = packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorRefuseReaction.name);
 
 	if (itemsReactions.length === 1) {
+		// Cached on its own: Core's deadline must end it even when Core's stop packet is lost
 		return await validateSell(
-			packet,
-			context,
+			{
+				packet, context
+			},
 			interaction,
 			{
 				reaction: itemsReactions[0],
 				reactionIndex: packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorSellItemReaction.name),
 				refuseReactionIndex
-			}
+			},
+			DiscordCollectorUtils.getRemainingCollectorTime(packet)
 		);
 	}
 
@@ -270,8 +288,9 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 
 		validateCollector = (
 			await validateSell(
-				packet,
-				context,
+				{
+					packet, context
+				},
 				selectMenuInteraction,
 				{
 					reaction,

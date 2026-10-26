@@ -517,8 +517,7 @@ export async function equipCollector(
 
 	const msg = await nestedMenus.send(interaction);
 
-	// Dummy collector to sync lifecycle with backend
-	const dummyCollector = msg.createReactionCollector();
+	const dummyCollector = DiscordCollectorUtils.createCoreLifecycleCollector(msg, packet);
 	dummyCollector.on("end", async () => {
 		await nestedMenus.stopCurrentCollector();
 		await interaction.followUp({
