@@ -29,6 +29,12 @@ export abstract class DiscordConstants {
 	];
 
 	/**
+	 * V8 old space limit of each shard process, in MB. A shard reaching it dies on a heap error and is respawned
+	 * by the shard supervisor, instead of growing until the container memory limit kills an arbitrary shard
+	 */
+	static readonly SHARD_MAX_OLD_SPACE_SIZE_MB = 384;
+
+	/**
 	 * Discord.js cache configuration for RAM optimization
 	 */
 	static CACHE = {
@@ -65,7 +71,12 @@ export abstract class DiscordConstants {
 		/**
 		 * Interval in seconds for sweeping guild members
 		 */
-		GUILD_MEMBER_SWEEP_INTERVAL: 600
+		GUILD_MEMBER_SWEEP_INTERVAL: 600,
+
+		/**
+		 * Interval in seconds for sweeping cached users, which discord.js never evicts otherwise
+		 */
+		USER_SWEEP_INTERVAL: 3600
 	};
 
 	/**

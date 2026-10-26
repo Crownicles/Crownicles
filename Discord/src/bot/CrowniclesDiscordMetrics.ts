@@ -18,7 +18,34 @@ for (let i = 5; i <= 10; i += 1) {
 	packetsTimeBuckets.push(i);
 }
 
+export const DISCORD_MONITORED_CACHES = {
+	INTERACTIONS: "interactions",
+	BUTTON_INTERACTIONS: "button_interactions",
+	STRING_SELECT_MENU_INTERACTIONS: "string_select_menu_interactions",
+	REACTION_COLLECTORS: "reaction_collectors",
+	USERS: "users",
+	CHANNELS: "channels",
+	GUILDS: "guilds"
+} as const;
+
+export type DiscordMonitoredCache = typeof DISCORD_MONITORED_CACHES[keyof typeof DISCORD_MONITORED_CACHES];
+
 export abstract class CrowniclesDiscordMetrics {
+	private static readonly cacheSizeProviders = new Map<DiscordMonitoredCache, () => number>();
+
+	private static cacheEntries = new client.Gauge({
+		name: "discord_cache_entries",
+		help: "Number of entries held in the in-memory caches of the shard",
+		labelNames: ["cache"],
+		registers: [crowniclesMetricsRegistry],
+		collect(): void {
+			for (const [cache, getSize] of CrowniclesDiscordMetrics.cacheSizeProviders) {
+				this.labels(cache)
+					.set(getSize());
+			}
+		}
+	});
+
 	private static packetsTimeHistogram = new client.Histogram({
 		name: "discord_packets_time",
 		help: "Histogram of packets times",
@@ -54,6 +81,13 @@ export abstract class CrowniclesDiscordMetrics {
 	static incrementPacketErrorCount(packetName: string): void {
 		this.packetsErrorCount.labels(packetName)
 			.inc();
+	}
+
+	/**
+	 * Register the function read at each scrape to expose the size of one of the shard caches
+	 */
+	static registerCacheSize(cache: DiscordMonitoredCache, getSize: () => number): void {
+		this.cacheSizeProviders.set(cache, getSize);
 	}
 }
 
