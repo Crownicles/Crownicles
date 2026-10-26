@@ -119,13 +119,21 @@ describe("cooking craft reaching a new grade", () => {
 		};
 	}
 
-	function expectGradeUpResponse(response: unknown[]): void {
+	/**
+	 * The recipes offered depend on the day, so a single craft may cross more than one level:
+	 * only the grade change and the consistency of the announced level are deterministic
+	 * @returns the cooking level announced by the response
+	 */
+	function expectGradeUpResponse(response: unknown[]): number {
+		const newCookingLevel = (response[0] as { newCookingLevel: number }).newCookingLevel;
+		expect(newCookingLevel).toBeGreaterThan(LEVEL_BEFORE_GRADE);
+		expect(getCookingGrade(newCookingLevel).id).not.toBe(getCookingGrade(LEVEL_BEFORE_GRADE).id);
 		expect(response[0]).toMatchObject({
 			cookingLevelUp: true,
-			newCookingLevel: LEVEL_BEFORE_GRADE + 1,
-			newCookingGrade: getCookingGrade(LEVEL_BEFORE_GRADE + 1).id,
+			newCookingGrade: getCookingGrade(newCookingLevel).id,
 			error: undefined
 		});
+		return newCookingLevel;
 	}
 
 	it("answers with the level up when the craft reaches a new grade", async () => {
@@ -133,12 +141,12 @@ describe("cooking craft reaching a new grade", () => {
 			player, context, craftPacket
 		} = await prepareGradeUpCraft(KEYCLOAK_ID, false);
 
-		expectGradeUpResponse(await reportCooking.handleCookingCraft(KEYCLOAK_ID, craftPacket, context));
+		const newCookingLevel = expectGradeUpResponse(await reportCooking.handleCookingCraft(KEYCLOAK_ID, craftPacket, context));
 
 		// Clicking the same button again from the stale menu is what displayed "craftUnavailable"
 		const staleResponse = await reportCooking.handleCookingCraft(KEYCLOAK_ID, craftPacket, context);
 		expect(staleResponse[0]).toMatchObject({ error: CookingCraftErrors.CRAFT_UNAVAILABLE });
-		expect((await Player.findByPk(player.id))!.cookingLevel).toBe(LEVEL_BEFORE_GRADE + 1);
+		expect((await Player.findByPk(player.id))!.cookingLevel).toBe(newCookingLevel);
 	});
 
 	it("answers when the crafted recipe was pinned instead of failing the mission update", async () => {
