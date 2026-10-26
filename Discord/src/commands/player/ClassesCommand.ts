@@ -15,6 +15,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import {
+	ReactionCollectorChangeClassDetails,
 	ReactionCollectorChangeClassPacket,
 	ReactionCollectorChangeClassReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
@@ -75,6 +76,41 @@ export async function handleCommandClassesChangeSuccessPacket(packet: CommandCla
 				.setDescription(description)
 		]
 	});
+}
+
+/**
+ * Build the embed asking the player to confirm the change to the selected class
+ */
+function buildClassChangeConfirmationEmbed(
+	interaction: CrowniclesInteraction,
+	classDetails: ReactionCollectorChangeClassDetails,
+	cooldownSeconds: number
+): CrowniclesEmbed {
+	const lng = interaction.userLanguage;
+	return new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:classes.confirm", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:classes.display", {
+			lng,
+			name: i18n.t("models:classWithStatsFormat", {
+				lng,
+				id: classDetails.id,
+				energy: classDetails.energy,
+				attack: classDetails.attack,
+				defense: classDetails.defense,
+				speed: classDetails.speed,
+				initialBreath: classDetails.initialBreath,
+				maxBreath: classDetails.maxBreath,
+				breathRegen: classDetails.breathRegen,
+				health: classDetails.health
+			}),
+			description: i18n.t(`commands:classes.description.${classDetails.id}`, {
+				lng
+			}),
+			time: dateDisplay(new Date(Date.now() + cooldownSeconds * 1000))
+		}));
 }
 
 export async function handleChangeClassReactionCollector(context: PacketContext, packet: ReactionCollectorChangeClassPacket): Promise<ReactionCollectorReturnTypeOrNull> {
@@ -165,30 +201,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 		const classDetails = data.classesDetails.find(details => details.id === parseInt(selectedOption, 10))!;
 
-		const validateClassChangeEmbed = new CrowniclesEmbed()
-			.formatAuthor(i18n.t("commands:classes.confirm", {
-				lng,
-				pseudo: escapeUsername(interaction.user.displayName)
-			}), interaction.user)
-			.setDescription(i18n.t("commands:classes.display", {
-				lng,
-				name: i18n.t("models:classWithStatsFormat", {
-					lng,
-					id: classDetails.id,
-					energy: classDetails.energy,
-					attack: classDetails.attack,
-					defense: classDetails.defense,
-					speed: classDetails.speed,
-					initialBreath: classDetails.initialBreath,
-					maxBreath: classDetails.maxBreath,
-					breathRegen: classDetails.breathRegen,
-					health: classDetails.health
-				}),
-				description: i18n.t(`commands:classes.description.${classDetails.id}`, {
-					lng
-				}),
-				time: dateDisplay(new Date(Date.now() + data.cooldownSeconds * 1000))
-			}));
+		const validateClassChangeEmbed = buildClassChangeConfirmationEmbed(interaction, classDetails, data.cooldownSeconds);
 
 		const validateRow = new ActionRowBuilder<ButtonBuilder>()
 			.addComponents(new ButtonBuilder()
