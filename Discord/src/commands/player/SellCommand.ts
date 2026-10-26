@@ -86,11 +86,21 @@ type SellSending = {
 };
 
 /**
+ * What ends the confirmation collector: Core's deadline when it is cached on its own, the selection collector otherwise
+ */
+const SELL_CONFIRMATION_LIFETIME = {
+	CORE_DEADLINE: "coreDeadline",
+	SELECTION: "selection"
+} as const;
+
+type SellConfirmationLifetime = typeof SELL_CONFIRMATION_LIFETIME[keyof typeof SELL_CONFIRMATION_LIFETIME];
+
+/**
  * Ask the player to confirm the sale of an item
  * @param sending - Collector packet and context the reactions are sent with
  * @param interaction - Interaction whose reply displays the confirmation
  * @param reactionsInfo - Reactions sent to Core when the player accepts or refuses
- * @param collectorTime - Lifetime of the confirmation collector when it is cached on its own, omitted when the selection collector stops it
+ * @param lifetime - What ends the confirmation collector
  */
 async function validateSell(
 	sending: SellSending,
@@ -98,7 +108,7 @@ async function validateSell(
 	reactionsInfo: {
 		reaction: ReactionCollectorSellItemReaction; reactionIndex: number; refuseReactionIndex: number;
 	},
-	collectorTime?: number
+	lifetime: SellConfirmationLifetime
 ): Promise<ReactionCollectorReturnTypeOrNull> {
 	const {
 		packet, context
@@ -133,7 +143,10 @@ async function validateSell(
 		components: [validateRow]
 	}) as Message;
 
-	const validateCollector = validateMsg.createMessageComponentCollector({ time: collectorTime });
+	// Computed once the reply is displayed, so a slow reply cannot keep the confirmation open after Core's deadline
+	const validateCollector = validateMsg.createMessageComponentCollector({
+		time: lifetime === SELL_CONFIRMATION_LIFETIME.CORE_DEADLINE ? DiscordCollectorUtils.getRemainingCollectorTime(packet) : undefined
+	});
 
 	validateCollector.on("collect", async (validateInteraction: ButtonInteraction) => {
 		if (validateInteraction.user.id !== context.discord?.user) {
@@ -188,7 +201,6 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 	const refuseReactionIndex = packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorRefuseReaction.name);
 
 	if (itemsReactions.length === 1) {
-		// Cached on its own: Core's deadline must end it even when Core's stop packet is lost
 		return await validateSell(
 			{
 				packet, context
@@ -199,7 +211,7 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 				reactionIndex: packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorSellItemReaction.name),
 				refuseReactionIndex
 			},
-			DiscordCollectorUtils.getRemainingCollectorTime(packet)
+			SELL_CONFIRMATION_LIFETIME.CORE_DEADLINE
 		);
 	}
 
@@ -248,7 +260,7 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 	let validateCollector: InteractionCollector<never>;
 
 	const selectCollector = msg.createMessageComponentCollector({
-		time: packet.endTime - Date.now()
+		time: DiscordCollectorUtils.getRemainingCollectorTime(packet)
 	});
 
 	selectCollector.on("collect", async (selectMenuInteraction: StringSelectMenuInteraction) => {
@@ -296,8 +308,14 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 					reaction,
 					reactionIndex: packet.reactions.findIndex(packetReaction => JSON.stringify(packetReaction.data) === JSON.stringify(reaction)),
 					refuseReactionIndex
-				}
+				},
+				SELL_CONFIRMATION_LIFETIME.SELECTION
 			))![0] as unknown as InteractionCollector<never>;
+
+		// The selection may have ended while the confirmation was being displayed: its end handler could not stop it then
+		if (selectCollector.ended) {
+			validateCollector.stop();
+		}
 	});
 
 	selectCollector.on("end", async () => {
