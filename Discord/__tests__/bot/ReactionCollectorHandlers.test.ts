@@ -25,7 +25,13 @@ import { DISCORD_MONITORED_CACHES } from "../../src/bot/CrowniclesDiscordMetrics
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorStopPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorStopPacket";
+import { ReactionCollectorResetTimerPacketRes } from "../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
+import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
+import { ReactionCollector } from "discord.js";
 import { getExposedCacheSize } from "./cacheSizes";
+import {
+	fakeCollectorMessage, wait
+} from "./fakeCollectorMessage";
 
 const COLLECTOR_TYPE = "TestCollectorData";
 
@@ -82,6 +88,65 @@ describe("ReactionCollectorHandler collectors cache", () => {
 		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.REACTION_COLLECTORS)).toBe(1);
 
 		await new ReactionCollectorHandler().collectorStop(context, stopPacket("stopped-by-core"));
+
+		expect(collector.ended).toBe(true);
+		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.REACTION_COLLECTORS)).toBe(0);
+	});
+});
+
+async function createLifecycleCollector(id: string, endTime: number): Promise<ReactionCollector> {
+	let lifecycleCollector!: ReactionCollector;
+	ReactionCollectorHandler.collectorMap.set(COLLECTOR_TYPE, (_context, packet) => {
+		lifecycleCollector = DiscordCollectorUtils.createCoreLifecycleCollector(fakeCollectorMessage(), packet);
+		return Promise.resolve([lifecycleCollector]);
+	});
+	await new ReactionCollectorHandler().collectorCreation(context, {
+		id,
+		endTime,
+		data: { type: COLLECTOR_TYPE }
+	} as ReactionCollectorCreationPacket);
+	return lifecycleCollector;
+}
+
+describe("Core lifecycle collectors of the nested menus", () => {
+	const DEADLINE_MS = 100;
+
+	beforeEach(() => {
+		ReactionCollectorHandler.collectorMap = new Map();
+	});
+
+	it("end at Core's deadline and leave the cache when Core's stop packet is lost", async () => {
+		const collector = await createLifecycleCollector("lost-stop", Date.now() + DEADLINE_MS);
+		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.REACTION_COLLECTORS)).toBe(1);
+
+		await wait(DEADLINE_MS * 2);
+
+		expect(collector.ended).toBe(true);
+		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.REACTION_COLLECTORS)).toBe(0);
+	});
+
+	it("follow the deadline pushed back by Core's timer resets", async () => {
+		const collector = await createLifecycleCollector("reset-then-lost-stop", Date.now() + DEADLINE_MS);
+
+		await wait(DEADLINE_MS / 2);
+		await new ReactionCollectorHandler().collectorResetTimer(context, {
+			reactionCollectorId: "reset-then-lost-stop",
+			endTime: Date.now() + DEADLINE_MS * 3
+		} as ReactionCollectorResetTimerPacketRes);
+
+		await wait(DEADLINE_MS);
+		expect(collector.ended).toBe(false);
+		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.REACTION_COLLECTORS)).toBe(1);
+
+		await wait(DEADLINE_MS * 3);
+		expect(collector.ended).toBe(true);
+		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.REACTION_COLLECTORS)).toBe(0);
+	});
+
+	it("still get a deadline when the creation packet arrives after Core's deadline", async () => {
+		const collector = await createLifecycleCollector("late-creation", Date.now());
+
+		await wait(DEADLINE_MS / 2);
 
 		expect(collector.ended).toBe(true);
 		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.REACTION_COLLECTORS)).toBe(0);

@@ -29,6 +29,11 @@ export abstract class DiscordConstants {
 	];
 
 	/**
+	 * Shortest duration given to a collector: discord.js arms no timer at all for a zero duration, which would keep it alive forever
+	 */
+	static readonly MIN_COLLECTOR_TIME: Millisecond = asMilliseconds(1);
+
+	/**
 	 * V8 old space limit of each shard process, in MB. A shard reaching it dies on a heap error and is respawned
 	 * by the shard supervisor, instead of growing until the container memory limit kills an arbitrary shard
 	 */
@@ -76,7 +81,12 @@ export abstract class DiscordConstants {
 		/**
 		 * Interval in seconds for sweeping cached users, which discord.js never evicts otherwise
 		 */
-		USER_SWEEP_INTERVAL: 3600
+		USER_SWEEP_INTERVAL: 3600,
+
+		/**
+		 * Interval between two purges of the expired interactions kept by DiscordCache
+		 */
+		INTERACTIONS_PURGE_INTERVAL: asMilliseconds(60_000)
 	};
 
 	/**
