@@ -117,7 +117,8 @@ async function getMoonIllumination(): Promise<number> {
 		});
 
 		if (!response.ok) {
-			CrowniclesLogger.errorWithObj("Moon API returned non-OK status", response);
+			await response.body?.cancel();
+			CrowniclesLogger.error("Moon API returned non-OK status", { status: response.status });
 			return getFallbackMoonIllumination();
 		}
 

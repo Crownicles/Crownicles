@@ -19,7 +19,7 @@
     "eslint": "eslint src",
     "eslintFix": "eslint src --fix",
     "tsc": "tsc",
-    "dockerStart": "node --max-old-space-size=512 dist/Core/src/main.js",
+    "dockerStart": "node --max-old-space-size=512 --heapsnapshot-signal=SIGUSR2 --diagnostic-dir=./logs dist/Core/src/main.js",
     "start-profiler": "pnpm run tsc && node --prof dist/Core/src/main.js"
   },
   "dependencies": {
