@@ -1,5 +1,5 @@
 import {
-	describe, expect, it, vi
+	beforeEach, describe, expect, it, vi
 } from "vitest";
 
 vi.mock("../../../src/bot/CrowniclesShard", () => ({
@@ -9,12 +9,13 @@ vi.mock("../../../src/bot/CrowniclesShard", () => ({
 
 vi.mock("../../../src/bot/DiscordCache");
 
-vi.mock("../../../src/utils/DisplayUtils", () => ({
-	DisplayUtils: {
-		getSimpleItemDisplay: (): string => "item"
+vi.mock("../../../src/utils/PacketUtils", () => ({
+	PacketUtils: {
+		sendPacketToBackend: vi.fn()
 	}
 }));
 
+import { ReactionCollector } from "discord.js";
 import { DiscordCache } from "../../../src/bot/DiscordCache";
 import { handleSellReactionCollector } from "../../../src/commands/player/SellCommand";
 import {
@@ -24,19 +25,27 @@ import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/int
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	fakeCollectorMessage, wait
+	deferredReply, fakeCollectorMessage, wait
 } from "../../bot/fakeCollectorMessage";
 
 const DEADLINE_MS = 100;
+
+const USER_ID = "user";
 
 const context = {
 	discord: {
 		interaction: "sell-interaction",
 		language: "fr",
-		user: "user"
+		user: USER_ID
 	},
 	keycloakId: "keycloak"
 } as PacketContext;
+
+const user = {
+	id: USER_ID,
+	displayName: "Tester",
+	displayAvatarURL: (): string => "https://example.com/avatar.png"
+};
 
 function sellPacket(itemsCount: number): ReactionCollectorSellPacket {
 	const itemReactions = Array.from({ length: itemsCount }, (_, slot) => ({
@@ -67,13 +76,14 @@ function sellPacket(itemsCount: number): ReactionCollectorSellPacket {
 }
 
 describe("handleSellReactionCollector", () => {
+	beforeEach(() => {
+		vi.mocked(DiscordCache.getInteraction).mockReset();
+	});
+
 	it("ends the confirmation of a single sellable item at Core's deadline even when Core's stop packet is lost", async () => {
 		vi.mocked(DiscordCache.getInteraction).mockReturnValue({
 			userLanguage: "fr",
-			user: {
-				displayName: "Tester",
-				displayAvatarURL: (): string => "https://example.com/avatar.png"
-			},
+			user,
 			editReply: (): Promise<unknown> => Promise.resolve(fakeCollectorMessage())
 		} as never);
 
@@ -84,5 +94,52 @@ describe("handleSellReactionCollector", () => {
 		await wait(DEADLINE_MS * 2);
 
 		expect(collectors![0].ended).toBe(true);
+	});
+
+	it("does not keep the confirmation of a single sellable item open past Core's deadline when Discord replies late", async () => {
+		const reply = deferredReply();
+		vi.mocked(DiscordCache.getInteraction).mockReturnValue({
+			userLanguage: "fr",
+			user,
+			editReply: reply.editReply
+		} as never);
+
+		const pendingCollectors = handleSellReactionCollector(context, sellPacket(1));
+		await wait(DEADLINE_MS * 1.5);
+		reply.resolve();
+		const collectors = await pendingCollectors;
+
+		await wait(DEADLINE_MS / 5);
+
+		expect(collectors![0].ended).toBe(true);
+	});
+
+	it("stops the confirmation displayed after the selection of an item already ended", async () => {
+		const selectionCollectors: ReactionCollector[] = [];
+		vi.mocked(DiscordCache.getInteraction).mockReturnValue({
+			userLanguage: "fr",
+			user,
+			editReply: (): Promise<unknown> => Promise.resolve(fakeCollectorMessage(selectionCollectors))
+		} as never);
+		const [selectCollector] = (await handleSellReactionCollector(context, sellPacket(2)))!;
+
+		const confirmationCollectors: ReactionCollector[] = [];
+		const confirmationReply = deferredReply(confirmationCollectors);
+		const selectInteraction = {
+			user,
+			values: ["0"],
+			deferReply: (): Promise<void> => Promise.resolve(),
+			editReply: confirmationReply.editReply
+		};
+		selectCollector.emit("collect", selectInteraction, user);
+		await wait(0);
+
+		selectCollector.stop();
+		await wait(0);
+		confirmationReply.resolve();
+		await wait(0);
+
+		expect(confirmationCollectors).toHaveLength(1);
+		expect(confirmationCollectors[0].ended).toBe(true);
 	});
 });

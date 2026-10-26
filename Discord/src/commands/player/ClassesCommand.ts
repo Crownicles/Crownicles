@@ -129,7 +129,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 	let validateCollector: InteractionCollector<never>;
 
 	const selectCollector = msg.createMessageComponentCollector({
-		time: packet.endTime - Date.now()
+		time: DiscordCollectorUtils.getRemainingCollectorTime(packet)
 	});
 
 	selectCollector.on("collect", async (selectMenuInteraction: StringSelectMenuInteraction) => {
@@ -246,6 +246,11 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 				components: [disabledRow]
 			});
 		});
+
+		// The selection may have ended while the confirmation was being displayed: its end handler could not stop it then
+		if (selectCollector.ended) {
+			validateCollector.stop();
+		}
 	});
 
 	selectCollector.on("end", async () => {
