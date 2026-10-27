@@ -18,7 +18,7 @@ export function intenseOrSimpleAttack(me: AiPlayerFighter, opponent: AiPlayerFig
 	if (
 		me.getEnergy() < opponent.getEnergy()
 		&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.15
-		&& FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)
+		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)
 		&& RandomUtils.crowniclesRandom.bool(0.8)
 	) {
 		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)!;

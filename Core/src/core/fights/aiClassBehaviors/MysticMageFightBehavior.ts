@@ -47,6 +47,15 @@ class MysticMageFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(actions.DARK_ATTACK)!;
 		}
 
+		// Blinding a target without alteration makes it skip most of its turns, worth more than a burn
+		if (
+			fightView.fightController.turn > 2
+			&& !opponent.hasFightAlteration()
+			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DARK_ATTACK)
+		) {
+			return FightActionDataController.instance.getById(actions.DARK_ATTACK)!;
+		}
+
 		/*
 		 * Fire attack if enough breath and no alteration
 		 * After turn 13, skip if cursed attack has not been used

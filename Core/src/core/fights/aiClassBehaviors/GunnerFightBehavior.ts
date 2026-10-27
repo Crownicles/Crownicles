@@ -12,6 +12,9 @@ import { shouldUseSabotage } from "./SlingerFightBehavior";
 import { Fighter } from "../fighter/Fighter";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 
+// Number of canons fired in a row by a chained canon sequence (see shouldContinueCanonSequence)
+const MAX_CHAINED_CANON_ATTACKS = 3;
+
 /**
  * Determines if the AI should use intense attack based on speed comparison and remaining health
  * @param opponent - The opponent fighter in the current battle
@@ -19,7 +22,7 @@ import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
  * @param isGoingForChainedCanonAttack - Whether currently using the chained canon attack strategy
  * @returns True if intense attack should be used, false otherwise
  */
-function shouldUseIntenseAttack(
+export function shouldUseIntenseAttack(
 	opponent: Fighter,
 	me: AiPlayerFighter,
 	isGoingForChainedCanonAttack: boolean
@@ -36,7 +39,7 @@ function shouldUseIntenseAttack(
  * @param opponent - The opponent fighter in the current battle
  * @returns The selected finishing attack
  */
-function chooseFinishingMove(me: AiPlayerFighter, opponent: RealPlayerFighter): FightAction {
+export function chooseFinishingMove(me: AiPlayerFighter, opponent: RealPlayerFighter): FightAction {
 	if (me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)
 		&& me.getSpeed() > opponent.getSpeed()) {
 		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)!;
@@ -52,6 +55,11 @@ class GunnerFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter;
 		const turn = fightView.fightController.turn;
+
+		// The canon sequence is over after three canons, without this the boomerang and the intense attack stay locked
+		if (this.isGoingForChainedCanonAttack && this.canonAttackUsed >= MAX_CHAINED_CANON_ATTACKS) {
+			this.isGoingForChainedCanonAttack = false;
+		}
 
 		// Use canon attack again if used last turn to get 1.5x damage
 		if (shouldContinueCanonSequence(me, this.isGoingForChainedCanonAttack, this.canonAttackUsed, turn)) {

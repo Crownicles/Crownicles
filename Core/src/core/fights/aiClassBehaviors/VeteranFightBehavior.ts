@@ -23,6 +23,15 @@ class VeteranFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
 
+		// Concentration boosts the next attack: spend it on the energetic attack
+		if (this.shouldUseConcentratedEnergeticAttack(me)) {
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK)!;
+		}
+
+		if (this.shouldConcentrateBeforeEnergeticAttack(me)) {
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CONCENTRATION)!;
+		}
+
 		if (this.shouldUseConcentration(me, fightView, opponent)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CONCENTRATION)!;
 		}
@@ -40,6 +49,28 @@ class VeteranFightBehavior implements ClassBehavior {
 		}
 
 		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PIERCING_ATTACK)!;
+	}
+
+	/**
+	 * Check if the veteran is concentrated and can spend this boost on an energetic attack
+	 * @param me - The AI fighter.
+	 */
+	private shouldUseConcentratedEnergeticAttack(me: AiPlayerFighter): boolean {
+		return me.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.CONCENTRATED
+			&& this.shouldUseEnergeticAttack(me);
+	}
+
+	/**
+	 * Check if concentrating now leaves enough breath, after the regeneration, for an energetic attack on the next turn,
+	 * and if the veteran cannot already afford both actions without waiting
+	 * @param me - The AI fighter.
+	 */
+	private shouldConcentrateBeforeEnergeticAttack(me: AiPlayerFighter): boolean {
+		const concentrationCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CONCENTRATION);
+		const energeticAttackCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK);
+		return !me.hasFightAlteration()
+			&& me.getBreath() - concentrationCost + me.getRegenBreath() >= energeticAttackCost
+			&& me.getBreath() < energeticAttackCost + concentrationCost;
 	}
 
 	/**
