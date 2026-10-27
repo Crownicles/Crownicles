@@ -5,9 +5,13 @@ import {
 } from "../../../data/Class";
 import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { PVE_BOSS_ROLES } from "../../../../../Lib/src/constants/PVEConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { LogsKingGuardFightsRequests } from "../../database/logs/requests/LogsKingGuardFightsRequests";
 import { getPveMonsterLevel } from "../../report/ReportPveService";
+import {
+	getLowLevelPveMonsterLevel, isLowLevelPlayer
+} from "../../report/PveMonsterLevel";
 import { generateKingGuardEquipment } from "./KingGuardEquipment";
 import { generateKingGuardPet } from "./KingGuardPet";
 
@@ -19,6 +23,9 @@ export type KingGuard = {
 	guardClass: Class;
 	activeObjects: PlayerActiveObjects;
 	pet: PetEntity;
+
+	// Level of the player when the guard level was chosen
+	playerLevel: number;
 };
 
 /**
@@ -26,14 +33,20 @@ export type KingGuard = {
  * @param player The player who will fight the guard
  */
 export async function computeKingGuardLevel(player: Player): Promise<number> {
+	const seed = RandomUtils.crowniclesRandom.integer(0, LEVEL_SEED_MAX);
+	if (isLowLevelPlayer(player.level)) {
+		return Math.max(FightConstants.REQUIRED_LEVEL, getLowLevelPveMonsterLevel({
+			ladder: await LogsKingGuardFightsRequests.getGuardLadder(player.keycloakId),
+			playerLevel: player.level,
+			seed,
+			role: PVE_BOSS_ROLES.MIDDLE
+		}));
+	}
 	const baseLevel = await LogsKingGuardFightsRequests.getGuardLevelBase({
 		playerKeycloakId: player.keycloakId,
 		classId: player.class
 	}) ?? player.level;
-	return Math.max(
-		FightConstants.REQUIRED_LEVEL,
-		getPveMonsterLevel(baseLevel, RandomUtils.crowniclesRandom.integer(0, LEVEL_SEED_MAX), false)
-	);
+	return Math.max(FightConstants.REQUIRED_LEVEL, getPveMonsterLevel(baseLevel, seed, false));
 }
 
 /**
@@ -52,6 +65,7 @@ export async function generateKingGuard(player: Player): Promise<KingGuard> {
 		player: guard,
 		guardClass,
 		activeObjects: generateKingGuardEquipment(guard.level),
-		pet: generateKingGuardPet()
+		pet: generateKingGuardPet(),
+		playerLevel: player.level
 	};
 }

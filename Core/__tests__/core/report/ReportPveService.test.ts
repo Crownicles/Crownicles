@@ -28,7 +28,7 @@ describe("getPveMonsterLevel", () => {
 		expect(getPveMonsterLevel(baseLevel, 400, true)).toBe(105);
 	});
 
-	it("never generates a level below the minimum monster level", () => {
-		expect(getPveMonsterLevel(0, 0, false)).toBe(PVEConstants.MIN_MONSTER_LEVEL);
+	it("never generates a level below the minimum level, whatever the record", () => {
+		expect(getPveMonsterLevel(11, 0, false)).toBe(PVEConstants.HIGH_LEVEL_MIN_MONSTER_LEVEL);
 	});
 });

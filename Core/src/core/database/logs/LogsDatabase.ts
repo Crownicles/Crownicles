@@ -95,7 +95,9 @@ import { LogsSeasonEnd } from "./models/LogsSeasonEnd";
 import { LogsPlayerLeagueReward } from "./models/LogsPlayerLeagueReward";
 import { LogsPlayersEnergy } from "./models/LogsPlayersEnergy";
 import { LogsGuildsPoints } from "./models/LogsGuildsPoints";
-import { LogsPveFightsResults } from "./models/LogsPveFightsResults";
+import {
+	LogsPveFightsResults, PVE_FIGHT_WINNER
+} from "./models/LogsPveFightsResults";
 import { LogsPveFightsActionsUsed } from "./models/LogsPveFightsActionsUsed";
 import { LogsPlayersRage } from "./models/LogsPlayersRage";
 import { GenericItem } from "../../../data/GenericItem";
@@ -1324,8 +1326,9 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log all the information about a pve fight, this is called at the end of a fight
 	 * @param fight
+	 * @param playerLevel Level of the player when the boss level was chosen, before the rewards of the fight
 	 */
-	public async logPveFight(fight: FightController): Promise<void> {
+	public async logPveFight(fight: FightController, playerLevel: number): Promise<void> {
 		const player = fight.fightInitiator as PlayerFighter | null;
 		const monster = fight.getNonFightInitiatorFighter() as MonsterFighter | null;
 
@@ -1340,6 +1343,7 @@ export class LogsDatabase extends Database {
 			const fightResult = await LogsPveFightsResults.create({
 				playerId,
 				classId: player.player.class,
+				playerLevel,
 				monsterId: monster.monster.id,
 				monsterLevel: monster.level,
 				monsterFightPoints: monsterStats.maxEnergy,
@@ -1347,7 +1351,9 @@ export class LogsDatabase extends Database {
 				monsterDefense: monsterStats.defense,
 				monsterSpeed: monsterStats.speed,
 				turn: fight.turn,
-				winner: !winner ? 0 : winner === player ? 1 : 2,
+				winner: !winner
+					? PVE_FIGHT_WINNER.DRAW
+					: winner === player ? PVE_FIGHT_WINNER.PLAYER : PVE_FIGHT_WINNER.MONSTER,
 				date: getDateLogs()
 			});
 			const fightActionsUsed: { [action: string]: number } = {};
@@ -1391,6 +1397,7 @@ export class LogsDatabase extends Database {
 			classId: player.player.class,
 			guardClassId: guard.player.class,
 			guardLevel: guard.level,
+			playerLevel: guard.playerLevel,
 			turn: fight.turn,
 			winner: fight.isADraw()
 				? KING_GUARD_FIGHT_WINNER.DRAW

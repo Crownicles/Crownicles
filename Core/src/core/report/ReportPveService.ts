@@ -51,6 +51,9 @@ import {
 } from "../utils/MaterialLootUtils";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { LogsPveFightProgressionRequests } from "../database/logs/requests/LogsPveFightProgressionRequests";
+import {
+	getLowLevelPveMonsterLevel, getPveBossRole, isLowLevelPlayer
+} from "./PveMonsterLevel";
 
 /**
  * PVE fight rewards structure
@@ -333,6 +336,42 @@ async function continueAfterPveBoss(
 }
 
 /**
+ * Compute the level of the boss a player is going to fight: from its ladder against this boss below LOW_LEVEL_PLAYER_THRESHOLD,
+ * from the records of its class lineage against it from this level
+ */
+async function computePveBossLevel(params: {
+	player: Player;
+	monster: Monster;
+	mapId: number;
+	seed: number;
+}): Promise<number> {
+	const {
+		player, monster, seed
+	} = params;
+	const isFinalBoss = Maps.isAtFinalPveBoss(player);
+	if (isLowLevelPlayer(player.level)) {
+		return getLowLevelPveMonsterLevel({
+			ladder: await LogsPveFightProgressionRequests.getBossLadder({
+				playerKeycloakId: player.keycloakId,
+				monsterId: monster.id
+			}),
+			playerLevel: player.level,
+			seed,
+			role: getPveBossRole({
+				depth: Maps.getPveIslandDepth(params.mapId),
+				isFinal: isFinalBoss
+			})
+		});
+	}
+	const monsterLevelBase = await LogsPveFightProgressionRequests.getMonsterLevelBase({
+		playerKeycloakId: player.keycloakId,
+		monsterId: monster.id,
+		classId: player.class
+	}) ?? player.level;
+	return getPveMonsterLevel(monsterLevelBase, seed, isFinalBoss);
+}
+
+/**
  * Do a PVE boss fight
  * @param player
  * @param response
@@ -358,12 +397,10 @@ export async function doPVEBoss(
 		);
 		return;
 	}
-	const monsterLevelBase = await LogsPveFightProgressionRequests.getMonsterLevelBase({
-		playerKeycloakId: player.keycloakId,
-		monsterId: monsterObj.id,
-		classId: player.class
-	}) ?? player.level;
-	const randomLevel = getPveMonsterLevel(monsterLevelBase, seed, Maps.isAtFinalPveBoss(player));
+	const playerLevel = player.level;
+	const randomLevel = await computePveBossLevel({
+		player, monster: monsterObj, mapId, seed
+	});
 
 	/**
 	 * Handle rewards after the PVE fight completes
@@ -386,7 +423,7 @@ export async function doPVEBoss(
 
 			await persistPveBossPostFightUnderLock(player, initialFightPointsLost, isWinOrDraw, playerActiveObjects);
 
-			crowniclesInstance?.logsDatabase.logPveFight(fight)
+			crowniclesInstance?.logsDatabase.logPveFight(fight, playerLevel)
 				.then();
 		}
 
@@ -455,6 +492,12 @@ export async function doPVEBoss(
 	response.push(packet);
 }
 
+/**
+ * Draw the level of a boss (or a king guard) of a player from LOW_LEVEL_PLAYER_THRESHOLD around its record against it
+ * @param baseLevel
+ * @param seed
+ * @param isFinalBoss
+ */
 export function getPveMonsterLevel(baseLevel: number, seed: number, isFinalBoss: boolean): number {
 	const randomOffset = isFinalBoss
 		? PVEConstants.FINAL_BOSS_MONSTER_LEVEL_RANDOM_OFFSET
@@ -471,7 +514,7 @@ export function getPveMonsterLevel(baseLevel: number, seed: number, isFinalBoss:
 		: randomOffset.MIN;
 
 	return Math.max(
-		PVEConstants.MIN_MONSTER_LEVEL,
+		PVEConstants.HIGH_LEVEL_MIN_MONSTER_LEVEL,
 		baseLevel + offsetStart + Math.floor(seed / 100) % offsetRange
 	);
 }

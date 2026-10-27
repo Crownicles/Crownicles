@@ -2,12 +2,23 @@ import {
 	DataTypes, Model, Sequelize
 } from "sequelize";
 
+export const PVE_FIGHT_WINNER = {
+	DRAW: 0,
+	PLAYER: 1,
+	MONSTER: 2
+} as const;
+
+export type PveFightWinner = typeof PVE_FIGHT_WINNER[keyof typeof PVE_FIGHT_WINNER];
+
 export class LogsPveFightsResults extends Model {
 	declare readonly id: number;
 
 	declare readonly playerId: number;
 
 	declare readonly classId: number | null;
+
+	// Level of the player when the opponent level was chosen, null for the fights logged before it was recorded
+	declare readonly playerLevel: number | null;
 
 	declare readonly monsterId: string;
 
@@ -23,7 +34,7 @@ export class LogsPveFightsResults extends Model {
 
 	declare readonly turn: number;
 
-	declare readonly winner: number;
+	declare readonly winner: PveFightWinner;
 
 	declare readonly date: number;
 }
@@ -40,6 +51,10 @@ export function initModel(sequelize: Sequelize): void {
 			allowNull: false
 		},
 		classId: {
+			type: DataTypes.SMALLINT.UNSIGNED,
+			allowNull: true
+		},
+		playerLevel: {
 			type: DataTypes.SMALLINT.UNSIGNED,
 			allowNull: true
 		},

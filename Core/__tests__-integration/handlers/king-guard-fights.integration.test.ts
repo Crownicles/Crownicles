@@ -1,7 +1,9 @@
 import {
 	afterAll, beforeAll, beforeEach, describe, expect, it, onTestFinished, vi
 } from "vitest";
-import { QueryInterface } from "sequelize";
+import {
+	DataTypes, QueryInterface
+} from "sequelize";
 import {
 	IntegrationTestEnvironment, setupIntegrationDb
 } from "../_setup";
@@ -53,6 +55,7 @@ async function logGuardFight(params: {
 	guardLevel: number;
 	winner: number;
 	date: number;
+	playerLevel?: number;
 }): Promise<void> {
 	await LogsKingGuardFightsResults.create({
 		playerId: params.playerId,
@@ -61,6 +64,7 @@ async function logGuardFight(params: {
 		guardLevel: params.guardLevel,
 		turn: 10,
 		winner: params.winner,
+		playerLevel: params.playerLevel ?? null,
 		date: params.date
 	});
 }
@@ -72,6 +76,12 @@ beforeAll(async () => {
 	initGloryPoints(env.sequelize);
 	await env.sequelize.sync();
 	await createKingGuardTable({ context: env.sequelize.getQueryInterface() });
+
+	// Column added by the migration 039, which also needs the PvE fights table
+	await env.sequelize.getQueryInterface().addColumn("king_guard_fights_results", "playerLevel", {
+		type: DataTypes.SMALLINT.UNSIGNED,
+		allowNull: true
+	});
 	initKingGuardResults(env.sequelize);
 }, 60_000);
 
@@ -247,7 +257,7 @@ describe("King guard fights logs", () => {
 		expect(baseLevel).toBe(FightConstants.REQUIRED_LEVEL - FightConstants.KING_GUARD.FAILED_FIGHT_LEVEL_REDUCTION);
 		const player = {
 			keycloakId: "lowLevelLoser",
-			level: 100,
+			level: FightConstants.REQUIRED_LEVEL,
 			class: ClassConstants.CLASSES_ID.KNIGHT
 		} as Player;
 		await expect(computeKingGuardLevel(player)).resolves.toBe(FightConstants.REQUIRED_LEVEL);
@@ -258,6 +268,29 @@ describe("King guard fights logs", () => {
 			playerKeycloakId: "newcomer",
 			classId: ClassConstants.CLASSES_ID.KNIGHT
 		})).resolves.toBeNull();
+	});
+
+	it("remembers the strongest guard beaten whatever the class, and the last guard fight", async () => {
+		const player = await LogsPlayers.create({ keycloakId: "climber" });
+		await logGuardFight({
+			playerId: player.id, guardLevel: 40, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 1_000
+		});
+		await logGuardFight({
+			playerId: player.id, classId: ClassConstants.CLASSES_ID.MYSTIC_MAGE, guardLevel: 47, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 1_100
+		});
+		await logGuardFight({
+			playerId: player.id, guardLevel: 52, winner: KING_GUARD_FIGHT_WINNER.DRAW, date: 1_200, playerLevel: 66
+		});
+
+		await expect(LogsKingGuardFightsRequests.getGuardLadder("climber")).resolves.toEqual({
+			strongestVictoryLevel: 47,
+			lastFight: {
+				level: 52, isDefeat: false, playerLevel: 66
+			}
+		});
+		await expect(LogsKingGuardFightsRequests.getGuardLadder("stranger")).resolves.toEqual({
+			strongestVictoryLevel: null, lastFight: null
+		});
 	});
 
 	it("counts only today's guard fights in the daily summary", async () => {

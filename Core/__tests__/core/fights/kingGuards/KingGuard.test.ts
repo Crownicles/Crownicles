@@ -14,7 +14,12 @@ vi.mock("../../../../src/data/FightAction", async importOriginal => ({
 	FightActionDataController: { instance: { getListById: vi.fn().mockReturnValue([]) } }
 }));
 vi.mock("../../../../src/core/database/logs/requests/LogsKingGuardFightsRequests", () => ({
-	LogsKingGuardFightsRequests: { getGuardLevelBase: vi.fn() }
+	LogsKingGuardFightsRequests: {
+		getGuardLevelBase: vi.fn(),
+		getGuardLadder: vi.fn().mockResolvedValue({
+			strongestVictoryLevel: null, lastFight: null
+		})
+	}
 }));
 
 import { KingGuardFighter } from "../../../../src/core/fights/fighter/KingGuardFighter";
@@ -68,7 +73,8 @@ describe("KingGuardFighter", () => {
 			player: buildGuardPlayer(),
 			guardClass: { fightActionsIds: [] } as unknown as Class,
 			activeObjects,
-			pet: pet as PetEntity
+			pet: pet as PetEntity,
+			playerLevel: 30
 		});
 	}
 
@@ -104,6 +110,9 @@ describe("computeKingGuardLevel", () => {
 		class: 0,
 		level: 60
 	} as Player;
+	const highLevelPlayer = {
+		...player, level: 150
+	} as Player;
 
 	function expectedRange(baseLevel: number): [number, number] {
 		return [
@@ -112,33 +121,74 @@ describe("computeKingGuardLevel", () => {
 		];
 	}
 
-	it("starts from the player level when no guard was fought yet", async () => {
-		vi.mocked(LogsKingGuardFightsRequests.getGuardLevelBase).mockResolvedValue(null);
-		const [min, max] = expectedRange(player.level);
-
+	async function expectLevelsBetween(guardPlayer: Player, [min, max]: [number, number]): Promise<void> {
 		for (let i = 0; i < 50; i++) {
-			const level = await computeKingGuardLevel(player);
+			const level = await computeKingGuardLevel(guardPlayer);
 			expect(level).toBeGreaterThanOrEqual(min);
 			expect(level).toBeLessThanOrEqual(max);
 		}
+	}
+
+	it("starts from the player level when a high level player never fought a guard with its class lineage", async () => {
+		vi.mocked(LogsKingGuardFightsRequests.getGuardLevelBase).mockResolvedValue(null);
+
+		await expectLevelsBetween(highLevelPlayer, expectedRange(highLevelPlayer.level));
 	});
 
-	it("starts from the guard fights history when there is one", async () => {
-		vi.mocked(LogsKingGuardFightsRequests.getGuardLevelBase).mockResolvedValue(100);
-		const [min, max] = expectedRange(100);
+	it("starts from the guard fights history of a high level player when there is one", async () => {
+		vi.mocked(LogsKingGuardFightsRequests.getGuardLevelBase).mockResolvedValue(140);
 
-		for (let i = 0; i < 50; i++) {
-			const level = await computeKingGuardLevel(player);
-			expect(level).toBeGreaterThanOrEqual(min);
-			expect(level).toBeLessThanOrEqual(max);
-		}
+		await expectLevelsBetween(highLevelPlayer, expectedRange(140));
+	});
+
+	it("never generates a guard below the minimum level for a high level player, whatever its record", async () => {
+		vi.mocked(LogsKingGuardFightsRequests.getGuardLevelBase).mockResolvedValue(11);
+
+		await expectLevelsBetween(highLevelPlayer, [PVEConstants.HIGH_LEVEL_MIN_MONSTER_LEVEL, PVEConstants.HIGH_LEVEL_MIN_MONSTER_LEVEL]);
 	});
 
 	it("never generates a guard below the level required to fight", async () => {
-		vi.mocked(LogsKingGuardFightsRequests.getGuardLevelBase).mockResolvedValue(0);
+		const lowLevelPlayer = {
+			...player, level: FightConstants.REQUIRED_LEVEL
+		} as Player;
 
 		for (let i = 0; i < 50; i++) {
-			expect(await computeKingGuardLevel(player)).toBeGreaterThanOrEqual(FightConstants.REQUIRED_LEVEL);
+			expect(await computeKingGuardLevel(lowLevelPlayer)).toBeGreaterThanOrEqual(FightConstants.REQUIRED_LEVEL);
 		}
+	});
+
+	it("follows the ladder of the strongest guard beaten for a low level player, whatever its class", async () => {
+		vi.mocked(LogsKingGuardFightsRequests.getGuardLevelBase).mockClear();
+		const strongestVictoryLevel = player.level - PVEConstants.LOW_LEVEL_BOSS_LADDER.MAX_LEVELS_BELOW_PLAYER;
+		vi.mocked(LogsKingGuardFightsRequests.getGuardLadder).mockResolvedValue({
+			strongestVictoryLevel,
+			lastFight: {
+				level: strongestVictoryLevel, isDefeat: false, playerLevel: player.level
+			}
+		});
+
+		const levels = await Promise.all(Array.from({ length: 100 }, () => computeKingGuardLevel(player)));
+
+		expect(levels.filter(level => level > strongestVictoryLevel).length).toBeGreaterThan(50);
+		expect(LogsKingGuardFightsRequests.getGuardLevelBase).not.toHaveBeenCalled();
+		vi.mocked(LogsKingGuardFightsRequests.getGuardLadder).mockResolvedValue({
+			strongestVictoryLevel: null, lastFight: null
+		});
+	});
+
+	it("keeps the guard close to the level of a low level player, whatever its ladder", async () => {
+		vi.mocked(LogsKingGuardFightsRequests.getGuardLadder).mockResolvedValue({
+			strongestVictoryLevel: 5,
+			lastFight: {
+				level: 5, isDefeat: false, playerLevel: player.level
+			}
+		});
+
+		for (let i = 0; i < 50; i++) {
+			expect(await computeKingGuardLevel(player)).toBeGreaterThanOrEqual(player.level - PVEConstants.LOW_LEVEL_BOSS_LADDER.MAX_LEVELS_BELOW_PLAYER);
+		}
+		vi.mocked(LogsKingGuardFightsRequests.getGuardLadder).mockResolvedValue({
+			strongestVictoryLevel: null, lastFight: null
+		});
 	});
 });
