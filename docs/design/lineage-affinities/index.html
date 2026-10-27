@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crownicles — Affinités de lignée (proposition)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="toc">
+	<div class="brand">👑 Affinités de lignée</div>
+	<a href="#tldr">TL;DR</a>
+	<a href="#diag">1. Diagnostic</a>
+	<a href="#systeme">2. Le système actuel</a>
+	<a href="#veille">3. Veille</a>
+	<a href="#proposition">4. Proposition</a>
+	<a href="#lignees">5. Les 7 lignées</a>
+	<a href="#atelier">6. Atelier interactif</a>
+	<a href="#garde-fous">7. Garde-fous</a>
+	<a href="#tech">8. Intégration technique</a>
+	<a href="#roadmap">9. Roadmap</a>
+	<a href="#questions">10. À trancher</a>
+</nav>
+
+<main>
+<header class="hero">
+	<p class="kicker">Proposition de game design · Crownicles</p>
+	<h1>Affinités de lignée</h1>
+	<p class="lead">Chaque objet peut « résonner » avec une lignée de classe. Équipé par la bonne lignée, il débloque un effet qui modifie <em>ses</em> actions de combat. Tout le monde peut encore tout porter&nbsp;: l'affinité relève le plafond sans abaisser le plancher.</p>
+	<div class="hero-badges">
+		<span class="pill">139 joueurs niv. 100+ analysés</span>
+		<span class="pill">~12 000 combats PvP (90 j)</span>
+		<span class="pill">406 items modélisés</span>
+		<span class="pill">11 jeux de référence</span>
+	</div>
+</header>
+
+<section id="tldr" class="card highlight">
+	<h2>TL;DR</h2>
+	<ol>
+		<li><strong>Le méta est figé</strong>&nbsp;: 4 armes équipent 45&nbsp;% des joueurs 100+, 2 armures 34&nbsp;%, 2 objets 30&nbsp;%. 72&nbsp;% des armes n'ont <em>aucun</em> porteur 100+.</li>
+		<li><strong>Cause racine</strong>&nbsp;: tous les items sont évalués sur un seul axe (stats brutes), avec un budget non normalisé, et aucun ne «&nbsp;parle&nbsp;» à une classe. La meilleure arme est la même pour 5 lignées sur 7.</li>
+		<li><strong>Proposition</strong>&nbsp;: 3 couches — <span class="tag t-socle">Socle</span> stats à budget normalisé, <span class="tag t-aff">Affinité</span> effet de lignée par emplacement (7 × 4 = 28 effets), <span class="tag t-sig">Signature</span> effet unique sur les mythiques. En plus, une <span class="tag t-reso">Résonance</span> quand on porte plusieurs pièces de la même lignée.</li>
+		<li><strong>Règle d'or</strong>&nbsp;: un item à affinité coûte ~10&nbsp;% de stats brutes. Hors lignée, il reste correct&nbsp;; dans la lignée, il devient le meilleur choix <em>pour cette lignée</em>.</li>
+		<li><strong>Prérequis</strong>&nbsp;: logguer les items équipés dans <code>fights_results</code>. Aujourd'hui, on ne peut pas mesurer le winrate d'un item.</li>
+	</ol>
+</section>
+
+<section id="diag">
+	<h2>1. Diagnostic — ce que portent les joueurs niveau 100+</h2>
+	<p class="muted">Sources&nbsp;: base <code>game</code> (inventaire, slot 0 = équipé) sur les 139 joueurs de niveau 100 à 157, et base <code>logs</code> (<code>fights_results</code>, 90 derniers jours, combats non amicaux).</p>
+
+	<div class="grid kpis">
+		<div class="kpi"><div class="v">45&nbsp;%</div><div class="l">des joueurs 100+ portent l'une des <strong>4 mêmes armes</strong></div></div>
+		<div class="kpi"><div class="v">28<span>/101</span></div><div class="l">armes portées par au moins un joueur 100+</div></div>
+		<div class="kpi"><div class="v">37&nbsp;%</div><div class="l">portent une <strong>potion sans effet</strong> («&nbsp;Pas de potion&nbsp;», périmée…)</div></div>
+		<div class="kpi"><div class="v">43&nbsp;%</div><div class="l">des joueurs 100+ sont <strong>Chevalier valeureux</strong></div></div>
+	</div>
+
+	<div class="grid two">
+		<div class="card">
+			<h3>Armes équipées (top 10)</h3>
+			<div class="bars" data-max="20" data-bars='[["Épée du Dragon (r7)",18,"hot"],["Sabre (r7)",17,"hot"],["Épée en diamant (r7)",15,"hot"],["Plothammer (r7)",12,"hot"],["Arc du héros (r7)",9],["Pistolet chargé (r6)",8],["Épée de maître (r7)",6],["Épée royale (r6)",6],["Âme du démon (r7)",6],["Épée de Ragnell (r7)",5]]'></div>
+			<p class="note">Bombe atomique, Bio-Arme, Sentence de la Faucheuse, Épée de givre… (r7–r8)&nbsp;: <strong>0 porteur</strong>.</p>
+		</div>
+		<div class="card">
+			<h3>Armures équipées (top 10)</h3>
+			<div class="bars" data-max="26" data-bars='[["Forteresse japonaise (r6)",25,"hot"],["Bouclier ultime (r7)",22,"hot"],["Bouclier déflecteur Engi (r7)",11],["Cri UwUrlant (r7)",10],["Bouclier humain (r7)",8],["Bouclier de givre (r7)",7],["Casque de robot (r6)",6],["Armure de fer (r6)",4],["Bouclier puissant (r6)",4],["Conventions de Genève (r7)",4]]'></div>
+			<p class="note">Sur les 9 armures mythiques (r8), seules 5 sont portées, chacune par 1 ou 2 joueurs. Plot armor, Armure Mk IX et Château de Himeji&nbsp;: 0 porteur.</p>
+		</div>
+		<div class="card">
+			<h3>Objets équipés par nature</h3>
+			<div class="bars" data-max="65" data-bars='[["Vitesse",62,"hot"],["Argent (hors combat)",25,"warn"],["Attaque",24],["Défense",20],["Soin",7],["Temps",1],["Énergie",0,"dead"]]'></div>
+			<p class="note">La vitesse donne l'initiative et entre dans <em>toutes</em> les formules d'attaque. 18&nbsp;% des joueurs équipent un objet <em>d'argent</em>, signe que l'emplacement vaut trop peu en combat. 13 objets d'énergie existent, aucun n'est porté.</p>
+		</div>
+		<div class="card">
+			<h3>Potions équipées par nature</h3>
+			<div class="bars" data-max="55" data-bars='[["Aucun effet",51,"dead"],["Soin",34],["Énergie",15],["Temps",14],["Attaque",12],["Vitesse",7],["Défense",6]]'></div>
+			<p class="note">Seuls 23 joueurs (17&nbsp;%) ont une potion de rareté ≥ 6. La potion est l'emplacement le plus «&nbsp;mort&nbsp;» du jeu.</p>
+		</div>
+	</div>
+
+	<div class="grid two">
+		<div class="card">
+			<h3>Classes des joueurs 100+</h3>
+			<div class="bars" data-max="62" data-bars='[["Chevalier valeureux",60,"hot"],["Mage mystique",15],["Paladin lumineux",14],["Canonnier redoutable",12],["Fantassin puissant",11],["Vétéran chevronné",10],["Tank impénétrable",8],["Autres (palier ≤3)",9]]'></div>
+		</div>
+		<div class="card">
+			<h3>Winrate PvP par classe (palier 4, 90 j)</h3>
+			<table class="tbl">
+				<thead><tr><th>Classe</th><th>Combats</th><th>Winrate</th></tr></thead>
+				<tbody>
+				<tr><td>Canonnier redoutable</td><td>1 845</td><td><span class="wr up">53,3&nbsp;%</span></td></tr>
+				<tr><td>Chevalier valeureux</td><td>8 625</td><td><span class="wr">49,9&nbsp;%</span></td></tr>
+				<tr><td>Fantassin puissant</td><td>1 451</td><td><span class="wr">49,5&nbsp;%</span></td></tr>
+				<tr><td>Vétéran chevronné</td><td>692</td><td><span class="wr">49,3&nbsp;%</span></td></tr>
+				<tr><td>Paladin lumineux</td><td>1 275</td><td><span class="wr down">44,3&nbsp;%</span></td></tr>
+				<tr><td>Mage mystique</td><td>1 392</td><td><span class="wr down">42,7&nbsp;%</span></td></tr>
+				<tr><td>Tank impénétrable</td><td>1 444</td><td><span class="wr down">40,8&nbsp;%</span></td></tr>
+				</tbody>
+			</table>
+			<p class="note">Le Chevalier n'est pas surpuissant (50&nbsp;% de winrate), il est <em>populaire</em>&nbsp;: c'est la lignée «&nbsp;par défaut&nbsp;». Tank, Mage et Paladin sont à la traîne. Les affinités permettent de les remonter <em>sans</em> toucher aux classes.</p>
+		</div>
+	</div>
+
+	<div class="card">
+		<h3>Pourquoi ces items&nbsp;? Le budget de stats n'est pas normalisé</h3>
+		<p>Stats effectives à rareté égale (niveau d'item 0). Au niveau 100+, la base du joueur va de 200 à 460&nbsp;: le plafond «&nbsp;stat d'item ≤ stat de base du joueur&nbsp;» ne s'applique donc <em>pas</em>, et c'est la <strong>somme</strong> des stats qui fait la différence&nbsp;:</p>
+		<table class="tbl budget">
+			<thead><tr><th>Item</th><th>Rareté</th><th>Atq</th><th>Déf</th><th>Vit</th><th>Budget total</th><th>Porteurs 100+</th></tr></thead>
+			<tbody>
+				<tr class="hot"><td>Épée du Dragon <small>(une arme… à 50&nbsp;% de défense)</small></td><td>7</td><td>99</td><td>117</td><td>18</td><td><b>234</b></td><td>18</td></tr>
+				<tr class="hot"><td>Plothammer</td><td>7</td><td>107</td><td>100</td><td>0</td><td><b>207</b></td><td>12</td></tr>
+				<tr><td>Sabre</td><td>7</td><td>212</td><td>0</td><td>0</td><td>212</td><td>17</td></tr>
+				<tr><td>Sceptre à 100 sorts</td><td><b>8</b></td><td>174</td><td>0</td><td>50</td><td>224</td><td>4</td></tr>
+				<tr class="dead"><td>Bombe atomique</td><td><b>8</b></td><td>239</td><td>0</td><td>−40</td><td>199</td><td>0</td></tr>
+			</tbody>
+		</table>
+		<ul class="findings">
+			<li><b>Rareté 8 ≈ rareté 7</b>&nbsp;: dans <code>ITEMS_MAPPER</code>, le multiplicateur passe seulement de <code>6.6</code> à <code>6.7</code>. Un mythique n'apporte presque rien de plus qu'un légendaire&nbsp;; il est juste plus rare.</li>
+			<li><b>Les stats «&nbsp;secondaires&nbsp;» sont gratuites</b>&nbsp;: <code>defense</code> et <code>speed</code> s'ajoutent en dehors de la formule de rareté. D'où une arme qui est surtout… un bouclier.</li>
+			<li><b>Aucune identité de classe</b>&nbsp;: en simulant chaque item pour chaque classe de palier&nbsp;4 au niveau 110, l'Épée du Dragon arrive n°1 pour 5 lignées sur 7. Ce qui est bon pour un Mage est bon pour un Fantassin.</li>
+			<li><b>Angle mort de la télémétrie</b>&nbsp;: <code>fights_results</code> stocke les classes, la gloire et le familier, mais pas les items. Impossible de calculer le winrate d'un item aujourd'hui.</li>
+		</ul>
+	</div>
+</section>
+
+<section id="systeme">
+	<h2>2. Le système actuel en un écran</h2>
+	<div class="grid three">
+		<div class="card">
+			<h3>Stats du joueur</h3>
+<pre>base(niv) = stat_classe × (1 + niv² / 4000)
+cumul = base
+  + min(arme, base)
+  + min(armure, base)
+  + min(objet, 2 × base)
+  + potion</pre>
+			<p class="note">Au niveau 110, la base est multipliée par 4&nbsp;: les plafonds ne jouent qu'en début de jeu.</p>
+		</div>
+		<div class="card">
+			<h3>Dégâts</h3>
+<pre>power(s) = 120·tanh(0.00123·s − 0.03) + 3
+ratio    = (power(atq) − power(déf)) / 50
+dégâts   = Σ interp(min, moy, max, ratio) × poids</pre>
+			<p class="note">La <code>tanh</code> produit des rendements décroissants&nbsp;: au-delà d'un seuil, +50 en stat brute change peu. C'est pour ça qu'en fin de jeu un <em>effet</em> vaut plus qu'un <em>+X</em>.</p>
+		</div>
+		<div class="card">
+			<h3>Poids des stats par action</h3>
+			<table class="tbl compact">
+				<thead><tr><th>Action</th><th>Atq</th><th>Vit</th></tr></thead>
+				<tbody>
+					<tr><td>simpleAttack</td><td>0,8</td><td>0,2</td></tr>
+					<tr><td>quickAttack</td><td>0,4</td><td>0,6</td></tr>
+					<tr><td>heavyAttack</td><td>0,6</td><td>0,4 <small>(déf adv. ×0,5)</small></td></tr>
+					<tr><td>canonAttack</td><td>0,5</td><td>0,5</td></tr>
+					<tr><td>piercingAttack</td><td>0,8</td><td>0,2 <small>(déf adv. ×0,2)</small></td></tr>
+					<tr><td>shieldAttack</td><td colspan="2">Déf 0,8 + Atq 0,2</td></tr>
+					<tr><td>fireAttack</td><td colspan="2">Atq contre Déf / 4</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="card">
+		<h3>Les 7 lignées et les actions qu'elles jouent vraiment (logs, 60 j)</h3>
+		<p class="muted">Le code ne connaît que <code>classGroup</code> (palier 0–4) et <code>classKind</code> (basic / attack / defense / other), et «&nbsp;basic&nbsp;» mélange deux lignées. La notion de <strong>lignée</strong> n'existe pas encore&nbsp;: c'est le premier ajout à faire.</p>
+		<div id="lineage-table"></div>
+	</div>
+</section>
+
+<section id="veille">
+	<h2>3. Veille — ce que font les autres</h2>
+	<div class="grid three veille">
+		<div class="card ref"><h4>Path of Exile — uniques</h4><p>«&nbsp;Les uniques sont <em>moins puissants</em> que les meilleurs rares, mais permettent des builds spéciaux.&nbsp;»</p><p class="take">→ L'affinité doit être un <b>sidegrade</b>, payé en stats brutes.</p><a href="https://www.poewiki.net/wiki/Unique_item" target="_blank">poewiki</a></div>
+		<div class="card ref"><h4>World of Warcraft — ilvl</h4><p>À niveau d'objet égal, le budget de stats est le même, mais dépensé différemment. Les bonus de set de classe forment une couche <em>séparée</em>.</p><p class="take">→ <b>Budget par rareté</b> + couche d'identité séparée.</p><a href="https://warcraft.wiki.gg/wiki/Item_level" target="_blank">warcraft.wiki.gg</a></div>
+		<div class="card ref"><h4>Darkest Dungeon — bibelots</h4><p>Des bibelots restreints par classe, triables «&nbsp;par restriction de classe&nbsp;», avec bonus <em>et</em> malus, plus des sets.</p><p class="take">→ Affinité visible et filtrable, bonus fidèle au rôle.</p><a href="https://darkestdungeon.fandom.com/wiki/Trinkets_(Darkest_Dungeon)" target="_blank">wiki DD</a></div>
+		<div class="card ref"><h4>Dead Cells — couleurs</h4><p>Chaque arme a une couleur (Brutalité, Tactique, Survie). Tout le monde peut l'utiliser, mais elle scale avec la stat de sa couleur.</p><p class="take">→ <b>Verrou souple</b>&nbsp;: personne ne perd l'item.</p><a href="https://deadcells.wiki.gg/wiki/Mutations" target="_blank">deadcells.wiki.gg</a></div>
+		<div class="card ref"><h4>Monster Hunter — talents de set</h4><p>Chaque pièce rapporte des points vers des paliers de talent&nbsp;: l'investissement partiel est récompensé.</p><p class="take">→ <b>Résonance</b> à 2, 3 et 4 pièces de la même lignée.</p></div>
+		<div class="card ref"><h4>Diablo III / IV — sets et aspects</h4><p>D3&nbsp;: les sets transforment une compétence. D4&nbsp;: les aspects s'extraient et se réimpriment sur un autre objet.</p><p class="take">→ Effets qui <b>modifient les actions</b>, et «&nbsp;réaccordage&nbsp;» d'affinité chez le forgeron.</p></div>
+		<div class="card ref"><h4>Slay the Spire / Hearthstone</h4><p>Les reliques et cartes de classe restent une <em>minorité</em> au-dessus d'un pool neutre majoritaire. Trop fortes, elles mènent au «&nbsp;netdeck&nbsp;» par classe.</p><p class="take">→ <b>~40&nbsp;% d'items à affinité</b> au maximum, le reste neutre.</p><a href="https://slay-the-spire.fandom.com/wiki/Relics" target="_blank">wiki StS</a></div>
+		<div class="card ref"><h4>Hades — boons duo</h4><p>Les boons fonctionnent pour tout le monde&nbsp;; certaines combinaisons débloquent un effet supplémentaire.</p><p class="take">→ La résonance récompense une combinaison, elle n'impose pas de restriction.</p><a href="https://hades.fandom.com/wiki/Duo_Boons" target="_blank">wiki Hades</a></div>
+		<div class="card ref"><h4>Vampire Survivors — évolutions</h4><p>Chaque arme a son évolution&nbsp;: aucune n'est un piège structurel.</p><p class="take">→ <b>Parité</b>&nbsp;: chaque lignée a au moins une option forte par emplacement.</p><a href="https://vampire-survivors.fandom.com/wiki/Evolution" target="_blank">wiki VS</a></div>
+	</div>
+	<div class="card theory">
+		<h3>Théorie à retenir</h3>
+		<ul>
+			<li><b>Sirlin</b>&nbsp;: un jeu est équilibré quand «&nbsp;un nombre raisonnablement grand d'options sont viables&nbsp;». Sa recette tirée de Guilty Gear, <em>défense universelle, attaque unique</em>, se traduit ici par un socle commun et une affinité qui différencie. <a href="https://www.sirlin.net/articles/balancing-multiplayer-games-part-1-definitions" target="_blank">sirlin.net</a></li>
+			<li><b>Coût d'opportunité</b>&nbsp;: l'Épée du Dragon gagne parce que la choisir ne coûte rien. Il faut que porter un item neutre fasse renoncer à l'effet de lignée.</li>
+			<li><b>Rosewater</b>&nbsp;: «&nbsp;les restrictions engendrent la créativité&nbsp;». Un bonus conditionné à une action fait jouer différemment&nbsp;; un +X ne change rien.</li>
+			<li><b>Intransitivité</b>&nbsp;: le «&nbsp;meilleur item&nbsp;» doit dépendre du contexte (qui le porte), pas d'un classement global.</li>
+		</ul>
+	</div>
+</section>
+
+<section id="proposition">
+	<h2>4. La proposition — 3 couches + résonance</h2>
+	<div class="layers">
+		<div class="layer l1">
+			<div class="lh"><span class="tag t-socle">Couche 1</span> Socle</div>
+			<p>Stats d'attaque, de défense et de vitesse avec un <b>budget fixe par rareté</b>, stats secondaires incluses. Concerne <em>tous</em> les items. Recadre l'Épée du Dragon sans toucher au reste.</p>
+		</div>
+		<div class="layer l2">
+			<div class="lh"><span class="tag t-aff">Couche 2</span> Affinité de lignée</div>
+			<p>~40&nbsp;% des items reçoivent <code>"affinity": "knight"</code>. L'effet est <b>générique par lignée × emplacement</b>&nbsp;: 7 lignées × 4 emplacements = <b>28 effets</b> à équilibrer, pas 400. L'item paie ~10&nbsp;% de son budget de socle.</p>
+		</div>
+		<div class="layer l3">
+			<div class="lh"><span class="tag t-sig">Couche 3</span> Signature</div>
+			<p>Les mythiques (r8, ~30 items) ont en plus <b>un effet unique</b>, actif uniquement dans leur lignée. La rareté 8 retrouve une raison d'exister.</p>
+		</div>
+		<div class="layer l4">
+			<div class="lh"><span class="tag t-reso">Bonus</span> Résonance</div>
+			<p>Porter 2, 3 ou 4 pièces de sa lignée donne un petit bonus croissant (souffle de départ, régénération…). L'engagement est récompensé sans être imposé.</p>
+		</div>
+	</div>
+
+	<div class="card">
+		<h3>Quelles raretés sont concernées&nbsp;?</h3>
+		<table class="tbl">
+			<thead><tr><th>Rareté</th><th>Socle normalisé</th><th>Affinité de lignée</th><th>Signature</th></tr></thead>
+			<tbody>
+				<tr><td>0 à 4 (Basique → Rare)</td><td>✔</td><td>— <small>(option&nbsp;: quelques items r3–r4 pour découvrir la mécanique tôt)</small></td><td>—</td></tr>
+				<tr><td>5 · Spécial</td><td>✔</td><td>✔ <small>(une partie des items)</small></td><td>—</td></tr>
+				<tr><td>6 · Épique</td><td>✔</td><td>✔</td><td>—</td></tr>
+				<tr><td>7 · Légendaire</td><td>✔</td><td>✔</td><td>—</td></tr>
+				<tr class="hot"><td>8 · Mythique</td><td>✔</td><td>✔</td><td>✔ <small>(effet unique cumulé avec l'affinité)</small></td></tr>
+			</tbody>
+		</table>
+		<p class="note">L'affinité ne se limite pas aux Légendaires et Mythiques&nbsp;: les joueurs 100+ portent surtout du r6–r7, et chaque lignée a besoin d'au moins 3 options par emplacement. <b>Variante «&nbsp;fin de jeu&nbsp;»</b>&nbsp;: affinité sur les r6–r8 seulement, signature sur les r8, sans intensité par palier. Plus simple à équilibrer, mais la mécanique est découverte plus tard.</p>
+	</div>
+
+	<div class="grid two">
+		<div class="card">
+			<h3>Règles de design</h3>
+			<ol class="rules">
+				<li><b>Verrou souple.</b> Tout le monde peut tout équiper. Hors lignée, l'item garde 90&nbsp;% de son socle.</li>
+				<li><b>Un effet, pas un pourcentage de stat.</b> L'affinité modifie une <em>action signature</em> de la lignée (durée d'altération, coût en souffle, effet secondaire). Avec la <code>tanh</code>, les +X deviennent inutiles en fin de jeu&nbsp;; un effet reste lisible et désirable.</li>
+				<li><b>Sidegrade.</b> Dans sa lignée, l'item à affinité vaut environ +8 à +12&nbsp;% de plus en combat qu'un neutre. Pas +30&nbsp;%&nbsp;: sinon on remplace «&nbsp;le même item pour tous&nbsp;» par «&nbsp;le même item pour chaque classe&nbsp;».</li>
+				<li><b>Parité.</b> Chaque lignée dispose d'au moins 3 items à affinité utilisables par rareté (5 à 8) et par emplacement.</li>
+				<li><b>Lisible en une ligne.</b> Un badge de lignée et une phrase. Dans le récit de combat&nbsp;: «&nbsp;✨ <i>Affinité&nbsp;: …</i>&nbsp;».</li>
+				<li><b>Par lignée, pas par classe.</b> L'affinité suit le joueur quand il évolue (Écuyer → Chevalier valeureux), et sa puissance grandit avec le palier.</li>
+			</ol>
+		</div>
+		<div class="card">
+			<h3>Aperçu Discord</h3>
+			<div class="discord">
+				<div class="embed knight">
+					<div class="e-title">⚔️ Lance de joute <span class="r">Légendaire</span></div>
+					<div class="e-line">🗡️ Attaque&nbsp;: <b>190</b> · 🛡️ Défense&nbsp;: <b>0</b> · 🚀 Vitesse&nbsp;: <b>+20</b></div>
+					<div class="e-aff active">🐎 <b>Affinité — Lignée du Chevalier</b> <span class="on">ACTIVE</span><br>
+						<i>Charge&nbsp;:</i> l'<b>attaque lourde</b> coûte 1 souffle de moins si tu as joué en premier ce tour.</div>
+					<div class="e-reso">🔗 Résonance Chevalier 2/4&nbsp;: +1 souffle de départ</div>
+				</div>
+				<div class="embed knight off">
+					<div class="e-title">⚔️ Lance de joute <span class="r">Légendaire</span></div>
+					<div class="e-line">🗡️ Attaque&nbsp;: <b>190</b> · 🛡️ Défense&nbsp;: <b>0</b> · 🚀 Vitesse&nbsp;: <b>+20</b></div>
+					<div class="e-aff">🐎 Affinité — Lignée du Chevalier <span class="offl">inactive pour un Mage</span></div>
+				</div>
+				<div class="fightlog">
+					<div>🐎 <b>Bast</b> utilise <b>Attaque lourde</b> et inflige <b>142</b> dégâts&nbsp;!</div>
+					<div class="aff">✨ <i>Affinité&nbsp;: la charge de la Lance de joute épargne 1 souffle.</i></div>
+				</div>
+			</div>
+			<p class="note">Maquette visuelle uniquement. En jeu, les emojis passeraient par <code>CrowniclesIcons</code> et le texte par les traductions.</p>
+		</div>
+	</div>
+
+	<div class="card">
+		<h3>Le compromis budgétaire, chiffré</h3>
+		<p>Exemple sur une arme légendaire (r7, rawAttack 10, soit 212 d'attaque). La valeur de l'effet en combat est une estimation, à valider par simulation.</p>
+		<div class="tradeoff">
+			<div class="to"><div class="ton">Neutre</div><div class="tob" style="--w:83%">212</div><div class="tol">Tout le monde&nbsp;: 100&nbsp;%</div></div>
+			<div class="to"><div class="ton">Affinité, hors lignée</div><div class="tob" style="--w:75%">191</div><div class="tol">90&nbsp;% — reste jouable, jamais du «&nbsp;loot mort&nbsp;»</div></div>
+			<div class="to"><div class="ton">Affinité, dans la lignée</div><div class="tob aff" style="--w:75%">191</div><div class="tol">≈ 110&nbsp;% avec l'effet — le meilleur choix <em>pour cette lignée</em></div></div>
+		</div>
+	</div>
+</section>
+
+<section id="lignees">
+	<h2>5. Les 7 lignées — identité et affinités</h2>
+	<p class="muted">Les effets sont des premières pistes, ancrées sur les actions les plus jouées par chaque lignée&nbsp;; les chiffres sont indicatifs et restent à calibrer. Les items cités existent déjà&nbsp;: on leur <em>attribue</em> une affinité cohérente avec leur thème ou leurs tags existants (<code>ranged</code>, <code>holy</code>, <code>fire</code>, types <code>poison</code> et <code>magic</code>).</p>
+	<div class="filters" id="lineage-filters"></div>
+	<div id="lineage-cards" class="lineage-grid"></div>
+</section>
+
+<section id="atelier">
+	<h2>6. Atelier — compose ton équipement</h2>
+	<p class="muted">Choisis une classe et un item par emplacement&nbsp;: les affinités, la signature et la résonance s'activent en direct.</p>
+	<div class="card workshop">
+		<div class="ws-controls">
+			<label>Classe<select id="ws-class"></select></label>
+			<label>Arme<select id="ws-weapon"></select></label>
+			<label>Armure<select id="ws-armor"></select></label>
+			<label>Objet<select id="ws-object"></select></label>
+			<label>Potion<select id="ws-potion"></select></label>
+		</div>
+		<div class="ws-out" id="ws-out"></div>
+	</div>
+</section>
+
+<section id="garde-fous">
+	<h2>7. Garde-fous — les pièges connus et nos parades</h2>
+	<div class="grid two">
+		<div class="card pit"><h4>😤 «&nbsp;Loot gâché, c'est pour une autre classe&nbsp;»</h4><p><b>Parade&nbsp;:</b> un verrou souple (90&nbsp;% du socle conservé), un léger biais de drop vers sa propre lignée (≈ 1/3 des items à affinité tirés), et un <b>réaccordage chez le forgeron</b>&nbsp;: changer l'affinité d'un item contre des matériaux, un puits de ressources à la Diablo IV.</p></div>
+		<div class="card pit"><h4>💥 Explosion combinatoire (N items × M classes)</h4><p><b>Parade&nbsp;:</b> 28 effets génériques et ~30 signatures. Créer un nouvel item revient à choisir une lignée, pas à inventer un effet. Au maximum ~40&nbsp;% d'items à affinité.</p></div>
+		<div class="card pit"><h4>🔁 «&nbsp;Le même item pour chaque classe&nbsp;»</h4><p><b>Parade&nbsp;:</b> l'effet dépend de l'emplacement, pas de l'item. <em>Toutes</em> les armes Chevalier donnent donc le même effet d'arme, et le choix se joue ensuite sur le socle (attaque ou vitesse) et la signature. Plusieurs items par lignée et par rareté.</p></div>
+		<div class="card pit"><h4>👑 Renforcer un Chevalier déjà populaire</h4><p><b>Parade&nbsp;:</b> calibrer lignée par lignée. Des effets Chevalier modestes (économie de souffle)&nbsp;; des effets plus marqués pour Tank, Mage et Paladin, qui plafonnent entre 41 et 44&nbsp;% de winrate.</p></div>
+		<div class="card pit"><h4>🙈 Illisibilité</h4><p><b>Parade&nbsp;:</b> un badge et une phrase par item, une ligne ✨ dans le récit de combat, et un filtre «&nbsp;mon affinité&nbsp;» dans l'inventaire et au shop.</p></div>
+		<div class="card pit"><h4>📉 Équilibrer à l'aveugle</h4><p><b>Parade&nbsp;:</b> la phase 0 est la télémétrie. On ajoute dans <code>fights_results</code> les ids des items équipés et les affinités actives, puis on suit pick-rate et winrate par item et par lignée dans Grafana.</p></div>
+	</div>
+</section>
+
+<section id="tech">
+	<h2>8. Intégration technique (esquisse)</h2>
+	<div class="grid two">
+		<div class="card">
+			<h3>Données</h3>
+<pre><span class="c">// Lib/src/constants/ClassConstants.ts</span>
+export const CLASS_LINEAGES = {
+  FOOTMAN: "footman",  KNIGHT: "knight",
+  TANK: "tank",        GUNNER: "gunner",
+  VETERAN: "veteran",  PALADIN: "paladin",
+  MAGE: "mage"
+} as const;
+
+<span class="c">// Core/resources/classes/21.json</span>
+{ ..., "lineage": "knight" }
+
+<span class="c">// Core/resources/weapons/27.json</span>
+{ "rarity": 7, "rawAttack": 10, ...,
+  "affinity": "knight" }</pre>
+			<p class="note">Un test d'intégrité vérifie que chaque classe déclare une lignée, que chaque affinité est une valeur valide, et que le ratio par lignée, emplacement et rareté est respecté.</p>
+		</div>
+		<div class="card">
+			<h3>Combat</h3>
+<pre><span class="c">// au démarrage du combat (PlayerFighter)</span>
+this.affinities = computeActiveAffinities(
+  player.lineage, activeObjects);  <span class="c">// emplacements actifs + résonance</span>
+
+<span class="c">// dans chaque action concernée</span>
+if (sender.hasAffinity(KNIGHT, WEAPON)
+    &amp;&amp; sender.playedFirstThisTurn()) {
+  breathCost -= 1;
+  result.affinityTriggered = AFFINITY_KNIGHT_WEAPON;
+}</pre>
+			<ul class="findings">
+				<li>Socle&nbsp;: <code>Weapon/Armor.getAttack()</code> applique un facteur 0,9 quand <code>affinity</code> est défini.</li>
+				<li>Effets&nbsp;: dans les actions (<code>actions/interfaces/players/*.ts</code>) via un helper commun, jamais dans <code>getCumulative*</code>, pour que les stats affichées restent honnêtes.</li>
+				<li>Packets&nbsp;: ajouter <code>affinity</code> et <code>affinityActive</code> à <code>MainItemDetails</code> et <code>SupportItemDetails</code>&nbsp;; Discord affiche le badge et la phrase.</li>
+				<li>Logs&nbsp;: colonnes d'items et bitmask des affinités actives dans <code>fights_results</code>. 7 lignées × 4 emplacements = 28 bits, donc un <code>INT UNSIGNED</code>.</li>
+			</ul>
+		</div>
+	</div>
+</section>
+
+<section id="roadmap">
+	<h2>9. Roadmap proposée</h2>
+	<div class="timeline">
+		<div class="step"><div class="sn">0</div><div><h4>Télémétrie</h4><p>Logguer les items équipés dans les combats, puis attendre 2 à 4 semaines de données avant toute modification pour avoir une baseline de winrate par item.</p></div></div>
+		<div class="step"><div class="sn">1</div><div><h4>Socle normalisé</h4><p>Budget par rareté incluant les stats secondaires, avec un vrai écart entre r7 et r8. Ajout du champ <code>lineage</code> aux classes.</p></div></div>
+		<div class="step"><div class="sn">2</div><div><h4>Affinités génériques</h4><p>28 effets, ~40&nbsp;% des items tagués, badge et ligne de récit. Simulation de combats IA contre IA par lignée avant la mise en prod.</p></div></div>
+		<div class="step"><div class="sn">3</div><div><h4>Résonance et potions</h4><p>Paliers à 2, 3 et 4 pièces. L'emplacement potion devient significatif (37&nbsp;% des joueurs le laissent vide).</p></div></div>
+		<div class="step"><div class="sn">4</div><div><h4>Signatures et réaccordage</h4><p>Effets uniques des r8. Le forgeron permet de changer l'affinité d'un item (puits de matériaux).</p></div></div>
+	</div>
+</section>
+
+<section id="questions">
+	<h2>10. Ce qu'on doit trancher ensemble</h2>
+	<div class="grid two">
+		<div class="card q"><h4>Verrou souple ou dur&nbsp;?</h4><p>Je recommande le <b>souple</b> (90&nbsp;% du socle hors lignée). Un verrou dur crée du loot mort et frustre au changement de classe.</p></div>
+		<div class="card q"><h4>Un effet générique par emplacement, ou un effet par item&nbsp;?</h4><p>Je recommande le <b>générique</b> (28 effets), plus une <b>signature</b> pour les r8. Un effet par item, c'est 400 effets à équilibrer.</p></div>
+		<div class="card q"><h4>Actif dès le palier 0, ou à partir d'un palier donné&nbsp;?</h4><p>Ma proposition&nbsp;: actif dès qu'on a une lignée, avec une intensité I (paliers 0 à 2), II (palier 3) et III (palier 4). Les nouveaux joueurs découvrent ainsi la mécanique tôt.</p></div>
+		<div class="card q"><h4>Quels items reçoivent une affinité&nbsp;?</h4><p>En priorité les items r5–r8 <b>jamais portés</b> (72&nbsp;% des armes), pour les ressusciter. Les dominants actuels (Sabre, Épée en diamant) restent neutres, comme «&nbsp;valeurs sûres&nbsp;».</p></div>
+		<div class="card q"><h4>Le PvE est-il concerné&nbsp;?</h4><p>Oui, par cohérence. Mais la calibration se fait sur le PvP (gloire), là où la dominance pose problème.</p></div>
+		<div class="card q"><h4>Et l'Épée du Dragon&nbsp;?</h4><p>Côté socle, on recadre son budget (moins de défense). Son thème feu en fait une candidate à une <b>signature Mage</b> (brûlure)… ou on la laisse neutre et iconique.</p></div>
+	</div>
+</section>
+
+<footer>
+	Proposition de travail — données au 27/10/2026. Les chiffres d'effets sont indicatifs et restent à valider par simulation.
+</footer>
+</main>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
