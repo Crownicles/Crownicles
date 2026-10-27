@@ -18,7 +18,7 @@ const use: FightAlterationFunc = (affected, fightAlteration) => {
 			stat: FightStatBuffed.DAMAGE_BOOST,
 			operator: FightStatModifierOperation.MULTIPLIER,
 			duration: 1,
-			value: 1.6
+			value: 1.7
 		}, affected, fightAlteration);
 		result.state = FightAlterationState.NEW;
 	}
