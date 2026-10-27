@@ -11,6 +11,14 @@ import { simpleOrQuickAttack } from "./EsquireFightBehavior";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 
+/**
+ * Check if a fighter can cast a god move (benediction or divine attack)
+ * @param fighter
+ */
+export function canUseGodMove(fighter: AiPlayerFighter | RealPlayerFighter): boolean {
+	return FightConstants.GOD_MOVES.some(godMove => fighter.availableFightActions.has(godMove));
+}
+
 class KnightFightBehavior implements ClassBehavior {
 	private blessRoundChosen: number | null = null;
 
@@ -69,6 +77,20 @@ class KnightFightBehavior implements ClassBehavior {
 			this.restCount = 0;
 			this.heavyAttackCount = 0;
 			this.blessUsed = false;
+		}
+
+		/*
+		 * GOD MOVE RACE: the benediction and the divine attack share a single quota between both fighters,
+		 * so against an opponent able to cast one, the first fighter to cast it takes it from the other
+		 */
+		if (
+			!this.blessUsed
+			&& canUseGodMove(opponent)
+			&& getUsedGodMoves(me, opponent) < 1
+			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION)
+		) {
+			this.blessUsed = true;
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION)!;
 		}
 
 		/*
