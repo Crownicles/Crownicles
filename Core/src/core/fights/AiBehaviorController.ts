@@ -17,6 +17,13 @@ import PaladinFightBehavior from "./aiClassBehaviors/PaladinFightBehavior";
 import TankFightBehavior from "./aiClassBehaviors/TankFightBehavior";
 import HelmetedFightBehavior from "./aiClassBehaviors/HelmetedFightBehavior";
 import GlovedFightBehavior from "./aiClassBehaviors/GlovedFightBehavior";
+import KnightEnduringFightBehavior from "./aiClassBehaviors/KnightEnduringFightBehavior";
+import KnightFieryFightBehavior from "./aiClassBehaviors/KnightFieryFightBehavior";
+import TankRiposteFightBehavior from "./aiClassBehaviors/TankRiposteFightBehavior";
+import PaladinJusticarFightBehavior from "./aiClassBehaviors/PaladinJusticarFightBehavior";
+import GunnerCannoneerFightBehavior from "./aiClassBehaviors/GunnerCannoneerFightBehavior";
+import VeteranChargerFightBehavior from "./aiClassBehaviors/VeteranChargerFightBehavior";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 
 export interface ClassBehavior {
 	chooseAction(fighter: AiPlayerFighter, fightView: FightView): FightAction;
@@ -25,22 +32,35 @@ export interface ClassBehavior {
 // Type for behavior constructor
 type ClassBehaviorConstructor = new () => ClassBehavior;
 
-// Map to store class behavior constructors by class ID
-const classBehaviorConstructors = new Map<number, ClassBehaviorConstructor>();
+/*
+ * Personalities of a class: each fight, the AI picks one of them at random so it is less predictable.
+ * Every personality registered here was checked to be about as strong as the others in simulated fights.
+ */
+const classBehaviorConstructors = new Map<number, ClassBehaviorConstructor[]>();
+
+const KNIGHT_PERSONALITIES = [
+	KnightFightBehavior,
+	KnightEnduringFightBehavior,
+	KnightFieryFightBehavior
+];
+const TANK_PERSONALITIES = [TankFightBehavior, TankRiposteFightBehavior];
+const PALADIN_PERSONALITIES = [PaladinFightBehavior, PaladinJusticarFightBehavior];
+const GUNNER_PERSONALITIES = [GunnerFightBehavior, GunnerCannoneerFightBehavior];
+const VETERAN_PERSONALITIES = [VeteranFightBehavior, VeteranChargerFightBehavior];
 
 /**
  * Initialize all class behaviors in a map so they can be accessed by class ID
  */
 export function initializeAllClassBehaviors(): void {
-	registerClassBehavior(ClassConstants.CLASSES_ID.KNIGHT, KnightFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.VALIANT_KNIGHT, KnightFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.PIKEMAN, KnightFightBehavior);
+	registerClassBehavior(ClassConstants.CLASSES_ID.KNIGHT, ...KNIGHT_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.VALIANT_KNIGHT, ...KNIGHT_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.PIKEMAN, ...KNIGHT_PERSONALITIES);
 	registerClassBehavior(ClassConstants.CLASSES_ID.HORSE_RIDER, HorseRiderFightBehavior);
 	registerClassBehavior(ClassConstants.CLASSES_ID.ESQUIRE, EsquireFightBehavior);
 	registerClassBehavior(ClassConstants.CLASSES_ID.MYSTIC_MAGE, MysticMageFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER, GunnerFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.GUNNER, GunnerFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.ARCHER, GunnerFightBehavior);
+	registerClassBehavior(ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER, ...GUNNER_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.GUNNER, ...GUNNER_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.ARCHER, ...GUNNER_PERSONALITIES);
 	registerClassBehavior(ClassConstants.CLASSES_ID.SLINGER, SlingerFightBehavior);
 	registerClassBehavior(ClassConstants.CLASSES_ID.ROCK_THROWER, RockThrowerFightBehavior);
 	registerClassBehavior(ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN, InfantryManFightBehavior);
@@ -48,33 +68,36 @@ export function initializeAllClassBehaviors(): void {
 	registerClassBehavior(ClassConstants.CLASSES_ID.SOLDIER, InfantryManFightBehavior);
 	registerClassBehavior(ClassConstants.CLASSES_ID.FIGHTER, FighterFightBehavior);
 	registerClassBehavior(ClassConstants.CLASSES_ID.RECRUIT, RecruitFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.VETERAN, VeteranFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.EXPERIENCED_VETERAN, VeteranFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.PALADIN, PaladinFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.LUMINOUS_PALADIN, PaladinFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.TANK, TankFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.IMPENETRABLE_TANK, TankFightBehavior);
-	registerClassBehavior(ClassConstants.CLASSES_ID.ENMESHED, TankFightBehavior);
+	registerClassBehavior(ClassConstants.CLASSES_ID.VETERAN, ...VETERAN_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.EXPERIENCED_VETERAN, ...VETERAN_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.PALADIN, ...PALADIN_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.LUMINOUS_PALADIN, ...PALADIN_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.TANK, ...TANK_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.IMPENETRABLE_TANK, ...TANK_PERSONALITIES);
+	registerClassBehavior(ClassConstants.CLASSES_ID.ENMESHED, ...TANK_PERSONALITIES);
 	registerClassBehavior(ClassConstants.CLASSES_ID.HELMETED, HelmetedFightBehavior);
 	registerClassBehavior(ClassConstants.CLASSES_ID.GLOVED, GlovedFightBehavior);
 }
 
 /**
- * Register a class behavior constructor
+ * Register the personalities of a class, replacing the previous ones
  * @param classId The class ID
- * @param behaviorConstructor The behavior constructor
+ * @param personalities The behavior constructors, one per personality
  */
-export function registerClassBehavior(classId: number, behaviorConstructor: ClassBehaviorConstructor): void {
-	classBehaviorConstructors.set(classId, behaviorConstructor);
+export function registerClassBehavior(classId: number, ...personalities: ClassBehaviorConstructor[]): void {
+	classBehaviorConstructors.set(classId, personalities);
 }
 
 /**
- * Get a new instance of class behavior by class ID
+ * Get a new instance of class behavior by class ID, with one of the class personalities picked at random
  * @param classId The class ID
  * @returns A new instance of the class behavior or undefined if not found
  */
 export function getAiClassBehavior(classId: number): ClassBehavior | undefined {
-	return classBehaviorConstructors.get(classId)
-		? new (classBehaviorConstructors.get(classId)!)()
-		: undefined;
+	const personalities = classBehaviorConstructors.get(classId);
+	if (!personalities || personalities.length === 0) {
+		return undefined;
+	}
+	const Personality = RandomUtils.crowniclesRandom.pick(personalities);
+	return new Personality();
 }
