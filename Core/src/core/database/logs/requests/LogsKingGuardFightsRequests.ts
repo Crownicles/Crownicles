@@ -1,8 +1,14 @@
 import { QueryTypes } from "sequelize";
 import { ClassInfoConstants } from "../../../../../../Lib/src/constants/ClassInfoConstants";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
+import { BossLadder } from "../../../report/PveMonsterLevel";
+import {
+	BossFightsTable, getBossFightsLadder
+} from "./LogsBossFightsLadderRequests";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
-import { LogsKingGuardFightsResults } from "../models/LogsKingGuardFightsResults";
+import {
+	KING_GUARD_FIGHT_WINNER, LogsKingGuardFightsResults
+} from "../models/LogsKingGuardFightsResults";
 import {
 	dateToLogs, getTodayMidnight
 } from "../../../../../../Lib/src/utils/TimeUtils";
@@ -10,6 +16,17 @@ import type { PersonalFightDailySummary } from "../LogsReadRequests";
 
 type KingGuardLevelBaseRow = {
 	baseLevel: number;
+};
+
+const KING_GUARD_FIGHTS: BossFightsTable = {
+	name: "king guard",
+	model: LogsKingGuardFightsResults,
+	table: "king_guard_fights_results",
+	levelColumn: "guardLevel",
+	winners: {
+		player: KING_GUARD_FIGHT_WINNER.PLAYER,
+		opponent: KING_GUARD_FIGHT_WINNER.GUARD
+	}
 };
 
 export abstract class LogsKingGuardFightsRequests {
@@ -50,6 +67,14 @@ export abstract class LogsKingGuardFightsRequests {
 			CrowniclesLogger.errorWithObj("Failed to retrieve king guard progression, using player level", error);
 			return null;
 		}
+	}
+
+	/**
+	 * Get the ladder of a player against the king guards, whatever its class: the strongest guard it beat and its last guard fight
+	 * (see PVEConstants.LOW_LEVEL_BOSS_LADDER)
+	 */
+	static getGuardLadder(playerKeycloakId: string): Promise<BossLadder> {
+		return getBossFightsLadder(KING_GUARD_FIGHTS, playerKeycloakId);
 	}
 
 	/**

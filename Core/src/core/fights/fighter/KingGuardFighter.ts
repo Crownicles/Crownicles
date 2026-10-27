@@ -7,6 +7,9 @@ import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObje
  * Its player and pet are never persisted: everything the fight needs is preloaded.
  */
 export class KingGuardFighter extends AiPlayerFighter {
+	// Level of the player when the guard level was chosen
+	public readonly playerLevel: number;
+
 	private readonly activeObjects: PlayerActiveObjects;
 
 	public constructor(guard: KingGuard) {
@@ -16,6 +19,7 @@ export class KingGuardFighter extends AiPlayerFighter {
 			preloadedPetEntity: guard.pet
 		});
 		this.activeObjects = guard.activeObjects;
+		this.playerLevel = guard.playerLevel;
 	}
 
 	/**

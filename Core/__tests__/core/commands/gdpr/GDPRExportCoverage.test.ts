@@ -524,7 +524,7 @@ const LOG_DATA_EXPORT_FIELD_COVERAGE = {
 		exporter: "LogsFightsExporter.ts",
 		csvFile: "logs/47_pve_fights.csv",
 		fields: [
-			"classId", "monsterId", "monsterLevel", "monsterFightPoints", "monsterAttack",
+			"classId", "playerLevel", "monsterId", "monsterLevel", "monsterFightPoints", "monsterAttack",
 			"monsterDefense", "monsterSpeed", "turn", "winner", "date"
 		]
 	},
@@ -532,7 +532,7 @@ const LOG_DATA_EXPORT_FIELD_COVERAGE = {
 		exporter: "LogsFightsExporter.ts",
 		csvFile: "logs/101_king_guard_fights.csv",
 		fields: [
-			"classId", "guardClassId", "guardLevel", "turn", "winner", "date"
+			"classId", "guardClassId", "guardLevel", "playerLevel", "turn", "winner", "date"
 		]
 	},
 	"LogsPlayersGloryPoints": {

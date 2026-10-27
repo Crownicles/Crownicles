@@ -21,6 +21,9 @@ export class LogsKingGuardFightsResults extends Model {
 
 	declare readonly guardLevel: number;
 
+	// Level of the player when the opponent level was chosen, null for the fights logged before it was recorded
+	declare readonly playerLevel: number | null;
+
 	declare readonly turn: number;
 
 	declare readonly winner: KingGuardFightWinner;
@@ -50,6 +53,10 @@ export function initModel(sequelize: Sequelize): void {
 		guardLevel: {
 			type: DataTypes.SMALLINT.UNSIGNED,
 			allowNull: false
+		},
+		playerLevel: {
+			type: DataTypes.SMALLINT.UNSIGNED,
+			allowNull: true
 		},
 		turn: {
 			type: DataTypes.TINYINT.UNSIGNED,

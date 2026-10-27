@@ -1,5 +1,16 @@
 import { TimeConstants } from "./TimeConstants";
 
+/**
+ * Role of a PVE boss in the island trip, which drives how hard it should be
+ */
+export const PVE_BOSS_ROLES = {
+	EARLY: "early",
+	MIDDLE: "middle",
+	FINAL: "final"
+} as const;
+
+export type PveBossRole = typeof PVE_BOSS_ROLES[keyof typeof PVE_BOSS_ROLES];
+
 export abstract class PVEConstants {
 	static readonly TIME_AFTER_INACTIVITY_ON_BOAT_IS_NOT_ACCEPTED = 24 * 3 * 3600 * 1000; // 3 days;
 
@@ -35,6 +46,75 @@ export abstract class PVEConstants {
 	} as const;
 
 	static readonly FINAL_BOSS_MONSTER_LEVEL_ABOVE_RECORD_PROBABILITY = 0.18;
+
+	// From this level, the bosses are drawn around the records of the class lineage, but never below HIGH_LEVEL_MIN_MONSTER_LEVEL
+	static readonly LOW_LEVEL_PLAYER_THRESHOLD = 100;
+
+	static readonly HIGH_LEVEL_MIN_MONSTER_LEVEL = 80;
+
+	/**
+	 * Below LOW_LEVEL_PLAYER_THRESHOLD, a boss follows the strongest one of its kind the player killed, whatever its class:
+	 * it grows a bit after each victory and comes back weaker after a defeat, at the pace of its role in the island trip
+	 */
+	static readonly LOW_LEVEL_BOSS_LADDER = {
+		// Level of a boss met for the first time, as a share of the player level, from MIN_LEVEL to LOW_LEVEL_PLAYER_THRESHOLD
+		TARGET_LEVEL_RATIO: {
+			[PVE_BOSS_ROLES.EARLY]: {
+				AT_MIN_LEVEL: -0.45,
+				AT_THRESHOLD: -0.3
+			},
+			[PVE_BOSS_ROLES.MIDDLE]: {
+				AT_MIN_LEVEL: -0.4,
+				AT_THRESHOLD: -0.25
+			},
+			[PVE_BOSS_ROLES.FINAL]: {
+				AT_MIN_LEVEL: -0.35,
+				AT_THRESHOLD: -0.1
+			}
+		},
+		FIRST_ENCOUNTER_VARIATION: 0.05,
+
+		// A beaten boss below its target level closes this share of the gap, for the players who level up fast
+		CATCH_UP_GAP_SHARE: 0.5,
+		CATCH_UP_VARIATION: 0.2,
+
+		// Share of its level a boss gains after a victory, and loses after a defeat once moved by the levels the player gained since
+		PACE: {
+			[PVE_BOSS_ROLES.EARLY]: {
+				CLIMB_AFTER_VICTORY: {
+					MIN: 0.0025,
+					MAX: 0.005
+				},
+				DROP_AFTER_DEFEAT: 0.25
+			},
+			[PVE_BOSS_ROLES.MIDDLE]: {
+				CLIMB_AFTER_VICTORY: {
+					MIN: 0.01,
+					MAX: 0.02
+				},
+				DROP_AFTER_DEFEAT: 0.15
+			},
+			[PVE_BOSS_ROLES.FINAL]: {
+				CLIMB_AFTER_VICTORY: {
+					MIN: 0.01,
+					MAX: 0.03
+				},
+				DROP_AFTER_DEFEAT: 0.12
+			}
+		},
+
+		// After a victory, the boss sometimes comes back a bit weaker instead
+		WEAKENED: {
+			PROBABILITY: 0.2,
+			MIN: -0.08,
+			MAX: -0.02
+		},
+
+		// Bosses up to this depth of the island are early bosses
+		EARLY_BOSS_MAX_DEPTH: 2,
+
+		MAX_LEVELS_BELOW_PLAYER: 20
+	};
 
 	/**
 	 * The formula is
