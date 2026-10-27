@@ -8,6 +8,9 @@ import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionR
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
 
+// Share of the computed recoil the sender actually takes when it is not stunned by its own attack
+const RECOIL_DAMAGE_MULTIPLIER = 0.5;
+
 const use: FightActionFunc = (sender, receiver, fightAction) => {
 	const result = simpleDamageFightAction(
 		{
@@ -45,7 +48,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 			selfTarget: true,
 			stat: FightStatBuffed.DAMAGE,
 			operator: FightStatModifierOperation.ADDITION,
-			value: FightActionController.getAttackDamage({
+			value: Math.round(RECOIL_DAMAGE_MULTIPLIER * FightActionController.getAttackDamage({
 				attackerStats: [
 					sender.getDefense() * damageFactor,
 					sender.getSpeed() * damageFactor,
@@ -65,7 +68,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 				minDamage: 60 * damageFactor,
 				averageDamage: 110 * damageFactor,
 				maxDamage: 210 * damageFactor
-			})
+			}))
 		}, sender, fightAction);
 	}
 

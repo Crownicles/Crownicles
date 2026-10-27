@@ -8,6 +8,9 @@ import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionR
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
 
+// Maximum amount of breath stolen from the opponent, starving them of the breath their strongest attacks need
+const MAX_STOLEN_BREATH = 2;
+
 function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 30,
@@ -49,7 +52,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		}
 	);
 
-	// 60% chance of reducing the opponent's speed by 15%. Otherwise, steal 1 point of breath from the opponent.
+	// 40% chance of reducing the opponent's speed by 15%. Otherwise, steal up to 2 points of breath from the opponent.
 	if (RandomUtils.crowniclesRandom.bool(0.4) || receiver.getBreath() < 1) {
 		// Reduce the target speed by 15%
 		FightActionController.applyBuff(result, {
@@ -60,17 +63,18 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		}, receiver, fightAction);
 	}
 	else {
+		const stolenBreath = Math.min(MAX_STOLEN_BREATH, receiver.getBreath());
 		FightActionController.applyBuff(result, {
 			selfTarget: false,
 			stat: FightStatBuffed.BREATH,
 			operator: FightStatModifierOperation.ADDITION,
-			value: -1
+			value: -stolenBreath
 		}, receiver, fightAction);
 		FightActionController.applyBuff(result, {
 			selfTarget: true,
 			stat: FightStatBuffed.BREATH,
 			operator: FightStatModifierOperation.ADDITION,
-			value: 1
+			value: stolenBreath
 		}, sender, fightAction);
 	}
 	return result;
