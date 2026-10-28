@@ -2501,7 +2501,8 @@
     },
     "fightActionChoose": {
       "turnIndicationTitle": "C'est au tour de {{pseudo}} de jouer {emote:fightCommand.crossedSwords}",
-      "turnIndicationDescription": "Choisissez une action"
+      "turnIndicationDescription": "Choisissez une action",
+      "powerMultiplier": "×{{multiplier, number}}"
     },
     "actions": {
       "intro": "{{emote}} | **{{fighter}}** ",

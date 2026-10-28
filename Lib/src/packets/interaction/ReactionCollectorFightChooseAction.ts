@@ -7,6 +7,9 @@ import {
 
 export class ReactionCollectorFightChooseActionReaction extends ReactionCollectorReaction {
 	id!: string;
+
+	// Damage multiplier of the action when it changes during the fight (e.g. the dark attack wears down with each use)
+	powerMultiplier?: number;
 }
 
 export class ReactionCollectorFightChooseActionData extends ReactionCollectorData {
@@ -28,12 +31,10 @@ export class ReactionCollectorFightChooseAction extends ReactionCollector {
 	private readonly fighterKeycloackId: string;
 
 
-	constructor(fightId: string, fighterKeycloakId: string, reactions: string[]) {
+	constructor(fightId: string, fighterKeycloakId: string, reactions: ReactionCollectorFightChooseActionReaction[]) {
 		super();
 		this.fightId = fightId;
-		this.reactions = reactions.map(r => ({
-			id: r
-		}));
+		this.reactions = reactions;
 		this.fighterKeycloackId = fighterKeycloakId;
 	}
 

@@ -56,18 +56,32 @@ async function acknowledgeActionClick(buttonInteraction: ButtonInteraction, rows
 }
 
 /**
+ * Button of a fight action, labelled with its current damage multiplier when it changes during the fight
+ */
+function buildActionButton(action: ReactionCollectorFightChooseActionReaction, lng: Language): ButtonBuilder {
+	const button = new ButtonBuilder()
+		.setEmoji(parseEmoji(CrowniclesIcons.fightActions[action.id])!)
+		.setCustomId(action.id)
+		.setStyle(ButtonStyle.Secondary);
+	if (action.powerMultiplier !== undefined) {
+		button.setLabel(i18n.t("commands:fight.fightActionChoose.powerMultiplier", {
+			lng,
+			multiplier: action.powerMultiplier
+		}));
+	}
+	return button;
+}
+
+/**
  * One button per available fight action, wrapped onto new rows when a row is full
  */
-function buildActionRows(actions: ReactionCollectorFightChooseActionReaction[]): ActionRowBuilder<ButtonBuilder>[] {
+function buildActionRows(actions: ReactionCollectorFightChooseActionReaction[], lng: Language): ActionRowBuilder<ButtonBuilder>[] {
 	const rows = [new ActionRowBuilder<ButtonBuilder>()];
 	for (const action of actions) {
 		if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
 			rows.push(new ActionRowBuilder<ButtonBuilder>());
 		}
-		rows[rows.length - 1].addComponents(new ButtonBuilder()
-			.setEmoji(parseEmoji(CrowniclesIcons.fightActions[action.id])!)
-			.setCustomId(action.id)
-			.setStyle(ButtonStyle.Secondary));
+		rows[rows.length - 1].addComponents(buildActionButton(action, lng));
 	}
 	return rows;
 }
@@ -203,7 +217,7 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 		}), user)
 			.setDescription(i18n.t("commands:fight.fightActionChoose.turnIndicationDescription", { lng }));
 		const actions = packet.reactions.map(reaction => reaction.data as ReactionCollectorFightChooseActionReaction);
-		const rows = buildActionRows(actions);
+		const rows = buildActionRows(actions, lng);
 		const options = {
 			embeds: [embed],
 			components: rows

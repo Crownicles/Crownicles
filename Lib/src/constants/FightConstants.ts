@@ -306,6 +306,17 @@ export abstract class FightConstants {
 		FightConstants.FIGHT_ACTIONS.MONSTER.HAMMER_QUAKE_ATTACK
 	];
 
+	/*
+	 * The dark attack wears down with each use: its damage multiplier drops by one step per use, down to a floor,
+	 * and gets one step back every time its caster plays this many actions in a row without it
+	 */
+	static readonly DARK_ATTACK_WEAR = {
+		BASE_MULTIPLIER: 1.8,
+		MULTIPLIER_LOSS_PER_USE: 0.3,
+		MIN_MULTIPLIER: 0.3,
+		RECOVERY_IDLE_ACTIONS: 2
+	};
+
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
 		MAX_ELO_GAP: 400,

@@ -7,7 +7,6 @@ import MysticMageFightBehavior from "../../../../src/core/fights/aiClassBehavior
 import GunnerFightBehavior from "../../../../src/core/fights/aiClassBehaviors/GunnerFightBehavior";
 import VeteranFightBehavior from "../../../../src/core/fights/aiClassBehaviors/VeteranFightBehavior";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import {
 	mockFighter, mockFightView
@@ -75,11 +74,35 @@ describe("AI class behaviors", () => {
 	});
 
 	describe("MysticMageFightBehavior", () => {
-		it("blinds an opponent without alteration instead of burning it", () => {
+		it("sets up a poison on a clean opponent at the start of the fight", () => {
 			const mage = mockFighter({ breath: 16 });
-			const opponent = mockFighter({ classId: ClassConstants.CLASSES_ID.VALIANT_KNIGHT });
+			const opponent = mockFighter();
+
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(1, opponent)).id).toBe(ACTIONS.POISONOUS_ATTACK);
+		});
+
+		it("cashes in the ailment of its opponent with a fresh dark attack", () => {
+			const mage = mockFighter({ breath: 16 });
+			const opponent = mockFighter({ alterationId: ALTERATIONS.POISONED });
 
 			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(4, opponent)).id).toBe(ACTIONS.DARK_ATTACK);
+		});
+
+		it("saves its breath for the dark attack rather than spending it on a weaker hit", () => {
+			const mage = mockFighter({ breath: 3 });
+			const opponent = mockFighter({ alterationId: ALTERATIONS.POISONED });
+
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(4, opponent)).id).toBe(ACTIONS.BREATH_TAKING_ATTACK);
+		});
+
+		it("leaves its worn dark attack aside and keeps fighting with fire", () => {
+			const mage = mockFighter({
+				breath: 16,
+				history: [ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK]
+			});
+			const opponent = mockFighter({ alterationId: ALTERATIONS.POISONED });
+
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(10, opponent)).id).toBe(ACTIONS.FIRE_ATTACK);
 		});
 	});
 
