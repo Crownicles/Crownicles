@@ -25,6 +25,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	ComponentType,
 	InteractionCollector,
 	InteractionEditReplyOptions,
 	Message,
@@ -199,7 +200,9 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 	let validateCollector: InteractionCollector<never>;
 
+	// Only the selection: when the selection expired, the confirmation buttons are displayed on the same message
 	const selectCollector = msg.createMessageComponentCollector({
+		componentType: ComponentType.StringSelect,
 		time: DiscordCollectorUtils.getRemainingCollectorTime(packet)
 	});
 

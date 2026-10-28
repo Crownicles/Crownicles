@@ -13,7 +13,6 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
-	DiscordAPIError,
 	InteractionCallbackResponse,
 	InteractionUpdateOptions,
 	Message,
@@ -21,8 +20,7 @@ import {
 	MessageComponentInteraction,
 	MessageEditOptions,
 	parseEmoji,
-	ReactionCollector,
-	RESTJSONErrorCodes
+	ReactionCollector
 } from "discord.js";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { getErrorReason } from "../../../Lib/src/utils/ErrorUtils";
@@ -116,7 +114,7 @@ export abstract class DiscordCollectorUtils {
 	];
 
 	/**
-	 * Component interactions that expired before being acknowledged, to which Discord no longer accepts any answer
+	 * Component interactions whose acknowledgement failed: unless acknowledged another way, Discord accepts no answer to them
 	 */
 	private static readonly unacknowledgedComponents = new WeakSet<MessageComponentInteraction>();
 
@@ -133,9 +131,7 @@ export abstract class DiscordCollectorUtils {
 			return true;
 		}
 		catch (error) {
-			if (error instanceof DiscordAPIError && error.code === RESTJSONErrorCodes.UnknownInteraction) {
-				DiscordCollectorUtils.unacknowledgedComponents.add(interaction);
-			}
+			DiscordCollectorUtils.unacknowledgedComponents.add(interaction);
 			CrowniclesLogger.warn("Component interaction could not be acknowledged, handling the click anyway", {
 				customId: interaction.customId,
 				reason: getErrorReason(error),
@@ -200,12 +196,20 @@ export abstract class DiscordCollectorUtils {
 	}
 
 	/**
+	 * Whether the acknowledgement of the interaction failed and it was not acknowledged another way (a concurrent
+	 * acknowledgement of the same click fails with "already acknowledged" but leaves it answerable)
+	 */
+	private static isUnanswerable(component: MessageComponentInteraction): boolean {
+		return DiscordCollectorUtils.unacknowledgedComponents.has(component) && !component.deferred && !component.replied;
+	}
+
+	/**
 	 * Cache the component interaction through which Core's response to a click is displayed, and return its id for the
-	 * packet context. An interaction that expired before being acknowledged can no longer be answered: it is left out, so
-	 * that the response falls back to the command interaction
+	 * packet context. An interaction whose acknowledgement failed (expired, Discord unavailable...) can no longer be answered:
+	 * it is left out, so that the response falls back to the command interaction
 	 */
 	private static cacheRespondingComponent(component: MessageComponentInteraction | null): RespondingComponentIds {
-		if (!component || DiscordCollectorUtils.unacknowledgedComponents.has(component)) {
+		if (!component || DiscordCollectorUtils.isUnanswerable(component)) {
 			return {};
 		}
 		if (component.isButton()) {

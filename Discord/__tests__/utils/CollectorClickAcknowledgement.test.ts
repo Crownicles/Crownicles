@@ -188,6 +188,25 @@ describe("collector click acknowledgement (#5059)", () => {
 		expect(sentDiscordContext()).toMatchObject({ buttonInteraction: click.id });
 	});
 
+	it("answers Core's response through the command interaction when Discord could not be reached to acknowledge the click", async () => {
+		const click = buttonClick("accept", () => Promise.reject(new Error("The operation was aborted due to timeout")));
+
+		await DiscordCollectorUtils.acknowledgeComponent(click, click.deferReply());
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
+
+		expect(sentDiscordContext()?.buttonInteraction).toBeUndefined();
+	});
+
+	it("keeps answering through the click when a concurrent acknowledgement of the same click succeeded", async () => {
+		const click = buttonClick("accept", () => Promise.reject(new Error("Interaction has already been acknowledged.")));
+
+		await DiscordCollectorUtils.acknowledgeComponent(click, click.deferReply());
+		Object.assign(click, { deferred: true });
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
+
+		expect(sentDiscordContext()).toMatchObject({ buttonInteraction: click.id });
+	});
+
 	it("displays the new view through a message edit when the update of an expired click is rejected", async () => {
 		const message = { edit: vi.fn().mockResolvedValue(undefined) };
 		const click = {
