@@ -210,23 +210,21 @@ export abstract class DiscordCollectorUtils {
 	 * happened (see MessagesUtils.editClickReply)
 	 */
 	private static cacheRespondingComponent(component: MessageComponentInteraction | null): RespondingComponentIds {
-		if (!component) {
-			return {};
-		}
-		const answerable = !DiscordCollectorUtils.isUnanswerable(component);
-		if (component.isButton()) {
-			if (answerable) {
-				DiscordCache.cacheButtonInteraction(component);
-			}
+		if (component?.isButton()) {
+			DiscordCollectorUtils.cacheIfAnswerable(component, DiscordCache.cacheButtonInteraction);
 			return { buttonInteraction: component.id };
 		}
-		if (component.isStringSelectMenu()) {
-			if (answerable) {
-				DiscordCache.cacheStringSelectMenuInteraction(component);
-			}
+		if (component?.isStringSelectMenu()) {
+			DiscordCollectorUtils.cacheIfAnswerable(component, DiscordCache.cacheStringSelectMenuInteraction);
 			return { stringSelectMenuInteraction: component.id };
 		}
 		return {};
+	}
+
+	private static cacheIfAnswerable<T extends MessageComponentInteraction>(component: T, cache: (component: T) => void): void {
+		if (!DiscordCollectorUtils.isUnanswerable(component)) {
+			cache(component);
+		}
 	}
 
 	static sendReaction(
