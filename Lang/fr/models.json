@@ -431,7 +431,7 @@
       "name_other": "Malédictions de la mer"
     },
     "darkAttack": {
-      "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Aveugle l'adversaire ou rend au lanceur une partie de son souffle perdu. L'altération \"aveuglé\" dure au moins 1 tour et rend l'adversaire incapable d'attaquer parfois, tout en réduisant sa défense et sa vitesse.",
+      "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Rend au lanceur une partie de son souffle perdu si l'adversaire subit une altération. Très puissante à sa première utilisation, elle s'affaiblit à chaque nouvelle utilisation et reprend des forces quand le lanceur s'en passe pendant quelques actions. Sa puissance actuelle est affichée sur son bouton.",
       "name_one": "Attaque sombre",
       "name_other": "Attaques sombres"
     },

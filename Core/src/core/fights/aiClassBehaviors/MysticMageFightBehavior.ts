@@ -5,114 +5,61 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
+import { getDarkAttackPowerMultiplier } from "../actions/DarkAttackWear";
 
+const ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
+
+// Below this multiplier, the worn dark attack is left aside until it recovers
+const MIN_WORTHWHILE_DARK_ATTACK_MULTIPLIER = 0.8;
+
+// The curse heals the mage only while the opponent has more than this share of its energy
+const CURSE_HEAL_ENERGY_RATIO = 0.4;
+
+// The opening poison lands as a critical hit during the first turns of the fight
+const POISON_OPENING_LAST_TURN = 2;
+
+function getAction(id: string): FightAction {
+	return FightActionDataController.instance.getById(id)!;
+}
+
+function canAfford(me: AiPlayerFighter, actionId: string): boolean {
+	return me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
+}
+
+/**
+ * Sets up one of its ailments, cashes it in with the dark attack while the attack is fresh,
+ * then finishes with its other attacks while the dark attack recovers
+ */
 class MysticMageFightBehavior implements ClassBehavior {
-	private cursedAttackUsed = false;
-
-	private cursedAttackTurn = RandomUtils.crowniclesRandom.integer(7, 15);
-
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter();
-		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 
 		// Early return if no opponent (should not happen in normal gameplay)
 		if (!opponent) {
-			return FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK)!;
+			return getAction(ACTIONS.BREATH_TAKING_ATTACK);
 		}
 
-		/*
-		 * Dark attack if:
-		 * - opponent is charging a two-turn attack without alterations
-		 * - player is dying soon
-		 */
-		const lastOpponentActionId = opponent.getLastFightActionUsed()?.id;
-		if (
-			me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DARK_ATTACK)
-			&& (
-
-				// Case 1: Cancel opponent's two-turn attack
-				lastOpponentActionId !== undefined && [
-					FightConstants.FIGHT_ACTIONS.PLAYER.RESTING,
-					FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK,
-					FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK,
-					FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
-				].includes(lastOpponentActionId)
-				&& !opponent.hasFightAlteration()
-
-				// Case 2: Player is dying
-				|| me.getEnergy() < 150 && opponent.getEnergy() > 300
-			)
-		) {
-			return FightActionDataController.instance.getById(actions.DARK_ATTACK)!;
+		if (opponent.hasFightAlteration()) {
+			if (getDarkAttackPowerMultiplier(me) >= MIN_WORTHWHILE_DARK_ATTACK_MULTIPLIER) {
+				// Save the breath for the dark attack rather than spending it on a weaker hit
+				return getAction(canAfford(me, ACTIONS.DARK_ATTACK) ? ACTIONS.DARK_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
+			}
+		}
+		else {
+			if (fightView.fightController.turn <= POISON_OPENING_LAST_TURN && canAfford(me, ACTIONS.POISONOUS_ATTACK)) {
+				return getAction(ACTIONS.POISONOUS_ATTACK);
+			}
+			if (opponent.getEnergy() > opponent.getMaxEnergy() * CURSE_HEAL_ENERGY_RATIO && canAfford(me, ACTIONS.CURSED_ATTACK)) {
+				return getAction(ACTIONS.CURSED_ATTACK);
+			}
 		}
 
-		// Blinding a target without alteration makes it skip most of its turns, worth more than a burn
-		if (
-			fightView.fightController.turn > 2
-			&& !opponent.hasFightAlteration()
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DARK_ATTACK)
-		) {
-			return FightActionDataController.instance.getById(actions.DARK_ATTACK)!;
+		for (const actionId of [ACTIONS.FIRE_ATTACK, ACTIONS.POISONOUS_ATTACK]) {
+			if (canAfford(me, actionId)) {
+				return getAction(actionId);
+			}
 		}
-
-		/*
-		 * Fire attack if enough breath and no alteration
-		 * After turn 13, skip if cursed attack has not been used
-		 */
-		if (
-			(!opponent.hasFightAlteration() || opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.BURNED)
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.FIRE_ATTACK)
-			&& fightView.fightController.turn > 1
-			&& (fightView.fightController.turn <= this.cursedAttackTurn
-				|| this.cursedAttackUsed)
-		) {
-			return FightActionDataController.instance.getById(actions.FIRE_ATTACK)!;
-		}
-
-		// Poison attack if opponent < 65 HP or if we are in the first turn
-		if (
-			opponent.getEnergy() < 65
-			&& me.getBreath() < FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.POISONOUS_ATTACK) + 3
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.POISONOUS_ATTACK)
-			|| fightView.fightController.turn <= 1
-			&& !opponent.hasFightAlteration()
-		) {
-			return FightActionDataController.instance.getById(actions.POISONOUS_ATTACK)!;
-		}
-
-		if (
-			!opponent.hasFightAlteration()
-			&& (fightView.fightController.turn === 2
-				|| (
-					me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CURSED_ATTACK)
-					&& (opponent.getEnergy() < 120
-						|| (opponent.getEnergy() > 500
-							&& (!this.cursedAttackUsed
-								|| RandomUtils.crowniclesRandom.bool(0.2))
-							&& fightView.fightController.turn > this.cursedAttackTurn)
-					)
-				)
-			)
-		) {
-			this.cursedAttackUsed = true;
-			return FightActionDataController.instance.getById(actions.CURSED_ATTACK)!;
-		}
-
-		// If breath > 10, always use dark attack
-		if (me.getBreath() > 10 && opponent.hasFightAlteration()) {
-			return FightActionDataController.instance.getById(actions.DARK_ATTACK)!;
-		}
-
-		// If enough breath for dark attack, random choice between dark and breathtaking
-		if (me.getBreath() >= 8) {
-			return RandomUtils.crowniclesRandom.bool(0.3)
-				? FightActionDataController.instance.getById(actions.DARK_ATTACK)!
-				: FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK)!;
-		}
-
-		// Default to breathtaking attack
-		return FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK)!;
+		return getAction(ACTIONS.BREATH_TAKING_ATTACK);
 	}
 }
 

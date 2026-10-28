@@ -7,6 +7,7 @@ import { simpleDamageFightAction } from "../../templates/SimpleDamageFightAction
 import { FightAlterations } from "../../FightAlterations";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
+import { getDarkAttackPowerMultiplier } from "../../DarkAttackWear";
 
 const use: FightActionFunc = (sender, receiver, fightAction) => {
 	const result = simpleDamageFightAction(
@@ -34,10 +35,10 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		}, sender, fightAction);
 	}
 
-	FightActionController.applyAlteration(result, {
-		selfTarget: false,
-		alteration: FightAlterations.BLIND
-	}, receiver);
+	// The current use is pushed to the history after the action: the multiplier only counts the previous ones
+	if (result.damages) {
+		result.damages = Math.round(result.damages * getDarkAttackPowerMultiplier(sender));
+	}
 
 	return result;
 };
