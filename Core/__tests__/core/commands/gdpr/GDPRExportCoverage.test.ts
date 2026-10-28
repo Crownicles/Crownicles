@@ -265,6 +265,7 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"score",
 		"weeklyScore",
 		"kingChallengeTier",
+		"defensePersonality",
 		"level",
 		"experience",
 		"money",

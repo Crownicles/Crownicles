@@ -341,6 +341,11 @@ export abstract class HelpConstants {
 			"nouveautés",
 			"nouveautes"
 		],
+		DEFENSE: [
+			"defense",
+			"défense",
+			"style"
+		],
 		CLASSES: [
 			"class",
 			"c",
@@ -799,6 +804,12 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":bookmark:",
 				NAME: "classes",
+				CATEGORY: "player"
+			},
+		DEFENSE:
+			{
+				EMOTE: ":shield:",
+				NAME: "defense",
 				CATEGORY: "player"
 			},
 		PET:

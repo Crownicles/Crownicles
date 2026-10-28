@@ -83,6 +83,7 @@ import { RecipeDiscoveryService } from "../../../cooking/RecipeDiscoveryService"
 import { RecipeDisplayInfo } from "../../../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/CookingConstants";
 import { buildNewItemSlotData } from "../../../utils/ItemSlotUtils";
+import type { AiPersonality } from "../../../../../../Lib/src/constants/AiPersonalityConstants";
 import { applyKingChallengeProgressUnderLock } from "../../../kingChallenge/KingChallenge";
 
 export type PlayerEditValueParameters = {
@@ -195,6 +196,9 @@ export class Player extends Model {
 
 	/** Number of king's challenge tiers already rewarded this week */
 	declare kingChallengeTier: number;
+
+	/** Personality of the AI defending the player in PvP fights, null for a random one at each fight */
+	declare defensePersonality: AiPersonality | null;
 
 	declare level: number;
 
@@ -1997,6 +2001,11 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.TINYINT.UNSIGNED,
 			allowNull: false,
 			defaultValue: 0
+		},
+		defensePersonality: {
+			type: DataTypes.STRING(32), // eslint-disable-line new-cap
+			allowNull: true,
+			defaultValue: null
 		},
 		level: {
 			type: DataTypes.INTEGER,

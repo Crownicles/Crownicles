@@ -92,6 +92,8 @@ import { ReactionCollectorStopPacket } from "../../../../Lib/src/packets/interac
 import { ReactionCollectorResetTimerPacketRes } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { ReactionCollectorChangeClassData } from "../../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
 import { handleChangeClassReactionCollector } from "../../commands/player/ClassesCommand";
+import { ReactionCollectorDefensePersonalityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDefensePersonality";
+import { createDefensePersonalityCollector } from "../../commands/player/DefenseCommand";
 import { ReactionCollectorSellData } from "../../../../Lib/src/packets/interaction/ReactionCollectorSell";
 import { handleSellReactionCollector } from "../../commands/player/SellCommand";
 import { ReactionCollectorFightChooseActionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
@@ -192,6 +194,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDrinkData.name, drinkAcceptCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetSellData.name, createPetSellCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorChangeClassData.name, handleChangeClassReactionCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDefensePersonalityData.name, createDefensePersonalityCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorSellData.name, handleSellReactionCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorFightChooseActionData.name, handleCommandFightActionChoose);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetTransferData.name, handlePetTransferReactionCollector);
