@@ -86,11 +86,11 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 
 		const getReactingPlayer = await KeycloakUtils.getKeycloakIdFromDiscordId(keycloakConfig, buttonInteraction.user.id, buttonInteraction.user.displayName);
 		if (!getReactingPlayer.isError && getReactingPlayer.payload.keycloakId) {
-			await buttonInteraction.deferReply();
+			await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
 
 			// Disable buttons
 			row.components.forEach(c => c.setDisabled(true));
-			await msg.edit({ components: [row] });
+			await DiscordCollectorUtils.editWithoutBlocking(msg, { components: [row] });
 
 			let reactionIndex = -1;
 			if (buttonInteraction.customId === SmallEventConstants.PET_FOOD.BUTTON_IDS.INVESTIGATE) {

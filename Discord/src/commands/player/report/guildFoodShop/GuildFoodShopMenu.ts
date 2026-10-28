@@ -38,6 +38,7 @@ import {
 	finishReportWithErrorEmbed, finishReportWithMessage
 } from "../ReportFlowHelpers";
 import { openCityConfirmation } from "../confirmation/CityConfirmationMenu";
+import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 
 type CityCollectorFactory = ReturnType<typeof createCityCollector>;
 
@@ -219,7 +220,7 @@ async function handleReimburse(ctx: FoodShopMenuContext, amount: number, nestedM
 
 function createMainCollector(ctx: FoodShopMenuContext): CityCollectorFactory {
 	return createCityCollector(ctx.interaction, ctx.collectorTime, async (customId, buttonInteraction, nestedMenus) => {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 
 		if (customId === ReportCityMenuIds.BACK_TO_CITY) {
 			await nestedMenus.changeToMainMenu();
@@ -238,7 +239,7 @@ function createMainCollector(ctx: FoodShopMenuContext): CityCollectorFactory {
 
 function createQuantityCollector(ctx: FoodShopMenuContext): CityCollectorFactory {
 	return createCityCollector(ctx.interaction, ctx.collectorTime, async (customId, buttonInteraction, nestedMenus) => {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 
 		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
@@ -263,7 +264,7 @@ function createQuantityCollector(ctx: FoodShopMenuContext): CityCollectorFactory
 
 function createReimburseCollector(ctx: FoodShopMenuContext): CityCollectorFactory {
 	return createCityCollector(ctx.interaction, ctx.collectorTime, async (customId, buttonInteraction, nestedMenus) => {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 
 		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);

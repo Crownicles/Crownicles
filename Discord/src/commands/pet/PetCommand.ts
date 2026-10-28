@@ -34,6 +34,7 @@ import {
 	StringConstants, SexTypeShort
 } from "../../../../Lib/src/constants/StringConstants";
 import { getExpeditionLocationName } from "./expedition/ExpeditionDisplayUtils";
+import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 
 /**
  * Get the sex context string for i18n translations (male/female)
@@ -242,7 +243,7 @@ function setupPetButtonCollector(params: {
 			 * (choice menu, in progress menu, or resolve menu based on state)
 			 */
 			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionPacketReq, {}));
-			await i.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(i, i.deferUpdate());
 		}
 	});
 

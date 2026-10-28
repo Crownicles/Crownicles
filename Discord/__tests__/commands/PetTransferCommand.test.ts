@@ -32,8 +32,11 @@ vi.mock("../../../Discord/src/utils/ErrorUtils", () => ({
 	sendInteractionNotForYou: vi.fn()
 }));
 
-vi.mock("../../../Discord/src/utils/DiscordCollectorUtils", () => ({
-	DiscordCollectorUtils: { sendReaction: vi.fn() },
+vi.mock("../../../Discord/src/utils/DiscordCollectorUtils", async () => ({
+	DiscordCollectorUtils: {
+		...(await import("../mocks/DiscordCollectorUtilsMock")).collectorAcknowledgementMocks,
+		sendReaction: vi.fn()
+	},
 	disableRows: vi.fn()
 }));
 

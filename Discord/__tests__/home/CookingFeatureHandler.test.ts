@@ -69,6 +69,7 @@ vi.mock("../../../Discord/src/utils/DiscordCollectorUtils", async (importOrigina
 		...actual,
 		DiscordCollectorUtils: {
 			...actual.DiscordCollectorUtils,
+			...(await import("../mocks/DiscordCollectorUtilsMock")).collectorAcknowledgementMocks,
 			sendReaction: vi.fn()
 		}
 	};

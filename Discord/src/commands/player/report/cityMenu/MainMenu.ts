@@ -434,7 +434,7 @@ function createMainMenuCollector(
 		context, interaction, packet, collectorTime
 	} = params;
 	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 		await handleMainMenuSelection({
 			selectedValue: customId, buttonInteraction, nestedMenus, context, packet
 		});

@@ -100,7 +100,7 @@ function createEnchantmentTransferCollector(
 			}
 
 			if (transfer && buttonInteraction.customId === BlacksmithMenuIds.CONFIRM_ENCHANTMENT_TRANSFER) {
-				await buttonInteraction.deferReply();
+				await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
 				const reactionIndex = packet.reactions.findIndex(reaction => isMatchingTransferReaction(reaction, transfer.source, transfer.target));
 				if (reactionIndex === -1) {
 					CrowniclesLogger.error(`Blacksmith enchantment transfer reaction not found from slot ${transfer.source.slot} to slot ${transfer.target.slot}, category ${transfer.source.category}`);
@@ -111,7 +111,7 @@ function createEnchantmentTransferCollector(
 				return;
 			}
 
-			await buttonInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 			if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
 				handleStayInCityInteraction(packet, context, buttonInteraction);
 			}

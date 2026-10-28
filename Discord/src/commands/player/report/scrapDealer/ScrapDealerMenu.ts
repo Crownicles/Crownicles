@@ -74,12 +74,12 @@ async function handleSharedScrapDealerInteraction(
 	buttonInteraction: ButtonInteraction
 ): Promise<boolean> {
 	if (buttonInteraction.customId === ScrapDealerMenuIds.BACK_TO_CITY) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 		await nestedMenus.changeToMainMenu();
 		return true;
 	}
 	if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 		handleStayInCityInteraction(params.packet, params.context, buttonInteraction);
 		return true;
 	}
@@ -107,7 +107,7 @@ function createScrapDealerListCollector(params: CityMenuParams): CrowniclesNeste
 				return;
 			}
 
-			await buttonInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 			const itemIndex = Number.parseInt(
 				buttonInteraction.customId.slice(ScrapDealerMenuIds.SELECT_ITEM_PREFIX.length),
 				10
@@ -131,7 +131,7 @@ async function confirmScrapDealerRecycle(
 	item: ScrapDealerItem,
 	buttonInteraction: ButtonInteraction
 ): Promise<void> {
-	await buttonInteraction.deferReply();
+	await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
 	const reactionIndex = findScrapDealerRecycleReactionIndex(params.packet, item);
 	if (reactionIndex === -1) {
 		CrowniclesLogger.error(`Scrap dealer recycle reaction not found for slot ${item.slot}, category ${item.category}`);
@@ -159,7 +159,7 @@ function createScrapDealerConfirmCollector(params: CityMenuParams, item: ScrapDe
 				return;
 			}
 			if (buttonInteraction.customId === ScrapDealerMenuIds.BACK_TO_LIST) {
-				await buttonInteraction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 				await nestedMenus.changeMenu(ScrapDealerMenuIds.SCRAP_DEALER_MENU);
 				return;
 			}

@@ -26,6 +26,7 @@ import { DepositTierAffordability } from "../../../../../../Lib/src/types/GuildD
 import {
 	PetConstants, PetFood
 } from "../../../../../../Lib/src/constants/PetConstants";
+import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 
 export type GuildDomainData = ReactionCollectorCityData["guildDomain"] & object & {
 
@@ -240,7 +241,7 @@ export function createDomainCollectorWithStayHandling(
 	handler: (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => Promise<void>
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
 	return createDomainCollector(ctx, async (customId, buttonInteraction, nestedMenus) => {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 			return;

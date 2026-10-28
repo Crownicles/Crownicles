@@ -13,13 +13,18 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	DiscordAPIError,
 	InteractionCallbackResponse,
+	InteractionUpdateOptions,
 	Message,
 	MessageActionRowComponentBuilder,
 	MessageComponentInteraction,
+	MessageEditOptions,
 	parseEmoji,
-	ReactionCollector
+	ReactionCollector,
+	RESTJSONErrorCodes
 } from "discord.js";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
@@ -63,6 +68,10 @@ const MANNER_TO_METHOD = {
 	[SendManner.EDIT_REPLY]: (interaction: CrowniclesInteraction): typeof interaction.editReply => interaction.editReply
 };
 
+function errorReason(error: unknown): string {
+	return error instanceof Error ? error.message : String(error);
+}
+
 function getSendingManner(interaction: CrowniclesInteraction, sendManners: SendManner[]): SendManner {
 	return sendManners.length === 1 ? sendManners[0] : interaction.replied ? sendManners[1] : sendManners[0];
 }
@@ -105,6 +114,65 @@ export abstract class DiscordCollectorUtils {
 	];
 
 	/**
+	 * Component interactions that expired before being acknowledged, to which Discord no longer accepts any answer
+	 */
+	private static readonly unacknowledgedComponents = new WeakSet<MessageComponentInteraction>();
+
+	/**
+	 * Wait for the acknowledgement of a component interaction (deferReply, deferUpdate, update...) without ever throwing.
+	 * Discord rejects an acknowledgement sent more than 3 seconds after the click, which happens when the shard lags: the
+	 * click must still be forwarded to Core, otherwise the player stays blocked until the collector ends (#5059).
+	 * Acknowledge before any other request to Discord, so that the slow requests do not consume the 3 seconds.
+	 * @returns whether the interaction was acknowledged
+	 */
+	static async acknowledgeComponent(interaction: MessageComponentInteraction, acknowledgement: Promise<unknown>): Promise<boolean> {
+		try {
+			await acknowledgement;
+			return true;
+		}
+		catch (error) {
+			if (error instanceof DiscordAPIError && error.code === RESTJSONErrorCodes.UnknownInteraction) {
+				DiscordCollectorUtils.unacknowledgedComponents.add(interaction);
+			}
+			CrowniclesLogger.warn("Component interaction could not be acknowledged, handling the click anyway", {
+				customId: interaction.customId,
+				reason: errorReason(error),
+				interactionAgeMs: Date.now() - interaction.createdTimestamp
+			});
+			return false;
+		}
+	}
+
+	/**
+	 * Edit a message whose update is only cosmetic (e.g. disabling the buttons of a collector), so that a failure of the
+	 * edit cannot prevent the click from being forwarded to Core
+	 */
+	static async editWithoutBlocking(message: Message, options: MessageEditOptions): Promise<void> {
+		try {
+			await message.edit(options);
+		}
+		catch (error) {
+			CrowniclesLogger.warn("Collector message could not be edited, handling the click anyway", {
+				messageId: message.id,
+				reason: errorReason(error)
+			});
+		}
+	}
+
+	/**
+	 * Update the message of a component interaction, falling back to a message edit when the interaction expired, so
+	 * that the displayed view always matches the state of the menu
+	 * @returns whether the interaction was acknowledged
+	 */
+	static async updateComponentMessage(interaction: MessageComponentInteraction, options: InteractionUpdateOptions & MessageEditOptions): Promise<boolean> {
+		if (await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.update(options))) {
+			return true;
+		}
+		await DiscordCollectorUtils.editWithoutBlocking(interaction.message, options);
+		return false;
+	}
+
+	/**
 	 * Time left before Core's deadline for the collector, never zero so that discord.js still arms its timer
 	 */
 	static getRemainingCollectorTime(packet: ReactionCollectorCreationPacket): number {
@@ -145,12 +213,15 @@ export abstract class DiscordCollectorUtils {
 			}
 		);
 
-		if (component) {
-			if (component.isButton()) {
-				DiscordCache.cacheButtonInteraction(component);
+		// Discord no longer accepts any answer to an unacknowledged interaction: the response to the click falls back to the command interaction
+		const respondingComponent = component && !DiscordCollectorUtils.unacknowledgedComponents.has(component) ? component : null;
+
+		if (respondingComponent) {
+			if (respondingComponent.isButton()) {
+				DiscordCache.cacheButtonInteraction(respondingComponent);
 			}
-			else if (component.isStringSelectMenu()) {
-				DiscordCache.cacheStringSelectMenuInteraction(component);
+			else if (respondingComponent.isStringSelectMenu()) {
+				DiscordCache.cacheStringSelectMenuInteraction(respondingComponent);
 			}
 		}
 
@@ -162,8 +233,8 @@ export abstract class DiscordCollectorUtils {
 				user: context.discord!.user,
 				channel: context.discord!.channel,
 				interaction: context.discord!.interaction,
-				buttonInteraction: component?.isButton() ? component.id : undefined,
-				stringSelectMenuInteraction: component?.isStringSelectMenu() ? component.id : undefined,
+				buttonInteraction: respondingComponent?.isButton() ? respondingComponent.id : undefined,
+				stringSelectMenuInteraction: respondingComponent?.isStringSelectMenu() ? respondingComponent.id : undefined,
 				language: context.discord!.language,
 				shardId
 			}
@@ -255,21 +326,15 @@ export abstract class DiscordCollectorUtils {
 			const getReactingPlayer = await KeycloakUtils.getKeycloakIdFromDiscordId(keycloakConfig, buttonInteraction.user.id, buttonInteraction.user.displayName);
 			if (!getReactingPlayer.isError && getReactingPlayer.payload.keycloakId) {
 				if (!options?.notDeferReply) {
-					await buttonInteraction.deferReply();
-				}
-				else if (messageContentOrEmbed instanceof CrowniclesEmbed) {
-					disableRows([row]);
-
-					await msg.edit({
-						embeds: [messageContentOrEmbed],
-						components: [row]
-					});
+					await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
 				}
 				else {
 					disableRows([row]);
 
-					await msg.edit({
-						content: messageContentOrEmbed,
+					await DiscordCollectorUtils.editWithoutBlocking(msg, {
+						...messageContentOrEmbed instanceof CrowniclesEmbed
+							? { embeds: [messageContentOrEmbed] }
+							: { content: messageContentOrEmbed },
 						components: [row]
 					});
 				}
@@ -413,12 +478,10 @@ export abstract class DiscordCollectorUtils {
 				return;
 			}
 
-			if (options.deferUpdate) {
-				await buttonInteraction.deferUpdate();
-			}
-			else {
-				await buttonInteraction.deferReply();
-			}
+			await DiscordCollectorUtils.acknowledgeComponent(
+				buttonInteraction,
+				options.deferUpdate ? buttonInteraction.deferUpdate() : buttonInteraction.deferReply()
+			);
 			if (buttonInteraction.customId !== "refuse") {
 				DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, parseInt(buttonInteraction.customId, 10));
 			}

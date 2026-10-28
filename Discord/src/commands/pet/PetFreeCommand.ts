@@ -475,12 +475,13 @@ export async function createPetFreeSelectionCollector(
 			return;
 		}
 
-		// Disable components immediately when a valid choice is made
+		await DiscordCollectorUtils.acknowledgeComponent(collectedInteraction, collectedInteraction.deferReply());
+
+		// Disable components once the choice is acknowledged
 		disableRows(components);
-		await msg.edit({ components });
+		await DiscordCollectorUtils.editWithoutBlocking(msg, { components });
 
 		if (collectedInteraction.customId === cancelCustomId) {
-			await collectedInteraction.deferReply();
 			DiscordCollectorUtils.sendReaction(
 				packet,
 				context,
@@ -494,7 +495,6 @@ export async function createPetFreeSelectionCollector(
 
 		if (collectedInteraction.customId === selectPetCustomId && collectedInteraction.isStringSelectMenu()) {
 			const selectedIndex = parseInt((collectedInteraction as StringSelectMenuInteraction).values[0], 10);
-			await collectedInteraction.deferReply();
 			DiscordCollectorUtils.sendReaction(
 				packet,
 				context,

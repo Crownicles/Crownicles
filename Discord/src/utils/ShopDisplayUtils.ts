@@ -240,7 +240,7 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 		// Disable buttons instead of removing them
 		disableRows([row]);
 
-		await buttonInteraction.update({ components: [row] });
+		await DiscordCollectorUtils.updateComponentMessage(buttonInteraction, { components: [row] });
 
 		if (buttonInteraction.customId === "closeShop") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, null, packet.reactions.findIndex(r =>
@@ -329,7 +329,7 @@ class ShopUiController {
 			kind: "main",
 			container: freshMain
 		};
-		await buttonInteraction.update({
+		await DiscordCollectorUtils.updateComponentMessage(buttonInteraction, {
 			embeds: [],
 			components: [freshMain],
 			flags: COMPONENTS_V2_FLAGS
@@ -346,7 +346,7 @@ class ShopUiController {
 			container,
 			itemReactions
 		};
-		await buttonInteraction.update({
+		await DiscordCollectorUtils.updateComponentMessage(buttonInteraction, {
 			embeds: [],
 			components: [container],
 			flags: COMPONENTS_V2_FLAGS
@@ -355,7 +355,7 @@ class ShopUiController {
 
 	async consumeAndDisable(buttonInteraction: ButtonInteraction): Promise<void> {
 		this.consumed = true;
-		await buttonInteraction.update({
+		await DiscordCollectorUtils.updateComponentMessage(buttonInteraction, {
 			embeds: [],
 			components: [this.buildDisabledContainer()],
 			flags: COMPONENTS_V2_FLAGS

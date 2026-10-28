@@ -146,7 +146,7 @@ function createMainMenuCollector(ctx: EquipMenuContext): (nestedMenus: Crownicle
 			const value = interaction.customId;
 
 			if (value === EQUIP_MENU_IDS.CLOSE) {
-				await interaction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferUpdate());
 				DiscordCollectorUtils.sendReaction(
 					ctx.packet, ctx.context, ctx.context.keycloakId!, interaction, ctx.closeReactionIndex
 				);
@@ -156,7 +156,7 @@ function createMainMenuCollector(ctx: EquipMenuContext): (nestedMenus: Crownicle
 			if (value.startsWith(EQUIP_MENU_IDS.CATEGORY_PREFIX)) {
 				const categoryIndex = parseInt(value.replace(EQUIP_MENU_IDS.CATEGORY_PREFIX, ""), 10);
 				if (!Number.isNaN(categoryIndex)) {
-					await interaction.deferUpdate();
+					await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferUpdate());
 					registerCategoryMenu(ctx, categoryIndex, nestedMenus);
 					await nestedMenus.changeMenu(`${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
 				}
@@ -305,7 +305,7 @@ function createEquipCategoryCollector(
 			const value = interaction.customId;
 
 			if (value === EQUIP_MENU_IDS.BACK_TO_CATEGORIES) {
-				await interaction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferUpdate());
 				refreshMainMenu(ctx, menus);
 				await menus.changeToMainMenu();
 				return;
@@ -315,7 +315,7 @@ function createEquipCategoryCollector(
 				const parts = value.replace(EQUIP_MENU_IDS.EQUIP_PREFIX, "").split("_");
 				const category = parseInt(parts[0], 10) as ItemCategory;
 				const slot = parseInt(parts[1], 10);
-				await interaction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferUpdate());
 				await sendEquipAction({
 					ctx, action: ItemConstants.EQUIP_ACTIONS.EQUIP, itemCategory: category, slot, categoryIndex, nestedMenus: menus
 				});
@@ -324,7 +324,7 @@ function createEquipCategoryCollector(
 
 			if (value.startsWith(EQUIP_MENU_IDS.DEPOSIT_PREFIX)) {
 				const category = parseInt(value.replace(EQUIP_MENU_IDS.DEPOSIT_PREFIX, ""), 10) as ItemCategory;
-				await interaction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferUpdate());
 				await sendEquipAction({
 					ctx, action: ItemConstants.EQUIP_ACTIONS.DEPOSIT, itemCategory: category, slot: 0, categoryIndex, nestedMenus: menus
 				});

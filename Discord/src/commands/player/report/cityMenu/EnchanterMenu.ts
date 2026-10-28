@@ -93,12 +93,12 @@ function sendListedItemReaction(
 async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promise<void> {
 	const index = parseListedItemIndex(params.selectedValue, ReportCityMenuIds.ENCHANT_ITEM_PREFIX, params.data.enchantableItems.length);
 	if (index === null) {
-		await params.buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(params.buttonInteraction, params.buttonInteraction.deferUpdate());
 		return;
 	}
 	const item = params.data.enchantableItems[index];
 	const lng = params.interaction.userLanguage;
-	await params.buttonInteraction.deferUpdate();
+	await DiscordCollectorUtils.acknowledgeComponent(params.buttonInteraction, params.buttonInteraction.deferUpdate());
 	await openCityConfirmation(params.nestedMenus, {
 		interaction: params.interaction,
 		collectorTime: params.collectorTime,
@@ -129,7 +129,7 @@ async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promi
 }
 
 async function handleDisenchantItemSelection(params: EnchanterHandlerParams): Promise<void> {
-	await params.buttonInteraction.deferUpdate();
+	await DiscordCollectorUtils.acknowledgeComponent(params.buttonInteraction, params.buttonInteraction.deferUpdate());
 	const index = parseListedItemIndex(params.selectedValue, ReportCityMenuIds.ENCHANTER_DISENCHANT_ITEM_PREFIX, params.data.disenchantableItems.length);
 	if (index === null) {
 		return;
@@ -169,19 +169,19 @@ async function handleEnchanterCollectorInteraction(params: EnchanterHandlerParam
 	} = params;
 
 	if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 		await nestedMenus.changeToMainMenu();
 		return;
 	}
 
 	if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 		handleStayInCityInteraction(packet, context, buttonInteraction);
 		return;
 	}
 
 	if (selectedValue === ReportCityMenuIds.ENCHANTER_DISENCHANT_MENU) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 		await nestedMenus.changeMenu(ReportCityMenuIds.ENCHANTER_DISENCHANT_MENU);
 		return;
 	}
@@ -372,13 +372,13 @@ async function handleEnchanterDisenchantCollectorInteraction(params: EnchanterHa
 	} = params;
 
 	if (selectedValue === ReportCityMenuIds.BACK_TO_ENCHANTER) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 		await nestedMenus.changeMenu(ReportCityMenuIds.ENCHANTER_MENU);
 		return;
 	}
 
 	if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 		handleStayInCityInteraction(packet, context, buttonInteraction);
 		return;
 	}

@@ -24,6 +24,7 @@ import {
 } from "../ReportCityMenuConstants";
 import { StringUtils } from "../../../../utils/StringUtils";
 import { Language } from "../../../../../../Lib/src/Language";
+import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 
 /**
  * Build the collector factory for a home feature sub-menu: routes the
@@ -45,7 +46,7 @@ function createFeatureSubMenuCollector(
 			}
 
 			if (componentInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-				await componentInteraction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 				handleStayInCityInteraction(params.packet, params.context, componentInteraction);
 				return;
 			}
@@ -206,14 +207,14 @@ function createMainHomeMenuCollector(
 
 			// Handle leave home
 			if (selectedValue === HomeMenuIds.LEAVE_HOME) {
-				await componentInteraction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 				await nestedMenus.changeToMainMenu();
 				return;
 			}
 
 			// Handle stay in city
 			if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-				await componentInteraction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 				handleStayInCityInteraction(packet, context, componentInteraction);
 				return;
 			}

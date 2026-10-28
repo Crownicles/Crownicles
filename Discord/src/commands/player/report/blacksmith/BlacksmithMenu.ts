@@ -101,7 +101,7 @@ function createBlacksmithMainCollector(params: BlacksmithMenuParams): Crownicles
 				return;
 			}
 
-			await buttonInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 			const selectedValue = buttonInteraction.customId;
 
 			if (selectedValue === BlacksmithMenuIds.UPGRADE_MENU) {
@@ -214,7 +214,7 @@ function createBlacksmithUpgradeListCollector(params: BlacksmithMenuParams): Cro
 				return;
 			}
 
-			await buttonInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 			const selectedValue = buttonInteraction.customId;
 
 			if (selectedValue === BlacksmithMenuIds.BACK_TO_BLACKSMITH) {
@@ -350,19 +350,19 @@ function createBlacksmithUpgradeDetailCollector(
 			}
 
 			if (buttonInteraction.customId === BlacksmithMenuIds.BACK_TO_UPGRADE_LIST) {
-				await buttonInteraction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 				await nestedMenus.changeMenu(BlacksmithMenuIds.UPGRADE_MENU);
 				return;
 			}
 
 			if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-				await buttonInteraction.deferUpdate();
+				await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 				handleStayInCityInteraction(packet, context, buttonInteraction);
 				return;
 			}
 
 			if (buttonInteraction.customId === BlacksmithMenuIds.CONFIRM_UPGRADE || buttonInteraction.customId === BlacksmithMenuIds.BUY_AND_UPGRADE) {
-				await buttonInteraction.deferReply();
+				await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
 				const buyMaterials = buttonInteraction.customId === BlacksmithMenuIds.BUY_AND_UPGRADE;
 
 				// Find the reaction with matching slot, category, and buyMaterials flag

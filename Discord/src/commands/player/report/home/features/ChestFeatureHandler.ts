@@ -98,7 +98,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await componentInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 		await nestedMenus.changeMenu(HomeMenuIds.CHEST_MENU);
 	}
 
@@ -109,7 +109,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
 		if (selectedValue === HomeMenuIds.BACK_TO_HOME && this.citiesWithMovedEquipment.has(ctx.packet)) {
-			await componentInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 			await this.closeChest(ctx, componentInteraction, nestedMenus);
 			return true;
 		}
@@ -121,7 +121,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		};
 
 		if (navigationTargets[selectedValue]) {
-			await componentInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 			await nestedMenus.changeMenu(navigationTargets[selectedValue]);
 			return true;
 		}
@@ -196,7 +196,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_BACK_TO_DETAIL_PREFIX)) {
-			await componentInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 			const categoryIndex = parseInt(selectedValue.replace(HomeMenuIds.CHEST_BACK_TO_DETAIL_PREFIX, ""), 10);
 			await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
 			return true;
@@ -299,16 +299,16 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	): Promise<void> {
 		const catInfo = CATEGORY_INFO[categoryIndex];
 		if (!catInfo) {
-			await componentInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 			return;
 		}
 
 		if (!ctx.homeData.chest) {
-			await componentInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 			return;
 		}
 
-		await componentInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 		this.registerCategoryMenu(ctx, categoryIndex, nestedMenus);
 		await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
 	}
@@ -617,7 +617,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		action: ChestAction;
 	}): Promise<void> {
 		const params = this.parseChestActionParams(selectedValue, prefix);
-		await componentInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 		await this.sendChestAction({
 			ctx,
 			action,
@@ -641,7 +641,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const {
 			category, slot: inventorySlot
 		} = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_SWAP_SELECT_PREFIX);
-		await componentInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 
 		const categoryIndex = CATEGORY_INFO.findIndex(c => c.category === category);
 		if (categoryIndex === -1) {

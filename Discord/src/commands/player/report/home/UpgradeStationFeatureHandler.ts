@@ -82,7 +82,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await componentInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 		await nestedMenus.changeMenu(HomeMenuIds.UPGRADE_STATION_MENU);
 	}
 
@@ -103,7 +103,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus,
 		targetMenu: string
 	): Promise<boolean> {
-		await componentInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 		await nestedMenus.changeMenu(targetMenu);
 		return true;
 	}
@@ -120,7 +120,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	): Promise<boolean> {
 		const index = this.parseIndexFromValue(selectedValue, prefix);
 		if (index === null) {
-			await componentInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 			return false;
 		}
 		await actionHandler(index);
@@ -220,7 +220,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		if (!this.isValidItemIndex(ctx, itemIndex)) {
-			await componentInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 			return;
 		}
 
@@ -241,7 +241,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			createCollector: this.createItemDetailCollector(ctx, itemIndex)
 		});
 
-		await componentInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 		await nestedMenus.changeMenu(menuId);
 	}
 
@@ -263,13 +263,13 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 				}
 
 				if (buttonInteraction.customId === HomeMenuIds.UPGRADE_BACK_TO_ITEMS) {
-					await buttonInteraction.deferUpdate();
+					await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 					await menus.changeMenu(HomeMenuIds.UPGRADE_STATION_MENU);
 					return;
 				}
 
 				if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-					await buttonInteraction.deferUpdate();
+					await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
 					handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 					return;
 				}
@@ -298,7 +298,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		const upgradeStation = ctx.homeData.upgradeStation!;
 		const item = upgradeStation.upgradeableItems[itemIndex];
 
-		await componentInteraction.deferReply();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferReply());
 
 		const reactionIndex = ctx.packet.reactions.findIndex(
 			reaction => reaction.type === ReactionCollectorUpgradeItemReaction.name
