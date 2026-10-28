@@ -25,6 +25,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	ComponentType,
 	InteractionCollector,
 	Message,
 	parseEmoji,
@@ -259,7 +260,9 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 
 	let validateCollector: InteractionCollector<never>;
 
+	// Only the selection: when the selection expired, the confirmation buttons are displayed on the same message
 	const selectCollector = msg.createMessageComponentCollector({
+		componentType: ComponentType.StringSelect,
 		time: DiscordCollectorUtils.getRemainingCollectorTime(packet)
 	});
 

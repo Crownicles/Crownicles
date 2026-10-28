@@ -15,6 +15,10 @@ vi.mock("../../../src/utils/PacketUtils", () => ({
 	}
 }));
 
+vi.mock("../../../../Lib/src/logs/CrowniclesLogger", () => ({
+	CrowniclesLogger: { warn: vi.fn() }
+}));
+
 import { ReactionCollector } from "discord.js";
 import { DiscordCache } from "../../../src/bot/DiscordCache";
 import { handleSellReactionCollector } from "../../../src/commands/player/SellCommand";
@@ -141,5 +145,35 @@ describe("handleSellReactionCollector", () => {
 
 		expect(confirmationCollectors).toHaveLength(1);
 		expect(confirmationCollectors[0].ended).toBe(true);
+	});
+
+	it("displays the confirmation in place of the selection menu when the selection expired before being acknowledged (#5059)", async () => {
+		const selectionCollectors: ReactionCollector[] = [];
+		const confirmationCollectors: ReactionCollector[] = [];
+		const commandEditReply = vi.fn()
+			.mockResolvedValueOnce(fakeCollectorMessage(selectionCollectors))
+			.mockResolvedValueOnce(fakeCollectorMessage(confirmationCollectors));
+		vi.mocked(DiscordCache.getInteraction).mockReturnValue({
+			userLanguage: "fr",
+			user,
+			editReply: commandEditReply
+		} as never);
+		const [selectCollector] = (await handleSellReactionCollector(context, sellPacket(2)))!;
+
+		const expiredSelection = {
+			user,
+			customId: "sellSelectionMenu",
+			createdTimestamp: Date.now() - 4000,
+			values: ["0"],
+			deferReply: (): Promise<void> => Promise.reject(new Error("Unknown interaction")),
+			editReply: vi.fn()
+		};
+		selectCollector.emit("collect", expiredSelection, user);
+		await wait(0);
+
+		expect(expiredSelection.editReply).not.toHaveBeenCalled();
+		expect(commandEditReply).toHaveBeenCalledTimes(2);
+		expect(confirmationCollectors).toHaveLength(1);
+		selectCollector.stop();
 	});
 });
