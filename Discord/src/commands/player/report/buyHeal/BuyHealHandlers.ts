@@ -7,13 +7,13 @@ import i18n from "../../../../translations/i18n";
 import { ReactionCollectorReturnTypeOrNull } from "../../../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { createConfirmationCollector } from "../../../../utils/ReportConfirmationCollector";
 import { escapeUsername } from "../../../../utils/StringUtils";
+import { MessagesUtils } from "../../../../utils/MessagesUtils";
 
 export async function handleBuyHealAccept(packet: CommandReportBuyHealAcceptPacketRes, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	if (!interaction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
 	const embed = new CrowniclesEmbed()
@@ -29,7 +29,7 @@ export async function handleBuyHealAccept(packet: CommandReportBuyHealAcceptPack
 				: i18n.t("commands:report.healNextStepSmallEvent", { lng })
 		}));
 
-	await buttonInteraction?.editReply({ embeds: [embed] });
+	await MessagesUtils.editClickReply(context, { embeds: [embed] });
 }
 
 export async function handleBuyHealRefuse(context: PacketContext): Promise<void> {
@@ -37,7 +37,6 @@ export async function handleBuyHealRefuse(context: PacketContext): Promise<void>
 	if (!interaction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
 	const embed = new CrowniclesEmbed()
@@ -48,7 +47,7 @@ export async function handleBuyHealRefuse(context: PacketContext): Promise<void>
 		.setDescription(i18n.t("commands:report.healRefusedDescription", { lng }))
 		.setErrorColor();
 
-	await buttonInteraction?.editReply({ embeds: [embed] });
+	await MessagesUtils.editClickReply(context, { embeds: [embed] });
 }
 
 export async function handleBuyHealNoAlteration(context: PacketContext): Promise<void> {
@@ -56,10 +55,9 @@ export async function handleBuyHealNoAlteration(context: PacketContext): Promise
 	if (!interaction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		content: i18n.t("commands:report.healNoAlteration", { lng })
 	});
 }
@@ -69,10 +67,9 @@ export async function handleBuyHealCannotHealOccupied(context: PacketContext): P
 	if (!interaction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		content: i18n.t("commands:report.healCannotHealOccupied", { lng })
 	});
 }

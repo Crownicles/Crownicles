@@ -4,6 +4,7 @@ import {
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
@@ -50,7 +51,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandSel
 }
 
 export async function handleCommandSellSuccessPacket(packet: CommandSellItemSuccessPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
 		return;
@@ -72,7 +73,7 @@ export async function handleCommandSellSuccessPacket(packet: CommandSellItemSucc
 		}
 	);
 
-	await interaction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(title, interaction.user)
@@ -144,8 +145,13 @@ async function validateSell(
 		components: [validateRow]
 	}) as Message;
 
-	// Computed once the reply is displayed, so a slow reply cannot keep the confirmation open after Core's deadline
+	/*
+	 * Only the confirmation buttons: an expired selection displays this confirmation on the selection message (#5059).
+	 * The lifetime is computed once the reply is displayed, so a slow reply cannot keep the confirmation open after Core's deadline
+	 */
 	const validateCollector = validateMsg.createMessageComponentCollector({
+		componentType: ComponentType.Button,
+		filter: buttonInteraction => buttonInteraction.customId === acceptCustomId || buttonInteraction.customId === refuseCustomId,
 		time: lifetime === SELL_CONFIRMATION_LIFETIME.CORE_DEADLINE ? DiscordCollectorUtils.getRemainingCollectorTime(packet) : undefined
 	});
 
