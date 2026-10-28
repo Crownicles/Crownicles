@@ -80,6 +80,23 @@ export async function handleCommandClassesChangeSuccessPacket(packet: CommandCla
 }
 
 /**
+ * Build the buttons accepting or refusing the change to the selected class
+ */
+function buildClassChangeValidationRow(customIds: {
+	accept: string; refuse: string;
+}): ActionRowBuilder<ButtonBuilder> {
+	return new ActionRowBuilder<ButtonBuilder>()
+		.addComponents(new ButtonBuilder()
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
+			.setCustomId(customIds.accept)
+			.setStyle(ButtonStyle.Secondary))
+		.addComponents(new ButtonBuilder()
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+			.setCustomId(customIds.refuse)
+			.setStyle(ButtonStyle.Secondary));
+}
+
+/**
  * Display the confirmation of the selected class as the reply to the selection. A selection that expired before being
  * acknowledged can no longer be answered: the confirmation then replaces the selection menu, reply to the command
  */
@@ -221,15 +238,10 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 		const validateClassChangeEmbed = buildClassChangeConfirmationEmbed(interaction, classDetails, data.cooldownSeconds);
 
-		const validateRow = new ActionRowBuilder<ButtonBuilder>()
-			.addComponents(new ButtonBuilder()
-				.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
-				.setCustomId(acceptCustomId)
-				.setStyle(ButtonStyle.Secondary))
-			.addComponents(new ButtonBuilder()
-				.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
-				.setCustomId(refuseCustomId)
-				.setStyle(ButtonStyle.Secondary));
+		const validateRow = buildClassChangeValidationRow({
+			accept: acceptCustomId,
+			refuse: refuseCustomId
+		});
 
 		const validateMsg = await displayClassChangeConfirmation({
 			interaction: selectMenuInteraction,
