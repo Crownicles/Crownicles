@@ -25,6 +25,7 @@ import {
 	RESTJSONErrorCodes
 } from "discord.js";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
+import { getErrorReason } from "../../../Lib/src/utils/ErrorUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
@@ -72,10 +73,6 @@ const MANNER_TO_METHOD = {
 	[SendManner.FOLLOWUP]: (interaction: CrowniclesInteraction): typeof interaction.followUp => interaction.followUp,
 	[SendManner.EDIT_REPLY]: (interaction: CrowniclesInteraction): typeof interaction.editReply => interaction.editReply
 };
-
-function errorReason(error: unknown): string {
-	return error instanceof Error ? error.message : String(error);
-}
 
 function getSendingManner(interaction: CrowniclesInteraction, sendManners: SendManner[]): SendManner {
 	return sendManners.length === 1 ? sendManners[0] : interaction.replied ? sendManners[1] : sendManners[0];
@@ -141,7 +138,7 @@ export abstract class DiscordCollectorUtils {
 			}
 			CrowniclesLogger.warn("Component interaction could not be acknowledged, handling the click anyway", {
 				customId: interaction.customId,
-				reason: errorReason(error),
+				reason: getErrorReason(error),
 				interactionAgeMs: Date.now() - interaction.createdTimestamp
 			});
 			return false;
@@ -159,7 +156,7 @@ export abstract class DiscordCollectorUtils {
 		catch (error) {
 			CrowniclesLogger.warn("Collector message could not be edited, handling the click anyway", {
 				messageId: message.id,
-				reason: errorReason(error)
+				reason: getErrorReason(error)
 			});
 		}
 	}

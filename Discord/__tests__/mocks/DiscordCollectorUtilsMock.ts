@@ -10,7 +10,8 @@ type EditableMessage = {
 
 /**
  * Nominal behaviour of the DiscordCollectorUtils acknowledgement helpers, for the tests mocking that module:
- * the acknowledgement is awaited and succeeds, the cosmetic edits are applied
+ * the acknowledgement is awaited and succeeds, the cosmetic edits are applied.
+ * The vi.mock factories are hoisted above the static imports, so they load this module through a dynamic import
  */
 export const collectorAcknowledgementMocks = {
 	acknowledgeComponent: vi.fn(async (_interaction: unknown, acknowledgement: Promise<unknown>): Promise<boolean> => {

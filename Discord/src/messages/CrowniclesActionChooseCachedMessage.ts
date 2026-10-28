@@ -22,12 +22,9 @@ import { DiscordConstants } from "../DiscordConstants";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { DisplayUtils } from "../utils/DisplayUtils";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
+import { getErrorReason } from "../../../Lib/src/utils/ErrorUtils";
 import { Language } from "../../../Lib/src/Language";
 import { Millisecond } from "../../../Lib/src/types/TimeTypes";
-
-function errorReason(error: unknown): string {
-	return error instanceof Error ? error.message : String(error);
-}
 
 /**
  * Acknowledge the click and disable the action buttons; failures are only logged so the chosen action still reaches Core.
@@ -41,7 +38,7 @@ async function acknowledgeActionClick(buttonInteraction: ButtonInteraction, rows
 	}
 	catch (error) {
 		CrowniclesLogger.warn("Fight action choice could not be acknowledged, sending it anyway", {
-			reason: errorReason(error),
+			reason: getErrorReason(error),
 			interactionAgeMs: Date.now() - buttonInteraction.createdTimestamp
 		});
 	}
@@ -50,7 +47,7 @@ async function acknowledgeActionClick(buttonInteraction: ButtonInteraction, rows
 	}
 	catch (error) {
 		CrowniclesLogger.warn("Fight action buttons could not be disabled, sending the choice anyway", {
-			reason: errorReason(error)
+			reason: getErrorReason(error)
 		});
 	}
 }
@@ -146,7 +143,7 @@ function watchDisplayedTurn(displayedTurn: DisplayedTurn): void {
 		setTimeout(() => {
 			checkDisplayedTurn(displayedTurn, expectedState, checkDelay).catch(error => {
 				CrowniclesLogger.warn("Fight action message could not be checked", {
-					reason: errorReason(error)
+					reason: getErrorReason(error)
 				});
 			});
 		}, checkDelay);
