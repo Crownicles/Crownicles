@@ -2,7 +2,7 @@ import {
 	afterEach, describe, expect, it, vi
 } from "vitest";
 import {
-	ClassBehavior, getAiClassBehavior, initializeAllClassBehaviors, registerClassBehavior
+	ClassBehavior, getAiClassBehavior, getAiPersonalities, initializeAllClassBehaviors, registerClassBehavior
 } from "../../../../src/core/fights/AiBehaviorController";
 import KnightFightBehavior from "../../../../src/core/fights/aiClassBehaviors/KnightFightBehavior";
 import KnightEnduringFightBehavior from "../../../../src/core/fights/aiClassBehaviors/KnightEnduringFightBehavior";
@@ -17,11 +17,13 @@ import MysticMageFightBehavior from "../../../../src/core/fights/aiClassBehavior
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
+import { AiPersonalityConstants } from "../../../../../Lib/src/constants/AiPersonalityConstants";
 import {
 	mockFighter, mockFightView
 } from "./AiFighterMocks";
 
 const ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
+const PERSONALITIES = AiPersonalityConstants.PERSONALITIES;
 
 /**
  * Behaviors offered to a class, captured from the random pick of its personality
@@ -30,7 +32,7 @@ const ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
 function personalitiesOf(classId: number): unknown[] {
 	const pick = vi.spyOn(RandomUtils.crowniclesRandom, "pick");
 	getAiClassBehavior(classId);
-	return pick.mock.lastCall?.[0] as unknown[];
+	return (pick.mock.lastCall?.[0] as { behavior: unknown }[]).map(personality => personality.behavior);
 }
 
 describe("AI personalities", () => {
@@ -46,10 +48,32 @@ describe("AI personalities", () => {
 			class SecondPersonality implements ClassBehavior {
 				chooseAction = vi.fn();
 			}
-			registerClassBehavior(-1, FirstPersonality, SecondPersonality);
+			registerClassBehavior(-1, { behavior: FirstPersonality }, { behavior: SecondPersonality });
 			vi.spyOn(RandomUtils.crowniclesRandom, "pick").mockImplementation(<T>(personalities: readonly T[]): T => personalities[1]);
 
 			expect(getAiClassBehavior(-1)).toBeInstanceOf(SecondPersonality);
+		});
+
+		it("builds the personality picked by the player instead of a random one", () => {
+			initializeAllClassBehaviors();
+			const pick = vi.spyOn(RandomUtils.crowniclesRandom, "pick");
+
+			expect(getAiClassBehavior(ClassConstants.CLASSES_ID.VALIANT_KNIGHT, PERSONALITIES.KNIGHT_ENDURING)).toBeInstanceOf(KnightEnduringFightBehavior);
+			expect(pick).not.toHaveBeenCalled();
+		});
+
+		it("picks at random when the personality picked by the player belongs to another class", () => {
+			initializeAllClassBehaviors();
+			vi.spyOn(RandomUtils.crowniclesRandom, "pick").mockImplementation(<T>(personalities: readonly T[]): T => personalities[0]);
+
+			expect(getAiClassBehavior(ClassConstants.CLASSES_ID.IMPENETRABLE_TANK, PERSONALITIES.KNIGHT_ENDURING)).toBeInstanceOf(TankFightBehavior);
+		});
+
+		it("lists the personalities a player can pick, none for a class with a single way to fight", () => {
+			initializeAllClassBehaviors();
+
+			expect(getAiPersonalities(ClassConstants.CLASSES_ID.LUMINOUS_PALADIN)).toEqual([PERSONALITIES.PALADIN_CRUSADER, PERSONALITIES.PALADIN_JUSTICAR]);
+			expect(getAiPersonalities(ClassConstants.CLASSES_ID.MYSTIC_MAGE)).toEqual([]);
 		});
 
 		it("returns no behavior for a class without personality", () => {

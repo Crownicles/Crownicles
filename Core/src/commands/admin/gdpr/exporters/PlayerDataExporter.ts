@@ -454,6 +454,7 @@ export async function exportPlayerData(
 			score: player.score,
 			weeklyScore: player.weeklyScore,
 			kingChallengeTier: player.kingChallengeTier,
+			defensePersonality: player.defensePersonality,
 			level: player.level,
 			experience: player.experience,
 			money: player.money,

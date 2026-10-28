@@ -456,6 +456,9 @@
       "BLESSING": {
         "description": "Affiche l'état de la bénédiction globale : la cagnotte que les aventuriers alimentent en rencontrant l'Oracle lors de leurs voyages, ou la bénédiction active et le temps qu'il lui reste. Cette commande est accessible après avoir rencontré l'Oracle au moins une fois."
       },
+      "DEFENSE": {
+        "description": "Permet de choisir comment votre personnage se défend lorsqu'un autre joueur l'attaque, ou de laisser un style différent être tiré au hasard à chaque combat. Seules certaines classes disposent de plusieurs styles."
+      },
       "CLASSES": {
         "description": "Permet de changer de classe. Plus d'informations sur les classes sont disponibles sur le guide du joueur : https://guide.crownicles.com"
       },
@@ -2706,6 +2709,67 @@
     "sellFooter": "Pour plus d'informations à propos des ventes de familiers, utilisez la commande help petsell.",
     "successTitle": "{{pseudo}}, transaction réussie !",
     "successDescription": "{{pet}} vous suit désormais. Occupez-vous en bien !\n\n{emote:unitValues.money} **{{treasury, number}}** ont été ajoutés à la trésorerie de la guilde **{{guildName}}**."
+  },
+  "defense": {
+    "title": "Style de défense de {{pseudo}}",
+    "description": "Choisissez comment votre personnage se défend lorsqu'un autre joueur l'attaque. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.\n\n",
+    "choice": "**{{name}}** : {{description}}",
+    "currentChoice": "**{{name}}** *(actuel)* : {{description}}",
+    "successTitle": "Style de défense de {{pseudo}}",
+    "success": "Votre personnage se défendra désormais avec le style **{{name}}**.",
+    "successRandom": "Votre personnage changera de style de défense à chaque combat.",
+    "noChoice": "Votre classe ({{className}}) n'a qu'une seule manière de se défendre.",
+    "canceled": "Votre style de défense n'a pas été modifié.",
+    "personalities": {
+      "random": {
+        "name": "Imprévisible",
+        "description": "un style différent est tiré au hasard à chaque combat."
+      },
+      "knightStrategist": {
+        "name": "Stratège",
+        "description": "enchaîne repos et attaques lourdes, et lance sa bénédiction en premier face à un adversaire capable d'en faire autant."
+      },
+      "knightEnduring": {
+        "name": "Endurant",
+        "description": "se repose dès qu'il est blessé et garde sa bénédiction pour la fin du combat, lorsqu'elle est la plus puissante."
+      },
+      "knightFiery": {
+        "name": "Fougueux",
+        "description": "lance sa bénédiction dès le début du combat et ne se repose que lorsqu'il est sérieusement blessé."
+      },
+      "tankBulwark": {
+        "name": "Rempart",
+        "description": "renforce sa défense et affaiblit l'adversaire avec son bouclier."
+      },
+      "tankRiposte": {
+        "name": "Riposteur",
+        "description": "laisse l'adversaire s'engager pour lui renvoyer ses attaques les plus coûteuses."
+      },
+      "paladinCrusader": {
+        "name": "Croisé",
+        "description": "affaiblit l'adversaire avec son bouclier et garde son attaque divine pour la fin du combat."
+      },
+      "paladinJusticar": {
+        "name": "Justicier",
+        "description": "frappe avec son attaque divine dès qu'elle a peu de chances d'échouer."
+      },
+      "gunnerStrategist": {
+        "name": "Stratège",
+        "description": "alterne attaques rapides, boomerangs et salves de canon selon l'adversaire."
+      },
+      "gunnerCannoneer": {
+        "name": "Canonnier",
+        "description": "enchaîne les tirs de canon dès que son souffle est au maximum."
+      },
+      "veteranStrategist": {
+        "name": "Stratège",
+        "description": "se concentre avant de déclencher ses attaques énergiques."
+      },
+      "veteranCharger": {
+        "name": "Fonceur",
+        "description": "privilégie les attaques chargées et garde ses attaques énergiques pour se soigner."
+      }
+    }
   },
   "classes": {
     "description": {
