@@ -317,6 +317,12 @@ export abstract class FightConstants {
 		RECOVERY_IDLE_ACTIONS: 2
 	};
 
+	// A cursed fighter only receives this share of its healing
+	static readonly CURSED_HEALING_MULTIPLIER = 0.6;
+
+	// The energetic attack punishes an opponent that has just rested
+	static readonly ENERGETIC_ATTACK_RESTED_TARGET_DAMAGE_MULTIPLIER = 1.5;
+
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
 		MAX_ELO_GAP: 400,

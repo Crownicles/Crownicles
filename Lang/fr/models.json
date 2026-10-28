@@ -411,7 +411,7 @@
       "stop": "subit les conséquences du maléfice."
     },
     "cursedAttack": {
-      "description": "Maudit l'adversaire, peut être en subira-t-il les conséquences dans le futur... Soigne le lanceur si l'adversaire a plus de 40% de son énergie.",
+      "description": "Maudit l'adversaire, peut être en subira-t-il les conséquences dans le futur... Tant qu'il est maudit, l'adversaire récupère moins d'énergie grâce aux soins. Soigne le lanceur si l'adversaire a plus de 40% de son énergie.",
       "name_one": "Attaque maudite",
       "name_other": "Attaques maudites"
     },
@@ -473,7 +473,7 @@
       "afraid": "est aidé par **{{petNickname}}** qui, bien que se rappelant parfaitement des événements récents, tremble trop de peur pour pouvoir restituer le souffle perdu."
     },
     "energeticAttack": {
-      "description": "Une partie des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse. Le soin est réduit contre les monstres.",
+      "description": "Une partie des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse. Inflige davantage de dégâts à un adversaire qui vient de se reposer. Le soin est réduit contre les monstres.",
       "name_one": "Attaque énergique",
       "name_other": "Attaques énergiques"
     },

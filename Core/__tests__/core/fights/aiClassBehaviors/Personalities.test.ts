@@ -149,6 +149,13 @@ describe("AI personalities", () => {
 		});
 	});
 
+	it("the charger veteran punishes an opponent that has just rested with an energetic attack", () => {
+		const veteran = mockFighter({ breath: 10 });
+		const opponent = mockFighter({ lastActionId: ACTIONS.RESTING });
+
+		expect(new VeteranChargerFightBehavior().chooseAction(veteran, mockFightView(5, opponent)).id).toBe(ACTIONS.ENERGETIC_ATTACK);
+	});
+
 	it("the charger veteran starts a two-turn charging attack", () => {
 		const veteran = mockFighter({ breath: 8 });
 		const opponent = mockFighter({ lastActionId: ACTIONS.SIMPLE_ATTACK });

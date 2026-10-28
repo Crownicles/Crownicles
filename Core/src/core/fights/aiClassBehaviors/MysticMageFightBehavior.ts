@@ -15,6 +15,9 @@ const MIN_WORTHWHILE_DARK_ATTACK_MULTIPLIER = 0.8;
 // The curse heals the mage only while the opponent has more than this share of its energy
 const CURSE_HEAL_ENERGY_RATIO = 0.4;
 
+// Actions an opponent heals itself with, which the curse reduces
+const HEALING_ACTIONS = [ACTIONS.RESTING, ACTIONS.ENERGETIC_ATTACK];
+
 // The opening poison lands as a critical hit during the first turns of the fight
 const POISON_OPENING_LAST_TURN = 2;
 
@@ -27,8 +30,8 @@ function canAfford(me: AiPlayerFighter, actionId: string): boolean {
 }
 
 /**
- * Sets up one of its ailments, cashes it in with the dark attack while the attack is fresh,
- * then finishes with its other attacks while the dark attack recovers
+ * Sets up one of its ailments (the curse first against an opponent that heals), cashes it in with the dark attack
+ * while the attack is fresh, then finishes with its other attacks while the dark attack recovers
  */
 class MysticMageFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
@@ -46,6 +49,10 @@ class MysticMageFightBehavior implements ClassBehavior {
 			}
 		}
 		else {
+			// The curse cuts the healing of the classes that rely on it
+			if (HEALING_ACTIONS.some(actionId => opponent.availableFightActions.has(actionId)) && canAfford(me, ACTIONS.CURSED_ATTACK)) {
+				return getAction(ACTIONS.CURSED_ATTACK);
+			}
 			if (fightView.fightController.turn <= POISON_OPENING_LAST_TURN && canAfford(me, ACTIONS.POISONOUS_ATTACK)) {
 				return getAction(ACTIONS.POISONOUS_ATTACK);
 			}

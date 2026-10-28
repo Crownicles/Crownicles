@@ -57,6 +57,21 @@ export abstract class FightActionController {
 	}
 
 	/**
+	 * A cursed fighter only receives a share of its healing; the reduced buff is the one recorded, so the history shows the energy actually gained
+	 * @param buff
+	 * @param target
+	 */
+	private static reduceHealingOfCursedTarget(buff: FightActionBuff, target: Fighter): FightActionBuff {
+		if (buff.stat !== FightStatBuffed.ENERGY || buff.value <= 0 || target.alteration?.id !== FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED) {
+			return buff;
+		}
+		return {
+			...buff,
+			value: Math.round(buff.value * FightConstants.CURSED_HEALING_MULTIPLIER)
+		};
+	}
+
+	/**
 	 * Apply a buff to a fighter
 	 * @param result
 	 * @param buff
@@ -65,10 +80,11 @@ export abstract class FightActionController {
 	 */
 	static applyBuff(
 		result: FightActionResult | FightAlterationResult | PetAssistanceResult,
-		buff: FightActionBuff,
+		requestedBuff: FightActionBuff,
 		target: Fighter,
 		origin: FightAction | FightAlteration | PetAssistance | null | undefined
 	): void {
+		const buff = FightActionController.reduceHealingOfCursedTarget(requestedBuff, target);
 		const originAction = (origin ?? null) as FightAction | null;
 		switch (buff.stat) {
 			case FightStatBuffed.ATTACK:
