@@ -174,10 +174,8 @@ describe("collector click acknowledgement (#5059)", () => {
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 
 		expect(DiscordCache.cacheButtonInteraction).not.toHaveBeenCalled();
-		expect(sentDiscordContext()).toMatchObject({
-			interaction: "command-interaction-id",
-			buttonInteraction: undefined
-		});
+		expect(sentDiscordContext()).toMatchObject({ interaction: "command-interaction-id" });
+		expect(sentDiscordContext()?.buttonInteraction).toBeUndefined();
 	});
 
 	it("keeps answering Core's response through the click when it was acknowledged", async () => {

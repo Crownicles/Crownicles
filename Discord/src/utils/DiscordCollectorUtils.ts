@@ -53,6 +53,11 @@ type SendingValues = {
 	items: string[];
 };
 
+/**
+ * Ids of the component interaction answering a click, in the context sent to Core
+ */
+type RespondingComponentIds = Pick<NonNullable<PacketContext["discord"]>, "buttonInteraction" | "stringSelectMenuInteraction">;
+
 export const SEND_POLITICS = {
 	ALWAYS_FOLLOWUP: [SendManner.FOLLOWUP],
 	REPLY_OR_FOLLOWUP: [SendManner.REPLY, SendManner.FOLLOWUP],
@@ -197,6 +202,26 @@ export abstract class DiscordCollectorUtils {
 		addButtonToRow(rows, button);
 	}
 
+	/**
+	 * Cache the component interaction through which Core's response to a click is displayed, and return its id for the
+	 * packet context. An interaction that expired before being acknowledged can no longer be answered: it is left out, so
+	 * that the response falls back to the command interaction
+	 */
+	private static cacheRespondingComponent(component: MessageComponentInteraction | null): RespondingComponentIds {
+		if (!component || DiscordCollectorUtils.unacknowledgedComponents.has(component)) {
+			return {};
+		}
+		if (component.isButton()) {
+			DiscordCache.cacheButtonInteraction(component);
+			return { buttonInteraction: component.id };
+		}
+		if (component.isStringSelectMenu()) {
+			DiscordCache.cacheStringSelectMenuInteraction(component);
+			return { stringSelectMenuInteraction: component.id };
+		}
+		return {};
+	}
+
 	static sendReaction(
 		packet: ReactionCollectorCreationPacket,
 		context: PacketContext,
@@ -213,18 +238,6 @@ export abstract class DiscordCollectorUtils {
 			}
 		);
 
-		// Discord no longer accepts any answer to an unacknowledged interaction: the response to the click falls back to the command interaction
-		const respondingComponent = component && !DiscordCollectorUtils.unacknowledgedComponents.has(component) ? component : null;
-
-		if (respondingComponent) {
-			if (respondingComponent.isButton()) {
-				DiscordCache.cacheButtonInteraction(respondingComponent);
-			}
-			else if (respondingComponent.isStringSelectMenu()) {
-				DiscordCache.cacheStringSelectMenuInteraction(respondingComponent);
-			}
-		}
-
 		PacketUtils.sendPacketToBackend({
 			frontEndOrigin: PacketConstants.FRONT_END_ORIGINS.DISCORD,
 			frontEndSubOrigin: context.frontEndSubOrigin,
@@ -233,8 +246,7 @@ export abstract class DiscordCollectorUtils {
 				user: context.discord!.user,
 				channel: context.discord!.channel,
 				interaction: context.discord!.interaction,
-				buttonInteraction: respondingComponent?.isButton() ? respondingComponent.id : undefined,
-				stringSelectMenuInteraction: respondingComponent?.isStringSelectMenu() ? respondingComponent.id : undefined,
+				...DiscordCollectorUtils.cacheRespondingComponent(component),
 				language: context.discord!.language,
 				shardId
 			}

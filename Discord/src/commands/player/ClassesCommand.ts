@@ -26,6 +26,7 @@ import {
 	ButtonInteraction,
 	ButtonStyle,
 	InteractionCollector,
+	InteractionEditReplyOptions,
 	Message,
 	parseEmoji,
 	StringSelectMenuBuilder,
@@ -76,6 +77,23 @@ export async function handleCommandClassesChangeSuccessPacket(packet: CommandCla
 				.setDescription(description)
 		]
 	});
+}
+
+/**
+ * Display the confirmation of the selected class as the reply to the selection. A selection that expired before being
+ * acknowledged can no longer be answered: the confirmation then replaces the selection menu, reply to the command
+ */
+async function displayClassChangeConfirmation(
+	selection: {
+		interaction: StringSelectMenuInteraction; acknowledged: boolean;
+	},
+	commandInteraction: CrowniclesInteraction,
+	display: InteractionEditReplyOptions
+): Promise<Message> {
+	if (selection.acknowledged) {
+		return await selection.interaction.editReply(display);
+	}
+	return await commandInteraction.editReply(display) as Message;
 }
 
 /**
@@ -213,15 +231,13 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 				.setCustomId(refuseCustomId)
 				.setStyle(ButtonStyle.Secondary));
 
-		const validateDisplay = {
+		const validateMsg = await displayClassChangeConfirmation({
+			interaction: selectMenuInteraction,
+			acknowledged: selectionAcknowledged
+		}, interaction, {
 			embeds: [validateClassChangeEmbed],
 			components: [validateRow]
-		};
-
-		// An expired selection can no longer be answered: the confirmation then replaces the selection menu
-		const validateMsg = (selectionAcknowledged
-			? await selectMenuInteraction.editReply(validateDisplay)
-			: await interaction.editReply(validateDisplay)) as Message;
+		});
 
 		validateCollector = validateMsg.createMessageComponentCollector() as unknown as InteractionCollector<never>;
 
