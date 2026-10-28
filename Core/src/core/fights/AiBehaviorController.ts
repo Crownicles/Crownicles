@@ -21,7 +21,7 @@ import KnightEnduringFightBehavior from "./aiClassBehaviors/KnightEnduringFightB
 import KnightFieryFightBehavior from "./aiClassBehaviors/KnightFieryFightBehavior";
 import TankRiposteFightBehavior from "./aiClassBehaviors/TankRiposteFightBehavior";
 import PaladinJusticarFightBehavior from "./aiClassBehaviors/PaladinJusticarFightBehavior";
-import GunnerCannoneerFightBehavior from "./aiClassBehaviors/GunnerCannoneerFightBehavior";
+import GunnerBombardierFightBehavior from "./aiClassBehaviors/GunnerBombardierFightBehavior";
 import VeteranChargerFightBehavior from "./aiClassBehaviors/VeteranChargerFightBehavior";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
@@ -82,7 +82,7 @@ const GUNNER_PERSONALITIES: ClassPersonality[] = [
 		id: AiPersonalityConstants.PERSONALITIES.GUNNER_STRATEGIST, behavior: GunnerFightBehavior
 	},
 	{
-		id: AiPersonalityConstants.PERSONALITIES.GUNNER_CANNONEER, behavior: GunnerCannoneerFightBehavior
+		id: AiPersonalityConstants.PERSONALITIES.GUNNER_BOMBARDIER, behavior: GunnerBombardierFightBehavior
 	}
 ];
 const VETERAN_PERSONALITIES: ClassPersonality[] = [

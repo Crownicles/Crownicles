@@ -11,7 +11,7 @@ import TankFightBehavior from "../../../../src/core/fights/aiClassBehaviors/Tank
 import TankRiposteFightBehavior from "../../../../src/core/fights/aiClassBehaviors/TankRiposteFightBehavior";
 import PaladinFightBehavior from "../../../../src/core/fights/aiClassBehaviors/PaladinFightBehavior";
 import PaladinJusticarFightBehavior from "../../../../src/core/fights/aiClassBehaviors/PaladinJusticarFightBehavior";
-import GunnerCannoneerFightBehavior from "../../../../src/core/fights/aiClassBehaviors/GunnerCannoneerFightBehavior";
+import GunnerBombardierFightBehavior from "../../../../src/core/fights/aiClassBehaviors/GunnerBombardierFightBehavior";
 import VeteranChargerFightBehavior from "../../../../src/core/fights/aiClassBehaviors/VeteranChargerFightBehavior";
 import MysticMageFightBehavior from "../../../../src/core/fights/aiClassBehaviors/MysticMageFightBehavior";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
@@ -133,11 +133,11 @@ describe("AI personalities", () => {
 		expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(11, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
 	});
 
-	describe("cannoneer gunner", () => {
+	describe("bombardier gunner", () => {
 		it("opens with the boomerang", () => {
 			const gunner = mockFighter({ breath: 10 });
 
-			expect(new GunnerCannoneerFightBehavior().chooseAction(gunner, mockFightView(1, mockFighter())).id).toBe(ACTIONS.BOOMERANG_ATTACK);
+			expect(new GunnerBombardierFightBehavior().chooseAction(gunner, mockFightView(1, mockFighter())).id).toBe(ACTIONS.BOOMERANG_ATTACK);
 		});
 
 		it("keeps chaining canons while it has the breath", () => {
@@ -145,7 +145,7 @@ describe("AI personalities", () => {
 				breath: 6, lastActionId: ACTIONS.CANON_ATTACK
 			});
 
-			expect(new GunnerCannoneerFightBehavior().chooseAction(gunner, mockFightView(5, mockFighter())).id).toBe(ACTIONS.CANON_ATTACK);
+			expect(new GunnerBombardierFightBehavior().chooseAction(gunner, mockFightView(5, mockFighter())).id).toBe(ACTIONS.CANON_ATTACK);
 		});
 	});
 
