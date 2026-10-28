@@ -2757,8 +2757,8 @@
         "name": "Stratège",
         "description": "alterne attaques rapides, boomerangs et salves de canon selon l'adversaire."
       },
-      "gunnerCannoneer": {
-        "name": "Canonnier",
+      "gunnerBombardier": {
+        "name": "Bombardier",
         "description": "enchaîne les tirs de canon dès que son souffle est au maximum."
       },
       "veteranStrategist": {

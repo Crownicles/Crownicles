@@ -14,10 +14,10 @@ import {
 const FINISHING_ENERGY_RATIO = 0.06;
 
 /**
- * Cannoneer gunner: opens with the boomerang, then fires a canon whenever its breath is full and keeps chaining canons
+ * Bombardier gunner: opens with the boomerang, then fires a canon whenever its breath is full and keeps chaining canons
  * (each repeated canon deals 50% more damage) while it can
  */
-class GunnerCannoneerFightBehavior implements ClassBehavior {
+class GunnerBombardierFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter;
 		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
@@ -49,4 +49,4 @@ class GunnerCannoneerFightBehavior implements ClassBehavior {
 	}
 }
 
-export default GunnerCannoneerFightBehavior;
+export default GunnerBombardierFightBehavior;

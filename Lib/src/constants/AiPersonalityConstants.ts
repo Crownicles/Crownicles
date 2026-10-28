@@ -13,7 +13,7 @@ export abstract class AiPersonalityConstants {
 		PALADIN_CRUSADER: "paladinCrusader",
 		PALADIN_JUSTICAR: "paladinJusticar",
 		GUNNER_STRATEGIST: "gunnerStrategist",
-		GUNNER_CANNONEER: "gunnerCannoneer",
+		GUNNER_BOMBARDIER: "gunnerBombardier",
 		VETERAN_STRATEGIST: "veteranStrategist",
 		VETERAN_CHARGER: "veteranCharger"
 	} as const;
