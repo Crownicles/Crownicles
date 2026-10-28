@@ -82,11 +82,17 @@ export async function handleCommandClassesChangeSuccessPacket(packet: CommandCla
 }
 
 /**
+ * Custom ids of the buttons accepting or refusing the change to the selected class
+ */
+type ClassChangeValidationIds = {
+	accept: string;
+	refuse: string;
+};
+
+/**
  * Build the buttons accepting or refusing the change to the selected class
  */
-function buildClassChangeValidationRow(customIds: {
-	accept: string; refuse: string;
-}): ActionRowBuilder<ButtonBuilder> {
+function buildClassChangeValidationRow(customIds: ClassChangeValidationIds): ActionRowBuilder<ButtonBuilder> {
 	return new ActionRowBuilder<ButtonBuilder>()
 		.addComponents(new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
@@ -96,6 +102,17 @@ function buildClassChangeValidationRow(customIds: {
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(customIds.refuse)
 			.setStyle(ButtonStyle.Secondary));
+}
+
+/**
+ * Collect the clicks on the confirmation buttons only: an expired selection displays the confirmation on the selection
+ * message, whose late selections must not be taken as an answer (#5059)
+ */
+function createClassChangeValidationCollector(validateMsg: Message, customIds: ClassChangeValidationIds): InteractionCollector<never> {
+	return validateMsg.createMessageComponentCollector({
+		componentType: ComponentType.Button,
+		filter: buttonInteraction => buttonInteraction.customId === customIds.accept || buttonInteraction.customId === customIds.refuse
+	}) as unknown as InteractionCollector<never>;
 }
 
 /**
@@ -242,10 +259,11 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 		const validateClassChangeEmbed = buildClassChangeConfirmationEmbed(interaction, classDetails, data.cooldownSeconds);
 
-		const validateRow = buildClassChangeValidationRow({
+		const validationIds = {
 			accept: acceptCustomId,
 			refuse: refuseCustomId
-		});
+		};
+		const validateRow = buildClassChangeValidationRow(validationIds);
 
 		const validateMsg = await displayClassChangeConfirmation({
 			interaction: selectMenuInteraction,
@@ -255,11 +273,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 			components: [validateRow]
 		});
 
-		// Only the confirmation buttons: an expired selection displays this confirmation on the selection message (#5059)
-		validateCollector = validateMsg.createMessageComponentCollector({
-			componentType: ComponentType.Button,
-			filter: buttonInteraction => buttonInteraction.customId === acceptCustomId || buttonInteraction.customId === refuseCustomId
-		}) as unknown as InteractionCollector<never>;
+		validateCollector = createClassChangeValidationCollector(validateMsg, validationIds);
 
 		validateCollector.on("collect", async (validateInteraction: ButtonInteraction) => {
 			if (validateInteraction.user.id !== context.discord?.user) {
