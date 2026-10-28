@@ -1,5 +1,6 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
+import { MessagesUtils } from "../utils/MessagesUtils";
 import {
 	disableRows, DiscordCollectorUtils
 } from "../utils/DiscordCollectorUtils";
@@ -171,13 +172,13 @@ async function sendAltarResultEmbed(
 	translationParams: Record<string, unknown>,
 	bonusText = ""
 ): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return;
 	}
 	const lng = context.discord!.language;
 
-	await interaction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"altar",

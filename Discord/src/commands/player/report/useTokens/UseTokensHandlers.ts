@@ -7,13 +7,13 @@ import i18n from "../../../../translations/i18n";
 import { ReactionCollectorReturnTypeOrNull } from "../../../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { createConfirmationCollector } from "../../../../utils/ReportConfirmationCollector";
 import { escapeUsername } from "../../../../utils/StringUtils";
+import { MessagesUtils } from "../../../../utils/MessagesUtils";
 
 export async function handleUseTokensAccept(packet: CommandReportUseTokensAcceptPacketRes, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	if (!interaction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
 	const embed = new CrowniclesEmbed()
@@ -29,7 +29,7 @@ export async function handleUseTokensAccept(packet: CommandReportUseTokensAccept
 				: i18n.t("commands:report.tokensNextStepSmallEvent", { lng })
 		}));
 
-	await buttonInteraction?.editReply({ embeds: [embed] });
+	await MessagesUtils.editClickReply(context, { embeds: [embed] });
 }
 
 export async function handleUseTokensRefuse(context: PacketContext): Promise<void> {
@@ -37,7 +37,6 @@ export async function handleUseTokensRefuse(context: PacketContext): Promise<voi
 	if (!interaction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
 	const embed = new CrowniclesEmbed()
@@ -48,7 +47,7 @@ export async function handleUseTokensRefuse(context: PacketContext): Promise<voi
 		.setDescription(i18n.t("commands:report.tokensUsedRefusedDescription", { lng }))
 		.setErrorColor();
 
-	await buttonInteraction?.editReply({ embeds: [embed] });
+	await MessagesUtils.editClickReply(context, { embeds: [embed] });
 }
 
 export async function createUseTokensCollector(context: PacketContext, packet: ReactionCollectorUseTokensPacket): Promise<ReactionCollectorReturnTypeOrNull> {

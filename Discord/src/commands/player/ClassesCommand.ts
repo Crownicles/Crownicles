@@ -8,6 +8,7 @@ import {
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
@@ -55,7 +56,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandCla
 }
 
 export async function handleCommandClassesChangeSuccessPacket(packet: CommandClassesChangeSuccessPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
 		return;
@@ -71,7 +72,7 @@ export async function handleCommandClassesChangeSuccessPacket(packet: CommandCla
 		name: i18n.t(`models:classes.${packet.classId}`, { lng })
 	});
 
-	await interaction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(title, interaction.user)
@@ -254,7 +255,11 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 			components: [validateRow]
 		});
 
-		validateCollector = validateMsg.createMessageComponentCollector() as unknown as InteractionCollector<never>;
+		// Only the confirmation buttons: an expired selection displays this confirmation on the selection message (#5059)
+		validateCollector = validateMsg.createMessageComponentCollector({
+			componentType: ComponentType.Button,
+			filter: buttonInteraction => buttonInteraction.customId === acceptCustomId || buttonInteraction.customId === refuseCustomId
+		}) as unknown as InteractionCollector<never>;
 
 		validateCollector.on("collect", async (validateInteraction: ButtonInteraction) => {
 			if (validateInteraction.user.id !== context.discord?.user) {

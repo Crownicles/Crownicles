@@ -174,8 +174,10 @@ describe("collector click acknowledgement (#5059)", () => {
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 
 		expect(DiscordCache.cacheButtonInteraction).not.toHaveBeenCalled();
-		expect(sentDiscordContext()).toMatchObject({ interaction: "command-interaction-id" });
-		expect(sentDiscordContext()?.buttonInteraction).toBeUndefined();
+		expect(sentDiscordContext()).toMatchObject({
+			interaction: "command-interaction-id",
+			buttonInteraction: click.id
+		});
 	});
 
 	it("keeps answering Core's response through the click when it was acknowledged", async () => {
@@ -194,7 +196,7 @@ describe("collector click acknowledgement (#5059)", () => {
 		await DiscordCollectorUtils.acknowledgeComponent(click, click.deferReply());
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 
-		expect(sentDiscordContext()?.buttonInteraction).toBeUndefined();
+		expect(DiscordCache.cacheButtonInteraction).not.toHaveBeenCalled();
 	});
 
 	it("keeps answering through the click when a concurrent acknowledgement of the same click succeeded", async () => {
@@ -204,7 +206,7 @@ describe("collector click acknowledgement (#5059)", () => {
 		Object.assign(click, { deferred: true });
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 
-		expect(sentDiscordContext()).toMatchObject({ buttonInteraction: click.id });
+		expect(DiscordCache.cacheButtonInteraction).toHaveBeenCalledWith(click);
 	});
 
 	it("displays the new view through a message edit when the update of an expired click is rejected", async () => {

@@ -204,20 +204,26 @@ export abstract class DiscordCollectorUtils {
 	}
 
 	/**
-	 * Cache the component interaction through which Core's response to a click is displayed, and return its id for the
-	 * packet context. An interaction whose acknowledgement failed (expired, Discord unavailable...) can no longer be answered:
-	 * it is left out, so that the response falls back to the command interaction
+	 * Return the id of the clicked component for the packet context, and cache the interaction through which Core's
+	 * response is displayed. An interaction whose acknowledgement failed (expired, Discord unavailable...) can no longer
+	 * be answered: it is not cached, so that the response falls back to the command interaction while still knowing a click
+	 * happened (see MessagesUtils.editClickReply)
 	 */
 	private static cacheRespondingComponent(component: MessageComponentInteraction | null): RespondingComponentIds {
-		if (!component || DiscordCollectorUtils.isUnanswerable(component)) {
+		if (!component) {
 			return {};
 		}
+		const answerable = !DiscordCollectorUtils.isUnanswerable(component);
 		if (component.isButton()) {
-			DiscordCache.cacheButtonInteraction(component);
+			if (answerable) {
+				DiscordCache.cacheButtonInteraction(component);
+			}
 			return { buttonInteraction: component.id };
 		}
 		if (component.isStringSelectMenu()) {
-			DiscordCache.cacheStringSelectMenuInteraction(component);
+			if (answerable) {
+				DiscordCache.cacheStringSelectMenuInteraction(component);
+			}
 			return { stringSelectMenuInteraction: component.id };
 		}
 		return {};
