@@ -28,6 +28,7 @@ import {
 	effectsErrorTextValue, sendInteractionNotForYou
 } from "../../../../utils/ErrorUtils";
 import { PacketUtils } from "../../../../utils/PacketUtils";
+import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 
 const TRAVEL_BUTTON_IDS = {
 	BUY_HEAL: "buyHeal",
@@ -328,7 +329,7 @@ function setupTravelButtonCollector(
 		}
 
 		row.components.forEach(button => button.setDisabled(true));
-		await buttonInteraction.update({ components: [row] });
+		await DiscordCollectorUtils.updateComponentMessage(buttonInteraction, { components: [row] });
 
 		await handleTravelButtonInteraction(buttonInteraction, context, lng);
 		buttonCollector.stop();

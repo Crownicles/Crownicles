@@ -174,11 +174,11 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 			return;
 		}
 
-		await selectMenuInteraction.deferReply();
+		const selectionAcknowledged = await DiscordCollectorUtils.acknowledgeComponent(selectMenuInteraction, selectMenuInteraction.deferReply());
 
 		disableRows([mainEmbedRow]);
 
-		await msg.edit({
+		await DiscordCollectorUtils.editWithoutBlocking(msg, {
 			embeds: [mainEmbed],
 			components: [mainEmbedRow]
 		});
@@ -213,10 +213,15 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 				.setCustomId(refuseCustomId)
 				.setStyle(ButtonStyle.Secondary));
 
-		const validateMsg = await selectMenuInteraction.editReply({
+		const validateDisplay = {
 			embeds: [validateClassChangeEmbed],
 			components: [validateRow]
-		}) as Message;
+		};
+
+		// An expired selection can no longer be answered: the confirmation then replaces the selection menu
+		const validateMsg = (selectionAcknowledged
+			? await selectMenuInteraction.editReply(validateDisplay)
+			: await interaction.editReply(validateDisplay)) as Message;
 
 		validateCollector = validateMsg.createMessageComponentCollector() as unknown as InteractionCollector<never>;
 
@@ -226,7 +231,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 				return;
 			}
 
-			await validateInteraction.deferReply();
+			await DiscordCollectorUtils.acknowledgeComponent(validateInteraction, validateInteraction.deferReply());
 
 			if (validateInteraction.customId === refuseCustomId) {
 				DiscordCollectorUtils.sendReaction(

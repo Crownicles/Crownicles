@@ -100,7 +100,7 @@ export class CrowniclesButtonReactionMessage {
 				component.setDisabled(true);
 			});
 
-			await i.update({
+			await DiscordCollectorUtils.updateComponentMessage(i, {
 				embeds: [this._embed],
 				components: [this._buttonRow]
 			});

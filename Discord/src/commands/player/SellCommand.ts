@@ -154,7 +154,7 @@ async function validateSell(
 			return;
 		}
 
-		await validateInteraction.deferReply();
+		await DiscordCollectorUtils.acknowledgeComponent(validateInteraction, validateInteraction.deferReply());
 
 		if (validateInteraction.customId === refuseCustomId) {
 			DiscordCollectorUtils.sendReaction(
@@ -269,13 +269,13 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 			return;
 		}
 
-		await selectMenuInteraction.deferReply();
+		const selectionAcknowledged = await DiscordCollectorUtils.acknowledgeComponent(selectMenuInteraction, selectMenuInteraction.deferReply());
 
 		mainEmbedRow.components.forEach(component => {
 			component.setDisabled(true);
 		});
 
-		await msg.edit({
+		await DiscordCollectorUtils.editWithoutBlocking(msg, {
 			embeds: [mainEmbed],
 			components: [mainEmbedRow]
 		});
@@ -298,12 +298,15 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 
 		const reaction = itemsReactions[parseInt(selectedOption, 10)];
 
+		// An expired selection can no longer be answered: the confirmation then replaces the selection menu
+		const confirmationInteraction = selectionAcknowledged ? selectMenuInteraction : interaction;
+
 		validateCollector = (
 			await validateSell(
 				{
 					packet, context
 				},
-				selectMenuInteraction,
+				confirmationInteraction,
 				{
 					reaction,
 					reactionIndex: packet.reactions.findIndex(packetReaction => JSON.stringify(packetReaction.data) === JSON.stringify(reaction)),

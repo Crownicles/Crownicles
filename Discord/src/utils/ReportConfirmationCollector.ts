@@ -111,13 +111,13 @@ function setupButtonCollector(
 			return;
 		}
 
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+
 		disableRows([row]);
-		await msg!.edit({
+		await DiscordCollectorUtils.editWithoutBlocking(msg!, {
 			embeds: [embed],
 			components: [row]
 		});
-
-		await buttonInteraction.deferReply();
 
 		const reactionIndex = buttonInteraction.customId === "accept" ? 0 : 1;
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);

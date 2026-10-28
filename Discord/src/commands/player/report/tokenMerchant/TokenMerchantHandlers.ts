@@ -99,13 +99,13 @@ async function onMerchantButtonCollect(buttonInteraction: ButtonInteraction, sta
 		return;
 	}
 
+	await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+
 	disableRows([row]);
-	await msg.edit({
+	await DiscordCollectorUtils.editWithoutBlocking(msg, {
 		embeds: [embed],
 		components: [row]
 	});
-
-	await buttonInteraction.deferReply();
 
 	const reactionIndex = buttonInteraction.customId.startsWith(BUY_BUTTON_PREFIX)
 		? Number.parseInt(buttonInteraction.customId.slice(BUY_BUTTON_PREFIX.length), 10)

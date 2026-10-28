@@ -31,6 +31,7 @@ import {
 	ReportCityButtonStyles, ReportCityMenuIds
 } from "../ReportCityMenuConstants";
 import { CityMenuParams } from "../ReportCityMenuTypes";
+import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 
 const BOSS_IDS = Object.values(FightConstants.FINAL_BOSS_MONSTER_IDS);
 const BOSS_ID_SET = new Set<string>(BOSS_IDS);
@@ -132,7 +133,7 @@ function createArchivistCollector(
 	handler: (click: ArchivistMenuClick) => Promise<void>
 ): CrowniclesNestedMenuCollectorFactory {
 	return createCityCollector(params.interaction, params.collectorTime, async (customId, interaction, menus) => {
-		await interaction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferUpdate());
 		await handler({
 			actionId: customId, menus
 		});
