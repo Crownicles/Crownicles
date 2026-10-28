@@ -81,6 +81,13 @@ describe("AI class behaviors", () => {
 			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(1, opponent)).id).toBe(ACTIONS.POISONOUS_ATTACK);
 		});
 
+		it("curses an opponent that heals itself before anything else", () => {
+			const mage = mockFighter({ breath: 16 });
+			const knight = mockFighter({ actions: [ACTIONS.SIMPLE_ATTACK, ACTIONS.HEAVY_ATTACK, ACTIONS.RESTING] });
+
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(1, knight)).id).toBe(ACTIONS.CURSED_ATTACK);
+		});
+
 		it("cashes in the ailment of its opponent with a fresh dark attack", () => {
 			const mage = mockFighter({ breath: 16 });
 			const opponent = mockFighter({ alterationId: ALTERATIONS.POISONED });
@@ -135,6 +142,13 @@ describe("AI class behaviors", () => {
 			});
 
 			expect(new VeteranFightBehavior().chooseAction(veteran, mockFightView(3, mockFighter())).id).toBe(ACTIONS.CONCENTRATION);
+		});
+
+		it("punishes an opponent that has just rested with an energetic attack", () => {
+			const veteran = mockFighter({ breath: 10 });
+			const opponent = mockFighter({ lastActionId: ACTIONS.RESTING });
+
+			expect(new VeteranFightBehavior().chooseAction(veteran, mockFightView(5, opponent)).id).toBe(ACTIONS.ENERGETIC_ATTACK);
 		});
 
 		it("spends its concentration on an energetic attack", () => {

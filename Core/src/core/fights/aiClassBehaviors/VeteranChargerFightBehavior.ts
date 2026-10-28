@@ -28,7 +28,8 @@ class VeteranChargerFightBehavior implements ClassBehavior {
 			return getAction(actions.CONCENTRATION);
 		}
 
-		if (me.getEnergy() < me.getMaxEnergy() * HEALING_ENERGY_RATIO && canUse(actions.ENERGETIC_ATTACK)) {
+		// The energetic attack also punishes an opponent that has just rested
+		if ((me.getEnergy() < me.getMaxEnergy() * HEALING_ENERGY_RATIO || opponentLastActionId === actions.RESTING) && canUse(actions.ENERGETIC_ATTACK)) {
 			return getAction(actions.ENERGETIC_ATTACK);
 		}
 
