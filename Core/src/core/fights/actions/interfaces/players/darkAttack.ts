@@ -1,15 +1,15 @@
 import { Fighter } from "../../../fighter/Fighter";
 import {
-	attackInfo, FightActionController, statsInfo
+	attackInfo, statsInfo
 } from "../../FightActionController";
 import { FightActionFunc } from "../../../../../data/FightAction";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
-import { FightAlterations } from "../../FightAlterations";
-import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
-import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
-import { getDarkAttackPowerMultiplier } from "../../DarkAttackWear";
+import { FightActionStatus } from "../../../../../../../Lib/src/types/FightActionStatus";
+import {
+	getDarkAttackPowerMultiplier, recordMissedDarkAttack
+} from "../../DarkAttackWear";
 
-const use: FightActionFunc = (sender, receiver, fightAction) => {
+const use: FightActionFunc = (sender, receiver) => {
 	const result = simpleDamageFightAction(
 		{
 			sender,
@@ -25,14 +25,8 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		}
 	);
 
-	// If the opponent has an alteration, give back breath to the sender
-	if (receiver.hasFightAlteration() && receiver.alteration!.id !== FightAlterations.BLIND) {
-		FightActionController.applyBuff(result, {
-			selfTarget: true,
-			stat: FightStatBuffed.BREATH,
-			operator: FightStatModifierOperation.ADDITION,
-			value: 3
-		}, sender, fightAction);
+	if (result.attackStatus === FightActionStatus.MISSED) {
+		recordMissedDarkAttack(sender);
 	}
 
 	// The current use is pushed to the history after the action: the multiplier only counts the previous ones
