@@ -92,6 +92,7 @@ export const CrowniclesIcons: {
 	fightActions: {
 		[actionId: string]: string;
 	};
+	defensePersonalities: { [personality: string]: string };
 	classKinds: {
 		[classKind: string]: string;
 	};
@@ -2315,6 +2316,23 @@ export const CrowniclesIcons: {
 		wateryGust: "🔘",
 		weak: "🤧",
 		webShotAttack: "🕸️"
+	},
+	defensePersonalities: {
+		random: "🎲",
+		knightStrategist: "♟️",
+		knightEnduring: "⏳",
+		knightFiery: "⚡",
+		tankBulwark: "🧱",
+		tankRiposte: "🔄",
+		paladinCrusader: "🛡️",
+		paladinJusticar: "⚖️",
+		gunnerStrategist: "🎯",
+		gunnerBombardier: "💣",
+		veteranStrategist: "🧠",
+		veteranCharger: "🐗",
+		mageOccultist: "🔮",
+		magePyromancer: "🔥",
+		mageWarlock: "🕯️"
 	},
 	classKinds: {
 		basic: "⚖️",

@@ -2713,74 +2713,76 @@
   },
   "defense": {
     "title": "Style de défense de {{pseudo}}",
-    "description": "Choisissez comment votre personnage se défend lorsqu'un autre joueur l'attaque. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.\n\n",
-    "choice": "**{{name}}** : {{description}}",
-    "currentChoice": "**{{name}}** *(actuel)* : {{description}}",
+    "intro": "Choisissez comment votre {{className}} se défend lorsqu'un autre joueur l'attaque. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.",
+    "choiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}}",
+    "currentChoiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}} · style actuel",
+    "chooseStyle": "Choisir un style de défense",
+    "cancel": "Annuler",
     "successTitle": "Style de défense de {{pseudo}}",
-    "success": "Votre personnage se défendra désormais avec le style **{{name}}**.",
-    "successRandom": "Votre personnage changera de style de défense à chaque combat.",
+    "success": "Votre personnage se défendra désormais avec le style {emote:defensePersonalities.{{personality}}} **{{name}}**.",
+    "successRandom": "Votre personnage changera de style de défense à chaque combat {emote:defensePersonalities.random}.",
     "noChoice": "Votre classe ({{className}}) n'a qu'une seule manière de se défendre.",
     "canceled": "Votre style de défense n'a pas été modifié.",
     "personalities": {
       "random": {
         "name": "Imprévisible",
-        "description": "un style différent est tiré au hasard à chaque combat."
+        "description": "Un style différent est tiré au hasard à chaque combat."
       },
       "knightStrategist": {
         "name": "Stratège",
-        "description": "enchaîne repos et attaques lourdes, et lance sa bénédiction en premier face à un adversaire capable d'en faire autant."
+        "description": "Enchaîne repos et attaques lourdes, et lance sa bénédiction en premier face à un adversaire capable d'en faire autant."
       },
       "knightEnduring": {
         "name": "Endurant",
-        "description": "se repose dès qu'il est blessé et garde sa bénédiction pour la fin du combat, lorsqu'elle est la plus puissante."
+        "description": "Se repose dès qu'il est blessé et garde sa bénédiction pour la fin du combat, lorsqu'elle est la plus puissante."
       },
       "knightFiery": {
         "name": "Fougueux",
-        "description": "lance sa bénédiction dès le début du combat et ne se repose que lorsqu'il est sérieusement blessé."
+        "description": "Lance sa bénédiction dès le début du combat et ne se repose que lorsqu'il est sérieusement blessé."
       },
       "tankBulwark": {
         "name": "Rempart",
-        "description": "renforce sa défense et affaiblit l'adversaire avec son bouclier."
+        "description": "Renforce sa défense et affaiblit l'adversaire avec son bouclier."
       },
       "tankRiposte": {
         "name": "Riposteur",
-        "description": "laisse l'adversaire s'engager pour lui renvoyer ses attaques les plus coûteuses."
+        "description": "Laisse l'adversaire s'engager pour lui renvoyer ses attaques les plus coûteuses."
       },
       "paladinCrusader": {
         "name": "Croisé",
-        "description": "affaiblit l'adversaire avec son bouclier et garde son attaque divine pour la fin du combat."
+        "description": "Affaiblit l'adversaire avec son bouclier et garde son attaque divine pour la fin du combat."
       },
       "paladinJusticar": {
         "name": "Justicier",
-        "description": "frappe avec son attaque divine dès qu'elle a peu de chances d'échouer."
+        "description": "Frappe avec son attaque divine dès qu'elle a peu de chances d'échouer."
       },
       "gunnerStrategist": {
         "name": "Stratège",
-        "description": "alterne attaques rapides, boomerangs et salves de canon selon l'adversaire."
+        "description": "Alterne attaques rapides, boomerangs et salves de canon selon l'adversaire."
       },
       "gunnerBombardier": {
         "name": "Bombardier",
-        "description": "enchaîne les tirs de canon dès que son souffle est au maximum."
+        "description": "Enchaîne les tirs de canon dès que son souffle est au maximum."
       },
       "veteranStrategist": {
         "name": "Stratège",
-        "description": "se concentre avant de déclencher ses attaques énergiques."
+        "description": "Se concentre avant de déclencher ses attaques énergiques."
       },
       "veteranCharger": {
         "name": "Fonceur",
-        "description": "privilégie les attaques chargées et garde ses attaques énergiques pour se soigner."
+        "description": "Privilégie les attaques chargées et garde ses attaques énergiques pour se soigner."
       },
       "mageOccultist": {
         "name": "Occultiste",
-        "description": "maudit ou empoisonne son adversaire, puis l'achève avec ses attaques sombres."
+        "description": "Maudit ou empoisonne son adversaire, puis l'achève avec ses attaques sombres."
       },
       "magePyromancer": {
         "name": "Pyromancien",
-        "description": "ouvre avec un poison, puis embrase son adversaire dès qu'il le peut et profite de ses brûlures."
+        "description": "Ouvre avec un poison, puis embrase son adversaire dès qu'il le peut et profite de ses brûlures."
       },
       "mageWarlock": {
         "name": "Envoûteur",
-        "description": "maudit systématiquement son adversaire, ce qui l'empêche de bien se soigner, puis en profite avec ses attaques sombres."
+        "description": "Maudit systématiquement son adversaire, ce qui l'empêche de bien se soigner, puis en profite avec ses attaques sombres."
       }
     }
   },
