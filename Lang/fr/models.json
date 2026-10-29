@@ -380,7 +380,7 @@
       "stop": "n'est plus confus."
     },
     "counterAttack": {
-      "description": "Réplique avec la même action que celle que vient de jouer votre adversaire. Ne fonctionne pas sur certaines attaques, ni si l'adversaire n'a pas attaqué.",
+      "description": "Réplique avec la même action que celle que vient de jouer votre adversaire, en infligeant 40 % de dégâts en plus. Ne fonctionne pas sur certaines attaques, ni si l'adversaire n'a pas attaqué.",
       "name_one": "Attaque riposte",
       "customMessage": "ne parvient pas à riposter.",
       "name_other": "Attaques riposte"
