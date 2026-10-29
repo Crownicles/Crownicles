@@ -19,6 +19,15 @@ function canAfford(me: AiPlayerFighter, actionId: string): boolean {
 }
 
 /**
+ * Quick attack when faster than the opponent and affordable, simple attack otherwise
+ */
+function quickOrSimpleAttack(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): FightAction {
+	const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
+	const useQuick = me.getSpeed() > opponent.getSpeed() && canAfford(me, actions.QUICK_ATTACK);
+	return FightActionDataController.instance.getById(useQuick ? actions.QUICK_ATTACK : actions.SIMPLE_ATTACK)!;
+}
+
+/**
  * Knight personality built around the rest then heavy attack combo: the heavy attack is only fully effective right after a rest.
  * Personalities differ by when they cast the benediction and by how hurt they must be to rest.
  */
@@ -69,9 +78,7 @@ export abstract class RestingKnightFightBehavior implements ClassBehavior {
 			return getAction(actions.RESTING);
 		}
 
-		return me.getSpeed() > opponent.getSpeed() && canAfford(me, actions.QUICK_ATTACK)
-			? getAction(actions.QUICK_ATTACK)
-			: getAction(actions.SIMPLE_ATTACK);
+		return quickOrSimpleAttack(me, opponent);
 	}
 
 	/**

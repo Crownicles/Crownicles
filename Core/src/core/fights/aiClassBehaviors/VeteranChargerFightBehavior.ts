@@ -6,12 +6,12 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import {
+	shouldPunishRest, shouldStartChargingAttack
+} from "./VeteranTactics";
 
 // Under this share of its energy, the veteran uses the energetic attack for its heal
 const HEALING_ENERGY_RATIO = 0.6;
-
-// The two-turn charging attack is not started against an opponent this close to death
-const MIN_OPPONENT_ENERGY_RATIO_TO_CHARGE = 0.16;
 
 /**
  * Charger veteran: favors the two-turn charging attacks and keeps the energetic attack to heal when hurt
@@ -22,30 +22,18 @@ class VeteranChargerFightBehavior implements ClassBehavior {
 		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 		const getAction = (actionId: string): FightAction => FightActionDataController.instance.getById(actionId)!;
 		const canUse = (actionId: string): boolean => me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
-		const opponentLastActionId = opponent.getLastFightActionUsed()?.id;
 
 		if (fightView.fightController.turn <= 2) {
 			return getAction(actions.CONCENTRATION);
 		}
 
 		// The energetic attack heals a hurt veteran and punishes an opponent that has just rested
-		const wantsEnergeticAttack = me.getEnergy() < me.getMaxEnergy() * HEALING_ENERGY_RATIO || opponentLastActionId === actions.RESTING;
-		if (wantsEnergeticAttack && canUse(actions.ENERGETIC_ATTACK)) {
+		const hurt = me.getEnergy() < me.getMaxEnergy() * HEALING_ENERGY_RATIO;
+		if (hurt && canUse(actions.ENERGETIC_ATTACK) || shouldPunishRest(me, opponent)) {
 			return getAction(actions.ENERGETIC_ATTACK);
 		}
 
-		// Do not charge into an opponent that is itself preparing a two-turn action
-		const opponentIsCharging = opponentLastActionId !== undefined
-			&& [
-				actions.CHARGE_ULTIMATE_ATTACK,
-				actions.CHARGE_CHARGING_ATTACK,
-				actions.RESTING
-			].includes(opponentLastActionId);
-		if (
-			canUse(actions.CHARGE_CHARGING_ATTACK)
-			&& !opponentIsCharging
-			&& opponent.getEnergy() > opponent.getMaxEnergy() * MIN_OPPONENT_ENERGY_RATIO_TO_CHARGE
-		) {
+		if (shouldStartChargingAttack(me, opponent)) {
 			return getAction(actions.CHARGE_CHARGING_ATTACK);
 		}
 
