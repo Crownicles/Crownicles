@@ -37,9 +37,10 @@ export function canPlayShieldAttack(
 ): boolean {
 	const shieldAttack = FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK;
 	const shieldAttacksUsed = me.fightActionsHistory.filter(action => action.id === shieldAttack).length;
-	if (opponent.hasFightAlteration()
-		|| shieldAttacksUsed >= chances.length
-		|| me.getBreath() - FightActionDataController.getFightActionBreathCost(shieldAttack) < breathToKeep) {
+	if (opponent.hasFightAlteration() || shieldAttacksUsed >= chances.length) {
+		return false;
+	}
+	if (me.getBreath() - FightActionDataController.getFightActionBreathCost(shieldAttack) < breathToKeep) {
 		return false;
 	}
 	const chance = chances[shieldAttacksUsed];
