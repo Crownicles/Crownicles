@@ -2881,7 +2881,7 @@
       "clock": "A clock"
     },
     "results": {
-      "success": "You convey the message {{emoji}}. The recipient's face lights up: \"That is indeed our agreed signal! Thank you so much for your discretion, here is your payment.\" You receive **{{money, number}} {emote:unitValues.money}** and **{{xp, number}} {emote:unitValues.experience}**!",
+      "success": "You convey the message {{emoji}}. The recipient's face lights up: \"That is indeed our agreed signal! Thank you so much for your discretion, here is your payment.\" You receive **{{money, number}} {emote:unitValues.money}** and **{{xp, number}} {emote:unitValues.xp}**!",
       "wrongGeneric": "You say the message is {{emoji}}. The recipient frowns: \"What? That is definitely not our signal. Are you trying to trick me? Get lost!\" You leave empty-handed.",
       "wrongBomb": "You mysteriously whisper the message {{emoji}}. The recipient panics: \"A BOMB?! AN ATTACK!\" In a sheer panic, they hit you with a stick and run away screaming! You lose **{{health, number}} {emote:unitValues.lostHealth}**.",
       "wrongPoo": "You solemnly announce {{emoji}}. The recipient stares in sheer disgust: \"Are you mocking me?! That is revolting!\" They slap you across the face and walk away muttering curses.",

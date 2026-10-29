@@ -2881,7 +2881,7 @@
       "clock": "Une horloge"
     },
     "results": {
-      "success": "Vous transmettez le message {{emoji}}. Le destinataire s'illumine : « C'est exactement le signal convenu ! Merci infiniment pour votre discrétion, voici votre récompense. » Vous recevez **{{money, number}} {emote:unitValues.money}** et **{{xp, number}} {emote:unitValues.experience}** !",
+      "success": "Vous transmettez le message {{emoji}}. Le destinataire s'illumine : « C'est exactement le signal convenu ! Merci infiniment pour votre discrétion, voici votre récompense. » Vous recevez **{{money, number}} {emote:unitValues.money}** et **{{xp, number}} {emote:unitValues.xp}** !",
       "wrongGeneric": "Vous annoncez le message {{emoji}}. Le destinataire fronce les sourcils : « Hein ? Ce n'est absolument pas notre signal. Vous essayez de m'arnaquer ? Fichez le camp ! » Vous repartez bredouille.",
       "wrongBomb": "Vous présentez le message {{emoji}} d'un air mystérieux. Le destinataire panique : « UNE BOMBE ?! UN ATTENTAT ! » Dans sa terreur, il vous assène un violent coup de bâton avant de s'enfuir en hurlant ! Vous perdez **{{health, number}} {emote:unitValues.lostHealth}**.",
       "wrongPoo": "Vous murmurez solennellement le message {{emoji}}. Le destinataire vous regarde avec un dégoût absolu : « Vous vous moquez de moi ?! C'est répugnant ! » Il vous gifle violemment et tourne les talons en marmonnant des injures.",

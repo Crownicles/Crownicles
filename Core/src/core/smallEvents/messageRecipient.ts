@@ -41,126 +41,87 @@ function generateEmojiChoices(secretEmoji: string): ReactionCollectorMessageReac
 	return allEmojis.map(emojiId => ({ emojiId }));
 }
 
-async function handleRecipientChoice(
-	response: CrowniclesPacket[],
-	player: Player,
-	chosenEmoji: string | undefined,
-	destinationLocationId: number,
-	secretEmoji: string
-): Promise<void> {
+type RecipientChoice = {
+	chosenEmoji: string | undefined;
+	secretEmoji: string;
+	destinationLocationId: number;
+};
+
+type RecipientOutcome = Pick<SmallEventMessageRecipientPacket, "outcome" | "moneyWon" | "xpWon" | "damage" | "timeLost">;
+
+type RecipientOutcomeHandler = (player: Player, response: CrowniclesPacket[]) => Promise<RecipientOutcome>;
+
+const OUTCOMES = SmallEventConstants.MESSAGE.OUTCOMES;
+
+async function rewardRightEmoji(player: Player, response: CrowniclesPacket[]): Promise<RecipientOutcome> {
+	const moneyWon = RandomUtils.randInt(SmallEventConstants.MESSAGE.REWARDS.MONEY.MIN, SmallEventConstants.MESSAGE.REWARDS.MONEY.MAX);
+	const xpWon = RandomUtils.randInt(SmallEventConstants.MESSAGE.REWARDS.EXPERIENCE.MIN, SmallEventConstants.MESSAGE.REWARDS.EXPERIENCE.MAX);
+	await player.addMoney({
+		amount: moneyWon,
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	});
+	await player.addExperience({
+		amount: xpWon,
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	});
+	return {
+		outcome: OUTCOMES.SUCCESS,
+		moneyWon,
+		xpWon
+	};
+}
+
+async function explodeBomb(player: Player, response: CrowniclesPacket[]): Promise<RecipientOutcome> {
+	const damage = RandomUtils.randInt(SmallEventConstants.MESSAGE.PENALTIES.BOMB_DAMAGE.MIN, SmallEventConstants.MESSAGE.PENALTIES.BOMB_DAMAGE.MAX);
+	await player.addHealth({
+		amount: -damage,
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	});
+	return {
+		outcome: OUTCOMES.WRONG_BOMB,
+		damage
+	};
+}
+
+async function loseTime(player: Player): Promise<RecipientOutcome> {
+	const timeLost = RandomUtils.randInt(SmallEventConstants.MESSAGE.PENALTIES.TIME_LOST.MIN, SmallEventConstants.MESSAGE.PENALTIES.TIME_LOST.MAX);
+	await TravelTime.applyEffect(player, Effect.OCCUPIED, timeLost, new Date(), NumberChangeReason.SMALL_EVENT);
+	return {
+		outcome: OUTCOMES.WRONG_TIME,
+		timeLost
+	};
+}
+
+const WRONG_EMOJI_HANDLERS: Record<string, RecipientOutcomeHandler> = {
+	bomb: explodeBomb,
+	clock: loseTime,
+	poop: () => Promise.resolve({ outcome: OUTCOMES.WRONG_POO }),
+	heart: () => Promise.resolve({ outcome: OUTCOMES.WRONG_LOVE })
+};
+
+function getOutcomeHandler(choice: RecipientChoice): RecipientOutcomeHandler {
+	if (!choice.chosenEmoji) {
+		return () => Promise.resolve({ outcome: OUTCOMES.TIMEOUT });
+	}
+	if (choice.chosenEmoji === choice.secretEmoji) {
+		return rewardRightEmoji;
+	}
+	return WRONG_EMOJI_HANDLERS[choice.chosenEmoji] ?? ((): Promise<RecipientOutcome> => Promise.resolve({ outcome: OUTCOMES.WRONG_GENERIC }));
+}
+
+async function handleRecipientChoice(response: CrowniclesPacket[], player: Player, choice: RecipientChoice): Promise<void> {
 	await PlayerMessageDeliveries.removeOfPlayer(player.id);
 
-	if (!chosenEmoji) {
-		response.push(makePacket(SmallEventMessageRecipientPacket, {
-			outcome: SmallEventConstants.MESSAGE.OUTCOMES.TIMEOUT,
-			correctEmoji: secretEmoji,
-			destinationLocationId
-		}));
-		await player.save();
-		return;
-	}
-
-	if (chosenEmoji === secretEmoji) {
-		const moneyWon = RandomUtils.randInt(
-			SmallEventConstants.MESSAGE.REWARDS.MONEY.MIN,
-			SmallEventConstants.MESSAGE.REWARDS.MONEY.MAX
-		);
-		const xpWon = RandomUtils.randInt(
-			SmallEventConstants.MESSAGE.REWARDS.EXPERIENCE.MIN,
-			SmallEventConstants.MESSAGE.REWARDS.EXPERIENCE.MAX
-		);
-
-		await player.addMoney({
-			amount: moneyWon,
-			response,
-			reason: NumberChangeReason.SMALL_EVENT
-		});
-		await player.addExperience({
-			amount: xpWon,
-			response,
-			reason: NumberChangeReason.SMALL_EVENT
-		});
-
-		response.push(makePacket(SmallEventMessageRecipientPacket, {
-			outcome: SmallEventConstants.MESSAGE.OUTCOMES.SUCCESS,
-			chosenEmoji,
-			correctEmoji: secretEmoji,
-			destinationLocationId,
-			moneyWon,
-			xpWon
-		}));
-	}
-	else {
-		switch (chosenEmoji) {
-			case "bomb": {
-				const damage = RandomUtils.randInt(
-					SmallEventConstants.MESSAGE.PENALTIES.BOMB_DAMAGE.MIN,
-					SmallEventConstants.MESSAGE.PENALTIES.BOMB_DAMAGE.MAX
-				);
-				await player.addHealth({
-					amount: -damage,
-					response,
-					reason: NumberChangeReason.SMALL_EVENT
-				});
-				response.push(makePacket(SmallEventMessageRecipientPacket, {
-					outcome: SmallEventConstants.MESSAGE.OUTCOMES.WRONG_BOMB,
-					chosenEmoji,
-					correctEmoji: secretEmoji,
-					destinationLocationId,
-					damage
-				}));
-				break;
-			}
-			case "clock": {
-				const timeLost = RandomUtils.randInt(
-					SmallEventConstants.MESSAGE.PENALTIES.TIME_LOST.MIN,
-					SmallEventConstants.MESSAGE.PENALTIES.TIME_LOST.MAX
-				);
-				await TravelTime.applyEffect(
-					player,
-					Effect.OCCUPIED,
-					timeLost,
-					new Date(),
-					NumberChangeReason.SMALL_EVENT
-				);
-				response.push(makePacket(SmallEventMessageRecipientPacket, {
-					outcome: SmallEventConstants.MESSAGE.OUTCOMES.WRONG_TIME,
-					chosenEmoji,
-					correctEmoji: secretEmoji,
-					destinationLocationId,
-					timeLost
-				}));
-				break;
-			}
-			case "poop": {
-				response.push(makePacket(SmallEventMessageRecipientPacket, {
-					outcome: SmallEventConstants.MESSAGE.OUTCOMES.WRONG_POO,
-					chosenEmoji,
-					correctEmoji: secretEmoji,
-					destinationLocationId
-				}));
-				break;
-			}
-			case "heart": {
-				response.push(makePacket(SmallEventMessageRecipientPacket, {
-					outcome: SmallEventConstants.MESSAGE.OUTCOMES.WRONG_LOVE,
-					chosenEmoji,
-					correctEmoji: secretEmoji,
-					destinationLocationId
-				}));
-				break;
-			}
-			default: {
-				response.push(makePacket(SmallEventMessageRecipientPacket, {
-					outcome: SmallEventConstants.MESSAGE.OUTCOMES.WRONG_GENERIC,
-					chosenEmoji,
-					correctEmoji: secretEmoji,
-					destinationLocationId
-				}));
-				break;
-			}
-		}
-	}
+	const outcome = await getOutcomeHandler(choice)(player, response);
+	response.push(makePacket(SmallEventMessageRecipientPacket, {
+		...outcome,
+		chosenEmoji: choice.chosenEmoji,
+		correctEmoji: choice.secretEmoji,
+		destinationLocationId: choice.destinationLocationId
+	}));
 
 	await player.save();
 }
@@ -198,13 +159,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 				const firstReaction = reactionCollector.getFirstReaction()?.reaction as {
 					data: ReactionCollectorMessageReaction;
 				} | undefined;
-				await handleRecipientChoice(
-					collectorResponse,
-					lockedPlayer,
-					firstReaction?.data.emojiId,
-					delivery.destinationLocationId,
-					secretEmoji
-				);
+				await handleRecipientChoice(collectorResponse, lockedPlayer, {
+					chosenEmoji: firstReaction?.data.emojiId,
+					secretEmoji,
+					destinationLocationId: delivery.destinationLocationId
+				});
 			});
 		};
 

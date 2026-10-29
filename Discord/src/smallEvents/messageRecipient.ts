@@ -52,6 +52,23 @@ export async function messageRecipientCollector(
 	}).send();
 }
 
+/**
+ * The outcome values are also the translation keys of the results, so unknown outcomes fall back to the generic one
+ */
+function getMessageRecipientResultText(packet: SmallEventMessageRecipientPacket, lng: Language): string {
+	const outcomes: string[] = Object.values(SmallEventConstants.MESSAGE.OUTCOMES);
+	const outcome = outcomes.includes(packet.outcome) ? packet.outcome : SmallEventConstants.MESSAGE.OUTCOMES.WRONG_GENERIC;
+
+	return i18n.t(`smallEvents:messageRecipient.results.${outcome}`, {
+		lng,
+		emoji: packet.chosenEmoji ? CrowniclesIcons.messageEmojis[packet.chosenEmoji] ?? "" : "",
+		money: packet.moneyWon ?? 0,
+		xp: packet.xpWon ?? 0,
+		health: packet.damage ?? 0,
+		time: i18n.formatDuration(packet.timeLost ?? 0, lng)
+	});
+}
+
 export async function messageRecipientResult(
 	context: PacketContext,
 	packet: SmallEventMessageRecipientPacket
@@ -61,56 +78,6 @@ export async function messageRecipientResult(
 		return;
 	}
 	const lng = interaction.userLanguage;
-	const chosenEmote = packet.chosenEmoji ? (CrowniclesIcons.messageEmojis[packet.chosenEmoji] ?? "") : "";
-
-	let resultText = "";
-	switch (packet.outcome) {
-		case SmallEventConstants.MESSAGE.OUTCOMES.SUCCESS:
-			resultText = i18n.t("smallEvents:messageRecipient.results.success", {
-				lng,
-				emoji: chosenEmote,
-				money: packet.moneyWon ?? 0,
-				xp: packet.xpWon ?? 0
-			});
-			break;
-		case SmallEventConstants.MESSAGE.OUTCOMES.WRONG_BOMB:
-			resultText = i18n.t("smallEvents:messageRecipient.results.wrongBomb", {
-				lng,
-				emoji: chosenEmote,
-				health: packet.damage ?? 0
-			});
-			break;
-		case SmallEventConstants.MESSAGE.OUTCOMES.WRONG_TIME:
-			resultText = i18n.t("smallEvents:messageRecipient.results.wrongTime", {
-				lng,
-				emoji: chosenEmote,
-				time: i18n.formatDuration(packet.timeLost ?? 0, lng)
-			});
-			break;
-		case SmallEventConstants.MESSAGE.OUTCOMES.WRONG_POO:
-			resultText = i18n.t("smallEvents:messageRecipient.results.wrongPoo", {
-				lng,
-				emoji: chosenEmote
-			});
-			break;
-		case SmallEventConstants.MESSAGE.OUTCOMES.WRONG_LOVE:
-			resultText = i18n.t("smallEvents:messageRecipient.results.wrongLove", {
-				lng,
-				emoji: chosenEmote
-			});
-			break;
-		case SmallEventConstants.MESSAGE.OUTCOMES.TIMEOUT:
-			resultText = i18n.t("smallEvents:messageRecipient.results.timeout", {
-				lng
-			});
-			break;
-		default:
-			resultText = i18n.t("smallEvents:messageRecipient.results.wrongGeneric", {
-				lng,
-				emoji: chosenEmote
-			});
-			break;
-	}
 
 	await interaction.followUp({
 		embeds: [
@@ -122,7 +89,7 @@ export async function messageRecipientResult(
 					}),
 					interaction.user
 				)
-				.setDescription(resultText)
+				.setDescription(getMessageRecipientResultText(packet, lng))
 		]
 	});
 }
