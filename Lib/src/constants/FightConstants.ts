@@ -324,7 +324,7 @@ export abstract class FightConstants {
 	static readonly ENERGETIC_ATTACK_RESTED_TARGET_DAMAGE_MULTIPLIER = 1.25;
 
 	// Damage multiplier of the attack following a concentration
-	static readonly CONCENTRATED_DAMAGE_MULTIPLIER = 1.6;
+	static readonly CONCENTRATED_DAMAGE_MULTIPLIER = 1.55;
 
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
