@@ -125,6 +125,13 @@ describe("AI personalities", () => {
 		expect(new TankFightBehavior().chooseAction(tank, mockFightView(5, opponent)).id).toBe(ACTIONS.SHIELD_ATTACK);
 	});
 
+	it("the riposte tank does not waste its counter attack on a cheap action", () => {
+		const tank = mockFighter({ breath: 10 });
+		const opponent = mockFighter({ lastActionId: ACTIONS.INTENSE_ATTACK });
+
+		expect(new TankRiposteFightBehavior().chooseAction(tank, mockFightView(5, opponent)).id).not.toBe(ACTIONS.COUNTER_ATTACK);
+	});
+
 	it("the justicar paladin strikes with the divine attack once it rarely misses", () => {
 		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
 		const paladin = mockFighter({ breath: 12 });
