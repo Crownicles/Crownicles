@@ -5,6 +5,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { canPlayShieldAttack } from "./ShieldAttackPacing";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { getUsedGodMoves } from "../FightController";
@@ -117,7 +118,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	 * Determines whether the SHIELD_ATTACK should be used.
 	 *
 	 * The shield attack scales on the paladin's high defense and weakens the opponent, which can only happen
-	 * when the opponent has no alteration yet (a fighter holds a single alteration at a time).
+	 * when the opponent has no alteration yet (a fighter holds a single alteration at a time), once per fight.
 	 *
 	 * @param me - The AI fighter.
 	 * @param opponent - The opponent fighter.
@@ -127,8 +128,7 @@ class PaladinFightBehavior implements ClassBehavior {
 		me: AiPlayerFighter,
 		opponent: RealPlayerFighter | AiPlayerFighter
 	): boolean {
-		return !opponent.hasFightAlteration()
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK);
+		return canPlayShieldAttack(me, opponent);
 	}
 
 	/**

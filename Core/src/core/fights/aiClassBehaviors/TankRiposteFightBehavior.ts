@@ -6,10 +6,11 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { canPlayShieldAttack } from "./ShieldAttackPacing";
 import { shouldCounterAttack } from "./TankFightBehavior";
 
 /**
- * Riposte tank: lets the opponent commit and copies its expensive actions, and only uses the shield attack
+ * Riposte tank: lets the opponent commit and copies its expensive actions, and only weakens it with the shield attack
  * when it keeps enough breath to counter on its next turn
  */
 class TankRiposteFightBehavior implements ClassBehavior {
@@ -27,8 +28,8 @@ class TankRiposteFightBehavior implements ClassBehavior {
 			return getAction(actions.COUNTER_ATTACK);
 		}
 
-		// The shield attack is worth it even against an opponent it can no longer weaken
-		if (me.getBreath() - cost(actions.SHIELD_ATTACK) + me.getRegenBreath() >= cost(actions.COUNTER_ATTACK)) {
+		// Keep enough breath, after the regeneration, to counter on the next turn
+		if (canPlayShieldAttack(me, opponent, cost(actions.COUNTER_ATTACK) - me.getRegenBreath())) {
 			return getAction(actions.SHIELD_ATTACK);
 		}
 
