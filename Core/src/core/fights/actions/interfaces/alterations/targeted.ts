@@ -4,9 +4,8 @@ import { FightAlterationFunc } from "../../../../../data/FightAlteration";
 import {
 	defaultDamageFightAlterationResult, defaultHealFightAlterationResult
 } from "../../../FightController";
-import {
-	attackInfo, statsInfo
-} from "../../FightActionController";
+import { statsInfo } from "../../FightActionController";
+import { getBoomerangAttackInfo } from "../players/boomerangAttack";
 import { FightAlterationState } from "../../../../../../../Lib/src/types/FightAlterationResult";
 
 const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
@@ -22,16 +21,10 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 		return defaultHealFightAlterationResult(affected);
 	}
 
-	return defaultDamageFightAlterationResult(opponent, getStatsInfo(affected, opponent), getAttackInfo());
+	return defaultDamageFightAlterationResult(opponent, getStatsInfo(affected, opponent), getBoomerangAttackInfo());
 };
 
 export default use;
-
-function getAttackInfo(): attackInfo {
-	return {
-		minDamage: 45, averageDamage: 90, maxDamage: 150
-	};
-}
 
 function getStatsInfo(victim: Fighter, sender: Fighter): statsInfo {
 	return {
