@@ -28,15 +28,19 @@ class VeteranChargerFightBehavior implements ClassBehavior {
 			return getAction(actions.CONCENTRATION);
 		}
 
-		// The energetic attack also punishes an opponent that has just rested
-		if ((me.getEnergy() < me.getMaxEnergy() * HEALING_ENERGY_RATIO || opponentLastActionId === actions.RESTING) && canUse(actions.ENERGETIC_ATTACK)) {
+		// The energetic attack heals a hurt veteran and punishes an opponent that has just rested
+		const wantsEnergeticAttack = me.getEnergy() < me.getMaxEnergy() * HEALING_ENERGY_RATIO || opponentLastActionId === actions.RESTING;
+		if (wantsEnergeticAttack && canUse(actions.ENERGETIC_ATTACK)) {
 			return getAction(actions.ENERGETIC_ATTACK);
 		}
 
 		// Do not charge into an opponent that is itself preparing a two-turn action
-		const opponentIsCharging = opponentLastActionId === actions.CHARGE_ULTIMATE_ATTACK
-			|| opponentLastActionId === actions.CHARGE_CHARGING_ATTACK
-			|| opponentLastActionId === actions.RESTING;
+		const opponentIsCharging = opponentLastActionId !== undefined
+			&& [
+				actions.CHARGE_ULTIMATE_ATTACK,
+				actions.CHARGE_CHARGING_ATTACK,
+				actions.RESTING
+			].includes(opponentLastActionId);
 		if (
 			canUse(actions.CHARGE_CHARGING_ATTACK)
 			&& !opponentIsCharging

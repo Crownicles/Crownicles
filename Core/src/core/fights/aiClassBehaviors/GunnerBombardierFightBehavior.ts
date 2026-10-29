@@ -20,32 +20,43 @@ const FINISHING_ENERGY_RATIO = 0.06;
 class GunnerBombardierFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter;
-		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
-		const getAction = (actionId: string): FightAction => FightActionDataController.instance.getById(actionId)!;
-		const canUse = (actionId: string): boolean => me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
 
 		if (opponent.getEnergy() <= opponent.getMaxEnergy() * FINISHING_ENERGY_RATIO) {
 			return chooseFinishingMove(me, opponent);
 		}
 
-		if (me.getLastFightActionUsed()?.id === actions.CANON_ATTACK && canUse(actions.CANON_ATTACK)) {
-			return getAction(actions.CANON_ATTACK);
-		}
-
-		if (fightView.fightController.turn <= 2 && !opponent.hasFightAlteration() && canUse(actions.BOOMERANG_ATTACK)) {
-			return getAction(actions.BOOMERANG_ATTACK);
-		}
-
-		// Start a new chain with a full breath, enough for several canons in a row
-		if (me.getBreath() >= me.getMaxBreath() - 1 && canUse(actions.CANON_ATTACK)) {
-			return getAction(actions.CANON_ATTACK);
+		const planned = this.chooseCanonPlan(me, opponent, fightView.fightController.turn);
+		if (planned) {
+			return planned;
 		}
 
 		if (shouldUseIntenseAttack(opponent, me, false)) {
-			return getAction(actions.INTENSE_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)!;
 		}
 
 		return chooseFinishingMove(me, opponent);
+	}
+
+	/**
+	 * Boomerang opening and canon chains: keeps chaining canons, opens with the boomerang, and starts a new chain
+	 * with a full breath, enough for several canons in a row. Null when none applies
+	 */
+	private chooseCanonPlan(me: AiPlayerFighter, opponent: RealPlayerFighter, turn: number): FightAction | null {
+		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
+		const canUse = (actionId: string): boolean => me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
+		const canFireCanon = canUse(actions.CANON_ATTACK);
+		const isOpening = turn <= 2 && !opponent.hasFightAlteration();
+
+		if (canFireCanon && me.getLastFightActionUsed()?.id === actions.CANON_ATTACK) {
+			return FightActionDataController.instance.getById(actions.CANON_ATTACK)!;
+		}
+		if (isOpening && canUse(actions.BOOMERANG_ATTACK)) {
+			return FightActionDataController.instance.getById(actions.BOOMERANG_ATTACK)!;
+		}
+		if (canFireCanon && me.getBreath() >= me.getMaxBreath() - 1) {
+			return FightActionDataController.instance.getById(actions.CANON_ATTACK)!;
+		}
+		return null;
 	}
 }
 

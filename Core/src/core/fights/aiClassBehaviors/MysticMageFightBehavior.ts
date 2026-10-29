@@ -1,5 +1,6 @@
 import { ClassBehavior } from "../AiBehaviorController";
 import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
+import { Fighter } from "../fighter/Fighter";
 import { FightView } from "../FightView";
 import {
 	FightAction, FightActionDataController
@@ -33,6 +34,35 @@ function canAfford(me: AiPlayerFighter, actionId: string): boolean {
  * Sets up one of its ailments (the curse first against an opponent that heals), cashes it in with the dark attack
  * while the attack is fresh, then finishes with its other attacks while the dark attack recovers
  */
+/**
+ * Move against an opponent that already suffers an alteration: the fresh dark attack cashes it in, saving the breath
+ * for it if needed. Null once the dark attack is too worn
+ */
+function chooseAgainstAilingOpponent(me: AiPlayerFighter): FightAction | null {
+	if (getDarkAttackPowerMultiplier(me) < MIN_WORTHWHILE_DARK_ATTACK_MULTIPLIER) {
+		return null;
+	}
+	return getAction(canAfford(me, ACTIONS.DARK_ATTACK) ? ACTIONS.DARK_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
+}
+
+/**
+ * Ailment to set up on a clean opponent: the curse first against the classes that heal, the poison at the opening,
+ * the curse while it still heals the mage. Null when none applies
+ */
+function chooseSetup(me: AiPlayerFighter, opponent: Fighter, turn: number): FightAction | null {
+	// The curse cuts the healing of the classes that rely on it
+	if (HEALING_ACTIONS.some(actionId => opponent.availableFightActions.has(actionId)) && canAfford(me, ACTIONS.CURSED_ATTACK)) {
+		return getAction(ACTIONS.CURSED_ATTACK);
+	}
+	if (turn <= POISON_OPENING_LAST_TURN && canAfford(me, ACTIONS.POISONOUS_ATTACK)) {
+		return getAction(ACTIONS.POISONOUS_ATTACK);
+	}
+	if (opponent.getEnergy() > opponent.getMaxEnergy() * CURSE_HEAL_ENERGY_RATIO && canAfford(me, ACTIONS.CURSED_ATTACK)) {
+		return getAction(ACTIONS.CURSED_ATTACK);
+	}
+	return null;
+}
+
 class MysticMageFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter();
@@ -42,23 +72,11 @@ class MysticMageFightBehavior implements ClassBehavior {
 			return getAction(ACTIONS.BREATH_TAKING_ATTACK);
 		}
 
-		if (opponent.hasFightAlteration()) {
-			if (getDarkAttackPowerMultiplier(me) >= MIN_WORTHWHILE_DARK_ATTACK_MULTIPLIER) {
-				// Save the breath for the dark attack rather than spending it on a weaker hit
-				return getAction(canAfford(me, ACTIONS.DARK_ATTACK) ? ACTIONS.DARK_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
-			}
-		}
-		else {
-			// The curse cuts the healing of the classes that rely on it
-			if (HEALING_ACTIONS.some(actionId => opponent.availableFightActions.has(actionId)) && canAfford(me, ACTIONS.CURSED_ATTACK)) {
-				return getAction(ACTIONS.CURSED_ATTACK);
-			}
-			if (fightView.fightController.turn <= POISON_OPENING_LAST_TURN && canAfford(me, ACTIONS.POISONOUS_ATTACK)) {
-				return getAction(ACTIONS.POISONOUS_ATTACK);
-			}
-			if (opponent.getEnergy() > opponent.getMaxEnergy() * CURSE_HEAL_ENERGY_RATIO && canAfford(me, ACTIONS.CURSED_ATTACK)) {
-				return getAction(ACTIONS.CURSED_ATTACK);
-			}
+		const planned = opponent.hasFightAlteration()
+			? chooseAgainstAilingOpponent(me)
+			: chooseSetup(me, opponent, fightView.fightController.turn);
+		if (planned) {
+			return planned;
 		}
 
 		for (const actionId of [ACTIONS.FIRE_ATTACK, ACTIONS.POISONOUS_ATTACK]) {

@@ -32,11 +32,8 @@ class TankRiposteFightBehavior implements ClassBehavior {
 			return getAction(actions.SHIELD_ATTACK);
 		}
 
-		if (
-			me.getEnergy() < opponent.getEnergy()
-			&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.15
-			&& me.getBreath() >= cost(actions.INTENSE_ATTACK)
-		) {
+		const behindOpponent = me.getEnergy() < opponent.getEnergy() && opponent.getEnergy() > opponent.getMaxEnergy() * 0.15;
+		if (behindOpponent && me.getBreath() >= cost(actions.INTENSE_ATTACK)) {
 			return getAction(actions.INTENSE_ATTACK);
 		}
 

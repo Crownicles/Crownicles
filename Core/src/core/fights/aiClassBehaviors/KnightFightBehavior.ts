@@ -22,6 +22,14 @@ export function canUseGodMove(fighter: AiPlayerFighter | RealPlayerFighter): boo
 class KnightFightBehavior implements ClassBehavior {
 	private blessRoundChosen: number | null = null;
 
+	/**
+	 * Check if the benediction is still free in the shared god move quota, affordable, and threatened by the opponent
+	 */
+	private shouldWinGodMoveRace(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): boolean {
+		const canAffordBenediction = me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION);
+		return canUseGodMove(opponent) && getUsedGodMoves(me, opponent) < 1 && canAffordBenediction;
+	}
+
 	private blessUsed = false;
 
 	private restCount = 0;
@@ -83,12 +91,7 @@ class KnightFightBehavior implements ClassBehavior {
 		 * GOD MOVE RACE: the benediction and the divine attack share a single quota between both fighters,
 		 * so against an opponent able to cast one, the first fighter to cast it takes it from the other
 		 */
-		if (
-			!this.blessUsed
-			&& canUseGodMove(opponent)
-			&& getUsedGodMoves(me, opponent) < 1
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION)
-		) {
+		if (!this.blessUsed && this.shouldWinGodMoveRace(me, opponent)) {
 			this.blessUsed = true;
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION)!;
 		}
