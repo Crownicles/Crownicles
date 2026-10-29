@@ -2750,7 +2750,7 @@
       },
       "paladinCrusader": {
         "name": "Croisé",
-        "description": "Affaiblit l'adversaire avec son bouclier et garde son attaque divine pour la fin du combat."
+        "description": "Garde son souffle pour son attaque ultime et ses attaques divines, qu'il réserve à la fin du combat, et dépense le surplus avec son bouclier et son bélier."
       },
       "paladinJusticar": {
         "name": "Justicier",
@@ -2766,11 +2766,11 @@
       },
       "veteranStrategist": {
         "name": "Stratège",
-        "description": "Se concentre avant de déclencher ses attaques énergiques."
+        "description": "Se concentre avant de déclencher ses attaques énergiques et répond par une attaque chargée quand l'adversaire prépare un grand coup."
       },
       "veteranCharger": {
         "name": "Fonceur",
-        "description": "Privilégie les attaques chargées et garde ses attaques énergiques pour se soigner."
+        "description": "Se concentre dès qu'il le peut et déclenche aussitôt son attaque énergique, sans jamais charger."
       },
       "mageOccultist": {
         "name": "Occultiste",
@@ -2778,7 +2778,7 @@
       },
       "magePyromancer": {
         "name": "Pyromancien",
-        "description": "Ouvre avec un poison, puis embrase son adversaire dès qu'il le peut et profite de ses brûlures."
+        "description": "Maudit son adversaire dès son premier tour, en profite avec ses attaques sombres tant que la malédiction dure, puis l'embrase sans relâche."
       },
       "mageWarlock": {
         "name": "Envoûteur",
