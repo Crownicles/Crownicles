@@ -6,7 +6,8 @@ import {
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { getUsedGodMoves } from "../FightController";
-import PaladinFightBehavior, { MAX_GOD_MOVES_PER_FIGHT } from "./PaladinFightBehavior";
+import PaladinFightBehavior from "./PaladinFightBehavior";
+import { MAX_GOD_MOVES_PER_FIGHT } from "./PaladinTactics";
 
 // The divine attack failure chance drops with the turns: from this turn it only misses one time out of five
 const JUSTICAR_DIVINE_ATTACK_TURN = 11;
