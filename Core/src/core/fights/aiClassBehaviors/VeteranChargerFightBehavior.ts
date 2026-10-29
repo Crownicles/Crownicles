@@ -7,14 +7,12 @@ import {
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import {
-	shouldChargerUseEnergeticAttack, shouldStartChargingAttack
+	canConcentrateForNextEnergeticAttack, shouldPunishRest, shouldUseConcentratedEnergeticAttack
 } from "./VeteranTactics";
 
-// Under this share of its energy, the veteran uses the energetic attack for its heal
-const HEALING_ENERGY_RATIO = 0.6;
-
 /**
- * Charger veteran: favors the two-turn charging attacks and keeps the energetic attack to heal when hurt
+ * Charger veteran: concentrates as soon as its next energetic attack is affordable and releases it right away,
+ * without the charging attack the strategist keeps against an opponent preparing a big move
  */
 class VeteranChargerFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
@@ -23,20 +21,18 @@ class VeteranChargerFightBehavior implements ClassBehavior {
 		const getAction = (actionId: string): FightAction => FightActionDataController.instance.getById(actionId)!;
 		const canUse = (actionId: string): boolean => me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
 
-		if (fightView.fightController.turn <= 2) {
+		if (shouldUseConcentratedEnergeticAttack(me) || shouldPunishRest(me, opponent)) {
+			return getAction(actions.ENERGETIC_ATTACK);
+		}
+		if (canConcentrateForNextEnergeticAttack(me)) {
 			return getAction(actions.CONCENTRATION);
 		}
-
-		if (shouldChargerUseEnergeticAttack(me, opponent, HEALING_ENERGY_RATIO)) {
+		if (canUse(actions.ENERGETIC_ATTACK)) {
 			return getAction(actions.ENERGETIC_ATTACK);
 		}
 
-		if (shouldStartChargingAttack(me, opponent)) {
-			return getAction(actions.CHARGE_CHARGING_ATTACK);
-		}
-
-		const preferQuick = me.getSpeed() > opponent.getSpeed() && canUse(actions.QUICK_ATTACK) || !canUse(actions.PIERCING_ATTACK);
-		return getAction(preferQuick ? actions.QUICK_ATTACK : actions.PIERCING_ATTACK);
+		// The cheap quick attack lets the breath build up for the next concentration and energetic attack
+		return getAction(canUse(actions.QUICK_ATTACK) ? actions.QUICK_ATTACK : actions.CONCENTRATION);
 	}
 }
 
