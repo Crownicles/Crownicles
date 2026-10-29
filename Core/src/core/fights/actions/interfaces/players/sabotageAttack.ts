@@ -5,6 +5,7 @@ import {
 import { FightAlterations } from "../../FightAlterations";
 import { FightActionFunc } from "../../../../../data/FightAction";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
+import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 
 const use: FightActionFunc = (sender, receiver) => {
 	const result = simpleDamageFightAction(
@@ -22,7 +23,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		}
 	);
 
-	if (Math.random() < 0.6) {
+	if (Math.random() < FightConstants.SABOTAGE_SELF_PARALYSIS_CHANCE) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: true,
 			alteration: FightAlterations.PARALYZED

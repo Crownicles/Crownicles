@@ -329,6 +329,12 @@ export abstract class FightConstants {
 	// The counter attack hits harder than the action it copies: the tank punishes the opponents that commit to a big attack
 	static readonly COUNTER_ATTACK_DAMAGE_MULTIPLIER = 1.4;
 
+	/*
+	 * Chance for the sabotage attack to paralyze its sender (speed at 0 for two turns, which the gunner's attacks rely on),
+	 * in exchange for more damage
+	 */
+	static readonly SABOTAGE_SELF_PARALYSIS_CHANCE = 0.4;
+
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
 		MAX_ELO_GAP: 400,
