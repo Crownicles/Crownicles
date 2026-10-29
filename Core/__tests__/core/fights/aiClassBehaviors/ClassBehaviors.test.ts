@@ -114,6 +114,28 @@ describe("AI class behaviors", () => {
 	});
 
 	describe("GunnerFightBehavior", () => {
+		it("presses a healthy opponent with the sabotage attack rather than the quick attack", () => {
+			const gunner = mockFighter({
+				breath: 4, speed: 500
+			});
+			const opponent = mockFighter({
+				speed: 100, energy: 390, maxEnergy: 700, alterationId: ALTERATIONS.SLOWED
+			});
+
+			expect(new GunnerFightBehavior().chooseAction(gunner, mockFightView(5, opponent)).id).toBe(ACTIONS.SABOTAGE_ATTACK);
+		});
+
+		it("keeps the quick attack against an opponent below half of its energy", () => {
+			const gunner = mockFighter({
+				breath: 4, speed: 500
+			});
+			const opponent = mockFighter({
+				speed: 100, energy: 300, maxEnergy: 700, alterationId: ALTERATIONS.SLOWED
+			});
+
+			expect(new GunnerFightBehavior().chooseAction(gunner, mockFightView(5, opponent)).id).toBe(ACTIONS.QUICK_ATTACK);
+		});
+
 		it("leaves its canon sequence after three canons and throws its boomerang again", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
 			const gunner = mockFighter({

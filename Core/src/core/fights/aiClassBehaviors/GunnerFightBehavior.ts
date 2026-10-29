@@ -15,6 +15,20 @@ import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 // Number of canons fired in a row by a chained canon sequence (see shouldContinueCanonSequence)
 const MAX_CHAINED_CANON_ATTACKS = 3;
 
+// While the opponent keeps more than this share of its energy, the sabotage attack is preferred to the quick attack
+const SABOTAGE_OPPONENT_ENERGY_RATIO = 0.5;
+
+/**
+ * Check if the sabotage attack should replace the quick attack: it hits harder for less breath, and the paralysis it
+ * may cause to the gunner itself costs little while the opponent is still far from defeat
+ * @param me - The AI fighter making the action decision
+ * @param opponent - The opponent fighter in the current battle
+ */
+export function shouldPressWithSabotage(me: AiPlayerFighter, opponent: Fighter): boolean {
+	return opponent.getEnergy() > opponent.getMaxEnergy() * SABOTAGE_OPPONENT_ENERGY_RATIO
+		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SABOTAGE_ATTACK);
+}
+
 /**
  * Determines if the AI should use intense attack based on speed comparison and remaining health
  * @param opponent - The opponent fighter in the current battle
@@ -99,6 +113,10 @@ class GunnerFightBehavior implements ClassBehavior {
 
 		// If the opponent has higher speed or close to it, use sabotage attack
 		if (shouldUseSabotage(opponent, me)) {
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SABOTAGE_ATTACK)!;
+		}
+
+		if (shouldPressWithSabotage(me, opponent)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SABOTAGE_ATTACK)!;
 		}
 
