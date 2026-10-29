@@ -12,6 +12,23 @@ import {
 	piercingOrSimpleAttack, shouldProtect
 } from "./RecruitFightBehavior";
 
+// Classes that can weaken (shield attack) or stun (ram attack) the infantryman for several turns
+const CONTROLLING_CLASSES: number[] = [ClassConstants.CLASSES_ID.IMPENETRABLE_TANK, ClassConstants.CLASSES_ID.LUMINOUS_PALADIN];
+
+/**
+ * Check if the infantryman should protect itself from a class able to weaken or stun it: the protection
+ * blocks these alterations, which keeps a human from chaining them against the AI
+ * @param me
+ * @param opponent
+ */
+function shouldProtectAgainstControl(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+	return CONTROLLING_CLASSES.includes(opponent.player.class)
+		&& !me.hasFightAlteration()
+		&& opponent.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK)
+		&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.14
+		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION);
+}
+
 class InfantryManFightBehavior implements ClassBehavior {
 	private powerfulAttacksUsedMap = 0;
 
@@ -66,7 +83,7 @@ class InfantryManFightBehavior implements ClassBehavior {
 		const powerfulAttacksUsed = this.powerfulAttacksUsedMap;
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
 
-		if (shouldProtect(opponent, me, fightView.fightController.turn)) {
+		if (shouldProtect(opponent, me, fightView.fightController.turn) || shouldProtectAgainstControl(me, opponent)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION)!;
 		}
 

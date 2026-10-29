@@ -6,6 +6,8 @@ import PaladinFightBehavior from "../../../../src/core/fights/aiClassBehaviors/P
 import MysticMageFightBehavior from "../../../../src/core/fights/aiClassBehaviors/MysticMageFightBehavior";
 import GunnerFightBehavior from "../../../../src/core/fights/aiClassBehaviors/GunnerFightBehavior";
 import VeteranFightBehavior from "../../../../src/core/fights/aiClassBehaviors/VeteranFightBehavior";
+import InfantryManFightBehavior from "../../../../src/core/fights/aiClassBehaviors/InfantrymanFightBehavior";
+import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import {
@@ -43,6 +45,36 @@ describe("AI class behaviors", () => {
 			});
 
 			expect(new KnightFightBehavior().chooseAction(knight, mockFightView(2, opponent)).id).not.toBe(ACTIONS.BENEDICTION);
+		});
+	});
+
+	describe("InfantrymanFightBehavior", () => {
+		it("protects itself from a paladin able to stun or weaken it", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+			const paladin = mockFighter({
+				classId: ClassConstants.CLASSES_ID.LUMINOUS_PALADIN, breath: 10
+			});
+
+			expect(new InfantryManFightBehavior().chooseAction(mockFighter(), mockFightView(5, paladin)).id).toBe(ACTIONS.PROTECTION);
+		});
+
+		it("keeps attacking while already protected", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+			const tank = mockFighter({
+				classId: ClassConstants.CLASSES_ID.IMPENETRABLE_TANK, breath: 10
+			});
+			const infantryman = mockFighter({ alterationId: ALTERATIONS.PROTECTED });
+
+			expect(new InfantryManFightBehavior().chooseAction(infantryman, mockFightView(5, tank)).id).not.toBe(ACTIONS.PROTECTION);
+		});
+
+		it("does not waste a turn protecting itself from a class without control attack", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+			const knight = mockFighter({
+				classId: ClassConstants.CLASSES_ID.KNIGHT, breath: 10
+			});
+
+			expect(new InfantryManFightBehavior().chooseAction(mockFighter(), mockFightView(5, knight)).id).not.toBe(ACTIONS.PROTECTION);
 		});
 	});
 
