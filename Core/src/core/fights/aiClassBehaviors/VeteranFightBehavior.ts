@@ -24,7 +24,7 @@ class VeteranFightBehavior implements ClassBehavior {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
 
 		// Concentration boosts the next attack: spend it on the energetic attack, which also punishes an opponent that has just rested
-		if (this.shouldUseConcentratedEnergeticAttack(me) || opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING && this.shouldUseEnergeticAttack(me)) {
+		if (this.shouldUseConcentratedEnergeticAttack(me) || this.shouldPunishRest(me, opponent)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK)!;
 		}
 
@@ -49,6 +49,16 @@ class VeteranFightBehavior implements ClassBehavior {
 		}
 
 		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PIERCING_ATTACK)!;
+	}
+
+	/**
+	 * Check if the opponent has just rested: the energetic attack deals more damage to a rested opponent
+	 * @param me - The AI fighter.
+	 * @param opponent - The opponent fighter.
+	 */
+	private shouldPunishRest(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+		return opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
+			&& this.shouldUseEnergeticAttack(me);
 	}
 
 	/**

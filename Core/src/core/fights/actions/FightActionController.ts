@@ -62,7 +62,8 @@ export abstract class FightActionController {
 	 * @param target
 	 */
 	private static reduceHealingOfCursedTarget(buff: FightActionBuff, target: Fighter): FightActionBuff {
-		if (buff.stat !== FightStatBuffed.ENERGY || buff.value <= 0 || target.alteration?.id !== FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED) {
+		const isHealing = buff.stat === FightStatBuffed.ENERGY && buff.value > 0;
+		if (!isHealing || target.alteration?.id !== FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED) {
 			return buff;
 		}
 		return {

@@ -20,11 +20,9 @@ const MAX_GOD_MOVES_FOR_DIVINE_ATTACK = 2;
 class PaladinJusticarFightBehavior extends PaladinFightBehavior {
 	override chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter;
-		if (
-			fightView.fightController.turn >= JUSTICAR_DIVINE_ATTACK_TURN
-			&& getUsedGodMoves(me, opponent) < MAX_GOD_MOVES_FOR_DIVINE_ATTACK
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK)
-		) {
+		const divineAttackAvailable = getUsedGodMoves(me, opponent) < MAX_GOD_MOVES_FOR_DIVINE_ATTACK
+			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK);
+		if (fightView.fightController.turn >= JUSTICAR_DIVINE_ATTACK_TURN && divineAttackAvailable) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK)!;
 		}
 		return super.chooseAction(me, fightView);

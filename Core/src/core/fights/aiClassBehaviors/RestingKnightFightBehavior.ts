@@ -14,6 +14,10 @@ const MAX_RESTS = 4;
 // Resting is pointless against an opponent this close to death
 const MIN_OPPONENT_ENERGY_TO_REST = 250;
 
+function canAfford(me: AiPlayerFighter, actionId: string): boolean {
+	return me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
+}
+
 /**
  * Knight personality built around the rest then heavy attack combo: the heavy attack is only fully effective right after a rest.
  * Personalities differ by when they cast the benediction and by how hurt they must be to rest.
@@ -47,9 +51,8 @@ export abstract class RestingKnightFightBehavior implements ClassBehavior {
 		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
 		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 		const getAction = (actionId: string): FightAction => FightActionDataController.instance.getById(actionId)!;
-		const canUse = (actionId: string): boolean => me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
 
-		if (getUsedGodMoves(me, opponent) < 1 && canUse(actions.BENEDICTION) && this.shouldBless(me, opponent, fightView.fightController.turn)) {
+		if (this.canBlessNow(me, opponent, fightView.fightController.turn)) {
 			return getAction(actions.BENEDICTION);
 		}
 
@@ -57,23 +60,37 @@ export abstract class RestingKnightFightBehavior implements ClassBehavior {
 			return getAction(actions.RESTING);
 		}
 
-		if (me.getLastFightActionUsed()?.id === actions.RESTING && canUse(actions.HEAVY_ATTACK)) {
+		if (me.getLastFightActionUsed()?.id === actions.RESTING && canAfford(me, actions.HEAVY_ATTACK)) {
 			return getAction(actions.HEAVY_ATTACK);
 		}
 
-		// Rest only if the breath regenerated meanwhile allows the heavy attack right after
-		if (
-			me.getEnergy() < me.getMaxEnergy() * this.restEnergyRatio
-			&& me.getBreath() + me.getRegenBreath() >= FightActionDataController.getFightActionBreathCost(actions.HEAVY_ATTACK)
-			&& this.restCount < MAX_RESTS
-			&& opponent.getEnergy() > MIN_OPPONENT_ENERGY_TO_REST
-		) {
+		if (this.shouldRestBeforeHeavyAttack(me, opponent)) {
 			this.restCount++;
 			return getAction(actions.RESTING);
 		}
 
-		return me.getSpeed() > opponent.getSpeed() && canUse(actions.QUICK_ATTACK)
+		return me.getSpeed() > opponent.getSpeed() && canAfford(me, actions.QUICK_ATTACK)
 			? getAction(actions.QUICK_ATTACK)
 			: getAction(actions.SIMPLE_ATTACK);
+	}
+
+	/**
+	 * The benediction is still available in the fight, affordable, and the personality wants it now
+	 */
+	private canBlessNow(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter, turn: number): boolean {
+		return getUsedGodMoves(me, opponent) < 1
+			&& canAfford(me, FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION)
+			&& this.shouldBless(me, opponent, turn);
+	}
+
+	/**
+	 * Rest when hurt enough, only if the breath regenerated meanwhile allows the heavy attack right after
+	 */
+	private shouldRestBeforeHeavyAttack(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): boolean {
+		const heavyAttackCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
+		const restWillPayOff = me.getBreath() + me.getRegenBreath() >= heavyAttackCost && opponent.getEnergy() > MIN_OPPONENT_ENERGY_TO_REST;
+		return me.getEnergy() < me.getMaxEnergy() * this.restEnergyRatio
+			&& this.restCount < MAX_RESTS
+			&& restWillPayOff;
 	}
 }

@@ -82,10 +82,7 @@ class GunnerFightBehavior implements ClassBehavior {
 		}
 
 		// Clear the chained canon attack flag if not enough breath to continue
-		if (
-			this.isGoingForChainedCanonAttack
-			&& me.getBreath() < FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)
-		) {
+		if (me.getBreath() < FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)) {
 			this.isGoingForChainedCanonAttack = false;
 		}
 
@@ -106,17 +103,22 @@ class GunnerFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)!;
 		}
 
+		return this.chooseRegularAttack(me, opponent);
+	}
+
+	/**
+	 * Attack outside of the boomerang and canon plans
+	 * @param me - The AI fighter making the action decision
+	 * @param opponent - The opponent fighter in the current battle
+	 */
+	private chooseRegularAttack(me: AiPlayerFighter, opponent: RealPlayerFighter): FightAction {
 		// If the opponent has higher speed or close to it, and we have enough breath, use intense attack
 		if (shouldUseIntenseAttack(opponent, me, this.isGoingForChainedCanonAttack)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)!;
 		}
 
-		// If the opponent has higher speed or close to it, use sabotage attack
-		if (shouldUseSabotage(opponent, me)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SABOTAGE_ATTACK)!;
-		}
-
-		if (shouldPressWithSabotage(me, opponent)) {
+		// Sabotage attack if the opponent has higher speed or close to it, or while it is still healthy
+		if (shouldUseSabotage(opponent, me) || shouldPressWithSabotage(me, opponent)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SABOTAGE_ATTACK)!;
 		}
 
