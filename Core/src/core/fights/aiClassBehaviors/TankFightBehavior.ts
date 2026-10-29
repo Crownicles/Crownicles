@@ -6,6 +6,7 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { canPlayShieldAttack } from "./ShieldAttackPacing";
 
 // Above this number of defense buffs the tank keeps attacking instead of stacking more defense
 const MAX_DEFENSE_BUFFS = 4;
@@ -44,12 +45,15 @@ class TankFightBehavior implements ClassBehavior {
 		}
 
 		/*
-		 * The shield attack is the tank's best damage, worth it even when it can no longer weaken an opponent that
-		 * already has an alteration. Copying the opponent with a counter-attack is left to the riposte personality:
-		 * against strong attackers, the shield attack defends better
+		 * The shield attack weakens the opponent, only used once per fight on an opponent without alteration:
+		 * chaining it would keep the opponent weakened for the whole fight, which is no fun to fight against
 		 */
-		if (canUse(actions.SHIELD_ATTACK)) {
+		if (canPlayShieldAttack(me, opponent)) {
 			return FightActionDataController.instance.getById(actions.SHIELD_ATTACK)!;
+		}
+
+		if (shouldCounterAttack(me, opponent)) {
+			return FightActionDataController.instance.getById(actions.COUNTER_ATTACK)!;
 		}
 
 		if (
