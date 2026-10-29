@@ -326,6 +326,9 @@ export abstract class FightConstants {
 	// Damage multiplier of the attack following a concentration
 	static readonly CONCENTRATED_DAMAGE_MULTIPLIER = 1.55;
 
+	// The counter attack hits harder than the action it copies: the tank punishes the opponents that commit to a big attack
+	static readonly COUNTER_ATTACK_DAMAGE_MULTIPLIER = 1.4;
+
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
 		MAX_ELO_GAP: 400,
