@@ -6,13 +6,10 @@ import {
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { getUsedGodMoves } from "../FightController";
-import PaladinFightBehavior from "./PaladinFightBehavior";
+import PaladinFightBehavior, { MAX_GOD_MOVES_PER_FIGHT } from "./PaladinFightBehavior";
 
 // The divine attack failure chance drops with the turns: from this turn it only misses one time out of five
 const JUSTICAR_DIVINE_ATTACK_TURN = 11;
-
-// The divine attack can be cast while fewer than this number of god moves were used in the fight
-const MAX_GOD_MOVES_FOR_DIVINE_ATTACK = 2;
 
 /**
  * Justicar paladin: fights like the crusader, but strikes with the divine attack as soon as it rarely misses
@@ -20,7 +17,7 @@ const MAX_GOD_MOVES_FOR_DIVINE_ATTACK = 2;
 class PaladinJusticarFightBehavior extends PaladinFightBehavior {
 	override chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter;
-		const divineAttackAvailable = getUsedGodMoves(me, opponent) < MAX_GOD_MOVES_FOR_DIVINE_ATTACK
+		const divineAttackAvailable = getUsedGodMoves(me, opponent) < MAX_GOD_MOVES_PER_FIGHT
 			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK);
 		if (fightView.fightController.turn >= JUSTICAR_DIVINE_ATTACK_TURN && divineAttackAvailable) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK)!;
