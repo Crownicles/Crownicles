@@ -7,7 +7,7 @@ import {
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import {
-	shouldPunishRest, shouldStartChargingAttack
+	shouldChargerUseEnergeticAttack, shouldStartChargingAttack
 } from "./VeteranTactics";
 
 // Under this share of its energy, the veteran uses the energetic attack for its heal
@@ -27,9 +27,7 @@ class VeteranChargerFightBehavior implements ClassBehavior {
 			return getAction(actions.CONCENTRATION);
 		}
 
-		// The energetic attack heals a hurt veteran and punishes an opponent that has just rested
-		const hurt = me.getEnergy() < me.getMaxEnergy() * HEALING_ENERGY_RATIO;
-		if (hurt && canUse(actions.ENERGETIC_ATTACK) || shouldPunishRest(me, opponent)) {
+		if (shouldChargerUseEnergeticAttack(me, opponent, HEALING_ENERGY_RATIO)) {
 			return getAction(actions.ENERGETIC_ATTACK);
 		}
 
@@ -37,11 +35,8 @@ class VeteranChargerFightBehavior implements ClassBehavior {
 			return getAction(actions.CHARGE_CHARGING_ATTACK);
 		}
 
-		if (me.getSpeed() > opponent.getSpeed() && canUse(actions.QUICK_ATTACK)) {
-			return getAction(actions.QUICK_ATTACK);
-		}
-
-		return canUse(actions.PIERCING_ATTACK) ? getAction(actions.PIERCING_ATTACK) : getAction(actions.QUICK_ATTACK);
+		const preferQuick = me.getSpeed() > opponent.getSpeed() && canUse(actions.QUICK_ATTACK) || !canUse(actions.PIERCING_ATTACK);
+		return getAction(preferQuick ? actions.QUICK_ATTACK : actions.PIERCING_ATTACK);
 	}
 }
 
