@@ -24,14 +24,14 @@ describe("TankFightBehavior", () => {
 		expect(new TankFightBehavior().chooseAction(tank, mockFightView(5, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
 	});
 
-	it("counters the heavy attack of an opponent it cannot weaken anymore", () => {
+	it("keeps hitting with the shield attack an opponent it cannot weaken anymore, instead of countering it", () => {
 		const tank = mockFighter({ breath: 10 });
 		const knight = mockFighter({
 			alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.WEAK,
 			lastActionId: ACTIONS.HEAVY_ATTACK
 		});
 
-		expect(new TankFightBehavior().chooseAction(tank, mockFightView(5, knight)).id).toBe(ACTIONS.COUNTER_ATTACK);
+		expect(new TankFightBehavior().chooseAction(tank, mockFightView(5, knight)).id).toBe(ACTIONS.SHIELD_ATTACK);
 	});
 
 	it("does not counter without enough breath for the counter attack", () => {

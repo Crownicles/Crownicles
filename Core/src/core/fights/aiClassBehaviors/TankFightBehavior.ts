@@ -11,7 +11,7 @@ import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 const MAX_DEFENSE_BUFFS = 4;
 
 // Opponent actions costing this much breath or less are not worth copying with a counter-attack
-const MAX_IGNORED_COUNTER_BREATH = 4;
+const MAX_IGNORED_COUNTER_BREATH = 5;
 
 /**
  * Check if the tank should copy the last action of its opponent: worth it only for an expensive, counterable action
@@ -43,13 +43,13 @@ class TankFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(actions.DEFENSE_BUFF)!;
 		}
 
-		// The shield attack weakens the opponent, which is only possible while it has no alteration
-		if (!opponent.hasFightAlteration() && canUse(actions.SHIELD_ATTACK)) {
+		/*
+		 * The shield attack is the tank's best damage, worth it even when it can no longer weaken an opponent that
+		 * already has an alteration. Copying the opponent with a counter-attack is left to the riposte personality:
+		 * against strong attackers, the shield attack defends better
+		 */
+		if (canUse(actions.SHIELD_ATTACK)) {
 			return FightActionDataController.instance.getById(actions.SHIELD_ATTACK)!;
-		}
-
-		if (shouldCounterAttack(me, opponent)) {
-			return FightActionDataController.instance.getById(actions.COUNTER_ATTACK)!;
 		}
 
 		if (
