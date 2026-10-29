@@ -5,7 +5,9 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
-import { canPlayShieldAttack } from "./ShieldAttackPacing";
+import {
+	canPlayShieldAttack, SHIELD_ATTACK_CHANCES
+} from "./ShieldAttackPacing";
 import {
 	hasBreathToSpare, MAX_GOD_MOVES_PER_FIGHT, shouldUseRamAttack
 } from "./PaladinTactics";
@@ -134,8 +136,8 @@ class PaladinFightBehavior implements ClassBehavior {
 		opponent: RealPlayerFighter | AiPlayerFighter,
 		usedUltimateAttacks: number
 	): boolean {
-		return canPlayShieldAttack(me, opponent)
-			&& hasBreathToSpare(me, opponent, usedUltimateAttacks, FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK);
+		return hasBreathToSpare(me, opponent, usedUltimateAttacks, FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
+			&& canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.ONCE);
 	}
 }
 

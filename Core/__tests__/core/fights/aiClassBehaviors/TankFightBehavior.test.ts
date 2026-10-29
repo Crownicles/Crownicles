@@ -1,8 +1,9 @@
 import {
-	describe, expect, it
+	afterEach, describe, expect, it, vi
 } from "vitest";
 import TankFightBehavior from "../../../../src/core/fights/aiClassBehaviors/TankFightBehavior";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import {
 	mockFighter, mockFightView
 } from "./AiFighterMocks";
@@ -10,6 +11,10 @@ import {
 const ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
 
 describe("TankFightBehavior", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
 	it("raises its defense on its first turn, whatever its current defense", () => {
 		const tank = mockFighter({
 			breath: 7, defense: 900
@@ -18,15 +23,33 @@ describe("TankFightBehavior", () => {
 		expect(new TankFightBehavior().chooseAction(tank, mockFightView(1, mockFighter())).id).toBe(ACTIONS.DEFENSE_BUFF);
 	});
 
-	it("weakens an opponent without alteration with the shield attack", () => {
+	it("weakens an opponent without alteration with the shield attack when its chance succeeds", () => {
+		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
 		const tank = mockFighter({ breath: 10 });
 
 		expect(new TankFightBehavior().chooseAction(tank, mockFightView(5, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
 	});
 
-	it("weakens its opponent with the shield attack only once per fight", () => {
+	it("is less and less likely to cast its shield attack again: 90%, then 50%, then 20%", () => {
+		const chances: number[] = [];
+		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockImplementation((chance?: number): boolean => {
+			chances.push(chance!);
+			return false;
+		});
+		const tankAfter = (shieldAttacks: number): ReturnType<typeof mockFighter> => mockFighter({
+			breath: 10, history: [ACTIONS.DEFENSE_BUFF, ...Array<string>(shieldAttacks).fill(ACTIONS.SHIELD_ATTACK)]
+		});
+
+		for (const shieldAttacks of [0, 1, 2]) {
+			expect(new TankFightBehavior().chooseAction(tankAfter(shieldAttacks), mockFightView(9, mockFighter())).id).not.toBe(ACTIONS.SHIELD_ATTACK);
+		}
+		expect(chances).toEqual([0.9, 0.5, 0.2]);
+	});
+
+	it("never casts a fourth shield attack in a fight", () => {
+		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
 		const tank = mockFighter({
-			breath: 10, history: [ACTIONS.DEFENSE_BUFF, ACTIONS.SHIELD_ATTACK, ACTIONS.SIMPLE_ATTACK]
+			breath: 10, history: [ACTIONS.DEFENSE_BUFF, ACTIONS.SHIELD_ATTACK, ACTIONS.SHIELD_ATTACK, ACTIONS.SHIELD_ATTACK]
 		});
 
 		expect(new TankFightBehavior().chooseAction(tank, mockFightView(9, mockFighter())).id).not.toBe(ACTIONS.SHIELD_ATTACK);
