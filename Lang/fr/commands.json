@@ -2769,6 +2769,18 @@
       "veteranCharger": {
         "name": "Fonceur",
         "description": "privilégie les attaques chargées et garde ses attaques énergiques pour se soigner."
+      },
+      "mageOccultist": {
+        "name": "Occultiste",
+        "description": "maudit ou empoisonne son adversaire, puis l'achève avec ses attaques sombres."
+      },
+      "magePyromancer": {
+        "name": "Pyromancien",
+        "description": "ouvre avec un poison, puis embrase son adversaire dès qu'il le peut et profite de ses brûlures."
+      },
+      "mageWarlock": {
+        "name": "Envoûteur",
+        "description": "maudit systématiquement son adversaire, ce qui l'empêche de bien se soigner, puis en profite avec ses attaques sombres."
       }
     }
   },

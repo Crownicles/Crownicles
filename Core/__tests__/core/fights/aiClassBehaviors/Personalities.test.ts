@@ -14,6 +14,8 @@ import PaladinJusticarFightBehavior from "../../../../src/core/fights/aiClassBeh
 import GunnerBombardierFightBehavior from "../../../../src/core/fights/aiClassBehaviors/GunnerBombardierFightBehavior";
 import VeteranChargerFightBehavior from "../../../../src/core/fights/aiClassBehaviors/VeteranChargerFightBehavior";
 import MysticMageFightBehavior from "../../../../src/core/fights/aiClassBehaviors/MysticMageFightBehavior";
+import MagePyromancerFightBehavior from "../../../../src/core/fights/aiClassBehaviors/MagePyromancerFightBehavior";
+import MageWarlockFightBehavior from "../../../../src/core/fights/aiClassBehaviors/MageWarlockFightBehavior";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
@@ -73,7 +75,7 @@ describe("AI personalities", () => {
 			initializeAllClassBehaviors();
 
 			expect(getAiPersonalities(ClassConstants.CLASSES_ID.LUMINOUS_PALADIN)).toEqual([PERSONALITIES.PALADIN_CRUSADER, PERSONALITIES.PALADIN_JUSTICAR]);
-			expect(getAiPersonalities(ClassConstants.CLASSES_ID.MYSTIC_MAGE)).toEqual([]);
+			expect(getAiPersonalities(ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN)).toEqual([]);
 		});
 
 		it("returns no behavior for a class without personality", () => {
@@ -86,7 +88,7 @@ describe("AI personalities", () => {
 			expect(personalitiesOf(ClassConstants.CLASSES_ID.VALIANT_KNIGHT)).toEqual([KnightFightBehavior, KnightEnduringFightBehavior, KnightFieryFightBehavior]);
 			expect(personalitiesOf(ClassConstants.CLASSES_ID.IMPENETRABLE_TANK)).toEqual([TankFightBehavior, TankRiposteFightBehavior]);
 			expect(personalitiesOf(ClassConstants.CLASSES_ID.LUMINOUS_PALADIN)).toEqual([PaladinFightBehavior, PaladinJusticarFightBehavior]);
-			expect(personalitiesOf(ClassConstants.CLASSES_ID.MYSTIC_MAGE)).toEqual([MysticMageFightBehavior]);
+			expect(personalitiesOf(ClassConstants.CLASSES_ID.MYSTIC_MAGE)).toEqual([MysticMageFightBehavior, MagePyromancerFightBehavior, MageWarlockFightBehavior]);
 		});
 	});
 
@@ -168,5 +170,37 @@ describe("AI personalities", () => {
 		const opponent = mockFighter({ lastActionId: ACTIONS.SIMPLE_ATTACK });
 
 		expect(new VeteranChargerFightBehavior().chooseAction(veteran, mockFightView(5, opponent)).id).toBe(ACTIONS.CHARGE_CHARGING_ATTACK);
+	});
+
+	describe("mage personalities", () => {
+		it("the pyromancer opens with the poison", () => {
+			const mage = mockFighter({ breath: 5 });
+
+			expect(new MagePyromancerFightBehavior().chooseAction(mage, mockFightView(1, mockFighter())).id).toBe(ACTIONS.POISONOUS_ATTACK);
+		});
+
+		it("the pyromancer sets a clean opponent on fire where the occultist curses it", () => {
+			const mage = mockFighter({ breath: 10 });
+
+			expect(new MagePyromancerFightBehavior().chooseAction(mage, mockFightView(5, mockFighter())).id).toBe(ACTIONS.FIRE_ATTACK);
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(5, mockFighter())).id).toBe(ACTIONS.CURSED_ATTACK);
+		});
+
+		it("the warlock still curses a weakened opponent that the occultist burns instead", () => {
+			const mage = mockFighter({ breath: 10 });
+			const weakened = (): ReturnType<typeof mockFighter> => mockFighter({ energy: 300 });
+
+			expect(new MageWarlockFightBehavior().chooseAction(mage, mockFightView(5, weakened())).id).toBe(ACTIONS.CURSED_ATTACK);
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(5, weakened())).id).toBe(ACTIONS.FIRE_ATTACK);
+		});
+
+		it("every mage personality cashes an ailing opponent in with its fresh dark attack", () => {
+			const mage = mockFighter({ breath: 10 });
+			const ailing = (): ReturnType<typeof mockFighter> => mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.BURNED });
+
+			for (const Behavior of [MysticMageFightBehavior, MagePyromancerFightBehavior, MageWarlockFightBehavior]) {
+				expect(new Behavior().chooseAction(mage, mockFightView(5, ailing())).id).toBe(ACTIONS.DARK_ATTACK);
+			}
+		});
 	});
 });

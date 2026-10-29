@@ -15,7 +15,10 @@ export abstract class AiPersonalityConstants {
 		GUNNER_STRATEGIST: "gunnerStrategist",
 		GUNNER_BOMBARDIER: "gunnerBombardier",
 		VETERAN_STRATEGIST: "veteranStrategist",
-		VETERAN_CHARGER: "veteranCharger"
+		VETERAN_CHARGER: "veteranCharger",
+		MAGE_OCCULTIST: "mageOccultist",
+		MAGE_PYROMANCER: "magePyromancer",
+		MAGE_WARLOCK: "mageWarlock"
 	} as const;
 }
 

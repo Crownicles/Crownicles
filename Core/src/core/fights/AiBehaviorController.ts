@@ -23,6 +23,8 @@ import TankRiposteFightBehavior from "./aiClassBehaviors/TankRiposteFightBehavio
 import PaladinJusticarFightBehavior from "./aiClassBehaviors/PaladinJusticarFightBehavior";
 import GunnerBombardierFightBehavior from "./aiClassBehaviors/GunnerBombardierFightBehavior";
 import VeteranChargerFightBehavior from "./aiClassBehaviors/VeteranChargerFightBehavior";
+import MagePyromancerFightBehavior from "./aiClassBehaviors/MagePyromancerFightBehavior";
+import MageWarlockFightBehavior from "./aiClassBehaviors/MageWarlockFightBehavior";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	AiPersonality, AiPersonalityConstants
@@ -93,6 +95,17 @@ const VETERAN_PERSONALITIES: ClassPersonality[] = [
 		id: AiPersonalityConstants.PERSONALITIES.VETERAN_CHARGER, behavior: VeteranChargerFightBehavior
 	}
 ];
+const MAGE_PERSONALITIES: ClassPersonality[] = [
+	{
+		id: AiPersonalityConstants.PERSONALITIES.MAGE_OCCULTIST, behavior: MysticMageFightBehavior
+	},
+	{
+		id: AiPersonalityConstants.PERSONALITIES.MAGE_PYROMANCER, behavior: MagePyromancerFightBehavior
+	},
+	{
+		id: AiPersonalityConstants.PERSONALITIES.MAGE_WARLOCK, behavior: MageWarlockFightBehavior
+	}
+];
 
 /**
  * Initialize all class behaviors in a map so they can be accessed by class ID
@@ -103,7 +116,7 @@ export function initializeAllClassBehaviors(): void {
 	registerClassBehavior(ClassConstants.CLASSES_ID.PIKEMAN, ...KNIGHT_PERSONALITIES);
 	registerClassBehavior(ClassConstants.CLASSES_ID.HORSE_RIDER, { behavior: HorseRiderFightBehavior });
 	registerClassBehavior(ClassConstants.CLASSES_ID.ESQUIRE, { behavior: EsquireFightBehavior });
-	registerClassBehavior(ClassConstants.CLASSES_ID.MYSTIC_MAGE, { behavior: MysticMageFightBehavior });
+	registerClassBehavior(ClassConstants.CLASSES_ID.MYSTIC_MAGE, ...MAGE_PERSONALITIES);
 	registerClassBehavior(ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER, ...GUNNER_PERSONALITIES);
 	registerClassBehavior(ClassConstants.CLASSES_ID.GUNNER, ...GUNNER_PERSONALITIES);
 	registerClassBehavior(ClassConstants.CLASSES_ID.ARCHER, ...GUNNER_PERSONALITIES);
