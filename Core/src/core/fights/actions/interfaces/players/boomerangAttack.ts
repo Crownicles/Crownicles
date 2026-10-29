@@ -6,10 +6,7 @@ import { FightAlterations } from "../../FightAlterations";
 import { FightActionFunc } from "../../../../../data/FightAction";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
 
-/**
- * Damage of the boomerang, for its throw and for each of its returns (targeted alteration)
- */
-export function getBoomerangAttackInfo(): attackInfo {
+function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 50,
 		averageDamage: 100,
@@ -36,7 +33,7 @@ const use: FightActionFunc = (sender, receiver) => {
 			failure: 5
 		},
 		{
-			attackInfo: getBoomerangAttackInfo(),
+			attackInfo: getAttackInfo(),
 			statsInfo: getStatsInfo(sender, receiver)
 		}
 	);
