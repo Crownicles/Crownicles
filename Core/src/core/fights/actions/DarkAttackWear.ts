@@ -1,16 +1,35 @@
 import { Fighter } from "../fighter/Fighter";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 
+// History positions of the dark attacks each fighter missed: a missed dark attack does not wear the attack down
+const missedDarkAttacks = new WeakMap<Fighter, Set<number>>();
+
 /**
- * Number of wear steps on the dark attack of a fighter: one per use, minus one every time
+ * Record that the dark attack the fighter is playing missed. The action is pushed to the history right after
+ * it is played, so it will sit at the current end of the history
+ * @param fighter
+ */
+export function recordMissedDarkAttack(fighter: Fighter): void {
+	const missed = missedDarkAttacks.get(fighter) ?? new Set<number>();
+	missed.add(fighter.fightActionsHistory.length);
+	missedDarkAttacks.set(fighter, missed);
+}
+
+/**
+ * Number of wear steps on the dark attack of a fighter: one per use that did not miss, minus one every time
  * the fighter played RECOVERY_IDLE_ACTIONS actions in a row without it
  * @param fighter
  */
 function getDarkAttackWear(fighter: Fighter): number {
+	const missed = missedDarkAttacks.get(fighter);
 	let wear = 0;
 	let idleActions = 0;
-	for (const action of fighter.fightActionsHistory) {
+	for (const [index, action] of fighter.fightActionsHistory.entries()) {
 		if (action.id === FightConstants.FIGHT_ACTIONS.PLAYER.DARK_ATTACK) {
+			if (missed?.has(index)) {
+				// A missed dark attack neither wears the attack down nor lets it recover
+				continue;
+			}
 			wear++;
 			idleActions = 0;
 			continue;

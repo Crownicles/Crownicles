@@ -25,11 +25,15 @@ function mageAfter(sequence: string): TestFighter {
 	return mage;
 }
 
-function useDarkAttack(sender: TestFighter, receiver: TestFighter): ReturnType<typeof darkAttackUse> {
+function useDarkAttack(sender: TestFighter, receiver: TestFighter, status = FightActionStatus.NORMAL): ReturnType<typeof darkAttackUse> {
 	vi.spyOn(FightActionController, "applySecondaryEffects").mockReturnValue({
-		damages: BASE_DAMAGE, status: FightActionStatus.NORMAL
+		damages: BASE_DAMAGE, status
 	});
-	return darkAttackUse(sender, receiver, DARK_ATTACK, 3, null as unknown as FightController);
+	const result = darkAttackUse(sender, receiver, DARK_ATTACK, 3, null as unknown as FightController);
+
+	// The fight controller pushes the played action to the history right after it
+	sender.fightActionsHistory.push(DARK_ATTACK);
+	return result;
 }
 
 describe("dark attack wear", () => {
@@ -61,7 +65,7 @@ describe("darkAttack", () => {
 		expect(freshResult.alterations).toBeUndefined();
 	});
 
-	it("gives breath back to the mage against an opponent with an alteration", () => {
+	it("no longer gives breath back against an opponent with an alteration", () => {
 		const mage = mageAfter("");
 		mage.setBreath(2);
 		const receiver = new TestFighter();
@@ -69,6 +73,17 @@ describe("darkAttack", () => {
 
 		useDarkAttack(mage, receiver);
 
-		expect(mage.getBreath()).toBe(5);
+		expect(mage.getBreath()).toBe(2);
+	});
+
+	it("is not worn down by a missed use, unlike a landed one", () => {
+		const missingMage = mageAfter("");
+		const hittingMage = mageAfter("");
+
+		useDarkAttack(missingMage, new TestFighter(), FightActionStatus.MISSED);
+		useDarkAttack(hittingMage, new TestFighter());
+
+		expect(getDarkAttackPowerMultiplier(missingMage)).toBe(1.7);
+		expect(getDarkAttackPowerMultiplier(hittingMage)).toBe(1.4);
 	});
 });
