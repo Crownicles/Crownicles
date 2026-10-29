@@ -2,7 +2,7 @@ import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { RestingKnightFightBehavior } from "./RestingKnightFightBehavior";
-import { canUseGodMove } from "./KnightFightBehavior";
+import { canUseGodMove } from "./KnightGodMoves";
 
 // The benediction buff grows with the turn, so the enduring knight waits for one of these turns to cast it
 const LATE_BENEDICTION_TURN = {

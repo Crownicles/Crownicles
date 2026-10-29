@@ -10,25 +10,10 @@ import { getUsedGodMoves } from "../FightController";
 import { simpleOrQuickAttack } from "./EsquireFightBehavior";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
-
-/**
- * Check if a fighter can cast a god move (benediction or divine attack)
- * @param fighter
- */
-export function canUseGodMove(fighter: AiPlayerFighter | RealPlayerFighter): boolean {
-	return FightConstants.GOD_MOVES.some(godMove => fighter.availableFightActions.has(godMove));
-}
+import { shouldWinGodMoveRace } from "./KnightGodMoves";
 
 class KnightFightBehavior implements ClassBehavior {
 	private blessRoundChosen: number | null = null;
-
-	/**
-	 * Check if the benediction is still free in the shared god move quota, affordable, and threatened by the opponent
-	 */
-	private shouldWinGodMoveRace(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): boolean {
-		const canAffordBenediction = me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION);
-		return canUseGodMove(opponent) && getUsedGodMoves(me, opponent) < 1 && canAffordBenediction;
-	}
 
 	private blessUsed = false;
 
@@ -91,7 +76,7 @@ class KnightFightBehavior implements ClassBehavior {
 		 * GOD MOVE RACE: the benediction and the divine attack share a single quota between both fighters,
 		 * so against an opponent able to cast one, the first fighter to cast it takes it from the other
 		 */
-		if (!this.blessUsed && this.shouldWinGodMoveRace(me, opponent)) {
+		if (!this.blessUsed && shouldWinGodMoveRace(me, opponent)) {
 			this.blessUsed = true;
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION)!;
 		}
