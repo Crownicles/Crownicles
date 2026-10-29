@@ -311,17 +311,20 @@ export abstract class FightConstants {
 	 * and gets one step back every time its caster plays this many actions in a row without it
 	 */
 	static readonly DARK_ATTACK_WEAR = {
-		BASE_MULTIPLIER: 1.8,
+		BASE_MULTIPLIER: 1.7,
 		MULTIPLIER_LOSS_PER_USE: 0.3,
 		MIN_MULTIPLIER: 0.3,
 		RECOVERY_IDLE_ACTIONS: 2
 	};
 
 	// A cursed fighter only receives this share of its healing
-	static readonly CURSED_HEALING_MULTIPLIER = 0.6;
+	static readonly CURSED_HEALING_MULTIPLIER = 0.7;
 
 	// The energetic attack punishes an opponent that has just rested
-	static readonly ENERGETIC_ATTACK_RESTED_TARGET_DAMAGE_MULTIPLIER = 1.5;
+	static readonly ENERGETIC_ATTACK_RESTED_TARGET_DAMAGE_MULTIPLIER = 1.25;
+
+	// Damage multiplier of the attack following a concentration
+	static readonly CONCENTRATED_DAMAGE_MULTIPLIER = 1.6;
 
 	static readonly ELO = {
 		DEFAULT_ELO: 0,

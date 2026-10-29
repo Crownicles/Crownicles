@@ -70,7 +70,7 @@ describe("FightActionController.applyBuff", () => {
 
 	it("reduces the healing of a cursed fighter and records the energy it actually gains", () => {
 		expect(healFighter(FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED)).toEqual({
-			healed: 60, recorded: 60
+			healed: 70, recorded: 70
 		});
 	});
 

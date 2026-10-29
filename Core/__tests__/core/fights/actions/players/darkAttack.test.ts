@@ -35,12 +35,12 @@ function useDarkAttack(sender: TestFighter, receiver: TestFighter): ReturnType<t
 describe("dark attack wear", () => {
 	it("starts strong and loses one step per use down to its floor", () => {
 		expect(["", "D", "DD", "DDD", "DDDD", "DDDDD", "DDDDDDDD"].map(sequence => getDarkAttackPowerMultiplier(mageAfter(sequence))))
-			.toEqual([1.8, 1.5, 1.2, 0.9, 0.6, 0.3, 0.3]);
+			.toEqual([1.7, 1.4, 1.1, 0.8, 0.5, 0.3, 0.3]);
 	});
 
 	it("gets one step back every two actions in a row without it", () => {
 		expect(["DDx", "DDxx", "DDxxxx", "DDxxxxxx", "DDxDx"].map(sequence => getDarkAttackPowerMultiplier(mageAfter(sequence))))
-			.toEqual([1.2, 1.5, 1.8, 1.8, 0.9]);
+			.toEqual([1.1, 1.4, 1.7, 1.7, 0.8]);
 	});
 });
 
@@ -55,8 +55,8 @@ describe("darkAttack", () => {
 		const freshResult = useDarkAttack(mageAfter(""), receiver);
 		const wornResult = useDarkAttack(mageAfter("DDD"), receiver);
 
-		expect(freshResult.damages).toBe(180);
-		expect(wornResult.damages).toBe(90);
+		expect(freshResult.damages).toBe(170);
+		expect(wornResult.damages).toBe(80);
 		expect(receiver.hasFightAlteration()).toBe(false);
 		expect(freshResult.alterations).toBeUndefined();
 	});
