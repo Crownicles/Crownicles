@@ -6,7 +6,9 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
-import { canPlayShieldAttack } from "./ShieldAttackPacing";
+import {
+	canPlayShieldAttack, SHIELD_ATTACK_CHANCES
+} from "./ShieldAttackPacing";
 import { shouldCounterAttack } from "./TankFightBehavior";
 
 /**
@@ -29,7 +31,7 @@ class TankRiposteFightBehavior implements ClassBehavior {
 		}
 
 		// Keep enough breath, after the regeneration, to counter on the next turn
-		if (canPlayShieldAttack(me, opponent, cost(actions.COUNTER_ATTACK) - me.getRegenBreath())) {
+		if (canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.DECREASING, cost(actions.COUNTER_ATTACK) - me.getRegenBreath())) {
 			return getAction(actions.SHIELD_ATTACK);
 		}
 

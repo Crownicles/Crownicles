@@ -6,7 +6,9 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
-import { canPlayShieldAttack } from "./ShieldAttackPacing";
+import {
+	canPlayShieldAttack, SHIELD_ATTACK_CHANCES
+} from "./ShieldAttackPacing";
 
 // Above this number of defense buffs the tank keeps attacking instead of stacking more defense
 const MAX_DEFENSE_BUFFS = 4;
@@ -45,10 +47,10 @@ class TankFightBehavior implements ClassBehavior {
 		}
 
 		/*
-		 * The shield attack weakens the opponent, only used once per fight on an opponent without alteration:
-		 * chaining it would keep the opponent weakened for the whole fight, which is no fun to fight against
+		 * The shield attack weakens the opponent, only used on an opponent without alteration and less and less likely
+		 * with each use: chaining it would keep the opponent weakened for the whole fight, which is no fun to fight against
 		 */
-		if (canPlayShieldAttack(me, opponent)) {
+		if (canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.DECREASING)) {
 			return FightActionDataController.instance.getById(actions.SHIELD_ATTACK)!;
 		}
 
