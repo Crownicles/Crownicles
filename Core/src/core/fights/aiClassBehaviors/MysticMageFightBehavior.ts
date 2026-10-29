@@ -20,7 +20,7 @@ const CURSE_HEAL_ENERGY_RATIO = 0.4;
 const HEALING_ACTIONS = [ACTIONS.RESTING, ACTIONS.ENERGETIC_ATTACK];
 
 // The opening poison lands as a critical hit during the first turns of the fight
-export const POISON_OPENING_LAST_TURN = 2;
+const POISON_OPENING_LAST_TURN = 2;
 
 export function getAction(id: string): FightAction {
 	return FightActionDataController.instance.getById(id)!;

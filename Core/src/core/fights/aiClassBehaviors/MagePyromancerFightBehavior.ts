@@ -4,33 +4,39 @@ import { FightView } from "../FightView";
 import { FightAction } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import {
-	canAfford, chooseAgainstAilingOpponent, getAction, POISON_OPENING_LAST_TURN
+	canAfford, chooseAgainstAilingOpponent, getAction
 } from "./MysticMageFightBehavior";
 
 const ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
 
 /**
- * Pyromancer mage: opens with the poison, then sets its opponent on fire whenever it is not ailing, cashes the burn
- * in with the dark attack, and steals breath with its cheap attack to afford the next fire attack
+ * Pyromancer mage: curses its opponent with its first move, cashes the curse in with the dark attack while it lasts
+ * if it has the breath for it, then burns its opponent with fire attacks once the curse has fallen
  */
 class MagePyromancerFightBehavior implements ClassBehavior {
+	// A protected opponent resists the curse: the mage casts it again until it lands once
+	private curseLanded = false;
+
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter();
 		if (!opponent) {
 			return getAction(ACTIONS.BREATH_TAKING_ATTACK);
 		}
 
-		if (opponent.hasFightAlteration()) {
+		const opponentCursed = opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED;
+		this.curseLanded ||= opponentCursed;
+		if (!this.curseLanded && !opponent.hasFightAlteration() && canAfford(me, ACTIONS.CURSED_ATTACK)) {
+			return getAction(ACTIONS.CURSED_ATTACK);
+		}
+
+		if (opponentCursed && canAfford(me, ACTIONS.DARK_ATTACK)) {
 			const cashIn = chooseAgainstAilingOpponent(me);
 			if (cashIn) {
 				return cashIn;
 			}
 		}
-		else if (fightView.fightController.turn <= POISON_OPENING_LAST_TURN && canAfford(me, ACTIONS.POISONOUS_ATTACK)) {
-			return getAction(ACTIONS.POISONOUS_ATTACK);
-		}
 
-		// Burns a clean opponent, and keeps hitting with fire once the dark attack is worn
+		// The cheap breath-taking attack lets the breath build up for the next fire attack, unlike the poison
 		return getAction(canAfford(me, ACTIONS.FIRE_ATTACK) ? ACTIONS.FIRE_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
 	}
 }
