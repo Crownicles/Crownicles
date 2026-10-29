@@ -20,26 +20,24 @@ const CURSE_HEAL_ENERGY_RATIO = 0.4;
 const HEALING_ACTIONS = [ACTIONS.RESTING, ACTIONS.ENERGETIC_ATTACK];
 
 // The opening poison lands as a critical hit during the first turns of the fight
-const POISON_OPENING_LAST_TURN = 2;
+export const POISON_OPENING_LAST_TURN = 2;
 
-function getAction(id: string): FightAction {
+export function getAction(id: string): FightAction {
 	return FightActionDataController.instance.getById(id)!;
 }
 
-function canAfford(me: AiPlayerFighter, actionId: string): boolean {
+export function canAfford(me: AiPlayerFighter, actionId: string): boolean {
 	return me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
 }
 
 /**
- * Sets up one of its ailments (the curse first against an opponent that heals), cashes it in with the dark attack
- * while the attack is fresh, then finishes with its other attacks while the dark attack recovers
- */
-/**
  * Move against an opponent that already suffers an alteration: the fresh dark attack cashes it in, saving the breath
- * for it if needed. Null once the dark attack is too worn
+ * for it if needed. Null once the dark attack is worn below the given multiplier
+ * @param me
+ * @param minDarkAttackMultiplier
  */
-function chooseAgainstAilingOpponent(me: AiPlayerFighter): FightAction | null {
-	if (getDarkAttackPowerMultiplier(me) < MIN_WORTHWHILE_DARK_ATTACK_MULTIPLIER) {
+export function chooseAgainstAilingOpponent(me: AiPlayerFighter, minDarkAttackMultiplier = MIN_WORTHWHILE_DARK_ATTACK_MULTIPLIER): FightAction | null {
+	if (getDarkAttackPowerMultiplier(me) < minDarkAttackMultiplier) {
 		return null;
 	}
 	return getAction(canAfford(me, ACTIONS.DARK_ATTACK) ? ACTIONS.DARK_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
@@ -63,6 +61,23 @@ function chooseSetup(me: AiPlayerFighter, opponent: Fighter, turn: number): Figh
 	return null;
 }
 
+/**
+ * Strongest affordable attack while the dark attack recovers: the fire attack, else the poison, else the cheap breath-taking attack
+ * @param me
+ */
+export function chooseDamagingAttack(me: AiPlayerFighter): FightAction {
+	for (const actionId of [ACTIONS.FIRE_ATTACK, ACTIONS.POISONOUS_ATTACK]) {
+		if (canAfford(me, actionId)) {
+			return getAction(actionId);
+		}
+	}
+	return getAction(ACTIONS.BREATH_TAKING_ATTACK);
+}
+
+/**
+ * Occultist mage: sets up one of its ailments (the curse first against an opponent that heals), cashes it in with
+ * the dark attack while the attack is fresh, then finishes with its other attacks while the dark attack recovers
+ */
 class MysticMageFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter();
@@ -79,12 +94,7 @@ class MysticMageFightBehavior implements ClassBehavior {
 			return planned;
 		}
 
-		for (const actionId of [ACTIONS.FIRE_ATTACK, ACTIONS.POISONOUS_ATTACK]) {
-			if (canAfford(me, actionId)) {
-				return getAction(actionId);
-			}
-		}
-		return getAction(ACTIONS.BREATH_TAKING_ATTACK);
+		return chooseDamagingAttack(me);
 	}
 }
 

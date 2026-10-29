@@ -90,7 +90,7 @@ describe("DefenseCommand", () => {
 	});
 
 	it("tells a player whose class has a single way to fight that there is nothing to choose", () => {
-		const response = execute(ClassConstants.CLASSES_ID.MYSTIC_MAGE);
+		const response = execute(ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN);
 
 		expect(response[0]).toBeInstanceOf(CommandDefenseNoChoicePacketRes);
 		expect(captured.value).toBeUndefined();
