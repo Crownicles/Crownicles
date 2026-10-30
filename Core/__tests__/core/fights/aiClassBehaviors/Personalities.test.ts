@@ -120,6 +120,8 @@ describe("AI personalities", () => {
 	});
 
 	it("the riposte tank copies an expensive action where the bulwark weakens its opponent", () => {
+		// The bulwark casts its first shield attack of the fight when its chance succeeds
+		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
 		const tank = mockFighter({ breath: 10 });
 		const opponent = mockFighter({ lastActionId: ACTIONS.POWERFUL_ATTACK });
 
