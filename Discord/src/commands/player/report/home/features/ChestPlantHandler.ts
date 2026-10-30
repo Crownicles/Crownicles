@@ -10,7 +10,9 @@ import { createHomeFeatureCollector } from "../HomeCollectorUtils";
 import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { HomeMenuIds } from "../HomeMenuConstants";
-import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
+import {
+	addButtonToRow, DiscordCollectorUtils
+} from "../../../../../utils/DiscordCollectorUtils";
 import { StringUtils } from "../../../../../utils/StringUtils";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
 import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -102,7 +104,7 @@ export class ChestPlantHandler {
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX)) {
-			await componentInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 			const targetPage = parseInt(selectedValue.replace(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX, ""), 10);
 
 			if (Number.isNaN(targetPage) || targetPage < 0) {
@@ -123,11 +125,11 @@ export class ChestPlantHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		if (!ctx.homeData.chest?.plantStorage) {
-			await componentInteraction.deferUpdate();
+			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 			return;
 		}
 
-		await componentInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 		this.registerPlantTabMenu(ctx, nestedMenus);
 		await nestedMenus.changeMenu(HomeMenuIds.CHEST_PLANT_TAB);
 	}
@@ -304,7 +306,7 @@ export class ChestPlantHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await componentInteraction.deferUpdate();
+		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
 
 		const parts = params.selectedValue.replace(params.prefix, "").split("_");
 		const plantId = parseInt(parts[0], 10);

@@ -8,6 +8,7 @@ import {
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
@@ -25,7 +26,9 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	ComponentType,
 	InteractionCollector,
+	InteractionEditReplyOptions,
 	Message,
 	parseEmoji,
 	StringSelectMenuBuilder,
@@ -53,7 +56,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandCla
 }
 
 export async function handleCommandClassesChangeSuccessPacket(packet: CommandClassesChangeSuccessPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
 		return;
@@ -69,13 +72,64 @@ export async function handleCommandClassesChangeSuccessPacket(packet: CommandCla
 		name: i18n.t(`models:classes.${packet.classId}`, { lng })
 	});
 
-	await interaction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(title, interaction.user)
 				.setDescription(description)
 		]
 	});
+}
+
+/**
+ * Custom ids of the buttons accepting or refusing the change to the selected class
+ */
+type ClassChangeValidationIds = {
+	accept: string;
+	refuse: string;
+};
+
+/**
+ * Build the buttons accepting or refusing the change to the selected class
+ */
+function buildClassChangeValidationRow(customIds: ClassChangeValidationIds): ActionRowBuilder<ButtonBuilder> {
+	return new ActionRowBuilder<ButtonBuilder>()
+		.addComponents(new ButtonBuilder()
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
+			.setCustomId(customIds.accept)
+			.setStyle(ButtonStyle.Secondary))
+		.addComponents(new ButtonBuilder()
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+			.setCustomId(customIds.refuse)
+			.setStyle(ButtonStyle.Secondary));
+}
+
+/**
+ * Collect the clicks on the confirmation buttons only: an expired selection displays the confirmation on the selection
+ * message, whose late selections must not be taken as an answer (#5059)
+ */
+function createClassChangeValidationCollector(validateMsg: Message, customIds: ClassChangeValidationIds): InteractionCollector<never> {
+	return validateMsg.createMessageComponentCollector({
+		componentType: ComponentType.Button,
+		filter: buttonInteraction => buttonInteraction.customId === customIds.accept || buttonInteraction.customId === customIds.refuse
+	}) as unknown as InteractionCollector<never>;
+}
+
+/**
+ * Display the confirmation of the selected class as the reply to the selection. A selection that expired before being
+ * acknowledged can no longer be answered: the confirmation then replaces the selection menu, reply to the command
+ */
+async function displayClassChangeConfirmation(
+	selection: {
+		interaction: StringSelectMenuInteraction; acknowledged: boolean;
+	},
+	commandInteraction: CrowniclesInteraction,
+	display: InteractionEditReplyOptions
+): Promise<Message> {
+	if (selection.acknowledged) {
+		return await selection.interaction.editReply(display);
+	}
+	return await commandInteraction.editReply(display) as Message;
 }
 
 /**
@@ -164,7 +218,9 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 	let validateCollector: InteractionCollector<never>;
 
+	// Only the selection: when the selection expired, the confirmation buttons are displayed on the same message
 	const selectCollector = msg.createMessageComponentCollector({
+		componentType: ComponentType.StringSelect,
 		time: DiscordCollectorUtils.getRemainingCollectorTime(packet)
 	});
 
@@ -174,11 +230,11 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 			return;
 		}
 
-		await selectMenuInteraction.deferReply();
+		const selectionAcknowledged = await DiscordCollectorUtils.acknowledgeComponent(selectMenuInteraction, selectMenuInteraction.deferReply());
 
 		disableRows([mainEmbedRow]);
 
-		await msg.edit({
+		await DiscordCollectorUtils.editWithoutBlocking(msg, {
 			embeds: [mainEmbed],
 			components: [mainEmbedRow]
 		});
@@ -203,22 +259,21 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 		const validateClassChangeEmbed = buildClassChangeConfirmationEmbed(interaction, classDetails, data.cooldownSeconds);
 
-		const validateRow = new ActionRowBuilder<ButtonBuilder>()
-			.addComponents(new ButtonBuilder()
-				.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
-				.setCustomId(acceptCustomId)
-				.setStyle(ButtonStyle.Secondary))
-			.addComponents(new ButtonBuilder()
-				.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
-				.setCustomId(refuseCustomId)
-				.setStyle(ButtonStyle.Secondary));
+		const validationIds = {
+			accept: acceptCustomId,
+			refuse: refuseCustomId
+		};
+		const validateRow = buildClassChangeValidationRow(validationIds);
 
-		const validateMsg = await selectMenuInteraction.editReply({
+		const validateMsg = await displayClassChangeConfirmation({
+			interaction: selectMenuInteraction,
+			acknowledged: selectionAcknowledged
+		}, interaction, {
 			embeds: [validateClassChangeEmbed],
 			components: [validateRow]
-		}) as Message;
+		});
 
-		validateCollector = validateMsg.createMessageComponentCollector() as unknown as InteractionCollector<never>;
+		validateCollector = createClassChangeValidationCollector(validateMsg, validationIds);
 
 		validateCollector.on("collect", async (validateInteraction: ButtonInteraction) => {
 			if (validateInteraction.user.id !== context.discord?.user) {
@@ -226,7 +281,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 				return;
 			}
 
-			await validateInteraction.deferReply();
+			await DiscordCollectorUtils.acknowledgeComponent(validateInteraction, validateInteraction.deferReply());
 
 			if (validateInteraction.customId === refuseCustomId) {
 				DiscordCollectorUtils.sendReaction(

@@ -4,6 +4,7 @@ import {
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
@@ -25,6 +26,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	ComponentType,
 	InteractionCollector,
 	Message,
 	parseEmoji,
@@ -49,7 +51,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandSel
 }
 
 export async function handleCommandSellSuccessPacket(packet: CommandSellItemSuccessPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
 		return;
@@ -71,7 +73,7 @@ export async function handleCommandSellSuccessPacket(packet: CommandSellItemSucc
 		}
 	);
 
-	await interaction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(title, interaction.user)
@@ -143,8 +145,13 @@ async function validateSell(
 		components: [validateRow]
 	}) as Message;
 
-	// Computed once the reply is displayed, so a slow reply cannot keep the confirmation open after Core's deadline
+	/*
+	 * Only the confirmation buttons: an expired selection displays this confirmation on the selection message (#5059).
+	 * The lifetime is computed once the reply is displayed, so a slow reply cannot keep the confirmation open after Core's deadline
+	 */
 	const validateCollector = validateMsg.createMessageComponentCollector({
+		componentType: ComponentType.Button,
+		filter: buttonInteraction => buttonInteraction.customId === acceptCustomId || buttonInteraction.customId === refuseCustomId,
 		time: lifetime === SELL_CONFIRMATION_LIFETIME.CORE_DEADLINE ? DiscordCollectorUtils.getRemainingCollectorTime(packet) : undefined
 	});
 
@@ -154,7 +161,7 @@ async function validateSell(
 			return;
 		}
 
-		await validateInteraction.deferReply();
+		await DiscordCollectorUtils.acknowledgeComponent(validateInteraction, validateInteraction.deferReply());
 
 		if (validateInteraction.customId === refuseCustomId) {
 			DiscordCollectorUtils.sendReaction(
@@ -259,7 +266,9 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 
 	let validateCollector: InteractionCollector<never>;
 
+	// Only the selection: when the selection expired, the confirmation buttons are displayed on the same message
 	const selectCollector = msg.createMessageComponentCollector({
+		componentType: ComponentType.StringSelect,
 		time: DiscordCollectorUtils.getRemainingCollectorTime(packet)
 	});
 
@@ -269,13 +278,13 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 			return;
 		}
 
-		await selectMenuInteraction.deferReply();
+		const selectionAcknowledged = await DiscordCollectorUtils.acknowledgeComponent(selectMenuInteraction, selectMenuInteraction.deferReply());
 
 		mainEmbedRow.components.forEach(component => {
 			component.setDisabled(true);
 		});
 
-		await msg.edit({
+		await DiscordCollectorUtils.editWithoutBlocking(msg, {
 			embeds: [mainEmbed],
 			components: [mainEmbedRow]
 		});
@@ -298,12 +307,15 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 
 		const reaction = itemsReactions[parseInt(selectedOption, 10)];
 
+		// An expired selection can no longer be answered: the confirmation then replaces the selection menu
+		const confirmationInteraction = selectionAcknowledged ? selectMenuInteraction : interaction;
+
 		validateCollector = (
 			await validateSell(
 				{
 					packet, context
 				},
-				selectMenuInteraction,
+				confirmationInteraction,
 				{
 					reaction,
 					reactionIndex: packet.reactions.findIndex(packetReaction => JSON.stringify(packetReaction.data) === JSON.stringify(reaction)),

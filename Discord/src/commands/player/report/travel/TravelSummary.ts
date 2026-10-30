@@ -28,6 +28,7 @@ import {
 	effectsErrorTextValue, sendInteractionNotForYou
 } from "../../../../utils/ErrorUtils";
 import { PacketUtils } from "../../../../utils/PacketUtils";
+import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 
 const TRAVEL_BUTTON_IDS = {
 	BUY_HEAL: "buyHeal",
@@ -288,24 +289,35 @@ function hasInteractiveButton(packet: CommandReportTravelSummaryRes): boolean {
 	return Boolean(tokensInteractive || healInteractive);
 }
 
+/**
+ * Briefly reply to the click with a loading message. It is only cosmetic: a click that expired before being acknowledged
+ * cannot be answered, and its action must still be sent to Core
+ */
+async function showTravelActionLoading(buttonInteraction: ButtonInteraction, content: string): Promise<void> {
+	try {
+		const loadingMessage = await buttonInteraction.followUp({
+			content,
+			ephemeral: false
+		});
+		await loadingMessage.delete().catch(() => null);
+	}
+	catch {
+		// The click expired: Core's answer is displayed through the command interaction
+	}
+}
+
 async function handleTravelButtonInteraction(
 	buttonInteraction: ButtonInteraction,
 	context: PacketContext,
 	lng: Language
 ): Promise<void> {
 	if (buttonInteraction.customId === TRAVEL_BUTTON_IDS.USE_TOKENS) {
-		await buttonInteraction.followUp({
-			content: i18n.t("commands:report.useTokensLoading", { lng }),
-			ephemeral: false
-		}).then(msg => msg.delete().catch(() => null));
+		await showTravelActionLoading(buttonInteraction, i18n.t("commands:report.useTokensLoading", { lng }));
 
 		PacketUtils.sendPacketToBackend(context, makePacket(CommandReportUseTokensPacketReq, {}));
 	}
 	else if (buttonInteraction.customId === TRAVEL_BUTTON_IDS.BUY_HEAL) {
-		await buttonInteraction.followUp({
-			content: i18n.t("commands:report.buyHealLoading", { lng }),
-			ephemeral: false
-		}).then(msg => msg.delete().catch(() => null));
+		await showTravelActionLoading(buttonInteraction, i18n.t("commands:report.buyHealLoading", { lng }));
 
 		PacketUtils.sendPacketToBackend(context, makePacket(CommandReportBuyHealPacketReq, {}));
 	}
@@ -328,7 +340,7 @@ function setupTravelButtonCollector(
 		}
 
 		row.components.forEach(button => button.setDisabled(true));
-		await buttonInteraction.update({ components: [row] });
+		await DiscordCollectorUtils.updateComponentMessage(buttonInteraction, { components: [row] });
 
 		await handleTravelButtonInteraction(buttonInteraction, context, lng);
 		buttonCollector.stop();

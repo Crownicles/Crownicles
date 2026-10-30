@@ -128,7 +128,7 @@ export async function handleCommandPetFeedWithGuildCollector(context: PacketCont
 			return;
 		}
 
-		await buttonInteraction.deferReply();
+		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
 
 		if (buttonInteraction.customId === refuseCustomId) {
 			DiscordCollectorUtils.sendReaction(

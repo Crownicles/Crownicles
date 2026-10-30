@@ -14,12 +14,16 @@ import {
 	ButtonInteraction,
 	ButtonStyle,
 	InteractionCallbackResponse,
+	InteractionUpdateOptions,
 	Message,
 	MessageActionRowComponentBuilder,
 	MessageComponentInteraction,
+	MessageEditOptions,
 	parseEmoji,
 	ReactionCollector
 } from "discord.js";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
+import { getErrorReason } from "../../../Lib/src/utils/ErrorUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
@@ -47,6 +51,11 @@ type SendingValues = {
 	embed: CrowniclesEmbed | string;
 	items: string[];
 };
+
+/**
+ * Ids of the component interaction answering a click, in the context sent to Core
+ */
+type RespondingComponentIds = Pick<NonNullable<PacketContext["discord"]>, "buttonInteraction" | "stringSelectMenuInteraction">;
 
 export const SEND_POLITICS = {
 	ALWAYS_FOLLOWUP: [SendManner.FOLLOWUP],
@@ -105,6 +114,63 @@ export abstract class DiscordCollectorUtils {
 	];
 
 	/**
+	 * Component interactions whose acknowledgement failed: unless acknowledged another way, Discord accepts no answer to them
+	 */
+	private static readonly unacknowledgedComponents = new WeakSet<MessageComponentInteraction>();
+
+	/**
+	 * Wait for the acknowledgement of a component interaction (deferReply, deferUpdate, update...) without ever throwing.
+	 * Discord rejects an acknowledgement sent more than 3 seconds after the click, which happens when the shard lags: the
+	 * click must still be forwarded to Core, otherwise the player stays blocked until the collector ends (#5059).
+	 * Acknowledge before any other request to Discord, so that the slow requests do not consume the 3 seconds.
+	 * @returns whether the interaction was acknowledged
+	 */
+	static async acknowledgeComponent(interaction: MessageComponentInteraction, acknowledgement: Promise<unknown>): Promise<boolean> {
+		try {
+			await acknowledgement;
+			return true;
+		}
+		catch (error) {
+			DiscordCollectorUtils.unacknowledgedComponents.add(interaction);
+			CrowniclesLogger.warn("Component interaction could not be acknowledged, handling the click anyway", {
+				customId: interaction.customId,
+				reason: getErrorReason(error),
+				interactionAgeMs: Date.now() - interaction.createdTimestamp
+			});
+			return false;
+		}
+	}
+
+	/**
+	 * Edit a message whose update is only cosmetic (e.g. disabling the buttons of a collector), so that a failure of the
+	 * edit cannot prevent the click from being forwarded to Core
+	 */
+	static async editWithoutBlocking(message: Message, options: MessageEditOptions): Promise<void> {
+		try {
+			await message.edit(options);
+		}
+		catch (error) {
+			CrowniclesLogger.warn("Collector message could not be edited, handling the click anyway", {
+				messageId: message.id,
+				reason: getErrorReason(error)
+			});
+		}
+	}
+
+	/**
+	 * Update the message of a component interaction, falling back to a message edit when the interaction expired, so
+	 * that the displayed view always matches the state of the menu
+	 * @returns whether the interaction was acknowledged
+	 */
+	static async updateComponentMessage(interaction: MessageComponentInteraction, options: InteractionUpdateOptions & MessageEditOptions): Promise<boolean> {
+		if (await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.update(options))) {
+			return true;
+		}
+		await DiscordCollectorUtils.editWithoutBlocking(interaction.message, options);
+		return false;
+	}
+
+	/**
 	 * Time left before Core's deadline for the collector, never zero so that discord.js still arms its timer
 	 */
 	static getRemainingCollectorTime(packet: ReactionCollectorCreationPacket): number {
@@ -129,6 +195,38 @@ export abstract class DiscordCollectorUtils {
 		addButtonToRow(rows, button);
 	}
 
+	/**
+	 * Whether the acknowledgement of the interaction failed and it was not acknowledged another way (a concurrent
+	 * acknowledgement of the same click fails with "already acknowledged" but leaves it answerable)
+	 */
+	private static isUnanswerable(component: MessageComponentInteraction): boolean {
+		return DiscordCollectorUtils.unacknowledgedComponents.has(component) && !component.deferred && !component.replied;
+	}
+
+	/**
+	 * Return the id of the clicked component for the packet context, and cache the interaction through which Core's
+	 * response is displayed. An interaction whose acknowledgement failed (expired, Discord unavailable...) can no longer
+	 * be answered: it is not cached, so that the response falls back to the command interaction while still knowing a click
+	 * happened (see MessagesUtils.editClickReply)
+	 */
+	private static cacheRespondingComponent(component: MessageComponentInteraction | null): RespondingComponentIds {
+		if (component?.isButton()) {
+			DiscordCollectorUtils.cacheIfAnswerable(component, DiscordCache.cacheButtonInteraction);
+			return { buttonInteraction: component.id };
+		}
+		if (component?.isStringSelectMenu()) {
+			DiscordCollectorUtils.cacheIfAnswerable(component, DiscordCache.cacheStringSelectMenuInteraction);
+			return { stringSelectMenuInteraction: component.id };
+		}
+		return {};
+	}
+
+	private static cacheIfAnswerable<T extends MessageComponentInteraction>(component: T, cache: (component: T) => void): void {
+		if (!DiscordCollectorUtils.isUnanswerable(component)) {
+			cache(component);
+		}
+	}
+
 	static sendReaction(
 		packet: ReactionCollectorCreationPacket,
 		context: PacketContext,
@@ -145,15 +243,6 @@ export abstract class DiscordCollectorUtils {
 			}
 		);
 
-		if (component) {
-			if (component.isButton()) {
-				DiscordCache.cacheButtonInteraction(component);
-			}
-			else if (component.isStringSelectMenu()) {
-				DiscordCache.cacheStringSelectMenuInteraction(component);
-			}
-		}
-
 		PacketUtils.sendPacketToBackend({
 			frontEndOrigin: PacketConstants.FRONT_END_ORIGINS.DISCORD,
 			frontEndSubOrigin: context.frontEndSubOrigin,
@@ -162,8 +251,7 @@ export abstract class DiscordCollectorUtils {
 				user: context.discord!.user,
 				channel: context.discord!.channel,
 				interaction: context.discord!.interaction,
-				buttonInteraction: component?.isButton() ? component.id : undefined,
-				stringSelectMenuInteraction: component?.isStringSelectMenu() ? component.id : undefined,
+				...DiscordCollectorUtils.cacheRespondingComponent(component),
 				language: context.discord!.language,
 				shardId
 			}
@@ -255,21 +343,15 @@ export abstract class DiscordCollectorUtils {
 			const getReactingPlayer = await KeycloakUtils.getKeycloakIdFromDiscordId(keycloakConfig, buttonInteraction.user.id, buttonInteraction.user.displayName);
 			if (!getReactingPlayer.isError && getReactingPlayer.payload.keycloakId) {
 				if (!options?.notDeferReply) {
-					await buttonInteraction.deferReply();
-				}
-				else if (messageContentOrEmbed instanceof CrowniclesEmbed) {
-					disableRows([row]);
-
-					await msg.edit({
-						embeds: [messageContentOrEmbed],
-						components: [row]
-					});
+					await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
 				}
 				else {
 					disableRows([row]);
 
-					await msg.edit({
-						content: messageContentOrEmbed,
+					await DiscordCollectorUtils.editWithoutBlocking(msg, {
+						...messageContentOrEmbed instanceof CrowniclesEmbed
+							? { embeds: [messageContentOrEmbed] }
+							: { content: messageContentOrEmbed },
 						components: [row]
 					});
 				}
@@ -413,12 +495,10 @@ export abstract class DiscordCollectorUtils {
 				return;
 			}
 
-			if (options.deferUpdate) {
-				await buttonInteraction.deferUpdate();
-			}
-			else {
-				await buttonInteraction.deferReply();
-			}
+			await DiscordCollectorUtils.acknowledgeComponent(
+				buttonInteraction,
+				options.deferUpdate ? buttonInteraction.deferUpdate() : buttonInteraction.deferReply()
+			);
 			if (buttonInteraction.customId !== "refuse") {
 				DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, parseInt(buttonInteraction.customId, 10));
 			}
