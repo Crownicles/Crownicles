@@ -437,6 +437,16 @@ export abstract class FightConstants {
 		ENCHANTMENT_PROBABILITY: {
 			MIN: 0.05,
 			MAX: 0.75
+		},
+
+		/*
+		 * Policy network trained by self-play (fights simulated with the game's own code). PROBABILITY is the share
+		 * of the guards it plays, the others keep the scripted behavior of their class (0 turns it off).
+		 * A model that does not know an action, alteration or pet assistance of the game is not used.
+		 */
+		NEURAL_AI: {
+			MODEL_PATH: "resources/kingGuardAi/model.json",
+			PROBABILITY: 1
 		}
 	};
 
