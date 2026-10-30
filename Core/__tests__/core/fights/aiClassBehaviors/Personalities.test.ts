@@ -236,6 +236,22 @@ describe("AI personalities", () => {
 			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(5, weakened())).id).toBe(ACTIONS.FIRE_ATTACK);
 		});
 
+		it("lets its dark attack recover once it is worn below its second use, and burns its opponent meanwhile", () => {
+			const mage = mockFighter({
+				breath: 10, history: [ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK]
+			});
+			const cursed = mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED });
+
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(6, cursed)).id).toBe(ACTIONS.FIRE_ATTACK);
+		});
+
+		it("saves its breath with its cheap attack until it can afford its fresh dark attack", () => {
+			const mage = mockFighter({ breath: 3 });
+			const cursed = mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED });
+
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(6, cursed)).id).toBe(ACTIONS.BREATH_TAKING_ATTACK);
+		});
+
 		it("every mage personality cashes a cursed opponent in with its fresh dark attack", () => {
 			const mage = mockFighter({ breath: 10 });
 			const ailing = (): ReturnType<typeof mockFighter> => mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED });
