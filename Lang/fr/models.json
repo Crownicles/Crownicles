@@ -1038,6 +1038,49 @@
     "webShotAttack": {
       "name_one": "Attaque jet de toile",
       "name_other": "Attaques jets de toile"
+    },
+    "leechBite": {
+      "name_one": "Morsure sangsue",
+      "name_other": "Morsures sangsue"
+    },
+    "multiHeadBite": {
+      "name_one": "Morsure aux mille têtes",
+      "name_other": "Morsures aux mille têtes"
+    },
+    "regrowth": {
+      "customMessage": "puise dans la sève et l'humus pour refermer ses blessures.",
+      "name_one": "Repousse",
+      "name_other": "Repousses"
+    },
+    "sporeCloud": {
+      "name_one": "Nuage de spores",
+      "name_other": "Nuages de spores"
+    },
+    "mantisScythes": {
+      "name_one": "Attaque faux de mante",
+      "name_other": "Attaques faux de mante"
+    },
+    "rootBind": {
+      "name_one": "Enracinement",
+      "name_other": "Enracinements"
+    },
+    "barkArmor": {
+      "customMessage": "se couvre d'une écorce épaisse et durcie.",
+      "name_one": "Armure d'écorce",
+      "name_other": "Armures d'écorce"
+    },
+    "featherStorm": {
+      "name_one": "Tempête de plumes",
+      "name_other": "Tempêtes de plumes"
+    },
+    "thornBarrage": {
+      "name_one": "Salve d'épines",
+      "name_other": "Salves d'épines"
+    },
+    "wrathOfTheForest": {
+      "customMessage": "laisse éclater la colère de la forêt : branches, racines et lianes s'abattent sur son adversaire avec une violence d'autant plus grande que ses blessures sont profondes.",
+      "name_one": "Colère de la forêt",
+      "name_other": "Colères de la forêt"
     }
   },
   "leagues": {
@@ -1191,6 +1234,54 @@
       "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
       "name": "Ravin des Abysses",
       "particle": "vers le"
+    },
+    "1300": {
+      "description": "Un large delta où le fleuve de l'île se perd en mille bras d'eau boueuse avant de rejoindre la mer. L'air y est lourd, chaud et humide, et l'odeur de vase se mêle à celle des fleurs sauvages. Au loin, au-dessus de la brume, se dresse la silhouette d'un arbre si gigantesque que sa cime se perd dans les nuages.",
+      "name": "Delta bourbeux",
+      "particle": "vers le",
+      "atParticle": "au"
+    },
+    "1301": {
+      "description": "Une forêt de palétuviers dont les racines plongent dans une eau saumâtre et immobile. On avance de racine en racine en prenant garde à ne pas glisser dans la vase, car quelque chose y ondule parfois sous la surface. Les voyageurs en ressortent souvent couverts de petites morsures rondes.",
+      "name": "Mangrove engloutie",
+      "particle": "vers la",
+      "atParticle": "à la"
+    },
+    "1302": {
+      "description": "Une vaste étendue de tourbe spongieuse d'où s'échappent des volutes de vapeur tiède. Le sol cède à chaque pas et des bulles éclatent à la surface des mares avec un bruit sourd. Les rares explorateurs revenus de ces lieux parlent de cous innombrables surgissant de la brume.",
+      "name": "Tourbière fumante",
+      "particle": "vers la",
+      "atParticle": "à la"
+    },
+    "1303": {
+      "description": "Une forêt où les arbres ont laissé place à des champignons géants, hauts comme des tours. Leurs chapeaux phosphorescents baignent le sous-bois d'une lumière verdâtre et un fin nuage de spores flotte en permanence dans l'air. Mieux vaut retenir son souffle en traversant ce lieu.",
+      "name": "Fongarium",
+      "particle": "vers le",
+      "atParticle": "au"
+    },
+    "1304": {
+      "description": "Les racines de l'Arbre-Mère émergent ici du sol en un labyrinthe d'arches noueuses, assez larges pour que l'on marche dessus. Des orchidées aux couleurs éclatantes y poussent en grappes, si nombreuses qu'il est difficile de distinguer une fleur d'une créature immobile.",
+      "name": "Racines tordues",
+      "particle": "vers les",
+      "atParticle": "aux"
+    },
+    "1305": {
+      "description": "Une immense cavité creusée au pied de l'Arbre-Mère, par laquelle on peut grimper à l'intérieur du bois vers les hauteurs. Les parois sont couvertes de sève figée et d'une écorce noircie qui semble parfois remuer. Le silence n'y est troublé que par de lents craquements, comme si l'arbre lui-même respirait.",
+      "name": "Tronc creux",
+      "particle": "vers le",
+      "atParticle": "au"
+    },
+    "1306": {
+      "description": "Tout en haut, les branches de l'Arbre-Mère forment un océan de feuillage au-dessus des nuages. Des lianes célestes y pendent d'une branche à l'autre et le vent y souffle si fort qu'il faut s'agripper pour avancer. Des plumes émeraude tourbillonnent parfois dans les bourrasques.",
+      "name": "Canopée céleste",
+      "particle": "vers la",
+      "atParticle": "à la"
+    },
+    "1307": {
+      "description": "Au sommet du tronc, une clairière de bois vivant entoure un cœur de sève lumineuse qui pulse lentement. Autrefois source de vie de toute l'île, il est aujourd'hui veiné d'une corruption sombre. Les branches alentour se tendent vers chaque intrus, comme si la forêt entière retenait son souffle.",
+      "name": "Cœur de l'Arbre-Mère",
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "12": {
       "description": "Une grande plaine vide nordique sans grand intérêt.",
@@ -1502,6 +1593,38 @@
     "mistyPath": {
       "name": "",
       "prefix": "du"
+    },
+    "delta": {
+      "name": "",
+      "prefix": "du"
+    },
+    "mangrove": {
+      "name": "",
+      "prefix": "de la"
+    },
+    "peatBog": {
+      "name": "",
+      "prefix": "de la"
+    },
+    "fungalGrove": {
+      "name": "",
+      "prefix": "du"
+    },
+    "twistedRoots": {
+      "name": "",
+      "prefix": "des"
+    },
+    "hollowTrunk": {
+      "name": "",
+      "prefix": "du"
+    },
+    "canopy": {
+      "name": "",
+      "prefix": "de la"
+    },
+    "motherTreeHeart": {
+      "name": "",
+      "prefix": "du"
     }
   },
   "biomes": {
@@ -1771,6 +1894,34 @@
     "leviathan": {
       "name": "Léviathan",
       "description": "Le seigneur incontesté des océans, capable d'invoquer la foudre céleste et de déchaîner des déluges apocalyptiques. Ses crocs acérés déchirent tout sur leur passage, et sa faim sépulcrale est insatiable. Parfois emporté par une fureur aveugle, il engendre alors un maelström si violent qu'il ne laisse derrière lui qu'un sillage de débris et de silence."
+    },
+    "giantLeech": {
+      "name": "Sangsue géante",
+      "description": "Un ver visqueux long comme un homme, tapi dans la vase de la mangrove. Il se colle à ses proies, plante ses mâchoires circulaires dans leur chair et aspire leur énergie pour refermer ses propres plaies. Il aime aussi se dissimuler dans la boue pour mieux surprendre ses victimes."
+    },
+    "swampHydra": {
+      "name": "Hydre des marais",
+      "description": "Une créature reptilienne aux cous innombrables qui hante les tourbières fumantes. Chaque fois qu'elle puise dans la tourbe pour se régénérer, de nouvelles têtes repoussent et ses morsures deviennent plus redoutables. Il faut l'abattre vite, avant qu'elle ne soit devenue une forêt de crocs."
+    },
+    "mycelialLord": {
+      "name": "Seigneur mycélien",
+      "description": "Un champignon colossal dont le réseau de filaments s'étend sous tout le Fongarium. Il relâche des nuages de spores qui empoisonnent ou égarent l'esprit de ses adversaires, se régénère grâce à l'humus et peut faire surgir du sol des alliés fongiques pour l'épauler."
+    },
+    "orchidMantis": {
+      "name": "Mante orchidée",
+      "description": "Une mante gigantesque aux couleurs d'orchidée, presque invisible parmi les fleurs qui poussent sur les racines tordues. Elle guette patiemment, puis fend l'air de ses faux avec une vitesse et une précision redoutables, laissant derrière elle des plaies béantes."
+    },
+    "corruptedSylvan": {
+      "name": "Sylvain corrompu",
+      "description": "Un ancien gardien de la forêt, mi-homme mi-arbre, dont l'écorce a noirci sous l'emprise de la corruption. Lent mais presque indestructible, il immobilise ses adversaires sous ses racines, se couvre d'une écorce toujours plus épaisse et les écrase de ses bras noueux."
+    },
+    "featheredSerpent": {
+      "name": "Serpent à plumes",
+      "description": "Un serpent ailé aux écailles émeraude et aux plumes chatoyantes qui règne sur la canopée. Plus rapide que le vent, il fond sur ses proies depuis les cimes et les crible de plumes acérées qui ralentissent leurs mouvements."
+    },
+    "motherTree": {
+      "name": "Arbre-Mère corrompu",
+      "description": "Le cœur millénaire de l'île, un arbre si gigantesque que son tronc pourrait abriter une ville entière. Rongé par une corruption venue des profondeurs, il crible ses ennemis d'épines, les enracine sur place et les noie sous ses spores. Il puise dans sa sève pour se régénérer, et plus il est blessé, plus la colère de la forêt qu'il déchaîne devient terrible."
     }
   },
   "objects": {
@@ -2404,6 +2555,27 @@
     },
     "1206": {
       "leviathan": "Vous descendez dans un ravin sous-marin où la lumière n'a plus cours. Les ténèbres vous enveloppent, le silence est oppressant. Puis vous la sentez avant de la voir : une présence titanesque émettant une vibration basse qui fait trembler tous vos os. Deux pupilles s'ouvrent, larges comme des boucliers, d'un bleu électrique qui grésille dans l'eau noire. Le Léviathan s'éveille, il se déploie lentement, sa taille défiant l'entendement. Des éclairs commencent à crépiter entre ses crocs tandis que l'eau tourbillonne en un maelström naissant. Vous venez de commettre l'erreur de le réveiller..."
+    },
+    "1301": {
+      "giantLeech": "Vous progressez de racine en racine à travers la mangrove engloutie, attentif à ne pas glisser dans l'eau trouble. Une racine bouge soudain sous votre pied. Ce n'était pas une racine : une sangsue géante se dresse hors de la vase, sa bouche circulaire grande ouverte, prête à se coller à vous !"
+    },
+    "1302": {
+      "swampHydra": "La vapeur de la tourbière vous enveloppe et chaque pas s'enfonce un peu plus dans le sol spongieux. Des bulles remontent à la surface d'une mare voisine, puis une tête reptilienne en émerge, suivie d'une deuxième, puis d'une troisième. L'hydre des marais vous a repéré et ses cous se tendent vers vous en sifflant !"
+    },
+    "1303": {
+      "mycelialLord": "Vous avancez dans le Fongarium, ébloui par la lueur verdâtre des chapeaux géants. Le sol se met à trembler doucement et les filaments blancs qui le recouvrent convergent vers un champignon plus grand que tous les autres. Ses lamelles s'ouvrent dans un souffle de spores : le Seigneur mycélien s'éveille !"
+    },
+    "1304": {
+      "orchidMantis": "Vous enjambez les racines noueuses de l'Arbre-Mère, émerveillé par les orchidées qui fleurissent tout autour de vous. L'une d'elles vous paraît pourtant étrangement grande. Trop tard : la fleur déplie de longues pattes tranchantes et une mante orchidée bondit sur vous !"
+    },
+    "1305": {
+      "corruptedSylvan": "Vous pénétrez dans le tronc creux et commencez votre ascension le long des parois de sève figée. Un craquement retentit derrière vous. Une silhouette d'écorce noircie se détache lentement du mur, ses doigts de racines s'enfonçant dans le bois : un sylvain corrompu vous barre la route !"
+    },
+    "1306": {
+      "featheredSerpent": "Vous émergez enfin dans la canopée, au-dessus des nuages. Le vent hurle entre les branches et vous vous agrippez aux lianes pour ne pas tomber. Une ombre passe au-dessus de vous, puis une pluie de plumes émeraude s'abat sur les feuilles : le serpent à plumes fond sur vous depuis les cimes !"
+    },
+    "1307": {
+      "motherTree": "Vous atteignez le sommet de l'Arbre-Mère, où un cœur de sève lumineuse pulse au centre d'une clairière de bois vivant. Des veines sombres le parcourent et les branches alentour se tendent lentement vers vous. Le sol se soulève, les épines se dressent : l'Arbre-Mère corrompu tout entier se retourne contre vous !"
     }
   },
   "materials": {

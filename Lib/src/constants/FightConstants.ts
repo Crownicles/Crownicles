@@ -178,7 +178,17 @@ export abstract class FightConstants {
 				AQUEOUS_EVASION: "aqueousEvasion",
 				TENTACLE_SHIELD: "tentacleShield",
 				TITAN_FIRE_ATTACK: "titanFireAttack",
-				ABYSSAL_AURA: "abyssalAura"
+				ABYSSAL_AURA: "abyssalAura",
+				LEECH_BITE: "leechBite",
+				MULTI_HEAD_BITE: "multiHeadBite",
+				REGROWTH: "regrowth",
+				SPORE_CLOUD: "sporeCloud",
+				MANTIS_SCYTHES: "mantisScythes",
+				ROOT_BIND: "rootBind",
+				BARK_ARMOR: "barkArmor",
+				FEATHER_STORM: "featherStorm",
+				THORN_BARRAGE: "thornBarrage",
+				WRATH_OF_THE_FOREST: "wrathOfTheForest"
 			},
 			PET: {
 				BITE: "bite",
@@ -425,7 +435,8 @@ export abstract class FightConstants {
 		MALE_ICE_DRAGON: "maleIceDragon",
 		FEMALE_ICE_DRAGON: "femaleIceDragon",
 		KRAKEN: "kraken",
-		LEVIATHAN: "leviathan"
+		LEVIATHAN: "leviathan",
+		MOTHER_TREE: "motherTree"
 	} as const;
 }
 

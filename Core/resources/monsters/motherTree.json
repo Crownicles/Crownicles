@@ -1,0 +1,52 @@
+{
+  "baseEnergyValue": 760,
+  "attackRatio": 160,
+  "defenseRatio": 140,
+  "speedRatio": 25,
+  "breath": 15,
+  "maxBreath": 50,
+  "breathRegen": 6,
+  "rewardFactor": 1.45,
+  "materialLoot": [
+    41,
+    15,
+    74,
+    88,
+    19,
+    87,
+    84,
+    18,
+    31,
+    40
+  ],
+  "attacks": [
+    {
+      "id": "thornBarrage",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "rootBind",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "sporeCloud",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "regrowth",
+      "minLevel": 50,
+      "weight": 2
+    },
+    {
+      "id": "wrathOfTheForest",
+      "minLevel": 80,
+      "weight": 2
+    }
+  ],
+  "maps": [
+    1307
+  ]
+}

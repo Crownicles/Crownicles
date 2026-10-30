@@ -439,6 +439,5 @@ export const FARMER_RECIPE_COSTS = [
 	100,
 	250,
 	500,
-	750,
-	1000
+	750
 ] as const;

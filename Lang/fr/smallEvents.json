@@ -439,6 +439,11 @@
       "{{playerDisplay}} vous raconte sobrement avoir terrassé le Léviathan au niveau **{{bossLevel, number}}**. Les vagues ne semblent plus pouvoir l'engloutir.",
       "Vous croisez {{playerDisplay}}, qui a fait taire à jamais le rugissement du Léviathan au niveau **{{bossLevel, number}}**. Le silence des mers profondes vous saisit."
     ],
+    "beaten_mother_tree": [
+      "Des échardes d'écorce et des traces de sève sont encore accrochées à l'armure de {{playerDisplay}} : il a abattu l'Arbre-Mère corrompu au niveau **{{bossLevel, number}}**. La forêt elle-même s'incline devant lui.",
+      "{{playerDisplay}} porte encore l'odeur de l'humus et des spores. Il a vaincu l'Arbre-Mère corrompu au niveau **{{bossLevel, number}}** et en est revenu pour le raconter !",
+      "Vous croisez {{playerDisplay}}, un aventurier ayant gravi la canopée jusqu'au cœur de l'Arbre-Mère corrompu pour le terrasser au niveau **{{bossLevel, number}}**. Une feuille dorée pend encore à sa cape."
+    ],
     "effect": {
       "sick": [
         "Vous entendez un bruit au loin... C'est {{playerDisplay}} qui vomit dans un buisson... Vous reprenez votre route bouleversé.",
@@ -2114,7 +2119,17 @@
       "{emote:fightActions.tentacleShield} Le bouclier tentacule, parade défensive contre les attaques à distance ! Le lanceur agite ses tentacules dans tous les sens, renvoyant une partie des projectiles à l'expéditeur. Une protection efficace qui transforme les attaques à distance de l'adversaire en arme contre lui-même !",
       "{emote:fightActions.tidalWave} Le raz-de-marée, déferlante magique d'une puissance impressionnante ! Une vague colossale s'abat sur l'adversaire, infligeant des dégâts importants avec une chance de le submerger sous les flots. La mer ne prévient jamais avant de frapper !",
       "{emote:fightActions.waterJet} Le jet d'eau, attaque à distance simple mais efficace ! Un puissant jet d'eau est projeté sur l'adversaire, avec une chance sur deux de le tremper complètement. Ne sous-estimez jamais la force de l'eau, même sous sa forme la plus élémentaire !",
-      "{emote:fightActions.wateryGust} La rafale aqueuse, technique à distance mêlant vent et eau ! Elle projette une bourrasque chargée d'embruns sur l'adversaire, infligeant des dégâts notables avec une faible chance de le submerger. Une technique polyvalente que j'ai souvent observée chez les esprits des eaux !"
+      "{emote:fightActions.wateryGust} La rafale aqueuse, technique à distance mêlant vent et eau ! Elle projette une bourrasque chargée d'embruns sur l'adversaire, infligeant des dégâts notables avec une faible chance de le submerger. Une technique polyvalente que j'ai souvent observée chez les esprits des eaux !",
+      "{emote:fightActions.leechBite} La morsure sangsue, attaque physique des créatures des marais ! Le lanceur plante ses mâchoires dans sa proie et aspire son énergie : la moitié des dégâts infligés lui revient sous forme de soin. Plus le combat s'éternise, plus la bête se fait vigoureuse !",
+      "{emote:fightActions.multiHeadBite} La morsure aux mille têtes, attaque physique de l'hydre des marais ! Chaque fois que l'hydre se régénère, de nouvelles têtes repoussent et ses morsures gagnent en puissance, jusqu'à plus du double de leurs dégâts initiaux. Mieux vaut l'abattre avant qu'elle ne repousse trop souvent !",
+      "{emote:fightActions.regrowth} La repousse, technique de régénération végétale ! Le lanceur puise dans la sève et l'humus pour refermer ses blessures. Plus il est blessé, plus il récupère d'énergie, et la repousse devient encore plus efficace lorsqu'il est sous la moitié de ses points de vie.",
+      "{emote:fightActions.sporeCloud} Le nuage de spores, technique à distance des champignons géants ! Un nuage âcre s'abat sur l'adversaire, lui inflige de légers dégâts et l'empoisonne le plus souvent. Quand les spores ne l'empoisonnent pas, elles lui embrument l'esprit et le rendent confus.",
+      "{emote:fightActions.mantisScythes} Les faux de mante, attaque physique d'une précision redoutable ! Le lanceur fend l'air de ses pattes tranchantes, avec de fortes chances de coup critique et une chance de faire saigner l'adversaire. Sa vitesse compte autant que sa force.",
+      "{emote:fightActions.rootBind} L'enracinement, technique de contrôle des gardiens de la forêt ! Des racines jaillissent du sol, s'enroulent autour des jambes de l'adversaire et le paralysent. Une victime enracinée perd toute sa vitesse et risque de ne pas pouvoir agir.",
+      "{emote:fightActions.barkArmor} L'armure d'écorce, technique défensive des créatures sylvestres ! Le lanceur se couvre d'une écorce épaisse qui augmente sa défense, et plus il l'utilise de façon répétée, plus l'écorce s'épaissit.",
+      "{emote:fightActions.featherStorm} La tempête de plumes, attaque à distance des créatures ailées de la canopée ! Une volée de plumes acérées fond sur l'adversaire, avec une chance sur deux de le ralentir. La vitesse du lanceur est sa meilleure arme.",
+      "{emote:fightActions.thornBarrage} La salve d'épines, attaque à distance des plantes les plus hostiles ! Une pluie d'épines s'abat sur l'adversaire et le fait saigner le plus souvent. Une armure solide est le meilleur rempart contre ce déluge végétal.",
+      "{emote:fightActions.wrathOfTheForest} La colère de la forêt, technique magique de l'Arbre-Mère ! Branches, racines et lianes s'abattent sur l'adversaire avec une violence qui grandit à mesure que le lanceur est blessé : à l'agonie, ses dégâts peuvent tripler. Achever l'Arbre-Mère demande des nerfs d'acier !"
     ]
   },
   "haunted": [

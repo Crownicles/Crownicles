@@ -1,0 +1,8 @@
+{
+  "type": "motherTreeHeart",
+  "biomes": [
+    "forest"
+  ],
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "pve_island"
+}
