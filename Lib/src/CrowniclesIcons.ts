@@ -41,6 +41,9 @@ export const CrowniclesIcons: {
 		accept: string;
 		refuse: string;
 	};
+	messageEmojis: {
+		[emojiId: string]: string;
+	};
 	altarSmallEvent: {
 		contribute: string;
 		refuse: string;
@@ -1178,7 +1181,9 @@ export const CrowniclesIcons: {
 		petDropToken: "🪙",
 		altar: "⛩️",
 		farmer: "🧑‍🌾",
-		gardener: "🌱"
+		gardener: "🌱",
+		message: "✉️",
+		messageRecipient: "📬"
 	},
 	pets: {
 		0: {
@@ -2120,6 +2125,20 @@ export const CrowniclesIcons: {
 	cartSmallEvent: {
 		accept: "🚗",
 		refuse: "🚶"
+	},
+	messageEmojis: {
+		apple: "🍎",
+		key: "🔑",
+		gem: "💎",
+		cat: "🐱",
+		lightning: "⚡",
+		star: "⭐",
+		mushroom: "🍄",
+		pizza: "🍕",
+		bomb: "💣",
+		poop: "💩",
+		heart: "❤️",
+		clock: "⏰"
 	},
 	altarSmallEvent: {
 		contribute: "💰",

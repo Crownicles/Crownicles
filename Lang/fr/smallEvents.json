@@ -2858,5 +2858,37 @@
     "menu": [
       "\n\nAcceptez-vous son offre ?"
     ]
+  },
+  "message": {
+    "intro": "Un messager essoufflé vous interpelle en hâte : « Par pitié, portez ce message secret à mon ami à {{destination}} ! Le message est : {{emoji}}. Retenez-le bien, il va s'effacer d'ici peu ! »",
+    "introVanished": "Un messager essoufflé vous avait interpellé pour porter un message secret à son ami à {{destination}}... Mais le message s'est effacé ! J'espère que vous avez bonne mémoire !",
+    "alreadyActive": "Vous croisez de nouveau le messager. Il vous dévisage, furieux : « Quoi ?! Tu n'as toujours pas livré mon message à {{destination}} ? Dépêche-toi, qu'est-ce que tu attends ! »"
+  },
+  "messageRecipient": {
+    "intro": "Vous apercevez l'ami du messager à {{destination}}. Il vous scrute d'un air méfiant : « Vous venez de sa part ? Quel est le message secret qu'il vous a confié ? »",
+    "emojis": {
+      "apple": "Une pomme",
+      "key": "Une clé",
+      "gem": "Un diamant",
+      "cat": "Un chat",
+      "lightning": "Un éclair",
+      "star": "Une étoile",
+      "mushroom": "Un champignon",
+      "pizza": "Une pizza",
+      "bomb": "Une bombe",
+      "poop": "Un tas d'excréments",
+      "heart": "Un cœur",
+      "clock": "Une horloge"
+    },
+    "results": {
+      "success": "Vous transmettez le message {{emoji}}. Le destinataire s'illumine : « C'est exactement le signal convenu ! Merci infiniment pour votre discrétion, voici votre récompense. » Vous recevez **{{money, number}} {emote:unitValues.money}** et **{{xp, number}} {emote:unitValues.xp}** !",
+      "wrongGeneric": "Vous annoncez le message {{emoji}}. Le destinataire fronce les sourcils : « Hein ? Ce n'est absolument pas notre signal. Vous essayez de m'arnaquer ? Fichez le camp ! » Vous repartez bredouille.",
+      "wrongBomb": "Vous présentez le message {{emoji}} d'un air mystérieux. Le destinataire panique : « UNE BOMBE ?! UN ATTENTAT ! » Dans sa terreur, il vous assène un violent coup de bâton avant de s'enfuir en hurlant ! Vous perdez **{{health, number}} {emote:unitValues.lostHealth}**.",
+      "wrongPoo": "Vous murmurez solennellement le message {{emoji}}. Le destinataire vous regarde avec un dégoût absolu : « Vous vous moquez de moi ?! C'est répugnant ! » Il vous gifle violemment et tourne les talons en marmonnant des injures.",
+      "wrongLove": "Vous chuchotez timidement le message {{emoji}} avec un clin d'œil. Le destinataire rougit violemment, très gêné : « Euh... c'est très gentil, mais je... nous ne nous connaissons pas... et je suis déjà marié ! » Il s'éloigne précipitamment en évitant votre regard.",
+      "wrongTime": "Vous proposez le message {{emoji}}. Le destinataire pousse un soupir tragique : « Ah, le temps... Parlons-en du temps ! » Il vous tient la jambe pendant une éternité à disserter sur les aiguilles et le sens de la vie. Vous perdez **{{time}} {emote:unitValues.time}**.",
+      "timeout": "Vous hésitez trop longtemps sans prononcer un mot. Lassé d'attendre, le destinataire soupire et disparaît dans la foule. Vous repartez sans rien."
+    }
   }
 }
+

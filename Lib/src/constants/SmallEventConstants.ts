@@ -576,6 +576,61 @@ export abstract class SmallEventConstants {
 		MANY_TOKENS_MIN: 15
 	};
 
+	static readonly MESSAGE = {
+		SMALL_EVENT_NAME: "message",
+		RECIPIENT_SMALL_EVENT_NAME: "messageRecipient",
+		VANISH_TIME_MS: 30000,
+		SECRET_EMOJIS: [
+			"apple",
+			"key",
+			"gem",
+			"cat",
+			"lightning",
+			"star",
+			"mushroom",
+			"pizza"
+		],
+		SPECIAL_WRONG_EMOJIS: [
+			"bomb",
+			"poop",
+			"heart",
+			"clock"
+		],
+		INTERACTIONS: {
+			INTRO: "intro",
+			ALREADY_ACTIVE: "alreadyActive"
+		},
+		OUTCOMES: {
+			SUCCESS: "success",
+			WRONG_GENERIC: "wrongGeneric",
+			WRONG_BOMB: "wrongBomb",
+			WRONG_POO: "wrongPoo",
+			WRONG_LOVE: "wrongLove",
+			WRONG_TIME: "wrongTime",
+			TIMEOUT: "timeout"
+		},
+		REWARDS: {
+			MONEY: {
+				MIN: 60,
+				MAX: 140
+			},
+			EXPERIENCE: {
+				MIN: 20,
+				MAX: 50
+			}
+		},
+		PENALTIES: {
+			BOMB_DAMAGE: {
+				MIN: 5,
+				MAX: 15
+			},
+			TIME_LOST: {
+				MIN: 15,
+				MAX: 30
+			}
+		}
+	} as const;
+
 	/**
 	 * Small event IDs that can only be triggered once per player run.
 	 * Used with PlayerSmallEvents.playerSmallEventCount().
@@ -587,3 +642,4 @@ export abstract class SmallEventConstants {
 		GO_TO_PVE_ISLAND: "goToPVEIsland"
 	} as const;
 }
+
