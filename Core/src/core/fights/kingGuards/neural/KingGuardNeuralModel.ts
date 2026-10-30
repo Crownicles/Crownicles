@@ -35,10 +35,14 @@ export type NeuralModelFile = {
  * @param file
  */
 function assertModelShape(file: NeuralModelFile): void {
-	const firstLayerOk = file.W1.length === file.F * file.H && file.b1.length === file.H;
-	const policyOk = file.Wp.length === file.A * file.H && file.bp.length === file.A;
-	const vocabularyOk = file.vocab.actionIds.length === file.A;
-	if (!firstLayerOk || !policyOk || !vocabularyOk) {
+	const sizes: [actual: number, expected: number][] = [
+		[file.W1.length, file.F * file.H],
+		[file.b1.length, file.H],
+		[file.Wp.length, file.A * file.H],
+		[file.bp.length, file.A],
+		[file.vocab.actionIds.length, file.A]
+	];
+	if (sizes.some(([actual, expected]) => actual !== expected)) {
 		throw new Error("Malformed king guard model");
 	}
 }
