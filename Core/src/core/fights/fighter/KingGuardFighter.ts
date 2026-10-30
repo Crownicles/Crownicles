@@ -1,6 +1,7 @@
 import { AiPlayerFighter } from "./AiPlayerFighter";
 import type { KingGuard } from "../kingGuards/KingGuardGenerator";
 import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
+import { createKingGuardBehavior } from "../kingGuards/neural/KingGuardNeuralAi";
 
 /**
  * AI-controlled fighter generated on the fly when /fight finds no opponent.
@@ -13,7 +14,8 @@ export class KingGuardFighter extends AiPlayerFighter {
 		super(guard.player, guard.guardClass, {
 			allowPotionConsumption: false,
 			preloadedActiveObjects: guard.activeObjects,
-			preloadedPetEntity: guard.pet
+			preloadedPetEntity: guard.pet,
+			classBehavior: createKingGuardBehavior(guard.guardClass.id)
 		});
 		this.activeObjects = guard.activeObjects;
 	}
