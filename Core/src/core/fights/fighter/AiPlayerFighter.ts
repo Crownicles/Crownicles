@@ -25,6 +25,9 @@ type AiPlayerFighterOptions = {
 	levelCap?: number;
 	preloadedActiveObjects?: PlayerActiveObjects;
 	preloadedPetEntity?: PetEntity | null;
+
+	// Replaces the behavior of the class (and its defense personality)
+	classBehavior?: ClassBehavior;
 };
 
 /**
@@ -50,7 +53,7 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds), options.levelCap);
 		this.fightRole = FightConstants.FIGHT_ROLES.DEFENDER;
 		this.class = playerClass;
-		this.classBehavior = getAiClassBehavior(playerClass.id, player.defensePersonality);
+		this.classBehavior = options.classBehavior ?? getAiClassBehavior(playerClass.id, player.defensePersonality);
 		this.allowPotionConsumption = options.allowPotionConsumption ?? true;
 		this.withoutConsequences = options.withoutConsequences ?? false;
 		this.preloadedActiveObjects = options.preloadedActiveObjects;
