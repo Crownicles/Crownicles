@@ -10,8 +10,11 @@ import { getDarkAttackPowerMultiplier } from "../actions/DarkAttackWear";
 
 const ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
 
-// Below this multiplier, the worn dark attack is left aside until it recovers
-const MIN_WORTHWHILE_DARK_ATTACK_MULTIPLIER = 0.8;
+// Below this multiplier, the dark attack is too worn: the mage turns to its other attacks until it recovers
+const WORN_OUT_DARK_ATTACK_MULTIPLIER = 0.8;
+
+// The dark attack is cast from this multiplier only: fresh, at most once more, then it rests
+const MIN_DARK_ATTACK_MULTIPLIER = 1.3;
 
 // The curse heals the mage only while the opponent has more than this share of its energy
 const CURSE_HEAL_ENERGY_RATIO = 0.4;
@@ -31,16 +34,20 @@ export function canAfford(me: AiPlayerFighter, actionId: string): boolean {
 }
 
 /**
- * Move against an opponent that already suffers an alteration: the fresh dark attack cashes it in, saving the breath
- * for it if needed. Null once the dark attack is worn below the given multiplier
+ * Move against an opponent that already suffers an alteration: the fresh dark attack cashes it in, the mage saving
+ * its breath with its cheap attack until it can afford it. Null once the dark attack is worn out, or too worn to be
+ * worth its breath
  * @param me
- * @param minDarkAttackMultiplier
  */
-export function chooseAgainstAilingOpponent(me: AiPlayerFighter, minDarkAttackMultiplier = MIN_WORTHWHILE_DARK_ATTACK_MULTIPLIER): FightAction | null {
-	if (getDarkAttackPowerMultiplier(me) < minDarkAttackMultiplier) {
+export function chooseAgainstAilingOpponent(me: AiPlayerFighter): FightAction | null {
+	const darkAttackMultiplier = getDarkAttackPowerMultiplier(me);
+	if (darkAttackMultiplier < WORN_OUT_DARK_ATTACK_MULTIPLIER) {
 		return null;
 	}
-	return getAction(canAfford(me, ACTIONS.DARK_ATTACK) ? ACTIONS.DARK_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
+	if (!canAfford(me, ACTIONS.DARK_ATTACK)) {
+		return getAction(ACTIONS.BREATH_TAKING_ATTACK);
+	}
+	return darkAttackMultiplier >= MIN_DARK_ATTACK_MULTIPLIER ? getAction(ACTIONS.DARK_ATTACK) : null;
 }
 
 /**
