@@ -8,6 +8,9 @@ import { FightConstants } from "../../../../../Lib/src/constants/FightConstants"
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
+import {
+	shouldConcentrateBeforeEnergeticAttack, shouldPunishRest, shouldUseConcentratedEnergeticAttack
+} from "./VeteranTactics";
 
 /**
  * Implements a veteran fight behavior that selects an appropriate fight action based on various tactical criteria.
@@ -22,6 +25,15 @@ class VeteranFightBehavior implements ClassBehavior {
 	 */
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
+
+		// Concentration boosts the next attack: spend it on the energetic attack, which also punishes an opponent that has just rested
+		if (shouldUseConcentratedEnergeticAttack(me) || shouldPunishRest(me, opponent)) {
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK)!;
+		}
+
+		if (shouldConcentrateBeforeEnergeticAttack(me)) {
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CONCENTRATION)!;
+		}
 
 		if (this.shouldUseConcentration(me, fightView, opponent)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CONCENTRATION)!;

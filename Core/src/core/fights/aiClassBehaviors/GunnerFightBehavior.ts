@@ -12,6 +12,9 @@ import { shouldUseSabotage } from "./SlingerFightBehavior";
 import { Fighter } from "../fighter/Fighter";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 
+// Number of canons fired in a row by a chained canon sequence (see shouldContinueCanonSequence)
+const MAX_CHAINED_CANON_ATTACKS = 3;
+
 /**
  * Determines if the AI should use intense attack based on speed comparison and remaining health
  * @param opponent - The opponent fighter in the current battle
@@ -19,7 +22,7 @@ import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
  * @param isGoingForChainedCanonAttack - Whether currently using the chained canon attack strategy
  * @returns True if intense attack should be used, false otherwise
  */
-function shouldUseIntenseAttack(
+export function shouldUseIntenseAttack(
 	opponent: Fighter,
 	me: AiPlayerFighter,
 	isGoingForChainedCanonAttack: boolean
@@ -36,7 +39,7 @@ function shouldUseIntenseAttack(
  * @param opponent - The opponent fighter in the current battle
  * @returns The selected finishing attack
  */
-function chooseFinishingMove(me: AiPlayerFighter, opponent: RealPlayerFighter): FightAction {
+export function chooseFinishingMove(me: AiPlayerFighter, opponent: RealPlayerFighter): FightAction {
 	if (me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)
 		&& me.getSpeed() > opponent.getSpeed()) {
 		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)!;
@@ -53,6 +56,11 @@ class GunnerFightBehavior implements ClassBehavior {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter;
 		const turn = fightView.fightController.turn;
 
+		// The canon sequence is over after three canons, without this the boomerang and the intense attack stay locked
+		if (this.isGoingForChainedCanonAttack && this.canonAttackUsed >= MAX_CHAINED_CANON_ATTACKS) {
+			this.isGoingForChainedCanonAttack = false;
+		}
+
 		// Use canon attack again if used last turn to get 1.5x damage
 		if (shouldContinueCanonSequence(me, this.isGoingForChainedCanonAttack, this.canonAttackUsed, turn)) {
 			this.canonAttackUsed++;
@@ -60,10 +68,7 @@ class GunnerFightBehavior implements ClassBehavior {
 		}
 
 		// Clear the chained canon attack flag if not enough breath to continue
-		if (
-			this.isGoingForChainedCanonAttack
-			&& me.getBreath() < FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)
-		) {
+		if (me.getBreath() < FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)) {
 			this.isGoingForChainedCanonAttack = false;
 		}
 
@@ -84,6 +89,15 @@ class GunnerFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)!;
 		}
 
+		return this.chooseRegularAttack(me, opponent);
+	}
+
+	/**
+	 * Attack outside of the boomerang and canon plans
+	 * @param me - The AI fighter making the action decision
+	 * @param opponent - The opponent fighter in the current battle
+	 */
+	private chooseRegularAttack(me: AiPlayerFighter, opponent: RealPlayerFighter): FightAction {
 		// If the opponent has higher speed or close to it, and we have enough breath, use intense attack
 		if (shouldUseIntenseAttack(opponent, me, this.isGoingForChainedCanonAttack)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)!;

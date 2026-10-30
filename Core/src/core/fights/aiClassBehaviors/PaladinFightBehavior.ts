@@ -5,6 +5,12 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import {
+	canPlayShieldAttack, SHIELD_ATTACK_CHANCES
+} from "./ShieldAttackPacing";
+import {
+	hasBreathToSpare, MAX_GOD_MOVES_PER_FIGHT, shouldUseRamAttack
+} from "./PaladinTactics";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { getUsedGodMoves } from "../FightController";
@@ -25,7 +31,6 @@ class PaladinFightBehavior implements ClassBehavior {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
 		const usedGodMoves = getUsedGodMoves(me, opponent);
 		const usedUltimateAttacks = me.fightActionsHistory.filter(action => action.id === FightConstants.FIGHT_ACTIONS.PLAYER.ULTIMATE_ATTACK).length;
-		const divineAndUltimateAttacksUsed = usedGodMoves >= 2 && usedUltimateAttacks > 0;
 
 		if (this.shouldUseUltimateAttack(me, usedUltimateAttacks)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK)!;
@@ -35,11 +40,11 @@ class PaladinFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK)!;
 		}
 
-		if (this.shouldUseShieldAttack(me, opponent, divineAndUltimateAttacksUsed)) {
+		if (this.shouldUseShieldAttack(me, opponent, usedUltimateAttacks)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)!;
 		}
 
-		if (this.shouldUseRamAttack(me, opponent, divineAndUltimateAttacksUsed)) {
+		if (shouldUseRamAttack(me, opponent, usedUltimateAttacks)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK)!;
 		}
 
@@ -70,7 +75,7 @@ class PaladinFightBehavior implements ClassBehavior {
 		usedUltimateAttacks: number
 	): boolean {
 		const divineAttackBreathCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK);
-		if (me.getBreath() < divineAttackBreathCost || usedGodMoves >= 2) {
+		if (me.getBreath() < divineAttackBreathCost || usedGodMoves >= MAX_GOD_MOVES_PER_FIGHT) {
 			return false;
 		}
 
@@ -115,65 +120,24 @@ class PaladinFightBehavior implements ClassBehavior {
 	}
 
 	/**
-	 * Determines whether the SHIELD_ATTACK should be used to block opponent's two-turn attacks.
+	 * Determines whether the SHIELD_ATTACK should be used.
 	 *
-	 * Uses a calculation based on the opponent's breath and random chance.
+	 * The shield attack scales on the paladin's high defense and weakens the opponent, which can only happen
+	 * when the opponent has no alteration yet (a fighter holds a single alteration at a time), once per fight.
+	 * It is paid with spare breath only, so that it never delays the ultimate or the divine attacks.
 	 *
 	 * @param me - The AI fighter.
 	 * @param opponent - The opponent fighter.
-	 * @param divineAndUltimateAttacksUsed - Indicator if both divine and ultimate attacks have been used.
+	 * @param usedUltimateAttacks - The number of ultimate attacks used.
 	 * @returns True if SHIELD_ATTACK should be used; otherwise, false.
 	 */
 	private shouldUseShieldAttack(
 		me: AiPlayerFighter,
 		opponent: RealPlayerFighter | AiPlayerFighter,
-		divineAndUltimateAttacksUsed: boolean
+		usedUltimateAttacks: number
 	): boolean {
-		const breathRange = Math.round(opponent.getBreath() / opponent.getMaxBreath() * 3);
-		return (
-			!opponent.hasFightAlteration()
-			&& (me.getBreath() > 18 || divineAndUltimateAttacksUsed)
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
-			&& (
-				opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING && (
-					opponent.player.class === ClassConstants.CLASSES_ID.KNIGHT
-					|| opponent.player.class === ClassConstants.CLASSES_ID.VALIANT_KNIGHT
-					|| opponent.player.class === ClassConstants.CLASSES_ID.HORSE_RIDER
-					|| opponent.player.class === ClassConstants.CLASSES_ID.PIKEMAN
-				)
-				|| opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
-				|| opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK
-				|| opponent.getDefense() > me.getDefense() * 0.9 && RandomUtils.crowniclesRandom.bool([
-					0.05,
-					0.2,
-					0.8
-				][breathRange])
-			)
-		);
-	}
-
-	/**
-	 * Determines whether the RAM_ATTACK should be used to cancel opponent's two-turn attack (except CHARGE_CHARGING_ATTACK).
-	 *
-	 * @param me - The AI fighter.
-	 * @param opponent - The opponent fighter.
-	 * @param divineAndUltimateAttacksUsed - Indicator if both divine and ultimate attacks have been used.
-	 * @returns True if RAM_ATTACK should be used; otherwise, false.
-	 */
-	private shouldUseRamAttack(
-		me: AiPlayerFighter,
-		opponent: RealPlayerFighter | AiPlayerFighter,
-		divineAndUltimateAttacksUsed: boolean
-	): boolean {
-		const ramAttackBreathCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK);
-		return (
-			(!opponent.hasFightAlteration() || opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.STUNNED)
-			&& (me.getBreath() > 17 || divineAndUltimateAttacksUsed
-				|| opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK && opponent.getBreath() >= 2)
-			&& me.getBreath() >= ramAttackBreathCost
-			&& me.getEnergy() >= me.getMaxEnergy() * 0.15
-			&& opponent.getLastFightActionUsed()?.id !== FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
-		);
+		return hasBreathToSpare(me, opponent, usedUltimateAttacks, FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
+			&& canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.ONCE);
 	}
 }
 

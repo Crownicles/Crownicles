@@ -28,6 +28,7 @@ import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights
 import { BuggedFightPacket } from "../../../../Lib/src/packets/fights/BuggedFightPacket";
 import { PetAssistanceResult } from "../../../../Lib/src/types/PetAssistanceResult";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
+import { getDarkAttackPowerMultiplier } from "./actions/DarkAttackWear";
 
 export class FightView {
 	public context: PacketContext;
@@ -45,6 +46,20 @@ export class FightView {
 	 */
 	private static getActionsBreathCosts(fighter: PlayerFighter | MonsterFighter | AiPlayerFighter): Array<[string, number]> {
 		return Array.from(fighter.availableFightActions, ([id, action]): [string, number] => [id, action.breath]);
+	}
+
+	/**
+	 * Button of an action in the action menu, with its current damage multiplier when it changes during the fight
+	 * @param fighter
+	 * @param actionId
+	 */
+	private static getActionChoice(fighter: PlayerFighter, actionId: string): ReactionCollectorFightChooseActionReaction {
+		return actionId === FightConstants.FIGHT_ACTIONS.PLAYER.DARK_ATTACK
+			? {
+				id: actionId,
+				powerMultiplier: getDarkAttackPowerMultiplier(fighter)
+			}
+			: { id: actionId };
 	}
 
 	/**
@@ -261,7 +276,7 @@ export class FightView {
 		const collector = new ReactionCollectorFightChooseAction(
 			this.fightController.id,
 			playerFighter.player.keycloakId,
-			[...actions.keys()]
+			[...actions.keys()].map(actionId => FightView.getActionChoice(playerFighter, actionId))
 		);
 
 		const endCallback: EndCallback = async (collector, response) => {

@@ -27,6 +27,9 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 
 export default use;
 
+/**
+ * Damage of each return of the boomerang
+ */
 function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 45, averageDamage: 90, maxDamage: 150

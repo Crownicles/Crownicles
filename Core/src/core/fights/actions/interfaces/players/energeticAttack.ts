@@ -11,6 +11,8 @@ import { MonsterFighter } from "../../../fighter/MonsterFighter";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 
 const use: FightActionFunc = (sender, receiver, fightAction) => {
+	const targetHasJustRested = receiver.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING;
+
 	// Check the number of energetic attacks the sender already used
 	const timeAttackWasUsed = sender.fightActionsHistory.filter(action => action.id === FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK).length;
 
@@ -49,6 +51,11 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		operator: FightStatModifierOperation.ADDITION,
 		value: cappedRecoveredEnergy
 	}, sender, fightAction);
+
+	// The bonus against a rested opponent only adds damage, the heal stays computed on the base damage
+	if (targetHasJustRested) {
+		result.damages = Math.round(result.damages! * FightConstants.ENERGETIC_ATTACK_RESTED_TARGET_DAMAGE_MULTIPLIER);
+	}
 
 	return result;
 };

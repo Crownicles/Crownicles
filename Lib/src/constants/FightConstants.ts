@@ -306,6 +306,29 @@ export abstract class FightConstants {
 		FightConstants.FIGHT_ACTIONS.MONSTER.HAMMER_QUAKE_ATTACK
 	];
 
+	/*
+	 * The dark attack wears down with each use: its damage multiplier drops by one step per use, down to a floor,
+	 * and gets one step back every time its caster plays this many actions in a row without it
+	 */
+	static readonly DARK_ATTACK_WEAR = {
+		BASE_MULTIPLIER: 1.7,
+		MULTIPLIER_LOSS_PER_USE: 0.3,
+		MIN_MULTIPLIER: 0.3,
+		RECOVERY_IDLE_ACTIONS: 2
+	};
+
+	// A cursed fighter only receives this share of its healing
+	static readonly CURSED_HEALING_MULTIPLIER = 0.7;
+
+	// The energetic attack punishes an opponent that has just rested
+	static readonly ENERGETIC_ATTACK_RESTED_TARGET_DAMAGE_MULTIPLIER = 1.25;
+
+	// Damage multiplier of the attack following a concentration
+	static readonly CONCENTRATED_DAMAGE_MULTIPLIER = 1.55;
+
+	// The counter attack hits harder than the action it copies: the tank punishes the opponents that commit to a big attack
+	static readonly COUNTER_ATTACK_DAMAGE_MULTIPLIER = 1.4;
+
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
 		MAX_ELO_GAP: 400,

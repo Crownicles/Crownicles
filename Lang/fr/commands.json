@@ -456,6 +456,9 @@
       "BLESSING": {
         "description": "Affiche l'état de la bénédiction globale : la cagnotte que les aventuriers alimentent en rencontrant l'Oracle lors de leurs voyages, ou la bénédiction active et le temps qu'il lui reste. Cette commande est accessible après avoir rencontré l'Oracle au moins une fois."
       },
+      "DEFENSE": {
+        "description": "Permet de choisir comment votre personnage se défend lorsqu'un autre joueur l'attaque, ou de laisser un style différent être tiré au hasard à chaque combat. Seules certaines classes disposent de plusieurs styles."
+      },
       "CLASSES": {
         "description": "Permet de changer de classe. Plus d'informations sur les classes sont disponibles sur le guide du joueur : https://guide.crownicles.com"
       },
@@ -2498,7 +2501,8 @@
     },
     "fightActionChoose": {
       "turnIndicationTitle": "C'est au tour de {{pseudo}} de jouer {emote:fightCommand.crossedSwords}",
-      "turnIndicationDescription": "Choisissez une action"
+      "turnIndicationDescription": "Choisissez une action",
+      "powerMultiplier": "×{{multiplier, number}}"
     },
     "actions": {
       "intro": "{{emote}} | **{{fighter}}** ",
@@ -2706,6 +2710,81 @@
     "sellFooter": "Pour plus d'informations à propos des ventes de familiers, utilisez la commande help petsell.",
     "successTitle": "{{pseudo}}, transaction réussie !",
     "successDescription": "{{pet}} vous suit désormais. Occupez-vous en bien !\n\n{emote:unitValues.money} **{{treasury, number}}** ont été ajoutés à la trésorerie de la guilde **{{guildName}}**."
+  },
+  "defense": {
+    "title": "Style de défense de {{pseudo}}",
+    "intro": "Choisissez comment votre {{className}} se défend lorsqu'un autre joueur l'attaque. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.",
+    "choiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}}",
+    "currentChoiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}} · style actuel",
+    "chooseStyle": "Choisir un style de défense",
+    "cancel": "Annuler",
+    "successTitle": "Style de défense de {{pseudo}}",
+    "success": "Votre personnage se défendra désormais avec le style {emote:defensePersonalities.{{personality}}} **{{name}}**.",
+    "successRandom": "Votre personnage changera de style de défense à chaque combat {emote:defensePersonalities.random}.",
+    "noChoice": "Votre classe ({{className}}) n'a qu'une seule manière de se défendre.",
+    "canceled": "Votre style de défense n'a pas été modifié.",
+    "personalities": {
+      "random": {
+        "name": "Imprévisible",
+        "description": "Un style différent est tiré au hasard à chaque combat."
+      },
+      "knightStrategist": {
+        "name": "Stratège",
+        "description": "Enchaîne repos et attaques lourdes, et lance sa bénédiction en premier face à un adversaire capable d'en faire autant."
+      },
+      "knightEnduring": {
+        "name": "Endurant",
+        "description": "Se repose dès qu'il est blessé et garde sa bénédiction pour la fin du combat, lorsqu'elle est la plus puissante."
+      },
+      "knightFiery": {
+        "name": "Fougueux",
+        "description": "Lance sa bénédiction dès le début du combat et ne se repose que lorsqu'il est sérieusement blessé."
+      },
+      "tankBulwark": {
+        "name": "Rempart",
+        "description": "Renforce sa défense et affaiblit l'adversaire avec son bouclier."
+      },
+      "tankRiposte": {
+        "name": "Riposteur",
+        "description": "Laisse l'adversaire s'engager pour lui renvoyer ses attaques les plus coûteuses."
+      },
+      "paladinCrusader": {
+        "name": "Croisé",
+        "description": "Garde son souffle pour son attaque ultime et ses attaques divines, qu'il réserve à la fin du combat, et dépense le surplus avec son bouclier et son bélier."
+      },
+      "paladinJusticar": {
+        "name": "Justicier",
+        "description": "Frappe avec son attaque divine dès qu'elle a peu de chances d'échouer."
+      },
+      "gunnerStrategist": {
+        "name": "Stratège",
+        "description": "Alterne attaques rapides, boomerangs et salves de canon selon l'adversaire."
+      },
+      "gunnerBombardier": {
+        "name": "Bombardier",
+        "description": "Enchaîne les tirs de canon dès que son souffle est au maximum."
+      },
+      "veteranStrategist": {
+        "name": "Stratège",
+        "description": "Se concentre avant de déclencher ses attaques énergiques et répond par une attaque chargée quand l'adversaire prépare un grand coup."
+      },
+      "veteranCharger": {
+        "name": "Fonceur",
+        "description": "Se concentre dès qu'il le peut et déclenche aussitôt son attaque énergique, sans jamais charger."
+      },
+      "mageOccultist": {
+        "name": "Occultiste",
+        "description": "Maudit ou empoisonne son adversaire, puis l'achève avec ses attaques sombres."
+      },
+      "magePyromancer": {
+        "name": "Pyromancien",
+        "description": "Maudit son adversaire dès son premier tour, en profite avec ses attaques sombres tant que la malédiction dure, puis l'embrase sans relâche."
+      },
+      "mageWarlock": {
+        "name": "Envoûteur",
+        "description": "Maudit systématiquement son adversaire, ce qui l'empêche de bien se soigner, puis en profite avec ses attaques sombres."
+      }
+    }
   },
   "classes": {
     "description": {

@@ -1,7 +1,5 @@
 import { TimeConstants } from "./TimeConstants";
-import {
-	asSeconds, Second
-} from "../types/TimeTypes";
+import { Second } from "../types/TimeTypes";
 
 export abstract class ClassConstants {
 	static readonly CLASSES_ID = {
@@ -42,12 +40,16 @@ export abstract class ClassConstants {
 
 	static readonly MAX_CLASS_GROUP = 4;
 
+	/*
+	 * Delay between two class changes, per class group. A week lets players try another class while blocking a daily
+	 * switch between an attack class played during the day and a defense class kept for the night
+	 */
 	static readonly TIME_BEFORE_CHANGE_CLASS: readonly Second[] = [
 		TimeConstants.S_TIME.WEEK,
 		TimeConstants.S_TIME.WEEK,
-		asSeconds(2 * TimeConstants.S_TIME.WEEK),
-		asSeconds(3 * TimeConstants.S_TIME.WEEK),
-		asSeconds(3 * TimeConstants.S_TIME.WEEK)
+		TimeConstants.S_TIME.WEEK,
+		TimeConstants.S_TIME.WEEK,
+		TimeConstants.S_TIME.WEEK
 	];
 
 	static readonly CLASS_KIND = {

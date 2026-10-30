@@ -10,6 +10,7 @@ import { getUsedGodMoves } from "../FightController";
 import { simpleOrQuickAttack } from "./EsquireFightBehavior";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { shouldWinGodMoveRace } from "./KnightGodMoves";
 
 class KnightFightBehavior implements ClassBehavior {
 	private blessRoundChosen: number | null = null;
@@ -69,6 +70,15 @@ class KnightFightBehavior implements ClassBehavior {
 			this.restCount = 0;
 			this.heavyAttackCount = 0;
 			this.blessUsed = false;
+		}
+
+		/*
+		 * GOD MOVE RACE: the benediction and the divine attack share a single quota between both fighters,
+		 * so against an opponent able to cast one, the first fighter to cast it takes it from the other
+		 */
+		if (!this.blessUsed && shouldWinGodMoveRace(me, opponent)) {
+			this.blessUsed = true;
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION)!;
 		}
 
 		/*

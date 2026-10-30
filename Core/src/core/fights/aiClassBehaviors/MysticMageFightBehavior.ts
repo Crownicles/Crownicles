@@ -1,109 +1,107 @@
 import { ClassBehavior } from "../AiBehaviorController";
 import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
+import { Fighter } from "../fighter/Fighter";
 import { FightView } from "../FightView";
 import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
+import { getDarkAttackPowerMultiplier } from "../actions/DarkAttackWear";
 
+const ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
+
+// Below this multiplier, the dark attack is too worn: the mage turns to its other attacks until it recovers
+const WORN_OUT_DARK_ATTACK_MULTIPLIER = 0.8;
+
+// The dark attack is cast from this multiplier only: fresh, at most once more, then it rests
+const MIN_DARK_ATTACK_MULTIPLIER = 1.3;
+
+// The curse heals the mage only while the opponent has more than this share of its energy
+const CURSE_HEAL_ENERGY_RATIO = 0.4;
+
+// Actions an opponent heals itself with, which the curse reduces
+const HEALING_ACTIONS = [ACTIONS.RESTING, ACTIONS.ENERGETIC_ATTACK];
+
+// The opening poison lands as a critical hit during the first turns of the fight
+const POISON_OPENING_LAST_TURN = 2;
+
+export function getAction(id: string): FightAction {
+	return FightActionDataController.instance.getById(id)!;
+}
+
+export function canAfford(me: AiPlayerFighter, actionId: string): boolean {
+	return me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
+}
+
+/**
+ * Move against an opponent that already suffers an alteration: the fresh dark attack cashes it in, the mage saving
+ * its breath with its cheap attack until it can afford it. Null once the dark attack is worn out, or too worn to be
+ * worth its breath
+ * @param me
+ */
+export function chooseAgainstAilingOpponent(me: AiPlayerFighter): FightAction | null {
+	const darkAttackMultiplier = getDarkAttackPowerMultiplier(me);
+	if (darkAttackMultiplier < WORN_OUT_DARK_ATTACK_MULTIPLIER) {
+		return null;
+	}
+	if (!canAfford(me, ACTIONS.DARK_ATTACK)) {
+		return getAction(ACTIONS.BREATH_TAKING_ATTACK);
+	}
+	return darkAttackMultiplier >= MIN_DARK_ATTACK_MULTIPLIER ? getAction(ACTIONS.DARK_ATTACK) : null;
+}
+
+/**
+ * Ailment to set up on a clean opponent: the curse first against the classes that heal, the poison at the opening,
+ * the curse while it still heals the mage. Null when none applies
+ */
+function chooseSetup(me: AiPlayerFighter, opponent: Fighter, turn: number): FightAction | null {
+	// The curse cuts the healing of the classes that rely on it
+	if (HEALING_ACTIONS.some(actionId => opponent.availableFightActions.has(actionId)) && canAfford(me, ACTIONS.CURSED_ATTACK)) {
+		return getAction(ACTIONS.CURSED_ATTACK);
+	}
+	if (turn <= POISON_OPENING_LAST_TURN && canAfford(me, ACTIONS.POISONOUS_ATTACK)) {
+		return getAction(ACTIONS.POISONOUS_ATTACK);
+	}
+	if (opponent.getEnergy() > opponent.getMaxEnergy() * CURSE_HEAL_ENERGY_RATIO && canAfford(me, ACTIONS.CURSED_ATTACK)) {
+		return getAction(ACTIONS.CURSED_ATTACK);
+	}
+	return null;
+}
+
+/**
+ * Strongest affordable attack while the dark attack recovers: the fire attack, else the poison, else the cheap breath-taking attack
+ * @param me
+ */
+export function chooseDamagingAttack(me: AiPlayerFighter): FightAction {
+	for (const actionId of [ACTIONS.FIRE_ATTACK, ACTIONS.POISONOUS_ATTACK]) {
+		if (canAfford(me, actionId)) {
+			return getAction(actionId);
+		}
+	}
+	return getAction(ACTIONS.BREATH_TAKING_ATTACK);
+}
+
+/**
+ * Occultist mage: sets up one of its ailments (the curse first against an opponent that heals), cashes it in with
+ * the dark attack while the attack is fresh, then finishes with its other attacks while the dark attack recovers
+ */
 class MysticMageFightBehavior implements ClassBehavior {
-	private cursedAttackUsed = false;
-
-	private cursedAttackTurn = RandomUtils.crowniclesRandom.integer(7, 15);
-
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter();
-		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 
 		// Early return if no opponent (should not happen in normal gameplay)
 		if (!opponent) {
-			return FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK)!;
+			return getAction(ACTIONS.BREATH_TAKING_ATTACK);
 		}
 
-		/*
-		 * Dark attack if:
-		 * - opponent is charging a two-turn attack without alterations
-		 * - player is dying soon
-		 */
-		const lastOpponentActionId = opponent.getLastFightActionUsed()?.id;
-		if (
-			me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DARK_ATTACK)
-			&& (
-
-				// Case 1: Cancel opponent's two-turn attack
-				lastOpponentActionId !== undefined && [
-					FightConstants.FIGHT_ACTIONS.PLAYER.RESTING,
-					FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK,
-					FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK,
-					FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
-				].includes(lastOpponentActionId)
-				&& !opponent.hasFightAlteration()
-
-				// Case 2: Player is dying
-				|| me.getEnergy() < 150 && opponent.getEnergy() > 300
-			)
-		) {
-			return FightActionDataController.instance.getById(actions.DARK_ATTACK)!;
+		const planned = opponent.hasFightAlteration()
+			? chooseAgainstAilingOpponent(me)
+			: chooseSetup(me, opponent, fightView.fightController.turn);
+		if (planned) {
+			return planned;
 		}
 
-		/*
-		 * Fire attack if enough breath and no alteration
-		 * After turn 13, skip if cursed attack has not been used
-		 */
-		if (
-			(!opponent.hasFightAlteration() || opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.BURNED)
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.FIRE_ATTACK)
-			&& fightView.fightController.turn > 1
-			&& (fightView.fightController.turn <= this.cursedAttackTurn
-				|| this.cursedAttackUsed)
-		) {
-			return FightActionDataController.instance.getById(actions.FIRE_ATTACK)!;
-		}
-
-		// Poison attack if opponent < 65 HP or if we are in the first turn
-		if (
-			opponent.getEnergy() < 65
-			&& me.getBreath() < FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.POISONOUS_ATTACK) + 3
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.POISONOUS_ATTACK)
-			|| fightView.fightController.turn <= 1
-			&& !opponent.hasFightAlteration()
-		) {
-			return FightActionDataController.instance.getById(actions.POISONOUS_ATTACK)!;
-		}
-
-		if (
-			!opponent.hasFightAlteration()
-			&& (fightView.fightController.turn === 2
-				|| (
-					me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CURSED_ATTACK)
-					&& (opponent.getEnergy() < 120
-						|| (opponent.getEnergy() > 500
-							&& (!this.cursedAttackUsed
-								|| RandomUtils.crowniclesRandom.bool(0.2))
-							&& fightView.fightController.turn > this.cursedAttackTurn)
-					)
-				)
-			)
-		) {
-			this.cursedAttackUsed = true;
-			return FightActionDataController.instance.getById(actions.CURSED_ATTACK)!;
-		}
-
-		// If breath > 10, always use dark attack
-		if (me.getBreath() > 10 && opponent.hasFightAlteration()) {
-			return FightActionDataController.instance.getById(actions.DARK_ATTACK)!;
-		}
-
-		// If enough breath for dark attack, random choice between dark and breathtaking
-		if (me.getBreath() >= 8) {
-			return RandomUtils.crowniclesRandom.bool(0.3)
-				? FightActionDataController.instance.getById(actions.DARK_ATTACK)!
-				: FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK)!;
-		}
-
-		// Default to breathtaking attack
-		return FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK)!;
+		return chooseDamagingAttack(me);
 	}
 }
 

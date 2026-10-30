@@ -3,6 +3,7 @@ import { FightAlterationState } from "../../../../../../../Lib/src/types/FightAl
 import { FightActionController } from "../../FightActionController";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
+import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 import {
 	defaultFightAlterationResult, defaultHealFightAlterationResult
 } from "../../../FightController";
@@ -18,7 +19,7 @@ const use: FightAlterationFunc = (affected, fightAlteration) => {
 			stat: FightStatBuffed.DAMAGE_BOOST,
 			operator: FightStatModifierOperation.MULTIPLIER,
 			duration: 1,
-			value: 1.6
+			value: FightConstants.CONCENTRATED_DAMAGE_MULTIPLIER
 		}, affected, fightAlteration);
 		result.state = FightAlterationState.NEW;
 	}

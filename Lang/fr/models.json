@@ -380,7 +380,7 @@
       "stop": "n'est plus confus."
     },
     "counterAttack": {
-      "description": "Réplique avec la même action que celle que vient de jouer votre adversaire. Ne fonctionne pas sur certaines attaques, ni si l'adversaire n'a pas attaqué.",
+      "description": "Réplique avec la même action que celle que vient de jouer votre adversaire, en infligeant 40 % de dégâts en plus. Ne fonctionne pas sur certaines attaques, ni si l'adversaire n'a pas attaqué.",
       "name_one": "Attaque riposte",
       "customMessage": "ne parvient pas à riposter.",
       "name_other": "Attaques riposte"
@@ -411,7 +411,7 @@
       "stop": "subit les conséquences du maléfice."
     },
     "cursedAttack": {
-      "description": "Maudit l'adversaire, peut être en subira-t-il les conséquences dans le futur... Soigne le lanceur si l'adversaire a plus de 40% de son énergie.",
+      "description": "Maudit l'adversaire, peut être en subira-t-il les conséquences dans le futur... Tant qu'il est maudit, l'adversaire récupère moins d'énergie grâce aux soins. Soigne le lanceur si l'adversaire a plus de 40% de son énergie.",
       "name_one": "Attaque maudite",
       "name_other": "Attaques maudites"
     },
@@ -431,7 +431,7 @@
       "name_other": "Malédictions de la mer"
     },
     "darkAttack": {
-      "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Aveugle l'adversaire ou rend au lanceur une partie de son souffle perdu. L'altération \"aveuglé\" dure au moins 1 tour et rend l'adversaire incapable d'attaquer parfois, tout en réduisant sa défense et sa vitesse.",
+      "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Très puissante à sa première utilisation, elle s'affaiblit à chaque nouvelle utilisation réussie et reprend des forces quand le lanceur s'en passe pendant quelques actions. Sa puissance actuelle est affichée sur son bouton.",
       "name_one": "Attaque sombre",
       "name_other": "Attaques sombres"
     },
@@ -473,7 +473,7 @@
       "afraid": "est aidé par **{{petNickname}}** qui, bien que se rappelant parfaitement des événements récents, tremble trop de peur pour pouvoir restituer le souffle perdu."
     },
     "energeticAttack": {
-      "description": "Une partie des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse. Le soin est réduit contre les monstres.",
+      "description": "Une partie des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse. Inflige davantage de dégâts à un adversaire qui vient de se reposer. Le soin est réduit contre les monstres.",
       "name_one": "Attaque énergique",
       "name_other": "Attaques énergiques"
     },
