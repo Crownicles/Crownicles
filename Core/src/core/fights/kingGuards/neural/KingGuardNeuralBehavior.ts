@@ -15,13 +15,28 @@ import {
 } from "./KingGuardNeuralFeatures";
 
 /**
+ * Assistance and stats at the fighter's level of a fighter's pet (null without a pet)
+ * @param fighter
+ */
+function toNeuralPetView(fighter: Fighter): NeuralFighterView["pet"] {
+	const petTypeId = fighter instanceof PlayerBaseFighter ? fighter.pet?.typeId : undefined;
+	if (petTypeId === undefined) {
+		return null;
+	}
+	const petData = PetDataController.instance.getById(petTypeId);
+	return {
+		assistanceId: getAiPetBehavior(petTypeId)?.id ?? null,
+		attack: petData ? FightUtils.calculatePetStatFromForce(petData.force, fighter.level) : 0,
+		speed: petData ? FightUtils.calculatePetStatFromSpeed(petData.speed, fighter.level) : 0
+	};
+}
+
+/**
  * What the network reads from a fighter of a real fight
+ * @param fighter
  */
 export function toNeuralFighterView(fighter: Fighter): NeuralFighterView {
 	const base = fighter.getBaseStats();
-	const playerFighter = fighter instanceof PlayerBaseFighter ? fighter : null;
-	const petTypeId = playerFighter?.pet?.typeId;
-	const petData = petTypeId !== undefined ? PetDataController.instance.getById(petTypeId) : undefined;
 	return {
 		energy: fighter.getEnergy(),
 		maxEnergy: fighter.getMaxEnergy(),
@@ -39,19 +54,14 @@ export function toNeuralFighterView(fighter: Fighter): NeuralFighterView {
 		historyIds: fighter.fightActionsHistory.map(action => action.id),
 		hasNextAction: Boolean(fighter.nextFightAction),
 		level: fighter.level,
-		classId: playerFighter?.player.class ?? -1,
-		pet: petTypeId === undefined
-			? null
-			: {
-				assistanceId: getAiPetBehavior(petTypeId)?.id ?? null,
-				attack: petData ? FightUtils.calculatePetStatFromForce(petData.force, fighter.level) : 0,
-				speed: petData ? FightUtils.calculatePetStatFromSpeed(petData.speed, fighter.level) : 0
-			}
+		classId: fighter instanceof PlayerBaseFighter ? fighter.player.class : -1,
+		pet: toNeuralPetView(fighter)
 	};
 }
 
 /**
  * Moves a fighter can play this turn: the ones it has enough breath for, or all of them when it has none
+ * @param fighter
  */
 function getPlayableActions(fighter: Fighter): FightAction[] {
 	const actions = [...fighter.availableFightActions.values()];
@@ -71,6 +81,11 @@ export class KingGuardNeuralBehavior implements ClassBehavior {
 		this.indexes = buildNeuralIndexes(model.vocab);
 	}
 
+	/**
+	 * The move of the guard: chosen by the network, or by the scripted behavior if the network cannot decide
+	 * @param fighter
+	 * @param fightView
+	 */
 	public chooseAction(fighter: AiPlayerFighter, fightView: FightView): FightAction {
 		try {
 			const action = this.chooseWithNetwork(fighter, fightView);
@@ -87,6 +102,11 @@ export class KingGuardNeuralBehavior implements ClassBehavior {
 		return this.fallback.chooseAction(fighter, fightView);
 	}
 
+	/**
+	 * The best rated playable move, drawn among the near-ties; null when the network cannot rate any
+	 * @param fighter
+	 * @param fightView
+	 */
 	private chooseWithNetwork(fighter: AiPlayerFighter, fightView: FightView): FightAction | null {
 		const candidates = getPlayableActions(fighter);
 		if (candidates.length === 1) {
@@ -106,12 +126,16 @@ export class KingGuardNeuralBehavior implements ClassBehavior {
 			role: "guard",
 			style: "strategist"
 		}));
-		const rated = candidates
-			.map(action => ({
-				action,
-				score: this.indexes.action.has(action.id) ? scores[this.indexes.action.get(action.id)!] : -Infinity
-			}))
-			.filter(entry => entry.score > -Infinity);
+		const rated = candidates.flatMap(action => {
+			const index = this.indexes.action.get(action.id);
+			return index === undefined
+				? []
+				: [
+					{
+						action, score: scores[index]
+					}
+				];
+		});
 		if (rated.length === 0) {
 			return null;
 		}
