@@ -16,6 +16,7 @@ let model: KingGuardNeuralModel | null | undefined;
 /**
  * Ids of the game the model does not know: a game update added an action, an alteration or a pet assistance
  * after the training, and the network would misread the fight
+ * @param candidate The model to check
  */
 export function getUnknownIdsOfModel(candidate: KingGuardNeuralModel): string[] {
 	const known = new Set([
@@ -31,6 +32,9 @@ export function getUnknownIdsOfModel(candidate: KingGuardNeuralModel): string[] 
 	return [...new Set(gameIds.filter(id => !known.has(id)))];
 }
 
+/**
+ * The model of the resources, or null when it is missing, unreadable or outdated
+ */
 function loadModel(): KingGuardNeuralModel | null {
 	const path = FightConstants.KING_GUARD.NEURAL_AI.MODEL_PATH;
 	if (!existsSync(path)) {
