@@ -104,7 +104,7 @@ export class ChestPlantHandler {
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX)) {
-			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+			await DiscordCollectorUtils.deferUpdate(componentInteraction);
 			const targetPage = parseInt(selectedValue.replace(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX, ""), 10);
 
 			if (Number.isNaN(targetPage) || targetPage < 0) {
@@ -125,11 +125,11 @@ export class ChestPlantHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		if (!ctx.homeData.chest?.plantStorage) {
-			await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+			await DiscordCollectorUtils.deferUpdate(componentInteraction);
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(componentInteraction);
 		this.registerPlantTabMenu(ctx, nestedMenus);
 		await nestedMenus.changeMenu(HomeMenuIds.CHEST_PLANT_TAB);
 	}
@@ -306,7 +306,7 @@ export class ChestPlantHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(componentInteraction);
 
 		const parts = params.selectedValue.replace(params.prefix, "").split("_");
 		const plantId = parseInt(parts[0], 10);

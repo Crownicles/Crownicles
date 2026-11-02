@@ -67,14 +67,15 @@ export abstract class MessagesUtils {
 	}
 
 	/**
-	 * User who made the button click Core is responding to, also known when the click could not be acknowledged.
-	 * It differs from the command author in the collectors other players can answer
+	 * User who made the click (button or selection) Core is responding to, also known when the click could not be
+	 * acknowledged. It differs from the command author in the collectors other players can answer
 	 */
 	static getClickUser(context: PacketContext): User | null {
-		const clickId = context.discord?.buttonInteraction;
+		const clickId = context.discord?.buttonInteraction ?? context.discord?.stringSelectMenuInteraction;
 		if (!clickId) {
 			return null;
 		}
-		return DiscordCache.getButtonInteraction(clickId)?.user ?? DiscordCache.getUnanswerableClickUser(clickId);
+		const answerableClick = DiscordCache.getButtonInteraction(clickId) ?? DiscordCache.getStringSelectMenuInteraction(clickId);
+		return answerableClick?.user ?? DiscordCache.getUnanswerableClickUser(clickId);
 	}
 }

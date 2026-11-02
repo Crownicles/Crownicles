@@ -129,7 +129,7 @@ export async function itemAcceptCollector(context: PacketContext, packet: Reacti
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(buttonInteraction);
 
 		DiscordCollectorUtils.sendReaction(
 			packet,

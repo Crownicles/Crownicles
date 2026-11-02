@@ -220,7 +220,7 @@ async function handleReimburse(ctx: FoodShopMenuContext, amount: number, nestedM
 
 function createMainCollector(ctx: FoodShopMenuContext): CityCollectorFactory {
 	return createCityCollector(ctx.interaction, ctx.collectorTime, async (customId, buttonInteraction, nestedMenus) => {
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 
 		if (customId === ReportCityMenuIds.BACK_TO_CITY) {
 			await nestedMenus.changeToMainMenu();
@@ -239,7 +239,7 @@ function createMainCollector(ctx: FoodShopMenuContext): CityCollectorFactory {
 
 function createQuantityCollector(ctx: FoodShopMenuContext): CityCollectorFactory {
 	return createCityCollector(ctx.interaction, ctx.collectorTime, async (customId, buttonInteraction, nestedMenus) => {
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 
 		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
@@ -264,7 +264,7 @@ function createQuantityCollector(ctx: FoodShopMenuContext): CityCollectorFactory
 
 function createReimburseCollector(ctx: FoodShopMenuContext): CityCollectorFactory {
 	return createCityCollector(ctx.interaction, ctx.collectorTime, async (customId, buttonInteraction, nestedMenus) => {
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 
 		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);

@@ -111,7 +111,7 @@ function setupButtonCollector(
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(buttonInteraction);
 
 		disableRows([row]);
 		await DiscordCollectorUtils.editWithoutBlocking(msg!, {

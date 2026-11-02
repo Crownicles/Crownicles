@@ -473,7 +473,7 @@ export async function createPetFreeSelectionCollector(
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(collectedInteraction, collectedInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(collectedInteraction);
 
 		// Disable components once the choice is acknowledged
 		disableRows(components);

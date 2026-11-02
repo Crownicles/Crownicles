@@ -130,7 +130,7 @@ export async function drinkAcceptCollector(context: PacketContext, packet: React
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(selectMenuInteraction, selectMenuInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(selectMenuInteraction);
 
 		const selectedOption = selectMenuInteraction.values[0];
 

@@ -116,6 +116,51 @@ function createClassChangeValidationCollector(validateMsg: Message, customIds: C
 }
 
 /**
+ * Forward the answer to the confirmation of the selected class to Core
+ * @param validateInteraction - Click on one of the confirmation buttons
+ * @param sending - Collector packet and context the reaction is sent with
+ * @param answer - Ids of the confirmation buttons and reaction of the selected class
+ */
+async function handleClassChangeValidationClick(
+	validateInteraction: ButtonInteraction,
+	sending: {
+		packet: ReactionCollectorChangeClassPacket; context: PacketContext;
+	},
+	answer: {
+		customIds: ClassChangeValidationIds; classReactionIndex: number;
+	}
+): Promise<void> {
+	const {
+		packet, context
+	} = sending;
+	if (validateInteraction.user.id !== context.discord?.user) {
+		await sendInteractionNotForYou(validateInteraction.user, validateInteraction, context.discord!.language);
+		return;
+	}
+
+	await DiscordCollectorUtils.deferReply(validateInteraction);
+
+	const reactionIndex = validateInteraction.customId === answer.customIds.refuse
+		? packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorRefuseReaction.name)
+		: answer.classReactionIndex;
+	DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, validateInteraction, reactionIndex);
+}
+
+/**
+ * Disable the confirmation buttons once the confirmation ended
+ */
+async function disableClassChangeValidation(validateMsg: Message, validateRow: ActionRowBuilder<ButtonBuilder>): Promise<void> {
+	const disabledRow = new ActionRowBuilder<ButtonBuilder>();
+	validateRow.components.forEach(component => {
+		disabledRow.addComponents(ButtonBuilder.from(component).setDisabled(true));
+	});
+
+	await validateMsg.edit({
+		components: [disabledRow]
+	});
+}
+
+/**
  * Display the confirmation of the selected class as the reply to the selection. A selection that expired before being
  * acknowledged can no longer be answered: the confirmation then replaces the selection menu, reply to the command
  */
@@ -241,7 +286,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 		}
 		selectionClaimed = true;
 
-		const selectionAcknowledged = await DiscordCollectorUtils.acknowledgeComponent(selectMenuInteraction, selectMenuInteraction.deferReply());
+		const selectionAcknowledged = await DiscordCollectorUtils.deferReply(selectMenuInteraction);
 
 		disableRows([mainEmbedRow]);
 
@@ -286,45 +331,13 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 		validateCollector = createClassChangeValidationCollector(validateMsg, validationIds);
 
-		validateCollector.on("collect", async (validateInteraction: ButtonInteraction) => {
-			if (validateInteraction.user.id !== context.discord?.user) {
-				await sendInteractionNotForYou(validateInteraction.user, validateInteraction, lng);
-				return;
-			}
-
-			await DiscordCollectorUtils.acknowledgeComponent(validateInteraction, validateInteraction.deferReply());
-
-			if (validateInteraction.customId === refuseCustomId) {
-				DiscordCollectorUtils.sendReaction(
-					packet,
-					context,
-					context.keycloakId!,
-					validateInteraction,
-					packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorRefuseReaction.name)
-				);
-				return;
-			}
-
-			DiscordCollectorUtils.sendReaction(
-				packet,
-				context,
-				context.keycloakId!,
-				validateInteraction,
-				classesReactions.findIndex(reaction => reaction.classId === classDetails.id)
-			);
-		});
-
-		validateCollector.on("end", async () => {
-			const disabledRow = new ActionRowBuilder<ButtonBuilder>();
-			validateRow.components.forEach(component => {
-				const button = ButtonBuilder.from(component).setDisabled(true);
-				disabledRow.addComponents(button);
-			});
-
-			await validateMsg.edit({
-				components: [disabledRow]
-			});
-		});
+		const classReactionIndex = classesReactions.findIndex(reaction => reaction.classId === classDetails.id);
+		validateCollector.on("collect", (validateInteraction: ButtonInteraction) => handleClassChangeValidationClick(validateInteraction, {
+			packet, context
+		}, {
+			customIds: validationIds, classReactionIndex
+		}));
+		validateCollector.on("end", () => disableClassChangeValidation(validateMsg, validateRow));
 
 		// The selection may have ended while the confirmation was being displayed: its end handler could not stop it then
 		if (selectCollector.ended) {

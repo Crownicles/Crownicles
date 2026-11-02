@@ -46,7 +46,7 @@ function createFeatureSubMenuCollector(
 			}
 
 			if (componentInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-				await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+				await DiscordCollectorUtils.deferUpdate(componentInteraction);
 				handleStayInCityInteraction(params.packet, params.context, componentInteraction);
 				return;
 			}
@@ -207,14 +207,14 @@ function createMainHomeMenuCollector(
 
 			// Handle leave home
 			if (selectedValue === HomeMenuIds.LEAVE_HOME) {
-				await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+				await DiscordCollectorUtils.deferUpdate(componentInteraction);
 				await nestedMenus.changeToMainMenu();
 				return;
 			}
 
 			// Handle stay in city
 			if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-				await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+				await DiscordCollectorUtils.deferUpdate(componentInteraction);
 				handleStayInCityInteraction(packet, context, componentInteraction);
 				return;
 			}

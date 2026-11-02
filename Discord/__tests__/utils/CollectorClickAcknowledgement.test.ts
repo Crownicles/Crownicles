@@ -172,7 +172,7 @@ describe("collector click acknowledgement (#5059)", () => {
 	it("answers Core's response through the command interaction when the click expired", async () => {
 		const click = buttonClick("accept", () => Promise.reject(unknownInteractionError()));
 
-		expect(await DiscordCollectorUtils.acknowledgeComponent(click, click.deferReply())).toBe(false);
+		expect(await DiscordCollectorUtils.deferReply(click)).toBe(false);
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 
 		expect(DiscordCache.cacheButtonInteraction).not.toHaveBeenCalled();
@@ -186,7 +186,7 @@ describe("collector click acknowledgement (#5059)", () => {
 	it("keeps answering Core's response through the click when it was acknowledged", async () => {
 		const click = buttonClick("accept", () => Promise.resolve());
 
-		expect(await DiscordCollectorUtils.acknowledgeComponent(click, click.deferReply())).toBe(true);
+		expect(await DiscordCollectorUtils.deferReply(click)).toBe(true);
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 
 		expect(DiscordCache.cacheButtonInteraction).toHaveBeenCalledWith(click);
@@ -197,7 +197,7 @@ describe("collector click acknowledgement (#5059)", () => {
 	it("answers Core's response through the command interaction when Discord could not be reached to acknowledge the click", async () => {
 		const click = buttonClick("accept", () => Promise.reject(new Error("The operation was aborted due to timeout")));
 
-		await DiscordCollectorUtils.acknowledgeComponent(click, click.deferReply());
+		await DiscordCollectorUtils.deferReply(click);
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 
 		expect(DiscordCache.cacheButtonInteraction).not.toHaveBeenCalled();
@@ -206,7 +206,7 @@ describe("collector click acknowledgement (#5059)", () => {
 	it("keeps answering through the click when a concurrent acknowledgement of the same click succeeded", async () => {
 		const click = buttonClick("accept", () => Promise.reject(new Error("Interaction has already been acknowledged.")));
 
-		await DiscordCollectorUtils.acknowledgeComponent(click, click.deferReply());
+		await DiscordCollectorUtils.deferReply(click);
 		Object.assign(click, { deferred: true });
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 

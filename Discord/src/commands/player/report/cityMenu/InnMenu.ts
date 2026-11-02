@@ -70,7 +70,7 @@ async function handleInnReactionRoute(params: InnHandlerParams & { route: InnRea
 	const {
 		route, selectedValue, buttonInteraction, context, packet
 	} = params;
-	await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+	await DiscordCollectorUtils.deferReply(buttonInteraction);
 	const id = selectedValue.replace(route.prefix, "");
 	const reactionIndex = packet.reactions.findIndex(
 		reaction => reaction.type === route.reactionType && route.idMatches(id, reaction)
@@ -86,13 +86,13 @@ async function handleInnCollectorInteraction(params: InnHandlerParams): Promise<
 	} = params;
 
 	if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 		await nestedMenus.changeToMainMenu();
 		return;
 	}
 
 	if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 		handleStayInCityInteraction(packet, context, buttonInteraction);
 		return;
 	}

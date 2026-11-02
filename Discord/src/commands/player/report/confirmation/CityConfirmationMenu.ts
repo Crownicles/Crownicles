@@ -79,10 +79,10 @@ function buildCityConfirmationContainer(config: CityConfirmationMenuConfig): Con
 
 async function ackConfirm(action: CityConfirmationAction, ack: CityConfirmationAck): Promise<void> {
 	if (ack === "update") {
-		await DiscordCollectorUtils.acknowledgeComponent(action.buttonInteraction, action.buttonInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(action.buttonInteraction);
 	}
 	else if (ack === "reply") {
-		await DiscordCollectorUtils.acknowledgeComponent(action.buttonInteraction, action.buttonInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(action.buttonInteraction);
 	}
 }
 
@@ -101,7 +101,7 @@ function createCityConfirmationCollector(
 		}
 
 		if (customId === ReportCityMenuIds.CITY_CONFIRMATION_CANCEL) {
-			await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
+			await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 			await nestedMenus.changeMenu(config.backMenuId);
 		}
 	});

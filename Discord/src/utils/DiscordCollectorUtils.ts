@@ -142,6 +142,22 @@ export abstract class DiscordCollectorUtils {
 	}
 
 	/**
+	 * Defer the update of the message of a clicked component without ever throwing (see acknowledgeComponent)
+	 * @returns whether the interaction was acknowledged
+	 */
+	static deferUpdate(interaction: MessageComponentInteraction): Promise<boolean> {
+		return DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferUpdate());
+	}
+
+	/**
+	 * Defer the reply to a clicked component without ever throwing (see acknowledgeComponent)
+	 * @returns whether the interaction was acknowledged
+	 */
+	static deferReply(interaction: MessageComponentInteraction): Promise<boolean> {
+		return DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferReply());
+	}
+
+	/**
 	 * Edit a message whose update is only cosmetic (e.g. disabling the buttons of a collector), so that a failure of the
 	 * edit cannot prevent the click from being forwarded to Core
 	 */
@@ -345,7 +361,7 @@ export abstract class DiscordCollectorUtils {
 			const getReactingPlayer = await KeycloakUtils.getKeycloakIdFromDiscordId(keycloakConfig, buttonInteraction.user.id, buttonInteraction.user.displayName);
 			if (!getReactingPlayer.isError && getReactingPlayer.payload.keycloakId) {
 				if (!options?.notDeferReply) {
-					await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+					await DiscordCollectorUtils.deferReply(buttonInteraction);
 				}
 				else {
 					disableRows([row]);
@@ -497,10 +513,7 @@ export abstract class DiscordCollectorUtils {
 				return;
 			}
 
-			await DiscordCollectorUtils.acknowledgeComponent(
-				buttonInteraction,
-				options.deferUpdate ? buttonInteraction.deferUpdate() : buttonInteraction.deferReply()
-			);
+			await (options.deferUpdate ? DiscordCollectorUtils.deferUpdate(buttonInteraction) : DiscordCollectorUtils.deferReply(buttonInteraction));
 			if (buttonInteraction.customId !== "refuse") {
 				DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, parseInt(buttonInteraction.customId, 10));
 			}

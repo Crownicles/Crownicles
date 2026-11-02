@@ -103,7 +103,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(componentInteraction);
 		await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
 	}
 
@@ -117,7 +117,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		if (!action) {
 			return false;
 		}
-		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(componentInteraction);
 		await action(nestedMenus);
 		return true;
 	}

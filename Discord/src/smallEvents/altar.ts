@@ -81,7 +81,7 @@ export async function altarCollector(context: PacketContext, packet: ReactionCol
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(buttonInteraction);
 
 		if (buttonInteraction.customId === "refuse") {
 			DiscordCollectorUtils.sendReaction(

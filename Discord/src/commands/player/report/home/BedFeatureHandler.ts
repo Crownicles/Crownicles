@@ -44,7 +44,7 @@ export class BedFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		_nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(componentInteraction);
 		const reactionIndex = ctx.packet.reactions.findIndex(
 			reaction => reaction.type === ReactionCollectorHomeBedReaction.name
 		);
