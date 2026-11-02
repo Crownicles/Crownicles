@@ -8,6 +8,7 @@ import {
 	CommandGuildLeavePacketReq
 } from "../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
@@ -75,7 +76,6 @@ function extractNewChiefPseudo(
  */
 export async function handleCommandGuildLeaveAcceptPacketRes(packet: CommandGuildLeaveAcceptPacketRes, context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const keyDesc = packet.isGuildDestroyed ? "destroySuccess" : packet.newChiefKeycloakId ? "leavingSuccessWithNewChief" : "leavingSuccess";
 	const getChief = packet.newChiefKeycloakId ? await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.newChiefKeycloakId) : undefined;
 
@@ -85,9 +85,9 @@ export async function handleCommandGuildLeaveAcceptPacketRes(packet: CommandGuil
 	}
 
 	const newChiefPseudo = extractNewChiefPseudo(getChief);
-	if (buttonInteraction && originalInteraction) {
+	if (originalInteraction) {
 		const lng = originalInteraction.userLanguage;
-		await buttonInteraction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildLeave.successTitle", {
 					lng,
@@ -115,9 +115,8 @@ export async function handleCommandGuildLeaveRefusePacketRes(context: PacketCont
 	if (!originalInteraction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = originalInteraction.userLanguage;
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildLeave.canceledTitle", {
 				lng,

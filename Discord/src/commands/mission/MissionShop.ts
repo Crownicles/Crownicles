@@ -8,6 +8,7 @@ import {
 	MarketTrend
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { PetUtils } from "../../utils/PetUtils";
@@ -197,12 +198,11 @@ export async function skipMissionShopItemCollector(context: PacketContext, packe
 
 export async function skipMissionShopResult(packet: CommandMissionShopSkipMissionResult, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (!interaction) {
 		return;
 	}
 	const lng = interaction.userLanguage;
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.shopItems.skipMission.successTitle", {

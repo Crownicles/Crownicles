@@ -42,14 +42,18 @@ export default class CommandRequirementHandlers {
 
 	@packetHandler(RequirementEffectPacket)
 	async requirementEffect(context: PacketContext, packet: RequirementEffectPacket): Promise<void> {
-		const interaction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction) : DiscordCache.getInteraction(context.discord!.interaction);
+		const clickId = context.discord!.buttonInteraction;
+		const buttonInteraction = clickId ? DiscordCache.getButtonInteraction(clickId) : null;
+
+		// A click that could not be acknowledged accepts no answer: the effect then follows up the command, whose reply holds the collector and is kept
+		const interaction = buttonInteraction ?? DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = context.discord!.language!;
 
 		const effectsText = effectsErrorTextValue(await DisplayUtils.getEscapedUsername(context.keycloakId!, lng), lng, true, packet.currentEffectId, packet.remainingTime);
 		if (!interaction) {
 			return;
 		}
-		if (interaction.deferred) {
+		if (interaction.deferred && (buttonInteraction || !clickId)) {
 			await interaction.deleteReply();
 		}
 
@@ -58,7 +62,7 @@ export default class CommandRequirementHandlers {
 			embeds: [
 				new CrowniclesEmbed()
 					.setErrorColor()
-					.formatAuthor(effectsText.title, interaction.user)
+					.formatAuthor(effectsText.title, MessagesUtils.getClickUser(context) ?? interaction.user)
 					.setDescription(effectsText.description)
 			],
 			flags: MessageFlags.Ephemeral

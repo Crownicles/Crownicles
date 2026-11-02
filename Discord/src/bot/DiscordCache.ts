@@ -5,7 +5,7 @@ import {
 	CrowniclesDiscordMetrics, DISCORD_MONITORED_CACHES
 } from "./CrowniclesDiscordMetrics";
 import {
-	ButtonInteraction, StringSelectMenuInteraction
+	ButtonInteraction, StringSelectMenuInteraction, User
 } from "discord.js";
 
 type CachedInteraction<T> = {
@@ -24,10 +24,16 @@ export class DiscordCache {
 
 	private static stringSelectMenuInteractionsCache: InteractionCache<StringSelectMenuInteraction> = new Map();
 
+	/**
+	 * Authors of the clicks whose acknowledgement failed: the click itself is not cached since Discord accepts no answer to it
+	 */
+	private static unanswerableClickUsersCache: InteractionCache<User> = new Map();
+
 	static {
 		CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.INTERACTIONS, () => DiscordCache.interactionsCache.size);
 		CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.BUTTON_INTERACTIONS, () => DiscordCache.buttonInteractionsCache.size);
 		CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.STRING_SELECT_MENU_INTERACTIONS, () => DiscordCache.stringSelectMenuInteractionsCache.size);
+		CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.UNANSWERABLE_CLICK_USERS, () => DiscordCache.unanswerableClickUsersCache.size);
 	}
 
 	private static init(): void {
@@ -61,6 +67,7 @@ export class DiscordCache {
 		DiscordCache.purgeExpired(DiscordCache.interactionsCache, now);
 		DiscordCache.purgeExpired(DiscordCache.buttonInteractionsCache, now);
 		DiscordCache.purgeExpired(DiscordCache.stringSelectMenuInteractionsCache, now);
+		DiscordCache.purgeExpired(DiscordCache.unanswerableClickUsersCache, now);
 	}
 
 	public static cacheInteraction(interaction: CrowniclesInteraction): void {
@@ -75,6 +82,10 @@ export class DiscordCache {
 		DiscordCache.cache(DiscordCache.stringSelectMenuInteractionsCache, component.id, component);
 	}
 
+	public static cacheUnanswerableClickUser(clickId: string, user: User): void {
+		DiscordCache.cache(DiscordCache.unanswerableClickUsersCache, clickId, user);
+	}
+
 	public static getInteraction(id: string): CrowniclesInteraction | null {
 		return DiscordCache.interactionsCache.get(id)?.interaction ?? null;
 	}
@@ -85,5 +96,9 @@ export class DiscordCache {
 
 	public static getStringSelectMenuInteraction(id: string): StringSelectMenuInteraction | null {
 		return DiscordCache.stringSelectMenuInteractionsCache.get(id)?.interaction ?? null;
+	}
+
+	public static getUnanswerableClickUser(clickId: string): User | null {
+		return DiscordCache.unanswerableClickUsersCache.get(clickId)?.interaction ?? null;
 	}
 }

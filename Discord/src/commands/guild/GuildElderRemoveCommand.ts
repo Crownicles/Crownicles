@@ -2,6 +2,7 @@ import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
@@ -53,9 +54,8 @@ export async function handleCommandGuildElderRemoveRefusePacketRes(packet: Comma
 	if (!originalInteraction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = originalInteraction.userLanguage;
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildElderRemove.canceledTitle", {
 				lng,
@@ -80,10 +80,9 @@ export async function handleCommandGuildElderRemoveRefusePacketRes(packet: Comma
  */
 export async function handleCommandGuildElderRemoveAcceptPacketRes(packet: CommandGuildElderRemoveAcceptPacketRes, context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (buttonInteraction && originalInteraction) {
+	if (originalInteraction) {
 		const lng = originalInteraction.userLanguage;
-		await buttonInteraction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildElderRemove.successElderRemoveTitle", {
 					lng,

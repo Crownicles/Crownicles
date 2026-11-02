@@ -1,6 +1,7 @@
 import { packetHandler } from "../../PacketHandler";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../../bot/DiscordCache";
+import { MessagesUtils } from "../../../utils/MessagesUtils";
 import { CrowniclesSmallEventEmbed } from "../../../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../../../utils/StringUtils";
 import {
@@ -12,7 +13,7 @@ import { SmallEventBadPetPacket } from "../../../../../Lib/src/packets/smallEven
 export default class BadPetSmallEventHandler {
 	@packetHandler(SmallEventBadPetPacket)
 	async smallEventBadPet(context: PacketContext, packet: SmallEventBadPetPacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		if (!interaction) {
 			return;
 		}
@@ -37,11 +38,11 @@ export default class BadPetSmallEventHandler {
 		const embed = new CrowniclesSmallEventEmbed(
 			"badPet",
 			description,
-			interaction.user,
+			MessagesUtils.getClickUser(context) ?? interaction.user,
 			lng
 		);
 
-		await interaction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [embed], components: []
 		});
 	}

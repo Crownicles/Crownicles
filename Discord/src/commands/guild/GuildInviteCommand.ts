@@ -15,6 +15,7 @@ import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket.js";
 import { DiscordCache } from "../../bot/DiscordCache.js";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed.js";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils.js";
 import { ReactionCollectorGuildInvitePacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildInvite.js";
@@ -43,7 +44,6 @@ export async function handleCommandGuildInviteError(packet: CommandGuildInviteEr
 		return;
 	}
 	const lng = interaction.userLanguage;
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const params = {
 		embeds: [
 			new CrowniclesErrorEmbed(
@@ -59,8 +59,8 @@ export async function handleCommandGuildInviteError(packet: CommandGuildInviteEr
 			)
 		]
 	};
-	if (buttonInteraction) {
-		await buttonInteraction.editReply(params);
+	if (context.discord?.buttonInteraction) {
+		await MessagesUtils.editClickReply(context, params);
 		return;
 	}
 	await interaction.reply(params);
@@ -96,7 +96,6 @@ export async function createGuildInviteCollector(context: PacketContext, packet:
 
 export async function handleCommandGuildInviteRefusePacketRes(packet: CommandGuildInviteRefusePacketRes, context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const getInvitedPlayer = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.invitedPlayerKeycloakId);
 	if (getInvitedPlayer.isError) {
 		return;
@@ -104,8 +103,8 @@ export async function handleCommandGuildInviteRefusePacketRes(packet: CommandGui
 	const invitedUser = await crowniclesClient!.users.fetch(getInvitedPlayer!.payload.user.attributes.discordId![0]);
 
 
-	if (buttonInteraction && originalInteraction) {
-		await buttonInteraction.editReply({
+	if (originalInteraction) {
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildInvite.refusedTitle", {
 					lng: originalInteraction.userLanguage,
@@ -119,16 +118,15 @@ export async function handleCommandGuildInviteRefusePacketRes(packet: CommandGui
 
 export async function handleCommandGuildInviteAcceptPacketRes(packet: CommandGuildInviteAcceptPacketRes, context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const getInvitedPlayer = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.invitedPlayerKeycloakId);
 	if (getInvitedPlayer.isError) {
 		return;
 	}
 	const invitedUser = await crowniclesClient!.users.fetch(getInvitedPlayer.payload.user.attributes.discordId![0]);
 
-	if (buttonInteraction && originalInteraction) {
+	if (originalInteraction) {
 		const lng = originalInteraction.userLanguage;
-		await buttonInteraction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildInvite.successTitle", {
 					lng,

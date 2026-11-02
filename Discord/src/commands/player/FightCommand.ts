@@ -7,6 +7,7 @@ import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { PacketUtils } from "../../utils/PacketUtils";
@@ -142,9 +143,8 @@ export async function handleCommandFightRefusePacketRes(context: PacketContext):
 	if (!originalInteraction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = originalInteraction.userLanguage;
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.canceledTitle", {
 				lng,
@@ -259,9 +259,8 @@ async function buildFightIntroEmbed(interaction: CrowniclesInteraction, packet: 
  */
 async function displayFightIntro(context: PacketContext, interaction: CrowniclesInteraction, packet: CommandFightIntroduceFightersPacket): Promise<void> {
 	const embed = await buildFightIntroEmbed(interaction, packet);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (buttonInteraction) {
-		await buttonInteraction.editReply({ embeds: [embed] });
+	if (context.discord?.buttonInteraction) {
+		await MessagesUtils.editClickReply(context, { embeds: [embed] });
 	}
 	else if (packet.friendly) {
 		await interaction.editReply({ embeds: [embed] });

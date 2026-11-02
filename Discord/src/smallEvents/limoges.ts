@@ -1,6 +1,7 @@
 import { ReactionCollectorLimogesPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorLimoges";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
+import { MessagesUtils } from "../utils/MessagesUtils";
 import i18n from "../translations/i18n";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
@@ -33,7 +34,7 @@ export async function limogesCollector(context: PacketContext, packet: ReactionC
 }
 
 export async function limogesResult(packet: SmallEventLimogesPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return;
 	}
@@ -67,12 +68,12 @@ export async function limogesResult(packet: SmallEventLimogesPacket, context: Pa
 	const recapKey = `smallEvents:limoges.recap.${packet.isSuccess ? "success" : "failure"}.${packet.shouldHaveAccepted ? "accept" : "refuse"}`;
 	const description = `${i18n.t(recapKey, { lng })}\n\n${outcome}`;
 
-	await interaction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"limoges",
 				description,
-				interaction.user,
+				MessagesUtils.getClickUser(context) ?? interaction.user,
 				lng
 			)
 		]

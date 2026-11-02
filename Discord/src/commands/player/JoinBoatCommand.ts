@@ -2,6 +2,7 @@ import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { ReactionCollectorJoinBoatPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorJoinBoat";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
@@ -43,10 +44,9 @@ export async function createJoinBoatCollector(context: PacketContext, packet: Re
 
 export async function handleCommandJoinBoatAcceptPacketRes(packet: CommandJoinBoatAcceptPacketRes, context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (buttonInteraction && originalInteraction) {
+	if (originalInteraction) {
 		const lng = originalInteraction.userLanguage;
-		await buttonInteraction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesEmbed().formatAuthor(i18n.t("commands:joinBoat.confirmationMessage.title.confirmed", {
 					lng,
@@ -73,9 +73,8 @@ export async function handleCommandJoinBoatRefusePacketRes(_packet: CommandJoinB
 	if (!originalInteraction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = originalInteraction.userLanguage;
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed().formatAuthor(i18n.t("commands:joinBoat.confirmationMessage.title.confirmed", {
 				lng,

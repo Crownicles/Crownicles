@@ -27,6 +27,7 @@ import {
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { ReactionCollectorPetFeedWithoutGuildPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithoutGuild";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandPetFeedPacketReq> {
@@ -35,7 +36,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandPet
 }
 
 export async function handleCommandPetFeedSuccessPacket(packet: CommandPetFeedSuccessPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
 		return;
@@ -48,7 +49,7 @@ export async function handleCommandPetFeedSuccessPacket(packet: CommandPetFeedSu
 	});
 	const description = i18n.t(`commands:petFeed.result.${packet.result}`, { lng });
 
-	await interaction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(title, interaction.user)

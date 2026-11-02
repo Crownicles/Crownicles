@@ -1,6 +1,7 @@
 import { packetHandler } from "../../PacketHandler";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../../bot/DiscordCache";
+import { MessagesUtils } from "../../../utils/MessagesUtils";
 import { CrowniclesSmallEventEmbed } from "../../../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../../../utils/StringUtils";
 import {
@@ -41,14 +42,17 @@ export default class InteractOtherPlayersSmallEventHandler {
 
 	@packetHandler(SmallEventInteractOtherPlayersAcceptToGivePoorPacket)
 	async smallEventInteractOtherPlayersAcceptToGivePoor(context: PacketContext, _packet: SmallEventInteractOtherPlayersAcceptToGivePoorPacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
 		const lng = context.discord!.language;
-		await interaction?.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"interactOtherPlayers",
 					StringUtils.getRandomTranslation("smallEvents:interactOtherPlayers.poor_give_money", lng),
-					interaction.user,
+					MessagesUtils.getClickUser(context) ?? interaction.user,
 					lng
 				)
 			]
@@ -58,14 +62,17 @@ export default class InteractOtherPlayersSmallEventHandler {
 
 	@packetHandler(SmallEventInteractOtherPlayersRefuseToGivePoorPacket)
 	async smallEventInteractOtherPlayersRefuseToGivePoor(context: PacketContext, _packet: SmallEventInteractOtherPlayersRefuseToGivePoorPacket): Promise<void> {
-		const interaction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!) : DiscordCache.getInteraction(context.discord!.interaction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
 		const lng = context.discord!.language;
-		await interaction?.editReply({
+		await MessagesUtils.editClickOrCommandReply(context, {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"interactOtherPlayers",
 					StringUtils.getRandomTranslation("smallEvents:interactOtherPlayers.poor_dont_give_money", lng),
-					interaction!.user,
+					MessagesUtils.getClickUser(context) ?? interaction.user,
 					lng
 				)
 			]

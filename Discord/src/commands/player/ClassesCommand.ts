@@ -217,6 +217,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 	}) as Message;
 
 	let validateCollector: InteractionCollector<never>;
+	let selectionClaimed = false;
 
 	// Only the selection: when the selection expired, the confirmation buttons are displayed on the same message
 	const selectCollector = msg.createMessageComponentCollector({
@@ -229,6 +230,16 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 			await sendInteractionNotForYou(selectMenuInteraction.user, selectMenuInteraction, lng);
 			return;
 		}
+
+		/*
+		 * Claimed before any await: a selection queued behind a slow acknowledgement would otherwise open a second
+		 * confirmation with the same buttons on the command message, and confirming the displayed class could apply the
+		 * other one (#5059). The selection collector keeps running, its end still stops the confirmation
+		 */
+		if (selectionClaimed) {
+			return;
+		}
+		selectionClaimed = true;
 
 		const selectionAcknowledged = await DiscordCollectorUtils.acknowledgeComponent(selectMenuInteraction, selectMenuInteraction.deferReply());
 

@@ -7,6 +7,7 @@ import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import {
 	CommandUnlockAcceptPacketRes,
@@ -97,8 +98,7 @@ export async function handleCommandUnlockRefusePacketRes(context: PacketContext)
 		return;
 	}
 	const lng = originalInteraction.userLanguage;
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed().formatAuthor(i18n.t("commands:unlock.canceledTitle", {
 				lng,
@@ -124,9 +124,8 @@ export async function handleCommandUnlockAcceptPacketRes(packet: CommandUnlockAc
 		return;
 	}
 	const lng = originalInteraction.userLanguage;
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const unlockedUser = await resolveKeycloakDiscordUser(packet.unlockedKeycloakId);
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed().formatAuthor(i18n.t("commands:unlock.title", {
 				lng,

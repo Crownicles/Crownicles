@@ -7,6 +7,7 @@ import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import {
 	CommandGuildKickAcceptPacketRes,
@@ -117,9 +118,8 @@ export async function handleCommandGuildKickRefusePacketRes(packet: CommandGuild
 	if (!originalInteraction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = originalInteraction.userLanguage;
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildKick.canceledTitle", {
 				lng,
@@ -144,14 +144,13 @@ export async function handleCommandGuildKickRefusePacketRes(packet: CommandGuild
  */
 export async function handleCommandGuildKickAcceptPacketRes(packet: CommandGuildKickAcceptPacketRes, context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const getKickedPlayer = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.kickedKeycloakId!);
 	if (getKickedPlayer.isError) {
 		return;
 	}
-	if (buttonInteraction && originalInteraction) {
+	if (originalInteraction) {
 		const lng = originalInteraction.userLanguage;
-		await buttonInteraction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildKick.title", {
 					lng,

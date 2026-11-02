@@ -14,6 +14,7 @@ import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { ReactionCollectorPetSellPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetSell";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
@@ -84,20 +85,25 @@ export async function createPetSellCollector(context: PacketContext, packet: Rea
 }
 
 export async function handlePetSellSuccess(context: PacketContext, packet: CommandPetSellSuccessPacket): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!)!;
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return;
+	}
 	const lng = interaction.userLanguage;
 
+	// The buyer, who may not be the seller who ran the command
+	const buyer = MessagesUtils.getClickUser(context) ?? interaction.user;
+
 	// Send pet sell success message
-	await buttonInteraction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(
 					i18n.t("commands:petSell.successTitle", {
 						lng,
-						pseudo: escapeUsername(buttonInteraction.user.displayName)
+						pseudo: escapeUsername(buyer.displayName)
 					}),
-					buttonInteraction.user
+					buyer
 				)
 				.setDescription(
 					i18n.t("commands:petSell.successDescription", {

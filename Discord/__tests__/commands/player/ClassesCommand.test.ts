@@ -15,6 +15,10 @@ vi.mock("../../../src/utils/PacketUtils", () => ({
 	}
 }));
 
+vi.mock("../../../../Lib/src/logs/CrowniclesLogger", () => ({
+	CrowniclesLogger: { warn: vi.fn() }
+}));
+
 import { ReactionCollector } from "discord.js";
 import { DiscordCache } from "../../../src/bot/DiscordCache";
 import { handleChangeClassReactionCollector } from "../../../src/commands/player/ClassesCommand";
@@ -110,5 +114,35 @@ describe("handleChangeClassReactionCollector", () => {
 
 		expect(confirmationCollectors).toHaveLength(1);
 		expect(confirmationCollectors[0].ended).toBe(true);
+	});
+
+	it("opens a single confirmation when a second selection is queued behind a slow acknowledgement (#5059)", async () => {
+		const selectionCollectors: ReactionCollector[] = [];
+		const confirmationCollectors: ReactionCollector[] = [];
+		const commandEditReply = vi.fn()
+			.mockResolvedValueOnce(fakeCollectorMessage(selectionCollectors))
+			.mockResolvedValue(fakeCollectorMessage(confirmationCollectors));
+		vi.mocked(DiscordCache.getInteraction).mockReturnValue({
+			userLanguage: "fr",
+			user,
+			editReply: commandEditReply
+		} as never);
+		const [selectCollector] = (await handleChangeClassReactionCollector(context, changeClassPacket()))!;
+
+		const expiredSelection = (): object => ({
+			user,
+			customId: "classSelectionMenu",
+			createdTimestamp: Date.now() - 4000,
+			values: [CLASS_ID.toString()],
+			deferReply: (): Promise<void> => Promise.reject(new Error("Unknown interaction")),
+			editReply: vi.fn()
+		});
+		selectCollector.emit("collect", expiredSelection(), user);
+		selectCollector.emit("collect", expiredSelection(), user);
+		await wait(0);
+
+		expect(commandEditReply).toHaveBeenCalledTimes(2);
+		expect(confirmationCollectors).toHaveLength(1);
+		selectCollector.stop();
 	});
 });
