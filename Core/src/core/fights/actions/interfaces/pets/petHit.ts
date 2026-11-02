@@ -40,7 +40,8 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 }
 
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	if (RandomUtils.crowniclesRandom.bool(0.85) || turn <= 2) {
+	// Strikes back half of the time
+	if (RandomUtils.crowniclesRandom.bool(0.5) || turn <= 2) {
 		return Promise.resolve(null);
 	}
 

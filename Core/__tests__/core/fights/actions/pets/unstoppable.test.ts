@@ -20,10 +20,9 @@ async function startOwnerTurn(owner: Fighter): Promise<Awaited<ReturnType<typeof
 }
 
 describe("unstoppable pet assistance (mammoth)", () => {
-	it("builds momentum by 4% per turn up to +20% damage, then keeps it silently", async () => {
+	it("builds momentum by 4% per turn up to +16% damage, then keeps it silently", async () => {
 		const owner = buildPetFighter({ petTypeId: PetConstants.PETS.MAMMOTH });
 		const expectedStatuses = [
-			PetAssistanceState.GENERAL_EFFECT,
 			PetAssistanceState.GENERAL_EFFECT,
 			PetAssistanceState.GENERAL_EFFECT,
 			PetAssistanceState.GENERAL_EFFECT,
@@ -36,7 +35,7 @@ describe("unstoppable pet assistance (mammoth)", () => {
 			const result = await startOwnerTurn(owner);
 
 			expect(result?.assistanceStatus).toBe(expectedStatuses[turn - 1]);
-			expect(owner.getDamageMultiplier()).toBeCloseTo(1 + Math.min(turn, 5) * 0.04);
+			expect(owner.getDamageMultiplier()).toBeCloseTo(1 + Math.min(turn, 4) * 0.04);
 		}
 	});
 
