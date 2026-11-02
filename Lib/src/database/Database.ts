@@ -9,6 +9,7 @@ import { createConnection } from "mariadb";
 import { DatabaseConfiguration } from "./DatabaseConfiguration";
 import { CrowniclesLogger } from "../logs/CrowniclesLogger";
 import { useCLSOnSequelize } from "../locks/CLSNamespace";
+import { getErrorReason } from "../utils/ErrorUtils";
 import TYPES = Transaction.TYPES;
 
 const DB_RETRY_MAX_ATTEMPTS = 10;
@@ -138,7 +139,7 @@ export abstract class Database {
 			catch (error) {
 				const delay = Math.min(DB_RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1), DB_RETRY_MAX_DELAY_MS);
 				CrowniclesLogger.error(`Database connection attempt ${attempt}/${DB_RETRY_MAX_ATTEMPTS} failed, retrying in ${delay}ms...`, {
-					reason: error instanceof Error ? error.message : String(error)
+					reason: getErrorReason(error)
 				});
 				if (attempt === DB_RETRY_MAX_ATTEMPTS) {
 					CrowniclesLogger.error("All database connection attempts failed");

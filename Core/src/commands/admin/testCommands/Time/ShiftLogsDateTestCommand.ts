@@ -5,6 +5,7 @@ import { crowniclesInstance } from "../../../../app";
 import { QueryTypes } from "sequelize";
 import { daysToSeconds } from "../../../../../../Lib/src/utils/TimeUtils";
 import { asDays } from "../../../../../../Lib/src/types/TimeTypes";
+import { getErrorReason } from "../../../../../../Lib/src/utils/ErrorUtils";
 
 export const commandInfo: ITestCommand = {
 	name: "shiftlogsdate",
@@ -65,7 +66,7 @@ const shiftLogsDateTestCommand: ExecuteTestCommandLike = async (_player, args) =
 		return `✅ Dates décalées de ${Math.abs(days)} jour(s) ${direction} ! ${tablesWithDate.length} tables mises à jour, ${totalRowsUpdated} entrées modifiées.`;
 	}
 	catch (error) {
-		return `❌ Erreur lors du décalage des dates : ${error instanceof Error ? error.message : String(error)}`;
+		return `❌ Erreur lors du décalage des dates : ${getErrorReason(error)}`;
 	}
 };
 

@@ -3,6 +3,7 @@ import {
 } from "../../../../core/CommandsTest";
 import { crowniclesInstance } from "../../../../app";
 import { QueryTypes } from "sequelize";
+import { getErrorReason } from "../../../../../../Lib/src/utils/ErrorUtils";
 
 export const commandInfo: ITestCommand = {
 	name: "clearLogs",
@@ -39,7 +40,7 @@ const clearLogsTestCommand: ExecuteTestCommandLike = async () => {
 		return `✅ Données des logs supprimées avec succès ! ${tables.length} tables ont été vidées (structure conservée).`;
 	}
 	catch (error) {
-		return `❌ Erreur lors du nettoyage de la base de données de logs : ${error instanceof Error ? error.message : String(error)}`;
+		return `❌ Erreur lors du nettoyage de la base de données de logs : ${getErrorReason(error)}`;
 	}
 };
 
