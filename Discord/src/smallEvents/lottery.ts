@@ -70,7 +70,7 @@ export async function lotteryCollector(context: PacketContext, packet: ReactionC
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(buttonInteraction);
 
 		if (buttonInteraction.customId === easyButtonId) {
 			DiscordCollectorUtils.sendReaction(

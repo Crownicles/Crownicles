@@ -8,12 +8,15 @@ import {
 	ButtonInteraction, StringSelectMenuInteraction, User
 } from "discord.js";
 
-type CachedInteraction<T> = {
-	interaction: T;
+/**
+ * Value kept until its interaction expires: an interaction, or what is still usable of an interaction that can no longer be answered
+ */
+type CachedEntry<T> = {
+	value: T;
 	expiresAt: number;
 };
 
-type InteractionCache<T> = Map<string, CachedInteraction<T>>;
+type InteractionCache<T> = Map<string, CachedEntry<T>>;
 
 export class DiscordCache {
 	private static initialized = false;
@@ -51,10 +54,10 @@ export class DiscordCache {
 		}
 	}
 
-	private static cache<T>(cache: InteractionCache<T>, id: string, interaction: T): void {
+	private static cache<T>(cache: InteractionCache<T>, id: string, value: T): void {
 		DiscordCache.init();
 		cache.set(id, {
-			interaction,
+			value,
 			expiresAt: Date.now() + Constants.CACHE_TIME.INTERACTIONS
 		});
 	}
@@ -87,18 +90,18 @@ export class DiscordCache {
 	}
 
 	public static getInteraction(id: string): CrowniclesInteraction | null {
-		return DiscordCache.interactionsCache.get(id)?.interaction ?? null;
+		return DiscordCache.interactionsCache.get(id)?.value ?? null;
 	}
 
 	public static getButtonInteraction(id: string): ButtonInteraction | null {
-		return DiscordCache.buttonInteractionsCache.get(id)?.interaction ?? null;
+		return DiscordCache.buttonInteractionsCache.get(id)?.value ?? null;
 	}
 
 	public static getStringSelectMenuInteraction(id: string): StringSelectMenuInteraction | null {
-		return DiscordCache.stringSelectMenuInteractionsCache.get(id)?.interaction ?? null;
+		return DiscordCache.stringSelectMenuInteractionsCache.get(id)?.value ?? null;
 	}
 
 	public static getUnanswerableClickUser(clickId: string): User | null {
-		return DiscordCache.unanswerableClickUsersCache.get(clickId)?.interaction ?? null;
+		return DiscordCache.unanswerableClickUsersCache.get(clickId)?.value ?? null;
 	}
 }

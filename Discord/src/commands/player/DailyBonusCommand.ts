@@ -204,7 +204,7 @@ export async function handleDailyBonusCollector(context: PacketContext, packet: 
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(selectMenuInteraction, selectMenuInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(selectMenuInteraction);
 
 		const selectedOption = selectMenuInteraction.values[0];
 

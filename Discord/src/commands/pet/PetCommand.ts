@@ -243,7 +243,7 @@ function setupPetButtonCollector(params: {
 			 * (choice menu, in progress menu, or resolve menu based on state)
 			 */
 			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionPacketReq, {}));
-			await DiscordCollectorUtils.acknowledgeComponent(i, i.deferUpdate());
+			await DiscordCollectorUtils.deferUpdate(i);
 		}
 	});
 

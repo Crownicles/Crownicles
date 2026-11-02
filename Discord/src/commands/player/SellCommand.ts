@@ -161,7 +161,7 @@ async function validateSell(
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(validateInteraction, validateInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(validateInteraction);
 
 		if (validateInteraction.customId === refuseCustomId) {
 			DiscordCollectorUtils.sendReaction(
@@ -289,7 +289,7 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 		}
 		selectionClaimed = true;
 
-		const selectionAcknowledged = await DiscordCollectorUtils.acknowledgeComponent(selectMenuInteraction, selectMenuInteraction.deferReply());
+		const selectionAcknowledged = await DiscordCollectorUtils.deferReply(selectMenuInteraction);
 
 		mainEmbedRow.components.forEach(component => {
 			component.setDisabled(true);

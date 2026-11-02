@@ -255,7 +255,7 @@ async function sendButtonReaction(
 	context: PacketContext,
 	reaction: ReactionMap
 ): Promise<void> {
-	await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferReply());
+	await DiscordCollectorUtils.deferReply(interaction);
 	DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, interaction, reaction.index);
 }
 
@@ -268,7 +268,7 @@ async function sendSelectedPetReaction(
 		components: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 	}
 ): Promise<void> {
-	await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferUpdate());
+	await DiscordCollectorUtils.deferUpdate(interaction);
 	DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, interaction, parseInt(interaction.values[0], 10));
 
 	// Immediately disable all components to prevent further clicks

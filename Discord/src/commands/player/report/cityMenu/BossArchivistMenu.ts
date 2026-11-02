@@ -133,7 +133,7 @@ function createArchivistCollector(
 	handler: (click: ArchivistMenuClick) => Promise<void>
 ): CrowniclesNestedMenuCollectorFactory {
 	return createCityCollector(params.interaction, params.collectorTime, async (customId, interaction, menus) => {
-		await DiscordCollectorUtils.acknowledgeComponent(interaction, interaction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(interaction);
 		await handler({
 			actionId: customId, menus
 		});

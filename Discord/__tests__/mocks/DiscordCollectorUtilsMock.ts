@@ -4,6 +4,11 @@ type UpdatableInteraction = {
 	update: (options: unknown) => Promise<unknown>;
 };
 
+type DeferrableInteraction = {
+	deferUpdate: () => Promise<unknown>;
+	deferReply: () => Promise<unknown>;
+};
+
 type EditableMessage = {
 	edit: (options: unknown) => Promise<unknown>;
 };
@@ -14,8 +19,12 @@ type EditableMessage = {
  * The vi.mock factories are hoisted above the static imports, so they load this module through a dynamic import
  */
 export const collectorAcknowledgementMocks = {
-	acknowledgeComponent: vi.fn(async (_interaction: unknown, acknowledgement: Promise<unknown>): Promise<boolean> => {
-		await acknowledgement;
+	deferUpdate: vi.fn(async (interaction: DeferrableInteraction): Promise<boolean> => {
+		await interaction.deferUpdate();
+		return true;
+	}),
+	deferReply: vi.fn(async (interaction: DeferrableInteraction): Promise<boolean> => {
+		await interaction.deferReply();
 		return true;
 	}),
 	updateComponentMessage: vi.fn(async (interaction: UpdatableInteraction, options: unknown): Promise<boolean> => {

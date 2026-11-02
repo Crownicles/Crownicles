@@ -111,12 +111,12 @@ export async function createPetExpeditionCollector(
 
 		if (buttonInteraction.customId === "expedition_recall") {
 			// Recall - defer reply as Core will send a response
-			await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+			await DiscordCollectorUtils.deferReply(buttonInteraction);
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, 0);
 		}
 		else if (buttonInteraction.customId === "expedition_cancel_view") {
 			// Close - just acknowledge, no response expected from Core
-			await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferUpdate());
+			await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, null, 1);
 		}
 
@@ -262,7 +262,7 @@ export async function createPetExpeditionChoiceCollector(
 			await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
 			return;
 		}
-		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(componentInteraction);
 		handleExpeditionChoiceInteraction(componentInteraction as ButtonInteraction | StringSelectMenuInteraction, data, packet, context);
 		collector.stop();
 	});
@@ -367,7 +367,7 @@ export async function createPetExpeditionFinishedCollector(
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(buttonInteraction);
 
 		if (buttonInteraction.customId === "expedition_claim") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, 0);

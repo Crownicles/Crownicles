@@ -111,7 +111,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 			return;
 		}
 
-		await DiscordCollectorUtils.acknowledgeComponent(buttonInteraction, buttonInteraction.deferReply());
+		await DiscordCollectorUtils.deferReply(buttonInteraction);
 		respondToEvent(buttonInteraction.customId, buttonInteraction);
 	});
 

@@ -165,7 +165,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(componentInteraction);
 		await this.fetchAndShowCookingMenu(ctx, nestedMenus);
 	}
 
@@ -175,7 +175,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
-		await DiscordCollectorUtils.acknowledgeComponent(componentInteraction, componentInteraction.deferUpdate());
+		await DiscordCollectorUtils.deferUpdate(componentInteraction);
 
 		if (await this.handleExactMenuAction(ctx, selectedValue, nestedMenus)) {
 			return true;
