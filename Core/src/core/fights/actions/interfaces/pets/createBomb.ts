@@ -12,9 +12,9 @@ import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 50,
-		averageDamage: 130,
-		maxDamage: 220
+		minDamage: 55,
+		averageDamage: 150,
+		maxDamage: 250
 	};
 }
 
@@ -35,8 +35,8 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 		});
 	}
 
-	// On turn 23/24, bomb explodes if opponent's energy >= fighter's; otherwise, it fails.
-	if (turn === 23 || turn === 24) {
+	// Mid-fight, on turn 13/14, the bomb explodes if the opponent's energy >= fighter's; otherwise, it fails.
+	if (turn === 13 || turn === 14) {
 		if (opponent.getEnergy() < fighter.getEnergy()) {
 			return Promise.resolve({
 				assistanceStatus: PetAssistanceState.FAILURE

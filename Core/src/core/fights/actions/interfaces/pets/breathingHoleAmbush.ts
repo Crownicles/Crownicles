@@ -21,14 +21,15 @@ const CATCHING_BREATH_ACTIONS: string[] = [
 const ambushedOwners = new WeakSet<Fighter>();
 
 /**
- * Tuned so that the ambush, which happens in about 57% of the PvP fights (share of the fighters resting at least once),
- * deals around 90% of the damage dealt by the claws of a tiger over a whole fight
+ * The ambush happens in about 57% of the PvP fights (share of the fighters resting at least once).
+ * Tuned with AI fights between level 100+ players: over a fight it deals slightly less damage than the claws of a tiger (~95%),
+ * a single blow being less decisive than damage spread over the fight, it wins fewer fights than the tiger
  */
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 45,
-		averageDamage: 185,
-		maxDamage: 255
+		minDamage: 55,
+		averageDamage: 225,
+		maxDamage: 310
 	};
 }
 

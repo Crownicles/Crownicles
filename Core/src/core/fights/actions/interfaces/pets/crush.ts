@@ -12,9 +12,9 @@ import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 10,
-		averageDamage: 150,
-		maxDamage: 235
+		minDamage: 20,
+		averageDamage: 225,
+		maxDamage: 335
 	};
 }
 
@@ -38,15 +38,15 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 }
 
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	// At turn 13/14, a warning is given
-	if (turn === 13 || turn === 14) {
+	// At turn 9/10, a warning is given
+	if (turn === 9 || turn === 10) {
 		return Promise.resolve({
 			assistanceStatus: PetAssistanceState.GENERAL_EFFECT
 		});
 	}
 
 	// On the following turn, the pet falls on the opponent except if the opponent is faster than the threshold
-	if (turn === 15 || turn === 16) {
+	if (turn === 11 || turn === 12) {
 		const petId = (fighter as PlayerFighter).pet!.typeId;
 		const petData = PetDataController.instance.getById(petId)!;
 		const centerSpeed = FightUtils.calculatePetStatFromForce(petData.force * 0.75, fighter.level);

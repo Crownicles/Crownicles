@@ -14,12 +14,12 @@ import { buildPetFighter } from "./PetFighterMocks";
 const FIGHT = {} as FightController;
 
 /*
- * Measured on the PvP fights of the last 30 days: 18.8 turns on average (9.4 per fighter)
- * and 57% of the fighters rest or run out of breath at least once
+ * Measured on AI fights between the level 100+ players of the game (their real class and gear):
+ * the claws strike 2.75 times per fight and the bear ambushes in 53% of the fights
+ * (57% of the PvP fighters of the last 30 days rest or run out of breath at least once)
  */
-const OWNER_TURNS_PER_FIGHT = 9.4;
-const SHARE_OF_FIGHTS_WITH_A_REST = 0.57;
-const CLAWS_TRIGGER_CHANCE = 0.3;
+const CLAWS_STRIKES_PER_FIGHT = 2.75;
+const AMBUSHES_PER_FIGHT = 0.53;
 
 describe("breathingHoleAmbush pet assistance (polar bear)", () => {
 	beforeEach(() => {
@@ -53,11 +53,12 @@ describe("breathingHoleAmbush pet assistance (polar bear)", () => {
 		expect((await breathingHoleAmbush(owner, opponent, 5, FIGHT))?.assistanceStatus).toBe(PetAssistanceState.SUCCESS);
 	});
 
+	// Defense and speed quartiles (25%, 50%, 75%) of the level 100+ players
 	it.each([
-		[500, 400],
-		[800, 600],
-		[1100, 900]
-	])("deals around 90%% of the damage of a tiger over a fight (defense %i, speed %i)", async (defense, speed) => {
+		[334, 159],
+		[446, 314],
+		[572, 465]
+	])("deals a bit less damage than a tiger over a fight (defense %i, speed %i)", async (defense, speed) => {
 		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
 		const opponent = buildPetFighter({
 			defense,
@@ -67,11 +68,11 @@ describe("breathingHoleAmbush pet assistance (polar bear)", () => {
 		const tigerOwner = buildPetFighter({ petTypeId: PetConstants.PETS.TIGER });
 		const bearOwner = buildPetFighter({ petTypeId: PetConstants.PETS.POLAR_BEAR });
 
-		const tigerDamagesPerFight = (await claws(tigerOwner, opponent, 1, FIGHT))!.damages! * CLAWS_TRIGGER_CHANCE * OWNER_TURNS_PER_FIGHT;
-		const bearDamagesPerFight = (await breathingHoleAmbush(bearOwner, opponent, 1, FIGHT))!.damages! * SHARE_OF_FIGHTS_WITH_A_REST;
+		const tigerDamagesPerFight = (await claws(tigerOwner, opponent, 1, FIGHT))!.damages! * CLAWS_STRIKES_PER_FIGHT;
+		const bearDamagesPerFight = (await breathingHoleAmbush(bearOwner, opponent, 1, FIGHT))!.damages! * AMBUSHES_PER_FIGHT;
 
 		const ratio = bearDamagesPerFight / tigerDamagesPerFight;
-		expect(ratio).toBeGreaterThan(0.8);
+		expect(ratio).toBeGreaterThan(0.85);
 		expect(ratio).toBeLessThanOrEqual(1);
 	});
 

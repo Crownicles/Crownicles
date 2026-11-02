@@ -6,11 +6,12 @@ import { Fighter } from "../../../fighter/Fighter";
 import { FightAlterations } from "../../FightAlterations";
 
 /**
- * Damage bonus gained by the owner at each of its turns, as long as the momentum is not broken
+ * Damage bonus gained by the owner at each of its turns, as long as the momentum is not broken.
+ * With 4 stacks (+16%), the mammoth wins about 90% as many extra fights as a tiger in AI fights between level 100+ players
  */
 const DAMAGE_BONUS_PER_STACK = 0.04;
 
-const MAX_MOMENTUM_STACKS = 5;
+const MAX_MOMENTUM_STACKS = 4;
 
 /**
  * Alterations that immobilize the owner and break the momentum.
