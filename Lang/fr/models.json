@@ -198,6 +198,22 @@
     "9": "Une classe axée sur la vitesse. Peu de points de vie et d'énergie mais vitesse et attaque élevées."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "est aidé par **{{petNickname}}**, resté à l'affût, qui surgit dès que l'adversaire reprend son souffle et lui assène un formidable coup de patte."
+    },
+    "scentOfBlood": {
+      "generalEffect": "est rejoint par **{{petNickname}}** qui a senti l'odeur du sang : le requin mord l'adversaire blessé et ouvre une plaie qui saigne abondamment.",
+      "success": "voit **{{petNickname}}** entrer en frénésie, rendu fou par le sang qui coule encore : le requin se jette sur l'adversaire et le mord sauvagement.",
+      "failure": "voit **{{petNickname}}** perdre la trace de sa proie : l'hémorragie de l'adversaire s'est arrêtée et le requin s'éloigne."
+    },
+    "unstoppable": {
+      "generalEffect": "prend de l'élan aux côtés de **{{petNickname}}**, dont la lourde course s'accélère : ses coups frappent de plus en plus fort.",
+      "success": "est emporté par **{{petNickname}}**, lancé à pleine vitesse : plus rien ne semble pouvoir l'arrêter.",
+      "failure": "est immobilisé et **{{petNickname}}** perd tout son élan, il va falloir le reprendre depuis le début."
+    },
+    "woundedPrey": {
+      "success": "est rejoint par **{{petNickname}}** qui tournoyait au-dessus du combat : voyant l'adversaire à bout de forces, le rapace fond sur lui en piqué, serres en avant."
+    },
     "drowning": {
       "customMessage": "saisit son adversaire avec l'une de ses tentacules et le plonge sous l'eau, seuls les adversaires ayant du souffle s'extirpent sans dommage.",
       "name_one": "Noyade",

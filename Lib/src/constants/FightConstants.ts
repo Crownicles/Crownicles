@@ -185,6 +185,7 @@ export abstract class FightConstants {
 				BOOST_DEFENSE: "boostDefense",
 				BOOST_SPEED: "boostSpeed",
 				BREAK_ARMOR: "breakArmor",
+				BREATHING_HOLE_AMBUSH: "breathingHoleAmbush",
 				BUILD_BARRAGE: "buildBarrage",
 				CLAWS: "claws",
 				CREATE_BOMB: "createBomb",
@@ -214,6 +215,7 @@ export abstract class FightConstants {
 				REVENGE: "revenge",
 				SCARE_ELEPHANT: "scareElephant",
 				SCARE_FISH: "scareFish",
+				SCENT_OF_BLOOD: "scentOfBlood",
 				SLIPPING: "slipping",
 				SMALL_BITE: "smallBite",
 				SMALL_CLAWS: "smallClaws",
@@ -226,8 +228,10 @@ export abstract class FightConstants {
 				SWALLOW: "swallow",
 				TRIES_TO_HELP: "triesToHelp",
 				UN_BLIND: "unBlind",
+				UNSTOPPABLE: "unstoppable",
 				USE_TOOL: "useTool",
 				VAMPIRISM: "vampirism",
+				WOUNDED_PREY: "woundedPrey",
 				FAIRY_HEAL: "fairyHeal"
 			},
 			PLAYER: {

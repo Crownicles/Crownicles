@@ -30,7 +30,7 @@ import {
 	FightAlteration, FightAlterationDataController
 } from "../../data/FightAlteration";
 import { PetAssistance } from "../../data/PetAssistance";
-import { getAiPetBehavior } from "./PetAssistManager";
+import { getPetBehaviors } from "./PetAssistManager";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
 
@@ -377,9 +377,11 @@ export class FightController {
 
 		const currentFighter = this.getPlayingFighter();
 		if ((currentFighter instanceof AiPlayerFighter || currentFighter instanceof PlayerFighter) && currentFighter.pet) {
-			const petAction = getAiPetBehavior(currentFighter.pet.typeId);
-			if (petAction) {
+			for (const petAction of getPetBehaviors(currentFighter.pet.typeId)) {
 				await this.executePetAssistance(petAction, response);
+				if (this.state !== FightState.RUNNING) {
+					break;
+				}
 			}
 		}
 		if (this.state !== FightState.RUNNING) {
