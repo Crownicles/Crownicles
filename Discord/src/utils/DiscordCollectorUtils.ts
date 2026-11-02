@@ -206,25 +206,27 @@ export abstract class DiscordCollectorUtils {
 	/**
 	 * Return the id of the clicked component for the packet context, and cache the interaction through which Core's
 	 * response is displayed. An interaction whose acknowledgement failed (expired, Discord unavailable...) can no longer
-	 * be answered: it is not cached, so that the response falls back to the command interaction while still knowing a click
-	 * happened (see MessagesUtils.editClickReply)
+	 * be answered: only its author is cached, so that the response falls back to the command interaction while still
+	 * knowing a click happened and who made it (see MessagesUtils.editClickReply and MessagesUtils.getClickUser)
 	 */
 	private static cacheRespondingComponent(component: MessageComponentInteraction | null): RespondingComponentIds {
 		if (component?.isButton()) {
-			DiscordCollectorUtils.cacheIfAnswerable(component, DiscordCache.cacheButtonInteraction);
+			DiscordCollectorUtils.cacheClick(component, DiscordCache.cacheButtonInteraction);
 			return { buttonInteraction: component.id };
 		}
 		if (component?.isStringSelectMenu()) {
-			DiscordCollectorUtils.cacheIfAnswerable(component, DiscordCache.cacheStringSelectMenuInteraction);
+			DiscordCollectorUtils.cacheClick(component, DiscordCache.cacheStringSelectMenuInteraction);
 			return { stringSelectMenuInteraction: component.id };
 		}
 		return {};
 	}
 
-	private static cacheIfAnswerable<T extends MessageComponentInteraction>(component: T, cache: (component: T) => void): void {
-		if (!DiscordCollectorUtils.isUnanswerable(component)) {
-			cache(component);
+	private static cacheClick<T extends MessageComponentInteraction>(component: T, cache: (component: T) => void): void {
+		if (DiscordCollectorUtils.isUnanswerable(component)) {
+			DiscordCache.cacheUnanswerableClickUser(component.id, component.user);
+			return;
 		}
+		cache(component);
 	}
 
 	static sendReaction(

@@ -22,6 +22,7 @@ export const DISCORD_MONITORED_CACHES = {
 	INTERACTIONS: "interactions",
 	BUTTON_INTERACTIONS: "button_interactions",
 	STRING_SELECT_MENU_INTERACTIONS: "string_select_menu_interactions",
+	UNANSWERABLE_CLICK_USERS: "unanswerable_click_users",
 	REACTION_COLLECTORS: "reaction_collectors",
 	USERS: "users",
 	CHANNELS: "channels",

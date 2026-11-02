@@ -17,7 +17,8 @@ vi.mock("../../src/bot/DiscordCache", () => ({
 			followUp: vi.fn()
 		})),
 		cacheButtonInteraction: vi.fn(),
-		cacheStringSelectMenuInteraction: vi.fn()
+		cacheStringSelectMenuInteraction: vi.fn(),
+		cacheUnanswerableClickUser: vi.fn()
 	}
 }));
 vi.mock("../../src/utils/PacketUtils", () => ({
@@ -141,6 +142,7 @@ describe("collector click acknowledgement (#5059)", () => {
 	beforeEach(() => {
 		vi.mocked(PacketUtils.sendPacketToBackend).mockClear();
 		vi.mocked(DiscordCache.cacheButtonInteraction).mockClear();
+		vi.mocked(DiscordCache.cacheUnanswerableClickUser).mockClear();
 	});
 
 	it("forwards the confirmation click to Core even when Discord rejects its acknowledgement", async () => {
@@ -174,6 +176,7 @@ describe("collector click acknowledgement (#5059)", () => {
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 
 		expect(DiscordCache.cacheButtonInteraction).not.toHaveBeenCalled();
+		expect(DiscordCache.cacheUnanswerableClickUser).toHaveBeenCalledWith(click.id, click.user);
 		expect(sentDiscordContext()).toMatchObject({
 			interaction: "command-interaction-id",
 			buttonInteraction: click.id
@@ -187,6 +190,7 @@ describe("collector click acknowledgement (#5059)", () => {
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
 
 		expect(DiscordCache.cacheButtonInteraction).toHaveBeenCalledWith(click);
+		expect(DiscordCache.cacheUnanswerableClickUser).not.toHaveBeenCalled();
 		expect(sentDiscordContext()).toMatchObject({ buttonInteraction: click.id });
 	});
 

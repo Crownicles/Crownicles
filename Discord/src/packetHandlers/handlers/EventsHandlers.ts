@@ -203,9 +203,11 @@ export default class EventsHandlers {
 				: null
 		]));
 		try {
-			if (context.discord!.buttonInteraction) {
-				await DiscordCache.getButtonInteraction(context.discord!.buttonInteraction)
-					?.followUp({ embeds: [embed] });
+			const buttonInteraction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction) : null;
+
+			// A click that could not be acknowledged accepts no follow-up: the destination is then sent in the channel
+			if (buttonInteraction) {
+				await buttonInteraction.followUp({ embeds: [embed] });
 				return;
 			}
 		}

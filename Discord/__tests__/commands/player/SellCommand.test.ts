@@ -176,4 +176,34 @@ describe("handleSellReactionCollector", () => {
 		expect(confirmationCollectors).toHaveLength(1);
 		selectCollector.stop();
 	});
+
+	it("opens a single confirmation when a second selection is queued behind a slow acknowledgement (#5059)", async () => {
+		const selectionCollectors: ReactionCollector[] = [];
+		const confirmationCollectors: ReactionCollector[] = [];
+		const commandEditReply = vi.fn()
+			.mockResolvedValueOnce(fakeCollectorMessage(selectionCollectors))
+			.mockResolvedValue(fakeCollectorMessage(confirmationCollectors));
+		vi.mocked(DiscordCache.getInteraction).mockReturnValue({
+			userLanguage: "fr",
+			user,
+			editReply: commandEditReply
+		} as never);
+		const [selectCollector] = (await handleSellReactionCollector(context, sellPacket(2)))!;
+
+		const expiredSelection = (itemIndex: string): object => ({
+			user,
+			customId: "sellSelectionMenu",
+			createdTimestamp: Date.now() - 4000,
+			values: [itemIndex],
+			deferReply: (): Promise<void> => Promise.reject(new Error("Unknown interaction")),
+			editReply: vi.fn()
+		});
+		selectCollector.emit("collect", expiredSelection("0"), user);
+		selectCollector.emit("collect", expiredSelection("1"), user);
+		await wait(0);
+
+		expect(commandEditReply).toHaveBeenCalledTimes(2);
+		expect(confirmationCollectors).toHaveLength(1);
+		selectCollector.stop();
+	});
 });

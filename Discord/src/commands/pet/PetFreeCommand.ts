@@ -236,8 +236,7 @@ function buildSimpleResponseEmbed(options: SimpleEmbedOptions): CrowniclesEmbed 
 
 export async function handleCommandPetFreeRefusePacketRes(context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (buttonInteraction && originalInteraction) {
+	if (originalInteraction) {
 		const lng = originalInteraction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 		const embed = buildSimpleResponseEmbed({
 			interaction: originalInteraction,
@@ -245,14 +244,13 @@ export async function handleCommandPetFreeRefusePacketRes(context: PacketContext
 			description: i18n.t("commands:petFree.canceledDesc", { lng }),
 			isError: true
 		});
-		await buttonInteraction.editReply({ embeds: [embed] });
+		await MessagesUtils.editClickReply(context, { embeds: [embed] });
 	}
 }
 
 export async function handleCommandPetFreeAcceptPacketRes(packet: CommandPetFreeAcceptPacketRes, context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (buttonInteraction && originalInteraction) {
+	if (originalInteraction) {
 		const lng = originalInteraction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 		const embed = buildSimpleResponseEmbed({
 			interaction: originalInteraction,
@@ -262,7 +260,7 @@ export async function handleCommandPetFreeAcceptPacketRes(packet: CommandPetFree
 				pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex)
 			})
 		});
-		await buttonInteraction.editReply({ embeds: [embed] });
+		await MessagesUtils.editClickReply(context, { embeds: [embed] });
 	}
 }
 

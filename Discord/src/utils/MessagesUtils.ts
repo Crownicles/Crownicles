@@ -1,12 +1,14 @@
 import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import { DiscordCache } from "../bot/DiscordCache";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
-import { BaseMessageOptions } from "discord.js";
+import {
+	BaseMessageOptions, User
+} from "discord.js";
 
 /**
  * Content of the response to a click, displayable both by editing a reply and by a follow-up
  */
-type ClickReplyOptions = Pick<BaseMessageOptions, "content" | "embeds">;
+type ClickReplyOptions = Pick<BaseMessageOptions, "content" | "embeds" | "components">;
 
 export abstract class MessagesUtils {
 	/**
@@ -50,5 +52,29 @@ export abstract class MessagesUtils {
 			return;
 		}
 		await DiscordCache.getInteraction(context.discord!.interaction)?.followUp(options);
+	}
+
+	/**
+	 * Display Core's response in the reply deferred on the click when there was one (see editClickReply), in the reply
+	 * to the command otherwise, e.g. when the collector ended without any click
+	 */
+	static async editClickOrCommandReply(context: PacketContext, options: ClickReplyOptions): Promise<void> {
+		if (context.discord?.buttonInteraction) {
+			await MessagesUtils.editClickReply(context, options);
+			return;
+		}
+		await DiscordCache.getInteraction(context.discord!.interaction)?.editReply(options);
+	}
+
+	/**
+	 * User who made the button click Core is responding to, also known when the click could not be acknowledged.
+	 * It differs from the command author in the collectors other players can answer
+	 */
+	static getClickUser(context: PacketContext): User | null {
+		const clickId = context.discord?.buttonInteraction;
+		if (!clickId) {
+			return null;
+		}
+		return DiscordCache.getButtonInteraction(clickId)?.user ?? DiscordCache.getUnanswerableClickUser(clickId);
 	}
 }

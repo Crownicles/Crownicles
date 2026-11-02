@@ -2,7 +2,7 @@ import {
 	describe, expect, it
 } from "vitest";
 import {
-	ButtonInteraction, StringSelectMenuInteraction
+	ButtonInteraction, StringSelectMenuInteraction, User
 } from "discord.js";
 import { DiscordCache } from "../../src/bot/DiscordCache";
 import { CrowniclesInteraction } from "../../src/messages/CrowniclesInteraction";
@@ -20,19 +20,23 @@ describe("DiscordCache", () => {
 		DiscordCache.cacheInteraction(fakeInteraction<CrowniclesInteraction>("command"));
 		DiscordCache.cacheButtonInteraction(fakeInteraction<ButtonInteraction>("button"));
 		DiscordCache.cacheStringSelectMenuInteraction(fakeInteraction<StringSelectMenuInteraction>("select"));
+		DiscordCache.cacheUnanswerableClickUser("expired-click", fakeInteraction<User>("clicker"));
 
 		DiscordCache.purge(cachedAt);
 		expect(DiscordCache.getInteraction("command")?.id).toBe("command");
 		expect(DiscordCache.getButtonInteraction("button")?.id).toBe("button");
 		expect(DiscordCache.getStringSelectMenuInteraction("select")?.id).toBe("select");
+		expect(DiscordCache.getUnanswerableClickUser("expired-click")?.id).toBe("clicker");
 
 		DiscordCache.purge(Date.now() + Constants.CACHE_TIME.INTERACTIONS + 1);
 		expect(DiscordCache.getInteraction("command")).toBeNull();
 		expect(DiscordCache.getButtonInteraction("button")).toBeNull();
 		expect(DiscordCache.getStringSelectMenuInteraction("select")).toBeNull();
+		expect(DiscordCache.getUnanswerableClickUser("expired-click")).toBeNull();
 		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.INTERACTIONS)).toBe(0);
 		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.BUTTON_INTERACTIONS)).toBe(0);
 		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.STRING_SELECT_MENU_INTERACTIONS)).toBe(0);
+		expect(await getExposedCacheSize(DISCORD_MONITORED_CACHES.UNANSWERABLE_CLICK_USERS)).toBe(0);
 	});
 
 	it("exposes the size of each interaction cache to Prometheus", async () => {

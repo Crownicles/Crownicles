@@ -5,6 +5,7 @@ import {
 } from "../../../Lib/src/packets/interaction/ReactionCollectorRecipeShopSmallEvent";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
+import { MessagesUtils } from "../utils/MessagesUtils";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
@@ -75,17 +76,17 @@ export async function recipeShopCollector(context: PacketContext, packet: Reacti
  * Edit the offer message to show the outcome of the recipe purchase decision
  */
 export async function recipeShopOutcomeHandler(context: PacketContext, source: RecipeShopSource, description: string): Promise<void> {
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (!buttonInteraction) {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
 		return;
 	}
 	const lng = context.discord!.language;
-	await buttonInteraction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				RECIPE_SHOP_SOURCE_ICON[source],
 				description,
-				buttonInteraction.user,
+				MessagesUtils.getClickUser(context) ?? interaction.user,
 				lng
 			)
 		],

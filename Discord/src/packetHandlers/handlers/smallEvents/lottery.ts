@@ -1,6 +1,7 @@
 import { packetHandler } from "../../PacketHandler";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../../bot/DiscordCache";
+import { MessagesUtils } from "../../../utils/MessagesUtils";
 import { CrowniclesSmallEventEmbed } from "../../../messages/CrowniclesSmallEventEmbed";
 import i18n from "../../../translations/i18n";
 import {
@@ -26,14 +27,17 @@ export default class LotterySmallEventHandler {
 
 	@packetHandler(SmallEventLotteryPoorPacket)
 	async smallEventLotteryPoor(context: PacketContext, _packet: SmallEventLotteryPoorPacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
 		const lng = context.discord!.language;
-		await interaction?.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"lottery",
 					i18n.t("smallEvents:lottery.poor", { lng }),
-					interaction.user,
+					MessagesUtils.getClickUser(context) ?? interaction.user,
 					lng
 				)
 			]
@@ -43,10 +47,13 @@ export default class LotterySmallEventHandler {
 
 	@packetHandler(SmallEventLotteryLosePacket)
 	async smallEventLotteryLose(context: PacketContext, packet: SmallEventLotteryLosePacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
 		const lng = context.discord!.language;
 		const lostTimeDisplay = i18n.formatDuration(packet.lostTime, lng);
-		await interaction?.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"lottery",
@@ -56,7 +63,7 @@ export default class LotterySmallEventHandler {
 						lostTimeDisplay,
 						money: packet.moneyLost
 					}),
-					interaction.user,
+					MessagesUtils.getClickUser(context) ?? interaction.user,
 					lng
 				)
 			]
@@ -66,10 +73,13 @@ export default class LotterySmallEventHandler {
 
 	@packetHandler(SmallEventLotteryWinPacket)
 	async smallEventLotteryWin(context: PacketContext, packet: SmallEventLotteryWinPacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
 		const lng = context.discord!.language;
 		const lostTimeDisplay = i18n.formatDuration(packet.lostTime, lng);
-		await interaction?.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"lottery",
@@ -81,7 +91,7 @@ export default class LotterySmallEventHandler {
 						lng,
 						reward: packet.winAmount
 					}),
-					interaction.user,
+					MessagesUtils.getClickUser(context) ?? interaction.user,
 					lng
 				)
 			]

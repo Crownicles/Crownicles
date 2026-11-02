@@ -8,6 +8,7 @@ import { ReactionCollectorPveFightData } from "../../../../../../Lib/src/packets
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { SexTypeShort } from "../../../../../../Lib/src/constants/StringConstants";
 import { DiscordCache } from "../../../../bot/DiscordCache";
+import { MessagesUtils } from "../../../../utils/MessagesUtils";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
 import { ReactionCollectorReturnTypeOrNull } from "../../../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -53,8 +54,7 @@ export async function refusePveFight(_packet: CommandReportRefusePveFightRes, co
 	if (!originalInteraction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		content: i18n.t("commands:report.pveFightRefused", {
 			lng: originalInteraction.userLanguage,
 			pseudo: escapeUsername(originalInteraction.user.displayName)

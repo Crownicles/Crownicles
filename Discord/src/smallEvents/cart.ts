@@ -76,7 +76,9 @@ export async function cartResult(packet: SmallEventCartPacket, context: PacketCo
 	const lng = context.discord!.language;
 	const story = getCartStory(packet);
 	const gainScoreText = getGainScoreText(story, packet, lng);
-	const result = {
+
+	// Without any click, the collector ended by itself: the result replaces the event
+	await MessagesUtils.editClickOrCommandReply(context, {
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"cart",
@@ -85,13 +87,5 @@ export async function cartResult(packet: SmallEventCartPacket, context: PacketCo
 				lng
 			)
 		]
-	};
-
-	// Without any click, the collector ended by itself: the result replaces the event
-	if (context.discord?.buttonInteraction) {
-		await MessagesUtils.editClickReply(context, result);
-	}
-	else {
-		await interaction.editReply(result);
-	}
+	});
 }
