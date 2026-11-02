@@ -35,14 +35,14 @@ Keycloak used to fall back on its embedded H2 database, stored in `PROJECT_ROOT/
 docker-compose stop keycloak
 docker run --rm -v PROJECT_ROOT/keycloak/data:/opt/keycloak/data -e KC_DB=dev-file \
   quay.io/keycloak/keycloak:26.8 export --dir /opt/keycloak/data/export --users different_files
-docker-compose up -d mariadb_keycloak
+docker-compose up -d --wait mariadb_keycloak
 docker run --rm --network keycloak_default -v PROJECT_ROOT/keycloak/data:/opt/keycloak/data \
   -e KC_DB=mariadb -e KC_DB_URL=jdbc:mariadb://mariadb_keycloak:3306/keycloak -e KC_DB_USERNAME=keycloak -e KC_DB_PASSWORD=password \
-  quay.io/keycloak/keycloak:26.8 import --dir /opt/keycloak/data/export --override true
-docker-compose up -d keycloak
+  quay.io/keycloak/keycloak:26.8 import --dir /opt/keycloak/data/export --override true \
+  && docker-compose up -d keycloak
 ```
 
-If the import fails on an emoji, run the `utf8mb4` conversion above, then run the import again. `keycloak_default` is the network created by docker compose for this folder: check its name with `docker network ls`.
+`--wait` makes the import wait until MariaDB is healthy, and Keycloak only starts once the import succeeds: it must stay stopped while the realms are overridden. If the import fails on an emoji, run the `utf8mb4` conversion above, then run the import command again. `keycloak_default` is the network created by docker compose for this folder: check its name with `docker network ls`.
 
 If you do not need your local users, simply start fresh and import the realm as described below.
 
