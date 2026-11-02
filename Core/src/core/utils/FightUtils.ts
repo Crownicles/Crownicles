@@ -1,4 +1,14 @@
 import { Fighter } from "../fights/fighter/Fighter";
+import { PlayerBaseFighter } from "../fights/fighter/PlayerBaseFighter";
+import { PetDataController } from "../../data/Pet";
+
+/**
+ * Fight stats of a pet, scaled on the level of its owner
+ */
+export type PetFightStats = {
+	force: number;
+	speed: number;
+};
 
 /**
  * Utility functions for fight calculations
@@ -52,5 +62,17 @@ export abstract class FightUtils {
 			COEFF_LINEAR
 		} = FightUtils.PET_SPEED_BALANCE;
 		return level * clampedSpeed * (COEFF_QUADRATIC * clampedSpeed + COEFF_LINEAR);
+	}
+
+	/**
+	 * Get the fight stats of the pet assisting a fighter
+	 * @param owner The fighter the pet belongs to, it must have a pet
+	 */
+	static getPetFightStats(owner: Fighter): PetFightStats {
+		const petData = PetDataController.instance.getById((owner as PlayerBaseFighter).pet!.typeId)!;
+		return {
+			force: FightUtils.calculatePetStatFromForce(petData.force, owner.level),
+			speed: FightUtils.calculatePetStatFromSpeed(petData.speed, owner.level)
+		};
 	}
 }

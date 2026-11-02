@@ -9,7 +9,10 @@ import {
 } from "../../../FightController";
 import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 
-const turnsToHeal = 3;
+/**
+ * Number of turns the bleeding deals damage before healing
+ */
+export const BLEEDING_TURNS_TO_HEAL = 3;
 
 /**
  * Monsters that are immune to bleeding
@@ -30,8 +33,8 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 		return defaultHealFightAlterationResult(affected);
 	}
 
-	// Automatically heal the bleeding if greater than turnsToHeal or if the player used resting
-	if (affected.alterationTurn > turnsToHeal || (affected.alterationTurn > 1 && affected.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)) {
+	// Automatically heal the bleeding if greater than BLEEDING_TURNS_TO_HEAL or if the player used resting
+	if (affected.alterationTurn > BLEEDING_TURNS_TO_HEAL || (affected.alterationTurn > 1 && affected.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)) {
 		return defaultHealFightAlterationResult(affected);
 	}
 	return defaultDamageFightAlterationResult(opponent, getStatsInfo(affected, opponent), getAttackInfo(affected.alterationTurn));
@@ -40,11 +43,11 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 export default use;
 
 function getAttackInfo(alterationTurn: number): attackInfo {
-	const turnsReduceFactor = turnsToHeal + 1 - alterationTurn;
+	const turnsReduceFactor = BLEEDING_TURNS_TO_HEAL + 1 - alterationTurn;
 	return {
-		minDamage: turnsReduceFactor * 10 / turnsToHeal,
-		averageDamage: turnsReduceFactor * 50 / turnsToHeal,
-		maxDamage: turnsReduceFactor * 65 / turnsToHeal
+		minDamage: turnsReduceFactor * 10 / BLEEDING_TURNS_TO_HEAL,
+		averageDamage: turnsReduceFactor * 50 / BLEEDING_TURNS_TO_HEAL,
+		maxDamage: turnsReduceFactor * 65 / BLEEDING_TURNS_TO_HEAL
 	};
 }
 

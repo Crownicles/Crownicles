@@ -22,7 +22,7 @@ import {
 } from "../../../../Lib/src/constants/PetConstants";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { RandomPetDwarfInfo } from "../../../../Lib/src/types/RandomPetDwarfInfo";
-import { getAiPetBehavior } from "../fights/PetAssistManager";
+import { getPetBehaviors } from "../fights/PetAssistManager";
 import { PetUtils } from "./PetUtils";
 import { DwarfPetsSeen } from "../database/game/models/DwarfPetsSeen";
 import { getPetExpeditionPreferences } from "../../../../Lib/src/constants/ExpeditionConstants";
@@ -92,7 +92,7 @@ async function buildPetInformationPacket(pet: PetEntity, player: Player, lovePoi
 		force: petModel.force,
 		speed: petModel.speed,
 		feedDelay: (petModel.feedDelay ?? 1) * PetConstants.BREED_COOLDOWN,
-		fightAssistId: getAiPetBehavior(petModel.id)?.id ?? "",
+		fightAssistIds: getPetBehaviors(petModel.id).map(behavior => behavior.id),
 		ageCategory: PetUtils.getAgeCategory(pet.id),
 		likedExpeditionTypes,
 		dislikedExpeditionTypes,
