@@ -619,6 +619,29 @@ export abstract class PetConstants {
 		}
 	];
 
+	/**
+	 * Second power of the pets that have one. It is triggered after the power declared in PET_BEHAVIORS,
+	 * so the first power can prepare the second one (e.g. the mammoth thaws its owner before checking its momentum)
+	 */
+	static readonly PET_SECONDARY_BEHAVIORS = [
+		{
+			petIds: [PetConstants.PETS.MAMMOTH],
+			behaviorId: FightConstants.FIGHT_ACTIONS.PET.UNSTOPPABLE
+		},
+		{
+			petIds: [PetConstants.PETS.POLAR_BEAR],
+			behaviorId: FightConstants.FIGHT_ACTIONS.PET.BREATHING_HOLE_AMBUSH
+		},
+		{
+			petIds: [PetConstants.PETS.EAGLE],
+			behaviorId: FightConstants.FIGHT_ACTIONS.PET.WOUNDED_PREY
+		},
+		{
+			petIds: [PetConstants.PETS.SHARK],
+			behaviorId: FightConstants.FIGHT_ACTIONS.PET.SCENT_OF_BLOOD
+		}
+	];
+
 	static readonly PET_FOOD_LOVE_POINTS_AMOUNT = [
 		1,
 		3,

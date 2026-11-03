@@ -12,9 +12,9 @@ import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 50,
-		averageDamage: 130,
-		maxDamage: 220
+		minDamage: 55,
+		averageDamage: 150,
+		maxDamage: 250
 	};
 }
 
@@ -28,6 +28,12 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	};
 }
 
+// Mid-fight: before, the bomb exploded on turn 23/24, after the end of most fights
+const EXPLOSION_TURNS = [
+	13,
+	14
+];
+
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (turn <= 2) {
 		return Promise.resolve({
@@ -35,8 +41,8 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 		});
 	}
 
-	// On turn 23/24, bomb explodes if opponent's energy >= fighter's; otherwise, it fails.
-	if (turn === 23 || turn === 24) {
+	// The bomb explodes if the opponent's energy >= fighter's; otherwise, it fails.
+	if (EXPLOSION_TURNS.includes(turn)) {
 		if (opponent.getEnergy() < fighter.getEnergy()) {
 			return Promise.resolve({
 				assistanceStatus: PetAssistanceState.FAILURE

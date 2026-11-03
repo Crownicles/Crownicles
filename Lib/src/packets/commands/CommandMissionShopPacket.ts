@@ -52,7 +52,7 @@ export class CommandMissionShopPetInformation extends CrowniclesPacket {
 
 	nextFeed!: number;
 
-	fightAssistId!: string;
+	fightAssistIds!: string[];
 
 	ageCategory!: string;
 
