@@ -38,6 +38,8 @@ export function buildPetFighter(options: PetFighterOptions = {}): PlayerFighter 
 		defenseModifiers: [],
 		speedModifiers: [],
 		damageMultipliers: [],
+		enchantmentDamageDealtMultiplier: 1,
+		enchantmentDamageTakenMultiplier: 1,
 		resistances: [],
 		breathRegenModifiers: []
 	});

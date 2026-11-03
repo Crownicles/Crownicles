@@ -4,12 +4,13 @@ import {
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { Fighter } from "../../../fighter/Fighter";
 import { FightAlterations } from "../../FightAlterations";
+import { FightActionType } from "../../../../../../../Lib/src/types/FightActionType";
 
 /**
- * Damage bonus gained by the owner at each of its turns, as long as the momentum is not broken.
- * With 4 stacks (+16%), the mammoth wins about 90% as many extra fights as a tiger in AI fights between level 100+ players
+ * Bonus on the melee (physical) damage of the owner gained at each of its turns, as long as the momentum is not broken.
+ * With 4 stacks (+20%), the mammoth wins about 90% as many extra fights as a tiger in AI fights between level 100+ players
  */
-const DAMAGE_BONUS_PER_STACK = 0.04;
+const DAMAGE_BONUS_PER_STACK = 0.05;
 
 const MAX_MOMENTUM_STACKS = 4;
 
@@ -51,8 +52,8 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 	const newStacks = Math.min(stacks + 1, MAX_MOMENTUM_STACKS);
 	momentumStacks.set(fighter, newStacks);
 
-	// The bonus lasts until the owner's next turn, where it is renewed
-	fighter.applyDamageMultiplier(1 + newStacks * DAMAGE_BONUS_PER_STACK, 1);
+	// The bonus lasts until the owner's next turn, where it is renewed. Only the melee attacks benefit from the mammoth's run
+	fighter.applyDamageMultiplier(1 + newStacks * DAMAGE_BONUS_PER_STACK, 1, FightActionType.PHYSICAL);
 
 	if (newStacks === stacks) {
 		// Already at full speed, no need to announce it every turn

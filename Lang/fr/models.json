@@ -207,7 +207,7 @@
       "failure": "voit **{{petNickname}}** perdre la trace de sa proie : l'hémorragie de l'adversaire s'est arrêtée et le requin s'éloigne."
     },
     "unstoppable": {
-      "generalEffect": "prend de l'élan aux côtés de **{{petNickname}}**, dont la lourde course s'accélère : ses coups frappent de plus en plus fort.",
+      "generalEffect": "prend de l'élan aux côtés de **{{petNickname}}**, dont la lourde course s'accélère : ses attaques au corps à corps frappent de plus en plus fort.",
       "success": "est emporté par **{{petNickname}}**, lancé à pleine vitesse : plus rien ne semble pouvoir l'arrêter.",
       "failure": "est immobilisé et **{{petNickname}}** perd tout son élan, il va falloir le reprendre depuis le début."
     },
