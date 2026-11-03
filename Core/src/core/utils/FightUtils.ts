@@ -1,6 +1,7 @@
 import { Fighter } from "../fights/fighter/Fighter";
 import { PlayerBaseFighter } from "../fights/fighter/PlayerBaseFighter";
 import { PetDataController } from "../../data/Pet";
+import type { statsInfo } from "../fights/actions/FightActionController";
 
 /**
  * Fight stats of a pet, scaled on the level of its owner
@@ -18,6 +19,11 @@ export abstract class FightUtils {
 		COEFF_QUADRATIC: 0.005,
 		COEFF_LINEAR: 0.15
 	};
+
+	// Usual weighting of a pet attack: its force against the target's defense, a bit of its speed against the target's speed
+	private static readonly PET_ATTACK_FORCE_EFFECT = 0.9;
+
+	private static readonly PET_ATTACK_SPEED_EFFECT = 0.1;
 
 	private static readonly PET_SPEED_BALANCE = {
 		COEFF_QUADRATIC: 0.005,
@@ -73,6 +79,29 @@ export abstract class FightUtils {
 		return {
 			force: FightUtils.calculatePetStatFromForce(petData.force, owner.level),
 			speed: FightUtils.calculatePetStatFromSpeed(petData.speed, owner.level)
+		};
+	}
+
+	/**
+	 * Get the stats used for a usual attack of the pet of a fighter
+	 * @param owner The fighter the pet belongs to, it must have a pet
+	 * @param target The fighter attacked by the pet
+	 */
+	static getPetAttackStatsInfo(owner: Fighter, target: Fighter): statsInfo {
+		const petStats = FightUtils.getPetFightStats(owner);
+		return {
+			attackerStats: [
+				petStats.force,
+				petStats.speed
+			],
+			defenderStats: [
+				target.getDefense(),
+				target.getSpeed()
+			],
+			statsEffect: [
+				FightUtils.PET_ATTACK_FORCE_EFFECT,
+				FightUtils.PET_ATTACK_SPEED_EFFECT
+			]
 		};
 	}
 }

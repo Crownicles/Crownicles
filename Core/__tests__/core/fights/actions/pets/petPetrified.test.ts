@@ -1,22 +1,18 @@
 import {
-	describe, expect, it, vi
+	describe, expect, it
 } from "vitest";
 import petPetrified from "../../../../../src/core/fights/actions/interfaces/pets/petPetrified";
-import { PetAssistanceState } from "../../../../../../Lib/src/types/PetAssistanceResult";
+import {
+	PetAssistanceResult, PetAssistanceState
+} from "../../../../../../Lib/src/types/PetAssistanceResult";
 import { FightAlterations } from "../../../../../src/core/fights/actions/FightAlterations";
+import { FightAlterationDataController } from "../../../../../src/data/FightAlteration";
 import type { FightController } from "../../../../../src/core/fights/FightController";
-import type { Fighter } from "../../../../../src/core/fights/fighter/Fighter";
-import type { FightAlteration } from "../../../../../src/data/FightAlteration";
+import type { PlayerFighter } from "../../../../../src/core/fights/fighter/PlayerFighter";
+import { buildPetFighter } from "./PetFighterMocks";
 
-function buildOpponent(hasAlteration = false): Fighter {
-	return {
-		hasFightAlteration: (): boolean => hasAlteration,
-		newAlteration: vi.fn((alteration: FightAlteration) => alteration)
-	} as unknown as Fighter;
-}
-
-function usePet(turn: number, opponent: Fighter): ReturnType<typeof petPetrified> {
-	return petPetrified({} as Fighter, opponent, turn, {} as FightController);
+function usePet(turn: number, opponent: PlayerFighter): Promise<PetAssistanceResult | null> {
+	return petPetrified(buildPetFighter(), opponent, turn, {} as FightController);
 }
 
 describe("petPetrified pet assistance (#5063)", () => {
@@ -30,13 +26,13 @@ describe("petPetrified pet assistance (#5063)", () => {
 		40,
 		41
 	])("petrifies the opponent on turn %i", async turn => {
-		const opponent = buildOpponent();
+		const opponent = buildPetFighter();
 
 		const result = await usePet(turn, opponent);
 
 		expect(result?.assistanceStatus).toBe(PetAssistanceState.SUCCESS);
 		expect(result?.alterations?.[0].alteration).toBe(FightAlterations.PETRIFIED);
-		expect(opponent.newAlteration).toHaveBeenCalledOnce();
+		expect(opponent.alteration?.id).toBe(FightAlterations.PETRIFIED);
 	});
 
 	it.each([
@@ -49,16 +45,17 @@ describe("petPetrified pet assistance (#5063)", () => {
 		27,
 		30
 	])("does nothing on turn %i", async turn => {
-		const opponent = buildOpponent();
+		const opponent = buildPetFighter();
 
 		expect(await usePet(turn, opponent)).toBeNull();
-		expect(opponent.newAlteration).not.toHaveBeenCalled();
+		expect(opponent.hasFightAlteration()).toBe(false);
 	});
 
 	it("does nothing when the opponent is already altered", async () => {
-		const opponent = buildOpponent(true);
+		const opponent = buildPetFighter();
+		opponent.newAlteration(FightAlterationDataController.instance.getById(FightAlterations.POISONED)!);
 
 		expect(await usePet(14, opponent)).toBeNull();
-		expect(opponent.newAlteration).not.toHaveBeenCalled();
+		expect(opponent.alteration?.id).toBe(FightAlterations.POISONED);
 	});
 });

@@ -7,24 +7,22 @@ import {
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 
-const PET_POWERS = FightConstants.FIGHT_ACTIONS.PET;
-
 describe("PetAssistManager", () => {
 	beforeAll(() => {
 		initializeAllPetBehaviors();
 	});
 
 	it.each([
-		[PetConstants.PETS.MAMMOTH, [PET_POWERS.PROTECT_AGAINST_COLD, PET_POWERS.UNSTOPPABLE]],
-		[PetConstants.PETS.POLAR_BEAR, [PET_POWERS.PROTECT_AGAINST_COLD, PET_POWERS.BREATHING_HOLE_AMBUSH]],
-		[PetConstants.PETS.EAGLE, [PET_POWERS.UN_BLIND, PET_POWERS.WOUNDED_PREY]],
-		[PetConstants.PETS.SHARK, [PET_POWERS.SCARE_FISH, PET_POWERS.SCENT_OF_BLOOD]]
+		[PetConstants.PETS.MAMMOTH, [FightConstants.FIGHT_ACTIONS.PET.PROTECT_AGAINST_COLD, FightConstants.FIGHT_ACTIONS.PET.UNSTOPPABLE]],
+		[PetConstants.PETS.POLAR_BEAR, [FightConstants.FIGHT_ACTIONS.PET.PROTECT_AGAINST_COLD, FightConstants.FIGHT_ACTIONS.PET.BREATHING_HOLE_AMBUSH]],
+		[PetConstants.PETS.EAGLE, [FightConstants.FIGHT_ACTIONS.PET.UN_BLIND, FightConstants.FIGHT_ACTIONS.PET.WOUNDED_PREY]],
+		[PetConstants.PETS.SHARK, [FightConstants.FIGHT_ACTIONS.PET.SCARE_FISH, FightConstants.FIGHT_ACTIONS.PET.SCENT_OF_BLOOD]]
 	])("gives pet %i its first power, then its second one", (petId, expectedPowers) => {
 		expect(getPetBehaviors(petId).map(behavior => behavior.id)).toEqual(expectedPowers);
 	});
 
 	it("keeps a single power for the other pets", () => {
-		expect(getPetBehaviors(PetConstants.PETS.TIGER).map(behavior => behavior.id)).toEqual([PET_POWERS.CLAWS]);
+		expect(getPetBehaviors(PetConstants.PETS.TIGER).map(behavior => behavior.id)).toEqual([FightConstants.FIGHT_ACTIONS.PET.CLAWS]);
 	});
 
 	it("does not register the powers twice when initialized again", () => {
