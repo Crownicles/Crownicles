@@ -51,9 +51,13 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	};
 }
 
+function isCatchingBreath(opponent: Fighter): boolean {
+	const lastActionId = opponent.fightActionsHistory.at(-1)?.id;
+	return lastActionId !== undefined && CATCHING_BREATH_ACTIONS.includes(lastActionId);
+}
+
 const use: PetAssistanceFunc = (fighter, opponent, _turn, _fightController): Promise<PetAssistanceResult | null> => {
-	const opponentLastActionId = opponent.fightActionsHistory.at(-1)?.id;
-	if (ambushedOwners.has(fighter) || !opponentLastActionId || !CATCHING_BREATH_ACTIONS.includes(opponentLastActionId)) {
+	if (ambushedOwners.has(fighter) || !isCatchingBreath(opponent)) {
 		return Promise.resolve(null);
 	}
 

@@ -111,15 +111,17 @@ function buildExpeditionSection(packet: CommandMissionShopPetInformation, lng: L
 	});
 }
 
+type FightEffectComments = {
+	commentOnFightEffect: string;
+	secondFightEffect: string;
+};
+
 /**
  * Build the veterinarian comments on the fight powers of the pet, the second one only exists for some pets
  * @param fightAssistIds
  * @param lng
  */
-function buildFightEffectComments(fightAssistIds: string[], lng: Language): {
-	commentOnFightEffect: string;
-	secondFightEffect: string;
-} {
+function buildFightEffectComments(fightAssistIds: string[], lng: Language): FightEffectComments {
 	const [firstPowerId, secondPowerId] = fightAssistIds;
 	return {
 		commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${firstPowerId}`, lng),

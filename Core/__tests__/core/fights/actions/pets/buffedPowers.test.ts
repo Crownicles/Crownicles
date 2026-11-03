@@ -11,11 +11,12 @@ import { FightConstants } from "../../../../../../Lib/src/constants/FightConstan
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 import { FightActionDataController } from "../../../../../src/data/FightAction";
 import type { FightController } from "../../../../../src/core/fights/FightController";
+import type { PlayerFighter } from "../../../../../src/core/fights/fighter/PlayerFighter";
 import { buildPetFighter } from "./PetFighterMocks";
 
 const FIGHT = {} as FightController;
 
-async function statusesOnTurns(power: typeof horn, owner: ReturnType<typeof buildPetFighter>, opponent: ReturnType<typeof buildPetFighter>, turns: number[]): Promise<(string | undefined)[]> {
+async function statusesOnTurns(power: typeof horn, owner: PlayerFighter, opponent: PlayerFighter, turns: number[]): Promise<(string | undefined)[]> {
 	const statuses: (string | undefined)[] = [];
 	for (const turn of turns) {
 		statuses.push((await power(owner, opponent, turn, FIGHT))?.assistanceStatus);
@@ -88,7 +89,7 @@ describe("buffed pet powers (#5063)", () => {
 		const owner = buildPetFighter({ petTypeId: PetConstants.PETS.KANGAROO });
 		const opponent = buildPetFighter();
 		vi.spyOn(opponent, "getLastFightActionUsed").mockReturnValue(FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK)!);
-		const bool = vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+		const bool = vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
 
 		expect((await petHit(owner, opponent, 5, FIGHT))?.assistanceStatus).toBe(PetAssistanceState.SUCCESS);
 		expect(bool).toHaveBeenCalledWith(0.5);

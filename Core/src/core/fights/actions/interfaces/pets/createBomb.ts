@@ -28,6 +28,12 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	};
 }
 
+// Mid-fight: before, the bomb exploded on turn 23/24, after the end of most fights
+const EXPLOSION_TURNS = [
+	13,
+	14
+];
+
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (turn <= 2) {
 		return Promise.resolve({
@@ -35,8 +41,8 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 		});
 	}
 
-	// Mid-fight, on turn 13/14, the bomb explodes if the opponent's energy >= fighter's; otherwise, it fails.
-	if (turn === 13 || turn === 14) {
+	// The bomb explodes if the opponent's energy >= fighter's; otherwise, it fails.
+	if (EXPLOSION_TURNS.includes(turn)) {
 		if (opponent.getEnergy() < fighter.getEnergy()) {
 			return Promise.resolve({
 				assistanceStatus: PetAssistanceState.FAILURE
