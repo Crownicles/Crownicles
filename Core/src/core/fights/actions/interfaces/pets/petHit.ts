@@ -39,9 +39,10 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	};
 }
 
+const STRIKE_BACK_CHANCE = 0.5;
+
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	// Strikes back half of the time
-	if (RandomUtils.crowniclesRandom.bool(0.5) || turn <= 2) {
+	if (!RandomUtils.crowniclesRandom.bool(STRIKE_BACK_CHANCE) || turn <= 2) {
 		return Promise.resolve(null);
 	}
 

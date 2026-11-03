@@ -37,16 +37,26 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	};
 }
 
+// The pet wobbles on turn 9/10, then falls on the opponent on its owner's next turn
+const WOBBLE_TURNS = [
+	9,
+	10
+];
+
+const FALL_TURNS = [
+	11,
+	12
+];
+
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	// At turn 9/10, a warning is given
-	if (turn === 9 || turn === 10) {
+	if (WOBBLE_TURNS.includes(turn)) {
 		return Promise.resolve({
 			assistanceStatus: PetAssistanceState.GENERAL_EFFECT
 		});
 	}
 
 	// On the following turn, the pet falls on the opponent except if the opponent is faster than the threshold
-	if (turn === 11 || turn === 12) {
+	if (FALL_TURNS.includes(turn)) {
 		const petId = (fighter as PlayerFighter).pet!.typeId;
 		const petData = PetDataController.instance.getById(petId)!;
 		const centerSpeed = FightUtils.calculatePetStatFromForce(petData.force * 0.75, fighter.level);

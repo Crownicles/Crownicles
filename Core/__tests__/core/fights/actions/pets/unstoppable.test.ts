@@ -39,21 +39,25 @@ describe("unstoppable pet assistance (mammoth)", () => {
 		}
 	});
 
-	it("loses all its momentum when the owner is stunned and starts over afterwards", async () => {
+	it("loses all its momentum when the owner gets stunned, and starts over on the turn the stun wears off", async () => {
 		const owner = buildPetFighter({ petTypeId: PetConstants.PETS.MAMMOTH });
 		await startOwnerTurn(owner);
 		await startOwnerTurn(owner);
 		await startOwnerTurn(owner);
 
+		// The stun was just inflicted: it has not affected the owner yet
 		owner.alteration = { id: FightAlterations.STUNNED } as FightAlteration;
+		owner.alterationTurn = 0;
 		const brokenResult = await startOwnerTurn(owner);
 
 		expect(brokenResult?.assistanceStatus).toBe(PetAssistanceState.FAILURE);
 		expect(owner.getDamageMultiplier()).toBe(1);
 
-		owner.alteration = null;
-		await startOwnerTurn(owner);
+		// On the owner's next turn, the stun is still there when the pet acts but wears off before the owner's action
+		owner.alterationTurn = 1;
+		const restartResult = await startOwnerTurn(owner);
 
+		expect(restartResult?.assistanceStatus).toBe(PetAssistanceState.GENERAL_EFFECT);
 		expect(owner.getDamageMultiplier()).toBeCloseTo(1.04);
 	});
 

@@ -14,7 +14,7 @@ const DAMAGE_BONUS_PER_STACK = 0.04;
 const MAX_MOMENTUM_STACKS = 4;
 
 /**
- * Alterations that immobilize the owner and break the momentum.
+ * Alterations that immobilize the owner and break the momentum when they hit it.
  * Frozen is thawed by the mammoth's first power before this one is checked
  */
 const MOMENTUM_BREAKERS: string[] = [
@@ -34,9 +34,17 @@ function breakMomentum(fighter: Fighter, stacks: number): PetAssistanceResult | 
 	return stacks > 0 ? { assistanceStatus: PetAssistanceState.FAILURE } : null;
 }
 
+/**
+ * The pet acts before the owner's alteration, which is still there on the turn it wears off:
+ * only an alteration that has not affected the owner yet (just inflicted) breaks the momentum
+ */
+function isJustImmobilized(fighter: Fighter): boolean {
+	return fighter.alteration !== null && fighter.alterationTurn === 0 && MOMENTUM_BREAKERS.includes(fighter.alteration.id);
+}
+
 const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Promise<PetAssistanceResult | null> => {
 	const stacks = momentumStacks.get(fighter) ?? 0;
-	if (fighter.alteration && MOMENTUM_BREAKERS.includes(fighter.alteration.id)) {
+	if (isJustImmobilized(fighter)) {
 		return Promise.resolve(breakMomentum(fighter, stacks));
 	}
 
