@@ -252,7 +252,8 @@ async function buildFightIntroEmbed(interaction: CrowniclesInteraction, packet: 
 }
 
 /**
- * Show the fight intro in place of the confirmation, or of the deferred command for friendly fights which have none
+ * Show the fight intro in place of the confirmation, or of the deferred command for friendly fights which have none.
+ * A fight started without confirmation nor deferred command (test commands) gets the intro as a new message
  */
 async function displayFightIntro(context: PacketContext, interaction: CrowniclesInteraction, packet: CommandFightIntroduceFightersPacket): Promise<void> {
 	const embed = await buildFightIntroEmbed(interaction, packet);
@@ -261,6 +262,9 @@ async function displayFightIntro(context: PacketContext, interaction: Crownicles
 	}
 	else if (packet.friendly) {
 		await interaction.editReply({ embeds: [embed] });
+	}
+	else {
+		await interaction.channel.send({ embeds: [embed] });
 	}
 }
 
