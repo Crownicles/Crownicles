@@ -18,6 +18,14 @@ import { generateKingGuardPet } from "./KingGuardPet";
 // Upper bound of the seed given to the PvE level algorithm, which reads its last two digits and the following ones
 const LEVEL_SEED_MAX = 1_000_000;
 
+/**
+ * Forced characteristics of a king guard (test command); the missing ones are drawn as usual
+ */
+export type KingGuardOverrides = {
+	level?: number;
+	classId?: number;
+};
+
 export type KingGuard = {
 	player: Player;
 	guardClass: Class;
@@ -52,14 +60,16 @@ export async function computeKingGuardLevel(player: Player): Promise<number> {
 /**
  * Generate a king guard for a player: an unsaved player of a random class available at its level, with a pet
  * @param player The player who will fight the guard
+ * @param overrides Forced level or class of the guard
  */
-export async function generateKingGuard(player: Player): Promise<KingGuard> {
+export async function generateKingGuard(player: Player, overrides: KingGuardOverrides = {}): Promise<KingGuard> {
 	const guard = Player.build({
 		keycloakId: FightConstants.KING_GUARD.KEYCLOAK_ID,
-		level: await computeKingGuardLevel(player),
+		level: overrides.level ?? await computeKingGuardLevel(player),
 		petId: null
 	});
-	const guardClass = RandomUtils.crowniclesRandom.pick(ClassDataController.instance.getByGroup(guard.getClassGroup()));
+	const forcedClass = overrides.classId === undefined ? undefined : ClassDataController.instance.getById(overrides.classId);
+	const guardClass = forcedClass ?? RandomUtils.crowniclesRandom.pick(ClassDataController.instance.getByGroup(guard.getClassGroup()));
 	guard.class = guardClass.id;
 	return {
 		player: guard,
