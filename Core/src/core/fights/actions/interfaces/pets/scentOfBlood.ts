@@ -1,5 +1,5 @@
 import {
-	attackInfo, FightActionController, statsInfo
+	attackInfo, FightActionController
 } from "../../FightActionController";
 import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import {
@@ -48,26 +48,8 @@ function getFrenzyAttackInfo(): attackInfo {
 	};
 }
 
-function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
-	const petStats = FightUtils.getPetFightStats(sender);
-	return {
-		attackerStats: [
-			petStats.force,
-			petStats.speed
-		],
-		defenderStats: [
-			receiver.getDefense(),
-			receiver.getSpeed()
-		],
-		statsEffect: [
-			0.9,
-			0.1
-		]
-	};
-}
-
 function bite(fighter: Fighter, opponent: Fighter, info: attackInfo): number {
-	return FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, info, true);
+	return FightActionController.getAttackDamage(FightUtils.getPetAttackStatsInfo(fighter, opponent), fighter, info, true);
 }
 
 /**

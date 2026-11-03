@@ -3,7 +3,9 @@ import {
 } from "vitest";
 import unstoppable from "../../../../../src/core/fights/actions/interfaces/pets/unstoppable";
 import { FightAlterations } from "../../../../../src/core/fights/actions/FightAlterations";
-import { PetAssistanceState } from "../../../../../../Lib/src/types/PetAssistanceResult";
+import {
+	PetAssistanceResult, PetAssistanceState
+} from "../../../../../../Lib/src/types/PetAssistanceResult";
 import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
 import type { FightController } from "../../../../../src/core/fights/FightController";
 import type { FightAlteration } from "../../../../../src/data/FightAlteration";
@@ -13,7 +15,7 @@ import { buildPetFighter } from "./PetFighterMocks";
 /**
  * Play the start of an owner's turn like the fight controller does: pet first, then the counters are reduced before the action
  */
-async function startOwnerTurn(owner: Fighter): Promise<Awaited<ReturnType<typeof unstoppable>>> {
+async function startOwnerTurn(owner: Fighter): Promise<PetAssistanceResult | null> {
 	const result = await unstoppable(owner, buildPetFighter(), 1, {} as FightController);
 	owner.reduceCounters();
 	return result;

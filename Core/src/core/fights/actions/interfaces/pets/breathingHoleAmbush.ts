@@ -1,5 +1,5 @@
 import {
-	attackInfo, FightActionController, statsInfo
+	attackInfo, FightActionController
 } from "../../FightActionController";
 import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import {
@@ -33,24 +33,6 @@ function getAttackInfo(): attackInfo {
 	};
 }
 
-function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
-	const petStats = FightUtils.getPetFightStats(sender);
-	return {
-		attackerStats: [
-			petStats.force,
-			petStats.speed
-		],
-		defenderStats: [
-			receiver.getDefense(),
-			receiver.getSpeed()
-		],
-		statsEffect: [
-			0.9,
-			0.1
-		]
-	};
-}
-
 function isCatchingBreath(opponent: Fighter): boolean {
 	const lastActionId = opponent.fightActionsHistory.at(-1)?.id;
 	return lastActionId !== undefined && CATCHING_BREATH_ACTIONS.includes(lastActionId);
@@ -63,7 +45,7 @@ const use: PetAssistanceFunc = (fighter, opponent, _turn, _fightController): Pro
 
 	ambushedOwners.add(fighter);
 	return Promise.resolve({
-		damages: FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, getAttackInfo(), true),
+		damages: FightActionController.getAttackDamage(FightUtils.getPetAttackStatsInfo(fighter, opponent), fighter, getAttackInfo(), true),
 		assistanceStatus: PetAssistanceState.SUCCESS
 	});
 };
