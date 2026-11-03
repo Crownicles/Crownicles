@@ -4,7 +4,7 @@ import { FightView } from "../../FightView";
 import { FightAction } from "../../../../data/FightAction";
 import { Fighter } from "../../fighter/Fighter";
 import { PlayerBaseFighter } from "../../fighter/PlayerBaseFighter";
-import { getAiPetBehavior } from "../../PetAssistManager";
+import { getPetBehaviors } from "../../PetAssistManager";
 import { PetDataController } from "../../../../data/Pet";
 import { FightUtils } from "../../../utils/FightUtils";
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
@@ -25,7 +25,8 @@ function toNeuralPetView(fighter: Fighter): NeuralFighterView["pet"] {
 	}
 	const petData = PetDataController.instance.getById(petTypeId);
 	return {
-		assistanceId: getAiPetBehavior(petTypeId)?.id ?? null,
+		// The first power of the pet (the one declared in PET_BEHAVIORS)
+		assistanceId: getPetBehaviors(petTypeId)[0]?.id ?? null,
 		attack: petData ? FightUtils.calculatePetStatFromForce(petData.force, fighter.level) : 0,
 		speed: petData ? FightUtils.calculatePetStatFromSpeed(petData.speed, fighter.level) : 0
 	};
