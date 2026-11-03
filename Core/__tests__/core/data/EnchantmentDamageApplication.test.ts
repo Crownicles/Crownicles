@@ -37,6 +37,7 @@ describe("Enchantment damage multiplier application", () => {
 			const receivedDamage: number[] = [];
 			const sender = {
 				getEnchantmentDamageDealtMultiplier: () => 1.5,
+				getActionTypeDamageMultiplier: () => 1,
 				damage: (): number => 0
 			} as unknown as Fighter;
 			const receiver = {
@@ -66,6 +67,7 @@ describe("Enchantment damage multiplier application", () => {
 
 			const sender = {
 				getEnchantmentDamageDealtMultiplier: () => 1,
+				getActionTypeDamageMultiplier: () => 1,
 				damage: (): number => 0
 			} as unknown as Fighter;
 			const receiver = {
