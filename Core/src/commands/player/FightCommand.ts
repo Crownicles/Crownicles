@@ -391,7 +391,9 @@ async function startAcceptedFight(player: Player, context: PacketContext, respon
 		}, opponent, context, response);
 	}
 	else {
-		await startKingGuardFight(player, playerClass, context, response);
+		await startKingGuardFight({
+			player, playerClass
+		}, context, response);
 	}
 }
 

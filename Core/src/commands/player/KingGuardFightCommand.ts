@@ -6,7 +6,9 @@ import { FightController } from "../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
 import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 import { KingGuardFighter } from "../../core/fights/fighter/KingGuardFighter";
-import { generateKingGuard } from "../../core/fights/kingGuards/KingGuardGenerator";
+import {
+	generateKingGuard, KingGuardOverrides
+} from "../../core/fights/kingGuards/KingGuardGenerator";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { Class } from "../../data/Class";
 import { crowniclesInstance } from "../../app";
@@ -50,17 +52,23 @@ export async function kingGuardFightEndCallback(fight: FightController, guard: K
 
 /**
  * Start a fight against a king guard generated for the player, used when no real opponent is available
- * @param player
- * @param playerClass
+ * @param fighter The player, its class and the forced characteristics of the guard if any (test command)
  * @param context
  * @param response
  */
-export async function startKingGuardFight(player: Player, playerClass: Class, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function startKingGuardFight(fighter: {
+	player: Player;
+	playerClass: Class;
+	guardOverrides?: KingGuardOverrides;
+}, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	const {
+		player, playerClass
+	} = fighter;
 	const askingFighter = new PlayerFighter(player, playerClass);
 	askingFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
 	await askingFighter.loadStats();
 
-	const guardFighter = new KingGuardFighter(await generateKingGuard(player));
+	const guardFighter = new KingGuardFighter(await generateKingGuard(player, fighter.guardOverrides));
 	await guardFighter.loadStats();
 
 	const fightController = new FightController(
