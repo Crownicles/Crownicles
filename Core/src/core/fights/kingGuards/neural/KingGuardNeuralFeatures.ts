@@ -27,6 +27,9 @@ export type NeuralFighterView = {
 	// Assistance of the fighter's pet and its stats at the fighter's level (null without a pet)
 	pet: {
 		assistanceId: string | null;
+
+		// Second power of the pet, for the pets that have one
+		secondaryAssistanceId: string | null;
 		attack: number;
 		speed: number;
 	} | null;
@@ -52,6 +55,7 @@ export type NeuralIndexes = {
 	action: Map<string, number>;
 	alteration: Map<string, number>;
 	assistance: Map<string, number>;
+	secondary: Map<string, number>;
 	classes: Map<number, number>;
 };
 
@@ -64,6 +68,7 @@ export function buildNeuralIndexes(vocab: NeuralVocabulary): NeuralIndexes {
 		action: new Map(vocab.actionIds.map((id, i) => [id, i])),
 		alteration: new Map(vocab.alterationIds.map((id, i) => [id, i])),
 		assistance: new Map(vocab.assistIds.map((id, i) => [id, i])),
+		secondary: new Map((vocab.secondaryIds ?? []).map((id, i) => [id, i])),
 		classes: new Map(vocab.classes.map((id, i) => [id, i]))
 	};
 }
@@ -81,10 +86,11 @@ export function getNeuralInputSize(vocab: NeuralVocabulary): number {
 	const alterations = vocab.alterationIds.length;
 	const classes = vocab.classes.length;
 	const assistances = vocab.assistIds.length + 1;
+	const secondaries = (vocab.secondaryIds ?? []).length + 1;
 	return STATE_SCALARS + 2 * alterations + 3 * actions + classes + 1
 		+ STAT_SCALARS + classes
 		+ actions + 2
-		+ 2 * assistances + PET_SCALARS + vocab.roles.length + vocab.styles.length;
+		+ 2 * assistances + PET_SCALARS + 2 * secondaries + vocab.roles.length + vocab.styles.length;
 }
 
 /**
@@ -265,6 +271,17 @@ function assistanceIndex(fighter: NeuralFighterView, indexes: NeuralIndexes): nu
 }
 
 /**
+ * Index of the second power of a fighter's pet, or the "none" slot
+ * @param fighter
+ * @param indexes
+ */
+function secondaryIndex(fighter: NeuralFighterView, indexes: NeuralIndexes): number {
+	const none = indexes.secondary.size;
+	const secondaryId = fighter.pet?.secondaryAssistanceId;
+	return secondaryId ? indexes.secondary.get(secondaryId) ?? none : none;
+}
+
+/**
  * Strength of a pet against what it hits: its attack against the target's defense, its speed against the target's
  * @param writer
  * @param pet
@@ -292,6 +309,8 @@ function writePetFeatures(writer: FeatureWriter, sides: NeuralSides, indexes: Ne
 	writer.oneHot(indexes.assistance.size + 1, assistanceIndex(opponent, indexes));
 	writePetStrength(writer, me.pet, opponent);
 	writePetStrength(writer, opponent.pet, me);
+	writer.oneHot(indexes.secondary.size + 1, secondaryIndex(me, indexes));
+	writer.oneHot(indexes.secondary.size + 1, secondaryIndex(opponent, indexes));
 }
 
 /**

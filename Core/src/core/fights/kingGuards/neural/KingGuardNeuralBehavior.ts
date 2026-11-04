@@ -24,9 +24,10 @@ function toNeuralPetView(fighter: Fighter): NeuralFighterView["pet"] {
 		return null;
 	}
 	const petData = PetDataController.instance.getById(petTypeId);
+	const [firstPower, secondPower] = getPetBehaviors(petTypeId);
 	return {
-		// The first power of the pet (the one declared in PET_BEHAVIORS)
-		assistanceId: getPetBehaviors(petTypeId)[0]?.id ?? null,
+		assistanceId: firstPower?.id ?? null,
+		secondaryAssistanceId: secondPower?.id ?? null,
 		attack: petData ? FightUtils.calculatePetStatFromForce(petData.force, fighter.level) : 0,
 		speed: petData ? FightUtils.calculatePetStatFromSpeed(petData.speed, fighter.level) : 0
 	};

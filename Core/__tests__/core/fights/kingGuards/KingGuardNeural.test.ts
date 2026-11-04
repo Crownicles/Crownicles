@@ -82,6 +82,15 @@ describe("King guard network", () => {
 		expect(getUnknownIdsOfModel(outdated)).toEqual([fixture.model.vocab.assistIds[0]]);
 	});
 
+	it("does not use a model trained before the pets had a second power", () => {
+		const { secondaryIds, ...vocab } = fixture.model.vocab;
+		const outdated = new KingGuardNeuralModel({
+			...fixture.model,
+			vocab
+		});
+		expect(getUnknownIdsOfModel(outdated)).toEqual(expect.arrayContaining(secondaryIds!));
+	});
+
 	it("hands the decision to the scripted behavior when the network fails", () => {
 		const logError = vi.spyOn(CrowniclesLogger, "errorWithObj").mockImplementation(() => undefined);
 		const fallbackAction = fakeAction("simpleAttack", 0);
