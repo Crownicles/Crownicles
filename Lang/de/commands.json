@@ -479,7 +479,7 @@
         "description": "Zeigt den Verlauf deiner letzten Kämpfe an: den jeweiligen Gegner, das Ergebnis sowie die Entwicklung des Ruhmes und der Liga jedes Kämpfers."
       },
       "FRIENDLY_FIGHT": {
-        "description": "Ermöglicht es dir, gegen einen anderen Spieler – den du entweder namentlich nennst oder anhand seiner Rangliste auswählst – in einem Freundschaftskampf anzutreten. Der Gegner wird von einer KI gesteuert. Dieser Kampf hat keinerlei Konsequenzen: kein Ruhm, keine Belohnung, kein Energieverlust und kein Missionsfortschritt. Die Turnieroption begrenzt das Level beider Kämpfer auf {{tournamentLevelCap}} : Ein Spieler mit niedrigerem Level behält sein Level bei."
+        "description": "Permet d'affronter un autre joueur, choisi en le mentionnant ou grâce à son classement, dans un combat amical. Le joueur affronté est contrôlé par une IA. Ce combat n'a aucune conséquence : aucune gloire, aucune récompense, aucune énergie perdue et aucune progression de mission. Le niveau des deux combattants est plafonné à {{friendlyFightLevelCap}} : un joueur de niveau inférieur conserve son niveau."
       },
       "GARDEN": {
         "description": "Damit könnt ihr euch um den Garten eures Hauses kümmern, wenn ihr euch in der Stadt befindet: Pflanzen, gießen, kompostieren und eure Pflanzen ernten. Mit dem „Cœur Sylvestre“, einem Talisman, der beim Kräuterhändler in Coco Village erhältlich ist, könnt ihr den Garten aus der Ferne einsehen und dort ernten."
@@ -2427,8 +2427,7 @@
     "notEnoughEnergy": "Sie haben nicht genug Energie, um einen Kampf zu beginnen!",
     "monsterNotFound": "Es wurden keine Monster gefunden, die gegen dich antreten können. Bitte melden Sie diesen Vorfall unserem Support (discord.gg/AP3Wmzb).",
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | Ein Kampf wird zwischen {{fightInitiator}} und {{opponent}} gestartet!",
-    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Zwischen {{fightInitiator}} und {{opponent}} wird ein Freundschaftskampf ausgetragen! Dieser hat keinerlei Konsequenzen.",
-    "tournamentFriendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Ein freundschaftlicher Kampf im Turniermodus zwischen {{fightInitiator}} und {{opponent}} beginnt! Die Kämpfer werden auf die maximale Stufe {{levelCap}} zurückgesetzt, und der Kampf hat keinerlei Konsequenzen.",
+    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Un combat amical est lancé entre {{fightInitiator}} et {{opponent}} ! Les combattants sont ramenés au niveau {{levelCap}} au maximum et le combat n'aura aucune conséquence.",
     "actionsOf": "**Angriffe von {{pseudo}} :**",
     "petOf": "**Familienmitglied von {{pseudo}} :**",
     "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
