@@ -479,7 +479,7 @@
         "description": "Displays a history of your most recent battles: the opponent you faced, the result, and each fighter's progress in terms of glory and league rank."
       },
       "FRIENDLY_FIGHT": {
-        "description": "Allows you to face off against another player—chosen by naming them or based on their ranking—in a friendly battle. The opponent is controlled by AI. This battle has no consequences: no glory, no rewards, no energy lost, and no mission progress. The tournament option caps both combatants’ levels at {{tournamentLevelCap}} : a player with a lower level retains their current level."
+        "description": "Permet d'affronter un autre joueur, choisi en le mentionnant ou grâce à son classement, dans un combat amical. Le joueur affronté est contrôlé par une IA. Ce combat n'a aucune conséquence : aucune gloire, aucune récompense, aucune énergie perdue et aucune progression de mission. Le niveau des deux combattants est plafonné à {{friendlyFightLevelCap}} : un joueur de niveau inférieur conserve son niveau."
       },
       "GARDEN": {
         "description": "Allows you to tend to your home's garden while you're in town: plant, water, compost, and harvest your plants. With the Cœur Sylvestre—a talisman sold at the Herbalist's in Coco Village—you can check on your garden and harvest from it remotely."
@@ -2427,8 +2427,7 @@
     "notEnoughEnergy": "You don't have enough energy to start a fight!",
     "monsterNotFound": "No monster has been found to face you. Please report this incident to our support (discord.gg/AP3Wmzb).",
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | A fight between {{fightInitiator}} and {{opponent}} has begun!",
-    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | A friendly battle has begun between {{fightInitiator}} and {{opponent}} ! It will have no consequences.",
-    "tournamentFriendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | A friendly tournament-style battle has begun between {{fightInitiator}} and {{opponent}} ! The combatants are reset to a maximum level of {{levelCap}} , and the battle will have no consequences.",
+    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Un combat amical est lancé entre {{fightInitiator}} et {{opponent}} ! Les combattants sont ramenés au niveau {{levelCap}} au maximum et le combat n'aura aucune conséquence.",
     "actionsOf": "**{{pseudo}}'s attacks:**",
     "petOf": "**{{pseudo}}'s pet:**",
     "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
