@@ -321,3 +321,83 @@ describe("King guard fights logs", () => {
 		});
 	});
 });
+
+describe("King guard fight stats", () => {
+	it("returns null for a player who never fought a king guard", async () => {
+		await LogsPlayers.create({ keycloakId: "neverFought" });
+
+		expect(await LogsKingGuardFightsRequests.getFightStats("neverFought")).toBeNull();
+	});
+
+	it("counts the results and the records broken, a weaker victory or a defeat against a stronger guard breaking none", async () => {
+		const player = await LogsPlayers.create({ keycloakId: "climber" });
+		const fights = [
+			{ guardLevel: 100, winner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			{ guardLevel: 95, winner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			{ guardLevel: 120, winner: KING_GUARD_FIGHT_WINNER.GUARD },
+			{ guardLevel: 110, winner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			{ guardLevel: 110, winner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			{ guardLevel: 130, winner: KING_GUARD_FIGHT_WINNER.DRAW }
+		];
+		for (const [index, fight] of fights.entries()) {
+			await logGuardFight({
+				playerId: player.id, ...fight, date: 1_000 + index
+			});
+		}
+
+		expect(await LogsKingGuardFightsRequests.getFightStats("climber")).toEqual({
+			won: 4,
+			lost: 1,
+			draw: 1,
+			record: {
+				level: 110,
+				recordsBroken: 2,
+				rank: 1,
+				challengers: 1
+			},
+			kingdomRecord: {
+				keycloakId: "climber",
+				level: 110
+			}
+		});
+	});
+
+	it("ranks the player among the challengers, the first to reach a level ranking first", async () => {
+		const leader = await LogsPlayers.create({ keycloakId: "leader" });
+		const early = await LogsPlayers.create({ keycloakId: "early" });
+		const late = await LogsPlayers.create({ keycloakId: "late" });
+		const neverWon = await LogsPlayers.create({ keycloakId: "neverWon" });
+		await logGuardFight({
+			playerId: leader.id, guardLevel: 150, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 3_000
+		});
+		await logGuardFight({
+			playerId: late.id, guardLevel: 120, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 2_000
+		});
+		await logGuardFight({
+			playerId: early.id, guardLevel: 120, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 1_000
+		});
+		await logGuardFight({
+			playerId: neverWon.id, guardLevel: 200, winner: KING_GUARD_FIGHT_WINNER.GUARD, date: 4_000
+		});
+
+		expect(await LogsKingGuardFightsRequests.getFightStats("late")).toMatchObject({
+			record: {
+				level: 120, rank: 3, challengers: 3
+			},
+			kingdomRecord: {
+				keycloakId: "leader", level: 150
+			}
+		});
+		expect((await LogsKingGuardFightsRequests.getFightStats("early"))?.record?.rank).toBe(2);
+
+		const neverWonStats = await LogsKingGuardFightsRequests.getFightStats("neverWon");
+		expect(neverWonStats).toEqual({
+			won: 0,
+			lost: 1,
+			draw: 0,
+			kingdomRecord: {
+				keycloakId: "leader", level: 150
+			}
+		});
+	});
+});
