@@ -262,7 +262,10 @@ function buildSpecificCommandEmbed(helpMessage: CrowniclesEmbed, command: HelpCo
 			lng,
 			petSellMinPrice: PetConstants.SELL_PRICE.MIN,
 			petSellMaxPrice: PetConstants.SELL_PRICE.MAX,
-			friendlyFightLevelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
+			friendlyFightLevelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP,
+
+			// TODO: remove once Crowdin has synchronized the non-French help translations, which still use the former name
+			tournamentLevelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 		}))
 		.addFields({
 			name: i18n.t("commands:help.usageFieldTitle", { lng }),
