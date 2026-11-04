@@ -8,6 +8,9 @@ export type NeuralVocabulary = {
 	actionIds: string[];
 	alterationIds: string[];
 	assistIds: string[];
+
+	// Second powers of the pets; absent from the models trained before the pets had them
+	secondaryIds?: string[];
 	classes: number[];
 	roles: string[];
 	styles: string[];

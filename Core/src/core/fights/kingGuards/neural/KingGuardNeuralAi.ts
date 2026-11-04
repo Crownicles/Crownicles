@@ -22,12 +22,13 @@ export function getUnknownIdsOfModel(candidate: KingGuardNeuralModel): string[] 
 	const known = new Set([
 		...candidate.vocab.actionIds,
 		...candidate.vocab.alterationIds,
-		...candidate.vocab.assistIds
+		...candidate.vocab.assistIds,
+		...candidate.vocab.secondaryIds ?? []
 	]);
 	const gameIds = [
 		...candidate.vocab.classes.flatMap(classId => ClassDataController.instance.getById(classId)?.fightActionsIds ?? []),
 		...Object.values(FightConstants.FIGHT_ACTIONS.ALTERATION),
-		...PetConstants.PET_BEHAVIORS.map(mapping => mapping.behaviorId)
+		...[...PetConstants.PET_BEHAVIORS, ...PetConstants.PET_SECONDARY_BEHAVIORS].map(mapping => mapping.behaviorId)
 	];
 	return [...new Set(gameIds.filter(id => !known.has(id)))];
 }
