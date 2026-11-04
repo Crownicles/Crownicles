@@ -187,6 +187,9 @@ export abstract class LogsFightHistoryRequests {
 					{ fightInitiatorId: logPlayerId },
 					{ player2Id: logPlayerId }
 				],
+
+				// Friendly fights change no glory, so they cannot be displayed with the glory changes of the history
+				friendly: false,
 				[Op.not]: { // Only new fights have the property set
 					fightInitiatorInitialDefenseGlory: null
 				}

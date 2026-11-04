@@ -1284,7 +1284,7 @@ export class LogsDatabase extends Database {
 			player2Points: nonFightInitiator.player.score,
 			turn: fight.turn,
 			winner: fight.isADraw() ? 0 : winner,
-			friendly: false,
+			friendly: fight.friendly,
 			fightInitiatorInitialDefenseGlory: freshFightInitiator.defenseGloryPoints,
 			fightInitiatorInitialAttackGlory: freshFightInitiator.attackGloryPoints,
 			fightInitiatorClassId: fightInitiator.player.class,
