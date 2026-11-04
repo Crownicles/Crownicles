@@ -314,10 +314,6 @@
       "user": {
         "description": "El usuario al que hay que enfrentarse.",
         "name": "usuario"
-      },
-      "tournament": {
-        "description": "Activar el modo torneo: el nivel de ambos luchadores tiene un límite máximo.",
-        "name": "torneo"
       }
     }
   },
