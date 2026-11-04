@@ -33,7 +33,7 @@ type PlayerFighterOptions = {
 	// Full energy, no potion, no energy loss and no missions (friendly fights)
 	withoutConsequences?: boolean;
 
-	// Level above which the fighter is capped (tournament mode of friendly fights)
+	// Level above which the fighter is capped (friendly fights)
 	levelCap?: number;
 };
 

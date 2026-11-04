@@ -23,6 +23,6 @@ export class CommandFightIntroduceFightersPacket extends CrowniclesPacket {
 
 	friendly?: boolean;
 
-	// Level above which the fighters are capped (tournament mode of friendly fights)
+	// Level above which the fighters are capped (friendly fights)
 	levelCap?: number;
 }

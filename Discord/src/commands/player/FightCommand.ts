@@ -232,10 +232,7 @@ async function resolveOpponentDisplayName(packet: CommandFightIntroduceFightersP
 }
 
 function getFightIntroTitleKey(packet: CommandFightIntroduceFightersPacket): string {
-	if (!packet.friendly) {
-		return "commands:fight.fightIntroTitle";
-	}
-	return packet.levelCap === undefined ? "commands:fight.friendlyFightIntroTitle" : "commands:fight.tournamentFriendlyFightIntroTitle";
+	return packet.friendly ? "commands:fight.friendlyFightIntroTitle" : "commands:fight.fightIntroTitle";
 }
 
 async function buildFightIntroEmbed(interaction: CrowniclesInteraction, packet: CommandFightIntroduceFightersPacket): Promise<CrowniclesEmbed> {

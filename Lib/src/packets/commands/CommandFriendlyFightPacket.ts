@@ -16,8 +16,6 @@ export class CommandFriendlyFightPacketReq extends CrowniclesPacket {
 		rank?: number;
 		keycloakId?: string;
 	};
-
-	tournamentMode!: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
