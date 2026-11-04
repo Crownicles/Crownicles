@@ -314,10 +314,6 @@
       "user": {
         "description": "O utilizador a enfrentar.",
         "name": "utilizador"
-      },
-      "tournament": {
-        "description": "Ativar o modo torneio: o nível dos dois combatentes é limitado.",
-        "name": "torneio"
       }
     }
   },
