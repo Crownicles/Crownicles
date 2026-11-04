@@ -154,18 +154,16 @@ export abstract class LogsKingGuardFightsRequests {
 	 * @param playerKeycloakId
 	 */
 	static async getFightStats(playerKeycloakId: string): Promise<KingGuardFightLogsStats | null> {
-		const [
-			tally,
-			ranking,
-			leaderboard
-		] = await Promise.all([
-			LogsKingGuardFightsRequests.getFightTally(playerKeycloakId),
-			LogsKingGuardFightsRequests.getRanking(playerKeycloakId),
-			LogsKingGuardFightsRequests.getLeaderboard()
-		]);
+		const tally = await LogsKingGuardFightsRequests.getFightTally(playerKeycloakId);
 		if (Number(tally.played) === 0) {
 			return null;
 		}
+
+		// Most players never fought a king guard: the ranking is only read for the ones who did
+		const [ranking, leaderboard] = await Promise.all([
+			LogsKingGuardFightsRequests.getRanking(playerKeycloakId),
+			LogsKingGuardFightsRequests.getLeaderboard()
+		]);
 
 		return {
 			won: Number(tally.won ?? 0),
