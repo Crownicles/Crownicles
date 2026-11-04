@@ -154,7 +154,11 @@ export abstract class LogsKingGuardFightsRequests {
 	 * @param playerKeycloakId
 	 */
 	static async getFightStats(playerKeycloakId: string): Promise<KingGuardFightLogsStats | null> {
-		const [tally, ranking, leaderboard] = await Promise.all([
+		const [
+			tally,
+			ranking,
+			leaderboard
+		] = await Promise.all([
 			LogsKingGuardFightsRequests.getFightTally(playerKeycloakId),
 			LogsKingGuardFightsRequests.getRanking(playerKeycloakId),
 			LogsKingGuardFightsRequests.getLeaderboard()
