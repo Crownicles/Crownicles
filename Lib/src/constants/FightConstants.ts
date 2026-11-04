@@ -396,7 +396,7 @@ export abstract class FightConstants {
 		FAILED_FIGHT_LEVEL_REDUCTION: 10,
 
 		// Number of players shown on the king guards page of the fight history, ranked by the strongest guard they beat
-		LEADERBOARD_SIZE: 5,
+		LEADERBOARD_SIZE: 10,
 
 		// Calibrated on real players' equipment: about one rarity every 16 levels, starting from common, give or take one
 		EQUIPMENT_RARITY: {

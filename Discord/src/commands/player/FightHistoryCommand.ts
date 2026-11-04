@@ -169,7 +169,7 @@ async function getLeaderboardLine(challenger: KingGuardChallengerRecord, rank: n
 	const isViewer = challenger.keycloakId === viewerKeycloakId;
 	return i18n.t("commands:fightHistory.kingGuardStats.leaderboardLine", {
 		lng,
-		badge: DisplayUtils.getRankMedalBadge(rank) ?? CrowniclesIcons.top.badges.self,
+		badge: DisplayUtils.getRankMedalBadge(rank) ?? (isViewer ? CrowniclesIcons.top.badges.self : CrowniclesIcons.top.badges.default),
 		rank,
 		name: isViewer
 			? i18n.t("commands:fightHistory.kingGuardStats.you", { lng })

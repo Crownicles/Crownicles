@@ -98,6 +98,31 @@ describe("buildKingGuardStatsDescription", () => {
 		expect(description).not.toContain("au-dessus");
 	});
 
+	it("shows the players ranked below the medals with a neutral badge, and the player with its own badge", async () => {
+		vi.spyOn(DisplayUtils, "getEscapedUsername").mockImplementation(keycloakId => Promise.resolve(keycloakId));
+		const leaderboard = Array.from({ length: 10 }, (_, index) => ({
+			keycloakId: `player${index + 1}`,
+			level: 200 - index
+		}));
+
+		const description = await buildKingGuardStatsDescription({
+			...stats,
+			record: {
+				level: 150,
+				recordsBroken: 3,
+				rank: 1234,
+				challengers: 2000
+			},
+			leaderboard
+		}, viewer, "fr");
+
+		expect(description).toContain(`${CrowniclesIcons.top.badges.fifth} 5. **player5** : garde niv. 196`);
+		expect(description).toContain(`${CrowniclesIcons.top.badges.default} 10. **player10** : garde niv. 191`);
+		const formatNumber = (value: number): string => new Intl.NumberFormat("fr").format(value);
+		expect(description.trim().split("\n").at(-1)).toBe(`${CrowniclesIcons.top.badges.self} ${formatNumber(1234)}. **Vous** : garde niv. 150`);
+		expect(description).toContain(`${formatNumber(1234)} / ${formatNumber(2000)}`);
+	});
+
 	it("tells a player who never beat a guard that it has no record yet, without rank", async () => {
 		vi.spyOn(DisplayUtils, "getEscapedUsername").mockResolvedValue("Other");
 		const { record: _record, ...withoutRecord } = stats;
