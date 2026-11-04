@@ -24,6 +24,7 @@ import { handleClassicError } from "../../utils/ErrorUtils";
 import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { CrowniclesPaginatedEmbed } from "../../messages/CrowniclesPaginatedEmbed";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	KingGuardChallengerRecord, KingGuardFightStats
 } from "../../../../Lib/src/types/KingGuardFightStats";
@@ -130,64 +131,91 @@ export async function buildPacketHistoryDescription(history: FightHistoryItem[],
 }
 
 /**
- * Get the line of the best king guard beaten by the player, telling how far above the player level it is
+ * Get the lines of the best king guard beaten by the player: how far above its level it is, how many times it was broken and its rank
  * @param stats
  * @param lng
  */
-function getKingGuardRecordLine(stats: KingGuardFightStats, lng: Language): string {
+function getKingGuardRecordLines(stats: KingGuardFightStats, lng: Language): string[] {
 	if (!stats.record) {
-		return i18n.t("commands:fightHistory.kingGuardStats.noRecord", { lng });
+		return [i18n.t("commands:fightHistory.kingGuardStats.noRecord", { lng })];
 	}
 	const levelsAbovePlayer = stats.record.level - stats.playerLevel;
-	return i18n.t("commands:fightHistory.kingGuardStats.record", {
-		lng,
-		level: stats.record.level,
-		aboveLevel: levelsAbovePlayer > 0
-			? i18n.t("commands:fightHistory.kingGuardStats.aboveLevel", {
-				lng,
-				count: levelsAbovePlayer
-			})
-			: ""
-	});
+	return [
+		i18n.t("commands:fightHistory.kingGuardStats.record", {
+			lng,
+			level: stats.record.level,
+			aboveLevel: levelsAbovePlayer > 0
+				? i18n.t("commands:fightHistory.kingGuardStats.aboveLevel", {
+					lng,
+					count: levelsAbovePlayer
+				})
+				: ""
+		}),
+		i18n.t("commands:fightHistory.kingGuardStats.progress", {
+			lng,
+			...stats.record
+		})
+	];
 }
 
 /**
- * Get the line of the strongest king guard ever beaten, by the viewer or by another player
- * @param kingdomRecord
+ * Get the line of a player of the king guards leaderboard
+ * @param challenger
+ * @param rank
  * @param viewerKeycloakId
  * @param lng
  */
-async function getKingdomRecordLine(kingdomRecord: KingGuardChallengerRecord, viewerKeycloakId: string, lng: Language): Promise<string> {
-	if (kingdomRecord.keycloakId === viewerKeycloakId) {
-		return i18n.t("commands:fightHistory.kingGuardStats.kingdomRecordHolder", { lng });
-	}
-	return i18n.t("commands:fightHistory.kingGuardStats.kingdomRecord", {
+async function getLeaderboardLine(challenger: KingGuardChallengerRecord, rank: number, viewerKeycloakId: string, lng: Language): Promise<string> {
+	const isViewer = challenger.keycloakId === viewerKeycloakId;
+	return i18n.t("commands:fightHistory.kingGuardStats.leaderboardLine", {
 		lng,
-		level: kingdomRecord.level,
-		holder: await DisplayUtils.getEscapedUsername(kingdomRecord.keycloakId, lng)
+		badge: DisplayUtils.getRankMedalBadge(rank) ?? CrowniclesIcons.top.badges.self,
+		rank,
+		name: isViewer
+			? i18n.t("commands:fightHistory.kingGuardStats.you", { lng })
+			: await DisplayUtils.getEscapedUsername(challenger.keycloakId, lng),
+		level: challenger.level
 	});
 }
 
 /**
- * Build the summary of the fights of the player against the king guards
+ * Get the leaderboard of the players who beat the strongest king guards, followed by the viewer if it is not part of it
+ * @param stats
+ * @param viewerKeycloakId
+ * @param lng
+ */
+async function getKingGuardLeaderboard(stats: KingGuardFightStats, viewerKeycloakId: string, lng: Language): Promise<string | undefined> {
+	if (stats.leaderboard.length === 0) {
+		return undefined;
+	}
+	const lines = await Promise.all(stats.leaderboard.map((challenger, index) => getLeaderboardLine(challenger, index + 1, viewerKeycloakId, lng)));
+	if (stats.record && stats.record.rank > stats.leaderboard.length) {
+		lines.push(await getLeaderboardLine({
+			keycloakId: viewerKeycloakId,
+			level: stats.record.level
+		}, stats.record.rank, viewerKeycloakId, lng));
+	}
+	return StringUtils.joinLines([i18n.t("commands:fightHistory.kingGuardStats.leaderboardTitle", { lng }), ...lines]);
+}
+
+/**
+ * Build the page summing up the fights of the player against the king guards
  * @param stats
  * @param viewerKeycloakId
  * @param lng
  */
 export async function buildKingGuardStatsDescription(stats: KingGuardFightStats, viewerKeycloakId: string, lng: Language): Promise<string> {
-	return StringUtils.joinLines([
-		getKingGuardRecordLine(stats, lng),
-		stats.record && i18n.t("commands:fightHistory.kingGuardStats.progress", {
-			lng,
-			...stats.record
-		}),
-		stats.kingdomRecord && await getKingdomRecordLine(stats.kingdomRecord, viewerKeycloakId, lng),
-		i18n.t("commands:fightHistory.kingGuardStats.tally", {
-			lng,
-			won: stats.won,
-			lost: stats.lost,
-			draw: stats.draw
-		})
+	return StringUtils.joinParagraphs([
+		StringUtils.joinLines([
+			...getKingGuardRecordLines(stats, lng),
+			i18n.t("commands:fightHistory.kingGuardStats.tally", {
+				lng,
+				won: stats.won,
+				lost: stats.lost,
+				draw: stats.draw
+			})
+		]),
+		await getKingGuardLeaderboard(stats, viewerKeycloakId, lng)
 	]);
 }
 
@@ -233,23 +261,30 @@ export async function handlePacketHistoryRes(packet: CommandFightHistoryPacketRe
 
 	const pages = await getFightHistoryPages(packet, lng);
 
-	const embed = new CrowniclesPaginatedEmbed({
+	await new CrowniclesPaginatedEmbed({
 		lng,
 		pages,
-		selectedPageIndex: pages.length - 1
+		selectedPageIndex: pages.length - 1,
+		...packet.kingGuardStats
+			? {
+				extraPage: {
+					title: i18n.t("commands:fightHistory.kingGuardStats.title", { lng }),
+					content: await buildKingGuardStatsDescription(packet.kingGuardStats, viewerKeycloakId, lng),
+					openButton: {
+						label: i18n.t("commands:fightHistory.kingGuardStats.openButton", { lng }),
+						emoji: CrowniclesIcons.fightCommand.crossedSwords
+					},
+					backButton: {
+						label: i18n.t("commands:fightHistory.kingGuardStats.backButton", { lng }),
+						emoji: CrowniclesIcons.collectors.previousPage
+					}
+				}
+			}
+			: {}
 	}).formatAuthor(i18n.t("commands:fightHistory.title", {
 		lng, pseudo: escapeUsername(interaction.user.displayName)
-	}), interaction.user);
-
-	// Added once as a field, it stays displayed on every page of the history
-	if (packet.kingGuardStats) {
-		embed.addFields({
-			name: i18n.t("commands:fightHistory.kingGuardStats.title", { lng }),
-			value: await buildKingGuardStatsDescription(packet.kingGuardStats, viewerKeycloakId, lng)
-		});
-	}
-
-	await embed.send(interaction);
+	}), interaction.user)
+		.send(interaction);
 }
 
 /**

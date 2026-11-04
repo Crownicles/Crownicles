@@ -317,10 +317,31 @@ describe("King guard fight stats", () => {
 				rank: 1,
 				challengers: 1
 			},
-			kingdomRecord: {
-				keycloakId: "climber",
-				level: 110
-			}
+			leaderboard: [
+				{
+					keycloakId: "climber",
+					level: 110
+				}
+			]
+		});
+	});
+
+	it("keeps only the strongest challengers in the leaderboard, while ranking the player among all of them", async () => {
+		const size = FightConstants.KING_GUARD.LEADERBOARD_SIZE;
+		for (let index = 0; index <= size; index++) {
+			const challenger = await LogsPlayers.create({ keycloakId: `challenger${index}` });
+			await logGuardFight({
+				playerId: challenger.id, guardLevel: 200 - index, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 1_000 + index
+			});
+		}
+
+		const stats = await LogsKingGuardFightsRequests.getFightStats(`challenger${size}`);
+
+		expect(stats?.leaderboard.map(challenger => challenger.keycloakId)).toEqual(
+			Array.from({ length: size }, (_, index) => `challenger${index}`)
+		);
+		expect(stats?.record).toMatchObject({
+			rank: size + 1, challengers: size + 1
 		});
 	});
 
@@ -342,13 +363,28 @@ describe("King guard fight stats", () => {
 			playerId: neverWon.id, guardLevel: 200, winner: KING_GUARD_FIGHT_WINNER.GUARD, date: 4_000
 		});
 
-		expect(await LogsKingGuardFightsRequests.getFightStats("late")).toMatchObject({
-			record: {
-				level: 120, rank: 3, challengers: 3
-			},
-			kingdomRecord: {
+		const leaderboard = [
+			{
 				keycloakId: "leader", level: 150
+			},
+			{
+				keycloakId: "early", level: 120
+			},
+			{
+				keycloakId: "late", level: 120
 			}
+		];
+		expect(await LogsKingGuardFightsRequests.getFightStats("late")).toEqual({
+			won: 1,
+			lost: 0,
+			draw: 0,
+			record: {
+				level: 120,
+				recordsBroken: 1,
+				rank: 3,
+				challengers: 3
+			},
+			leaderboard
 		});
 		expect((await LogsKingGuardFightsRequests.getFightStats("early"))?.record?.rank).toBe(2);
 
@@ -357,9 +393,7 @@ describe("King guard fight stats", () => {
 			won: 0,
 			lost: 1,
 			draw: 0,
-			kingdomRecord: {
-				keycloakId: "leader", level: 150
-			}
+			leaderboard
 		});
 	});
 });

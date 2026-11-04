@@ -34,6 +34,6 @@ export type KingGuardFightStats = {
 	// Absent until the player beats a king guard
 	record?: KingGuardPersonalRecord;
 
-	// Strongest king guard ever beaten, by any player
-	kingdomRecord?: KingGuardChallengerRecord;
+	// Players who beat the strongest king guards, the kingdom record first (see FightConstants.KING_GUARD.LEADERBOARD_SIZE)
+	leaderboard: KingGuardChallengerRecord[];
 };
