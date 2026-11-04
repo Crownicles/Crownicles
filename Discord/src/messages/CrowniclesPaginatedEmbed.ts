@@ -16,25 +16,6 @@ const PAGINATION_CUSTOM_IDS = {
 	BACK: "back"
 } as const;
 
-type PaginationButtons = {
-	previous: ButtonBuilder;
-	next: ButtonBuilder;
-	extraPage?: {
-		open: ButtonBuilder;
-		back: ButtonBuilder;
-	};
-};
-
-type PaginationState = {
-	currentPage: number;
-	onExtraPage: boolean;
-};
-
-type PaginatedEmbedView = {
-	embeds: CrowniclesEmbed[];
-	components: ActionRowBuilder<ButtonBuilder>[];
-};
-
 type PaginatedEmbedButtonLabel = {
 	label: string;
 	emoji: string;
@@ -48,6 +29,26 @@ export type CrowniclesPaginatedEmbedExtraPage = {
 	content: string;
 	openButton: PaginatedEmbedButtonLabel;
 	backButton: PaginatedEmbedButtonLabel;
+};
+
+type PaginationButtons = {
+	previous: ButtonBuilder;
+	next: ButtonBuilder;
+	extraPage?: {
+		page: CrowniclesPaginatedEmbedExtraPage;
+		open: ButtonBuilder;
+		back: ButtonBuilder;
+	};
+};
+
+type PaginationState = {
+	currentPage: number;
+	onExtraPage: boolean;
+};
+
+type PaginatedEmbedView = {
+	embeds: CrowniclesEmbed[];
+	components: ActionRowBuilder<ButtonBuilder>[];
 };
 
 /**
@@ -161,6 +162,7 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 			...extraPage
 				? {
 					extraPage: {
+						page: extraPage,
 						open: createButton(PAGINATION_CUSTOM_IDS.OPEN_EXTRA_PAGE, extraPage.openButton.emoji, extraPage.openButton.label),
 						back: createButton(PAGINATION_CUSTOM_IDS.BACK, extraPage.backButton.emoji, extraPage.backButton.label)
 					}
@@ -210,8 +212,8 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 	 * @param buttons
 	 */
 	private async buildView(state: PaginationState, buttons: PaginationButtons): Promise<PaginatedEmbedView> {
-		if (state.onExtraPage && this.options.extraPage && buttons.extraPage) {
-			return this.buildExtraPageView(this.options.extraPage, buttons.extraPage.back);
+		if (state.onExtraPage && buttons.extraPage) {
+			return this.buildExtraPageView(buttons.extraPage.page, buttons.extraPage.back);
 		}
 		return await this.buildPageView(state.currentPage, buttons);
 	}
