@@ -1,9 +1,7 @@
 import {
 	afterAll, beforeAll, beforeEach, describe, expect, it, onTestFinished, vi
 } from "vitest";
-import {
-	DataTypes, QueryInterface
-} from "sequelize";
+import { QueryInterface } from "sequelize";
 import {
 	IntegrationTestEnvironment, setupIntegrationDb
 } from "../_setup";
@@ -11,7 +9,7 @@ import {
 	initModel as initLogsPlayers, LogsPlayers
 } from "../../src/core/database/logs/models/LogsPlayers";
 import {
-	initModel as initKingGuardResults, KING_GUARD_FIGHT_WINNER, LogsKingGuardFightsResults
+	KING_GUARD_FIGHT_WINNER, LogsKingGuardFightsResults
 } from "../../src/core/database/logs/models/LogsKingGuardFightsResults";
 import {
 	initModel as initFightsResults, LogsFightsResults
@@ -24,13 +22,15 @@ import { LogsFightHistoryRequests } from "../../src/core/database/logs/requests/
 import { computeKingGuardLevel } from "../../src/core/fights/kingGuards/KingGuardGenerator";
 import type Player from "../../src/core/database/game/models/Player";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
-import { up as createKingGuardTable } from "../../src/core/database/logs/migrations/036-king-guard-fights";
 import { ClassConstants } from "../../../Lib/src/constants/ClassConstants";
 import { FightConstants } from "../../../Lib/src/constants/FightConstants";
 import {
 	dateToLogs, getTodayMidnight
 } from "../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../Lib/src/types/EloGameResult";
+import {
+	logPlayerFight, setupKingGuardFightsTable
+} from "../_fightsLogsSetup";
 
 // Importing the whole LogsDatabase boots the app: only its player resolver is needed by the fight history
 vi.mock("../../src/core/database/logs/LogsDatabase", async () => {
@@ -75,14 +75,7 @@ beforeAll(async () => {
 	initFightsResults(env.sequelize);
 	initGloryPoints(env.sequelize);
 	await env.sequelize.sync();
-	await createKingGuardTable({ context: env.sequelize.getQueryInterface() });
-
-	// Column added by the migration 039, which also needs the PvE fights table
-	await env.sequelize.getQueryInterface().addColumn("king_guard_fights_results", "playerLevel", {
-		type: DataTypes.SMALLINT.UNSIGNED,
-		allowNull: true
-	});
-	initKingGuardResults(env.sequelize);
+	await setupKingGuardFightsTable(env.sequelize);
 }, 60_000);
 
 afterAll(async () => {
@@ -98,37 +91,6 @@ beforeEach(async () => {
 	await LogsPlayers.destroy({ where: {} });
 });
 
-async function logRankedFight(params: {
-	initiatorId: number;
-	defenderId: number;
-	date: number;
-}): Promise<void> {
-	const fight = await LogsFightsResults.create({
-		fightInitiatorId: params.initiatorId,
-		fightInitiatorPoints: 0,
-		player2Id: params.defenderId,
-		player2Points: 0,
-		turn: 10,
-		winner: 1,
-		friendly: false,
-		fightInitiatorInitialDefenseGlory: 100,
-		fightInitiatorInitialAttackGlory: 100,
-		fightInitiatorClassId: ClassConstants.CLASSES_ID.KNIGHT,
-		player2InitialDefenseGlory: 100,
-		player2InitialAttackGlory: 100,
-		player2ClassId: ClassConstants.CLASSES_ID.KNIGHT,
-		date: params.date
-	});
-	await LogsPlayersGloryPoints.bulkCreate([
-		{
-			playerId: params.initiatorId, value: 110, reason: 0, fightId: fight.id, date: params.date, isDefense: false
-		},
-		{
-			playerId: params.defenderId, value: 90, reason: 0, fightId: fight.id, date: params.date, isDefense: true
-		}
-	]);
-}
-
 describe("King guard fights in the fight history", () => {
 	it("merges the king guard fights with the ranked fights, most recent first", async () => {
 		const player = await LogsPlayers.create({ keycloakId: "historyPlayer" });
@@ -136,7 +98,7 @@ describe("King guard fights in the fight history", () => {
 		await logGuardFight({
 			playerId: player.id, guardLevel: 30, winner: KING_GUARD_FIGHT_WINNER.GUARD, date: 1_000
 		});
-		await logRankedFight({
+		await logPlayerFight({
 			initiatorId: player.id, defenderId: opponent.id, date: 2_000
 		});
 		await logGuardFight({
@@ -169,13 +131,13 @@ describe("King guard fights in the fight history", () => {
 	it("keeps only the most recent fights of both kinds", async () => {
 		const player = await LogsPlayers.create({ keycloakId: "busyPlayer" });
 		const opponent = await LogsPlayers.create({ keycloakId: "busyOpponent" });
-		await logRankedFight({
+		await logPlayerFight({
 			initiatorId: player.id, defenderId: opponent.id, date: 1_000
 		});
 		await logGuardFight({
 			playerId: player.id, guardLevel: 30, winner: KING_GUARD_FIGHT_WINNER.DRAW, date: 2_000
 		});
-		await logRankedFight({
+		await logPlayerFight({
 			initiatorId: opponent.id, defenderId: player.id, date: 3_000
 		});
 
