@@ -123,6 +123,20 @@ describe("buildKingGuardStatsDescription", () => {
 		expect(description).toContain(`${formatNumber(1234)} / ${formatNumber(2000)}`);
 	});
 
+	it("lists the player only once when its rank was read after another player pushed it out of the leaderboard", async () => {
+		vi.spyOn(DisplayUtils, "getEscapedUsername").mockResolvedValue("Other");
+
+		const description = await buildKingGuardStatsDescription({
+			...stats,
+			record: {
+				...stats.record!,
+				rank: stats.leaderboard.length + 1
+			}
+		}, viewer, "fr");
+
+		expect(description.match(/\*\*Vous\*\*/gu)).toHaveLength(1);
+	});
+
 	it("tells a player who never beat a guard that it has no record yet, without rank", async () => {
 		vi.spyOn(DisplayUtils, "getEscapedUsername").mockResolvedValue("Other");
 		const { record: _record, ...withoutRecord } = stats;

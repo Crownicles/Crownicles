@@ -189,7 +189,9 @@ async function getKingGuardLeaderboard(stats: KingGuardFightStats, viewerKeycloa
 		return undefined;
 	}
 	const lines = await Promise.all(stats.leaderboard.map((challenger, index) => getLeaderboardLine(challenger, index + 1, viewerKeycloakId, lng)));
-	if (stats.record && stats.record.rank > stats.leaderboard.length) {
+
+	// The ranking and the leaderboard are read separately: the player is looked for by id, so that it is never listed twice
+	if (stats.record && !stats.leaderboard.some(challenger => challenger.keycloakId === viewerKeycloakId)) {
 		lines.push(await getLeaderboardLine({
 			keycloakId: viewerKeycloakId,
 			level: stats.record.level
