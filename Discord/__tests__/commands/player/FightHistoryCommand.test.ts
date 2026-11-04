@@ -50,50 +50,66 @@ describe("buildKingGuardStatsDescription", () => {
 			level: 152,
 			recordsBroken: 4,
 			rank: 2,
-			challengers: 5
+			challengers: 7
 		},
-		kingdomRecord: {
-			keycloakId: "leaderKeycloakId",
-			level: 188
-		}
+		leaderboard: [
+			{
+				keycloakId: "leaderKeycloakId", level: 188
+			},
+			{
+				keycloakId: viewer, level: 152
+			},
+			{
+				keycloakId: "thirdKeycloakId", level: 150
+			}
+		]
 	};
 
-	it("shows the record above the player level, the rank and the kingdom record holder", async () => {
-		vi.spyOn(DisplayUtils, "getEscapedUsername").mockResolvedValue("Leader");
+	it("shows the record above the player level, its rank, its results and the leaderboard with the player in it", async () => {
+		vi.spyOn(DisplayUtils, "getEscapedUsername").mockImplementation(keycloakId => Promise.resolve(keycloakId === "leaderKeycloakId" ? "Leader" : "Third"));
 
 		const description = await buildKingGuardStatsDescription(stats, viewer, "fr");
 
-		expect(description).toContain("152");
 		expect(description).toContain("12 niveaux au-dessus du vôtre");
-		expect(description).toContain("2 / 5");
-		expect(description).toContain("188");
-		expect(description).toContain("Leader");
+		expect(description).toContain("2 / 7");
 		expect(description).toContain(`${CrowniclesIcons.fightHistory.won} Victoires : 12`);
+		expect(description).toContain(`${CrowniclesIcons.top.badges.first} 1. **Leader** : garde niv. 188`);
+		expect(description).toContain(`${CrowniclesIcons.top.badges.second} 2. **Vous** : garde niv. 152`);
+		expect(description).toContain(`${CrowniclesIcons.top.badges.third} 3. **Third** : garde niv. 150`);
 		expect(description).not.toMatch(/undefined|NaN|\{\{/);
 	});
 
-	it("congratulates the holder of the kingdom record and hides the level gap when the record is not above the player", async () => {
+	it("adds the player after the leaderboard when it is ranked below it, and hides the level gap when the record is not above its level", async () => {
+		vi.spyOn(DisplayUtils, "getEscapedUsername").mockResolvedValue("Other");
+
 		const description = await buildKingGuardStatsDescription({
 			...stats,
 			playerLevel: 160,
-			kingdomRecord: {
-				keycloakId: viewer,
-				level: 152
-			}
+			record: {
+				level: 120,
+				recordsBroken: 2,
+				rank: 9,
+				challengers: 9
+			},
+			leaderboard: stats.leaderboard.filter(challenger => challenger.keycloakId !== viewer)
 		}, viewer, "fr");
 
-		expect(description).toContain(i18n.t("commands:fightHistory.kingGuardStats.kingdomRecordHolder", { lng: "fr" }));
+		expect(description.trim().split("\n").at(-1)).toBe(`${CrowniclesIcons.top.badges.self} 9. **Vous** : garde niv. 120`);
 		expect(description).not.toContain("au-dessus");
 	});
 
 	it("tells a player who never beat a guard that it has no record yet, without rank", async () => {
-		vi.spyOn(DisplayUtils, "getEscapedUsername").mockResolvedValue("Leader");
+		vi.spyOn(DisplayUtils, "getEscapedUsername").mockResolvedValue("Other");
 		const { record: _record, ...withoutRecord } = stats;
 
-		const description = await buildKingGuardStatsDescription(withoutRecord, viewer, "fr");
+		const description = await buildKingGuardStatsDescription({
+			...withoutRecord,
+			leaderboard: [stats.leaderboard[0]]
+		}, viewer, "fr");
 
 		expect(description).toContain(i18n.t("commands:fightHistory.kingGuardStats.noRecord", { lng: "fr" }));
-		expect(description).not.toContain("/ 5");
-		expect(description).toContain("Leader");
+		expect(description).not.toContain("/ 7");
+		expect(description).not.toContain("Vous");
+		expect(description).toContain("1. **Other**");
 	});
 });

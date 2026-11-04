@@ -155,7 +155,7 @@ export abstract class LogsKingGuardFightsRequests {
 						challengers: challengers.length
 					}
 				},
-			...challengers.length > 0 ? { kingdomRecord: challengers[0] } : {}
+			leaderboard: challengers.slice(0, FightConstants.KING_GUARD.LEADERBOARD_SIZE)
 		};
 	}
 
