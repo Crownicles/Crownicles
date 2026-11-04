@@ -23,6 +23,28 @@ type KingGuardLevelBaseRow = {
 
 type KingGuardTallyRow = Record<"played" | "won" | "lost" | "draw" | "recordsBroken", number | string | null>;
 
+// The level and the rank are null when the player never beat a king guard
+type KingGuardRankingRow = Record<"challengers" | "level" | "viewerRank", number | string | null>;
+
+/**
+ * Best king guard beaten by each player (challenger CTE), and when the player first beat a guard of this level:
+ * the ranking breaks ties by who reached the level first
+ */
+const CHALLENGERS_QUERY = `
+	WITH best AS (
+		SELECT fight.playerId, MAX(fight.guardLevel) AS level
+		FROM king_guard_fights_results fight
+		WHERE fight.winner = :playerWinner
+		GROUP BY fight.playerId
+	),
+	challenger AS (
+		SELECT best.playerId, best.level, MIN(fight.date) AS reachedDate
+		FROM best
+		INNER JOIN king_guard_fights_results fight
+			ON fight.playerId = best.playerId AND fight.winner = :playerWinner AND fight.guardLevel = best.level
+		GROUP BY best.playerId, best.level
+	)`;
+
 /**
  * What the logs tell about the fights of a player against the king guards; the player level is added by the caller
  */
@@ -132,30 +154,30 @@ export abstract class LogsKingGuardFightsRequests {
 	 * @param playerKeycloakId
 	 */
 	static async getFightStats(playerKeycloakId: string): Promise<KingGuardFightLogsStats | null> {
-		const [tally, challengers] = await Promise.all([
+		const [tally, ranking, leaderboard] = await Promise.all([
 			LogsKingGuardFightsRequests.getFightTally(playerKeycloakId),
-			LogsKingGuardFightsRequests.getChallengers()
+			LogsKingGuardFightsRequests.getRanking(playerKeycloakId),
+			LogsKingGuardFightsRequests.getLeaderboard()
 		]);
 		if (Number(tally.played) === 0) {
 			return null;
 		}
 
-		const playerIndex = challengers.findIndex(challenger => challenger.keycloakId === playerKeycloakId);
 		return {
 			won: Number(tally.won ?? 0),
 			lost: Number(tally.lost ?? 0),
 			draw: Number(tally.draw ?? 0),
-			...playerIndex === -1
+			...ranking.level === null
 				? {}
 				: {
 					record: {
-						level: challengers[playerIndex].level,
+						level: Number(ranking.level),
 						recordsBroken: Number(tally.recordsBroken ?? 0),
-						rank: playerIndex + 1,
-						challengers: challengers.length
+						rank: Number(ranking.viewerRank),
+						challengers: Number(ranking.challengers)
 					}
 				},
-			leaderboard: challengers.slice(0, FightConstants.KING_GUARD.LEADERBOARD_SIZE)
+			leaderboard
 		};
 	}
 
@@ -194,29 +216,51 @@ export abstract class LogsKingGuardFightsRequests {
 	}
 
 	/**
-	 * Get the best king guard beaten by each player, the strongest first, ties broken by who reached the level first
+	 * Get the best king guard beaten by the player and its rank among all the players who beat one
+	 * @param playerKeycloakId
 	 */
-	private static async getChallengers(): Promise<KingGuardChallengerRecord[]> {
-		return await LogsKingGuardFightsResults.sequelize!.query<KingGuardChallengerRecord>(`
-			SELECT player.keycloakId,
-			       best.guardLevel AS level
-			FROM (
-				SELECT fight.playerId,
-				       fight.guardLevel,
-				       fight.date,
-				       fight.id,
-				       ROW_NUMBER() OVER (
-					       PARTITION BY fight.playerId
-					       ORDER BY fight.guardLevel DESC, fight.date ASC, fight.id ASC
-				       ) AS playerBest
-				FROM king_guard_fights_results fight
-				WHERE fight.winner = :playerWinner
-			) best
-			INNER JOIN players player ON player.id = best.playerId
-			WHERE best.playerBest = 1
-			ORDER BY best.guardLevel DESC, best.date ASC, best.id ASC
+	private static async getRanking(playerKeycloakId: string): Promise<KingGuardRankingRow> {
+		const [ranking] = await LogsKingGuardFightsResults.sequelize!.query<KingGuardRankingRow>(`
+			${CHALLENGERS_QUERY},
+			viewer AS (
+				SELECT challenger.playerId, challenger.level, challenger.reachedDate
+				FROM challenger
+				INNER JOIN players player ON player.id = challenger.playerId
+				WHERE player.keycloakId = :playerKeycloakId
+			)
+			SELECT COUNT(*) AS challengers,
+			       MAX(viewer.level) AS level,
+			       1 + SUM(challenger.level > viewer.level
+				       OR challenger.level = viewer.level AND (challenger.reachedDate < viewer.reachedDate
+					       OR challenger.reachedDate = viewer.reachedDate AND challenger.playerId < viewer.playerId)) AS viewerRank
+			FROM challenger
+			LEFT JOIN viewer ON TRUE
 		`, {
-			replacements: { playerWinner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			replacements: {
+				playerKeycloakId,
+				playerWinner: KING_GUARD_FIGHT_WINNER.PLAYER
+			},
+			type: QueryTypes.SELECT
+		});
+		return ranking;
+	}
+
+	/**
+	 * Get the players who beat the strongest king guards, the strongest first
+	 */
+	private static async getLeaderboard(): Promise<KingGuardChallengerRecord[]> {
+		return await LogsKingGuardFightsResults.sequelize!.query<KingGuardChallengerRecord>(`
+			${CHALLENGERS_QUERY}
+			SELECT player.keycloakId, challenger.level
+			FROM challenger
+			INNER JOIN players player ON player.id = challenger.playerId
+			ORDER BY challenger.level DESC, challenger.reachedDate ASC, challenger.playerId ASC
+			LIMIT :size
+		`, {
+			replacements: {
+				playerWinner: KING_GUARD_FIGHT_WINNER.PLAYER,
+				size: FightConstants.KING_GUARD.LEADERBOARD_SIZE
+			},
 			type: QueryTypes.SELECT
 		});
 	}
