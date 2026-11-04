@@ -479,7 +479,7 @@
         "description": "Mostra la cronologia dei tuoi ultimi combattimenti: l'avversario affrontato, il risultato e l'andamento della gloria e della classifica di ciascun combattente."
       },
       "FRIENDLY_FIGHT": {
-        "description": "Consente di sfidare un altro giocatore, scelto menzionandolo o in base alla sua posizione in classifica, in un combattimento amichevole. Il giocatore sfidato è controllato da un'IA. Questo combattimento non ha alcuna conseguenza: nessuna gloria, nessuna ricompensa, nessuna perdita di energia e nessun avanzamento nella missione. L’opzione “torneo” limita il livello di entrambi i combattenti a {{tournamentLevelCap}} : un giocatore di livello inferiore mantiene il proprio livello."
+        "description": "Permet d'affronter un autre joueur, choisi en le mentionnant ou grâce à son classement, dans un combat amical. Le joueur affronté est contrôlé par une IA. Ce combat n'a aucune conséquence : aucune gloire, aucune récompense, aucune énergie perdue et aucune progression de mission. Le niveau des deux combattants est plafonné à {{friendlyFightLevelCap}} : un joueur de niveau inférieur conserve son niveau."
       },
       "GARDEN": {
         "description": "Vi permette di prendervi cura del giardino della vostra dimora quando vi trovate nella sua città: piantare, innaffiare, fare il compost e raccogliere i frutti delle vostre piante. Con il “Cœur Sylvestre”, un talismano in vendita presso l’Erborista a Coco Village, diventa possibile controllare il giardino e raccoglierne i frutti a distanza."
@@ -2427,8 +2427,7 @@
     "notEnoughEnergy": "Non hai abbastanza energia per iniziare una lotta!",
     "monsterNotFound": "Non è stato trovato alcun mostro da affrontare. Si prega di segnalare l'accaduto al nostro team di supporto (discord.gg/AP3Wmzb).",
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | È in corso una lotta tra {{fightInitiator}} e {{opponent}} !",
-    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | È in corso un combattimento amichevole tra {{fightInitiator}} e {{opponent}} ! Non avrà alcuna conseguenza.",
-    "tournamentFriendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | È in corso un combattimento amichevole in modalità torneo tra {{fightInitiator}} e {{opponent}} ! I combattenti vengono riportati al livello massimo {{levelCap}} e il combattimento non avrà alcuna conseguenza.",
+    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Un combat amical est lancé entre {{fightInitiator}} et {{opponent}} ! Les combattants sont ramenés au niveau {{levelCap}} au maximum et le combat n'aura aucune conséquence.",
     "actionsOf": "**Attacchi da {{pseudo}} :**",
     "petOf": "**Animale domestico di {{pseudo}} :**",
     "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
