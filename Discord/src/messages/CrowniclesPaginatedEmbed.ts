@@ -25,6 +25,11 @@ type PaginationButtons = {
 	};
 };
 
+type PaginationState = {
+	currentPage: number;
+	onExtraPage: boolean;
+};
+
 type PaginatedEmbedView = {
 	embeds: CrowniclesEmbed[];
 	components: ActionRowBuilder<ButtonBuilder>[];
@@ -200,18 +205,74 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 	}
 
 	/**
+	 * Build the view to display: the extra page if it is open, the current page otherwise
+	 * @param state
+	 * @param buttons
+	 */
+	private async buildView(state: PaginationState, buttons: PaginationButtons): Promise<PaginatedEmbedView> {
+		if (state.onExtraPage && this.options.extraPage && buttons.extraPage) {
+			return this.buildExtraPageView(this.options.extraPage, buttons.extraPage.back);
+		}
+		return await this.buildPageView(state.currentPage, buttons);
+	}
+
+	/**
+	 * Tell whether a user is allowed to use the buttons of the embed
+	 * @param userId
+	 * @param originalInteraction
+	 */
+	private isAllowedUser(userId: string, originalInteraction: CrowniclesInteraction): boolean {
+		return this.options.allowedUserIds
+			? this.options.allowedUserIds.includes(userId)
+			: userId === originalInteraction.user.id;
+	}
+
+	/**
+	 * Move to the page or the view asked by a click on one of the buttons
+	 * @param state
+	 * @param customId
+	 */
+	private static applyClick(state: PaginationState, customId: string): void {
+		switch (customId) {
+			case PAGINATION_CUSTOM_IDS.PREVIOUS:
+				state.currentPage--;
+				break;
+			case PAGINATION_CUSTOM_IDS.NEXT:
+				state.currentPage++;
+				break;
+			default:
+				state.onExtraPage = customId === PAGINATION_CUSTOM_IDS.OPEN_EXTRA_PAGE;
+		}
+	}
+
+	/**
+	 * Get the buttons of the displayed view, disabled once the collector ends
+	 * @param state
+	 * @param buttons
+	 */
+	private static getDisabledButtons(state: PaginationState, buttons: PaginationButtons): ButtonBuilder[] {
+		const shownButtons = state.onExtraPage && buttons.extraPage
+			? [buttons.extraPage.back]
+			: [
+				buttons.previous,
+				buttons.next,
+				...buttons.extraPage ? [buttons.extraPage.open] : []
+			];
+		return shownButtons.map(button => button.setDisabled(true));
+	}
+
+	/**
 	 * Send the paginated embed
 	 * @param originalInteraction
 	 */
 	async send(originalInteraction: CrowniclesInteraction): Promise<void> {
-		let currentPage = this.options.selectedPageIndex ?? 0;
-		let onExtraPage = false;
+		const state: PaginationState = {
+			currentPage: this.options.selectedPageIndex ?? 0,
+			onExtraPage: false
+		};
 		const buttons = this.createButtons();
-		const buildView = async (): Promise<PaginatedEmbedView> => onExtraPage && this.options.extraPage && buttons.extraPage
-			? this.buildExtraPageView(this.options.extraPage, buttons.extraPage.back)
-			: await this.buildPageView(currentPage, buttons);
 
-		const msg = await originalInteraction.editReply(await buildView());
+		const msg = await originalInteraction.editReply(await this.buildView(state, buttons));
 
 		if (!msg) {
 			return;
@@ -222,41 +283,20 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 		});
 
 		collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-			if (this.options.allowedUserIds
-				? !this.options.allowedUserIds.includes(buttonInteraction.user.id)
-				: buttonInteraction.user.id !== originalInteraction.user.id
-			) {
+			if (!this.isAllowedUser(buttonInteraction.user.id, originalInteraction)) {
 				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, this.options.lng);
 				return;
 			}
 
-			switch (buttonInteraction.customId) {
-				case PAGINATION_CUSTOM_IDS.PREVIOUS:
-					currentPage--;
-					break;
-				case PAGINATION_CUSTOM_IDS.NEXT:
-					currentPage++;
-					break;
-				default:
-					onExtraPage = buttonInteraction.customId === PAGINATION_CUSTOM_IDS.OPEN_EXTRA_PAGE;
-			}
-
-			await buttonInteraction.update(await buildView());
+			CrowniclesPaginatedEmbed.applyClick(state, buttonInteraction.customId);
+			await buttonInteraction.update(await this.buildView(state, buttons));
 		});
 
 		collector.on("end", async () => {
-			const shownButtons = onExtraPage && buttons.extraPage
-				? [buttons.extraPage.back]
-				: [
-					buttons.previous,
-					buttons.next,
-					...buttons.extraPage ? [buttons.extraPage.open] : []
-				];
-
 			await msg.edit({
 				components: [
 					new ActionRowBuilder<ButtonBuilder>()
-						.addComponents(shownButtons.map(button => button.setDisabled(true)))
+						.addComponents(CrowniclesPaginatedEmbed.getDisabledButtons(state, buttons))
 				]
 			});
 		});
