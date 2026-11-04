@@ -314,10 +314,6 @@
       "user": {
         "description": "L'utente da affrontare.",
         "name": "giocatore"
-      },
-      "tournament": {
-        "description": "Attivare la modalità torneo: il livello dei due combattenti viene limitato.",
-        "name": "torneo"
       }
     }
   },
