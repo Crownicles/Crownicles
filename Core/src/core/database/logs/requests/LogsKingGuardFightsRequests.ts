@@ -13,10 +13,20 @@ import {
 	dateToLogs, getTodayMidnight
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import type { PersonalFightDailySummary } from "../LogsReadRequests";
+import {
+	KingGuardChallengerRecord, KingGuardFightStats
+} from "../../../../../../Lib/src/types/KingGuardFightStats";
 
 type KingGuardLevelBaseRow = {
 	baseLevel: number;
 };
+
+type KingGuardTallyRow = Record<"played" | "won" | "lost" | "draw" | "recordsBroken", number | string | null>;
+
+/**
+ * What the logs tell about the fights of a player against the king guards; the player level is added by the caller
+ */
+export type KingGuardFightLogsStats = Omit<KingGuardFightStats, "playerLevel">;
 
 const KING_GUARD_FIGHTS: BossFightsTable = {
 	name: "king guard",
@@ -115,5 +125,99 @@ export abstract class LogsKingGuardFightsRequests {
 			won: Number(summary?.won ?? 0),
 			draw: Number(summary?.draw ?? 0)
 		};
+	}
+
+	/**
+	 * Get the summary of all the fights of a player against the king guards, or null if it never fought one
+	 * @param playerKeycloakId
+	 */
+	static async getFightStats(playerKeycloakId: string): Promise<KingGuardFightLogsStats | null> {
+		const [tally, challengers] = await Promise.all([
+			LogsKingGuardFightsRequests.getFightTally(playerKeycloakId),
+			LogsKingGuardFightsRequests.getChallengers()
+		]);
+		if (Number(tally.played) === 0) {
+			return null;
+		}
+
+		const playerIndex = challengers.findIndex(challenger => challenger.keycloakId === playerKeycloakId);
+		return {
+			won: Number(tally.won ?? 0),
+			lost: Number(tally.lost ?? 0),
+			draw: Number(tally.draw ?? 0),
+			...playerIndex === -1
+				? {}
+				: {
+					record: {
+						level: challengers[playerIndex].level,
+						recordsBroken: Number(tally.recordsBroken ?? 0),
+						rank: playerIndex + 1,
+						challengers: challengers.length
+					}
+				},
+			...challengers.length > 0 ? { kingdomRecord: challengers[0] } : {}
+		};
+	}
+
+	/**
+	 * Count the results of a player against the king guards, and how many times it beat a stronger guard than ever before
+	 * @param playerKeycloakId
+	 */
+	private static async getFightTally(playerKeycloakId: string): Promise<KingGuardTallyRow> {
+		const [tally] = await LogsKingGuardFightsResults.sequelize!.query<KingGuardTallyRow>(`
+			SELECT COUNT(*) AS played,
+			       SUM(guard.winner = :playerWinner) AS won,
+			       SUM(guard.winner = :guardWinner) AS lost,
+			       SUM(guard.winner = :draw) AS draw,
+			       SUM(guard.winner = :playerWinner AND (guard.previousBest IS NULL OR guard.guardLevel > guard.previousBest)) AS recordsBroken
+			FROM (
+				SELECT fight.winner,
+				       fight.guardLevel,
+				       MAX(CASE WHEN fight.winner = :playerWinner THEN fight.guardLevel END) OVER (
+					       ORDER BY fight.date, fight.id
+					       ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING
+				       ) AS previousBest
+				FROM king_guard_fights_results fight
+				INNER JOIN players player ON player.id = fight.playerId
+				WHERE player.keycloakId = :playerKeycloakId
+			) guard
+		`, {
+			replacements: {
+				playerKeycloakId,
+				playerWinner: KING_GUARD_FIGHT_WINNER.PLAYER,
+				guardWinner: KING_GUARD_FIGHT_WINNER.GUARD,
+				draw: KING_GUARD_FIGHT_WINNER.DRAW
+			},
+			type: QueryTypes.SELECT
+		});
+		return tally;
+	}
+
+	/**
+	 * Get the best king guard beaten by each player, the strongest first, ties broken by who reached the level first
+	 */
+	private static async getChallengers(): Promise<KingGuardChallengerRecord[]> {
+		return await LogsKingGuardFightsResults.sequelize!.query<KingGuardChallengerRecord>(`
+			SELECT player.keycloakId,
+			       best.guardLevel AS level
+			FROM (
+				SELECT fight.playerId,
+				       fight.guardLevel,
+				       fight.date,
+				       fight.id,
+				       ROW_NUMBER() OVER (
+					       PARTITION BY fight.playerId
+					       ORDER BY fight.guardLevel DESC, fight.date ASC, fight.id ASC
+				       ) AS playerBest
+				FROM king_guard_fights_results fight
+				WHERE fight.winner = :playerWinner
+			) best
+			INNER JOIN players player ON player.id = best.playerId
+			WHERE best.playerBest = 1
+			ORDER BY best.guardLevel DESC, best.date ASC, best.id ASC
+		`, {
+			replacements: { playerWinner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			type: QueryTypes.SELECT
+		});
 	}
 }

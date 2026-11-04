@@ -2896,6 +2896,17 @@
     "leagueChanges": {
       "up": " ({emote:other.leagueUp} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
       "down": " ({emote:other.leagueDown} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
+    },
+    "kingGuardStats": {
+      "title": "{emote:fightCommand.crossedSwords} Face aux gardes du roi",
+      "record": "**Votre record :** garde niv. {{level}} vaincu{{aboveLevel}}",
+      "aboveLevel_one": ", {{count}} niveau au-dessus du vôtre",
+      "aboveLevel_other": ", {{count}} niveaux au-dessus du vôtre",
+      "noRecord": "**Votre record :** aucun garde vaincu pour l'instant",
+      "progress": "**Records battus :** {{recordsBroken, number}} | **Classement :** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "kingdomRecordHolder": "{emote:other.crown} Vous détenez le record du royaume !",
+      "kingdomRecord": "{emote:other.crown} **Record du royaume :** garde niv. {{level}}, vaincu par **{{holder}}**",
+      "tally": "**Bilan :** {emote:fightHistory.won} Victoires : {{won, number}} · {emote:fightHistory.lost} Défaites : {{lost, number}} · {emote:fightHistory.draw} Nuls : {{draw, number}}"
     }
   },
   "deletecode": {
