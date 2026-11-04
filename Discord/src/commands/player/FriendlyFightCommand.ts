@@ -20,10 +20,7 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 		return null;
 	}
 	await deferFightInteraction(interaction);
-	return makePacket(CommandFriendlyFightPacketReq, {
-		askedPlayer,
-		tournamentMode: interaction.options.getBoolean("tournament") ?? false
-	});
+	return makePacket(CommandFriendlyFightPacketReq, { askedPlayer });
 }
 
 export async function handleCommandFriendlyFightError(context: PacketContext, packet: CommandFriendlyFightErrorPacketRes): Promise<void> {
@@ -37,9 +34,6 @@ export const commandInfo: ICommand = {
 				.setRequired(false))
 		.addIntegerOption(option =>
 			SlashCommandBuilderGenerator.generateOption("friendlyFight", "rank", option)
-				.setRequired(false))
-		.addBooleanOption(option =>
-			SlashCommandBuilderGenerator.generateOption("friendlyFight", "tournament", option)
 				.setRequired(false)) as SlashCommandBuilder,
 	getPacket,
 	mainGuildCommand: false

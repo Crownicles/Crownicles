@@ -83,12 +83,9 @@ describe("FriendlyFightCommand", () => {
 		};
 	}
 
-	async function executeCommand(tournamentMode = false): Promise<unknown[]> {
+	async function executeCommand(): Promise<unknown[]> {
 		const response: unknown[] = [];
-		await new FriendlyFightCommand().execute(response as never, player as never, {
-			askedPlayer: { rank: 1 },
-			tournamentMode
-		} as never, {} as never);
+		await new FriendlyFightCommand().execute(response as never, player as never, { askedPlayer: { rank: 1 } } as never, {} as never);
 		return response;
 	}
 
@@ -114,47 +111,27 @@ describe("FriendlyFightCommand", () => {
 		expect(startFightMock).not.toHaveBeenCalled();
 	});
 
-	it("starts a consequence-free fight against the AI-controlled opponent without any end reward", async () => {
+	it("starts a consequence-free fight with both fighters capped at the friendly fight level, without any end reward", async () => {
 		vi.mocked(Players.getAskedPlayer).mockResolvedValue(buildOpponent() as never);
 
 		await executeCommand();
 
 		expect(fighterOptions).toEqual([
 			{
-				kind: "player", options: { withoutConsequences: true }
-			},
-			{
-				kind: "ai", options: {
-					allowPotionConsumption: false, withoutConsequences: true
-				}
-			}
-		]);
-		expect(controllerOptions[0]).toMatchObject({ friendly: true });
-		expect(controllerOptions[0]).not.toHaveProperty("levelCap");
-		expect(setEndCallbackMock).not.toHaveBeenCalled();
-		expect(startFightMock).toHaveBeenCalledTimes(1);
-	});
-
-	it("caps the level of both fighters in tournament mode", async () => {
-		vi.mocked(Players.getAskedPlayer).mockResolvedValue(buildOpponent() as never);
-
-		await executeCommand(true);
-
-		expect(fighterOptions).toEqual([
-			{
 				kind: "player", options: {
-					withoutConsequences: true, levelCap: FightConstants.TOURNAMENT_LEVEL_CAP
+					withoutConsequences: true, levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 				}
 			},
 			{
 				kind: "ai", options: {
-					allowPotionConsumption: false, withoutConsequences: true, levelCap: FightConstants.TOURNAMENT_LEVEL_CAP
+					allowPotionConsumption: false, withoutConsequences: true, levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 				}
 			}
 		]);
 		expect(controllerOptions[0]).toMatchObject({
-			friendly: true, levelCap: FightConstants.TOURNAMENT_LEVEL_CAP
+			friendly: true, levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 		});
+		expect(setEndCallbackMock).not.toHaveBeenCalled();
 		expect(startFightMock).toHaveBeenCalledTimes(1);
 	});
 });

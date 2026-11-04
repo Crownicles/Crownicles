@@ -31,7 +31,7 @@ export abstract class PlayerBaseFighter extends Fighter {
 	/**
 	 * @param player
 	 * @param availableFightActions
-	 * @param levelCap When set, the fighter is fought at this level if the player is above it (tournament mode)
+	 * @param levelCap When set, the fighter is fought at this level if the player is above it (friendly fights)
 	 */
 	protected constructor(player: Player, availableFightActions: FightAction[], levelCap?: number) {
 		super(levelCap === undefined ? player.level : Math.min(player.level, levelCap), availableFightActions);

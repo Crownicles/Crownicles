@@ -62,11 +62,9 @@ export default class FriendlyFightCommand {
 			throw new Error("Class not found for friendly fight player or opponent");
 		}
 
-		const tournamentOptions = packet.tournamentMode ? { levelCap: FightConstants.TOURNAMENT_LEVEL_CAP } : {};
-
 		const askingFighter = new PlayerFighter(player, playerClass, {
 			withoutConsequences: true,
-			...tournamentOptions
+			levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 		});
 		askingFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
 		await askingFighter.loadStats();
@@ -74,7 +72,7 @@ export default class FriendlyFightCommand {
 		const incomingFighter = new AiPlayerFighter(opponent, opponentClass, {
 			allowPotionConsumption: false,
 			withoutConsequences: true,
-			...tournamentOptions
+			levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 		});
 		incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
 		await incomingFighter.loadStats();
@@ -89,7 +87,7 @@ export default class FriendlyFightCommand {
 				overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
 				context,
 				friendly: true,
-				...tournamentOptions
+				levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 			}
 		).startFight(response);
 	}

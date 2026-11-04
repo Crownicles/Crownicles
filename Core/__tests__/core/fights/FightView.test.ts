@@ -53,7 +53,7 @@ describe("FightView.introduceFight", () => {
 		expect(packet.levelCap).toBeUndefined();
 	});
 
-	it("introduces a player opponent with its pet and the tournament level cap", () => {
+	it("introduces a player opponent with its pet and the friendly fight level cap", () => {
 		const packet = introduce({
 			friendly: true, levelCap: 100
 		}, buildPlayerFighter<AiPlayerFighter>("opponent", true));
