@@ -13,9 +13,6 @@ import { FightUtils } from "../../../../utils/FightUtils";
 import { PlayerFighter } from "../../../fighter/PlayerFighter";
 import { PetDataController } from "../../../../../data/Pet";
 
-// The owner only receives this share of the energy drained from its opponent
-const DRAINED_ENERGY_SHARE = 0.5;
-
 function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 7,
@@ -59,7 +56,7 @@ const use: PetAssistanceFunc = (fighter, opponent, _turn, _fightController): Pro
 		selfTarget: true,
 		stat: FightStatBuffed.ENERGY,
 		operator: FightStatModifierOperation.ADDITION,
-		value: Math.round(damages * DRAINED_ENERGY_SHARE)
+		value: damages
 	}, fighter, undefined);
 
 	return Promise.resolve(result);
