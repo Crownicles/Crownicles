@@ -8,9 +8,9 @@ import { FightActionType } from "../../../../../../../Lib/src/types/FightActionT
 
 /**
  * Bonus on the melee (physical) damage of the owner gained at each of its turns, as long as the momentum is not broken.
- * With 4 stacks (+20%), the mammoth wins about 90% as many extra fights as a tiger in AI fights between level 100+ players
+ * Capped at +16% with 4 stacks: at +20%, the mammoth took half of the optimal level 100+ PvP meta in simulated fights
  */
-const DAMAGE_BONUS_PER_STACK = 0.05;
+const DAMAGE_BONUS_PER_STACK = 0.04;
 
 const MAX_MOMENTUM_STACKS = 4;
 
