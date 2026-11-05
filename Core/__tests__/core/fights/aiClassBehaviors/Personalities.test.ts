@@ -145,24 +145,33 @@ describe("AI personalities", () => {
 	});
 
 	describe("paladin breath reserve", () => {
-		it("keeps its breath for its ultimate and its divine attacks instead of opening with the shield attack", () => {
+		it("keeps the breath of its ultimate and spends the rest with its single shield attack", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
-			const paladin = mockFighter({
-				breath: 17, maxBreath: 25, regenBreath: 3
+			const paladin = (breath: number): ReturnType<typeof mockFighter> => mockFighter({
+				breath, maxBreath: 25, regenBreath: 3
 			});
 
-			expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(1, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(12), mockFightView(1, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(13), mockFightView(1, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
 		});
 
-		it("spends the breath of a divine attack the opponent's benediction made impossible", () => {
+		it("spends all its breath once its ultimate is used", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+			const paladin = mockFighter({
+				breath: 6, maxBreath: 25, regenBreath: 3, history: [ACTIONS.ULTIMATE_ATTACK]
+			});
+
+			expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(5, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
+		});
+
+		it("rams only to break the opponent's rest, even with its breath at its maximum", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
 			const paladin = (): ReturnType<typeof mockFighter> => mockFighter({
-				breath: 25, maxBreath: 30, regenBreath: 3
+				breath: 25, maxBreath: 25, regenBreath: 3, history: [ACTIONS.SHIELD_ATTACK]
 			});
-			const blessedKnight = mockFighter({ history: [ACTIONS.BENEDICTION] });
 
 			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(5, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
-			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(5, blessedKnight)).id).toBe(ACTIONS.SHIELD_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(5, mockFighter({ lastActionId: ACTIONS.RESTING }))).id).toBe(ACTIONS.RAM_ATTACK);
 		});
 	});
 
