@@ -20,32 +20,25 @@ function chooseCurseCashIn(me: AiPlayerFighter, opponent: Fighter): FightAction 
 }
 
 /**
- * Pyromancer mage: curses its opponent with its first move, cashes the curse in with the dark attack while it lasts
- * if it has the breath for it, then burns its opponent with fire attacks once the curse has fallen
+ * Pyromancer mage: curses its opponent whenever it is free of any alteration, cashes the curse in with the dark attack,
+ * which strikes a cursed opponent at full power, while it lasts if it has the breath for it, and burns its opponent
+ * with fire attacks the rest of the time
  */
 class MagePyromancerFightBehavior implements ClassBehavior {
-	// A protected opponent resists the curse: the mage casts it again until it lands once
-	private curseLanded = false;
-
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter();
 		if (!opponent) {
 			return getAction(ACTIONS.BREATH_TAKING_ATTACK);
 		}
 
-		const opponentCursed = opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED;
-		this.curseLanded ||= opponentCursed;
-		if (this.shouldCurse(me, opponent)) {
+		if (!opponent.hasFightAlteration() && canAfford(me, ACTIONS.CURSED_ATTACK)) {
 			return getAction(ACTIONS.CURSED_ATTACK);
 		}
 
 		// The cheap breath-taking attack lets the breath build up for the next fire attack, unlike the poison
+		const opponentCursed = opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED;
 		return (opponentCursed ? chooseCurseCashIn(me, opponent) : null)
 			?? getAction(canAfford(me, ACTIONS.FIRE_ATTACK) ? ACTIONS.FIRE_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
-	}
-
-	private shouldCurse(me: AiPlayerFighter, opponent: Fighter): boolean {
-		return !this.curseLanded && !opponent.hasFightAlteration() && canAfford(me, ACTIONS.CURSED_ATTACK);
 	}
 }
 

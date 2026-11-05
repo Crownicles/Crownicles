@@ -2799,7 +2799,7 @@
       },
       "magePyromancer": {
         "name": "Pyromancien",
-        "description": "Maudit son adversaire dès son premier tour, en profite avec ses attaques sombres tant que la malédiction dure, puis l'embrase sans relâche."
+        "description": "Maudit son adversaire dès qu'il le peut, en profite avec ses attaques sombres tant que la malédiction dure, et l'embrase le reste du temps."
       },
       "mageWarlock": {
         "name": "Envoûteur",
