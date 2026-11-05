@@ -44,11 +44,16 @@ function getDarkAttackWear(fighter: Fighter): number {
 }
 
 /**
- * Damage multiplier of the next dark attack of a fighter, which wears down with each use and recovers when it is left aside
+ * Damage multiplier of the next dark attack of a fighter against an opponent. It wears down with each use and recovers
+ * when it is left aside, but a cursed opponent always takes it at full power
  * @param fighter
+ * @param opponent
  */
-export function getDarkAttackPowerMultiplier(fighter: Fighter): number {
+export function getDarkAttackPowerMultiplier(fighter: Fighter, opponent: Fighter): number {
 	const wearConstants = FightConstants.DARK_ATTACK_WEAR;
+	if (opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED) {
+		return wearConstants.BASE_MULTIPLIER;
+	}
 	const multiplier = wearConstants.BASE_MULTIPLIER - wearConstants.MULTIPLIER_LOSS_PER_USE * getDarkAttackWear(fighter);
 
 	// Rounded to a tenth: the steps are tenths and the subtraction leaves floating point noise

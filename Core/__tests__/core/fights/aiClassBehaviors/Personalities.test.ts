@@ -242,9 +242,18 @@ describe("AI personalities", () => {
 			const mage = mockFighter({
 				breath: 10, history: [ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK]
 			});
+			const poisoned = mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.POISONED });
+
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(6, poisoned)).id).toBe(ACTIONS.FIRE_ATTACK);
+		});
+
+		it("keeps hitting a cursed opponent with its worn dark attack, which strikes it at full power", () => {
+			const mage = mockFighter({
+				breath: 10, history: [ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK]
+			});
 			const cursed = mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED });
 
-			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(6, cursed)).id).toBe(ACTIONS.FIRE_ATTACK);
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(6, cursed)).id).toBe(ACTIONS.DARK_ATTACK);
 		});
 
 		it("saves its breath with its cheap attack until it can afford its fresh dark attack", () => {

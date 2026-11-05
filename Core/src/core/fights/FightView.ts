@@ -3,6 +3,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PlayerFighter } from "./fighter/PlayerFighter";
+import { Fighter } from "./fighter/Fighter";
 import { MonsterFighter } from "./fighter/MonsterFighter";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
@@ -49,15 +50,16 @@ export class FightView {
 	}
 
 	/**
-	 * Button of an action in the action menu, with its current damage multiplier when it changes during the fight
+	 * Button of an action in the action menu, with its current damage multiplier against the opponent when it changes during the fight
 	 * @param fighter
+	 * @param opponent
 	 * @param actionId
 	 */
-	private static getActionChoice(fighter: PlayerFighter, actionId: string): ReactionCollectorFightChooseActionReaction {
+	private static getActionChoice(fighter: PlayerFighter, opponent: Fighter, actionId: string): ReactionCollectorFightChooseActionReaction {
 		return actionId === FightConstants.FIGHT_ACTIONS.PLAYER.DARK_ATTACK
 			? {
 				id: actionId,
-				powerMultiplier: getDarkAttackPowerMultiplier(fighter)
+				powerMultiplier: getDarkAttackPowerMultiplier(fighter, opponent)
 			}
 			: { id: actionId };
 	}
@@ -273,10 +275,11 @@ export class FightView {
 	 * @param actions - the actions available for the player
 	 */
 	displayFightActionMenu(response: CrowniclesPacket[], playerFighter: PlayerFighter, actions: Map<string, FightAction>): void {
+		const opponent = this.fightController.getDefendingFighter()!;
 		const collector = new ReactionCollectorFightChooseAction(
 			this.fightController.id,
 			playerFighter.player.keycloakId,
-			[...actions.keys()].map(actionId => FightView.getActionChoice(playerFighter, actionId))
+			[...actions.keys()].map(actionId => FightView.getActionChoice(playerFighter, opponent, actionId))
 		);
 
 		const endCallback: EndCallback = async (collector, response) => {

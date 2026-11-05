@@ -31,7 +31,7 @@ const use: FightActionFunc = (sender, receiver) => {
 
 	// The current use is pushed to the history after the action: the multiplier only counts the previous ones
 	if (result.damages) {
-		result.damages = Math.round(result.damages * getDarkAttackPowerMultiplier(sender));
+		result.damages = Math.round(result.damages * getDarkAttackPowerMultiplier(sender, receiver));
 	}
 
 	return result;
