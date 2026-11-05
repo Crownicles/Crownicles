@@ -27,8 +27,9 @@ type KingGuardTallyRow = Record<"played" | "won" | "lost" | "draw" | "recordsBro
 type KingGuardRankingRow = Record<"challengers" | "level" | "viewerRank", number | string | null>;
 
 /**
- * Best king guard beaten by each player (challenger CTE), and when the player first beat a guard of this level:
- * the ranking breaks ties by who reached the level first
+ * Best king guard beaten by each player (challenger CTE), and the fight in which the player first beat a guard of this level:
+ * the ranking breaks ties by who reached the level first. The dates of the logs are in seconds, so the id of that fight
+ * orders the players who reached the same level in the same second
  */
 const CHALLENGERS_QUERY = `
 	WITH best AS (
@@ -37,12 +38,20 @@ const CHALLENGERS_QUERY = `
 		WHERE fight.winner = :playerWinner
 		GROUP BY fight.playerId
 	),
-	challenger AS (
-		SELECT best.playerId, best.level, MIN(fight.date) AS reachedDate
+	reaching AS (
+		SELECT best.playerId,
+		       best.level,
+		       fight.date AS reachedDate,
+		       fight.id AS reachedFightId,
+		       ROW_NUMBER() OVER (PARTITION BY best.playerId ORDER BY fight.date, fight.id) AS reachingOrder
 		FROM best
 		INNER JOIN king_guard_fights_results fight
 			ON fight.playerId = best.playerId AND fight.winner = :playerWinner AND fight.guardLevel = best.level
-		GROUP BY best.playerId, best.level
+	),
+	challenger AS (
+		SELECT playerId, level, reachedDate, reachedFightId
+		FROM reaching
+		WHERE reachingOrder = 1
 	)`;
 
 /**
@@ -225,7 +234,7 @@ export abstract class LogsKingGuardFightsRequests {
 		const [ranking] = await LogsKingGuardFightsResults.sequelize!.query<KingGuardRankingRow>(`
 			${CHALLENGERS_QUERY},
 			viewer AS (
-				SELECT challenger.playerId, challenger.level, challenger.reachedDate
+				SELECT challenger.level, challenger.reachedDate, challenger.reachedFightId
 				FROM challenger
 				INNER JOIN players player ON player.id = challenger.playerId
 				WHERE player.keycloakId = :playerKeycloakId
@@ -234,7 +243,7 @@ export abstract class LogsKingGuardFightsRequests {
 			       MAX(viewer.level) AS level,
 			       1 + SUM(challenger.level > viewer.level
 				       OR challenger.level = viewer.level AND (challenger.reachedDate < viewer.reachedDate
-					       OR challenger.reachedDate = viewer.reachedDate AND challenger.playerId < viewer.playerId)) AS viewerRank
+					       OR challenger.reachedDate = viewer.reachedDate AND challenger.reachedFightId < viewer.reachedFightId)) AS viewerRank
 			FROM challenger
 			LEFT JOIN viewer ON TRUE
 		`, {
@@ -256,7 +265,7 @@ export abstract class LogsKingGuardFightsRequests {
 			SELECT player.keycloakId, challenger.level
 			FROM challenger
 			INNER JOIN players player ON player.id = challenger.playerId
-			ORDER BY challenger.level DESC, challenger.reachedDate ASC, challenger.playerId ASC
+			ORDER BY challenger.level DESC, challenger.reachedDate ASC, challenger.reachedFightId ASC
 			LIMIT :size
 		`, {
 			replacements: {

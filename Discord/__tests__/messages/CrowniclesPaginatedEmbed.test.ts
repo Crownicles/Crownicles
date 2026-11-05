@@ -124,6 +124,34 @@ describe("CrowniclesPaginatedEmbed extra page", () => {
 		expect(backView.customIds).toEqual(["previous", "next", "openExtraPage"]);
 	});
 
+	it("puts back the title of the pages after a double click on the button opening the extra page", async () => {
+		const embed = new CrowniclesPaginatedEmbed({
+			lng: "fr",
+			pages: ["page 1"],
+			extraPage
+		});
+		embed.setTitle("Pages title");
+		const { click } = await sendEmbed(embed);
+
+		await click("openExtraPage");
+		expect((await click("openExtraPage")).embeds[0].title).toBe("Extra title");
+
+		expect((await click("back")).embeds[0].title).toBe("Pages title");
+	});
+
+	it("shows no title after a double click on the button opening the extra page when the pages have none", async () => {
+		const { click } = await sendEmbed(new CrowniclesPaginatedEmbed({
+			lng: "fr",
+			pages: ["page 1"],
+			extraPage
+		}));
+
+		await click("openExtraPage");
+		await click("openExtraPage");
+
+		expect((await click("back")).embeds[0].title).toBeUndefined();
+	});
+
 	it("shows the button opening the extra page even when there is a single page", async () => {
 		const { firstView } = await sendEmbed(new CrowniclesPaginatedEmbed({
 			lng: "fr",
