@@ -2771,7 +2771,7 @@
       },
       "paladinCrusader": {
         "name": "Croisé",
-        "description": "Garde son souffle pour son attaque ultime et ses attaques divines, qu'il réserve à la fin du combat, et dépense le surplus avec son bouclier et son bélier."
+        "description": "Garde son souffle pour son attaque ultime, place ses attaques divines en fin de combat et ne charge au bélier que pour interrompre un repos ou une attaque ultime."
       },
       "paladinJusticar": {
         "name": "Justicier",
@@ -2799,7 +2799,7 @@
       },
       "magePyromancer": {
         "name": "Pyromancien",
-        "description": "Maudit son adversaire dès son premier tour, en profite avec ses attaques sombres tant que la malédiction dure, puis l'embrase sans relâche."
+        "description": "Maudit son adversaire dès qu'il le peut, en profite avec ses attaques sombres tant que la malédiction dure, et l'embrase le reste du temps."
       },
       "mageWarlock": {
         "name": "Envoûteur",

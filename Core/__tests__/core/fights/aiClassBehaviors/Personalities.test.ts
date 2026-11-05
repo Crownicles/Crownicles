@@ -145,24 +145,33 @@ describe("AI personalities", () => {
 	});
 
 	describe("paladin breath reserve", () => {
-		it("keeps its breath for its ultimate and its divine attacks instead of opening with the shield attack", () => {
+		it("keeps the breath of its ultimate and spends the rest with its single shield attack", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
-			const paladin = mockFighter({
-				breath: 17, maxBreath: 25, regenBreath: 3
+			const paladin = (breath: number): ReturnType<typeof mockFighter> => mockFighter({
+				breath, maxBreath: 25, regenBreath: 3
 			});
 
-			expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(1, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(12), mockFightView(1, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(13), mockFightView(1, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
 		});
 
-		it("spends the breath of a divine attack the opponent's benediction made impossible", () => {
+		it("spends all its breath once its ultimate is used", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+			const paladin = mockFighter({
+				breath: 6, maxBreath: 25, regenBreath: 3, history: [ACTIONS.ULTIMATE_ATTACK]
+			});
+
+			expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(5, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
+		});
+
+		it("rams only to break the opponent's rest, even with its breath at its maximum", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
 			const paladin = (): ReturnType<typeof mockFighter> => mockFighter({
-				breath: 25, maxBreath: 30, regenBreath: 3
+				breath: 25, maxBreath: 25, regenBreath: 3, history: [ACTIONS.SHIELD_ATTACK]
 			});
-			const blessedKnight = mockFighter({ history: [ACTIONS.BENEDICTION] });
 
 			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(5, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
-			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(5, blessedKnight)).id).toBe(ACTIONS.SHIELD_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(5, mockFighter({ lastActionId: ACTIONS.RESTING }))).id).toBe(ACTIONS.RAM_ATTACK);
 		});
 	});
 
@@ -213,13 +222,20 @@ describe("AI personalities", () => {
 			expect(new MagePyromancerFightBehavior().chooseAction(mage, mockFightView(2, mockFighter())).id).toBe(ACTIONS.CURSED_ATTACK);
 		});
 
-		it("the pyromancer burns its opponent once its curse has fallen, where the occultist curses it again", () => {
+		it("the pyromancer curses its opponent again once its curse has fallen", () => {
 			const mage = mockFighter({ breath: 10 });
 			const pyromancer = new MagePyromancerFightBehavior();
 			pyromancer.chooseAction(mage, mockFightView(2, mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED })));
 
-			expect(pyromancer.chooseAction(mage, mockFightView(6, mockFighter())).id).toBe(ACTIONS.FIRE_ATTACK);
-			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(6, mockFighter())).id).toBe(ACTIONS.CURSED_ATTACK);
+			expect(pyromancer.chooseAction(mage, mockFightView(6, mockFighter())).id).toBe(ACTIONS.CURSED_ATTACK);
+		});
+
+		it("the pyromancer burns an opponent that suffers another alteration, where the occultist strikes it with its dark attack", () => {
+			const mage = mockFighter({ breath: 10 });
+			const poisoned = (): ReturnType<typeof mockFighter> => mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.POISONED });
+
+			expect(new MagePyromancerFightBehavior().chooseAction(mage, mockFightView(6, poisoned())).id).toBe(ACTIONS.FIRE_ATTACK);
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(6, poisoned())).id).toBe(ACTIONS.DARK_ATTACK);
 		});
 
 		it("the pyromancer curses again an opponent that resisted its curse", () => {
