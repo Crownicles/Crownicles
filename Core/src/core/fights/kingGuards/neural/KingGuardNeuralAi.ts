@@ -9,13 +9,15 @@ import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { KingGuardNeuralModel } from "./KingGuardNeuralModel";
 import { KingGuardNeuralBehavior } from "./KingGuardNeuralBehavior";
+import { FightAlterations } from "../../actions/FightAlterations";
 
 // undefined: not loaded yet; null: missing or unusable, the guards keep their scripted behaviors
 let model: KingGuardNeuralModel | null | undefined;
 
 /**
  * Ids of the game the model does not know: a game update added an action, an alteration or a pet assistance
- * after the training, and the network would misread the fight
+ * after the training, and the network would misread the fight. Every player action is checked, the second half of
+ * a charged attack included, since any of them can be the last action of a fighter, and every alteration of the game
  * @param candidate The model to check
  */
 export function getUnknownIdsOfModel(candidate: KingGuardNeuralModel): string[] {
@@ -27,7 +29,9 @@ export function getUnknownIdsOfModel(candidate: KingGuardNeuralModel): string[] 
 	]);
 	const gameIds = [
 		...candidate.vocab.classes.flatMap(classId => ClassDataController.instance.getById(classId)?.fightActionsIds ?? []),
+		...Object.values(FightConstants.FIGHT_ACTIONS.PLAYER),
 		...Object.values(FightConstants.FIGHT_ACTIONS.ALTERATION),
+		...Object.values(FightAlterations),
 		...[...PetConstants.PET_BEHAVIORS, ...PetConstants.PET_SECONDARY_BEHAVIORS].map(mapping => mapping.behaviorId)
 	];
 	return [...new Set(gameIds.filter(id => !known.has(id)))];
@@ -59,7 +63,7 @@ function loadModel(): KingGuardNeuralModel | null {
 
 /**
  * Behavior of a new king guard: the policy network (a share of the guards, see NEURAL_AI.PROBABILITY), with the
- * scripted behavior of its class as a fallback
+ * scripted behavior of its class as a fallback. The guards of a class the model was not trained on keep their scripted behavior
  * @param classId The class of the guard
  */
 export function createKingGuardBehavior(classId: number): ClassBehavior | undefined {
@@ -70,7 +74,7 @@ export function createKingGuardBehavior(classId: number): ClassBehavior | undefi
 	if (model === undefined) {
 		model = loadModel();
 	}
-	return model ? new KingGuardNeuralBehavior(model, scripted) : scripted;
+	return model?.vocab.classes.includes(classId) ? new KingGuardNeuralBehavior(model, scripted) : scripted;
 }
 
 /**
