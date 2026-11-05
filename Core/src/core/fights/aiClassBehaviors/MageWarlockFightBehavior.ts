@@ -21,7 +21,7 @@ class MageWarlockFightBehavior implements ClassBehavior {
 		}
 
 		if (opponent.hasFightAlteration()) {
-			const cashIn = chooseAgainstAilingOpponent(me);
+			const cashIn = chooseAgainstAilingOpponent(me, opponent);
 			if (cashIn) {
 				return cashIn;
 			}

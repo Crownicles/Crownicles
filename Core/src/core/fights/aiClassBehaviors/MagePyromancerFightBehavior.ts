@@ -11,17 +11,18 @@ import {
 const ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
 
 /**
+ * Dark attack cashing a curse in while it lasts, when the mage has the breath for it. Null otherwise
+ * @param me
+ * @param opponent
+ */
+function chooseCurseCashIn(me: AiPlayerFighter, opponent: Fighter): FightAction | null {
+	return canAfford(me, ACTIONS.DARK_ATTACK) ? chooseAgainstAilingOpponent(me, opponent) : null;
+}
+
+/**
  * Pyromancer mage: curses its opponent with its first move, cashes the curse in with the dark attack while it lasts
  * if it has the breath for it, then burns its opponent with fire attacks once the curse has fallen
  */
-/**
- * Dark attack cashing a curse in while it lasts, when the mage has the breath for it. Null otherwise
- * @param me
- */
-function chooseCurseCashIn(me: AiPlayerFighter): FightAction | null {
-	return canAfford(me, ACTIONS.DARK_ATTACK) ? chooseAgainstAilingOpponent(me) : null;
-}
-
 class MagePyromancerFightBehavior implements ClassBehavior {
 	// A protected opponent resists the curse: the mage casts it again until it lands once
 	private curseLanded = false;
@@ -39,7 +40,7 @@ class MagePyromancerFightBehavior implements ClassBehavior {
 		}
 
 		// The cheap breath-taking attack lets the breath build up for the next fire attack, unlike the poison
-		return (opponentCursed ? chooseCurseCashIn(me) : null)
+		return (opponentCursed ? chooseCurseCashIn(me, opponent) : null)
 			?? getAction(canAfford(me, ACTIONS.FIRE_ATTACK) ? ACTIONS.FIRE_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
 	}
 

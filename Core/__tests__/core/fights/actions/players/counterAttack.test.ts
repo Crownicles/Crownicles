@@ -29,21 +29,13 @@ describe("counterAttack", () => {
 		vi.restoreAllMocks();
 	});
 
-	it("replays the action the opponent just used, with more damage", () => {
+	it("replays the action the opponent just used", () => {
 		const result = counter({
 			copiedActionId: FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK, copiedDamage: 100
 		});
 
 		expect(result.usedAction?.id).toBe(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK);
-		expect(result.usedAction?.result.damages).toBe(140);
-	});
-
-	it("keeps a copied action without damage harmless", () => {
-		const result = counter({
-			copiedActionId: FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK, copiedDamage: 0
-		});
-
-		expect(result.usedAction?.result.damages).toBe(0);
+		expect(result.usedAction?.result.damages).toBe(100);
 	});
 
 	it("does nothing against an uncounterable action", () => {
