@@ -36,11 +36,12 @@ export function canAfford(me: AiPlayerFighter, actionId: string): boolean {
 /**
  * Move against an opponent that already suffers an alteration: the fresh dark attack cashes it in, the mage saving
  * its breath with its cheap attack until it can afford it. Null once the dark attack is worn out, or too worn to be
- * worth its breath
+ * worth its breath. A cursed opponent always takes the dark attack at full power
  * @param me
+ * @param opponent
  */
-export function chooseAgainstAilingOpponent(me: AiPlayerFighter): FightAction | null {
-	const darkAttackMultiplier = getDarkAttackPowerMultiplier(me);
+export function chooseAgainstAilingOpponent(me: AiPlayerFighter, opponent: Fighter): FightAction | null {
+	const darkAttackMultiplier = getDarkAttackPowerMultiplier(me, opponent);
 	if (darkAttackMultiplier < WORN_OUT_DARK_ATTACK_MULTIPLIER) {
 		return null;
 	}
@@ -95,7 +96,7 @@ class MysticMageFightBehavior implements ClassBehavior {
 		}
 
 		const planned = opponent.hasFightAlteration()
-			? chooseAgainstAilingOpponent(me)
+			? chooseAgainstAilingOpponent(me, opponent)
 			: chooseSetup(me, opponent, fightView.fightController.turn);
 		if (planned) {
 			return planned;
