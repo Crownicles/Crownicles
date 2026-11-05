@@ -44,7 +44,7 @@ class PaladinFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)!;
 		}
 
-		if (shouldUseRamAttack(me, opponent, usedUltimateAttacks)) {
+		if (shouldUseRamAttack(me, opponent)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK)!;
 		}
 
@@ -124,7 +124,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	 *
 	 * The shield attack scales on the paladin's high defense and weakens the opponent, which can only happen
 	 * when the opponent has no alteration yet (a fighter holds a single alteration at a time), once per fight.
-	 * It is paid with spare breath only, so that it never delays the ultimate or the divine attacks.
+	 * It is paid with spare breath only, so that it never delays the ultimate.
 	 *
 	 * @param me - The AI fighter.
 	 * @param opponent - The opponent fighter.
@@ -136,7 +136,7 @@ class PaladinFightBehavior implements ClassBehavior {
 		opponent: RealPlayerFighter | AiPlayerFighter,
 		usedUltimateAttacks: number
 	): boolean {
-		return hasBreathToSpare(me, opponent, usedUltimateAttacks, FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
+		return hasBreathToSpare(me, usedUltimateAttacks, FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
 			&& canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.ONCE);
 	}
 }
