@@ -58,9 +58,9 @@ export default use;
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 56,
-		averageDamage: 202,
-		maxDamage: 314
+		minDamage: 53,
+		averageDamage: 191,
+		maxDamage: 297
 	};
 }
 
