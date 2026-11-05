@@ -113,7 +113,7 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 
 	private readonly pageCache: Map<number, string> = new Map();
 
-	// Title of the pages, saved when opening the extra page and put back when leaving it
+	// Title of the pages, saved when the extra page is first opened and put back when leaving it
 	private pagesTitle?: string | null;
 
 	constructor(options: CrowniclesPaginatedEmbedOptions) {
@@ -195,7 +195,10 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 	 * @param backButton
 	 */
 	private buildExtraPageView(extraPage: CrowniclesPaginatedEmbedExtraPage, backButton: ButtonBuilder): PaginatedEmbedView {
-		this.pagesTitle = this.data.title ?? null;
+		// Saved only once: a double click on the button would otherwise save the title of the extra page itself
+		if (this.pagesTitle === undefined) {
+			this.pagesTitle = this.data.title ?? null;
+		}
 		return {
 			embeds: [
 				this.setTitle(extraPage.title)

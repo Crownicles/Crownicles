@@ -383,6 +383,22 @@ describe("King guard fight stats", () => {
 		});
 	});
 
+	it("ranks first the player whose fight was logged first when two players reach the same level in the same second", async () => {
+		const lowerId = await LogsPlayers.create({ keycloakId: "lowerId" });
+		const higherId = await LogsPlayers.create({ keycloakId: "higherId" });
+		await logGuardFight({
+			playerId: higherId.id, guardLevel: 140, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 5_000
+		});
+		await logGuardFight({
+			playerId: lowerId.id, guardLevel: 140, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 5_000
+		});
+
+		const higherIdStats = await LogsKingGuardFightsRequests.getFightStats("higherId");
+		expect(higherIdStats?.leaderboard.map(challenger => challenger.keycloakId)).toEqual(["higherId", "lowerId"]);
+		expect(higherIdStats?.record?.rank).toBe(1);
+		expect((await LogsKingGuardFightsRequests.getFightStats("lowerId"))?.record?.rank).toBe(2);
+	});
+
 	it("ranks the player among the challengers, the first to reach a level ranking first", async () => {
 		const leader = await LogsPlayers.create({ keycloakId: "leader" });
 		const early = await LogsPlayers.create({ keycloakId: "early" });
