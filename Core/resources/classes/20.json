@@ -1,7 +1,7 @@
 {
   "attack": 115,
   "defense": 30,
-  "speed": 110,
+  "speed": 125,
   "health": 45,
   "fightPoint": 30,
   "baseBreath": 6,
