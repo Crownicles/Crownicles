@@ -21,26 +21,46 @@ export const commandInfo: ITestCommand = {
 };
 
 /**
+ * Forced class of the guard, none when the argument is missing or 0
+ * @param arg
+ */
+function parseClassOverride(arg: string | undefined): number | undefined {
+	const classId = arg ? parseInt(arg, 10) : 0;
+	if (classId === 0) {
+		return undefined;
+	}
+	if (!ClassDataController.instance.getById(classId)) {
+		throw new Error(`Classe ${classId} inconnue`);
+	}
+	return classId;
+}
+
+/**
+ * Forced level of the guard, none when the argument is missing
+ * @param arg
+ */
+function parseLevelOverride(arg: string | undefined): number | undefined {
+	if (!arg) {
+		return undefined;
+	}
+	const level = parseInt(arg, 10);
+	if (level < FightConstants.REQUIRED_LEVEL) {
+		throw new Error(`Le niveau doit être au moins ${FightConstants.REQUIRED_LEVEL}`);
+	}
+	return level;
+}
+
+/**
  * Forced class and level of the guard read from the arguments
  * @param args
  */
 function parseOverrides(args: string[]): KingGuardOverrides {
-	const overrides: KingGuardOverrides = {};
-	const classId = args[0] ? parseInt(args[0], 10) : 0;
-	if (classId !== 0) {
-		if (!ClassDataController.instance.getById(classId)) {
-			throw new Error(`Classe ${classId} inconnue`);
-		}
-		overrides.classId = classId;
-	}
-	if (args[1]) {
-		const level = parseInt(args[1], 10);
-		if (level < FightConstants.REQUIRED_LEVEL) {
-			throw new Error(`Le niveau doit être au moins ${FightConstants.REQUIRED_LEVEL}`);
-		}
-		overrides.level = level;
-	}
-	return overrides;
+	const classId = parseClassOverride(args[0]);
+	const level = parseLevelOverride(args[1]);
+	return {
+		...classId === undefined ? {} : { classId },
+		...level === undefined ? {} : { level }
+	};
 }
 
 /**
