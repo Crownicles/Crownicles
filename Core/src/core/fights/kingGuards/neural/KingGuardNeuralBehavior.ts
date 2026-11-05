@@ -105,7 +105,8 @@ export class KingGuardNeuralBehavior implements ClassBehavior {
 	}
 
 	/**
-	 * The best rated playable move, drawn among the near-ties; null when the network cannot rate any
+	 * The best rated playable move, drawn among the near-ties; null when the network cannot rate any, or when a fighter's
+	 * class is not one the model was trained on (its class inputs would all be zero)
 	 * @param fighter
 	 * @param fightView
 	 */
@@ -118,9 +119,14 @@ export class KingGuardNeuralBehavior implements ClassBehavior {
 		if (!opponent) {
 			return null;
 		}
+		const me = toNeuralFighterView(fighter);
+		const opponentView = toNeuralFighterView(opponent);
+		if (!this.indexes.classes.has(me.classId) || !this.indexes.classes.has(opponentView.classId)) {
+			return null;
+		}
 		const scores = this.model.scores(computeNeuralFeatures({
-			me: toNeuralFighterView(fighter),
-			opponent: toNeuralFighterView(opponent),
+			me,
+			opponent: opponentView,
 			turn: fightView.fightController.turn
 		}, {
 			vocab: this.model.vocab,
