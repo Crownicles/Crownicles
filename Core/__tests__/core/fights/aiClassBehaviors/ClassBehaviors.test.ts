@@ -126,11 +126,11 @@ describe("AI class behaviors", () => {
 	});
 
 	describe("MysticMageFightBehavior", () => {
-		it("sets up a poison on a clean opponent at the start of the fight", () => {
-			const mage = mockFighter({ breath: 16 });
-			const opponent = mockFighter();
+		it("curses a healthy clean opponent, and poisons it once it is weakened", () => {
+			const mage = (): ReturnType<typeof mockFighter> => mockFighter({ breath: 16 });
 
-			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(1, opponent)).id).toBe(ACTIONS.POISONOUS_ATTACK);
+			expect(new MysticMageFightBehavior().chooseAction(mage(), mockFightView(1, mockFighter())).id).toBe(ACTIONS.CURSED_ATTACK);
+			expect(new MysticMageFightBehavior().chooseAction(mage(), mockFightView(9, mockFighter({ energy: 300 }))).id).toBe(ACTIONS.POISONOUS_ATTACK);
 		});
 
 		it("curses an opponent that heals itself before anything else", () => {

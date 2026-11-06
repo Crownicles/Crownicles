@@ -246,12 +246,24 @@ describe("AI personalities", () => {
 			expect(new MagePyromancerFightBehavior().chooseAction(mage, mockFightView(4, mockFighter())).id).toBe(ACTIONS.CURSED_ATTACK);
 		});
 
-		it("the warlock still curses a weakened opponent that the occultist burns instead", () => {
+		it("the warlock keeps its breath for its curse and its dark attack where the occultist burns its opponent", () => {
+			const poisoned = (): ReturnType<typeof mockFighter> => mockFighter({
+				alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.POISONED
+			});
+			const wornMage = mockFighter({
+				breath: 9, history: [ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK]
+			});
+
+			expect(new MysticMageFightBehavior().chooseAction(wornMage, mockFightView(9, poisoned())).id).toBe(ACTIONS.FIRE_ATTACK);
+			expect(new MageWarlockFightBehavior().chooseAction(wornMage, mockFightView(9, poisoned())).id).toBe(ACTIONS.BREATH_TAKING_ATTACK);
+		});
+
+		it("the warlock still curses a weakened opponent that the occultist poisons instead", () => {
 			const mage = mockFighter({ breath: 10 });
 			const weakened = (): ReturnType<typeof mockFighter> => mockFighter({ energy: 300 });
 
 			expect(new MageWarlockFightBehavior().chooseAction(mage, mockFightView(5, weakened())).id).toBe(ACTIONS.CURSED_ATTACK);
-			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(5, weakened())).id).toBe(ACTIONS.FIRE_ATTACK);
+			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(5, weakened())).id).toBe(ACTIONS.POISONOUS_ATTACK);
 		});
 
 		it("lets its dark attack recover once it is worn below its second use, and burns its opponent meanwhile", () => {
