@@ -22,9 +22,6 @@ const CURSE_HEAL_ENERGY_RATIO = 0.4;
 // Actions an opponent heals itself with, which the curse reduces
 const HEALING_ACTIONS = [ACTIONS.RESTING, ACTIONS.ENERGETIC_ATTACK];
 
-// The opening poison lands as a critical hit during the first turns of the fight
-const POISON_OPENING_LAST_TURN = 2;
-
 export function getAction(id: string): FightAction {
 	return FightActionDataController.instance.getById(id)!;
 }
@@ -52,40 +49,30 @@ export function chooseAgainstAilingOpponent(me: AiPlayerFighter, opponent: Fight
 }
 
 /**
- * Ailment to set up on a clean opponent: the curse first against the classes that heal, the poison at the opening,
- * the curse while it still heals the mage. Null when none applies
- */
-function chooseSetup(me: AiPlayerFighter, opponent: Fighter, turn: number): FightAction | null {
-	// The curse cuts the healing of the classes that rely on it
-	if (HEALING_ACTIONS.some(actionId => opponent.availableFightActions.has(actionId)) && canAfford(me, ACTIONS.CURSED_ATTACK)) {
-		return getAction(ACTIONS.CURSED_ATTACK);
-	}
-	if (turn <= POISON_OPENING_LAST_TURN && canAfford(me, ACTIONS.POISONOUS_ATTACK)) {
-		return getAction(ACTIONS.POISONOUS_ATTACK);
-	}
-	if (opponent.getEnergy() > opponent.getMaxEnergy() * CURSE_HEAL_ENERGY_RATIO && canAfford(me, ACTIONS.CURSED_ATTACK)) {
-		return getAction(ACTIONS.CURSED_ATTACK);
-	}
-	return null;
-}
-
-/**
- * Strongest affordable attack while the dark attack recovers: the fire attack, else the poison, else the cheap breath-taking attack
+ * Ailment to set up on a clean opponent: the curse against the classes that heal or while it still heals the mage,
+ * the poison otherwise. Null when none is affordable
  * @param me
+ * @param opponent
  */
-export function chooseDamagingAttack(me: AiPlayerFighter): FightAction {
-	for (const actionId of [ACTIONS.FIRE_ATTACK, ACTIONS.POISONOUS_ATTACK]) {
-		if (canAfford(me, actionId)) {
-			return getAction(actionId);
-		}
+function chooseSetup(me: AiPlayerFighter, opponent: Fighter): FightAction | null {
+	// The curse cuts the healing of the classes that rely on it
+	const opponentHeals = HEALING_ACTIONS.some(actionId => opponent.availableFightActions.has(actionId));
+	if ((opponentHeals || opponent.getEnergy() > opponent.getMaxEnergy() * CURSE_HEAL_ENERGY_RATIO) && canAfford(me, ACTIONS.CURSED_ATTACK)) {
+		return getAction(ACTIONS.CURSED_ATTACK);
 	}
-	return getAction(ACTIONS.BREATH_TAKING_ATTACK);
+	return canAfford(me, ACTIONS.POISONOUS_ATTACK) ? getAction(ACTIONS.POISONOUS_ATTACK) : null;
 }
 
 /**
- * Occultist mage: sets up one of its ailments (the curse first against an opponent that heals), cashes it in with
- * the dark attack while the attack is fresh, then finishes with its other attacks while the dark attack recovers
+ * Attack while the dark attack recovers: the fire attack with enough breath, else the breath-taking attack, whose
+ * stolen breath pays for the next dark attack (it wins more fights than the poison as a filler)
+ * @param me
+ * @param minFireBreath Breath from which the mage spends it on the fire attack
  */
+export function chooseDamagingAttack(me: AiPlayerFighter, minFireBreath = FightActionDataController.getFightActionBreathCost(ACTIONS.FIRE_ATTACK)): FightAction {
+	return getAction(me.getBreath() >= minFireBreath && canAfford(me, ACTIONS.FIRE_ATTACK) ? ACTIONS.FIRE_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
+}
+
 class MysticMageFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter();
@@ -97,7 +84,7 @@ class MysticMageFightBehavior implements ClassBehavior {
 
 		const planned = opponent.hasFightAlteration()
 			? chooseAgainstAilingOpponent(me, opponent)
-			: chooseSetup(me, opponent, fightView.fightController.turn);
+			: chooseSetup(me, opponent);
 		if (planned) {
 			return planned;
 		}
