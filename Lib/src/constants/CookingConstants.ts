@@ -267,6 +267,25 @@ export const NO_XP_LEVEL_THRESHOLD = 3;
 export const MASTER_CHEF_BADGE_COOKING_LEVEL = 100;
 
 /**
+ * Specialties are recipes a master chef keeps at hand: each one stays on the station it was chosen on
+ * at every furnace ignition, until the chef removes it
+ */
+export const CookingSpecialtyConstants = {
+	UNLOCK_COOKING_LEVEL: MASTER_CHEF_BADGE_COOKING_LEVEL,
+	MAX_SPECIALTIES: 3
+} as const;
+
+export function hasUnlockedCookingSpecialties(cookingLevel: number): boolean {
+	return cookingLevel >= CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL;
+}
+
+/**
+ * Time potions a player can successfully cook during a week: each one bends time a little more,
+ * and once the limit is reached the time preparations stay inert until the weekly reset
+ */
+export const TIME_POTION_WEEKLY_CRAFT_LIMIT = 10;
+
+/**
  * Chance of receiving a consolation no-effect potion when a craft fails
  */
 export const FAILED_CRAFT_CONSOLATION_CHANCE = 0.3;
@@ -360,6 +379,20 @@ export const SLOT_CONFIGS: readonly SlotConfig[] = [
 		potionsOnly: false
 	}
 ] as const;
+
+/**
+ * Whether the furnace station can offer the recipe (level range and recipe types of the station)
+ */
+export function isRecipeEligibleForSlot(recipe: {
+	level: number;
+	recipeType: RecipeType;
+}, slotIndex: number): boolean {
+	const config = SLOT_CONFIGS[slotIndex];
+	return config !== undefined
+		&& recipe.level >= config.minLevel
+		&& recipe.level <= config.maxLevel
+		&& config.eligibleTypes.includes(recipe.recipeType);
+}
 
 /**
  * Per-slot seed offsets added to the day seed before the deterministic shuffle,

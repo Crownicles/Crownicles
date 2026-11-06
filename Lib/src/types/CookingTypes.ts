@@ -36,6 +36,9 @@ export interface CookingSlotData {
 		petFoodType?: PetFood;
 		ingredients: RecipeIngredients;
 		canCraft: boolean;
+
+		/** Time potions the player can still cook this week, only set on time potion recipes */
+		timePotionsLeftThisWeek?: number;
 	} | null;
 }
 
@@ -45,10 +48,18 @@ export const CookingCraftErrors = {
 	CRAFT_UNAVAILABLE: "craftUnavailable",
 	INVENTORY_FULL: "inventoryFull",
 	GUILD_REQUIRED: "guildRequired",
-	GUILD_STORAGE_FULL: "guildStorageFull"
+	GUILD_STORAGE_FULL: "guildStorageFull",
+	TIME_POTION_WEEKLY_LIMIT: "timePotionWeeklyLimit"
 } as const;
 
 export type CookingCraftError = typeof CookingCraftErrors[keyof typeof CookingCraftErrors];
+
+export const CookingSpecialtyErrors = {
+	LIMIT_REACHED: "specialtyLimitReached",
+	UNAVAILABLE: "specialtyUnavailable"
+} as const;
+
+export type CookingSpecialtyError = typeof CookingSpecialtyErrors[keyof typeof CookingSpecialtyErrors];
 
 /**
  * Minimal recipe info needed to render a recipe as "{icon} Name (level)".
@@ -69,6 +80,14 @@ export interface PinnedRecipeInfo {
 }
 
 /**
+ * A recipe the master chef made one of their specialties, offered on its station at every furnace ignition
+ */
+export interface CookingSpecialtyInfo extends RecipeDisplayInfo {
+	slotIndex: number;
+	canCraft: boolean;
+}
+
+/**
  * Authoritative snapshot of the cooking feature's state, produced by Core
  * and consumed by Discord as the single source of truth for every cooking
  * render. The Discord client must NOT keep any cached cooking state of its
@@ -84,6 +103,9 @@ export interface CookingMenuSnapshot {
 	cookingLevel: number;
 	cookingGrade: string;
 	pinnedRecipe?: PinnedRecipeInfo;
+
+	/** Omitted while the player has no specialty */
+	specialties?: CookingSpecialtyInfo[];
 	currentSlots: CookingSlotData[];
 	isIgnited: boolean;
 }

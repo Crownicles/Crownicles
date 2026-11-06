@@ -134,6 +134,7 @@ const EXPORTED_TABLES = {
 	"Apartment": "21_apartments.csv",
 	"PlayerCookingRecipe": "22_cooking_recipes.csv",
 	"GlobalBlessing": "23_current_blessing.csv",
+	"PlayerCookingSpecialty": "24_cooking_specialties.csv",
 
 	// ============ LOGS DATABASE - Player Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersScore": "logs/15_score_history.csv",

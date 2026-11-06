@@ -149,6 +149,7 @@ import {
 } from "./LogsCityLogger";
 import { transactionBelongsToSequelize } from "./LogsForeignTransactionGuard";
 import { MapCache } from "../../maps/MapCache";
+import type { CookingRecipeId } from "../../../../../Lib/src/types/CookingRecipe";
 
 /**
  * Data structure for expedition log entries
@@ -1859,6 +1860,11 @@ export class LogsDatabase extends Database {
 	/** Log a cooking craft attempt (success or failure) */
 	public logCookingUse(params: CookingUseLogParams): Promise<void> {
 		return this.cityLogger.logCookingUse(params);
+	}
+
+	/** Count the successful crafts of the given recipes by a player during the current week */
+	public countSuccessfulCookingCraftsThisWeek(keycloakId: string, recipeIds: CookingRecipeId[]): Promise<number> {
+		return this.cityLogger.countSuccessfulCookingCraftsThisWeek(keycloakId, recipeIds);
 	}
 
 	/** Log a garden action (plant/water/compost/harvest) */
