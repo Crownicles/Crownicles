@@ -198,6 +198,22 @@
     "9": "Uma classe centrada na velocidade. Pouca saúde e pontos de energia, mas muita velocidade e ataque."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "est aidé par **{{petNickname}}**, resté à l'affût, qui surgit dès que l'adversaire reprend son souffle et lui assène un formidable coup de patte."
+    },
+    "scentOfBlood": {
+      "generalEffect": "est rejoint par **{{petNickname}}** qui a senti l'odeur du sang : le requin mord l'adversaire blessé et ouvre une plaie qui saigne abondamment.",
+      "success": "voit **{{petNickname}}** entrer en frénésie, rendu fou par le sang qui coule encore : le requin se jette sur l'adversaire et le mord sauvagement.",
+      "failure": "voit **{{petNickname}}** perdre la trace de sa proie : l'hémorragie de l'adversaire s'est arrêtée et le requin s'éloigne."
+    },
+    "unstoppable": {
+      "generalEffect": "prend de l'élan aux côtés de **{{petNickname}}**, dont la lourde course s'accélère : ses attaques au corps à corps frappent de plus en plus fort.",
+      "success": "est emporté par **{{petNickname}}**, lancé à pleine vitesse : plus rien ne semble pouvoir l'arrêter.",
+      "failure": "est immobilisé et **{{petNickname}}** perd tout son élan, il va falloir le reprendre depuis le début."
+    },
+    "woundedPrey": {
+      "success": "est rejoint par **{{petNickname}}** qui tournoyait au-dessus du combat : voyant l'adversaire à bout de forces, le rapace fond sur lui en piqué, serres en avant."
+    },
     "drowning": {
       "customMessage": "agarra o seu adversário com um dos seus tentáculos e mergulha-o debaixo de água, sendo que apenas os adversários com fôlego escapam ilesos.",
       "name_one": "Afogamento",
@@ -411,7 +427,7 @@
       "stop": "sofre as consequências da maldição."
     },
     "cursedAttack": {
-      "description": "Amaldiçoa o adversário, talvez sofrendo as consequências no futuro... Cura o jogador se o adversário tiver mais de 40% da sua energia.",
+      "description": "Maudit l'adversaire, peut être en subira-t-il les conséquences dans le futur... Tant qu'il est maudit, l'adversaire récupère moins d'énergie grâce aux soins et subit l'attaque sombre à pleine puissance. Soigne le lanceur si l'adversaire a plus de 40% de son énergie.",
       "name_one": "Ataque amaldiçoado",
       "name_other": "Ataques amaldiçoados"
     },
@@ -431,7 +447,7 @@
       "name_other": "Maldições do mar"
     },
     "darkAttack": {
-      "description": "Ignora a defesa do adversário. Mais eficaz contra um jogador com um ataque elevado. Cega o oponente ou restaura parte do fôlego perdido. A alteração \"cego\" dura pelo menos 1 turno e torna o adversário incapaz de atacar por vezes, reduzindo a sua defesa e velocidade.",
+      "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Très puissante à sa première utilisation, elle s'affaiblit à chaque nouvelle utilisation réussie et reprend des forces quand le lanceur s'en passe pendant quelques actions. Elle frappe toujours un adversaire maudit à pleine puissance. Sa puissance actuelle est affichée sur son bouton.",
       "name_one": "Ataque negro",
       "name_other": "Ataques negros"
     },
@@ -473,7 +489,7 @@
       "afraid": "é ajudado por **{{petNickname}}** que, apesar de se lembrar perfeitamente dos acontecimentos recentes, treme demasiado de medo para conseguir recuperar o fôlego perdido."
     },
     "energeticAttack": {
-      "description": "Metade do dano deste ataque é devolvido ao atacante em forma de cura. Ignora parte da defesa adversária.",
+      "description": "Une partie des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse. Inflige davantage de dégâts à un adversaire qui vient de se reposer. Le soin est réduit contre les monstres.",
       "name_one": "Ataque energético",
       "name_other": "Ataques energéticos"
     },
