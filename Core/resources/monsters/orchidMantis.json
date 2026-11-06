@@ -1,0 +1,40 @@
+{
+  "baseEnergyValue": 100,
+  "attackRatio": 110,
+  "defenseRatio": 40,
+  "speedRatio": 130,
+  "breath": 6,
+  "maxBreath": 20,
+  "breathRegen": 5,
+  "rewardFactor": 0.5,
+  "materialLoot": [
+    59,
+    64,
+    37,
+    9,
+    88,
+    45,
+    75,
+    19
+  ],
+  "attacks": [
+    {
+      "id": "mantisScythes",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "stealth",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "ambush",
+      "minLevel": 60,
+      "weight": 2
+    }
+  ],
+  "maps": [
+    1304
+  ]
+}

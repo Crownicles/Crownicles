@@ -52,7 +52,8 @@ export enum InteractOtherPlayerInteraction {
 	BEATEN_MALE_ICE_DRAGON,
 	BEATEN_FEMALE_ICE_DRAGON,
 	BEATEN_KRAKEN,
-	BEATEN_LEVIATHAN
+	BEATEN_LEVIATHAN,
+	BEATEN_MOTHER_TREE
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
