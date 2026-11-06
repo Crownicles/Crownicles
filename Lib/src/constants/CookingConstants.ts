@@ -305,8 +305,8 @@ export function getNextCookingSpecialtyUnlockLevel(cookingLevel: number): number
 }
 
 /**
- * Time potions a player can successfully cook during a week: each one bends time a little more,
- * and once the limit is reached the time preparations stay inert until the weekly reset
+ * Time potions a player can successfully cook during a week: once the limit is reached, no time potion
+ * can be cooked until the weekly reset
  */
 export const TIME_POTION_WEEKLY_CRAFT_LIMIT = 10;
 
