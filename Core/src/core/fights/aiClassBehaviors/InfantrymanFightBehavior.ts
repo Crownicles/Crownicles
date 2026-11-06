@@ -8,9 +8,7 @@ import { FightConstants } from "../../../../../Lib/src/constants/FightConstants"
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
-import {
-	piercingOrSimpleAttack, shouldProtect
-} from "./RecruitFightBehavior";
+import { piercingOrSimpleAttack } from "./RecruitFightBehavior";
 
 // Classes that can weaken (shield attack) or stun (ram attack) the infantryman for several turns
 const CONTROLLING_CLASSES: number[] = [ClassConstants.CLASSES_ID.IMPENETRABLE_TANK, ClassConstants.CLASSES_ID.LUMINOUS_PALADIN];
@@ -83,7 +81,14 @@ class InfantryManFightBehavior implements ClassBehavior {
 		const powerfulAttacksUsed = this.powerfulAttacksUsedMap;
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
 
-		if (shouldProtect(opponent, me, fightView.fightController.turn) || shouldProtectAgainstControl(me, opponent)) {
+		// Opening: the charged attack, which also raises the defense while it charges
+		if (fightView.fightController.turn <= 2
+			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)) {
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)!;
+		}
+
+		// The protection is kept for the classes that would chain their controls: against the others, attacking won more fights
+		if (shouldProtectAgainstControl(me, opponent)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION)!;
 		}
 

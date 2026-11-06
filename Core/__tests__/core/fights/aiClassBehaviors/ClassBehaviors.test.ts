@@ -68,6 +68,16 @@ describe("AI class behaviors", () => {
 			expect(new InfantryManFightBehavior().chooseAction(infantryman, mockFightView(5, tank)).id).not.toBe(ACTIONS.PROTECTION);
 		});
 
+		it("opens with its charged attack, even against a mage it used to protect itself from", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
+			const mage = mockFighter({
+				classId: ClassConstants.CLASSES_ID.MYSTIC_MAGE, breath: 10
+			});
+
+			expect(new InfantryManFightBehavior().chooseAction(mockFighter(), mockFightView(2, mage)).id).toBe(ACTIONS.CHARGE_CHARGING_ATTACK);
+			expect(new InfantryManFightBehavior().chooseAction(mockFighter(), mockFightView(6, mage)).id).not.toBe(ACTIONS.PROTECTION);
+		});
+
 		it("does not waste a turn protecting itself from a class without control attack", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
 			const knight = mockFighter({
