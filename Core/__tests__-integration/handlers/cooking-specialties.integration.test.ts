@@ -22,6 +22,10 @@ import {
 	CookingSpecialtyConstants, SPECIALTY_SLOT_INDEX, TIME_POTION_WEEKLY_CRAFT_LIMIT
 } from "../../../Lib/src/constants/CookingConstants";
 
+// Cooking level unlocking every specialty, and the one before the first specialty
+const ALL_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[CookingSpecialtyConstants.MAX_SPECIALTIES - 1];
+const BEFORE_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0] - 1;
+
 type ReportCookingServiceModule = typeof import("../../src/core/report/ReportCookingService");
 type CookingServiceModule = typeof import("../../src/core/cooking/CookingService");
 type MaterialModule = typeof import("../../src/core/database/game/models/Material");
@@ -166,7 +170,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 
 	it("offers a specialty on the specialty station at every furnace ignition, besides every rotating station, even once cooked", async () => {
 		useTimePotionsCookedThisWeek(0);
-		const cook = await createCook("specialty-keeper", CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL);
+		const cook = await createCook("specialty-keeper", ALL_SPECIALTIES_LEVEL);
 		const chosen = visibleSlots(await getSlots(cook))[0];
 
 		const [setResponse] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
@@ -205,7 +209,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 
 	it("refuses a specialty beyond the limit and accepts a new one once a specialty is removed", async () => {
 		useTimePotionsCookedThisWeek(0);
-		const cook = await createCook("specialty-limit", CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL);
+		const cook = await createCook("specialty-limit", ALL_SPECIALTIES_LEVEL);
 
 		// Each new specialty leaves the rotation, so the next candidate is read from the refreshed stations
 		const chooseNextRecipe = async (): Promise<{ slotIndex: number; recipeId: string }> => {
@@ -246,9 +250,27 @@ describe("cooking specialties and time potion weekly limit", () => {
 		expect(await PlayerCookingSpecialty.count({ where: { playerId: cook.player.id } })).toBe(CookingSpecialtyConstants.MAX_SPECIALTIES);
 	});
 
-	it("refuses a specialty below the master chef level or for a recipe the station no longer offers", async () => {
+	it("only lets a kitchen master keep the single specialty of their grade", async () => {
 		useTimePotionsCookedThisWeek(0);
-		const apprentice = await createCook("specialty-apprentice", CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL - 1);
+		const cook = await createCook("specialty-kitchen-master", CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0]);
+		const [first, second] = visibleSlots(rotatingSlots(await getSlots(cook)));
+
+		const [accepted] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
+			slotIndex: first.slotIndex,
+			recipeId: first.recipe.id
+		});
+		expect(accepted).toMatchObject({ error: undefined });
+		const [refused] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
+			slotIndex: second.slotIndex,
+			recipeId: second.recipe.id
+		});
+		expect(refused).toMatchObject({ error: CookingSpecialtyErrors.LIMIT_REACHED });
+		expect(await PlayerCookingSpecialty.count({ where: { playerId: cook.player.id } })).toBe(1);
+	});
+
+	it("refuses a specialty before the first unlock level or for a recipe the station no longer offers", async () => {
+		useTimePotionsCookedThisWeek(0);
+		const apprentice = await createCook("specialty-apprentice", BEFORE_SPECIALTIES_LEVEL);
 		const apprenticeSlot = visibleSlots(await getSlots(apprentice))[0];
 		const [apprenticeResponse] = await reportCooking.handleCookingSetSpecialty(apprentice.keycloakId, {
 			slotIndex: apprenticeSlot.slotIndex,
@@ -257,7 +279,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 		expect(apprenticeResponse).toMatchObject({ error: CookingSpecialtyErrors.UNAVAILABLE });
 		expect((apprenticeResponse as { menu: { specialties?: unknown[] } }).menu.specialties).toBeUndefined();
 
-		const master = await createCook("specialty-stale", CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL);
+		const master = await createCook("specialty-stale", ALL_SPECIALTIES_LEVEL);
 		const [first, second] = visibleSlots(await getSlots(master));
 		const [staleResponse] = await reportCooking.handleCookingSetSpecialty(master.keycloakId, {
 			slotIndex: first.slotIndex,
@@ -269,7 +291,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 	});
 
 	it("blocks the time potions once the weekly limit is reached, without consuming the ingredients", async () => {
-		const cook = await createCook("time-potion-limit", CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL);
+		const cook = await createCook("time-potion-limit", ALL_SPECIALTIES_LEVEL);
 		await PlayerCookingRecipe.create({
 			playerId: cook.player.id,
 			recipeId: TIME_POTION_RECIPE_ID
@@ -309,7 +331,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 	});
 
 	it("counts the time potion just cooked in the menu shown after the craft", async () => {
-		const cook = await createCook("time-potion-specialty", CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL);
+		const cook = await createCook("time-potion-specialty", ALL_SPECIALTIES_LEVEL);
 		await PlayerCookingRecipe.create({
 			playerId: cook.player.id,
 			recipeId: TIME_POTION_RECIPE_ID

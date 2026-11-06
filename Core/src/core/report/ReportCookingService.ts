@@ -55,7 +55,7 @@ import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	getCookingGrade, CookingOutputType, CookingOutputTypeValue, CookingSpecialtyConstants, hasUnlockedCookingSpecialties,
+	getCookingGrade, CookingOutputType, CookingOutputTypeValue, getCookingSpecialtiesLimit, hasUnlockedCookingSpecialties,
 	SPECIALTY_SLOT_INDEX,
 	FAILED_CRAFT_CONSOLATION_CHANCE, FAILED_CRAFT_CONSOLATION_MIN_RARITY, FAILED_CRAFT_CONSOLATION_MAX_RARITY
 } from "../../../../Lib/src/constants/CookingConstants";
@@ -1130,15 +1130,15 @@ interface SpecialtyChoice {
 }
 
 /**
- * Store the specialty under the player lock, so two concurrent choices can't exceed the limit. The recipe is
- * unpinned since a specialty is already offered at every ignition.
+ * Store the specialty under the player lock, so two concurrent choices can't exceed the limit of the player's
+ * cooking level. The recipe is unpinned since a specialty is already offered at every ignition.
  */
 async function addSpecialtyUnderLock(lockedPlayer: Locked<Player>, recipeId: CookingRecipeId): Promise<CookingSpecialtyError | null> {
 	const specialties = await PlayerCookingSpecialty.getOfPlayer(lockedPlayer.id);
 	if (specialties.some(specialty => specialty.recipeId === recipeId)) {
 		return CookingSpecialtyErrors.UNAVAILABLE;
 	}
-	if (specialties.length >= CookingSpecialtyConstants.MAX_SPECIALTIES) {
+	if (specialties.length >= getCookingSpecialtiesLimit(lockedPlayer.cookingLevel)) {
 		return CookingSpecialtyErrors.LIMIT_REACHED;
 	}
 	await PlayerCookingSpecialty.create({
