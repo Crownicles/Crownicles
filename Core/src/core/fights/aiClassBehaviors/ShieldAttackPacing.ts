@@ -27,22 +27,40 @@ export type ShieldAttackChances = typeof SHIELD_ATTACK_CHANCES[keyof typeof SHIE
  * @param me
  * @param opponent
  * @param chances Chance to cast it, by number of shield attacks already cast in the fight
- * @param breathToKeep Breath the AI wants to keep after the shield attack
+ * @param pacing Breath the AI wants to keep after the shield attack, and number of weakening shield attacks it already
+ * cast in the fight (all its shield attacks by default)
  */
 export function canPlayShieldAttack(
 	me: AiPlayerFighter,
 	opponent: AiPlayerFighter | RealPlayerFighter,
 	chances: ShieldAttackChances,
-	breathToKeep = 0
+	pacing: {
+		breathToKeep?: number;
+		weakeningShieldAttacksCast?: number;
+	} = {}
 ): boolean {
 	const shieldAttack = FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK;
-	const shieldAttacksUsed = me.fightActionsHistory.filter(action => action.id === shieldAttack).length;
+	const shieldAttacksUsed = pacing.weakeningShieldAttacksCast ?? me.fightActionsHistory.filter(action => action.id === shieldAttack).length;
 	if (opponent.hasFightAlteration() || shieldAttacksUsed >= chances.length) {
 		return false;
 	}
-	if (me.getBreath() - FightActionDataController.getFightActionBreathCost(shieldAttack) < breathToKeep) {
+	if (me.getBreath() - FightActionDataController.getFightActionBreathCost(shieldAttack) < (pacing.breathToKeep ?? 0)) {
 		return false;
 	}
 	const chance = chances[shieldAttacksUsed];
 	return chance >= 1 || RandomUtils.crowniclesRandom.bool(chance);
+}
+
+/**
+ * Check if the AI can strike with the shield attack, which scales on its defense, without weakening its opponent: the
+ * opponent already suffers another alteration, which a fighter keeps until it wears off. Against a weakened opponent, it
+ * would weaken it again for two more turns
+ * @param me
+ * @param opponent
+ * @param breathToKeep Breath the AI wants to keep after the shield attack
+ */
+export function canStrikeWithShieldAttack(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter, breathToKeep = 0): boolean {
+	return opponent.hasFightAlteration()
+		&& opponent.alteration?.id !== FightConstants.FIGHT_ACTIONS.ALTERATION.WEAK
+		&& me.getBreath() - FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK) >= breathToKeep;
 }

@@ -30,29 +30,43 @@ describe("TankFightBehavior", () => {
 		expect(new TankFightBehavior().chooseAction(tank, mockFightView(5, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
 	});
 
-	it("is less and less likely to cast its shield attack again: 90%, then 50%, then 20%", () => {
+	it("is less and less likely to weaken its opponent again with its shield: 90%, then 50%, then 20%, never a fourth time", () => {
+		const chances: number[] = [];
+		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockImplementation((chance?: number): boolean => {
+			chances.push(chance!);
+			return true;
+		});
+		const tank = mockFighter({ breath: 10 });
+		const behavior = new TankFightBehavior();
+		const actions = [5, 7, 9, 11].map(turn => behavior.chooseAction(tank, mockFightView(turn, mockFighter())).id);
+
+		expect(actions).toEqual([ACTIONS.SHIELD_ATTACK, ACTIONS.SHIELD_ATTACK, ACTIONS.SHIELD_ATTACK, ACTIONS.INTENSE_ATTACK]);
+		expect(chances).toEqual([0.9, 0.5, 0.2]);
+	});
+
+	it("strikes with its shield an opponent that suffers another alteration, without using up its weakening shields", () => {
 		const chances: number[] = [];
 		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockImplementation((chance?: number): boolean => {
 			chances.push(chance!);
 			return false;
 		});
-		const tankAfter = (shieldAttacks: number): ReturnType<typeof mockFighter> => mockFighter({
-			breath: 10, history: [ACTIONS.DEFENSE_BUFF, ...Array<string>(shieldAttacks).fill(ACTIONS.SHIELD_ATTACK)]
-		});
+		const tank = mockFighter({ breath: 10 });
+		const behavior = new TankFightBehavior();
+		const poisoned = mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.POISONED });
 
-		for (const shieldAttacks of [0, 1, 2]) {
-			expect(new TankFightBehavior().chooseAction(tankAfter(shieldAttacks), mockFightView(9, mockFighter())).id).not.toBe(ACTIONS.SHIELD_ATTACK);
-		}
-		expect(chances).toEqual([0.9, 0.5, 0.2]);
+		expect(behavior.chooseAction(tank, mockFightView(5, poisoned)).id).toBe(ACTIONS.SHIELD_ATTACK);
+		behavior.chooseAction(tank, mockFightView(7, mockFighter()));
+		expect(chances).toEqual([0.9]);
 	});
 
-	it("never casts a fourth shield attack in a fight", () => {
-		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
-		const tank = mockFighter({
-			breath: 10, history: [ACTIONS.DEFENSE_BUFF, ACTIONS.SHIELD_ATTACK, ACTIONS.SHIELD_ATTACK, ACTIONS.SHIELD_ATTACK]
+	it("attacks with its intense attack whenever it can afford it", () => {
+		const tank = mockFighter({ breath: 10 });
+		const weakened = mockFighter({
+			alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.WEAK,
+			lastActionId: ACTIONS.SIMPLE_ATTACK
 		});
 
-		expect(new TankFightBehavior().chooseAction(tank, mockFightView(9, mockFighter())).id).not.toBe(ACTIONS.SHIELD_ATTACK);
+		expect(new TankFightBehavior().chooseAction(tank, mockFightView(5, weakened)).id).toBe(ACTIONS.INTENSE_ATTACK);
 	});
 
 	it("does not chain its shield attack on an opponent it already weakened, and counters its heavy attack instead", () => {
@@ -76,20 +90,12 @@ describe("TankFightBehavior", () => {
 	});
 
 	it("does not start an intense attack without enough breath for it", () => {
-		const tank = mockFighter({
-			breath: 3, energy: 100
-		});
+		const tank = mockFighter({ breath: 3 });
 		const opponent = mockFighter({
 			alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.WEAK,
 			lastActionId: ACTIONS.SIMPLE_ATTACK
 		});
-		const behavior = new TankFightBehavior();
 
-		// Spend all the defense buffs the tank stacks while it cannot afford a shield attack
-		for (let turn = 3; turn < 15; turn += 2) {
-			behavior.chooseAction(tank, mockFightView(turn, opponent));
-		}
-
-		expect(behavior.chooseAction(tank, mockFightView(15, opponent)).id).toBe(ACTIONS.SIMPLE_ATTACK);
+		expect(new TankFightBehavior().chooseAction(tank, mockFightView(15, opponent)).id).toBe(ACTIONS.SIMPLE_ATTACK);
 	});
 });
