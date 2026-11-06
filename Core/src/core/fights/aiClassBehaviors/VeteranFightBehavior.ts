@@ -9,6 +9,7 @@ import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import {
+	shouldChargeWhileSavingForEnergeticAttack,
 	shouldConcentrateBeforeEnergeticAttack, shouldPunishRest, shouldUseConcentratedEnergeticAttack
 } from "./VeteranTactics";
 
@@ -29,6 +30,10 @@ class VeteranFightBehavior implements ClassBehavior {
 		// Concentration boosts the next attack: spend it on the energetic attack, which also punishes an opponent that has just rested
 		if (shouldUseConcentratedEnergeticAttack(me) || shouldPunishRest(me, opponent)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK)!;
+		}
+
+		if (shouldChargeWhileSavingForEnergeticAttack(me)) {
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)!;
 		}
 
 		if (shouldConcentrateBeforeEnergeticAttack(me)) {
