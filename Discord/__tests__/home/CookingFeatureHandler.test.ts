@@ -113,7 +113,7 @@ import {
 	CookingCraftErrors, CookingSlotData, CookingSpecialtyErrors
 } from "../../../Lib/src/types/CookingTypes";
 import {
-	CookingOutputType, CookingSpecialtyConstants, RecipeType, SLOT_CONFIGS
+	CookingOutputType, CookingSpecialtyConstants, RecipeType, SPECIALTY_SLOT_INDEX
 } from "../../../Lib/src/constants/CookingConstants";
 import { ReactionCollectorHomeMenuReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { ReactionCollectorRefuseReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -1212,15 +1212,42 @@ describe("CookingFeatureHandler", () => {
 			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).toContain(`commands:report.city.homes.cooking.${CookingSpecialtyErrors.LIMIT_REACHED}`);
 		});
 
-		it("should not offer a recipe as the specialty of a station that can't offer it", async () => {
+		it("should only offer the recipes of the rotating stations as new specialties", async () => {
 			const ctx = createHandlerContext({ homeData: createCookingHomeData(5, CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL) });
-			const materialOnlySlot = SLOT_CONFIGS.findIndex(config => !config.eligibleTypes.includes(RecipeType.POTION_HEALTH));
 			const nestedMenus = await ignite(ctx, {
-				// A health potion pushed onto a material station by a kept recipe swap
-				currentSlots: [createSlotWithRecipe({ slotIndex: materialOnlySlot, recipeId: "swappedRecipe" })]
+				currentSlots: [
+					createSlotWithRecipe({ slotIndex: 0, recipeId: "rotatingRecipe" }),
+					createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId: "specialtyRecipe" })
+				],
+				specialties: [{
+					recipeId: "specialtyRecipe", level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
+				}]
 			});
 
-			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).not.toContain(`${HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX}${materialOnlySlot}:swappedRecipe`);
+			const rendered = JSON.stringify(lastRenderedMenu(nestedMenus));
+			expect(rendered).toContain(`${HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX}0:rotatingRecipe`);
+			expect(rendered).not.toContain(`${HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX}${SPECIALTY_SLOT_INDEX}:specialtyRecipe`);
+		});
+
+		it("should fit a full furnace with every specialty in Discord's 40 components", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(SPECIALTY_SLOT_INDEX, CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL) });
+			const specialtyIds = Array.from({ length: CookingSpecialtyConstants.MAX_SPECIALTIES }, (_, i) => `specialty${i}`);
+			const nestedMenus = await ignite(ctx, {
+				currentSlots: [
+					...Array.from({ length: SPECIALTY_SLOT_INDEX }, (_, slotIndex) => createSlotWithRecipe({ slotIndex, recipeId: `rotating${slotIndex}` })),
+					...specialtyIds.map(recipeId => createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId }))
+				],
+				specialties: specialtyIds.map(recipeId => ({
+					recipeId, level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
+				}))
+			});
+
+			const countComponents = (component: RenderedComponent): number => 1
+				+ (component.components ?? []).reduce((total, child) => total + countComponents(child), 0)
+				+ (component.accessory ? countComponents(component.accessory) : 0);
+			const rendered = lastRenderedMenu(nestedMenus);
+			expect(JSON.stringify(rendered)).toContain(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${SPECIALTY_SLOT_INDEX}:specialty2`);
+			expect(countComponents(rendered)).toBeLessThanOrEqual(40);
 		});
 
 		it("should not offer specialties below the master chef level", async () => {
@@ -1233,20 +1260,20 @@ describe("CookingFeatureHandler", () => {
 			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).not.toContain(HomeMenuIds.COOKING_SPECIALTY_SELECT);
 		});
 
-		it("should flag the specialty station and keep its craft button instead of a pin button", async () => {
+		it("should show the specialties on their own station with a craft button instead of a pin button", async () => {
 			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL) });
 			const nestedMenus = await ignite(ctx, {
-				currentSlots: [createSlotWithRecipe({ slotIndex: 1, recipeId: "specialtyRecipe", canCraft: false })],
+				currentSlots: [createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId: "specialtyRecipe", canCraft: false })],
 				specialties: [{
-					slotIndex: 1, recipeId: "specialtyRecipe", level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: false
+					recipeId: "specialtyRecipe", level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: false
 				}]
 			});
 
 			const rendered = lastRenderedMenu(nestedMenus);
-			expect(JSON.stringify(rendered)).toContain("commands:report.city.homes.cooking.slotSpecialtyName");
-			expect(JSON.stringify(rendered)).toContain(`${HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX}1:specialtyRecipe`);
+			expect(JSON.stringify(rendered)).toContain(`commands:report.city.homes.cooking.slotRecipeName|{\\"stationId\\":${SPECIALTY_SLOT_INDEX}`);
+			expect(JSON.stringify(rendered)).toContain(`${HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX}specialtyRecipe`);
 			expect(JSON.stringify(rendered)).not.toContain(HomeMenuIds.COOKING_PIN_PREFIX);
-			expect(findComponent(rendered, component => component.custom_id === `${HomeMenuIds.COOKING_CRAFT_PREFIX}1:specialtyRecipe`))
+			expect(findComponent(rendered, component => component.custom_id === `${HomeMenuIds.COOKING_CRAFT_PREFIX}${SPECIALTY_SLOT_INDEX}:specialtyRecipe`))
 				.toMatchObject({ disabled: true });
 		});
 
@@ -1261,7 +1288,7 @@ describe("CookingFeatureHandler", () => {
 					currentSlots: [],
 					isIgnited: false,
 					specialties: [{
-						slotIndex: 3, recipeId: "specialtyRecipe", level: 4, recipeType: RecipeType.POTION_SPEED, canCraft: true
+						recipeId: "specialtyRecipe", level: 4, recipeType: RecipeType.POTION_SPEED, canCraft: true
 					}]
 				}
 			});
@@ -1271,12 +1298,12 @@ describe("CookingFeatureHandler", () => {
 			expect(rendered).toContain("commands:report.city.homes.cooking.specialtyLine");
 			expect(rendered).not.toContain(HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX);
 
-			const removeValue = `${HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX}3:specialtyRecipe`;
+			const removeValue = `${HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX}specialtyRecipe`;
 			expect(rendered).toContain(removeValue);
 			await handler.handleSubMenuSelection(ctx, removeValue, createMockComponentInteraction(removeValue) as any, nestedMenus as any);
 			expect(lastSentPacket()).toBeInstanceOf(CommandReportCookingRemoveSpecialtyReq);
 			expect(lastSentPacket()).toMatchObject({
-				slotIndex: 3, recipeId: "specialtyRecipe", fromIgnitedView: false
+				recipeId: "specialtyRecipe", fromIgnitedView: false
 			});
 		});
 

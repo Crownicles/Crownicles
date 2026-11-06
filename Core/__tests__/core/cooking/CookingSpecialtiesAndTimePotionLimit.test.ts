@@ -77,19 +77,19 @@ describe("CookingService - getSpecialties", () => {
 		expect(getOfPlayerSpy).not.toHaveBeenCalled();
 	});
 
-	it("should delete the specialties whose recipe no longer exists or is no longer known", async () => {
+	it("should delete the specialties whose recipe no longer exists or is no longer known, and sort the others by level", async () => {
 		vi.spyOn(PlayerCookingSpecialty, "getOfPlayer").mockResolvedValue([
 			{
-				playerId: 7, slotIndex: 0, recipeId: "potion_health_1"
+				playerId: 7, recipeId: "potion_time_speedup_3"
 			},
 			{
-				playerId: 7, slotIndex: 1, recipeId: "removed_recipe"
+				playerId: 7, recipeId: "removed_recipe"
 			},
 			{
-				playerId: 7, slotIndex: 3, recipeId: "potion_time_speedup_3"
+				playerId: 7, recipeId: "potion_health_1"
 			},
 			{
-				playerId: 7, slotIndex: 4, recipeId: "potion_health_2"
+				playerId: 7, recipeId: "potion_health_2"
 			}
 		] as PlayerCookingSpecialty[]);
 		const destroySpy = vi.spyOn(PlayerCookingSpecialty, "destroy").mockResolvedValue(1);
@@ -97,16 +97,13 @@ describe("CookingService - getSpecialties", () => {
 		// potion_health_1 is known by default, potion_time_speedup_3 was discovered, potion_health_2 was not
 		const specialties = await CookingService.getSpecialties(masterChef, ["potion_time_speedup_3"]);
 
-		expect(specialties.map(specialty => [specialty.slotIndex, specialty.recipe.id])).toEqual([
-			[0, "potion_health_1"],
-			[3, "potion_time_speedup_3"]
-		]);
+		expect(specialties.map(specialty => specialty.id)).toEqual(["potion_health_1", "potion_time_speedup_3"]);
 		expect(destroySpy.mock.calls.map(([options]) => options?.where)).toEqual([
 			{
-				playerId: 7, slotIndex: 1, recipeId: "removed_recipe"
+				playerId: 7, recipeId: "removed_recipe"
 			},
 			{
-				playerId: 7, slotIndex: 4, recipeId: "potion_health_2"
+				playerId: 7, recipeId: "potion_health_2"
 			}
 		]);
 	});

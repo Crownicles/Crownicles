@@ -3,26 +3,17 @@ import {
 } from "sequelize";
 
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
-	// A specialty is kept on the furnace station it was chosen on, and a recipe can only be one specialty
 	await context.createTable("player_cooking_specialties", {
 		playerId: {
 			type: DataTypes.INTEGER,
 			allowNull: false,
 			primaryKey: true
 		},
-		slotIndex: {
-			type: DataTypes.TINYINT.UNSIGNED,
-			allowNull: false,
-			primaryKey: true
-		},
 		recipeId: {
 			type: DataTypes.STRING(64), // eslint-disable-line new-cap
-			allowNull: false
+			allowNull: false,
+			primaryKey: true
 		}
-	});
-	await context.addIndex("player_cooking_specialties", ["playerId", "recipeId"], {
-		name: "uq_player_cooking_specialties_recipe",
-		unique: true
 	});
 	await context.addConstraint("player_cooking_specialties", {
 		fields: ["playerId"],

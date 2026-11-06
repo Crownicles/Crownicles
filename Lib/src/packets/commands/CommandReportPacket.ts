@@ -787,12 +787,10 @@ export class CommandReportCookingUnpinRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingSetSpecialtyReq extends CrowniclesPacket {
+	/** Rotating station offering the recipe in the menu snapshot that produced this request */
 	slotIndex!: number;
 
-	/**
-	 * Recipe shown on the slot in the menu snapshot that produced this request. Core
-	 * refuses the request when the slot no longer offers it.
-	 */
+	/** Core refuses the request when the station no longer offers this recipe */
 	recipeId!: CookingRecipeId;
 }
 
@@ -805,9 +803,6 @@ export class CommandReportCookingSetSpecialtyRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingRemoveSpecialtyReq extends CrowniclesPacket {
-	slotIndex!: number;
-
-	/** Specialty displayed on the slot, so a stale menu never removes another one */
 	recipeId!: CookingRecipeId;
 
 	/** Whether the player issued the removal from the ignited menu (drives post-removal re-render). */

@@ -2876,7 +2876,8 @@ export const CrowniclesIcons: {
 		1: "🫕",
 		2: "⚒️",
 		3: "🧪",
-		4: "🔥"
+		4: "🔥",
+		5: "👨‍🍳"
 	},
 	cookingRecipeTypes: {
 		POTION_HEALTH: "❤️",

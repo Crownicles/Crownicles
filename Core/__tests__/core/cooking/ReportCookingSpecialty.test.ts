@@ -10,14 +10,13 @@ import {
 import { CookingService } from "../../../src/core/cooking/CookingService";
 import { handleCookingSetSpecialty } from "../../../src/core/report/ReportCookingService";
 import {
-	CookingOutputType, CookingSpecialtyConstants, RecipeType, SLOT_CONFIGS
+	CookingOutputType, CookingSpecialtyConstants, RecipeType, SLOT_CONFIGS, SPECIALTY_SLOT_INDEX
 } from "../../../../Lib/src/constants/CookingConstants";
 import {
 	CookingSlotData, CookingSpecialtyErrors
 } from "../../../../Lib/src/types/CookingTypes";
 
 const MATERIAL_ONLY_SLOT = SLOT_CONFIGS.findIndex(config => !config.eligibleTypes.includes(RecipeType.POTION_HEALTH));
-const HEALTH_POTION_SLOT = SLOT_CONFIGS.findIndex(config => config.eligibleTypes.includes(RecipeType.POTION_HEALTH) && config.minLevel <= 1);
 
 function healthPotionOnSlot(slotIndex: number): CookingSlotData {
 	return {
@@ -61,12 +60,11 @@ describe("handleCookingSetSpecialty", () => {
 		vi.restoreAllMocks();
 	});
 
-	it("should refuse a recipe swapped onto a station that can't offer it, since it would never come back there", async () => {
-		// A kept recipe anchored elsewhere can push a health potion onto a station reserved to other recipes
-		vi.spyOn(CookingService, "getSlotRecipes").mockResolvedValue([healthPotionOnSlot(MATERIAL_ONLY_SLOT)]);
+	it("should refuse a recipe only offered on the specialty station, which is already a specialty", async () => {
+		vi.spyOn(CookingService, "getSlotRecipes").mockResolvedValue([healthPotionOnSlot(SPECIALTY_SLOT_INDEX)]);
 
 		const [response] = await handleCookingSetSpecialty("master-chef", {
-			slotIndex: MATERIAL_ONLY_SLOT,
+			slotIndex: SPECIALTY_SLOT_INDEX,
 			recipeId: "potion_health_1"
 		});
 
@@ -74,11 +72,12 @@ describe("handleCookingSetSpecialty", () => {
 		expect(withLockedSpy).not.toHaveBeenCalled();
 	});
 
-	it("should store a recipe offered on a station that can offer it", async () => {
-		vi.spyOn(CookingService, "getSlotRecipes").mockResolvedValue([healthPotionOnSlot(HEALTH_POTION_SLOT)]);
+	it("should store a recipe offered on any rotating station, since the specialty station accepts every recipe", async () => {
+		// A kept recipe can push a health potion onto a station reserved to other recipes
+		vi.spyOn(CookingService, "getSlotRecipes").mockResolvedValue([healthPotionOnSlot(MATERIAL_ONLY_SLOT)]);
 
 		const [response] = await handleCookingSetSpecialty("master-chef", {
-			slotIndex: HEALTH_POTION_SLOT,
+			slotIndex: MATERIAL_ONLY_SLOT,
 			recipeId: "potion_health_1"
 		});
 

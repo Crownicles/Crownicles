@@ -13,7 +13,6 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 import { PlantId } from "../../../../Lib/src/constants/PlantConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
-import { CookingRecipeDataController } from "../../../src/data/CookingRecipeData";
 import {
 	HomePlantStorage, HomePlantStorages
 } from "../../../src/core/database/game/models/HomePlantStorage";
@@ -182,7 +181,7 @@ describe("CookingService - pure functions", () => {
 				discoveredIds: string[];
 				guild: unknown;
 				cookingSlots: number;
-			}, specialtySlots: ReadonlySet<number>) => void;
+			}, specialtyIds: ReadonlySet<string>) => void;
 		}).injectPinnedRecipeIfEligible.bind(CookingService);
 
 		const injectPotion = (slotRecipes: Array<CookingRecipe | null>, pinnedCookingRecipeId: string | null): void =>
@@ -286,115 +285,35 @@ describe("CookingService - pure functions", () => {
 		});
 	});
 
-	describe("injectKeptRecipes", () => {
-		type Specialty = {
-			slotIndex: number;
-			recipe: CookingRecipe;
-		};
-		const injectKept = (CookingService as unknown as {
-			injectKeptRecipes: (injection: {
+	describe("injectPinnedRecipeIfEligible with specialties", () => {
+		const injectWithSpecialties = (CookingService as unknown as {
+			injectPinnedRecipeIfEligible: (injection: {
 				slotRecipes: Array<CookingRecipe | null>;
 				player: { pinnedCookingRecipeId: string | null };
 				discoveredIds: string[];
 				guild: unknown;
 				cookingSlots: number;
-			}, specialties: Specialty[]) => void;
-		}).injectKeptRecipes.bind(CookingService);
+			}, specialtyIds: ReadonlySet<string>) => void;
+		}).injectPinnedRecipeIfEligible.bind(CookingService);
 
-		const recipe = (id: string): CookingRecipe => CookingRecipeDataController.instance.getById(id)!;
-		const fillers = (): Array<CookingRecipe | null> => [0, 1, 2, 3, 4].map(i => createTestRecipe({ id: `filler_${i}` }));
-		const inject = (slotRecipes: Array<CookingRecipe | null>, specialties: Specialty[], options: {
-			pinnedCookingRecipeId?: string;
-			guild?: unknown;
-			cookingSlots?: number;
-		} = {}): void => injectKept({
+		const inject = (slotRecipes: Array<CookingRecipe | null>, specialtyIds: string[]): void => injectWithSpecialties({
 			slotRecipes,
-			player: { pinnedCookingRecipeId: options.pinnedCookingRecipeId ?? null },
+			player: { pinnedCookingRecipeId: "potion_health_1" },
 			discoveredIds: [],
-			guild: options.guild ?? null,
-			cookingSlots: options.cookingSlots ?? 5
-		}, specialties);
-		const occurrences = (slotRecipes: Array<CookingRecipe | null>, id: string): number => slotRecipes.filter(r => r?.id === id).length;
+			guild: null,
+			cookingSlots: 3
+		}, new Set(specialtyIds));
 
-		it("should keep a specialty on the station it was chosen on, wherever the rotation placed it", () => {
-			const slots = fillers();
-			slots[0] = recipe("potion_time_speedup_3");
-			inject(slots, [{ slotIndex: 3, recipe: recipe("potion_time_speedup_3") }]);
-
-			expect(slots[3]?.id).toBe("potion_time_speedup_3");
-			expect(occurrences(slots, "potion_time_speedup_3")).toBe(1);
-			// The recipe displaced from the specialty station keeps the vacated slot
-			expect(slots[0]?.id).toBe("filler_3");
+		it("should not inject a pinned recipe that is also a specialty, already offered on the specialty station", () => {
+			const slots: Array<CookingRecipe | null> = [null, null, null];
+			inject(slots, ["potion_health_1"]);
+			expect(slots.every(slot => slot === null)).toBe(true);
 		});
 
-		it("should inject a specialty missing from the rotation on its station", () => {
-			const slots = fillers();
-			inject(slots, [{ slotIndex: 3, recipe: recipe("potion_time_speedup_3") }]);
-
-			expect(slots[3]?.id).toBe("potion_time_speedup_3");
-			expect(slots.every(r => r !== null)).toBe(true);
-		});
-
-		it("should keep every specialty on its own station at each furnace re-roll", () => {
-			const specialties = [
-				{ slotIndex: 0, recipe: recipe("potion_health_1") },
-				{ slotIndex: 1, recipe: recipe("potion_energy_1") },
-				{ slotIndex: 3, recipe: recipe("potion_defense_3") }
-			];
-			// Each re-roll puts the specialties in other slots, or leaves some of them out
-			const rotations = [
-				["potion_defense_3", "potion_health_1", "filler_2", "potion_energy_1", "filler_4"],
-				["filler_0", "potion_defense_3", "potion_energy_1", "filler_3", "potion_health_1"],
-				["filler_0", "filler_1", "filler_2", "filler_3", "filler_4"]
-			];
-			for (const rotation of rotations) {
-				const slots = rotation.map(id => id.startsWith("filler") ? createTestRecipe({ id }) : recipe(id));
-				inject(slots, specialties);
-
-				for (const specialty of specialties) {
-					expect(slots[specialty.slotIndex]?.id).toBe(specialty.recipe.id);
-					expect(occurrences(slots, specialty.recipe.id)).toBe(1);
-				}
-				expect(slots.every(r => r !== null)).toBe(true);
-			}
-		});
-
-		it("should anchor the pinned recipe on a station not holding a specialty", () => {
-			// Without specialty, the pinned recipe anchors on the first station able to host it
-			const withoutSpecialty = fillers();
-			inject(withoutSpecialty, [], { pinnedCookingRecipeId: "potion_health_1" });
-			expect(withoutSpecialty[0]?.id).toBe("potion_health_1");
-
-			const slots = fillers();
-			inject(slots, [{ slotIndex: 0, recipe: recipe("potion_energy_1") }], { pinnedCookingRecipeId: "potion_health_1" });
-
-			expect(slots[0]?.id).toBe("potion_energy_1");
-			expect(slots[1]?.id).toBe("potion_health_1");
-		});
-
-		it("should leave a pinned recipe that is also a specialty on its specialty station", () => {
-			const slots = fillers();
-			inject(slots, [{ slotIndex: 1, recipe: recipe("potion_health_1") }], { pinnedCookingRecipeId: "potion_health_1" });
-
-			expect(slots[1]?.id).toBe("potion_health_1");
-			expect(occurrences(slots, "potion_health_1")).toBe(1);
-		});
-
-		it("should not offer a specialty on a station the furnace does not have", () => {
-			const slots = fillers().slice(0, 3);
-			inject(slots, [{ slotIndex: 3, recipe: recipe("potion_time_speedup_3") }], { cookingSlots: 3 });
-
-			expect(occurrences(slots, "potion_time_speedup_3")).toBe(0);
-			expect(slots).toHaveLength(3);
-		});
-
-		it("should not offer a pet food specialty to a player without guild", () => {
-			const slots = fillers();
-			inject(slots, [{ slotIndex: 1, recipe: recipe("petfood_salad_1") }]);
-			expect(occurrences(slots, "petfood_salad_1")).toBe(0);
-
-			inject(slots, [{ slotIndex: 1, recipe: recipe("petfood_salad_1") }], { guild: {} });
-			expect(slots[1]?.id).toBe("petfood_salad_1");
+		it("should still inject a pinned recipe that is not a specialty", () => {
+			const slots: Array<CookingRecipe | null> = [null, null, null];
+			inject(slots, ["potion_energy_1"]);
+			expect(slots.filter(slot => slot?.id === "potion_health_1")).toHaveLength(1);
 		});
 	});
 

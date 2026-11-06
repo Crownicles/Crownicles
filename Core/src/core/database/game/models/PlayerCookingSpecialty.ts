@@ -4,21 +4,16 @@ import {
 import type { CookingRecipeId } from "../../../../../../Lib/src/types/CookingRecipe";
 
 /**
- * A recipe a master chef made one of their specialties: it is offered on the furnace station
- * `slotIndex` at every ignition, until the chef removes it
+ * A recipe a master chef made one of their specialties: it is offered on the specialty station
+ * at every furnace ignition, until the chef removes it
  */
 export class PlayerCookingSpecialty extends Model {
 	declare readonly playerId: number;
 
-	declare readonly slotIndex: number;
-
 	declare readonly recipeId: CookingRecipeId;
 
 	static getOfPlayer(playerId: number): Promise<PlayerCookingSpecialty[]> {
-		return PlayerCookingSpecialty.findAll({
-			where: { playerId },
-			order: [["slotIndex", "ASC"]]
-		});
+		return PlayerCookingSpecialty.findAll({ where: { playerId } });
 	}
 }
 
@@ -29,14 +24,10 @@ export function initModel(sequelize: Sequelize): void {
 			allowNull: false,
 			primaryKey: true
 		},
-		slotIndex: {
-			type: DataTypes.TINYINT.UNSIGNED,
-			allowNull: false,
-			primaryKey: true
-		},
 		recipeId: {
 			type: DataTypes.STRING(64), // eslint-disable-line new-cap
-			allowNull: false
+			allowNull: false,
+			primaryKey: true
 		}
 	}, {
 		sequelize,
