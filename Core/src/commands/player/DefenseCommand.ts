@@ -23,7 +23,10 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { getAiPersonalities } from "../../core/fights/AiBehaviorController";
 import { withLockedPlayerSafe } from "../../core/utils/withLockedPlayerSafe";
-import { AiPersonality } from "../../../../Lib/src/constants/AiPersonalityConstants";
+import {
+	AiPersonality, AiPersonalityConstants
+} from "../../../../Lib/src/constants/AiPersonalityConstants";
+import { LogsFightHistoryRequests } from "../../core/database/logs/requests/LogsFightHistoryRequests";
 
 /**
  * Save the defense personality picked by the player, or a random one at each fight when none is picked
@@ -68,7 +71,7 @@ export default class DefenseCommand {
 		level: FightConstants.REQUIRED_LEVEL,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	execute(response: CrowniclesPacket[], player: Player, _packet: CommandDefensePacketReq, context: PacketContext): void {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandDefensePacketReq, context: PacketContext): Promise<void> {
 		const personalities = getAiPersonalities(player.class);
 		if (personalities.length < 2) {
 			response.push(makePacket(CommandDefenseNoChoicePacketRes, { classId: player.class }));
@@ -81,7 +84,12 @@ export default class DefenseCommand {
 			: undefined;
 
 		const packet = new ReactionCollectorInstance(
-			new ReactionCollectorDefensePersonality(player.class, personalities, currentPersonality),
+			new ReactionCollectorDefensePersonality({
+				classId: player.class,
+				personalities,
+				currentPersonality,
+				recentDefenses: await LogsFightHistoryRequests.getRecentDefensesByAttackerClass(player.keycloakId, AiPersonalityConstants.RECENT_DEFENSES_DAYS)
+			}),
 			context,
 			{
 				allowedPlayerKeycloakIds: [player.keycloakId]

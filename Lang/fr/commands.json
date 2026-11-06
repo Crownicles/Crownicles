@@ -2734,7 +2734,7 @@
   },
   "defense": {
     "title": "Style de défense de {{pseudo}}",
-    "intro": "Choisissez comment votre {{className}} se défend lorsqu'un autre joueur l'attaque. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.",
+    "intro": "Choisissez comment votre {{className}} se défend lorsqu'un autre joueur l'attaque. Chaque style résiste mieux à certaines classes : choisissez-le d'après vos attaquants. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.",
     "choiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}}",
     "currentChoiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}} · style actuel",
     "chooseStyle": "Choisir un style de défense",
@@ -2743,6 +2743,11 @@
     "success": "Votre personnage se défendra désormais avec le style {emote:defensePersonalities.{{personality}}} **{{name}}**.",
     "successRandom": "Votre personnage changera de style de défense à chaque combat {emote:defensePersonalities.random}.",
     "noChoice": "Votre classe ({{className}}) n'a qu'une seule manière de se défendre.",
+    "recentDefensesTitle_one": "Vos défenses des dernières 24 heures",
+    "recentDefensesTitle_other": "Vos défenses des {{count}} derniers jours",
+    "noRecentDefense": "Personne ne vous a attaqué récemment.",
+    "recentDefense_one": "{{className}} : {{won}}/{{count}} défense réussie",
+    "recentDefense_other": "{{className}} : {{won}}/{{count}} défenses réussies",
     "canceled": "Votre style de défense n'a pas été modifié.",
     "personalities": {
       "random": {

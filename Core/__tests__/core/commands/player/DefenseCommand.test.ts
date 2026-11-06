@@ -59,11 +59,27 @@ vi.mock("../../../../src/core/utils/BlockingUtils", () => ({
 	BlockingUtils: { unblockPlayer: vi.fn() }
 }));
 
+// Hoisted above the imports, hence the raw id of the gunner class
+const { RECENT_DEFENSES, getRecentDefenses } = vi.hoisted(() => {
+	const recentDefenses = [
+		{
+			attackerClassId: 11, defenses: 3, won: 1
+		}
+	];
+	return {
+		RECENT_DEFENSES: recentDefenses,
+		getRecentDefenses: vi.fn(() => Promise.resolve(recentDefenses))
+	};
+});
+vi.mock("../../../../src/core/database/logs/requests/LogsFightHistoryRequests", () => ({
+	LogsFightHistoryRequests: { getRecentDefensesByAttackerClass: getRecentDefenses }
+}));
+
 const PERSONALITIES = AiPersonalityConstants.PERSONALITIES;
 
-function execute(classId: number, defensePersonality: string | null = null): unknown[] {
+async function execute(classId: number, defensePersonality: string | null = null): Promise<unknown[]> {
 	const response: unknown[] = [];
-	new DefenseCommand().execute(response as never, {
+	await new DefenseCommand().execute(response as never, {
 		class: classId, defensePersonality, keycloakId: "keycloak"
 	} as never, {} as never, {} as never);
 	return response;
@@ -89,15 +105,15 @@ describe("DefenseCommand", () => {
 		lockedPlayer.save.mockClear();
 	});
 
-	it("tells a player whose class has a single way to fight that there is nothing to choose", () => {
-		const response = execute(ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN);
+	it("tells a player whose class has a single way to fight that there is nothing to choose", async () => {
+		const response = await execute(ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN);
 
 		expect(response[0]).toBeInstanceOf(CommandDefenseNoChoicePacketRes);
 		expect(captured.value).toBeUndefined();
 	});
 
-	it("offers the personalities of the class of the player, with the current one", () => {
-		execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT, PERSONALITIES.KNIGHT_FIERY);
+	it("offers the personalities of the class of the player, with the current one", async () => {
+		await execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT, PERSONALITIES.KNIGHT_FIERY);
 		const packet = captured.value!.collector.creationPacket("id", 0);
 		const personalities = packet.reactions
 			.filter(reaction => reaction.type === ReactionCollectorDefensePersonalityReaction.name)
@@ -107,14 +123,21 @@ describe("DefenseCommand", () => {
 		expect(packet.data.data.currentPersonality).toBe(PERSONALITIES.KNIGHT_FIERY);
 	});
 
-	it("does not present a personality kept from a previous class as the current one", () => {
-		execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT, PERSONALITIES.TANK_RIPOSTE);
+	it("does not present a personality kept from a previous class as the current one", async () => {
+		await execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT, PERSONALITIES.TANK_RIPOSTE);
 
 		expect(captured.value!.collector.creationPacket("id", 0).data.data.currentPersonality).toBeUndefined();
 	});
 
+	it("shows the recent defenses of the player, to help it pick the style resisting its attackers", async () => {
+		await execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT);
+
+		expect(getRecentDefenses).toHaveBeenCalledWith("keycloak", AiPersonalityConstants.RECENT_DEFENSES_DAYS);
+		expect(captured.value!.collector.creationPacket("id", 0).data.data.recentDefenses).toEqual(RECENT_DEFENSES);
+	});
+
 	it("saves the picked personality", async () => {
-		execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT);
+		await execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT);
 		const response = await react({
 			type: ReactionCollectorDefensePersonalityReaction.name, personality: PERSONALITIES.KNIGHT_ENDURING
 		});
@@ -127,7 +150,7 @@ describe("DefenseCommand", () => {
 
 	it("goes back to a random personality at each fight", async () => {
 		lockedPlayer.defensePersonality = PERSONALITIES.KNIGHT_ENDURING;
-		execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT);
+		await execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT);
 		const response = await react({ type: ReactionCollectorDefensePersonalityReaction.name });
 
 		expect(lockedPlayer.defensePersonality).toBeNull();
@@ -135,7 +158,7 @@ describe("DefenseCommand", () => {
 	});
 
 	it("does not save a personality that no longer matches the class of the player", async () => {
-		execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT);
+		await execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT);
 		lockedPlayer.class = ClassConstants.CLASSES_ID.IMPENETRABLE_TANK;
 		const response = await react({
 			type: ReactionCollectorDefensePersonalityReaction.name, personality: PERSONALITIES.KNIGHT_ENDURING
@@ -146,7 +169,7 @@ describe("DefenseCommand", () => {
 	});
 
 	it("keeps the personality when the player refuses", async () => {
-		execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT);
+		await execute(ClassConstants.CLASSES_ID.VALIANT_KNIGHT);
 		const response = await react({ type: ReactionCollectorRefuseReaction.name });
 
 		expect(lockedPlayer.save).not.toHaveBeenCalled();

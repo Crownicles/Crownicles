@@ -26,8 +26,11 @@ import {
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { escapeUsername } from "../../utils/StringUtils";
-import { AiPersonality } from "../../../../Lib/src/constants/AiPersonalityConstants";
+import {
+	AiPersonality, AiPersonalityConstants
+} from "../../../../Lib/src/constants/AiPersonalityConstants";
 import { Language } from "../../../../Lib/src/Language";
+import { DefenseRecordByAttackerClass } from "../../../../Lib/src/types/DefenseRecord";
 
 // Translation key of the choice letting a different personality be picked at random at each fight
 const RANDOM_PERSONALITY_KEY = "random";
@@ -61,6 +64,30 @@ function getPersonalityName(personality: AiPersonality | undefined, lng: Languag
 }
 
 /**
+ * Field summing up the recent defenses of the player by class of the attackers, to help it pick the style that suits them
+ * @param recentDefenses
+ * @param lng
+ */
+function buildRecentDefensesField(recentDefenses: DefenseRecordByAttackerClass[], lng: Language): {
+	name: string; value: string;
+} {
+	const days = AiPersonalityConstants.RECENT_DEFENSES_DAYS;
+	return {
+		name: i18n.t("commands:defense.recentDefensesTitle", {
+			lng, count: days
+		}),
+		value: recentDefenses.length === 0
+			? i18n.t("commands:defense.noRecentDefense", { lng })
+			: recentDefenses.map(record => i18n.t("commands:defense.recentDefense", {
+				lng,
+				className: i18n.t(`models:classes.${record.attackerClassId}`, { lng }),
+				count: record.defenses,
+				won: record.won
+			})).join("\n")
+	};
+}
+
+/**
  * Embed presenting each defense personality of the class with its description, the current one being marked
  * @param interaction
  * @param packet
@@ -82,6 +109,7 @@ function buildDefensePersonalitiesEmbed(
 			lng,
 			className: i18n.t(`models:classes.${packet.data.data.classId}`, { lng })
 		}))
+		.addFields(buildRecentDefensesField(packet.data.data.recentDefenses, lng))
 		.addFields(personalities.map(personality => ({
 			name: i18n.t(personality === currentPersonality ? "commands:defense.currentChoiceTitle" : "commands:defense.choiceTitle", {
 				lng,
