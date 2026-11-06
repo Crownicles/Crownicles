@@ -328,7 +328,7 @@ export abstract class FightConstants {
 	static readonly ENERGETIC_ATTACK_RESTED_TARGET_DAMAGE_MULTIPLIER = 1.25;
 
 	// Damage multiplier of the attack following a concentration
-	static readonly CONCENTRATED_DAMAGE_MULTIPLIER = 1.575;
+	static readonly CONCENTRATED_DAMAGE_MULTIPLIER = 1.6;
 
 	/*
 	 * The counter attack replays the attack of a monster with the stats of the tank, much slower than the monsters whose
