@@ -476,7 +476,7 @@
         "image": "https://crownicles.com/public/ressources/fighthelp/fr/5.1.7.png"
       },
       "FIGHT_HISTORY": {
-        "description": "Affiche l'historique de vos derniers combats : l'adversaire affronté, le résultat ainsi que l'évolution de la gloire et de la ligue de chaque combattant."
+        "description": "Affiche l'historique de vos derniers combats : l'adversaire affronté, le résultat ainsi que l'évolution de la gloire et de la ligue de chaque combattant. Si vous avez déjà affronté un garde du roi, le bouton **Gardes du roi** présente votre record face aux gardes, votre classement et le tableau d'honneur du royaume."
       },
       "FRIENDLY_FIGHT": {
         "description": "Permet d'affronter un autre joueur, choisi en le mentionnant ou grâce à son classement, dans un combat amical. Le joueur affronté est contrôlé par une IA. Ce combat n'a aucune conséquence : aucune gloire, aucune récompense, aucune énergie perdue et aucune progression de mission. Le niveau des deux combattants est plafonné à {{friendlyFightLevelCap}} : un joueur de niveau inférieur conserve son niveau."
@@ -2896,6 +2896,20 @@
     "leagueChanges": {
       "up": " ({emote:other.leagueUp} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
       "down": " ({emote:other.leagueDown} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
+    },
+    "kingGuardStats": {
+      "openButton": "Gardes du roi",
+      "backButton": "Historique",
+      "title": "{emote:fightCommand.crossedSwords} Face aux gardes du roi",
+      "record": "**Votre record :** garde niv. {{level}} vaincu{{aboveLevel}}",
+      "aboveLevel_one": ", {{count}} niveau au-dessus du vôtre",
+      "aboveLevel_other": ", {{count}} niveaux au-dessus du vôtre",
+      "noRecord": "**Votre record :** aucun garde vaincu pour l'instant",
+      "progress": "**Records battus :** {{recordsBroken, number}} | **Classement :** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "tally": "**Bilan :** {emote:fightHistory.won} Victoires : {{won, number}} · {emote:fightHistory.lost} Défaites : {{lost, number}} · {emote:fightHistory.draw} Nuls : {{draw, number}}",
+      "leaderboardTitle": "{emote:other.crown} **Tableau d'honneur de la garde**",
+      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}** : garde niv. {{level}}",
+      "you": "Vous"
     }
   },
   "deletecode": {
