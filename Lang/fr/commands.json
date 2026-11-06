@@ -1443,10 +1443,10 @@
           "specialtyRemoved": "{emote:messages.info} **$t(models:cooking.recipes.{{recipeId}})** ne fait plus partie de vos spécialités.",
           "specialtyLimitReached": "{emote:messages.refuse} Vous maîtrisez déjà autant de spécialités que votre niveau de cuisine le permet (**{{max}}**). Retirez-en une avant d'en choisir une nouvelle.",
           "specialtyUnavailable": "{emote:messages.info} Cette recette ne peut plus devenir une spécialité dans l'état actuel du fourneau. Les propositions ont été rafraîchies.",
-          "timePotionsLeft_one": "{emote:unitValues.timeGain} Le fil du temps ne supportera plus qu'**{{count}}** préparation temporelle cette semaine.",
-          "timePotionsLeft_other": "{emote:unitValues.timeGain} Le fil du temps supportera encore **{{count}}** préparations temporelles cette semaine.",
-          "timePotionsExhausted": "{emote:unitValues.timeGain} Le fil du temps a été trop tendu cette semaine : les préparations temporelles resteront inertes jusqu'à la semaine prochaine.",
-          "timePotionWeeklyLimit": "{emote:messages.refuse} Vous avez déjà plié le temps **{{limit}}** fois cette semaine. Trop tendu, le fil du temps refuse de se tordre davantage et toute préparation temporelle resterait inerte : il faudra attendre qu'il se relâche, la semaine prochaine."
+          "timePotionsLeft_one": "{emote:unitValues.timeGain} Manipuler le temps épuise : encore **{{count}}** potion de temps possible cette semaine.",
+          "timePotionsLeft_other": "{emote:unitValues.timeGain} Manipuler le temps épuise : encore **{{count}}** potions de temps possibles cette semaine.",
+          "timePotionsExhausted": "{emote:unitValues.timeGain} Le temps a été assez malmené cette semaine : plus de potion de temps avant la semaine prochaine.",
+          "timePotionWeeklyLimit": "{emote:messages.refuse} Vous avez déjà préparé **{{limit}}** potions de temps cette semaine. Le temps a été assez malmené : il faudra attendre la semaine prochaine pour en préparer d'autres."
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
