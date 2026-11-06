@@ -144,6 +144,17 @@ describe("AI personalities", () => {
 		expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(11, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
 	});
 
+	it("the justicar paladin keeps its ultimate for the end of the fight, where the crusader charges it at half energy", () => {
+		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
+		const paladin = (energy: number): ReturnType<typeof mockFighter> => mockFighter({
+			breath: 25, maxBreath: 25, energy, maxEnergy: 1000
+		});
+
+		expect(new PaladinFightBehavior().chooseAction(paladin(500), mockFightView(5, mockFighter())).id).toBe(ACTIONS.CHARGE_ULTIMATE_ATTACK);
+		expect(new PaladinJusticarFightBehavior().chooseAction(paladin(500), mockFightView(5, mockFighter())).id).not.toBe(ACTIONS.CHARGE_ULTIMATE_ATTACK);
+		expect(new PaladinJusticarFightBehavior().chooseAction(paladin(250), mockFightView(5, mockFighter())).id).toBe(ACTIONS.CHARGE_ULTIMATE_ATTACK);
+	});
+
 	describe("paladin breath reserve", () => {
 		it("keeps the breath of its ultimate and spends the rest with its single shield attack", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);

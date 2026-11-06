@@ -17,15 +17,18 @@ import { getUsedGodMoves } from "../FightController";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 
 /*
- * The paladin charges its ultimate below this share of its energy: the ultimate attack never fails below 45%, and
+ * The crusader charges its ultimate below this share of its energy: the ultimate attack never fails below 45%, and
  * the charge leaves the opponent a turn to bring it there
  */
-const ULTIMATE_CHARGE_ENERGY_RATIO = 0.6;
+const CRUSADER_ULTIMATE_CHARGE_ENERGY_RATIO = 0.6;
 
 /**
  * Implements a paladin fight behavior that selects an appropriate fight action based on various tactical criteria.
  */
 class PaladinFightBehavior implements ClassBehavior {
+	// Share of its energy under which the paladin charges its ultimate
+	protected readonly ultimateChargeEnergyRatio: number = CRUSADER_ULTIMATE_CHARGE_ENERGY_RATIO;
+
 	/**
 	 * Chooses the appropriate fight action for the AI fighter based on the current fight situation.
 	 *
@@ -111,7 +114,7 @@ class PaladinFightBehavior implements ClassBehavior {
 
 	/**
 	 * Determines whether the CHARGE_ULTIMATE_ATTACK should be used if the ultimate attack hasn't been used
-	 * and energy is below ULTIMATE_CHARGE_ENERGY_RATIO.
+	 * and energy is below the ultimate charge energy ratio.
 	 *
 	 * @param me - The AI fighter.
 	 * @param usedUltimateAttacks - The number of ultimate attacks used.
@@ -119,7 +122,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	 */
 	private shouldUseUltimateAttack(me: AiPlayerFighter, usedUltimateAttacks: number): boolean {
 		const ultimateAttackBreathCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK);
-		return me.getEnergy() < me.getMaxEnergy() * ULTIMATE_CHARGE_ENERGY_RATIO
+		return me.getEnergy() < me.getMaxEnergy() * this.ultimateChargeEnergyRatio
 			&& me.getBreath() >= ultimateAttackBreathCost
 			&& RandomUtils.crowniclesRandom.bool(0.80)
 			&& usedUltimateAttacks === 0;
