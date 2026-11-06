@@ -9,48 +9,12 @@ import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { piercingOrSimpleAttack } from "./RecruitFightBehavior";
-
-// Classes that can weaken (shield attack) or stun (ram attack) the infantryman for several turns
-const CONTROLLING_CLASSES: number[] = [ClassConstants.CLASSES_ID.IMPENETRABLE_TANK, ClassConstants.CLASSES_ID.LUMINOUS_PALADIN];
-
-/**
- * Check if the infantryman should protect itself from a class able to weaken or stun it: the protection
- * blocks these alterations, which keeps a human from chaining them against the AI
- * @param me
- * @param opponent
- */
-function shouldProtectAgainstControl(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
-	return CONTROLLING_CLASSES.includes(opponent.player.class)
-		&& !me.hasFightAlteration()
-		&& opponent.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK)
-		&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.14
-		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION);
-}
-
-/**
- * Check if the infantryman opens with its charged attack, which also raises its defense while it charges
- * @param me
- * @param turn
- */
-function shouldOpenWithChargedAttack(me: AiPlayerFighter, turn: number): boolean {
-	return turn <= 2
-		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK);
-}
+import {
+	isOpponentCharging, isOpponentKnightLike, shouldOpenWithChargedAttack, shouldProtectAgainstControl
+} from "./InfantrymanTactics";
 
 class InfantryManFightBehavior implements ClassBehavior {
 	private powerfulAttacksUsedMap = 0;
-
-	private isOpponentCharging(opponent: RealPlayerFighter | AiPlayerFighter): boolean {
-		const opponentLastAction = opponent.getLastFightActionUsed();
-		return opponentLastAction !== null && (
-			(opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
-				&& this.isOpponentKnightLike(opponent)
-				&& RandomUtils.crowniclesRandom.bool(0.6))
-			|| opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK
-			|| (opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK && opponent.getBreath() >= 2)
-			|| opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
-		);
-	}
 
 	/**
 	 * Determines if the AI has a tactical advantage based on various conditions.
@@ -66,25 +30,10 @@ class InfantryManFightBehavior implements ClassBehavior {
 			&& (RandomUtils.crowniclesRandom.bool() || opponent.getDefense() < me.getDefense());
 	}
 
-	/**
-	 * Determines if the opponent is not a knight-like class.
-	 * @param opponent
-	 */
-	private isOpponentKnightLike(opponent: RealPlayerFighter | AiPlayerFighter): boolean {
-		const knightLikeClasses = [
-			ClassConstants.CLASSES_ID.KNIGHT,
-			ClassConstants.CLASSES_ID.VALIANT_KNIGHT,
-			ClassConstants.CLASSES_ID.HORSE_RIDER,
-			ClassConstants.CLASSES_ID.PIKEMAN,
-			ClassConstants.CLASSES_ID.ESQUIRE
-		];
-		return knightLikeClasses.includes(opponent.player.class);
-	}
-
 	private shouldUseChargingAttack(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter, fightView: FightView, powerfulAttacksUsed: number): boolean {
-		return this.isOpponentCharging(opponent)
+		return isOpponentCharging(opponent)
 			|| (this.hasTacticalAdvantage(me, opponent, fightView, powerfulAttacksUsed)
-				&& !this.isOpponentKnightLike(opponent));
+				&& !isOpponentKnightLike(opponent));
 	}
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
