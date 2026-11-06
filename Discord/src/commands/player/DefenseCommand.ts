@@ -21,11 +21,13 @@ import {
 	DiscordCollectorUtils, disableRows
 } from "../../utils/DiscordCollectorUtils";
 import {
-	ActionRowBuilder, Message, parseEmoji, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder
+	ActionRowBuilder, EmbedField, Message, parseEmoji, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder
 } from "discord.js";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
-import { escapeUsername } from "../../utils/StringUtils";
+import {
+	escapeUsername, StringUtils
+} from "../../utils/StringUtils";
 import {
 	AiPersonality, AiPersonalityConstants
 } from "../../../../Lib/src/constants/AiPersonalityConstants";
@@ -68,22 +70,20 @@ function getPersonalityName(personality: AiPersonality | undefined, lng: Languag
  * @param recentDefenses
  * @param lng
  */
-function buildRecentDefensesField(recentDefenses: DefenseRecordByAttackerClass[], lng: Language): {
-	name: string; value: string;
-} {
-	const days = AiPersonalityConstants.RECENT_DEFENSES_DAYS;
+function buildRecentDefensesField(recentDefenses: DefenseRecordByAttackerClass[], lng: Language): EmbedField {
 	return {
 		name: i18n.t("commands:defense.recentDefensesTitle", {
-			lng, count: days
+			lng, count: AiPersonalityConstants.RECENT_DEFENSES_DAYS
 		}),
 		value: recentDefenses.length === 0
 			? i18n.t("commands:defense.noRecentDefense", { lng })
-			: recentDefenses.map(record => i18n.t("commands:defense.recentDefense", {
+			: StringUtils.joinLines(recentDefenses.map(record => i18n.t("commands:defense.recentDefense", {
 				lng,
 				className: i18n.t(`models:classes.${record.attackerClassId}`, { lng }),
 				count: record.defenses,
 				won: record.won
-			})).join("\n")
+			}))),
+		inline: false
 	};
 }
 
