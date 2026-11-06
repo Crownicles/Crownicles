@@ -71,8 +71,8 @@ const { RECENT_DEFENSES, getRecentDefenses } = vi.hoisted(() => {
 		getRecentDefenses: vi.fn(() => Promise.resolve(recentDefenses))
 	};
 });
-vi.mock("../../../../src/core/database/logs/requests/LogsFightHistoryRequests", () => ({
-	LogsFightHistoryRequests: { getRecentDefensesByAttackerClass: getRecentDefenses }
+vi.mock("../../../../src/core/database/logs/requests/LogsDefenseRequests", () => ({
+	LogsDefenseRequests: { getRecentDefensesByAttackerClass: getRecentDefenses }
 }));
 
 const PERSONALITIES = AiPersonalityConstants.PERSONALITIES;

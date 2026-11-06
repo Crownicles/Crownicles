@@ -2734,7 +2734,7 @@
   },
   "defense": {
     "title": "Style de défense de {{pseudo}}",
-    "intro": "Choisissez comment votre {{className}} se défend lorsqu'un autre joueur l'attaque. Chaque style résiste mieux à certaines classes : choisissez-le d'après vos attaquants. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.",
+    "intro": "Choisissez comment votre {{className}} se défend lorsqu'un autre joueur l'attaque. Certains styles résistent mieux à certaines classes : choisissez d'après vos dernières défenses. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.",
     "choiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}}",
     "currentChoiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}} · style actuel",
     "chooseStyle": "Choisir un style de défense",
@@ -2756,7 +2756,7 @@
       },
       "knightStrategist": {
         "name": "Stratège",
-        "description": "Enchaîne repos et attaques lourdes, et lance sa bénédiction en premier face à un adversaire capable d'en faire autant."
+        "description": "Enchaîne repos et attaques lourdes, et lance sa bénédiction en premier face à un adversaire capable d'en faire autant. Particulièrement solide face aux Vétérans."
       },
       "knightEnduring": {
         "name": "Endurant",
@@ -2776,7 +2776,7 @@
       },
       "paladinCrusader": {
         "name": "Croisé",
-        "description": "Garde son souffle pour son attaque ultime, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération."
+        "description": "Charge tôt son attaque ultime, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération. Particulièrement solide face aux Canonniers."
       },
       "paladinJusticar": {
         "name": "Justicier",
@@ -2792,11 +2792,11 @@
       },
       "veteranStrategist": {
         "name": "Stratège",
-        "description": "Charge son attaque en attendant d'avoir le souffle de ses attaques énergiques, se concentre avant de les déclencher et répond par une attaque chargée quand l'adversaire prépare un grand coup."
+        "description": "Charge son attaque en attendant d'avoir le souffle de ses attaques énergiques, qu'il prépare en se concentrant. Particulièrement solide face aux Chevaliers."
       },
       "veteranCharger": {
         "name": "Fonceur",
-        "description": "Se concentre dès qu'il le peut et déclenche aussitôt son attaque énergique, sans jamais charger."
+        "description": "Se concentre dès qu'il le peut et déclenche aussitôt son attaque énergique, sans jamais charger. Particulièrement solide face aux Paladins."
       },
       "mageOccultist": {
         "name": "Occultiste",
