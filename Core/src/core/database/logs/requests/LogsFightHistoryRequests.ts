@@ -10,10 +10,8 @@ import {
 	FightHistoryItem, KingGuardFightHistoryItem, PlayerFightHistoryItem
 } from "../../../../../../Lib/src/packets/commands/CommandFightHistoryPacket";
 import {
-	asSeconds, daysToSeconds, getDateLogs, secondsToMilliseconds, weeksToSeconds
+	asSeconds, getDateLogs, secondsToMilliseconds, weeksToSeconds
 } from "../../../../../../Lib/src/utils/TimeUtils";
-import { DefenseRecordByAttackerClass } from "../../../../../../Lib/src/types/DefenseRecord";
-import { Day } from "../../../../../../Lib/src/types/TimeTypes";
 import { EloGameResult } from "../../../../../../Lib/src/types/EloGameResult";
 import {
 	KING_GUARD_FIGHT_WINNER, KingGuardFightWinner, LogsKingGuardFightsResults
@@ -25,9 +23,6 @@ const KING_GUARD_FIGHT_RESULTS: Record<KingGuardFightWinner, EloGameResult> = {
 	[KING_GUARD_FIGHT_WINNER.PLAYER]: EloGameResult.WIN,
 	[KING_GUARD_FIGHT_WINNER.GUARD]: EloGameResult.LOSS
 };
-
-// Value of the winner of a logged fight when the attacked player won
-const LOGGED_DEFENDER_WIN = 2;
 
 type HistoryCombinedLogsFightsResults = LogsFightsResults & {
 	LogsPlayer1: {
@@ -219,38 +214,6 @@ export abstract class LogsFightHistoryRequests {
 			],
 			limit: count
 		}) as unknown as HistoryCombinedLogsFightsResults[];
-	}
-
-	/**
-	 * Ranked fights in which a player was attacked over the last days, by class of the attackers, the most frequent first
-	 * @param keycloakId
-	 * @param days
-	 */
-	static async getRecentDefensesByAttackerClass(keycloakId: string, days: Day): Promise<DefenseRecordByAttackerClass[]> {
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		if (!logPlayer) {
-			return [];
-		}
-		const defenses = await LogsFightsResults.findAll({
-			attributes: ["fightInitiatorClassId", "winner"],
-			where: {
-				player2Id: logPlayer.id,
-				friendly: false,
-				date: { [Op.gte]: getDateLogs() - daysToSeconds(days) },
-				fightInitiatorClassId: { [Op.not]: null }
-			}
-		});
-		const byClass = new Map<number, DefenseRecordByAttackerClass>();
-		for (const defense of defenses) {
-			const attackerClassId = defense.fightInitiatorClassId!;
-			const record = byClass.get(attackerClassId) ?? {
-				attackerClassId, defenses: 0, won: 0
-			};
-			record.defenses++;
-			record.won += defense.winner === LOGGED_DEFENDER_WIN ? 1 : 0;
-			byClass.set(attackerClassId, record);
-		}
-		return [...byClass.values()].sort((a, b) => b.defenses - a.defenses);
 	}
 
 	/**
