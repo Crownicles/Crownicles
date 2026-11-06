@@ -94,14 +94,24 @@ describe("AI class behaviors", () => {
 			expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(3, knight)).id).toBe(ACTIONS.RAM_ATTACK);
 		});
 
-		it("does not ram a stunned opponent by default, as the ram hurts the paladin", () => {
+		it("strikes a stunned opponent with its shield instead of ramming it, which would stun it again", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
-			const paladin = mockFighter({ breath: 25 });
-			const opponent = mockFighter({
+			const paladin = (): ReturnType<typeof mockFighter> => mockFighter({ breath: 6 });
+			const stunned = mockFighter({
 				alterationId: ALTERATIONS.STUNNED, lastActionId: ACTIONS.SIMPLE_ATTACK
 			});
 
-			expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(3, opponent)).id).toBe(ACTIONS.SIMPLE_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(3, stunned)).id).toBe(ACTIONS.SHIELD_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(mockFighter({ breath: 5 }), mockFightView(3, stunned)).id).toBe(ACTIONS.SIMPLE_ATTACK);
+		});
+
+		it("rams a weakened opponent, which the ram cannot stun, but never a clean one", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+			const paladin = (): ReturnType<typeof mockFighter> => mockFighter({ breath: 5 });
+			const weakened = mockFighter({ alterationId: ALTERATIONS.WEAK, lastActionId: ACTIONS.SIMPLE_ATTACK });
+
+			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(3, weakened)).id).toBe(ACTIONS.RAM_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(3, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
 		});
 	});
 
