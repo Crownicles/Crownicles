@@ -198,6 +198,22 @@
     "9": "A class focused on speed. Low hitpoints and energy but high speed and attack."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "est aidé par **{{petNickname}}**, resté à l'affût, qui surgit dès que l'adversaire reprend son souffle et lui assène un formidable coup de patte."
+    },
+    "scentOfBlood": {
+      "generalEffect": "est rejoint par **{{petNickname}}** qui a senti l'odeur du sang : le requin mord l'adversaire blessé et ouvre une plaie qui saigne abondamment.",
+      "success": "voit **{{petNickname}}** entrer en frénésie, rendu fou par le sang qui coule encore : le requin se jette sur l'adversaire et le mord sauvagement.",
+      "failure": "voit **{{petNickname}}** perdre la trace de sa proie : l'hémorragie de l'adversaire s'est arrêtée et le requin s'éloigne."
+    },
+    "unstoppable": {
+      "generalEffect": "prend de l'élan aux côtés de **{{petNickname}}**, dont la lourde course s'accélère : ses attaques au corps à corps frappent de plus en plus fort.",
+      "success": "est emporté par **{{petNickname}}**, lancé à pleine vitesse : plus rien ne semble pouvoir l'arrêter.",
+      "failure": "est immobilisé et **{{petNickname}}** perd tout son élan, il va falloir le reprendre depuis le début."
+    },
+    "woundedPrey": {
+      "success": "est rejoint par **{{petNickname}}** qui tournoyait au-dessus du combat : voyant l'adversaire à bout de forces, le rapace fond sur lui en piqué, serres en avant."
+    },
     "drowning": {
       "customMessage": "grabs his opponent with one of his tentacles and plunges him underwater, with only those with breath escaping unscathed.",
       "name_one": "Drowning",
@@ -411,7 +427,7 @@
       "stop": "suffers the consequences of the curse."
     },
     "cursedAttack": {
-      "description": "Curses the opponent, who may suffer the consequences in the future... Heals the caster if the opponent has more than 40% of their energy.",
+      "description": "Maudit l'adversaire, peut être en subira-t-il les conséquences dans le futur... Tant qu'il est maudit, l'adversaire récupère moins d'énergie grâce aux soins et subit l'attaque sombre à pleine puissance. Soigne le lanceur si l'adversaire a plus de 40% de son énergie.",
       "name_one": "Cursed attack",
       "name_other": "Cursed attacks"
     },
@@ -431,7 +447,7 @@
       "name_other": "Curses from the sea"
     },
     "darkAttack": {
-      "description": "Ignores the opponent's defense. Most effective against a player with high attack. Blinds the opponent or restores some of the user's lost breath. The \"blinded\" debuff lasts at least 1 turn and sometimes renders the opponent unable to attack, while also reducing their defense and speed.",
+      "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Très puissante à sa première utilisation, elle s'affaiblit à chaque nouvelle utilisation réussie et reprend des forces quand le lanceur s'en passe pendant quelques actions. Elle frappe toujours un adversaire maudit à pleine puissance. Sa puissance actuelle est affichée sur son bouton.",
       "name_one": "Dark attack",
       "name_other": "Dark attacks"
     },
@@ -473,7 +489,7 @@
       "afraid": "is aided by **{{petNickname}}** who, despite remembering recent events perfectly, trembles too much with fear to be able to restore lost breath."
     },
     "energeticAttack": {
-      "description": "Part of this attack's damage is returned to the caster as healing. Ignores part of the opponent's defense. Healing is reduced against monsters.",
+      "description": "Une partie des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse. Inflige davantage de dégâts à un adversaire qui vient de se reposer. Le soin est réduit contre les monstres.",
       "name_one": "Energetic attack",
       "name_other": "Energetic attacks"
     },
