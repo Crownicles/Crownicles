@@ -230,12 +230,15 @@ describe("AI personalities", () => {
 			expect(pyromancer.chooseAction(mage, mockFightView(6, mockFighter())).id).toBe(ACTIONS.CURSED_ATTACK);
 		});
 
-		it("the pyromancer burns an opponent that suffers another alteration, where the occultist strikes it with its dark attack", () => {
-			const mage = mockFighter({ breath: 10 });
-			const poisoned = (): ReturnType<typeof mockFighter> => mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.POISONED });
+		it("the pyromancer strikes its burning opponent with its fresh dark attack, and burns it again once the dark attack is worn", () => {
+			const burned = (): ReturnType<typeof mockFighter> => mockFighter({ alterationId: FightConstants.FIGHT_ACTIONS.ALTERATION.BURNED });
+			const freshMage = mockFighter({ breath: 10 });
+			const wornMage = mockFighter({
+				breath: 10, history: [ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK, ACTIONS.DARK_ATTACK]
+			});
 
-			expect(new MagePyromancerFightBehavior().chooseAction(mage, mockFightView(6, poisoned())).id).toBe(ACTIONS.FIRE_ATTACK);
-			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(6, poisoned())).id).toBe(ACTIONS.DARK_ATTACK);
+			expect(new MagePyromancerFightBehavior().chooseAction(freshMage, mockFightView(6, burned())).id).toBe(ACTIONS.DARK_ATTACK);
+			expect(new MagePyromancerFightBehavior().chooseAction(wornMage, mockFightView(6, burned())).id).toBe(ACTIONS.FIRE_ATTACK);
 		});
 
 		it("the pyromancer curses again an opponent that resisted its curse", () => {
