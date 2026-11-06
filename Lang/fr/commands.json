@@ -2783,7 +2783,7 @@
       },
       "gunnerStrategist": {
         "name": "Stratège",
-        "description": "Ouvre au boomerang, tire des salves de canon dès qu'il en a le souffle et use l'adversaire d'attaques intenses et de sabotages entre deux salves."
+        "description": "Tire des salves de canon dès qu'il en a le souffle et use l'adversaire d'attaques intenses et de sabotages entre deux salves."
       },
       "gunnerBombardier": {
         "name": "Bombardier",
