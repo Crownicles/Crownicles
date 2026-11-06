@@ -16,7 +16,7 @@ import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
 import {
 	getCookingGrade, CookingOutputType, CookingGradeDefinition, getCookingSpecialtiesLimit, getNextCookingSpecialtyUnlockLevel,
-	hasUnlockedCookingSpecialties, SPECIALTY_SLOT_INDEX, TIME_POTION_WEEKLY_CRAFT_LIMIT
+	hasUnlockedCookingSpecialties, SPECIALTY_SLOT_INDEX, TIME_POTION_WEEKLY_CRAFT_LIMIT, TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD
 } from "../../../../../../../Lib/src/constants/CookingConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
 
@@ -835,8 +835,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Line telling how many time potions can still be cooked this week, only on time potion recipes.
-	 * A secret recipe only gets it once the limit is reached, to explain why it can't be cooked.
+	 * Line telling how many time potions can still be cooked this week, only on time potion recipes and once
+	 * few remain. A secret recipe only gets it once the limit is reached, to explain why it can't be cooked.
 	 */
 	private buildTimePotionLine(recipe: NonNullable<CookingSlotData["recipe"]>, ctx: HomeFeatureHandlerContext): string | null {
 		if (recipe.timePotionsLeftThisWeek === undefined) {
@@ -845,7 +845,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		if (recipe.timePotionsLeftThisWeek === 0) {
 			return i18n.t("commands:report.city.homes.cooking.timePotionsExhausted", { lng: ctx.lng });
 		}
-		return recipe.isSecret
+		return recipe.isSecret || recipe.timePotionsLeftThisWeek > TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD
 			? null
 			: i18n.t("commands:report.city.homes.cooking.timePotionsLeft", {
 				lng: ctx.lng,

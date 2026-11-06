@@ -308,7 +308,12 @@ export function getNextCookingSpecialtyUnlockLevel(cookingLevel: number): number
  * Time potions a player can successfully cook during a week: once the limit is reached, no time potion
  * can be cooked until the weekly reset
  */
-export const TIME_POTION_WEEKLY_CRAFT_LIMIT = 10;
+export const TIME_POTION_WEEKLY_CRAFT_LIMIT = 30;
+
+/**
+ * The time potions left this week are only shown to the player once this many or fewer remain
+ */
+export const TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD = 10;
 
 /**
  * Chance of receiving a consolation no-effect potion when a craft fails

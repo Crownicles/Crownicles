@@ -113,7 +113,7 @@ import {
 	CookingCraftErrors, CookingSlotData, CookingSpecialtyErrors
 } from "../../../Lib/src/types/CookingTypes";
 import {
-	CookingOutputType, CookingSpecialtyConstants, RecipeType, SPECIALTY_SLOT_INDEX
+	CookingOutputType, CookingSpecialtyConstants, RecipeType, SPECIALTY_SLOT_INDEX, TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD
 } from "../../../Lib/src/constants/CookingConstants";
 import { ReactionCollectorHomeMenuReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { ReactionCollectorRefuseReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -1376,20 +1376,37 @@ describe("CookingFeatureHandler", () => {
 				.toMatchObject({ disabled: true });
 		});
 
-		it("should tell how many time potions can still be cooked this week", async () => {
+		it("should not mention the weekly time potion limit while many time potions remain", async () => {
 			const ctx = createHandlerContext({ homeData: createCookingHomeData(2) });
 			const timePotionSlot = createSlotWithRecipe({ slotIndex: 0, recipeId: "timeRecipe" });
 			timePotionSlot.recipe = {
 				...timePotionSlot.recipe!,
 				recipeType: RecipeType.POTION_TIME_SPEEDUP,
-				timePotionsLeftThisWeek: 3
+				timePotionsLeftThisWeek: TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD + 1
 			};
 			const nestedMenus = await ignite(ctx, {
 				cookingLevel: 5,
 				currentSlots: [timePotionSlot]
 			});
 
-			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).toContain("commands:report.city.homes.cooking.timePotionsLeft|{\\\"count\\\":3}");
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).not.toContain("timePotionsLeft");
+		});
+
+		it("should tell how many time potions can still be cooked this week once few remain", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2) });
+			const timePotionSlot = createSlotWithRecipe({ slotIndex: 0, recipeId: "timeRecipe" });
+			timePotionSlot.recipe = {
+				...timePotionSlot.recipe!,
+				recipeType: RecipeType.POTION_TIME_SPEEDUP,
+				timePotionsLeftThisWeek: TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD
+			};
+			const nestedMenus = await ignite(ctx, {
+				cookingLevel: 5,
+				currentSlots: [timePotionSlot]
+			});
+
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus)))
+				.toContain(JSON.stringify(`commands:report.city.homes.cooking.timePotionsLeft|{"count":${TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD}}`).slice(1, -1));
 		});
 	});
 });
