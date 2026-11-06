@@ -166,24 +166,37 @@ describe("AI class behaviors", () => {
 	});
 
 	describe("GunnerFightBehavior", () => {
-		it("leaves its canon sequence after three canons and throws its boomerang again", () => {
-			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
-			const gunner = mockFighter({
-				breath: 12, speed: 500
-			});
-			const opponentState = {
-				speed: 100, alterationId: ALTERATIONS.SLOWED as string | null
+		it("opens with the boomerang on a clean opponent", () => {
+			const gunner = mockFighter({ breath: 8 });
+
+			expect(new GunnerFightBehavior().chooseAction(gunner, mockFightView(2, mockFighter())).id).toBe(ACTIONS.BOOMERANG_ATTACK);
+		});
+
+		it("starts a canon chain close to its full breath and fires at most three canons in a row", () => {
+			const gunnerState = {
+				breath: 10, maxBreath: 12, lastActionId: null as string | null
 			};
-			const opponent = mockFighter(opponentState);
+			const gunner = mockFighter(gunnerState);
 			const behavior = new GunnerFightBehavior();
-			const firstActions = [3, 5, 7].map(turn => behavior.chooseAction(gunner, mockFightView(turn, opponent)).id);
+			const opponent = mockFighter({ speed: 50 });
+			const actions = [3, 5, 7, 9].map(turn => {
+				const action = behavior.chooseAction(gunner, mockFightView(turn, opponent)).id;
+				// The canons in a row are paid with the breath left: below the threshold that starts a chain
+				gunnerState.lastActionId = action;
+				gunnerState.breath = 6;
+				return action;
+			});
 
-			// The opponent recovers from its alteration and becomes fast: the boomerang is worth throwing again
-			opponentState.alterationId = null;
-			opponentState.speed = 450;
+			expect(actions).toEqual([ACTIONS.CANON_ATTACK, ACTIONS.CANON_ATTACK, ACTIONS.CANON_ATTACK, ACTIONS.SABOTAGE_ATTACK]);
+		});
 
-			expect(firstActions).toEqual([ACTIONS.CANON_ATTACK, ACTIONS.CANON_ATTACK, ACTIONS.CANON_ATTACK]);
-			expect(behavior.chooseAction(gunner, mockFightView(9, opponent)).id).toBe(ACTIONS.BOOMERANG_ATTACK);
+		it("sabotages between two chains, and uses its intense attack against an opponent nearly as fast", () => {
+			const gunner = (): ReturnType<typeof mockFighter> => mockFighter({
+				breath: 7, maxBreath: 12, speed: 500
+			});
+
+			expect(new GunnerFightBehavior().chooseAction(gunner(), mockFightView(5, mockFighter({ speed: 100 }))).id).toBe(ACTIONS.SABOTAGE_ATTACK);
+			expect(new GunnerFightBehavior().chooseAction(gunner(), mockFightView(5, mockFighter({ speed: 450 }))).id).toBe(ACTIONS.INTENSE_ATTACK);
 		});
 	});
 
