@@ -3,6 +3,9 @@ import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { FightActionDataController } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 
+// The energetic attack fails 60% of the time from its fourth use in a fight
+const ENERGETIC_ATTACK_RELIABLE_USES = 3;
+
 function canAfford(me: AiPlayerFighter, actionId: string): boolean {
 	return me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
 }
@@ -58,4 +61,12 @@ export function shouldChargeWhileSavingForEnergeticAttack(me: AiPlayerFighter): 
 	return !me.hasFightAlteration()
 		&& canAfford(me, FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)
 		&& !canAfford(me, FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK);
+}
+
+/**
+ * Check if the energetic attack still rarely fails: from its fourth use, it fails more often than not
+ * @param me
+ */
+export function isEnergeticAttackReliable(me: AiPlayerFighter): boolean {
+	return me.fightActionsHistory.filter(action => action.id === FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK).length < ENERGETIC_ATTACK_RELIABLE_USES;
 }
