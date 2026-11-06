@@ -2780,7 +2780,7 @@
       },
       "paladinJusticar": {
         "name": "Justicier",
-        "description": "Frappe avec son attaque divine dès qu'elle a peu de chances d'échouer."
+        "description": "Garde son attaque ultime pour la fin du combat et frappe avec son attaque divine dès qu'elle a peu de chances d'échouer."
       },
       "gunnerStrategist": {
         "name": "Stratège",
