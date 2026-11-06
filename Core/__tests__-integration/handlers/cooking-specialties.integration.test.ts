@@ -226,7 +226,15 @@ describe("cooking specialties and time potion weekly limit", () => {
 			expect(response).toMatchObject({ error: undefined });
 			chosen.push(choice.recipeId);
 		}
-		expect(specialtySlotRecipeIds(await getSlots(cook)).sort()).toEqual([...chosen].sort());
+		// The specialty station offers a single specialty per ignition, each furnace re-roll moving to the next one
+		const offered: string[] = [];
+		for (let furnacePosition = 0; furnacePosition < CookingSpecialtyConstants.MAX_SPECIALTIES; furnacePosition++) {
+			await Player.update({ furnacePosition }, { where: { id: cook.player.id } });
+			const displayed = specialtySlotRecipeIds(await getSlots(cook));
+			expect(displayed).toHaveLength(1);
+			offered.push(displayed[0]);
+		}
+		expect([...offered].sort()).toEqual([...chosen].sort());
 
 		const extra = await chooseNextRecipe();
 		const [refused] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, extra);

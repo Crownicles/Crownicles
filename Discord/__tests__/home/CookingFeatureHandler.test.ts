@@ -1233,25 +1233,30 @@ describe("CookingFeatureHandler", () => {
 			expect(rendered).not.toContain(`${HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX}${SPECIALTY_SLOT_INDEX}:specialtyRecipe`);
 		});
 
-		it("should fit a full furnace with every specialty in Discord's 40 components", async () => {
-			const ctx = createHandlerContext({ homeData: createCookingHomeData(SPECIALTY_SLOT_INDEX, ALL_SPECIALTIES_LEVEL) });
-			const specialtyIds = Array.from({ length: CookingSpecialtyConstants.MAX_SPECIALTIES }, (_, i) => `specialty${i}`);
+		it("should tell which specialty the specialty station offers when several cycle on it", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
+			const specialties = ["firstSpecialty", "secondSpecialty", "thirdSpecialty"].map(recipeId => ({
+				recipeId, level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
+			}));
 			const nestedMenus = await ignite(ctx, {
-				currentSlots: [
-					...Array.from({ length: SPECIALTY_SLOT_INDEX }, (_, slotIndex) => createSlotWithRecipe({ slotIndex, recipeId: `rotating${slotIndex}` })),
-					...specialtyIds.map(recipeId => createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId }))
-				],
-				specialties: specialtyIds.map(recipeId => ({
-					recipeId, level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
-				}))
+				currentSlots: [createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId: "secondSpecialty" })],
+				specialties
 			});
 
-			const countComponents = (component: RenderedComponent): number => 1
-				+ (component.components ?? []).reduce((total, child) => total + countComponents(child), 0)
-				+ (component.accessory ? countComponents(component.accessory) : 0);
-			const rendered = lastRenderedMenu(nestedMenus);
-			expect(JSON.stringify(rendered)).toContain(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${SPECIALTY_SLOT_INDEX}:specialty2`);
-			expect(countComponents(rendered)).toBeLessThanOrEqual(40);
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus)))
+				.toContain(JSON.stringify("commands:report.city.homes.cooking.specialtyRotation|{\"current\":2,\"total\":3}").slice(1, -1));
+		});
+
+		it("should not mention any rotation with a single specialty", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
+			const nestedMenus = await ignite(ctx, {
+				currentSlots: [createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId: "onlySpecialty" })],
+				specialties: [{
+					recipeId: "onlySpecialty", level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
+				}]
+			});
+
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).not.toContain("specialtyRotation");
 		});
 
 		it("should limit the specialties to the cooking level and announce the next unlock", async () => {

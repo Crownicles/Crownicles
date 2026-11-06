@@ -218,6 +218,9 @@ export class CookingService {
 			slotRecipes, player, discoveredIds, guild, cookingSlots
 		}, specialtyIds);
 
+		// The specialty station offers one specialty at a time: each furnace re-roll moves to the next one
+		const offeredSpecialties = specialties.length > 0 ? [specialties[player.furnacePosition % specialties.length]] : [];
+
 		const context: RecipeSlotContext = {
 			furnacePosition: player.furnacePosition,
 			daySeed,
@@ -225,7 +228,7 @@ export class CookingService {
 			...await CookingService.loadIngredientStocks(homeId, player.id),
 			guild,
 			keptRecipeIds: new Set([...specialtyIds, ...player.pinnedCookingRecipeId ? [player.pinnedCookingRecipeId] : []]),
-			timePotionsLeftThisWeek: await CookingService.getTimePotionsLeftThisWeek(player, [...slotRecipes, ...specialties])
+			timePotionsLeftThisWeek: await CookingService.getTimePotionsLeftThisWeek(player, [...slotRecipes, ...offeredSpecialties])
 		};
 
 		return [
@@ -233,7 +236,7 @@ export class CookingService {
 				slotIndex: i,
 				recipe: recipe ? CookingService.buildRecipeSlotData(i, recipe, context) : null
 			})),
-			...specialties.map(recipe => ({
+			...offeredSpecialties.map(recipe => ({
 				slotIndex: SPECIALTY_SLOT_INDEX,
 				recipe: CookingService.buildRecipeSlotData(SPECIALTY_SLOT_INDEX, recipe, context)
 			}))
@@ -693,7 +696,7 @@ export class CookingService {
 	/**
 	 * Specialties of the player, up to the limit of their cooking level. A specialty whose recipe no longer exists
 	 * or is no longer known by the player is deleted, so it no longer counts towards the limit.
-	 * Sorted by level, so the specialty station keeps the same order at every ignition.
+	 * Sorted by level, so the specialty station cycles through them in the same order.
 	 */
 	static async getSpecialties(player: Player, discoveredIds: string[]): Promise<CookingRecipe[]> {
 		if (!hasUnlockedCookingSpecialties(player.cookingLevel)) {
