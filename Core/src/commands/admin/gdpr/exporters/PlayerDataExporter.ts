@@ -411,10 +411,7 @@ async function exportPlayerCookingRecipes(playerId: number, csvFiles: GDPRCsvFil
 async function exportPlayerCookingSpecialties(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
 	const specialties = await PlayerCookingSpecialty.getOfPlayer(playerId);
 	if (specialties.length > 0) {
-		csvFiles["24_cooking_specialties.csv"] = toCSV(specialties.map(specialty => ({
-			slotIndex: specialty.slotIndex,
-			recipeId: specialty.recipeId
-		})));
+		csvFiles["24_cooking_specialties.csv"] = toCSV(specialties.map(specialty => ({ recipeId: specialty.recipeId })));
 	}
 }
 

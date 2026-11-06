@@ -19,7 +19,7 @@ import {
 	CookingCraftErrors, CookingSpecialtyErrors
 } from "../../../Lib/src/types/CookingTypes";
 import {
-	CookingSpecialtyConstants, TIME_POTION_WEEKLY_CRAFT_LIMIT
+	CookingSpecialtyConstants, SPECIALTY_SLOT_INDEX, TIME_POTION_WEEKLY_CRAFT_LIMIT
 } from "../../../Lib/src/constants/CookingConstants";
 
 type ReportCookingServiceModule = typeof import("../../src/core/report/ReportCookingService");
@@ -94,6 +94,14 @@ describe("cooking specialties and time potion weekly limit", () => {
 		return slots.filter((slot): slot is CookingSlotData & { recipe: RecipeSlotData } => slot.recipe !== null && !slot.recipe.isSecret);
 	}
 
+	function rotatingSlots(slots: CookingSlotData[]): CookingSlotData[] {
+		return slots.filter(slot => slot.slotIndex !== SPECIALTY_SLOT_INDEX);
+	}
+
+	function specialtySlotRecipeIds(slots: CookingSlotData[]): string[] {
+		return slots.filter(slot => slot.slotIndex === SPECIALTY_SLOT_INDEX).map(slot => slot.recipe!.id);
+	}
+
 	async function giveIngredients({
 		player, home
 	}: Cook, recipe: RecipeSlotData): Promise<void> {
@@ -156,7 +164,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 		}) as LogsDatabase);
 	}
 
-	it("keeps a specialty on its station at every furnace ignition, even once cooked", async () => {
+	it("offers a specialty on the specialty station at every furnace ignition, besides every rotating station, even once cooked", async () => {
 		useTimePotionsCookedThisWeek(0);
 		const cook = await createCook("specialty-keeper", CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL);
 		const chosen = visibleSlots(await getSlots(cook))[0];
@@ -167,63 +175,62 @@ describe("cooking specialties and time potion weekly limit", () => {
 		});
 		expect(setResponse).toMatchObject({ error: undefined });
 		expect((setResponse as { menu: { specialties: unknown[] } }).menu.specialties).toEqual([
-			expect.objectContaining({
-				slotIndex: chosen.slotIndex,
-				recipeId: chosen.recipe.id
-			})
+			expect.objectContaining({ recipeId: chosen.recipe.id })
 		]);
 
-		// Furnace re-rolls change the whole rotation, but never the specialty station
+		// Furnace re-rolls change the whole rotation, but the specialty stays on its own station
 		for (let furnacePosition = 1; furnacePosition <= 6; furnacePosition++) {
 			await Player.update({ furnacePosition }, { where: { id: cook.player.id } });
 			const slots = await getSlots(cook);
-			const specialtySlot = slots.find(slot => slot.slotIndex === chosen.slotIndex)!;
-			expect(specialtySlot.recipe).toMatchObject({
-				id: chosen.recipe.id,
-				isSecret: false
-			});
-			expect(slots.filter(slot => slot.recipe?.id === chosen.recipe.id)).toHaveLength(1);
+			expect(specialtySlotRecipeIds(slots)).toEqual([chosen.recipe.id]);
+			expect(slots.find(slot => slot.slotIndex === SPECIALTY_SLOT_INDEX)!.recipe!.isSecret).toBe(false);
+			expect(rotatingSlots(slots)).toHaveLength(cook.home.getLevel()!.features.cookingSlots);
+			expect(rotatingSlots(slots).every(slot => slot.recipe?.id !== chosen.recipe.id)).toBe(true);
 		}
 
 		// Cooking the specialty does not consume it, unlike a pinned recipe
 		await giveIngredients(cook, chosen.recipe);
 		const [craftResponse] = await reportCooking.handleCookingCraft(cook.keycloakId, {
-			slotIndex: chosen.slotIndex,
+			slotIndex: SPECIALTY_SLOT_INDEX,
 			recipeId: chosen.recipe.id
 		}, packetContext(cook.keycloakId));
-		expect(craftResponse).toMatchObject({ error: undefined });
+		expect(craftResponse).toMatchObject({
+			error: undefined,
+			recipeId: chosen.recipe.id
+		});
 		expect(await PlayerCookingSpecialty.findAll({ where: { playerId: cook.player.id } })).toEqual([
-			expect.objectContaining({
-				slotIndex: chosen.slotIndex,
-				recipeId: chosen.recipe.id
-			})
+			expect.objectContaining({ recipeId: chosen.recipe.id })
 		]);
 	});
 
-	it("refuses a specialty beyond the limit and frees a station once a specialty is removed", async () => {
+	it("refuses a specialty beyond the limit and accepts a new one once a specialty is removed", async () => {
 		useTimePotionsCookedThisWeek(0);
 		const cook = await createCook("specialty-limit", CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL);
-		const candidates = visibleSlots(await getSlots(cook));
-		expect(candidates.length).toBeGreaterThan(CookingSpecialtyConstants.MAX_SPECIALTIES);
 
-		for (const candidate of candidates.slice(0, CookingSpecialtyConstants.MAX_SPECIALTIES)) {
-			const [response] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
+		// Each new specialty leaves the rotation, so the next candidate is read from the refreshed stations
+		const chooseNextRecipe = async (): Promise<{ slotIndex: number; recipeId: string }> => {
+			const candidate = visibleSlots(rotatingSlots(await getSlots(cook)))[0];
+			return {
 				slotIndex: candidate.slotIndex,
 				recipeId: candidate.recipe.id
-			});
+			};
+		};
+		const chosen: string[] = [];
+		for (let i = 0; i < CookingSpecialtyConstants.MAX_SPECIALTIES; i++) {
+			const choice = await chooseNextRecipe();
+			const [response] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, choice);
 			expect(response).toMatchObject({ error: undefined });
+			chosen.push(choice.recipeId);
 		}
-		const extra = candidates[CookingSpecialtyConstants.MAX_SPECIALTIES];
-		const [refused] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
-			slotIndex: extra.slotIndex,
-			recipeId: extra.recipe.id
-		});
+		expect(specialtySlotRecipeIds(await getSlots(cook)).sort()).toEqual([...chosen].sort());
+
+		const extra = await chooseNextRecipe();
+		const [refused] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, extra);
 		expect(refused).toMatchObject({ error: CookingSpecialtyErrors.LIMIT_REACHED });
 		expect(await PlayerCookingSpecialty.count({ where: { playerId: cook.player.id } })).toBe(CookingSpecialtyConstants.MAX_SPECIALTIES);
 
 		const [removed] = await reportCooking.handleCookingRemoveSpecialty(cook.keycloakId, {
-			slotIndex: candidates[0].slotIndex,
-			recipeId: candidates[0].recipe.id,
+			recipeId: chosen[0],
 			fromIgnitedView: false
 		});
 		expect(removed).toMatchObject({
@@ -234,10 +241,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 		});
 		expect((removed as { menu: { specialties: unknown[] } }).menu.specialties).toHaveLength(CookingSpecialtyConstants.MAX_SPECIALTIES - 1);
 
-		const [accepted] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
-			slotIndex: extra.slotIndex,
-			recipeId: extra.recipe.id
-		});
+		const [accepted] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, await chooseNextRecipe());
 		expect(accepted).toMatchObject({ error: undefined });
 		expect(await PlayerCookingSpecialty.count({ where: { playerId: cook.player.id } })).toBe(CookingSpecialtyConstants.MAX_SPECIALTIES);
 	});
@@ -311,7 +315,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 			recipeId: TIME_POTION_RECIPE_ID
 		});
 
-		// The pin brings the time potion on a station, where the master chef makes it a specialty
+		// The pin brings the time potion on a rotating station, from where the master chef makes it a specialty
 		await Player.update({ pinnedCookingRecipeId: TIME_POTION_RECIPE_ID }, { where: { id: cook.player.id } });
 		useLoggedTimePotions(TIME_POTION_WEEKLY_CRAFT_LIMIT - 1);
 		const pinnedSlot = visibleSlots(await getSlots(cook)).find(slot => slot.recipe.id === TIME_POTION_RECIPE_ID)!;
@@ -324,7 +328,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 
 		await giveIngredients(cook, pinnedSlot.recipe);
 		const [craftResponse] = await reportCooking.handleCookingCraft(cook.keycloakId, {
-			slotIndex: pinnedSlot.slotIndex,
+			slotIndex: SPECIALTY_SLOT_INDEX,
 			recipeId: TIME_POTION_RECIPE_ID
 		}, packetContext(cook.keycloakId));
 
@@ -335,7 +339,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 			menu: { currentSlots: CookingSlotData[] };
 		};
 		expect(craft.error).toBeUndefined();
-		expect(craft.menu.currentSlots.find(slot => slot.slotIndex === pinnedSlot.slotIndex)!.recipe).toMatchObject({
+		expect(craft.menu.currentSlots.find(slot => slot.slotIndex === SPECIALTY_SLOT_INDEX)!.recipe).toMatchObject({
 			id: TIME_POTION_RECIPE_ID,
 			timePotionsLeftThisWeek: craft.success ? 0 : 1
 		});

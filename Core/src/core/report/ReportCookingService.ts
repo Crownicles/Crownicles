@@ -56,7 +56,7 @@ import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
 	getCookingGrade, CookingOutputType, CookingOutputTypeValue, CookingSpecialtyConstants, hasUnlockedCookingSpecialties,
-	isRecipeEligibleForSlot,
+	SPECIALTY_SLOT_INDEX,
 	FAILED_CRAFT_CONSOLATION_CHANCE, FAILED_CRAFT_CONSOLATION_MIN_RARITY, FAILED_CRAFT_CONSOLATION_MAX_RARITY
 } from "../../../../Lib/src/constants/CookingConstants";
 import {
@@ -776,7 +776,10 @@ async function loadCookingCraftContext(
 	const slots = await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
 	});
-	const slot = slots.find(slotData => slotData.slotIndex === packet.slotIndex);
+
+	// The specialty station offers several recipes: the requested recipe identifies the row
+	const slot = slots.find(slotData => slotData.slotIndex === packet.slotIndex && slotData.recipe?.id === packet.recipeId)
+		?? slots.find(slotData => slotData.slotIndex === packet.slotIndex);
 	const recipe = slot?.recipe ? CookingRecipeDataController.instance.getById(slot.recipe.id) : undefined;
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
 	return {
@@ -1127,12 +1130,12 @@ interface SpecialtyChoice {
 }
 
 /**
- * Store the specialty under the player lock, so two concurrent choices can neither exceed the limit nor
- * share a station. The recipe is unpinned since a specialty is already offered at every ignition.
+ * Store the specialty under the player lock, so two concurrent choices can't exceed the limit. The recipe is
+ * unpinned since a specialty is already offered at every ignition.
  */
-async function addSpecialtyUnderLock(lockedPlayer: Locked<Player>, choice: SpecialtyChoice): Promise<CookingSpecialtyError | null> {
+async function addSpecialtyUnderLock(lockedPlayer: Locked<Player>, recipeId: CookingRecipeId): Promise<CookingSpecialtyError | null> {
 	const specialties = await PlayerCookingSpecialty.getOfPlayer(lockedPlayer.id);
-	if (specialties.some(specialty => specialty.slotIndex === choice.slotIndex || specialty.recipeId === choice.recipeId)) {
+	if (specialties.some(specialty => specialty.recipeId === recipeId)) {
 		return CookingSpecialtyErrors.UNAVAILABLE;
 	}
 	if (specialties.length >= CookingSpecialtyConstants.MAX_SPECIALTIES) {
@@ -1140,9 +1143,9 @@ async function addSpecialtyUnderLock(lockedPlayer: Locked<Player>, choice: Speci
 	}
 	await PlayerCookingSpecialty.create({
 		playerId: lockedPlayer.id,
-		...choice
+		recipeId
 	});
-	if (lockedPlayer.pinnedCookingRecipeId === choice.recipeId) {
+	if (lockedPlayer.pinnedCookingRecipeId === recipeId) {
 		lockedPlayer.pinnedCookingRecipeId = null;
 		await lockedPlayer.save();
 	}
@@ -1150,7 +1153,7 @@ async function addSpecialtyUnderLock(lockedPlayer: Locked<Player>, choice: Speci
 }
 
 /**
- * Make the recipe currently offered on a station one of the player's specialties
+ * Make a recipe currently offered on a rotating station one of the player's specialties
  */
 async function setSpecialty({
 	player, home, cookingSlots
@@ -1159,18 +1162,15 @@ async function setSpecialty({
 		return CookingSpecialtyErrors.UNAVAILABLE;
 	}
 
-	/*
-	 * Only a recipe the player can see on the station can become its specialty, and only if the station
-	 * itself can offer it: a recipe swapped there by another kept recipe would never come back to it.
-	 */
+	// Only a recipe the player can see can become a specialty
 	const offeredRecipe = (await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
-	})).find(slot => slot.slotIndex === choice.slotIndex)?.recipe;
-	if (offeredRecipe?.id !== choice.recipeId || offeredRecipe.isSecret || !isRecipeEligibleForSlot(offeredRecipe, choice.slotIndex)) {
+	})).find(slot => slot.slotIndex === choice.slotIndex && slot.slotIndex !== SPECIALTY_SLOT_INDEX)?.recipe;
+	if (offeredRecipe?.id !== choice.recipeId || offeredRecipe.isSecret) {
 		return CookingSpecialtyErrors.UNAVAILABLE;
 	}
 
-	const error = await Player.withLocked(player.id, lockedPlayer => addSpecialtyUnderLock(lockedPlayer, choice));
+	const error = await Player.withLocked(player.id, lockedPlayer => addSpecialtyUnderLock(lockedPlayer, choice.recipeId));
 	if (!error && player.pinnedCookingRecipeId === choice.recipeId) {
 		player.pinnedCookingRecipeId = null;
 		player.changed("pinnedCookingRecipeId", false);
@@ -1212,11 +1212,9 @@ export async function handleCookingRemoveSpecialty(
 		return [];
 	}
 
-	// Compare-and-delete on the whole row: a stale menu never removes another specialty of the station
 	await PlayerCookingSpecialty.destroy({
 		where: {
 			playerId: data.player.id,
-			slotIndex: packet.slotIndex,
 			recipeId: packet.recipeId
 		}
 	});

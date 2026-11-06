@@ -80,10 +80,9 @@ export interface PinnedRecipeInfo {
 }
 
 /**
- * A recipe the master chef made one of their specialties, offered on its station at every furnace ignition
+ * A recipe the master chef made one of their specialties, offered on the specialty station at every furnace ignition
  */
 export interface CookingSpecialtyInfo extends RecipeDisplayInfo {
-	slotIndex: number;
 	canCraft: boolean;
 }
 

@@ -267,8 +267,8 @@ export const NO_XP_LEVEL_THRESHOLD = 3;
 export const MASTER_CHEF_BADGE_COOKING_LEVEL = 100;
 
 /**
- * Specialties are recipes a master chef keeps at hand: each one stays on the station it was chosen on
- * at every furnace ignition, until the chef removes it
+ * Specialties are recipes a master chef keeps at hand: they are offered on a dedicated station, besides
+ * the rotating ones, at every furnace ignition until the chef removes them
  */
 export const CookingSpecialtyConstants = {
 	UNLOCK_COOKING_LEVEL: MASTER_CHEF_BADGE_COOKING_LEVEL,
@@ -379,6 +379,11 @@ export const SLOT_CONFIGS: readonly SlotConfig[] = [
 		potionsOnly: false
 	}
 ] as const;
+
+/**
+ * Index of the station dedicated to the specialties, right after the rotating stations
+ */
+export const SPECIALTY_SLOT_INDEX = SLOT_CONFIGS.length;
 
 /**
  * Whether the furnace station can offer the recipe (level range and recipe types of the station)

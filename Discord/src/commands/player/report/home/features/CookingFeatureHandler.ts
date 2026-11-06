@@ -16,7 +16,7 @@ import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
 import {
 	getCookingGrade, CookingOutputType, CookingGradeDefinition, CookingSpecialtyConstants,
-	hasUnlockedCookingSpecialties, isRecipeEligibleForSlot, TIME_POTION_WEEKLY_CRAFT_LIMIT
+	hasUnlockedCookingSpecialties, SPECIALTY_SLOT_INDEX, TIME_POTION_WEEKLY_CRAFT_LIMIT
 } from "../../../../../../../Lib/src/constants/CookingConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
 
@@ -328,9 +328,9 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		selectedValue: string,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
-		const selection = this.parseSlotRecipeSelection(selectedValue, HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX);
-		if (selection) {
-			await this.sendRemoveSpecialtyAction(ctx, selection, nestedMenus);
+		const recipeId = selectedValue.slice(HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX.length);
+		if (recipeId) {
+			await this.sendRemoveSpecialtyAction(ctx, recipeId, nestedMenus);
 		}
 		return true;
 	}
@@ -422,8 +422,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 						})
 						: i18n.t("commands:report.city.homes.cooking.specialtyAdded", {
 							lng: ctx.lng,
-							recipeId: selection.recipeId,
-							stationId: selection.slotIndex
+							recipeId: selection.recipeId
 						});
 					this.registerFromCurrentState(ctx, nestedMenus, { text });
 				}
@@ -438,11 +437,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Send the request removing a specialty to Core
 	 */
-	private async sendRemoveSpecialtyAction(ctx: HomeFeatureHandlerContext, selection: SlotRecipeSelection, nestedMenus: CrowniclesNestedMenus): Promise<void> {
+	private async sendRemoveSpecialtyAction(ctx: HomeFeatureHandlerContext, recipeId: CookingRecipeId, nestedMenus: CrowniclesNestedMenus): Promise<void> {
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
 			makePacket(CommandReportCookingRemoveSpecialtyReq, {
-				...selection,
+				recipeId,
 				fromIgnitedView: this.getState(ctx).isIgnited
 			}),
 			async (_responseContext, packetName, responsePacket) => {
@@ -452,7 +451,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					this.registerFromCurrentState(ctx, nestedMenus, {
 						text: i18n.t("commands:report.city.homes.cooking.specialtyRemoved", {
 							lng: ctx.lng,
-							recipeId: selection.recipeId
+							recipeId
 						})
 					});
 				}
@@ -627,7 +626,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			}),
 			...state.specialties.map(specialty => i18n.t("commands:report.city.homes.cooking.specialtyLine", {
 				lng: ctx.lng,
-				stationId: specialty.slotIndex,
 				recipeId: specialty.recipeId,
 				recipeType: specialty.recipeType,
 				level: specialty.level
@@ -726,16 +724,18 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			new TextDisplayBuilder().setContent(this.withNotice(this.buildIgnitedDescription(ctx), notice))
 		);
 
-		// Build slot sections
+		// Build slot sections. The specialty rows share a single separator: a full furnace must fit in Discord's 40 components
 		const state = this.getState(ctx);
-		for (const slot of state.currentSlots) {
-			container.addSeparatorComponents(
-				new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
-			);
+		state.currentSlots.forEach((slot, index) => {
+			if (!this.isSpecialtySlot(slot) || !this.isSpecialtySlot(state.currentSlots[index - 1])) {
+				container.addSeparatorComponents(
+					new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
+				);
+			}
 			container.addSectionComponents(
 				this.buildSlotSection(slot, ctx, allDisabled)
 			);
-		}
+		});
 
 		// Bottom action row
 		container.addSeparatorComponents(
@@ -749,8 +749,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		return container;
 	}
 
-	private isSpecialtySlot(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): boolean {
-		return this.getState(ctx).specialties.some(specialty => specialty.slotIndex === slot.slotIndex && specialty.recipeId === slot.recipe?.id);
+	private isSpecialtySlot(slot: CookingSlotData | undefined): boolean {
+		return slot?.slotIndex === SPECIALTY_SLOT_INDEX;
 	}
 
 	private buildSpecialtyOptionLabel(recipeId: CookingRecipeId, level: number, ctx: HomeFeatureHandlerContext): string {
@@ -762,8 +762,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Options making a visible slot recipe a specialty: every non secret recipe the station can offer
-	 * and whose station holds no specialty yet, while the limit is not reached
+	 * Options making a visible recipe of the rotating stations a specialty, while the limit is not reached
 	 */
 	private buildSetSpecialtyOptions(ctx: HomeFeatureHandlerContext): StringSelectMenuOptionBuilder[] {
 		const state = this.getState(ctx);
@@ -773,26 +772,19 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		return state.currentSlots
 			.filter(slot => slot.recipe
 				&& !slot.recipe.isSecret
-				&& isRecipeEligibleForSlot(slot.recipe, slot.slotIndex)
-				&& !state.specialties.some(specialty => specialty.slotIndex === slot.slotIndex || specialty.recipeId === slot.recipe!.id))
+				&& !this.isSpecialtySlot(slot))
 			.map(slot => new StringSelectMenuOptionBuilder()
 				.setLabel(this.buildSpecialtyOptionLabel(slot.recipe!.id, slot.recipe!.level, ctx))
-				.setDescription(i18n.t("commands:report.city.homes.cooking.specialtySetDescription", {
-					lng: ctx.lng,
-					stationId: slot.slotIndex
-				}))
+				.setDescription(i18n.t("commands:report.city.homes.cooking.specialtySetDescription", { lng: ctx.lng }))
 				.setValue(this.buildSlotRecipeCustomId(HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX, slot.slotIndex, slot.recipe!.id))
-				.setEmoji(parseEmoji(CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking)!));
+				.setEmoji(parseEmoji(CrowniclesIcons.cookingStations[SPECIALTY_SLOT_INDEX])!));
 	}
 
 	private buildRemoveSpecialtyOptions(ctx: HomeFeatureHandlerContext): StringSelectMenuOptionBuilder[] {
 		return this.getState(ctx).specialties.map(specialty => new StringSelectMenuOptionBuilder()
 			.setLabel(this.buildSpecialtyOptionLabel(specialty.recipeId, specialty.level, ctx))
-			.setDescription(i18n.t("commands:report.city.homes.cooking.specialtyRemoveDescription", {
-				lng: ctx.lng,
-				stationId: specialty.slotIndex
-			}))
-			.setValue(this.buildSlotRecipeCustomId(HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX, specialty.slotIndex, specialty.recipeId))
+			.setDescription(i18n.t("commands:report.city.homes.cooking.specialtyRemoveDescription", { lng: ctx.lng }))
+			.setValue(buildCustomId(HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX, specialty.recipeId))
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!));
 	}
 
@@ -893,7 +885,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Build the title line for a recipe slot, flagging the specialties
+	 * Build the title line for a recipe slot
 	 */
 	private buildSlotTitle(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): string {
 		const recipe = slot.recipe!;
@@ -904,8 +896,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				level: recipe.level
 			});
 		}
-		const titleKey = this.isSpecialtySlot(slot, ctx) ? "slotSpecialtyName" : "slotRecipeName";
-		return i18n.t(`commands:report.city.homes.cooking.${titleKey}`, {
+		return i18n.t("commands:report.city.homes.cooking.slotRecipeName", {
 			lng: ctx.lng,
 			stationId: slot.slotIndex,
 			recipeId: recipe.id,
@@ -918,13 +909,13 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 * The pin button replaces the craft button on a recipe the player can't cook yet, unless it is secret, a
 	 * specialty (already offered at every ignition) or a time potion blocked until next week
 	 */
-	private canShowPinButton(slot: CookingSlotData, ctx: HomeFeatureHandlerContext, allDisabled: boolean): boolean {
+	private canShowPinButton(slot: CookingSlotData, allDisabled: boolean): boolean {
 		const recipe = slot.recipe!;
 		return !recipe.canCraft
 			&& !recipe.isSecret
 			&& !allDisabled
 			&& recipe.timePotionsLeftThisWeek !== 0
-			&& !this.isSpecialtySlot(slot, ctx);
+			&& !this.isSpecialtySlot(slot);
 	}
 
 	/**
@@ -933,7 +924,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private buildSlotAccessoryButton(slot: CookingSlotData, ctx: HomeFeatureHandlerContext, allDisabled: boolean): ButtonBuilder {
 		const recipe = slot.recipe!;
 
-		if (this.canShowPinButton(slot, ctx, allDisabled)) {
+		if (this.canShowPinButton(slot, allDisabled)) {
 			return this.buildPinOrUnpinButton(slot, ctx);
 		}
 

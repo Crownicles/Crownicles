@@ -115,6 +115,28 @@ describe("CookingSlotRotation", () => {
 			expect(recipes.every(recipe => recipe === null || recipe.outputType !== CookingOutputType.PET_FOOD)).toBe(true);
 		});
 
+		it("should never offer the excluded recipes (the specialties) and keep every station filled", () => {
+			const discovered = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
+			for (let furnacePosition = 0; furnacePosition < 40; furnacePosition++) {
+				const options = {
+					cookingSlots: SLOT_CONFIGS.length,
+					furnacePosition,
+					daySeed: 77,
+					discoveredRecipeIds: discovered
+				};
+				// Exclude what the rotation would naturally offer on the first three stations
+				const excludedRecipeIds = new Set(getUniqueRecipesForSlots(options).slice(0, 3).map(recipe => recipe!.id));
+
+				const recipes = getUniqueRecipesForSlots({
+					...options,
+					excludedRecipeIds
+				});
+
+				expect(recipes.some(recipe => recipe && excludedRecipeIds.has(recipe.id))).toBe(false);
+				expect(recipes.every(recipe => recipe !== null)).toBe(true);
+			}
+		});
+
 		it("should guarantee at least 2 recipes at player level for low-level players", () => {
 			const discovered = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
 			const maxRecipeLevelWithoutPenalty = 2; // Aide-cuisine grade
