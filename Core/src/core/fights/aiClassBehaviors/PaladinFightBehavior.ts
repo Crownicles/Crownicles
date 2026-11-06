@@ -18,9 +18,10 @@ import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants"
 
 /*
  * The crusader charges its ultimate below this share of its energy: the ultimate attack never fails below 45%, and
- * the charge leaves the opponent a turn to bring it there
+ * the charge leaves the opponent a turn to bring it there. Charged higher, it often fires above 45%, where it fails
+ * 70% of the time: the whole fight then hinges on that single roll
  */
-const CRUSADER_ULTIMATE_CHARGE_ENERGY_RATIO = 0.6;
+const CRUSADER_ULTIMATE_CHARGE_ENERGY_RATIO = 0.5;
 
 /**
  * Implements a paladin fight behavior that selects an appropriate fight action based on various tactical criteria.

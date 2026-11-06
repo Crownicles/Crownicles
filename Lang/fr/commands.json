@@ -2775,7 +2775,7 @@
       },
       "paladinCrusader": {
         "name": "Croisé",
-        "description": "Charge tôt son attaque ultime, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération. Particulièrement solide face aux Canonniers."
+        "description": "Charge son attaque ultime à mi-combat, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération."
       },
       "paladinJusticar": {
         "name": "Justicier",

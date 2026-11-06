@@ -144,15 +144,24 @@ describe("AI personalities", () => {
 		expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(11, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
 	});
 
-	it("the justicar paladin keeps its ultimate for the end of the fight, where the crusader charges it at half energy", () => {
+	it("the justicar paladin keeps its ultimate for the end of the fight, where the crusader charges it below half of its energy", () => {
 		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
 		const paladin = (energy: number): ReturnType<typeof mockFighter> => mockFighter({
 			breath: 25, maxBreath: 25, energy, maxEnergy: 1000
 		});
 
-		expect(new PaladinFightBehavior().chooseAction(paladin(500), mockFightView(5, mockFighter())).id).toBe(ACTIONS.CHARGE_ULTIMATE_ATTACK);
-		expect(new PaladinJusticarFightBehavior().chooseAction(paladin(500), mockFightView(5, mockFighter())).id).not.toBe(ACTIONS.CHARGE_ULTIMATE_ATTACK);
+		expect(new PaladinFightBehavior().chooseAction(paladin(450), mockFightView(5, mockFighter())).id).toBe(ACTIONS.CHARGE_ULTIMATE_ATTACK);
+		expect(new PaladinJusticarFightBehavior().chooseAction(paladin(450), mockFightView(5, mockFighter())).id).not.toBe(ACTIONS.CHARGE_ULTIMATE_ATTACK);
 		expect(new PaladinJusticarFightBehavior().chooseAction(paladin(250), mockFightView(5, mockFighter())).id).toBe(ACTIONS.CHARGE_ULTIMATE_ATTACK);
+	});
+
+	it("the crusader paladin does not charge its ultimate where it would most likely fail", () => {
+		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
+		const paladin = mockFighter({
+			breath: 25, maxBreath: 25, energy: 550, maxEnergy: 1000
+		});
+
+		expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(5, mockFighter())).id).not.toBe(ACTIONS.CHARGE_ULTIMATE_ATTACK);
 	});
 
 	describe("paladin breath reserve", () => {
