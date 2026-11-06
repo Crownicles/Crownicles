@@ -271,9 +271,10 @@ function getCookingGradeMinLevel(gradeId: string): number {
 }
 
 /**
- * Specialties are recipes a master chef keeps at hand: they are offered on a dedicated station, besides
- * the rotating ones, at every furnace ignition until the chef removes them. One specialty is unlocked on
- * becoming kitchen master, one on becoming royal grand chef and the last one with the master chef badge.
+ * Specialties are recipes a master chef keeps at hand until removing them: they are offered one at a time on
+ * a dedicated station, besides the rotating ones, each furnace re-roll moving to the next one. One specialty
+ * is unlocked on becoming kitchen master, one on becoming royal grand chef and the last one with the master
+ * chef badge.
  */
 const SPECIALTY_UNLOCK_COOKING_LEVELS: readonly number[] = [
 	getCookingGradeMinLevel("kitchenMaster"),

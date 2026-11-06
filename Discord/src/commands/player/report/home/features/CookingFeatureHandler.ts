@@ -742,18 +742,16 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			new TextDisplayBuilder().setContent(this.withNotice(this.buildIgnitedDescription(ctx), notice))
 		);
 
-		// Build slot sections. The specialty rows share a single separator: a full furnace must fit in Discord's 40 components
+		// Build slot sections
 		const state = this.getState(ctx);
-		state.currentSlots.forEach((slot, index) => {
-			if (!this.isSpecialtySlot(slot) || !this.isSpecialtySlot(state.currentSlots[index - 1])) {
-				container.addSeparatorComponents(
-					new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
-				);
-			}
+		for (const slot of state.currentSlots) {
+			container.addSeparatorComponents(
+				new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
+			);
 			container.addSectionComponents(
 				this.buildSlotSection(slot, ctx, allDisabled)
 			);
-		});
+		}
 
 		// Bottom action row
 		container.addSeparatorComponents(
@@ -767,8 +765,23 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		return container;
 	}
 
-	private isSpecialtySlot(slot: CookingSlotData | undefined): boolean {
-		return slot?.slotIndex === SPECIALTY_SLOT_INDEX;
+	private isSpecialtySlot(slot: CookingSlotData): boolean {
+		return slot.slotIndex === SPECIALTY_SLOT_INDEX;
+	}
+
+	/**
+	 * Line telling which of the specialties the specialty station offers, when there are several to cycle through
+	 */
+	private buildSpecialtyRotationLine(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): string | null {
+		const specialties = this.getState(ctx).specialties;
+		if (!this.isSpecialtySlot(slot) || specialties.length < 2) {
+			return null;
+		}
+		return i18n.t("commands:report.city.homes.cooking.specialtyRotation", {
+			lng: ctx.lng,
+			current: specialties.findIndex(specialty => specialty.recipeId === slot.recipe?.id) + 1,
+			total: specialties.length
+		});
 	}
 
 	private buildSpecialtyOptionLabel(recipeId: CookingRecipeId, level: number, ctx: HomeFeatureHandlerContext): string {
@@ -868,6 +881,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		section.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(StringUtils.joinLines([
 				slotTitle,
+				this.buildSpecialtyRotationLine(slot, ctx),
 				this.buildTimePotionLine(slot.recipe, ctx),
 				ingredientsList
 			]))
