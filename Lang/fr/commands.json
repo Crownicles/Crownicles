@@ -2792,7 +2792,7 @@
       },
       "veteranStrategist": {
         "name": "Stratège",
-        "description": "Se concentre avant de déclencher ses attaques énergiques et répond par une attaque chargée quand l'adversaire prépare un grand coup."
+        "description": "Charge son attaque en attendant d'avoir le souffle de ses attaques énergiques, se concentre avant de les déclencher et répond par une attaque chargée quand l'adversaire prépare un grand coup."
       },
       "veteranCharger": {
         "name": "Fonceur",

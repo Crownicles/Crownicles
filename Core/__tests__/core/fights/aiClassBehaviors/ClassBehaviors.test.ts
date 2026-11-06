@@ -6,6 +6,7 @@ import PaladinFightBehavior from "../../../../src/core/fights/aiClassBehaviors/P
 import MysticMageFightBehavior from "../../../../src/core/fights/aiClassBehaviors/MysticMageFightBehavior";
 import GunnerFightBehavior from "../../../../src/core/fights/aiClassBehaviors/GunnerFightBehavior";
 import VeteranFightBehavior from "../../../../src/core/fights/aiClassBehaviors/VeteranFightBehavior";
+import VeteranChargerFightBehavior from "../../../../src/core/fights/aiClassBehaviors/VeteranChargerFightBehavior";
 import InfantryManFightBehavior from "../../../../src/core/fights/aiClassBehaviors/InfantrymanFightBehavior";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
@@ -222,6 +223,15 @@ describe("AI class behaviors", () => {
 			});
 
 			expect(new VeteranFightBehavior().chooseAction(veteran, mockFightView(5, mockFighter())).id).toBe(ACTIONS.ENERGETIC_ATTACK);
+		});
+
+		it("charges its attack while saving breath for its energetic attack, where the charger concentrates", () => {
+			const veteran = mockFighter({
+				breath: 8, regenBreath: 5
+			});
+
+			expect(new VeteranFightBehavior().chooseAction(veteran, mockFightView(3, mockFighter())).id).toBe(ACTIONS.CHARGE_CHARGING_ATTACK);
+			expect(new VeteranChargerFightBehavior().chooseAction(veteran, mockFightView(3, mockFighter())).id).toBe(ACTIONS.CONCENTRATION);
 		});
 	});
 });
