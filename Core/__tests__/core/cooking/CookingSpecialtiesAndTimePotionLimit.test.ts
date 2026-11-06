@@ -12,6 +12,10 @@ import {
 } from "../../../../Lib/src/constants/CookingConstants";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 
+// Cooking level unlocking every specialty, and the one before the first specialty
+const ALL_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[CookingSpecialtyConstants.MAX_SPECIALTIES - 1];
+const BEFORE_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0] - 1;
+
 const recipe = (id: string): CookingRecipe => CookingRecipeDataController.instance.getById(id)!;
 
 describe("CookingService - time potion weekly limit", () => {
@@ -58,7 +62,7 @@ describe("CookingService - time potion weekly limit", () => {
 describe("CookingService - getSpecialties", () => {
 	const masterChef = {
 		id: 7,
-		cookingLevel: CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL
+		cookingLevel: ALL_SPECIALTIES_LEVEL
 	} as Player;
 
 	afterEach(() => {
@@ -70,11 +74,29 @@ describe("CookingService - getSpecialties", () => {
 
 		const specialties = await CookingService.getSpecialties({
 			...masterChef,
-			cookingLevel: CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL - 1
+			cookingLevel: BEFORE_SPECIALTIES_LEVEL
 		} as Player, []);
 
 		expect(specialties).toEqual([]);
 		expect(getOfPlayerSpy).not.toHaveBeenCalled();
+	});
+
+	it("should only offer as many specialties as the cooking level allows", async () => {
+		vi.spyOn(PlayerCookingSpecialty, "getOfPlayer").mockResolvedValue([
+			{
+				playerId: 7, recipeId: "potion_health_1"
+			},
+			{
+				playerId: 7, recipeId: "potion_energy_1"
+			}
+		] as PlayerCookingSpecialty[]);
+
+		const specialties = await CookingService.getSpecialties({
+			...masterChef,
+			cookingLevel: CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0]
+		} as Player, []);
+
+		expect(specialties).toHaveLength(1);
 	});
 
 	it("should delete the specialties whose recipe no longer exists or is no longer known, and sort the others by level", async () => {

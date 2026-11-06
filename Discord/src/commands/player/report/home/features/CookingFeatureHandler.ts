@@ -15,7 +15,7 @@ import { StringUtils } from "../../../../../utils/StringUtils";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
 import {
-	getCookingGrade, CookingOutputType, CookingGradeDefinition, CookingSpecialtyConstants,
+	getCookingGrade, CookingOutputType, CookingGradeDefinition, getCookingSpecialtiesLimit, getNextCookingSpecialtyUnlockLevel,
 	hasUnlockedCookingSpecialties, SPECIALTY_SLOT_INDEX, TIME_POTION_WEEKLY_CRAFT_LIMIT
 } from "../../../../../../../Lib/src/constants/CookingConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
@@ -418,7 +418,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					const text = response.error
 						? i18n.t(`commands:report.city.homes.cooking.${response.error}`, {
 							lng: ctx.lng,
-							max: CookingSpecialtyConstants.MAX_SPECIALTIES
+							max: getCookingSpecialtiesLimit(this.getState(ctx).cookingLevel)
 						})
 						: i18n.t("commands:report.city.homes.cooking.specialtyAdded", {
 							lng: ctx.lng,
@@ -605,6 +605,19 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
+	 * Line announcing the cooking level unlocking the next specialty, null once they are all unlocked
+	 */
+	private buildNextSpecialtyUnlockLine(ctx: HomeFeatureHandlerContext): string | null {
+		const nextUnlockLevel = getNextCookingSpecialtyUnlockLevel(this.getState(ctx).cookingLevel);
+		return nextUnlockLevel === null
+			? null
+			: i18n.t("commands:report.city.homes.cooking.specialtyNextUnlock", {
+				lng: ctx.lng,
+				level: nextUnlockLevel
+			});
+	}
+
+	/**
 	 * Build the specialties block of the pre-ignite menu, empty while they are not unlocked
 	 */
 	private buildSpecialtiesDisplay(ctx: HomeFeatureHandlerContext): string {
@@ -612,24 +625,29 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		if (!hasUnlockedCookingSpecialties(state.cookingLevel)) {
 			return "";
 		}
+		const specialtiesLimit = getCookingSpecialtiesLimit(state.cookingLevel);
 		if (state.specialties.length === 0) {
-			return i18n.t("commands:report.city.homes.cooking.specialtiesNone", {
-				lng: ctx.lng,
-				max: CookingSpecialtyConstants.MAX_SPECIALTIES
-			});
+			return StringUtils.joinLines([
+				i18n.t("commands:report.city.homes.cooking.specialtiesNone", {
+					lng: ctx.lng,
+					count: specialtiesLimit
+				}),
+				this.buildNextSpecialtyUnlockLine(ctx)
+			]);
 		}
 		return StringUtils.joinLines([
 			i18n.t("commands:report.city.homes.cooking.specialtiesTitle", {
 				lng: ctx.lng,
 				current: state.specialties.length,
-				max: CookingSpecialtyConstants.MAX_SPECIALTIES
+				max: specialtiesLimit
 			}),
 			...state.specialties.map(specialty => i18n.t("commands:report.city.homes.cooking.specialtyLine", {
 				lng: ctx.lng,
 				recipeId: specialty.recipeId,
 				recipeType: specialty.recipeType,
 				level: specialty.level
-			}) + (specialty.canCraft ? ` ${CrowniclesIcons.collectors.accept}` : ""))
+			}) + (specialty.canCraft ? ` ${CrowniclesIcons.collectors.accept}` : "")),
+			this.buildNextSpecialtyUnlockLine(ctx)
 		]);
 	}
 
@@ -766,7 +784,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildSetSpecialtyOptions(ctx: HomeFeatureHandlerContext): StringSelectMenuOptionBuilder[] {
 		const state = this.getState(ctx);
-		if (state.specialties.length >= CookingSpecialtyConstants.MAX_SPECIALTIES) {
+		if (state.specialties.length >= getCookingSpecialtiesLimit(state.cookingLevel)) {
 			return [];
 		}
 		return state.currentSlots
@@ -810,7 +828,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				.setPlaceholder(i18n.t("commands:report.city.homes.cooking.specialtySelectPlaceholder", {
 					lng: ctx.lng,
 					current: state.specialties.length,
-					max: CookingSpecialtyConstants.MAX_SPECIALTIES
+					max: getCookingSpecialtiesLimit(state.cookingLevel)
 				}))
 				.addOptions(options)
 		));

@@ -120,6 +120,10 @@ import { ReactionCollectorRefuseReaction } from "../../../Lib/src/packets/intera
 import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
 import { HomeFeatureHandlerContext } from "../../src/commands/player/report/home/HomeMenuTypes";
 
+// Cooking level unlocking every specialty, and the one before the first specialty
+const ALL_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[CookingSpecialtyConstants.MAX_SPECIALTIES - 1];
+const BEFORE_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0] - 1;
+
 /**
  * Create home data with cooking configuration.
  */
@@ -1169,7 +1173,7 @@ describe("CookingFeatureHandler", () => {
 			await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_IGNITE, createMockComponentInteraction(HomeMenuIds.COOKING_IGNITE) as any, nestedMenus as any);
 			await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
 				menu: {
-					cookingLevel: CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL,
+					cookingLevel: ALL_SPECIALTIES_LEVEL,
 					cookingGrade: "royalGrandChef",
 					currentSlots: [],
 					isIgnited: true,
@@ -1182,7 +1186,7 @@ describe("CookingFeatureHandler", () => {
 		}
 
 		it("should offer the visible recipes of the ignited furnace as specialties and send the chosen slot and recipe", async () => {
-			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL) });
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
 			const nestedMenus = await ignite(ctx, {
 				currentSlots: [
 					createSlotWithRecipe({ slotIndex: 0, recipeId: "visibleRecipe" }),
@@ -1203,7 +1207,7 @@ describe("CookingFeatureHandler", () => {
 			await simulateMqttResponse(CommandReportCookingSetSpecialtyRes.name, {
 				error: CookingSpecialtyErrors.LIMIT_REACHED,
 				menu: {
-					cookingLevel: CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL,
+					cookingLevel: ALL_SPECIALTIES_LEVEL,
 					cookingGrade: "royalGrandChef",
 					currentSlots: [createSlotWithRecipe({ slotIndex: 0, recipeId: "visibleRecipe" })],
 					isIgnited: true
@@ -1213,7 +1217,7 @@ describe("CookingFeatureHandler", () => {
 		});
 
 		it("should only offer the recipes of the rotating stations as new specialties", async () => {
-			const ctx = createHandlerContext({ homeData: createCookingHomeData(5, CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL) });
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(5, ALL_SPECIALTIES_LEVEL) });
 			const nestedMenus = await ignite(ctx, {
 				currentSlots: [
 					createSlotWithRecipe({ slotIndex: 0, recipeId: "rotatingRecipe" }),
@@ -1230,7 +1234,7 @@ describe("CookingFeatureHandler", () => {
 		});
 
 		it("should fit a full furnace with every specialty in Discord's 40 components", async () => {
-			const ctx = createHandlerContext({ homeData: createCookingHomeData(SPECIALTY_SLOT_INDEX, CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL) });
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(SPECIALTY_SLOT_INDEX, ALL_SPECIALTIES_LEVEL) });
 			const specialtyIds = Array.from({ length: CookingSpecialtyConstants.MAX_SPECIALTIES }, (_, i) => `specialty${i}`);
 			const nestedMenus = await ignite(ctx, {
 				currentSlots: [
@@ -1250,10 +1254,55 @@ describe("CookingFeatureHandler", () => {
 			expect(countComponents(rendered)).toBeLessThanOrEqual(40);
 		});
 
-		it("should not offer specialties below the master chef level", async () => {
-			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL - 1) });
+		it("should limit the specialties to the cooking level and announce the next unlock", async () => {
+			const kitchenMasterLevel = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0];
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, kitchenMasterLevel) });
+			const nestedMenus = createMockNestedMenus();
+			await handler.handleFeatureSelection(ctx, createMockComponentInteraction() as any, nestedMenus as any);
+			await simulateMqttResponse(CommandReportCookingMenuRes.name, {
+				menu: {
+					cookingLevel: kitchenMasterLevel,
+					cookingGrade: "kitchenMaster",
+					currentSlots: [],
+					isIgnited: false
+				}
+			});
+
+			const rendered = JSON.stringify(lastRenderedMenu(nestedMenus));
+			expect(rendered).toContain(JSON.stringify("commands:report.city.homes.cooking.specialtiesNone|{\"count\":1}").slice(1, -1));
+			expect(rendered).toContain(JSON.stringify(`commands:report.city.homes.cooking.specialtyNextUnlock|{"level":${CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[1]}}`).slice(1, -1));
+
+			// Once the single specialty of the grade is taken, no other recipe is offered
+			const igniteMenus = await ignite(ctx, {
+				cookingLevel: kitchenMasterLevel,
+				currentSlots: [createSlotWithRecipe({ slotIndex: 0, recipeId: "rotatingRecipe" })],
+				specialties: [{
+					recipeId: "specialtyRecipe", level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
+				}]
+			});
+			expect(JSON.stringify(lastRenderedMenu(igniteMenus))).not.toContain(HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX);
+		});
+
+		it("should not announce any next unlock once every specialty is unlocked", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
+			const nestedMenus = createMockNestedMenus();
+			await handler.handleFeatureSelection(ctx, createMockComponentInteraction() as any, nestedMenus as any);
+			await simulateMqttResponse(CommandReportCookingMenuRes.name, {
+				menu: {
+					cookingLevel: ALL_SPECIALTIES_LEVEL,
+					cookingGrade: "royalGrandChef",
+					currentSlots: [],
+					isIgnited: false
+				}
+			});
+
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).not.toContain("specialtyNextUnlock");
+		});
+
+		it("should not offer specialties before the first unlock level", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, BEFORE_SPECIALTIES_LEVEL) });
 			const nestedMenus = await ignite(ctx, {
-				cookingLevel: CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL - 1,
+				cookingLevel: BEFORE_SPECIALTIES_LEVEL,
 				currentSlots: [createSlotWithRecipe({ slotIndex: 0 })]
 			});
 
@@ -1261,7 +1310,7 @@ describe("CookingFeatureHandler", () => {
 		});
 
 		it("should show the specialties on their own station with a craft button instead of a pin button", async () => {
-			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL) });
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
 			const nestedMenus = await ignite(ctx, {
 				currentSlots: [createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId: "specialtyRecipe", canCraft: false })],
 				specialties: [{
@@ -1278,12 +1327,12 @@ describe("CookingFeatureHandler", () => {
 		});
 
 		it("should list the specialties before ignition and send their removal from the pre-ignite menu", async () => {
-			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL) });
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
 			const nestedMenus = createMockNestedMenus();
 			await handler.handleFeatureSelection(ctx, createMockComponentInteraction() as any, nestedMenus as any);
 			await simulateMqttResponse(CommandReportCookingMenuRes.name, {
 				menu: {
-					cookingLevel: CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL,
+					cookingLevel: ALL_SPECIALTIES_LEVEL,
 					cookingGrade: "royalGrandChef",
 					currentSlots: [],
 					isIgnited: false,

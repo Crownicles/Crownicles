@@ -266,17 +266,42 @@ export const NO_XP_LEVEL_THRESHOLD = 3;
  */
 export const MASTER_CHEF_BADGE_COOKING_LEVEL = 100;
 
+function getCookingGradeMinLevel(gradeId: string): number {
+	return COOKING_GRADES.find(grade => grade.id === gradeId)!.minLevel;
+}
+
 /**
  * Specialties are recipes a master chef keeps at hand: they are offered on a dedicated station, besides
- * the rotating ones, at every furnace ignition until the chef removes them
+ * the rotating ones, at every furnace ignition until the chef removes them. One specialty is unlocked on
+ * becoming kitchen master, one on becoming royal grand chef and the last one with the master chef badge.
  */
+const SPECIALTY_UNLOCK_COOKING_LEVELS: readonly number[] = [
+	getCookingGradeMinLevel("kitchenMaster"),
+	getCookingGradeMinLevel("royalGrandChef"),
+	MASTER_CHEF_BADGE_COOKING_LEVEL
+];
+
 export const CookingSpecialtyConstants = {
-	UNLOCK_COOKING_LEVEL: MASTER_CHEF_BADGE_COOKING_LEVEL,
-	MAX_SPECIALTIES: 3
+	UNLOCK_COOKING_LEVELS: SPECIALTY_UNLOCK_COOKING_LEVELS,
+	MAX_SPECIALTIES: SPECIALTY_UNLOCK_COOKING_LEVELS.length
 } as const;
 
+/**
+ * Number of specialties a cook of the given level can keep
+ */
+export function getCookingSpecialtiesLimit(cookingLevel: number): number {
+	return CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS.filter(unlockLevel => cookingLevel >= unlockLevel).length;
+}
+
 export function hasUnlockedCookingSpecialties(cookingLevel: number): boolean {
-	return cookingLevel >= CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL;
+	return getCookingSpecialtiesLimit(cookingLevel) > 0;
+}
+
+/**
+ * Cooking level unlocking the next specialty, null once every specialty is unlocked
+ */
+export function getNextCookingSpecialtyUnlockLevel(cookingLevel: number): number | null {
+	return CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS.find(unlockLevel => cookingLevel < unlockLevel) ?? null;
 }
 
 /**

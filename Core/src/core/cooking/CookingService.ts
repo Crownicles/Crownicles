@@ -37,6 +37,7 @@ import {
 	TIME_POTION_WEEKLY_CRAFT_LIMIT,
 	SPECIALTY_SLOT_INDEX,
 	hasUnlockedCookingSpecialties,
+	getCookingSpecialtiesLimit,
 	isRecipeEligibleForSlot
 } from "../../../../Lib/src/constants/CookingConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -690,8 +691,8 @@ export class CookingService {
 	}
 
 	/**
-	 * Specialties of the player, empty while they are not unlocked. A specialty whose recipe no longer exists or
-	 * is no longer known by the player is deleted, so it no longer counts towards the limit.
+	 * Specialties of the player, up to the limit of their cooking level. A specialty whose recipe no longer exists
+	 * or is no longer known by the player is deleted, so it no longer counts towards the limit.
 	 * Sorted by level, so the specialty station keeps the same order at every ignition.
 	 */
 	static async getSpecialties(player: Player, discoveredIds: string[]): Promise<CookingRecipe[]> {
@@ -713,7 +714,9 @@ export class CookingService {
 				});
 			}
 		}
-		return specialties.sort((a, b) => a.level - b.level || a.id.localeCompare(b.id));
+		return specialties
+			.sort((a, b) => a.level - b.level || a.id.localeCompare(b.id))
+			.slice(0, getCookingSpecialtiesLimit(player.cookingLevel));
 	}
 
 	/**

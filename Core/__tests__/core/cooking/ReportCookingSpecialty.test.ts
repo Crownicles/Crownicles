@@ -16,6 +16,9 @@ import {
 	CookingSlotData, CookingSpecialtyErrors
 } from "../../../../Lib/src/types/CookingTypes";
 
+// Cooking level unlocking every specialty
+const ALL_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[CookingSpecialtyConstants.MAX_SPECIALTIES - 1];
+
 const MATERIAL_ONLY_SLOT = SLOT_CONFIGS.findIndex(config => !config.eligibleTypes.includes(RecipeType.POTION_HEALTH));
 
 function healthPotionOnSlot(slotIndex: number): CookingSlotData {
@@ -43,7 +46,7 @@ describe("handleCookingSetSpecialty", () => {
 	beforeEach(() => {
 		const masterChef = {
 			id: 1,
-			cookingLevel: CookingSpecialtyConstants.UNLOCK_COOKING_LEVEL,
+			cookingLevel: ALL_SPECIALTIES_LEVEL,
 			guildId: null,
 			pinnedCookingRecipeId: null
 		} as Player;
