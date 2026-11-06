@@ -11,18 +11,17 @@ import {
 const ACTIONS = FightConstants.FIGHT_ACTIONS.PLAYER;
 
 /**
- * Dark attack cashing a curse in while it lasts, when the mage has the breath for it. Null otherwise
+ * Dark attack cashing an alteration in (its curse, or the burn of its fire attacks), when the mage has the breath for it. Null otherwise
  * @param me
  * @param opponent
  */
-function chooseCurseCashIn(me: AiPlayerFighter, opponent: Fighter): FightAction | null {
-	return canAfford(me, ACTIONS.DARK_ATTACK) ? chooseAgainstAilingOpponent(me, opponent) : null;
+function chooseCashIn(me: AiPlayerFighter, opponent: Fighter): FightAction | null {
+	return opponent.hasFightAlteration() && canAfford(me, ACTIONS.DARK_ATTACK) ? chooseAgainstAilingOpponent(me, opponent) : null;
 }
 
 /**
- * Pyromancer mage: curses its opponent whenever it is free of any alteration, cashes the curse in with the dark attack,
- * which strikes a cursed opponent at full power, while it lasts if it has the breath for it, and burns its opponent
- * with fire attacks the rest of the time
+ * Pyromancer mage: curses its opponent whenever it is free of any alteration, burns it with fire attacks as soon as it
+ * has the breath for them, and cashes the curse or the burns in with the dark attack
  */
 class MagePyromancerFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
@@ -36,8 +35,7 @@ class MagePyromancerFightBehavior implements ClassBehavior {
 		}
 
 		// The cheap breath-taking attack lets the breath build up for the next fire attack, unlike the poison
-		const opponentCursed = opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.CURSED;
-		return (opponentCursed ? chooseCurseCashIn(me, opponent) : null)
+		return chooseCashIn(me, opponent)
 			?? getAction(canAfford(me, ACTIONS.FIRE_ATTACK) ? ACTIONS.FIRE_ATTACK : ACTIONS.BREATH_TAKING_ATTACK);
 	}
 }
