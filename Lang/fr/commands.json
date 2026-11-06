@@ -2776,7 +2776,7 @@
       },
       "paladinCrusader": {
         "name": "Croisé",
-        "description": "Charge tôt son attaque ultime, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération. Particulièrement solide face aux Canonniers."
+        "description": "Charge son attaque ultime à mi-combat, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération."
       },
       "paladinJusticar": {
         "name": "Justicier",
@@ -2792,7 +2792,7 @@
       },
       "veteranStrategist": {
         "name": "Stratège",
-        "description": "Charge son attaque en attendant d'avoir le souffle de ses attaques énergiques, qu'il prépare en se concentrant. Particulièrement solide face aux Chevaliers."
+        "description": "Charge son attaque en attendant d'avoir le souffle de ses attaques énergiques, qu'il prépare en se concentrant."
       },
       "veteranCharger": {
         "name": "Fonceur",
