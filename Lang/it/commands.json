@@ -456,6 +456,9 @@
       "BLESSING": {
         "description": "Mostra lo stato della benedizione generale: il fondo comune che gli avventurieri alimentano incontrando l'Oracolo durante i loro viaggi, oppure la benedizione attiva e il tempo che le rimane. Questo comando è accessibile dopo aver incontrato l'Oracolo almeno una volta."
       },
+      "DEFENSE": {
+        "description": "Permet de choisir comment votre personnage se défend lorsqu'un autre joueur l'attaque, ou de laisser un style différent être tiré au hasard à chaque combat. Seules certaines classes disposent de plusieurs styles."
+      },
       "CLASSES": {
         "description": "Permette di cambiare classe. Più informazioni sulle classi sono disponibili nella Guida del giocatore: https://guide.draftbot.com"
       },
@@ -1930,7 +1933,8 @@
         "name": "{emote:shopItems.lovePointsValue} Veterinario di corte",
         "info": "Ottenere informazioni dettagliate sul vostro animale domestico.",
         "giveTitle": "{{pseudo}}acquisto effettuato!",
-        "giveDesc": "Dopo un esame approfondito del vostro animale e del suo stato di salute, il veterinario vi consegnerà il suo rapporto:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Punteggio di amore**: {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Dieta**: {{diet}}\n{emote:petInformation.force} **Forza**: {{force, number}}\n{emote:petInformation.speed} **Velocità** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervallo pasto** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Fame successiva**: {{nextFeed}}\n{emote:petInformation.age} **Età**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effetto di combattimento**: {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force, number}}\n{emote:petInformation.speed} **Vitesse** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}{{secondFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "secondFightEffect": "\n{emote:petInformation.fightEffect} **Second effet de combat** : {{comment}}",
         "expeditionPreferences": "\n\n{emote:expedition.map} **Incentivi all'esplorazione**:\n{{likedLocations}}{{dislikedLocations}}",
         "likedLocations": "{emote:expedition.liked} Prosperità in: {{locations}}",
         "dislikedLocations": "\n{emote:expedition.disliked} Diffidare di : {{locations}}",
@@ -1938,6 +1942,26 @@
         "petIsHungry": "{emote:effects.starving} affamato",
         "lovePointsGained": "\n\n{emote:petInformation.loveScore} Il veterinario ha elargito cure amorevoli al vostro animale, dandogli **{{amount, number}}** punti amore!",
         "commentOnFightEffect": {
+          "breathingHoleAmbush": [
+            "Ce chasseur des glaces possède une patience infinie. Il guette l'instant précis où l'adversaire s'arrête pour reprendre son souffle, puis surgit pour lui asséner un coup de patte dévastateur. Il ne frappe ainsi qu'une seule fois par combat.",
+            "Les observations comportementales révèlent une technique de chasse à l'affût redoutable. Dès que votre adversaire se repose ou se retrouve à bout de souffle, il bondit sur lui avec une force colossale, une fois par combat.",
+            "Son instinct de prédateur polaire est intact : une proie qui reprend son souffle est sans défense. Il attend ce moment pour frapper, une seule fois mais très fort."
+          ],
+          "scentOfBlood": [
+            "Il sent le sang à des kilomètres ! Dès que votre adversaire est sérieusement blessé, il le mord et le fait saigner. Si la proie laisse l'hémorragie suivre son cours sans se reposer, il entre en frénésie et revient la mordre sauvagement.",
+            "Les observations révèlent un instinct de prédateur marin redoutable. Une fois l'ennemi à moitié vaincu, il ouvre une plaie qui saigne, puis tourne autour de sa proie. Seul un adversaire qui se repose pour stopper l'hémorragie échappe à sa frénésie.",
+            "L'odeur du sang le rend fou. Il attend que l'adversaire soit affaibli pour le faire saigner, et ne lâche plus sa proie tant que la plaie reste ouverte : mieux vaut pour elle se reposer au plus vite."
+          ],
+          "unstoppable": [
+            "Sa masse colossale met du temps à se mettre en mouvement, mais une fois lancé, plus rien ne l'arrête ! À chaque échange, il prend un peu plus d'élan et vos attaques au corps à corps gagnent en puissance. Attention : si vous êtes immobilisé, il perd tout son élan.",
+            "Les examens musculaires révèlent une inertie phénoménale. En combat, il accélère tour après tour et vous entraîne dans sa course, renforçant progressivement vos attaques au corps à corps jusqu'à un certain plafond. Être étourdi, pétrifié ou paralysé brise cependant cet élan.",
+            "Ce familier est lent au démarrage, mais son élan est irrésistible. Plus le combat dure, plus vos attaques au corps à corps sont puissantes, tant que rien ne vous immobilise. Son épaisse toison, qui vous protège du gel, l'aide d'ailleurs à garder son allure."
+          ],
+          "woundedPrey": [
+            "Sa vue perçante repère la moindre faiblesse. Il tournoie au-dessus du combat et, dès que l'adversaire est à bout de forces, il fond sur lui en piqué pour l'achever. Il ne plonge qu'une seule fois par combat.",
+            "Les analyses révèlent un instinct de rapace parfaitement aiguisé. Ce familier attend que l'ennemi soit gravement affaibli pour plonger sur lui à pleine vitesse, une fois par combat.",
+            "Ses piqués sont fulgurants : c'est sa vitesse, bien plus que sa force, qui fait mal. Il les réserve aux proies à bout de forces, qu'il achève d'un seul plongeon par combat."
+          ],
           "bite": [
             "Questo animale ha zanne impressionanti! In combattimento, non esiterà a mordere gli avversari con una precisione spaventosa.",
             "Guardate questi canini! Il vostro compagno potrà mordere i nemici, infliggendo loro ferite dolorose e facendoli perdere l'equilibrio.",
@@ -2174,9 +2198,9 @@
             "Le osservazioni veterinarie confermano la capacità di emofagia strategica. Morde gli avversari sani per farli sanguinare, poi converte il sangue dei nemici già indeboliti in energia curativa per sostenervi. Nota importante: la benedizione divina dei paladini annulla completamente questa capacità vampirica."
           ],
           "petPetrified": [
-            "I test psichici indicano che questo animale emette un'aura terrificante nei momenti critici del combattimento. Nei momenti finali di una battaglia, il suo sguardo pietrificante può letteralmente congelare un avversario sul posto, lasciandolo totalmente vulnerabile. Attenzione: questa capacità è inefficace contro i maghi, le cui menti disciplinate resistono alla pietrificazione mentale.",
-            "L'analisi comportamentale rivela un'abilità di paralisi mentale che si attiva alla fine del combattimento. L'animale emana una presenza così intimidatoria che può pietrificare i nemici, impedendo loro di muoversi o di reagire. Tuttavia, i maghi hanno una resistenza naturale a questo effetto e non possono essere pietrificati.",
-            "Le osservazioni cliniche attestano un potere pietrificante temporaneo che si manifesta nelle fasi finali del combattimento. La sua aura soprannaturale può congelare l'avversario in uno stato di paralisi totale, lasciandolo indifeso. Nota importante: l'allenamento mentale dei maghi li rende immuni a questa pietrificazione."
+            "Les tests psychiques indiquent que ce familier émet une aura terrifiante aux moments critiques du combat. Dès le début de l'affrontement, puis de nouveau à mi-combat, son regard pétrifiant peut littéralement figer l'adversaire sur place, le rendant totalement vulnérable. Attention : cette capacité est inefficace contre les mages, dont l'esprit discipliné résiste à la pétrification mentale.",
+            "Les analyses comportementales révèlent une capacité de paralysie mentale activée au début du combat, puis une seconde fois à mi-combat. Votre familier dégage alors une présence si intimidante qu'elle peut pétrifier l'ennemi, l'empêchant de bouger ou de riposter. Toutefois, les mages possèdent une résistance naturelle à cet effet et ne peuvent être pétrifiés.",
+            "Les observations cliniques attestent d'un pouvoir de pétrification temporaire qui se manifeste à l'ouverture du combat, puis à nouveau à mi-combat. Son aura surnaturelle peut figer l'adversaire dans un état de paralysie totale, le laissant sans défense. Note importante : l'entraînement mental des mages les immunise contre cette pétrification."
           ]
         },
         "ageComment_ancestor": "INCREDIBILE! esclama il veterinario, con gli occhi spalancati. Il vostro animale è un esemplare eccezionalmente raro! È uno dei più vecchi mai registrati nei nostri archivi - solo {{age}} altri animali domestici sono stati trovati più vecchi! Una vera reliquia vivente!",
@@ -2497,7 +2521,8 @@
     },
     "fightActionChoose": {
       "turnIndicationTitle": "È il turno di {{pseudo}} di giocare a {emote:fightCommand.crossedSwords}",
-      "turnIndicationDescription": "Scegliere un'azione"
+      "turnIndicationDescription": "Scegliere un'azione",
+      "powerMultiplier": "×{{multiplier, number}}"
     },
     "actions": {
       "intro": "{{emote}} |{{fighter}} ",
@@ -2705,6 +2730,86 @@
     "sellFooter": "Per ulteriori informazioni sulla vendita di animali domestici, utilizzare il comando help petsell.",
     "successTitle": "{{pseudo}}Una transazione di successo!",
     "successDescription": "{{pet}} vi seguirà d'ora in poi. Abbiatene cura!"
+  },
+  "defense": {
+    "title": "Style de défense de {{pseudo}}",
+    "intro": "Choisissez comment votre {{className}} se défend lorsqu'un autre joueur l'attaque. Certains styles résistent mieux à certaines classes : choisissez d'après vos dernières défenses. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.",
+    "choiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}}",
+    "currentChoiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}} · style actuel",
+    "chooseStyle": "Choisir un style de défense",
+    "cancel": "Annullamento",
+    "successTitle": "Style de défense de {{pseudo}}",
+    "success": "Votre personnage se défendra désormais avec le style {emote:defensePersonalities.{{personality}}} **{{name}}**.",
+    "successRandom": "Votre personnage changera de style de défense à chaque combat {emote:defensePersonalities.random}.",
+    "noChoice": "Votre classe ({{className}}) n'a qu'une seule manière de se défendre.",
+    "recentDefensesTitle_one": "Vos défenses des dernières 24 heures",
+    "recentDefensesTitle_other": "Vos défenses des {{count}} derniers jours",
+    "noRecentDefense": "Personne ne vous a attaqué récemment.",
+    "recentDefense_one": "{{className}} : {{won}}/{{count}} défense réussie",
+    "recentDefense_other": "{{className}} : {{won}}/{{count}} défenses réussies",
+    "canceled": "Votre style de défense n'a pas été modifié.",
+    "personalities": {
+      "random": {
+        "name": "Imprévisible",
+        "description": "Un style différent est tiré au hasard à chaque combat."
+      },
+      "knightStrategist": {
+        "name": "Stratège",
+        "description": "Enchaîne repos et attaques lourdes, et lance sa bénédiction en premier face à un adversaire capable d'en faire autant. Particulièrement solide face aux Vétérans."
+      },
+      "knightEnduring": {
+        "name": "Endurant",
+        "description": "Se repose dès qu'il est blessé et garde sa bénédiction pour la fin du combat, lorsqu'elle est la plus puissante."
+      },
+      "knightFiery": {
+        "name": "Fougueux",
+        "description": "Lance sa bénédiction dès le début du combat et ne se repose que lorsqu'il est sérieusement blessé."
+      },
+      "tankBulwark": {
+        "name": "Rempart",
+        "description": "Renforce sa défense et affaiblit l'adversaire avec son bouclier."
+      },
+      "tankRiposte": {
+        "name": "Riposteur",
+        "description": "Laisse l'adversaire s'engager pour lui renvoyer ses attaques les plus coûteuses."
+      },
+      "paladinCrusader": {
+        "name": "Croisé",
+        "description": "Charge son attaque ultime à mi-combat, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération."
+      },
+      "paladinJusticar": {
+        "name": "Justicier",
+        "description": "Garde son attaque ultime pour la fin du combat et frappe avec son attaque divine dès qu'elle a peu de chances d'échouer."
+      },
+      "gunnerStrategist": {
+        "name": "Stratège",
+        "description": "Tire des salves de canon dès qu'il en a le souffle et use l'adversaire d'attaques intenses et de sabotages entre deux salves."
+      },
+      "gunnerBombardier": {
+        "name": "Bombardier",
+        "description": "Enchaîne les tirs de canon dès que son souffle est au maximum et sabote l'adversaire en attendant."
+      },
+      "veteranStrategist": {
+        "name": "Stratège",
+        "description": "Charge son attaque en attendant d'avoir le souffle de ses attaques énergiques, qu'il prépare en se concentrant."
+      },
+      "veteranCharger": {
+        "name": "Fonceur",
+        "description": "Se concentre dès qu'il le peut et déclenche aussitôt son attaque énergique, sans jamais charger. Particulièrement solide face aux Paladins."
+      },
+      "mageOccultist": {
+        "name": "Occultiste",
+        "description": "Maudit ou empoisonne son adversaire, puis l'achève avec ses attaques sombres."
+      },
+      "magePyromancer": {
+        "name": "Pyromancien",
+        "description": "Maudit son adversaire dès qu'il le peut, l'embrase dès qu'il en a le souffle, et profite de sa malédiction comme de ses brûlures avec ses attaques sombres."
+      },
+      "mageWarlock": {
+        "name": "Envoûteur",
+        "description": "Maudit systématiquement son adversaire, ce qui l'empêche de bien se soigner, puis en profite avec ses attaques sombres."
+      }
+    }
   },
   "classes": {
     "description": {
