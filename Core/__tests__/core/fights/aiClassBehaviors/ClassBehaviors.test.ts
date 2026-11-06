@@ -233,5 +233,14 @@ describe("AI class behaviors", () => {
 			expect(new VeteranFightBehavior().chooseAction(veteran, mockFightView(3, mockFighter())).id).toBe(ACTIONS.CHARGE_CHARGING_ATTACK);
 			expect(new VeteranChargerFightBehavior().chooseAction(veteran, mockFightView(3, mockFighter())).id).toBe(ACTIONS.CONCENTRATION);
 		});
+
+		it("the charger does not gamble the fight on a fourth energetic attack, which fails more often than not", () => {
+			const veteran = (energeticAttacks: number): ReturnType<typeof mockFighter> => mockFighter({
+				breath: 10, alterationId: ALTERATIONS.CONCENTRATED, history: Array(energeticAttacks).fill(ACTIONS.ENERGETIC_ATTACK)
+			});
+
+			expect(new VeteranChargerFightBehavior().chooseAction(veteran(2), mockFightView(9, mockFighter())).id).toBe(ACTIONS.ENERGETIC_ATTACK);
+			expect(new VeteranChargerFightBehavior().chooseAction(veteran(3), mockFightView(9, mockFighter())).id).toBe(ACTIONS.PIERCING_ATTACK);
+		});
 	});
 });

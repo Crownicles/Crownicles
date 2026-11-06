@@ -7,7 +7,7 @@ import {
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import {
-	canConcentrateForNextEnergeticAttack, shouldPunishRest, shouldUseConcentratedEnergeticAttack
+	canConcentrateForNextEnergeticAttack, isEnergeticAttackReliable, shouldPunishRest, shouldUseConcentratedEnergeticAttack
 } from "./VeteranTactics";
 
 /**
@@ -16,6 +16,15 @@ import {
  */
 class VeteranChargerFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
+		const action = this.chooseChargingPlan(me, fightView);
+
+		// An energetic attack that fails more often than not would decide the fight on a single roll: the piercing attack is played instead
+		return action.id === FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK && !isEnergeticAttackReliable(me)
+			? FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PIERCING_ATTACK)!
+			: action;
+	}
+
+	private chooseChargingPlan(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter;
 		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 		const getAction = (actionId: string): FightAction => FightActionDataController.instance.getById(actionId)!;
