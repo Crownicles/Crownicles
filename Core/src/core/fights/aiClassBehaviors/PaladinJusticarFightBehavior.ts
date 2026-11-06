@@ -12,10 +12,19 @@ import { MAX_GOD_MOVES_PER_FIGHT } from "./PaladinTactics";
 // The divine attack failure chance drops with the turns: from this turn it only misses one time out of five
 const JUSTICAR_DIVINE_ATTACK_TURN = 11;
 
+/*
+ * The justicar keeps its ultimate for the end of the fight: charged later than by the crusader, it resists the knights
+ * better, but leaves the gunners the time to wear it down
+ */
+const JUSTICAR_ULTIMATE_CHARGE_ENERGY_RATIO = 0.3;
+
 /**
- * Justicar paladin: fights like the crusader, but strikes with the divine attack as soon as it rarely misses
+ * Justicar paladin: fights like the crusader, but keeps its ultimate for the end of the fight and strikes with the
+ * divine attack as soon as it rarely misses
  */
 class PaladinJusticarFightBehavior extends PaladinFightBehavior {
+	protected override readonly ultimateChargeEnergyRatio = JUSTICAR_ULTIMATE_CHARGE_ENERGY_RATIO;
+
 	override chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter;
 		const divineAttackAvailable = getUsedGodMoves(me, opponent) < MAX_GOD_MOVES_PER_FIGHT

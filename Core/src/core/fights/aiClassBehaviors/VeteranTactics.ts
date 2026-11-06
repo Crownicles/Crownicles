@@ -48,3 +48,14 @@ export function canConcentrateForNextEnergeticAttack(me: AiPlayerFighter): boole
 		&& me.getBreath() >= concentrationCost
 		&& me.getBreath() - concentrationCost + me.getRegenBreath() >= energeticAttackCost;
 }
+
+/**
+ * Check if the veteran, neither concentrated nor able to afford its energetic attack yet, can charge its attack instead
+ * of concentrating: the charged attack hits the knights hard, but a paladin can break the charge with its ram
+ * @param me
+ */
+export function shouldChargeWhileSavingForEnergeticAttack(me: AiPlayerFighter): boolean {
+	return !me.hasFightAlteration()
+		&& canAfford(me, FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)
+		&& !canAfford(me, FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK);
+}
