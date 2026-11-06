@@ -27,6 +27,16 @@ function shouldProtectAgainstControl(me: AiPlayerFighter, opponent: RealPlayerFi
 		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION);
 }
 
+/**
+ * Check if the infantryman opens with its charged attack, which also raises its defense while it charges
+ * @param me
+ * @param turn
+ */
+function shouldOpenWithChargedAttack(me: AiPlayerFighter, turn: number): boolean {
+	return turn <= 2
+		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK);
+}
+
 class InfantryManFightBehavior implements ClassBehavior {
 	private powerfulAttacksUsedMap = 0;
 
@@ -81,9 +91,7 @@ class InfantryManFightBehavior implements ClassBehavior {
 		const powerfulAttacksUsed = this.powerfulAttacksUsedMap;
 		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
 
-		// Opening: the charged attack, which also raises the defense while it charges
-		if (fightView.fightController.turn <= 2
-			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)) {
+		if (shouldOpenWithChargedAttack(me, fightView.fightController.turn)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)!;
 		}
 
