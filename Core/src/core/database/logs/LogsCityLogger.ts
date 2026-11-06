@@ -20,7 +20,12 @@ import { LogsGardenActions } from "./models/LogsGardenActions";
 import { LogsCityVisits } from "./models/LogsCityVisits";
 import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
 import { findOrCreateLogsGuild } from "./LogsGuildResolver";
-import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
+import {
+	dateToLogs, getDateLogs, getNextSundayMidnight, msDiff
+} from "../../../../../Lib/src/utils/TimeUtils";
+import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
+import { Op } from "sequelize";
+import type { CookingRecipeId } from "../../../../../Lib/src/types/CookingRecipe";
 import {
 	Guild
 } from "../game/models/Guild";
@@ -615,6 +620,22 @@ export class LogsCityLogger {
 			materialOutputId: materialOutputId ?? null,
 			date
 		}));
+	}
+
+	/** Count the successful crafts of the given recipes by a player since the last weekly reset */
+	async countSuccessfulCookingCraftsThisWeek(keycloakId: string, recipeIds: CookingRecipeId[]): Promise<number> {
+		const playerId = await resolveLogsPlayerId(keycloakId);
+		if (playerId === null) {
+			return 0;
+		}
+		return LogsCookingUses.count({
+			where: {
+				playerId,
+				recipeId: { [Op.in]: recipeIds },
+				success: true,
+				date: { [Op.gt]: dateToLogs(new Date(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK))) }
+			}
+		});
 	}
 
 	/** Log a garden action (plant/water/compost/harvest). */

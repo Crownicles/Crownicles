@@ -26,6 +26,7 @@ import { HomeChestSlots } from "../../../../core/database/game/models/HomeChestS
 import { HomeGardenSlots } from "../../../../core/database/game/models/HomeGardenSlot";
 import { HomePlantStorages } from "../../../../core/database/game/models/HomePlantStorage";
 import { PlayerCookingRecipe } from "../../../../core/database/game/models/PlayerCookingRecipe";
+import { PlayerCookingSpecialty } from "../../../../core/database/game/models/PlayerCookingSpecialty";
 import { GlobalBlessing } from "../../../../core/database/game/models/GlobalBlessing";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
@@ -324,6 +325,9 @@ async function exportMiscData(
 
 	// Player cooking recipes discovered
 	await exportPlayerCookingRecipes(player.id, csvFiles);
+
+	// Player cooking specialties
+	await exportPlayerCookingSpecialties(player.id, csvFiles);
 }
 
 async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
@@ -400,6 +404,16 @@ async function exportPlayerCookingRecipes(playerId: number, csvFiles: GDPRCsvFil
 		csvFiles["22_cooking_recipes.csv"] = toCSV(recipes.map(r => ({
 			recipeId: r.recipeId,
 			sourceMapId: r.sourceMapId
+		})));
+	}
+}
+
+async function exportPlayerCookingSpecialties(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const specialties = await PlayerCookingSpecialty.getOfPlayer(playerId);
+	if (specialties.length > 0) {
+		csvFiles["24_cooking_specialties.csv"] = toCSV(specialties.map(specialty => ({
+			slotIndex: specialty.slotIndex,
+			recipeId: specialty.recipeId
 		})));
 	}
 }

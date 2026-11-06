@@ -22,6 +22,8 @@ import {
 	CommandReportCookingMenuReq,
 	CommandReportCookingPinReq,
 	CommandReportCookingUnpinReq,
+	CommandReportCookingSetSpecialtyReq,
+	CommandReportCookingRemoveSpecialtyReq,
 	CommandReportBossPersonalRecordsReq,
 	CommandReportBossPersonalRecordsRes,
 	CommandReportBossLeaderboardReq,
@@ -38,7 +40,7 @@ import {
 } from "../../report/ReportGardenService";
 import {
 	handleCookingIgnite, handleCookingWoodConfirm, handleCookingRevive, handleCookingCraft,
-	handleCookingMenu, handleCookingPin, handleCookingUnpin
+	handleCookingMenu, handleCookingPin, handleCookingUnpin, handleCookingSetSpecialty, handleCookingRemoveSpecialty
 } from "../../report/ReportCookingService";
 import {
 	handleGuildDomainUpgrade
@@ -141,6 +143,16 @@ export default class CoreHandlers {
 	@packetHandler(CommandReportCookingUnpinReq)
 	async cookingUnpin(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingUnpinReq): Promise<void> {
 		response.push(...await handleCookingUnpin(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingSetSpecialtyReq)
+	async cookingSetSpecialty(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingSetSpecialtyReq): Promise<void> {
+		response.push(...await handleCookingSetSpecialty(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingRemoveSpecialtyReq)
+	async cookingRemoveSpecialty(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingRemoveSpecialtyReq): Promise<void> {
+		response.push(...await handleCookingRemoveSpecialty(context.keycloakId!, packet));
 	}
 
 	@packetHandler(CommandReportBossPersonalRecordsReq)

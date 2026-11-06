@@ -18,8 +18,8 @@ interface HomeCollectorOptions {
 
 /**
  * Creates a standard collector factory for home feature sub-menus.
- * Handles user ID validation and routes button interactions
- * to the handler's handleSubMenuSelection.
+ * Handles user ID validation and routes button interactions, and the selected
+ * option of select menus, to the handler's handleSubMenuSelection.
  */
 export function createHomeFeatureCollector(
 	handler: HomeFeatureHandler,
@@ -37,6 +37,9 @@ export function createHomeFeatureCollector(
 
 			if (interaction.isButton()) {
 				await handler.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
+			}
+			else if (interaction.isStringSelectMenu()) {
+				await handler.handleSubMenuSelection(ctx, interaction.values[0], interaction, menus);
 			}
 		});
 
