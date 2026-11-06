@@ -26,7 +26,7 @@ import { withLockedPlayerSafe } from "../../core/utils/withLockedPlayerSafe";
 import {
 	AiPersonality, AiPersonalityConstants
 } from "../../../../Lib/src/constants/AiPersonalityConstants";
-import { LogsFightHistoryRequests } from "../../core/database/logs/requests/LogsFightHistoryRequests";
+import { LogsDefenseRequests } from "../../core/database/logs/requests/LogsDefenseRequests";
 
 /**
  * Save the defense personality picked by the player, or a random one at each fight when none is picked
@@ -88,7 +88,7 @@ export default class DefenseCommand {
 				classId: player.class,
 				personalities,
 				currentPersonality,
-				recentDefenses: await LogsFightHistoryRequests.getRecentDefensesByAttackerClass(player.keycloakId, AiPersonalityConstants.RECENT_DEFENSES_DAYS)
+				recentDefenses: await LogsDefenseRequests.getRecentDefensesByAttackerClass(player.keycloakId, AiPersonalityConstants.RECENT_DEFENSES_DAYS)
 			}),
 			context,
 			{

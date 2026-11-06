@@ -10,7 +10,7 @@ import {
 import {
 	initModel as initFightsResults, LogsFightsResults
 } from "../../src/core/database/logs/models/LogsFightsResults";
-import { LogsFightHistoryRequests } from "../../src/core/database/logs/requests/LogsFightHistoryRequests";
+import { LogsDefenseRequests } from "../../src/core/database/logs/requests/LogsDefenseRequests";
 import { ClassConstants } from "../../../Lib/src/constants/ClassConstants";
 import { AiPersonalityConstants } from "../../../Lib/src/constants/AiPersonalityConstants";
 import {
@@ -23,11 +23,6 @@ vi.mock("../../src/core/database/logs/LogsDatabase", async () => {
 	const { findOrCreateLogsPlayer } = await import("../../src/core/database/logs/LogsPlayerResolver");
 	return { LogsDatabase: { findOrCreatePlayer: findOrCreateLogsPlayer } };
 });
-
-// Same for the leagues data, whose item helpers import the whole game
-vi.mock("../../src/data/League", () => ({
-	LeagueDataController: { instance: { getByGlory: (): { id: number } => ({ id: 1 }) } }
-}));
 
 const FIGHT_WINNER = {
 	ATTACKER: 1,
@@ -94,7 +89,7 @@ describe("Recent defenses shown by the defense command", () => {
 			initiatorId: attacker.id, defenderId: defender.id, initiatorClassId: GUNNER, winner: 0
 		});
 
-		expect(await LogsFightHistoryRequests.getRecentDefensesByAttackerClass("defender", AiPersonalityConstants.RECENT_DEFENSES_DAYS)).toEqual([
+		expect(await LogsDefenseRequests.getRecentDefensesByAttackerClass("defender", AiPersonalityConstants.RECENT_DEFENSES_DAYS)).toEqual([
 			{
 				attackerClassId: GUNNER, defenses: 3, won: 1
 			},
@@ -122,6 +117,6 @@ describe("Recent defenses shown by the defense command", () => {
 			date: getDateLogs() - daysToSeconds(window) - 1
 		});
 
-		expect(await LogsFightHistoryRequests.getRecentDefensesByAttackerClass("player", window)).toEqual([]);
+		expect(await LogsDefenseRequests.getRecentDefensesByAttackerClass("player", window)).toEqual([]);
 	});
 });
