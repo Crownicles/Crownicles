@@ -2771,7 +2771,7 @@
       },
       "paladinCrusader": {
         "name": "Croisé",
-        "description": "Garde son souffle pour son attaque ultime, place ses attaques divines en fin de combat et ne charge au bélier que pour interrompre un repos ou une attaque ultime."
+        "description": "Garde son souffle pour son attaque ultime, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération."
       },
       "paladinJusticar": {
         "name": "Justicier",

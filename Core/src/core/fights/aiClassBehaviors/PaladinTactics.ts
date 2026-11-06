@@ -36,8 +36,9 @@ function isOpponentPreparing(opponent: RealPlayerFighter | AiPlayerFighter): boo
 }
 
 /**
- * Check if the paladin should ram to break the opponent's rest or ultimate charge. Its stun makes it a frustrating
- * default attack, and its recoil a poor one
+ * Check if the paladin should ram: to break the opponent's rest or ultimate charge, or to strike an opponent that
+ * already suffers another alteration than a stun, which the ram cannot stun. Rams that would stun a clean opponent, or
+ * stun a stunned one again, are left out: chained, they keep it stunned, which is no fun to fight against
  * @param me
  * @param opponent
  */
@@ -46,6 +47,8 @@ export function shouldUseRamAttack(me: AiPlayerFighter, opponent: RealPlayerFigh
 	if (me.getBreath() < getBreathCost(ramAttack) || me.getEnergy() < me.getMaxEnergy() * 0.15) {
 		return false;
 	}
-	return isOpponentPreparing(opponent)
-		&& (!opponent.hasFightAlteration() || opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.STUNNED);
+	if (isOpponentPreparing(opponent)) {
+		return !opponent.hasFightAlteration() || opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.STUNNED;
+	}
+	return opponent.hasFightAlteration() && opponent.alteration?.id !== FightConstants.FIGHT_ACTIONS.ALTERATION.STUNNED;
 }
