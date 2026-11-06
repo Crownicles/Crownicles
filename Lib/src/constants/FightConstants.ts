@@ -334,7 +334,7 @@ export abstract class FightConstants {
 	 * The counter attack replays the attack of a monster with the stats of the tank, much slower than the monsters whose
 	 * attacks often depend on the speed of their caster: against a monster, it strikes harder to make up for it
 	 */
-	static readonly COUNTER_ATTACK_MONSTER_DAMAGE_MULTIPLIER = 2.5;
+	static readonly COUNTER_ATTACK_MONSTER_DAMAGE_MULTIPLIER = 2;
 
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
