@@ -7,11 +7,8 @@ import {
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import {
-	canPlayShieldAttack, SHIELD_ATTACK_CHANCES
+	canPlayShieldAttack, canStrikeWithShieldAttack, SHIELD_ATTACK_CHANCES
 } from "./ShieldAttackPacing";
-
-// Above this number of defense buffs the tank keeps attacking instead of stacking more defense
-const MAX_DEFENSE_BUFFS = 4;
 
 // Opponent actions costing this much breath or less are not worth copying with a counter-attack
 const MAX_IGNORED_COUNTER_BREATH = 5;
@@ -31,52 +28,43 @@ export function shouldCounterAttack(me: AiPlayerFighter, opponent: AiPlayerFight
 		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.COUNTER_ATTACK);
 }
 
+/**
+ * Bulwark tank: raises its defense at the opening, weakens its opponent with its shield, strikes with the shield an
+ * opponent that already suffers another alteration, copies its expensive actions, and hits as hard as its breath allows
+ */
 class TankFightBehavior implements ClassBehavior {
-	private defenseBuffsUsed = 0;
+	// Shield attacks cast on an opponent without alteration, which weakened it: the pacing only limits these
+	private weakeningShieldAttacks = 0;
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
-		const turn = fightView.fightController.turn;
 		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
+		const getAction = (actionId: string): FightAction => FightActionDataController.instance.getById(actionId)!;
 		const canUse = (actionId: string): boolean => me.getBreath() >= FightActionDataController.getFightActionBreathCost(actionId);
 
 		// Opening: raise the defense, which also feeds the damage of the shield attack
-		if (turn < 3 && canUse(actions.DEFENSE_BUFF)) {
-			this.defenseBuffsUsed++;
-			return FightActionDataController.instance.getById(actions.DEFENSE_BUFF)!;
+		if (fightView.fightController.turn < 3 && canUse(actions.DEFENSE_BUFF)) {
+			return getAction(actions.DEFENSE_BUFF);
 		}
 
 		/*
 		 * The shield attack weakens the opponent, only used on an opponent without alteration and less and less likely
 		 * with each use: chaining it would keep the opponent weakened for the whole fight, which is no fun to fight against
 		 */
-		if (canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.DECREASING)) {
-			return FightActionDataController.instance.getById(actions.SHIELD_ATTACK)!;
+		if (canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.DECREASING, { weakeningShieldAttacksCast: this.weakeningShieldAttacks })) {
+			this.weakeningShieldAttacks++;
+			return getAction(actions.SHIELD_ATTACK);
+		}
+		if (canStrikeWithShieldAttack(me, opponent)) {
+			return getAction(actions.SHIELD_ATTACK);
 		}
 
 		if (shouldCounterAttack(me, opponent)) {
-			return FightActionDataController.instance.getById(actions.COUNTER_ATTACK)!;
+			return getAction(actions.COUNTER_ATTACK);
 		}
 
-		if (
-			this.defenseBuffsUsed < MAX_DEFENSE_BUFFS
-			&& opponent.hasFightAlteration()
-			&& !canUse(actions.SHIELD_ATTACK)
-			&& canUse(actions.DEFENSE_BUFF)
-		) {
-			this.defenseBuffsUsed++;
-			return FightActionDataController.instance.getById(actions.DEFENSE_BUFF)!;
-		}
-
-		if (
-			me.getEnergy() < opponent.getEnergy()
-			&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.15
-			&& canUse(actions.INTENSE_ATTACK)
-		) {
-			return FightActionDataController.instance.getById(actions.INTENSE_ATTACK)!;
-		}
-
-		return FightActionDataController.instance.getById(actions.SIMPLE_ATTACK)!;
+		// The intense attack is worth its breath against any opponent: stacking more defense buffs lost more fights
+		return getAction(canUse(actions.INTENSE_ATTACK) ? actions.INTENSE_ATTACK : actions.SIMPLE_ATTACK);
 	}
 }
 

@@ -68,6 +68,16 @@ describe("AI class behaviors", () => {
 			expect(new InfantryManFightBehavior().chooseAction(infantryman, mockFightView(5, tank)).id).not.toBe(ACTIONS.PROTECTION);
 		});
 
+		it("opens with its charged attack, even against a mage it used to protect itself from", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
+			const mage = mockFighter({
+				classId: ClassConstants.CLASSES_ID.MYSTIC_MAGE, breath: 10
+			});
+
+			expect(new InfantryManFightBehavior().chooseAction(mockFighter(), mockFightView(2, mage)).id).toBe(ACTIONS.CHARGE_CHARGING_ATTACK);
+			expect(new InfantryManFightBehavior().chooseAction(mockFighter(), mockFightView(6, mage)).id).not.toBe(ACTIONS.PROTECTION);
+		});
+
 		it("does not waste a turn protecting itself from a class without control attack", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
 			const knight = mockFighter({
@@ -94,23 +104,33 @@ describe("AI class behaviors", () => {
 			expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(3, knight)).id).toBe(ACTIONS.RAM_ATTACK);
 		});
 
-		it("does not ram a stunned opponent by default, as the ram hurts the paladin", () => {
+		it("strikes a stunned opponent with its shield instead of ramming it, which would stun it again", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
-			const paladin = mockFighter({ breath: 25 });
-			const opponent = mockFighter({
+			const paladin = (): ReturnType<typeof mockFighter> => mockFighter({ breath: 6 });
+			const stunned = mockFighter({
 				alterationId: ALTERATIONS.STUNNED, lastActionId: ACTIONS.SIMPLE_ATTACK
 			});
 
-			expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(3, opponent)).id).toBe(ACTIONS.SIMPLE_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(3, stunned)).id).toBe(ACTIONS.SHIELD_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(mockFighter({ breath: 5 }), mockFightView(3, stunned)).id).toBe(ACTIONS.SIMPLE_ATTACK);
+		});
+
+		it("rams a weakened opponent, which the ram cannot stun, but never a clean one", () => {
+			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+			const paladin = (): ReturnType<typeof mockFighter> => mockFighter({ breath: 5 });
+			const weakened = mockFighter({ alterationId: ALTERATIONS.WEAK, lastActionId: ACTIONS.SIMPLE_ATTACK });
+
+			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(3, weakened)).id).toBe(ACTIONS.RAM_ATTACK);
+			expect(new PaladinFightBehavior().chooseAction(paladin(), mockFightView(3, mockFighter())).id).toBe(ACTIONS.SIMPLE_ATTACK);
 		});
 	});
 
 	describe("MysticMageFightBehavior", () => {
-		it("sets up a poison on a clean opponent at the start of the fight", () => {
-			const mage = mockFighter({ breath: 16 });
-			const opponent = mockFighter();
+		it("curses a healthy clean opponent, and poisons it once it is weakened", () => {
+			const mage = (): ReturnType<typeof mockFighter> => mockFighter({ breath: 16 });
 
-			expect(new MysticMageFightBehavior().chooseAction(mage, mockFightView(1, opponent)).id).toBe(ACTIONS.POISONOUS_ATTACK);
+			expect(new MysticMageFightBehavior().chooseAction(mage(), mockFightView(1, mockFighter())).id).toBe(ACTIONS.CURSED_ATTACK);
+			expect(new MysticMageFightBehavior().chooseAction(mage(), mockFightView(9, mockFighter({ energy: 300 }))).id).toBe(ACTIONS.POISONOUS_ATTACK);
 		});
 
 		it("curses an opponent that heals itself before anything else", () => {
@@ -146,24 +166,37 @@ describe("AI class behaviors", () => {
 	});
 
 	describe("GunnerFightBehavior", () => {
-		it("leaves its canon sequence after three canons and throws its boomerang again", () => {
-			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
-			const gunner = mockFighter({
-				breath: 12, speed: 500
-			});
-			const opponentState = {
-				speed: 100, alterationId: ALTERATIONS.SLOWED as string | null
+		it("opens with the boomerang on a clean opponent", () => {
+			const gunner = mockFighter({ breath: 8 });
+
+			expect(new GunnerFightBehavior().chooseAction(gunner, mockFightView(2, mockFighter())).id).toBe(ACTIONS.BOOMERANG_ATTACK);
+		});
+
+		it("starts a canon chain close to its full breath and fires at most three canons in a row", () => {
+			const gunnerState = {
+				breath: 10, maxBreath: 12, lastActionId: null as string | null
 			};
-			const opponent = mockFighter(opponentState);
+			const gunner = mockFighter(gunnerState);
 			const behavior = new GunnerFightBehavior();
-			const firstActions = [3, 5, 7].map(turn => behavior.chooseAction(gunner, mockFightView(turn, opponent)).id);
+			const opponent = mockFighter({ speed: 50 });
+			const actions = [3, 5, 7, 9].map(turn => {
+				const action = behavior.chooseAction(gunner, mockFightView(turn, opponent)).id;
+				// The canons in a row are paid with the breath left: below the threshold that starts a chain
+				gunnerState.lastActionId = action;
+				gunnerState.breath = 6;
+				return action;
+			});
 
-			// The opponent recovers from its alteration and becomes fast: the boomerang is worth throwing again
-			opponentState.alterationId = null;
-			opponentState.speed = 450;
+			expect(actions).toEqual([ACTIONS.CANON_ATTACK, ACTIONS.CANON_ATTACK, ACTIONS.CANON_ATTACK, ACTIONS.SABOTAGE_ATTACK]);
+		});
 
-			expect(firstActions).toEqual([ACTIONS.CANON_ATTACK, ACTIONS.CANON_ATTACK, ACTIONS.CANON_ATTACK]);
-			expect(behavior.chooseAction(gunner, mockFightView(9, opponent)).id).toBe(ACTIONS.BOOMERANG_ATTACK);
+		it("sabotages between two chains, and uses its intense attack against an opponent nearly as fast", () => {
+			const gunner = (): ReturnType<typeof mockFighter> => mockFighter({
+				breath: 7, maxBreath: 12, speed: 500
+			});
+
+			expect(new GunnerFightBehavior().chooseAction(gunner(), mockFightView(5, mockFighter({ speed: 100 }))).id).toBe(ACTIONS.SABOTAGE_ATTACK);
+			expect(new GunnerFightBehavior().chooseAction(gunner(), mockFightView(5, mockFighter({ speed: 450 }))).id).toBe(ACTIONS.INTENSE_ATTACK);
 		});
 	});
 

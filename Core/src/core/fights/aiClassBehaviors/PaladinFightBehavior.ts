@@ -6,7 +6,7 @@ import {
 } from "../../../data/FightAction";
 import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import {
-	canPlayShieldAttack, SHIELD_ATTACK_CHANCES
+	canPlayShieldAttack, canStrikeWithShieldAttack, SHIELD_ATTACK_CHANCES
 } from "./ShieldAttackPacing";
 import {
 	hasBreathToSpare, MAX_GOD_MOVES_PER_FIGHT, shouldUseRamAttack
@@ -15,6 +15,12 @@ import { FightConstants } from "../../../../../Lib/src/constants/FightConstants"
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { getUsedGodMoves } from "../FightController";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
+
+/*
+ * The paladin charges its ultimate below this share of its energy: the ultimate attack never fails below 45%, and
+ * the charge leaves the opponent a turn to bring it there
+ */
+const ULTIMATE_CHARGE_ENERGY_RATIO = 0.6;
 
 /**
  * Implements a paladin fight behavior that selects an appropriate fight action based on various tactical criteria.
@@ -105,7 +111,7 @@ class PaladinFightBehavior implements ClassBehavior {
 
 	/**
 	 * Determines whether the CHARGE_ULTIMATE_ATTACK should be used if the ultimate attack hasn't been used
-	 * and energy is below a threshold.
+	 * and energy is below ULTIMATE_CHARGE_ENERGY_RATIO.
 	 *
 	 * @param me - The AI fighter.
 	 * @param usedUltimateAttacks - The number of ultimate attacks used.
@@ -113,7 +119,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	 */
 	private shouldUseUltimateAttack(me: AiPlayerFighter, usedUltimateAttacks: number): boolean {
 		const ultimateAttackBreathCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK);
-		return me.getEnergy() < me.getMaxEnergy() * 0.45
+		return me.getEnergy() < me.getMaxEnergy() * ULTIMATE_CHARGE_ENERGY_RATIO
 			&& me.getBreath() >= ultimateAttackBreathCost
 			&& RandomUtils.crowniclesRandom.bool(0.80)
 			&& usedUltimateAttacks === 0;
@@ -124,7 +130,8 @@ class PaladinFightBehavior implements ClassBehavior {
 	 *
 	 * The shield attack scales on the paladin's high defense and weakens the opponent, which can only happen
 	 * when the opponent has no alteration yet (a fighter holds a single alteration at a time), once per fight.
-	 * It is paid with spare breath only, so that it never delays the ultimate.
+	 * It is paid with spare breath only, so that it never delays the ultimate. It also strikes an opponent that
+	 * already suffers another alteration than weakness, which it cannot weaken.
 	 *
 	 * @param me - The AI fighter.
 	 * @param opponent - The opponent fighter.
@@ -137,7 +144,8 @@ class PaladinFightBehavior implements ClassBehavior {
 		usedUltimateAttacks: number
 	): boolean {
 		return hasBreathToSpare(me, usedUltimateAttacks, FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
-			&& canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.ONCE);
+			&& canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.ONCE)
+			|| canStrikeWithShieldAttack(me, opponent);
 	}
 }
 

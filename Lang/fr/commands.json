@@ -2771,7 +2771,7 @@
       },
       "paladinCrusader": {
         "name": "Croisé",
-        "description": "Garde son souffle pour son attaque ultime, place ses attaques divines en fin de combat et ne charge au bélier que pour interrompre un repos ou une attaque ultime."
+        "description": "Garde son souffle pour son attaque ultime, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération."
       },
       "paladinJusticar": {
         "name": "Justicier",
@@ -2779,11 +2779,11 @@
       },
       "gunnerStrategist": {
         "name": "Stratège",
-        "description": "Alterne attaques rapides, boomerangs et salves de canon selon l'adversaire."
+        "description": "Ouvre au boomerang, tire des salves de canon dès qu'il en a le souffle et use l'adversaire d'attaques intenses et de sabotages entre deux salves."
       },
       "gunnerBombardier": {
         "name": "Bombardier",
-        "description": "Enchaîne les tirs de canon dès que son souffle est au maximum."
+        "description": "Enchaîne les tirs de canon dès que son souffle est au maximum et sabote l'adversaire en attendant."
       },
       "veteranStrategist": {
         "name": "Stratège",
