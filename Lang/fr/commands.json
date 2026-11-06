@@ -2779,11 +2779,11 @@
       },
       "gunnerStrategist": {
         "name": "Stratège",
-        "description": "Alterne attaques rapides, boomerangs et salves de canon selon l'adversaire."
+        "description": "Ouvre au boomerang, tire des salves de canon dès qu'il en a le souffle et use l'adversaire d'attaques intenses et de sabotages entre deux salves."
       },
       "gunnerBombardier": {
         "name": "Bombardier",
-        "description": "Enchaîne les tirs de canon dès que son souffle est au maximum."
+        "description": "Enchaîne les tirs de canon dès que son souffle est au maximum et sabote l'adversaire en attendant."
       },
       "veteranStrategist": {
         "name": "Stratège",
