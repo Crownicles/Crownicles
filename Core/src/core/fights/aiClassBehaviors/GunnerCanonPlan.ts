@@ -36,6 +36,27 @@ function chooseFinishingMove(me: AiPlayerFighter, opponent: RealPlayerFighter | 
 }
 
 /**
+ * Check if the intense attack is worth it: against an opponent nearly as fast as the gunner, and not about to fall
+ * @param me
+ * @param opponent
+ */
+function shouldUseIntenseAttack(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+	return opponent.getSpeed() > me.getSpeed() * INTENSE_ATTACK_MIN_SPEED_RATIO
+		&& opponent.getEnergy() > opponent.getMaxEnergy() * INTENSE_ATTACK_MIN_ENERGY_RATIO
+		&& canAfford(me, ACTIONS.INTENSE_ATTACK);
+}
+
+/**
+ * Check if the gunner opens with the boomerang: on its first move, against an opponent without alteration
+ * @param me
+ * @param opponent
+ * @param turn
+ */
+function shouldOpenWithBoomerang(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter, turn: number): boolean {
+	return turn <= 2 && !opponent.hasFightAlteration() && canAfford(me, ACTIONS.BOOMERANG_ATTACK);
+}
+
+/**
  * Canon plan of the gunners: the boomerang at the opening on a clean opponent, canon chains started once the breath is
  * close enough to its maximum, the intense attack against an opponent nearly as fast, and the cheap sabotage attack in
  * between, which lets the breath build up for the next chain
@@ -56,22 +77,30 @@ export class GunnerCanonPlan {
 		if (opponent.getEnergy() <= opponent.getMaxEnergy() * FINISHING_ENERGY_RATIO) {
 			return chooseFinishingMove(me, opponent);
 		}
-		if (turn <= 2 && !opponent.hasFightAlteration() && canAfford(me, ACTIONS.BOOMERANG_ATTACK)) {
+		if (shouldOpenWithBoomerang(me, opponent, turn)) {
 			return getAction(ACTIONS.BOOMERANG_ATTACK);
 		}
-		if (lastWasCanon && this.chainedCanonAttacks < MAX_CHAINED_CANON_ATTACKS && canAfford(me, ACTIONS.CANON_ATTACK)) {
-			this.chainedCanonAttacks++;
+		const canonChainLength = this.getCanonChainLengthIfFired(me, lastWasCanon);
+		if (canonChainLength !== null) {
+			this.chainedCanonAttacks = canonChainLength;
 			return getAction(ACTIONS.CANON_ATTACK);
 		}
-		if (me.getBreath() >= me.getMaxBreath() - this.breathMarginToStartChain && canAfford(me, ACTIONS.CANON_ATTACK)) {
-			this.chainedCanonAttacks = 1;
-			return getAction(ACTIONS.CANON_ATTACK);
+		return getAction(shouldUseIntenseAttack(me, opponent) ? ACTIONS.INTENSE_ATTACK : ACTIONS.SABOTAGE_ATTACK);
+	}
+
+	/**
+	 * Length of the canon chain if the gunner fires a canon now: to continue its chain, or to start a new one with a nearly
+	 * full breath. Null when it does not fire
+	 * @param me
+	 * @param lastWasCanon
+	 */
+	private getCanonChainLengthIfFired(me: AiPlayerFighter, lastWasCanon: boolean): number | null {
+		if (!canAfford(me, ACTIONS.CANON_ATTACK)) {
+			return null;
 		}
-		if (opponent.getSpeed() > me.getSpeed() * INTENSE_ATTACK_MIN_SPEED_RATIO
-			&& opponent.getEnergy() > opponent.getMaxEnergy() * INTENSE_ATTACK_MIN_ENERGY_RATIO
-			&& canAfford(me, ACTIONS.INTENSE_ATTACK)) {
-			return getAction(ACTIONS.INTENSE_ATTACK);
+		if (lastWasCanon && this.chainedCanonAttacks < MAX_CHAINED_CANON_ATTACKS) {
+			return this.chainedCanonAttacks + 1;
 		}
-		return getAction(ACTIONS.SABOTAGE_ATTACK);
+		return me.getBreath() >= me.getMaxBreath() - this.breathMarginToStartChain ? 1 : null;
 	}
 }
