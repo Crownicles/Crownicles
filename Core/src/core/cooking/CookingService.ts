@@ -327,27 +327,38 @@ export class CookingService {
 		};
 	}
 
+	/**
+	 * Whether the recipe output is hidden on this slot. The recipes the player chose to keep are never secret.
+	 */
+	private static isSecretOnSlot(slotIndex: number, recipe: CookingRecipe, context: RecipeSlotContext): boolean {
+		return !context.keptRecipeIds.has(recipe.id) && isRecipeSecret({
+			slotIndex,
+			furnacePosition: context.furnacePosition,
+			daySeed: context.daySeed,
+			secretRate: context.grade.secretRecipeRate
+		});
+	}
+
+	/**
+	 * The time potions left this week, only for time potion recipes
+	 */
+	private static getTimePotionsLeft(recipe: CookingRecipe, context: RecipeSlotContext): Pick<RecipeSlotData, "timePotionsLeftThisWeek"> {
+		return CookingService.isTimePotionRecipe(recipe) && context.timePotionsLeftThisWeek !== undefined
+			? { timePotionsLeftThisWeek: context.timePotionsLeftThisWeek }
+			: {};
+	}
+
 	private static buildRecipeSlotData(
 		slotIndex: number,
 		recipe: CookingRecipe,
 		context: RecipeSlotContext
 	): RecipeSlotData {
-		const secret = context.keptRecipeIds.has(recipe.id)
-			? false
-			: isRecipeSecret({
-				slotIndex,
-				furnacePosition: context.furnacePosition,
-				daySeed: context.daySeed,
-				secretRate: context.grade.secretRecipeRate
-			});
-
+		const secret = CookingService.isSecretOnSlot(slotIndex, recipe, context);
 		const {
 			ingredients, hasIngredients
 		} = CookingService.buildIngredientAvailability(recipe, context.plantStorageMap, context.materialMap);
-		const canCraftOutput = recipe.outputType === CookingOutputType.PET_FOOD
-			? Boolean(context.guild)
-			: true;
-		const timePotionsLeftThisWeek = CookingService.isTimePotionRecipe(recipe) ? context.timePotionsLeftThisWeek : undefined;
+		const canCraftOutput = recipe.outputType !== CookingOutputType.PET_FOOD || Boolean(context.guild);
+		const timePotionsLeft = CookingService.getTimePotionsLeft(recipe, context);
 
 		const {
 			id, level, outputType, recipeType
@@ -362,8 +373,8 @@ export class CookingService {
 			outputDescription: secret ? SECRET_RECIPE_PLACEHOLDER : id,
 			petFoodType: recipe.petFood?.type,
 			ingredients,
-			canCraft: hasIngredients && canCraftOutput && timePotionsLeftThisWeek !== 0,
-			...timePotionsLeftThisWeek !== undefined ? { timePotionsLeftThisWeek } : {}
+			canCraft: hasIngredients && canCraftOutput && timePotionsLeft.timePotionsLeftThisWeek !== 0,
+			...timePotionsLeft
 		};
 	}
 
@@ -631,6 +642,10 @@ export class CookingService {
 		return recipe.materials[0].materialId;
 	}
 
+	private static isKnownRecipe(recipe: CookingRecipe, discoveredIds: string[]): boolean {
+		return recipe.discoveredByDefault || discoveredIds.includes(recipe.id);
+	}
+
 	/**
 	 * Resolve the player's pinned recipe, or null when there is no pin or it is
 	 * not currently eligible (unknown, undiscovered, or pet food without a guild).
@@ -645,7 +660,7 @@ export class CookingService {
 		if (!pinnedRecipe) {
 			return null;
 		}
-		const isDiscovered = pinnedRecipe.discoveredByDefault || discoveredIds.includes(pinnedRecipe.id);
+		const isDiscovered = CookingService.isKnownRecipe(pinnedRecipe, discoveredIds);
 		const isPetFoodAllowed = pinnedRecipe.outputType !== CookingOutputType.PET_FOOD || Boolean(guild);
 		return isDiscovered && isPetFoodAllowed ? pinnedRecipe : null;
 	}
@@ -705,7 +720,7 @@ export class CookingService {
 		const specialties: CookingRecipe[] = [];
 		for (const { recipeId } of await PlayerCookingSpecialty.getOfPlayer(player.id)) {
 			const recipe = CookingRecipeDataController.instance.getById(recipeId);
-			if (recipe && (recipe.discoveredByDefault || discoveredIds.includes(recipe.id))) {
+			if (recipe && CookingService.isKnownRecipe(recipe, discoveredIds)) {
 				specialties.push(recipe);
 			}
 			else {

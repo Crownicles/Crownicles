@@ -266,19 +266,15 @@ export const NO_XP_LEVEL_THRESHOLD = 3;
  */
 export const MASTER_CHEF_BADGE_COOKING_LEVEL = 100;
 
-function getCookingGradeMinLevel(gradeId: string): number {
-	return COOKING_GRADES.find(grade => grade.id === gradeId)!.minLevel;
-}
-
 /**
  * Specialties are recipes a master chef keeps at hand until removing them: they are offered one at a time on
  * a dedicated station, besides the rotating ones, each furnace re-roll moving to the next one. One specialty
- * is unlocked on becoming kitchen master, one on becoming royal grand chef and the last one with the master
- * chef badge.
+ * is unlocked on reaching the second highest grade, one on reaching the highest grade and the last one with
+ * the master chef badge.
  */
 const SPECIALTY_UNLOCK_COOKING_LEVELS: readonly number[] = [
-	getCookingGradeMinLevel("kitchenMaster"),
-	getCookingGradeMinLevel("royalGrandChef"),
+	COOKING_GRADES[COOKING_GRADES.length - 2].minLevel,
+	COOKING_GRADES[COOKING_GRADES.length - 1].minLevel,
 	MASTER_CHEF_BADGE_COOKING_LEVEL
 ];
 
