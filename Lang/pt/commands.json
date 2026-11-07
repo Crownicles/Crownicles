@@ -653,6 +653,8 @@
     "seedSlot": "{emote:city.homeUpgrades.garden} Semente :",
     "plantSlots_one": "{emote:shopItems.plantSlotExtension} Planta transportada ({{count}}/{{max}}):",
     "plantSlots_other": "{emote:shopItems.plantSlotExtension} Plantas transportadas ({{count}}/{{max}}):",
+    "plantsLinkedToHomeStorageTitle": "{emote:city.homeUpgrades.chest} Lien avec le coffre :",
+    "plantsLinkedToHomeStorage": "Vos plantes sont reliées par magie au coffre de votre maison : les plantes achetées ou reçues y sont envoyées directement, vos emplacements ne gardant que ce que le coffre ne peut plus contenir.",
     "weapons_one": "{{count}}{{max}}Arma ( / ):",
     "weapons_other": "{{count}}{{max}}Armas ( / ) :",
     "talisman": "Artefactos :",
@@ -1695,9 +1697,17 @@
     "materialLine": "{emote:materiais.{{materialId}}} **$t(models:materials.{{materialId}})** x{{quantity}}",
     "genericPurchase_one": "Obteve **{{count}}x** {{item}}.",
     "genericPurchase_other": "Obteve **{{count}}x** {{item}}.",
+    "plantsSentToHomeStorage_one": "{emote:city.homeUpgrades.chest} **{{count}}** plante a été envoyée par magie dans le coffre de votre maison.",
+    "plantsSentToHomeStorage_other": "{emote:city.homeUpgrades.chest} **{{count}}** plantes ont été envoyées par magie dans le coffre de votre maison.",
     "notEnoughMoney": "Não tens dinheiro suficiente para comprar este artigo! Estás em falta `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Não há mais poções do dia disponíveis para venda... Volta amanhã!",
     "noPlantSlotAvailable": "Não tens nenhuma ranhura livre para as plantas! Liberta uma ou melhora o teu equipamento na fábrica de curtumes.",
+    "noPlantSpace": {
+      "homeStorageFull": "Il n'y a plus assez de place pour ces plantes, ni dans le coffre de votre maison ni dans vos emplacements de plante ! Faites de la place en cuisinant ou en compostant vos plantes.",
+      "plantSlotsFull": "Vous n'avez aucun emplacement de plante libre ! Déposez vos plantes dans le coffre de votre maison, ou agrandissez votre sacoche au tanneur : son dernier emplacement relie par magie vos plantes au coffre de votre maison.",
+      "noHome": "Vous n'avez aucun emplacement de plante libre ! Une maison vous permettrait de stocker vos plantes dans son coffre.",
+      "noGarden": "Vous n'avez aucun emplacement de plante libre ! Votre maison n'a pas encore de jardin : améliorez-la pour pouvoir stocker vos plantes dans son coffre."
+    },
     "noGardenForRemoteHarvestTalisman": "O Herborista recusa-se a vender-te o Coração do Bosque: este item só será útil quando o teu jardim estiver desbloqueado.",
     "boughtTooMuchTokens": "Atingiu o seu limite de compra de fichas neste momento. Volte mais tarde!",
     "tokensBought_one": "Comprou **{{count}} token** {emote:unitValues.token}.",
@@ -1777,7 +1787,7 @@
       },
       "plantSlotExtension": {
         "name": "{Nova localização da planta",
-        "info": "Pode ter uma planta extra no seu inventário."
+        "info": "Vous pourrez transporter une plante supplémentaire dans votre inventaire. Le dernier emplacement relie aussi par magie vos plantes au coffre de votre maison, dès qu'elle dispose d'un jardin : les plantes achetées ou reçues y sont envoyées directement."
       },
       "weeklyPlantName": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
       "weeklyPlantTier1": {
