@@ -654,7 +654,7 @@
     "plantSlots_one": "{emote:shopItems.plantSlotExtension} Transportierte Pflanze ({{count}}/{{max}}) :",
     "plantSlots_other": "{emote:shopItems.plantSlotExtension} Transportierte Pflanzen ({{count}}/{{max}}) :",
     "plantsLinkedToHomeStorageTitle": "{emote:city.homeUpgrades.chest} Lien avec le coffre :",
-    "plantsLinkedToHomeStorage": "Vos plantes sont reliées par magie au coffre de votre maison : les plantes achetées ou reçues y sont envoyées directement, vos emplacements ne gardant que ce que le coffre ne peut plus contenir.",
+    "plantsLinkedToHomeStorage": "Vos plantes sont reliées au coffre de votre maison : les plantes achetées ou reçues y sont envoyées directement, vos emplacements ne gardant que ce que le coffre ne peut plus contenir.",
     "weapons_one": "Waffe ({{count}}/{{max}}):",
     "weapons_other": "Waffen ({{count}}/{{max}}):",
     "talisman": "Artefakte:",
@@ -1697,14 +1697,14 @@
     "materialLine": "{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})** x{{quantity}}",
     "genericPurchase_one": "Sie haben **{{count}}x** {{item}} erhalten.",
     "genericPurchase_other": "Sie haben **{{count}}x** {{item}} erhalten.",
-    "plantsSentToHomeStorage_one": "{emote:city.homeUpgrades.chest} **{{count}}** plante a été envoyée par magie dans le coffre de votre maison.",
-    "plantsSentToHomeStorage_other": "{emote:city.homeUpgrades.chest} **{{count}}** plantes ont été envoyées par magie dans le coffre de votre maison.",
+    "plantsSentToHomeStorage_one": "{emote:city.homeUpgrades.chest} **{{count}}** plante a été envoyée dans le coffre de votre maison.",
+    "plantsSentToHomeStorage_other": "{emote:city.homeUpgrades.chest} **{{count}}** plantes ont été envoyées dans le coffre de votre maison.",
     "notEnoughMoney": "Sie haben nicht genug Geld, um diesen Gegenstand zu kaufen! Es fehlt Ihnen `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Es gibt keinen Trank des Tages mehr, der zum Verkauf angeboten wird... Kommen Sie morgen wieder!",
     "noPlantSlotAvailable": "Sie haben keine freien Pflanzenplätze! Machen Sie einen frei oder verbessern Sie Ihre Ausrüstung beim Gerber.",
     "noPlantSpace": {
       "homeStorageFull": "Il n'y a plus assez de place pour ces plantes, ni dans le coffre de votre maison ni dans vos emplacements de plante ! Faites de la place en cuisinant ou en compostant vos plantes.",
-      "plantSlotsFull": "Vous n'avez aucun emplacement de plante libre ! Déposez vos plantes dans le coffre de votre maison, ou agrandissez votre sacoche au tanneur : son dernier emplacement relie par magie vos plantes au coffre de votre maison.",
+      "plantSlotsFull": "Vous n'avez aucun emplacement de plante libre ! Déposez vos plantes dans le coffre de votre maison, ou agrandissez votre sacoche au tanneur : son dernier emplacement relie vos plantes au coffre de votre maison.",
       "noHome": "Vous n'avez aucun emplacement de plante libre ! Une maison vous permettrait de stocker vos plantes dans son coffre.",
       "noGarden": "Vous n'avez aucun emplacement de plante libre ! Votre maison n'a pas encore de jardin : améliorez-la pour pouvoir stocker vos plantes dans son coffre."
     },
@@ -1787,7 +1787,7 @@
       },
       "plantSlotExtension": {
         "name": "{emote:shopItems.plantSlotExtension} Neuer Pflanzenstandort",
-        "info": "Vous pourrez transporter une plante supplémentaire dans votre inventaire. Le dernier emplacement relie aussi par magie vos plantes au coffre de votre maison, dès qu'elle dispose d'un jardin : les plantes achetées ou reçues y sont envoyées directement."
+        "info": "Vous pourrez transporter une plante supplémentaire dans votre inventaire. Le dernier emplacement relie aussi vos plantes au coffre de votre maison, dès qu'elle dispose d'un jardin : les plantes achetées ou reçues y sont envoyées directement."
       },
       "weeklyPlantName": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
       "weeklyPlantTier1": {
