@@ -148,7 +148,7 @@ class PaladinFightBehavior implements ClassBehavior {
 		usedUltimateAttacks: number
 	): boolean {
 		return hasBreathToSpare(me, usedUltimateAttacks, FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
-			&& canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.SPARING)
+			&& canPlayShieldAttack(me, opponent, SHIELD_ATTACK_CHANCES.ONCE)
 			|| canStrikeWithShieldAttack(me, opponent);
 	}
 }

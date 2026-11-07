@@ -165,7 +165,7 @@ describe("AI personalities", () => {
 	});
 
 	describe("paladin breath reserve", () => {
-		it("keeps the breath of its ultimate and spends the rest on its shield attack", () => {
+		it("keeps the breath of its ultimate and spends the rest with its single shield attack", () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
 			const paladin = (breath: number): ReturnType<typeof mockFighter> => mockFighter({
 				breath, maxBreath: 25, regenBreath: 3
@@ -182,16 +182,6 @@ describe("AI personalities", () => {
 			});
 
 			expect(new PaladinFightBehavior().chooseAction(paladin, mockFightView(5, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
-		});
-
-		it("may weaken its opponent a second time with its shield attack, never a third", () => {
-			vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
-			const paladin = (shieldAttacks: number): ReturnType<typeof mockFighter> => mockFighter({
-				breath: 25, maxBreath: 25, regenBreath: 3, history: Array<string>(shieldAttacks).fill(ACTIONS.SHIELD_ATTACK)
-			});
-
-			expect(new PaladinFightBehavior().chooseAction(paladin(1), mockFightView(3, mockFighter())).id).toBe(ACTIONS.SHIELD_ATTACK);
-			expect(new PaladinFightBehavior().chooseAction(paladin(2), mockFightView(3, mockFighter())).id).not.toBe(ACTIONS.SHIELD_ATTACK);
 		});
 
 		it("rams only to break the opponent's rest, even with its breath at its maximum", () => {

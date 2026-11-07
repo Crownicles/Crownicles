@@ -16,15 +16,7 @@ export const SHIELD_ATTACK_CHANCES = {
 		0.5,
 		0.2
 	],
-
-	/*
-	 * The paladin weakens its opponent once, and sometimes a second time: with a single weakening, its AI won fewer than
-	 * one defense in five against strong attackers, while two keep the attacker under control about a quarter of its turns
-	 */
-	SPARING: [
-		1,
-		0.5
-	]
+	ONCE: [1]
 } as const;
 
 export type ShieldAttackChances = typeof SHIELD_ATTACK_CHANCES[keyof typeof SHIELD_ATTACK_CHANCES];
