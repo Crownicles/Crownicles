@@ -2545,7 +2545,8 @@
       "1": "Chaudron",
       "2": "Fonderie",
       "3": "Alambic",
-      "4": "Brasier"
+      "4": "Brasier",
+      "5": "Spécialité du chef"
     },
     "recipes": {
       "potion_health_1": "Potion de soin basique",
