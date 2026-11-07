@@ -314,10 +314,6 @@
       "user": {
         "description": "The player to fight.",
         "name": "user"
-      },
-      "tournament": {
-        "description": "Enable tournament mode: the level of both fighters is capped.",
-        "name": "tournament"
       }
     }
   },
