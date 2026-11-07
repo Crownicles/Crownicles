@@ -198,6 +198,22 @@
     "9": "Eine auf Geschwindigkeit ausgerichtete Klasse. Wenig Lebens- und Energiepunkte, aber hohe Geschwindigkeit und Angriffsstärke."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "Er wird von **{{petNickname}}** unterstützt, der in Lauerstellung geblieben ist und sofort zuschlägt, sobald der Gegner wieder zu Atem gekommen ist, und ihm einen gewaltigen Prankenhieb versetzt."
+    },
+    "scentOfBlood": {
+      "generalEffect": "Zu ihm gesellt sich **{{petNickname}}**, der den Geruch von Blut gewittert hat: Der Hai beißt den verwundeten Gegner und reißt ihm eine Wunde auf, aus der es stark blutet.",
+      "success": "sieht, wie **{{petNickname}}** in Raserei verfällt, in den Wahnsinn getrieben durch das noch immer fließende Blut: Der Hai stürzt sich auf seinen Gegner und beißt ihn wild.",
+      "failure": "{{petNickname}}verliert seine Beute aus den Augen: Die Blutung des Gegners hat aufgehört, und der Hai schwimmt davon."
+    },
+    "unstoppable": {
+      "generalEffect": "gewinnt an Schwung an der Seite von **{{petNickname}}**, dessen schwerfälliger Lauf immer schneller wird: Seine Nahkampfangriffe werden immer heftiger.",
+      "success": "wird von **{{petNickname}}** mitgerissen, der mit voller Geschwindigkeit losrast: Nichts scheint ihn noch aufhalten zu können.",
+      "failure": "wird unterbrochen und **{{petNickname}}** verliert seinen ganzen Schwung – man muss wieder von vorne anfangen."
+    },
+    "woundedPrey": {
+      "success": "Zu ihm gesellt sich **{{petNickname}}**, der über dem Kampf kreiste: Als er sah, dass der Gegner am Ende seiner Kräfte war, stürzte sich der Raubvogel mit nach vorne gestreckten Krallen im Sturzflug auf ihn."
+    },
     "drowning": {
       "customMessage": "packt seinen Gegner mit einem seiner Tentakel und taucht ihn unter Wasser, nur Gegner mit Atem kommen unbeschadet wieder heraus.",
       "name_one": "Ertrinken",
@@ -411,7 +427,7 @@
       "stop": "leidet unter den Folgen des Fluches."
     },
     "cursedAttack": {
-      "description": "Verflucht den Gegner, vielleicht wird er in der Zukunft die Konsequenzen zu spüren bekommen... Heilt den Werfer, wenn der Gegner mehr als 40% seiner Energie hat.",
+      "description": "Der Gegner ist verflucht – vielleicht wird er in Zukunft die Folgen davon spüren … Solange er verflucht ist, gewinnt der Gegner durch Heilung weniger Energie zurück und muss den dunklen Angriff in voller Stärke hinnehmen. Heilt den Zaubernden, wenn der Gegner mehr als 40 % seiner Energie besitzt.",
       "name_one": "Verfluchung",
       "name_other": "Verfluchungen"
     },
@@ -431,7 +447,7 @@
       "name_other": "Flüche des Meeres"
     },
     "darkAttack": {
-      "description": "Ignoriert die Verteidigung des Gegners. Wirkt am besten gegen einen Spieler mit hohem Angriffswert. Blendet den Gegner oder gibt dem Werfer einen Teil seines verlorenen Atems zurück. Die Veränderung \"Geblendet\" hält mindestens 1 Runde an und macht den Gegner manchmal unfähig anzugreifen, während seine Verteidigung und Geschwindigkeit verringert werden.",
+      "description": "Berücksichtigt die Verteidigung des Gegners kaum. Wirkt am effektivsten gegen einen Spieler mit hoher Angriffskraft. Bei ihrem ersten Einsatz ist sie sehr mächtig, verliert jedoch bei jedem weiteren erfolgreichen Einsatz an Kraft und gewinnt wieder an Stärke, wenn der Anwender sie einige Züge lang nicht einsetzt. Sie trifft einen verfluchten Gegner immer mit voller Kraft. Ihre aktuelle Stärke wird auf der Schaltfläche angezeigt.",
       "name_one": "Dunkle Attacke",
       "name_other": "Dunkle Attacken"
     },
@@ -473,7 +489,7 @@
       "afraid": "wird von **{{petNickname}}** unterstützt, der sich zwar genau an die jüngsten Ereignisse erinnert, aber vor Angst zu sehr zittert, um den verlorenen Atem wiedergeben zu können."
     },
     "energeticAttack": {
-      "description": "La moitié des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse.",
+      "description": "Ein Teil des Schadens dieses Angriffs wird dem Angreifer in Form von Heilung zurückgegeben. Ein Teil der gegnerischen Verteidigung wird ignoriert. Fügt einem Gegner, der sich gerade ausgeruht hat, zusätzlichen Schaden zu. Gegen Monster wird die Heilung verringert.",
       "name_one": "Energische Attacke",
       "name_other": "Energische Attacken"
     },
@@ -2529,7 +2545,8 @@
       "1": "Kessel",
       "2": "Gießerei",
       "3": "Destilliergerät",
-      "4": "Brasier"
+      "4": "Brasier",
+      "5": "Spezialität des Küchenchefs"
     },
     "recipes": {
       "potion_health_1": "Grundlegender Heiltrank",
