@@ -198,6 +198,22 @@
     "9": "Una classe incentrata sulla velocità. Bassa salute e punti energia, ma alta velocità e attacco."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "viene aiutato da **{{petNickname}}**, rimasto all'erta, che balza in avanti non appena l'avversario riprende fiato e gli sferra un formidabile colpo con la zampa."
+    },
+    "scentOfBlood": {
+      "generalEffect": "viene raggiunto da **{{petNickname}}** che ha fiutato l'odore del sangue: lo squalo morde l'avversario ferito e gli provoca una ferita che sanguina abbondantemente.",
+      "success": "vede **{{petNickname}}** andare in delirio, reso folle dal sangue che continua a scorrere: lo squalo si avventa sull’avversario e lo morde selvaggiamente.",
+      "failure": "vede **{{petNickname}}** perdere le tracce della sua preda: l’emorragia dell’avversario si è arrestata e lo squalo si allontana."
+    },
+    "unstoppable": {
+      "generalEffect": "prende slancio al fianco di **{{petNickname}}**, la cui corsa pesante acquista velocità: i suoi attacchi corpo a corpo colpiscono sempre più forte.",
+      "success": "viene trascinato via da **{{petNickname}}**, lanciato a tutta velocità: sembra che nulla possa più fermarlo.",
+      "failure": "viene bloccato e **{{petNickname}}** perde tutto il suo slancio, bisognerà ricominciare da capo."
+    },
+    "woundedPrey": {
+      "success": "viene raggiunto da **{{petNickname}}**, che volteggiava sopra il combattimento: vedendo l’avversario ormai allo stremo delle forze, il rapace piomba su di lui in picchiata, con gli artigli protesi in avanti."
+    },
     "drowning": {
       "customMessage": "afferra l'avversario con uno dei suoi tentacoli e lo immerge sott'acqua, facendo uscire indenni solo gli avversari dotati di respiro.",
       "name_one": "Annegamento",
@@ -411,7 +427,7 @@
       "stop": "subisce le conseguenze della maledizione."
     },
     "cursedAttack": {
-      "description": "Maledice l'avversario, forse ne subirà le conseguenze in futuro... Guarisce l'incantatore se l'avversario ha più del 40% della sua energia.",
+      "description": "Maledetto l'avversario, forse ne subirà le conseguenze in futuro... Finché rimane maledetto, l'avversario recupera meno energia grazie alle cure e subisce l'attacco oscuro a piena potenza. Cura il lanciatore se l’avversario ha più del 40% della sua energia.",
       "name_one": "Attacca maledetta",
       "name_other": "Attacchi maledette"
     },
@@ -431,7 +447,7 @@
       "name_other": "Maledizioni dal mare"
     },
     "darkAttack": {
-      "description": "Ignora la difesa dell'avversario. Più efficace contro un giocatore con un attacco elevato. Acceca l'avversario o ripristina parte del fiato perso dall'incantatore. L'alterazione “accecata” dura almeno 1 turno e rende l'avversario incapace di attaccare a volte, riducendone la difesa e la velocità.",
+      "description": "Non tiene molto conto della difesa dell'avversario. È più efficace contro un giocatore con un attacco elevato. Molto potente al primo utilizzo, si indebolisce ad ogni nuovo utilizzo riuscito e recupera forza quando chi la lancia ne fa a meno per alcune azioni. Colpisce sempre un avversario maledetto con tutta la sua potenza. La sua potenza attuale è visualizzata sul pulsante.",
       "name_one": "Attacco oscuro",
       "name_other": "Attacchi oscure"
     },
@@ -473,7 +489,7 @@
       "afraid": "è aiutato da **{{petNickname}}** che, pur ricordando perfettamente gli ultimi eventi, trema troppo per la paura per poter ripristinare il respiro perduto."
     },
     "energeticAttack": {
-      "description": "La moitié des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse.",
+      "description": "Una parte dei danni inflitti da questo attacco viene restituita a chi lo lancia sotto forma di cura. Ignora una parte della difesa avversaria. Infligge più danni a un avversario che si è appena riposato. La cura è ridotta contro i mostri.",
       "name_one": "Attacca energica ",
       "name_other": "Attacchi energetiche"
     },
@@ -2529,7 +2545,8 @@
       "1": "Calderone",
       "2": "Fonderia",
       "3": "Ancora",
-      "4": "Braciere"
+      "4": "Braciere",
+      "5": "Specialità dello chef"
     },
     "recipes": {
       "potion_health_1": "Pozione curativa di base",
