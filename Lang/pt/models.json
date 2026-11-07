@@ -2545,7 +2545,8 @@
       "1": "Caldeirão",
       "2": "Fundição",
       "3": "Ainda assim",
-      "4": "Braseiro"
+      "4": "Braseiro",
+      "5": "Spécialité du chef"
     },
     "recipes": {
       "potion_health_1": "Poção de cura básica",
