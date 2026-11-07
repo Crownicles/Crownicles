@@ -2850,7 +2850,7 @@
         "Théobald sort une plante de son chariot et vous la tend avec un clin d'œil malicieux :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
         "Le jardinier, ne pouvant vous donner de graine, vous offre généreusement une de ses plantes en souvenir de votre rencontre :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
-      "plantSentToHomeStorage": "{emote:city.homeUpgrades.chest} À peine l'avez-vous saisie que la plante disparaît dans un léger scintillement : elle a rejoint par magie le coffre de votre maison.",
+      "plantSentToHomeStorage": "{emote:city.homeUpgrades.chest} À peine l'avez-vous saisie que la plante disparaît dans un léger scintillement : elle a rejoint le coffre de votre maison.",
       "material": [
         "Théobald fouille dans sa besace et en sort un matériau qu'il a trouvé en retournant la terre de son jardin. Il vous l'offre avec un sourire bienveillant :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
         "Le jardinier sort de sa poche un matériau qu'il a déterré en bêchant ce matin. Il vous le tend en vous expliquant qu'il n'en a pas l'utilité :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
