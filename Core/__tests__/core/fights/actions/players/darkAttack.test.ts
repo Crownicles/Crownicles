@@ -7,6 +7,7 @@ import { getDarkAttackPowerMultiplier } from "../../../../../src/core/fights/act
 import { FightAlterationDataController } from "../../../../../src/data/FightAlteration";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
 import { FightActionStatus } from "../../../../../../Lib/src/types/FightActionStatus";
+import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 import { TestFighter } from "./TestFighter";
 import type { FightAction } from "../../../../../src/data/FightAction";
 import type { FightController } from "../../../../../src/core/fights/FightController";
@@ -86,6 +87,20 @@ describe("darkAttack", () => {
 		useDarkAttack(mage, receiver);
 
 		expect(mage.getBreath()).toBe(2);
+	});
+
+	it("is held back by the defense of a heavily armored target", () => {
+		vi.spyOn(RandomUtils, "variationInt").mockReturnValue(0);
+		vi.spyOn(FightActionController, "applySecondaryEffects").mockImplementation(damages => ({
+			damages,
+			status: FightActionStatus.NORMAL
+		}));
+
+		const againstLightArmor = darkAttackUse(mageAfter(""), new TestFighter({ defense: 100 }), DARK_ATTACK, 3, null as unknown as FightController);
+		const againstHeavyArmor = darkAttackUse(mageAfter(""), new TestFighter({ defense: 1600 }), DARK_ATTACK, 3, null as unknown as FightController);
+
+		// Sixteen times more defense: the armored target takes well under three quarters of the damage
+		expect(againstHeavyArmor.damages! / againstLightArmor.damages!).toBeLessThan(0.7);
 	});
 
 	it("is not worn down by a missed use, unlike a landed one", () => {

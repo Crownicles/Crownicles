@@ -47,6 +47,10 @@ function getAttackInfo(): attackInfo {
 	};
 }
 
+/*
+ * The dark attack turns the target's own attack against it and only counts a small share of its defense. That share must
+ * not be negligible: the defense brought by the target's gear would otherwise never protect it from the mage
+ */
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	return {
 		attackerStats: [
@@ -54,8 +58,8 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 			receiver.getAttack()
 		],
 		defenderStats: [
-			receiver.getDefense() * 0.15,
-			receiver.getDefense() * 0.05
+			receiver.getDefense() * 0.3,
+			receiver.getDefense() * 0.1
 		],
 		statsEffect: [
 			0.5,
