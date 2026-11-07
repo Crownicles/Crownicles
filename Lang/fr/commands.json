@@ -475,8 +475,7 @@
         "description": "Permet de gérer votre équipement pour chaque catégorie d'objets : équiper un objet de votre réserve, ranger l'objet équipé dans votre réserve ou intervertir deux objets."
       },
       "FIGHT": {
-        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
-        "image": "https://crownicles.com/public/ressources/fighthelp/fr/5.1.7.png"
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
         "description": "Affiche l'historique de vos derniers combats : l'adversaire affronté, le résultat ainsi que l'évolution de la gloire et de la ligue de chaque combattant. Si vous avez déjà affronté un garde du roi, le bouton **Gardes du roi** présente votre record face aux gardes, votre classement et le tableau d'honneur du royaume."
