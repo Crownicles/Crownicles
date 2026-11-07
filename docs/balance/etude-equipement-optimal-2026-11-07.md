@@ -648,13 +648,18 @@ Toute courbe qui s'aplatit (tanh, logarithme…) pousse à combler sa faiblesse 
 vaut pareil. Les plafonds des objets jouent dans l'autre sens : ils suivent la stat de base de la classe, donc ils limitent
 surtout la stat faible (l'armure du Canonnier) et laissent de la place à la stat forte.
 
+**Build de référence.** Toutes les mesures de cette section ont été faites sur la branche avec la défense de base du Canonnier
+à 38, annulée depuis (§6). Ce buff ne déplace notablement que le Canonnier (+8,8 au niveau 100 avec la courbe actuelle,
+−0,4 à −2,3 pour les autres classes) : il ne change pas les conclusions (le Tank et le Paladin dominent avec une courbe
+droite), mais l'écart de référence de 4,3 est celui de ce build. Avec les règles finales de la branche, il est de 12,7 (§4.8).
+
 **Mesure** (protocole réaliste, niveau 100, mêmes combats). La courbe droite a la pente moyenne de la courbe actuelle entre
 300 et 1 000 (les stats du niveau 100), plafonds gardés. La tanh plus plate (`166·tanh(0,0006·stat − 0,03) + 3`) a la même
 pente moyenne mais s'aplatit deux fois moins. Perte du build intuitif par rapport à l'équipement optimal A (l'optimum de la
 courbe actuelle : sous une autre courbe, il faudrait ré-optimiser l'équipement, ces chiffres comparent deux builds, ils ne
 donnent pas l'équilibre final) :
 
-| Build intuitif | Courbe actuelle | Tanh plus plate | Courbe droite | Courbe droite, sans plafond, objets ×0,6 |
+| Build intuitif | Courbe actuelle (défense du Canonnier à 38) | Tanh plus plate | Courbe droite | Courbe droite, sans plafond, objets ×0,6 |
 |---|---|---|---|---|
 | Canonnier « canon de verre » | −12,1 | −3,9 | −3,1 | −4,7 |
 | Tank « mur » | −6,3 | +3,2 | **+6,4** (devient le meilleur) | **+4,5** |
@@ -672,7 +677,7 @@ donnent pas l'équilibre final) :
   29 points sans eux) ; leur rôle est d'empêcher qu'une classe porte l'équipement d'une autre.
 
 **Avec l'équipement ré-optimisé pour chaque formule** (optimiseur réseau des deux côtés, 2 minutes par formule ; scores réseau
-des deux côtés, 3 meilleurs familiers par classe) :
+des deux côtés, 3 meilleurs familiers par classe ; même build de référence, défense du Canonnier à 38) :
 
 | Formule | Équipement choisi (stats des objets attaque / défense / vitesse) | Fant | Tank | Cano | Chev | Pala | Vété | Mage | Écart |
 |---|---|---|---|---|---|---|---|---|---|
@@ -683,7 +688,8 @@ des deux côtés, 3 meilleurs familiers par classe) :
 | Courbe droite, sans plafond, objets ×0,8 | idem | 45,0 | 68,4 | 47,1 | 49,0 | 72,8 | 32,8 | 34,9 | 39,9 |
 
 Dans le protocole réaliste avec son propre équipement optimal, la courbe droite donne Paladin 63,1, Tank 58,1, Canonnier 50,9,
-Chevalier 49,7, Mage 43,6, Fantassin 42,3, Vétéran 42,2 (écart 20,9 contre 4,3 aujourd'hui) : même sens, moins marqué.
+Chevalier 49,7, Mage 43,6, Fantassin 42,3, Vétéran 42,2 (écart 20,9, contre 4,3 avec la courbe actuelle sur le même build, 12,7 avec les règles finales) : même sens,
+moins marqué.
 
 - **La courbe droite fait bien ce qu'on veut** : l'optimiseur choisit spontanément le Tank « mur », le Canonnier « attaque »,
   le Paladin et le Chevalier en défense.
