@@ -475,8 +475,7 @@
         "description": "Consente di gestire il proprio equipaggiamento per ogni categoria di oggetti: equipaggiare un oggetto dalla propria riserva, riporre l'oggetto equipaggiato nella propria riserva o scambiare due oggetti."
       },
       "FIGHT": {
-        "description": "Utilizzare questo comando per sfidare altri giocatori.\nLe battaglie si svolgono turno per turno. A ogni turno si può scegliere un'azione da eseguire.\n\nPer ulteriori informazioni, consultare la pagina della guida: https://guide.crownicles.com/notions-principale/combats.",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
+        "description": "Utilizzare questo comando per sfidare altri giocatori.\nLe battaglie si svolgono turno per turno. A ogni turno si può scegliere un'azione da eseguire.\n\nPer ulteriori informazioni, consultare la pagina della guida: https://guide.crownicles.com/notions-principale/combats."
       },
       "FIGHT_HISTORY": {
         "description": "Mostra la cronologia dei tuoi ultimi combattimenti: l'avversario affrontato, il risultato e l'andamento della gloria e della classifica di ciascun combattente. Se hai già affrontato una guardia del re, il pulsante **Guardie del re** mostra il tuo record contro le guardie, la tua posizione in classifica e l'albo d'onore del regno."
