@@ -447,7 +447,7 @@
       "name_other": "Maldiciones del mar"
     },
     "darkAttack": {
-      "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Très puissante à sa première utilisation, elle s'affaiblit à chaque nouvelle utilisation réussie et reprend des forces quand le lanceur s'en passe pendant quelques actions. Elle frappe toujours un adversaire maudit à pleine puissance. Sa puissance actuelle est affichée sur son bouton.",
+      "description": "Tient peu compte de la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Très puissante à sa première utilisation, elle s'affaiblit à chaque nouvelle utilisation réussie et reprend des forces quand le lanceur s'en passe pendant quelques actions. Elle frappe toujours un adversaire maudit à pleine puissance. Sa puissance actuelle est affichée sur son bouton.",
       "name_one": "Ataque oscuro",
       "name_other": "Ataques oscuros"
     },
