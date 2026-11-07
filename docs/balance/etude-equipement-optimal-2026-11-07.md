@@ -9,9 +9,11 @@ Historique complet du travail : [historique-equilibrage-pvp-2026.md](historique-
 
 ## Résumé
 
-1. **Le Canonnier n'avait pas un équipement de Chevalier dans la mesure qui a guidé son buff.** L'étude « équipement égal »
-   de la PR lui donnait déjà exactement son équipement optimal (tout en défense). Seule la toute première étude (tout le monde
-   avec l'équipement du n°1 de la prod) le désavantageait, et elle avait été refaite.
+1. **Dans l'étude « équipement égal » qui a guidé l'équilibrage, les classes n'avaient pas toutes leur meilleur équipement**
+   (mode `auto` : 3 objets par emplacement, enchantements `pvpAttack3` / `defense3` seulement, choisi avec le seul familier Lion).
+   Le Canonnier et le Chevalier avaient déjà leur optimum ; les 5 autres non. Avec l'optimum de chaque classe, à niveau égal :
+   **le Tank était sous-estimé de 4,5 points** (49,1 → 53,6), le Chevalier surestimé de 3 (52,6 → 49,6), les autres bougent de
+   1,4 point au plus (§2). Le Canonnier reste le plus faible à niveau égal (44,3 → 43,4) : ce n'était pas un problème d'équipement.
 2. **L'équilibrage de #5062 tient avec un équipement et des familiers optimaux.** Dans le protocole le plus proche du jeu
    (un humain attaque l'IA de défense d'un autre joueur), l'écart entre classes passe de 23,9 à 11,9 points (avec potion) et
    de 26,8 à 8,8 (sans potion) entre la prod et develop, au niveau 157. En prod, le Chevalier est le seul choix rationnel ;
@@ -62,24 +64,39 @@ Les scores sont la moyenne attaque/défense, en % de victoires (nul = ½). Sauf 
 (pondération « uniforme ») ; la pondération « terrain réel » donne aux adversaires leur part dans les vrais combats
 (46 % de Chevaliers).
 
-## 2. Le Canonnier avait-il un mauvais équipement ?
+## 2. Les classes avaient-elles un mauvais équipement dans les mesures de l'équilibrage ?
 
-**Non, pas dans la mesure qui a guidé son buff.** Il y a eu trois mesures successives :
+Il y a eu trois mesures successives :
 
 1. La toute première étude classes × familiers (04/11) donnait à **tout le monde l'équipement du n°1 de la prod**
-   (un Fantassin : arme 89 `pveAttack3`, armure 13 `defense3`, potion et objet de vitesse). Là, oui, le Canonnier jouait
-   avec un équipement qui n'était pas le sien. Tu l'avais relevé et on l'a refaite.
-2. L'étude « équipement égal » de la PR (mode `auto`) donnait au Canonnier : Épée du Dragon (89) `pvpAttack3`,
-   Cri UwUrlant (61) `defense3`, Amulette cyclonique (38, défense) et Jus de kiwi (52, potion de défense).
-   **C'est exactement son optimum** trouvé cette nuit dans un espace bien plus large (tous les objets non dominés,
-   tous les enchantements, ses meilleurs familiers, terrain lui-même optimisé). Son score n'a pas bougé : 44,3 dans la PR,
-   43,4 à 44,1 cette nuit.
-3. Le terrain réel prend l'équipement actuel des joueurs. Les vrais Canonniers n'ont en moyenne que **40 % de la défense**
-   de leur optimum : ils s'équipent en attaque et en vitesse. Quand tout le monde passe à l'équipement optimal, le Canonnier
-   garde pourtant son rang (51,1 → 49,5, §4.2) : les autres classes sont aussi mal équipées aujourd'hui. En revanche, un
-   Canonnier qui adopterait seul l'équipement optimal gagnerait beaucoup (§4.5).
+   (un Fantassin : arme 89 `pveAttack3`, armure 13 `defense3`, potion et objet de vitesse). Aucune classe sauf le Fantassin
+   n'avait le sien. Tu l'avais relevé et elle avait été refaite avant de décider quoi que ce soit.
+2. L'étude « équipement égal » de la PR (mode `auto`), celle qui a guidé l'équilibrage : chaque classe choisissait parmi
+   3 armes, 3 armures, 3 objets et 3 potions portés en prod, avec `pvpAttack3` et `defense3` seulement et le familier Lion.
+   Comparaison avec l'optimum de cette nuit (tous les objets non dominés, tous les enchantements, meilleurs familiers, terrain
+   lui-même optimisé), même build, même réseau, tous familiers, avec potion :
 
-### Pourquoi l'optimum du Canonnier est « défensif »
+   | Classe | Équipement `auto` (PR) → optimal | Score PR (`auto`) | Score optimal | Écart |
+   |---|---|---|---|---|
+   | Fantassin | armure 13 `defense3` → armure 61 `maxEnergy3` ; objet vitesse → attaque ; potion attaque → vitesse | 47,8 | 46,6 | −1,2 |
+   | Tank | Sabre → Plothammer ; armure 13 → Armure électrifiée (94) ; **objet défense → attaque** | 49,1 | **53,6** | **+4,5** |
+   | Canonnier | identique | 44,3 | 43,4 | −0,9 |
+   | Chevalier | identique (sans potion aussi) | 52,6 | 49,6 | **−3,0** |
+   | Paladin | `defense3` → `maxEnergy3` ; objet défense → vitesse | 50,8 | 52,2 | +1,4 |
+   | Vétéran | armure 62 → 37 ; objet vitesse → défense ; potion défense → vitesse | 53,0 | 53,3 | +0,3 |
+   | Mage | objet défense → vitesse ; potion vitesse → défense | 52,2 | 51,2 | −1,0 |
+   | **Écart** | | 8,7 | 10,2 | |
+
+   - **Le Tank était le plus mal équipé** : avec objet et potion d'attaque, il gagne 4,5 points à niveau égal.
+   - Le Chevalier perd 3 points sans avoir changé d'équipement : ce sont les autres classes, mieux équipées, qui le battent plus.
+   - Pour les autres, l'écart reste dans 1,4 point : le classement de la PR à niveau égal tenait, sauf pour le Tank.
+3. Le terrain réel prend l'équipement actuel des joueurs. **Toutes les classes** sont loin de leur optimum (armes et armures
+   surtout à +0, peu d'enchantements), et chacune dans sa stat faible : Canonnier 40 % de la défense optimale, Mage 28 % de la
+   vitesse, Tank 56 % de l'attaque, Chevalier et Vétéran 56 à 59 % de la défense, Paladin 70 % de l'attaque. Quand tout le monde
+   passe à l'optimum (même protocole, §4.2), **le Mage gagne 12 points**, le Chevalier en perd 5, le Paladin et le Fantassin 3,
+   les autres bougent de 1,6 point au plus.
+
+### Pourquoi l'optimum comble la faiblesse de chaque classe
 La puissance d'une stat en combat est `120·tanh(0,00123·stat − 0,03) + 3` (`FightActionController.statToStatPower`) :
 les rendements sont décroissants. Un bonus plat d'objet ou de potion vaut donc le plus **sur la stat la plus faible de la classe**.
 L'équipement optimal comble les faiblesses au lieu de renforcer les points forts :
