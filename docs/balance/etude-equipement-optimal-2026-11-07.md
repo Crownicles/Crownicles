@@ -5,6 +5,8 @@ Question posée : dans les mesures qui ont servi à l'équilibrage de #5062, le 
 familiers** ? Et quelles modifications faire ?
 
 Build mesuré : `develop` du 07/11 (#5062 et #5082 mergées), comparé à la prod 6.1.1 quand c'est possible.
+Branche `balance/realistic-gear-meta-study` : sauf mention contraire, « la branche » désigne la modification 1 de l'attaque
+sombre seule (défense ×2) ; la modification 2 (usure de départ ×1,6) a été ajoutée à la fin, après les mesures du niveau 100 (§4.5).
 Historique complet du travail : [historique-equilibrage-pvp-2026.md](historique-equilibrage-pvp-2026.md).
 
 ## Résumé
@@ -20,20 +22,26 @@ Historique complet du travail : [historique-equilibrage-pvp-2026.md](historique-
    sur develop, 3 à 5 classes le sont selon le scénario.
 3. **Mais toutes les études étaient au niveau 157, alors que les joueurs 100+ sont au niveau 115 en médiane.** À un niveau
    réaliste, les objets pèsent plus lourd et **le Mage bien équipé domine** : 63 % de victoires contre 51 % aujourd'hui
-   (ses joueurs sont mal équipés). C'est le principal risque de l'équilibrage.
+   (ses joueurs sont mal équipés). C'est le principal risque de l'équilibrage. **Au niveau 100 bien équipé, develop est même
+   moins équilibré que la prod** (écart 25,6 contre 18,9, Mage 64,6 ; §4.5). Avec les vrais joueurs de niveau 100 à 109 et leur
+   vrai équipement, c'est l'inverse : develop est bien plus équilibré que la prod (écart 9,1 contre 21,1, Mage 49,5 contre 37,8).
 4. **Les builds intuitifs sont des pièges** : rendements décroissants obligent, l'optimum comble la faiblesse de la classe.
    Un Canonnier « canon de verre » perd 16 points, un Tank « mur » 16, un Mage « attaque » 19. La plupart des vrais Canonniers,
    Tanks et Mages jouent ces builds.
-5. **Une modification proposée, commitée sur cette branche** (détails §6) : l'attaque sombre compte 30 % et 10 % de la défense
-   de la cible au lieu de 15 % et 5 %. Le Mage bien équipé au niveau 120 perd 5 à 8 points selon l'équipement mesuré
-   (63,1 → 55,1), il ne perd que 0,6 point sur le terrain réel d'aujourd'hui.
+5. **Deux modifications proposées, commitées sur cette branche** (détails §6), toutes deux sur l'attaque sombre :
+   - elle compte 30 % et 10 % de la défense de la cible au lieu de 15 % et 5 % : le Mage bien équipé au niveau 120 perd 5 à 8
+     points selon l'équipement mesuré (63,1 → 55,1), il ne perd que 0,6 point sur le terrain réel d'aujourd'hui ;
+   - son usure démarre à ×1,6 au lieu de ×1,7 : au niveau 100 bien équipé, le Mage perd encore 5,6 à 6,2 points (il restait à
+     56,9 à 61,6 après la première modification), pour 1,4 à 1,9 point sur les joueurs d'aujourd'hui. Avec les deux, les vrais
+     Mages de niveau 100 à 109 passent de 49,5 (develop) à 46,1 (37,8 en prod) : un arbitrage à trancher ensemble.
 6. **Le Paladin n'est pas faible** : il ne le paraissait qu'avec l'équipement choisi par l'optimiseur au niveau 120. Avec
    potion d'attaque et objet de vitesse, il gagne 52,3 % au lieu de 44,6 %. La modification de son IA essayée cette nuit
    (2e bouclier) a été annulée.
-7. **Le Canonnier est vraiment faible aux niveaux réalistes quand tout le monde est bien équipé** (39,6 au niveau 105,
-   42,5 à 47,0 au niveau 120), parce que son armure est plafonnée à sa très faible défense de base. Il va bien aujourd'hui
-   (52,9 sur le terrain réel). Le meilleur buff mesuré (énergie de départ 30 → 100) le remet à 47,0 au niveau 105, mais le
-   fait passer 2e sur le terrain réel (55,7) : décision à prendre ensemble.
+7. **Le Canonnier n'est faible que si tous ses adversaires sont équipés de façon optimale** (39,6 au niveau 105, ~40 au
+   niveau 100, 42,5 à 47,0 au niveau 120), parce que son armure est plafonnée à sa très faible défense de base. Avec les vrais
+   joueurs, il gagne déjà : 52,9 sur le terrain réel, 53,0 au niveau 100 à 109. L'énergie de départ 30 → 100 le remettrait à
+   46,6 au niveau 100 bien équipé, mais à **59,1 et 68 % de la méta pour les vrais joueurs de niveau 100** : à ne pas faire
+   maintenant, à reprendre quand les joueurs s'équiperont mieux.
 
 ## 1. Méthode
 
@@ -254,7 +262,98 @@ l'équipement B (Bouclier ultime `maxEnergy3`, objet de vitesse, potion d'attaqu
   adversaires s'équipent en attaque (39,6 à 47,0).
 - **Pas robuste** : la faiblesse du Paladin (44,6) ne vient que de l'équipement choisi pour lui.
 
-### 4.5 Le build intuitif du Canonnier est mauvais
+### 4.5 Niveau 100 : bien équipé, develop y est moins équilibré que la prod
+Le niveau 100 est l'entrée du dernier palier, là où les objets pèsent le plus lourd. Même protocole réaliste, équipement
+optimal de niveau 120, avec potion, mêmes combats pour chaque build :
+
+| Classe | Prod 6.1.1 | Develop | Défense ×2 (modification 1) | Modification 1 + énergie du Canonnier 30 → 100 | Modifications 1 + 2 (état final de la branche) |
+|---|---|---|---|---|---|
+| Fantassin | 53,6 | 48,8 | 48,5 | 47,5 | 49,9 |
+| Tank | 54,5 | 49,5 | 51,6 | 50,8 | 52,9 |
+| Canonnier | **39,9** | **39,0** | **40,6** | 46,6 | **40,9** |
+| Chevalier | **58,7** | 48,2 | 50,2 | 48,8 | 51,2 |
+| Paladin | 51,8 | 51,9 | 52,9 | 52,0 | 53,6 |
+| Vétéran | 49,0 | 48,0 | 49,4 | 48,4 | 49,8 |
+| Mage | 42,5 | **64,6** | 56,9 | 55,9 | 51,8 |
+| **Écart** | 18,9 | **25,6** | 16,4 | **9,2** | 12,7 |
+| Écart pondéré terrain réel | 20,4 | 31,5 | 21,3 | 15,8 | 21,2 |
+| Méta réaliste (Nash) | Chevalier 61 %, Fantassin 23 %, Paladin 16 % | Mage 100 % | Mage 62 %, Canonnier 20 %, Vétéran 18 % | Mage 35 %, Canonnier 28 %, Vétéran 17 %, Paladin 11 %, Fantassin 9 % | Mage 54 %, Canonnier 14 %, Chevalier 10 %, Vétéran 7 %, Tank 6 %, Fantassin 5 %, Paladin 3 % |
+
+- **Au niveau 100 bien équipé, develop est moins équilibré que la prod** : les buffs du Mage de #5062 le font passer de 42,5 à
+  64,6. Les modifications de l'attaque sombre ramènent l'écart sous celui de la prod et le Mage dans la moyenne (51,8).
+- **Le buff du canon de #5062 n'aide pas le Canonnier au niveau 100** (39,9 → 39,0) : il avait été mesuré au niveau 157.
+  L'énergie de départ 30 → 100 le remet à 46,6, mais elle ne tient pas avec les vrais joueurs (ci-dessous).
+
+**Contrôles de robustesse au niveau 100**
+
+1. *Équipement ré-optimisé au niveau 100* (équipement C : l'optimiseur relancé au niveau 100 sur les règles de la branche,
+   réseau des deux côtés). À niveau égal, réseau des deux côtés (top 12) : Paladin 57,9, Tank 54,9, Chevalier 53,4, Mage 52,9,
+   Vétéran 48,5, Fantassin 42,4, Canonnier 40,1 ; méta Paladin 38 %, Canonnier 21 %, Tank 16 %, Chevalier 15 %, Vétéran 10 %.
+   Le même équipement dans le protocole réaliste :
+
+   | Classe | Develop | Modification 1 (défense ×2) |
+   |---|---|---|
+   | Fantassin | 50,6 | 50,6 |
+   | Tank | 51,6 | 53,2 |
+   | Canonnier | 44,9 | 44,9 |
+   | Chevalier | 44,8 | 45,8 |
+   | Paladin | 48,9 | 49,3 |
+   | Vétéran | 44,3 | 44,5 |
+   | Mage | **65,0** | **61,6** |
+   | **Écart** | 20,6 | 17,1 |
+   | Méta réaliste (Nash) | Mage 50 %, Canonnier 46 % | Mage 54 %, Canonnier 38 %, Paladin 8 % |
+
+   Le Mage domine toujours sur develop (65,0). Avec cet équipement, l'attaque sombre modifiée ne lui retire que 3,4 points,
+   tous en défense : en attaque, le moteur gagne 76 % de ses combats dans les deux cas (97,5 % contre le Tank, 99 % contre le
+   Paladin). Il passe par l'attaque empoisonnée (2,6 par combat, 90 % de critiques les deux premiers tours), le vol de souffle
+   (2,4) et l'attaque sombre (1,9).
+
+2. *Vrais joueurs de niveau 100 à 109 de la prod du 07/11, avec leur vrai équipement et leur familier* (52 joueurs,
+   mêmes combats pour chaque build) :
+
+   | Classe | Prod 6.1.1 | Develop | Modification 1 (défense ×2) | Modifications 1 + 2 (état final) |
+   |---|---|---|---|---|
+   | Fantassin | 49,0 | 49,9 | 50,0 | 50,1 |
+   | Tank | 51,0 | **43,9** | 44,6 | **45,0** |
+   | Canonnier | 49,3 | 53,0 | 53,0 | 54,0 |
+   | Chevalier | **58,9** | 52,5 | 52,5 | 52,5 |
+   | Paladin | 49,3 | 51,1 | 51,0 | 51,7 |
+   | Vétéran | 54,8 | 50,1 | 50,5 | 50,7 |
+   | Mage | **37,8** | 49,5 | 48,3 | 46,1 |
+   | **Écart** | **21,1** | **9,1** | **8,4** | **9,0** |
+   | Méta réaliste (Nash) | Chevalier 66 %, Canonnier 27 %, Vétéran 7 % | Vétéran 38 %, Paladin 25 %, Chevalier 19 %, Canonnier 9 %, Mage 8 % | Vétéran 39 %, Paladin 25 %, Chevalier 22 %, Mage 9 %, Canonnier 5 % | Vétéran 61 %, Paladin 23 %, Chevalier 15 % |
+
+   **Pour les joueurs de niveau 100 d'aujourd'hui, develop est bien plus équilibré que la prod** (écart 21,1 → 9,1). Le Mage
+   ne déborde que si ses joueurs et leurs adversaires s'équipent de façon optimale. Le Tank y est le plus faible (43,9).
+
+3. *Leviers mesurés au niveau 100*, appariés (mêmes combats), sur la branche :
+
+   | Variante | Équipement A (niv. 120 optimal) | Équipement C (niv. 100 optimal) | Vrais joueurs 100–109 | Terrain réel (méthode PR) |
+   |---|---|---|---|---|
+   | Branche avec la modification 1 (défense ×2) | Mage 56,9 ; Canonnier 40,6 ; écart 16,4 | Mage 61,6 ; Canonnier 44,9 ; écart 17,1 | Mage 48,3 ; Canonnier 53,0 ; écart 8,4 | Mage 50,8 ; Canonnier 52,8 |
+   | + Canonnier énergie 30 → 100 | Canonnier **+6,1** (46,6) ; écart 9,2 | Canonnier **+4,1** (49,0) ; écart 17,1 | Canonnier **+6,1 (59,1)** ; écart 8,4 → **15,7** ; méta Canonnier 68 % | Canonnier +2,9 (55,7, 2e) |
+   | + attaque sombre : défense ×2,5 au lieu de ×2 | | Mage −2,5 | Mage −0,6 | Mage −1,4 (49,4) |
+   | **+ attaque sombre : usure de départ ×1,6 au lieu de ×1,7** | **Mage −5,6 (50,3) ; écart 9,2 → 5,4** | **Mage −6,2 (55,0) ; écart 17,1 → 10,1** | Mage −1,4 | Mage −1,9 |
+   | **État final de la branche** (défense ×2 + usure ×1,6, sans l'énergie du Canonnier, Core compilé) | Mage 51,8 ; Canonnier 40,9 ; écart **12,7** | | Mage **46,1** (develop 49,5) ; écart 9,0 (develop 9,1) | |
+
+   Les lignes ×2,5 et ×1,6 sont mesurées avec l'énergie du Canonnier à 100 et appariées avec elle (sauf ×2,5 sur le terrain
+   réel, apparié avec la branche).
+
+   - **L'usure de départ ×1,6 est le levier qui manquait au niveau 100.** Avec l'équipement C, la défense comptée deux fois
+     ne touche que la défense du Mage ; ×1,6 baisse aussi son attaque (75,7 → 67,7). Avec les deux modifications de l'attaque
+     sombre et l'énergie du Canonnier, au niveau 100 avec l'équipement A, les 7 classes sont entre 47,4 et 52,7 et la méta
+     réaliste les joue toutes (Mage 22 %, Tank 17 %, Vétéran 17 %, Chevalier 15 %, Canonnier 13 %, Paladin 9 %, Fantassin 7 %).
+   - Sans l'énergie du Canonnier (état final de la branche), le Mage est dans la moyenne au niveau 100 bien équipé (51,8) et
+     c'est le Canonnier qui fixe l'écart (40,9). La méta réaliste y joue encore le Mage à 54 % : il bat les classes qui battent
+     les autres (équilibre sensible au bruit, ±1,3 point par duel).
+   - Son coût sur les joueurs d'aujourd'hui : −1,4 à −1,9 mesuré seul. Avec les deux modifications, les vrais Mages de niveau 100
+     à 109 passent de 49,5 (develop) à 46,1, 2e plus faible derrière le Tank (45,0), mais toujours bien au-dessus de la prod
+     (37,8). L'écart entre classes ne bouge pas (9,1 → 9,0).
+   - **L'énergie du Canonnier ne tient pas avec les vrais joueurs de niveau 100** : bien équipés ou non, ils gagnent déjà
+     (53,0), et +70 d'énergie les mettrait à 59,1 et à 68 % de la méta. Le Canonnier n'est faible que si tous ses adversaires
+     s'équipent de façon optimale.
+
+### 4.6 Le build intuitif du Canonnier est mauvais
 Même protocole réaliste, en ne changeant que l'équipement d'une classe (mêmes combats) :
 
 | Build | Score |
@@ -269,7 +368,7 @@ C'est le build que portent la plupart des vrais Canonniers. Ce n'est donc pas la
 ses joueurs qui s'équipent à l'inverse de ce qui marche, parce que le jeu ne le dit nulle part et que l'intuition (« canon de verre »
 → attaque et vitesse) est trompeuse avec des rendements décroissants.
 
-### 4.6 Méta réaliste : quelle classe choisirait un joueur qui sait tout ?
+### 4.7 Méta réaliste : quelle classe choisirait un joueur qui sait tout ?
 Équilibre de Nash sur le choix de classe (une classe pour attaquer et défendre), protocole réaliste :
 
 | Scénario | Prod 6.1.1 | Develop |
@@ -292,13 +391,16 @@ dans le PvP réaliste (vérifié sur une deuxième graine), ±0,3 sur l'équilib
 |---|---|---|---|---|
 | **Attaque sombre : défense comptée à 30 % et 10 % (au lieu de 15 % et 5 %)** | **63,1 → 55,1** ; écart 18,4 → **9,4** | 57,7 → 53,5 ; écart 11,9 → **6,3** | **51,4 → 50,8** | −2,7 |
 | Défense comptée à 37,5 % et 12,5 % (×2,5 au lieu de ×2) | équipement B : 65,2 → 57,4 (−7,8 au lieu de −5,3) | | 51,4 → 49,4 | |
+| **Usure de départ ×1,6 au lieu de ×1,7 (en plus de la défense ×2)** | niveau 100 : −5,6 (équipement A), −6,2 (équipement C) | | −1,9 ; vrais joueurs 100–109 : −1,4 | |
 | Attaque sombre ×1,65 au lieu de ×1,7 | 63,1 → 60,0 | | | |
 | Attaque sombre ×1,6 | | | | −6,0 |
 | Contre un maudit : ×1,4 au lieu de pleine puissance | 63,1 → 60,7 | | | −2,3 |
 
-La défense comptée à 30 % / 10 % est le seul levier qui **vise exactement le problème** : elle coupe le Mage là où il déborde
+La défense comptée à 30 % / 10 % est le levier qui **vise exactement le problème** : elle coupe le Mage là où il déborde
 (adversaires bien équipés, niveaux réalistes) et ne touche presque pas les Mages d'aujourd'hui face aux joueurs d'aujourd'hui.
-Les autres leviers baissent le Mage partout, y compris là où il n'est pas trop fort.
+Elle ne suffit pas au niveau 100 bien équipé (§4.5) : le Mage y gagne encore en attaque grâce au poison et au vol de souffle.
+L'usure de départ ×1,6 complète : son effet est 3 à 4 fois plus fort au niveau 100 bien équipé (−5,6 à −6,2) que sur les
+joueurs d'aujourd'hui (−1,4 à −1,9).
 
 ### 5.2 Paladin
 | Variante | Niveau 120 optimal | Niveau 157 optimal | Terrain réel (méthode PR) | Réseau, niveau égal (157 / 120)* |
@@ -360,15 +462,16 @@ Le Canonnier est faible quand tout le monde est bien équipé à bas niveau (39,
 défense de base (113 au niveau 105, 215 au niveau 157). Variantes mesurées sur la branche (avec l'attaque sombre modifiée),
 appariées avec elle :
 
-| Variante | Niveau 105 optimal | Niveau 120 optimal | Terrain réel (méthode PR) |
-|---|---|---|---|
-| Canon +8 % | 39,9 → 45,1 ; écart 17,6 → 11,1 | 47,2 → 51,9 | 52,8 → **57,1** (à égalité en tête) |
-| Énergie de départ 30 → 100 | 39,9 → **47,0** ; écart 17,6 → **9,1** | 47,2 → 51,5 | 52,8 → 55,7 (2e) |
-| Énergie de départ 30 → 65 | 39,9 → 42,9 ; écart 17,6 → 14,0 | | 52,8 → 54,6 |
+| Variante | Niveau 105 optimal | Niveau 120 optimal | Niveau 100 optimal (A / C) | Vrais joueurs 100–109 | Terrain réel (méthode PR) |
+|---|---|---|---|---|---|
+| Canon +8 % | 39,9 → 45,1 ; écart 17,6 → 11,1 | 47,2 → 51,9 | | | 52,8 → **57,1** (à égalité en tête) |
+| Énergie de départ 30 → 100 | 39,9 → **47,0** ; écart 17,6 → **9,1** | 47,2 → 51,5 | 40,6 → 46,6 / 44,9 → 49,0 | 53,0 → **59,1** (méta 68 %) | 52,8 → 55,7 (2e) |
+| Énergie de départ 30 → 65 | 39,9 → 42,9 ; écart 17,6 → 14,0 | | | | 52,8 → 54,6 |
 
 L'énergie aide plus là où il en a besoin (bas niveau, adversaires bien équipés) et moins sur le terrain réel que le canon.
 Les deux le font passer devant presque tout le monde sur le terrain réel d'aujourd'hui, où ses joueurs gagnent déjà grâce
-à leur build offensif contre des adversaires peu défendus.
+à leur build offensif contre des adversaires peu défendus. Les vrais joueurs de niveau 100 à 109 tranchent : il y gagne déjà
+(53,0), et l'énergie à 100 le rendrait dominant.
 
 ## 6. Liste des modifications proposées
 
@@ -380,27 +483,47 @@ Les deux le font passer devant presque tout le monde sur le terrain réel d'aujo
    - Effet : −8,0 au niveau 120 (équipement A), −5,3 (équipement B), −7,0 au niveau 105, −4,0 au niveau 157 ;
      **−0,6 seulement sur le terrain réel** (51,4 → 50,8), parce que les adversaires d'aujourd'hui ont peu de défense.
      L'identité est gardée : elle utilise toujours l'attaque de la cible, s'use, se recharge et frappe un maudit à pleine puissance.
-   - Le Mage reste premier bien équipé au niveau 120 (55 à 60) : c'est un premier pas, à réévaluer sur les vrais combats.
-     À ×2,5 (37,5 % et 12,5 %), le Mage perd encore 2,6 points bien équipé, mais 2 points sur le terrain réel (49,4) : à garder
-     en réserve si les vrais combats montrent encore un Mage dominant.
+   - Au niveau 100 bien équipé, il reste premier (56,9 à 61,6) : la défense ne pèse pas assez dans ses victoires en attaque.
+     D'où la modification 2. À ×2,5 (37,5 % et 12,5 %), le Mage ne perdait que 2,5 points de plus au niveau 100 (équipement C)
+     pour 1,4 sur le terrain réel : l'usure de départ fait mieux pour le même coût.
    - Description française : « Ignore la défense » → « Tient peu compte de la défense ».
-   - Le réseau des gardes du roi n'a pas besoin d'être réentraîné (33,1 → 33,3 sur le banc des gardes, mêmes combats).
-2. **Canonnier — à décider ensemble : énergie de départ 30 → 100** (non commité, une ligne dans `Core/resources/classes/20.json`).
-   - Pour : quand tout le monde est bien équipé à un niveau réaliste, il est de loin le plus faible (39,6 au niveau 105, 42,5 à
-     47,0 au niveau 120) ; +70 d'énergie le remet à 47,0 au niveau 105 (écart 17,6 → 9,1) et 51,5 au niveau 120. C'est une stat
-     de la seule classe 100+, comme les changements d'énergie du Tank et du Paladin dans #5062, et elle garde son identité
-     (il reste celui qui a le moins de défense et frappe le plus vite).
-   - Contre : aujourd'hui ses joueurs gagnent déjà (52,8 sur le terrain réel) ; il passerait 2e (55,7) derrière le Fantassin (56,9).
-   - La valeur intermédiaire (65) coûte presque autant sur le terrain réel (+1,8) pour moitié moins d'effet (+3,0) ; le canon +8 %
-     coûte plus sur le terrain réel (+4,3) pour moins d'effet à bas niveau (+5,3).
-   - Mon avis : le faire en même temps qu'on décide du +6 % du Fantassin (les deux classes de « burst » se retrouveraient
-     autour de 55–56 sur le terrain réel), ou attendre les vrais combats par tranche de niveau après la sortie.
+   - Le réseau des gardes du roi n'a pas besoin d'être réentraîné (banc des gardes, mêmes combats : 33,1 sur develop, 33,3
+     avec la modification 1, 32,6 avec les deux, ±1,2).
+2. **Mage — l'usure de l'attaque sombre démarre à ×1,6 au lieu de ×1,7** (`7f69ba647`, commité, une constante :
+   `FightConstants.DARK_ATTACK_WEAR.BASE_MULTIPLIER`).
+   - Problème : au niveau 100, là où les objets pèsent le plus, le Mage bien équipé gagne encore 56,9 à 61,6 % de ses combats
+     après la modification 1, et 76 % de ses attaques (97 à 99 % contre le Tank et le Paladin).
+   - Effet, mesuré avec l'énergie du Canonnier à 100 et apparié : niveau 100 bien équipé −5,6 (équipement A, écart 9,2 → 5,4,
+     les 7 classes jouées par la méta réaliste) et −6,2 (équipement C, écart 17,1 → 10,1) ; vrais joueurs de niveau 100 à 109
+     −1,4 ; terrain réel −1,9. État final de la branche (les deux modifications, Core compilé) : au niveau 100 bien équipé,
+     Mage 56,9 → 51,8 et écart 16,4 → 12,7 ; pour les vrais joueurs de niveau 100 à 109, Mage 49,5 (develop) → 46,1, écart
+     inchangé (9,1 → 9,0).
+   - **C'est un arbitrage à trancher ensemble** : la modification 2 règle le Mage pour des joueurs bien équipés, mais coûte
+     environ 3 points aux vrais Mages de niveau 100 par rapport à develop (ils restent 8 points au-dessus de la prod). Si l'on
+     préfère ne pas toucher aux joueurs d'aujourd'hui, garder la modification 1 seule et suivre le Mage par tranche de niveau
+     après la sortie ; le commit est isolé pour pouvoir le retirer.
+   - Le Mage reste bien au-dessus de la prod pour ses vrais joueurs (37,8 en prod au niveau 100 à 109).
+   - L'identité ne change pas : la séquence devient ×1,6, ×1,3, ×1,0, ×0,7… L'IA du Mage lance toujours l'attaque sombre fraîche
+     puis une seconde fois (seuil ×1,3) avant de la laisser reposer ; elle la juge usée un usage plus tôt (seuil ×0,8).
+     La description française ne cite pas de chiffre, rien à traduire.
+   - Ce que j'avais écarté cette nuit (« ×1,65 : −3 seulement là où il domine, et le même effet partout ») était mesuré au
+     niveau 120 sans la modification 1 ; au niveau 100, l'effet est 3 à 4 fois plus fort bien équipé que sur les joueurs
+     d'aujourd'hui.
 
-Vérification : le Core compilé avec la modification de l'attaque sombre (et le 2e bouclier, annulé depuis) rejoue
-**exactement** les combats simulés sans recompiler (0 combat différent sur 4 900, niveau 120 avec potion). Tests Core
-(1 954) et Lib passent, lint propre sur les fichiers modifiés.
+Vérification : le Core compilé avec la modification 1 (et le 2e bouclier, annulé depuis) rejoue **exactement** les combats
+simulés sans recompiler (0 combat différent sur 4 900, niveau 120 avec potion). Même contrôle pour la modification 2
+(0 combat différent sur 4 900, niveau 100, équipement C). Tests Core (1 953) et Lib (636)
+passent, lint propre sur les fichiers modifiés.
 
 ### À ne pas faire maintenant
+- **Canonnier : énergie de départ 30 → 100** (une ligne dans `Core/resources/classes/20.json`, non commitée).
+  - Pour : quand tous ses adversaires sont équipés de façon optimale à un niveau réaliste, il est de loin le plus faible
+    (39,0 à 44,9 au niveau 100, 39,6 au niveau 105, 42,5 à 47,0 au niveau 120) ; +70 d'énergie le remet à 46,6 à 49,0 au
+    niveau 100, 47,0 au niveau 105 et 51,5 au niveau 120, et garde son identité (moins de défense, frappe le plus vite).
+  - Contre, et décisif : **avec les vrais joueurs de niveau 100 à 109, il gagne déjà (53,0) et passerait à 59,1, choisi à 68 %
+    par la méta réaliste** ; sur le terrain réel, il passerait 2e (55,7). La valeur 65 et le canon +8 % ont le même défaut.
+  - À reprendre quand les joueurs s'équiperont mieux (voir « Apprendre aux joueurs à s'équiper ») : c'est à ce moment que sa
+    faiblesse apparaîtra.
 - **Tank** : pas de nerf. Il est le plus faible sur le terrain réel (42,3) et sans potion (45), comme voulu. Sa force à niveau
   égal (52 à 55) vient de l'objet et de la potion d'attaque et du bouclier en chaîne, que son IA n'a pas le droit de jouer :
   elle ne concerne que les gardes du roi.
@@ -410,12 +533,11 @@ Vérification : le Core compilé avec la modification de l'attaque sombre (et le
   faible dès que ses joueurs s'équiperont bien. À décider sur les vrais combats après la sortie.
 - **Paladin** : rien. Sa faiblesse apparente venait de l'équipement choisi pour lui (§4.4). Ni énergie, ni divine +30 %,
   ni 2e bouclier de l'IA (essayé puis annulé) : ces leviers le rendraient premier à niveau égal ou ajouteraient du contrôle.
-- **Mage** : pas de nerf de la puissance de l'attaque sombre (×1,65 : −3 seulement là où il domine, et le même effet partout),
-  ni du bonus contre un maudit (×1,4 : −2,4).
+- **Mage** : pas de nerf du bonus contre un maudit (×1,4 : −2,4 au niveau 120, moins ciblé que l'usure de départ).
 
 ### Hors chiffres
 - **Apprendre aux joueurs à s'équiper.** Rendements décroissants obligent, le meilleur équipement comble la faiblesse de la
-  classe. Les builds intuitifs coûtent 16 à 19 points (§4.5) et ce sont ceux de la plupart des joueurs. Une ligne de conseil
+  classe. Les builds intuitifs coûtent 16 à 19 points (§4.6) et ce sont ceux de la plupart des joueurs. Une ligne de conseil
   dans la description de chaque classe, ou chez le forgeron, changerait plus l'équilibre réel que n'importe quel chiffre.
   L'idée des affinités d'objets par lignée (branche `design/lineage-affinities`) irait dans le même sens.
 - **Mesurer au bon niveau.** Les prochains équilibrages doivent se mesurer au niveau 115–120 avec un équipement optimal, et
@@ -428,13 +550,13 @@ Vérification : le Core compilé avec la modification de l'attaque sombre (et le
 ## 7. Limites
 - Le moteur au niveau humain attaque à pleine énergie et joue un peu mieux que la moyenne des joueurs (66 % contre 63,8 %
   en prod) ; les chiffres « optimal » ne sont pas recalés sur les vrais joueurs, ce sont des écarts entre classes.
-- L'équipement optimal a été trouvé avec le réseau des deux côtés ; les tests de builds dans le protocole réaliste (§4.5)
+- L'équipement optimal a été trouvé avec le réseau des deux côtés ; les tests de builds dans le protocole réaliste (§4.6)
   confirment qu'il y est aussi le meilleur, avec une large marge.
 - Les familiers sont les 3 meilleurs de chaque classe selon le réseau ; la chauve-souris domine toujours.
 - 100 combats par duel et par scénario : ±1,3 point par classe (vérifié sur une 2e graine). Les équilibres de Nash sont
   sensibles au bruit : à lire comme des tendances.
 - Le réseau des gardes du roi n'a pas été réentraîné : les règles changées ne touchent ni son vocabulaire ni ses entrées,
-  mais l'attaque sombre frappe un peu moins fort contre un garde blindé. À vérifier avec le banc des gardes avant la sortie.
+  et le banc des gardes ne bouge pas au-delà du bruit (33,1 → 32,6 ± 1,2 avec les deux modifications de l'attaque sombre).
 
 ## 8. Reproduire
 Outils : `Crownicles/Tools`, branche `class-pet-study/optimal-gear` (`scripts/class-pet-study`), et `Crownicles/Fight-Simulator-30000`

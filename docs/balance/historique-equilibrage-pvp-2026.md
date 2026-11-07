@@ -201,5 +201,9 @@ Détails : [etude-equipement-optimal-2026-11-07.md](etude-equipement-optimal-202
   5 à 8 points bien équipé, 0,6 sur le terrain réel d'aujourd'hui.
 - Le Paladin ne paraissait faible qu'avec un mauvais choix d'équipement de l'optimiseur ; le 2e bouclier essayé pour son IA a été annulé.
 - Le Canonnier est faible aux niveaux bas quand tout le monde est bien équipé (39,6 au niveau 105) : son armure est plafonnée à sa
-  défense de base. Le meilleur buff testé (énergie de départ 30 → 100) le remet à 47,0 mais le fait passer 2e sur le terrain
-  réel d'aujourd'hui (55,7) : décision à prendre (voir l'étude).
+  défense de base. Le meilleur buff testé (énergie de départ 30 → 100) le remet à 47,0, mais avec les vrais joueurs de niveau
+  100 à 109 il gagne déjà (53,0) et passerait à 59,1 : écarté pour l'instant.
+- Niveau 100 : bien équipé, develop est moins équilibré que la prod (écart 25,6 contre 18,9, Mage 64,6) ; avec les vrais
+  joueurs de niveau 100 à 109 et leur vrai équipement, c'est l'inverse (écart 9,1 contre 21,1). La défense comptée deux fois
+  ne suffit pas au niveau 100 bien équipé (Mage 56,9 à 61,6) : 2e modification proposée sur la branche, l'usure de l'attaque
+  sombre démarre à ×1,6 au lieu de ×1,7 (Mage −5,6 à −6,2 au niveau 100 bien équipé, −1,4 à −1,9 sur les joueurs d'aujourd'hui).
