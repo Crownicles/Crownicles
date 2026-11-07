@@ -57,6 +57,7 @@ import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
 	getCookingGrade, CookingOutputType, CookingOutputTypeValue, getCookingSpecialtiesLimit, hasUnlockedCookingSpecialties,
+	TIME_POTION_WEEKLY_CRAFT_LIMIT,
 	SPECIALTY_SLOT_INDEX,
 	FAILED_CRAFT_CONSOLATION_CHANCE, FAILED_CRAFT_CONSOLATION_MIN_RARITY, FAILED_CRAFT_CONSOLATION_MAX_RARITY
 } from "../../../../Lib/src/constants/CookingConstants";
@@ -880,12 +881,76 @@ function buildCookingUseLogParams({
 	};
 }
 
+function logCookingUse(params: CookingUseLogParams): void {
+	crowniclesInstance?.logsDatabase.logCookingUse(params).then();
+}
+
 /**
- * Awaited: the weekly time potion limit counts the logged crafts, so a craft must be logged before the
- * menu shown after it and before the player can start the next one
+ * Take one of the time potions of the week before cooking one, so two concurrent crafts can't both take the last one
+ * @returns false when the weekly limit is already reached
  */
-async function logCookingUse(params: CookingUseLogParams): Promise<void> {
-	await crowniclesInstance?.logsDatabase.logCookingUse(params);
+async function takeWeeklyTimePotionUnderLock(lockedPlayer: Locked<Player>): Promise<boolean> {
+	if (lockedPlayer.timePotionsCookedThisWeek >= TIME_POTION_WEEKLY_CRAFT_LIMIT) {
+		return false;
+	}
+	lockedPlayer.timePotionsCookedThisWeek++;
+	await lockedPlayer.save();
+	return true;
+}
+
+/**
+ * Give back the time potion taken for a craft that did not brew one
+ */
+async function giveBackWeeklyTimePotionUnderLock(lockedPlayer: Locked<Player>): Promise<void> {
+	lockedPlayer.timePotionsCookedThisWeek = Math.max(0, lockedPlayer.timePotionsCookedThisWeek - 1);
+	await lockedPlayer.save();
+}
+
+/**
+ * Mirror the persisted count on the craft player without dirtying it, for the menu shown after the craft
+ */
+function mirrorTimePotionsCooked(player: Player, lockedPlayer: Locked<Player>): void {
+	player.timePotionsCookedThisWeek = lockedPlayer.timePotionsCookedThisWeek;
+	player.changed("timePotionsCookedThisWeek", false);
+}
+
+/**
+ * Cook the recipe. A time potion is first taken from the weekly limit under the player lock, and given back
+ * when the craft brews none, so the limit holds even for concurrent crafts.
+ * @returns null when the weekly limit is reached, nothing being consumed
+ */
+async function executeCraftWithinWeeklyLimit({
+	player, recipe, home
+}: ReadyCookingCraftContext): Promise<CraftResult | null> {
+	const craft = (): Promise<CraftResult> => CookingService.executeCraft({
+		player, recipe, homeId: home.id
+	});
+	if (!CookingService.isTimePotionRecipe(recipe)) {
+		return await craft();
+	}
+
+	const taken = await Player.withLocked(player.id, async lockedPlayer => {
+		const hasTaken = await takeWeeklyTimePotionUnderLock(lockedPlayer);
+		mirrorTimePotionsCooked(player, lockedPlayer);
+		return hasTaken;
+	});
+	if (!taken) {
+		return null;
+	}
+
+	let result: CraftResult | undefined;
+	try {
+		result = await craft();
+		return result;
+	}
+	finally {
+		if (!result?.success) {
+			await Player.withLocked(player.id, async lockedPlayer => {
+				await giveBackWeeklyTimePotionUnderLock(lockedPlayer);
+				mirrorTimePotionsCooked(player, lockedPlayer);
+			});
+		}
+	}
 }
 
 /**
@@ -905,16 +970,29 @@ function getCraftedMaterials({
 	return material ? [material, ...surplus] : surplus;
 }
 
+function buildTimePotionLimitBlock({
+	player, home, cookingSlots, recipe, slotRecipe
+}: ReadyCookingCraftContext): BlockedCraftParams {
+	return {
+		player,
+		home,
+		cookingSlots,
+		error: CookingCraftErrors.TIME_POTION_WEEKLY_LIMIT,
+		recipeId: recipe.id,
+		wasSecret: slotRecipe.isSecret,
+		outputType: recipe.outputType
+	};
+}
+
 async function executeReadyCookingCraft(
 	craftContext: ReadyCookingCraftContext,
 	packetContext: PacketContext
 ): Promise<CrowniclesPacket[]> {
 	const response: CrowniclesPacket[] = [];
-	const result = await CookingService.executeCraft({
-		player: craftContext.player,
-		recipe: craftContext.recipe,
-		homeId: craftContext.home.id
-	});
+	const result = await executeCraftWithinWeeklyLimit(craftContext);
+	if (!result) {
+		return [await buildBlockedCraftResponse(buildTimePotionLimitBlock(craftContext))];
+	}
 	if (craftContext.player.pinnedCookingRecipeId === craftContext.recipe.id) {
 		const observedPinnedId = craftContext.recipe.id;
 		await Player.withLocked(craftContext.player.id, async lockedPlayer => {
@@ -940,11 +1018,6 @@ async function executeReadyCookingCraft(
 		result,
 		guild: craftContext.guild
 	});
-
-	// Logged before the menu is rebuilt: the time potions left this week are counted from this log
-	await logCookingUse(buildCookingUseLogParams({
-		craftContext, result, outputResult
-	}));
 	const updatedSlots = await CookingService.getSlotRecipes({
 		player: craftContext.player,
 		homeId: craftContext.home.id,
@@ -961,6 +1034,9 @@ async function executeReadyCookingCraft(
 		craftContext, result, outputResult, menu
 	}));
 	appendInventorySwapPackets(response, outputResult.inventorySwapPackets);
+	logCookingUse(buildCookingUseLogParams({
+		craftContext, result, outputResult
+	}));
 	await MissionsController.update(craftContext.player, response, { missionId: "cookRecipes" });
 
 	if (result.levelUp) {
@@ -1177,14 +1253,29 @@ function mirrorUnpinnedRecipe(player: Player, recipeId: CookingRecipeId): void {
 	}
 }
 
-/**
- * Make a recipe currently offered on a rotating station one of the player's specialties
- */
-async function setSpecialty(data: PlayerAndHome, choice: CookingSlotRecipeRef): Promise<CookingSpecialtyError | null> {
-	if (!hasUnlockedCookingSpecialties(data.player.cookingLevel) || !await isOfferedOnRotatingStation(data, choice)) {
+async function addOfferedSpecialtyUnderLock(
+	lockedPlayer: Locked<Player>,
+	data: PlayerAndHome,
+	choice: CookingSlotRecipeRef
+): Promise<CookingSpecialtyError | null> {
+	if (!await isOfferedOnRotatingStation({
+		...data,
+		player: lockedPlayer
+	}, choice)) {
 		return CookingSpecialtyErrors.UNAVAILABLE;
 	}
-	const error = await Player.withLocked(data.player.id, lockedPlayer => addSpecialtyUnderLock(lockedPlayer, choice.recipeId));
+	return await addSpecialtyUnderLock(lockedPlayer, choice.recipeId);
+}
+
+/**
+ * Make a recipe currently offered on a rotating station one of the player's specialties. The offer is checked under
+ * the player lock, with the furnace as it is then: a concurrent re-roll can't let a stale choice through.
+ */
+async function setSpecialty(data: PlayerAndHome, choice: CookingSlotRecipeRef): Promise<CookingSpecialtyError | null> {
+	if (!hasUnlockedCookingSpecialties(data.player.cookingLevel)) {
+		return CookingSpecialtyErrors.UNAVAILABLE;
+	}
+	const error = await Player.withLocked(data.player.id, lockedPlayer => addOfferedSpecialtyUnderLock(lockedPlayer, data, choice));
 	if (!error) {
 		mirrorUnpinnedRecipe(data.player, choice.recipeId);
 	}

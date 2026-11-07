@@ -494,6 +494,7 @@ export async function exportPlayerData(
 			lastBedUsedAt: player.lastBedUsedAt,
 			furnacePosition: player.furnacePosition,
 			pinnedCookingRecipeId: player.pinnedCookingRecipeId,
+			timePotionsCookedThisWeek: player.timePotionsCookedThisWeek,
 			lastGardenWatered: player.lastGardenWatered,
 			createdAt: player.createdAt,
 			updatedAt: player.updatedAt

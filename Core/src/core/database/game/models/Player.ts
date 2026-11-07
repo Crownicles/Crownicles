@@ -260,6 +260,8 @@ export class Player extends Model {
 
 	declare pinnedCookingRecipeId: string | null;
 
+	declare timePotionsCookedThisWeek: number;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -1543,6 +1545,13 @@ export class Player extends Model {
  */
 export class Players {
 	/**
+	 * Start a new week of time potions for every player
+	 */
+	static async resetTimePotionsCookedThisWeek(): Promise<void> {
+		await Player.update({ timePotionsCookedThisWeek: 0 }, { where: { timePotionsCookedThisWeek: { [Op.gt]: 0 } } });
+	}
+
+	/**
 	 * Get or create a player
 	 * @param keycloakId
 	 */
@@ -2122,6 +2131,11 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.STRING(64), // eslint-disable-line new-cap
 			allowNull: true,
 			defaultValue: null
+		},
+		timePotionsCookedThisWeek: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 0
 		},
 		updatedAt: {
 			type: DataTypes.DATE,

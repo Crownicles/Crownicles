@@ -50,7 +50,6 @@ import {
 import {
 	CookingSlotData, RecipeSlotData, PinnedRecipeInfo, RecipeIngredients, RecipeDisplayInfo, CookingSpecialtyInfo
 } from "../../../../Lib/src/types/CookingTypes";
-import { crowniclesInstance } from "../../app";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import { Badge } from "../../../../Lib/src/types/Badge";
@@ -228,7 +227,7 @@ export class CookingService {
 			...await CookingService.loadIngredientStocks(homeId, player.id),
 			guild,
 			keptRecipeIds: new Set([...specialtyIds, ...player.pinnedCookingRecipeId ? [player.pinnedCookingRecipeId] : []]),
-			timePotionsLeftThisWeek: await CookingService.getTimePotionsLeftThisWeek(player, [...slotRecipes, ...offeredSpecialties])
+			timePotionsLeftThisWeek: CookingService.getTimePotionsLeftThisWeek(player, [...slotRecipes, ...offeredSpecialties])
 		};
 
 		return [
@@ -260,18 +259,12 @@ export class CookingService {
 	}
 
 	/**
-	 * Time potions the player can still cook this week, or undefined when none of the given recipes
-	 * brews one (the weekly count is then not needed and the logs database is not queried)
+	 * Time potions the player can still cook this week, or undefined when none of the given recipes brews one
 	 */
-	static async getTimePotionsLeftThisWeek(player: Player, recipes: (CookingRecipe | null)[]): Promise<number | undefined> {
-		if (!recipes.some(recipe => recipe && CookingService.isTimePotionRecipe(recipe))) {
-			return undefined;
-		}
-		const timePotionRecipeIds = CookingRecipeDataController.instance
-			.getByType(RecipeType.POTION_TIME_SPEEDUP)
-			.map(recipe => recipe.id);
-		const cookedThisWeek = await crowniclesInstance?.logsDatabase.countSuccessfulCookingCraftsThisWeek(player.keycloakId, timePotionRecipeIds) ?? 0;
-		return Math.max(0, TIME_POTION_WEEKLY_CRAFT_LIMIT - cookedThisWeek);
+	static getTimePotionsLeftThisWeek(player: Player, recipes: (CookingRecipe | null)[]): number | undefined {
+		return recipes.some(recipe => recipe && CookingService.isTimePotionRecipe(recipe))
+			? Math.max(0, TIME_POTION_WEEKLY_CRAFT_LIMIT - player.timePotionsCookedThisWeek)
+			: undefined;
 	}
 
 	/**
@@ -759,7 +752,7 @@ export class CookingService {
 		const {
 			plantStorageMap, materialMap
 		} = await CookingService.loadIngredientStocks(homeId, player.id);
-		const timePotionsLeftThisWeek = await CookingService.getTimePotionsLeftThisWeek(player, specialties);
+		const timePotionsLeftThisWeek = CookingService.getTimePotionsLeftThisWeek(player, specialties);
 
 		return specialties.map(recipe => {
 			const { hasIngredients } = CookingService.buildIngredientAvailability(recipe, plantStorageMap, materialMap);
