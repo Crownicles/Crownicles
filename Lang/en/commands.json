@@ -475,8 +475,7 @@
         "description": "Allows you to manage your equipment for each item category: equip an item from your inventory, return the equipped item to your inventory, or swap two items."
       },
       "FIGHT": {
-        "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats",
-        "image": "https://crownicles.com/public/ressources/fighthelp/en/5.1.7.png"
+        "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
         "description": "Displays a history of your most recent battles: the opponent you faced, the result, and each fighter’s progress in glory and league rank. If you have already fought a King’s Guard, the **King’s Guards** button shows your record against the Guards, your ranking, and the kingdom’s honor roll."
