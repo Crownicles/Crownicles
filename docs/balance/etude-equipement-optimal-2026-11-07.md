@@ -22,16 +22,16 @@ Historique complet du travail : [historique-equilibrage-pvp-2026.md](historique-
 4. **Les builds intuitifs sont des pièges** : rendements décroissants obligent, l'optimum comble la faiblesse de la classe.
    Un Canonnier « canon de verre » perd 16 points, un Tank « mur » 16, un Mage « attaque » 19. La plupart des vrais Canonniers,
    Tanks et Mages jouent ces builds.
-5. **Deux modifications proposées, commitées sur cette branche** (détails §6) :
-   - l'attaque sombre compte 30 % et 10 % de la défense de la cible au lieu de 15 % et 5 % : le Mage optimal au niveau 120
-     passe de 63,1 à 55,1, il ne perd que 0,6 point sur le terrain réel ;
-   - optionnel : l'IA de défense du Paladin peut affaiblir une 2e fois son adversaire (une chance sur deux) : c'est la plus
-     faible des IA de défense quand les joueurs sont bien équipés, et ce levier n'aide pas les Paladins humains ; il coûte un
-     peu de contrôle (21 → 27 % des tours de l'attaquant).
-
-   Ensemble, au niveau 120 avec un équipement optimal, l'écart entre classes passe de 18,4 à 7,9.
-
-
+5. **Une modification proposée, commitée sur cette branche** (détails §6) : l'attaque sombre compte 30 % et 10 % de la défense
+   de la cible au lieu de 15 % et 5 %. Le Mage bien équipé au niveau 120 perd 5 à 8 points selon l'équipement mesuré
+   (63,1 → 55,1), il ne perd que 0,6 point sur le terrain réel d'aujourd'hui.
+6. **Le Paladin n'est pas faible** : il ne le paraissait qu'avec l'équipement choisi par l'optimiseur au niveau 120. Avec
+   potion d'attaque et objet de vitesse, il gagne 52,3 % au lieu de 44,6 %. La modification de son IA essayée cette nuit
+   (2e bouclier) a été annulée.
+7. **Le Canonnier est vraiment faible aux niveaux réalistes quand tout le monde est bien équipé** (39,6 au niveau 105,
+   42,5 à 47,0 au niveau 120), parce que son armure est plafonnée à sa très faible défense de base. Il va bien aujourd'hui
+   (52,9 sur le terrain réel). Le meilleur buff mesuré (énergie de départ 30 → 100) le remet à 47,0 au niveau 105, mais le
+   fait passer 2e sur le terrain réel (55,7) : décision à prendre ensemble.
 
 ## 1. Méthode
 
@@ -213,7 +213,29 @@ Niveau 120, équipement ré-optimisé pour ce niveau, avec potion :
   défense de la cible. Elle ignore presque la défense, et elle frappe à pleine puissance (×1,7, sans usure) tant que la cible est
   maudite. Quand les autres s'équipent en défense (équipement optimal, ou niveau plus bas où les objets pèsent plus), leurs dégâts
   baissent, pas ceux du Mage.
-- Le Canonnier est le plus faible à niveau égal au niveau 120 (39,4), mais correct dans le PvP réaliste (47,0) et sur le terrain réel.
+- Le Canonnier est le plus faible à niveau égal au niveau 120 (39,4), et faible dans le PvP réaliste dès que le niveau baisse
+  (voir ci-dessous).
+
+**Contrôles de robustesse au niveau réaliste** (develop) :
+
+| Classe | Niv. 120, équipement A | Niv. 120, équipement B | Niv. 105 (équipement A) | Niv. 120 sans potion |
+|---|---|---|---|---|
+| Fantassin | 47,8 | 49,1 | 48,9 | 50,3 |
+| Tank | 51,4 | 48,8 | 50,3 | 43,4 |
+| Canonnier | 47,0 | **42,5** | **39,6** | 47,0 |
+| Chevalier | 46,5 | 45,3 | 48,7 | 48,7 |
+| Paladin | **44,6** | 52,7 | 49,6 | 49,9 |
+| Vétéran | 49,6 | 46,4 | 48,4 | 52,9 |
+| Mage | **63,1** | **65,2** | **64,5** | **57,9** |
+| **Écart** | 18,4 | 22,7 | 24,9 | 14,4 |
+
+L'équipement A est l'optimum trouvé pour develop, l'équipement B celui trouvé après les modifications de cette branche.
+Le réseau les juge presque équivalents, mais face aux IA scriptées certaines options valent ±5 à 8 points : le Paladin
+avec l'équipement A (Conventions de Genève `maxEnergy3`, objet de défense, potion de vitesse) fait 44,6 ; seul avec
+l'équipement B (Bouclier ultime `maxEnergy3`, objet de vitesse, potion d'attaque) il fait **52,3** (défense 18,6 → 30,9 %).
+- **Robuste** : le Mage domine dans tous ces scénarios (58 à 65), le Canonnier est faible dès que le niveau baisse ou que les
+  adversaires s'équipent en attaque (39,6 à 47,0).
+- **Pas robuste** : la faiblesse du Paladin (44,6) ne vient que de l'équipement choisi pour lui.
 
 ### 4.5 Le build intuitif du Canonnier est mauvais
 Même protocole réaliste, en ne changeant que l'équipement d'une classe (mêmes combats) :
@@ -252,6 +274,7 @@ dans le PvP réaliste (vérifié sur une deuxième graine), ±0,3 sur l'équilib
 | Variante | Niveau 120 optimal | Niveau 157 optimal | Terrain réel (méthode PR) | Réseau (157) |
 |---|---|---|---|---|
 | **Attaque sombre : défense comptée à 30 % et 10 % (au lieu de 15 % et 5 %)** | **63,1 → 55,1** ; écart 18,4 → **9,4** | 57,7 → 53,5 ; écart 11,9 → **6,3** | **51,4 → 50,8** | −2,7 |
+| Défense comptée à 37,5 % et 12,5 % (×2,5 au lieu de ×2) | équipement B : 65,2 → 57,4 (−7,8 au lieu de −5,3) | | 51,4 → 49,4 | |
 | Attaque sombre ×1,65 au lieu de ×1,7 | 63,1 → 60,0 | | | |
 | Attaque sombre ×1,6 | | | | −6,0 |
 | Contre un maudit : ×1,4 au lieu de pleine puissance | 63,1 → 60,7 | | | −2,3 |
@@ -268,6 +291,10 @@ Les autres leviers baissent le Mage partout, y compris là où il n'est pas trop
 | Attaque divine +30 % | 44,6 → 47,7 (défense 18,6 → 24,5, attaque inchangée) | | 48,2 → 49,9 (attaque +1,7) | ≈ +5,1 / +1,1 (Paladin premier) |
 
 \* mesuré avec l'attaque sombre modifiée, moins l'effet de l'attaque sombre seule.
+
+**Conclusion : aucune de ces modifications n'est nécessaire.** Le Paladin ne paraissait faible qu'avec l'équipement choisi
+par l'optimiseur au niveau 120 ; avec potion d'attaque et objet de vitesse, il gagne 52,3 % (défense 30,9 %) sans rien changer
+(§4.4). Le 2e bouclier, commité cette nuit, a été annulé sur la branche.
 
 Dans le PvP réaliste, la divine semblait n'aider que l'IA (le moteur attaquant la joue 0,21 fois par combat, l'IA 1,45 fois),
 mais le réseau, qui joue mieux, s'en sert beaucoup plus, et le terrain réel montre aussi un gain en attaque : des joueurs qui
@@ -286,8 +313,10 @@ s'adaptent en profiteraient. Seule la modification d'IA ne peut pas profiter aux
 Attaque puissante sans les +6 % de #5062 (PvP réaliste) : Fantassin 51,4 → 46,9 bien équipé au niveau 157, 57,2 → 55,6 sur
 le terrain réel.
 
-### 5.4 Le paquet retenu : attaque sombre + IA du Paladin
-Mesuré dans tous les scénarios réalistes, apparié avec develop (moyenne attaque/défense, chaque classe pèse autant) :
+### 5.4 Le paquet mesuré : attaque sombre + IA du Paladin
+Mesuré dans tous les scénarios réalistes, apparié avec develop (moyenne attaque/défense, chaque classe pèse autant). La partie
+IA du Paladin a ensuite été annulée (§5.2) : elle ne bouge que le Paladin (+2 à +3,5), les chiffres du Mage et des autres
+classes viennent de l'attaque sombre (seule, au niveau 120 avec potion : Mage −8,0, écart 18,4 → 9,4, §5.1).
 
 | Classe | Niv. 120, potion | Niv. 120, sans potion | Niv. 157, potion | Niv. 157, sans potion | Terrain réel (méthode PR) |
 |---|---|---|---|---|---|
@@ -309,29 +338,52 @@ Tank 17 % (au lieu de Mage 100 %) ; niveau 157 sans potion Vétéran 36 %, Palad
 - Côté réseau (niveau égal), l'attaque sombre baisse le Mage de 2,7 à 5,5 points ; la modification d'IA n'y joue pas.
 
 
+### 5.5 Canonnier : un buff pour les niveaux réalistes ?
+Le Canonnier est faible quand tout le monde est bien équipé à bas niveau (39,6 au niveau 105) : son armure est plafonnée à sa
+défense de base (113 au niveau 105, 215 au niveau 157). Variantes mesurées sur la branche (avec l'attaque sombre modifiée),
+appariées avec elle :
+
+| Variante | Niveau 105 optimal | Niveau 120 optimal | Terrain réel (méthode PR) |
+|---|---|---|---|
+| Canon +8 % | 39,9 → 45,1 ; écart 17,6 → 11,1 | 47,2 → 51,9 | 52,8 → **57,1** (à égalité en tête) |
+| Énergie de départ 30 → 100 | 39,9 → **47,0** ; écart 17,6 → **9,1** | 47,2 → 51,5 | 52,8 → 55,7 (2e) |
+| Énergie de départ 30 → 65 | 39,9 → 42,9 ; écart 17,6 → 14,0 | | 52,8 → 54,6 |
+
+L'énergie aide plus là où il en a besoin (bas niveau, adversaires bien équipés) et moins sur le terrain réel que le canon.
+Les deux le font passer devant presque tout le monde sur le terrain réel d'aujourd'hui, où ses joueurs gagnent déjà grâce
+à leur build offensif contre des adversaires peu défendus.
+
 ## 6. Liste des modifications proposées
 
-### À faire (commitées sur `balance/realistic-gear-meta-study`, une par commit, tests et lint passés)
-1. **Mage — l'attaque sombre compte 30 % et 10 % de la défense de la cible (au lieu de 15 % et 5 %)** (`de4fe896a`).
-   - Problème : à un niveau réaliste et bien équipé, le Mage gagne 63 % de ses combats et son IA plus de la moitié de ses défenses.
-     L'attaque sombre ignore presque la défense : plus les adversaires s'équipent en défense, plus le Mage domine.
-   - Effet : 63,1 → 55,1 au niveau 120 optimal, 57,7 → 53,7 au niveau 157 ; **0,6 point seulement sur le terrain réel**
-     (51,4 → 50,8), parce que les adversaires d'aujourd'hui ont peu de défense. L'identité est gardée : elle utilise toujours
-     l'attaque de la cible, s'use, se recharge et frappe un maudit à pleine puissance.
+### À faire
+1. **Mage — l'attaque sombre compte 30 % et 10 % de la défense de la cible (au lieu de 15 % et 5 %)** (`de4fe896a`, commité).
+   - Problème : à un niveau réaliste et bien équipé, le Mage gagne 63 à 65 % de ses combats et son IA plus de la moitié de ses
+     défenses ; la méta réaliste le choisit à 100 %. L'attaque sombre ignore presque la défense : plus les adversaires
+     s'équipent en défense (ou plus le niveau est bas, où les objets pèsent plus), plus le Mage domine.
+   - Effet : −8,0 au niveau 120 (équipement A), −5,3 (équipement B), −7,0 au niveau 105, −4,0 au niveau 157 ;
+     **−0,6 seulement sur le terrain réel** (51,4 → 50,8), parce que les adversaires d'aujourd'hui ont peu de défense.
+     L'identité est gardée : elle utilise toujours l'attaque de la cible, s'use, se recharge et frappe un maudit à pleine puissance.
+   - Le Mage reste premier bien équipé au niveau 120 (55 à 60) : c'est un premier pas, à réévaluer sur les vrais combats.
+     À ×2,5 (37,5 % et 12,5 %), le Mage perd encore 2,6 points bien équipé, mais 2 points sur le terrain réel (49,4) : à garder
+     en réserve si les vrais combats montrent encore un Mage dominant.
    - Description française : « Ignore la défense » → « Tient peu compte de la défense ».
-2. **Optionnel — Paladin : son IA de défense peut affaiblir une 2e fois son adversaire, une fois sur deux** (`e88cbf568`).
-   - Problème : c'est la plus faible des IA de défense (18,6 % de défenses gagnées au niveau 120 optimal, 29 % sur le terrain
-     réel), alors que les Paladins humains sont les meilleurs attaquants (70 à 73 %). Un buff chiffré (énergie, divine,
-     ultime) aide aussi les attaquants et le rend premier à niveau égal.
-   - Effet : bien équipé, défense 18,6 → 24 % et score +2 à +3,5 selon le scénario ; aucun effet sur les Paladins humains.
-   - Coût : le contrôle subi par l'attaquant passe de 21–22 à 27 % de ses tours (repère : 30 %, celui du Tank), et sur le
-     terrain réel d'aujourd'hui le gain est nul (48,2 → 48,2). C'est une préparation à des joueurs mieux équipés, au prix d'un
-     peu plus de contrôle : à garder seulement si ce compromis te convient. Le commit s'annule seul.
+   - Le réseau des gardes du roi n'a pas besoin d'être réentraîné (33,1 → 33,3 sur le banc des gardes, mêmes combats).
+2. **Canonnier — à décider ensemble : énergie de départ 30 → 100** (non commité, une ligne dans `Core/resources/classes/20.json`).
+   - Pour : quand tout le monde est bien équipé à un niveau réaliste, il est de loin le plus faible (39,6 au niveau 105, 42,5 à
+     47,0 au niveau 120) ; +70 d'énergie le remet à 47,0 au niveau 105 (écart 17,6 → 9,1) et 51,5 au niveau 120. C'est une stat
+     de la seule classe 100+, comme les changements d'énergie du Tank et du Paladin dans #5062, et elle garde son identité
+     (il reste celui qui a le moins de défense et frappe le plus vite).
+   - Contre : aujourd'hui ses joueurs gagnent déjà (52,8 sur le terrain réel) ; il passerait 2e (55,7) derrière le Fantassin (56,9).
+   - La valeur intermédiaire (65) coûte presque autant sur le terrain réel (+1,8) pour moitié moins d'effet (+3,0) ; le canon +8 %
+     coûte plus sur le terrain réel (+4,3) pour moins d'effet à bas niveau (+5,3).
+   - Mon avis : le faire en même temps qu'on décide du +6 % du Fantassin (les deux classes de « burst » se retrouveraient
+     autour de 55–56 sur le terrain réel), ou attendre les vrais combats par tranche de niveau après la sortie.
+
+Vérification : le Core compilé avec la modification de l'attaque sombre (et le 2e bouclier, annulé depuis) rejoue
+**exactement** les combats simulés sans recompiler (0 combat différent sur 4 900, niveau 120 avec potion). Tests Core
+(1 954) et Lib passent, lint propre sur les fichiers modifiés.
 
 ### À ne pas faire maintenant
-- **Canonnier** : pas de buff. Il est dans la moyenne dans tous les scénarios réalistes (47 à 50) et sur le terrain réel (52,9).
-  Il est le plus faible à niveau égal (38 à 44), mais ce protocole suppose des défenseurs parfaits, que le jeu n'a pas.
-  Son vrai problème est l'équipement de ses joueurs (voir plus bas).
 - **Tank** : pas de nerf. Il est le plus faible sur le terrain réel (42,3) et sans potion (45), comme voulu. Sa force à niveau
   égal (52 à 55) vient de l'objet et de la potion d'attaque et du bouclier en chaîne, que son IA n'a pas le droit de jouer :
   elle ne concerne que les gardes du roi.
@@ -339,8 +391,8 @@ Tank 17 % (au lieu de Mage 100 %) ; niveau 157 sans potion Vétéran 36 %, Palad
   premier (57,2), mais bien équipé il est dans la moyenne (47 à 52). Les retirer ne
   coûterait que 1,6 point sur le terrain réel (57,2 → 55,6) mais 4,5 points bien équipé (51,4 → 46,9) : le Fantassin deviendrait
   faible dès que ses joueurs s'équiperont bien. À décider sur les vrais combats après la sortie.
-- **Paladin** : ni énergie (+35 : +1,2 à +2,2) ni divine +30 % (+3 en réaliste) : ces leviers aident aussi l'attaquant, et à
-  niveau égal le Paladin passerait premier.
+- **Paladin** : rien. Sa faiblesse apparente venait de l'équipement choisi pour lui (§4.4). Ni énergie, ni divine +30 %,
+  ni 2e bouclier de l'IA (essayé puis annulé) : ces leviers le rendraient premier à niveau égal ou ajouteraient du contrôle.
 - **Mage** : pas de nerf de la puissance de l'attaque sombre (×1,65 : −3 seulement là où il domine, et le même effet partout),
   ni du bonus contre un maudit (×1,4 : −2,4).
 

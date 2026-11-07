@@ -196,6 +196,10 @@ Détails : [etude-equipement-optimal-2026-11-07.md](etude-equipement-optimal-202
   de 23,9 (prod) à 11,9 (develop) au niveau 157. Au niveau réaliste (115 en médiane), le Mage bien équipé domine (63 %).
 - Les builds intuitifs (Canonnier « canon de verre », Tank « mur », Mage « attaque ») coûtent 16 à 19 points : l'optimum comble
   la faiblesse de la classe, à cause des rendements décroissants des stats.
-- Deux modifications proposées sur la branche `balance/realistic-gear-meta-study` : l'attaque sombre compte 30 % / 10 % de la
-  défense (au lieu de 15 % / 5 %) et l'IA de défense du Paladin peut affaiblir une 2e fois. Ensemble, au niveau 120 avec un
-  équipement optimal, l'écart passe de 18,4 à 7,9 ; le terrain réel d'aujourd'hui ne bouge pas de plus d'un point.
+- Le Mage bien équipé domine à tous les niveaux réalistes (58 à 65 %). Modification proposée sur la branche
+  `balance/realistic-gear-meta-study` : l'attaque sombre compte 30 % / 10 % de la défense (au lieu de 15 % / 5 %) ; le Mage perd
+  5 à 8 points bien équipé, 0,6 sur le terrain réel d'aujourd'hui.
+- Le Paladin ne paraissait faible qu'avec un mauvais choix d'équipement de l'optimiseur ; le 2e bouclier essayé pour son IA a été annulé.
+- Le Canonnier est faible aux niveaux bas quand tout le monde est bien équipé (39,6 au niveau 105) : son armure est plafonnée à sa
+  défense de base. Le meilleur buff testé (énergie de départ 30 → 100) le remet à 47,0 mais le fait passer 2e sur le terrain
+  réel d'aujourd'hui (55,7) : décision à prendre (voir l'étude).
