@@ -456,6 +456,9 @@
       "BLESSING": {
         "description": "Mostra o estado da bênção global: o fundo comum que os aventureiros alimentam ao encontrarem o Oráculo durante as suas viagens, ou a bênção ativa e o tempo que ainda resta. Este comando fica disponível depois de se ter encontrado o Oráculo pelo menos uma vez."
       },
+      "DEFENSE": {
+        "description": "Permite escolher como a sua personagem se defende quando é atacada por outro jogador, ou deixar que seja escolhido aleatoriamente um estilo diferente em cada combate. Apenas algumas classes dispõem de vários estilos."
+      },
       "CLASSES": {
         "description": "Permite-te mudar de classe. Mais informações sobre as classes estão disponíveis no guia do jogador: https://guide.draftbot.com"
       },
@@ -476,10 +479,10 @@
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "FIGHT_HISTORY": {
-        "description": "Mostra o histórico das tuas últimas lutas: o adversário enfrentado, o resultado, bem como a evolução da glória e da liga de cada lutador."
+        "description": "Mostra o histórico das tuas últimas lutas: o adversário enfrentado, o resultado, bem como a evolução da glória e da liga de cada lutador. Se já enfrentaste um guarda do rei, o botão **Guarda do Rei** apresenta o teu registo contra os guardas, a tua classificação e o quadro de honra do reino."
       },
       "FRIENDLY_FIGHT": {
-        "description": "Permite enfrentar outro jogador, escolhido ao mencioná-lo ou através da sua classificação, num combate amigável. O jogador adversário é controlado por uma IA. Este combate não tem quaisquer consequências: não há glória, nem recompensas, nem perda de energia, nem progressão na missão. A opção «torneio» limita o nível de ambos os combatentes a {{tournamentLevelCap}} : um jogador de nível inferior mantém o seu nível."
+        "description": "Permite enfrentar outro jogador, escolhido ao mencioná-lo ou através da sua classificação, num combate amigável. O jogador adversário é controlado por uma IA. Este combate não tem quaisquer consequências: não há glória, nem recompensas, nem perda de energia, nem progressão na missão. O nível dos dois combatentes está limitado a {{friendlyFightLevelCap}} : um jogador de nível inferior mantém o seu nível."
       },
       "GARDEN": {
         "description": "Permite-lhe cuidar do jardim da sua casa quando se encontra na cidade: plantar, regar, fazer compostagem e colher as suas plantas. Com o Cœur Sylvestre, um talismã vendido na loja do Erborista em Coco Village, torna-se possível ver o jardim e colher nele à distância."
@@ -650,6 +653,8 @@
     "seedSlot": "{emote:city.homeUpgrades.garden} Semente :",
     "plantSlots_one": "{emote:shopItems.plantSlotExtension} Planta transportada ({{count}}/{{max}}):",
     "plantSlots_other": "{emote:shopItems.plantSlotExtension} Plantas transportadas ({{count}}/{{max}}):",
+    "plantsLinkedToHomeStorageTitle": "{emote:city.homeUpgrades.chest} Link para o baú:",
+    "plantsLinkedToHomeStorage": "As suas plantas estão ligadas ao cofre da sua casa: as plantas compradas ou recebidas são enviadas diretamente para lá, ficando os seus espaços apenas com o que o cofre já não consegue guardar.",
     "weapons_one": "{{count}}{{max}}Arma ( / ):",
     "weapons_other": "{{count}}{{max}}Armas ( / ) :",
     "talisman": "Artefactos :",
@@ -1387,7 +1392,8 @@
             "1": "Ferver em lume brando",
             "2": "Derreter",
             "3": "Destilação",
-            "4": "Torradas"
+            "4": "Torradas",
+            "5": "Sublimar"
           },
           "noWood": "{emote:messages.refuse} Não tens lenha para acender o fogão. Recolhe lenha nas tuas expedições!",
           "woodConfirm": "{emote:messages.info} Já não tens madeira comum. **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** será usado para acender o fogão. Confirmar?",
@@ -1425,7 +1431,25 @@
           "pinnedRecipeTitle": "{emote:messages.pin} **Receita afixada** - {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Nível {{level}})",
           "pinnedReady": "\n{emote:messages.validate} Tem todos os ingredientes para esta receita!",
           "unpinButton": "Desfixação",
-          "pinButton": "Pino"
+          "pinButton": "Pino",
+          "specialtiesNone_one": "{emote:cookingStations.5} A sua mestria nos fogões permite-lhe ter a **{{count}} especialidade**: o fogão irá propor-lhe esta especialidade sempre que o acender no local **$t(models:cooking.stations.5)**, para além das receitas habituais. Acenda-o para a escolher entre as receitas propostas.",
+          "specialtiesNone_other": "{emote:cookingStations.5} A sua mestria nos fogões permite-lhe ter até **{{count}} especialidades**: o fogão irá sugerir-lhe uma cada vez que o acender no local **$t(models:cooking.stations.5)**, para além das receitas habituais. Acenda-o para escolher entre as receitas propostas.",
+          "specialtyRotation": "{emote:collectors.switch} Especialidade {{current}}/{{total}} : reacenda o fogão para passar para a seguinte.",
+          "specialtyNextUnlock": "{emote:unitValues.xp} Será desbloqueada uma especialidade adicional no nível **{{level}}** de culinária.",
+          "specialtiesTitle": "{emote:cookingStations.5} **As vossas especialidades** ({{current}}/{{max}})",
+          "specialtyLine": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+          "specialtySelectPlaceholder": "Gerir as suas especialidades ({{current}}/{{max}})",
+          "specialtyOptionLabel": "$t(models:cooking.recipes.{{recipeId}}) (Nível {{level}})",
+          "specialtySetDescription": "Adicione-o às suas especialidades",
+          "specialtyRemoveDescription": "Retirá-la das vossas especialidades",
+          "specialtyAdded": "{emote:cookingStations.5} **$t(models:cooking.recipes.{{recipeId}})** junta-se às vossas especialidades: o fogão irá disponibilizá-la no local **$t(models:cooking.stations.5)**.",
+          "specialtyRemoved": "{emote:messages.info} **$t(models:cooking.recipes.{{recipeId}})** já não faz parte das suas especialidades.",
+          "specialtyLimitReached": "{emote:messages.refuse} Já dominas todas as especialidades que o teu nível de culinária permite (**{{max}}**). Retira uma delas antes de escolheres uma nova.",
+          "specialtyUnavailable": "{emote:messages.info} Esta receita já não pode tornar-se uma especialidade, dado o estado atual do fogão. As sugestões foram atualizadas.",
+          "timePotionsLeft_one": "{emote:unitValues.timeGain} Manipular o tempo esgota: ainda restam **{{count}}** poções de tempo disponíveis esta semana.",
+          "timePotionsLeft_other": "{emote:unitValues.timeGain} Manipular o tempo esgota: ainda restam **{{count}}** poções de tempo disponíveis esta semana.",
+          "timePotionsExhausted": "{emote:unitValues.timeGain} O tempo foi bastante maltratado esta semana: já não há mais poções de tempo até à próxima semana.",
+          "timePotionWeeklyLimit": "{emote:messages.refuse} Já preparaste **{{limit}}** poções de tempo esta semana. O tempo já foi bastante maltratado: vai ser preciso esperar até à próxima semana para preparar mais."
         },
         "upgradeChanges": {
           "betterBed": "Uma cama melhor para uma noite de sono melhor {emote:city.homeUpgrades.bed}",
@@ -1673,9 +1697,17 @@
     "materialLine": "{emote:materiais.{{materialId}}} **$t(models:materials.{{materialId}})** x{{quantity}}",
     "genericPurchase_one": "Obteve **{{count}}x** {{item}}.",
     "genericPurchase_other": "Obteve **{{count}}x** {{item}}.",
+    "plantsSentToHomeStorage_one": "{emote:city.homeUpgrades.chest} **{{count}}** A planta foi enviada para o baú da sua casa.",
+    "plantsSentToHomeStorage_other": "{emote:city.homeUpgrades.chest} **{{count}}** plantas foram enviadas para o baú da sua casa.",
     "notEnoughMoney": "Não tens dinheiro suficiente para comprar este artigo! Estás em falta `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Não há mais poções do dia disponíveis para venda... Volta amanhã!",
     "noPlantSlotAvailable": "Não tens nenhuma ranhura livre para as plantas! Liberta uma ou melhora o teu equipamento na fábrica de curtumes.",
+    "noPlantSpace": {
+      "homeStorageFull": "Já não há espaço suficiente para estas plantas, nem na arrecadação da vossa casa nem nos vossos canteiros! Abram espaço cozinhando ou fazendo compostagem com as vossas plantas.",
+      "plantSlotsFull": "Não tem nenhum espaço livre para plantas! Guarde as suas plantas no baú da sua casa ou aumente a capacidade da sua mochila junto do curtidor: o último espaço da mochila liga as suas plantas ao baú da sua casa.",
+      "noHome": "Não tens nenhum espaço livre para plantas! Uma casa permitir-te-ia guardar as tuas plantas no seu baú.",
+      "noGarden": "Não tens nenhum espaço livre para plantas! A tua casa ainda não tem jardim: melhora-a para poderes guardar as tuas plantas no seu baú."
+    },
     "noGardenForRemoteHarvestTalisman": "O Herborista recusa-se a vender-te o Coração do Bosque: este item só será útil quando o teu jardim estiver desbloqueado.",
     "boughtTooMuchTokens": "Atingiu o seu limite de compra de fichas neste momento. Volte mais tarde!",
     "tokensBought_one": "Comprou **{{count}} token** {emote:unitValues.token}.",
@@ -1755,7 +1787,7 @@
       },
       "plantSlotExtension": {
         "name": "{Nova localização da planta",
-        "info": "Pode ter uma planta extra no seu inventário."
+        "info": "Poderás transportar mais uma planta no teu inventário. O último espaço também liga as tuas plantas ao baú da tua casa, desde que esta tenha um jardim: as plantas compradas ou recebidas são enviadas diretamente para lá."
       },
       "weeklyPlantName": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
       "weeklyPlantTier1": {
@@ -1930,7 +1962,8 @@
         "name": "{emote:shopItems.lovePointsValue} Médico veterinário do tribunal",
         "info": "Obtenha informações pormenorizadas sobre o seu animal de estimação.",
         "giveTitle": "{{pseudo}}compra efectuada!",
-        "giveDesc": "Depois de um exame minucioso do seu animal de estimação e do seu estado de saúde, o veterinário dar-lhe-á o seu relatório:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Pontuação do amor** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Dieta**: {{diet}}\n{emote:petInformation.force} **Força**: {{force, number}}\n{emote:petInformation.speed} **Velocidade** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervalo de refeição** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Próxima fome**: {{nextFeed}}\n{emote:petInformation.age} **Idade**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Efeito de combate**: {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "giveDesc": "Depois de ter examinado cuidadosamente o seu animal e o seu estado de saúde, o veterinário apresenta-lhe o seu relatório:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Pontuação de amor**: {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Dieta alimentar**: {{diet}}\n{emote:petInformation.force} **Força**: {{force, number}}\n{emote:petInformation.speed} **Velocidade**: {{speed, number}}\n{emote:petInformation.feedDelay} **Intervalo entre refeições**: {{feedDelay}}\n{emote:petInformation.nextFeed} **Próxima fome**: {{nextFeed}}\n{emote:petInformation.age} **Idade**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Efeito de combate**: {{commentOnFightEffect}}{{secondFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "secondFightEffect": "\n{emote:petInformation.fightEffect} **Segundo efeito de combate**: {{comment}}",
         "expeditionPreferences": "\n\n{emote:expedition.map} **Incentivos à exploração**:\n{{likedLocations}}{{dislikedLocations}}",
         "likedLocations": "{emote:expedition.liked} Próspero em: {{locations}}",
         "dislikedLocations": "\n{emote:expedition.disliked} Cuidado com : {{locations}}",
@@ -1938,6 +1971,26 @@
         "petIsHungry": "{emote:effects.starving} faminto",
         "lovePointsGained": "\n\n{O veterinário dedicou cuidados amorosos à sua mascote, dando-lhe **{{amount, number}}** pontos de amor!",
         "commentOnFightEffect": {
+          "breathingHoleAmbush": [
+            "Este caçador de gelo tem uma paciência infinita. Ele aguarda o momento exato em que o adversário pára para recuperar o fôlego e, então, surge para lhe desferir um golpe devastador com a pata. Assim, ele só ataca uma única vez por combate.",
+            "As observações comportamentais revelam uma técnica de caça à espreita formidável. Assim que o seu adversário descansa ou fica sem fôlego, ele lança-se sobre ele com uma força colossal, uma vez por combate.",
+            "O seu instinto de predador polar permanece intacto: uma presa que recupera o fôlego fica indefesa. Ele espera por esse momento para atacar, uma única vez, mas com toda a força."
+          ],
+          "scentOfBlood": [
+            "Ele cheira o sangue a quilómetros de distância! Assim que o seu adversário fica gravemente ferido, ele morde-o e faz-o sangrar. Se a presa deixar a hemorragia seguir o seu curso sem descansar, ele entra em frenesi e volta para a morder selvaticamente.",
+            "As observações revelam um instinto de predador marinho temível. Assim que o inimigo está meio derrotado, ele abre uma ferida que sangra e, em seguida, rodeia a sua presa. Apenas um adversário que se detém para estancar a hemorragia consegue escapar à sua fúria.",
+            "O cheiro do sangue enlouquece-o. Ele espera que o adversário fique enfraquecido para o fazer sangrar e não larga a presa enquanto a ferida permanecer aberta: é melhor para ela descansar o mais depressa possível."
+          ],
+          "unstoppable": [
+            "A sua massa colossal demora algum tempo a ganhar impulso, mas, uma vez em movimento, nada o consegue parar! A cada troca de golpes, ganha um pouco mais de impulso e os teus ataques corpo a corpo ganham mais força. Atenção: se ficares imobilizado, ele perde todo o seu impulso.",
+            "Os exames musculares revelam uma inércia fenomenal. Em combate, ele acelera a cada turno e arrasta-te na sua corrida, reforçando progressivamente os teus ataques corpo a corpo até um certo limite. No entanto, ficar atordoado, petrificado ou paralisado interrompe esse ímpeto.",
+            "Este animal de estimação é lento a arrancar, mas o seu ímpeto é irresistível. Quanto mais o combate se prolonga, mais poderosos se tornam os teus ataques corpo a corpo, desde que nada te imobilize. A sua pelagem espessa, que te protege do frio, ajuda-o, aliás, a manter o ritmo."
+          ],
+          "woundedPrey": [
+            "A sua visão perspicaz detecta a mais pequena fraqueza. Ele paira sobre o combate e, assim que o adversário fica sem forças, lança-se em picada sobre ele para o acabar. Ele só mergulha uma vez por combate.",
+            "As análises revelam um instinto de predador perfeitamente apurado. Este animal de estimação espera que o inimigo esteja gravemente enfraquecido para se lançar sobre ele a toda a velocidade, uma vez por combate.",
+            "As suas investidas são fulminantes: é a sua velocidade, muito mais do que a sua força, que causa danos. Ele reserva-as para as presas exaustas, que abate com uma única investida por combate."
+          ],
           "bite": [
             "Esta mascote tem umas presas impressionantes! Em combate, não hesitará em morder os seus adversários com uma precisão assustadora.",
             "Olha para estes caninos! O teu companheiro poderá morder os teus inimigos, causando feridas dolorosas e desequilibrando-os.",
@@ -2174,9 +2227,9 @@
             "Observações veterinárias confirmam uma capacidade de hemofagia estratégica. Morde os adversários saudáveis para os fazer sangrar e depois converte o sangue dos inimigos já enfraquecidos em energia curativa para te ajudar. Nota importante: a bênção divina dos paladinos anula completamente esta capacidade vampírica."
           ],
           "petPetrified": [
-            "Testes psíquicos indicam que este animal de estimação emite uma aura aterrorizante em momentos críticos de combate. Nos momentos finais de uma batalha, o seu olhar petrificante pode literalmente congelar um oponente no lugar, deixando-o totalmente vulnerável. Aviso: esta habilidade é ineficaz contra magos, cujas mentes disciplinadas resistem à petrificação mental.",
-            "A análise comportamental revela uma capacidade de paralisia mental activada no final do combate. O teu animal de estimação exala uma presença tão intimidante que pode petrificar os inimigos, impedindo-os de se moverem ou retaliarem. No entanto, os magos têm uma resistência natural a este efeito e não podem ser petrificados.",
-            "Observações clínicas atestam um poder petrificante temporário que se manifesta nas fases finais do combate. A sua aura sobrenatural pode congelar um adversário num estado de paralisia total, deixando-o indefeso. Nota importante: o treino mental dos magos torna-os imunes a esta petrificação."
+            "Os testes psíquicos indicam que este familiar emite uma aura aterradora nos momentos críticos do combate. Logo no início do confronto, e novamente a meio do combate, o seu olhar petrificante pode literalmente paralisar o adversário no local, tornando-o totalmente vulnerável. Atenção: esta capacidade é ineficaz contra os magos, cuja mente disciplinada resiste à petrificação mental.",
+            "As análises comportamentais revelam uma capacidade de paralisia mental ativada no início do combate e, posteriormente, uma segunda vez a meio do combate. O seu animal de estimação emana então uma presença tão intimidante que pode petrificar o inimigo, impedindo-o de se mover ou de ripostar. No entanto, os magos possuem uma resistência natural a este efeito e não podem ser petrificados.",
+            "As observações clínicas comprovam a existência de um poder de petrificação temporária que se manifesta no início do combate e, posteriormente, a meio do mesmo. A sua aura sobrenatural pode imobilizar o adversário num estado de paralisia total, deixando-o indefeso. Nota importante: o treino mental dos magos torna-os imunes a esta petrificação."
           ]
         },
         "ageComment_ancestor": "INCRÍVEL! exclama o veterinário, de olhos arregalados. O seu animal de estimação é um exemplar excecionalmente raro! É um dos mais antigos alguma vez registados nos nossos arquivos - apenas {{age}} outros animais de estimação foram encontrados mais velhos! Uma verdadeira relíquia viva!",
@@ -2427,8 +2480,7 @@
     "notEnoughEnergy": "Não tens energia suficiente para começar uma luta!",
     "monsterNotFound": "Não foi encontrado nenhum monstro para te enfrentar. Por favor, comunique este incidente à nossa equipa de apoio (discord.gg/AP3Wmzb).",
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | Está a decorrer um combate entre {{fightInitiator}} e {{opponent}} !",
-    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Está a decorrer um combate amigável entre {{fightInitiator}} e {{opponent}} ! Não terá quaisquer consequências.",
-    "tournamentFriendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Está a decorrer um combate amigável no modo torneio entre {{fightInitiator}} e {{opponent}} ! Os combatentes são reajustados para o nível máximo de {{levelCap}} e o combate não terá quaisquer consequências.",
+    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Está a decorrer um combate amigável entre {{fightInitiator}} e {{opponent}} ! Os combatentes são levados ao nível máximo de {{levelCap}} e o combate não terá quaisquer consequências.",
     "actionsOf": "**Ataques de {{pseudo}} :**",
     "petOf": "** {{pseudo}} family:**",
     "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
@@ -2498,7 +2550,8 @@
     },
     "fightActionChoose": {
       "turnIndicationTitle": "É a vez de {{pseudo}} jogar {emote:fightCommand.crossedSwords}",
-      "turnIndicationDescription": "Escolher uma ação"
+      "turnIndicationDescription": "Escolher uma ação",
+      "powerMultiplier": "×{{multiplier, number}}"
     },
     "actions": {
       "intro": "{{emote}} |{{fighter}}** ",
@@ -2707,6 +2760,86 @@
     "successTitle": "{{pseudo}}Uma transação bem sucedida!",
     "successDescription": "{{pet}} segue-o a partir de agora. Cuida bem dele!"
   },
+  "defense": {
+    "title": "Estilo de defesa de {{pseudo}}",
+    "intro": "Escolha como o seu {{className}} se defende quando outro jogador o ataca. Alguns estilos resistem melhor a determinadas classes: escolha com base nas suas últimas defesas. A sua escolha permanece secreta: os seus adversários só a descobrem durante o combate.",
+    "choiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}}",
+    "currentChoiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}} · estilo atual",
+    "chooseStyle": "Escolher um estilo de defesa",
+    "cancel": "Cancelar",
+    "successTitle": "Estilo de defesa de {{pseudo}}",
+    "success": "A partir de agora, a tua personagem irá defender-se com o estilo {emote:defensePersonalities.{{personality}}} **{{name}}**.",
+    "successRandom": "A tua personagem mudará de estilo de defesa em cada combate {emote:defensePersonalities.random}.",
+    "noChoice": "A vossa turma ({{className}}) só tem uma forma de se defender.",
+    "recentDefensesTitle_one": "As suas defesas nas últimas 24 horas",
+    "recentDefensesTitle_other": "As vossas defesas dos {{count}} últimos dias",
+    "noRecentDefense": "Ninguém o atacou recentemente.",
+    "recentDefense_one": "{{className}} : {{won}}/{{count}} defesa bem-sucedida",
+    "recentDefense_other": "{{className}} : {{won}}/{{count}} defesas bem-sucedidas",
+    "canceled": "O seu estilo de defesa não sofreu alterações.",
+    "personalities": {
+      "random": {
+        "name": "Imprevisível",
+        "description": "Em cada combate, é sorteado aleatoriamente um estilo diferente."
+      },
+      "knightStrategist": {
+        "name": "Estrategista",
+        "description": "Alterna entre momentos de descanso e ataques poderosos, e lança a sua bênção primeiro quando enfrenta um adversário capaz de fazer o mesmo. É particularmente forte contra os Veteranos."
+      },
+      "knightEnduring": {
+        "name": "Resistente",
+        "description": "Descansa assim que fica ferido e guarda a sua bênção para o final do combate, quando esta é mais poderosa."
+      },
+      "knightFiery": {
+        "name": "Impetuoso",
+        "description": "Lança a sua bênção logo no início do combate e só descansa quando está gravemente ferido."
+      },
+      "tankBulwark": {
+        "name": "Muralha",
+        "description": "Reforça a sua defesa e enfraquece o adversário com o seu escudo."
+      },
+      "tankRiposte": {
+        "name": "Respondedor",
+        "description": "Deixa o adversário avançar para lhe devolver os seus ataques mais devastadores."
+      },
+      "paladinCrusader": {
+        "name": "Cruzado",
+        "description": "Carrega o seu ataque final a meio do combate, lança os seus ataques divinos no final do combate e atinge com o escudo ou com o aríete um adversário que já se encontre sob o efeito de uma alteração."
+      },
+      "paladinJusticar": {
+        "name": "Justiciero",
+        "description": "Guarda o seu ataque final para o final do combate e lança o seu ataque divino assim que perceber que as hipóteses de falhar são mínimas."
+      },
+      "gunnerStrategist": {
+        "name": "Estrategista",
+        "description": "Dispara rajadas de canhão assim que tem fôlego e desgasta o adversário com ataques intensos e sabotagens entre uma rajada e outra."
+      },
+      "gunnerBombardier": {
+        "name": "Bombardier",
+        "description": "Dispara sucessivamente com o canhão assim que a sua energia estiver no máximo e, entretanto, atrapalha o adversário."
+      },
+      "veteranStrategist": {
+        "name": "Estrategista",
+        "description": "Carrega o seu ataque enquanto espera recuperar o fôlego após os seus ataques vigorosos, que prepara concentrando-se."
+      },
+      "veteranCharger": {
+        "name": "Perseverante",
+        "description": "Concentra-se assim que pode e lança imediatamente o seu ataque enérgico, sem nunca carregar. É particularmente resistente contra os Paladinos."
+      },
+      "mageOccultist": {
+        "name": "Ocultista",
+        "description": "Amaldiçoa ou envenena o seu adversário e, em seguida, acaba com ele com os seus ataques sombrios."
+      },
+      "magePyromancer": {
+        "name": "Piromante",
+        "description": "Amaldiçoa o seu adversário sempre que pode, incendeia-o sempre que tem fôlego para isso e tira partido tanto da maldição como das queimaduras com os seus ataques sombrios."
+      },
+      "mageWarlock": {
+        "name": "Encantador",
+        "description": "Amaldiçoa sistematicamente o seu adversário, o que o impede de se curar adequadamente, e depois tira partido disso com os seus ataques sombrios."
+      }
+    }
+  },
   "classes": {
     "description": {
       "0": "Uma aula simples. Bastante equilibrada.",
@@ -2897,6 +3030,20 @@
     "leagueChanges": {
       "up": " ({emote:other.leagueUp} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
       "down": " ({emote:other.leagueDown} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
+    },
+    "kingGuardStats": {
+      "openButton": "Guarda Real",
+      "backButton": "Histórico",
+      "title": "{emote:fightCommand.crossedSwords} Frente aos guardas do rei",
+      "record": "**O teu recorde:** defesa de nível {{level}} derrotado{{aboveLevel}}",
+      "aboveLevel_one": ", {{count}} um nível acima do seu",
+      "aboveLevel_other": ", {{count}} níveis acima do seu",
+      "noRecord": "**O seu recorde:** ainda não derrotou nenhum guarda",
+      "progress": "**Recordes batidos:** {{recordsBroken, number}} | **Classificação:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "tally": "**Balanço:** {emote:fightHistory.won} Vitórias: {{won, number}} · {emote:fightHistory.lost} Derrotas: {{lost, number}} · {emote:fightHistory.draw} Empates: {{draw, number}}",
+      "leaderboardTitle": "{emote:other.crown} **Quadro de honra da guarda**",
+      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}**: guarda-nível {{level}}",
+      "you": "Vocês"
     }
   },
   "deletecode": {
