@@ -93,22 +93,17 @@ export abstract class ShopUtils {
 				.find(item => item.id === reactionInstance.shopItemId)!.buyCallback(response, player.id, context, reactionInstance.amount);
 			const isDetailedResult = typeof buyResult !== "boolean";
 			const parsed: ShopUtilsBuyCallbackResult = isDetailedResult ? buyResult as ShopUtilsBuyCallbackResult : { success: buyResult as boolean };
-			if (parsed.success) {
-				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
-				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
-				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
-				await parsed.postPurchase?.();
-				if (isDetailedResult) {
-					const translationParams = this.getTranslationParams(reactionInstance.shopItemId, additionalShopData);
-					response.push(makePacket(CommandShopGenericPurchase, {
-						shopItemId: reactionInstance.shopItemId,
-						amount: reactionInstance.amount,
-						materials: parsed.materials,
-						translationParams
-					}));
-				}
-				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount, cityId).then();
+			if (!parsed.success) {
+				return;
 			}
+			if (!parsed.currencySpent) {
+				await this.chargePurchase(player, collectorShop.currency, reactionInstance, response);
+			}
+			await parsed.postPurchase?.();
+			if (isDetailedResult) {
+				response.push(this.buildGenericPurchasePacket(reactionInstance, parsed, additionalShopData));
+			}
+			logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount, cityId).then();
 		};
 
 		const packet = new ReactionCollectorInstance(
@@ -142,6 +137,20 @@ export abstract class ShopUtils {
 		return true;
 	}
 
+	/**
+	 * Charge the price of a purchase whose buy callback did not already do it under its own lock
+	 */
+	private static async chargePurchase(
+		player: Player,
+		currency: ShopCurrency,
+		reactionInstance: ReactionCollectorShopItemReaction,
+		response: CrowniclesPacket[]
+	): Promise<void> {
+		// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
+		const currentPlayerInfo = currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
+		await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
+	}
+
 	private static async manageCurrencySpending(
 		player: Player | PlayerMissionsInfo,
 		reactionInstance: ReactionCollectorShopItemReaction,
@@ -158,6 +167,20 @@ export abstract class ShopUtils {
 			await player.spendGems(reactionInstance.price, response, NumberChangeReason.MISSION_SHOP);
 		}
 		await player.save();
+	}
+
+	private static buildGenericPurchasePacket(
+		reactionInstance: ReactionCollectorShopItemReaction,
+		buyResult: BuyCallbackResult,
+		shopData: additionalShopData
+	): CommandShopGenericPurchase {
+		return makePacket(CommandShopGenericPurchase, {
+			shopItemId: reactionInstance.shopItemId,
+			amount: reactionInstance.amount,
+			materials: buyResult.materials,
+			...buyResult.plantsSentToHomeStorage ? { plantsSentToHomeStorage: buyResult.plantsSentToHomeStorage } : {},
+			translationParams: this.getTranslationParams(reactionInstance.shopItemId, shopData)
+		});
 	}
 
 	private static getTranslationParams(shopItemId: ShopItemType, shopData: additionalShopData): Record<string, string> | undefined {

@@ -30,4 +30,9 @@ export class SmallEventGardenerPacket extends SmallEventPacket {
 	conditionKey!: SeedConditionKey;
 
 	isFirstEncounter?: boolean;
+
+	/**
+	 * Set when the gifted plant went straight to the home plant storage (plant inventory linked to the home)
+	 */
+	sentToHomeStorage?: boolean;
 }

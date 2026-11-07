@@ -203,6 +203,25 @@ export const PLANT_SLOT_TYPE = {
 
 export type PlantSlotType = typeof PLANT_SLOT_TYPE[keyof typeof PLANT_SLOT_TYPE];
 
+/**
+ * Why plants could not be given to a player
+ */
+export const PLANT_RECEPTION_FAILURES = {
+	/** The plant inventory is linked to the home: neither the chest nor the plant slots have room */
+	HOME_STORAGE_FULL: "homeStorageFull",
+
+	/** Not linked yet: the plant slots are full, but the player has a home chest to deposit them in */
+	PLANT_SLOTS_FULL: "plantSlotsFull",
+
+	/** The plant slots are full and the player has no home to store plants in */
+	NO_HOME: "noHome",
+
+	/** The plant slots are full and the home does not unlock the garden yet, so its chest cannot store plants */
+	NO_GARDEN: "noGarden"
+} as const;
+
+export type PlantReceptionFailure = typeof PLANT_RECEPTION_FAILURES[keyof typeof PLANT_RECEPTION_FAILURES];
+
 export abstract class PlantConstants {
 	/**
 	 * Total number of plant types
@@ -218,6 +237,15 @@ export abstract class PlantConstants {
 	 * Maximum plant slots after tanner upgrade
 	 */
 	public static readonly MAX_PLANT_SLOTS = 3;
+
+	/**
+	 * The last tanner plant slot upgrade magically links the plant inventory to the home plant storage (once the
+	 * home has a garden): received plants go straight to the chest, the plant slots only take what the chest
+	 * cannot hold.
+	 */
+	public static hasHomeStorageLink(plantSlots: number): boolean {
+		return plantSlots >= PlantConstants.MAX_PLANT_SLOTS;
+	}
 
 	/**
 	 * Seed slots are always 1 (not upgradeable)
@@ -302,6 +330,28 @@ export abstract class PlantConstants {
 		const variation = RANGE_RATIO * 2 * dailyFactor - RANGE_RATIO;
 
 		return Math.round(basePrice * (1 + variation));
+	}
+
+	/**
+	 * Quantities offered at the herbalist to a player whose plant inventory is linked to their home storage,
+	 * completed by the largest quantity they can receive and afford. At most 4 quantities, so that their
+	 * buttons and the cancel button fit on a single action row.
+	 */
+	private static readonly HERBALIST_LINKED_AMOUNTS = [
+		1,
+		5,
+		10
+	] as const;
+
+	/**
+	 * Quantities a player whose plant inventory is linked to their home storage can buy at once at the herbalist.
+	 * @param maxAmount - The largest quantity the player can both receive and afford
+	 */
+	public static getLinkedHerbalistAmounts(maxAmount: number): number[] {
+		if (maxAmount <= 1) {
+			return [1];
+		}
+		return [...PlantConstants.HERBALIST_LINKED_AMOUNTS.filter(amount => amount < maxAmount), maxAmount];
 	}
 
 	/**

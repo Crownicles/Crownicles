@@ -64,6 +64,20 @@ export class HomePlantStorages {
 	}
 
 	/**
+	 * Room left for a plant type in a storage entry (missing entries are empty)
+	 */
+	private static roomLeft(storage: HomePlantStorage | null, maxCapacity: number): number {
+		return Math.max(0, maxCapacity - (storage?.quantity ?? 0));
+	}
+
+	/**
+	 * Number of plants of a type the home storage can still receive
+	 */
+	public static async getRoomFor(homeId: number, plantId: PlantId, maxCapacity: number): Promise<number> {
+		return HomePlantStorages.roomLeft(await HomePlantStorages.getForPlant(homeId, plantId), maxCapacity);
+	}
+
+	/**
 	 * Add plants to storage, capped at max capacity. Returns the number of plants that didn't fit.
 	 */
 	public static async addPlant(homeId: number, plantId: PlantId | 0, amount: number, maxCapacity: number): Promise<number> {
@@ -78,8 +92,7 @@ export class HomePlantStorages {
 			return amount;
 		}
 
-		const spaceAvailable = maxCapacity - storage.quantity;
-		const toAdd = Math.min(amount, spaceAvailable);
+		const toAdd = Math.min(amount, HomePlantStorages.roomLeft(storage, maxCapacity));
 		const overflow = amount - toAdd;
 
 		if (toAdd > 0) {

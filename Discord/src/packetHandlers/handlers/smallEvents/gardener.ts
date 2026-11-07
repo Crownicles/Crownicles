@@ -12,6 +12,7 @@ import {
 	GARDENER_INTERACTIONS, PlantConstants, SEED_CONDITION_FAILURE
 } from "../../../../../Lib/src/constants/PlantConstants";
 import { Language } from "../../../../../Lib/src/Language";
+import i18n from "../../../translations/i18n";
 
 function buildAdviceReplacements(packet: SmallEventGardenerPacket): Record<string, unknown> {
 	if (packet.plantId <= 0) {
@@ -39,9 +40,12 @@ function buildGardenerRewardText(packet: SmallEventGardenerPacket, lng: Language
 				buildAdviceReplacements(packet)
 			);
 		case GARDENER_INTERACTIONS.PLANT:
-			return StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
-				plantId: packet.plantId
-			});
+			return StringUtils.joinParagraphs([
+				StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
+					plantId: packet.plantId
+				}),
+				packet.sentToHomeStorage && i18n.t("smallEvents:gardener.rewards.plantSentToHomeStorage", { lng })
+			]);
 		case GARDENER_INTERACTIONS.MATERIAL:
 			return StringUtils.getRandomTranslation("smallEvents:gardener.rewards.material", lng, {
 				materialId: packet.materialId
