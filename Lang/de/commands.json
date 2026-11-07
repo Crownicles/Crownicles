@@ -475,8 +475,7 @@
         "description": "Hiermit können Sie Ihre Ausrüstung für jede Objektkategorie verwalten: ein Objekt aus Ihrem Vorrat anlegen, das angelegte Objekt in Ihren Vorrat zurücklegen oder zwei Objekte vertauschen."
       },
       "FIGHT": {
-        "description": "Verwenden Sie diesen Befehl, um andere Spieler herauszufordern.\nDie Kämpfe werden rundenweise ausgetragen. In jeder Runde können Sie eine Aktion auswählen, die Sie ausführen möchten.\n\nFür weitere Informationen können Sie die Seite des Guides besuchen: https://guide.crownicles.com/notions-principale/combats",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
+        "description": "Verwenden Sie diesen Befehl, um andere Spieler herauszufordern.\nDie Kämpfe werden rundenweise ausgetragen. In jeder Runde können Sie eine Aktion auswählen, die Sie ausführen möchten.\n\nFür weitere Informationen können Sie die Seite des Guides besuchen: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
         "description": "Zeigt den Verlauf deiner letzten Kämpfe an: den besiegten Gegner, das Ergebnis sowie die Entwicklung des Ruhmes und der Liga jedes Kämpfers. Wenn Sie bereits gegen eine Königliche Garde gekämpft haben, zeigt die Schaltfläche **Königliche Garde** Ihre Bilanz gegen die Garde, Ihre Platzierung und die Ehrentafel des Königreichs an."
