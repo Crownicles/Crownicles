@@ -41,16 +41,13 @@ type WeeklyPlantPurchase = {
 };
 
 /**
- * Without the home storage link, plants are sold one at a time. With it, the player can buy as many as they
- * can both receive and afford.
+ * Quantities the player can buy at once, up to as many plants as they can both receive (empty plant slots, plus
+ * the room left in the home storage their plant inventory is linked to) and afford
  */
 async function getWeeklyPlantAmounts(offer: WeeklyPlantOffer, reception: PlantReception): Promise<number[]> {
-	if (!reception.linkedHomeStorage) {
-		return [1];
-	}
 	const capacity = await getPlantReceptionCapacity(reception, offer.plant.id);
 	const affordable = Math.floor(offer.player.money / offer.unitPrice);
-	return PlantConstants.getLinkedHerbalistAmounts(Math.min(capacity, affordable));
+	return PlantConstants.getHerbalistAmounts(Math.min(capacity, affordable));
 }
 
 /**

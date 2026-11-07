@@ -99,22 +99,22 @@ describe("PlantConstants", () => {
 		});
 	});
 
-	describe("getLinkedHerbalistAmounts", () => {
-		it("should only sell one plant when at most one can be received and afforded", () => {
-			expect(PlantConstants.getLinkedHerbalistAmounts(0)).toEqual([1]);
-			expect(PlantConstants.getLinkedHerbalistAmounts(1)).toEqual([1]);
+	describe("getHerbalistAmounts", () => {
+		it("should still sell one plant when none can be received or afforded", () => {
+			expect(PlantConstants.getHerbalistAmounts(0)).toEqual([1]);
+			expect(PlantConstants.getHerbalistAmounts(1)).toEqual([1]);
 		});
 
-		it("should end with the largest quantity the player can buy", () => {
-			expect(PlantConstants.getLinkedHerbalistAmounts(2)).toEqual([1, 2]);
-			expect(PlantConstants.getLinkedHerbalistAmounts(7)).toEqual([1, 5, 7]);
-			expect(PlantConstants.getLinkedHerbalistAmounts(10)).toEqual([1, 5, 10]);
-			expect(PlantConstants.getLinkedHerbalistAmounts(53)).toEqual([1, 5, 10, 53]);
+		it("should offer 1, 5 and 10 below the largest quantity the player can buy, then that quantity", () => {
+			expect(PlantConstants.getHerbalistAmounts(2)).toEqual([1, 2]);
+			expect(PlantConstants.getHerbalistAmounts(7)).toEqual([1, 5, 7]);
+			expect(PlantConstants.getHerbalistAmounts(10)).toEqual([1, 5, 10]);
+			expect(PlantConstants.getHerbalistAmounts(53)).toEqual([1, 5, 10, 53]);
 		});
 
 		it("should never offer more than 4 quantities so that they fit next to the cancel button", () => {
 			for (let maxAmount = 0; maxAmount <= 100; maxAmount++) {
-				const amounts = PlantConstants.getLinkedHerbalistAmounts(maxAmount);
+				const amounts = PlantConstants.getHerbalistAmounts(maxAmount);
 				expect(amounts.length).toBeLessThanOrEqual(4);
 				expect(new Set(amounts).size).toBe(amounts.length);
 				expect([...amounts].sort((a, b) => a - b)).toEqual(amounts);

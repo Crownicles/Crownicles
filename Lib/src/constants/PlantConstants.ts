@@ -333,25 +333,26 @@ export abstract class PlantConstants {
 	}
 
 	/**
-	 * Quantities offered at the herbalist to a player whose plant inventory is linked to their home storage,
-	 * completed by the largest quantity they can receive and afford. At most 4 quantities, so that their
-	 * buttons and the cancel button fit on a single action row.
+	 * Quantities offered at the herbalist below the largest one the player can buy. With that largest quantity
+	 * and the cancel button, their buttons fit on a single action row.
 	 */
-	private static readonly HERBALIST_LINKED_AMOUNTS = [
+	private static readonly HERBALIST_AMOUNTS = [
 		1,
 		5,
 		10
 	] as const;
 
 	/**
-	 * Quantities a player whose plant inventory is linked to their home storage can buy at once at the herbalist.
+	 * Quantities of a weekly plant a player can buy at once at the herbalist: the usual ones below the largest
+	 * quantity they can both receive and afford, then that largest quantity. A single plant stays on sale when
+	 * they can do neither, so that trying to buy it tells them why.
 	 * @param maxAmount - The largest quantity the player can both receive and afford
 	 */
-	public static getLinkedHerbalistAmounts(maxAmount: number): number[] {
+	public static getHerbalistAmounts(maxAmount: number): number[] {
 		if (maxAmount <= 1) {
 			return [1];
 		}
-		return [...PlantConstants.HERBALIST_LINKED_AMOUNTS.filter(amount => amount < maxAmount), maxAmount];
+		return [...PlantConstants.HERBALIST_AMOUNTS.filter(amount => amount < maxAmount), maxAmount];
 	}
 
 	/**
