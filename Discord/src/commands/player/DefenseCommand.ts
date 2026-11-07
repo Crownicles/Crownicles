@@ -25,6 +25,7 @@ import {
 } from "discord.js";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
@@ -179,7 +180,7 @@ export async function createDefensePersonalityCollector(context: PacketContext, 
 			await sendInteractionNotForYou(menuInteraction.user, menuInteraction, lng);
 			return;
 		}
-		await menuInteraction.deferReply();
+		await DiscordCollectorUtils.deferReply(menuInteraction);
 		menuCollector.stop();
 		const selected = menuInteraction.values[0];
 		DiscordCollectorUtils.sendReaction(
@@ -201,12 +202,12 @@ export async function createDefensePersonalityCollector(context: PacketContext, 
 }
 
 /**
- * Confirm the new defense personality of the player
+ * Confirm the new defense personality of the player, in the reply deferred on its selection
  * @param context
  * @param packet
  */
 export async function handleCommandDefenseChangeSuccessPacket(context: PacketContext, packet: CommandDefenseChangeSuccessPacketRes): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = MessagesUtils.getCurrentInteraction(context);
 	if (!interaction) {
 		return;
 	}
