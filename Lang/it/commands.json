@@ -456,6 +456,9 @@
       "BLESSING": {
         "description": "Mostra lo stato della benedizione generale: il fondo comune che gli avventurieri alimentano incontrando l'Oracolo durante i loro viaggi, oppure la benedizione attiva e il tempo che le rimane. Questo comando è accessibile dopo aver incontrato l'Oracolo almeno una volta."
       },
+      "DEFENSE": {
+        "description": "Consente di scegliere come il proprio personaggio si difenda quando viene attaccato da un altro giocatore, oppure di lasciare che ad ogni combattimento venga selezionato casualmente uno stile diverso. Solo alcune classi dispongono di più stili."
+      },
       "CLASSES": {
         "description": "Permette di cambiare classe. Più informazioni sulle classi sono disponibili nella Guida del giocatore: https://guide.draftbot.com"
       },
@@ -476,10 +479,10 @@
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "FIGHT_HISTORY": {
-        "description": "Mostra la cronologia dei tuoi ultimi combattimenti: l'avversario affrontato, il risultato e l'andamento della gloria e della classifica di ciascun combattente."
+        "description": "Mostra la cronologia dei tuoi ultimi combattimenti: l'avversario affrontato, il risultato e l'andamento della gloria e della classifica di ciascun combattente. Se hai già affrontato una guardia del re, il pulsante **Guardie del re** mostra il tuo record contro le guardie, la tua posizione in classifica e l'albo d'onore del regno."
       },
       "FRIENDLY_FIGHT": {
-        "description": "Consente di sfidare un altro giocatore, scelto menzionandolo o in base alla sua posizione in classifica, in un combattimento amichevole. Il giocatore sfidato è controllato da un'IA. Questo combattimento non ha alcuna conseguenza: nessuna gloria, nessuna ricompensa, nessuna perdita di energia e nessun avanzamento nella missione. L’opzione “torneo” limita il livello di entrambi i combattenti a {{tournamentLevelCap}} : un giocatore di livello inferiore mantiene il proprio livello."
+        "description": "Consente di sfidare un altro giocatore, scelto menzionandolo o in base alla sua posizione in classifica, in un combattimento amichevole. Il giocatore sfidato è controllato da un’IA. Questo combattimento non ha alcuna conseguenza: nessuna gloria, nessuna ricompensa, nessuna perdita di energia e nessun avanzamento nella missione. Il livello di entrambi i combattenti è limitato a {{friendlyFightLevelCap}} : un giocatore di livello inferiore mantiene il proprio livello."
       },
       "GARDEN": {
         "description": "Vi permette di prendervi cura del giardino della vostra dimora quando vi trovate nella sua città: piantare, innaffiare, fare il compost e raccogliere i frutti delle vostre piante. Con il “Cœur Sylvestre”, un talismano in vendita presso l’Erborista a Coco Village, diventa possibile controllare il giardino e raccoglierne i frutti a distanza."
@@ -650,6 +653,8 @@
     "seedSlot": "{emote:city.homeUpgrades.garden} Seme :",
     "plantSlots_one": "{emote:shopItems.plantSlotExtension} Pianta trasportata ({{count}}/{{max}}):",
     "plantSlots_other": "{emote:shopItems.plantSlotExtension} Piante trasportate ({{count}}/{{max}}):",
+    "plantsLinkedToHomeStorageTitle": "{emote:city.homeUpgrades.chest} Link al forziere:",
+    "plantsLinkedToHomeStorage": "Le vostre piante sono collegate al deposito della vostra casa: le piante acquistate o ricevute vengono inviate direttamente lì, mentre gli spazi a vostra disposizione conservano solo ciò che il deposito non è più in grado di contenere.",
     "weapons_one": "Arma ({{count}}/{{max}}) :",
     "weapons_other": "Armi ({{count}}/{{max}}) :",
     "talisman": "Artefatti :",
@@ -1387,7 +1392,8 @@
             "1": "Simmer",
             "2": "Fondere",
             "3": "Distillazione",
-            "4": "Brindisi"
+            "4": "Brindisi",
+            "5": "Esaltare"
           },
           "noWood": "{emote:messages.refuse} Non hai legna per accendere la stufa. Raccogli la legna durante le tue spedizioni!",
           "woodConfirm": "{emote:messages.info} Non hai più legno comune. **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** sarà utilizzato per accendere la stufa. Confermare?",
@@ -1425,7 +1431,25 @@
           "pinnedRecipeTitle": "{emote:messages.pin} **Ricetta appuntata** - {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Livello {{level}})",
           "pinnedReady": "\n{emote:messages.validate} Avete tutti gli ingredienti per questa ricetta!",
           "unpinButton": "Svolgimento",
-          "pinButton": "Spillo"
+          "pinButton": "Spillo",
+          "specialtiesNone_one": "{emote:cookingStations.5} La tua abilità ai fornelli ti permette di avere **{{count}} specialità**: il fornello te la proporrà ogni volta che lo accenderai nella posizione **$t(models:cooking.stations.5)**, oltre alle ricette abituali. Accendilo per sceglierla tra le ricette proposte.",
+          "specialtiesNone_other": "{emote:cookingStations.5} La tua abilità ai fornelli ti permette di avere fino a **{{count}} specialità**: il fornello te ne proporrà una ogni volta che lo accendi nella posizione **$t(models:cooking.stations.5)**, oltre alle ricette abituali. Accendilo per sceglierle tra le ricette proposte.",
+          "specialtyRotation": "{emote:collectors.switch} Specialità {{current}}/{{total}} : riaccendi il fornello per passare alla successiva.",
+          "specialtyNextUnlock": "{emote:unitValues.xp} Una specialità aggiuntiva verrà sbloccata al livello **{{level}}** di cucina.",
+          "specialtiesTitle": "{emote:cookingStations.5} **Le vostre specialità** ({{current}}/{{max}})",
+          "specialtyLine": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Liv. {{level}})",
+          "specialtySelectPlaceholder": "Gestisci le tue specializzazioni ({{current}}/{{max}})",
+          "specialtyOptionLabel": "$t(models:cooking.recipes.{{recipeId}}) (Livello {{level}})",
+          "specialtySetDescription": "Aggiungilo alle tue specialità",
+          "specialtyRemoveDescription": "Rimuoverla dalle vostre specialità",
+          "specialtyAdded": "{emote:cookingStations.5} **$t(models:cooking.recipes.{{recipeId}})** si aggiunge alle vostre specialità: il fornello ve la proporrà nella posizione **$t(models:cooking.stations.5)**.",
+          "specialtyRemoved": "{emote:messages.info} **$t(models:cooking.recipes.{{recipeId}})** non fa più parte delle tue specializzazioni.",
+          "specialtyLimitReached": "{emote:messages.refuse} Hai già imparato tutte le specialità consentite dal tuo livello di cucina (**{{max}}**). Elimina una di queste prima di sceglierne una nuova.",
+          "specialtyUnavailable": "{emote:messages.info} Questa ricetta non può più diventare una specialità, visto lo stato attuale dei fornelli. Le proposte sono state rinnovate.",
+          "timePotionsLeft_one": "{emote:unitValues.timeGain} Manipolare il tempo consuma risorse: questa settimana sono ancora disponibili **{{count}}** pozioni del tempo.",
+          "timePotionsLeft_other": "{emote:unitValues.timeGain} Manipolare il tempo consuma risorse: questa settimana sono ancora disponibili **{{count}}** pozioni del tempo.",
+          "timePotionsExhausted": "{emote:unitValues.timeGain} Il tempo è stato piuttosto messo a dura prova questa settimana: non ci sono più pozioni del tempo fino alla prossima settimana.",
+          "timePotionWeeklyLimit": "{emote:messages.refuse} Questa settimana avete già preparato **{{limit}}** pozioni del tempo. Il tempo è stato piuttosto malmenato: bisognerà aspettare la prossima settimana per prepararne altre."
         },
         "upgradeChanges": {
           "betterBed": "Un letto migliore per un sonno migliore {emote:city.homeUpgrades.bed}",
@@ -1673,9 +1697,17 @@
     "materialLine": "{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})** x{{quantity}}",
     "genericPurchase_one": "Avete ottenuto **{{count}}x** {{item}}.",
     "genericPurchase_other": "Avete ottenuto **{{count}}x** {{item}}.",
+    "plantsSentToHomeStorage_one": "{emote:city.homeUpgrades.chest} **{{count}}** La pianta è stata inviata nel forziere della tua casa.",
+    "plantsSentToHomeStorage_other": "{emote:city.homeUpgrades.chest} **{{count}}** piante sono state inviate nel baule della tua casa.",
     "notEnoughMoney": "Non hai abbastanza soldi per comprare questo oggetto! Ti manca `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Non ci sono più pozioni del giorno disponibili per la vendita... Tornate domani!",
     "noPlantSlotAvailable": "Non hai slot per le piante liberi! Liberatene uno o aggiornate il vostro equipaggiamento presso la conceria.",
+    "noPlantSpace": {
+      "homeStorageFull": "Non c'è più abbastanza spazio per queste piante, né nel ripostiglio di casa vostra né nelle vostre aiuole! Fate spazio cucinando o trasformandole in compost.",
+      "plantSlotsFull": "Non hai più spazio libero per le piante! Riponi le tue piante nel baule di casa tua oppure amplia la tua borsa dal conciatore: l'ultimo spazio disponibile collega le tue piante al baule di casa tua.",
+      "noHome": "Non hai più spazio libero per le piante! Una casa ti permetterebbe di riporre le tue piante nel suo bagagliaio.",
+      "noGarden": "Non hai più spazio libero per le piante! La tua casa non ha ancora un giardino: migliorala per poter riporre le tue piante nel suo baule."
+    },
     "noGardenForRemoteHarvestTalisman": "L'erborista si rifiuta di vendervi il Cuore di bosco: questo oggetto sarà utile solo quando il vostro giardino sarà stato sbloccato.",
     "boughtTooMuchTokens": "Per il momento hai raggiunto il limite di acquisto di chip. Tornate più tardi!",
     "tokensBought_one": "Hai acquistato **{{count}} token** {emote:unitValues.token}.",
@@ -1755,7 +1787,7 @@
       },
       "plantSlotExtension": {
         "name": "{emote:shopItems.plantSlotExtension} Nuova posizione dell'impianto",
-        "info": "È possibile portare una pianta in più nell'inventario."
+        "info": "Potrai trasportare una pianta in più nel tuo inventario. L'ultimo spazio collega inoltre le tue piante alla cassapanca di casa tua, non appena questa dispone di un giardino: le piante acquistate o ricevute vengono inviate direttamente lì."
       },
       "weeklyPlantName": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
       "weeklyPlantTier1": {
@@ -1930,7 +1962,8 @@
         "name": "{emote:shopItems.lovePointsValue} Veterinario di corte",
         "info": "Ottenere informazioni dettagliate sul vostro animale domestico.",
         "giveTitle": "{{pseudo}}acquisto effettuato!",
-        "giveDesc": "Dopo un esame approfondito del vostro animale e del suo stato di salute, il veterinario vi consegnerà il suo rapporto:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Punteggio di amore**: {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Dieta**: {{diet}}\n{emote:petInformation.force} **Forza**: {{force, number}}\n{emote:petInformation.speed} **Velocità** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervallo pasto** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Fame successiva**: {{nextFeed}}\n{emote:petInformation.age} **Età**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effetto di combattimento**: {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "giveDesc": "Dopo aver esaminato a lungo il vostro animale e il suo stato di salute, il veterinario vi fornisce il suo referto:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Punteggio d'amore**: {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Dieta**: {{diet}}\n{emote:petInformation.force} **Forza**: {{force, number}}\n{emote:petInformation.speed} **Velocità**: {{speed, number}}\n{emote:petInformation.feedDelay} **Intervallo tra i pasti**: {{feedDelay}}\n{emote:petInformation.nextFeed} **Prossima fame**: {{nextFeed}}\n{emote:petInformation.age} **Età**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effetto di combattimento**: {{commentOnFightEffect}}{{secondFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "secondFightEffect": "\n{emote:petInformation.fightEffect} **Secondo effetto di combattimento**: {{comment}}",
         "expeditionPreferences": "\n\n{emote:expedition.map} **Incentivi all'esplorazione**:\n{{likedLocations}}{{dislikedLocations}}",
         "likedLocations": "{emote:expedition.liked} Prosperità in: {{locations}}",
         "dislikedLocations": "\n{emote:expedition.disliked} Diffidare di : {{locations}}",
@@ -1938,6 +1971,26 @@
         "petIsHungry": "{emote:effects.starving} affamato",
         "lovePointsGained": "\n\n{emote:petInformation.loveScore} Il veterinario ha elargito cure amorevoli al vostro animale, dandogli **{{amount, number}}** punti amore!",
         "commentOnFightEffect": {
+          "breathingHoleAmbush": [
+            "Questo cacciatore dei ghiacci possiede una pazienza infinita. Aspetta il momento esatto in cui l’avversario si ferma per riprendere fiato, poi balza in avanti per sferrargli un colpo devastante con la zampa. Colpisce così solo una volta per combattimento.",
+            "Le osservazioni comportamentali rivelano una tecnica di caccia all'agguato formidabile. Non appena il tuo avversario si ferma per riposarsi o rimane senza fiato, gli si avventa contro con una forza colossale, una volta per combattimento.",
+            "Il suo istinto di predatore polare è intatto: una preda che riprende fiato è indifesa. Aspetta quel momento per colpire, una sola volta ma con grande forza."
+          ],
+          "scentOfBlood": [
+            "Sente l'odore del sangue a chilometri di distanza! Non appena il tuo avversario è gravemente ferito, lo morde e lo fa sanguinare. Se la preda lascia che l'emorragia faccia il suo corso senza fermarsi, lui entra in preda alla frenesia e torna a morderla selvaggiamente.",
+            "Le osservazioni rivelano un temibile istinto da predatore marino. Una volta che il nemico è già mezzo sconfitto, gli infligge una ferita sanguinante, poi gli gira intorno. Solo un avversario che si ferma per fermare l’emorragia riesce a sfuggire alla sua furia.",
+            "L'odore del sangue lo fa impazzire. Aspetta che l'avversario sia indebolito per farlo sanguinare, e non molla la presa sulla preda finché la ferita rimane aperta: per lei è meglio riposarsi il prima possibile."
+          ],
+          "unstoppable": [
+            "La sua massa colossale impiega un po' di tempo a mettersi in movimento, ma una volta lanciato, nulla può fermarlo! Ad ogni scambio, acquista un po' più di slancio e i tuoi attacchi in corpo a corpo diventano più potenti. Attenzione: se vieni immobilizzato, perde tutto il suo slancio.",
+            "Gli esami muscolari rivelano un'inerzia fenomenale. In combattimento, accelera turno dopo turno e ti trascina nella sua corsa, potenziando progressivamente i tuoi attacchi in corpo a corpo fino a un certo limite. Essere stordito, pietrificato o paralizzato interrompe tuttavia questo slancio.",
+            "Questo famiglio è lento all'inizio, ma il suo slancio è irresistibile. Più il combattimento si protrae, più i tuoi attacchi in corpo a corpo diventano potenti, purché nulla ti immobilizzi. Il suo folto vello, che ti protegge dal gelo, lo aiuta inoltre a mantenere il ritmo."
+          ],
+          "woundedPrey": [
+            "Il suo sguardo penetrante individua anche la minima debolezza. Volteggia sopra il campo di battaglia e, non appena l’avversario è allo stremo delle forze, piomba su di lui in picchiata per dargli il colpo di grazia. Effettua una sola picchiata per combattimento.",
+            "Le analisi rivelano un istinto da rapace perfettamente affinato. Questo famiglio attende che il nemico sia gravemente indebolito per piombargli addosso a tutta velocità, una volta per combattimento.",
+            "I suoi attacchi in picchiata sono fulminei: è la sua velocità, ben più che la sua forza, a fare male. Li riserva alle prede ormai allo stremo delle forze, che uccide con un solo tuffo per combattimento."
+          ],
           "bite": [
             "Questo animale ha zanne impressionanti! In combattimento, non esiterà a mordere gli avversari con una precisione spaventosa.",
             "Guardate questi canini! Il vostro compagno potrà mordere i nemici, infliggendo loro ferite dolorose e facendoli perdere l'equilibrio.",
@@ -2174,9 +2227,9 @@
             "Le osservazioni veterinarie confermano la capacità di emofagia strategica. Morde gli avversari sani per farli sanguinare, poi converte il sangue dei nemici già indeboliti in energia curativa per sostenervi. Nota importante: la benedizione divina dei paladini annulla completamente questa capacità vampirica."
           ],
           "petPetrified": [
-            "I test psichici indicano che questo animale emette un'aura terrificante nei momenti critici del combattimento. Nei momenti finali di una battaglia, il suo sguardo pietrificante può letteralmente congelare un avversario sul posto, lasciandolo totalmente vulnerabile. Attenzione: questa capacità è inefficace contro i maghi, le cui menti disciplinate resistono alla pietrificazione mentale.",
-            "L'analisi comportamentale rivela un'abilità di paralisi mentale che si attiva alla fine del combattimento. L'animale emana una presenza così intimidatoria che può pietrificare i nemici, impedendo loro di muoversi o di reagire. Tuttavia, i maghi hanno una resistenza naturale a questo effetto e non possono essere pietrificati.",
-            "Le osservazioni cliniche attestano un potere pietrificante temporaneo che si manifesta nelle fasi finali del combattimento. La sua aura soprannaturale può congelare l'avversario in uno stato di paralisi totale, lasciandolo indifeso. Nota importante: l'allenamento mentale dei maghi li rende immuni a questa pietrificazione."
+            "I test psichici indicano che questo famiglio emana un’aura terrificante nei momenti critici del combattimento. Fin dall’inizio dello scontro, e poi di nuovo a metà combattimento, il suo sguardo pietrificante può letteralmente immobilizzare l’avversario sul posto, rendendolo totalmente vulnerabile. Attenzione: questa abilità è inefficace contro i maghi, la cui mente disciplinata resiste alla pietrificazione mentale.",
+            "Le analisi comportamentali rivelano una capacità di paralisi mentale che si attiva all’inizio del combattimento e poi una seconda volta a metà combattimento. Il tuo famiglio emana allora una presenza così intimidatoria da poter pietrificare il nemico, impedendogli di muoversi o di contrattaccare. Tuttavia, i maghi possiedono una resistenza naturale a questo effetto e non possono essere pietrificati.",
+            "Le osservazioni cliniche attestano un potere di pietrificazione temporanea che si manifesta all’inizio del combattimento e poi nuovamente a metà combattimento. La sua aura soprannaturale può immobilizzare l’avversario in uno stato di paralisi totale, lasciandolo indifeso. Nota importante: l’allenamento mentale dei maghi li rende immuni a questa pietrificazione."
           ]
         },
         "ageComment_ancestor": "INCREDIBILE! esclama il veterinario, con gli occhi spalancati. Il vostro animale è un esemplare eccezionalmente raro! È uno dei più vecchi mai registrati nei nostri archivi - solo {{age}} altri animali domestici sono stati trovati più vecchi! Una vera reliquia vivente!",
@@ -2427,8 +2480,7 @@
     "notEnoughEnergy": "Non hai abbastanza energia per iniziare una lotta!",
     "monsterNotFound": "Non è stato trovato alcun mostro da affrontare. Si prega di segnalare l'accaduto al nostro team di supporto (discord.gg/AP3Wmzb).",
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | È in corso una lotta tra {{fightInitiator}} e {{opponent}} !",
-    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | È in corso un combattimento amichevole tra {{fightInitiator}} e {{opponent}} ! Non avrà alcuna conseguenza.",
-    "tournamentFriendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | È in corso un combattimento amichevole in modalità torneo tra {{fightInitiator}} e {{opponent}} ! I combattenti vengono riportati al livello massimo {{levelCap}} e il combattimento non avrà alcuna conseguenza.",
+    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | È iniziato un combattimento amichevole tra {{fightInitiator}} e {{opponent}} ! I combattenti vengono riportati al livello massimo {{levelCap}} e il combattimento non avrà alcuna conseguenza.",
     "actionsOf": "**Attacchi da {{pseudo}} :**",
     "petOf": "**Animale domestico di {{pseudo}} :**",
     "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
@@ -2498,7 +2550,8 @@
     },
     "fightActionChoose": {
       "turnIndicationTitle": "È il turno di {{pseudo}} di giocare a {emote:fightCommand.crossedSwords}",
-      "turnIndicationDescription": "Scegliere un'azione"
+      "turnIndicationDescription": "Scegliere un'azione",
+      "powerMultiplier": "×{{multiplier, number}}"
     },
     "actions": {
       "intro": "{{emote}} |{{fighter}} ",
@@ -2707,6 +2760,86 @@
     "successTitle": "{{pseudo}}Una transazione di successo!",
     "successDescription": "{{pet}} vi seguirà d'ora in poi. Abbiatene cura!"
   },
+  "defense": {
+    "title": "Stile difensivo di {{pseudo}}",
+    "intro": "Scegliete come il vostro {{className}} si difenderà quando un altro giocatore lo attaccherà. Alcuni stili resistono meglio a determinate classi: scegliete in base alle vostre ultime difese. La vostra scelta rimane segreta: i vostri avversari la scopriranno solo combattendo.",
+    "choiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}}",
+    "currentChoiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}} · stile attuale",
+    "chooseStyle": "Scegliere uno stile di difesa",
+    "cancel": "Annullamento",
+    "successTitle": "Stile difensivo di {{pseudo}}",
+    "success": "Il tuo personaggio si difenderà d'ora in poi con lo stile {emote:defensePersonalities.{{personality}}} **{{name}}**.",
+    "successRandom": "Il tuo personaggio cambierà stile di difesa ad ogni combattimento {emote:defensePersonalities.random}.",
+    "noChoice": "La vostra classe ({{className}}) ha un solo modo per difendersi.",
+    "recentDefensesTitle_one": "Le vostre difese nelle ultime 24 ore",
+    "recentDefensesTitle_other": "Le vostre difese su {{count}} negli ultimi giorni",
+    "noRecentDefense": "Nessuno vi ha aggredito di recente.",
+    "recentDefense_one": "{{className}} : {{won}}/{{count}} difesa riuscita",
+    "recentDefense_other": "{{className}} : {{won}}/{{count}} difese riuscite",
+    "canceled": "Il tuo stile di difesa non è cambiato.",
+    "personalities": {
+      "random": {
+        "name": "Imprevedibile",
+        "description": "Ad ogni combattimento viene estratto a caso uno stile diverso."
+      },
+      "knightStrategist": {
+        "name": "Stratega",
+        "description": "Alterna momenti di riposo ad attacchi potenti e lancia per primo la sua benedizione quando affronta un avversario in grado di fare lo stesso. Particolarmente efficace contro i Veterani."
+      },
+      "knightEnduring": {
+        "name": "Resistente",
+        "description": "Si riposa non appena viene ferito e conserva la sua benedizione per la fine del combattimento, quando è più potente."
+      },
+      "knightFiery": {
+        "name": "Impetuoso",
+        "description": "Lancia la sua benedizione fin dall'inizio del combattimento e si ferma solo quando è gravemente ferito."
+      },
+      "tankBulwark": {
+        "name": "Ramparto",
+        "description": "Rafforza la propria difesa e indebolisce l'avversario con il proprio scudo."
+      },
+      "tankRiposte": {
+        "name": "Riposteur",
+        "description": "Lascia che l'avversario attacchi per respingere i suoi attacchi più devastanti."
+      },
+      "paladinCrusader": {
+        "name": "Incrociato",
+        "description": "Carica il suo attacco definitivo a metà combattimento, sferra i suoi attacchi divini alla fine del combattimento e colpisce con lo scudo o l’ariete un avversario già affetto da uno stato alterato."
+      },
+      "paladinJusticar": {
+        "name": "Giustiziere",
+        "description": "Riserva il suo attacco finale per la fine del combattimento e sferra il suo attacco divino non appena vede che le probabilità di fallire sono minime."
+      },
+      "gunnerStrategist": {
+        "name": "Stratega",
+        "description": "Spara raffiche di cannoni non appena ne ha la forza e logora l'avversario con attacchi intensi e sabotaggi tra una raffica e l'altra."
+      },
+      "gunnerBombardier": {
+        "name": "Bombardier",
+        "description": "Sparare a raffica con il cannone non appena la potenza di fuoco raggiunge il massimo e, nel frattempo, ostacolare l'avversario."
+      },
+      "veteranStrategist": {
+        "name": "Stratega",
+        "description": "Carica il suo attacco in attesa di recuperare il fiato dopo i suoi attacchi energici, che prepara concentrandosi."
+      },
+      "veteranCharger": {
+        "name": "Un uomo d'azione",
+        "description": "Si concentra non appena può e sferra immediatamente il suo attacco energico, senza mai caricare. Particolarmente resistente contro i Paladini."
+      },
+      "mageOccultist": {
+        "name": "Occultista",
+        "description": "Maledice o avvelena il suo avversario, per poi finirlo con i suoi attacchi oscuri."
+      },
+      "magePyromancer": {
+        "name": "Piromante",
+        "description": "Maledice il suo avversario ogni volta che può, lo avvolge nelle fiamme ogni volta che ne ha il fiato, e sfrutta sia la maledizione che le ustioni con i suoi attacchi oscuri."
+      },
+      "mageWarlock": {
+        "name": "Affascinante",
+        "description": "Maledice sistematicamente il suo avversario, impedendogli così di curarsi adeguatamente, per poi approfittarne con i suoi attacchi oscuri."
+      }
+    }
+  },
   "classes": {
     "description": {
       "0": "Una classe semplice. Abbastanza equilibrata.",
@@ -2897,6 +3030,20 @@
     "leagueChanges": {
       "up": " ({emote:other.leagueUp} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
       "down": " ({emote:other.leagueDown} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
+    },
+    "kingGuardStats": {
+      "openButton": "Guardie del re",
+      "backButton": "Cronologia",
+      "title": "{emote:fightCommand.crossedSwords} Di fronte alle guardie del re",
+      "record": "**Il tuo record:** guardia di livello {{level}} sconfitto{{aboveLevel}}",
+      "aboveLevel_one": ", {{count}} un livello superiore al vostro",
+      "aboveLevel_other": ", {{count}} livelli superiori al vostro",
+      "noRecord": "**Il tuo record:** nessun guardia sconfitta finora",
+      "progress": "**Record battuti:** {{recordsBroken, number}} | **Classifica:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "tally": "**Bilancio:** {emote:fightHistory.won} Vittorie: {{won, number}} · {emote:fightHistory.lost} Sconfitte: {{lost, number}} · {emote:fightHistory.draw} Pareggi: {{draw, number}}",
+      "leaderboardTitle": "{emote:other.crown} **Albo d'onore della guardia**",
+      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}**: livello di guardia {{level}}",
+      "you": "Voi"
     }
   },
   "deletecode": {
