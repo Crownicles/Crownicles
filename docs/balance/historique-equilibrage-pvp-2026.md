@@ -203,7 +203,8 @@ Détails : [etude-equipement-optimal-2026-11-07.md](etude-equipement-optimal-202
 - Le Canonnier est faible aux niveaux bas quand tout le monde est bien équipé (39,6 au niveau 105) : son armure et son objet
   sont plafonnés par sa défense de base. L'énergie de départ 30 → 100 le remettait à 47,0, mais avec les vrais joueurs de niveau
   100 à 109 il gagne déjà (53,0) et passerait à 59,1 : écartée.
-- Après-midi du 07/11, méta équilibrée au niveau 100 : 3e modification proposée, **défense de base du Canonnier 30 → 38**.
+- Après-midi du 07/11, méta équilibrée au niveau 100 : **défense de base du Canonnier 30 → 38**, commitée puis annulée
+  (les vrais Canonniers de niveau 100 à 109 sont déjà premiers en score brut, 54,0 → 57,3).
   Les plafonds de l'armure et de l'objet suivant la défense de base, elle profite surtout aux Canonniers équipés en défense
   (le meilleur build). Bien équipé au niveau 100, l'écart entre classes passe de 12,7 à 4,3 et la méta réaliste joue les
   7 classes ; terrain réel : Canonnier +1,1 (54,4).

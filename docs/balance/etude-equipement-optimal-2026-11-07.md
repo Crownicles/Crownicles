@@ -41,10 +41,10 @@ Historique complet du travail : [historique-equilibrage-pvp-2026.md](historique-
    niveau 100, 42,5 à 47,0 au niveau 120), parce que son armure et son objet sont plafonnés par sa très faible défense de base.
    Avec les vrais joueurs, il gagne déjà : 52,9 sur le terrain réel, 53,0 au niveau 100 à 109. L'énergie de départ 30 → 100
    l'aidait autant avec le vrai équipement qu'avec l'optimal (59,1 et 68 % de la méta pour les vrais joueurs de niveau 100).
-8. **Pour une méta équilibrée au niveau 100 : défense de base du Canonnier 30 → 38** (§4.8, troisième modification de la
-   branche). Bien équipé au niveau 100, l'écart entre classes passe de 12,7 à **4,3** et la méta réaliste joue les 7 classes ;
-   sur le terrain réel d'aujourd'hui, le Canonnier ne gagne que 1,1 point (54,4). Les écarts qui restent (Mage, Vétéran, Tank)
-   changent de signe entre l'équipement optimal et le vrai : ils viennent des builds, pas des règles.
+8. **Défense de base du Canonnier 30 → 38 : mesurée puis retirée** (§4.8). Elle équilibrait le niveau 100 bien équipé (écart
+   12,7 → 4,3, les 7 classes jouées), mais les vrais Canonniers de niveau 100 à 109 sont déjà premiers en score brut sans elle
+   (54,0, contre 49,3 en prod, grâce au buff du canon de #5062) et passaient à 57,3. Retirée à la demande, à revoir sur les
+   vrais combats après la sortie.
 
 ## 1. Méthode
 
@@ -384,7 +384,7 @@ ses joueurs qui s'équipent à l'inverse de ce qui marche, parce que le jeu ne l
 En prod, le Chevalier est la seule réponse rationnelle, ce qui colle avec la réalité (45 % des joueurs 100+, 14 des 20 meilleurs).
 Develop ouvre nettement le jeu, sauf aux niveaux réalistes avec un bon équipement, où le Mage prend toute la place.
 
-### 4.8 Vers une méta équilibrée au niveau 100 : la défense du Canonnier
+### 4.8 Vers une méta équilibrée au niveau 100 : la défense du Canonnier (mesurée, non retenue)
 Point de départ : l'état final de la branche (modifications 1 et 2 de l'attaque sombre). Cinq terrains, mêmes combats pour
 chaque variante :
 - **A** : équipement optimal de niveau 120 porté au niveau 100 ;
@@ -592,21 +592,16 @@ Vérification : le Core compilé avec la modification 1 (et le 2e bouclier, annu
 simulés sans recompiler (0 combat différent sur 4 900, niveau 120 avec potion). Même contrôle pour la modification 2
 (0 combat différent sur 4 900, niveau 100, équipement C). Tests Core (1 953) et Lib (636)
 passent, lint propre sur les fichiers modifiés.
-3. **Canonnier — défense de base 30 → 38** (proposé l'après-midi du 07/11 pour une méta équilibrée au niveau 100, §4.8 ;
-   une ligne dans `Core/resources/classes/20.json`, `77a5c67b5`, commité).
-   - Problème : avec un équipement optimal au niveau 100, il est la classe la plus faible sur tous les terrains (40,9 à 45,3),
-     parce que son armure et son objet sont plafonnés par sa défense de base, de loin la plus faible.
-   - Effet au niveau 100 : +8,8 avec l'équipement A (écart 12,7 → **4,3**, **les 7 classes jouées par la méta réaliste**),
-     +3,9 avec l'équipement C, +3,3 pour les vrais joueurs de niveau 100 à 109 (57,3), **+1,1 sur le terrain réel** (54,4,
-     3e derrière le Fantassin 56,9 et à égalité avec le Vétéran 53,8). Au niveau 120 bien équipé : +4,4 (53,2, 2e derrière le
-     Tank 53,6 ; écart 8,3 → 7,8).
-   - Mieux ciblé que l'énergie de départ (rapport 2,7 au lieu de 1,0 entre le gain bien équipé et le gain des vrais joueurs) :
-     il profite surtout aux Canonniers qui s'équipent en défense, ce qui est le meilleur build (§4.6), et garde son identité
-     (la défense la plus faible de toutes, 38 contre 45 pour le Mage).
-   - Valeur plus prudente : 35 (+5,1 bien équipé, +2,1 pour les vrais joueurs de niveau 100 à 109 ; écart 6,5 au niveau 100).
-
 ### À ne pas faire maintenant
-- **Canonnier : énergie de départ 30 → 100** (remplacée par la défense de base, modification 3).
+- **Canonnier : défense de base 30 → 38** (commitée en `77a5c67b5`, annulée).
+  - Effet au niveau 100 : +8,8 avec l'équipement A (écart 12,7 → 4,3, les 7 classes jouées par la méta réaliste), +3,9 avec
+    l'équipement C ; niveau 120 bien équipé +4,4 (53,2) ; terrain réel +1,1 (54,4).
+  - Annulée : les vrais Canonniers de niveau 100 à 109 sont déjà premiers en score brut (54,0) et passaient à 57,3. Ils restent
+    hors de la méta réaliste de cette tranche (0 %) : leur score vient du Tank et du Mage, qu'ils écrasent ; ils perdent contre
+    le Vétéran (43) et ne défendent qu'à 28 % contre le Vétéran et le Paladin.
+  - À revoir si les vrais combats après la sortie le montrent faible, ou quand les joueurs s'équiperont mieux. Valeur plus
+    prudente mesurée : 35 (+5,1 bien équipé, +2,1 pour les vrais joueurs de niveau 100 à 109).
+- **Canonnier : énergie de départ 30 → 100**.
   - Avec les vrais joueurs de niveau 100 à 109, il gagne déjà (53,0) et passerait à 59,1, choisi à 68 % par la méta réaliste ;
     sur le terrain réel, il passerait 2e (55,7). La valeur 65 et le canon +8 % ont le même défaut, comme la défense de la
     cible comptée à 60 % ou 80 % par le canon (rapport 1,5).
