@@ -350,7 +350,7 @@ describe("Plant inventory linked to the home plant storage", () => {
 
 			const [item] = await herbalistShopItems.getWeeklyPlantShopItems(player, [plant]);
 			expect(item.id).toBe(ShopItemType.WEEKLY_PLANT_TIER_1);
-			expect(item.amounts).toEqual(PlantConstants.getLinkedHerbalistAmounts(linkedCapacity));
+			expect(item.amounts).toEqual(PlantConstants.getHerbalistAmounts(linkedCapacity));
 
 			const result = await item.buyCallback([], player.id, NO_CONTEXT, linkedCapacity);
 
@@ -362,14 +362,35 @@ describe("Plant inventory linked to the home plant storage", () => {
 			expect(await getCarriedPlants(player.id)).toHaveLength(PlantConstants.MAX_PLANT_SLOTS);
 		});
 
-		it("only sells plants one at a time without the home storage link", async () => {
+		it("lets a player without the home storage link fill all their empty plant slots at once", async () => {
+			const plantSlots = PlantConstants.MAX_PLANT_SLOTS - 1;
+			const initialMoney = unitPrice * linkedCapacity;
 			const player = await createPlayer({
-				plantSlots: PlantConstants.MAX_PLANT_SLOTS - 1, withHome: true, money: unitPrice * linkedCapacity
+				plantSlots, withHome: true, money: initialMoney
+			});
+
+			const [item] = await herbalistShopItems.getWeeklyPlantShopItems(player, [plant]);
+			expect(item.amounts).toEqual(PlantConstants.getHerbalistAmounts(plantSlots));
+
+			const result = await item.buyCallback([], player.id, NO_CONTEXT, plantSlots);
+
+			expect(result).toEqual({
+				success: true, currencySpent: true
+			});
+			expect(await getMoney(player.id)).toBe(initialMoney - unitPrice * plantSlots);
+			expect(await getCarriedPlants(player.id)).toEqual(Array(plantSlots).fill(DELIVERED_PLANT));
+			expect(await getStoredQuantity(player.id, DELIVERED_PLANT)).toBe(0);
+		});
+
+		it("never offers more plants than the player can afford", async () => {
+			const affordablePlants = 2;
+			const player = await createPlayer({
+				plantSlots: PlantConstants.MAX_PLANT_SLOTS, withHome: true, money: unitPrice * affordablePlants
 			});
 
 			const [item] = await herbalistShopItems.getWeeklyPlantShopItems(player, [plant]);
 
-			expect(item.amounts).toEqual([1]);
+			expect(item.amounts).toEqual(PlantConstants.getHerbalistAmounts(affordablePlants));
 		});
 
 		it("checks the money again under the lock and delivers nothing when it is no longer enough", async () => {
