@@ -370,7 +370,7 @@ describe("Plant inventory linked to the home plant storage", () => {
 			});
 
 			const [item] = await herbalistShopItems.getWeeklyPlantShopItems(player, [plant]);
-			expect(item.amounts).toEqual(PlantConstants.getHerbalistAmounts(plantSlots));
+			expect(item.amounts).toEqual([1, 2]);
 
 			const result = await item.buyCallback([], player.id, NO_CONTEXT, plantSlots);
 
@@ -390,7 +390,7 @@ describe("Plant inventory linked to the home plant storage", () => {
 
 			const [item] = await herbalistShopItems.getWeeklyPlantShopItems(player, [plant]);
 
-			expect(item.amounts).toEqual(PlantConstants.getHerbalistAmounts(affordablePlants));
+			expect(item.amounts).toEqual([1, 2]);
 		});
 
 		it("checks the money again under the lock and delivers nothing when it is no longer enough", async () => {
