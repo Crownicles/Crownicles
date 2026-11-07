@@ -58,6 +58,7 @@ import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
+import { givePlantsToPlayer } from "../utils/PlantDeliveryUtils";
 
 function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<SmallEventGardenerPacket, "interactionName" | "conditionKey">): SmallEventGardenerPacket {
 	return {
@@ -72,7 +73,8 @@ function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<Sma
 		 * to a meaningful value — every other call site (post-collector callbacks)
 		 * leaves it unset because Discord skips the story for those (#4273).
 		 */
-		...packet.isFirstEncounter !== undefined ? { isFirstEncounter: packet.isFirstEncounter } : {}
+		...packet.isFirstEncounter !== undefined ? { isFirstEncounter: packet.isFirstEncounter } : {},
+		...packet.sentToHomeStorage ? { sentToHomeStorage: true } : {}
 	};
 }
 
@@ -549,18 +551,24 @@ async function handleFallback(response: CrowniclesPacket[], player: Player, cond
 }
 
 async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket> {
-	const emptySlot = await PlayerPlantSlots.findEmptyPlantSlot(player.id);
+	const randomPlantId = PlantConstants.lootRandomPlant(RandomUtils.crowniclesRandom);
+	const delivery = await givePlantsToPlayer({
+		playerId: player.id,
+		plantId: randomPlantId,
+		amount: 1
+	});
 
-	if (emptySlot) {
-		const randomPlantId = PlantConstants.lootRandomPlant(RandomUtils.crowniclesRandom);
-		await PlayerPlantSlots.setPlant(player.id, emptySlot.slot, randomPlantId);
+	if (!delivery.delivered) {
 		return makeGardenerPacket({
-			interactionName: GARDENER_INTERACTIONS.PLANT, conditionKey: SEED_CONDITION_FAILURE.NONE, plantId: randomPlantId
+			interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: SEED_CONDITION_FAILURE.NO_PLANT_SPACE
 		});
 	}
 
 	return makeGardenerPacket({
-		interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: SEED_CONDITION_FAILURE.NO_PLANT_SPACE
+		interactionName: GARDENER_INTERACTIONS.PLANT,
+		conditionKey: SEED_CONDITION_FAILURE.NONE,
+		plantId: randomPlantId,
+		...delivery.toHomeStorage > 0 ? { sentToHomeStorage: true } : {}
 	});
 }
 

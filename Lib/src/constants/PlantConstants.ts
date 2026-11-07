@@ -220,6 +220,14 @@ export abstract class PlantConstants {
 	public static readonly MAX_PLANT_SLOTS = 3;
 
 	/**
+	 * The last tanner plant slot upgrade magically links the plant inventory to the home plant storage:
+	 * received plants go straight to the chest, the plant slots only take what the chest cannot hold.
+	 */
+	public static hasHomeStorageLink(plantSlots: number): boolean {
+		return plantSlots >= PlantConstants.MAX_PLANT_SLOTS;
+	}
+
+	/**
 	 * Seed slots are always 1 (not upgradeable)
 	 */
 	public static readonly SEED_SLOTS = 1;
@@ -302,6 +310,28 @@ export abstract class PlantConstants {
 		const variation = RANGE_RATIO * 2 * dailyFactor - RANGE_RATIO;
 
 		return Math.round(basePrice * (1 + variation));
+	}
+
+	/**
+	 * Quantities offered at the herbalist to a player whose plant inventory is linked to their home storage,
+	 * completed by the largest quantity they can receive and afford. At most 4 quantities, so that their
+	 * buttons and the cancel button fit on a single action row.
+	 */
+	private static readonly HERBALIST_LINKED_AMOUNTS = [
+		1,
+		5,
+		10
+	] as const;
+
+	/**
+	 * Quantities a player whose plant inventory is linked to their home storage can buy at once at the herbalist.
+	 * @param maxAmount - The largest quantity the player can both receive and afford
+	 */
+	public static getLinkedHerbalistAmounts(maxAmount: number): number[] {
+		if (maxAmount <= 1) {
+			return [1];
+		}
+		return [...PlantConstants.HERBALIST_LINKED_AMOUNTS.filter(amount => amount < maxAmount), maxAmount];
 	}
 
 	/**

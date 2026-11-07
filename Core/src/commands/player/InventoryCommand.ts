@@ -18,7 +18,9 @@ import {
 } from "../../core/utils/CommandUtils";
 import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import { Materials } from "../../core/database/game/models/Material";
-import { Homes } from "../../core/database/game/models/Home";
+import {
+	Home, Homes
+} from "../../core/database/game/models/Home";
 import { StatValues } from "../../../../Lib/src/types/StatValues";
 import { EMPTY_SLOTS_PER_CATEGORY } from "../../../../Lib/src/types/HomeFeatures";
 import {
@@ -28,6 +30,7 @@ import {
 	PlantId, PLANT_SLOT_TYPE
 } from "../../../../Lib/src/constants/PlantConstants";
 import { buildPotionDisplayPacket } from "./InventoryPotionUtils";
+import { isPlantInventoryLinkedToHome } from "../../core/utils/PlantDeliveryUtils";
 
 function buildMainItemBackups(
 	items: InventorySlot[],
@@ -73,7 +76,8 @@ function getBackupItems(items: InventorySlot[], categoryCheck: (item: InventoryS
 
 function buildPlantsData(
 	playerPlantSlots: PlayerPlantSlot[],
-	invInfo: { plantSlots: number }
+	invInfo: { plantSlots: number },
+	home: Home | null
 ): NonNullable<CommandInventoryPacketRes["data"]>["plants"] {
 	if (playerPlantSlots.length === 0) {
 		return undefined;
@@ -88,7 +92,8 @@ function buildPlantsData(
 				plantId: s.plantId as PlantId,
 				slot: s.slot
 			})),
-		maxPlantSlots: invInfo.plantSlots
+		maxPlantSlots: invInfo.plantSlots,
+		linkedToHomeStorage: isPlantInventoryLinkedToHome(invInfo.plantSlots, home)
 	};
 }
 
@@ -154,7 +159,7 @@ async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInvento
 					materialId: m.materialId,
 					quantity: m.quantity
 				})),
-			plants: buildPlantsData(playerPlantSlots, invInfo)
+			plants: buildPlantsData(playerPlantSlots, invInfo, home)
 		}
 	};
 }
