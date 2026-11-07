@@ -340,7 +340,7 @@
     }
   },
   "defense": {
-    "name": "Verteidigung",
+    "name": "verteidigung",
     "description": "Wähle den Verteidigungsstil deines Charakters aus."
   },
   "classes": {
