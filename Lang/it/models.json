@@ -2545,7 +2545,8 @@
       "1": "Calderone",
       "2": "Fonderia",
       "3": "Ancora",
-      "4": "Braciere"
+      "4": "Braciere",
+      "5": "Spécialité du chef"
     },
     "recipes": {
       "potion_health_1": "Pozione curativa di base",
