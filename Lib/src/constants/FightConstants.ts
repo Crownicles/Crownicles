@@ -315,7 +315,7 @@ export abstract class FightConstants {
 	 * and gets one step back every time its caster plays this many actions in a row without it
 	 */
 	static readonly DARK_ATTACK_WEAR = {
-		BASE_MULTIPLIER: 1.7,
+		BASE_MULTIPLIER: 1.6,
 		MULTIPLIER_LOSS_PER_USE: 0.3,
 		MIN_MULTIPLIER: 0.3,
 		RECOVERY_IDLE_ACTIONS: 2

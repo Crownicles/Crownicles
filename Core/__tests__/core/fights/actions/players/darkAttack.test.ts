@@ -7,6 +7,7 @@ import { getDarkAttackPowerMultiplier } from "../../../../../src/core/fights/act
 import { FightAlterationDataController } from "../../../../../src/data/FightAlteration";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
 import { FightActionStatus } from "../../../../../../Lib/src/types/FightActionStatus";
+import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 import { TestFighter } from "./TestFighter";
 import type { FightAction } from "../../../../../src/data/FightAction";
 import type { FightController } from "../../../../../src/core/fights/FightController";
@@ -39,12 +40,12 @@ function useDarkAttack(sender: TestFighter, receiver: TestFighter, status = Figh
 describe("dark attack wear", () => {
 	it("starts strong and loses one step per use down to its floor", () => {
 		expect(["", "D", "DD", "DDD", "DDDD", "DDDDD", "DDDDDDDD"].map(sequence => getDarkAttackPowerMultiplier(mageAfter(sequence), new TestFighter())))
-			.toEqual([1.7, 1.4, 1.1, 0.8, 0.5, 0.3, 0.3]);
+			.toEqual([1.6, 1.3, 1, 0.7, 0.4, 0.3, 0.3]);
 	});
 
 	it("gets one step back every two actions in a row without it", () => {
 		expect(["DDx", "DDxx", "DDxxxx", "DDxxxxxx", "DDxDx"].map(sequence => getDarkAttackPowerMultiplier(mageAfter(sequence), new TestFighter())))
-			.toEqual([1.1, 1.4, 1.7, 1.7, 0.8]);
+			.toEqual([1, 1.3, 1.6, 1.6, 0.7]);
 	});
 });
 
@@ -59,8 +60,8 @@ describe("darkAttack", () => {
 		const freshResult = useDarkAttack(mageAfter(""), receiver);
 		const wornResult = useDarkAttack(mageAfter("DDD"), receiver);
 
-		expect(freshResult.damages).toBe(170);
-		expect(wornResult.damages).toBe(80);
+		expect(freshResult.damages).toBe(160);
+		expect(wornResult.damages).toBe(70);
 		expect(receiver.hasFightAlteration()).toBe(false);
 		expect(freshResult.alterations).toBeUndefined();
 	});
@@ -72,9 +73,9 @@ describe("darkAttack", () => {
 		const poisonedReceiver = new TestFighter();
 		poisonedReceiver.newAlteration(FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.POISONED)!);
 
-		expect(useDarkAttack(mage, cursedReceiver).damages).toBe(170);
-		expect(useDarkAttack(mageAfter("DDD"), poisonedReceiver).damages).toBe(80);
-		expect(getDarkAttackPowerMultiplier(mage, new TestFighter())).toBe(0.5);
+		expect(useDarkAttack(mage, cursedReceiver).damages).toBe(160);
+		expect(useDarkAttack(mageAfter("DDD"), poisonedReceiver).damages).toBe(70);
+		expect(getDarkAttackPowerMultiplier(mage, new TestFighter())).toBe(0.4);
 	});
 
 	it("no longer gives breath back against an opponent with an alteration", () => {
@@ -88,6 +89,20 @@ describe("darkAttack", () => {
 		expect(mage.getBreath()).toBe(2);
 	});
 
+	it("is held back by the defense of a heavily armored target", () => {
+		vi.spyOn(RandomUtils, "variationInt").mockReturnValue(0);
+		vi.spyOn(FightActionController, "applySecondaryEffects").mockImplementation(damages => ({
+			damages,
+			status: FightActionStatus.NORMAL
+		}));
+
+		const againstLightArmor = darkAttackUse(mageAfter(""), new TestFighter({ defense: 100 }), DARK_ATTACK, 3, null as unknown as FightController);
+		const againstHeavyArmor = darkAttackUse(mageAfter(""), new TestFighter({ defense: 1600 }), DARK_ATTACK, 3, null as unknown as FightController);
+
+		// Sixteen times more defense: the armored target takes well under three quarters of the damage
+		expect(againstHeavyArmor.damages! / againstLightArmor.damages!).toBeLessThan(0.7);
+	});
+
 	it("is not worn down by a missed use, unlike a landed one", () => {
 		const missingMage = mageAfter("");
 		const hittingMage = mageAfter("");
@@ -95,7 +110,7 @@ describe("darkAttack", () => {
 		useDarkAttack(missingMage, new TestFighter(), FightActionStatus.MISSED);
 		useDarkAttack(hittingMage, new TestFighter());
 
-		expect(getDarkAttackPowerMultiplier(missingMage, new TestFighter())).toBe(1.7);
-		expect(getDarkAttackPowerMultiplier(hittingMage, new TestFighter())).toBe(1.4);
+		expect(getDarkAttackPowerMultiplier(missingMage, new TestFighter())).toBe(1.6);
+		expect(getDarkAttackPowerMultiplier(hittingMage, new TestFighter())).toBe(1.3);
 	});
 });
