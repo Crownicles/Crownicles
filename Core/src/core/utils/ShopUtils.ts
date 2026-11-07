@@ -99,14 +99,7 @@ export abstract class ShopUtils {
 				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
 				await parsed.postPurchase?.();
 				if (isDetailedResult) {
-					const translationParams = this.getTranslationParams(reactionInstance.shopItemId, additionalShopData);
-					response.push(makePacket(CommandShopGenericPurchase, {
-						shopItemId: reactionInstance.shopItemId,
-						amount: reactionInstance.amount,
-						materials: parsed.materials,
-						...parsed.plantsSentToHomeStorage ? { plantsSentToHomeStorage: parsed.plantsSentToHomeStorage } : {},
-						translationParams
-					}));
+					response.push(this.buildGenericPurchasePacket(reactionInstance, parsed, additionalShopData));
 				}
 				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount, cityId).then();
 			}
@@ -159,6 +152,20 @@ export abstract class ShopUtils {
 			await player.spendGems(reactionInstance.price, response, NumberChangeReason.MISSION_SHOP);
 		}
 		await player.save();
+	}
+
+	private static buildGenericPurchasePacket(
+		reactionInstance: ReactionCollectorShopItemReaction,
+		buyResult: BuyCallbackResult,
+		shopData: additionalShopData
+	): CommandShopGenericPurchase {
+		return makePacket(CommandShopGenericPurchase, {
+			shopItemId: reactionInstance.shopItemId,
+			amount: reactionInstance.amount,
+			materials: buyResult.materials,
+			...buyResult.plantsSentToHomeStorage ? { plantsSentToHomeStorage: buyResult.plantsSentToHomeStorage } : {},
+			translationParams: this.getTranslationParams(reactionInstance.shopItemId, shopData)
+		});
 	}
 
 	private static getTranslationParams(shopItemId: ShopItemType, shopData: additionalShopData): Record<string, string> | undefined {

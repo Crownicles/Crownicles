@@ -47,14 +47,16 @@ type PlantDeliveryRequest = {
 const DELIVERY_LOCK_CONTEXT = "givePlantsToPlayer";
 
 function getLinkedHomeStorage(plantSlots: number, home: Home | null): LinkedHomeStorage | null {
-	const homeLevel = home?.getLevel();
-	if (!PlantConstants.hasHomeStorageLink(plantSlots) || !home || !homeLevel) {
+	if (!home || !PlantConstants.hasHomeStorageLink(plantSlots)) {
 		return null;
 	}
-	return {
-		homeId: home.id,
-		maxCapacity: homeLevel.features.gardenPlantStorageCapacity
-	};
+	const homeLevel = home.getLevel();
+	return homeLevel
+		? {
+			homeId: home.id,
+			maxCapacity: homeLevel.features.gardenPlantStorageCapacity
+		}
+		: null;
 }
 
 /**
