@@ -198,6 +198,22 @@
     "9": "Uma classe centrada na velocidade. Pouca saúde e pontos de energia, mas muita velocidade e ataque."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "é ajudado por **{{petNickname}}**, que se manteve à espreita e surge assim que o adversário recupera o fôlego, desferindo-lhe uma formidável patada."
+    },
+    "scentOfBlood": {
+      "generalEffect": "é acompanhado por **{{petNickname}}**, que sentiu o cheiro a sangue: o tubarão morde o adversário ferido e abre uma ferida que sangra abundantemente.",
+      "success": "vê **{{petNickname}}** entrar em frenesi, enlouquecido pelo sangue que ainda escorre: o tubarão atira-se sobre o adversário e morde-o selvaticamente.",
+      "failure": "vê **{{petNickname}}** perder o rasto da sua presa: a hemorragia do adversário parou e o tubarão afasta-se."
+    },
+    "unstoppable": {
+      "generalEffect": "ganha impulso ao lado de **{{petNickname}}**, cuja corrida pesada ganha velocidade: os seus ataques corpo a corpo são cada vez mais fortes.",
+      "success": "é arrastado pelo **{{petNickname}}**, que avança a toda a velocidade: parece que já nada o consegue parar.",
+      "failure": "fica paralisado e **{{petNickname}}** perde todo o seu ímpeto; vai ser preciso recomeçar do início."
+    },
+    "woundedPrey": {
+      "success": "é acompanhado por **{{petNickname}}**, que sobrevoava o combate: ao ver o adversário exausto, a ave de rapina lança-se sobre ele em picada, com as garras à frente."
+    },
     "drowning": {
       "customMessage": "agarra o seu adversário com um dos seus tentáculos e mergulha-o debaixo de água, sendo que apenas os adversários com fôlego escapam ilesos.",
       "name_one": "Afogamento",
@@ -411,7 +427,7 @@
       "stop": "sofre as consequências da maldição."
     },
     "cursedAttack": {
-      "description": "Amaldiçoa o adversário, talvez sofrendo as consequências no futuro... Cura o jogador se o adversário tiver mais de 40% da sua energia.",
+      "description": "Maldito seja o adversário, talvez venha a sofrer as consequências no futuro... Enquanto estiver amaldiçoado, o adversário recupera menos energia com os cuidados e sofre o ataque sombrio com toda a potência. Cura o lançador se o adversário tiver mais de 40% da sua energia.",
       "name_one": "Ataque amaldiçoado",
       "name_other": "Ataques amaldiçoados"
     },
@@ -431,7 +447,7 @@
       "name_other": "Maldições do mar"
     },
     "darkAttack": {
-      "description": "Ignora a defesa do adversário. Mais eficaz contra um jogador com um ataque elevado. Cega o oponente ou restaura parte do fôlego perdido. A alteração \"cego\" dura pelo menos 1 turno e torna o adversário incapaz de atacar por vezes, reduzindo a sua defesa e velocidade.",
+      "description": "Não tem muito em conta a defesa do adversário. É mais eficaz contra um jogador com um ataque elevado. Muito poderosa na primeira utilização, enfraquece a cada nova utilização bem-sucedida e recupera força quando o lançador não a utiliza durante algumas ações. Atinge sempre um adversário amaldiçoado com toda a potência. A sua potência atual é exibida no botão.",
       "name_one": "Ataque negro",
       "name_other": "Ataques negros"
     },
@@ -473,7 +489,7 @@
       "afraid": "é ajudado por **{{petNickname}}** que, apesar de se lembrar perfeitamente dos acontecimentos recentes, treme demasiado de medo para conseguir recuperar o fôlego perdido."
     },
     "energeticAttack": {
-      "description": "Metade do dano deste ataque é devolvido ao atacante em forma de cura. Ignora parte da defesa adversária.",
+      "description": "Parte dos danos causados por este ataque é devolvida ao lançador sob a forma de cura. Ignora parte da defesa do adversário. Inflige mais danos a um adversário que acabou de descansar. A cura é reduzida contra monstros.",
       "name_one": "Ataque energético",
       "name_other": "Ataques energéticos"
     },
@@ -2529,7 +2545,8 @@
       "1": "Caldeirão",
       "2": "Fundição",
       "3": "Ainda assim",
-      "4": "Braseiro"
+      "4": "Braseiro",
+      "5": "Especialidade do chef"
     },
     "recipes": {
       "potion_health_1": "Poção de cura básica",

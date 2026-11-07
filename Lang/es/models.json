@@ -198,6 +198,22 @@
     "9": "Una clase centrada en la velocidad. Pocos puntos de salud y energía, pero mucha velocidad y ataque."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "cuenta con la ayuda de **{{petNickname}}**, que se mantiene al acecho y se abalanza en cuanto el adversario recupera el aliento para asestarle un formidable zarpazo."
+    },
+    "scentOfBlood": {
+      "generalEffect": "Se le une **{{petNickname}}**, que ha olido la sangre: el tiburón muerde al adversario herido y le abre una herida que sangra profusamente.",
+      "success": "ve cómo **{{petNickname}}** entra en un estado de frenesí, enloquecido por la sangre que aún brota: el tiburón se abalanza sobre su adversario y lo muerde salvajemente.",
+      "failure": "ve cómo **{{petNickname}}** pierde el rastro de su presa: la hemorragia del adversario se ha detenido y el tiburón se aleja."
+    },
+    "unstoppable": {
+      "generalEffect": "cobra impulso junto a **{{petNickname}}**, cuyo pesado avance se acelera: sus ataques cuerpo a cuerpo son cada vez más contundentes.",
+      "success": "es arrastrado por **{{petNickname}}**, que avanza a toda velocidad: ya nada parece poder detenerlo.",
+      "failure": "queda paralizado y **{{petNickname}}** pierde todo su impulso, habrá que volver a empezar desde el principio."
+    },
+    "woundedPrey": {
+      "success": "Se le une **{{petNickname}}**, que volaba en círculos sobre el combate: al ver que el adversario está al límite de sus fuerzas, el ave rapaz se abalanza sobre él en picado, con las garras por delante."
+    },
     "drowning": {
       "customMessage": "agarra a su oponente con uno de sus tentáculos y lo sumerge bajo el agua, y sólo los oponentes con aliento escapan ilesos.",
       "name_one": "Ahogamiento",
@@ -411,7 +427,7 @@
       "stop": "sufre las consecuencias de la maldición."
     },
     "cursedAttack": {
-      "description": "Maldice al oponente, tal vez sufriendo las consecuencias en el futuro... Cura al lanzador si el oponente tiene más del 40% de su energía.",
+      "description": "Maldito sea el adversario, quizá sufra las consecuencias en el futuro... Mientras esté maldito, el adversario recupera menos energía con los cuidados y recibe el ataque oscuro con toda su potencia. Cura al lanzador si el adversario tiene más del 40 % de su energía.",
       "name_one": "Ataque maldito",
       "name_other": "Ataques malditos"
     },
@@ -431,7 +447,7 @@
       "name_other": "Maldiciones del mar"
     },
     "darkAttack": {
-      "description": "Ignora la defensa del adversario. Más eficaz contra un jugador con un ataque alto. Ciega al oponente o restaura parte del aliento perdido por el lanzador. La alteración \"cegado\" dura al menos 1 turno y hace que el oponente no pueda atacar en algunos momentos, al tiempo que reduce su defensa y velocidad.",
+      "description": "No tiene muy en cuenta la defensa del adversario. Es más eficaz contra un jugador con un ataque elevado. Muy potente la primera vez que se usa, se debilita con cada nuevo uso exitoso y recupera fuerza cuando el lanzador deja de usarla durante unas cuantas acciones. Siempre golpea a un adversario maldito con toda su potencia. Su potencia actual se muestra en su botón.",
       "name_one": "Ataque oscuro",
       "name_other": "Ataques oscuros"
     },
@@ -473,7 +489,7 @@
       "afraid": "es ayudado por **{{petNickname}}** que, aunque recuerda perfectamente los acontecimientos recientes, tiembla demasiado de miedo para poder devolverle el aliento perdido."
     },
     "energeticAttack": {
-      "description": "La mitad del daño de este ataque se devuelve al lanzador en forma de curación. Ignora parte de la defensa enemiga.",
+      "description": "Una parte del daño de este ataque se devuelve al lanzador en forma de curación. Ignora una parte de la defensa del rival. Inflige más daño a un rival que acaba de descansar. La curación se reduce contra los monstruos.",
       "name_one": "Ataque energético",
       "name_other": "Ataques energéticos"
     },
@@ -2529,7 +2545,8 @@
       "1": "Caldero",
       "2": "Fundición",
       "3": "Todavía",
-      "4": "Brasero"
+      "4": "Brasero",
+      "5": "Especialidad del chef"
     },
     "recipes": {
       "potion_health_1": "Poción curativa básica",
