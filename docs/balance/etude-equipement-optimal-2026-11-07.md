@@ -676,20 +676,46 @@ donnent pas l'équilibre final) :
   les plafonds ne mordent presque pas (seules les défenses du Canonnier, du Chevalier, du Vétéran et du Mage gagnent 8 à
   29 points sans eux) ; leur rôle est d'empêcher qu'une classe porte l'équipement d'une autre.
 
-**Mon avis.**
-- Oui sur le fond : une courbe droite rend l'équipement lisible, et c'est la seule forme de courbe qui le fait.
-- Garder les plafonds : ce sont eux qui gardent l'identité des classes (le Canonnier ne peut pas porter l'armure d'un Tank).
-  Sans eux, chaque classe peut empiler n'importe quelle stat et la méta converge vers les mêmes builds pour tout le monde.
-  Réduire la puissance des objets va dans le bon sens (la classe pèse plus que l'équipement), avec ou sans plafond.
-- Une courbe droite doit se diviser par le facteur de niveau des stats de base (`1 + niveau²/4000`) : aujourd'hui, la courbe
-  s'aplatit aussi avec le niveau (au niveau 157, les stats sont presque toutes en haut de la courbe et comptent moins qu'au
-  niveau 100). Divisée par ce facteur, une stat compterait pareil à tous les niveaux.
-- C'est un chantier de version majeure, pas de la 6.1.2 : il touche aussi le PvE (monstres réglés sur la courbe actuelle),
-  les gardes du roi (réseau à réentraîner) et chaque classe. Les outils de cette étude permettent de le faire : rejouer
-  `ai/linearPowerPatch.js` du simulateur, ré-optimiser l'équipement de chaque classe, puis rééquilibrer.
-- Plus léger : une tanh plus plate fait déjà l'essentiel pour le Canonnier et le Tank (−3,9 et +3,2) en bousculant moins
-  l'équilibre (écart 18,9 au lieu de 23,9), mais pas pour le Mage (−13,7) : son build « attaque » abandonne la vitesse et la
-  défense dont son kit a besoin. Il faudrait quand même rééquilibrer toutes les classes.
+**Avec l'équipement ré-optimisé pour chaque formule** (optimiseur réseau des deux côtés, 2 minutes par formule ; scores réseau
+des deux côtés, 3 meilleurs familiers par classe) :
+
+| Formule | Équipement choisi (stats des objets attaque / défense / vitesse) | Fant | Tank | Cano | Chev | Pala | Vété | Mage | Écart |
+|---|---|---|---|---|---|---|---|---|---|
+| Actuelle | combler la faiblesse : Tank 440/556/−36, Canonnier 542/171/178 | 45,1 | 55,0 | 42,3 | 52,0 | 63,2 | 46,8 | 45,6 | 20,8 |
+| Courbe droite | **miser sur la force** : Tank 135/777/−30 (« mur »), Canonnier 772/141/−15 (« attaque »), Paladin 29/824/30 | 40,1 | 68,5 | 45,8 | 49,9 | 72,0 | 36,7 | 37,0 | 35,3 |
+| Courbe droite, pente 0,05 | idem | 44,4 | 69,2 | 40,5 | 57,0 | 72,0 | 33,7 | 33,1 | 38,8 |
+| Courbe droite, sans plafond, objets ×0,6 | idem | 44,1 | 67,6 | 54,3 | 48,5 | 67,6 | 32,9 | 35,1 | 34,7 |
+| Courbe droite, sans plafond, objets ×0,8 | idem | 45,0 | 68,4 | 47,1 | 49,0 | 72,8 | 32,8 | 34,9 | 39,9 |
+
+Dans le protocole réaliste avec son propre équipement optimal, la courbe droite donne Paladin 63,1, Tank 58,1, Canonnier 50,9,
+Chevalier 49,7, Mage 43,6, Fantassin 42,3, Vétéran 42,2 (écart 20,9 contre 4,3 aujourd'hui) : même sens, moins marqué.
+
+- **La courbe droite fait bien ce qu'on veut** : l'optimiseur choisit spontanément le Tank « mur », le Canonnier « attaque »,
+  le Paladin et le Chevalier en défense.
+- **Mais c'est la courbe actuelle qui équilibre les classes spécialistes.** Elle punit fort la stat faible : la faible attaque
+  du Tank lui coûte cher. Sans elle, les classes qui ont une stat énorme et beaucoup d'énergie (Tank, Paladin) écrasent les
+  autres. Ni la pente, ni la puissance des objets, ni les plafonds n'y changent rien.
+- Premiers essais de rééquilibrage (réseau, quelques secondes chacun) : défense de base du Tank 110 → 75 et du Paladin
+  105 → 70, énergie 400 → 250 et 330 → 230, ne les ramènent qu'à 61–62. C'est un rééquilibrage complet des classes, pas un
+  réglage.
+
+
+**Proposition.**
+1. **Formule cible, si l'on veut que miser sur une stat soit un vrai choix** : puissance proportionnelle à la stat, divisée
+   par le facteur de niveau des stats de base, `puissance = 0,304 × stat / (1 + niveau²/4000)` (même pente moyenne
+   qu'aujourd'hui au niveau 100, une stat compte pareil à tous les niveaux), plafonds des objets gardés. Les plafonds ne mordent
+   presque pas au niveau 100+ avec un bon équipement (8 à 29 points de défense) ; ils protègent les bas niveaux, où un objet
+   rare dépasserait la stat de base, et l'identité des classes. Réduire les objets ou enlever les plafonds n'améliore pas
+   l'équilibre (tableau ci-dessus).
+2. **Elle impose un rééquilibrage complet** : stats de base des classes spécialistes (Tank, Paladin), énergie, chiffres des
+   attaques réglés sur la courbe actuelle (part de la défense de l'attaque sombre, du poison…), PvE (monstres), réseau des
+   gardes du roi à réentraîner. Chantier de version majeure, pas de la 6.1.2.
+3. **Méthode rapide pour le faire** : tri des variantes dans le simulateur réseau des deux côtés (4 secondes par variante),
+   équipement ré-optimisé à chaque étape (2 minutes), confirmation dans le protocole réaliste (5 minutes), puis l'étude du
+   matin refaite : niveaux 100 et 120, vrais joueurs, terrain réel.
+4. **En attendant, pour la 6.1.2** : garder la courbe actuelle et rendre l'équipement lisible autrement, en affichant pour
+   chaque objet son gain réel pour la classe du joueur (le forgeron et l'inventaire connaissent la courbe) ou un conseil de
+   build par classe. Cela corrige le piège sans toucher à l'équilibre.
 
 ## 8. Limites
 - Le moteur au niveau humain attaque à pleine énergie et joue un peu mieux que la moyenne des joueurs (66 % contre 63,8 %
