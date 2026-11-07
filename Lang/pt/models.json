@@ -396,7 +396,7 @@
       "stop": "já não está confuso."
     },
     "counterAttack": {
-      "description": "Repete a mesma ação que o teu adversário. Não funciona com ataques mágicos ou divinos, ou se o adversário não tiver atacado.",
+      "description": "Repete a mesma ação que o teu adversário acabou de realizar. Causa mais danos contra monstros. Não funciona com certos ataques, nem se o adversário não tiver atacado.",
       "name_one": "Ataque riposte",
       "customMessage": "não conseguiu ripostar.",
       "name_other": "Os ataques ripostam"
