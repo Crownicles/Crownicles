@@ -1,4 +1,34 @@
-# Aperçu : rework pour des objets intuitifs (07/11/2026)
+# Rework pour des objets intuitifs (07/11/2026) — première passe
+
+## 0. État de la branche (première passe, 10 minutes)
+- **Formule en place** : `FightActionController.statToStatPower(stat, level)` = `0,304 × stat / (1 + niveau²/4000)`
+  (`FightConstants.STAT_POWER`), au lieu de la tanh. Le niveau de l'attaquant sert aux deux combattants.
+- **Énergie de départ (`fightPoint`) rééquilibrée automatiquement** au niveau 100 (simulateur réseau des deux côtés,
+  équipement ré-optimisé pour la courbe droite, 8 itérations de 4 secondes) : écart entre classes 35,3 → **0,3**.
+
+  | Classe | Avant | Après |
+  |---|---|---|
+  | Fantassin | 295 | 583 |
+  | Tank | 400 | 45 |
+  | Canonnier | 30 | 79 |
+  | Chevalier | 205 | 279 |
+  | Paladin | 330 | −117 |
+  | Vétéran | −155 | 52 |
+  | Mage | 180 | 367 |
+
+  Dans le protocole réaliste (même équipement, IA de défense scriptées), ces énergies dépassent la cible : Fantassin 56,4,
+  Canonnier 54,9, Mage 54,0, Vétéran 50,5, Chevalier 49,4, Tank 43,4, Paladin 41,3 (écart 15,1, contre 20,9 avant le
+  rééquilibrage et 4,3 avec les règles actuelles ; méta réaliste Fantassin 53 %, Mage 45 %). Le simulateur réseau joue la
+  défense mieux que les IA scriptées, ce qui avantage le Tank et le Paladin. Prochaine étape : la même boucle de réglage,
+  mais sur le protocole réaliste (5 minutes par itération, 3 à 4 itérations).
+- **Pas encore fait** : tout le reste du §3 (une seule stat réglée, l'énergie ; les autres niveaux ; les parts de stats des
+  attaques ; l'IA ; le PvE ; les gardes du roi ; l'étude refaite). L'énergie ne compte pas pareil à tous les niveaux
+  (`fightPoint` est fixe, le reste de l'énergie grandit avec le niveau) : l'équilibre ne vaut qu'au niveau 100.
+- **2 tests échouent, attendus** : ils fixent des réglages faits sur l'ancienne courbe et sont à refaire avec la nouvelle.
+  L'attaque sombre contre une cible blindée garde 74 % de ses dégâts (attendu < 70 %), et l'ours polaire fait 0,3 % de
+  plus que le tigre (attendu un peu moins).
+
+# Aperçu : rework pour des objets intuitifs
 
 Objectif : qu'un joueur puisse miser sur une stat au détriment des autres (« Tank mur », « Canonnier canon de verre ») et que
 ce soit un vrai choix, au lieu d'un piège. Mesures et raisonnement : §7 de `etude-equipement-optimal-2026-11-07.md`

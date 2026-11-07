@@ -43,7 +43,7 @@ export abstract class FightActionController {
 		const levelBonusRatio = this.getLevelBonusRatio(attacker.level);
 		let attackDamage = 0;
 		for (let i = 0; i < statsInfo.attackerStats.length; i++) {
-			attackDamage += this.getAttackDamageByStat(statsInfo.attackerStats[i], statsInfo.defenderStats[i], attackInfo) * statsInfo.statsEffect[i];
+			attackDamage += this.getAttackDamageByStat(statsInfo.attackerStats[i], statsInfo.defenderStats[i], attackInfo, attacker.level) * statsInfo.statsEffect[i];
 		}
 
 		// Add a random variation for 5% of the damage
@@ -162,13 +162,14 @@ export abstract class FightActionController {
 	}
 
 	/**
-	 * Return a value between 0 and 100, (more or less), representing the power of a stat
-	 * here is the formula: f(x) = 100 * tanh(0.0023*x - 0.03) + 3
-	 * (formula by Pokegali)
+	 * Power of a stat, proportional to it: every point counts the same whatever the class and the stat, and the power is
+	 * divided by the growth factor of the class base stats so a stat counts the same at every level
 	 * @param stat
+	 * @param level - level of the attacker, used for both fighters
 	 */
-	static statToStatPower(stat: number): number {
-		return 120 * Math.tanh(0.00123 * stat - 0.03) + 3;
+	static statToStatPower(stat: number, level: number): number {
+		const statPower = FightConstants.STAT_POWER;
+		return statPower.SLOPE * stat / (1 + level * level / statPower.LEVEL_GROWTH_DIVIDER);
 	}
 
 	/**
@@ -262,12 +263,13 @@ export abstract class FightActionController {
 	 * @param attackerStat
 	 * @param defenderStat
 	 * @param attackInfo
+	 * @param level - level of the attacker
 	 */
-	private static getAttackDamageByStat(attackerStat: number, defenderStat: number, attackInfo: attackInfo): number {
+	private static getAttackDamageByStat(attackerStat: number, defenderStat: number, attackInfo: attackInfo, level: number): number {
 		/*
 		 * This function allows exacerbating the difference between the attacker stat and the defender stat
 		 */
-		const ratio = (this.statToStatPower(attackerStat) - this.statToStatPower(defenderStat)) / 50;
+		const ratio = (this.statToStatPower(attackerStat, level) - this.statToStatPower(defenderStat, level)) / 50;
 
 		let damage;
 		if (ratio < 0) {

@@ -324,6 +324,16 @@ export abstract class FightConstants {
 	// A cursed fighter only receives this share of its healing
 	static readonly CURSED_HEALING_MULTIPLIER = 0.7;
 
+	/*
+	 * Power of a stat in the damage formula: proportional to the stat, so every point counts the same whatever the class
+	 * and the stat. Divided by the growth factor of the class base stats (1 + level² / LEVEL_GROWTH_DIVIDER, see Class),
+	 * so a stat counts the same at every level. SLOPE gives, at level 100, the mean slope of the former tanh curve
+	 */
+	static readonly STAT_POWER = {
+		SLOPE: 0.304,
+		LEVEL_GROWTH_DIVIDER: 4000
+	};
+
 	// The energetic attack punishes an opponent that has just rested
 	static readonly ENERGETIC_ATTACK_RESTED_TARGET_DAMAGE_MULTIPLIER = 1.25;
 
