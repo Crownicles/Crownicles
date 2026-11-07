@@ -8,6 +8,7 @@ import {
 	Home, Homes
 } from "../../../src/core/database/game/models/Home";
 import { CookingService } from "../../../src/core/cooking/CookingService";
+import { PlayerCookingSpecialty } from "../../../src/core/database/game/models/PlayerCookingSpecialty";
 import { handleCookingSetSpecialty } from "../../../src/core/report/ReportCookingService";
 import {
 	CookingOutputType, CookingSpecialtyConstants, RecipeType, SLOT_CONFIGS, SPECIALTY_SLOT_INDEX
@@ -41,7 +42,7 @@ function healthPotionOnSlot(slotIndex: number): CookingSlotData {
 }
 
 describe("handleCookingSetSpecialty", () => {
-	let withLockedSpy: ReturnType<typeof vi.spyOn>;
+	let createSpy: ReturnType<typeof vi.spyOn>;
 
 	beforeEach(() => {
 		const masterChef = {
@@ -56,7 +57,9 @@ describe("handleCookingSetSpecialty", () => {
 			getLevel: () => ({ features: { cookingSlots: SLOT_CONFIGS.length } })
 		} as unknown as Home);
 		vi.spyOn(CookingService, "getSpecialtiesInfo").mockResolvedValue([]);
-		withLockedSpy = vi.spyOn(Player, "withLocked").mockResolvedValue(null);
+		vi.spyOn(Player, "withLocked").mockImplementation((_id, body) => body(masterChef));
+		vi.spyOn(PlayerCookingSpecialty, "getOfPlayer").mockResolvedValue([]);
+		createSpy = vi.spyOn(PlayerCookingSpecialty, "create").mockResolvedValue({} as PlayerCookingSpecialty);
 	});
 
 	afterEach(() => {
@@ -72,7 +75,7 @@ describe("handleCookingSetSpecialty", () => {
 		});
 
 		expect(response).toMatchObject({ error: CookingSpecialtyErrors.UNAVAILABLE });
-		expect(withLockedSpy).not.toHaveBeenCalled();
+		expect(createSpy).not.toHaveBeenCalled();
 	});
 
 	it("should store a recipe offered on any rotating station, since the specialty station accepts every recipe", async () => {
@@ -85,6 +88,9 @@ describe("handleCookingSetSpecialty", () => {
 		});
 
 		expect(response).toMatchObject({ error: undefined });
-		expect(withLockedSpy).toHaveBeenCalledOnce();
+		expect(createSpy).toHaveBeenCalledWith({
+			playerId: 1,
+			recipeId: "potion_health_1"
+		});
 	});
 });

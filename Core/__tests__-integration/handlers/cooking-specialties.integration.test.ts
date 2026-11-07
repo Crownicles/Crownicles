@@ -3,14 +3,12 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, createNoopLogsDatabase, loadProductionModule, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { Home as HomeType } from "../../src/core/database/game/models/Home";
 import type { PlayerCookingSpecialty as PlayerCookingSpecialtyType } from "../../src/core/database/game/models/PlayerCookingSpecialty";
 import type { PlayerCookingRecipe as PlayerCookingRecipeType } from "../../src/core/database/game/models/PlayerCookingRecipe";
-import type { LogsDatabase } from "../../src/core/database/logs/LogsDatabase";
-import type { CookingUseLogParams } from "../../src/core/database/logs/LogsCityLogger";
 import type {
 	CookingSlotData, RecipeSlotData
 } from "../../../Lib/src/types/CookingTypes";
@@ -132,44 +130,11 @@ describe("cooking specialties and time potion weekly limit", () => {
 		} as PacketContext;
 	}
 
-	/**
-	 * Answer the given weekly count of successful time potion crafts, every other log call being a no-op
-	 */
-	function useTimePotionsCookedThisWeek(count: number): void {
-		const noop = createNoopLogsDatabase();
-		env.crownicles.setLogsDatabaseForTests(new Proxy(noop, {
-			get: (target, prop): unknown => (prop === "countSuccessfulCookingCraftsThisWeek"
-				? (): Promise<number> => Promise.resolve(count)
-				: Reflect.get(target, prop))
-		}) as LogsDatabase);
-	}
-
-	/**
-	 * Like the logs database, count the successful time potion crafts logged on top of the given ones
-	 */
-	function useLoggedTimePotions(alreadyCooked: number): void {
-		let cooked = alreadyCooked;
-		const noop = createNoopLogsDatabase();
-		env.crownicles.setLogsDatabaseForTests(new Proxy(noop, {
-			get: (target, prop): unknown => {
-				if (prop === "countSuccessfulCookingCraftsThisWeek") {
-					return (): Promise<number> => Promise.resolve(cooked);
-				}
-				if (prop === "logCookingUse") {
-					return (params: CookingUseLogParams): Promise<void> => {
-						if (params.success && params.recipeId.startsWith("potion_time_speedup")) {
-							cooked++;
-						}
-						return Promise.resolve();
-					};
-				}
-				return Reflect.get(target, prop);
-			}
-		}) as LogsDatabase);
+	async function setTimePotionsCookedThisWeek({ player }: Cook, count: number): Promise<void> {
+		await Player.update({ timePotionsCookedThisWeek: count }, { where: { id: player.id } });
 	}
 
 	it("offers a specialty on the specialty station at every furnace ignition, besides every rotating station, even once cooked", async () => {
-		useTimePotionsCookedThisWeek(0);
 		const cook = await createCook("specialty-keeper", ALL_SPECIALTIES_LEVEL);
 		const chosen = visibleSlots(await getSlots(cook))[0];
 
@@ -208,7 +173,6 @@ describe("cooking specialties and time potion weekly limit", () => {
 	});
 
 	it("refuses a specialty beyond the limit and accepts a new one once a specialty is removed", async () => {
-		useTimePotionsCookedThisWeek(0);
 		const cook = await createCook("specialty-limit", ALL_SPECIALTIES_LEVEL);
 
 		// Each new specialty leaves the rotation, so the next candidate is read from the refreshed stations
@@ -259,7 +223,6 @@ describe("cooking specialties and time potion weekly limit", () => {
 	});
 
 	it("only lets a kitchen master keep the single specialty of their grade", async () => {
-		useTimePotionsCookedThisWeek(0);
 		const cook = await createCook("specialty-kitchen-master", CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0]);
 		const [first, second] = visibleSlots(rotatingSlots(await getSlots(cook)));
 
@@ -277,7 +240,6 @@ describe("cooking specialties and time potion weekly limit", () => {
 	});
 
 	it("refuses a specialty before the first unlock level or for a recipe the station no longer offers", async () => {
-		useTimePotionsCookedThisWeek(0);
 		const apprentice = await createCook("specialty-apprentice", BEFORE_SPECIALTIES_LEVEL);
 		const apprenticeSlot = visibleSlots(await getSlots(apprentice))[0];
 		const [apprenticeResponse] = await reportCooking.handleCookingSetSpecialty(apprentice.keycloakId, {
@@ -308,7 +270,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 		const findTimePotionSlot = async (): Promise<CookingSlotData & { recipe: RecipeSlotData }> =>
 			visibleSlots(await getSlots(cook)).find(slot => slot.recipe.id === TIME_POTION_RECIPE_ID)!;
 
-		useTimePotionsCookedThisWeek(TIME_POTION_WEEKLY_CRAFT_LIMIT - 1);
+		await setTimePotionsCookedThisWeek(cook, TIME_POTION_WEEKLY_CRAFT_LIMIT - 1);
 		const lastTimePotionSlot = await findTimePotionSlot();
 		await giveIngredients(cook, lastTimePotionSlot.recipe);
 		expect((await findTimePotionSlot()).recipe).toMatchObject({
@@ -316,7 +278,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 			canCraft: true
 		});
 
-		useTimePotionsCookedThisWeek(TIME_POTION_WEEKLY_CRAFT_LIMIT);
+		await setTimePotionsCookedThisWeek(cook, TIME_POTION_WEEKLY_CRAFT_LIMIT);
 		const blockedSlot = await findTimePotionSlot();
 		expect(blockedSlot.recipe).toMatchObject({
 			timePotionsLeftThisWeek: 0,
@@ -347,7 +309,7 @@ describe("cooking specialties and time potion weekly limit", () => {
 
 		// The pin brings the time potion on a rotating station, from where the master chef makes it a specialty
 		await Player.update({ pinnedCookingRecipeId: TIME_POTION_RECIPE_ID }, { where: { id: cook.player.id } });
-		useLoggedTimePotions(TIME_POTION_WEEKLY_CRAFT_LIMIT - 1);
+		await setTimePotionsCookedThisWeek(cook, TIME_POTION_WEEKLY_CRAFT_LIMIT - 1);
 		const pinnedSlot = visibleSlots(await getSlots(cook)).find(slot => slot.recipe.id === TIME_POTION_RECIPE_ID)!;
 		const [setResponse] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
 			slotIndex: pinnedSlot.slotIndex,
@@ -373,5 +335,8 @@ describe("cooking specialties and time potion weekly limit", () => {
 			id: TIME_POTION_RECIPE_ID,
 			timePotionsLeftThisWeek: craft.success ? 0 : 1
 		});
+
+		// Only a successful craft keeps the time potion taken from the weekly limit
+		expect((await Player.findByPk(cook.player.id))!.timePotionsCookedThisWeek).toBe(TIME_POTION_WEEKLY_CRAFT_LIMIT - (craft.success ? 0 : 1));
 	});
 });

@@ -6,7 +6,7 @@ import { PacketUtils } from "../../utils/PacketUtils";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 import { botConfig } from "../../../bootstrap";
 import { crowniclesInstance } from "../../../app";
-import Player from "../../database/game/models/Player";
+import Player, { Players } from "../../database/game/models/Player";
 import {
 	DatabaseError, Op
 } from "sequelize";
@@ -106,6 +106,8 @@ export class CrowniclesMonday {
 		});
 		await PlayerMissionsInfo.resetShopBuyout();
 		CrowniclesLogger.info("All players can now buy again points from the mission shop !");
+		await Players.resetTimePotionsCookedThisWeek();
+		CrowniclesLogger.info("All players can cook time potions again");
 		crowniclesInstance?.logsDatabase.logTopWeekEnd()
 			.then();
 	}
