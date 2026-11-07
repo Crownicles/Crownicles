@@ -24,7 +24,7 @@ import {
 import type { CookingRecipeId } from "../../types/CookingRecipe";
 export {
 	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients, CookingMenuSnapshot,
-	CookingSpecialtyInfo, CookingSpecialtyErrors, CookingSpecialtyError
+	CookingSpecialtyInfo, CookingSpecialtyErrors, CookingSpecialtyError, CookingSlotRecipeRef
 } from "../../types/CookingTypes";
 import {
 	CookingCraftError, CookingMenuSnapshot, CookingSpecialtyError, RecipeDisplayInfo

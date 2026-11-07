@@ -27,6 +27,7 @@ import {
 	CookingSpecialtyErrors,
 	CookingSpecialtyError,
 	CookingSlotData,
+	CookingSlotRecipeRef,
 	CookingMenuSnapshot,
 	CraftPetFoodResult,
 	CraftMaterialResult,
@@ -750,9 +751,6 @@ function validateCraftRequest(
 	if (slot.recipe.id !== requestedRecipeId) {
 		return CookingCraftErrors.CRAFT_UNAVAILABLE;
 	}
-	if (slot.recipe.timePotionsLeftThisWeek === 0) {
-		return CookingCraftErrors.TIME_POTION_WEEKLY_LIMIT;
-	}
 	if (recipe.outputType === CookingOutputType.PET_FOOD && !guild) {
 		return CookingCraftErrors.GUILD_REQUIRED;
 	}
@@ -760,6 +758,16 @@ function validateCraftRequest(
 		return CookingCraftErrors.CRAFT_UNAVAILABLE;
 	}
 	return null;
+}
+
+/**
+ * A time potion stays offered once the weekly limit is reached, only to be refused with an explanation.
+ * Checked before the other validations, which would only see a recipe that can't be cooked.
+ */
+function getTimePotionLimitError(slot: CookingSlotData | undefined, requestedRecipeId: CookingRecipeId): CookingCraftError | null {
+	return slot?.recipe?.id === requestedRecipeId && slot.recipe.timePotionsLeftThisWeek === 0
+		? CookingCraftErrors.TIME_POTION_WEEKLY_LIMIT
+		: null;
 }
 
 async function loadCookingCraftContext(
@@ -985,7 +993,7 @@ export async function handleCookingCraft(
 		return [];
 	}
 
-	const validationError = validateCraftRequest(
+	const validationError = getTimePotionLimitError(craftContext.slot, packet.recipeId) ?? validateCraftRequest(
 		craftContext.slot,
 		craftContext.recipe,
 		craftContext.guild,
@@ -1124,11 +1132,6 @@ export async function handleCookingUnpin(
 	return response;
 }
 
-interface SpecialtyChoice {
-	slotIndex: number;
-	recipeId: CookingRecipeId;
-}
-
 /**
  * Store the specialty under the player lock, so two concurrent choices can't exceed the limit of the player's
  * cooking level. The recipe is unpinned since a specialty is already offered at every ignition.
@@ -1153,27 +1156,37 @@ async function addSpecialtyUnderLock(lockedPlayer: Locked<Player>, recipeId: Coo
 }
 
 /**
- * Make a recipe currently offered on a rotating station one of the player's specialties
+ * Only a visible recipe of a rotating station can become a specialty
  */
-async function setSpecialty({
+async function isOfferedOnRotatingStation({
 	player, home, cookingSlots
-}: PlayerAndHome, choice: SpecialtyChoice): Promise<CookingSpecialtyError | null> {
-	if (!hasUnlockedCookingSpecialties(player.cookingLevel)) {
-		return CookingSpecialtyErrors.UNAVAILABLE;
-	}
-
-	// Only a recipe the player can see can become a specialty
+}: PlayerAndHome, choice: CookingSlotRecipeRef): Promise<boolean> {
 	const offeredRecipe = (await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
 	})).find(slot => slot.slotIndex === choice.slotIndex && slot.slotIndex !== SPECIALTY_SLOT_INDEX)?.recipe;
-	if (offeredRecipe?.id !== choice.recipeId || offeredRecipe.isSecret) {
-		return CookingSpecialtyErrors.UNAVAILABLE;
-	}
+	return offeredRecipe?.id === choice.recipeId && !offeredRecipe.isSecret;
+}
 
-	const error = await Player.withLocked(player.id, lockedPlayer => addSpecialtyUnderLock(lockedPlayer, choice.recipeId));
-	if (!error && player.pinnedCookingRecipeId === choice.recipeId) {
+/**
+ * Mirror the unpinning done under the lock without dirtying the instance used to build the menu
+ */
+function mirrorUnpinnedRecipe(player: Player, recipeId: CookingRecipeId): void {
+	if (player.pinnedCookingRecipeId === recipeId) {
 		player.pinnedCookingRecipeId = null;
 		player.changed("pinnedCookingRecipeId", false);
+	}
+}
+
+/**
+ * Make a recipe currently offered on a rotating station one of the player's specialties
+ */
+async function setSpecialty(data: PlayerAndHome, choice: CookingSlotRecipeRef): Promise<CookingSpecialtyError | null> {
+	if (!hasUnlockedCookingSpecialties(data.player.cookingLevel) || !await isOfferedOnRotatingStation(data, choice)) {
+		return CookingSpecialtyErrors.UNAVAILABLE;
+	}
+	const error = await Player.withLocked(data.player.id, lockedPlayer => addSpecialtyUnderLock(lockedPlayer, choice.recipeId));
+	if (!error) {
+		mirrorUnpinnedRecipe(data.player, choice.recipeId);
 	}
 	return error;
 }

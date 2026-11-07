@@ -44,6 +44,14 @@ export interface CookingSlotData {
 
 export type RecipeSlotData = NonNullable<CookingSlotData["recipe"]>;
 
+/**
+ * A recipe offered on a given furnace slot, as chosen by the player from a menu snapshot
+ */
+export interface CookingSlotRecipeRef {
+	slotIndex: number;
+	recipeId: CookingRecipeId;
+}
+
 export const CookingCraftErrors = {
 	CRAFT_UNAVAILABLE: "craftUnavailable",
 	INVENTORY_FULL: "inventoryFull",
