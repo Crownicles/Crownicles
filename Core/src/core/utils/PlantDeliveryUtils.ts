@@ -1,3 +1,4 @@
+import { Model } from "sequelize";
 import { Player } from "../database/game/models/Player";
 import {
 	Home, Homes
@@ -8,7 +9,9 @@ import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import {
 	PLANT_RECEPTION_FAILURES, PlantConstants, PlantId, PlantReceptionFailure
 } from "../../../../Lib/src/constants/PlantConstants";
-import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	Locked, LockKey
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { withLockedPlayerAndMissionsSafe } from "./withLockedPlayerAndMissionsSafe";
 
 /**
@@ -53,22 +56,32 @@ export type PlantDeliveryResult =
 
 const DELIVERY_LOCK_CONTEXT = "givePlantsToPlayer";
 
+/**
+ * Capacity per plant type of the home plant storage. The chest only gives access to it once the home has a
+ * garden: without one, plants sent there could neither be seen nor withdrawn.
+ */
+function getHomePlantStorageCapacity(home: Home | null): number {
+	const features = home?.getLevel()?.features;
+	return features && features.gardenPlots > 0 ? features.gardenPlantStorageCapacity : 0;
+}
+
 function getLinkedHomeStorage(plantSlots: number, home: Home | null): LinkedHomeStorage | null {
-	if (!home || !PlantConstants.hasHomeStorageLink(plantSlots)) {
-		return null;
-	}
-	const homeLevel = home.getLevel();
-	return homeLevel
+	const maxCapacity = getHomePlantStorageCapacity(home);
+	return home && maxCapacity > 0 && PlantConstants.hasHomeStorageLink(plantSlots)
 		? {
 			homeId: home.id,
-			maxCapacity: homeLevel.features.gardenPlantStorageCapacity
+			maxCapacity
 		}
 		: null;
 }
 
+function getHomeLockKeys(home: Home | null): LockKey<Model>[] {
+	return home ? [Home.lockKey(home.id)] : [];
+}
+
 /**
  * Whether the plant inventory of a player is linked to their home plant storage: it needs the last tanner
- * plant slot upgrade and a home
+ * plant slot upgrade and a home with a garden
  */
 export function isPlantInventoryLinkedToHome(plantSlots: number, home: Home | null): boolean {
 	return getLinkedHomeStorage(plantSlots, home) !== null;
@@ -84,7 +97,10 @@ function getReceptionFailure(linkedHomeStorage: LinkedHomeStorage | null, home: 
 	if (linkedHomeStorage) {
 		return PLANT_RECEPTION_FAILURES.HOME_STORAGE_FULL;
 	}
-	return home ? PLANT_RECEPTION_FAILURES.PLANT_SLOTS_FULL : PLANT_RECEPTION_FAILURES.NO_HOME;
+	if (!home) {
+		return PLANT_RECEPTION_FAILURES.NO_HOME;
+	}
+	return getHomePlantStorageCapacity(home) > 0 ? PLANT_RECEPTION_FAILURES.PLANT_SLOTS_FULL : PLANT_RECEPTION_FAILURES.NO_GARDEN;
 }
 
 export async function getPlantReception(playerId: number): Promise<PlantReception> {
@@ -115,12 +131,20 @@ export async function getPlantReceptionCapacity(reception: PlantReception, plant
 }
 
 /**
+ * Rows a plant delivery locks besides the player and their missions: their home, whose plant storage may
+ * receive the plants. Small events giving plants declare them with `getAdditionalLockKeys`.
+ */
+export async function getPlantReceiverLockKeys(player: Player): Promise<LockKey<Model>[]> {
+	return getHomeLockKeys(await Homes.getOfPlayer(player.id));
+}
+
+/**
  * Lock the player, their missions and their home (if any) in the canonical order, so that a plant delivery and
  * the player mutations around it (money, missions) form a single critical section.
  *
  * Reentrant, but a caller already inside a critical section must already hold the home lock too (small events
- * declare it with `getAdditionalLockKeys`): otherwise the home row would be locked after the player row, against
- * the canonical order.
+ * declare it with {@link getPlantReceiverLockKeys}): otherwise the home row would be locked after the player row,
+ * against the canonical order.
  */
 export async function withLockedPlantReceiver(player: Player, context: string, body: (receiver: PlantReceiver) => Promise<void>): Promise<void> {
 	const home = await Homes.getOfPlayer(player.id);
@@ -129,7 +153,7 @@ export async function withLockedPlantReceiver(player: Player, context: string, b
 			player: lockedPlayer,
 			home: home ? await Home.findByPk(home.id) : null
 		});
-	}, home ? [Home.lockKey(home.id)] : []);
+	}, getHomeLockKeys(home));
 }
 
 /**

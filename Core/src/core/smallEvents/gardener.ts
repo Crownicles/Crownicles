@@ -58,7 +58,9 @@ import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
-import { givePlantsToPlayer } from "../utils/PlantDeliveryUtils";
+import {
+	getPlantReceiverLockKeys, givePlantsToPlayer
+} from "../utils/PlantDeliveryUtils";
 
 function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<SmallEventGardenerPacket, "interactionName" | "conditionKey">): SmallEventGardenerPacket {
 	return {
@@ -664,8 +666,5 @@ export const smallEventFuncs: SmallEventFuncs = {
 	},
 
 	// The plant gift may go to the home plant storage
-	getAdditionalLockKeys: async player => {
-		const home = await Homes.getOfPlayer(player.id);
-		return home ? [Home.lockKey(home.id)] : [];
-	}
+	getAdditionalLockKeys: getPlantReceiverLockKeys
 };

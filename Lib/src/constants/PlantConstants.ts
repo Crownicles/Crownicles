@@ -214,7 +214,10 @@ export const PLANT_RECEPTION_FAILURES = {
 	PLANT_SLOTS_FULL: "plantSlotsFull",
 
 	/** The plant slots are full and the player has no home to store plants in */
-	NO_HOME: "noHome"
+	NO_HOME: "noHome",
+
+	/** The plant slots are full and the home does not unlock the garden yet, so its chest cannot store plants */
+	NO_GARDEN: "noGarden"
 } as const;
 
 export type PlantReceptionFailure = typeof PLANT_RECEPTION_FAILURES[keyof typeof PLANT_RECEPTION_FAILURES];
@@ -236,8 +239,9 @@ export abstract class PlantConstants {
 	public static readonly MAX_PLANT_SLOTS = 3;
 
 	/**
-	 * The last tanner plant slot upgrade magically links the plant inventory to the home plant storage:
-	 * received plants go straight to the chest, the plant slots only take what the chest cannot hold.
+	 * The last tanner plant slot upgrade magically links the plant inventory to the home plant storage (once the
+	 * home has a garden): received plants go straight to the chest, the plant slots only take what the chest
+	 * cannot hold.
 	 */
 	public static hasHomeStorageLink(plantSlots: number): boolean {
 		return plantSlots >= PlantConstants.MAX_PLANT_SLOTS;

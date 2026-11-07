@@ -38,10 +38,23 @@ type ReportGardenServiceModule = typeof import("../../src/core/report/ReportGard
 type ReactionsCollectorModule = typeof import("../../src/core/utils/ReactionsCollector");
 
 const N_CONCURRENT = 25;
-const SMALLEST_HOME_LEVEL = 1;
 const DELIVERED_PLANT = PlantId.LUNAR_MOSS;
 const NO_CONTEXT = {} as PacketContext;
 const HERBALIST_CITY = { id: "coco_village" } as City;
+const NO_GARDEN_HOME_LEVEL = HomeLevel.getInitialLevel().level;
+
+/**
+ * Smallest home level with a garden: the chest only gives access to the home plant storage from there on
+ */
+function getSmallestGardenHomeLevel(): number {
+	let level = NO_GARDEN_HOME_LEVEL;
+	while (HomeLevel.getByLevel(level)!.features.gardenPlots === 0) {
+		level++;
+	}
+	return level;
+}
+
+const GARDEN_HOME_LEVEL = getSmallestGardenHomeLevel();
 
 /**
  * Integration tests for the magic link between the plant inventory and the home plant storage, granted by the
@@ -65,7 +78,7 @@ describe("Plant inventory linked to the home plant storage", () => {
 	let reactionsCollector: ReactionsCollectorModule;
 	let keycloakCounter = 0;
 
-	const storageCapacity = HomeLevel.getByLevel(SMALLEST_HOME_LEVEL)!.features.gardenPlantStorageCapacity;
+	const storageCapacity = HomeLevel.getByLevel(GARDEN_HOME_LEVEL)!.features.gardenPlantStorageCapacity;
 	const linkedCapacity = storageCapacity + PlantConstants.MAX_PLANT_SLOTS;
 
 	beforeAll(async () => {
@@ -106,7 +119,7 @@ describe("Plant inventory linked to the home plant storage", () => {
 	});
 
 	async function createPlayer(params: {
-		plantSlots: number; withHome: boolean; money?: number;
+		plantSlots: number; withHome: boolean; money?: number; homeLevel?: number;
 	}): Promise<PlayerType> {
 		keycloakCounter++;
 		const player = await Player.create({
@@ -121,7 +134,7 @@ describe("Plant inventory linked to the home plant storage", () => {
 			await Home.create({
 				ownerId: player.id,
 				cityId: "plant-delivery-city",
-				level: SMALLEST_HOME_LEVEL
+				level: params.homeLevel ?? GARDEN_HOME_LEVEL
 			});
 		}
 		return player;
@@ -227,6 +240,22 @@ describe("Plant inventory linked to the home plant storage", () => {
 			expect(await getCarriedPlants(player.id)).toHaveLength(PlantConstants.MAX_PLANT_SLOTS);
 		});
 
+		it("keeps the plants in the plant slots while the home has no garden, its chest not showing any plant", async () => {
+			const player = await createPlayer({
+				plantSlots: PlantConstants.MAX_PLANT_SLOTS, withHome: true, homeLevel: NO_GARDEN_HOME_LEVEL
+			});
+
+			const result = await plantDelivery.givePlantsToPlayer(player, {
+				plantId: DELIVERED_PLANT, amount: PlantConstants.MAX_PLANT_SLOTS
+			});
+
+			expect(result).toEqual({
+				delivered: true, toHomeStorage: 0, toPlantSlots: PlantConstants.MAX_PLANT_SLOTS
+			});
+			expect(await getStoredQuantity(player.id, DELIVERED_PLANT)).toBe(0);
+			expect(await getCarriedPlants(player.id)).toHaveLength(PlantConstants.MAX_PLANT_SLOTS);
+		});
+
 		it("gives nothing when the whole quantity does not fit, and tells why", async () => {
 			const linkedPlayer = await createPlayer({
 				plantSlots: PlantConstants.MAX_PLANT_SLOTS, withHome: true
@@ -236,6 +265,9 @@ describe("Plant inventory linked to the home plant storage", () => {
 			});
 			const playerWithoutHome = await createPlayer({
 				plantSlots: PlantConstants.DEFAULT_PLANT_SLOTS, withHome: false
+			});
+			const playerWithoutGarden = await createPlayer({
+				plantSlots: PlantConstants.MAX_PLANT_SLOTS, withHome: true, homeLevel: NO_GARDEN_HOME_LEVEL
 			});
 
 			const results = await Promise.all([
@@ -247,6 +279,9 @@ describe("Plant inventory linked to the home plant storage", () => {
 				}),
 				plantDelivery.givePlantsToPlayer(playerWithoutHome, {
 					plantId: DELIVERED_PLANT, amount: PlantConstants.DEFAULT_PLANT_SLOTS + 1
+				}),
+				plantDelivery.givePlantsToPlayer(playerWithoutGarden, {
+					plantId: DELIVERED_PLANT, amount: PlantConstants.MAX_PLANT_SLOTS + 1
 				})
 			]);
 
@@ -259,9 +294,12 @@ describe("Plant inventory linked to the home plant storage", () => {
 				},
 				{
 					delivered: false, reason: PLANT_RECEPTION_FAILURES.NO_HOME
+				},
+				{
+					delivered: false, reason: PLANT_RECEPTION_FAILURES.NO_GARDEN
 				}
 			]);
-			for (const player of [linkedPlayer, playerWithHome, playerWithoutHome]) {
+			for (const player of [linkedPlayer, playerWithHome, playerWithoutHome, playerWithoutGarden]) {
 				expect(await getStoredQuantity(player.id, DELIVERED_PLANT)).toBe(0);
 				expect(await getCarriedPlants(player.id)).toEqual([]);
 			}
@@ -283,15 +321,20 @@ describe("Plant inventory linked to the home plant storage", () => {
 	});
 
 	describe("isPlantInventoryLinkedToHome", () => {
-		it("links the plant inventory only with the last tanner upgrade and a home", async () => {
+		it("links the plant inventory only with the last tanner upgrade and a home with a garden", async () => {
 			const playerWithHome = await createPlayer({
 				plantSlots: PlantConstants.MAX_PLANT_SLOTS, withHome: true
 			});
+			const playerWithoutGarden = await createPlayer({
+				plantSlots: PlantConstants.MAX_PLANT_SLOTS, withHome: true, homeLevel: NO_GARDEN_HOME_LEVEL
+			});
 			const home = await Home.findOne({ where: { ownerId: playerWithHome.id } });
+			const homeWithoutGarden = await Home.findOne({ where: { ownerId: playerWithoutGarden.id } });
 
 			expect(plantDelivery.isPlantInventoryLinkedToHome(PlantConstants.MAX_PLANT_SLOTS, home)).toBe(true);
 			expect(plantDelivery.isPlantInventoryLinkedToHome(PlantConstants.MAX_PLANT_SLOTS - 1, home)).toBe(false);
 			expect(plantDelivery.isPlantInventoryLinkedToHome(PlantConstants.MAX_PLANT_SLOTS, null)).toBe(false);
+			expect(plantDelivery.isPlantInventoryLinkedToHome(PlantConstants.MAX_PLANT_SLOTS, homeWithoutGarden)).toBe(false);
 		});
 	});
 
