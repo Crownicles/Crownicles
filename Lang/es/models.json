@@ -396,7 +396,7 @@
       "stop": "ya no se confunde."
     },
     "counterAttack": {
-      "description": "Repite la misma acción que tu oponente. No funciona con ataques mágicos o divinos, o si el oponente no ha atacado.",
+      "description": "Repite la misma acción que acaba de realizar tu rival. Inflige más daño a los monstruos. No funciona con ciertos ataques, ni si el rival no ha atacado.",
       "name_one": "Réplica de ataque",
       "customMessage": "fue incapaz de defenderse.",
       "name_other": "Los ataques contraatacan"
