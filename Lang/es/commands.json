@@ -475,8 +475,7 @@
         "description": "Te permite gestionar tu equipamiento para cada categoría de objetos: equipar un objeto de tu inventario, guardar el objeto equipado en tu inventario o intercambiar dos objetos."
       },
       "FIGHT": {
-        "description": "Utiliza este comando para desafiar a otros jugadores.\nLas batallas tienen lugar turno a turno. En cada turno, puedes elegir una acción a realizar.\n\nPara más información, consulta la página de la guía: https://guide.crownicles.com/notions-principale/combats",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
+        "description": "Utiliza este comando para desafiar a otros jugadores.\nLas batallas tienen lugar turno a turno. En cada turno, puedes elegir una acción a realizar.\n\nPara más información, consulta la página de la guía: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
         "description": "Muestra el historial de tus últimas peleas: el rival al que te has enfrentado, el resultado y la evolución de la gloria y la liga de cada luchador. Si ya te has enfrentado a un guardia del rey, el botón **Guardias del rey** muestra tu historial frente a los guardias, tu clasificación y el cuadro de honor del reino."
