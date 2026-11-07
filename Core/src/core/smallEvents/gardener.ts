@@ -550,10 +550,10 @@ async function handleFallback(response: CrowniclesPacket[], player: Player, cond
 	return await handleMaterialGift(response, player);
 }
 
-async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket> {
+// Exported for integration tests
+export async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket> {
 	const randomPlantId = PlantConstants.lootRandomPlant(RandomUtils.crowniclesRandom);
-	const delivery = await givePlantsToPlayer({
-		playerId: player.id,
+	const delivery = await givePlantsToPlayer(player, {
 		plantId: randomPlantId,
 		amount: 1
 	});
@@ -661,5 +661,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 				...packet, isFirstEncounter
 			}));
 		}
+	},
+
+	// The plant gift may go to the home plant storage
+	getAdditionalLockKeys: async player => {
+		const home = await Homes.getOfPlayer(player.id);
+		return home ? [Home.lockKey(home.id)] : [];
 	}
 };

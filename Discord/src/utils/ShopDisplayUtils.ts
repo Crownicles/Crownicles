@@ -127,7 +127,7 @@ export async function handleCommandShopBoughtTooMuchDailyPotions(context: Packet
 }
 
 export async function handleCommandShopNoPlantSlotAvailable(packet: CommandShopNoPlantSlotAvailable, context: PacketContext): Promise<void> {
-	await sendShopError(context, packet.linkedToHomeStorage ? "commands:shop.noPlantSpaceInHomeStorage" : "commands:shop.noPlantSlotAvailable");
+	await sendShopError(context, packet.reason ? `commands:shop.noPlantSpace.${packet.reason}` : "commands:shop.noPlantSlotAvailable");
 }
 
 export async function handleCommandShopNoGardenForRemoteHarvestTalisman(context: PacketContext): Promise<void> {

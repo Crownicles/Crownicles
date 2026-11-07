@@ -1701,8 +1701,12 @@
     "plantsSentToHomeStorage_other": "{emote:city.homeUpgrades.chest} **{{count}}** plantes ont été envoyées par magie dans le coffre de votre maison.",
     "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Il n'y a plus aucune potion du jour disponible à la vente... Revenez demain !",
-    "noPlantSlotAvailable": "Vous n'avez aucun emplacement de plante libre ! Déposez vos plantes dans le coffre de votre maison, ou agrandissez votre sacoche au tanneur : son dernier emplacement relie par magie vos plantes au coffre de votre maison.",
-    "noPlantSpaceInHomeStorage": "Il n'y a pas assez de place pour ces plantes, ni dans le coffre de votre maison ni dans vos emplacements de plante ! Faites de la place en cuisinant ou en compostant vos plantes, ou choisissez une quantité plus petite.",
+    "noPlantSlotAvailable": "Vous n'avez aucun emplacement de plante libre ! Libérez-en un ou améliorez votre équipement au tanneur.",
+    "noPlantSpace": {
+      "homeStorageFull": "Il n'y a pas assez de place pour ces plantes, ni dans le coffre de votre maison ni dans vos emplacements de plante ! Faites de la place en cuisinant ou en compostant vos plantes, ou choisissez une quantité plus petite.",
+      "plantSlotsFull": "Vous n'avez aucun emplacement de plante libre ! Déposez vos plantes dans le coffre de votre maison, ou agrandissez votre sacoche au tanneur : son dernier emplacement relie par magie vos plantes au coffre de votre maison.",
+      "noHome": "Vous n'avez aucun emplacement de plante libre ! Une maison vous permettrait de stocker vos plantes dans son coffre."
+    },
     "noGardenForRemoteHarvestTalisman": "L'Herboriste refuse de vous vendre le Cœur Sylvestre : cet objet ne vous sera utile qu'une fois votre jardin débloqué.",
     "boughtTooMuchTokens": "Vous avez atteint la limite d'achat de jetons pour le moment. Revenez plus tard !",
     "tokensBought_one": "Vous avez acheté **{{count}} jeton** {emote:unitValues.token}.",

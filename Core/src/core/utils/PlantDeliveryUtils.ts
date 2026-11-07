@@ -6,10 +6,10 @@ import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import {
-	PlantConstants, PlantId
+	PLANT_RECEPTION_FAILURES, PlantConstants, PlantId, PlantReceptionFailure
 } from "../../../../Lib/src/constants/PlantConstants";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
-import { withLockedEntitiesSafe } from "./withLockedEntitiesSafe";
+import { withLockedPlayerAndMissionsSafe } from "./withLockedPlayerAndMissionsSafe";
 
 /**
  * Home plant storage the plant inventory of a player is magically linked to
@@ -27,6 +27,19 @@ export type PlantReception = {
 	linkedHomeStorage: LinkedHomeStorage | null;
 };
 
+/**
+ * A player receiving plants, and their home, both locked
+ */
+export type PlantReceiver = {
+	player: Locked<Player>;
+	home: Locked<Home> | null;
+};
+
+export type PlantDeliveryRequest = {
+	plantId: PlantId;
+	amount: number;
+};
+
 export type PlantDeliveryResult =
 	| {
 		delivered: true;
@@ -35,14 +48,8 @@ export type PlantDeliveryResult =
 	}
 	| {
 		delivered: false;
-		linkedToHomeStorage: boolean;
+		reason: PlantReceptionFailure;
 	};
-
-type PlantDeliveryRequest = {
-	playerId: number;
-	plantId: PlantId;
-	amount: number;
-};
 
 const DELIVERY_LOCK_CONTEXT = "givePlantsToPlayer";
 
@@ -67,12 +74,17 @@ export function isPlantInventoryLinkedToHome(plantSlots: number, home: Home | nu
 	return getLinkedHomeStorage(plantSlots, home) !== null;
 }
 
-async function getHomeStorageRoom(linkedHomeStorage: LinkedHomeStorage | null, plantId: PlantId): Promise<number> {
-	if (!linkedHomeStorage) {
-		return 0;
+function getHomeStorageRoom(linkedHomeStorage: LinkedHomeStorage | null, plantId: PlantId): Promise<number> {
+	return linkedHomeStorage
+		? HomePlantStorages.getRoomFor(linkedHomeStorage.homeId, plantId, linkedHomeStorage.maxCapacity)
+		: Promise.resolve(0);
+}
+
+function getReceptionFailure(linkedHomeStorage: LinkedHomeStorage | null, home: Home | null): PlantReceptionFailure {
+	if (linkedHomeStorage) {
+		return PLANT_RECEPTION_FAILURES.HOME_STORAGE_FULL;
 	}
-	const storage = await HomePlantStorages.getForPlant(linkedHomeStorage.homeId, plantId);
-	return Math.max(0, linkedHomeStorage.maxCapacity - (storage?.quantity ?? 0));
+	return home ? PLANT_RECEPTION_FAILURES.PLANT_SLOTS_FULL : PLANT_RECEPTION_FAILURES.NO_HOME;
 }
 
 export async function getPlantReception(playerId: number): Promise<PlantReception> {
@@ -102,29 +114,53 @@ export async function getPlantReceptionCapacity(reception: PlantReception, plant
 	return reception.emptyPlantSlots + await getHomeStorageRoom(reception.linkedHomeStorage, plantId);
 }
 
-async function givePlantsUnderLock(request: PlantDeliveryRequest, home: Locked<Home> | null): Promise<PlantDeliveryResult> {
-	const {
-		playerId, plantId, amount
-	} = request;
-	const invInfo = await InventoryInfos.getOfPlayer(playerId);
-	await PlayerPlantSlots.initializeSlots(playerId, invInfo.plantSlots);
-	const linkedHomeStorage = getLinkedHomeStorage(invInfo.plantSlots, home);
-	const emptySlots = (await PlayerPlantSlots.getPlantSlots(playerId)).filter(slot => slot.isEmpty());
+/**
+ * Lock the player, their missions and their home (if any) in the canonical order, so that a plant delivery and
+ * the player mutations around it (money, missions) form a single critical section.
+ *
+ * Reentrant, but a caller already inside a critical section must already hold the home lock too (small events
+ * declare it with `getAdditionalLockKeys`): otherwise the home row would be locked after the player row, against
+ * the canonical order.
+ */
+export async function withLockedPlantReceiver(player: Player, context: string, body: (receiver: PlantReceiver) => Promise<void>): Promise<void> {
+	const home = await Homes.getOfPlayer(player.id);
+	await withLockedPlayerAndMissionsSafe(player, context, async lockedPlayer => {
+		await body({
+			player: lockedPlayer,
+			home: home ? await Home.findByPk(home.id) : null
+		});
+	}, home ? [Home.lockKey(home.id)] : []);
+}
 
-	const toHomeStorage = Math.min(amount, await getHomeStorageRoom(linkedHomeStorage, plantId));
-	const toPlantSlots = amount - toHomeStorage;
+/**
+ * Give plants to a player, all or nothing. When the plant inventory is linked to the home, the plants go to the
+ * home plant storage first and the plant slots only take what the chest cannot hold. Otherwise, they go to the
+ * plant slots. The receiver must come from {@link withLockedPlantReceiver}, so that concurrent deliveries can
+ * neither claim the same empty slot nor overfill the chest.
+ */
+export async function givePlantsUnderLock(receiver: PlantReceiver, request: PlantDeliveryRequest): Promise<PlantDeliveryResult> {
+	const {
+		player, home
+	} = receiver;
+	const invInfo = await InventoryInfos.getOfPlayer(player.id);
+	await PlayerPlantSlots.initializeSlots(player.id, invInfo.plantSlots);
+	const linkedHomeStorage = getLinkedHomeStorage(invInfo.plantSlots, home);
+	const emptySlots = (await PlayerPlantSlots.getPlantSlots(player.id)).filter(slot => slot.isEmpty());
+
+	const toHomeStorage = Math.min(request.amount, await getHomeStorageRoom(linkedHomeStorage, request.plantId));
+	const toPlantSlots = request.amount - toHomeStorage;
 	if (toPlantSlots > emptySlots.length) {
 		return {
 			delivered: false,
-			linkedToHomeStorage: linkedHomeStorage !== null
+			reason: getReceptionFailure(linkedHomeStorage, home)
 		};
 	}
 
 	if (linkedHomeStorage && toHomeStorage > 0) {
-		await HomePlantStorages.addPlant(linkedHomeStorage.homeId, plantId, toHomeStorage, linkedHomeStorage.maxCapacity);
+		await HomePlantStorages.addPlant(linkedHomeStorage.homeId, request.plantId, toHomeStorage, linkedHomeStorage.maxCapacity);
 	}
 	for (const slot of emptySlots.slice(0, toPlantSlots)) {
-		await PlayerPlantSlots.setPlant(playerId, slot.slot, plantId);
+		await PlayerPlantSlots.setPlant(player.id, slot.slot, request.plantId);
 	}
 	return {
 		delivered: true,
@@ -133,31 +169,16 @@ async function givePlantsUnderLock(request: PlantDeliveryRequest, home: Locked<H
 	};
 }
 
-function withLockedPlayerAndHome(playerId: number, homeId: number | null, body: (home: Locked<Home> | null) => Promise<void>): Promise<boolean> {
-	if (homeId === null) {
-		return withLockedEntitiesSafe([Player.lockKey(playerId)] as const, DELIVERY_LOCK_CONTEXT, () => body(null));
-	}
-	return withLockedEntitiesSafe(
-		[Player.lockKey(playerId), Home.lockKey(homeId)] as const,
-		DELIVERY_LOCK_CONTEXT,
-		([, home]) => body(home)
-	);
-}
-
 /**
- * Give plants to a player, all or nothing. When the plant inventory is linked to the home, the plants go to the
- * home plant storage first and the plant slots only take what the chest cannot hold. Otherwise, they go to the
- * plant slots. Runs under a Player + Home row lock so that concurrent deliveries can neither claim the same empty
- * slot nor overfill the chest. Reentrant: safe to call from a section already holding the player lock.
+ * Lock the player and their home, then give them plants: see {@link givePlantsUnderLock}
  */
-export async function givePlantsToPlayer(request: PlantDeliveryRequest): Promise<PlantDeliveryResult> {
-	const home = await Homes.getOfPlayer(request.playerId);
+export async function givePlantsToPlayer(player: Player, request: PlantDeliveryRequest): Promise<PlantDeliveryResult> {
 	let result: PlantDeliveryResult = {
 		delivered: false,
-		linkedToHomeStorage: false
+		reason: PLANT_RECEPTION_FAILURES.NO_HOME
 	};
-	await withLockedPlayerAndHome(request.playerId, home?.id ?? null, async lockedHome => {
-		result = await givePlantsUnderLock(request, lockedHome);
+	await withLockedPlantReceiver(player, DELIVERY_LOCK_CONTEXT, async receiver => {
+		result = await givePlantsUnderLock(receiver, request);
 	});
 	return result;
 }

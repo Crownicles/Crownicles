@@ -1,6 +1,9 @@
+import { Model } from "sequelize";
 import Player from "../database/game/models/Player";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
-import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	LockKey, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { DailyMissions } from "../database/game/models/DailyMission";
 
 /**
@@ -20,12 +23,22 @@ import { DailyMissions } from "../database/game/models/DailyMission";
  *
  * @param playerId The player whose rows to lock.
  * @param body Critical section. Receives the fresh, locked `Player`.
+ * @param additionalLockKeys Other rows the critical section mutates (e.g. the player's home), locked
+ * together with the player rows so that the whole lock set keeps the canonical order.
  */
-export async function withLockedPlayerAndMissions<T>(playerId: number, body: (lockedPlayer: Player) => Promise<T>): Promise<T> {
+export async function withLockedPlayerAndMissions<T>(
+	playerId: number,
+	body: (lockedPlayer: Player) => Promise<T>,
+	additionalLockKeys: readonly LockKey<Model>[] = []
+): Promise<T> {
 	await DailyMissions.getOrGenerate();
 	await PlayerMissionsInfos.getOfPlayer(playerId);
 	return await withLockedEntities(
-		[Player.lockKey(playerId), PlayerMissionsInfo.lockKey(playerId)] as const,
+		[
+			Player.lockKey(playerId),
+			PlayerMissionsInfo.lockKey(playerId),
+			...additionalLockKeys
+		] as const,
 		([lockedPlayer]) => body(lockedPlayer)
 	);
 }
