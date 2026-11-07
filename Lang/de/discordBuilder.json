@@ -314,10 +314,6 @@
       "user": {
         "description": "Der Gegner, dem man sich stellen muss.",
         "name": "spieler"
-      },
-      "tournament": {
-        "description": "Turniermodus aktivieren: Das Level beider Kämpfer wird begrenzt.",
-        "name": "turnier"
       }
     }
   },
@@ -342,6 +338,10 @@
         "description": "Der Spieler, an den der Begleiter verkauft werden soll."
       }
     }
+  },
+  "defense": {
+    "name": "defense",
+    "description": "Choisir le style de défense de votre personnage."
   },
   "classes": {
     "name": "klassen",

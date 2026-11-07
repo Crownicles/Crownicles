@@ -314,10 +314,6 @@
       "user": {
         "description": "El usuario al que hay que enfrentarse.",
         "name": "usuario"
-      },
-      "tournament": {
-        "description": "Activar el modo torneo: el nivel de ambos luchadores tiene un límite máximo.",
-        "name": "torneo"
       }
     }
   },
@@ -342,6 +338,10 @@
         "description": "El jugador al que vender la mascota."
       }
     }
+  },
+  "defense": {
+    "name": "defense",
+    "description": "Choisir le style de défense de votre personnage."
   },
   "classes": {
     "name": "clases",

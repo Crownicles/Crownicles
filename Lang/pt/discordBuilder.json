@@ -314,10 +314,6 @@
       "user": {
         "description": "O utilizador a enfrentar.",
         "name": "utilizador"
-      },
-      "tournament": {
-        "description": "Ativar o modo torneio: o nível dos dois combatentes é limitado.",
-        "name": "torneio"
       }
     }
   },
@@ -342,6 +338,10 @@
         "description": "O jogador a quem vender a mascote."
       }
     }
+  },
+  "defense": {
+    "name": "defense",
+    "description": "Choisir le style de défense de votre personnage."
   },
   "classes": {
     "name": "aulas",
