@@ -1390,7 +1390,8 @@
             "1": "Ferver em lume brando",
             "2": "Derreter",
             "3": "Destilação",
-            "4": "Torradas"
+            "4": "Torradas",
+            "5": "Sublimer"
           },
           "noWood": "{emote:messages.refuse} Não tens lenha para acender o fogão. Recolhe lenha nas tuas expedições!",
           "woodConfirm": "{emote:messages.info} Já não tens madeira comum. **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** será usado para acender o fogão. Confirmar?",
@@ -1428,7 +1429,25 @@
           "pinnedRecipeTitle": "{emote:messages.pin} **Receita afixada** - {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Nível {{level}})",
           "pinnedReady": "\n{emote:messages.validate} Tem todos os ingredientes para esta receita!",
           "unpinButton": "Desfixação",
-          "pinButton": "Pino"
+          "pinButton": "Pino",
+          "specialtiesNone_one": "{emote:cookingStations.5} Votre maîtrise des fourneaux vous permet d'avoir **{{count}} spécialité** : le fourneau vous la proposera à chaque allumage sur l'emplacement **$t(models:cooking.stations.5)**, en plus des recettes habituelles. Allumez-le pour la choisir parmi les recettes proposées.",
+          "specialtiesNone_other": "{emote:cookingStations.5} Votre maîtrise des fourneaux vous permet d'avoir jusqu'à **{{count}} spécialités** : le fourneau vous en proposera une à chaque allumage sur l'emplacement **$t(models:cooking.stations.5)**, en plus des recettes habituelles. Allumez-le pour les choisir parmi les recettes proposées.",
+          "specialtyRotation": "{emote:collectors.switch} Spécialité {{current}}/{{total}} : relancez le fourneau pour passer à la suivante.",
+          "specialtyNextUnlock": "{emote:unitValues.xp} Une spécialité supplémentaire se débloquera au niveau **{{level}}** de cuisine.",
+          "specialtiesTitle": "{emote:cookingStations.5} **Vos spécialités** ({{current}}/{{max}})",
+          "specialtyLine": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+          "specialtySelectPlaceholder": "Gérer vos spécialités ({{current}}/{{max}})",
+          "specialtyOptionLabel": "$t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+          "specialtySetDescription": "L'ajouter à vos spécialités",
+          "specialtyRemoveDescription": "La retirer de vos spécialités",
+          "specialtyAdded": "{emote:cookingStations.5} **$t(models:cooking.recipes.{{recipeId}})** rejoint vos spécialités : le fourneau vous la proposera sur l'emplacement **$t(models:cooking.stations.5)**.",
+          "specialtyRemoved": "{emote:messages.info} **$t(models:cooking.recipes.{{recipeId}})** ne fait plus partie de vos spécialités.",
+          "specialtyLimitReached": "{emote:messages.refuse} Vous maîtrisez déjà autant de spécialités que votre niveau de cuisine le permet (**{{max}}**). Retirez-en une avant d'en choisir une nouvelle.",
+          "specialtyUnavailable": "{emote:messages.info} Cette recette ne peut plus devenir une spécialité dans l'état actuel du fourneau. Les propositions ont été rafraîchies.",
+          "timePotionsLeft_one": "{emote:unitValues.timeGain} Manipuler le temps épuise : encore **{{count}}** potion de temps possible cette semaine.",
+          "timePotionsLeft_other": "{emote:unitValues.timeGain} Manipuler le temps épuise : encore **{{count}}** potions de temps possibles cette semaine.",
+          "timePotionsExhausted": "{emote:unitValues.timeGain} Le temps a été assez malmené cette semaine : plus de potion de temps avant la semaine prochaine.",
+          "timePotionWeeklyLimit": "{emote:messages.refuse} Vous avez déjà préparé **{{limit}}** potions de temps cette semaine. Le temps a été assez malmené : il faudra attendre la semaine prochaine pour en préparer d'autres."
         },
         "upgradeChanges": {
           "betterBed": "Uma cama melhor para uma noite de sono melhor {emote:city.homeUpgrades.bed}",
