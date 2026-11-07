@@ -2545,7 +2545,8 @@
       "1": "Cauldron",
       "2": "Smelter",
       "3": "Alambic",
-      "4": "Blaze"
+      "4": "Blaze",
+      "5": "Spécialité du chef"
     },
     "recipes": {
       "potion_health_1": "Basic Healing Potion",
