@@ -341,6 +341,16 @@ function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: 
 		}
 	]);
 
+	if (plants.linkedToHomeStorage) {
+		embed.addFields([
+			{
+				name: i18n.t("commands:inventory.plantsLinkedToHomeStorageTitle", { lng }),
+				value: i18n.t("commands:inventory.plantsLinkedToHomeStorage", { lng }),
+				inline: false
+			}
+		]);
+	}
+
 	return embed;
 }
 

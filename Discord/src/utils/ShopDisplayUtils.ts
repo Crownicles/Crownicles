@@ -10,6 +10,7 @@ import {
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	CommandShopGenericPurchase,
+	CommandShopNoPlantSlotAvailable,
 	CommandShopNotEnoughCurrency,
 	ReactionCollectorShopCloseReaction,
 	ReactionCollectorShopData,
@@ -37,7 +38,9 @@ import {
 	shopItemTypeFromId, shopItemTypeToId
 } from "../../../Lib/src/utils/ShopUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
-import { escapeUsername } from "./StringUtils";
+import {
+	escapeUsername, StringUtils
+} from "./StringUtils";
 import { Badge } from "../../../Lib/src/types/Badge";
 import { Constants } from "../../../Lib/src/constants/Constants";
 import { Language } from "../../../Lib/src/Language";
@@ -123,8 +126,8 @@ export async function handleCommandShopBoughtTooMuchDailyPotions(context: Packet
 	await sendShopError(context, "commands:shop.boughtTooMuchDailyPotions");
 }
 
-export async function handleCommandShopNoPlantSlotAvailable(context: PacketContext): Promise<void> {
-	await sendShopError(context, "commands:shop.noPlantSlotAvailable");
+export async function handleCommandShopNoPlantSlotAvailable(packet: CommandShopNoPlantSlotAvailable, context: PacketContext): Promise<void> {
+	await sendShopError(context, packet.linkedToHomeStorage ? "commands:shop.noPlantSpaceInHomeStorage" : "commands:shop.noPlantSlotAvailable");
 }
 
 export async function handleCommandShopNoGardenForRemoteHarvestTalisman(context: PacketContext): Promise<void> {
@@ -165,21 +168,28 @@ export async function handleCommandShopGenericPurchase(packet: CommandShopGeneri
 				lng,
 				...packet.translationParams
 			});
-			let description = i18n.t("commands:shop.genericPurchase", {
-				lng,
-				item: itemName,
-				count: packet.amount
-			});
-			if (packet.materials) {
-				const materialLines = Object.entries(packet.materials)
+			const materialLines = packet.materials
+				? Object.entries(packet.materials)
 					.map(([materialId, quantity]) => i18n.t("commands:shop.materialLine", {
 						lng,
 						materialId,
 						quantity
-					}));
-				description += `\n\n${materialLines.join("\n")}`;
-			}
-			return description;
+					}))
+				: [];
+			return StringUtils.joinParagraphs([
+				i18n.t("commands:shop.genericPurchase", {
+					lng,
+					item: itemName,
+					count: packet.amount
+				}),
+				StringUtils.joinLines(materialLines),
+				packet.plantsSentToHomeStorage
+					? i18n.t("commands:shop.plantsSentToHomeStorage", {
+						lng,
+						count: packet.plantsSentToHomeStorage
+					})
+					: null
+			]);
 		}
 	});
 }

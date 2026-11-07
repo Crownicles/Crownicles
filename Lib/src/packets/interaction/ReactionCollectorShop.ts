@@ -22,6 +22,11 @@ export type MaterialDistribution = Record<string, number>;
 export type BuyCallbackResult = {
 	success: boolean;
 	materials?: MaterialDistribution;
+
+	/**
+	 * Bought plants that went straight to the home plant storage (plant inventory linked to the home)
+	 */
+	plantsSentToHomeStorage?: number;
 };
 
 export interface ShopItem {
@@ -66,6 +71,10 @@ export class CommandShopBoughtTooMuchDailyPotions extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopNoPlantSlotAvailable extends CrowniclesPacket {
+	/**
+	 * Set when the plant inventory is linked to the home plant storage: neither the chest nor the plant slots had room
+	 */
+	linkedToHomeStorage?: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -86,6 +95,8 @@ export class CommandShopGenericPurchase extends CrowniclesPacket {
 	amount!: number;
 
 	materials?: MaterialDistribution;
+
+	plantsSentToHomeStorage?: number;
 
 	translationParams?: Record<string, string>;
 }

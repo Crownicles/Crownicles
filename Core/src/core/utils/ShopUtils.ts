@@ -104,6 +104,7 @@ export abstract class ShopUtils {
 						shopItemId: reactionInstance.shopItemId,
 						amount: reactionInstance.amount,
 						materials: parsed.materials,
+						...parsed.plantsSentToHomeStorage ? { plantsSentToHomeStorage: parsed.plantsSentToHomeStorage } : {},
 						translationParams
 					}));
 				}

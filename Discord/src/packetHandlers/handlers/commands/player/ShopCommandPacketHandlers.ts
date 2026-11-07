@@ -59,8 +59,8 @@ export default class ShopCommandPacketHandlers {
 	}
 
 	@packetHandler(CommandShopNoPlantSlotAvailable)
-	async shopNoPlantSlotAvailable(context: PacketContext, _packet: CommandShopNoPlantSlotAvailable): Promise<void> {
-		await handleCommandShopNoPlantSlotAvailable(context);
+	async shopNoPlantSlotAvailable(context: PacketContext, packet: CommandShopNoPlantSlotAvailable): Promise<void> {
+		await handleCommandShopNoPlantSlotAvailable(packet, context);
 	}
 
 	@packetHandler(CommandShopNoGardenForRemoteHarvestTalisman)
