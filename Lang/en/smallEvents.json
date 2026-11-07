@@ -2850,7 +2850,7 @@
         "Théobald pulls a plant out of his cart and tends it to you with a malicious wink:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
         "The gardener, unable to give you seed, has managed one of his plants in memory of your encounter:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
-      "plantSentToHomeStorage": "{emote:city.homeUpgrades.chest} À peine l'avez-vous saisie que la plante disparaît dans un léger scintillement : elle a rejoint par magie le coffre de votre maison.",
+      "plantSentToHomeStorage": "{emote:city.homeUpgrades.chest} À peine l'avez-vous saisie que la plante disparaît dans un léger scintillement : elle a rejoint le coffre de votre maison.",
       "material": [
         "Theobald searches in his besace and leaves a sailor he found by returning the land from his garden. It offers you a kind smile:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
         "The gardener comes out of his pocket a sailor he degraded by beating this morning. He tends it to you by explaining that he doesn't have the utility:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
