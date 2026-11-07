@@ -396,7 +396,7 @@
       "stop": "non è più confuso."
     },
     "counterAttack": {
-      "description": "Replica con la stessa azione che quella appena usata da vostro avversario. Non funziona su gli attacchi magiche o divine, neanche se vostro avversario non ha attaccato.",
+      "description": "Ripete la stessa azione appena eseguita dal tuo avversario. Infligge più danni ai mostri. Non funziona con alcuni attacchi, né se l'avversario non ha attaccato.",
       "name_one": "Attacco risposto",
       "customMessage": "non era in grado di reagire.",
       "name_other": "Attacchi risposto"

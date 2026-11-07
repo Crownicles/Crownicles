@@ -396,7 +396,7 @@
       "stop": "ist nicht mehr verwirrend."
     },
     "counterAttack": {
-      "description": "Replique mit der gleichen Aktion wie die, die Ihr Gegner gespielt hat. Funktioniert nicht auf magischen oder götkischen Angriffen, oder wenn der Gegner nicht angegriffen hat.",
+      "description": "Wiederholt dieselbe Aktion, die dein Gegner gerade ausgeführt hat. Verursacht gegen Monster zusätzlichen Schaden. Wirkt nicht bei bestimmten Angriffen und auch nicht, wenn der Gegner nicht angegriffen hat.",
       "name_one": "Gegenschlag",
       "customMessage": "gelingt es nicht, zurückzuschlagen.",
       "name_other": "Gegenschläge"

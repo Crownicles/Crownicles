@@ -396,7 +396,7 @@
       "stop": "is no longer confused."
     },
     "counterAttack": {
-      "description": "Retaliates with the same action your opponent just played. Does not work on certain attacks, nor if your opponent did not attack.",
+      "description": "Counter with the same action your opponent just used. Deals more damage to monsters. Does not work against certain attacks, nor if the opponent has not attacked.",
       "name_one": "Counterattack",
       "customMessage": "can't counterattack.",
       "name_other": "Counterattacks"
