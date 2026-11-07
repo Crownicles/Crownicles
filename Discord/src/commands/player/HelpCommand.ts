@@ -249,7 +249,7 @@ function buildSpecificCommandEmbed(helpMessage: CrowniclesEmbed, command: HelpCo
 	const commandMentionString: string = commandMention ? commandMention : i18n.t("error:commandDoesntExist", { lng });
 
 	if (command === "FIGHT") {
-		helpMessage.setImage(i18n.t("commands:help.commands.FIGHT.image", { lng }));
+		helpMessage.setImage(HelpConstants.FIGHT_HELP_IMAGE_URL.replace("{lng}", lng));
 	}
 
 	helpMessage.setTitle(
