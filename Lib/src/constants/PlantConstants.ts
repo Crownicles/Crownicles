@@ -203,6 +203,22 @@ export const PLANT_SLOT_TYPE = {
 
 export type PlantSlotType = typeof PLANT_SLOT_TYPE[keyof typeof PLANT_SLOT_TYPE];
 
+/**
+ * Why plants could not be given to a player
+ */
+export const PLANT_RECEPTION_FAILURES = {
+	/** The plant inventory is linked to the home: neither the chest nor the plant slots have room */
+	HOME_STORAGE_FULL: "homeStorageFull",
+
+	/** Not linked yet: the plant slots are full, but the player has a home chest to deposit them in */
+	PLANT_SLOTS_FULL: "plantSlotsFull",
+
+	/** The plant slots are full and the player has no home to store plants in */
+	NO_HOME: "noHome"
+} as const;
+
+export type PlantReceptionFailure = typeof PLANT_RECEPTION_FAILURES[keyof typeof PLANT_RECEPTION_FAILURES];
+
 export abstract class PlantConstants {
 	/**
 	 * Total number of plant types
