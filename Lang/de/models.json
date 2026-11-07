@@ -2545,7 +2545,8 @@
       "1": "Kessel",
       "2": "Gießerei",
       "3": "Destilliergerät",
-      "4": "Brasier"
+      "4": "Brasier",
+      "5": "Spécialité du chef"
     },
     "recipes": {
       "potion_health_1": "Grundlegender Heiltrank",
