@@ -28,7 +28,7 @@ Historique complet du travail : [historique-equilibrage-pvp-2026.md](historique-
 4. **Les builds intuitifs sont des pièges** : rendements décroissants obligent, l'optimum comble la faiblesse de la classe.
    Un Canonnier « canon de verre » perd 16 points, un Tank « mur » 16, un Mage « attaque » 19. La plupart des vrais Canonniers,
    Tanks et Mages jouent ces builds.
-5. **Deux modifications proposées, commitées sur cette branche** (détails §6), toutes deux sur l'attaque sombre :
+5. **Deux modifications de l'attaque sombre, commitées sur cette branche** (détails §6) :
    - elle compte 30 % et 10 % de la défense de la cible au lieu de 15 % et 5 % : le Mage bien équipé au niveau 120 perd 5 à 8
      points selon l'équipement mesuré (63,1 → 55,1), il ne perd que 0,6 point sur le terrain réel d'aujourd'hui ;
    - son usure démarre à ×1,6 au lieu de ×1,7 : au niveau 100 bien équipé, le Mage perd encore 5,6 à 6,2 points (il restait à
@@ -38,10 +38,13 @@ Historique complet du travail : [historique-equilibrage-pvp-2026.md](historique-
    potion d'attaque et objet de vitesse, il gagne 52,3 % au lieu de 44,6 %. La modification de son IA essayée cette nuit
    (2e bouclier) a été annulée.
 7. **Le Canonnier n'est faible que si tous ses adversaires sont équipés de façon optimale** (39,6 au niveau 105, ~40 au
-   niveau 100, 42,5 à 47,0 au niveau 120), parce que son armure est plafonnée à sa très faible défense de base. Avec les vrais
-   joueurs, il gagne déjà : 52,9 sur le terrain réel, 53,0 au niveau 100 à 109. L'énergie de départ 30 → 100 le remettrait à
-   46,6 au niveau 100 bien équipé, mais à **59,1 et 68 % de la méta pour les vrais joueurs de niveau 100** : à ne pas faire
-   maintenant, à reprendre quand les joueurs s'équiperont mieux.
+   niveau 100, 42,5 à 47,0 au niveau 120), parce que son armure et son objet sont plafonnés par sa très faible défense de base.
+   Avec les vrais joueurs, il gagne déjà : 52,9 sur le terrain réel, 53,0 au niveau 100 à 109. L'énergie de départ 30 → 100
+   l'aidait autant avec le vrai équipement qu'avec l'optimal (59,1 et 68 % de la méta pour les vrais joueurs de niveau 100).
+8. **Pour une méta équilibrée au niveau 100 : défense de base du Canonnier 30 → 38** (§4.8, troisième modification de la
+   branche). Bien équipé au niveau 100, l'écart entre classes passe de 12,7 à **4,3** et la méta réaliste joue les 7 classes ;
+   sur le terrain réel d'aujourd'hui, le Canonnier ne gagne que 1,1 point (54,4). Les écarts qui restent (Mage, Vétéran, Tank)
+   changent de signe entre l'équipement optimal et le vrai : ils viennent des builds, pas des règles.
 
 ## 1. Méthode
 
@@ -381,6 +384,81 @@ ses joueurs qui s'équipent à l'inverse de ce qui marche, parce que le jeu ne l
 En prod, le Chevalier est la seule réponse rationnelle, ce qui colle avec la réalité (45 % des joueurs 100+, 14 des 20 meilleurs).
 Develop ouvre nettement le jeu, sauf aux niveaux réalistes avec un bon équipement, où le Mage prend toute la place.
 
+### 4.8 Vers une méta équilibrée au niveau 100 : la défense du Canonnier
+Point de départ : l'état final de la branche (modifications 1 et 2 de l'attaque sombre). Cinq terrains, mêmes combats pour
+chaque variante :
+- **A** : équipement optimal de niveau 120 porté au niveau 100 ;
+- **C** : équipement ré-optimisé au niveau 100 (réseau des deux côtés) ;
+- **M** : pour chaque classe, le meilleur des deux dans le protocole réaliste (Fantassin, Tank, Canonnier et Mage en C ;
+  Chevalier, Paladin et Vétéran en A) ;
+- **R** : les vrais joueurs de niveau 100 à 109 avec leur vrai équipement ;
+- **terrain réel** : méthode de la PR, tous les joueurs 100+ avec leur vrai équipement.
+
+| Classe | A | C | M | R | Terrain réel |
+|---|---|---|---|---|---|
+| Fantassin | 49,9 | 52,3 | 51,0 | 50,1 | 57,5 |
+| Tank | 52,9 | 54,0 | 54,3 | **45,0** | **43,3** |
+| Canonnier | **40,9** | **45,3** | **41,4** | 54,0 | 53,3 |
+| Chevalier | 51,2 | 47,8 | 50,3 | 52,5 | 48,9 |
+| Paladin | 53,6 | 49,2 | 52,9 | 51,7 | 48,3 |
+| Vétéran | 49,8 | 45,3 | 45,0 | 50,7 | 53,7 |
+| Mage | 51,8 | 56,1 | 55,2 | 46,1 | 48,6 |
+| **Écart** | 12,7 | 10,8 | 13,8 | 9,0 | 14,2 |
+
+Avec un équipement optimal, le Canonnier est la classe la plus faible sur les trois terrains (40,9 à 45,3). Avec le vrai
+équipement, il est parmi les plus forts (53,3 à 54,0). Un buff doit donc aider surtout les Canonniers bien équipés.
+Leviers mesurés, appariés :
+
+| Variante | A | C | R | Terrain réel | Rapport A / R |
+|---|---|---|---|---|---|
+| Énergie de départ 30 → 100 (§4.5, mesurée avant la modification 2) | +6,1 | +4,1 | +6,1 | +2,9 | 1,0 |
+| Canon : défense de la cible comptée à 60 % | +14,7 | | +10,1 | | 1,5 |
+| Canon : défense de la cible comptée à 80 % | +7,7 | | +5,2 | | 1,5 |
+| Défense de base 30 → 35 | +5,1 | | +2,1 | | 2,4 |
+| **Défense de base 30 → 38** | **+8,8** | **+3,9** | **+3,3** | **+1,1** | **2,7** |
+| Défense de base 30 → 40 | +11,1 | +4,7 | +4,4 | | 2,5 |
+
+**La défense de base est le levier le mieux ciblé.** Les plafonds de l'armure et de l'objet suivent la défense de base de la
+classe : passer de 30 à 38 donne +84 de défense au Canonnier qui s'équipe en défense (le build optimal, §4.6), +56 au build
+« canon de verre » de l'équipement C et +30 à +56 aux vrais Canonniers. Le gain de défense compte aussi plus contre des
+attaquants bien équipés. Le Canonnier garde de loin la défense de base la plus faible (38 contre 45 pour le Mage, le suivant).
+
+Avec la défense de base à 38 (+ modifications 1 et 2) :
+
+| Classe | A | C | M | R | Terrain réel |
+|---|---|---|---|---|---|
+| Fantassin | 47,6 | 51,6 | 50,3 | 49,0 | 56,9 |
+| Tank | 51,3 | 53,3 | 53,6 | **43,9** | **43,1** |
+| Canonnier | 49,6 | 49,2 | 44,5* | 57,3 | 54,4 |
+| Chevalier | 49,6 | 46,5 | 49,6 | 52,3 | 48,9 |
+| Paladin | 51,9 | 48,9 | 52,7 | 51,4 | 47,9 |
+| Vétéran | 49,4 | **45,0** | **44,8** | 50,1 | 53,8 |
+| Mage | 50,5 | **55,4** | **54,5** | 46,1 | 48,6 |
+| **Écart** | **12,7 → 4,3** | 10,8 → 10,4 | 13,8 → 10,0 | 9,0 → 13,4 | 14,2 → 13,8 |
+| Méta réaliste (Nash) | **les 7 classes** : Tank 22 %, Vétéran 20 %, Chevalier 17 %, Canonnier 15 %, Mage 14 %, Fantassin 9 %, Paladin 3 % | Mage 49 %, Canonnier 31 %, Fantassin 18 % | Mage 39 %, Chevalier 34 %, Fantassin 26 % | Vétéran 48 %, Paladin 29 %, Canonnier 17 %, Chevalier 6 % | |
+
+\* M garde au Canonnier son équipement C. Avec son équipement A (défensif), il fait 45,6 (M2, écart 9,3) : contre les
+Fantassin, Tank et Mage de l'équipement C, il reste un peu en dessous.
+
+Contrôles :
+- banc des gardes du roi : 32,6 → 32,2 (± 1,2), pas de réentraînement ;
+- la donnée commitée (`20.json`) rejoue exactement la variante simulée (0 combat différent sur 4 900, équipement A) ;
+- **niveau 120** (équipement A) : Canonnier 48,8 → 53,2, 2e derrière le Tank (53,6), écart 8,3 → 7,8 ; méta réaliste Tank 40 %,
+  Vétéran 35 %, Canonnier 25 % : il ne devient pas dominant plus haut ;
+- les valeurs 35 et 40 encadrent le choix : 35 laisse le Canonnier à 46,0 bien équipé, 40 le met premier (52,0) et coûte
+  4,4 points pour les vrais joueurs de niveau 100 à 109 ;
+- non mesuré : l'équipement ré-optimisé par le réseau avec la défense à 38 (l'optimiseur pourrait trouver au Canonnier un
+  build encore meilleur ; M2 montre déjà qu'il reste un peu faible face à l'équipement C).
+
+**Ce qui reste et ne se corrige pas par les règles.** Après ce changement, les écarts restants changent de signe entre
+l'équipement optimal et le vrai équipement :
+- le Mage est fort avec l'équipement C (55) mais faible avec le vrai équipement (46 à 48,6) ;
+- le Vétéran est faible avec l'équipement C (45) mais fort sur le terrain réel (53,8) ;
+- le Tank est bien placé avec un équipement optimal (51 à 54) mais le plus faible avec le vrai (43 à 44).
+
+Corriger l'un de ces écarts pour les joueurs bien équipés l'aggraverait pour les joueurs d'aujourd'hui. Ces écarts viennent
+de l'équipement choisi (§4.6) : c'est apprendre aux joueurs à s'équiper qui les réduira.
+
 ## 5. Variantes testées
 
 Chaque variante est rejouée **sur les mêmes combats** que develop (écart apparié). Bruit : environ ±1,3 point par classe
@@ -514,16 +592,24 @@ Vérification : le Core compilé avec la modification 1 (et le 2e bouclier, annu
 simulés sans recompiler (0 combat différent sur 4 900, niveau 120 avec potion). Même contrôle pour la modification 2
 (0 combat différent sur 4 900, niveau 100, équipement C). Tests Core (1 953) et Lib (636)
 passent, lint propre sur les fichiers modifiés.
+3. **Canonnier — défense de base 30 → 38** (proposé l'après-midi du 07/11 pour une méta équilibrée au niveau 100, §4.8 ;
+   une ligne dans `Core/resources/classes/20.json`, `77a5c67b5`, commité).
+   - Problème : avec un équipement optimal au niveau 100, il est la classe la plus faible sur tous les terrains (40,9 à 45,3),
+     parce que son armure et son objet sont plafonnés par sa défense de base, de loin la plus faible.
+   - Effet au niveau 100 : +8,8 avec l'équipement A (écart 12,7 → **4,3**, **les 7 classes jouées par la méta réaliste**),
+     +3,9 avec l'équipement C, +3,3 pour les vrais joueurs de niveau 100 à 109 (57,3), **+1,1 sur le terrain réel** (54,4,
+     3e derrière le Fantassin 56,9 et à égalité avec le Vétéran 53,8). Au niveau 120 bien équipé : +4,4 (53,2, 2e derrière le
+     Tank 53,6 ; écart 8,3 → 7,8).
+   - Mieux ciblé que l'énergie de départ (rapport 2,7 au lieu de 1,0 entre le gain bien équipé et le gain des vrais joueurs) :
+     il profite surtout aux Canonniers qui s'équipent en défense, ce qui est le meilleur build (§4.6), et garde son identité
+     (la défense la plus faible de toutes, 38 contre 45 pour le Mage).
+   - Valeur plus prudente : 35 (+5,1 bien équipé, +2,1 pour les vrais joueurs de niveau 100 à 109 ; écart 6,5 au niveau 100).
 
 ### À ne pas faire maintenant
-- **Canonnier : énergie de départ 30 → 100** (une ligne dans `Core/resources/classes/20.json`, non commitée).
-  - Pour : quand tous ses adversaires sont équipés de façon optimale à un niveau réaliste, il est de loin le plus faible
-    (39,0 à 44,9 au niveau 100, 39,6 au niveau 105, 42,5 à 47,0 au niveau 120) ; +70 d'énergie le remet à 46,6 à 49,0 au
-    niveau 100, 47,0 au niveau 105 et 51,5 au niveau 120, et garde son identité (moins de défense, frappe le plus vite).
-  - Contre, et décisif : **avec les vrais joueurs de niveau 100 à 109, il gagne déjà (53,0) et passerait à 59,1, choisi à 68 %
-    par la méta réaliste** ; sur le terrain réel, il passerait 2e (55,7). La valeur 65 et le canon +8 % ont le même défaut.
-  - À reprendre quand les joueurs s'équiperont mieux (voir « Apprendre aux joueurs à s'équiper ») : c'est à ce moment que sa
-    faiblesse apparaîtra.
+- **Canonnier : énergie de départ 30 → 100** (remplacée par la défense de base, modification 3).
+  - Avec les vrais joueurs de niveau 100 à 109, il gagne déjà (53,0) et passerait à 59,1, choisi à 68 % par la méta réaliste ;
+    sur le terrain réel, il passerait 2e (55,7). La valeur 65 et le canon +8 % ont le même défaut, comme la défense de la
+    cible comptée à 60 % ou 80 % par le canon (rapport 1,5).
 - **Tank** : pas de nerf. Il est le plus faible sur le terrain réel (42,3) et sans potion (45), comme voulu. Sa force à niveau
   égal (52 à 55) vient de l'objet et de la potion d'attaque et du bouclier en chaîne, que son IA n'a pas le droit de jouer :
   elle ne concerne que les gardes du roi.
@@ -540,14 +626,72 @@ passent, lint propre sur les fichiers modifiés.
   classe. Les builds intuitifs coûtent 16 à 19 points (§4.6) et ce sont ceux de la plupart des joueurs. Une ligne de conseil
   dans la description de chaque classe, ou chez le forgeron, changerait plus l'équilibre réel que n'importe quel chiffre.
   L'idée des affinités d'objets par lignée (branche `design/lineage-affinities`) irait dans le même sens.
-- **Mesurer au bon niveau.** Les prochains équilibrages doivent se mesurer au niveau 115–120 avec un équipement optimal, et
-  sur le terrain réel ; le niveau 157 ne représente qu'un joueur.
+- **Mesurer au bon niveau.** Les prochains équilibrages doivent se mesurer au niveau 100 et au niveau 115–120 avec un
+  équipement optimal, et sur les vrais joueurs de la tranche (terrain réel, vrais joueurs 100–109) ; le niveau 157 ne
+  représente qu'un joueur. Les deux vues peuvent se contredire (Canonnier, §4.5) : un changement doit tenir dans les deux.
 - **Les potions amplifient les écarts** (Mage +4, Paladin −6 au niveau 157 selon qu'on les compte) : à surveiller si les
   potions de combat de haute rareté se répandent.
 - **Après la sortie**, suivre par tranche de niveau (100–130) : la part et le taux de victoire du Mage, le taux de victoire
   réel du Fantassin (au-dessus de 55 : retirer les 6 %), le taux de défenses gagnées du Paladin.
 
-## 7. Limites
+## 7. Piste de fond : supprimer les rendements décroissants ?
+Question posée l'après-midi du 07/11 : l'équipement serait plus intuitif, et plus drôle, si l'on pouvait miser sur une stat
+au détriment des autres. Faut-il supprimer les rendements décroissants, réduire la puissance des objets et enlever leur plafond ?
+
+**D'où vient le piège.** La puissance d'une stat est `120·tanh(0,00123·stat − 0,03) + 3`. La courbe s'aplatit : +100 dans une
+stat rapporte 2 à 3 fois plus dans la stat faible de la classe que dans sa stat forte (au niveau 100, équipement optimal) :
+
+| Classe | +100 attaque | +100 défense | +100 vitesse |
+|---|---|---|---|
+| Tank | 6,0 | 6,3 | 14,7 |
+| Canonnier | 6,3 | 7,9 | 11,4 |
+| Paladin | 12,2 | 4,3 | 12,5 |
+| Mage | 10,2 | 6,9 | 12,6 |
+| Courbe sans rendements décroissants | 8,7 | 8,7 | 8,7 |
+
+Toute courbe qui s'aplatit (tanh, logarithme…) pousse à combler sa faiblesse ; seule une courbe droite fait que chaque point
+vaut pareil. Les plafonds des objets jouent dans l'autre sens : ils suivent la stat de base de la classe, donc ils limitent
+surtout la stat faible (l'armure du Canonnier) et laissent de la place à la stat forte.
+
+**Mesure** (protocole réaliste, niveau 100, mêmes combats). La courbe droite a la pente moyenne de la courbe actuelle entre
+300 et 1 000 (les stats du niveau 100), plafonds gardés. La tanh plus plate (`166·tanh(0,0006·stat − 0,03) + 3`) a la même
+pente moyenne mais s'aplatit deux fois moins. Perte du build intuitif par rapport à l'équipement optimal A (l'optimum de la
+courbe actuelle : sous une autre courbe, il faudrait ré-optimiser l'équipement, ces chiffres comparent deux builds, ils ne
+donnent pas l'équilibre final) :
+
+| Build intuitif | Courbe actuelle | Tanh plus plate | Courbe droite | Courbe droite, sans plafond, objets ×0,6 |
+|---|---|---|---|---|
+| Canonnier « canon de verre » | −12,1 | −3,9 | −3,1 | −4,7 |
+| Tank « mur » | −6,3 | +3,2 | **+6,4** (devient le meilleur) | **+4,5** |
+| Mage « attaque » | −22,5 | −13,7 | −11,9 | −0,1 |
+| **Écart entre classes** (équipement A) | 4,3 | 18,9 (Paladin 60,9, Vétéran 42,0) | **23,9** (Paladin 63,5, Chevalier 56,1, Vétéran 39,6) | **30,5** (Paladin 64,7, Vétéran 34,2, Mage 38,1) |
+
+- **Ça marche pour l'intuition** : sans rendements décroissants, le Tank « mur » devient le meilleur Tank, le Canonnier
+  « canon de verre » ne perd plus que 3 points, et le piège du Mage « attaque » est divisé par deux.
+- **Mais tout l'équilibrage est à refaire** : la défense des classes blindées n'est plus amortie, le Paladin et le Chevalier
+  écrasent la méta (Chevalier 75 %, Paladin 17 %) et le Vétéran tombe à 39,6. Tous les chiffres des attaques (part de la
+  défense de l'attaque sombre, du poison, etc.) ont été réglés sur la courbe actuelle.
+- **Sans plafond et avec des objets ×0,6**, l'équipement pèse moins : aucun build intuitif n'est plus un piège (Mage
+  « attaque » −0,1), mais les stats de base des classes décident presque tout (écart 30,5). À ce niveau d'équipement optimal,
+  les plafonds ne mordent presque pas (seules les défenses du Canonnier, du Chevalier, du Vétéran et du Mage gagnent 8 à
+  29 points sans eux) ; leur rôle est d'empêcher qu'une classe porte l'équipement d'une autre.
+
+**Mon avis.**
+- Oui sur le fond : une courbe droite rend l'équipement lisible, et c'est la seule forme de courbe qui le fait.
+- Garder les plafonds : ce sont eux qui gardent l'identité des classes (le Canonnier ne peut pas porter l'armure d'un Tank).
+  Sans eux, chaque classe peut empiler n'importe quelle stat et la méta converge vers les mêmes builds pour tout le monde.
+  Réduire la puissance des objets va dans le bon sens (la classe pèse plus que l'équipement), avec ou sans plafond.
+- Une courbe droite doit se diviser par le facteur de niveau des stats de base (`1 + niveau²/4000`) : aujourd'hui, la courbe
+  s'aplatit aussi avec le niveau (au niveau 157, les stats sont presque toutes en haut de la courbe et comptent moins qu'au
+  niveau 100). Divisée par ce facteur, une stat compterait pareil à tous les niveaux.
+- C'est un chantier de version majeure, pas de la 6.1.2 : il touche aussi le PvE (monstres réglés sur la courbe actuelle),
+  les gardes du roi (réseau à réentraîner) et chaque classe. Les outils de cette étude permettent de le faire : rejouer
+  `ai/linearPowerPatch.js` du simulateur, ré-optimiser l'équipement de chaque classe, puis rééquilibrer.
+- Plus léger : une tanh plus plate fait déjà l'essentiel pour le Canonnier et le Tank (−3,9 et +3,2) en bousculant moins
+  l'équilibre (écart 18,9 au lieu de 23,9), mais pas pour le Mage (−13,7) : son build « attaque » abandonne la vitesse et la
+  défense dont son kit a besoin. Il faudrait quand même rééquilibrer toutes les classes.
+
+## 8. Limites
 - Le moteur au niveau humain attaque à pleine énergie et joue un peu mieux que la moyenne des joueurs (66 % contre 63,8 %
   en prod) ; les chiffres « optimal » ne sont pas recalés sur les vrais joueurs, ce sont des écarts entre classes.
 - L'équipement optimal a été trouvé avec le réseau des deux côtés ; les tests de builds dans le protocole réaliste (§4.6)
@@ -556,9 +700,10 @@ passent, lint propre sur les fichiers modifiés.
 - 100 combats par duel et par scénario : ±1,3 point par classe (vérifié sur une 2e graine). Les équilibres de Nash sont
   sensibles au bruit : à lire comme des tendances.
 - Le réseau des gardes du roi n'a pas été réentraîné : les règles changées ne touchent ni son vocabulaire ni ses entrées,
-  et le banc des gardes ne bouge pas au-delà du bruit (33,1 → 32,6 ± 1,2 avec les deux modifications de l'attaque sombre).
+  et le banc des gardes ne bouge pas au-delà du bruit (33,1 → 32,6 avec les deux modifications de l'attaque sombre, 32,2
+  avec en plus la défense du Canonnier, ± 1,2).
 
-## 8. Reproduire
+## 9. Reproduire
 Outils : `Crownicles/Tools`, branche `class-pet-study/optimal-gear` (`scripts/class-pet-study`), et `Crownicles/Fight-Simulator-30000`
 (`solver/`, note `CONNAISSANCES.md`).
 

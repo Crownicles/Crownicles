@@ -200,9 +200,16 @@ Détails : [etude-equipement-optimal-2026-11-07.md](etude-equipement-optimal-202
   `balance/realistic-gear-meta-study` : l'attaque sombre compte 30 % / 10 % de la défense (au lieu de 15 % / 5 %) ; le Mage perd
   5 à 8 points bien équipé, 0,6 sur le terrain réel d'aujourd'hui.
 - Le Paladin ne paraissait faible qu'avec un mauvais choix d'équipement de l'optimiseur ; le 2e bouclier essayé pour son IA a été annulé.
-- Le Canonnier est faible aux niveaux bas quand tout le monde est bien équipé (39,6 au niveau 105) : son armure est plafonnée à sa
-  défense de base. Le meilleur buff testé (énergie de départ 30 → 100) le remet à 47,0, mais avec les vrais joueurs de niveau
-  100 à 109 il gagne déjà (53,0) et passerait à 59,1 : écarté pour l'instant.
+- Le Canonnier est faible aux niveaux bas quand tout le monde est bien équipé (39,6 au niveau 105) : son armure et son objet
+  sont plafonnés par sa défense de base. L'énergie de départ 30 → 100 le remettait à 47,0, mais avec les vrais joueurs de niveau
+  100 à 109 il gagne déjà (53,0) et passerait à 59,1 : écartée.
+- Après-midi du 07/11, méta équilibrée au niveau 100 : 3e modification proposée, **défense de base du Canonnier 30 → 38**.
+  Les plafonds de l'armure et de l'objet suivant la défense de base, elle profite surtout aux Canonniers équipés en défense
+  (le meilleur build). Bien équipé au niveau 100, l'écart entre classes passe de 12,7 à 4,3 et la méta réaliste joue les
+  7 classes ; terrain réel : Canonnier +1,1 (54,4).
+- Piste de fond étudiée le même jour (§7 de l'étude) : supprimer les rendements décroissants. Une courbe de puissance droite
+  rend les builds intuitifs viables (Tank « mur » meilleur que l'optimal actuel, Canonnier « canon de verre » −3 au lieu de
+  −12) mais défait tout l'équilibrage (écart 4,3 → 23,9, Paladin et Chevalier dominants) : chantier de version majeure.
 - Niveau 100 : bien équipé, develop est moins équilibré que la prod (écart 25,6 contre 18,9, Mage 64,6) ; avec les vrais
   joueurs de niveau 100 à 109 et leur vrai équipement, c'est l'inverse (écart 9,1 contre 21,1). La défense comptée deux fois
   ne suffit pas au niveau 100 bien équipé (Mage 56,9 à 61,6) : 2e modification proposée sur la branche, l'usure de l'attaque
