@@ -1,0 +1,392 @@
+# Étude du 07/11/2026 : l'équilibrage tient-il avec un équipement et des familiers optimaux ?
+
+Question posée : dans les mesures qui ont servi à l'équilibrage de #5062, le Canonnier avait-il un équipement inadapté
+(« un stuff de Chevalier ») ? Que donne l'équilibrage quand **chaque classe a son équipement optimal et ses meilleurs
+familiers** ? Et quelles modifications faire ?
+
+Build mesuré : `develop` du 07/11 (#5062 et #5082 mergées), comparé à la prod 6.1.1 quand c'est possible.
+Historique complet du travail : [historique-equilibrage-pvp-2026.md](historique-equilibrage-pvp-2026.md).
+
+## Résumé
+
+1. **Le Canonnier n'avait pas un équipement de Chevalier dans la mesure qui a guidé son buff.** L'étude « équipement égal »
+   de la PR lui donnait déjà exactement son équipement optimal (tout en défense). Seule la toute première étude (tout le monde
+   avec l'équipement du n°1 de la prod) le désavantageait, et elle avait été refaite.
+2. **L'équilibrage de #5062 tient avec un équipement et des familiers optimaux.** Dans le protocole le plus proche du jeu
+   (un humain attaque l'IA de défense d'un autre joueur), l'écart entre classes passe de 23,9 à 11,9 points (avec potion) et
+   de 26,8 à 8,8 (sans potion) entre la prod et develop, au niveau 157. En prod, le Chevalier est le seul choix rationnel ;
+   sur develop, 3 à 5 classes le sont selon le scénario.
+3. **Mais toutes les études étaient au niveau 157, alors que les joueurs 100+ sont au niveau 115 en médiane.** À un niveau
+   réaliste, les objets pèsent plus lourd et **le Mage bien équipé domine** : 63 % de victoires contre 51 % aujourd'hui
+   (ses joueurs sont mal équipés). C'est le principal risque de l'équilibrage.
+4. **Les builds intuitifs sont des pièges** : rendements décroissants obligent, l'optimum comble la faiblesse de la classe.
+   Un Canonnier « canon de verre » perd 16 points, un Tank « mur » 16, un Mage « attaque » 19. La plupart des vrais Canonniers,
+   Tanks et Mages jouent ces builds.
+5. **Deux modifications proposées, commitées sur cette branche** (détails §6) :
+   - l'attaque sombre compte 30 % et 10 % de la défense de la cible au lieu de 15 % et 5 % : le Mage optimal au niveau 120
+     passe de 63,1 à 55,1, il ne perd que 0,6 point sur le terrain réel ;
+   - optionnel : l'IA de défense du Paladin peut affaiblir une 2e fois son adversaire (une chance sur deux) : c'est la plus
+     faible des IA de défense quand les joueurs sont bien équipés, et ce levier n'aide pas les Paladins humains ; il coûte un
+     peu de contrôle (21 → 27 % des tours de l'attaquant).
+
+   Ensemble, au niveau 120 avec un équipement optimal, l'écart entre classes passe de 18,4 à 7,9.
+
+
+
+## 1. Méthode
+
+### 1.1 Équipement optimal de chaque classe
+- **Espace exploré** : tous les objets du jeu de rareté ≤ 7, arme et armure +5, en appliquant les plafonds du jeu
+  (arme et armure plafonnées à la stat de base de la classe, objet à 2 fois, potion sans plafond). On ne garde que les objets
+  non dominés pour la classe : 9 armes, 10 à 12 armures, 3 objets, 3 potions (+ « pas de potion »).
+- **Enchantements** : tous ceux utiles en PvP. Arme : `pvpAttack3`, `baseBreath2`, `burnedDamage1`, `frozenDamage1`,
+  `poisonedDamage1`. Armure : `defense3`, `speed3`, `maxEnergy3`, `maxBreath1`. (L'ancien mode `auto` n'autorisait que
+  `pvpAttack3` et `defense3`, et 3 objets par emplacement.)
+- **Recherche** : descente par blocs (arme × enchantement, armure × enchantement, objet + potion), chaque classe jouée avec
+  ses 3 meilleurs familiers contre un terrain de toutes les classes elles-mêmes optimisées, jusqu'à ce qu'un round ne change
+  plus rien. Chaque bloc est évalué sur des combats appariés (mêmes tirages pour chaque candidat), puis les 5 meilleurs
+  candidats sont rejoués sur 12 000 combats chacun.
+- **Familiers** : avec cet équipement, toutes les combinaisons classe × familier (3,2 millions de combats), puis
+  ré-optimisation de l'équipement avec les nouveaux meilleurs familiers, puis méta entre les 12 meilleurs familiers de chaque classe.
+- Deux scénarios : **avec potion** (chacun a la meilleure potion de combat) et **sans potion**.
+
+### 1.2 Trois protocoles de combat
+| Protocole | Attaquant | Défenseur | Ce qu'il mesure |
+|---|---|---|---|
+| **Équilibre des règles** | réseau des gardes | réseau des gardes | les classes à niveau de jeu égal et élevé des deux côtés |
+| **PvP réaliste** | moteur au niveau humain (expectimax) | IA de défense scriptées de develop (personnalité au hasard) | ce que vivent les joueurs : un humain attaque l'IA d'un autre joueur |
+| **Terrain réel** (méthode de la PR) | moteur au niveau humain | IA de défense scriptées | les vrais joueurs 100+ avec leur vrai équipement, pondérés comme les vrais combats, écart humain de la prod appliqué |
+
+Le PvP réaliste et le terrain réel utilisent le même moteur ; la seule différence est l'équipement (optimal contre réel).
+Les scores sont la moyenne attaque/défense, en % de victoires (nul = ½). Sauf mention, chaque classe pèse autant
+(pondération « uniforme ») ; la pondération « terrain réel » donne aux adversaires leur part dans les vrais combats
+(46 % de Chevaliers).
+
+## 2. Le Canonnier avait-il un mauvais équipement ?
+
+**Non, pas dans la mesure qui a guidé son buff.** Il y a eu trois mesures successives :
+
+1. La toute première étude classes × familiers (04/11) donnait à **tout le monde l'équipement du n°1 de la prod**
+   (un Fantassin : arme 89 `pveAttack3`, armure 13 `defense3`, potion et objet de vitesse). Là, oui, le Canonnier jouait
+   avec un équipement qui n'était pas le sien. Tu l'avais relevé et on l'a refaite.
+2. L'étude « équipement égal » de la PR (mode `auto`) donnait au Canonnier : Épée du Dragon (89) `pvpAttack3`,
+   Cri UwUrlant (61) `defense3`, Amulette cyclonique (38, défense) et Jus de kiwi (52, potion de défense).
+   **C'est exactement son optimum** trouvé cette nuit dans un espace bien plus large (tous les objets non dominés,
+   tous les enchantements, ses meilleurs familiers, terrain lui-même optimisé). Son score n'a pas bougé : 44,3 dans la PR,
+   43,4 à 44,1 cette nuit.
+3. Le terrain réel prend l'équipement actuel des joueurs. Les vrais Canonniers n'ont en moyenne que **40 % de la défense**
+   de leur optimum : ils s'équipent en attaque et en vitesse. Quand tout le monde passe à l'équipement optimal, le Canonnier
+   garde pourtant son rang (51,1 → 49,5, §4.2) : les autres classes sont aussi mal équipées aujourd'hui. En revanche, un
+   Canonnier qui adopterait seul l'équipement optimal gagnerait beaucoup (§4.5).
+
+### Pourquoi l'optimum du Canonnier est « défensif »
+La puissance d'une stat en combat est `120·tanh(0,00123·stat − 0,03) + 3` (`FightActionController.statToStatPower`) :
+les rendements sont décroissants. Un bonus plat d'objet ou de potion vaut donc le plus **sur la stat la plus faible de la classe**.
+L'équipement optimal comble les faiblesses au lieu de renforcer les points forts :
+
+| Classe | Point faible de base (niv. 157) | Ce que l'optimum y met |
+|---|---|---|
+| Canonnier | défense 215 | armure défense, objet et potion de défense |
+| Tank | attaque 430 | objet (Diamant Kéraunique) et potion (Huile de ghost pepper) d'attaque |
+| Mage | vitesse 179 | objet de vitesse (Fleur de l'espoir) |
+| Paladin | vitesse 107 | objet de vitesse, potion d'attaque |
+
+C'est l'inverse de ce que font les joueurs (ils renforcent l'identité de leur classe), et ça dilue cette identité :
+un Canonnier optimal est blindé, un Tank optimal frappe fort.
+
+## 3. Équipement optimal de chaque classe
+
+Toutes les armes et armures à +5. Avec potion (puis sans, si différent) :
+
+| Classe | Arme | Armure | Objet | Potion | Ancien `auto` (PR) |
+|---|---|---|---|---|---|
+| Fantassin | Épée du Dragon (89) `pvpAttack3` (sans potion : Electektron 96) | Cri UwUrlant (61) `maxEnergy3` (sans : Pare-feu 70) | Diamant Kéraunique (3, attaque) (sans : Fleur de l'espoir 4) | Grande Potion (4, vitesse) | armure 13 `defense3`, objet vitesse, potion attaque |
+| Tank | Plothammer (87) `pvpAttack3` (sans : Sabre 27) | Armure électrifiée (94) `defense3` | Diamant Kéraunique (3, attaque) | Huile de ghost pepper (46, attaque) | Sabre, armure 13, **objet défense** |
+| Canonnier | Épée du Dragon (89) `pvpAttack3` | Cri UwUrlant (61) `defense3` | Amulette cyclonique (38, défense) | Jus de kiwi (52, défense) | **identique** |
+| Chevalier | Épée du Dragon (89) `pvpAttack3` | Cri UwUrlant (61) `defense3` (sans : Bouclier ultime 13) | Fleur de l'espoir (4, vitesse) | Jus de kiwi (52, défense) | identique |
+| Paladin | Épée du Dragon (89) `pvpAttack3` | Bouclier ultime (13) `maxEnergy3` (sans : Armure électrifiée 94) | Fleur de l'espoir (4, vitesse) | Huile de ghost pepper (46, attaque) | armure `defense3`, **objet défense** |
+| Vétéran | Épée du Dragon (89) `pvpAttack3` | Conventions de Genève (37) `defense3` | Amulette cyclonique (38, défense) (sans : Fleur de l'espoir 4) | Grande Potion (4, vitesse) | armure 62, objet vitesse, potion défense |
+| Mage | Épée du Dragon (89) `pvpAttack3` | Bouclier ultime (13) `defense3` | Fleur de l'espoir (4, vitesse) (sans : Amulette 38) | Jus de kiwi (52, défense) | objet défense, potion vitesse |
+
+- L'enchantement d'arme optimal est **toujours `pvpAttack3`** ; `baseBreath2` et les enchantements d'altération ne gagnent jamais.
+- `speed3` n'est jamais optimal (même pour le Canonnier) ; `maxEnergy3` l'est pour le Fantassin et le Paladin.
+- Les différences entre deux options proches sont souvent de moins d'un point : l'optimum est plat.
+
+Meilleurs familiers avec cet équipement (avec potion) : Fantassin Élan, Mammouth, Féetaud ; Tank Chauve-souris, Tortue,
+Gorille ; Canonnier Féetaud, Chauve-souris, Raton laveur ; Chevalier Chauve-souris, Corbeau, Tigre ; Paladin Élan, Tortue,
+Rhinocéros ; Vétéran Chauve-souris, Mammouth, Lion ; Mage Canard écarlate, Colombe, Tortue.
+
+### L'équipement des vrais joueurs 100+ (prod du 07/11)
+- Armes et armures surtout à **+0** (5 armes sur 130 à +5) ; 89 armures sur 130 sans enchantement ; 31 joueurs sans potion,
+  les autres surtout des potions de faible rareté ou hors combat.
+- Par rapport à l'optimum de leur classe, à niveau égal : Canonnier 40 % de la défense, Mage 28 % de la vitesse,
+  Tank 56 % de l'attaque, Chevalier et Vétéran 56 à 59 % de la défense, Paladin 70 % de l'attaque.
+
+## 4. Résultats
+
+### 4.1 PvP réaliste avec équipement et familiers optimaux (le plus proche du jeu)
+Moteur au niveau humain contre les IA de défense scriptées, chaque classe avec son équipement optimal et ses 3 meilleurs
+familiers, niveau 157, 100 combats par duel et par build, mêmes combats sur la prod 6.1.1 et sur develop.
+
+| Classe | Sans potion : prod → develop | Avec potion : prod → develop | Avec potion, pondération terrain réel : prod → develop |
+|---|---|---|---|
+| Fantassin | 45,0 → 48,2 | 49,5 → 51,4 | 44,6 → 54,2 |
+| Tank | 54,5 → **45,0** | 51,8 → 48,2 | 46,5 → 44,2 |
+| Canonnier | 50,5 → 48,9 | 50,8 → 49,5 | 45,8 → 51,7 |
+| Chevalier | 63,0 → 52,8 | 62,9 → 47,7 | 56,3 → 48,4 |
+| Paladin | 46,2 → 51,4 | 43,2 → **45,8** | 34,8 → **43,6** |
+| Vétéran | 54,6 → 49,9 | 52,9 → 49,7 | 50,9 → 57,9 |
+| Mage | 36,2 → 53,8 | 38,9 → **57,7** | 34,8 → **59,0** |
+| **Écart** | **26,8 → 8,8** | **23,9 → 11,9** | **21,5 → 15,4** |
+| Victoires de l'attaquant | 72,1 → 67,0 | 74,1 → 68,6 | |
+
+- **L'équilibrage tient avec un équipement optimal** : l'écart est divisé par 2 à 3, et sans potion toutes les classes sont
+  entre 45 et 54, le Tank le plus faible, comme voulu.
+- Une deuxième graine (autres combats) donne les mêmes chiffres à 1,3 point près.
+- **Avec potion, le Mage sort du lot** (57,7) : sa potion de défense comble sa faiblesse, et son IA de défense est la meilleure
+  (42,5 % de défenses réussies). Le **Paladin est le plus faible** (45,8) : son IA de défense ne gagne que 18,6 % de ses défenses.
+
+### 4.2 Même protocole, équipement réel contre équipement optimal (develop)
+| Classe | Équipement réel (terrain réel non pondéré) | Optimal avec potion | Optimal sans potion | Terrain réel (méthode PR) |
+|---|---|---|---|---|
+| Fantassin | 54,4 | 51,4 | 48,2 | 57,2 |
+| Tank | 46,7 | 48,2 | 45,0 | 42,3 |
+| Canonnier | 51,1 | 49,5 | 48,9 | 52,9 |
+| Chevalier | 52,5 | 47,7 | 52,8 | 48,9 |
+| Paladin | 49,1 | 45,8 | 51,4 | 48,2 |
+| Vétéran | 50,8 | 49,7 | 49,9 | 53,3 |
+| Mage | 45,4 | **57,7** | 53,8 | 51,4 |
+| **Écart** | 8,9 | 11,9 | 8,8 | 14,9 |
+
+**La classe qui gagne le plus à optimiser son équipement est le Mage** (+12 avec potion), pas le Canonnier (−1,6).
+Les vrais Mages n'ont que 28 % de la vitesse de leur optimum : quand ils s'équiperont mieux, le Mage montera.
+
+### 4.3 Équilibre des règles (réseau des deux côtés)
+Combinaisons classe × familier, équipement optimal ; « top 12 » = chaque classe avec ses 12 meilleurs familiers contre
+les 12 meilleurs des autres.
+
+| Classe | Avec potion : tous familiers | Avec potion : top 12 | Sans potion : tous familiers | Sans potion : top 12 | PR (équipement `auto`, avec potion) |
+|---|---|---|---|---|---|
+| Fantassin | 46,6 | 44,5 | 43,6 | 42,2 | 47,8 |
+| Tank | 53,6 | **54,6** | 52,6 | 52,8 | 49,1 |
+| Canonnier | 43,4 | 44,1 | 44,5 | 45,3 | 44,3 |
+| Chevalier | 49,6 | 48,3 | 52,6 | 50,8 | 52,6 |
+| Paladin | 52,2 | 53,9 | 54,3 | **56,8** | 50,8 |
+| Vétéran | 53,3 | 51,9 | 54,5 | 53,4 | 53,0 |
+| Mage | 51,2 | 52,6 | 48,0 | 48,8 | 52,2 |
+| **Écart** | 10,2 | 10,5 | 10,9 | 14,6 | 8,7 |
+
+- Méta (équilibre de Nash du top 12), avec potion : Mage 42 %, Paladin 28 %, Vétéran 23 %, Tank 6 %, les autres ≈ 0.
+  Sans potion : Vétéran 32 %, Chevalier 26 %, Tank 22 %, Paladin 18 %, Mage 2 %. La chauve-souris domine toujours les familiers.
+- **Contres durs** : le Fantassin ne gagne que 12 à 15 % (avec potion) et 7 % (sans) contre le Tank et le Paladin.
+- Le Tank optimal (objet + potion d'attaque, armure lourde) gagne **5 points** par rapport à l'équipement `auto` de la PR.
+
+**Pourquoi ce protocole diverge du PvP réaliste pour le Tank et le Paladin** : le réseau joue le Paladin en enchaînant
+l'attaque bouclier (3,35 fois par combat) et le bélier (2 fois) ; dans le PvP réaliste, le moteur qui attaque avec un Paladin
+fait pareil (3,2 boucliers, l'IA adverse passe 46 % de ses tours sous contrôle). Mais quand le Paladin et le Tank défendent,
+leurs IA scriptées n'ont droit qu'à un bouclier affaiblissant par combat (choix de #5062 contre les IA « cancer ») :
+22 à 26 % de contrôle seulement. Leur force « à niveau égal » vient donc du contrôle en chaîne, que seul un humain
+peut jouer. C'est voulu côté IA ; ça explique que ces deux classes soient fortes à niveau égal, fortes en attaque, et faibles en défense.
+
+### 4.4 Le niveau change tout : au niveau réaliste, le Mage domine
+Les joueurs 100+ sont au niveau **115 en médiane** (25 % sous 106, 75 % sous 125, un seul au-dessus de 150) ; toutes les études
+précédentes étaient au niveau 157. Les stats de base des classes croissent comme le carré du niveau, pas les objets : à 120, les
+objets pèsent 1,6 fois plus lourd qu'à 157, et les plafonds d'arme et d'armure (= stat de base) mordent davantage.
+
+Niveau 120, équipement ré-optimisé pour ce niveau, avec potion :
+
+| Classe | PvP réaliste : prod → develop | Pondéré terrain réel : prod → develop | Équilibre des règles (top 12) |
+|---|---|---|---|
+| Fantassin | 51,1 → 47,8 | 53,4 → 56,2 | 41,6 |
+| Tank | 56,4 → 51,4 | 48,3 → 44,4 | 54,1 |
+| Canonnier | 41,8 → 47,0 | 39,6 → 49,3 | **39,4** |
+| Chevalier | 57,8 → 46,5 | 53,5 → 47,7 | 52,1 |
+| Paladin | 45,6 → 44,6 | 38,4 → **40,1** | 55,1 |
+| Vétéran | 52,7 → 49,6 | 55,8 → 59,2 | 50,0 |
+| Mage | 44,5 → **63,1** | 42,5 → **65,9** | **57,7** |
+| **Écart** | 16,0 → 18,4 | 17,4 → 25,8 | 18,3 |
+
+- **Le Mage est le principal risque de l'équilibrage.** Bien équipé à un niveau réaliste, il gagne 63 % (66 % sur le terrain réel)
+  et son IA de défense gagne plus de la moitié de ses défenses. Aujourd'hui, ses joueurs sont mal équipés (28 % de la vitesse
+  optimale) et le terrain réel le met à 51,4 ; ça changera dès que les Mages s'équiperont mieux.
+- **Pourquoi le Mage** : l'attaque sombre compare l'attaque (la sienne puis celle de la cible) à seulement 15 % et 5 % de la
+  défense de la cible. Elle ignore presque la défense, et elle frappe à pleine puissance (×1,7, sans usure) tant que la cible est
+  maudite. Quand les autres s'équipent en défense (équipement optimal, ou niveau plus bas où les objets pèsent plus), leurs dégâts
+  baissent, pas ceux du Mage.
+- Le Canonnier est le plus faible à niveau égal au niveau 120 (39,4), mais correct dans le PvP réaliste (47,0) et sur le terrain réel.
+
+### 4.5 Le build intuitif du Canonnier est mauvais
+Même protocole réaliste, en ne changeant que l'équipement d'une classe (mêmes combats) :
+
+| Build | Score |
+|---|---|
+| Canonnier optimal (défense : Cri UwUrlant `defense3`, Amulette cyclonique, Jus de kiwi) | 49,5 |
+| Canonnier avec objet et potion de vitesse | 42,2 (−7,3) |
+| Canonnier « attaque » (Sabre, objet et potion d'attaque) | 35,4 (−14,1) |
+| Canonnier « canon de verre » (Sabre, armure de vitesse `speed3`, objet et potion de vitesse) | 33,3 (−16,2) |
+| Mage « attaque » (Sabre, objet et potion d'attaque) au lieu de vitesse + défense | 39,1 (−18,6) |
+
+C'est le build que portent la plupart des vrais Canonniers. Ce n'est donc pas la mesure qui sous-estimait le Canonnier : ce sont
+ses joueurs qui s'équipent à l'inverse de ce qui marche, parce que le jeu ne le dit nulle part et que l'intuition (« canon de verre »
+→ attaque et vitesse) est trompeuse avec des rendements décroissants.
+
+### 4.6 Méta réaliste : quelle classe choisirait un joueur qui sait tout ?
+Équilibre de Nash sur le choix de classe (une classe pour attaquer et défendre), protocole réaliste :
+
+| Scénario | Prod 6.1.1 | Develop |
+|---|---|---|
+| Équipement réel | Chevalier 100 % | Chevalier 43 %, Fantassin 34 %, Vétéran 23 % |
+| Optimal sans potion, niveau 157 | Chevalier 100 % | **Chevalier 29 %, Vétéran 23 %, Paladin 21 %, Mage 15 %, Fantassin 12 %** |
+| Optimal avec potion, niveau 157 | Chevalier 48 %, Vétéran 48 % | Fantassin 54 %, Mage 43 % |
+| Optimal avec potion, niveau 120 | — | Mage 100 % |
+
+En prod, le Chevalier est la seule réponse rationnelle, ce qui colle avec la réalité (45 % des joueurs 100+, 14 des 20 meilleurs).
+Develop ouvre nettement le jeu, sauf aux niveaux réalistes avec un bon équipement, où le Mage prend toute la place.
+
+## 5. Variantes testées
+
+Chaque variante est rejouée **sur les mêmes combats** que develop (écart apparié). Bruit : environ ±1,3 point par classe
+dans le PvP réaliste (vérifié sur une deuxième graine), ±0,3 sur l'équilibre des règles.
+
+### 5.1 Mage
+| Variante | Niveau 120 optimal | Niveau 157 optimal | Terrain réel (méthode PR) | Réseau (157) |
+|---|---|---|---|---|
+| **Attaque sombre : défense comptée à 30 % et 10 % (au lieu de 15 % et 5 %)** | **63,1 → 55,1** ; écart 18,4 → **9,4** | 57,7 → 53,5 ; écart 11,9 → **6,3** | **51,4 → 50,8** | −2,7 |
+| Attaque sombre ×1,65 au lieu de ×1,7 | 63,1 → 60,0 | | | |
+| Attaque sombre ×1,6 | | | | −6,0 |
+| Contre un maudit : ×1,4 au lieu de pleine puissance | 63,1 → 60,7 | | | −2,3 |
+
+La défense comptée à 30 % / 10 % est le seul levier qui **vise exactement le problème** : elle coupe le Mage là où il déborde
+(adversaires bien équipés, niveaux réalistes) et ne touche presque pas les Mages d'aujourd'hui face aux joueurs d'aujourd'hui.
+Les autres leviers baissent le Mage partout, y compris là où il n'est pas trop fort.
+
+### 5.2 Paladin
+| Variante | Niveau 120 optimal | Niveau 157 optimal | Terrain réel (méthode PR) | Réseau, niveau égal (157 / 120)* |
+|---|---|---|---|---|
+| Énergie de départ 330 → 365 | 44,6 → 45,9 | 45,8 → 48,0 | 48,2 → 49,3 | ≈ +2,2 / +1,7 (Paladin premier) |
+| **IA : 2e bouclier affaiblissant à 50 % (au lieu d'un seul)** | 44,6 → 47,2 (défense 18,6 → 24,0 ; contrôle infligé 22 → 27 %) | | 48,2 → 48,2 (non pondéré 49,1 → 49,5) ; contrôle infligé 21 → 27 % | aucun effet (IA seulement) |
+| Attaque divine +30 % | 44,6 → 47,7 (défense 18,6 → 24,5, attaque inchangée) | | 48,2 → 49,9 (attaque +1,7) | ≈ +5,1 / +1,1 (Paladin premier) |
+
+\* mesuré avec l'attaque sombre modifiée, moins l'effet de l'attaque sombre seule.
+
+Dans le PvP réaliste, la divine semblait n'aider que l'IA (le moteur attaquant la joue 0,21 fois par combat, l'IA 1,45 fois),
+mais le réseau, qui joue mieux, s'en sert beaucoup plus, et le terrain réel montre aussi un gain en attaque : des joueurs qui
+s'adaptent en profiteraient. Seule la modification d'IA ne peut pas profiter aux Paladins humains.
+
+### 5.3 Autres classes (réseau des deux côtés, niveau 157, top 12, avec potion)
+| Variante | Effet sur la classe visée |
+|---|---|
+| Tank : énergie 400 → 350 / 300 | −3,4 / −7,0 |
+| Tank : attaque 60 → 50 | −3,2 |
+| Attaque perçante +20 % | Fantassin +3,0 mais Vétéran +4,5 (attaque partagée) : à éviter |
+| Attaque puissante +12 % au lieu de +6 % | Fantassin +3,8 |
+| Ultime du Paladin comme en prod | Paladin −2,9 |
+| Canon +5 % | Canonnier +3,3 |
+
+Attaque puissante sans les +6 % de #5062 (PvP réaliste) : Fantassin 51,4 → 46,9 bien équipé au niveau 157, 57,2 → 55,6 sur
+le terrain réel.
+
+### 5.4 Le paquet retenu : attaque sombre + IA du Paladin
+Mesuré dans tous les scénarios réalistes, apparié avec develop (moyenne attaque/défense, chaque classe pèse autant) :
+
+| Classe | Niv. 120, potion | Niv. 120, sans potion | Niv. 157, potion | Niv. 157, sans potion | Terrain réel (méthode PR) |
+|---|---|---|---|---|---|
+| Fantassin | 47,8 → 47,3 | 50,3 → 49,6 | 51,4 → 50,9 | 48,2 → 47,5 | 57,2 → 57,1 |
+| Tank | 51,4 → 53,4 | 43,4 → 45,6 | 48,2 → 49,9 | 45,0 → 46,7 | 42,3 → 43,1 |
+| Canonnier | 47,0 → 47,2 | 47,0 → 45,8 | 49,5 → 49,4 | 48,9 → 47,2 | 52,9 → 52,8 |
+| Chevalier | 46,5 → 48,0 | 48,7 → 49,0 | 47,7 → 48,4 | 52,8 → 53,2 | 48,9 → 48,9 |
+| Paladin | 44,6 → **48,1** | 49,9 → 53,0 | 45,8 → 47,8 | 51,4 → 54,0 | 48,2 → 48,4 |
+| Vétéran | 49,6 → 50,8 | 52,9 → 53,6 | 49,7 → 50,0 | 49,9 → 49,9 | 53,3 → 53,2 |
+| Mage | 63,1 → **55,1** | 57,9 → **53,3** | 57,7 → **53,7** | 53,8 → 51,3 | 51,4 → 50,6 |
+| **Écart** | **18,4 → 7,9** | **14,4 → 8,0** | **11,9 → 5,9** | 8,8 → 7,3 | 14,9 → 14,0 |
+| Écart pondéré terrain réel | 25,8 → 16,6 | 17,7 → 16,0 | 15,4 → 14,1 | 14,1 → 12,6 | |
+
+Méta réaliste (Nash sur le choix de classe) avec le paquet : niveau 120 avec potion Mage 35 %, Canonnier 23 %, Vétéran 22 %,
+Tank 17 % (au lieu de Mage 100 %) ; niveau 157 sans potion Vétéran 36 %, Paladin 24 %, Chevalier 18 %, Mage 13 %, Fantassin 9 %.
+
+- Partout où le Mage débordait, l'écart est divisé par 2 ; sur le terrain réel d'aujourd'hui, rien ne bouge de plus d'un point.
+- Le Tank reste le plus faible sur le terrain réel et sans potion.
+- Côté réseau (niveau égal), l'attaque sombre baisse le Mage de 2,7 à 5,5 points ; la modification d'IA n'y joue pas.
+
+
+## 6. Liste des modifications proposées
+
+### À faire (commitées sur `balance/realistic-gear-meta-study`, une par commit, tests et lint passés)
+1. **Mage — l'attaque sombre compte 30 % et 10 % de la défense de la cible (au lieu de 15 % et 5 %)** (`de4fe896a`).
+   - Problème : à un niveau réaliste et bien équipé, le Mage gagne 63 % de ses combats et son IA plus de la moitié de ses défenses.
+     L'attaque sombre ignore presque la défense : plus les adversaires s'équipent en défense, plus le Mage domine.
+   - Effet : 63,1 → 55,1 au niveau 120 optimal, 57,7 → 53,7 au niveau 157 ; **0,6 point seulement sur le terrain réel**
+     (51,4 → 50,8), parce que les adversaires d'aujourd'hui ont peu de défense. L'identité est gardée : elle utilise toujours
+     l'attaque de la cible, s'use, se recharge et frappe un maudit à pleine puissance.
+   - Description française : « Ignore la défense » → « Tient peu compte de la défense ».
+2. **Optionnel — Paladin : son IA de défense peut affaiblir une 2e fois son adversaire, une fois sur deux** (`e88cbf568`).
+   - Problème : c'est la plus faible des IA de défense (18,6 % de défenses gagnées au niveau 120 optimal, 29 % sur le terrain
+     réel), alors que les Paladins humains sont les meilleurs attaquants (70 à 73 %). Un buff chiffré (énergie, divine,
+     ultime) aide aussi les attaquants et le rend premier à niveau égal.
+   - Effet : bien équipé, défense 18,6 → 24 % et score +2 à +3,5 selon le scénario ; aucun effet sur les Paladins humains.
+   - Coût : le contrôle subi par l'attaquant passe de 21–22 à 27 % de ses tours (repère : 30 %, celui du Tank), et sur le
+     terrain réel d'aujourd'hui le gain est nul (48,2 → 48,2). C'est une préparation à des joueurs mieux équipés, au prix d'un
+     peu plus de contrôle : à garder seulement si ce compromis te convient. Le commit s'annule seul.
+
+### À ne pas faire maintenant
+- **Canonnier** : pas de buff. Il est dans la moyenne dans tous les scénarios réalistes (47 à 50) et sur le terrain réel (52,9).
+  Il est le plus faible à niveau égal (38 à 44), mais ce protocole suppose des défenseurs parfaits, que le jeu n'a pas.
+  Son vrai problème est l'équipement de ses joueurs (voir plus bas).
+- **Tank** : pas de nerf. Il est le plus faible sur le terrain réel (42,3) et sans potion (45), comme voulu. Sa force à niveau
+  égal (52 à 55) vient de l'objet et de la potion d'attaque et du bouclier en chaîne, que son IA n'a pas le droit de jouer :
+  elle ne concerne que les gardes du roi.
+- **Fantassin** : le bonus de 6 % de l'attaque puissante reste en observation, comme prévu dans #5062. Le terrain réel le met
+  premier (57,2), mais bien équipé il est dans la moyenne (47 à 52). Les retirer ne
+  coûterait que 1,6 point sur le terrain réel (57,2 → 55,6) mais 4,5 points bien équipé (51,4 → 46,9) : le Fantassin deviendrait
+  faible dès que ses joueurs s'équiperont bien. À décider sur les vrais combats après la sortie.
+- **Paladin** : ni énergie (+35 : +1,2 à +2,2) ni divine +30 % (+3 en réaliste) : ces leviers aident aussi l'attaquant, et à
+  niveau égal le Paladin passerait premier.
+- **Mage** : pas de nerf de la puissance de l'attaque sombre (×1,65 : −3 seulement là où il domine, et le même effet partout),
+  ni du bonus contre un maudit (×1,4 : −2,4).
+
+### Hors chiffres
+- **Apprendre aux joueurs à s'équiper.** Rendements décroissants obligent, le meilleur équipement comble la faiblesse de la
+  classe. Les builds intuitifs coûtent 16 à 19 points (§4.5) et ce sont ceux de la plupart des joueurs. Une ligne de conseil
+  dans la description de chaque classe, ou chez le forgeron, changerait plus l'équilibre réel que n'importe quel chiffre.
+  L'idée des affinités d'objets par lignée (branche `design/lineage-affinities`) irait dans le même sens.
+- **Mesurer au bon niveau.** Les prochains équilibrages doivent se mesurer au niveau 115–120 avec un équipement optimal, et
+  sur le terrain réel ; le niveau 157 ne représente qu'un joueur.
+- **Les potions amplifient les écarts** (Mage +4, Paladin −6 au niveau 157 selon qu'on les compte) : à surveiller si les
+  potions de combat de haute rareté se répandent.
+- **Après la sortie**, suivre par tranche de niveau (100–130) : la part et le taux de victoire du Mage, le taux de victoire
+  réel du Fantassin (au-dessus de 55 : retirer les 6 %), le taux de défenses gagnées du Paladin.
+
+## 7. Limites
+- Le moteur au niveau humain attaque à pleine énergie et joue un peu mieux que la moyenne des joueurs (66 % contre 63,8 %
+  en prod) ; les chiffres « optimal » ne sont pas recalés sur les vrais joueurs, ce sont des écarts entre classes.
+- L'équipement optimal a été trouvé avec le réseau des deux côtés ; les tests de builds dans le protocole réaliste (§4.5)
+  confirment qu'il y est aussi le meilleur, avec une large marge.
+- Les familiers sont les 3 meilleurs de chaque classe selon le réseau ; la chauve-souris domine toujours.
+- 100 combats par duel et par scénario : ±1,3 point par classe (vérifié sur une 2e graine). Les équilibres de Nash sont
+  sensibles au bruit : à lire comme des tendances.
+- Le réseau des gardes du roi n'a pas été réentraîné : les règles changées ne touchent ni son vocabulaire ni ses entrées,
+  mais l'attaque sombre frappe un peu moins fort contre un garde blindé. À vérifier avec le banc des gardes avant la sortie.
+
+## 8. Reproduire
+Outils : `Crownicles/Tools`, branche `class-pet-study/optimal-gear` (`scripts/class-pet-study`), et `Crownicles/Fight-Simulator-30000`
+(`solver/`, note `CONNAISSANCES.md`).
+
+```bash
+# 1. équipement + familiers optimaux, puis méta (≈ 15 min par scénario, jamais deux en parallèle)
+python3 loadoutSweep.py <checkout>/Core .work/lo.json --pets '{"18": [98, 61, 102], ...}' --level 120 [--potions none]
+ITERATIONS=1 ./optimalStudy.sh <checkout>/Core .work/opt120 .work/lo.json best 120
+# 2. PvP réaliste avec ces joueurs (≈ 6 min par build)
+python3 makeRoster.py .work/opt120/loadouts.json /tmp/roster120 --pets 3 --level 120
+cd <Fight-Simulator-30000>/solver
+SOLVER_DATA_DIR=/tmp/roster120 node run.js --core <prod>/Core --core <branche>/Core --mode br --engine expectimax \
+	--value models/vmix.json --depth 3 --samples 8,3,2 --n 100 --chunk 2 --full-energy --out opt120
+node tools/uniformScores.js opt120:0 opt120:1 [--real-weights] [--matrix]; node tools/classNash.js opt120:1
+# 3. terrain réel (méthode de la PR) : CORE=<branche>/Core tools/rf.sh <nom> [variante]
+# 4. une variante sans recompiler : --set, --class-stat, --dmg, --patch ai/darkDefensePatch.js --patch-options '{...}',
+#    --ai ai/shieldChances.js (SHIELD_PALADIN=1,0.5)
+```
+
+
+
+
+
