@@ -135,6 +135,15 @@
     "appOutdated": "Une nouvelle version de l'application est disponible. Mettez-la à jour depuis votre magasin d'applications pour continuer l'aventure.",
     "serverOutdated": "Le royaume est en cours de mise à jour. Réessayez dans quelques instants."
   },
+  "crash": {
+    "eyebrow": "Incident",
+    "title": "L'application s'est interrompue",
+    "description": "Une erreur inattendue a arrêté l'écran en cours. L'aventure, elle, est gardée par le serveur : relancer l'application la reprend là où elle en est.",
+    "restart": "Relancer l'application",
+    "report": "Rapport d'erreur",
+    "share": "Partager le rapport",
+    "reportText": "Crownicles {{version}} · {{platform}} · {{date}}\n\n{{message}}\n\n{{stack}}\n{{componentStack}}"
+  },
   "auth": {
     "caption": "Bienvenue",
     "title": "Crownicles",
@@ -298,6 +307,10 @@
     },
     "appVersion": "Version de l'application",
     "appVersionValue": "{{version}} ({{build}})",
+    "lastCrash": {
+      "title": "Dernier plantage",
+      "subtitle": "Le {{date}}. Toucher pour partager le rapport d'erreur."
+    },
     "coreVersion": "Version du moteur",
     "legal": {
       "privacy": "Politique de confidentialité",

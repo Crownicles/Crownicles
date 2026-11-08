@@ -2,7 +2,7 @@ import {
 	act, fireEvent, render, screen, waitFor
 } from "@testing-library/react-native";
 import {
-	AppState, type AppStateStatus, Linking
+	AppState, type AppStateStatus, Linking, Share
 } from "react-native";
 import {
 	QueryClient, QueryClientProvider
@@ -29,6 +29,7 @@ import {
 	ACCOUNT_ACTION_OUTCOMES, KeycloakAuth
 } from "@/src/authentication/KeycloakAuth";
 import { fakeAuthState } from "@/src/testing/fakeAuthState";
+import { fatalErrorStore } from "@/src/store/FatalErrorStore";
 
 const mockPush = jest.fn();
 const mockChangeEmail = jest.fn();
@@ -229,6 +230,17 @@ describe("settings", () => {
 			version: "6.0.5", build: "3"
 		})}`)).toBeTruthy();
 		await waitFor(() => expect(screen.getByText("6.0.4")).toBeTruthy());
+	});
+
+	it("hands over the report of the last error that stopped the app", async () => {
+		const share = jest.spyOn(Share, "share").mockResolvedValue({ action: Share.sharedAction });
+		await renderSettings();
+		expect(screen.queryByText("app:settings.lastCrash.title")).toBeNull();
+
+		await act(() => fatalErrorStore.record(new TypeError("Cannot read property 'isSelf' of undefined")));
+		await fireEvent.press(screen.getByText("app:settings.lastCrash.title"));
+
+		expect(share.mock.calls[0][0].message).toContain("Cannot read property 'isSelf' of undefined");
 	});
 
 	it("keeps the chosen vibrations on this device and lets the player feel them at once", async () => {
