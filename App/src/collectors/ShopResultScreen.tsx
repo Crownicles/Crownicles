@@ -21,6 +21,7 @@ import {
 import { MarketAnalysis } from "@/src/collectors/MarketAnalysis";
 import { petName } from "@/src/display/PetDisplay";
 import { petCheckupSummary } from "@/src/display/PetCheckup";
+import { formatNumber } from "@/src/display/Amounts";
 import {
 	isShopRefusal, shopOutcomeReport
 } from "@/src/display/ShopReport";
@@ -51,16 +52,18 @@ function CheckupReport({ packet }: { packet: ShopPetCheckupRes }): ReactNode {
 			<SectionHeader>{i18n.t("app:city.checkup.headers.vitals")}</SectionHeader>
 			<Gauge
 				label={i18n.t("app:city.checkup.labels.lovePoints")}
-				value={`${summary.lovePoints.actual}/${summary.lovePoints.max}`}
+				value={i18n.t("app:profile.formats.progress", {
+					value: summary.lovePoints.actual, max: summary.lovePoints.max
+				})}
 				ratio={summary.lovePoints.max > 0 ? summary.lovePoints.actual / summary.lovePoints.max : 0}
 				color={colors.red}
 			/>
 			<Figures items={[
 				{
-					caption: i18n.t("app:city.checkup.labels.force"), value: String(summary.force)
+					caption: i18n.t("app:city.checkup.labels.force"), value: formatNumber(summary.force)
 				},
 				{
-					caption: i18n.t("app:city.checkup.labels.speed"), value: String(summary.speed)
+					caption: i18n.t("app:city.checkup.labels.speed"), value: formatNumber(summary.speed)
 				}
 			]}
 			/>
@@ -69,7 +72,7 @@ function CheckupReport({ packet }: { packet: ShopPetCheckupRes }): ReactNode {
 					<Effects items={[
 						{
 							label: i18n.t("app:city.checkup.labels.lovePointsGained"),
-							value: String(summary.lovePointsGained),
+							value: formatNumber(summary.lovePointsGained),
 							tone: EFFECT_TONES.GAIN
 						}
 					]}
@@ -85,12 +88,8 @@ function CheckupReport({ packet }: { packet: ShopPetCheckupRes }): ReactNode {
 			<SectionHeader>{i18n.t("app:city.checkup.headers.combat")}</SectionHeader>
 			{summary.fightEffects.map((effect, index) => <Story key={index}>{effect}</Story>)}
 
-			{summary.expeditions !== "" && (
-				<>
-					<SectionHeader>{i18n.t("app:city.checkup.headers.expeditions")}</SectionHeader>
-					<Story>{summary.expeditions}</Story>
-				</>
-			)}
+			<SectionHeader>{i18n.t("app:city.checkup.headers.expeditions")}</SectionHeader>
+			<Story>{summary.expeditions}</Story>
 			{summary.dwarfAside !== "" && (
 				<>
 					<SectionHeader>{i18n.t("app:city.checkup.headers.dwarf")}</SectionHeader>
