@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
-import { Text } from "react-native";
+import {
+	Text, View
+} from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
 import { makeFromClientPacket } from "ws-packets/src/MakePackets";
 import { GardenInfoReq } from "ws-packets/src/fromClient/GardenReq";
@@ -31,6 +33,7 @@ import { formatTimeUntil } from "@/src/display/ItemEffects";
 import { AppIcons } from "@/src/AppIcons";
 import { i18n } from "@/src/translations/i18n";
 import { useColors } from "@/src/design/ThemeContext";
+import { Theme } from "@/src/design/Theme";
 import {
 	CLOCK_INTERVALS, useCurrentTime
 } from "@/src/store/useCurrentTime";
@@ -212,26 +215,30 @@ function GardenPlots({
 		<GardenFigures garden={garden} />
 		<SectionHeader>{i18n.t("app:garden.plots")}</SectionHeader>
 		<ExpandableList>{garden.plots.map(plot => <GardenPlotRow key={plot.slot} plot={plot} garden={garden} actions={actions} />)}</ExpandableList>
-		<ActionBanner
-			icon={Sprout}
-			label={i18n.t("app:garden.harvest")}
-			pending={actions.pending}
-			{...lockFor(garden.eligibility.canHarvest ? undefined : { reason: i18n.t("app:garden.errors.noReadyPlants") })}
-			onPress={(): void => {
-				actions.submit({ type: GARDEN_OPERATIONS.HARVEST }).catch(console.error);
-			}}
-		/>
-		{garden.accessMode === GARDEN_ACCESS.FULL
-			? <ActionBanner
-				icon={Droplets}
-				label={i18n.t("app:garden.water")}
+		<View style={{
+			marginTop: Theme.spacing.md, gap: Theme.spacing.sm
+		}}>
+			<ActionBanner
+				icon={Sprout}
+				label={i18n.t("app:garden.harvest")}
 				pending={actions.pending}
-				{...lockFor(waterLock(garden, now))}
+				{...lockFor(garden.eligibility.canHarvest ? undefined : { reason: i18n.t("app:garden.errors.noReadyPlants") })}
 				onPress={(): void => {
-					actions.submit({ type: GARDEN_OPERATIONS.WATER }).catch(console.error);
+					actions.submit({ type: GARDEN_OPERATIONS.HARVEST }).catch(console.error);
 				}}
 			/>
-			: null}
+			{garden.accessMode === GARDEN_ACCESS.FULL
+				? <ActionBanner
+					icon={Droplets}
+					label={i18n.t("app:garden.water")}
+					pending={actions.pending}
+					{...lockFor(waterLock(garden, now))}
+					onPress={(): void => {
+						actions.submit({ type: GARDEN_OPERATIONS.WATER }).catch(console.error);
+					}}
+				/>
+				: null}
+		</View>
 	</>;
 }
 

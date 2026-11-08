@@ -259,7 +259,7 @@ describe("CollectorLabels", () => {
 
 		expect(collectorTitle(data)).toBe("app:collector.titles.destination");
 		expect(collectorDescription(data)).toBe("app:collector.descriptions.destinationBiomes");
-		expect(reactionLabel(reaction, data)).toBe("models:map_locations.3.name (15 minutes) · icon:expedition.locations.coast models:map_types.coast.name, icon:expedition.locations.swamp models:map_types.swamp.name");
+		expect(reactionLabel(reaction, data)).toBe("models:map_locations.3.name (15 minutes) · icon:expedition.locations.coast models:biomes.coast, icon:expedition.locations.swamp models:biomes.swamp");
 		expect(isChoosable(reaction, data)).toBe(true);
 	});
 

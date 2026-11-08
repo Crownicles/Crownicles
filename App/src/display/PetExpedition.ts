@@ -22,7 +22,7 @@ export function expeditionPetLabel(pet: PetBasicInfo): string {
 /** The destination's own name, without its landscape emoji: a location mixing several biomes names each of its expeditions after the explored one. */
 export function expeditionLocationTitle(location: ExpeditionLocation): string {
 	const name = location.mapLocationId === undefined
-		? i18n.t(`models:map_types.${location.locationType}.name`)
+		? i18n.t(`models:biomes.${location.locationType}`)
 		: i18n.t(`commands:petExpedition.mapLocationExpeditions.${location.mapLocationId}`, { context: location.locationType });
 	return location.isDistantExpedition ? i18n.t("commands:petExpedition.distantExpeditionPrefix", { location: name }) : name;
 }
@@ -30,7 +30,7 @@ export function expeditionLocationTitle(location: ExpeditionLocation): string {
 /** A biome with its landscape emoji, as the expedition screens name it. */
 export function biomeName(biome: ExpeditionLocationType): string {
 	return i18n.t("app:expedition.locationName", {
-		icon: AppIcons.getIcon(`expedition.locations.${biome}`), name: i18n.t(`models:map_types.${biome}.name`)
+		icon: AppIcons.getIcon(`expedition.locations.${biome}`), name: i18n.t(`models:biomes.${biome}`)
 	});
 }
 

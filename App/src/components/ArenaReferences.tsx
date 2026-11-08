@@ -88,6 +88,9 @@ const useStyles = createStyles(colors => ({
 	metaText: {
 		flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted
 	},
+	metaDate: {
+		flexShrink: 0, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted
+	},
 	leagueLabel: {
 		flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle
 	},
@@ -182,7 +185,8 @@ function PlayerHistoryEntry({ entry }: { entry: PlayerFightHistoryEntry }): Reac
 			<Text style={[styles.result, { color: colors[RESULT_COLORS[entry.result]] }]}>{i18n.t(RESULT_LABELS[entry.result])}</Text>
 			<View style={styles.meta}>
 				{classIcon ? <TwemojiIcon emoji={classIcon} size={12} /> : null}
-				<Text style={styles.metaText} numberOfLines={1}>{i18n.t(`models:classes.${entry.classes.opponent}`)} · {missionDate(entry.date)}</Text>
+				<Text style={styles.metaText} numberOfLines={1}>{i18n.t(`models:classes.${entry.classes.opponent}`)}</Text>
+				<Text style={styles.metaDate}>· {missionDate(entry.date)}</Text>
 			</View>
 			{league ? <HistoryLeagueChange change={league} /> : null}
 		</View>
@@ -208,7 +212,8 @@ function KingGuardHistoryEntry({ entry }: { entry: KingGuardFightHistoryEntry })
 			<Text style={[styles.result, { color: colors[RESULT_COLORS[entry.result]] }]}>{i18n.t(RESULT_LABELS[entry.result])}</Text>
 			<View style={styles.meta}>
 				{classIcon ? <TwemojiIcon emoji={classIcon} size={12} /> : null}
-				<Text style={styles.metaText} numberOfLines={1}>{i18n.t(`models:classes.${entry.classes.opponent}`)} · {i18n.t("app:battle.level", { level: entry.kingGuard.level })} · {missionDate(entry.date)}</Text>
+				<Text style={styles.metaText} numberOfLines={1}>{i18n.t(`models:classes.${entry.classes.opponent}`)} · {i18n.t("app:battle.level", { level: entry.kingGuard.level })}</Text>
+				<Text style={styles.metaDate}>· {missionDate(entry.date)}</Text>
 			</View>
 		</View>
 		<View style={styles.end}>
