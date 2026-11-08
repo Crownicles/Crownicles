@@ -1,10 +1,12 @@
 import { ShopPetCheckupRes } from "ws-packets/src/fromServer/shop/ShopRes";
 import { PetSex } from "ws-packets/src/objects/OwnedPet";
-import { AppIcons } from "@/src/AppIcons";
 import {
 	petIcon, petTypeName
 } from "@/src/display/PetDisplay";
 import { formatDurationMinutes } from "@/src/display/ItemEffects";
+import {
+	biomeName, isExpeditionLocationType
+} from "@/src/display/PetExpedition";
 import { i18n } from "@/src/translations/i18n";
 import { randomTranslation } from "@/src/translations/RandomTranslation";
 
@@ -22,8 +24,9 @@ function shortPet(typeId: number, sex: PetSex, nickname?: string): string {
 	});
 }
 
+/** The vet names the biomes as the expeditions do; one a newer server sends keeps its own name. */
 function locationType(type: string): string {
-	return `${AppIcons.getIconOrNull(`expedition.locations.${type}`) ?? ""} ${i18n.t(`models:biomes.${type}`)}`.trim();
+	return isExpeditionLocationType(type) ? biomeName(type) : type;
 }
 
 function expeditionSection(pet: ShopPetCheckupRes): string {

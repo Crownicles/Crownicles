@@ -1,7 +1,9 @@
 import {
 	ExpeditionLocation, PetBasicInfo
 } from "ws-packets/src/objects/PetExpedition";
-import { ExpeditionLocationType } from "ws-packets/src/fromServer/pet/PetRes";
+import {
+	EXPEDITION_LOCATION_TYPES, ExpeditionLocationType
+} from "ws-packets/src/fromServer/pet/PetRes";
 import { AppIcons } from "@/src/AppIcons";
 import { i18n } from "@/src/translations/i18n";
 
@@ -25,6 +27,11 @@ export function expeditionLocationTitle(location: ExpeditionLocation): string {
 		? i18n.t(`models:biomes.${location.locationType}`)
 		: i18n.t(`commands:petExpedition.mapLocationExpeditions.${location.mapLocationId}`, { context: location.locationType });
 	return location.isDistantExpedition ? i18n.t("commands:petExpedition.distantExpeditionPrefix", { location: name }) : name;
+}
+
+/** Some packets carry a biome as a plain string: only a biome this app knows can be named. */
+export function isExpeditionLocationType(value: string): value is ExpeditionLocationType {
+	return Object.values<string>(EXPEDITION_LOCATION_TYPES).includes(value);
 }
 
 /** A biome with its landscape emoji, as the expedition screens name it. */
