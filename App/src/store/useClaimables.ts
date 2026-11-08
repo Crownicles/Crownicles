@@ -4,6 +4,7 @@ import { LeagueInfoReq } from "ws-packets/src/fromClient/RankingsReq";
 import { InventoryRes } from "ws-packets/src/fromServer/inventory/InventoryRes";
 import { LeagueInfoRes } from "ws-packets/src/fromServer/fight/RankingsRes";
 import { GuildRes } from "ws-packets/src/fromServer/guild/GuildRes";
+import { PetRes } from "ws-packets/src/fromServer/pet/PetRes";
 import { PlayerNotFound } from "ws-packets/src/fromServer/common/PlayerNotFound";
 import { GameClient } from "@/src/networking/GameClient";
 import { GAME_ENTITIES } from "@/src/store/GameEntities";
@@ -11,6 +12,7 @@ import {
 	RequestState, useGameQuery
 } from "@/src/store/useGameQuery";
 import { useOwnGuild } from "@/src/store/useGuild";
+import { useOwnPet } from "@/src/store/useKnownPet";
 import { useMissionRewards } from "@/src/store/MissionRewardsStore";
 import { givesDailyBonus } from "@/src/display/ItemEffects";
 import { useCurrentTime } from "@/src/store/useCurrentTime";
@@ -18,7 +20,7 @@ import {
 	JOURNEY_TABS, JourneyTab
 } from "@/src/journey/Journey";
 
-/** A daily bonus or a guild reward becomes available on its own: the pills look at the clock this often. */
+/** A daily bonus, a guild reward or an expedition's finds become available on their own: the pills look at the clock this often. */
 export const CLAIMABLES_TICK_MS = 30_000;
 
 /** The player's own inventory, one query shared by every screen that needs it. */
@@ -63,6 +65,12 @@ export function guildDailyClaimable(state: RequestState<GuildRes>, now: number):
 	return daily !== undefined && now !== 0 && !daily.blockedByIsland && daily.availableAt <= now;
 }
 
+/** The pet's finds wait from the moment it is due back from its expedition, until they are claimed. */
+export function expeditionClaimable(state: RequestState<PetRes>, now: number): boolean {
+	const expedition = state.status === "ready" ? state.data.expeditionInProgress : undefined;
+	return expedition !== undefined && now !== 0 && expedition.endTime <= now;
+}
+
 export function useMissionsToClaim(): number {
 	return useMissionRewards().rewards.missions.length;
 }
@@ -81,11 +89,17 @@ export function useGuildDailyToClaim(): number {
 	return guildDailyClaimable(useOwnGuild(), now) ? 1 : 0;
 }
 
+export function useExpeditionToClaim(): number {
+	const now = useCurrentTime(CLAIMABLES_TICK_MS);
+	return expeditionClaimable(useOwnPet(), now) ? 1 : 0;
+}
+
 /** How many rewards wait behind each tab, so the bar leads the player to them. */
 export function useTabClaimables(): Partial<Record<JourneyTab, number>> {
 	return {
 		[JOURNEY_TABS.ADVENTURE]: useMissionsToClaim(),
 		[JOURNEY_TABS.PROFILE]: useDailyBonusToClaim(),
+		[JOURNEY_TABS.PET]: useExpeditionToClaim(),
 		[JOURNEY_TABS.GUILD]: useGuildDailyToClaim(),
 		[JOURNEY_TABS.ARENA]: useLeagueRewardToClaim()
 	};

@@ -33,7 +33,7 @@ describe("expedition collectors", () => {
 					pet: PET,
 					expeditions: [
 						OPTION, {
-							...OPTION, id: "far", mapLocationId: 13, riskCategory: "extreme", hasCloneTalismanBonus: true
+							...OPTION, id: "far", mapLocationId: 13, riskCategory: "extreme", displayDurationMinutes: 2 * 1_440 + 3 * 60, hasCloneTalismanBonus: true, hasBonusTokens: true
 						}
 					],
 					hasGuild: true,
@@ -60,6 +60,9 @@ describe("expedition collectors", () => {
 		expect(screen.getByText("commands:petExpedition.mapLocationExpeditions.12")).toBeTruthy();
 		expect(screen.getByText("commands:petExpedition.riskCategories.extreme")).toBeTruthy();
 		expect(screen.getByText("app:expedition.cloneBonus")).toBeTruthy();
+		expect(screen.getByText("commands:petExpedition.expeditionOption.bonusTokens")).toBeTruthy();
+		expect(screen.getByText("app:adventure.duration.hours")).toBeTruthy();
+		expect(screen.getByText("app:adventure.duration.daysHours")).toBeTruthy();
 		expect(screen.getByText("app:expedition.provisions")).toBeTruthy();
 		expect(screen.getByText("commands:petExpedition.chooseExpedition")).toBeTruthy();
 		expect(screen.getByTestId("pet-impatience", { includeHiddenElements: true })).toBeTruthy();

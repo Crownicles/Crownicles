@@ -8,7 +8,7 @@ import {
 	ExpeditionFoodDetails, ExpeditionProgressDetails
 } from "@/src/components/ExpeditionDetails";
 import { expeditionPetName } from "@/src/display/PetExpedition";
-import { formatDurationMinutes } from "@/src/display/ItemEffects";
+import { formatLongDurationMinutes } from "@/src/display/ItemEffects";
 import { i18n } from "@/src/translations/i18n";
 import { ExpandableList } from "@/src/design/Sections";
 
@@ -35,7 +35,7 @@ export function ExpeditionStarted({ packet }: { packet: PetExpeditionStartedRes 
 				...packet.foodConsumedDetails ? { foodConsumedDetails: packet.foodConsumedDetails } : {}
 			}} />
 			: <ExpandableList><ExpeditionFoodDetails amount={packet.foodConsumed} details={packet.foodConsumedDetails} /></ExpandableList>}
-		{packet.originalDisplayDurationMinutes !== undefined ? <Note>{i18n.t("app:expedition.plannedDuration", { duration: formatDurationMinutes(packet.originalDisplayDurationMinutes) })}</Note> : null}
+		{packet.originalDisplayDurationMinutes !== undefined ? <Note>{i18n.t("app:expedition.plannedDuration", { duration: formatLongDurationMinutes(packet.originalDisplayDurationMinutes) })}</Note> : null}
 		{packet.insufficientFood ? <Note>{i18n.t(`app:expedition.insufficientFood.${packet.insufficientFoodCause ?? "noGuild"}`)}</Note> : null}
 	</>;
 }

@@ -2,6 +2,7 @@ import {
 	OwnedPet, PetSex
 } from "ws-packets/src/objects/OwnedPet";
 import { i18n } from "@/src/translations/i18n";
+import { anyTranslation } from "@/src/translations/RandomTranslation";
 import { AppIcons } from "@/src/AppIcons";
 
 const RARITY_RANGE = {
@@ -31,6 +32,11 @@ export function petNickname(pet: OwnedPet): string {
 
 export function petName(pet: Pick<OwnedPet, "typeId" | "sex"> & { nickname?: string }): string {
 	return pet.nickname || petTypeName(pet);
+}
+
+/** How the pet takes a caress, in one of the phrases Discord picks from, which call a pet without a nickname "your pet". */
+export function caressReaction(pet: Pick<OwnedPet, "nickname">): string {
+	return anyTranslation("commands:pet.petPhrases", { petName: pet.nickname || i18n.t("commands:pet.defaultPetName") });
 }
 
 /** The pet as game texts quote it: its emoji, then its nickname or its species. */

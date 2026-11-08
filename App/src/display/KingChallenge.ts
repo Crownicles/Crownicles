@@ -7,11 +7,9 @@ import {
 	AMOUNT_UNITS, formatAmount, formatMoney, formatNumber
 } from "@/src/display/Amounts";
 import { joinFacts } from "@/src/display/Facts";
-import { formatDurationMinutes } from "@/src/display/ItemEffects";
+import { formatLongDurationMinutes } from "@/src/display/ItemEffects";
 
 const MILLISECONDS_PER_MINUTE = 60_000;
-const MINUTES_PER_DAY = 1_440;
-const MINUTES_PER_HOUR = 60;
 
 /** The tiers are numbered from the first; the last one, the champion's, stands outside the ladder and is named instead. */
 export function kingChallengeTierLabel(index: number, tierCount: number): string {
@@ -29,19 +27,9 @@ export function tierRewardFacts(reward: KingChallengeReward): string {
 	]);
 }
 
-/** A wait of several days is counted in days and hours, the last day in hours and minutes. */
+/** The wait before the challenge starts over, which can last several days. */
 export function formatTimeLeft(milliseconds: number): string {
-	const minutes = Math.max(0, Math.ceil(milliseconds / MILLISECONDS_PER_MINUTE));
-	if (minutes < MINUTES_PER_DAY) {
-		return formatDurationMinutes(minutes);
-	}
-	const days = Math.floor(minutes / MINUTES_PER_DAY);
-	const hours = Math.floor((minutes % MINUTES_PER_DAY) / MINUTES_PER_HOUR);
-	return hours === 0
-		? i18n.t("app:adventure.duration.days", { count: days })
-		: i18n.t("app:adventure.duration.daysHours", {
-			days, hours
-		});
+	return formatLongDurationMinutes(milliseconds / MILLISECONDS_PER_MINUTE);
 }
 
 /** Core pays no token to a player who already held the cap, though the tiers crossed list some. */

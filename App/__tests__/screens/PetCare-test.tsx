@@ -46,7 +46,9 @@ jest.mock("@/src/collectors/CollectorsContext", () => ({ useCollectors: () => ({
 jest.mock("@/src/AppIcons", () => ({ AppIcons: {
 	getIcon: (): string => "", getIconOrNull: (): null => null
 } }));
-jest.mock("@/src/translations/i18n", () => ({ i18n: { t: (key: string): string => key } }));
+jest.mock("@/src/translations/i18n", () => ({ i18n: {
+	t: (key: string): string => key, tArray: (key: string, options?: { petName?: string }): string[] => [`${key}:${options?.petName}`]
+} }));
 
 const PET = {
 	typeId: 1, nickname: "Aster", rarity: 1, sex: "m" as const, loveLevel: 3, force: 10, feedDelay: 2
@@ -358,6 +360,31 @@ describe("pet care screens", () => {
 	])("floats hearts $case", async scenario => {
 		await render(<PetCaress pet={PET} size={40} strokes={1} hadEnough={scenario.hadEnough} />);
 		expect(screen.queryByTestId("pet-motes", { includeHiddenElements: true }) !== null).toBe(scenario.hearts);
+	});
+
+	it.each([
+		{
+			case: "by its nickname", nickname: "Aster", named: "Aster"
+		},
+		{
+			case: "as your pet when it has no nickname", nickname: "", named: "commands:pet.defaultPetName"
+		}
+	])("answers a caress with the pet's reaction, in Discord's words, naming it $case", async ({
+		nickname, named
+	}) => {
+		jest.mocked(GameClient.request).mockImplementation(request => Promise.resolve(request instanceof PetCaressReq
+			? {
+				kind: "answer", packet: new PetCaressRes()
+			}
+			: {
+				kind: "answer", packet: Object.assign(new ProfileRes(), { effect: NO_EFFECT })
+			}));
+		await renderOverview({ pet: {
+			...PET, nickname
+		} });
+		expect(screen.queryByText(`commands:pet.petPhrases:${named}`)).toBeNull();
+		await fireEvent.press(screen.getByText("app:pet.care.caress"));
+		await waitFor(() => expect(screen.getByText(`commands:pet.petPhrases:${named}`)).toBeTruthy());
 	});
 
 	it("walks the pet off after one stroke too many", async () => {

@@ -10,6 +10,7 @@ import {
 	PetCaressRes, PetNickRes
 } from "ws-packets/src/fromServer/pet/PetCareRes";
 import { Blocked } from "ws-packets/src/fromServer/common/Blocked";
+import { OwnedPet } from "ws-packets/src/objects/OwnedPet";
 import {
 	GameAnswer, GameClient
 } from "@/src/networking/GameClient";
@@ -17,9 +18,12 @@ import {
 	GAME_ENTITIES, gameKey
 } from "@/src/store/GameEntities";
 import { commandRejectionMessage } from "@/src/display/CommandRejection";
+import { caressReaction } from "@/src/display/PetDisplay";
 import { i18n } from "@/src/translations/i18n";
 
-type PetCareAction = { type: "caress" } | {
+type PetCareAction = {
+	type: "caress"; pet: OwnedPet;
+} | {
 	type: "rename"; nickname: string;
 };
 export type PetActions = {
@@ -45,8 +49,11 @@ function careFailure(answer: Exclude<GameAnswer<PetCaressRes | PetNickRes>, { ki
 	return i18n.t(answer.kind === "alternative" ? "app:collector.pending" : "app:common.connectionError");
 }
 
-/** A caress says itself through the pet's own reaction, so it leaves no line of text behind. */
-function careResult(packet: PetCaressRes | PetNickRes): string | null {
+/** A caress is answered by the pet itself, in Discord's words; a renaming says what became of the name. */
+function careResult(action: PetCareAction, packet: PetCaressRes | PetNickRes): string | null {
+	if (action.type === "caress") {
+		return caressReaction(action.pet);
+	}
 	if (!("foundPet" in packet)) {
 		return null;
 	}
@@ -106,7 +113,7 @@ export function usePetActions(): PetActions {
 				await queryClient.invalidateQueries({ queryKey: gameKey(entity) });
 			}
 			const succeeded = careSucceeded(answer.packet);
-			say(careResult(answer.packet), !succeeded);
+			say(careResult(action, answer.packet), !succeeded);
 			return succeeded;
 		}
 		catch {

@@ -12,6 +12,7 @@ const ITEM_TYPES_BY_CATEGORY = [
 ] as const;
 
 const MINUTES_PER_HOUR = 60;
+const MINUTES_PER_DAY = 1_440;
 
 export function itemTypeFromCategory(category: number): typeof ITEM_TYPES_BY_CATEGORY[number] | null {
 	return ITEM_TYPES_BY_CATEGORY[category] ?? null;
@@ -66,6 +67,21 @@ export function formatDurationMinutes(totalMinutes: number): string {
 		? i18n.t("app:adventure.duration.hours", { count: hours })
 		: i18n.t("app:adventure.duration.hoursMinutes", {
 			hours, minutes
+		});
+}
+
+/** A wait of several days is counted in days and hours, the last day in hours and minutes. */
+export function formatLongDurationMinutes(totalMinutes: number): string {
+	const bounded = Math.max(0, Math.ceil(totalMinutes));
+	if (bounded < MINUTES_PER_DAY) {
+		return formatDurationMinutes(bounded);
+	}
+	const days = Math.floor(bounded / MINUTES_PER_DAY);
+	const hours = Math.floor((bounded % MINUTES_PER_DAY) / MINUTES_PER_HOUR);
+	return hours === 0
+		? i18n.t("app:adventure.duration.days", { count: days })
+		: i18n.t("app:adventure.duration.daysHours", {
+			days, hours
 		});
 }
 
