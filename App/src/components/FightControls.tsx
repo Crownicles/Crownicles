@@ -95,12 +95,17 @@ export type FightNavigation = {
 	onClose: () => void; onJournal: () => void;
 };
 
-/** The kind of fight, as its header names it. */
-function fightKindKey(introduction: FightIntroduction | null): string {
+/** The kind of fight, as its header names it: a friendly fight also says the level its fighters are brought down to. */
+function fightKind(introduction: FightIntroduction | null): string {
 	if (introduction?.opponent.monsterId) {
-		return "app:battle.encounter";
+		return i18n.t("app:battle.encounter");
 	}
-	return introduction?.friendly ? "app:battle.friendly" : "app:battle.duel";
+	if (!introduction?.friendly) {
+		return i18n.t("app:battle.duel");
+	}
+	return introduction.levelCap === undefined
+		? i18n.t("app:battle.friendly")
+		: i18n.t("app:battle.friendlyLevelCap", { levelCap: introduction.levelCap });
 }
 
 export function FightHeader({
@@ -112,7 +117,7 @@ export function FightHeader({
 	const compact = useCompactFight();
 	const status = playback.status;
 	return <View style={[styles.header, compact && styles.compactHeader]}>
-		<View style={styles.headerBody}><Text style={styles.eyebrow}>{i18n.t(fightKindKey(fight.introduction))}</Text><Text style={styles.title}>{i18n.t(`app:battle.${phase}`)}</Text></View>
+		<View style={styles.headerBody}><Text style={styles.eyebrow}>{fightKind(fight.introduction)}</Text><Text style={styles.title}>{i18n.t(`app:battle.${phase}`)}</Text></View>
 		<Text style={styles.turn}>{status
 			? i18n.t("app:arena.turn", {
 				turn: status.numberOfTurn, max: status.maxNumberOfTurn

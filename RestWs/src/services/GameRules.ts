@@ -52,6 +52,9 @@ export function buildGameRules(): GameRules {
 				max: PetSellConstants.SELL_PRICE.MAX
 			}
 		},
+		friendlyFight: {
+			levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
+		},
 		cooldownHours: {
 			innMeal: PlayersConstants.MEAL_COOLDOWN / TimeConstants.MS_TIME.HOUR,
 			innRoom: HomeConstants.BED_COOLDOWN_MS / TimeConstants.MS_TIME.HOUR,

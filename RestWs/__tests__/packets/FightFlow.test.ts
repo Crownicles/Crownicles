@@ -77,10 +77,11 @@ describe("fight protocol", () => {
 	});
 	it("tells the app a fight is friendly, and only then", async () => {
 		const base = {fightId: "duel", fightInitiatorKeycloakId: "private-self", fightOpponentKeycloakId: "private-opponent", fightInitiatorActions: [], fightOpponentActions: []};
-		const friendly = await FightServerTranslator.introduction(CONTEXT, makePacket(CommandFightIntroduceFightersPacket, {...base, friendly: true}));
+		const friendly = await FightServerTranslator.introduction(CONTEXT, makePacket(CommandFightIntroduceFightersPacket, {...base, friendly: true, levelCap: 100}));
 		const ranked = await FightServerTranslator.introduction(CONTEXT, makePacket(CommandFightIntroduceFightersPacket, base));
-		expect(friendly.introduction.friendly).toBe(true);
+		expect(friendly.introduction).toMatchObject({friendly: true, levelCap: 100});
 		expect(ranked.introduction).not.toHaveProperty("friendly");
+		expect(ranked.introduction).not.toHaveProperty("levelCap");
 	});
 	it("forwards why a friendly fight could not start", async () => {
 		const result = await FightServerTranslator.friendlyError(CONTEXT, makePacket(CommandFriendlyFightErrorPacketRes, {error: FRIENDLY_FIGHT_ERRORS.OPPONENT_LEVEL_TOO_LOW}));

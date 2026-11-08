@@ -90,7 +90,8 @@ export default class FightServerTranslator {
 			opponentActions: packet.fightOpponentActions,
 			...packet.fightInitiatorPet ? { initiatorPet: packet.fightInitiatorPet } : {},
 			...packet.fightOpponentPet ? { opponentPet: packet.fightOpponentPet } : {},
-			...packet.friendly ? { friendly: true } : {}
+			...packet.friendly ? { friendly: true } : {},
+			...packet.levelCap === undefined ? {} : { levelCap: packet.levelCap }
 		} });
 	}
 

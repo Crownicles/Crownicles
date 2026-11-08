@@ -14,7 +14,11 @@ import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
 jest.mock("@/src/networking/GameClient", () => ({ GameClient: { request: jest.fn() } }));
 jest.mock("@/src/store/usePlayerProfile", () => ({ usePlayerProfile: jest.fn() }));
 jest.mock("@/src/translations/i18n", () => ({ i18n: {
-	language: "fr", t: (key: string, options?: Record<string, unknown>): string => options?.level === undefined ? key : `${key}:${options.level}`
+	language: "fr",
+	t: (key: string, options?: Record<string, unknown>): string => {
+		const value = options?.level ?? options?.levelCap;
+		return value === undefined ? key : `${key}:${String(value)}`;
+	}
 } }));
 
 const NO_EFFECT = {
@@ -51,6 +55,11 @@ describe("friendly fight from another player's profile", () => {
 		await renderBanner(3, 20);
 		expect(screen.getByText("app:arena.locked:8")).toBeTruthy();
 		expect(screen.getByRole("button", { name: START_LABEL })).toBeDisabled();
+	});
+
+	it("announces the level both fighters are brought down to, as the server rules set it", async () => {
+		await renderBanner(20, 20);
+		expect(screen.getByText("app:friendlyFight.detail:100")).toBeTruthy();
 	});
 
 	it("asks for the duel against the referenced player and lets the fight screen take over", async () => {

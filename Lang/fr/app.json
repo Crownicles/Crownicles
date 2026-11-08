@@ -1332,7 +1332,7 @@
       "substitution": "{{selected}} → {{used}}"
     },
     "speed": {"label": "Vitesse des animations de combat", "normal": "Normale (1×)", "fast": "Rapide (2×)"},
-    "duel": "Combat · arène", "friendly": "Combat · amical", "encounter": "Rencontre · combat", "yourTurn": "Votre tour", "opponentTurn": "Tour adverse", "resolving": "Action en cours", "finished": "Combat terminé",
+    "duel": "Combat · arène", "friendly": "Combat · amical", "friendlyLevelCap": "Combat · amical · niveau {{levelCap}} au plus", "encounter": "Rencontre · combat", "yourTurn": "Votre tour", "opponentTurn": "Tour adverse", "resolving": "Action en cours", "finished": "Combat terminé",
     "versus": "VS", "level": "Niv. {{level}}", "shortTurn": "Tour {{turn}}", "seconds": "{{seconds}} s", "availableBreath": "Disponible",
     "breathRegen_one": "+{{count}} au prochain tour", "breathRegen_other": "+{{count}} au prochain tour",
     "actions": "Vos actions", "chooseAction": "À vous de jouer", "wait": "En attente", "ready": "Choisissez votre action", "opening": "Le combat commence", "preparing": "Les combattants se préparent…",
@@ -1353,6 +1353,7 @@
     "you": "Vous", "opponent": "Adversaire", "energy": "Énergie", "breath": "Souffle", "glory": "Gloire", "league": "Ligue", "pet": "Familier",
     "turn": "Tour {{turn}} / {{max}}", "turns": "Tours joués", "waiting": "L'adversaire choisit son action…", "action": "Action de combat", "actionBreath": "{{value}} souffle",
     "log": "Journal du combat", "victory": "Victoire", "defeat": "Défaite", "draw": "Match nul", "gloryChange": "{{before}} → {{after}}", "petLove": "Votre familier gagne {{count}} points d'amour.", "kingGuardNoGlory": "Aucun adversaire n'était disponible : ce combat contre un garde du roi ne mettait aucune gloire en jeu.",
+    "friendlyFightHint": "Un combat amical, sans aucune conséquence, se lance depuis le profil d'un autre joueur, ouvert depuis les classements ou depuis une guilde.",
     "friendlyNoConsequence": "Ce combat amical n'a eu aucune conséquence : ni gloire, ni récompense, ni énergie perdue.",
     "stats": {"attack": "Attaque", "defense": "Défense", "speed": "Vitesse", "breathRegen": "Récupération de souffle"},
     "attacks": "Attaques",
@@ -1361,7 +1362,7 @@
   },
   "friendlyFight": {
     "start": "Défier {{pseudo}} en combat amical",
-    "detail": "Sans gloire, sans récompense, sans énergie perdue",
+    "detail": "Sans gloire, sans récompense, sans énergie perdue · niveau {{levelCap}} au plus",
     "errors": {
       "opponentNotFound": "Ce joueur est introuvable ou n'a pas encore commencé l'aventure.",
       "selfFight": "Un combat amical ne peut pas être lancé contre soi-même.",

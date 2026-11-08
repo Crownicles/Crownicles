@@ -331,5 +331,6 @@ export default function Arena(): ReactNode {
 			: <ArenaStart pending={pending} ongoing={ongoing} lock={ongoing ? undefined : startLock(canFight, blocking, profile)} onStart={start} />}
 		{startError ? <ArenaStartError error={startError} /> : null}
 		<ArenaLinks pages={canFight ? ARENA_PAGES : BEFORE_FIGHTS_PAGES} onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
+		{canFight ? <Note>{i18n.t("app:arena.friendlyFightHint")}</Note> : null}
 	</Screen>;
 }

@@ -51,7 +51,7 @@ export function FriendlyFightPlayer({
 		<ActionBanner
 			icon={Swords}
 			label={ongoing ? i18n.t("app:arena.resume") : i18n.t("app:friendlyFight.start", { pseudo: profile.pseudo })}
-			{...ongoing ? {} : { detail: i18n.t("app:friendlyFight.detail") }}
+			{...ongoing ? {} : { detail: i18n.t("app:friendlyFight.detail", { levelCap: gameRules().friendlyFight.levelCap }) }}
 			pending={pending}
 			{...lock ? { lock } : {}}
 			onPress={ongoing

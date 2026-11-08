@@ -33,6 +33,11 @@ export type GameRules = {
 		sellPrice: NumberRange;
 	};
 
+	/** Fighters above this level are fought at it in a friendly fight. */
+	friendlyFight: {
+		levelCap: number;
+	};
+
 	/** How long, in hours, before each city service can be used again. */
 	cooldownHours: {
 		innMeal: number;

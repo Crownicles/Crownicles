@@ -76,6 +76,13 @@ describe("arena start", () => {
 		expect(mockOpen).not.toHaveBeenCalled();
 	});
 
+	it("tells where friendly fights are started once fights are open, and not before", async () => {
+		await renderArena(3);
+		expect(screen.queryByText("app:arena.friendlyFightHint")).toBeNull();
+		await renderArena(8);
+		expect(screen.getByText("app:arena.friendlyFightHint")).toBeTruthy();
+	});
+
 	it("lets a player at the fight level look for an opponent", async () => {
 		await renderArena(8);
 		expect(screen.queryByText("app:arena.locked:8")).toBeNull();

@@ -9,6 +9,7 @@ const GAME_RULES_SECTIONS: Record<keyof GameRules, true> = {
 	journeyLevels: true,
 	fight: true,
 	pet: true,
+	friendlyFight: true,
 	cooldownHours: true,
 	apartment: true,
 	onboardingTrials: true

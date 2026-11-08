@@ -72,8 +72,11 @@ export type FightIntroduction = {
 	initiatorPet?: OwnedPet;
 	opponentPet?: OwnedPet;
 
-	/** A friendly fight leaves no trace: no reward, no glory, nothing logged. */
+	/** A friendly fight has no consequence: no reward, no glory, no energy lost, no fight history entry. */
 	friendly?: boolean;
+
+	/** Fighters above this level are fought at it (friendly fights). */
+	levelCap?: number;
 };
 export type FightStatus = {
 	fightId: string; numberOfTurn: number; maxNumberOfTurn: number; activeFighter: FightFighter; defendingFighter: FightFighter;

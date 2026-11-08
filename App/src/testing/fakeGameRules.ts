@@ -51,6 +51,7 @@ export const fakeGameRules: GameRules = {
 	pet: { sellPrice: {
 		min: 100, max: 50_000
 	} },
+	friendlyFight: { levelCap: 100 },
 	cooldownHours: {
 		innMeal: 12, innRoom: 24, gardenWatering: 12
 	},

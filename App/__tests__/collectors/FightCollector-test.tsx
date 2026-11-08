@@ -229,6 +229,19 @@ describe("live battle presentation", () => {
 		await fireEvent.press(screen.getByText("app:battle.returnToArena"));
 		expect(close).toHaveBeenCalledTimes(1);
 	});
+	it("names an arena duel, and a friendly fight with the level its fighters are brought down to", async () => {
+		const view = await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(screen.getByText("app:battle.duel")).toBeTruthy();
+		const friendly = battle();
+		await view.rerender(<FightLiveView fight={{
+			...friendly,
+			introduction: {
+				...friendly.introduction!, friendly: true, levelCap: 100
+			}
+		}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		expect(screen.getByText("app:battle.friendlyLevelCap")).toBeTruthy();
+		expect(screen.queryByText("app:battle.duel")).toBeNull();
+	});
 	it("tells the fight in the feed itself, without a separate history during combat", async () => {
 		await render(<FightLiveView fight={battle()} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
 		expect(screen.queryByRole("button", { name: "app:arena.log" })).toBeNull();
