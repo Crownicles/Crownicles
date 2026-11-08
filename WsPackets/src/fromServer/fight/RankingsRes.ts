@@ -1,12 +1,15 @@
 import { FromServerPacket } from "../FromServerPacket";
 import {
-	FightHistoryEntry, LeagueRewardAvailability, LeagueRewardOutcome, RankingEntry, TopDataType, TopTiming, LeagueInfo
+	FightHistoryEntry, KingGuardFightStats, LeagueRewardAvailability, LeagueRewardOutcome, RankingEntry, TopDataType, TopTiming, LeagueInfo
 } from "../../objects/Rankings";
 
 export class FightHistoryRes extends FromServerPacket {
 	public static readonly wireName = "FightHistoryRes";
 
 	history!: FightHistoryEntry[];
+
+	/** Absent when the player never fought a king guard. */
+	kingGuardStats?: KingGuardFightStats;
 }
 export class LeagueRewardRes extends FromServerPacket {
 	public static readonly wireName = "LeagueRewardRes";

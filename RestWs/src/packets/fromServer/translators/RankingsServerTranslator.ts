@@ -14,7 +14,7 @@ import {
 	FightHistoryRes, LeagueInfoRes, LeagueRewardRes, TopRes, TopEmptyRes
 } from "../../../../../WsPackets/src/fromServer/fight/RankingsRes";
 import {
-	FIGHT_HISTORY_ENTRY_TYPES, FightHistoryEntry, TopDataType, RankingEntry
+	FIGHT_HISTORY_ENTRY_TYPES, FightHistoryEntry, KingGuardChallenger, KingGuardFightStats, TopDataType, RankingEntry
 } from "../../../../../WsPackets/src/objects/Rankings";
 import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePackets";
 import { resolvePlayerName } from "../PlayerDisplay";
@@ -22,6 +22,9 @@ import { playerReference } from "../../../services/PlayerReference";
 import {
 	TopElementScore, TopElementGlory
 } from "../../../../../Lib/src/types/TopElement";
+import {
+	KingGuardChallengerRecord, KingGuardFightStats as LibKingGuardFightStats
+} from "../../../../../Lib/src/types/KingGuardFightStats";
 
 async function fightHistoryEntry(entry: FightHistoryItem): Promise<FightHistoryEntry> {
 	if ("kingGuard" in entry) {
@@ -38,6 +41,26 @@ async function fightHistoryEntry(entry: FightHistoryItem): Promise<FightHistoryE
 		...details,
 		opponentRef: playerReference(opponentKeycloakId),
 		...opponentName ? { opponentName } : {}
+	};
+}
+
+async function kingGuardChallenger(challenger: KingGuardChallengerRecord, viewerKeycloakId: string | undefined): Promise<KingGuardChallenger> {
+	const name = await resolvePlayerName(challenger.keycloakId);
+	return {
+		playerRef: playerReference(challenger.keycloakId),
+		level: challenger.level,
+		sameContext: challenger.keycloakId === viewerKeycloakId,
+		...name ? { name } : {}
+	};
+}
+
+async function kingGuardStats(stats: LibKingGuardFightStats, viewerKeycloakId: string | undefined): Promise<KingGuardFightStats> {
+	const {
+		leaderboard, ...summary
+	} = stats;
+	return {
+		...summary,
+		leaderboard: await Promise.all(leaderboard.map(challenger => kingGuardChallenger(challenger, viewerKeycloakId)))
 	};
 }
 
@@ -71,8 +94,11 @@ async function playerRankingEntry(entry: TopElementScore | TopElementGlory): Pro
 
 export default class RankingsServerTranslator {
 	@fromServerTranslator(CommandFightHistoryPacketRes, FightHistoryRes)
-	public static async history(_context: PacketContext, packet: CommandFightHistoryPacketRes): Promise<FightHistoryRes> {
-		return asyncMakeFromServerPacket(FightHistoryRes, { history: await Promise.all(packet.history.map(fightHistoryEntry)) });
+	public static async history(context: PacketContext, packet: CommandFightHistoryPacketRes): Promise<FightHistoryRes> {
+		return asyncMakeFromServerPacket(FightHistoryRes, {
+			history: await Promise.all(packet.history.map(fightHistoryEntry)),
+			...packet.kingGuardStats ? { kingGuardStats: await kingGuardStats(packet.kingGuardStats, context.keycloakId) } : {}
+		});
 	}
 
 	@fromServerTranslator(CommandLeagueInfoRes, LeagueInfoRes)

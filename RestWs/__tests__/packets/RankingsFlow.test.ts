@@ -64,6 +64,22 @@ describe("arena reference data", () => {
 		expect(result.history[0]).toEqual({type: "kingGuard", id: 7, result: EloGameResult.WIN, date: 223456, classes: {me: 1, opponent: 3}, kingGuard: {level: 37}});
 		expect(result.history[1]).toMatchObject({type: "player", id: 7, opponentName: "Aventurier"});
 	});
+	it("sums up the king guard fights and names the roll of honour without leaking accounts", async () => {
+		const result = await RankingsServerTranslator.history(CONTEXT, makePacket(CommandFightHistoryPacketRes, {history: [], kingGuardStats: {
+			won: 4, lost: 2, draw: 1, playerLevel: 30,
+			record: {level: 37, recordsBroken: 3, rank: 12, challengers: 80},
+			leaderboard: [{keycloakId: "private-champion", level: 90}, {keycloakId: CONTEXT.keycloakId!, level: 37}]
+		}}));
+		expect(result.kingGuardStats).toMatchObject({won: 4, lost: 2, draw: 1, playerLevel: 30, record: {level: 37, recordsBroken: 3, rank: 12, challengers: 80}});
+		expect(result.kingGuardStats!.leaderboard).toMatchObject([{name: "Aventurier", level: 90, sameContext: false}, {level: 37, sameContext: true}]);
+		expect(resolvePlayerReference(result.kingGuardStats!.leaderboard[0].playerRef)).toBe("private-champion");
+		expect(JSON.stringify(result)).not.toContain("private-champion");
+		expect(JSON.stringify(result)).not.toContain(CONTEXT.keycloakId);
+	});
+	it("leaves the king guard summary out for a player who never fought one", async () => {
+		const result = await RankingsServerTranslator.history(CONTEXT, makePacket(CommandFightHistoryPacketRes, {history: []}));
+		expect(JSON.parse(JSON.stringify(result))).not.toHaveProperty("kingGuardStats");
+	});
 	it("preserves the claim date and the granted reward amounts", async () => {
 		const date = await RankingsServerTranslator.notSunday(CONTEXT, makePacket(CommandLeagueRewardNotSundayPacketRes, {nextSunday: 1_900_000_000_000}));
 		expect(date.outcome).toEqual({type: "notSunday", nextSunday: 1_900_000_000_000});

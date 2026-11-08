@@ -18,7 +18,7 @@ import {
 	TopRes, TopEmptyRes, LeagueInfoRes
 } from "ws-packets/src/fromServer/fight/RankingsRes";
 import {
-	TopDataType, TopTiming, EloGameResult, FIGHT_HISTORY_ENTRY_TYPES, PlayerFightHistoryEntry
+	TopDataType, TopTiming, EloGameResult, FIGHT_HISTORY_ENTRY_TYPES, KingGuardFightStats, PlayerFightHistoryEntry
 } from "ws-packets/src/objects/Rankings";
 
 const mockPush = jest.fn();
@@ -43,7 +43,7 @@ jest.mock("@/src/collectors/CollectorsContext", () => ({ useCollectors: () => ({
 jest.mock("@/src/AppIcons", () => ({ AppIcons: {
 	getIcon: (): string => "", getIconOrNull: (): null => null
 } }));
-jest.mock("@/src/translations/i18n", () => ({ i18n: { t: (key: string): string => key } }));
+jest.mock("@/src/translations/i18n", () => ({ i18n: { t: (key: string, options?: object): string => key.startsWith("app:arena.kingGuards.") && options ? `${key} ${JSON.stringify(options)}` : key } }));
 
 type HistoryFight = PlayerFightHistoryEntry;
 
@@ -73,6 +73,26 @@ function historyFight(fight: Partial<HistoryFight> & Pick<HistoryFight, "glory">
 		...fight
 	};
 }
+
+/** A player of level 30 whose best guard is level 37, ranked 12th of 80, listed second on the roll behind a champion. */
+const KING_GUARD_STATS: KingGuardFightStats = {
+	won: 4,
+	lost: 2,
+	draw: 1,
+	playerLevel: 30,
+	record: {
+		level: 37, recordsBroken: 3, rank: 12, challengers: 80
+	},
+	leaderboard: [
+		{
+			name: "Champion", playerRef: "ref-champion", level: 90, sameContext: false
+		},
+		{
+			name: "Aventurier", playerRef: "ref-self", level: 37, sameContext: true
+		}
+	]
+};
+const KING_GUARDS_VIEW = "commands:fightHistory.kingGuardStats.openButton";
 
 const LEAGUES = Object.assign(new LeagueInfoRes(), {
 	currentLeagueId: 0,
@@ -272,6 +292,59 @@ describe("arena references", () => {
 		expect(screen.getByText("app:arena.history.noGloryAtStake")).toBeTruthy();
 		await fireEvent.press(screen.getByText("commands:fight.kingGuard.name"));
 		expect(mockPush).not.toHaveBeenCalled();
+	});
+	it("offers the king guards' summary only to a player who fought one", async () => {
+		const fights = [
+			historyFight({ glory: gloryOf({
+				me: 5, opponent: -5
+			}, {}) })
+		];
+		const { rerender } = await render(<FightHistoryContent history={fights} />);
+		expect(screen.queryByRole("tab", { name: KING_GUARDS_VIEW })).toBeNull();
+		await rerender(<FightHistoryContent history={fights} kingGuardStats={KING_GUARD_STATS} />);
+		expect(screen.getByText("Arsene")).toBeTruthy();
+		await fireEvent.press(screen.getByRole("tab", { name: KING_GUARDS_VIEW }));
+		expect(screen.queryByText("Arsene")).toBeNull();
+		expect(within(screen.getByTestId("king-guard-record")).getByText(/app:arena.kingGuards.beaten.*"level":37/)).toBeTruthy();
+	});
+	it("tells the record above the player's level, the rank among the challengers and the tally", async () => {
+		await render(<FightHistoryContent history={[]} kingGuardStats={{
+			...KING_GUARD_STATS, leaderboard: []
+		}} />);
+		await fireEvent.press(screen.getByRole("tab", { name: KING_GUARDS_VIEW }));
+		expect(screen.getByText(/app:arena.kingGuards.aboveLevel.*"count":7/)).toBeTruthy();
+		expect(screen.getByText(/app:arena.kingGuards.rankOf.*"rank":"12","challengers":"80"/)).toBeTruthy();
+		expect(screen.getByText("app:arena.kingGuards.recordsBroken")).toBeTruthy();
+		expect(screen.getByText("3")).toBeTruthy();
+		for (const [caption, value] of [
+			["won", "4"],
+			["lost", "2"],
+			["draw", "1"]
+		]) {
+			expect(screen.getByText(`app:arena.kingGuards.${caption}`)).toBeTruthy();
+			expect(screen.getByText(value)).toBeTruthy();
+		}
+	});
+	it("says no guard was beaten yet, without a rank to show", async () => {
+		const {
+			record: _record, ...withoutRecord
+		} = KING_GUARD_STATS;
+		await render(<FightHistoryContent history={[]} kingGuardStats={withoutRecord} />);
+		await fireEvent.press(screen.getByRole("tab", { name: KING_GUARDS_VIEW }));
+		expect(within(screen.getByTestId("king-guard-record")).getByText("app:arena.kingGuards.noRecord")).toBeTruthy();
+		expect(screen.queryByText(/app:arena.kingGuards.rankOf/)).toBeNull();
+	});
+	it("ranks the roll of honour and opens a challenger's profile, the player's own row on their own tab", async () => {
+		await render(<FightHistoryContent history={[]} kingGuardStats={KING_GUARD_STATS} />);
+		await fireEvent.press(screen.getByRole("tab", { name: KING_GUARDS_VIEW }));
+		expect(screen.getByText("app:arena.kingGuards.roll")).toBeTruthy();
+		const [champion, own] = screen.getAllByLabelText("app:arena.rankings.openProfile");
+		expect(within(champion).getByText("Champion")).toBeTruthy();
+		expect(within(own).getByText("app:arena.you")).toBeTruthy();
+		await fireEvent.press(champion);
+		expect(mockPush).toHaveBeenCalledWith(expect.objectContaining({ params: expect.objectContaining({ ref: "ref-champion" }) }));
+		await fireEvent.press(own);
+		expect(mockNavigate).toHaveBeenCalledWith("/profile");
 	});
 	it("selects another league without claiming a reward until explicitly requested", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({

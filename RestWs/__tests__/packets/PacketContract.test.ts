@@ -129,6 +129,8 @@ describe("packet contracts", () => {
 			defenseNoChoice: true,
 			defenseCancel: true,
 			defenseRecord: true,
+			kingGuardFightStats: true,
+			kingGuardPersonalRecord: true,
 			drinkRequest: true,
 			inventoryRequest: true,
 			petRequest: true,

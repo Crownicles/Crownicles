@@ -9,7 +9,7 @@ import {
 	useOpenGuild, useOpenPlayer
 } from "@/src/navigation/OtherProfiles";
 import {
-	TopDataType, TopTiming, RankingEntry
+	KingGuardChallenger, TopDataType, TopTiming, RankingEntry
 } from "ws-packets/src/objects/Rankings";
 import { TopRes } from "ws-packets/src/fromServer/fight/RankingsRes";
 import {
@@ -163,10 +163,22 @@ type RankingNavigation = {
 	router: ReturnType<typeof useRouter>; openPlayer: (playerRef: string) => void; openGuild: (name: string) => void;
 };
 
-/** Where a row leads: one's own row goes to one's own tab, with everything only they can do there. */
-function rankingLink(entry: RankingEntry, dataType: TopDataType, {
-	router, openPlayer, openGuild
-}: RankingNavigation): RankingLink | undefined {
+/** A ranked player, named by an opaque handle on their account. */
+type RankedPlayer = {
+	name?: string; playerRef: string; sameContext: boolean;
+};
+
+/** Where a player's row leads: one's own row goes to one's own tab, with everything only they can do there. */
+function playerLink(player: RankedPlayer, {
+	router, openPlayer
+}: RankingNavigation): RankingLink {
+	return {
+		label: i18n.t("app:arena.rankings.openProfile", { name: player.name || i18n.t("error:unknownPlayer") }),
+		open: (): void => player.sameContext ? router.navigate("/profile") : openPlayer(player.playerRef)
+	};
+}
+
+function rankingLink(entry: RankingEntry, dataType: TopDataType, navigation: RankingNavigation): RankingLink | undefined {
 	if (dataType === TopDataType.GUILD) {
 		if (!entry.name) {
 			return undefined;
@@ -174,17 +186,67 @@ function rankingLink(entry: RankingEntry, dataType: TopDataType, {
 		const name = entry.name;
 		return {
 			label: i18n.t("app:arena.rankings.openGuild", { name }),
-			open: (): void => entry.sameContext ? router.navigate("/guild") : openGuild(name)
+			open: (): void => entry.sameContext ? navigation.router.navigate("/guild") : navigation.openGuild(name)
 		};
 	}
 	const { playerRef } = entry;
-	if (!playerRef) {
-		return undefined;
-	}
+	return playerRef
+		? playerLink({
+			...entry, playerRef
+		}, navigation)
+		: undefined;
+}
+
+function useRankingNavigation(): RankingNavigation {
 	return {
-		label: i18n.t("app:arena.rankings.openProfile", { name: entry.name || i18n.t("error:unknownPlayer") }),
-		open: (): void => entry.sameContext ? router.navigate("/profile") : openPlayer(playerRef)
+		router: useRouter(), openPlayer: useOpenPlayer(), openGuild: useOpenGuild()
 	};
+}
+
+/** A line of a board: its rank, who holds it and what they are worth there; one's own line stands out. */
+type RankedLine = {
+	rank: number;
+	name: string;
+	sameContext: boolean;
+	value: string;
+	unit?: string;
+	meta?: ReactNode;
+	link?: RankingLink;
+};
+
+function RankedRow({ line }: { line: RankedLine }): ReactNode {
+	const styles = useStyles();
+	const podium = line.rank <= PODIUM_LAST_RANK;
+	const row = <>
+		<View style={[styles.rankBadge, podium && styles.rankBadgePodium]}>
+			<Text style={[styles.rank, podium && styles.rankPodium]} numberOfLines={1}>{formatNumber(line.rank)}</Text>
+		</View>
+		<View style={styles.body}>
+			<Text style={styles.name} numberOfLines={1}>{line.name}</Text>
+			{line.meta}
+		</View>
+		<View style={styles.end}>
+			<View style={styles.value}>
+				<Text style={styles.valueText} numberOfLines={1}>{line.value}</Text>
+				{line.unit ? <UnitIcon unit={line.unit} size={12} /> : null}
+			</View>
+			{line.sameContext ? <Text style={styles.self}>{i18n.t("app:arena.you")}</Text> : null}
+		</View>
+	</>;
+	const { link } = line;
+	if (!link) {
+		return <View style={[styles.entry, line.sameContext && styles.entrySelf]}>{row}</View>;
+	}
+	return <Pressable
+		accessibilityRole="button"
+		accessibilityLabel={link.label}
+		onPress={link.open}
+		style={({ pressed }): StyleProp<ViewStyle> => [
+			styles.entry,
+			line.sameContext && styles.entrySelf,
+			pressed && styles.pressed
+		]}
+	>{row}</Pressable>;
 }
 
 function RankingRow({
@@ -193,45 +255,35 @@ function RankingRow({
 	entry: RankingEntry; dataType: TopDataType;
 }): ReactNode {
 	const styles = useStyles();
-	const router = useRouter();
-	const openPlayer = useOpenPlayer();
-	const openGuild = useOpenGuild();
-	const podium = entry.rank <= PODIUM_LAST_RANK;
-	const link = rankingLink(entry, dataType, {
-		router, openPlayer, openGuild
-	});
-	const row = <>
-		<View style={[styles.rankBadge, podium && styles.rankBadgePodium]}>
-			<Text style={[styles.rank, podium && styles.rankPodium]} numberOfLines={1}>{formatNumber(entry.rank)}</Text>
-		</View>
-		<View style={styles.body}>
-			<Text style={styles.name} numberOfLines={1}>{entry.name || i18n.t("error:unknownPlayer")}</Text>
-			<View style={styles.meta}>
-				{entryIcons(entry).map(icon => <TwemojiIcon key={icon} emoji={icon} size={12} />)}
-				<Text style={styles.metaText} numberOfLines={1}>{entryMeta(entry)}</Text>
-			</View>
-		</View>
-		<View style={styles.end}>
-			<View style={styles.value}>
-				<Text style={styles.valueText} numberOfLines={1}>{formatNumber(entry.value)}</Text>
-				<UnitIcon unit={RANKING_UNITS[dataType]} size={12} />
-			</View>
-			{entry.sameContext ? <Text style={styles.self}>{i18n.t("app:arena.you")}</Text> : null}
-		</View>
-	</>;
-	if (!link) {
-		return <View style={[styles.entry, entry.sameContext && styles.entrySelf]}>{row}</View>;
-	}
-	return <Pressable
-		accessibilityRole="button"
-		accessibilityLabel={link.label}
-		onPress={link.open}
-		style={({ pressed }): StyleProp<ViewStyle> => [
-			styles.entry,
-			entry.sameContext && styles.entrySelf,
-			pressed && styles.pressed
-		]}
-	>{row}</Pressable>;
+	const link = rankingLink(entry, dataType, useRankingNavigation());
+	return <RankedRow line={{
+		rank: entry.rank,
+		name: entry.name || i18n.t("error:unknownPlayer"),
+		sameContext: entry.sameContext,
+		value: formatNumber(entry.value),
+		unit: RANKING_UNITS[dataType],
+		meta: <View style={styles.meta}>
+			{entryIcons(entry).map(icon => <TwemojiIcon key={icon} emoji={icon} size={12} />)}
+			<Text style={styles.metaText} numberOfLines={1}>{entryMeta(entry)}</Text>
+		</View>,
+		...link ? { link } : {}
+	}} />;
+}
+
+/** The roll of honour of the king guards, in the hand of the other boards: the strongest guard each player beat. */
+export function KingGuardRollRow({
+	challenger, rank
+}: {
+	challenger: KingGuardChallenger; rank: number;
+}): ReactNode {
+	const link = playerLink(challenger, useRankingNavigation());
+	return <RankedRow line={{
+		rank,
+		name: challenger.name || i18n.t("error:unknownPlayer"),
+		sameContext: challenger.sameContext,
+		value: i18n.t("app:battle.level", { level: challenger.level }),
+		link
+	}} />;
 }
 
 function PageArrow({

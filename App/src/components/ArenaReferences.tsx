@@ -13,7 +13,8 @@ import {
 } from "ws-packets/src/fromServer/fight/RankingsRes";
 import { PlayerNotFound } from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {
-	EloGameResult, FIGHT_HISTORY_ENTRY_TYPES, FightHistoryEntry, KingGuardFightHistoryEntry, LeagueInfo, LeagueRewardAvailability, PlayerFightHistoryEntry
+	EloGameResult, FIGHT_HISTORY_ENTRY_TYPES, FightHistoryEntry, KingGuardChallenger, KingGuardFightHistoryEntry, KingGuardFightStats, LeagueInfo, LeagueRewardAvailability,
+	PlayerFightHistoryEntry
 } from "ws-packets/src/objects/Rankings";
 import {
 	CommandMenu, useCommandMenus
@@ -29,8 +30,10 @@ import {
 	Note, SectionHeader
 } from "@/src/design/Primitives";
 import {
-	ActionBanner, ExpandableEntry, ExpandableList, Lock, useSectionStyles, Standing
+	ActionBanner, ExpandableEntry, ExpandableList, Figures, Lock, useSectionStyles, Standing
 } from "@/src/design/Sections";
+import { SegmentedControl } from "@/src/design/SegmentedControl";
+import { KingGuardRollRow } from "@/src/components/Rankings";
 import {
 	ChevronRight, Clock3, Medal, Shield, Swords, Trophy
 } from "@/src/design/FightIcons";
@@ -234,7 +237,7 @@ function groupHistoryByMonth(history: FightHistoryEntry[]): {
 	}));
 }
 
-export function FightHistoryContent({ history }: { history: FightHistoryEntry[] }): ReactNode {
+function FightHistoryList({ history }: { history: FightHistoryEntry[] }): ReactNode {
 	if (!history.length) {
 		return <Note>{i18n.t("app:arena.history.empty")}</Note>;
 	}
@@ -244,9 +247,103 @@ export function FightHistoryContent({ history }: { history: FightHistoryEntry[] 
 	</View>)}</>;
 }
 
+function KingGuardRecordStanding({ stats }: { stats: KingGuardFightStats }): ReactNode {
+	const icon = AppIcons.getIconOrNull("fightCommand.crossedSwords");
+	const { record } = stats;
+	const levelsAbove = record ? record.level - stats.playerLevel : 0;
+	return <Standing
+		testID="king-guard-record"
+		{...icon ? { emblem: <TwemojiIcon emoji={icon} size={40} /> } : {}}
+		caption={i18n.t("app:arena.kingGuards.record")}
+		title={record ? i18n.t("app:arena.kingGuards.beaten", { level: record.level }) : i18n.t("app:arena.kingGuards.noRecord")}
+		{...levelsAbove > 0 ? { subtitle: i18n.t("app:arena.kingGuards.aboveLevel", { count: levelsAbove }) } : {}}
+	/>;
+}
+
+/** The roll of honour lists the strongest; the player's own rank among all of them is in the figures above. */
+function KingGuardRoll({ leaderboard }: { leaderboard: KingGuardChallenger[] }): ReactNode {
+	if (!leaderboard.length) {
+		return null;
+	}
+	return <>
+		<SectionHeader action={{ hint: i18n.t("app:arena.kingGuards.rollHint") }}>{i18n.t("app:arena.kingGuards.roll")}</SectionHeader>
+		<ExpandableList>{leaderboard.map((challenger, index) => <KingGuardRollRow key={challenger.playerRef} challenger={challenger} rank={index + 1} />)}</ExpandableList>
+	</>;
+}
+
+/** The fights against the king guards, summed up: the player's record and rank, the tally, and who beat the strongest. */
+export function KingGuardStatsContent({ stats }: { stats: KingGuardFightStats }): ReactNode {
+	const { record } = stats;
+	return <>
+		<KingGuardRecordStanding stats={stats} />
+		{record
+			? <Figures items={[
+				{
+					caption: i18n.t("app:arena.rankings.positions"),
+					value: i18n.t("app:arena.kingGuards.rankOf", {
+						rank: formatNumber(record.rank), challengers: formatNumber(record.challengers)
+					})
+				},
+				{
+					caption: i18n.t("app:arena.kingGuards.recordsBroken"), value: formatNumber(record.recordsBroken)
+				}
+			]} />
+			: null}
+		<SectionHeader>{i18n.t("app:arena.kingGuards.tally")}</SectionHeader>
+		<Figures items={[
+			{
+				caption: i18n.t("app:arena.kingGuards.won"), value: formatNumber(stats.won)
+			},
+			{
+				caption: i18n.t("app:arena.kingGuards.lost"), value: formatNumber(stats.lost)
+			},
+			{
+				caption: i18n.t("app:arena.kingGuards.draw"), value: formatNumber(stats.draw)
+			}
+		]} />
+		<KingGuardRoll leaderboard={stats.leaderboard} />
+	</>;
+}
+
+const HISTORY_VIEWS = {
+	FIGHTS: "fights", KING_GUARDS: "kingGuards"
+} as const;
+type HistoryView = typeof HISTORY_VIEWS[keyof typeof HISTORY_VIEWS];
+
+/** A player who fought a king guard can switch from the fights to their summary against the guards, as the boards switch in the rankings. */
+export function FightHistoryContent({
+	history, kingGuardStats
+}: {
+	history: FightHistoryEntry[]; kingGuardStats?: KingGuardFightStats;
+}): ReactNode {
+	const [view, setView] = useState<HistoryView>(HISTORY_VIEWS.FIGHTS);
+	if (!kingGuardStats) {
+		return <FightHistoryList history={history} />;
+	}
+	return <>
+		<SegmentedControl
+			label={i18n.t("app:arena.pages.history")}
+			value={view}
+			onChange={setView}
+			options={[
+				{
+					value: HISTORY_VIEWS.FIGHTS, label: i18n.t("app:arena.history.fights"), icon: AppIcons.getIcon("fightHistory.menu")
+				},
+				{
+					value: HISTORY_VIEWS.KING_GUARDS, label: i18n.t("commands:fightHistory.kingGuardStats.openButton"), icon: AppIcons.getIcon("fightCommand.crossedSwords")
+				}
+			]}
+		/>
+		{view === HISTORY_VIEWS.FIGHTS ? <FightHistoryList history={history} /> : <KingGuardStatsContent stats={kingGuardStats} />}
+	</>;
+}
+
 export function FightHistory(): ReactNode {
 	const state = useGameQuery(GAME_ENTITIES.FIGHT_HISTORY, () => GameClient.request(makeFromClientPacket(FightHistoryReq, {}), FightHistoryRes));
-	return <GameQueryContent state={state} entity={GAME_ENTITIES.FIGHT_HISTORY}>{packet => <FightHistoryContent history={packet.history} />}</GameQueryContent>;
+	return <GameQueryContent state={state} entity={GAME_ENTITIES.FIGHT_HISTORY}>{packet => <FightHistoryContent
+		history={packet.history}
+		{...packet.kingGuardStats ? { kingGuardStats: packet.kingGuardStats } : {}}
+	/>}</GameQueryContent>;
 }
 
 function LeagueEmblem({

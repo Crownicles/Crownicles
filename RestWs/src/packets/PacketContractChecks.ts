@@ -151,6 +151,12 @@ import {
 	DefenseCancelRes, DefenseNoChoiceRes, DefenseRes
 } from "../../../WsPackets/src/fromServer/defense/DefenseRes";
 import { DefenseRecord } from "../../../WsPackets/src/objects/DefenseRecord";
+import {
+	KingGuardFightStats as LibKingGuardFightStats, KingGuardPersonalRecord as LibKingGuardPersonalRecord
+} from "../../../Lib/src/types/KingGuardFightStats";
+import {
+	KingGuardFightStats, KingGuardPersonalRecord
+} from "../../../WsPackets/src/objects/Rankings";
 
 type WireShape<Value> =
 	[Value] extends [number] ? "number"
@@ -343,6 +349,10 @@ type DefenseNoChoiceContract = Assert<IsEqual<WireShape<CommandDefenseNoChoicePa
 type DefenseCancelContract = Assert<IsEqual<WireShape<CommandDefenseCancelPacketRes>, WireShape<WirePacketFields<DefenseCancelRes>>>>;
 type DefenseRecordContract = Assert<IsEqual<WireShape<DefenseRecordByAttackerClass>, WireShape<DefenseRecord>>>;
 
+// The roll of honour names players by an opaque handle instead of their account: only its other fields keep Core's shape
+type KingGuardFightStatsContract = Assert<IsEqual<WireShape<Omit<LibKingGuardFightStats, "leaderboard">>, WireShape<Omit<KingGuardFightStats, "leaderboard">>>>;
+type KingGuardPersonalRecordContract = Assert<IsEqual<WireShape<LibKingGuardPersonalRecord>, WireShape<KingGuardPersonalRecord>>>;
+
 export const packetContractChecks: {
 	classesInfo: ClassesInfoContract;
 	availableClass: AvailableClassContract;
@@ -358,6 +368,8 @@ export const packetContractChecks: {
 	defenseNoChoice: DefenseNoChoiceContract;
 	defenseCancel: DefenseCancelContract;
 	defenseRecord: DefenseRecordContract;
+	kingGuardFightStats: KingGuardFightStatsContract;
+	kingGuardPersonalRecord: KingGuardPersonalRecordContract;
 	drinkRequest: DrinkRequestContract;
 	inventoryRequest: InventoryRequestContract;
 	petRequest: PetRequestContract;
@@ -425,6 +437,8 @@ export const packetContractChecks: {
 	defenseNoChoice: true,
 	defenseCancel: true,
 	defenseRecord: true,
+	kingGuardFightStats: true,
+	kingGuardPersonalRecord: true,
 	drinkRequest: true,
 	inventoryRequest: true,
 	petRequest: true,
