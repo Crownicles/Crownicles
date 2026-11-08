@@ -113,36 +113,62 @@ function specialtyChoiceLock(menu: CookingMenu): Lock | undefined {
 		: undefined;
 }
 
-/**
- * What else a recipe of a rotating station offers: keeping it in sight, or making it a specialty. A time potion
- * out of reach until next week is not worth pinning.
- */
-function RecipeOptions({
-	slot, recipe, menu, actions, onToggle
-}: {
-	slot: CookingSlot; recipe: SlotRecipe; menu: CookingMenu; actions: CookingSubmit; onToggle: () => void;
+type RecipeOption = {
+	slot: CookingSlot; recipe: SlotRecipe; actions: CookingSubmit;
+};
+
+/** A time potion out of reach until next week is not worth pinning. */
+function isPinnable(recipe: SlotRecipe): boolean {
+	return recipe.timePotionsLeftThisWeek !== 0;
+}
+
+/** A secret recipe and the specialty station offer nothing more, nor a recipe that can neither be pinned nor kept as a specialty. */
+function offersOptions({
+	slot, recipe
+}: RecipeOption, menu: CookingMenu): boolean {
+	if (recipe.isSecret || isSpecialtyStation(slot, menu)) {
+		return false;
+	}
+	return isPinnable(recipe) || menu.rules.specialtyLimit > 0;
+}
+
+function PinButton({
+	recipe, actions
+}: RecipeOption): ReactNode {
+	return <Button disabled={actions.pending} onPress={(): Promise<void> => actions.submit(makeFromClientPacket(CookingPinReq, {
+		recipeId: recipe.id, fromIgnitedView: true
+	}))}>{i18n.t("app:cooking.pin")}</Button>;
+}
+
+function SpecialtyButton({
+	slot, recipe, actions, lock, onToggle
+}: RecipeOption & {
+	lock: Lock | undefined; onToggle: () => void;
 }): ReactNode {
-	const pinnable = recipe.timePotionsLeftThisWeek !== 0;
-	const specialtiesUnlocked = menu.rules.specialtyLimit > 0;
-	if (recipe.isSecret || isSpecialtyStation(slot, menu) || !pinnable && !specialtiesUnlocked) {
+	return <Button disabled={actions.pending || lock !== undefined} onPress={(): void => {
+		onToggle();
+		actions.submit(makeFromClientPacket(CookingSetSpecialtyReq, {
+			slotIndex: slot.slotIndex, recipeId: recipe.id
+		})).catch(console.error);
+	}}>{i18n.t("app:cooking.specialties.add")}</Button>;
+}
+
+/** What else a recipe of a rotating station offers: keeping it in sight, or making it a specialty once they are unlocked. */
+function RecipeOptions({
+	menu, onToggle, ...option
+}: RecipeOption & {
+	menu: CookingMenu; onToggle: () => void;
+}): ReactNode {
+	if (!offersOptions(option, menu)) {
 		return null;
 	}
+	const pinnable = isPinnable(option.recipe);
+	const specialtiesUnlocked = menu.rules.specialtyLimit > 0;
 	const specialtyLock = specialtiesUnlocked ? specialtyChoiceLock(menu) : undefined;
 	return <>
 		<ButtonRow>
-			{pinnable
-				? <Button disabled={actions.pending} onPress={(): Promise<void> => actions.submit(makeFromClientPacket(CookingPinReq, {
-					recipeId: recipe.id, fromIgnitedView: true
-				}))}>{i18n.t("app:cooking.pin")}</Button>
-				: null}
-			{specialtiesUnlocked
-				? <Button disabled={actions.pending || specialtyLock !== undefined} onPress={(): void => {
-					onToggle();
-					actions.submit(makeFromClientPacket(CookingSetSpecialtyReq, {
-						slotIndex: slot.slotIndex, recipeId: recipe.id
-					})).catch(console.error);
-				}}>{i18n.t("app:cooking.specialties.add")}</Button>
-				: null}
+			{pinnable ? <PinButton {...option} /> : null}
+			{specialtiesUnlocked ? <SpecialtyButton {...option} lock={specialtyLock} onToggle={onToggle} /> : null}
 		</ButtonRow>
 		{specialtyLock ? <LockHint lock={specialtyLock} /> : null}
 	</>;

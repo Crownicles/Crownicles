@@ -9,7 +9,7 @@ import {
 } from "@/src/design/FightIcons";
 import { ReactionCollectorCreation } from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
-	FIGHT_DATA_KINDS, FIGHT_REACTION_KINDS, GENERIC_REACTION_KINDS
+	FIGHT_DATA_KINDS, FIGHT_REACTION_KINDS, GENERIC_REACTION_KINDS, ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
 import {
 	Button, ButtonRow, Note
@@ -223,6 +223,37 @@ function ActionGrid({
 	</>;
 }
 
+/** The power of an action whose damage changes during the fight, as the server sends it with its choice. */
+function powerOf(reaction: ReactionCollectorReaction | undefined): Pick<ActionOption, "powerMultiplier"> {
+	return reaction?.type === FIGHT_REACTION_KINDS.ACTION && reaction.data.powerMultiplier !== undefined
+		? { powerMultiplier: reaction.data.powerMultiplier }
+		: {};
+}
+
+/**
+ * Every action of the fighter keeps the place the introduction gave it, enabled when the server offers it this turn;
+ * a choice the introduction did not list comes after, so no reaction index is ever lost.
+ */
+function actionOptions(collector: ReactionCollectorCreation, actions: [string, number][]): ActionOption[] {
+	const options: ActionOption[] = actions.map(([id, cost]) => {
+		const index = collector.reactions.findIndex(reaction => reaction.type === FIGHT_REACTION_KINDS.ACTION && reaction.data.id === id);
+		return {
+			id, cost, index, ...powerOf(collector.reactions[index])
+		};
+	});
+	collector.reactions.forEach((reaction, index) => {
+		if (reaction.type !== FIGHT_REACTION_KINDS.ACTION) {
+			options.push({ index });
+		}
+		else if (!actions.some(([id]) => id === reaction.data.id)) {
+			options.push({
+				id: reaction.data.id, index, ...powerOf(reaction)
+			});
+		}
+	});
+	return options;
+}
+
 export function FightActions({
 	collector, onChoose, submitting
 }: CollectorProps): ReactNode {
@@ -232,28 +263,10 @@ export function FightActions({
 		answer, locked, secondsLeft
 	} = useCollectorAnswer(collector, onChoose, submitting);
 	const { introduction } = useFight();
-	const actions = introduction?.initiatorActions ?? [];
-	const options: ActionOption[] = actions.map(([id, cost]) => {
-		const index = collector.reactions.findIndex(reaction => reaction.type === FIGHT_REACTION_KINDS.ACTION && reaction.data.id === id);
-		const reaction = collector.reactions[index];
-		const powerMultiplier = reaction?.type === FIGHT_REACTION_KINDS.ACTION ? reaction.data.powerMultiplier : undefined;
-		return {
-			id, cost, index, ...powerMultiplier === undefined ? {} : { powerMultiplier }
-		};
-	});
-	collector.reactions.forEach((reaction, index) => {
-		if (reaction.type !== FIGHT_REACTION_KINDS.ACTION) {
-			options.push({ index });
-		}
-		else if (!actions.some(([id]) => id === reaction.data.id)) {
-			options.push({
-				id: reaction.data.id, index, ...reaction.data.powerMultiplier === undefined ? {} : { powerMultiplier: reaction.data.powerMultiplier }
-			});
-		}
-	});
+	const urgent = secondsLeft <= URGENT_REMAINING_SECONDS;
 	return <>
-		<View style={styles.header}><Text style={styles.heading}>{i18n.t(locked ? "app:battle.actions" : "app:battle.chooseAction")}</Text><View style={styles.timer}><Clock3 size={13} color={secondsLeft <= URGENT_REMAINING_SECONDS ? colors.red : colors.muted} /><Text style={[styles.timerText, secondsLeft <= URGENT_REMAINING_SECONDS && styles.urgent]}>{i18n.t("app:battle.seconds", { seconds: secondsLeft })}</Text></View></View>
-		<ActionGrid options={options} locked={locked} onChoose={answer} />
+		<View style={styles.header}><Text style={styles.heading}>{i18n.t(locked ? "app:battle.actions" : "app:battle.chooseAction")}</Text><View style={styles.timer}><Clock3 size={13} color={urgent ? colors.red : colors.muted} /><Text style={[styles.timerText, urgent && styles.urgent]}>{i18n.t("app:battle.seconds", { seconds: secondsLeft })}</Text></View></View>
+		<ActionGrid options={actionOptions(collector, introduction?.initiatorActions ?? [])} locked={locked} onChoose={answer} />
 	</>;
 }
 

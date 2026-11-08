@@ -24,9 +24,11 @@ export function KingChallengeToast(): ReactNode {
 	const router = useRouter();
 	const reached = useKingChallengeTierReached();
 	const myTurn = useAnnouncementTurn();
-	const levelUp = useLevelUp();
-	const cityStay = useCityStayScore();
-	if (!reached || !myTurn || levelUp || cityStay) {
+	const gainsToldFirst = [useLevelUp(), useCityStayScore()].some(Boolean);
+	if (!reached || !myTurn) {
+		return null;
+	}
+	if (gainsToldFirst) {
 		return null;
 	}
 	const rules = gameRules().kingChallenge;

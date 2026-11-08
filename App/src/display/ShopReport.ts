@@ -122,33 +122,33 @@ function isFixedReport(outcome: ReportedOutcome): outcome is Extract<ReportedOut
 }
 
 /** Tells, word for word like Discord does, what the commerce just answered. The market report has its own screen. */
+type DetailedReportKind = Exclude<ReportedOutcome["kind"], keyof typeof FIXED_REPORTS>;
+type OutcomeOf<Kind extends ReportedOutcome["kind"]> = Extract<ReportedOutcome, { kind: Kind }>;
+
+/** The answers whose sentence carries what the server granted or refused. */
+const DETAILED_REPORTS: { [Kind in DetailedReportKind]: (outcome: OutcomeOf<Kind>, now: number) => string } = {
+	purchase: purchaseReport,
+	noPlantSlot: outcome => i18n.t(outcome.reason ? `commands:shop.noPlantSpace.${outcome.reason}` : "commands:shop.noPlantSlotAvailable"),
+	notEnoughCurrency: outcome => i18n.t("commands:shop.notEnoughMoney", {
+		missingCurrency: outcome.missingCurrency, currency: outcome.currency
+	}),
+	money: outcome => i18n.t("commands:shop.shopItems.money.giveDescription", { amount: outcome.amount }),
+	kingsFavor: outcome => i18n.t("commands:shop.shopItems.kingsFavor.giveDescription", { thousandPoints: outcome.thousandPoints }),
+	missionSkipped: (outcome, now) => joinLines([
+		i18n.t("commands:shop.shopItems.skipMission.successDescription", { mission: missionDescription(outcome.oldMission, now) }),
+		i18n.t("commands:shop.shopItems.skipMission.getNewMission", { mission: missionDescription(outcome.newMission, now) })
+	]),
+	badge: outcome => i18n.t("commands:shop.badgeBought", { badgeName: outcome.badgeId })
+};
+
 export function shopOutcomeReport(outcome: ReportedOutcome, now: number): string {
 	if (isFixedReport(outcome)) {
 		return i18n.t(FIXED_REPORTS[outcome.kind]);
 	}
-	switch (outcome.kind) {
-		case "purchase":
-			return purchaseReport(outcome);
-		case "noPlantSlot":
-			return i18n.t(outcome.reason ? `commands:shop.noPlantSpace.${outcome.reason}` : "commands:shop.noPlantSlotAvailable");
-		case "notEnoughCurrency":
-			return i18n.t("commands:shop.notEnoughMoney", {
-				missingCurrency: outcome.missingCurrency, currency: outcome.currency
-			});
-		case "money":
-			return i18n.t("commands:shop.shopItems.money.giveDescription", { amount: outcome.amount });
-		case "kingsFavor":
-			return i18n.t("commands:shop.shopItems.kingsFavor.giveDescription", { thousandPoints: outcome.thousandPoints });
-		case "missionSkipped":
-			return joinLines([
-				i18n.t("commands:shop.shopItems.skipMission.successDescription", { mission: missionDescription(outcome.oldMission, now) }),
-				i18n.t("commands:shop.shopItems.skipMission.getNewMission", { mission: missionDescription(outcome.newMission, now) })
-			]);
-		case "badge":
-			return i18n.t("commands:shop.badgeBought", { badgeName: outcome.badgeId });
-		default:
-			return "";
-	}
+
+	// TypeScript cannot tie the handler picked by the kind to that same member of the union, which the map guarantees
+	const report = DETAILED_REPORTS[outcome.kind] as (detailed: typeof outcome, at: number) => string;
+	return report(outcome, now);
 }
 
 /** Whether the answer is a refusal, which the screen says in a colder tone. */

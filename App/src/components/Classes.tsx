@@ -296,6 +296,46 @@ function criterionOf(field: string): ClassStatField {
 	return CLASS_STAT_FIELDS.find(stat => stat.field === field) ?? CLASS_STAT_FIELDS[0];
 }
 
+type ClassRanking = {
+	current?: ClassDetails; comparison: Comparison; ranked: ClassDetails[];
+};
+
+/** A class left in a lower tier cannot be chosen again, but it stays the measure of every other one. */
+function rankClasses(classes: ClassDetails[], outsideTier: ClassDetails | undefined, currentClass: number | undefined, criterion: ClassStatField): ClassRanking {
+	const compared = outsideTier ? [...classes, outsideTier] : classes;
+	const current = compared.find(entry => entry.id === currentClass);
+	return {
+		...current ? { current } : {},
+		comparison: {
+			criterion, best: Math.max(...compared.map(entry => entry.stats[criterion.field])), ...current ? { reference: current } : {}
+		},
+		ranked: [...compared].sort((first, second) => second.stats[criterion.field] - first.stats[criterion.field])
+	};
+}
+
+function criterionLabel(stat: ClassStatField): string {
+	return i18n.t(`app:profile.fields.${stat.unit}`);
+}
+
+function CriterionPicker({
+	criterion, onChange
+}: {
+	criterion: ClassStatField; onChange: (criterion: ClassStatField) => void;
+}): ReactNode {
+	return <SegmentedControl
+		iconsOnly
+		label={i18n.t("app:classes.comparison")}
+		value={criterion.field}
+		onChange={(field): void => onChange(criterionOf(field))}
+		options={CLASS_STAT_FIELDS.map(stat => {
+			const icon = AppIcons.getIconOrNull(`unitValues.${stat.unit}`);
+			return {
+				value: stat.field, label: criterionLabel(stat), ...icon ? { icon } : {}
+			};
+		})}
+	/>;
+}
+
 /**
  * Ranks the classes on one figure at a time, so the player sees at a glance which one is best at what.
  * The defense style sits under the player's class, which decides the styles it can pick.
@@ -310,32 +350,16 @@ export function ClassesContent({
 	if (classes.length === 0) {
 		return <EmptyState>{i18n.t("app:classes.empty")}</EmptyState>;
 	}
-
-	// A class left in a lower tier cannot be chosen again, but it stays the measure of every other one.
-	const compared = outsideTier ? [...classes, outsideTier] : classes;
-	const current = compared.find(entry => entry.id === currentClass);
-	const comparison: Comparison = {
-		criterion, best: Math.max(...compared.map(entry => entry.stats[criterion.field])), ...current ? { reference: current } : {}
-	};
-	const ranked = [...compared].sort((first, second) => second.stats[criterion.field] - first.stats[criterion.field]);
-	const criterionLabel = (stat: ClassStatField): string => i18n.t(`app:profile.fields.${stat.unit}`);
+	const {
+		current, comparison, ranked
+	} = rankClasses(classes, outsideTier, currentClass, criterion);
+	const opensScreen = currentClass === undefined && defense === undefined;
 	return <>
 		{currentClass === undefined ? null : <ClassStanding classId={currentClass} {...current ? { details: current } : {}} />}
 		{change ? <ChangeNotices change={change} /> : null}
 		{defense}
-		<SectionHeader first={currentClass === undefined && defense === undefined} action={{ hint: criterionLabel(criterion) }}>{i18n.t("app:classes.comparison")}</SectionHeader>
-		<SegmentedControl
-			iconsOnly
-			label={i18n.t("app:classes.comparison")}
-			value={criterion.field}
-			onChange={(field): void => setCriterion(criterionOf(field))}
-			options={CLASS_STAT_FIELDS.map(stat => {
-				const icon = AppIcons.getIconOrNull(`unitValues.${stat.unit}`);
-				return {
-					value: stat.field, label: criterionLabel(stat), ...icon ? { icon } : {}
-				};
-			})}
-		/>
+		<SectionHeader first={opensScreen} action={{ hint: criterionLabel(criterion) }}>{i18n.t("app:classes.comparison")}</SectionHeader>
+		<CriterionPicker criterion={criterion} onChange={setCriterion} />
 		<ExpandableList>{ranked.map(entry => <ClassChoice
 			key={entry.id}
 			details={entry}

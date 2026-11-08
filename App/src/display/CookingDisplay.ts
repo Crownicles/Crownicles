@@ -29,10 +29,10 @@ export function isSpecialtyStation(slot: CookingSlot, menu: CookingMenu): boolea
  */
 export function timePotionsNotice(recipe: SlotRecipe, menu: CookingMenu): string | undefined {
 	const left = recipe.timePotionsLeftThisWeek;
-	if (left === undefined || left === 0 || recipe.isSecret || left > menu.rules.timePotionsShownFrom) {
+	if (left === undefined || recipe.isSecret) {
 		return undefined;
 	}
-	return i18n.t("app:cooking.timePotionsLeft", { count: left });
+	return left > 0 && left <= menu.rules.timePotionsShownFrom ? i18n.t("app:cooking.timePotionsLeft", { count: left }) : undefined;
 }
 
 /** Which of the specialties the station offers this time, when there are several to cycle through. */
