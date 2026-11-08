@@ -476,8 +476,10 @@ const TRANSFER = Object.assign(new ReactionCollectorCreation(), {
 	]
 });
 
+type ShelterPet = typeof PET | typeof BOARDER;
+
 type ShelterState = {
-	ownPet: typeof PET | typeof BOARDER; boarders: (typeof PET | typeof BOARDER)[];
+	ownPet: ShelterPet; boarders: ShelterPet[];
 };
 
 function shelterAnswers(client: QueryClient, state: ShelterState): void {
