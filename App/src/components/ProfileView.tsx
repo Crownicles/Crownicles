@@ -16,6 +16,7 @@ import { formatNumber } from "@/src/display/Amounts";
 import { Theme } from "@/src/design/Theme";
 import { i18n } from "@/src/translations/i18n";
 import { formatDurationMinutes } from "@/src/display/ItemEffects";
+import { gameRules } from "@/src/rules/GameRules";
 import {
 	createStyles, useColors
 } from "@/src/design/ThemeContext";
@@ -259,6 +260,21 @@ function campaignSection(profile: ProfileRes): ProfileSection {
 	};
 }
 
+/** The tiers of the king's challenge crossed this week, out of every tier the week offers. */
+function kingChallengeSection(profile: ProfileRes): ProfileSection {
+	return {
+		id: "kingChallenge",
+		icon: "kingChallenge.icon",
+		label: i18n.t("commands:missions.kingChallenge.button"),
+		content: <SectionGauge
+			label={i18n.t("app:kingChallenge.profileTiers")}
+			value={profile.kingChallengeTier}
+			max={gameRules().kingChallenge.tierRewards.length}
+			emojiPath="kingChallenge.icon"
+		/>
+	};
+}
+
 function cookingSection(profile: ProfileRes): ProfileSection | null {
 	if (!profile.cooking) {
 		return null;
@@ -300,6 +316,7 @@ function ProfileSections({
 		statisticsSection(profile),
 		rankingSection(profile),
 		campaignSection(profile),
+		kingChallengeSection(profile),
 		cookingSection(profile)
 	]
 		.filter((section): section is ProfileSection => section !== null);

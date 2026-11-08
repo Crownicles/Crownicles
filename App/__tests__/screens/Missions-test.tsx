@@ -14,15 +14,23 @@ import {
 } from "@/src/components/Missions";
 import { missionDescription } from "@/src/display/Missions";
 import { GameClient } from "@/src/networking/GameClient";
+import { useLocalSearchParams } from "expo-router";
 import {
 	GAME_ENTITIES, gameKey
 } from "@/src/store/GameEntities";
 
 jest.mock("@react-native-async-storage/async-storage", () => require("@react-native-async-storage/async-storage/jest/async-storage-mock"));
-jest.mock("expo-router", () => ({ useFocusEffect: jest.fn() }));
+const mockRouter = { setParams: jest.fn() };
+jest.mock("expo-router", () => ({
+	useFocusEffect: jest.fn(),
+	useLocalSearchParams: jest.fn(() => ({})),
+	useRouter: (): object => mockRouter
+}));
 jest.mock("@/src/networking/GameClient", () => ({ GameClient: { request: jest.fn() } }));
 jest.mock("@/src/store/AppState", () => require("@/src/testing/fakeAppState").fakeAppState.hooks);
-jest.mock("@/src/AppIcons", () => ({ AppIcons: { getIcon: (path: string): string => path } }));
+jest.mock("@/src/AppIcons", () => ({ AppIcons: {
+	getIcon: (path: string): string => path, getIconOrNull: (path: string): string => path
+} }));
 jest.mock("@/src/translations/i18n", () => ({ i18n: {
 	language: "fr",
 	t: (key: string | string[], options?: Record<string, unknown>): string => {
@@ -53,6 +61,18 @@ function mission(missionType: Mission["missionType"]): Mission {
 	};
 }
 
+const KING_CHALLENGE = {
+	weeklyScore: 2_500,
+	tier: 1,
+	thresholds: [
+		2_000,
+		3_100,
+		4_800,
+		39_400
+	],
+	nextResetDate: NOW + 3_600_000
+};
+
 function packet(): MissionsRes {
 	return Object.assign(new MissionsRes(), {
 		missions: [
@@ -69,8 +89,17 @@ function packet(): MissionsRes {
 	});
 }
 
+function testClient(): QueryClient {
+	return new QueryClient({ defaultOptions: { queries: {
+		retry: false, gcTime: Infinity
+	} } });
+}
+
 describe("missions screen", () => {
-	beforeEach(() => jest.clearAllMocks());
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.mocked(useLocalSearchParams).mockReturnValue({});
+	});
 
 	it("lists what is left to do apart from the daily mission the server calls done", async () => {
 		await render(<MissionsContent data={packet()} now={NOW} />);
@@ -151,6 +180,41 @@ describe("missions screen", () => {
 		expect(GameClient.request).toHaveBeenCalledWith(expect.any(MissionsReq), MissionsRes, expect.any(Array));
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toMatchObject({ askedPlayer: {} });
 		expect(invalidate).toHaveBeenCalledWith({ queryKey: gameKey(GAME_ENTITIES.PROFILE) });
+	});
+
+	it("puts the king's challenge on its own view next to the missions, as Discord's button does", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({
+			kind: "answer", packet: Object.assign(packet(), { kingChallenge: KING_CHALLENGE })
+		});
+		await render(<QueryClientProvider client={testClient()}><Missions /></QueryClientProvider>);
+		await waitFor(() => expect(screen.getByText("app:missions.todo")).toBeTruthy());
+		expect(screen.queryByText("app:kingChallenge.weeklyScore")).toBeNull();
+
+		await fireEvent.press(screen.getByText("commands:missions.kingChallenge.button"));
+		expect(screen.getByText("app:kingChallenge.weeklyScore")).toBeTruthy();
+		expect(screen.queryByText("app:missions.todo")).toBeNull();
+
+		await fireEvent.press(screen.getByText("app:profile.titles.missions"));
+		expect(screen.getByText("app:missions.todo")).toBeTruthy();
+	});
+
+	it("opens on the king's challenge when another screen asks for it, then forgets the request", async () => {
+		jest.mocked(useLocalSearchParams).mockReturnValue({ missionsView: "kingChallenge" });
+		jest.mocked(GameClient.request).mockResolvedValue({
+			kind: "answer", packet: Object.assign(packet(), { kingChallenge: KING_CHALLENGE })
+		});
+		await render(<QueryClientProvider client={testClient()}><Missions /></QueryClientProvider>);
+		await waitFor(() => expect(screen.getByText("app:kingChallenge.weeklyScore")).toBeTruthy());
+		expect(mockRouter.setParams).toHaveBeenCalledWith({ missionsView: undefined });
+	});
+
+	it("offers no king's challenge when the server does not send one", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({
+			kind: "answer", packet: packet()
+		});
+		await render(<QueryClientProvider client={testClient()}><Missions /></QueryClientProvider>);
+		await waitFor(() => expect(screen.getByText("app:missions.todo")).toBeTruthy());
+		expect(screen.queryByText("commands:missions.kingChallenge.button")).toBeNull();
 	});
 
 	it("allows retrying an unavailable server and then displays its response", async () => {

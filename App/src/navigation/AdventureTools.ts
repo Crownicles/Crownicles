@@ -12,3 +12,11 @@ export type AdventureToolName = typeof ADVENTURE_TOOL_NAMES[keyof typeof ADVENTU
 export const ADVENTURE_MISSIONS: Href = {
 	pathname: "/", params: { [ADVENTURE_TOOL_PARAM]: ADVENTURE_TOOL_NAMES.MISSIONS }
 };
+
+/** The search parameter through which another screen asks the missions to open on one of their views. */
+export const MISSIONS_VIEW_PARAM = "missionsView";
+
+export const MISSIONS_VIEWS = {
+	MISSIONS: "missions", KING_CHALLENGE: "kingChallenge"
+} as const;
+export type MissionsView = typeof MISSIONS_VIEWS[keyof typeof MISSIONS_VIEWS];

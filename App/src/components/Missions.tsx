@@ -3,6 +3,9 @@ import {
 } from "react";
 import { Text } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+	useLocalSearchParams, useRouter
+} from "expo-router";
 import { makeFromClientPacket } from "ws-packets/src/MakePackets";
 import { MissionsReq } from "ws-packets/src/fromClient/MissionsReq";
 import { MissionsRes } from "ws-packets/src/fromServer/missions/MissionsRes";
@@ -34,9 +37,16 @@ import {
 	missionDate, missionDescription
 } from "@/src/display/Missions";
 import { UnclaimedMissions } from "@/src/components/MissionRewards";
+import { KingChallenge } from "@/src/components/KingChallenge";
 import { useMissionRewards } from "@/src/store/MissionRewardsStore";
+import {
+	CLOCK_INTERVALS, useCurrentTime
+} from "@/src/store/useCurrentTime";
+import { SegmentedControl } from "@/src/design/SegmentedControl";
+import {
+	MISSIONS_VIEW_PARAM, MISSIONS_VIEWS, MissionsView
+} from "@/src/navigation/AdventureTools";
 
-const CLOCK_INTERVAL = 60_000;
 const MISSION_EMBLEM_SIZE = 26;
 
 /** A mission still to do, with what kind it is and when it lapses. */
@@ -217,17 +227,70 @@ function useConsultMissions(): void {
 	}, [queryClient]);
 }
 
+function isMissionsView(value: unknown): value is MissionsView {
+	return Object.values<unknown>(MISSIONS_VIEWS).includes(value);
+}
+
+/** Another screen may ask for a view through the route, as the toast of a crossed tier does: it opens once, then the request is cleared. */
+function useRequestedView(open: (view: MissionsView) => void): void {
+	const router = useRouter();
+	const requested = useLocalSearchParams()[MISSIONS_VIEW_PARAM];
+	useEffect(() => {
+		if (!isMissionsView(requested)) {
+			return;
+		}
+		open(requested);
+		router.setParams({ [MISSIONS_VIEW_PARAM]: undefined });
+	}, [
+		requested,
+		open,
+		router
+	]);
+}
+
+/** The missions and the king's challenge, side by side as on Discord; rewards waiting to be opened are counted on the missions. */
+function MissionsViews({
+	data, now
+}: {
+	data: MissionsRes; now: number;
+}): ReactNode {
+	const [view, setView] = useState<MissionsView>(MISSIONS_VIEWS.MISSIONS);
+	const unclaimed = useMissionRewards().rewards.missions.length;
+	useRequestedView(setView);
+	const kingChallenge = data.kingChallenge;
+	const missions = <>
+		<UnclaimedMissions />
+		<MissionsContent data={data} now={now} />
+	</>;
+	if (!kingChallenge) {
+		return missions;
+	}
+	return <>
+		<SegmentedControl
+			options={[
+				{
+					value: MISSIONS_VIEWS.MISSIONS, label: i18n.t("app:profile.titles.missions"), icon: AppIcons.getIcon("missions.campaign"), badge: unclaimed
+				},
+				{
+					value: MISSIONS_VIEWS.KING_CHALLENGE, label: i18n.t("commands:missions.kingChallenge.button"), icon: AppIcons.getIcon("kingChallenge.icon")
+				}
+			]}
+			value={view}
+			onChange={setView}
+			label={i18n.t("app:profile.titles.missions")}
+		/>
+		{view === MISSIONS_VIEWS.KING_CHALLENGE ? <KingChallenge progress={kingChallenge} now={now} /> : missions}
+	</>;
+}
+
 export function Missions(): ReactNode {
 	const queryClient = useQueryClient();
-	const [now, setNow] = useState(Date.now);
+	const now = useCurrentTime(CLOCK_INTERVALS.MINUTE_MS);
 	const state = useMissions();
 	useConsultMissions();
-	const resetsAt = state.status === "ready" ? state.data.dailyMission.resetsAt : null;
-	useGameDeadline(GAME_ENTITIES.MISSIONS, resetsAt);
-	useEffect(() => {
-		const timer = setInterval(() => setNow(Date.now()), CLOCK_INTERVAL);
-		return (): void => clearInterval(timer);
-	}, []);
+	const data = state.status === "ready" ? state.data : null;
+	useGameDeadline(GAME_ENTITIES.MISSIONS, data ? data.dailyMission.resetsAt : null);
+	useGameDeadline(GAME_ENTITIES.MISSIONS, data?.kingChallenge?.nextResetDate ?? null);
 	if (state.status === "loading") {
 		return <EmptyState>{i18n.t("app:common.loading")}</EmptyState>;
 	}
@@ -240,8 +303,5 @@ export function Missions(): ReactNode {
 	if (state.status === "empty") {
 		return <EmptyState>{i18n.t("app:profile.notFound")}</EmptyState>;
 	}
-	return <>
-		<UnclaimedMissions />
-		<MissionsContent data={state.data} now={now} />
-	</>;
+	return <MissionsViews data={state.data} now={now} />;
 }

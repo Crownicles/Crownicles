@@ -682,6 +682,9 @@
     },
     "duration": {
       "hoursMinutes": "{{hours}} h {{minutes}}", "hours": "{{count}} h",
+      "daysHours": "{{days}} j {{hours}} h",
+      "days_one": "{{count}} jour",
+      "days_other": "{{count}} jours",
       "minutes_one": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
       "seconds_one": "{{count}} seconde",
@@ -1621,6 +1624,20 @@
     "statsIncreased": "Statistiques améliorées",
     "missionSlot": "Nouvel emplacement de mission",
     "stronger": "Votre personnage gagne en expérience."
+  },
+  "kingChallenge": {
+    "weeklyScore": "Score de la semaine",
+    "tiersReached": "Paliers relevés",
+    "scoreProgress": "{{value, number}} / {{max, number}} {emote:unitValues.score}",
+    "reset": "Nouveau défi",
+    "resetIn": "dans {{duration}}",
+    "tiers": "Paliers",
+    "tier": "Palier {{tier}}",
+    "championTier": "Palier du champion",
+    "championNote": "Le palier du champion attend un score digne des meilleurs aventuriers des semaines passées.",
+    "tokenRule": "Les jetons d'un palier ne vous sont versés que si vous possédez moins de {{tokenCap}} jetons.",
+    "tokensHeld": "Vous possédez déjà {{tokens}} jetons : passez sous {{tokenCap}} pour toucher ceux des prochains paliers.",
+    "profileTiers": "Paliers relevés cette semaine"
   },
   "moments": {
     "eyebrows": {

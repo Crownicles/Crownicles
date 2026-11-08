@@ -48,6 +48,18 @@ const PROFILE = {
 	guild: "Aurore"
 } as ProfileRes;
 
+describe("king's challenge on the profile", () => {
+	it("shows the tiers crossed this week out of every tier of the week", async () => {
+		await render(<ProfileView profile={{
+			...PROFILE, kingChallengeTier: 3
+		} as ProfileRes} />);
+		expect(screen.getByTestId("profile-kingChallenge")).toBeTruthy();
+		expect(screen.getByLabelText("app:kingChallenge.profileTiers").props.accessibilityValue).toEqual({
+			now: 3, max: 4
+		});
+	});
+});
+
 describe("someone else's profile", () => {
 	it("opens the guild they belong to", async () => {
 		const onGuild = jest.fn();
