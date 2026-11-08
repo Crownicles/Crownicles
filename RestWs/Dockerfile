@@ -16,6 +16,7 @@ RUN corepack use pnpm@"${PNPM_VERSION}"
 
 # Copy files in the workdir
 COPY ./RestWs/package.json ./RestWs/pnpm-lock.yaml ./RestWs/tsconfig.json ./
+COPY ./RestWs/patches ./patches
 # Create the config directory
 RUN mkdir config
 
@@ -25,6 +26,7 @@ RUN pnpm install
 # Copy the lib
 RUN mkdir ../Lib
 COPY ./Lib/package.json ./Lib/pnpm-lock.yaml ../Lib/
+COPY ./Lib/patches ../Lib/patches
 COPY ./Lib/src ../Lib/src
 
 # Copy the websocket packets, they have no runtime dependency so only the sources are needed
@@ -58,6 +60,7 @@ RUN corepack use pnpm@"${PNPM_VERSION}"
 
 # Copy files in the workdir
 COPY ./RestWs/package.json ./RestWs/pnpm-lock.yaml ./RestWs/tsconfig.json ./
+COPY ./RestWs/patches ./patches
 # Create the directories
 RUN mkdir config
 
