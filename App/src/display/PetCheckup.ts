@@ -9,7 +9,6 @@ import { i18n } from "@/src/translations/i18n";
 import { randomTranslation } from "@/src/translations/RandomTranslation";
 
 const KEY = "commands:shop.shopItems.lovePointsValue";
-const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_MINUTE = 60_000;
 
 function shortPet(typeId: number, sex: PetSex, nickname?: string): string {
@@ -24,7 +23,7 @@ function shortPet(typeId: number, sex: PetSex, nickname?: string): string {
 }
 
 function locationType(type: string): string {
-	return `${AppIcons.getIconOrNull(`expedition.locations.${type}`) ?? ""} ${i18n.t(`models:map_types.${type}.name`)}`.trim();
+	return `${AppIcons.getIconOrNull(`expedition.locations.${type}`) ?? ""} ${i18n.t(`models:biomes.${type}`)}`.trim();
 }
 
 function expeditionSection(pet: ShopPetCheckupRes): string {
@@ -68,7 +67,7 @@ export function petCheckupReport(pet: ShopPetCheckupRes): string {
 		diet: i18n.t("models:diet", { context: pet.diet }),
 		force: pet.force,
 		speed: pet.speed,
-		feedDelay: formatDurationMinutes(pet.feedDelay / SECONDS_PER_MINUTE),
+		feedDelay: formatDurationMinutes(pet.feedDelay / MILLISECONDS_PER_MINUTE),
 		nextFeed: nextFeed(pet),
 		commentOnFightEffect: randomTranslation(`${KEY}.commentOnFightEffect.${pet.fightAssistId}`),
 		secondFightEffect: pet.secondFightAssistId
