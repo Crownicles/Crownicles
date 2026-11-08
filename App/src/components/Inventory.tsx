@@ -23,7 +23,7 @@ import {
 	formatDurationMinutes, givesDailyBonus
 } from "@/src/display/ItemEffects";
 import {
-	materialName, plantName
+	materialName, plantName, sortByMaterialName
 } from "@/src/display/Resources";
 import {
 	EntryRow, ExpandableList, Fact, Lock
@@ -139,30 +139,52 @@ function InventoryMaterials({ materials }: { materials: MaterialQuantity[] }): R
 	return <>
 		<SectionHeader first action={{ hint: formatNumber(materials.length) }}>{i18n.t("app:inventory.views.materials")}</SectionHeader>
 		<ExpandableList>{materials.length > 0
-			? materials.map(material => <Fact key={material.materialId} label={materialName(material.materialId)} value={formatNumber(material.quantity)} />)
+			? sortByMaterialName(materials).map(material => <Fact key={material.materialId} label={materialName(material.materialId)} value={formatNumber(material.quantity)} />)
 			: <EmptyState>{i18n.t("app:inventory.noMaterials")}</EmptyState>}
 		</ExpandableList>
 	</>;
 }
 
-function InventoryPlants({ plants }: { plants: InventoryData["plants"] }): ReactNode {
+type CarriedPlants = NonNullable<InventoryData["plants"]>;
+
+/** The seed waiting to be planted is kept apart from the plants, the way Discord lists it in its own field. */
+function InventorySeed({ seed }: { seed: CarriedPlants["seed"] }): ReactNode {
+	return <>
+		<SectionHeader first icon={AppIcons.getIconOrNull("city.homeUpgrades.garden") ?? undefined}>{i18n.t("app:inventory.seed")}</SectionHeader>
+		<ExpandableList>{seed
+			? <Fact label={plantName(seed)} />
+			: <EmptyState>{i18n.t("app:inventory.noSeed")}</EmptyState>}
+		</ExpandableList>
+	</>;
+}
+
+/** The plants carried and how many slots they fill: a slot is only a place, so its number is not shown. */
+function InventoryCarriedPlants({ plants }: { plants: CarriedPlants }): ReactNode {
 	return <>
 		<SectionHeader
-			first
-			{...plants
-				? { action: { hint: i18n.t("app:profile.formats.progress", {
-					value: plants.plantSlots.length, max: plants.maxPlantSlots
-				}) } }
-				: {}}
+			icon={AppIcons.getIconOrNull("shopItems.plantSlotExtension") ?? undefined}
+			action={{ hint: i18n.t("app:profile.formats.progress", {
+				value: plants.plantSlots.length, max: plants.maxPlantSlots
+			}) }}
 		>{i18n.t("app:inventory.views.plants")}</SectionHeader>
-		<ExpandableList>{plants
-			? <>
-				<Fact label={i18n.t("app:inventory.seed")} value={plants.seed ? plantName(plants.seed) : i18n.t("app:profile.values.none")} />
-				{plants.plantSlots.map(plant => <Fact key={plant.slot} label={plantName(plant.plantId)} value={i18n.t("app:inventory.plantSlot", { slot: plant.slot })} />)}
-			</>
-			: <EmptyState>{i18n.t("app:inventory.noPlants")}</EmptyState>}
+		<ExpandableList>{plants.plantSlots.length > 0
+			? plants.plantSlots.map(plant => <Fact key={plant.slot} label={plantName(plant.plantId)} />)
+			: <EmptyState>{i18n.t("app:inventory.noCarriedPlants")}</EmptyState>}
 		</ExpandableList>
-		{plants?.linkedToHomeStorage ? <Note>{i18n.t("app:inventory.plantsLinkedToHomeStorage")}</Note> : null}
+		{plants.linkedToHomeStorage ? <Note>{i18n.t("app:inventory.plantsLinkedToHomeStorage")}</Note> : null}
+	</>;
+}
+
+function InventoryPlants({ plants }: { plants: InventoryData["plants"] }): ReactNode {
+	if (!plants) {
+		return <>
+			<SectionHeader first>{i18n.t("app:inventory.views.plants")}</SectionHeader>
+			<ExpandableList><EmptyState>{i18n.t("app:inventory.noPlants")}</EmptyState></ExpandableList>
+		</>;
+	}
+	return <>
+		<InventorySeed seed={plants.seed} />
+		<InventoryCarriedPlants plants={plants} />
 	</>;
 }
 

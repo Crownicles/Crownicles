@@ -207,6 +207,8 @@
     "usages": "{{usages}}/{{max}} utilisations",
     "noMaterials": "Vous ne transportez aucun matériau.",
     "noPlants": "Vous ne transportez aucune plante ni graine.",
+    "noSeed": "Vous ne transportez aucune graine.",
+    "noCarriedPlants": "Vous ne transportez aucune plante.",
     "seed": "Graine",
     "plantSlot": "Emplacement {{slot}}",
     "plantsLinkedToHomeStorage": "Vos plantes sont reliées au coffre de votre maison : les plantes achetées ou reçues y sont envoyées directement, vos emplacements ne gardant que ce que le coffre ne peut plus contenir.",
