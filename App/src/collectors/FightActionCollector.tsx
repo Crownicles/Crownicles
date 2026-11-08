@@ -120,13 +120,26 @@ type ActionOption = {
 	id?: string; index: number; cost?: number; powerMultiplier?: number;
 };
 
-function FightActionButton({
-	actionId, cost, powerMultiplier, disabled, onPress, onDetails
-}: {
-	actionId: string; cost?: number; powerMultiplier?: number; disabled: boolean; onPress: () => void; onDetails: () => void;
-}): ReactNode {
+/** What an action costs and, when its damage changes during the fight, how hard it strikes now. */
+type ActionFigureValues = Pick<ActionOption, "cost" | "powerMultiplier">;
+
+function ActionFigures({
+	cost, powerMultiplier
+}: ActionFigureValues): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
+	return <View style={styles.foot}>
+		{cost === undefined ? null : <><Wind size={12} color={colors.blue} /><Text style={styles.cost}>{i18n.t("app:arena.actionBreath", { value: cost })}</Text></>}
+		{powerMultiplier === undefined ? null : <><Swords size={12} color={colors.muted} /><Text style={styles.cost}>{i18n.t("app:battle.powerMultiplier", { multiplier: powerMultiplier })}</Text></>}
+	</View>;
+}
+
+function FightActionButton({
+	actionId, figures, disabled, onPress, onDetails
+}: {
+	actionId: string; figures: ActionFigureValues; disabled: boolean; onPress: () => void; onDetails: () => void;
+}): ReactNode {
+	const styles = useStyles();
 	const compact = useCompactFight();
 	const icon = AppIcons.getIconOrNull(`fightActions.${actionId}`);
 	const description = i18n.t(`models:fight_actions.${actionId}.description`, { defaultValue: "" });
@@ -142,10 +155,7 @@ function FightActionButton({
 				{icon ? <TwemojiIcon emoji={icon} size={compact ? 17 : 20} /> : null}
 				<Text style={[styles.label, compact && styles.compactLabel]} numberOfLines={2}>{fightActionName(actionId)}</Text>
 			</View>
-			<View style={styles.foot}>
-				{cost === undefined ? null : <><Wind size={12} color={colors.blue} /><Text style={styles.cost}>{i18n.t("app:arena.actionBreath", { value: cost })}</Text></>}
-				{powerMultiplier === undefined ? null : <><Swords size={12} color={colors.muted} /><Text style={styles.cost}>{i18n.t("app:battle.powerMultiplier", { multiplier: powerMultiplier })}</Text></>}
-			</View>
+			<ActionFigures {...figures} />
 		</Pressable>
 		<View style={styles.info}><FightIconButton icon={Info} label={i18n.t("app:battle.actionDetails", { action: fightActionName(actionId) })} onPress={onDetails} /></View>
 	</View>;
@@ -205,8 +215,7 @@ function ActionGrid({
 				return <FightActionButton
 					key={actionId}
 					actionId={actionId}
-					{...(option.cost === undefined ? {} : { cost: option.cost })}
-					{...(option.powerMultiplier === undefined ? {} : { powerMultiplier: option.powerMultiplier })}
+					figures={option}
 					disabled={locked || option.index < 0}
 					onPress={(): void => onChoose(option.index)}
 					onDetails={(): void => setDetails(actionId)}
