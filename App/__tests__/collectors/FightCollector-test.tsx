@@ -2,7 +2,7 @@ import {
 	act, fireEvent, render, screen, within
 } from "@testing-library/react-native";
 import {
-	AccessibilityInfo, Animated, StyleSheet
+	AccessibilityInfo, Animated, StyleSheet, TextStyle
 } from "react-native";
 import {
 	FightConfirmCollector, FightActions
@@ -42,6 +42,19 @@ jest.mock("@/src/collectors/CollectorsContext", () => ({ useCollectors: (): {
 	open: [], react: jest.fn(), isAnswerPending: (): boolean => false
 }) }));
 jest.mock("@tanstack/react-query", () => ({ useQueryClient: (): { invalidateQueries: jest.Mock } => ({ invalidateQueries: jest.fn().mockResolvedValue(undefined) }) }));
+
+/** A text drawn inside another one takes on its decoration, as React Native nests them. */
+function textDecorationOf(text: string): TextStyle["textDecorationLine"] {
+	let node: ReturnType<typeof screen.getByText> | null = screen.getByText(text);
+	while (node) {
+		const decoration = (StyleSheet.flatten(node.props.style) as TextStyle | undefined)?.textDecorationLine;
+		if (decoration) {
+			return decoration;
+		}
+		node = node.parent;
+	}
+	return undefined;
+}
 
 describe("fight collectors", () => {
 	afterEach(() => fightStore.reset());
@@ -140,6 +153,50 @@ describe("fight collectors", () => {
 		await render(<FightConfirmCollector collector={collector} onChoose={choose} submitting={false} />);
 		await fireEvent.press(screen.getByText("app:collector.refuse"));
 		expect(choose).toHaveBeenCalledWith(2);
+	});
+	it.each([
+		{
+			isOnExpedition: true, struck: true
+		}, {
+			isOnExpedition: false, struck: false
+		}
+	])("strikes out the pet only when it is away on an expedition (expedition: $isOnExpedition)", async ({
+		isOnExpedition, struck
+	}) => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {
+			id: "confirm-pet",
+			endTime: Date.now() + 60_000,
+			data: {
+				type: "fightConfirm",
+				data: { playerStats: {
+					classId: 1,
+					fightRanking: { glory: 500 },
+					energy: {
+						value: 90, max: 100
+					},
+					attack: 10,
+					defense: 5,
+					speed: 8,
+					breath: {
+						base: 3, max: 10, regen: 2
+					},
+					pet: {
+						petTypeId: 1, petSex: "m", petNickname: "Rex", isOnExpedition
+					}
+				} }
+			},
+			reactions: [
+				{
+					type: "accept", data: {}
+				},
+				{
+					type: "refuse", data: {}
+				}
+			]
+		});
+		await render(<FightConfirmCollector collector={collector} onChoose={jest.fn()} submitting={false} />);
+		expect(textDecorationOf("app:pet.name")).toBe(struck ? "line-through" : undefined);
+		expect(screen.queryByText("app:pet.powers.expedition") !== null).toBe(isOnExpedition);
 	});
 	it("sends the original action index once even if the player taps twice", async () => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {

@@ -190,7 +190,7 @@ export function FightConfirmCollector({
 		] as const).map(key => <View key={key} style={styles.preparationStat}><TwemojiIcon emoji={AppIcons.getIcon(`unitValues.${key}`)} size={18} /><Text style={styles.statValue}>{formatNumber(stats[key])}</Text><Text style={styles.statLabel}>{i18n.t(`app:arena.stats.${key}`)}</Text></View>)}</View>
 		<ExpandableList>
 			<Fact label={i18n.t("app:arena.glory")} value={formatGlory(stats.fightRanking.glory)} />
-			{stats.pet ? <Fact label={i18n.t("app:arena.pet")} value={expeditionPetLabel(stats.pet)} /> : null}
+			{stats.pet ? <Fact label={i18n.t("app:arena.pet")} value={expeditionPetLabel(stats.pet)} struck={stats.pet.isOnExpedition} /> : null}
 		</ExpandableList>
 		{stats.pet?.isOnExpedition ? <Note>{i18n.t("app:pet.powers.expedition")}</Note> : null}
 		<ButtonRow><Button variant="primary" icon={Swords} disabled={locked || accept < 0} onPress={(): void => answer(accept)}>{i18n.t("app:arena.start")}</Button><Button disabled={locked || refuse < 0} onPress={(): void => answer(refuse)}>{i18n.t("app:collector.refuse")}</Button></ButtonRow>
