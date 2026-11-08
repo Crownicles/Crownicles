@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import { makeFromClientPacket } from "ws-packets/src/MakePackets";
 import {
-	CookingMenuReq, CookingIgniteReq, CookingReviveReq, CookingWoodConfirmReq, CookingCraftReq, CookingPinReq, CookingUnpinReq
+	CookingMenuReq, CookingIgniteReq, CookingReviveReq, CookingWoodConfirmReq, CookingCraftReq, CookingPinReq, CookingUnpinReq, CookingSetSpecialtyReq
 } from "ws-packets/src/fromClient/CookingReq";
 import { CookingRes } from "ws-packets/src/fromServer/home/CookingRes";
 import {
@@ -16,15 +16,16 @@ import { GameClient } from "@/src/networking/GameClient";
 import { GAME_ENTITIES } from "@/src/store/GameEntities";
 import { useGameQuery } from "@/src/store/useGameQuery";
 import {
-	CookingRequest, cookingMenuFromOutcome, useCookingActions
+	CookingSubmit, cookingMenuFromOutcome, useCookingActions
 } from "@/src/store/useCookingActions";
 import { GameQueryContent } from "@/src/components/GameQueryContent";
 import { HomeCookingResults } from "@/src/components/HomeCookingResults";
+import { CookingSpecialties } from "@/src/components/HomeCookingSpecialties";
 import {
 	Button, ButtonRow, Note, SectionHeader
 } from "@/src/design/Primitives";
 import {
-	ActionBanner, ExpandableEntry, ExpandableList, Fact, Figures, Gauge, useSectionStyles
+	ActionBanner, ExpandableEntry, ExpandableList, Fact, Figures, Gauge, Lock, LockHint, useSectionStyles
 } from "@/src/design/Sections";
 import {
 	Check, Flame
@@ -37,11 +38,10 @@ import { formatNumber } from "@/src/display/Amounts";
 import {
 	materialName, plantName
 } from "@/src/display/Resources";
+import {
+	isSpecialtyStation, recipeName, SlotRecipe, specialtyRotation, specialtyStationIcon, specialtyStationName, timePotionsNotice
+} from "@/src/display/CookingDisplay";
 import { i18n } from "@/src/translations/i18n";
-
-type CookingActions = {
-	pending: boolean; submit: (request: CookingRequest) => Promise<void>;
-};
 
 const useStyles = createStyles(colors => ({
 	ingredients: {
@@ -86,27 +86,73 @@ function Ingredients({ ingredients }: { ingredients: RecipeIngredients }): React
 }
 
 /** Why a recipe cannot be cooked yet, as precisely as the menu allows. */
-function recipeLock(recipe: NonNullable<CookingSlot["recipe"]>, isIgnited: boolean): string | undefined {
+function recipeLock(recipe: SlotRecipe, isIgnited: boolean): string | undefined {
 	if (recipe.canCraft) {
 		return undefined;
 	}
 	if (!isIgnited) {
 		return i18n.t("app:cooking.locks.unlit");
 	}
+	if (recipe.timePotionsLeftThisWeek === 0) {
+		return i18n.t("app:cooking.locks.timePotionsExhausted");
+	}
 	return ingredientList(recipe.ingredients).some(ingredient => ingredient.playerHas < ingredient.quantity)
 		? i18n.t("app:cooking.locks.missingIngredients")
 		: i18n.t("app:cooking.notReady");
 }
 
-function recipeName(recipe: NonNullable<CookingSlot["recipe"]>): string {
-	return recipe.isSecret ? i18n.t("app:cooking.secretRecipe") : i18n.t(`models:cooking.recipes.${recipe.id}`);
+function slotRecipeName(recipe: SlotRecipe): string {
+	return recipe.isSecret ? i18n.t("app:cooking.secretRecipe") : recipeName(recipe.id);
+}
+
+/** A full set of specialties is said under the button that would add one more. */
+function specialtyChoiceLock(menu: CookingMenu): Lock | undefined {
+	const limit = menu.rules.specialtyLimit;
+	return (menu.specialties?.length ?? 0) >= limit
+		? { reason: i18n.t("app:cooking.specialties.full", { count: limit }) }
+		: undefined;
+}
+
+/**
+ * What else a recipe of a rotating station offers: keeping it in sight, or making it a specialty. A time potion
+ * out of reach until next week is not worth pinning.
+ */
+function RecipeOptions({
+	slot, recipe, menu, actions, onToggle
+}: {
+	slot: CookingSlot; recipe: SlotRecipe; menu: CookingMenu; actions: CookingSubmit; onToggle: () => void;
+}): ReactNode {
+	const pinnable = recipe.timePotionsLeftThisWeek !== 0;
+	const specialtiesUnlocked = menu.rules.specialtyLimit > 0;
+	if (recipe.isSecret || isSpecialtyStation(slot, menu) || !pinnable && !specialtiesUnlocked) {
+		return null;
+	}
+	const specialtyLock = specialtiesUnlocked ? specialtyChoiceLock(menu) : undefined;
+	return <>
+		<ButtonRow>
+			{pinnable
+				? <Button disabled={actions.pending} onPress={(): Promise<void> => actions.submit(makeFromClientPacket(CookingPinReq, {
+					recipeId: recipe.id, fromIgnitedView: true
+				}))}>{i18n.t("app:cooking.pin")}</Button>
+				: null}
+			{specialtiesUnlocked
+				? <Button disabled={actions.pending || specialtyLock !== undefined} onPress={(): void => {
+					onToggle();
+					actions.submit(makeFromClientPacket(CookingSetSpecialtyReq, {
+						slotIndex: slot.slotIndex, recipeId: recipe.id
+					})).catch(console.error);
+				}}>{i18n.t("app:cooking.specialties.add")}</Button>
+				: null}
+		</ButtonRow>
+		{specialtyLock ? <LockHint lock={specialtyLock} /> : null}
+	</>;
 }
 
 /** A recipe is cooked from its own entry, next to the ingredients it will consume. */
 function RecipeSlot({
-	slot, isIgnited, actions, expanded, onToggle
+	slot, menu, actions, expanded, onToggle
 }: {
-	slot: CookingSlot; isIgnited: boolean; actions: CookingActions; expanded: boolean; onToggle: () => void;
+	slot: CookingSlot; menu: CookingMenu; actions: CookingSubmit; expanded: boolean; onToggle: () => void;
 }): ReactNode {
 	const sectionStyles = useSectionStyles();
 	const {
@@ -115,16 +161,19 @@ function RecipeSlot({
 	if (!recipe) {
 		return <Note>{i18n.t("app:cooking.emptySlot", { slot: slotIndex + 1 })}</Note>;
 	}
-	const lock = recipeLock(recipe, isIgnited);
+	const lock = recipeLock(recipe, menu.isIgnited);
+	const notice = timePotionsNotice(recipe, menu);
+	const caption = lock ?? notice;
 	return <ExpandableEntry
-		label={recipeName(recipe)}
-		{...lock ? { caption: lock } : {}}
+		label={slotRecipeName(recipe)}
+		{...caption ? { caption } : {}}
 		end={<Text style={sectionStyles.caption}>{i18n.t("app:cooking.recipeLevelShort", { level: recipe.level })}</Text>}
 		dimmed={!recipe.canCraft}
 		expanded={expanded}
 		onToggle={onToggle}
 	>
 		<Ingredients ingredients={recipe.ingredients} />
+		{lock && notice ? <Note>{notice}</Note> : null}
 		<ActionBanner
 			icon={Check}
 			label={i18n.t("app:cooking.craft")}
@@ -137,18 +186,29 @@ function RecipeSlot({
 				})).catch(console.error);
 			}}
 		/>
-		{!recipe.isSecret
-			? <ButtonRow><Button disabled={actions.pending} onPress={(): Promise<void> => actions.submit(makeFromClientPacket(CookingPinReq, {
-				recipeId: recipe.id, fromIgnitedView: true
-			}))}>{i18n.t("app:cooking.pin")}</Button></ButtonRow>
-			: null}
+		<RecipeOptions slot={slot} recipe={recipe} menu={menu} actions={actions} onToggle={onToggle} />
 	</ExpandableEntry>;
+}
+
+/** The station offering the chef's specialties, one per ignition, set apart from the rotating ones. */
+function SpecialtyStation({
+	slot, menu, children
+}: {
+	slot: CookingSlot; menu: CookingMenu; children: ReactNode;
+}): ReactNode {
+	const icon = specialtyStationIcon(menu);
+	const rotation = specialtyRotation(slot, menu);
+	return <>
+		<SectionHeader {...icon ? { icon } : {}}>{specialtyStationName(menu)}</SectionHeader>
+		<ExpandableList>{children}</ExpandableList>
+		{rotation ? <Note>{rotation}</Note> : null}
+	</>;
 }
 
 function PinnedRecipe({
 	menu, actions
 }: {
-	menu: CookingMenu; actions: CookingActions;
+	menu: CookingMenu; actions: CookingSubmit;
 }): ReactNode {
 	if (!menu.pinnedRecipe) {
 		return null;
@@ -166,7 +226,7 @@ function PinnedRecipe({
 function FurnaceActions({
 	isIgnited, actions
 }: {
-	isIgnited: boolean; actions: CookingActions;
+	isIgnited: boolean; actions: CookingSubmit;
 }): ReactNode {
 	const [revive, setRevive] = useState(false);
 	if (!isIgnited) {
@@ -202,7 +262,7 @@ function FurnaceActions({
 function WoodConfirmation({
 	outcome, actions
 }: {
-	outcome: CookingOutcome | null; actions: CookingActions;
+	outcome: CookingOutcome | null; actions: CookingSubmit;
 }): ReactNode {
 	if (outcome?.kind !== "woodConfirmation") {
 		return null;
@@ -223,6 +283,15 @@ function WoodConfirmation({
 function CookingContent({ menu }: { menu: CookingMenu }): ReactNode {
 	const actions = useCookingActions();
 	const [openSlot, setOpenSlot] = useState<number>();
+	const station = menu.currentSlots.find(slot => isSpecialtyStation(slot, menu));
+	const slotEntry = (slot: CookingSlot): ReactNode => <RecipeSlot
+		key={slot.slotIndex}
+		slot={slot}
+		menu={menu}
+		actions={actions}
+		expanded={openSlot === slot.slotIndex}
+		onToggle={(): void => setOpenSlot(openSlot === slot.slotIndex ? undefined : slot.slotIndex)}
+	/>;
 	return <>
 		<Figures items={[
 			{
@@ -238,16 +307,11 @@ function CookingContent({ menu }: { menu: CookingMenu }): ReactNode {
 		{actions.message ? <Note>{actions.message}</Note> : null}
 		<HomeCookingResults outcome={actions.outcome} />
 		<PinnedRecipe menu={menu} actions={actions} />
-		<ExpandableList>{menu.currentSlots.map(slot => <RecipeSlot
-			key={slot.slotIndex}
-			slot={slot}
-			isIgnited={menu.isIgnited}
-			actions={actions}
-			expanded={openSlot === slot.slotIndex}
-			onToggle={(): void => setOpenSlot(openSlot === slot.slotIndex ? undefined : slot.slotIndex)}
-		/>)}</ExpandableList>
+		<ExpandableList>{menu.currentSlots.filter(slot => !isSpecialtyStation(slot, menu)).map(slotEntry)}</ExpandableList>
+		{station ? <SpecialtyStation slot={station} menu={menu}>{slotEntry(station)}</SpecialtyStation> : null}
 		<FurnaceActions isIgnited={menu.isIgnited} actions={actions} />
 		<WoodConfirmation outcome={actions.outcome} actions={actions} />
+		<CookingSpecialties menu={menu} actions={actions} />
 	</>;
 }
 

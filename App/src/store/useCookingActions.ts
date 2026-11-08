@@ -3,7 +3,8 @@ import {
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-	CookingMenuReq, CookingIgniteReq, CookingReviveReq, CookingWoodConfirmReq, CookingCraftReq, CookingPinReq, CookingUnpinReq
+	CookingMenuReq, CookingIgniteReq, CookingReviveReq, CookingWoodConfirmReq, CookingCraftReq, CookingPinReq, CookingUnpinReq,
+	CookingSetSpecialtyReq, CookingRemoveSpecialtyReq
 } from "ws-packets/src/fromClient/CookingReq";
 import { CookingRes } from "ws-packets/src/fromServer/home/CookingRes";
 import {
@@ -17,10 +18,17 @@ import {
 	GameMutation, useGameMutation
 } from "@/src/store/useGameMutation";
 import { commandRejectionMessage } from "@/src/display/CommandRejection";
+import {
+	recipeName, specialtyStationName
+} from "@/src/display/CookingDisplay";
 import { i18n } from "@/src/translations/i18n";
 
-export type CookingRequest = CookingMenuReq | CookingIgniteReq | CookingReviveReq | CookingWoodConfirmReq | CookingCraftReq | CookingPinReq | CookingUnpinReq;
+export type CookingRequest = CookingMenuReq | CookingIgniteReq | CookingReviveReq | CookingWoodConfirmReq | CookingCraftReq | CookingPinReq | CookingUnpinReq
+	| CookingSetSpecialtyReq | CookingRemoveSpecialtyReq;
 type CookingActions = GameMutation<CookingRequest> & { outcome: CookingOutcome | null };
+
+/** What a cooking control needs to send its request and wait for the answer. */
+export type CookingSubmit = Pick<GameMutation<CookingRequest>, "pending" | "submit">;
 
 export function cookingMenuFromOutcome(outcome: CookingOutcome): CookingMenu | undefined {
 	if (outcome.kind === "crafted") {
@@ -29,14 +37,30 @@ export function cookingMenuFromOutcome(outcome: CookingOutcome): CookingMenu | u
 	return "menu" in outcome ? outcome.menu : undefined;
 }
 
-function cookingMessage(outcome: CookingOutcome): string | null {
+/** Core answers a specialty change with the whole menu only: the recipe the player picked is named from the request. */
+function specialtyMessage(outcome: CookingOutcome, request: CookingRequest): string | null {
+	if (outcome.kind === "specialtyChosen" && outcome.error) {
+		return i18n.t(`app:cooking.errors.${outcome.error}`, { max: outcome.menu.rules.specialtyLimit });
+	}
+	if (outcome.kind === "specialtyChosen" && request instanceof CookingSetSpecialtyReq) {
+		return i18n.t("app:cooking.specialties.added", {
+			recipe: recipeName(request.recipeId), station: specialtyStationName(outcome.menu)
+		});
+	}
+	if (outcome.kind === "specialtyRemoved" && request instanceof CookingRemoveSpecialtyReq) {
+		return i18n.t("app:cooking.specialties.removed", { recipe: recipeName(request.recipeId) });
+	}
+	return null;
+}
+
+function cookingMessage(outcome: CookingOutcome, request: CookingRequest): string | null {
 	if (outcome.kind === "noWood" || outcome.kind === "unavailable") {
 		return i18n.t(`app:cooking.${outcome.kind}`);
 	}
 	if (outcome.kind === "crafted" && outcome.result.error) {
 		return i18n.t(`app:cooking.errors.${outcome.result.error}`);
 	}
-	return null;
+	return specialtyMessage(outcome, request);
 }
 
 export function useCookingActions(): CookingActions {
@@ -73,7 +97,7 @@ export function useCookingActions(): CookingActions {
 			GAME_ENTITIES.GUILD_DOMAIN,
 			GAME_ENTITIES.PET
 		].map(entity => queryClient.invalidateQueries({ queryKey: gameKey(entity) })));
-		return cookingMessage(nextOutcome);
+		return cookingMessage(nextOutcome, request);
 	});
 	return {
 		...mutation, outcome

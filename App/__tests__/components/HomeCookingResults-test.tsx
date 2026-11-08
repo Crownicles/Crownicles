@@ -17,7 +17,13 @@ function crafted(values: Partial<CraftResult>): CraftResult {
 		cookingXpGained: 40,
 		cookingLevelUp: false,
 		menu: {
-			cookingLevel: 100, cookingGrade: "masterChef", currentSlots: [], isIgnited: true
+			cookingLevel: 100,
+			cookingGrade: "masterChef",
+			currentSlots: [],
+			isIgnited: true,
+			rules: {
+				specialtyStation: 5, specialtyLimit: 3, timePotionsShownFrom: 10
+			}
 		},
 		...values
 	};

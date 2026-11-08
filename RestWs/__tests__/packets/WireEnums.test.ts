@@ -35,8 +35,8 @@ import {PLAYER_EFFECTS} from "../../../WsPackets/src/objects/PlayerUtility";
 import {HomeConstants} from "../../../Lib/src/constants/HomeConstants";
 import {CHEST_ACTIONS, CHEST_ERRORS, PLANT_TRANSFER_ACTIONS, PLANT_TRANSFER_ERRORS} from "../../../WsPackets/src/objects/HomeChest";
 import {RecipeType as CoreRecipeType, CookingOutputType as CoreCookingOutputType} from "../../../Lib/src/constants/CookingConstants";
-import {CookingCraftErrors as CoreCookingCraftErrors} from "../../../Lib/src/types/CookingTypes";
-import {RecipeType, CookingOutputType, CookingCraftErrors} from "../../../WsPackets/src/objects/Cooking";
+import {CookingCraftErrors as CoreCookingCraftErrors, CookingSpecialtyErrors as CoreCookingSpecialtyErrors} from "../../../Lib/src/types/CookingTypes";
+import {RecipeType, CookingOutputType, CookingCraftErrors, CookingSpecialtyErrors} from "../../../WsPackets/src/objects/Cooking";
 import {GardenConstants} from "../../../Lib/src/constants/GardenConstants";
 import {GardenNoAccessReason} from "../../../Lib/src/packets/commands/CommandGardenPacket";
 import {GardenAccessMode} from "../../../Lib/src/types/GardenAccessMode";
@@ -76,6 +76,7 @@ describe("wire enums mirror their back-end counterpart", () => {
 		["RecipeType", RecipeType, CoreRecipeType],
 		["CookingOutputType", CookingOutputType, CoreCookingOutputType],
 		["CookingCraftErrors", CookingCraftErrors, CoreCookingCraftErrors],
+		["CookingSpecialtyErrors", CookingSpecialtyErrors, CoreCookingSpecialtyErrors],
 		["ChestActions", CHEST_ACTIONS, HomeConstants.CHEST_ACTIONS],
 		["ChestErrors", CHEST_ERRORS, HomeConstants.CHEST_ERRORS],
 		["PlantTransferActions", PLANT_TRANSFER_ACTIONS, HomeConstants.PLANT_TRANSFER_ACTIONS],

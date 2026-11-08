@@ -38,7 +38,7 @@
     "unpin": "Désépingler",
     "pinned": "Recette épinglée",
     "recipeLevelShort": "Niv. {{level}}",
-    "locks": {"unlit": "Le fourneau est éteint : allumez-le pour cuisiner.", "missingIngredients": "Il manque des ingrédients pour cette recette."},
+    "locks": {"unlit": "Le fourneau est éteint : allumez-le pour cuisiner.", "missingIngredients": "Il manque des ingrédients pour cette recette.", "timePotionsExhausted": "Le temps a été assez malmené cette semaine : plus de potion de temps avant la semaine prochaine."},
     "secretRecipe": "Recette mystérieuse",
     "emptySlot": "Emplacement {{slot}} vide.",
     "ingredientQuantity": "{{owned}} / {{required}}",
@@ -63,7 +63,23 @@
     "levelUp": "Cuisine niveau {{level}} · {{grade}}",
     "discovered": "Recette découverte : {{recipe}} · niveau {{level}}",
     "badge": "Badge obtenu : {{badge}}",
-    "errors": {"craftUnavailable": "La recette ou ses ingrédients ont changé. La liste a été actualisée.", "inventoryFull": "Votre inventaire ne peut pas recevoir cette préparation.", "guildRequired": "Cette recette nécessite une guilde.", "guildStorageFull": "La réserve de nourriture de votre guilde est pleine.", "timePotionWeeklyLimit": "Toutes les potions de temps permises cette semaine ont déjà été préparées."}
+    "timePotionsLeft_one": "Manipuler le temps épuise : encore {{count}} potion de temps possible cette semaine.",
+    "timePotionsLeft_other": "Manipuler le temps épuise : encore {{count}} potions de temps possibles cette semaine.",
+    "specialties": {
+      "title": "Vos spécialités",
+      "none_one": "Votre maîtrise des fourneaux vous permet d'avoir {{count}} spécialité : le fourneau vous la proposera à chaque allumage sur l'emplacement {{station}}, en plus des recettes habituelles. Allumez-le pour la choisir parmi les recettes proposées.",
+      "none_other": "Votre maîtrise des fourneaux vous permet d'avoir jusqu'à {{count}} spécialités : le fourneau vous en proposera une à chaque allumage sur l'emplacement {{station}}, en plus des recettes habituelles. Allumez-le pour les choisir parmi les recettes proposées.",
+      "ready": "Tous les ingrédients sont réunis",
+      "nextUnlock": "Une spécialité supplémentaire se débloquera au niveau {{level}} de cuisine.",
+      "rotation": "Spécialité {{current}}/{{total}} : relancez le fourneau pour passer à la suivante.",
+      "add": "En faire une spécialité",
+      "remove": "Retirer de vos spécialités",
+      "full_one": "Votre spécialité est déjà choisie : retirez-la pour faire place à celle-ci.",
+      "full_other": "Vos {{count}} spécialités sont déjà choisies : retirez-en une pour faire place à celle-ci.",
+      "added": "{{recipe}} rejoint vos spécialités : le fourneau vous la proposera sur l'emplacement {{station}}.",
+      "removed": "{{recipe}} ne fait plus partie de vos spécialités."
+    },
+    "errors": {"craftUnavailable": "La recette ou ses ingrédients ont changé. La liste a été actualisée.", "inventoryFull": "Votre inventaire ne peut pas recevoir cette préparation.", "guildRequired": "Cette recette nécessite une guilde.", "guildStorageFull": "La réserve de nourriture de votre guilde est pleine.", "timePotionWeeklyLimit": "Toutes les potions de temps permises cette semaine ont déjà été préparées.", "specialtyLimitReached": "Vous maîtrisez déjà autant de spécialités que votre niveau de cuisine le permet ({{max}}). Retirez-en une avant d'en choisir une nouvelle.", "specialtyUnavailable": "Cette recette ne peut plus devenir une spécialité dans l'état actuel du fourneau. Les propositions ont été actualisées."}
   },
   "homeChest": {
     "title": "Coffre de la maison",

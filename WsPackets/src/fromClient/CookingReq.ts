@@ -33,3 +33,19 @@ export class CookingUnpinReq extends FromClientPacket {
 
 	fromIgnitedView!: boolean;
 }
+
+/** Makes the recipe a rotating station offers one of the master chef's specialties. */
+export class CookingSetSpecialtyReq extends FromClientPacket {
+	public static readonly wireName = "CookingSetSpecialtyReq";
+
+	slotIndex!: number;
+
+	recipeId!: string;
+}
+export class CookingRemoveSpecialtyReq extends FromClientPacket {
+	public static readonly wireName = "CookingRemoveSpecialtyReq";
+
+	recipeId!: string;
+
+	fromIgnitedView!: boolean;
+}

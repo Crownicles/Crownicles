@@ -33,6 +33,8 @@ import {
 	CommandReportBuyHealRefusePacketRes,
 	CommandReportBigEventResultRes,
 	CommandReportChooseDestinationRes,
+	CommandReportCookingRemoveSpecialtyReq,
+	CommandReportCookingSetSpecialtyReq,
 	CommandReportBlacksmithEnchantmentTransferRes,
 	CommandReportEnchanterDisenchantRes,
 	CommandReportStayInCity,
@@ -131,6 +133,11 @@ import { CommandClassesInfoPacketRes } from "../../../Lib/src/packets/commands/C
 import { ReactionCollectorChangeClassDetails } from "../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
 import { ClassStats as LibClassStats } from "../../../Lib/src/types/ClassStats";
 import { ClassKind as LibClassKind } from "../../../Lib/src/types/ClassKind";
+import { CookingMenuSnapshot } from "../../../Lib/src/types/CookingTypes";
+import {
+	CookingRemoveSpecialtyReq, CookingSetSpecialtyReq
+} from "../../../WsPackets/src/fromClient/CookingReq";
+import { CookingMenu } from "../../../WsPackets/src/objects/Cooking";
 import { ClassesInfoRes } from "../../../WsPackets/src/fromServer/classes/ClassesInfoRes";
 import {
 	AvailableClass, ClassStats, ClassKind
@@ -318,6 +325,9 @@ type ClassStatsContract = Assert<IsEqual<WireShape<LibClassStats>, WireShape<Cla
 type ClassKindContract = Assert<IsEqual<LibClassKind, ClassKind>>;
 type RecruitingGuildContract = Assert<IsEqual<WireShape<LibRecruitingGuild>, WireShape<RecruitingGuild>>>;
 type GuildRecruitmentSettingsContract = Assert<IsEqual<WireShape<LibGuildRecruitmentSettings>, WireShape<GuildRecruitmentSettings>>>;
+type CookingMenuContract = Assert<IsEqual<WireShape<CookingMenuSnapshot>, WireShape<Omit<CookingMenu, "rules">>>>;
+type CookingSetSpecialtyRequestContract = Assert<IsEqual<WireShape<CommandReportCookingSetSpecialtyReq>, WireShape<WirePacketFields<CookingSetSpecialtyReq>>>>;
+type CookingRemoveSpecialtyRequestContract = Assert<IsEqual<WireShape<CommandReportCookingRemoveSpecialtyReq>, WireShape<WirePacketFields<CookingRemoveSpecialtyReq>>>>;
 
 export const packetContractChecks: {
 	classesInfo: ClassesInfoContract;
@@ -326,6 +336,9 @@ export const packetContractChecks: {
 	classKind: ClassKindContract;
 	recruitingGuild: RecruitingGuildContract;
 	guildRecruitmentSettings: GuildRecruitmentSettingsContract;
+	cookingMenu: CookingMenuContract;
+	cookingSetSpecialtyRequest: CookingSetSpecialtyRequestContract;
+	cookingRemoveSpecialtyRequest: CookingRemoveSpecialtyRequestContract;
 	drinkRequest: DrinkRequestContract;
 	inventoryRequest: InventoryRequestContract;
 	petRequest: PetRequestContract;
@@ -385,6 +398,9 @@ export const packetContractChecks: {
 	classKind: true,
 	recruitingGuild: true,
 	guildRecruitmentSettings: true,
+	cookingMenu: true,
+	cookingSetSpecialtyRequest: true,
+	cookingRemoveSpecialtyRequest: true,
 	drinkRequest: true,
 	inventoryRequest: true,
 	petRequest: true,

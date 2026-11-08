@@ -5,10 +5,12 @@ import {
 } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportCookingMenuReq, CommandReportCookingIgniteReq, CommandReportCookingReviveReq,
-	CommandReportCookingWoodConfirmRes, CommandReportCookingCraftReq, CommandReportCookingPinReq, CommandReportCookingUnpinReq
+	CommandReportCookingWoodConfirmRes, CommandReportCookingCraftReq, CommandReportCookingPinReq, CommandReportCookingUnpinReq,
+	CommandReportCookingSetSpecialtyReq, CommandReportCookingRemoveSpecialtyReq
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	CookingMenuReq, CookingIgniteReq, CookingReviveReq, CookingWoodConfirmReq, CookingCraftReq, CookingPinReq, CookingUnpinReq
+	CookingMenuReq, CookingIgniteReq, CookingReviveReq, CookingWoodConfirmReq, CookingCraftReq, CookingPinReq, CookingUnpinReq,
+	CookingSetSpecialtyReq, CookingRemoveSpecialtyReq
 } from "../../../../../WsPackets/src/fromClient/CookingReq";
 
 function validateRecipeId(recipeId: string): void {
@@ -19,6 +21,11 @@ function validateRecipeId(recipeId: string): void {
 function validateBoolean(value: boolean): void {
 	if (typeof value !== "boolean") {
 		throw new InvalidClientPacketError("Invalid cooking confirmation");
+	}
+}
+function validateSlotIndex(slotIndex: number): void {
+	if (!Number.isSafeInteger(slotIndex) || slotIndex < 0) {
+		throw new InvalidClientPacketError("Invalid cooking slot");
 	}
 }
 
@@ -47,9 +54,7 @@ export default class CookingClientTranslator {
 	@fromClientTranslator(CookingCraftReq)
 	public static craft(_context: PacketContext, packet: CookingCraftReq): Promise<CommandReportCookingCraftReq> {
 		validateRecipeId(packet.recipeId);
-		if (!Number.isSafeInteger(packet.slotIndex) || packet.slotIndex < 0) {
-			throw new InvalidClientPacketError("Invalid cooking slot");
-		}
+		validateSlotIndex(packet.slotIndex);
 		return asyncMakePacket(CommandReportCookingCraftReq, {
 			slotIndex: packet.slotIndex, recipeId: packet.recipeId
 		});
@@ -68,5 +73,23 @@ export default class CookingClientTranslator {
 	public static unpin(_context: PacketContext, packet: CookingUnpinReq): Promise<CommandReportCookingUnpinReq> {
 		validateBoolean(packet.fromIgnitedView);
 		return asyncMakePacket(CommandReportCookingUnpinReq, { fromIgnitedView: packet.fromIgnitedView });
+	}
+
+	@fromClientTranslator(CookingSetSpecialtyReq)
+	public static setSpecialty(_context: PacketContext, packet: CookingSetSpecialtyReq): Promise<CommandReportCookingSetSpecialtyReq> {
+		validateRecipeId(packet.recipeId);
+		validateSlotIndex(packet.slotIndex);
+		return asyncMakePacket(CommandReportCookingSetSpecialtyReq, {
+			slotIndex: packet.slotIndex, recipeId: packet.recipeId
+		});
+	}
+
+	@fromClientTranslator(CookingRemoveSpecialtyReq)
+	public static removeSpecialty(_context: PacketContext, packet: CookingRemoveSpecialtyReq): Promise<CommandReportCookingRemoveSpecialtyReq> {
+		validateRecipeId(packet.recipeId);
+		validateBoolean(packet.fromIgnitedView);
+		return asyncMakePacket(CommandReportCookingRemoveSpecialtyReq, {
+			recipeId: packet.recipeId, fromIgnitedView: packet.fromIgnitedView
+		});
 	}
 }
