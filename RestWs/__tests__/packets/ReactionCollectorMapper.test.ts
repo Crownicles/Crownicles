@@ -134,7 +134,8 @@ describe("mapCollectorCreation", () => {
 		const destination = Object.assign(new ReactionCollectorChooseDestinationReaction(), {
 			mapId: 42,
 			mapTypeId: "port",
-			tripDuration: 15
+			tripDuration: 15,
+			biomes: ["coast", "swamp"]
 		});
 		const packet = new ReactionCollectorChooseDestination([destination], true)
 			.creationPacket("collector-1", END_TIME);
@@ -150,7 +151,7 @@ describe("mapCollectorCreation", () => {
 		expect(mapped.reactions).toStrictEqual([
 			{
 				type: REPORT_COLLECTOR_REACTION_KINDS.DESTINATION,
-				data: {mapId: 42, mapTypeId: "port", tripDurationMinutes: 15}
+				data: {mapId: 42, mapTypeId: "port", tripDurationMinutes: 15, biomes: ["coast", "swamp"]}
 			},
 			{type: REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, data: {}}
 		]);

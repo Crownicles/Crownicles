@@ -90,13 +90,13 @@ function destinationCollector(): ReactionCollectorCreation {
 			{
 				type: REPORT_COLLECTOR_REACTION_KINDS.DESTINATION,
 				data: {
-					mapId: 2, mapTypeId: "fo", tripDurationMinutes: 60
+					mapId: 2, mapTypeId: "fo", tripDurationMinutes: 60, biomes: ["forest"]
 				}
 			},
 			{
 				type: REPORT_COLLECTOR_REACTION_KINDS.DESTINATION,
 				data: {
-					mapId: 3, mapTypeId: "mo", tripDurationMinutes: 90
+					mapId: 3, mapTypeId: "mo", tripDurationMinutes: 90, biomes: ["mountain"]
 				}
 			}
 		]

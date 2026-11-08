@@ -442,6 +442,7 @@
     "descriptions": {
       "unknownItem": "cet objet",
       "destination": "Choisissez la prochaine étape de votre aventure.",
+      "destinationBiomes": "Choisissez la prochaine étape de votre aventure. Les terrains indiqués sont ceux que votre familier pourra y explorer en expédition.",
       "unknownDuration": "durée inconnue"
     },
     "shop": {
@@ -467,6 +468,7 @@
       "lotteryMedium": "Récompense moyenne",
       "lotteryHard": "Grande récompense",
       "destination": "{{destination}} ({{duration}})",
+      "destinationBiomes": "{{destination}} ({{duration}}) · {{biomes}}",
       "stayInCity": "Rester en ville"
     },
     "pveIsland": {

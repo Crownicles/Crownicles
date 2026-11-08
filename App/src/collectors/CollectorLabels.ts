@@ -38,6 +38,7 @@ import {
 	petName, petShortField
 } from "@/src/display/PetDisplay";
 import { fightActionName } from "@/src/display/Fight";
+import { biomeName } from "@/src/display/PetExpedition";
 
 const SEX_CONTEXTS = {
 	MALE: "male",
@@ -396,7 +397,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 		+ randomTranslation("smallEvents:witch.intro") + randomTranslation("smallEvents:witch.description") + randomTranslation("smallEvents:witch.situation")),
 	[ITEM_DATA_KINDS.CHOICE]: () => undefined,
 	[ITEM_DATA_KINDS.ACCEPT]: () => undefined,
-	[REPORT_COLLECTOR_DATA_KINDS.DESTINATION]: () => i18n.t("app:collector.descriptions.destination"),
+	[REPORT_COLLECTOR_DATA_KINDS.DESTINATION]: () => i18n.t("app:collector.descriptions.destinationBiomes"),
 	[REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS]: () => i18n.t("app:adventure.tokens.use.description"),
 	[REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL]: makeDataHandler(REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data => i18n.t("app:adventure.heal.use.description", {
 		price: data.data.healPrice,
@@ -479,9 +480,10 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 	[REPORT_COLLECTOR_REACTION_KINDS.DESTINATION]: makeReactionHandler(REPORT_COLLECTOR_REACTION_KINDS.DESTINATION, reaction => {
 		const icon = AppIcons.getIconOrNull(`mapTypes.${reaction.data.mapTypeId}`);
 		const destination = i18n.t(`models:map_locations.${reaction.data.mapId}.name`);
-		return i18n.t("app:collector.choices.destination", {
+		return i18n.t("app:collector.choices.destinationBiomes", {
 			destination: icon ? `${icon} ${destination}` : destination,
-			duration: destinationDuration(reaction.data.tripDurationMinutes)
+			duration: destinationDuration(reaction.data.tripDurationMinutes),
+			biomes: reaction.data.biomes.map(biomeName).join(", ")
 		});
 	}),
 	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: () => withIcon("other.stay", i18n.t("app:collector.choices.stayInCity")),

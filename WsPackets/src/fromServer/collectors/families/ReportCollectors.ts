@@ -2,6 +2,7 @@ import {
 	ReactionCollectorDataKind, ReactionCollectorReactionKind
 } from "../ReactionCollectorProtocol";
 import { MonsterStats } from "../../../objects/Fight";
+import { ExpeditionLocationType } from "../../pet/PetRes";
 
 declare module "../ReactionCollectorProtocol" {
 	interface ReactionCollectorDataPayloads {
@@ -34,6 +35,9 @@ declare module "../ReactionCollectorProtocol" {
 			mapId: number;
 			mapTypeId: string;
 			tripDurationMinutes?: number;
+
+			/** Biomes of the destination, which the pet can explore in expedition once there. */
+			biomes: readonly ExpeditionLocationType[];
 		};
 		reportStayInCity: Record<string, never>;
 		reportTokenMerchantBuy: {

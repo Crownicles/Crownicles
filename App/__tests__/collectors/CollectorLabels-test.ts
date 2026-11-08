@@ -36,8 +36,11 @@ jest.mock("@/src/translations/i18n", () => ({
 			if (key === "app:adventure.duration.minutes") {
 				return `${options?.count} minutes`;
 			}
-			if (key === "app:collector.choices.destination") {
-				return `${options?.destination} (${options?.duration})`;
+			if (key === "app:collector.choices.destinationBiomes") {
+				return `${options?.destination} (${options?.duration}) · ${options?.biomes}`;
+			}
+			if (key === "app:expedition.locationName") {
+				return `${options?.icon} ${options?.name}`;
 			}
 			return key;
 		},
@@ -247,13 +250,13 @@ describe("CollectorLabels", () => {
 		const reaction = {
 			type: REPORT_COLLECTOR_REACTION_KINDS.DESTINATION,
 			data: {
-				mapId: 3, mapTypeId: "port", tripDurationMinutes: 15
+				mapId: 3, mapTypeId: "port", tripDurationMinutes: 15, biomes: ["coast", "swamp"]
 			}
 		} as const;
 
 		expect(collectorTitle(data)).toBe("app:collector.titles.destination");
-		expect(collectorDescription(data)).toBe("app:collector.descriptions.destination");
-		expect(reactionLabel(reaction, data)).toBe("models:map_locations.3.name (15 minutes)");
+		expect(collectorDescription(data)).toBe("app:collector.descriptions.destinationBiomes");
+		expect(reactionLabel(reaction, data)).toBe("models:map_locations.3.name (15 minutes) · icon:expedition.locations.coast models:map_types.coast.name, icon:expedition.locations.swamp models:map_types.swamp.name");
 		expect(isChoosable(reaction, data)).toBe(true);
 	});
 
