@@ -8,7 +8,7 @@ import {
 	Note, Screen, SectionHeader
 } from "@/src/design/Primitives";
 import {
-	ActionBanner, Effects, EFFECT_TONES, Fact, Figures, Gauge, Standing
+	ActionBanner, Effects, EFFECT_TONES, ExpandableList, Fact, Figures, Gauge, Standing
 } from "@/src/design/Sections";
 import {
 	BookOpen, Check, CircleAlert
@@ -19,8 +19,13 @@ import {
 	createStyles, useColors
 } from "@/src/design/ThemeContext";
 import { MarketAnalysis } from "@/src/collectors/MarketAnalysis";
-import { petName } from "@/src/display/PetDisplay";
-import { petCheckupSummary } from "@/src/display/PetCheckup";
+import {
+	petIcon, petName
+} from "@/src/display/PetDisplay";
+import {
+	ExpeditionAffinities, petCheckupSummary
+} from "@/src/display/PetCheckup";
+import { TwemojiIcon } from "@/src/design/TwemojiIcon";
 import { formatNumber } from "@/src/display/Amounts";
 import {
 	isShopRefusal, shopOutcomeReport
@@ -31,12 +36,24 @@ const RESULT_EMBLEM_SIZE = 27;
 
 const useStyles = createStyles(() => ({
 	continue: { marginTop: Theme.spacing.xl },
-	block: { marginTop: Theme.spacing.md }
+	block: { marginTop: Theme.spacing.md },
+	paragraphs: { gap: Theme.spacing.md }
 }));
 
 function ContinueBanner({ onContinue }: { onContinue: () => void }): ReactNode {
 	const styles = useStyles();
 	return <View style={styles.continue}><ActionBanner icon={BookOpen} label={i18n.t("app:city.checkup.continue")} onPress={onContinue} /></View>;
+}
+
+/** Where the pet thrives and what it distrusts, or how it adapts to every terrain. */
+function CheckupAffinities({ affinities }: { affinities: ExpeditionAffinities }): ReactNode {
+	if (!affinities.liked && !affinities.disliked) {
+		return <Story>{i18n.t("app:city.checkup.noPreferences")}</Story>;
+	}
+	return <ExpandableList>
+		{affinities.liked ? <Fact label={i18n.t("app:city.checkup.labels.liked")} value={affinities.liked} /> : null}
+		{affinities.disliked ? <Fact label={i18n.t("app:city.checkup.labels.disliked")} value={affinities.disliked} /> : null}
+	</ExpandableList>;
 }
 
 function CheckupReport({ packet }: { packet: ShopPetCheckupRes }): ReactNode {
@@ -46,27 +63,22 @@ function CheckupReport({ packet }: { packet: ShopPetCheckupRes }): ReactNode {
 	return (
 		<>
 			<SectionHeader>{i18n.t("app:city.checkup.headers.diagnosis")}</SectionHeader>
-			<Story>{summary.advice}</Story>
-			<Story>{summary.ageComment}</Story>
+			<View style={styles.paragraphs}>
+				<Story>{summary.advice}</Story>
+				<Story>{summary.ageComment}</Story>
+			</View>
 
 			<SectionHeader>{i18n.t("app:city.checkup.headers.vitals")}</SectionHeader>
-			<Gauge
-				label={i18n.t("app:city.checkup.labels.lovePoints")}
-				value={i18n.t("app:profile.formats.progress", {
-					value: summary.lovePoints.actual, max: summary.lovePoints.max
-				})}
-				ratio={summary.lovePoints.max > 0 ? summary.lovePoints.actual / summary.lovePoints.max : 0}
-				color={colors.red}
-			/>
-			<Figures items={[
-				{
-					caption: i18n.t("app:city.checkup.labels.force"), value: formatNumber(summary.force)
-				},
-				{
-					caption: i18n.t("app:city.checkup.labels.speed"), value: formatNumber(summary.speed)
-				}
-			]}
-			/>
+			<ExpandableList>
+				<Gauge
+					label={i18n.t("app:city.checkup.labels.lovePoints")}
+					value={i18n.t("app:profile.formats.progress", {
+						value: summary.lovePoints.actual, max: summary.lovePoints.max
+					})}
+					ratio={summary.lovePoints.max > 0 ? summary.lovePoints.actual / summary.lovePoints.max : 0}
+					color={colors.red}
+				/>
+			</ExpandableList>
 			{summary.lovePointsGained > 0 && (
 				<View style={styles.block}>
 					<Effects items={[
@@ -79,17 +91,28 @@ function CheckupReport({ packet }: { packet: ShopPetCheckupRes }): ReactNode {
 					/>
 				</View>
 			)}
+			<Figures items={[
+				{
+					caption: i18n.t("app:city.checkup.labels.force"), value: formatNumber(summary.force)
+				},
+				{
+					caption: i18n.t("app:city.checkup.labels.speed"), value: formatNumber(summary.speed)
+				}
+			]}
+			/>
 
 			<SectionHeader>{i18n.t("app:city.checkup.headers.feeding")}</SectionHeader>
-			<Fact label={i18n.t("app:city.checkup.labels.diet")} value={summary.diet} />
-			<Fact label={i18n.t("app:city.checkup.labels.feedInterval")} value={summary.feedInterval} />
-			<Fact label={i18n.t("app:city.checkup.labels.nextFeed")} value={summary.nextFeed} />
+			<ExpandableList>
+				<Fact label={i18n.t("app:city.checkup.labels.diet")} value={summary.diet} />
+				<Fact label={i18n.t("app:city.checkup.labels.feedInterval")} value={summary.feedInterval} />
+				<Fact label={i18n.t("app:city.checkup.labels.appetite")} value={summary.appetite} />
+			</ExpandableList>
 
 			<SectionHeader>{i18n.t("app:city.checkup.headers.combat")}</SectionHeader>
-			{summary.fightEffects.map(effect => <Story key={effect}>{effect}</Story>)}
+			<View style={styles.paragraphs}>{summary.fightEffects.map(effect => <Story key={effect}>{effect}</Story>)}</View>
 
 			<SectionHeader>{i18n.t("app:city.checkup.headers.expeditions")}</SectionHeader>
-			<Story>{summary.expeditions}</Story>
+			<CheckupAffinities affinities={summary.expeditions} />
 			{summary.dwarfAside !== "" && (
 				<>
 					<SectionHeader>{i18n.t("app:city.checkup.headers.dwarf")}</SectionHeader>
@@ -122,7 +145,7 @@ export function ShopResultScreen({
 	if (result.kind === "checkup") {
 		return (
 			<Screen>
-				<Standing caption={i18n.t("app:city.checkup.eyebrow")} title={petName(result.packet)} />
+				<Standing emblem={<TwemojiIcon emoji={petIcon(result.packet)} size={RESULT_EMBLEM_SIZE} />} caption={i18n.t("app:city.checkup.eyebrow")} title={petName(result.packet)} />
 				<CheckupReport packet={result.packet} />
 				<ContinueBanner onContinue={onContinue} />
 			</Screen>
