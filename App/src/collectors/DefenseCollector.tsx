@@ -7,9 +7,8 @@ import {
 	DEFENSE_DATA_KINDS, DEFENSE_REACTION_KINDS, GENERIC_REACTION_KINDS, ReactionCollectorDataOf
 } from "ws-packets/src/fromServer/collectors";
 import { DefenseRecord } from "ws-packets/src/objects/DefenseRecord";
-import {
-	countdownLabel, useSecondsLeft
-} from "@/src/collectors/CollectorPrompt";
+import { countdownLabel } from "@/src/collectors/CollectorPrompt";
+import { useCollectorAnswer } from "@/src/collectors/useCollectorAnswer";
 import {
 	Note, SectionHeader
 } from "@/src/design/Primitives";
@@ -117,14 +116,14 @@ function adoptionLock(expired: boolean, chosen: DefenseStyleChoice | undefined, 
 	return chosen && chosen.personality === current ? { reason: i18n.t("app:defense.alreadyCurrent") } : undefined;
 }
 
+/** Leaving the sheet answers the refusal, which changes nothing; the shared answer guard sends a single reaction before the offer runs out. */
 function DefenseMenu({
-	collector, data, onChoose, submitting, onClose
-}: DefenseCollectorProps & {
-	data: DefenseData; onClose: () => void;
-}): ReactNode {
-	const [answered, setAnswered] = useState(false);
+	collector, data, onChoose, submitting
+}: DefenseCollectorProps & { data: DefenseData }): ReactNode {
 	const [selected, setSelected] = useState<number | undefined>();
-	const secondsLeft = useSecondsLeft(collector.endTime);
+	const {
+		answered, secondsLeft, answer
+	} = useCollectorAnswer(collector, onChoose, submitting);
 	const choices = defenseStyleChoices(collector);
 	const chosen = choices.find(choice => choice.index === selected);
 	const pending = submitting || answered;
@@ -134,7 +133,7 @@ function DefenseMenu({
 		title={i18n.t("app:defense.title")}
 		subtitle={i18n.t("app:defense.currentStyle", { name: defenseStyleName(data.currentPersonality) })}
 		emblem={<DefenseStyleEmblem personality={data.currentPersonality} size={Theme.dimensions.headerIcon} />}
-		onClose={onClose}
+		onClose={(): void => answer(collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE))}
 		testID="defense-sheet"
 	>
 		<Note>{i18n.t("commands:defense.intro", { className: i18n.t(`models:classes.${data.classId}`) })}</Note>
@@ -146,11 +145,9 @@ function DefenseMenu({
 			pending={pending}
 			disabled={chosen === undefined}
 			onPress={(): void => {
-				if (chosen === undefined || lock) {
-					return;
+				if (chosen !== undefined && !lock) {
+					answer(chosen.index);
 				}
-				setAnswered(true);
-				onChoose(chosen.index);
 			}}
 			{...lock ? { lock } : {}}
 		/>
@@ -164,11 +161,5 @@ export function DefenseCollector(props: DefenseCollectorProps): ReactNode {
 	if (collector.data.type !== DEFENSE_DATA_KINDS.COLLECTOR) {
 		return null;
 	}
-	const refuseIndex = collector.reactions.findIndex(reaction => reaction.type === GENERIC_REACTION_KINDS.REFUSE);
-	const close = (): void => {
-		if (!props.submitting && refuseIndex >= 0) {
-			props.onChoose(refuseIndex);
-		}
-	};
-	return <DefenseMenu {...props} data={collector.data.data} onClose={close} />;
+	return <DefenseMenu {...props} data={collector.data.data} />;
 }

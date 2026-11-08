@@ -21,6 +21,9 @@ jest.mock("@/src/AppIcons", () => ({ AppIcons: {
 } }));
 jest.mock("@/src/translations/i18n", () => ({ i18n: { t: (key: string, options?: object): string => `${key}${options ? ` ${JSON.stringify(options)}` : ""}` } }));
 
+// The sheet then closes on the spot, so what closing it sends can be checked without waiting for its animation.
+jest.mock("@/src/store/useReducedMotion", () => ({ useReducedMotion: (): boolean => true }));
+
 const KNIGHT = 2;
 const FIERY = "knightFiery";
 const styleName = (personality: string): string => `commands:defense.personalities.${personality}.name`;
@@ -118,6 +121,15 @@ describe("defense style choice", () => {
 		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
 		await waitFor(() => expect(choose).toHaveBeenCalledTimes(1));
 		expect(choose).toHaveBeenCalledWith(4);
+	});
+
+	it("answers once: putting the sheet away after adopting a style does not refuse it as well", async () => {
+		const choose = await renderChoice(defenseCollector({ currentPersonality: FIERY }));
+		await fireEvent.press(screen.getByRole("button", { name: styleName("knightEnduring") }));
+		await fireEvent.press(screen.getByRole("button", { name: "app:defense.choose" }));
+		await fireEvent.press(screen.getByTestId("detail-sheet-backdrop"));
+		expect(choose).toHaveBeenCalledTimes(1);
+		expect(choose).toHaveBeenCalledWith(1);
 	});
 });
 
