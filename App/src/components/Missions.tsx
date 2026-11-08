@@ -250,13 +250,11 @@ function useRequestedView(open: (view: MissionsView) => void): void {
 
 /** The missions and the king's challenge, side by side as on Discord; rewards waiting to be opened are counted on the missions. */
 function MissionsViews({
-	data, now
+	data, now, view, onViewChange
 }: {
-	data: MissionsRes; now: number;
+	data: MissionsRes; now: number; view: MissionsView; onViewChange: (view: MissionsView) => void;
 }): ReactNode {
-	const [view, setView] = useState<MissionsView>(MISSIONS_VIEWS.MISSIONS);
 	const unclaimed = useMissionRewards().rewards.missions.length;
-	useRequestedView(setView);
 	const kingChallenge = data.kingChallenge;
 	const missions = <>
 		<UnclaimedMissions />
@@ -276,7 +274,7 @@ function MissionsViews({
 				}
 			]}
 			value={view}
-			onChange={setView}
+			onChange={onViewChange}
 			label={i18n.t("app:profile.titles.missions")}
 		/>
 		{view === MISSIONS_VIEWS.KING_CHALLENGE ? <KingChallenge progress={kingChallenge} now={now} /> : missions}
@@ -287,6 +285,10 @@ export function Missions(): ReactNode {
 	const queryClient = useQueryClient();
 	const now = useCurrentTime(CLOCK_INTERVALS.MINUTE_MS);
 	const state = useMissions();
+
+	// The requested view is taken as soon as the missions open, so closing them while they load does not leave it for the next opening.
+	const [view, setView] = useState<MissionsView>(MISSIONS_VIEWS.MISSIONS);
+	useRequestedView(setView);
 	useConsultMissions();
 	const data = state.status === "ready" ? state.data : null;
 	useGameDeadline(GAME_ENTITIES.MISSIONS, data ? data.dailyMission.resetsAt : null);
@@ -303,5 +305,5 @@ export function Missions(): ReactNode {
 	if (state.status === "empty") {
 		return <EmptyState>{i18n.t("app:profile.notFound")}</EmptyState>;
 	}
-	return <MissionsViews data={state.data} now={now} />;
+	return <MissionsViews data={state.data} now={now} view={view} onViewChange={setView} />;
 }
