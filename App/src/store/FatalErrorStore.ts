@@ -25,23 +25,40 @@ type Listener = () => void;
 
 const STORAGE_KEY = "lastFatalError";
 
-/** Long enough for the frames that locate the error, short enough to be stored and shared as a message. */
+/** Long enough for the message and the frames that locate the error, short enough to be stored and shared as a message. */
 const MAX_TRACE_LENGTH = 4_000;
 
+const REDACTED = "[redacted]";
+
+/**
+ * The report leaves the phone, so no credential goes in it: Keycloak's tokens are JWTs, and the socket address carries the
+ * access token as its `token` parameter.
+ */
+const CREDENTIALS: readonly (readonly [RegExp, string])[] = [
+	[/eyJ[\w-]*\.[\w-]+\.[\w-]*/g, REDACTED],
+	[/(token=)[^&\s"']+/gi, `$1${REDACTED}`],
+	[/(Bearer\s+)[^\s"']+/gi, `$1${REDACTED}`]
+];
+
+/** Credentials are masked before the text is cut, so that cutting it cannot leave the start of one behind. */
+function reportText(text: string): string {
+	return CREDENTIALS.reduce((masked, [pattern, replacement]) => masked.replace(pattern, replacement), text).slice(0, MAX_TRACE_LENGTH);
+}
+
 function trace(value: unknown): string {
-	return typeof value === "string" ? value.slice(0, MAX_TRACE_LENGTH) : "";
+	return typeof value === "string" ? reportText(value) : "";
 }
 
 /** What the error says and where it was thrown; a thrown value that is no Error only has its text. */
 export function describeFatalError(error: unknown): Pick<FatalErrorRecord, "message" | "stack" | "componentStack"> {
 	if (!(error instanceof Error)) {
 		return {
-			message: String(error), stack: ""
+			message: reportText(String(error)), stack: ""
 		};
 	}
 	const componentStack = trace(Reflect.get(error, "componentStack"));
 	return {
-		message: `${error.name}: ${error.message}`,
+		message: reportText(`${error.name}: ${error.message}`),
 		stack: trace(error.stack),
 		...componentStack ? { componentStack } : {}
 	};

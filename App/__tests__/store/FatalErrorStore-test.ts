@@ -100,4 +100,30 @@ describe("fatal error store", () => {
 		expect(reactNativeHandler).toHaveBeenCalledWith(warning, false);
 		expect(fatalErrorStore.getLast()).toBeNull();
 	});
+
+	it("keeps no credential in a report that leaves the phone, even when the error quotes the socket address", () => {
+		const accessToken = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJwbGF5ZXIifQ.c2lnbmF0dXJl";
+		const address = `wss://crownicles.example.com/ws?protocol=3&token=${accessToken}`;
+		const error = new Error(`Unable to open ${address}`);
+		error.stack = `Error: Unable to open ${address}\n    at connect (WebSocketClient.ts:253:18)`;
+		launchApp().installFatalErrorHandler();
+
+		ErrorUtils.getGlobalHandler()(error, true);
+
+		const report = launchApp().fatalErrorStore.getLast();
+		expect(mockStorage.get("lastFatalError")).not.toContain(accessToken);
+		expect(report?.message).toContain("wss://crownicles.example.com/ws?protocol=3");
+		expect(report?.stack).toContain("at connect (WebSocketClient.ts:253:18)");
+		expect(launchApp().describeFatalError("refresh_token=opaque-refresh&client_id=app Bearer opaque-access").message)
+			.not.toMatch(/opaque-refresh|opaque-access/);
+	});
+
+	it("keeps a report short enough to be stored and shared, whatever the error says", () => {
+		const payload = "x".repeat(100_000);
+		launchApp().installFatalErrorHandler();
+
+		ErrorUtils.getGlobalHandler()(new Error(payload), true);
+
+		expect(launchApp().fatalErrorStore.getLast()?.message.length).toBeLessThan(payload.length);
+	});
 });
