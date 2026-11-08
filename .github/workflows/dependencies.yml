@@ -32,8 +32,10 @@ jobs:
         with:
           fail-on-severity: high
           # GHSA-qr28-fpjm-wq7f, a denial of service of decode-uri-component 0.2 on a crafted link, is only
-          # fixed in 0.5.1, out of the ^0.2 that query-string 7 of the app's @react-navigation/core requires.
-          # Remove once the app is on @react-navigation/core 7.24 or later, which no longer uses query-string.
+          # fixed in 0.5.1, an ES module out of the ^0.2 that query-string 7 requires. expo-router 57 and
+          # @react-navigation/core 7.12 both read the app's links with that query-string. Remove once the app is on
+          # Expo SDK 58 and @react-navigation/native 7.5: neither expo-router 58 nor @react-navigation/core 7.24
+          # uses query-string any more (#5122).
           allow-ghsas: GHSA-qr28-fpjm-wq7f
 
   pnpm-version-consistency:

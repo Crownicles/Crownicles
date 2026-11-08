@@ -138,9 +138,11 @@ whose fix is out of that range; none of them is part of the bundle shipped in th
   does not declare, so it never runs. Remove it once `expo-game-center` no longer brings
   `@expo/plist` 0.1.
 
-`decode-uri-component` 0.2 is the one advisory left: it is fixed in 0.5.1 only, out of what the
-`query-string` of `@react-navigation/core` requires, so `.github/workflows/dependencies.yml` allows
-it until the app moves to a `@react-navigation/core` that no longer uses `query-string`.
+`decode-uri-component` 0.2 is the one advisory left: it is fixed in 0.5.1 only, an ES module out of
+the range of the `query-string` 7 that `expo-router` 57 and `@react-navigation/core` read the app's
+links with, so `.github/workflows/dependencies.yml` allows it until the app moves to Expo SDK 58 and
+`@react-navigation/native` 7.5: neither `expo-router` 58 nor `@react-navigation/core` 7.24 uses
+`query-string` any more (#5122).
 
 ## Game Center and Google Play Games
 
