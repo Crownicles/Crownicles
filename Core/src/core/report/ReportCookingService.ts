@@ -1292,7 +1292,7 @@ export async function handleCookingSetSpecialty(
 ): Promise<CrowniclesPacket[]> {
 	const data = await getPlayerAndHome(keycloakId);
 	if (!data) {
-		return [];
+		return [makePacket(CommandReportCookingUnavailableRes, {})];
 	}
 
 	const error = await setSpecialty(data, {
@@ -1317,7 +1317,7 @@ export async function handleCookingRemoveSpecialty(
 ): Promise<CrowniclesPacket[]> {
 	const data = await getPlayerAndHome(keycloakId);
 	if (!data) {
-		return [];
+		return [makePacket(CommandReportCookingUnavailableRes, {})];
 	}
 
 	await PlayerCookingSpecialty.destroy({
