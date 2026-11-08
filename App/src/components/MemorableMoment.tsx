@@ -288,7 +288,7 @@ function CardMiddle({ content }: { content: MomentCardContent }): ReactNode {
 		</View>
 		<Text style={[cardStyles.eyebrow, { color: accent }]}>{content.eyebrow}</Text>
 		<Text style={cardStyles.title} numberOfLines={2} adjustsFontSizeToFit>{content.title}</Text>
-		<TwemojiText containerStyle={cardStyles.subtitleBox} textStyle={cardStyles.subtitle} emojiSize={Theme.fontSize.body} numberOfLines={2}>{content.subtitle}</TwemojiText>
+		<TwemojiText containerStyle={cardStyles.subtitleBox} textStyle={cardStyles.subtitle} numberOfLines={2}>{content.subtitle}</TwemojiText>
 		{content.record
 			? <View style={cardStyles.record}>
 				<Text style={[cardStyles.recordLevel, { color: accent }]}>{i18n.t("app:inventory.level", { level: content.record.level })}</Text>

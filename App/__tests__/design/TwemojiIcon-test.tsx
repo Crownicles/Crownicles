@@ -1,8 +1,9 @@
 import { render } from "@testing-library/react-native";
 import { createElement } from "react";
+import { TextStyle } from "react-native";
 import { twemojiAssetUrl } from "@/src/design/TwemojiIcon";
 import {
-	inlineEmojiOffset, TwemojiText
+	inlineEmoji, TwemojiText
 } from "@/src/design/TwemojiText";
 import {
 	ArrowRight, Cannon
@@ -84,16 +85,42 @@ describe("emojis among words", () => {
 		[14.5, 14.5],
 		[25, 30]
 	])("centres a %s pt text's %s pt emoji on its capitals rather than standing it on the baseline", (fontSize, emojiSize) => {
-		const emojiMiddle = emojiSize / 2 - inlineEmojiOffset({ fontSize }, emojiSize);
-		expect(emojiMiddle).toBeCloseTo(capitalsMiddle(fontSize));
+		const emoji = inlineEmoji({ fontSize }, emojiSize);
+		expect(emoji.size / 2 - emoji.offset).toBeCloseTo(capitalsMiddle(fontSize));
+	});
+
+	it("draws an emoji as tall as the letters of its text unless another size is asked", () => {
+		expect(inlineEmoji({
+			fontSize: 13, lineHeight: 18
+		}).size).toBe(13);
+		expect(inlineEmoji({
+			fontSize: 13, lineHeight: 18
+		}, 16).size).toBe(16);
+	});
+
+	it.each<[TextStyle & { fontSize: number }, number]>([
+		[
+			{
+				fontSize: 12, lineHeight: 17
+			}, 30
+		],
+		[{ fontSize: 10 }, 20]
+	])("keeps an emoji asked taller than the line of %j within that line, where iOS would cut it", (textStyle, emojiSize) => {
+		const emoji = inlineEmoji(textStyle, emojiSize);
+		const line = textStyle.lineHeight ?? textStyle.fontSize * 1.21;
+
+		// Inter's capitals sit in the middle of the line: an emoji centred on them spans the middle ± half its size.
+		expect(line / 2 - emoji.size / 2).toBeGreaterThanOrEqual(0);
+		expect(line / 2 + emoji.size / 2).toBeLessThanOrEqual(line);
 	});
 
 	it("lowers each emoji of a text by what its own text size asks", async () => {
 		const femaleSymbol = String.fromCodePoint(0x26a7, 0xfe0f);
-		const { getByLabelText } = await render(<TwemojiText textStyle={{ fontSize: 20 }} emojiSize={20}>{femaleSymbol}</TwemojiText>);
-		expect(getByLabelText(femaleSymbol).props.style).toEqual(
-			expect.objectContaining({ transform: [{ translateY: inlineEmojiOffset({ fontSize: 20 }, 20) }] })
-		);
-		expect(inlineEmojiOffset({ fontSize: 20 }, 20)).toBeGreaterThan(0);
+		const { getByLabelText } = await render(<TwemojiText textStyle={{ fontSize: 20 }}>{femaleSymbol}</TwemojiText>);
+		const expected = inlineEmoji({ fontSize: 20 });
+		expect(getByLabelText(femaleSymbol).props.style).toEqual(expect.objectContaining({
+			width: 20, height: 20, transform: [{ translateY: expected.offset }]
+		}));
+		expect(expected.offset).toBeGreaterThan(0);
 	});
 });

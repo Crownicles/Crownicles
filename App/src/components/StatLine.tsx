@@ -118,7 +118,7 @@ export function StatLine({
 		{compared === undefined ? null : <Text style={styles.compared}>{compared}</Text>}
 		<View style={[styles.valueBox, compared !== undefined && styles.column]}>
 			{capped ? <Text style={styles.capped}>{capped}</Text> : null}
-			<TwemojiText textStyle={styles.value} emojiSize={Theme.fontSize.rowTitle}>{value}</TwemojiText>
+			<TwemojiText textStyle={styles.value}>{value}</TwemojiText>
 		</View>
 		{children}
 	</View>;

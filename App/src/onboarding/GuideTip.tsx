@@ -58,7 +58,7 @@ export function GuideTip({
 	return <View style={styles.tip} {...testID ? { testID } : {}}>
 		<View style={styles.emblem}><TwemojiIcon emoji={AppIcons.getIcon("other.guide")} size={GUIDE_ICON} /></View>
 		<View style={styles.body}>
-			<TwemojiText textStyle={styles.text} emojiSize={Theme.fontSize.bodySmall}>{text}</TwemojiText>
+			<TwemojiText textStyle={styles.text}>{text}</TwemojiText>
 			{action
 				? <Pressable
 					accessibilityRole="button"

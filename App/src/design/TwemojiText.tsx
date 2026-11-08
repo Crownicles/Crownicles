@@ -29,17 +29,30 @@ export function emojiEntities(text: string): readonly EmojiEntity[] {
 /** Inter's capitals rise this share of the font size above the baseline. */
 const CAP_HEIGHT_RATIO = 0.727;
 
+/** Inter's ascender to descender, as a share of the font size: the height of a line whose style sets none. */
+const NATURAL_LINE_HEIGHT_RATIO = 1.21;
+
 /** React Native's own text size, for a text whose style sets none. */
 const DEFAULT_FONT_SIZE = 14;
 
+/** How the emojis of a text are drawn: their size, and how far they are lowered onto the words. */
+export type InlineEmoji = {
+	size: number; offset: number;
+};
+
 /**
  * Both platforms stand an inline image on the baseline of its line, so an emoji as tall as the letters rises
- * above them, and iOS cuts what passes the top of the text. Lowered by this much, it is centred on the
- * capitals whatever the size of the text and of the emoji, instead of following a nudge tuned for one size.
+ * above them, and iOS cuts what passes the box of the text. Lowered by `offset`, it is centred on the capitals
+ * whatever the size of the text and of the emoji; and since Inter's capitals sit in the middle of its line, an
+ * emoji no taller than the line always stays whole. It is as tall as the letters unless a size is asked.
  */
-export function inlineEmojiOffset(textStyle: StyleProp<TextStyle>, emojiSize: number): number {
-	const fontSize = StyleSheet.flatten(textStyle)?.fontSize ?? DEFAULT_FONT_SIZE;
-	return (emojiSize - fontSize * CAP_HEIGHT_RATIO) / 2;
+export function inlineEmoji(textStyle: StyleProp<TextStyle>, emojiSize?: number): InlineEmoji {
+	const flat = StyleSheet.flatten(textStyle);
+	const fontSize = flat?.fontSize ?? DEFAULT_FONT_SIZE;
+	const size = Math.min(emojiSize ?? fontSize, flat?.lineHeight ?? fontSize * NATURAL_LINE_HEIGHT_RATIO);
+	return {
+		size, offset: (size - fontSize * CAP_HEIGHT_RATIO) / 2
+	};
 }
 
 /**
@@ -49,14 +62,13 @@ export function inlineEmojiOffset(textStyle: StyleProp<TextStyle>, emojiSize: nu
  * emoji substitution.
  */
 export function twemojiParts({
-	text, textStyle, emojiSize, emojiOffset, keyPrefix = ""
+	text, textStyle, emoji, keyPrefix = ""
 }: {
 	text: string;
 	textStyle?: StyleProp<TextStyle>;
-	emojiSize: number;
 
-	/** From `inlineEmojiOffset`, with the style of the text holding the pieces. */
-	emojiOffset: number;
+	/** From `inlineEmoji`, with the style of the text holding the pieces. */
+	emoji: InlineEmoji;
 	keyPrefix?: string;
 }): ReactNode[] {
 	const entities = emojiEntities(text);
@@ -77,8 +89,8 @@ export function twemojiParts({
 			<TwemojiIcon
 				key={`${keyPrefix}emoji-${startIndex}-${endIndex}`}
 				emoji={entity.text}
-				size={emojiSize}
-				verticalOffset={emojiOffset}
+				size={emoji.size}
+				verticalOffset={emoji.offset}
 			/>
 		);
 		lastIndex = endIndex;
@@ -116,10 +128,12 @@ export function TwemojiText({
 	children: string;
 	textStyle?: StyleProp<TextStyle>;
 	containerStyle?: StyleProp<ViewStyle>;
-	emojiSize: number;
+
+	/** Only for an emoji meant to stand apart from the letters: by default it is as tall as they are. */
+	emojiSize?: number;
 	numberOfLines?: number;
 }): ReactNode {
 	return <View style={containerStyle}><Text style={textStyle} numberOfLines={numberOfLines}>{twemojiParts({
-		text: children, emojiSize, emojiOffset: inlineEmojiOffset(textStyle, emojiSize)
+		text: children, emoji: inlineEmoji(textStyle, emojiSize)
 	})}</Text></View>;
 }

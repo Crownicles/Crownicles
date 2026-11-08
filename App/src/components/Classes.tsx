@@ -197,7 +197,7 @@ function ClassAttack({ attack }: { attack: ClassDetails["attacks"][number] }): R
 			<Text style={styles.attackName} numberOfLines={1}>{i18n.t(`models:fight_actions.${attack.id}.name`, { count: 1 })}</Text>
 			<Text style={styles.attackDescription}>{i18n.t(`models:fight_actions.${attack.id}.description`)}</Text>
 		</View>
-		<TwemojiText textStyle={styles.attackCost} emojiSize={12}>{i18n.t("app:classes.breathCost", { cost: attack.cost })}</TwemojiText>
+		<TwemojiText textStyle={styles.attackCost}>{i18n.t("app:classes.breathCost", { cost: attack.cost })}</TwemojiText>
 	</View>;
 }
 
