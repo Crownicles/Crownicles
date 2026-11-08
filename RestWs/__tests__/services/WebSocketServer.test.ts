@@ -123,6 +123,63 @@ describe("WebSocket session ownership", () => {
 		expect(mocks.publish).toHaveBeenCalledTimes(1);
 	});
 
+	/** The token check answers only when the test says so, as a slow Keycloak would. */
+	function delayTokenCheck(): (result: object) => void {
+		let finish!: (result: object) => void;
+		mocks.checkToken.mockReturnValueOnce(new Promise<object>(resolve => { finish = resolve; }));
+		return (result): void => finish(result);
+	}
+
+	it("handles, in order, what a phone sent as soon as it connected, while its token was being checked", async () => {
+		const finish = delayTokenCheck();
+		const socket = new SocketStub();
+		const pending = connect(socket);
+		await send(socket, JSON.stringify({id: "first", name: "command", data: {}}));
+		await send(socket, presence(true));
+		await send(socket, JSON.stringify({id: "second", name: "command", data: {}}));
+		expect(mocks.publish).not.toHaveBeenCalled();
+
+		finish({isError: false, payload: {keycloakId: PLAYER}});
+		await pending;
+		expect(mocks.publish.mock.calls.map(([context]) => context.packetId)).toEqual(["first", "second"]);
+		expect(WebSocketServer.isInForeground(PLAYER)).toBe(true);
+	});
+
+	it("forgets what a socket sent before its token was refused", async () => {
+		const finish = delayTokenCheck();
+		const socket = new SocketStub();
+		const pending = connect(socket);
+		await send(socket);
+		finish({isError: true, status: 401});
+		await pending;
+		expect(socket.close).toHaveBeenCalledWith(1008, "Unauthorized");
+		expect(mocks.translator).not.toHaveBeenCalled();
+		expect(mocks.publish).not.toHaveBeenCalled();
+	});
+
+	it("holds a bounded number of messages while the token is being checked", async () => {
+		const finish = delayTokenCheck();
+		const socket = new SocketStub();
+		const pending = connect(socket);
+		for (let index = 0; index <= WebSocketConstants.MAX_HELD_MESSAGES; index++) {
+			await send(socket);
+		}
+		finish({isError: false, payload: {keycloakId: PLAYER}});
+		await pending;
+		expect(mocks.publish).toHaveBeenCalledTimes(WebSocketConstants.MAX_HELD_MESSAGES);
+	});
+
+	it("holds a bounded size of messages while the token is being checked", async () => {
+		const finish = delayTokenCheck();
+		const socket = new SocketStub();
+		const pending = connect(socket);
+		await send(socket, JSON.stringify({id: "oversized", name: "command", data: {padding: "x".repeat(WebSocketConstants.MAX_HELD_BYTES)}}));
+		await send(socket, JSON.stringify({id: "small", name: "command", data: {}}));
+		finish({isError: false, payload: {keycloakId: PLAYER}});
+		await pending;
+		expect(mocks.publish.mock.calls.map(([context]) => context.packetId)).toEqual(["small"]);
+	});
+
 	it.each([
 		null, 1, "text", [], {name: "command", data: null}, {name: "command", data: []},
 		{name: {}, data: {}}, {name: "command", data: {}, id: 1},
@@ -147,7 +204,8 @@ describe("WebSocket session ownership", () => {
 		const socket = new SocketStub();
 		await connect(socket);
 		expect(socket.close).toHaveBeenCalledWith(1008, "Account collision requires resolution");
-		expect(socket.on.mock.calls.some(([event]) => event === "message")).toBe(false);
+		await send(socket);
+		expect(mocks.translator).not.toHaveBeenCalled();
 		expect(mocks.publish).not.toHaveBeenCalled();
 	});
 
@@ -156,7 +214,8 @@ describe("WebSocket session ownership", () => {
 		const socket = new SocketStub();
 		await connect(socket);
 		expect(socket.close).toHaveBeenCalledWith(1008, WEBSOCKET_AUTH_UNAVAILABLE_REASON);
-		expect(socket.on.mock.calls.some(([event]) => event === "message")).toBe(false);
+		await send(socket);
+		expect(mocks.translator).not.toHaveBeenCalled();
 		expect(mocks.publish).not.toHaveBeenCalled();
 	});
 

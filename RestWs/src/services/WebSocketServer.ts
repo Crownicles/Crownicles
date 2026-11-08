@@ -10,6 +10,7 @@ import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../packets/fromClient/FromClientTranslator";
 import { InvalidClientPacketError } from "../packets/fromClient/InvalidClientPacketError";
 import { AccountCollisionService } from "./AccountCollisionService";
+import { ClientMessageInbox } from "./ClientMessageInbox";
 import {
 	WEBSOCKET_APP_OUTDATED_REASON, WEBSOCKET_SERVER_OUTDATED_REASON, WEBSOCKET_SESSION_REPLACED_REASON, WEBSOCKET_ACCOUNT_COLLISION_REASON, WEBSOCKET_AUTH_UNAVAILABLE_REASON, WebSocketCloseReason
 } from "../../../WsPackets/src/WebSocketCloseReasons";
@@ -116,65 +117,64 @@ function logClientPacketFailure(error: unknown, packet: FailedClientPacket): voi
 }
 
 /**
- * Handle the message received from the client
+ * Handle a message received from a verified client
  * @param ws
  * @param player
+ * @param message
  */
-function handleClientMessage(ws: WebSocket, {
+async function handleClientMessage(ws: WebSocket, {
 	keycloakId, groups
-}: ConnectedPlayer): void {
-	ws.on("message", async (message: string) => {
-		if (!WebSocketServer.isActiveConnection(keycloakId, ws)) {
-			return;
-		}
-		const parsedMessage = parseClientMessage(message);
-		if (!parsedMessage) {
-			return;
-		}
-		if (parsedMessage.name === AppPresenceReq.wireName) {
-			WebSocketServer.recordPresence(ws, (parsedMessage.data as Partial<AppPresenceReq>).foreground === true);
-			return;
-		}
+}: ConnectedPlayer, message: string): Promise<void> {
+	if (!WebSocketServer.isActiveConnection(keycloakId, ws)) {
+		return;
+	}
+	const parsedMessage = parseClientMessage(message);
+	if (!parsedMessage) {
+		return;
+	}
+	if (parsedMessage.name === AppPresenceReq.wireName) {
+		WebSocketServer.recordPresence(ws, (parsedMessage.data as Partial<AppPresenceReq>).foreground === true);
+		return;
+	}
 
-		// Log the received message
-		CrowniclesLogger.debug("Received message from client", {
-			keycloakId,
-			packet: {
-				name: parsedMessage.name,
-				data: parsedMessage.data
-			}
-		});
-
-		const translator = getClientTranslator(parsedMessage.name);
-		if (!translator) {
-			CrowniclesLogger.debug("No translator found for message", { parsedMessage });
-			return;
-		}
-
-		// Create the context for the message and send it to the back end
-		try {
-			const context: PacketContext = {
-				packetId: parsedMessage.id,
-				frontEndOrigin: ContextConstants.FRONT_END_ORIGIN,
-				frontEndSubOrigin: ContextConstants.FRONT_END_SUB_ORIGIN,
-				keycloakId,
-				rightGroups: groups as RightGroup[],
-				webSocket: {}
-			};
-
-			// todo verify that all properties are present in the message
-			const packet = await translator(context, parsedMessage.data);
-			if (WebSocketServer.isActiveConnection(keycloakId, ws)) {
-				MqttManager.globalMqttClient.sendToBackEnd(context, packet);
-			}
-		}
-		catch (error) {
-			logClientPacketFailure(error, {
-				keycloakId,
-				packetName: parsedMessage.name
-			});
+	// Log the received message
+	CrowniclesLogger.debug("Received message from client", {
+		keycloakId,
+		packet: {
+			name: parsedMessage.name,
+			data: parsedMessage.data
 		}
 	});
+
+	const translator = getClientTranslator(parsedMessage.name);
+	if (!translator) {
+		CrowniclesLogger.debug("No translator found for message", { parsedMessage });
+		return;
+	}
+
+	// Create the context for the message and send it to the back end
+	try {
+		const context: PacketContext = {
+			packetId: parsedMessage.id,
+			frontEndOrigin: ContextConstants.FRONT_END_ORIGIN,
+			frontEndSubOrigin: ContextConstants.FRONT_END_SUB_ORIGIN,
+			keycloakId,
+			rightGroups: groups as RightGroup[],
+			webSocket: {}
+		};
+
+		// todo verify that all properties are present in the message
+		const packet = await translator(context, parsedMessage.data);
+		if (WebSocketServer.isActiveConnection(keycloakId, ws)) {
+			MqttManager.globalMqttClient.sendToBackEnd(context, packet);
+		}
+	}
+	catch (error) {
+		logClientPacketFailure(error, {
+			keycloakId,
+			packetName: parsedMessage.name
+		});
+	}
 }
 
 /**
@@ -238,6 +238,9 @@ export class WebSocketServer {
 	 */
 	private static handleConnection(): void {
 		WebSocketServer.server.on("connection", async (ws, req) => {
+			// Listen right away: what arrives while the token is checked must not be lost
+			const inbox = new ClientMessageInbox();
+			ws.on("message", (message: string) => inbox.receive(message));
 			try {
 				// Verify the client connection and get the keycloakId and groups
 				const connectionData = await WebSocketServer.verifyClientConnection(ws, req);
@@ -250,11 +253,11 @@ export class WebSocketServer {
 				WebSocketServer.replaceConnection(keycloakId, ws);
 				ws.on("pong", () => WebSocketServer.unansweredSockets.delete(ws));
 
-				// Handle the message received from the client
-				handleClientMessage(ws, connectionData);
-
 				// Handle the close event
 				ws.on("close", () => WebSocketServer.handleClose(ws, req, keycloakId));
+
+				// Handle the messages received from the client, starting with the ones that waited
+				await inbox.open(message => handleClientMessage(ws, connectionData, message));
 			}
 			catch (error) {
 				CrowniclesLogger.errorWithObj("Error during WebSocket connection", error);
