@@ -120,7 +120,8 @@
   "pnpm": {
     "overrides": {
       "shell-quote": "^1.9.0",
-      "zod": "^4.6.6"
+      "zod": "^4.6.6",
+      "@xmldom/xmldom@^0.7": "^0.8.15"
     },
     "patchedDependencies": {
       "react-native-google-play-games@0.4.0": "patches/react-native-google-play-games@0.4.0.patch",

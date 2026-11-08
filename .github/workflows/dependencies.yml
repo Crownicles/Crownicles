@@ -31,6 +31,10 @@ jobs:
         uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
+          # GHSA-qr28-fpjm-wq7f, a denial of service of decode-uri-component 0.2 on a crafted link, is only
+          # fixed in 0.5.1, out of the ^0.2 that query-string 7 of the app's @react-navigation/core requires.
+          # Remove once the app is on @react-navigation/core 7.24 or later, which no longer uses query-string.
+          allow-ghsas: GHSA-qr28-fpjm-wq7f
 
   pnpm-version-consistency:
     runs-on: ubuntu-latest
