@@ -67,6 +67,39 @@ describe("KingChallengeToast", () => {
 		expect(screen.getByText("app:kingChallenge.toast.title {\"count\":2,\"tier\":3,\"tierCount\":4}")).toBeTruthy();
 	});
 
+	it("adds up a crossing that the rewards of the previous one caused, rather than forgetting the first", async () => {
+		await render(<KingChallengeToast />);
+		await crossTiers({
+			reward: {
+				money: 1_250, tokens: 2, gems: 0
+			}
+		});
+		await crossTiers({
+			tier: 3,
+			reward: {
+				money: 1_750, tokens: 3, gems: 1
+			},
+			ownedTokens: 11
+		});
+		expect(screen.getByText("app:kingChallenge.toast.title {\"count\":2,\"tier\":3,\"tierCount\":4}")).toBeTruthy();
+		expect(screen.getByText("app:kingChallenge.toast.money {\"amount\":\"3,000\"} · app:kingChallenge.toast.tokens {\"amount\":\"5\"} · app:kingChallenge.toast.gems {\"amount\":\"1\"}")).toBeTruthy();
+	});
+
+	it("tells only the crossing of a new week when the previous one was not told yet", async () => {
+		await render(<KingChallengeToast />);
+		await crossTiers({
+			tier: 4, crossedTiers: 1
+		});
+		await crossTiers({
+			tier: 1,
+			reward: {
+				money: 750, tokens: 2, gems: 0
+			}
+		});
+		expect(screen.getByText("app:kingChallenge.toast.title {\"count\":1,\"tier\":1,\"tierCount\":4}")).toBeTruthy();
+		expect(screen.getByText("app:kingChallenge.toast.money {\"amount\":\"750\"} · app:kingChallenge.toast.tokens {\"amount\":\"2\"}")).toBeTruthy();
+	});
+
 	it("says why no token came when the player already held the cap", async () => {
 		await render(<KingChallengeToast />);
 		await crossTiers({
