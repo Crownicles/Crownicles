@@ -88,9 +88,9 @@ const useStyles = createStyles(colors => ({
 	metaText: {
 		flex: 1, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted
 	},
-	metaDate: {
-		flexShrink: 0, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle, color: colors.muted
-	},
+
+	// The date keeps its full width: only the class before it is shortened.
+	metaDate: { flex: 0 },
 	leagueLabel: {
 		flex: 1, fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowSubtitle, lineHeight: Theme.lineHeight.rowSubtitle
 	},
@@ -186,7 +186,7 @@ function PlayerHistoryEntry({ entry }: { entry: PlayerFightHistoryEntry }): Reac
 			<View style={styles.meta}>
 				{classIcon ? <TwemojiIcon emoji={classIcon} size={12} /> : null}
 				<Text style={styles.metaText} numberOfLines={1}>{i18n.t(`models:classes.${entry.classes.opponent}`)}</Text>
-				<Text style={styles.metaDate}>· {missionDate(entry.date)}</Text>
+				<Text style={[styles.metaText, styles.metaDate]}>· {missionDate(entry.date)}</Text>
 			</View>
 			{league ? <HistoryLeagueChange change={league} /> : null}
 		</View>
@@ -213,7 +213,7 @@ function KingGuardHistoryEntry({ entry }: { entry: KingGuardFightHistoryEntry })
 			<View style={styles.meta}>
 				{classIcon ? <TwemojiIcon emoji={classIcon} size={12} /> : null}
 				<Text style={styles.metaText} numberOfLines={1}>{i18n.t(`models:classes.${entry.classes.opponent}`)} · {i18n.t("app:battle.level", { level: entry.kingGuard.level })}</Text>
-				<Text style={styles.metaDate}>· {missionDate(entry.date)}</Text>
+				<Text style={[styles.metaText, styles.metaDate]}>· {missionDate(entry.date)}</Text>
 			</View>
 		</View>
 		<View style={styles.end}>
