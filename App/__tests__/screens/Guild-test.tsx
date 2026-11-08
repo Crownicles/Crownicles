@@ -20,7 +20,9 @@ import {
 	GuildInvitePlayerReq, GuildInviteReq, GuildLeaveReq
 } from "ws-packets/src/fromClient/GuildManagementReq";
 import { JoinBoatReq } from "ws-packets/src/fromClient/PlayerUtilityReq";
-import { GuildDomainContent } from "@/src/components/GuildDomain";
+import {
+	GuildDomainContent, GuildFoodShopContent
+} from "@/src/components/GuildDomain";
 import { GuildDomainSnapshot } from "ws-packets/src/objects/GuildDomain";
 import {
 	GuildDomainDepositReq, GuildDomainFoodReq, GuildDomainUpgradeReq
@@ -260,7 +262,8 @@ describe("guild screens", () => {
 			kind: "alternative", packetName: "GuildDomainRes", packet: {}
 		});
 		await render(<GuildDomainContent domain={{
-			...DOMAIN, maxBuyableFood: [
+			...DOMAIN,
+			maxBuyableFood: [
 				42,
 				2,
 				0,
@@ -307,6 +310,35 @@ describe("guild screens", () => {
 		}} />);
 		expect(screen.getByText("app:guild.domainLocks.none")).toBeTruthy();
 		expect(screen.queryByText("app:guildDomain.buildings")).toBeNull();
+	});
+	it("sells only food away from the domain, without the buildings and deposits that cannot be reached from there", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({
+			kind: "alternative", packetName: "GuildDomainRes", packet: {}
+		});
+		await render(<GuildFoodShopContent shop={{
+			...DOMAIN,
+			maxBuyableFood: [
+				42,
+				2,
+				0,
+				1
+			]
+		}} />);
+		expect(screen.queryByText("app:guildDomain.buildings")).toBeNull();
+		expect(screen.queryByText(/commands:report.city.guildDomain.buildings/)).toBeNull();
+		expect(screen.queryByText("app:guildDomain.deposit")).toBeNull();
+		expect(screen.getByText("app:city.summary.treasury")).toBeTruthy();
+		expect(screen.getAllByText("app:guildDomain.buyFood")).toHaveLength(3 + 2 + 1);
+		await fireEvent.press(screen.getAllByText("app:guildDomain.buyFood")[0]);
+		await waitFor(() => expect(GameClient.request).toHaveBeenCalled());
+		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(GuildDomainFoodReq);
+	});
+	it("asks for the refund right in the food shop, through the server's reactions", async () => {
+		mockOpenCollectors = [reimburseCollector()];
+		await render(<GuildFoodShopContent shop={DOMAIN} />);
+		expect(screen.getByText("app:guildDomain.confirmReimburse")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:guildDomain.reimburseDecline"));
+		expect(mockReact).toHaveBeenCalledWith("reimburse", 1);
 	});
 	it.each([
 		{

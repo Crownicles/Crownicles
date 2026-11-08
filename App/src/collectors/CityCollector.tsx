@@ -50,7 +50,7 @@ type CityCollectorData = Extract<ReactionCollectorCreation["data"], { type: type
 export type CityEntry = {
 	reaction: ReactionCollectorReaction; index: number;
 };
-export type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
+export type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild" | "guildFoodShop";
 
 export type CityNavigationItem = {
 	kind: "navigation";

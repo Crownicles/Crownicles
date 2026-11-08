@@ -1070,7 +1070,8 @@
       "inn": "Un repas est disponible toutes les {{mealHours}} h et une chambre toutes les {{roomHours}} h.",
       "garden": "L'arrosage est possible toutes les {{hours}} heures. Le jardin à distance permet seulement la récolte.",
       "notary": "Chaque ville applique son propre coefficient de prix pour les logements.",
-      "guildDomain": "Le domaine regroupe la boutique, le refuge, l'entrepôt et la ménagerie de votre guilde."
+      "guildDomain": "Le domaine regroupe la boutique, le refuge, l'entrepôt et la ménagerie de votre guilde.",
+      "guildFoodShop": "Un marchand itinérant propose de la nourriture pour familiers, réglée sur la trésorerie de votre guilde."
     },
     "reactions": {
       "enchant": "Aller voir l'enchanteur",

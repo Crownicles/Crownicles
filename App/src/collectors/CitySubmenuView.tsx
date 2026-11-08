@@ -30,7 +30,9 @@ import { Note } from "@/src/design/Primitives";
 import { Standing } from "@/src/design/Sections";
 import { Page } from "@/src/design/DetailScreen";
 import { TwemojiIcon } from "@/src/design/TwemojiIcon";
-import { GuildDomain } from "@/src/components/GuildDomain";
+import {
+	GuildDomain, GuildFoodShopPage
+} from "@/src/components/GuildDomain";
 import { useColors } from "@/src/design/ThemeContext";
 import { i18n } from "@/src/translations/i18n";
 
@@ -60,7 +62,9 @@ function submenuIcon(view: CitySubmenu, snapshot?: CityMobileSnapshot): string |
 	return AppIcons.getIconOrNull(cityNavigationMeta(view).iconPath);
 }
 
-const INTERACTIVE_SUBMENUS: Partial<Record<CitySubmenu, () => ReactNode>> = { guild: GuildDomain };
+const INTERACTIVE_SUBMENUS: Partial<Record<CitySubmenu, () => ReactNode>> = {
+	guild: GuildDomain, guildFoodShop: GuildFoodShopPage
+};
 
 /** The workshops ring with hammers: their heading takes the gold of hot metal. */
 const WARM_SUBMENUS = new Set<CitySubmenu>([
