@@ -26,10 +26,11 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
 	getItem: jest.fn().mockResolvedValue(null), setItem: jest.fn().mockResolvedValue(undefined)
 }));
 jest.mock("@/src/AppIcons", () => ({ AppIcons: {
-	getIcon: (): string => "", getIconOrNull: (): null => null
+	getIcon: (path: string): string => path === "pets.1.emoteMale" ? "🐕" : "", getIconOrNull: (): null => null
 } }));
 jest.mock("@/src/translations/i18n", () => ({ i18n: {
-	t: (key: string): string => key, tArray: (key: string): string[] => [key]
+	t: (key: string, options?: Record<string, unknown>): string => key === "commands:pet.shortPetField" ? `${String(options?.emote)} ${String(options?.name)}` : key,
+	tArray: (key: string): string[] => [key]
 } }));
 jest.mock("react-native-safe-area-context", () => ({ useSafeAreaInsets: (): {
 	top: number; bottom: number; left: number; right: number;
@@ -374,9 +375,14 @@ describe("live battle presentation", () => {
 			}
 		}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
 		await fireEvent.press(screen.getByRole("button", { name: "app:arena.details : Arsene" }));
-		expect(screen.getByText("app:arena.pet")).toBeTruthy();
-		expect(screen.getByText("commands:pet.shortPetField")).toBeTruthy();
-		expect(screen.queryByText("Milo")).toBeNull();
+
+		// The portrait already wears the pet's emoji: look for it on the row naming the pet only.
+		let petRow: ReturnType<typeof screen.getByText> | null = screen.getByText("app:arena.pet");
+		while (petRow && within(petRow).queryByText("Milo") === null) {
+			petRow = petRow.parent;
+		}
+		expect(petRow).not.toBeNull();
+		expect(within(petRow!).getByLabelText("🐕")).toBeTruthy();
 	});
 	it("shows both fighters' current statistics without opening their details", async () => {
 		const initial = battle();
