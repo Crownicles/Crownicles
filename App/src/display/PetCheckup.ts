@@ -57,29 +57,48 @@ function dwarfAside(pet: ShopPetCheckupRes): string {
 		: "";
 }
 
-/** The very report the Discord vet hands over, word for word. */
-export function petCheckupReport(pet: ShopPetCheckupRes): string {
-	const report = i18n.t(`${KEY}.giveDesc`, {
-		petName: shortPet(pet.typeId, pet.sex, pet.nickname),
-		commentOnResult: randomTranslation(`${KEY}.advice.${pet.loveLevel}`),
-		commentOnPetAge: i18n.t(`${KEY}.ageComment`, {
+export type PetCheckupSummary = {
+	advice: string;
+	ageComment: string;
+	lovePoints: {
+		actual: number;
+		max: number;
+	};
+	lovePointsGained: number;
+	force: number;
+	speed: number;
+	diet: string;
+	feedInterval: string;
+	nextFeed: string;
+	fightEffects: string[];
+	expeditions: string;
+	dwarfAside: string;
+};
+
+/** The vet's findings, split into fields so the screen can lay them out. */
+export function petCheckupSummary(pet: ShopPetCheckupRes): PetCheckupSummary {
+	return {
+		advice: randomTranslation(`${KEY}.advice.${pet.loveLevel}`),
+		ageComment: i18n.t(`${KEY}.ageComment`, {
 			context: pet.ageCategory, age: pet.petId - 1
 		}),
-		actualLP: pet.lovePoints,
-		maxLovePoints: pet.maxLovePoints,
-		diet: i18n.t("models:diet", { context: pet.diet }),
+		lovePoints: {
+			actual: pet.lovePoints,
+			max: pet.maxLovePoints
+		},
+		lovePointsGained: pet.lovePointsGained ?? 0,
 		force: pet.force,
 		speed: pet.speed,
-		feedDelay: formatDurationMinutes(pet.feedDelay / MILLISECONDS_PER_MINUTE),
+		diet: i18n.t("models:diet", { context: pet.diet }),
+		feedInterval: formatDurationMinutes(pet.feedDelay / MILLISECONDS_PER_MINUTE),
 		nextFeed: nextFeed(pet),
-		commentOnFightEffect: randomTranslation(`${KEY}.commentOnFightEffect.${pet.fightAssistId}`),
-		secondFightEffect: pet.secondFightAssistId
-			? i18n.t(`${KEY}.secondFightEffect`, { comment: randomTranslation(`${KEY}.commentOnFightEffect.${pet.secondFightAssistId}`) })
-			: "",
-		expeditionSection: expeditionSection(pet),
-		dwarfPet: dwarfAside(pet)
-	});
-	return pet.lovePointsGained
-		? report + i18n.t(`${KEY}.lovePointsGained`, { amount: pet.lovePointsGained })
-		: report;
+		fightEffects: [
+			randomTranslation(`${KEY}.commentOnFightEffect.${pet.fightAssistId}`),
+			...pet.secondFightAssistId
+				? [i18n.t(`${KEY}.secondFightEffect`, { comment: randomTranslation(`${KEY}.commentOnFightEffect.${pet.secondFightAssistId}`) })]
+				: []
+		],
+		expeditions: expeditionSection(pet),
+		dwarfAside: dwarfAside(pet)
+	};
 }

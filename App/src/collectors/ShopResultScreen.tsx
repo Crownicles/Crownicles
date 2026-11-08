@@ -2,12 +2,13 @@ import {
 	ReactNode, useState
 } from "react";
 import { View } from "react-native";
+import { ShopPetCheckupRes } from "ws-packets/src/fromServer/shop/ShopRes";
 import { ShopResult } from "@/src/collectors/ReportEventStore";
 import {
-	Note, Screen
+	Note, Screen, SectionHeader
 } from "@/src/design/Primitives";
 import {
-	ActionBanner, Standing
+	ActionBanner, Effects, EFFECT_TONES, Fact, Figures, Gauge, Standing
 } from "@/src/design/Sections";
 import {
 	BookOpen, Check, CircleAlert
@@ -19,22 +20,85 @@ import {
 } from "@/src/design/ThemeContext";
 import { MarketAnalysis } from "@/src/collectors/MarketAnalysis";
 import { petName } from "@/src/display/PetDisplay";
-import { petCheckupReport } from "@/src/display/PetCheckup";
+import { petCheckupSummary } from "@/src/display/PetCheckup";
 import {
 	isShopRefusal, shopOutcomeReport
 } from "@/src/display/ShopReport";
-import { plainLines } from "@/src/display/Markdown";
 import { i18n } from "@/src/translations/i18n";
 
 const RESULT_EMBLEM_SIZE = 27;
 
 const useStyles = createStyles(() => ({
-	continue: { marginTop: Theme.spacing.xl }
+	continue: { marginTop: Theme.spacing.xl },
+	block: { marginTop: Theme.spacing.md }
 }));
 
 function ContinueBanner({ onContinue }: { onContinue: () => void }): ReactNode {
 	const styles = useStyles();
 	return <View style={styles.continue}><ActionBanner icon={BookOpen} label={i18n.t("app:city.checkup.continue")} onPress={onContinue} /></View>;
+}
+
+function CheckupReport({ packet }: { packet: ShopPetCheckupRes }): ReactNode {
+	const styles = useStyles();
+	const colors = useColors();
+	const summary = petCheckupSummary(packet);
+	return (
+		<>
+			<SectionHeader>{i18n.t("app:city.checkup.headers.diagnosis")}</SectionHeader>
+			<Story>{summary.advice}</Story>
+			<Story>{summary.ageComment}</Story>
+
+			<SectionHeader>{i18n.t("app:city.checkup.headers.vitals")}</SectionHeader>
+			<Gauge
+				label={i18n.t("app:city.checkup.labels.lovePoints")}
+				value={`${summary.lovePoints.actual}/${summary.lovePoints.max}`}
+				ratio={summary.lovePoints.max > 0 ? summary.lovePoints.actual / summary.lovePoints.max : 0}
+				color={colors.red}
+			/>
+			<Figures items={[
+				{
+					caption: i18n.t("app:city.checkup.labels.force"), value: String(summary.force)
+				},
+				{
+					caption: i18n.t("app:city.checkup.labels.speed"), value: String(summary.speed)
+				}
+			]}
+			/>
+			{summary.lovePointsGained > 0 && (
+				<View style={styles.block}>
+					<Effects items={[
+						{
+							label: i18n.t("app:city.checkup.labels.lovePointsGained"),
+							value: String(summary.lovePointsGained),
+							tone: EFFECT_TONES.GAIN
+						}
+					]}
+					/>
+				</View>
+			)}
+
+			<SectionHeader>{i18n.t("app:city.checkup.headers.feeding")}</SectionHeader>
+			<Fact label={i18n.t("app:city.checkup.labels.diet")} value={summary.diet} />
+			<Fact label={i18n.t("app:city.checkup.labels.feedInterval")} value={summary.feedInterval} />
+			<Fact label={i18n.t("app:city.checkup.labels.nextFeed")} value={summary.nextFeed} />
+
+			<SectionHeader>{i18n.t("app:city.checkup.headers.combat")}</SectionHeader>
+			{summary.fightEffects.map((effect, index) => <Story key={index}>{effect}</Story>)}
+
+			{summary.expeditions !== "" && (
+				<>
+					<SectionHeader>{i18n.t("app:city.checkup.headers.expeditions")}</SectionHeader>
+					<Story>{summary.expeditions}</Story>
+				</>
+			)}
+			{summary.dwarfAside !== "" && (
+				<>
+					<SectionHeader>{i18n.t("app:city.checkup.headers.dwarf")}</SectionHeader>
+					<Story>{summary.dwarfAside}</Story>
+				</>
+			)}
+		</>
+	);
 }
 
 /** What the commerce answers once the player has picked something, told in its own words. */
@@ -60,7 +124,7 @@ export function ShopResultScreen({
 		return (
 			<Screen>
 				<Standing caption={i18n.t("app:city.checkup.eyebrow")} title={petName(result.packet)} />
-				<Note>{plainLines(petCheckupReport(result.packet))}</Note>
+				<CheckupReport packet={result.packet} />
 				<ContinueBanner onContinue={onContinue} />
 			</Screen>
 		);

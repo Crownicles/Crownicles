@@ -1,103 +1,101 @@
-import { changeLanguage } from "i18next";
+import { petCheckupSummary } from "@/src/display/PetCheckup";
 import { ShopPetCheckupRes } from "ws-packets/src/fromServer/shop/ShopRes";
-import { petCheckupReport } from "@/src/display/PetCheckup";
-import { applyServerBundle } from "@/src/translations/i18nLoader";
-import { fakeGameRules } from "@/src/testing/fakeGameRules";
-import frenchCommands from "../../../Lang/fr/commands.json";
-import frenchApp from "../../../Lang/fr/app.json";
-import frenchModels from "../../../Lang/fr/models.json";
 
-const VET = frenchCommands.shop.shopItems.lovePointsValue;
-const PET_INFORMATION_ICONS = [
-	"loveScore",
-	"diet",
-	"force",
-	"speed",
-	"feedDelay",
-	"nextFeed",
-	"age",
-	"fightEffect"
-];
+jest.mock("@/src/translations/i18n", () => ({ i18n: { t: (key: string, options?: object): string => `${key}${options ? ` ${JSON.stringify(options)}` : ""}` } }));
+jest.mock("@/src/translations/RandomTranslation", () => ({ randomTranslation: (key: string, options?: object): string => `${key}${options ? ` ${JSON.stringify(options)}` : ""}` }));
+jest.mock("@/src/AppIcons", () => ({ AppIcons: {
+	getIcon: (path: string): string => `icon:${path}`, getIconOrNull: (path: string): string => `icon:${path}`
+} }));
+jest.mock("@/src/display/PetDisplay", () => ({
+	petIcon: (): string => "petIcon",
+	petTypeName: (): string => "petName"
+}));
+jest.mock("@/src/display/ItemEffects", () => ({ formatDurationMinutes: (minutes: number): string => `duration:${minutes}` }));
 
-/** Core sends the time between meals in milliseconds: three hours and a half here. */
-const FEED_DELAY_MS = 12_600_000;
-const SECOND_POWER_LABEL = VET.secondFightEffect.slice(VET.secondFightEffect.indexOf("**"), VET.secondFightEffect.indexOf("{{comment}}"));
+const KEY = "commands:shop.shopItems.lovePointsValue";
 
-function checkup(overrides: Partial<ShopPetCheckupRes>): ShopPetCheckupRes {
-	return Object.assign(new ShopPetCheckupRes(), {
-		typeId: 42,
-		petId: 3,
+function buildPet(overrides: Partial<ShopPetCheckupRes> = {}): ShopPetCheckupRes {
+	const base: ShopPetCheckupRes = {
+		typeId: 7,
 		sex: "f",
-		nickname: "Moka",
+		petId: 3,
 		loveLevel: 2,
-		lovePoints: 30,
-		maxLovePoints: 100,
-		diet: "herbivorous",
 		ageCategory: "adult",
-		nextFeed: 0,
-		feedDelay: FEED_DELAY_MS,
+		lovePoints: 40,
+		maxLovePoints: 100,
+		lovePointsGained: 5,
 		force: 12,
 		speed: 9,
-		fightAssistId: "claws",
-		...overrides
+		diet: "carnivorous",
+		feedDelay: 3_600_000,
+		nextFeed: 1_800_000,
+		fightAssistId: "1",
+		secondFightAssistId: undefined,
+		likedExpeditionTypes: [],
+		dislikedExpeditionTypes: [],
+		randomPetDwarf: undefined
+	};
+	return Object.assign(base, overrides);
+}
+
+describe("petCheckupSummary", () => {
+	it("converts the feeding delays from milliseconds to minutes", () => {
+		const summary = petCheckupSummary(buildPet({
+			feedDelay: 3_600_000,
+			nextFeed: 1_800_000
+		}));
+		expect(summary.feedInterval).toBe("duration:60");
+		expect(summary.nextFeed).toBe("duration:30");
 	});
-}
 
-function writesOneOf(report: string, comments: string[]): boolean {
-	return comments.some(comment => report.includes(comment));
-}
+	it("reports the hungry text when the next feed is already due", () => {
+		const summary = petCheckupSummary(buildPet({ nextFeed: 0 }));
+		expect(summary.nextFeed).toBe(`${KEY}.petIsHungry`);
+	});
 
-describe("vet checkup report", () => {
-	beforeAll(async () => {
-		await changeLanguage("fr");
-		applyServerBundle({
-			language: "fr",
-			namespaces: {
-				commands: frenchCommands, app: frenchApp, models: frenchModels
-			},
-			icons: {
-				petInformation: Object.fromEntries(PET_INFORMATION_ICONS.map(icon => [icon, icon])),
-				pets: { 42: { emoteFemale: "mammoth" } },
-				diet: { herbivorous: "herbivorous" },
-				effects: { starving: "starving" },
-				expedition: {
-					map: "map",
-					liked: "liked",
-					disliked: "disliked",
-					locations: {
-						coast: "coast", swamp: "swamp"
-					}
-				}
-			},
-			rules: fakeGameRules
+	it("keeps love points and gains as numbers, defaulting the gain to 0", () => {
+		const summary = petCheckupSummary(buildPet({ lovePointsGained: undefined }));
+		expect(summary.lovePoints).toEqual({
+			actual: 40,
+			max: 100
 		});
+		expect(summary.lovePointsGained).toBe(0);
 	});
 
-	it("describes the second fight power of a pet that has one, after the first", () => {
-		const report = petCheckupReport(checkup({
-			fightAssistId: "petCharge", secondFightAssistId: "unstoppable"
+	it("exposes the stats and the diet as separate fields", () => {
+		const summary = petCheckupSummary(buildPet());
+		expect(summary.force).toBe(12);
+		expect(summary.speed).toBe(9);
+		expect(summary.diet).toContain("models:diet");
+	});
+
+	it("omits the second fight effect when there is none", () => {
+		const summary = petCheckupSummary(buildPet({ secondFightAssistId: undefined }));
+		expect(summary.fightEffects).toHaveLength(1);
+	});
+
+	it("adds a second fight effect when present", () => {
+		const summary = petCheckupSummary(buildPet({ secondFightAssistId: "4" }));
+		expect(summary.fightEffects).toHaveLength(2);
+		expect(summary.fightEffects[1]).toContain(`${KEY}.secondFightEffect`);
+	});
+
+	it("uses the no-preferences text when the pet has no expedition likes", () => {
+		const summary = petCheckupSummary(buildPet());
+		expect(summary.expeditions).toBe(`${KEY}.noPreferences`);
+	});
+
+	it("names liked and disliked expedition biomes with their icons", () => {
+		const summary = petCheckupSummary(buildPet({
+			likedExpeditionTypes: ["forest"],
+			dislikedExpeditionTypes: ["desert"]
 		}));
-		expect(writesOneOf(report, VET.commentOnFightEffect.petCharge)).toBe(true);
-		expect(report).toContain(SECOND_POWER_LABEL);
-		expect(writesOneOf(report.slice(report.indexOf(SECOND_POWER_LABEL)), VET.commentOnFightEffect.unstoppable)).toBe(true);
+		expect(summary.expeditions).toContain("icon:expedition.locations.forest");
+		expect(summary.expeditions).toContain("icon:expedition.locations.desert");
+		expect(summary.expeditions).toContain(`${KEY}.expeditionPreferences`);
 	});
 
-	it("counts the time between meals from the milliseconds Core sends", () => {
-		expect(petCheckupReport(checkup({}))).toContain("3 h 30");
-	});
-
-	it("names the biomes the pet likes and dislikes", () => {
-		const report = petCheckupReport(checkup({
-			likedExpeditionTypes: ["coast"], dislikedExpeditionTypes: ["swamp"]
-		}));
-		expect(report).toContain(frenchModels.biomes.coast);
-		expect(report).toContain(frenchModels.biomes.swamp);
-		expect(report).not.toContain("models:");
-	});
-
-	it("tells no second power for a pet with a single one", () => {
-		const report = petCheckupReport(checkup({ fightAssistId: "claws" }));
-		expect(writesOneOf(report, VET.commentOnFightEffect.claws)).toBe(true);
-		expect(report).not.toContain(SECOND_POWER_LABEL);
+	it("leaves the dwarf aside empty when no dwarf is around", () => {
+		expect(petCheckupSummary(buildPet()).dwarfAside).toBe("");
 	});
 });
