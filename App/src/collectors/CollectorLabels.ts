@@ -5,6 +5,7 @@ import {
 	SELL_DATA_KINDS, SELL_REACTION_KINDS,
 	DAILY_BONUS_DATA_KINDS, DAILY_BONUS_REACTION_KINDS,
 	CLASSES_DATA_KINDS, CLASSES_REACTION_KINDS,
+	DEFENSE_DATA_KINDS, DEFENSE_REACTION_KINDS,
 	PET_FEED_DATA_KINDS, PET_FEED_REACTION_KINDS,
 	EXPEDITION_DATA_KINDS, EXPEDITION_REACTION_KINDS,
 	PET_MANAGEMENT_DATA_KINDS, PET_MANAGEMENT_REACTION_KINDS,
@@ -26,6 +27,7 @@ import { ItemWithDetails } from "ws-packets/src/objects/ItemWithDetails";
 import { PetSex } from "ws-packets/src/objects/OwnedPet";
 import { i18n } from "@/src/translations/i18n";
 import { joinParagraphs } from "@/src/display/Paragraphs";
+import { defenseStyleName } from "@/src/display/DefenseStyles";
 import {
 	formatDurationMinutes, itemTypeFromCategory
 } from "@/src/display/ItemEffects";
@@ -282,6 +284,7 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 	[PET_FEED_DATA_KINDS.GUILD]: () => i18n.t("app:pet.care.feed"),
 	[PET_FEED_DATA_KINDS.PERSONAL]: () => i18n.t("app:pet.care.feed"),
 	[CLASSES_DATA_KINDS.COLLECTOR]: () => i18n.t("app:classes.change"),
+	[DEFENSE_DATA_KINDS.COLLECTOR]: () => i18n.t("app:defense.title"),
 	[DAILY_BONUS_DATA_KINDS.COLLECTOR]: () => i18n.t("app:dailyBonus.title"),
 	[SELL_DATA_KINDS.COLLECTOR]: () => i18n.t("app:sale.title"),
 	[EQUIP_DATA_KINDS.COLLECTOR]: () => i18n.t("app:equipment.title"),
@@ -337,6 +340,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 	[PET_FEED_DATA_KINDS.GUILD]: () => undefined,
 	[PET_FEED_DATA_KINDS.PERSONAL]: () => undefined,
 	[CLASSES_DATA_KINDS.COLLECTOR]: () => undefined,
+	[DEFENSE_DATA_KINDS.COLLECTOR]: () => undefined,
 	[DAILY_BONUS_DATA_KINDS.COLLECTOR]: () => undefined,
 	[SELL_DATA_KINDS.COLLECTOR]: () => undefined,
 	[EQUIP_DATA_KINDS.COLLECTOR]: () => undefined,
@@ -428,6 +432,7 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 	})),
 	[CLASSES_REACTION_KINDS.CHOOSE]: makeReactionHandler(CLASSES_REACTION_KINDS.CHOOSE, reaction => withIcon(`classes.${reaction.data.classId}`, i18n.t(`models:classes.${reaction.data.classId}`))),
 	[DAILY_BONUS_REACTION_KINDS.OBJECT]: makeReactionHandler(DAILY_BONUS_REACTION_KINDS.OBJECT, reaction => itemDisplayName(reaction.data.object)),
+	[DEFENSE_REACTION_KINDS.STYLE]: makeReactionHandler(DEFENSE_REACTION_KINDS.STYLE, reaction => defenseStyleName(reaction.data.personality)),
 	[SELL_REACTION_KINDS.ITEM]: makeReactionHandler(SELL_REACTION_KINDS.ITEM, reaction => itemDisplayName(reaction.data.item)),
 	[EQUIP_REACTION_KINDS.CLOSE]: () => i18n.t("app:equipment.close"),
 	[GENERIC_REACTION_KINDS.ACCEPT]: (_reaction, data) => choiceLabel(ACCEPT_LABELS[data.type] ?? DEFAULT_ACCEPT_LABEL),
@@ -556,6 +561,7 @@ const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHan
 	[EXPEDITION_REACTION_KINDS.CLAIM]: (_reaction, data) => isDataOfType(data, EXPEDITION_DATA_KINDS.FINISHED),
 	[PET_FEED_REACTION_KINDS.FOOD]: makeChoosableHandler(PET_FEED_REACTION_KINDS.FOOD, (reaction, data) => isDataOfType(data, PET_FEED_DATA_KINDS.GUILD) && reaction.data.amount > 0),
 	[CLASSES_REACTION_KINDS.CHOOSE]: (_reaction, data) => isDataOfType(data, CLASSES_DATA_KINDS.COLLECTOR),
+	[DEFENSE_REACTION_KINDS.STYLE]: (_reaction, data) => isDataOfType(data, DEFENSE_DATA_KINDS.COLLECTOR),
 	[DAILY_BONUS_REACTION_KINDS.OBJECT]: (_reaction, data) => isDataOfType(data, DAILY_BONUS_DATA_KINDS.COLLECTOR),
 	[SELL_REACTION_KINDS.ITEM]: (_reaction, data) => isDataOfType(data, SELL_DATA_KINDS.COLLECTOR),
 	[EQUIP_REACTION_KINDS.CLOSE]: (_reaction, data) => isDataOfType(data, EQUIP_DATA_KINDS.COLLECTOR),

@@ -1736,6 +1736,21 @@
     "outcomes": {"success": "Classe modifiée", "cooldown": "Changement indisponible"},
     "kinds": {"basic": "Polyvalente", "attack": "Attaque", "defense": "Défense", "other": "Spécialisée"}
   },
+  "defense": {
+    "section": "Face aux attaques",
+    "title": "Style de défense",
+    "entry": "La manière dont votre personnage combat lorsqu'un autre joueur l'attaque.",
+    "currentStyle": "Style actuel : {{name}}",
+    "styles": "Styles de votre classe",
+    "current": "Actuel",
+    "choose": "Adopter ce style",
+    "alreadyCurrent": "Ce style vous défend déjà.",
+    "won_one": "{{count}} réussie sur {{total}}",
+    "won_other": "{{count}} réussies sur {{total}}",
+    "changed": "Style de défense modifié",
+    "changedTo": "Votre personnage se défendra désormais avec le style {{name}}.",
+    "changedToRandom": "Votre personnage changera de style de défense à chaque combat."
+  },
   "profile": {
     "eyebrow": "Profil",
     "subtitle": "{{className}} · niveau {{level, number}} · {{location}}",

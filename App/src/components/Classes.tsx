@@ -47,6 +47,9 @@ import {
 	activeEffect, effectLock, PlayerEffect
 } from "@/src/display/CommandRejection";
 import { formatNumber } from "@/src/display/Amounts";
+import { DefenseStyleEntry } from "@/src/components/DefenseStyleEntry";
+import { gameRules } from "@/src/rules/GameRules";
+import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
 import { AppIcons } from "@/src/AppIcons";
 import { i18n } from "@/src/translations/i18n";
 import {
@@ -293,11 +296,14 @@ function criterionOf(field: string): ClassStatField {
 	return CLASS_STAT_FIELDS.find(stat => stat.field === field) ?? CLASS_STAT_FIELDS[0];
 }
 
-/** Ranks the classes on one figure at a time, so the player sees at a glance which one is best at what. */
+/**
+ * Ranks the classes on one figure at a time, so the player sees at a glance which one is best at what.
+ * The defense style sits under the player's class, which decides the styles it can pick.
+ */
 export function ClassesContent({
-	classes, currentClass, outsideTier, change
+	classes, currentClass, outsideTier, change, defense
 }: {
-	classes: ClassDetails[]; currentClass?: number; outsideTier?: ClassDetails; change?: ClassChange;
+	classes: ClassDetails[]; currentClass?: number; outsideTier?: ClassDetails; change?: ClassChange; defense?: ReactNode;
 }): ReactNode {
 	const [selected, setSelected] = useState<number | undefined>();
 	const [criterion, setCriterion] = useState<ClassStatField>(CLASS_STAT_FIELDS[0]);
@@ -316,7 +322,8 @@ export function ClassesContent({
 	return <>
 		{currentClass === undefined ? null : <ClassStanding classId={currentClass} {...current ? { details: current } : {}} />}
 		{change ? <ChangeNotices change={change} /> : null}
-		<SectionHeader first={currentClass === undefined} action={{ hint: criterionLabel(criterion) }}>{i18n.t("app:classes.comparison")}</SectionHeader>
+		{defense}
+		<SectionHeader first={currentClass === undefined && defense === undefined} action={{ hint: criterionLabel(criterion) }}>{i18n.t("app:classes.comparison")}</SectionHeader>
 		<SegmentedControl
 			iconsOnly
 			label={i18n.t("app:classes.comparison")}
@@ -340,10 +347,19 @@ export function ClassesContent({
 	</>;
 }
 
+/** The defense style is only asked once fights are open, and like any command not while an alteration holds the player. */
+function defenseLock(profile: ProfileRes | null, effect: PlayerEffect | null): Lock | undefined {
+	const level = gameRules().journeyLevels.fights;
+	if (profile && profile.level < level) {
+		return { reason: i18n.t("app:arena.locked", { level }) };
+	}
+	return effect ? effectLock(effect) : undefined;
+}
+
 function ClassesReady({
-	info, currentClass, effect
+	info, currentClass, effect, defense
 }: {
-	info: ClassesInfoRes; currentClass: number | undefined; effect: PlayerEffect | null;
+	info: ClassesInfoRes; currentClass: number | undefined; effect: PlayerEffect | null; defense: Lock | undefined;
 }): ReactNode {
 	const change = useClassChange(info.data?.nextChangeTimestamp, effect);
 	if (!info.data) {
@@ -352,6 +368,7 @@ function ClassesReady({
 	return <ClassesContent
 		classes={info.data.classesStats}
 		change={change}
+		defense={<DefenseStyleEntry lock={defense} />}
 		{...(currentClass === undefined ? {} : { currentClass })}
 		{...(info.data.currentClass ? { outsideTier: info.data.currentClass } : {})}
 	/>;
@@ -360,7 +377,12 @@ function ClassesReady({
 export function Classes(): ReactNode {
 	const profile = usePlayerProfile();
 	const state = useGameQuery(GAME_ENTITIES.CLASSES, () => GameClient.request(makeFromClientPacket(ClassesInfoReq, {}), ClassesInfoRes));
-	const currentClass = profile.status === "ready" ? profile.data.classId : undefined;
-	const effect = profile.status === "ready" ? activeEffect(profile.data) : null;
-	return <GameQueryContent state={state} entity={GAME_ENTITIES.CLASSES}>{info => <ClassesReady info={info} currentClass={currentClass} effect={effect} />}</GameQueryContent>;
+	const player = profile.status === "ready" ? profile.data : null;
+	const effect = player ? activeEffect(player) : null;
+	return <GameQueryContent state={state} entity={GAME_ENTITIES.CLASSES}>{info => <ClassesReady
+		info={info}
+		currentClass={player?.classId}
+		effect={effect}
+		defense={defenseLock(player, effect)}
+	/>}</GameQueryContent>;
 }

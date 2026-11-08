@@ -56,6 +56,9 @@ import {
 import {
 	classesDataMappings, classesReactionMappings
 } from "./mappings/ClassesCollectorMappings";
+import {
+	defenseDataMappings, defenseReactionMappings
+} from "./mappings/DefenseCollectorMappings";
 
 const reactionMappings = indexMappings([
 	...fightReactionMappings,
@@ -73,7 +76,8 @@ const reactionMappings = indexMappings([
 	...equipReactionMappings,
 	...sellReactionMappings,
 	...dailyBonusReactionMappings,
-	...classesReactionMappings
+	...classesReactionMappings,
+	...defenseReactionMappings
 ]);
 
 const dataMappings = indexMappings([
@@ -93,7 +97,8 @@ const dataMappings = indexMappings([
 	...equipDataMappings,
 	...sellDataMappings,
 	...dailyBonusDataMappings,
-	...classesDataMappings
+	...classesDataMappings,
+	...defenseDataMappings
 ]);
 
 /**

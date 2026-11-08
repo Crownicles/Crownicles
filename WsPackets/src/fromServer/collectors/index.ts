@@ -22,6 +22,7 @@ export * from "./families/EquipCollector";
 export * from "./families/SellCollector";
 export * from "./families/DailyBonusCollector";
 export * from "./families/ClassesCollector";
+export * from "./families/DefenseCollector";
 export * from "./families/PetFeedCollector";
 export * from "./families/PetExpeditionCollector";
 export * from "./families/PetManagementCollector";

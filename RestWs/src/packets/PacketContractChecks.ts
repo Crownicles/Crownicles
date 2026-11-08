@@ -142,6 +142,15 @@ import { ClassesInfoRes } from "../../../WsPackets/src/fromServer/classes/Classe
 import {
 	AvailableClass, ClassStats, ClassKind
 } from "../../../WsPackets/src/objects/ClassDetails";
+import {
+	CommandDefenseCancelPacketRes, CommandDefenseChangeSuccessPacketRes, CommandDefenseNoChoicePacketRes, CommandDefensePacketReq
+} from "../../../Lib/src/packets/commands/CommandDefensePacket";
+import { DefenseRecordByAttackerClass } from "../../../Lib/src/types/DefenseRecord";
+import { DefenseReq } from "../../../WsPackets/src/fromClient/DefenseReq";
+import {
+	DefenseCancelRes, DefenseNoChoiceRes, DefenseRes
+} from "../../../WsPackets/src/fromServer/defense/DefenseRes";
+import { DefenseRecord } from "../../../WsPackets/src/objects/DefenseRecord";
 
 type WireShape<Value> =
 	[Value] extends [number] ? "number"
@@ -328,6 +337,11 @@ type GuildRecruitmentSettingsContract = Assert<IsEqual<WireShape<LibGuildRecruit
 type CookingMenuContract = Assert<IsEqual<WireShape<CookingMenuSnapshot>, WireShape<Omit<CookingMenu, "rules">>>>;
 type CookingSetSpecialtyRequestContract = Assert<IsEqual<WireShape<CommandReportCookingSetSpecialtyReq>, WireShape<WirePacketFields<CookingSetSpecialtyReq>>>>;
 type CookingRemoveSpecialtyRequestContract = Assert<IsEqual<WireShape<CommandReportCookingRemoveSpecialtyReq>, WireShape<WirePacketFields<CookingRemoveSpecialtyReq>>>>;
+type DefenseRequestContract = Assert<IsEqual<WireShape<CommandDefensePacketReq>, WireShape<WirePacketFields<DefenseReq>>>>;
+type DefenseSuccessContract = Assert<IsEqual<WireShape<CommandDefenseChangeSuccessPacketRes>, WireShape<WirePacketFields<DefenseRes>>>>;
+type DefenseNoChoiceContract = Assert<IsEqual<WireShape<CommandDefenseNoChoicePacketRes>, WireShape<WirePacketFields<DefenseNoChoiceRes>>>>;
+type DefenseCancelContract = Assert<IsEqual<WireShape<CommandDefenseCancelPacketRes>, WireShape<WirePacketFields<DefenseCancelRes>>>>;
+type DefenseRecordContract = Assert<IsEqual<WireShape<DefenseRecordByAttackerClass>, WireShape<DefenseRecord>>>;
 
 export const packetContractChecks: {
 	classesInfo: ClassesInfoContract;
@@ -339,6 +353,11 @@ export const packetContractChecks: {
 	cookingMenu: CookingMenuContract;
 	cookingSetSpecialtyRequest: CookingSetSpecialtyRequestContract;
 	cookingRemoveSpecialtyRequest: CookingRemoveSpecialtyRequestContract;
+	defenseRequest: DefenseRequestContract;
+	defenseSuccess: DefenseSuccessContract;
+	defenseNoChoice: DefenseNoChoiceContract;
+	defenseCancel: DefenseCancelContract;
+	defenseRecord: DefenseRecordContract;
 	drinkRequest: DrinkRequestContract;
 	inventoryRequest: InventoryRequestContract;
 	petRequest: PetRequestContract;
@@ -401,6 +420,11 @@ export const packetContractChecks: {
 	cookingMenu: true,
 	cookingSetSpecialtyRequest: true,
 	cookingRemoveSpecialtyRequest: true,
+	defenseRequest: true,
+	defenseSuccess: true,
+	defenseNoChoice: true,
+	defenseCancel: true,
+	defenseRecord: true,
 	drinkRequest: true,
 	inventoryRequest: true,
 	petRequest: true,

@@ -15,7 +15,7 @@ import {
 import { BottomSheet } from "@/src/design/BottomSheet";
 import { Theme } from "@/src/design/Theme";
 import {
-	CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, ITEM_DATA_KINDS, PET_FEED_DATA_KINDS,
+	CLASSES_DATA_KINDS, DAILY_BONUS_DATA_KINDS, DEFENSE_DATA_KINDS, DRINK_DATA_KINDS, EQUIP_DATA_KINDS, EXPEDITION_DATA_KINDS, ITEM_DATA_KINDS, PET_FEED_DATA_KINDS,
 	PET_MANAGEMENT_DATA_KINDS, SELL_DATA_KINDS, GUILD_DATA_KINDS, FIGHT_DATA_KINDS, ReactionCollectorDataKind, PLAYER_UTILITY_DATA_KINDS
 } from "ws-packets/src/fromServer/collectors";
 import { EquipCollector } from "@/src/collectors/EquipCollector";
@@ -27,6 +27,9 @@ import { ReactionCollectorCreation } from "ws-packets/src/fromServer/common/Reac
 import { ClassesCollector } from "@/src/collectors/ClassesCollector";
 import { ClassOutcome } from "@/src/collectors/ClassOutcome";
 import { useClassOutcome } from "@/src/store/useClassOutcome";
+import { DefenseCollector } from "@/src/collectors/DefenseCollector";
+import { DefenseOutcome } from "@/src/collectors/DefenseOutcome";
+import { useDefenseOutcome } from "@/src/store/useDefenseOutcome";
 import { HomePurchaseOutcome } from "@/src/collectors/HomePurchaseOutcome";
 import { useHomePurchaseOutcome } from "@/src/store/useHomePurchaseOutcome";
 import { ItemUpgradeOutcome } from "@/src/collectors/ItemUpgradeOutcome";
@@ -100,6 +103,7 @@ const COLLECTOR_COMPONENTS: Partial<Record<ReactionCollectorDataKind, (props: Ac
 	[PET_FEED_DATA_KINDS.GUILD]: PetFeedCollector,
 	[PET_FEED_DATA_KINDS.PERSONAL]: PetFeedCollector,
 	[CLASSES_DATA_KINDS.COLLECTOR]: ClassesCollector,
+	[DEFENSE_DATA_KINDS.COLLECTOR]: DefenseCollector,
 	[SELL_DATA_KINDS.COLLECTOR]: SellCollector,
 	[DAILY_BONUS_DATA_KINDS.COLLECTOR]: ConsumableCollector,
 	[DRINK_DATA_KINDS.COLLECTOR]: ConsumableCollector
@@ -169,6 +173,7 @@ function FoundItemCollector({ waiting }: { waiting: boolean }): ReactNode {
 function PendingOutcomes(): ReactNode {
 	const inventoryOutcome = useInventoryOutcome();
 	const classOutcome = useClassOutcome();
+	const defenseOutcome = useDefenseOutcome();
 	const homePurchase = useHomePurchaseOutcome();
 	const itemUpgrade = useItemUpgradeOutcome();
 	const itemRecycle = useItemRecycleOutcome();
@@ -213,6 +218,9 @@ function PendingOutcomes(): ReactNode {
 		},
 		{
 			state: classOutcome, node: <PendingOutcome state={classOutcome} Content={ClassOutcome} />
+		},
+		{
+			state: defenseOutcome, node: <PendingOutcome state={defenseOutcome} Content={DefenseOutcome} />
 		},
 		{
 			state: homePurchase, node: <PendingOutcome state={homePurchase} Content={HomePurchaseOutcome} />

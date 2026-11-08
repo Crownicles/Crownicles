@@ -8,6 +8,7 @@ import {
 import { ClassDetails } from "ws-packets/src/objects/ClassDetails";
 import { ClassesInfoRes } from "ws-packets/src/fromServer/classes/ClassesInfoRes";
 import { ReactionCollectorCreation } from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import { DefenseNoChoiceRes } from "ws-packets/src/fromServer/defense/DefenseRes";
 import { makeFromServerPacket } from "ws-packets/src/MakePackets";
 import {
 	Classes, ClassesContent
@@ -44,6 +45,12 @@ jest.mock("@/src/translations/i18n", () => ({ i18n: {
 		}
 		if (key === "app:requirements.effect") {
 			return `busy for ${options?.duration}`;
+		}
+		if (key === "app:arena.locked") {
+			return `fights at level ${options?.level}`;
+		}
+		if (key === "commands:defense.noChoice") {
+			return `single style for ${options?.className}`;
 		}
 		return key;
 	}
@@ -124,6 +131,20 @@ async function chooseTank(): Promise<void> {
 	await renderClasses();
 	await fireEvent.press(await screen.findByLabelText("models:classes.8"));
 	await fireEvent.press(within(screen.getByTestId("class-details-8")).getByText("app:classes.choose"));
+}
+
+/** A player of class 7 free of any alteration, at the given level. */
+function playerAtLevel(level: number): void {
+	jest.mocked(usePlayerProfile).mockReturnValue({
+		status: "ready",
+		data: {
+			classId: 7,
+			level,
+			effect: {
+				effect: "none", hasTimeDisplay: false, healed: false, timeLeft: 0
+			}
+		}
+	} as unknown as ReturnType<typeof usePlayerProfile>);
 }
 
 describe("classes screen", () => {
@@ -210,6 +231,58 @@ describe("classes screen", () => {
 		await waitFor(() => expect(within(screen.getByTestId("class-change-lock")).getByText("available in 3 days")).toBeTruthy());
 		await fireEvent.press(screen.getByLabelText("models:classes.8"));
 		await fireEvent.press(within(screen.getByTestId("class-details-8")).getByText("app:classes.choose"));
+		expect(GameClient.request).toHaveBeenCalledTimes(1);
+	});
+
+	it("opens the choice of the defense style from the player's class", async () => {
+		const offer = Object.assign(new ReactionCollectorCreation(), {
+			id: "defense",
+			endTime: Date.now() + 60_000,
+			data: {
+				type: "defense",
+				data: {
+					classId: 7, recentDefenses: [], recentDefensesDays: 7
+				}
+			},
+			reactions: [
+				{
+					type: "defenseStyle", data: {}
+				}, {
+					type: "refuse", data: {}
+				}
+			]
+		});
+		playerAtLevel(20);
+		jest.mocked(GameClient.request).mockImplementation(packet => Promise.resolve(packet.constructor.name === "DefenseReq"
+			? {
+				kind: "answer", packet: offer
+			}
+			: infoAnswer()));
+		await renderClasses();
+		await fireEvent.press(await screen.findByRole("button", { name: "app:defense.title" }));
+		await waitFor(() => expect(mockTrack).toHaveBeenCalledWith(offer));
+		expect(mockAnswerWithoutShowing).not.toHaveBeenCalled();
+	});
+
+	it("tells under the defense style that the class has a single one", async () => {
+		playerAtLevel(20);
+		jest.mocked(GameClient.request).mockImplementation(packet => Promise.resolve(packet.constructor.name === "DefenseReq"
+			? {
+				kind: "alternative", packetName: DefenseNoChoiceRes.wireName, packet: makeFromServerPacket(DefenseNoChoiceRes, { classId: 7 })
+			}
+			: infoAnswer()));
+		await renderClasses();
+		await fireEvent.press(await screen.findByRole("button", { name: "app:defense.title" }));
+		await waitFor(() => expect(screen.getByText("single style for models:classes.7")).toBeTruthy());
+		expect(mockTrack).not.toHaveBeenCalled();
+	});
+
+	it("keeps the defense style closed before the fights level, saying why on its row", async () => {
+		playerAtLevel(5);
+		jest.mocked(GameClient.request).mockResolvedValue(infoAnswer());
+		await renderClasses();
+		expect(within(await screen.findByRole("button", { name: "app:defense.title" })).getByText("fights at level 8")).toBeTruthy();
+		await fireEvent.press(screen.getByRole("button", { name: "app:defense.title" }));
 		expect(GameClient.request).toHaveBeenCalledTimes(1);
 	});
 
