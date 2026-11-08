@@ -128,9 +128,14 @@ describe('FightController endFight fallback', () => {
 });
 
 describe('FightController endFight re-entry', () => {
-	function buildFinishedFight(): {
-		fight: FightController; initiator: StubFighter; opponent: StubFighter; endCallback: ReturnType<typeof vi.fn>;
-	} {
+	type FinishedFightFixture = {
+		fight: FightController;
+		initiator: StubFighter;
+		opponent: StubFighter;
+		endCallback: ReturnType<typeof vi.fn>;
+	};
+
+	function buildFinishedFight(): FinishedFightFixture {
 		const initiator = createStubFighter('initiator');
 		const opponent = createStubFighter('opponent');
 		initiator.isDead.mockReturnValue(false);
@@ -169,6 +174,19 @@ describe('FightController endFight re-entry', () => {
 		expect(outroFightMock.mock.calls[0][3]).toBe(false);
 		expect(initiator.endFight).toHaveBeenCalledTimes(1);
 		expect(initiator.endFight).toHaveBeenCalledWith(true, [], false, 1);
+		expect(opponent.endFight).toHaveBeenCalledTimes(1);
+		expect(endCallback).toHaveBeenCalledTimes(1);
+	});
+
+	it('ends the fight once when a second end starts before the first one is over', async () => {
+		const {
+			fight, initiator, opponent, endCallback
+		} = buildFinishedFight();
+
+		await Promise.all([fight.endFight([]), fight.endFight([])]);
+
+		expect(outroFightMock).toHaveBeenCalledTimes(1);
+		expect(initiator.endFight).toHaveBeenCalledTimes(1);
 		expect(opponent.endFight).toHaveBeenCalledTimes(1);
 		expect(endCallback).toHaveBeenCalledTimes(1);
 	});

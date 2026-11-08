@@ -84,9 +84,12 @@ describe("FightView.introduceFight", () => {
 });
 
 describe("FightView.displayFightActionMenu timeout", () => {
-	function buildTimeoutFixture(hadEnded: boolean): {
-		playerFighter: PlayerFighter; endFight: ReturnType<typeof vi.fn>;
-	} {
+	type TimeoutFixture = {
+		playerFighter: PlayerFighter;
+		endFight: ReturnType<typeof vi.fn>;
+	};
+
+	function buildTimeoutFixture(hadEnded: boolean): TimeoutFixture {
 		const endFight = vi.fn().mockResolvedValue(undefined);
 		const controller = {
 			id: "fight",
