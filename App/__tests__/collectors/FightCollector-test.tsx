@@ -362,6 +362,22 @@ describe("live battle presentation", () => {
 		// The player's own attacks stay in the action grid: only one of them is on screen.
 		expect(screen.getAllByText("models:fight_actions.simpleAttack.name")).toHaveLength(1);
 	});
+	it("names the opponent's pet in their details with its emoji, the way game texts quote a pet", async () => {
+		const initial = battle();
+		await render(<FightLiveView fight={{
+			...initial,
+			introduction: {
+				...initial.introduction!,
+				opponentPet: {
+					typeId: 1, nickname: "Milo", rarity: 1, sex: "m", loveLevel: 5, force: 10, feedDelay: 0
+				}
+			}
+		}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		await fireEvent.press(screen.getByRole("button", { name: "app:arena.details : Arsene" }));
+		expect(screen.getByText("app:arena.pet")).toBeTruthy();
+		expect(screen.getByText("commands:pet.shortPetField")).toBeTruthy();
+		expect(screen.queryByText("Milo")).toBeNull();
+	});
 	it("shows both fighters' current statistics without opening their details", async () => {
 		const initial = battle();
 		const view = await render(<FightLiveView fight={initial} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
