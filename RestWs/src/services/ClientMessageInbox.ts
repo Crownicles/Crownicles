@@ -5,7 +5,8 @@ type ClientMessageHandler = (message: string) => Promise<void>;
 
 /**
  * The app sends what it queued as soon as its socket opens, while the server is still checking its token:
- * those messages wait here and are handled in the order they came once the player is known.
+ * those messages wait here and are handed over in the order they came once the player is known. Once one
+ * does not fit, every later one is dropped too, so none is handled in place of an earlier one that was lost.
  */
 export class ClientMessageInbox {
 	private held: string[] = [];
@@ -34,17 +35,21 @@ export class ClientMessageInbox {
 	}
 
 	private hold(message: string): void {
-		if (this.held.length >= WebSocketConstants.MAX_HELD_MESSAGES || this.heldBytes + message.length > WebSocketConstants.MAX_HELD_BYTES) {
-			if (!this.overflowed) {
-				this.overflowed = true;
-				CrowniclesLogger.warn("Dropped client messages sent before their token was checked", {
-					heldMessages: this.held.length,
-					heldBytes: this.heldBytes
-				});
-			}
+		if (!this.overflowed && !this.fits(message)) {
+			this.overflowed = true;
+			CrowniclesLogger.warn("Dropped client messages sent before their token was checked", {
+				heldMessages: this.held.length,
+				heldBytes: this.heldBytes
+			});
+		}
+		if (this.overflowed) {
 			return;
 		}
 		this.held.push(message);
 		this.heldBytes += message.length;
+	}
+
+	private fits(message: string): boolean {
+		return this.held.length < WebSocketConstants.MAX_HELD_MESSAGES && this.heldBytes + message.length <= WebSocketConstants.MAX_HELD_BYTES;
 	}
 }
