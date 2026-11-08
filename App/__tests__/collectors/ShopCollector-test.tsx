@@ -3,6 +3,7 @@ import {
 } from "@testing-library/react-native";
 import { Platform } from "react-native";
 import { ReactionCollectorCreation } from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import { ShopPetCheckupRes } from "ws-packets/src/fromServer/shop/ShopRes";
 import {
 	SHOP_DATA_KINDS, SHOP_REACTION_KINDS
 } from "ws-packets/src/fromServer/collectors";
@@ -237,5 +238,53 @@ describe("what a commerce asks once an item is paid for", () => {
 		expect(screen.getByText(/plus aucune potion du jour/)).toBeTruthy();
 		await fireEvent.press(screen.getByText("Continuer"));
 		expect(onContinue).toHaveBeenCalled();
+	});
+});
+
+/** A pet back from the vet: Core sends the time between meals in milliseconds, three hours and a half here. */
+function checkup(lovePointsGained?: number): ShopPetCheckupRes {
+	return Object.assign(new ShopPetCheckupRes(), {
+		typeId: 1,
+		petId: 3,
+		sex: "f",
+		nickname: "Moka",
+		loveLevel: 2,
+		lovePoints: 30,
+		maxLovePoints: 100,
+		diet: "herbivorous",
+		ageCategory: "adult",
+		nextFeed: 0,
+		feedDelay: 12_600_000,
+		force: 12,
+		speed: 9,
+		fightAssistId: "claws",
+		...lovePointsGained === undefined ? {} : { lovePointsGained }
+	});
+}
+
+describe("vet checkup", () => {
+	it("lays the report out in sections, the affection counted out of its maximum and the meals in hours", async () => {
+		await render(<ShopResultScreen result={{
+			kind: "checkup", packet: checkup()
+		}} onContinue={jest.fn()} />);
+		for (const header of [
+			"Diagnostic",
+			"Constantes",
+			"Alimentation",
+			"Combat",
+			"Expéditions"
+		]) {
+			expect(screen.getByText(header)).toBeTruthy();
+		}
+		expect(screen.getByText("30 / 100")).toBeTruthy();
+		expect(screen.getByText("3 h 30")).toBeTruthy();
+		expect(screen.queryByText("Affection gagnée")).toBeNull();
+	});
+
+	it("tells the affection the care gave only when it gave some", async () => {
+		await render(<ShopResultScreen result={{
+			kind: "checkup", packet: checkup(5)
+		}} onContinue={jest.fn()} />);
+		expect(screen.getByText("Affection gagnée")).toBeTruthy();
 	});
 });
