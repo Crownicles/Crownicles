@@ -283,7 +283,7 @@ async function buildProfilePacket(
 				max: toCheckPlayer.getExperienceNeededToLevelUp()
 			},
 			health: {
-				value: toCheckPlayer.getHealthValue(),
+				value: toCheckPlayer.getHealth(),
 				max: toCheckPlayer.getMaxHealth()
 			},
 			money: toCheckPlayer.money,

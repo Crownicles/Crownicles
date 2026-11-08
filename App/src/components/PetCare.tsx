@@ -40,6 +40,7 @@ import {
 	ActionBanner, Lock, LockHint, QuestionSheet, Refusal, Standing
 } from "@/src/design/Sections";
 import { TwemojiIcon } from "@/src/design/TwemojiIcon";
+import { Story } from "@/src/design/Story";
 import {
 	Check, Clock3, Flame, Gift, Heart, HeartPulse, LogOut, LucideIcon, PawPrint, Utensils, Wind
 } from "@/src/design/FightIcons";
@@ -195,8 +196,9 @@ function RenameAction({ onPage }: { onPage: (page: PetPage) => void }): ReactNod
 
 /** What can be done with a pet at home: caress it, send it away, rename or sell it. */
 function PetHomeActions({
-	actions, patience, menus, locks, onPage
+	pet, actions, patience, menus, locks, onPage
 }: {
+	pet: OwnedPet;
 	actions: PetActions;
 	patience: PetPatience;
 	menus: CommandMenuState;
@@ -207,7 +209,9 @@ function PetHomeActions({
 }): ReactNode {
 	return <>
 		<QuickAction icon={AppIcons.getIcon("petCommand.pet")} disabled={actions.pending || patience.hadEnough} onPress={(): void => {
-			actions.care({ type: "caress" }).then(petted => {
+			actions.care({
+				type: "caress", pet
+			}).then(petted => {
 				if (petted) {
 					patience.stroke();
 				}
@@ -284,6 +288,20 @@ function PetRelease({ menus }: { menus: CommandMenuState }): ReactNode {
 	</>;
 }
 
+/** How the pet took the last caress, as Discord replies to it, while it is home; then what the server turned down. */
+function PetCareMessages({
+	actions, menus, home
+}: {
+	actions: PetActions; menus: CommandMenuState; home: boolean;
+}): ReactNode {
+	const reaction = home && !actions.failed ? actions.message : null;
+	const refusal = (actions.failed ? actions.message : null) ?? menus.message;
+	return <>
+		{reaction ? <Story>{reaction}</Story> : null}
+		{refusal ? <Refusal>{refusal}</Refusal> : null}
+	</>;
+}
+
 /** Core refuses feeding and selling to an altered player, so both wait with the alteration's reason. */
 function usePlayerAlteration(): Lock | undefined {
 	const profile = usePlayerProfile();
@@ -305,17 +323,16 @@ export function PetOverview({
 	useGameDeadline(GAME_ENTITIES.PET, expedition?.endTime ?? null);
 	const expeditionBlocked = expeditionLock(packet);
 	const alteration = usePlayerAlteration();
-	const message = actions.message ?? menus.message;
 	return <>
 		{expedition
 			? <PetExpeditionJourney pet={pet} expedition={expedition} />
 			: <PetStanding pet={pet} strokes={patience.strokes} hadEnough={patience.hadEnough} />}
-		{message ? <Refusal>{message}</Refusal> : null}
+		<PetCareMessages actions={actions} menus={menus} home={!expedition} />
 		<PetMainAction packet={packet} menus={menus} alteration={alteration} />
 		<QuickActions>
 			{expedition
 				? <PetAwayActions pet={pet} expedition={expedition} menus={menus} onPage={onPage} />
-				: <PetHomeActions actions={actions} patience={patience} menus={menus} locks={{
+				: <PetHomeActions pet={pet} actions={actions} patience={patience} menus={menus} locks={{
 					expedition: expeditionBlocked !== undefined, alteration: alteration !== undefined
 				}} onPage={onPage} />}
 		</QuickActions>

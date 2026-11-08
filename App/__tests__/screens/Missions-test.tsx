@@ -208,6 +208,14 @@ describe("missions screen", () => {
 		expect(mockRouter.setParams).toHaveBeenCalledWith({ missionsView: undefined });
 	});
 
+	it("takes the requested view while the missions still load, so closing them then leaves no request for the next opening", async () => {
+		jest.mocked(useLocalSearchParams).mockReturnValue({ missionsView: "kingChallenge" });
+		jest.mocked(GameClient.request).mockReturnValue(new Promise(() => undefined));
+		await render(<QueryClientProvider client={testClient()}><Missions /></QueryClientProvider>);
+		expect(screen.getByText("app:common.loading")).toBeTruthy();
+		expect(mockRouter.setParams).toHaveBeenCalledWith({ missionsView: undefined });
+	});
+
 	it("offers no king's challenge when the server does not send one", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue({
 			kind: "answer", packet: packet()

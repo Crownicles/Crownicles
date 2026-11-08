@@ -34,8 +34,13 @@ export function activeEffect(profile: ProfileRes): PlayerEffect | null {
 	return effect.effect !== "none" && effect.hasTimeDisplay && !effect.healed ? effect : null;
 }
 
+/** A refusal the screen already knows about, worded as Core would answer the tap. */
+export function rejectionLock(rejection: CommandRejection): Lock {
+	return { reason: commandRejectionMessage(rejection) };
+}
+
 export function effectLock(effect: PlayerEffect): Lock {
-	return { reason: commandRejectionMessage({
+	return rejectionLock({
 		type: COMMAND_REJECTIONS.EFFECT, currentEffectId: effect.effect, remainingTime: effect.timeLeft
-	}) };
+	});
 }

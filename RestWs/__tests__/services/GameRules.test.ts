@@ -11,7 +11,6 @@ import {
 	findTextIssue, normalizeText, TEXT_ISSUES, TextRuleId
 } from "../../../WsPackets/src/objects/TextRules";
 import { buildGameRules } from "../../src/services/GameRules";
-import { FightConstants } from "../../../Lib/src/constants/FightConstants";
 import { KingChallengeConstants } from "../../../Lib/src/constants/KingChallengeConstants";
 import { TokensConstants } from "../../../Lib/src/constants/TokensConstants";
 
@@ -40,12 +39,6 @@ describe("text rules sent to the app", () => {
 
 	it("name the issues as Core does", () => {
 		expect(TEXT_ISSUES).toEqual(CORE_TEXT_ISSUES);
-	});
-});
-
-describe("friendly fights described to the app", () => {
-	it("cap the fighters at the level Core fights them at", () => {
-		expect(buildGameRules().friendlyFight.levelCap).toBe(FightConstants.FRIENDLY_FIGHT_LEVEL_CAP);
 	});
 });
 

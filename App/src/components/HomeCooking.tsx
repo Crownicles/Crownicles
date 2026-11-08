@@ -122,6 +122,10 @@ function isPinnable(recipe: SlotRecipe): boolean {
 	return recipe.timePotionsLeftThisWeek !== 0;
 }
 
+function areSpecialtiesUnlocked(menu: CookingMenu): boolean {
+	return menu.rules.specialtyLimit > 0;
+}
+
 /** A secret recipe and the specialty station offer nothing more, nor a recipe that can neither be pinned nor kept as a specialty. */
 function offersOptions({
 	slot, recipe
@@ -129,7 +133,7 @@ function offersOptions({
 	if (recipe.isSecret || isSpecialtyStation(slot, menu)) {
 		return false;
 	}
-	return isPinnable(recipe) || menu.rules.specialtyLimit > 0;
+	return isPinnable(recipe) || areSpecialtiesUnlocked(menu);
 }
 
 function PinButton({
@@ -163,7 +167,7 @@ function RecipeOptions({
 		return null;
 	}
 	const pinnable = isPinnable(option.recipe);
-	const specialtiesUnlocked = menu.rules.specialtyLimit > 0;
+	const specialtiesUnlocked = areSpecialtiesUnlocked(menu);
 	const specialtyLock = specialtiesUnlocked ? specialtyChoiceLock(menu) : undefined;
 	return <>
 		<ButtonRow>

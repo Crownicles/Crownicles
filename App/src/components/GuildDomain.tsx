@@ -192,6 +192,15 @@ function GuildFoodLine({
 	</>;
 }
 
+/** Every food the shop sells, with its stock, its price and the quantities the treasury can still pay for. */
+function GuildFoodLines({
+	shop, actions
+}: {
+	shop: GuildFoodShop; actions: DomainActions;
+}): ReactNode {
+	return Object.values(PetFood).map((foodType, index) => <GuildFoodLine key={foodType} data={shop} foodType={foodType} index={index} actions={actions} />);
+}
+
 /**
  * The treasury paid for the food: the player may refund it from their own purse. Asked in place, where the
  * purchase was made, since the shop already holds the screen and no second window may open on top of it.
@@ -292,7 +301,7 @@ function BuildingContents({
 		case GuildBuilding.SHOP:
 			return <>
 				<ReimburseOffer />
-				{Object.values(PetFood).map((foodType, index) => <GuildFoodLine key={foodType} data={domain} foodType={foodType} index={index} actions={actions} />)}
+				<GuildFoodLines shop={domain} actions={actions} />
 			</>;
 		case GuildBuilding.SHELTER:
 			return <ExpandableList>
@@ -357,6 +366,18 @@ function BuildingEntry({
 	</ExpandableEntry>;
 }
 
+/** What the food is paid with: the guild's treasury, and the player's own purse that may refund it. */
+function TreasuryFigures({ shop }: { shop: GuildFoodShop }): ReactNode {
+	return <Figures items={[
+		{
+			caption: i18n.t("app:city.summary.treasury"), value: formatNumber(shop.treasury), unit: "money"
+		},
+		{
+			caption: i18n.t("app:guild.yourMoney"), value: formatNumber(shop.playerMoney), unit: "money"
+		}
+	]} />;
+}
+
 function DomainStanding({ domain }: { domain: GuildDomainSnapshot }): ReactNode {
 	const icon = AppIcons.getIconOrNull("city.guildDomain.menu");
 	return <Standing
@@ -368,33 +389,40 @@ function DomainStanding({ domain }: { domain: GuildDomainSnapshot }): ReactNode 
 			? i18n.t("app:guild.level", { level: domain.guildLevel })
 			: i18n.t(`models:map_locations.${domain.domainMapLocationId}.name`)}
 	>
-		<Figures items={[
-			{
-				caption: i18n.t("app:city.summary.treasury"), value: formatNumber(domain.treasury), unit: "money"
-			},
-			{
-				caption: i18n.t("app:guild.yourMoney"), value: formatNumber(domain.playerMoney), unit: "money"
-			}
-		]} />
+		<TreasuryFigures shop={domain} />
 	</Standing>;
+}
+
+type DomainCommands = {
+	actions: DomainActions; message: string | null;
+};
+
+/** One domain request at a time, and the refusal Core answered, shown where the request was made. */
+function useDomainCommands(): DomainCommands {
+	const {
+		pending, message, open
+	} = useCommandMenus();
+	return {
+		message,
+		actions: {
+			pending,
+			run: (action: DomainRequest): void => {
+				if (pending) {
+					return;
+				}
+				open(DOMAIN_MENUS[action.kind], action.request).catch(console.error);
+			}
+		}
+	};
 }
 
 export function GuildDomainContent({ domain }: { domain: GuildDomainSnapshot }): ReactNode {
 	const [building, setBuilding] = useState<GuildBuilding | null>(null);
 	const [openAmount, setOpenAmount] = useState<number>();
 	const {
-		pending, message, open
-	} = useCommandMenus();
+		actions, message
+	} = useDomainCommands();
 	const router = useRouter();
-	const actions = {
-		pending,
-		run: (action: DomainRequest): void => {
-			if (pending) {
-				return;
-			}
-			open(DOMAIN_MENUS[action.kind], action.request).catch(console.error);
-		}
-	};
 	return <>
 		<DomainStanding domain={domain} />
 		{message ? <Refusal>{message}</Refusal> : null}
@@ -417,7 +445,32 @@ export function GuildDomainContent({ domain }: { domain: GuildDomainSnapshot }):
 	</>;
 }
 
-export function GuildDomain(): ReactNode {
+/**
+ * Away from the domain, the guild's travelling merchant only sells food, as on Discord: the treasury paying for
+ * it, the refund it may call for and the foods, without the buildings that cannot be reached from here.
+ */
+export function GuildFoodShopContent({ shop }: { shop: GuildFoodShop }): ReactNode {
+	const {
+		actions, message
+	} = useDomainCommands();
+	return <>
+		<TreasuryFigures shop={shop} />
+		{message ? <Refusal>{message}</Refusal> : null}
+		<ReimburseOffer />
+		<GuildFoodLines shop={shop} actions={actions} />
+	</>;
+}
+
+/** The guild's data the domain and the food supply both read, so a purchase in one refreshes the other; a player without a guild is told so. */
+function GuildDomainQuery({ children }: { children: (domain: GuildDomainSnapshot) => ReactNode }): ReactNode {
 	const state = useGameQuery(GAME_ENTITIES.GUILD_DOMAIN, () => GameClient.request(makeFromClientPacket(GuildDomainInfoReq, {}), GuildDomainInfoRes));
-	return <GameQueryContent state={state} entity={GAME_ENTITIES.GUILD_DOMAIN}>{packet => packet.data ? <GuildDomainContent domain={packet.data} /> : <Note>{i18n.t("app:guild.noGuild")}</Note>}</GameQueryContent>;
+	return <GameQueryContent state={state} entity={GAME_ENTITIES.GUILD_DOMAIN}>{packet => packet.data ? children(packet.data) : <Note>{i18n.t("app:guild.noGuild")}</Note>}</GameQueryContent>;
+}
+
+export function GuildDomain(): ReactNode {
+	return <GuildDomainQuery>{domain => <GuildDomainContent domain={domain} />}</GuildDomainQuery>;
+}
+
+export function GuildFoodShopPage(): ReactNode {
+	return <GuildDomainQuery>{shop => <GuildFoodShopContent shop={shop} />}</GuildDomainQuery>;
 }

@@ -121,7 +121,6 @@ function isFixedReport(outcome: ReportedOutcome): outcome is Extract<ReportedOut
 	return outcome.kind in FIXED_REPORTS;
 }
 
-/** Tells, word for word like Discord does, what the commerce just answered. The market report has its own screen. */
 type DetailedReportKind = Exclude<ReportedOutcome["kind"], keyof typeof FIXED_REPORTS>;
 type OutcomeOf<Kind extends ReportedOutcome["kind"]> = Extract<ReportedOutcome, { kind: Kind }>;
 
@@ -141,14 +140,18 @@ const DETAILED_REPORTS: { [Kind in DetailedReportKind]: (outcome: OutcomeOf<Kind
 	badge: outcome => i18n.t("commands:shop.badgeBought", { badgeName: outcome.badgeId })
 };
 
+/** Tells, word for word like Discord does, what the commerce just answered. The market report has its own screen. */
 export function shopOutcomeReport(outcome: ReportedOutcome, now: number): string {
 	if (isFixedReport(outcome)) {
 		return i18n.t(FIXED_REPORTS[outcome.kind]);
 	}
 
-	// TypeScript cannot tie the handler picked by the kind to that same member of the union, which the map guarantees
-	const report = DETAILED_REPORTS[outcome.kind] as (detailed: typeof outcome, at: number) => string;
-	return report(outcome, now);
+	/*
+	 * TypeScript cannot tie the handler picked by the kind to that same member of the union, which the map guarantees.
+	 * A kind added by a newer server has no handler in an installed app: it tells nothing rather than breaking the screen.
+	 */
+	const report = DETAILED_REPORTS[outcome.kind] as ((detailed: typeof outcome, at: number) => string) | undefined;
+	return report?.(outcome, now) ?? "";
 }
 
 /** Whether the answer is a refusal, which the screen says in a colder tone. */

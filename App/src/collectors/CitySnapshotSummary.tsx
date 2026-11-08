@@ -12,8 +12,7 @@ import { plantName } from "@/src/display/Resources";
 import { renderCityNotarySummary } from "@/src/collectors/CityNotarySummary";
 import { useColors } from "@/src/design/ThemeContext";
 import type { Palette } from "@/src/design/Theme";
-
-type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
+import type { CitySubmenu } from "@/src/collectors/CityCollector";
 
 type SummaryRenderer = (snapshot: CityMobileSnapshot, colors: Palette) => ReactNode;
 type OwnedHome = NonNullable<NonNullable<CityMobileSnapshot["home"]>["owned"]>;

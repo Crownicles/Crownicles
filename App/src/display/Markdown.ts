@@ -1,29 +1,62 @@
-import MarkdownIt from "markdown-it";
+import MarkdownIt, { type Token } from "markdown-it";
 
 const markdown = new MarkdownIt({
-	html: false, linkify: false
+	html: false, linkify: true
+});
+
+// Only an address written out in full is a link, as Discord sees it: a bare domain in a story stays a word.
+markdown.linkify.set({
+	fuzzyLink: false,
+	fuzzyEmail: false,
+	fuzzyIP: false
 });
 
 export type StorySpan = {
-	id: string; text: string; strong: boolean; emphasis: boolean; code: boolean;
+	id: string;
+	text: string;
+	strong: boolean;
+	emphasis: boolean;
+	code: boolean;
+
+	/** The web page the span opens when touched. */
+	link?: string;
 };
 
-const MARK_UPDATES: Readonly<Partial<Record<string, Partial<Pick<StorySpan, "strong" | "emphasis">>>>> = {
-	strong_open: { strong: true }, strong_close: { strong: false }, em_open: { emphasis: true }, em_close: { emphasis: false }
+type StoryMarks = Pick<StorySpan, "strong" | "emphasis"> & { link: string | undefined };
+
+const LINK_OPEN = "link_open";
+const LINK_CLOSE = "link_close";
+const MARK_UPDATES: Readonly<Partial<Record<string, Partial<StoryMarks>>>> = {
+	strong_open: { strong: true },
+	strong_close: { strong: false },
+	em_open: { emphasis: true },
+	em_close: { emphasis: false },
+	[LINK_CLOSE]: { link: undefined }
 };
 const SOFT_BREAK = "softbreak";
 const INLINE_CODE = "code_inline";
 
-/** Game texts are authored for Discord, so their emphasis has to be unpacked before rendering. */
+/** A game text may name any address; only a web page, which the browser opens, is followed. */
+const WEB_LINK = /^https?:\/\//iu;
+
+function markUpdate(token: Token): Partial<StoryMarks> | undefined {
+	if (token.type !== LINK_OPEN) {
+		return MARK_UPDATES[token.type];
+	}
+	const href = token.attrGet("href");
+	return { link: typeof href === "string" && WEB_LINK.test(href) ? href : undefined };
+}
+
+/** Game texts are authored for Discord, so their emphasis and links have to be unpacked before rendering. */
 export function storySpans(text: string): StorySpan[] {
 	const tokens = markdown.parseInline(text, {})[0]?.children ?? [];
 	const spans: StorySpan[] = [];
-	const marks = {
-		strong: false, emphasis: false
+	const marks: StoryMarks = {
+		strong: false, emphasis: false, link: undefined
 	};
 	let offset = 0;
 	for (const token of tokens) {
-		const update = MARK_UPDATES[token.type];
+		const update = markUpdate(token);
 		if (update) {
 			Object.assign(marks, update);
 			continue;
@@ -32,8 +65,11 @@ export function storySpans(text: string): StorySpan[] {
 		if (!content) {
 			continue;
 		}
+		const {
+			link, ...emphasis
+		} = marks;
 		spans.push({
-			id: `span-${offset}`, text: content, ...marks, code: token.type === INLINE_CODE
+			id: `span-${offset}`, text: content, ...emphasis, code: token.type === INLINE_CODE, ...link === undefined ? {} : { link }
 		});
 		offset += content.length;
 	}

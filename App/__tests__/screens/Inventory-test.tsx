@@ -31,6 +31,12 @@ jest.mock("@/src/AppIcons", () => ({ AppIcons: {
 jest.mock("@/src/translations/i18n", () => ({ i18n: { t: (key: string, options?: {
 	count?: number; max?: number; slot?: number; value?: number; details?: string; usages?: number;
 }): string => {
+	const materialNames: Record<string, string> = {
+		"models:materials.101": "Plume", "models:materials.102": "Écorce", "models:materials.103": "Acier", "models:materials.104": "Bois"
+	};
+	if (key in materialNames) {
+		return materialNames[key];
+	}
 	if (key === "app:profile.formats.progress") {
 		return `${options?.value} / ${options?.max}`;
 	}
@@ -156,7 +162,7 @@ describe("inventory views", () => {
 		await fireEvent.press(screen.getByRole("tab", { name: "app:inventory.views.plants" }));
 		expect(screen.getByText("app:inventory.seed")).toBeTruthy();
 		expect(screen.getByText("1 / 3")).toBeTruthy();
-		expect(screen.queryByText("app:inventory.plantsLinkedToHomeStorage")).toBeNull();
+		expect(screen.queryByText("commands:inventory.plantsLinkedToHomeStorage")).toBeNull();
 	});
 
 	it("tells that the plants are delivered to the home chest once the inventory is linked to it", async () => {
@@ -166,7 +172,50 @@ describe("inventory views", () => {
 		};
 		await renderWithGameQuery(<Inventory inventoryData={data} />);
 		await fireEvent.press(screen.getByRole("tab", { name: "app:inventory.views.plants" }));
-		expect(screen.getByText("app:inventory.plantsLinkedToHomeStorage")).toBeTruthy();
+		expect(screen.getByText("commands:inventory.plantsLinkedToHomeStorage")).toBeTruthy();
+	});
+
+	it("lists the materials in the alphabetical order of their names, accents included", async () => {
+		const data = inventory();
+		data.materials = [
+			101,
+			102,
+			103,
+			104
+		].map(materialId => ({
+			materialId, quantity: 1
+		}));
+		await renderWithGameQuery(<Inventory inventoryData={data} />);
+		await fireEvent.press(screen.getByRole("tab", { name: "app:inventory.views.materials" }));
+		expect(screen.getAllByText(/^(Plume|Écorce|Acier|Bois)$/).map(row => String(row.props.children).trim())).toEqual([
+			"Acier",
+			"Bois",
+			"Écorce",
+			"Plume"
+		]);
+	});
+
+	it("keeps the seed apart from the plants, which are counted against the slots without naming them", async () => {
+		await renderWithGameQuery(<Inventory inventoryData={inventory()} />);
+		await fireEvent.press(screen.getByRole("tab", { name: "app:inventory.views.plants" }));
+		expect(screen.getByText("app:inventory.seed")).toBeTruthy();
+		expect(screen.getAllByText("models:plants.1")).toHaveLength(2);
+		expect(screen.getByText("1 / 3")).toBeTruthy();
+		expect(screen.queryByText("app:inventory.plantSlot")).toBeNull();
+		expect(screen.queryByText("app:profile.values.none")).toBeNull();
+	});
+
+	it("says that no seed is carried, in a sentence of its own", async () => {
+		const data = inventory();
+		data.plants = {
+			...data.plants!, seed: undefined, plantSlots: []
+		};
+		await renderWithGameQuery(<Inventory inventoryData={data} />);
+		await fireEvent.press(screen.getByRole("tab", { name: "app:inventory.views.plants" }));
+		expect(screen.getByText("app:inventory.noSeed")).toBeTruthy();
+		expect(screen.getByText("app:inventory.noCarriedPlants")).toBeTruthy();
+		expect(screen.getByText("0 / 3")).toBeTruthy();
+		expect(screen.queryByText("app:profile.values.none")).toBeNull();
 	});
 
 	it("equips a reserve item from its own row", async () => {

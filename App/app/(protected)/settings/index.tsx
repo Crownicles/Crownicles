@@ -57,13 +57,16 @@ import {
 } from "@/src/design/ThemeTransition";
 import { TwemojiIcon } from "@/src/design/TwemojiIcon";
 import {
-	AtSign, BookOpen, KeyRound, LogOut, Shield, UserRound
+	AtSign, BookOpen, CircleAlert, KeyRound, LogOut, Shield
 } from "@/src/design/FightIcons";
 import { AppConstants } from "@/src/AppConstants";
 import { Theme } from "@/src/design/Theme";
 import { AppIcons } from "@/src/AppIcons";
 import { i18n } from "@/src/translations/i18n";
 import { GameServicesSettings } from "@/src/gameServices/GameServicesSettings";
+import { useLastFatalError } from "@/src/store/FatalErrorStore";
+import { shareFatalError } from "@/src/components/FatalErrorScreen";
+import { missionDate } from "@/src/display/Missions";
 
 const ROW_EMBLEM_SIZE = 24;
 type LegalPageUrl = typeof AppConstants.LEGAL_URLS[keyof typeof AppConstants.LEGAL_URLS];
@@ -280,8 +283,12 @@ function AccountSettings(): ReactNode {
 				disabled={passwordChange.running || sessionExit.pending}
 				onPress={passwordChange.start}
 			/>
-			<EntryRow emblem={<UserRound size={ROW_EMBLEM_SIZE} />} title={i18n.t("app:settings.changeAccount")} disabled={sessionExit.pending} onPress={sessionExit.leave} />
-			<EntryRow title={i18n.t("app:common.logout")} disabled={sessionExit.pending} onPress={(): void => setLeaving(true)} />
+			<EntryRow
+				title={i18n.t("app:common.logout")}
+				subtitle={i18n.t("app:settings.logoutHint")}
+				disabled={sessionExit.pending}
+				onPress={(): void => setLeaving(true)}
+			/>
 			<EntryRow title={i18n.t("app:settings.deleteAccount.entry")} disabled={sessionExit.pending} danger onPress={(): void => router.push("/settings/delete-account")} />
 		</ExpandableList>
 		<AccountFeedback emailChange={emailChange} passwordChange={passwordChange} sessionExit={sessionExit} logoutOpen={leaving} />
@@ -310,6 +317,19 @@ function DeveloperTools(): ReactNode {
 	</>;
 }
 
+/** The last error that stopped the app, handed over as text to whoever investigates it. */
+function LastCrashEntry(): ReactNode {
+	const record = useLastFatalError();
+	return record
+		? <EntryRow
+			emblem={<CircleAlert size={ROW_EMBLEM_SIZE} />}
+			title={i18n.t("app:settings.lastCrash.title")}
+			subtitle={i18n.t("app:settings.lastCrash.subtitle", { date: missionDate(record.occurredAt) })}
+			onPress={(): void => shareFatalError(record)}
+		/>
+		: null;
+}
+
 function AboutSettings(): ReactNode {
 	const preferences = useContext(PreferencesContext);
 	const [legalLinkFailed, setLegalLinkFailed] = useState(false);
@@ -325,6 +345,7 @@ function AboutSettings(): ReactNode {
 			<EntryRow emblem={<BookOpen size={ROW_EMBLEM_SIZE} />} title={i18n.t("app:settings.legal.terms")} onPress={(): void => openLegalPage(AppConstants.LEGAL_URLS.TERMS)} />
 			<EntryRow title={i18n.t("app:settings.appVersion")} end={appVersion()} />
 			<EntryRow title={i18n.t("app:settings.coreVersion")} end={version.status === "ready" ? version.data.coreVersion : i18n.t("app:common.loading")} />
+			<LastCrashEntry />
 			<SwitchRow label={i18n.t("app:settings.developerMode")} value={preferences.getDevMode()} onChange={preferences.setDevMode} />
 			{preferences.getDevMode() ? <DeveloperTools /> : null}
 		</ExpandableList>

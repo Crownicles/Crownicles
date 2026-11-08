@@ -54,6 +54,11 @@ describe("shop outcome report", () => {
 		expect(report).toContain("\"missingCurrency\":40");
 	});
 
+	it("tells nothing, rather than breaking the screen, about an answer only a newer server knows", () => {
+		// Decoded from the wire like any packet, so outside the union this version of the app was built with
+		expect(shopOutcomeReport(JSON.parse("{\"kind\":\"tradedIn\"}"), NOW)).toBe("");
+	});
+
 	it("tells the forecast of every horizon a trend is known for", () => {
 		const report = marketReport({
 			kind: "marketAnalysis",

@@ -80,6 +80,24 @@ describe("KeycloakAuth", () => {
 		);
 	});
 
+	it("ends on Keycloak the session of the refresh token, with the app's own client", async () => {
+		const fetch = jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, { status: 204 }));
+
+		await expect(KeycloakAuth.endSession("refresh-token")).resolves.toBeUndefined();
+		expect(fetch).toHaveBeenCalledWith(
+			"https://keycloak.example.com/realms/crownicles/protocol/openid-connect/logout",
+			expect.objectContaining({
+				method: "POST", body: "client_id=crownicles-app&refresh_token=refresh-token"
+			})
+		);
+	});
+
+	it("reports a session Keycloak did not end", async () => {
+		jest.spyOn(globalThis, "fetch").mockResolvedValue(new Response(JSON.stringify({ error: "invalid_grant" }), { status: 400 }));
+
+		await expect(KeycloakAuth.endSession("refresh-token")).rejects.toMatchObject({ reason: AUTH_FAILURES.UNREACHABLE });
+	});
+
 	it("names the provider so Keycloak skips its picker", async () => {
 		mockPromptAsync.mockResolvedValue({
 			type: "success",

@@ -1,7 +1,9 @@
 import {
 	act, fireEvent, render, screen, waitFor, within
 } from "@testing-library/react-native";
-import { Animated } from "react-native";
+import {
+	Animated, Linking
+} from "react-native";
 import { TRAVEL_DASH_MS } from "@/src/store/TravelDashStore";
 import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
 import { ReportTravelSummaryRes } from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
@@ -25,7 +27,7 @@ import {
 } from "@/src/store/GameEntities";
 import { GameClient } from "@/src/networking/GameClient";
 import {
-	CITY_DATA_KINDS, CITY_REACTION_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, SMALL_EVENT_DATA_KINDS
+	CITY_DATA_KINDS, CITY_REACTION_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, SMALL_EVENT_DATA_KINDS, SMALL_EVENT_RECIPE_SHOP_SOURCES
 } from "ws-packets/src/fromServer/collectors";
 import { AppIcons } from "@/src/AppIcons";
 import { usePlayerProfile } from "@/src/store/usePlayerProfile";
@@ -37,6 +39,7 @@ import { ReportUseTokensAcceptedRes } from "ws-packets/src/fromServer/report/Rep
 import { ReportBuyHealAcceptedRes } from "ws-packets/src/fromServer/report/ReportHealRes";
 import { ReportBigEventResultRes } from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import { MissionsRes } from "ws-packets/src/fromServer/missions/MissionsRes";
+import { InventoryRes } from "ws-packets/src/fromServer/inventory/InventoryRes";
 import { MISSION_TYPES } from "ws-packets/src/objects/Mission";
 import { useMissions } from "@/src/components/Missions";
 import { i18n } from "@/src/translations/i18n";
@@ -54,13 +57,14 @@ function pushFromCore(wireName: string, packet: object): void {
 }
 
 const mockNavigate = jest.fn();
+const mockPush = jest.fn();
 const mockSearchParams = jest.fn((): Record<string, string> => ({}));
 const mockTabPress: { listener: (() => void) | null } = { listener: null };
 
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined,
 	useRouter: (): object => ({
-		push: jest.fn(), navigate: mockNavigate, setParams: jest.fn()
+		push: mockPush, navigate: mockNavigate, setParams: jest.fn()
 	}),
 	useLocalSearchParams: (): Record<string, string> => mockSearchParams(),
 	useNavigation: (): object => ({
@@ -155,6 +159,17 @@ function mockReport(travel = report(), reportReady = false): ReportViewRes {
 		status: "ready", data: view
 	});
 	return view;
+}
+
+/** A player on the road whose inventory holds, or not, the Cœur sylvestre. */
+function mockRoadWithHeart(hasRemoteHarvestTalisman: boolean): void {
+	const view = mockReport();
+	const inventory = Object.assign(new InventoryRes(), {
+		foundPlayer: true, hasRemoteHarvestTalisman
+	});
+	mockedUseGameQuery.mockImplementation(entity => ({
+		status: "ready", data: entity === GAME_ENTITIES.INVENTORY ? inventory : view
+	}));
 }
 
 /** A contest candidate whose current campaign mission is the given one, at its campaign position. */
@@ -444,6 +459,22 @@ describe("Adventure screen", () => {
 		expect(screen.getAllByText("app:profile.titles.missions").length).toBeGreaterThan(1);
 	});
 
+	it("opens the garden from the road once the Cœur sylvestre is owned, as /garden does on Discord", async () => {
+		mockRoadWithHeart(true);
+		await render(<Adventure />);
+		await fireEvent.press(screen.getByText("app:city.titles.garden"));
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: "/home/[service]", params: { service: "garden" }
+		});
+	});
+
+	it("leaves the garden to the home city while the Cœur sylvestre is not owned", async () => {
+		mockRoadWithHeart(false);
+		await render(<Adventure />);
+		expect(screen.getByText("app:profile.titles.missions")).toBeTruthy();
+		expect(screen.queryByText("app:city.titles.garden")).toBeNull();
+	});
+
 	it("goes back to the adventure when its tab is tapped over the missions", async () => {
 		mockReport();
 		await render(<Adventure />);
@@ -545,6 +576,18 @@ describe("Adventure screen", () => {
 
 		expect(screen.getByText("Garder de l'argent de côté est judicieux.")).toBeTruthy();
 		expect(screen.queryByText("Utilisez la commande /idea !")).toBeNull();
+	});
+
+	it("opens the link written in a travel advice in the browser", async () => {
+		jest.mocked(i18n.tArrayWithoutCommands).mockReturnValue(["Vous voulez apprendre à jouer ? Lisez le guide du joueur ! https://guide.crownicles.com/"]);
+		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+		mockReport();
+
+		await render(<Adventure />);
+		await fireEvent.press(screen.getByRole("link", { name: "https://guide.crownicles.com/" }));
+
+		expect(openURL).toHaveBeenCalledWith("https://guide.crownicles.com/");
+		openURL.mockRestore();
 	});
 
 	it("names the last mini-event in the title, like the Discord report does", async () => {
@@ -867,6 +910,49 @@ describe("Adventure screen", () => {
 		expect(reportEventStore.getSnapshot()).toBeNull();
 		expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: gameKey(GAME_ENTITIES.REPORT) });
 		expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: gameKey(GAME_ENTITIES.PROFILE) });
+	});
+
+	it("tells what Gaspard-Jo gave, then offers his recipe once the player moves on, as Discord tells both", async () => {
+		mockReport();
+		const offer: ReactionCollectorCreation = {
+			id: "recipe-offer",
+			endTime: Date.now() + 60_000,
+			data: {
+				type: SMALL_EVENT_DATA_KINDS.RECIPE_SHOP,
+				data: {
+					source: SMALL_EVENT_RECIPE_SHOP_SOURCES.GASPARD_JO,
+					recipe: {
+						recipeId: "championFeast", level: 7, recipeType: "PETFOOD_ULTIMATE"
+					},
+					recipeCost: 350
+				}
+			},
+			reactions: [
+				{
+					type: GENERIC_REACTION_KINDS.ACCEPT, data: {}
+				}, {
+					type: GENERIC_REACTION_KINDS.REFUSE, data: {}
+				}
+			]
+		};
+
+		// RestWs sends the outcome Core folded into the offer just before the offer itself.
+		await render(<Adventure />);
+		await act(async () => pushFromCore(SmallEventResultRes.wireName, {
+			eventName: "SmallEventUltimateFoodMerchantPacket", data: { interactionName: "item" }
+		}));
+		mockedUseCollectors.mockReturnValue({
+			open: [offer], track: jest.fn(), react: jest.fn(), isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()
+		});
+		await screen.rerender(<Adventure />);
+
+		expect(screen.getByText(/smallEvents:ultimateFoodMerchant\.rewards\.item:only/)).toBeTruthy();
+		expect(screen.queryByText(/smallEvents:recipeShop\.offer\.gaspardJo/)).toBeNull();
+
+		await fireEvent.press(screen.getByText("app:adventure.smallEvent.continue"));
+
+		expect(screen.getByText(/smallEvents:recipeShop\.offer\.gaspardJo/)).toBeTruthy();
+		expect(screen.queryByText(/smallEvents:ultimateFoodMerchant\.rewards/)).toBeNull();
 	});
 
 	it("plays the cure on the emblem before opening the heal result", async () => {

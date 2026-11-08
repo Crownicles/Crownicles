@@ -28,6 +28,7 @@ import { FightErrorRes } from "ws-packets/src/fromServer/fight/FightRes";
 import { FightError } from "ws-packets/src/objects/Fight";
 import { PlayerNotFound } from "ws-packets/src/fromServer/common/PlayerNotFound";
 import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
+import { ReportTravelSummaryRes } from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {
 	CommandMenu, useCommandMenus
 } from "@/src/store/useInventoryMenus";
@@ -105,24 +106,36 @@ const useStyles = createStyles(colors => ({
 	links: { marginTop: 30 }
 }));
 
-/** A running alteration takes the place of the class: it is what decides whether the player can fight. */
-function identityEmblem(profile: ProfileRes, cure: Cure | null): ReactNode {
+function identityEmblemPath(profile: ProfileRes, onIsland: boolean): string | null {
+	const effect = activeEffect(profile);
+	if (effect) {
+		return `effects.${effect.effect}`;
+	}
+	if (onIsland) {
+		return "other.island";
+	}
+	return profile.classId === undefined ? null : `classes.${profile.classId}`;
+}
+
+/** A running alteration, then the island being explored, take the place of the class: they decide whether the player can fight. */
+function identityEmblem(profile: ProfileRes, onIsland: boolean, cure: Cure | null): ReactNode {
 	if (cure) {
 		return <CureEmblem cure={cure} />;
 	}
-	const effect = activeEffect(profile);
-	const path = effect ? `effects.${effect.effect}` : profile.classId === undefined ? null : `classes.${profile.classId}`;
+	const path = identityEmblemPath(profile, onIsland);
 	const icon = path ? AppIcons.getIconOrNull(path) : null;
 	return icon ? <TwemojiIcon emoji={icon} size={IDENTITY_EMBLEM_SIZE} /> : null;
 }
 
+type ArenaStanding = {
+	profile: ProfileRes; onIsland: boolean; cure: Cure | null;
+};
+
 function ArenaIdentity({
-	profile, cure
-}: {
-	profile: ProfileRes; cure: Cure | null;
-}): ReactNode {
+	profile, onIsland, cure
+}: ArenaStanding): ReactNode {
 	const styles = useStyles();
-	return <View style={styles.identity}>{identityEmblem(profile, cure)}<View><Text style={styles.name}>{profile.pseudo}</Text>{profile.classId === undefined ? null : <Text style={styles.className}>{i18n.t(`models:classes.${profile.classId}`)} · {i18n.t("app:battle.level", { level: profile.level })}</Text>}</View></View>;
+	return <View style={styles.identity}>{identityEmblem(profile, onIsland, cure)}<View><Text style={styles.name}>{profile.pseudo}</Text>{profile.classId === undefined ? null : <Text style={styles.className}>{i18n.t(`models:classes.${profile.classId}`)} · {i18n.t("app:battle.level", { level: profile.level })}</Text>}</View></View>;
 }
 
 function ArenaRanking({ profile }: { profile: ProfileRes }): ReactNode {
@@ -134,14 +147,11 @@ function ArenaRanking({ profile }: { profile: ProfileRes }): ReactNode {
 	return <View style={styles.ranking}><View style={styles.rank}><Text style={styles.rankLabel}>{i18n.t("app:arena.glory")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{formatGlory(ranking.glory)}</TwemojiText></View><View style={[styles.rank, styles.rankEnd]}><Text style={styles.rankLabel}>{i18n.t("app:arena.league")}</Text><TwemojiText textStyle={styles.rankValue} emojiSize={Theme.fontSize.rowTitle}>{leagueName(ranking.league)}</TwemojiText></View></View>;
 }
 
-function ArenaProfile({
-	profile, cure
-}: {
-	profile: ProfileRes; cure: Cure | null;
-}): ReactNode {
+function ArenaProfile(standing: ArenaStanding): ReactNode {
 	const colors = useColors();
+	const { profile } = standing;
 	return <>
-		<ArenaIdentity profile={profile} cure={cure} />
+		<ArenaIdentity {...standing} />
 		{profile.stats ? <FightGauge label={i18n.t("app:arena.energy")} icon={Zap} value={profile.stats.energy.value} max={profile.stats.energy.max} color={colors.green} /> : null}
 		<ArenaRanking profile={profile} />
 	</>;
@@ -231,8 +241,7 @@ type ArenaCure = {
 };
 
 /** While an alteration that can be healed holds the player back, the cure takes the place of the duel. */
-function useArenaCure(blocking: PlayerEffect | null): ArenaCure {
-	const report = useReportView();
+function useArenaCure(blocking: PlayerEffect | null, travel: ReportTravelSummaryRes | undefined): ArenaCure {
 	const queryClient = useQueryClient();
 	const {
 		action, cure
@@ -242,7 +251,6 @@ function useArenaCure(blocking: PlayerEffect | null): ArenaCure {
 			queryClient.invalidateQueries({ queryKey: gameKey(entity) }).catch(console.error);
 		}
 	});
-	const travel = report.status === "ready" ? report.data.travel : undefined;
 	return {
 		offer: blocking ? healOffer(travel) : null, action, cure
 	};
@@ -265,13 +273,21 @@ function energyLock(profile: ProfileRes): Lock | undefined {
 		: undefined;
 }
 
+/** What keeps the player from looking for an opponent, known before the tap. */
+type ArenaEligibility = {
+	canFight: boolean; blocking: PlayerEffect | null; onIsland: boolean;
+};
+
 /** Before the fight level the start button stays in sight, greyed, with the level that opens fights. */
-function startLock(canFight: boolean, blocking: PlayerEffect | null, profile: ProfileRes | null): Lock | undefined {
-	if (!canFight) {
+function startLock(eligibility: ArenaEligibility, profile: ProfileRes | null): Lock | undefined {
+	if (!eligibility.canFight) {
 		return { reason: i18n.t("app:arena.locked", { level: gameRules().journeyLevels.fights }) };
 	}
-	if (blocking) {
-		return effectLock(blocking);
+	if (eligibility.blocking) {
+		return effectLock(eligibility.blocking);
+	}
+	if (eligibility.onIsland) {
+		return { reason: i18n.t("app:arena.island") };
 	}
 	return profile ? energyLock(profile) : undefined;
 }
@@ -295,14 +311,13 @@ function useArenaFight(): {
 	};
 }
 
-type ArenaEligibility = {
-	canFight: boolean; blocking: PlayerEffect | null;
-};
-
-function arenaEligibility(profile: ProfileRes | null, ongoing: boolean): ArenaEligibility {
+function arenaEligibility(profile: ProfileRes | null, ongoing: boolean, travel: ReportTravelSummaryRes | undefined): ArenaEligibility {
 	return {
 		canFight: !profile || profile.level >= gameRules().journeyLevels.fights,
-		blocking: profile && !ongoing ? activeEffect(profile) : null
+		blocking: profile && !ongoing ? activeEffect(profile) : null,
+
+		// Duels are fought on the continent; the report shows the island energy for the whole exploration, boats included.
+		onIsland: travel?.energy.show === true
 	};
 }
 
@@ -314,21 +329,24 @@ export default function Arena(): ReactNode {
 		ongoing, startError, pending, message, start
 	} = useArenaFight();
 	const profile = state.status === "ready" ? state.data : null;
+	const report = useReportView();
+	const travel = report.status === "ready" ? report.data.travel : undefined;
 
 	// A fight already under way can always be resumed.
+	const eligibility = arenaEligibility(profile, ongoing, travel);
 	const {
 		canFight, blocking
-	} = arenaEligibility(profile, ongoing);
+	} = eligibility;
 	const {
 		offer, action: heal, cure
-	} = useArenaCure(blocking);
+	} = useArenaCure(blocking, travel);
 	return <Screen>
 		<ArenaHeader />
-		<GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{profile => <ArenaProfile profile={profile} cure={cure} />}</GameQueryContent>
+		<GameQueryContent state={state} entity={GAME_ENTITIES.PROFILE}>{profile => <ArenaProfile profile={profile} onIsland={eligibility.onIsland} cure={cure} />}</GameQueryContent>
 		{message ? <Note>{message}</Note> : null}
 		{offer
 			? <View style={styles.start}><HealAction heal={offer} action={heal} /></View>
-			: <ArenaStart pending={pending} ongoing={ongoing} lock={ongoing ? undefined : startLock(canFight, blocking, profile)} onStart={start} />}
+			: <ArenaStart pending={pending} ongoing={ongoing} lock={ongoing ? undefined : startLock(eligibility, profile)} onStart={start} />}
 		{startError ? <ArenaStartError error={startError} /> : null}
 		<ArenaLinks pages={canFight ? ARENA_PAGES : BEFORE_FIGHTS_PAGES} onSelect={(page): void => router.push(`/arena/${page}`)} {...playerEmblems(state)} />
 		{canFight ? <Note>{i18n.t("app:arena.friendlyFightHint")}</Note> : null}

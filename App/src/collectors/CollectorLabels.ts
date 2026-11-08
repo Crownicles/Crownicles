@@ -203,6 +203,9 @@ const ACCEPT_LABELS: Partial<Record<ReactionCollectorData["type"], ChoiceLabel>>
 	[SMALL_EVENT_DATA_KINDS.CART]: {
 		icon: "cartSmallEvent.accept", key: "app:collector.cart.accept"
 	},
+	[SMALL_EVENT_DATA_KINDS.LIMOGES]: {
+		icon: "collectors.accept", key: "app:common.yes"
+	},
 	[REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT]: {
 		icon: "pveFights.startFight", key: "app:adventure.pveFight.start"
 	}
@@ -214,6 +217,9 @@ const REFUSE_LABELS: Partial<Record<ReactionCollectorData["type"], ChoiceLabel>>
 	},
 	[SMALL_EVENT_DATA_KINDS.CART]: {
 		icon: "collectors.refuse", key: "app:collector.cart.refuse"
+	},
+	[SMALL_EVENT_DATA_KINDS.LIMOGES]: {
+		icon: "collectors.refuse", key: "app:common.no"
 	},
 	[REPORT_COLLECTOR_DATA_KINDS.PVE_FIGHT]: {
 		icon: "pveFights.waitABit", key: "app:adventure.pveFight.wait"
@@ -491,7 +497,7 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 			biomes: reaction.data.biomes.map(biomeName).join(", ")
 		});
 	}),
-	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: () => withIcon("other.stay", i18n.t("app:collector.choices.stayInCity")),
+	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: () => withIcon("mapTypes.ci", i18n.t("app:collector.choices.stayInCity")),
 	[REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY]: makeReactionHandler(REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, (reaction, data) => {
 		if (!isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT)) {
 			return i18n.t("app:collector.unknownChoice");

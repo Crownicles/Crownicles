@@ -89,6 +89,14 @@ const ENDING_SOCKET_STATES: Partial<Record<AuthStateEnum, EndedPhase>> = {
 	[AuthStateEnum.NO_TOKEN]: SESSION_PHASES.SIGNED_OUT
 };
 
+/**
+ * The device already forgot the session: ending it on Keycloak too is best effort, the next sign-in only needs it
+ * when the browser kept the account's cookie, and the session expires on its own otherwise.
+ */
+function endOnKeycloak(token: AuthToken | null): void {
+	token?.endSession().catch((error: unknown): void => console.warn("The session could not be ended on Keycloak", error));
+}
+
 /** Only Keycloak refusing the session ends it; any other failure may be retried. */
 function isRejectedSession(error: unknown): boolean {
 	return error instanceof AuthFailure && error.reason === AUTH_FAILURES.INVALID_TOKEN;
@@ -154,12 +162,15 @@ export class SessionCoordinator {
 	}
 
 	/**
-	 * Closes the session on this device. An open session keeps running until the device has forgotten it, so a
-	 * failure leaves the player where they were; any other phase has nothing left to keep.
+	 * Closes the session on this device, then on Keycloak, so whoever signs in next starts from no account. An open session
+	 * keeps running until the device has forgotten it, so a failure leaves the player where they were; any other phase has
+	 * nothing left to keep.
 	 */
 	public async leave(): Promise<void> {
+		const token = this.token;
 		if (this.phase !== SESSION_PHASES.ACTIVE) {
 			await this.end(SESSION_PHASES.SIGNED_OUT);
+			endOnKeycloak(token);
 			return;
 		}
 		const generation = this.generation;
@@ -173,6 +184,7 @@ export class SessionCoordinator {
 			}
 			throw error;
 		}
+		endOnKeycloak(token);
 		if (generation === this.generation) {
 			this.dispose();
 			this.events.collision(null);

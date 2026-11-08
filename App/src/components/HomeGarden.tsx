@@ -98,7 +98,7 @@ function GardenPlotRow({
 	if (!garden.eligibility.canPlantSeed) {
 		return <EntryRow
 			title={i18n.t("app:city.garden.plot", { slot: plot.slot + 1 })}
-			subtitle={i18n.t("app:garden.errors.noSeed")}
+			subtitle={i18n.t(garden.accessMode === GARDEN_ACCESS.READ_ONLY ? "app:garden.errors.notAtHome" : "app:garden.errors.noSeed")}
 			end={i18n.t("app:city.garden.empty")}
 		/>;
 	}

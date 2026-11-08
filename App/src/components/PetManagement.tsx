@@ -32,6 +32,7 @@ import { TwemojiIcon } from "@/src/design/TwemojiIcon";
 import {
 	ExpandedEntry, useExpandedEntry
 } from "@/src/design/useExpandedEntry";
+import { useAfterDismissal } from "@/src/design/useAfterDismissal";
 import { AppIcons } from "@/src/AppIcons";
 import {
 	petIcon, petMood, petName, petRarity
@@ -93,12 +94,13 @@ function transferReaction(collector: ReactionCollectorCreation, transfer: Transf
 }
 
 function PetEntry({
-	pet, action, expanded, onToggle, testID
+	pet, action, expanded, onToggle, onDismissed, testID
 }: {
 	pet: OwnedPet;
 	action: ReactNode;
 	expanded: boolean;
 	onToggle: () => void;
+	onDismissed: () => void;
 	testID: string;
 }): ReactNode {
 	return <ExpandableEntry
@@ -107,6 +109,7 @@ function PetEntry({
 		caption={`${petRarity(pet)} · ${petMood(pet)}`}
 		expanded={expanded}
 		onToggle={onToggle}
+		onDismissed={onDismissed}
 		testID={testID}
 	>{action}</ExpandableEntry>;
 }
@@ -117,7 +120,7 @@ type ShelterProps = {
 
 /** What the shelter rows share: which one is unfolded, and how a pet is moved from there. */
 type ShelterActions = {
-	unfolding: ExpandedEntry<string>; pending: boolean; transfer: (target: Transfer) => void;
+	unfolding: ExpandedEntry<string>; pending: boolean; transfer: (target: Transfer) => void; onDismissed: () => void;
 };
 
 function shelterLock({
@@ -140,6 +143,7 @@ function OwnPetSection({
 		pet={ownPet}
 		expanded={actions.unfolding.isExpanded("own")}
 		onToggle={(): void => actions.unfolding.toggle("own")}
+		onDismissed={actions.onDismissed}
 		testID="shelter-own-pet"
 		action={<ActionBanner
 			icon={ArrowRight}
@@ -172,6 +176,7 @@ function BoardersSection({
 		pet={pet}
 		expanded={actions.unfolding.isExpanded(`boarder-${slot}`)}
 		onToggle={(): void => actions.unfolding.toggle(`boarder-${slot}`)}
+		onDismissed={actions.onDismissed}
 		testID={`shelter-boarder-${slot}`}
 		action={<ActionBanner
 			icon={ArrowRight}
@@ -202,12 +207,23 @@ function ShelterContent(props: ShelterProps): ReactNode {
 			value: boarders.length, max: maxCount
 		});
 	const full = shelterLock(props);
+	const confirmation = useAfterDismissal();
 	const actions: ShelterActions = {
 		unfolding,
 		pending,
+
+		/*
+		 * The row folds back as soon as the transfer is confirmed: once the shelter refreshes, its slot holds
+		 * another pet, and a sheet left open would offer to swap the pet just moved. The request leaves once
+		 * the sheet is put away, so a window the server answers with is not lost behind it.
+		 */
 		transfer: (target: Transfer): void => {
-			open(PET_MANAGEMENT_MENUS.TRANSFER, undefined, collector => transferReaction(collector, target)).catch(console.error);
-		}
+			confirmation.defer(() => {
+				open(PET_MANAGEMENT_MENUS.TRANSFER, undefined, collector => transferReaction(collector, target)).catch(console.error);
+			});
+			unfolding.collapse();
+		},
+		onDismissed: confirmation.onDismissed
 	};
 	return <>
 		<Standing

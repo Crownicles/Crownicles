@@ -20,7 +20,10 @@ jest.mock("@/src/AppIcons", () => {
 		"goblets.cracked": "💀",
 		"collectors.question": "❓",
 		"smallEvents.pet": "🐕‍🦺",
-		"smallEvents.doNothing": "🚶"
+		"smallEvents.doNothing": "🚶",
+		"collectors.accept": "✅",
+		"collectors.refuse": "❌",
+		"mapTypes.ci": "🏘️"
 	};
 	return {
 		AppIcons: {
@@ -279,5 +282,30 @@ describe("CollectorLabels", () => {
 		expect(reactionLabel({
 			type: "refuse", data: {}
 		}, data)).toContain("app:collector.pveIsland.continueJourney");
+	});
+
+	it("answers the Limoges storyteller's question with yes or no, as Discord's buttons do", () => {
+		const data = {
+			type: SMALL_EVENT_DATA_KINDS.LIMOGES,
+			data: { questionId: "journeyInvitation" }
+		} as const;
+
+		expect(reactionLabel({
+			type: "accept", data: {}
+		}, data)).toBe("✅ app:common.yes");
+		expect(reactionLabel({
+			type: "refuse", data: {}
+		}, data)).toBe("❌ app:common.no");
+	});
+
+	it("draws the city emoji on the choice of staying in town", () => {
+		const data = {
+			type: REPORT_COLLECTOR_DATA_KINDS.DESTINATION,
+			data: {}
+		} as const;
+
+		expect(reactionLabel({
+			type: REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, data: {}
+		}, data)).toBe("🏘️ app:collector.choices.stayInCity");
 	});
 });

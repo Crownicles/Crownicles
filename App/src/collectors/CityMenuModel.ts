@@ -61,7 +61,8 @@ const CITY_SUBMENU_ORDER: Record<CitySubmenu, number> = {
 	blacksmith: 8,
 	scrapDealer: 9,
 	royalBlacksmith: 10,
-	guild: 0
+	guild: 0,
+	guildFoodShop: 1
 };
 
 type CityNavigationDefinition = {
@@ -104,6 +105,9 @@ const CITY_NAVIGATION_META: Record<Exclude<CitySubmenu, "inn">, CityNavigationDe
 	},
 	guild: {
 		iconPath: "city.guildDomain.menu", titleKey: "app:city.labels.guildDomain", subtitleKey: "app:city.notes.guildDomain"
+	},
+	guildFoodShop: {
+		iconPath: "expedition.food", titleKey: "commands:report.city.guildFoodShop.label", subtitleKey: "app:city.notes.guildFoodShop"
 	}
 };
 
@@ -188,7 +192,20 @@ function emptyCityGroups(): Record<CityGroup, CityListItem[]> {
 
 function emptyCitySubmenus(): Record<CitySubmenu, CityEntry[]> {
 	return {
-		home: [], homeBed: [], homeChest: [], homeGarden: [], homeCooking: [], homeUpgrade: [], notary: [], inn: [], enchanter: [], blacksmith: [], scrapDealer: [], royalBlacksmith: [], guild: []
+		home: [],
+		homeBed: [],
+		homeChest: [],
+		homeGarden: [],
+		homeCooking: [],
+		homeUpgrade: [],
+		notary: [],
+		inn: [],
+		enchanter: [],
+		blacksmith: [],
+		scrapDealer: [],
+		royalBlacksmith: [],
+		guild: [],
+		guildFoodShop: []
 	};
 }
 
@@ -343,7 +360,7 @@ function addGuildFoodShop(state: CityGroupingState, foodShop: CityGroupingOption
 		return;
 	}
 	state.groups.guild.push({
-		kind: "navigation", view: "guild", key: "guild-food-shop", iconPath: "expedition.food", title: i18n.t("commands:report.city.guildFoodShop.label"), subtitle: i18n.t("app:guildDomain.foodShopDescription", { guild: foodShop.guildName })
+		...navigationItem("guildFoodShop", "guild-food-shop"), subtitle: i18n.t("app:guildDomain.foodShopDescription", { guild: foodShop.guildName })
 	});
 }
 

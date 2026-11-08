@@ -2,7 +2,7 @@ import {
 	act, fireEvent, render, screen, within
 } from "@testing-library/react-native";
 import {
-	AccessibilityInfo, Animated, StyleSheet
+	AccessibilityInfo, Animated, StyleSheet, TextStyle
 } from "react-native";
 import {
 	FightConfirmCollector, FightActions
@@ -26,10 +26,11 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
 	getItem: jest.fn().mockResolvedValue(null), setItem: jest.fn().mockResolvedValue(undefined)
 }));
 jest.mock("@/src/AppIcons", () => ({ AppIcons: {
-	getIcon: (): string => "", getIconOrNull: (): null => null
+	getIcon: (path: string): string => path === "pets.1.emoteMale" ? "🐕" : "", getIconOrNull: (): null => null
 } }));
 jest.mock("@/src/translations/i18n", () => ({ i18n: {
-	t: (key: string): string => key, tArray: (key: string): string[] => [key]
+	t: (key: string, options?: Record<string, unknown>): string => key === "commands:pet.shortPetField" ? `${String(options?.emote)} ${String(options?.name)}` : key,
+	tArray: (key: string): string[] => [key]
 } }));
 jest.mock("react-native-safe-area-context", () => ({ useSafeAreaInsets: (): {
 	top: number; bottom: number; left: number; right: number;
@@ -42,6 +43,19 @@ jest.mock("@/src/collectors/CollectorsContext", () => ({ useCollectors: (): {
 	open: [], react: jest.fn(), isAnswerPending: (): boolean => false
 }) }));
 jest.mock("@tanstack/react-query", () => ({ useQueryClient: (): { invalidateQueries: jest.Mock } => ({ invalidateQueries: jest.fn().mockResolvedValue(undefined) }) }));
+
+/** A text drawn inside another one takes on its decoration, as React Native nests them. */
+function textDecorationOf(text: string): TextStyle["textDecorationLine"] {
+	let node: ReturnType<typeof screen.getByText> | null = screen.getByText(text);
+	while (node) {
+		const decoration = (StyleSheet.flatten(node.props.style) as TextStyle | undefined)?.textDecorationLine;
+		if (decoration) {
+			return decoration;
+		}
+		node = node.parent;
+	}
+	return undefined;
+}
 
 describe("fight collectors", () => {
 	afterEach(() => fightStore.reset());
@@ -140,6 +154,50 @@ describe("fight collectors", () => {
 		await render(<FightConfirmCollector collector={collector} onChoose={choose} submitting={false} />);
 		await fireEvent.press(screen.getByText("app:collector.refuse"));
 		expect(choose).toHaveBeenCalledWith(2);
+	});
+	it.each([
+		{
+			isOnExpedition: true, struck: true
+		}, {
+			isOnExpedition: false, struck: false
+		}
+	])("strikes out the pet only when it is away on an expedition (expedition: $isOnExpedition)", async ({
+		isOnExpedition, struck
+	}) => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {
+			id: "confirm-pet",
+			endTime: Date.now() + 60_000,
+			data: {
+				type: "fightConfirm",
+				data: { playerStats: {
+					classId: 1,
+					fightRanking: { glory: 500 },
+					energy: {
+						value: 90, max: 100
+					},
+					attack: 10,
+					defense: 5,
+					speed: 8,
+					breath: {
+						base: 3, max: 10, regen: 2
+					},
+					pet: {
+						petTypeId: 1, petSex: "m", petNickname: "Rex", isOnExpedition
+					}
+				} }
+			},
+			reactions: [
+				{
+					type: "accept", data: {}
+				},
+				{
+					type: "refuse", data: {}
+				}
+			]
+		});
+		await render(<FightConfirmCollector collector={collector} onChoose={jest.fn()} submitting={false} />);
+		expect(textDecorationOf("app:pet.name")).toBe(struck ? "line-through" : undefined);
+		expect(screen.queryByText("app:pet.powers.expedition") !== null).toBe(isOnExpedition);
 	});
 	it("sends the original action index once even if the player taps twice", async () => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {
@@ -304,6 +362,27 @@ describe("live battle presentation", () => {
 
 		// The player's own attacks stay in the action grid: only one of them is on screen.
 		expect(screen.getAllByText("models:fight_actions.simpleAttack.name")).toHaveLength(1);
+	});
+	it("names the opponent's pet in their details with its emoji, the way game texts quote a pet", async () => {
+		const initial = battle();
+		await render(<FightLiveView fight={{
+			...initial,
+			introduction: {
+				...initial.introduction!,
+				opponentPet: {
+					typeId: 1, nickname: "Milo", rarity: 1, sex: "m", loveLevel: 5, force: 10, feedDelay: 0
+				}
+			}
+		}} onChoose={jest.fn()} submitting={false} onClose={jest.fn()} />);
+		await fireEvent.press(screen.getByRole("button", { name: "app:arena.details : Arsene" }));
+
+		// The portrait already wears the pet's emoji: look for it on the row naming the pet only.
+		let petRow: ReturnType<typeof screen.getByText> | null = screen.getByText("app:arena.pet");
+		while (petRow && within(petRow).queryByText("Milo") === null) {
+			petRow = petRow.parent;
+		}
+		expect(petRow).not.toBeNull();
+		expect(within(petRow!).getByLabelText("🐕")).toBeTruthy();
 	});
 	it("shows both fighters' current statistics without opening their details", async () => {
 		const initial = battle();

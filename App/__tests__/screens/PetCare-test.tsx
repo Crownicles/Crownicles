@@ -1,6 +1,7 @@
 import {
 	fireEvent, render, screen, waitFor
 } from "@testing-library/react-native";
+import { Platform } from "react-native";
 import {
 	QueryClient, QueryClientProvider
 } from "@tanstack/react-query";
@@ -22,12 +23,9 @@ import {
 import {
 	PET_FEED_ERRORS, PET_FEED_RESULTS
 } from "ws-packets/src/objects/PetFood";
-import {
-	PetSellReq, GuildShelterReq
-} from "ws-packets/src/fromClient/PetManagementReq";
+import { PetSellReq } from "ws-packets/src/fromClient/PetManagementReq";
 import { GuildShelterRes } from "ws-packets/src/fromServer/pet/PetManagementRes";
 import { PetExpeditionReq } from "ws-packets/src/fromClient/PetExpeditionReq";
-import { PetReq } from "ws-packets/src/fromClient/PetReq";
 import { PetRes } from "ws-packets/src/fromServer/pet/PetRes";
 import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
 import { ReactionCollectorCreation } from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
@@ -48,7 +46,9 @@ jest.mock("@/src/collectors/CollectorsContext", () => ({ useCollectors: () => ({
 jest.mock("@/src/AppIcons", () => ({ AppIcons: {
 	getIcon: (): string => "", getIconOrNull: (): null => null
 } }));
-jest.mock("@/src/translations/i18n", () => ({ i18n: { t: (key: string): string => key } }));
+jest.mock("@/src/translations/i18n", () => ({ i18n: {
+	t: (key: string): string => key, tArray: (key: string, options?: { petName?: string }): string[] => [`${key}:${options?.petName}`]
+} }));
 
 const PET = {
 	typeId: 1, nickname: "Aster", rarity: 1, sex: "m" as const, loveLevel: 3, force: 10, feedDelay: 2
@@ -362,6 +362,31 @@ describe("pet care screens", () => {
 		expect(screen.queryByTestId("pet-motes", { includeHiddenElements: true }) !== null).toBe(scenario.hearts);
 	});
 
+	it.each([
+		{
+			case: "by its nickname", nickname: "Aster", named: "Aster"
+		},
+		{
+			case: "as your pet when it has no nickname", nickname: "", named: "commands:pet.defaultPetName"
+		}
+	])("answers a caress with the pet's reaction, in Discord's words, naming it $case", async ({
+		nickname, named
+	}) => {
+		jest.mocked(GameClient.request).mockImplementation(request => Promise.resolve(request instanceof PetCaressReq
+			? {
+				kind: "answer", packet: new PetCaressRes()
+			}
+			: {
+				kind: "answer", packet: Object.assign(new ProfileRes(), { effect: NO_EFFECT })
+			}));
+		await renderOverview({ pet: {
+			...PET, nickname
+		} });
+		expect(screen.queryByText(`commands:pet.petPhrases:${named}`)).toBeNull();
+		await fireEvent.press(screen.getByText("app:pet.care.caress"));
+		await waitFor(() => expect(screen.getByText(`commands:pet.petPhrases:${named}`)).toBeTruthy());
+	});
+
 	it("walks the pet off after one stroke too many", async () => {
 		jest.mocked(GameClient.request).mockImplementation(request => Promise.resolve(request instanceof PetCaressReq
 			? {
@@ -422,58 +447,111 @@ describe("pet care screens", () => {
 		await fireEvent.press(screen.getByText("app:pet.feed.continue"));
 		expect(onContinue).toHaveBeenCalled();
 	});
+});
 
-	it("swaps a boarder from the shelter itself, on the reaction the server attached to it", async () => {
-		const transfer = Object.assign(new ReactionCollectorCreation(), {
-			id: "transfer",
-			endTime: Date.now() + 60_000,
-			data: {
-				type: "petTransfer",
-				data: {
-					ownPet: PET,
-					shelterPets: [
-						{
-							petEntityId: 4, pet: BOARDER
-						}
-					]
-				}
-			},
-			reactions: [
+const TRANSFER = Object.assign(new ReactionCollectorCreation(), {
+	id: "transfer",
+	endTime: Date.now() + 60_000,
+	data: {
+		type: "petTransfer",
+		data: {
+			ownPet: PET,
+			shelterPets: [
 				{
-					type: "petDeposit", data: {}
-				},
-				{
-					type: "petSwitch", data: { petEntityId: 4 }
-				},
-				{
-					type: "refuse", data: {}
+					petEntityId: 4, pet: BOARDER
 				}
 			]
+		}
+	},
+	reactions: [
+		{
+			type: "petDeposit", data: {}
+		},
+		{
+			type: "petSwitch", data: { petEntityId: 4 }
+		},
+		{
+			type: "refuse", data: {}
+		}
+	]
+});
+
+type ShelterPet = typeof PET | typeof BOARDER;
+
+type ShelterState = {
+	ownPet: ShelterPet; boarders: ShelterPet[];
+};
+
+function shelterAnswers(client: QueryClient, state: ShelterState): void {
+	client.setQueryData(gameKey(GAME_ENTITIES.SHELTER), {
+		kind: "answer",
+		packet: Object.assign(new GuildShelterRes(), {
+			guildName: "Les Veilleurs", pets: state.boarders, maxCount: 6
+		})
+	});
+	client.setQueryData(gameKey(GAME_ENTITIES.PET), {
+		kind: "answer",
+		packet: Object.assign(new PetRes(), {
+			pet: state.ownPet, hasTalisman: false
+		})
+	});
+}
+
+/** The shelter as the server last described it; only the transfer itself reaches the server. */
+async function renderShelter(state: ShelterState): Promise<QueryClient> {
+	jest.mocked(GameClient.request).mockResolvedValue({
+		kind: "answer", packet: TRANSFER
+	});
+	const client = new QueryClient({ defaultOptions: { queries: {
+		retry: false, gcTime: Infinity, staleTime: Infinity
+	} } });
+	shelterAnswers(client, state);
+	await render(<QueryClientProvider client={client}><GuildShelter /></QueryClientProvider>);
+	return client;
+}
+
+describe("guild shelter", () => {
+	// Android reports a sheet put away as soon as it closes: the transfer it held leaves then.
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.replaceProperty(Platform, "OS", "android");
+	});
+	afterEach(() => jest.restoreAllMocks());
+
+	it("swaps a boarder from the shelter itself, on the reaction the server attached to it", async () => {
+		await renderShelter({
+			ownPet: PET, boarders: [BOARDER]
 		});
-		jest.mocked(GameClient.request).mockImplementation(async request => request instanceof GuildShelterReq
-			? {
-				kind: "answer",
-				packet: Object.assign(new GuildShelterRes(), {
-					guildName: "Les Veilleurs", pets: [BOARDER], maxCount: 6
-				})
-			}
-			: request instanceof PetReq
-				? {
-					kind: "answer",
-					packet: Object.assign(new PetRes(), {
-						pet: PET, hasTalisman: false
-					})
-				}
-				: {
-					kind: "answer", packet: transfer
-				});
-		const client = new QueryClient({ defaultOptions: { queries: {
-			retry: false, gcTime: Infinity
-		} } });
-		await render(<QueryClientProvider client={client}><GuildShelter /></QueryClientProvider>);
-		await waitFor(() => expect(screen.getByText("models:pets:8")).toBeTruthy());
 		await fireEvent.press(screen.getByText("models:pets:8"));
 		await fireEvent.press(screen.getByText("app:pet.management.switch"));
 		await waitFor(() => expect(mockAnswerWithoutShowing).toHaveBeenCalledWith("transfer", 1));
+	});
+
+	it("puts the swapped boarder away instead of offering to swap back the pet just left in its place", async () => {
+		const client = await renderShelter({
+			ownPet: PET, boarders: [BOARDER]
+		});
+		await fireEvent.press(screen.getByText("models:pets:8"));
+		await fireEvent.press(screen.getByText("app:pet.management.switch"));
+		await waitFor(() => expect(mockAnswerWithoutShowing).toHaveBeenCalledWith("transfer", 1));
+
+		shelterAnswers(client, {
+			ownPet: BOARDER, boarders: [PET]
+		});
+
+		// The boarder now follows the player, and the pet left behind boards in the slot it had.
+		await waitFor(() => expect(screen.getAllByText(/^(Aster|models:pets:8)$/).map(node => node.props.children)).toEqual(["models:pets:8", "Aster"]));
+		expect(screen.queryByTestId("shelter-boarder-0")).toBeNull();
+		expect(screen.queryByText("app:pet.management.switch")).toBeNull();
+	});
+
+	it("holds the transfer while the sheet is still leaving, so a window the server answers with is not lost behind it", async () => {
+		jest.replaceProperty(Platform, "OS", "ios");
+		await renderShelter({
+			ownPet: PET, boarders: [BOARDER]
+		});
+		await fireEvent.press(screen.getByText("Aster"));
+		await fireEvent.press(screen.getByText("app:pet.management.deposit"));
+		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 });

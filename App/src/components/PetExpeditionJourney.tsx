@@ -17,7 +17,7 @@ import { createStyles } from "@/src/design/ThemeContext";
 import {
 	expeditionLocationIcon, expeditionLocationTitle
 } from "@/src/display/PetExpedition";
-import { formatDurationMinutes } from "@/src/display/ItemEffects";
+import { formatLongDurationMinutes } from "@/src/display/ItemEffects";
 import { formatNumber } from "@/src/display/Amounts";
 import { missionDate } from "@/src/display/Missions";
 import {
@@ -116,7 +116,7 @@ function expeditionFigures(expedition: PetExpedition, secondsLeft: number): Figu
 		...secondsLeft > 0
 			? [
 				{
-					caption: i18n.t("app:expedition.remaining"), value: formatDurationMinutes(secondsLeft / SECONDS_PER_MINUTE)
+					caption: i18n.t("app:expedition.remaining"), value: formatLongDurationMinutes(secondsLeft / SECONDS_PER_MINUTE)
 				}
 			]
 			: [],

@@ -117,6 +117,17 @@ describe("garden screen", () => {
 		expect(screen.queryByText("app:garden.compost")).toBeNull();
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
+	it("says an empty plot waits for the player's return home, not for a seed they already carry, on a remote snapshot", async () => {
+		const remote = snapshot();
+		remote.garden.accessMode = "readOnly";
+		remote.garden.eligibility = {
+			canHarvest: false, canPlantSeed: false, canWaterGarden: false, canCompost: false
+		};
+		remote.compostOffers = [];
+		await render(<HomeGarden />, { wrapper: provider(remote) });
+		expect(screen.getByText("app:garden.errors.notAtHome")).toBeTruthy();
+		expect(screen.queryByText("app:garden.errors.noSeed")).toBeNull();
+	});
 	it("submits only the selected compost offer and groups repeated material gains", async () => {
 		jest.mocked(GameClient.request).mockResolvedValueOnce(answer({
 			kind: "compost",

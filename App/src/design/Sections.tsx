@@ -163,6 +163,9 @@ const factStylesOf = styleGroup(colors => ({
 	factAmount: {
 		fontFamily: Theme.fonts.semiBold, fontSize: Theme.fontSize.rowTitle, lineHeight: Theme.lineHeight.body, color: colors.ink, fontVariant: ["tabular-nums"], textAlign: "right"
 	},
+	factStruck: {
+		color: colors.muted, textDecorationLine: "line-through"
+	},
 	gauge: {
 		paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.md, gap: 6
 	},
@@ -1032,12 +1035,15 @@ export function ExpandableEntry({
 
 /** A plain statement of fact: what it is on the left, what it is worth on the right. */
 export function Fact({
-	label, value, unit, end
+	label, value, unit, end, struck = false
 }: {
 	label: string;
 	value?: string;
 	unit?: string;
 	end?: ReactNode;
+
+	/** Struck out, as Discord does, when the value does not count this time (a pet away on an expedition misses the fight). */
+	struck?: boolean;
 }): ReactNode {
 	const styles = useStyles();
 	return <View style={styles.fact}>
@@ -1045,7 +1051,7 @@ export function Fact({
 		{end !== undefined && typeof end !== "string"
 			? end
 			: <View style={styles.factValue}>
-				<TwemojiText textStyle={styles.factAmount} emojiSize={Theme.fontSize.rowTitle}>{typeof end === "string" ? end : value ?? ""}</TwemojiText>
+				<TwemojiText textStyle={[styles.factAmount, struck && styles.factStruck]} emojiSize={Theme.fontSize.rowTitle}>{typeof end === "string" ? end : value ?? ""}</TwemojiText>
 				{unit ? <UnitIcon unit={unit} size={15} /> : null}
 			</View>}
 	</View>;

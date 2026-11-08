@@ -5,12 +5,17 @@ import {
 	QueryClient, QueryClientProvider
 } from "@tanstack/react-query";
 import {
-	FightHistoryContent, LeaguesContent
+	FightHistoryContent, Leagues, LeaguesContent
 } from "@/src/components/ArenaReferences";
 import {
 	GloryRankings, GuildRankings, Rankings, RankingsContent
 } from "@/src/components/Rankings";
 import { GameClient } from "@/src/networking/GameClient";
+import {
+	claimantOf, OCCUPIED, profileOf
+} from "@/src/testing/fakeLeagueClaimant";
+import { usePlayerProfile } from "@/src/store/usePlayerProfile";
+import { useReportView } from "@/src/store/useReportActions";
 import {
 	TopReq, LeagueRewardReq
 } from "ws-packets/src/fromClient/RankingsReq";
@@ -39,6 +44,8 @@ jest.mock("expo-router", () => ({
 	})
 }));
 jest.mock("@/src/networking/GameClient", () => ({ GameClient: { request: jest.fn() } }));
+jest.mock("@/src/store/usePlayerProfile", () => ({ usePlayerProfile: jest.fn() }));
+jest.mock("@/src/store/useReportActions", () => ({ useReportView: jest.fn() }));
 jest.mock("@/src/collectors/CollectorsContext", () => ({ useCollectors: () => ({ track: jest.fn() }) }));
 jest.mock("@/src/AppIcons", () => ({ AppIcons: {
 	getIcon: (): string => "", getIconOrNull: (): null => null
@@ -107,6 +114,8 @@ const LEAGUES = Object.assign(new LeagueInfoRes(), {
 		}
 	]
 });
+
+const FREE_CLAIMANT = claimantOf();
 
 describe("arena references", () => {
 	beforeEach(() => jest.clearAllMocks());
@@ -350,7 +359,7 @@ describe("arena references", () => {
 		jest.mocked(GameClient.request).mockResolvedValue({
 			kind: "alternative", packetName: "LeagueRewardRes", packet: {}
 		});
-		await render(<LeaguesContent data={LEAGUES} />);
+		await render(<LeaguesContent data={LEAGUES} claimant={FREE_CLAIMANT} />);
 		expect(within(screen.getByRole("button", { name: "app:arena.leagues.claim" })).getByTestId("count-badge")).toHaveTextContent("1");
 		expect(within(screen.getByTestId("league-standing")).getByLabelText("models:leagues.1")).toHaveProp("accessibilityValue", {
 			now: 123, max: 300
@@ -380,12 +389,15 @@ describe("arena references", () => {
 		expect(jest.mocked(GameClient.request).mock.calls[0][0]).toBeInstanceOf(LeagueRewardReq);
 	});
 	it("announces when the reward cannot be claimed yet instead of waiting for the tap", async () => {
-		await render(<LeaguesContent data={{
-			...LEAGUES,
-			rewardAvailability: {
-				type: "notSunday", nextSunday: 1_900_000_000_000
-			}
-		}} />);
+		await render(<LeaguesContent
+			data={{
+				...LEAGUES,
+				rewardAvailability: {
+					type: "notSunday", nextSunday: 1_900_000_000_000
+				}
+			}}
+			claimant={FREE_CLAIMANT}
+		/>);
 		expect(screen.getByTestId("league-reward-unavailable")).toBeTruthy();
 		expect(screen.getByText("app:arena.leagues.nextClaim")).toBeTruthy();
 		const claim = screen.getByRole("button", { name: "app:arena.leagues.claim" });
@@ -396,22 +408,81 @@ describe("arena references", () => {
 		await fireEvent.press(claim);
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
+	it("greys the claim of a busy player with the time left, without a badge nor a request", async () => {
+		jest.mocked(GameClient.request).mockResolvedValue({
+			kind: "answer", packet: LEAGUES
+		});
+		jest.mocked(usePlayerProfile).mockReturnValue({
+			status: "ready", data: profileOf({ effect: OCCUPIED })
+		});
+		jest.mocked(useReportView).mockReturnValue({ status: "loading" });
+		const client = new QueryClient({ defaultOptions: { queries: {
+			retry: false, gcTime: Infinity
+		} } });
+		await render(<QueryClientProvider client={client}><Leagues /></QueryClientProvider>);
+		const claim = await screen.findByRole("button", { name: "app:arena.leagues.claim" });
+		expect(screen.getByText("app:requirements.effect")).toBeTruthy();
+		expect(claim).toBeDisabled();
+		expect(within(claim).queryByTestId("count-badge")).toBeNull();
+		await fireEvent.press(claim);
+		expect(jest.mocked(GameClient.request).mock.calls.filter(([request]) => request instanceof LeagueRewardReq)).toHaveLength(0);
+	});
+	it.each([
+		{
+			situation: "below the fight level", claimant: claimantOf({ level: 7 }), reason: "app:requirements.level"
+		},
+		{
+			situation: "on the boat, away from the continent", claimant: claimantOf({}, { isOnBoat: true }), reason: "app:requirements.location"
+		}
+	])("greys the claim of a player $situation, without a badge nor a request", async ({
+		claimant, reason
+	}) => {
+		await render(<LeaguesContent data={LEAGUES} claimant={claimant} />);
+		expect(screen.getByText(reason)).toBeTruthy();
+		const claim = screen.getByRole("button", { name: "app:arena.leagues.claim" });
+		expect(claim).toBeDisabled();
+		expect(within(claim).queryByTestId("count-badge")).toBeNull();
+		await fireEvent.press(claim);
+		expect(GameClient.request).not.toHaveBeenCalled();
+	});
+	it("tells the season's own blocker before the player's, which would not open the reward once over", async () => {
+		await render(<LeaguesContent
+			data={{
+				...LEAGUES, rewardAvailability: { type: "alreadyClaimed" }
+			}}
+			claimant={claimantOf({ effect: OCCUPIED })}
+		/>);
+		expect(screen.getByText("app:arena.leagues.alreadyClaimed")).toBeTruthy();
+		expect(screen.queryByText("app:requirements.effect")).toBeNull();
+	});
+	it("leaves the claim open to a player walking on the continent", async () => {
+		await render(<LeaguesContent data={LEAGUES} claimant={claimantOf({}, { isOnBoat: false })} />);
+		expect(screen.getByRole("button", {
+			name: "app:arena.leagues.claim", disabled: false
+		})).toBeTruthy();
+	});
 	it("removes the league action badge after the server reports the reward as claimed", async () => {
-		const view = await render(<LeaguesContent data={LEAGUES} />);
+		const view = await render(<LeaguesContent data={LEAGUES} claimant={FREE_CLAIMANT} />);
 		expect(within(screen.getByRole("button", { name: "app:arena.leagues.claim" })).getByTestId("count-badge")).toBeTruthy();
 
-		await view.rerender(<LeaguesContent data={{
-			...LEAGUES, rewardAvailability: { type: "alreadyClaimed" }
-		}} />);
+		await view.rerender(<LeaguesContent
+			data={{
+				...LEAGUES, rewardAvailability: { type: "alreadyClaimed" }
+			}}
+			claimant={FREE_CLAIMANT}
+		/>);
 		const claim = screen.getByRole("button", { name: "app:arena.leagues.claim" });
 		expect(claim).toBeDisabled();
 		expect(within(claim).queryByTestId("count-badge")).toBeNull();
 		expect(GameClient.request).not.toHaveBeenCalled();
 	});
 	it("keeps the highest league visible without inventing another threshold", async () => {
-		await render(<LeaguesContent data={{
-			...LEAGUES, currentLeagueId: 1, glory: 900
-		}} />);
+		await render(<LeaguesContent
+			data={{
+				...LEAGUES, currentLeagueId: 1, glory: 900
+			}}
+			claimant={FREE_CLAIMANT}
+		/>);
 		const standing = within(screen.getByTestId("league-standing"));
 		expect(standing.getByText("models:leagues.1")).toBeTruthy();
 		expect(standing.getByText("900")).toBeTruthy();
@@ -426,7 +497,7 @@ describe("arena references", () => {
 			.mockResolvedValueOnce({
 				kind: "alternative", packetName: "LeagueRewardRes", packet: {}
 			});
-		await render(<LeaguesContent data={LEAGUES} />);
+		await render(<LeaguesContent data={LEAGUES} claimant={FREE_CLAIMANT} />);
 		await fireEvent.press(screen.getByRole("button", { name: "app:arena.leagues.claim" }));
 		await screen.findByText("app:common.connectionError");
 		expect(GameClient.request).toHaveBeenCalledTimes(1);

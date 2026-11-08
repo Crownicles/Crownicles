@@ -17,7 +17,7 @@ import { SectionHeader } from "@/src/design/Primitives";
 import {
 	fighterDisplayName, fighterSubtitle, fightActionName
 } from "@/src/display/Fight";
-import { petName } from "@/src/display/PetDisplay";
+import { petShortField } from "@/src/display/PetDisplay";
 import { formatNumber } from "@/src/display/Amounts";
 import { i18n } from "@/src/translations/i18n";
 import { useCompactFight } from "@/src/components/FightControls";
@@ -193,7 +193,7 @@ function FighterStats({
 			<Fact label={i18n.t("app:arena.stats.breathRegen")} value={`+${formatNumber(fighter.stats.breathRegen)}`} unit="breath" />
 			{fighter.alteration ? <Fact label={i18n.t("app:arena.effects.newAlteration")} value={fightActionName(fighter.alteration)} /> : null}
 			{fighter.glory === undefined ? null : <Fact label={i18n.t("app:arena.glory")} value={formatNumber(fighter.glory)} unit="glory" />}
-			{pet ? <Fact label={i18n.t("app:arena.pet")} value={petName(pet)} /> : null}
+			{pet ? <Fact label={i18n.t("app:arena.pet")} value={petShortField(pet)} /> : null}
 		</ExpandableList>
 		{actions.length > 0 ? <FighterAttacks actions={actions} /> : null}
 	</QuestionSheet>;

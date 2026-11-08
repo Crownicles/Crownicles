@@ -8,13 +8,15 @@ import {
 	GuildCommandOutcome, GuildCreationStatus, GuildDailyReward
 } from "ws-packets/src/objects/Guild";
 import { Note } from "@/src/design/Primitives";
-import {
-	formatMoney, formatNumber
-} from "@/src/display/Amounts";
+import { formatMoney } from "@/src/display/Amounts";
 import { formatDurationMinutes } from "@/src/display/ItemEffects";
+import {
+	gainEffect, signedAmount
+} from "@/src/display/OutcomeEffects";
+import { petShortField } from "@/src/display/PetDisplay";
 import { i18n } from "@/src/translations/i18n";
 import {
-	ActionBanner, Fact, QuestionSheet, Toast
+	ActionBanner, Effect, Effects, QuestionSheet, Toast
 } from "@/src/design/Sections";
 import { TwemojiIcon } from "@/src/design/TwemojiIcon";
 
@@ -22,13 +24,27 @@ const TOAST_EMBLEM_SIZE = 22;
 
 const MS_PER_MINUTE = 60_000;
 const MINUTES_PER_HOUR = 60;
-const DAILY_NUMBERS = [
-	"money",
-	"heal",
-	"personalXp",
-	"guildXp",
-	"guildPoints",
-	"commonFood"
+
+/** Each counted gain wears the game emoji of what it adds, as Discord writes it next to the amount. */
+const DAILY_GAINS = [
+	{
+		key: "money", icon: "unitValues.money"
+	},
+	{
+		key: "heal", icon: "unitValues.health"
+	},
+	{
+		key: "personalXp", icon: "unitValues.xp"
+	},
+	{
+		key: "guildXp", icon: "unitValues.xp"
+	},
+	{
+		key: "guildPoints", icon: "unitValues.guildPoint"
+	},
+	{
+		key: "commonFood", icon: "foods.commonFood"
+	}
 ] as const;
 const DAILY_FLAGS = [
 	"fullHeal",
@@ -53,7 +69,22 @@ function DailyPetReward({ pet }: { pet: GuildDailyReward["pet"] }): ReactNode {
 	if (!pet) {
 		return null;
 	}
-	return <Note>{i18n.t("app:guild.rewards.pet", { pet: i18n.t(`models:pets.${pet.typeId}`, { context: pet.isFemale ? "female" : "male" }) })}</Note>;
+	return <Note>{i18n.t("app:guild.rewards.pet", { pet: petShortField({
+		typeId: pet.typeId, sex: pet.isFemale ? "f" : "m"
+	}) })}</Note>;
+}
+
+function dailyGains(reward: GuildDailyReward): Effect[] {
+	return DAILY_GAINS.flatMap(({
+		key, icon
+	}) => {
+		const amount = reward[key];
+		if (!amount) {
+			return [];
+		}
+		const emoji = AppIcons.getIconOrNull(icon);
+		return [gainEffect(i18n.t(`app:guild.rewards.${key}`), signedAmount(amount), emoji ? { emoji } : {})];
+	});
 }
 
 function DailyRewardExtras({ reward }: { reward: GuildDailyReward }): ReactNode {
@@ -65,9 +96,10 @@ function DailyRewardExtras({ reward }: { reward: GuildDailyReward }): ReactNode 
 }
 
 function DailyReward({ reward }: { reward: GuildDailyReward }): ReactNode {
+	const gains = dailyGains(reward);
 	return <>
-		<Note>{reward.guildName}</Note>
-		{DAILY_NUMBERS.filter(key => reward[key] !== undefined).map(key => <Fact key={key} label={i18n.t(`app:guild.rewards.${key}`)} value={formatNumber(reward[key]!)} />)}
+		<Note>{i18n.t("commands:guildDaily.rewardTitle", { guildName: reward.guildName })}</Note>
+		{gains.length > 0 ? <Effects items={gains} /> : null}
 		{DAILY_FLAGS.filter(key => reward[key]).map(key => <Note key={key}>{i18n.t(`app:guild.rewards.${key}`)}</Note>)}
 		<DailyRewardExtras reward={reward} />
 	</>;
@@ -158,7 +190,7 @@ export function GuildOutcome({
 	}
 	return <QuestionSheet
 		caption={i18n.t("app:guild.eyebrow")}
-		title={i18n.t("app:guild.pages.manage")}
+		title={i18n.t("app:guild.daily")}
 		onClose={onContinue}
 	>
 		<DailyReward reward={outcome.reward} />

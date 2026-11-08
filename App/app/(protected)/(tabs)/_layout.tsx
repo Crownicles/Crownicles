@@ -36,7 +36,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { DeathScreen } from "@/src/components/DeathScreen";
 import {
-	UnlockCelebration, useAdventureBusy, useAdventureHoldsTabs
+	UnlockCelebration, useAdventureBusy, useAdventureHoldsTabs, useAdventureTelling
 } from "@/src/components/UnlockCelebration";
 import { usePlayerIsDead } from "@/src/store/usePlayerIsDead";
 import {
@@ -363,12 +363,15 @@ function StopToast(): ReactNode {
 
 export default function TabLayout(): ReactNode {
 	const dead = usePlayerIsDead();
+
+	// The event that killed the character is told first, as on Discord: the death waits for the player to move on.
+	const telling = useAdventureTelling();
 	const journey = useJourney();
 	const colors = useColors();
 	useNotificationNavigation();
 	usePushRegistration();
 	useAppNotificationRefresh();
-	if (dead) {
+	if (dead && !telling) {
 		return <DeathScreen />;
 	}
 	return (

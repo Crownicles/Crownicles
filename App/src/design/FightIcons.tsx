@@ -37,6 +37,7 @@ import {
 	PawPrint as NativePawPrint,
 	Play as NativePlay,
 	Plus as NativePlus,
+	RotateCcw as NativeRotateCcw,
 	Search as NativeSearch,
 	Share as NativeShare,
 	Shield as NativeShield,
@@ -124,6 +125,7 @@ export const PawPrint = iconComponent(NativePawPrint);
 export const Pause = iconComponent(NativePause);
 export const Play = iconComponent(NativePlay);
 export const Plus = iconComponent(NativePlus);
+export const RotateCcw = iconComponent(NativeRotateCcw);
 export const Search = iconComponent(NativeSearch);
 export const Share = iconComponent(NativeShare);
 export const Shield = iconComponent(NativeShield);

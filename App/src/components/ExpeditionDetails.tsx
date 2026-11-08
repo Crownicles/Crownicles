@@ -8,7 +8,7 @@ import {
 import {
 	expeditionLocationIcon, expeditionLocationName, expeditionLocationTitle, expeditionPetName, expeditionRisk
 } from "@/src/display/PetExpedition";
-import { formatDurationMinutes } from "@/src/display/ItemEffects";
+import { formatLongDurationMinutes } from "@/src/display/ItemEffects";
 import { formatNumber } from "@/src/display/Amounts";
 import { missionDate } from "@/src/display/Missions";
 import { useSecondsLeft } from "@/src/collectors/CollectorPrompt";
@@ -17,6 +17,7 @@ import {
 	ExpandableList, Fact, Gauge
 } from "@/src/design/Sections";
 import { TwemojiIcon } from "@/src/design/TwemojiIcon";
+import { StoryText } from "@/src/design/Story";
 import { Theme } from "@/src/design/Theme";
 import { AppIcons } from "@/src/AppIcons";
 import {
@@ -102,7 +103,7 @@ function ladderTone(ladder: readonly string[], category: string, threshold: numb
 function optionStats(option: ExpeditionOption): OptionStat[] {
 	return [
 		{
-			key: "duration", emoji: AppIcons.getIcon("expedition.duration"), text: formatDurationMinutes(option.displayDurationMinutes), tone: STAT_TONES.PLAIN
+			key: "duration", emoji: AppIcons.getIcon("expedition.duration"), text: formatLongDurationMinutes(option.displayDurationMinutes), tone: STAT_TONES.PLAIN
 		},
 		{
 			key: "risk", emoji: AppIcons.getIcon(`expedition.risk.${option.riskCategory}`), text: i18n.t(`commands:petExpedition.riskCategories.${option.riskCategory}`), tone: ladderTone(RISK_LADDER, option.riskCategory, FIRST_PERILOUS_RISK, STAT_TONES.WARNING)
@@ -120,13 +121,6 @@ function optionStats(option: ExpeditionOption): OptionStat[] {
 			? [
 				{
 					key: "clone", emoji: AppIcons.getIcon("expedition.cloneTalisman"), text: i18n.t("app:expedition.cloneBonus"), tone: STAT_TONES.BONUS
-				}
-			]
-			: [],
-		...option.hasBonusTokens
-			? [
-				{
-					key: "tokens", emoji: AppIcons.getIcon("unitValues.token"), text: i18n.t("app:expedition.tokenBonus"), tone: STAT_TONES.BONUS
 				}
 			]
 			: []
@@ -157,6 +151,10 @@ export function ExpeditionOptionRow({
 				<TwemojiIcon emoji={stat.emoji} size={STAT_EMOJI_SIZE} />
 				<Text style={[styles.statText, styles[stat.tone]]}>{stat.text}</Text>
 			</View>)}</View>
+			{/* A word or two would not say what the tokens are about: the hint is written out as Discord does. */}
+			{option.hasBonusTokens
+				? <StoryText style={[styles.statText, styles.bonus]} emojiSize={STAT_EMOJI_SIZE}>{i18n.t("commands:petExpedition.expeditionOption.bonusTokens")}</StoryText>
+				: null}
 		</View>
 	</Pressable>;
 }
@@ -170,8 +168,8 @@ export function ExpeditionProgressDetails({ data }: { data: ExpeditionProgress }
 		<Fact label={i18n.t("app:expedition.destination")} value={expeditionLocationName(data)} />
 		<Fact label={i18n.t("app:expedition.risk")} value={expeditionRisk(data.riskCategory)} />
 		<Fact label={i18n.t("app:expedition.returnAt")} value={missionDate(data.returnTime)} />
-		{duration ? <Gauge label={i18n.t("app:expedition.remaining")} value={formatDurationMinutes(secondsLeft / SECONDS_PER_MINUTE)} ratio={1 - secondsLeft * MILLISECONDS_PER_SECOND / duration} color={colors.green} /> : null}
-		{data.durationMinutes !== undefined ? <Fact label={i18n.t("app:expedition.duration")} value={formatDurationMinutes(data.durationMinutes)} /> : null}
+		{duration ? <Gauge label={i18n.t("app:expedition.remaining")} value={formatLongDurationMinutes(secondsLeft / SECONDS_PER_MINUTE)} ratio={1 - secondsLeft * MILLISECONDS_PER_SECOND / duration} color={colors.green} /> : null}
+		{data.durationMinutes !== undefined ? <Fact label={i18n.t("app:expedition.duration")} value={formatLongDurationMinutes(data.durationMinutes)} /> : null}
 		<ExpeditionFoodDetails amount={data.foodConsumed} details={data.foodConsumedDetails} />
 	</ExpandableList>;
 }

@@ -1,6 +1,7 @@
 import {
-	render, screen
+	fireEvent, render, screen
 } from "@testing-library/react-native";
+import { Linking } from "react-native";
 import { Story } from "@/src/design/Story";
 import { ChoiceAction } from "@/src/design/Sections";
 
@@ -15,6 +16,19 @@ describe("game prose", () => {
 		await render(<Story>{"Vous perdez 10 ❤️ en chemin."}</Story>);
 		expect(screen.queryByText(/❤️/)).toBeNull();
 		expect(screen.getByText("Vous perdez 10 ")).toBeTruthy();
+	});
+
+	it("opens a web address of the text in the browser when it is touched", async () => {
+		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+		await render(<Story>{"Plus d'informations sur les familiers sur https://guide.crownicles.com/notions-principale/familiers/ !"}</Story>);
+		await fireEvent.press(screen.getByRole("link", { name: "https://guide.crownicles.com/notions-principale/familiers/" }));
+		expect(openURL).toHaveBeenCalledWith("https://guide.crownicles.com/notions-principale/familiers/");
+		openURL.mockRestore();
+	});
+
+	it("leaves a text without a web address untouchable", async () => {
+		await render(<Story>{"Le site crownicles.com est en ligne."}</Story>);
+		expect(screen.queryByRole("link")).toBeNull();
 	});
 
 	it("centers the leading game emoji beside a choice label without an inline text offset", async () => {

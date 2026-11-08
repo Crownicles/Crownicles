@@ -65,8 +65,14 @@ class NativeWindowLife {
 		if (this.state === "shown") {
 			this.appeared();
 			this.state = "idle";
+
+			// Starting the transition is also what tells the window it is no longer shown: Android ends it at once.
+			const leaving = this.turns.start();
 			if (leavingHoldsTheNextWindow()) {
-				this.leaving = this.turns.start();
+				this.leaving = leaving;
+			}
+			else {
+				leaving();
 			}
 		}
 		return false;

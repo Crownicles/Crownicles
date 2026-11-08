@@ -2,7 +2,7 @@ import {
 	act, fireEvent, render, screen, waitFor
 } from "@testing-library/react-native";
 import {
-	AppState, type AppStateStatus, Linking
+	AppState, type AppStateStatus, Linking, Share
 } from "react-native";
 import {
 	QueryClient, QueryClientProvider
@@ -29,6 +29,7 @@ import {
 	ACCOUNT_ACTION_OUTCOMES, KeycloakAuth
 } from "@/src/authentication/KeycloakAuth";
 import { fakeAuthState } from "@/src/testing/fakeAuthState";
+import { fatalErrorStore } from "@/src/store/FatalErrorStore";
 
 const mockPush = jest.fn();
 const mockChangeEmail = jest.fn();
@@ -231,6 +232,17 @@ describe("settings", () => {
 		await waitFor(() => expect(screen.getByText("6.0.4")).toBeTruthy());
 	});
 
+	it("hands over the report of the last error that stopped the app", async () => {
+		const share = jest.spyOn(Share, "share").mockResolvedValue({ action: Share.sharedAction });
+		await renderSettings();
+		expect(screen.queryByText("app:settings.lastCrash.title")).toBeNull();
+
+		await act(() => fatalErrorStore.record(new TypeError("Cannot read property 'isSelf' of undefined")));
+		await fireEvent.press(screen.getByText("app:settings.lastCrash.title"));
+
+		expect(share.mock.calls[0][0].message).toContain("Cannot read property 'isSelf' of undefined");
+	});
+
 	it("keeps the chosen vibrations on this device and lets the player feel them at once", async () => {
 		await renderSettings();
 
@@ -330,12 +342,10 @@ describe("settings", () => {
 		expect(auth.leave).toHaveBeenCalledTimes(1);
 	});
 
-	it("changes account directly without a confirmation, after forgetting the token and this device", async () => {
-		const auth = await renderSettings();
-		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
-		await waitFor(() => expect(auth.leave).toHaveBeenCalledTimes(1));
-		expect(forgetPushDevice).toHaveBeenCalledTimes(1);
-		expect(screen.queryByText("app:settings.logoutConfirm.title")).toBeNull();
+	it("says before the tap that logging out leads back to the choice of an account, from a single entry", async () => {
+		await renderSettings();
+		expect(screen.getByText("app:settings.logoutHint")).toBeTruthy();
+		expect(screen.queryByText("app:settings.changeAccount")).toBeNull();
 	});
 
 	it("does not expose the next login or delete the token twice while session cleanup is pending", async () => {
@@ -344,10 +354,12 @@ describe("settings", () => {
 			finish = resolve;
 		});
 		const auth = await renderSettings({ leave: jest.fn(() => clearing) });
-		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
+		await fireEvent.press(screen.getByText("app:common.logout"));
+		await waitFor(() => expect(screen.getByText("app:settings.logoutConfirm.title")).toBeTruthy());
+		await fireEvent.press(screen.getAllByText("app:common.logout").at(-1)!);
 		await waitFor(() => expect(auth.leave).toHaveBeenCalledTimes(1));
-		expect(screen.getByText("app:settings.leavingAccount")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
+		expect(screen.getAllByText("app:settings.leavingAccount").length).toBeGreaterThan(0);
+		await fireEvent.press(screen.getAllByText("app:settings.leavingAccount").at(-1)!);
 		expect(auth.leave).toHaveBeenCalledTimes(1);
 		await act(async (): Promise<void> => {
 			finish();
@@ -359,9 +371,11 @@ describe("settings", () => {
 		const leave = jest.fn().mockRejectedValueOnce(new Error("keychain unavailable"))
 			.mockResolvedValue(undefined);
 		await renderSettings({ leave });
-		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
+		await fireEvent.press(screen.getByText("app:common.logout"));
+		await waitFor(() => expect(screen.getByText("app:settings.logoutConfirm.title")).toBeTruthy());
+		await fireEvent.press(screen.getAllByText("app:common.logout").at(-1)!);
 		await waitFor(() => expect(screen.getByText("app:settings.changeAccountFailed")).toBeTruthy());
-		await fireEvent.press(screen.getByText("app:settings.changeAccount"));
+		await fireEvent.press(screen.getAllByText("app:common.logout").at(-1)!);
 		await waitFor(() => expect(leave).toHaveBeenCalledTimes(2));
 	});
 });

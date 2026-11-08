@@ -151,12 +151,30 @@ function getRealmUrl(): string {
 	return `${url}/realms/${realm}`;
 }
 
+function getEndSessionEndpoint(): string {
+	return `${getRealmUrl()}/protocol/openid-connect/logout`;
+}
+
+/** Keycloak's OpenID Connect endpoints take the app's public client and their parameters as a form. */
+function postToKeycloak(endpoint: string, params: Record<string, string>): Promise<Response> {
+	return fetch(endpoint, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded"
+		},
+		body: new URLSearchParams({
+			client_id: getClientId(),
+			...params
+		}).toString()
+	});
+}
+
 function getDiscovery(): DiscoveryDocument {
 	const realmUrl = getRealmUrl();
 	return {
 		authorizationEndpoint: `${realmUrl}/protocol/openid-connect/auth`,
 		tokenEndpoint: `${realmUrl}/protocol/openid-connect/token`,
-		endSessionEndpoint: `${realmUrl}/protocol/openid-connect/logout`
+		endSessionEndpoint: getEndSessionEndpoint()
 	};
 }
 
@@ -331,6 +349,18 @@ export class KeycloakAuth {
 		});
 	}
 
+	/**
+	 * Ends on Keycloak the session this refresh token belongs to, the browser sign-in it came from included: a browser that
+	 * kept its cookie, as an Android custom tab does, would otherwise offer that account again, or refuse another one.
+	 */
+	public static async endSession(refreshToken: string): Promise<void> {
+		const response = await postToKeycloak(getEndSessionEndpoint(), { refresh_token: refreshToken });
+
+		if (!response.ok) {
+			throw new AuthFailure(AUTH_FAILURES.UNREACHABLE, `Keycloak logout request failed with status ${response.status}`);
+		}
+	}
+
 	public static refresh(refreshToken: string): Promise<KeycloakOAuth2Token> {
 		return KeycloakAuth.requestToken({
 			grant_type: "refresh_token",
@@ -343,16 +373,7 @@ export class KeycloakAuth {
 	 * refresh_expires_in field that the app needs to know when a re-login is required.
 	 */
 	private static async requestToken(params: Record<string, string>): Promise<KeycloakOAuth2Token> {
-		const response = await fetch(`${getRealmUrl()}/protocol/openid-connect/token`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: new URLSearchParams({
-				client_id: getClientId(),
-				...params
-			}).toString()
-		});
+		const response = await postToKeycloak(`${getRealmUrl()}/protocol/openid-connect/token`, params);
 
 		if (!response.ok) {
 			const failure = await response.json().catch(() => ({})) as { error?: string };

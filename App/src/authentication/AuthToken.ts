@@ -64,6 +64,11 @@ export class AuthToken {
 		return this.refreshing;
 	}
 
+	/** Ends the account's session on Keycloak, which this token can no longer reopen afterwards. */
+	public endSession(): Promise<void> {
+		return KeycloakAuth.endSession(this.data.refreshToken);
+	}
+
 	public toJsonString(): string {
 		return JSON.stringify({
 			accessToken: this.data.accessToken,

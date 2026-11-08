@@ -169,15 +169,16 @@ describe("WebSocket session ownership", () => {
 		expect(mocks.publish).toHaveBeenCalledTimes(WebSocketConstants.MAX_HELD_MESSAGES);
 	});
 
-	it("holds a bounded size of messages while the token is being checked", async () => {
+	it("drops what comes after a message too big to hold, so nothing is handled in place of a lost message", async () => {
 		const finish = delayTokenCheck();
 		const socket = new SocketStub();
 		const pending = connect(socket);
+		await send(socket, JSON.stringify({id: "kept", name: "command", data: {}}));
 		await send(socket, JSON.stringify({id: "oversized", name: "command", data: {padding: "x".repeat(WebSocketConstants.MAX_HELD_BYTES)}}));
-		await send(socket, JSON.stringify({id: "small", name: "command", data: {}}));
+		await send(socket, JSON.stringify({id: "after", name: "command", data: {}}));
 		finish({isError: false, payload: {keycloakId: PLAYER}});
 		await pending;
-		expect(mocks.publish.mock.calls.map(([context]) => context.packetId)).toEqual(["small"]);
+		expect(mocks.publish.mock.calls.map(([context]) => context.packetId)).toEqual(["kept"]);
 	});
 
 	it.each([

@@ -13,7 +13,7 @@ import {
 } from "ws-packets/src/fromServer/fight/RankingsRes";
 import { PlayerNotFound } from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {
-	EloGameResult, FIGHT_HISTORY_ENTRY_TYPES, FightHistoryEntry, KingGuardChallenger, KingGuardFightHistoryEntry, KingGuardFightStats, LeagueInfo, LeagueRewardAvailability,
+	EloGameResult, FIGHT_HISTORY_ENTRY_TYPES, FightHistoryEntry, KingGuardChallenger, KingGuardFightHistoryEntry, KingGuardFightStats, LeagueInfo,
 	PlayerFightHistoryEntry
 } from "ws-packets/src/objects/Rankings";
 import {
@@ -21,7 +21,9 @@ import {
 } from "@/src/store/useInventoryMenus";
 import { GAME_ENTITIES } from "@/src/store/GameEntities";
 import { useGameQuery } from "@/src/store/useGameQuery";
-import { useLeagueInfo } from "@/src/store/useClaimables";
+import {
+	useLeagueClaimant, useLeagueInfo
+} from "@/src/store/useClaimables";
 import { GameClient } from "@/src/networking/GameClient";
 import { GameQueryContent } from "@/src/components/GameQueryContent";
 import { FightGauge } from "@/src/components/FightGauge";
@@ -30,12 +32,12 @@ import {
 	Note, SectionHeader
 } from "@/src/design/Primitives";
 import {
-	ActionBanner, ExpandableEntry, ExpandableList, Figures, Lock, useSectionStyles, Standing
+	ActionBanner, ExpandableEntry, ExpandableList, Figures, useSectionStyles, Standing
 } from "@/src/design/Sections";
 import { SegmentedControl } from "@/src/design/SegmentedControl";
 import { KingGuardRollRow } from "@/src/components/Rankings";
 import {
-	ChevronRight, Clock3, Medal, Shield, Swords, Trophy
+	ChevronRight, Medal, Shield, Swords, Trophy
 } from "@/src/design/FightIcons";
 import { useOpenPlayer } from "@/src/navigation/OtherProfiles";
 import {
@@ -47,6 +49,9 @@ import {
 	formatNumber, formatSignedNumber
 } from "@/src/display/Amounts";
 import { missionDate } from "@/src/display/Missions";
+import {
+	LeagueClaimant, leagueRewardLock
+} from "@/src/display/Leagues";
 import { i18n } from "@/src/translations/i18n";
 import {
 	createStyles, useColors
@@ -439,19 +444,11 @@ function LeagueChoice({
 	</ExpandableEntry>;
 }
 
-function claimLock(availability: LeagueRewardAvailability): Lock | undefined {
-	if (!availability) {
-		return undefined;
-	}
-	return {
-		reason: availability.type === "notSunday"
-			? i18n.t("app:arena.leagues.nextClaim", { date: missionDate(availability.nextSunday) })
-			: i18n.t(`app:arena.leagues.${availability.type}`),
-		icon: Clock3
-	};
-}
-
-export function LeaguesContent({ data }: { data: LeagueInfoRes }): ReactNode {
+export function LeaguesContent({
+	data, claimant
+}: {
+	data: LeagueInfoRes; claimant: LeagueClaimant;
+}): ReactNode {
 	const [selected, setSelected] = useState<number | undefined>();
 	const {
 		pending, message, open
@@ -460,7 +457,7 @@ export function LeaguesContent({ data }: { data: LeagueInfoRes }): ReactNode {
 	const current = leagues.find(league => league.id === data.currentLeagueId);
 	const next = current ? leagues.find(league => league.minGloryPoints > current.minGloryPoints) : undefined;
 	const selectLeague = (id: number): void => setSelected(previous => previous === id ? undefined : id);
-	const lock = claimLock(data.rewardAvailability);
+	const lock = leagueRewardLock(data.rewardAvailability, claimant);
 	return <>
 		<LeagueStanding data={data} {...next ? { next } : {}} />
 		<ActionBanner
@@ -491,5 +488,6 @@ export function LeaguesContent({ data }: { data: LeagueInfoRes }): ReactNode {
 
 export function Leagues(): ReactNode {
 	const state = useLeagueInfo();
-	return <GameQueryContent state={state} entity={GAME_ENTITIES.LEAGUES}>{packet => <LeaguesContent data={packet} />}</GameQueryContent>;
+	const claimant = useLeagueClaimant();
+	return <GameQueryContent state={state} entity={GAME_ENTITIES.LEAGUES}>{packet => <LeaguesContent data={packet} claimant={claimant} />}</GameQueryContent>;
 }

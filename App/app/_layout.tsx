@@ -16,6 +16,15 @@ import {
 	ThemeRoot, useColors, useTheme
 } from "@/src/design/ThemeContext";
 import { ThemeTransitionRoot } from "@/src/design/ThemeTransition";
+import { installFatalErrorHandler } from "@/src/store/FatalErrorStore";
+import {
+	FatalErrorRelay, FatalErrorScreen
+} from "@/src/components/FatalErrorScreen";
+
+/** Expo Router draws it in place of the whole app when one of its screens throws. */
+export { FatalErrorScreen as ErrorBoundary };
+
+installFatalErrorHandler();
 
 SplashScreen.preventAutoHideAsync().catch((error: unknown) => {
 	console.warn("Unable to keep the native splash screen visible:", error);
@@ -94,5 +103,5 @@ function ThemedApp(): ReactNode {
 }
 
 export default function RootLayout(): ReactNode {
-	return <ThemeRoot><ThemeTransitionRoot><ThemedApp /></ThemeTransitionRoot></ThemeRoot>;
+	return <ThemeRoot><ThemeTransitionRoot><FatalErrorRelay /><ThemedApp /></ThemeTransitionRoot></ThemeRoot>;
 }

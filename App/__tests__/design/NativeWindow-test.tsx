@@ -148,6 +148,14 @@ describe("native windows", () => {
 			expect(screen.getByTestId("second")).toBeTruthy();
 		});
 
+		it("puts a window away at once, even when no other window follows", async () => {
+			const view = await render(<Windows first second={false} />);
+			await report(() => windowOf("first").onShow?.({} as never));
+
+			await view.rerender(<Windows first={false} second={false} />);
+			expect(screen.queryByTestId("first")).toBeNull();
+		});
+
 		it("opens the next window as soon as the previous one is taken out of the tree", async () => {
 			const view = await render(<Replacement first />);
 			await report(() => windowOf("first").onShow?.({} as never));
