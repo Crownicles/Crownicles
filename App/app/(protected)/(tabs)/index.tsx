@@ -93,7 +93,9 @@ import { TwemojiIcon } from "@/src/design/TwemojiIcon";
 import { i18n } from "@/src/translations/i18n";
 import { formatDurationMinutes } from "@/src/display/ItemEffects";
 import { usePlayerProfile } from "@/src/store/usePlayerProfile";
-import { useMissionsToClaim } from "@/src/store/useClaimables";
+import {
+	useMissionsToClaim, useOwnInventory
+} from "@/src/store/useClaimables";
 import { useTravelAdvicesShown } from "@/src/preferences/TravelAdvicePreference";
 import { WorldMap } from "@/src/components/WorldMap";
 import { DetailScreen } from "@/src/design/DetailScreen";
@@ -107,6 +109,9 @@ import { useContest } from "@/src/onboarding/Contest";
 import {
 	ADVENTURE_MISSIONS, ADVENTURE_TOOL_NAMES, ADVENTURE_TOOL_PARAM, AdventureToolName
 } from "@/src/navigation/AdventureTools";
+import {
+	HOME_SERVICES, homeServiceHref
+} from "@/src/navigation/HomeServices";
 import { ONBOARDING_MISSION_IDS } from "ws-packets/src/objects/Onboarding";
 import { GuideTip } from "@/src/onboarding/GuideTip";
 import {
@@ -863,6 +868,16 @@ function isAdventureTool(value: unknown): value is AdventureTool {
 	return typeof value === "string" && Object.hasOwn(ADVENTURE_TOOLS, value);
 }
 
+/** The Cœur sylvestre opens the garden from the road, as /garden does on Discord: the shortcut appears once the heart is owned. */
+function RemoteGardenShortcut(): ReactNode {
+	const router = useRouter();
+	const inventory = useOwnInventory();
+	if (inventory.status !== "ready" || !inventory.data.hasRemoteHarvestTalisman) {
+		return null;
+	}
+	return <QuickAction icon={AppIcons.getIcon("city.homeUpgrades.garden")} onPress={(): void => router.push(homeServiceHref(HOME_SERVICES.GARDEN))}>{i18n.t("app:city.titles.garden")}</QuickAction>;
+}
+
 /** Side trips that belong to the journey screen itself, never on top of an open menu. */
 function AdventureTools({ onOpen }: { onOpen: (tool: AdventureTool) => void }): ReactNode {
 	const missionsToClaim = useMissionsToClaim();
@@ -870,6 +885,7 @@ function AdventureTools({ onOpen }: { onOpen: (tool: AdventureTool) => void }): 
 		<QuickAction icon={AppIcons.getIcon("expedition.map")} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.MAP)}>{i18n.t("app:map.title")}</QuickAction>
 		<QuickAction icon={AppIcons.getIcon("missions.campaign")} badge={missionsToClaim} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.MISSIONS)}>{i18n.t("app:profile.titles.missions")}</QuickAction>
 		<QuickAction icon={AppIcons.getIcon("navigation.journal")} onPress={(): void => onOpen(ADVENTURE_TOOL_NAMES.JOURNAL)}>{i18n.t("app:adventure.journal.title")}</QuickAction>
+		<RemoteGardenShortcut />
 	</QuickActions>;
 }
 

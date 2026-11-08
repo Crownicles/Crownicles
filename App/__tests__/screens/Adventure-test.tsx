@@ -37,6 +37,7 @@ import { ReportUseTokensAcceptedRes } from "ws-packets/src/fromServer/report/Rep
 import { ReportBuyHealAcceptedRes } from "ws-packets/src/fromServer/report/ReportHealRes";
 import { ReportBigEventResultRes } from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import { MissionsRes } from "ws-packets/src/fromServer/missions/MissionsRes";
+import { InventoryRes } from "ws-packets/src/fromServer/inventory/InventoryRes";
 import { MISSION_TYPES } from "ws-packets/src/objects/Mission";
 import { useMissions } from "@/src/components/Missions";
 import { i18n } from "@/src/translations/i18n";
@@ -54,13 +55,14 @@ function pushFromCore(wireName: string, packet: object): void {
 }
 
 const mockNavigate = jest.fn();
+const mockPush = jest.fn();
 const mockSearchParams = jest.fn((): Record<string, string> => ({}));
 const mockTabPress: { listener: (() => void) | null } = { listener: null };
 
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined,
 	useRouter: (): object => ({
-		push: jest.fn(), navigate: mockNavigate, setParams: jest.fn()
+		push: mockPush, navigate: mockNavigate, setParams: jest.fn()
 	}),
 	useLocalSearchParams: (): Record<string, string> => mockSearchParams(),
 	useNavigation: (): object => ({
@@ -155,6 +157,17 @@ function mockReport(travel = report(), reportReady = false): ReportViewRes {
 		status: "ready", data: view
 	});
 	return view;
+}
+
+/** A player on the road whose inventory holds, or not, the Cœur sylvestre. */
+function mockRoadWithHeart(hasRemoteHarvestTalisman: boolean): void {
+	const view = mockReport();
+	const inventory = Object.assign(new InventoryRes(), {
+		foundPlayer: true, hasRemoteHarvestTalisman
+	});
+	mockedUseGameQuery.mockImplementation(entity => ({
+		status: "ready", data: entity === GAME_ENTITIES.INVENTORY ? inventory : view
+	}));
 }
 
 /** A contest candidate whose current campaign mission is the given one, at its campaign position. */
@@ -442,6 +455,22 @@ describe("Adventure screen", () => {
 		expect(screen.queryByText("app:utilities.unlock")).toBeNull();
 		await fireEvent.press(screen.getByText("app:profile.titles.missions"));
 		expect(screen.getAllByText("app:profile.titles.missions").length).toBeGreaterThan(1);
+	});
+
+	it("opens the garden from the road once the Cœur sylvestre is owned, as /garden does on Discord", async () => {
+		mockRoadWithHeart(true);
+		await render(<Adventure />);
+		await fireEvent.press(screen.getByText("app:city.titles.garden"));
+		expect(mockPush).toHaveBeenCalledWith({
+			pathname: "/home/[service]", params: { service: "garden" }
+		});
+	});
+
+	it("leaves the garden to the home city while the Cœur sylvestre is not owned", async () => {
+		mockRoadWithHeart(false);
+		await render(<Adventure />);
+		expect(screen.getByText("app:profile.titles.missions")).toBeTruthy();
+		expect(screen.queryByText("app:city.titles.garden")).toBeNull();
 	});
 
 	it("goes back to the adventure when its tab is tapped over the missions", async () => {

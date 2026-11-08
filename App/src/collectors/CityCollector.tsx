@@ -32,7 +32,9 @@ import {
 } from "@/src/design/Sections";
 import { TwemojiIcon } from "@/src/design/TwemojiIcon";
 import { i18n } from "@/src/translations/i18n";
-import { HOME_SERVICE_DESTINATIONS } from "@/src/navigation/HomeServices";
+import {
+	HOME_SERVICE_DESTINATIONS, homeServiceHref
+} from "@/src/navigation/HomeServices";
 
 type CityCollectorProps = {
 	collector: ReactionCollectorCreation;
@@ -317,10 +319,7 @@ export function useCityNavigation(): CityNavigation {
 	const [trail, setTrail] = useState<SubmenuStep[]>([]);
 	const navigate = (item: CityNavigationItem): void => {
 		if (item.view in HOME_SERVICE_DESTINATIONS) {
-			const service = HOME_SERVICE_DESTINATIONS[item.view as keyof typeof HOME_SERVICE_DESTINATIONS];
-			router.push({
-				pathname: "/home/[service]", params: { service }
-			});
+			router.push(homeServiceHref(HOME_SERVICE_DESTINATIONS[item.view as keyof typeof HOME_SERVICE_DESTINATIONS]));
 			return;
 		}
 		setTrail([
