@@ -11,7 +11,9 @@ import {
 	GloryRankings, GuildRankings, Rankings, RankingsContent
 } from "@/src/components/Rankings";
 import { GameClient } from "@/src/networking/GameClient";
-import { LeagueClaimant } from "@/src/display/Leagues";
+import {
+	claimantOf, OCCUPIED, profileOf
+} from "@/src/testing/fakeLeagueClaimant";
 import { usePlayerProfile } from "@/src/store/usePlayerProfile";
 import { useReportView } from "@/src/store/useReportActions";
 import {
@@ -23,8 +25,6 @@ import {
 import {
 	TopDataType, TopTiming, EloGameResult, FIGHT_HISTORY_ENTRY_TYPES, KingGuardFightStats, PlayerFightHistoryEntry
 } from "ws-packets/src/objects/Rankings";
-import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
-import { ReportTravelSummaryRes } from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 
 const mockPush = jest.fn();
 const mockNavigate = jest.fn();
@@ -114,23 +114,6 @@ const LEAGUES = Object.assign(new LeagueInfoRes(), {
 		}
 	]
 });
-
-const NO_EFFECT = {
-	effect: "none", hasTimeDisplay: false, healed: false, timeLeft: 0
-};
-const OCCUPIED = {
-	effect: "occupied", hasTimeDisplay: true, healed: false, timeLeft: 8_400_000
-};
-
-/** A player of level 30 free of any alteration and walking on the continent, unless the test says otherwise. */
-function claimantOf(profile: Partial<ProfileRes> = {}, travel?: Partial<ReportTravelSummaryRes>): LeagueClaimant {
-	return {
-		profile: {
-			level: 30, effect: NO_EFFECT, ...profile
-		} as ProfileRes,
-		...travel ? { travel: travel as ReportTravelSummaryRes } : {}
-	};
-}
 
 const FREE_CLAIMANT = claimantOf();
 
@@ -430,8 +413,8 @@ describe("arena references", () => {
 			kind: "answer", packet: LEAGUES
 		});
 		jest.mocked(usePlayerProfile).mockReturnValue({
-			status: "ready", data: claimantOf({ effect: OCCUPIED }).profile
-		} as never);
+			status: "ready", data: profileOf({ effect: OCCUPIED })
+		});
 		jest.mocked(useReportView).mockReturnValue({ status: "loading" });
 		const client = new QueryClient({ defaultOptions: { queries: {
 			retry: false, gcTime: Infinity

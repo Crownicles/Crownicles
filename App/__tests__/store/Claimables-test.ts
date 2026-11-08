@@ -4,8 +4,6 @@ import { LeagueInfoRes } from "ws-packets/src/fromServer/fight/RankingsRes";
 import { GuildRes } from "ws-packets/src/fromServer/guild/GuildRes";
 import { ItemNature } from "ws-packets/src/objects/ItemNature";
 import { PetRes } from "ws-packets/src/fromServer/pet/PetRes";
-import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
-import { ReportTravelSummaryRes } from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {
 	RequestState, useGameQuery
 } from "@/src/store/useGameQuery";
@@ -16,7 +14,9 @@ import {
 	GAME_ENTITIES, GameEntity
 } from "@/src/store/GameEntities";
 import { JOURNEY_TABS } from "@/src/journey/Journey";
-import { LeagueClaimant } from "@/src/display/Leagues";
+import {
+	claimantOf, OCCUPIED
+} from "@/src/testing/fakeLeagueClaimant";
 
 jest.mock("@/src/store/useGameQuery", () => ({ useGameQuery: jest.fn() }));
 jest.mock("@/src/store/MissionRewardsStore", () => ({ useMissionRewards: (): object => ({
@@ -70,26 +70,6 @@ function petAway(endTime: number): RequestState<PetRes> {
 		data: { expeditionInProgress: {
 			startTime: endTime - EXPEDITION_LENGTH, endTime
 		} } as never
-	};
-}
-
-const NO_EFFECT = {
-	effect: "none", hasTimeDisplay: false, healed: false, timeLeft: 0
-};
-const OCCUPIED = {
-	effect: "occupied", hasTimeDisplay: true, healed: false, timeLeft: 8_400_000
-};
-
-function profileOf(profile: Partial<ProfileRes> = {}): ProfileRes {
-	return {
-		level: 30, effect: NO_EFFECT, ...profile
-	} as ProfileRes;
-}
-
-/** A player of level 30 free of any alteration and walking on the continent, unless the test says otherwise. */
-function claimantOf(profile: Partial<ProfileRes> = {}, travel?: Partial<ReportTravelSummaryRes>): LeagueClaimant {
-	return {
-		profile: profileOf(profile), ...travel ? { travel: travel as ReportTravelSummaryRes } : {}
 	};
 }
 
