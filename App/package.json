@@ -119,7 +119,8 @@
   "private": true,
   "pnpm": {
     "overrides": {
-      "shell-quote": "^1.9.0"
+      "shell-quote": "^1.9.0",
+      "zod": "^4.6.6"
     },
     "patchedDependencies": {
       "react-native-google-play-games@0.4.0": "patches/react-native-google-play-games@0.4.0.patch",

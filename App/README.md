@@ -120,6 +120,19 @@ linked from the repository (`link:../WsPackets`).
 Anything edited by hand in there is lost on the next generation, so a native change belongs in a
 config plugin declared in `app.json`.
 
+## Forced dependency versions
+
+`pnpm.overrides` in `package.json` raises two transitive packages past a vulnerability the
+dependency review of the CI refuses. Both only run on the developer's machine: neither is part of
+the bundle shipped in the app.
+
+- `shell-quote` `^1.9.0`, brought by `react-devtools-core`.
+- `zod` `^4.6.6` ([GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)),
+  used by `@expo/cli` 57.0.25 to check the dev tools plugins and by `eslint-plugin-react-hooks`.
+  The CLI only asks zod for what version 4 kept the same; `expo start`, `expo export` and
+  `expo prebuild` were checked with it. Remove this override once `expo` depends on `@expo/cli`
+  57.0.33 or later, which no longer uses zod (`expo` 57.0.32 does).
+
 ## Game Center and Google Play Games
 
 These are optional cosmetic services, not Crownicles login providers. Achievements belong to the
