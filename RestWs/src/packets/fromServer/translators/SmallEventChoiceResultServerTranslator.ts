@@ -157,6 +157,7 @@ export default class SmallEventChoiceResultServerTranslator {
 			materialId: packet.materialId,
 			cost: packet.cost,
 			...packet.isFirstEncounter === undefined ? {} : { isFirstEncounter: packet.isFirstEncounter },
+			...packet.sentToHomeStorage === undefined ? {} : { sentToHomeStorage: packet.sentToHomeStorage },
 			...gardenerRequirement(packet)
 		});
 	}

@@ -36,6 +36,9 @@ export type SmallEventChoiceResult =
 		/** What the advice asks the player to reach before the seed can be offered. */
 		requiredLevel?: number;
 		requiredMoney?: number;
+
+		/** Only set when the gifted plant went straight to the home chest, the plant inventory being linked to it. */
+		sentToHomeStorage?: boolean;
 	}
 	| {
 		event: "pveIsland"; outcome: "accepted"; alone: boolean; pointsWon: number;

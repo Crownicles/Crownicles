@@ -91,18 +91,18 @@ export function marketReport(outcome: Extract<ShopOutcome, { kind: "marketAnalys
 
 
 function purchaseReport(outcome: Extract<ShopOutcome, { kind: "purchase" }>): string {
-	let text = i18n.t("commands:shop.genericPurchase", {
-		item: i18n.t(`commands:shop.shopItems.${outcome.shopItemId}.name`, { ...outcome.translationParams }),
-		count: outcome.amount
-	});
-	if (outcome.materials) {
-		const lines = Object.entries(outcome.materials)
-			.map(([materialId, quantity]) => i18n.t("commands:shop.materialLine", {
-				materialId, quantity
-			}));
-		text = joinParagraphs([text, joinLines(lines)]);
-	}
-	return text;
+	const materialLines = Object.entries(outcome.materials ?? {})
+		.map(([materialId, quantity]) => i18n.t("commands:shop.materialLine", {
+			materialId, quantity
+		}));
+	return joinParagraphs([
+		i18n.t("commands:shop.genericPurchase", {
+			item: i18n.t(`commands:shop.shopItems.${outcome.shopItemId}.name`, { ...outcome.translationParams }),
+			count: outcome.amount
+		}),
+		joinLines(materialLines),
+		outcome.plantsSentToHomeStorage ? i18n.t("commands:shop.plantsSentToHomeStorage", { count: outcome.plantsSentToHomeStorage }) : null
+	]);
 }
 
 type ReportedOutcome = Exclude<ShopOutcome, { kind: "marketAnalysis" }>;
@@ -111,7 +111,6 @@ type ReportedOutcome = Exclude<ShopOutcome, { kind: "marketAnalysis" }>;
 const FIXED_REPORTS = {
 	slotBought: "commands:shop.buyCategorySlotSuccess",
 	tooManyDailyPotions: "commands:shop.boughtTooMuchDailyPotions",
-	noPlantSlot: "commands:shop.noPlantSlotAvailable",
 	noGardenForTalisman: "commands:shop.noGardenForRemoteHarvestTalisman",
 	alreadyHasBadge: "commands:shop.alreadyHaveBadge",
 	alreadyBoughtPointsThisWeek: "commands:missionsshop.alreadyBoughtPointsThisWeek",
@@ -130,6 +129,8 @@ export function shopOutcomeReport(outcome: ReportedOutcome, now: number): string
 	switch (outcome.kind) {
 		case "purchase":
 			return purchaseReport(outcome);
+		case "noPlantSlot":
+			return i18n.t(outcome.reason ? `commands:shop.noPlantSpace.${outcome.reason}` : "commands:shop.noPlantSlotAvailable");
 		case "notEnoughCurrency":
 			return i18n.t("commands:shop.notEnoughMoney", {
 				missingCurrency: outcome.missingCurrency, currency: outcome.currency

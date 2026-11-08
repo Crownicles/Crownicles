@@ -1,5 +1,5 @@
 import {
-	ShopOutcome, MARKET_TRENDS
+	ShopOutcome, MARKET_TRENDS, PLANT_RECEPTION_FAILURES
 } from "ws-packets/src/fromServer/shop/ShopRes";
 import { MISSION_TYPES } from "ws-packets/src/objects/Mission";
 import {
@@ -26,6 +26,24 @@ describe("shop outcome report", () => {
 		expect(report).toContain("commands:shop.shopItems.randomItem.name");
 		expect(report).toContain("commands:shop.materialLine");
 		expect(report).toContain("\"quantity\":3");
+	});
+
+	it("tells how many bought plants went straight to the home chest", () => {
+		const linked = shopOutcomeReport({
+			kind: "purchase", shopItemId: "weeklyPlantTier1", amount: 10, plantsSentToHomeStorage: 8
+		}, NOW);
+		const carried = shopOutcomeReport({
+			kind: "purchase", shopItemId: "weeklyPlantTier1", amount: 1
+		}, NOW);
+		expect(linked).toContain("commands:shop.plantsSentToHomeStorage({\"count\":8})");
+		expect(carried).not.toContain("plantsSentToHomeStorage");
+	});
+
+	it("says where to make room for plants that could not be received", () => {
+		expect(shopOutcomeReport({
+			kind: "noPlantSlot", reason: PLANT_RECEPTION_FAILURES.PLANT_SLOTS_FULL
+		}, NOW)).toBe("commands:shop.noPlantSpace.plantSlotsFull");
+		expect(shopOutcomeReport({ kind: "noPlantSlot" }, NOW)).toBe("commands:shop.noPlantSlotAvailable");
 	});
 
 	it("says how much currency is missing", () => {

@@ -168,7 +168,10 @@ const GARDENER_REWARDS: Record<string, (result: Result<"gardener">) => string> =
 		...result.requiredLevel === undefined ? {} : { level: result.requiredLevel },
 		...result.requiredMoney === undefined ? {} : { cost: result.requiredMoney }
 	}),
-	plant: result => any("gardener.rewards.plant", { plantId: result.plantId }),
+	plant: result => joinParagraphs([
+		any("gardener.rewards.plant", { plantId: result.plantId }),
+		result.sentToHomeStorage && t("gardener.rewards.plantSentToHomeStorage")
+	]),
 	material: result => any("gardener.rewards.material", { materialId: result.materialId })
 };
 

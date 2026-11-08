@@ -68,6 +68,7 @@ export default class ShopServerTranslator {
 			shopItemId: shopItemTypeToId(packet.shopItemId),
 			amount: packet.amount,
 			...packet.materials === undefined ? {} : { materials: packet.materials },
+			...packet.plantsSentToHomeStorage === undefined ? {} : { plantsSentToHomeStorage: packet.plantsSentToHomeStorage },
 			...packet.translationParams === undefined ? {} : { translationParams: packet.translationParams }
 		});
 	}
@@ -92,8 +93,11 @@ export default class ShopServerTranslator {
 	}
 
 	@fromServerTranslator(CommandShopNoPlantSlotAvailable, ShopOutcomeRes)
-	public static noPlantSlot(_context: PacketContext, _packet: CommandShopNoPlantSlotAvailable): Promise<ShopOutcomeRes> {
-		return outcome({ kind: "noPlantSlot" });
+	public static noPlantSlot(_context: PacketContext, packet: CommandShopNoPlantSlotAvailable): Promise<ShopOutcomeRes> {
+		return outcome({
+			kind: "noPlantSlot",
+			...packet.reason === undefined ? {} : { reason: packet.reason }
+		});
 	}
 
 	@fromServerTranslator(CommandShopNoGardenForRemoteHarvestTalisman, ShopOutcomeRes)

@@ -14,6 +14,16 @@ export const MARKET_TRENDS = {
 
 export type MarketTrendKind = typeof MARKET_TRENDS[keyof typeof MARKET_TRENDS];
 
+/** Why bought plants could not be received: the answer tells the player where to make room. */
+export const PLANT_RECEPTION_FAILURES = {
+	HOME_STORAGE_FULL: "homeStorageFull",
+	PLANT_SLOTS_FULL: "plantSlotsFull",
+	NO_HOME: "noHome",
+	NO_GARDEN: "noGarden"
+} as const;
+
+export type PlantReceptionFailure = typeof PLANT_RECEPTION_FAILURES[keyof typeof PLANT_RECEPTION_FAILURES];
+
 export type PlantForecast = {
 	plantId: number;
 	trends: MarketTrendKind[];
@@ -26,6 +36,9 @@ export type ShopOutcome =
 		shopItemId: string;
 		amount: number;
 		materials?: Record<string, number>;
+
+		/** Bought plants that went straight to the home chest, the plant inventory being linked to it. */
+		plantsSentToHomeStorage?: number;
 		translationParams?: Record<string, string>;
 	}
 	| {
@@ -54,9 +67,11 @@ export type ShopOutcome =
 		kind: "badge"; badgeId: string;
 	}
 	| {
+		kind: "noPlantSlot"; reason?: PlantReceptionFailure;
+	}
+	| {
 		kind: "slotBought"
 		| "tooManyDailyPotions"
-		| "noPlantSlot"
 		| "noGardenForTalisman"
 		| "alreadyHasBadge"
 		| "alreadyBoughtPointsThisWeek"

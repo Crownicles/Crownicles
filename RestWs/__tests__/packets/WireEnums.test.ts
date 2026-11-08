@@ -52,6 +52,8 @@ import {ONBOARDING_TRIALS} from "../../../Lib/src/constants/OnboardingConstants"
 import {ONBOARDING_MISSION_IDS, ONBOARDING_TRIAL_IDS} from "../../../WsPackets/src/objects/Onboarding";
 import {FRIENDLY_FIGHT_ERRORS as LibFriendlyFightErrors} from "../../../Lib/src/packets/commands/CommandFriendlyFightPacket";
 import {FRIENDLY_FIGHT_ERRORS} from "../../../WsPackets/src/objects/Fight";
+import {PLANT_RECEPTION_FAILURES as LibPlantReceptionFailures} from "../../../Lib/src/constants/PlantConstants";
+import {PLANT_RECEPTION_FAILURES} from "../../../WsPackets/src/fromServer/shop/ShopRes";
 
 /**
  * `WsPackets` is standalone by design, so it redeclares the enums it puts on the wire instead of
@@ -81,6 +83,7 @@ describe("wire enums mirror their back-end counterpart", () => {
 		["ChestErrors", CHEST_ERRORS, HomeConstants.CHEST_ERRORS],
 		["PlantTransferActions", PLANT_TRANSFER_ACTIONS, HomeConstants.PLANT_TRANSFER_ACTIONS],
 		["PlantTransferErrors", PLANT_TRANSFER_ERRORS, HomeConstants.PLANT_TRANSFER_ERRORS],
+		["PlantReceptionFailures", PLANT_RECEPTION_FAILURES, LibPlantReceptionFailures],
 		["PlayerEffects", PLAYER_EFFECTS, {DEAD: Effect.DEAD.id, NOT_STARTED: Effect.NOT_STARTED.id, OCCUPIED: Effect.OCCUPIED.id}],
 		["TopDataType", TopDataType, CoreTopDataType],
 		["TopTiming", TopTiming, CoreTopTiming],

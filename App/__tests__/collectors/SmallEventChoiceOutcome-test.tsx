@@ -128,6 +128,22 @@ describe("SmallEventChoiceOutcome", () => {
 		}
 	);
 
+	it.each([true, false])("tells whether the gardener's plant went straight to the home chest (%s)", async sentToHomeStorage => {
+		await render(<SmallEventChoiceOutcome outcome={{ result: {
+			event: "gardener",
+			outcome: "resolved",
+			interactionName: "plant",
+			conditionKey: "none",
+			plantId: 3,
+			materialId: 0,
+			cost: 0,
+			...sentToHomeStorage ? { sentToHomeStorage } : {}
+		} } as SmallEventChoiceResultRes} onContinue={jest.fn()} />);
+
+		expect(screen.getByText(/smallEvents:gardener\.rewards\.plant$/u)).toBeTruthy();
+		expect(screen.queryByText(/plantSentToHomeStorage/u) !== null).toBe(sentToHomeStorage);
+	});
+
 	it("adds the score to the cart story only once the trip was paid", async () => {
 		await render(<SmallEventChoiceOutcome outcome={{ result: {
 			event: "cart", outcome: "resolved", accepted: true, canAfford: true, isScam: false, isDisplayed: true, pointsWon: 20
