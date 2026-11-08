@@ -1172,6 +1172,10 @@
       "noPet": "Aucun familier à ausculter",
       "noPetDescription": "Le vétérinaire referme sa trousse : vous n'avez aucun compagnon à lui présenter.",
       "continue": "Continuer",
+      "advice": "**{{pet}}** {{advice}}",
+      "fedFor": "rassasié pour {{duration}}",
+      "secondFightEffect": "**Second effet de combat** : {{comment}}",
+      "noPreferences": "Le vétérinaire relève chez votre familier une remarquable capacité d'adaptation : il s'acclimate à tous les terrains sans difficulté particulière.",
       "headers": {
         "diagnosis": "Diagnostic",
         "vitals": "Constantes",
@@ -1187,7 +1191,9 @@
         "speed": "Vitesse",
         "diet": "Régime",
         "feedInterval": "Délai entre les repas",
-        "nextFeed": "Prochain repas"
+        "appetite": "Appétit",
+        "liked": "{emote:expedition.liked} Prospère dans",
+        "disliked": "{emote:expedition.disliked} Se méfie de"
       }
     }
   },

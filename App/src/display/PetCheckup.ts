@@ -11,6 +11,7 @@ import { i18n } from "@/src/translations/i18n";
 import { randomTranslation } from "@/src/translations/RandomTranslation";
 
 const KEY = "commands:shop.shopItems.lovePointsValue";
+const APP_KEY = "app:city.checkup";
 const MILLISECONDS_PER_MINUTE = 60_000;
 
 function shortPet(typeId: number, sex: PetSex, nickname?: string): string {
@@ -29,23 +30,39 @@ function locationType(type: string): string {
 	return isExpeditionLocationType(type) ? biomeName(type) : type;
 }
 
-function expeditionSection(pet: ShopPetCheckupRes): string {
-	const liked = pet.likedExpeditionTypes ?? [];
-	const disliked = pet.dislikedExpeditionTypes ?? [];
-	if (liked.length === 0 && disliked.length === 0) {
-		return i18n.t(`${KEY}.noPreferences`);
-	}
-	return i18n.t(`${KEY}.expeditionPreferences`, {
-		likedLocations: liked.length > 0 ? i18n.t(`${KEY}.likedLocations`, { locations: liked.map(locationType).join(", ") }) : "",
-		dislikedLocations: disliked.length > 0 ? i18n.t(`${KEY}.dislikedLocations`, { locations: disliked.map(locationType).join(", ") }) : ""
-	});
+/** The biomes the pet thrives in and the ones it distrusts, each named with its landscape emoji; neither when it adapts to every terrain. */
+export type ExpeditionAffinities = {
+	liked?: string;
+	disliked?: string;
+};
+
+function locationList(types: string[] | undefined): string {
+	return (types ?? []).map(locationType).join(", ");
 }
 
-/** The vet counts the wait in whole minutes, where Discord leans on its own relative timestamps. */
-function nextFeed(pet: ShopPetCheckupRes): string {
+function expeditionAffinities(pet: ShopPetCheckupRes): ExpeditionAffinities {
+	const liked = locationList(pet.likedExpeditionTypes);
+	const disliked = locationList(pet.dislikedExpeditionTypes);
+	return {
+		...liked ? { liked } : {},
+		...disliked ? { disliked } : {}
+	};
+}
+
+/** Hungry now, or fed for a while yet: the vet counts the wait in whole minutes, where Discord leans on its own relative timestamps. */
+function appetite(pet: ShopPetCheckupRes): string {
 	return pet.nextFeed <= 0
 		? i18n.t(`${KEY}.petIsHungry`)
-		: formatDurationMinutes(pet.nextFeed / MILLISECONDS_PER_MINUTE);
+		: i18n.t(`${APP_KEY}.fedFor`, { duration: formatDurationMinutes(pet.nextFeed / MILLISECONDS_PER_MINUTE) });
+}
+
+function fightEffects(pet: ShopPetCheckupRes): string[] {
+	return [
+		randomTranslation(`${KEY}.commentOnFightEffect.${pet.fightAssistId}`),
+		...pet.secondFightAssistId
+			? [i18n.t(`${APP_KEY}.secondFightEffect`, { comment: randomTranslation(`${KEY}.commentOnFightEffect.${pet.secondFightAssistId}`) })]
+			: []
+	];
 }
 
 function dwarfAside(pet: ShopPetCheckupRes): string {
@@ -69,16 +86,20 @@ export type PetCheckupSummary = {
 	speed: number;
 	diet: string;
 	feedInterval: string;
-	nextFeed: string;
+	appetite: string;
 	fightEffects: string[];
-	expeditions: string;
+	expeditions: ExpeditionAffinities;
 	dwarfAside: string;
 };
 
 /** The vet's findings, split into fields so the screen can lay them out. */
 export function petCheckupSummary(pet: ShopPetCheckupRes): PetCheckupSummary {
 	return {
-		advice: randomTranslation(`${KEY}.advice.${pet.loveLevel}`),
+
+		// The vet's advice goes on from the pet's name, as Discord writes it.
+		advice: i18n.t(`${APP_KEY}.advice`, {
+			pet: shortPet(pet.typeId, pet.sex, pet.nickname), advice: randomTranslation(`${KEY}.advice.${pet.loveLevel}`)
+		}),
 		ageComment: i18n.t(`${KEY}.ageComment`, {
 			context: pet.ageCategory, age: pet.petId - 1
 		}),
@@ -91,14 +112,9 @@ export function petCheckupSummary(pet: ShopPetCheckupRes): PetCheckupSummary {
 		speed: pet.speed,
 		diet: i18n.t("models:diet", { context: pet.diet }),
 		feedInterval: formatDurationMinutes(pet.feedDelay / MILLISECONDS_PER_MINUTE),
-		nextFeed: nextFeed(pet),
-		fightEffects: [
-			randomTranslation(`${KEY}.commentOnFightEffect.${pet.fightAssistId}`),
-			...pet.secondFightAssistId
-				? [i18n.t(`${KEY}.secondFightEffect`, { comment: randomTranslation(`${KEY}.commentOnFightEffect.${pet.secondFightAssistId}`) })]
-				: []
-		],
-		expeditions: expeditionSection(pet),
+		appetite: appetite(pet),
+		fightEffects: fightEffects(pet),
+		expeditions: expeditionAffinities(pet),
 		dwarfAside: dwarfAside(pet)
 	};
 }

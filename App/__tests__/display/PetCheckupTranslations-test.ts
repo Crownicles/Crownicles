@@ -11,7 +11,8 @@ const VET = frenchCommands.shop.shopItems.lovePointsValue;
 
 /** Core sends the time between meals in milliseconds: three hours and a half here. */
 const FEED_DELAY_MS = 12_600_000;
-const SECOND_POWER_LABEL = VET.secondFightEffect.slice(VET.secondFightEffect.indexOf("**"), VET.secondFightEffect.indexOf("{{comment}}"));
+const CHECKUP = frenchApp.city.checkup;
+const SECOND_POWER_LABEL = CHECKUP.secondFightEffect.slice(0, CHECKUP.secondFightEffect.indexOf("{{comment}}"));
 
 function checkup(overrides: Partial<ShopPetCheckupRes>): ShopPetCheckupRes {
 	return Object.assign(new ShopPetCheckupRes(), {
@@ -65,7 +66,7 @@ describe("vet checkup in French", () => {
 			fightAssistId: "petCharge", secondFightAssistId: "unstoppable"
 		}));
 		expect(oneOf(fightEffects[0], VET.commentOnFightEffect.petCharge)).toBe(true);
-		expect(fightEffects[1]).toContain(SECOND_POWER_LABEL);
+		expect(fightEffects[1].startsWith(SECOND_POWER_LABEL)).toBe(true);
 		expect(oneOf(fightEffects[1], VET.commentOnFightEffect.unstoppable)).toBe(true);
 	});
 
@@ -83,8 +84,14 @@ describe("vet checkup in French", () => {
 		const { expeditions } = petCheckupSummary(checkup({
 			likedExpeditionTypes: ["coast"], dislikedExpeditionTypes: ["swamp"]
 		}));
-		expect(expeditions).toContain(frenchModels.biomes.coast);
-		expect(expeditions).toContain(frenchModels.biomes.swamp);
-		expect(expeditions).not.toContain("models:");
+		expect(expeditions.liked).toContain(frenchModels.biomes.coast);
+		expect(expeditions.disliked).toContain(frenchModels.biomes.swamp);
+		expect(JSON.stringify(expeditions)).not.toContain("models:");
+	});
+
+	it("starts the advice with the pet's name, as the vet's sentence goes on from it", () => {
+		const { advice } = petCheckupSummary(checkup({}));
+		expect(advice).toMatch(/^\*\*.*Moka\*\* /u);
+		expect(oneOf(advice, VET.advice[2])).toBe(true);
 	});
 });

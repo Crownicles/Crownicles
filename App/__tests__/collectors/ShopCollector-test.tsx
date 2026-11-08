@@ -242,7 +242,7 @@ describe("what a commerce asks once an item is paid for", () => {
 });
 
 /** A pet back from the vet: Core sends the time between meals in milliseconds, three hours and a half here. */
-function checkup(lovePointsGained?: number): ShopPetCheckupRes {
+function checkup(overrides: Partial<ShopPetCheckupRes> = {}): ShopPetCheckupRes {
 	return Object.assign(new ShopPetCheckupRes(), {
 		typeId: 1,
 		petId: 3,
@@ -258,7 +258,7 @@ function checkup(lovePointsGained?: number): ShopPetCheckupRes {
 		force: 12,
 		speed: 9,
 		fightAssistId: "claws",
-		...lovePointsGained === undefined ? {} : { lovePointsGained }
+		...overrides
 	});
 }
 
@@ -283,8 +283,34 @@ describe("vet checkup", () => {
 
 	it("tells the affection the care gave only when it gave some", async () => {
 		await render(<ShopResultScreen result={{
-			kind: "checkup", packet: checkup(5)
+			kind: "checkup", packet: checkup({ lovePointsGained: 5 })
 		}} onContinue={jest.fn()} />);
 		expect(screen.getByText("Affection gagnée")).toBeTruthy();
+	});
+
+	it("tells whether the pet is hungry or for how long it is fed", async () => {
+		await render(<ShopResultScreen result={{
+			kind: "checkup", packet: checkup({ nextFeed: 5_400_000 })
+		}} onContinue={jest.fn()} />);
+		expect(screen.getByText("Appétit")).toBeTruthy();
+		expect(screen.getByText("rassasié pour 1 h 30")).toBeTruthy();
+	});
+
+	it("lists where the pet thrives and what it distrusts on their own lines, or how it adapts to every terrain", async () => {
+		const view = await render(<ShopResultScreen result={{
+			kind: "checkup",
+			packet: checkup({
+				likedExpeditionTypes: ["coast"], dislikedExpeditionTypes: ["swamp"]
+			})
+		}} onContinue={jest.fn()} />);
+		expect(screen.getByText(/Prospère dans/u)).toBeTruthy();
+		expect(screen.getByText(/Se méfie de/u)).toBeTruthy();
+		expect(screen.queryByText(/remarquable capacité d'adaptation/u)).toBeNull();
+
+		await view.rerender(<ShopResultScreen result={{
+			kind: "checkup", packet: checkup()
+		}} onContinue={jest.fn()} />);
+		expect(screen.getByText(/remarquable capacité d'adaptation/u)).toBeTruthy();
+		expect(screen.queryByText(/Prospère dans/u)).toBeNull();
 	});
 });

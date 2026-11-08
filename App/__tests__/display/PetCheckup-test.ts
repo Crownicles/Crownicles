@@ -39,18 +39,18 @@ function buildPet(overrides: Partial<ShopPetCheckupRes> = {}): ShopPetCheckupRes
 }
 
 describe("petCheckupSummary", () => {
-	it("converts the feeding delays from milliseconds to minutes", () => {
+	it("converts the feeding delays from milliseconds to minutes, the pet fed for that long", () => {
 		const summary = petCheckupSummary(buildPet({
 			feedDelay: 3_600_000,
 			nextFeed: 1_800_000
 		}));
 		expect(summary.feedInterval).toBe("duration:60");
-		expect(summary.nextFeed).toBe("duration:30");
+		expect(summary.appetite).toBe('app:city.checkup.fedFor {"duration":"duration:30"}');
 	});
 
 	it("reports the hungry text when the next feed is already due", () => {
 		const summary = petCheckupSummary(buildPet({ nextFeed: 0 }));
-		expect(summary.nextFeed).toBe(`${KEY}.petIsHungry`);
+		expect(summary.appetite).toBe(`${KEY}.petIsHungry`);
 	});
 
 	it("counts no affection gained when the vet gave none", () => {
@@ -65,12 +65,11 @@ describe("petCheckupSummary", () => {
 	it("adds a second fight effect when present", () => {
 		const summary = petCheckupSummary(buildPet({ secondFightAssistId: "4" }));
 		expect(summary.fightEffects).toHaveLength(2);
-		expect(summary.fightEffects[1]).toContain(`${KEY}.secondFightEffect`);
+		expect(summary.fightEffects[1]).toContain("app:city.checkup.secondFightEffect");
 	});
 
-	it("uses the no-preferences text when the pet has no expedition likes", () => {
-		const summary = petCheckupSummary(buildPet());
-		expect(summary.expeditions).toBe(`${KEY}.noPreferences`);
+	it("names no biome when the pet adapts to every terrain", () => {
+		expect(petCheckupSummary(buildPet()).expeditions).toEqual({});
 	});
 
 	it("names liked and disliked expedition biomes with their icons", () => {
@@ -78,9 +77,8 @@ describe("petCheckupSummary", () => {
 			likedExpeditionTypes: ["forest"],
 			dislikedExpeditionTypes: ["desert"]
 		}));
-		expect(summary.expeditions).toContain("icon:expedition.locations.forest");
-		expect(summary.expeditions).toContain("icon:expedition.locations.desert");
-		expect(summary.expeditions).toContain(`${KEY}.expeditionPreferences`);
+		expect(summary.expeditions.liked).toContain("icon:expedition.locations.forest");
+		expect(summary.expeditions.disliked).toContain("icon:expedition.locations.desert");
 	});
 
 	it("leaves the dwarf aside empty when no dwarf is around", () => {
