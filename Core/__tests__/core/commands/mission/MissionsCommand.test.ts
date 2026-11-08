@@ -16,6 +16,7 @@ vi.mock("../../../../src/core/database/game/models/PlayerMissionsInfo", () => ({
 vi.mock("../../../../src/core/database/game/models/MissionSlot", () => ({ MissionSlots: { getOfPlayer: vi.fn().mockResolvedValue([]) } }));
 vi.mock("../../../../src/core/database/game/models/DailyMission", () => ({ DailyMissions: { getOrGenerate: vi.fn() } }));
 vi.mock("../../../../src/core/missions/Campaign", () => ({ Campaign: { getMaxCampaignNumber: (): number => 150 } }));
+vi.mock("../../../../src/core/kingChallenge/KingChallenge", () => ({ getKingChallengeProgress: vi.fn().mockResolvedValue({ tiers: [] }) }));
 vi.mock("../../../../src/core/missions/MissionsController", () => ({ MissionsController: { update: vi.fn(), prepareMissionSlots: vi.fn(() => []), prepareBaseMission: vi.fn(mission => mission) } }));
 
 const CONTEXT: PacketContext = { keycloakId: "player", frontEndOrigin: "websocket", frontEndSubOrigin: "", webSocket: {} };
