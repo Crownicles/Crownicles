@@ -16,16 +16,21 @@ export function cityItemName(item: {
 	return i18n.t(`models:${itemType}s.${item.itemId}`);
 }
 
+type CityItemList = (snapshot: CityMobileSnapshot) => CityMobileItem[] | undefined;
+
+/** Every list of the city a reaction may point an item in, searched in this order. */
+const CITY_ITEM_LISTS: CityItemList[] = [
+	(snapshot): CityMobileItem[] | undefined => snapshot.enchanter?.enchantableItems,
+	(snapshot): CityMobileItem[] | undefined => snapshot.enchanter?.disenchantableItems,
+	(snapshot): CityMobileItem[] | undefined => snapshot.home?.owned?.upgradeStation?.upgradeableItems,
+	(snapshot): CityMobileItem[] | undefined => snapshot.blacksmith?.upgradeableItems,
+	(snapshot): CityMobileItem[] | undefined => snapshot.blacksmith?.enchantmentTransfers,
+	(snapshot): CityMobileItem[] | undefined => snapshot.scrapDealer?.recyclableItems,
+	(snapshot): CityMobileItem[] | undefined => snapshot.royalBlacksmith?.upgradeableItems
+];
+
 function itemCandidates(snapshot: CityMobileSnapshot): CityMobileItem[] {
-	return [
-		...snapshot.enchanter?.enchantableItems ?? [],
-		...snapshot.enchanter?.disenchantableItems ?? [],
-		...snapshot.home?.owned?.upgradeStation?.upgradeableItems ?? [],
-		...snapshot.blacksmith?.upgradeableItems ?? [],
-		...snapshot.blacksmith?.enchantmentTransfers ?? [],
-		...snapshot.scrapDealer?.recyclableItems ?? [],
-		...snapshot.royalBlacksmith?.upgradeableItems ?? []
-	];
+	return CITY_ITEM_LISTS.flatMap(list => list(snapshot) ?? []);
 }
 
 export function itemSnapshotForReaction(snapshot: CityMobileSnapshot | undefined, reaction: ReactionCollectorReaction): CityMobileItem | undefined {

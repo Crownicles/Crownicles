@@ -1,4 +1,6 @@
-import type { FightEnd } from "ws-packets/src/objects/Fight";
+import type {
+	FightEnd, FightParticipant
+} from "ws-packets/src/objects/Fight";
 
 export const GAME_ACHIEVEMENTS = {
 	PVP_FIGHT_COMPLETED: "pvp_fight_completed"
@@ -7,8 +9,13 @@ export const GAME_ACHIEVEMENTS = {
 export type GameAchievementId = typeof GAME_ACHIEVEMENTS[keyof typeof GAME_ACHIEVEMENTS];
 export const ACHIEVEMENT_COMPLETION_PERCENT = 100;
 
+/** A monster or a king's guard: a fight against one is no fight between players. */
+function isNonPlayer(fighter: FightParticipant): boolean {
+	return Boolean(fighter.monsterId) || Boolean(fighter.isKingGuard);
+}
+
 export function achievementsForFightEnd(result: FightEnd): GameAchievementId[] {
-	if (result.winner.monsterId || result.loser.monsterId || result.winner.isKingGuard || result.loser.isKingGuard) {
+	if ([result.winner, result.loser].some(isNonPlayer)) {
 		return [];
 	}
 	if (result.winner.isSelf === result.loser.isSelf) {

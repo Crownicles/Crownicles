@@ -130,12 +130,72 @@ type CitySheet = {
 	unfolding: ExpandedEntry<string>; confirmation: ReturnType<typeof useAfterDismissal>; now: number;
 };
 
-function reactionEntry(item: CityReactionItem, props: CityRowsProps, {
+/** A reaction row as the list shows it, whether it is sent at once or unfolds first. */
+type ReactionEntryLook = {
+	emblem: ReactNode; label: string; caption: ReactNode; end: ReactNode; dimmed: boolean;
+};
+
+/** How a reaction row reads: the lock its caption tells, whether it is unfolded and whether it is switched off. */
+type ReactionRowLook = {
+	snapshot: CityMobileSnapshot | undefined; lock: Lock | undefined; expanded: boolean; dimmed: boolean;
+};
+
+function reactionEntryLook(reaction: ReactionCollectorReaction, props: CityRowsProps, {
+	snapshot, lock, expanded, dimmed
+}: ReactionRowLook): ReactionEntryLook {
+	return {
+		emblem: props.rowIcon(reaction, snapshot),
+		label: plainStory(props.rowTitle(reaction, props.collector.data, snapshot)),
+		caption: entryCaption(props.rowSubtitle(reaction, snapshot), lock, expanded),
+		end: <EntryEnd value={props.rowEnd(reaction, snapshot)} />,
+		dimmed
+	};
+}
+
+/** A reaction sent at the first tap, unless its row is switched off. */
+function directReactionEntry(item: CityReactionItem, props: CityRowsProps, now: number): ReactNode {
+	const {
+		reaction, index
+	} = item.entry;
+	const {
+		snapshot, choosable, lock
+	} = reactionRowState(reaction, props, now);
+	const look = reactionEntryLook(reaction, props, {
+		snapshot, lock, expanded: false, dimmed: props.locked || !choosable
+	});
+	return <ExpandableEntry
+		key={JSON.stringify(reaction)}
+		{...look}
+		chevron={ENTRY_CHEVRONS.FORWARD}
+		expanded={false}
+		onToggle={(): void => {
+			if (!look.dimmed) {
+				props.onChoose(index);
+			}
+		}}
+	/>;
+}
+
+/** The button of an unfolded row, worded after its action when the menu says how. */
+function confirmationBanner(confirm: RowConfirm | undefined, {
+	pending, lock, onPress
+}: {
+	pending: boolean; lock: Lock | undefined; onPress: () => void;
+}): ReactNode {
+	return <ActionBanner
+		icon={confirm?.icon ?? Check}
+		label={confirm?.label ?? i18n.t("app:collector.accept")}
+		pending={pending}
+		onPress={onPress}
+		{...lock ? { lock } : {}}
+		{...confirm?.hint ? { hint: confirm.hint } : {}}
+	/>;
+}
+
+/** A reaction that spends something: its row unfolds on what it does, and a second tap confirms it. */
+function confirmedReactionEntry(item: CityReactionItem, props: CityRowsProps, {
 	unfolding, confirmation, now
 }: CitySheet): ReactNode {
-	const {
-		collector, locked, onChoose, rowIcon, rowTitle, rowSubtitle, rowEnd
-	} = props;
 	const {
 		reaction, index
 	} = item.entry;
@@ -143,50 +203,37 @@ function reactionEntry(item: CityReactionItem, props: CityRowsProps, {
 	const {
 		snapshot, choosable, lock
 	} = reactionRowState(reaction, props, now);
-	const confirms = CITY_REACTIONS_REQUIRING_CONFIRMATION.has(reaction.type);
-	const expanded = confirms && unfolding.isExpanded(key);
-	const confirm = props.rowConfirm?.(reaction, snapshot);
-	const bright = confirms && (props.staysBright?.(reaction) ?? false);
-	const shared = {
-		emblem: rowIcon(reaction, snapshot),
-		label: plainStory(rowTitle(reaction, collector.data, snapshot)),
-		caption: entryCaption(rowSubtitle(reaction, snapshot), bright ? undefined : lock, expanded),
-		end: <EntryEnd value={rowEnd(reaction, snapshot)} />,
-		dimmed: locked || !choosable && !bright
-	};
-	if (!confirms) {
-		return <ExpandableEntry
-			key={key}
-			{...shared}
-			chevron={ENTRY_CHEVRONS.FORWARD}
-			expanded={false}
-			onToggle={(): void => {
-				if (!shared.dimmed) {
-					onChoose(index);
-				}
-			}}
-		/>;
-	}
+	const bright = props.staysBright?.(reaction) ?? false;
+	const expanded = unfolding.isExpanded(key);
+	const look = reactionEntryLook(reaction, props, {
+		snapshot,
+		lock: bright ? undefined : lock,
+		expanded,
+		dimmed: props.locked || !choosable && !bright
+	});
 	return <ExpandableEntry
 		key={key}
-		{...shared}
+		{...look}
 		expanded={expanded}
 		onToggle={(): void => unfolding.toggle(key)}
 		onDismissed={confirmation.onDismissed}
 	>
 		{props.rowDetails?.(reaction, snapshot)}
-		<ActionBanner
-			icon={confirm?.icon ?? Check}
-			label={confirm?.label ?? i18n.t("app:collector.accept")}
-			pending={locked}
-			onPress={(): void => {
-				confirmation.defer(() => onChoose(index));
+		{confirmationBanner(props.rowConfirm?.(reaction, snapshot), {
+			pending: props.locked,
+			lock,
+			onPress: (): void => {
+				confirmation.defer(() => props.onChoose(index));
 				unfolding.collapse();
-			}}
-			{...lock ? { lock } : {}}
-			{...confirm?.hint ? { hint: confirm.hint } : {}}
-		/>
+			}
+		})}
 	</ExpandableEntry>;
+}
+
+function reactionEntry(item: CityReactionItem, props: CityRowsProps, sheet: CitySheet): ReactNode {
+	return CITY_REACTIONS_REQUIRING_CONFIRMATION.has(item.entry.reaction.type)
+		? confirmedReactionEntry(item, props, sheet)
+		: directReactionEntry(item, props, sheet.now);
 }
 
 /** A fact worth telling at length: written at full contrast, it unfolds on what it means instead of looking switched off. */
