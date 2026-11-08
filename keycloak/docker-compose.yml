@@ -25,7 +25,7 @@ services:
     # which advisories apply and to avoid a silent major upgrade on the next `docker compose up`.
     # The Dockerfile adds the extensions realm.json relies on to that image.
     build: .
-    image: crownicles/keycloak:26.8
+    image: crownicles/keycloak:26.7.4
     container_name: keycloak
     ports:
       - 8080:8080
