@@ -85,7 +85,7 @@ export function formatLongDurationMinutes(totalMinutes: number): string {
 		});
 }
 
-const MILLISECONDS_PER_MINUTE = 60_000;
+export const MILLISECONDS_PER_MINUTE = 60_000;
 
 /** The time left before a moment the server sent as an absolute timestamp. */
 export function formatTimeUntil(timestamp: number, now = Date.now()): string {

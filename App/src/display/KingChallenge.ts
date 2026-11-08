@@ -7,9 +7,9 @@ import {
 	AMOUNT_UNITS, formatAmount, formatMoney, formatNumber
 } from "@/src/display/Amounts";
 import { joinFacts } from "@/src/display/Facts";
-import { formatLongDurationMinutes } from "@/src/display/ItemEffects";
-
-const MILLISECONDS_PER_MINUTE = 60_000;
+import {
+	formatLongDurationMinutes, MILLISECONDS_PER_MINUTE
+} from "@/src/display/ItemEffects";
 
 /** The tiers are numbered from the first; the last one, the champion's, stands outside the ladder and is named instead. */
 export function kingChallengeTierLabel(index: number, tierCount: number): string {
