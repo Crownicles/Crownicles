@@ -252,21 +252,31 @@ export default class ReactionCollectorHandler {
 		forgetIfAllEnded();
 	}
 
-	@packetHandler(ReactionCollectorStopPacket)
-	async collectorStop(_context: PacketContext, packet: ReactionCollectorStopPacket): Promise<void> {
-		const collector = ReactionCollectorHandler.collectorsCache.get(packet.id);
-		if (!collector) {
-			// Expected when the collectors already ended on their own before Core's stop packet arrived
-			CrowniclesLogger.debug(`Collector stop received for collector with ID ${packet.id} but no collector was found with this ID`);
+	/**
+	 * Apply Core's decision to every Discord collector of a Core collector still running. A missing cache entry is
+	 * expected when the collectors already ended on their own before Core's packet arrived.
+	 * @param collectorId
+	 * @param received What Core sent, as the logs name it
+	 * @param action
+	 */
+	private static forEachRunningCollector(collectorId: string, received: string, action: (collector: ReactionCollectorReturnType[number]) => void): void {
+		const collectors = ReactionCollectorHandler.collectorsCache.get(collectorId);
+		if (!collectors) {
+			CrowniclesLogger.debug(`${received} received for collector with ID ${collectorId} but no collector was found with this ID`);
 			return;
 		}
-		collector.forEach(c => {
+		collectors.forEach(c => {
 			if (c.ended) {
-				CrowniclesLogger.warn(`Collector stop received for collector with ID ${packet.id} but collector was already stopped`);
+				CrowniclesLogger.warn(`${received} received for collector with ID ${collectorId} but collector was already stopped`);
 				return;
 			}
-			c.stop();
+			action(c);
 		});
+	}
+
+	@packetHandler(ReactionCollectorStopPacket)
+	async collectorStop(_context: PacketContext, packet: ReactionCollectorStopPacket): Promise<void> {
+		ReactionCollectorHandler.forEachRunningCollector(packet.id, "Collector stop", c => c.stop());
 		ReactionCollectorHandler.collectorsCache.delete(packet.id);
 		await Promise.resolve();
 	}
@@ -278,21 +288,9 @@ export default class ReactionCollectorHandler {
 
 	@packetHandler(ReactionCollectorResetTimerPacketRes)
 	async collectorResetTimer(_context: PacketContext, packet: ReactionCollectorResetTimerPacketRes): Promise<void> {
-		const collector = ReactionCollectorHandler.collectorsCache.get(packet.reactionCollectorId);
-		if (!collector) {
-			// Expected when the collectors already ended on their own before Core's reset answer arrived
-			CrowniclesLogger.debug(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but no collector was found with this ID`);
-			return;
-		}
-		collector.forEach(c => {
-			if (c.ended) {
-				CrowniclesLogger.warn(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but collector was already stopped`);
-				return;
-			}
-			c.resetTimer({
-				time: packet.endTime - Date.now()
-			});
-		});
+		ReactionCollectorHandler.forEachRunningCollector(packet.reactionCollectorId, "Collector reset timer", c => c.resetTimer({
+			time: packet.endTime - Date.now()
+		}));
 		await Promise.resolve();
 	}
 
