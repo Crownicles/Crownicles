@@ -254,6 +254,17 @@ describe("cooking screen", () => {
 		await render(<HomeCooking />, { wrapper: provider(unlocked) });
 		expect(screen.getByText("app:cooking.specialties.none")).toBeTruthy();
 	});
+	it("asks a cook whose furnace is already lit to choose the first specialty among its recipes, not to light it", async () => {
+		const lit = {
+			...menu(),
+			rules: {
+				...menu().rules, specialtyLimit: 1
+			}
+		};
+		await render(<HomeCooking />, { wrapper: provider(lit) });
+		expect(screen.getByText("app:cooking.specialties.noneLit")).toBeTruthy();
+		expect(screen.queryByText("app:cooking.specialties.none")).toBeNull();
+	});
 	it("makes a rotating recipe a specialty with the station offering it, and tells where it will be offered", async () => {
 		jest.mocked(GameClient.request).mockResolvedValue(answer({
 			kind: "specialtyChosen", menu: masterChefMenu()

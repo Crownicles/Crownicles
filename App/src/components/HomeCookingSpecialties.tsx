@@ -65,7 +65,7 @@ export function CookingSpecialties({
 			value: specialties.length, max: specialtyLimit
 		}) }}>{i18n.t("app:cooking.specialties.title")}</SectionHeader>
 		{specialties.length === 0
-			? <Note>{i18n.t("app:cooking.specialties.none", {
+			? <Note>{i18n.t(menu.isIgnited ? "app:cooking.specialties.noneLit" : "app:cooking.specialties.none", {
 				count: specialtyLimit, station: specialtyStationName(menu)
 			})}</Note>
 			: <ExpandableList>{specialties.map(specialty => <SpecialtyEntry

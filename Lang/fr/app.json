@@ -69,6 +69,8 @@
       "title": "Vos spécialités",
       "none_one": "Votre maîtrise des fourneaux vous permet d'avoir {{count}} spécialité : le fourneau vous la proposera à chaque allumage sur l'emplacement {{station}}, en plus des recettes habituelles. Allumez-le pour la choisir parmi les recettes proposées.",
       "none_other": "Votre maîtrise des fourneaux vous permet d'avoir jusqu'à {{count}} spécialités : le fourneau vous en proposera une à chaque allumage sur l'emplacement {{station}}, en plus des recettes habituelles. Allumez-le pour les choisir parmi les recettes proposées.",
+      "noneLit_one": "Votre maîtrise des fourneaux vous permet d'avoir {{count}} spécialité : choisissez-la parmi les recettes que le fourneau vous propose, et il vous l'offrira ensuite à chaque allumage sur l'emplacement {{station}}, en plus des recettes habituelles.",
+      "noneLit_other": "Votre maîtrise des fourneaux vous permet d'avoir jusqu'à {{count}} spécialités : choisissez-les parmi les recettes que le fourneau vous propose, et il vous en offrira une à chaque allumage sur l'emplacement {{station}}, en plus des recettes habituelles.",
       "ready": "Tous les ingrédients sont réunis",
       "nextUnlock": "Une spécialité supplémentaire se débloquera au niveau {{level}} de cuisine.",
       "rotation": "Spécialité {{current}}/{{total}} : relancez le fourneau pour passer à la suivante.",
