@@ -86,7 +86,7 @@ function CheckupReport({ packet }: { packet: ShopPetCheckupRes }): ReactNode {
 			<Fact label={i18n.t("app:city.checkup.labels.nextFeed")} value={summary.nextFeed} />
 
 			<SectionHeader>{i18n.t("app:city.checkup.headers.combat")}</SectionHeader>
-			{summary.fightEffects.map((effect, index) => <Story key={index}>{effect}</Story>)}
+			{summary.fightEffects.map(effect => <Story key={effect}>{effect}</Story>)}
 
 			<SectionHeader>{i18n.t("app:city.checkup.headers.expeditions")}</SectionHeader>
 			<Story>{summary.expeditions}</Story>
