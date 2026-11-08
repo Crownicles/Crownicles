@@ -224,13 +224,16 @@ describe("cooking specialties and time potion weekly limit", () => {
 
 	it("only lets a kitchen master keep the single specialty of their grade", async () => {
 		const cook = await createCook("specialty-kitchen-master", CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0]);
-		const [first, second] = visibleSlots(rotatingSlots(await getSlots(cook)));
+		const [first] = visibleSlots(rotatingSlots(await getSlots(cook)));
 
 		const [accepted] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
 			slotIndex: first.slotIndex,
 			recipeId: first.recipe.id
 		});
 		expect(accepted).toMatchObject({ error: undefined });
+
+		// The new specialty leaves the rotating stations, which offer other recipes from then on: choose among them
+		const second = visibleSlots(rotatingSlots(await getSlots(cook))).find(slot => slot.recipe.id !== first.recipe.id)!;
 		const [refused] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
 			slotIndex: second.slotIndex,
 			recipeId: second.recipe.id
