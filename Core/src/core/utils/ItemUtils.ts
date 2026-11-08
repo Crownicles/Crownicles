@@ -496,6 +496,66 @@ function getItemToReplace(inventorySlots: InventorySlot[], category: ItemCategor
 	return inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
 }
 
+type ItemReplacement = {
+	itemToGive: ItemToGive;
+	foundItem: ItemWithDetails;
+	itemToReplace: InventorySlot;
+};
+
+type ItemChoiceOptions = {
+	resaleMultiplier: number;
+	canDrinkThisPotion: boolean;
+};
+
+/**
+ * The choice between a found item and the one it would replace, when its category has a single slot
+ * @param context
+ * @param whoIsConcerned
+ * @param replacement - the found item and the slot it would take the place of
+ * @param options - the share of its value a sold item brings, and whether a found potion can be drunk at once
+ */
+function buildItemAcceptCollector(
+	context: PacketContext,
+	whoIsConcerned: WhoIsConcerned,
+	{
+		itemToGive, foundItem, itemToReplace
+	}: ItemReplacement,
+	{
+		resaleMultiplier, canDrinkThisPotion
+	}: ItemChoiceOptions
+): CrowniclesPacket {
+	const { player } = whoIsConcerned;
+	const itemToReplaceInstance = itemToReplace.getItem()!;
+	return new ReactionCollectorInstance(
+		new ReactionCollectorItemAccept(
+			{
+				itemWithDetails: toItemWithDetails(
+					player,
+					itemToReplaceInstance,
+					itemToReplace.itemLevel,
+					itemToReplace.itemEnchantmentId,
+					itemToReplace.remainingPotionUsages
+				),
+				foundItem
+			},
+			canDrinkThisPotion
+		),
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1,
+			mainPacket: false
+		},
+		getGiveItemToPlayerEndCallback(whoIsConcerned, {
+			itemToGive,
+			itemToReplace,
+			itemToReplaceInstance
+		}, resaleMultiplier)
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM)
+		.build();
+}
+
 /**
  * Gives an item to a player
  * @param response
@@ -568,37 +628,14 @@ export async function giveItemToPlayer(
 		return;
 	}
 
-	const itemToReplace = getItemToReplace(inventorySlots, category, maxSlots);
-	const itemToReplaceInstance = itemToReplace.getItem()!;
-
-	response.push(new ReactionCollectorInstance(
-		new ReactionCollectorItemAccept(
-			{
-				itemWithDetails: toItemWithDetails(
-					player,
-					itemToReplaceInstance,
-					itemToReplace.itemLevel,
-					itemToReplace.itemEnchantmentId,
-					itemToReplace.remainingPotionUsages
-				),
-				foundItem
-			},
-			canDrinkThisPotion
-		),
-		context,
-		{
-			allowedPlayerKeycloakIds: [player.keycloakId],
-			reactionLimit: 1,
-			mainPacket: false
-		},
-		getGiveItemToPlayerEndCallback(whoIsConcerned, {
-			itemToGive,
-			itemToReplace,
-			itemToReplaceInstance
-		}, resaleMultiplier)
-	)
-		.block(player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM)
-		.build());
+	response.push(buildItemAcceptCollector(context, whoIsConcerned, {
+		itemToGive,
+		foundItem,
+		itemToReplace: getItemToReplace(inventorySlots, category, maxSlots)
+	}, {
+		resaleMultiplier,
+		canDrinkThisPotion
+	}));
 }
 
 
