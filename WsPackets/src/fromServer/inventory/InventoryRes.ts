@@ -44,6 +44,9 @@ export class InventoryRes extends FromServerPacket {
 				slot: number;
 			}[];
 			maxPlantSlots: number;
+
+			/** The last tanner plant slot links the plants to the chest of a home with a garden: they are delivered there first. */
+			linkedToHomeStorage: boolean;
 		};
 	};
 

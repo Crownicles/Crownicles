@@ -193,6 +193,7 @@
     "noPlants": "Vous ne transportez aucune plante ni graine.",
     "seed": "Graine",
     "plantSlot": "Emplacement {{slot}}",
+    "plantsLinkedToHomeStorage": "Vos plantes sont reliées au coffre de votre maison : les plantes achetées ou reçues y sont envoyées directement, vos emplacements ne gardant que ce que le coffre ne peut plus contenir.",
     "owned": "Obtenu",
     "absent": "Absent",
     "artifacts": {"title": "Artefacts", "expedition": "Talisman d'ancrage", "clone": "Talisman de clonage", "harvest": "Cœur sylvestre"}

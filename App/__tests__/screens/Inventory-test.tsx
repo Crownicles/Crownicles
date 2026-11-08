@@ -99,7 +99,8 @@ function inventory(): InventoryData {
 					plantId: PlantId.COMMON_HERB, slot: 2
 				}
 			],
-			maxPlantSlots: 3
+			maxPlantSlots: 3,
+			linkedToHomeStorage: false
 		}
 	};
 }
@@ -155,6 +156,17 @@ describe("inventory views", () => {
 		await fireEvent.press(screen.getByRole("tab", { name: "app:inventory.views.plants" }));
 		expect(screen.getByText("app:inventory.seed")).toBeTruthy();
 		expect(screen.getByText("1 / 3")).toBeTruthy();
+		expect(screen.queryByText("app:inventory.plantsLinkedToHomeStorage")).toBeNull();
+	});
+
+	it("tells that the plants are delivered to the home chest once the inventory is linked to it", async () => {
+		const data = inventory();
+		data.plants = {
+			...data.plants!, linkedToHomeStorage: true
+		};
+		await renderWithGameQuery(<Inventory inventoryData={data} />);
+		await fireEvent.press(screen.getByRole("tab", { name: "app:inventory.views.plants" }));
+		expect(screen.getByText("app:inventory.plantsLinkedToHomeStorage")).toBeTruthy();
 	});
 
 	it("equips a reserve item from its own row", async () => {

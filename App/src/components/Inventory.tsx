@@ -162,6 +162,7 @@ function InventoryPlants({ plants }: { plants: InventoryData["plants"] }): React
 			</>
 			: <EmptyState>{i18n.t("app:inventory.noPlants")}</EmptyState>}
 		</ExpandableList>
+		{plants?.linkedToHomeStorage ? <Note>{i18n.t("app:inventory.plantsLinkedToHomeStorage")}</Note> : null}
 	</>;
 }
 
