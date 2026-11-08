@@ -113,8 +113,8 @@ const FIXED_REPORTS = {
 	tooManyDailyPotions: "commands:shop.boughtTooMuchDailyPotions",
 	noGardenForTalisman: "commands:shop.noGardenForRemoteHarvestTalisman",
 	alreadyHasBadge: "commands:shop.alreadyHaveBadge",
-	alreadyBoughtPointsThisWeek: "commands:missionsshop.alreadyBoughtPointsThisWeek",
-	noMissionToSkip: "commands:missionsshop.noMissionToSkip"
+	alreadyBoughtPointsThisWeek: "commands:missionsshop.error.alreadyBoughtPointsThisWeek",
+	noMissionToSkip: "commands:missionsshop.error.noMissionToSkip"
 } as const satisfies Partial<Record<ReportedOutcome["kind"], string>>;
 
 function isFixedReport(outcome: ReportedOutcome): outcome is Extract<ReportedOutcome, { kind: keyof typeof FIXED_REPORTS }> {
