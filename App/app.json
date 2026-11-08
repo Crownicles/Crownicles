@@ -2,7 +2,7 @@
   "expo": {
     "name": "Crownicles",
     "slug": "Crownicles",
-    "version": "6.1.0",
+    "version": "6.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "crownicles",
@@ -15,7 +15,7 @@
       },
       "bundleIdentifier": "com.crownicles.app",
       "appleTeamId": "WJS86RD78F",
-      "buildNumber": "5",
+      "buildNumber": "6",
       "entitlements": {
         "com.apple.developer.game-center": true
       },
@@ -39,7 +39,7 @@
         "backgroundColor": "#B95E4B"
       },
       "package": "com.crownicles.app",
-      "versionCode": 10
+      "versionCode": 11
     },
     "web": {
       "bundler": "metro",
