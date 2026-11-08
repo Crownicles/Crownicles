@@ -40,9 +40,15 @@ import { assertUnderLock } from "../../../../Lib/src/locks/CLSNamespace";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
+import { bufferUntilCommit } from "../../../../Lib/src/locks/scheduleAfterCommit";
 
 
 export type LockedPlayerMutation = (lockedPlayer: Player) => void;
+
+/**
+ * Asynchronous work run on the locked player once the mission updates are saved, in the same critical section
+ */
+export type LockedPlayerFollowUp = (lockedPlayer: Locked<Player>, response: CrowniclesPacket[]) => Promise<void>;
 
 // Methods that overwrite a caller `Player` instance with a freshly locked row.
 export const PLAYER_RESYNC_CALLERS = {
@@ -148,12 +154,13 @@ export abstract class MissionsController {
 
 	static getMissionInterface(missionId: string): IMission {
 		try {
+			// skipcq: JS-0359 - Mission interfaces are discovered dynamically from mission ids.
 			return (require(`./interfaces/${missionId}`) as {
 				missionInterface: IMission;
 			}).missionInterface;
 		}
 		catch {
-			// Forced to use a require, as importing the base interface directly will result in a cyclic import (DefaultInterface -> IMission -> Player -> MissionController)
+			// skipcq: JS-0359 - Importing the base interface directly would be a cyclic import (DefaultInterface -> IMission -> Player -> MissionController).
 			return require("./DefaultInterface").missionInterface;
 		}
 	}
@@ -245,18 +252,16 @@ export abstract class MissionsController {
 	/**
 	 * Handle the dailyStreak mission update when a daily mission is completed.
 	 * Resets the streak if the player missed a day (last completion was not yesterday).
-	 * This MUST be called BEFORE updating lastDailyMissionCompleted to get accurate streak tracking.
-	 * @param player
+	 * @param context
 	 * @param missionSlots
-	 * @param missionInfo
-	 * @param response
+	 * @param previousCompletion The daily mission completion before this one, as lastDailyMissionCompleted is already updated
 	 */
 	private static async handleDailyStreakMissionUnderLock(
 		context: MissionLockContext,
-		missionSlots: MissionSlot[]
+		missionSlots: MissionSlot[],
+		previousCompletion: Date | null
 	): Promise<void> {
 		assertUnderLock("MissionsController.handleDailyStreakMissionUnderLock");
-		const { missionInfo } = context;
 		const streakMission = missionSlots.find(slot => slot.missionId === "dailyStreak");
 		if (!streakMission || streakMission.isCompleted()) {
 			// Update the mission if the player doesn't have it or has already completed it
@@ -270,9 +275,8 @@ export abstract class MissionsController {
 		yesterday.setDate(yesterday.getDate() - 1);
 
 		// Check the last completion date
-		const lastCompleted = missionInfo.lastDailyMissionCompleted;
-		if (lastCompleted) {
-			const lastCompletedDate = new Date(lastCompleted);
+		if (previousCompletion) {
+			const lastCompletedDate = new Date(previousCompletion);
 
 			// If the last completion was NOT yesterday and NOT today, reset the streak
 			if (!datesAreOnSameDay(lastCompletedDate, yesterday) && !datesAreOnSameDay(lastCompletedDate, today)) {
@@ -424,20 +428,45 @@ export abstract class MissionsController {
 	 * @param player
 	 * @param response the response packets
 	 * @param missionInformationsList the mission updates to apply together
+	 * @param followUpUnderLock work committed with the mission updates, run once they are saved
 	 */
 	static async updateMultiple(
 		player: Player,
 		response: CrowniclesPacket[],
-		missionInformationsList: MissionInformations[]
+		missionInformationsList: MissionInformations[],
+		followUpUnderLock?: LockedPlayerFollowUp
 	): Promise<Player> {
 		assertPlayerHasNoPendingChanges(player, PLAYER_RESYNC_CALLERS.UPDATE_MULTIPLE);
 		const updatedPlayer = await MissionsController.runUnderMissionLock(
 			player,
 			PLAYER_RESYNC_CALLERS.UPDATE_MULTIPLE,
-			(lockedPlayer, lockedMissionInfo, dailyMission) =>
-				MissionsController.runBatchUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, missionInformationsList, dailyMission)
+			(lockedPlayer, lockedMissionInfo, dailyMission) => followUpUnderLock
+				? MissionsController.runBatchUpdateWithFollowUpUnderLock({
+					player: lockedPlayer,
+					missionInfo: lockedMissionInfo,
+					dailyMission,
+					response
+				}, missionInformationsList, followUpUnderLock)
+				: MissionsController.runBatchUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, missionInformationsList, dailyMission)
 		);
 		return MissionsController.synchronizeCaller(player, updatedPlayer);
+	}
+
+	/**
+	 * Run the batch, then its follow-up. A failing follow-up rolls the batch back with it,
+	 * so the packets of both are only added to the response once committed.
+	 */
+	private static async runBatchUpdateWithFollowUpUnderLock(
+		context: MissionLockContext,
+		missionInformationsList: MissionInformations[],
+		followUpUnderLock: LockedPlayerFollowUp
+	): Promise<Player> {
+		let batchUpdatedPlayer = context.player;
+		await bufferUntilCommit(context.response, async batchResponse => {
+			batchUpdatedPlayer = await MissionsController.runBatchUpdateUnderLock(context.player, context.missionInfo, batchResponse, missionInformationsList, context.dailyMission);
+			await followUpUnderLock(batchUpdatedPlayer, batchResponse);
+		});
+		return batchUpdatedPlayer;
 	}
 
 	private static async runBatchUpdateUnderLock(
@@ -764,20 +793,27 @@ export abstract class MissionsController {
 			missionInfo.dailyMissionNumberDone += count;
 		}
 		missionInfo.dailyMissionNumberDone = Math.min(missionInfo.dailyMissionNumberDone, dailyMission.missionObjective);
-		await missionInfo.save();
-
-		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
-			await MissionsController.handleDailyStreakMissionUnderLock({
-				player,
-				missionInfo,
-				dailyMission,
-				response
-			}, missionSlots);
+		const completed = missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective;
+		const previousCompletion = missionInfo.lastDailyMissionCompleted;
+		if (completed) {
+			/*
+			 * Saved before the streak: its rewards update the missions again in this transaction (e.g. its money for an
+			 * earnMoney daily mission, or a king's challenge tier its points cross), which must not complete this daily mission twice
+			 */
 			missionInfo.lastDailyMissionCompleted = new Date();
-			await missionInfo.save();
-			return true;
 		}
-		return false;
+		await missionInfo.save();
+		if (!completed) {
+			return false;
+		}
+
+		await MissionsController.handleDailyStreakMissionUnderLock({
+			player,
+			missionInfo,
+			dailyMission,
+			response
+		}, missionSlots, previousCompletion);
+		return true;
 	}
 
 	private static async updateMissionsCountsUnderLock(

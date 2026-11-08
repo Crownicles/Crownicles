@@ -28,6 +28,7 @@ import { resolveKeycloakDiscordUser } from "../../utils/KeycloakPlayerUtils";
 import { disableRows } from "../../utils/DiscordCollectorUtils";
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { PlantId } from "../../../../Lib/src/constants/PlantConstants";
 import { DiscordConstants } from "../../DiscordConstants";
 
 enum InventoryView {
@@ -273,6 +274,45 @@ function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, ln
 	return embed;
 }
 
+type InventoryPlants = NonNullable<NonNullable<CommandInventoryPacketRes["data"]>["plants"]>;
+
+function formatPlant(plantId: PlantId, lng: Language): string {
+	const plantEmoji = CrowniclesIcons.plants[plantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
+	return `${plantEmoji} **${i18n.t(`models:plants.${plantId}`, { lng })}**`;
+}
+
+function buildSeedField(plants: InventoryPlants, lng: Language): EmbedField {
+	return {
+		name: i18n.t("commands:inventory.seedSlot", { lng }),
+		value: plants.seed ? formatPlant(plants.seed, lng) : i18n.t("commands:inventory.emptySlot", { lng }),
+		inline: false
+	};
+}
+
+function buildPlantSlotsField(plants: InventoryPlants, lng: Language): EmbedField {
+	const plantEntries = Array.from({ length: plants.maxPlantSlots }, (_unused, slot) => {
+		const found = plants.plantSlots.find(p => p.slot === slot);
+		return found ? formatPlant(found.plantId, lng) : i18n.t("commands:inventory.emptySlot", { lng });
+	});
+	return {
+		name: i18n.t("commands:inventory.plantSlots", {
+			lng,
+			count: plants.plantSlots.length,
+			max: plants.maxPlantSlots
+		}),
+		value: plantEntries.join("\n"),
+		inline: false
+	};
+}
+
+function buildHomeStorageLinkField(lng: Language): EmbedField {
+	return {
+		name: i18n.t("commands:inventory.plantsLinkedToHomeStorageTitle", { lng }),
+		value: i18n.t("commands:inventory.plantsLinkedToHomeStorage", { lng }),
+		inline: false
+	};
+}
+
 function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language, targetUser: User | null): CrowniclesEmbed {
 	if (!packet.data) {
 		throw new Error("Inventory packet data must not be undefined");
@@ -297,50 +337,11 @@ function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: 
 		return embed;
 	}
 
-	// Seed slot
-	let seedValue: string;
-	if (plants.seed) {
-		const seedEmoji = CrowniclesIcons.plants[plants.seed] ?? CrowniclesIcons.city.homeUpgrades.garden;
-		const seedName = i18n.t(`models:plants.${plants.seed}`, { lng });
-		seedValue = `${seedEmoji} **${seedName}**`;
-	}
-	else {
-		seedValue = i18n.t("commands:inventory.emptySlot", { lng });
-	}
 	embed.addFields([
-		{
-			name: i18n.t("commands:inventory.seedSlot", { lng }),
-			value: seedValue,
-			inline: false
-		}
+		buildSeedField(plants, lng),
+		buildPlantSlotsField(plants, lng),
+		...plants.linkedToHomeStorage ? [buildHomeStorageLinkField(lng)] : []
 	]);
-
-	// Plant slots
-	const plantEntries: string[] = [];
-	for (let slot = 0; slot < plants.maxPlantSlots; slot++) {
-		const found = plants.plantSlots.find(p => p.slot === slot);
-		if (found) {
-			const plantEmoji = CrowniclesIcons.plants[found.plantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
-			const plantName = i18n.t(`models:plants.${found.plantId}`, { lng });
-			plantEntries.push(`${plantEmoji} **${plantName}**`);
-		}
-		else {
-			plantEntries.push(i18n.t("commands:inventory.emptySlot", { lng }));
-		}
-	}
-
-	embed.addFields([
-		{
-			name: i18n.t("commands:inventory.plantSlots", {
-				lng,
-				count: plants.plantSlots.length,
-				max: plants.maxPlantSlots
-			}),
-			value: plantEntries.join("\n"),
-			inline: false
-		}
-	]);
-
 	return embed;
 }
 

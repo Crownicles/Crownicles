@@ -119,7 +119,7 @@ For the database, you can use a mariadb container with the following command:
 mkdir -p PROJECT_ROOT/database/mariadb
 
 # Run mariadb database with docker
-docker run -d --name mariadb -e MARIADB_USER=crownicles -e MARIADB_PASSWORD=secret_password -e MARIADB_ROOT_PASSWORD=super_secret_password -v PROJECT_ROOT/database/mariadb:/var/lib/mysql -p 3306:3306 mariadb:latest
+docker run -d --name mariadb -e MARIADB_USER=crownicles -e MARIADB_PASSWORD=secret_password -e MARIADB_ROOT_PASSWORD=super_secret_password -v PROJECT_ROOT/database/mariadb:/var/lib/mysql -p 3306:3306 mariadb:12.3
 ```
 
 #### MQTT broker
@@ -131,7 +131,8 @@ Before proceeding, please create a `mqtt5/` folder at the project root to store 
 mkdir -p PROJECT_ROOT/mqtt5
 ```
 You can use [this guide](https://github.com/sukesh-ak/setup-mosquitto-with-docker) to install it with docker. Step 1, 2,
-3, and 5 are enough to have a working MQTT broker.
+3, and 5 are enough to have a working MQTT broker. Use the `eclipse-mosquitto:2` image rather than an untagged one, so
+that a pull never silently changes the major version.
 
 The following config file can be used:
 

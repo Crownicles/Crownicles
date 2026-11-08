@@ -9,7 +9,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		weeklyscore: TypeKey.INTEGER
 	},
-	description: "Définit le score hebdomadaire du joueur testeur. (le nombre de points gagnés depuis le début de la semaine) indépendant du score du joueur /!"
+	description: "Définit le score hebdomadaire du joueur testeur. (le nombre de points gagnés depuis le début de la semaine) indépendant du score du joueur /! Remet aussi à zéro les paliers du défi du roi déjà récompensés : le prochain gain de points paie tous les paliers atteints."
 };
 
 
@@ -18,6 +18,7 @@ export const commandInfo: ITestCommand = {
  */
 const playerWeeklyScoreTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	player.weeklyScore = parseInt(args[0], 10);
+	player.kingChallengeTier = 0;
 	await player.save();
 
 	return `Vous avez maintenant ${player.weeklyScore} points de la semaine !`;

@@ -122,6 +122,7 @@ async function exportPveFights(
 		f => ({
 			id: f.id,
 			classId: f.classId,
+			playerLevel: f.playerLevel,
 			monsterId: f.monsterId,
 			monsterLevel: f.monsterLevel,
 			monsterFightPoints: f.monsterFightPoints,
@@ -171,6 +172,7 @@ async function exportKingGuardFights(
 			classId: f.classId,
 			guardClassId: f.guardClassId,
 			guardLevel: f.guardLevel,
+			playerLevel: f.playerLevel,
 			turns: f.turn,
 			winner: f.winner,
 			date: f.date

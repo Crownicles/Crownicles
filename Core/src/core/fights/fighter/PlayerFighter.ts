@@ -32,6 +32,9 @@ type PlayerFighterOptions = {
 
 	// Full energy, no potion, no energy loss and no missions (friendly fights)
 	withoutConsequences?: boolean;
+
+	// Level above which the fighter is capped (friendly fights)
+	levelCap?: number;
 };
 
 /**
@@ -48,7 +51,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 	private readonly withoutConsequences: boolean;
 
 	public constructor(player: Player, playerClass: Class, options: PlayerFighterOptions = {}) {
-		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
+		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds), options.levelCap);
 		this.petAssisted = false;
 		this.withoutConsequences = options.withoutConsequences ?? false;
 	}
@@ -143,7 +146,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 */
 	public async loadStats(isPvE = false): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
+		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects, this.level);
 		this.stats.energy = this.withoutConsequences
 			? this.stats.maxEnergy
 			: this.player.getCumulativeEnergy(playerActiveObjects);

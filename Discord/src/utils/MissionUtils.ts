@@ -9,6 +9,8 @@ import {
 } from "../../../Lib/src/utils/TimeUtils";
 import { getTranslatedRiskCategoryNameWithEmoji } from "../commands/pet/expedition/ExpeditionDisplayUtils";
 
+type RewardDisplayKey = "pointsDisplay" | "gemsDisplay" | "moneyDisplay" | "xpDisplay" | "tokensDisplay";
+
 export abstract class MissionUtils {
 	/**
 	 * Get the displayable version of a mission (only the plain objective)
@@ -29,36 +31,34 @@ export abstract class MissionUtils {
 	 * @param lng
 	 */
 	static formatCompletedMission(mission: CompletedMission, lng: Language): string {
-		const rewards = [
-			{
-				value: mission.pointsToWin, key: "pointsDisplay"
-			},
-			{
-				value: mission.gemsToWin, key: "gemsDisplay"
-			},
-			{
-				value: mission.moneyToWin, key: "moneyDisplay"
-			},
-			{
-				value: mission.xpToWin, key: "xpDisplay"
-			},
-			{
-				value: mission.tokensToWin ?? 0, key: "tokensDisplay"
-			}
-		];
-
-		const rewardDisplays = rewards
-			.filter(reward => reward.value > 0)
-			.map(reward => i18n.t(`notifications:missions.completed.${reward.key}`, {
-				count: reward.value,
-				lng
-			}));
+		const rewardsDisplay = this.formatRewards({
+			pointsDisplay: mission.pointsToWin,
+			gemsDisplay: mission.gemsToWin,
+			moneyDisplay: mission.moneyToWin,
+			xpDisplay: mission.xpToWin,
+			tokensDisplay: mission.tokensToWin ?? 0
+		}, lng);
 
 		return i18n.t("notifications:missions.completed.missionDisplay", {
 			lng,
 			missionDescription: this.formatBaseMission(mission, lng),
-			missionsReward: rewardDisplays.length === 0 ? "" : ` (${rewardDisplays.join(", ")})`
+			missionsReward: rewardsDisplay === "" ? "" : ` (${rewardsDisplay})`
 		});
+	}
+
+	/**
+	 * Display rewards the way mission rewards are displayed ("+750 💰, +2 🪙"), skipping the empty ones
+	 * @param rewards Amount of each reward, keyed by its display translation
+	 * @param lng
+	 */
+	static formatRewards(rewards: Partial<Record<RewardDisplayKey, number>>, lng: Language): string {
+		return Object.entries(rewards)
+			.filter(([, value]) => value > 0)
+			.map(([key, value]) => i18n.t(`notifications:missions.completed.${key as RewardDisplayKey}`, {
+				count: value,
+				lng
+			}))
+			.join(", ");
 	}
 
 	/**

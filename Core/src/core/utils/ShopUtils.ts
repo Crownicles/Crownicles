@@ -31,6 +31,7 @@ import {
 	LockKey, Locked
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { withLockedPlayerAndMissions } from "./withLockedPlayerAndMissions";
+import { getPlantReceiverLockKeys } from "./PlantDeliveryUtils";
 
 type ShopPurchase = {
 	shop: ShopInformations;
@@ -165,6 +166,10 @@ export abstract class ShopUtils {
 		if (itemType === ShopItemType.LOVE_POINTS_VALUE && player.petId !== null) {
 			return [PetEntity.lockKey(player.petId)];
 		}
+		if (itemType >= ShopItemType.WEEKLY_PLANT_TIER_1 && itemType <= ShopItemType.WEEKLY_PLANT_TIER_3) {
+			// The herbalist delivers into the home plant storage, whose row must be locked before the player one
+			return await getPlantReceiverLockKeys(player);
+		}
 		return [];
 	}
 
@@ -186,16 +191,13 @@ export abstract class ShopUtils {
 			return false;
 		}
 		await player.reload();
-		const currentPayer = await this.getCurrencyHolder(player, currency);
-		await this.manageCurrencySpendingUnderLock(currentPayer, reaction, response);
+		if (!parsed.currencySpent) {
+			const currentPayer = await this.getCurrencyHolder(player, currency);
+			await this.manageCurrencySpendingUnderLock(currentPayer, reaction, response);
+		}
 		await parsed.postPurchase?.();
 		if (isDetailedResult) {
-			response.push(makePacket(CommandShopGenericPurchase, {
-				shopItemId: reaction.shopItemId,
-				amount: reaction.amount,
-				materials: parsed.materials,
-				translationParams: this.getTranslationParams(reaction.shopItemId, data)
-			}));
+			response.push(this.buildGenericPurchasePacket(reaction, parsed, data));
 		}
 		return true;
 	}
@@ -233,6 +235,20 @@ export abstract class ShopUtils {
 			await player.spendGems(reactionInstance.price, response, NumberChangeReason.MISSION_SHOP);
 		}
 		await player.save();
+	}
+
+	private static buildGenericPurchasePacket(
+		reactionInstance: ReactionCollectorShopItemReaction,
+		buyResult: BuyCallbackResult,
+		shopData: additionalShopData
+	): CommandShopGenericPurchase {
+		return makePacket(CommandShopGenericPurchase, {
+			shopItemId: reactionInstance.shopItemId,
+			amount: reactionInstance.amount,
+			materials: buyResult.materials,
+			...buyResult.plantsSentToHomeStorage ? { plantsSentToHomeStorage: buyResult.plantsSentToHomeStorage } : {},
+			translationParams: this.getTranslationParams(reactionInstance.shopItemId, shopData)
+		});
 	}
 
 	private static getTranslationParams(shopItemId: ShopItemType, shopData: additionalShopData): Record<string, string> | undefined {

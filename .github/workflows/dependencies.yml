@@ -1,0 +1,55 @@
+name: Dependencies
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - '**/package.json'
+      - '**/pnpm-lock.yaml'
+      - '**/Dockerfile'
+      - .github/actions/**
+      - .github/workflows/dependencies.yml
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Only fails on vulnerabilities introduced by the pull request, not on the ones already present on the base branch
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Review the added dependencies
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high
+
+  pnpm-version-consistency:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check that every module and Dockerfile use the same pnpm version
+        run: |
+          versions=$(
+            for file in */package.json; do
+              echo "$file $(jq -r '.packageManager // "missing"' "$file" | sed -E 's/^pnpm@([^+]+).*/\1/')"
+            done
+            for file in */Dockerfile; do
+              grep -E '^ARG PNPM_VERSION=' "$file" | sed -E "s|^ARG PNPM_VERSION=|$file |"
+            done
+          )
+          echo "$versions"
+          if [ "$(echo "$versions" | awk '{ print $2 }' | sort -u | wc -l)" -ne 1 ]; then
+            echo "::error title=pnpm version mismatch::All packageManager fields and Dockerfile PNPM_VERSION arguments must use the same pnpm version"
+            exit 1
+          fi

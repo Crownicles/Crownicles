@@ -198,6 +198,22 @@
     "9": "Una classe incentrata sulla velocità. Bassa salute e punti energia, ma alta velocità e attacco."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "viene aiutato da **{{petNickname}}**, rimasto all'erta, che balza in avanti non appena l'avversario riprende fiato e gli sferra un formidabile colpo con la zampa."
+    },
+    "scentOfBlood": {
+      "generalEffect": "viene raggiunto da **{{petNickname}}** che ha fiutato l'odore del sangue: lo squalo morde l'avversario ferito e gli provoca una ferita che sanguina abbondantemente.",
+      "success": "vede **{{petNickname}}** andare in delirio, reso folle dal sangue che continua a scorrere: lo squalo si avventa sull’avversario e lo morde selvaggiamente.",
+      "failure": "vede **{{petNickname}}** perdere le tracce della sua preda: l’emorragia dell’avversario si è arrestata e lo squalo si allontana."
+    },
+    "unstoppable": {
+      "generalEffect": "prende slancio al fianco di **{{petNickname}}**, la cui corsa pesante acquista velocità: i suoi attacchi corpo a corpo colpiscono sempre più forte.",
+      "success": "viene trascinato via da **{{petNickname}}**, lanciato a tutta velocità: sembra che nulla possa più fermarlo.",
+      "failure": "viene bloccato e **{{petNickname}}** perde tutto il suo slancio, bisognerà ricominciare da capo."
+    },
+    "woundedPrey": {
+      "success": "viene raggiunto da **{{petNickname}}**, che volteggiava sopra il combattimento: vedendo l’avversario ormai allo stremo delle forze, il rapace piomba su di lui in picchiata, con gli artigli protesi in avanti."
+    },
     "drowning": {
       "customMessage": "afferra l'avversario con uno dei suoi tentacoli e lo immerge sott'acqua, facendo uscire indenni solo gli avversari dotati di respiro.",
       "name_one": "Annegamento",
@@ -380,7 +396,7 @@
       "stop": "non è più confuso."
     },
     "counterAttack": {
-      "description": "Replica con la stessa azione che quella appena usata da vostro avversario. Non funziona su gli attacchi magiche o divine, neanche se vostro avversario non ha attaccato.",
+      "description": "Ripete la stessa azione appena eseguita dal tuo avversario. Infligge più danni ai mostri. Non funziona con alcuni attacchi, né se l'avversario non ha attaccato.",
       "name_one": "Attacco risposto",
       "customMessage": "non era in grado di reagire.",
       "name_other": "Attacchi risposto"
@@ -411,7 +427,7 @@
       "stop": "subisce le conseguenze della maledizione."
     },
     "cursedAttack": {
-      "description": "Maledice l'avversario, forse ne subirà le conseguenze in futuro... Guarisce l'incantatore se l'avversario ha più del 40% della sua energia.",
+      "description": "Maledetto l'avversario, forse ne subirà le conseguenze in futuro... Finché rimane maledetto, l'avversario recupera meno energia grazie alle cure e subisce l'attacco oscuro a piena potenza. Cura il lanciatore se l’avversario ha più del 40% della sua energia.",
       "name_one": "Attacca maledetta",
       "name_other": "Attacchi maledette"
     },
@@ -431,7 +447,7 @@
       "name_other": "Maledizioni dal mare"
     },
     "darkAttack": {
-      "description": "Ignora la difesa dell'avversario. Più efficace contro un giocatore con un attacco elevato. Acceca l'avversario o ripristina parte del fiato perso dall'incantatore. L'alterazione “accecata” dura almeno 1 turno e rende l'avversario incapace di attaccare a volte, riducendone la difesa e la velocità.",
+      "description": "Non tiene molto conto della difesa dell'avversario. È più efficace contro un giocatore con un attacco elevato. Molto potente al primo utilizzo, si indebolisce ad ogni nuovo utilizzo riuscito e recupera forza quando chi la lancia ne fa a meno per alcune azioni. Colpisce sempre un avversario maledetto con tutta la sua potenza. La sua potenza attuale è visualizzata sul pulsante.",
       "name_one": "Attacco oscuro",
       "name_other": "Attacchi oscure"
     },
@@ -473,7 +489,7 @@
       "afraid": "è aiutato da **{{petNickname}}** che, pur ricordando perfettamente gli ultimi eventi, trema troppo per la paura per poter ripristinare il respiro perduto."
     },
     "energeticAttack": {
-      "description": "La moitié des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse.",
+      "description": "Una parte dei danni inflitti da questo attacco viene restituita a chi lo lancia sotto forma di cura. Ignora una parte della difesa avversaria. Infligge più danni a un avversario che si è appena riposato. La cura è ridotta contro i mostri.",
       "name_one": "Attacca energica ",
       "name_other": "Attacchi energetiche"
     },
@@ -1254,7 +1270,7 @@
       "atParticle": "al"
     },
     "21": {
-      "description": "Una strada molto utilizzata dagli abitanti del villaggio. Molti piccoli venditori ambulanti si installano qui per un giorno, creando un grande mercato.",
+      "description": "Una strada molto frequentata dagli abitanti del villaggio. Molti piccoli venditori ambulanti vi si sistemano per l’arco della giornata, dando vita a un immenso mercato. Più avanti, vecchie bancarelle abbandonate da tempo stanno cadendo in rovina sotto la sabbia.",
       "name": "Strada delle Meraviglie",
       "particle": "verso la",
       "atParticle": "al"
@@ -1266,7 +1282,7 @@
       "atParticle": "a"
     },
     "23": {
-      "description": "Importante città mercantile e crocevia economico, Claire de Ville non è sempre stata così accogliente. Inizialmente molto povera, si è sviluppata rapidamente grazie ai suoi numerosi negozi e alberghi che offrono un'ampia scelta ai viaggiatori della regione. Claire de Ville è anche rinomata per la sua calma e il rispetto dell'ordine.",
+      "description": "Grande città commerciale e crocevia economico, Claire de Ville non è sempre stata così accogliente. Inizialmente molto povera, ha saputo svilupparsi rapidamente grazie ai suoi numerosi negozi e alberghi che offrono un’ampia scelta ai viaggiatori della regione. Claire de Ville è nota anche per la sua tranquillità e il rispetto dell’ordine pubblico. Sotto le sue strade, i cunicoli scavati ai tempi della sua povertà serpeggiano ancora nella roccia.",
       "name": "Claire de Ville",
       "particle": "verso",
       "atParticle": "à",
@@ -1279,7 +1295,7 @@
       "atParticle": "al"
     },
     "25": {
-      "description": "È tutto nel nome. Un fiume molto apprezzato dai pescivendoli di Claire de Ville.",
+      "description": "Il nome dice già tutto. Un fiume molto apprezzato dai pescivendoli di Claire de Ville. A valle, le sue rive si perdono in distese fangose dove pullulano i granchi.",
       "name": "Fiume dei Granchi",
       "particle": "verso la",
       "atParticle": "al"
@@ -1292,7 +1308,7 @@
       "inParticle": "in"
     },
     "27": {
-      "description": "Una foresta ai margini del Monte Celestrum.",
+      "description": "Una foresta ai piedi del Monte Célestrum. I suoi margini si arrampicano sui ripidi pendii della montagna.",
       "name": "Foresta di Celestrum",
       "particle": "verso la",
       "atParticle": "al"
@@ -1338,7 +1354,7 @@
       "particle": "verso la"
     },
     "41": {
-      "description": "Spianata pavimentata che collega Boug-Coton alle porte del castello reale. I messaggeri si incrociano per raggiungere gli appartamenti del re.",
+      "description": "Spianata lastricata che collega Boug-Coton alle porte del castello reale. I messaggeri vi si incrociano prima di accedere agli appartamenti del re. Sotto i suoi ciottoli si snodano passaggi segreti scavati nella roccia fino alle fondamenta del castello.",
       "name": "Corte dello Château",
       "particle": "verso la",
       "atParticle": "al",
@@ -1351,13 +1367,13 @@
       "atParticle": "al"
     },
     "5": {
-      "description": "Il sentiero deriva il suo soprannome dalla sua natura di attraversamento della parte meridionale della Foresta del Vecchio.",
+      "description": "Sentiero che deve il suo soprannome al percorso che traccia nel cuore della rigogliosa natura a sud della foresta del Vecchio. Sotto la vegetazione si intravedono ancora i muretti di un antico labirinto ormai dimenticato.",
       "name": "Strada di Dedale",
       "particle": "verso lo",
       "atParticle": "a"
     },
     "6": {
-      "description": "Un villaggio tranquillo, rinomato per la sua accogliente locanda.",
+      "description": "Un tranquillo paesino famoso per la sua accogliente locanda. Sotto la locanda si estendono vaste cantine segrete scavate direttamente nella roccia.",
       "name": "Boug-Coton",
       "particle": "verso",
       "atParticle": "à",
@@ -2529,7 +2545,8 @@
       "1": "Calderone",
       "2": "Fonderia",
       "3": "Ancora",
-      "4": "Braciere"
+      "4": "Braciere",
+      "5": "Specialità dello chef"
     },
     "recipes": {
       "potion_health_1": "Pozione curativa di base",

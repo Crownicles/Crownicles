@@ -1,4 +1,12 @@
 {
+  "kingChallenge": {
+    "title_one": "{{pseudo}}, superam a fase {{tier}}/{{tierCount}} do desafio do rei!",
+    "title_other": "{{pseudo}}, superas {{count}} os níveis do desafio do rei, até ao nível {{tier}}/{{tierCount}}!",
+    "rewards": "{emote:kingChallenge.icon} O rei recompensa-vos ({{rewards}}).",
+    "nextTier": "Próximo nível em **{{points, number}}** {emote:unitValues.score}.",
+    "completed": "Conseguiste superar o desafio do rei até ao último nível!",
+    "useTokens": "Tens **{{tokens, number}}** {emote:unitValues.token}: usa-os com o comando {command:report} para atingires o próximo nível mais rapidamente."
+  },
   "missions": {
     "expired": {
       "title_one": "{{pseudo}}uma missão expirou",
@@ -29,7 +37,8 @@
       "pointsDisplay": "+{{count, number}} {emote:unitValues.score}",
       "gemsDisplay": "+{{count, number}} {emote:unitValues.gem}",
       "moneyDisplay": "+{{count, number}} {emote:unitValues.money}",
-      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}"
+      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}",
+      "tokensDisplay": "+{{count, number}} {emote:unitValues.token}"
     }
   },
   "guildFood": {

@@ -198,6 +198,22 @@
     "9": "Une classe axée sur la vitesse. Peu de points de vie et d'énergie mais vitesse et attaque élevées."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "est aidé par **{{petNickname}}**, resté à l'affût, qui surgit dès que l'adversaire reprend son souffle et lui assène un formidable coup de patte."
+    },
+    "scentOfBlood": {
+      "generalEffect": "est rejoint par **{{petNickname}}** qui a senti l'odeur du sang : le requin mord l'adversaire blessé et ouvre une plaie qui saigne abondamment.",
+      "success": "voit **{{petNickname}}** entrer en frénésie, rendu fou par le sang qui coule encore : le requin se jette sur l'adversaire et le mord sauvagement.",
+      "failure": "voit **{{petNickname}}** perdre la trace de sa proie : l'hémorragie de l'adversaire s'est arrêtée et le requin s'éloigne."
+    },
+    "unstoppable": {
+      "generalEffect": "prend de l'élan aux côtés de **{{petNickname}}**, dont la lourde course s'accélère : ses attaques au corps à corps frappent de plus en plus fort.",
+      "success": "est emporté par **{{petNickname}}**, lancé à pleine vitesse : plus rien ne semble pouvoir l'arrêter.",
+      "failure": "est immobilisé et **{{petNickname}}** perd tout son élan, il va falloir le reprendre depuis le début."
+    },
+    "woundedPrey": {
+      "success": "est rejoint par **{{petNickname}}** qui tournoyait au-dessus du combat : voyant l'adversaire à bout de forces, le rapace fond sur lui en piqué, serres en avant."
+    },
     "drowning": {
       "customMessage": "saisit son adversaire avec l'une de ses tentacules et le plonge sous l'eau, seuls les adversaires ayant du souffle s'extirpent sans dommage.",
       "name_one": "Noyade",
@@ -380,7 +396,7 @@
       "stop": "n'est plus confus."
     },
     "counterAttack": {
-      "description": "Réplique avec la même action que celle que vient de jouer votre adversaire. Ne fonctionne pas sur certaines attaques, ni si l'adversaire n'a pas attaqué.",
+      "description": "Réplique avec la même action que celle que vient de jouer votre adversaire. Inflige davantage de dégâts contre les monstres. Ne fonctionne pas sur certaines attaques, ni si l'adversaire n'a pas attaqué.",
       "name_one": "Attaque riposte",
       "customMessage": "ne parvient pas à riposter.",
       "name_other": "Attaques riposte"
@@ -411,7 +427,7 @@
       "stop": "subit les conséquences du maléfice."
     },
     "cursedAttack": {
-      "description": "Maudit l'adversaire, peut être en subira-t-il les conséquences dans le futur... Soigne le lanceur si l'adversaire a plus de 40% de son énergie.",
+      "description": "Maudit l'adversaire, peut être en subira-t-il les conséquences dans le futur... Tant qu'il est maudit, l'adversaire récupère moins d'énergie grâce aux soins et subit l'attaque sombre à pleine puissance. Soigne le lanceur si l'adversaire a plus de 40% de son énergie.",
       "name_one": "Attaque maudite",
       "name_other": "Attaques maudites"
     },
@@ -431,7 +447,7 @@
       "name_other": "Malédictions de la mer"
     },
     "darkAttack": {
-      "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Aveugle l'adversaire ou rend au lanceur une partie de son souffle perdu. L'altération \"aveuglé\" dure au moins 1 tour et rend l'adversaire incapable d'attaquer parfois, tout en réduisant sa défense et sa vitesse.",
+      "description": "Tient peu compte de la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Très puissante à sa première utilisation, elle s'affaiblit à chaque nouvelle utilisation réussie et reprend des forces quand le lanceur s'en passe pendant quelques actions. Elle frappe toujours un adversaire maudit à pleine puissance. Sa puissance actuelle est affichée sur son bouton.",
       "name_one": "Attaque sombre",
       "name_other": "Attaques sombres"
     },
@@ -473,7 +489,7 @@
       "afraid": "est aidé par **{{petNickname}}** qui, bien que se rappelant parfaitement des événements récents, tremble trop de peur pour pouvoir restituer le souffle perdu."
     },
     "energeticAttack": {
-      "description": "Une partie des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse. Le soin est réduit contre les monstres.",
+      "description": "Une partie des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse. Inflige davantage de dégâts à un adversaire qui vient de se reposer. Le soin est réduit contre les monstres.",
       "name_one": "Attaque énergique",
       "name_other": "Attaques énergiques"
     },
@@ -1254,7 +1270,7 @@
       "atParticle": "à la"
     },
     "21": {
-      "description": "Une route très empruntée par les villageois. Beaucoup de petits vendeurs ambulants s'y installent le temps d'une journée pour au final créer un immense marché.",
+      "description": "Une route très empruntée par les villageois. Beaucoup de petits vendeurs ambulants s'y installent le temps d'une journée pour au final créer un immense marché. Plus loin, d'anciennes échoppes désertées depuis longtemps tombent en ruines sous le sable.",
       "name": "Route des Merveilles",
       "particle": "vers la",
       "atParticle": "à la"
@@ -1266,7 +1282,7 @@
       "atParticle": "au"
     },
     "23": {
-      "description": "Grande ville marchande et carrefour économique, Claire de Ville n'a pas toujours été aussi accueillante. Au début très pauvre, elle a su se développer rapidement grâce à ses nombreux commerces et hôtels offrant un large choix aux voyageurs de la région. Claire de Ville est aussi réputée pour son calme et son respect de l'ordre.",
+      "description": "Grande ville marchande et carrefour économique, Claire de Ville n'a pas toujours été aussi accueillante. Au début très pauvre, elle a su se développer rapidement grâce à ses nombreux commerces et hôtels offrant un large choix aux voyageurs de la région. Claire de Ville est aussi réputée pour son calme et son respect de l'ordre. Sous ses rues, les souterrains creusés au temps de sa misère serpentent encore dans la roche.",
       "name": "Claire de Ville",
       "particle": "vers",
       "atParticle": "à",
@@ -1279,7 +1295,7 @@
       "atParticle": "à la"
     },
     "25": {
-      "description": "Tout est dans le nom. Une rivière très appréciée des poissonniers de Claire de Ville.",
+      "description": "Tout est dans le nom. Une rivière très appréciée des poissonniers de Claire de Ville. En aval, ses rives se perdent en vasières boueuses où pullulent les crabes.",
       "name": "Rivière aux Crabes",
       "particle": "vers la",
       "atParticle": "à la"
@@ -1292,7 +1308,7 @@
       "inParticle": "dans"
     },
     "27": {
-      "description": "Une forêt au bord du Mont Célestrum.",
+      "description": "Une forêt au bord du Mont Célestrum. Ses lisières grimpent sur les pentes escarpées de la montagne.",
       "name": "Forêt Célestrum",
       "particle": "vers la",
       "atParticle": "à la"
@@ -1338,7 +1354,7 @@
       "particle": "vers la"
     },
     "41": {
-      "description": "Esplanade pavée reliant Boug-Coton aux portes du château royal. Les messagers s’y croisent avant d’accéder aux appartements du roi.",
+      "description": "Esplanade pavée reliant Boug-Coton aux portes du château royal. Les messagers s’y croisent avant d’accéder aux appartements du roi. Sous ses pavés courent des passages secrets creusés dans la roche jusqu'aux fondations du château.",
       "name": "Cour du Château",
       "particle": "vers la",
       "atParticle": "à la",
@@ -1351,13 +1367,13 @@
       "atParticle": "à la"
     },
     "5": {
-      "description": "Chemin tirant son surnom de son sillonement au sein de la nature foisonnant du sud de la forêt du vieillard.",
+      "description": "Chemin tirant son surnom de son sillonement au sein de la nature foisonnant du sud de la forêt du vieillard. Sous la végétation se devinent encore les murets d'un ancien labyrinthe oublié.",
       "name": "Chemin du Dédale",
       "particle": "vers le",
       "atParticle": "au"
     },
     "6": {
-      "description": "Un village paisible réputé pour son auberge accueillante.",
+      "description": "Un village paisible réputé pour son auberge accueillante. Sous l'auberge s'étendent de vastes caves secrètes creusées à même la roche.",
       "name": "Boug-Coton",
       "particle": "vers",
       "atParticle": "à",
@@ -2532,7 +2548,8 @@
       "1": "Chaudron",
       "2": "Fonderie",
       "3": "Alambic",
-      "4": "Brasier"
+      "4": "Brasier",
+      "5": "Spécialité du chef"
     },
     "recipes": {
       "potion_health_1": "Potion de soin basique",

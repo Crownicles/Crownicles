@@ -3,29 +3,26 @@ name: TypeScript Compilation Check
 on:
   pull_request:
     branches: [ '**' ]
-    paths: [ Lib/**, Discord/**, Core/**, RestWs/**, .github/workflows/** ]
+    paths: [ Lib/**, Discord/**, Core/**, RestWs/**, .github/workflows/**, .github/actions/** ]
   push:
     branches: [ develop, master ]
-    paths: [ Lib/**, Discord/**, Core/**, RestWs/**, .github/workflows/** ]
+    paths: [ Lib/**, Discord/**, Core/**, RestWs/**, .github/workflows/**, .github/actions/** ]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   typescript-compilation:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-
-      - name: Setup PNPM
-        run: |
-          npm install --global corepack@latest
-          corepack enable
-          corepack prepare pnpm@10.26.0 --activate
+      - name: Setup Node.js and PNPM
+        uses: ./.github/actions/setup-pnpm
 
       - name: Cache PNPM dependencies
         uses: actions/cache@v6
@@ -39,13 +36,13 @@ jobs:
       - name: Install dependencies for all modules
         run: |
           echo "Installing Lib dependencies..."
-          pnpm --dir ./Lib install
+          pnpm --dir ./Lib install --frozen-lockfile
           echo "Installing Discord dependencies..."
-          pnpm --dir ./Discord install
+          pnpm --dir ./Discord install --frozen-lockfile
           echo "Installing Core dependencies..."
-          pnpm --dir ./Core install
+          pnpm --dir ./Core install --frozen-lockfile
           echo "Installing RestWs dependencies..."
-          pnpm --dir ./RestWs install
+          pnpm --dir ./RestWs install --frozen-lockfile
 
       - name: TypeScript compilation check for Lib
         run: |

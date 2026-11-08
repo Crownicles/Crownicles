@@ -28,6 +28,42 @@ export abstract class MapCache {
 
 	static finalPveBossMapIds: number[];
 
+	/**
+	 * Depth of each PVE island location: 1 for the locations reached from the island entry, 2 for the next ones...
+	 */
+	static pveIslandMapDepths: Map<number, number>;
+
+	/**
+	 * Give a depth to the PVE island locations reachable from a location which do not have one yet
+	 * @param mapId
+	 * @param depths
+	 * @param depth
+	 * @returns The locations which just got a depth
+	 */
+	private static visitPveIslandNeighbours(mapId: number, depths: Map<number, number>, depth: number): number[] {
+		const neighbours = MapLinkDataController.instance.getLinksByMapStart(mapId)
+			.map(link => link.endMap)
+			.filter(endMap => !depths.has(endMap)
+				&& MapLocationDataController.instance.getById(endMap)?.attribute === MapConstants.MAP_ATTRIBUTES.PVE_ISLAND);
+		for (const neighbour of neighbours) {
+			depths.set(neighbour, depth);
+		}
+		return neighbours;
+	}
+
+	/**
+	 * Compute the depth of each PVE island location with a breadth-first search from the island entries
+	 */
+	static computePveIslandMapDepths(): Map<number, number> {
+		const depths = new Map<number, number>();
+		let frontier = MapLocationDataController.instance.getWithAttributes([MapConstants.MAP_ATTRIBUTES.PVE_ISLAND_ENTRY])
+			.map(location => location.id);
+		for (let depth = 1; frontier.length > 0; depth++) {
+			frontier = frontier.flatMap(mapId => this.visitPveIslandNeighbours(mapId, depths, depth));
+		}
+		return depths;
+	}
+
 	static async init(): Promise<void> {
 		// Boat links entry only
 		const boatEntryMapLinksObjects = MapLinkDataController.instance.getFromAttributeToAttribute(MapConstants.MAP_ATTRIBUTES.MAIN_CONTINENT, MapConstants.MAP_ATTRIBUTES.PVE_ISLAND_ENTRY);
@@ -83,6 +119,8 @@ export abstract class MapCache {
 				});
 			})
 			.map(location => location.id);
+
+		this.pveIslandMapDepths = this.computePveIslandMapDepths();
 
 		// Fight regen list
 		this.regenEnergyMapLinks = MapLinkDataController.instance.getAll()

@@ -1,4 +1,12 @@
 {
+  "kingChallenge": {
+    "title_one": "{{pseudo}}, vous relevez le palier {{tier}}/{{tierCount}} du défi du roi !",
+    "title_other": "{{pseudo}}, vous relevez {{count}} paliers du défi du roi, jusqu'au palier {{tier}}/{{tierCount}} !",
+    "rewards": "{emote:kingChallenge.icon} Le roi vous récompense ({{rewards}}).",
+    "nextTier": "Palier suivant dans **{{points, number}}** {emote:unitValues.score}.",
+    "completed": "Vous avez relevé le défi du roi jusqu'au dernier palier !",
+    "useTokens": "Vous avez **{{tokens, number}}** {emote:unitValues.token} : utilisez-les avec la commande {command:report} pour atteindre le palier suivant plus vite."
+  },
   "missions": {
     "expired": {
       "title_one": "{{pseudo}}, une mission a expiré",
@@ -31,7 +39,7 @@
       "gemsDisplay": "+{{count, number}} {emote:unitValues.gem}",
       "moneyDisplay": "+{{count, number}} {emote:unitValues.money}",
       "xpDisplay": "+{{count, number}} {emote:unitValues.xp}",
-    "tokensDisplay": "+{{count, number}} {emote:unitValues.token}"
+      "tokensDisplay": "+{{count, number}} {emote:unitValues.token}"
     }
   },
   "guildFood": {

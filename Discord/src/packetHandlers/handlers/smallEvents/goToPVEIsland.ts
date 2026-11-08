@@ -1,6 +1,7 @@
 import { packetHandler } from "../../PacketHandler";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../../bot/DiscordCache";
+import { MessagesUtils } from "../../../utils/MessagesUtils";
 import { CrowniclesSmallEventEmbed } from "../../../messages/CrowniclesSmallEventEmbed";
 import i18n from "../../../translations/i18n";
 import {
@@ -13,12 +14,12 @@ import {
 export default class GoToPVEIslandSmallEventHandler {
 	@packetHandler(SmallEventGoToPVEIslandAcceptPacket)
 	async smallEventGoToPVEIslandAccept(context: PacketContext, packet: SmallEventGoToPVEIslandAcceptPacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		if (!interaction) {
 			return;
 		}
 		const lng = context.discord!.language;
-		await interaction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"goToPVEIsland",
@@ -31,7 +32,7 @@ export default class GoToPVEIslandSmallEventHandler {
 							})
 							: ""
 					}),
-					interaction.user,
+					MessagesUtils.getClickUser(context) ?? interaction.user,
 					lng
 				)
 			]
@@ -41,14 +42,17 @@ export default class GoToPVEIslandSmallEventHandler {
 
 	@packetHandler(SmallEventGoToPVEIslandRefusePacket)
 	async smallEventGoToPVEIslandRefuse(context: PacketContext, _packet: SmallEventGoToPVEIslandRefusePacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
 		const lng = context.discord!.language;
-		await interaction?.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"goToPVEIsland",
 					i18n.t("smallEvents:goToPVEIsland.endStoryRefuse", { lng }),
-					interaction.user,
+					MessagesUtils.getClickUser(context) ?? interaction.user,
 					lng
 				)
 			]
@@ -78,14 +82,17 @@ export default class GoToPVEIslandSmallEventHandler {
 
 	@packetHandler(SmallEventGoToPVEIslandNotEnoughGemsPacket)
 	async smallEventGoToPVEIslandNotEnoughGems(context: PacketContext, _packet: SmallEventGoToPVEIslandNotEnoughGemsPacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
 		const lng = context.discord!.language;
-		await interaction?.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"goToPVEIsland",
 					i18n.t("smallEvents:goToPVEIsland.notEnoughGems", { lng }),
-					interaction.user,
+					MessagesUtils.getClickUser(context) ?? interaction.user,
 					lng
 				)
 			]

@@ -64,7 +64,7 @@ export class ReactionCollectorInstance {
 
 	private readonly filter: FilterFunction;
 
-	private endTime: number;
+	private _endTime: number;
 
 	private readonly time: number;
 
@@ -92,7 +92,7 @@ export class ReactionCollectorInstance {
 		this.model = reactionCollector;
 		this.filter = collectorOptions.allowedPlayerKeycloakIds ? createDefaultFilter(collectorOptions.allowedPlayerKeycloakIds) : (): boolean => true;
 		this.time = collectorOptions.time ?? Constants.MESSAGES.COLLECTOR_TIME;
-		this.endTime = Date.now() + this.time;
+		this._endTime = Date.now() + this.time;
 		this.mainPacket = collectorOptions.mainPacket ?? true;
 		this.visiblePlayerKeycloakIds = collectorOptions.visiblePlayerKeycloakIds ?? (context.keycloakId ? [context.keycloakId] : []);
 		this.collectCallback = collectCallback;
@@ -109,6 +109,13 @@ export class ReactionCollectorInstance {
 
 	private set hasEnded(value: boolean) {
 		this._hasEnded = value;
+	}
+
+	/**
+	 * Current deadline of the collector, pushed back by each timer reset unlike the one of the creation packet
+	 */
+	get endTime(): number {
+		return this._endTime;
 	}
 
 	get hasEndedByTime(): boolean {
@@ -242,9 +249,9 @@ export class ReactionCollectorInstance {
 	}
 
 	public resetTimer(): void {
-		this.endTime = Date.now() + this.time;
+		this._endTime = Date.now() + this.time;
 		clearTimeout(this.endTimeout);
-		this.endTimeout = setTimeout(this.endByTime.bind(this), this.endTime - Date.now());
+		this.endTimeout = setTimeout(this.endByTime.bind(this), this._endTime - Date.now());
 	}
 }
 
@@ -274,7 +281,7 @@ export abstract class ReactionCollectorController {
 			collector.resetTimer();
 			response.push(makePacket(ReactionCollectorResetTimerPacketRes, {
 				reactionCollectorId: packet.reactionCollectorId,
-				endTime: collector.creationPacket.endTime
+				endTime: collector.endTime
 			}));
 		}
 	}

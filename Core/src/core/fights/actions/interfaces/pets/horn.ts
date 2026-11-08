@@ -37,16 +37,31 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	};
 }
 
+/**
+ * The pet charges twice per fight: it takes a run-up on the first turn of a pair, then strikes on the next one
+ */
+const RUN_UP_TURNS = [
+	1,
+	2,
+	13,
+	14
+];
+
+const STRIKE_TURNS = [
+	3,
+	4,
+	15,
+	16
+];
+
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	// At turn 1 / 2, a warning is given
-	if (turn === 1 || turn === 2) {
+	if (RUN_UP_TURNS.includes(turn)) {
 		return Promise.resolve({
 			assistanceStatus: PetAssistanceState.GENERAL_EFFECT
 		});
 	}
 
-	// At turn 3 / 4, the pet hit the opponent
-	if (turn === 3 || turn === 4) {
+	if (STRIKE_TURNS.includes(turn)) {
 		return Promise.resolve({
 			damages: FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, getAttackInfo(), true),
 			assistanceStatus: PetAssistanceState.SUCCESS

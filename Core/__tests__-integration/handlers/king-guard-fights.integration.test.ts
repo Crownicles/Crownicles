@@ -9,7 +9,7 @@ import {
 	initModel as initLogsPlayers, LogsPlayers
 } from "../../src/core/database/logs/models/LogsPlayers";
 import {
-	initModel as initKingGuardResults, KING_GUARD_FIGHT_WINNER, LogsKingGuardFightsResults
+	KING_GUARD_FIGHT_WINNER, LogsKingGuardFightsResults
 } from "../../src/core/database/logs/models/LogsKingGuardFightsResults";
 import {
 	initModel as initFightsResults, LogsFightsResults
@@ -22,13 +22,15 @@ import { LogsFightHistoryRequests } from "../../src/core/database/logs/requests/
 import { computeKingGuardLevel } from "../../src/core/fights/kingGuards/KingGuardGenerator";
 import type Player from "../../src/core/database/game/models/Player";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
-import { up as createKingGuardTable } from "../../src/core/database/logs/migrations/036-king-guard-fights";
 import { ClassConstants } from "../../../Lib/src/constants/ClassConstants";
 import { FightConstants } from "../../../Lib/src/constants/FightConstants";
 import {
 	dateToLogs, getTodayMidnight
 } from "../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../Lib/src/types/EloGameResult";
+import {
+	logPlayerFight, setupKingGuardFightsTable
+} from "../_fightsLogsSetup";
 
 // Importing the whole LogsDatabase boots the app: only its player resolver is needed by the fight history
 vi.mock("../../src/core/database/logs/LogsDatabase", async () => {
@@ -53,6 +55,7 @@ async function logGuardFight(params: {
 	guardLevel: number;
 	winner: number;
 	date: number;
+	playerLevel?: number;
 }): Promise<void> {
 	await LogsKingGuardFightsResults.create({
 		playerId: params.playerId,
@@ -61,6 +64,7 @@ async function logGuardFight(params: {
 		guardLevel: params.guardLevel,
 		turn: 10,
 		winner: params.winner,
+		playerLevel: params.playerLevel ?? null,
 		date: params.date
 	});
 }
@@ -71,8 +75,7 @@ beforeAll(async () => {
 	initFightsResults(env.sequelize);
 	initGloryPoints(env.sequelize);
 	await env.sequelize.sync();
-	await createKingGuardTable({ context: env.sequelize.getQueryInterface() });
-	initKingGuardResults(env.sequelize);
+	await setupKingGuardFightsTable(env.sequelize);
 }, 60_000);
 
 afterAll(async () => {
@@ -88,37 +91,6 @@ beforeEach(async () => {
 	await LogsPlayers.destroy({ where: {} });
 });
 
-async function logRankedFight(params: {
-	initiatorId: number;
-	defenderId: number;
-	date: number;
-}): Promise<void> {
-	const fight = await LogsFightsResults.create({
-		fightInitiatorId: params.initiatorId,
-		fightInitiatorPoints: 0,
-		player2Id: params.defenderId,
-		player2Points: 0,
-		turn: 10,
-		winner: 1,
-		friendly: false,
-		fightInitiatorInitialDefenseGlory: 100,
-		fightInitiatorInitialAttackGlory: 100,
-		fightInitiatorClassId: ClassConstants.CLASSES_ID.KNIGHT,
-		player2InitialDefenseGlory: 100,
-		player2InitialAttackGlory: 100,
-		player2ClassId: ClassConstants.CLASSES_ID.KNIGHT,
-		date: params.date
-	});
-	await LogsPlayersGloryPoints.bulkCreate([
-		{
-			playerId: params.initiatorId, value: 110, reason: 0, fightId: fight.id, date: params.date, isDefense: false
-		},
-		{
-			playerId: params.defenderId, value: 90, reason: 0, fightId: fight.id, date: params.date, isDefense: true
-		}
-	]);
-}
-
 describe("King guard fights in the fight history", () => {
 	it("merges the king guard fights with the ranked fights, most recent first", async () => {
 		const player = await LogsPlayers.create({ keycloakId: "historyPlayer" });
@@ -126,7 +98,7 @@ describe("King guard fights in the fight history", () => {
 		await logGuardFight({
 			playerId: player.id, guardLevel: 30, winner: KING_GUARD_FIGHT_WINNER.GUARD, date: 1_000
 		});
-		await logRankedFight({
+		await logPlayerFight({
 			initiatorId: player.id, defenderId: opponent.id, date: 2_000
 		});
 		await logGuardFight({
@@ -160,13 +132,13 @@ describe("King guard fights in the fight history", () => {
 	it("keeps only the most recent fights of both kinds", async () => {
 		const player = await LogsPlayers.create({ keycloakId: "busyPlayer" });
 		const opponent = await LogsPlayers.create({ keycloakId: "busyOpponent" });
-		await logRankedFight({
+		await logPlayerFight({
 			initiatorId: player.id, defenderId: opponent.id, date: 1_000
 		});
 		await logGuardFight({
 			playerId: player.id, guardLevel: 30, winner: KING_GUARD_FIGHT_WINNER.DRAW, date: 2_000
 		});
-		await logRankedFight({
+		await logPlayerFight({
 			initiatorId: opponent.id, defenderId: player.id, date: 3_000
 		});
 
@@ -248,7 +220,7 @@ describe("King guard fights logs", () => {
 		expect(baseLevel).toBe(FightConstants.REQUIRED_LEVEL - FightConstants.KING_GUARD.FAILED_FIGHT_LEVEL_REDUCTION);
 		const player = {
 			keycloakId: "lowLevelLoser",
-			level: 100,
+			level: FightConstants.REQUIRED_LEVEL,
 			class: ClassConstants.CLASSES_ID.KNIGHT
 		} as Player;
 		await expect(computeKingGuardLevel(player)).resolves.toBe(FightConstants.REQUIRED_LEVEL);
@@ -259,6 +231,29 @@ describe("King guard fights logs", () => {
 			playerKeycloakId: "newcomer",
 			classId: ClassConstants.CLASSES_ID.KNIGHT
 		})).resolves.toBeNull();
+	});
+
+	it("remembers the strongest guard beaten whatever the class, and the last guard fight", async () => {
+		const player = await LogsPlayers.create({ keycloakId: "climber" });
+		await logGuardFight({
+			playerId: player.id, guardLevel: 40, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 1_000
+		});
+		await logGuardFight({
+			playerId: player.id, classId: ClassConstants.CLASSES_ID.MYSTIC_MAGE, guardLevel: 47, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 1_100
+		});
+		await logGuardFight({
+			playerId: player.id, guardLevel: 52, winner: KING_GUARD_FIGHT_WINNER.DRAW, date: 1_200, playerLevel: 66
+		});
+
+		await expect(LogsKingGuardFightsRequests.getGuardLadder("climber")).resolves.toEqual({
+			strongestVictoryLevel: 47,
+			lastFight: {
+				level: 52, isDefeat: false, playerLevel: 66
+			}
+		});
+		await expect(LogsKingGuardFightsRequests.getGuardLadder("stranger")).resolves.toEqual({
+			strongestVictoryLevel: null, lastFight: null
+		});
 	});
 
 	it("counts only today's guard fights in the daily summary", async () => {
@@ -286,6 +281,136 @@ describe("King guard fights logs", () => {
 			played: 0,
 			won: 0,
 			draw: 0
+		});
+	});
+});
+
+describe("King guard fight stats", () => {
+	it("returns null for a player who never fought a king guard", async () => {
+		await LogsPlayers.create({ keycloakId: "neverFought" });
+
+		expect(await LogsKingGuardFightsRequests.getFightStats("neverFought")).toBeNull();
+	});
+
+	it("counts the results and the records broken, a weaker victory or a defeat against a stronger guard breaking none", async () => {
+		const player = await LogsPlayers.create({ keycloakId: "climber" });
+		const fights = [
+			{ guardLevel: 100, winner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			{ guardLevel: 95, winner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			{ guardLevel: 120, winner: KING_GUARD_FIGHT_WINNER.GUARD },
+			{ guardLevel: 110, winner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			{ guardLevel: 110, winner: KING_GUARD_FIGHT_WINNER.PLAYER },
+			{ guardLevel: 130, winner: KING_GUARD_FIGHT_WINNER.DRAW }
+		];
+		for (const [index, fight] of fights.entries()) {
+			await logGuardFight({
+				playerId: player.id, ...fight, date: 1_000 + index
+			});
+		}
+
+		expect(await LogsKingGuardFightsRequests.getFightStats("climber")).toEqual({
+			won: 4,
+			lost: 1,
+			draw: 1,
+			record: {
+				level: 110,
+				recordsBroken: 2,
+				rank: 1,
+				challengers: 1
+			},
+			leaderboard: [
+				{
+					keycloakId: "climber",
+					level: 110
+				}
+			]
+		});
+	});
+
+	it("keeps only the strongest challengers in the leaderboard, while ranking the player among all of them", async () => {
+		const size = FightConstants.KING_GUARD.LEADERBOARD_SIZE;
+		for (let index = 0; index <= size; index++) {
+			const challenger = await LogsPlayers.create({ keycloakId: `challenger${index}` });
+			await logGuardFight({
+				playerId: challenger.id, guardLevel: 200 - index, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 1_000 + index
+			});
+		}
+
+		const stats = await LogsKingGuardFightsRequests.getFightStats(`challenger${size}`);
+
+		expect(stats?.leaderboard.map(challenger => challenger.keycloakId)).toEqual(
+			Array.from({ length: size }, (_, index) => `challenger${index}`)
+		);
+		expect(stats?.record).toMatchObject({
+			rank: size + 1, challengers: size + 1
+		});
+	});
+
+	it("ranks first the player whose fight was logged first when two players reach the same level in the same second", async () => {
+		const lowerId = await LogsPlayers.create({ keycloakId: "lowerId" });
+		const higherId = await LogsPlayers.create({ keycloakId: "higherId" });
+		await logGuardFight({
+			playerId: higherId.id, guardLevel: 140, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 5_000
+		});
+		await logGuardFight({
+			playerId: lowerId.id, guardLevel: 140, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 5_000
+		});
+
+		const higherIdStats = await LogsKingGuardFightsRequests.getFightStats("higherId");
+		expect(higherIdStats?.leaderboard.map(challenger => challenger.keycloakId)).toEqual(["higherId", "lowerId"]);
+		expect(higherIdStats?.record?.rank).toBe(1);
+		expect((await LogsKingGuardFightsRequests.getFightStats("lowerId"))?.record?.rank).toBe(2);
+	});
+
+	it("ranks the player among the challengers, the first to reach a level ranking first", async () => {
+		const leader = await LogsPlayers.create({ keycloakId: "leader" });
+		const early = await LogsPlayers.create({ keycloakId: "early" });
+		const late = await LogsPlayers.create({ keycloakId: "late" });
+		const neverWon = await LogsPlayers.create({ keycloakId: "neverWon" });
+		await logGuardFight({
+			playerId: leader.id, guardLevel: 150, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 3_000
+		});
+		await logGuardFight({
+			playerId: late.id, guardLevel: 120, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 2_000
+		});
+		await logGuardFight({
+			playerId: early.id, guardLevel: 120, winner: KING_GUARD_FIGHT_WINNER.PLAYER, date: 1_000
+		});
+		await logGuardFight({
+			playerId: neverWon.id, guardLevel: 200, winner: KING_GUARD_FIGHT_WINNER.GUARD, date: 4_000
+		});
+
+		const leaderboard = [
+			{
+				keycloakId: "leader", level: 150
+			},
+			{
+				keycloakId: "early", level: 120
+			},
+			{
+				keycloakId: "late", level: 120
+			}
+		];
+		expect(await LogsKingGuardFightsRequests.getFightStats("late")).toEqual({
+			won: 1,
+			lost: 0,
+			draw: 0,
+			record: {
+				level: 120,
+				recordsBroken: 1,
+				rank: 3,
+				challengers: 3
+			},
+			leaderboard
+		});
+		expect((await LogsKingGuardFightsRequests.getFightStats("early"))?.record?.rank).toBe(2);
+
+		const neverWonStats = await LogsKingGuardFightsRequests.getFightStats("neverWon");
+		expect(neverWonStats).toEqual({
+			won: 0,
+			lost: 1,
+			draw: 0,
+			leaderboard
 		});
 	});
 });

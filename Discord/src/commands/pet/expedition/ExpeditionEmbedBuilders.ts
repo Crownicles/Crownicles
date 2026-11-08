@@ -52,7 +52,7 @@ export function buildInProgressEmbed(
 ): CrowniclesEmbed {
 	const lng = interaction.userLanguage;
 	const locationEmoji = CrowniclesIcons.expedition.locations[expedition.locationType as ExpeditionLocationType];
-	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
+	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.locationType, expedition.isDistantExpedition);
 	const petDisplay = getPetDisplayString(expedition.pet, lng);
 	const sexContext = getSexContext(expedition.pet.petSex);
 
@@ -308,7 +308,7 @@ export function buildExpeditionResolveEmbed(
 	const lng = interaction.userLanguage;
 	const petDisplay = getPetDisplayString(packet.pet, lng);
 	const locationEmoji = CrowniclesIcons.expedition.locations[packet.expedition.locationType as ExpeditionLocationType];
-	const locationName = getExpeditionLocationName(lng, packet.expedition.mapLocationId!, packet.expedition.isDistantExpedition);
+	const locationName = getExpeditionLocationName(lng, packet.expedition.mapLocationId!, packet.expedition.locationType, packet.expedition.isDistantExpedition);
 
 	const resolutionData = buildResolutionData(packet, {
 		pseudo: escapeUsername(interaction.user.displayName),

@@ -50,8 +50,14 @@ export class FightAction extends Data<string> {
 			return;
 		}
 
-		// Attack/defense enchantments act as multipliers on the effective damage dealt (sender) and received (receiver)
-		result.damages = Math.round(result.damages * sender.getEnchantmentDamageDealtMultiplier() * receiver.getEnchantmentDamageTakenMultiplier());
+		/*
+		 * Attack/defense enchantments act as multipliers on the effective damage dealt (sender) and received (receiver),
+		 * as well as the sender's damage bonuses limited to this type of action (e.g. the mammoth momentum on physical attacks)
+		 */
+		result.damages = Math.round(result.damages
+			* sender.getEnchantmentDamageDealtMultiplier()
+			* sender.getActionTypeDamageMultiplier(action.type)
+			* receiver.getEnchantmentDamageTakenMultiplier());
 
 		// originalDamages (used for reflected damage) is intentionally taken after the enchantment scaling above
 		const originalDamages = result.damages;

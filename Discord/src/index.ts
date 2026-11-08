@@ -95,6 +95,7 @@ function main(): void {
 	const shardingManager = new ShardingManager("./dist/Discord/src/bot/CrowniclesShard.js", {
 		totalShards: shardCount,
 		respawn: false,
+		execArgv: [`--max-old-space-size=${DiscordConstants.SHARD_MAX_OLD_SPACE_SIZE_MB}`],
 
 		// Needed as in auto mode it has to make a request to know the needed number of shards
 		token: config.DISCORD_CLIENT_TOKEN

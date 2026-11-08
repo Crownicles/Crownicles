@@ -6,26 +6,22 @@ on:
     paths:
       - RestWs/**
       - .github/workflows/**
+      - .github/actions/**
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   eslint-restws-module:
     runs-on: ubuntu-latest
-    continue-on-error: true
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
 
-      # Setup Node.js environment once for all jobs
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-
-      - name: Setup PNPM
-        run: |
-          npm install --global corepack@latest
-          corepack enable
-          corepack use pnpm@latest-10
+      - name: Setup Node.js and PNPM
+        uses: ./.github/actions/setup-pnpm
 
       # Cache PNPM dependencies for RestWs module
       - name: Cache RestWs dependencies
@@ -38,5 +34,5 @@ jobs:
       - name: Install dependencies and Run ESLint in RestWs folder
         working-directory: ./RestWs
         run: |
-          pnpm install
+          pnpm install --frozen-lockfile
           pnpm eslint

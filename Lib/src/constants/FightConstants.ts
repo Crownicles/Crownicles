@@ -9,6 +9,9 @@ export abstract class FightConstants {
 
 	static readonly REQUIRED_LEVEL = 8;
 
+	// In friendly fights, the fighters above this level are fought as if they were at this level
+	static readonly FRIENDLY_FIGHT_LEVEL_CAP = 100;
+
 	static readonly POINTS_REGEN_MINUTES: Minute = asMinutes(7);
 
 	static readonly POINTS_REGEN_AMOUNT = 130;
@@ -182,6 +185,7 @@ export abstract class FightConstants {
 				BOOST_DEFENSE: "boostDefense",
 				BOOST_SPEED: "boostSpeed",
 				BREAK_ARMOR: "breakArmor",
+				BREATHING_HOLE_AMBUSH: "breathingHoleAmbush",
 				BUILD_BARRAGE: "buildBarrage",
 				CLAWS: "claws",
 				CREATE_BOMB: "createBomb",
@@ -211,6 +215,7 @@ export abstract class FightConstants {
 				REVENGE: "revenge",
 				SCARE_ELEPHANT: "scareElephant",
 				SCARE_FISH: "scareFish",
+				SCENT_OF_BLOOD: "scentOfBlood",
 				SLIPPING: "slipping",
 				SMALL_BITE: "smallBite",
 				SMALL_CLAWS: "smallClaws",
@@ -223,8 +228,10 @@ export abstract class FightConstants {
 				SWALLOW: "swallow",
 				TRIES_TO_HELP: "triesToHelp",
 				UN_BLIND: "unBlind",
+				UNSTOPPABLE: "unstoppable",
 				USE_TOOL: "useTool",
 				VAMPIRISM: "vampirism",
+				WOUNDED_PREY: "woundedPrey",
 				FAIRY_HEAL: "fairyHeal"
 			},
 			PLAYER: {
@@ -302,6 +309,32 @@ export abstract class FightConstants {
 		FightConstants.FIGHT_ACTIONS.MONSTER.RADIANT_BLAST_ATTACK,
 		FightConstants.FIGHT_ACTIONS.MONSTER.HAMMER_QUAKE_ATTACK
 	];
+
+	/*
+	 * The dark attack wears down with each use: its damage multiplier drops by one step per use, down to a floor,
+	 * and gets one step back every time its caster plays this many actions in a row without it
+	 */
+	static readonly DARK_ATTACK_WEAR = {
+		BASE_MULTIPLIER: 1.6,
+		MULTIPLIER_LOSS_PER_USE: 0.3,
+		MIN_MULTIPLIER: 0.3,
+		RECOVERY_IDLE_ACTIONS: 2
+	};
+
+	// A cursed fighter only receives this share of its healing
+	static readonly CURSED_HEALING_MULTIPLIER = 0.7;
+
+	// The energetic attack punishes an opponent that has just rested
+	static readonly ENERGETIC_ATTACK_RESTED_TARGET_DAMAGE_MULTIPLIER = 1.25;
+
+	// Damage multiplier of the attack following a concentration
+	static readonly CONCENTRATED_DAMAGE_MULTIPLIER = 1.6;
+
+	/*
+	 * The counter attack replays the attack of a monster with the stats of the tank, much slower than the monsters whose
+	 * attacks often depend on the speed of their caster: against a monster, it strikes harder to make up for it
+	 */
+	static readonly COUNTER_ATTACK_MONSTER_DAMAGE_MULTIPLIER = 2;
 
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
@@ -392,6 +425,9 @@ export abstract class FightConstants {
 		// Same rule as the PvE bosses: a lost fight lowers the next guard level by this amount
 		FAILED_FIGHT_LEVEL_REDUCTION: 10,
 
+		// Number of players shown on the king guards page of the fight history, ranked by the strongest guard they beat
+		LEADERBOARD_SIZE: 10,
+
 		// Calibrated on real players' equipment: about one rarity every 16 levels, starting from common, give or take one
 		EQUIPMENT_RARITY: {
 			AT_LEVEL_ZERO: 1,
@@ -411,6 +447,16 @@ export abstract class FightConstants {
 		ENCHANTMENT_PROBABILITY: {
 			MIN: 0.05,
 			MAX: 0.75
+		},
+
+		/*
+		 * Policy network trained by self-play (fights simulated with the game's own code). PROBABILITY is the share
+		 * of the guards it plays, the others keep the scripted behavior of their class (0 turns it off).
+		 * A model that does not know an action, alteration or pet assistance of the game is not used.
+		 */
+		NEURAL_AI: {
+			MODEL_PATH: "resources/kingGuardAi/model.json",
+			PROBABILITY: 1
 		}
 	};
 

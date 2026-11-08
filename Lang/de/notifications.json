@@ -1,4 +1,12 @@
 {
+  "kingChallenge": {
+    "title_one": "{{pseudo}}, ihr habt die Stufe {{tier}}/{{tierCount}} der Herausforderung des Königs gemeistert!",
+    "title_other": "{{pseudo}}, ihr meistert {{count}} Stufen der Herausforderung des Königs, bis hin zur Stufe {{tier}}/{{tierCount}}!",
+    "rewards": "{emote:kingChallenge.icon} Der König belohnt euch ({{rewards}}).",
+    "nextTier": "Nächste Stufe bei **{{points, number}}** {emote:unitValues.score}.",
+    "completed": "Ihr habt die Herausforderung des Königs bis zur letzten Stufe gemeistert!",
+    "useTokens": "Sie haben **{{tokens, number}}** {emote:unitValues.token}: Nutzen Sie diese mit dem Befehl {command:report}, um die nächste Stufe schneller zu erreichen."
+  },
   "missions": {
     "expired": {
       "title_one": "{{pseudo}}Ein Auftrag ist abgelaufen",
@@ -29,7 +37,8 @@
       "pointsDisplay": "+{{count, number}} {emote:unitValues.score}",
       "gemsDisplay": "+{{count, number}} {emote:unitValues.gem}",
       "moneyDisplay": "+{{count, number}} {emote:unitValues.money}",
-      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}"
+      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}",
+      "tokensDisplay": "+{{count, number}} {emote:unitValues.token}"
     }
   },
   "guildFood": {

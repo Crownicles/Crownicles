@@ -1,6 +1,7 @@
 import { ReactionCollectorEpicShopSmallEventPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorEpicShopSmallEvent";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
+import { MessagesUtils } from "../utils/MessagesUtils";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../utils/StringUtils";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
@@ -46,13 +47,12 @@ export async function epicItemShopHandler(context: PacketContext, translationKey
 	if (!originalInteraction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"epicItemShop",
 				StringUtils.getRandomTranslation(translationKey, originalInteraction.userLanguage),
-				buttonInteraction.user,
+				MessagesUtils.getClickUser(context) ?? originalInteraction.user,
 				originalInteraction.userLanguage
 			)
 		]

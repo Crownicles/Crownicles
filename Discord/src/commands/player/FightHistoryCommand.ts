@@ -24,6 +24,10 @@ import { handleClassicError } from "../../utils/ErrorUtils";
 import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { CrowniclesPaginatedEmbed } from "../../messages/CrowniclesPaginatedEmbed";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import {
+	KingGuardChallengerRecord, KingGuardFightStats
+} from "../../../../Lib/src/types/KingGuardFightStats";
 
 /**
  * Get the league change string
@@ -127,6 +131,97 @@ export async function buildPacketHistoryDescription(history: FightHistoryItem[],
 }
 
 /**
+ * Get the lines of the best king guard beaten by the player: how far above its level it is, how many times it was broken and its rank
+ * @param stats
+ * @param lng
+ */
+function getKingGuardRecordLines(stats: KingGuardFightStats, lng: Language): string[] {
+	if (!stats.record) {
+		return [i18n.t("commands:fightHistory.kingGuardStats.noRecord", { lng })];
+	}
+	const levelsAbovePlayer = stats.record.level - stats.playerLevel;
+	return [
+		i18n.t("commands:fightHistory.kingGuardStats.record", {
+			lng,
+			level: stats.record.level,
+			aboveLevel: levelsAbovePlayer > 0
+				? i18n.t("commands:fightHistory.kingGuardStats.aboveLevel", {
+					lng,
+					count: levelsAbovePlayer
+				})
+				: ""
+		}),
+		i18n.t("commands:fightHistory.kingGuardStats.progress", {
+			lng,
+			...stats.record
+		})
+	];
+}
+
+/**
+ * Get the line of a player of the king guards leaderboard
+ * @param challenger
+ * @param rank
+ * @param viewerKeycloakId
+ * @param lng
+ */
+async function getLeaderboardLine(challenger: KingGuardChallengerRecord, rank: number, viewerKeycloakId: string, lng: Language): Promise<string> {
+	const isViewer = challenger.keycloakId === viewerKeycloakId;
+	return i18n.t("commands:fightHistory.kingGuardStats.leaderboardLine", {
+		lng,
+		badge: DisplayUtils.getRankMedalBadge(rank) ?? (isViewer ? CrowniclesIcons.top.badges.self : CrowniclesIcons.top.badges.default),
+		rank,
+		name: isViewer
+			? i18n.t("commands:fightHistory.kingGuardStats.you", { lng })
+			: await DisplayUtils.getEscapedUsername(challenger.keycloakId, lng),
+		level: challenger.level
+	});
+}
+
+/**
+ * Get the leaderboard of the players who beat the strongest king guards, followed by the viewer if it is not part of it
+ * @param stats
+ * @param viewerKeycloakId
+ * @param lng
+ */
+async function getKingGuardLeaderboard(stats: KingGuardFightStats, viewerKeycloakId: string, lng: Language): Promise<string | undefined> {
+	if (stats.leaderboard.length === 0) {
+		return undefined;
+	}
+	const lines = await Promise.all(stats.leaderboard.map((challenger, index) => getLeaderboardLine(challenger, index + 1, viewerKeycloakId, lng)));
+
+	// The ranking and the leaderboard are read separately: the player is looked for by id, so that it is never listed twice
+	if (stats.record && !stats.leaderboard.some(challenger => challenger.keycloakId === viewerKeycloakId)) {
+		lines.push(await getLeaderboardLine({
+			keycloakId: viewerKeycloakId,
+			level: stats.record.level
+		}, stats.record.rank, viewerKeycloakId, lng));
+	}
+	return StringUtils.joinLines([i18n.t("commands:fightHistory.kingGuardStats.leaderboardTitle", { lng }), ...lines]);
+}
+
+/**
+ * Build the page summing up the fights of the player against the king guards
+ * @param stats
+ * @param viewerKeycloakId
+ * @param lng
+ */
+export async function buildKingGuardStatsDescription(stats: KingGuardFightStats, viewerKeycloakId: string, lng: Language): Promise<string> {
+	return StringUtils.joinParagraphs([
+		StringUtils.joinLines([
+			...getKingGuardRecordLines(stats, lng),
+			i18n.t("commands:fightHistory.kingGuardStats.tally", {
+				lng,
+				won: stats.won,
+				lost: stats.lost,
+				draw: stats.draw
+			})
+		]),
+		await getKingGuardLeaderboard(stats, viewerKeycloakId, lng)
+	]);
+}
+
+/**
  * Get the fight history pages
  * @param packet
  * @param lng
@@ -171,7 +266,23 @@ export async function handlePacketHistoryRes(packet: CommandFightHistoryPacketRe
 	await new CrowniclesPaginatedEmbed({
 		lng,
 		pages,
-		selectedPageIndex: pages.length - 1
+		selectedPageIndex: pages.length - 1,
+		...packet.kingGuardStats
+			? {
+				extraPage: {
+					title: i18n.t("commands:fightHistory.kingGuardStats.title", { lng }),
+					content: await buildKingGuardStatsDescription(packet.kingGuardStats, viewerKeycloakId, lng),
+					openButton: {
+						label: i18n.t("commands:fightHistory.kingGuardStats.openButton", { lng }),
+						emoji: CrowniclesIcons.fightCommand.crossedSwords
+					},
+					backButton: {
+						label: i18n.t("commands:fightHistory.kingGuardStats.backButton", { lng }),
+						emoji: CrowniclesIcons.collectors.previousPage
+					}
+				}
+			}
+			: {}
 	}).formatAuthor(i18n.t("commands:fightHistory.title", {
 		lng, pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)

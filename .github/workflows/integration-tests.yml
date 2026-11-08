@@ -3,19 +3,24 @@ name: Integration Tests
 on:
   pull_request:
     branches: [ '**' ]
-    paths: [ Lib/**, Core/**, .github/workflows/integration-tests.yml ]
+    paths: [ Lib/**, Core/**, .github/workflows/integration-tests.yml, .github/actions/** ]
   push:
     branches: [ develop, master ]
-    paths: [ Lib/**, Core/**, .github/workflows/integration-tests.yml ]
+    paths: [ Lib/**, Core/**, .github/workflows/integration-tests.yml, .github/actions/** ]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   core-integration:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     services:
       mariadb:
-        image: mariadb:11
+        image: mariadb:12.3
         env:
           MARIADB_ROOT_PASSWORD: super_secret_password
           MARIADB_DATABASE: crownicles_bootstrap
@@ -40,16 +45,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-
-      - name: Setup PNPM
-        run: |
-          npm install --global corepack@latest
-          corepack enable
-          corepack prepare pnpm@10.26.0 --activate
+      - name: Setup Node.js and PNPM
+        uses: ./.github/actions/setup-pnpm
 
       - name: Cache PNPM dependencies
         uses: actions/cache@v6
@@ -62,8 +59,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm --dir ./Lib install
-          pnpm --dir ./Core install
+          pnpm --dir ./Lib install --frozen-lockfile
+          pnpm --dir ./Core install --frozen-lockfile
 
       - name: Wait for MariaDB to be ready
         run: |

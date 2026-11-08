@@ -8,9 +8,9 @@ import { simpleDamageFightAction } from "../../templates/SimpleDamageFightAction
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 45,
-		averageDamage: 90,
-		maxDamage: 150
+		minDamage: 50,
+		averageDamage: 100,
+		maxDamage: 165
 	};
 }
 

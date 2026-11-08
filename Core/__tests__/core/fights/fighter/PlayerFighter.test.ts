@@ -22,10 +22,10 @@ import { InventorySlots } from "../../../../src/core/database/game/models/Invent
 import Player from "../../../../src/core/database/game/models/Player";
 import { Class } from "../../../../src/data/Class";
 
-function buildPlayer(): Player {
+function buildPlayer(level = 20): Player {
 	return {
 		id: 1,
-		level: 20,
+		level,
 		petId: null,
 		reload: vi.fn(),
 		save: vi.fn(),
@@ -87,5 +87,41 @@ describe("PlayerFighter without consequences", () => {
 		await fighter.loadStats();
 
 		expect(fighter.getEnergy()).toBe(120);
+	});
+});
+
+describe("PlayerFighter with a level cap", () => {
+	const levelCap = 100;
+
+	beforeEach(() => {
+		vi.clearAllMocks();
+		vi.mocked(InventorySlots.getPlayerActiveObjects).mockResolvedValue(activeObjects as never);
+	});
+
+	it("fights at the capped level when the player is above it", async () => {
+		const player = buildPlayer(150);
+		const fighter = new PlayerFighter(player, playerClass, {
+			withoutConsequences: true, levelCap
+		});
+
+		await fighter.loadStats();
+
+		expect(fighter.level).toBe(levelCap);
+		expect(player.getMaxCumulativeEnergy).toHaveBeenCalledWith(activeObjects, levelCap);
+		expect(player.getCumulativeAttack).toHaveBeenCalledWith(activeObjects, false, levelCap);
+		expect(player.getCumulativeDefense).toHaveBeenCalledWith(activeObjects, false, levelCap);
+		expect(player.getCumulativeSpeed).toHaveBeenCalledWith(activeObjects, false, levelCap);
+	});
+
+	it("keeps the player level when it is below the cap", async () => {
+		const player = buildPlayer(42);
+		const fighter = new PlayerFighter(player, playerClass, {
+			withoutConsequences: true, levelCap
+		});
+
+		await fighter.loadStats();
+
+		expect(fighter.level).toBe(42);
+		expect(player.getCumulativeAttack).toHaveBeenCalledWith(activeObjects, false, 42);
 	});
 });

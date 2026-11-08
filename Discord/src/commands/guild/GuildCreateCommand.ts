@@ -7,6 +7,7 @@ import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import {
@@ -36,7 +37,6 @@ function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Comm
 
 async function replyErrorEmbed(context: PacketContext, errorKey: string, formatParams: Record<string, unknown> = {}): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const replacements = {
 		lng: interaction?.userLanguage ?? LANGUAGE.ENGLISH,
 		...formatParams
@@ -51,8 +51,8 @@ async function replyErrorEmbed(context: PacketContext, errorKey: string, formatP
 			)
 		]
 	};
-	if (interaction && buttonInteraction) {
-		await buttonInteraction.editReply(params);
+	if (interaction && context.discord?.buttonInteraction) {
+		await MessagesUtils.editClickReply(context, params);
 	}
 	else if (interaction) {
 		await interaction.reply(params);
@@ -110,10 +110,9 @@ export async function createGuildCreateCollector(context: PacketContext, packet:
 
 export async function handleCommandGuildCreateRefusePacketRes(context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (buttonInteraction && originalInteraction) {
+	if (originalInteraction) {
 		const lng = originalInteraction.userLanguage;
-		await buttonInteraction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildCreate.canceledTitle", {
 					lng,
@@ -130,10 +129,9 @@ export async function handleCommandGuildCreateRefusePacketRes(context: PacketCon
 
 export async function handleCommandGuildCreateAcceptPacketRes(packet: CommandGuildCreateAcceptPacketRes, context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (buttonInteraction && originalInteraction) {
+	if (originalInteraction) {
 		const lng = originalInteraction.userLanguage;
-		await buttonInteraction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [
 				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildCreate.title", {
 					lng,

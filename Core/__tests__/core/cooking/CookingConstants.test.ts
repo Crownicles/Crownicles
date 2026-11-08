@@ -4,10 +4,31 @@ import {
 import {
 	getCookingGrade, getMinCookingLevelForRecipeLevel, COOKING_GRADES, CookingXpConstants,
 	GASPARD_JO_RECIPE_COSTS, FARMER_RECIPE_COSTS,
-	SLOT_CONFIGS, SLOT_SEED_OFFSETS
+	SLOT_CONFIGS, SLOT_SEED_OFFSETS, MASTER_CHEF_BADGE_COOKING_LEVEL,
+	getCookingSpecialtiesLimit, getNextCookingSpecialtyUnlockLevel
 } from "../../../../Lib/src/constants/CookingConstants";
 
 describe("CookingConstants", () => {
+	describe("cooking specialties unlock", () => {
+		const firstLevelOf = (gradeId: string): number => COOKING_GRADES.find(grade => grade.id === gradeId)!.minLevel;
+
+		it("should unlock one specialty on becoming kitchen master, one on becoming royal grand chef and the last one with the master chef badge", () => {
+			expect(getCookingSpecialtiesLimit(firstLevelOf("kitchenMaster") - 1)).toBe(0);
+			expect(getCookingSpecialtiesLimit(firstLevelOf("kitchenMaster"))).toBe(1);
+			expect(getCookingSpecialtiesLimit(firstLevelOf("royalGrandChef") - 1)).toBe(1);
+			expect(getCookingSpecialtiesLimit(firstLevelOf("royalGrandChef"))).toBe(2);
+			expect(getCookingSpecialtiesLimit(MASTER_CHEF_BADGE_COOKING_LEVEL - 1)).toBe(2);
+			expect(getCookingSpecialtiesLimit(MASTER_CHEF_BADGE_COOKING_LEVEL)).toBe(3);
+		});
+
+		it("should announce the level of the next specialty until they are all unlocked", () => {
+			expect(getNextCookingSpecialtyUnlockLevel(0)).toBe(firstLevelOf("kitchenMaster"));
+			expect(getNextCookingSpecialtyUnlockLevel(firstLevelOf("kitchenMaster"))).toBe(firstLevelOf("royalGrandChef"));
+			expect(getNextCookingSpecialtyUnlockLevel(firstLevelOf("royalGrandChef"))).toBe(MASTER_CHEF_BADGE_COOKING_LEVEL);
+			expect(getNextCookingSpecialtyUnlockLevel(MASTER_CHEF_BADGE_COOKING_LEVEL)).toBeNull();
+		});
+	});
+
 	describe("getCookingGrade", () => {
 		it("should return kitchenHelper for level 0", () => {
 			expect(getCookingGrade(0).id).toBe("kitchenHelper");

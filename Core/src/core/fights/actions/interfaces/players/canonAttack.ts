@@ -38,9 +38,9 @@ export default use;
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 20,
-		averageDamage: 120,
-		maxDamage: 250
+		minDamage: 22,
+		averageDamage: 123,
+		maxDamage: 259
 	};
 }
 
@@ -48,7 +48,7 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	return {
 		attackerStats: [
 			sender.getAttack(),
-			sender.getSpeed() * 0.8
+			sender.getSpeed()
 		],
 		defenderStats: [
 			receiver.getDefense(),

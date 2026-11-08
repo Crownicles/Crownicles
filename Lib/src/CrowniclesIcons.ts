@@ -92,6 +92,7 @@ export const CrowniclesIcons: {
 	fightActions: {
 		[actionId: string]: string;
 	};
+	defensePersonalities: { [personality: string]: string };
 	classKinds: {
 		[classKind: string]: string;
 	};
@@ -117,6 +118,11 @@ export const CrowniclesIcons: {
 	};
 	missions: {
 		[missionId: string]: string;
+	};
+	kingChallenge: {
+		icon: string;
+		tierReached: string;
+		tierPending: string;
 	};
 	messages: {
 		validate: string;
@@ -2325,6 +2331,23 @@ export const CrowniclesIcons: {
 		weak: "🤧",
 		webShotAttack: "🕸️"
 	},
+	defensePersonalities: {
+		random: "🎲",
+		knightStrategist: "♟️",
+		knightEnduring: "⏳",
+		knightFiery: "⚡",
+		tankBulwark: "🧱",
+		tankRiposte: "🔄",
+		paladinCrusader: "🛡️",
+		paladinJusticar: "⚖️",
+		gunnerStrategist: "🎯",
+		gunnerBombardier: "💣",
+		veteranStrategist: "🧠",
+		veteranCharger: "🐗",
+		mageOccultist: "🔮",
+		magePyromancer: "🔥",
+		mageWarlock: "🕯️"
+	},
 	classKinds: {
 		basic: "⚖️",
 		attack: "🗡️",
@@ -2443,6 +2466,11 @@ export const CrowniclesIcons: {
 			dailyBonus: "📅",
 			petExpedition: "🐾"
 		}
+	},
+	kingChallenge: {
+		icon: "⚜️",
+		tierReached: "✅",
+		tierPending: "▫️"
 	},
 	missions: {
 		expired: "📤",
@@ -2883,7 +2911,8 @@ export const CrowniclesIcons: {
 		1: "🫕",
 		2: "⚒️",
 		3: "🧪",
-		4: "🔥"
+		4: "🔥",
+		5: "👨‍🍳"
 	},
 	cookingRecipeTypes: {
 		POTION_HEALTH: "❤️",

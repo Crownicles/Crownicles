@@ -1,6 +1,10 @@
-import { ForeignKeyConstraintError } from "sequelize";
+import {
+	ForeignKeyConstraintError, Model
+} from "sequelize";
 import Player from "../database/game/models/Player";
-import { LockedRowNotFoundError } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	LockedRowNotFoundError, LockKey
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { withLockedPlayerAndMissions } from "./withLockedPlayerAndMissions";
 
@@ -16,18 +20,20 @@ import { withLockedPlayerAndMissions } from "./withLockedPlayerAndMissions";
  * @param player Caller's (possibly stale) player — only `id` is read.
  * @param context Short call-site label, surfaced in the warn log line.
  * @param body Critical section. Receives the fresh, locked `Player`.
+ * @param additionalLockKeys Other rows the critical section mutates, see {@link withLockedPlayerAndMissions}.
  */
 export async function withLockedPlayerAndMissionsSafe(
 	player: Player,
 	context: string,
-	body: (lockedPlayer: Player) => Promise<void>
+	body: (lockedPlayer: Player) => Promise<void>,
+	additionalLockKeys: readonly LockKey<Model>[] = []
 ): Promise<void> {
 	try {
-		await withLockedPlayerAndMissions(player.id, body);
+		await withLockedPlayerAndMissions(player.id, body, additionalLockKeys);
 	}
 	catch (error) {
 		if (error instanceof LockedRowNotFoundError || error instanceof ForeignKeyConstraintError) {
-			CrowniclesLogger.warn(`${context}: player ${player.id} vanished while acquiring player + missions locks — small event aborted`);
+			CrowniclesLogger.warn(`${context}: a locked row of player ${player.id} vanished while acquiring the player + missions locks — aborted`);
 			return;
 		}
 		throw error;

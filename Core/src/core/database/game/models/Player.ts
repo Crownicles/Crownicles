@@ -6,7 +6,7 @@ import PetEntity from "./PetEntity";
 import MissionSlot from "./MissionSlot";
 import { InventoryInfos } from "./InventoryInfo";
 import {
-	assertPlayerHasNoPendingChanges, LockedPlayerMutation, MissionInformationsWithoutMutation, MissionsController, PLAYER_RESYNC_CALLERS
+	assertPlayerHasNoPendingChanges, LockedPlayerFollowUp, LockedPlayerMutation, MissionInformationsWithoutMutation, MissionsController, PLAYER_RESYNC_CALLERS
 } from "../../../missions/MissionsController";
 import { PlayerActiveObjects } from "./PlayerActiveObjects";
 import {
@@ -89,6 +89,8 @@ import { RecipeDiscoveryService } from "../../../cooking/RecipeDiscoveryService"
 import { RecipeDisplayInfo } from "../../../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/CookingConstants";
 import { buildNewItemSlotData } from "../../../utils/ItemSlotUtils";
+import type { AiPersonality } from "../../../../../../Lib/src/constants/AiPersonalityConstants";
+import { applyKingChallengeProgressUnderLock } from "../../../kingChallenge/KingChallenge";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -104,16 +106,35 @@ type ressourcesLostOnPveFaint = {
 
 /**
  * Reasons whose token gains are allowed to push the player above the normal
- * token cap. These are rare, reward-like sources (pet expeditions and the
- * one-time new player boost handed out during the tutorial big events).
+ * token cap, as long as the player was below it. These are rare, reward-like sources
+ * (pet expeditions, the one-time new player boost handed out during the tutorial
+ * big events and the king's challenge tiers).
  */
 const OVER_CAP_TOKEN_REASONS: ReadonlySet<NumberChangeReason> = new Set([
 	NumberChangeReason.EXPEDITION,
 	NumberChangeReason.BIG_EVENT,
-	NumberChangeReason.ROYAL_MAIL
+	NumberChangeReason.ROYAL_MAIL,
+	NumberChangeReason.KING_CHALLENGE
 ]);
 
 const PLAYERS_LEVELING_UP_CONTEXT_KEY = "playersLevelingUp" as const;
+
+/**
+ * Tokens owned by each player, keyed by player id, when the action currently running for them started.
+ * See {@link Player.runWithTokenCapReference}.
+ */
+const TOKEN_CAP_REFERENCES_CONTEXT_KEY = "tokenCapReferences" as const;
+
+function getTokenCapReferences(): ReadonlyMap<number, number> | undefined {
+	return getCrowniclesNamespace().get(TOKEN_CAP_REFERENCES_CONTEXT_KEY) as ReadonlyMap<number, number> | undefined;
+}
+
+/**
+ * Tokens owned by the player when the action currently running for them started, if any
+ */
+function getTokensBeforeAction(playerId: number): number | undefined {
+	return getTokenCapReferences()?.get(playerId);
+}
 
 /**
  * Compute the new token count after applying `amount` to `currentTokens`, honoring
@@ -122,19 +143,24 @@ const PLAYERS_LEVELING_UP_CONTEXT_KEY = "playersLevelingUp" as const;
  * mutation callback to recompute against the freshly locked DB value (so a
  * concurrent token write between the caller's read and the lock acquisition is
  * never silently clobbered).
+ * @param currentTokens
+ * @param amount
+ * @param reason
+ * @param tokensBeforeAction Tokens owned when the action granting this gain started: an over-cap reward is still paid
+ * when an earlier reward of the same action already brought the player to the cap
  */
-function computeNewTokens(currentTokens: number, amount: number, reason: NumberChangeReason): number {
+function computeNewTokens(currentTokens: number, amount: number, reason: NumberChangeReason, tokensBeforeAction = currentTokens): number {
 	if (amount <= 0) {
 		// When spending or doing a no-op, don't clamp to MAX (preserve over-cap tokens from expeditions)
 		return Math.max(0, currentTokens + amount);
 	}
-	if (currentTokens >= TokensConstants.MAX) {
-		// Block all gains when already at or above max (including over-cap reward sources)
-		return currentTokens;
-	}
 	if (OVER_CAP_TOKEN_REASONS.has(reason)) {
-		// Reward sources can exceed the max cap, but only when current tokens are below MAX
-		return currentTokens + amount;
+		// Reward sources can exceed the max cap, but only when the player was below MAX
+		return Math.min(currentTokens, tokensBeforeAction) < TokensConstants.MAX ? currentTokens + amount : currentTokens;
+	}
+	if (currentTokens >= TokensConstants.MAX) {
+		// Block all gains when already at or above max
+		return currentTokens;
 	}
 	return MathUtils.clamp(currentTokens + amount, 0, TokensConstants.MAX);
 }
@@ -174,6 +200,12 @@ export class Player extends Model {
 	declare score: number;
 
 	declare weeklyScore: number;
+
+	/** Number of king's challenge tiers already rewarded this week */
+	declare kingChallengeTier: number;
+
+	/** Personality of the AI defending the player in PvP fights, null for a random one at each fight */
+	declare defensePersonality: AiPersonality | null;
 
 	declare level: number;
 
@@ -237,6 +269,8 @@ export class Player extends Model {
 	declare furnacePosition: number;
 
 	declare pinnedCookingRecipeId: string | null;
+
+	declare timePotionsCookedThisWeek: number;
 
 	declare updatedAt: Date;
 
@@ -319,7 +353,8 @@ export class Player extends Model {
 	private async mutateWithMissions(
 		response: CrowniclesPacket[],
 		missions: MissionInformationsWithoutMutation[],
-		mutate: LockedPlayerMutation
+		mutate: LockedPlayerMutation,
+		followUpUnderLock?: LockedPlayerFollowUp
 	): Promise<void> {
 		const [firstMission, ...otherMissions] = missions;
 		await MissionsController.updateMultiple(this, response, [
@@ -328,7 +363,7 @@ export class Player extends Model {
 				applyOnLockedPlayer: mutate
 			},
 			...otherMissions
-		]);
+		], followUpUnderLock);
 	}
 
 	private async mutateLocked(mutate: LockedPlayerMutation): Promise<void> {
@@ -365,10 +400,17 @@ export class Player extends Model {
 				set: true
 			}
 		];
-		await this.mutateWithMissions(parameters.response, scoreMissions, locked => {
-			locked.score = Math.max(0, locked.score + delta);
-			locked.addWeeklyScore(delta);
-		});
+		await this.mutateWithMissions(
+			parameters.response,
+			scoreMissions,
+			locked => {
+				locked.score = Math.max(0, locked.score + delta);
+				locked.addWeeklyScore(delta);
+			},
+
+			// Paid in the critical section of the gain: committed apart, a weekly reset between them would reset the score before its tiers are paid
+			applyKingChallengeProgressUnderLock
+		);
 		crowniclesInstance?.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
 			.then();
 		return this;
@@ -436,10 +478,39 @@ export class Player extends Model {
 			}
 		], locked => {
 			const previousTokens = locked.tokens;
-			locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason);
+			locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason, getTokensBeforeAction(locked.id));
 			actualChange = locked.tokens - previousTokens;
 		});
 		return actualChange;
+	}
+
+	/**
+	 * Tokens a gain of `amount` would actually grant to this player now, given the token cap.
+	 * Only meaningful on a locked instance, before granting the gain.
+	 * @param amount
+	 * @param reason
+	 */
+	public getTokenGain(amount: number, reason: NumberChangeReason): number {
+		return computeNewTokens(this.tokens, amount, reason, getTokensBeforeAction(this.id)) - this.tokens;
+	}
+
+	/**
+	 * Run an action whose rewards are judged against the tokens this player owns when it starts: every reward source
+	 * allowed to exceed the cap (e.g. an expedition and the king's challenge tier its score crosses) is paid as long as
+	 * the player was below the cap before the action, even when another reward of the action already reached it.
+	 * Must be called on a locked instance. A nested call keeps the reference of the outermost action.
+	 * @param body
+	 */
+	public async runWithTokenCapReference<T>(body: () => Promise<T>): Promise<T> {
+		const references = getTokenCapReferences();
+		if (references?.has(this.id)) {
+			return await body();
+		}
+		const namespace = getCrowniclesNamespace();
+		return await namespace.runPromise(async () => {
+			namespace.set(TOKEN_CAP_REFERENCES_CONTEXT_KEY, new Map([...references ?? [], [this.id, this.tokens]]));
+			return await body();
+		});
 	}
 
 	/**
@@ -869,9 +940,10 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Get the attack, defense and speed of the player class at the player level
+	 * Get the attack, defense and speed of the player class at the given level
+	 * @param level The level at which the stats are computed, the player level by default
 	 */
-	public getMaxStatsValue(): StatValues {
+	public getMaxStatsValue(level = this.level): StatValues {
 		const playerClass = ClassDataController.instance.getById(this.class);
 		if (!playerClass) {
 			return {
@@ -879,9 +951,9 @@ export class Player extends Model {
 			};
 		}
 		return {
-			attack: playerClass.getAttackValue(this.level),
-			defense: playerClass.getDefenseValue(this.level),
-			speed: playerClass.getSpeedValue(this.level)
+			attack: playerClass.getAttackValue(level),
+			defense: playerClass.getDefenseValue(level),
+			speed: playerClass.getSpeedValue(level)
 		};
 	}
 
@@ -955,9 +1027,11 @@ export class Player extends Model {
 	 * Attack enchantments are not applied here: they act as a multiplier on the effective damage dealt
 	 * in fights (see {@link EnchantmentUtils.getOutgoingDamageMultiplier}), not on the raw attack stat.
 	 * @param playerActiveObjects
+	 * @param includePotion
+	 * @param level The level at which the stat is computed, the player level by default
 	 */
-	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, includePotion = true): number {
-		const playerAttack = this.getMaxStatsValue().attack;
+	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
+		const playerAttack = this.getMaxStatsValue(level).attack;
 		const weaponAttack = playerActiveObjects.weapon.item.getAttack(playerActiveObjects.weapon.itemLevel);
 		const armorAttack = playerActiveObjects.armor.item.getAttack(playerActiveObjects.armor.itemLevel);
 		const objectAttack = playerActiveObjects.object.item.getAttack();
@@ -980,9 +1054,11 @@ export class Player extends Model {
 	 * The defense enchantment is not applied here: it acts as a multiplier on the effective damage received
 	 * in fights (see {@link EnchantmentUtils.getIncomingDamageMultiplier}), not on the raw defense stat.
 	 * @param playerActiveObjects
+	 * @param includePotion
+	 * @param level The level at which the stat is computed, the player level by default
 	 */
-	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects, includePotion = true): number {
-		const playerDefense = this.getMaxStatsValue().defense;
+	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
+		const playerDefense = this.getMaxStatsValue(level).defense;
 		const defense = playerDefense
 			+ (playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel) < playerDefense
 				? playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel)
@@ -1000,9 +1076,11 @@ export class Player extends Model {
 	/**
 	 * Calculate the cumulative speed of the player
 	 * @param playerActiveObjects
+	 * @param includePotion
+	 * @param level The level at which the stat is computed, the player level by default
 	 */
-	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects, includePotion = true): number {
-		const playerSpeed = this.getMaxStatsValue().speed;
+	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
+		const playerSpeed = this.getMaxStatsValue(level).speed;
 		const speed = playerSpeed
 			+ (playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel) < playerSpeed
 				? playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel)
@@ -1041,12 +1119,14 @@ export class Player extends Model {
 
 	/**
 	 * Get the player max cumulative energy
+	 * @param playerActiveObjects
+	 * @param level The level at which the max energy is computed, the player level by default
 	 */
-	public getMaxCumulativeEnergy(playerActiveObjects: PlayerActiveObjects): number {
+	public getMaxCumulativeEnergy(playerActiveObjects: PlayerActiveObjects, level = this.level): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
 		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.MAX_ENERGY, EnchantmentConstants.MAX_ENERGY_MULTIPLIER);
 
-		return Math.round((playerClass?.getMaxCumulativeEnergyValue(this.level) ?? FightConstants.PLAYER_MAX_ENERGY) * multiplier);
+		return Math.round((playerClass?.getMaxCumulativeEnergyValue(level) ?? FightConstants.PLAYER_MAX_ENERGY) * multiplier);
 	}
 
 	/**
@@ -1505,6 +1585,13 @@ export class Player extends Model {
  */
 export class Players {
 	private static readonly registrations = new Map<string, Promise<Player>>();
+
+	/**
+	 * Start a new week of time potions for every player
+	 */
+	static async resetTimePotionsCookedThisWeek(): Promise<void> {
+		await Player.update({ timePotionsCookedThisWeek: 0 }, { where: { timePotionsCookedThisWeek: { [Op.gt]: 0 } } });
+	}
 
 	/**
 	 * Get or create a player
@@ -1973,6 +2060,16 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.WEEKLY_SCORE
 		},
+		kingChallengeTier: {
+			type: DataTypes.TINYINT.UNSIGNED,
+			allowNull: false,
+			defaultValue: 0
+		},
+		defensePersonality: {
+			type: DataTypes.STRING(32), // eslint-disable-line new-cap
+			allowNull: true,
+			defaultValue: null
+		},
 		level: {
 			type: DataTypes.INTEGER,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.LEVEL
@@ -2093,6 +2190,11 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.STRING(64), // eslint-disable-line new-cap
 			allowNull: true,
 			defaultValue: null
+		},
+		timePotionsCookedThisWeek: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 0
 		},
 		updatedAt: {
 			type: DataTypes.DATE,

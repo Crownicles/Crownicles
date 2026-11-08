@@ -13,7 +13,6 @@ import {
 import {
 	BuyCallbackResult,
 	CommandShopNoGardenForRemoteHarvestTalisman,
-	CommandShopNoPlantSlotAvailable,
 	ShopCategory
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
@@ -35,10 +34,9 @@ import {
 } from "../utils/TannerShopItems";
 import { crowniclesInstance } from "../../app";
 import { toItemWithDetails } from "../utils/ItemUtils";
-import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import {
-	PlantConstants, PlantId, PlantType
+	PlantConstants, PlantType
 } from "../../../../Lib/src/constants/PlantConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../missions/MissionsController";
@@ -62,6 +60,7 @@ import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { CITY_SERVICES } from "../../../../Lib/src/constants/CityServiceConstants";
 import { Homes } from "../database/game/models/Home";
+import { getWeeklyPlantShopItems } from "../utils/HerbalistShopItems";
 
 /**
  * Cached materials by type and rarity (constant after data loading, computed once per key)
@@ -410,32 +409,10 @@ export async function openHerbalist({
 	const weeklyPlants = PlantConstants.getWeeklyHerbalistPlants();
 	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 
-	const tierTypes: ShopItemType[] = [
-		ShopItemType.WEEKLY_PLANT_TIER_1,
-		ShopItemType.WEEKLY_PLANT_TIER_2,
-		ShopItemType.WEEKLY_PLANT_TIER_3
-	];
-
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "weeklyPlants",
-			items: weeklyPlants.map((plant: PlantType, index: number) => ({
-				id: tierTypes[index],
-				price: PlantConstants.getHerbalistPrice(plant),
-				amounts: [1],
-				buyCallback: async (buyResponse: CrowniclesPacket[], playerId: number): Promise<BuyCallbackResult> => {
-					const emptySlot = await PlayerPlantSlots.findEmptyPlantSlot(playerId);
-					if (!emptySlot) {
-						buyResponse.push(makePacket(CommandShopNoPlantSlotAvailable, {}));
-						return { success: false };
-					}
-					await PlayerPlantSlots.setPlant(playerId, emptySlot.slot, plant.id);
-					if (plant.id === PlantId.ANCIENT_TREE) {
-						await MissionsController.update(player, buyResponse, { missionId: "getAncestralTrees" });
-					}
-					return { success: true };
-				}
-			}))
+			items: await getWeeklyPlantShopItems(player, weeklyPlants)
 		}
 	];
 

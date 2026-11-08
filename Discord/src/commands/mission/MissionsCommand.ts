@@ -27,6 +27,32 @@ import { PacketUtils } from "../../utils/PacketUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { Language } from "../../../../Lib/src/Language";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
+import {
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType, Message, User
+} from "discord.js";
+import { KingChallengeProgress } from "../../../../Lib/src/types/KingChallenge";
+import { KingChallengeConstants } from "../../../../Lib/src/constants/KingChallengeConstants";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { StringUtils } from "../../utils/StringUtils";
+import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
+import { Constants } from "../../../../Lib/src/constants/Constants";
+
+const MISSIONS_BUTTON_IDS = {
+	KING_CHALLENGE: "missions_king_challenge",
+	MISSIONS: "missions_back"
+} as const;
+
+type MissionsButtonId = typeof MISSIONS_BUTTON_IDS[keyof typeof MISSIONS_BUTTON_IDS];
+
+type MissionsEmbedAuthor = {
+	discordUser: User | null;
+	pseudo: string;
+};
+
+type MissionsPages = {
+	missions: CrowniclesEmbed;
+	kingChallenge: CrowniclesEmbed;
+};
 
 /**
  * Get the packet to send to the server
@@ -136,6 +162,116 @@ function getSideMissionsPart(packet: CommandMissionsPacketRes, lng: Language): s
 }
 
 /**
+ * Objective of the next tier of the king's challenge, displayed like a mission, or the completion of the challenge
+ */
+function getKingChallengeObjective(progress: KingChallengeProgress, lng: Language): string {
+	const time = finishInTimeDisplay(new Date(progress.nextResetDate));
+	if (progress.tier >= progress.thresholds.length) {
+		return i18n.t("commands:missions.kingChallenge.completed", {
+			lng,
+			time
+		});
+	}
+	const objective = progress.thresholds[progress.tier];
+	return i18n.t("commands:missions.kingChallenge.nextTier", {
+		lng,
+		time,
+		nextTier: progress.tier + 1,
+		progressionBar: MissionUtils.generateDisplayProgression(progress.weeklyScore, objective),
+		current: progress.weeklyScore,
+		objective
+	});
+}
+
+/**
+ * One line per tier of the king's challenge, with its threshold, its rewards and whether it is already reached
+ */
+function getKingChallengeTierLines(progress: KingChallengeProgress, lng: Language): string[] {
+	return progress.thresholds.map((threshold, index) => {
+		const reward = KingChallengeConstants.REWARDS[index];
+		return i18n.t("commands:missions.kingChallenge.tier", {
+			lng,
+			status: index < progress.tier ? "tierReached" : "tierPending",
+			tier: index + 1,
+			threshold,
+			rewards: MissionUtils.formatRewards({
+				moneyDisplay: reward.money,
+				tokensDisplay: reward.tokens,
+				gemsDisplay: reward.gems
+			}, lng)
+		});
+	});
+}
+
+/**
+ * Description of the king's challenge sub-page of the missions command
+ */
+function getKingChallengeDescription(progress: KingChallengeProgress, lng: Language): string {
+	return StringUtils.joinParagraphs([
+		i18n.t("commands:missions.kingChallenge.description", { lng }),
+		StringUtils.joinLines([
+			i18n.t("commands:missions.kingChallenge.header", {
+				lng,
+				tier: progress.tier,
+				tierCount: progress.thresholds.length
+			}),
+			getKingChallengeObjective(progress, lng)
+		]),
+		StringUtils.joinLines(getKingChallengeTierLines(progress, lng))
+	]);
+}
+
+/**
+ * Build an embed of the missions command with the author of the displayed missions
+ */
+function buildMissionsCommandEmbed(author: MissionsEmbedAuthor, title: string, description: string): CrowniclesEmbed {
+	const embed = new CrowniclesEmbed().setDescription(description);
+	return author.discordUser ? embed.formatAuthor(title, author.discordUser) : embed.setTitle(title);
+}
+
+function buildToggleButton(showKingChallenge: boolean, lng: Language): ButtonBuilder {
+	return new ButtonBuilder()
+		.setCustomId(showKingChallenge ? MISSIONS_BUTTON_IDS.KING_CHALLENGE : MISSIONS_BUTTON_IDS.MISSIONS)
+		.setLabel(i18n.t(showKingChallenge ? "commands:missions.kingChallenge.button" : "commands:missions.kingChallenge.backButton", { lng }))
+		.setEmoji(showKingChallenge ? CrowniclesIcons.kingChallenge.icon : CrowniclesIcons.collectors.back)
+		.setStyle(ButtonStyle.Secondary);
+}
+
+/**
+ * Let the player who asked switch between the missions and the king's challenge sub-page
+ */
+function setupMissionsToggleCollector(message: Message, interaction: CrowniclesInteraction, pages: MissionsPages): void {
+	const lng = interaction.userLanguage;
+	const collector = message.createMessageComponentCollector({
+		componentType: ComponentType.Button,
+		filter: (buttonInteraction: ButtonInteraction) => {
+			if (buttonInteraction.user.id !== interaction.user.id) {
+				sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
+				return false;
+			}
+			return Object.values(MISSIONS_BUTTON_IDS)
+				.includes(buttonInteraction.customId as MissionsButtonId);
+		},
+		time: Constants.MESSAGES.COLLECTOR_TIME
+	});
+
+	let lastButton = buildToggleButton(true, lng);
+	collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+		const showKingChallenge = buttonInteraction.customId === MISSIONS_BUTTON_IDS.KING_CHALLENGE;
+		lastButton = buildToggleButton(!showKingChallenge, lng);
+		await buttonInteraction.update({
+			embeds: [showKingChallenge ? pages.kingChallenge : pages.missions],
+			components: [new ActionRowBuilder<ButtonBuilder>().addComponents(lastButton)]
+		});
+	});
+
+	collector.on("end", async () => {
+		await message.edit({ components: [new ActionRowBuilder<ButtonBuilder>().addComponents(lastButton.setDisabled(true))] })
+			.catch(() => undefined);
+	});
+}
+
+/**
  * Handle the response of the missions command
  * @param packet
  * @param context
@@ -153,29 +289,34 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 	const discordUser = getUser.payload.user.attributes.discordId
 		? crowniclesClient.users.cache.get(getUser.payload.user.attributes.discordId[0]) ?? await crowniclesClient.users.fetch(getUser.payload.user.attributes.discordId[0])
 		: null;
-	const missionCommandEmbed = new CrowniclesEmbed();
+	const author: MissionsEmbedAuthor = {
+		discordUser,
+		pseudo: escapeUsername(discordUser?.displayName ?? getUser.payload.user.username)
+	};
 
-	if (discordUser) {
-		missionCommandEmbed.formatAuthor(i18n.t("commands:missions.title", {
+	const pages: MissionsPages = {
+		missions: buildMissionsCommandEmbed(author, i18n.t("commands:missions.title", {
 			lng,
-			pseudo: escapeUsername(discordUser.displayName)
-		}), discordUser);
-	}
-	else {
-		missionCommandEmbed.setTitle(i18n.t("commands:missions.title", {
+			pseudo: author.pseudo
+		}), StringUtils.joinLines([
+			getCampaignMissionPart(packet, lng),
+			getDailyMissionPart(packet, lng),
+			getSideMissionsPart(packet, lng)
+		])),
+		kingChallenge: buildMissionsCommandEmbed(author, i18n.t("commands:missions.kingChallenge.title", {
 			lng,
-			pseudo: escapeUsername(getUser.payload.user.username)
-		}));
-	}
+			pseudo: author.pseudo
+		}), getKingChallengeDescription(packet.kingChallenge, lng))
+	};
 
-	missionCommandEmbed.setDescription([
-		getCampaignMissionPart(packet, lng),
-		getDailyMissionPart(packet, lng),
-		getSideMissionsPart(packet, lng)
-	].filter(Boolean).join("\n"));
-	await interaction.reply({
-		embeds: [missionCommandEmbed]
+	const reply = await interaction.reply({
+		embeds: [pages.missions],
+		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buildToggleButton(true, lng))],
+		withResponse: true
 	});
+	if (reply?.resource?.message) {
+		setupMissionsToggleCollector(reply.resource.message, interaction, pages);
+	}
 }
 
 export const commandInfo: ICommand = {

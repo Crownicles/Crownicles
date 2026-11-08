@@ -1,17 +1,23 @@
 services:
   mariadb_keycloak:
-    image: mariadb
+    # Pinned on the LTS branch: an untagged image follows `latest`, which jumps across major versions
+    image: mariadb:12.3
     container_name: mariadb_keycloak
     volumes:
-      - ../../keycloak/mariadb:/var/lib/mysql
+      # A named volume rather than a host folder: on a case-insensitive filesystem (macOS), MariaDB mixes up the upper case Keycloak tables
+      - keycloak_mariadb:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: keycloak
       MYSQL_USER: keycloak
       MYSQL_PASSWORD: password
-    # Copy-pasted from https://github.com/docker-library/mariadb/issues/94
+      # Runs mariadb-upgrade on startup when the data directory comes from an older version
+      MARIADB_AUTO_UPGRADE: "1"
+    # The image no longer ships mysqladmin: use its own healthcheck script
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "--silent" ]
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 5s
+      retries: 20
     ports:
       - 3307:3306
   keycloak:
@@ -19,41 +25,44 @@ services:
     # which advisories apply and to avoid a silent major upgrade on the next `docker compose up`.
     # The Dockerfile adds the extensions realm.json relies on to that image.
     build: .
-    image: crownicles/keycloak:26.7.4
+    image: crownicles/keycloak:26.8
     container_name: keycloak
     ports:
       - 8080:8080
     volumes:
-      -  ../../keycloak/data:/opt/keycloak/data
       # Mounted as a single theme rather than over the themes directory, which would hide the
       # built-in ones this theme inherits from.
       - ./theme:/opt/keycloak/themes/crownicles
     deploy:
       resources:
         limits:
-          memory: 2G
+          memory: 1280M
         reservations:
-          memory: 768M
+          memory: 512M
     environment:
-      # JVM config: 1280m heap + 192m metaspace = 1472m, leaving ~576m for JVM overhead
+      # JVM config: 768m heap + 192m metaspace = 960m, leaving ~320m for JVM overhead (threads, code cache, direct buffers)
       # ExitOnOutOfMemoryError ensures clean shutdown instead of hanging on OOM
-      JAVA_OPTS_APPEND: -Xms512m -Xmx1280m -XX:MaxMetaspaceSize=192m -XX:+ExitOnOutOfMemoryError
+      JAVA_OPTS_APPEND: -Xms256m -Xmx768m -XX:MaxMetaspaceSize=192m -XX:+ExitOnOutOfMemoryError
       # JAVA_OPTS: -XX:UseSVE=0 # Uncomment for macOS due to a keycloak bug https://github.com/keycloak/keycloak/issues/36008
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       # Pins the issuer and the identity provider redirect URIs to a single address, so that a token
       # stays valid whichever address a service uses to reach Keycloak. Override it in keycloak/.env
       # with the LAN address when a phone or another machine has to sign in.
       KC_HOSTNAME: ${KEYCLOAK_HOSTNAME:-http://localhost:8080}
-      DB_VENDOR: mariadb
-      DB_ADDR: 127.0.0.1:3307
-      DB_DATABASE: keycloak
-      DB_USER: keycloak
-      DB_PASSWORD: password
+      # Without KC_DB, Keycloak silently falls back to its embedded H2 database
+      KC_DB: mariadb
+      KC_DB_URL: jdbc:mariadb://mariadb_keycloak:3306/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
       JGROUPS_DISCOVERY_PROTOCOL: JDBC_PING
       QUARKUS_TRANSACTION_MANAGER_OBJECT_STORE_DIRECTORY: /tmp
       QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY: true
     depends_on:
-      - mariadb_keycloak
+      mariadb_keycloak:
+        condition: service_healthy
     command:
       - start-dev
+
+volumes:
+  keycloak_mariadb:

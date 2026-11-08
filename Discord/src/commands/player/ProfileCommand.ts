@@ -29,6 +29,7 @@ import { resolveKeycloakDiscordUser } from "../../utils/KeycloakPlayerUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { ColorConstants } from "../../../../Lib/src/constants/ColorConstants";
+import { KingChallengeConstants } from "../../../../Lib/src/constants/KingChallengeConstants";
 
 /**
  * Display the profile of a player
@@ -228,7 +229,9 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 	addField(fields, "mission", true, {
 		lng,
 		gems: packet.playerData.missions.gems,
-		campaign: packet.playerData.missions.campaignProgression
+		campaign: packet.playerData.missions.campaignProgression,
+		kingChallengeTier: packet.playerData.kingChallengeTier,
+		kingChallengeTierCount: KingChallengeConstants.TIER_COUNT
 	});
 
 	addRankAndEffectFields(fields, packet, lng);

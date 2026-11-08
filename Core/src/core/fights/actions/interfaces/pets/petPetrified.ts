@@ -8,10 +8,20 @@ import { Fighter } from "../../../fighter/Fighter";
 import { PlayerFighter } from "../../../fighter/PlayerFighter";
 import { AiPlayerFighter } from "../../../fighter/AiPlayerFighter";
 import { ClassConstants } from "../../../../../../../Lib/src/constants/ClassConstants";
+import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 
-const shouldSkipPetPetrified = (turn: number, opponent: Fighter): boolean => {
-	return (turn % 26 !== 2 && turn % 26 !== 3) || opponent.hasFightAlteration();
-};
+/*
+ * Turns (within each MAX_TURNS cycle, so it repeats in overtime) on which the pet tries to petrify.
+ * Each pair covers both turn parities, the owner plays on exactly one of them.
+ */
+const PETRIFICATION_TURNS = [
+	2,
+	3,
+	14,
+	15
+];
+
+const shouldSkipPetPetrified = (turn: number, opponent: Fighter): boolean => !PETRIFICATION_TURNS.includes(turn % FightConstants.MAX_TURNS) || opponent.hasFightAlteration();
 
 const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (shouldSkipPetPetrified(turn, opponent)) {

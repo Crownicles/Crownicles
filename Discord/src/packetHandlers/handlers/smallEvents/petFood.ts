@@ -1,6 +1,7 @@
 import { packetHandler } from "../../PacketHandler";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../../bot/DiscordCache";
+import { MessagesUtils } from "../../../utils/MessagesUtils";
 import { CrowniclesSmallEventEmbed } from "../../../messages/CrowniclesSmallEventEmbed";
 import { getPetFoodDescription } from "../../../smallEvents/petFood";
 import { SmallEventPetFoodPacket } from "../../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
@@ -8,7 +9,7 @@ import { SmallEventPetFoodPacket } from "../../../../../Lib/src/packets/smallEve
 export default class PetFoodSmallEventHandler {
 	@packetHandler(SmallEventPetFoodPacket)
 	async smallEventPetFood(context: PacketContext, packet: SmallEventPetFoodPacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		if (!interaction) {
 			return;
 		}
@@ -19,11 +20,11 @@ export default class PetFoodSmallEventHandler {
 		const embed = new CrowniclesSmallEventEmbed(
 			"petFood",
 			description,
-			interaction.user,
+			MessagesUtils.getClickUser(context) ?? interaction.user,
 			lng
 		);
 
-		await interaction.editReply({
+		await MessagesUtils.editClickReply(context, {
 			embeds: [embed], components: []
 		});
 	}

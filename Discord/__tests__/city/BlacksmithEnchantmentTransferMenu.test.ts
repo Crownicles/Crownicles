@@ -3,8 +3,9 @@ import {
 } from "vitest";
 import { Message, MessageComponentInteraction } from "discord.js";
 
-vi.mock("../../src/utils/DiscordCollectorUtils", () => ({
+vi.mock("../../src/utils/DiscordCollectorUtils", async () => ({
 	DiscordCollectorUtils: {
+		...(await import("../mocks/DiscordCollectorUtilsMock")).collectorAcknowledgementMocks,
 		sendReaction: vi.fn()
 	},
 	disableRows: vi.fn()

@@ -1,0 +1,342 @@
+import {
+	afterAll, beforeAll, describe, expect, it
+} from "vitest";
+import type { ModelStatic } from "sequelize";
+import {
+	CoreTestEnvironment, loadProductionModule, setupCoreForTests
+} from "../_coreSetup";
+import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
+import type { Home as HomeType } from "../../src/core/database/game/models/Home";
+import type { PlayerCookingSpecialty as PlayerCookingSpecialtyType } from "../../src/core/database/game/models/PlayerCookingSpecialty";
+import type { PlayerCookingRecipe as PlayerCookingRecipeType } from "../../src/core/database/game/models/PlayerCookingRecipe";
+import type {
+	CookingSlotData, RecipeSlotData
+} from "../../../Lib/src/types/CookingTypes";
+import type { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
+import {
+	CookingCraftErrors, CookingSpecialtyErrors
+} from "../../../Lib/src/types/CookingTypes";
+import {
+	CookingSpecialtyConstants, SPECIALTY_SLOT_INDEX, TIME_POTION_WEEKLY_CRAFT_LIMIT
+} from "../../../Lib/src/constants/CookingConstants";
+
+// Cooking level unlocking every specialty, and the one before the first specialty
+const ALL_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[CookingSpecialtyConstants.MAX_SPECIALTIES - 1];
+const BEFORE_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0] - 1;
+
+type ReportCookingServiceModule = typeof import("../../src/core/report/ReportCookingService");
+type CookingServiceModule = typeof import("../../src/core/cooking/CookingService");
+type MaterialModule = typeof import("../../src/core/database/game/models/Material");
+type HomePlantStorageModule = typeof import("../../src/core/database/game/models/HomePlantStorage");
+
+const HOME_LEVEL_WITH_FIVE_COOKING_SLOTS = 8;
+const TIME_POTION_RECIPE_ID = "potion_time_speedup_3";
+
+describe("cooking specialties and time potion weekly limit", () => {
+	let env: CoreTestEnvironment;
+	let Player: ModelStatic<PlayerType>;
+	let Home: ModelStatic<HomeType>;
+	let PlayerCookingSpecialty: ModelStatic<PlayerCookingSpecialtyType>;
+	let PlayerCookingRecipe: ModelStatic<PlayerCookingRecipeType>;
+	let reportCooking: ReportCookingServiceModule;
+	let cooking: CookingServiceModule["CookingService"];
+	let materials: MaterialModule["Materials"];
+	let plantStorages: HomePlantStorageModule["HomePlantStorages"];
+
+	beforeAll(async () => {
+		env = await setupCoreForTests("cookingspecialties");
+		const models = env.crownicles.gameDatabase.sequelize.models;
+		Player = models.Player as ModelStatic<PlayerType>;
+		Home = models.Home as ModelStatic<HomeType>;
+		PlayerCookingSpecialty = models.PlayerCookingSpecialty as ModelStatic<PlayerCookingSpecialtyType>;
+		PlayerCookingRecipe = models.PlayerCookingRecipe as ModelStatic<PlayerCookingRecipeType>;
+		reportCooking = loadProductionModule<ReportCookingServiceModule>("core/report/ReportCookingService");
+		cooking = loadProductionModule<CookingServiceModule>("core/cooking/CookingService").CookingService;
+		materials = loadProductionModule<MaterialModule>("core/database/game/models/Material").Materials;
+		plantStorages = loadProductionModule<HomePlantStorageModule>("core/database/game/models/HomePlantStorage").HomePlantStorages;
+	});
+
+	afterAll(async () => {
+		await env?.teardown();
+	});
+
+	type Cook = {
+		player: PlayerType;
+		home: HomeType;
+		keycloakId: string;
+	};
+
+	async function createCook(keycloakId: string, cookingLevel: number): Promise<Cook> {
+		const player = await Player.create({
+			keycloakId,
+			level: 50,
+			cookingLevel
+		});
+		await env.crownicles.gameDatabase.sequelize.models.PlayerMissionsInfo.create({ playerId: player.id });
+		const home = await Home.create({
+			ownerId: player.id,
+			cityId: "cooking-test-city",
+			level: HOME_LEVEL_WITH_FIVE_COOKING_SLOTS
+		});
+		return {
+			player, home, keycloakId
+		};
+	}
+
+	async function getSlots({
+		player, home
+	}: Cook): Promise<CookingSlotData[]> {
+		await player.reload();
+		return await cooking.getSlotRecipes({
+			player, homeId: home.id, cookingSlots: home.getLevel()!.features.cookingSlots
+		});
+	}
+
+	function visibleSlots(slots: CookingSlotData[]): Array<CookingSlotData & { recipe: RecipeSlotData }> {
+		return slots.filter((slot): slot is CookingSlotData & { recipe: RecipeSlotData } => slot.recipe !== null && !slot.recipe.isSecret);
+	}
+
+	function rotatingSlots(slots: CookingSlotData[]): CookingSlotData[] {
+		return slots.filter(slot => slot.slotIndex !== SPECIALTY_SLOT_INDEX);
+	}
+
+	function specialtySlotRecipeIds(slots: CookingSlotData[]): string[] {
+		return slots.filter(slot => slot.slotIndex === SPECIALTY_SLOT_INDEX).map(slot => slot.recipe!.id);
+	}
+
+	async function giveIngredients({
+		player, home
+	}: Cook, recipe: RecipeSlotData): Promise<void> {
+		for (const plant of recipe.ingredients.plants) {
+			await plantStorages.addPlant(home.id, plant.plantId as never, plant.quantity, 999);
+		}
+		for (const material of recipe.ingredients.materials) {
+			await materials.giveMaterial(player.id, material.materialId, material.quantity);
+		}
+	}
+
+	function packetContext(keycloakId: string): PacketContext {
+		return {
+			frontEndOrigin: "discord",
+			frontEndSubOrigin: "guild",
+			keycloakId,
+			discord: {
+				user: keycloakId,
+				interaction: "interaction",
+				channel: "channel",
+				language: "fr",
+				shardId: 0
+			}
+		} as PacketContext;
+	}
+
+	async function setTimePotionsCookedThisWeek({ player }: Cook, count: number): Promise<void> {
+		await Player.update({ timePotionsCookedThisWeek: count }, { where: { id: player.id } });
+	}
+
+	it("offers a specialty on the specialty station at every furnace ignition, besides every rotating station, even once cooked", async () => {
+		const cook = await createCook("specialty-keeper", ALL_SPECIALTIES_LEVEL);
+		const chosen = visibleSlots(await getSlots(cook))[0];
+
+		const [setResponse] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
+			slotIndex: chosen.slotIndex,
+			recipeId: chosen.recipe.id
+		});
+		expect(setResponse).toMatchObject({ error: undefined });
+		expect((setResponse as { menu: { specialties: unknown[] } }).menu.specialties).toEqual([
+			expect.objectContaining({ recipeId: chosen.recipe.id })
+		]);
+
+		// Furnace re-rolls change the whole rotation, but the specialty stays on its own station
+		for (let furnacePosition = 1; furnacePosition <= 6; furnacePosition++) {
+			await Player.update({ furnacePosition }, { where: { id: cook.player.id } });
+			const slots = await getSlots(cook);
+			expect(specialtySlotRecipeIds(slots)).toEqual([chosen.recipe.id]);
+			expect(slots.find(slot => slot.slotIndex === SPECIALTY_SLOT_INDEX)!.recipe!.isSecret).toBe(false);
+			expect(rotatingSlots(slots)).toHaveLength(cook.home.getLevel()!.features.cookingSlots);
+			expect(rotatingSlots(slots).every(slot => slot.recipe?.id !== chosen.recipe.id)).toBe(true);
+		}
+
+		// Cooking the specialty does not consume it, unlike a pinned recipe
+		await giveIngredients(cook, chosen.recipe);
+		const [craftResponse] = await reportCooking.handleCookingCraft(cook.keycloakId, {
+			slotIndex: SPECIALTY_SLOT_INDEX,
+			recipeId: chosen.recipe.id
+		}, packetContext(cook.keycloakId));
+		expect(craftResponse).toMatchObject({
+			error: undefined,
+			recipeId: chosen.recipe.id
+		});
+		expect(await PlayerCookingSpecialty.findAll({ where: { playerId: cook.player.id } })).toEqual([
+			expect.objectContaining({ recipeId: chosen.recipe.id })
+		]);
+	});
+
+	it("refuses a specialty beyond the limit and accepts a new one once a specialty is removed", async () => {
+		const cook = await createCook("specialty-limit", ALL_SPECIALTIES_LEVEL);
+
+		// Each new specialty leaves the rotation, so the next candidate is read from the refreshed stations
+		const chooseNextRecipe = async (): Promise<{ slotIndex: number; recipeId: string }> => {
+			const candidate = visibleSlots(rotatingSlots(await getSlots(cook)))[0];
+			return {
+				slotIndex: candidate.slotIndex,
+				recipeId: candidate.recipe.id
+			};
+		};
+		const chosen: string[] = [];
+		for (let i = 0; i < CookingSpecialtyConstants.MAX_SPECIALTIES; i++) {
+			const choice = await chooseNextRecipe();
+			const [response] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, choice);
+			expect(response).toMatchObject({ error: undefined });
+			chosen.push(choice.recipeId);
+		}
+		// The specialty station offers a single specialty per ignition, each furnace re-roll moving to the next one
+		const offered: string[] = [];
+		for (let furnacePosition = 0; furnacePosition < CookingSpecialtyConstants.MAX_SPECIALTIES; furnacePosition++) {
+			await Player.update({ furnacePosition }, { where: { id: cook.player.id } });
+			const displayed = specialtySlotRecipeIds(await getSlots(cook));
+			expect(displayed).toHaveLength(1);
+			offered.push(displayed[0]);
+		}
+		expect([...offered].sort()).toEqual([...chosen].sort());
+
+		const extra = await chooseNextRecipe();
+		const [refused] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, extra);
+		expect(refused).toMatchObject({ error: CookingSpecialtyErrors.LIMIT_REACHED });
+		expect(await PlayerCookingSpecialty.count({ where: { playerId: cook.player.id } })).toBe(CookingSpecialtyConstants.MAX_SPECIALTIES);
+
+		const [removed] = await reportCooking.handleCookingRemoveSpecialty(cook.keycloakId, {
+			recipeId: chosen[0],
+			fromIgnitedView: false
+		});
+		expect(removed).toMatchObject({
+			menu: {
+				isIgnited: false,
+				currentSlots: []
+			}
+		});
+		expect((removed as { menu: { specialties: unknown[] } }).menu.specialties).toHaveLength(CookingSpecialtyConstants.MAX_SPECIALTIES - 1);
+
+		const [accepted] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, await chooseNextRecipe());
+		expect(accepted).toMatchObject({ error: undefined });
+		expect(await PlayerCookingSpecialty.count({ where: { playerId: cook.player.id } })).toBe(CookingSpecialtyConstants.MAX_SPECIALTIES);
+	});
+
+	it("only lets a kitchen master keep the single specialty of their grade", async () => {
+		const cook = await createCook("specialty-kitchen-master", CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0]);
+		const [first, second] = visibleSlots(rotatingSlots(await getSlots(cook)));
+
+		const [accepted] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
+			slotIndex: first.slotIndex,
+			recipeId: first.recipe.id
+		});
+		expect(accepted).toMatchObject({ error: undefined });
+		const [refused] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
+			slotIndex: second.slotIndex,
+			recipeId: second.recipe.id
+		});
+		expect(refused).toMatchObject({ error: CookingSpecialtyErrors.LIMIT_REACHED });
+		expect(await PlayerCookingSpecialty.count({ where: { playerId: cook.player.id } })).toBe(1);
+	});
+
+	it("refuses a specialty before the first unlock level or for a recipe the station no longer offers", async () => {
+		const apprentice = await createCook("specialty-apprentice", BEFORE_SPECIALTIES_LEVEL);
+		const apprenticeSlot = visibleSlots(await getSlots(apprentice))[0];
+		const [apprenticeResponse] = await reportCooking.handleCookingSetSpecialty(apprentice.keycloakId, {
+			slotIndex: apprenticeSlot.slotIndex,
+			recipeId: apprenticeSlot.recipe.id
+		});
+		expect(apprenticeResponse).toMatchObject({ error: CookingSpecialtyErrors.UNAVAILABLE });
+		expect((apprenticeResponse as { menu: { specialties?: unknown[] } }).menu.specialties).toBeUndefined();
+
+		const master = await createCook("specialty-stale", ALL_SPECIALTIES_LEVEL);
+		const [first, second] = visibleSlots(await getSlots(master));
+		const [staleResponse] = await reportCooking.handleCookingSetSpecialty(master.keycloakId, {
+			slotIndex: first.slotIndex,
+			recipeId: second.recipe.id
+		});
+		expect(staleResponse).toMatchObject({ error: CookingSpecialtyErrors.UNAVAILABLE });
+
+		expect(await PlayerCookingSpecialty.count({ where: { playerId: [apprentice.player.id, master.player.id] } })).toBe(0);
+	});
+
+	it("blocks the time potions once the weekly limit is reached, without consuming the ingredients", async () => {
+		const cook = await createCook("time-potion-limit", ALL_SPECIALTIES_LEVEL);
+		await PlayerCookingRecipe.create({
+			playerId: cook.player.id,
+			recipeId: TIME_POTION_RECIPE_ID
+		});
+		await Player.update({ pinnedCookingRecipeId: TIME_POTION_RECIPE_ID }, { where: { id: cook.player.id } });
+		const findTimePotionSlot = async (): Promise<CookingSlotData & { recipe: RecipeSlotData }> =>
+			visibleSlots(await getSlots(cook)).find(slot => slot.recipe.id === TIME_POTION_RECIPE_ID)!;
+
+		await setTimePotionsCookedThisWeek(cook, TIME_POTION_WEEKLY_CRAFT_LIMIT - 1);
+		const lastTimePotionSlot = await findTimePotionSlot();
+		await giveIngredients(cook, lastTimePotionSlot.recipe);
+		expect((await findTimePotionSlot()).recipe).toMatchObject({
+			timePotionsLeftThisWeek: 1,
+			canCraft: true
+		});
+
+		await setTimePotionsCookedThisWeek(cook, TIME_POTION_WEEKLY_CRAFT_LIMIT);
+		const blockedSlot = await findTimePotionSlot();
+		expect(blockedSlot.recipe).toMatchObject({
+			timePotionsLeftThisWeek: 0,
+			canCraft: false
+		});
+		const materialsBefore = await materials.getPlayerMaterials(cook.player.id);
+
+		const [craftResponse] = await reportCooking.handleCookingCraft(cook.keycloakId, {
+			slotIndex: blockedSlot.slotIndex,
+			recipeId: TIME_POTION_RECIPE_ID
+		}, packetContext(cook.keycloakId));
+
+		expect(craftResponse).toMatchObject({
+			success: false,
+			error: CookingCraftErrors.TIME_POTION_WEEKLY_LIMIT,
+			cookingXpGained: 0
+		});
+		expect(await materials.getPlayerMaterials(cook.player.id)).toEqual(materialsBefore);
+		expect((await findTimePotionSlot()).recipe.ingredients).toEqual(blockedSlot.recipe.ingredients);
+	});
+
+	it("counts the time potion just cooked in the menu shown after the craft", async () => {
+		const cook = await createCook("time-potion-specialty", ALL_SPECIALTIES_LEVEL);
+		await PlayerCookingRecipe.create({
+			playerId: cook.player.id,
+			recipeId: TIME_POTION_RECIPE_ID
+		});
+
+		// The pin brings the time potion on a rotating station, from where the master chef makes it a specialty
+		await Player.update({ pinnedCookingRecipeId: TIME_POTION_RECIPE_ID }, { where: { id: cook.player.id } });
+		await setTimePotionsCookedThisWeek(cook, TIME_POTION_WEEKLY_CRAFT_LIMIT - 1);
+		const pinnedSlot = visibleSlots(await getSlots(cook)).find(slot => slot.recipe.id === TIME_POTION_RECIPE_ID)!;
+		const [setResponse] = await reportCooking.handleCookingSetSpecialty(cook.keycloakId, {
+			slotIndex: pinnedSlot.slotIndex,
+			recipeId: TIME_POTION_RECIPE_ID
+		});
+		expect(setResponse).toMatchObject({ error: undefined });
+		expect((await Player.findByPk(cook.player.id))!.pinnedCookingRecipeId).toBeNull();
+
+		await giveIngredients(cook, pinnedSlot.recipe);
+		const [craftResponse] = await reportCooking.handleCookingCraft(cook.keycloakId, {
+			slotIndex: SPECIALTY_SLOT_INDEX,
+			recipeId: TIME_POTION_RECIPE_ID
+		}, packetContext(cook.keycloakId));
+
+		// The craft may fail: only a successful one bends time
+		const craft = craftResponse as {
+			success: boolean;
+			error?: string;
+			menu: { currentSlots: CookingSlotData[] };
+		};
+		expect(craft.error).toBeUndefined();
+		expect(craft.menu.currentSlots.find(slot => slot.slotIndex === SPECIALTY_SLOT_INDEX)!.recipe).toMatchObject({
+			id: TIME_POTION_RECIPE_ID,
+			timePotionsLeftThisWeek: craft.success ? 0 : 1
+		});
+
+		// Only a successful craft keeps the time potion taken from the weekly limit
+		expect((await Player.findByPk(cook.player.id))!.timePotionsCookedThisWeek).toBe(TIME_POTION_WEEKLY_CRAFT_LIMIT - (craft.success ? 0 : 1));
+	});
+});

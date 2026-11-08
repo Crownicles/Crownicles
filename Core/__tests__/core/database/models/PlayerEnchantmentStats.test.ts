@@ -142,3 +142,20 @@ describe('Player enchantment stat calculations', () => {
 		});
 	});
 });
+
+describe('Player stat calculations at an explicit level (tournament level cap)', () => {
+	const HIGH_LEVEL = 150;
+	const CAPPED_LEVEL = 100;
+
+	it('computes the stats of a high level player as if it were at the given level', () => {
+		const highLevelPlayer = buildPlayer(HIGH_LEVEL, CLASS_ID);
+		const cappedLevelPlayer = buildPlayer(CAPPED_LEVEL, CLASS_ID);
+		const activeObjects = buildActiveObjects({});
+
+		expect(highLevelPlayer.getCumulativeAttack(activeObjects, true, CAPPED_LEVEL)).toBe(cappedLevelPlayer.getCumulativeAttack(activeObjects));
+		expect(highLevelPlayer.getCumulativeDefense(activeObjects, true, CAPPED_LEVEL)).toBe(cappedLevelPlayer.getCumulativeDefense(activeObjects));
+		expect(highLevelPlayer.getCumulativeSpeed(activeObjects, true, CAPPED_LEVEL)).toBe(cappedLevelPlayer.getCumulativeSpeed(activeObjects));
+		expect(highLevelPlayer.getMaxCumulativeEnergy(activeObjects, CAPPED_LEVEL)).toBe(cappedLevelPlayer.getMaxCumulativeEnergy(activeObjects));
+		expect(highLevelPlayer.getCumulativeAttack(activeObjects, true, CAPPED_LEVEL)).toBeLessThan(highLevelPlayer.getCumulativeAttack(activeObjects));
+	});
+});

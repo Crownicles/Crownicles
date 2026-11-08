@@ -77,6 +77,9 @@ export enum NumberChangeReason {
 	SCRAP_DEALER_RECYCLE,
 	CITY_STAY,
 	BLACKSMITH_ENCHANTMENT_TRANSFER,
+
+	// King's challenge
+	KING_CHALLENGE,
 	ROYAL_MAIL
 }
 

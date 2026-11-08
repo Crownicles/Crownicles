@@ -198,6 +198,22 @@
     "9": "Eine auf Geschwindigkeit ausgerichtete Klasse. Wenig Lebens- und Energiepunkte, aber hohe Geschwindigkeit und Angriffsstärke."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "Er wird von **{{petNickname}}** unterstützt, der in Lauerstellung geblieben ist und sofort zuschlägt, sobald der Gegner wieder zu Atem gekommen ist, und ihm einen gewaltigen Prankenhieb versetzt."
+    },
+    "scentOfBlood": {
+      "generalEffect": "Zu ihm gesellt sich **{{petNickname}}**, der den Geruch von Blut gewittert hat: Der Hai beißt den verwundeten Gegner und reißt ihm eine Wunde auf, aus der es stark blutet.",
+      "success": "sieht, wie **{{petNickname}}** in Raserei verfällt, in den Wahnsinn getrieben durch das noch immer fließende Blut: Der Hai stürzt sich auf seinen Gegner und beißt ihn wild.",
+      "failure": "{{petNickname}}verliert seine Beute aus den Augen: Die Blutung des Gegners hat aufgehört, und der Hai schwimmt davon."
+    },
+    "unstoppable": {
+      "generalEffect": "gewinnt an Schwung an der Seite von **{{petNickname}}**, dessen schwerfälliger Lauf immer schneller wird: Seine Nahkampfangriffe werden immer heftiger.",
+      "success": "wird von **{{petNickname}}** mitgerissen, der mit voller Geschwindigkeit losrast: Nichts scheint ihn noch aufhalten zu können.",
+      "failure": "wird unterbrochen und **{{petNickname}}** verliert seinen ganzen Schwung – man muss wieder von vorne anfangen."
+    },
+    "woundedPrey": {
+      "success": "Zu ihm gesellt sich **{{petNickname}}**, der über dem Kampf kreiste: Als er sah, dass der Gegner am Ende seiner Kräfte war, stürzte sich der Raubvogel mit nach vorne gestreckten Krallen im Sturzflug auf ihn."
+    },
     "drowning": {
       "customMessage": "packt seinen Gegner mit einem seiner Tentakel und taucht ihn unter Wasser, nur Gegner mit Atem kommen unbeschadet wieder heraus.",
       "name_one": "Ertrinken",
@@ -380,7 +396,7 @@
       "stop": "ist nicht mehr verwirrend."
     },
     "counterAttack": {
-      "description": "Replique mit der gleichen Aktion wie die, die Ihr Gegner gespielt hat. Funktioniert nicht auf magischen oder götkischen Angriffen, oder wenn der Gegner nicht angegriffen hat.",
+      "description": "Wiederholt dieselbe Aktion, die dein Gegner gerade ausgeführt hat. Verursacht gegen Monster zusätzlichen Schaden. Wirkt nicht bei bestimmten Angriffen und auch nicht, wenn der Gegner nicht angegriffen hat.",
       "name_one": "Gegenschlag",
       "customMessage": "gelingt es nicht, zurückzuschlagen.",
       "name_other": "Gegenschläge"
@@ -411,7 +427,7 @@
       "stop": "leidet unter den Folgen des Fluches."
     },
     "cursedAttack": {
-      "description": "Verflucht den Gegner, vielleicht wird er in der Zukunft die Konsequenzen zu spüren bekommen... Heilt den Werfer, wenn der Gegner mehr als 40% seiner Energie hat.",
+      "description": "Der Gegner ist verflucht – vielleicht wird er in Zukunft die Folgen davon spüren … Solange er verflucht ist, gewinnt der Gegner durch Heilung weniger Energie zurück und muss den dunklen Angriff in voller Stärke hinnehmen. Heilt den Zaubernden, wenn der Gegner mehr als 40 % seiner Energie besitzt.",
       "name_one": "Verfluchung",
       "name_other": "Verfluchungen"
     },
@@ -431,7 +447,7 @@
       "name_other": "Flüche des Meeres"
     },
     "darkAttack": {
-      "description": "Ignoriert die Verteidigung des Gegners. Wirkt am besten gegen einen Spieler mit hohem Angriffswert. Blendet den Gegner oder gibt dem Werfer einen Teil seines verlorenen Atems zurück. Die Veränderung \"Geblendet\" hält mindestens 1 Runde an und macht den Gegner manchmal unfähig anzugreifen, während seine Verteidigung und Geschwindigkeit verringert werden.",
+      "description": "Berücksichtigt die Verteidigung des Gegners kaum. Wirkt am effektivsten gegen einen Spieler mit hoher Angriffskraft. Bei ihrem ersten Einsatz ist sie sehr mächtig, verliert jedoch bei jedem weiteren erfolgreichen Einsatz an Kraft und gewinnt wieder an Stärke, wenn der Anwender sie einige Züge lang nicht einsetzt. Sie trifft einen verfluchten Gegner immer mit voller Kraft. Ihre aktuelle Stärke wird auf der Schaltfläche angezeigt.",
       "name_one": "Dunkle Attacke",
       "name_other": "Dunkle Attacken"
     },
@@ -473,7 +489,7 @@
       "afraid": "wird von **{{petNickname}}** unterstützt, der sich zwar genau an die jüngsten Ereignisse erinnert, aber vor Angst zu sehr zittert, um den verlorenen Atem wiedergeben zu können."
     },
     "energeticAttack": {
-      "description": "La moitié des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse.",
+      "description": "Ein Teil des Schadens dieses Angriffs wird dem Angreifer in Form von Heilung zurückgegeben. Ein Teil der gegnerischen Verteidigung wird ignoriert. Fügt einem Gegner, der sich gerade ausgeruht hat, zusätzlichen Schaden zu. Gegen Monster wird die Heilung verringert.",
       "name_one": "Energische Attacke",
       "name_other": "Energische Attacken"
     },
@@ -1254,7 +1270,7 @@
       "atParticle": "an die"
     },
     "21": {
-      "description": "Eine Straße, die von den Dorfbewohnern sehr geliehen wird. Viele der ambulanten kleinen Verkäufer installieren die Tageszeit, um einen riesigen Markt zu schaffen.",
+      "description": "Eine Straße, die von den Dorfbewohnern sehr stark frequentiert wird. Viele kleine Straßenhändler lassen sich dort für einen Tag nieder und schaffen so letztendlich einen riesigen Markt. Etwas weiter verfallen alte, längst verlassene Verkaufsstände unter dem Sand.",
       "name": "Route der Merwachles",
       "particle": "in Richtung",
       "atParticle": "an die"
@@ -1266,7 +1282,7 @@
       "atParticle": "unter"
     },
     "23": {
-      "description": "In der großen Handelsstadt Claire de Ville war es nicht immer so gastfreundlich, wie es die Stadt war. Zu Beginn sehr arm, hat sie sich schnell dank ihrer vielen Geschäfte und Hotels entwickelt, die den Reisenden in der Region eine große Auswahl bieten. Claire de Ville ist auch bekannt für die Ruhe und die Befolgung des Ortes.",
+      "description": "Claire de Ville, eine große Handelsstadt und wirtschaftliche Drehscheibe, war nicht immer so einladend. Ursprünglich sehr arm, gelang es ihr, sich dank ihrer zahlreichen Geschäfte und Hotels, die Reisenden aus der Region eine große Auswahl bieten, rasch zu entwickeln. Claire de Ville ist zudem für seine Ruhe und seine Ordnungsliebe bekannt. Unter den Straßen schlängeln sich noch immer die in Zeiten der Armut gegrabenen unterirdischen Gänge durch den Fels.",
       "name": "Claire de Ville",
       "particle": "in",
       "atParticle": "à",
@@ -1279,7 +1295,7 @@
       "atParticle": "an die"
     },
     "25": {
-      "description": "Es ist alles im Namen. Ein sehr beliebter Fluss von Claires De-Ville-Giissbänner.",
+      "description": "Der Name sagt schon alles. Ein Fluss, der bei den Fischhändlern von Claire de Ville sehr beliebt ist. Stromabwärts gehen seine Ufer in schlammige Wattgebiete über, in denen es von Krabben nur so wimmelt.",
       "name": "Rivière in Crabes",
       "particle": "in Richtung",
       "atParticle": "an die"
@@ -1292,7 +1308,7 @@
       "inParticle": "in"
     },
     "27": {
-      "description": "Ein Wald am Rande des Mont Célestrum.",
+      "description": "Ein Wald am Fuße des Mont Célestrum. Seine Waldränder erstrecken sich bis zu den steilen Hängen des Berges.",
       "name": "Wälder Célestrum",
       "particle": "in Richtung",
       "atParticle": "an die"
@@ -1338,7 +1354,7 @@
       "particle": "in Richtung"
     },
     "41": {
-      "description": "Gepflasterte Esplanade, die Boug-Coton mit den Toren des Königsschlosses verbindet. Hier kreuzen sich die Wege der Boten, bevor sie zu den Gemächern des Königs gelangen.",
+      "description": "Eine gepflasterte Esplanade, die Boug-Coton mit den Toren des Königsschlosses verbindet. Dort kreuzen sich die Wege der Boten, bevor sie die Gemächer des Königs betreten. Unter dem Pflaster verlaufen geheime, in den Fels gehauene Gänge, die bis zu den Fundamenten des Schlosses reichen.",
       "name": "Hof des Schlosses",
       "particle": "in Richtung",
       "atParticle": "an die",
@@ -1351,13 +1367,13 @@
       "atParticle": "an die"
     },
     "5": {
-      "description": "Pfad, der seinen Spitznamen mit seinem Nachnamen in der Natur im Süden des Waldes des Alten Mannes auszieht.",
+      "description": "Ein Weg, der seinen Namen der Tatsache verdankt, dass er sich durch die üppige Natur im südlichen Teil des „Forêt du Vieillard“ schlängelt. Unter der Vegetation lassen sich noch die kleinen Mauern eines längst vergessenen Labyrinths erahnen.",
       "name": "Pfad für Dedale",
       "particle": "in Richtung",
       "atParticle": "unter"
     },
     "6": {
-      "description": "Ein friedliches Dorf, das für seine Gastfreundschaft bekannt ist.",
+      "description": "Ein beschauliches Dorf, das für sein gastfreundliches Gasthaus bekannt ist. Unter dem Gasthaus erstrecken sich weitläufige, geheime Keller, die direkt in den Fels gehauen wurden.",
       "name": "Boug-Coton",
       "particle": "in",
       "atParticle": "à",
@@ -2529,7 +2545,8 @@
       "1": "Kessel",
       "2": "Gießerei",
       "3": "Destilliergerät",
-      "4": "Brasier"
+      "4": "Brasier",
+      "5": "Spezialität des Küchenchefs"
     },
     "recipes": {
       "potion_health_1": "Grundlegender Heiltrank",

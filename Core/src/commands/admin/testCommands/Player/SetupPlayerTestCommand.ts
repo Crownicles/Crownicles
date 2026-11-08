@@ -51,6 +51,7 @@ const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, res
 	player.level = SETUP_DEFAULTS.level;
 	player.score = SETUP_DEFAULTS.score;
 	player.weeklyScore = 0;
+	player.kingChallengeTier = 0;
 	player.experience = 0;
 	player.defenseGloryPoints = SETUP_DEFAULTS.gloryPoints;
 	player.attackGloryPoints = SETUP_DEFAULTS.gloryPoints;

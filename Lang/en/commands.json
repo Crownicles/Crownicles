@@ -147,7 +147,7 @@
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
     "chooseExpeditionTitle": "{{pseudo}}, new expeditions available",
-    "chooseExpedition": "The $t(models:talisman.anchor) vibrates gently in your satchel. Three destinations appear in your mind's eye, revealed by the artifact's magic. {{petDisplay}} can't wait to explore one of these lands:",
+    "chooseExpedition": "The $t(models:talisman.anchor) vibrates gently in your bag. Several destinations come to mind, revealed by the artifact’s magic. {{petDisplay}} is bursting with impatience, ready to set out and explore one of these lands:",
     "selectPlaceholder": "Choose a destination...",
     "distantExpeditionPrefix": "Long-distance expedition: {{location}}",
     "expeditionOption": {
@@ -299,32 +299,44 @@
       "2": "Secret Trails of the Rural Path",
       "3": "Hidden Meadows of The Cradle",
       "4": "Depths of the Older's Forest",
-      "5": "Forgotten Labyrinths of the Daedalus Path",
+      "5_forest": "The Winding Underbrush of the Labyrinth Path",
+      "5_ruins": "Forgotten Labyrinths of the Daedalus Path",
       "6": "the Secret Cellars of Boug-Coton",
-      "7": "the Forgotten Tombs of the Valley of the Kings",
+      "7_desert": "The Burning Dunes of the Valley of the Kings",
+      "7_ruins": "the Forgotten Tombs of the Valley of the Kings",
       "8": "the Mystical Passages of the Crossroads of Destiny",
-      "9": "Old Cobblestones of Main Road",
-      "10": "the Lost Catacombs of Ville Forte",
+      "9_plains": "the side streets off the Grande Rue",
+      "9_ruins": "Old Cobblestones of Main Road",
+      "10_cave": "the Lost Catacombs of Ville Forte",
+      "10_ruins": "The Collapsed Ramparts of Ville Forte",
       "11": "The Great Road Ambushes",
       "12": "the Plains of the Expanse",
       "13": "the Cursed Swamps of the Swampy Road",
-      "14": "the Enchanted Mists of Lake Mirage",
-      "15": "the snow-covered peaks of Mount Celestrum",
+      "14_coast": "The Peaceful Shores of Lake Mirage",
+      "14_swamp": "The Misty Reed Beds of Lake Mirage",
+      "15_cave": "The Bottomless Caves of Mount Célestrum",
+      "15_mountain": "the snow-covered peaks of Mount Celestrum",
       "16": "Dens of The wolves Path",
       "17": "Coco Village Hidden Oases",
       "18": "Tumultuous Rapids of Vacarme River",
-      "19": "the Quicksand of La Dune",
+      "19_coast": "The Windy Shore of La Dune",
+      "19_desert": "the Quicksand of La Dune",
       "21": "Abandoned Shops of the Road Of Wonders",
-      "22": "Dark Galleries of Howling Woods",
-      "23": "the Secret Alleys of Claire de Ville",
+      "22": "The Thickets of the Bandits of the Howling Forest",
+      "23": "The Forgotten Underground by Claire de Ville",
       "24": "the Escarpments of the Climbing Road",
-      "25": "Crab's River Meanders",
-      "26": "Mergagnan old quarters",
-      "27": "the Mystic Glades of the Celestrum Forest",
-      "28": "Undergrounds of Castle Doors",
+      "25_coast": "Crab's River Meanders",
+      "25_swamp": "The Mudflats of the Rivière aux Crabes",
+      "26_coast": "the Port of Mergagnan",
+      "26_plains": "The Gardens of Mergagnan",
+      "27_forest": "the Mystic Glades of the Celestrum Forest",
+      "27_mountain": "The Steep Slopes of the Célestrum Forest",
+      "28": "The Area Around the Castle Gates",
       "29": "the Alcoves in the Reception Room",
       "32": "Royal Cobblestones of Castle Road",
-      "41": "The Secret Passages of the Castle Courtyard"
+      "40": "The Haunted Hallways of the Haunted House",
+      "41_cave": "The Secret Passages of the Castle Courtyard",
+      "41_plains": "the Esplanade of the Castle Courtyard"
     },
     "errors": {
       "noPet": "Nature spirits refuse to let you send a pet... because you don't have one!",
@@ -444,6 +456,9 @@
       "BLESSING": {
         "description": "Displays the status of the overall blessing: the fund that adventurers contribute to by meeting the Oracle during their travels, or the active blessing and the time remaining. This command becomes available after meeting the Oracle at least once."
       },
+      "DEFENSE": {
+        "description": "Allows you to choose how your character defends itself when another player attacks it, or to have a different style randomly selected for each battle. Only certain classes have multiple styles."
+      },
       "CLASSES": {
         "description": "Change your class. More information about classes is available through the player guide: https://guide.crownicles.com/v/en/notions-principale/classes/"
       },
@@ -460,14 +475,13 @@
         "description": "Allows you to manage your equipment for each item category: equip an item from your inventory, return the equipped item to your inventory, or swap two items."
       },
       "FIGHT": {
-        "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats",
-        "image": "https://crownicles.com/public/ressources/fighthelp/en/5.1.7.png"
+        "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
-        "description": "Displays a history of your most recent battles: the opponent you faced, the result, and each fighter's progress in terms of glory and league rank."
+        "description": "Displays a history of your most recent battles: the opponent you faced, the result, and each fighter’s progress in glory and league rank. If you have already fought a King’s Guard, the **King’s Guards** button shows your record against the Guards, your ranking, and the kingdom’s honor roll."
       },
       "FRIENDLY_FIGHT": {
-        "description": "Allows you to face off against another player—chosen by mentioning them or based on their ranking—in a friendly battle. The opponent is controlled by AI. This battle has no consequences: no glory, no rewards, no energy lost, and no mission progress."
+        "description": "Allows you to face off against another player—chosen by naming them or based on their ranking—in a friendly battle. The opponent is controlled by AI. This battle has no consequences: no glory, no rewards, no energy lost, and no mission progress. The level of both combatants is capped at {{friendlyFightLevelCap}} : a player of a lower level retains their current level."
       },
       "GARDEN": {
         "description": "Allows you to tend to your home's garden while you're in town: plant, water, compost, and harvest your plants. With the Cœur Sylvestre—a talisman sold at the Herbalist's in Coco Village—you can check on your garden and harvest from it remotely."
@@ -638,6 +652,8 @@
     "seedSlot": "{emote:city.homeUpgrades.garden} Seed:",
     "plantSlots_one": "{emote:shopItems.plantSlotExtension} Transported Plant ({{count}}/{{max}}):",
     "plantSlots_other": "{emote:shopItems.plantSlotExtension} Transported Plants ({{count}}/{{max}}):",
+    "plantsLinkedToHomeStorageTitle": "{emote:city.homeUpgrades.chest} Link to the chest:",
+    "plantsLinkedToHomeStorage": "Your plants are linked to your home's storage: plants you buy or receive are sent there directly, and your plant slots only hold what the storage can no longer hold.",
     "weapons_one": "Weapon ({{count}}/{{max}}):",
     "weapons_other": "Weapons ({{count}}/{{max}}):",
     "talisman": "Artifacts :",
@@ -751,7 +767,7 @@
     },
     "mission": {
       "fieldName": "Missions:",
-      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
+      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% | {emote:kingChallenge.icon} {{kingChallengeTier}}/{{kingChallengeTierCount}}"
     },
     "noTimeLeft": {
       "fieldName": "Time left:",
@@ -794,7 +810,7 @@
   },
   "report": {
     "adviceTitle": "Advice:",
-    "chooseDestinationIndications": "Choose a destination for your journey:",
+    "chooseDestinationIndications": "Choose a destination for your trip. The areas listed are the ones your pet can explore there on an expedition:",
     "choseMapMinutes_one": "You have decided to head for {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. This journey will take approximately **{{timeDisplay}}**.",
     "choseMapMinutes_other": "You have decided to head for {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. This journey will take approximately **{{timeDisplay}}**.",
     "choseMap_one": "You chose to go in the direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. You'll travel for about **{{time}} hour**.",
@@ -808,6 +824,7 @@
     "collectedPointsTitle": "Collected points:",
     "commandDescription": "Get a report on your character's situation.",
     "commandName": "report",
+    "destinationChoice": "{{mapTypeIcon}} {{location}} ({{duration}}) | {{biomes}}",
     "destinationTitle": "{{pseudo}}, travel destination",
     "doChoice": "{{emoji}} {{choiceText}}\n",
     "doEvent": "{emote:commands.report} **{{pseudo}}'s log:** {{event}}\n*- Use the buttons to perform an action {emote:collectors.warning} Not answering is considered a separate choice.*",
@@ -1374,7 +1391,8 @@
             "1": "Mijot",
             "2": "Smelt",
             "3": "Distiller",
-            "4": "Grill"
+            "4": "Grill",
+            "5": "Enhance"
           },
           "noWood": "{emote:messages.refuse} You don't have any wood to light the furnace. Collect wood when you expepedite it!",
           "woodConfirm": "{emote:messages.info} You no longer have any common wood. From **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** will be used to light the furnace. Are you sure?",
@@ -1412,7 +1430,25 @@
           "pinnedRecipeTitle": "{emote:messages.pin} **Pin Recipe** — {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
           "pinnedReady": "\n{emote:messages.validate} You have all the metrics for this recipe!",
           "unpinButton": "Unpin",
-          "pinButton": "Pin"
+          "pinButton": "Pin",
+          "specialtiesNone_one": "{emote:cookingStations.5} Your mastery of the stove grants you the **{{count}} specialty**: the stove will offer it to you every time you light it at the **$t(models:cooking.stations.5)** location, in addition to the usual recipes. Light it to select it from the available recipes.",
+          "specialtiesNone_other": "{emote:cookingStations.5} Your cooking skills allow you to have up to **{{count}} specialties**: the stove will offer you one each time you light it at the **$t(models:cooking.stations.5)** location, in addition to the usual recipes. Light it to choose from the suggested recipes.",
+          "specialtyRotation": "{emote:collectors.switch} Specialty {{current}}/{{total}} : Restart the furnace to move on to the next one.",
+          "specialtyNextUnlock": "{emote:unitValues.xp} An additional specialty will unlock at cooking level **{{level}}**.",
+          "specialtiesTitle": "{emote:cookingStations.5} **Your specialties** ({{current}}/{{max}})",
+          "specialtyLine": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Level {{level}})",
+          "specialtySelectPlaceholder": "Manage Your Specialties ({{current}}/{{max}})",
+          "specialtyOptionLabel": "$t(models:cooking.recipes.{{recipeId}}) (Level {{level}})",
+          "specialtySetDescription": "Add it to your specialties",
+          "specialtyRemoveDescription": "Remove it from your specialties",
+          "specialtyAdded": "{emote:cookingStations.5} **$t(models:cooking.recipes.{{recipeId}})** has been added to your specialties: the stove will offer it to you at the **$t(models:cooking.stations.5) ** location.",
+          "specialtyRemoved": "{emote:messages.info} **$t(models:cooking.recipes.{{recipeId}})** is no longer one of your specialties.",
+          "specialtyLimitReached": "{emote:messages.refuse} You already know as many specialties as your cooking level allows (**{{max}}**). Remove one before choosing a new one.",
+          "specialtyUnavailable": "{emote:messages.info} This recipe can no longer be a specialty given the current state of the stove. The suggestions have been updated.",
+          "timePotionsLeft_one": "{emote:unitValues.timeGain} Manipulating time is exhausting: **{{count}}** time potions left this week.",
+          "timePotionsLeft_other": "{emote:unitValues.timeGain} Manipulating time is exhausting: you still have **{{count}}** time potions left to use this week.",
+          "timePotionsExhausted": "{emote:unitValues.timeGain} Time has taken quite a beating this week: no more time potions until next week.",
+          "timePotionWeeklyLimit": "{emote:messages.refuse} You've already prepared **{{limit}}** time potions this week. Time has been in short supply: you'll have to wait until next week to prepare more."
         },
         "upgradeChanges": {
           "betterBed": "A better bed for more sleeping {emote:city.homeUpgrades.bed}",
@@ -1660,9 +1696,17 @@
     "materialLine": "{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})** x{{quantity}}",
     "genericPurchase_one": "You got **{{count}}x** {{item}}.",
     "genericPurchase_other": "You got **{{count}}x** {{item}}.",
+    "plantsSentToHomeStorage_one": "{emote:city.homeUpgrades.chest} **{{count}}** plant has been sent to your home chest.",
+    "plantsSentToHomeStorage_other": "{emote:city.homeUpgrades.chest} **{{count}}** plants have been sent to your home chest.",
     "notEnoughMoney": "You don't have enough money to buy this item! You are missing `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "There are no more potions of the day available for sale... Come back tomorrow!",
     "noPlantSlotAvailable": "You don't have any free plant slots! Lift one or improve your equipment to the tanner.",
+    "noPlantSpace": {
+      "homeStorageFull": "There isn't enough room for these plants anymore—neither in your garage nor in your garden beds! Make some room by cooking with them or composting them.",
+      "plantSlotsFull": "You have no free plant slots! Store your plants in your home's chest, or upgrade your bag at the tanner's: the last slot in the upgraded bag connects your plants to your home's chest.",
+      "noHome": "You don't have any free plant slots! A house would let you store your plants in its trunk.",
+      "noGarden": "You don't have any free plant slots! Your house doesn't have a garden yet: upgrade it so you can store your plants in its trunk."
+    },
     "noGardenForRemoteHarvestTalisman": "The Herbalist refuses to sell you the Sylvester Heart: this item will only be useful once your garden is unblocked.",
     "boughtTooMuchTokens": "You've reached your token purchase limit for the moment. Please come back later!",
     "tokensBought_one": "You have purchased **{{count}} token** {emote:unitValues.token}.",
@@ -1742,7 +1786,7 @@
       },
       "plantSlotExtension": {
         "name": "{emote:shopItems.plantSlotExtension} New Plant Location",
-        "info": "You can carry an additional plant in your inventory."
+        "info": "You'll be able to carry one additional plant in your inventory. The last slot also links your plants to your home's chest, as long as your home has a garden: plants you buy or receive are sent there directly."
       },
       "weeklyPlantName": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
       "weeklyPlantTier1": {
@@ -1917,7 +1961,8 @@
         "name": "{emote:shopItems.lovePointsValue} Court veterinarian",
         "info": "Get detailed information about your pet.",
         "giveTitle": "{{pseudo}}, purchase successful!",
-        "giveDesc": "After a long examination of your pet and its state of health, the vet will give you his report:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Love score** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Diet**: {{diet}}\n{emote:petInformation.force} **Strength**: {{force, number}}\n{emote:petInformation.speed} **Speed**: {{speed, number}}\n{emote:petInformation.feedDelay} **Meal interval**: {{feedDelay}}\n{emote:petInformation.nextFeed} **Next hunger**: {{nextFeed}}\n{emote:petInformation.age} **Age**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Fighting effect**: {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "giveDesc": "After thoroughly examining your pet and assessing its health, the veterinarian gives you their report:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Love Score**: {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Diet**: {{diet}}\n{emote:petInformation.force} **Strength**: {{force, number}}\n{emote:petInformation.speed} **Speed**: {{speed, number}}\n{emote:petInformation.feedDelay} **Time between meals**: {{feedDelay}}\n{emote:petInformation.nextFeed} **Next hunger**: {{nextFeed}}\n{emote:petInformation.age} **Age**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Combat Effect**: {{commentOnFightEffect}}{{secondFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "secondFightEffect": "\n{emote:petInformation.fightEffect} **Second combat effect**: {{comment}}",
         "expeditionPreferences": "\n\n{emote:expedition.map} **Exploration benefits**:\n{{likedLocations}}{{dislikedLocations}}",
         "likedLocations": "{emote:expedition.liked} Thrives in: {{locations}}",
         "dislikedLocations": "\n{emote:expedition.disliked} Wary of : {{locations}}",
@@ -1925,6 +1970,26 @@
         "petIsHungry": "{emote:effects.starving} hungry",
         "lovePointsGained": "\n\n{emote:petInformation.loveScore} The veterinary performed affectionate care to your pet, making it **{{amount, number}}** love points!",
         "commentOnFightEffect": {
+          "breathingHoleAmbush": [
+            "This ice hunter has infinite patience. He waits for the precise moment when his opponent pauses to catch his breath, then pounces to deliver a devastating blow with his paw. He strikes only once per battle.",
+            "Behavioral observations reveal a formidable ambush hunting technique. As soon as your opponent rests or runs out of breath, it pounces on them with tremendous force—once per battle.",
+            "His polar predator's instinct remains intact: prey catching its breath is defenseless. He waits for that moment to strike—just once, but with great force."
+          ],
+          "scentOfBlood": [
+            "It can smell blood from miles away! As soon as your opponent is seriously injured, it bites them and makes them bleed. If the prey lets the bleeding continue without resting, it goes into a frenzy and comes back to bite them savagely.",
+            "Observations reveal the instincts of a formidable marine predator. Once the enemy is half-defeated, it inflicts a bleeding wound and then circles its prey. Only an opponent that stops to stem the bleeding can escape its frenzy.",
+            "The smell of blood drives him wild. He waits until his opponent is weakened before drawing blood, and he doesn't let go of his prey as long as the wound remains open: it's best for her to rest as soon as possible."
+          ],
+          "unstoppable": [
+            "Its colossal mass takes a while to get moving, but once it’s going, nothing can stop it! With each exchange, it gains a little more momentum, and your melee attacks become more powerful. Warning: if you’re immobilized, it loses all its momentum.",
+            "Muscle tests reveal phenomenal inertia. In combat, it accelerates turn after turn and pulls you along with it, gradually boosting your melee attacks up to a certain limit. However, being stunned, petrified, or paralyzed breaks this momentum.",
+            "This familiar is slow to get going, but its momentum is unstoppable. The longer the fight goes on, the more powerful your melee attacks become—as long as nothing immobilizes you. Its thick fur, which protects you from the cold, also helps it maintain its pace."
+          ],
+          "woundedPrey": [
+            "Its keen eyesight spots even the slightest weakness. It circles above the fray, and as soon as its opponent is exhausted, it dives down to finish it off. It dives only once per battle.",
+            "Analysis reveals a perfectly honed predatory instinct. This pet waits until the enemy is severely weakened before pouncing on it at full speed—once per battle.",
+            "Its dives are lightning-fast: it’s its speed, far more than its strength, that does the damage. It reserves these dives for prey that’s on the verge of collapse, which it finishes off with a single dive per fight."
+          ],
           "bite": [
             "This pet has impressive fangs! In combat, it won't hesitate to bite your opponents with fearsome precision.",
             "Look at those canines! Your companion can bite your enemies, inflicting painful wounds and throwing them off balance.",
@@ -2161,9 +2226,9 @@
             "Veterinary observations confirm a capacity for strategic hemophagy. It bites healthy opponents to make them bleed, then converts the blood of already weakened enemies into healing energy to sustain you. Important note: the divine blessing of paladins completely cancels out this vampiric ability."
           ],
           "petPetrified": [
-            "Psychic tests indicate that this pet emits a terrifying aura at critical moments in combat. In the final moments of a confrontation, its petrifying gaze can literally freeze the opponent in place, leaving him totally vulnerable. Warning: this ability is ineffective against mages, whose disciplined minds resist mental petrification.",
-            "Behavioral analysis reveals a mental paralysis ability activated at the end of combat. Your pet then exudes a presence so intimidating that it can petrify enemies, preventing them from moving or retaliating. However, mages have a natural resistance to this effect and cannot be petrified.",
-            "Clinical observations attest to a temporary petrifying power that manifests itself in the final stages of combat. His supernatural aura can freeze the opponent in a state of total paralysis, leaving him defenseless. Important note: mages' mental training makes them immune to this petrification."
+            "Psychic tests indicate that this familiar emits a terrifying aura at critical moments during combat. From the start of the battle, and again midway through, its petrifying gaze can literally freeze the opponent in place, leaving them completely vulnerable. Warning: This ability is ineffective against mages, whose disciplined minds resist mental petrification.",
+            "Behavioral analyses reveal a mental paralysis ability that is activated at the start of combat, and then a second time midway through combat. Your pet then exudes such an intimidating presence that it can petrify the enemy, preventing them from moving or fighting back. However, mages possess a natural resistance to this effect and cannot be petrified.",
+            "Clinical observations confirm a temporary petrification ability that manifests at the start of combat and again midway through the fight. His supernatural aura can freeze the opponent in a state of total paralysis, leaving them defenseless. Important note: Mages’ mental training makes them immune to this petrification."
           ]
         },
         "ageComment_ancestor": "INCREDIBLE! Exclaims the wide-eyed vet. Your pet is an exceptionally rare specimen! It's one of the oldest ever recorded in our archives, with only {{age}} older pets ever found! A true living relic!",
@@ -2282,6 +2347,16 @@
     "off": "The bot was successfully released from maintenance."
   },
   "missions": {
+    "kingChallenge": {
+      "button": "The King's Challenge",
+      "backButton": "Back",
+      "title": "The King's Challenge {{pseudo}}",
+      "description": "Every Monday, the king issues a new challenge to the kingdom's adventurers and rewards those who rise to it.",
+      "header": "{emote:kingChallenge.icon} **King's Challenge ({{tier}}/{{tierCount}})**",
+      "nextTier": "Earn {{objective, number}} {emote:unitValues.score} this week to reach the {{nextTier}} milestone (expires {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
+      "completed": "You've risen to the king's challenge all the way to the final level! A new challenge will be launched at {{time}}.",
+      "tier": "{emote:kingChallenge.{{status}}} Level {{tier}}: {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
+    },
     "title": "{{pseudo}}'s missions",
     "subcategories": {
       "campaignCurrent": "{emote:missions.campaign} **Campaign ({{current}}/{{max}})**",
@@ -2404,7 +2479,7 @@
     "notEnoughEnergy": "You don't have enough energy to start a fight!",
     "monsterNotFound": "No monster has been found to face you. Please report this incident to our support (discord.gg/AP3Wmzb).",
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | A fight between {{fightInitiator}} and {{opponent}} has begun!",
-    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | A friendly battle has begun between {{fightInitiator}} and {{opponent}} ! It will have no consequences.",
+    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | A friendly battle has begun between {{fightInitiator}} and {{opponent}} ! The combatants are reset to a maximum level of {{levelCap}} , and the battle will have no consequences.",
     "actionsOf": "**{{pseudo}}'s attacks:**",
     "petOf": "**{{pseudo}}'s pet:**",
     "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
@@ -2474,7 +2549,8 @@
     },
     "fightActionChoose": {
       "turnIndicationTitle": "It's {{pseudo}}'s turn to play {emote:fightCommand.crossedSwords}",
-      "turnIndicationDescription": "Choose an action"
+      "turnIndicationDescription": "Choose an action",
+      "powerMultiplier": "×{{multiplier, number}}"
     },
     "actions": {
       "intro": "{{emote}} | **{{fighter}}** ",
@@ -2683,6 +2759,86 @@
     "successTitle": "{{pseudo}}, transaction completed!",
     "successDescription": "{{pet}} is now following you. Take good care of it!"
   },
+  "defense": {
+    "title": "Defensive style of {{pseudo}}",
+    "intro": "Choose how your {{className}} defends itself when another player attacks it. Some styles are better at resisting certain classes: choose based on your most recent defenses. Your choice remains secret: your opponents won't find out until they fight you.",
+    "choiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}}",
+    "currentChoiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}} · current style",
+    "chooseStyle": "Choosing a Defensive Style",
+    "cancel": "Cancel",
+    "successTitle": "Defensive style of {{pseudo}}",
+    "success": "Your character will now defend themselves using the {emote:defensePersonalities.{{personality}}} **{{name}} ** style.",
+    "successRandom": "Your character will change their defense style in every battle {emote:defensePersonalities.random}.",
+    "noChoice": "Your class ({{className}}) has only one way to defend itself.",
+    "recentDefensesTitle_one": "Your defenses over the past 24 hours",
+    "recentDefensesTitle_other": "Your comments on the {{count}} over the past few days",
+    "noRecentDefense": "No one has attacked you recently.",
+    "recentDefense_one": "{{className}} : {{won}}/{{count}} successful defense",
+    "recentDefense_other": "{{className}} : {{won}}/{{count}} successful defenses",
+    "canceled": "Your defensive style has not changed.",
+    "personalities": {
+      "random": {
+        "name": "Unpredictable",
+        "description": "A different style is randomly selected for each battle."
+      },
+      "knightStrategist": {
+        "name": "Strategist",
+        "description": "Alternates between resting and launching heavy attacks, and casts its blessing first when facing an opponent capable of doing the same. Particularly effective against Veterans."
+      },
+      "knightEnduring": {
+        "name": "Enduring",
+        "description": "He rests as soon as he is injured and saves his blessing for the end of the battle, when it is at its most powerful."
+      },
+      "knightFiery": {
+        "name": "Spirited",
+        "description": "He casts his blessing right at the start of the battle and doesn't rest until he is seriously injured."
+      },
+      "tankBulwark": {
+        "name": "Rampart",
+        "description": "Strengthens his defense and weakens his opponent with his shield."
+      },
+      "tankRiposte": {
+        "name": "Reporter",
+        "description": "Let your opponent make the first move so you can counter with their most damaging attacks."
+      },
+      "paladinCrusader": {
+        "name": "Crossed",
+        "description": "Charges up his ultimate attack midway through combat, uses his divine attacks at the end of combat, and strikes an opponent already under the effect of a status condition with his shield or battering ram."
+      },
+      "paladinJusticar": {
+        "name": "Avenger",
+        "description": "She saves her ultimate attack for the end of the battle and unleashes her divine attack as soon as there's little chance of it failing."
+      },
+      "gunnerStrategist": {
+        "name": "Strategist",
+        "description": "He fires cannon salvos whenever he has the breath to do so and wears down his opponent with intense attacks and acts of sabotage between salvos."
+      },
+      "gunnerBombardier": {
+        "name": "Bombardier",
+        "description": "Fire the cannon repeatedly as soon as your stamina is at its maximum, and keep your opponent off balance in the meantime."
+      },
+      "veteranStrategist": {
+        "name": "Strategist",
+        "description": "He charges his attack while waiting to regain his breath after his powerful strikes, which he prepares by concentrating."
+      },
+      "veteranCharger": {
+        "name": "Go-getter",
+        "description": "It focuses as soon as it can and immediately launches its powerful attack, without ever charging. It is particularly effective against Paladins."
+      },
+      "mageOccultist": {
+        "name": "Occultist",
+        "description": "Curses or poisons his opponent, then finishes him off with his dark attacks."
+      },
+      "magePyromancer": {
+        "name": "Pyromancer",
+        "description": "He curses his opponent whenever he can, sets him ablaze whenever he has the breath to do so, and takes advantage of both the curse and the burns with his dark attacks."
+      },
+      "mageWarlock": {
+        "name": "Enchanting",
+        "description": "He consistently curses his opponent, preventing them from healing properly, and then takes advantage of the situation with his dark attacks."
+      }
+    }
+  },
   "classes": {
     "description": {
       "0": "A simple class. Somewhat balanced.",
@@ -2873,6 +3029,20 @@
     "leagueChanges": {
       "up": " ({emote:other.leagueUp} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
       "down": " ({emote:other.leagueDown} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
+    },
+    "kingGuardStats": {
+      "openButton": "The King's Guards",
+      "backButton": "History",
+      "title": "{emote:fightCommand.crossedSwords} Facing the king's guards",
+      "record": "**Your record:** Level {{level}} defeated{{aboveLevel}}",
+      "aboveLevel_one": ", {{count}} one level above yours",
+      "aboveLevel_other": ", {{count}} levels above yours",
+      "noRecord": "**Your record:** no guards defeated so far",
+      "progress": "**Records broken:** {{recordsBroken, number}} | **Rankings:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "tally": "**Record:** {emote:fightHistory.won} Wins: {{won, number}} · {emote:fightHistory.lost} Losses: {{lost, number}} · {emote:fightHistory.draw} Draws: {{draw, number}}",
+      "leaderboardTitle": "{emote:other.crown} **Guard Hall of Fame**",
+      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}**: level guard {{level}}",
+      "you": "You"
     }
   },
   "deletecode": {

@@ -42,6 +42,9 @@ interface UniqueSlotRecipesOptions {
 	discoveredRecipeIds: string[];
 	allowPetFoodRecipes?: boolean;
 	maxRecipeLevelWithoutPenalty?: number;
+
+	/** Recipes already offered elsewhere (the specialties), never picked by the rotation */
+	excludedRecipeIds?: ReadonlySet<string>;
 }
 
 /**
@@ -197,11 +200,12 @@ export function getUniqueRecipesForSlots({
 	daySeed,
 	discoveredRecipeIds,
 	allowPetFoodRecipes = true,
-	maxRecipeLevelWithoutPenalty
+	maxRecipeLevelWithoutPenalty,
+	excludedRecipeIds = new Set<string>()
 }: UniqueSlotRecipesOptions): Array<CookingRecipe | null> {
 	const slotCount = Math.min(cookingSlots, SLOT_CONFIGS.length);
 	const recipes: Array<CookingRecipe | null> = new Array(slotCount).fill(null);
-	const usedRecipeIds = new Set<string>();
+	const usedRecipeIds = new Set<string>(excludedRecipeIds);
 
 	const baseOptions = {
 		furnacePosition,

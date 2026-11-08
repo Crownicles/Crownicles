@@ -23,10 +23,11 @@ import {
 } from "../../types/PveBossRecord";
 import type { CookingRecipeId } from "../../types/CookingRecipe";
 export {
-	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients, CookingMenuSnapshot
+	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients, CookingMenuSnapshot,
+	CookingSpecialtyInfo, CookingSpecialtyErrors, CookingSpecialtyError, CookingSlotRecipeRef
 } from "../../types/CookingTypes";
 import {
-	CookingCraftError, CookingMenuSnapshot, RecipeDisplayInfo
+	CookingCraftError, CookingMenuSnapshot, CookingSpecialtyError, RecipeDisplayInfo
 } from "../../types/CookingTypes";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
@@ -817,6 +818,37 @@ export class CommandReportCookingUnpinReq extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingUnpinRes extends CrowniclesPacket {
+	menu!: CookingMenuSnapshot;
+}
+
+// ---- Cooking specialties packets ----
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingSetSpecialtyReq extends CrowniclesPacket {
+	/** Rotating station offering the recipe in the menu snapshot that produced this request */
+	slotIndex!: number;
+
+	/** Core refuses the request when the station no longer offers this recipe */
+	recipeId!: CookingRecipeId;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingSetSpecialtyRes extends CrowniclesPacket {
+	error?: CookingSpecialtyError;
+
+	menu!: CookingMenuSnapshot;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingRemoveSpecialtyReq extends CrowniclesPacket {
+	recipeId!: CookingRecipeId;
+
+	/** Whether the player issued the removal from the ignited menu (drives post-removal re-render). */
+	fromIgnitedView!: boolean;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingRemoveSpecialtyRes extends CrowniclesPacket {
 	menu!: CookingMenuSnapshot;
 }
 

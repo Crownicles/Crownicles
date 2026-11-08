@@ -1,6 +1,7 @@
 import { packetHandler } from "../../PacketHandler";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../../bot/DiscordCache";
+import { MessagesUtils } from "../../../utils/MessagesUtils";
 import { CrowniclesSmallEventEmbed } from "../../../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../../../utils/StringUtils";
 import { getRandomSmallEventIntro } from "../../../utils/SmallEventUtils";
@@ -11,6 +12,7 @@ import {
 	GARDENER_INTERACTIONS, PlantConstants, SEED_CONDITION_FAILURE
 } from "../../../../../Lib/src/constants/PlantConstants";
 import { Language } from "../../../../../Lib/src/Language";
+import i18n from "../../../translations/i18n";
 
 function buildAdviceReplacements(packet: SmallEventGardenerPacket): Record<string, unknown> {
 	if (packet.plantId <= 0) {
@@ -38,9 +40,12 @@ function buildGardenerRewardText(packet: SmallEventGardenerPacket, lng: Language
 				buildAdviceReplacements(packet)
 			);
 		case GARDENER_INTERACTIONS.PLANT:
-			return StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
-				plantId: packet.plantId
-			});
+			return StringUtils.joinParagraphs([
+				StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
+					plantId: packet.plantId
+				}),
+				packet.sentToHomeStorage && i18n.t("smallEvents:gardener.rewards.plantSentToHomeStorage", { lng })
+			]);
 		case GARDENER_INTERACTIONS.MATERIAL:
 			return StringUtils.getRandomTranslation("smallEvents:gardener.rewards.material", lng, {
 				materialId: packet.materialId
@@ -53,9 +58,10 @@ function buildGardenerRewardText(packet: SmallEventGardenerPacket, lng: Language
 export default class GardenerSmallEventHandler {
 	@packetHandler(SmallEventGardenerPacket)
 	async smallEventGardener(context: PacketContext, packet: SmallEventGardenerPacket): Promise<void> {
-		const interaction = context.discord!.buttonInteraction
-			? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!)
-			: DiscordCache.getInteraction(context.discord!.interaction!);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
 		const lng = context.discord!.language;
 
 		const isFromCollector = Boolean(context.discord!.buttonInteraction);
@@ -66,12 +72,12 @@ export default class GardenerSmallEventHandler {
 
 		const rewardText = buildGardenerRewardText(packet, lng);
 
-		await interaction?.editReply({
+		await MessagesUtils.editClickOrCommandReply(context, {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"gardener",
 					story + rewardText,
-					interaction.user,
+					MessagesUtils.getClickUser(context) ?? interaction.user,
 					lng
 				)
 			]

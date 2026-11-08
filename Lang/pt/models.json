@@ -198,6 +198,22 @@
     "9": "Uma classe centrada na velocidade. Pouca saúde e pontos de energia, mas muita velocidade e ataque."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "é ajudado por **{{petNickname}}**, que se manteve à espreita e surge assim que o adversário recupera o fôlego, desferindo-lhe uma formidável patada."
+    },
+    "scentOfBlood": {
+      "generalEffect": "é acompanhado por **{{petNickname}}**, que sentiu o cheiro a sangue: o tubarão morde o adversário ferido e abre uma ferida que sangra abundantemente.",
+      "success": "vê **{{petNickname}}** entrar em frenesi, enlouquecido pelo sangue que ainda escorre: o tubarão atira-se sobre o adversário e morde-o selvaticamente.",
+      "failure": "vê **{{petNickname}}** perder o rasto da sua presa: a hemorragia do adversário parou e o tubarão afasta-se."
+    },
+    "unstoppable": {
+      "generalEffect": "ganha impulso ao lado de **{{petNickname}}**, cuja corrida pesada ganha velocidade: os seus ataques corpo a corpo são cada vez mais fortes.",
+      "success": "é arrastado pelo **{{petNickname}}**, que avança a toda a velocidade: parece que já nada o consegue parar.",
+      "failure": "fica paralisado e **{{petNickname}}** perde todo o seu ímpeto; vai ser preciso recomeçar do início."
+    },
+    "woundedPrey": {
+      "success": "é acompanhado por **{{petNickname}}**, que sobrevoava o combate: ao ver o adversário exausto, a ave de rapina lança-se sobre ele em picada, com as garras à frente."
+    },
     "drowning": {
       "customMessage": "agarra o seu adversário com um dos seus tentáculos e mergulha-o debaixo de água, sendo que apenas os adversários com fôlego escapam ilesos.",
       "name_one": "Afogamento",
@@ -380,7 +396,7 @@
       "stop": "já não está confuso."
     },
     "counterAttack": {
-      "description": "Repete a mesma ação que o teu adversário. Não funciona com ataques mágicos ou divinos, ou se o adversário não tiver atacado.",
+      "description": "Repete a mesma ação que o teu adversário acabou de realizar. Causa mais danos contra monstros. Não funciona com certos ataques, nem se o adversário não tiver atacado.",
       "name_one": "Ataque riposte",
       "customMessage": "não conseguiu ripostar.",
       "name_other": "Os ataques ripostam"
@@ -411,7 +427,7 @@
       "stop": "sofre as consequências da maldição."
     },
     "cursedAttack": {
-      "description": "Amaldiçoa o adversário, talvez sofrendo as consequências no futuro... Cura o jogador se o adversário tiver mais de 40% da sua energia.",
+      "description": "Maldito seja o adversário, talvez venha a sofrer as consequências no futuro... Enquanto estiver amaldiçoado, o adversário recupera menos energia com os cuidados e sofre o ataque sombrio com toda a potência. Cura o lançador se o adversário tiver mais de 40% da sua energia.",
       "name_one": "Ataque amaldiçoado",
       "name_other": "Ataques amaldiçoados"
     },
@@ -431,7 +447,7 @@
       "name_other": "Maldições do mar"
     },
     "darkAttack": {
-      "description": "Ignora a defesa do adversário. Mais eficaz contra um jogador com um ataque elevado. Cega o oponente ou restaura parte do fôlego perdido. A alteração \"cego\" dura pelo menos 1 turno e torna o adversário incapaz de atacar por vezes, reduzindo a sua defesa e velocidade.",
+      "description": "Não tem muito em conta a defesa do adversário. É mais eficaz contra um jogador com um ataque elevado. Muito poderosa na primeira utilização, enfraquece a cada nova utilização bem-sucedida e recupera força quando o lançador não a utiliza durante algumas ações. Atinge sempre um adversário amaldiçoado com toda a potência. A sua potência atual é exibida no botão.",
       "name_one": "Ataque negro",
       "name_other": "Ataques negros"
     },
@@ -473,7 +489,7 @@
       "afraid": "é ajudado por **{{petNickname}}** que, apesar de se lembrar perfeitamente dos acontecimentos recentes, treme demasiado de medo para conseguir recuperar o fôlego perdido."
     },
     "energeticAttack": {
-      "description": "Metade do dano deste ataque é devolvido ao atacante em forma de cura. Ignora parte da defesa adversária.",
+      "description": "Parte dos danos causados por este ataque é devolvida ao lançador sob a forma de cura. Ignora parte da defesa do adversário. Inflige mais danos a um adversário que acabou de descansar. A cura é reduzida contra monstros.",
       "name_one": "Ataque energético",
       "name_other": "Ataques energéticos"
     },
@@ -1254,7 +1270,7 @@
       "atParticle": "para o"
     },
     "21": {
-      "description": "Uma estrada muito utilizada pelos habitantes da aldeia. Muitos pequenos vendedores ambulantes instalam-se aqui durante um dia, criando um enorme mercado.",
+      "description": "Uma estrada muito frequentada pelos habitantes da aldeia. Muitos pequenos vendedores ambulantes instalam-se ali durante o dia, acabando por criar um imenso mercado. Mais adiante, antigas barracas abandonadas há muito tempo estão a ruir sob a areia.",
       "name": "Rota das Merveiras",
       "particle": "para o",
       "atParticle": "para o"
@@ -1266,7 +1282,7 @@
       "atParticle": "em"
     },
     "23": {
-      "description": "Grande cidade mercantil e cruzamento económico, Claire de Ville nem sempre foi tão acolhedora. Inicialmente muito pobre, desenvolveu-se rapidamente graças às suas numerosas lojas e hotéis que oferecem uma vasta escolha aos viajantes da região. Claire de Ville é também conhecida pela sua calma e respeito pela ordem.",
+      "description": "Grande cidade comercial e centro económico, Claire de Ville nem sempre foi tão acolhedora. Inicialmente muito pobre, conseguiu desenvolver-se rapidamente graças aos seus inúmeros comércios e hotéis, que oferecem uma vasta escolha aos viajantes da região. Claire de Ville é também conhecida pela sua tranquilidade e pelo respeito pela ordem. Sob as suas ruas, os túneis escavados na época da sua miséria ainda serpenteiam pela rocha.",
       "name": "Claire de Ville",
       "particle": "para",
       "atParticle": "à",
@@ -1279,7 +1295,7 @@
       "atParticle": "para o"
     },
     "25": {
-      "description": "Está tudo no nome. Um rio muito apreciado pelas peixarias de Claire de Ville.",
+      "description": "O nome diz tudo. Um rio muito apreciado pelos pescadores de Claire de Ville. A jusante, as suas margens perdem-se em bancos de lodo lamacentos onde abundam os caranguejos.",
       "name": "Rio dos Caranguejos",
       "particle": "para o",
       "atParticle": "para o"
@@ -1292,7 +1308,7 @@
       "inParticle": "em"
     },
     "27": {
-      "description": "Uma floresta à beira do Monte Celestrum.",
+      "description": "Uma floresta nas encostas do Monte Célestrum. As suas orlas estendem-se pelas encostas íngremes da montanha.",
       "name": "Floresta de Celestrum",
       "particle": "para o",
       "atParticle": "para o"
@@ -1338,7 +1354,7 @@
       "particle": "para o"
     },
     "41": {
-      "description": "Esplanada pavimentada que liga Boug-Coton às portas do castelo real. Os mensageiros passam uns pelos outros a caminho dos apartamentos do rei.",
+      "description": "Esplanada pavimentada que liga Boug-Coton às portas do castelo real. Os mensageiros cruzam-se ali antes de acederem aos aposentos do rei. Sob os seus paralelepípedos correm passagens secretas escavadas na rocha até às fundações do castelo.",
       "name": "Pátio do Castelo",
       "particle": "para o",
       "atParticle": "para o",
@@ -1351,13 +1367,13 @@
       "atParticle": "para o"
     },
     "5": {
-      "description": "A alcunha do caminho deve-se ao facto de se cruzar na parte sul da Floresta do Velho.",
+      "description": "Trilha que deve o seu nome ao facto de serpentear no seio da natureza exuberante do sul da Floresta do Velho. Por baixo da vegetação, ainda se adivinham os muretes de um antigo labirinto esquecido.",
       "name": "Caminho do Dédale",
       "particle": "para o",
       "atParticle": "em"
     },
     "6": {
-      "description": "Uma aldeia tranquila conhecida pela sua pousada acolhedora.",
+      "description": "Uma aldeia tranquila, conhecida pela sua pousada acolhedora. Por baixo da pousada estendem-se vastas caves secretas escavadas diretamente na rocha.",
       "name": "Boug-Cotton",
       "particle": "para",
       "atParticle": "à",
@@ -2529,7 +2545,8 @@
       "1": "Caldeirão",
       "2": "Fundição",
       "3": "Ainda assim",
-      "4": "Braseiro"
+      "4": "Braseiro",
+      "5": "Especialidade do chef"
     },
     "recipes": {
       "potion_health_1": "Poção de cura básica",

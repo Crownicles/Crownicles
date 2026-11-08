@@ -58,6 +58,9 @@ import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
+import {
+	getPlantReceiverLockKeys, givePlantsToPlayer
+} from "../utils/PlantDeliveryUtils";
 
 function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<SmallEventGardenerPacket, "interactionName" | "conditionKey">): SmallEventGardenerPacket {
 	return {
@@ -72,7 +75,8 @@ function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<Sma
 		 * to a meaningful value — every other call site (post-collector callbacks)
 		 * leaves it unset because Discord skips the story for those (#4273).
 		 */
-		...packet.isFirstEncounter !== undefined ? { isFirstEncounter: packet.isFirstEncounter } : {}
+		...packet.isFirstEncounter !== undefined ? { isFirstEncounter: packet.isFirstEncounter } : {},
+		...packet.sentToHomeStorage ? { sentToHomeStorage: true } : {}
 	};
 }
 
@@ -88,44 +92,58 @@ function getFallbackMoonIllumination(): number {
 	return (1 - Math.cos(2 * Math.PI * phase)) / 2;
 }
 
+function buildMoonApiUrl(now: Date): string {
+	const year = now.getFullYear();
+	const month = String(now.getMonth() + 1)
+		.padStart(2, "0");
+	const day = String(now.getDate())
+		.padStart(2, "0");
+	const today = `${year}-${month}-${day}`;
+
+	const timezoneOffsetMinutes = -now.getTimezoneOffset();
+	const offsetSign = timezoneOffsetMinutes >= 0 ? "+" : "-";
+	const absMinutes = Math.abs(timezoneOffsetMinutes);
+	const offsetHours = String(Math.floor(absMinutes / 60))
+		.padStart(2, "0");
+	const offsetMins = String(absMinutes % 60)
+		.padStart(2, "0");
+	const offset = `${offsetSign}${offsetHours}:${offsetMins}`;
+
+	return `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=${offset}`;
+}
+
+/**
+ * Fetch the current moon phase in degrees, or null when the API answers with an error or an unexpected payload
+ */
+async function fetchMoonPhase(): Promise<number | null> {
+	const response = await fetch(buildMoonApiUrl(new Date()), {
+		headers: { "User-Agent": PlantConstants.MOON_API.USER_AGENT }
+	});
+
+	if (!response.ok) {
+		// An unread body keeps its connection and buffers alive
+		await response.body?.cancel();
+		CrowniclesLogger.error("Moon API returned non-OK status", { status: response.status });
+		return null;
+	}
+
+	const data = await response.json() as { properties?: { moonphase?: number } };
+	const moonphase = data.properties?.moonphase;
+	if (typeof moonphase !== "number") {
+		CrowniclesLogger.error("Moon API returned unexpected data format");
+		return null;
+	}
+	return moonphase;
+}
+
 async function getMoonIllumination(): Promise<number> {
 	if (moonCache && Date.now() - moonCache.fetchedAt < PlantConstants.MOON_API.CACHE_DURATION) {
 		return moonCache.illumination;
 	}
 
 	try {
-		const now = new Date();
-		const year = now.getFullYear();
-		const month = String(now.getMonth() + 1)
-			.padStart(2, "0");
-		const day = String(now.getDate())
-			.padStart(2, "0");
-		const today = `${year}-${month}-${day}`;
-
-		const timezoneOffsetMinutes = -now.getTimezoneOffset();
-		const offsetSign = timezoneOffsetMinutes >= 0 ? "+" : "-";
-		const absMinutes = Math.abs(timezoneOffsetMinutes);
-		const offsetHours = String(Math.floor(absMinutes / 60))
-			.padStart(2, "0");
-		const offsetMins = String(absMinutes % 60)
-			.padStart(2, "0");
-		const offset = `${offsetSign}${offsetHours}:${offsetMins}`;
-
-		const url = `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=${offset}`;
-		const response = await fetch(url, {
-			headers: { "User-Agent": PlantConstants.MOON_API.USER_AGENT }
-		});
-
-		if (!response.ok) {
-			CrowniclesLogger.errorWithObj("Moon API returned non-OK status", response);
-			return getFallbackMoonIllumination();
-		}
-
-		const data = await response.json() as { properties?: { moonphase?: number } };
-		const moonphase = data.properties?.moonphase;
-
-		if (typeof moonphase !== "number") {
-			CrowniclesLogger.error("Moon API returned unexpected data format");
+		const moonphase = await fetchMoonPhase();
+		if (moonphase === null) {
 			return getFallbackMoonIllumination();
 		}
 
@@ -534,19 +552,25 @@ async function handleFallback(response: CrowniclesPacket[], player: Player, cond
 	return await handleMaterialGift(response, player);
 }
 
-async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket> {
-	const emptySlot = await PlayerPlantSlots.findEmptyPlantSlot(player.id);
+// Exported for integration tests
+export async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket> {
+	const randomPlantId = PlantConstants.lootRandomPlant(RandomUtils.crowniclesRandom);
+	const delivery = await givePlantsToPlayer(player, {
+		plantId: randomPlantId,
+		amount: 1
+	});
 
-	if (emptySlot) {
-		const randomPlantId = PlantConstants.lootRandomPlant(RandomUtils.crowniclesRandom);
-		await PlayerPlantSlots.setPlant(player.id, emptySlot.slot, randomPlantId);
+	if (!delivery.delivered) {
 		return makeGardenerPacket({
-			interactionName: GARDENER_INTERACTIONS.PLANT, conditionKey: SEED_CONDITION_FAILURE.NONE, plantId: randomPlantId
+			interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: SEED_CONDITION_FAILURE.NO_PLANT_SPACE
 		});
 	}
 
 	return makeGardenerPacket({
-		interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: SEED_CONDITION_FAILURE.NO_PLANT_SPACE
+		interactionName: GARDENER_INTERACTIONS.PLANT,
+		conditionKey: SEED_CONDITION_FAILURE.NONE,
+		plantId: randomPlantId,
+		...delivery.toHomeStorage > 0 ? { sentToHomeStorage: true } : {}
 	});
 }
 
@@ -639,5 +663,8 @@ export const smallEventFuncs: SmallEventFuncs = {
 				...packet, isFirstEncounter
 			}));
 		}
-	}
+	},
+
+	// The plant gift may go to the home plant storage
+	getAdditionalLockKeys: getPlantReceiverLockKeys
 };

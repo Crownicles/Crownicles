@@ -51,7 +51,7 @@ export async function createPetExpeditionCollector(
 	const lng = interaction.userLanguage;
 
 	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
-	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
+	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.locationType, data.isDistantExpedition);
 	const petDisplay = getPetDisplayString(data.pet, lng);
 	const sexContext = getSexContext(data.pet.petSex);
 
@@ -111,12 +111,12 @@ export async function createPetExpeditionCollector(
 
 		if (buttonInteraction.customId === "expedition_recall") {
 			// Recall - defer reply as Core will send a response
-			await buttonInteraction.deferReply();
+			await DiscordCollectorUtils.deferReply(buttonInteraction);
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, 0);
 		}
 		else if (buttonInteraction.customId === "expedition_cancel_view") {
 			// Close - just acknowledge, no response expected from Core
-			await buttonInteraction.deferUpdate();
+			await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, null, 1);
 		}
 
@@ -140,7 +140,7 @@ function addExpeditionMenuOption(
 	lng: Language
 ): void {
 	const locationEmoji = CrowniclesIcons.expedition.locations[exp.locationType];
-	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
+	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.locationType, exp.isDistantExpedition);
 	const displayDuration = i18n.formatDuration(exp.displayDurationMinutes, lng);
 
 	selectMenu.addOptions({
@@ -262,7 +262,7 @@ export async function createPetExpeditionChoiceCollector(
 			await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
 			return;
 		}
-		await componentInteraction.deferReply();
+		await DiscordCollectorUtils.deferReply(componentInteraction);
 		handleExpeditionChoiceInteraction(componentInteraction as ButtonInteraction | StringSelectMenuInteraction, data, packet, context);
 		collector.stop();
 	});
@@ -286,7 +286,7 @@ function buildFinishedExpeditionEmbed(
 	user: User
 ): CrowniclesEmbed {
 	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
-	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
+	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.locationType, data.isDistantExpedition);
 	const petDisplay = getPetDisplayString(data.pet, lng);
 	const sexContext = getSexContext(data.pet.petSex);
 
@@ -367,7 +367,7 @@ export async function createPetExpeditionFinishedCollector(
 			return;
 		}
 
-		await buttonInteraction.deferReply();
+		await DiscordCollectorUtils.deferReply(buttonInteraction);
 
 		if (buttonInteraction.customId === "expedition_claim") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, 0);

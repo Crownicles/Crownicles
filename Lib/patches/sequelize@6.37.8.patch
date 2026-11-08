@@ -1,0 +1,13 @@
+diff --git a/lib/dialects/mariadb/query.js b/lib/dialects/mariadb/query.js
+index e8ee50294eb40f4d81b03ad932643e1a6100df4a..31bdcc0862723320dd55bc227d6f6d456fadcc8d 100644
+--- a/lib/dialects/mariadb/query.js
++++ b/lib/dialects/mariadb/query.js
+@@ -107,7 +107,7 @@ class Query extends AbstractQuery {
+     }
+     if (this.isRawQuery()) {
+       const meta = data.meta;
+-      delete data.meta;
++      Reflect.deleteProperty(data, "meta");
+       return [data, meta];
+     }
+     if (this.isShowIndexesQuery()) {

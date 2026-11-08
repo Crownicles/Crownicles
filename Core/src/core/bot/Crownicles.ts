@@ -22,8 +22,6 @@ import { Settings } from "../database/game/models/Setting";
 import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
-import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 // skipcq: JS-C1003 - fs does not expose itself as an ES Module.
@@ -45,6 +43,7 @@ import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
 import { CrowniclesEach10Minutes } from "./cronJobs/CrowniclesEach10Minutes";
 import { CrowniclesChristmas } from "./cronJobs/CrowniclesChristmas";
 import { ReleaseGift } from "./ReleaseGift";
+import { getKingChallengeThresholds } from "../kingChallenge/KingChallenge";
 import {
 	PERIODIC_LOOPS, startResilientLoop
 } from "./ResilientLoop";
@@ -113,46 +112,6 @@ export class Crownicles {
 	}
 
 	/**
-	 * End the top week
-	 */
-	static async topWeekEnd(): Promise<void> {
-		crowniclesInstance?.logsDatabase.log15BestTopWeek()
-			.then();
-		const winner = await Player.findOne({
-			where: {
-				weeklyScore: { [Op.gt]: 100 }
-			},
-			order: [
-				["weeklyScore", "DESC"],
-				["level", "DESC"]
-			],
-			limit: 1
-		});
-		if (winner !== null) {
-			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
-			await PlayerBadgesManager.addBadge(winner.id, Badge.TOP_WEEK);
-		}
-		else {
-			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
-		}
-		await Player.update({ weeklyScore: 0 }, { where: {} });
-		CrowniclesLogger.info("Weekly leaderboard has been reset !");
-		await PlayerMissionsInfo.resetShopBuyout();
-		CrowniclesLogger.info("All players can now buy again points from the mission shop !");
-		crowniclesInstance?.logsDatabase.logTopWeekEnd()
-			.then();
-	}
-
-	/**
-	 * Choose a new pve island
-	 */
-	static async newPveIsland(): Promise<void> {
-		const newMapLink = MapCache.randomPveBoatLinkId(await Settings.PVE_ISLAND.getValue());
-		CrowniclesLogger.info("New pve island map link of the week", { newMapLink });
-		await Settings.PVE_ISLAND.setValue(newMapLink);
-	}
-
-	/**
 	 * Update the fight points of the entities that lost some
 	 */
 	static async fightPowerRegenerationLoop(): Promise<void> {
@@ -190,29 +149,6 @@ export class Crownicles {
 				}
 			}
 		);
-	}
-
-	/**
-	 * Execute all the daily tasks
-	 */
-	static async weeklyTimeout(): Promise<void> {
-		if (!PacketUtils.isMqttConnected()) {
-			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
-			setTimeout(Crownicles.weeklyTimeout, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
-			return;
-		}
-
-		/*
-		 * First program the next weekly end immediately at +7 days
-		 * Then wait a bit before setting the next date, so we are sure to be past the date
-		 *
-		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
-		 */
-		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + weeksToMilliseconds(asWeeks(1)));
-		Crownicles.topWeekEnd()
-			.then();
-		Crownicles.newPveIsland()
-			.then();
 	}
 
 	static async reportNotifications(): Promise<void> {
@@ -347,6 +283,12 @@ export class Crownicles {
 		FightsManager.init();
 		await BlessingManager.getInstance()
 			.init();
+
+		/*
+		 * Creates the setting rows of the thresholds before concurrent score gains could race to insert them,
+		 * or read under lock a row inserted after the snapshot of their transaction
+		 */
+		await getKingChallengeThresholds();
 		if (botConfig.TEST_MODE) {
 			await CommandsTest.init();
 		}

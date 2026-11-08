@@ -13,6 +13,7 @@ import {
 } from "discord.js";
 import { PetSellConstants } from "../../../../Lib/src/constants/PetSellConstants";
 import { HelpConstants } from "../../../../Lib/src/constants/HelpConstants";
+import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import {
 	crowniclesClient, discordConfig
 } from "../../bot/CrowniclesShard";
@@ -248,7 +249,7 @@ function buildSpecificCommandEmbed(helpMessage: CrowniclesEmbed, command: HelpCo
 	const commandMentionString: string = commandMention ? commandMention : i18n.t("error:commandDoesntExist", { lng });
 
 	if (command === "FIGHT") {
-		helpMessage.setImage(i18n.t("commands:help.commands.FIGHT.image", { lng }));
+		helpMessage.setImage(HelpConstants.FIGHT_HELP_IMAGE_URL.replace("{lng}", lng));
 	}
 
 	helpMessage.setTitle(
@@ -260,7 +261,8 @@ function buildSpecificCommandEmbed(helpMessage: CrowniclesEmbed, command: HelpCo
 		.setDescription(i18n.t(`commands:help.commands.${command}.description`, {
 			lng,
 			petSellMinPrice: PetSellConstants.SELL_PRICE.MIN,
-			petSellMaxPrice: PetSellConstants.SELL_PRICE.MAX
+			petSellMaxPrice: PetSellConstants.SELL_PRICE.MAX,
+			friendlyFightLevelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 		}))
 		.addFields({
 			name: i18n.t("commands:help.usageFieldTitle", { lng }),

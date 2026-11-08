@@ -8,6 +8,7 @@ import {
 	MarketTrend
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { PetUtils } from "../../utils/PetUtils";
@@ -111,6 +112,29 @@ function buildExpeditionSection(packet: CommandMissionShopPetInformation, lng: L
 	});
 }
 
+type FightEffectComments = {
+	commentOnFightEffect: string;
+	secondFightEffect: string;
+};
+
+/**
+ * Build the veterinarian comments on the fight powers of the pet, the second one only exists for some pets
+ * @param fightAssistIds
+ * @param lng
+ */
+function buildFightEffectComments(fightAssistIds: string[], lng: Language): FightEffectComments {
+	const [firstPowerId, secondPowerId] = fightAssistIds;
+	return {
+		commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${firstPowerId}`, lng),
+		secondFightEffect: secondPowerId
+			? i18n.t("commands:shop.shopItems.lovePointsValue.secondFightEffect", {
+				lng,
+				comment: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${secondPowerId}`, lng)
+			})
+			: ""
+	};
+}
+
 export async function handleLovePointsValueShopItem(packet: CommandMissionShopPetInformation, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!interaction) {
@@ -135,7 +159,7 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 		speed: packet.speed,
 		feedDelay: i18n.formatDuration(millisecondsToMinutes(asMilliseconds(packet.feedDelay)), lng),
 		nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
-		commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),
+		...buildFightEffectComments(packet.fightAssistIds, lng),
 		commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),
 		expeditionSection,
 		dwarfPet: packet.randomPetDwarf
@@ -197,12 +221,11 @@ export async function skipMissionShopItemCollector(context: PacketContext, packe
 
 export async function skipMissionShopResult(packet: CommandMissionShopSkipMissionResult, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (!interaction) {
 		return;
 	}
 	const lng = interaction.userLanguage;
-	await buttonInteraction?.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.shopItems.skipMission.successTitle", {

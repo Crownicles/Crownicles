@@ -33,6 +33,8 @@ import {
 import {
 	StringConstants, SexTypeShort
 } from "../../../../Lib/src/constants/StringConstants";
+import { getExpeditionLocationName } from "./expedition/ExpeditionDisplayUtils";
+import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 
 /**
  * Get the sex context string for i18n translations (male/female)
@@ -53,9 +55,7 @@ function generateExpeditionRPText(
 
 	// Get location info
 	const locationEmoji = CrowniclesIcons.expedition.locations[expedition.locationType as ExpeditionLocationType];
-	const locationName = expedition.mapLocationId
-		? i18n.t(`commands:petExpedition.mapLocationExpeditions.${expedition.mapLocationId}`, { lng })
-		: i18n.t("commands:petExpedition.mapLocationExpeditions.1", { lng });
+	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId, expedition.locationType);
 
 	// Header with location and return time
 	let text = i18n.t("commands:petExpedition.expeditionStatusRP.header", {
@@ -243,7 +243,7 @@ function setupPetButtonCollector(params: {
 			 * (choice menu, in progress menu, or resolve menu based on state)
 			 */
 			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionPacketReq, {}));
-			await i.deferUpdate();
+			await DiscordCollectorUtils.deferUpdate(i);
 		}
 	});
 

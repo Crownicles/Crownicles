@@ -1,4 +1,7 @@
 import { ACCOUNT_DELETION_CODE_LENGTH } from "../../Lib/src/utils/AccountDeletionCode";
+import {
+	asMilliseconds, Millisecond
+} from "../../Lib/src/types/TimeTypes";
 
 export abstract class DiscordConstants {
 	static MAX_BUTTONS_PER_ROW = 5;
@@ -15,6 +18,27 @@ export abstract class DiscordConstants {
 	};
 
 	static EMPTY_MESSAGE = "_ _";
+
+	/**
+	 * Delays after which the action message of a fight turn is read back from Discord, to display the turn again when Discord
+	 * wrote an older state of the message over it (#5046). Each check is skipped once the fighter has played.
+	 */
+	static FIGHT_ACTION_DISPLAY_CHECK_DELAYS: Millisecond[] = [
+		asMilliseconds(3_000),
+		asMilliseconds(15_000),
+		asMilliseconds(45_000)
+	];
+
+	/**
+	 * Shortest duration given to a collector: discord.js arms no timer at all for a zero duration, which would keep it alive forever
+	 */
+	static readonly MIN_COLLECTOR_TIME: Millisecond = asMilliseconds(1);
+
+	/**
+	 * V8 old space limit of each shard process, in MB. A shard reaching it dies on a heap error and is respawned
+	 * by the shard supervisor, instead of growing until the container memory limit kills an arbitrary shard
+	 */
+	static readonly SHARD_MAX_OLD_SPACE_SIZE_MB = 384;
 
 	/**
 	 * Discord.js cache configuration for RAM optimization
@@ -53,7 +77,17 @@ export abstract class DiscordConstants {
 		/**
 		 * Interval in seconds for sweeping guild members
 		 */
-		GUILD_MEMBER_SWEEP_INTERVAL: 600
+		GUILD_MEMBER_SWEEP_INTERVAL: 600,
+
+		/**
+		 * Interval in seconds for sweeping cached users, which discord.js never evicts otherwise
+		 */
+		USER_SWEEP_INTERVAL: 3600,
+
+		/**
+		 * Interval between two purges of the expired interactions kept by DiscordCache
+		 */
+		INTERACTIONS_PURGE_INTERVAL: asMilliseconds(60_000)
 	};
 
 	/**

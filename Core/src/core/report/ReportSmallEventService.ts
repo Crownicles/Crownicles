@@ -155,7 +155,9 @@ async function loadAndExecuteSmallEvent(
  * player are serialised on the database side. Small events that defer
  * their mutations to a later collector callback acquire the lock for
  * their setup phase only — the deferred callback re-locks itself
- * (handled per file in PR-H2).
+ * (handled per file in PR-H2). Rows the small event mutates besides the
+ * player (`getAdditionalLockKeys`, e.g. the home) join the same lock set,
+ * so that it keeps the canonical order.
  */
 async function runSmallEventUnderLock(
 	player: Locked<Player>,
@@ -165,6 +167,7 @@ async function runSmallEventUnderLock(
 	context: PacketContext,
 	playerActiveObjects: PlayerActiveObjects
 ): Promise<void> {
+	const additionalLockKeys = await smallEvent.getAdditionalLockKeys?.(player) ?? [];
 	await withLockedPlayerAndMissionsSafe(player, "runSmallEventUnderPlayerLock", async lockedPlayer => {
 		/*
 		 * Insert the small-event record BEFORE the body so it is affected
@@ -177,7 +180,7 @@ async function runSmallEventUnderLock(
 		await smallEvent.executeSmallEvent(response, lockedPlayer, context, playerActiveObjects);
 		await lockedPlayer.save();
 		await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
-	});
+	}, additionalLockKeys);
 }
 
 /**

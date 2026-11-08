@@ -5,6 +5,7 @@ import { GuildLevelUpPacket } from "./events/GuildLevelUpPacket";
 import { ItemAcceptPacket } from "./events/ItemAcceptPacket";
 import { ItemFoundPacket } from "./events/ItemFoundPacket";
 import { ItemRefusePacket } from "./events/ItemRefusePacket";
+import { KingChallengeTierReachedPacket } from "./events/KingChallengeTierReachedPacket";
 import { MissionsCompletedPacket } from "./events/MissionsCompletedPacket";
 import { MissionsExpiredPacket } from "./events/MissionsExpiredPacket";
 import { PlayerDeathPacket } from "./events/PlayerDeathPacket";
@@ -60,6 +61,7 @@ export const NOTIFICATION_PACKET_NAMES: ReadonlySet<string> = new Set([
 	ItemAcceptPacket.name,
 	ItemFoundPacket.name,
 	ItemRefusePacket.name,
+	KingChallengeTierReachedPacket.name,
 	MissionsCompletedPacket.name,
 	MissionsExpiredPacket.name,
 	PlayerDeathPacket.name,

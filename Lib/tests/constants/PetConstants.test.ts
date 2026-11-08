@@ -51,4 +51,28 @@ describe("PetConstants", () => {
 			expect(behaviorIds.length).toBe(uniqueBehaviorIds.size);
 		});
 	});
+
+	describe("PET_SECONDARY_BEHAVIORS", () => {
+		const secondaryPetIds = PetConstants.PET_SECONDARY_BEHAVIORS.flatMap(behavior => behavior.petIds);
+
+		it("should only give a second power to pets that have a first one", () => {
+			const petIdsWithFirstPower = PetConstants.PET_BEHAVIORS.flatMap(behavior => behavior.petIds);
+
+			for (const petId of secondaryPetIds) {
+				expect(petIdsWithFirstPower).toContain(petId);
+			}
+		});
+
+		it("should give at most one second power per pet", () => {
+			expect(secondaryPetIds.length).toBe(new Set(secondaryPetIds).size);
+		});
+
+		it("should use powers that are not already a first power", () => {
+			const firstPowerIds = PetConstants.PET_BEHAVIORS.map(behavior => behavior.behaviorId);
+
+			for (const behavior of PetConstants.PET_SECONDARY_BEHAVIORS) {
+				expect(firstPowerIds).not.toContain(behavior.behaviorId);
+			}
+		});
+	});
 });

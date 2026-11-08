@@ -1,5 +1,5 @@
 import {
-	beforeEach, describe, expect, it, vi
+	afterEach, beforeEach, describe, expect, it, vi
 } from "vitest";
 import {
 	ReactionCollector,
@@ -14,6 +14,9 @@ import { ReactionCollectorController, ReactionCollectorInstance } from "../../..
 import { PacketUtils } from "../../../src/core/utils/PacketUtils";
 import { BlockingUtils } from "../../../src/core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
+import {
+	ReactionCollectorResetTimerPacketReq, ReactionCollectorResetTimerPacketRes
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 
 const COLLECTOR_TIME = 5_000;
 const PLAYER = "player-keycloak-id";
@@ -166,5 +169,42 @@ describe("ReactionCollectorInstance closing reason", () => {
 		await vi.advanceTimersByTimeAsync(COLLECTOR_TIME);
 
 		expect(stopPacketOf(closingPackets).reason).toBe(REACTION_COLLECTOR_STOP_REASONS.EXPIRED);
+	});
+});
+
+describe("ReactionCollectorController.resetTimer", () => {
+	const RESET_COLLECTOR_TIME = 60_000;
+
+	beforeEach(() => {
+		vi.useFakeTimers();
+		vi.spyOn(PacketUtils, "sendPackets").mockImplementation(() => {});
+	});
+
+	afterEach(() => {
+		vi.useRealTimers();
+		vi.restoreAllMocks();
+	});
+
+	it("answers with the deadline pushed back by the reset, not the deadline of the creation packet", async () => {
+		const collector = new ReactionCollectorInstance(new TestCollector(), context(), { time: RESET_COLLECTOR_TIME }, vi.fn());
+		collector.build();
+		const creationEndTime = collector.creationPacket.endTime;
+
+		vi.advanceTimersByTime(RESET_COLLECTOR_TIME / 2);
+		const response: CrowniclesPacket[] = [];
+		ReactionCollectorController.resetTimer(response, {
+			reactionCollectorId: collector.creationPacket.id
+		} as ReactionCollectorResetTimerPacketReq);
+
+		const answer = response[0] as ReactionCollectorResetTimerPacketRes;
+		expect(answer.endTime).toBe(Date.now() + RESET_COLLECTOR_TIME);
+		expect(answer.endTime).toBeGreaterThan(creationEndTime);
+
+		vi.advanceTimersByTime(RESET_COLLECTOR_TIME / 2);
+		expect(collector.hasEnded).toBeFalsy();
+
+		vi.advanceTimersByTime(RESET_COLLECTOR_TIME / 2);
+		await vi.runAllTimersAsync();
+		expect(collector.hasEnded).toBe(true);
 	});
 });

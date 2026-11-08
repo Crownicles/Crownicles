@@ -1,7 +1,8 @@
 {
   "type": "ro",
   "biomes": [
-    "forest"
+    "forest",
+    "ruins"
   ],
   "tags": [
     "detAu"

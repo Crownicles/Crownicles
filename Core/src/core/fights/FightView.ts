@@ -3,6 +3,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PlayerFighter } from "./fighter/PlayerFighter";
+import { Fighter } from "./fighter/Fighter";
 import { MonsterFighter } from "./fighter/MonsterFighter";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
@@ -31,6 +32,7 @@ import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 import {
 	FightFighterSnapshot, FightStatusSnapshot
 } from "../../../../Lib/src/types/FightStatusSnapshot";
+import { getDarkAttackPowerMultiplier } from "./actions/DarkAttackWear";
 
 export class FightView {
 	public context: PacketContext;
@@ -66,30 +68,61 @@ export class FightView {
 	}
 
 	/**
+	 * Get the id and breath cost of each fight action available to a fighter
+	 * @param fighter
+	 */
+	private static getActionsBreathCosts(fighter: PlayerFighter | MonsterFighter | AiPlayerFighter): Array<[string, number]> {
+		return Array.from(fighter.availableFightActions, ([id, action]): [string, number] => [id, action.breath]);
+	}
+
+	/**
+	 * Button of an action in the action menu, with its current damage multiplier against the opponent when it changes during the fight
+	 * @param fighter
+	 * @param opponent
+	 * @param actionId
+	 */
+	private static getActionChoice(fighter: PlayerFighter, opponent: Fighter, actionId: string): ReactionCollectorFightChooseActionReaction {
+		return actionId === FightConstants.FIGHT_ACTIONS.PLAYER.DARK_ATTACK
+			? {
+				id: actionId,
+				powerMultiplier: getDarkAttackPowerMultiplier(fighter, opponent)
+			}
+			: { id: actionId };
+	}
+
+	/**
+	 * Get the fields of the intro packet describing the opponent, which is either a monster or a player
+	 * @param opponent
+	 */
+	private static getOpponentIntroFields(opponent: MonsterFighter | AiPlayerFighter): Pick<CommandFightIntroduceFightersPacket, "fightOpponentKeycloakId" | "fightOpponentMonsterId" | "fightOpponentPet"> {
+		if (opponent instanceof MonsterFighter) {
+			return { fightOpponentMonsterId: opponent.monster.id };
+		}
+		return {
+			fightOpponentKeycloakId: opponent.player.keycloakId,
+			...opponent.pet ? { fightOpponentPet: opponent.pet.asOwnedPet() } : {}
+		};
+	}
+
+	/**
 	 * Send the fight intro message
 	 * @param fighter
 	 * @param opponent
 	 * @param response
 	 */
 	introduceFight(response: CrowniclesPacket[], fighter: PlayerFighter | AiPlayerFighter, opponent: MonsterFighter | AiPlayerFighter): void {
-		const fightInitiatorActions = new Array<[string, number]>();
-		for (const action of fighter.availableFightActions) {
-			fightInitiatorActions.push([action[0], action[1].breath]);
-		}
-		const fightOpponentActions = new Array<[string, number]>();
-		for (const action of opponent.availableFightActions) {
-			fightOpponentActions.push([action[0], action[1].breath]);
-		}
+		const {
+			id, friendly, levelCap
+		} = this.fightController;
 		response.push(makePacket(CommandFightIntroduceFightersPacket, {
-			fightId: this.fightController.id,
+			fightId: id,
 			fightInitiatorKeycloakId: fighter.player.keycloakId,
-			fightOpponentKeycloakId: opponent instanceof MonsterFighter ? undefined : opponent.player.keycloakId,
-			fightOpponentMonsterId: opponent instanceof MonsterFighter ? opponent.monster.id : undefined,
-			fightInitiatorActions,
-			fightOpponentActions,
-			fightInitiatorPet: fighter.pet ? fighter.pet.asOwnedPet() : undefined,
-			fightOpponentPet: opponent instanceof MonsterFighter || !opponent.pet ? undefined : opponent.pet.asOwnedPet(),
-			friendly: this.fightController.friendly
+			fightInitiatorActions: FightView.getActionsBreathCosts(fighter),
+			fightOpponentActions: FightView.getActionsBreathCosts(opponent),
+			...FightView.getOpponentIntroFields(opponent),
+			...fighter.pet ? { fightInitiatorPet: fighter.pet.asOwnedPet() } : {},
+			friendly,
+			...levelCap !== undefined ? { levelCap } : {}
 		}));
 	}
 
@@ -251,10 +284,11 @@ export class FightView {
 	 * @param actions - the actions available for the player
 	 */
 	displayFightActionMenu(response: CrowniclesPacket[], playerFighter: PlayerFighter, actions: Map<string, FightAction>): void {
+		const opponent = this.fightController.getDefendingFighter()!;
 		const collector = new ReactionCollectorFightChooseAction(
 			this.fightController.id,
 			playerFighter.player.keycloakId,
-			[...actions.keys()]
+			[...actions.keys()].map(actionId => FightView.getActionChoice(playerFighter, opponent, actionId))
 		);
 
 		const endCallback: EndCallback = async (collector, response) => {

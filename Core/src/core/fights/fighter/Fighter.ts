@@ -29,6 +29,9 @@ export type FightStatModifier = {
 type FightDamageMultiplier = {
 	value: number;
 	turns: number;
+
+	// When set, the multiplier only applies to the actions of this type
+	actionType?: FightActionType;
 };
 
 type FightBreathRegenModifier = {
@@ -334,25 +337,35 @@ export abstract class Fighter {
 	 * Apply a multiplier which multiply the total damages of the fighter
 	 * @param multiplier
 	 * @param turns The number of turns it lasts
+	 * @param actionType When set, only the damages of the actions of this type are multiplied
 	 */
-	public applyDamageMultiplier(multiplier: number, turns: number): void {
+	public applyDamageMultiplier(multiplier: number, turns: number, actionType?: FightActionType): void {
 		this.damageMultipliers.push({
 			value: multiplier,
-			turns
+			turns,
+			...actionType && { actionType }
 		});
 	}
 
 	/**
-	 * Get the damage multiplier
+	 * Get the damage multiplier applying to all the actions of the fighter
 	 */
 	public getDamageMultiplier(): number {
-		let multiplier = 1;
+		return this.multiplyDamageMultipliers(damageMultiplier => damageMultiplier.actionType === undefined);
+	}
 
-		for (const damageMultiplier of this.damageMultipliers) {
-			multiplier *= damageMultiplier.value;
-		}
+	/**
+	 * Get the damage multiplier applying only to the actions of the given type
+	 * @param actionType
+	 */
+	public getActionTypeDamageMultiplier(actionType: FightActionType): number {
+		return this.multiplyDamageMultipliers(damageMultiplier => damageMultiplier.actionType === actionType);
+	}
 
-		return multiplier;
+	private multiplyDamageMultipliers(isApplying: (damageMultiplier: FightDamageMultiplier) => boolean): number {
+		return this.damageMultipliers
+			.filter(isApplying)
+			.reduce((multiplier, damageMultiplier) => multiplier * damageMultiplier.value, 1);
 	}
 
 	/**

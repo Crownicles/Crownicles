@@ -23,7 +23,21 @@ type MapLinkData = {
 
 const mapLocationsPath = resolve(__dirname, "../../../resources/mapLocations");
 const frenchModelsPath = resolve(__dirname, "../../../../Lang/fr/models.json");
+const frenchCommandsPath = resolve(__dirname, "../../../../Lang/fr/commands.json");
 const mapLinksPath = resolve(__dirname, "../../../resources/mapLinks");
+
+/**
+ * Attributes of the ends of the map links where a pet expedition cannot be launched, mirroring MapCache.continentMapLinks:
+ * the PVE island links and the links inside the haunted area. Expeditions are proposed on both ends of the other links.
+ */
+const NON_EXPEDITION_LINK_ATTRIBUTES: readonly (readonly [string, string])[] = [
+	[MapConstants.MAP_ATTRIBUTES.MAIN_CONTINENT, MapConstants.MAP_ATTRIBUTES.PVE_ISLAND_ENTRY],
+	[MapConstants.MAP_ATTRIBUTES.PVE_ISLAND_ENTRY, MapConstants.MAP_ATTRIBUTES.PVE_ISLAND],
+	[MapConstants.MAP_ATTRIBUTES.PVE_ISLAND, MapConstants.MAP_ATTRIBUTES.PVE_ISLAND],
+	[MapConstants.MAP_ATTRIBUTES.PVE_ISLAND, MapConstants.MAP_ATTRIBUTES.PVE_EXIT],
+	[MapConstants.MAP_ATTRIBUTES.PVE_EXIT, MapConstants.MAP_ATTRIBUTES.CONTINENT1],
+	[MapConstants.MAP_ATTRIBUTES.HAUNTED, MapConstants.MAP_ATTRIBUTES.HAUNTED]
+];
 
 function readIds(path: string): number[] {
 	return readdirSync(path)
@@ -116,6 +130,28 @@ describe("Map data integrity", () => {
 		expect(invalid).toEqual([]);
 	});
 
+	it("every biome of an expedition location has its own French expedition name, and every name matches a biome", () => {
+		const expeditionNames = (JSON.parse(readFileSync(frenchCommandsPath, "utf-8")) as {
+			petExpedition: { mapLocationExpeditions: Record<string, string> };
+		}).petExpedition.mapLocationExpeditions;
+		const expeditionLocationIds = new Set([...mapLinks.values()]
+			.filter(link => !NON_EXPEDITION_LINK_ATTRIBUTES.some(([start, end]) => readMapLocation(link.startMap).attribute === start
+				&& readMapLocation(link.endMap).attribute === end))
+			.flatMap(link => [link.startMap, link.endMap]));
+		const expectedKeys = [...expeditionLocationIds]
+			.map(id => ({
+				id,
+				mapLocation: readMapLocation(id)
+			}))
+			.flatMap(({ id, mapLocation }) => {
+				const biomes = mapLocation.biomes ?? [];
+				return biomes.length === 1 ? [String(id)] : biomes.map(biome => `${id}_${biome}`);
+			})
+			.sort();
+
+		expect(Object.keys(expeditionNames).sort()).toEqual(expectedKeys);
+	});
+
 	it("every biome can be reached by expeditions on the main continent", () => {
 		const continentBiomes = new Set([...mapLocationIds]
 			.map(readMapLocation)
@@ -125,6 +161,18 @@ describe("Map data integrity", () => {
 		const missing = Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES).filter(biome => !continentBiomes.has(biome));
 
 		expect(missing).toEqual([]);
+	});
+
+	it("every biome is offered by two neighbouring locations of the main continent, so a player can loop on it", () => {
+		const continentIds = [...mapLocationIds].filter(id => readMapLocation(id).attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1);
+		const offers = (id: number, biome: string): boolean => readMapLocation(id).biomes?.includes(biome) ?? false;
+		const withoutLoop = Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES)
+			.filter(biome => ![...mapLinks.values()].some(link => continentIds.includes(link.startMap)
+				&& continentIds.includes(link.endMap)
+				&& offers(link.startMap, biome)
+				&& offers(link.endMap, biome)));
+
+		expect(withoutLoop).toEqual([]);
 	});
 
 	it("every map location type has a French name, a prefix and an icon", () => {

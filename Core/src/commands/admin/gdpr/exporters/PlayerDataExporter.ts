@@ -30,6 +30,7 @@ import { HomeChestSlots } from "../../../../core/database/game/models/HomeChestS
 import { HomeGardenSlots } from "../../../../core/database/game/models/HomeGardenSlot";
 import { HomePlantStorages } from "../../../../core/database/game/models/HomePlantStorage";
 import { PlayerCookingRecipe } from "../../../../core/database/game/models/PlayerCookingRecipe";
+import { PlayerCookingSpecialty } from "../../../../core/database/game/models/PlayerCookingSpecialty";
 import { GlobalBlessing } from "../../../../core/database/game/models/GlobalBlessing";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
@@ -360,6 +361,9 @@ async function exportMiscData(
 
 	// Player cooking recipes discovered
 	await exportPlayerCookingRecipes(player.id, csvFiles);
+
+	// Player cooking specialties
+	await exportPlayerCookingSpecialties(player.id, csvFiles);
 }
 
 async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
@@ -440,6 +444,13 @@ async function exportPlayerCookingRecipes(playerId: number, csvFiles: GDPRCsvFil
 	}
 }
 
+async function exportPlayerCookingSpecialties(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const specialties = await PlayerCookingSpecialty.getOfPlayer(playerId);
+	if (specialties.length > 0) {
+		csvFiles["24_cooking_specialties.csv"] = toCSV(specialties.map(specialty => ({ recipeId: specialty.recipeId })));
+	}
+}
+
 /**
  * Exports guild-related data (files 13-14)
  */
@@ -489,6 +500,8 @@ export async function exportPlayerData(
 			health: player.getHealthValue(),
 			score: player.score,
 			weeklyScore: player.weeklyScore,
+			kingChallengeTier: player.kingChallengeTier,
+			defensePersonality: player.defensePersonality,
 			level: player.level,
 			experience: player.experience,
 			money: player.money,
@@ -517,6 +530,7 @@ export async function exportPlayerData(
 			lastBedUsedAt: player.lastBedUsedAt,
 			furnacePosition: player.furnacePosition,
 			pinnedCookingRecipeId: player.pinnedCookingRecipeId,
+			timePotionsCookedThisWeek: player.timePotionsCookedThisWeek,
 			lastGardenWatered: player.lastGardenWatered,
 			guildJoinedAt: player.guildJoinedAt,
 			createdAt: player.createdAt,

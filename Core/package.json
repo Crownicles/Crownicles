@@ -1,9 +1,9 @@
 {
   "name": "crownicles_core",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "Core package of Crownicles which manages the game mechanics",
   "main": "src/main.js",
-  "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f",
+  "packageManager": "pnpm@10.34.3+sha512.f2c531b08829d7be7f03c90addc266615f9c5477463e4bf1d275cb263ce9ea57cf0d5599110d94649a9bb3fed9f0b5efcea74a7016b61532a24cb9ad87860c1d",
   "engines": {
     "node": ">=24.0.0"
   },
@@ -19,7 +19,7 @@
     "eslint": "eslint src",
     "eslintFix": "eslint src --fix",
     "tsc": "tsc",
-    "dockerStart": "node --max-old-space-size=512 dist/Core/src/main.js",
+    "dockerStart": "node --max-old-space-size=512 --heapsnapshot-signal=SIGUSR2 --diagnostic-dir=./logs dist/Core/src/main.js",
     "start-profiler": "pnpm run tsc && node --prof dist/Core/src/main.js"
   },
   "dependencies": {
@@ -29,7 +29,7 @@
     "cls-hooked": "4.2.2",
     "cron": "4.4.0",
     "express": "5.2.1",
-    "mariadb": "3.0.2",
+    "mariadb": "3.5.4",
     "moment": "2.30.1",
     "mqtt": "5.15.2",
     "prom-client": "15.1.3",
@@ -54,5 +54,10 @@
     "typescript": "6.0.3",
     "typescript-eslint": "8.67.0",
     "vitest": "4.1.11"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "sequelize@6.37.8": "patches/sequelize@6.37.8.patch"
+    }
   }
 }

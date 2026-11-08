@@ -147,7 +147,7 @@
     "recallButton": "Rappeler",
     "closeButton": "Continuer l'exploration",
     "chooseExpeditionTitle": "{{pseudo}}, nouvelles expéditions disponibles",
-    "chooseExpedition": "Le $t(models:talisman.anchor) vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
+    "chooseExpedition": "Le $t(models:talisman.anchor) vibre doucement dans votre sacoche. Plusieurs destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
     "selectPlaceholder": "Choisissez une destination...",
     "distantExpeditionPrefix": "Expédition lointaine : {{location}}",
     "expeditionOption": {
@@ -299,32 +299,44 @@
       "2": "les Sentiers Secrets de la Voie Champêtre",
       "3": "les Prairies Cachées du Berceau",
       "4": "les Profondeurs de la Forêt du Vieillard",
-      "5": "les Labyrinthes Oubliés du Chemin du Dédale",
+      "5_forest": "les Sous-bois Sinueux du Chemin du Dédale",
+      "5_ruins": "les Labyrinthes Oubliés du Chemin du Dédale",
       "6": "les Caves Secrètes de Boug-Coton",
-      "7": "les Tombeaux Oubliés de la Vallée des Rois",
+      "7_desert": "les Dunes Brûlantes de la Vallée des Rois",
+      "7_ruins": "les Tombeaux Oubliés de la Vallée des Rois",
       "8": "les Passages Mystiques du Croisement des Destins",
-      "9": "les Pavés Anciens de la Grande Rue",
-      "10": "les Catacombes Perdues de Ville Forte",
+      "9_plains": "les Bas-côtés de la Grande Rue",
+      "9_ruins": "les Pavés Anciens de la Grande Rue",
+      "10_cave": "les Catacombes Perdues de Ville Forte",
+      "10_ruins": "les Remparts Effondrés de Ville Forte",
       "11": "les Embuscades du Grand Axe",
       "12": "les Plaines de l'Étendue",
       "13": "les Marécages Maudits de la Route Marécageuse",
-      "14": "les Brumes Enchanteresses du Lac Mirage",
-      "15": "les Sommets Enneigés du Mont Célestrum",
+      "14_coast": "les Rives Paisibles du Lac Mirage",
+      "14_swamp": "les Roselières Brumeuses du Lac Mirage",
+      "15_cave": "les Grottes sans Fond du Mont Célestrum",
+      "15_mountain": "les Sommets Enneigés du Mont Célestrum",
       "16": "les Tanières du Chemin aux Loups",
       "17": "les Oasis Cachées du Village Coco",
       "18": "les Rapides Tumultueux de la Rivière Vacarme",
-      "19": "les Sables Mouvants de La Dune",
+      "19_coast": "le Rivage Venteux de La Dune",
+      "19_desert": "les Sables Mouvants de La Dune",
       "21": "les Échoppes Abandonnées de la Route des Merveilles",
-      "22": "les Galeries Obscures du Bois Hurlant",
-      "23": "les Ruelles Secrètes de Claire de Ville",
+      "22": "les Fourrés des Brigands du Bois Hurlant",
+      "23": "les Souterrains Oubliés de Claire de Ville",
       "24": "les Escarpements de la Route Grimpante",
-      "25": "les Méandres de la Rivière aux Crabes",
-      "26": "les Quartiers Anciens de Mergagnan",
-      "27": "les Clairières Mystiques de la Forêt Célestrum",
-      "28": "les Souterrains des Portes du Château",
+      "25_coast": "les Méandres de la Rivière aux Crabes",
+      "25_swamp": "les Vasières de la Rivière aux Crabes",
+      "26_coast": "le Port de Mergagnan",
+      "26_plains": "les Jardins de Mergagnan",
+      "27_forest": "les Clairières Mystiques de la Forêt Célestrum",
+      "27_mountain": "les Pentes Escarpées de la Forêt Célestrum",
+      "28": "les Abords des Portes du Château",
       "29": "les Alcôves de la Salle de Réception",
       "32": "les Pavés Royaux de la Route vers le Château",
-      "41": "les Passages Secrets de la Cour du Château"
+      "40": "les Couloirs Hantés de la Maison Hantée",
+      "41_cave": "les Passages Secrets de la Cour du Château",
+      "41_plains": "l'Esplanade de la Cour du Château"
     },
     "errors": {
       "noPet": "Les esprits de la nature refusent de vous laisser envoyer un familier... car vous n'en possédez pas !",
@@ -479,6 +491,9 @@
       "BLESSING": {
         "description": "Affiche l'état de la bénédiction globale : la cagnotte que les aventuriers alimentent en rencontrant l'Oracle lors de leurs voyages, ou la bénédiction active et le temps qu'il lui reste. Cette commande est accessible après avoir rencontré l'Oracle au moins une fois."
       },
+      "DEFENSE": {
+        "description": "Permet de choisir comment votre personnage se défend lorsqu'un autre joueur l'attaque, ou de laisser un style différent être tiré au hasard à chaque combat. Seules certaines classes disposent de plusieurs styles."
+      },
       "CLASSES": {
         "description": "Permet de changer de classe. Plus d'informations sur les classes sont disponibles sur le guide du joueur : https://guide.crownicles.com"
       },
@@ -495,14 +510,13 @@
         "description": "Permet de gérer votre équipement pour chaque catégorie d'objets : équiper un objet de votre réserve, ranger l'objet équipé dans votre réserve ou intervertir deux objets."
       },
       "FIGHT": {
-        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
-        "image": "https://crownicles.com/public/ressources/fighthelp/fr/5.1.7.png"
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
-        "description": "Affiche l'historique de vos derniers combats : l'adversaire affronté, le résultat ainsi que l'évolution de la gloire et de la ligue de chaque combattant."
+        "description": "Affiche l'historique de vos derniers combats : l'adversaire affronté, le résultat ainsi que l'évolution de la gloire et de la ligue de chaque combattant. Si vous avez déjà affronté un garde du roi, le bouton **Gardes du roi** présente votre record face aux gardes, votre classement et le tableau d'honneur du royaume."
       },
       "FRIENDLY_FIGHT": {
-        "description": "Permet d'affronter un autre joueur, choisi en le mentionnant ou grâce à son classement, dans un combat amical. Le joueur affronté est contrôlé par une IA. Ce combat n'a aucune conséquence : aucune gloire, aucune récompense, aucune énergie perdue et aucune progression de mission."
+        "description": "Permet d'affronter un autre joueur, choisi en le mentionnant ou grâce à son classement, dans un combat amical. Le joueur affronté est contrôlé par une IA. Ce combat n'a aucune conséquence : aucune gloire, aucune récompense, aucune énergie perdue et aucune progression de mission. Le niveau des deux combattants est plafonné à {{friendlyFightLevelCap}} : un joueur de niveau inférieur conserve son niveau."
       },
       "GARDEN": {
         "description": "Permet de vous occuper du jardin de votre demeure lorsque vous vous trouvez dans sa ville : planter, arroser, composter et récolter vos plantes. Avec le Cœur Sylvestre, un talisman vendu chez l'Herboriste à Coco Village, il devient possible de consulter le jardin et d'y récolter à distance."
@@ -679,6 +693,8 @@
     "seedSlot": "{emote:city.homeUpgrades.garden} Graine :",
     "plantSlots_one": "{emote:shopItems.plantSlotExtension} Plante transportée ({{count}}/{{max}}) :",
     "plantSlots_other": "{emote:shopItems.plantSlotExtension} Plantes transportées ({{count}}/{{max}}) :",
+    "plantsLinkedToHomeStorageTitle": "{emote:city.homeUpgrades.chest} Lien avec le coffre :",
+    "plantsLinkedToHomeStorage": "Vos plantes sont reliées au coffre de votre maison : les plantes achetées ou reçues y sont envoyées directement, vos emplacements ne gardant que ce que le coffre ne peut plus contenir.",
     "weapons_one": "Arme ({{count}}/{{max}}) :",
     "weapons_other": "Armes ({{count}}/{{max}}) :",
     "talisman": "Artefacts :",
@@ -792,7 +808,7 @@
     },
     "mission": {
       "fieldName": "Missions :",
-      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
+      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% | {emote:kingChallenge.icon} {{kingChallengeTier}}/{{kingChallengeTierCount}}"
     },
     "noTimeLeft": {
       "fieldName": "Temps restant :",
@@ -835,7 +851,7 @@
   },
   "report": {
     "adviceTitle": "Conseil :",
-    "chooseDestinationIndications": "Choisissez une destination pour votre voyage:",
+    "chooseDestinationIndications": "Choisissez une destination pour votre voyage. Les terrains indiqués sont ceux que votre familier pourra y explorer en expédition :",
     "choseMapMinutes_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
     "choseMapMinutes_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
     "choseMap_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{time}} heure**.",
@@ -849,6 +865,7 @@
     "collectedPointsTitle": "Points récoltés :",
     "commandDescription": "Obtenir un rapport sur la situation de votre personnage.",
     "commandName": "rapport",
+    "destinationChoice": "{{mapTypeIcon}} {{location}} ({{duration}}) | {{biomes}}",
     "destinationTitle": "{{pseudo}}, destination du voyage",
     "doChoice": "{{emoji}} {{choiceText}}\n",
     "doEvent": "{emote:commands.report} **Journal de {{pseudo}} :** {{event}}\n*- Utilisez les boutons pour effectuer une action {emote:collectors.warning} Ne pas répondre est considéré comme un choix à part.*",
@@ -1416,7 +1433,8 @@
             "1": "Mijoter",
             "2": "Fondre",
             "3": "Distiller",
-            "4": "Griller"
+            "4": "Griller",
+            "5": "Sublimer"
           },
           "noWood": "{emote:messages.refuse} Vous n'avez pas de bois pour allumer le fourneau. Récoltez du bois lors de vos expéditions !",
           "woodConfirm": "{emote:messages.info} Vous n'avez plus de bois commun. Du **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** sera utilisé pour allumer le fourneau. Confirmer ?",
@@ -1454,7 +1472,25 @@
           "pinnedRecipeTitle": "{emote:messages.pin} **Recette épinglée** — {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
           "pinnedReady": "\n{emote:messages.validate} Vous avez tous les ingrédients pour cette recette !",
           "unpinButton": "Désépingler",
-          "pinButton": "Épingler"
+          "pinButton": "Épingler",
+          "specialtiesNone_one": "{emote:cookingStations.5} Votre maîtrise des fourneaux vous permet d'avoir **{{count}} spécialité** : le fourneau vous la proposera à chaque allumage sur l'emplacement **$t(models:cooking.stations.5)**, en plus des recettes habituelles. Allumez-le pour la choisir parmi les recettes proposées.",
+          "specialtiesNone_other": "{emote:cookingStations.5} Votre maîtrise des fourneaux vous permet d'avoir jusqu'à **{{count}} spécialités** : le fourneau vous en proposera une à chaque allumage sur l'emplacement **$t(models:cooking.stations.5)**, en plus des recettes habituelles. Allumez-le pour les choisir parmi les recettes proposées.",
+          "specialtyRotation": "{emote:collectors.switch} Spécialité {{current}}/{{total}} : relancez le fourneau pour passer à la suivante.",
+          "specialtyNextUnlock": "{emote:unitValues.xp} Une spécialité supplémentaire se débloquera au niveau **{{level}}** de cuisine.",
+          "specialtiesTitle": "{emote:cookingStations.5} **Vos spécialités** ({{current}}/{{max}})",
+          "specialtyLine": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+          "specialtySelectPlaceholder": "Gérer vos spécialités ({{current}}/{{max}})",
+          "specialtyOptionLabel": "$t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+          "specialtySetDescription": "L'ajouter à vos spécialités",
+          "specialtyRemoveDescription": "La retirer de vos spécialités",
+          "specialtyAdded": "{emote:cookingStations.5} **$t(models:cooking.recipes.{{recipeId}})** rejoint vos spécialités : le fourneau vous la proposera sur l'emplacement **$t(models:cooking.stations.5)**.",
+          "specialtyRemoved": "{emote:messages.info} **$t(models:cooking.recipes.{{recipeId}})** ne fait plus partie de vos spécialités.",
+          "specialtyLimitReached": "{emote:messages.refuse} Vous maîtrisez déjà autant de spécialités que votre niveau de cuisine le permet (**{{max}}**). Retirez-en une avant d'en choisir une nouvelle.",
+          "specialtyUnavailable": "{emote:messages.info} Cette recette ne peut plus devenir une spécialité dans l'état actuel du fourneau. Les propositions ont été rafraîchies.",
+          "timePotionsLeft_one": "{emote:unitValues.timeGain} Manipuler le temps épuise : encore **{{count}}** potion de temps possible cette semaine.",
+          "timePotionsLeft_other": "{emote:unitValues.timeGain} Manipuler le temps épuise : encore **{{count}}** potions de temps possibles cette semaine.",
+          "timePotionsExhausted": "{emote:unitValues.timeGain} Le temps a été assez malmené cette semaine : plus de potion de temps avant la semaine prochaine.",
+          "timePotionWeeklyLimit": "{emote:messages.refuse} Vous avez déjà préparé **{{limit}}** potions de temps cette semaine. Le temps a été assez malmené : il faudra attendre la semaine prochaine pour en préparer d'autres."
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
@@ -1715,9 +1751,17 @@
     "materialLine": "{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})** x{{quantity}}",
     "genericPurchase_one": "Vous avez obtenu **{{count}}x** {{item}}.",
     "genericPurchase_other": "Vous avez obtenu **{{count}}x** {{item}}.",
+    "plantsSentToHomeStorage_one": "{emote:city.homeUpgrades.chest} **{{count}}** plante a été envoyée dans le coffre de votre maison.",
+    "plantsSentToHomeStorage_other": "{emote:city.homeUpgrades.chest} **{{count}}** plantes ont été envoyées dans le coffre de votre maison.",
     "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Il n'y a plus aucune potion du jour disponible à la vente... Revenez demain !",
     "noPlantSlotAvailable": "Vous n'avez aucun emplacement de plante libre ! Libérez-en un ou améliorez votre équipement au tanneur.",
+    "noPlantSpace": {
+      "homeStorageFull": "Il n'y a plus assez de place pour ces plantes, ni dans le coffre de votre maison ni dans vos emplacements de plante ! Faites de la place en cuisinant ou en compostant vos plantes.",
+      "plantSlotsFull": "Vous n'avez aucun emplacement de plante libre ! Déposez vos plantes dans le coffre de votre maison, ou agrandissez votre sacoche au tanneur : son dernier emplacement relie vos plantes au coffre de votre maison.",
+      "noHome": "Vous n'avez aucun emplacement de plante libre ! Une maison vous permettrait de stocker vos plantes dans son coffre.",
+      "noGarden": "Vous n'avez aucun emplacement de plante libre ! Votre maison n'a pas encore de jardin : améliorez-la pour pouvoir stocker vos plantes dans son coffre."
+    },
     "noGardenForRemoteHarvestTalisman": "L'Herboriste refuse de vous vendre le Cœur Sylvestre : cet objet ne vous sera utile qu'une fois votre jardin débloqué.",
     "boughtTooMuchTokens": "Vous avez atteint la limite d'achat de jetons pour le moment. Revenez plus tard !",
     "tokensBought_one": "Vous avez acheté **{{count}} jeton** {emote:unitValues.token}.",
@@ -1797,7 +1841,7 @@
       },
       "plantSlotExtension": {
         "name": "{emote:shopItems.plantSlotExtension} Nouvel emplacement de plante",
-        "info": "Vous pourrez transporter une plante supplémentaire dans votre inventaire."
+        "info": "Vous pourrez transporter une plante supplémentaire dans votre inventaire. Le dernier emplacement relie aussi vos plantes au coffre de votre maison, dès qu'elle dispose d'un jardin : les plantes achetées ou reçues y sont envoyées directement."
       },
       "weeklyPlantName": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
       "weeklyPlantTier1": {
@@ -1972,7 +2016,8 @@
         "name": "{emote:shopItems.lovePointsValue} Vétérinaire de la cour",
         "info": "Obtenir des informations détaillées sur votre familier.",
         "giveTitle": "{{pseudo}}, achat effectué !",
-        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force, number}}\n{emote:petInformation.speed} **Vitesse** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force, number}}\n{emote:petInformation.speed} **Vitesse** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}{{secondFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "secondFightEffect": "\n{emote:petInformation.fightEffect} **Second effet de combat** : {{comment}}",
         "expeditionPreferences": "\n\n{emote:expedition.map} **Affinités d'exploration** :\n{{likedLocations}}{{dislikedLocations}}",
         "likedLocations": "{emote:expedition.liked} Prospère dans : {{locations}}",
         "dislikedLocations": "\n{emote:expedition.disliked} Se méfie de : {{locations}}",
@@ -1980,6 +2025,26 @@
         "petIsHungry": "{emote:effects.starving} affamé",
         "lovePointsGained": "\n\n{emote:petInformation.loveScore} Le vétérinaire a prodigué des soins affectueux à votre familier, lui rendant **{{amount, number}}** points d'amour !",
         "commentOnFightEffect": {
+          "breathingHoleAmbush": [
+            "Ce chasseur des glaces possède une patience infinie. Il guette l'instant précis où l'adversaire s'arrête pour reprendre son souffle, puis surgit pour lui asséner un coup de patte dévastateur. Il ne frappe ainsi qu'une seule fois par combat.",
+            "Les observations comportementales révèlent une technique de chasse à l'affût redoutable. Dès que votre adversaire se repose ou se retrouve à bout de souffle, il bondit sur lui avec une force colossale, une fois par combat.",
+            "Son instinct de prédateur polaire est intact : une proie qui reprend son souffle est sans défense. Il attend ce moment pour frapper, une seule fois mais très fort."
+          ],
+          "scentOfBlood": [
+            "Il sent le sang à des kilomètres ! Dès que votre adversaire est sérieusement blessé, il le mord et le fait saigner. Si la proie laisse l'hémorragie suivre son cours sans se reposer, il entre en frénésie et revient la mordre sauvagement.",
+            "Les observations révèlent un instinct de prédateur marin redoutable. Une fois l'ennemi à moitié vaincu, il ouvre une plaie qui saigne, puis tourne autour de sa proie. Seul un adversaire qui se repose pour stopper l'hémorragie échappe à sa frénésie.",
+            "L'odeur du sang le rend fou. Il attend que l'adversaire soit affaibli pour le faire saigner, et ne lâche plus sa proie tant que la plaie reste ouverte : mieux vaut pour elle se reposer au plus vite."
+          ],
+          "unstoppable": [
+            "Sa masse colossale met du temps à se mettre en mouvement, mais une fois lancé, plus rien ne l'arrête ! À chaque échange, il prend un peu plus d'élan et vos attaques au corps à corps gagnent en puissance. Attention : si vous êtes immobilisé, il perd tout son élan.",
+            "Les examens musculaires révèlent une inertie phénoménale. En combat, il accélère tour après tour et vous entraîne dans sa course, renforçant progressivement vos attaques au corps à corps jusqu'à un certain plafond. Être étourdi, pétrifié ou paralysé brise cependant cet élan.",
+            "Ce familier est lent au démarrage, mais son élan est irrésistible. Plus le combat dure, plus vos attaques au corps à corps sont puissantes, tant que rien ne vous immobilise. Son épaisse toison, qui vous protège du gel, l'aide d'ailleurs à garder son allure."
+          ],
+          "woundedPrey": [
+            "Sa vue perçante repère la moindre faiblesse. Il tournoie au-dessus du combat et, dès que l'adversaire est à bout de forces, il fond sur lui en piqué pour l'achever. Il ne plonge qu'une seule fois par combat.",
+            "Les analyses révèlent un instinct de rapace parfaitement aiguisé. Ce familier attend que l'ennemi soit gravement affaibli pour plonger sur lui à pleine vitesse, une fois par combat.",
+            "Ses piqués sont fulgurants : c'est sa vitesse, bien plus que sa force, qui fait mal. Il les réserve aux proies à bout de forces, qu'il achève d'un seul plongeon par combat."
+          ],
           "bite": [
             "Ce familier possède des crocs impressionnants ! En combat, il n'hésitera pas à mordre vos adversaires avec une précision redoutable.",
             "Regardez ces canines ! Votre compagnon pourra mordre vos ennemis, leur infligeant des blessures douloureuses et les déstabilisant.",
@@ -2216,9 +2281,9 @@
             "Les observations vétérinaires confirment une capacité d'hémophagie stratégique. Il mord les adversaires sains pour les faire saigner, puis convertit le sang des ennemis déjà affaiblis en énergie curative pour vous soutenir. Note importante : la bénédiction divine des paladins annule totalement cette capacité vampirique."
           ],
           "petPetrified": [
-            "Les tests psychiques indiquent que ce familier émet une aura terrifiante aux moments critiques du combat. Lors des derniers instants de l'affrontement, son regard pétrifiant peut littéralement figer l'adversaire sur place, le rendant totalement vulnérable. Attention : cette capacité est inefficace contre les mages, dont l'esprit discipliné résiste à la pétrification mentale.",
-            "Les analyses comportementales révèlent une capacité de paralysie mentale activée en fin de combat. Votre familier dégage alors une présence si intimidante qu'elle peut pétrifier l'ennemi, l'empêchant de bouger ou de riposter. Toutefois, les mages possèdent une résistance naturelle à cet effet et ne peuvent être pétrifiés.",
-            "Les observations cliniques attestent d'un pouvoir de pétrification temporaire qui se manifeste dans les phases finales du combat. Son aura surnaturelle peut figer l'adversaire dans un état de paralysie totale, le laissant sans défense. Note importante : l'entraînement mental des mages les immunise contre cette pétrification."
+            "Les tests psychiques indiquent que ce familier émet une aura terrifiante aux moments critiques du combat. Dès le début de l'affrontement, puis de nouveau à mi-combat, son regard pétrifiant peut littéralement figer l'adversaire sur place, le rendant totalement vulnérable. Attention : cette capacité est inefficace contre les mages, dont l'esprit discipliné résiste à la pétrification mentale.",
+            "Les analyses comportementales révèlent une capacité de paralysie mentale activée au début du combat, puis une seconde fois à mi-combat. Votre familier dégage alors une présence si intimidante qu'elle peut pétrifier l'ennemi, l'empêchant de bouger ou de riposter. Toutefois, les mages possèdent une résistance naturelle à cet effet et ne peuvent être pétrifiés.",
+            "Les observations cliniques attestent d'un pouvoir de pétrification temporaire qui se manifeste à l'ouverture du combat, puis à nouveau à mi-combat. Son aura surnaturelle peut figer l'adversaire dans un état de paralysie totale, le laissant sans défense. Note importante : l'entraînement mental des mages les immunise contre cette pétrification."
           ]
         },
         "ageComment_ancestor": "INCROYABLE ! S'exclame le vétérinaire les yeux écarquillés. Votre familier est un spécimen d'une rareté exceptionnelle ! Il compte parmi les plus anciens jamais répertoriés dans nos archives, seulement {{age}} autres familiers ont été découverts plus âgés ! Une véritable relique vivante !",
@@ -2337,6 +2402,16 @@
     "off": "Le bot a été sorti de maintenance avec succès."
   },
   "missions": {
+    "kingChallenge": {
+      "button": "Défi du roi",
+      "backButton": "Retour",
+      "title": "Défi du roi de {{pseudo}}",
+      "description": "Chaque lundi, le roi lance un nouveau défi aux aventuriers du royaume et récompense ceux qui le relèvent.",
+      "header": "{emote:kingChallenge.icon} **Défi du roi ({{tier}}/{{tierCount}})**",
+      "nextTier": "Gagner {{objective, number}} {emote:unitValues.score} cette semaine pour relever le palier {{nextTier}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
+      "completed": "Vous avez relevé le défi du roi jusqu'au dernier palier ! Un nouveau défi sera lancé {{time}}.",
+      "tier": "{emote:kingChallenge.{{status}}} Palier {{tier}} : {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
+    },
     "title": "Missions de {{pseudo}}",
     "subcategories": {
       "campaignCurrent": "{emote:missions.campaign} **Campagne ({{current}}/{{max}})**",
@@ -2459,7 +2534,7 @@
     "notEnoughEnergy": "Vous n'avez pas assez d'énergie pour démarrer un combat !",
     "monsterNotFound": "Aucun monstre n'a été trouvé pour vous affronter. Veuillez signaler cet incident à notre support (discord.gg/AP3Wmzb).",
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | Un combat est lancé entre {{fightInitiator}} et {{opponent}} !",
-    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Un combat amical est lancé entre {{fightInitiator}} et {{opponent}} ! Il n'aura aucune conséquence.",
+    "friendlyFightIntroTitle": "{emote:fightCommand.crossedSwords} | Un combat amical est lancé entre {{fightInitiator}} et {{opponent}} ! Les combattants sont ramenés au niveau {{levelCap}} au maximum et le combat n'aura aucune conséquence.",
     "actionsOf": "**Attaques de {{pseudo}} :**",
     "petOf": "**Familier de {{pseudo}} :**",
     "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
@@ -2529,7 +2604,8 @@
     },
     "fightActionChoose": {
       "turnIndicationTitle": "C'est au tour de {{pseudo}} de jouer {emote:fightCommand.crossedSwords}",
-      "turnIndicationDescription": "Choisissez une action"
+      "turnIndicationDescription": "Choisissez une action",
+      "powerMultiplier": "×{{multiplier, number}}"
     },
     "actions": {
       "intro": "{{emote}} | **{{fighter}}** ",
@@ -2738,6 +2814,86 @@
     "successTitle": "{{pseudo}}, transaction réussie !",
     "successDescription": "{{pet}} vous suit désormais. Occupez-vous en bien !\n\n{emote:unitValues.money} **{{treasury, number}}** ont été ajoutés à la trésorerie de la guilde **{{guildName}}**."
   },
+  "defense": {
+    "title": "Style de défense de {{pseudo}}",
+    "intro": "Choisissez comment votre {{className}} se défend lorsqu'un autre joueur l'attaque. Certains styles résistent mieux à certaines classes : choisissez d'après vos dernières défenses. Votre choix reste secret : vos adversaires ne le découvrent qu'en combattant.",
+    "choiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}}",
+    "currentChoiceTitle": "{emote:defensePersonalities.{{personality}}} {{name}} · style actuel",
+    "chooseStyle": "Choisir un style de défense",
+    "cancel": "Annuler",
+    "successTitle": "Style de défense de {{pseudo}}",
+    "success": "Votre personnage se défendra désormais avec le style {emote:defensePersonalities.{{personality}}} **{{name}}**.",
+    "successRandom": "Votre personnage changera de style de défense à chaque combat {emote:defensePersonalities.random}.",
+    "noChoice": "Votre classe ({{className}}) n'a qu'une seule manière de se défendre.",
+    "recentDefensesTitle_one": "Vos défenses des dernières 24 heures",
+    "recentDefensesTitle_other": "Vos défenses des {{count}} derniers jours",
+    "noRecentDefense": "Personne ne vous a attaqué récemment.",
+    "recentDefense_one": "{{className}} : {{won}}/{{count}} défense réussie",
+    "recentDefense_other": "{{className}} : {{won}}/{{count}} défenses réussies",
+    "canceled": "Votre style de défense n'a pas été modifié.",
+    "personalities": {
+      "random": {
+        "name": "Imprévisible",
+        "description": "Un style différent est tiré au hasard à chaque combat."
+      },
+      "knightStrategist": {
+        "name": "Stratège",
+        "description": "Enchaîne repos et attaques lourdes, et lance sa bénédiction en premier face à un adversaire capable d'en faire autant. Particulièrement solide face aux Vétérans."
+      },
+      "knightEnduring": {
+        "name": "Endurant",
+        "description": "Se repose dès qu'il est blessé et garde sa bénédiction pour la fin du combat, lorsqu'elle est la plus puissante."
+      },
+      "knightFiery": {
+        "name": "Fougueux",
+        "description": "Lance sa bénédiction dès le début du combat et ne se repose que lorsqu'il est sérieusement blessé."
+      },
+      "tankBulwark": {
+        "name": "Rempart",
+        "description": "Renforce sa défense et affaiblit l'adversaire avec son bouclier."
+      },
+      "tankRiposte": {
+        "name": "Riposteur",
+        "description": "Laisse l'adversaire s'engager pour lui renvoyer ses attaques les plus coûteuses."
+      },
+      "paladinCrusader": {
+        "name": "Croisé",
+        "description": "Charge son attaque ultime à mi-combat, place ses attaques divines en fin de combat et frappe au bouclier ou au bélier un adversaire déjà sous le coup d'une altération."
+      },
+      "paladinJusticar": {
+        "name": "Justicier",
+        "description": "Garde son attaque ultime pour la fin du combat et frappe avec son attaque divine dès qu'elle a peu de chances d'échouer."
+      },
+      "gunnerStrategist": {
+        "name": "Stratège",
+        "description": "Tire des salves de canon dès qu'il en a le souffle et use l'adversaire d'attaques intenses et de sabotages entre deux salves."
+      },
+      "gunnerBombardier": {
+        "name": "Bombardier",
+        "description": "Enchaîne les tirs de canon dès que son souffle est au maximum et sabote l'adversaire en attendant."
+      },
+      "veteranStrategist": {
+        "name": "Stratège",
+        "description": "Charge son attaque en attendant d'avoir le souffle de ses attaques énergiques, qu'il prépare en se concentrant."
+      },
+      "veteranCharger": {
+        "name": "Fonceur",
+        "description": "Se concentre dès qu'il le peut et déclenche aussitôt son attaque énergique, sans jamais charger. Particulièrement solide face aux Paladins."
+      },
+      "mageOccultist": {
+        "name": "Occultiste",
+        "description": "Maudit ou empoisonne son adversaire, puis l'achève avec ses attaques sombres."
+      },
+      "magePyromancer": {
+        "name": "Pyromancien",
+        "description": "Maudit son adversaire dès qu'il le peut, l'embrase dès qu'il en a le souffle, et profite de sa malédiction comme de ses brûlures avec ses attaques sombres."
+      },
+      "mageWarlock": {
+        "name": "Envoûteur",
+        "description": "Maudit systématiquement son adversaire, ce qui l'empêche de bien se soigner, puis en profite avec ses attaques sombres."
+      }
+    }
+  },
   "classes": {
     "description": {
       "0": "Une classe simple. Plutôt équilibrée.",
@@ -2930,6 +3086,20 @@
     "leagueChanges": {
       "up": " ({emote:other.leagueUp} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
       "down": " ({emote:other.leagueDown} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
+    },
+    "kingGuardStats": {
+      "openButton": "Gardes du roi",
+      "backButton": "Historique",
+      "title": "{emote:fightCommand.crossedSwords} Face aux gardes du roi",
+      "record": "**Votre record :** garde niv. {{level}} vaincu{{aboveLevel}}",
+      "aboveLevel_one": ", {{count}} niveau au-dessus du vôtre",
+      "aboveLevel_other": ", {{count}} niveaux au-dessus du vôtre",
+      "noRecord": "**Votre record :** aucun garde vaincu pour l'instant",
+      "progress": "**Records battus :** {{recordsBroken, number}} | **Classement :** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "tally": "**Bilan :** {emote:fightHistory.won} Victoires : {{won, number}} · {emote:fightHistory.lost} Défaites : {{lost, number}} · {emote:fightHistory.draw} Nuls : {{draw, number}}",
+      "leaderboardTitle": "{emote:other.crown} **Tableau d'honneur de la garde**",
+      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}** : garde niv. {{level}}",
+      "you": "Vous"
     }
   },
   "deletecode": {

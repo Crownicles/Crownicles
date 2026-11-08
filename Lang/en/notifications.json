@@ -1,4 +1,12 @@
 {
+  "kingChallenge": {
+    "title_one": "{{pseudo}}, you have cleared the level {{tier}}/{{tierCount}} of the King's Challenge!",
+    "title_other": "{{pseudo}}, you've completed {{count}} levels of the King's Challenge, all the way up to level {{tier}}/{{tierCount}}!",
+    "rewards": "{emote:kingChallenge.icon} The king rewards you ({{rewards}}).",
+    "nextTier": "Next level in **{{points, number}}** {emote:unitValues.score}.",
+    "completed": "You've risen to the king's challenge all the way to the final level!",
+    "useTokens": "You have **{{tokens, number}}** {emote:unitValues.token}: use them with the {command:report} command to reach the next tier faster."
+  },
   "missions": {
     "expired": {
       "title_one": "{{pseudo}}, a mission has expired",
@@ -29,7 +37,8 @@
       "pointsDisplay": "+{{count, number}} {emote:unitValues.score}",
       "gemsDisplay": "+{{count, number}} {emote:unitValues.gem}",
       "moneyDisplay": "+{{count, number}} {emote:unitValues.money}",
-      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}"
+      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}",
+      "tokensDisplay": "+{{count, number}} {emote:unitValues.token}"
     }
   },
   "guildFood": {

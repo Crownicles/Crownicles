@@ -198,6 +198,22 @@
     "9": "Una clase centrada en la velocidad. Pocos puntos de salud y energía, pero mucha velocidad y ataque."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "cuenta con la ayuda de **{{petNickname}}**, que se mantiene al acecho y se abalanza en cuanto el adversario recupera el aliento para asestarle un formidable zarpazo."
+    },
+    "scentOfBlood": {
+      "generalEffect": "Se le une **{{petNickname}}**, que ha olido la sangre: el tiburón muerde al adversario herido y le abre una herida que sangra profusamente.",
+      "success": "ve cómo **{{petNickname}}** entra en un estado de frenesí, enloquecido por la sangre que aún brota: el tiburón se abalanza sobre su adversario y lo muerde salvajemente.",
+      "failure": "ve cómo **{{petNickname}}** pierde el rastro de su presa: la hemorragia del adversario se ha detenido y el tiburón se aleja."
+    },
+    "unstoppable": {
+      "generalEffect": "cobra impulso junto a **{{petNickname}}**, cuyo pesado avance se acelera: sus ataques cuerpo a cuerpo son cada vez más contundentes.",
+      "success": "es arrastrado por **{{petNickname}}**, que avanza a toda velocidad: ya nada parece poder detenerlo.",
+      "failure": "queda paralizado y **{{petNickname}}** pierde todo su impulso, habrá que volver a empezar desde el principio."
+    },
+    "woundedPrey": {
+      "success": "Se le une **{{petNickname}}**, que volaba en círculos sobre el combate: al ver que el adversario está al límite de sus fuerzas, el ave rapaz se abalanza sobre él en picado, con las garras por delante."
+    },
     "drowning": {
       "customMessage": "agarra a su oponente con uno de sus tentáculos y lo sumerge bajo el agua, y sólo los oponentes con aliento escapan ilesos.",
       "name_one": "Ahogamiento",
@@ -380,7 +396,7 @@
       "stop": "ya no se confunde."
     },
     "counterAttack": {
-      "description": "Repite la misma acción que tu oponente. No funciona con ataques mágicos o divinos, o si el oponente no ha atacado.",
+      "description": "Repite la misma acción que acaba de realizar tu rival. Inflige más daño a los monstruos. No funciona con ciertos ataques, ni si el rival no ha atacado.",
       "name_one": "Réplica de ataque",
       "customMessage": "fue incapaz de defenderse.",
       "name_other": "Los ataques contraatacan"
@@ -411,7 +427,7 @@
       "stop": "sufre las consecuencias de la maldición."
     },
     "cursedAttack": {
-      "description": "Maldice al oponente, tal vez sufriendo las consecuencias en el futuro... Cura al lanzador si el oponente tiene más del 40% de su energía.",
+      "description": "Maldito sea el adversario, quizá sufra las consecuencias en el futuro... Mientras esté maldito, el adversario recupera menos energía con los cuidados y recibe el ataque oscuro con toda su potencia. Cura al lanzador si el adversario tiene más del 40 % de su energía.",
       "name_one": "Ataque maldito",
       "name_other": "Ataques malditos"
     },
@@ -431,7 +447,7 @@
       "name_other": "Maldiciones del mar"
     },
     "darkAttack": {
-      "description": "Ignora la defensa del adversario. Más eficaz contra un jugador con un ataque alto. Ciega al oponente o restaura parte del aliento perdido por el lanzador. La alteración \"cegado\" dura al menos 1 turno y hace que el oponente no pueda atacar en algunos momentos, al tiempo que reduce su defensa y velocidad.",
+      "description": "No tiene muy en cuenta la defensa del adversario. Es más eficaz contra un jugador con un ataque elevado. Muy potente la primera vez que se usa, se debilita con cada nuevo uso exitoso y recupera fuerza cuando el lanzador deja de usarla durante unas cuantas acciones. Siempre golpea a un adversario maldito con toda su potencia. Su potencia actual se muestra en su botón.",
       "name_one": "Ataque oscuro",
       "name_other": "Ataques oscuros"
     },
@@ -473,7 +489,7 @@
       "afraid": "es ayudado por **{{petNickname}}** que, aunque recuerda perfectamente los acontecimientos recientes, tiembla demasiado de miedo para poder devolverle el aliento perdido."
     },
     "energeticAttack": {
-      "description": "La mitad del daño de este ataque se devuelve al lanzador en forma de curación. Ignora parte de la defensa enemiga.",
+      "description": "Una parte del daño de este ataque se devuelve al lanzador en forma de curación. Ignora una parte de la defensa del rival. Inflige más daño a un rival que acaba de descansar. La curación se reduce contra los monstruos.",
       "name_one": "Ataque energético",
       "name_other": "Ataques energéticos"
     },
@@ -1254,7 +1270,7 @@
       "atParticle": "a la"
     },
     "21": {
-      "description": "Una carretera muy utilizada por los aldeanos. Muchos pequeños vendedores ambulantes se instalan aquí durante un día, creando un enorme mercado.",
+      "description": "Una carretera muy transitada por los vecinos del pueblo. Muchos pequeños vendedores ambulantes se instalan allí durante todo el día, creando al final un mercado inmenso. Más allá, antiguas casetas abandonadas desde hace mucho tiempo se desmoronan bajo la arena.",
       "name": "Ruta de las maravillas",
       "particle": "a la",
       "atParticle": "a la"
@@ -1266,7 +1282,7 @@
       "atParticle": "en"
     },
     "23": {
-      "description": "Claire de Ville, gran ciudad comercial y encrucijada económica, no siempre ha sido tan acogedora. Inicialmente muy pobre, se ha desarrollado rápidamente gracias a sus numerosos comercios y hoteles que ofrecen una amplia oferta a los viajeros de la región. Claire de Ville también es conocida por su tranquilidad y respeto al orden.",
+      "description": "Claire de Ville, una gran ciudad comercial y cruce de caminos económico, no siempre ha sido tan acogedora. Aunque al principio era muy pobre, supo desarrollarse rápidamente gracias a sus numerosos comercios y hoteles, que ofrecen una amplia variedad de opciones a los viajeros de la región. Claire de Ville también es conocida por su tranquilidad y su respeto por el orden. Bajo sus calles, los pasadizos subterráneos excavados en tiempos de penuria aún serpentean entre la roca.",
       "name": "Claire de Ville",
       "particle": "a",
       "atParticle": "à",
@@ -1279,7 +1295,7 @@
       "atParticle": "a la"
     },
     "25": {
-      "description": "Todo está en el nombre. Un río muy apreciado por los pescaderos de Claire de Ville.",
+      "description": "El nombre lo dice todo. Un río muy apreciado por los pescaderos de Claire de Ville. Río abajo, sus orillas se pierden en marismas fangosas donde abundan los cangrejos.",
       "name": "Rivière aux Crabes",
       "particle": "a la",
       "atParticle": "a la"
@@ -1292,7 +1308,7 @@
       "inParticle": "en"
     },
     "27": {
-      "description": "Un bosque al borde del monte Celestrum.",
+      "description": "Un bosque a las faldas del Monte Célestrum. Sus laderas se extienden por las escarpadas laderas de la montaña.",
       "name": "Bosque de Celestrum",
       "particle": "a la",
       "atParticle": "a la"
@@ -1338,7 +1354,7 @@
       "particle": "a la"
     },
     "41": {
-      "description": "Explanada pavimentada que une Boug-Coton con las puertas del castillo real. Los mensajeros se cruzan en su camino hacia los pisos del rey.",
+      "description": "Esplanada empedrada que une Boug-Coton con las puertas del castillo real. Los mensajeros se cruzan allí antes de acceder a los aposentos del rey. Bajo sus adoquines discurren pasadizos secretos excavados en la roca hasta los cimientos del castillo.",
       "name": "Cour du Château",
       "particle": "a la",
       "atParticle": "a la",
@@ -1351,13 +1367,13 @@
       "atParticle": "a la"
     },
     "5": {
-      "description": "El sendero debe su apodo a su naturaleza entrecruzada en la parte sur del Bosque del Viejo.",
+      "description": "Camino que debe su nombre a su recorrido por la exuberante naturaleza del sur del bosque del anciano. Bajo la vegetación aún se adivinan los muretes de un antiguo laberinto olvidado.",
       "name": "Camino de Dédale",
       "particle": "a la",
       "atParticle": "en"
     },
     "6": {
-      "description": "Un pueblo tranquilo conocido por su acogedora posada.",
+      "description": "Un tranquilo pueblo famoso por su acogedora posada. Bajo la posada se extienden unas amplias bodegas secretas excavadas directamente en la roca.",
       "name": "Algodón Boug",
       "particle": "a",
       "atParticle": "à",
@@ -2529,7 +2545,8 @@
       "1": "Caldero",
       "2": "Fundición",
       "3": "Todavía",
-      "4": "Brasero"
+      "4": "Brasero",
+      "5": "Especialidad del chef"
     },
     "recipes": {
       "potion_health_1": "Poción curativa básica",

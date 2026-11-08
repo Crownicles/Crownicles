@@ -163,7 +163,8 @@ function buildMapReactions(player: Player, destinationMaps: number[]): ReactionC
 		return {
 			mapId,
 			mapTypeId: mapLocation.type,
-			tripDuration: revealsTripDuration(startingMapId, mapLink.id) ? mapLink.tripDuration : undefined
+			tripDuration: revealsTripDuration(startingMapId, mapLink.id) ? mapLink.tripDuration : undefined,
+			biomes: mapLocation.biomes
 		};
 	});
 }

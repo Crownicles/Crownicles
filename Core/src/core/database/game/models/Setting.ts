@@ -1,10 +1,11 @@
 import {
-	DataTypes, Model, Sequelize
+	DataTypes, Model, Sequelize, Transaction
 } from "sequelize";
 import { PotionDataController } from "../../../../data/Potion";
 import { MapCache } from "../../../maps/MapCache";
 import { CityDataController } from "../../../../data/City";
 import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
+import { KingChallengeConstants } from "../../../../../../Lib/src/constants/KingChallengeConstants";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import moment from "moment";
@@ -57,11 +58,24 @@ class SettingClassString {
 		this.defaultValue = defaultValue;
 	}
 
-	public async getValue(): Promise<string> {
+	public getValue(): Promise<string> {
+		return this.readValue(false);
+	}
+
+	/**
+	 * Read the latest committed value and keep it from changing until the current transaction ends,
+	 * so it stays consistent with the rows locked by this transaction
+	 */
+	public getValueUnderShareLock(): Promise<string> {
+		return this.readValue(true);
+	}
+
+	private async readValue(lockForShare: boolean): Promise<string> {
 		let value: string;
 
 		const settingInstance = await Setting.findOne({
-			where: { name: this.name }
+			where: { name: this.name },
+			...lockForShare ? { lock: Transaction.LOCK.SHARE } : {}
 		});
 
 		if (settingInstance) {
@@ -137,6 +151,22 @@ export abstract class Settings {
 	public static readonly RELEASE_GIFT_600_APPLIED = new SettingClassNumber(
 		"releaseGift600Applied",
 		(): Promise<number> => Promise.resolve(0)
+	);
+
+	/**
+	 * Weekly scores of the reference rank of the last weeks (comma separated), used to compute the king's challenge ladder
+	 */
+	public static readonly KING_CHALLENGE_REFERENCE_SCORES = new SettingClassString(
+		"kingChallengeReferenceScores",
+		(): Promise<string> => Promise.resolve(KingChallengeConstants.DEFAULT_REFERENCE_SCORES.ladder.join(","))
+	);
+
+	/**
+	 * Best weekly scores of the last weeks (comma separated), used to compute the king's challenge champion tier
+	 */
+	public static readonly KING_CHALLENGE_CHAMPION_SCORES = new SettingClassString(
+		"kingChallengeChampionScores",
+		(): Promise<string> => Promise.resolve(KingChallengeConstants.DEFAULT_REFERENCE_SCORES.champion.join(","))
 	);
 
 	/**

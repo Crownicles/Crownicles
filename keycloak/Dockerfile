@@ -4,7 +4,7 @@ WORKDIR /build
 COPY extensions/account-policy/ .
 RUN mvn --batch-mode --no-transfer-progress package
 
-FROM quay.io/keycloak/keycloak:26.7.4
+FROM quay.io/keycloak/keycloak:26.8
 
 COPY --from=account-policy --chown=keycloak:keycloak /build/target/account-policy-1.0.0.jar /opt/keycloak/providers/account-policy.jar
 

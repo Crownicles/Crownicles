@@ -1,9 +1,9 @@
 {
   "name": "crownicles_rest_ws_middleware",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "Rest API middleware package of Crownicles",
   "main": "src/index.js",
-  "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f",
+  "packageManager": "pnpm@10.34.3+sha512.f2c531b08829d7be7f03c90addc266615f9c5477463e4bf1d275cb263ce9ea57cf0d5599110d94649a9bb3fed9f0b5efcea74a7016b61532a24cb9ad87860c1d",
   "engines": {
     "node": ">=24.0.0"
   },
@@ -25,13 +25,13 @@
     "cls-hooked": "4.2.2",
     "fastify": "5.8.5",
     "i18next": "26.4.0",
-    "mariadb": "3.0.2",
+    "mariadb": "3.5.4",
     "moment": "2.30.1",
     "mqtt": "5.15.1",
     "nodemailer": "^10.0.10",
     "prom-client": "15.1.3",
     "random-js": "2.1.0",
-    "sequelize": "6.37.7",
+    "sequelize": "6.37.8",
     "source-map-support": "0.5.21",
     "toml": "4.1.1",
     "triple-beam": "1.4.1",
@@ -54,5 +54,10 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.0",
     "vitest": "4.1.5"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "sequelize@6.37.8": "patches/sequelize@6.37.8.patch"
+    }
   }
 }

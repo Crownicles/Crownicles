@@ -136,6 +136,7 @@ const EXPORTED_TABLES = {
 	"Apartment": "21_apartments.csv",
 	"PlayerCookingRecipe": "22_cooking_recipes.csv",
 	"GlobalBlessing": "23_current_blessing.csv",
+	"PlayerCookingSpecialty": "24_cooking_specialties.csv",
 
 	// ============ LOGS DATABASE - Player Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersScore": "logs/15_score_history.csv",
@@ -266,6 +267,8 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"fightPointsLost",
 		"score",
 		"weeklyScore",
+		"kingChallengeTier",
+		"defensePersonality",
 		"level",
 		"experience",
 		"money",
@@ -293,6 +296,7 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"lastBedUsedAt",
 		"furnacePosition",
 		"pinnedCookingRecipeId",
+		"timePotionsCookedThisWeek",
 		"lastGardenWatered",
 		"guildJoinedAt",
 		"updatedAt",
@@ -531,7 +535,7 @@ const LOG_DATA_EXPORT_FIELD_COVERAGE = {
 		exporter: "LogsFightsExporter.ts",
 		csvFile: "logs/47_pve_fights.csv",
 		fields: [
-			"classId", "monsterId", "monsterLevel", "monsterFightPoints", "monsterAttack",
+			"classId", "playerLevel", "monsterId", "monsterLevel", "monsterFightPoints", "monsterAttack",
 			"monsterDefense", "monsterSpeed", "turn", "winner", "date"
 		]
 	},
@@ -539,7 +543,7 @@ const LOG_DATA_EXPORT_FIELD_COVERAGE = {
 		exporter: "LogsFightsExporter.ts",
 		csvFile: "logs/101_king_guard_fights.csv",
 		fields: [
-			"classId", "guardClassId", "guardLevel", "turn", "winner", "date"
+			"classId", "guardClassId", "guardLevel", "playerLevel", "turn", "winner", "date"
 		]
 	},
 	"LogsPlayersGloryPoints": {

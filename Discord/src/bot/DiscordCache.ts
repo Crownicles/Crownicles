@@ -1,73 +1,107 @@
 import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import { Constants } from "../../../Lib/src/constants/Constants";
+import { DiscordConstants } from "../DiscordConstants";
 import {
-	ButtonInteraction, StringSelectMenuInteraction
+	CrowniclesDiscordMetrics, DISCORD_MONITORED_CACHES
+} from "./CrowniclesDiscordMetrics";
+import {
+	ButtonInteraction, StringSelectMenuInteraction, User
 } from "discord.js";
+
+/**
+ * Value kept until its interaction expires: an interaction, or what is still usable of an interaction that can no longer be answered
+ */
+type CachedEntry<T> = {
+	value: T;
+	expiresAt: number;
+};
+
+type InteractionCache<T> = Map<string, CachedEntry<T>>;
 
 export class DiscordCache {
 	private static initialized = false;
 
-	private static interactionsCache: Map<string, {
-		interaction: CrowniclesInteraction; time: number;
-	}> = new Map();
+	private static interactionsCache: InteractionCache<CrowniclesInteraction> = new Map();
 
-	private static buttonInteractionsCache: Map<string, {
-		interaction: ButtonInteraction; time: number;
-	}> = new Map();
+	private static buttonInteractionsCache: InteractionCache<ButtonInteraction> = new Map();
 
-	private static stringSelectMenuInteractionsCache: Map<string, {
-		interaction: StringSelectMenuInteraction; time: number;
-	}> = new Map();
+	private static stringSelectMenuInteractionsCache: InteractionCache<StringSelectMenuInteraction> = new Map();
+
+	/**
+	 * Authors of the clicks whose acknowledgement failed: the click itself is not cached since Discord accepts no answer to it
+	 */
+	private static unanswerableClickUsersCache: InteractionCache<User> = new Map();
+
+	static {
+		CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.INTERACTIONS, () => DiscordCache.interactionsCache.size);
+		CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.BUTTON_INTERACTIONS, () => DiscordCache.buttonInteractionsCache.size);
+		CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.STRING_SELECT_MENU_INTERACTIONS, () => DiscordCache.stringSelectMenuInteractionsCache.size);
+		CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.UNANSWERABLE_CLICK_USERS, () => DiscordCache.unanswerableClickUsersCache.size);
+	}
 
 	private static init(): void {
 		if (!DiscordCache.initialized) {
-			setInterval(DiscordCache.purge, 60000);
+			setInterval(() => DiscordCache.purge(), DiscordConstants.CACHE.INTERACTIONS_PURGE_INTERVAL).unref();
 			DiscordCache.initialized = true;
 		}
 	}
 
-	private static purge(): void {
-		const now = Date.now();
-		DiscordCache.interactionsCache.forEach(interactionEntry => {
-			if (interactionEntry.time < now) {
-				DiscordCache.interactionsCache.delete(interactionEntry.interaction.id);
+	private static purgeExpired<T>(cache: InteractionCache<T>, now: number): void {
+		for (const [id, entry] of cache) {
+			if (entry.expiresAt < now) {
+				cache.delete(id);
 			}
+		}
+	}
+
+	private static cache<T>(cache: InteractionCache<T>, id: string, value: T): void {
+		DiscordCache.init();
+		cache.set(id, {
+			value,
+			expiresAt: Date.now() + Constants.CACHE_TIME.INTERACTIONS
 		});
+	}
+
+	/**
+	 * Remove every expired interaction from all the interaction caches
+	 * @param now - Reference time, defaults to the current time
+	 */
+	public static purge(now = Date.now()): void {
+		DiscordCache.purgeExpired(DiscordCache.interactionsCache, now);
+		DiscordCache.purgeExpired(DiscordCache.buttonInteractionsCache, now);
+		DiscordCache.purgeExpired(DiscordCache.stringSelectMenuInteractionsCache, now);
+		DiscordCache.purgeExpired(DiscordCache.unanswerableClickUsersCache, now);
 	}
 
 	public static cacheInteraction(interaction: CrowniclesInteraction): void {
-		DiscordCache.init();
-		DiscordCache.interactionsCache.set(interaction.id, {
-			interaction, time: Date.now() + Constants.CACHE_TIME.INTERACTIONS
-		});
+		DiscordCache.cache(DiscordCache.interactionsCache, interaction.id, interaction);
 	}
 
 	public static cacheButtonInteraction(interaction: ButtonInteraction): void {
-		DiscordCache.init();
-		DiscordCache.buttonInteractionsCache.set(interaction.id, {
-			interaction, time: Date.now() + Constants.CACHE_TIME.INTERACTIONS
-		});
+		DiscordCache.cache(DiscordCache.buttonInteractionsCache, interaction.id, interaction);
 	}
 
 	public static cacheStringSelectMenuInteraction(component: StringSelectMenuInteraction): void {
-		DiscordCache.init();
-		DiscordCache.stringSelectMenuInteractionsCache.set(component.id, {
-			interaction: component, time: Date.now() + Constants.CACHE_TIME.INTERACTIONS
-		});
+		DiscordCache.cache(DiscordCache.stringSelectMenuInteractionsCache, component.id, component);
+	}
+
+	public static cacheUnanswerableClickUser(clickId: string, user: User): void {
+		DiscordCache.cache(DiscordCache.unanswerableClickUsersCache, clickId, user);
 	}
 
 	public static getInteraction(id: string): CrowniclesInteraction | null {
-		const entry = DiscordCache.interactionsCache.get(id);
-		return entry?.interaction ?? null;
+		return DiscordCache.interactionsCache.get(id)?.value ?? null;
 	}
 
 	public static getButtonInteraction(id: string): ButtonInteraction | null {
-		const entry = DiscordCache.buttonInteractionsCache.get(id);
-		return entry?.interaction ?? null;
+		return DiscordCache.buttonInteractionsCache.get(id)?.value ?? null;
 	}
 
 	public static getStringSelectMenuInteraction(id: string): StringSelectMenuInteraction | null {
-		const entry = DiscordCache.stringSelectMenuInteractionsCache.get(id);
-		return entry?.interaction ?? null;
+		return DiscordCache.stringSelectMenuInteractionsCache.get(id)?.value ?? null;
+	}
+
+	public static getUnanswerableClickUser(clickId: string): User | null {
+		return DiscordCache.unanswerableClickUsersCache.get(clickId)?.value ?? null;
 	}
 }

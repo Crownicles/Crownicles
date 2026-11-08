@@ -354,7 +354,7 @@ export class ReportCityMenu {
 			await nestedMenus.changeMenu(navigateAfterSend);
 		}
 
-		const dummyCollector = msg.createReactionCollector();
+		const dummyCollector = DiscordCollectorUtils.createCoreLifecycleCollector(msg, packet);
 		dummyCollector.on("end", async () => {
 			await nestedMenus.stopCurrentCollector();
 		});

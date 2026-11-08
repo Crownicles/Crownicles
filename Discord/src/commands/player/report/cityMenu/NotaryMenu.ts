@@ -541,10 +541,10 @@ async function handleApartmentClaimRent(
 	} = params;
 	const apartmentId = parseApartmentClaimRentId(selectedValue);
 	if (apartmentId === null) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 		return;
 	}
-	await buttonInteraction.deferReply();
+	await DiscordCollectorUtils.deferReply(buttonInteraction);
 	const reactionIndex = packet.reactions.findIndex(
 		reaction => reaction.type === ReactionCollectorApartmentClaimRentReaction.name
 			&& (reaction.data as ReactionCollectorApartmentClaimRentReaction).apartmentId === apartmentId
@@ -555,7 +555,7 @@ async function handleApartmentClaimRent(
 }
 
 async function handleNotaryConfirmationRequest(params: NotaryCollectorHandlerParams): Promise<void> {
-	await params.buttonInteraction.deferUpdate();
+	await DiscordCollectorUtils.deferUpdate(params.buttonInteraction);
 	const confirmationDetails = buildNotaryConfirmationDetails(params);
 	if (confirmationDetails) {
 		await showNotaryConfirmation(params, confirmationDetails);
@@ -578,13 +578,13 @@ async function handleManageHomeCollectorInteraction(params: NotaryCollectorHandl
 	}
 
 	if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 		await nestedMenus.changeToMainMenu();
 		return;
 	}
 
 	if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-		await buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 		handleStayInCityInteraction(packet, context, buttonInteraction);
 	}
 }

@@ -6,6 +6,7 @@ const fighterOptions: { kind: string; options: unknown }[] = [];
 const startFightMock = vi.fn();
 const setEndCallbackMock = vi.fn();
 const controllerOptions: unknown[] = [];
+const logFightMock = vi.hoisted(() => vi.fn());
 
 vi.mock("../../../../src/core/utils/CommandUtils", () => ({
 	commandRequires: () => (_target: unknown, _propertyKey: string, descriptor: PropertyDescriptor) => descriptor,
@@ -45,6 +46,9 @@ vi.mock("../../../../src/core/fights/fighter/AiPlayerFighter", () => ({
 
 		public loadStats = vi.fn();
 	}
+}));
+vi.mock("../../../../src/app", () => ({
+	crowniclesInstance: { logsDatabase: { logFight: logFightMock } }
 }));
 vi.mock("../../../../src/core/fights/FightController", () => ({
 	FightController: class {
@@ -111,23 +115,40 @@ describe("FriendlyFightCommand", () => {
 		expect(startFightMock).not.toHaveBeenCalled();
 	});
 
-	it("starts a consequence-free fight against the AI-controlled opponent without any end reward", async () => {
+	it("starts a consequence-free fight with both fighters capped at the friendly fight level", async () => {
 		vi.mocked(Players.getAskedPlayer).mockResolvedValue(buildOpponent() as never);
 
 		await executeCommand();
 
 		expect(fighterOptions).toEqual([
 			{
-				kind: "player", options: { withoutConsequences: true }
+				kind: "player", options: {
+					withoutConsequences: true, levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
+				}
 			},
 			{
 				kind: "ai", options: {
-					allowPotionConsumption: false, withoutConsequences: true
+					allowPotionConsumption: false, withoutConsequences: true, levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 				}
 			}
 		]);
-		expect(controllerOptions[0]).toMatchObject({ friendly: true });
-		expect(setEndCallbackMock).not.toHaveBeenCalled();
+		expect(controllerOptions[0]).toMatchObject({
+			friendly: true, levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
+		});
 		expect(startFightMock).toHaveBeenCalledTimes(1);
+	});
+
+	it("only logs the fight once it is over", async () => {
+		vi.mocked(Players.getAskedPlayer).mockResolvedValue(buildOpponent() as never);
+		const fight = { friendly: true };
+
+		await executeCommand();
+
+		expect(setEndCallbackMock).toHaveBeenCalledTimes(1);
+		expect(logFightMock).not.toHaveBeenCalled();
+		const response: unknown[] = [];
+		await setEndCallbackMock.mock.calls[0][0](fight, response);
+		expect(logFightMock).toHaveBeenCalledExactlyOnceWith(fight);
+		expect(response).toEqual([]);
 	});
 });

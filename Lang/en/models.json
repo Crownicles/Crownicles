@@ -198,6 +198,22 @@
     "9": "A class focused on speed. Low hitpoints and energy but high speed and attack."
   },
   "fight_actions": {
+    "breathingHoleAmbush": {
+      "success": "He is aided by **{{petNickname}}**, who has remained on the lookout and pounces as soon as his opponent catches his breath, delivering a powerful swipe."
+    },
+    "scentOfBlood": {
+      "generalEffect": "He is joined by **{{petNickname}}**, who has caught the scent of blood: the shark bites the wounded opponent and opens a wound that bleeds profusely.",
+      "success": "sees **{{petNickname}}** go into a frenzy, driven mad by the blood still flowing: the shark lunges at its opponent and bites it savagely.",
+      "failure": "sees **{{petNickname}}** lose track of its prey: the opponent has stopped bleeding, and the shark swims away."
+    },
+    "unstoppable": {
+      "generalEffect": "gains momentum alongside **{{petNickname}}**, whose heavy-hitting run is picking up speed: his close-range attacks are landing with increasing force.",
+      "success": "is swept away by **{{petNickname}}**, racing at full speed: nothing seems able to stop it now.",
+      "failure": "is stuck, and **{{petNickname}}** loses all its momentum—we'll have to start over from the beginning."
+    },
+    "woundedPrey": {
+      "success": "He is joined by **{{petNickname}}**, which was circling above the fight: seeing that its opponent is exhausted, the bird of prey dives toward it, talons outstretched."
+    },
     "drowning": {
       "customMessage": "grabs his opponent with one of his tentacles and plunges him underwater, with only those with breath escaping unscathed.",
       "name_one": "Drowning",
@@ -380,7 +396,7 @@
       "stop": "is no longer confused."
     },
     "counterAttack": {
-      "description": "Retaliates with the same action your opponent just played. Does not work on certain attacks, nor if your opponent did not attack.",
+      "description": "Counter with the same action your opponent just used. Deals more damage to monsters. Does not work against certain attacks, nor if the opponent has not attacked.",
       "name_one": "Counterattack",
       "customMessage": "can't counterattack.",
       "name_other": "Counterattacks"
@@ -411,7 +427,7 @@
       "stop": "suffers the consequences of the curse."
     },
     "cursedAttack": {
-      "description": "Curses the opponent, who may suffer the consequences in the future... Heals the caster if the opponent has more than 40% of their energy.",
+      "description": "Curse the opponent—perhaps they will suffer the consequences in the future... As long as they are cursed, the opponent regains less energy from healing and takes the full brunt of the dark attack. Heals the caster if the opponent has more than 40% of their energy.",
       "name_one": "Cursed attack",
       "name_other": "Cursed attacks"
     },
@@ -431,7 +447,7 @@
       "name_other": "Curses from the sea"
     },
     "darkAttack": {
-      "description": "Ignores the opponent's defense. Most effective against a player with high attack. Blinds the opponent or restores some of the user's lost breath. The \"blinded\" debuff lasts at least 1 turn and sometimes renders the opponent unable to attack, while also reducing their defense and speed.",
+      "description": "Pay little attention to the opponent's defense. More effective against a player with a high attack stat. Very powerful the first time it’s used; it weakens with each subsequent successful use but regains strength when the caster goes without using it for a few turns. It always hits a cursed opponent at full power. Its current power level is displayed on its button.",
       "name_one": "Dark attack",
       "name_other": "Dark attacks"
     },
@@ -473,7 +489,7 @@
       "afraid": "is aided by **{{petNickname}}** who, despite remembering recent events perfectly, trembles too much with fear to be able to restore lost breath."
     },
     "energeticAttack": {
-      "description": "Part of this attack's damage is returned to the caster as healing. Ignores part of the opponent's defense. Healing is reduced against monsters.",
+      "description": "A portion of the damage dealt by this attack is returned to the caster as healing. Ignores a portion of the opponent's defense. Deals additional damage to an opponent who has just rested. The healing is reduced against monsters.",
       "name_one": "Energetic attack",
       "name_other": "Energetic attacks"
     },
@@ -1254,7 +1270,7 @@
       "atParticle": "at"
     },
     "21": {
-      "description": "A road, very popular with the villagers. Lots of small sellers settle there for a day ultimately creating a huge market.",
+      "description": "A road heavily used by villagers. Many small street vendors set up shop there for the day, eventually creating a huge market. Further on, old stalls that have long been abandoned are crumbling into ruins beneath the sand.",
       "name": "Road of Wonders",
       "particle": "towards the",
       "atParticle": "at"
@@ -1266,7 +1282,7 @@
       "atParticle": "to"
     },
     "23": {
-      "description": "Large commercial city and economical crossroad, Claire de Ville hasn't always been that welcoming. Very poor at the beginning, she managed to quickly develop thanks to its many shops and hostels which offers a great choice to wanderers of the region. Claire de Ville is also known for its calm and its order.",
+      "description": "A major commercial city and economic hub, Claire de Ville hasn’t always been so welcoming. Initially very poor, it grew rapidly thanks to its many shops and hotels, which offer a wide variety of options to travelers in the region. Claire de Ville is also renowned for its tranquility and respect for law and order. Beneath its streets, the underground passages dug during its days of poverty still wind through the rock.",
       "name": "Claire de Ville",
       "particle": "towards",
       "atParticle": "in",
@@ -1279,7 +1295,7 @@
       "atParticle": "at"
     },
     "25": {
-      "description": "Everything is in the name. A river well appreciated by fishmongers from Claire de Ville.",
+      "description": "The name says it all. A river much loved by the fishmongers of Claire de Ville. Downstream, its banks give way to muddy mudflats teeming with crabs.",
       "name": "Crabs' River",
       "particle": "towards the",
       "atParticle": "at"
@@ -1292,7 +1308,7 @@
       "inParticle": "in"
     },
     "27": {
-      "description": "A forest at the foot of Mount Celestrum",
+      "description": "A forest at the foot of Mount Célestrum. Its edges climb up the mountain's steep slopes.",
       "name": "Celestrum Forest",
       "particle": "towards the",
       "atParticle": "at"
@@ -1338,7 +1354,7 @@
       "particle": "of the"
     },
     "41": {
-      "description": "A pavement flank connecting Boug-Coton with the gates of the royal chateau, where messengers meet before entering the king’s apartments.",
+      "description": "A cobblestone esplanade connecting Boug-Coton to the gates of the royal castle. Messengers cross paths here before entering the king’s apartments. Beneath the cobblestones run secret passages carved into the rock, extending all the way to the castle’s foundations.",
       "name": "Court of Chapel",
       "particle": "of the",
       "atParticle": "at",
@@ -1351,13 +1367,13 @@
       "atParticle": "at"
     },
     "5": {
-      "description": "A path named after its furrow within the lush nature in the south of the Oldster's forest.",
+      "description": "A path that gets its nickname from the way it winds through the lush natural landscape of the southern part of the Old Man's Forest. Beneath the vegetation, one can still make out the low walls of an ancient, forgotten labyrinth.",
       "name": "Daedalus Path",
       "particle": "towards the",
       "atParticle": "to"
     },
     "6": {
-      "description": "A peaceful village known for its welcoming inn.",
+      "description": "A peaceful village known for its welcoming inn. Beneath the inn lie vast secret cellars carved directly into the rock.",
       "name": "Boug-Coton",
       "particle": "towards",
       "atParticle": "in",
@@ -2529,7 +2545,8 @@
       "1": "Cauldron",
       "2": "Smelter",
       "3": "Alambic",
-      "4": "Blaze"
+      "4": "Blaze",
+      "5": "Chef's Specialty"
     },
     "recipes": {
       "potion_health_1": "Basic Healing Potion",

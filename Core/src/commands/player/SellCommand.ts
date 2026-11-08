@@ -32,6 +32,18 @@ import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 
+/**
+ * Get the money the player receives when selling the item of the given slot, money blessing included
+ * @param slot
+ */
+function getSellPrice(slot: InventorySlot): number {
+	const item = slot.getItem();
+	if (slot.itemCategory === ItemCategory.POTION || !item) {
+		return 0;
+	}
+	return BlessingManager.getInstance().applyMoneyBlessing(getItemValue(item));
+}
+
 function getEndCallback(player: Player) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SELL);
@@ -63,17 +75,19 @@ function getEndCallback(player: Player) {
 		}) > 0) {
 			const shouldCountAsSoldItem = sellItem.item.category !== ItemCategory.POTION;
 
+			// The menu price already includes the money blessing: credit exactly what was announced
 			await player.addMoney({
 				amount: sellItem.price,
 				response,
-				reason: NumberChangeReason.ITEM_SELL
+				reason: NumberChangeReason.ITEM_SELL,
+				ignoreBlessing: true
 			});
 			await player.save();
 
 			if (shouldCountAsSoldItem) {
 				await MissionsController.update(player, response, {
 					missionId: "sellItemWithGivenCost",
-					params: { itemCost: sellItem.price }
+					params: { itemCost: getItemValue(itemInstance) }
 				});
 				await MissionsController.update(player, response, {
 					missionId: "sellItems"
@@ -87,7 +101,7 @@ function getEndCallback(player: Player) {
 
 			response.push(makePacket(CommandSellItemSuccessPacket, {
 				item: sellItem.item,
-				price: BlessingManager.getInstance().applyMoneyBlessing(sellItem.price)
+				price: sellItem.price
 			}));
 		}
 	};
@@ -111,17 +125,14 @@ export default class SellCommand {
 		toSellItems = sortPlayerItemList(toSellItems);
 
 		const collector = new ReactionCollectorSell(
-			toSellItems.map(slot => {
-				const item = slot.getItem();
-				return {
-					item: {
-						id: slot.itemId,
-						category: slot.itemCategory
-					},
-					slot: slot.slot,
-					price: slot.itemCategory === ItemCategory.POTION || !item ? 0 : getItemValue(item)
-				};
-			})
+			toSellItems.map(slot => ({
+				item: {
+					id: slot.itemId,
+					category: slot.itemCategory
+				},
+				slot: slot.slot,
+				price: getSellPrice(slot)
+			}))
 		);
 
 		const packet = new ReactionCollectorInstance(

@@ -2,6 +2,7 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import { EloGameResult } from "../../types/EloGameResult";
+import { KingGuardFightStats } from "../../types/KingGuardFightStats";
 
 type FightHistoryItemBase = {
 
@@ -62,4 +63,7 @@ export class CommandFightHistoryPacketReq extends CrowniclesPacket {}
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandFightHistoryPacketRes extends CrowniclesPacket {
 	history!: FightHistoryItem[];
+
+	// Absent when the player never fought a king guard
+	kingGuardStats?: KingGuardFightStats;
 }

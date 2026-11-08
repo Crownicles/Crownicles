@@ -51,6 +51,11 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 				slot: number;
 			}[];
 			maxPlantSlots: number;
+
+			/**
+			 * Whether the plant inventory is magically linked to the home plant storage
+			 */
+			linkedToHomeStorage: boolean;
 		};
 	};
 

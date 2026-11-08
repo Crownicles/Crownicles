@@ -90,4 +90,35 @@ describe("PlantConstants", () => {
 			expect(plant!.id).toBe(PlantId.COMMON_HERB);
 		});
 	});
+
+	describe("hasHomeStorageLink", () => {
+		it("should link the plant inventory to the home only with the last tanner upgrade", () => {
+			expect(PlantConstants.hasHomeStorageLink(PlantConstants.DEFAULT_PLANT_SLOTS)).toBe(false);
+			expect(PlantConstants.hasHomeStorageLink(PlantConstants.MAX_PLANT_SLOTS - 1)).toBe(false);
+			expect(PlantConstants.hasHomeStorageLink(PlantConstants.MAX_PLANT_SLOTS)).toBe(true);
+		});
+	});
+
+	describe("getHerbalistAmounts", () => {
+		it("should still sell one plant when none can be received or afforded", () => {
+			expect(PlantConstants.getHerbalistAmounts(0)).toEqual([1]);
+			expect(PlantConstants.getHerbalistAmounts(1)).toEqual([1]);
+		});
+
+		it("should offer 1, 5 and 10 below the largest quantity the player can buy, then that quantity", () => {
+			expect(PlantConstants.getHerbalistAmounts(2)).toEqual([1, 2]);
+			expect(PlantConstants.getHerbalistAmounts(7)).toEqual([1, 5, 7]);
+			expect(PlantConstants.getHerbalistAmounts(10)).toEqual([1, 5, 10]);
+			expect(PlantConstants.getHerbalistAmounts(53)).toEqual([1, 5, 10, 53]);
+		});
+
+		it("should never offer more than 4 quantities so that they fit next to the cancel button", () => {
+			for (let maxAmount = 0; maxAmount <= 100; maxAmount++) {
+				const amounts = PlantConstants.getHerbalistAmounts(maxAmount);
+				expect(amounts.length).toBeLessThanOrEqual(4);
+				expect(new Set(amounts).size).toBe(amounts.length);
+				expect([...amounts].sort((a, b) => a - b)).toEqual(amounts);
+			}
+		});
+	});
 });

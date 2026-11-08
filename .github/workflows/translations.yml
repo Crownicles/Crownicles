@@ -1,0 +1,30 @@
+name: Translations
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - Lang/fr/**
+      - .github/scripts/check-emojis.*
+      - .github/workflows/translations.yml
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  no-hardcoded-emojis-in-translations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # Other languages are synced from French by Crowdin, so only the source locale is checked
+      - name: Forbid hardcoded emojis in French translations
+        run: node .github/scripts/check-emojis.mjs translations Lang/fr

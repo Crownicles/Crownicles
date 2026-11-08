@@ -12,7 +12,9 @@ import { ShopCurrency } from "../../constants/ShopConstants";
 import {
 	ShopItemType
 } from "../../constants/LogsConstants";
-import { PlantId } from "../../constants/PlantConstants";
+import {
+	PlantId, PlantReceptionFailure
+} from "../../constants/PlantConstants";
 
 /**
  * Map of materialId (as string) to quantity received
@@ -22,6 +24,16 @@ export type MaterialDistribution = Record<string, number>;
 export type BuyCallbackResult = {
 	success: boolean;
 	materials?: MaterialDistribution;
+
+	/**
+	 * Set when the buy callback already charged the price, under the same lock as the purchase itself
+	 */
+	currencySpent?: boolean;
+
+	/**
+	 * Bought plants that went straight to the home plant storage (plant inventory linked to the home)
+	 */
+	plantsSentToHomeStorage?: number;
 };
 
 export interface ShopItem {
@@ -66,6 +78,10 @@ export class CommandShopBoughtTooMuchDailyPotions extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopNoPlantSlotAvailable extends CrowniclesPacket {
+	/**
+	 * Why the bought plants could not be received, when known
+	 */
+	reason?: PlantReceptionFailure;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -86,6 +102,8 @@ export class CommandShopGenericPurchase extends CrowniclesPacket {
 	amount!: number;
 
 	materials?: MaterialDistribution;
+
+	plantsSentToHomeStorage?: number;
 
 	translationParams?: Record<string, string>;
 }

@@ -1,0 +1,96 @@
+import {
+	afterEach, beforeEach, describe, expect, it, vi
+} from "vitest";
+import {
+	Player, Players
+} from "../../../src/core/database/game/models/Player";
+import {
+	Home, Homes
+} from "../../../src/core/database/game/models/Home";
+import { CookingService } from "../../../src/core/cooking/CookingService";
+import { PlayerCookingSpecialty } from "../../../src/core/database/game/models/PlayerCookingSpecialty";
+import { handleCookingSetSpecialty } from "../../../src/core/report/ReportCookingService";
+import {
+	CookingOutputType, CookingSpecialtyConstants, RecipeType, SLOT_CONFIGS, SPECIALTY_SLOT_INDEX
+} from "../../../../Lib/src/constants/CookingConstants";
+import {
+	CookingSlotData, CookingSpecialtyErrors
+} from "../../../../Lib/src/types/CookingTypes";
+
+// Cooking level unlocking every specialty
+const ALL_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[CookingSpecialtyConstants.MAX_SPECIALTIES - 1];
+
+const MATERIAL_ONLY_SLOT = SLOT_CONFIGS.findIndex(config => !config.eligibleTypes.includes(RecipeType.POTION_HEALTH));
+
+function healthPotionOnSlot(slotIndex: number): CookingSlotData {
+	return {
+		slotIndex,
+		recipe: {
+			id: "potion_health_1",
+			level: 1,
+			isSecret: false,
+			outputDescription: "potion_health_1",
+			outputType: CookingOutputType.POTION,
+			recipeType: RecipeType.POTION_HEALTH,
+			ingredients: {
+				plants: [],
+				materials: []
+			},
+			canCraft: true
+		}
+	};
+}
+
+describe("handleCookingSetSpecialty", () => {
+	let createSpy: ReturnType<typeof vi.spyOn>;
+
+	beforeEach(() => {
+		const masterChef = {
+			id: 1,
+			cookingLevel: ALL_SPECIALTIES_LEVEL,
+			guildId: null,
+			pinnedCookingRecipeId: null
+		} as Player;
+		vi.spyOn(Players, "getByKeycloakId").mockResolvedValue(masterChef);
+		vi.spyOn(Homes, "getOfPlayer").mockResolvedValue({
+			id: 1,
+			getLevel: () => ({ features: { cookingSlots: SLOT_CONFIGS.length } })
+		} as unknown as Home);
+		vi.spyOn(CookingService, "getSpecialtiesInfo").mockResolvedValue([]);
+		vi.spyOn(Player, "withLocked").mockImplementation((_id, body) => body(masterChef));
+		vi.spyOn(PlayerCookingSpecialty, "getOfPlayer").mockResolvedValue([]);
+		createSpy = vi.spyOn(PlayerCookingSpecialty, "create").mockResolvedValue({} as PlayerCookingSpecialty);
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("should refuse a recipe only offered on the specialty station, which is already a specialty", async () => {
+		vi.spyOn(CookingService, "getSlotRecipes").mockResolvedValue([healthPotionOnSlot(SPECIALTY_SLOT_INDEX)]);
+
+		const [response] = await handleCookingSetSpecialty("master-chef", {
+			slotIndex: SPECIALTY_SLOT_INDEX,
+			recipeId: "potion_health_1"
+		});
+
+		expect(response).toMatchObject({ error: CookingSpecialtyErrors.UNAVAILABLE });
+		expect(createSpy).not.toHaveBeenCalled();
+	});
+
+	it("should store a recipe offered on any rotating station, since the specialty station accepts every recipe", async () => {
+		// A kept recipe can push a health potion onto a station reserved to other recipes
+		vi.spyOn(CookingService, "getSlotRecipes").mockResolvedValue([healthPotionOnSlot(MATERIAL_ONLY_SLOT)]);
+
+		const [response] = await handleCookingSetSpecialty("master-chef", {
+			slotIndex: MATERIAL_ONLY_SLOT,
+			recipeId: "potion_health_1"
+		});
+
+		expect(response).toMatchObject({ error: undefined });
+		expect(createSpy).toHaveBeenCalledWith({
+			playerId: 1,
+			recipeId: "potion_health_1"
+		});
+	});
+});

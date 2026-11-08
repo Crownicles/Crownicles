@@ -5,7 +5,7 @@ import {
 	CLS_TRANSACTION_KEY, getCrowniclesNamespace
 } from "../../src/locks/CLSNamespace";
 import {
-	runAfterCommit, scheduleAfterCommit
+	bufferUntilCommit, runAfterCommit, scheduleAfterCommit
 } from "../../src/locks/scheduleAfterCommit";
 
 describe("scheduleAfterCommit", () => {
@@ -149,5 +149,101 @@ describe("runAfterCommit", () => {
 		});
 
 		await expect(afterCommit?.()).rejects.toBe(error);
+	});
+});
+
+describe("bufferUntilCommit", () => {
+	type FakeTransaction = {
+		afterCommit: (hook: () => void) => void;
+		commit: () => void;
+	};
+
+	function createTransaction(): FakeTransaction {
+		const hooks: (() => void)[] = [];
+		return {
+			afterCommit: hook => {
+				hooks.push(hook);
+			},
+			commit: (): void => {
+				for (const hook of hooks) {
+					hook();
+				}
+			}
+		};
+	}
+
+	async function inTransaction(transaction: FakeTransaction, body: () => Promise<void>): Promise<void> {
+		const namespace = getCrowniclesNamespace();
+		await namespace.runPromise(async () => {
+			namespace.set(CLS_TRANSACTION_KEY, transaction);
+			await body();
+		});
+	}
+
+	it("writes to the target directly outside a transaction", async () => {
+		const target = ["before"];
+
+		await bufferUntilCommit(target, buffer => {
+			buffer.push("granted");
+			return Promise.resolve();
+		});
+
+		expect(target).toEqual(["before", "granted"]);
+	});
+
+	it("inserts the items on commit at their position, the nested buffers included", async () => {
+		const transaction = createTransaction();
+		const target = ["before"];
+
+		await inTransaction(transaction, async () => {
+			await bufferUntilCommit(target, async buffer => {
+				buffer.push("first reward");
+				await bufferUntilCommit(buffer, nestedBuffer => {
+					nestedBuffer.push("nested reward");
+					return Promise.resolve();
+				});
+				buffer.push("first reward end");
+			});
+			target.push("between");
+			await bufferUntilCommit(target, buffer => {
+				buffer.push("second reward");
+				return Promise.resolve();
+			});
+			target.push("after");
+		});
+		expect(target).toEqual(["before", "between", "after"]);
+
+		transaction.commit();
+		expect(target).toEqual(["before", "first reward", "nested reward", "first reward end", "between", "second reward", "after"]);
+	});
+
+	it("drops the items when the transaction never commits", async () => {
+		const target: string[] = [];
+
+		await inTransaction(createTransaction(), () => bufferUntilCommit(target, buffer => {
+			buffer.push("granted");
+			return Promise.resolve();
+		}));
+
+		expect(target).toEqual([]);
+	});
+
+	it("drops the items of a failed fill and of its nested buffers even if the transaction commits", async () => {
+		const transaction = createTransaction();
+		const target: string[] = [];
+
+		await inTransaction(transaction, async () => {
+			await expect(bufferUntilCommit(target, async buffer => {
+				buffer.push("rolled back reward");
+				await bufferUntilCommit(buffer, nestedBuffer => {
+					nestedBuffer.push("nested rolled back reward");
+					return Promise.resolve();
+				});
+				throw new Error("credit failed");
+			})).rejects.toThrow("credit failed");
+		});
+		transaction.commit();
+
+		expect(target).toEqual([]);
 	});
 });

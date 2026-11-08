@@ -1,5 +1,5 @@
 import {
-	Client, GuildMember, Guild, IntentsBitField, Options, Partials, TextChannel
+	Client, GuildMember, Guild, IntentsBitField, Options, Partials, TextChannel, User
 } from "discord.js";
 import { Constants } from "../../../Lib/src/constants/Constants";
 import { loadConfig } from "../config/DiscordConfig";
@@ -15,6 +15,9 @@ import { DiscordDatabase } from "../database/discord/DiscordDatabase";
 import { CrowniclesDiscordWebServer } from "./CrowniclesDiscordWebServer";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { DiscordConstants } from "../DiscordConstants";
+import {
+	CrowniclesDiscordMetrics, DISCORD_MONITORED_CACHES
+} from "./CrowniclesDiscordMetrics";
 import "source-map-support/register";
 
 process.on("uncaughtException", error => {
@@ -104,6 +107,16 @@ export abstract class Intents {
 }
 
 /**
+ * Expose the size of the discord.js caches of the shard
+ * @param client
+ */
+function registerClientCacheSizesMetrics(client: Client): void {
+	CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.USERS, () => client.users.cache.size);
+	CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.CHANNELS, () => client.channels.cache.size);
+	CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.GUILDS, () => client.guilds.cache.size);
+}
+
+/**
  * The main function of the bot : makes the bot start
  */
 async function connectAndStartBot(): Promise<void> {
@@ -143,6 +156,11 @@ async function connectAndStartBot(): Promise<void> {
 					interval: DiscordConstants.CACHE.GUILD_MEMBER_SWEEP_INTERVAL,
 					filter: (): (member: GuildMember) => boolean =>
 						(member: GuildMember): boolean => member.id !== client.user?.id
+				},
+				users: {
+					interval: DiscordConstants.CACHE.USER_SWEEP_INTERVAL,
+					filter: (): (user: User) => boolean =>
+						(user: User): boolean => user.id !== client.user?.id
 				}
 			}
 		}
@@ -202,6 +220,7 @@ async function connectAndStartBot(): Promise<void> {
 	});
 
 	CrowniclesDiscordWebServer.start(shardId);
+	registerClientCacheSizesMetrics(client);
 	const isMainShard = shardId === 0;
 	await CommandsManager.register(crowniclesClient, isMainShard);
 	await DiscordMQTT.init(isMainShard);

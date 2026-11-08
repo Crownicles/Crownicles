@@ -18,6 +18,11 @@ vi.mock("../../../src/app", () => ({
 	}
 }));
 
+// The king's challenge reads its thresholds from the database, it is covered by its own integration test
+vi.mock("../../../src/core/kingChallenge/KingChallenge", () => ({
+	applyKingChallengeProgressUnderLock: vi.fn().mockResolvedValue(undefined)
+}));
+
 /**
  * This test suite verifies that MissionsController synchronizes the caller
  * before Player mutation methods resume.

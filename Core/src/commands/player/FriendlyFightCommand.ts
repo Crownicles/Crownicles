@@ -18,6 +18,15 @@ import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 import { AiPlayerFighter } from "../../core/fights/fighter/AiPlayerFighter";
 import { FightController } from "../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
+import { crowniclesInstance } from "../../app";
+
+/**
+ * Log the friendly fight once it is over, without any reward nor glory change
+ * @param fight
+ */
+async function friendlyFightEndCallback(fight: FightController): Promise<void> {
+	await crowniclesInstance?.logsDatabase.logFight(fight);
+}
 
 /**
  * Check that the asked opponent can be fought, returning the reason why not otherwise
@@ -62,19 +71,22 @@ export default class FriendlyFightCommand {
 			throw new Error("Class not found for friendly fight player or opponent");
 		}
 
-		const askingFighter = new PlayerFighter(player, playerClass, { withoutConsequences: true });
+		const askingFighter = new PlayerFighter(player, playerClass, {
+			withoutConsequences: true,
+			levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
+		});
 		askingFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
 		await askingFighter.loadStats();
 
 		const incomingFighter = new AiPlayerFighter(opponent, opponentClass, {
 			allowPotionConsumption: false,
-			withoutConsequences: true
+			withoutConsequences: true,
+			levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 		});
 		incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
 		await incomingFighter.loadStats();
 
-		// No end callback: a friendly fight is neither logged nor rewarded
-		await new FightController(
+		const fightController = new FightController(
 			{
 				fighter1: askingFighter,
 				fighter2: incomingFighter
@@ -82,8 +94,11 @@ export default class FriendlyFightCommand {
 			{
 				overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
 				context,
-				friendly: true
+				friendly: true,
+				levelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 			}
-		).startFight(response);
+		);
+		fightController.setEndCallback(friendlyFightEndCallback);
+		await fightController.startFight(response);
 	}
 }

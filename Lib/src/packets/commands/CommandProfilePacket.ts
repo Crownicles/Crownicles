@@ -86,6 +86,7 @@ export class CommandProfilePacketRes extends CrowniclesPacket {
 			value: number;
 			max: number;
 		};
+		kingChallengeTier: number;
 		cooking?: {
 			level: number;
 			grade: string;

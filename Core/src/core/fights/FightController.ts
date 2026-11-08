@@ -30,7 +30,7 @@ import {
 	FightAlteration, FightAlterationDataController
 } from "../../data/FightAlteration";
 import { PetAssistance } from "../../data/PetAssistance";
-import { getAiPetBehavior } from "./PetAssistManager";
+import { getPetBehaviors } from "./PetAssistManager";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
 
@@ -39,6 +39,7 @@ type FightControllerOptions = {
 	context: PacketContext;
 	silentMode?: boolean;
 	friendly?: boolean;
+	levelCap?: number;
 };
 
 export class FightController {
@@ -61,6 +62,8 @@ export class FightController {
 	private readonly silentMode: boolean;
 
 	public readonly friendly: boolean;
+
+	public readonly levelCap?: number;
 
 	public petReactionData?: {
 		keycloakId: string;
@@ -87,6 +90,7 @@ export class FightController {
 		this.overtimeBehavior = options.overtimeBehavior;
 		this.silentMode = options.silentMode ?? false;
 		this.friendly = options.friendly ?? false;
+		this.levelCap = options.levelCap;
 	}
 
 	/**
@@ -386,9 +390,11 @@ export class FightController {
 
 		const currentFighter = this.getPlayingFighter();
 		if ((currentFighter instanceof AiPlayerFighter || currentFighter instanceof PlayerFighter) && currentFighter.pet) {
-			const petAction = getAiPetBehavior(currentFighter.pet.typeId);
-			if (petAction) {
+			for (const petAction of getPetBehaviors(currentFighter.pet.typeId)) {
 				await this.executePetAssistance(petAction, response);
+				if (this.state !== FightState.RUNNING) {
+					break;
+				}
 			}
 		}
 		if (this.state !== FightState.RUNNING) {

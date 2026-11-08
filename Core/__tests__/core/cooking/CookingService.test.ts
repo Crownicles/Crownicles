@@ -4,7 +4,8 @@ import {
 import { CookingService } from "../../../src/core/cooking/CookingService";
 import {
 	getCookingGrade, CookingXpConstants, FAILURE_RATE_PER_EXTRA_LEVEL,
-	PLANT_COOKING_XP, MATERIAL_RARITY_COOKING_XP, MASTER_CHEF_BADGE_COOKING_LEVEL
+	PLANT_COOKING_XP, MATERIAL_RARITY_COOKING_XP, MASTER_CHEF_BADGE_COOKING_LEVEL,
+	RecipeType
 } from "../../../../Lib/src/constants/CookingConstants";
 import Player from "../../../src/core/database/game/models/Player";
 import { PlayerBadgesManager } from "../../../src/core/database/game/models/PlayerBadges";
@@ -180,7 +181,7 @@ describe("CookingService - pure functions", () => {
 				discoveredIds: string[];
 				guild: unknown;
 				cookingSlots: number;
-			}) => void;
+			}, specialtyIds: ReadonlySet<string>) => void;
 		}).injectPinnedRecipeIfEligible.bind(CookingService);
 
 		const injectPotion = (slotRecipes: Array<CookingRecipe | null>, pinnedCookingRecipeId: string | null): void =>
@@ -190,7 +191,7 @@ describe("CookingService - pure functions", () => {
 				discoveredIds: [],
 				guild: null,
 				cookingSlots: 3
-			});
+			}, new Set());
 
 		// Resolve the deterministic anchor slot for a recipe by injecting it into empty slots.
 		const computeAnchorIndex = (pinnedCookingRecipeId: string): number => {
@@ -284,6 +285,38 @@ describe("CookingService - pure functions", () => {
 		});
 	});
 
+	describe("injectPinnedRecipeIfEligible with specialties", () => {
+		const injectWithSpecialties = (CookingService as unknown as {
+			injectPinnedRecipeIfEligible: (injection: {
+				slotRecipes: Array<CookingRecipe | null>;
+				player: { pinnedCookingRecipeId: string | null };
+				discoveredIds: string[];
+				guild: unknown;
+				cookingSlots: number;
+			}, specialtyIds: ReadonlySet<string>) => void;
+		}).injectPinnedRecipeIfEligible.bind(CookingService);
+
+		const inject = (slotRecipes: Array<CookingRecipe | null>, specialtyIds: string[]): void => injectWithSpecialties({
+			slotRecipes,
+			player: { pinnedCookingRecipeId: "potion_health_1" },
+			discoveredIds: [],
+			guild: null,
+			cookingSlots: 3
+		}, new Set(specialtyIds));
+
+		it("should not inject a pinned recipe that is also a specialty, already offered on the specialty station", () => {
+			const slots: Array<CookingRecipe | null> = [null, null, null];
+			inject(slots, ["potion_health_1"]);
+			expect(slots.every(slot => slot === null)).toBe(true);
+		});
+
+		it("should still inject a pinned recipe that is not a specialty", () => {
+			const slots: Array<CookingRecipe | null> = [null, null, null];
+			inject(slots, ["potion_energy_1"]);
+			expect(slots.filter(slot => slot?.id === "potion_health_1")).toHaveLength(1);
+		});
+	});
+
 	describe("buildRecipeSlotData", () => {
 		const build = (CookingService as unknown as {
 			buildRecipeSlotData: (
@@ -296,9 +329,16 @@ describe("CookingService - pure functions", () => {
 					plantStorageMap: Map<number, number>;
 					materialMap: Map<number, number>;
 					guild: unknown;
-					pinnedRecipeId: string | null;
+					keptRecipeIds: ReadonlySet<string>;
+					timePotionsLeftThisWeek?: number;
 				}
-			) => { id: string; isSecret: boolean; outputDescription: string };
+			) => {
+				id: string;
+				isSecret: boolean;
+				outputDescription: string;
+				canCraft: boolean;
+				timePotionsLeftThisWeek?: number;
+			};
 		}).buildRecipeSlotData.bind(CookingService);
 
 		const baseContext = {
@@ -308,20 +348,53 @@ describe("CookingService - pure functions", () => {
 			plantStorageMap: new Map<number, number>(),
 			materialMap: new Map<number, number>(),
 			guild: null,
-			pinnedRecipeId: null as string | null
+			keptRecipeIds: new Set<string>()
 		};
 
-		it("should never mark the pinned recipe as secret, even when secretRate is 1", () => {
+		it("should never mark a kept recipe (pinned or specialty) as secret, even when secretRate is 1", () => {
 			const recipe = createTestRecipe({ id: "potion_health_1" });
-			const result = build(0, recipe, { ...baseContext, pinnedRecipeId: "potion_health_1" });
+			const result = build(0, recipe, { ...baseContext, keptRecipeIds: new Set(["potion_health_1"]) });
 			expect(result.isSecret).toBe(false);
 			expect(result.outputDescription).toBe("potion_health_1");
 		});
 
-		it("should still mark non-pinned recipes as secret when secretRate is 1", () => {
+		it("should still mark non-kept recipes as secret when secretRate is 1", () => {
 			const recipe = createTestRecipe({ id: "other_recipe" });
-			const result = build(0, recipe, { ...baseContext, pinnedRecipeId: "potion_health_1" });
+			const result = build(0, recipe, { ...baseContext, keptRecipeIds: new Set(["potion_health_1"]) });
 			expect(result.isSecret).toBe(true);
+		});
+
+		describe("time potion weekly limit", () => {
+			// Every ingredient of the test recipes is in stock
+			const stockedContext = {
+				...baseContext,
+				grade: { secretRecipeRate: 0 },
+				plantStorageMap: new Map<number, number>([[PlantId.COMMON_HERB, 99], [PlantId.LUNAR_MOSS, 99]]),
+				materialMap: new Map<number, number>([[68, 99]])
+			};
+			const timePotion = createTestRecipe({
+				id: "potion_time_speedup_1",
+				recipeType: RecipeType.POTION_TIME_SPEEDUP,
+				plants: [{ plantId: PlantId.LUNAR_MOSS, quantity: 1 }]
+			});
+
+			it("should block a time potion once the weekly limit is reached, even with every ingredient", () => {
+				const result = build(0, timePotion, { ...stockedContext, timePotionsLeftThisWeek: 0 });
+				expect(result.canCraft).toBe(false);
+				expect(result.timePotionsLeftThisWeek).toBe(0);
+			});
+
+			it("should let a time potion be cooked while the weekly limit is not reached", () => {
+				const result = build(0, timePotion, { ...stockedContext, timePotionsLeftThisWeek: 4 });
+				expect(result.canCraft).toBe(true);
+				expect(result.timePotionsLeftThisWeek).toBe(4);
+			});
+
+			it("should neither block nor annotate the other recipes", () => {
+				const result = build(0, createTestRecipe(), { ...stockedContext, timePotionsLeftThisWeek: 0 });
+				expect(result.canCraft).toBe(true);
+				expect(result).not.toHaveProperty("timePotionsLeftThisWeek");
+			});
 		});
 	});
 

@@ -5,7 +5,9 @@ import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import {
 	Guilds, Guild
 } from "../database/game/models/Guild";
-import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
+import {
+	CookingRecipe, CookingRecipeId
+} from "../../../../Lib/src/types/CookingRecipe";
 import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialDataController } from "../../data/Material";
@@ -30,16 +32,23 @@ import {
 	MASTER_CHEF_BADGE_COOKING_LEVEL,
 	CookingOutputType,
 	SECRET_RECIPE_PLACEHOLDER,
-	SLOT_CONFIGS
+	SLOT_CONFIGS,
+	RecipeType,
+	TIME_POTION_WEEKLY_CRAFT_LIMIT,
+	SPECIALTY_SLOT_INDEX,
+	hasUnlockedCookingSpecialties,
+	getCookingSpecialtiesLimit,
+	isRecipeEligibleForSlot
 } from "../../../../Lib/src/constants/CookingConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
+import { PlayerCookingSpecialty } from "../database/game/models/PlayerCookingSpecialty";
 import {
 	getUniqueRecipesForSlots,
 	isRecipeSecret
 } from "./CookingSlotRotation";
 import {
-	CookingSlotData, RecipeSlotData, PinnedRecipeInfo, RecipeIngredients, RecipeDisplayInfo
+	CookingSlotData, RecipeSlotData, PinnedRecipeInfo, RecipeIngredients, RecipeDisplayInfo, CookingSpecialtyInfo
 } from "../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
@@ -71,14 +80,22 @@ export interface CraftResult {
 	bonusOutput: boolean;
 }
 
-interface RecipeSlotContext {
+interface IngredientStocks {
+	plantStorageMap: Map<number, number>;
+	materialMap: Map<number, number>;
+}
+
+interface RecipeSlotContext extends IngredientStocks {
 	furnacePosition: number;
 	daySeed: number;
 	grade: CookingGradeDefinition;
-	plantStorageMap: Map<number, number>;
-	materialMap: Map<number, number>;
 	guild: Guild | null;
-	pinnedRecipeId: string | null;
+
+	/** Recipes the player chose to keep at hand (pinned recipe and specialties), never secret */
+	keptRecipeIds: ReadonlySet<CookingRecipeId>;
+
+	/** Only set when a time potion recipe is offered */
+	timePotionsLeftThisWeek?: number;
 }
 
 interface CookingLevelUpResult {
@@ -181,39 +198,73 @@ export class CookingService {
 		const discoveredIds = await PlayerCookingRecipe.getDiscoveredRecipeIds(player);
 		const daySeed = getDayNumber();
 		const grade = getCookingGrade(player.cookingLevel);
-		const playerMaterials = await Materials.getPlayerMaterials(player.id);
-		const materialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
 		const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+
+		// The specialties have their own station: the rotating stations offer other recipes
+		const specialties = await CookingService.getSpecialties(player, discoveredIds);
+		const specialtyIds = new Set(specialties.map(specialty => specialty.id));
 		const slotRecipes = getUniqueRecipesForSlots({
 			cookingSlots,
 			furnacePosition: player.furnacePosition,
 			daySeed,
 			discoveredRecipeIds: discoveredIds,
 			allowPetFoodRecipes: Boolean(guild),
-			maxRecipeLevelWithoutPenalty: grade.maxRecipeLevelWithoutPenalty
+			maxRecipeLevelWithoutPenalty: grade.maxRecipeLevelWithoutPenalty,
+			excludedRecipeIds: specialtyIds
 		});
 
 		CookingService.injectPinnedRecipeIfEligible({
 			slotRecipes, player, discoveredIds, guild, cookingSlots
-		});
+		}, specialtyIds);
 
-		// Load all plant storages once to avoid N+1 queries
-		const plantStorageMap = await CookingService.buildPlantAvailabilityMap(homeId, player.id);
+		// The specialty station offers one specialty at a time: each furnace re-roll moves to the next one
+		const offeredSpecialties = specialties.length > 0 ? [specialties[player.furnacePosition % specialties.length]] : [];
 
 		const context: RecipeSlotContext = {
 			furnacePosition: player.furnacePosition,
 			daySeed,
 			grade,
-			plantStorageMap,
-			materialMap,
+			...await CookingService.loadIngredientStocks(homeId, player.id),
 			guild,
-			pinnedRecipeId: player.pinnedCookingRecipeId
+			keptRecipeIds: new Set([...specialtyIds, ...player.pinnedCookingRecipeId ? [player.pinnedCookingRecipeId] : []]),
+			timePotionsLeftThisWeek: CookingService.getTimePotionsLeftThisWeek(player, [...slotRecipes, ...offeredSpecialties])
 		};
 
-		return slotRecipes.map((recipe, i) => ({
-			slotIndex: i,
-			recipe: recipe ? CookingService.buildRecipeSlotData(i, recipe, context) : null
-		}));
+		return [
+			...slotRecipes.map((recipe, i) => ({
+				slotIndex: i,
+				recipe: recipe ? CookingService.buildRecipeSlotData(i, recipe, context) : null
+			})),
+			...offeredSpecialties.map(recipe => ({
+				slotIndex: SPECIALTY_SLOT_INDEX,
+				recipe: CookingService.buildRecipeSlotData(SPECIALTY_SLOT_INDEX, recipe, context)
+			}))
+		];
+	}
+
+	/**
+	 * Load the player's plants (home storage and carried) and materials once, so every recipe
+	 * of a menu is checked against the same stocks without N+1 queries
+	 */
+	private static async loadIngredientStocks(homeId: number, playerId: number): Promise<IngredientStocks> {
+		const playerMaterials = await Materials.getPlayerMaterials(playerId);
+		return {
+			plantStorageMap: await CookingService.buildPlantAvailabilityMap(homeId, playerId),
+			materialMap: new Map(playerMaterials.map(m => [m.materialId, m.quantity]))
+		};
+	}
+
+	static isTimePotionRecipe(recipe: CookingRecipe): boolean {
+		return recipe.recipeType === RecipeType.POTION_TIME_SPEEDUP;
+	}
+
+	/**
+	 * Time potions the player can still cook this week, or undefined when none of the given recipes brews one
+	 */
+	static getTimePotionsLeftThisWeek(player: Player, recipes: (CookingRecipe | null)[]): number | undefined {
+		return recipes.some(recipe => recipe && CookingService.isTimePotionRecipe(recipe))
+			? Math.max(0, TIME_POTION_WEEKLY_CRAFT_LIMIT - player.timePotionsCookedThisWeek)
+			: undefined;
 	}
 
 	/**
@@ -269,26 +320,38 @@ export class CookingService {
 		};
 	}
 
+	/**
+	 * Whether the recipe output is hidden on this slot. The recipes the player chose to keep are never secret.
+	 */
+	private static isSecretOnSlot(slotIndex: number, recipe: CookingRecipe, context: RecipeSlotContext): boolean {
+		return !context.keptRecipeIds.has(recipe.id) && isRecipeSecret({
+			slotIndex,
+			furnacePosition: context.furnacePosition,
+			daySeed: context.daySeed,
+			secretRate: context.grade.secretRecipeRate
+		});
+	}
+
+	/**
+	 * The time potions left this week, only for time potion recipes
+	 */
+	private static getTimePotionsLeft(recipe: CookingRecipe, context: RecipeSlotContext): Pick<RecipeSlotData, "timePotionsLeftThisWeek"> {
+		return CookingService.isTimePotionRecipe(recipe) && context.timePotionsLeftThisWeek !== undefined
+			? { timePotionsLeftThisWeek: context.timePotionsLeftThisWeek }
+			: {};
+	}
+
 	private static buildRecipeSlotData(
 		slotIndex: number,
 		recipe: CookingRecipe,
 		context: RecipeSlotContext
 	): RecipeSlotData {
-		const secret = recipe.id === context.pinnedRecipeId
-			? false
-			: isRecipeSecret({
-				slotIndex,
-				furnacePosition: context.furnacePosition,
-				daySeed: context.daySeed,
-				secretRate: context.grade.secretRecipeRate
-			});
-
+		const secret = CookingService.isSecretOnSlot(slotIndex, recipe, context);
 		const {
 			ingredients, hasIngredients
 		} = CookingService.buildIngredientAvailability(recipe, context.plantStorageMap, context.materialMap);
-		const canCraftOutput = recipe.outputType === CookingOutputType.PET_FOOD
-			? Boolean(context.guild)
-			: true;
+		const canCraftOutput = recipe.outputType !== CookingOutputType.PET_FOOD || Boolean(context.guild);
+		const timePotionsLeft = CookingService.getTimePotionsLeft(recipe, context);
 
 		const {
 			id, level, outputType, recipeType
@@ -303,7 +366,8 @@ export class CookingService {
 			outputDescription: secret ? SECRET_RECIPE_PLACEHOLDER : id,
 			petFoodType: recipe.petFood?.type,
 			ingredients,
-			canCraft: hasIngredients && canCraftOutput
+			canCraft: hasIngredients && canCraftOutput && timePotionsLeft.timePotionsLeftThisWeek !== 0,
+			...timePotionsLeft
 		};
 	}
 
@@ -571,6 +635,10 @@ export class CookingService {
 		return recipe.materials[0].materialId;
 	}
 
+	private static isKnownRecipe(recipe: CookingRecipe, discoveredIds: string[]): boolean {
+		return recipe.discoveredByDefault || discoveredIds.includes(recipe.id);
+	}
+
 	/**
 	 * Resolve the player's pinned recipe, or null when there is no pin or it is
 	 * not currently eligible (unknown, undiscovered, or pet food without a guild).
@@ -585,7 +653,7 @@ export class CookingService {
 		if (!pinnedRecipe) {
 			return null;
 		}
-		const isDiscovered = pinnedRecipe.discoveredByDefault || discoveredIds.includes(pinnedRecipe.id);
+		const isDiscovered = CookingService.isKnownRecipe(pinnedRecipe, discoveredIds);
 		const isPetFoodAllowed = pinnedRecipe.outputType !== CookingOutputType.PET_FOOD || Boolean(guild);
 		return isDiscovered && isPetFoodAllowed ? pinnedRecipe : null;
 	}
@@ -601,11 +669,8 @@ export class CookingService {
 	private static anchorPinnedRecipe({
 		slotRecipes, cookingSlots
 	}: PinnedRecipeInjection, pinnedRecipe: CookingRecipe): void {
-		const anchorSlotIndex = SLOT_CONFIGS.findIndex((config, idx) =>
-			idx < cookingSlots
-			&& pinnedRecipe.level >= config.minLevel
-			&& pinnedRecipe.level <= config.maxLevel
-			&& config.eligibleTypes.includes(pinnedRecipe.recipeType));
+		const anchorSlotIndex = SLOT_CONFIGS.findIndex((_config, idx) =>
+			idx < cookingSlots && isRecipeEligibleForSlot(pinnedRecipe, idx));
 		if (anchorSlotIndex === -1) {
 			return;
 		}
@@ -617,26 +682,88 @@ export class CookingService {
 			return;
 		}
 
-		if (naturalSlotIndex === -1) {
-			// Absent from the current rotation: inject it into its anchor slot.
-			slotRecipes[anchorSlotIndex] = pinnedRecipe;
-			return;
-		}
-
 		// Present elsewhere: swap so the displaced recipe keeps a slot instead of vanishing.
-		slotRecipes[naturalSlotIndex] = slotRecipes[anchorSlotIndex];
+		if (naturalSlotIndex !== -1) {
+			slotRecipes[naturalSlotIndex] = slotRecipes[anchorSlotIndex];
+		}
 		slotRecipes[anchorSlotIndex] = pinnedRecipe;
 	}
 
 	/**
-	 * Inject the player's pinned recipe into slot recipes if it is eligible for at least one slot
+	 * Inject the player's pinned recipe into slot recipes if it is eligible for at least one slot.
+	 * A pinned recipe that is also a specialty is already offered on the specialty station.
 	 */
-	private static injectPinnedRecipeIfEligible(injection: PinnedRecipeInjection): void {
+	private static injectPinnedRecipeIfEligible(injection: PinnedRecipeInjection, specialtyIds: ReadonlySet<CookingRecipeId>): void {
 		const pinnedRecipe = CookingService.getEligiblePinnedRecipe(injection);
-		if (!pinnedRecipe) {
+		if (!pinnedRecipe || specialtyIds.has(pinnedRecipe.id)) {
 			return;
 		}
 		CookingService.anchorPinnedRecipe(injection, pinnedRecipe);
+	}
+
+	/**
+	 * Specialties of the player, up to the limit of their cooking level. A specialty whose recipe no longer exists
+	 * or is no longer known by the player is deleted, so it no longer counts towards the limit.
+	 * Sorted by level, so the specialty station cycles through them in the same order.
+	 */
+	static async getSpecialties(player: Player, discoveredIds: string[]): Promise<CookingRecipe[]> {
+		if (!hasUnlockedCookingSpecialties(player.cookingLevel)) {
+			return [];
+		}
+		const specialties: CookingRecipe[] = [];
+		for (const { recipeId } of await PlayerCookingSpecialty.getOfPlayer(player.id)) {
+			const recipe = CookingRecipeDataController.instance.getById(recipeId);
+			if (recipe && CookingService.isKnownRecipe(recipe, discoveredIds)) {
+				specialties.push(recipe);
+			}
+			else {
+				await PlayerCookingSpecialty.destroy({
+					where: {
+						playerId: player.id,
+						recipeId
+					}
+				});
+			}
+		}
+		return specialties
+			.sort((a, b) => a.level - b.level || a.id.localeCompare(b.id))
+			.slice(0, getCookingSpecialtiesLimit(player.cookingLevel));
+	}
+
+	/**
+	 * Build the specialties of the player with whether each one can be cooked right now
+	 */
+	static async getSpecialtiesInfo(params: {
+		player: Player;
+		homeId: number;
+		guild: Guild | null;
+	}): Promise<CookingSpecialtyInfo[]> {
+		const {
+			player, homeId, guild
+		} = params;
+		if (!hasUnlockedCookingSpecialties(player.cookingLevel)) {
+			return [];
+		}
+		const specialties = await CookingService.getSpecialties(player, await PlayerCookingRecipe.getDiscoveredRecipeIds(player));
+		if (specialties.length === 0) {
+			return [];
+		}
+
+		const {
+			plantStorageMap, materialMap
+		} = await CookingService.loadIngredientStocks(homeId, player.id);
+		const timePotionsLeftThisWeek = CookingService.getTimePotionsLeftThisWeek(player, specialties);
+
+		return specialties.map(recipe => {
+			const { hasIngredients } = CookingService.buildIngredientAvailability(recipe, plantStorageMap, materialMap);
+			const timeLimitReached = CookingService.isTimePotionRecipe(recipe) && timePotionsLeftThisWeek === 0;
+			return {
+				recipeId: recipe.id,
+				level: recipe.level,
+				recipeType: recipe.recipeType,
+				canCraft: hasIngredients && CookingService.canStorePetFoodReward(recipe, guild) && !timeLimitReached
+			};
+		});
 	}
 
 	/**
@@ -653,9 +780,9 @@ export class CookingService {
 			return null;
 		}
 
-		const playerMaterials = await Materials.getPlayerMaterials(params.player.id);
-		const materialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
-		const plantStorageMap = await CookingService.buildPlantAvailabilityMap(params.homeId, params.player.id);
+		const {
+			plantStorageMap, materialMap
+		} = await CookingService.loadIngredientStocks(params.homeId, params.player.id);
 
 		const {
 			ingredients, hasIngredients

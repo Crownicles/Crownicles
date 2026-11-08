@@ -93,6 +93,8 @@ import { ReactionCollectorStopPacket } from "../../../../Lib/src/packets/interac
 import { ReactionCollectorResetTimerPacketRes } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { ReactionCollectorChangeClassData } from "../../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
 import { handleChangeClassReactionCollector } from "../../commands/player/ClassesCommand";
+import { ReactionCollectorDefensePersonalityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDefensePersonality";
+import { createDefensePersonalityCollector } from "../../commands/player/DefenseCommand";
 import { ReactionCollectorSellData } from "../../../../Lib/src/packets/interaction/ReactionCollectorSell";
 import { handleSellReactionCollector } from "../../commands/player/SellCommand";
 import { ReactionCollectorFightChooseActionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
@@ -109,6 +111,9 @@ import { ReactionCollectorJoinBoatData } from "../../../../Lib/src/packets/inter
 import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import {
+	CrowniclesDiscordMetrics, DISCORD_MONITORED_CACHES
+} from "../../bot/CrowniclesDiscordMetrics";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { ReportCityMenu } from "../../commands/player/report/ReportCityMenu";
 import { ReactionCollectorDailyBonusData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
@@ -138,6 +143,10 @@ export type ReactionCollectorReturnTypeOrNull = ReactionCollectorReturnType | nu
 
 export default class ReactionCollectorHandler {
 	private static collectorsCache: Map<string, ReactionCollectorReturnType> = new Map();
+
+	static {
+		CrowniclesDiscordMetrics.registerCacheSize(DISCORD_MONITORED_CACHES.REACTION_COLLECTORS, () => ReactionCollectorHandler.collectorsCache.size);
+	}
 
 	/**
 	 * Registry of collector handlers. Uses `any` for generic parameters because TypeScript's
@@ -186,6 +195,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDrinkData.name, drinkAcceptCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetSellData.name, createPetSellCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorChangeClassData.name, handleChangeClassReactionCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDefensePersonalityData.name, createDefensePersonalityCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorSellData.name, handleSellReactionCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorFightChooseActionData.name, handleCommandFightActionChoose);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetTransferData.name, handlePetTransferReactionCollector);
@@ -221,15 +231,33 @@ export default class ReactionCollectorHandler {
 		const createdCollector = await collector(context, packet);
 
 		if (createdCollector) {
-			ReactionCollectorHandler.collectorsCache.set(packet.id, createdCollector);
+			ReactionCollectorHandler.registerCollectors(packet.id, createdCollector);
 		}
+	}
+
+	/**
+	 * Keep the collectors until Core stops them, but forget them as soon as they all ended on their own:
+	 * otherwise a lost or late stop packet would retain them, and the interactions they capture, forever
+	 */
+	private static registerCollectors(id: string, collectors: ReactionCollectorReturnType): void {
+		ReactionCollectorHandler.collectorsCache.set(id, collectors);
+		const forgetIfAllEnded = (): void => {
+			if (ReactionCollectorHandler.collectorsCache.get(id) === collectors && collectors.every(c => c.ended)) {
+				ReactionCollectorHandler.collectorsCache.delete(id);
+			}
+		};
+		for (const c of collectors) {
+			c.once("end", forgetIfAllEnded);
+		}
+		forgetIfAllEnded();
 	}
 
 	@packetHandler(ReactionCollectorStopPacket)
 	async collectorStop(_context: PacketContext, packet: ReactionCollectorStopPacket): Promise<void> {
 		const collector = ReactionCollectorHandler.collectorsCache.get(packet.id);
 		if (!collector) {
-			CrowniclesLogger.warn(`Collector stop received for collector with ID ${packet.id} but no collector was found with this ID`);
+			// Expected when the collectors already ended on their own before Core's stop packet arrived
+			CrowniclesLogger.debug(`Collector stop received for collector with ID ${packet.id} but no collector was found with this ID`);
 			return;
 		}
 		collector.forEach(c => {
@@ -252,7 +280,8 @@ export default class ReactionCollectorHandler {
 	async collectorResetTimer(_context: PacketContext, packet: ReactionCollectorResetTimerPacketRes): Promise<void> {
 		const collector = ReactionCollectorHandler.collectorsCache.get(packet.reactionCollectorId);
 		if (!collector) {
-			CrowniclesLogger.warn(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but no collector was found with this ID`);
+			// Expected when the collectors already ended on their own before Core's reset answer arrived
+			CrowniclesLogger.debug(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but no collector was found with this ID`);
 			return;
 		}
 		collector.forEach(c => {

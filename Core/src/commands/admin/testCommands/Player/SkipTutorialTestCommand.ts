@@ -20,6 +20,7 @@ const skipTutorialTestCommand: ExecuteTestCommandLike = async player => {
 	player.level = 1;
 	player.score = 2000;
 	player.weeklyScore = 0;
+	player.kingChallengeTier = 0;
 	player.experience = 0;
 	player.money = 0;
 	player.defenseGloryPoints = 100;

@@ -1,7 +1,8 @@
 {
   "type": "ri",
   "biomes": [
-    "coast"
+    "coast",
+    "swamp"
   ],
   "tags": [
     "detALa"

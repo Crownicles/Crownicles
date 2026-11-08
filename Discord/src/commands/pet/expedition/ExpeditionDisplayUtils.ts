@@ -102,14 +102,18 @@ export function getTerrainEmoji(difficulty: number): string {
 
 /**
  * Get the display name for an expedition location
- * Uses the stylized expedition name based on mapLocationId
+ * Uses the stylized expedition name based on mapLocationId, specific to the explored biome when the location mixes several biomes
  */
 export function getExpeditionLocationName(
 	lng: Language,
 	mapLocationId: number,
+	locationType: ExpeditionLocationType,
 	isDistantExpedition?: boolean
 ): string {
-	const expeditionName = i18n.t(`commands:petExpedition.mapLocationExpeditions.${mapLocationId}`, { lng });
+	const expeditionName = i18n.t(`commands:petExpedition.mapLocationExpeditions.${mapLocationId}`, {
+		lng,
+		context: locationType
+	});
 	if (isDistantExpedition) {
 		return i18n.t("commands:petExpedition.distantExpeditionPrefix", {
 			lng,
@@ -136,7 +140,7 @@ export function getLocationDisplayString(
 	isDistantExpedition?: boolean
 ): string {
 	const locationEmoji = CrowniclesIcons.expedition.locations[locationType];
-	const locationName = getExpeditionLocationName(lng, mapLocationId, isDistantExpedition);
+	const locationName = getExpeditionLocationName(lng, mapLocationId, locationType, isDistantExpedition);
 	return `${locationEmoji} ${locationName}`;
 }
 
@@ -249,7 +253,7 @@ export function buildExpeditionOptionText(
 	lng: Language
 ): string {
 	const locationEmoji = CrowniclesIcons.expedition.locations[exp.locationType];
-	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
+	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.locationType, exp.isDistantExpedition);
 	const displayDuration = i18n.formatDuration(exp.displayDurationMinutes, lng);
 	const foodCost = exp.foodCost ?? 1;
 	const foodDisplay = i18n.t("commands:petExpedition.foodCost", {

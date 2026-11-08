@@ -339,6 +339,10 @@
       }
     }
   },
+  "defense": {
+    "name": "defensa",
+    "description": "Elige el estilo de defensa de tu personaje."
+  },
   "classes": {
     "name": "clases",
     "description": "Cambia de clase."

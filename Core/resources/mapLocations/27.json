@@ -1,7 +1,8 @@
 {
   "type": "fo",
   "biomes": [
-    "forest"
+    "forest",
+    "mountain"
   ],
   "tags": [
     "detALa"

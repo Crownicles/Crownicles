@@ -144,6 +144,15 @@ export class Maps {
 	}
 
 	/**
+	 * Get the depth of a PVE island location, 1 being the first location after the island entry.
+	 * Unknown locations are considered as the first one, whose bosses are the easiest
+	 * @param mapId
+	 */
+	static getPveIslandDepth(mapId: number): number {
+		return MapCache.pveIslandMapDepths.get(mapId) ?? 1;
+	}
+
+	/**
 	 * Check if the player is near the water
 	 * @param player
 	 */

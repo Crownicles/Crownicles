@@ -8,9 +8,16 @@ on:
       - 'Lang/**'
   workflow_dispatch:
 
+# Serialize the pushes so that the latest tag always points to the most recent build.
+# A pending run is replaced by a newer push, which only skips intermediate commits of the branch.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
     -
       name: Checkout
@@ -26,7 +33,7 @@ jobs:
       uses: docker/setup-buildx-action@v4
     - name: Get current date
       id: date
-      run: echo "date=$(date +'%s')" >> $GITHUB_OUTPUT
+      run: echo "date=$(date +'%s')" >> "$GITHUB_OUTPUT"
     -
       name: Build and push Core
       uses: docker/build-push-action@v7
@@ -34,6 +41,7 @@ jobs:
         context: .
         file: ./Core/Dockerfile
         push: true
+        pull: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/core-pre-release:latest,${{ secrets.DOCKER_HUB_USERNAME }}/core-pre-release:${{ steps.date.outputs.date }}
     -
       name: Build and push Discord
@@ -42,6 +50,7 @@ jobs:
         context: .
         file: ./Discord/Dockerfile
         push: true
+        pull: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/discord-pre-release:latest,${{ secrets.DOCKER_HUB_USERNAME }}/discord-pre-release:${{ steps.date.outputs.date }}
     -
       name: Build and push RestWs
@@ -50,4 +59,5 @@ jobs:
         context: .
         file: ./RestWs/Dockerfile
         push: true
+        pull: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/restws-pre-release:latest,${{ secrets.DOCKER_HUB_USERNAME }}/restws-pre-release:${{ steps.date.outputs.date }}

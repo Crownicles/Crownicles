@@ -16,15 +16,17 @@ RUN corepack use pnpm@"${PNPM_VERSION}"
 
 # Copy files in the workdir
 COPY ./Core/package.json ./Core/pnpm-lock.yaml ./Core/tsconfig.json ./
+COPY ./Core/patches ./patches
 # Create the config directory
 RUN mkdir config
 
 # Install all dependencies (including devDependencies for typescript compilation)
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 # Copy the lib
 RUN mkdir ../Lib
 COPY ./Lib/package.json ./Lib/pnpm-lock.yaml ../Lib/
+COPY ./Lib/patches ../Lib/patches
 COPY ./Lib/src ../Lib/src
 
 # Copy the source code
@@ -33,7 +35,7 @@ COPY ./Core/resources ./resources
 
 # Install all lib dependencies (including devDependencies for typescript compilation)
 WORKDIR /crownicles/Lib
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 WORKDIR /crownicles/Core
 
 # Compile the source code
@@ -53,11 +55,12 @@ RUN corepack use pnpm@"${PNPM_VERSION}"
 
 # Copy files in the workdir
 COPY ./Core/package.json ./Core/pnpm-lock.yaml ./Core/tsconfig.json ./
+COPY ./Core/patches ./patches
 # Create the directories
 RUN mkdir config resources
 
 # Install the dependencies
-RUN pnpm install --prod
+RUN pnpm install --prod --frozen-lockfile
 
 # Copy the built app from the builder
 COPY --from=builder /crownicles/Core/dist ./dist
@@ -68,8 +71,8 @@ RUN mkdir -p /.cache/node/corepack
 RUN chmod -R 777 /.cache/node/corepack
 RUN chmod o+rx /root
 
-# Install wget for healthcheck
-RUN apk add --no-cache wget
+# Install wget for healthcheck and refresh the system CA bundle (distrusts the compromised eMudhra intermediates)
+RUN apk upgrade --no-cache ca-certificates-bundle && apk add --no-cache wget
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \

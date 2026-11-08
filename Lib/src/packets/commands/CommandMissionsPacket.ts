@@ -3,6 +3,7 @@ import {
 } from "../CrowniclesPacket";
 import { BaseMission } from "../../types/CompletedMission";
 import { Millisecond } from "../../types/TimeTypes";
+import { KingChallengeProgress } from "../../types/KingChallenge";
 
 export type DailyMissionStatus = {
 	completed: boolean;
@@ -33,6 +34,8 @@ export class CommandMissionsPacketRes extends CrowniclesPacket {
 	maxSideMissionSlots!: number;
 
 	dailyMission!: DailyMissionStatus;
+
+	kingChallenge!: KingChallengeProgress;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

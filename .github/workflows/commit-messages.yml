@@ -1,0 +1,32 @@
+name: Commit messages
+on:
+  pull_request:
+    branches:
+      - '**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  no-emojis-in-commit-messages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Test the emoji detection
+        run: node --test .github/scripts/check-emojis.test.mjs
+
+      - name: Forbid emojis in commit messages
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node .github/scripts/check-emojis.mjs commits "$BASE_SHA" "$HEAD_SHA"

@@ -133,6 +133,19 @@ export abstract class CrowniclesCoreMetrics {
 		registers: [crowniclesMetricsRegistry]
 	});
 
+	/*
+	 * nodejs_external_memory_bytes mixes Buffers/ArrayBuffers with other native allocations:
+	 * this gauge isolates the ArrayBuffers part to tell which one grows
+	 */
+	private static arrayBuffersBytes = new client.Gauge({
+		name: "crownicles_array_buffers_bytes",
+		help: "Memory allocated for ArrayBuffers and Buffers, in bytes",
+		registers: [crowniclesMetricsRegistry],
+		collect(): void {
+			this.set(process.memoryUsage().arrayBuffers);
+		}
+	});
+
 	private static externalApiFailuresCount = new client.Counter({
 		name: "crownicles_external_api_failures_count",
 		help: "Count of failed calls to external APIs",

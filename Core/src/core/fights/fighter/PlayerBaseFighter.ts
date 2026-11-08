@@ -28,8 +28,13 @@ export abstract class PlayerBaseFighter extends Fighter {
 
 	protected fightRole: FightRole = FightConstants.FIGHT_ROLES.ATTACKER;
 
-	protected constructor(player: Player, availableFightActions: FightAction[]) {
-		super(player.level, availableFightActions);
+	/**
+	 * @param player
+	 * @param availableFightActions
+	 * @param levelCap When set, the fighter is fought at this level if the player is above it (friendly fights)
+	 */
+	protected constructor(player: Player, availableFightActions: FightAction[], levelCap?: number) {
+		super(levelCap === undefined ? player.level : Math.min(player.level, levelCap), availableFightActions);
 		this.player = player;
 	}
 
@@ -87,11 +92,11 @@ export abstract class PlayerBaseFighter extends Fighter {
 	 */
 	protected loadCombatStats(playerActiveObjects: PlayerActiveObjects, isPvE: boolean, includePotion = true): void {
 		const {
-			player, stats
+			player, stats, level
 		} = this;
-		stats.attack = player.getCumulativeAttack(playerActiveObjects, includePotion);
-		stats.defense = player.getCumulativeDefense(playerActiveObjects, includePotion);
-		stats.speed = player.getCumulativeSpeed(playerActiveObjects, includePotion);
+		stats.attack = player.getCumulativeAttack(playerActiveObjects, includePotion, level);
+		stats.defense = player.getCumulativeDefense(playerActiveObjects, includePotion, level);
+		stats.speed = player.getCumulativeSpeed(playerActiveObjects, includePotion, level);
 		stats.breath = player.getBaseBreath(playerActiveObjects);
 		stats.maxBreath = player.getMaxBreath(playerActiveObjects);
 		stats.breathRegen = player.getBreathRegen();

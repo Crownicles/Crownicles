@@ -88,8 +88,22 @@ export class PlayerMissionsInfo extends Model {
 		return this.campaignBlob || Campaign.getDefaultCampaignBlob();
 	}
 
+	/**
+	 * Applied on the balance in database rather than on this instance: a nested critical section of the same
+	 * transaction (e.g. a king's challenge tier reached by the points of a completed mission) may have credited
+	 * gems through another instance, which saving `this.gems + amount` would silently overwrite.
+	 */
 	public async addGems(amount: number, keycloakId: string, reason: NumberChangeReason): Promise<void> {
-		this.gems += amount;
+		await this.increment({ gems: amount });
+		const { gems } = await PlayerMissionsInfo.findByPk(this.playerId, {
+			attributes: ["gems"],
+			rejectOnEmpty: true
+		});
+
+		// Raw: the instance mirrors the database, it has no pending change on this field
+		this.set("gems", gems, { raw: true });
+
+		// Still persists the other pending changes of the instance, which callers rely on
 		await this.save();
 		crowniclesInstance?.logsDatabase.logGemsChange(keycloakId, this.gems, reason)
 			.then();

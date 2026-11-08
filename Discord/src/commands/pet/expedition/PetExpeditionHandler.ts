@@ -176,7 +176,7 @@ export async function handleExpeditionChoiceRes(
 
 	const expedition = packet.expedition!;
 	const locationEmoji = CrowniclesIcons.expedition.locations[expedition.locationType as ExpeditionLocationType];
-	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
+	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.locationType, expedition.isDistantExpedition);
 	const petDisplay = getPetDisplayString(expedition.pet, lng);
 	const sexContext = getSexContext(expedition.pet.petSex);
 

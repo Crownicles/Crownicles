@@ -69,6 +69,7 @@ vi.mock("../../../Discord/src/utils/DiscordCollectorUtils", async (importOrigina
 		...actual,
 		DiscordCollectorUtils: {
 			...actual.DiscordCollectorUtils,
+			...(await import("../mocks/DiscordCollectorUtilsMock")).collectorAcknowledgementMocks,
 			sendReaction: vi.fn()
 		}
 	};
@@ -103,14 +104,25 @@ import {
 	CommandReportCookingReviveRes,
 	CommandReportCookingCraftRes,
 	CommandReportCookingMenuReq,
-	CommandReportCookingMenuRes
+	CommandReportCookingMenuRes,
+	CommandReportCookingSetSpecialtyReq,
+	CommandReportCookingSetSpecialtyRes,
+	CommandReportCookingRemoveSpecialtyReq
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
-import { CookingCraftErrors, CookingSlotData } from "../../../Lib/src/types/CookingTypes";
-import { CookingOutputType, RecipeType } from "../../../Lib/src/constants/CookingConstants";
+import {
+	CookingCraftErrors, CookingSlotData, CookingSpecialtyErrors
+} from "../../../Lib/src/types/CookingTypes";
+import {
+	CookingOutputType, CookingSpecialtyConstants, RecipeType, SPECIALTY_SLOT_INDEX, TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD
+} from "../../../Lib/src/constants/CookingConstants";
 import { ReactionCollectorHomeMenuReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { ReactionCollectorRefuseReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
 import { HomeFeatureHandlerContext } from "../../src/commands/player/report/home/HomeMenuTypes";
+
+// Cooking level unlocking every specialty, and the one before the first specialty
+const ALL_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[CookingSpecialtyConstants.MAX_SPECIALTIES - 1];
+const BEFORE_SPECIALTIES_LEVEL = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0] - 1;
 
 /**
  * Create home data with cooking configuration.
@@ -1129,6 +1141,279 @@ describe("CookingFeatureHandler", () => {
 
 			const menuOptions = (nestedMenus.registerMenu as ReturnType<typeof vi.fn>).mock.calls[0][1];
 			expect(JSON.stringify(menuOptions.containers)).toContain(`${HomeMenuIds.COOKING_CRAFT_PREFIX}0:testRecipe`);
+		});
+	});
+
+	describe("master chef specialties and time potion weekly limit", () => {
+		type RenderedComponent = Record<string, unknown> & { components?: RenderedComponent[]; accessory?: RenderedComponent };
+
+		function lastRenderedMenu(nestedMenus: ReturnType<typeof createMockNestedMenus>): RenderedComponent {
+			const calls = (nestedMenus.registerMenu as ReturnType<typeof vi.fn>).mock.calls;
+			return calls[calls.length - 1][1].containers[0].toJSON() as RenderedComponent;
+		}
+
+		function findComponent(component: RenderedComponent, predicate: (candidate: RenderedComponent) => boolean): RenderedComponent | undefined {
+			if (predicate(component)) {
+				return component;
+			}
+			for (const child of [...component.components ?? [], ...component.accessory ? [component.accessory] : []]) {
+				const found = findComponent(child, predicate);
+				if (found) {
+					return found;
+				}
+			}
+			return undefined;
+		}
+
+		function lastSentPacket(): unknown {
+			const calls = (DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse as ReturnType<typeof vi.fn>).mock.calls;
+			return calls[calls.length - 1][1];
+		}
+
+		async function ignite(ctx: HomeFeatureHandlerContext, menu: Partial<CommandReportCookingIgniteRes["menu"]>): Promise<ReturnType<typeof createMockNestedMenus>> {
+			const nestedMenus = createMockNestedMenus();
+			await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_IGNITE, createMockComponentInteraction(HomeMenuIds.COOKING_IGNITE) as any, nestedMenus as any);
+			await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
+				menu: {
+					cookingLevel: ALL_SPECIALTIES_LEVEL,
+					cookingGrade: "royalGrandChef",
+					currentSlots: [],
+					isIgnited: true,
+					...menu
+				},
+				woodConsumed: true,
+				woodMaterialId: 1
+			} as CommandReportCookingIgniteRes);
+			return nestedMenus;
+		}
+
+		it("should offer the visible recipes of the ignited furnace as specialties and send the chosen slot and recipe", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
+			const nestedMenus = await ignite(ctx, {
+				currentSlots: [
+					createSlotWithRecipe({ slotIndex: 0, recipeId: "visibleRecipe" }),
+					createSlotWithRecipe({ slotIndex: 1, recipeId: "secretRecipe", isSecret: true })
+				]
+			});
+
+			const rendered = JSON.stringify(lastRenderedMenu(nestedMenus));
+			expect(rendered).toContain(HomeMenuIds.COOKING_SPECIALTY_SELECT);
+			expect(rendered).toContain(`${HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX}0:visibleRecipe`);
+			expect(rendered).not.toContain(`${HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX}1:secretRecipe`);
+
+			const setValue = `${HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX}0:visibleRecipe`;
+			await handler.handleSubMenuSelection(ctx, setValue, createMockComponentInteraction(setValue) as any, nestedMenus as any);
+			expect(lastSentPacket()).toBeInstanceOf(CommandReportCookingSetSpecialtyReq);
+			expect(lastSentPacket()).toMatchObject({ slotIndex: 0, recipeId: "visibleRecipe" });
+
+			await simulateMqttResponse(CommandReportCookingSetSpecialtyRes.name, {
+				error: CookingSpecialtyErrors.LIMIT_REACHED,
+				menu: {
+					cookingLevel: ALL_SPECIALTIES_LEVEL,
+					cookingGrade: "royalGrandChef",
+					currentSlots: [createSlotWithRecipe({ slotIndex: 0, recipeId: "visibleRecipe" })],
+					isIgnited: true
+				}
+			});
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).toContain(`commands:report.city.homes.cooking.${CookingSpecialtyErrors.LIMIT_REACHED}`);
+		});
+
+		it("should only offer the recipes of the rotating stations as new specialties", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(5, ALL_SPECIALTIES_LEVEL) });
+			const nestedMenus = await ignite(ctx, {
+				currentSlots: [
+					createSlotWithRecipe({ slotIndex: 0, recipeId: "rotatingRecipe" }),
+					createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId: "specialtyRecipe" })
+				],
+				specialties: [{
+					recipeId: "specialtyRecipe", level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
+				}]
+			});
+
+			const rendered = JSON.stringify(lastRenderedMenu(nestedMenus));
+			expect(rendered).toContain(`${HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX}0:rotatingRecipe`);
+			expect(rendered).not.toContain(`${HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX}${SPECIALTY_SLOT_INDEX}:specialtyRecipe`);
+		});
+
+		it("should tell which specialty the specialty station offers when several cycle on it", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
+			const specialties = ["firstSpecialty", "secondSpecialty", "thirdSpecialty"].map(recipeId => ({
+				recipeId, level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
+			}));
+			const nestedMenus = await ignite(ctx, {
+				currentSlots: [createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId: "secondSpecialty" })],
+				specialties
+			});
+
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus)))
+				.toContain(JSON.stringify("commands:report.city.homes.cooking.specialtyRotation|{\"current\":2,\"total\":3}").slice(1, -1));
+		});
+
+		it("should not mention any rotation with a single specialty", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
+			const nestedMenus = await ignite(ctx, {
+				currentSlots: [createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId: "onlySpecialty" })],
+				specialties: [{
+					recipeId: "onlySpecialty", level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
+				}]
+			});
+
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).not.toContain("specialtyRotation");
+		});
+
+		it("should limit the specialties to the cooking level and announce the next unlock", async () => {
+			const kitchenMasterLevel = CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[0];
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, kitchenMasterLevel) });
+			const nestedMenus = createMockNestedMenus();
+			await handler.handleFeatureSelection(ctx, createMockComponentInteraction() as any, nestedMenus as any);
+			await simulateMqttResponse(CommandReportCookingMenuRes.name, {
+				menu: {
+					cookingLevel: kitchenMasterLevel,
+					cookingGrade: "kitchenMaster",
+					currentSlots: [],
+					isIgnited: false
+				}
+			});
+
+			const rendered = JSON.stringify(lastRenderedMenu(nestedMenus));
+			expect(rendered).toContain(JSON.stringify("commands:report.city.homes.cooking.specialtiesNone|{\"count\":1}").slice(1, -1));
+			expect(rendered).toContain(JSON.stringify(`commands:report.city.homes.cooking.specialtyNextUnlock|{"level":${CookingSpecialtyConstants.UNLOCK_COOKING_LEVELS[1]}}`).slice(1, -1));
+
+			// Once the single specialty of the grade is taken, no other recipe is offered
+			const igniteMenus = await ignite(ctx, {
+				cookingLevel: kitchenMasterLevel,
+				currentSlots: [createSlotWithRecipe({ slotIndex: 0, recipeId: "rotatingRecipe" })],
+				specialties: [{
+					recipeId: "specialtyRecipe", level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: true
+				}]
+			});
+			expect(JSON.stringify(lastRenderedMenu(igniteMenus))).not.toContain(HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX);
+		});
+
+		it("should not announce any next unlock once every specialty is unlocked", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
+			const nestedMenus = createMockNestedMenus();
+			await handler.handleFeatureSelection(ctx, createMockComponentInteraction() as any, nestedMenus as any);
+			await simulateMqttResponse(CommandReportCookingMenuRes.name, {
+				menu: {
+					cookingLevel: ALL_SPECIALTIES_LEVEL,
+					cookingGrade: "royalGrandChef",
+					currentSlots: [],
+					isIgnited: false
+				}
+			});
+
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).not.toContain("specialtyNextUnlock");
+		});
+
+		it("should not offer specialties before the first unlock level", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, BEFORE_SPECIALTIES_LEVEL) });
+			const nestedMenus = await ignite(ctx, {
+				cookingLevel: BEFORE_SPECIALTIES_LEVEL,
+				currentSlots: [createSlotWithRecipe({ slotIndex: 0 })]
+			});
+
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).not.toContain(HomeMenuIds.COOKING_SPECIALTY_SELECT);
+		});
+
+		it("should show the specialties on their own station with a craft button instead of a pin button", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
+			const nestedMenus = await ignite(ctx, {
+				currentSlots: [createSlotWithRecipe({ slotIndex: SPECIALTY_SLOT_INDEX, recipeId: "specialtyRecipe", canCraft: false })],
+				specialties: [{
+					recipeId: "specialtyRecipe", level: 1, recipeType: RecipeType.POTION_HEALTH, canCraft: false
+				}]
+			});
+
+			const rendered = lastRenderedMenu(nestedMenus);
+			expect(JSON.stringify(rendered)).toContain(`commands:report.city.homes.cooking.slotRecipeName|{\\"stationId\\":${SPECIALTY_SLOT_INDEX}`);
+			expect(JSON.stringify(rendered)).toContain(`${HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX}specialtyRecipe`);
+			expect(JSON.stringify(rendered)).not.toContain(HomeMenuIds.COOKING_PIN_PREFIX);
+			expect(findComponent(rendered, component => component.custom_id === `${HomeMenuIds.COOKING_CRAFT_PREFIX}${SPECIALTY_SLOT_INDEX}:specialtyRecipe`))
+				.toMatchObject({ disabled: true });
+		});
+
+		it("should list the specialties before ignition and send their removal from the pre-ignite menu", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2, ALL_SPECIALTIES_LEVEL) });
+			const nestedMenus = createMockNestedMenus();
+			await handler.handleFeatureSelection(ctx, createMockComponentInteraction() as any, nestedMenus as any);
+			await simulateMqttResponse(CommandReportCookingMenuRes.name, {
+				menu: {
+					cookingLevel: ALL_SPECIALTIES_LEVEL,
+					cookingGrade: "royalGrandChef",
+					currentSlots: [],
+					isIgnited: false,
+					specialties: [{
+						recipeId: "specialtyRecipe", level: 4, recipeType: RecipeType.POTION_SPEED, canCraft: true
+					}]
+				}
+			});
+
+			const rendered = JSON.stringify(lastRenderedMenu(nestedMenus));
+			expect(rendered).toContain("commands:report.city.homes.cooking.specialtiesTitle");
+			expect(rendered).toContain("commands:report.city.homes.cooking.specialtyLine");
+			expect(rendered).not.toContain(HomeMenuIds.COOKING_SPECIALTY_SET_PREFIX);
+
+			const removeValue = `${HomeMenuIds.COOKING_SPECIALTY_REMOVE_PREFIX}specialtyRecipe`;
+			expect(rendered).toContain(removeValue);
+			await handler.handleSubMenuSelection(ctx, removeValue, createMockComponentInteraction(removeValue) as any, nestedMenus as any);
+			expect(lastSentPacket()).toBeInstanceOf(CommandReportCookingRemoveSpecialtyReq);
+			expect(lastSentPacket()).toMatchObject({
+				recipeId: "specialtyRecipe", fromIgnitedView: false
+			});
+		});
+
+		it("should explain a time potion blocked by the weekly limit and disable its craft button", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2) });
+			const timePotionSlot = createSlotWithRecipe({ slotIndex: 0, recipeId: "timeRecipe", canCraft: false });
+			timePotionSlot.recipe = {
+				...timePotionSlot.recipe!,
+				recipeType: RecipeType.POTION_TIME_SPEEDUP,
+				timePotionsLeftThisWeek: 0
+			};
+			const nestedMenus = await ignite(ctx, {
+				cookingLevel: 5,
+				currentSlots: [timePotionSlot]
+			});
+
+			const rendered = lastRenderedMenu(nestedMenus);
+			expect(JSON.stringify(rendered)).toContain("commands:report.city.homes.cooking.timePotionsExhausted");
+			expect(JSON.stringify(rendered)).not.toContain(HomeMenuIds.COOKING_PIN_PREFIX);
+			expect(findComponent(rendered, component => component.custom_id === `${HomeMenuIds.COOKING_CRAFT_PREFIX}0:timeRecipe`))
+				.toMatchObject({ disabled: true });
+		});
+
+		it("should not mention the weekly time potion limit while many time potions remain", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2) });
+			const timePotionSlot = createSlotWithRecipe({ slotIndex: 0, recipeId: "timeRecipe" });
+			timePotionSlot.recipe = {
+				...timePotionSlot.recipe!,
+				recipeType: RecipeType.POTION_TIME_SPEEDUP,
+				timePotionsLeftThisWeek: TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD + 1
+			};
+			const nestedMenus = await ignite(ctx, {
+				cookingLevel: 5,
+				currentSlots: [timePotionSlot]
+			});
+
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus))).not.toContain("timePotionsLeft");
+		});
+
+		it("should tell how many time potions can still be cooked this week once few remain", async () => {
+			const ctx = createHandlerContext({ homeData: createCookingHomeData(2) });
+			const timePotionSlot = createSlotWithRecipe({ slotIndex: 0, recipeId: "timeRecipe" });
+			timePotionSlot.recipe = {
+				...timePotionSlot.recipe!,
+				recipeType: RecipeType.POTION_TIME_SPEEDUP,
+				timePotionsLeftThisWeek: TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD
+			};
+			const nestedMenus = await ignite(ctx, {
+				cookingLevel: 5,
+				currentSlots: [timePotionSlot]
+			});
+
+			expect(JSON.stringify(lastRenderedMenu(nestedMenus)))
+				.toContain(JSON.stringify(`commands:report.city.homes.cooking.timePotionsLeft|{"count":${TIME_POTION_WEEKLY_LIMIT_DISPLAY_THRESHOLD}}`).slice(1, -1));
 		});
 	});
 });

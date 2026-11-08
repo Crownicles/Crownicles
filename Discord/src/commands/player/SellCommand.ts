@@ -4,6 +4,7 @@ import {
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
@@ -25,6 +26,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	ComponentType,
 	InteractionCollector,
 	Message,
 	parseEmoji,
@@ -49,7 +51,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandSel
 }
 
 export async function handleCommandSellSuccessPacket(packet: CommandSellItemSuccessPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
 		return;
@@ -71,7 +73,7 @@ export async function handleCommandSellSuccessPacket(packet: CommandSellItemSucc
 		}
 	);
 
-	await interaction.editReply({
+	await MessagesUtils.editClickReply(context, {
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(title, interaction.user)
@@ -80,14 +82,39 @@ export async function handleCommandSellSuccessPacket(packet: CommandSellItemSucc
 	});
 }
 
+type SellSending = {
+	packet: ReactionCollectorSellPacket;
+	context: PacketContext;
+};
+
+/**
+ * What ends the confirmation collector: Core's deadline when it is cached on its own, the selection collector otherwise
+ */
+const SELL_CONFIRMATION_LIFETIME = {
+	CORE_DEADLINE: "coreDeadline",
+	SELECTION: "selection"
+} as const;
+
+type SellConfirmationLifetime = typeof SELL_CONFIRMATION_LIFETIME[keyof typeof SELL_CONFIRMATION_LIFETIME];
+
+/**
+ * Ask the player to confirm the sale of an item
+ * @param sending - Collector packet and context the reactions are sent with
+ * @param interaction - Interaction whose reply displays the confirmation
+ * @param reactionsInfo - Reactions sent to Core when the player accepts or refuses
+ * @param lifetime - What ends the confirmation collector
+ */
 async function validateSell(
-	packet: ReactionCollectorSellPacket,
-	context: PacketContext,
+	sending: SellSending,
 	interaction: CrowniclesInteraction | StringSelectMenuInteraction,
 	reactionsInfo: {
 		reaction: ReactionCollectorSellItemReaction; reactionIndex: number; refuseReactionIndex: number;
-	}
+	},
+	lifetime: SellConfirmationLifetime
 ): Promise<ReactionCollectorReturnTypeOrNull> {
+	const {
+		packet, context
+	} = sending;
 	const lng = context.discord!.language;
 	const validateClassChangeEmbed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:sell.sellTitle", {
@@ -118,7 +145,15 @@ async function validateSell(
 		components: [validateRow]
 	}) as Message;
 
-	const validateCollector = validateMsg.createMessageComponentCollector();
+	/*
+	 * Only the confirmation buttons: an expired selection displays this confirmation on the selection message (#5059).
+	 * The lifetime is computed once the reply is displayed, so a slow reply cannot keep the confirmation open after Core's deadline
+	 */
+	const validateCollector = validateMsg.createMessageComponentCollector({
+		componentType: ComponentType.Button,
+		filter: buttonInteraction => buttonInteraction.customId === acceptCustomId || buttonInteraction.customId === refuseCustomId,
+		time: lifetime === SELL_CONFIRMATION_LIFETIME.CORE_DEADLINE ? DiscordCollectorUtils.getRemainingCollectorTime(packet) : undefined
+	});
 
 	validateCollector.on("collect", async (validateInteraction: ButtonInteraction) => {
 		if (validateInteraction.user.id !== context.discord?.user) {
@@ -126,7 +161,7 @@ async function validateSell(
 			return;
 		}
 
-		await validateInteraction.deferReply();
+		await DiscordCollectorUtils.deferReply(validateInteraction);
 
 		if (validateInteraction.customId === refuseCustomId) {
 			DiscordCollectorUtils.sendReaction(
@@ -174,14 +209,16 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 
 	if (itemsReactions.length === 1) {
 		return await validateSell(
-			packet,
-			context,
+			{
+				packet, context
+			},
 			interaction,
 			{
 				reaction: itemsReactions[0],
 				reactionIndex: packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorSellItemReaction.name),
 				refuseReactionIndex
-			}
+			},
+			SELL_CONFIRMATION_LIFETIME.CORE_DEADLINE
 		);
 	}
 
@@ -228,9 +265,12 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 	}))!;
 
 	let validateCollector: InteractionCollector<never>;
+	let selectionClaimed = false;
 
+	// Only the selection: when the selection expired, the confirmation buttons are displayed on the same message
 	const selectCollector = msg.createMessageComponentCollector({
-		time: packet.endTime - Date.now()
+		componentType: ComponentType.StringSelect,
+		time: DiscordCollectorUtils.getRemainingCollectorTime(packet)
 	});
 
 	selectCollector.on("collect", async (selectMenuInteraction: StringSelectMenuInteraction) => {
@@ -239,13 +279,23 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 			return;
 		}
 
-		await selectMenuInteraction.deferReply();
+		/*
+		 * Claimed before any await: a selection queued behind a slow acknowledgement would otherwise open a second
+		 * confirmation with the same buttons on the command message, and confirming the displayed item could sell the other
+		 * one (#5059). The selection collector keeps running, its end still stops the confirmation
+		 */
+		if (selectionClaimed) {
+			return;
+		}
+		selectionClaimed = true;
+
+		const selectionAcknowledged = await DiscordCollectorUtils.deferReply(selectMenuInteraction);
 
 		mainEmbedRow.components.forEach(component => {
 			component.setDisabled(true);
 		});
 
-		await msg.edit({
+		await DiscordCollectorUtils.editWithoutBlocking(msg, {
 			embeds: [mainEmbed],
 			components: [mainEmbedRow]
 		});
@@ -268,17 +318,27 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 
 		const reaction = itemsReactions[parseInt(selectedOption, 10)];
 
+		// An expired selection can no longer be answered: the confirmation then replaces the selection menu
+		const confirmationInteraction = selectionAcknowledged ? selectMenuInteraction : interaction;
+
 		validateCollector = (
 			await validateSell(
-				packet,
-				context,
-				selectMenuInteraction,
+				{
+					packet, context
+				},
+				confirmationInteraction,
 				{
 					reaction,
 					reactionIndex: packet.reactions.findIndex(packetReaction => JSON.stringify(packetReaction.data) === JSON.stringify(reaction)),
 					refuseReactionIndex
-				}
+				},
+				SELL_CONFIRMATION_LIFETIME.SELECTION
 			))![0] as unknown as InteractionCollector<never>;
+
+		// The selection may have ended while the confirmation was being displayed: its end handler could not stop it then
+		if (selectCollector.ended) {
+			validateCollector.stop();
+		}
 	});
 
 	selectCollector.on("end", async () => {

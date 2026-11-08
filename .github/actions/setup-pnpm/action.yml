@@ -1,0 +1,19 @@
+name: Setup Node.js and pnpm
+description: Installs Node.js and activates the pnpm version pinned in the packageManager field of the modules
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v7
+      with:
+        node-version: '24'
+
+    # Commands run from the repository root (pnpm --dir ...) have no packageManager field to read,
+    # so the pinned version is also activated globally
+    - name: Setup PNPM
+      shell: bash
+      run: |
+        npm install --global corepack@latest
+        corepack enable
+        corepack prepare "$(node -p "require('./Lib/package.json').packageManager")" --activate

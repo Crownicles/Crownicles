@@ -23,6 +23,7 @@ import { MissionsController } from "../../core/missions/MissionsController";
 import {
 	datesAreOnSameDay, dateToMs, getTomorrowMidnight
 } from "../../../../Lib/src/utils/TimeUtils";
+import { getKingChallengeProgress } from "../../core/kingChallenge/KingChallenge";
 
 export default class MissionsCommand {
 	@commandRequires(CommandMissionsPacketReq, {
@@ -70,7 +71,8 @@ export default class MissionsCommand {
 			dailyMission: {
 				completed: datesAreOnSameDay(new Date(), new Date(missionInfo.lastDailyMissionCompleted)),
 				resetsAt: dateToMs(getTomorrowMidnight())
-			}
+			},
+			kingChallenge: await getKingChallengeProgress(toCheckPlayer)
 		}));
 	}
 }

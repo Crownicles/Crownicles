@@ -149,6 +149,15 @@ export const HomeMenuIds = {
 	/** Unpin recipe button */
 	COOKING_UNPIN: "COOKING_UNPIN",
 
+	/** Select menu managing the specialties of a master chef */
+	COOKING_SPECIALTY_SELECT: "COOKING_SPECIALTY_SELECT",
+
+	/** Prefix of the option making a slot recipe a specialty ("slotIndex:recipeId" appended) */
+	COOKING_SPECIALTY_SET_PREFIX: "COOKING_SPECIALTY_SET_",
+
+	/** Prefix of the option removing a specialty ("slotIndex:recipeId" appended) */
+	COOKING_SPECIALTY_REMOVE_PREFIX: "COOKING_SPECIALTY_REMOVE_",
+
 	// --- Feature IDs ---
 	/** Garden feature identifier */
 	FEATURE_GARDEN: "garden",

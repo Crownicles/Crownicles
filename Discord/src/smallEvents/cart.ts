@@ -1,5 +1,6 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
+import { MessagesUtils } from "../utils/MessagesUtils";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { SmallEventCartPacket } from "../../../Lib/src/packets/smallEvents/SmallEventCartPacket";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -68,9 +69,7 @@ function getGainScoreText(story: CartStory, packet: SmallEventCartPacket, lng: L
 }
 
 export async function cartResult(packet: SmallEventCartPacket, context: PacketContext): Promise<void> {
-	const interaction = context.discord?.buttonInteraction
-		? DiscordCache.getButtonInteraction(context.discord.buttonInteraction)
-		: DiscordCache.getInteraction(context.discord!.interaction);
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return;
 	}
@@ -78,7 +77,8 @@ export async function cartResult(packet: SmallEventCartPacket, context: PacketCo
 	const story = getCartStory(packet);
 	const gainScoreText = getGainScoreText(story, packet, lng);
 
-	await interaction.editReply({
+	// Without any click, the collector ended by itself: the result replaces the event
+	await MessagesUtils.editClickOrCommandReply(context, {
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"cart",

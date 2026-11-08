@@ -22,4 +22,7 @@ export class CommandFightIntroduceFightersPacket extends CrowniclesPacket {
 	fightOpponentPet?: OwnedPet;
 
 	friendly?: boolean;
+
+	// Level above which the fighters are capped (friendly fights)
+	levelCap?: number;
 }

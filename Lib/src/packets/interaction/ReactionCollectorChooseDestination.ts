@@ -4,6 +4,7 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
+import { Biome } from "../../types/Biome";
 
 export class ReactionCollectorChooseDestinationReaction extends ReactionCollectorReaction {
 	mapId!: number;
@@ -11,6 +12,11 @@ export class ReactionCollectorChooseDestinationReaction extends ReactionCollecto
 	mapTypeId!: string;
 
 	tripDuration?: number;
+
+	/**
+	 * Biomes of the destination: once there, the pet can explore each of them in expedition
+	 */
+	biomes!: readonly Biome[];
 }
 
 /**

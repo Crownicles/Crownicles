@@ -15,6 +15,7 @@ import { createCityCollector } from "../ReportCityMenu";
 import {
 	ReportCityButtonStyles, ReportCityMenuIds
 } from "../ReportCityMenuConstants";
+import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 
 type CityConfirmationAction = {
 	buttonInteraction: MessageComponentInteraction;
@@ -78,10 +79,10 @@ function buildCityConfirmationContainer(config: CityConfirmationMenuConfig): Con
 
 async function ackConfirm(action: CityConfirmationAction, ack: CityConfirmationAck): Promise<void> {
 	if (ack === "update") {
-		await action.buttonInteraction.deferUpdate();
+		await DiscordCollectorUtils.deferUpdate(action.buttonInteraction);
 	}
 	else if (ack === "reply") {
-		await action.buttonInteraction.deferReply();
+		await DiscordCollectorUtils.deferReply(action.buttonInteraction);
 	}
 }
 
@@ -100,7 +101,7 @@ function createCityConfirmationCollector(
 		}
 
 		if (customId === ReportCityMenuIds.CITY_CONFIRMATION_CANCEL) {
-			await buttonInteraction.deferUpdate();
+			await DiscordCollectorUtils.deferUpdate(buttonInteraction);
 			await nestedMenus.changeMenu(config.backMenuId);
 		}
 	});
