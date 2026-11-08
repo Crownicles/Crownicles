@@ -20,9 +20,7 @@ import {
 import { PetFood } from "ws-packets/src/objects/PetFood";
 import { GameClient } from "@/src/networking/GameClient";
 import { GAME_ENTITIES } from "@/src/store/GameEntities";
-import {
-	RequestState, useGameQuery
-} from "@/src/store/useGameQuery";
+import { useGameQuery } from "@/src/store/useGameQuery";
 import {
 	CommandMenu, useCommandMenus
 } from "@/src/store/useInventoryMenus";
@@ -463,17 +461,16 @@ export function GuildFoodShopContent({ shop }: { shop: GuildFoodShop }): ReactNo
 	</>;
 }
 
-function useGuildDomainInfo(): RequestState<GuildDomainInfoRes> {
-	return useGameQuery(GAME_ENTITIES.GUILD_DOMAIN, () => GameClient.request(makeFromClientPacket(GuildDomainInfoReq, {}), GuildDomainInfoRes));
+/** The guild's data the domain and the food supply both read, so a purchase in one refreshes the other; a player without a guild is told so. */
+function GuildDomainQuery({ children }: { children: (domain: GuildDomainSnapshot) => ReactNode }): ReactNode {
+	const state = useGameQuery(GAME_ENTITIES.GUILD_DOMAIN, () => GameClient.request(makeFromClientPacket(GuildDomainInfoReq, {}), GuildDomainInfoRes));
+	return <GameQueryContent state={state} entity={GAME_ENTITIES.GUILD_DOMAIN}>{packet => packet.data ? children(packet.data) : <Note>{i18n.t("app:guild.noGuild")}</Note>}</GameQueryContent>;
 }
 
 export function GuildDomain(): ReactNode {
-	const state = useGuildDomainInfo();
-	return <GameQueryContent state={state} entity={GAME_ENTITIES.GUILD_DOMAIN}>{packet => packet.data ? <GuildDomainContent domain={packet.data} /> : <Note>{i18n.t("app:guild.noGuild")}</Note>}</GameQueryContent>;
+	return <GuildDomainQuery>{domain => <GuildDomainContent domain={domain} />}</GuildDomainQuery>;
 }
 
-/** Reads the same guild data as the domain, so a purchase refreshes the stock and the treasury here as well. */
 export function GuildFoodShopPage(): ReactNode {
-	const state = useGuildDomainInfo();
-	return <GameQueryContent state={state} entity={GAME_ENTITIES.GUILD_DOMAIN}>{packet => packet.data ? <GuildFoodShopContent shop={packet.data} /> : <Note>{i18n.t("app:guild.noGuild")}</Note>}</GameQueryContent>;
+	return <GuildDomainQuery>{shop => <GuildFoodShopContent shop={shop} />}</GuildDomainQuery>;
 }
