@@ -5,6 +5,7 @@ import {
 	QueryClient, QueryClientProvider
 } from "@tanstack/react-query";
 import { MissionsCompletedRes } from "ws-packets/src/fromServer/missions/MissionsCompletedRes";
+import { KingChallengeTierReachedRes } from "ws-packets/src/fromServer/missions/KingChallengeTierReachedRes";
 import { BlessingActivatedRes } from "ws-packets/src/fromServer/character/BlessingActivatedRes";
 import { RoyalLetterRes } from "ws-packets/src/fromServer/onboarding/RoyalLetterRes";
 import { ItemFoundRes } from "ws-packets/src/fromServer/inventory/ItemFoundRes";
@@ -44,7 +45,8 @@ function refresh(queryClient: QueryClient, entity: typeof GAME_ENTITIES[keyof ty
 
 /**
  * Completed missions change the list, and Core now keeps them to show; a token reward also changes
- * what the report offers to spend. A royal letter, a mythical find and a boss record are kept the same way.
+ * what the report offers to spend. A crossed tier of the king's challenge changes the missions and pays
+ * into the profile. A royal letter, a mythical find and a boss record are kept the same way.
  */
 function useRewardsRefresh(queryClient: QueryClient): void {
 	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<MissionsCompletedRes>(MissionsCompletedRes.wireName, packet => {
@@ -54,6 +56,16 @@ function useRewardsRefresh(queryClient: QueryClient): void {
 		refresh(queryClient, GAME_ENTITIES.MISSIONS);
 		refresh(queryClient, GAME_ENTITIES.APP_STATE);
 		if (packet.missions.some(completed => completed.reward.tokens)) {
+			refresh(queryClient, GAME_ENTITIES.REPORT);
+		}
+	}), [queryClient]);
+	useEffect(() => WebSocketClient.getInstance().registerPushedPacketHandler<KingChallengeTierReachedRes>(KingChallengeTierReachedRes.wireName, packet => {
+		if (!packet.self) {
+			return;
+		}
+		refresh(queryClient, GAME_ENTITIES.MISSIONS);
+		refresh(queryClient, GAME_ENTITIES.PROFILE);
+		if (packet.reward.tokens > 0) {
 			refresh(queryClient, GAME_ENTITIES.REPORT);
 		}
 	}), [queryClient]);

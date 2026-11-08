@@ -53,6 +53,7 @@ import {
 import { usePushRegistration } from "@/src/notifications/PushRegistration";
 import { LevelUpToast } from "@/src/components/LevelUpToast";
 import { CityStayScoreToast } from "@/src/components/CityStayScoreToast";
+import { KingChallengeToast } from "@/src/components/KingChallengeToast";
 import { MemorableMomentOverlay } from "@/src/components/MemorableMoment";
 import { useNotificationNavigation } from "@/src/notifications/useNotifications";
 import { allowPermissionPrompt } from "@/src/notifications/ReportNotifications";
@@ -382,6 +383,7 @@ export default function TabLayout(): ReactNode {
 			<AppNotificationToast />
 			<LevelUpToast />
 			<CityStayScoreToast />
+			<KingChallengeToast />
 			<MemorableMomentOverlay />
 			<StopToast />
 		</View>

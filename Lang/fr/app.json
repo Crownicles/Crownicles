@@ -1637,7 +1637,15 @@
     "championNote": "Le palier du champion attend un score digne des meilleurs aventuriers des semaines passées.",
     "tokenRule": "Les jetons d'un palier ne vous sont versés que si vous possédez moins de {{tokenCap}} jetons.",
     "tokensHeld": "Vous possédez déjà {{tokens}} jetons : passez sous {{tokenCap}} pour toucher ceux des prochains paliers.",
-    "profileTiers": "Paliers relevés cette semaine"
+    "profileTiers": "Paliers relevés cette semaine",
+    "toast": {
+      "title_one": "Palier {{tier}} / {{tierCount}} du défi du roi relevé",
+      "title_other": "{{count}} paliers du défi du roi relevés ({{tier}} / {{tierCount}})",
+      "money": "Argent +{{amount}}",
+      "tokens": "Jetons +{{amount}}",
+      "gems": "Gemmes +{{amount}}",
+      "tokensWithheld": "Jetons non versés : vous en possédez déjà {{tokens}}"
+    }
   },
   "moments": {
     "eyebrows": {

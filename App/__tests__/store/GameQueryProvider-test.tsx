@@ -5,6 +5,7 @@ import {
 import { Text } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { MissionsCompletedRes } from "ws-packets/src/fromServer/missions/MissionsCompletedRes";
+import { KingChallengeTierReachedRes } from "ws-packets/src/fromServer/missions/KingChallengeTierReachedRes";
 import { MISSION_TYPES } from "ws-packets/src/objects/Mission";
 import { AuthStateEnum } from "@/src/authentication/AuthStateEnum";
 import { WebSocketClient } from "@/src/networking/WebSocketClient";
@@ -75,6 +76,33 @@ describe("GameQueryProvider", () => {
 
 		await waitFor(() => expect(screen.getByText("next campaign mission")).toBeTruthy());
 		expect(read).toHaveBeenCalledTimes(2);
+		view.unmount();
+	});
+
+	it("refreshes the missions when the player's own character crosses a tier of the king's challenge", async () => {
+		let challenge = "tier 1";
+		const read = jest.fn(async (): Promise<string> => challenge);
+		const view = await render(<GameQueryProvider><MissionReader read={read} /></GameQueryProvider>);
+		await waitFor(() => expect(screen.getByText("tier 1")).toBeTruthy());
+
+		challenge = "tier 2";
+		const crossing: KingChallengeTierReachedRes = {
+			self: false,
+			tier: 2,
+			crossedTiers: 1,
+			reward: {
+				money: 1_250, tokens: 2, gems: 0
+			},
+			ownedTokens: 6
+		};
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		await act(async () => registry.dispatch(KingChallengeTierReachedRes.wireName, crossing));
+		expect(read).toHaveBeenCalledTimes(1);
+
+		await act(async () => registry.dispatch(KingChallengeTierReachedRes.wireName, {
+			...crossing, self: true
+		}));
+		await waitFor(() => expect(screen.getByText("tier 2")).toBeTruthy());
 		view.unmount();
 	});
 

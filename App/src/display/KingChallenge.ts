@@ -1,7 +1,10 @@
-import { KingChallengeReward } from "ws-packets/src/objects/KingChallenge";
+import {
+	KingChallengeReward, KingChallengeRules
+} from "ws-packets/src/objects/KingChallenge";
+import { KingChallengeTierReachedRes } from "ws-packets/src/fromServer/missions/KingChallengeTierReachedRes";
 import { i18n } from "@/src/translations/i18n";
 import {
-	AMOUNT_UNITS, formatAmount, formatMoney
+	AMOUNT_UNITS, formatAmount, formatMoney, formatNumber
 } from "@/src/display/Amounts";
 import { joinFacts } from "@/src/display/Facts";
 import { formatDurationMinutes } from "@/src/display/ItemEffects";
@@ -39,4 +42,22 @@ export function formatTimeLeft(milliseconds: number): string {
 		: i18n.t("app:adventure.duration.daysHours", {
 			days, hours
 		});
+}
+
+/** Core pays no token to a player who already held the cap, though the tiers crossed list some. */
+function tokensWithheld(reached: KingChallengeTierReachedRes, rules: KingChallengeRules): boolean {
+	return reached.reward.tokens === 0
+		&& reached.ownedTokens >= rules.tokenCap
+		&& rules.tierRewards.slice(reached.tier - reached.crossedTiers, reached.tier).some(reward => reward.tokens > 0);
+}
+
+/** What a crossing paid, in words since a toast does not draw emojis, and why no token came when the cap held them back. */
+export function tierReachedRewards(reached: KingChallengeTierReachedRes, rules: KingChallengeRules): string {
+	const { reward } = reached;
+	return joinFacts([
+		reward.money > 0 && i18n.t("app:kingChallenge.toast.money", { amount: formatNumber(reward.money) }),
+		reward.tokens > 0 && i18n.t("app:kingChallenge.toast.tokens", { amount: formatNumber(reward.tokens) }),
+		reward.gems > 0 && i18n.t("app:kingChallenge.toast.gems", { amount: formatNumber(reward.gems) }),
+		tokensWithheld(reached, rules) && i18n.t("app:kingChallenge.toast.tokensWithheld", { tokens: formatNumber(reached.ownedTokens) })
+	]);
 }

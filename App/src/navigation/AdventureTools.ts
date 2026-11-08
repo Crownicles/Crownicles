@@ -20,3 +20,11 @@ export const MISSIONS_VIEWS = {
 	MISSIONS: "missions", KING_CHALLENGE: "kingChallenge"
 } as const;
 export type MissionsView = typeof MISSIONS_VIEWS[keyof typeof MISSIONS_VIEWS];
+
+/** The king's challenge is a view of the missions, as on Discord. */
+export const ADVENTURE_KING_CHALLENGE: Href = {
+	pathname: "/",
+	params: {
+		[ADVENTURE_TOOL_PARAM]: ADVENTURE_TOOL_NAMES.MISSIONS, [MISSIONS_VIEW_PARAM]: MISSIONS_VIEWS.KING_CHALLENGE
+	}
+};
