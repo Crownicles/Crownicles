@@ -82,7 +82,8 @@ const MOTION_ACTIONS = {
 		"piercingAttack",
 		"elementaryPiercingAttack",
 		"aerialDiveAttack",
-		"peck"
+		"peck",
+		"woundedPrey"
 	],
 	bite: [
 		"aceratedFangs",
@@ -91,13 +92,15 @@ const MOTION_ACTIONS = {
 		"bite",
 		"smallBite",
 		"pinch",
-		"swallow"
+		"swallow",
+		"scentOfBlood"
 	],
 	claw: [
 		"clawAttack",
 		"claws",
 		"smallClaws",
-		"petMakeBleed"
+		"petMakeBleed",
+		"breathingHoleAmbush"
 	],
 	shot: [
 		"canonAttack",
@@ -178,7 +181,8 @@ const MOTION_ACTIONS = {
 		"boostSpeed",
 		"rainbowPower",
 		"outrageAttack",
-		"outrage"
+		"outrage",
+		"unstoppable"
 	],
 	heal: [
 		"hydraulicHeal",
