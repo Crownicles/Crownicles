@@ -3,7 +3,7 @@ import {
 	act, render, screen
 } from "@testing-library/react-native";
 import {
-	AppState, AppStateStatus, ModalProps, Text
+	AppState, AppStateStatus, ModalProps, Platform, Text
 } from "react-native";
 
 // The setup replaces the windows by plain modals for every other test.
@@ -46,6 +46,14 @@ function Windows({
 	return <>
 		<NativeWindow visible={first} {...onFirstDismissed ? { onDismiss: onFirstDismissed } : {}}><Text testID="first">first</Text></NativeWindow>
 		<NativeWindow visible={second}><Text testID="second">second</Text></NativeWindow>
+	</>;
+}
+
+/** The first window is taken out of the tree rather than asked away, as a sheet whose collector ended. */
+function Replacement({ first }: { first: boolean }): ReactNode {
+	return <>
+		{first ? <NativeWindow><Text testID="first">first</Text></NativeWindow> : null}
+		<NativeWindow visible={!first}><Text testID="second">second</Text></NativeWindow>
 	</>;
 }
 
@@ -113,5 +121,47 @@ describe("native windows", () => {
 
 		await act(async () => jest.advanceTimersByTime(1_000));
 		expect(screen.getByTestId("second")).toBeTruthy();
+	});
+
+	it("waits for a window taken out of the tree to finish leaving on iOS", async () => {
+		const view = await render(<Replacement first />);
+		await report(() => windowOf("first").onShow?.({} as never));
+
+		await view.rerender(<Replacement first={false} />);
+		expect(screen.queryByTestId("second")).toBeNull();
+		await act(async () => jest.advanceTimersByTime(500));
+		expect(screen.getByTestId("second")).toBeTruthy();
+	});
+
+	describe("on Android, where a dialog leaves at once and never reports its dismissal", () => {
+		beforeEach(() => {
+			jest.replaceProperty(Platform, "OS", "android");
+		});
+
+		afterEach(() => jest.restoreAllMocks());
+
+		it("opens the next window as soon as the previous one is asked away", async () => {
+			const view = await render(<Windows first second={false} />);
+			await report(() => windowOf("first").onShow?.({} as never));
+
+			await view.rerender(<Windows first={false} second />);
+			expect(screen.getByTestId("second")).toBeTruthy();
+		});
+
+		it("opens the next window as soon as the previous one is taken out of the tree", async () => {
+			const view = await render(<Replacement first />);
+			await report(() => windowOf("first").onShow?.({} as never));
+
+			await view.rerender(<Replacement first={false} />);
+			expect(screen.getByTestId("second")).toBeTruthy();
+		});
+
+		it("still opens one window at a time, the next once the first has appeared", async () => {
+			await render(<Windows first second />);
+			expect(screen.queryByTestId("second")).toBeNull();
+
+			await report(() => windowOf("first").onShow?.({} as never));
+			expect(screen.getByTestId("second")).toBeTruthy();
+		});
 	});
 });

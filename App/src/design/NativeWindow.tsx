@@ -2,7 +2,7 @@ import {
 	ReactNode, useEffect, useState, useSyncExternalStore
 } from "react";
 import {
-	AppState, Modal, ModalProps
+	AppState, Modal, ModalProps, Platform
 } from "react-native";
 
 /** How long a window may take to appear or go before the next one stops waiting for the platform to say so. */
@@ -10,6 +10,15 @@ const TRANSITION_TIMEOUT_MS = 1_000;
 
 /** A window removed from the tree never reports its dismissal: the next one waits for its animation instead. */
 const REMOVAL_TRANSITION_MS = 500;
+
+/**
+ * Only UIKit loses a window presented while another one leaves, and only iOS reports when a window is gone.
+ * An Android dialog leaves at once: waiting for a dismissal it never reports would leave the player for a
+ * whole second in front of the screen they just acted on, tapping again.
+ */
+function leavingHoldsTheNextWindow(): boolean {
+	return Platform.OS === "ios";
+}
 
 type WindowState = "idle" | "waiting" | "shown";
 
@@ -56,7 +65,9 @@ class NativeWindowLife {
 		if (this.state === "shown") {
 			this.appeared();
 			this.state = "idle";
-			this.leaving = this.turns.start();
+			if (leavingHoldsTheNextWindow()) {
+				this.leaving = this.turns.start();
+			}
 		}
 		return false;
 	}
@@ -75,7 +86,7 @@ class NativeWindowLife {
 		const shown = this.state === "shown";
 		this.withdraw();
 		this.left();
-		if (shown) {
+		if (shown && leavingHoldsTheNextWindow()) {
 			this.turns.start(REMOVAL_TRANSITION_MS);
 		}
 	}
