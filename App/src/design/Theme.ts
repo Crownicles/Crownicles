@@ -161,16 +161,6 @@ export const Theme = {
 		quickActionHeight: 72,
 		quickActionIcon: 19
 	},
-	emoji: {
-		iosHeroOffset: 2,
-		iosFieldOffset: -2,
-
-		/** A caption's line leaves no room above the emoji: lifted, iOS cuts its top. */
-		iosCaptionOffset: 0,
-
-		/** Android sets an inline emoji on the baseline, above the words it sits among. */
-		androidStoryOffset: 2
-	},
 	radius: 14,
 	pillRadius: 999,
 	fontSize: {
