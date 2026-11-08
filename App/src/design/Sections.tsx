@@ -628,7 +628,7 @@ export function Standing({
 		<View style={styles.body}>
 			<Text style={[styles.caption, captionColor ? { color: captionColor } : null]}>{caption}</Text>
 			<TwemojiText textStyle={styles.title} emojiSize={STANDING_TITLE_EMOJI_SIZE}>{title}</TwemojiText>
-			{subtitle ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption} iosEmojiVerticalOffset={Theme.emoji.iosCaptionOffset}>{subtitle}</TwemojiText> : null}
+			{subtitle ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{subtitle}</TwemojiText> : null}
 		</View>
 	</>;
 	return <View style={styles.standing} testID={testID}>
@@ -924,7 +924,7 @@ function EntryHeading({
 		{emblem ? <View style={styles.entryEmblem}>{emblem}</View> : null}
 		<View style={styles.body}>
 			<TwemojiText textStyle={danger ? [styles.entryLabel, styles.dangerLabel] : styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
-			{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption} iosEmojiVerticalOffset={Theme.emoji.iosCaptionOffset}>{caption}</TwemojiText> : caption}
+			{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{caption}</TwemojiText> : caption}
 		</View>
 	</>;
 }
@@ -1070,7 +1070,7 @@ export function Fact({
 
 function rowTrailing(styles: SectionStyles, end: ReactNode): ReactNode {
 	return typeof end === "string"
-		? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption} iosEmojiVerticalOffset={Theme.emoji.iosCaptionOffset}>{end}</TwemojiText>
+		? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{end}</TwemojiText>
 		: end;
 }
 

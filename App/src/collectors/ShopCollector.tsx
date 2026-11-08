@@ -246,7 +246,7 @@ function ArticleCaption({
 }): ReactNode {
 	const sectionStyles = useSectionStyles();
 	return <View>
-		{summary ? <TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption} iosEmojiVerticalOffset={Theme.emoji.iosCaptionOffset}>{summary}</TwemojiText> : null}
+		{summary ? <TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption}>{summary}</TwemojiText> : null}
 		{lock ? <LockHint lock={lock} /> : null}
 	</View>;
 }

@@ -1,10 +1,9 @@
 import { parse } from "@twemoji/parser";
 import { ReactNode } from "react";
 import {
-	Platform, StyleProp, Text, TextStyle, View, ViewStyle
+	StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle
 } from "react-native";
 import { TwemojiIcon } from "@/src/design/TwemojiIcon";
-import { Theme } from "@/src/design/Theme";
 
 type EmojiEntity = ReturnType<typeof parse>[number];
 
@@ -27,6 +26,22 @@ export function emojiEntities(text: string): readonly EmojiEntity[] {
 	return entities;
 }
 
+/** Inter's capitals rise this share of the font size above the baseline. */
+const CAP_HEIGHT_RATIO = 0.727;
+
+/** React Native's own text size, for a text whose style sets none. */
+const DEFAULT_FONT_SIZE = 14;
+
+/**
+ * Both platforms stand an inline image on the baseline of its line, so an emoji as tall as the letters rises
+ * above them, and iOS cuts what passes the top of the text. Lowered by this much, it is centred on the
+ * capitals whatever the size of the text and of the emoji, instead of following a nudge tuned for one size.
+ */
+export function inlineEmojiOffset(textStyle: StyleProp<TextStyle>, emojiSize: number): number {
+	const fontSize = StyleSheet.flatten(textStyle)?.fontSize ?? DEFAULT_FONT_SIZE;
+	return (emojiSize - fontSize * CAP_HEIGHT_RATIO) / 2;
+}
+
 /**
  * The text split into words and emojis, ready to be laid out on a wrapping line.
  *
@@ -34,16 +49,17 @@ export function emojiEntities(text: string): readonly EmojiEntity[] {
  * emoji substitution.
  */
 export function twemojiParts({
-	text, textStyle, emojiSize, iosEmojiVerticalOffset, keyPrefix = ""
+	text, textStyle, emojiSize, emojiOffset, keyPrefix = ""
 }: {
 	text: string;
 	textStyle?: StyleProp<TextStyle>;
 	emojiSize: number;
-	iosEmojiVerticalOffset?: number;
+
+	/** From `inlineEmojiOffset`, with the style of the text holding the pieces. */
+	emojiOffset: number;
 	keyPrefix?: string;
 }): ReactNode[] {
 	const entities = emojiEntities(text);
-	const emojiVerticalOffset = Platform.OS === "ios" ? iosEmojiVerticalOffset ?? 0 : 0;
 
 	const parts: ReactNode[] = [];
 	let lastIndex = 0;
@@ -62,7 +78,7 @@ export function twemojiParts({
 				key={`${keyPrefix}emoji-${startIndex}-${endIndex}`}
 				emoji={entity.text}
 				size={emojiSize}
-				verticalOffset={emojiVerticalOffset}
+				verticalOffset={emojiOffset}
 			/>
 		);
 		lastIndex = endIndex;
@@ -95,16 +111,15 @@ export function splitLeadingEmoji(label: string): {
 
 /** Laid out as one paragraph, so a long label wraps its words after the emoji instead of pushing the text below it. */
 export function TwemojiText({
-	children, textStyle, containerStyle, emojiSize, iosEmojiVerticalOffset = Theme.emoji.iosFieldOffset, numberOfLines
+	children, textStyle, containerStyle, emojiSize, numberOfLines
 }: {
 	children: string;
 	textStyle?: StyleProp<TextStyle>;
 	containerStyle?: StyleProp<ViewStyle>;
 	emojiSize: number;
-	iosEmojiVerticalOffset?: number;
 	numberOfLines?: number;
 }): ReactNode {
 	return <View style={containerStyle}><Text style={textStyle} numberOfLines={numberOfLines}>{twemojiParts({
-		text: children, emojiSize, iosEmojiVerticalOffset
+		text: children, emojiSize, emojiOffset: inlineEmojiOffset(textStyle, emojiSize)
 	})}</Text></View>;
 }

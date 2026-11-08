@@ -1,9 +1,9 @@
 import { render } from "@testing-library/react-native";
 import { createElement } from "react";
-import { Platform } from "react-native";
 import { twemojiAssetUrl } from "@/src/design/TwemojiIcon";
-import { TwemojiText } from "@/src/design/TwemojiText";
-import { Theme } from "@/src/design/Theme";
+import {
+	inlineEmojiOffset, TwemojiText
+} from "@/src/design/TwemojiText";
 import {
 	ArrowRight, Cannon
 } from "@/src/design/FightIcons";
@@ -71,21 +71,29 @@ describe("twemojiAssetUrl", () => {
 			})
 		);
 		expect(queryByText(femaleSymbol)).toBeNull();
-		expect(image.props.style).toEqual(
-			expect.objectContaining({
-				transform: [{ translateY: Platform.OS === "ios" ? Theme.emoji.iosFieldOffset : 0 }]
-			})
-		);
+	});
+});
+
+describe("emojis among words", () => {
+	/** Where a glyph sits relative to the baseline, upwards, with Inter's capitals 0.727 of the font size tall. */
+	const capitalsMiddle = (fontSize: number): number => fontSize * 0.727 / 2;
+
+	it.each([
+		[12, 12],
+		[14, 14],
+		[14.5, 14.5],
+		[25, 30]
+	])("centres a %s pt text's %s pt emoji on its capitals rather than standing it on the baseline", (fontSize, emojiSize) => {
+		const emojiMiddle = emojiSize / 2 - inlineEmojiOffset({ fontSize }, emojiSize);
+		expect(emojiMiddle).toBeCloseTo(capitalsMiddle(fontSize));
 	});
 
-	it("applies an iOS-only offset when a text role provides one", async () => {
+	it("lowers each emoji of a text by what its own text size asks", async () => {
 		const femaleSymbol = String.fromCodePoint(0x26a7, 0xfe0f);
-		const { getByLabelText } = await render(<TwemojiText emojiSize={14} iosEmojiVerticalOffset={-4}>{femaleSymbol}</TwemojiText>);
-
+		const { getByLabelText } = await render(<TwemojiText textStyle={{ fontSize: 20 }} emojiSize={20}>{femaleSymbol}</TwemojiText>);
 		expect(getByLabelText(femaleSymbol).props.style).toEqual(
-			expect.objectContaining({
-				transform: [{ translateY: Platform.OS === "ios" ? -4 : 0 }]
-			})
+			expect.objectContaining({ transform: [{ translateY: inlineEmojiOffset({ fontSize: 20 }, 20) }] })
 		);
+		expect(inlineEmojiOffset({ fontSize: 20 }, 20)).toBeGreaterThan(0);
 	});
 });
