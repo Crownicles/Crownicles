@@ -108,6 +108,11 @@ const listStylesOf = styleGroup(colors => ({
 	list: {
 		backgroundColor: colors.paper, borderRadius: Theme.radius, overflow: "hidden"
 	},
+
+	/** On a page, the actions under a list keep the distance a sheet's spacing gives them there. */
+	actionStack: {
+		marginTop: Theme.spacing.md, gap: Theme.spacing.sm
+	},
 	choice: {
 		paddingTop: Theme.spacing.md, paddingBottom: Theme.spacing.xs, paddingHorizontal: Theme.spacing.md, borderLeftWidth: 3, borderLeftColor: "transparent"
 	},
@@ -882,6 +887,12 @@ export function ActionBanner({
 export function ExpandableList({ children }: { children: ReactNode }): ReactNode {
 	const styles = useStyles();
 	return <View style={styles.list}>{children}</View>;
+}
+
+/** The actions a page offers under a list, set apart from it and from each other. */
+export function ActionStack({ children }: { children: ReactNode }): ReactNode {
+	const styles = useStyles();
+	return <View style={styles.actionStack}>{children}</View>;
 }
 
 /** Whether pressing an entry unfolds it, takes the player elsewhere, or does nothing at all. */
