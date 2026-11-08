@@ -162,7 +162,7 @@ describe("inventory views", () => {
 		await fireEvent.press(screen.getByRole("tab", { name: "app:inventory.views.plants" }));
 		expect(screen.getByText("app:inventory.seed")).toBeTruthy();
 		expect(screen.getByText("1 / 3")).toBeTruthy();
-		expect(screen.queryByText("app:inventory.plantsLinkedToHomeStorage")).toBeNull();
+		expect(screen.queryByText("commands:inventory.plantsLinkedToHomeStorage")).toBeNull();
 	});
 
 	it("tells that the plants are delivered to the home chest once the inventory is linked to it", async () => {
@@ -172,7 +172,7 @@ describe("inventory views", () => {
 		};
 		await renderWithGameQuery(<Inventory inventoryData={data} />);
 		await fireEvent.press(screen.getByRole("tab", { name: "app:inventory.views.plants" }));
-		expect(screen.getByText("app:inventory.plantsLinkedToHomeStorage")).toBeTruthy();
+		expect(screen.getByText("commands:inventory.plantsLinkedToHomeStorage")).toBeTruthy();
 	});
 
 	it("lists the materials in the alphabetical order of their names, accents included", async () => {

@@ -171,7 +171,7 @@ function InventoryCarriedPlants({ plants }: { plants: CarriedPlants }): ReactNod
 			? plants.plantSlots.map(plant => <Fact key={plant.slot} label={plantName(plant.plantId)} />)
 			: <EmptyState>{i18n.t("app:inventory.noCarriedPlants")}</EmptyState>}
 		</ExpandableList>
-		{plants.linkedToHomeStorage ? <Note>{i18n.t("app:inventory.plantsLinkedToHomeStorage")}</Note> : null}
+		{plants.linkedToHomeStorage ? <Note>{i18n.t("commands:inventory.plantsLinkedToHomeStorage")}</Note> : null}
 	</>;
 }
 
