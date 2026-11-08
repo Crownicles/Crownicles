@@ -46,9 +46,7 @@ class FightStore {
 		client.registerPushedPacketHandler<FightLogRes>(FightLogRes.wireName, packet => this.addLog(packet.entry));
 		client.registerPushedPacketHandler<FightWaitRes>(FightWaitRes.wireName, () => this.update({ waiting: true }));
 		client.registerPushedPacketHandler<FightEndRes>(FightEndRes.wireName, packet => this.finish(packet.result));
-		client.registerPushedPacketHandler<FightRewardRes>(FightRewardRes.wireName, packet => this.update({
-			reward: packet.reward, waiting: false, visible: true
-		}));
+		client.registerPushedPacketHandler<FightRewardRes>(FightRewardRes.wireName, packet => this.reward(packet.reward));
 		client.registerPushedPacketHandler<FightMonsterRewardRes>(FightMonsterRewardRes.wireName, packet => this.update({ monsterReward: packet.reward }));
 		client.registerPushedPacketHandler<FightErrorRes>(FightErrorRes.wireName, packet => this.fail(packet.error));
 	}
@@ -64,6 +62,16 @@ class FightStore {
 		}
 		gameServicesStore.recordFightEnd(result).catch((error: unknown): void => {
 			console.warn("Unable to record the PvP achievement:", error);
+		});
+	}
+
+	/** A reward belongs to the fight on screen: once its result was put away, a late reward has nothing left to reopen. */
+	private reward(reward: FightReward): void {
+		if (!this.snapshot.introduction && !this.snapshot.result) {
+			return;
+		}
+		this.update({
+			reward, waiting: false, visible: true
 		});
 	}
 

@@ -227,6 +227,31 @@ describe("fight session", () => {
 			introduction: null, result: null, reward: null, logs: []
 		});
 	});
+	it("does not reopen an empty battle screen for the reward of a duel whose result was put away", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightIntroductionRes.wireName, { introduction: INTRO });
+		registry.dispatch(FightEndRes.wireName, { result: END });
+		fightStore.reset();
+		registry.dispatch(FightRewardRes.wireName, { reward: {
+			points: 31, money: 71
+		} });
+		expect(fightStore.getSnapshot()).toMatchObject({
+			visible: false, reward: null
+		});
+	});
+	it("still shows the reward of a duel whose result arrived without its introduction, as after a reconnection", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		registry.dispatch(FightEndRes.wireName, { result: END });
+		registry.dispatch(FightRewardRes.wireName, { reward: {
+			points: 31, money: 71
+		} });
+		expect(fightStore.getSnapshot()).toMatchObject({
+			visible: true,
+			reward: {
+				points: 31, money: 71
+			}
+		});
+	});
 	it("records a finished fight independently of rendering or changing Crownicles accounts", () => {
 		const record = jest.spyOn(gameServicesStore, "recordFightEnd").mockResolvedValue(undefined);
 		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
