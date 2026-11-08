@@ -2046,7 +2046,10 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		health: {
 			type: DataTypes.INTEGER,
-			defaultValue: EntityConstants.DEFAULT_VALUES.HEALTH
+
+			// A new character starts with a full health bar, which depends on its starting class and level (#5070)
+			defaultValue: ClassDataController.instance.getById(PlayersConstants.PLAYER_DEFAULT_VALUES.CLASS)!
+				.getMaxHealthValue(PlayersConstants.PLAYER_DEFAULT_VALUES.LEVEL)
 		},
 		fightPointsLost: {
 			type: DataTypes.INTEGER,
