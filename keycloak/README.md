@@ -69,11 +69,11 @@ Keycloak used to fall back on its embedded H2 database, stored in `PROJECT_ROOT/
 ```bash
 docker-compose stop keycloak
 docker run --rm -v PROJECT_ROOT/keycloak/data:/opt/keycloak/data -e KC_DB=dev-file \
-  quay.io/keycloak/keycloak:26.8 export --dir /opt/keycloak/data/export --users different_files
+  quay.io/keycloak/keycloak:26.7.4 export --dir /opt/keycloak/data/export --users different_files
 docker-compose up -d --wait mariadb_keycloak
 docker run --rm --network keycloak_default -v PROJECT_ROOT/keycloak/data:/opt/keycloak/data \
   -e KC_DB=mariadb -e KC_DB_URL=jdbc:mariadb://mariadb_keycloak:3306/keycloak -e KC_DB_USERNAME=keycloak -e KC_DB_PASSWORD=password \
-  quay.io/keycloak/keycloak:26.8 import --dir /opt/keycloak/data/export --override true \
+  quay.io/keycloak/keycloak:26.7.4 import --dir /opt/keycloak/data/export --override true \
   && docker-compose up -d keycloak
 ```
 
