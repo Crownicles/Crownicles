@@ -17,7 +17,6 @@ import {
 } from "@/src/design/Sections";
 import { ItemDetails } from "@/src/components/ItemDetails";
 import { ExpandedEntry } from "@/src/design/useExpandedEntry";
-import { Theme } from "@/src/design/Theme";
 import { TwemojiText } from "@/src/design/TwemojiText";
 import {
 	InventoryItem, InventoryItemActions, ITEM_ACTIONS, ItemAction, ItemActionChoice
@@ -56,7 +55,7 @@ function ItemCaption({
 	const sectionStyles = useSectionStyles();
 	const lock = expanded ? undefined : choices.find(choice => choice.lock && choice.action !== ITEM_ACTIONS.DEPOSIT)?.lock;
 	return <>
-		<TwemojiText textStyle={sectionStyles.caption} emojiSize={Theme.fontSize.caption}>{inventoryItemDetails(item)}</TwemojiText>
+		<TwemojiText textStyle={sectionStyles.caption}>{inventoryItemDetails(item)}</TwemojiText>
 		{lock ? <LockHint lock={lock} /> : null}
 	</>;
 }

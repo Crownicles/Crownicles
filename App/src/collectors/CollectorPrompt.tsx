@@ -110,7 +110,7 @@ function SkipCountdown({
 		style={({ pressed }): object[] => [styles.cancel, pressed && styles.pressed].filter(Boolean) as object[]}
 		testID="collector-skip-countdown"
 	>
-		<TwemojiText textStyle={styles.cancelLabel} emojiSize={Theme.fontSize.bodySmall}>{i18n.t("app:collector.skipCountdown")}</TwemojiText>
+		<TwemojiText textStyle={styles.cancelLabel}>{i18n.t("app:collector.skipCountdown")}</TwemojiText>
 	</Pressable>;
 }
 

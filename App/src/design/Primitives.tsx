@@ -375,13 +375,13 @@ export function SectionHeader({
 
 export function Note({ children }: { children: string }): ReactNode {
 	const styles = useStyles();
-	return <TwemojiText containerStyle={styles.note} textStyle={styles.noteText} emojiSize={Theme.fontSize.note}>{children}</TwemojiText>;
+	return <TwemojiText containerStyle={styles.note} textStyle={styles.noteText}>{children}</TwemojiText>;
 }
 
 /** A game text set aside like a note, a travel advice for one: it keeps its emphasis, and its links still open. */
 export function StoryNote({ children }: { children: string }): ReactNode {
 	const styles = useStyles();
-	return <View style={styles.note}><StoryText style={styles.noteText} emojiSize={Theme.fontSize.note}>{children}</StoryText></View>;
+	return <View style={styles.note}><StoryText style={styles.noteText}>{children}</StoryText></View>;
 }
 
 function getButtonStyle(styles: PrimitiveStyles, variant: ButtonVariant, disabled: boolean, pressed = false): StyleProp<ViewStyle> {

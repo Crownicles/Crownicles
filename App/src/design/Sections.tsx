@@ -330,7 +330,7 @@ export function ChoiceAction({
 		].filter(Boolean) as object[]}
 	>
 		{leadingEmoji ? <TwemojiIcon emoji={leadingEmoji} size={Theme.fontSize.rowTitle} /> : null}
-		<TwemojiText containerStyle={styles.choiceActionLabel} textStyle={styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{text}</TwemojiText>
+		<TwemojiText containerStyle={styles.choiceActionLabel} textStyle={styles.entryLabel}>{text}</TwemojiText>
 		<ArrowRight size={20} />
 	</Pressable>;
 }
@@ -628,7 +628,7 @@ export function Standing({
 		<View style={styles.body}>
 			<Text style={[styles.caption, captionColor ? { color: captionColor } : null]}>{caption}</Text>
 			<TwemojiText textStyle={styles.title} emojiSize={STANDING_TITLE_EMOJI_SIZE}>{title}</TwemojiText>
-			{subtitle ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{subtitle}</TwemojiText> : null}
+			{subtitle ? <TwemojiText textStyle={styles.caption}>{subtitle}</TwemojiText> : null}
 		</View>
 	</>;
 	return <View style={styles.standing} testID={testID}>
@@ -814,7 +814,7 @@ function BannerLabel({
 }): ReactNode {
 	const styles = useStyles();
 	return <View style={styles.bannerLabelBox}>
-		<TwemojiText textStyle={styles.bannerLabel} emojiSize={Theme.fontSize.button} numberOfLines={BANNER_LABEL_LINES}>{label}</TwemojiText>
+		<TwemojiText textStyle={styles.bannerLabel} numberOfLines={BANNER_LABEL_LINES}>{label}</TwemojiText>
 		{detail ? <Text style={styles.bannerDetail} numberOfLines={BANNER_LABEL_LINES}>{detail}</Text> : null}
 	</View>;
 }
@@ -923,8 +923,8 @@ function EntryHeading({
 	return <>
 		{emblem ? <View style={styles.entryEmblem}>{emblem}</View> : null}
 		<View style={styles.body}>
-			<TwemojiText textStyle={danger ? [styles.entryLabel, styles.dangerLabel] : styles.entryLabel} emojiSize={Theme.fontSize.rowTitle}>{label}</TwemojiText>
-			{typeof caption === "string" ? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{caption}</TwemojiText> : caption}
+			<TwemojiText textStyle={danger ? [styles.entryLabel, styles.dangerLabel] : styles.entryLabel}>{label}</TwemojiText>
+			{typeof caption === "string" ? <TwemojiText textStyle={styles.caption}>{caption}</TwemojiText> : caption}
 		</View>
 	</>;
 }
@@ -1058,11 +1058,11 @@ export function Fact({
 }): ReactNode {
 	const styles = useStyles();
 	return <View style={styles.fact}>
-		<TwemojiText containerStyle={styles.factLabelBox} textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
+		<TwemojiText containerStyle={styles.factLabelBox} textStyle={styles.factLabel}>{label}</TwemojiText>
 		{end !== undefined && typeof end !== "string"
 			? end
 			: <View style={styles.factValue}>
-				<TwemojiText textStyle={[styles.factAmount, struck && styles.factStruck]} emojiSize={Theme.fontSize.rowTitle}>{typeof end === "string" ? end : value ?? ""}</TwemojiText>
+				<TwemojiText textStyle={[styles.factAmount, struck && styles.factStruck]}>{typeof end === "string" ? end : value ?? ""}</TwemojiText>
 				{unit ? <UnitIcon unit={unit} size={15} /> : null}
 			</View>}
 	</View>;
@@ -1070,7 +1070,7 @@ export function Fact({
 
 function rowTrailing(styles: SectionStyles, end: ReactNode): ReactNode {
 	return typeof end === "string"
-		? <TwemojiText textStyle={styles.caption} emojiSize={Theme.fontSize.caption}>{end}</TwemojiText>
+		? <TwemojiText textStyle={styles.caption}>{end}</TwemojiText>
 		: end;
 }
 
@@ -1178,8 +1178,8 @@ export function Gauge({
 	const styles = useStyles();
 	return <View style={styles.gauge}>
 		<View style={styles.gaugeTop}>
-			<TwemojiText containerStyle={styles.factLabelBox} textStyle={styles.factLabel} emojiSize={Theme.fontSize.caption}>{label}</TwemojiText>
-			<TwemojiText textStyle={styles.gaugeValue} emojiSize={Theme.fontSize.caption}>{value}</TwemojiText>
+			<TwemojiText containerStyle={styles.factLabelBox} textStyle={styles.factLabel}>{label}</TwemojiText>
+			<TwemojiText textStyle={styles.gaugeValue}>{value}</TwemojiText>
 		</View>
 		<View style={styles.gaugeTrack}>
 			<View style={[
