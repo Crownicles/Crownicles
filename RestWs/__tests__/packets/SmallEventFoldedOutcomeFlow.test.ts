@@ -9,7 +9,8 @@ import {ReactionCollectorCreationPacket} from "../../../Lib/src/packets/interact
 import {
 	ReactionCollectorRecipeShopSmallEvent, ReactionCollectorRecipeShopSmallEventData, RecipeShopSource
 } from "../../../Lib/src/packets/interaction/ReactionCollectorRecipeShopSmallEvent";
-import {ItemWithDetails} from "../../../Lib/src/types/ItemWithDetails";
+import {MainItemDetails} from "../../../Lib/src/types/MainItemDetails";
+import {ItemCategory, ItemRarity} from "../../../Lib/src/constants/ItemConstants";
 import {RecipeDisplayInfo} from "../../../Lib/src/types/CookingTypes";
 import {RecipeType} from "../../../Lib/src/constants/CookingConstants";
 import {SmallEventResultRes} from "../../../WsPackets/src/fromServer/smallEvents/SmallEventResultRes";
@@ -28,15 +29,15 @@ const CONTEXT: PacketContext = {
 
 const RECIPE: RecipeDisplayInfo = {recipeId: "championFeast", level: 7, recipeType: RecipeType.PETFOOD_ULTIMATE};
 
-const FOUND_ITEM = {
+const FOUND_ITEM: MainItemDetails = {
 	id: 7,
-	rarity: 1,
-	itemCategory: 0,
+	rarity: ItemRarity.COMMON,
+	itemCategory: ItemCategory.WEAPON,
 	itemLevel: 2,
 	attack: {baseValue: 1, upgradeValue: 2, maxValue: 3},
 	defense: {baseValue: 1, upgradeValue: 2, maxValue: 3},
 	speed: {baseValue: 1, upgradeValue: 2, maxValue: 3}
-} as unknown as ItemWithDetails;
+};
 
 /** The offer Core builds when the small event also sells a recipe, with what the event gave folded in. */
 function recipeOffer(folded: Pick<ReactionCollectorRecipeShopSmallEventData, "source" | "farmer" | "ultimateFoodMerchant">): ReactionCollectorCreationPacket {
