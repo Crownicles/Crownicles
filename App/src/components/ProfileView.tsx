@@ -346,7 +346,7 @@ function Belongings({
 					? <EntryRow emblem={<TwemojiIcon emoji={AppIcons.getIcon("guild.icon")} size={GUILD_ROW_EMBLEM_SIZE} />} title={guild} subtitle={i18n.t("app:profile.fields.guild")} onPress={(): void => onGuild(guild)} testID="profile-guild" />
 					: null}
 				{guild && !onGuild ? <Fact label={iconLabel("guild.icon", i18n.t("app:profile.fields.guild"))} value={guild} /> : null}
-				{profile.pet ? <Fact label={iconLabel("petCommand.pet", i18n.t("app:profile.fields.pet"))} value={petLabel(profile)} /> : null}
+				{profile.pet ? <Fact label={iconLabel("navigation.pet", i18n.t("app:profile.fields.pet"))} value={petLabel(profile)} /> : null}
 			</ExpandableList>
 		</>
 	);
