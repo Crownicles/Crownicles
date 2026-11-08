@@ -27,6 +27,7 @@ import {
 	FIGHT_ACTION_MOTIONS, FIGHT_MOTIONS
 } from "@/src/display/FightMotion";
 import { FightGauge } from "@/src/components/FightGauge";
+import type { FighterActions } from "@/src/components/FightFighterCard";
 import { useCollectorAnswer } from "@/src/collectors/useCollectorAnswer";
 import { useFight } from "@/src/store/FightStore";
 import { fightActionName } from "@/src/display/Fight";
@@ -243,7 +244,7 @@ function powerOf(reaction: ReactionCollectorReaction | undefined): Pick<ActionOp
  * Every action of the fighter keeps the place the introduction gave it, enabled when the server offers it this turn;
  * a choice the introduction did not list comes after, so no reaction index is ever lost.
  */
-function actionOptions(collector: ReactionCollectorCreation, actions: [string, number][]): ActionOption[] {
+function actionOptions(collector: ReactionCollectorCreation, actions: FighterActions): ActionOption[] {
 	const options: ActionOption[] = actions.map(([id, cost]) => {
 		const index = collector.reactions.findIndex(reaction => reaction.type === FIGHT_REACTION_KINDS.ACTION && reaction.data.id === id);
 		return {
