@@ -132,8 +132,9 @@ export class ReactionCollectorInstance {
 		return this._context;
 	}
 
-	public isVisibleTo(keycloakId: string): boolean {
-		return this.visiblePlayerKeycloakIds.includes(keycloakId);
+	/** The players who see this collector in their pending choices: the one it was opened for, and those it involves. */
+	public get visibleKeycloakIds(): readonly string[] {
+		return this.visiblePlayerKeycloakIds;
 	}
 
 	private isReactionLimitReached(): boolean {
@@ -289,7 +290,7 @@ export abstract class ReactionCollectorController {
 	public static getCollectorsOfPlayer(keycloakId: string): ReactionCollectorInstance[] {
 		const result: ReactionCollectorInstance[] = [];
 		for (const collector of collectors.values()) {
-			if (!collector.hasEnded && collector.isVisibleTo(keycloakId)) {
+			if (!collector.hasEnded && collector.visibleKeycloakIds.includes(keycloakId)) {
 				result.push(collector);
 			}
 		}

@@ -462,6 +462,41 @@ type GiveItemOptions = {
 };
 
 /**
+ * Number of items of a category the player can carry, the bonus of their home included
+ * @param player
+ * @param category
+ */
+async function getMaxSlotsForCategory(player: Player, category: ItemCategory): Promise<number> {
+	const invInfo = await InventoryInfos.getOfPlayer(player.id);
+	const home = await Homes.getOfPlayer(player.id);
+	const homeBonus = home?.getLevel()?.features.inventoryBonus;
+	return invInfo.slotLimitForCategory(category) + (homeBonus ? getSlotCountForCategory(homeBonus, category) : 0);
+}
+
+/**
+ * Whether a found item is sold at once: every slot of its category already holds the very same item, unless it is a potion the player could drink
+ * @param item
+ * @param categorySlots - the slots of the player holding an item of the same category
+ * @param slotData - the level and enchantment of the found item
+ */
+function isSoldAtOnce(item: GenericItem, categorySlots: InventorySlot[], slotData: ItemSlotData): boolean {
+	if (item.getCategory() === ItemCategory.POTION && !(item as Potion).isFightPotion()) {
+		return false;
+	}
+	return categorySlots.every((slot: InventorySlot) => itemSlotDataEquals(slot, slotData));
+}
+
+/**
+ * The slot a found item would take the place of: the equipped one when the category has a single slot, the first backup one otherwise
+ * @param inventorySlots
+ * @param category
+ * @param maxSlots
+ */
+function getItemToReplace(inventorySlots: InventorySlot[], category: ItemCategory, maxSlots: number): InventorySlot {
+	return inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
+}
+
+/**
  * Gives an item to a player
  * @param response
  * @param context
@@ -509,18 +544,11 @@ export async function giveItemToPlayer(
 	}
 
 	const category = item.getCategory();
-	const invInfo = await InventoryInfos.getOfPlayer(player.id);
-	const home = await Homes.getOfPlayer(player.id);
-	const homeBonus = home?.getLevel()?.features.inventoryBonus;
-	const maxSlots = invInfo.slotLimitForCategory(category) + (homeBonus ? getSlotCountForCategory(homeBonus, category) : 0);
+	const maxSlots = await getMaxSlotsForCategory(player, category);
 	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category);
-	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
 	const canDrinkThisPotion = canPotionBeDrunkImmediately(item, canDrinkImmediately);
-	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion() // Because we can't drink immediately these potions
-		? items.length === items.filter((slot: InventorySlot) => itemSlotDataEquals(slot, slotData)).length
-		: false;
 
-	if (autoSell) {
+	if (isSoldAtOnce(item, items, slotData)) {
 		await sellOrKeepItem(response, whoIsConcerned, {
 			itemToGive
 		}, {
@@ -540,6 +568,7 @@ export async function giveItemToPlayer(
 		return;
 	}
 
+	const itemToReplace = getItemToReplace(inventorySlots, category, maxSlots);
 	const itemToReplaceInstance = itemToReplace.getItem()!;
 
 	response.push(new ReactionCollectorInstance(
