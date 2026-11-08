@@ -1,7 +1,9 @@
 import {
 	act, fireEvent, render, screen, waitFor, within
 } from "@testing-library/react-native";
-import { Animated } from "react-native";
+import {
+	Animated, Linking
+} from "react-native";
 import { TRAVEL_DASH_MS } from "@/src/store/TravelDashStore";
 import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
 import { ReportTravelSummaryRes } from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
@@ -574,6 +576,18 @@ describe("Adventure screen", () => {
 
 		expect(screen.getByText("Garder de l'argent de côté est judicieux.")).toBeTruthy();
 		expect(screen.queryByText("Utilisez la commande /idea !")).toBeNull();
+	});
+
+	it("opens the link written in a travel advice in the browser", async () => {
+		jest.mocked(i18n.tArrayWithoutCommands).mockReturnValue(["Vous voulez apprendre à jouer ? Lisez le guide du joueur ! https://guide.crownicles.com/"]);
+		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+		mockReport();
+
+		await render(<Adventure />);
+		await fireEvent.press(screen.getByRole("link", { name: "https://guide.crownicles.com/" }));
+
+		expect(openURL).toHaveBeenCalledWith("https://guide.crownicles.com/");
+		openURL.mockRestore();
 	});
 
 	it("names the last mini-event in the title, like the Discord report does", async () => {

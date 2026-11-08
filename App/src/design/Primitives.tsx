@@ -10,6 +10,7 @@ import { Theme } from "@/src/design/Theme";
 import { LucideIcon } from "@/src/design/FightIcons";
 import { TwemojiIcon } from "@/src/design/TwemojiIcon";
 import { TwemojiText } from "@/src/design/TwemojiText";
+import { StoryText } from "@/src/design/Story";
 import { useReducedMotion } from "@/src/store/useReducedMotion";
 import {
 	KeyboardRevealProvider, useKeyboardAvoidance
@@ -375,6 +376,12 @@ export function SectionHeader({
 export function Note({ children }: { children: string }): ReactNode {
 	const styles = useStyles();
 	return <TwemojiText containerStyle={styles.note} textStyle={styles.noteText} emojiSize={Theme.fontSize.note}>{children}</TwemojiText>;
+}
+
+/** A game text set aside like a note, a travel advice for one: it keeps its emphasis, and its links still open. */
+export function StoryNote({ children }: { children: string }): ReactNode {
+	const styles = useStyles();
+	return <View style={styles.note}><StoryText style={styles.noteText} emojiSize={Theme.fontSize.note}>{children}</StoryText></View>;
 }
 
 function getButtonStyle(styles: PrimitiveStyles, variant: ButtonVariant, disabled: boolean, pressed = false): StyleProp<ViewStyle> {

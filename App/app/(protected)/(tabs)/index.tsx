@@ -58,7 +58,7 @@ import { SmallEventChoiceOutcome as SmallEventChoiceOutcomeScreen } from "@/src/
 import { ShopResultScreen } from "@/src/collectors/ShopResultScreen";
 import { AutomaticSmallEventOutcome as AutomaticSmallEventOutcomeScreen } from "@/src/collectors/AutomaticSmallEventOutcome";
 import {
-	EmptyState, Note, QuickAction, QuickActions, Screen
+	EmptyState, Note, QuickAction, QuickActions, Screen, StoryNote
 } from "@/src/design/Primitives";
 import {
 	ActionBanner, Figure, Figures, Standing
@@ -81,7 +81,6 @@ import { useScreenFocused } from "@/src/store/useScreenFocused";
 import {
 	TRAVEL_DASH_MS, travelDashStore
 } from "@/src/store/TravelDashStore";
-import { plainStory } from "@/src/display/Markdown";
 import { useReducedMotion } from "@/src/store/useReducedMotion";
 import {
 	SilentAnswer, useReportShortcut
@@ -385,7 +384,7 @@ function hasNextStop(packet: ReportTravelSummaryRes): boolean {
  */
 function travelAdvice(stopTime: number): string {
 	const advices = i18n.tArrayWithoutCommands("advices:advices");
-	return advices.length === 0 ? "" : plainStory(advices[Math.abs(stopTime) % advices.length]);
+	return advices.length === 0 ? "" : advices[Math.abs(stopTime) % advices.length];
 }
 
 /** A newcomer already has the guide to follow; the advices wait until they find their feet. */
@@ -1013,7 +1012,7 @@ function AdventureSheet({
 			<AdventureHeader packet={packet} dash={dash} cure={cure} />
 			<AdventureActions packet={packet} actions={actions} />
 			{contestRunning ? <ContestTips packet={packet} reportReady={actions.reportReady} /> : null}
-			{advice ? <Note>{advice}</Note> : null}
+			{advice ? <StoryNote>{advice}</StoryNote> : null}
 			<MissionRewardsBanner />
 			{tools}
 		</Screen>
