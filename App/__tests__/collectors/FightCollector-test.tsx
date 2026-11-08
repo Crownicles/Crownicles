@@ -82,6 +82,28 @@ describe("fight collectors", () => {
 		await fireEvent.press(screen.getByText("models:fight_actions.simpleAttack.name"));
 		expect(choose).toHaveBeenCalledWith(1);
 	});
+	it("shows the current power of an action that wears down during the fight, and only on that action", async () => {
+		const collector = Object.assign(new ReactionCollectorCreation(), {
+			id: "worn-turn",
+			endTime: Date.now() + 60_000,
+			data: {
+				type: "fightAction", data: { fightId: "duel" }
+			},
+			reactions: [
+				{
+					type: "fightAction",
+					data: {
+						id: "darkAttack", powerMultiplier: 0.8
+					}
+				}, {
+					type: "fightAction", data: { id: "simpleAttack" }
+				}
+			]
+		});
+		await render(<FightActions collector={collector} onChoose={jest.fn()} submitting={false} />);
+		expect(screen.getAllByText("app:battle.powerMultiplier")).toHaveLength(1);
+		expect(within(screen.getByRole("button", { name: "models:fight_actions.darkAttack.name" })).getByText("app:battle.powerMultiplier")).toBeTruthy();
+	});
 	it("lets the player cancel preparation at the original refusal index", async () => {
 		const collector = Object.assign(new ReactionCollectorCreation(), {
 			id: "confirm",

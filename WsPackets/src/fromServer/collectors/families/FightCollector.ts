@@ -9,7 +9,12 @@ declare module "../ReactionCollectorProtocol" {
 		fightAction: { fightId: string };
 	}
 	interface ReactionCollectorReactionPayloads {
-		fightAction: { id: string };
+		fightAction: {
+			id: string;
+
+			/** Damage multiplier of an action whose power changes during the fight (the dark attack wears down with each use). */
+			powerMultiplier?: number;
+		};
 	}
 }
 export const FIGHT_DATA_KINDS = {

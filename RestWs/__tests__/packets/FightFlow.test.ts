@@ -23,9 +23,9 @@ describe("fight protocol", () => {
 		expect(JSON.parse(JSON.stringify(packet))).toEqual({});
 	});
 	it("keeps original action positions without publishing the fighter identity", () => {
-		const result = mapCollectorCreation(new ReactionCollectorFightChooseAction("duel", "private-self", ["quickAttack", "rest", "simpleAttack"]).creationPacket("choices", 1_900_000_000_000));
+		const result = mapCollectorCreation(new ReactionCollectorFightChooseAction("duel", "private-self", [{id: "quickAttack"}, {id: "rest"}, {id: "darkAttack", powerMultiplier: 0.8}]).creationPacket("choices", 1_900_000_000_000));
 		expect(result.data).toEqual({type: "fightAction", data: {fightId: "duel"}});
-		expect(result.reactions.map(reaction => reaction.data)).toEqual([{id: "quickAttack"}, {id: "rest"}, {id: "simpleAttack"}]);
+		expect(result.reactions.map(reaction => reaction.data)).toEqual([{id: "quickAttack"}, {id: "rest"}, {id: "darkAttack", powerMultiplier: 0.8}]);
 		expect(JSON.stringify(result)).not.toContain("private-self");
 	});
 	it("resolves participants while preserving the current fighter and statistics", async () => {

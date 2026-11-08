@@ -1336,7 +1336,7 @@
     "versus": "VS", "level": "Niv. {{level}}", "shortTurn": "Tour {{turn}}", "seconds": "{{seconds}} s", "availableBreath": "Disponible",
     "breathRegen_one": "+{{count}} au prochain tour", "breathRegen_other": "+{{count}} au prochain tour",
     "actions": "Vos actions", "chooseAction": "À vous de jouer", "wait": "En attente", "ready": "Choisissez votre action", "opening": "Le combat commence", "preparing": "Les combattants se préparent…",
-    "unavailable": "Indisponible", "actionDetails": "Détail : {{action}}", "critical": "Critique", "missed": "Manqué", "noEffect": "Sans effet",
+    "unavailable": "Indisponible", "actionDetails": "Détail : {{action}}", "powerMultiplier": "×{{multiplier, number}} de puissance", "critical": "Critique", "missed": "Manqué", "noEffect": "Sans effet",
     "finishedAgainst": "Face à {{opponent}} · {{turns}} tours", "returnToArena": "Retour à l'arène",
     "monsterReward": {
       "experience": "Expérience",

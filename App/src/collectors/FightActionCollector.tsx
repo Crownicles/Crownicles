@@ -117,13 +117,13 @@ const useStyles = createStyles(colors => ({
 
 const URGENT_REMAINING_SECONDS = 10;
 type ActionOption = {
-	id?: string; index: number; cost?: number;
+	id?: string; index: number; cost?: number; powerMultiplier?: number;
 };
 
 function FightActionButton({
-	actionId, cost, disabled, onPress, onDetails
+	actionId, cost, powerMultiplier, disabled, onPress, onDetails
 }: {
-	actionId: string; cost?: number; disabled: boolean; onPress: () => void; onDetails: () => void;
+	actionId: string; cost?: number; powerMultiplier?: number; disabled: boolean; onPress: () => void; onDetails: () => void;
 }): ReactNode {
 	const styles = useStyles();
 	const colors = useColors();
@@ -142,7 +142,10 @@ function FightActionButton({
 				{icon ? <TwemojiIcon emoji={icon} size={compact ? 17 : 20} /> : null}
 				<Text style={[styles.label, compact && styles.compactLabel]} numberOfLines={2}>{fightActionName(actionId)}</Text>
 			</View>
-			<View style={styles.foot}>{cost === undefined ? null : <><Wind size={12} color={colors.blue} /><Text style={styles.cost}>{i18n.t("app:arena.actionBreath", { value: cost })}</Text></>}</View>
+			<View style={styles.foot}>
+				{cost === undefined ? null : <><Wind size={12} color={colors.blue} /><Text style={styles.cost}>{i18n.t("app:arena.actionBreath", { value: cost })}</Text></>}
+				{powerMultiplier === undefined ? null : <><Swords size={12} color={colors.muted} /><Text style={styles.cost}>{i18n.t("app:battle.powerMultiplier", { multiplier: powerMultiplier })}</Text></>}
+			</View>
 		</Pressable>
 		<View style={styles.info}><FightIconButton icon={Info} label={i18n.t("app:battle.actionDetails", { action: fightActionName(actionId) })} onPress={onDetails} /></View>
 	</View>;
@@ -203,6 +206,7 @@ function ActionGrid({
 					key={actionId}
 					actionId={actionId}
 					{...(option.cost === undefined ? {} : { cost: option.cost })}
+					{...(option.powerMultiplier === undefined ? {} : { powerMultiplier: option.powerMultiplier })}
 					disabled={locked || option.index < 0}
 					onPress={(): void => onChoose(option.index)}
 					onDetails={(): void => setDetails(actionId)}
@@ -229,16 +233,21 @@ export function FightActions({
 	} = useCollectorAnswer(collector, onChoose, submitting);
 	const { introduction } = useFight();
 	const actions = introduction?.initiatorActions ?? [];
-	const options: ActionOption[] = actions.map(([id, cost]) => ({
-		id, cost, index: collector.reactions.findIndex(reaction => reaction.type === FIGHT_REACTION_KINDS.ACTION && reaction.data.id === id)
-	}));
+	const options: ActionOption[] = actions.map(([id, cost]) => {
+		const index = collector.reactions.findIndex(reaction => reaction.type === FIGHT_REACTION_KINDS.ACTION && reaction.data.id === id);
+		const reaction = collector.reactions[index];
+		const powerMultiplier = reaction?.type === FIGHT_REACTION_KINDS.ACTION ? reaction.data.powerMultiplier : undefined;
+		return {
+			id, cost, index, ...powerMultiplier === undefined ? {} : { powerMultiplier }
+		};
+	});
 	collector.reactions.forEach((reaction, index) => {
 		if (reaction.type !== FIGHT_REACTION_KINDS.ACTION) {
 			options.push({ index });
 		}
 		else if (!actions.some(([id]) => id === reaction.data.id)) {
 			options.push({
-				id: reaction.data.id, index
+				id: reaction.data.id, index, ...reaction.data.powerMultiplier === undefined ? {} : { powerMultiplier: reaction.data.powerMultiplier }
 			});
 		}
 	});
