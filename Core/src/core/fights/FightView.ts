@@ -283,6 +283,9 @@ export class FightView {
 		);
 
 		const endCallback: EndCallback = async (collector, response) => {
+			if (this.fightController.hadEnded()) {
+				return;
+			}
 			const reaction = collector.getFirstReaction();
 			if (!reaction) {
 				playerFighter.kill();
