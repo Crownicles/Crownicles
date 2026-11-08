@@ -57,7 +57,7 @@ import {
 } from "@/src/design/ThemeTransition";
 import { TwemojiIcon } from "@/src/design/TwemojiIcon";
 import {
-	AtSign, BookOpen, KeyRound, LogOut, Shield, UserRound
+	AtSign, BookOpen, KeyRound, LogOut, Shield
 } from "@/src/design/FightIcons";
 import { AppConstants } from "@/src/AppConstants";
 import { Theme } from "@/src/design/Theme";
@@ -280,8 +280,12 @@ function AccountSettings(): ReactNode {
 				disabled={passwordChange.running || sessionExit.pending}
 				onPress={passwordChange.start}
 			/>
-			<EntryRow emblem={<UserRound size={ROW_EMBLEM_SIZE} />} title={i18n.t("app:settings.changeAccount")} disabled={sessionExit.pending} onPress={sessionExit.leave} />
-			<EntryRow title={i18n.t("app:common.logout")} disabled={sessionExit.pending} onPress={(): void => setLeaving(true)} />
+			<EntryRow
+				title={i18n.t("app:common.logout")}
+				subtitle={i18n.t("app:settings.logoutHint")}
+				disabled={sessionExit.pending}
+				onPress={(): void => setLeaving(true)}
+			/>
 			<EntryRow title={i18n.t("app:settings.deleteAccount.entry")} disabled={sessionExit.pending} danger onPress={(): void => router.push("/settings/delete-account")} />
 		</ExpandableList>
 		<AccountFeedback emailChange={emailChange} passwordChange={passwordChange} sessionExit={sessionExit} logoutOpen={leaving} />

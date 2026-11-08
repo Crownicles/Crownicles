@@ -54,6 +54,7 @@ describe("session coordinator", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		jest.mocked(RestApi.checkAccountCollision).mockResolvedValue({collision: null});
+		jest.spyOn(KeycloakAuth, "endSession").mockResolvedValue(undefined);
 	});
 	afterEach(() => jest.restoreAllMocks());
 
@@ -238,6 +239,51 @@ describe("session coordinator", () => {
 		await session.leave();
 		expect(socket.close).toHaveBeenCalledTimes(closes + 1);
 		expect(events.state).toHaveBeenLastCalledWith(AuthStateEnum.NO_TOKEN);
+	});
+
+	it("ends the account on Keycloak once the device forgot it, so the next sign-in starts from no account", async () => {
+		const {
+			session, storage, events, report
+		} = harness();
+		await session.enter(token("left-access"));
+		report(AuthStateEnum.LOGGED_IN);
+		await session.leave();
+		expect(KeycloakAuth.endSession).toHaveBeenCalledWith("left-access-refresh");
+		expect(storage.clear.mock.invocationCallOrder[0]).toBeLessThan(jest.mocked(KeycloakAuth.endSession).mock.invocationCallOrder[0]);
+		expect(events.state).toHaveBeenLastCalledWith(AuthStateEnum.NO_TOKEN);
+	});
+
+	it("keeps the account open on Keycloak while the device cannot forget it", async () => {
+		const {
+			session, storage, report
+		} = harness();
+		await session.enter(token());
+		report(AuthStateEnum.LOGGED_IN);
+		storage.clear.mockRejectedValueOnce(new Error("keychain unavailable"));
+		await expect(session.leave()).rejects.toThrow("keychain unavailable");
+		expect(KeycloakAuth.endSession).not.toHaveBeenCalled();
+	});
+
+	it("ends on Keycloak an account left before its session opened", async () => {
+		const { session } = harness();
+		jest.mocked(RestApi.checkAccountCollision).mockResolvedValueOnce(COLLISION);
+		await session.enter(token("discord-access"));
+		await session.leave();
+		expect(KeycloakAuth.endSession).toHaveBeenCalledWith("discord-access-refresh");
+	});
+
+	it("signs the player out of the device even when Keycloak cannot be reached", async () => {
+		const {
+			session, events, report
+		} = harness();
+		const warn = jest.spyOn(console, "warn").mockImplementation(() => undefined);
+		jest.mocked(KeycloakAuth.endSession).mockRejectedValueOnce(new TypeError("Network unavailable"));
+		await session.enter(token());
+		report(AuthStateEnum.LOGGED_IN);
+		await session.leave();
+		await flush();
+		expect(events.state).toHaveBeenLastCalledWith(AuthStateEnum.NO_TOKEN);
+		expect(warn).toHaveBeenCalledWith("The session could not be ended on Keycloak", expect.any(TypeError));
 	});
 
 	it("does not save a rotated token while the device is forgetting the session", async () => {

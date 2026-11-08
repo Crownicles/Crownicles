@@ -304,7 +304,7 @@
     },
     "ping": "Ping",
     "pingValue": "{{value}} ms",
-    "changeAccount": "Changer de compte",
+    "logoutHint": "Revenir à l'écran de connexion, pour reprendre ce compte ou en utiliser un autre.",
     "leavingAccount": "Fermeture de la session en cours…",
     "changeAccountFailed": "La session n'a pas pu être fermée. Réessayez dans un instant.",
     "email": {

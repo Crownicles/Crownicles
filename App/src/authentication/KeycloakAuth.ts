@@ -151,12 +151,16 @@ function getRealmUrl(): string {
 	return `${url}/realms/${realm}`;
 }
 
+function getEndSessionEndpoint(): string {
+	return `${getRealmUrl()}/protocol/openid-connect/logout`;
+}
+
 function getDiscovery(): DiscoveryDocument {
 	const realmUrl = getRealmUrl();
 	return {
 		authorizationEndpoint: `${realmUrl}/protocol/openid-connect/auth`,
 		tokenEndpoint: `${realmUrl}/protocol/openid-connect/token`,
-		endSessionEndpoint: `${realmUrl}/protocol/openid-connect/logout`
+		endSessionEndpoint: getEndSessionEndpoint()
 	};
 }
 
@@ -329,6 +333,27 @@ export class KeycloakAuth {
 			redirect_uri: getRedirectUri(),
 			code_verifier: request.codeVerifier ?? ""
 		});
+	}
+
+	/**
+	 * Ends on Keycloak the session this refresh token belongs to, the browser sign-in it came from included: a browser that
+	 * kept its cookie, as an Android custom tab does, would otherwise offer that account again, or refuse another one.
+	 */
+	public static async endSession(refreshToken: string): Promise<void> {
+		const response = await fetch(getEndSessionEndpoint(), {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded"
+			},
+			body: new URLSearchParams({
+				client_id: getClientId(),
+				refresh_token: refreshToken
+			}).toString()
+		});
+
+		if (!response.ok) {
+			throw new AuthFailure(AUTH_FAILURES.UNREACHABLE, `Keycloak logout request failed with status ${response.status}`);
+		}
 	}
 
 	public static refresh(refreshToken: string): Promise<KeycloakOAuth2Token> {
