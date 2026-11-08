@@ -11,12 +11,9 @@ import { translateSmallEventResult } from "../packets/fromServer/translators/Sma
 import { SmallEventResultRes } from "../../../WsPackets/src/fromServer/smallEvents/SmallEventResultRes";
 import { FromServerPacket } from "../../../WsPackets/src/fromServer/FromServerPacket";
 import { MqttManager } from "./MqttManager";
-
-/** A packet as Core publishes it for a WebSocket front. */
-type CorePacket = {
-	name: string;
-	packet: CrowniclesPacket;
-};
+import {
+	CorePacket, unfoldSmallEventOutcome
+} from "../packets/fromServer/collectors/FoldedSmallEventOutcomes";
 
 /** A packet as the app receives it, tied to the request it answers. */
 type ClientPacket = {
@@ -90,7 +87,7 @@ export class GlobalMqttClient extends RestWsMqttClient {
 
 		// Translate the packets to the client format
 		const translatedPackets: ClientPacket[] = [];
-		for (const packet of dataJson.packets as CorePacket[]) {
+		for (const packet of (dataJson.packets as CorePacket[]).flatMap(unfoldSmallEventOutcome)) {
 			const translated = await translateForClient(context, packet);
 			if (translated) {
 				translatedPackets.push(translated);

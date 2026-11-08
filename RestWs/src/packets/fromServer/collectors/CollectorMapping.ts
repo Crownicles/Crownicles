@@ -20,7 +20,7 @@ import {
  * the class in Lib then breaks this file at compile time, instead of silently emitting a payload
  * that installed clients no longer recognise.
  */
-type LibClassRef<Instance> = {
+export type LibClassRef<Instance> = {
 	readonly name: string;
 	readonly prototype: Instance;
 };

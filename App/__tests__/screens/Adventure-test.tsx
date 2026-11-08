@@ -27,7 +27,7 @@ import {
 } from "@/src/store/GameEntities";
 import { GameClient } from "@/src/networking/GameClient";
 import {
-	CITY_DATA_KINDS, CITY_REACTION_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, SMALL_EVENT_DATA_KINDS
+	CITY_DATA_KINDS, CITY_REACTION_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, SMALL_EVENT_DATA_KINDS, SMALL_EVENT_RECIPE_SHOP_SOURCES
 } from "ws-packets/src/fromServer/collectors";
 import { AppIcons } from "@/src/AppIcons";
 import { usePlayerProfile } from "@/src/store/usePlayerProfile";
@@ -910,6 +910,49 @@ describe("Adventure screen", () => {
 		expect(reportEventStore.getSnapshot()).toBeNull();
 		expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: gameKey(GAME_ENTITIES.REPORT) });
 		expect(mockQueryClient.invalidateQueries).toHaveBeenCalledWith({ queryKey: gameKey(GAME_ENTITIES.PROFILE) });
+	});
+
+	it("tells what Gaspard-Jo gave, then offers his recipe once the player moves on, as Discord tells both", async () => {
+		mockReport();
+		const offer: ReactionCollectorCreation = {
+			id: "recipe-offer",
+			endTime: Date.now() + 60_000,
+			data: {
+				type: SMALL_EVENT_DATA_KINDS.RECIPE_SHOP,
+				data: {
+					source: SMALL_EVENT_RECIPE_SHOP_SOURCES.GASPARD_JO,
+					recipe: {
+						recipeId: "championFeast", level: 7, recipeType: "PETFOOD_ULTIMATE"
+					},
+					recipeCost: 350
+				}
+			},
+			reactions: [
+				{
+					type: GENERIC_REACTION_KINDS.ACCEPT, data: {}
+				}, {
+					type: GENERIC_REACTION_KINDS.REFUSE, data: {}
+				}
+			]
+		};
+
+		// RestWs sends the outcome Core folded into the offer just before the offer itself.
+		await render(<Adventure />);
+		await act(async () => pushFromCore(SmallEventResultRes.wireName, {
+			eventName: "SmallEventUltimateFoodMerchantPacket", data: { interactionName: "item" }
+		}));
+		mockedUseCollectors.mockReturnValue({
+			open: [offer], track: jest.fn(), react: jest.fn(), isAnswerPending: jest.fn(() => false), answerWithoutShowing: jest.fn()
+		});
+		await screen.rerender(<Adventure />);
+
+		expect(screen.getByText(/smallEvents:ultimateFoodMerchant\.rewards\.item:only/)).toBeTruthy();
+		expect(screen.queryByText(/smallEvents:recipeShop\.offer\.gaspardJo/)).toBeNull();
+
+		await fireEvent.press(screen.getByText("app:adventure.smallEvent.continue"));
+
+		expect(screen.getByText(/smallEvents:recipeShop\.offer\.gaspardJo/)).toBeTruthy();
+		expect(screen.queryByText(/smallEvents:ultimateFoodMerchant\.rewards/)).toBeNull();
 	});
 
 	it("plays the cure on the emblem before opening the heal result", async () => {
