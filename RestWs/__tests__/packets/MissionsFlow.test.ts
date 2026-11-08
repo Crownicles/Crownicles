@@ -3,6 +3,7 @@ import { makePacket, PacketContext } from "../../../Lib/src/packets/CrowniclesPa
 import { CommandMissionPlayerNotFoundPacket, CommandMissionsPacketReq, CommandMissionsPacketRes } from "../../../Lib/src/packets/commands/CommandMissionsPacket";
 import { MissionType } from "../../../Lib/src/types/CompletedMission";
 import { asMilliseconds } from "../../../Lib/src/types/TimeTypes";
+import { KingChallengeProgress } from "../../../Lib/src/types/KingChallenge";
 import { MissionsReq } from "../../../WsPackets/src/fromClient/MissionsReq";
 import { PlayerNotFound } from "../../../WsPackets/src/fromServer/common/PlayerNotFound";
 import MissionsCommandClientTranslator from "../../src/packets/fromClient/translators/MissionsCommandClientTranslator";
@@ -12,6 +13,13 @@ import { MissionsCompletedPacket } from "../../../Lib/src/packets/events/Mission
 import { MissionsCompletedRes } from "../../../WsPackets/src/fromServer/missions/MissionsCompletedRes";
 
 const CONTEXT: PacketContext = { frontEndOrigin: "websocket", frontEndSubOrigin: "", keycloakId: "authenticated-player", webSocket: {} };
+
+const KING_CHALLENGE: KingChallengeProgress = {
+	weeklyScore: 4_250,
+	tier: 2,
+	thresholds: [2_000, 3_100, 4_800, 7_400, 11_400, 17_600, 27_200, 39_400],
+	nextResetDate: asMilliseconds(1_900_400_000_000)
+};
 
 describe("missions over WebSocket", () => {
 	it("resolves self from the authenticated context and preserves rank lookup", async () => {
@@ -39,12 +47,32 @@ describe("missions over WebSocket", () => {
 			campaignProgression: 8,
 			maxCampaignNumber: 150,
 			maxSideMissionSlots: 2,
-			dailyMission: { completed: true, resetsAt: asMilliseconds(1_900_000_000_000) }
+			dailyMission: { completed: true, resetsAt: asMilliseconds(1_900_000_000_000) },
+			kingChallenge: KING_CHALLENGE
 		});
 		const result = await MissionsCommandServerTranslator.translate(CONTEXT, JSON.parse(JSON.stringify(packet)));
 		expect(result.missions.map(mission => mission.missionType)).toEqual(["sideMission", "daily", "campaign"]);
 		expect(result.dailyMission).toEqual({ completed: true, resetsAt: 1_900_000_000_000 });
 		expect(result).not.toHaveProperty("keycloakId");
+	});
+
+	it("carries the king's challenge of the week, with the absolute date it starts over", async () => {
+		const packet = makePacket(CommandMissionsPacketRes, {
+			keycloakId: "private-id",
+			missions: [],
+			campaignProgression: 0,
+			maxCampaignNumber: 150,
+			maxSideMissionSlots: 2,
+			dailyMission: { completed: false, resetsAt: asMilliseconds(1_900_000_000_000) },
+			kingChallenge: KING_CHALLENGE
+		});
+		const result = await MissionsCommandServerTranslator.translate(CONTEXT, JSON.parse(JSON.stringify(packet)));
+		expect(result.kingChallenge).toEqual({
+			weeklyScore: 4_250,
+			tier: 2,
+			thresholds: [2_000, 3_100, 4_800, 7_400, 11_400, 17_600, 27_200, 39_400],
+			nextResetDate: 1_900_400_000_000
+		});
 	});
 
 	it("decodes a journey using the shared server format", async () => {
@@ -57,7 +85,8 @@ describe("missions over WebSocket", () => {
 			campaignProgression: 0,
 			maxCampaignNumber: 150,
 			maxSideMissionSlots: 2,
-			dailyMission: { completed: false, resetsAt: asMilliseconds(1_900_000_000_000) }
+			dailyMission: { completed: false, resetsAt: asMilliseconds(1_900_000_000_000) },
+			kingChallenge: KING_CHALLENGE
 		});
 		const result = await MissionsCommandServerTranslator.translate(CONTEXT, packet);
 		expect(result.missions[0].travel).toEqual({ fromMap: 12, toMap: 33, time: 6, orderMatter: true, progress: { startTimestamp: 1_900_000_000_000, startMap: 12 } });

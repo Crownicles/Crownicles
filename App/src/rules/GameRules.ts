@@ -12,7 +12,8 @@ const GAME_RULES_SECTIONS: Record<keyof GameRules, true> = {
 	friendlyFight: true,
 	cooldownHours: true,
 	apartment: true,
-	onboardingTrials: true
+	onboardingTrials: true,
+	kingChallenge: true
 };
 
 export function hasEveryGameRule(rules: Record<string, unknown>): boolean {

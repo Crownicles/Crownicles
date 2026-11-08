@@ -139,6 +139,14 @@ import {
 } from "../../../WsPackets/src/fromClient/CookingReq";
 import { CookingMenu } from "../../../WsPackets/src/objects/Cooking";
 import { ClassesInfoRes } from "../../../WsPackets/src/fromServer/classes/ClassesInfoRes";
+import { KingChallengeTierReachedPacket } from "../../../Lib/src/packets/events/KingChallengeTierReachedPacket";
+import {
+	KingChallengeProgress as LibKingChallengeProgress, KingChallengeReward as LibKingChallengeReward
+} from "../../../Lib/src/types/KingChallenge";
+import { KingChallengeTierReachedRes } from "../../../WsPackets/src/fromServer/missions/KingChallengeTierReachedRes";
+import {
+	KingChallengeProgress, KingChallengeReward
+} from "../../../WsPackets/src/objects/KingChallenge";
 import {
 	AvailableClass, ClassStats, ClassKind
 } from "../../../WsPackets/src/objects/ClassDetails";
@@ -352,6 +360,14 @@ type DefenseRecordContract = Assert<IsEqual<WireShape<DefenseRecordByAttackerCla
 // The roll of honour names players by an opaque handle instead of their account: only its other fields keep Core's shape
 type KingGuardFightStatsContract = Assert<IsEqual<WireShape<Omit<LibKingGuardFightStats, "leaderboard">>, WireShape<Omit<KingGuardFightStats, "leaderboard">>>>;
 type KingGuardPersonalRecordContract = Assert<IsEqual<WireShape<LibKingGuardPersonalRecord>, WireShape<KingGuardPersonalRecord>>>;
+type KingChallengeProgressContract = Assert<IsEqual<WireShape<LibKingChallengeProgress>, WireShape<KingChallengeProgress>>>;
+type KingChallengeRewardContract = Assert<IsEqual<WireShape<LibKingChallengeReward>, WireShape<KingChallengeReward>>>;
+
+/** The points to the next tier are left out: the missions show the whole ladder, one tap away from the toast. */
+type KingChallengeTierReachedContract = Assert<IsEqual<
+	WireShape<Omit<KingChallengeTierReachedPacket, "keycloakId" | "pointsToNextTier">>,
+	WireShape<Omit<WirePacketFields<KingChallengeTierReachedRes>, "self">>
+>>;
 
 export const packetContractChecks: {
 	classesInfo: ClassesInfoContract;
@@ -370,6 +386,9 @@ export const packetContractChecks: {
 	defenseRecord: DefenseRecordContract;
 	kingGuardFightStats: KingGuardFightStatsContract;
 	kingGuardPersonalRecord: KingGuardPersonalRecordContract;
+	kingChallengeProgress: KingChallengeProgressContract;
+	kingChallengeReward: KingChallengeRewardContract;
+	kingChallengeTierReached: KingChallengeTierReachedContract;
 	drinkRequest: DrinkRequestContract;
 	inventoryRequest: InventoryRequestContract;
 	petRequest: PetRequestContract;
@@ -439,6 +458,9 @@ export const packetContractChecks: {
 	defenseRecord: true,
 	kingGuardFightStats: true,
 	kingGuardPersonalRecord: true,
+	kingChallengeProgress: true,
+	kingChallengeReward: true,
+	kingChallengeTierReached: true,
 	drinkRequest: true,
 	inventoryRequest: true,
 	petRequest: true,

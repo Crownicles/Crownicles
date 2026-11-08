@@ -16,7 +16,13 @@ export default class MissionsCommandServerTranslator {
 			campaignProgression: packet.campaignProgression,
 			maxCampaignNumber: packet.maxCampaignNumber,
 			maxSideMissionSlots: packet.maxSideMissionSlots,
-			dailyMission: packet.dailyMission
+			dailyMission: packet.dailyMission,
+			kingChallenge: {
+				weeklyScore: packet.kingChallenge.weeklyScore,
+				tier: packet.kingChallenge.tier,
+				thresholds: packet.kingChallenge.thresholds,
+				nextResetDate: packet.kingChallenge.nextResetDate
+			}
 		});
 	}
 

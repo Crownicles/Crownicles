@@ -79,5 +79,22 @@ export const fakeGameRules: GameRules = {
 		{
 			id: ONBOARDING_TRIAL_IDS.PATH, missions: [ONBOARDING_MISSION_IDS.CHOOSE_CLASS]
 		}
-	]
+	],
+	kingChallenge: {
+		tierRewards: [
+			{
+				money: 750, tokens: 2, gems: 0
+			},
+			{
+				money: 1_250, tokens: 2, gems: 0
+			},
+			{
+				money: 1_750, tokens: 3, gems: 1
+			},
+			{
+				money: 10_000, tokens: 8, gems: 3
+			}
+		],
+		tokenCap: 20
+	}
 };

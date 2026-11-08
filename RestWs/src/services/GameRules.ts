@@ -15,6 +15,8 @@ import { PlayersConstants } from "../../../Lib/src/constants/PlayersConstants";
 import { HomeConstants } from "../../../Lib/src/constants/HomeConstants";
 import { GardenConstants } from "../../../Lib/src/constants/GardenConstants";
 import { TimeConstants } from "../../../Lib/src/constants/TimeConstants";
+import { KingChallengeConstants } from "../../../Lib/src/constants/KingChallengeConstants";
+import { TokensConstants } from "../../../Lib/src/constants/TokensConstants";
 
 function toWireTextRule(rule: TextRule): WireTextRule {
 	return {
@@ -68,6 +70,10 @@ export function buildGameRules(): GameRules {
 		onboardingTrials: ONBOARDING_TRIALS.map(trial => ({
 			id: trial.id,
 			missions: [...trial.missions]
-		}))
+		})),
+		kingChallenge: {
+			tierRewards: KingChallengeConstants.REWARDS.map(reward => ({ ...reward })),
+			tokenCap: TokensConstants.MAX
+		}
 	};
 }

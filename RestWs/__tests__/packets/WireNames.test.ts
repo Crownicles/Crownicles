@@ -99,6 +99,7 @@ const WIRE_NAMES = [
 	"MissionsReq",
 	"MissionsRes",
 	"MissionsCompletedRes",
+	"KingChallengeTierReachedRes",
 	"RoyalLetterRes",
 	"PetNotFound",
 	"PetReq",

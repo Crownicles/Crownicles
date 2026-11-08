@@ -12,6 +12,8 @@ import {
 } from "../../../WsPackets/src/objects/TextRules";
 import { buildGameRules } from "../../src/services/GameRules";
 import { FightConstants } from "../../../Lib/src/constants/FightConstants";
+import { KingChallengeConstants } from "../../../Lib/src/constants/KingChallengeConstants";
+import { TokensConstants } from "../../../Lib/src/constants/TokensConstants";
 
 const CORE_RULES: Record<TextRuleId, TextRule> = {
 	guildName: TextRuleConstants.GUILD_NAME,
@@ -52,5 +54,15 @@ describe("city cooldowns sent to the app", () => {
 		for (const hours of Object.values(buildGameRules().cooldownHours)) {
 			expect(Number.isInteger(hours) && hours > 0, String(hours)).toBe(true);
 		}
+	});
+});
+
+describe("king's challenge rules sent to the app", () => {
+	it("give a reward for every tier of the week, champion tier included, and Core's token cap", () => {
+		const rules = buildGameRules().kingChallenge;
+		const thresholds = KingChallengeConstants.computeThresholds(KingChallengeConstants.DEFAULT_REFERENCE_SCORES);
+		expect(rules.tierRewards).toHaveLength(thresholds.length);
+		expect(rules.tierRewards.at(-1)).toEqual(KingChallengeConstants.REWARDS.at(-1));
+		expect(rules.tokenCap).toBe(TokensConstants.MAX);
 	});
 });

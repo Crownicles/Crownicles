@@ -1,5 +1,6 @@
 import { OnboardingTrial } from "./Onboarding";
 import { JourneyLevels } from "./Journey";
+import { KingChallengeRules } from "./KingChallenge";
 import {
 	TextRule, TextRuleId
 } from "./TextRules";
@@ -54,4 +55,6 @@ export type GameRules = {
 
 	/** The royal contest trials, in campaign order. */
 	onboardingTrials: OnboardingTrial[];
+
+	kingChallenge: KingChallengeRules;
 };
