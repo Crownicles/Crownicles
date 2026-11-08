@@ -14,7 +14,12 @@ import {
 import { useOwnGuild } from "@/src/store/useGuild";
 import { useOwnPet } from "@/src/store/useKnownPet";
 import { useMissionRewards } from "@/src/store/MissionRewardsStore";
+import { usePlayerProfile } from "@/src/store/usePlayerProfile";
+import { useReportView } from "@/src/store/useReportActions";
 import { givesDailyBonus } from "@/src/display/ItemEffects";
+import {
+	LeagueClaimant, leagueRewardLock
+} from "@/src/display/Leagues";
 import { useCurrentTime } from "@/src/store/useCurrentTime";
 import {
 	JOURNEY_TABS, JourneyTab
@@ -54,9 +59,20 @@ export function dailyBonusClaimable(state: RequestState<InventoryRes>, now: numb
 	return givesDailyBonus(data.object) || data.backupObjects.some(entry => givesDailyBonus(entry.display));
 }
 
-/** Core says outright whether the season reward can be claimed. */
-export function leagueRewardClaimable(state: RequestState<LeagueInfoRes>): boolean {
-	return state.status === "ready" && state.data.rewardAvailability === null;
+/** The profile and the journey the reward command is checked against, read from the requests the tabs already share. */
+export function useLeagueClaimant(): LeagueClaimant {
+	const profile = usePlayerProfile();
+	const report = useReportView();
+	const travel = report.status === "ready" ? report.data.travel : undefined;
+	return {
+		profile: profile.status === "ready" ? profile.data : null,
+		...travel ? { travel } : {}
+	};
+}
+
+/** Only a reward the claim button would accept is pointed at, so the badge waits for the profile. */
+export function leagueRewardClaimable(state: RequestState<LeagueInfoRes>, claimant: LeagueClaimant): boolean {
+	return state.status === "ready" && claimant.profile !== null && !leagueRewardLock(state.data.rewardAvailability, claimant);
 }
 
 /** The guild reward waits once its delay ran out, unless a member exploring the island froze it. */
@@ -81,7 +97,7 @@ export function useDailyBonusToClaim(): number {
 }
 
 export function useLeagueRewardToClaim(): number {
-	return leagueRewardClaimable(useLeagueInfo()) ? 1 : 0;
+	return leagueRewardClaimable(useLeagueInfo(), useLeagueClaimant()) ? 1 : 0;
 }
 
 export function useGuildDailyToClaim(): number {

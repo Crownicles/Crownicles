@@ -4,6 +4,8 @@ import { LeagueInfoRes } from "ws-packets/src/fromServer/fight/RankingsRes";
 import { GuildRes } from "ws-packets/src/fromServer/guild/GuildRes";
 import { ItemNature } from "ws-packets/src/objects/ItemNature";
 import { PetRes } from "ws-packets/src/fromServer/pet/PetRes";
+import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
+import { ReportTravelSummaryRes } from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {
 	RequestState, useGameQuery
 } from "@/src/store/useGameQuery";
@@ -14,11 +16,13 @@ import {
 	GAME_ENTITIES, GameEntity
 } from "@/src/store/GameEntities";
 import { JOURNEY_TABS } from "@/src/journey/Journey";
+import { LeagueClaimant } from "@/src/display/Leagues";
 
 jest.mock("@/src/store/useGameQuery", () => ({ useGameQuery: jest.fn() }));
 jest.mock("@/src/store/MissionRewardsStore", () => ({ useMissionRewards: (): object => ({
 	rewards: { missions: [] }, unannounced: 0
 }) }));
+jest.mock("@/src/store/useReportActions", () => ({ useReportView: (): object => ({ status: "loading" }) }));
 
 const NOW = 1_000_000;
 const MONEY_OBJECT = {
@@ -69,6 +73,32 @@ function petAway(endTime: number): RequestState<PetRes> {
 	};
 }
 
+const NO_EFFECT = {
+	effect: "none", hasTimeDisplay: false, healed: false, timeLeft: 0
+};
+const OCCUPIED = {
+	effect: "occupied", hasTimeDisplay: true, healed: false, timeLeft: 8_400_000
+};
+
+function profileOf(profile: Partial<ProfileRes> = {}): ProfileRes {
+	return {
+		level: 30, effect: NO_EFFECT, ...profile
+	} as ProfileRes;
+}
+
+/** A player of level 30 free of any alteration and walking on the continent, unless the test says otherwise. */
+function claimantOf(profile: Partial<ProfileRes> = {}, travel?: Partial<ReportTravelSummaryRes>): LeagueClaimant {
+	return {
+		profile: profileOf(profile), ...travel ? { travel: travel as ReportTravelSummaryRes } : {}
+	};
+}
+
+function league(rewardAvailability: LeagueInfoRes["rewardAvailability"]): RequestState<LeagueInfoRes> {
+	return {
+		status: "ready", data: { rewardAvailability } as never
+	};
+}
+
 /** Only the pet is known: every other tab's reward is still loading. */
 function knowPet(pet: RequestState<PetRes>): void {
 	jest.mocked(useGameQuery).mockImplementation(((entity: GameEntity) => entity === GAME_ENTITIES.PET ? pet : { status: "loading" }) as typeof useGameQuery);
@@ -88,15 +118,25 @@ describe("claimable rewards", () => {
 	});
 
 	it("offers the season reward only when Core says it can be claimed", () => {
-		const league = (rewardAvailability: LeagueInfoRes["rewardAvailability"]): RequestState<LeagueInfoRes> => ({
-			status: "ready", data: { rewardAvailability } as never
-		});
-		expect(leagueRewardClaimable(league(null))).toBe(true);
-		expect(leagueRewardClaimable(league({ type: "alreadyClaimed" }))).toBe(false);
+		const claimant = claimantOf();
+		expect(leagueRewardClaimable(league(null), claimant)).toBe(true);
+		expect(leagueRewardClaimable(league({ type: "alreadyClaimed" }), claimant)).toBe(false);
 		expect(leagueRewardClaimable(league({
 			type: "notSunday", nextSunday: NOW
-		}))).toBe(false);
-		expect(leagueRewardClaimable({ status: "loading" })).toBe(false);
+		}), claimant)).toBe(false);
+		expect(leagueRewardClaimable({ status: "loading" }, claimant)).toBe(false);
+	});
+
+	it("does not point at a season reward the player could not claim right now", () => {
+		expect(leagueRewardClaimable(league(null), claimantOf({ effect: OCCUPIED }))).toBe(false);
+		expect(leagueRewardClaimable(league(null), claimantOf({ level: 7 }))).toBe(false);
+		expect(leagueRewardClaimable(league(null), claimantOf({}, { isOnBoat: true }))).toBe(false);
+		expect(leagueRewardClaimable(league(null), { profile: null })).toBe(false);
+		expect(leagueRewardClaimable(league(null), claimantOf({
+			effect: {
+				...OCCUPIED, healed: true
+			}
+		}, { isOnBoat: false }))).toBe(true);
 	});
 
 	it("offers the guild reward once due, unless the island froze it or there is no guild", () => {
