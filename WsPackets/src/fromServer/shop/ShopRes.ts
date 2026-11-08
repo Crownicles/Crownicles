@@ -102,6 +102,9 @@ export class ShopPetCheckupRes extends FromServerPacket {
 
 	public fightAssistId!: string;
 
+	/** Only the pets with a second fight power have one. */
+	public secondFightAssistId?: string;
+
 	public likedExpeditionTypes?: string[];
 
 	public dislikedExpeditionTypes?: string[];

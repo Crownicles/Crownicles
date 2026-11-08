@@ -71,6 +71,9 @@ export function petCheckupReport(pet: ShopPetCheckupRes): string {
 		feedDelay: formatDurationMinutes(pet.feedDelay / SECONDS_PER_MINUTE),
 		nextFeed: nextFeed(pet),
 		commentOnFightEffect: randomTranslation(`${KEY}.commentOnFightEffect.${pet.fightAssistId}`),
+		secondFightEffect: pet.secondFightAssistId
+			? i18n.t(`${KEY}.secondFightEffect`, { comment: randomTranslation(`${KEY}.commentOnFightEffect.${pet.secondFightAssistId}`) })
+			: "",
 		expeditionSection: expeditionSection(pet),
 		dwarfPet: dwarfAside(pet)
 	});
