@@ -86,6 +86,7 @@ export function translateProfileData(pseudo: string, playerData: ProfilePlayerDa
 		},
 		money: playerData.money,
 		...playerData.tokens ? { tokens: translateValueAndMax(playerData.tokens) } : {},
+		kingChallengeTier: playerData.kingChallengeTier,
 		...playerData.cooking ? { cooking: translateCooking(playerData.cooking) } : {},
 		effect: {
 			effect: playerData.effect.effect,

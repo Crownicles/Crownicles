@@ -19,7 +19,11 @@ export const CookingOutputType = {
 } as const;
 export type CookingOutput = typeof CookingOutputType[keyof typeof CookingOutputType];
 export const CookingCraftErrors = {
-	CRAFT_UNAVAILABLE: "craftUnavailable", INVENTORY_FULL: "inventoryFull", GUILD_REQUIRED: "guildRequired", GUILD_STORAGE_FULL: "guildStorageFull"
+	CRAFT_UNAVAILABLE: "craftUnavailable",
+	INVENTORY_FULL: "inventoryFull",
+	GUILD_REQUIRED: "guildRequired",
+	GUILD_STORAGE_FULL: "guildStorageFull",
+	TIME_POTION_WEEKLY_LIMIT: "timePotionWeeklyLimit"
 } as const;
 export type CookingCraftError = typeof CookingCraftErrors[keyof typeof CookingCraftErrors];
 export type RecipeIngredients = {

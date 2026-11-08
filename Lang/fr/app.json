@@ -63,7 +63,7 @@
     "levelUp": "Cuisine niveau {{level}} · {{grade}}",
     "discovered": "Recette découverte : {{recipe}} · niveau {{level}}",
     "badge": "Badge obtenu : {{badge}}",
-    "errors": {"craftUnavailable": "La recette ou ses ingrédients ont changé. La liste a été actualisée.", "inventoryFull": "Votre inventaire ne peut pas recevoir cette préparation.", "guildRequired": "Cette recette nécessite une guilde.", "guildStorageFull": "La réserve de nourriture de votre guilde est pleine."}
+    "errors": {"craftUnavailable": "La recette ou ses ingrédients ont changé. La liste a été actualisée.", "inventoryFull": "Votre inventaire ne peut pas recevoir cette préparation.", "guildRequired": "Cette recette nécessite une guilde.", "guildStorageFull": "La réserve de nourriture de votre guilde est pleine.", "timePotionWeeklyLimit": "Toutes les potions de temps permises cette semaine ont déjà été préparées."}
   },
   "homeChest": {
     "title": "Coffre de la maison",

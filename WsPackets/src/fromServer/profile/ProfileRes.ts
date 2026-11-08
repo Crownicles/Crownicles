@@ -116,6 +116,9 @@ export class ProfileRes extends FromServerPacket {
 
 	tokens?: ValueAndMax;
 
+	/** The king's challenge tier reached this week, 0 before the first one. */
+	kingChallengeTier!: number;
+
 	cooking?: Cooking;
 
 	pseudo!: string;

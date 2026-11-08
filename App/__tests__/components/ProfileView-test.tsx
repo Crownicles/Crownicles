@@ -23,6 +23,7 @@ const PROFILE = {
 	tokens: {
 		value: 3, max: 10
 	},
+	kingChallengeTier: 0,
 	missions: {
 		gems: 8, campaignProgression: 50
 	},
