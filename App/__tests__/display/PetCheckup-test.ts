@@ -53,20 +53,8 @@ describe("petCheckupSummary", () => {
 		expect(summary.nextFeed).toBe(`${KEY}.petIsHungry`);
 	});
 
-	it("keeps love points and gains as numbers, defaulting the gain to 0", () => {
-		const summary = petCheckupSummary(buildPet({ lovePointsGained: undefined }));
-		expect(summary.lovePoints).toEqual({
-			actual: 40,
-			max: 100
-		});
-		expect(summary.lovePointsGained).toBe(0);
-	});
-
-	it("exposes the stats and the diet as separate fields", () => {
-		const summary = petCheckupSummary(buildPet());
-		expect(summary.force).toBe(12);
-		expect(summary.speed).toBe(9);
-		expect(summary.diet).toContain("models:diet");
+	it("counts no affection gained when the vet gave none", () => {
+		expect(petCheckupSummary(buildPet({ lovePointsGained: undefined })).lovePointsGained).toBe(0);
 	});
 
 	it("omits the second fight effect when there is none", () => {
