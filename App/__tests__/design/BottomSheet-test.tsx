@@ -15,7 +15,7 @@ jest.mock("@/src/translations/i18n", () => ({ i18n: { t: (key: string): string =
 
 function drag(update: Partial<PanResponderGestureState> = {}): PanResponderGestureState {
 	return {
-		stateID: 1, moveX: 0, moveY: 0, x0: 0, y0: 0, dx: 0, dy: 120, vx: 0, vy: 0, numberActiveTouches: 1, _accountsForMovesUpTo: 0, ...update
+		stateID: 1, moveX: 0, moveY: 0, x0: 0, y0: 0, dx: 0, dy: 120, vx: 0, vy: 0, numberActiveTouches: 1, ...update
 	};
 }
 

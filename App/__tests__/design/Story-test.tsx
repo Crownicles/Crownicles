@@ -19,7 +19,7 @@ describe("game prose", () => {
 	});
 
 	it("opens a web address of the text in the browser when it is touched", async () => {
-		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
 		await render(<Story>{"Plus d'informations sur les familiers sur https://guide.crownicles.com/notions-principale/familiers/ !"}</Story>);
 		await fireEvent.press(screen.getByRole("link", { name: "https://guide.crownicles.com/notions-principale/familiers/" }));
 		expect(openURL).toHaveBeenCalledWith("https://guide.crownicles.com/notions-principale/familiers/");

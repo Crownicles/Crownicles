@@ -2,7 +2,7 @@ import {
 	createContext, ReactNode, RefObject, useCallback, useContext, useRef, useState
 } from "react";
 import {
-	Animated, Easing, Image, Platform, StyleSheet, useWindowDimensions, View
+	Animated, Easing, Image, Platform, StyleSheet, useWindowDimensions, View, ViewInstance
 } from "react-native";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { captureRef } from "react-native-view-shot";
@@ -44,7 +44,7 @@ function nextFrame(): Promise<void> {
 	return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 }
 
-function snapshot(root: RefObject<View | null>): Promise<string> {
+function snapshot(root: RefObject<ViewInstance | null>): Promise<string> {
 	return captureRef(root, {
 		...SNAPSHOT, result: "tmpfile"
 	});
@@ -69,7 +69,7 @@ function revealOrigin(request: ThemeRequest): ThemeOrigin | null {
 }
 
 /** Repaints the screen in the new theme, then pictures it once drawn. */
-async function pictureAfter(reveal: Reveal, root: RefObject<View | null>): Promise<string> {
+async function pictureAfter(reveal: Reveal, root: RefObject<ViewInstance | null>): Promise<string> {
 	reveal.switchTheme();
 	await nextFrame();
 	return snapshot(root);
@@ -112,7 +112,7 @@ function RevealOverlay({
 export function ThemeTransitionRoot({ children }: { children: ReactNode }): ReactNode {
 	const theme = useTheme();
 	const reducedMotion = useReducedMotion();
-	const root = useRef<View>(null);
+	const root = useRef<ViewInstance>(null);
 	const [reveal, setReveal] = useState<Reveal | null>(null);
 	const { setPreference } = theme;
 

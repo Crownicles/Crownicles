@@ -1,9 +1,8 @@
 const { withGradleProperties } = require("expo/config-plugins");
 
-// android/ est regenere a chaque prebuild : R8 et le retrait des ressources inutilisees
-// s'activent ici, sinon le build release embarque le bytecode et les ressources non optimises.
+// android/ est regenere a chaque prebuild : le modele active deja R8 depuis le SDK 58, mais pas le
+// retrait des ressources inutilisees, sans lequel le build release les embarque toutes.
 const RELEASE_OPTIMIZATIONS = {
-  "android.enableMinifyInReleaseBuilds": "true",
   "android.enableShrinkResourcesInReleaseBuilds": "true"
 };
 

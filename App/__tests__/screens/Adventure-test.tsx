@@ -52,6 +52,9 @@ import {
 } from "@/src/navigation/AdventureTools";
 
 /** Delivers a packet exactly as Core pushes it through the socket. */
+/** What an animation calls once it ends, as `start` receives it. */
+type AnimationEnd = Parameters<Animated.CompositeAnimation["start"]>[0];
+
 function pushFromCore(wireName: string, packet: object): void {
 	Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry").dispatch(wireName, packet);
 }
@@ -334,7 +337,7 @@ describe("Adventure screen", () => {
 			});
 
 		const runTiming = Animated.timing;
-		const dash: { finish?: Animated.EndCallback } = {};
+		const dash: { finish?: AnimationEnd } = {};
 
 		// Jest's native driver ends any animation after 16 ms: the test holds the dash itself rather than racing it.
 		jest.spyOn(Animated, "timing").mockImplementation((value, config) => {
@@ -342,7 +345,7 @@ describe("Adventure screen", () => {
 			return config.duration === TRAVEL_DASH_MS
 				? {
 					...animation,
-					start: (callback?: Animated.EndCallback): void => {
+					start: (callback?: AnimationEnd): void => {
 						dash.finish = callback;
 					}
 				}
@@ -580,7 +583,7 @@ describe("Adventure screen", () => {
 
 	it("opens the link written in a travel advice in the browser", async () => {
 		jest.mocked(i18n.tArrayWithoutCommands).mockReturnValue(["Vous voulez apprendre à jouer ? Lisez le guide du joueur ! https://guide.crownicles.com/"]);
-		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
 		mockReport();
 
 		await render(<Adventure />);

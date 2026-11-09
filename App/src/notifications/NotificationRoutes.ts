@@ -26,7 +26,7 @@ export const NOTIFICATION_ROUTES: Record<NotificationType, Href> = {
 };
 
 /**
- * Opens the screen of a notification with the home of its tab under it (the `initialRouteName` of the tab's
+ * Opens the screen of a notification with the home of its tab under it (the `anchor` of the tab's
  * stack): back then returns to that home rather than to another tab, and the tab is not stuck on the sub-page.
  */
 export function openNotificationRoute(router: Router, type: NotificationType): void {

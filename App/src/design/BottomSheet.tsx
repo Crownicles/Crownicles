@@ -3,7 +3,7 @@ import {
 } from "react";
 import {
 	Animated, GestureResponderEvent, KeyboardAvoidingView, PanResponder, PanResponderGestureState, PanResponderInstance, Platform,
-	Pressable, ScrollView, StyleProp, StyleSheet, useWindowDimensions, View, ViewStyle
+	Pressable, ScrollView, ScrollViewInstance, StyleProp, StyleSheet, useWindowDimensions, View, ViewStyle
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { NativeWindow } from "@/src/design/NativeWindow";
@@ -324,7 +324,7 @@ export function SheetScrollView({
 	testID?: string;
 }): ReactNode {
 	const report = useContext(SheetScrollContext);
-	const scroll = useRef<ScrollView>(null);
+	const scroll = useRef<ScrollViewInstance>(null);
 	const size = useRef({
 		viewport: 0, content: 0, positioned: false, endPending: false
 	});

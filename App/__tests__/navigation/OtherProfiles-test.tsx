@@ -5,25 +5,37 @@ import {
 import {
 	fireEvent, render, screen
 } from "@testing-library/react-native";
-import { StackRouter } from "expo-router/build/layouts/StackClient";
-import { StackActions } from "expo-router/build/react-navigation/native";
 import {
 	useOpenGuild, useOpenPlayer
 } from "@/src/navigation/OtherProfiles";
 
-const mockStack = StackRouter({ initialRouteName: "rankings" });
-const mockOptions = {
-	routeNames: [
-		"rankings",
-		"player/[ref]",
-		"guilds/[name]"
-	],
-	routeParamList: { rankings: {
-		page: 4, timing: "week", scrollPosition: 235
-	} },
-	routeGetIdList: {}
+type StackRoute = {
+	key: string; name: string; params: Record<string, unknown>;
 };
-let mockState = mockStack.getInitialState(mockOptions);
+
+/** The part of an expo-router stack state the profile links read: the routes in order and the focused one. */
+type StackState = {
+	type: "stack"; index: number; routes: StackRoute[];
+};
+
+const RANKING_PARAMS = {
+	page: 4, timing: "week", scrollPosition: 235
+};
+
+function rankingStack(): StackState {
+	return {
+		type: "stack",
+		index: 0,
+		routes: [
+			{
+				key: "rankings-0", name: "rankings", params: RANKING_PARAMS
+			}
+		]
+	};
+}
+
+let mockState = rankingStack();
+let mockRouteKeys = 0;
 let mockSegments = [
 	"(protected)",
 	"(tabs)",
@@ -35,20 +47,27 @@ type ProfileHref = {
 	pathname: string; params: Record<string, string>;
 };
 
+/** Like the stack, a push puts a new screen on top, even for a profile already open further down. */
 const mockPush = jest.fn((href: ProfileHref): void => {
 	const name = "ref" in href.params ? "player/[ref]" : "guilds/[name]";
-	const next = mockStack.getStateForAction(mockState, StackActions.push(name, href.params), mockOptions);
-	if (!next) {
-		throw new Error("Unexpected profile push");
-	}
-	mockState = mockStack.getRehydratedState(next, mockOptions);
+	mockRouteKeys++;
+	const routes = [
+		...mockState.routes,
+		{
+			key: `${name}-${mockRouteKeys}`, name, params: href.params
+		}
+	];
+	mockState = {
+		...mockState, index: routes.length - 1, routes
+	};
 });
+
+/** Like the stack, a dismissal takes the given number of screens off the top. */
 const mockDismiss = jest.fn((count: number): void => {
-	const next = mockStack.getStateForAction(mockState, StackActions.pop(count), mockOptions);
-	if (!next) {
-		throw new Error("Unexpected profile pop");
-	}
-	mockState = mockStack.getRehydratedState(next, mockOptions);
+	const routes = mockState.routes.slice(0, -count);
+	mockState = {
+		...mockState, index: routes.length - 1, routes
+	};
 });
 
 jest.mock("expo-router", () => ({
@@ -75,7 +94,7 @@ const REPEATED_LOOPS = 10;
 describe("other profile navigation history", () => {
 	beforeEach((): void => {
 		jest.clearAllMocks();
-		mockState = mockStack.getInitialState(mockOptions);
+		mockState = rankingStack();
 		mockSegments = [
 			"(protected)",
 			"(tabs)",
@@ -96,7 +115,7 @@ describe("other profile navigation history", () => {
 		}
 		expect(mockDismiss).toHaveBeenCalledTimes(REPEATED_LOOPS);
 		expect(mockState.routes[0]).toBe(ranking);
-		expect(mockState.routes[0].params).toEqual(mockOptions.routeParamList.rankings);
+		expect(mockState.routes[0].params).toEqual(RANKING_PARAMS);
 		expect(mockState.routes[1].params).toEqual({ ref: "player-a" });
 	});
 

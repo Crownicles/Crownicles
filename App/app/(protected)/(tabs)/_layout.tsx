@@ -3,7 +3,7 @@ import {
 } from "react";
 import { useRouter } from "expo-router";
 
-/** Expo SDK 57 no longer accepts react-navigation directly, so the top tabs come from its own copy. */
+/** Expo Router no longer accepts react-navigation directly since SDK 57, so the top tabs come from its own copy. */
 import { TopTabs } from "expo-router/js-top-tabs";
 import {
 	Animated, Text, TouchableOpacity, View

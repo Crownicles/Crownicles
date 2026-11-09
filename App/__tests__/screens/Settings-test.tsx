@@ -233,7 +233,7 @@ describe("settings", () => {
 	});
 
 	it("hands over the report of the last error that stopped the app", async () => {
-		const share = jest.spyOn(Share, "share").mockResolvedValue({ action: Share.sharedAction });
+		const share = jest.spyOn(Share, "share").mockResolvedValue({ action: Share.sharedAction, activityType: undefined });
 		await renderSettings();
 		expect(screen.queryByText("app:settings.lastCrash.title")).toBeNull();
 

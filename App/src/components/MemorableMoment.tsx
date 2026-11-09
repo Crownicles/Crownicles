@@ -2,7 +2,7 @@ import {
 	ReactNode, RefObject, useCallback, useEffect, useMemo, useRef, useState
 } from "react";
 import {
-	Animated, Easing, Pressable, StyleSheet, Text, useWindowDimensions, View
+	Animated, Easing, Pressable, StyleSheet, Text, useWindowDimensions, View, ViewInstance
 } from "react-native";
 import { Image } from "expo-image";
 import { NotificationFeedbackType } from "expo-haptics";
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
 	pressed: { opacity: 0.6 }
 });
 
-async function shareCard(card: RefObject<View | null>): Promise<void> {
+async function shareCard(card: RefObject<ViewInstance | null>): Promise<void> {
 	if (!await isAvailableAsync()) {
 		throw new Error("Sharing is not available on this device");
 	}
@@ -367,7 +367,7 @@ async function shareCard(card: RefObject<View | null>): Promise<void> {
 	});
 }
 
-function useShareCard(card: RefObject<View | null>): {
+function useShareCard(card: RefObject<ViewInstance | null>): {
 	share: () => void; sharing: boolean; failed: boolean;
 } {
 	const [sharing, setSharing] = useState(false);
@@ -421,7 +421,7 @@ function MemorableMomentWindow({
 }): ReactNode {
 	const pseudo = usePlayerPseudo();
 	const { width } = useWindowDimensions();
-	const card = useRef<View>(null);
+	const card = useRef<ViewInstance>(null);
 	const content = useMemo(() => momentContent(moment), [moment]);
 	const sharing = useShareCard(card);
 	const shown = useAppearance();
