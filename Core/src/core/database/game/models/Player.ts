@@ -1181,6 +1181,21 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Forget the defense personality when the class of the player does not offer it, so that the stored personality
+	 * is always the one defending the player
+	 * @param classPersonalities Defense personalities offered by the class of the player
+	 * @returns The forgotten personality, if any
+	 */
+	public forgetDefensePersonalityNotIn(classPersonalities: readonly AiPersonality[]): AiPersonality | undefined {
+		const personality = this.defensePersonality;
+		if (!personality || classPersonalities.includes(personality)) {
+			return undefined;
+		}
+		this.defensePersonality = null;
+		return personality;
+	}
+
+	/**
 	 * Get the raw health value of the player (without max capping)
 	 * Use getHealth() when the value should be capped to the max health
 	 */

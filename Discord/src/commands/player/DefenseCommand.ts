@@ -62,7 +62,7 @@ function getPersonalityKey(personality: AiPersonality | undefined): string {
  * @param personality
  * @param lng
  */
-function getPersonalityName(personality: AiPersonality | undefined, lng: Language): string {
+export function getPersonalityName(personality: AiPersonality | undefined, lng: Language): string {
 	return i18n.t(`commands:defense.personalities.${getPersonalityKey(personality)}.name`, { lng });
 }
 

@@ -21,13 +21,19 @@ vi.mock("../../../../Lib/src/logs/CrowniclesLogger", () => ({
 
 import { ReactionCollector } from "discord.js";
 import { DiscordCache } from "../../../src/bot/DiscordCache";
-import { handleChangeClassReactionCollector } from "../../../src/commands/player/ClassesCommand";
+import {
+	handleChangeClassReactionCollector, handleCommandClassesChangeSuccessPacket
+} from "../../../src/commands/player/ClassesCommand";
 import {
 	ReactionCollectorChangeClassPacket, ReactionCollectorChangeClassReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CommandClassesChangeSuccessPacket } from "../../../../Lib/src/packets/commands/CommandClassesPacket";
+import { AiPersonalityConstants } from "../../../../Lib/src/constants/AiPersonalityConstants";
+import { MessagesUtils } from "../../../src/utils/MessagesUtils";
+import { CrowniclesEmbed } from "../../../src/messages/CrowniclesEmbed";
 import {
 	deferredReply, fakeCollectorMessage, wait
 } from "../../bot/fakeCollectorMessage";
@@ -144,5 +150,41 @@ describe("handleChangeClassReactionCollector", () => {
 		expect(commandEditReply).toHaveBeenCalledTimes(2);
 		expect(confirmationCollectors).toHaveLength(1);
 		selectCollector.stop();
+	});
+});
+
+describe("handleCommandClassesChangeSuccessPacket", () => {
+	/**
+	 * Display the confirmation of a class change and return the description shown to the player
+	 * @param packet
+	 */
+	async function displayedDescription(packet: CommandClassesChangeSuccessPacket): Promise<string> {
+		vi.mocked(DiscordCache.getInteraction).mockReturnValue({ user } as never);
+		const editClickReply = vi.spyOn(MessagesUtils, "editClickReply").mockResolvedValue();
+
+		await handleCommandClassesChangeSuccessPacket(packet, context);
+
+		expect(editClickReply).toHaveBeenCalledOnce();
+		const [embed] = editClickReply.mock.calls[0][1].embeds as CrowniclesEmbed[];
+		editClickReply.mockRestore();
+		return embed.data.description!;
+	}
+
+	it("tells the player the defense personality of the former class is forgotten (#5126)", async () => {
+		const description = await displayedDescription({
+			classId: ClassConstants.CLASSES_ID.LUMINOUS_PALADIN,
+			lostDefensePersonality: AiPersonalityConstants.PERSONALITIES.KNIGHT_STRATEGIST
+		});
+
+		const [newClass, lostPersonality] = description.split("\n\n");
+		expect(newClass).toContain("Paladin lumineux");
+		expect(lostPersonality).toContain("**Stratège**");
+	});
+
+	it("only shows the new class when no defense personality is forgotten", async () => {
+		const description = await displayedDescription({ classId: ClassConstants.CLASSES_ID.LUMINOUS_PALADIN });
+
+		expect(description).toContain("Paladin lumineux");
+		expect(description).not.toContain("\n\n");
 	});
 });

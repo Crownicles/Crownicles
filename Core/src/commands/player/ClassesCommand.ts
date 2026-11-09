@@ -14,7 +14,9 @@ import {
 import { ClassDataController } from "../../data/Class";
 import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
-import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
+import {
+	EndCallback, ReactionCollectorInstance
+} from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
 	ReactionCollectorChangeClass,
@@ -31,9 +33,15 @@ import {
 	secondsToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { withLockedPlayerAndMissionsSafe } from "../../core/utils/withLockedPlayerAndMissionsSafe";
+import { getAiPersonalities } from "../../core/fights/AiBehaviorController";
 
-function getEndCallback(player: Player) {
-	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+/**
+ * Apply the class picked by the player. A defense personality the new class does not offer is forgotten,
+ * and the player is told so in the confirmation.
+ * @param player
+ */
+export function getEndCallback(player: Player): EndCallback {
+	return async (collector, response): Promise<void> => {
 		try {
 			const firstReaction = collector.getFirstReaction();
 			if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
@@ -52,6 +60,7 @@ function getEndCallback(player: Player) {
 
 				const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
 				await lockedPlayer.changeClass(selectedClass, playerActiveObjects, response);
+				const lostDefensePersonality = lockedPlayer.forgetDefensePersonalityNotIn(getAiPersonalities(selectedClass));
 				await lockedPlayer.save();
 				await MissionsController.update(lockedPlayer, response, { missionId: "chooseClass" });
 				await MissionsController.update(lockedPlayer, response, {
@@ -62,7 +71,8 @@ function getEndCallback(player: Player) {
 					.then();
 
 				response.push(makePacket(CommandClassesChangeSuccessPacket, {
-					classId: selectedClass
+					classId: selectedClass,
+					...lostDefensePersonality ? { lostDefensePersonality } : {}
 				}));
 			});
 		}
