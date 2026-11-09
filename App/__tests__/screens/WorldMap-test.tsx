@@ -14,7 +14,6 @@ import { MapViewer } from "@/src/components/MapViewer";
 import { WorldMapContent } from "@/src/components/WorldMap";
 import { MapRes } from "ws-packets/src/fromServer/report/MapRes";
 
-Object.assign(Reanimated, { useEvent: jest.fn() });
 jest.mock("expo-router", () => ({ useFocusEffect: jest.fn() }));
 jest.mock("@/src/AppIcons", () => ({ AppIcons: {
 	getIcon: (): string => "", getIconOrNull: (): null => null
