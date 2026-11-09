@@ -45,7 +45,10 @@ import {
 	DiscordCollectorUtils,
 	disableRows
 } from "../../utils/DiscordCollectorUtils";
-import { escapeUsername } from "../../utils/StringUtils";
+import {
+	escapeUsername, StringUtils
+} from "../../utils/StringUtils";
+import { getPersonalityName } from "./DefenseCommand";
 
 /**
  * Get the packet
@@ -67,10 +70,17 @@ export async function handleCommandClassesChangeSuccessPacket(packet: CommandCla
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	});
-	const description = i18n.t("commands:classes.newClass", {
-		lng,
-		name: i18n.t(`models:classes.${packet.classId}`, { lng })
-	});
+	const description = StringUtils.joinParagraphs([
+		i18n.t("commands:classes.newClass", {
+			lng,
+			name: i18n.t(`models:classes.${packet.classId}`, { lng })
+		}),
+		packet.lostDefensePersonality && i18n.t("commands:classes.lostDefensePersonality", {
+			lng,
+			personality: packet.lostDefensePersonality,
+			name: getPersonalityName(packet.lostDefensePersonality, lng)
+		})
+	]);
 
 	await MessagesUtils.editClickReply(context, {
 		embeds: [

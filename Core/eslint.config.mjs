@@ -44,6 +44,7 @@ export default defineConfig([
 					"addWeeklyScore",
 					"changeClass",
 					"eatMeal",
+					"forgetDefensePersonalityNotIn",
 					"setEnergyLost",
 					"setHealthNoCheck",
 					"setPet",
