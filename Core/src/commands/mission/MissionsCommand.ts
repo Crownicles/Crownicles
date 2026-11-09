@@ -20,6 +20,9 @@ import { MissionType } from "../../../../Lib/src/types/CompletedMission";
 import { DailyMissions } from "../../core/database/game/models/DailyMission";
 import { Campaign } from "../../core/missions/Campaign";
 import { MissionsController } from "../../core/missions/MissionsController";
+import {
+	datesAreOnSameDay, dateToMs, getTomorrowMidnight
+} from "../../../../Lib/src/utils/TimeUtils";
 import { getKingChallengeProgress } from "../../core/kingChallenge/KingChallenge";
 
 export default class MissionsCommand {
@@ -40,7 +43,7 @@ export default class MissionsCommand {
 			return;
 		}
 
-		if (toCheckPlayer.id === player.id) {
+		if (toCheckPlayer.id === player.id && !packet.passive) {
 			await MissionsController.update(player, response, { missionId: "commandMission" });
 		}
 
@@ -65,6 +68,10 @@ export default class MissionsCommand {
 			maxCampaignNumber: Campaign.getMaxCampaignNumber(),
 			campaignProgression: missionInfo.campaignProgression,
 			maxSideMissionSlots: toCheckPlayer.getMissionSlotsNumber(),
+			dailyMission: {
+				completed: datesAreOnSameDay(new Date(), new Date(missionInfo.lastDailyMissionCompleted)),
+				resetsAt: dateToMs(getTomorrowMidnight())
+			},
 			kingChallenge: await getKingChallengeProgress(toCheckPlayer)
 		}));
 	}

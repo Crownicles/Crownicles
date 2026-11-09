@@ -1,0 +1,146 @@
+import {
+	useEffect, useRef, useState
+} from "react";
+import { FromClientPacket } from "ws-packets/src/fromClient/FromClientPacket";
+import { FromServerPacket } from "ws-packets/src/fromServer/FromServerPacket";
+import {
+	FromClientPacketLike, FromServerPacketLike, makeFromClientPacket
+} from "ws-packets/src/MakePackets";
+import { SellReq } from "ws-packets/src/fromClient/SellReq";
+import { DrinkReq } from "ws-packets/src/fromClient/DrinkReq";
+import { SellNoItemRes } from "ws-packets/src/fromServer/inventory/SellRes";
+import { DailyBonusReq } from "ws-packets/src/fromClient/DailyBonusReq";
+import {
+	DailyBonusCooldownRes, DailyBonusNoObjectRes, DailyBonusRes
+} from "ws-packets/src/fromServer/inventory/DailyBonusRes";
+import { DrinkNoAvailablePotion } from "ws-packets/src/fromServer/drink/DrinkNoAvailablePotion";
+import { ReactionCollectorCreation } from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import { Blocked } from "ws-packets/src/fromServer/common/Blocked";
+import {
+	GameClient, GameAnswer
+} from "@/src/networking/GameClient";
+import { useCollectors } from "@/src/collectors/CollectorsContext";
+import { i18n } from "@/src/translations/i18n";
+import { commandRejectionMessage } from "@/src/display/CommandRejection";
+
+export type CommandMenu = {
+	request: FromClientPacketLike<FromClientPacket>;
+	emptyPacket: FromServerPacketLike<FromServerPacket>;
+	emptyMessage: string;
+	outcomePackets?: FromServerPacketLike<FromServerPacket>[];
+
+	/** Reads an outcome packet as a refusal to show where the request was made; null leaves it to its sheet. */
+	refusal?: (packet: FromServerPacket) => string | null;
+};
+
+export const INVENTORY_MENUS = {
+	SELL: {
+		request: SellReq, emptyPacket: SellNoItemRes, emptyMessage: "app:sale.noItems"
+	},
+	DRINK: {
+		request: DrinkReq, emptyPacket: DrinkNoAvailablePotion, emptyMessage: "app:inventoryActions.noPotion"
+	},
+	DAILY: {
+		request: DailyBonusReq, emptyPacket: DailyBonusNoObjectRes, emptyMessage: "app:dailyBonus.noObject", outcomePackets: [DailyBonusRes, DailyBonusCooldownRes]
+	}
+} satisfies Record<string, CommandMenu>;
+
+/** Picks the reaction the screen already knows the player chose, or nothing to let them choose. */
+type MenuResolver = (collector: ReactionCollectorCreation) => number | null;
+
+export type CommandMenuState = {
+	message: string | null;
+	pending: boolean;
+	open: (menu: CommandMenu, request?: FromClientPacket, resolve?: MenuResolver) => Promise<void>;
+
+	/** Opens the menu like `open`, resolving with the refusal, or null once the menu opened or its answer was sent. */
+	attempt: (menu: CommandMenu, request?: FromClientPacket, resolve?: MenuResolver) => Promise<string | null>;
+
+	/** Forgets the last refusal, once the player changed what was refused. */
+	clearMessage: () => void;
+};
+
+function commandMessage(answer: GameAnswer<ReactionCollectorCreation>, menu: CommandMenu): string | null {
+	if (answer.kind === "rejected") {
+		return commandRejectionMessage(answer.packet.rejection);
+	}
+	if (answer.kind !== "alternative") {
+		return i18n.t("app:common.connectionError");
+	}
+	if (answer.packetName === menu.emptyPacket.wireName) {
+		return i18n.t(menu.emptyMessage);
+	}
+	if (menu.outcomePackets?.some(packet => packet.wireName === answer.packetName)) {
+		return menu.refusal?.(answer.packet) ?? null;
+	}
+	return i18n.t("app:collector.pending");
+}
+
+export function useCommandMenus(): CommandMenuState {
+	const {
+		track, answerWithoutShowing
+	} = useCollectors();
+	const [message, setMessage] = useState<string | null>(null);
+	const [pending, setPending] = useState(false);
+	const inFlight = useRef(false);
+	const active = useRef(true);
+
+	useEffect(() => {
+		active.current = true;
+		return (): void => {
+			active.current = false;
+		};
+	}, []);
+
+	const refuse = (refusal: string | null): string | null => {
+		if (active.current) {
+			setMessage(refusal);
+		}
+		return refusal;
+	};
+
+	const attempt = async (menu: CommandMenu, request?: FromClientPacket, resolve?: MenuResolver): Promise<string | null> => {
+		if (inFlight.current) {
+			return null;
+		}
+		inFlight.current = true;
+		setPending(true);
+		setMessage(null);
+		try {
+			const answer = await GameClient.request(request ?? makeFromClientPacket(menu.request, {}), ReactionCollectorCreation, [
+				menu.emptyPacket,
+				Blocked,
+				...menu.outcomePackets ?? []
+			]);
+			if (answer.kind !== "answer") {
+				return refuse(commandMessage(answer, menu));
+			}
+			if (!active.current) {
+				return null;
+			}
+			const reactionIndex = resolve?.(answer.packet) ?? null;
+			if (reactionIndex === null) {
+				track(answer.packet);
+			}
+			else { answerWithoutShowing(answer.packet.id, reactionIndex); }
+			return null;
+		}
+		catch {
+			return refuse(i18n.t("app:common.connectionError"));
+		}
+		finally {
+			inFlight.current = false;
+			if (active.current) {
+				setPending(false);
+			}
+		}
+	};
+
+	const open = async (menu: CommandMenu, request?: FromClientPacket, resolve?: MenuResolver): Promise<void> => {
+		await attempt(menu, request, resolve);
+	};
+
+	return {
+		message, pending, open, attempt, clearMessage: (): void => setMessage(null)
+	};
+}

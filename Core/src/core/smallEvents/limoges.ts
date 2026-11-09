@@ -11,6 +11,7 @@ import {
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { reportExperience } from "../onboarding/OnboardingExperience";
 import {
 	SmallEventLimogesPacket,
 	SmallEventLimogesPenaltyType
@@ -66,7 +67,7 @@ async function applyFavorableOutcome(
 	response: CrowniclesPacket[],
 	properties: LimogesProperties
 ): Promise<Required<SmallEventLimogesPacket>["reward"]> {
-	const experience = RandomUtils.rangedInt(properties.reward.experience);
+	const experience = reportExperience(player, RandomUtils.rangedInt(properties.reward.experience));
 	const score = RandomUtils.rangedInt(properties.reward.score);
 	await player.addExperience({
 		amount: experience,

@@ -20,6 +20,8 @@ export abstract class GardenConstants {
 	} as const;
 
 	public static readonly GARDEN_ERRORS = {
+		NOT_AT_HOME: "notAtHome",
+		INVALID_ACTION: "invalidAction",
 		NO_READY_PLANTS: "noReadyPlants",
 		NO_SEED: "noSeed",
 		NO_EMPTY_PLOT: "noEmptyPlot",

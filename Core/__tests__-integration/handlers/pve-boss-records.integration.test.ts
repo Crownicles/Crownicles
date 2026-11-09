@@ -33,6 +33,7 @@ async function createFight(params: {
 	classId: number;
 	actionName: string;
 	actionCount?: number;
+	winner?: number;
 }): Promise<number> {
 	const action = await LogsFightsActions.create({
 		name: params.actionName,
@@ -40,6 +41,7 @@ async function createFight(params: {
 	});
 	const fight = await LogsPveFightsResults.create({
 		playerId: params.playerId,
+		classId: params.classId,
 		monsterId: params.monsterId ?? "magmaTitan",
 		monsterLevel: params.monsterLevel,
 		monsterFightPoints: 1_000,
@@ -47,7 +49,7 @@ async function createFight(params: {
 		monsterDefense: 100,
 		monsterSpeed: 100,
 		turn: params.turns,
-		winner: 1,
+		winner: params.winner ?? 1,
 		date: params.date
 	});
 	await LogsPveFightsActionsUsed.create({
@@ -170,5 +172,34 @@ describe("PvE boss record queries", () => {
 			["champion", 120],
 			["duplicate-player", 110]
 		]);
+	});
+
+	it("finds the best level a class beat a boss at, ignoring losses, other classes and other bosses", async () => {
+		const player = await LogsPlayers.create({ keycloakId: "record-holder" });
+		const fight = {
+			playerId: player.id, turns: 10, date: 1_000, classId: 18, actionName: "attack"
+		};
+		await createFight({
+			...fight, monsterLevel: 100
+		});
+		await createFight({
+			...fight, monsterLevel: 120
+		});
+		await createFight({
+			...fight, monsterLevel: 200, winner: 2
+		});
+		await createFight({
+			...fight, monsterLevel: 150, classId: 19
+		});
+		await createFight({
+			...fight, monsterLevel: 300, monsterId: "kraken"
+		});
+
+		await expect(LogsPveBossRecordsRequests.getBestWinLevel({
+			playerKeycloakId: "record-holder", monsterId: "magmaTitan", classId: 18
+		})).resolves.toBe(120);
+		await expect(LogsPveBossRecordsRequests.getBestWinLevel({
+			playerKeycloakId: "record-holder", monsterId: "leviathan", classId: 18
+		})).resolves.toBeNull();
 	});
 });

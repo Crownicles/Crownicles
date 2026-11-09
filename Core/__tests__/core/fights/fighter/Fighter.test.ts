@@ -1,6 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { Fighter } from "../../../../src/core/fights/fighter/Fighter";
-import { FightAction } from "../../../../src/data/FightAction";
+import { FightAction, FightActionDataController } from "../../../../src/data/FightAction";
+import { FightActionController } from "../../../../src/core/fights/actions/FightActionController";
+import intenseAttack from "../../../../src/core/fights/actions/interfaces/players/intenseAttack";
+import simpleAttack from "../../../../src/core/fights/actions/interfaces/players/simpleAttack";
+import { FightActionStatus } from "../../../../../Lib/src/types/FightActionStatus";
+import type { FightController } from "../../../../src/core/fights/FightController";
 import { FightView } from "../../../../src/core/fights/FightView";
 import { FighterStatus } from "../../../../src/core/fights/FighterStatus";
 
@@ -96,6 +101,125 @@ function createMockFightAction(id: string, breath: number, weight: number = 0): 
 }
 
 describe('Fighter', () => {
+	describe('non-lethal fight actions', () => {
+		afterEach((): void => vi.restoreAllMocks());
+
+		it.each([FightActionStatus.NORMAL, FightActionStatus.CRITICAL])('keeps the receiver alive after an enchanted intense attack with status %s', attackStatus => {
+			const sender = new TestFighter(14, []);
+			const receiver = new TestFighter(14, []);
+			sender.setEnchantmentDamageDealtMultiplier(1.2);
+			vi.spyOn(FightActionController, 'getAttackDamage').mockReturnValue(100);
+			vi.spyOn(FightActionController, 'applySecondaryEffects').mockReturnValue({damages: attackStatus === FightActionStatus.CRITICAL ? 150 : 100, status: attackStatus});
+			vi.spyOn(FightActionDataController, 'getFightActionFunction').mockReturnValue(intenseAttack);
+			const action = FightActionDataController.instance.getById('intenseAttack')!;
+
+			const result = action.use(sender, receiver, 1, {} as FightController);
+
+			expect(receiver.getEnergy()).toBe(1);
+			expect(receiver.isDead()).toBe(false);
+			expect(result.damages).toBe(99);
+			expect(result.attackStatus).toBe(attackStatus);
+			expect(sender.nextFightAction).toBe(FightActionDataController.instance.getById('resting'));
+		});
+
+		it('deals no damage to a receiver already at one energy', () => {
+			const sender = new TestFighter(14, []);
+			const receiver = new TestFighter(14, []);
+			receiver.damage(99);
+			sender.setEnchantmentDamageDealtMultiplier(1.2);
+			vi.spyOn(FightActionController, 'getAttackDamage').mockReturnValue(100);
+			vi.spyOn(FightActionController, 'applySecondaryEffects').mockReturnValue({damages: 100, status: FightActionStatus.NORMAL});
+			vi.spyOn(FightActionDataController, 'getFightActionFunction').mockReturnValue(intenseAttack);
+			const action = FightActionDataController.instance.getById('intenseAttack')!;
+
+			const result = action.use(sender, receiver, 1, {} as FightController);
+
+			expect(receiver.getEnergy()).toBe(1);
+			expect(result.damages).toBe(0);
+		});
+
+		it('does not revive a dead receiver when the attack is replayed', () => {
+			const sender = new TestFighter(14, []);
+			const receiver = new TestFighter(14, []);
+			receiver.damage(100);
+			vi.spyOn(FightActionController, 'getAttackDamage').mockReturnValue(100);
+			vi.spyOn(FightActionController, 'applySecondaryEffects').mockReturnValue({damages: 100, status: FightActionStatus.NORMAL});
+			vi.spyOn(FightActionDataController, 'getFightActionFunction').mockReturnValue(intenseAttack);
+			const action = FightActionDataController.instance.getById('intenseAttack')!;
+
+			const result = action.use(sender, receiver, 1, {} as FightController);
+
+			expect(receiver.getEnergy()).toBe(0);
+			expect(result.damages).toBe(0);
+		});
+
+		it('keeps armor enchantments and damage resistance effective', () => {
+			const sender = new TestFighter(14, []);
+			const receiver = new TestFighter(14, []);
+			sender.setEnchantmentDamageDealtMultiplier(1.2);
+			receiver.setEnchantmentDamageTakenMultiplier(0.8);
+			vi.spyOn(FightActionController, 'getAttackDamage').mockReturnValue(40);
+			vi.spyOn(FightActionController, 'applySecondaryEffects').mockReturnValue({damages: 40, status: FightActionStatus.NORMAL});
+			vi.spyOn(FightActionDataController, 'getFightActionFunction').mockReturnValue(intenseAttack);
+			const action = FightActionDataController.instance.getById('intenseAttack')!;
+			receiver.applyResistance({type: action.type, value: 0.5, turns: 1});
+
+			const result = action.use(sender, receiver, 1, {} as FightController);
+
+			expect(result.damages).toBe(19);
+			expect(receiver.getEnergy()).toBe(81);
+		});
+
+		it('applies the energy floor after a damage vulnerability multiplier', () => {
+			const sender = new TestFighter(14, []);
+			const receiver = new TestFighter(14, []);
+			vi.spyOn(FightActionController, 'getAttackDamage').mockReturnValue(100);
+			vi.spyOn(FightActionController, 'applySecondaryEffects').mockReturnValue({damages: 100, status: FightActionStatus.NORMAL});
+			vi.spyOn(FightActionDataController, 'getFightActionFunction').mockReturnValue(intenseAttack);
+			const action = FightActionDataController.instance.getById('intenseAttack')!;
+			receiver.applyResistance({type: action.type, value: -0.5, turns: 1});
+
+			const result = action.use(sender, receiver, 1, {} as FightController);
+
+			expect(result.damages).toBe(99);
+			expect(receiver.getEnergy()).toBe(1);
+		});
+
+		it('preserves reflected damage against a nearly defeated receiver', () => {
+			const sender = new TestFighter(14, []);
+			const receiver = new TestFighter(14, []);
+			receiver.damage(95);
+			sender.setEnchantmentDamageDealtMultiplier(1.2);
+			vi.spyOn(FightActionController, 'getAttackDamage').mockReturnValue(100);
+			vi.spyOn(FightActionController, 'applySecondaryEffects').mockReturnValue({damages: 100, status: FightActionStatus.NORMAL});
+			vi.spyOn(FightActionDataController, 'getFightActionFunction').mockReturnValue(intenseAttack);
+			const action = FightActionDataController.instance.getById('intenseAttack')!;
+			receiver.applyResistance({type: action.type, value: 0.5, turns: 1, reflectDamage: true});
+
+			const result = action.use(sender, receiver, 1, {} as FightController);
+
+			expect(result.damages).toBe(3);
+			expect(result.reflectedDamages).toBe(3);
+			expect(receiver.getEnergy()).toBe(2);
+			expect(sender.getEnergy()).toBe(97);
+		});
+
+		it('still lets an ordinary enchanted attack defeat the receiver', () => {
+			const sender = new TestFighter(14, []);
+			const receiver = new TestFighter(14, []);
+			sender.setEnchantmentDamageDealtMultiplier(1.2);
+			vi.spyOn(FightActionController, 'getAttackDamage').mockReturnValue(100);
+			vi.spyOn(FightActionController, 'applySecondaryEffects').mockReturnValue({damages: 100, status: FightActionStatus.NORMAL});
+			vi.spyOn(FightActionDataController, 'getFightActionFunction').mockReturnValue(simpleAttack);
+			const action = FightActionDataController.instance.getById('simpleAttack')!;
+
+			const result = action.use(sender, receiver, 1, {} as FightController);
+
+			expect(result.damages).toBe(120);
+			expect(receiver.isDead()).toBe(true);
+		});
+	});
+
 	describe('getRandomAvailableFightAction', () => {
 		let fighter: TestFighter;
 		let mockActions: FightAction[];

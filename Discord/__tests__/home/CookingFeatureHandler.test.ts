@@ -369,8 +369,8 @@ describe("CookingFeatureHandler", () => {
 
 			expect(result).toBe(true);
 			expect(interaction.deferUpdate).toHaveBeenCalled();
-			// Wood cancel is fire-and-forget: uses PacketUtils.sendPacketToBackend
-			expect(PacketUtils.sendPacketToBackend).toHaveBeenCalled();
+			await simulateMqttResponse(CommandReportCookingMenuRes.name, {menu: {cookingLevel: 0, cookingGrade: "kitchenHelper", currentSlots: [], isIgnited: false}} as CommandReportCookingMenuRes);
+			expect(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse).toHaveBeenCalled();
 			expect(nestedMenus.registerMenu).toHaveBeenCalledWith(
 				HomeMenuIds.COOKING_MENU,
 				expect.objectContaining({
@@ -607,7 +607,8 @@ describe("CookingFeatureHandler", () => {
 				// No prior slots, so should go back to cooking menu
 				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_WOOD_CANCEL, interaction as any, nestedMenus as any);
 
-				expect(PacketUtils.sendPacketToBackend).toHaveBeenCalled();
+				await simulateMqttResponse(CommandReportCookingMenuRes.name, {menu: {cookingLevel: 0, cookingGrade: "kitchenHelper", currentSlots: [], isIgnited: false}} as CommandReportCookingMenuRes);
+				expect(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse).toHaveBeenCalled();
 				expect(nestedMenus.registerMenu).toHaveBeenCalledWith(
 					HomeMenuIds.COOKING_MENU,
 					expect.objectContaining({
@@ -640,6 +641,7 @@ describe("CookingFeatureHandler", () => {
 				const cancelInteraction = createMockComponentInteraction(HomeMenuIds.COOKING_WOOD_CANCEL);
 				const nestedMenus = createMockNestedMenus();
 				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_WOOD_CANCEL, cancelInteraction as any, nestedMenus as any);
+				await simulateMqttResponse(CommandReportCookingMenuRes.name, {menu: {cookingLevel: 5, cookingGrade: "apprentice", currentSlots: [], isIgnited: false}} as CommandReportCookingMenuRes);
 
 				// Should register ignited menu since we have slots
 				expect(nestedMenus.registerMenu).toHaveBeenCalledWith(

@@ -8,8 +8,10 @@ import { NotificationPacket } from "../../../../Lib/src/packets/notifications/No
 import { NotificationsSerializedPacket } from "../../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
 import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeathPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
+import { DiscordNotificationPreferencesRequest } from "../../../../Lib/src/types/NotificationPreferences";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { publishAppNotifications } from "../bot/AppNotifications";
 
 export type InternalErrorDetails = {
 
@@ -26,6 +28,12 @@ export type InternalErrorDetails = {
 };
 
 export abstract class PacketUtils {
+	static webSocketContextForPlayer(context: PacketContext, keycloakId: string): PacketContext {
+		return {
+			frontEndOrigin: context.frontEndOrigin, frontEndSubOrigin: context.frontEndSubOrigin, keycloakId, webSocket: {}
+		};
+	}
+
 	/**
 	 * Report a failure the player can do nothing about. The reason describes what went wrong and is shown to the
 	 * player so they can write a useful bug report, while the caught exception is only logged server-side (CWE-209).
@@ -99,6 +107,20 @@ export abstract class PacketUtils {
 		CrowniclesLogger.debug("Sent Discord announcement", { json });
 	}
 
+	/**
+	 * Publish an announcement only to the fronts listening right now: a live notification must not be replayed when a front restarts.
+	 */
+	static broadcast(announcement: AnnouncementPacket, topic: string): void {
+		const json = JSON.stringify(announcement);
+		mqttClient.publish(topic, json);
+		CrowniclesLogger.debug("Sent live announcement", { json });
+	}
+
+	/** Asks Discord for a player's notification settings; it answers with a `DiscordNotificationPreferencesPacket`. */
+	static requestDiscordNotificationPreferences(request: DiscordNotificationPreferencesRequest): void {
+		mqttClient.publish(MqttTopicUtils.getDiscordNotificationPreferencesRequestTopic(botConfig.PREFIX), JSON.stringify(request));
+	}
+
 	static isMqttConnected(): boolean {
 		return mqttClient.connected;
 	}
@@ -116,5 +138,7 @@ export abstract class PacketUtils {
 			qos: 2
 		});
 		CrowniclesLogger.debug("Sent notifications", { json });
+		publishAppNotifications(notifications)
+			.catch(error => CrowniclesLogger.errorWithObj("Could not send app notifications", error));
 	}
 }

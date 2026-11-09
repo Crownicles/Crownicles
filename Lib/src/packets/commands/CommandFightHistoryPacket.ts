@@ -5,6 +5,10 @@ import { EloGameResult } from "../../types/EloGameResult";
 import { KingGuardFightStats } from "../../types/KingGuardFightStats";
 
 type FightHistoryItemBase = {
+
+	/** Id of the fight in its log table, unique within a fight kind only */
+	id: number;
+
 	result: EloGameResult;
 
 	classes: {

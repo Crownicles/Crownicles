@@ -18,4 +18,19 @@ export abstract class MigrationNameChanger {
 
 		return false;
 	}
+
+	/**
+	 * Like changeMigrationName, for a migration renumbered more than once: whichever former name the database knows is renamed.
+	 * @param context The query interface.
+	 * @param oldNames Every former name of the migration.
+	 * @returns True if one of the former names was found and renamed, false otherwise.
+	 */
+	static async changeMigrationNameFromAny(context: QueryInterface, oldNames: readonly string[]): Promise<boolean> {
+		for (const oldName of oldNames) {
+			if (await MigrationNameChanger.changeMigrationName(context, oldName)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

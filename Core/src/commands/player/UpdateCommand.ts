@@ -7,6 +7,7 @@ import {
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
+import { version } from "../../../package.json";
 
 export default class UpdateCommand {
 	@commandRequires(CommandUpdatePacketReq, {
@@ -15,7 +16,7 @@ export default class UpdateCommand {
 	})
 	execute(response: CrowniclesPacket[]): void {
 		response.push(makePacket(CommandUpdatePacketRes, {
-			coreVersion: process.env.npm_package_version
+			coreVersion: process.env.npm_package_version ?? version
 		}));
 	}
 }

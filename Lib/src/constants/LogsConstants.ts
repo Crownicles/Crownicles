@@ -79,7 +79,8 @@ export enum NumberChangeReason {
 	BLACKSMITH_ENCHANTMENT_TRANSFER,
 
 	// King's challenge
-	KING_CHALLENGE
+	KING_CHALLENGE,
+	ROYAL_MAIL
 }
 
 export enum ShopItemType {

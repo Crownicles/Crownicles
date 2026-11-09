@@ -1,9 +1,9 @@
 import {
 	afterEach, beforeEach, describe, expect, it, vi
 } from "vitest";
-import { handleCookingCraft } from "../../../src/core/report/ReportCookingService";
+import { handleCookingCraft, handleCookingMenu, handleCookingIgnite, handleCookingWoodConfirm, handleCookingRevive } from "../../../src/core/report/ReportCookingService";
 import {
-	CommandReportCookingCraftReq, CookingCraftErrors, CookingSlotData
+	CommandReportCookingCraftReq, CookingCraftErrors, CookingSlotData, CommandReportCookingUnavailableRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import type { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -19,6 +19,7 @@ import {
 import {
 	Home, Homes
 } from "../../../src/core/database/game/models/Home";
+import {MaterialRarity} from "../../../../Lib/src/types/MaterialRarity";
 
 const player = {
 	id: 42,
@@ -88,5 +89,32 @@ describe("handleCookingCraft snapshot guard", () => {
 				isIgnited: true
 			}
 		});
+	});
+
+	it("answers unavailable when no cooking-capable home exists", async () => {
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(null);
+		for (const response of [
+			await handleCookingMenu(player.keycloakId, {}),
+			await handleCookingIgnite(player.keycloakId, {}),
+			await handleCookingCraft(player.keycloakId, {recipeId: currentRecipeId, slotIndex: 3}, {} as PacketContext)
+		]) {
+			expect(response).toHaveLength(1);
+			expect(response[0]).toBeInstanceOf(CommandReportCookingUnavailableRes);
+		}
+	});
+
+	it("does not consume wood when confirmation has expired or is refused", async () => {
+		const pendingMissing = await handleCookingWoodConfirm(player.keycloakId, {accepted: true});
+		expect(pendingMissing[0]).toBeInstanceOf(CommandReportCookingUnavailableRes);
+		const declined = await handleCookingWoodConfirm(player.keycloakId, {accepted: false});
+		expect(declined[0]).toMatchObject({menu: {isIgnited: false, currentSlots: []}});
+		expect(CookingService.executeCraft).not.toHaveBeenCalled();
+	});
+
+	it("keeps the lit menu when a rare-wood revival is declined", async () => {
+		vi.spyOn(CookingService, "getWoodToConsume").mockResolvedValue({materialId: 9, rarity: MaterialRarity.UNCOMMON, needsConfirmation: true});
+		await handleCookingRevive(player.keycloakId, {});
+		const response = await handleCookingWoodConfirm(player.keycloakId, {accepted: false});
+		expect(response[0]).toMatchObject({menu: {isIgnited: true, currentSlots: [currentSlot]}});
 	});
 });

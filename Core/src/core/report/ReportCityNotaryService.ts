@@ -121,10 +121,11 @@ async function runApartmentBuyUnderLock(params: {
 	lockedPlayer: Locked<Player>;
 	city: City;
 	price: number;
+	isRented: boolean;
 	response: CrowniclesPacket[];
 }): Promise<void> {
 	const {
-		lockedPlayer, city, price, response
+		lockedPlayer, city, price, isRented, response
 	} = params;
 
 	// Re-validate ownership against the locked player.
@@ -150,7 +151,8 @@ async function runApartmentBuyUnderLock(params: {
 	response.push(makePacket(CommandReportApartmentBuyRes, {
 		cityId: city.id,
 		mapLocationId: city.maps[0],
-		cost: price
+		cost: price,
+		isRented
 	}));
 
 	await MissionsController.update(lockedPlayer, response, { missionId: "buyApartment" });
@@ -198,7 +200,7 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 	}
 
 	await withLockedPlayerAndMissions(player.id, lockedPlayer => runApartmentBuyUnderLock({
-		lockedPlayer, city, price, response
+		lockedPlayer, city, price, isRented: playerHome.cityId === city.id, response
 	}));
 }
 

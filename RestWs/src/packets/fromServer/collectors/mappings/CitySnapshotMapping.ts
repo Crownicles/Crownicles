@@ -1,0 +1,277 @@
+import {
+	EnchanterCityData, ReactionCollectorCityData
+} from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { DisenchantableItem } from "../../../../../../Lib/src/types/DisenchantableItem";
+import { homeUpgradeChanges } from "../../../../../../Lib/src/utils/HomeUpgradeChanges";
+import type {
+	CityMobileBeyondReachItem,
+	CityMobileEnchantmentTransfer,
+	CityMobileEnchantedItem,
+	CityMobileItem,
+	CityMobileRecycleItem,
+	CityMobileSnapshot,
+	CityMobileUpgradeItem
+} from "../../../../../../WsPackets/src/fromServer/collectors/families/CityCollectors";
+
+type CityMobileOwnedHome = NonNullable<NonNullable<CityMobileSnapshot["home"]>["owned"]>;
+type CityMobileGarden = NonNullable<CityMobileOwnedHome["garden"]>;
+type CityMobileHomeManage = NonNullable<NonNullable<CityMobileSnapshot["home"]>["manage"]>;
+type CityMobileApartmentNotary = NonNullable<CityMobileSnapshot["apartmentNotary"]>;
+type CityMobileBlacksmith = NonNullable<CityMobileSnapshot["blacksmith"]>;
+type CityMobileScrapDealer = NonNullable<CityMobileSnapshot["scrapDealer"]>;
+type CityMobileRoyalBlacksmith = NonNullable<CityMobileSnapshot["royalBlacksmith"]>;
+type CityMobileEnchanter = NonNullable<CityMobileSnapshot["enchanter"]>;
+type CityMobileGuildDomain = NonNullable<CityMobileSnapshot["guildDomain"]>;
+type CityMobileGuildDomainNotary = NonNullable<CityMobileSnapshot["guildDomainNotary"]>;
+type CityMobileGuildFoodShop = NonNullable<CityMobileSnapshot["guildFoodShop"]>;
+
+function itemSnapshot(item: {
+	slot: number;
+	category: number;
+	details: {
+		id: number; itemLevel: number;
+	};
+}): CityMobileItem {
+	return {
+		slot: item.slot, itemId: item.details.id, itemCategory: item.category, itemLevel: item.details.itemLevel
+	};
+}
+
+function upgradeItemSnapshot(item: {
+	category: number;
+	slot: number;
+	details: {
+		id: number; itemLevel: number;
+	};
+	nextLevel?: number;
+	upgradeCost: number;
+	missingMaterialsCost: number;
+	hasAllMaterials: boolean;
+	canUpgrade: boolean;
+	canBuyAndUpgrade: boolean;
+	requiredMaterials: {
+		materialId: number; quantity: number; playerQuantity: number;
+	}[];
+}): CityMobileUpgradeItem {
+	return {
+		...itemSnapshot(item),
+		nextLevel: item.nextLevel ?? item.details.itemLevel + 1,
+		upgradeCost: item.upgradeCost,
+		missingMaterialsCost: item.missingMaterialsCost,
+		hasAllMaterials: item.hasAllMaterials,
+		canUpgrade: item.canUpgrade,
+		canBuyAndUpgrade: item.canBuyAndUpgrade,
+		materials: item.requiredMaterials.map(material => ({ ...material }))
+	};
+}
+
+function mapGarden(garden: NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["garden"]>): CityMobileGarden {
+	return {
+		plots: garden.plots.map(plot => ({
+			slot: plot.slot, plantId: plot.plantId, growthProgress: plot.growthProgress, isReady: plot.isReady, readyAtTimestamp: plot.readyAtTimestamp
+		})),
+		hasSeed: garden.hasSeed,
+		seedPlantId: garden.seedPlantId,
+		eligibility: { ...garden.eligibility }
+	};
+}
+
+type UpgradeStation = NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["upgradeStation"]>;
+
+/** The station works for free and sells nothing: an upgrade is only a matter of materials. */
+function mapUpgradeStation(station: UpgradeStation): NonNullable<CityMobileOwnedHome["upgradeStation"]> {
+	return {
+		upgradeableItems: station.upgradeableItems.map(item => upgradeItemSnapshot({
+			...item, upgradeCost: 0, missingMaterialsCost: 0, hasAllMaterials: item.canUpgrade, canBuyAndUpgrade: false
+		})),
+		beyondReachItems: station.beyondReachItems.map(item => ({
+			...itemSnapshot(item), limit: item.limit
+		})),
+		maxItemLevel: station.maxItemLevel,
+		maxRarity: station.maxUpgradeableRarity
+	};
+}
+
+function mapOwnedHome(ownedHome: NonNullable<ReactionCollectorCityData["home"]["owned"]>): CityMobileOwnedHome {
+	return {
+		level: ownedHome.level,
+		...ownedHome.isApartment === undefined ? {} : { isApartment: ownedHome.isApartment },
+		cookingLevel: ownedHome.cooking.level,
+		cookingSlots: ownedHome.features.cookingSlots,
+		bedHealthRegeneration: ownedHome.features.bedHealthRegeneration,
+		gardenPlots: ownedHome.features.gardenPlots,
+		hasBed: ownedHome.features.bedHealthRegeneration > 0,
+		hasChest: ownedHome.features.chestSlots.weapon + ownedHome.features.chestSlots.armor + ownedHome.features.chestSlots.object + ownedHome.features.chestSlots.potion > 0,
+		hasGarden: ownedHome.features.gardenPlots > 0,
+		hasCooking: ownedHome.features.cookingSlots > 0,
+		hasUpgradeStation: ownedHome.upgradeStation !== undefined,
+		upgradeableItemCount: ownedHome.upgradeStation?.upgradeableItems.length ?? 0,
+		...ownedHome.upgradeStation === undefined ? {} : { upgradeStation: mapUpgradeStation(ownedHome.upgradeStation) },
+		...ownedHome.chest === undefined
+			? {}
+			: {
+				chestItemCount: ownedHome.chest.chestItems.length, depositableItemCount: ownedHome.chest.depositableItems.length
+			},
+		...ownedHome.garden === undefined
+			? {}
+			: {
+				gardenReadyPlots: ownedHome.garden.plots.filter(plot => plot.isReady).length, gardenTotalPlots: ownedHome.garden.totalPlots, garden: mapGarden(ownedHome.garden)
+			}
+	};
+}
+
+type HomeManage = NonNullable<ReactionCollectorCityData["home"]["manage"]>;
+
+function homeManagePrices(manage: HomeManage): Partial<CityMobileHomeManage> {
+	return {
+		...manage.newPrice === undefined ? {} : { newPrice: manage.newPrice },
+		...manage.upgrade === undefined
+			? {}
+			: {
+				upgradePrice: manage.upgrade.price,
+				upgradeChanges: homeUpgradeChanges(manage.upgrade.oldFeatures, manage.upgrade.newFeatures)
+			},
+		...manage.movePrice === undefined ? {} : { movePrice: manage.movePrice }
+	};
+}
+
+function homeManagePermissions(manage: HomeManage): Partial<CityMobileHomeManage> {
+	return {
+		...manage.canBuy === undefined ? {} : { canBuy: manage.canBuy },
+		...manage.canUpgrade === undefined ? {} : { canUpgrade: manage.canUpgrade },
+		...manage.canMove === undefined ? {} : { canMove: manage.canMove },
+		...manage.requiredPlayerLevelForUpgrade === undefined ? {} : { requiredPlayerLevelForUpgrade: manage.requiredPlayerLevelForUpgrade },
+		...manage.isMaxLevel ? { isMaxLevel: true } : {}
+	};
+}
+
+function mapHomeManage(manage: HomeManage): CityMobileHomeManage {
+	return {
+		...homeManagePrices(manage),
+		currentMoney: manage.currentMoney,
+		...homeManagePermissions(manage)
+	};
+}
+
+function mapApartmentNotary(data: ReactionCollectorCityData["apartmentNotary"]): CityMobileApartmentNotary {
+	return {
+		...data.forSale === undefined
+			? {}
+			: { forSale: {
+				price: data.forSale.price, canAfford: data.forSale.canAfford, ...data.forSale.canAfford ? {} : { missingMoney: data.forSale.missingMoney }
+			} },
+		ownedApartments: data.ownedApartments.map(apartment => ({
+			apartmentId: apartment.apartmentId, mapLocationId: apartment.mapLocationId, accumulatedRent: apartment.accumulatedRent, isRented: apartment.isRented, canClaim: apartment.canClaim
+		})),
+		ownedCount: data.ownedApartments.length,
+
+		// Only a let apartment pays: a foothold's figure is time elapsed, not a rent the notary can hand over.
+		accumulatedRent: data.ownedApartments.filter(apartment => apartment.isRented).reduce((total, apartment) => total + apartment.accumulatedRent, 0),
+		...data.requiresHomePrice === undefined ? {} : { requiresHomePrice: data.requiresHomePrice }
+	};
+}
+
+function enchantedItemSnapshot(item: DisenchantableItem): CityMobileEnchantedItem {
+	return {
+		...itemSnapshot(item), enchantmentId: item.enchantmentId, enchantmentType: item.enchantmentType
+	};
+}
+
+function mapBlacksmith(data: NonNullable<ReactionCollectorCityData["blacksmith"]>): CityMobileBlacksmith {
+	return {
+		playerMoney: data.playerMoney,
+		upgradeableItems: data.upgradeableItems.map(upgradeItemSnapshot),
+		enchantmentTransfers: data.enchantmentTransfers.map(source => ({
+			...enchantedItemSnapshot(source),
+			targets: source.targets.map(target => ({
+				...itemSnapshot({
+					slot: target.slot, category: source.category, details: target.details
+				}),
+				cost: target.cost,
+				canAfford: target.canAfford
+			}))
+		} satisfies CityMobileEnchantmentTransfer)),
+		beyondReachItems: data.beyondReachItems.map(item => ({
+			...itemSnapshot(item), limit: item.limit
+		} satisfies CityMobileBeyondReachItem))
+	};
+}
+
+function mapScrapDealer(data: NonNullable<ReactionCollectorCityData["scrapDealer"]>): CityMobileScrapDealer {
+	return {
+		recyclableItems: data.recyclableItems.map(item => ({
+			...itemSnapshot(item), recoveredMaterials: item.recoveredMaterials.map(material => ({ ...material })), recoveredMoney: item.recoveredMoney
+		} satisfies CityMobileRecycleItem)),
+		enchantedItems: data.enchantedItems.map(itemSnapshot)
+	};
+}
+
+function mapRoyalBlacksmith(data: NonNullable<ReactionCollectorCityData["royalBlacksmith"]>): CityMobileRoyalBlacksmith {
+	return {
+		status: data.status,
+		playerLevel: data.playerLevel,
+		requiredPlayerLevel: data.requiredPlayerLevel,
+		playerMoney: data.playerMoney,
+		playerGems: data.playerGems,
+		upgradeableItems: data.upgradeableItems.map(upgradeItemSnapshot)
+	};
+}
+
+function mapEnchanter(data: EnchanterCityData): CityMobileEnchanter {
+	return {
+		enchantmentId: data.enchantmentId,
+		enchantmentType: data.enchantmentType,
+		enchantmentSlot: data.enchantmentSlot,
+		enchantmentCost: { ...data.enchantmentCost },
+		mageReduction: data.mageReduction,
+		playerMoney: data.playerMoney,
+		playerGems: data.playerGems,
+		enchantableItems: data.enchantableItems.map(item => itemSnapshot(item)),
+		disenchantableItems: data.disenchantableItems.map(enchantedItemSnapshot)
+	};
+}
+
+function mapEquipmentSnapshots(data: ReactionCollectorCityData): Pick<CityMobileSnapshot, "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith"> {
+	return {
+		...data.enchanter === undefined ? {} : { enchanter: mapEnchanter(data.enchanter) },
+		...data.blacksmith === undefined ? {} : { blacksmith: mapBlacksmith(data.blacksmith) },
+		...data.scrapDealer === undefined ? {} : { scrapDealer: mapScrapDealer(data.scrapDealer) },
+		...data.royalBlacksmith === undefined ? {} : { royalBlacksmith: mapRoyalBlacksmith(data.royalBlacksmith) }
+	};
+}
+
+function mapGuildDomain(data: NonNullable<ReactionCollectorCityData["guildDomain"]>): CityMobileGuildDomain {
+	return {
+		...data, food: { ...data.food }
+	};
+}
+
+function mapGuildSnapshots(data: ReactionCollectorCityData): Pick<CityMobileSnapshot, "guildDomain" | "guildDomainNotary" | "guildFoodShop"> {
+	return {
+		...data.guildDomain === undefined ? {} : { guildDomain: mapGuildDomain(data.guildDomain) },
+		...data.guildDomainNotary === undefined ? {} : { guildDomainNotary: { ...data.guildDomainNotary } satisfies CityMobileGuildDomainNotary },
+		...data.guildFoodShop === undefined ? {} : { guildFoodShop: { ...data.guildFoodShop } satisfies CityMobileGuildFoodShop }
+	};
+}
+
+export function mapCitySnapshot(data: ReactionCollectorCityData): CityMobileSnapshot {
+	const snapshot: CityMobileSnapshot = {
+		energy: data.energy,
+		health: data.health,
+		inns: data.inns?.map(inn => ({ innId: inn.innId })),
+		...data.minimumCityStayScore ? { minimumCityStayScore: data.minimumCityStayScore } : {},
+		...data.innCooldowns === undefined ? {} : { innCooldowns: { ...data.innCooldowns } },
+		shops: data.shops?.map(shop => ({
+			shopId: shop.shopId, isEmpty: Boolean(shop.isEmpty)
+		})),
+		home: {
+			owned: data.home.owned ? mapOwnedHome(data.home.owned) : undefined,
+			manage: data.home.manage ? mapHomeManage(data.home.manage) : undefined,
+			...data.home.elsewhere === undefined ? {} : { elsewhere: { ...data.home.elsewhere } }
+		},
+		apartmentNotary: mapApartmentNotary(data.apartmentNotary)
+	};
+	return {
+		...snapshot, ...mapEquipmentSnapshots(data), ...mapGuildSnapshots(data)
+	};
+}

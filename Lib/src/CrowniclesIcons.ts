@@ -212,6 +212,14 @@ export const CrowniclesIcons: {
 		switch: string;
 		withdraw: string;
 	};
+	navigation: {
+		adventure: string;
+		profile: string;
+		pet: string;
+		guild: string;
+		fight: string;
+		journal: string;
+	};
 	other: { [otherId: string]: string };
 	guild: {
 		icon: string;
@@ -252,6 +260,7 @@ export const CrowniclesIcons: {
 		won: string;
 		lost: string;
 		draw: string;
+		menu: string;
 	};
 	items: {
 		drinkPotion: string;
@@ -271,12 +280,17 @@ export const CrowniclesIcons: {
 		shops: { [shopId: string]: string };
 		home: { [level: number]: string };
 		manageHome: string;
+		homePurchases: {
+			buy: string;
+			move: string;
+		};
 		guildDomain: {
 			menu: string;
 			shop: string;
 			shelter: string;
 			pantry: string;
 			trainingGround: string;
+			recruitmentOffice: string;
 		};
 		guildDomainNotary: string;
 		apartmentNotary: {
@@ -2464,7 +2478,8 @@ export const CrowniclesIcons: {
 		campaign: "📖",
 		sideMission: "📜",
 		total: "🧾",
-		book: "📖"
+		book: "📖",
+		rewards: "👑"
 	},
 	messages: {
 		validate: "✅",
@@ -2619,6 +2634,14 @@ export const CrowniclesIcons: {
 		switch: "🔄",
 		withdraw: "📤"
 	},
+	navigation: {
+		adventure: "🧭",
+		profile: "👤",
+		pet: "🐾",
+		guild: "🏰",
+		fight: "⚔️",
+		journal: "📔"
+	},
 	other: {
 		trash: "🗑️",
 		tada: "🎉",
@@ -2643,7 +2666,11 @@ export const CrowniclesIcons: {
 		car: "🚗",
 		walking: "🚶",
 		leagueUp: "↗️",
-		leagueDown: "↘️"
+		leagueDown: "↘️",
+		explosion: "💥",
+		royalLetter: "✉️",
+		seal: "🏵️",
+		guide: "💁‍♀️"
 	},
 	guild: {
 		icon: "🏟️",
@@ -2737,7 +2764,8 @@ export const CrowniclesIcons: {
 	fightHistory: {
 		won: "🟢",
 		lost: "🔴",
-		draw: "🟡"
+		draw: "🟡",
+		menu: "📜"
 	},
 	items: { drinkPotion: "🥤" },
 	city: {
@@ -2755,10 +2783,12 @@ export const CrowniclesIcons: {
 		shops: {
 			royalMarket: "💎",
 			generalShop: "🛒",
+			materialMerchant: "📦",
 			stockExchange: "💎",
 			tanner: "🧳",
 			herbalist: "🌿",
-			lumberjack: "🪵"
+			lumberjack: "🪵",
+			veterinarian: "🧑‍⚕️"
 		},
 		home: {
 			1: "🏕️",
@@ -2771,12 +2801,17 @@ export const CrowniclesIcons: {
 			8: "🏡"
 		},
 		manageHome: "🧑‍💼",
+		homePurchases: {
+			buy: "🏠",
+			move: "📦"
+		},
 		guildDomain: {
 			menu: "🏰",
 			shop: "🛒",
 			shelter: "🐾",
 			pantry: "🍖",
-			trainingGround: "⚔️"
+			trainingGround: "⚔️",
+			recruitmentOffice: "📢"
 		},
 		guildDomainNotary: "📋",
 		apartmentNotary: {

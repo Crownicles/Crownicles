@@ -7,9 +7,11 @@ import {
 	CommandPetTransferFeistyErrorPacket,
 	CommandPetTransferNoPetErrorPacket,
 	CommandPetTransferPetOnExpeditionErrorPacket,
+	CommandPetTransferProbationErrorPacket,
 	CommandPetTransferSituationChangedErrorPacket,
 	CommandPetTransferSuccessPacket
 } from "../../../../../../Lib/src/packets/commands/CommandPetTransferPacket";
+import { finishInTimeDisplay } from "../../../../../../Lib/src/utils/TimeUtils";
 import { KeycloakUtils } from "../../../../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../../../../bot/CrowniclesShard";
 import { handlePetTransferSuccess } from "../../../../commands/pet/PetTransferCommand";
@@ -56,5 +58,10 @@ export default class PetTransferCommandPacketHandlers {
 	@packetHandler(CommandPetTransferPetOnExpeditionErrorPacket)
 	async petOnExpeditionError(context: PacketContext, _packet: CommandPetTransferPetOnExpeditionErrorPacket): Promise<void> {
 		await handleClassicError(context, "commands:petTransfer.petOnExpedition");
+	}
+
+	@packetHandler(CommandPetTransferProbationErrorPacket)
+	async probationError(context: PacketContext, packet: CommandPetTransferProbationErrorPacket): Promise<void> {
+		await handleClassicError(context, "commands:petTransfer.probationError", { time: finishInTimeDisplay(new Date(packet.probationEndsAt)) });
 	}
 }

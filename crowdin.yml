@@ -1,6 +1,13 @@
 files:
   - source: /Lang/fr/*.json
     translation: /Lang/%two_letters_code%/%file_name%.json
+  # Keycloak formats these messages with MessageFormat: an apostrophe is written ''
+  - source: /keycloak/theme/login/messages/messages_fr.properties
+    translation: /keycloak/theme/login/messages/messages_%two_letters_code%.properties
+    escape_quotes: 3
+  - source: /keycloak/theme/email/messages/messages_fr.properties
+    translation: /keycloak/theme/email/messages/messages_%two_letters_code%.properties
+    escape_quotes: 3
 commit_message: update translations from Crowdin
 pull_request_labels:
   - translations

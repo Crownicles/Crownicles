@@ -1,0 +1,92 @@
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { KeycloakUtils } = require("../../Lib/dist/src/keycloak/KeycloakUtils.js");
+const { KeycloakConstants } = require("../../Lib/dist/src/constants/KeycloakConstants.js");
+const PAGE_SIZE = 100;
+const APPLY_FLAG = "--apply";
+
+function configuration() {
+	const names = {
+		url: "KEYCLOAK_URL",
+		realm: "KEYCLOAK_REALM",
+		clientId: "KEYCLOAK_CLIENT_ID",
+		clientSecret: "KEYCLOAK_CLIENT_SECRET"
+	};
+	return Object.fromEntries(Object.entries(names).map(([field, name]) => {
+		const value = process.env[name];
+		if (!value) throw new Error(`Missing ${name}`);
+		return [field, value];
+	}));
+}
+
+function applyRequested() {
+	const unknown = process.argv.slice(2).filter(argument => argument !== APPLY_FLAG);
+	if (unknown.length) throw new Error("Only --apply is supported; default is read-only");
+	return process.argv.includes(APPLY_FLAG);
+}
+
+function payloadOf(result, action) {
+	if (result.isError) throw new Error(`Could not ${action}: HTTP ${result.status}`);
+	return result.payload;
+}
+
+async function* allUsers(config) {
+	for (let first = 0; ;) {
+		const {users} = payloadOf(await KeycloakUtils.getUsersPage(config, first, PAGE_SIZE), "read users");
+		if (!users.length) return;
+		yield* users;
+		first += users.length;
+	}
+}
+
+function isLegacyCandidate(user) {
+	const discordId = user.attributes?.discordId?.[0];
+	return Boolean(discordId) && user.username === `discord-${discordId}`;
+}
+
+async function run() {
+	const apply = applyRequested();
+	const config = configuration();
+	const totals = {scanned: 0, candidates: 0, alreadyLinked: 0, needsLink: 0, linked: 0, conflicts: 0};
+	for await (const user of allUsers(config)) {
+		totals.scanned++;
+		if (!isLegacyCandidate(user)) continue;
+		totals.candidates++;
+		await processCandidate(config, user, {apply, totals});
+	}
+	console.log(JSON.stringify({mode: apply ? "apply" : "read-only", ...totals}, null, 2));
+	if (totals.conflicts) process.exitCode = 1;
+}
+
+function discordLinkState(identities, discordId) {
+	const existing = identities.find(identity => identity.identityProvider === KeycloakConstants.IDENTITY_PROVIDERS.DISCORD);
+	if (!existing) return "needsLink";
+	return existing.userId === discordId ? "alreadyLinked" : "conflicts";
+}
+
+async function inspectCandidate(config, user) {
+	const discordId = user.attributes.discordId[0];
+	const {identities} = payloadOf(await KeycloakUtils.getFederatedIdentities(config, user.id), "inspect identities");
+	const {users} = payloadOf(await KeycloakUtils.getDiscordIdentityOwners(config, discordId), "inspect identity ownership");
+	if (users.some(owner => owner.id !== user.id)) return "conflicts";
+	return discordLinkState(identities, discordId);
+}
+
+async function processCandidate(config, user, {apply, totals}) {
+	const outcome = await inspectCandidate(config, user);
+	totals[outcome]++;
+	if (outcome !== "needsLink" || !apply) return;
+	totals[linkOutcome(await KeycloakUtils.linkLegacyDiscordUser(config, user))]++;
+}
+
+function linkOutcome(result) {
+	if (!result.isError) return result.payload.changed ? "linked" : "alreadyLinked";
+	if (result.status !== 409) throw new Error(`Could not link a historical identity: HTTP ${result.status}`);
+	return "conflicts";
+}
+
+run().catch(error => {
+	console.error(error.message);
+	process.exitCode = 1;
+});

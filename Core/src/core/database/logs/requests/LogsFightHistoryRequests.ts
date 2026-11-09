@@ -83,6 +83,7 @@ export abstract class LogsFightHistoryRequests {
 	 */
 	private static buildKingGuardFightHistoryItem(fight: LogsKingGuardFightsResults): KingGuardFightHistoryItem {
 		return {
+			id: fight.id,
 			date: secondsToMilliseconds(asSeconds(fight.date)),
 			result: KING_GUARD_FIGHT_RESULTS[fight.winner],
 			classes: {
@@ -136,6 +137,7 @@ export abstract class LogsFightHistoryRequests {
 
 		// Build the fight history item
 		return {
+			id: fight.id,
 			initiator: isInitiator,
 			opponentKeycloakId: isInitiator ? fight.LogsPlayer2.keycloakId : fight.LogsPlayer1.keycloakId,
 			date: secondsToMilliseconds(asSeconds(fight.date)),

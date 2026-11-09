@@ -7,6 +7,7 @@ import {
 import { CommandsTest } from "../../core/CommandsTest";
 import { adminCommand } from "../../core/utils/CommandUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { botConfig } from "../../bootstrap";
 
 /**
  * Command to get the list of all available test commands for autocomplete
@@ -27,10 +28,13 @@ export default class TestListCommand {
 			.map(cmd => ({
 				name: cmd.name,
 				aliases: cmd.aliases,
-				category: cmd.category
+				category: cmd.category,
+				description: cmd.description,
+				format: cmd.commandFormat
 			}));
 
 		response.push(makePacket(CommandTestListPacketRes, {
+			testMode: botConfig.TEST_MODE,
 			commands
 		}));
 	}

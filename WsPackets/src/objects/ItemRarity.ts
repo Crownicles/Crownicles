@@ -1,0 +1,11 @@
+export enum ItemRarity {
+	BASIC,
+	COMMON,
+	UNCOMMON,
+	EXOTIC,
+	RARE,
+	SPECIAL,
+	EPIC,
+	LEGENDARY,
+	MYTHICAL
+}

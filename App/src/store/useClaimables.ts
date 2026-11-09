@@ -1,0 +1,122 @@
+import { makeFromClientPacket } from "ws-packets/src/MakePackets";
+import { InventoryReq } from "ws-packets/src/fromClient/InventoryReq";
+import { LeagueInfoReq } from "ws-packets/src/fromClient/RankingsReq";
+import { InventoryRes } from "ws-packets/src/fromServer/inventory/InventoryRes";
+import { LeagueInfoRes } from "ws-packets/src/fromServer/fight/RankingsRes";
+import { GuildRes } from "ws-packets/src/fromServer/guild/GuildRes";
+import { PetRes } from "ws-packets/src/fromServer/pet/PetRes";
+import { PlayerNotFound } from "ws-packets/src/fromServer/common/PlayerNotFound";
+import { GameClient } from "@/src/networking/GameClient";
+import { GAME_ENTITIES } from "@/src/store/GameEntities";
+import {
+	RequestState, useGameQuery
+} from "@/src/store/useGameQuery";
+import { useOwnGuild } from "@/src/store/useGuild";
+import { useOwnPet } from "@/src/store/useKnownPet";
+import { useMissionRewards } from "@/src/store/MissionRewardsStore";
+import { usePlayerProfile } from "@/src/store/usePlayerProfile";
+import { useReportView } from "@/src/store/useReportActions";
+import { givesDailyBonus } from "@/src/display/ItemEffects";
+import {
+	LeagueClaimant, leagueRewardLock
+} from "@/src/display/Leagues";
+import { useCurrentTime } from "@/src/store/useCurrentTime";
+import {
+	JOURNEY_TABS, JourneyTab
+} from "@/src/journey/Journey";
+
+/** A daily bonus, a guild reward or an expedition's finds become available on their own: the pills look at the clock this often. */
+export const CLAIMABLES_TICK_MS = 30_000;
+
+/** The player's own inventory, one query shared by every screen that needs it. */
+export function useOwnInventory(): RequestState<InventoryRes> {
+	return useGameQuery(
+		GAME_ENTITIES.INVENTORY,
+		() => GameClient.request(makeFromClientPacket(InventoryReq, { askedPlayer: {} }), InventoryRes, [PlayerNotFound])
+	);
+}
+
+/** The leagues and where the player stands among them. */
+export function useLeagueInfo(): RequestState<LeagueInfoRes> {
+	return useGameQuery(GAME_ENTITIES.LEAGUES, () => GameClient.request(makeFromClientPacket(LeagueInfoReq, {}), LeagueInfoRes));
+}
+
+/** The daily bonus waits once its delay ran out and an object, worn or kept aside, can give it. */
+export function dailyBonusClaimable(state: RequestState<InventoryRes>, now: number): boolean {
+	if (state.status !== "ready" || now === 0) {
+		return false;
+	}
+	const {
+		data, dailyBonusAvailableAt
+	} = state.data;
+	if (!data) {
+		return false;
+	}
+	const waiting = dailyBonusAvailableAt === undefined || dailyBonusAvailableAt > now;
+	if (waiting) {
+		return false;
+	}
+	return givesDailyBonus(data.object) || data.backupObjects.some(entry => givesDailyBonus(entry.display));
+}
+
+/** The profile and the journey the reward command is checked against, read from the requests the tabs already share. */
+export function useLeagueClaimant(): LeagueClaimant {
+	const profile = usePlayerProfile();
+	const report = useReportView();
+	const travel = report.status === "ready" ? report.data.travel : undefined;
+	return {
+		profile: profile.status === "ready" ? profile.data : null,
+		...travel ? { travel } : {}
+	};
+}
+
+/** Only a reward the claim button would accept is pointed at, so the badge waits for the profile. */
+export function leagueRewardClaimable(state: RequestState<LeagueInfoRes>, claimant: LeagueClaimant): boolean {
+	return state.status === "ready" && claimant.profile !== null && !leagueRewardLock(state.data.rewardAvailability, claimant);
+}
+
+/** The guild reward waits once its delay ran out, unless a member exploring the island froze it. */
+export function guildDailyClaimable(state: RequestState<GuildRes>, now: number): boolean {
+	const daily = state.status === "ready" ? state.data.data?.membership?.daily : undefined;
+	return daily !== undefined && now !== 0 && !daily.blockedByIsland && daily.availableAt <= now;
+}
+
+/** The pet's finds wait from the moment it is due back from its expedition, until they are claimed. */
+export function expeditionClaimable(state: RequestState<PetRes>, now: number): boolean {
+	const expedition = state.status === "ready" ? state.data.expeditionInProgress : undefined;
+	return expedition !== undefined && now !== 0 && expedition.endTime <= now;
+}
+
+export function useMissionsToClaim(): number {
+	return useMissionRewards().rewards.missions.length;
+}
+
+export function useDailyBonusToClaim(): number {
+	const now = useCurrentTime(CLAIMABLES_TICK_MS);
+	return dailyBonusClaimable(useOwnInventory(), now) ? 1 : 0;
+}
+
+export function useLeagueRewardToClaim(): number {
+	return leagueRewardClaimable(useLeagueInfo(), useLeagueClaimant()) ? 1 : 0;
+}
+
+export function useGuildDailyToClaim(): number {
+	const now = useCurrentTime(CLAIMABLES_TICK_MS);
+	return guildDailyClaimable(useOwnGuild(), now) ? 1 : 0;
+}
+
+export function useExpeditionToClaim(): number {
+	const now = useCurrentTime(CLAIMABLES_TICK_MS);
+	return expeditionClaimable(useOwnPet(), now) ? 1 : 0;
+}
+
+/** How many rewards wait behind each tab, so the bar leads the player to them. */
+export function useTabClaimables(): Partial<Record<JourneyTab, number>> {
+	return {
+		[JOURNEY_TABS.ADVENTURE]: useMissionsToClaim(),
+		[JOURNEY_TABS.PROFILE]: useDailyBonusToClaim(),
+		[JOURNEY_TABS.PET]: useExpeditionToClaim(),
+		[JOURNEY_TABS.GUILD]: useGuildDailyToClaim(),
+		[JOURNEY_TABS.ARENA]: useLeagueRewardToClaim()
+	};
+}

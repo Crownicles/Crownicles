@@ -109,6 +109,7 @@ describe("King guard fights in the fight history", () => {
 
 		expect(history.map(fight => fight.date)).toEqual([3_000_000, 2_000_000, 1_000_000]);
 		expect(history[0]).toEqual({
+			id: expect.any(Number),
 			date: 3_000_000,
 			result: EloGameResult.WIN,
 			classes: {

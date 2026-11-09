@@ -1,5 +1,4 @@
 import { StringConstants } from "../constants/StringConstants";
-import { ConstantRange } from "../constants/Constants";
 
 /**
  * Remove discord formatting scrap from usernames
@@ -44,28 +43,6 @@ export function progressBar(value: number, maxValue: number): string {
 
 	// Creating the bar
 	return `\`\`\`[${progressText}${emptyProgressText}]${percentageText}\`\`\``;
-}
-
-/**
- * Check if a name is valid (is used to check guilds or pet names and guild descriptions)
- * @param name - the string to check
- * @param range - custom range for the name length
- */
-export function checkNameString(name: string, range: ConstantRange): boolean {
-	// Here are the characters that are allowed in a name or description
-	const regexAllowed = /^[A-Za-z0-9 ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû!,'.:()-]+$/u;
-
-	/*
-	 * Here are the scenarios where the name is not valid and checked by this regex :
-	 * The name contains only numbers ^[0-9 ]+$ (only numbers and spaces)
-	 * $|( {2}) is used to check if there are 2 spaces in a row
-	 * $|([ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû]{2}) is used to check if there are 2 special characters in a row
-	 * $|([!,'.:()]{2}) is used to check if there are 2 punctuation characters in a row
-	 */
-	const regexSpecialCases = /^[0-9 ]+$|( {2})+$|([ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû]{2})+$|([!,'.:()-]{2})+/u;
-
-	// We also check for the length of the name
-	return regexAllowed.test(name) && !regexSpecialCases.test(name) && name.length >= range.MIN && name.length <= range.MAX;
 }
 
 /**

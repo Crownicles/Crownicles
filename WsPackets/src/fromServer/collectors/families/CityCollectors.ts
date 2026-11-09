@@ -1,0 +1,350 @@
+import {
+	GuildDomainSnapshot, GuildFoodShop
+} from "../../../objects/GuildDomain";
+import { HomeUpgradeChange } from "../../../objects/HomeUpgrade";
+
+import {
+	ReactionCollectorDataKind,
+	ReactionCollectorReactionKind
+} from "../ReactionCollectorProtocol";
+
+/**
+ * Data needed to render the mobile city screens without leaking the complete server-side models.
+ * Reactions remain the source of truth for actions; this snapshot is display-only.
+ */
+export type CityMobileSnapshot = {
+	energy?: {
+		current: number; max: number;
+	};
+	health?: {
+		current: number; max: number;
+	};
+	inns?: { innId: string }[];
+
+	/** Points the player is sure to receive on leaving the city, a random bonus being drawn on exit. Absent when the stay has earned nothing yet. */
+	minimumCityStayScore?: number;
+
+	/** When an inn serves the player a meal or a room again, as absolute timestamps; absent once it already can. */
+	innCooldowns?: {
+		mealAvailableAt?: number; roomAvailableAt?: number;
+	};
+	shops?: {
+		shopId: string; isEmpty: boolean;
+	}[];
+	home?: {
+		owned?: {
+			level: number;
+			isApartment?: boolean;
+			cookingLevel?: number;
+			cookingSlots?: number;
+			bedHealthRegeneration: number;
+			gardenPlots: number;
+			hasBed: boolean;
+			hasChest: boolean;
+			hasGarden: boolean;
+			hasCooking: boolean;
+			hasUpgradeStation: boolean;
+			upgradeableItemCount: number;
+
+			/** Absent from servers older than the station's own screen. */
+			upgradeStation?: {
+				upgradeableItems: CityMobileUpgradeItem[];
+				beyondReachItems: CityMobileStationBeyondReachItem[];
+				maxItemLevel: number;
+				maxRarity: number;
+			};
+			chestItemCount?: number;
+			depositableItemCount?: number;
+			gardenReadyPlots?: number;
+			gardenTotalPlots?: number;
+			garden?: {
+				plots: {
+					slot: number; plantId: number; growthProgress: number; isReady: boolean; readyAtTimestamp: number;
+				}[];
+				hasSeed: boolean;
+				seedPlantId: number;
+				eligibility: {
+					canHarvest: boolean; canPlantSeed: boolean; canWaterGarden: boolean; canCompost: boolean;
+				};
+			};
+		};
+		manage?: {
+			newPrice?: number;
+			upgradePrice?: number;
+
+			/** What the upgrade brings, as keys of `commands:report.city.homes.upgradeChanges`. */
+			upgradeChanges?: HomeUpgradeChange[];
+			movePrice?: number;
+			currentMoney: number;
+			canBuy?: boolean;
+			canUpgrade?: boolean;
+			canMove?: boolean;
+
+			/** Sent when the next upgrade exists but the player is not experienced enough for it. */
+			requiredPlayerLevelForUpgrade?: number;
+			isMaxLevel?: boolean;
+		};
+
+		/** The player's home, when it stands in another city and no apartment opens it here. */
+		elsewhere?: {
+			mapLocationId: number;
+			level: number;
+			hasCooking: boolean;
+		};
+	};
+	enchanter?: {
+		enchantmentId: string;
+		enchantmentType: string;
+		enchantmentSlot: number;
+		enchantmentCost: {
+			money: number; gems: number;
+		};
+		mageReduction: boolean;
+		playerMoney: number;
+		playerGems: number;
+		enchantableItems: CityMobileItem[];
+
+		/** What Mernil strips of its enchantment for free. Absent from servers older than this service. */
+		disenchantableItems?: CityMobileEnchantedItem[];
+	};
+	blacksmith?: {
+		playerMoney: number;
+		upgradeableItems: CityMobileUpgradeItem[];
+
+		/** Enchanted equipments whose enchantment the blacksmith can move onto a bare one of the same category. */
+		enchantmentTransfers: CityMobileEnchantmentTransfer[];
+
+		/** Absent from servers older than the workbench, which only listed what could be upgraded. */
+		beyondReachItems?: CityMobileBeyondReachItem[];
+	};
+	scrapDealer?: {
+		recyclableItems: CityMobileRecycleItem[];
+
+		/** Absent from servers older than the reasons on the scrap dealer's bench. */
+		enchantedItems?: CityMobileItem[];
+	};
+	royalBlacksmith?: {
+		status: string;
+		playerLevel: number;
+		requiredPlayerLevel: number;
+		playerMoney: number;
+		playerGems: number;
+		upgradeableItems: CityMobileUpgradeItem[];
+	};
+	guildDomain?: GuildDomainSnapshot;
+	guildDomainNotary?: {
+		hasDomain: boolean;
+		cost: number;
+		treasury: number;
+		canAfford: boolean;
+	};
+	guildFoodShop?: GuildFoodShop;
+	apartmentNotary?: {
+		forSale?: {
+			price: number; canAfford: boolean; missingMoney?: number;
+		};
+		ownedApartments: {
+			apartmentId: number;
+			mapLocationId: number;
+			accumulatedRent: number;
+			isRented: boolean;
+			canClaim: boolean;
+		}[];
+		ownedCount: number;
+
+		/** The rent waiting across the let apartments; a foothold earns none. */
+		accumulatedRent: number;
+
+		/** The price of this city's apartment, sent instead of `forSale` while the player owns no home yet. */
+		requiresHomePrice?: number;
+	};
+};
+
+export type CityMobileItem = {
+	slot: number;
+	itemId: number;
+	itemCategory: number;
+	itemLevel: number;
+};
+
+export type CityMobileUpgradeItem = CityMobileItem & {
+	nextLevel: number;
+	upgradeCost: number;
+	missingMaterialsCost: number;
+	hasAllMaterials: boolean;
+	canUpgrade: boolean;
+	canBuyAndUpgrade: boolean;
+	materials: {
+		materialId: number; quantity: number; playerQuantity: number;
+	}[];
+};
+
+export type CityMobileEnchantedItem = CityMobileItem & {
+	enchantmentId: string;
+	enchantmentType: string;
+};
+
+/** An unenchanted equipment able to receive a transferred enchantment, priced by its rarity. */
+export type CityMobileEnchantmentTransferTarget = CityMobileItem & {
+	cost: number;
+	canAfford: boolean;
+};
+
+export type CityMobileEnchantmentTransfer = CityMobileEnchantedItem & {
+	targets: CityMobileEnchantmentTransferTarget[];
+};
+
+/** Why the blacksmith cannot upgrade an item: only the royal blacksmith can, or nobody can anymore. */
+export const CITY_BLACKSMITH_LIMITS = {
+	ROYAL_ONLY: "royalOnly",
+	MAXED: "maxed"
+} as const;
+export type CityBlacksmithLimit = typeof CITY_BLACKSMITH_LIMITS[keyof typeof CITY_BLACKSMITH_LIMITS];
+
+export type CityMobileBeyondReachItem = CityMobileItem & {
+	limit: CityBlacksmithLimit;
+};
+
+/** Why the home's upgrade station hands an item back: the home is too small for its level or its rarity, or nothing can improve it. */
+export const CITY_STATION_LIMITS = {
+	HOME_LEVEL: "homeLevel",
+	RARITY: "rarity",
+	MAXED: "maxed"
+} as const;
+export type CityStationLimit = typeof CITY_STATION_LIMITS[keyof typeof CITY_STATION_LIMITS];
+
+export type CityMobileStationBeyondReachItem = CityMobileItem & {
+	limit: CityStationLimit;
+};
+
+export type CityMobileRecycleItem = CityMobileItem & {
+	recoveredMaterials: {
+		materialId: number; quantity: number;
+	}[];
+	recoveredMoney: number;
+};
+
+/**
+ * The city collector keeps actions in the ordered reaction list and carries a compact display
+ * snapshot for the mobile menu. The snapshot never authorises an action; Core remains authoritative.
+ */
+declare module "../ReactionCollectorProtocol" {
+	interface ReactionCollectorDataPayloads {
+		city: {
+			mapTypeId: string;
+			mapLocationId: number;
+			availableServices: string[];
+			initialMenu?: string;
+			gardenOnly?: boolean;
+			snapshot?: CityMobileSnapshot;
+		};
+	}
+
+	interface ReactionCollectorReactionPayloads {
+		cityExit: Record<string, never>;
+		cityInnMeal: {
+			innId: string;
+			mealId: string;
+			price: number;
+			energy: number;
+		};
+		cityInnRoom: {
+			innId: string;
+			roomId: string;
+			price: number;
+			health: number;
+		};
+		cityEnchant: {
+			slot: number;
+			itemCategory: number;
+		};
+		cityEnchanterDisenchant: {
+			slot: number;
+			itemCategory: number;
+		};
+		cityShop: {
+			shopId: string;
+		};
+		cityBuyHome: Record<string, never>;
+		cityUpgradeHome: Record<string, never>;
+		cityMoveHome: Record<string, never>;
+		homeMenu: Record<string, never>;
+		homeBed: Record<string, never>;
+
+		/** Discord rebuilds the city when its chest closes; the app never shows it, its chest requests refresh the city on their own. */
+		homeChestClose: Record<string, never>;
+		cityUpgradeItem: {
+			slot: number;
+			itemCategory: number;
+		};
+		cityBlacksmithMenu: Record<string, never>;
+		cityBlacksmithUpgrade: {
+			slot: number;
+			itemCategory: number;
+			buyMaterials: boolean;
+		};
+		cityBlacksmithEnchantmentTransfer: {
+			itemCategory: number;
+			sourceSlot: number;
+			targetSlot: number;
+		};
+		cityScrapDealerMenu: Record<string, never>;
+		cityScrapDealerRecycle: {
+			slot: number;
+			itemCategory: number;
+			itemId: number;
+		};
+		cityRoyalBlacksmithMenu: Record<string, never>;
+		cityRoyalBlacksmithUpgrade: {
+			slot: number;
+			itemCategory: number;
+			buyMaterials: boolean;
+		};
+		cityGardenHarvest: Record<string, never>;
+		cityGardenWater: Record<string, never>;
+		cityGardenCompost: {
+			plantId: number;
+			quantity: number;
+		};
+		cityGuildDomainMenu: Record<string, never>;
+		cityGuildDomainNotary: Record<string, never>;
+		cityApartmentBuy: Record<string, never>;
+		cityApartmentClaimRent: {
+			apartmentId: number;
+		};
+	}
+}
+
+export const CITY_DATA_KINDS = {
+	CITY: "city"
+} as const satisfies Record<string, ReactionCollectorDataKind>;
+
+export const CITY_REACTION_KINDS = {
+	EXIT: "cityExit",
+	INN_MEAL: "cityInnMeal",
+	INN_ROOM: "cityInnRoom",
+	ENCHANT: "cityEnchant",
+	ENCHANTER_DISENCHANT: "cityEnchanterDisenchant",
+	SHOP: "cityShop",
+	BUY_HOME: "cityBuyHome",
+	UPGRADE_HOME: "cityUpgradeHome",
+	MOVE_HOME: "cityMoveHome",
+	HOME_MENU: "homeMenu",
+	HOME_BED: "homeBed",
+	HOME_CHEST_CLOSE: "homeChestClose",
+	UPGRADE_ITEM: "cityUpgradeItem",
+	BLACKSMITH_MENU: "cityBlacksmithMenu",
+	BLACKSMITH_UPGRADE: "cityBlacksmithUpgrade",
+	BLACKSMITH_ENCHANTMENT_TRANSFER: "cityBlacksmithEnchantmentTransfer",
+	SCRAP_DEALER_MENU: "cityScrapDealerMenu",
+	SCRAP_DEALER_RECYCLE: "cityScrapDealerRecycle",
+	ROYAL_BLACKSMITH_MENU: "cityRoyalBlacksmithMenu",
+	ROYAL_BLACKSMITH_UPGRADE: "cityRoyalBlacksmithUpgrade",
+	GARDEN_HARVEST: "cityGardenHarvest",
+	GARDEN_WATER: "cityGardenWater",
+	GARDEN_COMPOST: "cityGardenCompost",
+	GUILD_DOMAIN_MENU: "cityGuildDomainMenu",
+	GUILD_DOMAIN_NOTARY: "cityGuildDomainNotary",
+	APARTMENT_BUY: "cityApartmentBuy",
+	APARTMENT_CLAIM_RENT: "cityApartmentClaimRent"
+} as const satisfies Record<string, ReactionCollectorReactionKind>;

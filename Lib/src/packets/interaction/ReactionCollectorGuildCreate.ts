@@ -8,6 +8,8 @@ import {
 
 export class ReactionCollectorGuildCreateData extends ReactionCollectorData {
 	guildName!: string;
+
+	price!: number;
 }
 
 export type ReactionCollectorGuildCreatePacket = AcceptRefusePacket<ReactionCollectorGuildCreateData>;
@@ -15,7 +17,7 @@ export type ReactionCollectorGuildCreatePacket = AcceptRefusePacket<ReactionColl
 export class ReactionCollectorGuildCreate extends ReactionCollector {
 	private readonly guildName: string;
 
-	constructor(guildName: string) {
+	constructor(guildName: string, private readonly price: number) {
 		super();
 		this.guildName = guildName;
 	}
@@ -29,7 +31,8 @@ export class ReactionCollectorGuildCreate extends ReactionCollector {
 				this.buildReaction(ReactionCollectorRefuseReaction, {})
 			],
 			data: this.buildData(ReactionCollectorGuildCreateData, {
-				guildName: this.guildName
+				guildName: this.guildName,
+				price: this.price
 			})
 		};
 	}

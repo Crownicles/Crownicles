@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "version": "2024-11-15"
+  },
+  "resources": {
+    "achievements": [
+      {
+        "activityProperties": {},
+        "archived": false,
+        "points": 10,
+        "referenceName": "Crownicles Local PvP",
+        "repeatable": false,
+        "showBeforeEarned": true,
+        "vendorIdentifier": "com.crownicles.app.local.pvp_fight_completed"
+      }
+    ],
+    "achievementLocalizations": {
+      "com.crownicles.app.local.pvp_fight_completed": [
+        {
+          "afterEarnedDescription": "Un combat contre un autre joueur a \u00e9t\u00e9 termin\u00e9.",
+          "beforeEarnedDescription": "Terminer un combat contre un autre joueur.",
+          "locale": "fr-FR",
+          "localID": "pvp-fr-FR",
+          "name": "Premier duel"
+        }
+      ]
+    },
+    "leaderboards": [
+      {
+        "archived": false,
+        "defaultFormatter": "INTEGER",
+        "referenceName": "Crownicles Local Topweek",
+        "scoreRangeEnd": null,
+        "scoreRangeStart": 0,
+        "scoreSortType": "DESC",
+        "submissionType": "BEST_SCORE",
+        "vendorIdentifier": "com.crownicles.app.local.topweek_best",
+        "visibility": "SHOW_FOR_ALL"
+      }
+    ],
+    "leaderboardLocalizations": {
+      "com.crownicles.app.local.topweek_best": [
+        {
+          "description": "Meilleur score hebdomadaire observ\u00e9 dans l'application de test.",
+          "formatterSuffix": " points",
+          "formatterSuffixSingular": " point",
+          "locale": "fr-FR",
+          "localID": "topweek-fr-FR",
+          "name": "Record topweek"
+        }
+      ]
+    }
+  }
+}

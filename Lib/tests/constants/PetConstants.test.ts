@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { PetConstants } from "../../src/constants/PetConstants";
+import { PetSellConstants } from "../../src/constants/PetSellConstants";
 
 describe("PetConstants", () => {
 	describe("NICKNAME_LENGTH_RANGE", () => {
@@ -10,7 +11,7 @@ describe("PetConstants", () => {
 
 	describe("SELL_PRICE", () => {
 		it("should have MIN less than or equal to MAX", () => {
-			expect(PetConstants.SELL_PRICE.MIN).toBeLessThanOrEqual(PetConstants.SELL_PRICE.MAX);
+			expect(PetSellConstants.SELL_PRICE.MIN).toBeLessThanOrEqual(PetSellConstants.SELL_PRICE.MAX);
 		});
 	});
 

@@ -204,6 +204,7 @@ describe("city services", () => {
 		data.blacksmith = {
 			upgradeableItems: [],
 			enchantmentTransfers: [],
+			beyondReachItems: [],
 			playerMoney: 0
 		};
 

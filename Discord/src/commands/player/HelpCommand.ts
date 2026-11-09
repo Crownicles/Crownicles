@@ -11,7 +11,7 @@ import {
 import {
 	APIEmbedField, AutocompleteInteraction
 } from "discord.js";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { PetSellConstants } from "../../../../Lib/src/constants/PetSellConstants";
 import { HelpConstants } from "../../../../Lib/src/constants/HelpConstants";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import {
@@ -260,8 +260,8 @@ function buildSpecificCommandEmbed(helpMessage: CrowniclesEmbed, command: HelpCo
 	)
 		.setDescription(i18n.t(`commands:help.commands.${command}.description`, {
 			lng,
-			petSellMinPrice: PetConstants.SELL_PRICE.MIN,
-			petSellMaxPrice: PetConstants.SELL_PRICE.MAX,
+			petSellMinPrice: PetSellConstants.SELL_PRICE.MIN,
+			petSellMaxPrice: PetSellConstants.SELL_PRICE.MAX,
 			friendlyFightLevelCap: FightConstants.FRIENDLY_FIGHT_LEVEL_CAP
 		}))
 		.addFields({

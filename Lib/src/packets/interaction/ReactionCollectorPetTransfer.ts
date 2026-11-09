@@ -11,6 +11,9 @@ export class ReactionCollectorPetTransferData extends ReactionCollectorData {
 	shelterPets: {
 		petEntityId: number; pet: OwnedPet;
 	}[] = [];
+
+	/** Set while the player is on probation: shelter pets are listed, but none can be taken out yet. */
+	probationEndsAt?: number;
 }
 
 export class ReactionCollectorPetTransferDepositReaction extends ReactionCollectorReaction {}
@@ -41,13 +44,16 @@ export class ReactionCollectorPetTransfer extends ReactionCollector {
 
 	private readonly reactions: ReactionCollectorReaction[];
 
+	private readonly probationEndsAt: number | undefined;
+
 	constructor(ownPet: OwnedPet, shelterPets: {
 		petEntityId: number; pet: OwnedPet;
-	}[], reactions: ReactionCollectorReaction[]) {
+	}[], reactions: ReactionCollectorReaction[], probationEndsAt?: number) {
 		super();
 		this.ownPet = ownPet;
 		this.shelterPets = shelterPets;
 		this.reactions = reactions;
+		this.probationEndsAt = probationEndsAt;
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorPetTransferPacket {
@@ -60,7 +66,8 @@ export class ReactionCollectorPetTransfer extends ReactionCollector {
 			})),
 			data: this.buildData(ReactionCollectorPetTransferData, {
 				ownPet: this.ownPet,
-				shelterPets: this.shelterPets
+				shelterPets: this.shelterPets,
+				...this.probationEndsAt === undefined ? {} : { probationEndsAt: this.probationEndsAt }
 			})
 		};
 	}

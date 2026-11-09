@@ -118,7 +118,36 @@ async function queryBossLeaderboard(monsterId: string, classId: number): Promise
 	});
 }
 
+type PveBossBestLevelRow = {
+	level: number | null;
+};
+
 export abstract class LogsPveBossRecordsRequests {
+	static isFinalBossId(monsterId: string): monsterId is FinalPveBossId {
+		return FINAL_BOSS_ID_SET.has(monsterId);
+	}
+
+	/** The highest level at which the player ever beat this boss with exactly this class, or null if never. */
+	static async getBestWinLevel(params: {
+		playerKeycloakId: string;
+		monsterId: string;
+		classId: number;
+	}): Promise<number | null> {
+		const rows = await LogsPveFightsResults.sequelize!.query<PveBossBestLevelRow>(`
+			SELECT MAX(pve.monsterLevel) AS level
+			FROM pve_fights_results pve
+			INNER JOIN players player ON player.id = pve.playerId
+			WHERE player.keycloakId = :playerKeycloakId
+			  AND pve.monsterId = :monsterId
+			  AND pve.classId = :classId
+			  AND pve.winner = 1
+		`, {
+			replacements: params,
+			type: QueryTypes.SELECT
+		});
+		return rows[0]?.level ?? null;
+	}
+
 	static getMaximumTierClassIds(): number[] {
 		return ClassDataController.instance.getByGroup(ClassConstants.MAX_CLASS_GROUP).map(playerClass => playerClass.id);
 	}

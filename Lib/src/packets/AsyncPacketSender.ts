@@ -12,6 +12,7 @@ import { PlayerDeathPacket } from "./events/PlayerDeathPacket";
 import { PlayerLeavePveIslandPacket } from "./events/PlayerLeavePveIslandPacket";
 import { PlayerLevelUpPacket } from "./events/PlayerLevelUpPacket";
 import { PlayerReceivePetPacket } from "./events/PlayerReceivePetPacket";
+import { RoyalLetterPacket } from "./events/RoyalLetterPacket";
 
 
 type AsyncPacketSenderCallback = (context: PacketContext, packetName: string, packet: CrowniclesPacket) => Promise<void> | void;
@@ -66,7 +67,8 @@ export const NOTIFICATION_PACKET_NAMES: ReadonlySet<string> = new Set([
 	PlayerDeathPacket.name,
 	PlayerLeavePveIslandPacket.name,
 	PlayerLevelUpPacket.name,
-	PlayerReceivePetPacket.name
+	PlayerReceivePetPacket.name,
+	RoyalLetterPacket.name
 ]);
 
 export abstract class AsyncPacketSender {

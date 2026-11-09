@@ -1,0 +1,23 @@
+diff --git a/ios/ExpoGameCenterModule.swift b/ios/ExpoGameCenterModule.swift
+index 7c2f3bb0fbc4a21a167f89be850f444186bd9070..f60101806c2b90a373b926b65792431f0ed04af1 100644
+--- a/ios/ExpoGameCenterModule.swift
++++ b/ios/ExpoGameCenterModule.swift
+@@ -24,6 +24,7 @@ public class ExpoGameCenterModule: Module {
+ 
+   // Delegate instance
+   private let gameCenterDelegate = GameCenterDelegate()
++  private let localTestLaunchVariable = "CROWNICLES_GAMEKIT_LOCAL_TEST"
+ 
+   // Required for module registration
+   public required init(appContext: AppContext) {
+@@ -36,6 +37,10 @@ public class ExpoGameCenterModule: Module {
+   public func definition() -> ModuleDefinition {
+     Name("ExpoGameCenter")
+ 
++    Constant("crowniclesLocalTestLaunch") {
++      ProcessInfo.processInfo.environment[self.localTestLaunchVariable] == "1"
++    }
++
+     OnCreate {
+       print("[ExpoGameCenter] *** Module definition created ***")
+     }

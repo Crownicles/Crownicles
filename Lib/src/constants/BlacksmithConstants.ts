@@ -14,6 +14,13 @@ export type ItemUpgradeLevel = 1 | 2 | 3 | 4 | 5;
  */
 export type ItemLevel = 0 | ItemUpgradeLevel;
 
+/** Why a weapon or armor the player holds is beyond the blacksmith's hammer. */
+export const BLACKSMITH_LIMITS = {
+	ROYAL_ONLY: "royalOnly",
+	MAXED: "maxed"
+} as const;
+export type BlacksmithLimit = typeof BLACKSMITH_LIMITS[keyof typeof BLACKSMITH_LIMITS];
+
 /**
  * Constants for the blacksmith NPC found in cities
  * The blacksmith can:

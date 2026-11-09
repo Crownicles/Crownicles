@@ -19,7 +19,7 @@ import { PetFood } from "../../types/PetFood";
 import { MaterialQuantity } from "../../types/MaterialQuantity";
 import { ApartmentLocationRef } from "../../types/ApartmentLocation";
 import {
-	FinalPveBossId, PveBossLeaderboardEntry, PveBossPersonalRecord
+	FinalPveBossId, PveBossLeaderboardEntry, PveBossNewRecord, PveBossPersonalRecord
 } from "../../types/PveBossRecord";
 import type { CookingRecipeId } from "../../types/CookingRecipe";
 export {
@@ -59,6 +59,9 @@ export class CommandReportTravelSummaryRes extends CrowniclesPacket {
 	startTime!: number;
 
 	arriveTime!: number;
+
+	/** What the next stop counts from: the departure, the last small event or the end of an alteration. */
+	lastStopTime!: number;
 
 	nextStopTime!: number;
 
@@ -120,6 +123,8 @@ export class CommandReportMonsterRewardRes extends CrowniclesPacket {
 	 * Cooking recipe learned from the notes left by a defeated island boss.
 	 */
 	discoveredRecipe?: RecipeDisplayInfo;
+
+	bossRecord?: PveBossNewRecord;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -306,16 +311,22 @@ export class CommandReportEnchanterDisenchantRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportBuyHomeRes extends CrowniclesPacket {
 	cost!: number;
+
+	level!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportUpgradeHomeRes extends CrowniclesPacket {
 	cost!: number;
+
+	level!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportMoveHomeRes extends CrowniclesPacket {
 	cost!: number;
+
+	level!: number;
 
 	/** Amount of accumulated apartment rent applied as discount on the move price. Omitted when 0. */
 	rentDeducted?: number;
@@ -324,6 +335,8 @@ export class CommandReportMoveHomeRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportUpgradeItemRes extends CrowniclesPacket {
 	itemCategory!: number;
+
+	itemId!: number;
 
 	newItemLevel!: number;
 }
@@ -343,6 +356,8 @@ export class CommandReportEquipmentChangedRes extends CrowniclesPacket {}
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportBlacksmithUpgradeRes extends CrowniclesPacket {
 	itemCategory!: number;
+
+	itemId!: number;
 
 	newItemLevel!: number;
 
@@ -375,6 +390,12 @@ export class CommandReportBlacksmithEnchantmentTransferRes extends CrowniclesPac
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportScrapDealerRecycleRes extends CrowniclesPacket {
+	itemId!: number;
+
+	itemCategory!: number;
+
+	itemLevel!: number;
+
 	materialLoot!: MaterialQuantity[];
 
 	moneyGained!: number;
@@ -386,6 +407,8 @@ export class CommandReportScrapDealerRecycleRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportRoyalBlacksmithUpgradeRes extends CrowniclesPacket {
 	itemCategory!: number;
+
+	itemId!: number;
 
 	/** Gold cost component of the total. */
 	upgradeCost!: number;
@@ -452,6 +475,9 @@ export class CommandReportApartmentBuyRes extends CrowniclesPacket implements Ap
 	mapLocationId!: number;
 
 	cost!: number;
+
+	/** Rented out from the start, because the player's home stands in the same city. */
+	isRented!: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -489,6 +515,9 @@ export class CommandReportApartmentRequiresHomeRes extends CrowniclesPacket impl
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportHomeChestInfoReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportHomeChestActionReq extends CrowniclesPacket {
 	action!: ChestAction;
 
@@ -520,6 +549,12 @@ export class CommandReportHomeChestActionRes extends CrowniclesPacket {
 
 	/** Max backup slots per category in the player's inventory */
 	inventoryCapacity!: ChestSlotsPerCategory;
+
+	plantStorage?: PlantStorageEntry[];
+
+	playerPlantSlots?: PlayerPlantSlotEntry[];
+
+	plantMaxCapacity?: number;
 }
 
 // Garden packets
@@ -672,6 +707,9 @@ export class CommandReportCookingIgniteRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingNoWoodRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingUnavailableRes extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingReviveReq extends CrowniclesPacket {}
@@ -864,6 +902,8 @@ export class CommandReportGuildDomainNotEnoughTreasuryRes extends CrowniclesPack
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainUpgradeReq extends CrowniclesPacket {
 	building!: GuildBuilding;
+
+	expectedLevel?: number;
 }
 
 @sendablePacket(PacketDirection.NONE)
@@ -916,6 +956,8 @@ export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainDepositTreasuryReq extends CrowniclesPacket {
 	amount!: number;
+
+	expectedGuildId?: number;
 
 	/** When true, the deposit is treated as a refund of a previous treasury withdrawal: no commission is taken. */
 	isReimburse?: boolean;

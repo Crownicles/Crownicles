@@ -1,0 +1,309 @@
+import {
+	ReactNode, useEffect, useState
+} from "react";
+import { Text } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+	useLocalSearchParams, useRouter
+} from "expo-router";
+import { makeFromClientPacket } from "ws-packets/src/MakePackets";
+import { MissionsReq } from "ws-packets/src/fromClient/MissionsReq";
+import { MissionsRes } from "ws-packets/src/fromServer/missions/MissionsRes";
+import { PlayerNotFound } from "ws-packets/src/fromServer/common/PlayerNotFound";
+import {
+	Mission, MISSION_TYPES
+} from "ws-packets/src/objects/Mission";
+import {
+	GameAnswer, GameClient
+} from "@/src/networking/GameClient";
+import {
+	GAME_ENTITIES, gameKey
+} from "@/src/store/GameEntities";
+import {
+	RequestState, useGameQuery
+} from "@/src/store/useGameQuery";
+import { useGameDeadline } from "@/src/store/useGameDeadline";
+import {
+	Button, ButtonRow, EmptyState, Note, SectionHeader
+} from "@/src/design/Primitives";
+import {
+	EntryRow, ExpandableList, useSectionStyles
+} from "@/src/design/Sections";
+import { TwemojiIcon } from "@/src/design/TwemojiIcon";
+import { AppIcons } from "@/src/AppIcons";
+import { i18n } from "@/src/translations/i18n";
+import { joinFacts } from "@/src/display/Facts";
+import {
+	missionDate, missionDescription
+} from "@/src/display/Missions";
+import { UnclaimedMissions } from "@/src/components/MissionRewards";
+import { KingChallenge } from "@/src/components/KingChallenge";
+import { useMissionRewards } from "@/src/store/MissionRewardsStore";
+import {
+	CLOCK_INTERVALS, useCurrentTime
+} from "@/src/store/useCurrentTime";
+import { SegmentedControl } from "@/src/design/SegmentedControl";
+import {
+	MISSIONS_VIEW_PARAM, MISSIONS_VIEWS, MissionsView
+} from "@/src/navigation/AdventureTools";
+
+const MISSION_EMBLEM_SIZE = 26;
+
+/** A mission still to do, with what kind it is and when it lapses. */
+type MissionEntryData = {
+	key: string; mission: Mission; kind: string; deadline?: string;
+};
+
+function MissionList({
+	entries, now
+}: {
+	entries: MissionEntryData[]; now: number;
+}): ReactNode {
+	const sectionStyles = useSectionStyles();
+	return <ExpandableList>
+		{entries.map(entry => <EntryRow
+			key={entry.key}
+			emblem={<TwemojiIcon emoji={AppIcons.getIcon(`missions.${entry.mission.missionType}`)} size={MISSION_EMBLEM_SIZE} />}
+			title={missionDescription(entry.mission, now)}
+			subtitle={joinFacts([entry.kind, entry.deadline])}
+			end={<Text style={sectionStyles.amount}>{i18n.t("app:profile.formats.progress", {
+				value: entry.mission.numberDone, max: entry.mission.missionObjective
+			})}</Text>}
+			testID={`mission-${entry.key}`}
+		/>)}
+	</ExpandableList>;
+}
+
+function missionOfType(data: MissionsRes, type: Mission["missionType"]): Mission | undefined {
+	return data.missions.find(entry => entry.missionType === type);
+}
+
+function campaignEntry(data: MissionsRes): MissionEntryData[] {
+	const mission = missionOfType(data, MISSION_TYPES.CAMPAIGN);
+	if (data.campaignProgression === 0 || !mission) {
+		return [];
+	}
+	return [
+		{
+			key: "campaign",
+			mission,
+			kind: i18n.t("app:missions.kinds.campaign", {
+				value: data.campaignProgression, max: data.maxCampaignNumber
+			})
+		}
+	];
+}
+
+function dailyEntry(data: MissionsRes): MissionEntryData[] {
+	const mission = missionOfType(data, MISSION_TYPES.DAILY);
+	if (data.dailyMission.completed || !mission) {
+		return [];
+	}
+	return [
+		{
+			key: "daily", mission, kind: i18n.t("app:missions.kinds.daily"), deadline: i18n.t("app:missions.resetsAt", { date: missionDate(data.dailyMission.resetsAt) })
+		}
+	];
+}
+
+function sideEntries(data: MissionsRes): MissionEntryData[] {
+	return data.missions.filter(entry => entry.missionType === MISSION_TYPES.NORMAL).map(mission => ({
+		key: `${mission.missionId}:${mission.missionVariant}:${mission.expiresAt}`,
+		mission,
+		kind: i18n.t("app:missions.kinds.side"),
+		...mission.expiresAt ? { deadline: i18n.t("app:missions.expiresAt", { date: missionDate(Date.parse(mission.expiresAt)) }) } : {}
+	}));
+}
+
+/** Everything the player can still work on, whatever its kind: the one place to look for what to do. */
+function MissionsToDo({
+	data, now, first
+}: {
+	data: MissionsRes; now: number; first: boolean;
+}): ReactNode {
+	const entries = [
+		...campaignEntry(data),
+		...dailyEntry(data),
+		...sideEntries(data)
+	];
+	return <>
+		<SectionHeader first={first}>{i18n.t("app:missions.todo")}</SectionHeader>
+		{entries.length === 0
+			? <Note>{i18n.t("app:missions.nothingToDo")}</Note>
+			: <MissionList entries={entries} now={now} />}
+	</>;
+}
+
+function DoneRow({
+	title, subtitle, testID
+}: {
+	title: string; subtitle?: string; testID: string;
+}): ReactNode {
+	return <EntryRow
+		emblem={<TwemojiIcon emoji={AppIcons.getIcon("messages.validate")} size={MISSION_EMBLEM_SIZE} />}
+		title={title}
+		{...subtitle ? { subtitle } : {}}
+		disabled
+		testID={testID}
+	/>;
+}
+
+/** What is over and asks nothing more, set apart below so it never reads as something to do. */
+function MissionsDone({
+	data, now
+}: {
+	data: MissionsRes; now: number;
+}): ReactNode {
+	const daily = missionOfType(data, MISSION_TYPES.DAILY);
+	const dailyDone = data.dailyMission.completed && daily !== undefined;
+	const campaignDone = data.campaignProgression === 0;
+	if (!dailyDone && !campaignDone) {
+		return null;
+	}
+	return <>
+		<SectionHeader>{i18n.t("app:missions.done")}</SectionHeader>
+		<ExpandableList>
+			{dailyDone
+				? <DoneRow
+					title={missionDescription(daily, now)}
+					subtitle={i18n.t("app:missions.dailyDone", { date: missionDate(data.dailyMission.resetsAt) })}
+					testID="mission-daily-done"
+				/>
+				: null}
+			{campaignDone ? <DoneRow title={i18n.t("app:missions.campaignCompleted")} testID="mission-campaign-done" /> : null}
+		</ExpandableList>
+	</>;
+}
+
+export function MissionsContent({
+	data, now
+}: {
+	data: MissionsRes; now: number;
+}): ReactNode {
+	const rewardsFirst = useMissionRewards().rewards.missions.length > 0;
+	if (data.missions.length === 0) {
+		return <EmptyState>{i18n.t("app:missions.empty")}</EmptyState>;
+	}
+	return <>
+		<MissionsToDo data={data} first={!rewardsFirst} now={now} />
+		<MissionsDone data={data} now={now} />
+	</>;
+}
+
+function requestMissions(passive: boolean): Promise<GameAnswer<MissionsRes>> {
+	return GameClient.request(makeFromClientPacket(MissionsReq, {
+		askedPlayer: {}, ...passive ? { passive } : {}
+	}), MissionsRes, [PlayerNotFound]);
+}
+
+/** The player's missions, read through the shared cache; an answer also refreshes the profile Core rewarded. */
+export function useMissions(): RequestState<MissionsRes> {
+	const queryClient = useQueryClient();
+	return useGameQuery(GAME_ENTITIES.MISSIONS, async () => {
+		// Screens glance at the missions on their own: only opening them counts as consulting them.
+		const answer = await requestMissions(true);
+		if (answer.kind === "answer") {
+			await queryClient.invalidateQueries({ queryKey: gameKey(GAME_ENTITIES.PROFILE) });
+		}
+		return answer;
+	});
+}
+
+/** Opening the missions is what the campaign counts as the player consulting them. */
+function useConsultMissions(): void {
+	const queryClient = useQueryClient();
+	useEffect(() => {
+		requestMissions(false)
+			.then(async answer => {
+				if (answer.kind === "timeout") {
+					return;
+				}
+				queryClient.setQueryData(gameKey(GAME_ENTITIES.MISSIONS), answer);
+				if (answer.kind === "answer") {
+					await queryClient.invalidateQueries({ queryKey: gameKey(GAME_ENTITIES.PROFILE) });
+				}
+			})
+			.catch(error => console.error("Failed to consult the missions:", error));
+	}, [queryClient]);
+}
+
+function isMissionsView(value: unknown): value is MissionsView {
+	return Object.values<unknown>(MISSIONS_VIEWS).includes(value);
+}
+
+/** Another screen may ask for a view through the route, as the toast of a crossed tier does: it opens once, then the request is cleared. */
+function useRequestedView(open: (view: MissionsView) => void): void {
+	const router = useRouter();
+	const requested = useLocalSearchParams()[MISSIONS_VIEW_PARAM];
+	useEffect(() => {
+		if (!isMissionsView(requested)) {
+			return;
+		}
+		open(requested);
+		router.setParams({ [MISSIONS_VIEW_PARAM]: undefined });
+	}, [
+		requested,
+		open,
+		router
+	]);
+}
+
+/** The missions and the king's challenge, side by side as on Discord; rewards waiting to be opened are counted on the missions. */
+function MissionsViews({
+	data, now, view, onViewChange
+}: {
+	data: MissionsRes; now: number; view: MissionsView; onViewChange: (view: MissionsView) => void;
+}): ReactNode {
+	const unclaimed = useMissionRewards().rewards.missions.length;
+	const kingChallenge = data.kingChallenge;
+	const missions = <>
+		<UnclaimedMissions />
+		<MissionsContent data={data} now={now} />
+	</>;
+	if (!kingChallenge) {
+		return missions;
+	}
+	return <>
+		<SegmentedControl
+			options={[
+				{
+					value: MISSIONS_VIEWS.MISSIONS, label: i18n.t("app:profile.titles.missions"), icon: AppIcons.getIcon("missions.campaign"), badge: unclaimed
+				},
+				{
+					value: MISSIONS_VIEWS.KING_CHALLENGE, label: i18n.t("commands:missions.kingChallenge.button"), icon: AppIcons.getIcon("kingChallenge.icon")
+				}
+			]}
+			value={view}
+			onChange={onViewChange}
+			label={i18n.t("app:profile.titles.missions")}
+		/>
+		{view === MISSIONS_VIEWS.KING_CHALLENGE ? <KingChallenge progress={kingChallenge} now={now} /> : missions}
+	</>;
+}
+
+export function Missions(): ReactNode {
+	const queryClient = useQueryClient();
+	const now = useCurrentTime(CLOCK_INTERVALS.MINUTE_MS);
+	const state = useMissions();
+
+	// The requested view is taken as soon as the missions open, so closing them while they load does not leave it for the next opening.
+	const [view, setView] = useState<MissionsView>(MISSIONS_VIEWS.MISSIONS);
+	useRequestedView(setView);
+	useConsultMissions();
+	const data = state.status === "ready" ? state.data : null;
+	useGameDeadline(GAME_ENTITIES.MISSIONS, data ? data.dailyMission.resetsAt : null);
+	useGameDeadline(GAME_ENTITIES.MISSIONS, data?.kingChallenge?.nextResetDate ?? null);
+	if (state.status === "loading") {
+		return <EmptyState>{i18n.t("app:common.loading")}</EmptyState>;
+	}
+	if (state.status === "failed") {
+		return <>
+			<EmptyState>{i18n.t("app:common.error")}</EmptyState>
+			<ButtonRow><Button onPress={(): void => { queryClient.invalidateQueries({ queryKey: gameKey(GAME_ENTITIES.MISSIONS) }).catch(console.error); }}>{i18n.t("app:common.retry")}</Button></ButtonRow>
+		</>;
+	}
+	if (state.status === "empty") {
+		return <EmptyState>{i18n.t("app:profile.notFound")}</EmptyState>;
+	}
+	return <MissionsViews data={state.data} now={now} view={view} onViewChange={setView} />;
+}

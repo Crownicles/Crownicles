@@ -35,7 +35,8 @@ export abstract class MissionUtils {
 			pointsDisplay: mission.pointsToWin,
 			gemsDisplay: mission.gemsToWin,
 			moneyDisplay: mission.moneyToWin,
-			xpDisplay: mission.xpToWin
+			xpDisplay: mission.xpToWin,
+			tokensDisplay: mission.tokensToWin ?? 0
 		}, lng);
 
 		return i18n.t("notifications:missions.completed.missionDisplay", {

@@ -9,7 +9,10 @@ import {
 } from "../../../src/core/database/game/models/Home";
 import { CookingService } from "../../../src/core/cooking/CookingService";
 import { PlayerCookingSpecialty } from "../../../src/core/database/game/models/PlayerCookingSpecialty";
-import { handleCookingSetSpecialty } from "../../../src/core/report/ReportCookingService";
+import {
+	handleCookingRemoveSpecialty, handleCookingSetSpecialty
+} from "../../../src/core/report/ReportCookingService";
+import { CommandReportCookingUnavailableRes } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	CookingOutputType, CookingSpecialtyConstants, RecipeType, SLOT_CONFIGS, SPECIALTY_SLOT_INDEX
 } from "../../../../Lib/src/constants/CookingConstants";
@@ -92,5 +95,22 @@ describe("handleCookingSetSpecialty", () => {
 			playerId: 1,
 			recipeId: "potion_health_1"
 		});
+	});
+
+	it("should answer that cooking is unavailable to a player without a home, instead of leaving the request unanswered", async () => {
+		vi.spyOn(Homes, "getOfPlayer").mockResolvedValue(null);
+
+		const [chosen] = await handleCookingSetSpecialty("master-chef", {
+			slotIndex: MATERIAL_ONLY_SLOT,
+			recipeId: "potion_health_1"
+		});
+		const [removed] = await handleCookingRemoveSpecialty("master-chef", {
+			recipeId: "potion_health_1",
+			fromIgnitedView: true
+		});
+
+		expect(chosen).toBeInstanceOf(CommandReportCookingUnavailableRes);
+		expect(removed).toBeInstanceOf(CommandReportCookingUnavailableRes);
+		expect(createSpy).not.toHaveBeenCalled();
 	});
 });

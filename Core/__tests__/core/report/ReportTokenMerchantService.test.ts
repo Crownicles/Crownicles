@@ -4,6 +4,7 @@ import {
 import type { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorTokenMerchantBuyReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorTokenMerchant";
 import { ShopConstants } from "../../../../Lib/src/constants/ShopConstants";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import type { Player } from "../../../src/core/database/game/models/Player";
 import { LogsReadRequests } from "../../../src/core/database/logs/LogsReadRequests";
@@ -23,7 +24,8 @@ vi.mock("../../../src/app", () => ({
 vi.mock("../../../src/core/database/logs/LogsReadRequests", () => ({
 	LogsReadRequests: {
 		getAmountOfTokensBoughtByPlayerToday: vi.fn(),
-		getAmountOfTokensBoughtByPlayerThisWeek: vi.fn()
+		getAmountOfTokensBoughtByPlayerThisWeek: vi.fn(),
+		getTokenCharityCountReceivedByPlayerThisWeek: vi.fn()
 	}
 }));
 
@@ -76,6 +78,8 @@ describe("ReportTokenMerchantService", () => {
 		vi.clearAllMocks();
 		vi.mocked(LogsReadRequests.getAmountOfTokensBoughtByPlayerToday).mockResolvedValue(0);
 		vi.mocked(LogsReadRequests.getAmountOfTokensBoughtByPlayerThisWeek).mockResolvedValue(0);
+		vi.mocked(LogsReadRequests.getTokenCharityCountReceivedByPlayerThisWeek).mockResolvedValue(0);
+		player.money = 5000;
 		vi.mocked(withLockedPlayerAndMissions).mockImplementation(async (_playerId, callback) => await callback(player as Player));
 	});
 
@@ -110,5 +114,27 @@ describe("ReportTokenMerchantService", () => {
 			.toBeLessThan(player.save.mock.invocationCallOrder[0]);
 		expect(player.save.mock.invocationCallOrder[0])
 			.toBeLessThan(player.addTokens.mock.invocationCallOrder[0]);
+	});
+
+	it("gifts tokens instead of selling them to a player with no tokens and less than the charity threshold", async () => {
+		player.money = TokensConstants.MERCHANT_CHARITY_MONEY_THRESHOLD - 1;
+		const response: unknown[] = [];
+		await openTokenMerchant(player as Player, {} as PacketContext, response as never);
+
+		expect(capturedEndCallback).toBeUndefined();
+		expect(player.spendMoney).not.toHaveBeenCalled();
+		expect(player.addTokens).toHaveBeenCalledWith(expect.objectContaining({
+			amount: TokensConstants.MERCHANT_CHARITY_AMOUNT,
+			reason: NumberChangeReason.TOKEN_MERCHANT_CHARITY
+		}));
+	});
+
+	it("offers the paid bundles once this week's gift is spent, even below the threshold", async () => {
+		player.money = TokensConstants.MERCHANT_CHARITY_MONEY_THRESHOLD - 1;
+		vi.mocked(LogsReadRequests.getTokenCharityCountReceivedByPlayerThisWeek).mockResolvedValue(1);
+		await openTokenMerchant(player as Player, {} as PacketContext, []);
+
+		expect(capturedEndCallback).toBeDefined();
+		expect(player.addTokens).not.toHaveBeenCalled();
 	});
 });

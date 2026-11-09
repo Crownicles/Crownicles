@@ -16,7 +16,10 @@ import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import {
 	ChestSlotsPerCategory, HomeFeatures
 } from "../../../../Lib/src/types/HomeFeatures";
-import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
+import {
+	HomeConstants, UpgradeStationLimit
+} from "../../../../Lib/src/constants/HomeConstants";
+import { RoyalBlacksmithConstants } from "../../../../Lib/src/constants/BlacksmithConstants";
 import {
 	ItemRarity, ItemCategory
 } from "../../../../Lib/src/constants/ItemConstants";
@@ -154,6 +157,7 @@ export async function buildApartmentNotaryData(
 		...canShowForSale
 			? { forSale: buildForSaleData(city.apartmentPrice, player.money) }
 			: {},
+		...city.apartmentPrice && !home ? { requiresHomePrice: city.apartmentPrice } : {},
 		ownedApartments: summaries
 	};
 }
@@ -329,9 +333,25 @@ export async function buildHomeData(
 		player, home, homeLevel, city
 	});
 
+	const elsewhere = owned ? undefined : buildElsewhereHome(home, homeLevel);
+
 	return {
 		...owned ? { owned } : {},
-		...manage ? { manage } : {}
+		...manage ? { manage } : {},
+		...elsewhere ? { elsewhere } : {}
+	};
+}
+
+/** The home a player owns in another city, for the cities where no apartment opens it. */
+function buildElsewhereHome(home: Home | null, homeLevel: HomeLevel | null): HomeData["elsewhere"] {
+	const mapLocationId = home ? CityDataController.instance.getById(home.cityId)?.maps[0] : undefined;
+	if (!home || !homeLevel || mapLocationId === undefined) {
+		return undefined;
+	}
+	return {
+		mapLocationId,
+		level: home.level,
+		hasCooking: homeLevel.features.cookingSlots > 0
 	};
 }
 
@@ -557,9 +577,21 @@ function buildNoOptionsReason(
 	};
 }
 
+/** Why the home's station would hand an item back, or null when it can work on it. */
+function upgradeStationLimit(itemLevel: number, rarity: number, homeLevel: HomeLevel): UpgradeStationLimit | null {
+	if (itemLevel >= RoyalBlacksmithConstants.TARGET_LEVEL) {
+		return HomeConstants.UPGRADE_STATION_LIMITS.MAXED;
+	}
+	if (itemLevel >= homeLevel.features.maxItemUpgradeLevel) {
+		return HomeConstants.UPGRADE_STATION_LIMITS.HOME_LEVEL;
+	}
+	return rarity > homeLevel.features.upgradeItemMaximumRarity ? HomeConstants.UPGRADE_STATION_LIMITS.RARITY : null;
+}
+
 /**
  * Build upgrade station data for the home feature in the city collector.
- * Determines which items can be upgraded at home and their material requirements.
+ * Determines which items can be upgraded at home and their material requirements,
+ * and which ones the station hands back, with the reason.
  */
 export function buildUpgradeStationData(
 	playerInventory: InventorySlot[],
@@ -567,10 +599,8 @@ export function buildUpgradeStationData(
 	homeLevel: HomeLevel,
 	player: Player
 ): UpgradeStationData {
-	const maxUpgradeableRarity = homeLevel.features.upgradeItemMaximumRarity;
-	const maxLevelAtHome = homeLevel.features.maxItemUpgradeLevel;
-
 	const upgradeableItems: UpgradeStationItem[] = [];
+	const beyondReachItems: UpgradeStationData["beyondReachItems"] = [];
 
 	for (const inventorySlot of playerInventory) {
 		// Only process weapons and armors with a valid item
@@ -587,14 +617,13 @@ export function buildUpgradeStationData(
 			continue;
 		}
 
-		// Check if item level allows upgrade at home (limited by home's maxItemUpgradeLevel)
 		const currentLevel = inventorySlot.itemLevel ?? 0;
-		if (currentLevel >= maxLevelAtHome) {
-			continue;
-		}
-
-		// Check if item rarity is allowed at this home level
-		if (itemData.rarity > maxUpgradeableRarity) {
+		const details = inventorySlot.itemWithDetails(player) as MainItemDetails;
+		const limit = upgradeStationLimit(currentLevel, itemData.rarity, homeLevel);
+		if (limit) {
+			beyondReachItems.push({
+				slot: inventorySlot.slot, category: inventorySlot.itemCategory, details, limit
+			});
 			continue;
 		}
 
@@ -607,7 +636,7 @@ export function buildUpgradeStationData(
 		upgradeableItems.push({
 			slot: inventorySlot.slot,
 			category: inventorySlot.itemCategory,
-			details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+			details,
 			nextLevel,
 			requiredMaterials,
 			canUpgrade
@@ -616,7 +645,9 @@ export function buildUpgradeStationData(
 
 	return {
 		upgradeableItems,
-		maxUpgradeableRarity
+		beyondReachItems,
+		maxUpgradeableRarity: homeLevel.features.upgradeItemMaximumRarity,
+		maxItemLevel: homeLevel.features.maxItemUpgradeLevel
 	};
 }
 

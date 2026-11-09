@@ -184,17 +184,20 @@ async function dontKeepOriginalItem(
  * @param response
  * @param player
  * @param item
- * @param money
+ * @param itemValue
+ * @returns the amount actually credited, blessing included
  */
-async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, item: GenericItem, money: number): Promise<void> {
+async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, item: GenericItem, itemValue: number): Promise<number> {
+	const credited = BlessingManager.getInstance().applyMoneyBlessing(itemValue);
 	await player.addMoney({
-		amount: money,
+		amount: credited,
 		response,
-		reason: NumberChangeReason.ITEM_SELL
+		reason: NumberChangeReason.ITEM_SELL,
+		ignoreBlessing: true
 	});
 	await MissionsController.update(player, response, {
 		missionId: "sellItemWithGivenCost",
-		params: { itemCost: money }
+		params: { itemCost: itemValue }
 	});
 	await MissionsController.update(player, response, {
 		missionId: "sellItems"
@@ -202,6 +205,7 @@ async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, 
 	await player.save();
 	crowniclesInstance?.logsDatabase.logItemSell(player.keycloakId, item)
 		.then();
+	return credited;
 }
 
 /**
@@ -210,20 +214,20 @@ async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, 
  * @param player
  * @param inventorySlots
  * @param item
- * @param money
+ * @param soldMoney - amount already credited, blessing included
  * @param autoSell
  */
 async function manageItemRefusal(response: CrowniclesPacket[], {
 	player,
 	inventorySlots
-}: WhoIsConcerned, item: GenericItem, money: number, autoSell: boolean): Promise<void> {
+}: WhoIsConcerned, item: GenericItem, soldMoney: number, autoSell: boolean): Promise<void> {
 	response.push(makePacket(ItemRefusePacket, {
 		item: {
 			id: item.id,
 			category: item.getCategory()
 		},
 		autoSell,
-		soldMoney: BlessingManager.getInstance().applyMoneyBlessing(money)
+		soldMoney
 	}));
 	await MissionsController.update(player, response, { missionId: "findOrBuyItem" });
 	await player.reload();
@@ -267,17 +271,15 @@ async function sellOrKeepItem(
 		item = itemToReplaceInstance!;
 		resaleMultiplier = 1;
 	}
-	let money = 0;
+	let soldMoney = 0;
 	if (item.getCategory() !== ItemCategory.POTION) {
-		money = Math.round(getItemValue(item) * resaleMultiplier);
-
 		// For auto-sell scenarios, ensure we reload again before adding money to prevent race conditions
 		if (autoSell) {
 			await player.reload();
 		}
-		await manageMoneyPayment(response, player, item, money);
+		soldMoney = await manageMoneyPayment(response, player, item, Math.round(getItemValue(item) * resaleMultiplier));
 	}
-	await manageItemRefusal(response, whoIsConcerned, item, money, autoSell ?? false);
+	await manageItemRefusal(response, whoIsConcerned, item, soldMoney, autoSell ?? false);
 }
 
 /**
@@ -327,6 +329,7 @@ function getMoreThan2ItemsSwitchingEndCallback(
 
 type ItemsToManage = {
 	itemToGive: ItemToGive;
+	foundItem: ItemWithDetails;
 	tradableItems: InventorySlot[];
 };
 
@@ -347,6 +350,7 @@ function manageMoreThan2ItemsSwitching(
 	whoIsConcerned: WhoIsConcerned,
 	{
 		itemToGive,
+		foundItem,
 		tradableItems
 	}: ItemsToManage,
 	sellKeepOptions: SellKeepItemOptions,
@@ -356,10 +360,7 @@ function manageMoreThan2ItemsSwitching(
 	tradableItems.sort((a: InventorySlot, b: InventorySlot) => a.slot > b.slot ? 1 : b.slot > a.slot ? -1 : 0);
 
 	const collector = new ReactionCollectorItemChoice({
-		item: {
-			id: itemToGive.item.id,
-			category: itemToGive.item.getCategory()
-		}
+		foundItem
 	},
 	tradableItems.map(i => ({
 		slot: i.slot,
@@ -461,6 +462,101 @@ type GiveItemOptions = {
 };
 
 /**
+ * Number of items of a category the player can carry, the bonus of their home included
+ * @param player
+ * @param category
+ */
+async function getMaxSlotsForCategory(player: Player, category: ItemCategory): Promise<number> {
+	const invInfo = await InventoryInfos.getOfPlayer(player.id);
+	const home = await Homes.getOfPlayer(player.id);
+	const homeBonus = home?.getLevel()?.features.inventoryBonus;
+	return invInfo.slotLimitForCategory(category) + (homeBonus ? getSlotCountForCategory(homeBonus, category) : 0);
+}
+
+/**
+ * Whether a found item is sold at once: every slot of its category already holds the very same item, unless it is a potion the player could drink
+ * @param item
+ * @param categorySlots - the slots of the player holding an item of the same category
+ * @param slotData - the level and enchantment of the found item
+ */
+function isSoldAtOnce(item: GenericItem, categorySlots: InventorySlot[], slotData: ItemSlotData): boolean {
+	if (item.getCategory() === ItemCategory.POTION && !(item as Potion).isFightPotion()) {
+		return false;
+	}
+	return categorySlots.every((slot: InventorySlot) => itemSlotDataEquals(slot, slotData));
+}
+
+/**
+ * The slot a found item would take the place of: the equipped one when the category has a single slot, the first backup one otherwise
+ * @param inventorySlots
+ * @param category
+ * @param maxSlots
+ */
+function getItemToReplace(inventorySlots: InventorySlot[], category: ItemCategory, maxSlots: number): InventorySlot {
+	return inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
+}
+
+type ItemReplacement = {
+	itemToGive: ItemToGive;
+	foundItem: ItemWithDetails;
+	itemToReplace: InventorySlot;
+};
+
+type ItemChoiceOptions = {
+	resaleMultiplier: number;
+	canDrinkThisPotion: boolean;
+};
+
+/**
+ * The choice between a found item and the one it would replace, when its category has a single slot
+ * @param context
+ * @param whoIsConcerned
+ * @param replacement - the found item and the slot it would take the place of
+ * @param options - the share of its value a sold item brings, and whether a found potion can be drunk at once
+ */
+function buildItemAcceptCollector(
+	context: PacketContext,
+	whoIsConcerned: WhoIsConcerned,
+	{
+		itemToGive, foundItem, itemToReplace
+	}: ItemReplacement,
+	{
+		resaleMultiplier, canDrinkThisPotion
+	}: ItemChoiceOptions
+): CrowniclesPacket {
+	const { player } = whoIsConcerned;
+	const itemToReplaceInstance = itemToReplace.getItem()!;
+	return new ReactionCollectorInstance(
+		new ReactionCollectorItemAccept(
+			{
+				itemWithDetails: toItemWithDetails(
+					player,
+					itemToReplaceInstance,
+					itemToReplace.itemLevel,
+					itemToReplace.itemEnchantmentId,
+					itemToReplace.remainingPotionUsages
+				),
+				foundItem
+			},
+			canDrinkThisPotion
+		),
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1,
+			mainPacket: false
+		},
+		getGiveItemToPlayerEndCallback(whoIsConcerned, {
+			itemToGive,
+			itemToReplace,
+			itemToReplaceInstance
+		}, resaleMultiplier)
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM)
+		.build();
+}
+
+/**
  * Gives an item to a player
  * @param response
  * @param context
@@ -489,34 +585,30 @@ export async function giveItemToPlayer(
 		inventorySlots
 	};
 
+	const foundItem = toItemWithDetails(
+		player,
+		item,
+		slotData.itemLevel,
+		slotData.itemEnchantmentId,
+		slotData.remainingPotionUsages
+	);
+	const kept = await player.giveItem(item, slotData.itemLevel, slotData.itemEnchantmentId);
 	response.push(makePacket(ItemFoundPacket, {
-		itemWithDetails: toItemWithDetails(
-			player,
-			item,
-			slotData.itemLevel,
-			slotData.itemEnchantmentId,
-			slotData.remainingPotionUsages
-		)
+		itemWithDetails: foundItem,
+		kept
 	}));
 
-	if (await player.giveItem(item, slotData.itemLevel, slotData.itemEnchantmentId)) {
+	if (kept) {
 		await manageGiveItemRelateds(response, player, item);
 		return;
 	}
 
 	const category = item.getCategory();
-	const invInfo = await InventoryInfos.getOfPlayer(player.id);
-	const home = await Homes.getOfPlayer(player.id);
-	const homeBonus = home?.getLevel()?.features.inventoryBonus;
-	const maxSlots = invInfo.slotLimitForCategory(category) + (homeBonus ? getSlotCountForCategory(homeBonus, category) : 0);
+	const maxSlots = await getMaxSlotsForCategory(player, category);
 	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category);
-	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
 	const canDrinkThisPotion = canPotionBeDrunkImmediately(item, canDrinkImmediately);
-	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion() // Because we can't drink immediately these potions
-		? items.length === items.filter((slot: InventorySlot) => itemSlotDataEquals(slot, slotData)).length
-		: false;
 
-	if (autoSell) {
+	if (isSoldAtOnce(item, items, slotData)) {
 		await sellOrKeepItem(response, whoIsConcerned, {
 			itemToGive
 		}, {
@@ -530,38 +622,20 @@ export async function giveItemToPlayer(
 	if (maxSlots >= 2) {
 		manageMoreThan2ItemsSwitching(response, context, whoIsConcerned, {
 			itemToGive,
+			foundItem,
 			tradableItems: items
 		}, { resaleMultiplier }, canDrinkThisPotion);
 		return;
 	}
 
-	const itemToReplaceInstance = itemToReplace.getItem()!;
-
-	response.push(new ReactionCollectorInstance(
-		new ReactionCollectorItemAccept(
-			toItemWithDetails(
-				player,
-				itemToReplaceInstance,
-				itemToReplace.itemLevel,
-				itemToReplace.itemEnchantmentId,
-				itemToReplace.remainingPotionUsages
-			),
-			canDrinkThisPotion
-		),
-		context,
-		{
-			allowedPlayerKeycloakIds: [player.keycloakId],
-			reactionLimit: 1,
-			mainPacket: false
-		},
-		getGiveItemToPlayerEndCallback(whoIsConcerned, {
-			itemToGive,
-			itemToReplace,
-			itemToReplaceInstance
-		}, resaleMultiplier)
-	)
-		.block(player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM)
-		.build());
+	response.push(buildItemAcceptCollector(context, whoIsConcerned, {
+		itemToGive,
+		foundItem,
+		itemToReplace: getItemToReplace(inventorySlots, category, maxSlots)
+	}, {
+		resaleMultiplier,
+		canDrinkThisPotion
+	}));
 }
 
 

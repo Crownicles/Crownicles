@@ -3,7 +3,7 @@ import { Player } from "../database/game/models/Player";
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
 import {
-	BlacksmithConstants, ItemUpgradeLevel
+	BLACKSMITH_LIMITS, BlacksmithConstants, BlacksmithLimit, ItemUpgradeLevel, RoyalBlacksmithConstants
 } from "../../../../Lib/src/constants/BlacksmithConstants";
 import {
 	getEnchantmentTransferPrice, getMaterialsPurchasePrice, getUpgradePrice
@@ -205,6 +205,35 @@ function buildBlacksmithEnchantmentTransfers(
 		.filter(source => source.targets.length > 0);
 }
 
+function blacksmithLimit(itemLevel: number): BlacksmithLimit | null {
+	if (itemLevel >= RoyalBlacksmithConstants.TARGET_LEVEL) {
+		return BLACKSMITH_LIMITS.MAXED;
+	}
+	return itemLevel >= BlacksmithConstants.MAX_UPGRADE_LEVEL ? BLACKSMITH_LIMITS.ROYAL_ONLY : null;
+}
+
+/**
+ * Build the list of weapons and armors the blacksmith can no longer upgrade, so the player sees why
+ */
+function buildBlacksmithBeyondReachItems(
+	playerInventory: InventorySlot[],
+	player: Player
+): BlacksmithData["beyondReachItems"] {
+	return playerInventory.flatMap(inventorySlot => {
+		const limit = getBlacksmithItemData(inventorySlot) ? blacksmithLimit(inventorySlot.itemLevel ?? 0) : null;
+		return limit
+			? [
+				{
+					slot: inventorySlot.slot,
+					category: inventorySlot.itemCategory,
+					details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+					limit
+				}
+			]
+			: [];
+	});
+}
+
 /**
  * Build blacksmith data for the city collector.
  * The blacksmith allows upgrading items beyond home level and moving an enchantment from one equipment to another.
@@ -217,6 +246,7 @@ export function buildBlacksmithData(
 	return {
 		upgradeableItems: buildBlacksmithUpgradeableItems(playerInventory, playerMaterialMap, player),
 		enchantmentTransfers: buildBlacksmithEnchantmentTransfers(playerInventory, player),
+		beyondReachItems: buildBlacksmithBeyondReachItems(playerInventory, player),
 		playerMoney: player.money
 	};
 }

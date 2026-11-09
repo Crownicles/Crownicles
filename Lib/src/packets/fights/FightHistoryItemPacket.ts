@@ -2,6 +2,7 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import { OwnedPet } from "../../types/OwnedPet";
+import { FightStatusSnapshot } from "../../types/FightStatusSnapshot";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandFightHistoryItemPacket extends CrowniclesPacket {
@@ -23,6 +24,8 @@ export class CommandFightHistoryItemPacket extends CrowniclesPacket {
 
 	pet?: OwnedPet;
 
+	stateAfter?: FightStatusSnapshot;
+
 	fightActionEffectDealt?: { // Stat change for the opponent in % (10 = 10%) can be negative
 		newAlteration?: string;
 		damages?: number;
@@ -31,6 +34,7 @@ export class CommandFightHistoryItemPacket extends CrowniclesPacket {
 		attack?: number;
 		speed?: number;
 		breath?: number; // This one is not in %
+		energy?: number;
 	};
 
 	fightActionEffectReceived?: { // Stat change for the fighter in % (10 = 10%) can be negative
@@ -40,5 +44,6 @@ export class CommandFightHistoryItemPacket extends CrowniclesPacket {
 		attack?: number;
 		speed?: number;
 		breath?: number; // This one is not in %
+		energy?: number;
 	};
 }

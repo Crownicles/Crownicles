@@ -27,10 +27,11 @@ function getPlayerCommandKeys(): string[] {
 
 describe("/help command coverage", () => {
 	it("should list every player command", () => {
-		const englishBuilder: Record<string, { name: string }> = JSON.parse(readFileSync(resolve(LANG_DIR, "en", "discordBuilder.json"), "utf8"));
+		const englishBuilder: Record<string, { name: string } | undefined> = JSON.parse(readFileSync(resolve(LANG_DIR, "en", "discordBuilder.json"), "utf8"));
 		const helpNames = new Set(Object.values(HelpConstants.COMMANDS_DATA).map(command => command.NAME.split(" ")[0]));
 
-		expect(getPlayerCommandKeys().filter(key => !helpNames.has(englishBuilder[key].name))).toEqual([]);
+		// Like SlashCommandBuilderGenerator: a command Crowdin has not translated yet is registered under its section name
+		expect(getPlayerCommandKeys().filter(key => !helpNames.has(englishBuilder[key]?.name ?? key.toLowerCase()))).toEqual([]);
 	});
 
 	it("should have search words and a French description for every listed command", () => {

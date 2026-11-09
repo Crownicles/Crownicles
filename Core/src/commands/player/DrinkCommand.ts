@@ -29,6 +29,14 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import { withLockedPlayerAndMissionsSafe } from "../../core/utils/withLockedPlayerAndMissionsSafe";
+
+const DRINK_REQUIREMENTS = {
+	notBlocked: true,
+	disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
+	whereAllowed: [WhereAllowed.CONTINENT]
+};
 
 async function getDrinkablePotions(player: Player): Promise<InventorySlot[]> {
 	return (await InventorySlots.getOfPlayer(player.id)).filter(item => {
@@ -40,12 +48,24 @@ async function getDrinkablePotions(player: Player): Promise<InventorySlot[]> {
 	});
 }
 
+async function drinkSelectedPotionUnderLock(response: CrowniclesPacket[], player: Locked<Player>, expectedSlot: InventorySlot, context: PacketContext): Promise<void> {
+	if (!await CommandUtils.verifyCommandRequirements(player, context, response, DRINK_REQUIREMENTS)) {
+		return;
+	}
+	const potionSlot = (await getDrinkablePotions(player)).find(slot => slot.slot === expectedSlot.slot && slot.itemId === expectedSlot.itemId);
+	if (!potionSlot) {
+		response.push(makePacket(CommandDrinkNoAvailablePotion, {}));
+		return;
+	}
+	const potion = potionSlot.getItem() as Potion;
+	await consumePotion(response, potion, player, await InventorySlots.getPlayerActiveObjects(player.id));
+	await player.drinkPotion(potionSlot.slot);
+	await player.save();
+	await checkDrinkPotionMissions(response, player, potion, await InventorySlots.getOfPlayer(player.id));
+}
+
 export default class DrinkCommand {
-	@commandRequires(CommandDrinkPacketReq, {
-		notBlocked: true,
-		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
-		whereAllowed: [WhereAllowed.CONTINENT]
-	})
+	@commandRequires(CommandDrinkPacketReq, DRINK_REQUIREMENTS)
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
 		const potions = await getDrinkablePotions(player);
 
@@ -67,11 +87,7 @@ export default class DrinkCommand {
 
 			const potionDetails = (reaction.reaction.data as ReactionCollectorDrinkReaction).potion;
 			const potionSlot = potions.find(p => p.itemId === potionDetails.id && p.itemCategory === potionDetails.itemCategory)!;
-			const potion = potionSlot.getItem() as Potion;
-			await consumePotion(response, potion, player, await InventorySlots.getPlayerActiveObjects(player.id));
-			await player.drinkPotion(potionSlot.slot);
-			await player.save();
-			await checkDrinkPotionMissions(response, player, potion, await InventorySlots.getOfPlayer(player.id));
+			await withLockedPlayerAndMissionsSafe(player, "DrinkCommand confirmation", lockedPlayer => drinkSelectedPotionUnderLock(response, lockedPlayer, potionSlot, context));
 		};
 
 		const collectorPacket = new ReactionCollectorInstance(

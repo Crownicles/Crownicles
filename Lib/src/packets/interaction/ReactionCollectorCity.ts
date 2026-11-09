@@ -14,20 +14,21 @@ import {
 	HomeFeatures, ChestSlotsPerCategory
 } from "../../types/HomeFeatures";
 import {
-	BuildingUpgradeEligibilityMap, DepositTierAffordability
-} from "../../types/GuildDomainEligibility";
+	GuildDomainSnapshot, GuildFoodShopSnapshot
+} from "../../types/GuildDomainSnapshot";
 import { MaterialRarity } from "../../types/MaterialRarity";
 import { ItemSlot } from "../../types/ItemSlot";
 import { PlantId } from "../../constants/PlantConstants";
 import {
 	PlantStorageEntry, PlayerPlantSlotEntry
 } from "../../types/PlantStorageEntry";
-import { OwnedPet } from "../../types/OwnedPet";
 import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
 import { GardenAccessMode } from "../../types/GardenAccessMode";
 import { GardenConstants } from "../../constants/GardenConstants";
 import { CityService } from "../../constants/CityServiceConstants";
 import { ScrapDealerData } from "../../types/ScrapDealerData";
+import { BlacksmithLimit } from "../../constants/BlacksmithConstants";
+import { UpgradeStationLimit } from "../../constants/HomeConstants";
 import { DisenchantableItem } from "../../types/DisenchantableItem";
 import { EnchantmentCost } from "../../types/ItemEnchantment";
 import { EnchantmentTransferSource } from "../../types/EnchantmentTransfer";
@@ -83,6 +84,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 			health: number;
 		}[];
 	}[];
+
+	/** When the inns serve the player a meal or a room again (ms timestamps); a field is absent once it already can. */
+	innCooldowns?: {
+		mealAvailableAt?: number;
+		roomAvailableAt?: number;
+	};
 
 	shops?: {
 		shopId: string;
@@ -141,7 +148,18 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 					})[];
 					canUpgrade: boolean;
 				}[];
+
+				/** Weapons and armors the station cannot work on, and why. */
+				beyondReachItems: {
+					slot: number;
+					category: ItemCategory;
+					details: MainItemDetails;
+					limit: UpgradeStationLimit;
+				}[];
 				maxUpgradeableRarity: ItemRarity;
+
+				/** The highest level the station can bring an item to. */
+				maxItemLevel: number;
 			};
 			chest?: {
 				chestItems: ItemSlot[];
@@ -231,6 +249,13 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 			/** Whether the home is at max level */
 			isMaxLevel?: boolean;
 		};
+
+		/** The player's home, when it stands in another city and no apartment opens it here. */
+		elsewhere?: {
+			mapLocationId: number;
+			level: number;
+			hasCooking: boolean;
+		};
 	};
 
 	/**
@@ -273,6 +298,14 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		/** Enchanted equipment whose enchantment can be moved onto another equipment of the same category */
 		enchantmentTransfers: EnchantmentTransferSource[];
 
+		/** Weapons and armors the player holds that the blacksmith cannot upgrade any further, and why. */
+		beyondReachItems: {
+			slot: number;
+			category: ItemCategory;
+			details: MainItemDetails;
+			limit: BlacksmithLimit;
+		}[];
+
 		/** Current player money for UI display */
 		playerMoney: number;
 	};
@@ -299,6 +332,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 		/** Player level snapshot — used for the "not worthy" RP message. */
 		playerLevel: number;
+
+		/** Minimum player level required to use the royal blacksmith. */
+		requiredPlayerLevel: number;
 
 		/** Items currently at level 4 that the Royal Blacksmith can push to level 5. */
 		upgradeableItems: {
@@ -346,95 +382,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	/**
 	 * Guild domain data - shown when the guild has its domain in this city
 	 */
-	guildDomain?: {
-
-		/** Whether the player's guild has its domain in this city */
-		isInCity: boolean;
-
-		/** Guild name */
-		guildName: string;
-
-		/** Building levels */
-		shopLevel: number;
-		shelterLevel: number;
-		pantryLevel: number;
-		trainingGroundLevel: number;
-
-		/** Guild level (for upgrade requirements) */
-		guildLevel: number;
-
-		/** Treasury balance */
-		treasury: number;
-
-		/** Player money */
-		playerMoney: number;
-
-		/** Whether the player is the guild chief */
-		isChief: boolean;
-
-		/** Whether the player is the guild elder */
-		isElder: boolean;
-
-		/** Food storage */
-		food: {
-			common: number;
-			carnivorous: number;
-			herbivorous: number;
-			ultimate: number;
-		};
-
-		/** Food caps based on pantry level */
-		foodCaps: readonly number[];
-
-		/** Max quantity of each food the guild can currently buy from its treasury (clamped by remaining cap and unit price). */
-		maxBuyableFood: readonly number[];
-
-		/** Pets currently in the guild shelter */
-		shelterPets: OwnedPet[];
-
-		/** Maximum number of pets the shelter can hold */
-		shelterMaxCount: number;
-
-		/**
-		 * Per-building upgrade eligibility computed by Core.
-		 * `null` means the building is already at max level.
-		 * `canAfford` = treasury covers the upgrade cost.
-		 * `meetsLevel` = guild level satisfies the required level.
-		 */
-		canUpgradeBuildings: BuildingUpgradeEligibilityMap;
-
-		/** Whether the player can afford each treasury deposit tier (computed by Core). */
-		canDeposit: DepositTierAffordability;
-	};
+	guildDomain?: GuildDomainSnapshot;
 
 	/**
 	 * Guild food shop - shown when the player has a guild with a shop but is NOT in the domain city
 	 */
-	guildFoodShop?: {
-
-		/** Guild name */
-		guildName: string;
-
-		/** Food storage */
-		food: {
-			common: number;
-			carnivorous: number;
-			herbivorous: number;
-			ultimate: number;
-		};
-
-		/** Food caps based on pantry level */
-		foodCaps: readonly number[];
-
-		/** Max quantity of each food the guild can currently buy from its treasury (clamped by remaining cap and unit price). */
-		maxBuyableFood: readonly number[];
-
-		/** Player money */
-		playerMoney: number;
-
-		/** Guild treasury balance (used to fund purchases) */
-		treasury: number;
-	};
+	guildFoodShop?: GuildFoodShopSnapshot;
 
 	/**
 	 * Guild domain notary options - shown when the player is a guild chief
@@ -478,6 +431,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 		/** Apartments owned by the player, with their current accumulated rent. */
 		ownedApartments: OwnedApartmentSummary[];
+
+		/** The price of this city's apartment, sent instead of `forSale` while the player owns no home yet. */
+		requiresHomePrice?: number;
 	};
 }
 
@@ -942,8 +898,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 		return reactions;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
-		const reactions = this.data.gardenOnly
+	getReactions(): ReactionCollectorCityPacket["reactions"] {
+		return this.data.gardenOnly
 			? [
 				this.buildReaction(ReactionCollectorRefuseReaction, {}),
 				...this.buildHomeFeatureReactions()
@@ -962,10 +918,13 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...this.buildGuildDomainReactions(),
 				...this.buildApartmentNotaryReactions()
 			];
+	}
+
+	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
 		return {
 			id,
 			endTime,
-			reactions,
+			reactions: this.getReactions(),
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data
 			})

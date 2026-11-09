@@ -14,6 +14,8 @@ import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/int
 import {
 	CommandFightNotEnoughEnergyPacketRes,
 	CommandFightPacketReq,
+	CommandFightResumeReq,
+	CommandFightResumeRes,
 	CommandFightRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandFightPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
@@ -47,6 +49,7 @@ import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { FightsManager } from "../../core/fights/FightsManager";
 import { getPlayerStats } from "./FightPlayerStats";
 import {
 	calculateMoneyReward, calculateScoreReward, FightInitiatorInformation, getGameResultFromFight, handlePostFightPetLove
@@ -416,6 +419,15 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 }
 
 export default class FightCommand {
+	@commandRequires(CommandFightResumeReq, {
+		notBlocked: false, whereAllowed: CommandUtils.WHERE.EVERYWHERE
+	})
+	public resume(response: CrowniclesPacket[], player: Player): void {
+		const fight = FightsManager.getActiveFightOf(player.keycloakId);
+		fight?.sendCurrentState(response);
+		response.push(makePacket(CommandFightResumeRes, { active: Boolean(fight) }));
+	}
+
 	@commandRequires(CommandFightPacketReq, {
 		notBlocked: true,
 		whereAllowed: [WhereAllowed.CONTINENT],

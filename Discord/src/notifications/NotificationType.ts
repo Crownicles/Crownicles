@@ -1,6 +1,9 @@
 import { NotificationSendTypeEnum } from "./NotificationSendType";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import NotificationsConfiguration from "../database/discord/models/NotificationsConfiguration";
+import {
+	isNotificationType, NotificationPreferences
+} from "../../../Lib/src/types/NotificationPreferences";
 
 export type NotificationType = {
 	emote: string;
@@ -189,4 +192,11 @@ export abstract class NotificationsTypes {
 		NotificationsTypes.DAILY_BONUS,
 		NotificationsTypes.PET_EXPEDITION
 	];
+}
+
+/** Which kinds are on in the player's Discord settings; only on/off is shared, not where Discord sends them. */
+export function discordPreferences(configuration: NotificationsConfiguration): NotificationPreferences {
+	return Object.fromEntries(NotificationsTypes.ALL
+		.filter(type => isNotificationType(type.customId))
+		.map(type => [type.customId, type.value(configuration).enabled])) as NotificationPreferences;
 }
