@@ -1,5 +1,5 @@
 import {
-	CLS_TRANSACTION_KEY, getCrowniclesNamespace, getCurrentTransaction
+	CLS_TRANSACTION_KEY, getCrowniclesNamespace, getCurrentTransaction, runInChildContext
 } from "./CLSNamespace";
 import type { Transaction } from "sequelize";
 
@@ -14,13 +14,7 @@ function runOutsideTransaction(task: AsyncTask, onError: (error: unknown) => voi
 }
 
 function runAwaitedOutsideTransaction(task: AsyncTask): Promise<void> {
-	const namespace = getCrowniclesNamespace();
-	return new Promise<void>((resolve, reject) => {
-		namespace.run(() => {
-			namespace.set(CLS_TRANSACTION_KEY, null);
-			task().then(resolve, reject);
-		});
-	});
+	return runInChildContext({ [CLS_TRANSACTION_KEY]: null }, task);
 }
 
 export function scheduleAfterCommit(task: AsyncTask, onError: (error: unknown) => void, explicitTransaction?: Transaction | null): void {
