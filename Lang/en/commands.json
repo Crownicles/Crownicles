@@ -2872,7 +2872,7 @@
     "display": "{{name}}\n\n{emote:commands.classesDescription} `{{description}}`\n\nWould you like to change to this class? You won't be able to change class until {{time}}.",
     "success": "{{pseudo}}, your class has been modified!",
     "newClass": "Your new class is: **{{name}}**",
-    "lostDefensePersonality": "Votre nouvelle classe ne dispose pas du style de défense {emote:defensePersonalities.{{personality}}} **{{name}}** que vous aviez choisi : il a été abandonné. Consultez {command:defense} pour voir comment votre personnage se défend désormais.",
+    "lostDefensePersonality": "Your new class does not have the defense style {emote:defensePersonalities.{{personality}}} **{{name}}** that you had chosen: it has been discontinued. Check {command:defense} to see how your character now defends itself.",
     "confirm": "{{pseudo}}, you have selected the following class:",
     "error": {
       "canceledPurchase": "Class change cancelled.",
