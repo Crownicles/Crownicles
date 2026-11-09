@@ -105,7 +105,7 @@ describe("character reference screens", () => {
 	});
 
 	it("leads to the online guide and the rarities, the badges living on the profile", async () => {
-		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(true);
+		const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
 		jest.mocked(GameClient.request).mockResolvedValue({
 			kind: "answer", packet: { rarities: [0, 43.768] }
 		} as never);

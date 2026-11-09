@@ -42,7 +42,7 @@ describe("fatal error screen", () => {
 	afterEach(() => jest.restoreAllMocks());
 
 	it("keeps the app open on a screen that broke while drawing, and hands its report over", async () => {
-		const share = jest.spyOn(Share, "share").mockResolvedValue({ action: Share.sharedAction });
+		const share = jest.spyOn(Share, "share").mockResolvedValue({ action: Share.sharedAction, activityType: undefined });
 		await render(<App><FightScreen /></App>);
 
 		expect(screen.getByText("app:crash.title")).toBeTruthy();

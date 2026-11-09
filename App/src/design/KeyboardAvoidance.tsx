@@ -2,7 +2,7 @@ import {
 	createContext, ReactNode, RefObject, useCallback, useContext, useEffect, useRef, useState
 } from "react";
 import {
-	Keyboard, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollView, TextInput, View
+	Keyboard, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollViewInstance, TextInputInstance, View, ViewInstance
 } from "react-native";
 import { Theme } from "@/src/design/Theme";
 
@@ -17,14 +17,14 @@ export type WindowSpan = {
 	top: number; bottom: number;
 };
 
-type Measurable = Pick<View, "measureInWindow">;
+type Measurable = Pick<ViewInstance, "measureInWindow">;
 type RevealRequest = {
 	field: Measurable; form: Measurable;
 };
 type Reveal = (request: RevealRequest) => void;
 
 const RevealContext = createContext<Reveal | null>(null);
-const FormContext = createContext<RefObject<View | null> | null>(null);
+const FormContext = createContext<RefObject<ViewInstance | null> | null>(null);
 
 /**
  * How far to scroll down so a whole form (field, refusal reason, button) sits above the keyboard,
@@ -46,18 +46,18 @@ function spanOf(target: Measurable): Promise<WindowSpan> {
 
 /** What must stay in sight together while one of its fields is typed in: the fields and the action that sends them. */
 export function FormBlock({ children }: { children: ReactNode }): ReactNode {
-	const ref = useRef<View>(null);
+	const ref = useRef<ViewInstance>(null);
 	return <FormContext.Provider value={ref}><View ref={ref}>{children}</View></FormContext.Provider>;
 }
 
 /** Asks the screen, once focused, to bring the field's form above the keyboard; alone, the field and its hint. */
 export function useRevealOnFocus(): {
-	inputRef: RefObject<TextInput | null>; rootRef: RefObject<View | null>; onFocus: () => void;
+	inputRef: RefObject<TextInputInstance | null>; rootRef: RefObject<ViewInstance | null>; onFocus: () => void;
 } {
 	const reveal = useContext(RevealContext);
 	const form = useContext(FormContext);
-	const inputRef = useRef<TextInput>(null);
-	const rootRef = useRef<View>(null);
+	const inputRef = useRef<TextInputInstance>(null);
+	const rootRef = useRef<ViewInstance>(null);
 	const onFocus = (): void => {
 		const field = inputRef.current;
 		const block = form?.current ?? rootRef.current;
@@ -74,7 +74,7 @@ export function useRevealOnFocus(): {
 }
 
 type KeyboardAvoidance = {
-	scrollRef: RefObject<ScrollView | null>;
+	scrollRef: RefObject<ScrollViewInstance | null>;
 
 	/** Height to take off the scroll view on Android, where the edge-to-edge window no longer shrinks. */
 	clearance: number;
@@ -83,7 +83,7 @@ type KeyboardAvoidance = {
 };
 
 /** Scrolls just enough to bring the requested form above the keyboard. */
-async function scrollFormIntoSight(scrollView: ScrollView, target: RevealRequest, keyboardTop: number, offset: number): Promise<void> {
+async function scrollFormIntoSight(scrollView: ScrollViewInstance, target: RevealRequest, keyboardTop: number, offset: number): Promise<void> {
 	const scroll = scrollView.getNativeScrollRef();
 	if (!scroll) {
 		return;
@@ -111,7 +111,7 @@ async function scrollFormIntoSight(scrollView: ScrollView, target: RevealRequest
  * Follows where the keyboard's top edge lies and, on Android, how much the scroll view must give up to stay above it.
  * `onShown` and `onHidden` must keep their identity across renders.
  */
-function useKeyboardFrame(scrollRef: RefObject<ScrollView | null>, keyboardTop: RefObject<number | null>, onShown: () => void, onHidden: () => void): number {
+function useKeyboardFrame(scrollRef: RefObject<ScrollViewInstance | null>, keyboardTop: RefObject<number | null>, onShown: () => void, onHidden: () => void): number {
 	const [clearance, setClearance] = useState(0);
 	const applied = useRef(0);
 	useEffect(() => {
@@ -156,7 +156,7 @@ function useKeyboardFrame(scrollRef: RefObject<ScrollView | null>, keyboardTop: 
  * by `clearance`; both only bring the caret into sight, so the rest of the form is scrolled up here.
  */
 export function useKeyboardAvoidance(): KeyboardAvoidance {
-	const scrollRef = useRef<ScrollView>(null);
+	const scrollRef = useRef<ScrollViewInstance>(null);
 	const offset = useRef(0);
 	const request = useRef<RevealRequest | null>(null);
 	const timer = useRef<ReturnType<typeof setTimeout> | null>(null);

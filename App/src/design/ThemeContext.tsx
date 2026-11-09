@@ -2,7 +2,7 @@ import {
 	createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState
 } from "react";
 import {
-	Appearance, StyleSheet, useColorScheme
+	Appearance, ImageStyle, StyleSheet, TextStyle, useColorScheme, ViewStyle
 } from "react-native";
 import { setBackgroundColorAsync } from "expo-system-ui";
 import {
@@ -80,7 +80,12 @@ export function paletteColor(colors: Palette, tint: Tint): string {
 }
 
 /** Styles built from the palette, once per palette, and rebuilt when the theme changes. */
-export function createStyles<Styles extends StyleSheet.NamedStyles<Styles>>(factory: (colors: Palette) => Styles): () => Styles {
+/** A style sheet whose entries keep their literal values, so that each one is checked against the style it is. */
+type NamedStyles<Styles> = {
+	[Name in keyof Styles]: ViewStyle | TextStyle | ImageStyle;
+};
+
+export function createStyles<Styles extends NamedStyles<Styles>>(factory: (colors: Palette) => Styles): () => Styles {
 	const cache = new Map<Palette, Styles>();
 	return function useStyles(): Styles {
 		const colors = useColors();
@@ -94,6 +99,6 @@ export function createStyles<Styles extends StyleSheet.NamedStyles<Styles>>(fact
 }
 
 /** One part of a large style sheet, merged into the factory given to createStyles; its keys stay inferred. */
-export function styleGroup<Styles extends StyleSheet.NamedStyles<Styles>>(factory: (colors: Palette) => Styles): (colors: Palette) => Styles {
+export function styleGroup<Styles extends NamedStyles<Styles>>(factory: (colors: Palette) => Styles): (colors: Palette) => Styles {
 	return factory;
 }

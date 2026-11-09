@@ -2,7 +2,7 @@ import {
 	ReactNode, useEffect, useRef, useState
 } from "react";
 import {
-	Animated, Easing, ScrollView, Text, View
+	Animated, Easing, ScrollView, ScrollViewInstance, Text, View
 } from "react-native";
 import { FightLogRecord } from "@/src/store/FightStore";
 import { Theme } from "@/src/design/Theme";
@@ -189,7 +189,7 @@ export function FightFeed({
 }): ReactNode {
 	const styles = useStyles();
 	const still = useReducedMotion();
-	const scroll = useRef<ScrollView>(null);
+	const scroll = useRef<ScrollViewInstance>(null);
 	const latest = entries.at(-1)?.sequence;
 	return <ScrollView
 		ref={scroll}

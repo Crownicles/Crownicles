@@ -1,13 +1,11 @@
 import { useEffect } from "react";
-import {
-	AppState, AppStateStatus
-} from "react-native";
+import { AppState } from "react-native";
 import { AppPresenceReq } from "ws-packets/src/fromClient/AppPresenceReq";
 import { makeFromClientPacket } from "ws-packets/src/MakePackets";
 import { AuthStateEnum } from "@/src/authentication/AuthStateEnum";
 import { WebSocketClient } from "@/src/networking/WebSocketClient";
 
-function announce(state: AppStateStatus): void {
+function announce(state: typeof AppState.currentState): void {
 	WebSocketClient.getInstance().sendIfOpen(makeFromClientPacket(AppPresenceReq, { foreground: state === "active" }));
 }
 

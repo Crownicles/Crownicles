@@ -18,19 +18,6 @@
       "buildNumber": "7",
       "entitlements": {
         "com.apple.developer.game-center": true
-      },
-      "infoPlist": {
-        "UIApplicationSceneManifest": {
-          "UIApplicationSupportsMultipleScenes": false,
-          "UISceneConfigurations": {
-            "UIWindowSceneSessionRoleApplication": [
-              {
-                "UISceneConfigurationName": "Default Configuration",
-                "UISceneDelegateClassName": "EXExpoAppSceneDelegate"
-              }
-            ]
-          }
-        }
       }
     },
     "android": {
@@ -77,6 +64,7 @@
       "expo-font",
       "expo-image",
       "expo-status-bar",
+      "expo-sharing",
       [
         "expo-notifications",
         {
@@ -84,7 +72,6 @@
           "color": "#B95E4B"
         }
       ],
-      "./plugins/withSceneLifecycle",
       "./plugins/withAndroidReleaseSigning",
       "./plugins/withAndroidReleaseOptimizations",
       "./plugins/withGameServices"
