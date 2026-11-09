@@ -5,6 +5,9 @@ import {
 	useNavigationContainerRef, useRouter
 } from "expo-router";
 import {
+	CommonActions, NavigationState
+} from "expo-router/react-navigation";
+import {
 	deleteStoredToken, readFullStoredToken, readStoredToken, TOKEN_STORAGE_KEY_TEMPLATE, writeStoredToken
 } from "@/src/authentication/TokenStorage";
 import { WebSocketClient } from "@/src/networking/WebSocketClient";
@@ -32,6 +35,23 @@ const ROOT_SCREENS = {
 } as const;
 
 type RootScreen = typeof ROOT_SCREENS[keyof typeof ROOT_SCREENS];
+
+/** The mounted navigator that lists the given screen: the app's root stack sits below the container Expo Router adds. */
+function navigatorListing(state: NavigationState, screen: RootScreen): NavigationState | undefined {
+	if (state.routeNames.includes(screen)) {
+		return state;
+	}
+	for (const route of state.routes) {
+		const nested = route.state;
+		if (nested?.stale === false) {
+			const found = navigatorListing(nested, screen);
+			if (found) {
+				return found;
+			}
+		}
+	}
+	return undefined;
+}
 
 /** States that send the player back to the login screen */
 const LOGIN_STATES: ReadonlySet<AuthStateEnum> = new Set([
@@ -144,13 +164,21 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 	const resetRootTo = (screen: RootScreen): void => {
 		cancelPendingNavigation();
 		const attempt = (): void => {
-			if (!navigationRef.isReady()) {
+			const stack = navigationRef.isReady() ? navigatorListing(navigationRef.getRootState(), screen) : undefined;
+			if (!stack) {
 				initialNavigationTimer.current = setTimeout(attempt, 100);
 				return;
 			}
 			initialNavigationTimer.current = null;
-			navigationRef.reset({
-				index: 0, routes: [{ name: screen }]
+
+			// Expo Router only takes a complete state: the stack keeps its key, route names and key sequence.
+			navigationRef.dispatch({
+				...CommonActions.reset({
+					...stack,
+					index: 0,
+					routes: [{ name: screen }]
+				}),
+				target: stack.key
 			});
 		};
 		attempt();

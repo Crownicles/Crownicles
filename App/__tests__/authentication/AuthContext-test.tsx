@@ -24,11 +24,52 @@ import { fightStore } from "@/src/store/FightStore";
 import { FightIntroductionRes } from "ws-packets/src/fromServer/fight/FightRes";
 import { ReportUseTokensAcceptedRes } from "ws-packets/src/fromServer/report/ReportTokenRes";
 
-const mockReset = jest.fn();
+/** The app's root stack, as Expo Router nests it below the container route it adds. */
+const APP_STACK = {
+	key: "stack-app",
+	index: 1,
+	routeNames: ["login", "(protected)"],
+	routes: [
+		{
+			key: "login-1", name: "login"
+		},
+		{
+			key: "(protected)-2", name: "(protected)"
+		}
+	],
+	routeKeySeq: 2,
+	stale: false as const,
+	type: "stack"
+};
+const ROOT_STATE = {
+	key: "navigator:root",
+	index: 0,
+	routeNames: ["__root", "+not-found", "_sitemap"],
+	routes: [
+		{
+			key: "__root-1", name: "__root", state: APP_STACK
+		}
+	],
+	routeKeySeq: 1,
+	stale: false as const,
+	type: "stack"
+};
+const mockDispatch = jest.fn();
 const mockReplace = jest.fn();
 const mockNavigationRef = {
-	isReady: jest.fn((): boolean => true), reset: mockReset
+	isReady: jest.fn((): boolean => true), getRootState: (): typeof ROOT_STATE => ROOT_STATE, dispatch: mockDispatch
 };
+
+/** The app's root stack left with the given screen alone, its key, route names and key sequence kept as Expo Router requires. */
+function rootResetTo(name: string): object {
+	return {
+		type: "RESET",
+		payload: {
+			...APP_STACK, index: 0, routes: [{ name }]
+		},
+		target: APP_STACK.key
+	};
+}
 jest.mock("expo-router", () => ({
 	useRouter: (): object => ({ replace: mockReplace }),
 	useNavigationContainerRef: (): object => mockNavigationRef
@@ -119,7 +160,7 @@ describe("account session ownership", () => {
 		expect(collectorsStore.getSnapshot()).toHaveLength(1);
 		expect(fightStore.getSnapshot().visible).toBe(true);
 		expect(reportEventStore.getTokenSnapshot()).not.toBeNull();
-		mockReset.mockClear();
+		mockDispatch.mockClear();
 		const lateSocket = reportSocket!;
 		await act(async () => lateSocket(endedState));
 		await act(() => jest.advanceTimersByTime(100));
@@ -129,10 +170,8 @@ describe("account session ownership", () => {
 			introduction: null, visible: false, logs: []
 		});
 		expect(reportEventStore.getTokenSnapshot()).toBeNull();
-		expect(mockReset).toHaveBeenCalledTimes(1);
-		expect(mockReset).toHaveBeenCalledWith({
-			index: 0, routes: [{ name: "login" }]
-		});
+		expect(mockDispatch).toHaveBeenCalledTimes(1);
+		expect(mockDispatch).toHaveBeenCalledWith(rootResetTo("login"));
 		await act(() => lateSocket(AuthStateEnum.LOGGED_IN));
 		expect(screen.getByText(String(endedState))).toBeTruthy();
 		expect(collectorsStore.getSnapshot()).toEqual([]);
@@ -143,16 +182,14 @@ describe("account session ownership", () => {
 		jest.mocked(readFullStoredToken).mockResolvedValue(storedSession());
 		await render(<AuthProvider><AuthProbe /></AuthProvider>);
 		await waitFor(() => expect(reportSocket).toBeDefined());
-		mockReset.mockClear();
+		mockDispatch.mockClear();
 		mockNavigationRef.isReady.mockReturnValueOnce(false);
 		await act(() => reportSocket!(AuthStateEnum.LOGGED_IN));
-		expect(mockReset).not.toHaveBeenCalled();
+		expect(mockDispatch).not.toHaveBeenCalled();
 
 		await act(() => jest.advanceTimersByTime(100));
 
-		expect(mockReset).toHaveBeenCalledWith({
-			index: 0, routes: [{ name: "(protected)" }]
-		});
+		expect(mockDispatch).toHaveBeenCalledWith(rootResetTo("(protected)"));
 	});
 
 	it("reopens the stored session when the player retries from a connection error", async () => {
@@ -170,9 +207,7 @@ describe("account session ownership", () => {
 		await render(<AuthProvider><AuthProbe /></AuthProvider>);
 		await waitFor(() => expect(screen.getByText(String(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED))).toBeTruthy());
 		expect(WebSocketClient.getInstance().init).not.toHaveBeenCalled();
-		expect(mockReset).toHaveBeenCalledWith({
-			index: 0, routes: [{ name: "login" }]
-		});
+		expect(mockDispatch).toHaveBeenCalledWith(rootResetTo("login"));
 	});
 
 	// Without a navigator under it, a root navigation remounts the whole app, boot screen included.
@@ -184,14 +219,14 @@ describe("account session ownership", () => {
 		}));
 		await render(<AuthProvider><AuthProbe /></AuthProvider>);
 		await waitFor(() => expect(RestApi.checkAccountCollision).toHaveBeenCalled());
-		mockReset.mockClear();
+		mockDispatch.mockClear();
 		mockReplace.mockClear();
 
 		await screen.unmount();
 		await act(async () => refuse(new AuthFailure(AUTH_FAILURES.INVALID_TOKEN, "refused after the boot screen took over")));
 		await act(() => jest.advanceTimersByTime(1_000));
 
-		expect(mockReset).not.toHaveBeenCalled();
+		expect(mockDispatch).not.toHaveBeenCalled();
 		expect(mockReplace).not.toHaveBeenCalled();
 	});
 });

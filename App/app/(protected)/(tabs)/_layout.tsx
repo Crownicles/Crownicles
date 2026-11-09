@@ -4,9 +4,11 @@ import {
 import { useRouter } from "expo-router";
 
 /** Expo Router no longer accepts react-navigation directly since SDK 57, so the top tabs come from its own copy. */
-import { TopTabs } from "expo-router/js-top-tabs";
 import {
-	Animated, Text, TouchableOpacity, View
+	type MaterialTopTabBarProps, TopTabs
+} from "expo-router/js-top-tabs";
+import {
+	Text, TouchableOpacity, View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppIcons } from "@/src/AppIcons";
@@ -140,25 +142,9 @@ function useEnergyProgress(followed: boolean): number | undefined {
 	return regenerating && energy.max > 0 ? energy.value / energy.max : undefined;
 }
 
-type NavigatorTabBarProps = {
-	state: {
-		index: number;
-		routes: readonly {
-			key: string; name: string; params?: object;
-		}[];
-	};
-	position: Animated.AnimatedInterpolation<number>;
-	navigation: {
-		emit: (event: {
-			type: "tabPress"; target: string; canPreventDefault: true;
-		}) => { defaultPrevented: boolean };
-		navigate: (name: string, params?: object) => void;
-	};
-};
-
 function NavigatorTabBar({
-	state, position, navigation, journey, hidden
-}: NavigatorTabBarProps & {
+	state, position, emitter, navigateToTab, journey, hidden
+}: MaterialTopTabBarProps & {
 	journey: Journey; hidden: boolean;
 }): ReactNode {
 	const currentTime = useCurrentTime(RING_TICK_MS);
@@ -191,11 +177,11 @@ function NavigatorTabBar({
 		if (!route) {
 			return;
 		}
-		const event = navigation.emit({
+		const event = emitter.emit({
 			type: "tabPress", target: route.key, canPreventDefault: true
 		});
 		if (!event.defaultPrevented) {
-			navigation.navigate(route.name, route.params);
+			navigateToTab(route.key);
 		}
 	};
 	return <CapsuleTabBar tabs={tabs} focused={state.routes[state.index].name} position={position} onSelect={select} hidden={hidden} />;
@@ -261,7 +247,7 @@ function TabPager({ journey }: { journey: Journey }): ReactNode {
 	return (
 		<TopTabs
 			tabBarPosition="bottom"
-			tabBar={(props: NavigatorTabBarProps) => <NavigatorTabBar {...props} journey={journey} hidden={!hasTabs || heldOn(props.state.routes[props.state.index].name)} />}
+			tabBar={(props: MaterialTopTabBarProps) => <NavigatorTabBar {...props} journey={journey} hidden={!hasTabs || heldOn(props.state.routes[props.state.index].name)} />}
 
 			// A tab is drawn once it is reached or next to the one on screen, so a swipe never lands on a blank page.
 			screenOptions={({ route }: { route: { name: string } }) => ({
