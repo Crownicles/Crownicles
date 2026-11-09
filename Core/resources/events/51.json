@@ -18,7 +18,8 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 120
+          "lostTime": 120,
+          "money": 200
         },
         "1": {
           "health": -30,
