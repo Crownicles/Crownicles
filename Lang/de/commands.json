@@ -2872,6 +2872,7 @@
     "display": "{{name}}\n\n{emote:commands.classesDescription} `{{description}}`\n\nMöchten Sie in diese Klasse wechseln? Sie können die Klasse erst nach {{time}}wechseln.",
     "success": "{{pseudo}}Ihre Klasse wurde geändert!",
     "newClass": "Ihre neue Klasse ist : **{{name}}**",
+    "lostDefensePersonality": "Votre nouvelle classe ne dispose pas du style de défense {emote:defensePersonalities.{{personality}}} **{{name}}** que vous aviez choisi : il a été abandonné. Consultez {command:defense} pour voir comment votre personnage se défend désormais.",
     "confirm": "{{pseudo}}Sie haben die folgende Klasse ausgewählt:",
     "error": {
       "canceledPurchase": "Klassenwechsel abgesagt.",
