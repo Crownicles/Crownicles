@@ -1,6 +1,6 @@
 {
   "name": "crownicles_discord_middleware",
-  "version": "6.2.0",
+  "version": "6.2.0.b",
   "description": "Discord middleware package of Crownicles",
   "main": "src/index.js",
   "packageManager": "pnpm@10.34.3+sha512.f2c531b08829d7be7f03c90addc266615f9c5477463e4bf1d275cb263ce9ea57cf0d5599110d94649a9bb3fed9f0b5efcea74a7016b61532a24cb9ad87860c1d",
