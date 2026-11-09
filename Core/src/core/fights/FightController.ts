@@ -151,6 +151,9 @@ export class FightController {
 	 * @param bug true if the fight has bugged
 	 */
 	public async endFight(response: CrowniclesPacket[], bug = false): Promise<void> {
+		if (this.isClosed()) {
+			return;
+		}
 		this.state = bug ? FightState.BUG : FightState.FINISHED;
 
 		this.checkNegativeEnergy();
@@ -181,6 +184,9 @@ export class FightController {
 	 * @param response {CrowniclesPacket[]}
 	 */
 	public async endBugFight(response: CrowniclesPacket[]): Promise<void> {
+		if (this.isClosed()) {
+			return;
+		}
 		for (const fighter of this.fighters) {
 			fighter.unblock();
 			if (fighter instanceof PlayerFighter) {
@@ -520,6 +526,13 @@ export class FightController {
 				.isDeadOrBug()
 			|| this.getDefendingFighter()!
 				.isDeadOrBug());
+	}
+
+	/**
+	 * Check if endFight has already run, unlike hadEnded which is also true when a fighter just died and the fight still has to be ended
+	 */
+	private isClosed(): boolean {
+		return this.state === FightState.FINISHED || this.state === FightState.BUG;
 	}
 }
 

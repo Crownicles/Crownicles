@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 const outroFightMock = vi.fn();
+const displayBugFightMock = vi.fn();
 
 vi.mock('../../../src/core/fights/FightsManager', () => ({
 	FightsManager: {
@@ -18,7 +19,7 @@ vi.mock('../../../src/core/fights/FightView', () => {
 
 			public outroFight = outroFightMock;
 
-			public displayBugFight = vi.fn();
+			public displayBugFight = displayBugFightMock;
 
 			public introduceFight = vi.fn();
 
@@ -123,5 +124,84 @@ describe('FightController endFight fallback', () => {
 		expect(loser).toBe(opponent);
 		expect(winner).toBe(initiator);
 		expect(draw).toBe(true);
+	});
+});
+
+describe('FightController endFight re-entry', () => {
+	type FinishedFightFixture = {
+		fight: FightController;
+		initiator: StubFighter;
+		opponent: StubFighter;
+		endCallback: ReturnType<typeof vi.fn>;
+	};
+
+	function buildFinishedFight(): FinishedFightFixture {
+		const initiator = createStubFighter('initiator');
+		const opponent = createStubFighter('opponent');
+		initiator.isDead.mockReturnValue(false);
+		opponent.isDead.mockReturnValue(true);
+
+		const fight = new FightController(
+			{ fighter1: initiator, fighter2: opponent },
+			{
+				overtimeBehavior: FightOvertimeBehavior.END_FIGHT_DRAW,
+				context: {} as Record<string, unknown>
+			}
+		);
+		const endCallback = vi.fn().mockResolvedValue(undefined);
+		fight.setEndCallback(endCallback);
+
+		return {
+			fight, initiator, opponent, endCallback
+		};
+	}
+
+	beforeEach(() => {
+		outroFightMock.mockClear();
+		displayBugFightMock.mockClear();
+	});
+
+	it('does not end the fight a second time', async () => {
+		const {
+			fight, initiator, opponent, endCallback
+		} = buildFinishedFight();
+
+		await fight.endFight([]);
+		initiator.isDead.mockReturnValue(true);
+		await fight.endFight([]);
+
+		expect(outroFightMock).toHaveBeenCalledTimes(1);
+		expect(outroFightMock.mock.calls[0][3]).toBe(false);
+		expect(initiator.endFight).toHaveBeenCalledTimes(1);
+		expect(initiator.endFight).toHaveBeenCalledWith(true, [], false, 1);
+		expect(opponent.endFight).toHaveBeenCalledTimes(1);
+		expect(endCallback).toHaveBeenCalledTimes(1);
+	});
+
+	it('ends the fight once when a second end starts before the first one is over', async () => {
+		const {
+			fight, initiator, opponent, endCallback
+		} = buildFinishedFight();
+
+		await Promise.all([fight.endFight([]), fight.endFight([])]);
+
+		expect(outroFightMock).toHaveBeenCalledTimes(1);
+		expect(initiator.endFight).toHaveBeenCalledTimes(1);
+		expect(opponent.endFight).toHaveBeenCalledTimes(1);
+		expect(endCallback).toHaveBeenCalledTimes(1);
+	});
+
+	it('ignores a bug cancellation once the fight has ended', async () => {
+		const {
+			fight, initiator, endCallback
+		} = buildFinishedFight();
+
+		await fight.endFight([]);
+		await fight.endBugFight([]);
+
+		expect(displayBugFightMock).not.toHaveBeenCalled();
+		expect(outroFightMock).toHaveBeenCalledTimes(1);
+		expect(initiator.endFight).toHaveBeenCalledTimes(1);
+		expect(endCallback).toHaveBeenCalledTimes(1);
 	});
 });
