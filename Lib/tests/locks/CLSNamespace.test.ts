@@ -52,21 +52,25 @@ describe("runInChildContext", () => {
 	});
 
 	it("does not leak the child context to unrelated callbacks while the body is pending", async () => {
+		const namespace = getCrowniclesNamespace();
+		const activeContextBefore = namespace.active;
 		const bodyStarted = createGate();
 		const bodyReleased = createGate();
 
 		const running = runInChildContext({ [PROBE_KEY]: "child" }, async () => {
 			bodyStarted.open();
 			await bodyReleased.opened;
-			return getCrowniclesNamespace().get(PROBE_KEY);
+			return namespace.get(PROBE_KEY);
 		});
+		const activeContextAfterCall = namespace.active;
 		await bodyStarted.opened;
 		const seenByUnrelatedCallback = await readProbeFromImmediate();
 		bodyReleased.open();
 
 		expect(await running).toBe("child");
+		expect(activeContextAfterCall).toBe(activeContextBefore);
 		expect(seenByUnrelatedCallback).toBeUndefined();
-		expect(getCrowniclesNamespace().get(PROBE_KEY)).toBeUndefined();
+		expect(namespace.get(PROBE_KEY)).toBeUndefined();
 	});
 
 	it("rejects with the error of the body", async () => {

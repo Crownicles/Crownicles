@@ -7,7 +7,6 @@ import {
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { PlayerMissionsInfo as PlayerMissionsInfoType } from "../../src/core/database/game/models/PlayerMissionsInfo";
-import type { CrowniclesPacket } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
 	getCrowniclesNamespace, getCurrentTransaction
 } from "../../../Lib/src/locks/CLSNamespace";
@@ -81,13 +80,14 @@ describe("player CLS contexts", () => {
 		const player = await createPlayer("cls-leak-level-up");
 		await player.update({ experience: player.getExperienceNeededToLevelUp() });
 		const initialLevel = player.level;
-		const response: CrowniclesPacket[] = [];
+		const namespace = getCrowniclesNamespace();
+		const activeContextBefore = namespace.active;
 
-		const levelUp = player.levelUpIfNeeded(response);
-		const playersLevelingUpSeenByCaller = getCrowniclesNamespace().get("playersLevelingUp");
+		const levelUp = player.levelUpIfNeeded([]);
+		const activeContextAfterCall = namespace.active;
 		await levelUp;
 
-		expect(playersLevelingUpSeenByCaller).toBeUndefined();
+		expect(activeContextAfterCall).toBe(activeContextBefore);
 		expect((await Player.findByPk(player.id))!.level).toBe(initialLevel + 1);
 	});
 });
