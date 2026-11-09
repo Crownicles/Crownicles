@@ -233,17 +233,19 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 	}
 
 	/**
-	 * Move to the page or the view asked by a click on one of the buttons
+	 * Move to the page or the view asked by a click on one of the buttons.
+	 * The page stays in the navigation: a double click reaches the collector twice before the first update disables the button.
 	 * @param state
 	 * @param customId
+	 * @param totalPages
 	 */
-	private static applyClick(state: PaginationState, customId: string): void {
+	private static applyClick(state: PaginationState, customId: string, totalPages: number): void {
 		switch (customId) {
 			case PAGINATION_CUSTOM_IDS.PREVIOUS:
-				state.currentPage--;
+				state.currentPage = Math.max(state.currentPage - 1, 0);
 				break;
 			case PAGINATION_CUSTOM_IDS.NEXT:
-				state.currentPage++;
+				state.currentPage = Math.min(state.currentPage + 1, totalPages - 1);
 				break;
 			default:
 				state.onExtraPage = customId === PAGINATION_CUSTOM_IDS.OPEN_EXTRA_PAGE;
@@ -293,7 +295,7 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 				return;
 			}
 
-			CrowniclesPaginatedEmbed.applyClick(state, buttonInteraction.customId);
+			CrowniclesPaginatedEmbed.applyClick(state, buttonInteraction.customId, this.getTotalPages());
 			await buttonInteraction.update(await this.buildView(state, buttons));
 		});
 

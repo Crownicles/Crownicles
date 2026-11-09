@@ -96,6 +96,49 @@ const extraPage = {
 	}
 };
 
+describe("CrowniclesPaginatedEmbed navigation", () => {
+	// A double click reaches the collector twice before the first update disables the button (#5125)
+	it("stays on the last page after a double click on the next button", async () => {
+		const { click } = await sendEmbed(new CrowniclesPaginatedEmbed({
+			lng: "fr",
+			pages: ["page 1", "page 2"]
+		}));
+
+		await click("next");
+		const view = await click("next");
+
+		expect(view.embeds[0].description).toBe("page 2");
+		expect(view.disabled).toEqual([false, true]);
+	});
+
+	it("stays on the first page after a double click on the previous button", async () => {
+		const { click } = await sendEmbed(new CrowniclesPaginatedEmbed({
+			lng: "fr",
+			pages: ["page 1", "page 2"],
+			selectedPageIndex: 1
+		}));
+
+		await click("previous");
+		const view = await click("previous");
+
+		expect(view.embeds[0].description).toBe("page 1");
+		expect(view.disabled).toEqual([true, false]);
+	});
+
+	it("stays on the last page built on demand after a double click on the next button", async () => {
+		const { click } = await sendEmbed(new CrowniclesPaginatedEmbed({
+			lng: "fr",
+			pageBuilder: (pageIndex: number): Promise<string> => Promise.resolve(`built page ${pageIndex + 1}`),
+			pagesCount: 2
+		}));
+
+		await click("next");
+		const view = await click("next");
+
+		expect(view.embeds[0].description).toBe("built page 2");
+	});
+});
+
 describe("CrowniclesPaginatedEmbed extra page", () => {
 	it("shows the button opening the extra page next to the navigation, and comes back to the same page", async () => {
 		const { firstView, click } = await sendEmbed(new CrowniclesPaginatedEmbed({
