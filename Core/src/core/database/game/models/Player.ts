@@ -44,7 +44,9 @@ import {
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
-import { getCrowniclesNamespace } from "../../../../../../Lib/src/locks/CLSNamespace";
+import {
+	getCrowniclesNamespace, runInChildContext
+} from "../../../../../../Lib/src/locks/CLSNamespace";
 import {
 	League, LeagueDataController
 } from "../../../../data/League";
@@ -496,11 +498,9 @@ export class Player extends Model {
 		if (references?.has(this.id)) {
 			return await body();
 		}
-		const namespace = getCrowniclesNamespace();
-		return await namespace.runPromise(async () => {
-			namespace.set(TOKEN_CAP_REFERENCES_CONTEXT_KEY, new Map([...references ?? [], [this.id, this.tokens]]));
-			return await body();
-		});
+		return await runInChildContext({
+			[TOKEN_CAP_REFERENCES_CONTEXT_KEY]: new Map([...references ?? [], [this.id, this.tokens]])
+		}, body);
 	}
 
 	/**
@@ -631,18 +631,13 @@ export class Player extends Model {
 	 * @param response
 	 */
 	public async levelUpIfNeeded(response: CrowniclesPacket[]): Promise<void> {
-		const namespace = getCrowniclesNamespace();
-		const playersLevelingUp = namespace.get(PLAYERS_LEVELING_UP_CONTEXT_KEY) as ReadonlySet<number> | undefined;
+		const playersLevelingUp = getCrowniclesNamespace().get(PLAYERS_LEVELING_UP_CONTEXT_KEY) as ReadonlySet<number> | undefined;
 		if (playersLevelingUp?.has(this.id)) {
 			return;
 		}
-		await namespace.runPromise(async () => {
-			namespace.set(PLAYERS_LEVELING_UP_CONTEXT_KEY, new Set([
-				...playersLevelingUp ?? [],
-				this.id
-			]));
-			await this.processLevelUps(response);
-		});
+		await runInChildContext({
+			[PLAYERS_LEVELING_UP_CONTEXT_KEY]: new Set([...playersLevelingUp ?? [], this.id])
+		}, () => this.processLevelUps(response));
 	}
 
 	private async processLevelUps(response: CrowniclesPacket[]): Promise<void> {

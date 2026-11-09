@@ -79,6 +79,29 @@ export function getCrowniclesNamespace(): Namespace {
 }
 
 /**
+ * Runs `body` in a child of the current CLS context, with `values` set on it, and resolves with its result.
+ * The body still sees everything the current context holds, like the caller's transaction.
+ *
+ * Never use `namespace.runPromise` for this: it leaves its context active until the promise settles, so every
+ * unrelated callback the event loop runs meanwhile (another player's packet, a timer...) sees it, along with the
+ * caller's transaction (#5123). `namespace.run` restores the previous context synchronously, while the
+ * continuations of the body keep the child context.
+ * @param values entries to set on the child context
+ * @param body the work to run in the child context
+ */
+export function runInChildContext<T>(values: Readonly<Record<string, unknown>>, body: () => Promise<T>): Promise<T> {
+	const namespace = getCrowniclesNamespace();
+	return new Promise<T>((resolve, reject) => {
+		namespace.run(() => {
+			for (const [key, value] of Object.entries(values)) {
+				namespace.set(key, value);
+			}
+			body().then(resolve, reject);
+		});
+	});
+}
+
+/**
  * Wires the shared namespace into the supplied Sequelize constructor so
  * that every model operation (save / update / destroy / find / …)
  * executed inside `namespace.run(...)` (or any `withLockedEntities`

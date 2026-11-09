@@ -15,6 +15,13 @@ export default {
 	"no-magic-numbers": "off",
 	"no-return-assign": "error",
 	"no-self-compare": "error",
+	"no-restricted-properties": [
+		"error",
+		{
+			"property": "runPromise",
+			"message": "cls-hooked runPromise leaves its context active until the promise settles, leaking it and the caller's transaction to unrelated callbacks (#5123). Use runInChildContext from Lib/src/locks/CLSNamespace instead."
+		}
+	],
 	"no-useless-return": "error",
 	"require-await": "error",
 	"yoda": "error",
