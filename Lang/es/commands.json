@@ -2872,6 +2872,7 @@
     "display": "{{name}}\n\n{emote:commands.classesDescription}{{description}}\n\n¿Desea cambiar a esta clase? No podrá cambiar de clase antes de {{time}}.",
     "success": "{{pseudo}}¡su clase ha sido modificada!",
     "newClass": "Su nueva clase es : **{{name}}**",
+    "lostDefensePersonality": "Tu nueva clase no cuenta con el estilo de defensa {emote:defensePersonalities.{{personality}}} **{{name}}** que habías elegido: se ha eliminado. Consulta {command:defense} para ver cómo se defiende ahora tu personaje.",
     "confirm": "{{pseudo}}ha seleccionado la siguiente clase:",
     "error": {
       "canceledPurchase": "Cambio de clase cancelado.",

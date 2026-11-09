@@ -2872,6 +2872,7 @@
     "display": "{{name}}\n\n{emote:commands.classesDescription}{{description}}\n\nGostaria de mudar para esta turma? Não será possível mudar de turma antes de {{time}}.",
     "success": "{{pseudo}}a sua turma foi modificada!",
     "newClass": "A vossa nova turma é : **{{name}}**",
+    "lostDefensePersonality": "A tua nova classe não dispõe do estilo de defesa {emote:defensePersonalities.{{personality}}} **{{name}}** que tinhas escolhido: este foi abandonado. Consulta {command:defense} para veres como a tua personagem se defende agora.",
     "confirm": "{{pseudo}}selecionou a classe seguinte:",
     "error": {
       "canceledPurchase": "Mudança de turma cancelada.",
