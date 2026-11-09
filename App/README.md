@@ -127,22 +127,10 @@ severity advisory. When the fix stays within the range its dependents ask for, t
 simply resolves the fixed version. `pnpm.overrides` in `package.json` only forces the packages
 whose fix is out of that range; none of them is part of the bundle shipped in the app.
 
-- `shell-quote` `^1.9.0`, brought by `react-devtools-core`.
-- `zod` `^4.6.6` ([GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)),
-  used by `@expo/cli` 57.0.25 to check the dev tools plugins and by `eslint-plugin-react-hooks`.
-  The CLI only asks zod for what version 4 kept the same; `expo start`, `expo export` and
-  `expo prebuild` were checked with it. Remove this override once `expo` depends on `@expo/cli`
-  57.0.33 or later, which no longer uses zod (`expo` 57.0.32 does).
 - `@xmldom/xmldom` 0.7 raised to `^0.8.15`, the first release past its advisories. It comes with
   the old `@expo/config-plugins` that `expo-game-center` depends on for a config plugin the app
   does not declare, so it never runs. Remove it once `expo-game-center` no longer brings
   `@expo/plist` 0.1.
-
-`decode-uri-component` 0.2 is the one advisory left: it is fixed in 0.5.1 only, an ES module out of
-the range of the `query-string` 7 that `expo-router` 57 and `@react-navigation/core` read the app's
-links with, so `.github/workflows/dependencies.yml` allows it until the app moves to Expo SDK 58 and
-`@react-navigation/native` 7.5: neither `expo-router` 58 nor `@react-navigation/core` 7.24 uses
-`query-string` any more (#5122).
 
 ## Game Center and Google Play Games
 
