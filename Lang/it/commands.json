@@ -2872,7 +2872,7 @@
     "display": "{{name}}\n\n{emote:commands.classesDescription}{{description}}\n\nDesidera passare a questa classe? Non sarà possibile cambiare classe prima di {{time}}.",
     "success": "{{pseudo}}la tua classe è stata modificata!",
     "newClass": "La tua nuova classe è : **{{name}}**",
-    "lostDefensePersonality": "Votre nouvelle classe ne dispose pas du style de défense {emote:defensePersonalities.{{personality}}} **{{name}}** que vous aviez choisi : il a été abandonné. Consultez {command:defense} pour voir comment votre personnage se défend désormais.",
+    "lostDefensePersonality": "La tua nuova classe non dispone dello stile di difesa {emote:defensePersonalities.{{personality}}} **{{name}}** che avevi scelto: è stato eliminato. Consulta {command:defense} per scoprire come si difende ora il tuo personaggio.",
     "confirm": "{{pseudo}}avete selezionato la seguente classe:",
     "error": {
       "canceledPurchase": "Cambio di classe annullato.",
