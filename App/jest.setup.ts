@@ -32,12 +32,26 @@ jest.mock("react-native-reanimated", () => {
 			View,
 			createAnimatedComponent: (component: unknown) => component
 		},
-		useSharedValue: (value: unknown) => ({ value }),
+		useSharedValue: (initial: unknown) => {
+			const shared = {
+				value: initial,
+				get: (): unknown => shared.value,
+				set: (next: unknown): void => {
+					shared.value = next;
+				}
+			};
+			return shared;
+		},
 		useAnimatedStyle: (style: () => object) => style(),
 		withTiming: (value: unknown) => value,
 		withSpring: (value: unknown) => value,
 		withDecay: () => 0,
-		cancelAnimation: () => undefined
+		cancelAnimation: () => undefined,
+
+		// What Gesture Handler asks Reanimated for to bind its gestures; the tests fire the gesture callbacks themselves.
+		isSharedValue: () => false,
+		useEvent: () => undefined,
+		useComposedEventHandler: () => undefined
 	};
 });
 

@@ -5,7 +5,7 @@ import {
 	Image, LayoutChangeEvent, View
 } from "react-native";
 import {
-	Gesture, GestureDetector, GestureHandlerRootView
+	GestureDetector, GestureHandlerRootView, useCompetingGestures, usePanGesture, usePinchGesture, useSimultaneousGestures, useTapGesture
 } from "react-native-gesture-handler";
 import Animated, {
 	cancelAnimation, useAnimatedStyle, useSharedValue, withDecay, withSpring
@@ -93,14 +93,14 @@ export function MapViewer({
 		scale: number; x: number; y: number;
 	}): void => {
 		"worklet";
-		scale.value = withSpring(target.scale, SETTLE_SPRING);
-		x.value = withSpring(target.x, SETTLE_SPRING);
-		y.value = withSpring(target.y, SETTLE_SPRING);
+		scale.set(withSpring(target.scale, SETTLE_SPRING));
+		x.set(withSpring(target.x, SETTLE_SPRING));
+		y.set(withSpring(target.y, SETTLE_SPRING));
 	};
 	const settle = (): void => {
 		"worklet";
 		springTo(settledView({
-			scale: scale.value, x: x.value, y: y.value
+			scale: scale.get(), x: x.get(), y: y.get()
 		}, layout));
 	};
 	const fromCentre = (pointX: number, pointY: number): {
@@ -113,81 +113,86 @@ export function MapViewer({
 	};
 
 	// Two fingers also drag: the move of their midpoint is added to the zoom around it.
-	const pinch = Gesture.Pinch()
-		.withTestId("map-pinch")
-		.onStart(event => {
+	const pinch = usePinchGesture({
+		testID: "map-pinch",
+		onActivate: event => {
 			stop();
-			focal.value = fromCentre(event.focalX, event.focalY);
-		})
-		.onChange(event => {
+			focal.set(fromCentre(event.focalX, event.focalY));
+		},
+		onUpdate: event => {
 			if (event.numberOfPointers !== 2) {
 				return;
 			}
 			const point = fromCentre(event.focalX, event.focalY);
 			const zoomed = zoomAround({
-				scale: scale.value, x: x.value, y: y.value
-			}, focal.value, resistedScale(scale.value, event.scaleChange));
-			scale.value = zoomed.scale;
-			x.value = zoomed.x + point.x - focal.value.x;
-			y.value = zoomed.y + point.y - focal.value.y;
-			focal.value = point;
-		})
-		.onEnd(settle);
+				scale: scale.get(), x: x.get(), y: y.get()
+			}, focal.get(), resistedScale(scale.get(), event.scaleChange));
+			scale.set(zoomed.scale);
+			x.set(zoomed.x + point.x - focal.get().x);
+			y.set(zoomed.y + point.y - focal.get().y);
+			focal.set(point);
+		},
+		onDeactivate: settle
+	});
 
-	const pan = Gesture.Pan()
-		.withTestId("map-pan")
-		.maxPointers(1)
-		.onStart(stop)
-		.onChange(event => {
+	const pan = usePanGesture({
+		testID: "map-pan",
+		maxPointers: 1,
+		onActivate: stop,
+		onUpdate: event => {
 			const moved = resistedMove({
-				x: x.value, y: y.value
+				x: x.get(), y: y.get()
 			}, {
 				x: event.changeX, y: event.changeY
-			}, panLimits(layout, scale.value));
-			x.value = moved.x;
-			y.value = moved.y;
-		})
-		.onEnd((event, success) => {
-			if (!success) {
+			}, panLimits(layout, scale.get()));
+			x.set(moved.x);
+			y.set(moved.y);
+		},
+		onDeactivate: event => {
+			if (event.canceled) {
 				return;
 			}
-			const limits = panLimits(layout, scale.value);
-			x.value = withDecay({
+			const limits = panLimits(layout, scale.get());
+			x.set(withDecay({
 				velocity: event.velocityX, deceleration: DECAY_DECELERATION, clamp: [-limits.x, limits.x], rubberBandEffect: true
-			});
-			y.value = withDecay({
+			}));
+			y.set(withDecay({
 				velocity: event.velocityY, deceleration: DECAY_DECELERATION, clamp: [-limits.y, limits.y], rubberBandEffect: true
-			});
-		});
+			}));
+		}
+	});
 
-	const doubleTap = Gesture.Tap()
-		.numberOfTaps(2)
-		.maxDistance(TAP_MAX_DISTANCE)
-		.onEnd(event => {
+	const doubleTap = useTapGesture({
+		numberOfTaps: 2,
+		maxDistance: TAP_MAX_DISTANCE,
+		onDeactivate: event => {
 			stop();
-			const target = scale.value > MAP_ZOOM.min
+			const target = scale.get() > MAP_ZOOM.min
 				? {
 					scale: MAP_ZOOM.min, x: 0, y: 0
 				}
 				: zoomAround({
-					scale: scale.value, x: x.value, y: y.value
+					scale: scale.get(), x: x.get(), y: y.get()
 				}, fromCentre(event.x, event.y), MAP_ZOOM.doubleTap);
 			springTo({
 				scale: target.scale, ...clampPoint(target, panLimits(layout, target.scale))
 			});
-		});
+		}
+	});
+
+	// Competing, not exclusive: pinching and dragging must not wait for the double tap to fail first.
+	const gesture = useCompetingGestures(useSimultaneousGestures(pinch, pan), doubleTap);
 
 	const transform = useAnimatedStyle(() => ({
 		transform: [
-			{ translateX: x.value },
-			{ translateY: y.value },
-			{ scale: scale.value }
+			{ translateX: x.get() },
+			{ translateY: y.get() },
+			{ scale: scale.get() }
 		]
 	}));
 
 	return <MapFrame onClose={onClose}>
-		{/* Race, not Exclusive: pinching and dragging must not wait for the double tap to fail first. */}
-		<GestureDetector gesture={Gesture.Race(Gesture.Simultaneous(pinch, pan), doubleTap)}>
+		<GestureDetector gesture={gesture}>
 			<View
 				testID="map-stage"
 				style={styles.stage}
