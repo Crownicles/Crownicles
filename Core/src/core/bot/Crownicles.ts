@@ -44,6 +44,7 @@ import { CrowniclesEach10Minutes } from "./cronJobs/CrowniclesEach10Minutes";
 import { CrowniclesChristmas } from "./cronJobs/CrowniclesChristmas";
 import { ReleaseGift } from "./ReleaseGift";
 import { getKingChallengeThresholds } from "../kingChallenge/KingChallenge";
+import { insertMissingKingGuards } from "../fights/kingGuards/KingGuardMatchmaking";
 import {
 	PERIODIC_LOOPS, startResilientLoop
 } from "./ResilientLoop";
@@ -289,6 +290,9 @@ export class Crownicles {
 		 * or read under lock a row inserted after the snapshot of their transaction
 		 */
 		await getKingChallengeThresholds();
+
+		// The guards added to the library start with their initial rating, the others keep the one they earned
+		await insertMissingKingGuards();
 		if (botConfig.TEST_MODE) {
 			await CommandsTest.init();
 		}

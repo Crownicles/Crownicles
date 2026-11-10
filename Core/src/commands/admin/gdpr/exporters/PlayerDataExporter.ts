@@ -478,6 +478,7 @@ export async function exportPlayerData(
 			defenseGloryPoints: player.defenseGloryPoints,
 			attackGloryPoints: player.attackGloryPoints,
 			gloryPointsLastSeason: player.gloryPointsLastSeason,
+			guardGloryPoints: player.guardGloryPoints,
 			rage: player.rage,
 			fightPointsLost: player.fightPointsLost,
 			fightCountdown: player.fightCountdown,

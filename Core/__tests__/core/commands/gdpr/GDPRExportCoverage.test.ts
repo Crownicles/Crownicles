@@ -286,6 +286,7 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"defenseGloryPoints",
 		"attackGloryPoints",
 		"gloryPointsLastSeason",
+		"guardGloryPoints",
 		"fightCountdown",
 		"rage",
 		"lastMealAt",
@@ -535,7 +536,8 @@ const LOG_DATA_EXPORT_FIELD_COVERAGE = {
 		exporter: "LogsFightsExporter.ts",
 		csvFile: "logs/101_king_guard_fights.csv",
 		fields: [
-			"classId", "guardClassId", "guardLevel", "playerLevel", "turn", "winner", "date"
+			"classId", "guardClassId", "guardLevel", "playerLevel", "guardId", "playerGuardGlory", "playerGuardGloryChange",
+			"guardGlory", "guardGloryChange", "turn", "winner", "date"
 		]
 	},
 	"LogsPlayersGloryPoints": {

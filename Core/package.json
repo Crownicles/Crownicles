@@ -15,6 +15,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:integration": "pnpm run tsc && vitest run --config vitest.integration.config.mts",
+    "generateKingGuardLibrary": "vitest run --config vitest.scripts.config.mts --silent=false --reporter=verbose",
     "cd": "cd",
     "eslint": "eslint src",
     "eslintFix": "eslint src --fix",

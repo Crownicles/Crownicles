@@ -107,6 +107,7 @@ import { PlayerFighter } from "../../fights/fighter/PlayerFighter";
 import { PlayerBaseFighter } from "../../fights/fighter/PlayerBaseFighter";
 import { MonsterFighter } from "../../fights/fighter/MonsterFighter";
 import type { KingGuardFighter } from "../../fights/fighter/KingGuardFighter";
+import type { KingGuardRatingChange } from "../../fights/kingGuards/KingGuardRating";
 import {
 	KING_GUARD_FIGHT_WINNER, LogsKingGuardFightsResults
 } from "./models/LogsKingGuardFightsResults";
@@ -1385,8 +1386,9 @@ export class LogsDatabase extends Database {
 	 * Log the result of a fight against a king guard
 	 * @param fight
 	 * @param guard
+	 * @param ratingChange - Hidden ratings before the fight and their change, null when they could not be updated
 	 */
-	public async logKingGuardFight(fight: FightController, guard: KingGuardFighter): Promise<void> {
+	public async logKingGuardFight(fight: FightController, guard: KingGuardFighter, ratingChange: KingGuardRatingChange | null): Promise<void> {
 		const player = fight.fightInitiator;
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(player.player.keycloakId);
 		if (!logPlayer) {
@@ -1398,6 +1400,8 @@ export class LogsDatabase extends Database {
 			guardClassId: guard.player.class,
 			guardLevel: guard.level,
 			playerLevel: guard.playerLevel,
+			guardId: guard.guardData.id,
+			...ratingChange,
 			turn: fight.turn,
 			winner: fight.isADraw()
 				? KING_GUARD_FIGHT_WINNER.DRAW

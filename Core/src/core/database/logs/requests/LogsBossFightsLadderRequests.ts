@@ -5,7 +5,7 @@ import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogge
 import { BossLadder } from "../../../report/PveMonsterLevel";
 
 /**
- * Log table of the fights against opponents whose level follows the player progression: the PVE bosses or the king guards
+ * Log table of the fights against opponents whose level follows the player progression: the PVE bosses
  */
 export type BossFightsTable = {
 	name: string;

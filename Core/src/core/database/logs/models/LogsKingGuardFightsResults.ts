@@ -24,6 +24,17 @@ export class LogsKingGuardFightsResults extends Model {
 	// Level of the player when the opponent level was chosen, null for the fights logged before it was recorded
 	declare readonly playerLevel: number | null;
 
+	// Guard of the library and hidden ratings before the fight with their change, null before the library or when the update failed
+	declare readonly guardId: number | null;
+
+	declare readonly playerGuardGlory: number | null;
+
+	declare readonly playerGuardGloryChange: number | null;
+
+	declare readonly guardGlory: number | null;
+
+	declare readonly guardGloryChange: number | null;
+
 	declare readonly turn: number;
 
 	declare readonly winner: KingGuardFightWinner;
@@ -56,6 +67,26 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		playerLevel: {
 			type: DataTypes.SMALLINT.UNSIGNED,
+			allowNull: true
+		},
+		guardId: {
+			type: DataTypes.SMALLINT.UNSIGNED,
+			allowNull: true
+		},
+		playerGuardGlory: {
+			type: DataTypes.INTEGER,
+			allowNull: true
+		},
+		playerGuardGloryChange: {
+			type: DataTypes.SMALLINT,
+			allowNull: true
+		},
+		guardGlory: {
+			type: DataTypes.INTEGER,
+			allowNull: true
+		},
+		guardGloryChange: {
+			type: DataTypes.SMALLINT,
 			allowNull: true
 		},
 		turn: {

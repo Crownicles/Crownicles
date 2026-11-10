@@ -37,6 +37,8 @@ import { KingGuardFightRewardPacket } from "../../../../Lib/src/packets/fights/K
 import {
 	resolveKeycloakPlayerName
 } from "../../utils/KeycloakPlayerUtils";
+import { KingGuardUtils } from "../../utils/KingGuardUtils";
+import { KingGuardIdentity } from "../../../../Lib/src/utils/KingGuardIdentity";
 import { StringUtils } from "../../utils/StringUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { AIFightActionChoosePacket } from "../../../../Lib/src/packets/fights/AIFightActionChoosePacket";
@@ -47,7 +49,9 @@ import { CommandFightCancelPacketReq } from "../../../../Lib/src/packets/command
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { DiscordConstants } from "../../DiscordConstants";
 import { PetUtils } from "../../utils/PetUtils";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import {
+	SexTypeShort, StringConstants
+} from "../../../../Lib/src/constants/StringConstants";
 import { ReactionCollectorFightChooseActionPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { deferFightInteraction } from "./FightInteractionUtils";
 
@@ -214,8 +218,9 @@ function addFightProfileFor(introEmbed: CrowniclesEmbed, lng: Language, fighterN
  * @param lng
  */
 async function resolveOpponentDisplayName(packet: CommandFightIntroduceFightersPacket, lng: Language): Promise<string> {
-	if (packet.fightOpponentKeycloakId === FightConstants.KING_GUARD.KEYCLOAK_ID) {
-		return i18n.t("commands:fight.kingGuard.name", { lng });
+	const guardId = KingGuardIdentity.getGuardId(packet.fightOpponentKeycloakId);
+	if (guardId !== null) {
+		return KingGuardUtils.getDisplayName(guardId, lng);
 	}
 	if (packet.fightOpponentKeycloakId) {
 		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.fightOpponentKeycloakId);
@@ -689,7 +694,9 @@ export async function handleKingGuardFightReward(context: PacketContext, packet:
 		.setTitle(i18n.t("commands:fight.fightReward.title", { lng }))
 		.setDescription(i18n.t(`commands:fight.kingGuard.recap.${result}`, {
 			lng,
-			player: playerUsername
+			player: playerUsername,
+			guard: KingGuardUtils.getFirstName(packet.guard.id, lng),
+			context: packet.guard.sex === StringConstants.SEX.FEMALE.short ? StringConstants.SEX.FEMALE.long : StringConstants.SEX.MALE.long
 		}));
 	generateFightRewardField(embed, packet, lng, playerUsername);
 	generatePetLoveChangeField(embed, packet, lng, playerUsername);
