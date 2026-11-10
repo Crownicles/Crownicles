@@ -191,10 +191,10 @@ function drawAround(random: Random, base: number, offset: Range, bounds: Range):
 /**
  * Items of the highest rarity not above the given one that has some, the empty item excluded, ordered by id for reproducible draws
  */
-function getItemsOfRarityOrBelow<T extends GenericItem>(controller: ItemDataController<T>, rarity: number, filter: (item: T) => boolean = (): boolean => true): T[] {
+function getItemsOfRarityOrBelow<T extends GenericItem>(controller: ItemDataController<T>, rarity: number, filter?: (item: T) => boolean): T[] {
 	for (let currentRarity = rarity; currentRarity >= ItemRarity.COMMON; currentRarity--) {
 		const items = controller.getAllValues()
-			.filter(item => item.id !== NO_ITEM_ID && item.rarity === currentRarity && filter(item))
+			.filter(item => item.id !== NO_ITEM_ID && item.rarity === currentRarity && (filter?.(item) ?? true))
 			.sort((a, b) => a.id - b.id);
 		if (items.length > 0) {
 			return items;
