@@ -90,7 +90,8 @@ export abstract class LogsFightHistoryRequests {
 				opponent: fight.guardClassId
 			},
 			kingGuard: {
-				level: fight.guardLevel
+				level: fight.guardLevel,
+				...fight.guardId ? { id: fight.guardId } : {}
 			}
 		};
 	}

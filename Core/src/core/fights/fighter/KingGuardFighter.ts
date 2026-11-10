@@ -1,14 +1,17 @@
 import { AiPlayerFighter } from "./AiPlayerFighter";
-import type { KingGuard } from "../kingGuards/KingGuardGenerator";
+import type { KingGuard } from "../kingGuards/KingGuardLibrary";
 import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
 import { createKingGuardBehavior } from "../kingGuards/neural/KingGuardNeuralAi";
+import { KingGuardData } from "../../../data/KingGuard";
 
 /**
- * AI-controlled fighter generated on the fly when /fight finds no opponent.
+ * AI-controlled fighter drawn from the library of the king guards when /fight finds no opponent.
  * Its player and pet are never persisted: everything the fight needs is preloaded.
  */
 export class KingGuardFighter extends AiPlayerFighter {
-	// Level of the player when the guard level was chosen
+	public readonly guardData: KingGuardData;
+
+	// Level of the player when the guard was chosen
 	public readonly playerLevel: number;
 
 	private readonly activeObjects: PlayerActiveObjects;
@@ -20,12 +23,13 @@ export class KingGuardFighter extends AiPlayerFighter {
 			preloadedPetEntity: guard.pet,
 			classBehavior: createKingGuardBehavior(guard.guardClass.id)
 		});
+		this.guardData = guard.data;
 		this.activeObjects = guard.activeObjects;
 		this.playerLevel = guard.playerLevel;
 	}
 
 	/**
-	 * No glory is at stake against a king guard
+	 * No glory is at stake against a king guard, and its rating stays hidden
 	 */
 	public override getDisplayedGloryPoints(): number | undefined {
 		return undefined;

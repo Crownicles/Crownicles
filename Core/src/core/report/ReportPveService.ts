@@ -493,7 +493,7 @@ export async function doPVEBoss(
 }
 
 /**
- * Draw the level of a boss (or a king guard) of a player from LOW_LEVEL_PLAYER_THRESHOLD around its record against it
+ * Draw the level of a boss of a player from LOW_LEVEL_PLAYER_THRESHOLD around its record against it
  * @param baseLevel
  * @param seed
  * @param isFinalBoss

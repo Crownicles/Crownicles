@@ -11,7 +11,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import { LogsFightHistoryRequests } from "../../core/database/logs/requests/LogsFightHistoryRequests";
-import { LogsKingGuardFightsRequests } from "../../core/database/logs/requests/LogsKingGuardFightsRequests";
+import { getKingGuardFightStats } from "../../core/fights/kingGuards/KingGuardStats";
 import { MissionsController } from "../../core/missions/MissionsController";
 
 export default class FightHistoryCommand {
@@ -24,18 +24,11 @@ export default class FightHistoryCommand {
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightHistoryPacketRes, _context: PacketContext): Promise<void> {
 		const [history, kingGuardStats] = await Promise.all([
 			LogsFightHistoryRequests.getFightHistory(player.keycloakId, FightConstants.HISTORY_LIMIT),
-			LogsKingGuardFightsRequests.getFightStats(player.keycloakId)
+			getKingGuardFightStats(player)
 		]);
 		response.push(makePacket(CommandFightHistoryPacketRes, {
 			history,
-			...kingGuardStats
-				? {
-					kingGuardStats: {
-						...kingGuardStats,
-						playerLevel: player.level
-					}
-				}
-				: {}
+			...kingGuardStats ? { kingGuardStats } : {}
 		}));
 
 		// Update the mission for using the fighthistory command

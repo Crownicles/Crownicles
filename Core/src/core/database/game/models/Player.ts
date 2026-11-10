@@ -242,6 +242,9 @@ export class Player extends Model {
 
 	declare gloryPointsLastSeason: number;
 
+	// Hidden rating against the king guards, only used to choose them: null until the first fight against one
+	declare guardGloryPoints: number | null;
+
 	declare fightCountdown: number;
 
 	declare rage: number;
@@ -2093,6 +2096,11 @@ export function initModel(sequelize: Sequelize): void {
 		defenseGloryPoints: {
 			type: DataTypes.INTEGER,
 			defaultValue: FightConstants.ELO.DEFAULT_ELO
+		},
+		guardGloryPoints: {
+			type: DataTypes.INTEGER,
+			allowNull: true,
+			defaultValue: null
 		},
 		gloryPointsLastSeason: {
 			type: DataTypes.INTEGER,
