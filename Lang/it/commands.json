@@ -478,7 +478,7 @@
         "description": "Utilizzare questo comando per sfidare altri giocatori.\nLe battaglie si svolgono turno per turno. A ogni turno si può scegliere un'azione da eseguire.\n\nPer ulteriori informazioni, consultare la pagina della guida: https://guide.crownicles.com/notions-principale/combats."
       },
       "FIGHT_HISTORY": {
-        "description": "Mostra la cronologia dei tuoi ultimi combattimenti: l'avversario affrontato, il risultato e l'andamento della gloria e della classifica di ciascun combattente. Se hai già affrontato una guardia del re, il pulsante **Guardie del re** mostra il tuo record contro le guardie, la tua posizione in classifica e l'albo d'onore del regno."
+        "description": "Affiche l'historique de vos derniers combats : l'adversaire affronté, le résultat ainsi que l'évolution de la gloire et de la ligue de chaque combattant. Si vous avez déjà affronté un garde du roi, le bouton **Gardes du roi** présente le meilleur garde que vous avez vaincu, votre classement et le tableau d'honneur du royaume."
       },
       "FRIENDLY_FIGHT": {
         "description": "Consente di sfidare un altro giocatore, scelto menzionandolo o in base alla sua posizione in classifica, in un combattimento amichevole. Il giocatore sfidato è controllato da un’IA. Questo combattimento non ha alcuna conseguenza: nessuna gloria, nessuna ricompensa, nessuna perdita di energia e nessun avanzamento nella missione. Il livello di entrambi i combattenti è limitato a {{friendlyFightLevelCap}} : un giocatore di livello inferiore mantiene il proprio livello."
@@ -2688,11 +2688,14 @@
       ]
     },
     "kingGuard": {
-      "name": "Guardia del re",
-      "recap": {
-        "win": "Non c'era nessun avversario disponibile: {{player}} ha affrontato una guardia del re e l'ha sconfitto. In questo combattimento non c'era in palio alcuna gloria.",
-        "draw": "Non c'era nessun avversario disponibile: {{player}} ha affrontato una guardia del re senza riuscire a spuntarla. In questo combattimento non c'era in palio alcuna gloria.",
-        "loss": "Non c'era nessun avversario disponibile: {{player}} ha affrontato una guardia del re ed è stato sconfitto. In questo combattimento non c'era in palio alcuna gloria."
+      "displayName": "Garde {{name}}",
+      "unnamed": "un garde du roi",
+      "outcome": {
+        "win": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincu. Aucune gloire n'était en jeu lors de ce combat.",
+        "win_female": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincue. Aucune gloire n'était en jeu lors de ce combat.",
+        "draw": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, sans parvenir à le départager. Aucune gloire n'était en jeu lors de ce combat.",
+        "draw_female": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, sans parvenir à la départager. Aucune gloire n'était en jeu lors de ce combat.",
+        "loss": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et a été vaincu. Aucune gloire n'était en jeu lors de ce combat."
       }
     }
   },
@@ -3017,7 +3020,7 @@
     "noHistory": "Non hai ancora nessun combattimento nella tua storia.",
     "title": "{{pseudo}}La storia dei combattimenti",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Risultato :** {{resultSentence}}\n**La tua gloria:** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Gloria opposta :** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
-    "kingGuardHistoryLine": "{{date}}\n{emote:fightCommand.crossedSwords} Non c'erano avversari disponibili: hai affrontato una **guardia del re** di livello {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Risultato:** {{resultSentence}}\n**Gloria:** {emote:unitValues.glory} non era in gioco alcuna gloria",
+    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} Aucun adversaire n'était disponible : vous avez affronté **{{guard}}** de niveau {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Résultat :** {{resultSentence}}\n**Gloire :** {emote:unitValues.glory} aucune gloire n'était en jeu",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Hai attaccato **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} Sei stato attaccato da **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
@@ -3035,14 +3038,15 @@
       "openButton": "Guardie del re",
       "backButton": "Cronologia",
       "title": "{emote:fightCommand.crossedSwords} Di fronte alle guardie del re",
-      "record": "**Il tuo record:** guardia di livello {{level}} sconfitto{{aboveLevel}}",
+      "bestDefeatedGuard": "**Meilleur garde vaincu :** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), niv. {{level}}){{aboveLevel}}",
+      "bestDefeatedGuardHint": "*Les gardes gagnent ou perdent en renommée au fil de leurs combats : votre meilleur garde vaincu est celui qui est aujourd'hui le plus redoutable parmi ceux que vous avez battus.*",
       "aboveLevel_one": ", {{count}} un livello superiore al vostro",
       "aboveLevel_other": ", {{count}} livelli superiori al vostro",
-      "noRecord": "**Il tuo record:** nessun guardia sconfitta finora",
-      "progress": "**Record battuti:** {{recordsBroken, number}} | **Classifica:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "noDefeatedGuard": "**Meilleur garde vaincu :** aucun garde vaincu pour l'instant",
+      "ranking": "**Classement :** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
       "tally": "**Bilancio:** {emote:fightHistory.won} Vittorie: {{won, number}} · {emote:fightHistory.lost} Sconfitte: {{lost, number}} · {emote:fightHistory.draw} Pareggi: {{draw, number}}",
       "leaderboardTitle": "{emote:other.crown} **Albo d'onore della guardia**",
-      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}**: livello di guardia {{level}}",
+      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}** : {{guard}} {emote:classes.{{classId}}}, niv. {{level}}",
       "you": "Voi"
     }
   },
