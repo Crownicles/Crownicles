@@ -8,7 +8,9 @@ import { InventoryInfos } from "./InventoryInfo";
 import {
 	assertPlayerHasNoPendingChanges, LockedPlayerFollowUp, LockedPlayerMutation, MissionInformationsWithoutMutation, MissionsController, PLAYER_RESYNC_CALLERS
 } from "../../../missions/MissionsController";
-import { PlayerActiveObjects } from "./PlayerActiveObjects";
+import {
+	EquippedMainItem, PlayerActiveObjects
+} from "./PlayerActiveObjects";
 import {
 	asMilliseconds,
 	daysToMilliseconds,
@@ -1019,6 +1021,19 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Get the attack, defense and speed a weapon or an armor adds to the player: each of them is capped by the stat of the class
+	 * @param mainItem The equipped weapon or armor
+	 * @param maxStats The stats of the class, see {@link getMaxStatsValue}
+	 */
+	public static getCappedMainItemStats(mainItem: EquippedMainItem, maxStats: StatValues): StatValues {
+		return {
+			attack: Math.min(mainItem.item.getAttack(mainItem.itemLevel), maxStats.attack),
+			defense: Math.min(mainItem.item.getDefense(mainItem.itemLevel), maxStats.defense),
+			speed: Math.min(mainItem.item.getSpeed(mainItem.itemLevel), maxStats.speed)
+		};
+	}
+
+	/**
 	 * Calculate the cumulative attack of the player.
 	 * Attack enchantments are not applied here: they act as a multiplier on the effective damage dealt
 	 * in fights (see {@link EnchantmentUtils.getOutgoingDamageMultiplier}), not on the raw attack stat.
@@ -1027,17 +1042,12 @@ export class Player extends Model {
 	 * @param level The level at which the stat is computed, the player level by default
 	 */
 	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
-		const playerAttack = this.getMaxStatsValue(level).attack;
-		const weaponAttack = playerActiveObjects.weapon.item.getAttack(playerActiveObjects.weapon.itemLevel);
-		const armorAttack = playerActiveObjects.armor.item.getAttack(playerActiveObjects.armor.itemLevel);
+		const maxStats = this.getMaxStatsValue(level);
+		const playerAttack = maxStats.attack;
 		const objectAttack = playerActiveObjects.object.item.getAttack();
 		const attack = playerAttack
-			+ (weaponAttack < playerAttack
-				? weaponAttack
-				: playerAttack)
-			+ (armorAttack < playerAttack
-				? armorAttack
-				: playerAttack)
+			+ Player.getCappedMainItemStats(playerActiveObjects.weapon, maxStats).attack
+			+ Player.getCappedMainItemStats(playerActiveObjects.armor, maxStats).attack
 			+ (objectAttack / 2 < playerAttack
 				? objectAttack
 				: playerAttack * 2)
@@ -1054,14 +1064,11 @@ export class Player extends Model {
 	 * @param level The level at which the stat is computed, the player level by default
 	 */
 	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
-		const playerDefense = this.getMaxStatsValue(level).defense;
+		const maxStats = this.getMaxStatsValue(level);
+		const playerDefense = maxStats.defense;
 		const defense = playerDefense
-			+ (playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel) < playerDefense
-				? playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel)
-				: playerDefense)
-			+ (playerActiveObjects.armor.item.getDefense(playerActiveObjects.armor.itemLevel) < playerDefense
-				? playerActiveObjects.armor.item.getDefense(playerActiveObjects.armor.itemLevel)
-				: playerDefense)
+			+ Player.getCappedMainItemStats(playerActiveObjects.weapon, maxStats).defense
+			+ Player.getCappedMainItemStats(playerActiveObjects.armor, maxStats).defense
 			+ (playerActiveObjects.object.item.getDefense() / 2 < playerDefense
 				? playerActiveObjects.object.item.getDefense()
 				: playerDefense * 2)
@@ -1076,14 +1083,11 @@ export class Player extends Model {
 	 * @param level The level at which the stat is computed, the player level by default
 	 */
 	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
-		const playerSpeed = this.getMaxStatsValue(level).speed;
+		const maxStats = this.getMaxStatsValue(level);
+		const playerSpeed = maxStats.speed;
 		const speed = playerSpeed
-			+ (playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel) < playerSpeed
-				? playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel)
-				: playerSpeed)
-			+ (playerActiveObjects.armor.item.getSpeed(playerActiveObjects.armor.itemLevel) < playerSpeed
-				? playerActiveObjects.armor.item.getSpeed(playerActiveObjects.armor.itemLevel)
-				: playerSpeed)
+			+ Player.getCappedMainItemStats(playerActiveObjects.weapon, maxStats).speed
+			+ Player.getCappedMainItemStats(playerActiveObjects.armor, maxStats).speed
 			+ (playerActiveObjects.object.item.getSpeed() / 2 < playerSpeed
 				? playerActiveObjects.object.item.getSpeed()
 				: playerSpeed * 2)

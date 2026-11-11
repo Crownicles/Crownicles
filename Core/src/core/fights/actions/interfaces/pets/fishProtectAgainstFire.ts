@@ -2,15 +2,14 @@ import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
-import { RealPlayerFighter } from "../../../fighter/RealPlayerFighter";
-import { AiPlayerFighter } from "../../../fighter/AiPlayerFighter";
+import { PlayerBaseFighter } from "../../../fighter/PlayerBaseFighter";
 import { PetEntities } from "../../../../database/game/models/PetEntity";
 import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 import { PetConstants } from "../../../../../../../Lib/src/constants/PetConstants";
 
 const use: PetAssistanceFunc = async (fighter, opponent, _turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (fighter.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.BURNED) {
-		if (opponent instanceof RealPlayerFighter || opponent instanceof AiPlayerFighter) {
+		if (opponent instanceof PlayerBaseFighter) {
 			// Test if the opponent has a shark
 			const pet = await PetEntities.getById(opponent.player.petId);
 			if (pet?.typeId === PetConstants.PETS.SHARK) {
