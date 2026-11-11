@@ -1,0 +1,45 @@
+{
+  "baseEnergyValue": 260,
+  "attackRatio": 70,
+  "defenseRatio": 95,
+  "speedRatio": 30,
+  "breath": 12,
+  "maxBreath": 30,
+  "breathRegen": 6,
+  "rewardFactor": 0.65,
+  "materialLoot": [
+    55,
+    10,
+    73,
+    66,
+    17,
+    74,
+    36,
+    40
+  ],
+  "attacks": [
+    {
+      "id": "sporeCloud",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "slamAttack",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "regrowth",
+      "minLevel": 0,
+      "weight": 2
+    },
+    {
+      "id": "summonAttack",
+      "minLevel": 50,
+      "weight": 2
+    }
+  ],
+  "maps": [
+    1303
+  ]
+}

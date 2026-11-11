@@ -1,0 +1,40 @@
+{
+  "baseEnergyValue": 220,
+  "attackRatio": 120,
+  "defenseRatio": 55,
+  "speedRatio": 160,
+  "breath": 8,
+  "maxBreath": 25,
+  "breathRegen": 6,
+  "rewardFactor": 0.75,
+  "materialLoot": [
+    89,
+    52,
+    80,
+    53,
+    74,
+    30,
+    19,
+    62
+  ],
+  "attacks": [
+    {
+      "id": "featherStorm",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "aerialDiveAttack",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "tailWhipAttack",
+      "minLevel": 0,
+      "weight": 3
+    }
+  ],
+  "maps": [
+    1306
+  ]
+}

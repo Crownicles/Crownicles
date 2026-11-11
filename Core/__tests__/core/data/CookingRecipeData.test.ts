@@ -40,8 +40,7 @@ describe("Cooking Recipe Data Validation", () => {
 		const islandBossRecipes = recipes.filter(r => r.discoverySource === "ISLAND_BOSS");
 		const finalBossCount = Object.keys(FightConstants.FINAL_BOSS_MONSTER_IDS).length;
 
-		// When the oceanic island is merged, add 2 more ISLAND_BOSS recipes:
-		// potion_health_8 and potion_time_speedup_8 (currently set as DEFAULT in recipes.json)
+		// Each final boss discovers one recipe the first time it is beaten
 		expect(islandBossRecipes.length).toBe(finalBossCount);
 	});
 

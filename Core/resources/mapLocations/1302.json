@@ -1,0 +1,8 @@
+{
+  "type": "peatBog",
+  "biomes": [
+    "swamp"
+  ],
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "pve_island"
+}

@@ -1,0 +1,40 @@
+{
+  "baseEnergyValue": 40,
+  "attackRatio": 55,
+  "defenseRatio": 45,
+  "speedRatio": 55,
+  "breath": 8,
+  "maxBreath": 18,
+  "breathRegen": 4,
+  "rewardFactor": 0.3,
+  "materialLoot": [
+    10,
+    32,
+    55,
+    54,
+    52,
+    8,
+    17,
+    78
+  ],
+  "attacks": [
+    {
+      "id": "leechBite",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "mudShotAttack",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "stealth",
+      "minLevel": 40,
+      "weight": 2
+    }
+  ],
+  "maps": [
+    1301
+  ]
+}
