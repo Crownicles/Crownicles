@@ -4,8 +4,9 @@ import {
 import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
-import { PlayerBaseFighter } from "../../../fighter/PlayerBaseFighter";
-import { applyGearRemovalBuffs } from "../../GearStatRemoval";
+import {
+	applyGearRemovalBuffs, getRemovableGearStats
+} from "../../GearStatRemoval";
 
 const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Execute at the start of the fight
@@ -13,11 +14,11 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 		return null;
 	}
 
-	// Only players (human or AI) carry a weapon: the stolen stats are the ones it adds to the fight, capped by the class
-	const weapon = opponent instanceof PlayerBaseFighter ? await opponent.getEquippedMainItemStats("weapon") : null;
+	// The removed stats are the ones the weapon adds to the fight, capped by the class
+	const weapon = await getRemovableGearStats(opponent, "weapon", "attack");
 
 	// 10% chance to fail to steal the weapon
-	if (RandomUtils.crowniclesRandom.bool(0.1) || !weapon || weapon.attack === 0) {
+	if (!weapon || RandomUtils.crowniclesRandom.bool(0.1)) {
 		return Promise.resolve({
 			assistanceStatus: PetAssistanceState.FAILURE
 		});

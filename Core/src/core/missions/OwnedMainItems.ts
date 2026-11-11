@@ -29,10 +29,17 @@ function isMatchingInventorySlot(slot: InventorySlot, predicate: OwnedMainItemPr
 }
 
 /**
+ * Whether the item category is a weapon or a shield (armor).
+ */
+function isWeaponOrArmorCategory(category: ItemCategory): boolean {
+	return category === ItemCategory.WEAPON || category === ItemCategory.ARMOR;
+}
+
+/**
  * Whether a home chest slot holds a weapon or shield matching the predicate.
  */
 function isMatchingChestSlot(slot: HomeChestSlot, predicate: OwnedMainItemPredicate): boolean {
-	if (slot.isEmpty() || slot.itemCategory !== ItemCategory.WEAPON && slot.itemCategory !== ItemCategory.ARMOR) {
+	if (slot.isEmpty() || !isWeaponOrArmorCategory(slot.itemCategory)) {
 		return false;
 	}
 	const item = slot.getItem();
