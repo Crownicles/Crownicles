@@ -1,5 +1,5 @@
 import {
-	asDays, asMinutes, Day, Minute
+	asDays, asMinutes, asWeeks, Day, Minute
 } from "../types/TimeTypes";
 import { InactivityKFactorBoost } from "../types/InactivityKFactorBoost";
 
@@ -361,7 +361,7 @@ export abstract class FightConstants {
 		 * FIGHT_COUNT_THRESHOLD must be independent from FIGHT_COUNTDOWN_REGEN_LIMIT to avoid accidental balance coupling.
 		 */
 		INACTIVE_ATTACKER: {
-			WINDOW_WEEKS: 10,
+			WINDOW_WEEKS: asWeeks(10),
 			FIGHT_COUNT_THRESHOLD: 7,
 			COUNTDOWN_THRESHOLD: 3,
 			K_FACTOR_MAX_MULTIPLIER: 4
@@ -369,7 +369,7 @@ export abstract class FightConstants {
 
 		// A defender rarely attacked recently has a stale defense rating; tuned independently from the attackers
 		INACTIVE_DEFENDER: {
-			WINDOW_WEEKS: 10,
+			WINDOW_WEEKS: asWeeks(10),
 			FIGHT_COUNT_THRESHOLD: 7,
 			COUNTDOWN_THRESHOLD: 3,
 			K_FACTOR_MAX_MULTIPLIER: 4

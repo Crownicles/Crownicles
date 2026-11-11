@@ -100,7 +100,7 @@ describe("Logged friendly fights", () => {
 			initiatorId: player.id, defenderId: opponent.id, friendly: true, date: now
 		});
 
-		expect(await LogsFightHistoryRequests.getAttackCountInLastNWeeks("friendlyAttacker", 1)).toBe(1);
+		expect(await LogsFightHistoryRequests.getAttackCountInLastNWeeks("friendlyAttacker", asWeeks(1))).toBe(1);
 	});
 
 	it("are not counted as ranked defenses either, which are counted apart from the attacks and within the window", async () => {
@@ -127,7 +127,7 @@ describe("Logged friendly fights", () => {
 			await logPlayerFight(fight);
 		}
 
-		expect(await LogsFightHistoryRequests.getDefenseCountInLastNWeeks("rankedDefender", 1)).toBe(2);
-		expect(await LogsFightHistoryRequests.getAttackCountInLastNWeeks("rankedDefender", 1)).toBe(1);
+		expect(await LogsFightHistoryRequests.getDefenseCountInLastNWeeks("rankedDefender", asWeeks(1))).toBe(2);
+		expect(await LogsFightHistoryRequests.getAttackCountInLastNWeeks("rankedDefender", asWeeks(1))).toBe(1);
 	});
 });
