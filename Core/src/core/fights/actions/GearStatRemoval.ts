@@ -2,7 +2,10 @@ import { FightStatBuffed } from "../../../../../Lib/src/types/FightActionResult"
 import { FightStatModifierOperation } from "../../../../../Lib/src/types/FightStatModifierOperation";
 import { PetAssistanceResult } from "../../../../../Lib/src/types/PetAssistanceResult";
 import { Fighter } from "../fighter/Fighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { FightActionController } from "./FightActionController";
+import { EquippedMainItemSlot } from "../../database/game/models/PlayerActiveObjects";
+import { StatValues } from "../../../../../Lib/src/types/StatValues";
 
 export type GearStatPart = {
 	stat: FightStatBuffed;
@@ -21,6 +24,21 @@ export function getGearRemovalMultiplier({
 		return null;
 	}
 	return Math.max(0, (total - gear) / total);
+}
+
+/**
+ * Stats the equipped weapon or armor of the target adds to its fight stats, capped by its class,
+ * or `null` when there is nothing to remove: monsters carry no gear, and a gear without its main stat is not worth removing
+ * @param target
+ * @param slot
+ * @param mainStat The stat the gear is meant to provide (attack for a weapon, defense for an armor)
+ */
+export async function getRemovableGearStats(target: Fighter, slot: EquippedMainItemSlot, mainStat: keyof StatValues): Promise<StatValues | null> {
+	if (!(target instanceof PlayerBaseFighter)) {
+		return null;
+	}
+	const gearStats = await target.getEquippedMainItemStats(slot);
+	return gearStats[mainStat] === 0 ? null : gearStats;
 }
 
 /**

@@ -4,8 +4,9 @@ import {
 import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
-import { PlayerBaseFighter } from "../../../fighter/PlayerBaseFighter";
-import { applyGearRemovalBuffs } from "../../GearStatRemoval";
+import {
+	applyGearRemovalBuffs, getRemovableGearStats
+} from "../../GearStatRemoval";
 
 const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Execute at the start of the fight
@@ -13,11 +14,11 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 		return null;
 	}
 
-	// Only players (human or AI) wear an armor: the broken stats are the ones it adds to the fight, capped by the class
-	const armor = opponent instanceof PlayerBaseFighter ? await opponent.getEquippedMainItemStats("armor") : null;
+	// The removed stats are the ones the armor adds to the fight, capped by the class
+	const armor = await getRemovableGearStats(opponent, "armor", "defense");
 
 	// 15% chance to fail to break the armor
-	if (RandomUtils.crowniclesRandom.bool(0.15) || !armor || armor.defense === 0) {
+	if (!armor || RandomUtils.crowniclesRandom.bool(0.15)) {
 		return Promise.resolve({
 			assistanceStatus: PetAssistanceState.FAILURE
 		});
