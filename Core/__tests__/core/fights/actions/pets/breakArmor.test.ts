@@ -15,9 +15,17 @@ type ArmorStats = {
 	speed: number;
 };
 
-function buildOpponent(stats: ArmorStats): PlayerFighter {
+const UNCAPPED_CLASS_STATS: ArmorStats = {
+	attack: Infinity, defense: Infinity, speed: Infinity
+};
+
+function buildOpponent(stats: ArmorStats, classStats = UNCAPPED_CLASS_STATS): PlayerFighter {
 	return Object.assign(Object.create(PlayerFighter.prototype) as PlayerFighter, {
-		player: { id: 1 },
+		player: {
+			id: 1,
+			getMaxStatsValue: (): ArmorStats => classStats
+		},
+		level: 50,
 		stats: { ...stats },
 		attackModifiers: [],
 		defenseModifiers: [],
@@ -42,6 +50,24 @@ describe("breakArmor pet assistance", () => {
 	beforeEach(() => {
 		vi.restoreAllMocks();
 		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+	});
+
+	it("removes at most the class defense when the armor exceeds the class cap (#5075)", async () => {
+		const opponent = buildOpponent({
+			attack: 30, defense: 12, speed: 20
+		}, {
+			attack: 10, defense: 6, speed: 10
+		});
+		mockArmor({
+			attack: 0, defense: 15, speed: 0
+		});
+
+		const result = await breakArmor({} as Fighter, opponent, 1, {} as FightController);
+
+		expect(result?.assistanceStatus).toBe(PetAssistanceState.SUCCESS);
+		expect(opponent.getDefense()).toBe(6);
+		expect(opponent.getAttack()).toBe(30);
+		expect(opponent.getSpeed()).toBe(20);
 	});
 
 	it("keeps the stats usable when the opponent has no speed left (#4883)", async () => {

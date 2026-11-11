@@ -4,8 +4,7 @@ import {
 import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
-import { PlayerFighter } from "../../../fighter/PlayerFighter";
-import { AiPlayerFighter } from "../../../fighter/AiPlayerFighter";
+import { PlayerBaseFighter } from "../../../fighter/PlayerBaseFighter";
 import { applyGearRemovalBuffs } from "../../GearStatRemoval";
 
 const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
@@ -13,20 +12,12 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 	if (turn > 2) {
 		return null;
 	}
-	let armorDamages = 0;
-	let armorDefense = 0;
-	let armorSpeed = 0;
 
-	// Check if the opponent is a player or an AI player
-	if (opponent instanceof PlayerFighter || opponent instanceof AiPlayerFighter) {
-		const memberActiveObjects = await opponent.getMainActiveObjects();
-		armorDamages = memberActiveObjects.armor.item.getAttack(memberActiveObjects.armor.itemLevel);
-		armorDefense = memberActiveObjects.armor.item.getDefense(memberActiveObjects.armor.itemLevel);
-		armorSpeed = memberActiveObjects.armor.item.getSpeed(memberActiveObjects.armor.itemLevel);
-	}
+	// Only players (human or AI) wear an armor: the broken stats are the ones it adds to the fight, capped by the class
+	const armor = opponent instanceof PlayerBaseFighter ? await opponent.getEquippedMainItemStats("armor") : null;
 
 	// 15% chance to fail to break the armor
-	if (RandomUtils.crowniclesRandom.bool(0.15) || armorDefense === 0) {
+	if (RandomUtils.crowniclesRandom.bool(0.15) || !armor || armor.defense === 0) {
 		return Promise.resolve({
 			assistanceStatus: PetAssistanceState.FAILURE
 		});
@@ -39,13 +30,13 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 	// Lower the opponent's stats by the share its armor was providing
 	applyGearRemovalBuffs(result, opponent, [
 		{
-			stat: FightStatBuffed.DEFENSE, total: opponent.getDefense(), gear: armorDefense
+			stat: FightStatBuffed.DEFENSE, total: opponent.getDefense(), gear: armor.defense
 		},
 		{
-			stat: FightStatBuffed.ATTACK, total: opponent.getAttack(), gear: armorDamages
+			stat: FightStatBuffed.ATTACK, total: opponent.getAttack(), gear: armor.attack
 		},
 		{
-			stat: FightStatBuffed.SPEED, total: opponent.getSpeed(), gear: armorSpeed
+			stat: FightStatBuffed.SPEED, total: opponent.getSpeed(), gear: armor.speed
 		}
 	]);
 

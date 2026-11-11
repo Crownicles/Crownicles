@@ -11,9 +11,12 @@ import { FightAction } from "../../../data/FightAction";
 import {
 	FightConstants, FightRole
 } from "../../../../../Lib/src/constants/FightConstants";
-import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
+import {
+	EquippedMainItemSlot, PlayerActiveObjects
+} from "../../database/game/models/PlayerActiveObjects";
 import { EnchantmentUtils } from "../../utils/EnchantmentUtils";
 import { EnchantmentConstants } from "../../../../../Lib/src/constants/EnchantmentConstants";
+import { StatValues } from "../../../../../Lib/src/types/StatValues";
 
 /**
  * Base class for player fighters (human-controlled or AI)
@@ -50,6 +53,15 @@ export abstract class PlayerBaseFighter extends Fighter {
 	 */
 	public async getMainActiveObjects(): Promise<PlayerActiveObjects> {
 		return await InventorySlots.getMainSlotsItems(this.player.id);
+	}
+
+	/**
+	 * Get the stats the equipped weapon or armor adds to the fight stats of the fighter, capped by its class at the fight level
+	 * @param slot
+	 */
+	public async getEquippedMainItemStats(slot: EquippedMainItemSlot): Promise<StatValues> {
+		const activeObjects = await this.getMainActiveObjects();
+		return Player.getCappedMainItemStats(activeObjects[slot], this.player.getMaxStatsValue(this.level));
 	}
 
 	/**
