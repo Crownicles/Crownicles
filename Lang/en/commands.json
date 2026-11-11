@@ -478,7 +478,7 @@
         "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats"
       },
       "FIGHT_HISTORY": {
-        "description": "Displays a history of your most recent battles: the opponent you faced, the result, and each fighter’s progress in glory and league rank. If you have already fought a King’s Guard, the **King’s Guards** button shows your record against the Guards, your ranking, and the kingdom’s honor roll."
+        "description": "Affiche l'historique de vos derniers combats : l'adversaire affronté, le résultat ainsi que l'évolution de la gloire et de la ligue de chaque combattant. Si vous avez déjà affronté un garde du roi, le bouton **Gardes du roi** présente le meilleur garde que vous avez vaincu, votre classement et le tableau d'honneur du royaume."
       },
       "FRIENDLY_FIGHT": {
         "description": "Allows you to face off against another player—chosen by naming them or based on their ranking—in a friendly battle. The opponent is controlled by AI. This battle has no consequences: no glory, no rewards, no energy lost, and no mission progress. The level of both combatants is capped at {{friendlyFightLevelCap}} : a player of a lower level retains their current level."
@@ -2688,11 +2688,14 @@
       ]
     },
     "kingGuard": {
-      "name": "King's Guard",
-      "recap": {
-        "win": "No opponent was available: {{player}} faced a royal guard and defeated him. No glory was at stake in this fight.",
-        "draw": "No opponent was available: {{player}} faced a royal guard but was unable to defeat him. No glory was at stake in this fight.",
-        "loss": "No opponent was available: {{player}} faced a royal guard and was defeated. No glory was at stake in this fight."
+      "displayName": "Garde {{name}}",
+      "unnamed": "un garde du roi",
+      "outcome": {
+        "win": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincu. Aucune gloire n'était en jeu lors de ce combat.",
+        "win_female": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincue. Aucune gloire n'était en jeu lors de ce combat.",
+        "draw": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, sans parvenir à le départager. Aucune gloire n'était en jeu lors de ce combat.",
+        "draw_female": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, sans parvenir à la départager. Aucune gloire n'était en jeu lors de ce combat.",
+        "loss": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et a été vaincu. Aucune gloire n'était en jeu lors de ce combat."
       }
     }
   },
@@ -3017,7 +3020,7 @@
     "noHistory": "You don't have any battles in your history yet.",
     "title": "{{pseudo}}, your fight history",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Result :** {{resultSentence}}\n**Your glory:** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Opposite glory :** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
-    "kingGuardHistoryLine": "{{date}}\n{emote:fightCommand.crossedSwords} No opponents were available: you fought a **King's Guard** at level {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Result:** {{resultSentence}}\n**Glory:** {emote:unitValues.glory} No glory was at stake",
+    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} Aucun adversaire n'était disponible : vous avez affronté **{{guard}}** de niveau {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Résultat :** {{resultSentence}}\n**Gloire :** {emote:unitValues.glory} aucune gloire n'était en jeu",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} You attacked **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} You were attacked by **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
@@ -3035,14 +3038,15 @@
       "openButton": "The King's Guards",
       "backButton": "History",
       "title": "{emote:fightCommand.crossedSwords} Facing the king's guards",
-      "record": "**Your record:** Level {{level}} defeated{{aboveLevel}}",
+      "bestDefeatedGuard": "**Meilleur garde vaincu :** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), niv. {{level}}){{aboveLevel}}",
+      "bestDefeatedGuardHint": "*Les gardes gagnent ou perdent en renommée au fil de leurs combats : votre meilleur garde vaincu est celui qui est aujourd'hui le plus redoutable parmi ceux que vous avez battus.*",
       "aboveLevel_one": ", {{count}} one level above yours",
       "aboveLevel_other": ", {{count}} levels above yours",
-      "noRecord": "**Your record:** no guards defeated so far",
-      "progress": "**Records broken:** {{recordsBroken, number}} | **Rankings:** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
+      "noDefeatedGuard": "**Meilleur garde vaincu :** aucun garde vaincu pour l'instant",
+      "ranking": "**Classement :** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
       "tally": "**Record:** {emote:fightHistory.won} Wins: {{won, number}} · {emote:fightHistory.lost} Losses: {{lost, number}} · {emote:fightHistory.draw} Draws: {{draw, number}}",
       "leaderboardTitle": "{emote:other.crown} **Guard Hall of Fame**",
-      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}**: level guard {{level}}",
+      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}** : {{guard}} {emote:classes.{{classId}}}, niv. {{level}}",
       "you": "You"
     }
   },
