@@ -23,7 +23,7 @@ describe('EloUtils', () => {
     describe('getAttackerKFactor', () => {
         const nonRoyalLeague = { id: 5 };
         const royalLeague = { id: LeagueInfoConstants.ROYAL_LEAGUE_ID };
-        const threshold = FightConstants.ELO.INACTIVE_ATTACKER_ATTACK_COUNT_THRESHOLD;
+        const threshold = FightConstants.ELO.INACTIVE_ATTACKER.FIGHT_COUNT_THRESHOLD;
 
         it('should return base k-factor when attacker is active (attackCount >= threshold)', () => {
             const attacker = { getGloryPoints: () => 1500, getLeague: () => nonRoyalLeague } as any;
@@ -56,13 +56,13 @@ describe('EloUtils', () => {
             expect(EloUtils.getAttackerKFactor(attacker, threshold - 4)).toBe(32 * 3);
         });
 
-        it('should cap the multiplier at INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER', () => {
+        it('should cap the multiplier at INACTIVE_ATTACKER.K_FACTOR_MAX_MULTIPLIER', () => {
             const attacker = { getGloryPoints: () => 1500, getLeague: () => nonRoyalLeague } as any;
 
             // threshold-5 attacks -> attackBasedCountdown = 5 -> multiplier = min(5-1, 4) = 4 (capped)
             expect(EloUtils.getAttackerKFactor(attacker, threshold - 5)).toBe(32 * 4);
             // 0 attacks -> attackBasedCountdown = threshold -> multiplier capped at max
-            expect(EloUtils.getAttackerKFactor(attacker, 0)).toBe(32 * FightConstants.ELO.INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER);
+            expect(EloUtils.getAttackerKFactor(attacker, 0)).toBe(32 * FightConstants.ELO.INACTIVE_ATTACKER.K_FACTOR_MAX_MULTIPLIER);
         });
 
         it('should NOT boost k-factor for Royal league players even when inactive', () => {
@@ -85,6 +85,34 @@ describe('EloUtils', () => {
 
             // threshold attacks -> attackBasedCountdown = 0 -> below FIGHT_COUNTDOWN_THRESHOLD -> no boost
             expect(EloUtils.getAttackerKFactor(attacker, threshold)).toBe(32);
+        });
+    });
+
+    describe('getDefenderKFactor', () => {
+        const nonRoyalLeague = { id: 5 };
+        const royalLeague = { id: LeagueInfoConstants.ROYAL_LEAGUE_ID };
+        const threshold = FightConstants.ELO.INACTIVE_DEFENDER.FIGHT_COUNT_THRESHOLD;
+        const defender = { getGloryPoints: () => 300, getLeague: () => nonRoyalLeague } as any;
+
+        it('should boost the k-factor of a defender who was not attacked in the window, up to the maximal multiplier', () => {
+            expect(EloUtils.getDefenderKFactor(defender, 0)).toBe(32 * FightConstants.ELO.INACTIVE_DEFENDER.K_FACTOR_MAX_MULTIPLIER);
+        });
+
+        it('should lower the boost as the defenses in the window add up', () => {
+            // threshold-4 defenses -> countdown = 4 -> multiplier = 3, threshold-3 defenses -> multiplier = 2
+            expect(EloUtils.getDefenderKFactor(defender, threshold - 4)).toBe(32 * 3);
+            expect(EloUtils.getDefenderKFactor(defender, threshold - 3)).toBe(32 * 2);
+        });
+
+        it('should not boost a defender who is attacked regularly', () => {
+            expect(EloUtils.getDefenderKFactor(defender, threshold - 2)).toBe(32);
+            expect(EloUtils.getDefenderKFactor(defender, threshold + 5)).toBe(32);
+        });
+
+        it('should not boost a defender of the royal league', () => {
+            const royalDefender = { getGloryPoints: () => 3500, getLeague: () => royalLeague } as any;
+
+            expect(EloUtils.getDefenderKFactor(royalDefender, 0)).toBe(12);
         });
     });
 

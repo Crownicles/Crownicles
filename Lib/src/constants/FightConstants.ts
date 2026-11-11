@@ -1,6 +1,7 @@
 import {
 	asDays, asMinutes, Day, Minute
 } from "../types/TimeTypes";
+import { InactivityKFactorBoost } from "../types/InactivityKFactorBoost";
 
 export abstract class FightConstants {
 	static readonly RARE_SUB_TEXT_INTRO = 0.001; // Chance of having a rare subtext in the fight intro message (1=100%)
@@ -354,15 +355,25 @@ export abstract class FightConstants {
 		LOW_LEVEL_BONUS_THRESHOLD: 1000,
 		MAX_RANK_FOR_LEAGUE_POINTS_REWARD: 200,
 		ELO_DIFFERENCE_FOR_SAME_ELO: 30,
-		INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER: 4,
-		INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD: 3,
-		ATTACK_COUNT_WINDOW_WEEKS: 10,
 
 		/*
-		 * Number of attacks below which a player is considered inactive and gets a K-factor boost.
-		 * Must be independent from FIGHT_COUNTDOWN_REGEN_LIMIT to avoid accidental balance coupling.
+		 * An attacker who has initiated few ranked fights recently has a stale attack rating.
+		 * FIGHT_COUNT_THRESHOLD must be independent from FIGHT_COUNTDOWN_REGEN_LIMIT to avoid accidental balance coupling.
 		 */
-		INACTIVE_ATTACKER_ATTACK_COUNT_THRESHOLD: 7
+		INACTIVE_ATTACKER: {
+			WINDOW_WEEKS: 10,
+			FIGHT_COUNT_THRESHOLD: 7,
+			COUNTDOWN_THRESHOLD: 3,
+			K_FACTOR_MAX_MULTIPLIER: 4
+		} satisfies InactivityKFactorBoost,
+
+		// A defender rarely attacked recently has a stale defense rating; tuned independently from the attackers
+		INACTIVE_DEFENDER: {
+			WINDOW_WEEKS: 10,
+			FIGHT_COUNT_THRESHOLD: 7,
+			COUNTDOWN_THRESHOLD: 3,
+			K_FACTOR_MAX_MULTIPLIER: 4
+		} satisfies InactivityKFactorBoost
 	};
 
 	// If a player has a fight countdown higher than this value, he will not appear in the glory top
@@ -391,12 +402,6 @@ export abstract class FightConstants {
 
 	// Number of players to search for when looking for an opponent
 	static PLAYER_PER_OPPONENT_SEARCH = 10;
-
-	// Amount of attack glory transformed into defense glory each week
-	static ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK = 50;
-
-	// Maximum defense glory points to be eligible for attack glory transfer
-	static readonly MAX_DEFENSE_GLORY_FOR_TRANSFER = 1400;
 
 	// Purge timeout
 	static PURGE_TIMEOUT = 60000;

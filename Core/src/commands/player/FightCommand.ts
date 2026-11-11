@@ -69,7 +69,7 @@ export const fightsDefenderCooldowns = new Map<string, number>();
  * @param response
  * @param fightLogId
  */
-async function updatePlayersEloAndCooldowns(
+export async function updatePlayersEloAndCooldowns(
 	attacker: Player,
 	defender: Player,
 	attackerGameResult: EloGameResult,
@@ -78,15 +78,15 @@ async function updatePlayersEloAndCooldowns(
 	fightLogId: number | null
 ): Promise<void> {
 	// Calculate elo
-	const rawAttackCountInWindow = await LogsFightHistoryRequests.getAttackCountInLastNWeeks(
-		attacker.keycloakId,
-		FightConstants.ELO.ATTACK_COUNT_WINDOW_WEEKS
-	);
+	const [rawAttackCountInWindow, rawDefenseCountInWindow] = await Promise.all([
+		LogsFightHistoryRequests.getAttackCountInLastNWeeks(attacker.keycloakId, FightConstants.ELO.INACTIVE_ATTACKER.WINDOW_WEEKS),
+		LogsFightHistoryRequests.getDefenseCountInLastNWeeks(defender.keycloakId, FightConstants.ELO.INACTIVE_DEFENDER.WINDOW_WEEKS)
+	]);
 
-	// The current fight is already logged at this point, subtract 1 to count only previous attacks
-	const attackCountInWindow = Math.max(0, rawAttackCountInWindow - (fightLogId !== null ? 1 : 0));
-	const player1KFactor = EloUtils.getAttackerKFactor(attacker, attackCountInWindow);
-	const player2KFactor = EloUtils.getKFactor(defender);
+	// The current fight is already logged at this point, subtract it to count only the previous attacks and defenses
+	const currentFightCount = fightLogId !== null ? 1 : 0;
+	const player1KFactor = EloUtils.getAttackerKFactor(attacker, Math.max(0, rawAttackCountInWindow - currentFightCount));
+	const player2KFactor = EloUtils.getDefenderKFactor(defender, Math.max(0, rawDefenseCountInWindow - currentFightCount));
 	const player1NewRating = EloUtils.calculateNewRating(attacker.attackGloryPoints, defender.defenseGloryPoints, attackerGameResult, player1KFactor);
 	const player2NewRating = EloUtils.calculateNewRating(defender.defenseGloryPoints, attacker.attackGloryPoints, defenderGameResult, player2KFactor);
 

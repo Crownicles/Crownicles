@@ -16,7 +16,9 @@ import {
 import { LogsKingGuardFightsResults } from "../../src/core/database/logs/models/LogsKingGuardFightsResults";
 import { LogsFightHistoryRequests } from "../../src/core/database/logs/requests/LogsFightHistoryRequests";
 import { FightConstants } from "../../../Lib/src/constants/FightConstants";
-import { getDateLogs } from "../../../Lib/src/utils/TimeUtils";
+import {
+	asWeeks, getDateLogs, weeksToSeconds
+} from "../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../Lib/src/types/EloGameResult";
 import {
 	logPlayerFight, setupKingGuardFightsTable
@@ -99,5 +101,33 @@ describe("Logged friendly fights", () => {
 		});
 
 		expect(await LogsFightHistoryRequests.getAttackCountInLastNWeeks("friendlyAttacker", 1)).toBe(1);
+	});
+
+	it("are not counted as ranked defenses either, which are counted apart from the attacks and within the window", async () => {
+		const player = await LogsPlayers.create({ keycloakId: "rankedDefender" });
+		const opponent = await LogsPlayers.create({ keycloakId: "rankedAttacker" });
+		const now = getDateLogs();
+		for (const fight of [
+			{
+				initiatorId: opponent.id, defenderId: player.id, friendly: false, date: now
+			},
+			{
+				initiatorId: opponent.id, defenderId: player.id, friendly: false, date: now
+			},
+			{
+				initiatorId: opponent.id, defenderId: player.id, friendly: true, date: now
+			},
+			{
+				initiatorId: opponent.id, defenderId: player.id, friendly: false, date: now - weeksToSeconds(asWeeks(2))
+			},
+			{
+				initiatorId: player.id, defenderId: opponent.id, friendly: false, date: now
+			}
+		]) {
+			await logPlayerFight(fight);
+		}
+
+		expect(await LogsFightHistoryRequests.getDefenseCountInLastNWeeks("rankedDefender", 1)).toBe(2);
+		expect(await LogsFightHistoryRequests.getAttackCountInLastNWeeks("rankedDefender", 1)).toBe(1);
 	});
 });
