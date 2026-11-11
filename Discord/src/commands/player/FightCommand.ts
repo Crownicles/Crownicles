@@ -691,7 +691,7 @@ export async function handleKingGuardFightReward(context: PacketContext, packet:
 
 	const embed = new CrowniclesEmbed()
 		.setTitle(i18n.t("commands:fight.fightReward.title", { lng }))
-		.setDescription(i18n.t(`commands:fight.kingGuard.recap.${result}`, {
+		.setDescription(i18n.t(`commands:fight.kingGuard.outcome.${result}`, {
 			lng,
 			player: playerUsername,
 			guard: KingGuardUtils.getFirstName(packet.guard.id, lng),

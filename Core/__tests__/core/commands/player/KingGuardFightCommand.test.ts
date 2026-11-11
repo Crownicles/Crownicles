@@ -16,9 +16,9 @@ vi.mock("../../../../src/core/database/game/models/Player", () => ({
 	default: {
 		lockKey: (id: number): unknown => ({
 			model: "Player", id
-		})
-	},
-	Players: { getById: vi.fn() }
+		}),
+		findByPk: vi.fn()
+	}
 }));
 vi.mock("../../../../src/core/database/game/models/KingGuardState", () => ({
 	KingGuardState: {
@@ -49,7 +49,7 @@ vi.mock("../../../../src/core/blessings/BlessingManager", () => ({
 }));
 
 import { kingGuardFightEndCallback } from "../../../../src/commands/player/KingGuardFightCommand";
-import { Players } from "../../../../src/core/database/game/models/Player";
+import Player from "../../../../src/core/database/game/models/Player";
 import { LogsReadRequests } from "../../../../src/core/database/logs/LogsReadRequests";
 import { LogsKingGuardFightsRequests } from "../../../../src/core/database/logs/requests/LogsKingGuardFightsRequests";
 import { KingGuardFightRewardPacket } from "../../../../../Lib/src/packets/fights/KingGuardFightRewardPacket";
@@ -118,7 +118,7 @@ describe("kingGuardFightEndCallback", () => {
 			id: GUARD_ID, glory: 1500, wins: 4, losses: 2, draws: 1, save: vi.fn()
 		};
 		withLockedEntitiesMock.mockImplementation((_keys: unknown, body: (rows: unknown[]) => unknown) => body([lockedPlayer, lockedGuard]));
-		vi.mocked(Players.getById).mockResolvedValue(player as never);
+		vi.mocked(Player.findByPk).mockResolvedValue(player as never);
 		vi.mocked(LogsReadRequests.getPersonalInitiatedFightDailySummary).mockResolvedValue({
 			played: 1, won: 1, draw: 0
 		});
@@ -197,6 +197,21 @@ describe("kingGuardFightEndCallback", () => {
 		expect(warnSpy).toHaveBeenCalled();
 		expect(logKingGuardFightMock).toHaveBeenCalledWith(fight, guard, null);
 		expect(player.addMoney).toHaveBeenCalledWith(expect.objectContaining({ amount: WIN_MONEY_REWARD }));
+	});
+
+	it("gives no reward when the player vanished during the fight", async () => {
+		withLockedEntitiesMock.mockRejectedValue(new LockedRowNotFoundError("players", 1));
+		vi.mocked(Player.findByPk).mockResolvedValue(null);
+		const warnSpy = vi.spyOn(CrowniclesLogger, "warn").mockImplementation((): void => undefined);
+		onTestFinished(() => warnSpy.mockRestore());
+		const {
+			fight, guard
+		} = buildFight("win");
+		const response: unknown[] = [];
+
+		await kingGuardFightEndCallback(fight, guard, response as never);
+
+		expect(response).toEqual([]);
 	});
 
 	it("rewards money and score like a ranked fight, without any glory change, and names the guard to the front", async () => {

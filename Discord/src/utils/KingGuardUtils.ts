@@ -20,7 +20,7 @@ export abstract class KingGuardUtils {
 	 * @param lng
 	 */
 	static getDisplayName(guardId: number, lng: Language): string {
-		return i18n.t("commands:fight.kingGuard.name", {
+		return i18n.t("commands:fight.kingGuard.displayName", {
 			lng,
 			name: KingGuardUtils.getFirstName(guardId, lng)
 		});

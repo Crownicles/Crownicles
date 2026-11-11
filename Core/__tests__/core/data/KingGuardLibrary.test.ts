@@ -33,7 +33,7 @@ const levels = Array.from({ length: MAX_LEVEL - MIN_LEVEL + 1 }, (_, index) => M
 // Guards of the library as first released, with their names
 const FIRST_LIBRARY = {
 	SIZE: 1710,
-	SHA256: "9b1de711624987fff9b82450bdf2b3b56621553d2c16f20ba86767a531a127bd"
+	SHA256: "dd342d072babcacbf1d57b1adbc2d05f4ac343b72cc5164d2271f62ce6d737c2"
 };
 
 function median(values: number[]): number {

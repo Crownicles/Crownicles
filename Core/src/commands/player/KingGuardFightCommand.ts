@@ -1,7 +1,7 @@
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import Player, { Players } from "../../core/database/game/models/Player";
+import Player from "../../core/database/game/models/Player";
 import { KingGuardState } from "../../core/database/game/models/KingGuardState";
 import { FightController } from "../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
@@ -107,7 +107,11 @@ export async function kingGuardFightEndCallback(fight: FightController, guard: K
 	await crowniclesInstance?.logsDatabase.logKingGuardFight(fight, guard, ratingChange);
 
 	// Read after the ratings update, which owns the rating and the fight countdown of the player
-	const initiatorPlayer = await Players.getById(playerId);
+	const initiatorPlayer = await Player.findByPk(playerId);
+	if (!initiatorPlayer) {
+		// The player vanished during the fight (account deleted): there is no one left to reward
+		return;
+	}
 	const fightInitiatorInfo = {
 		playerDailyFightSummary: await LogsReadRequests.getPersonalInitiatedFightDailySummary(initiatorPlayer.keycloakId),
 		initiatorGameResult: gameResults.initiatorResult,

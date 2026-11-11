@@ -2688,9 +2688,9 @@
       ]
     },
     "kingGuard": {
-      "name": "Garde {{name}}",
+      "displayName": "Garde {{name}}",
       "unnamed": "un garde du roi",
-      "recap": {
+      "outcome": {
         "win": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincu. Aucune gloire n'était en jeu lors de ce combat.",
         "win_female": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, et l'a vaincue. Aucune gloire n'était en jeu lors de ce combat.",
         "draw": "Aucun adversaire n'était disponible : {{player}} a affronté {{guard}}, garde du roi, sans parvenir à le départager. Aucune gloire n'était en jeu lors de ce combat.",
@@ -3020,7 +3020,7 @@
     "noHistory": "Vous n'avez pas encore de combats dans votre historique.",
     "title": "{{pseudo}}, historique des combats",
     "historyLine": "{{date}}\n{{attackSentence}}\n**Résultat :** {{resultSentence}}\n**Votre gloire :** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Gloire adverse :** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
-    "kingGuardHistoryLine": "{{date}}\n{emote:fightCommand.crossedSwords} Aucun adversaire n'était disponible : vous avez affronté **{{guard}}** de niveau {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Résultat :** {{resultSentence}}\n**Gloire :** {emote:unitValues.glory} aucune gloire n'était en jeu",
+    "kingGuardFightLine": "{{date}}\n{emote:fightCommand.crossedSwords} Aucun adversaire n'était disponible : vous avez affronté **{{guard}}** de niveau {{guardLevel}} ({emote:classes.{{guardClassId}}} $t(models:classes.{{guardClassId}}))\n**Résultat :** {{resultSentence}}\n**Gloire :** {emote:unitValues.glory} aucune gloire n'était en jeu",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Vous avez attaqué **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} Vous avez été attaqué par **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
@@ -3038,15 +3038,15 @@
       "openButton": "Gardes du roi",
       "backButton": "Historique",
       "title": "{emote:fightCommand.crossedSwords} Face aux gardes du roi",
-      "record": "**Meilleur garde vaincu :** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), niv. {{level}}){{aboveLevel}}",
-      "recordHint": "*Les gardes gagnent ou perdent en renommée au fil de leurs combats : votre meilleur garde vaincu est celui qui est aujourd'hui le plus redoutable parmi ceux que vous avez battus.*",
+      "bestDefeatedGuard": "**Meilleur garde vaincu :** {{guard}} ({emote:classes.{{classId}}} $t(models:classes.{{classId}}), niv. {{level}}){{aboveLevel}}",
+      "bestDefeatedGuardHint": "*Les gardes gagnent ou perdent en renommée au fil de leurs combats : votre meilleur garde vaincu est celui qui est aujourd'hui le plus redoutable parmi ceux que vous avez battus.*",
       "aboveLevel_one": ", {{count}} niveau au-dessus du vôtre",
       "aboveLevel_other": ", {{count}} niveaux au-dessus du vôtre",
-      "noRecord": "**Meilleur garde vaincu :** aucun garde vaincu pour l'instant",
+      "noDefeatedGuard": "**Meilleur garde vaincu :** aucun garde vaincu pour l'instant",
       "ranking": "**Classement :** {emote:announcements.trophy} {{rank, number}} / {{challengers, number}}",
       "tally": "**Bilan :** {emote:fightHistory.won} Victoires : {{won, number}} · {emote:fightHistory.lost} Défaites : {{lost, number}} · {emote:fightHistory.draw} Nuls : {{draw, number}}",
       "leaderboardTitle": "{emote:other.crown} **Tableau d'honneur de la garde**",
-      "leaderboardLine": "{{badge}} {{rank, number}}. **{{name}}** : {{guard}} {emote:classes.{{classId}}}, niv. {{level}}",
+      "leaderboardEntry": "{{badge}} {{rank, number}}. **{{name}}** : {{guard}} {emote:classes.{{classId}}}, niv. {{level}}",
       "you": "Vous"
     }
   },
