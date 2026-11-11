@@ -1967,7 +1967,7 @@ export class Players {
 
 	/**
 	 * Find the X active players that are the closest in defense glory to a specific value.
-	 * Active players are those whose startTravelDate is within the last two weeks.
+	 * Active players are those whose startTravelDate is within the last two weeks, and who are not dead.
 	 * @param player - the player that needs an opponent
 	 * @param amountOfPlayersToRetrieve - the X amount of players
 	 * @param offset - offset in case the found players are not enough and an offset search is necessary
@@ -1985,7 +1985,10 @@ export class Players {
 					]
 				},
 				level: { [Op.gte]: FightConstants.REQUIRED_LEVEL },
-				startTravelDate: { [Op.gte]: twoWeeksAgo }
+				startTravelDate: { [Op.gte]: twoWeeksAgo },
+
+				// A dead player does not play until they respawn, whatever their travel dates say
+				effectId: { [Op.ne]: Effect.DEAD.id }
 			},
 			order: [
 				// Sort using the difference with the attack elo of the player
