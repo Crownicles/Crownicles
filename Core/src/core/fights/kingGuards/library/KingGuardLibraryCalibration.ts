@@ -7,6 +7,7 @@ import { EloUtils } from "../../../utils/EloUtils";
 import { median } from "../../../../../../Lib/src/utils/MathUtils";
 import { KingGuardFighter } from "../../fighter/KingGuardFighter";
 import { FightController } from "../../FightController";
+import { FightsManager } from "../../FightsManager";
 import { FightOvertimeBehavior } from "../../FightOvertimeBehavior";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
@@ -80,7 +81,13 @@ export async function playKingGuardsFight(first: KingGuardData, second: KingGuar
 		firstScore = fight.isADraw() ? 0.5 : fight.getWinnerFighter() === fighter1 ? 1 : 0;
 		return Promise.resolve();
 	});
-	await fightController.startFight([]);
+	try {
+		await fightController.startFight([]);
+	}
+	finally {
+		// The purge of the fights manager only runs in the bot: the tool would keep every fight of the tournament in memory
+		FightsManager.unregisterFight(fightController.id);
+	}
 	return firstScore;
 }
 

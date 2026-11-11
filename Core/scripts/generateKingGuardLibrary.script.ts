@@ -21,6 +21,8 @@ import {
 import {
 	KING_GUARD_LIBRARY_PATH, KingGuardData
 } from "../src/data/KingGuard";
+import { initializeAllClassBehaviors } from "../src/core/fights/AiBehaviorController";
+import { initializeAllPetBehaviors } from "../src/core/fights/PetAssistManager";
 import { RandomUtils } from "../../Lib/src/utils/RandomUtils";
 import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
 
@@ -69,6 +71,10 @@ it("completes the library of the king guards", async () => {
 	initPetEntity(sequelize);
 	CrowniclesLogger.init("warn", ["console"], { app: "KingGuardLibrary" });
 	await loadFightFunctionsFromSources();
+
+	// Registered at the start of the bot: without them, the pets never assist and the guards have no scripted fallback
+	initializeAllClassBehaviors();
+	initializeAllPetBehaviors();
 
 	/*
 	 * The composition of the new guards only depends on the seed. The fights draw most of their randomness from the game's

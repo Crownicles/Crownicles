@@ -59,6 +59,15 @@ describe("buildPacketHistoryDescription", () => {
 		expect(description).toContain("**un garde du roi**");
 		expect(description).not.toMatch(/undefined|NaN|\{\{|kingGuards:/);
 	});
+
+	it("names the guard in every language, the translations not synced yet falling back to French", async () => {
+		for (const lng of LANGUAGE.LANGUAGES) {
+			const description = await buildPacketHistoryDescription([fight], 0, 1, lng);
+
+			expect(description, lng).toContain(guardName(7));
+			expect(description, lng).not.toMatch(/undefined|NaN|\{\{|kingGuards:/);
+		}
+	});
 });
 
 describe("buildKingGuardStatsDescription", () => {
@@ -165,13 +174,16 @@ describe("buildKingGuardStatsDescription", () => {
 		expect(description.match(/\*\*Vous\*\*/gu)).toHaveLength(1);
 	});
 
-	it("renders the page in every language without any missing value, the translations not synced yet falling back to French", async () => {
+	it("renders the page in every language with the names of the guards and without any missing value, the translations not synced yet falling back to French", async () => {
 		vi.spyOn(DisplayUtils, "getEscapedUsername").mockResolvedValue("Other");
 
 		for (const lng of LANGUAGE.LANGUAGES) {
 			const description = await buildKingGuardStatsDescription(stats, viewer, lng);
 
 			expect(description, lng).not.toMatch(/undefined|NaN|\{\{|kingGuards:/);
+			for (const entry of stats.leaderboard) {
+				expect(description, lng).toContain(guardName(entry.guard.id));
+			}
 		}
 	});
 
@@ -184,7 +196,7 @@ describe("buildKingGuardStatsDescription", () => {
 			leaderboard: [stats.leaderboard[0]]
 		}, viewer, "fr");
 
-		expect(description).toContain(i18n.t("commands:fightHistory.kingGuardStats.noRecord", { lng: "fr" }));
+		expect(description).toContain(i18n.t("commands:fightHistory.kingGuardStats.noDefeatedGuard", { lng: "fr" }));
 		expect(description).not.toContain("/ 7");
 		expect(description).not.toContain("Vous");
 		expect(description).toContain("1. **Other**");

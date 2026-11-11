@@ -102,7 +102,7 @@ async function buildPlayerFightHistoryLine(fight: PlayerFightHistoryItem, lng: L
  * @param lng
  */
 function buildKingGuardFightHistoryLine(fight: KingGuardFightHistoryItem, lng: Language): string {
-	return i18n.t("commands:fightHistory.kingGuardHistoryLine", {
+	return i18n.t("commands:fightHistory.kingGuardFightLine", {
 		lng,
 		date: dateDisplay(new Date(fight.date)),
 
@@ -143,12 +143,12 @@ export async function buildPacketHistoryDescription(history: FightHistoryItem[],
  */
 function getKingGuardRecordLines(stats: KingGuardFightStats, lng: Language): string[] {
 	if (!stats.record) {
-		return [i18n.t("commands:fightHistory.kingGuardStats.noRecord", { lng })];
+		return [i18n.t("commands:fightHistory.kingGuardStats.noDefeatedGuard", { lng })];
 	}
 	const guard = stats.record.guard;
 	const levelsAbovePlayer = guard.level - stats.playerLevel;
 	return [
-		i18n.t("commands:fightHistory.kingGuardStats.record", {
+		i18n.t("commands:fightHistory.kingGuardStats.bestDefeatedGuard", {
 			lng,
 			guard: KingGuardUtils.getDisplayName(guard.id, lng),
 			classId: guard.classId,
@@ -160,7 +160,7 @@ function getKingGuardRecordLines(stats: KingGuardFightStats, lng: Language): str
 				})
 				: ""
 		}),
-		i18n.t("commands:fightHistory.kingGuardStats.recordHint", { lng }),
+		i18n.t("commands:fightHistory.kingGuardStats.bestDefeatedGuardHint", { lng }),
 		i18n.t("commands:fightHistory.kingGuardStats.ranking", {
 			lng,
 			rank: stats.record.rank,
@@ -178,7 +178,7 @@ function getKingGuardRecordLines(stats: KingGuardFightStats, lng: Language): str
  */
 async function getLeaderboardLine(challenger: KingGuardChallengerRecord, rank: number, viewerKeycloakId: string, lng: Language): Promise<string> {
 	const isViewer = challenger.keycloakId === viewerKeycloakId;
-	return i18n.t("commands:fightHistory.kingGuardStats.leaderboardLine", {
+	return i18n.t("commands:fightHistory.kingGuardStats.leaderboardEntry", {
 		lng,
 		badge: DisplayUtils.getRankMedalBadge(rank) ?? (isViewer ? CrowniclesIcons.top.badges.self : CrowniclesIcons.top.badges.default),
 		rank,
