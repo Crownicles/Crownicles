@@ -88,6 +88,14 @@ describe('EloUtils', () => {
         });
     });
 
+    describe('getExpectedScore', () => {
+        it('should give even odds between equal ratings and 10 against 1 for a gap of one rating scale', () => {
+            expect(EloUtils.getExpectedScore(1500, 1500)).toBe(0.5);
+            expect(EloUtils.getExpectedScore(1500 + FightConstants.ELO.RATING_SCALE, 1500)).toBeCloseTo(10 / 11);
+            expect(EloUtils.getExpectedScore(1200, 1700) + EloUtils.getExpectedScore(1700, 1200)).toBeCloseTo(1);
+        });
+    });
+
     describe('calculateNewRating', () => {
         it('should return the correct K factor', () => {
             expect(EloUtils.calculateNewRating(1500, 1500, 1, 32)).toBe(1518);

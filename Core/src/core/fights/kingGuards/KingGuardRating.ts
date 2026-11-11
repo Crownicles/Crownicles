@@ -1,6 +1,8 @@
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { EloGameResult } from "../../../../../Lib/src/types/EloGameResult";
 import { KingGuardDataController } from "../../../data/KingGuard";
+import { EloUtils } from "../../utils/EloUtils";
+import { median } from "../../../../../Lib/src/utils/MathUtils";
 
 /**
  * Hidden ratings of a player and of the guard it fights
@@ -21,27 +23,12 @@ export type KingGuardRatingChange = {
 };
 
 /**
- * Expected score of a side against the other, from 0 (sure to lose) to 1 (sure to win)
- * @param rating
- * @param opponentRating
- */
-export function getKingGuardExpectedScore(rating: number, opponentRating: number): number {
-	return 1 / (1 + Math.pow(10, (opponentRating - rating) / FightConstants.KING_GUARD.RATING.SCALE));
-}
-
-/**
  * Rating a player starts from against the king guards: the median initial rating of the guards of its level,
  * so that a strong player does not have to beat a series of weak guards first
  * @param playerLevel
  */
 export function getInitialPlayerGuardGlory(playerLevel: number): number {
-	const ratings = KingGuardDataController.instance.getOfClosestLevel(playerLevel)
-		.map(guard => guard.initialGlory)
-		.sort((a, b) => a - b);
-	const middle = Math.floor(ratings.length / 2);
-	return ratings.length % 2 === 0
-		? Math.round((ratings[middle - 1] + ratings[middle]) / 2)
-		: ratings[middle];
+	return Math.round(median(KingGuardDataController.instance.getOfClosestLevel(playerLevel).map(guard => guard.initialGlory)));
 }
 
 /**
@@ -65,8 +52,8 @@ export function computeKingGuardRatingChange(before: KingGuardRatings, playerRes
 	const guardResult = 1 - playerResult;
 	return {
 		playerGuardGlory: before.player,
-		playerGuardGloryChange: Math.round(playerKFactor * (playerResult - getKingGuardExpectedScore(before.player, before.guard))),
+		playerGuardGloryChange: Math.round(playerKFactor * (playerResult - EloUtils.getExpectedScore(before.player, before.guard))),
 		guardGlory: before.guard,
-		guardGloryChange: Math.round(FightConstants.KING_GUARD.RATING.GUARD_K_FACTOR * (guardResult - getKingGuardExpectedScore(before.guard, before.player)))
+		guardGloryChange: Math.round(FightConstants.KING_GUARD.RATING.GUARD_K_FACTOR * (guardResult - EloUtils.getExpectedScore(before.guard, before.player)))
 	};
 }

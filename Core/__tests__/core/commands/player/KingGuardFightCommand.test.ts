@@ -55,13 +55,11 @@ import { LogsKingGuardFightsRequests } from "../../../../src/core/database/logs/
 import { KingGuardFightRewardPacket } from "../../../../../Lib/src/packets/fights/KingGuardFightRewardPacket";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { LockedRowNotFoundError } from "../../../../../Lib/src/locks/withLockedEntities";
-import { getInitialPlayerGuardGlory } from "../../../../src/core/fights/kingGuards/KingGuardRating";
 import { KingGuardIdentity } from "../../../../../Lib/src/utils/KingGuardIdentity";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 
 const WIN_MONEY_REWARD = 400;
 const GUARD_ID = 321;
-const PLAYER_LEVEL = 130;
 const {
 	PROVISIONAL_FIGHTS, PROVISIONAL_PLAYER_K_FACTOR, PLAYER_K_FACTOR, GUARD_K_FACTOR
 } = FightConstants.KING_GUARD.RATING;
@@ -114,7 +112,7 @@ describe("kingGuardFightEndCallback", () => {
 		vi.clearAllMocks();
 		player = buildPlayer();
 		lockedPlayer = {
-			id: 1, level: PLAYER_LEVEL, guardGloryPoints: 1500, fightCountdown: 3, save: vi.fn()
+			id: 1, guardGloryPoints: 1500, fightCountdown: 3, save: vi.fn(), getGuardGloryPoints: vi.fn().mockReturnValue(1500)
 		};
 		lockedGuard = {
 			id: GUARD_ID, glory: 1500, wins: 4, losses: 2, draws: 1, save: vi.fn()
@@ -170,9 +168,11 @@ describe("kingGuardFightEndCallback", () => {
 		});
 	});
 
-	it("starts a player who never fought a guard from the rating of its level, and moves it faster during its first fights", async () => {
+	it("starts from the rating the player gives, and moves it faster during its first fights", async () => {
+		const startingRating = 1234;
 		lockedPlayer.guardGloryPoints = null;
-		lockedGuard.glory = getInitialPlayerGuardGlory(PLAYER_LEVEL);
+		lockedPlayer.getGuardGloryPoints = vi.fn().mockReturnValue(startingRating);
+		lockedGuard.glory = startingRating;
 		vi.mocked(LogsKingGuardFightsRequests.countRatedFights).mockResolvedValue(0);
 		const {
 			fight, guard
@@ -180,7 +180,7 @@ describe("kingGuardFightEndCallback", () => {
 
 		await kingGuardFightEndCallback(fight, guard, [] as never);
 
-		expect(lockedPlayer.guardGloryPoints).toBe(getInitialPlayerGuardGlory(PLAYER_LEVEL) + PROVISIONAL_PLAYER_K_FACTOR / 2);
+		expect(lockedPlayer.guardGloryPoints).toBe(startingRating + PROVISIONAL_PLAYER_K_FACTOR / 2);
 	});
 
 	it("still rewards the player when its row or the one of the guard vanished, logging the fight without ratings", async () => {

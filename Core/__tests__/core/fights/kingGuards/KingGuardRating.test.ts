@@ -2,23 +2,15 @@ import {
 	describe, expect, it
 } from "vitest";
 import {
-	computeKingGuardRatingChange, getInitialPlayerGuardGlory, getKingGuardExpectedScore, getPlayerKingGuardKFactor
+	computeKingGuardRatingChange, getInitialPlayerGuardGlory, getPlayerKingGuardKFactor
 } from "../../../../src/core/fights/kingGuards/KingGuardRating";
 import { KingGuardDataController } from "../../../../src/data/KingGuard";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { EloGameResult } from "../../../../../Lib/src/types/EloGameResult";
 
 const {
-	PROVISIONAL_FIGHTS, PROVISIONAL_PLAYER_K_FACTOR, PLAYER_K_FACTOR, GUARD_K_FACTOR, SCALE
+	PROVISIONAL_FIGHTS, PROVISIONAL_PLAYER_K_FACTOR, PLAYER_K_FACTOR, GUARD_K_FACTOR
 } = FightConstants.KING_GUARD.RATING;
-
-describe("getKingGuardExpectedScore", () => {
-	it("gives even odds between equal ratings and 10 against 1 for a gap of one scale", () => {
-		expect(getKingGuardExpectedScore(1500, 1500)).toBe(0.5);
-		expect(getKingGuardExpectedScore(1500 + SCALE, 1500)).toBeCloseTo(10 / 11);
-		expect(getKingGuardExpectedScore(1200, 1700) + getKingGuardExpectedScore(1700, 1200)).toBeCloseTo(1);
-	});
-});
 
 describe("computeKingGuardRatingChange", () => {
 	it("raises the player and lowers the guard when the player wins, the more so when the guard was stronger", () => {

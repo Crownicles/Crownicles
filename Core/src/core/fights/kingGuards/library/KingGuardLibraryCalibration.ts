@@ -3,7 +3,8 @@ import {
 } from "random-js";
 import { KingGuardData } from "../../../../data/KingGuard";
 import { buildKingGuard } from "../KingGuardLibrary";
-import { getKingGuardExpectedScore } from "../KingGuardRating";
+import { EloUtils } from "../../../utils/EloUtils";
+import { median } from "../../../../../../Lib/src/utils/MathUtils";
 import { KingGuardFighter } from "../../fighter/KingGuardFighter";
 import { FightController } from "../../FightController";
 import { FightOvertimeBehavior } from "../../FightOvertimeBehavior";
@@ -58,12 +59,6 @@ export type CalibrationOptions = {
 // The fight of a calibration is silent: nothing is sent to any front
 const CALIBRATION_CONTEXT = {} as PacketContext;
 
-function median(values: number[]): number {
-	const sorted = [...values].sort((a, b) => a - b);
-	const middle = Math.floor(sorted.length / 2);
-	return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
-}
-
 /**
  * Play a silent fight between two guards of the library
  * @returns 1 when the first guard won, 0.5 for a draw, 0 when the second guard won
@@ -96,7 +91,7 @@ export async function playKingGuardsFight(first: KingGuardData, second: KingGuar
  * @param priorRatings - Ratings the virtual draws are played against
  */
 export function fitKingGuardsRatings(guards: KingGuardData[], fights: CalibrationFight[], priorRatings: Map<number, number>): Map<number, number> {
-	const scale = FightConstants.KING_GUARD.RATING.SCALE;
+	const scale = FightConstants.ELO.RATING_SCALE;
 	const strengthOf = (rating: number): number => Math.pow(10, rating / scale);
 	const strengths = new Map(guards.map(guard => [guard.id, strengthOf(priorRatings.get(guard.id)!)]));
 	const scores = new Map(guards.map(guard => [guard.id, KING_GUARD_CALIBRATION.VIRTUAL_DRAWS / 2]));
@@ -174,7 +169,7 @@ async function playRound(random: Random, guards: KingGuardData[], params: {
 		});
 		const firstRating = params.onlineRatings.get(first.id)!;
 		const secondRating = params.onlineRatings.get(second.id)!;
-		const change = params.kFactor * (firstScore - getKingGuardExpectedScore(firstRating, secondRating));
+		const change = params.kFactor * (firstScore - EloUtils.getExpectedScore(firstRating, secondRating));
 		params.onlineRatings.set(first.id, firstRating + change);
 		params.onlineRatings.set(second.id, secondRating - change);
 	}

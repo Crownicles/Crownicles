@@ -53,6 +53,15 @@ export abstract class EloUtils {
 	}
 
 	/**
+	 * Expected score of a player against an opponent, from 0 (sure to lose) to 1 (sure to win)
+	 * @param playerRating The player rating
+	 * @param opponentRating Their opponent rating
+	 */
+	static getExpectedScore(playerRating: number, opponentRating: number): number {
+		return 1 / (1 + Math.pow(10, (opponentRating - playerRating) / FightConstants.ELO.RATING_SCALE));
+	}
+
+	/**
 	 * Calculate the new elo rating of a player
 	 * @param playerRating The player rating
 	 * @param opponentRating Their opponent rating
@@ -60,7 +69,7 @@ export abstract class EloUtils {
 	 * @param kFactor The k factor of the player (see EloUtils.getKFactor)
 	 */
 	static calculateNewRating(playerRating: number, opponentRating: number, gameResult: EloGameResult, kFactor: number): number {
-		const newElo = Math.round(playerRating + kFactor * (gameResult - 1 / (1 + Math.pow(10, (opponentRating - playerRating) / 400))));
+		const newElo = Math.round(playerRating + kFactor * (gameResult - EloUtils.getExpectedScore(playerRating, opponentRating)));
 		return Math.max(newElo + Math.round((newElo - playerRating) * (1.49 - Math.tanh((playerRating - 502) / 140) / 2 - 0.87)), 0);
 	}
 }

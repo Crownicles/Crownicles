@@ -161,7 +161,7 @@ function getKingGuardRecordLines(stats: KingGuardFightStats, lng: Language): str
 				: ""
 		}),
 		i18n.t("commands:fightHistory.kingGuardStats.recordHint", { lng }),
-		i18n.t("commands:fightHistory.kingGuardStats.progress", {
+		i18n.t("commands:fightHistory.kingGuardStats.ranking", {
 			lng,
 			rank: stats.record.rank,
 			challengers: stats.record.challengers
@@ -186,6 +186,7 @@ async function getLeaderboardLine(challenger: KingGuardChallengerRecord, rank: n
 			? i18n.t("commands:fightHistory.kingGuardStats.you", { lng })
 			: await DisplayUtils.getEscapedUsername(challenger.keycloakId, lng),
 		guard: KingGuardUtils.getDisplayName(challenger.guard.id, lng),
+		classId: challenger.guard.classId,
 		level: challenger.guard.level
 	});
 }

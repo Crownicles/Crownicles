@@ -2,7 +2,6 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import Player from "../../../../core/database/game/models/Player";
-import { getPlayerGuardGlory } from "../../../../core/fights/kingGuards/KingGuardMatchmaking";
 
 export const commandInfo: ITestCommand = {
 	name: "kingguardglory",
@@ -19,7 +18,7 @@ export const commandInfo: ITestCommand = {
  */
 const kingGuardGloryTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	if (!args[0]) {
-		return `Votre cote face aux gardes du roi est de ${getPlayerGuardGlory(player)}${player.guardGloryPoints === null ? " (celle de votre niveau, vous n'avez encore affronté aucun garde)" : ""}`;
+		return `Votre cote face aux gardes du roi est de ${player.getGuardGloryPoints()}${player.guardGloryPoints === null ? " (celle de votre niveau, vous n'avez encore affronté aucun garde)" : ""}`;
 	}
 	const glory = parseInt(args[0], 10);
 	await Player.withLocked(player.id, async lockedPlayer => {

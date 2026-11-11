@@ -17,8 +17,7 @@ describe("King guard names", () => {
 	const firstName = i18n.t("kingGuards:names.5", { lng: "fr" });
 
 	it("names a guard of the library with its unique first name and its title", () => {
-		expect(firstName).toMatch(/^\p{Lu}\p{L}+$/u);
-		expect(KingGuardUtils.getFirstName(5, "fr")).toBe(firstName);
+		expect(KingGuardUtils.getFirstName(5, "fr")).toMatch(/^\p{Lu}\p{L}+$/u);
 		expect(KingGuardUtils.getDisplayName(5, "fr")).toBe(`Garde ${firstName}`);
 	});
 

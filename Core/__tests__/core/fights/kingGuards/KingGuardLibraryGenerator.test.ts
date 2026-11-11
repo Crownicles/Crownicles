@@ -14,6 +14,7 @@ import {
 } from "../../../../src/data/KingGuard";
 import { ItemConstants } from "../../../../../Lib/src/constants/ItemConstants";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
 
 initPlayer(new Sequelize({
 	dialect: "mariadb", logging: false
@@ -37,14 +38,14 @@ describe("generateKingGuardLibrary", () => {
 			expect(guard.armor.level).toBe(ItemConstants.MAX_UPGRADE_LEVEL);
 			expect(guard.weapon.enchantmentId).not.toBeNull();
 			expect(guard.armor.enchantmentId).not.toBeNull();
-			expect(guard.potionId).not.toBe(0);
+			expect(guard.potionId).not.toBe(InventoryConstants.POTION_DEFAULT_ID);
 			expect(guard.pet).not.toBeNull();
 		}
 	});
 
 	it("leaves the poorly equipped guards without fight potion and with barely upgraded items", () => {
 		for (const guard of library.filter(guard => guard.profile === KING_GUARD_PROFILES.POORLY_EQUIPPED)) {
-			expect(guard.potionId).toBe(0);
+			expect(guard.potionId).toBe(InventoryConstants.POTION_DEFAULT_ID);
 			expect(guard.weapon.level).toBeLessThanOrEqual(2);
 			expect(guard.armor.level).toBeLessThanOrEqual(2);
 		}

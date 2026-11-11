@@ -49,9 +49,8 @@ import { CommandFightCancelPacketReq } from "../../../../Lib/src/packets/command
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { DiscordConstants } from "../../DiscordConstants";
 import { PetUtils } from "../../utils/PetUtils";
-import {
-	SexTypeShort, StringConstants
-} from "../../../../Lib/src/constants/StringConstants";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { getSexContext } from "../pet/expedition/ExpeditionDisplayUtils";
 import { ReactionCollectorFightChooseActionPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { deferFightInteraction } from "./FightInteractionUtils";
 
@@ -696,7 +695,7 @@ export async function handleKingGuardFightReward(context: PacketContext, packet:
 			lng,
 			player: playerUsername,
 			guard: KingGuardUtils.getFirstName(packet.guard.id, lng),
-			context: packet.guard.sex === StringConstants.SEX.FEMALE.short ? StringConstants.SEX.FEMALE.long : StringConstants.SEX.MALE.long
+			context: getSexContext(packet.guard.sex)
 		}));
 	generateFightRewardField(embed, packet, lng, playerUsername);
 	generatePetLoveChangeField(embed, packet, lng, playerUsername);
