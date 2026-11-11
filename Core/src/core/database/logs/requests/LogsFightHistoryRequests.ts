@@ -13,6 +13,7 @@ import {
 	asSeconds, getDateLogs, secondsToMilliseconds, weeksToSeconds
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../../../../Lib/src/types/EloGameResult";
+import { Week } from "../../../../../../Lib/src/types/TimeTypes";
 import {
 	KING_GUARD_FIGHT_WINNER, KingGuardFightWinner, LogsKingGuardFightsResults
 } from "../models/LogsKingGuardFightsResults";
@@ -223,7 +224,7 @@ export abstract class LogsFightHistoryRequests {
 	 * @param weeks
 	 * @param playerColumn - Column holding the player: the initiator for their attacks, the opponent for their defenses
 	 */
-	private static async getRankedFightCountInLastNWeeks(keycloakId: string, weeks: number, playerColumn: "fightInitiatorId" | "player2Id"): Promise<number> {
+	private static async getRankedFightCountInLastNWeeks(keycloakId: string, weeks: Week, playerColumn: "fightInitiatorId" | "player2Id"): Promise<number> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!logPlayer) {
 			return 0;
@@ -243,7 +244,7 @@ export abstract class LogsFightHistoryRequests {
 	 * @param keycloakId
 	 * @param weeks
 	 */
-	static getAttackCountInLastNWeeks(keycloakId: string, weeks: number): Promise<number> {
+	static getAttackCountInLastNWeeks(keycloakId: string, weeks: Week): Promise<number> {
 		return LogsFightHistoryRequests.getRankedFightCountInLastNWeeks(keycloakId, weeks, "fightInitiatorId");
 	}
 
@@ -252,7 +253,7 @@ export abstract class LogsFightHistoryRequests {
 	 * @param keycloakId
 	 * @param weeks
 	 */
-	static getDefenseCountInLastNWeeks(keycloakId: string, weeks: number): Promise<number> {
+	static getDefenseCountInLastNWeeks(keycloakId: string, weeks: Week): Promise<number> {
 		return LogsFightHistoryRequests.getRankedFightCountInLastNWeeks(keycloakId, weeks, "player2Id");
 	}
 }
