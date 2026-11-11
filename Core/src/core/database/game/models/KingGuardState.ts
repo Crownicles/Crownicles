@@ -4,6 +4,7 @@ import {
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
+import type { KingGuardData } from "../../../../data/KingGuard";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import moment from "moment";
@@ -49,10 +50,7 @@ export abstract class KingGuardStates {
 	 * Give their initial rating to the guards of the library not yet in the table, the others keep the rating they earned
 	 * @param guards
 	 */
-	static async insertMissing(guards: {
-		id: number;
-		initialGlory: number;
-	}[]): Promise<void> {
+	static async insertMissing(guards: Pick<KingGuardData, "id" | "initialGlory">[]): Promise<void> {
 		await KingGuardState.bulkCreate(guards.map(guard => ({
 			id: guard.id,
 			glory: guard.initialGlory
@@ -82,14 +80,10 @@ export abstract class KingGuardStates {
 	}
 
 	/**
-	 * Get the current rating of the given guards, or of all of them
-	 * @param ids
+	 * Get the current rating of every guard
 	 */
-	static async getGlories(ids?: number[]): Promise<Map<number, number>> {
-		const guards = await KingGuardState.findAll({
-			attributes: ["id", "glory"],
-			...ids ? { where: { id: { [Op.in]: ids } } } : {}
-		});
+	static async getGlories(): Promise<Map<number, number>> {
+		const guards = await KingGuardState.findAll({ attributes: ["id", "glory"] });
 		return new Map(guards.map(guard => [guard.id, guard.glory]));
 	}
 }

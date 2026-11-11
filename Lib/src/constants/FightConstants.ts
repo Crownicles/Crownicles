@@ -338,6 +338,9 @@ export abstract class FightConstants {
 
 	static readonly ELO = {
 		DEFAULT_ELO: 0,
+
+		// Rating gap for which the stronger side is expected to win 10 times out of 11, as in chess
+		RATING_SCALE: 400,
 		MAX_ELO_GAP: 400,
 		DEFAULT_K_FACTOR: 32,
 		LOW_K_FACTOR: 24,
@@ -444,10 +447,7 @@ export abstract class FightConstants {
 			PROVISIONAL_FIGHTS: 10,
 			PROVISIONAL_PLAYER_K_FACTOR: 48,
 			PLAYER_K_FACTOR: 32,
-			GUARD_K_FACTOR: 16,
-
-			// Rating gap for which the stronger side is expected to win 10 times out of 11, as in chess
-			SCALE: 400
+			GUARD_K_FACTOR: 16
 		},
 
 		/*

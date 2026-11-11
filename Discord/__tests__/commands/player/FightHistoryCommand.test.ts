@@ -18,10 +18,13 @@ import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import i18n from "../../../src/translations/i18n";
+import { LANGUAGE } from "../../../../Lib/src/Language";
 
 function guardName(guardId: number): string {
 	return i18n.t(`kingGuards:names.${guardId}`, { lng: "fr" });
 }
+
+const paladinIcon = CrowniclesIcons.classes[ClassConstants.CLASSES_ID.PALADIN];
 
 describe("buildPacketHistoryDescription", () => {
 	const fight: KingGuardFightHistoryItem = {
@@ -100,9 +103,9 @@ describe("buildKingGuardStatsDescription", () => {
 		expect(description).toContain("12 niveaux au-dessus du vôtre");
 		expect(description).toContain("2 / 7");
 		expect(description).toContain(`${CrowniclesIcons.fightHistory.won} Victoires : 12`);
-		expect(description).toContain(`${CrowniclesIcons.top.badges.first} 1. **Leader** : Garde ${guardName(1)}, niv. 188`);
-		expect(description).toContain(`${CrowniclesIcons.top.badges.second} 2. **Vous** : Garde ${guardName(2)}, niv. 152`);
-		expect(description).toContain(`${CrowniclesIcons.top.badges.third} 3. **Third** : Garde ${guardName(3)}, niv. 150`);
+		expect(description).toContain(`${CrowniclesIcons.top.badges.first} 1. **Leader** : Garde ${guardName(1)} ${paladinIcon}, niv. 188`);
+		expect(description).toContain(`${CrowniclesIcons.top.badges.second} 2. **Vous** : Garde ${guardName(2)} ${paladinIcon}, niv. 152`);
+		expect(description).toContain(`${CrowniclesIcons.top.badges.third} 3. **Third** : Garde ${guardName(3)} ${paladinIcon}, niv. 150`);
 		expect(description).not.toMatch(/undefined|NaN|\{\{|kingGuards:/);
 	});
 
@@ -120,7 +123,7 @@ describe("buildKingGuardStatsDescription", () => {
 			leaderboard: stats.leaderboard.filter(challenger => challenger.keycloakId !== viewer)
 		}, viewer, "fr");
 
-		expect(description.trim().split("\n").at(-1)).toBe(`${CrowniclesIcons.top.badges.self} 9. **Vous** : Garde ${guardName(4)}, niv. 120`);
+		expect(description.trim().split("\n").at(-1)).toBe(`${CrowniclesIcons.top.badges.self} 9. **Vous** : Garde ${guardName(4)} ${paladinIcon}, niv. 120`);
 		expect(description).not.toContain("au-dessus");
 	});
 
@@ -141,10 +144,10 @@ describe("buildKingGuardStatsDescription", () => {
 			leaderboard
 		}, viewer, "fr");
 
-		expect(description).toContain(`${CrowniclesIcons.top.badges.fifth} 5. **player5** : Garde ${guardName(14)}, niv. 196`);
-		expect(description).toContain(`${CrowniclesIcons.top.badges.default} 10. **player10** : Garde ${guardName(19)}, niv. 191`);
+		expect(description).toContain(`${CrowniclesIcons.top.badges.fifth} 5. **player5** : Garde ${guardName(14)} ${paladinIcon}, niv. 196`);
+		expect(description).toContain(`${CrowniclesIcons.top.badges.default} 10. **player10** : Garde ${guardName(19)} ${paladinIcon}, niv. 191`);
 		const formatNumber = (value: number): string => new Intl.NumberFormat("fr").format(value);
-		expect(description.trim().split("\n").at(-1)).toBe(`${CrowniclesIcons.top.badges.self} ${formatNumber(1234)}. **Vous** : Garde ${guardName(30)}, niv. 150`);
+		expect(description.trim().split("\n").at(-1)).toBe(`${CrowniclesIcons.top.badges.self} ${formatNumber(1234)}. **Vous** : Garde ${guardName(30)} ${paladinIcon}, niv. 150`);
 		expect(description).toContain(`${formatNumber(1234)} / ${formatNumber(2000)}`);
 	});
 
@@ -160,6 +163,16 @@ describe("buildKingGuardStatsDescription", () => {
 		}, viewer, "fr");
 
 		expect(description.match(/\*\*Vous\*\*/gu)).toHaveLength(1);
+	});
+
+	it("renders the page in every language without any missing value, the translations not synced yet falling back to French", async () => {
+		vi.spyOn(DisplayUtils, "getEscapedUsername").mockResolvedValue("Other");
+
+		for (const lng of LANGUAGE.LANGUAGES) {
+			const description = await buildKingGuardStatsDescription(stats, viewer, lng);
+
+			expect(description, lng).not.toMatch(/undefined|NaN|\{\{|kingGuards:/);
+		}
 	});
 
 	it("tells a player who never beat a guard that it has no record yet, without rank", async () => {

@@ -1,6 +1,7 @@
 import {
 	KingGuardVictory, LogsKingGuardFightsRequests
 } from "../../database/logs/requests/LogsKingGuardFightsRequests";
+import type Player from "../../database/game/models/Player";
 import { KingGuardStates } from "../../database/game/models/KingGuardState";
 import { KingGuardDataController } from "../../../data/KingGuard";
 import {
@@ -69,10 +70,7 @@ function toKingGuardDisplay(guardId: number): KingGuardDisplay {
  * Get the summary of all the fights of a player against the king guards, or null if it never fought one
  * @param player - The keycloak id and the current level of the player
  */
-export async function getKingGuardFightStats(player: {
-	keycloakId: string;
-	level: number;
-}): Promise<KingGuardFightStats | null> {
+export async function getKingGuardFightStats(player: Pick<Player, "keycloakId" | "level">): Promise<KingGuardFightStats | null> {
 	const tally = await LogsKingGuardFightsRequests.getFightTally(player.keycloakId);
 	if (tally.played === 0) {
 		return null;

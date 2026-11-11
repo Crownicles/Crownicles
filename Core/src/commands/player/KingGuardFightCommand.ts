@@ -8,9 +8,7 @@ import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
 import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 import { KingGuardFighter } from "../../core/fights/fighter/KingGuardFighter";
 import { buildKingGuard } from "../../core/fights/kingGuards/KingGuardLibrary";
-import {
-	getPlayerGuardGlory, pickKingGuard
-} from "../../core/fights/kingGuards/KingGuardMatchmaking";
+import { pickKingGuard } from "../../core/fights/kingGuards/KingGuardMatchmaking";
 import {
 	computeKingGuardRatingChange, getPlayerKingGuardKFactor, KingGuardRatingChange
 } from "../../core/fights/kingGuards/KingGuardRating";
@@ -45,7 +43,7 @@ async function applyKingGuardFightResultUnderLock(
 	result: KingGuardFightResult
 ): Promise<KingGuardRatingChange> {
 	const change = computeKingGuardRatingChange({
-		player: getPlayerGuardGlory(player),
+		player: player.getGuardGloryPoints(),
 		guard: guard.glory
 	}, result.playerResult, result.playerKFactor);
 	player.guardGloryPoints = change.playerGuardGlory + change.playerGuardGloryChange;

@@ -38,7 +38,7 @@ export type KingGuardData = {
 	weapon: KingGuardMainItem;
 	armor: KingGuardMainItem;
 
-	// 0 when the guard has no fight potion
+	// InventoryConstants.POTION_DEFAULT_ID when the guard has no fight potion
 	potionId: number;
 	objectId: number;
 	pet: KingGuardPetData | null;
@@ -46,6 +46,11 @@ export type KingGuardData = {
 	// Rating given to the guard when it joins the king_guards table, estimated by a simulated tournament between the guards
 	initialGlory: number;
 };
+
+/**
+ * What a guard is made of, as drawn by the generator of the library: everything but its initial rating, estimated afterwards
+ */
+export type KingGuardComposition = Omit<KingGuardData, "initialGlory">;
 
 export const KING_GUARD_LIBRARY_PATH = "resources/kingGuards/library.json";
 

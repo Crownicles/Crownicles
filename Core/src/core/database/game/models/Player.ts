@@ -87,6 +87,7 @@ import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/Cooki
 import { buildNewItemSlotData } from "../../../utils/ItemSlotUtils";
 import type { AiPersonality } from "../../../../../../Lib/src/constants/AiPersonalityConstants";
 import { applyKingChallengeProgressUnderLock } from "../../../kingChallenge/KingChallenge";
+import { getInitialPlayerGuardGlory } from "../../../fights/kingGuards/KingGuardRating";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -566,6 +567,13 @@ export class Player extends Model {
 	 */
 	public getGloryPoints(): number {
 		return this.attackGloryPoints + this.defenseGloryPoints;
+	}
+
+	/**
+	 * Return the hidden rating of the player against the king guards, the one of its level if it never fought one
+	 */
+	public getGuardGloryPoints(): number {
+		return this.guardGloryPoints ?? getInitialPlayerGuardGlory(this.level);
 	}
 
 	/**

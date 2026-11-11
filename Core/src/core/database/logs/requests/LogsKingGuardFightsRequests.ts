@@ -7,12 +7,14 @@ import {
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import type { PersonalFightDailySummary } from "../LogsReadRequests";
 
-type KingGuardTallyRow = Record<"played" | "won" | "lost" | "draw", number | string | null>;
+type KingGuardTallyKey = "played" | "won" | "lost" | "draw";
+
+type KingGuardTallyRow = Record<KingGuardTallyKey, number | string | null>;
 
 /**
  * Results of a player against the king guards
  */
-export type KingGuardFightTally = Record<"played" | "won" | "lost" | "draw", number>;
+export type KingGuardFightTally = Record<KingGuardTallyKey, number>;
 
 /**
  * A guard of the library beaten by a player, and the fight in which the player first beat it: the dates of the logs are in

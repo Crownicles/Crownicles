@@ -12,8 +12,9 @@ import { PetDataController } from "../../../../data/Pet";
 import { ItemDataController } from "../../../../data/DataController";
 import { GenericItem } from "../../../../data/GenericItem";
 import {
-	KING_GUARD_PROFILES, KingGuardData, KingGuardPetData, KingGuardProfile
+	KING_GUARD_PROFILES, KingGuardComposition, KingGuardData, KingGuardPetData, KingGuardProfile
 } from "../../../../data/KingGuard";
+import { InventoryConstants } from "../../../../../../Lib/src/constants/InventoryConstants";
 import {
 	FightItemNatures, ItemCategory, ItemConstants, ItemRarity
 } from "../../../../../../Lib/src/constants/ItemConstants";
@@ -144,9 +145,6 @@ const FULLY_UPGRADED_LEVEL = 120;
 // Number of best items among which an optimized guard picks each of its items, so that the optimized guards stay varied
 const BEST_ITEMS_CHOICE = 3;
 
-// Id of the empty item of each category (no potion, no object...)
-const NO_ITEM_ID = 0;
-
 // Seed of the library committed in Core/resources/kingGuards/library.json
 export const KING_GUARD_LIBRARY_SEED = 5137;
 
@@ -189,12 +187,13 @@ function drawAround(random: Random, base: number, offset: Range, bounds: Range):
 }
 
 /**
- * Items of the highest rarity not above the given one that has some, the empty item excluded, ordered by id for reproducible draws
+ * Items of the highest rarity not above the given one that has some, ordered by id for reproducible draws.
+ * The search stops at the common rarity: the empty item of each category (no weapon, no potion...) is the only basic one
  */
 function getItemsOfRarityOrBelow<T extends GenericItem>(controller: ItemDataController<T>, rarity: number, filter?: (item: T) => boolean): T[] {
 	for (let currentRarity = rarity; currentRarity >= ItemRarity.COMMON; currentRarity--) {
 		const items = controller.getAllValues()
-			.filter(item => item.id !== NO_ITEM_ID && item.rarity === currentRarity && (filter?.(item) ?? true))
+			.filter(item => item.rarity === currentRarity && (filter?.(item) ?? true))
 			.sort((a, b) => a.id - b.id);
 		if (items.length > 0) {
 			return items;
@@ -260,7 +259,7 @@ function drawEquipment(random: Random, slot: GuardSlot): EquipmentDraw {
 				enchantmentId: drawEnchantment(random, ItemCategory.ARMOR, settings)
 			},
 			potionId: potionNature === null
-				? NO_ITEM_ID
+				? InventoryConstants.POTION_DEFAULT_ID
 				: random.pick(getItemsOfRarityOrBelow(PotionDataController.instance, rarity, potion => potion.nature === potionNature)).id,
 			objectId: random.pick(getItemsOfRarityOrBelow(
 				ObjectItemDataController.instance,
@@ -380,12 +379,12 @@ function getGuardSlotsOfLevel(random: Random, level: number, firstId: number): G
  * The same seed gives the same library as long as the game data does not change
  * @param seed
  */
-export function generateKingGuardLibrary(seed = KING_GUARD_LIBRARY_SEED): Omit<KingGuardData, "initialGlory">[] {
+export function generateKingGuardLibrary(seed = KING_GUARD_LIBRARY_SEED): KingGuardComposition[] {
 	const random = new Random(MersenneTwister19937.seed(seed));
 	const {
 		MIN_LEVEL, MAX_LEVEL, GUARDS_PER_LEVEL
 	} = FightConstants.KING_GUARD.LIBRARY;
-	const guards: Omit<KingGuardData, "initialGlory">[] = [];
+	const guards: KingGuardComposition[] = [];
 	for (let level = MIN_LEVEL; level <= MAX_LEVEL; level++) {
 		for (const slot of getGuardSlotsOfLevel(random, level, (level - MIN_LEVEL) * GUARDS_PER_LEVEL + 1)) {
 			const settings = KING_GUARD_PROFILE_SETTINGS[slot.profile];
@@ -409,10 +408,10 @@ export function generateKingGuardLibrary(seed = KING_GUARD_LIBRARY_SEED): Omit<K
  */
 export function completeKingGuardLibrary(
 	library: Pick<KingGuardData, "id" | "level">[],
-	generated: Omit<KingGuardData, "initialGlory">[]
-): Omit<KingGuardData, "initialGlory">[] {
+	generated: KingGuardComposition[]
+): KingGuardComposition[] {
 	let nextId = library.reduce((highest, guard) => Math.max(highest, guard.id), 0) + 1;
-	const newGuards: Omit<KingGuardData, "initialGlory">[] = [];
+	const newGuards: KingGuardComposition[] = [];
 	for (const level of [...new Set(generated.map(guard => guard.level))]) {
 		const guardsInLibrary = library.filter(guard => guard.level === level).length;
 		for (const guard of generated.filter(generatedGuard => generatedGuard.level === level).slice(guardsInLibrary)) {

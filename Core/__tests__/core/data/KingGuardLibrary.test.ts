@@ -21,6 +21,7 @@ import {
 } from "../../../../Lib/src/constants/ItemConstants";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { StringConstants } from "../../../../Lib/src/constants/StringConstants";
+import { InventoryConstants } from "../../../../Lib/src/constants/InventoryConstants";
 
 const guards = KingGuardDataController.instance.getAll();
 const names = (JSON.parse(readFileSync("../Lang/fr/kingGuards.json", "utf8")) as { names: Record<string, string> }).names;
@@ -93,7 +94,7 @@ describe("King guards library", () => {
 		for (const guard of guards) {
 			const potion = PotionDataController.instance.getById(guard.potionId);
 			expect(potion, `guard ${guard.id}`).toBeDefined();
-			if (guard.potionId !== 0) {
+			if (guard.potionId !== InventoryConstants.POTION_DEFAULT_ID) {
 				expect(FightItemNatures, `guard ${guard.id}`).toContain(potion!.nature);
 			}
 			expect(ObjectItemDataController.instance.getById(guard.objectId), `guard ${guard.id}`).toBeDefined();

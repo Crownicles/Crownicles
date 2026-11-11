@@ -27,6 +27,7 @@ import { KingGuardData } from "../../../../src/data/KingGuard";
 import { buildKingGuard } from "../../../../src/core/fights/kingGuards/KingGuardLibrary";
 import { KingGuardIdentity } from "../../../../../Lib/src/utils/KingGuardIdentity";
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
+import { getInitialPlayerGuardGlory } from "../../../../src/core/fights/kingGuards/KingGuardRating";
 
 function buildGuardPlayer(): Player {
 	return {
@@ -119,6 +120,21 @@ describe("KingGuardFighter", () => {
 
 	it("has no glory at stake and keeps its rating hidden", () => {
 		expect(buildGuardFighter().getDisplayedGloryPoints()).toBeUndefined();
+	});
+});
+
+describe("Player.getGuardGloryPoints", () => {
+	initPlayer(new Sequelize({
+		dialect: "mariadb", logging: false
+	}));
+
+	it("gives a player who never fought a guard the rating of the guards of its level, and its own rating afterwards", () => {
+		expect(Player.build({
+			level: 150, guardGloryPoints: null
+		}).getGuardGloryPoints()).toBe(getInitialPlayerGuardGlory(150));
+		expect(Player.build({
+			level: 150, guardGloryPoints: 1777
+		}).getGuardGloryPoints()).toBe(1777);
 	});
 });
 

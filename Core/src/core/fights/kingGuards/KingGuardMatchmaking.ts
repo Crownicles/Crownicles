@@ -4,7 +4,6 @@ import { LogsKingGuardFightsRequests } from "../../database/logs/requests/LogsKi
 import {
 	KingGuardData, KingGuardDataController
 } from "../../../data/KingGuard";
-import { getInitialPlayerGuardGlory } from "./KingGuardRating";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 
@@ -13,14 +12,6 @@ import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
  */
 export async function insertMissingKingGuards(): Promise<void> {
 	await KingGuardStates.insertMissing(KingGuardDataController.instance.getAll());
-}
-
-/**
- * Hidden rating of a player against the king guards, the one of its level if it never fought one
- * @param player
- */
-export function getPlayerGuardGlory(player: Player): number {
-	return player.guardGloryPoints ?? getInitialPlayerGuardGlory(player.level);
 }
 
 /**
@@ -35,7 +26,7 @@ export async function pickKingGuard(player: Player): Promise<KingGuardData> {
 	} = FightConstants.KING_GUARD.RATING;
 	const recentGuardIds = new Set(await LogsKingGuardFightsRequests.getLastGuardIds(player.keycloakId, RECENT_GUARDS_EXCLUDED));
 	const candidates = await KingGuardStates.findClosest({
-		rating: getPlayerGuardGlory(player),
+		rating: player.getGuardGloryPoints(),
 		guardIds: library.getIds().filter(guardId => !recentGuardIds.has(guardId)),
 		count: CANDIDATES
 	});
