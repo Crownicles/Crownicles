@@ -54,14 +54,7 @@ function getListEmbed(lng: Language, classList: {
 			name: DisplayUtils.getClassDisplay(foundClass.id, lng),
 			value: i18n.t("commands:classesInfo.displays.class", {
 				lng,
-				health: foundClass.stats.health,
-				attack: foundClass.stats.attack,
-				defense: foundClass.stats.defense,
-				speed: foundClass.stats.speed,
-				baseBreath: foundClass.stats.baseBreath,
-				maxBreath: foundClass.stats.maxBreath,
-				breathRegen: foundClass.stats.breathRegen,
-				fightPoint: foundClass.stats.fightPoint
+				...foundClass.stats
 			}),
 			inline: false
 		});
