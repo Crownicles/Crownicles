@@ -12,7 +12,8 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
-import { getNextSundayMidnight } from "../../../../Lib/src/utils/TimeUtils";
+import { getNextWeekDayMidnight } from "../../../../Lib/src/utils/TimeUtils";
+import { DayOfTheWeek } from "../../../../Lib/src/constants/TimeConstants";
 import { bufferUntilCommit } from "../../../../Lib/src/locks/scheduleAfterCommit";
 import { getCurrentTransaction } from "../../../../Lib/src/locks/CLSNamespace";
 
@@ -152,7 +153,7 @@ export async function getKingChallengeProgress(player: Player): Promise<KingChal
 		thresholds: await getKingChallengeThresholds(),
 
 		// NEXT_WEEKLY_RESET only catches up a missed reset at startup, the reset itself runs every Monday at midnight
-		nextResetDate: getNextSundayMidnight()
+		nextResetDate: getNextWeekDayMidnight(DayOfTheWeek.SUNDAY)
 	};
 }
 

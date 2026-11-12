@@ -4,9 +4,11 @@ import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
 import { Op } from "sequelize";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import {
-	getDateLogs, getNextSundayMidnight, millisecondsToSeconds, msDiff
+	getDateLogs, getNextWeekDayMidnight, millisecondsToSeconds, msDiff
 } from "../../../../../Lib/src/utils/TimeUtils";
-import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
+import {
+	TimeConstants, DayOfTheWeek
+} from "../../../../../Lib/src/constants/TimeConstants";
 import {
 	ExpeditionCompleteParams,
 	ExpeditionLogData,
@@ -156,7 +158,7 @@ export class LogsExpeditionLogger {
 			return 0;
 		}
 		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(
-			getNextSundayMidnight(),
+			getNextWeekDayMidnight(DayOfTheWeek.SUNDAY),
 			TimeConstants.MS_TIME.WEEK
 		)));
 
