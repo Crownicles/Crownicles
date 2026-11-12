@@ -22,6 +22,7 @@ import { CrowniclesCoreMetrics } from "../CrowniclesCoreMetrics";
 import {
 	msDiff, nowMs
 } from "../../../../../Lib/src/types/TimeTypes";
+import { getModelSequelize } from "../../../../../Lib/src/database/ModelUtils";
 
 type DailyTask = {
 	name: string;
@@ -143,7 +144,7 @@ export class CrowniclesDaily {
 		 * here indefinitely. Without the guard this nightly job would rewrite an ever-growing
 		 * set of already-done rows, and `advancedSlots` below would count no-ops.
 		 */
-		const [rows] = await MissionSlot.sequelize!.query(
+		const [rows] = await getModelSequelize(MissionSlot).query(
 			`SELECT ms.id
 			FROM mission_slots ms
 			JOIN players p ON p.id = ms.playerId
@@ -231,7 +232,7 @@ export class CrowniclesDaily {
 			await reloadEnchanterSettings();
 			return;
 		}
-		await Setting.sequelize!.transaction(reloadEnchanterSettings);
+		await getModelSequelize(Setting).transaction(reloadEnchanterSettings);
 	}
 
 	/**
@@ -263,7 +264,7 @@ export class CrowniclesDaily {
 		 * `ELSE 0` is unreachable, the WHERE clause restricts the rows to the levels of the CASE: it only
 		 * exists because a CASE without ELSE yields NULL, which would wipe the love points it is added to.
 		 */
-		const [, affectedPets] = await Guild.sequelize!.query(
+		const [, affectedPets] = await getModelSequelize(Guild).query(
 			`UPDATE pet_entities pe
 			JOIN guild_pets gp ON gp.petEntityId = pe.id
 			JOIN guilds g ON gp.guildId = g.id

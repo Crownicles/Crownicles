@@ -50,6 +50,8 @@ export default {
 	"no-var": "error",
 	"prefer-const": "error",
 	"@typescript-eslint/no-explicit-any": "error",
+	// Warning only, to measure the debt and remove it progressively (#4156)
+	"@typescript-eslint/no-non-null-assertion": "warn",
 	"@typescript-eslint/explicit-module-boundary-types": "off",
 	"@typescript-eslint/explicit-function-return-type": "error",
 	"capitalized-comments": "off",

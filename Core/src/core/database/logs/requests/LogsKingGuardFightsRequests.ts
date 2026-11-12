@@ -6,6 +6,7 @@ import {
 	dateToLogs, getTodayMidnight
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import type { PersonalFightDailySummary } from "../LogsReadRequests";
+import { getModelSequelize } from "../../../../../../Lib/src/database/ModelUtils";
 
 type KingGuardTallyKey = "played" | "won" | "lost" | "draw";
 
@@ -47,7 +48,7 @@ export abstract class LogsKingGuardFightsRequests {
 	 * @param count - The number of fights to look at
 	 */
 	static async getLastGuardIds(playerKeycloakId: string, count: number): Promise<number[]> {
-		const rows = await LogsKingGuardFightsResults.sequelize!.query<{ guardId: number }>(`
+		const rows = await getModelSequelize(LogsKingGuardFightsResults).query<{ guardId: number }>(`
 			SELECT fight.guardId
 			FROM king_guard_fights_results fight
 			INNER JOIN players player ON player.id = fight.playerId
@@ -70,7 +71,7 @@ export abstract class LogsKingGuardFightsRequests {
 	 * @param playerKeycloakId
 	 */
 	static async countRatedFights(playerKeycloakId: string): Promise<number> {
-		const [row] = await LogsKingGuardFightsResults.sequelize!.query<{ count: number | string }>(`
+		const [row] = await getModelSequelize(LogsKingGuardFightsResults).query<{ count: number | string }>(`
 			SELECT COUNT(*) AS count
 			FROM king_guard_fights_results fight
 			INNER JOIN players player ON player.id = fight.playerId
@@ -88,7 +89,7 @@ export abstract class LogsKingGuardFightsRequests {
 	 * @param playerKeycloakId
 	 */
 	static async getDailySummary(playerKeycloakId: string): Promise<PersonalFightDailySummary> {
-		const [summary] = await LogsKingGuardFightsResults.sequelize!.query<Record<keyof PersonalFightDailySummary, number | string | null>>(`
+		const [summary] = await getModelSequelize(LogsKingGuardFightsResults).query<Record<keyof PersonalFightDailySummary, number | string | null>>(`
 			SELECT COUNT(*) AS played,
 			       SUM(guard.winner = 1) AS won,
 			       SUM(guard.winner = 0) AS draw
@@ -115,7 +116,7 @@ export abstract class LogsKingGuardFightsRequests {
 	 * @param playerKeycloakId
 	 */
 	static async getFightTally(playerKeycloakId: string): Promise<KingGuardFightTally> {
-		const [tally] = await LogsKingGuardFightsResults.sequelize!.query<KingGuardTallyRow>(`
+		const [tally] = await getModelSequelize(LogsKingGuardFightsResults).query<KingGuardTallyRow>(`
 			SELECT COUNT(*) AS played,
 			       SUM(fight.winner = :playerWinner) AS won,
 			       SUM(fight.winner = :guardWinner) AS lost,
@@ -144,7 +145,7 @@ export abstract class LogsKingGuardFightsRequests {
 	 * Get every guard of the library each player beat, with the fight in which it first beat it
 	 */
 	static async getVictories(): Promise<KingGuardVictory[]> {
-		const rows = await LogsKingGuardFightsResults.sequelize!.query<Record<keyof KingGuardVictory, number | string>>(`
+		const rows = await getModelSequelize(LogsKingGuardFightsResults).query<Record<keyof KingGuardVictory, number | string>>(`
 			SELECT player.keycloakId,
 			       fight.guardId,
 			       MIN(fight.date) AS firstDate,
