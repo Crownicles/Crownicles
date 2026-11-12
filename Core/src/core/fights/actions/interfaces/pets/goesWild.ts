@@ -9,7 +9,7 @@ import {
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 import { FightUtils } from "../../../../utils/FightUtils";
-import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { PlayerBaseFighter } from "../../../fighter/PlayerBaseFighter";
 import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
@@ -20,8 +20,8 @@ function getAttackInfo(): attackInfo {
 	};
 }
 
-function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
-	const petId = (sender as PlayerFighter).pet!.typeId;
+function getStatsInfo(sender: PlayerBaseFighter, receiver: Fighter): statsInfo {
+	const petId = sender.pet!.typeId;
 	const petData = PetDataController.instance.getById(petId)!;
 	return {
 		attackerStats: [
@@ -40,7 +40,7 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 }
 
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	const force = PetDataController.instance.getById((fighter as PlayerFighter).pet!.typeId)!.force;
+	const force = PetDataController.instance.getById(fighter.pet!.typeId)!.force;
 	const baseTurn = Math.floor(force / 2);
 	if (turn !== baseTurn + 2 && turn !== baseTurn + 3) {
 		return Promise.resolve(null);
