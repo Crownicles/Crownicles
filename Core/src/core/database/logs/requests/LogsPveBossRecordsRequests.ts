@@ -9,6 +9,7 @@ import { LogsPveFightsResults } from "../models/LogsPveFightsResults";
 import {
 	selectPersonalBossRecords
 } from "./LogsPveBossRecordsUtils";
+import { getModelSequelize } from "../../../../../../Lib/src/database/ModelUtils";
 
 const LEADERBOARD_LIMIT = 10;
 const FINAL_BOSS_IDS = Object.values(FightConstants.FINAL_BOSS_MONSTER_IDS);
@@ -56,7 +57,7 @@ function groupFightRows(rows: PveBossFightRow[]): PveBossFightRecord[] {
 }
 
 async function queryBossFightRows(whereClause: string, replacements: Record<string, unknown>): Promise<PveBossFightRow[]> {
-	return await LogsPveFightsResults.sequelize!.query<PveBossFightRow>(`
+	return await getModelSequelize(LogsPveFightsResults).query<PveBossFightRow>(`
 		SELECT pve.id AS fightId,
 		       player.keycloakId AS playerKeycloakId,
 		       pve.monsterId,
@@ -80,7 +81,7 @@ async function queryBossFightRows(whereClause: string, replacements: Record<stri
 }
 
 async function queryBossLeaderboard(monsterId: string, classId: number): Promise<PveBossLeaderboardEntry[]> {
-	return await LogsPveFightsResults.sequelize!.query<PveBossLeaderboardEntry>(`
+	return await getModelSequelize(LogsPveFightsResults).query<PveBossLeaderboardEntry>(`
 		WITH ranked_records AS (
 			SELECT player.keycloakId AS playerKeycloakId,
 			       pve.id AS fightId,

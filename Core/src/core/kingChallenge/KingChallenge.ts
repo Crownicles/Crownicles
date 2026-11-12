@@ -16,6 +16,7 @@ import { getNextWeekDayMidnight } from "../../../../Lib/src/utils/TimeUtils";
 import { DayOfTheWeek } from "../../../../Lib/src/constants/TimeConstants";
 import { bufferUntilCommit } from "../../../../Lib/src/locks/scheduleAfterCommit";
 import { getCurrentTransaction } from "../../../../Lib/src/locks/CLSNamespace";
+import { getModelSequelize } from "../../../../Lib/src/database/ModelUtils";
 
 /**
  * The thresholds only change on the weekly reset, they are computed once and kept until then.
@@ -185,7 +186,7 @@ export async function getWeeklyReferenceScores(): Promise<KingChallengeWeekScore
  */
 export async function startNewKingChallengeWeek(weekScores: KingChallengeWeekScores | null): Promise<void> {
 	try {
-		await Player.sequelize!.transaction(async () => {
+		await getModelSequelize(Player).transaction(async () => {
 			// The players are locked before the reference scores, in the same order as the score gains, so they cannot deadlock
 			await Player.update({
 				weeklyScore: 0,

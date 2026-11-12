@@ -8,6 +8,7 @@ import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogge
 import {
 	LogsPveFightsResults, PVE_FIGHT_WINNER
 } from "../models/LogsPveFightsResults";
+import { getModelSequelize } from "../../../../../../Lib/src/database/ModelUtils";
 
 const FAILED_FIGHT_LEVEL_REDUCTION = 10;
 
@@ -34,7 +35,7 @@ export abstract class LogsPveFightProgressionRequests {
 	}): Promise<number | null> {
 		const classIds = ClassInfoConstants.getClassLineage(params.classId);
 		try {
-			const rows = await LogsPveFightsResults.sequelize!.query<PveMonsterLevelBaseRow>(`
+			const rows = await getModelSequelize(LogsPveFightsResults).query<PveMonsterLevelBaseRow>(`
 				SELECT pve.monsterLevel
 				       - CASE WHEN pve.winner = 1 THEN 0 ELSE :failedFightLevelReduction END AS baseLevel
 				FROM pve_fights_results pve

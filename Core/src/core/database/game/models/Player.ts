@@ -90,6 +90,7 @@ import { buildNewItemSlotData } from "../../../utils/ItemSlotUtils";
 import type { AiPersonality } from "../../../../../../Lib/src/constants/AiPersonalityConstants";
 import { applyKingChallengeProgressUnderLock } from "../../../kingChallenge/KingChallenge";
 import { getInitialPlayerGuardGlory } from "../../../fights/kingGuards/KingGuardRating";
+import { getModelSequelize } from "../../../../../../Lib/src/database/ModelUtils";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -844,7 +845,7 @@ export class Player extends Model {
 		return Math.round(
 			(<{
 				count: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				replacements: {
 					link: this.mapLinkId,
 					linkInverse: oppositeLink.id
@@ -1665,7 +1666,7 @@ export class Players {
 		               FROM (SELECT id, RANK() OVER (ORDER BY ${orderBy} desc, level desc) ranking
 		                     FROM players ${condition}) subquery
 		               WHERE subquery.id = ${playerId}`;
-		return ((await Player.sequelize!.query(query))[0][0] as {
+		return ((await getModelSequelize(Player).query(query))[0][0] as {
 			ranking: number;
 		}).ranking;
 	}
@@ -1679,7 +1680,7 @@ export class Players {
 		               FROM players
 		               WHERE players.${weekOnly ? "weeklyScore" : "score"}
 			                     > ${Constants.MINIMAL_PLAYER_SCORE}`;
-		const queryResult = await Player.sequelize!.query(query);
+		const queryResult = await getModelSequelize(Player).query(query);
 		return (queryResult[0][0] as {
 			nbPlayers: number;
 		}).nbPlayers;
@@ -1693,7 +1694,7 @@ export class Players {
 		               FROM players
 		               WHERE players.fightCountdown
 			                     <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE}`;
-		const queryResult = await Player.sequelize!.query(query);
+		const queryResult = await getModelSequelize(Player).query(query);
 		return (queryResult[0][0] as {
 			nbPlayers: number;
 		}).nbPlayers;
@@ -1768,7 +1769,7 @@ export class Players {
 		                            RANK() OVER (ORDER BY weeklyScore desc, level desc) weeklyRank
 		                     FROM players) subquery
 		               WHERE subquery.rank = :rank`;
-		const res = await Player.sequelize!.query(query, {
+		const res = await getModelSequelize(Player).query(query, {
 			replacements: { rank },
 			type: QueryTypes.SELECT,
 			mapToModel: true,
@@ -1788,7 +1789,7 @@ export class Players {
 		                            RANK() OVER (ORDER BY weeklyScore desc, level desc) weeklyRank
 		                     FROM players) subquery
 		               WHERE subquery.id = :id`;
-		const playerToReturn = (await Player.sequelize!.query<Player>(query, {
+		const playerToReturn = (await getModelSequelize(Player).query<Player>(query, {
 			replacements: { id },
 			type: QueryTypes.SELECT
 		}))[0] as Player;
@@ -1805,7 +1806,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1821,7 +1822,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1836,7 +1837,7 @@ export class Players {
 		               WHERE effectId = "${Effect.NOT_STARTED.id}"`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize!.query(query, {
+		}[]>(await getModelSequelize(Player).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -1850,7 +1851,7 @@ export class Players {
 		               WHERE score > ${Constants.MINIMAL_PLAYER_SCORE}`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize!.query(query, {
+		}[]>(await getModelSequelize(Player).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -1865,7 +1866,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1881,7 +1882,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1896,7 +1897,7 @@ export class Players {
 		               WHERE score > ${Constants.MINIMAL_PLAYER_SCORE}`;
 		return (<{
 			sum: number;
-		}[]>(await Player.sequelize!.query(query, {
+		}[]>(await getModelSequelize(Player).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].sum;
 	}
@@ -1909,7 +1910,7 @@ export class Players {
 		               FROM players`;
 		return (<{
 			max: number;
-		}[]>(await Player.sequelize!.query(query, {
+		}[]>(await getModelSequelize(Player).query(query, {
 			type: QueryTypes.SELECT
 		})))[0].max;
 	}
@@ -1927,7 +1928,7 @@ export class Players {
 		return Math.round(
 			(<{
 				count: number;
-			}[]>(await Player.sequelize!.query(query, {
+			}[]>(await getModelSequelize(Player).query(query, {
 				replacements: { class: classEntity.id },
 				type: QueryTypes.SELECT
 			})))[0].count

@@ -1,15 +1,16 @@
 import {
-	QueryTypes, Sequelize
+	Model, ModelStatic, QueryTypes
 } from "sequelize";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { BossLadder } from "../../../report/PveMonsterLevel";
+import { getModelSequelize } from "../../../../../../Lib/src/database/ModelUtils";
 
 /**
  * Log table of the fights against opponents whose level follows the player progression: the PVE bosses
  */
 export type BossFightsTable = {
 	name: string;
-	model: { sequelize?: Sequelize };
+	model: ModelStatic<Model>;
 	table: string;
 	levelColumn: string;
 	winners: {
@@ -65,11 +66,11 @@ export async function getBossFightsLadder(bossFights: BossFightsTable, playerKey
 	} as const;
 	try {
 		const [[strongestVictory], [lastFight]] = await Promise.all([
-			bossFights.model.sequelize!.query<StrongestVictoryRow>(
+			getModelSequelize(bossFights.model).query<StrongestVictoryRow>(
 				`SELECT MAX(fights.${bossFights.levelColumn}) AS level ${fightsOfPlayer} AND fights.winner = :playerWinner`,
 				options
 			),
-			bossFights.model.sequelize!.query<LastFightRow>(
+			getModelSequelize(bossFights.model).query<LastFightRow>(
 				`SELECT fights.${bossFights.levelColumn} AS level, fights.winner, fights.playerLevel ${fightsOfPlayer} ORDER BY fights.id DESC LIMIT 1`,
 				options
 			)
