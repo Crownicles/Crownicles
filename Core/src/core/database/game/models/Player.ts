@@ -1044,13 +1044,10 @@ export class Player extends Model {
 	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, includePotion = true, level = this.level): number {
 		const maxStats = this.getMaxStatsValue(level);
 		const playerAttack = maxStats.attack;
-		const objectAttack = playerActiveObjects.object.item.getAttack();
 		const attack = playerAttack
 			+ Player.getCappedMainItemStats(playerActiveObjects.weapon, maxStats).attack
 			+ Player.getCappedMainItemStats(playerActiveObjects.armor, maxStats).attack
-			+ (objectAttack / 2 < playerAttack
-				? objectAttack
-				: playerAttack * 2)
+			+ playerActiveObjects.object.item.getCappedStats(maxStats).attack
 			+ (includePotion ? playerActiveObjects.potion.item.getAttack() : 0);
 		return attack > 0 ? Math.round(attack) : 0;
 	}
@@ -1069,9 +1066,7 @@ export class Player extends Model {
 		const defense = playerDefense
 			+ Player.getCappedMainItemStats(playerActiveObjects.weapon, maxStats).defense
 			+ Player.getCappedMainItemStats(playerActiveObjects.armor, maxStats).defense
-			+ (playerActiveObjects.object.item.getDefense() / 2 < playerDefense
-				? playerActiveObjects.object.item.getDefense()
-				: playerDefense * 2)
+			+ playerActiveObjects.object.item.getCappedStats(maxStats).defense
 			+ (includePotion ? playerActiveObjects.potion.item.getDefense() : 0);
 		return defense > 0 ? Math.round(defense) : 0;
 	}
@@ -1088,9 +1083,7 @@ export class Player extends Model {
 		const speed = playerSpeed
 			+ Player.getCappedMainItemStats(playerActiveObjects.weapon, maxStats).speed
 			+ Player.getCappedMainItemStats(playerActiveObjects.armor, maxStats).speed
-			+ (playerActiveObjects.object.item.getSpeed() / 2 < playerSpeed
-				? playerActiveObjects.object.item.getSpeed()
-				: playerSpeed * 2)
+			+ playerActiveObjects.object.item.getCappedStats(maxStats).speed
 			+ (includePotion ? playerActiveObjects.potion.item.getSpeed() : 0);
 		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.SPEED, EnchantmentConstants.SPEED_MULTIPLIER);
 		const enchantedSpeed = Math.round(speed * multiplier);

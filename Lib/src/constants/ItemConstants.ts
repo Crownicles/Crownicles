@@ -135,6 +135,11 @@ export abstract class ItemConstants {
 		"energy"
 	];
 
+	/**
+	 * An object never adds more than this multiple of the class value of the stat it boosts
+	 */
+	static readonly OBJECT_MAX_CLASS_STAT_MULTIPLIER = 2;
+
 	static readonly UPGRADE_LEVEL_STATS_MULTIPLIER = [
 		1,
 		1.05,

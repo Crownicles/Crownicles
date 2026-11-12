@@ -1,11 +1,22 @@
 import {
-	ItemCategory, ItemNature
+	ItemCategory, ItemConstants, ItemNature
 } from "../../../Lib/src/constants/ItemConstants";
 import { ItemDataController } from "./DataController";
 import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
-import { StatValues } from "../../../Lib/src/types/StatValues";
+import {
+	NO_STAT_COMPARISON, StatValues
+} from "../../../Lib/src/types/StatValues";
 import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
+
+/**
+ * Stat boosted by the objects of each fight nature
+ */
+const BOOSTED_STAT_BY_NATURE = new Map<ItemNature, keyof StatValues>([
+	[ItemNature.ATTACK, "attack"],
+	[ItemNature.DEFENSE, "defense"],
+	[ItemNature.SPEED, "speed"]
+]);
 
 export class ObjectItem extends SupportItem {
 	categoryName = "objects";
@@ -18,29 +29,24 @@ export class ObjectItem extends SupportItem {
 		return this.power;
 	}
 
-	public getDisplayPacket(maxStatsValue: StatValues = {
-		attack: Infinity,
-		defense: Infinity,
-		speed: Infinity
-	}): SupportItemDetails {
-		let maxPower: number;
-		switch (this.nature) {
-			case ItemNature.ATTACK:
-				maxPower = maxStatsValue.attack >= this.power / 2 ? this.power : maxStatsValue.attack * 2;
-				break;
-			case ItemNature.DEFENSE:
-				maxPower = maxStatsValue.defense >= this.power / 2 ? this.power : maxStatsValue.defense * 2;
-				break;
-			case ItemNature.SPEED:
-				maxPower = maxStatsValue.speed >= this.power / 2 ? this.power : maxStatsValue.speed * 2;
-				break;
-			default:
-				maxPower = this.power;
-				break;
-		}
+	/**
+	 * Stats the object adds to a player whose class gives maxStats: never more than
+	 * {@link ItemConstants.OBJECT_MAX_CLASS_STAT_MULTIPLIER} times the class value of the stat it boosts
+	 * @param maxStats
+	 */
+	public getCappedStats(maxStats: StatValues): StatValues {
+		return {
+			attack: Math.min(this.getAttack(), maxStats.attack * ItemConstants.OBJECT_MAX_CLASS_STAT_MULTIPLIER),
+			defense: Math.min(this.getDefense(), maxStats.defense * ItemConstants.OBJECT_MAX_CLASS_STAT_MULTIPLIER),
+			speed: Math.min(this.getSpeed(), maxStats.speed * ItemConstants.OBJECT_MAX_CLASS_STAT_MULTIPLIER)
+		};
+	}
+
+	public getDisplayPacket(maxStatsValue: StatValues = NO_STAT_COMPARISON): SupportItemDetails {
+		const boostedStat = BOOSTED_STAT_BY_NATURE.get(this.nature);
 		return {
 			itemCategory: this.getCategory(),
-			maxPower,
+			maxPower: boostedStat ? this.getCappedStats(maxStatsValue)[boostedStat] : this.power,
 			nature: this.nature,
 			power: this.power,
 			rarity: this.rarity,

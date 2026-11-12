@@ -11,6 +11,8 @@ import { PlayerActiveObjects } from '../../../../src/core/database/game/models/P
 import { FightAlterations } from '../../../../src/core/fights/actions/FightAlterations';
 import { EnchantmentConstants } from '../../../../../Lib/src/constants/EnchantmentConstants';
 import { ClassDataController } from '../../../../src/data/Class';
+import { ObjectItem } from '../../../../src/data/ObjectItem';
+import { ItemNature } from '../../../../../Lib/src/constants/ItemConstants';
 
 class TestPlayerBaseFighter extends PlayerBaseFighter {
 	constructor(player: Player) {
@@ -87,7 +89,12 @@ function buildZeroStatActiveObjects(params: {
 			itemEnchantmentId: params.armorEnchantmentId ?? null
 		},
 		potion: { item: zeroStatsItem as PlayerActiveObjects['potion']['item'] },
-		object: { item: zeroStatsItem as PlayerActiveObjects['object']['item'] }
+		object: {
+			item: Object.assign(new ObjectItem(), {
+				nature: ItemNature.NONE,
+				power: 0
+			})
+		}
 	};
 }
 
