@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { getWeekNumber, minutesDisplayIntl, weeksToSeconds } from "../../src/utils/TimeUtils";
+import { afterEach, describe, it, expect, vi } from "vitest";
+import { getNextWeekDayMidnight, getWeekNumber, minutesDisplayIntl, weeksToSeconds } from "../../src/utils/TimeUtils";
+import { DayOfTheWeek } from "../../src/constants/TimeConstants";
 import {LANGUAGE} from "../../src/Language";
 
 
@@ -145,5 +146,29 @@ describe("weeksToSeconds", () => {
 
 	it("should scale linearly", () => {
 		expect(weeksToSeconds(10)).toBe(10 * 604800);
+	});
+});
+
+describe("getNextWeekDayMidnight", () => {
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
+	const endOfDay = (year: number, month: number, day: number): number => new Date(year, month, day, 23, 59, 59, 999).valueOf();
+
+	it("returns the end of the next given day later in the week", () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date(2025, 0, 8, 12)); // Wednesday
+
+		expect(getNextWeekDayMidnight(DayOfTheWeek.SATURDAY)).toBe(endOfDay(2025, 0, 11));
+		expect(getNextWeekDayMidnight(DayOfTheWeek.SUNDAY)).toBe(endOfDay(2025, 0, 12));
+	});
+
+	it("returns the end of today when today is the given day", () => {
+		vi.useFakeTimers();
+		vi.setSystemTime(new Date(2025, 0, 12, 10)); // Sunday
+
+		expect(getNextWeekDayMidnight(DayOfTheWeek.SUNDAY)).toBe(endOfDay(2025, 0, 12));
+		expect(getNextWeekDayMidnight(DayOfTheWeek.SATURDAY)).toBe(endOfDay(2025, 0, 18));
 	});
 });

@@ -4,8 +4,9 @@ import { Maps } from "../maps/Maps";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { SmallEventLeagueRewardPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventLeagueReward";
 import {
-	getNextSaturdayMidnight, todayIsSunday
+	getNextWeekDayMidnight, todayIsSunday
 } from "../../../../Lib/src/utils/TimeUtils";
+import { DayOfTheWeek } from "../../../../Lib/src/constants/TimeConstants";
 import Player from "../database/game/models/Player";
 
 export const smallEventFuncs: SmallEventFuncs = {
@@ -21,7 +22,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			leagueId: league.id,
 			money: league.getMoneyToAward(),
 			xp: league.getXPToAward(),
-			nextRewardDate: getNextSaturdayMidnight(),
+			nextRewardDate: getNextWeekDayMidnight(DayOfTheWeek.SATURDAY),
 			enoughFights: player.fightCountdown <= FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
 		}));
 	}

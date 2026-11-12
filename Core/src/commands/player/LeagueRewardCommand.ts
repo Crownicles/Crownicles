@@ -18,8 +18,9 @@ import {
 } from "../../core/utils/ItemUtils";
 import { crowniclesInstance } from "../../app";
 import {
-	getNextSaturdayMidnight, todayIsSunday
+	getNextWeekDayMidnight, todayIsSunday
 } from "../../../../Lib/src/utils/TimeUtils";
+import { DayOfTheWeek } from "../../../../Lib/src/constants/TimeConstants";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
@@ -34,7 +35,7 @@ export default class LeagueRewardCommand {
 	static async execute(response: CrowniclesPacket[], player: Player, _packet: CommandLeagueRewardPacketReq, context: PacketContext, ignoreDate = false): Promise<void> {
 		if (!ignoreDate && !todayIsSunday()) {
 			response.push(makePacket(CommandLeagueRewardNotSundayPacketRes, {
-				nextSunday: getNextSaturdayMidnight()
+				nextSunday: getNextWeekDayMidnight(DayOfTheWeek.SATURDAY)
 			}));
 			return;
 		}
