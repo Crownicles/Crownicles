@@ -5,7 +5,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import {
@@ -25,7 +25,7 @@ class VeteranFightBehavior implements ClassBehavior {
 	 * @returns The chosen fight action.
 	 */
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerBaseFighter; // AI will never fight monsters
 
 		// Concentration boosts the next attack: spend it on the energetic attack, which also punishes an opponent that has just rested
 		if (shouldUseConcentratedEnergeticAttack(me) || shouldPunishRest(me, opponent)) {
@@ -72,7 +72,7 @@ class VeteranFightBehavior implements ClassBehavior {
 	 * @param opponent - The opponent fighter.
 	 * @returns True if concentration should be used; otherwise, false.
 	 */
-	private shouldUseConcentration(me: AiPlayerFighter, fightView: FightView, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+	private shouldUseConcentration(me: AiPlayerFighter, fightView: FightView, opponent: PlayerBaseFighter): boolean {
 		// Always use concentration on the first turn.
 		if (fightView.fightController.turn === 1) {
 			return true;
@@ -119,7 +119,7 @@ class VeteranFightBehavior implements ClassBehavior {
 	 * @param opponent - The opponent fighter.
 	 * @returns True if a charging attack should be used; otherwise, false.
 	 */
-	private shouldUseChargingAttack(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+	private shouldUseChargingAttack(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 		const chargingBreathCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK);
 		if (me.getBreath() < chargingBreathCost) {
 			return false;
@@ -167,7 +167,7 @@ class VeteranFightBehavior implements ClassBehavior {
 	 * @param opponent - The opponent fighter.
 	 * @returns True if a quick attack should be used; otherwise, false.
 	 */
-	private shouldUseQuickAttack(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+	private shouldUseQuickAttack(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 		if (opponent.getSpeed() < me.getSpeed() * 0.4) {
 			return true;
 		}

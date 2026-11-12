@@ -1,5 +1,5 @@
 import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { RestingKnightFightBehavior } from "./RestingKnightFightBehavior";
 import { canUseGodMove } from "./KnightGodMoves";
@@ -19,11 +19,11 @@ class KnightEnduringFightBehavior extends RestingKnightFightBehavior {
 
 	private readonly benedictionTurn = RandomUtils.rangedInt(LATE_BENEDICTION_TURN);
 
-	protected shouldBless(_me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter, turn: number): boolean {
+	protected shouldBless(_me: AiPlayerFighter, opponent: PlayerBaseFighter, turn: number): boolean {
 		return canUseGodMove(opponent) || turn >= this.benedictionTurn;
 	}
 
-	protected override shouldStall(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): boolean {
+	protected override shouldStall(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 		return me.getEnergy() < 150 && opponent.getEnergy() > 500;
 	}
 }

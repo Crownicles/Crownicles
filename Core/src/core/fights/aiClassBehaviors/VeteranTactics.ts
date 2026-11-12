@@ -1,5 +1,5 @@
 import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { FightActionDataController } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 
@@ -15,7 +15,7 @@ function canAfford(me: AiPlayerFighter, actionId: string): boolean {
  * @param me
  * @param opponent
  */
-export function shouldPunishRest(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): boolean {
+export function shouldPunishRest(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 	return opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
 		&& canAfford(me, FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK);
 }
