@@ -30,14 +30,10 @@ export async function handleStartPveFight(context: PacketContext, packet: Reacti
 		event: i18n.t(`models:pveMapsStory.${data.mapId}.${data.monster.id}`, { lng }),
 		monsterDisplay: i18n.t("commands:report.encounterMonsterStats", {
 			lng,
+			...data.monster,
 			monsterName: i18n.t(`models:monsters.${data.monster.id}.name`, { lng }),
 			emoji: CrowniclesIcons.monsters[data.monster.id],
-			description: i18n.t(`models:monsters.${data.monster.id}.description`, { lng }),
-			level: data.monster.level,
-			energy: data.monster.energy,
-			attack: data.monster.attack,
-			defense: data.monster.defense,
-			speed: data.monster.speed
+			description: i18n.t(`models:monsters.${data.monster.id}.description`, { lng })
 		})
 	});
 

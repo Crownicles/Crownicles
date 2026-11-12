@@ -205,15 +205,7 @@ function buildClassChangeConfirmationEmbed(
 			lng,
 			name: i18n.t("models:classWithStatsFormat", {
 				lng,
-				id: classDetails.id,
-				energy: classDetails.energy,
-				attack: classDetails.attack,
-				defense: classDetails.defense,
-				speed: classDetails.speed,
-				initialBreath: classDetails.initialBreath,
-				maxBreath: classDetails.maxBreath,
-				breathRegen: classDetails.breathRegen,
-				health: classDetails.health
+				...classDetails
 			}),
 			description: i18n.t(`commands:classes.description.${classDetails.id}`, {
 				lng
