@@ -51,6 +51,22 @@ type SendResult<OptionValue> = OptionValue extends InteractionReplyOptions
 
 type Fallback = () => void | Promise<void>;
 
+/**
+ * Message telling the user why the bot could not send what it wanted to
+ */
+type FallbackAlert = {
+	content?: string;
+	embeds?: CrowniclesEmbed[];
+};
+
+/**
+ * Errors due to a development mistake, and not to a weird permission error
+ */
+const DEV_MISTAKE_ERROR_CODES = [
+	DiscordjsErrorCodes.InteractionAlreadyReplied,
+	DiscordjsErrorCodes.InteractionNotReplied
+];
+
 const NO_FALLBACK: Fallback = (): void => {
 	// Nothing to do when the message could not be sent
 };
@@ -388,7 +404,28 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 	}
 
 	/**
-	 * Manage the fallback of both reply and followUp functions
+	 * Alert telling the user why a message could not be sent, in their language
+	 * @param interaction
+	 * @param e - Error raised by the send
+	 */
+	private static getFallbackAlert(interaction: CrowniclesInteraction, e: Error): FallbackAlert {
+		const lng = interaction.userLanguage;
+		if (e?.constructor.name === DiscordjsError.name && DEV_MISTAKE_ERROR_CODES.includes((e as DiscordjsError).code)) {
+			return {
+				embeds: [
+					new CrowniclesEmbed()
+						.formatAuthor(i18n.t("error:errorOccurredTitle", { lng }), interaction.user)
+						.setDescription(i18n.t("error:aDevMessedUp", { lng }))
+						.setErrorColor()
+				]
+			};
+		}
+		return { content: i18n.t("bot:noSpeakPermission", { lng }) };
+	}
+
+	/**
+	 * Alert the user that a message could not be sent: through the interaction, else in the channel, else in direct
+	 * messages. Each way is tried once, so that an alert delivered nowhere ends instead of being retried forever
 	 */
 	private async manageFallback<OptionType>(
 		functionPrototype: ReplyFunctionLike<OptionType>,
@@ -404,50 +441,29 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 			return;
 		}
 
-		// Error codes due to a development mistake, and not because of a weird permission error
-		const manageFallbackDevErrorCodes = [
-			DiscordjsErrorCodes.InteractionAlreadyReplied,
-			DiscordjsErrorCodes.InteractionNotReplied
-		];
-
-		let toSendProp: {
-			content?: string; embeds?: CrowniclesEmbed[];
-		};
-		const lng = this.userLanguage;
-		if (e?.constructor.name === DiscordjsError.name && manageFallbackDevErrorCodes.includes((e as DiscordjsError).code)) {
-			toSendProp = {
-				embeds: [
-					new CrowniclesEmbed()
-						.formatAuthor(i18n.t("error:errorOccurredTitle", { lng }), this.user)
-						.setDescription(i18n.t("error:aDevMessedUp", { lng }))
-						.setErrorColor()
-				]
-			};
-		}
-		else {
-			toSendProp = { content: i18n.t("bot:noSpeakPermission", { lng }) };
-		}
+		const alert = CrowniclesInteraction.getFallbackAlert(this, e);
 		try {
 			// @ts-expect-error - We consider that the functionPrototype is a function that can be called with these parameters (i.e, accepts a InteractionReplyOptions)
 			await functionPrototype.call(this, {
 				flags: MessageFlags.Ephemeral,
-				...toSendProp
+				...alert
 			});
+			return;
 		}
 		catch {
-			// Try again to manage fallback with the send function
-			if (functionPrototype !== CrowniclesChannel.prototype.send) {
-				await CrowniclesInteraction.prototype.manageFallback.bind(this)(BaseGuildTextChannel.prototype.send.bind(this.channel), e);
-				return;
-			}
+			// The interaction refuses the alert as well
+		}
 
-			// We can't send ephemeral message, so we send the message in DM
-			try {
-				await CommandInteraction.prototype.user.send.bind(this.user)({ ...toSendProp });
-			}
-			catch (e) {
-				CrowniclesLogger.errorWithObj(`Unable to alert user of no speak permission : c:${this.channel?.id} / u:${this.user?.id}`, e);
-			}
+		// The channel is null when it is not cached
+		if (this.channel && await CrowniclesChannel.prototype.send.call(this.channel, alert)) {
+			return;
+		}
+
+		try {
+			await this.user.send(alert);
+		}
+		catch (dmError) {
+			CrowniclesLogger.errorWithObj(`Unable to alert user of no speak permission : c:${this.channel?.id} / u:${this.user?.id}`, dmError);
 		}
 	}
 }

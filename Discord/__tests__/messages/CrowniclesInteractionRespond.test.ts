@@ -10,6 +10,13 @@ import {
 } from "../../src/messages/CrowniclesInteraction";
 import { LANGUAGE } from "../../../Lib/src/Language";
 
+vi.mock("../../../Lib/src/logs/CrowniclesLogger", () => ({
+	CrowniclesLogger: {
+		error: vi.fn(),
+		errorWithObj: vi.fn()
+	}
+}));
+
 const sentMessage = { id: "sent-message-id" } as Message;
 const content = { content: "Core's response" };
 
@@ -18,11 +25,16 @@ const content = { content: "Core's response" };
  */
 function castInteraction(state: {
 	deferred: boolean; replied: boolean;
-}): CrowniclesInteraction {
+}, overrides: {
+	channel?: BaseGuildTextChannel | null;
+	user?: { send: () => Promise<unknown> };
+} = {}): CrowniclesInteraction {
 	return CrowniclesInteraction.cast({
 		...state,
 		channel: Object.create(BaseGuildTextChannel.prototype),
-		isCommand: (): boolean => false
+		user: { send: vi.fn().mockResolvedValue(sentMessage) },
+		isCommand: (): boolean => false,
+		...overrides
 	} as never, LANGUAGE.FRENCH);
 }
 
@@ -101,5 +113,40 @@ describe("CrowniclesInteraction.respond (#2730)", () => {
 			withResponse: true
 		});
 		expect(CommandInteraction.prototype.editReply).toHaveBeenCalledWith(content);
+	});
+});
+
+describe("CrowniclesInteraction send fallback", () => {
+	beforeEach(() => {
+		vi.spyOn(CommandInteraction.prototype, "followUp").mockRejectedValue(new Error("Missing Access"));
+		vi.spyOn(BaseGuildTextChannel.prototype, "send").mockRejectedValue(new Error("Missing Permissions"));
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("alerts the user once through the interaction, once in the channel, then in direct messages, and gives up", async () => {
+		const user = { send: vi.fn().mockRejectedValue(new Error("Cannot send messages to this user")) };
+		const interaction = castInteraction({
+			deferred: true, replied: true
+		}, { user });
+
+		expect(await interaction.respond(content)).toBeNull();
+		expect(CommandInteraction.prototype.followUp).toHaveBeenCalledTimes(2);
+		expect(BaseGuildTextChannel.prototype.send).toHaveBeenCalledOnce();
+		expect(user.send).toHaveBeenCalledOnce();
+	});
+
+	it("alerts the user in direct messages when the channel of the interaction is not cached", async () => {
+		const user = { send: vi.fn().mockResolvedValue(sentMessage) };
+		const interaction = castInteraction({
+			deferred: true, replied: true
+		}, {
+			channel: null, user
+		});
+
+		expect(await interaction.respond(content)).toBeNull();
+		expect(user.send).toHaveBeenCalledOnce();
 	});
 });
