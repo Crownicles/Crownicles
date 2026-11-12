@@ -20,8 +20,6 @@ const typeHasDecorator = new Map<string, boolean>();
 const backToFrontPackets = new Array<string>();
 const frontToBackPackets = new Array<string>();
 const nonePackets = new Array<string>();
-const coreImplementedPackets = new Array<string>();
-const discordImplementedPackets = new Array<string>();
 
 type TypeExpression = {
 	expression?: TypeExpression;
@@ -30,29 +28,31 @@ type TypeExpression = {
 	arguments: TypeExpression[];
 };
 
+const packetsByDirection = new Map<string, string[]>([
+	["BACK_TO_FRONT", backToFrontPackets],
+	["FRONT_TO_BACK", frontToBackPackets]
+]);
+
+/**
+ * Direction given to the sendablePacket decorator of a class, null when the class has no such decorator
+ */
+function getSendablePacketDirection(node: import("typescript").ClassDeclaration): string | null {
+	const decorator = node.modifiers?.find(modifier => (modifier as unknown as TypeExpression)?.expression?.expression?.escapedText === "sendablePacket");
+	return decorator ? (decorator as unknown as TypeExpression).expression?.arguments[0].name.escapedText ?? "" : null;
+}
+
 function checkForDecorators(filePath: string): void {
 	const sourceCode = fs.readFileSync(filePath, "utf8");
 	const sourceFile = ts!.createSourceFile(filePath, sourceCode, ts!.ScriptTarget.ESNext, true);
 
 	function visit(node: import("typescript").Node): void {
 		if (ts!.isClassDeclaration(node) && node.heritageClauses) {
-			parentTypes.set(node.name!.escapedText.toString(), (node.heritageClauses[0].types[0].expression as unknown as TypeExpression).escapedText);
-			if (node.modifiers && node.modifiers.length > 0 && node.modifiers.some(modifier => (modifier as unknown as TypeExpression)?.expression?.expression?.escapedText === "sendablePacket")) {
-				typeHasDecorator.set(node.name!.escapedText.toString(), true);
-				const modifier = node.modifiers[0] as unknown as TypeExpression;
-				const directionName = modifier?.expression?.arguments[0].name.escapedText ?? "";
-				if (directionName === "BACK_TO_FRONT") {
-					backToFrontPackets.push(node.name!.escapedText.toString());
-				}
-				else if (directionName === "FRONT_TO_BACK") {
-					frontToBackPackets.push(node.name!.escapedText.toString());
-				}
-				else {
-					nonePackets.push(node.name!.escapedText.toString());
-				}
-			}
-			else {
-				typeHasDecorator.set(node.name!.escapedText.toString(), false);
+			const className = node.name!.escapedText.toString();
+			parentTypes.set(className, (node.heritageClauses[0].types[0].expression as unknown as TypeExpression).escapedText);
+			const direction = getSendablePacketDirection(node);
+			typeHasDecorator.set(className, direction !== null);
+			if (direction !== null) {
+				(packetsByDirection.get(direction) ?? nonePackets).push(className);
 			}
 		}
 		ts!.forEachChild(node, visit);
@@ -103,82 +103,90 @@ function isCrowniclesPacket(packetName: string): boolean {
 	return packetName === "CrowniclesPacket";
 }
 
-// Development-only validation: only run if source folders exist (not in production Docker)
-if (isDevEnvironment) {
-	// Dynamically import typescript only in dev environment
-	ts = require("typescript");
+/**
+ * Log an error for each packet of the list
+ * @param packets - Packets in error
+ * @param message - Error logged before the name of each packet
+ * @returns whether there was any packet in error
+ */
+function reportPacketsInError(packets: string[], message: string): boolean {
+	for (const packet of packets) {
+		console.error(`${message}: ${packet}`);
+	}
+	return packets.length > 0;
+}
 
+function verifyPacketsDecorators(): void {
 	walkDirectory(folderPath, checkForDecorators);
-
-	let error = false;
 	console.log("Verifying packets decorators...");
 
-	for (const packet of parentTypes.keys()) {
-		if (isCrowniclesPacket(packet) && !typeHasDecorator.get(packet)) {
-			console.error(`Packet decorator missing on packet: ${packet}`);
-			error = true;
-		}
-	}
-
-	if (error) {
+	const packetsWithoutDecorator = [...parentTypes.keys()].filter(packet => isCrowniclesPacket(packet) && !typeHasDecorator.get(packet));
+	if (reportPacketsInError(packetsWithoutDecorator, "Packet decorator missing on packet")) {
 		process.exit(1);
 	}
 
 	console.log("All packets decorators OK");
+}
+
+type PacketsDirection = {
+	name: string;
+	packets: string[];
+};
+
+/**
+ * Verify that the handlers of a service handle exactly the packets of its direction
+ * @param service - Name of the service in the logs
+ * @param handlersPath - Directory containing the TypeScript files of the handlers
+ * @param direction - Direction of the packets the service receives
+ */
+function verifyPacketsHandlers(service: string, handlersPath: string, direction: PacketsDirection): void {
+	const implementedPackets = new Array<string>();
+	walkDirectory(handlersPath, fullPath => checkForPacketHandlers(fullPath, implementedPackets));
+	console.log(`Verifying ${service} packets handlers...`);
+
+	const missingHandlers = reportPacketsInError(
+		direction.packets.filter(packet => !implementedPackets.includes(packet)),
+		"No handler found for packet"
+	);
+	const unexpectedHandlers = reportPacketsInError(
+		implementedPackets.filter(packet => !direction.packets.includes(packet)),
+		`Handler found for a packet not ${direction.name}`
+	);
+	if (missingHandlers || unexpectedHandlers) {
+		process.exit(1);
+	}
+
+	console.log(`All ${service} packets handlers OK`);
+}
+
+async function verifyPackets(): Promise<void> {
+	// Dynamically import typescript only in dev environment
+	ts = await import("typescript");
+
+	verifyPacketsDecorators();
 
 	// Verify core if path exists
 	if (existsSync(corePath)) {
-		walkDirectory(corePath, fullPath => checkForPacketHandlers(fullPath, coreImplementedPackets));
-
-		error = false;
-		console.log("Verifying core packets handlers...");
-
-		for (const packet of frontToBackPackets) {
-			if (!coreImplementedPackets.includes(packet)) {
-				console.error(`No handler found for packet: ${packet}`);
-				error = true;
-			}
-		}
-
-		for (const packet of coreImplementedPackets) {
-			if (!frontToBackPackets.includes(packet)) {
-				console.error(`Handler found for a packet not FRONT_TO_BACK: ${packet}`);
-				error = true;
-			}
-		}
-
-		if (error) {
-			process.exit(1);
-		}
-
-		console.log("All core packets handlers OK");
+		verifyPacketsHandlers("core", corePath, {
+			name: "FRONT_TO_BACK",
+			packets: frontToBackPackets
+		});
 	}
 
 	// Verify discord if path exists
 	if (existsSync(discordPath)) {
-		walkDirectory(discordPath, fullPath => checkForPacketHandlers(fullPath, discordImplementedPackets));
-
-		error = false;
-		console.log("Verifying discord packets handlers...");
-
-		for (const packet of backToFrontPackets) {
-			if (!discordImplementedPackets.includes(packet)) {
-				console.error(`No handler found for packet: ${packet}`);
-				error = true;
-			}
-		}
-
-		for (const packet of discordImplementedPackets) {
-			if (!backToFrontPackets.includes(packet)) {
-				console.error(`Handler found for a packet not BACK_TO_FRONT: ${packet}`);
-				error = true;
-			}
-		}
-
-		if (error) {
-			process.exit(1);
-		}
-
-		console.log("All discord packets handlers OK");
+		verifyPacketsHandlers("discord", discordPath, {
+			name: "BACK_TO_FRONT",
+			packets: backToFrontPackets
+		});
 	}
+}
+
+// Development-only validation: only run if source folders exist (not in production Docker)
+if (isDevEnvironment) {
+	verifyPackets()
+		.catch((error: unknown) => {
+			console.error("Error while verifying the packets", error);
+			process.exit(1);
+		});
 }

@@ -1,8 +1,8 @@
 import {
 	describe, expect, it
 } from "vitest";
-import chargingAttack = require("../../../resources/fightActions/chargingAttack.json");
-import chargeChargingAttack = require("../../../resources/fightActions/chargeChargingAttack.json");
+import chargingAttack from "../../../resources/fightActions/chargingAttack.json";
+import chargeChargingAttack from "../../../resources/fightActions/chargeChargingAttack.json";
 import { FightActionType } from "../../../../Lib/src/types/FightActionType";
 
 describe("charged attack action types", () => {

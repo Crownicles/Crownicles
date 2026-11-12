@@ -2,9 +2,9 @@ import { DataControllerString } from "./DataController";
 import { Data } from "./Data";
 import { FightActionType } from "../../../Lib/src/types/FightActionType";
 import { Fighter } from "../core/fights/fighter/Fighter";
-import { readdirSync } from "fs";
 import { FightController } from "../core/fights/FightController";
 import { FightActionResult } from "../../../Lib/src/types/FightActionResult";
+import { importCompiledFolderExports } from "../core/utils/DynamicImportUtils";
 
 export class FightAction extends Data<string> {
 	public readonly breath!: number;
@@ -78,6 +78,14 @@ export class FightAction extends Data<string> {
 
 export type FightActionFunc = (sender: Fighter, receiver: Fighter, fightAction: FightAction, turn: number, fight: FightController) => FightActionResult;
 
+type FightActionModule = {
+	default: FightActionFunc;
+};
+
+function importFightActionsFunctions(folder: string): Promise<Map<string, FightActionFunc>> {
+	return importCompiledFolderExports(folder, (fightActionModule: FightActionModule) => fightActionModule.default);
+}
+
 
 export class FightActionDataController extends DataControllerString<FightAction> {
 	static readonly instance: FightActionDataController = new FightActionDataController("fightActions");
@@ -92,25 +100,15 @@ export class FightActionDataController extends DataControllerString<FightAction>
 		throw new Error(`FightAction with id ${id} not found`);
 	}
 
-	public static getFightActionFunction(id: string): FightActionFunc | undefined {
-		if (!FightActionDataController.fightActionsFunctionsCache) {
-			FightActionDataController.fightActionsFunctionsCache = new Map<string, FightActionFunc>();
-			FightActionDataController.loadFightActionsFromFolder("dist/Core/src/core/fights/actions/interfaces/players", "../core/fights/actions/interfaces/players");
-			FightActionDataController.loadFightActionsFromFolder("dist/Core/src/core/fights/actions/interfaces/monsters", "../core/fights/actions/interfaces/monsters");
-		}
-
-		return FightActionDataController.fightActionsFunctionsCache.get(id);
+	public static async loadFightActionsFunctions(): Promise<void> {
+		FightActionDataController.fightActionsFunctionsCache = new Map([
+			...await importFightActionsFunctions("core/fights/actions/interfaces/players"),
+			...await importFightActionsFunctions("core/fights/actions/interfaces/monsters")
+		]);
 	}
 
-	private static loadFightActionsFromFolder(path: string, relativePath: string): void {
-		const files = readdirSync(path);
-		for (const file of files) {
-			if (file.endsWith(".js")) {
-				const defaultFunc = require(`${relativePath}/${file.substring(0, file.length - 3)}`).default;
-				const fightActionName = file.substring(0, file.length - 3);
-				FightActionDataController.fightActionsFunctionsCache.set(fightActionName, defaultFunc);
-			}
-		}
+	public static getFightActionFunction(id: string): FightActionFunc | undefined {
+		return FightActionDataController.fightActionsFunctionsCache.get(id);
 	}
 
 	newInstance(): FightAction {

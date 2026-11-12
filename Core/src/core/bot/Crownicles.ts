@@ -40,6 +40,7 @@ import { insertMissingKingGuards } from "../fights/kingGuards/KingGuardMatchmaki
 import {
 	PERIODIC_LOOPS, startResilientLoop
 } from "./ResilientLoop";
+import { loadDiscoveredModules } from "./DiscoveredModules";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -169,6 +170,7 @@ export class Crownicles {
 	async init(): Promise<void> {
 		CrowniclesCoreWebServer.start();
 		await registerAllPacketHandlers();
+		await loadDiscoveredModules();
 		initializeAllClassBehaviors();
 		initializeAllPetBehaviors();
 		await this.gameDatabase.init(true);

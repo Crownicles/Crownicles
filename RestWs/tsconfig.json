@@ -8,6 +8,7 @@
 		"allowJs": true,
 		"outDir": "dist",
 		"checkJs": false,
+		"esModuleInterop": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"incremental": true,

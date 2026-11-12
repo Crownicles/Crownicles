@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readdirSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 
 describe('Pet powers veterinarian descriptions', () => {
@@ -12,7 +12,7 @@ describe('Pet powers veterinarian descriptions', () => {
 
 		// Load French translations for veterinarian comments
 		const frTranslationsPath = resolve(__dirname, '../../../../Lang/fr/commands.json');
-		const frTranslations = JSON.parse(require('fs').readFileSync(frTranslationsPath, 'utf8'));
+		const frTranslations = JSON.parse(readFileSync(frTranslationsPath, 'utf8'));
 		const vetComments = frTranslations.shop?.shopItems?.lovePointsValue?.commentOnFightEffect || {};
 
 		// Check each pet action has a description
@@ -39,7 +39,7 @@ describe('Pet powers veterinarian descriptions', () => {
 	it('should have valid format for all veterinarian descriptions', () => {
 		// Load French translations
 		const frTranslationsPath = resolve(__dirname, '../../../../Lang/fr/commands.json');
-		const frTranslations = JSON.parse(require('fs').readFileSync(frTranslationsPath, 'utf8'));
+		const frTranslations = JSON.parse(readFileSync(frTranslationsPath, 'utf8'));
 		const vetComments = frTranslations.shop?.shopItems?.lovePointsValue?.commentOnFightEffect || {};
 
 		// Check that each description is a non-empty string or array of strings
@@ -73,7 +73,7 @@ describe('Pet powers veterinarian descriptions', () => {
 
 		// Load French translations
 		const frTranslationsPath = resolve(__dirname, '../../../../Lang/fr/commands.json');
-		const frTranslations = JSON.parse(require('fs').readFileSync(frTranslationsPath, 'utf8'));
+		const frTranslations = JSON.parse(readFileSync(frTranslationsPath, 'utf8'));
 		const vetComments = frTranslations.shop?.shopItems?.lovePointsValue?.commentOnFightEffect || {};
 
 		// Find descriptions that don't have a corresponding action file

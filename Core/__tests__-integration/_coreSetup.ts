@@ -211,6 +211,11 @@ async function setupCoreForTestsImpl(suiteName: string): Promise<CoreTestEnviron
 	}>("app");
 	distApp.setCrowniclesInstanceForTests(testInstance);
 
+	// Like the start of the bot: the small events, fight actions and mission interfaces are imported before being read
+	await loadProductionModule<{
+		loadDiscoveredModules: () => Promise<void>;
+	}>("core/bot/DiscoveredModules").loadDiscoveredModules();
+
 	let toreDown = false;
 	return {
 		crownicles: testInstance,
