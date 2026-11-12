@@ -34,9 +34,8 @@ import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/intera
 import { EnchantmentTransferSource } from "../../../Lib/src/types/EnchantmentTransfer";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
 import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
-import {
-	BlacksmithMenuParams, getBlacksmithMenus
-} from "../../src/commands/player/report/blacksmith/BlacksmithMenu";
+import { getBlacksmithMenus } from "../../src/commands/player/report/blacksmith/BlacksmithMenu";
+import { CityMenuParams } from "../../src/commands/player/report/ReportCityMenuTypes";
 import { BlacksmithMenuIds } from "../../src/commands/player/report/blacksmith/BlacksmithMenuConstants";
 import { CrowniclesNestedMenu } from "../../src/messages/CrowniclesNestedMenus";
 
@@ -101,7 +100,7 @@ function createPacket(): ReactionCollectorCreationPacket {
 	} as unknown as ReactionCollectorCreationPacket;
 }
 
-function createMenuParams(packet: ReactionCollectorCreationPacket): BlacksmithMenuParams {
+function createMenuParams(packet: ReactionCollectorCreationPacket): CityMenuParams {
 	return {
 		context: {
 			keycloakId: "keycloak-id",

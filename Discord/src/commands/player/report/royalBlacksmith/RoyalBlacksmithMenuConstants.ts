@@ -17,7 +17,7 @@ export const RoyalBlacksmithMenuIds = {
 	/** Back to upgrade items list */
 	BACK_TO_UPGRADE_LIST: "ROYAL_BLACKSMITH_BACK_TO_LIST",
 
-	/** Prefix for an item selection button. Followed by slot_category. */
+	/** Prefix for an item selection button, followed by the index of the item */
 	UPGRADE_ITEM_PREFIX: "ROYAL_UPGRADE_ITEM_",
 
 	/** Confirm upgrade on the item detail screen */
