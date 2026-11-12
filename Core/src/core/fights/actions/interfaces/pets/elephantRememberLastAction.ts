@@ -3,33 +3,29 @@ import {
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import { PlayerBaseFighter } from "../../../fighter/PlayerBaseFighter";
-import { PetEntities } from "../../../../database/game/models/PetEntity";
 import { PetConstants } from "../../../../../../../Lib/src/constants/PetConstants";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightActionController } from "../../FightActionController";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 
-const use: PetAssistanceFunc = async (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
+const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Does nothing first turn.
 	if (turn <= 2) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	// 85 % of the time, nothing happens
 	if (RandomUtils.crowniclesRandom.bool(0.85)) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 
-	if (opponent instanceof PlayerBaseFighter) {
-		// Test if the opponent has a mouse
-		const pet = await PetEntities.getById(opponent.player.petId);
-		if (pet?.typeId === PetConstants.PETS.MOUSE) {
-			return {
-				assistanceStatus: PetAssistanceState.AFRAID
-			};
-		}
+	// The elephant is afraid of a mouse taking part in the fight
+	if (opponent instanceof PlayerBaseFighter && opponent.pet?.typeId === PetConstants.PETS.MOUSE) {
+		return Promise.resolve({
+			assistanceStatus: PetAssistanceState.AFRAID
+		});
 	}
 
 	const lastAction = fighter.getLastFightActionUsed();
