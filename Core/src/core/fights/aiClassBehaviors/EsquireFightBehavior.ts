@@ -5,8 +5,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { PlayerFighter } from "../fighter/PlayerFighter";
-import { MonsterFighter } from "../fighter/MonsterFighter";
+import { Fighter } from "../fighter/Fighter";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 
 class EsquireFightBehavior implements ClassBehavior {
@@ -46,7 +45,7 @@ class EsquireFightBehavior implements ClassBehavior {
  * @param opponent
  * @param restCount
  */
-export function simpleOrQuickAttack(me: AiPlayerFighter, opponent: PlayerFighter | MonsterFighter | AiPlayerFighter, restCount = 0): FightAction {
+export function simpleOrQuickAttack(me: AiPlayerFighter, opponent: Fighter, restCount = 0): FightAction {
 	// Other attacks based on speed comparison
 	const mySpeed = me.getSpeed();
 	const opponentSpeed = opponent.getSpeed();
