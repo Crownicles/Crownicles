@@ -1,71 +1,31 @@
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonInteraction,
-	ButtonStyle,
-	ContainerBuilder,
-	MessageComponentInteraction,
-	SeparatorBuilder,
-	SeparatorSpacingSize,
-	TextDisplayBuilder
-} from "discord.js";
-import {
-	CrowniclesNestedMenu,
-	CrowniclesNestedMenuCollector,
-	CrowniclesNestedMenuCollectorFactory
-} from "../../../../messages/CrowniclesNestedMenus";
+import { CrowniclesNestedMenu } from "../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../translations/i18n";
-import { StringUtils } from "../../../../utils/StringUtils";
-import { DisplayUtils } from "../../../../utils/DisplayUtils";
-import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
-import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	ReactionCollectorBlacksmithUpgradeReaction,
 	ReactionCollectorCityData
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
-import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
-import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 import { BlacksmithMenuIds } from "./BlacksmithMenuConstants";
-import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
+import { CityMenuParams } from "../ReportCityMenuTypes";
 import {
-	addCitySection, createStayInCityButton, handleStayInCityInteraction
-} from "../ReportCityMenu";
-import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+	addCityNavigationRow, addSeparatedCitySection, buildCityMenuContainer, createCityBackButton
+} from "../CityMenuLayout";
+import { createCityMenuCollector } from "../CityMenuCollector";
 import { buildUpgradeDetailDescription } from "./BlacksmithUpgradeDetailHelper";
+import {
+	BlacksmithUpgradeFlow, registerBlacksmithUpgradeMenus
+} from "./BlacksmithUpgradeMenus";
 import { registerEnchantmentTransferMenus } from "./BlacksmithEnchantmentTransferMenu";
 
-export interface BlacksmithMenuParams {
-	context: PacketContext;
-	interaction: CrowniclesInteraction;
-	packet: ReactionCollectorCreationPacket;
-	collectorTime: number;
-	pseudo: string;
-}
+type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
 
-type BlacksmithUpgradeableItem = NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"][number];
-
-/**
- * Type guard to check if a reaction is a blacksmith upgrade reaction
- */
-function isBlacksmithUpgradeReaction(reaction: {
-	type: string; data: unknown;
-}): reaction is {
-	type: string; data: ReactionCollectorBlacksmithUpgradeReaction;
-} {
-	if (reaction.type !== ReactionCollectorBlacksmithUpgradeReaction.name) {
-		return false;
-	}
-	const data = reaction.data as Record<string, unknown>;
-	return typeof data.slot === "number" && typeof data.itemCategory === "number" && typeof data.buyMaterials === "boolean";
-}
+type BlacksmithUpgradeableItem = BlacksmithData["upgradeableItems"][number];
 
 /**
  * Get the translation key for the blacksmith menu description based on available services
  */
-function getDescriptionKeyBlacksmithMenu(blacksmith: NonNullable<ReactionCollectorCityData["blacksmith"]>): string {
+function getDescriptionKeyBlacksmithMenu(blacksmith: BlacksmithData): string {
 	const hasUpgrades = blacksmith.upgradeableItems.length > 0;
 	const hasTransfers = blacksmith.enchantmentTransfers.length > 0;
 
@@ -82,78 +42,17 @@ function getDescriptionKeyBlacksmithMenu(blacksmith: NonNullable<ReactionCollect
 }
 
 /**
- * Build the collector factory for the main blacksmith menu: routes to the
- * upgrade / enchantment transfer sub-menus and the back/stay shortcuts.
+ * Get the main blacksmith menu, leading to the upgrade and enchantment transfer menus
  */
-function createBlacksmithMainCollector(params: BlacksmithMenuParams): CrowniclesNestedMenuCollectorFactory {
-	const {
-		context, interaction, packet, collectorTime
-	} = params;
-	const lng = interaction.userLanguage;
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({
-			time: collectorTime
-		});
+function getBlacksmithMenu(params: CityMenuParams, blacksmith: BlacksmithData): CrowniclesNestedMenu {
+	const lng = params.interaction.userLanguage;
+	const container = buildCityMenuContainer(params, {
+		titleKey: "commands:report.city.blacksmith.title",
+		description: i18n.t(getDescriptionKeyBlacksmithMenu(blacksmith), { lng })
+	});
 
-		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			await DiscordCollectorUtils.deferUpdate(buttonInteraction);
-			const selectedValue = buttonInteraction.customId;
-
-			if (selectedValue === BlacksmithMenuIds.UPGRADE_MENU) {
-				await nestedMenus.changeMenu(BlacksmithMenuIds.UPGRADE_MENU);
-			}
-			else if (selectedValue === BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU) {
-				await nestedMenus.changeMenu(BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU);
-			}
-			else if (selectedValue === BlacksmithMenuIds.BACK_TO_CITY) {
-				await nestedMenus.changeToMainMenu();
-			}
-			else if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-			}
-		});
-
-		return collector;
-	};
-}
-
-/**
- * Get the main blacksmith menu
- */
-export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNestedMenu {
-	const {
-		interaction, packet, pseudo
-	} = params;
-	const data = packet.data.data as ReactionCollectorCityData;
-	const lng = interaction.userLanguage;
-	const blacksmith = data.blacksmith!;
-
-	const container = new ContainerBuilder();
-
-	// Title
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.title", {
-				lng, pseudo
-			}))
-		)
-	);
-
-	// Build description based on available services
-	const descriptionKey = getDescriptionKeyBlacksmithMenu(blacksmith);
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(i18n.t(descriptionKey, { lng }))
-	);
-
-	// Add upgrade option if there are upgradeable items
 	if (blacksmith.upgradeableItems.length > 0) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection({
+		addSeparatedCitySection({
 			container,
 			emote: CrowniclesIcons.city.blacksmith.upgrade,
 			title: i18n.t("commands:report.city.blacksmith.upgradeLabel", { lng }),
@@ -164,8 +63,7 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 	}
 
 	if (blacksmith.enchantmentTransfers.length > 0) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection({
+		addSeparatedCitySection({
 			container,
 			emote: CrowniclesIcons.city.blacksmith.enchantmentTransfer,
 			title: i18n.t("commands:report.city.blacksmith.enchantmentTransferLabel", { lng }),
@@ -175,144 +73,24 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 		});
 	}
 
-	// Back to city + Stay in city buttons
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(
-			new ButtonBuilder()
-				.setCustomId(BlacksmithMenuIds.BACK_TO_CITY)
-				.setLabel(i18n.t("commands:report.city.blacksmith.backToCity", { lng }))
-				.setEmoji(CrowniclesIcons.city.exit)
-				.setStyle(ButtonStyle.Secondary),
-			createStayInCityButton(lng)
-		)
-	);
+	addCityNavigationRow(container, lng, [createCityBackButton(BlacksmithMenuIds.BACK_TO_CITY, i18n.t("commands:report.city.blacksmith.backToCity", { lng }), CrowniclesIcons.city.exit)]);
 
 	return {
 		containers: [container],
-		createCollector: createBlacksmithMainCollector(params)
-	};
-}
-
-/**
- * Build the collector factory for the upgrade item list: routes back to the
- * blacksmith, opens an item detail menu or the stay shortcut.
- */
-function createBlacksmithUpgradeListCollector(params: BlacksmithMenuParams): CrowniclesNestedMenuCollectorFactory {
-	const {
-		context, interaction, packet, collectorTime
-	} = params;
-	const lng = interaction.userLanguage;
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({
-			time: collectorTime
-		});
-
-		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			await DiscordCollectorUtils.deferUpdate(buttonInteraction);
-			const selectedValue = buttonInteraction.customId;
-
-			if (selectedValue === BlacksmithMenuIds.BACK_TO_BLACKSMITH) {
-				await nestedMenus.changeMenu(BlacksmithMenuIds.BLACKSMITH_MENU);
-			}
-			else if (selectedValue.startsWith(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX)) {
-				const itemIndex = Number.parseInt(selectedValue.slice(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX.length), 10);
-				if (!Number.isNaN(itemIndex)) {
-					await nestedMenus.changeMenu(`${BlacksmithMenuIds.UPGRADE_MENU}_DETAIL_${itemIndex}`);
-				}
-			}
-			else if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-			}
-		});
-
-		return collector;
-	};
-}
-
-/**
- * Get the blacksmith upgrade item selection menu
- */
-export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): CrowniclesNestedMenu {
-	const {
-		interaction, packet, pseudo
-	} = params;
-	const data = packet.data.data as ReactionCollectorCityData;
-	const lng = interaction.userLanguage;
-	const blacksmith = data.blacksmith!;
-
-	const container = new ContainerBuilder();
-
-	// Title
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.upgradeTitle", {
-				lng, pseudo
-			}))
-		)
-	);
-
-	// Description with player money
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.blacksmith.upgradeSelectDescription", {
-				lng,
-				money: blacksmith.playerMoney
-			})
-		)
-	);
-
-	// Add each upgradeable item as a section
-	for (let i = 0; i < blacksmith.upgradeableItems.length; i++) {
-		const item = blacksmith.upgradeableItems[i];
-		const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
-
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection({
-			container,
-			text: `${itemDisplay}\n${i18n.t("commands:report.city.blacksmith.itemUpgradePreview", {
-				lng,
-				currentLevel: item.details.itemLevel ?? 0,
-				nextLevel: item.nextLevel,
-				cost: item.upgradeCost
-			})}`,
-			customId: `${BlacksmithMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
-			buttonLabel: i18n.t("commands:report.city.buttons.upgrade", { lng }),
-			emoji: CrowniclesIcons.city.blacksmith.upgrade
-		});
-	}
-
-	// Back to blacksmith + Stay in city buttons
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(
-			new ButtonBuilder()
-				.setCustomId(BlacksmithMenuIds.BACK_TO_BLACKSMITH)
-				.setLabel(i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }))
-				.setEmoji(CrowniclesIcons.city.back)
-				.setStyle(ButtonStyle.Secondary),
-			createStayInCityButton(lng)
-		)
-	);
-
-	return {
-		containers: [container],
-		createCollector: createBlacksmithUpgradeListCollector(params)
+		createCollector: createCityMenuCollector(params, {
+			menuIds: new Map([
+				[BlacksmithMenuIds.UPGRADE_MENU, BlacksmithMenuIds.UPGRADE_MENU],
+				[BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU, BlacksmithMenuIds.ENCHANTMENT_TRANSFER_MENU]
+			]),
+			backToCityId: BlacksmithMenuIds.BACK_TO_CITY
+		})
 	};
 }
 
 /**
  * Build description for upgrade item details
  */
-function buildUpgradeDetailDescriptionForStandard(
-	item: NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"][0],
-	lng: Language
-): string {
+function buildUpgradeDetailDescriptionForStandard(item: BlacksmithUpgradeableItem, lng: Language): string {
 	return buildUpgradeDetailDescription({
 		item,
 		lng,
@@ -326,204 +104,53 @@ function buildUpgradeDetailDescriptionForStandard(
 	});
 }
 
-/**
- * Build the collector factory for the upgrade detail view: routes back/stay
- * shortcuts and triggers the (buy &) upgrade reaction.
- */
-function createBlacksmithUpgradeDetailCollector(
-	params: BlacksmithMenuParams,
-	item: BlacksmithUpgradeableItem
-): CrowniclesNestedMenuCollectorFactory {
-	const {
-		context, interaction, packet, collectorTime
-	} = params;
-	const lng = interaction.userLanguage;
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({
-			time: collectorTime
-		});
-
-		collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			if (buttonInteraction.customId === BlacksmithMenuIds.BACK_TO_UPGRADE_LIST) {
-				await DiscordCollectorUtils.deferUpdate(buttonInteraction);
-				await nestedMenus.changeMenu(BlacksmithMenuIds.UPGRADE_MENU);
-				return;
-			}
-
-			if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-				await DiscordCollectorUtils.deferUpdate(buttonInteraction);
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-				return;
-			}
-
-			if (buttonInteraction.customId === BlacksmithMenuIds.CONFIRM_UPGRADE || buttonInteraction.customId === BlacksmithMenuIds.BUY_AND_UPGRADE) {
-				await DiscordCollectorUtils.deferReply(buttonInteraction);
-				const buyMaterials = buttonInteraction.customId === BlacksmithMenuIds.BUY_AND_UPGRADE;
-
-				// Find the reaction with matching slot, category, and buyMaterials flag
-				const reactionIndex = packet.reactions.findIndex(
-					r => isBlacksmithUpgradeReaction(r)
-						&& r.data.slot === item.slot
-						&& r.data.itemCategory === item.category
-						&& r.data.buyMaterials === buyMaterials
-				);
-
-				if (reactionIndex !== -1) {
-					DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-				}
-				else {
-					CrowniclesLogger.error(`Blacksmith upgrade reaction not found for slot ${item.slot}, category ${item.category}, buyMaterials ${buyMaterials}`);
-					await buttonInteraction.deleteReply();
-				}
-			}
-		});
-
-		return collector;
-	};
-}
-
-/**
- * Get the upgrade item detail menu with confirm/buy materials buttons
- */
-export function getBlacksmithUpgradeDetailMenu(
-	params: BlacksmithMenuParams,
-	itemIndex: number
-): CrowniclesNestedMenu {
-	const {
-		interaction, packet, pseudo
-	} = params;
-	const data = packet.data.data as ReactionCollectorCityData;
-	const lng = interaction.userLanguage;
-	const blacksmith = data.blacksmith!;
-	const item = blacksmith.upgradeableItems[itemIndex];
-
-	const description = buildUpgradeDetailDescriptionForStandard(item, lng);
-
-	const container = new ContainerBuilder();
-
-	// Title
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.upgradeTitle", {
-				lng, pseudo
-			}))
-		)
-	);
-
-	// Description
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(description)
-	);
-
-	// Build buttons
-	const buttons: ButtonBuilder[] = [];
-
-	// Confirm upgrade button (if has all materials and enough money)
-	const {
-		canUpgrade, canBuyAndUpgrade
-	} = item;
-	buttons.push(
-		new ButtonBuilder()
-			.setCustomId(BlacksmithMenuIds.CONFIRM_UPGRADE)
-			.setLabel(i18n.t("commands:report.city.blacksmith.confirmUpgrade", {
-				lng,
-				cost: item.upgradeCost
-			}))
-			.setStyle(canUpgrade ? ButtonStyle.Success : ButtonStyle.Secondary)
-			.setDisabled(!canUpgrade)
-			.setEmoji(CrowniclesIcons.city.blacksmith.upgrade)
-	);
-
-	// Buy materials and upgrade button (if missing materials and has enough money)
-	if (!item.hasAllMaterials) {
-		const totalCost = item.upgradeCost + item.missingMaterialsCost;
-		buttons.push(
-			new ButtonBuilder()
-				.setCustomId(BlacksmithMenuIds.BUY_AND_UPGRADE)
-				.setLabel(i18n.t("commands:report.city.blacksmith.buyMaterialsAndUpgrade", {
-					lng,
-					cost: totalCost
-				}))
-				.setStyle(canBuyAndUpgrade ? ButtonStyle.Primary : ButtonStyle.Secondary)
-				.setDisabled(!canBuyAndUpgrade)
-				.setEmoji(CrowniclesIcons.collectors.accept)
-		);
-	}
-
-	// Back button
-	buttons.push(
-		new ButtonBuilder()
-			.setCustomId(BlacksmithMenuIds.BACK_TO_UPGRADE_LIST)
-			.setLabel(i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
-			.setEmoji(CrowniclesIcons.city.back)
-			.setStyle(ButtonStyle.Secondary),
-		createStayInCityButton(lng)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)
-	);
-
-	return {
-		containers: [container],
-		createCollector: createBlacksmithUpgradeDetailCollector(params, item)
-	};
-}
-
-/**
- * Parameters for registering sub-menus
- */
-interface RegisterSubMenusParams {
-	menus: Map<string, CrowniclesNestedMenu>;
-	items: unknown[];
-	mainKey: string;
-	mainMenu: CrowniclesNestedMenu;
-	detailMenuFactory: (index: number) => CrowniclesNestedMenu;
-}
-
-/**
- * Register a main menu and its detail sub-menus into the provided map
- */
-function registerSubMenus(params: RegisterSubMenusParams): void {
-	const {
-		menus, items, mainKey, mainMenu, detailMenuFactory
-	} = params;
-	if (items.length === 0) {
-		return;
-	}
-	menus.set(mainKey, mainMenu);
-	for (let i = 0; i < items.length; i++) {
-		menus.set(`${mainKey}_DETAIL_${i}`, detailMenuFactory(i));
-	}
-}
+const BLACKSMITH_UPGRADE_FLOW: BlacksmithUpgradeFlow<BlacksmithUpgradeableItem> = {
+	ids: BlacksmithMenuIds,
+	translationKeys: {
+		upgradeTitle: "commands:report.city.blacksmith.upgradeTitle",
+		confirmUpgrade: "commands:report.city.blacksmith.confirmUpgrade",
+		buyMaterialsAndUpgrade: "commands:report.city.blacksmith.buyMaterialsAndUpgrade",
+		backToItems: "commands:report.city.blacksmith.backToItems"
+	},
+	backToBlacksmith: {
+		customId: BlacksmithMenuIds.BACK_TO_BLACKSMITH,
+		labelKey: "commands:report.city.blacksmith.backToBlacksmith",
+		menuId: BlacksmithMenuIds.BLACKSMITH_MENU
+	},
+	upgradeReaction: ReactionCollectorBlacksmithUpgradeReaction,
+	logName: "Blacksmith",
+	describeOffer: (item, lng) => i18n.t("commands:report.city.blacksmith.itemUpgradePreview", {
+		lng,
+		currentLevel: item.details.itemLevel ?? 0,
+		nextLevel: item.nextLevel,
+		cost: item.upgradeCost
+	}),
+	describeUpgrade: buildUpgradeDetailDescriptionForStandard
+};
 
 /**
  * Get all blacksmith menus (main + sub-menus) for registration
  */
-export function getBlacksmithMenus(params: BlacksmithMenuParams): Map<string, CrowniclesNestedMenu> {
-	const data = params.packet.data.data as ReactionCollectorCityData;
-	const blacksmith = data.blacksmith;
+export function getBlacksmithMenus(params: CityMenuParams): Map<string, CrowniclesNestedMenu> {
+	const blacksmith = (params.packet.data.data as ReactionCollectorCityData).blacksmith;
 	const menus = new Map<string, CrowniclesNestedMenu>();
 
 	if (!blacksmith) {
 		return menus;
 	}
 
-	menus.set(BlacksmithMenuIds.BLACKSMITH_MENU, getBlacksmithMenu(params));
+	menus.set(BlacksmithMenuIds.BLACKSMITH_MENU, getBlacksmithMenu(params, blacksmith));
 
-	registerSubMenus({
-		menus,
-		items: blacksmith.upgradeableItems,
-		mainKey: BlacksmithMenuIds.UPGRADE_MENU,
-		mainMenu: getBlacksmithUpgradeMenu(params),
-		detailMenuFactory: i => getBlacksmithUpgradeDetailMenu(params, i)
-	});
+	if (blacksmith.upgradeableItems.length > 0) {
+		registerBlacksmithUpgradeMenus(menus, params, {
+			flow: BLACKSMITH_UPGRADE_FLOW,
+			description: i18n.t("commands:report.city.blacksmith.upgradeSelectDescription", {
+				lng: params.interaction.userLanguage,
+				money: blacksmith.playerMoney
+			}),
+			offers: blacksmith.upgradeableItems
+		});
+	}
 
 	registerEnchantmentTransferMenus(params, menus);
 
