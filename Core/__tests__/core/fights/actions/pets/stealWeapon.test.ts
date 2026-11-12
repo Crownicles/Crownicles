@@ -7,7 +7,7 @@ import { InventorySlots } from "../../../../../src/core/database/game/models/Inv
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 import { PetAssistanceState } from "../../../../../../Lib/src/types/PetAssistanceResult";
 import type { FightController } from "../../../../../src/core/fights/FightController";
-import type { Fighter } from "../../../../../src/core/fights/fighter/Fighter";
+import type { PlayerBaseFighter } from "../../../../../src/core/fights/fighter/PlayerBaseFighter";
 
 type WeaponStats = {
 	attack: number;
@@ -61,7 +61,7 @@ describe("stealWeapon pet assistance", () => {
 			attack: 150, defense: 50, speed: 25
 		});
 
-		const result = await stealWeapon({} as Fighter, opponent, 1, {} as FightController);
+		const result = await stealWeapon({} as PlayerBaseFighter, opponent, 1, {} as FightController);
 
 		expect(result?.assistanceStatus).toBe(PetAssistanceState.SUCCESS);
 		expect(opponent.getAttack()).toBe(150);
@@ -79,7 +79,7 @@ describe("stealWeapon pet assistance", () => {
 			attack: 60, defense: 5, speed: 30
 		});
 
-		const result = await stealWeapon({} as Fighter, opponent, 1, {} as FightController);
+		const result = await stealWeapon({} as PlayerBaseFighter, opponent, 1, {} as FightController);
 
 		expect(result?.assistanceStatus).toBe(PetAssistanceState.SUCCESS);
 		expect(opponent.getAttack()).toBe(20);
@@ -95,7 +95,7 @@ describe("stealWeapon pet assistance", () => {
 			attack: 120, defense: -50, speed: 15
 		});
 
-		const result = await stealWeapon({} as Fighter, opponent, 1, {} as FightController);
+		const result = await stealWeapon({} as PlayerBaseFighter, opponent, 1, {} as FightController);
 
 		expect(result?.assistanceStatus).toBe(PetAssistanceState.SUCCESS);
 		expect(opponent.getSpeed()).toBe(0);
@@ -111,7 +111,7 @@ describe("stealWeapon pet assistance", () => {
 			attack: 150, defense: 0, speed: 80
 		});
 
-		await stealWeapon({} as Fighter, opponent, 1, {} as FightController);
+		await stealWeapon({} as PlayerBaseFighter, opponent, 1, {} as FightController);
 
 		expect(opponent.getAttack()).toBe(0);
 		expect(opponent.getSpeed()).toBe(0);

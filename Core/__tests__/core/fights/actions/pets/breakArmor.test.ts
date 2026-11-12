@@ -7,7 +7,7 @@ import { InventorySlots } from "../../../../../src/core/database/game/models/Inv
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 import { PetAssistanceState } from "../../../../../../Lib/src/types/PetAssistanceResult";
 import type { FightController } from "../../../../../src/core/fights/FightController";
-import type { Fighter } from "../../../../../src/core/fights/fighter/Fighter";
+import type { PlayerBaseFighter } from "../../../../../src/core/fights/fighter/PlayerBaseFighter";
 
 type ArmorStats = {
 	attack: number;
@@ -62,7 +62,7 @@ describe("breakArmor pet assistance", () => {
 			attack: 0, defense: 15, speed: 0
 		});
 
-		const result = await breakArmor({} as Fighter, opponent, 1, {} as FightController);
+		const result = await breakArmor({} as PlayerBaseFighter, opponent, 1, {} as FightController);
 
 		expect(result?.assistanceStatus).toBe(PetAssistanceState.SUCCESS);
 		expect(opponent.getDefense()).toBe(6);
@@ -78,7 +78,7 @@ describe("breakArmor pet assistance", () => {
 			attack: -36, defense: 170, speed: 15
 		});
 
-		const result = await breakArmor({} as Fighter, opponent, 1, {} as FightController);
+		const result = await breakArmor({} as PlayerBaseFighter, opponent, 1, {} as FightController);
 
 		expect(result?.assistanceStatus).toBe(PetAssistanceState.SUCCESS);
 		expect(opponent.getSpeed()).toBe(0);
@@ -94,7 +94,7 @@ describe("breakArmor pet assistance", () => {
 			attack: 0, defense: 150, speed: 80
 		});
 
-		await breakArmor({} as Fighter, opponent, 1, {} as FightController);
+		await breakArmor({} as PlayerBaseFighter, opponent, 1, {} as FightController);
 
 		expect(opponent.getDefense()).toBe(0);
 		expect(opponent.getSpeed()).toBe(0);
