@@ -309,13 +309,12 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 		}), getKingChallengeDescription(packet.kingChallenge, lng))
 	};
 
-	const reply = await interaction.reply({
+	const msg = await interaction.replyWithMessage({
 		embeds: [pages.missions],
-		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buildToggleButton(true, lng))],
-		withResponse: true
+		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buildToggleButton(true, lng))]
 	});
-	if (reply?.resource?.message) {
-		setupMissionsToggleCollector(reply.resource.message, interaction, pages);
+	if (msg) {
+		setupMissionsToggleCollector(msg, interaction, pages);
 	}
 }
 

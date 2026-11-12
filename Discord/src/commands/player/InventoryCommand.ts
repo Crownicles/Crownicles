@@ -415,15 +415,13 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		return new ActionRowBuilder<ButtonBuilder>().addComponents(buttons);
 	}
 
-	const reply = await interaction.reply({
+	const msg = await interaction.replyWithMessage({
 		embeds: [embeds[currentView]],
-		components: [createButtons(currentView)],
-		withResponse: true
+		components: [createButtons(currentView)]
 	});
-	if (!reply?.resource?.message) {
+	if (!msg) {
 		return;
 	}
-	const msg = reply.resource.message;
 	const collector = msg.createMessageComponentCollector({
 		filter: buttonInteraction => allCustomIds.includes(buttonInteraction.customId),
 		time: Constants.MESSAGES.COLLECTOR_TIME

@@ -37,6 +37,7 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { KingChallengeTierReachedPacket } from "../../../../Lib/src/packets/events/KingChallengeTierReachedPacket";
 import { KingChallengeConstants } from "../../../../Lib/src/constants/KingChallengeConstants";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 
 type MissionRewardTotals = {
 	gems: number;
@@ -202,17 +203,11 @@ export default class EventsHandlers {
 				})
 				: null
 		]));
-		try {
-			const buttonInteraction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction) : null;
 
-			// A click that could not be acknowledged accepts no follow-up: the destination is then sent in the channel
-			if (buttonInteraction) {
-				await buttonInteraction.followUp({ embeds: [embed] });
-				return;
-			}
-		}
-		catch {
-			// Do nothing
+		// A click that could not be acknowledged accepts no follow-up: the destination is then sent in the channel
+		const buttonClick = MessagesUtils.getButtonClick(context);
+		if (buttonClick && await buttonClick.followUp({ embeds: [embed] })) {
+			return;
 		}
 
 		await interaction.channel.send({ embeds: [embed] });

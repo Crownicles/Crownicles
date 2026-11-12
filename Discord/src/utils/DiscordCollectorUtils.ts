@@ -13,23 +13,23 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
-	InteractionCallbackResponse,
 	InteractionUpdateOptions,
 	Message,
 	MessageActionRowComponentBuilder,
 	MessageComponentInteraction,
 	MessageEditOptions,
 	parseEmoji,
-	ReactionCollector
+	ReactionCollector,
+	StringSelectMenuInteraction
 } from "discord.js";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { getErrorReason } from "../../../Lib/src/utils/ErrorUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
-import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import {
-	sendInteractionNotForYou, SendManner
-} from "./ErrorUtils";
+	CrowniclesInteraction, SendManner
+} from "../messages/CrowniclesInteraction";
+import { sendInteractionNotForYou } from "./ErrorUtils";
 import { PacketUtils } from "./PacketUtils";
 import {
 	keycloakConfig, shardId
@@ -41,6 +41,7 @@ import { RequirementEffectPacket } from "../../../Lib/src/packets/commands/requi
 import { Effect } from "../../../Lib/src/types/Effect";
 import { PacketConstants } from "../../../Lib/src/constants/PacketConstants";
 import { DiscordConstants } from "../DiscordConstants";
+import { Language } from "../../../Lib/src/Language";
 
 type SendingContext = {
 	packet: ReactionCollectorCreationPacket;
@@ -56,25 +57,6 @@ type SendingValues = {
  * Ids of the component interaction answering a click, in the context sent to Core
  */
 type RespondingComponentIds = Pick<NonNullable<PacketContext["discord"]>, "buttonInteraction" | "stringSelectMenuInteraction">;
-
-export const SEND_POLITICS = {
-	ALWAYS_FOLLOWUP: [SendManner.FOLLOWUP],
-	REPLY_OR_FOLLOWUP: [SendManner.REPLY, SendManner.FOLLOWUP],
-	REPLY_OR_EDIT_REPLY: [SendManner.REPLY, SendManner.EDIT_REPLY],
-	EDIT_REPLY_OR_FOLLOWUP: [SendManner.EDIT_REPLY, SendManner.FOLLOWUP],
-	ALWAYS_SEND: [SendManner.SEND]
-};
-
-const MANNER_TO_METHOD = {
-	[SendManner.SEND]: (interaction: CrowniclesInteraction): typeof interaction.channel.send => interaction.channel.send,
-	[SendManner.REPLY]: (interaction: CrowniclesInteraction): typeof interaction.reply => interaction.reply,
-	[SendManner.FOLLOWUP]: (interaction: CrowniclesInteraction): typeof interaction.followUp => interaction.followUp,
-	[SendManner.EDIT_REPLY]: (interaction: CrowniclesInteraction): typeof interaction.editReply => interaction.editReply
-};
-
-function getSendingManner(interaction: CrowniclesInteraction, sendManners: SendManner[]): SendManner {
-	return sendManners.length === 1 ? sendManners[0] : interaction.replied ? sendManners[1] : sendManners[0];
-}
 
 /**
  * Disables all components in the provided action rows
@@ -225,24 +207,27 @@ export abstract class DiscordCollectorUtils {
 	 * be answered: only its author is cached, so that the response falls back to the command interaction while still
 	 * knowing a click happened and who made it (see MessagesUtils.editClickReply and MessagesUtils.getClickUser)
 	 */
-	private static cacheRespondingComponent(component: MessageComponentInteraction | null): RespondingComponentIds {
+	private static cacheRespondingComponent(component: MessageComponentInteraction | null, lng: Language): RespondingComponentIds {
 		if (component?.isButton()) {
-			DiscordCollectorUtils.cacheClick(component, DiscordCache.cacheButtonInteraction);
+			DiscordCollectorUtils.cacheClick(component, lng, DiscordCache.cacheButtonInteraction);
 			return { buttonInteraction: component.id };
 		}
 		if (component?.isStringSelectMenu()) {
-			DiscordCollectorUtils.cacheClick(component, DiscordCache.cacheStringSelectMenuInteraction);
+			DiscordCollectorUtils.cacheClick(component, lng, DiscordCache.cacheStringSelectMenuInteraction);
 			return { stringSelectMenuInteraction: component.id };
 		}
 		return {};
 	}
 
-	private static cacheClick<T extends MessageComponentInteraction>(component: T, cache: (component: T) => void): void {
+	/**
+	 * Cache the click cast to CrowniclesInteraction, in the language of the command it answers
+	 */
+	private static cacheClick(component: ButtonInteraction | StringSelectMenuInteraction, lng: Language, cache: (click: CrowniclesInteraction) => void): void {
 		if (DiscordCollectorUtils.isUnanswerable(component)) {
 			DiscordCache.cacheUnanswerableClickUser(component.id, component.user);
 			return;
 		}
-		cache(component);
+		cache(CrowniclesInteraction.cast(component, lng));
 	}
 
 	static sendReaction(
@@ -269,7 +254,7 @@ export abstract class DiscordCollectorUtils {
 				user: context.discord!.user,
 				channel: context.discord!.channel,
 				interaction: context.discord!.interaction,
-				...DiscordCollectorUtils.cacheRespondingComponent(component),
+				...DiscordCollectorUtils.cacheRespondingComponent(component, context.discord!.language),
 				language: context.discord!.language,
 				shardId
 			}
@@ -425,7 +410,7 @@ export abstract class DiscordCollectorUtils {
 				text?: string;
 				emoji?: string;
 			}[];
-			sendManners?: SendManner[];
+			sendManner?: SendManner;
 			deferUpdate?: boolean;
 		}
 	): Promise<ReactionCollectorReturnTypeOrNull> {
@@ -474,28 +459,12 @@ export abstract class DiscordCollectorUtils {
 			embed += choiceDesc;
 		}
 
-		if (!options.sendManners) {
-			options.sendManners = SEND_POLITICS.REPLY_OR_FOLLOWUP; // Default manners
-		}
-
-		const sendManner = getSendingManner(interaction, options.sendManners);
-
-		// Edit message
-		const reply: Message | InteractionCallbackResponse | null = await MANNER_TO_METHOD[sendManner](interaction)({
+		const msg = await interaction.respond({
 			components: rows,
-			withResponse: true,
 			...embed instanceof CrowniclesEmbed
 				? { embeds: [embed] }
 				: { content: embed }
-		});
-
-		let msg;
-		if (reply instanceof InteractionCallbackResponse) {
-			msg = reply.resource?.message;
-		}
-		else {
-			msg = reply;
-		}
+		}, { manner: options.sendManner });
 
 		if (!msg) {
 			return null;

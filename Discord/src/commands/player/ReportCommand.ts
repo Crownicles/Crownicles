@@ -34,6 +34,7 @@ import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {
 	await interaction.deferReply();
@@ -216,10 +217,10 @@ export async function reportResult(packet: CommandReportBigEventResultRes, conte
 		alte: packet.effect && packet.effect.name !== Effect.OCCUPIED.id ? CrowniclesIcons.effects[packet.effect.name] : ""
 	});
 
-	const buttonInteraction = context.discord?.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord?.buttonInteraction) : null;
+	const buttonClick = MessagesUtils.getButtonClick(context);
 
-	if (buttonInteraction) {
-		await buttonInteraction.editReply({ content });
+	if (buttonClick) {
+		await buttonClick.editReply({ content });
 	}
 	else {
 		await interaction.channel.send({ content });

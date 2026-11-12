@@ -20,6 +20,7 @@ import { Language } from "../../../../../../Lib/src/Language";
 import { ShopConstants } from "../../../../../../Lib/src/constants/ShopConstants";
 import i18n from "../../../../translations/i18n";
 import { escapeUsername } from "../../../../utils/StringUtils";
+import { MessagesUtils } from "../../../../utils/MessagesUtils";
 
 const BUY_BUTTON_PREFIX = "buy_";
 const REFUSE_BUTTON_ID = "refuse";
@@ -169,15 +170,13 @@ export async function createTokenMerchantCollector(context: PacketContext, packe
  * the merchant answered immediately (charity / cannot afford / limit).
  */
 async function replyMerchantResult(context: PacketContext, embed: CrowniclesEmbed): Promise<void> {
-	const buttonInteractionId = context.discord?.buttonInteraction;
-	const buttonInteraction = buttonInteractionId ? DiscordCache.getButtonInteraction(buttonInteractionId) : undefined;
-	if (buttonInteraction) {
-		await buttonInteraction.editReply({ embeds: [embed] });
+	const buttonClick = MessagesUtils.getButtonClick(context);
+	if (buttonClick) {
+		await buttonClick.editReply({ embeds: [embed] });
 		return;
 	}
 
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-	await interaction?.followUp({ embeds: [embed] });
+	await DiscordCache.getInteraction(context.discord!.interaction)?.followUp({ embeds: [embed] });
 }
 
 /**
