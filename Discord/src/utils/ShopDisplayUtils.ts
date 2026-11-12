@@ -5,7 +5,7 @@ import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import {
-	sendErrorMessage, sendInteractionNotForYou, SendManner
+	sendErrorMessage, sendInteractionNotForYou
 } from "./ErrorUtils";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
@@ -52,6 +52,7 @@ import {
 	parseShopAmountCustomId
 } from "./cityShop/CityShopViews";
 import { confirmCityMessageHandoff } from "../commands/player/report/CityMessageHandoff";
+import { SendManner } from "../messages/CrowniclesInteraction";
 
 /**
  * discord.js message flag enabling the Components V2 layout (containers,
@@ -523,11 +524,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		msg = await interaction.editReply(messagePayload);
 	}
 	else {
-		const reply = await interaction.reply({
-			...messagePayload,
-			withResponse: true
-		});
-		msg = reply?.resource?.message ?? null;
+		msg = await interaction.replyWithMessage(messagePayload);
 	}
 
 	if (!msg) {

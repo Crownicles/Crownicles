@@ -303,15 +303,11 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 		.setColor(<ColorResolvable>(packet.playerData.color ?? ColorConstants.PROFILE_DEFAULT))
 		.addFields(generateFields(packet, lng))
 		.formatAuthorOrTitle(title, targetUser);
-	const reply = await interaction.reply({
-		embeds: [embed],
-		withResponse: true
-	});
-	if (!reply?.resource?.message) {
+	const message = await interaction.replyWithMessage({ embeds: [embed] });
+	if (!message) {
 		// An error occurred and no message was fetched
 		return;
 	}
-	const message = reply.resource.message;
 	const collector = message.createReactionCollector({
 		filter: (reaction: MessageReaction) => reaction.me && !reaction.users.cache.last()!.bot,
 		time: Constants.MESSAGES.COLLECTOR_TIME,

@@ -9,6 +9,7 @@ import i18n from "../../translations/i18n";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { escapeUsername } from "../../utils/StringUtils";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 
 export default class ItemHandler {
 	@packetHandler(ItemAcceptPacket)
@@ -96,9 +97,9 @@ export default class ItemHandler {
 				}));
 		}
 
-		const buttonInteraction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!) : null;
-		if (buttonInteraction && !buttonInteraction.replied) {
-			await buttonInteraction.editReply({ embeds: [menuEmbed] });
+		const buttonClick = MessagesUtils.getButtonClick(context);
+		if (buttonClick && !buttonClick.replied) {
+			await buttonClick.editReply({ embeds: [menuEmbed] });
 		}
 		else {
 			await interaction.channel.send({ embeds: [menuEmbed] });

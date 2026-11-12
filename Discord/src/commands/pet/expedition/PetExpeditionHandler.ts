@@ -20,9 +20,6 @@ import {
 	CommandPetExpeditionResolvePacketRes,
 	CommandPetExpeditionErrorPacket
 } from "../../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
-import {
-	ButtonInteraction, StringSelectMenuInteraction
-} from "discord.js";
 import { PetBasicInfo } from "../../../../../Lib/src/types/PetBasicInfo";
 import { Language } from "../../../../../Lib/src/Language";
 import { CrowniclesInteraction } from "../../../messages/CrowniclesInteraction";
@@ -44,6 +41,7 @@ import {
 	buildExpeditionStartedEmbed,
 	buildExpeditionErrorEmbed
 } from "./ExpeditionEmbedBuilders";
+import { MessagesUtils } from "../../../utils/MessagesUtils";
 
 /**
  * Helper to send response using the correct interaction (button/select menu or original)
@@ -58,17 +56,10 @@ async function sendResponse(
 	}
 
 	// Check if we have a button or select menu interaction from a collector
-	const buttonInteraction = context.discord?.buttonInteraction
-		? DiscordCache.getButtonInteraction(context.discord.buttonInteraction) as ButtonInteraction | undefined
-		: undefined;
-	const selectMenuInteraction = context.discord?.stringSelectMenuInteraction
-		? DiscordCache.getStringSelectMenuInteraction(context.discord.stringSelectMenuInteraction) as StringSelectMenuInteraction | undefined
-		: undefined;
+	const click = MessagesUtils.getAnswerableClick(context);
 
-	const componentInteraction = buttonInteraction ?? selectMenuInteraction;
-
-	if (componentInteraction && !componentInteraction.replied) {
-		await componentInteraction.editReply({ embeds: [embed] });
+	if (click && !click.replied) {
+		await click.editReply({ embeds: [embed] });
 	}
 	else {
 		await interaction.channel.send({ embeds: [embed] });

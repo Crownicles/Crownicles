@@ -25,8 +25,7 @@ vi.mock("../../src/utils/PacketUtils", () => ({
 	PacketUtils: { sendPacketToBackend: vi.fn() }
 }));
 vi.mock("../../src/utils/ErrorUtils", () => ({
-	sendInteractionNotForYou: vi.fn(),
-	SendManner: {}
+	sendInteractionNotForYou: vi.fn()
 }));
 vi.mock("../../src/bot/DiscordMQTT", () => ({
 	DiscordMQTT: {}
@@ -89,7 +88,9 @@ function buttonClick(customId: string, acknowledgement: () => Promise<unknown>, 
 		customId,
 		user: { id: PLAYER_ID },
 		createdTimestamp: Date.now() - 4000,
+		channel: null,
 		isButton: (): boolean => true,
+		isCommand: (): boolean => false,
 		isStringSelectMenu: (): boolean => false,
 		deferReply: vi.fn(() => {
 			calls.push("deferReply");
@@ -192,6 +193,17 @@ describe("collector click acknowledgement (#5059)", () => {
 		expect(DiscordCache.cacheButtonInteraction).toHaveBeenCalledWith(click);
 		expect(DiscordCache.cacheUnanswerableClickUser).not.toHaveBeenCalled();
 		expect(sentDiscordContext()).toMatchObject({ buttonInteraction: click.id });
+	});
+
+	it("caches the click with the error handling of the bot, in the language of the command (#2754)", async () => {
+		const click = buttonClick("accept", () => Promise.resolve());
+
+		await DiscordCollectorUtils.deferReply(click);
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, click, 0);
+
+		const [cachedClick] = vi.mocked(DiscordCache.cacheButtonInteraction).mock.calls[0];
+		expect(cachedClick.userLanguage).toBe(context.discord!.language);
+		expect(cachedClick.respond).toBeTypeOf("function");
 	});
 
 	it("answers Core's response through the command interaction when Discord could not be reached to acknowledge the click", async () => {

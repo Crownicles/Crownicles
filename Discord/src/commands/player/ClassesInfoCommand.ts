@@ -139,15 +139,13 @@ export async function handleCommandClassesInfoPacketRes(packet: CommandClassesIn
 		.addOptions(classesMenuOptions);
 	const row = new ActionRowBuilder<StringSelectMenuBuilder>()
 		.addComponents(classSelectionMenu);
-	const reply = await interaction.reply({
+	const msg = await interaction.replyWithMessage({
 		embeds: [classListEmbed],
-		components: [row],
-		withResponse: true
+		components: [row]
 	});
-	if (!reply?.resource?.message) {
+	if (!msg) {
 		return;
 	}
-	const msg = reply.resource.message;
 	const collector = msg.createMessageComponentCollector({
 		filter: menuInteraction => menuInteraction.customId === ClassInfoConstants.MENU_IDS.CLASS_SELECTION,
 		time: Constants.MESSAGES.COLLECTOR_TIME
