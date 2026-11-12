@@ -1,10 +1,10 @@
 import { readdir } from "fs/promises";
-import { readdirSync } from "fs";
 import { isAnId } from "../../../Lib/src/utils/StringUtils";
 import {
 	CrowniclesPacket, PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
 import Player from "./database/game/models/Player";
+import { importCompiledFolderExports } from "./utils/DynamicImportUtils";
 
 type Checker = (v: string) => boolean;
 
@@ -35,27 +35,6 @@ export function formatTypeWaited(typeWaited: TypeKey): string {
 }
 
 /**
- * Represents a file name for command files
- */
-class CommandFileName {
-	constructor(public readonly value: string) {}
-
-	/**
-	 * Get the filename without extension
-	 */
-	withoutExtension(): string {
-		return this.value.substring(0, this.value.length - 3);
-	}
-
-	/**
-	 * Check if this is a JavaScript file
-	 */
-	isJavaScriptFile(): boolean {
-		return this.value.endsWith(".js");
-	}
-}
-
-/**
  * Represents a type/category name for commands
  */
 class CommandTypeName {
@@ -66,59 +45,6 @@ class CommandTypeName {
 	 */
 	toString(): string {
 		return this.value;
-	}
-}
-
-/**
- * Represents a file path for command loading
- */
-class CommandFilePath {
-	constructor(
-		private readonly type: CommandTypeName,
-		private readonly fileName: CommandFileName
-	) {}
-
-	/**
-	 * Get the require path for the command file
-	 */
-	getRequirePath(): string {
-		return `../commands/admin/testCommands/${this.type.value}/${this.fileName.withoutExtension()}`;
-	}
-
-	/**
-	 * Load the command info from the file
-	 */
-	loadCommandInfo(): ITestCommand {
-		// Dynamic import is required here as commands are loaded at runtime
-		return require(this.getRequirePath()).commandInfo as ITestCommand;
-	}
-
-	/**
-	 * Create a CommandFilePath from type and filename
-	 */
-	static fromFileName(type: CommandTypeName, fileName: CommandFileName): CommandFilePath {
-		return new CommandFilePath(type, fileName);
-	}
-}
-
-/**
- * Represents a directory path for command scanning
- */
-class CommandDirectoryPath {
-	constructor(private readonly basePath: string) {}
-
-	/**
-	 * Get the full path for a command type
-	 */
-	getPath(type: string): string {
-		return `${this.basePath}/${type}`;
-	}
-
-	/**
-	 * Create a CommandDirectoryPath for the distribution folder
-	 */
-	static fromDistPath(): CommandDirectoryPath {
-		return new CommandDirectoryPath("dist/Core/src/commands/admin/testCommands");
 	}
 }
 
@@ -509,6 +435,10 @@ export function formatCommandFormat(commandFormat: string): string {
 
 export type ExecuteTestCommandLike = (player: Player, args: string[], response: CrowniclesPacket[], context: PacketContext) => string | Promise<string>;
 
+type TestCommandModule = {
+	commandInfo: ITestCommand;
+};
+
 export abstract class CommandsTest {
 	static testCommandsArray: { [commandName: string]: ITestCommand };
 
@@ -519,16 +449,15 @@ export abstract class CommandsTest {
 	 */
 	static async init(): Promise<void> {
 		CommandsTest.testCommandsArray = {};
-		const dirPath = CommandDirectoryPath.fromDistPath();
 		CommandsTest.testCommType = await readdir("dist/Core/src/commands/admin/testCommands");
 		for (const type of CommandsTest.testCommType) {
 			const typeName = new CommandTypeName(type);
-			const commandsFiles = readdirSync(dirPath.getPath(type))
-				.filter((command: string) => new CommandFileName(command).isJavaScriptFile());
-			for (const commandFile of commandsFiles) {
-				const fileName = new CommandFileName(commandFile);
-				const filePath = CommandFilePath.fromFileName(typeName, fileName);
-				this.initCommandTestFromCommandFile(filePath, typeName);
+			const testCommands = await importCompiledFolderExports(
+				`commands/admin/testCommands/${type}`,
+				(testCommandModule: TestCommandModule) => testCommandModule.commandInfo
+			);
+			for (const testCommand of testCommands.values()) {
+				this.initCommandTest(testCommand, typeName);
 			}
 		}
 	}
@@ -611,13 +540,12 @@ export abstract class CommandsTest {
 	}
 
 	/**
-	 * Initialize a test command from its file
-	 * @param filePath - Path to the command file
+	 * Initialize a test command imported from its file
+	 * @param testCommand - The command of the file
 	 * @param typeName - Command category type
 	 */
-	private static initCommandTestFromCommandFile(filePath: CommandFilePath, typeName: CommandTypeName): void {
+	private static initCommandTest(testCommand: ITestCommand, typeName: CommandTypeName): void {
 		const category = new CommandCategory(typeName.value);
-		const testCommand = filePath.loadCommandInfo();
 		testCommand.category = category.value;
 		const commandName = new CommandName(testCommand.name);
 		CommandsTest.testCommandsArray[commandName.toLowerCase()] = testCommand;

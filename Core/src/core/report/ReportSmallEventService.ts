@@ -30,15 +30,13 @@ async function checkSmallEventEligibility(
 	player: Player,
 	execution: SmallEventExecutionContext
 ): Promise<SmallEventEligibility | null> {
-	const file = await import(`../smallEvents/${key}.js`);
-
-	if (!file.smallEventFuncs?.canBeExecuted) {
-		PacketUtils.pushInternalError(execution.response, `Small event ${key} doesn't contain a canBeExecuted function`);
+	const smallEvent = SmallEventDataController.getSmallEventFunction(key);
+	if (!smallEvent) {
+		PacketUtils.pushInternalError(execution.response, `Small event ${key} doesn't export its functions`);
 		return null;
 	}
 
-	const canExecute = await file.smallEventFuncs.canBeExecuted(player, execution.playerActiveObjects);
-	if (!canExecute) {
+	if (!await smallEvent.canBeExecuted(player, execution.playerActiveObjects)) {
 		return null;
 	}
 
@@ -111,22 +109,19 @@ async function loadAndExecuteSmallEvent(
 	execution: SmallEventExecutionContext
 ): Promise<void> {
 	const filename = `${event}.js`;
+	const smallEvent = SmallEventDataController.getSmallEventFunction(event);
+	if (!smallEvent) {
+		PacketUtils.pushInternalError(execution.response, `Small event file ${filename} doesn't exist`);
+		return;
+	}
 
 	try {
-		const smallEventModule = require.resolve(`../smallEvents/${filename}`);
-		try {
-			// skipcq: JS-0359 - Small event handlers are discovered dynamically from resource names.
-			const smallEvent: SmallEventFuncs = require(smallEventModule).smallEventFuncs;
-			await crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event);
+		await crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event);
 
-			await runSmallEventUnderLock(player, event, smallEvent, execution);
-		}
-		catch (e) {
-			PacketUtils.pushInternalError(execution.response, `Error while executing ${filename} small event`, { cause: e });
-		}
+		await runSmallEventUnderLock(player, event, smallEvent, execution);
 	}
-	catch {
-		PacketUtils.pushInternalError(execution.response, `Small event file ${filename} doesn't exist`);
+	catch (e) {
+		PacketUtils.pushInternalError(execution.response, `Error while executing ${filename} small event`, { cause: e });
 	}
 }
 

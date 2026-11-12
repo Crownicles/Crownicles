@@ -1,5 +1,8 @@
-import { MissionDifficulty } from "./MissionDifficulty";
-import Player from "../database/game/models/Player";
+/*
+ * Type-only imports: the default interface, imported by the MissionsController, must not depend on the Player at runtime
+ */
+import type { MissionDifficulty } from "./MissionDifficulty";
+import type Player from "../database/game/models/Player";
 
 export type MissionParams = {
 	[key: string]: unknown;

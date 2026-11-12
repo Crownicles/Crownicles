@@ -69,7 +69,7 @@ export default {
 			"ignoreRestSiblings": true
 		}
 	],
-	"@typescript-eslint/no-require-imports": "off",
+	"@typescript-eslint/no-require-imports": "error",
 	"jsdoc/check-alignment": "error",
 	"jsdoc/check-indentation": "error",
 	"jsdoc/check-line-alignment": "error",

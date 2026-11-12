@@ -3,7 +3,9 @@ import * as i18next from "i18next";
 import {
 	Language, LANGUAGE
 } from "../../../Lib/src/Language";
-import { readdirSync } from "fs";
+import {
+	readdirSync, readFileSync
+} from "fs";
 import { resolve } from "path";
 import { BotUtils } from "../utils/BotUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
@@ -18,7 +20,7 @@ function getI18nOptions(): i18next.InitOptions<unknown> {
 		for (const file of readdirSync(resolve(__dirname, dirPath))) {
 			if (file.endsWith(".json")) {
 				console.log(`Loading i18next resource ${dirPath}/${file}`);
-				resourceFiles[file.substring(0, file.length - 5)] = require(`${dirPath}/${file}`);
+				resourceFiles[file.substring(0, file.length - 5)] = JSON.parse(readFileSync(resolve(__dirname, dirPath, file), "utf8"));
 			}
 		}
 		resources[language] = resourceFiles;

@@ -27,8 +27,8 @@ import { RandomUtils } from "../../Lib/src/utils/RandomUtils";
 import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
 
 /**
- * The fight engine requires its actions, alterations and pet assistances from the compiled files of the bot: the tool,
- * running the TypeScript sources, fills their caches with the source modules instead
+ * The bot imports the actions, alterations and pet assistances of the fight engine from its compiled files when it starts:
+ * the tool, running the TypeScript sources, fills their caches with the source modules instead
  */
 async function loadFightFunctionsFromSources(): Promise<void> {
 	const loadFolder = async (folder: string): Promise<[string, unknown][]> => {
