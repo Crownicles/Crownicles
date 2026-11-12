@@ -1,5 +1,5 @@
 import { AiPlayerFighter } from "../fighter/AiPlayerFighter";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { FightActionDataController } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
@@ -31,7 +31,7 @@ function canAfford(me: AiPlayerFighter, actionId: string): boolean {
  * @param me
  * @param opponent
  */
-export function shouldProtectAgainstControl(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+export function shouldProtectAgainstControl(me: AiPlayerFighter, opponent: PlayerBaseFighter): boolean {
 	return CONTROLLING_CLASSES.includes(opponent.player.class)
 		&& !me.hasFightAlteration()
 		&& opponent.getBreath() >= FightActionDataController.getFightActionBreathCost(ACTIONS.RAM_ATTACK)
@@ -48,7 +48,7 @@ export function shouldOpenWithChargedAttack(me: AiPlayerFighter, turn: number): 
 	return turn <= 2 && canAfford(me, ACTIONS.CHARGE_CHARGING_ATTACK);
 }
 
-export function isOpponentKnightLike(opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+export function isOpponentKnightLike(opponent: PlayerBaseFighter): boolean {
 	return KNIGHT_LIKE_CLASSES.includes(opponent.player.class);
 }
 
@@ -57,7 +57,7 @@ export function isOpponentKnightLike(opponent: RealPlayerFighter | AiPlayerFight
  * knight's rest (60% of the time, to stay unpredictable)
  * @param opponent
  */
-export function isOpponentCharging(opponent: RealPlayerFighter | AiPlayerFighter): boolean {
+export function isOpponentCharging(opponent: PlayerBaseFighter): boolean {
 	const lastActionId = opponent.getLastFightActionUsed()?.id;
 	if (lastActionId === ACTIONS.RESTING) {
 		return isOpponentKnightLike(opponent) && RandomUtils.crowniclesRandom.bool(0.6);

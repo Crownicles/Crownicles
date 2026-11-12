@@ -9,7 +9,7 @@ import {
 import { Player } from "../database/game/models/Player";
 import { FightController } from "../fights/FightController";
 import { FightOvertimeBehavior } from "../fights/FightOvertimeBehavior";
-import { RealPlayerFighter } from "../fights/fighter/RealPlayerFighter";
+import { PlayerFighter } from "../fights/fighter/PlayerFighter";
 import { MonsterFighter } from "../fights/fighter/MonsterFighter";
 import {
 	Monster, MonsterDataController
@@ -86,7 +86,7 @@ async function handleWinnerPetLovePoints(
 
 	const winner = fight.getWinnerFighter();
 	const petLoveResult = fight.getPostFightPetLoveChange(winner, PostFightPetLoveOutcomes.WIN);
-	if (!petLoveResult || !(winner instanceof RealPlayerFighter)) {
+	if (!petLoveResult || !(winner instanceof PlayerFighter)) {
 		return;
 	}
 
@@ -413,7 +413,7 @@ export async function doPVEBoss(
 			const initialFightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
 			player.fightPointsLost = initialFightPointsLost;
 
-			const isWinOrDraw = fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter;
+			const isWinOrDraw = fight.isADraw() || fight.getWinnerFighter() instanceof PlayerFighter;
 
 			if (isWinOrDraw) {
 				await applyPveBossWinRewards({
@@ -458,7 +458,7 @@ export async function doPVEBoss(
 			return;
 		}
 
-		const playerFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class)!);
+		const playerFighter = new PlayerFighter(player, ClassDataController.instance.getById(player.class)!);
 		await playerFighter.loadStats(true);
 		playerFighter.setBaseEnergy(playerFighter.getMaxEnergy() - player.fightPointsLost);
 

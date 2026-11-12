@@ -5,7 +5,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerBaseFighter } from "../fighter/PlayerBaseFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { piercingOrSimpleAttack } from "./RecruitFightBehavior";
@@ -23,14 +23,14 @@ class InfantryManFightBehavior implements ClassBehavior {
 	 * @param fightView
 	 * @param powerfulAttacksUsed
 	 */
-	private hasTacticalAdvantage(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter, fightView: FightView, powerfulAttacksUsed: number): boolean {
+	private hasTacticalAdvantage(me: AiPlayerFighter, opponent: PlayerBaseFighter, fightView: FightView, powerfulAttacksUsed: number): boolean {
 		return (fightView.fightController.turn > 11 || powerfulAttacksUsed > 2)
 			&& me.getEnergy() > me.getMaxEnergy() * 0.21
 			&& (opponent.player.class !== ClassConstants.CLASSES_ID.MYSTIC_MAGE || me.hasFightAlteration())
 			&& (RandomUtils.crowniclesRandom.bool() || opponent.getDefense() < me.getDefense());
 	}
 
-	private shouldUseChargingAttack(me: AiPlayerFighter, opponent: RealPlayerFighter | AiPlayerFighter, fightView: FightView, powerfulAttacksUsed: number): boolean {
+	private shouldUseChargingAttack(me: AiPlayerFighter, opponent: PlayerBaseFighter, fightView: FightView, powerfulAttacksUsed: number): boolean {
 		return isOpponentCharging(opponent)
 			|| (this.hasTacticalAdvantage(me, opponent, fightView, powerfulAttacksUsed)
 				&& !isOpponentKnightLike(opponent));
@@ -38,7 +38,7 @@ class InfantryManFightBehavior implements ClassBehavior {
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const powerfulAttacksUsed = this.powerfulAttacksUsedMap;
-		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerBaseFighter; // AI will never fight monsters
 
 		if (shouldOpenWithChargedAttack(me, fightView.fightController.turn)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)!;
