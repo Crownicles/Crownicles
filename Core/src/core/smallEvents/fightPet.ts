@@ -8,16 +8,13 @@ import { Maps } from "../maps/Maps";
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { PetDataController } from "../../data/Pet";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import {
-	makePacket, PacketContext
-} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
-import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import {
 	ReactionCollectorFightPet,
 	ReactionCollectorFightPetReaction
@@ -67,7 +64,9 @@ function retrieveSelectedEvent(collector: ReactionCollectorInstance): FightPetAc
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnPveIsland,
-	executeSmallEvent: (response, player, context: PacketContext, playerActiveObjects: PlayerActiveObjects) => {
+	executeSmallEvent: (player, {
+		response, context, playerActiveObjects
+	}) => {
 		const pet = PetDataController.instance.getRandom();
 		const isFemale = RandomUtils.crowniclesRandom.bool();
 

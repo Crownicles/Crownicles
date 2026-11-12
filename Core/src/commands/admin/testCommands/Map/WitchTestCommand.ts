@@ -37,7 +37,12 @@ const smallEventTestCommand: ExecuteTestCommandLike = async (player, args, respo
 		}
 	});
 
-	await smallEventFuncs.executeSmallEvent(response, player, context, await InventorySlots.getPlayerActiveObjects(player.id), args);
+	await smallEventFuncs.executeSmallEvent(player, {
+		response,
+		context,
+		playerActiveObjects: await InventorySlots.getPlayerActiveObjects(player.id),
+		testArgs: args
+	});
 	return "Mini event forcé !";
 };
 

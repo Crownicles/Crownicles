@@ -188,7 +188,9 @@ async function runWitchEndCallbackUnderLock(
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent: (response, player, context, _playerActiveObjects, testArgs?: string[]) => {
+	executeSmallEvent: (player, {
+		response, context, testArgs
+	}) => {
 		const events: WitchEventSelection = testArgs
 			? {
 				randomAdvice: WitchActionDataController.instance.getById(testArgs[0])!,

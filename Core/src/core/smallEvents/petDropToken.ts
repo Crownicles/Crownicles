@@ -40,7 +40,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const expeditions = await findPetsOnSamePath(link.startMap, link.endMap, player.id);
 		return expeditions.length > 0;
 	},
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		const link = MapLinkDataController.instance.getById(player.mapLinkId)!;
 
 		const expeditions = await findPetsOnSamePath(link.startMap, link.endMap, player.id);

@@ -134,7 +134,9 @@ async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: async (response, player, context): Promise<void> => {
+	executeSmallEvent: async (player, {
+		response, context
+	}): Promise<void> => {
 		let guild: Guild | null;
 		try {
 			guild = await Guilds.getById(player.guildId);

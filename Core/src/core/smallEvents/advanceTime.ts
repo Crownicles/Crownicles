@@ -9,7 +9,7 @@ import { Maps } from "../maps/Maps";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		const timeAdvanced = RandomUtils.crowniclesRandom.integer(10, 50);
 		await TravelTime.timeTravel(player, timeAdvanced, NumberChangeReason.SMALL_EVENT);
 		await player.save();

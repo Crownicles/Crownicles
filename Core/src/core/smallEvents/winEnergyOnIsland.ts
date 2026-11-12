@@ -9,7 +9,9 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: player => Maps.isOnPveIsland(player) && player.fightPointsLost > 0,
-	executeSmallEvent: async (response, player, _context, playerActiveObjects): Promise<void> => {
+	executeSmallEvent: async (player, {
+		response, playerActiveObjects
+	}): Promise<void> => {
 		const maxCumulativeEnergy = player.getMaxCumulativeEnergy(playerActiveObjects);
 		const amount = RandomUtils.randInt(
 			Math.max(PVEConstants.FIGHT_POINTS_SMALL_EVENT.MIN_PERCENT * maxCumulativeEnergy, 1),

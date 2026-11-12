@@ -217,7 +217,9 @@ async function runLotteryEndCallbackUnderLock(
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent(response, player, context): void {
+	executeSmallEvent(player, {
+		response, context
+	}): void {
 		const dataLottery = SmallEventDataController.instance.getById("lottery")!
 			.getProperties<LotteryProperties>();
 

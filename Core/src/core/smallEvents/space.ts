@@ -137,7 +137,9 @@ async function astronomyEvent(context: PacketContext): Promise<void> {
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	async executeSmallEvent(response, player, context): Promise<void> {
+	async executeSmallEvent(player, {
+		response, context
+	}): Promise<void> {
 		// Update oracle missions for space oracle
 		await MissionsController.update(player, response, {
 			missionId: "meetOracle",

@@ -14,7 +14,7 @@ import {
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		const packet: SmallEventSmallBadPacket = new SmallEventSmallBadPacket();
 		packet.issue = RandomUtils.crowniclesRandom.pick(Object.values(SmallEventBadIssue)) as SmallEventBadIssue;
 

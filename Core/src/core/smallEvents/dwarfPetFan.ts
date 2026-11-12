@@ -174,7 +174,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			&& [destination.id, origin.id].some(mapId =>
 				[MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM].includes(mapId));
 	},
-	executeSmallEvent: async (response, player, _context): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		await MissionsController.update(player, response, { missionId: "meetTalvar" });
 
 		const petEntity = await PetEntities.getById(player.petId);

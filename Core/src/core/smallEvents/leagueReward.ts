@@ -14,7 +14,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		return Maps.isOnContinent(player) && player.level > FightConstants.REQUIRED_LEVEL && (!todayIsSunday() || !await player.hasClaimedLeagueReward());
 	},
 
-	executeSmallEvent: (response, player): void => {
+	executeSmallEvent: (player, { response }): void => {
 		const league = player.getLeague();
 
 		response.push(makePacket(SmallEventLeagueRewardPacket, {

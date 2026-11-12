@@ -7,7 +7,9 @@ import {
 } from "../../../Lib/src/packets/CrowniclesPacket";
 import { PlayerActiveObjects } from "../core/database/game/models/PlayerActiveObjects";
 import { Model } from "sequelize";
-import { LockKey } from "../../../Lib/src/locks/withLockedEntities";
+import {
+	Locked, LockKey
+} from "../../../Lib/src/locks/withLockedEntities";
 
 export class SmallEvent extends Data<string> {
 	public readonly rarity!: number;
@@ -19,8 +21,27 @@ export class SmallEvent extends Data<string> {
 	}
 }
 
+/**
+ * The report a small event is executed in: the packets answered to the player, the context of their command and their
+ * active objects, read once for the eligibility of every small event and the execution of the chosen one
+ */
+export type SmallEventExecutionContext = {
+	response: CrowniclesPacket[];
+	context: PacketContext;
+	playerActiveObjects: PlayerActiveObjects;
+
+	/**
+	 * Outcome forced by the test command executing the small event
+	 */
+	testArgs?: string[];
+};
+
 export type CanBeExecutedLike = (player: Player, playerActiveObjects: PlayerActiveObjects) => boolean | Promise<boolean>;
-export type ExecuteSmallEventLike = (response: CrowniclesPacket[], player: Player, context: PacketContext, playerActiveObjects: PlayerActiveObjects, testArgs?: string[]) => void | Promise<void>;
+
+/**
+ * The report executes the small event with the player locked together with their missions
+ */
+export type ExecuteSmallEventLike = (player: Locked<Player>, execution: SmallEventExecutionContext) => void | Promise<void>;
 
 /**
  * Rows a small event mutates besides the player and their missions (e.g. the player's home)
