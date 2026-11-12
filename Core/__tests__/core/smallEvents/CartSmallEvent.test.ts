@@ -109,7 +109,9 @@ describe("cart small event", () => {
 	});
 
 	it("applies the destination after spendMoney reloads the player", async () => {
-		smallEventFuncs.executeSmallEvent([], player as Player, {} as never);
+		smallEventFuncs.executeSmallEvent(player as Player, {
+			response: [], context: {} as never, playerActiveObjects: {} as never
+		});
 
 		if (!capturedEndCallback) {
 			throw new Error("Expected cart collector callback to be set");

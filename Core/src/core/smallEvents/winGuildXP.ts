@@ -16,7 +16,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const guild = await Guilds.getById(player.guildId);
 		return Boolean(guild && !guild.isAtMaxLevel());
 	},
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		const guild = await Guilds.getById(player.guildId);
 		if (!guild) {
 			return;

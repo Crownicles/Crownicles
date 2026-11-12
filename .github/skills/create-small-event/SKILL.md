@@ -66,7 +66,7 @@ export const smallEventFuncs: SmallEventFuncs = {
         // Common checks: Maps.isOnContinent(player), player.level >= X
         return Maps.isOnContinent(player);
     },
-    executeSmallEvent: async (response, player): Promise<void> => {
+    executeSmallEvent: async (player, { response }): Promise<void> => {
         // Game logic here: modify player state, give rewards, etc.
         // Always push a packet at the end
         response.push(makePacket(SmallEvent{Name}Packet, { /* fields */ }));
@@ -78,11 +78,21 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 **SmallEventFuncs interface:**
 ```typescript
+type SmallEventExecutionContext = {
+    response: CrowniclesPacket[];
+    context: PacketContext;
+    playerActiveObjects: PlayerActiveObjects;
+    testArgs?: string[];
+};
+
 type SmallEventFuncs = {
-    canBeExecuted: (player: Player) => boolean | Promise<boolean>;
-    executeSmallEvent: (response: CrowniclesPacket[], player: Player, context: PacketContext, testArgs?: string[]) => void | Promise<void>;
+    canBeExecuted: (player: Player, playerActiveObjects: PlayerActiveObjects) => boolean | Promise<boolean>;
+    executeSmallEvent: (player: Locked<Player>, execution: SmallEventExecutionContext) => void | Promise<void>;
+    getAdditionalLockKeys?: (player: Player) => Promise<LockKey<Model>[]>;
 };
 ```
+
+`executeSmallEvent` destructures only the fields of the execution context it uses (`{ response, context }`, `{ response, playerActiveObjects }`...).
 
 **Common patterns:**
 - Give tokens: `await player.addTokens({ amount: 1, response, reason: NumberChangeReason.SMALL_EVENT }); await player.save();`

@@ -610,7 +610,9 @@ async function sendACoin(otherPlayer: Player, player: Player, response: Crownicl
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	async executeSmallEvent(response, player, context): Promise<void> {
+	async executeSmallEvent(player, {
+		response, context
+	}): Promise<void> {
 		const numberOfPlayers = await Player.count({
 			where: { score: { [Op.gt]: SmallEventConstants.INTERACT_OTHER_PLAYERS.MIN_SCORE_FOR_COUNTING } }
 		});

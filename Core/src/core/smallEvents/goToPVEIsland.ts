@@ -47,7 +47,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 			&& await LogsReadRequests.getCountPVEIslandThisWeek(player.keycloakId, player.guildId) < PVEConstants.TRAVEL_COST.length;
 	},
 
-	async executeSmallEvent(response, player, context): Promise<void> {
+	async executeSmallEvent(player, {
+		response, context
+	}): Promise<void> {
 		const price = await player.getTravelCostThisWeek();
 		const anotherMemberOnBoat = await Maps.getGuildMembersOnBoat(player);
 		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);

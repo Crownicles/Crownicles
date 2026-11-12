@@ -184,7 +184,9 @@ function getEndCallback(
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent(response, player, context): void {
+	executeSmallEvent(player, {
+		response, context
+	}): void {
 		const properties = SmallEventDataController.instance.getById("limoges")!
 			.getProperties<LimogesProperties>();
 		const question = getRandomQuestion(properties);

@@ -169,7 +169,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 					MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM
 				].includes(mapId));
 	},
-	executeSmallEvent: (response, player, context) => {
+	executeSmallEvent: (player, {
+		response, context
+	}) => {
 		const collector = new ReactionCollectorGobletsGame();
 
 		const endCallback: EndCallback = async (collector, response) => {

@@ -4,7 +4,7 @@ import { Maps } from "../maps/Maps";
 import { MapLinkDataController } from "../../data/MapLink";
 import { MapLocationDataController } from "../../data/MapLocation";
 import {
-	CrowniclesPacket, makePacket, PacketContext
+	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
@@ -608,7 +608,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 		}
 		return await PlayerSmallEvents.playerSmallEventCount(player.id, SmallEventConstants.UNIQUE_EVENT_IDS.GARDENER) === 0;
 	},
-	executeSmallEvent: async (response: CrowniclesPacket[], player, context: PacketContext): Promise<void> => {
+	executeSmallEvent: async (player, {
+		response, context
+	}): Promise<void> => {
 		const home = await Homes.getOfPlayer(player.id);
 		const nextSeedId = await getNextSeedId(player, home);
 

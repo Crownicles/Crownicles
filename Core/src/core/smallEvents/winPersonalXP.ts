@@ -9,7 +9,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		const xpWon = RandomUtils.rangedInt(SmallEventConstants.EXPERIENCE);
 		await player.addExperience({
 			amount: xpWon,

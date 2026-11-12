@@ -353,7 +353,9 @@ function generateInteractionAmount(handler: PetInteractionConfig): number | unde
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: async player => Maps.isOnContinent(player) && await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT),
-	executeSmallEvent: async (response, player, context): Promise<void> => {
+	executeSmallEvent: async (player, {
+		response, context
+	}): Promise<void> => {
 		const petEntity = await PetEntities.getById(player.petId);
 		if (!petEntity) {
 			PacketUtils.pushInternalError(response, "Small event pet: pet entity not found", {

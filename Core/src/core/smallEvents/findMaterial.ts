@@ -69,7 +69,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted(player): boolean {
 		return Maps.isOnContinent(player);
 	},
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (player, { response }): Promise<void> => {
 		const material = pickMaterialFromBiome(pickTravelBiome(player), rollMaterialRarity());
 		const quantity = rollQuantity();
 
