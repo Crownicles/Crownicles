@@ -9,7 +9,7 @@ import {
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightAlterations } from "../../FightAlterations";
 import { FightUtils } from "../../../../utils/FightUtils";
-import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { PlayerBaseFighter } from "../../../fighter/PlayerBaseFighter";
 import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
@@ -20,8 +20,8 @@ function getAttackInfo(): attackInfo {
 	};
 }
 
-function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
-	const petId = (sender as PlayerFighter).pet!.typeId;
+function getStatsInfo(sender: PlayerBaseFighter, receiver: Fighter): statsInfo {
+	const petId = sender.pet!.typeId;
 	const petData = PetDataController.instance.getById(petId)!;
 	return {
 		attackerStats: [

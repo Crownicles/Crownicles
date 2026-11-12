@@ -3,10 +3,11 @@ import { readdirSync } from "fs";
 import { FightAction } from "./FightAction";
 import { FightController } from "../core/fights/FightController";
 import { Fighter } from "../core/fights/fighter/Fighter";
+import type { PlayerBaseFighter } from "../core/fights/fighter/PlayerBaseFighter";
 import { PetAssistanceResult } from "../../../Lib/src/types/PetAssistanceResult";
 
 export class PetAssistance extends FightAction {
-	public async execute(fighter: Fighter, opponent: Fighter, turn: number, fightController: FightController): Promise<PetAssistanceResult | null> {
+	public async execute(fighter: PlayerBaseFighter, opponent: Fighter, turn: number, fightController: FightController): Promise<PetAssistanceResult | null> {
 		const result = await PetAssistanceDataController.getPetAssistanceFunction(this.id)(fighter, opponent, turn, fightController);
 		if (!result) {
 			return null;
@@ -16,7 +17,10 @@ export class PetAssistance extends FightAction {
 	}
 }
 
-export type PetAssistanceFunc = (affected: Fighter, opponent: Fighter, turn: number, fight: FightController) => Promise<PetAssistanceResult | null>;
+/**
+ * Only the player fighters (human, AI or king guard) have a pet assisting them
+ */
+export type PetAssistanceFunc = (affected: PlayerBaseFighter, opponent: Fighter, turn: number, fight: FightController) => Promise<PetAssistanceResult | null>;
 
 export class PetAssistanceDataController extends DataControllerString<PetAssistance> {
 	static readonly instance: PetAssistanceDataController = new PetAssistanceDataController("fightActions");

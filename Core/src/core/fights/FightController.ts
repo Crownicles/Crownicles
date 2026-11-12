@@ -10,6 +10,7 @@ import { FighterStatus } from "./FighterStatus";
 import { FightOvertimeBehavior } from "./FightOvertimeBehavior";
 import { MonsterFighter } from "./fighter/MonsterFighter";
 import { PlayerFighter } from "./fighter/PlayerFighter";
+import { PlayerBaseFighter } from "./fighter/PlayerBaseFighter";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import {
 	CrowniclesPacket, PacketContext
@@ -301,10 +302,10 @@ export class FightController {
 	/**
 	 * Execute a pet assistance
 	 * @param petAssistance
+	 * @param attacker The playing fighter, owner of the pet
 	 * @param response
 	 */
-	private async executePetAssistance(petAssistance: PetAssistance, response: CrowniclesPacket[]): Promise<void> {
-		const attacker = this.getPlayingFighter()!;
+	private async executePetAssistance(petAssistance: PetAssistance, attacker: PlayerFighter | AiPlayerFighter, response: CrowniclesPacket[]): Promise<void> {
 		const defender = this.getDefendingFighter()!;
 		const result = await petAssistance.execute(attacker, defender, this.turn, this);
 		if (!result) {
@@ -382,9 +383,9 @@ export class FightController {
 		}
 
 		const currentFighter = this.getPlayingFighter();
-		if ((currentFighter instanceof AiPlayerFighter || currentFighter instanceof PlayerFighter) && currentFighter.pet) {
+		if (currentFighter instanceof PlayerBaseFighter && currentFighter.pet) {
 			for (const petAction of getPetBehaviors(currentFighter.pet.typeId)) {
-				await this.executePetAssistance(petAction, response);
+				await this.executePetAssistance(petAction, currentFighter, response);
 				if (this.state !== FightState.RUNNING) {
 					break;
 				}
