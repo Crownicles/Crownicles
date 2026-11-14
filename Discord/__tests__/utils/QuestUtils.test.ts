@@ -30,13 +30,14 @@ describe("Quest step hints (fr)", () => {
 
 	it("gives the level required by Velanna for the anchor talisman", () => {
 		expect(getHint(QUEST_IDS.EXPEDITION_TALISMANS, "anchorTalisman"))
-			.toContain(`niveau ${ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL} `);
+			.toContain(`Niveau ${ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL} minimum`);
 	});
 
-	it("gives the level, night hours and moon illumination the gardener requires for the lunar moss", () => {
+	it("gives the level, inn night duration, night hours and moon illumination the gardener requires for the lunar moss", () => {
 		const hint = getHint(QUEST_IDS.SEEDS, "lunarMoss");
-		expect(hint).toContain(`niveau ${PlantConstants.SEED_LEVEL_REQUIREMENTS[PlantId.LUNAR_MOSS]} `);
-		expect(hint).toContain(`entre ${PlantConstants.NIGHT_THRESHOLDS.EVENING} h et ${PlantConstants.NIGHT_THRESHOLDS.MORNING} h`);
+		expect(hint).toContain(`Niveau ${PlantConstants.SEED_LEVEL_REQUIREMENTS[PlantId.LUNAR_MOSS]} minimum`);
+		expect(hint).toContain(`moins de ${PlantConstants.INN_NIGHT_FAVOR_HOURS} h`);
+		expect(hint).toContain(`${PlantConstants.NIGHT_THRESHOLDS.EVENING} h – ${PlantConstants.NIGHT_THRESHOLDS.MORNING} h`);
 		expect(hint).toContain(new Intl.NumberFormat(LANGUAGE.FRENCH, { style: "percent" }).format(PlantConstants.MOON_ILLUMINATION_THRESHOLD));
 	});
 

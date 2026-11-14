@@ -2365,7 +2365,7 @@
       "description": "Les quêtes retracent les grandes découvertes qui attendent les aventuriers du royaume. Elles ne rapportent rien par elles-mêmes : chacune de leurs étapes est déjà récompensée en chemin.",
       "questHeader": "{{icon}} **{{name}}**",
       "progression": "{{progressionBar}} {{current}}/{{max}}",
-      "currentStep": "{emote:quests.stepCurrent} {{label}}\n*{{hint}}*",
+      "currentStep": "{emote:quests.stepCurrent} {{label}}\n{{hint}}",
       "noOngoingQuest": "Vous n'avez aucune quête en cours. De nouvelles quêtes se découvrent au fil de vos aventures dans le royaume.",
       "options": {
         "quests": "Quêtes en cours ({{count}})",
@@ -2382,19 +2382,19 @@
           "steps": {
             "meetVelanna": {
               "label": "Rencontrer Velanna",
-              "hint": "Une guerrière balafrée arpente parfois les routes du continent et s'intéresse de près aux familiers de ceux qu'elle croise."
+              "hint": "*Une guerrière balafrée arpente parfois les routes du continent et s'intéresse de près aux familiers de ceux qu'elle croise.*"
             },
             "anchorTalisman": {
               "label": "Obtenir le $t(models:talisman.anchor)",
-              "hint": "Velanna ne confie cet artefact qu'aux aventuriers de niveau {{level}} ou plus, membres d'une guilde et accompagnés d'un familier rassasié, docile et déjà présenté à Talvar."
+              "hint": "Velanna le confie si vous réunissez :\n• Niveau {{level}} minimum\n• Membre d'une guilde\n• Un familier rassasié et docile\n• Un familier déjà présenté à Talvar"
             },
             "successfulExpedition": {
               "label": "Réussir une expédition",
-              "hint": "Le $t(models:talisman.anchor) permet d'envoyer son familier explorer des contrées lointaines depuis {command:pet}."
+              "hint": "*Le $t(models:talisman.anchor) permet d'envoyer son familier explorer des contrées lointaines depuis {command:pet}.*"
             },
             "cloneTalisman": {
               "label": "Obtenir le $t(models:talisman.clone)",
-              "hint": "Les rumeurs parlent d'un artefact légendaire enfoui dans certaines contrées, que seul un familier en expédition pourrait déterrer."
+              "hint": "*Les rumeurs parlent d'un artefact légendaire enfoui dans certaines contrées, que seul un familier en expédition pourrait déterrer.*"
             }
           }
         },
@@ -2405,43 +2405,43 @@
           "steps": {
             "commonHerb": {
               "label": "Planter {emote:plants.1} $t(models:plants.1)",
-              "hint": "Le jardinier, que l'on croise sur les routes forestières, offre cette graine aux aventuriers de niveau {{level}} ou plus. Elle se plante ensuite dans le jardin d'une demeure."
+              "hint": "• Croiser Théobald, le jardinier, sur une route forestière\n• Niveau {{level}} minimum\n• Un jardin dans votre demeure pour la planter"
             },
             "goldenClover": {
               "label": "Planter {emote:plants.2} $t(models:plants.2)",
-              "hint": "Le jardinier cède cette graine aux aventuriers de niveau {{level}} ou plus, contre {{price, number}} {emote:unitValues.money}."
+              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
             },
             "lunarMoss": {
               "label": "Planter {emote:plants.3} $t(models:plants.3)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier volant, ou ayant passé la nuit à l'auberge dans les {{innNightHours}} dernières heures, ou le croisant la nuit entre {{nightStart}} h et {{nightEnd}} h quand la lune est éclairée à plus de {{moonIllumination, number(style: percent)}}."
+              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier volant**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **nuit de lune** ({{nightStart}} h – {{nightEnd}} h, lune éclairée à plus de {{moonIllumination, number(style: percent)}})"
             },
             "ironRoot": {
               "label": "Planter {emote:plants.4} $t(models:plants.4)",
-              "hint": "Le jardinier cède cette graine aux aventuriers de niveau {{level}} ou plus, contre {{price, number}} {emote:unitValues.money}."
+              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
             },
             "nightMushroom": {
               "label": "Planter {emote:plants.5} $t(models:plants.5)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier nocturne, ou ayant passé la nuit à l'auberge dans les {{innNightHours}} dernières heures, ou le croisant la nuit entre {{nightStart}} h et {{nightEnd}} h."
+              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier nocturne**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **rencontre de nuit** ({{nightStart}} h – {{nightEnd}} h)"
             },
             "venomousLeaf": {
               "label": "Planter {emote:plants.6} $t(models:plants.6)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier herbivore dressé."
+              "hint": "• Niveau {{level}} minimum\n• Un **familier herbivore** dressé"
             },
             "fireBulb": {
               "label": "Planter {emote:plants.7} $t(models:plants.7)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus portant la marque du feu, par leur familier ou par un équipement porté."
+              "hint": "• Niveau {{level}} minimum\n• Au choix : être **mage**, un **familier de feu** ou un **équipement de feu** porté"
             },
             "meatPlant": {
               "label": "Planter {emote:plants.8} $t(models:plants.8)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier carnivore de rareté $t(items:rarities.{{rarity}}) ou supérieure."
+              "hint": "• Niveau {{level}} minimum\n• Un **familier carnivore** de rareté $t(items:rarities.{{rarity}}) ou supérieure"
             },
             "crystalFlower": {
               "label": "Planter {emote:plants.9} $t(models:plants.9)",
-              "hint": "Le jardinier cède cette graine aux aventuriers de niveau {{level}} ou plus, contre {{price, number}} {emote:unitValues.money}."
+              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
             },
             "ancientTree": {
               "label": "Planter {emote:plants.10} $t(models:plants.10)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier herbivore dressé de rareté $t(items:rarities.{{rarity}}) ou supérieure."
+              "hint": "• Niveau {{level}} minimum\n• Un **familier herbivore** dressé de rareté $t(items:rarities.{{rarity}}) ou supérieure"
             }
           }
         }
