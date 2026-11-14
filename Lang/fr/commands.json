@@ -2386,7 +2386,7 @@
             },
             "anchorTalisman": {
               "label": "Obtenir le $t(models:talisman.anchor)",
-              "hint": "Velanna ne confie cet artefact qu'aux aventuriers expérimentés membres d'une guilde, accompagnés d'un familier rassasié, docile et déjà présenté à Talvar."
+              "hint": "Velanna ne confie cet artefact qu'aux aventuriers de niveau {{level}} ou plus, membres d'une guilde et accompagnés d'un familier rassasié, docile et déjà présenté à Talvar."
             },
             "successfulExpedition": {
               "label": "Réussir une expédition",
@@ -2405,43 +2405,43 @@
           "steps": {
             "commonHerb": {
               "label": "Planter {emote:plants.1} $t(models:plants.1)",
-              "hint": "Le jardinier, que l'on croise sur les routes forestières, offre cette graine aux aventuriers assez expérimentés. Elle se plante ensuite dans le jardin d'une demeure."
+              "hint": "Le jardinier, que l'on croise sur les routes forestières, offre cette graine aux aventuriers de niveau {{level}} ou plus. Elle se plante ensuite dans le jardin d'une demeure."
             },
             "goldenClover": {
               "label": "Planter {emote:plants.2} $t(models:plants.2)",
-              "hint": "Le jardinier ne cède cette graine que contre quelques pièces."
+              "hint": "Le jardinier cède cette graine aux aventuriers de niveau {{level}} ou plus, contre {{price, number}} {emote:unitValues.money}."
             },
             "lunarMoss": {
               "label": "Planter {emote:plants.3} $t(models:plants.3)",
-              "hint": "Le jardinier ne sort cette graine de sa besace qu'en pleine nuit, sous la lumière d'une lune bien ronde."
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, la nuit entre {{nightStart}} h et {{nightEnd}} h, quand la lune est éclairée à plus de {{moonIllumination, number(style: percent)}}."
             },
             "ironRoot": {
               "label": "Planter {emote:plants.4} $t(models:plants.4)",
-              "hint": "Le jardinier réclame une somme rondelette en échange de cette graine."
+              "hint": "Le jardinier cède cette graine aux aventuriers de niveau {{level}} ou plus, contre {{price, number}} {emote:unitValues.money}."
             },
             "nightMushroom": {
               "label": "Planter {emote:plants.5} $t(models:plants.5)",
-              "hint": "Le jardinier ne confie cette graine qu'une fois la nuit tombée."
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, la nuit entre {{nightStart}} h et {{nightEnd}} h."
             },
             "venomousLeaf": {
               "label": "Planter {emote:plants.6} $t(models:plants.6)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers accompagnés d'un familier herbivore bien dressé."
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier herbivore dressé."
             },
             "fireBulb": {
               "label": "Planter {emote:plants.7} $t(models:plants.7)",
-              "hint": "Seul un aventurier portant la marque du feu, par son familier ou par son équipement, peut obtenir cette graine."
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus portant la marque du feu, par leur familier ou par un équipement porté."
             },
             "meatPlant": {
               "label": "Planter {emote:plants.8} $t(models:plants.8)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers accompagnés d'un familier carnivore d'une grande rareté."
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier carnivore de rareté $t(items:rarities.{{rarity}}) ou supérieure."
             },
             "crystalFlower": {
               "label": "Planter {emote:plants.9} $t(models:plants.9)",
-              "hint": "Le jardinier exige une petite fortune en échange de cette graine."
+              "hint": "Le jardinier cède cette graine aux aventuriers de niveau {{level}} ou plus, contre {{price, number}} {emote:unitValues.money}."
             },
             "ancientTree": {
               "label": "Planter {emote:plants.10} $t(models:plants.10)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers accompagnés d'un familier herbivore bien dressé et d'une grande rareté."
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier herbivore dressé de rareté $t(items:rarities.{{rarity}}) ou supérieure."
             }
           }
         }

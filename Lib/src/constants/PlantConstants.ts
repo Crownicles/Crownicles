@@ -3,6 +3,7 @@ import {
 	getDayNumber, getWeekNumber
 } from "../utils/TimeUtils";
 import { frac } from "../utils/MathUtils";
+import { ItemRarity } from "./ItemConstants";
 
 /**
  * Gardener interaction types sent in SmallEventGardenerPacket
@@ -513,6 +514,11 @@ export abstract class PlantConstants {
 	 * Minimum moon illumination (0-1) required for LUNAR_MOSS seed.
 	 */
 	public static readonly MOON_ILLUMINATION_THRESHOLD = 0.5;
+
+	/**
+	 * Minimum rarity of the pet the gardener requires before handing over the meat plant and ancestral tree seeds
+	 */
+	public static readonly RARE_PET_SEED_MIN_RARITY = ItemRarity.EPIC;
 
 	/**
 	 * Maximum plant ID value (ANCIENT_TREE = 10).
