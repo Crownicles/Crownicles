@@ -32,7 +32,9 @@ import {
 import {
 	PetDataController
 } from "../../data/Pet";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import {
+	PetConstants, PetTag
+} from "../../../../Lib/src/constants/PetConstants";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -260,7 +262,7 @@ async function checkSeedFavors(player: Player, favors: SeedFavor[], failureKey: 
 	};
 }
 
-async function hasPetWithTag(player: Player, tag: string): Promise<boolean> {
+async function hasPetWithTag(player: Player, tag: PetTag): Promise<boolean> {
 	const petEntity = await getOwnedPet(player);
 	return Boolean(petEntity && PetDataController.instance.getById(petEntity.typeId)?.hasTag(tag));
 }
