@@ -2347,15 +2347,94 @@
     "off": "Le bot a été sorti de maintenance avec succès."
   },
   "missions": {
+    "pages": {
+      "missions": "Missions",
+      "kingChallenge": "Défi du roi",
+      "quests": "Quêtes"
+    },
     "kingChallenge": {
-      "button": "Défi du roi",
-      "backButton": "Retour",
       "title": "Défi du roi de {{pseudo}}",
       "description": "Chaque lundi, le roi lance un nouveau défi aux aventuriers du royaume et récompense ceux qui le relèvent.",
       "header": "{emote:kingChallenge.icon} **Défi du roi ({{tier}}/{{tierCount}})**",
       "nextTier": "Gagner {{objective, number}} {emote:unitValues.score} cette semaine pour relever le palier {{nextTier}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
       "completed": "Vous avez relevé le défi du roi jusqu'au dernier palier ! Un nouveau défi sera lancé {{time}}.",
       "tier": "{emote:kingChallenge.{{status}}} Palier {{tier}} : {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
+    },
+    "quests": {
+      "title": "Quêtes de {{pseudo}}",
+      "description": "Les quêtes retracent les grandes découvertes qui attendent les aventuriers du royaume. Elles ne rapportent rien par elles-mêmes : chacune de leurs étapes est déjà récompensée en chemin.",
+      "header": "**{{name}} ({{current}}/{{max}})**\n{{progressionBar}}",
+      "stepDone": "{emote:quests.stepDone} {{step}}",
+      "stepCurrent": "{emote:quests.stepCurrent} {{step}}\n*{{hint}}*",
+      "completed": "Quête terminée !",
+      "list": {
+        "expeditionTalismans": {
+          "name": "{emote:expedition.talisman} Les talismans d'expédition",
+          "steps": {
+            "meetVelanna": {
+              "label": "Rencontrer Velanna",
+              "hint": "Une guerrière balafrée arpente parfois les routes du continent et s'intéresse de près aux familiers de ceux qu'elle croise."
+            },
+            "anchorTalisman": {
+              "label": "Obtenir le $t(models:talisman.anchor)",
+              "hint": "Velanna ne confie cet artefact qu'aux aventuriers expérimentés membres d'une guilde, accompagnés d'un familier rassasié, docile et déjà présenté à Talvar."
+            },
+            "successfulExpedition": {
+              "label": "Réussir une expédition",
+              "hint": "Le $t(models:talisman.anchor) permet d'envoyer son familier explorer des contrées lointaines depuis {command:pet}."
+            },
+            "cloneTalisman": {
+              "label": "Obtenir le $t(models:talisman.clone)",
+              "hint": "Les rumeurs parlent d'un artefact légendaire enfoui dans certaines contrées, que seul un familier en expédition pourrait déterrer."
+            }
+          }
+        },
+        "seeds": {
+          "name": "{emote:city.gardenStatus.seed} Les graines du jardinier",
+          "steps": {
+            "commonHerb": {
+              "label": "Planter {emote:plants.1} $t(models:plants.1)",
+              "hint": "Le jardinier, que l'on croise sur les routes forestières, offre cette graine aux aventuriers assez expérimentés. Elle se plante ensuite dans le jardin d'une demeure."
+            },
+            "goldenClover": {
+              "label": "Planter {emote:plants.2} $t(models:plants.2)",
+              "hint": "Le jardinier ne cède cette graine que contre quelques pièces."
+            },
+            "lunarMoss": {
+              "label": "Planter {emote:plants.3} $t(models:plants.3)",
+              "hint": "Le jardinier ne sort cette graine de sa besace qu'en pleine nuit, sous la lumière d'une lune bien ronde."
+            },
+            "ironRoot": {
+              "label": "Planter {emote:plants.4} $t(models:plants.4)",
+              "hint": "Le jardinier réclame une somme rondelette en échange de cette graine."
+            },
+            "nightMushroom": {
+              "label": "Planter {emote:plants.5} $t(models:plants.5)",
+              "hint": "Le jardinier ne confie cette graine qu'une fois la nuit tombée."
+            },
+            "venomousLeaf": {
+              "label": "Planter {emote:plants.6} $t(models:plants.6)",
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers accompagnés d'un familier herbivore bien dressé."
+            },
+            "fireBulb": {
+              "label": "Planter {emote:plants.7} $t(models:plants.7)",
+              "hint": "Seul un aventurier portant la marque du feu, par son familier ou par son équipement, peut obtenir cette graine."
+            },
+            "meatPlant": {
+              "label": "Planter {emote:plants.8} $t(models:plants.8)",
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers accompagnés d'un familier carnivore d'une grande rareté."
+            },
+            "crystalFlower": {
+              "label": "Planter {emote:plants.9} $t(models:plants.9)",
+              "hint": "Le jardinier exige une petite fortune en échange de cette graine."
+            },
+            "ancientTree": {
+              "label": "Planter {emote:plants.10} $t(models:plants.10)",
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers accompagnés d'un familier herbivore bien dressé et d'une grande rareté."
+            }
+          }
+        }
+      }
     },
     "title": "Missions de {{pseudo}}",
     "subcategories": {
