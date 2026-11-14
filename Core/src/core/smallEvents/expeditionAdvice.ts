@@ -399,7 +399,17 @@ async function executeSmallEvent(player: Player, {
 	}
 }
 
+/**
+ * Velanna is guaranteed to a player who fulfills every condition of the anchor talisman without having it yet,
+ * so that a player who prepared the talisman is not left at the mercy of the draw
+ */
+async function isVelannaGuaranteed(player: Player): Promise<boolean> {
+	return !(await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman
+		&& (await checkTalismanConditions(player)).conditionMet;
+}
+
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted,
-	executeSmallEvent
+	executeSmallEvent,
+	isGuaranteed: isVelannaGuaranteed
 };
