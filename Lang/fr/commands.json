@@ -2363,20 +2363,22 @@
     "quests": {
       "title": "Quêtes de {{pseudo}}",
       "description": "Les quêtes retracent les grandes découvertes qui attendent les aventuriers du royaume. Elles ne rapportent rien par elles-mêmes : chacune de leurs étapes est déjà récompensée en chemin.",
-      "header": "**{{name}} ({{current}}/{{max}})**\n{{progressionBar}}",
-      "stepDone": "{emote:quests.stepDone} {{step}}",
-      "stepCurrent": "{emote:quests.stepCurrent} {{step}}\n*{{hint}}*",
+      "questHeader": "{{icon}} **{{name}}**",
+      "progression": "{{progressionBar}} {{current}}/{{max}}",
+      "currentStep": "{emote:quests.stepCurrent} {{label}}\n*{{hint}}*",
       "noOngoingQuest": "Vous n'avez aucune quête en cours. De nouvelles quêtes se découvrent au fil de vos aventures dans le royaume.",
       "options": {
         "quests": "Quêtes en cours ({{count}})",
         "completedQuests": "Quêtes terminées ({{count}})"
       },
       "completedTitle": "Quêtes terminées de {{pseudo}}",
-      "completedQuest": "{emote:quests.stepDone} **{{name}}**",
-      "noCompletedQuest": "Aucune quête n'est encore terminée.",
+      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} étapes",
+      "noCompletedQuest": "Aucune quête n'est encore terminée. Les quêtes accomplies sont conservées ici.",
       "list": {
         "expeditionTalismans": {
-          "name": "{emote:expedition.talisman} Les talismans d'expédition",
+          "name": "Les talismans d'expédition",
+          "icon": "{emote:expedition.talisman}",
+          "description": "Les familiers les plus aguerris peuvent explorer seuls les contrées lointaines, à condition d'être liés à leur maître par des artefacts ancestraux.",
           "steps": {
             "meetVelanna": {
               "label": "Rencontrer Velanna",
@@ -2397,7 +2399,9 @@
           }
         },
         "seeds": {
-          "name": "{emote:city.gardenStatus.seed} Les graines du jardinier",
+          "name": "Les graines du jardinier",
+          "icon": "{emote:city.gardenStatus.seed}",
+          "description": "Un jardinier itinérant confie ses graines les plus rares aux aventuriers qui ont su faire pousser les précédentes.",
           "steps": {
             "commonHerb": {
               "label": "Planter {emote:plants.1} $t(models:plants.1)",

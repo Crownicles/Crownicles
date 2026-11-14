@@ -41,6 +41,7 @@ import { MessagesUtils } from "../../utils/MessagesUtils";
 import { QuestUpdatedPacket } from "../../../../Lib/src/packets/events/QuestUpdatedPacket";
 import { QuestUtils } from "../../utils/QuestUtils";
 import { QuestProgress } from "../../../../Lib/src/types/QuestProgress";
+import { APIEmbedField } from "discord.js";
 
 type MissionRewardTotals = {
 	gems: number;
@@ -141,17 +142,50 @@ function getQuestUpdateContext(quest: QuestProgress): "obtained" | "progressed" 
 }
 
 /**
- * Description of a quest update: the quest progression, the step just completed, the next one and how to follow the quests
+ * Description of a quest update: the quest, its story when it is obtained, and its progression
  */
 function buildQuestUpdatedDescription(quest: QuestProgress, lng: Language): string {
-	return StringUtils.joinParagraphs([
-		StringUtils.joinLines([
-			QuestUtils.formatHeader(quest, lng),
-			QuestUtils.formatDoneStep(quest, quest.stepsDone - 1, lng),
-			...QuestUtils.formatCurrentStep(quest, lng)
-		]),
-		i18n.t("notifications:quests.followQuests", { lng })
+	return StringUtils.joinLines([
+		QuestUtils.formatHeader(quest, lng),
+		...quest.stepsDone === 1
+			? [
+				i18n.t("notifications:quests.description", {
+					lng,
+					description: QuestUtils.getDescription(quest, lng)
+				})
+			]
+			: [],
+		QuestUtils.formatProgression(quest, lng)
 	]);
+}
+
+/**
+ * Fields of a quest update: the step just completed, then the next step or the completion of the quest, then how to follow the quests
+ */
+function buildQuestUpdatedFields(quest: QuestProgress, lng: Language): APIEmbedField[] {
+	const nextStepField: APIEmbedField = QuestUtils.isCompleted(quest)
+		? {
+			name: i18n.t("notifications:quests.completed", { lng }),
+			value: i18n.t("notifications:quests.completedValue", { lng })
+		}
+		: {
+			name: i18n.t("notifications:quests.nextStep", { lng }),
+			value: i18n.t("notifications:quests.nextStepValue", {
+				lng,
+				...QuestUtils.getStep(quest, quest.stepsDone, lng)
+			})
+		};
+	return [
+		{
+			name: i18n.t("notifications:quests.stepDone", { lng }),
+			value: QuestUtils.getStep(quest, quest.stepsDone - 1, lng).label
+		},
+		nextStepField,
+		{
+			name: i18n.t("notifications:quests.journal", { lng }),
+			value: i18n.t("notifications:quests.journalValue", { lng })
+		}
+	];
 }
 
 /**
@@ -454,7 +488,11 @@ export default class EventsHandlers {
 		}
 
 		await interaction.channel.send({
-			embeds: [embed.setDescription(buildQuestUpdatedDescription(packet.quest, lng))]
+			embeds: [
+				embed
+					.setDescription(buildQuestUpdatedDescription(packet.quest, lng))
+					.addFields(buildQuestUpdatedFields(packet.quest, lng))
+			]
 		});
 	}
 

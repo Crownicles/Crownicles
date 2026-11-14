@@ -284,10 +284,7 @@ function getQuestsDescription(ongoingQuests: QuestProgress[], lng: Language): st
  */
 function getCompletedQuestsDescription(completedQuests: QuestProgress[], lng: Language): string {
 	return completedQuests.length > 0
-		? StringUtils.joinLines(completedQuests.map(quest => i18n.t("commands:missions.quests.completedQuest", {
-			lng,
-			name: QuestUtils.getName(quest, lng)
-		})))
+		? StringUtils.joinLines(completedQuests.map(quest => QuestUtils.formatCompletedQuest(quest, lng)))
 		: i18n.t("commands:missions.quests.noCompletedQuest", { lng });
 }
 
