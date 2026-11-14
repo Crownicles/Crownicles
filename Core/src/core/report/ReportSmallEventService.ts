@@ -13,11 +13,12 @@ import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { crowniclesInstance } from "../../app";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 
 /**
  * Small event eligibility result
  */
-interface SmallEventEligibility {
+export interface SmallEventEligibility {
 	key: string;
 	rarity: number;
 }
@@ -85,9 +86,13 @@ function selectRandomSmallEvent(eligibleEvents: SmallEventEligibility[]): string
 }
 
 /**
- * First eligible small event guaranteed to happen now, if any
+ * First eligible small event guaranteed to happen now, if any. Guarantees only apply to the small event following the
+ * first ones of a path, so a path has at most one guaranteed small event and the checks are skipped the rest of the time.
  */
-async function findGuaranteedSmallEvent(player: Player, eligibleEvents: SmallEventEligibility[]): Promise<string | null> {
+export async function findGuaranteedSmallEvent(player: Player, eligibleEvents: SmallEventEligibility[]): Promise<string | null> {
+	if (await PlayerSmallEvents.countSmallEventsOfPlayer(player.id) !== SmallEventConstants.GUARANTEED_AFTER_SMALL_EVENTS) {
+		return null;
+	}
 	for (const event of eligibleEvents) {
 		if (await SmallEventDataController.getSmallEventFunction(event.key)?.isGuaranteed?.(player)) {
 			return event.key;

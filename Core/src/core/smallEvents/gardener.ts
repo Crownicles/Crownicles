@@ -698,14 +698,11 @@ async function explainBlockedSeed(response: CrowniclesPacket[], player: Player, 
 }
 
 /**
- * The gardener is guaranteed on a forest path once enough small events happened on it without him, when the player
- * fulfills the conditions of their next seed: a player who prepared the right pet is not left at the mercy of the draw.
- * The small event being eligible already means the path is a forest one and the gardener did not appear on it yet.
+ * The gardener is guaranteed on a forest path to a player who fulfills the conditions of their next seed: a player who
+ * prepared the right pet is not left at the mercy of the draw. The small event being eligible already means the path is
+ * a forest one and the gardener did not appear on it yet.
  */
 async function isGardenerGuaranteed(player: Player): Promise<boolean> {
-	if (await PlayerSmallEvents.countSmallEventsOfPlayer(player.id) < PlantConstants.GARDENER_GUARANTEED_AFTER_SMALL_EVENTS) {
-		return false;
-	}
 	const home = await Homes.getOfPlayer(player.id);
 	const nextSeedId = await findNextSeedId(player.id, home);
 	return nextSeedId !== null && (await checkSeedConditions(player, nextSeedId, home)).canObtain;

@@ -21,6 +21,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../utils/PetUtils";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 
 /**
  * Return true if the player has a pet AND the pet is not feisty AND the dwarf never saw this pet from it
@@ -163,6 +164,22 @@ async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, pe
 	}
 }
 
+/**
+ * Talvar is guaranteed to a player working towards the anchor talisman whose pet he never saw, since showing it to him
+ * is one of the conditions of the talisman
+ */
+async function isTalvarGuaranteed(player: Player): Promise<boolean> {
+	if (!player.petId || (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman) {
+		return false;
+	}
+	const petEntity = await PetEntities.getById(player.petId);
+	if (!petEntity || petEntity.isFeisty()) {
+		return false;
+	}
+	return await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT)
+		&& !await DwarfPetsSeen.isPetSeen(player, petEntity.typeId);
+}
+
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: player => {
 		const destination = player.getDestination();
@@ -183,5 +200,6 @@ export const smallEventFuncs: SmallEventFuncs = {
 		}
 
 		await manageNewPetSeen(response, player, petEntity);
-	}
+	},
+	isGuaranteed: isTalvarGuaranteed
 };

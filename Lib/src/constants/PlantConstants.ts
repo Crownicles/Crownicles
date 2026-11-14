@@ -529,12 +529,6 @@ export abstract class PlantConstants {
 	public static readonly INN_NIGHT_FAVOR_DURATION: Second = hoursToSeconds(asHours(PlantConstants.INN_NIGHT_FAVOR_HOURS));
 
 	/**
-	 * The gardener is guaranteed on a forest path once this many small events happened on it without him,
-	 * when the player fulfills the conditions of their next seed
-	 */
-	public static readonly GARDENER_GUARANTEED_AFTER_SMALL_EVENTS = 3;
-
-	/**
 	 * Chance that the consolation gift of a blocked seed is a plant rather than a material
 	 */
 	public static readonly GARDENER_CONSOLATION_PLANT_PROBABILITY = 0.6;

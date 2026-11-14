@@ -2378,7 +2378,7 @@
         "expeditionTalismans": {
           "name": "Les talismans d'expédition",
           "icon": "{emote:expedition.talisman}",
-          "description": "Les familiers les plus aguerris peuvent explorer seuls les contrées lointaines, à condition d'être liés à leur maître par des artefacts ancestraux.",
+          "description": "Les familiers les plus aguerris peuvent explorer seuls les contrées lointaines, à condition d'être liés à leur maître par des artefacts ancestraux. Velanna et Talvar finissent toujours par croiser la route des aventuriers qui sont prêts.",
           "steps": {
             "meetVelanna": {
               "label": "Rencontrer Velanna",

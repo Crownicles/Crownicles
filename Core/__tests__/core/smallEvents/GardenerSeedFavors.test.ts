@@ -2,7 +2,6 @@ import {
 	afterEach, beforeEach, describe, expect, it, vi
 } from "vitest";
 import { smallEventFuncs } from "../../../src/core/smallEvents/gardener";
-import { PlayerSmallEvents } from "../../../src/core/database/game/models/PlayerSmallEvent";
 import { Homes } from "../../../src/core/database/game/models/Home";
 import { HomeGardenSlots } from "../../../src/core/database/game/models/HomeGardenSlot";
 import { PlayerPlantSlots } from "../../../src/core/database/game/models/PlayerPlantSlot";
@@ -13,7 +12,7 @@ import { LogsReadRequests } from "../../../src/core/database/logs/LogsReadReques
 import { MaterialDataController } from "../../../src/data/Material";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
-	GARDENER_INTERACTIONS, PlantConstants, PlantId, SEED_CONDITION_FAILURE
+	GARDENER_INTERACTIONS, PlantId, SEED_CONDITION_FAILURE
 } from "../../../../Lib/src/constants/PlantConstants";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { givePlantsToPlayer } from "../../../src/core/utils/PlantDeliveryUtils";
@@ -71,7 +70,6 @@ describe("gardener seed favors and guaranteed encounter", () => {
 	beforeEach(() => {
 		vi.useFakeTimers({ toFake: ["Date"] });
 		vi.setSystemTime(NOON);
-		vi.spyOn(PlayerSmallEvents, "countSmallEventsOfPlayer").mockResolvedValue(PlantConstants.GARDENER_GUARANTEED_AFTER_SMALL_EVENTS);
 		vi.spyOn(Homes, "getOfPlayer").mockResolvedValue({
 			id: 9,
 			getLevel: () => ({ features: { gardenPlots: 4 } })
@@ -83,12 +81,6 @@ describe("gardener seed favors and guaranteed encounter", () => {
 	afterEach(() => {
 		vi.useRealTimers();
 		vi.restoreAllMocks();
-	});
-
-	it("is not guaranteed before enough small events happened on the path", async () => {
-		vi.spyOn(PlayerSmallEvents, "countSmallEventsOfPlayer").mockResolvedValue(PlantConstants.GARDENER_GUARANTEED_AFTER_SMALL_EVENTS - 1);
-		mockNextSeed(PlantId.COMMON_HERB);
-		expect(await isGuaranteed(makePlayer())).toBe(false);
 	});
 
 	it("is not guaranteed in daylight to a player who cannot earn the lunar moss", async () => {
