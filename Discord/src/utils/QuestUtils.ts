@@ -10,6 +10,11 @@ type QuestStepTranslation = {
 	hint: string;
 };
 
+type QuestIconAndName = {
+	icon: string;
+	name: string;
+};
+
 export abstract class QuestUtils {
 	static getStepCount(quest: QuestProgress): number {
 		return QuestConstants.STEPS[quest.questId].length;
@@ -25,8 +30,7 @@ export abstract class QuestUtils {
 	static formatHeader(quest: QuestProgress, lng: Language): string {
 		return i18n.t("commands:missions.quests.questHeader", {
 			lng,
-			icon: i18n.t(`commands:missions.quests.list.${quest.questId}.icon`, { lng }),
-			name: i18n.t(`commands:missions.quests.list.${quest.questId}.name`, { lng })
+			...QuestUtils.getIconAndName(quest, lng)
 		});
 	}
 
@@ -78,9 +82,15 @@ export abstract class QuestUtils {
 	static formatCompletedQuest(quest: QuestProgress, lng: Language): string {
 		return i18n.t("commands:missions.quests.completedQuest", {
 			lng,
-			icon: i18n.t(`commands:missions.quests.list.${quest.questId}.icon`, { lng }),
-			name: i18n.t(`commands:missions.quests.list.${quest.questId}.name`, { lng }),
+			...QuestUtils.getIconAndName(quest, lng),
 			max: QuestUtils.getStepCount(quest)
 		});
+	}
+
+	private static getIconAndName(quest: QuestProgress, lng: Language): QuestIconAndName {
+		return {
+			icon: i18n.t(`commands:missions.quests.list.${quest.questId}.icon`, { lng }),
+			name: i18n.t(`commands:missions.quests.list.${quest.questId}.name`, { lng })
+		};
 	}
 }

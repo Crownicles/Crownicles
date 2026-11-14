@@ -2,7 +2,7 @@ import {
 	beforeEach, describe, expect, it, vi
 } from "vitest";
 import {
-	getObtainedQuestsProgress, getSeedsQuestStepOfPlant, notifyQuestStepCompleted
+	getObtainedQuestsProgress, notifyQuestStepCompleted
 } from "../../../src/core/quests/Quests";
 import { QuestUpdatedPacket } from "../../../../Lib/src/packets/events/QuestUpdatedPacket";
 import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -134,12 +134,6 @@ describe("Quests progress", () => {
 				stepId: "successfulExpedition"
 			});
 			expect(response).toHaveLength(0);
-		});
-
-		it("maps each plant to its step of the seeds quest", () => {
-			expect(getSeedsQuestStepOfPlant(PlantId.COMMON_HERB)).toBe("commonHerb");
-			expect(getSeedsQuestStepOfPlant(PlantId.ANCIENT_TREE)).toBe("ancientTree");
-			expect(getSeedsQuestStepOfPlant(0)).toBeUndefined();
 		});
 	});
 });

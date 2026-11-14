@@ -278,6 +278,33 @@ async function handlePlayerWithTalisman(
 }
 
 /**
+ * Properties shared by every packet sent to a player who does not have the talisman yet
+ */
+type WithoutTalismanPacketData = Pick<SmallEventExpeditionAdvicePacket, "alreadyHasTalisman" | "talismanGiven" | "petInExpedition"> & {
+	encounterCount: number;
+};
+
+/**
+ * Tell Velanna's lore about the talisman during the first encounters. The first one starts the expedition talismans quest
+ */
+async function handleTalismanIntro(
+	response: CrowniclesPacket[],
+	player: Player,
+	basePacketData: WithoutTalismanPacketData
+): Promise<void> {
+	response.push(makePacket(SmallEventExpeditionAdvicePacket, {
+		...basePacketData,
+		interactionType: ExpeditionAdviceInteractionType.TALISMAN_INTRO
+	}));
+	if (basePacketData.encounterCount === 1) {
+		await notifyQuestStepCompleted(response, player, {
+			questId: QUEST_IDS.EXPEDITION_TALISMANS,
+			stepId: "meetVelanna"
+		});
+	}
+}
+
+/**
  * Handle the case when player doesn't have talisman yet
  */
 async function handlePlayerWithoutTalisman(
@@ -292,7 +319,7 @@ async function handlePlayerWithoutTalisman(
 	);
 
 	// Base packet properties for all cases when player doesn't have talisman
-	const basePacketData = {
+	const basePacketData: WithoutTalismanPacketData = {
 		alreadyHasTalisman: false,
 		talismanGiven: false,
 		petInExpedition: false,
@@ -304,16 +331,7 @@ async function handlePlayerWithoutTalisman(
 	 * Note: encounterCount already includes current encounter as it's logged before execution
 	 */
 	if (encounterCount <= ExpeditionConstants.TALISMAN_EVENT.TALISMAN_INTRO_ENCOUNTERS) {
-		response.push(makePacket(SmallEventExpeditionAdvicePacket, {
-			...basePacketData,
-			interactionType: ExpeditionAdviceInteractionType.TALISMAN_INTRO
-		}));
-		if (encounterCount === 1) {
-			await notifyQuestStepCompleted(response, player, {
-				questId: QUEST_IDS.EXPEDITION_TALISMANS,
-				stepId: "meetVelanna"
-			});
-		}
+		await handleTalismanIntro(response, player, basePacketData);
 		return;
 	}
 

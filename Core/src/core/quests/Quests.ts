@@ -21,6 +21,14 @@ type QuestProgressComputer = (player: Player) => Promise<number>;
 export type SeedsQuestStepId = QuestStepId<typeof QUEST_IDS.SEEDS>;
 
 /**
+ * A step of a given quest
+ */
+export type QuestStepReference<Q extends QuestId> = {
+	questId: Q;
+	stepId: QuestStepId<Q>;
+};
+
+/**
  * Plant to plant in the garden to complete each step of the seeds quest
  */
 const SEEDS_QUEST_STEP_PLANTS: Record<SeedsQuestStepId, PlantId> = {
@@ -106,10 +114,7 @@ export function getSeedsQuestStepOfPlant(plantId: PlantId | 0): SeedsQuestStepId
 export async function notifyQuestStepCompleted<Q extends QuestId>(
 	response: CrowniclesPacket[],
 	player: Player,
-	questStep: {
-		questId: Q;
-		stepId: QuestStepId<Q>;
-	}
+	questStep: QuestStepReference<Q>
 ): Promise<void> {
 	const stepsDoneWithStep = getQuestSteps(questStep.questId).indexOf(questStep.stepId) + 1;
 	if (await QUEST_PROGRESS_COMPUTERS[questStep.questId](player) > stepsDoneWithStep) {

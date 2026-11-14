@@ -487,15 +487,20 @@ export function handleGardenPlant(
 	});
 }
 
+/**
+ * Outcome of a planting attempt: the packet answering it and, when the plant is the most advanced of the garden, the step of the seeds quest it completes
+ */
+type GardenPlantResult = {
+	planted: boolean;
+	packet: CrowniclesPacket;
+	completedSeedsStep?: SeedsQuestStepId;
+};
+
 async function runGardenPlantUnderLock(
 	player: Locked<Player>,
 	home: Locked<Home>,
 	packet: CommandReportGardenPlantReq
-): Promise<{
-	planted: boolean;
-	packet: CrowniclesPacket;
-	completedSeedsStep?: SeedsQuestStepId;
-}> {
+): Promise<GardenPlantResult> {
 	const validation = await validateGardenPlant(player, home, packet);
 	if (validation.error) {
 		return {
