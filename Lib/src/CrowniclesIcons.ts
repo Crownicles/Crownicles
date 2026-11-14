@@ -128,6 +128,7 @@ export const CrowniclesIcons: {
 		icon: string;
 		stepDone: string;
 		stepCurrent: string;
+		completed: string;
 	};
 	messages: {
 		validate: string;
@@ -2466,7 +2467,8 @@ export const CrowniclesIcons: {
 	quests: {
 		icon: "🧭",
 		stepDone: "✅",
-		stepCurrent: "⏳"
+		stepCurrent: "⏳",
+		completed: "🏆"
 	},
 	missions: {
 		expired: "📤",
