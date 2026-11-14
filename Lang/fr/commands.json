@@ -2413,7 +2413,7 @@
             },
             "lunarMoss": {
               "label": "Planter {emote:plants.3} $t(models:plants.3)",
-              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier volant**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **nuit de lune** ({{nightStart}} h – {{nightEnd}} h, lune éclairée à plus de {{moonIllumination, number(style: percent)}})"
+              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier volant**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **rencontre de nuit** ({{nightStart}} h – {{nightEnd}} h)"
             },
             "ironRoot": {
               "label": "Planter {emote:plants.4} $t(models:plants.4)",

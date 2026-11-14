@@ -44,7 +44,6 @@ export const SEED_CONDITION_SUCCESS = {
 	FREE: "free",
 	PAID: "paid",
 	PAID_ACCEPTED: "paidAccepted",
-	MOON: "moon",
 	NIGHT: "night",
 	FLYING_PET: "flyingPet",
 	NOCTURNAL_PET: "nocturnalPet",
@@ -496,30 +495,6 @@ export abstract class PlantConstants {
 		EVENING: 21,
 		MORNING: 6
 	} as const;
-
-	/**
-	 * Moon API configuration for real moon phase data (Met.no).
-	 */
-	public static readonly MOON_API = {
-		BASE_URL: "https://api.met.no/weatherapi/sunrise/3.0/moon",
-		LAT: 48.8566,
-		LON: 2.3522,
-		USER_AGENT: "Crownicles/1.0",
-		CACHE_DURATION: TimeConstants.MS_TIME.HOUR
-	} as const;
-
-	/**
-	 * Fallback lunar constants used when the moon API is unavailable.
-	 */
-	public static readonly LUNAR_FALLBACK = {
-		CYCLE_DAYS: 29.53058770576,
-		REFERENCE_NEW_MOON: Date.UTC(2000, 0, 6, 18, 14, 0)
-	} as const;
-
-	/**
-	 * Minimum moon illumination (0-1) required for LUNAR_MOSS seed.
-	 */
-	public static readonly MOON_ILLUMINATION_THRESHOLD = 0.5;
 
 	/**
 	 * A night spent in an inn during these last hours earns the night seeds, as an alternative to meeting the gardener at night
