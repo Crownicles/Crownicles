@@ -2738,9 +2738,6 @@
         "paidAccepted": [
           "Théobald vous montre une graine qu'il examine à la lumière. Après avoir déboursé **{{cost}} {emote:unitValues.money}**, vous rangez précieusement cette **graine** {emote:smallEvents.gardener} dans votre sac."
         ],
-        "moon": [
-          "Théobald lève les yeux vers le ciel nocturne et sourit en voyant la lune briller. Il sort précautionneusement une graine de sa sacoche en murmurant que cette plante ne peut être confiée que sous un clair de lune suffisant. Vous recevez une **graine** {emote:smallEvents.gardener}."
-        ],
         "night": [
           "Théobald scrute le ciel assombri avec satisfaction. La nuit est idéale pour confier cette graine, car la plante a besoin de l'obscurité pour s'épanouir. Vous recevez une **graine** {emote:smallEvents.gardener}."
         ],
@@ -2794,8 +2791,8 @@
           "Le jardinier range la graine de champignon nocturne avec regret. Pour l'obtenir, il faut revenir avec un **familier nocturne** capable de flairer les champignons dans le noir, après une **nuit à l'auberge** de moins de {{innNightHours}} heures, ou simplement **la nuit**."
         ],
         "needMoonlight": [
-          "Théobald observe le ciel avec déception : la mousse lunaire ne pousse que sur les rochers les plus hauts, éclairés par la lune. Il ne la confie qu'à un aventurier accompagné d'un **familier volant**, ayant **passé la nuit à l'auberge** dans les {{innNightHours}} dernières heures, ou le croisant sous un **clair de lune**.",
-          "Le jardinier range la graine de mousse lunaire avec regret. Pour l'obtenir, il faut revenir avec un **familier volant** capable d'aller la cueillir, après une **nuit à l'auberge** de moins de {{innNightHours}} heures, ou par une **nuit de lune bien ronde**."
+          "Théobald observe le ciel avec déception : la mousse lunaire ne pousse que sur les rochers les plus hauts, là où la lune brille le plus fort. Il ne la confie qu'à un aventurier accompagné d'un **familier volant**, ayant **passé la nuit à l'auberge** dans les {{innNightHours}} dernières heures, ou le croisant **à la nuit tombée**.",
+          "Le jardinier range la graine de mousse lunaire avec regret. Pour l'obtenir, il faut revenir avec un **familier volant** capable d'aller la cueillir, après une **nuit à l'auberge** de moins de {{innNightHours}} heures, ou simplement **la nuit**."
         ],
         "needFireAffinity": [
           "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **familier lié au feu** ou porter un **équipement forgé dans les flammes**.",

@@ -65,7 +65,14 @@ describe("guaranteed small events", () => {
 
 		it("guarantees the eligible small event right after the first ones of the path", async () => {
 			vi.spyOn(PlayerSmallEvents, "countSmallEventsOfPlayer").mockResolvedValue(SmallEventConstants.GUARANTEED_AFTER_SMALL_EVENTS);
+			vi.spyOn(PlayerSmallEvents, "playerSmallEventCount").mockResolvedValue(0);
 			expect(await findGuaranteedSmallEvent(player, eligibleEvents)).toBe("guaranteed");
+		});
+
+		it("does not guarantee a small event the player already met on the path", async () => {
+			vi.spyOn(PlayerSmallEvents, "countSmallEventsOfPlayer").mockResolvedValue(SmallEventConstants.GUARANTEED_AFTER_SMALL_EVENTS);
+			vi.spyOn(PlayerSmallEvents, "playerSmallEventCount").mockImplementation((_playerId, key) => Promise.resolve(key === "guaranteed" ? 1 : 0));
+			expect(await findGuaranteedSmallEvent(player, eligibleEvents)).toBeNull();
 		});
 
 		it("guarantees nothing before or after that small event, so a path has at most one guaranteed small event", async () => {

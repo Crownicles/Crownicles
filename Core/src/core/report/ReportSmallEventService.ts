@@ -86,6 +86,18 @@ function selectRandomSmallEvent(eligibleEvents: SmallEventEligibility[]): string
 }
 
 /**
+ * Whether an eligible small event is guaranteed to happen now: it declares so, and did not already happen on the path
+ * (a player who just met it, e.g. for an introduction, is not forced to meet it again)
+ */
+async function isSmallEventGuaranteed(player: Player, key: string): Promise<boolean> {
+	const isGuaranteed = SmallEventDataController.getSmallEventFunction(key)?.isGuaranteed;
+	if (!isGuaranteed || await PlayerSmallEvents.playerSmallEventCount(player.id, key) > 0) {
+		return false;
+	}
+	return await isGuaranteed(player);
+}
+
+/**
  * First eligible small event guaranteed to happen now, if any. Guarantees only apply to the small event following the
  * first ones of a path, so a path has at most one guaranteed small event and the checks are skipped the rest of the time.
  */
@@ -94,7 +106,7 @@ export async function findGuaranteedSmallEvent(player: Player, eligibleEvents: S
 		return null;
 	}
 	for (const event of eligibleEvents) {
-		if (await SmallEventDataController.getSmallEventFunction(event.key)?.isGuaranteed?.(player)) {
+		if (await isSmallEventGuaranteed(player, event.key)) {
 			return event.key;
 		}
 	}

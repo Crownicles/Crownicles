@@ -15,7 +15,6 @@ import {
 	GARDENER_ADVICE, GARDENER_INTERACTIONS, PLANT_TYPES, PlantConstants, PlantId,
 	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE
 } from "../../../../Lib/src/constants/PlantConstants";
-import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import {
 	PlayerPlantSlot, PlayerPlantSlots
 } from "../database/game/models/PlayerPlantSlot";
@@ -57,7 +56,6 @@ import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
-import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
 import {
@@ -84,86 +82,6 @@ function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<Sma
 }
 
 type GardenerPlantGift = Extract<GardenerConsolation, { plantId: PlantId }>;
-
-let moonCache: {
-	illumination: number; fetchedAt: number;
-} | null = null;
-
-const RADIANS_PER_DEGREE = Math.PI / 180;
-
-function getFallbackMoonIllumination(): number {
-	const daysSinceNewMoon = (Date.now() - PlantConstants.LUNAR_FALLBACK.REFERENCE_NEW_MOON) / TimeConstants.MS_TIME.DAY;
-	const phase = (daysSinceNewMoon % PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS) / PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS;
-	return (1 - Math.cos(2 * Math.PI * phase)) / 2;
-}
-
-function buildMoonApiUrl(now: Date): string {
-	const year = now.getFullYear();
-	const month = String(now.getMonth() + 1)
-		.padStart(2, "0");
-	const day = String(now.getDate())
-		.padStart(2, "0");
-	const today = `${year}-${month}-${day}`;
-
-	const timezoneOffsetMinutes = -now.getTimezoneOffset();
-	const offsetSign = timezoneOffsetMinutes >= 0 ? "+" : "-";
-	const absMinutes = Math.abs(timezoneOffsetMinutes);
-	const offsetHours = String(Math.floor(absMinutes / 60))
-		.padStart(2, "0");
-	const offsetMins = String(absMinutes % 60)
-		.padStart(2, "0");
-	const offset = `${offsetSign}${offsetHours}:${offsetMins}`;
-
-	return `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=${offset}`;
-}
-
-/**
- * Fetch the current moon phase in degrees, or null when the API answers with an error or an unexpected payload
- */
-async function fetchMoonPhase(): Promise<number | null> {
-	const response = await fetch(buildMoonApiUrl(new Date()), {
-		headers: { "User-Agent": PlantConstants.MOON_API.USER_AGENT }
-	});
-
-	if (!response.ok) {
-		// An unread body keeps its connection and buffers alive
-		await response.body?.cancel();
-		CrowniclesLogger.error("Moon API returned non-OK status", { status: response.status });
-		return null;
-	}
-
-	const data = await response.json() as { properties?: { moonphase?: number } };
-	const moonphase = data.properties?.moonphase;
-	if (typeof moonphase !== "number") {
-		CrowniclesLogger.error("Moon API returned unexpected data format");
-		return null;
-	}
-	return moonphase;
-}
-
-async function getMoonIllumination(): Promise<number> {
-	if (moonCache && Date.now() - moonCache.fetchedAt < PlantConstants.MOON_API.CACHE_DURATION) {
-		return moonCache.illumination;
-	}
-
-	try {
-		const moonphase = await fetchMoonPhase();
-		if (moonphase === null) {
-			return getFallbackMoonIllumination();
-		}
-
-		const illumination = (1 - Math.cos(moonphase * RADIANS_PER_DEGREE)) / 2;
-		moonCache = {
-			illumination,
-			fetchedAt: Date.now()
-		};
-		return illumination;
-	}
-	catch (e) {
-		CrowniclesLogger.errorWithObj("Failed to fetch moon phase from API", e);
-		return getFallbackMoonIllumination();
-	}
-}
 
 function getGameHour(): number {
 	return new Date().getHours();
@@ -271,17 +189,18 @@ async function hasSleptInInnRecently(player: Player): Promise<boolean> {
 	return await LogsReadRequests.hasSleptInInnDuringLast(player.keycloakId, PlantConstants.INN_NIGHT_FAVOR_DURATION);
 }
 
-async function isMoonlitNight(): Promise<boolean> {
-	return isNight() && await getMoonIllumination() > PlantConstants.MOON_ILLUMINATION_THRESHOLD;
-}
-
 const INN_NIGHT_FAVOR: SeedFavor = {
 	conditionKey: SEED_CONDITION_SUCCESS.INN_NIGHT,
 	isGranted: hasSleptInInnRecently
 };
 
+const NIGHT_FAVOR: SeedFavor = {
+	conditionKey: SEED_CONDITION_SUCCESS.NIGHT,
+	isGranted: isNight
+};
+
 /**
- * The lunar moss grows on the highest rocks lit by the moon: a flying pet picks it, or the player watched the moon from an inn, or meets the gardener under it
+ * The lunar moss grows on the highest rocks: a flying pet picks it, or the player spent the night in an inn, or meets the gardener at night
  */
 const LUNAR_MOSS_FAVORS: SeedFavor[] = [
 	{
@@ -289,10 +208,7 @@ const LUNAR_MOSS_FAVORS: SeedFavor[] = [
 		isGranted: player => hasPetWithTag(player, PetConstants.TAGS.FLYING)
 	},
 	INN_NIGHT_FAVOR,
-	{
-		conditionKey: SEED_CONDITION_SUCCESS.MOON,
-		isGranted: isMoonlitNight
-	}
+	NIGHT_FAVOR
 ];
 
 /**
@@ -304,10 +220,7 @@ const NIGHT_MUSHROOM_FAVORS: SeedFavor[] = [
 		isGranted: player => hasPetWithTag(player, PetConstants.TAGS.NOCTURNAL)
 	},
 	INN_NIGHT_FAVOR,
-	{
-		conditionKey: SEED_CONDITION_SUCCESS.NIGHT,
-		isGranted: isNight
-	}
+	NIGHT_FAVOR
 ];
 
 function getSpecialSeedChecker(seedId: PlantId): SeedConditionChecker | null {
