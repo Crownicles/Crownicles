@@ -36,7 +36,7 @@ export abstract class QuestConstants {
 	/**
 	 * Plant to plant in the garden to complete each step of the seeds quest
 	 */
-	static readonly SEEDS_STEP_PLANTS: Readonly<Record<typeof QuestConstants.STEPS[typeof QUEST_IDS.SEEDS][number], PlantId>> = {
+	static readonly SEEDS_STEP_PLANTS: Readonly<Record<QuestStepId<typeof QUEST_IDS.SEEDS>, PlantId>> = {
 		commonHerb: PlantId.COMMON_HERB,
 		goldenClover: PlantId.GOLDEN_CLOVER,
 		lunarMoss: PlantId.LUNAR_MOSS,

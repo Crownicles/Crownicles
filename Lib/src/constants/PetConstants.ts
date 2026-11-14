@@ -676,6 +676,8 @@ export type PostFightPetReactionType = typeof PetConstants.POST_FIGHT_REACTION_T
  */
 export type PetFood = typeof PetConstants.PET_FOOD[keyof typeof PetConstants.PET_FOOD];
 
+export type PetTag = typeof PetConstants.TAGS[keyof typeof PetConstants.TAGS];
+
 export enum PET_ENTITY_GIVE_RETURN {
 	NO_SLOT,
 	GUILD,
