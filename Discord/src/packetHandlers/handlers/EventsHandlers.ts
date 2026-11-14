@@ -38,6 +38,9 @@ import { KingChallengeTierReachedPacket } from "../../../../Lib/src/packets/even
 import { KingChallengeConstants } from "../../../../Lib/src/constants/KingChallengeConstants";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { MessagesUtils } from "../../utils/MessagesUtils";
+import { QuestUpdatedPacket } from "../../../../Lib/src/packets/events/QuestUpdatedPacket";
+import { QuestUtils } from "../../utils/QuestUtils";
+import { QuestProgress } from "../../../../Lib/src/types/QuestProgress";
 
 type MissionRewardTotals = {
 	gems: number;
@@ -125,6 +128,30 @@ async function buildPlayerNotificationEmbed(
 	return discordUser
 		? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
 		: new CrowniclesEmbed().setTitle(titleText);
+}
+
+/**
+ * Whether a quest update obtains, makes progress in or completes the quest, used as the context of its title
+ */
+function getQuestUpdateContext(quest: QuestProgress): "obtained" | "progressed" | "completed" {
+	if (QuestUtils.isCompleted(quest)) {
+		return "completed";
+	}
+	return quest.stepsDone === 1 ? "obtained" : "progressed";
+}
+
+/**
+ * Description of a quest update: the quest progression, the step just completed, the next one and how to follow the quests
+ */
+function buildQuestUpdatedDescription(quest: QuestProgress, lng: Language): string {
+	return StringUtils.joinParagraphs([
+		StringUtils.joinLines([
+			QuestUtils.formatHeader(quest, lng),
+			QuestUtils.formatDoneStep(quest, quest.stepsDone - 1, lng),
+			...QuestUtils.formatCurrentStep(quest, lng)
+		]),
+		i18n.t("notifications:quests.followQuests", { lng })
+	]);
 }
 
 /**
@@ -406,6 +433,28 @@ export default class EventsHandlers {
 
 		await interaction.channel.send({
 			embeds: [embed.setDescription(StringUtils.joinLines(buildKingChallengeTierReachedLines(packet, lng)))]
+		});
+	}
+
+	@packetHandler(QuestUpdatedPacket)
+	async questUpdated(context: PacketContext, packet: QuestUpdatedPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+
+		const lng = interaction.userLanguage;
+		const embed = await buildPlayerNotificationEmbed(packet.keycloakId, "quest updated", pseudo => i18n.t("notifications:quests.title", {
+			lng,
+			context: getQuestUpdateContext(packet.quest),
+			pseudo
+		}));
+		if (!embed) {
+			return;
+		}
+
+		await interaction.channel.send({
+			embeds: [embed.setDescription(buildQuestUpdatedDescription(packet.quest, lng))]
 		});
 	}
 
