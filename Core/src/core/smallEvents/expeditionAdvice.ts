@@ -31,6 +31,8 @@ import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventCon
 import { MissionsController } from "../missions/MissionsController";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { notifyQuestStepCompleted } from "../quests/Quests";
+import { QUEST_IDS } from "../../../../Lib/src/constants/QuestConstants";
 
 /**
  * Check if the small event can be executed for this player
@@ -306,6 +308,12 @@ async function handlePlayerWithoutTalisman(
 			...basePacketData,
 			interactionType: ExpeditionAdviceInteractionType.TALISMAN_INTRO
 		}));
+		if (encounterCount === 1) {
+			await notifyQuestStepCompleted(response, player, {
+				questId: QUEST_IDS.EXPEDITION_TALISMANS,
+				stepId: "meetVelanna"
+			});
+		}
 		return;
 	}
 
@@ -350,6 +358,10 @@ async function handlePlayerWithoutTalisman(
 		petSex: conditionResult.petSex,
 		petNickname: conditionResult.petNickname
 	}));
+	await notifyQuestStepCompleted(response, player, {
+		questId: QUEST_IDS.EXPEDITION_TALISMANS,
+		stepId: "anchorTalisman"
+	});
 }
 
 /**

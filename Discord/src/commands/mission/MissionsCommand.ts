@@ -37,7 +37,7 @@ import { StringUtils } from "../../utils/StringUtils";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { QuestProgress } from "../../../../Lib/src/types/QuestProgress";
-import { QuestConstants } from "../../../../Lib/src/constants/QuestConstants";
+import { QuestUtils } from "../../utils/QuestUtils";
 
 const MISSIONS_PAGE_IDS = {
 	MISSIONS: "missions",
@@ -51,25 +51,42 @@ type MissionsPageId = typeof MISSIONS_PAGE_IDS[keyof typeof MISSIONS_PAGE_IDS];
 /**
  * Tabs always shown below the missions command
  */
-const MISSIONS_TABS: readonly MissionsPageId[] = [
+const MISSIONS_TABS = [
 	MISSIONS_PAGE_IDS.MISSIONS,
 	MISSIONS_PAGE_IDS.KING_CHALLENGE,
 	MISSIONS_PAGE_IDS.QUESTS
-];
+] as const;
 
-/**
- * Pages of the quests tab, the completed quests being only reachable from the quests tab
- */
-const QUESTS_PAGES: readonly MissionsPageId[] = [MISSIONS_PAGE_IDS.QUESTS, MISSIONS_PAGE_IDS.COMPLETED_QUESTS];
+type MissionsTabId = typeof MISSIONS_TABS[number];
 
-const MISSIONS_PAGE_EMOTES: Record<MissionsPageId, string> = {
+const MISSIONS_TAB_EMOTES: Record<MissionsTabId, string> = {
 	[MISSIONS_PAGE_IDS.MISSIONS]: CrowniclesIcons.missions.sideMission,
 	[MISSIONS_PAGE_IDS.KING_CHALLENGE]: CrowniclesIcons.kingChallenge.icon,
-	[MISSIONS_PAGE_IDS.QUESTS]: CrowniclesIcons.quests.icon,
-	[MISSIONS_PAGE_IDS.COMPLETED_QUESTS]: CrowniclesIcons.quests.stepDone
+	[MISSIONS_PAGE_IDS.QUESTS]: CrowniclesIcons.quests.icon
 };
 
-const MISSIONS_PAGE_BUTTON_PREFIX = "missions_page_";
+type QuestsPageId = typeof MISSIONS_PAGE_IDS.QUESTS | typeof MISSIONS_PAGE_IDS.COMPLETED_QUESTS;
+
+/**
+ * Option of each page of the quests tab, leading to the other one: the ongoing quests lead to the completed ones and back
+ */
+const QUESTS_PAGE_OPTIONS: Record<QuestsPageId, {
+	target: QuestsPageId;
+	emote: string;
+}> = {
+	[MISSIONS_PAGE_IDS.QUESTS]: {
+		target: MISSIONS_PAGE_IDS.COMPLETED_QUESTS,
+		emote: CrowniclesIcons.quests.stepDone
+	},
+	[MISSIONS_PAGE_IDS.COMPLETED_QUESTS]: {
+		target: MISSIONS_PAGE_IDS.QUESTS,
+		emote: CrowniclesIcons.quests.stepCurrent
+	}
+};
+
+const MISSIONS_TAB_BUTTON_PREFIX = "missions_tab_";
+
+const QUESTS_OPTION_BUTTON_PREFIX = "missions_quests_";
 
 type MissionsEmbedAuthor = {
 	discordUser: User | null;
@@ -77,6 +94,11 @@ type MissionsEmbedAuthor = {
 };
 
 type MissionsPages = Record<MissionsPageId, CrowniclesEmbed>;
+
+type QuestsCounts = {
+	ongoing: number;
+	completed: number;
+};
 
 /**
  * Get the packet to send to the server
@@ -246,59 +268,13 @@ function getKingChallengeDescription(progress: KingChallengeProgress, lng: Langu
 }
 
 /**
- * Completed steps of a quest followed by its current step and the hint to complete it, or the completion of the quest
- */
-function getQuestStepLines(quest: QuestProgress, lng: Language): string[] {
-	const steps: readonly string[] = QuestConstants.STEPS[quest.questId];
-	const stepKeyPrefix = `commands:missions.quests.list.${quest.questId}.steps`;
-	const currentStep = steps[quest.stepsDone];
-	return [
-		...steps.slice(0, quest.stepsDone)
-			.map(step => i18n.t("commands:missions.quests.stepDone", {
-				lng,
-				step: i18n.t(`${stepKeyPrefix}.${step}.label`, { lng })
-			})),
-		i18n.t("commands:missions.quests.stepCurrent", {
-			lng,
-			step: i18n.t(`${stepKeyPrefix}.${currentStep}.label`, { lng }),
-			hint: i18n.t(`${stepKeyPrefix}.${currentStep}.hint`, { lng })
-		})
-	];
-}
-
-function isQuestCompleted(quest: QuestProgress): boolean {
-	return quest.stepsDone >= QuestConstants.STEPS[quest.questId].length;
-}
-
-function getQuestName(quest: QuestProgress, lng: Language): string {
-	return i18n.t(`commands:missions.quests.list.${quest.questId}.name`, { lng });
-}
-
-/**
- * Display of an ongoing quest: its name, its progression and its steps
- */
-function getQuestDisplay(quest: QuestProgress, lng: Language): string {
-	const stepCount = QuestConstants.STEPS[quest.questId].length;
-	return StringUtils.joinLines([
-		i18n.t("commands:missions.quests.header", {
-			lng,
-			name: getQuestName(quest, lng),
-			current: quest.stepsDone,
-			max: stepCount,
-			progressionBar: MissionUtils.generateDisplayProgression(quest.stepsDone, stepCount)
-		}),
-		...getQuestStepLines(quest, lng)
-	]);
-}
-
-/**
  * Description of the quests sub-page of the missions command, which only shows the ongoing quests
  */
 function getQuestsDescription(ongoingQuests: QuestProgress[], lng: Language): string {
 	return StringUtils.joinParagraphs([
 		i18n.t("commands:missions.quests.description", { lng }),
 		...ongoingQuests.length > 0
-			? ongoingQuests.map(quest => getQuestDisplay(quest, lng))
+			? ongoingQuests.map(quest => QuestUtils.formatOngoingQuest(quest, lng))
 			: [i18n.t("commands:missions.quests.noOngoingQuest", { lng })]
 	]);
 }
@@ -310,7 +286,7 @@ function getCompletedQuestsDescription(completedQuests: QuestProgress[], lng: La
 	return completedQuests.length > 0
 		? StringUtils.joinLines(completedQuests.map(quest => i18n.t("commands:missions.quests.completedQuest", {
 			lng,
-			name: getQuestName(quest, lng)
+			name: QuestUtils.getName(quest, lng)
 		})))
 		: i18n.t("commands:missions.quests.noCompletedQuest", { lng });
 }
@@ -323,42 +299,58 @@ function buildMissionsCommandEmbed(author: MissionsEmbedAuthor, title: string, d
 	return author.discordUser ? embed.formatAuthor(title, author.discordUser) : embed.setTitle(title);
 }
 
-type MissionsPagesRowOptions = {
-	displayedPage: MissionsPageId | null;
-	completedQuestsCount: number;
-};
+function isQuestsPage(page: MissionsPageId): page is QuestsPageId {
+	return page === MISSIONS_PAGE_IDS.QUESTS || page === MISSIONS_PAGE_IDS.COMPLETED_QUESTS;
+}
 
 /**
- * The tabs of the missions command, plus the completed quests sub-page while a quests page is displayed.
- * The displayed page is disabled, and every button is disabled once no page is displayed anymore
+ * The tabs of the missions command: the tab of the displayed page is disabled, and every tab once no page is displayed anymore
  */
-function buildPagesRow({
-	displayedPage, completedQuestsCount
-}: MissionsPagesRowOptions, lng: Language): ActionRowBuilder<ButtonBuilder> {
-	const pages = displayedPage !== null && QUESTS_PAGES.includes(displayedPage)
-		? [...MISSIONS_TABS, MISSIONS_PAGE_IDS.COMPLETED_QUESTS]
-		: MISSIONS_TABS;
-	return new ActionRowBuilder<ButtonBuilder>().addComponents(pages
-		.map(page => new ButtonBuilder()
-			.setCustomId(`${MISSIONS_PAGE_BUTTON_PREFIX}${page}`)
-			.setLabel(i18n.t(`commands:missions.pages.${page}`, {
-				lng,
-				count: completedQuestsCount
-			}))
-			.setEmoji(MISSIONS_PAGE_EMOTES[page])
+function buildTabsRow(displayedPage: MissionsPageId | null, lng: Language): ActionRowBuilder<ButtonBuilder> {
+	const displayedTab = displayedPage !== null && isQuestsPage(displayedPage) ? MISSIONS_PAGE_IDS.QUESTS : displayedPage;
+	return new ActionRowBuilder<ButtonBuilder>().addComponents(MISSIONS_TABS
+		.map(tab => new ButtonBuilder()
+			.setCustomId(`${MISSIONS_TAB_BUTTON_PREFIX}${tab}`)
+			.setLabel(i18n.t(`commands:missions.pages.${tab}`, { lng }))
+			.setEmoji(MISSIONS_TAB_EMOTES[tab])
 			.setStyle(ButtonStyle.Secondary)
-			.setDisabled(page === displayedPage || displayedPage === null)));
+			.setDisabled(displayedTab === null || tab === displayedTab)));
+}
+
+/**
+ * The option of a page of the quests tab, leading to its other page
+ */
+function buildQuestsOptionRow(displayedPage: QuestsPageId, questsCounts: QuestsCounts, lng: Language): ActionRowBuilder<ButtonBuilder> {
+	const option = QUESTS_PAGE_OPTIONS[displayedPage];
+	return new ActionRowBuilder<ButtonBuilder>().addComponents(new ButtonBuilder()
+		.setCustomId(`${QUESTS_OPTION_BUTTON_PREFIX}${option.target}`)
+		.setLabel(i18n.t(`commands:missions.quests.options.${option.target}`, {
+			lng,
+			count: option.target === MISSIONS_PAGE_IDS.QUESTS ? questsCounts.ongoing : questsCounts.completed
+		}))
+		.setEmoji(option.emote)
+		.setStyle(ButtonStyle.Secondary));
+}
+
+/**
+ * Components below a page of the missions command: the tabs, plus the option of the quests tab while one of its pages is displayed
+ */
+function buildPageComponents(displayedPage: MissionsPageId | null, questsCounts: QuestsCounts, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
+	const tabsRow = buildTabsRow(displayedPage, lng);
+	return displayedPage !== null && isQuestsPage(displayedPage)
+		? [tabsRow, buildQuestsOptionRow(displayedPage, questsCounts, lng)]
+		: [tabsRow];
 }
 
 function getPageOfButton(customId: string): MissionsPageId | undefined {
 	return Object.values(MISSIONS_PAGE_IDS)
-		.find(page => `${MISSIONS_PAGE_BUTTON_PREFIX}${page}` === customId);
+		.find(page => customId === `${MISSIONS_TAB_BUTTON_PREFIX}${page}` || customId === `${QUESTS_OPTION_BUTTON_PREFIX}${page}`);
 }
 
 /**
- * Let the player who asked switch between the sub-pages of the missions command
+ * Let the player who asked switch between the pages of the missions command
  */
-function setupMissionsPagesCollector(message: Message, interaction: CrowniclesInteraction, pages: MissionsPages, completedQuestsCount: number): void {
+function setupMissionsPagesCollector(message: Message, interaction: CrowniclesInteraction, pages: MissionsPages, questsCounts: QuestsCounts): void {
 	const lng = interaction.userLanguage;
 	const collector = message.createMessageComponentCollector({
 		componentType: ComponentType.Button,
@@ -379,24 +371,12 @@ function setupMissionsPagesCollector(message: Message, interaction: CrowniclesIn
 		}
 		await buttonInteraction.update({
 			embeds: [pages[page]],
-			components: [
-				buildPagesRow({
-					displayedPage: page,
-					completedQuestsCount
-				}, lng)
-			]
+			components: buildPageComponents(page, questsCounts, lng)
 		});
 	});
 
 	collector.on("end", async () => {
-		await message.edit({
-			components: [
-				buildPagesRow({
-					displayedPage: null,
-					completedQuestsCount
-				}, lng)
-			]
-		})
+		await message.edit({ components: buildPageComponents(null, questsCounts, lng) })
 			.catch(() => undefined);
 	});
 }
@@ -424,7 +404,12 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 		pseudo: escapeUsername(discordUser?.displayName ?? getUser.payload.user.username)
 	};
 
-	const completedQuests = packet.quests.filter(isQuestCompleted);
+	const completedQuests = packet.quests.filter(QuestUtils.isCompleted);
+	const ongoingQuests = packet.quests.filter(quest => !QuestUtils.isCompleted(quest));
+	const questsCounts: QuestsCounts = {
+		ongoing: ongoingQuests.length,
+		completed: completedQuests.length
+	};
 	const pages: MissionsPages = {
 		missions: buildMissionsCommandEmbed(author, i18n.t("commands:missions.title", {
 			lng,
@@ -441,7 +426,7 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 		quests: buildMissionsCommandEmbed(author, i18n.t("commands:missions.quests.title", {
 			lng,
 			pseudo: author.pseudo
-		}), getQuestsDescription(packet.quests.filter(quest => !isQuestCompleted(quest)), lng)),
+		}), getQuestsDescription(ongoingQuests, lng)),
 		completedQuests: buildMissionsCommandEmbed(author, i18n.t("commands:missions.quests.completedTitle", {
 			lng,
 			pseudo: author.pseudo
@@ -450,15 +435,10 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 
 	const msg = await interaction.replyWithMessage({
 		embeds: [pages.missions],
-		components: [
-			buildPagesRow({
-				displayedPage: MISSIONS_PAGE_IDS.MISSIONS,
-				completedQuestsCount: completedQuests.length
-			}, lng)
-		]
+		components: buildPageComponents(MISSIONS_PAGE_IDS.MISSIONS, questsCounts, lng)
 	});
 	if (msg) {
-		setupMissionsPagesCollector(msg, interaction, pages, completedQuests.length);
+		setupMissionsPagesCollector(msg, interaction, pages, questsCounts);
 	}
 }
 

@@ -1,7 +1,11 @@
 import {
 	beforeEach, describe, expect, it, vi
 } from "vitest";
-import { getQuestsProgress } from "../../../src/core/quests/Quests";
+import {
+	getObtainedQuestsProgress, getSeedsQuestStepOfPlant, notifyQuestStepCompleted
+} from "../../../src/core/quests/Quests";
+import { QuestUpdatedPacket } from "../../../../Lib/src/packets/events/QuestUpdatedPacket";
+import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { QUEST_IDS } from "../../../../Lib/src/constants/QuestConstants";
 import { PlantId } from "../../../../Lib/src/constants/PlantConstants";
 import { PlayerTalismansManager } from "../../../src/core/database/game/models/PlayerTalismans";
@@ -24,7 +28,7 @@ function mockTalismans(state: TalismansState): void {
 }
 
 async function getStepsDone(questId: string): Promise<number | undefined> {
-	return (await getQuestsProgress(player)).find(quest => quest.questId === questId)?.stepsDone;
+	return (await getObtainedQuestsProgress(player)).find(quest => quest.questId === questId)?.stepsDone;
 }
 
 describe("Quests progress", () => {
@@ -39,10 +43,16 @@ describe("Quests progress", () => {
 		vi.spyOn(Homes, "getOfPlayer").mockResolvedValue(null);
 	});
 
-	it("returns the progress of every quest", async () => {
-		const quests = await getQuestsProgress(player);
-		expect(quests.map(quest => quest.questId)).toEqual(Object.values(QUEST_IDS));
-		expect(quests.every(quest => quest.stepsDone === 0)).toBe(true);
+	it("only returns the quests whose first step is completed", async () => {
+		expect(await getObtainedQuestsProgress(player)).toEqual([]);
+
+		vi.spyOn(LogsReadRequests, "getSmallEventEncounterCount").mockResolvedValue(1);
+		expect(await getObtainedQuestsProgress(player)).toEqual([
+			{
+				questId: QUEST_IDS.EXPEDITION_TALISMANS,
+				stepsDone: 1
+			}
+		]);
 	});
 
 	describe("expedition talismans", () => {
@@ -92,6 +102,44 @@ describe("Quests progress", () => {
 			vi.spyOn(Homes, "getOfPlayer").mockResolvedValue({ id: 10 } as never);
 			vi.spyOn(HomeGardenSlots, "getHighestPlantedId").mockResolvedValue(PlantId.ANCIENT_TREE);
 			expect(await getStepsDone(QUEST_IDS.SEEDS)).toBe(10);
+		});
+	});
+
+	describe("step completion notification", () => {
+		it("announces the step even when its asynchronous log is not readable yet", async () => {
+			mockTalismans({
+				hasTalisman: true,
+				hasCloneTalisman: false
+			});
+			const response: CrowniclesPacket[] = [];
+			await notifyQuestStepCompleted(response, player, {
+				questId: QUEST_IDS.EXPEDITION_TALISMANS,
+				stepId: "successfulExpedition"
+			});
+			expect(response).toHaveLength(1);
+			expect((response[0] as QuestUpdatedPacket).quest).toEqual({
+				questId: QUEST_IDS.EXPEDITION_TALISMANS,
+				stepsDone: 3
+			});
+		});
+
+		it("announces nothing when a later step was already completed", async () => {
+			mockTalismans({
+				hasTalisman: true,
+				hasCloneTalisman: true
+			});
+			const response: CrowniclesPacket[] = [];
+			await notifyQuestStepCompleted(response, player, {
+				questId: QUEST_IDS.EXPEDITION_TALISMANS,
+				stepId: "successfulExpedition"
+			});
+			expect(response).toHaveLength(0);
+		});
+
+		it("maps each plant to its step of the seeds quest", () => {
+			expect(getSeedsQuestStepOfPlant(PlantId.COMMON_HERB)).toBe("commonHerb");
+			expect(getSeedsQuestStepOfPlant(PlantId.ANCIENT_TREE)).toBe("ancientTree");
+			expect(getSeedsQuestStepOfPlant(0)).toBeUndefined();
 		});
 	});
 });

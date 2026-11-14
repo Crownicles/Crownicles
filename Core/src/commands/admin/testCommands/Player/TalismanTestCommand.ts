@@ -3,6 +3,11 @@ import {
 } from "../../../../core/CommandsTest";
 import { PlayerTalismansManager } from "../../../../core/database/game/models/PlayerTalismans";
 import Player from "../../../../core/database/game/models/Player";
+import { CrowniclesPacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	QUEST_IDS, QuestStepId
+} from "../../../../../../Lib/src/constants/QuestConstants";
+import { notifyQuestStepCompleted } from "../../../../core/quests/Quests";
 
 export const commandInfo: ITestCommand = {
 	name: "talisman",
@@ -35,6 +40,9 @@ interface TalismanConfig {
 	removeMessage: string;
 	alreadyHasMessage: string;
 	doesNotHaveMessage: string;
+
+	/** Step of the expedition talismans quest completed by obtaining the talisman */
+	questStepId?: QuestStepId<typeof QUEST_IDS.EXPEDITION_TALISMANS>;
 }
 
 const TALISMAN_CONFIGS: Record<TalismanType, TalismanConfig> = {
@@ -43,14 +51,16 @@ const TALISMAN_CONFIGS: Record<TalismanType, TalismanConfig> = {
 		giveMessage: "Vous avez reçu le **Talisman d'Ancrage** ! Vous pouvez maintenant envoyer votre familier en expédition.",
 		removeMessage: "Le **Talisman d'Ancrage** a été retiré de votre inventaire.",
 		alreadyHasMessage: "Vous possédez déjà le Talisman d'Ancrage !",
-		doesNotHaveMessage: "Vous ne possédez pas le Talisman d'Ancrage !"
+		doesNotHaveMessage: "Vous ne possédez pas le Talisman d'Ancrage !",
+		questStepId: "anchorTalisman"
 	},
 	[TALISMAN_TYPES.CLONE]: {
 		hasProperty: "hasCloneTalisman",
 		giveMessage: "Vous avez reçu le **Talisman de Clonage** ! Votre familier peut maintenant vous assister en défense et dans les petits événements même en expédition.",
 		removeMessage: "Le **Talisman de Clonage** a été retiré de votre inventaire.",
 		alreadyHasMessage: "Vous possédez déjà le Talisman de Clonage !",
-		doesNotHaveMessage: "Vous ne possédez pas le Talisman de Clonage !"
+		doesNotHaveMessage: "Vous ne possédez pas le Talisman de Clonage !",
+		questStepId: "cloneTalisman"
 	},
 	[TALISMAN_TYPES.HARVEST]: {
 		hasProperty: "hasRemoteHarvestTalisman",
@@ -98,7 +108,7 @@ function validateTalismanArgs(args: string[]): ValidatedTalismanArgs {
 	};
 }
 
-async function updateTalisman(player: Player, config: TalismanConfig, action: TalismanAction): Promise<string> {
+async function updateTalisman(player: Player, config: TalismanConfig, action: TalismanAction, response: CrowniclesPacket[]): Promise<string> {
 	const isGiving = action === TALISMAN_ACTIONS.GIVE;
 	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 	const hasTalisman = talismans[config.hasProperty];
@@ -108,18 +118,24 @@ async function updateTalisman(player: Player, config: TalismanConfig, action: Ta
 
 	talismans[config.hasProperty] = isGiving;
 	await talismans.save();
+	if (isGiving && config.questStepId) {
+		await notifyQuestStepCompleted(response, player, {
+			questId: QUEST_IDS.EXPEDITION_TALISMANS,
+			stepId: config.questStepId
+		});
+	}
 	return isGiving ? config.giveMessage : config.removeMessage;
 }
 
 /**
  * Give or remove a talisman to/from the player
  */
-const talismanTestCommand: ExecuteTestCommandLike = (player, args) => {
+const talismanTestCommand: ExecuteTestCommandLike = (player, args, response) => {
 	const {
 		talismanType,
 		action
 	} = validateTalismanArgs(args);
-	return updateTalisman(player, TALISMAN_CONFIGS[talismanType], action);
+	return updateTalisman(player, TALISMAN_CONFIGS[talismanType], action, response);
 };
 
 commandInfo.execute = talismanTestCommand;

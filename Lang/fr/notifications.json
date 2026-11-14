@@ -1,4 +1,10 @@
 {
+  "quests": {
+    "title_obtained": "{{pseudo}}, vous obtenez une nouvelle quête !",
+    "title_progressed": "{{pseudo}}, votre quête progresse !",
+    "title_completed": "{{pseudo}}, vous terminez une quête !",
+    "followQuests": "Retrouvez toutes vos quêtes avec la commande {command:missions}."
+  },
   "kingChallenge": {
     "title_one": "{{pseudo}}, vous relevez le palier {{tier}}/{{tierCount}} du défi du roi !",
     "title_other": "{{pseudo}}, vous relevez {{count}} paliers du défi du roi, jusqu'au palier {{tier}}/{{tierCount}} !",

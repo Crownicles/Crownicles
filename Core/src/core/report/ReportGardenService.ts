@@ -44,6 +44,10 @@ import {
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
+import {
+	getSeedsQuestStepOfPlant, notifyQuestStepCompleted, SeedsQuestStepId
+} from "../quests/Quests";
+import { QUEST_IDS } from "../../../../Lib/src/constants/QuestConstants";
 import { updateCollectMaterialsMission } from "../utils/MaterialLootUtils";
 import { GardenActionType } from "../database/logs/LogsCityLogger";
 
@@ -445,6 +449,7 @@ export function handleGardenPlant(
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	let plantedPlayer: Player | null = null;
+	let completedSeedsStep: SeedsQuestStepId | undefined;
 	return withGardenLock(
 		keycloakId,
 		() => makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_SEED),
@@ -452,6 +457,7 @@ export function handleGardenPlant(
 			const result = await runGardenPlantUnderLock(player, home, packet);
 			if (result.planted) {
 				plantedPlayer = player;
+				completedSeedsStep = result.completedSeedsStep;
 			}
 			return result.packet;
 		}
@@ -470,6 +476,12 @@ export function handleGardenPlant(
 		const sideEffects: CrowniclesPacket[] = [];
 		if (plantedPlayer) {
 			await MissionsController.update(plantedPlayer, sideEffects, { missionId: "plantSeed" });
+			if (completedSeedsStep) {
+				await notifyQuestStepCompleted(sideEffects, plantedPlayer, {
+					questId: QUEST_IDS.SEEDS,
+					stepId: completedSeedsStep
+				});
+			}
 		}
 		response.push(resultPacket, ...sideEffects);
 	});
@@ -480,7 +492,9 @@ async function runGardenPlantUnderLock(
 	home: Locked<Home>,
 	packet: CommandReportGardenPlantReq
 ): Promise<{
-	planted: boolean; packet: CrowniclesPacket;
+	planted: boolean;
+	packet: CrowniclesPacket;
+	completedSeedsStep?: SeedsQuestStepId;
 }> {
 	const validation = await validateGardenPlant(player, home, packet);
 	if (validation.error) {
@@ -494,6 +508,7 @@ async function runGardenPlantUnderLock(
 		seedSlot, gardenSlot
 	} = validation;
 	const plantId = seedSlot!.plantId;
+	const isNewHighestPlant = plantId > await HomeGardenSlots.getHighestPlantedId(home.id);
 
 	await HomeGardenSlots.plantSeed(home.id, gardenSlot!.slot, plantId);
 	await PlayerPlantSlots.clearSeed(player.id);
@@ -512,7 +527,8 @@ async function runGardenPlantUnderLock(
 		packet: makePacket(CommandReportGardenPlantRes, {
 			plantId,
 			gardenSlot: gardenSlot!.slot
-		})
+		}),
+		...isNewHighestPlant ? { completedSeedsStep: getSeedsQuestStepOfPlant(plantId) } : {}
 	};
 }
 
