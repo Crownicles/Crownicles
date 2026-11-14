@@ -2350,7 +2350,8 @@
     "pages": {
       "missions": "Missions",
       "kingChallenge": "Défi du roi",
-      "quests": "Quêtes"
+      "quests": "Quêtes",
+      "completedQuests": "Quêtes terminées ({{count}})"
     },
     "kingChallenge": {
       "title": "Défi du roi de {{pseudo}}",
@@ -2366,7 +2367,10 @@
       "header": "**{{name}} ({{current}}/{{max}})**\n{{progressionBar}}",
       "stepDone": "{emote:quests.stepDone} {{step}}",
       "stepCurrent": "{emote:quests.stepCurrent} {{step}}\n*{{hint}}*",
-      "completed": "Quête terminée !",
+      "noOngoingQuest": "Toutes les quêtes connues à ce jour sont terminées. D'autres découvertes attendent peut-être encore les aventuriers du royaume.",
+      "completedTitle": "Quêtes terminées de {{pseudo}}",
+      "completedQuest": "{emote:quests.stepDone} **{{name}}**",
+      "noCompletedQuest": "Aucune quête n'est encore terminée.",
       "list": {
         "expeditionTalismans": {
           "name": "{emote:expedition.talisman} Les talismans d'expédition",
