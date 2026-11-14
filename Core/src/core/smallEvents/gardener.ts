@@ -49,9 +49,7 @@ import { ReactionCollectorGardener } from "../../../../Lib/src/packets/interacti
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import {
-	ItemConstants, ItemRarity
-} from "../../../../Lib/src/constants/ItemConstants";
+import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
@@ -279,7 +277,7 @@ function isHerbivorePetEligible(petEntity: PetEntity, requireLegendary: boolean)
 
 	const isHerbivore = petData.canEatVegetables();
 	const isTrained = petEntity.lovePoints >= PetConstants.TRAINED_LOVE_THRESHOLD;
-	const meetsRarityRequirement = !requireLegendary || petData.rarity >= ItemRarity.EPIC;
+	const meetsRarityRequirement = !requireLegendary || petData.rarity >= PlantConstants.RARE_PET_SEED_MIN_RARITY;
 
 	return isHerbivore && isTrained && meetsRarityRequirement;
 }
@@ -395,7 +393,7 @@ async function checkCarnivorePetCondition(player: Player): Promise<SeedCondition
 		};
 	}
 
-	if (petData.rarity < ItemRarity.EPIC) {
+	if (petData.rarity < PlantConstants.RARE_PET_SEED_MIN_RARITY) {
 		return {
 			canObtain: false,
 			conditionKey: SEED_CONDITION_FAILURE.NEED_CARNIVORE_PET

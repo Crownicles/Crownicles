@@ -1,7 +1,13 @@
 import i18n from "../translations/i18n";
 import { Language } from "../../../Lib/src/Language";
 import { QuestProgress } from "../../../Lib/src/types/QuestProgress";
-import { QuestConstants } from "../../../Lib/src/constants/QuestConstants";
+import {
+	QUEST_IDS, QuestConstants, QuestId
+} from "../../../Lib/src/constants/QuestConstants";
+import {
+	PlantConstants, PlantId
+} from "../../../Lib/src/constants/PlantConstants";
+import { ExpeditionConstants } from "../../../Lib/src/constants/ExpeditionConstants";
 import { MissionUtils } from "./MissionUtils";
 import { StringUtils } from "./StringUtils";
 
@@ -13,6 +19,30 @@ type QuestStepTranslation = {
 type QuestIconAndName = {
 	icon: string;
 	name: string;
+};
+
+/**
+ * Values interpolated in the hint of a step, read from the constants the game itself checks so the hint never drifts from the rule
+ */
+type QuestStepHintParams = Partial<Record<"level" | "price" | "nightStart" | "nightEnd" | "moonIllumination" | "rarity", number>>;
+
+/**
+ * Requirements of the gardener before handing over the seed of a plant
+ */
+function getSeedStepHintParams(plantId: PlantId): QuestStepHintParams {
+	return {
+		level: PlantConstants.SEED_LEVEL_REQUIREMENTS[plantId],
+		price: PlantConstants.SEED_COSTS[plantId],
+		nightStart: PlantConstants.NIGHT_THRESHOLDS.EVENING,
+		nightEnd: PlantConstants.NIGHT_THRESHOLDS.MORNING,
+		moonIllumination: PlantConstants.MOON_ILLUMINATION_THRESHOLD,
+		rarity: PlantConstants.RARE_PET_SEED_MIN_RARITY
+	};
+}
+
+const QUEST_STEP_HINT_PARAMS: Record<QuestId, (stepIndex: number) => QuestStepHintParams> = {
+	[QUEST_IDS.EXPEDITION_TALISMANS]: () => ({ level: ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL }),
+	[QUEST_IDS.SEEDS]: stepIndex => getSeedStepHintParams(QuestConstants.SEEDS_STEP_PLANTS[QuestConstants.STEPS[QUEST_IDS.SEEDS][stepIndex]])
 };
 
 export abstract class QuestUtils {
@@ -58,7 +88,10 @@ export abstract class QuestUtils {
 		const stepKey = `commands:missions.quests.list.${quest.questId}.steps.${QuestConstants.STEPS[quest.questId][stepIndex]}`;
 		return {
 			label: i18n.t(`${stepKey}.label`, { lng }),
-			hint: i18n.t(`${stepKey}.hint`, { lng })
+			hint: i18n.t(`${stepKey}.hint`, {
+				lng,
+				...QUEST_STEP_HINT_PARAMS[quest.questId](stepIndex)
+			})
 		};
 	}
 

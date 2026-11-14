@@ -28,22 +28,6 @@ export type QuestStepReference<Q extends QuestId> = {
 	stepId: QuestStepId<Q>;
 };
 
-/**
- * Plant to plant in the garden to complete each step of the seeds quest
- */
-const SEEDS_QUEST_STEP_PLANTS: Record<SeedsQuestStepId, PlantId> = {
-	commonHerb: PlantId.COMMON_HERB,
-	goldenClover: PlantId.GOLDEN_CLOVER,
-	lunarMoss: PlantId.LUNAR_MOSS,
-	ironRoot: PlantId.IRON_ROOT,
-	nightMushroom: PlantId.NIGHT_MUSHROOM,
-	venomousLeaf: PlantId.VENOMOUS_LEAF,
-	fireBulb: PlantId.FIRE_BULB,
-	meatPlant: PlantId.MEAT_PLANT,
-	crystalFlower: PlantId.CRYSTAL_FLOWER,
-	ancientTree: PlantId.ANCIENT_TREE
-};
-
 function getQuestSteps<Q extends QuestId>(questId: Q): readonly QuestStepId<Q>[] {
 	return QuestConstants.STEPS[questId];
 }
@@ -76,7 +60,7 @@ async function computeExpeditionTalismansProgress(player: Player): Promise<numbe
 async function computeSeedsProgress(player: Player): Promise<number> {
 	const home = await Homes.getOfPlayer(player.id);
 	const highestPlanted = home ? await HomeGardenSlots.getHighestPlantedId(home.id) : 0;
-	return await countCompletedSteps(QUEST_IDS.SEEDS, step => highestPlanted >= SEEDS_QUEST_STEP_PLANTS[step]);
+	return await countCompletedSteps(QUEST_IDS.SEEDS, step => highestPlanted >= QuestConstants.SEEDS_STEP_PLANTS[step]);
 }
 
 const QUEST_PROGRESS_COMPUTERS: Record<QuestId, QuestProgressComputer> = {
@@ -102,7 +86,7 @@ export async function getObtainedQuestsProgress(player: Player): Promise<QuestPr
  */
 export function getSeedsQuestStepOfPlant(plantId: PlantId | 0): SeedsQuestStepId | undefined {
 	return getQuestSteps(QUEST_IDS.SEEDS)
-		.find(step => SEEDS_QUEST_STEP_PLANTS[step] === plantId);
+		.find(step => QuestConstants.SEEDS_STEP_PLANTS[step] === plantId);
 }
 
 /**
