@@ -3,5 +3,6 @@
   "diet": "carnivorous",
   "force": 19,
   "feedDelay": 6,
-  "speed": 25
+  "speed": 25,
+  "tags": ["nocturnal"]
 }

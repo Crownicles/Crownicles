@@ -1,7 +1,10 @@
 import { TimeConstants } from "./TimeConstants";
 import {
-	getDayNumber, getWeekNumber
+	getDayNumber, getWeekNumber, hoursToSeconds
 } from "../utils/TimeUtils";
+import {
+	asHours, Second
+} from "../types/TimeTypes";
 import { frac } from "../utils/MathUtils";
 import { ItemRarity } from "./ItemConstants";
 
@@ -43,6 +46,9 @@ export const SEED_CONDITION_SUCCESS = {
 	PAID_ACCEPTED: "paidAccepted",
 	MOON: "moon",
 	NIGHT: "night",
+	FLYING_PET: "flyingPet",
+	NOCTURNAL_PET: "nocturnalPet",
+	INN_NIGHT: "innNight",
 	HERBIVORE_PET: "herbivorePet",
 	LEGENDARY_HERBIVORE_PET: "legendaryHerbivorePet",
 	MAGE: "mage",
@@ -514,6 +520,24 @@ export abstract class PlantConstants {
 	 * Minimum moon illumination (0-1) required for LUNAR_MOSS seed.
 	 */
 	public static readonly MOON_ILLUMINATION_THRESHOLD = 0.5;
+
+	/**
+	 * A night spent in an inn during these last hours earns the night seeds, as an alternative to meeting the gardener at night
+	 */
+	public static readonly INN_NIGHT_FAVOR_HOURS = 24;
+
+	public static readonly INN_NIGHT_FAVOR_DURATION: Second = hoursToSeconds(asHours(PlantConstants.INN_NIGHT_FAVOR_HOURS));
+
+	/**
+	 * The gardener is guaranteed on a forest path once this many small events happened on it without him,
+	 * when the player fulfills the conditions of their next seed
+	 */
+	public static readonly GARDENER_GUARANTEED_AFTER_SMALL_EVENTS = 3;
+
+	/**
+	 * Chance that the consolation gift of a blocked seed is a plant rather than a material
+	 */
+	public static readonly GARDENER_CONSOLATION_PLANT_PROBABILITY = 0.6;
 
 	/**
 	 * Minimum rarity of the pet the gardener requires before handing over the meat plant and ancestral tree seeds

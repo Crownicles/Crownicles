@@ -3,8 +3,20 @@ import {
 	PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import {
-	GardenerInteractionName, SeedConditionKey
+	GardenerInteractionName, PlantId, SeedConditionKey
 } from "../../constants/PlantConstants";
+
+/**
+ * Gift the gardener adds to his explanation when he cannot hand over the next seed, so that the encounter is never wasted
+ */
+export type GardenerConsolation =
+	| {
+		plantId: PlantId;
+		sentToHomeStorage: boolean;
+	}
+	| {
+		materialId: number;
+	};
 
 export const GARDENER_STORY_VARIANT = {
 	FIRST: "first",
@@ -35,4 +47,9 @@ export class SmallEventGardenerPacket extends SmallEventPacket {
 	 * Set when the gifted plant went straight to the home plant storage (plant inventory linked to the home)
 	 */
 	sentToHomeStorage?: boolean;
+
+	/**
+	 * Set when the gardener explains why he cannot hand over the next seed: the gift he gives instead
+	 */
+	consolation?: GardenerConsolation;
 }

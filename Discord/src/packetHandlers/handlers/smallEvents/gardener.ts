@@ -6,7 +6,7 @@ import { CrowniclesSmallEventEmbed } from "../../../messages/CrowniclesSmallEven
 import { StringUtils } from "../../../utils/StringUtils";
 import { getRandomSmallEventIntro } from "../../../utils/SmallEventUtils";
 import {
-	getGardenerStoryVariant, SmallEventGardenerPacket
+	GardenerConsolation, getGardenerStoryVariant, SmallEventGardenerPacket
 } from "../../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
 import {
 	GARDENER_INTERACTIONS, PlantConstants, SEED_CONDITION_FAILURE
@@ -24,7 +24,27 @@ function buildAdviceReplacements(packet: SmallEventGardenerPacket): Record<strin
 	if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_MONEY) {
 		return { cost: PlantConstants.SEED_COSTS[packet.plantId as keyof typeof PlantConstants.SEED_COSTS] };
 	}
+	if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_MOONLIGHT || packet.conditionKey === SEED_CONDITION_FAILURE.NEED_NIGHT) {
+		return { innNightHours: PlantConstants.INN_NIGHT_FAVOR_HOURS };
+	}
 	return {};
+}
+
+/**
+ * Text of the gift the gardener gives when he cannot hand over the next seed
+ */
+function buildConsolationText(consolation: GardenerConsolation, lng: Language): string {
+	if ("materialId" in consolation) {
+		return StringUtils.getRandomTranslation("smallEvents:gardener.rewards.consolation.material", lng, {
+			materialId: consolation.materialId
+		});
+	}
+	return StringUtils.joinParagraphs([
+		StringUtils.getRandomTranslation("smallEvents:gardener.rewards.consolation.plant", lng, {
+			plantId: consolation.plantId
+		}),
+		consolation.sentToHomeStorage && i18n.t("smallEvents:gardener.rewards.plantSentToHomeStorage", { lng })
+	]);
 }
 
 function buildGardenerRewardText(packet: SmallEventGardenerPacket, lng: Language): string {
@@ -34,11 +54,14 @@ function buildGardenerRewardText(packet: SmallEventGardenerPacket, lng: Language
 				cost: packet.cost
 			});
 		case GARDENER_INTERACTIONS.ADVICE:
-			return StringUtils.getRandomTranslation(
-				`smallEvents:gardener.rewards.advice.${packet.conditionKey}`,
-				lng,
-				buildAdviceReplacements(packet)
-			);
+			return StringUtils.joinParagraphs([
+				StringUtils.getRandomTranslation(
+					`smallEvents:gardener.rewards.advice.${packet.conditionKey}`,
+					lng,
+					buildAdviceReplacements(packet)
+				),
+				packet.consolation && buildConsolationText(packet.consolation, lng)
+			]);
 		case GARDENER_INTERACTIONS.PLANT:
 			return StringUtils.joinParagraphs([
 				StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {

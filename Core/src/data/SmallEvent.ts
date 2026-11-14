@@ -48,6 +48,11 @@ export type ExecuteSmallEventLike = (player: Locked<Player>, execution: SmallEve
  */
 export type AdditionalLockKeysLike = (player: Player) => Promise<LockKey<Model>[]>;
 
+/**
+ * Whether an eligible small event must be chosen instead of drawing one at random
+ */
+export type IsGuaranteedLike = (player: Player) => Promise<boolean>;
+
 export type SmallEventFuncs = {
 	canBeExecuted: CanBeExecutedLike;
 	executeSmallEvent: ExecuteSmallEventLike;
@@ -57,6 +62,11 @@ export type SmallEventFuncs = {
 	 * whole lock set keeps the canonical order
 	 */
 	getAdditionalLockKeys?: AdditionalLockKeysLike;
+
+	/**
+	 * Checked on the eligible small events before the random draw: the first guaranteed one is chosen
+	 */
+	isGuaranteed?: IsGuaranteedLike;
 };
 
 type SmallEventModule = {

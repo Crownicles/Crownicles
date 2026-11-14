@@ -85,7 +85,19 @@ function selectRandomSmallEvent(eligibleEvents: SmallEventEligibility[]): string
 }
 
 /**
- * Get a random small event key based on rarity weighting
+ * First eligible small event guaranteed to happen now, if any
+ */
+async function findGuaranteedSmallEvent(player: Player, eligibleEvents: SmallEventEligibility[]): Promise<string | null> {
+	for (const event of eligibleEvents) {
+		if (await SmallEventDataController.getSmallEventFunction(event.key)?.isGuaranteed?.(player)) {
+			return event.key;
+		}
+	}
+	return null;
+}
+
+/**
+ * Get the guaranteed small event if there is one, or else a random small event key based on rarity weighting
  */
 async function getRandomSmallEvent(
 	player: Player,
@@ -97,7 +109,7 @@ async function getRandomSmallEvent(
 		return null;
 	}
 
-	return selectRandomSmallEvent(eligibleEvents);
+	return await findGuaranteedSmallEvent(player, eligibleEvents) ?? selectRandomSmallEvent(eligibleEvents);
 }
 
 /**

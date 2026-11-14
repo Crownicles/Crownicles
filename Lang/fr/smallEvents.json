@@ -2744,6 +2744,15 @@
         "night": [
           "Théobald scrute le ciel assombri avec satisfaction. La nuit est idéale pour confier cette graine, car la plante a besoin de l'obscurité pour s'épanouir. Vous recevez une **graine** {emote:smallEvents.gardener}."
         ],
+        "flyingPet": [
+          "Théobald lève les yeux vers votre familier volant et sourit. La mousse lunaire ne pousse que sur les rochers les plus hauts, là où seule une créature ailée peut aller la cueillir. Il vous confie une **graine** {emote:smallEvents.gardener}, certain qu'elle sera entre de bonnes ailes."
+        ],
+        "nocturnalPet": [
+          "Le jardinier remarque les yeux brillants de votre familier nocturne et hoche la tête avec approbation. Un compagnon capable de flairer les champignons dans l'obscurité saura veiller sur cette plante. Vous recevez une **graine** {emote:smallEvents.gardener}."
+        ],
+        "innNight": [
+          "Théobald remarque votre mine reposée et devine que vous avez passé la nuit à l'auberge. Ceux qui ont dormi sous la lune savent ce que la nuit apporte aux plantes : il vous tend une **graine** {emote:smallEvents.gardener}."
+        ],
         "herbivorePet": [
           "Le jardinier observe votre familier herbivore avec admiration, impressionné par le lien évident qui vous unit. Seuls ceux qui prennent soin de la nature méritent une telle plante, confie-t-il en vous tendant une **graine** {emote:smallEvents.gardener}."
         ],
@@ -2781,12 +2790,12 @@
           "Théobald secoue la tête. La prochaine graine nécessite un compagnon proche de la nature. Revenez avec un **familier herbivore** que vous aurez **apprivoisé complètement**."
         ],
         "needNight": [
-          "Théobald regarde le soleil encore haut dans le ciel et soupire. La prochaine graine ne peut être offerte qu'à la **tombée de la nuit**. Revenez quand le soleil se sera couché.",
-          "Le jardinier observe le ciel lumineux et secoue la tête. Cette graine particulière ne se confie que dans l'**obscurité de la nuit**."
+          "Théobald regarde le ciel lumineux et soupire : le champignon nocturne ne se trouve que dans l'obscurité. Il ne le confie qu'à un aventurier accompagné d'un **familier nocturne**, ayant **passé la nuit à l'auberge** dans les {{innNightHours}} dernières heures, ou le croisant **à la nuit tombée**.",
+          "Le jardinier range la graine de champignon nocturne avec regret. Pour l'obtenir, il faut revenir avec un **familier nocturne** capable de flairer les champignons dans le noir, après une **nuit à l'auberge** de moins de {{innNightHours}} heures, ou simplement **la nuit**."
         ],
         "needMoonlight": [
-          "Le jardinier observe le ciel avec déception. La **lune n'est pas assez visible** pour confier cette graine. Revenez quand elle brillera davantage dans le ciel nocturne.",
-          "Théobald scrute le firmament en plissant les yeux. Cette graine exige un **puissant clair de lune** pour être offerte. Revenez lors d'une nuit plus lumineuse."
+          "Théobald observe le ciel avec déception : la mousse lunaire ne pousse que sur les rochers les plus hauts, éclairés par la lune. Il ne la confie qu'à un aventurier accompagné d'un **familier volant**, ayant **passé la nuit à l'auberge** dans les {{innNightHours}} dernières heures, ou le croisant sous un **clair de lune**.",
+          "Le jardinier range la graine de mousse lunaire avec regret. Pour l'obtenir, il faut revenir avec un **familier volant** capable d'aller la cueillir, après une **nuit à l'auberge** de moins de {{innNightHours}} heures, ou par une **nuit de lune bien ronde**."
         ],
         "needFireAffinity": [
           "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **familier lié au feu** ou porter un **équipement forgé dans les flammes**.",
@@ -2851,6 +2860,16 @@
         "Le jardinier, ne pouvant vous donner de graine, vous offre généreusement une de ses plantes en souvenir de votre rencontre :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
       "plantSentToHomeStorage": "{emote:city.homeUpgrades.chest} À peine l'avez-vous saisie que la plante disparaît dans un léger scintillement : elle a rejoint le coffre de votre maison.",
+      "consolation": {
+        "plant": [
+          "Pour ne pas vous laisser repartir les mains vides, Théobald vous offre une de ses plantes :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+          "En attendant votre prochaine rencontre, le jardinier vous glisse une plante de son chariot :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
+        ],
+        "material": [
+          "Pour ne pas vous laisser repartir les mains vides, Théobald vous offre un matériau déterré dans son jardin :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+          "En attendant votre prochaine rencontre, le jardinier vous tend un matériau qu'il n'utilise pas :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+        ]
+      },
       "material": [
         "Théobald fouille dans sa besace et en sort un matériau qu'il a trouvé en retournant la terre de son jardin. Il vous l'offre avec un sourire bienveillant :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
         "Le jardinier sort de sa poche un matériau qu'il a déterré en bêchant ce matin. Il vous le tend en vous expliquant qu'il n'en a pas l'utilité :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"

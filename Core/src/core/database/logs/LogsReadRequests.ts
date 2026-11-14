@@ -19,7 +19,8 @@ import {
 	getTodayMidnight,
 	millisecondsToSeconds,
 	minutesToMilliseconds,
-	msDiff, nowMs
+	msDiff, nowMs,
+	secondsToMilliseconds
 } from "../../../../../Lib/src/utils/TimeUtils";
 import { Second } from "../../../../../Lib/src/types/TimeTypes";
 import {
@@ -38,6 +39,7 @@ import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
 import { LogsExpeditions } from "./models/LogsExpeditions";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
+import { LogsInnRooms } from "./models/LogsInnRooms";
 import { getPveIslandLeaveDates } from "./requests/LogsPveIslandRequests";
 import { LogsKingGuardFightsRequests } from "./requests/LogsKingGuardFightsRequests";
 
@@ -585,6 +587,26 @@ export class LogsReadRequests {
 				smallEventId: smallEvent.id
 			}
 		});
+	}
+
+	/**
+	 * Whether the player rented a room in an inn during the given last seconds
+	 * @param keycloakId - The keycloak id of the player
+	 * @param duration - How far back to look, in seconds
+	 */
+	static async hasSleptInInnDuringLast(keycloakId: string, duration: Second): Promise<boolean> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return false;
+		}
+		return await LogsInnRooms.count({
+			where: {
+				playerId: logPlayer.id,
+				date: {
+					[Op.gte]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), secondsToMilliseconds(duration))))
+				}
+			}
+		}) > 0;
 	}
 
 	/**
