@@ -24,7 +24,7 @@ type QuestIconAndName = {
 /**
  * Values interpolated in the hint of a step, read from the constants the game itself checks so the hint never drifts from the rule
  */
-type QuestStepHintParams = Partial<Record<"level" | "price" | "nightStart" | "nightEnd" | "moonIllumination" | "rarity", number>>;
+type QuestStepHintParams = Partial<Record<"level" | "price" | "nightStart" | "nightEnd" | "moonIllumination" | "innNightHours" | "rarity", number>>;
 
 /**
  * Requirements of the gardener before handing over the seed of a plant
@@ -36,6 +36,7 @@ function getSeedStepHintParams(plantId: PlantId): QuestStepHintParams {
 		nightStart: PlantConstants.NIGHT_THRESHOLDS.EVENING,
 		nightEnd: PlantConstants.NIGHT_THRESHOLDS.MORNING,
 		moonIllumination: PlantConstants.MOON_ILLUMINATION_THRESHOLD,
+		innNightHours: PlantConstants.INN_NIGHT_FAVOR_HOURS,
 		rarity: PlantConstants.RARE_PET_SEED_MIN_RARITY
 	};
 }

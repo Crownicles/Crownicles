@@ -2401,7 +2401,7 @@
         "seeds": {
           "name": "Les graines du jardinier",
           "icon": "{emote:city.gardenStatus.seed}",
-          "description": "Un jardinier itinérant confie ses graines les plus rares aux aventuriers qui ont su faire pousser les précédentes.",
+          "description": "Un jardinier itinérant confie ses graines les plus rares aux aventuriers qui ont su faire pousser les précédentes. Il finit toujours par croiser, sur les chemins forestiers, la route de ceux qui sont prêts à recevoir la suivante.",
           "steps": {
             "commonHerb": {
               "label": "Planter {emote:plants.1} $t(models:plants.1)",
@@ -2413,7 +2413,7 @@
             },
             "lunarMoss": {
               "label": "Planter {emote:plants.3} $t(models:plants.3)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, la nuit entre {{nightStart}} h et {{nightEnd}} h, quand la lune est éclairée à plus de {{moonIllumination, number(style: percent)}}."
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier volant, ou ayant passé la nuit à l'auberge dans les {{innNightHours}} dernières heures, ou le croisant la nuit entre {{nightStart}} h et {{nightEnd}} h quand la lune est éclairée à plus de {{moonIllumination, number(style: percent)}}."
             },
             "ironRoot": {
               "label": "Planter {emote:plants.4} $t(models:plants.4)",
@@ -2421,7 +2421,7 @@
             },
             "nightMushroom": {
               "label": "Planter {emote:plants.5} $t(models:plants.5)",
-              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, la nuit entre {{nightStart}} h et {{nightEnd}} h."
+              "hint": "Le jardinier ne confie cette graine qu'aux aventuriers de niveau {{level}} ou plus, accompagnés d'un familier nocturne, ou ayant passé la nuit à l'auberge dans les {{innNightHours}} dernières heures, ou le croisant la nuit entre {{nightStart}} h et {{nightEnd}} h."
             },
             "venomousLeaf": {
               "label": "Planter {emote:plants.6} $t(models:plants.6)",

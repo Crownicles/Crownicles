@@ -73,6 +73,15 @@ export abstract class PlayerSmallEvents {
 		});
 	}
 
+	/**
+	 * Number of small events the player met on their current path
+	 */
+	static async countSmallEventsOfPlayer(playerId: number): Promise<number> {
+		return await PlayerSmallEvent.count({
+			where: { playerId }
+		});
+	}
+
 	static async playerSmallEventCount(playerId: number, smallEventId: string): Promise<number> {
 		return await PlayerSmallEvent.count({
 			where: {

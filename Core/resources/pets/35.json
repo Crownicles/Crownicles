@@ -2,5 +2,6 @@
   "rarity": 3,
   "force": 7,
   "feedDelay": 3,
-  "speed": 13
+  "speed": 13,
+  "tags": ["nocturnal"]
 }

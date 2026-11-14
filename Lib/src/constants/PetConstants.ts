@@ -652,7 +652,8 @@ export abstract class PetConstants {
 	static readonly TAGS = {
 		FIRE: "fire",
 		FLYING: "flying",
-		AQUATIC: "aquatic"
+		AQUATIC: "aquatic",
+		NOCTURNAL: "nocturnal"
 	} as const;
 
 	static SEX = {
