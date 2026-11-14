@@ -36,23 +36,31 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { StringUtils } from "../../utils/StringUtils";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
+import { QuestProgress } from "../../../../Lib/src/types/QuestProgress";
+import { QuestConstants } from "../../../../Lib/src/constants/QuestConstants";
 
-const MISSIONS_BUTTON_IDS = {
-	KING_CHALLENGE: "missions_king_challenge",
-	MISSIONS: "missions_back"
+const MISSIONS_PAGE_IDS = {
+	MISSIONS: "missions",
+	KING_CHALLENGE: "kingChallenge",
+	QUESTS: "quests"
 } as const;
 
-type MissionsButtonId = typeof MISSIONS_BUTTON_IDS[keyof typeof MISSIONS_BUTTON_IDS];
+type MissionsPageId = typeof MISSIONS_PAGE_IDS[keyof typeof MISSIONS_PAGE_IDS];
+
+const MISSIONS_PAGE_EMOTES: Record<MissionsPageId, string> = {
+	[MISSIONS_PAGE_IDS.MISSIONS]: CrowniclesIcons.missions.sideMission,
+	[MISSIONS_PAGE_IDS.KING_CHALLENGE]: CrowniclesIcons.kingChallenge.icon,
+	[MISSIONS_PAGE_IDS.QUESTS]: CrowniclesIcons.quests.icon
+};
+
+const MISSIONS_PAGE_BUTTON_PREFIX = "missions_page_";
 
 type MissionsEmbedAuthor = {
 	discordUser: User | null;
 	pseudo: string;
 };
 
-type MissionsPages = {
-	missions: CrowniclesEmbed;
-	kingChallenge: CrowniclesEmbed;
-};
+type MissionsPages = Record<MissionsPageId, CrowniclesEmbed>;
 
 /**
  * Get the packet to send to the server
@@ -222,6 +230,57 @@ function getKingChallengeDescription(progress: KingChallengeProgress, lng: Langu
 }
 
 /**
+ * Completed steps of a quest followed by its current step and the hint to complete it, or the completion of the quest
+ */
+function getQuestStepLines(quest: QuestProgress, lng: Language): string[] {
+	const steps: readonly string[] = QuestConstants.STEPS[quest.questId];
+	const stepKeyPrefix = `commands:missions.quests.list.${quest.questId}.steps`;
+	const lines = steps.slice(0, quest.stepsDone)
+		.map(step => i18n.t("commands:missions.quests.stepDone", {
+			lng,
+			step: i18n.t(`${stepKeyPrefix}.${step}.label`, { lng })
+		}));
+	if (quest.stepsDone >= steps.length) {
+		lines.push(i18n.t("commands:missions.quests.completed", { lng }));
+		return lines;
+	}
+	const currentStep = steps[quest.stepsDone];
+	lines.push(i18n.t("commands:missions.quests.stepCurrent", {
+		lng,
+		step: i18n.t(`${stepKeyPrefix}.${currentStep}.label`, { lng }),
+		hint: i18n.t(`${stepKeyPrefix}.${currentStep}.hint`, { lng })
+	}));
+	return lines;
+}
+
+/**
+ * Display of a quest: its name, its progression and its steps
+ */
+function getQuestDisplay(quest: QuestProgress, lng: Language): string {
+	const stepCount = QuestConstants.STEPS[quest.questId].length;
+	return StringUtils.joinLines([
+		i18n.t("commands:missions.quests.header", {
+			lng,
+			name: i18n.t(`commands:missions.quests.list.${quest.questId}.name`, { lng }),
+			current: quest.stepsDone,
+			max: stepCount,
+			progressionBar: MissionUtils.generateDisplayProgression(quest.stepsDone, stepCount)
+		}),
+		...getQuestStepLines(quest, lng)
+	]);
+}
+
+/**
+ * Description of the quests sub-page of the missions command
+ */
+function getQuestsDescription(quests: QuestProgress[], lng: Language): string {
+	return StringUtils.joinParagraphs([
+		i18n.t("commands:missions.quests.description", { lng }),
+		...quests.map(quest => getQuestDisplay(quest, lng))
+	]);
+}
+
+/**
  * Build an embed of the missions command with the author of the displayed missions
  */
 function buildMissionsCommandEmbed(author: MissionsEmbedAuthor, title: string, description: string): CrowniclesEmbed {
@@ -229,18 +288,28 @@ function buildMissionsCommandEmbed(author: MissionsEmbedAuthor, title: string, d
 	return author.discordUser ? embed.formatAuthor(title, author.discordUser) : embed.setTitle(title);
 }
 
-function buildToggleButton(showKingChallenge: boolean, lng: Language): ButtonBuilder {
-	return new ButtonBuilder()
-		.setCustomId(showKingChallenge ? MISSIONS_BUTTON_IDS.KING_CHALLENGE : MISSIONS_BUTTON_IDS.MISSIONS)
-		.setLabel(i18n.t(showKingChallenge ? "commands:missions.kingChallenge.button" : "commands:missions.kingChallenge.backButton", { lng }))
-		.setEmoji(showKingChallenge ? CrowniclesIcons.kingChallenge.icon : CrowniclesIcons.collectors.back)
-		.setStyle(ButtonStyle.Secondary);
+/**
+ * One button per sub-page of the missions command, the displayed one being disabled
+ */
+function buildPagesRow(displayedPage: MissionsPageId | null, lng: Language): ActionRowBuilder<ButtonBuilder> {
+	return new ActionRowBuilder<ButtonBuilder>().addComponents(Object.values(MISSIONS_PAGE_IDS)
+		.map(page => new ButtonBuilder()
+			.setCustomId(`${MISSIONS_PAGE_BUTTON_PREFIX}${page}`)
+			.setLabel(i18n.t(`commands:missions.pages.${page}`, { lng }))
+			.setEmoji(MISSIONS_PAGE_EMOTES[page])
+			.setStyle(ButtonStyle.Secondary)
+			.setDisabled(page === displayedPage || displayedPage === null)));
+}
+
+function getPageOfButton(customId: string): MissionsPageId | undefined {
+	return Object.values(MISSIONS_PAGE_IDS)
+		.find(page => `${MISSIONS_PAGE_BUTTON_PREFIX}${page}` === customId);
 }
 
 /**
- * Let the player who asked switch between the missions and the king's challenge sub-page
+ * Let the player who asked switch between the sub-pages of the missions command
  */
-function setupMissionsToggleCollector(message: Message, interaction: CrowniclesInteraction, pages: MissionsPages): void {
+function setupMissionsPagesCollector(message: Message, interaction: CrowniclesInteraction, pages: MissionsPages): void {
 	const lng = interaction.userLanguage;
 	const collector = message.createMessageComponentCollector({
 		componentType: ComponentType.Button,
@@ -249,24 +318,24 @@ function setupMissionsToggleCollector(message: Message, interaction: CrowniclesI
 				sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 				return false;
 			}
-			return Object.values(MISSIONS_BUTTON_IDS)
-				.includes(buttonInteraction.customId as MissionsButtonId);
+			return getPageOfButton(buttonInteraction.customId) !== undefined;
 		},
 		time: Constants.MESSAGES.COLLECTOR_TIME
 	});
 
-	let lastButton = buildToggleButton(true, lng);
 	collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-		const showKingChallenge = buttonInteraction.customId === MISSIONS_BUTTON_IDS.KING_CHALLENGE;
-		lastButton = buildToggleButton(!showKingChallenge, lng);
+		const page = getPageOfButton(buttonInteraction.customId);
+		if (!page) {
+			return;
+		}
 		await buttonInteraction.update({
-			embeds: [showKingChallenge ? pages.kingChallenge : pages.missions],
-			components: [new ActionRowBuilder<ButtonBuilder>().addComponents(lastButton)]
+			embeds: [pages[page]],
+			components: [buildPagesRow(page, lng)]
 		});
 	});
 
 	collector.on("end", async () => {
-		await message.edit({ components: [new ActionRowBuilder<ButtonBuilder>().addComponents(lastButton.setDisabled(true))] })
+		await message.edit({ components: [buildPagesRow(null, lng)] })
 			.catch(() => undefined);
 	});
 }
@@ -306,15 +375,19 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 		kingChallenge: buildMissionsCommandEmbed(author, i18n.t("commands:missions.kingChallenge.title", {
 			lng,
 			pseudo: author.pseudo
-		}), getKingChallengeDescription(packet.kingChallenge, lng))
+		}), getKingChallengeDescription(packet.kingChallenge, lng)),
+		quests: buildMissionsCommandEmbed(author, i18n.t("commands:missions.quests.title", {
+			lng,
+			pseudo: author.pseudo
+		}), getQuestsDescription(packet.quests, lng))
 	};
 
 	const msg = await interaction.replyWithMessage({
 		embeds: [pages.missions],
-		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buildToggleButton(true, lng))]
+		components: [buildPagesRow(MISSIONS_PAGE_IDS.MISSIONS, lng)]
 	});
 	if (msg) {
-		setupMissionsToggleCollector(msg, interaction, pages);
+		setupMissionsPagesCollector(msg, interaction, pages);
 	}
 }
 

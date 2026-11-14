@@ -124,6 +124,11 @@ export const CrowniclesIcons: {
 		tierReached: string;
 		tierPending: string;
 	};
+	quests: {
+		icon: string;
+		stepDone: string;
+		stepCurrent: string;
+	};
 	messages: {
 		validate: string;
 		refuse: string;
@@ -2457,6 +2462,11 @@ export const CrowniclesIcons: {
 		icon: "⚜️",
 		tierReached: "✅",
 		tierPending: "▫️"
+	},
+	quests: {
+		icon: "🧭",
+		stepDone: "✅",
+		stepCurrent: "⏳"
 	},
 	missions: {
 		expired: "📤",

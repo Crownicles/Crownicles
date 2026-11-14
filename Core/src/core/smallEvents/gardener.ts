@@ -197,7 +197,7 @@ async function getNextSeedId(player: Player, home: Home | null): Promise<PlantId
 		return PlantId.COMMON_HERB;
 	}
 
-	const highestPlanted = await getHighestPlantedSeedId(home!.id);
+	const highestPlanted = await HomeGardenSlots.getHighestPlantedId(home!.id);
 	const nextSeed = highestPlanted + 1;
 	return nextSeed > PlantConstants.MAX_PLANT_ID ? null : nextSeed as PlantId;
 }
@@ -216,11 +216,6 @@ function hasGarden(home: Home | null): boolean {
 async function playerHasSeed(playerId: number): Promise<boolean> {
 	const seedSlot = await PlayerPlantSlots.getSeedSlot(playerId);
 	return seedSlot !== null && seedSlot.plantId !== 0;
-}
-
-async function getHighestPlantedSeedId(homeId: number): Promise<number> {
-	const gardenSlots = await HomeGardenSlots.getOfHome(homeId);
-	return gardenSlots.reduce((highestPlanted, slot) => Math.max(highestPlanted, slot.plantId), 0);
 }
 
 function getDefaultSeedCondition(cost: number): SeedConditionResult {

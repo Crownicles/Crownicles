@@ -71,6 +71,15 @@ export class HomeGardenSlots {
 	}
 
 	/**
+	 * Get the highest plant id currently planted in the garden of a home, or 0 when the garden is empty.
+	 * Seeds are handed over in increasing plant id order, so it measures how far the player went in the seeds progression.
+	 */
+	public static async getHighestPlantedId(homeId: number): Promise<number> {
+		const gardenSlots = await HomeGardenSlots.getOfHome(homeId);
+		return gardenSlots.reduce((highestPlanted, slot) => Math.max(highestPlanted, slot.plantId), 0);
+	}
+
+	/**
 	 * Initialize empty garden slots for a home based on the number of plots
 	 */
 	public static async initializeSlots(homeId: number, gardenPlots: number): Promise<void> {

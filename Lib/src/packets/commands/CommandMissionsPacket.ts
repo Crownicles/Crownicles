@@ -3,6 +3,7 @@ import {
 } from "../CrowniclesPacket";
 import { BaseMission } from "../../types/CompletedMission";
 import { KingChallengeProgress } from "../../types/KingChallenge";
+import { QuestProgress } from "../../types/QuestProgress";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandMissionsPacketReq extends CrowniclesPacket {
@@ -25,6 +26,8 @@ export class CommandMissionsPacketRes extends CrowniclesPacket {
 	maxSideMissionSlots!: number;
 
 	kingChallenge!: KingChallengeProgress;
+
+	quests!: QuestProgress[];
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
