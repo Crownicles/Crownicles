@@ -131,23 +131,31 @@ async function buildPlayerNotificationEmbed(
 		: new CrowniclesEmbed().setTitle(titleText);
 }
 
+const QUEST_UPDATE_KINDS = {
+	OBTAINED: "obtained",
+	PROGRESSED: "progressed",
+	COMPLETED: "completed"
+} as const;
+
+type QuestUpdateKind = typeof QUEST_UPDATE_KINDS[keyof typeof QUEST_UPDATE_KINDS];
+
 /**
- * Whether a quest update obtains, makes progress in or completes the quest, used as the context of its title
+ * Whether a quest update obtains, makes progress in or completes the quest
  */
-function getQuestUpdateContext(quest: QuestProgress): "obtained" | "progressed" | "completed" {
+function getQuestUpdateKind(quest: QuestProgress): QuestUpdateKind {
 	if (QuestUtils.isCompleted(quest)) {
-		return "completed";
+		return QUEST_UPDATE_KINDS.COMPLETED;
 	}
-	return quest.stepsDone === 1 ? "obtained" : "progressed";
+	return quest.stepsDone === 1 ? QUEST_UPDATE_KINDS.OBTAINED : QUEST_UPDATE_KINDS.PROGRESSED;
 }
 
 /**
  * Description of a quest update: the quest, its story when it is obtained, and its progression
  */
-function buildQuestUpdatedDescription(quest: QuestProgress, lng: Language): string {
+function buildQuestUpdatedDescription(quest: QuestProgress, updateKind: QuestUpdateKind, lng: Language): string {
 	return StringUtils.joinLines([
 		QuestUtils.formatHeader(quest, lng),
-		...quest.stepsDone === 1
+		...updateKind === QUEST_UPDATE_KINDS.OBTAINED
 			? [
 				i18n.t("notifications:quests.description", {
 					lng,
@@ -162,8 +170,8 @@ function buildQuestUpdatedDescription(quest: QuestProgress, lng: Language): stri
 /**
  * Fields of a quest update: the step just completed, then the next step or the completion of the quest, then how to follow the quests
  */
-function buildQuestUpdatedFields(quest: QuestProgress, lng: Language): APIEmbedField[] {
-	const nextStepField: APIEmbedField = QuestUtils.isCompleted(quest)
+function buildQuestUpdatedFields(quest: QuestProgress, updateKind: QuestUpdateKind, lng: Language): APIEmbedField[] {
+	const nextStepField: APIEmbedField = updateKind === QUEST_UPDATE_KINDS.COMPLETED
 		? {
 			name: i18n.t("notifications:quests.completed", { lng }),
 			value: i18n.t("notifications:quests.completedValue", { lng })
@@ -478,9 +486,10 @@ export default class EventsHandlers {
 		}
 
 		const lng = interaction.userLanguage;
+		const updateKind = getQuestUpdateKind(packet.quest);
 		const embed = await buildPlayerNotificationEmbed(packet.keycloakId, "quest updated", pseudo => i18n.t("notifications:quests.title", {
 			lng,
-			context: getQuestUpdateContext(packet.quest),
+			context: updateKind,
 			pseudo
 		}));
 		if (!embed) {
@@ -490,8 +499,8 @@ export default class EventsHandlers {
 		await interaction.channel.send({
 			embeds: [
 				embed
-					.setDescription(buildQuestUpdatedDescription(packet.quest, lng))
-					.addFields(buildQuestUpdatedFields(packet.quest, lng))
+					.setDescription(buildQuestUpdatedDescription(packet.quest, updateKind, lng))
+					.addFields(buildQuestUpdatedFields(packet.quest, updateKind, lng))
 			]
 		});
 	}

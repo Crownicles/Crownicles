@@ -68,12 +68,17 @@ const MISSIONS_TAB_EMOTES: Record<MissionsTabId, string> = {
 type QuestsPageId = typeof MISSIONS_PAGE_IDS.QUESTS | typeof MISSIONS_PAGE_IDS.COMPLETED_QUESTS;
 
 /**
- * Option of each page of the quests tab, leading to the other one: the ongoing quests lead to the completed ones and back
+ * Button of a page of the quests tab leading to its other page
  */
-const QUESTS_PAGE_OPTIONS: Record<QuestsPageId, {
+type QuestsPageOption = {
 	target: QuestsPageId;
 	emote: string;
-}> = {
+};
+
+/**
+ * Option of each page of the quests tab, leading to the other one: the ongoing quests lead to the completed ones and back
+ */
+const QUESTS_PAGE_OPTIONS: Record<QuestsPageId, QuestsPageOption> = {
 	[MISSIONS_PAGE_IDS.QUESTS]: {
 		target: MISSIONS_PAGE_IDS.COMPLETED_QUESTS,
 		emote: CrowniclesIcons.quests.stepDone
