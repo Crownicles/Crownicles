@@ -2364,8 +2364,9 @@
       "title": "Quêtes de {{pseudo}}",
       "description": "Les quêtes retracent les grandes découvertes qui attendent les aventuriers du royaume. Elles ne rapportent rien par elles-mêmes : chacune de leurs étapes est déjà récompensée en chemin.",
       "questHeader": "{{icon}} **{{name}}**",
-      "progression": "{{progressionBar}} {{current}}/{{max}}",
-      "currentStep": "{emote:quests.stepCurrent} {{label}}\n{{hint}}",
+      "progression_one": "{{progressionBar}} {{count}} étape accomplie sur {{max}}",
+      "progression_other": "{{progressionBar}} {{count}} étapes accomplies sur {{max}}",
+      "currentStep": "{emote:quests.stepCurrent} **Étape {{stepNumber}}** : {{label}}\n{{hint}}",
       "noOngoingQuest": "Vous n'avez aucune quête en cours. De nouvelles quêtes se découvrent au fil de vos aventures dans le royaume.",
       "options": {
         "quests": "Quêtes en cours ({{count}})",

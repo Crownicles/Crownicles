@@ -6,7 +6,7 @@
     "description": "> {{description}}",
     "stepDone": "{emote:quests.stepDone} Étape accomplie",
     "nextStep": "{emote:quests.stepCurrent} Prochaine étape",
-    "nextStepValue": "{{label}}\n{{hint}}",
+    "nextStepValue": "**Étape {{stepNumber}}** : {{label}}\n{{hint}}",
     "completed": "{emote:quests.completed} Quête accomplie",
     "completedValue": "Toutes les étapes de cette quête sont accomplies : elle rejoint vos quêtes terminées.",
     "journal": "{emote:quests.icon} Journal de quêtes",
