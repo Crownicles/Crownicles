@@ -12,6 +12,7 @@ import { MissionUtils } from "./MissionUtils";
 import { StringUtils } from "./StringUtils";
 
 type QuestStepTranslation = {
+	stepNumber: number;
 	label: string;
 	hint: string;
 };
@@ -76,17 +77,18 @@ export abstract class QuestUtils {
 		return i18n.t("commands:missions.quests.progression", {
 			lng,
 			progressionBar: MissionUtils.generateDisplayProgression(quest.stepsDone, stepCount),
-			current: quest.stepsDone,
+			count: quest.stepsDone,
 			max: stepCount
 		});
 	}
 
 	/**
-	 * Label and hint of a step of the quest, given by its index
+	 * Number, label and hint of a step of the quest, given by its index
 	 */
 	static getStep(quest: QuestProgress, stepIndex: number, lng: Language): QuestStepTranslation {
 		const stepKey = `commands:missions.quests.list.${quest.questId}.steps.${QuestConstants.STEPS[quest.questId][stepIndex]}`;
 		return {
+			stepNumber: stepIndex + 1,
 			label: i18n.t(`${stepKey}.label`, { lng }),
 			hint: i18n.t(`${stepKey}.hint`, {
 				lng,
