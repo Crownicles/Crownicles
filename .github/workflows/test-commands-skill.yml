@@ -1,0 +1,41 @@
+name: Test commands skill
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths: &skill-sources
+      - Core/src/commands/admin/testCommands/**
+      - Core/resources/mapLinks/**
+      - Core/resources/missions/**
+      - Core/resources/smallEvents/**
+      - Lang/fr/events.json
+      - Lang/fr/models.json
+      - .github/skills/test-commands/**
+      - skills/**
+      - .github/scripts/generate-test-commands-skill.mjs
+      - .github/workflows/test-commands-skill.yml
+  push:
+    branches:
+      - develop
+    paths: *skill-sources
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  skill-up-to-date:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # The skills and the downloadable zip are generated from the test commands, the translations and the resources
+      - name: Check that the test commands skills are up to date
+        run: node .github/scripts/generate-test-commands-skill.mjs --check
