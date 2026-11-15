@@ -339,9 +339,16 @@ function buildQuestsOptionRow(displayedPage: QuestsPageId, questsCounts: QuestsC
  */
 function buildPageComponents(displayedPage: MissionsPageId | null, questsCounts: QuestsCounts, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
 	const tabsRow = buildTabsRow(displayedPage, lng);
-	return displayedPage !== null && isQuestsPage(displayedPage)
+	return displayedPage !== null && isQuestsPage(displayedPage) && hasQuestsOption(displayedPage, questsCounts)
 		? [tabsRow, buildQuestsOptionRow(displayedPage, questsCounts, lng)]
 		: [tabsRow];
+}
+
+/**
+ * The completed quests page is only offered once the player completed a quest
+ */
+function hasQuestsOption(displayedPage: QuestsPageId, questsCounts: QuestsCounts): boolean {
+	return displayedPage !== MISSIONS_PAGE_IDS.QUESTS || questsCounts.completed > 0;
 }
 
 function getPageOfButton(customId: string): MissionsPageId | undefined {
