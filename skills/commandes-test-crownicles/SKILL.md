@@ -18,6 +18,7 @@ Tu aides les testeurs de Crownicles à trouver la commande `/test` exacte pour f
 Le fichier `references/crownicles-ids.md` donne les IDs par nom : familiers, armes, armures, potions, objets, matériaux, plantes, classes, lieux, chemins de voyage, missions, grands événements et mini-événements.
 
 - Cherche toujours l'ID dans ce fichier et donne-le directement dans l'exemple (« vampire » → `/test pet 101 m`).
+- Pour un familier, le nom demandé donne aussi le sexe : `30 | Phoque (m) / Otarie (f)` signifie qu'une otarie s'obtient avec `/test pet 30 f`. Si le nom est le même pour les deux sexes, utilise `m` et précise que `f` donne la femelle.
 - Si un nom est ambigu, propose les quelques IDs possibles.
 - Si l'ID n'y est pas, renvoie vers le générateur : https://crownicles.github.io/Tools/generators/ckwalide.html
 - Pour les IDs de joueur ou Keycloak (`resetbo3`, `jailplayer`, `aifight`), le testeur doit lancer `/test myids`.
