@@ -2347,15 +2347,106 @@
     "off": "The bot was successfully released from maintenance."
   },
   "missions": {
+    "pages": {
+      "missions": "Missions",
+      "kingChallenge": "Défi du roi",
+      "quests": "Quêtes"
+    },
     "kingChallenge": {
-      "button": "The King's Challenge",
-      "backButton": "Back",
       "title": "The King's Challenge {{pseudo}}",
       "description": "Every Monday, the king issues a new challenge to the kingdom's adventurers and rewards those who rise to it.",
       "header": "{emote:kingChallenge.icon} **King's Challenge ({{tier}}/{{tierCount}})**",
       "nextTier": "Earn {{objective, number}} {emote:unitValues.score} this week to reach the {{nextTier}} milestone (expires {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
       "completed": "You've risen to the king's challenge all the way to the final level! A new challenge will be launched at {{time}}.",
       "tier": "{emote:kingChallenge.{{status}}} Level {{tier}}: {{threshold, number}} {emote:unitValues.score} ({{rewards}})"
+    },
+    "quests": {
+      "title": "Quêtes de {{pseudo}}",
+      "description": "Les quêtes retracent les grandes découvertes qui attendent les aventuriers du royaume. Elles ne rapportent rien par elles-mêmes : chacune de leurs étapes est déjà récompensée en chemin.",
+      "questHeader": "{{icon}} **{{name}}**",
+      "progression_one": "{{progressionBar}} {{count}} étape accomplie sur {{max}}",
+      "progression_other": "{{progressionBar}} {{count}} étapes accomplies sur {{max}}",
+      "currentStep": "{emote:quests.stepCurrent} **Étape {{stepNumber}}** : {{label}}\n{{hint}}",
+      "noOngoingQuest": "Vous n'avez aucune quête en cours. De nouvelles quêtes se découvrent au fil de vos aventures dans le royaume.",
+      "options": {
+        "quests": "Quêtes en cours ({{count}})",
+        "completedQuests": "Quêtes terminées ({{count}})"
+      },
+      "completedTitle": "Quêtes terminées de {{pseudo}}",
+      "completedQuest": "{{icon}} **{{name}}** — {emote:quests.completed} {{max}}/{{max}} étapes",
+      "noCompletedQuest": "Aucune quête n'est encore terminée. Les quêtes accomplies sont conservées ici.",
+      "list": {
+        "expeditionTalismans": {
+          "name": "Les talismans d'expédition",
+          "icon": "{emote:expedition.talisman}",
+          "description": "Les familiers les plus aguerris peuvent explorer seuls les contrées lointaines, à condition d'être liés à leur maître par des artefacts ancestraux. Velanna et Talvar finissent toujours par croiser la route des aventuriers qui sont prêts.",
+          "steps": {
+            "meetVelanna": {
+              "label": "Meet Velanna",
+              "hint": "*Une guerrière balafrée arpente parfois les routes du continent et s'intéresse de près aux familiers de ceux qu'elle croise.*"
+            },
+            "anchorTalisman": {
+              "label": "Obtenir le $t(models:talisman.anchor)",
+              "hint": "Velanna le confie si vous réunissez :\n• Niveau {{level}} minimum\n• Membre d'une guilde\n• Un familier rassasié et docile\n• Un familier déjà présenté à Talvar"
+            },
+            "successfulExpedition": {
+              "label": "Réussir une expédition",
+              "hint": "*Le $t(models:talisman.anchor) permet d'envoyer son familier explorer des contrées lointaines depuis {command:pet}.*"
+            },
+            "cloneTalisman": {
+              "label": "Obtenir le $t(models:talisman.clone)",
+              "hint": "*Les rumeurs parlent d'un artefact légendaire enfoui dans certaines contrées, que seul un familier en expédition pourrait déterrer.*"
+            }
+          }
+        },
+        "seeds": {
+          "name": "Les graines du jardinier",
+          "icon": "{emote:city.gardenStatus.seed}",
+          "description": "Un jardinier itinérant confie ses graines les plus rares aux aventuriers qui ont su faire pousser les précédentes. Il finit toujours par croiser, sur les chemins forestiers, la route de ceux qui sont prêts à recevoir la suivante.",
+          "steps": {
+            "commonHerb": {
+              "label": "Planter {emote:plants.1} $t(models:plants.1)",
+              "hint": "• Croiser Théobald, le jardinier, sur une route forestière\n• Niveau {{level}} minimum\n• Un jardin dans votre demeure pour la planter"
+            },
+            "goldenClover": {
+              "label": "Planter {emote:plants.2} $t(models:plants.2)",
+              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
+            },
+            "lunarMoss": {
+              "label": "Planter {emote:plants.3} $t(models:plants.3)",
+              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier volant**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **rencontre de nuit** ({{nightStart}} h – {{nightEnd}} h)"
+            },
+            "ironRoot": {
+              "label": "Planter {emote:plants.4} $t(models:plants.4)",
+              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
+            },
+            "nightMushroom": {
+              "label": "Planter {emote:plants.5} $t(models:plants.5)",
+              "hint": "• Niveau {{level}} minimum\n• Au choix : un **familier nocturne**, une **nuit à l'auberge** de moins de {{innNightHours}} h, ou une **rencontre de nuit** ({{nightStart}} h – {{nightEnd}} h)"
+            },
+            "venomousLeaf": {
+              "label": "Planter {emote:plants.6} $t(models:plants.6)",
+              "hint": "• Niveau {{level}} minimum\n• Un **familier herbivore** dressé"
+            },
+            "fireBulb": {
+              "label": "Planter {emote:plants.7} $t(models:plants.7)",
+              "hint": "• Niveau {{level}} minimum\n• Au choix : être **mage**, un **familier de feu** ou un **équipement de feu** porté"
+            },
+            "meatPlant": {
+              "label": "Planter {emote:plants.8} $t(models:plants.8)",
+              "hint": "• Niveau {{level}} minimum\n• Un **familier carnivore** de rareté $t(items:rarities.{{rarity}}) ou supérieure"
+            },
+            "crystalFlower": {
+              "label": "Planter {emote:plants.9} $t(models:plants.9)",
+              "hint": "• Niveau {{level}} minimum\n• Prix : {{price, number}} {emote:unitValues.money}"
+            },
+            "ancientTree": {
+              "label": "Planter {emote:plants.10} $t(models:plants.10)",
+              "hint": "• Niveau {{level}} minimum\n• Un **familier herbivore** dressé de rareté $t(items:rarities.{{rarity}}) ou supérieure"
+            }
+          }
+        }
+      }
     },
     "title": "{{pseudo}}'s missions",
     "subcategories": {
