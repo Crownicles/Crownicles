@@ -29,7 +29,7 @@ import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans"
  * @param player
  * @param petEntity
  */
-async function canContinueSmallEvent(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<boolean> {
+async function canContinueSmallEvent(response: CrowniclesPacket[], player: Player, petEntity: PetEntity | null): Promise<boolean> {
 	// Check if the player has shown all the pets
 	if (await DwarfPetsSeen.isAllPetSeen(player)) {
 		await manageAllPetsAreSeen(response, player, petEntity);
@@ -37,7 +37,7 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 	}
 
 	// Check if the player has a pet
-	if (!player.petId) {
+	if (!petEntity) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, { interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.NO_PET }));
 		return false;
 	}
@@ -82,8 +82,8 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
  * @param player
  * @param petEntity
  */
-async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<void> {
-	if (player.petId && petEntity.isFeisty()) {
+async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity | null): Promise<void> {
+	if (petEntity?.isFeisty()) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			...petEntity.getBasicInfo(),
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.FEISTY_PET
@@ -195,7 +195,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 		await MissionsController.update(player, response, { missionId: "meetTalvar" });
 
 		const petEntity = await PetEntities.getById(player.petId);
-		if (!petEntity || !await canContinueSmallEvent(response, player, petEntity)) {
+
+		// The pet check must come after canContinueSmallEvent, which answers the player even when they have no pet
+		if (!await canContinueSmallEvent(response, player, petEntity) || !petEntity) {
 			return;
 		}
 
