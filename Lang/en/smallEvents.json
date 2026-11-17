@@ -2738,11 +2738,17 @@
         "paidAccepted": [
           "Theobald shows you a seed he examines in the light. After having exchanged **{{cost}} {emote:unitValues.money}**, you store this **seed** {emote:smallEvents.gardener} in your bag."
         ],
-        "moon": [
-          "Théobald lifts his eyes to the night sky and smiles when he sees the moon glow. He takes a seed out of his bag presumptuously whispering that this plant can only be entrusted under sufficient moonlight. You receive a **seed** {emote:smallEvents.gardener}."
-        ],
         "night": [
           "Theobald watches the dark sky with satisfaction. The night is ideal for entrusting this seed, because the plant needs darkness to flourish. You receive a **seed** {emote:smallEvents.gardener}."
+        ],
+        "flyingPet": [
+          "Théobald lève les yeux vers votre familier volant et sourit. La mousse lunaire ne pousse que sur les rochers les plus hauts, là où seule une créature ailée peut aller la cueillir. Il vous confie une **graine** {emote:smallEvents.gardener}, certain qu'elle sera entre de bonnes ailes."
+        ],
+        "nocturnalPet": [
+          "Le jardinier remarque les yeux brillants de votre familier nocturne et hoche la tête avec approbation. Un compagnon capable de flairer les champignons dans l'obscurité saura veiller sur cette plante. Vous recevez une **graine** {emote:smallEvents.gardener}."
+        ],
+        "innNight": [
+          "Théobald remarque votre mine reposée et devine que vous avez passé la nuit à l'auberge. Ceux qui ont dormi sous la lune savent ce que la nuit apporte aux plantes : il vous tend une **graine** {emote:smallEvents.gardener}."
         ],
         "herbivorePet": [
           "The gardener watches your herbivore pet with admiration, impressed by the obvious bond that unites you. Only those who take care of nature can take care of such a plant, does he tell you by tending you a **seed** {emote:smallEvents.gardener}."
@@ -2781,12 +2787,12 @@
           "Theobald shakes the hue. The next seed requires a companion close to nature. Return with a **herbivore pet** that you have **fully tamed**."
         ],
         "needNight": [
-          "Théobald looks at the sun still high in the sky and sigh. The next seed can only be gifted at **fall of the night**. Come back when the sun has set.",
-          "The gardener observes the bright sky and shakes the hue. This particuly seed only trusts in the **darkened at night**."
+          "Théobald regarde le ciel lumineux et soupire : le champignon nocturne ne se trouve que dans l'obscurité. Il ne le confie qu'à un aventurier accompagné d'un **familier nocturne**, ayant **passé la nuit à l'auberge** dans les {{innNightHours}} dernières heures, ou le croisant **à la nuit tombée**.",
+          "Le jardinier range la graine de champignon nocturne avec regret. Pour l'obtenir, il faut revenir avec un **familier nocturne** capable de flairer les champignons dans le noir, après une **nuit à l'auberge** de moins de {{innNightHours}} heures, ou simplement **la nuit**."
         ],
         "needMoonlight": [
-          "The gardener watches the sky with disappointment. The **moon is not visible enough** to entrust this seed. Come back when it shines more in the night sky.",
-          "Theobald scrutinizes the firmament by narrowing his eyes. This seed requires a **powerful moonlight to be gifted. Return to a brighter night."
+          "Théobald observe le ciel avec déception : la mousse lunaire ne pousse que sur les rochers les plus hauts, là où la lune brille le plus fort. Il ne la confie qu'à un aventurier accompagné d'un **familier volant**, ayant **passé la nuit à l'auberge** dans les {{innNightHours}} dernières heures, ou le croisant **à la nuit tombée**.",
+          "Le jardinier range la graine de mousse lunaire avec regret. Pour l'obtenir, il faut revenir avec un **familier volant** capable d'aller la cueillir, après une **nuit à l'auberge** de moins de {{innNightHours}} heures, ou simplement **la nuit**."
         ],
         "needFireAffinity": [
           "Théobald shakes his head. The next seed requires an affinity for fire. You would need to be a **mage**, have a **fire-bound familiar**, or wear **equipment forged in flames**.",
@@ -2851,6 +2857,16 @@
         "The gardener, unable to give you seed, has managed one of his plants in memory of your encounter:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
       "plantSentToHomeStorage": "{emote:city.homeUpgrades.chest} As soon as you pick it up, the plant disappears with a faint sparkle: it has been added to your home's chest.",
+      "consolation": {
+        "plant": [
+          "Pour ne pas vous laisser repartir les mains vides, Théobald vous offre une de ses plantes :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+          "En attendant votre prochaine rencontre, le jardinier vous glisse une plante de son chariot :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
+        ],
+        "material": [
+          "Pour ne pas vous laisser repartir les mains vides, Théobald vous offre un matériau déterré dans son jardin :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+          "En attendant votre prochaine rencontre, le jardinier vous tend un matériau qu'il n'utilise pas :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+        ]
+      },
       "material": [
         "Theobald searches in his besace and leaves a sailor he found by returning the land from his garden. It offers you a kind smile:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
         "The gardener comes out of his pocket a sailor he degraded by beating this morning. He tends it to you by explaining that he doesn't have the utility:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
