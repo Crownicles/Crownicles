@@ -234,12 +234,15 @@ export default class GuildKickCommand {
 		// kickedPlayer is guaranteed non-null after isNotEligible check
 		const validKickedPlayer = kickedPlayer!;
 
-		BlockingUtils.blockPlayer(validKickedPlayer.keycloakId, BlockingConstants.REASONS.GUILD_KICK);
-
 		const guild = await Guilds.getById(player.guildId);
 		if (!guild) {
+			PacketUtils.pushInternalError(response, "Guild kick: guild of the kicker not found", {
+				context: { keycloakId: player.keycloakId }
+			});
 			return;
 		}
+
+		BlockingUtils.blockPlayer(validKickedPlayer.keycloakId, BlockingConstants.REASONS.GUILD_KICK);
 
 		// Send collector
 		const collector = new ReactionCollectorGuildKick(
