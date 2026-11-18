@@ -16,6 +16,7 @@ import { Guilds } from "../../../../core/database/game/models/Guild";
 import { ScheduledDailyBonusNotification } from "../../../../core/database/game/models/ScheduledDailyBonusNotification";
 import { ScheduledReportNotification } from "../../../../core/database/game/models/ScheduledReportNotification";
 import { ScheduledExpeditionNotification } from "../../../../core/database/game/models/ScheduledExpeditionNotification";
+import { ScheduledGardenNotification } from "../../../../core/database/game/models/ScheduledGardenNotification";
 import { DwarfPetsSeen } from "../../../../core/database/game/models/DwarfPetsSeen";
 import { PlayerTalismans } from "../../../../core/database/game/models/PlayerTalismans";
 import { Material } from "../../../../core/database/game/models/Material";
@@ -190,6 +191,7 @@ async function exportScheduledNotifications(player: NonNullable<Player>, csvFile
 	const dailyBonusNotifs = await ScheduledDailyBonusNotification.findAll({ where: { playerId: player.id } });
 	const reportNotifs = await ScheduledReportNotification.findAll({ where: { playerId: player.id } });
 	const expeditionNotifs = await ScheduledExpeditionNotification.findAll({ where: { keycloakId: player.keycloakId } });
+	const gardenNotifs = await ScheduledGardenNotification.findAll({ where: { playerId: player.id } });
 
 	const notifications = [
 		...dailyBonusNotifs.map(n => ({
@@ -221,6 +223,17 @@ async function exportScheduledNotifications(player: NonNullable<Player>, csvFile
 			petId: n.petId,
 			petSex: n.petSex,
 			petNickname: n.petNickname ?? "",
+			scheduledAt: n.scheduledAt,
+			createdAt: n.createdAt,
+			updatedAt: n.updatedAt
+		})),
+		...gardenNotifs.map(n => ({
+			type: n.type,
+			mapId: "",
+			expeditionId: "",
+			petId: "",
+			petSex: "",
+			petNickname: "",
 			scheduledAt: n.scheduledAt,
 			createdAt: n.createdAt,
 			updatedAt: n.updatedAt

@@ -50,6 +50,7 @@ import {
 import { QUEST_IDS } from "../../../../Lib/src/constants/QuestConstants";
 import { updateCollectMaterialsMission } from "../utils/MaterialLootUtils";
 import { GardenActionType } from "../database/logs/LogsCityLogger";
+import { rescheduleGardenNotificationsUnderLock } from "../bot/GardenNotifications";
 
 type HomeData = ReactionCollectorCityData["home"];
 type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
@@ -217,14 +218,12 @@ function buildGardenPlotsData(gardenSlots: HomeGardenSlot[], earthQuality: numbe
 }
 
 function computeReadyAtTimestamp(slot: HomeGardenSlot, effectiveGrowthTime: number, isReady: boolean): number {
-	if (!slot.plantedAt) {
-		return 0;
-	}
-	if (isReady) {
+	const readyAt = slot.getReadyAt(effectiveGrowthTime);
+	if (readyAt === null || isReady) {
 		return 0;
 	}
 
-	return Math.ceil((slot.plantedAt.valueOf() + effectiveGrowthTime * TimeConstants.MS_TIME.SECOND) / TimeConstants.MS_TIME.SECOND);
+	return Math.ceil(readyAt / TimeConstants.MS_TIME.SECOND);
 }
 
 /**
@@ -356,6 +355,7 @@ async function runHarvestUnderLock(params: {
 			accumulator
 		});
 	}
+	await rescheduleGardenNotificationsUnderLock(player, home);
 
 	const updatedStorage = await HomePlantStorages.getOfHome(home.id);
 	const plantStorage = updatedStorage
@@ -517,6 +517,7 @@ async function runGardenPlantUnderLock(
 
 	await HomeGardenSlots.plantSeed(home.id, gardenSlot!.slot, plantId);
 	await PlayerPlantSlots.clearSeed(player.id);
+	await rescheduleGardenNotificationsUnderLock(player, home);
 
 	crowniclesInstance?.logsDatabase.logGardenAction({
 		keycloakId: player.keycloakId,
@@ -812,6 +813,7 @@ async function applyGardenWateringUnderLock(
 	now: number
 ): Promise<void> {
 	await shiftPlantedAtForGroupedSlots(home.id, groupSlotsByAdvance(wateringResult.entries));
+	await rescheduleGardenNotificationsUnderLock(lockedPlayer, home);
 
 	lockedPlayer.lastGardenWatered = new Date(now);
 	await lockedPlayer.save();

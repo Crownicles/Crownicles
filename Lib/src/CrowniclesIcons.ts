@@ -2456,7 +2456,9 @@ export const CrowniclesIcons: {
 			guildStatusChange: "📜",
 			energy: "⚡",
 			dailyBonus: "📅",
-			petExpedition: "🐾"
+			petExpedition: "🐾",
+			gardenPlantReady: "🌱",
+			gardenAllPlantsReady: "🧺"
 		}
 	},
 	kingChallenge: {

@@ -178,6 +178,42 @@ export abstract class NotificationsTypes {
 		}
 	};
 
+	static GARDEN_PLANT_READY: NotificationType = {
+		emote: CrowniclesIcons.notifications.types.gardenPlantReady,
+		customId: "gardenPlantReady",
+		i18nKey: "commands:notifications.types.gardenPlantReady",
+		value: notificationsConfiguration => ({
+			enabled: notificationsConfiguration.gardenPlantReadyEnabled,
+			sendType: notificationsConfiguration.gardenPlantReadySendType,
+			channelId: notificationsConfiguration.gardenPlantReadyChannelId
+		}),
+		toggleCallback: (notificationsConfiguration): void => {
+			notificationsConfiguration.gardenPlantReadyEnabled = !notificationsConfiguration.gardenPlantReadyEnabled;
+		},
+		changeSendTypeCallback: (notificationsConfiguration, sendType, channelId): void => {
+			notificationsConfiguration.gardenPlantReadySendType = sendType;
+			notificationsConfiguration.gardenPlantReadyChannelId = channelId;
+		}
+	};
+
+	static GARDEN_ALL_PLANTS_READY: NotificationType = {
+		emote: CrowniclesIcons.notifications.types.gardenAllPlantsReady,
+		customId: "gardenAllPlantsReady",
+		i18nKey: "commands:notifications.types.gardenAllPlantsReady",
+		value: notificationsConfiguration => ({
+			enabled: notificationsConfiguration.gardenAllPlantsReadyEnabled,
+			sendType: notificationsConfiguration.gardenAllPlantsReadySendType,
+			channelId: notificationsConfiguration.gardenAllPlantsReadyChannelId
+		}),
+		toggleCallback: (notificationsConfiguration): void => {
+			notificationsConfiguration.gardenAllPlantsReadyEnabled = !notificationsConfiguration.gardenAllPlantsReadyEnabled;
+		},
+		changeSendTypeCallback: (notificationsConfiguration, sendType, channelId): void => {
+			notificationsConfiguration.gardenAllPlantsReadySendType = sendType;
+			notificationsConfiguration.gardenAllPlantsReadyChannelId = channelId;
+		}
+	};
+
 	static ALL: NotificationType[] = [
 		NotificationsTypes.REPORT,
 		NotificationsTypes.GUILD_DAILY,
@@ -187,6 +223,8 @@ export abstract class NotificationsTypes {
 		NotificationsTypes.GUILD_STATUS_CHANGE,
 		NotificationsTypes.ENERGY,
 		NotificationsTypes.DAILY_BONUS,
-		NotificationsTypes.PET_EXPEDITION
+		NotificationsTypes.PET_EXPEDITION,
+		NotificationsTypes.GARDEN_PLANT_READY,
+		NotificationsTypes.GARDEN_ALL_PLANTS_READY
 	];
 }
