@@ -10,11 +10,14 @@ import type { Home as HomeType } from "../../src/core/database/game/models/Home"
 import type { InventoryInfo as InventoryInfoType } from "../../src/core/database/game/models/InventoryInfo";
 import type { PlayerPlantSlot as PlayerPlantSlotType } from "../../src/core/database/game/models/PlayerPlantSlot";
 import type { HomeGardenSlot as HomeGardenSlotType } from "../../src/core/database/game/models/HomeGardenSlot";
-import type { ScheduledGardenNotification as ScheduledGardenNotificationType } from "../../src/core/database/game/models/ScheduledGardenNotification";
+import {
+	GARDEN_NOTIFICATION_TYPES, GardenNotificationType, type ScheduledGardenNotification as ScheduledGardenNotificationType
+} from "../../src/core/database/game/models/ScheduledGardenNotification";
 import {
 	PLANT_SLOT_TYPE, PlantConstants, PlantId
 } from "../../../Lib/src/constants/PlantConstants";
 import { GardenConstants } from "../../../Lib/src/constants/GardenConstants";
+import { TimeConstants } from "../../../Lib/src/constants/TimeConstants";
 import { HomeLevel } from "../../../Lib/src/types/HomeLevel";
 import type { CrowniclesPacket } from "../../../Lib/src/packets/CrowniclesPacket";
 import type {
@@ -24,17 +27,23 @@ import type {
 type ReportGardenServiceModule = typeof import("../../src/core/report/ReportGardenService");
 
 const FIND_EMPTY_SLOT = -1;
-const MS_PER_SECOND = 1000;
 
-function getSmallestGardenHomeLevel(): HomeLevel {
-	let level = HomeLevel.getInitialLevel().level;
-	while (HomeLevel.getByLevel(level)!.features.gardenPlots < 2) {
-		level++;
+/**
+ * Smallest home level whose garden holds two plants
+ */
+function getSmallestTwoPlotsHomeLevel(): HomeLevel {
+	let homeLevel = HomeLevel.getInitialLevel();
+	while (homeLevel.features.gardenPlots < 2) {
+		const nextLevel = HomeLevel.getByLevel(homeLevel.level + 1);
+		if (!nextLevel) {
+			throw new Error("No home level has two garden plots");
+		}
+		homeLevel = nextLevel;
 	}
-	return HomeLevel.getByLevel(level)!;
+	return homeLevel;
 }
 
-const GARDEN_HOME_LEVEL = getSmallestGardenHomeLevel();
+const GARDEN_HOME_LEVEL = getSmallestTwoPlotsHomeLevel();
 
 /**
  * The garden notifications are rescheduled from the persisted garden after each growth change:
@@ -120,18 +129,16 @@ describe("Garden notifications scheduling", () => {
 
 	async function getPersistedReadyTimes(homeId: number): Promise<number[]> {
 		const slots = await HomeGardenSlot.findAll({ where: { homeId } });
-		return slots
-			.filter(slot => slot.plantId !== 0)
-			.map(slot => {
-				const growthSeconds = GardenConstants.getEffectiveGrowthTime(
-					PlantConstants.getPlantById(slot.plantId)!.growthTimeSeconds,
-					GARDEN_HOME_LEVEL.features.gardenEarthQuality
-				);
-				return Math.floor((slot.plantedAt!.valueOf() + growthSeconds * MS_PER_SECOND) / MS_PER_SECOND) * MS_PER_SECOND;
-			});
+		return slots.flatMap(slot => {
+			const plant = PlantConstants.getPlantById(slot.plantId);
+			const readyAt = plant
+				? slot.getReadyAt(GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, GARDEN_HOME_LEVEL.features.gardenEarthQuality))
+				: null;
+			return readyAt === null ? [] : [Math.floor(readyAt / TimeConstants.MS_TIME.SECOND) * TimeConstants.MS_TIME.SECOND];
+		});
 	}
 
-	async function getScheduledAt(playerId: number, type: string): Promise<number | undefined> {
+	async function getScheduledAt(playerId: number, type: GardenNotificationType): Promise<number | undefined> {
 		const notification = await ScheduledGardenNotification.findOne({
 			where: {
 				playerId, type
@@ -150,8 +157,8 @@ describe("Garden notifications scheduling", () => {
 
 		const readyTimes = await getPersistedReadyTimes(home.id);
 		expect(readyTimes).toHaveLength(2);
-		expect(await getScheduledAt(player.id, "plantReady")).toBe(Math.min(...readyTimes));
-		expect(await getScheduledAt(player.id, "allPlantsReady")).toBe(Math.max(...readyTimes));
+		expect(await getScheduledAt(player.id, GARDEN_NOTIFICATION_TYPES.PLANT_READY)).toBe(Math.min(...readyTimes));
+		expect(await getScheduledAt(player.id, GARDEN_NOTIFICATION_TYPES.ALL_PLANTS_READY)).toBe(Math.max(...readyTimes));
 	});
 
 	it("reschedules from the restarted growth after a harvest", async () => {
@@ -162,13 +169,13 @@ describe("Garden notifications scheduling", () => {
 		await plant(player, PlantId.LUNAR_MOSS);
 
 		// Both plants become ready, then the player harvests them: both growths restart
-		await HomeGardenSlot.update({ plantedAt: new Date(Date.now() - 365 * 24 * 3600 * MS_PER_SECOND) }, { where: { homeId: home.id } });
+		await HomeGardenSlot.update({ plantedAt: new Date(Date.now() - TimeConstants.MS_TIME.WEEK) }, { where: { homeId: home.id } });
 		const response: CrowniclesPacket[] = [];
 		await gardenService.handleGardenHarvest(player.keycloakId, {} as CommandReportGardenHarvestReq, response);
 
 		const readyTimes = await getPersistedReadyTimes(home.id);
-		expect(Math.min(...readyTimes)).toBeGreaterThan(Date.now() - MS_PER_SECOND);
-		expect(await getScheduledAt(player.id, "plantReady")).toBe(Math.min(...readyTimes));
-		expect(await getScheduledAt(player.id, "allPlantsReady")).toBe(Math.max(...readyTimes));
+		expect(Math.min(...readyTimes)).toBeGreaterThan(Date.now() - TimeConstants.MS_TIME.SECOND);
+		expect(await getScheduledAt(player.id, GARDEN_NOTIFICATION_TYPES.PLANT_READY)).toBe(Math.min(...readyTimes));
+		expect(await getScheduledAt(player.id, GARDEN_NOTIFICATION_TYPES.ALL_PLANTS_READY)).toBe(Math.max(...readyTimes));
 	});
 });
