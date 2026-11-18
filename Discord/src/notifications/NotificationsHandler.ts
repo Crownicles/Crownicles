@@ -34,7 +34,6 @@ import { GDPRExportCompleteNotificationPacket } from "../../../Lib/src/packets/n
 import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
 import { ZipArchive } from "archiver";
 import { DiscordConstants } from "../DiscordConstants";
-import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 
 /**
  * Create a ZIP buffer from CSV files
@@ -199,9 +198,7 @@ export abstract class NotificationsHandler {
 				notificationContent = i18n.t("bot:notificationGardenPlantReady", {
 					lng,
 					count: packet.plantIds.length,
-					plants: packet.plantIds
-						.map(plantId => `${CrowniclesIcons.plants[plantId]} **${i18n.t(`models:plants.${plantId}`, { lng })}**`)
-						.join(", ")
+					plants: packet.plantIds.map(plantId => DisplayUtils.getPlantDisplay(plantId, lng)).join(", ")
 				});
 				notificationType = NotificationsTypes.GARDEN_PLANT_READY;
 				break;

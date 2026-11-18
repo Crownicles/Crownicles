@@ -43,11 +43,12 @@ import {
 	PlantConstants, PlantId
 } from "../../../../Lib/src/constants/PlantConstants";
 import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
+import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import { GardenPlantReadyNotificationPacket } from "../../../../Lib/src/packets/notifications/GardenPlantReadyNotificationPacket";
 import { GardenAllPlantsReadyNotificationPacket } from "../../../../Lib/src/packets/notifications/GardenAllPlantsReadyNotificationPacket";
 
 const NOW = new Date("2026-11-18T12:00:00Z").valueOf();
-const MINUTE = 60_000;
+const MINUTE = TimeConstants.MS_TIME.MINUTE;
 const OWNER = {
 	id: 7,
 	keycloakId: "player"
@@ -64,7 +65,7 @@ function growthMs(plantId: PlantId): number {
 	if (!plant) {
 		throw new Error(`Unknown plant ${plantId}`);
 	}
-	return plant.growthTimeSeconds * 1000;
+	return plant.growthTimeSeconds * TimeConstants.MS_TIME.SECOND;
 }
 
 /**

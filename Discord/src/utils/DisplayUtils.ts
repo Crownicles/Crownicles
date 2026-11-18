@@ -3,6 +3,7 @@ import {
 } from "../../../Lib/src/constants/ItemConstants";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
+import { PlantId } from "../../../Lib/src/constants/PlantConstants";
 import { Language } from "../../../Lib/src/Language";
 import { ItemWithDetails } from "../../../Lib/src/types/ItemWithDetails";
 import { Item } from "../../../Lib/src/types/Item";
@@ -163,6 +164,11 @@ export class DisplayUtils {
 	 * @param mapLocationId
 	 * @param lng
 	 */
+	static getPlantDisplay(plantId: PlantId, lng: Language): string {
+		const plantEmoji = CrowniclesIcons.plants[plantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
+		return `${plantEmoji} **${i18n.t(`models:plants.${plantId}`, { lng })}**`;
+	}
+
 	static getMapLocationDisplay(mapType: string, mapLocationId: number, lng: Language): string {
 		return i18n.t("{emote:mapTypes.{{mapType}}} $t(models:map_locations.{{mapLocationId}}.name)", {
 			lng,
