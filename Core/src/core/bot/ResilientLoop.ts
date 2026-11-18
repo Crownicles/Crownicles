@@ -6,7 +6,8 @@ export const PERIODIC_LOOPS = {
 	ENERGY_REGEN: "energy_regen",
 	REPORT_NOTIFICATIONS: "report_notifications",
 	DAILY_BONUS_NOTIFICATIONS: "daily_bonus_notifications",
-	EXPEDITION_NOTIFICATIONS: "expedition_notifications"
+	EXPEDITION_NOTIFICATIONS: "expedition_notifications",
+	GARDEN_NOTIFICATIONS: "garden_notifications"
 } as const;
 
 export type PeriodicLoopName = typeof PERIODIC_LOOPS[keyof typeof PERIODIC_LOOPS];

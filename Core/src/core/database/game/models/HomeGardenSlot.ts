@@ -37,6 +37,16 @@ export class HomeGardenSlot extends Model {
 	}
 
 	/**
+	 * Get the timestamp in milliseconds at which the plant in this slot is (or was) ready to harvest, or null when the slot is empty
+	 */
+	getReadyAt(effectiveGrowthTimeSeconds: number): number | null {
+		if (this.isEmpty() || !this.plantedAt) {
+			return null;
+		}
+		return this.plantedAt.valueOf() + effectiveGrowthTimeSeconds * TimeConstants.MS_TIME.SECOND;
+	}
+
+	/**
 	 * Get growth progress as a ratio (0 to 1)
 	 */
 	getGrowthProgress(effectiveGrowthTimeSeconds: number): number {

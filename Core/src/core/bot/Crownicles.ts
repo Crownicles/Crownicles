@@ -28,6 +28,7 @@ import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifi
 import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
 import { processDueExpeditionNotifications } from "./ExpeditionNotifications";
+import { processDueGardenNotifications } from "./GardenNotifications";
 import { processDueReportNotifications } from "./ReportNotifications";
 import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
 import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
@@ -138,6 +139,14 @@ export class Crownicles {
 		await processDueExpeditionNotifications();
 	}
 
+	static async gardenNotifications(): Promise<void> {
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error(`MQTT is not connected, can't do garden notifications. Trying again in ${TimeoutFunctionsConstants.GARDEN_NOTIFICATIONS} ms`);
+			return;
+		}
+		await processDueGardenNotifications();
+	}
+
 	/**
 	 * Sets the maintenance mode of the bot
 	 * @param enable
@@ -216,6 +225,13 @@ export class Crownicles {
 			PERIODIC_LOOPS.EXPEDITION_NOTIFICATIONS,
 			Crownicles.expeditionNotifications,
 			asMilliseconds(TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS),
+			{ startImmediately: true }
+		);
+
+		startResilientLoop(
+			PERIODIC_LOOPS.GARDEN_NOTIFICATIONS,
+			Crownicles.gardenNotifications,
+			asMilliseconds(TimeoutFunctionsConstants.GARDEN_NOTIFICATIONS),
 			{ startImmediately: true }
 		);
 

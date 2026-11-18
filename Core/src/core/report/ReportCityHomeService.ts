@@ -32,6 +32,7 @@ import {
 } from "../database/game/models/Apartment";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
+import { rescheduleGardenNotificationsUnderLock } from "../bot/GardenNotifications";
 import type {
 	HomeBedUseLogParams,
 	HomeMoveLogParams,
@@ -235,6 +236,9 @@ async function runUpgradeHomeUnderLock(params: {
 		lockedHome.save(),
 		lockedPlayer.save()
 	]);
+
+	// A better earth quality shortens the growth of the plants already in the garden
+	await rescheduleGardenNotificationsUnderLock(lockedPlayer, lockedHome);
 
 	response.push(makePacket(CommandReportUpgradeHomeRes, {
 		cost: upgradePrice

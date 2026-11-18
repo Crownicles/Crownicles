@@ -63,6 +63,8 @@ vi.mock("../../../src/core/missions/MissionsController", () => ({
 
 vi.mock("../../../src/core/utils/MaterialLootUtils", () => ({ updateCollectMaterialsMission: vi.fn().mockResolvedValue(undefined) }));
 
+vi.mock("../../../src/core/bot/GardenNotifications", () => ({ rescheduleGardenNotificationsUnderLock: vi.fn().mockResolvedValue(undefined) }));
+
 vi.mock("../../../../Lib/src/locks/withLockedEntities", () => ({
 	withLockedEntities: vi.fn()
 }));
