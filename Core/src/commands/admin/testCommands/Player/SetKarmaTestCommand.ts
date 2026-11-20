@@ -7,9 +7,7 @@ export const commandInfo: ITestCommand = {
 	name: "setkarma",
 	aliases: ["setkarma"],
 	commandFormat: "<karma>",
-	typeWaited: {
-		karma: TypeKey.INTEGER
-	},
+	typeWaited: { karma: TypeKey.INTEGER },
 	description: "Définit votre karma à la valeur donnée"
 };
 

@@ -21,7 +21,7 @@ describe("PossibilityOutcome Requirements", () => {
 		mockPlayer = {
 			id: 1,
 			level: 10,
-			health: 100,
+			getHealth: vi.fn().mockReturnValue(100),
 			karma: 50,
 			class: 1,
 			petId: 123,

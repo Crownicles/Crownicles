@@ -10,6 +10,7 @@ import { LogsPlayersHealth } from "../../../../core/database/logs/models/LogsPla
 import { LogsPlayersEnergy } from "../../../../core/database/logs/models/LogsPlayersEnergy";
 import { LogsPlayersGems } from "../../../../core/database/logs/models/LogsPlayersGems";
 import { LogsPlayersRage } from "../../../../core/database/logs/models/LogsPlayersRage";
+import { LogsPlayersKarma } from "../../../../core/database/logs/models/LogsPlayersKarma";
 import { LogsPlayersTokens } from "../../../../core/database/logs/models/LogsPlayersTokens";
 import { LogsPlayersGloryPoints } from "../../../../core/database/logs/models/LogsPlayersGloryPoints";
 import { LogsPlayersClassChanges } from "../../../../core/database/logs/models/LogsPlayersClassChanges";
@@ -79,11 +80,12 @@ async function exportCoreStats(logsPlayerId: number, csvFiles: GDPRCsvFiles): Pr
 }
 
 /**
- * Exports currency stats (gems, rage, tokens, glory points)
+ * Exports currency stats (gems, rage, karma, tokens, glory points)
  */
 async function exportCurrencyStats(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
 	await exportStatWithReason(LogsPlayersGems, logsPlayerId, "logs/21_gems_history.csv", csvFiles);
 	await exportStatWithReason(LogsPlayersRage, logsPlayerId, "logs/22_rage_history.csv", csvFiles);
+	await exportStatWithReason(LogsPlayersKarma, logsPlayerId, "logs/103_karma_history.csv", csvFiles);
 	await exportStatWithReason(LogsPlayersTokens, logsPlayerId, "logs/23_tokens_history.csv", csvFiles);
 	const gloryPointsCsv = await streamToCSV(
 		LogsPlayersGloryPoints,

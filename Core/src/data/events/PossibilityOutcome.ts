@@ -546,7 +546,7 @@ async function isOutcomeValidForPlayer(
 	// Check all requirement types
 	return (
 		isRangeValid(req.level, player.level)
-		&& isRangeValid(req.health, player.health)
+		&& isRangeValid(req.health, player.getHealth())
 		&& isRangeValid(req.karma, player.karma)
 		&& isRangeValid(req.defense, player.getCumulativeDefense(playerActiveObjects))
 		&& isRangeValid(req.attack, player.getCumulativeAttack(playerActiveObjects))
@@ -622,7 +622,7 @@ async function isPetTypeValid(validPetTypeIds: number[] | undefined, player: Pla
 
 	// Get the player's pet and check if its type is in the valid list
 	const petEntity = await PetEntities.getById(player.petId);
-	return petEntity && validPetTypeIds.includes(petEntity.typeId);
+	return petEntity !== null && validPetTypeIds.includes(petEntity.typeId);
 }
 
 /**
@@ -647,7 +647,10 @@ async function isPetRarityValid(
 
 	// Get the player's pet and its rarity from the pet data
 	const petEntity = await PetEntities.getById(player.petId);
+	if (!petEntity) {
+		return false;
+	}
 	const petData = PetDataController.instance.getById(petEntity.typeId);
-	return isRangeValid(petRarityRange, petData.rarity);
+	return petData !== undefined && isRangeValid(petRarityRange, petData.rarity);
 }
 

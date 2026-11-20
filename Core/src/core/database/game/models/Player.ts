@@ -1426,7 +1426,11 @@ export class Player extends Model {
 	 * @param _response
 	 */
 	public async addKarma(karmas: number, _response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
-		await this.setKarma(this.karma + karmas, reason);
+		await this.mutateLocked(locked => {
+			locked.karma += karmas;
+		});
+		crowniclesInstance?.logsDatabase.logKarmaChange(this.keycloakId, this.karma, reason)
+			.then();
 	}
 
 	/**
@@ -1435,10 +1439,11 @@ export class Player extends Model {
 	 * @param reason
 	 */
 	public async setKarma(karmas: number, reason: NumberChangeReason): Promise<void> {
-		this.karma = karmas;
-		crowniclesInstance.logsDatabase.logKarmaChange(this.keycloakId, this.karma, reason)
+		await this.mutateLocked(locked => {
+			locked.karma = karmas;
+		});
+		crowniclesInstance?.logsDatabase.logKarmaChange(this.keycloakId, this.karma, reason)
 			.then();
-		await this.save();
 	}
 
 	/**
