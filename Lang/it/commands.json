@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Cambio di status all'interno della gilda",
       "energy": "Energia rigenerata",
       "dailyBonus": "Bonus giornaliero",
-      "petExpedition": "Spedizione di animali domestici completata"
+      "petExpedition": "Spedizione di animali domestici completata",
+      "gardenPlantReady": "Plante du jardin prête à être récoltée",
+      "gardenAllPlantsReady": "Toutes les plantes du jardin prêtes à être récoltées"
     },
     "enableDisable": "Abilitazione/Disabilitazione",
     "sendLocationField": "Indirizzo di consegna :",
