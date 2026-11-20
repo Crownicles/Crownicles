@@ -252,7 +252,7 @@
           "4": "Les gardes vous regardent avec suspicion, ayant entendu parler de votre réputation sulfureuse. Ils vous conseillent fermement de ne pas vous mêler de leurs affaires.",
           "5": "Votre tentative d'approche des forces de l'ordre tourne au vinaigre ! Reconnaissant votre visage sur un avis de recherche, ils tentent de vous arrêter. S'en suit une épique course poursuite dans les rues de Claire de Ville, et vous parvenez à les semer.",
           "6": "Votre tentative d'approche des forces de l'ordre tourne au vinaigre ! Reconnaissant votre visage sur un avis de recherche, ils tentent de vous arrêter. S'en suit une épique course poursuite dans les rues de Claire de Ville, et vous sentez le bout de leurs dagues entailler votre dos, provoquant une poussée d'adrénaline qui vous permet de les semer.",
-          "7": "Les gardes vous regardent avec suspicion, ayant entendu parler de vos activités douteuses, mais l'un d'eux, pris de pitié à votre égard, décide de vous laisser une chance de vous racheter. Vous travaillez donc à ses côtés, et malgré vos maladresses, parvenez à rendre service à ce garde, qui vous révèle être un fervent adorateur d'Iatneh. Vous reprenez votre route, fier de ce progrès."
+          "7": "Les gardes vous regardent avec suspicion, ayant entendu parler de vos activités douteuses, mais l'un d'eux, pris de pitié à votre égard, décide de vous laisser une chance de vous racheter. Vous travaillez donc à ses côtés, et malgré vos maladresses, parvenez à rendre service à ce garde, qui vous révèle être un fervent adorateur d'Iatneh. Vous vous éloignez, fier de ce progrès."
         },
         "text": "Proposer votre aide aux gardes."
       },
@@ -271,32 +271,6 @@
           "0": "Vous décidez de faire rapidement le tour de Claire de Ville sans vous attarder. La ville est effectivement prospère, mais vous préférez reprendre rapidement votre route vers de nouveaux horizons.",
           "1": "Intimidé par l'agitation de cette grande ville marchande, vous préférez ne pas vous mêler aux habitants et repartez discrètement après une visite superficielle."
         }
-      },
-      "goForge": {
-        "outcomes": {
-          "0": "Il n'y a rien d'intéressant dans cette forge... Vous quittez rapidement les lieux.",
-          "1": "En essayant une épée, vous brisez la fenêtre de la forge, le forgeron demande remboursement !",
-          "2": "Personne n'est présent dans la forge qui semble abandonnée depuis des années. Avant de ressortir vous remarquez cependant un objet qui pourrait vous servir pour la suite de votre aventure...",
-          "3": "La forge semble abandonnée depuis des années. Vous ressortez donc bredouille.",
-          "4": "Vous entrez et saluez le forgeron. Après une rapide inspection de son travail vous comprenez que vous ne trouverez rien d'intéressant ici. Vous échangez quelques mots et ressortez."
-        },
-        "text": "Aller à la forge."
-      },
-      "goInn": {
-        "outcomes": {
-          "0": "Après avoir discuté pendant 2 heures avec l'aubergiste, vous finissez par apprendre qu'il n'y a aucune chambre disponible pour la nuit ! Vous ressortez de l'auberge, frustré de ne pas avoir pu profiter d'une bonne nuit de repos.",
-          "1": "Vous payez une chambre pour la nuit et tombez effondré sur le lit. Il faudra dormir avant de pouvoir reprendre l'aventure.",
-          "2": "L'auberge semble abandonnée depuis plusieurs années... Vous ressortez sans vous poser plus de questions."
-        },
-        "text": "Aller à l'auberge."
-      },
-      "goMarket": {
-        "outcomes": {
-          "0": "Vous explorez le marché en 30 minutes avant de découvrir un petit objet au sol qui pourrait vous être utile...",
-          "1": "Après avoir perdu 60 minutes à vous balader dans les étals, vous finissez par quitter le marché sans avoir pu trouver quoi que ce soit d'intéressant.",
-          "2": "Alors que votre vigilance était au plus bas sur le marché, vous recevez un coup violent derrière la tête et vous vous effondrez à terre... Après ce moment, plus aucun souvenir. Il faudra vous soigner avant de pouvoir reprendre l'aventure !"
-        },
-        "text": "Aller au marché."
       }
     },
     "text": "Vous voici aux portes de Claire de Ville, cette grande cité marchande qui se dresse majestueusement devant vous. Carrefour économique réputé dans toute la région, la ville bourdonne d'une activité constante. Des caravanes de marchands franchissent les portes fortifiées dans un ballet incessant, tandis que l'écho des marteaux résonne depuis les forges renommées. L'odeur alléchante des auberges se mélange aux parfums d'épices du grand marché central."
@@ -564,7 +538,7 @@
           "3": "Grâce à votre expérience de vétéran, vous repérez d'instinct les caches et renforts d'ouvriers. Derrière une solive chevillée, vous découvrez une pièce d'atelier de maître, soigneusement dissimulée, elle a certainement été cachée là afin d'éviter un vol avant la fin de la construction. Raisonnant qu'elle ne sera plus d'utilité à personne maintenant que la construction a été abandonnée, vous la récupérez avec précaution, conscient de sa valeur.",
           "4": "Votre primate bondit de perche en perche avec une joie espiègle. De ses doigts habiles, il extirpe d'un recoin inaccessible une trouvaille oubliée par les bâtisseurs, qu'il vous dépose fièrement dans la paume.",
           "5": "Votre robuste constitution fait grincer les vieilles planches de la construction que vous sentez plier sous vos pieds. Une latte craque, mais vous vous rattrapez de justesse. Le reste de l'ascension se fait sans encombre. Vous ne trouvez rien en haut des échafauds et redescendez soulagé de n'avoir pas chuté.",
-          "6": "Piqué par la cupidité, vous arrachez clous et pièces de bois, fouillez les poches de cuir. Hélas, tout n'est plus que rouille et pourriture : le chantier a déjà été débarrassé du peu qui valait encore. Vous repartez, l'âme en peine et les mains vides.",
+          "6": "Piqué par la cupidité, vous arrachez clous et pièces de bois, fouillez les poches de cuir. Hélas, tout n'est plus que rouille et pourriture : le chantier a déjà été débarrassé du peu qui valait encore. Vous redescendez, l'âme en peine et les mains vides.",
           "7": "Votre carrure fait geindre l'ouvrage, mais vos bras puissants vous hissent jusqu'à la panne faîtière. Là, blotti sous une bavette de tuiles, vous trouvez un objet de valeur oublié des maîtres d'œuvre.",
           "8": "À mesure que vous grimpez, barreaux et nœuds cèdent en chaîne. Sans assez d'élan pour vous rattraper, vous chutez lourdement dans un vacarme de bois brisé. Vous restez étourdi, le souffle coupé.",
           "9": "Prudent car vous manquez encore d'expérience, vous n'osez guère dépasser le premier niveau. En remettant votre besace, vous remarquez un petit outil gravé, abandonné tout près de vos pieds. Vous décidez de le prendre, pensant qu'il pourrait vous être utile plus tard.",
@@ -595,14 +569,14 @@
       },
       "skip": {
         "outcomes": {
-          "0": "La prudence vous dicte de poursuivre votre route. Vous reprenez le chemin des ruelles, laissant derrière vous ce chantier figé dans le temps.",
+          "0": "La prudence vous dicte de ne pas vous attarder. Vous reprenez le chemin des ruelles, laissant derrière vous ce chantier figé dans le temps.",
           "1": "En coupant au travers du chantier sans regarder, votre pied se heurte à un doloire laissée au sol. Une entaille vive vous arrache un juron."
         },
         "text": "Passer son chemin sans s'attarder."
       },
       "end": {
         "outcomes": {
-          "0": "Vous demeurez un long moment à contempler cet ouvrage fantôme : solives qui grincent, toiles d'araignée et registres oubliés. Puis, le cœur songeur, vous vous décidez à reprendre la route.",
+          "0": "Vous demeurez un long moment à contempler cet ouvrage fantôme : solives qui grincent, toiles d'araignée et registres oubliés. Puis, le cœur songeur, vous vous décidez à vous éloigner.",
           "1": "Votre familier, haut dans le ciel, vrille subitement et se pose près d'un renfoncement. Il en retire un objet brillant et vous le dépose dans la main avec un petit cri satisfait. Vous le félicitez pour cette trouvaille, la chance sourit souvent à ceux qui prennent le temps de chercher.",
           "2": "Sans prévenir, votre gorille tambourine de ses poings un pan de mur ! La maçonnerie cède et une pierre vous heurte le crâne. Vous le rabrouez en massant votre tête, car cet incident aurait dû être évité."
         }
@@ -753,14 +727,14 @@
         "outcomes": {
           "0": "Vous demeurez figé, observant la scène avec une fascination morbide. Faut-il intervenir ? Appeler à l'aide ? Votre indécision vous paralyse jusqu'à ce que le garde, ayant achevé son méfait, remarque votre présence. Il vous fixe d'un regard menaçant avant de disparaître dans les ruelles. Vous reprenez finalement votre route, troublé par votre propre passivité.",
           "1": "Tétanisé par cette démonstration flagrante de corruption au cœur même de Claire de Ville, vous restez bouche bée pendant de longues minutes. Lorsque le garde finit par vous remarquer, son regard noir vous glace le sang. Vous vous hâtez de dégager, le cœur battant, ayant perdu un temps précieux dans cette observation stérile.",
-          "2": "Votre familier observe également la scène avec curiosité, mais contrairement à vous, il agit ! Il bondit vers le garde en aboyant/sifflant/criant, créant une diversion qui permet à la femme de s'échapper. Le garde, surpris, s'enfuit également. Vous récupérez votre compagnon et reprenez votre route."
+          "2": "Votre familier observe également la scène avec curiosité, mais contrairement à vous, il agit ! Il bondit vers le garde en aboyant/sifflant/criant, créant une diversion qui permet à la femme de s'échapper. Le garde, surpris, s'enfuit également. Vous récupérez votre compagnon et vous éloignez."
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Vous détournez délibérément le regard de cette scène déplaisante et poursuivez votre route d'un pas pressé. Après tout, ce ne sont pas vos affaires, et Claire de Ville a assez de problèmes sans que vous vous en mêliez.",
+          "0": "Vous détournez délibérément le regard de cette scène déplaisante et vous éloignez d'un pas pressé. Après tout, ce ne sont pas vos affaires, et Claire de Ville a assez de problèmes sans que vous vous en mêliez.",
           "1": "Alors que vous passez votre chemin sans un regard, votre pied heurte une pierre mal placée ! Vous vous étalez de tout votre long sur les pavés inégaux de Claire de Ville, sous les regards moqueurs des passants. Votre chute attire l'attention sur la scène du vol, et le garde corrompu s'enfuit précipitamment.",
-          "2": "Votre indifférence face à l'injustice ne passe pas inaperçue. Plusieurs citoyens vous observent avec mépris tandis que vous continuez votre route sans intervenir. Votre réputation en souffre légèrement.",
+          "2": "Votre indifférence face à l'injustice ne passe pas inaperçue. Plusieurs citoyens vous observent avec mépris tandis que vous vous éloignez sans intervenir. Votre réputation en souffre légèrement.",
           "3": "Vous passez votre chemin, mais votre compagnon animal semble troublé par la scène. Il tire sur sa laisse ou pousse des gémissements plaintifs, vous retardant légèrement dans votre progression.",
           "4": "Absorbé par vos propres pensées, vous ne remarquez même pas vraiment la scène et continuez naturellement votre route à travers les rues de Claire de Ville."
         },
@@ -782,7 +756,7 @@
         "outcomes": {
           "0": "Vous approchez discrètement et glissez quelques pièces au garde en murmurant que vous souhaitez qu'il la laisse partir. Le corrompu, reconnaissant un confrère dans la malveillance, empoche l'argent avec un sourire entendu et libère la femme. Elle vous lance un regard reconnaissant mêlé de dégoût avant de disparaître.",
           "1": "Votre réputation de personne honorable vous précède ! Lorsque vous tentez de corrompre le garde, celui-ci éclate de rire en s'étonnant que ce soit vous qui lui offriez un pot-de-vin. Il libère la femme de lui-même, amusé par votre tentative maladroite de négociation.",
-          "2": "Le garde accepte votre argent... puis exige davantage ! Coincé dans ce chantage, vous devez payer une somme exorbitante pour libérer la pauvre femme. Vous repartez la bourse vide mais la conscience légèrement apaisée.",
+          "2": "Le garde accepte votre argent... puis exige davantage ! Coincé dans ce chantage, vous devez payer une somme exorbitante pour libérer la pauvre femme. Vous vous éloignez la bourse vide mais la conscience légèrement apaisée.",
           "3": "Votre offre de corruption attire l'attention d'autres gardes honnêtes ! Réalisant votre erreur, vous devez fuir précipitamment, laissant votre argent derrière vous dans votre fuite chaotique."
         },
         "text": "Payer le garde pour qu'il libère sa victime."
