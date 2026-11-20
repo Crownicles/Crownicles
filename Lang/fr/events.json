@@ -205,15 +205,15 @@
       "visitInn": {
         "outcomes": {
           "0": "L'aubergiste vous reconnaît : votre nom est de ceux qu'on accueille volontiers. Il vous offre sa meilleure chambre et un repas copieux. Au matin, toute votre fatigue a disparu.",
-          "1": "L'aubergiste de la Halte Dorée vous accueille chaleureusement. Vous négociez un prix raisonnable pour une chambre confortable et profitez d'une nuit réparatrice bien méritée.",
+          "1": "L'aubergiste de la Halte des Braves vous accueille chaleureusement. Vous négociez un prix raisonnable pour une chambre confortable et profitez d'une nuit réparatrice bien méritée.",
           "2": "L'aubergiste vous reconnaît et hésite, nerveux. Il finit par vous proposer une chambre à un prix exorbitant, en prétextant que votre présence risque de faire fuir ses autres clients.",
           "3": "L'auberge affiche complet : une caravane de marchands a pris tous les lits avant vous. Déçu, vous devez chercher un autre endroit où passer la nuit.",
           "4": "L'aubergiste voit à votre allure que vous avez de la route derrière vous. Contre une modeste contribution, il vous confie ce qu'il sait des chemins des environs.",
-          "5": "L'établissement semble avoir connu des jours meilleurs. L'aubergiste, désabusé, vous propose une chambre basique à prix réduit, s'excusant pour le manque de confort.",
+          "5": "La Halte des Braves est bondée, comme toujours. Il ne reste qu'un réduit sous les combles, que l'aubergiste vous cède à prix réduit en s'excusant du manque de confort.",
           "6": "L'aubergiste, grand amoureux des animaux, fond devant votre compagnon à quatre pattes. Il vous offre le gîte et le couvert à tous les deux.",
-          "7": "Vous entrez à la Halte Dorée, et votre T-Rex vous suit en bon compagnon. C'est la panique dans toute l'auberge. Croyant à une attaque, l'aubergiste vous apporte la caisse et vous supplie de ressortir."
+          "7": "Vous entrez à la Halte des Braves, et votre T-Rex vous suit en bon compagnon. C'est la panique dans toute l'auberge. Croyant à une attaque, l'aubergiste vous apporte la caisse et vous supplie de ressortir."
         },
-        "text": "Chercher refuge à l'auberge La Halte Dorée."
+        "text": "Chercher refuge à l'auberge La Halte des Braves."
       },
       "exploreMarket": {
         "outcomes": {
