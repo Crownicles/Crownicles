@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Changement de statut au sein de la guilde",
       "energy": "Énergie régénérée",
       "dailyBonus": "Bonus journalier",
-      "petExpedition": "Expédition de familier terminée"
+      "petExpedition": "Expédition de familier terminée",
+      "gardenPlantReady": "Plante du jardin prête à être récoltée",
+      "gardenAllPlantsReady": "Toutes les plantes du jardin prêtes à être récoltées"
     },
     "enableDisable": "Activer/Désactiver",
     "sendLocationField": "Endroit d'envoi :",
