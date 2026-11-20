@@ -543,30 +543,50 @@ async function isOutcomeValidForPlayer(
 		return true;
 	}
 
-	// Check all requirement types
-	return (
-		isRangeValid(req.level, player.level)
-		&& isRangeValid(req.health, player.getHealth())
-		&& isRangeValid(req.karma, player.karma)
-		&& isRangeValid(req.defense, player.getCumulativeDefense(playerActiveObjects))
-		&& isRangeValid(req.attack, player.getCumulativeAttack(playerActiveObjects))
-		&& isRangeValid(req.speed, player.getCumulativeSpeed(playerActiveObjects))
-		&& isClassValid(req.validClassIds, player.class)
-		&& await isCampaignMissionValid(req.campaignCurrentMissionId, player)
-		&& await isPetTypeValid(req.validPetTypeIds, player)
-		&& await isPetRarityValid(req.petRarity, player)
-	);
+	return areStatRequirementsValid(req, player, playerActiveObjects)
+		&& await areProgressionRequirementsValid(req, player);
 }
+
+/**
+ * Check the requirements read from the player's own numbers: level, health, karma, fight stats and class
+ */
+function areStatRequirementsValid(
+	req: OutcomeRequirements,
+	player: Player,
+	playerActiveObjects: PlayerActiveObjects
+): boolean {
+	const rangeChecks: [OutcomeRange | undefined, number][] = [
+		[req.level, player.level],
+		[req.health, player.getHealth()],
+		[req.karma, player.karma],
+		[req.defense, player.getCumulativeDefense(playerActiveObjects)],
+		[req.attack, player.getCumulativeAttack(playerActiveObjects)],
+		[req.speed, player.getCumulativeSpeed(playerActiveObjects)]
+	];
+	return rangeChecks.every(([range, value]) => isRangeValid(range, value))
+		&& isClassValid(req.validClassIds, player.class);
+}
+
+/**
+ * Check the requirements that need a database read: campaign progression and pet
+ */
+async function areProgressionRequirementsValid(req: OutcomeRequirements, player: Player): Promise<boolean> {
+	return await isCampaignMissionValid(req.campaignCurrentMissionId, player)
+		&& await isPetTypeValid(req.validPetTypeIds, player)
+		&& await isPetRarityValid(req.petRarity, player);
+}
+
+type OutcomeRequirements = NonNullable<PossibilityOutcome["requirements"]>;
+
+type OutcomeRange = {
+	min?: number;
+	max?: number;
+};
 
 /**
  * Check if a value falls within the specified range requirements
  */
-function isRangeValid(
-	range: {
-		min?: number; max?: number;
-	} | undefined,
-	value: number
-): boolean {
+function isRangeValid(range: OutcomeRange | undefined, value: number): boolean {
 	if (!range) {
 		return true;
 	}
