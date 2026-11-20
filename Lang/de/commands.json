@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Änderung des Status innerhalb der Gilde",
       "energy": "Regenerierte Energie",
       "dailyBonus": "Täglicher Bonus",
-      "petExpedition": "Vertrautenversand beendet"
+      "petExpedition": "Vertrautenversand beendet",
+      "gardenPlantReady": "Plante du jardin prête à être récoltée",
+      "gardenAllPlantsReady": "Toutes les plantes du jardin prêtes à être récoltées"
     },
     "enableDisable": "Aktivieren/Deaktivieren",
     "sendLocationField": "Ort der Versendung :",
