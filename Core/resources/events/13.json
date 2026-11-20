@@ -3,6 +3,7 @@
     "visitForge": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 50
@@ -12,6 +13,7 @@
           "karma": 3
         },
         "1": {
+          "forceStayInCity": true,
           "requirements": {
             "level": {
               "min": 60
@@ -24,6 +26,7 @@
           "karma": 5
         },
         "2": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -30
@@ -32,6 +35,7 @@
           "karma": -5
         },
         "3": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -50
@@ -43,6 +47,7 @@
           "karma": -8
         },
         "4": {
+          "forceStayInCity": true,
           "requirements": {
             "level": {
               "max": 30
@@ -52,6 +57,7 @@
           "karma": -3
         },
         "5": {
+          "forceStayInCity": true,
           "requirements": {
             "level": {
               "min": 80
@@ -59,6 +65,7 @@
           }
         },
         "6": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 45
         }
@@ -67,6 +74,7 @@
     "visitInn": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 100
@@ -76,11 +84,13 @@
           "karma": 5
         },
         "1": {
+          "forceStayInCity": true,
           "health": 15,
           "money": -80,
           "effect": "sleeping"
         },
         "2": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -20
@@ -92,10 +102,12 @@
           "effect": "sleeping"
         },
         "3": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 90
         },
         "4": {
+          "forceStayInCity": true,
           "requirements": {
             "level": {
               "min": 50
@@ -105,11 +117,13 @@
           "karma": 2
         },
         "5": {
+          "forceStayInCity": true,
           "health": 8,
           "money": -30,
           "effect": "sleeping"
         },
         "6": {
+          "forceStayInCity": true,
           "requirements": {
             "validPetTypeIds": [
               1
@@ -119,6 +133,7 @@
           "karma": 8
         },
         "7": {
+          "forceStayInCity": true,
           "requirements": {
             "validPetTypeIds": [
               65
@@ -132,6 +147,7 @@
     "exploreMarket": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 80
@@ -141,6 +157,7 @@
           "karma": 10
         },
         "1": {
+          "forceStayInCity": true,
           "requirements": {
             "level": {
               "min": 40
@@ -150,6 +167,7 @@
           "karma": 1
         },
         "2": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -30
@@ -159,6 +177,7 @@
           "karma": -5
         },
         "3": {
+          "forceStayInCity": true,
           "requirements": {
             "speed": {
               "min": 200
@@ -168,6 +187,7 @@
           "karma": 5
         },
         "4": {
+          "forceStayInCity": true,
           "requirements": {
             "speed": {
               "max": 150
@@ -176,6 +196,7 @@
           "money": -120
         },
         "5": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -80
@@ -187,6 +208,7 @@
           "effect": "hurt"
         },
         "6": {
+          "forceStayInCity": true,
           "requirements": {
             "attack": {
               "min": 250
@@ -195,6 +217,7 @@
           "karma": 3
         },
         "7": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 20
@@ -204,6 +227,7 @@
           "karma": 8
         },
         "8": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 100
@@ -215,6 +239,7 @@
           "money": -250
         },
         "9": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 100
@@ -252,6 +277,7 @@
           ]
         },
         "2": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 30
@@ -264,6 +290,7 @@
           "karma": 12
         },
         "3": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -10
@@ -272,6 +299,7 @@
           "karma": 1
         },
         "4": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -100
@@ -280,13 +308,16 @@
           "karma": -15
         },
         "5": {
+          "forceStayInCity": true,
           "money": -150,
           "karma": 3
         },
         "6": {
+          "forceStayInCity": true,
           "karma": 8
         },
         "7": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -50
@@ -302,6 +333,7 @@
     "helpCityGuards": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 100
@@ -316,6 +348,7 @@
           "karma": 20
         },
         "1": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 50
@@ -326,6 +359,7 @@
           "karma": 15
         },
         "2": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 20
@@ -338,6 +372,7 @@
           "karma": 10
         },
         "3": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "min": 0
@@ -345,6 +380,7 @@
           }
         },
         "4": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -10
@@ -353,6 +389,7 @@
           "karma": -5
         },
         "5": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -50
@@ -366,6 +403,7 @@
           "karma": -20
         },
         "6": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -50
@@ -379,6 +417,7 @@
           "effect": "confounded"
         },
         "7": {
+          "forceStayInCity": true,
           "requirements": {
             "karma": {
               "max": -30
@@ -395,11 +434,13 @@
     "restAndObserve": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "health": 5,
           "effect": "occupied",
           "lostTime": 60
         },
         "1": {
+          "forceStayInCity": true,
           "requirements": {
             "level": {
               "min": 50
@@ -410,16 +451,19 @@
           "lostTime": 45
         },
         "2": {
+          "forceStayInCity": true,
           "karma": 2,
           "effect": "occupied",
           "lostTime": 30
         },
         "3": {
+          "forceStayInCity": true,
           "karma": 5,
           "effect": "occupied",
           "lostTime": 40
         },
         "4": {
+          "forceStayInCity": true,
           "requirements": {
             "petRarity": {
               "min": 4
@@ -442,90 +486,6 @@
           "effect": "occupied",
           "lostTime": 3,
           "karma": -1
-        }
-      }
-    },
-    "goAway": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 25,
-          "mapTypesDestination": [
-            "ro"
-          ]
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 70,
-          "mapTypesDestination": [
-            "ro"
-          ]
-        }
-      }
-    },
-    "goForge": {
-      "outcomes": {
-        "0": {
-          "forceStayInCity": true
-        },
-        "1": {
-          "forceStayInCity": true,
-          "effect": "occupied",
-          "lostTime": 40,
-          "money": -300
-        },
-        "2": {
-          "forceStayInCity": true,
-          "randomItem": {}
-        },
-        "3": {
-          "forceStayInCity": true
-        },
-        "4": {
-          "forceStayInCity": true,
-          "effect": "occupied",
-          "lostTime": 20
-        }
-      }
-    },
-    "goInn": {
-      "outcomes": {
-        "0": {
-          "forceStayInCity": true,
-          "effect": "occupied",
-          "lostTime": 120
-        },
-        "1": {
-          "forceStayInCity": true,
-          "effect": "sleeping",
-          "health": 15,
-          "money": -70,
-          "tags": [
-            "moneyUsage"
-          ]
-        },
-        "2": {
-          "forceStayInCity": true
-        }
-      }
-    },
-    "goMarket": {
-      "outcomes": {
-        "0": {
-          "forceStayInCity": true,
-          "effect": "occupied",
-          "lostTime": 30,
-          "randomItem": {}
-        },
-        "1": {
-          "forceStayInCity": true,
-          "effect": "occupied",
-          "lostTime": 60
-        },
-        "2": {
-          "forceStayInCity": true,
-          "effect": "injured",
-          "health": -60
         }
       }
     }
