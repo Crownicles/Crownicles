@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Mudança de estatuto no seio da guilda",
       "energy": "Energia regenerada",
       "dailyBonus": "Bónus diário",
-      "petExpedition": "Expedição de animais de estimação concluída"
+      "petExpedition": "Expedição de animais de estimação concluída",
+      "gardenPlantReady": "Plante du jardin prête à être récoltée",
+      "gardenAllPlantsReady": "Toutes les plantes du jardin prêtes à être récoltées"
     },
     "enableDisable": "Ativar/Desativar",
     "sendLocationField": "Endereço de entrega :",
