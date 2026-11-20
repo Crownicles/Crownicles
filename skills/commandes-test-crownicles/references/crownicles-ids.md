@@ -314,7 +314,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 93 | Caravane |
 | 94 | Armure électrifiée |
 | 95 | Exosquelette |
-| 96 | Tenue de l’Archimage |
+| 96 | Tenue de l'Archimage |
 | 97 | Armure en diamant |
 | 98 | Bouclier en Beskar |
 | 99 | Armure en Beskar |
@@ -854,8 +854,8 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 
 | ID | Début du texte |
 |---|---|
-| 1 | Un arbre est tombé sur le chemin et bloque le passage ! |
-| 2 | Devant vous, un chien arrive et tourne autour de vous. Il semble vouloir que vous le suiviez ! |
+| 1 | Dans la pénombre de la Forêt Du Vieillard, un chêne déraciné barre le sentier. Son tronc fait bien deux mètres de diamètre, ses branches emm |
+| 2 | Sur les pavés brisés de la Grande Rue, un chien efflanqué au pelage tacheté surgit des ruines d'un ancien comptoir. Il tourne autour de vous |
 | 3 | Alors que vous voyagez sur la Route des Merveilles, vous découvrez un coffret ! Malheureusement, il est verrouillé... |
 | 4 | Vous avez décidé de profiter d'une nuit calme pour continuer votre progression. Le ciel est magnifique et après quelques minutes à le scrute |
 | 5 | Vous avez trouvé une fontaine ! |
@@ -863,17 +863,17 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 7 | Parmi les ruines de Ville Forte, vous découvrez une maison encore debout. Elle semble abandonnée... |
 | 8 | Vous avez décidé de profiter de l'été pour passer par les montagnes tant que les cols ne sont pas trop enneigés. Cependant, l'ascension s'av |
 | 9 | Au milieu d'un champ, vous rencontrez un paysan. Ce dernier a perdu sa fourche... |
-| 10 | Alors que vous passiez près d'un plan d'eau, vous remarquez un homme qui semble en difficulté sur sa partie de pêche ! |
-| 11 | Alors que vous vous apprêtez à rentrer dans une forêt, une inconnue vous explique qu'il existe un chemin plus court en passant par l'ouest. |
-| 12 | Vous voyez une rivière devant vous. De l'autre côté du rivage, vous apercevez un village. |
-| 13 | Après avoir passé plusieurs semaines à marcher sans effectuer la moindre rencontre humaine, vous arpentez à présent les ruelles d'une petite |
-| 14 | Alors que la fatigue commence à vous assaillir, vous découvrez une petite prairie où se tient une petite maison. Vous vous en approchez et d |
-| 15 | Alors que vous traversez une ville en passant par des ruelles, vous entrez dans ce qui vous semble être une petite boutique où un groupe d'h |
-| 16 | Après avoir suivi pendant de longues heures une rivière, vous découvrez un vieux château qui semble abandonné au bord de l'eau. |
-| 17 | Affamé par votre journée de voyage, vous décidez de faire une halte et de rechercher de quoi vous nourrir autour de vous. |
-| 18 | La ville où vous mettez les pieds semble déserte, sans âme qui vive. En parcourant ses rues, votre regard s'arrête sur un chantier qui paraî |
-| 19 | Après de longs jours sans avoir pu vous sustenter, vous voyez sur le bord du chemin un cadavre de renard, semblant tout frais. |
-| 20 | À votre arrivée dans un village, vous remarquez du coin de l'œil un garde volant une pauvre femme. |
+| 10 | La Rivière Vacarme gronde à vous en assourdir, charriant branches et écume. Sur un rocher instable au bord des rapides, un vieux pêcheur se |
+| 11 | Aux abords du Bois Hurlant, une femme encapuchonnée sort de l'ombre et vous aborde, le regard inquiet. « N'entrez pas par le sentier princip |
+| 12 | Devant vous, la Rivière Vacarme charrie branches et écume dans un grondement assourdissant. Un vieux pont de bois l'enjambe encore : plusieu |
+| 13 | Vous voici à Claire de Ville, la grande cité marchande de la région. Les caravanes se croisent sous les portes fortifiées, les marteaux des |
+| 14 | Au milieu de L'Étendue, une maisonnette de pierre se niche au creux d'un vallon abrité du vent. Le marteau y sonne clair sur l'enclume : un |
+| 15 | Dans une ruelle de Claire de Ville, vous poussez la porte d'une petite boutique. Des marchands y négocient âprement autour d'étals chargés d |
+| 16 | Au détour d'un méandre de la Rivière aux Crabes, les ruines d'un château se dressent sur un promontoire rocheux. Le lierre ronge ses murs gr |
+| 17 | Sur le Grand Axe, la faim vous oblige à faire halte. Un grand arbre ploie sous des fruits dorés, des champignons colorés parsèment le sous-b |
+| 18 | Dans les ruelles de Mergagnan, vous tombez sur un chantier à l'abandon : poutres noircies, échafauds grinçants, outils rouillés. Le baron Al |
+| 19 | Au Croisement des Destins, vous vous arrêtez net : le corps encore tiède d'un renard gît à demi caché par les herbes. Pas de trace de lutte, |
+| 20 | Dans une ruelle de Claire de Ville, à l'écart du grand marché, un garde aux armes de la cité a acculé une femme contre un mur. Il lui arrach |
 | 21 | En continuant votre périple, vous arrivez devant un pont délabré qui, de plus, est au dessus d'un énorme gouffre. |
 | 22 | Alors que vous traversez la propriété d'un fermier, vous voyez un pommier aux fruits forts appétissants. |
 | 23 | Vous vous baladez en forêt, quand soudain, vous apercevez un chariot qui semble cassé. Autour, le groupe de personnes semble mal en point. |
