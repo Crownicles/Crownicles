@@ -7,15 +7,15 @@
           "1": "En coupant l'arbre, vous découvrez qu'il était creux et abritait une petite cache laissée par un autre voyageur. Vous y trouvez un objet qui vous sera utile pour votre périple.",
           "2": "L'arbre est plus coriace que prévu. Vos efforts acharnés finissent par porter leurs fruits, mais vous vous êtes épuisé dans l'opération. Il faudra vous reposer avant de continuer.",
           "3": "Vous décidez d'utiliser votre arme pour couper l'arbre mais la lame n'est pas assez aiguisée. Après plusieurs tentatives infructueuses, vous finissez par abandonner et vous reposez un moment pour reprendre des forces.",
-          "4": "Vous décidez d'utiliser votre arme pour couper l'arbre, cette dernière ne fait qu'une bouchée de l'arbre ! L'obstacle est rapidement dégagé et vous reprenez votre aventure."
+          "4": "Vous attaquez le tronc avec votre arme, qui n'en fait qu'une bouchée. L'obstacle est vite dégagé et vous reprenez votre aventure."
         },
         "text": "Couper l'arbre pour dégager le passage."
       },
       "climbOver": {
         "outcomes": {
-          "0": "Avec agilité, vous escaladez le tronc imposant. La vue depuis le sommet de l'arbre vous permet d'apercevoir la suite du sentier au loin.",
+          "0": "Vous escaladez le tronc avec agilité. Du sommet, vous apercevez la suite du sentier au loin.",
           "1": "Vous grimpez prudemment sur l'arbre. En redescendant de l'autre côté, vous glissez sur l'écorce humide et vous égratignez les mains, mais rien de grave.",
-          "2": "Votre tentative d'escalade se solde par une chute douloureuse. Vous vous relevez tant bien que mal, meurtri mais déterminé à continuer."
+          "2": "Vous glissez à mi-hauteur et retombez lourdement sur le sentier. Vous vous relevez tant bien que mal, meurtri mais décidé à continuer."
         },
         "text": "Escalader le tronc pour passer par-dessus."
       },
@@ -23,49 +23,49 @@
         "outcomes": {
           "0": "En explorant les alentours, vous découvrez un ancien sentier de bûcherons qui contourne l'obstacle. Ce chemin discret vous mène rapidement de l'autre côté.",
           "1": "Vous trouvez un passage entre les racines de l'arbre déraciné. C'est étroit, mais vous parvenez à vous faufiler sans trop de difficultés.",
-          "2": "Votre recherche d'un chemin alternatif vous égare dans les fourrés. Après avoir tourné en rond, vous finissez par retrouver le sentier principal, mais vous avez perdu un temps précieux.",
-          "3": "En cherchant un passage, vous vous enfoncez dans les sous-bois où des ronces vous griffent et ralentissent votre progression. Vous décidez de les contourner également et vous rendez rapidement compte que vous n'êtes plus capable de retrouver votre chemin. Perdu, il vous faudra du temps pour retrouver le sentier principal."
+          "2": "Vous cherchez un autre chemin et vous égarez dans les fourrés. Après avoir tourné en rond, vous retrouvez le sentier principal, mais vous avez perdu un temps précieux.",
+          "3": "En cherchant un passage, vous vous enfoncez dans des sous-bois où les ronces vous griffent. Vous les contournez à leur tour, et vous ne retrouvez plus votre chemin. Il vous faudra du temps pour regagner le sentier principal."
         },
         "text": "Chercher un chemin pour contourner l'obstacle."
       },
       "end": {
         "outcomes": {
-          "0": "Découragé par l'obstacle et l'atmosphère sinistre de la Forêt Du Vieillard, vous décidez d'établir un campement temporaire. Très vite, vous entendez des bruits suspects dans les fourrés. Vous regardez autour de vous et découvrez que votre sac a été fouillé et plusieurs objets de valeur ont disparu."
+          "0": "Découragé par l'obstacle, vous montez un campement au pied du chêne. Très vite, des bruits suspects montent des fourrés. Quand vous revenez à votre sac, il a été fouillé et plusieurs objets de valeur ont disparu."
         }
       }
     },
-    "text": "Dans la pénombre de la Forêt Du Vieillard, vous progressez prudemment sur le sentier sinueux quand votre route est soudainement bloquée par un énorme chêne déraciné. L'arbre ancestral, dont le tronc fait bien deux mètres de diamètre barre complètement le passage. Ses branches emmêlées forment un véritable mur végétal, et ses racines imposantes, encore chargées de terre, témoignent de la violence de sa chute récente."
+    "text": "Dans la pénombre de la Forêt Du Vieillard, un chêne déraciné barre le sentier. Son tronc fait bien deux mètres de diamètre, ses branches emmêlées forment un mur, et la terre encore fraîche sur ses racines dit que sa chute est récente."
   },
   "10": {
     "possibilities": {
       "help": {
         "outcomes": {
           "0": "Malgré vos efforts conjugués, le courant puissant de la Rivière Vacarme emporte la ligne. Le pêcheur vous remercie chaleureusement pour votre tentative et partage quelques pièces de monnaie qu'il avait dans sa poche.",
-          "1": "Ensemble, vous parvenez à remonter une prise exceptionnelle ! Le vieux pêcheur, ravi de ce succès inattendu, vous offre un objet précieux qu'il gardait depuis des années en guise de porte-bonheur.",
-          "2": "Votre aide permet au pêcheur de capturer un poisson de belle taille. Reconnaissant, il vous donne quelques pièces et vous met en garde contre les zones les plus dangereuses de la rivière.",
-          "3": "Le poisson que vous tentez d'aider à remonter s'avère être d'une force redoutable ! Vous glissez sur les rochers humides et tombez dans les eaux tumultueuses. Le pêcheur vous repêche in extremis, mais vous êtes sonnés et trempés jusqu'aux os.",
+          "1": "Ensemble, vous remontez une prise comme le vieux pêcheur n'en avait pas vu depuis longtemps. Ravi, il vous offre un objet qu'il gardait depuis des années en guise de porte-bonheur.",
+          "2": "Grâce à vous, le pêcheur sort de l'eau un poisson de belle taille. Reconnaissant, il vous donne quelques pièces et vous signale les passages les plus dangereux de la rivière.",
+          "3": "Le poisson tire plus fort que vous deux réunis. Vous glissez sur les rochers humides et tombez dans les rapides. Le pêcheur vous repêche de justesse, sonné et trempé jusqu'aux os.",
           "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette 'prise' et vous laisse repartir en vous remerciant de vos efforts."
         },
         "text": "Prêter main-forte au pêcheur en difficulté."
       },
       "advice": {
         "outcomes": {
-          "0": "Vos conseils avisés permettent au pêcheur de changer de technique. Il attrape rapidement un beau poisson et vous remercie avec quelques pièces qui traînaient au fond de ses poches.",
+          "0": "Sur vos conseils, le pêcheur change de technique et attrape aussitôt un beau poisson. Il vous remercie avec quelques pièces qui traînaient au fond de ses poches.",
           "1": "Le pêcheur suit vos recommandations mais sans succès. Il apprécie néanmoins votre bienveillance. Vous repartez avec un léger sourire, heureux d'avoir tenté d'aider.",
           "2": "Vous tentez de donner des conseils au pêcheur, mais il vous ignore complètement, trop concentré sur sa tâche. Vous finissez par vous lasser et décidez de continuer votre route.",
           "3": "Le pêcheur, amusé par vos tentatives de conseils, vous écoute poliment mais ne change pas sa technique. Il finit par attraper un poisson malgré tout et vous offre un sourire en guise de remerciement.",
-          "4": "Il semblerait que votre mauvaise réputation vous ai précédé ! Le pêcheur vous regarde d'un air méfiant et refuse vos conseils, vous demandant de partir immédiatement. Déçu, car pour une fois vous étiez animé de bonnes intentions, vous reprenez votre route."
+          "4": "Le pêcheur vous dévisage, méfiant : on lui a parlé de vous. Il refuse vos conseils et vous demande de partir. Pour une fois que vous étiez animé de bonnes intentions, vous reprenez votre route, déçu."
         },
         "text": "Donner des conseils depuis la berge."
       },
       "push": {
         "outcomes": {
-          "0": "Votre geste impulsif pousse le pêcheur dans les eaux tumultueuses ! Horrifié par votre propre action, vous plongez immédiatement pour le secourir. Vous parvenez à le ramener sur la berge après une lutte épuisante contre le courant. Le vieil homme, choqué mais reconnaissant d'être en vie, accepte vos excuses et quelques pièces de dédommagement.",
-          "1": "Votre poussée envoie le pêcheur directement dans un remous violent ! Paniqué, vous tentez de le sauver mais le courant vous emporte tous les deux. Par miracle, vous échouez plus loin sur un banc de sable, trempés et meurtris. Le pêcheur, furieux, exige une compensation substantielle pour ce 'petit jeu' qui a failli vous coûter la vie à tous deux.",
-          "2": "Le pêcheur, surpris par votre geste, tombe dans l'eau en lâchant tout son matériel ! Vous le repêchez rapidement, mais sa canne à pêche et son équipement ont été emportés par les flots. Rongé par les remords, vous lui offrez une généreuse compensation, mais l'homme reste amer de cette perte. Ironiquement, vous retrouvez un objet lui appartenant quelques minutes après vous être séparé de lui. Vous décidez de le garder pour vous et continuez votre route.",
-          "3": "Votre poussée fait perdre l'équilibre au pêcheur qui s'agrippe instinctivement à vous ! Vous basculez tous les deux dans la rivière tumultueuse. Après une chute chaotique et quelques mètres emportés par le courant, vous parvenez à vous extraire de l'eau, mais vous êtes tous deux blessés par cette mésaventure.",
-          "4": "Le pêcheur, plus agile que vous ne le pensiez, évite votre poussée au dernier moment ! Déséquilibré par votre propre élan, c'est vous qui tombez dans les eaux glacées de la Rivière Vacarme. Le vieil homme vous aide à sortir de l'eau, mais vous êtes trempé, frigorifié, et profondément humilié par votre geste raté.",
-          "5": "Votre geste malveillant propulse le pêcheur dans les rapides les plus dangereux ! Vous réalisez immédiatement la gravité de la situation et vous lancez à son secours. Après de longues minutes angoissantes, vous parvenez à le sortir de l'eau, inconscient mais vivant. Quand il revient à lui, terrorisé et en colère, vous devez lui verser une compensation importante et promettre de ne plus jamais remettre les pieds dans la région."
+          "0": "Vous poussez le pêcheur dans les rapides, et vous le regrettez aussitôt. Vous plongez, luttez contre le courant et le ramenez sur la berge. Choqué mais vivant, le vieil homme accepte vos excuses et quelques pièces de dédommagement.",
+          "1": "Le pêcheur bascule dans un remous. Vous sautez pour le rattraper, et le courant vous emporte tous les deux jusqu'à un banc de sable, trempés et meurtris. Furieux, il exige une forte compensation pour ce 'petit jeu'.",
+          "2": "Le pêcheur tombe à l'eau en lâchant tout son matériel. Vous le repêchez, mais sa canne est partie avec le courant, et votre dédommagement ne le console pas. Un peu plus loin, vous retrouvez un de ses objets échoué sur la berge, et vous le gardez.",
+          "3": "Le pêcheur perd l'équilibre et s'agrippe à vous. Vous basculez ensemble dans la rivière, qui vous traîne sur quelques mètres avant de vous laisser regagner la rive, blessés tous les deux.",
+          "4": "Le pêcheur s'écarte au dernier moment, et c'est vous que votre élan envoie dans les eaux glacées de la Rivière Vacarme. Le vieil homme vous aide à en sortir, trempé, frigorifié et humilié.",
+          "5": "Le pêcheur disparaît dans les rapides les plus violents. Vous vous jetez à son secours et le sortez de l'eau après de longues minutes, inconscient mais vivant. À son réveil, terrorisé et furieux, il exige une lourde compensation et la promesse de vous tenir tranquille."
         },
         "text": "Pousser le pêcheur dans l'eau."
       },
@@ -78,11 +78,11 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous décidez de rester un moment sur la berge pour vous reposer et observer les flots tumultueux. Le bruit hypnotique de la Rivière Vacarme et le spectacle du pêcheur luttant contre les éléments vous plongent dans une méditation profonde. Quand vous reprenez finalement votre route, vous vous sentez apaisé malgré le vacarme environnant, mais le temps a filé sans que vous vous en rendiez compte."
+          "0": "Vous vous asseyez sur la berge pour regarder les flots et le pêcheur aux prises avec sa ligne. Le grondement de la Rivière Vacarme finit par vous bercer. Quand vous reprenez votre route, apaisé, le temps a filé sans que vous vous en rendiez compte."
         }
       }
     },
-    "text": "Le grondement assourdissant de la Rivière Vacarme résonne dans l'atmosphère tandis que vous approchez de ses berges tumultueuses. Les eaux bouillonnantes charrient des branches et de l'écume, témoignant de la violence du cours d'eau. Sur un rocher instable au bord des rapides, un pêcheur âgé lutte désespérément contre son matériel : sa ligne semble prise dans un courant particulièrement fort, et l'homme peine visiblement à maintenir son équilibre face à la puissance de la rivière..."
+    "text": "La Rivière Vacarme gronde à vous en assourdir, charriant branches et écume. Sur un rocher instable au bord des rapides, un vieux pêcheur se bat avec sa canne : sa ligne est prise dans le courant, et il peine à garder l'équilibre."
   },
   "11": {
     "possibilities": {
@@ -660,46 +660,46 @@
     "possibilities": {
       "followDog": {
         "outcomes": {
-          "0": "Malgré votre volonté de suivre l'animal, vos jambes ne parviennent pas à maintenir le rythme effréné du chien. Après quelques minutes de course à travers les vestiges de l'ancienne auberge, vous perdez sa trace dans un labyrinthe de poutres effondrées. Désorienté et essoufflé, vous réalisez que vous vous êtes égaré dans les ruines de l'établissement.",
-          "1": "Votre agilité vous permet de suivre le chien bondissant à travers les décombres de l'ancienne auberge. Il vous mène directement vers les caves effondrées de l'établissement, où scintillent quelques pièces d'or oubliées par les derniers clients. L'animal vous observe avec intelligence avant de disparaître entre les poutres calcinées, comme s'il avait accompli sa mission de guide.",
-          "2": "Votre expérience de voyageur vous permet de décrypter le comportement de l'animal : ce n'est pas un chien errant ordinaire, mais probablement l'ancien compagnon de l'aubergiste ! Vous le suivez avec assurance dans les ruines de l'établissement, et il vous conduit vers l'ancienne réserve où vous découvrez un coffre enfoui sous les décombres, contenant les économies cachées du tenancier et un objet précieux.",
-          "3": "Votre réputation bienveillante semble avoir précédé votre passage dans cette région ! Le chien, visiblement habitué aux anciens voyageurs généreux qui fréquentaient l'auberge, vous guide avec une confiance totale vers la vieille cuisine effondrée. Non seulement vous y trouvez une belle somme cachée dans l'âtre éteint, mais l'animal vous conduit également vers l'ancien puits de l'auberge où l'eau claire restaure vos forces.",
-          "4": "Votre propre compagnon canin établit immédiatement une connexion avec le chien mystérieux ! Dans un concert d'aboiements joyeux qui résonne entre les murs écroulés de l'auberge, ils vous guident vers le trésor du maître-aubergiste, dissimulé sous les fondations de la salle commune.",
-          "5": "Votre aura sombre effraie visiblement l'animal, mais votre curiosité vous pousse à le traquer dans les ruines de l'auberge malgré sa peur évidente. Cette poursuite agressive entre les chambres effondrées et la salle commune en ruines ne fait qu'alimenter les légendes sinistres qui entourent cet établissement jadis prospère. Après plusieurs minutes, vous finissez par perdre l'animal de vue, vous voilà perdu dans les décombres de l'auberge.",
-          "6": "Votre compagnon félin observe la scène avec curiosité, explorant déjà les recoins de l'ancienne auberge. Après un moment d'évaluation mutuelle, votre chat et le chien trouvent un terrain d'entente respectueuse près des restes de l'ancien foyer. Le chien, rassuré, vous guide vers une cache dissimulée derrière l'ancien comptoir de l'auberge, où brillent encore quelques pièces dans un pot de grès brisé.",
-          "7": "Attiré par le bruit du chien, votre rongeur sort timidement de votre besace, et s'enfuit à toute vitesse à travers les décombres de l'auberge. Vous décidez d'arrêter de suivre le chien pour ne pas perdre votre compagnon et parvenez à le récupérer sain et sauf entre les ruines de la salle commune."
+          "0": "Vous vous élancez derrière le chien, mais il file trop vite pour vous. Après quelques minutes de course dans les vestiges de l'auberge, vous perdez sa trace entre les poutres effondrées. Essoufflé, vous ne savez plus par où vous êtes entré.",
+          "1": "Vous suivez le chien de poutre en poutre jusqu'aux caves effondrées de l'auberge, où brillent quelques pièces oubliées par les derniers clients. L'animal vous regarde les ramasser, puis disparaît entre les solives calcinées.",
+          "2": "À sa façon d'attendre devant chaque porte, vous comprenez que ce chien était celui de l'aubergiste. Il vous conduit à l'ancienne réserve, où un coffre dort sous les gravats : les économies du tenancier, et un objet de valeur.",
+          "3": "Le chien vous fait fête comme à un habitué et vous mène à la cuisine effondrée, où une petite somme est restée cachée dans l'âtre. Il vous conduit ensuite au vieux puits de l'auberge, dont l'eau claire vous remet d'aplomb.",
+          "4": "Le chien tacheté et votre compagnon canin se flairent, puis filent ensemble dans un concert d'aboiements. Ils s'arrêtent sous la salle commune et grattent le sol jusqu'à dégager le magot de l'aubergiste, dissimulé sous les fondations.",
+          "5": "Le chien couche les oreilles en vous voyant approcher, puis détale. Vous le traquez quand même de chambre en chambre, jusqu'à le perdre de vue. Au milieu des décombres, vous ne retrouvez plus la sortie.",
+          "6": "Près de l'ancien foyer, votre chat et le chien se jaugent un long moment, puis s'ignorent poliment. Rassuré, le chien vous mène derrière le comptoir, où quelques pièces brillent encore dans un pot de grès brisé.",
+          "7": "Attiré par les aboiements, votre rongeur sort de votre besace et file dans les décombres. Vous laissez partir le chien pour ne pas perdre votre compagnon, que vous récupérez sain et sauf sous une table renversée."
         },
         "text": "Suivre le chien."
       },
       "intimidateDog": {
         "outcomes": {
-          "0": "Votre allure menaçante et votre arme bien visible impressionnent immédiatement l'animal qui recule vers les décombres de l'ancienne auberge, les oreilles basses et la queue entre les pattes. Il disparaît rapidement entre les poutres effondrées de la salle commune, vous laissant libre de continuer votre route sans être importuné.",
-          "1": "Votre tentative d'intimidation se retourne lamentablement contre vous ! Le chien, loin d'être impressionné par votre faible prestance, vous mord sauvagement la jambe avant de s'enfuir en aboyant vers les chambres écroulées de l'auberge. La blessure est douloureuse, vous manquez encore d'autorité face à l'ancien gardien des lieux.",
-          "2": "Votre réputation de brute et votre attitude agressive terrorisent non seulement l'animal mais aussi un pauvre mendiant caché dans les décombres de l'auberge qui observait la scène ! Tremblant de peur face à votre sinistre renommée dans ce lieu déjà hanté par les malheurs, il vous jette précipitamment les quelques pièces de sa maigre bourse pour acheter votre clémence avant de fuir vers les ruines de la cuisine.",
-          "3": "Votre imposant familier émerge à vos côtés près du seuil brisé de l'auberge, et sa seule présence suffit à faire comprendre au chien qu'il vaut mieux ne pas insister. L'animal, reconnaissant la hiérarchie naturelle, s'incline respectueusement avant de s'éloigner dignement vers les vestiges de l'écurie.",
-          "4": "Vous tentez de faire fuir l'animal avec des gestes brusques et des cris menaçants, mais votre maladresse ne fait qu'amuser le chien qui, loin d'être intimidé, vous tourne autour en aboyant joyeusement près des ruines de l'auberge. Après quelques minutes, l'animal, fatigué de ce jeu, s'éloigne finalement vers les décombres de la salle commune. Vous décidez de reprendre votre route sans perdre d'avantage de temps."
+          "0": "Vous posez la main sur votre arme et faites un pas vers lui. Le chien recule, oreilles basses et queue entre les pattes, puis disparaît entre les poutres de la salle commune. Plus rien ne vous retient ici.",
+          "1": "Vous criez et agitez les bras, sans grand effet. Le chien vous mord la jambe, puis s'enfuit en aboyant vers les chambres écroulées. La blessure est douloureuse, et votre fierté n'en sort pas indemne.",
+          "2": "Le chien détale sous vos cris, et un mendiant sort des décombres où il s'abritait. Il vous reconnaît, blêmit, et vous jette les quelques pièces de sa bourse avant de fuir vers les ruines de la cuisine.",
+          "3": "Sur le seuil brisé de l'auberge, votre familier vient se placer à vos côtés. Le chien le regarde, comprend qu'il vaut mieux ne pas insister, et s'éloigne sans hâte vers les vestiges de l'écurie.",
+          "4": "Vous gesticulez et criez, ce qui amuse beaucoup le chien : il vous tourne autour en aboyant joyeusement. Au bout de quelques minutes, lassé du jeu, il s'éloigne vers la salle commune, et vous reprenez votre route."
         },
         "text": "Essayer de faire fuir le chien."
       },
       "skip": {
         "outcomes": {
-          "0": "Votre vitesse et votre agilité vous permet d'éviter facilement l'animal insistant ! Vous traversez les ruines de l'auberge aisément sautant par-dessus les poutres effondrées et les décombres de la salle commune. Le chien, impressionné par cette démonstration athlétique, abandonne rapidement sa poursuite.",
-          "1": "Alors que vous tentez de passer sans prêter attention au chien, celui-ci se jette soudainement sur vous avec une agilité surprenante ! Heureusement, votre bouclier est solide et votre expérience vous permet de bloquer presque tous les assauts de la bête. Vous parvenez à vous extraire de cette situation après quelques minutes de lutte avec seulement quelques égratignures.",
-          "2": "Votre fuite précipitée se solde par une chute catastrophique dans les décombres de l'auberge ! Vos jambes peu agiles s'emmêlent dans les gravats et les poutres brisées de l'ancienne salle commune, vous envoyant rouler douloureusement sur les pavés de la cour effondrée.",
-          "3": "L'animal semble percevoir votre aura bienveillante et après vous avoir observé quelques instants près des vestiges de l'auberge, comprend que vous n'êtes pas celui qu'il cherchait. Il s'éloigne de lui-même sans insister, disparaissant dignement entre les décombres de l'ancienne écurie.",
-          "4": "Votre compagnon survole les ruines de l'auberge, créant une diversion et vous permettant de continuer votre route sans être dérangé par le chien. Fier de vous et de votre familier, vous reprenez votre chemin à travers la grande rue."
+          "0": "Vous enjambez les poutres effondrées et traversez les ruines de l'auberge avant que le chien n'ait fait trois pas. Il vous regarde filer, puis renonce à vous suivre.",
+          "1": "Vous passez sans un regard, et le chien se jette sur vous. Votre bouclier encaisse presque tous ses assauts. Après quelques minutes de lutte, vous vous dégagez avec de simples égratignures.",
+          "2": "Vous pressez le pas, et vos pieds se prennent dans les gravats de l'ancienne salle commune. Vous roulez sur les pavés de la cour effondrée et vous relevez couvert de contusions.",
+          "3": "Le chien vous observe un instant près des vestiges de l'auberge, puis semble comprendre que vous n'êtes pas celui qu'il cherchait. Il s'éloigne de lui-même et disparaît dans l'ancienne écurie.",
+          "4": "D'un battement d'ailes, votre compagnon survole les ruines et entraîne le chien à sa suite. Vous en profitez pour poursuivre votre chemin le long de la Grande Rue, fier de votre familier."
         },
-        "text": "Continuer votre route. en ignorant le chien."
+        "text": "Continuer votre route en ignorant le chien."
       },
       "end": {
         "outcomes": {
-          "0": "Votre immobilité prolongée face à l'animal de plus en plus insistant finit par l'agacer. Le chien, frustré par votre manque de réaction vous mords les jambes avec une insistance croissante. Vous finissez par sursauter, repoussant l'animal avec difficulté avant qu'il ne vous inflige une blessure plus grave.",
-          "1": "Votre inaction face au chien de plus en plus agité se révèle être une grave erreur de jugement ! L'animal vous inflige une morsure particulièrement vicieuse qui vous laisse pantelant au milieu des pavés.",
-          "2": "Votre chien observe la scène avec une gêne palpable. Il décide alors de le rejoindre, attiré par son énergie communicative, vous laissant seul au milieu de la rue. Pendant quelques minutes, vous entendez leurs jeux d'une oreille, perdu dans vos pensées, lorsqu'un concert d'aboiements vous sort de votre torpeur. En jouant dans l'herbe, les deux canidés ont déterré un bibelot qui attire votre attention. "
+          "0": "Vous restez planté là, et le chien s'impatiente. Il finit par vous mordre les mollets, de plus en plus fort. Vous le repoussez avec peine avant qu'il ne vous blesse davantage.",
+          "1": "Vous ne bougez pas, et le chien s'énerve pour de bon. Sa morsure est profonde : vous restez pantelant au milieu des pavés.",
+          "2": "Gêné, votre chien regarde l'autre s'agiter, puis file le rejoindre. Vous les écoutez jouer d'une oreille, jusqu'à ce qu'un concert d'aboiements vous tire de vos pensées : en grattant l'herbe, ils ont déterré un bibelot."
         }
       }
     },
-    "text": "Sur les pavés brisés de la Grande Rue, vestiges d'une époque de prospérité commerciale désormais révolue, un chien au pelage tacheté surgit d'entre les ruines d'un ancien comptoir. Ses côtes saillantes témoignent des difficultés de la vie sauvage, mais ses yeux brillent d'une intelligence remarquable. L'animal vous fixe intensément, puis se met à tourner autour de vous avec une insistance troublante. Il aboie brièvement puis s'éloigne de quelques pas vers les restes effondrés d'une ancienne auberge, avant de revenir vers vous en gémissant doucement. Ses allées et venues répétées entre vous et les ruines, accompagnées de regards perçants et de petits jappements, ne laissent aucun doute : l'animal semble vouloir vous guider quelque part..."
+    "text": "Sur les pavés brisés de la Grande Rue, un chien efflanqué au pelage tacheté surgit des ruines d'un ancien comptoir. Il tourne autour de vous, aboie, file vers une auberge effondrée, puis revient en gémissant. Il veut que vous le suiviez."
   },
   "20": {
     "possibilities": {
