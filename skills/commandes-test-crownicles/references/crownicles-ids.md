@@ -864,7 +864,7 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 8 | Vous avez décidé de profiter de l'été pour passer par les montagnes tant que les cols ne sont pas trop enneigés. Cependant, l'ascension s'av |
 | 9 | Au milieu d'un champ, vous rencontrez un paysan. Ce dernier a perdu sa fourche... |
 | 10 | La Rivière Vacarme gronde à vous en assourdir, charriant branches et écume. Sur un rocher instable au bord des rapides, un vieux pêcheur se |
-| 11 | Aux abords du Bois Hurlant, une femme encapuchonnée sort de l'ombre et vous aborde, le regard inquiet. « N'entrez pas par le sentier princip |
+| 11 | Aux abords du Bois Hurlant, une femme encapuchonnée sort de l'ombre et vous aborde, le regard inquiet. Elle vous déconseille le sentier prin |
 | 12 | Devant vous, la Rivière Vacarme charrie branches et écume dans un grondement assourdissant. Un vieux pont de bois l'enjambe encore : plusieu |
 | 13 | Vous voici à Claire de Ville, la grande cité marchande de la région. Les caravanes se croisent sous les portes fortifiées, les marteaux des |
 | 14 | Au milieu de L'Étendue, une maisonnette de pierre se niche au creux d'un vallon abrité du vent. Le marteau y sonne clair sur l'enclume : un |
