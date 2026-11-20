@@ -279,35 +279,35 @@
     "possibilities": {
       "chatWorker": {
         "outcomes": {
-          "0": "Le maître-forgeron reconnaît immédiatement en vous un héros de légende ! Ému par votre présence, il partage avec vous les secrets de son art ancestral. Ensemble, vous forgez une pièce extraordinaire qu'il vous offre avec une bourse, bénissant votre noble quête.",
-          "1": "Vos cicatrices de bataille et votre port d'armes impressionnent le forgeron. Il vous défie dans un concours de forge, créant ensemble une arme digne de votre réputation. Respectueux de votre expertise martiale, il vous remet son œuvre.",
-          "2": "Votre aura sombre intrigue le forgeron qui, après quelques échanges, vous révèle connaître des techniques... particulières. Il vous propose de forger ensemble une lame aux propriétés uniques, moyennant une généreuse rétribution pour ce service discret.",
-          "3": "Votre tigre majestueux fascine le forgeron ! Ancien dresseur, il partage avec vous ses souvenirs de la faune sauvage tout en créant un objet unique inspiré par votre compagnon félin.",
-          "4": "Votre enthousiasme de novice amuse le forgeron, mais votre maladresse près du feu et des outils chauds vous vaut quelques brûlures. Il vous soigne en grondant gentiment sur les dangers de la forge.",
-          "5": "Découvrant que vous vous êtes spécialisé en vétéran, le forgeron est impressionné. Il vous consulte sur l'équilibrage d'une arme et, satisfait de vos conseils experts, vous récompense généreusement pour cette collaboration inattendue.",
+          "0": "Le forgeron a entendu parler de vous, et il vous le dit sans détour. Il vous garde la journée à sa forge, vous montre quelques tours de main, et vous repartez avec la pièce forgée ensemble et une bourse pour la route.",
+          "1": "Le forgeron détaille vos cicatrices et vos armes, puis vous lance un défi : forger une lame à quatre mains. À la fin de la journée, il vous la remet avec un hochement de tête approbateur.",
+          "2": "Le forgeron vous observe un moment, puis baisse la voix : il connaît des techniques... particulières. Vous forgez ensemble une lame qu'il vaut mieux ne pas montrer, et il vous paie largement votre discrétion.",
+          "3": "Le forgeron pose son marteau en voyant votre tigre. Ancien dresseur, il vous raconte ses années auprès des fauves tout en façonnant un petit objet inspiré de votre compagnon, qu'il vous offre.",
+          "4": "Vous vous approchez trop près du feu et attrapez un outil encore chaud. Le forgeron soigne vos brûlures en vous grondant gentiment sur les dangers de la forge.",
+          "5": "Le forgeron reconnaît en vous un vétéran et vous demande votre avis sur l'équilibrage d'une arme. Vos conseils lui conviennent : il vous récompense généreusement pour ce coup de main.",
           "6": "Vous passez un moment agréable avec le forgeron, échangeant sur vos voyages respectifs. Sa compagnie réchauffe votre cœur autant que sa forge réchauffe vos membres fatigués."
         },
         "text": "Engager la conversation avec le forgeron."
       },
       "stayNight": {
         "outcomes": {
-          "0": "Votre réputation de saint homme vous précède ! Le forgeron insiste pour vous accueillir dans sa demeure, vous offrant son propre lit et un festin digne d'un roi. Cette nuit bénie restaure complètement vos forces.",
+          "0": "Le forgeron vous connaît de réputation et insiste pour vous recevoir. Il vous cède son propre lit et sert un festin digne d'un roi. Au matin, vous avez retrouvé toutes vos forces.",
           "1": "Le forgeron accepte de vous héberger contre une contribution équitable. Sa maison rustique mais chaleureuse vous offre un repos bien mérité, loin des vents glacés de L'Étendue.",
-          "2": "Votre sinistre réputation effraie le forgeron qui refuse catégoriquement de vous laisser approcher de sa demeure. Il menace même d'alerter les autorités si vous insistez.",
-          "3": "Votre fidèle chien attendrit immédiatement le forgeron, ancien propriétaire d'un molosse ! Ému par cette rencontre, il vous accueille tous les deux avec joie, partageant même ses meilleures provisions avec votre compagnon.",
-          "4": "Impressionné par votre allure de guerrier aguerri, le forgeron vous propose un échange : une nuit au chaud contre quelques pièces et la promesse de défendre sa maison si des bandits apparaissent.",
-          "5": "Touché par votre jeunesse et votre apparent épuisement, le forgeron accepte de vous laisser dormir dans son atelier. Il vous raconte l'histoire de différents objets qu'il a forgé en préparant une paillasse de fortune.",
+          "2": "Le forgeron vous reconnaît et se place en travers de sa porte. Il refuse de vous laisser approcher de sa maison, et menace d'alerter les autorités si vous insistez.",
+          "3": "Le forgeron, qui a longtemps eu un molosse, s'attendrit devant votre chien. Il vous accueille tous les deux avec joie et partage ses meilleures provisions avec votre compagnon.",
+          "4": "Le forgeron regarde votre armure et vous propose un marché : une nuit au chaud contre quelques pièces, et la promesse de défendre sa maison si des bandits se montrent.",
+          "5": "Touché par votre air épuisé, le forgeron vous laisse dormir dans son atelier. Tout en préparant une paillasse de fortune, il vous raconte l'histoire de quelques objets qu'il a forgés.",
           "6": "Bien que réticent, le forgeron finit par céder à vos demandes répétées. Il vous installe dans un coin de son atelier, près de la chaleur rassurante de la forge qui se refroidit."
         },
         "text": "Demander l'hospitalité pour la nuit."
       },
       "inspectForge": {
         "outcomes": {
-          "0": "Votre œil expert reconnaît immédiatement la qualité exceptionnelle du travail ! Le forgeron, flatté par votre expertise, vous fait découvrir ses techniques secrètes et vous offre une de ses créations les plus abouties.",
-          "1": "Profitant de l'inattention du forgeron absorbé par son travail, vous dérobez discrètement un objet qui traine à côté de vous. Votre rapidité vous permet de disparaître avant qu'il ne remarque le vol.",
-          "2": "Votre curiosité vous joue des tours ! En touchant sans permission les outils encore chauds, vous vous brûlez douloureusement. Le forgeron vous soigne en secouant la tête devant votre imprudence.",
-          "3": "Votre connaissance des armes à distance impressionne le forgeron ! Il sollicite votre avis sur plusieurs pièces et, satisfait de vos commentaires pertinents, vous récompense pour cette consultation improvisée.",
-          "4": "Votre chauve-souris, paniquée par les étincelles et le bruit, sème la pagaille dans l'atelier ! Le temps de rattraper votre compagnon affolé, vous avez mis un joyeux désordre dans la forge organisée. Le forgeron, n'a pas l'air amusé par la scène et vous demande de partir.",
+          "0": "Vous reconnaissez un travail de grande qualité, et vous le dites. Flatté, le forgeron vous montre quelques-uns de ses tours de main et vous offre l'une de ses pièces les plus abouties.",
+          "1": "Le forgeron est absorbé par son travail. Vous glissez dans votre sac un objet qui traîne à portée de main, et vous êtes déjà loin quand il relève la tête.",
+          "2": "Vous touchez sans permission un outil encore chaud et vous brûlez cruellement. Le forgeron vous soigne en secouant la tête.",
+          "3": "Vous vous y connaissez en armes à distance, et le forgeron s'en aperçoit vite. Il vous demande votre avis sur plusieurs pièces et vous paie cette consultation improvisée.",
+          "4": "Affolée par les étincelles et le vacarme, votre chauve-souris sème la pagaille dans l'atelier. Le temps de la rattraper, vous avez mis la forge sens dessus dessous. Le forgeron ne rit pas, et vous demande de partir.",
           "5": "Vous observez avec fascination le travail minutieux du forgeron, impressionné par sa dextérité et son savoir-faire. Il vous explique les différentes étapes de la fabrication d'une arme. Vous prenez congé après cette leçon riche en enseignements."
         },
         "text": "Examiner de plus près la forge et les créations."
@@ -316,8 +316,8 @@
         "outcomes": {
           "0": "Plein d'énergie, vous saluez poliment le forgeron et reprenez votre route d'un pas assuré à travers L'Étendue, profitant de cette belle journée.",
           "1": "Épuisé mais déterminé, vous forcez le passage. Malheureusement, vos forces vous abandonnent quelques kilomètres plus loin et vous vous effondrez au bord du chemin.",
-          "2": "Bien que tentés de vous arrêter, votre conscience vous pousse à ne pas déranger le forgeron qui semble actuellement trés occupé. Vous continuez votre route en vous promettant de revenir plus tard.",
-          "3": "Votre agilité vous permet de traverser rapidement les terrains accidentés de L'Étendue, mais vous prenez tout de même le temps d'observer discrètement le forgeron au travail."
+          "2": "Vous êtes tenté de vous arrêter, mais le forgeron semble très occupé et vous ne voulez pas le déranger. Vous continuez votre route en vous promettant de revenir plus tard.",
+          "3": "Vous traversez d'un bon pas les terrains accidentés de L'Étendue, non sans jeter au passage un regard curieux au forgeron à l'ouvrage."
         },
         "text": "Continuer votre chemin sans vous arrêter."
       },
@@ -327,106 +327,106 @@
         }
       }
     },
-    "text": "L'immensité désolée de L'Étendue s'étire à perte de vue sous vos pas fatigués, quand soudain une vision inespérée rompt la monotonie du paysage. Au creux d'un vallon protégé des vents, une maisonnette de pierre se dresse comme un phare dans cette mer d'herbes folles. L'écho cristallin du marteau sur l'enclume danse dans l'air, ponctué par le souffle régulier du soufflet et les crépitements de la forge. Un homme trapu aux avant-bras marqués par les étincelles façonne méthodiquement une pièce incandescente, totalement absorbé par son art. Des flammes orangées léchent les parois de pierre noircie tandis qu'une fumée odorante s'élève vers le ciel."
+    "text": "Au milieu de L'Étendue, une maisonnette de pierre se niche au creux d'un vallon abrité du vent. Le marteau y sonne clair sur l'enclume : un homme trapu, les avant-bras marqués par les étincelles, façonne une pièce incandescente sans lever les yeux."
   },
   "15": {
     "possibilities": {
       "trade": {
         "outcomes": {
-          "0": "Votre réputation de voyageur honorable vous précède ! Les marchands vous accueillent chaleureusement et vous proposent leurs meilleures marchandises à des prix équitables. Après une négociation cordiale, vous repartez satisfait de votre acquisition et enrichi de nouvelles relations commerciales.",
-          "1": "Votre réputation sulfureuse intrigue ces marchands peu scrupuleux. Ils vous proposent discrètement des marchandises 'tombées du chariot' à prix bradé. L'affaire conclue dans l'ombre vous rapporte un objet d'origine douteuse, mais vous savez qu'il vaut mieux ne pas poser de questions.",
-          "2": "Votre réputation de malfrat effraie ces commerçants qui ne souhaitent pas attirer l'attention des autorités ! Tandis que l'on vous menace de vous dénoncer aux gardes, vous ne parvenez à vous échapper qu'en achetant le silence des marchands à prix fort. Votre transaction forcée vous laisse meurtri dans votre fierté et votre bourse.",
-          "3": "Impressionnés par votre stature de héros légendaire, les marchands sortent leurs articles les plus précieux ! Ils vous font une démonstration passionnée de leurs créations d'exception et, conquis par votre noblesse d'âme, vous cèdent l'une de leurs pièces maîtresses à un prix raisonnable.",
-          "4": "Votre jeunesse et votre enthousiasme touchent ces marchands expérimentés. Amusés par votre naïveté commerciale mais charmés par votre sincérité, ils acceptent de vous céder un objet que vous convoitiez contre une somme modique. Vous repartez avec un sourire satisfait, conscient d'avoir fait une excellente affaire.",
-          "5": "Vous tentez d'entrer dans la boutique avant de vous rappeler que votre familier gigantesque ne passera jamais la porte ! Embarrassé par cette situation cocasse, vous ressortez sous les regards amusés des marchands. Votre compagnon imposant attire tous les regards."
+          "0": "Les marchands vous connaissent de réputation et vous accueillent avec chaleur. Ils vous proposent leurs meilleures marchandises à un prix honnête, et vous ressortez satisfait de votre achat.",
+          "1": "Les marchands échangent un regard, puis vous proposent à voix basse des marchandises 'tombées du chariot', à prix bradé. Vous ressortez avec un objet d'origine douteuse, et vous ne posez pas de questions.",
+          "2": "Les marchands vous reconnaissent et menacent d'appeler les gardes : ils ne veulent pas d'ennuis avec les autorités. Vous n'achetez leur silence qu'au prix fort, et votre fierté en souffre autant que votre bourse.",
+          "3": "Les marchands savent à qui ils ont affaire et sortent de l'arrière-boutique leurs plus belles pièces. Après une présentation passionnée, ils vous en cèdent une à un prix raisonnable.",
+          "4": "Les marchands sourient de vous voir marchander si mal, et avec tant de sincérité. Amusés, ils vous cèdent l'objet que vous convoitiez pour une somme modique. Vous ressortez ravi de cette bonne affaire.",
+          "5": "Vous allez pour entrer, puis vous vous rappelez que votre familier ne passera jamais la porte. Vous restez sur le seuil, embarrassé, sous le regard amusé des marchands et de toute la ruelle."
         },
         "text": "Tenter de négocier avec les marchands."
       },
       "steal": {
         "outcomes": {
-          "0": "Vos réflexes vous permettent de subtiliser discrètement quelques pièces dans la caisse pendant que les marchands sont distraits. Vous vous éclipsez rapidement dans les ruelles de Claire de Ville, votre larcin passant totalement inaperçu.",
-          "1": "Votre réputation de brigand redoutable et votre allure menaçante paralysent les marchands de terreur ! Vous vous servez généreusement dans leur caisse sans rencontrer la moindre résistance, laissant ces pauvres commerçants tremblants dans votre sillage.",
-          "2": "Votre tentative de vol échoue lamentablement ! Pris en flagrant délit par les marchands alertes, vous subissez leurs coups et devez rembourser bien plus que ce que vous espériez dérober. Une leçon douloureuse qui vous laisse pantois et appauvri.",
-          "3": "Vous tentez de subtiliser quelques pièces mais vous êtes immédiatement attrapé. Votre geste déshonorant choque profondément ces honnêtes commerçants ! Bien que vous ne soyez pas un criminel endurci, votre acte vous vaut leur mépris et une amende salée. Vous repartez la tête basse, rongé par la culpabilité.",
-          "4": "Votre inexpérience du vol se retourne contre vous ! Non seulement vous êtes immédiatement démasqué, mais les marchands, furieux de cette trahison, vous infligent une correction exemplaire. Votre naïveté criminelle vous coûte cher en pièces et en dignité.",
-          "5": "Vous n'êtes pas un voleur aguerri, mais votre singe complice est lui un expert en la matière ! Il se faufile entre les étals et subtilise quelques pièces ainsi qu'un objet sans que personne ne s'en aperçoive. Vous le retrouvez plus loin, fier de son larcin qu'il partage généreusement avec vous."
+          "0": "Les marchands sont distraits. Votre main plonge dans la caisse et en ressort pleine, puis vous vous éclipsez dans les ruelles de Claire de Ville sans que personne n'ait rien vu.",
+          "1": "Les marchands vous reconnaissent et se figent. Vous vous servez dans leur caisse sans rencontrer la moindre résistance, et vous les laissez tremblants derrière leurs étals.",
+          "2": "Les marchands vous prennent la main dans la caisse. Ils vous rouent de coups et vous font rembourser bien plus que ce que vous espériez dérober.",
+          "3": "On vous saisit le poignet avant même que vous ayez touché une pièce. Les marchands, choqués, vous infligent une amende salée et leur mépris. Vous ressortez la tête basse, rongé par la culpabilité.",
+          "4": "Vous n'avez jamais volé, et cela se voit : vous êtes démasqué aussitôt. Furieux, les marchands vous infligent une correction dont vous sortez étourdi, la bourse et la dignité bien allégées.",
+          "5": "Vous n'avez rien d'un voleur, mais votre singe, lui, connaît son affaire. Il se faufile entre les étals et subtilise quelques pièces et un objet sans que personne ne s'en aperçoive, puis partage son butin avec vous au coin de la rue."
         },
         "text": "Tenter discrètement de dérober quelques pièces."
       },
       "observe": {
         "outcomes": {
           "0": "En voyageur expérimenté, vous analysez discrètement les techniques de vente et l'organisation de cette boutique. Votre patience vous permet de repérer le meilleur moment pour acquérir un objet peu cher qui vous intéressait.",
-          "1": "Votre réputation de saint homme attire l'attention bienveillante d'un marchand pieux ! Touché par votre aura spirituelle, il partage avec vous quelques pièces et ses bénédictions pour votre noble quête, vous encourageant à poursuivre votre mission divine.",
-          "2": "Étonnamment, votre simple présence silencieuse semble apaiser l'atmosphère tendue de cette boutique. Les marchands, peu habitués à tant de calme, ralentissent leurs négociations agressives. Quand vous repartez, l'un d'eux vous glisse quelques pièces en vous remerciant d'avoir apporté la paix dans son commerce.",
-          "3": "Vous observez patiemment les allées et venues de cette boutique animée. Le ballet incessant des clients et des marchandises vous hypnotise quelque peu, et vous perdez la notion du temps à contempler cette fourmilière commerciale. Quand vous émergez de votre contemplation, l'activité a repris son cours normal."
+          "1": "Un marchand pieux, à qui l'on a parlé de vos bonnes actions, vient vous trouver. Il vous glisse quelques pièces et vous encourage à continuer sur cette voie.",
+          "2": "Vous restez là sans rien dire, et l'atmosphère de la boutique s'apaise peu à peu : les marchands baissent le ton, les négociations s'adoucissent. Avant que vous ne sortiez, l'un d'eux vous glisse quelques pièces pour ce calme inhabituel.",
+          "3": "Vous observez les allées et venues de la boutique. Le ballet des clients et des marchandises finit par vous hypnotiser, et vous perdez la notion du temps."
         },
         "text": "Observer discrètement l'activité de la boutique."
       },
       "skip": {
         "outcomes": {
-          "0": "Pressé par votre quête, vous traversez rapidement la boutique sans vous attarder. Les marchands vous saluent poliment tandis que vous poursuivez votre chemin à travers les ruelles de Claire de Ville.",
-          "1": "Votre agilité remarquable vous permet de traverser la boutique bondée sans ralentir votre allure. Vous vous faufilez habilement entre les clients et les marchandises, disparaissant dans les ruelles avant même que les commerçants aient eu le temps de vous interpeller.",
-          "2": "En tentant de traverser rapidement la boutique, votre précipitation vous joue des tours ! Vous trébuchez sur une caisse mal placée, renversez quelques objets et vous retrouvez empêtré dans une dispute avec un marchand mécontent qui exige réparation. Vous repartez en boitant, le pied encore endolori par le choc."
+          "0": "Vous traversez la boutique sans vous attarder. Les marchands vous saluent poliment, et vous retrouvez les ruelles de Claire de Ville.",
+          "1": "Vous vous faufilez entre les clients et les étals sans ralentir, et vous avez retrouvé la ruelle avant que les commerçants aient eu le temps de vous interpeller.",
+          "2": "Dans votre hâte, vous trébuchez sur une caisse et renversez quelques objets. Un marchand mécontent exige réparation. Vous ressortez en boitant, le pied endolori."
         },
         "text": "Continuer votre route sans perdre de temps."
       },
       "end": {
         "outcomes": {
-          "0": "Intimidé par l'activité commerciale intense de la boutique, vous restez planté près de l'entrée sans oser vous avancer. Les marchands finissent par vous remarquer et vous questionnent sur vos intentions. Embarrassé par votre indécision, vous bredouillez quelques excuses avant de quitter précipitamment la boutique, laissant derrière vous des commerçants perplexes.",
-          "1": "Votre magnifique compagnon attire immédiatement l'attention admirative des marchands ! Fascinés par sa beauté et sa rareté, ils interrompent leurs affaires pour l'observer et vous poser mille questions. Cette rencontre inattendue égaye votre journée et celle des commerçants, mais ne vous aide pas vraiment à faire des affaires. Après un moment de discussion, vous reprenez votre route, le cœur léger."
+          "0": "Vous restez planté près de l'entrée sans oser avancer. Les marchands finissent par vous demander ce que vous voulez. Vous bredouillez quelques excuses et ressortez précipitamment, les laissant perplexes.",
+          "1": "Les marchands interrompent leurs affaires pour admirer votre compagnon et vous posent mille questions à son sujet. Vous ne faites aucune affaire, mais ce moment égaie leur journée et la vôtre."
         }
       }
     },
-    "text": "En explorant les ruelles animées de Claire de Ville, vous pénétrez dans une petite boutique où règne une atmosphère de commerce intense. Plusieurs marchands aux allures diverses négocient âprement autour d'étals chargés de marchandises hétéroclites : armes d'occasion, bijoux clinquants, provisions de voyage et objets d'artisanat local. L'odeur du cuir et des épices flotte dans l'air tandis que les pièces d'or tintent dans les bourses. Les commerçants vous jaugent du regard..."
+    "text": "Dans une ruelle de Claire de Ville, vous poussez la porte d'une petite boutique. Des marchands y négocient âprement autour d'étals chargés d'armes d'occasion, de bijoux clinquants et de provisions de voyage. À votre entrée, ils vous jaugent du regard."
   },
   "16": {
     "possibilities": {
       "enterCastle": {
         "outcomes": {
-          "0": "Votre expérience de vétéran aventurier vous permet de détecter immédiatement les zones dangereuses du château. Vous progressez avec prudence, testant chaque plancher avant d'y poser le pied. Dans l'ancienne armurerie, vous découvrez une cache secrète contenant des trésors oubliés depuis des décennies.",
-          "1": "Malgré l'état délabré des lieux, votre agilité vous permet d'éviter les pièges naturels du château en ruine. Vous explorez méthodiquement les salles et découvrez dans les anciens quartiers des gardes un objet de valeur miraculeusement préservé.",
-          "2": "Votre progression dans le château décrépit révèle rapidement votre inexpérience des lieux dangereux. Un plancher vermoulu cède sous votre poids et vous chutez lourdement dans les caves humides. Vous parvenez à remonter, mais vous êtes blessé et secoué par cette mésaventure.",
-          "3": "Alors que vous explorez prudemment les couloirs sombres, un pan entier du plafond s'effondre ! Heureusement, vos réflexes de combattant aguerri vous permettent d'esquiver le pire, mais des gravats vous blessent tout de même. Vous battez en retraite, meurtri.",
-          "4": "En pénétrant dans le château, vous découvrez avec stupeur qu'il n'est pas si abandonné que cela... Des brigands en ont fait leur repaire ! Reconnaissant en vous un compagnon potentiel de par votre réputation sulfureuse, ils vous accueillent chaleureusement et partagent une partie de leur butin récent.",
-          "5": "Les brigands qui ont élu domicile dans le château vous reconnaissent immédiatement ! Votre sinistre réputation les impressionne et leur chef vous propose même de rejoindre leur bande. Vous déclinez poliment mais repartez avec quelques pièces d'or en gage de respect mutuel.",
-          "6": "Vous découvrez que le château abrite une famille de réfugiés qui a fui la guerre. Touché par leur sort et mû par votre bon cœur, vous partagez vos provisions avec eux. En retour, ils vous révèlent l'emplacement d'une cache d'objets précieux qu'ils ont découverte mais n'osaient pas toucher.",
-          "7": "À peine avez-vous franchi le seuil que des gardes loyalistes surgissent de leur cachette ! Ils ont reconnu votre visage et tentent de vous capturer. Votre réputation de hors-la-loi vous précède, et une course-poursuite épique s'engage dans les couloirs en ruine. Vous parvenez à semer vos poursuivants après de longues minutes à déambuler dans les différents étages du château.",
-          "8": "Votre dragon fidèle ouvre la marche, ses flammes éclairant parfaitement les couloirs sombres du château ! Cette lumière naturelle vous révèle tous les dangers potentiels et vous guide vers les salles les plus intéressantes. Grâce à votre compagnon lumineux, vous explorez en toute sécurité et découvrez plusieurs objets précieux dissimulés dans l'obscurité.",
-          "9": "Votre serpent, attiré par les recoins sombres du château, disparaît rapidement dans une fissure du mur. Quelques minutes plus tard, il ressort fièrement avec une pièce d'or ancienne entre les crocs ! Son instinct l'a mené vers une cache oubliée depuis des siècles.",
-          "10": "Votre imposant diplodocus pénètre dans le château avec enthousiasme, mais son poids colossal fait trembler toute la structure ! Un pan entier du plafond s'effondre dans un fracas épouvantable. Heureusement, les débris révèlent une chambre secrète où vous découvrez un trésor caché. Votre compagnon géant a involontairement ouvert la voie vers les richesses et vous vous en sortez plutôt bien car un unique petit rocher vous a légèrement accroché l'épaule durant l'effondrement.",
-          "11": "En franchissant le seuil du château, vous êtes saisi d'une terreur inexplicable. Chaque craquement, chaque ombre vous fait sursauter. Votre inexpérience des lieux hantés prend le dessus et vous fuyez précipitamment vers la sortie, le cœur battant la chamade.",
-          "12": "Votre formation de chevalier vous a appris à reconnaître l'architecture des forteresses ! Vous naviguez instinctivement dans les dédales du château, retrouvant sans peine l'ancienne armurerie. Parmi les armes rouillées, vous dénichez une pièce d'équipement encore en parfait état, digne de votre rang."
+          "0": "Vous progressez en testant chaque plancher avant d'y poser le pied, par vieille habitude. Dans l'ancienne armurerie, une pierre sonne creux : derrière elle, une cache que personne n'a ouverte depuis des décennies.",
+          "1": "Vous sautez par-dessus les planchers crevés et les marches manquantes. Dans les anciens quartiers des gardes, vous découvrez un objet de valeur que le temps a épargné.",
+          "2": "Vous avancez sans méfiance, et un plancher vermoulu cède sous votre poids. Vous chutez lourdement dans les caves humides. Vous parvenez à remonter, blessé et secoué.",
+          "3": "Dans un couloir sombre, un pan de plafond s'effondre. Vous bondissez en arrière, par réflexe de combattant, et évitez le pire, mais les gravats vous blessent tout de même. Vous battez en retraite.",
+          "4": "Le château n'est pas si abandonné : des brigands en ont fait leur repaire. Ils vous reconnaissent, vous accueillent en camarade et partagent avec vous une partie de leur dernier butin.",
+          "5": "Les brigands installés dans le château vous reconnaissent aussitôt, et leur chef vous propose de rejoindre la bande. Vous déclinez poliment, et repartez avec quelques pièces d'or offertes en signe de respect.",
+          "6": "Une famille de réfugiés s'abrite dans le château. Vous partagez vos provisions avec eux. En retour, ils vous indiquent une cache d'objets qu'ils ont découverte et n'osaient pas toucher.",
+          "7": "À peine le seuil franchi, des gardes surgissent de leur cachette : ils ont reconnu votre visage. La poursuite dure de longues minutes, d'étage en étage, avant que vous ne parveniez à les semer.",
+          "8": "Les flammes de votre dragon éclairent les couloirs comme en plein jour. Aucun plancher pourri ne vous échappe, et vous dénichez plusieurs objets que l'obscurité cachait.",
+          "9": "Par une fissure du mur, votre serpent se glisse et disparaît. Quelques minutes plus tard, il en ressort avec une pièce d'or ancienne entre les crocs : il a trouvé une cache oubliée depuis des siècles.",
+          "10": "Enthousiaste, votre diplodocus entre dans le château, et toute la structure tremble. Un pan de plafond s'effondre dans un fracas épouvantable, dévoilant une chambre secrète et son trésor. Vous vous en tirez avec une pierre reçue sur l'épaule.",
+          "11": "En franchissant le seuil, vous êtes saisi d'une terreur inexplicable. Chaque craquement, chaque ombre vous fait sursauter. Vous fuyez vers la sortie, le cœur battant la chamade.",
+          "12": "Vous connaissez le plan des forteresses comme on vous l'a enseigné, et vous retrouvez sans peine l'ancienne armurerie. Parmi les armes rouillées, une pièce d'équipement est restée en bon état."
         },
         "text": "Pénétrer dans le château en ruine pour l'explorer."
       },
       "walkAround": {
         "outcomes": {
-          "0": "Votre inspection minutieuse du périmètre révèle que le château a été le théâtre de batailles sanglantes. Votre expérience vous permet de reconnaître les traces d'un ancien siège. Bien que vous ne trouviez rien de valeur, cette découverte historique enrichit vos connaissances.",
-          "1": "En faisant le tour du château, votre œil exercé repère plusieurs cachettes dissimulées dans les fondations. D'anciens défenseurs y avaient caché en urgence des bourses d'or que le temps a oubliées. Votre patience et votre perspicacité sont récompensées !",
-          "2": "Votre exploration externe vous mène vers les anciennes écuries effondrées. En fouillant les décombres, vous tombez dans une fosse dissimulée, probablement un ancien piège défensif. La chute est douloureuse et vous vous entaillez la jambe sur les pierres tranchantes.",
+          "0": "En faisant le tour du château, vous reconnaissez les traces d'un ancien siège : brèches colmatées, pierres noircies, fossés comblés. Vous ne trouvez rien de valeur, mais vous en savez un peu plus sur l'histoire des lieux.",
+          "1": "En faisant le tour du château, vous repérez plusieurs cachettes dans les fondations. D'anciens défenseurs y avaient glissé en hâte des bourses d'or, que le temps a oubliées.",
+          "2": "Vous fouillez les décombres des anciennes écuries quand le sol se dérobe : une fosse dissimulée, sans doute un vieux piège défensif. La chute est rude, et vous vous entaillez la jambe sur les pierres.",
           "3": "Alors que vous contournez prudemment le château, votre fidèle chien déterre près des remparts un coffret enterré contenant des pièces d'or ! Votre compagnon à quatre pattes vous a encore une fois rendu un fier service.",
-          "4": "Votre reptile, attiré par les lézardes chaudes des murs exposés au soleil, découvre une fissure cachée menant à une petite réserve secrète. Les anciens habitants y avaient dissimulé quelques objets de valeur que vous récupérez avec reconnaissance.",
-          "5": "Les douves asséchées du château révèlent les restes d'un ancien pont-levis. Votre inspection révèle que le mécanisme contenait une cache d'outils et de pièces que vous récupérez avant de poursuivre votre chemin.",
-          "6": "Votre exploration du périmètre attire l'attention de corneilles qui nichent dans les tours. Leurs cris perçants alertent d'éventuels occupants de votre présence. Par précaution, vous décidez de quitter les lieux rapidement avant d'attirer des ennuis."
+          "4": "Attiré par les lézardes chaudes des murs exposés au soleil, votre reptile découvre une fissure qui mène à une petite réserve. Les anciens habitants y avaient dissimulé quelques objets de valeur.",
+          "5": "Dans les douves asséchées gisent les restes d'un pont-levis. Son mécanisme abritait une cache d'outils et de pièces, que vous récupérez avant de poursuivre votre chemin.",
+          "6": "Les corneilles qui nichent dans les tours vous repèrent et se mettent à crier. Si quelqu'un occupe les lieux, il sait maintenant que vous êtes là. Par précaution, vous vous éloignez sans attendre."
         },
         "text": "Contourner le château pour l'examiner depuis l'extérieur."
       },
       "searchRiver": {
         "outcomes": {
-          "0": "Votre intuition vous mène vers les berges de la rivière. Votre expérience des cours d'eau vous révèle que l'ancien embarcadère du château cache encore les restes d'une barge coulée. En plongeant, vous récupérez quelques objets de valeur dans l'épave.",
+          "0": "Vous savez où chercher : sous l'ancien embarcadère du château, une barge coulée repose encore sur le fond. Vous plongez et remontez quelques objets de valeur de l'épave.",
           "1": "En longeant la rivière près du château, vous découvrez les vestiges d'un ancien moulin à eau. Les mécanismes rouillés recèlent encore quelques pièces coincées dans les engrenages que vous parvenez à extraire.",
-          "2": "Votre exploration des berges vous fait découvrir une grotte naturelle dissimulée sous les fondations du château. Elle servait probablement d'issue de secours aux anciens seigneurs. Vous y trouvez quelques anciennes provisions encore comestibles et un objet oublié.",
+          "2": "En longeant la berge, vous découvrez une grotte dissimulée sous les fondations du château, sans doute une issue de secours des anciens seigneurs. Vous y trouvez des provisions encore comestibles et un objet oublié.",
           "3": "En vous penchant vers la rivière pour boire, vous glissez sur les pierres humides et tombez à l'eau ! Le courant vous emporte quelques mètres plus loin. Vous parvenez à regagner la berge, trempé et frigorifié.",
-          "4": "Votre hippopotame se jette avec bonheur dans la rivière ! Sa joie est contagieuse et vous décidez de le rejoindre pour une baignade rafraîchissante. Votre compagnon, excellent nageur, découvre au fond de l'eau un objet brillant qu'il vous rapporte fièrement."
+          "4": "Tout à sa joie, votre hippopotame se jette dans la rivière, et vous le rejoignez pour une baignade rafraîchissante. Il remonte du fond avec un objet brillant, qu'il vous rapporte fièrement."
         },
         "text": "Explorer les berges de la rivière près du château."
       },
       "restAndObserve": {
         "outcomes": {
-          "0": "Vous vous installez confortablement face au château et laissez votre esprit vagabonder. Cette pause contemplative vous permet d'imaginer la grandeur passée de cette forteresse et de récupérer un peu de votre énergie spirituelle.",
-          "1": "Votre observation patiente du château révèle des détails architecturaux fascinants. En tant qu'aventurier expérimenté, vous reconnaissez le style de construction et datez approximativement l'édifice, enrichissant vos connaissances historiques.",
-          "2": "Pendant votre méditation face aux ruines, un vieil ermite sort des buissons proches. Impressionné par votre aura bienveillante, il partage avec vous des légendes locales sur le château et vous offre un petit objet béni en guise d'amitié.",
-          "3": "Votre repos près du château attire l'attention d'un groupe de pèlerins qui passaient par là. Reconnaissant en vous un voyageur expérimenté, ils sollicitent vos conseils sur la route à suivre et vous offrent quelques provisions en remerciement.",
+          "0": "Vous vous installez face au château et laissez votre esprit vagabonder. Vous imaginez la forteresse au temps de sa grandeur, et cette pause vous rend un peu d'énergie.",
+          "1": "À force d'observer le château, vous reconnaissez son style de construction et parvenez à dater l'édifice, à quelques décennies près. Vous en apprenez un peu plus sur l'histoire de la région.",
+          "2": "Un vieil ermite sort des buissons pendant que vous contemplez les ruines. Il a entendu parler de vous : il vous raconte ce qu'on dit du château dans la région et vous offre un petit objet béni en signe d'amitié.",
+          "3": "Un groupe de pèlerins s'arrête près de vous et vous demande conseil sur la route à suivre. Vous les renseignez de votre mieux, et ils vous offrent quelques pièces et des provisions en remerciement.",
           "4": "Alors que vous contemplez paisiblement les ruines, votre animal de compagnie se met à jouer avec les reflets du soleil sur les pierres humides. Ce moment de pure joie réchauffe votre cœur et vous redonne de l'entrain pour continuer votre périple."
         },
         "text": "S'arrêter pour contempler et se reposer face au château."
@@ -440,93 +440,93 @@
       },
       "end": {
         "outcomes": {
-          "0": "Fasciné par l'architecture gothique du château, vous passez de longues minutes à en admirer les détails sculptés. Les gargouilles semblent vous observer tandis que vous tentez d'imaginer la vie qui animait autrefois ces murs. Quand vous reprenez finalement votre route, vous emportez avec vous l'image majestueuse de cette forteresse oubliée.",
-          "1": "L'imposante silhouette du château réveille en vous des rêves de grandeur et d'aventure. Vous vous perdez dans vos pensées, imaginant les banquets fastueux et les tournois chevaleresques qui se déroulaient autrefois entre ces murs. Cette rêverie vous fait perdre la notion du temps, mais elle nourrit votre âme d'aventurier.",
-          "2": "Alors que vous contemplez le château, votre alien, poussé par sa curiosité insatiable pour la culture humaine, s'éclipse discrètement. Inquiet, vous le cherchez et le retrouvez dans l'ancienne salle du trône, fasciné par les symboles royaux ! Dans son exploration, il a découvert une cache royale remplie de pièces d'or que vous partagez, amusé par sa soif de connaissance."
+          "0": "Vous passez de longues minutes à admirer les détails sculptés du château. Les gargouilles semblent vous observer tandis que vous imaginez la vie qui animait autrefois ces murs. Vous reprenez enfin votre route, cette image en tête.",
+          "1": "La silhouette du château éveille en vous des rêves de grandeur. Vous imaginez les banquets et les tournois qui se tenaient entre ces murs, et vous perdez la notion du temps.",
+          "2": "Pendant que vous contemplez le château, votre alien, curieux de tout ce qui est humain, s'éclipse. Vous le retrouvez dans l'ancienne salle du trône, en arrêt devant les emblèmes royaux et devant une cache pleine de pièces d'or."
         }
       }
     },
-    "text": "Au détour d'un méandre de la Rivière aux Crabes, une vision saisissante s'offre à vous : les ruines majestueuses d'un ancien château se dressent sur un promontoire rocheux, ses tours déchiquetées se reflétant dans les eaux tumultueuses. Les murs de pierre grise, rongés par les intempéries et le lierre, témoignent d'un passé glorieux révolu. Des corneilles nichent dans les créneaux brisés, et le vent qui s'engouffre dans les ouvertures béantes produit une mélopée mélancolique. Cette forteresse abandonnée semble garder jalousement ses secrets..."
+    "text": "Au détour d'un méandre de la Rivière aux Crabes, les ruines d'un château se dressent sur un promontoire rocheux. Le lierre ronge ses murs gris, des corneilles nichent dans les créneaux brisés, et le vent siffle dans les ouvertures béantes."
   },
   "17": {
     "possibilities": {
       "fruits": {
         "outcomes": {
-          "0": "Votre agilité vous permet de grimper avec aisance jusqu'aux branches les plus hautes. Les fruits dorés que vous cueillez regorgent de suc sucré et vous redonnent instantanément des forces. Cette pause revigorante dans la canopée vous offre même une vue panoramique sur les environs.",
-          "1": "Votre ascension laborieuse vous mène vers des fruits prometteurs, mais la branche fragile cède sous votre poids ! La chute brutale vous laisse étourdi et meurtri au pied de l'arbre. Vous abandonnez l'idée de ce repas aérien, préférant reprendre la route en claudiquant.",
-          "2": "Dans votre inexpérience, vous croquez avec appétit dans des fruits qui semblent appétissantes. Hélas, quelques heures plus tard, des crampes violentes vous rappellent cruellement que toutes les fruits colorées ne sont pas comestibles.",
-          "3": "Votre expérience de voyageur vous permet d'identifier les meilleurs fruits parmi la diversité de l'arbre. Non seulement vous vous nourrissez sainement, mais vous découvrez également un objet de valeur niché dans un creux du tronc, probablement oublié par un autre aventurier.",
-          "4": "Alors que vous vous apprêtiez à grimper, votre singe compagnon bondit avec enthousiasme dans les branches, sélectionnant avec expertise les fruits les plus nutritifs qu'il partage généreusement avec vous.",
-          "5": "Votre corpulence imposante joue contre vous ! En vous hissant vers les branches hautes, votre poids fait craquer dangereusement le bois. Soudain, la branche maîtresse se brise net et vous chutez lourdement, meurtri par cette tentative malheureuse.",
-          "6": "Votre majestueuse girafe étend gracieusement son long cou vers les fruits les plus hauts, ceux que même les singes ne peuvent atteindre ! Elle cueille délicatement les spécimens les plus juteux et vous les apporte avec une élégance naturelle. Ce festin de fruits d'exception vous régale comme jamais.",
-          "7": "Votre majestueux diplodocus étend gracieusement son long cou vers les fruits les plus hauts, ceux que même les singes ne peuvent atteindre ! Il attrape délicatement les spécimens les plus juteux et vous les apporte avec une élégance naturelle. Ce festin de fruits d'exception vous régale comme jamais."
+          "0": "Vous grimpez sans effort jusqu'aux plus hautes branches. Les fruits dorés regorgent de suc et vous rendent des forces, et la vue sur les environs vaut le détour.",
+          "1": "Vous vous hissez péniblement vers les fruits, et la branche cède sous votre poids. Vous vous retrouvez au pied de l'arbre, étourdi et meurtri. Tant pis pour ce repas : vous reprenez la route en claudiquant.",
+          "2": "Vous croquez avec appétit dans des fruits qui ont l'air délicieux. Quelques heures plus tard, des crampes violentes vous rappellent que tous les fruits colorés ne sont pas comestibles.",
+          "3": "Vous savez reconnaître les fruits mûrs des autres, et vous faites un repas sain. Dans un creux du tronc, vous découvrez en prime un objet de valeur, sans doute oublié par un autre voyageur.",
+          "4": "Alors que vous vous apprêtiez à grimper, votre singe bondit dans les branches et choisit en connaisseur les fruits les plus mûrs, qu'il partage avec vous.",
+          "5": "Vous vous hissez vers les hautes branches, et le bois craque sous le poids de votre équipement. La branche maîtresse se brise net. Vous chutez lourdement.",
+          "6": "De son long cou, votre girafe atteint les fruits les plus hauts, ceux que même les singes ne peuvent cueillir. Elle détache les plus juteux et vous les apporte un à un. Vous n'avez jamais si bien mangé sur une route.",
+          "7": "De son long cou, votre diplodocus atteint les fruits les plus hauts, ceux que même les singes ne peuvent cueillir. Il détache les plus juteux et vous les apporte un à un. Vous n'avez jamais si bien mangé sur une route."
         },
         "text": "Escalader l'arbre aux fruits dorés."
       },
       "hunt": {
         "outcomes": {
-          "0": "Malgré vos efforts pour traquer le gibier dans les fourrés, votre manque d'expérience de la chasse vous joue des tours. Les animaux détectent votre présence de loin et s'enfuient, vous laissant bredouille après de longues heures de traque infructueuse.",
-          "1": "Vous parvenez à blesser un sanglier mais sous-estimez sa rage ! La bête furieuse charge avec une violence inouïe, ses défenses lacérant votre chair avant que vous ne parveniez à l'achever. Ce repas vous aura coûté très cher, mais vous vous consolez en fabriquant un petit objet à partir de la carcasse de l'animal.",
-          "2": "Votre maîtrise du combat vous permet d'abattre proprement plusieurs lapins sauvages. Avec l'habileté d'un chasseur expérimenté, vous préparez un festin roboratif qui vous redonne toute votre vigueur pour la suite du voyage.",
-          "3": "Votre réputation de brigand vous sert dans cette chasse impitoyable. Vous traquez une biche avec une efficacité redoutable, puis dépouillez sa carcasse de tout ce qui a de la valeur, y compris ses bois qui se vendront bien au marché noir.",
-          "4": "Votre compagnon prédateur prend naturellement les devants de la chasse ! Sa puissance instinctive vous assure un repas copieux sans effort de votre part. La nature reprend ses droits.",
-          "5": "Vos talents d'archer vous permettent d'abattre plusieurs petits gibiers d'une main sûre. Cette chasse efficace et sans gaspillage vous nourrit convenablement tout en respectant l'équilibre de la forêt.",
-          "6": "Votre familier disparaît dans les fourrés avec un grognement déterminé. Quelques minutes plus tard, il reparaît en rabattant habilement un cerf dans votre direction ! Cette coordination parfaite vous offre un festin digne des meutes sauvages.",
-          "7": "Votre vitesse exceptionnelle vous permet de poursuivre le gibier avec l'agilité d'un félin ! Vous rattrapez aisément lapins et perdrix, transformant cette chasse en véritable démonstration de célérité. Le repas qui s'ensuit récompense dignement vos prouesses.",
-          "8": "Concentré sur un lièvre, vous ne voyez pas le cerf qui charge ! L'impact brutal du bois sur votre torse vous projette au sol. Sonné et meurtri, vous abandonnez toute velléité de chasse, remerciant les dieux d'être encore vivant après cette rencontre malheureuse.",
-          "9": "Votre maladresse de novice vous fait tomber nez à nez avec un autre chasseur expérimenté ! Amusé par votre technique approximative, ce vétéran bienveillant partage généreusement le fruit de sa propre chasse. Votre inexpérience vous vaut finalement un excellent repas et une leçon d'humilité."
+          "0": "Vous traquez le gibier dans les fourrés pendant des heures. Les animaux vous entendent venir de loin et détalent à chaque fois. Vous revenez bredouille.",
+          "1": "Vous blessez un sanglier, qui charge. Ses défenses vous lacèrent la jambe avant que vous ne parveniez à l'achever. Ce repas vous coûte cher, mais vous taillez un petit objet dans la carcasse pour vous consoler.",
+          "2": "Vous abattez proprement plusieurs lapins sauvages et les préparez en chasseur qui connaît son affaire. Le repas vous rend toute votre vigueur pour la suite du voyage.",
+          "3": "Vous traquez une biche sans états d'âme, puis dépouillez la carcasse de tout ce qui a de la valeur. Les bois, surtout, se vendront bien au marché noir.",
+          "4": "En prédateur, votre familier prend les devants et disparaît dans les fourrés. Il en revient avec de quoi faire un repas copieux, sans que vous ayez eu à lever le petit doigt.",
+          "5": "Quelques flèches bien placées, et vous voilà avec plusieurs pièces de petit gibier. Vous ne prenez que ce qu'il vous faut, et le repas vous remet d'aplomb.",
+          "6": "Avec un grognement, votre familier disparaît dans les fourrés. Quelques minutes plus tard, il rabat un cerf droit sur vous. Vous partagez un festin digne d'une meute.",
+          "7": "Vous poursuivez lapins et perdrix à la course, et vous les rattrapez. Le repas qui s'ensuit est à la mesure de l'exploit.",
+          "8": "Concentré sur un lièvre, vous ne voyez pas le cerf qui charge. Ses bois vous frappent en plein torse et vous jettent au sol. Sonné, vous renoncez à chasser, en remerciant les dieux d'être encore vivant.",
+          "9": "Vous tombez nez à nez avec un chasseur chevronné, que votre technique approximative amuse beaucoup. Bon prince, il partage avec vous le produit de sa chasse, et vous donne au passage une leçon d'humilité."
         },
         "text": "Partir chasser dans les fourrés."
       },
       "mushrooms": {
         "outcomes": {
-          "0": "Votre œil exercé distingue les champignons comestibles des variétés toxiques. En fouillant sous un champignon particulièrement gros, vous découvrez même un objet précieux enterré par quelque créature ou ancien voyageur.",
-          "1": "Votre inexpérience mycologique vous fait hésiter longuement devant chaque spécimen. Vous passez un temps considérable à essayer d'identifier les espèces comestibles, mais votre prudence excessive vous fait finalement abandonner sans rien récolter.",
-          "2": "Votre sombre personnalité vous pousse vers les champignons les plus toxiques ! Attiré par leurs couleurs vives, vous en consommez plusieurs avant de réaliser votre erreur. Les hallucinations et les convulsions qui suivent vous rappellent douloureusement que vos mauvaises actions attirent le malheur.",
-          "3": "Votre bienveillance naturelle vous guide vers les champignons les plus sains. Comme si la nature elle-même récompensait votre bonté, vous trouvez une variété particulièrement nutritive qui apaise votre faim tout en purifiant votre esprit.",
-          "4": "Vos compétences de mage vous ont permis d'acquérir des savoirs très utile pour identifier les meilleurs espèces de champignons. Rapidement vous remarquez quelques spécimens d'une variété rarissime de champignons aux propriétés exceptionnelles. Non seulement ils vous nourrissent, mais leurs vertus vous procurent également un bien-être durable.",
-          "5": "Votre cochon compagnon grogne d'excitation en reniflant le sol ! Son flair exceptionnel lui permet de dénicher les truffes les plus précieuses enfouies sous les feuilles mortes. Ces délices gastronomiques vous nourrissent parfaitement, et vous en conservez quelques-unes pour les revendre plus tard.",
-          "6": "Votre expérience considérable vous permet d'éviter instinctivement les champignons vénéneux. Même les plus tentants et colorés ne vous trompent pas - vous sélectionnez uniquement les variétés nutritives et savoureuses qui vous sustentent sainement."
+          "0": "Vous distinguez sans peine les champignons comestibles des toxiques. En soulevant le plus gros, vous découvrez un objet enterré là par une bête ou par un ancien voyageur.",
+          "1": "Vous hésitez longuement devant chaque champignon, sans parvenir à distinguer les bons des mauvais. Par prudence, vous finissez par renoncer, sans avoir rien récolté.",
+          "2": "Attiré par les plus colorés, vous en avalez plusieurs avant de comprendre votre erreur. Les hallucinations et les convulsions qui suivent vous font regretter votre gourmandise.",
+          "3": "Vous tombez sur une variété particulièrement nourrissante, comme si la forêt vous la réservait. Elle apaise votre faim et vous laisse l'esprit clair.",
+          "4": "Vos études de mage vous ont appris à reconnaître les champignons, et vous repérez vite quelques spécimens d'une variété rarissime. Ils vous nourrissent, et leurs vertus vous laissent une sensation de bien-être durable.",
+          "5": "En grognant d'excitation, votre cochon renifle le sol et déterre des truffes enfouies sous les feuilles mortes. Vous vous régalez, et vous en gardez quelques-unes à revendre.",
+          "6": "Même les plus tentants ne vous trompent pas : vous écartez les champignons vénéneux sans hésiter et ne gardez que les variétés savoureuses. Le repas est simple et sain."
         },
         "text": "Cueillir les champignons des sous-bois."
       },
       "salad": {
         "outcomes": {
           "0": "Vous composez une salade simple mais nourrissante avec les herbes sauvages que vous reconnaissez. Ce repas frugal mais sain vous redonne quelques forces tout en respectant la nature environnante.",
-          "1": "Votre mauvaise réputation semble vous poursuivre jusque dans vos choix alimentaires ! Les plantes que vous sélectionnez s'avèrent amères et peu nutritives, vous laissant plus affamé qu'avant. Même la nature semble vous bouder.",
-          "2": "Votre inexpérience vous fait confondre plusieurs plantes. Vous perdez un temps précieux à essayer de distinguer les espèces comestibles des nuisibles, renonçant finalement à ce repas végétal par peur d'empoisonnement.",
-          "3": "Votre compagnon herbivore vous guide instinctivement vers les meilleures plantes comestibles. Sa connaissance naturelle de la flore vous offre un repas végétarien parfaitement équilibré et savoureux.",
-          "4": "Catastrophe ! Votre vache gourmande se jette sur votre cueillette et dévore goulûment toutes les herbes que vous aviez soigneusement sélectionnées ! Elle mastique béatement votre repas sous vos yeux dépités, vous laissant le ventre vide et l'amertume au cœur.",
-          "5": "Votre aura maléfique corrompt littéralement la nature autour de vous ! Les plantes se flétrissent à votre approche, les feuilles noircissent et les herbes pourrissent entre vos doigts. Contraint de consommer cette bouillie infecte, vous vous empoisonnez avec les fruits de vos propres mauvaises actions."
+          "1": "Les plantes que vous choisissez sont amères et ne nourrissent pas. Vous vous retrouvez plus affamé qu'avant. Même la nature semble vous bouder.",
+          "2": "Vous confondez plusieurs plantes et perdez un temps précieux à tenter de distinguer les comestibles des autres. Par peur de vous empoisonner, vous renoncez à ce repas.",
+          "3": "En herbivore averti, votre compagnon vous mène droit aux meilleures plantes. Grâce à lui, vous composez une salade savoureuse et nourrissante.",
+          "4": "Catastrophe : votre vache se jette sur votre cueillette et dévore toutes les herbes que vous aviez soigneusement choisies. Elle mastique béatement sous vos yeux dépités, et vous restez le ventre vide.",
+          "5": "Les herbes que vous cueillez noircissent et pourrissent entre vos doigts, comme si la nature elle-même ne voulait pas de vous. Affamé, vous avalez quand même cette bouillie infecte, et vous en tombez malade."
         },
         "text": "Concocter une salade sauvage."
       },
       "scavenge": {
         "outcomes": {
-          "0": "Votre nature de brigand et votre rapidité vous permettent de fouiller efficacement les restes d'anciens campements le long du Grand Axe. Vous déterrez des provisions encore bonnes et quelques pièces oubliées par d'anciens voyageurs.",
-          "1": "Votre long passé de brigand vous mène naturellement vers les cachettes des bandits de la région. Vous découvrez un garde-manger secret contenant des vivres volés et même un objet de valeur abandonné lors d'une fuite précipitée.",
-          "2": "Poussé par votre faim, vous vous résolvez à fouiller les détritus. Cette action contre votre nature vous pèse moralement, mais la survie l'emporte sur les principes dans cette situation désespérée. Vous parvenez à trouver quelques vivres encore comestibles, et reprenez rapidement votre route.",
+          "0": "Vous fouillez les anciens campements du Grand Axe vite et sans scrupules. Vous déterrez des provisions encore bonnes et quelques pièces oubliées par des voyageurs.",
+          "1": "Vous savez où les bandits de la région cachent leurs réserves : vous avez fait la même chose. Vous trouvez un garde-manger secret plein de vivres volés, et un objet de valeur abandonné lors d'une fuite.",
+          "2": "La faim vous pousse à fouiller les détritus, à contrecœur. Vous trouvez quelques vivres encore comestibles et reprenez vite votre route, pas très fier de vous.",
           "3": "Les restes que vous déterrez s'avèrent avariés et infestés de parasites. Cette nourriture de dernier recours vous rend malade, et vous devez vous arrêter pour vous soigner avant de pouvoir continuer votre route."
         },
         "text": "Fouiller les restes d'anciens campements."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous décidez stoïquement de poursuivre votre route le ventre vide, considérant que la faim forge le caractère. Cette austérité volontaire vous endurcit, même si elle ne nourrit pas votre corps. Vous continuez votre chemin tiraillé par la faim.",
-          "1": "Votre inexpérience vous fait sous-estimer les besoins de votre organisme. En refusant de vous nourrir, vous vous affaiblissez dangereusement et devrez bientôt faire face aux conséquences de cette négligence.",
-          "2": "Votre sagesse de voyageur expérimenté vous dicte de préserver vos forces pour des défis plus importants. Vous acceptez temporairement la faim, sachant qu'une meilleure occasion de vous nourrir se présentera bientôt."
+          "0": "Vous poursuivez votre route le ventre vide, en vous disant que la faim forge le caractère. Elle ne nourrit pas, en revanche, et vous tiraille à chaque pas.",
+          "1": "Vous sous-estimez ce que la route exige de votre corps. Sans rien dans le ventre, vous vous affaiblissez dangereusement, et vous le paierez bientôt.",
+          "2": "Vous avez assez voyagé pour savoir qu'une meilleure occasion de manger se présentera bientôt. Vous acceptez la faim pour l'instant et gardez vos forces pour la suite."
         },
         "text": "Poursuivre la route sans vous nourrir."
       },
       "end": {
         "outcomes": {
           "0": "L'indécision vous paralyse face à ces multiples options alimentaires. Vous passez de longues minutes à peser le pour et le contre de chaque choix, laissant finalement le temps filer sans prendre de décision définitive.",
-          "1": "Votre état de faiblesse vous fait hésiter longuement entre toutes ces possibilités. Cette hésitation prolongée vous épuise encore davantage, et vous devez finalement vous reposer longuement avant de pouvoir reprendre la route, le ventre toujours vide.",
-          "2": "Alors que vous réfléchissez aux différentes options, votre fidèle félin disparaît silencieusement dans les fourrés. Il revient fièrement quelques minutes plus tard en traînant une proie imposante ! Ensemble, vous partagez ce festin royal qui vous redonne toute votre vigueur et renforce vos liens avec votre noble compagnon."
+          "1": "Trop faible pour vous décider, vous hésitez longuement entre toutes ces possibilités. Cette hésitation achève de vous épuiser, et vous devez vous reposer longtemps avant de reprendre la route, le ventre toujours vide.",
+          "2": "Pendant que vous réfléchissez, votre félin disparaît dans les fourrés. Il revient quelques minutes plus tard en traînant une belle proie. Vous partagez ce festin, qui vous rend toute votre vigueur."
         }
       }
     },
-    "text": "Sur la périlleuse route du Grand Axe, connue pour ses brigands et ses dangers, une faim tenaillante vous oblige à faire halte. Autour de vous, la nature offre plusieurs possibilités pour vous sustenter, mais sur cette route maudite, même les choix les plus simples peuvent receler des pièges mortels. Un grand chêne aux fruits dorés se dresse majestueusement, tandis que des champignons colorés parsèment les sous-bois. Des traces d'animaux sauvages marquent le sol boueux, et vous apercevez les vestiges d'anciens campements de voyageurs moins chanceux que vous..."
+    "text": "Sur le Grand Axe, la faim vous oblige à faire halte. Un grand arbre ploie sous des fruits dorés, des champignons colorés parsèment le sous-bois, des traces de gibier marquent la boue, et les restes d'anciens campements jonchent le bord de la route."
   },
   "18": {
     "possibilities": {
