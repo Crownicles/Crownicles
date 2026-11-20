@@ -489,16 +489,24 @@ export const CrowniclesIcons: {
 			}
 		},
 		2: {
-			end: { 0: "🐶" },
+			end: {
+				0: "🐶",
+				1: "🩸",
+				2: "🐾"
+			},
 			followDog: "🐕",
+			intimidateDog: "😠",
 			skip: "🏃"
 		},
 		20: {
 			alert: "🤙",
 			end: {
 				0: "🚶",
-				1: "🚶"
+				1: "🚶",
+				2: "🐾"
 			},
+			intimidate: "😠",
+			negotiateBribe: "💰",
 			skip: "🚶",
 			surpriseAttack: "👊"
 		},
