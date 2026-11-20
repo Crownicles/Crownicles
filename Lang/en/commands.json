@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Change of guild status",
       "energy": "Regenerated energy",
       "dailyBonus": "Daily bonus",
-      "petExpedition": "Pet expedition completed"
+      "petExpedition": "Pet expedition completed",
+      "gardenPlantReady": "Plante du jardin prête à être récoltée",
+      "gardenAllPlantsReady": "Toutes les plantes du jardin prêtes à être récoltées"
     },
     "enableDisable": "Enable/Disable",
     "sendLocationField": "Send location:",
