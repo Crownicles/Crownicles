@@ -2327,7 +2327,9 @@
       "guildStatusChange": "Cambio de estatus dentro del gremio",
       "energy": "Energía regenerada",
       "dailyBonus": "Bonificación diaria",
-      "petExpedition": "Envío de mascotas completado"
+      "petExpedition": "Envío de mascotas completado",
+      "gardenPlantReady": "Plante du jardin prête à être récoltée",
+      "gardenAllPlantsReady": "Toutes les plantes du jardin prêtes à être récoltées"
     },
     "enableDisable": "Activar/Desactivar",
     "sendLocationField": "Dirección de entrega :",
