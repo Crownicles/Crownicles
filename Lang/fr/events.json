@@ -484,7 +484,7 @@
           "1": "Vous hésitez longuement devant chaque champignon, sans parvenir à distinguer les bons des mauvais. Par prudence, vous finissez par renoncer, sans avoir rien récolté.",
           "2": "Attiré par les plus colorés, vous en avalez plusieurs avant de comprendre votre erreur. Les hallucinations et les convulsions qui suivent vous font regretter votre gourmandise.",
           "3": "Vous tombez sur une variété particulièrement nourrissante, comme si la forêt vous la réservait. Elle apaise votre faim et vous laisse l'esprit clair.",
-          "4": "Vos études de mage vous ont appris à reconnaître les champignons, et vous repérez vite quelques spécimens d'une variété rarissime. Ils vous nourrissent, et leurs vertus vous laissent une sensation de bien-être durable.",
+          "4": "Du temps de vos études de mage, on vous a appris à reconnaître les champignons, et vous repérez vite quelques spécimens d'une variété rarissime. Ils vous nourrissent, et leurs vertus vous laissent une sensation de bien-être durable.",
           "5": "En grognant d'excitation, votre cochon renifle le sol et déterre des truffes enfouies sous les feuilles mortes. Vous vous régalez, et vous en gardez quelques-unes à revendre.",
           "6": "Même les plus tentants ne vous trompent pas : vous écartez les champignons vénéneux sans hésiter et ne gardez que les variétés savoureuses. Le repas est simple et sain."
         },
@@ -532,18 +532,18 @@
     "possibilities": {
       "searchScaffolding": {
         "outcomes": {
-          "0": "Votre agilité vous permet de vous hisser par les perches branlantes et les cordes rêches. De là-haut, Mergagnan s'étale en toits de chaume, et la lueur de la Plage Sentinelle calme vos pensées tumultueuses. Vous vous reposez quelques instants, profitant de la vue apaisante sur la mer agitée avant de redescendre.",
-          "1": "Votre œil et votre main exercés par la route, passent chaque palan et chaque poutre au crible. Dans une fente garnie de mousse, vous mettez la main sur un objet utile, sans doute délaissé lors de la fuite précipitée des travailleurs.",
-          "2": "La corde pourrie cède sous votre prise ! Vous heurtez les pavés inégaux dans un craquement sinistre. La douleur qui vous traverse jusqu'aux reins vous rappelle qu'on ne brave pas impunément les échafauds vermoulus quand on est aussi peu agile que vous.",
-          "3": "Grâce à votre expérience de vétéran, vous repérez d'instinct les caches et renforts d'ouvriers. Derrière une solive chevillée, vous découvrez une pièce d'atelier de maître, soigneusement dissimulée, elle a certainement été cachée là afin d'éviter un vol avant la fin de la construction. Raisonnant qu'elle ne sera plus d'utilité à personne maintenant que la construction a été abandonnée, vous la récupérez avec précaution, conscient de sa valeur.",
-          "4": "Votre primate bondit de perche en perche avec une joie espiègle. De ses doigts habiles, il extirpe d'un recoin inaccessible une trouvaille oubliée par les bâtisseurs, qu'il vous dépose fièrement dans la paume.",
-          "5": "Votre robuste constitution fait grincer les vieilles planches de la construction que vous sentez plier sous vos pieds. Une latte craque, mais vous vous rattrapez de justesse. Le reste de l'ascension se fait sans encombre. Vous ne trouvez rien en haut des échafauds et redescendez soulagé de n'avoir pas chuté.",
+          "0": "Vous vous hissez par les perches branlantes et les cordes rêches jusqu'au faîte. De là-haut, Mergagnan s'étale en toits de chaume jusqu'à la Plage Sentinelle. Vous vous reposez un moment face à la mer avant de redescendre.",
+          "1": "Vous passez chaque palan et chaque poutre au crible, en habitué des lieux abandonnés. Dans une fente garnie de mousse, vous mettez la main sur un objet utile, sans doute oublié dans la fuite des ouvriers.",
+          "2": "La corde pourrie cède sous votre prise, et vous heurtez les pavés de tout votre poids. La douleur vous traverse jusqu'aux reins : on ne brave pas impunément les échafauds vermoulus.",
+          "3": "En vétéran, vous savez où les ouvriers cachent ce qui a de la valeur. Derrière une solive chevillée, vous trouvez une pièce d'atelier de maître, mise à l'abri des voleurs. Elle ne servira plus à personne ici : vous l'emportez.",
+          "4": "De perche en perche, votre primate bondit avec une joie espiègle. Il extirpe d'un recoin inaccessible une trouvaille oubliée par les bâtisseurs et vous la dépose fièrement dans la paume.",
+          "5": "Les vieilles planches plient sous votre poids. Une latte craque, vous vous rattrapez de justesse, et le reste de l'ascension se passe sans encombre. Il n'y a rien là-haut : vous redescendez, soulagé de ne pas avoir chuté.",
           "6": "Piqué par la cupidité, vous arrachez clous et pièces de bois, fouillez les poches de cuir. Hélas, tout n'est plus que rouille et pourriture : le chantier a déjà été débarrassé du peu qui valait encore. Vous redescendez, l'âme en peine et les mains vides.",
-          "7": "Votre carrure fait geindre l'ouvrage, mais vos bras puissants vous hissent jusqu'à la panne faîtière. Là, blotti sous une bavette de tuiles, vous trouvez un objet de valeur oublié des maîtres d'œuvre.",
+          "7": "L'ouvrage geint sous votre carrure, mais vous vous hissez à la force des bras jusqu'à la panne faîtière. Là, sous une bavette de tuiles, vous trouvez un objet de valeur oublié des maîtres d'œuvre.",
           "8": "À mesure que vous grimpez, barreaux et nœuds cèdent en chaîne. Sans assez d'élan pour vous rattraper, vous chutez lourdement dans un vacarme de bois brisé. Vous restez étourdi, le souffle coupé.",
-          "9": "Prudent car vous manquez encore d'expérience, vous n'osez guère dépasser le premier niveau. En remettant votre besace, vous remarquez un petit outil gravé, abandonné tout près de vos pieds. Vous décidez de le prendre, pensant qu'il pourrait vous être utile plus tard.",
-          "10": "Votre prudence vous fait rebrousser chemin, mais le mauvais sort s'acharne : une tuile descellée dégringole et vous heurte au crâne. Même la sagesse n'écarte pas tous les périls.",
-          "11": "Avec l'aisance d'un maître-bâtisseur, vous domptez les madriers et atteignez la pointe. Miraculeusement, vous découvrez une petite cache que vous n'aviez pas remarquée auparavant, et plusieurs objets brillent entre deux planches. Vous subtilisez ce que vous pouvez, certain d'en tirer quelques pièces chez un brocanteur peu regardant ou encore d'en trouver un usage pour vos aventures futures."
+          "9": "Par prudence, vous n'osez guère dépasser le premier niveau. En remettant votre besace, vous remarquez à vos pieds un petit outil gravé, que vous emportez : il pourra servir.",
+          "10": "Vous jugez plus sage de rebrousser chemin, mais le mauvais sort s'acharne : une tuile descellée dégringole et vous heurte au crâne. Même la sagesse n'écarte pas tous les périls.",
+          "11": "Vous grimpez jusqu'à la pointe comme si vous aviez monté ces madriers vous-même. Entre deux planches, quelques objets brillent dans une petite cache. Vous prenez ce que vous pouvez, sûr d'en tirer quelques pièces chez un brocanteur peu regardant."
         },
         "text": "Gravir les échafauds et fouiller la charpente."
       },
@@ -553,16 +553,16 @@
           "1": "Connaisseur des lieux délaissés, vous fouillez les zones où l'on cache l'outillage. Un coffre de charpentier gît sous une bâche : à l'intérieur, un objet préservé, oublié depuis l'arrêt brutal des travaux.",
           "2": "À trop vous presser, vous plongez la main dans une huche sans regarder. Une lame de rabot rouillée vous entaille profondément. Le sang perle, et vos doigts tremblent. Il vous faudra un moment pour panser cette blessure.",
           "3": "L'œil attiré par tout ce qui ressemble à de l'argent, vous pillez les objets de valeur encore présents sur le site : clous forgés, racloirs, tout est récupérable ! Le butin est honnête, et vous vous réjouissez déjà du profit que vous tirerez de ce larcin.",
-          "4": "Votre chien renifle longuement le sol battu. Sous un amas de gravats, il met à jour une cache contenant un objet précieux mis à l'abri avant la débâcle.",
-          "5": "Vos bras forcent les verrous et soulèvent les pierres taillées. Le vacarme attire le regard de plusieurs passants, mais vos efforts vous permettent de débusquer du matériel bien dissimulé et quelques pièces scintillantes.",
-          "6": "Tandis que vous fouillez le site sans rien découvrir d'intéressant, votre familier s'en donne à cœur-joie parmi bois et pierres. En un clin d'œil, un abri propre et sec se dresse : vous y passez une nuit paisible qui vous permet de reprendre des forces."
+          "4": "Le nez au sol, votre chien renifle longuement la terre battue. Sous un amas de gravats, il met au jour une cache contenant un objet mis à l'abri avant la débâcle.",
+          "5": "Vous forcez les verrous et soulevez les pierres taillées. Le vacarme attire le regard de plusieurs passants, mais vous débusquez du matériel bien dissimulé et quelques pièces.",
+          "6": "Tandis que vous fouillez le site sans rien découvrir, votre familier s'en donne à cœur joie parmi le bois et les pierres. En un clin d'œil, un abri propre et sec se dresse, et vous y passez une nuit paisible qui vous rend des forces."
         },
         "text": "Fouiller méthodiquement le chantier déserté."
       },
       "investigate": {
         "outcomes": {
           "0": "Vous relevez marques de craie, numéros de travées, comptes griffonnés à la hâte, et entre deux notes, un nom revient : baron Almerac. À côté, la mention d'une « coupe de deniers » et d'intérêts impayés : l'argent se serait tari avant la pierre.",
-          "1": "Avec patience, vous fouillez le chantier à la recherche d'indices. Dans une niche, vous trouvez un billet froissé et déchiré. Vous parvenez tout de même à déchiffrer quelques mots : « Fièvre des marais - que Dieu nous garde ». Il semblerait que le manque d'argent n'ait pas été la seule épreuve qui soit venue à bout de cette construction.",
+          "1": "Dans une niche, vous trouvez un billet froissé et déchiré, dont vous déchiffrez quelques mots : « Fièvre des marais - que Dieu nous garde ». Le manque d'argent n'est peut-être pas la seule épreuve qui a eu raison de ce chantier.",
           "2": "Vous épluchez les indices jusqu'à l'égarement. Les pistes se contredisent, les marques effacées ne livrent rien. Vous perdez un temps précieux sans rien apprendre sur l'histoire de ces lieux."
         },
         "text": "Enquêter sur les raisons de l'abandon."
@@ -570,31 +570,31 @@
       "skip": {
         "outcomes": {
           "0": "La prudence vous dicte de ne pas vous attarder. Vous reprenez le chemin des ruelles, laissant derrière vous ce chantier figé dans le temps.",
-          "1": "En coupant au travers du chantier sans regarder, votre pied se heurte à un doloire laissée au sol. Une entaille vive vous arrache un juron."
+          "1": "En coupant à travers le chantier sans regarder, vous heurtez du pied une doloire laissée au sol. L'entaille vous arrache un juron."
         },
         "text": "Passer son chemin sans s'attarder."
       },
       "end": {
         "outcomes": {
           "0": "Vous demeurez un long moment à contempler cet ouvrage fantôme : solives qui grincent, toiles d'araignée et registres oubliés. Puis, le cœur songeur, vous vous décidez à vous éloigner.",
-          "1": "Votre familier, haut dans le ciel, vrille subitement et se pose près d'un renfoncement. Il en retire un objet brillant et vous le dépose dans la main avec un petit cri satisfait. Vous le félicitez pour cette trouvaille, la chance sourit souvent à ceux qui prennent le temps de chercher.",
-          "2": "Sans prévenir, votre gorille tambourine de ses poings un pan de mur ! La maçonnerie cède et une pierre vous heurte le crâne. Vous le rabrouez en massant votre tête, car cet incident aurait dû être évité."
+          "1": "Haut dans le ciel, votre familier vrille soudain et se pose près d'un renfoncement. Il en retire un objet brillant qu'il dépose dans votre main avec un petit cri satisfait. La chance sourit à ceux qui prennent le temps de chercher.",
+          "2": "Sans prévenir, votre gorille tambourine des poings contre un pan de mur. La maçonnerie cède, et une pierre vous heurte le crâne. Vous le rabrouez en vous massant la tête."
         }
       }
     },
-    "text": "Au détour des ruelles paisibles de Mergagnan, vous tombez sur un chantier figé comme par un sort. Poutres noircies, échafauds grinçants et outils rouillés témoignent d'un labeur rompu net. On disait que le baron Almerac, riche bienfaiteur sans héritier, finançait l'édification d'une halle de pierre. Depuis sa mort soudaine, les deniers auraient cessé d'affluer, les maîtres d'œuvre se seraient querellés avec la guilde, et les compagnons auraient déserté, laissant tout en l'état, jusqu'aux registres tachés d'encre et aux dalles mal scellées."
+    "text": "Dans les ruelles de Mergagnan, vous tombez sur un chantier à l'abandon : poutres noircies, échafauds grinçants, outils rouillés. Le baron Almerac y faisait bâtir une halle de pierre. Depuis sa mort, l'argent ne rentre plus, les compagnons ont déserté, et jusqu'aux registres sont restés sur place."
   },
   "19": {
     "possibilities": {
       "butch": {
         "outcomes": {
-          "0": "Votre faim et votre absence totale de scrupules triomphent : en geste précis mais froid, vous arrachez peau et parties revendables. Vous repartez lesté d'un butin conséquent.",
+          "0": "Sans le moindre scrupule, vous arrachez d'un geste précis et froid la peau et tout ce qui peut se revendre. Vous repartez lesté d'un butin conséquent.",
           "1": "Habileté et coups assurés : en quelques instants la peau est nette, roulée et prête à la vente. Vous reprenez la route satisfait de votre travail.",
-          "2": "Votre chien gémit doucement tandis que vous travaillez. Sa présence vous ralentit et vous culpabilise. Vous vous dépêchez de terminer pensant aux gains que vous aller empocher.",
+          "2": "Pendant que vous travaillez, votre chien gémit doucement. Il vous ralentit et vous donne mauvaise conscience. Vous vous dépêchez de finir, en pensant à ce que vous allez empocher.",
           "3": "Vous entamez la découpe quand votre renard apprivoisé pousse un cri plaintif et se couche près de la dépouille. La tristesse vous prend : vous renoncez, refermez la chair et enterrez l'animal avec un minimum de dignité.",
-          "4": "Votre droiture vous empêche d'exploiter l'animal. Vous décidez de le respecter et créez une petite tombe dans les herbes hautes, en murmurant une prière pour son âme. Vous repartez le cœur léger, mais le ventre vide.",
+          "4": "Vous ne pouvez vous résoudre à tirer profit de l'animal. Vous lui creusez une petite tombe dans les herbes hautes, en murmurant une prière pour son âme. Vous repartez le cœur léger, mais le ventre vide.",
           "5": "Mal préparé et mal outillé, vous ne parvenez pas à recueillir quoi que ce soit sur la carcasse. L'odeur vire rapidement : un malaise vous prend.",
-          "6": "Rodé aux travaux sanglants, vous mettez rapidement de coté les meilleurs morceaux et trouvez même un objet surprenant dans l'estomac qui est surement la cause de la mort du renard...",
+          "6": "Rodé aux travaux sanglants, vous mettez rapidement de côté les meilleurs morceaux. Dans l'estomac, vous trouvez même un objet surprenant, sans doute la cause de la mort du renard.",
           "7": "Vous vous appliquez tant bien que mal. L'opération est grossière et longue mais après de nombreuses minutes vous parvenez à récupérer la fourrure et quelques morceaux de viande. Vous n'êtes pas fier de ce travail, mais au moins vous ne repartez pas les mains vides.",
           "8": "Avec l'assurance d'un voyageur chevronné, vous dépecez proprement la dépouille, prélevant la fourrure et les morceaux de viande avec soin. Vous laissez le reste à la nature et reprenez la route, satisfait de votre labeur.",
           "9": "Vous vous acharnez, maladroit : incisions trop profondes, peau arrachée, chair déchirée. La fourrure est irrécupérable. Vous n'emportez que l'odeur tenace de l'échec."
@@ -606,8 +606,8 @@
           "0": "Feu vif, découpe propre, cuisson maîtrisée : la chair grillée vous redonne des forces et vous réchauffe l'âme.",
           "1": "Alors que vous approchez pour le saisir, l'animal est pris d'un sursaut nerveux et vous lacère avant de retomber inerte. Blessé, vous abandonnez toute idée de repas.",
           "2": "Vous ratez complètement la cuisson, la viande noircie et malodorante vous rend malade après quelques bouchées. Vous repartez en vous demandant si vous n'auriez pas mieux fait de laisser le renard en paix.",
-          "3": "Votre fidèle compagnon s'approche prudemment du foyer que vous avez allumé. Ensemble, vous partagez ce repas frugal mais réconfortant. La chaleur des flammes et la présence rassurante de votre animal vous redonnent du courage pour la suite du voyage.",
-          "4": "Vous cuisez délicatement quelques morceaux choisis et enterrez respectueusement les restes loin du chemin. A la fin de votre repas, vous remerciez le Loup Fenrir pour cette nourriture et reprenez votre route.",
+          "3": "Prudemment, votre compagnon s'approche du foyer que vous avez allumé. Vous partagez ce repas frugal, et la chaleur des flammes comme sa présence vous redonnent du courage pour la suite du voyage.",
+          "4": "Vous faites cuire quelques morceaux choisis et enterrez les restes loin du chemin. À la fin du repas, vous remerciez la forêt pour cette nourriture et reprenez votre route.",
           "5": "Vous rassemblez quelques brindilles et allumez un petit feu. La cuisson est simple mais efficace et la chair rôtie calme votre faim. Vous éteignez soigneusement les braises avant de reprendre la route.",
           "6": "Par instinct plus que par science, vous mélangez herbes sauvages, racines croquantes et cette pincée de sel oubliée au fond de votre besace. Miracle ! La préparation rustique révèle des saveurs étonnamment harmonieuses qui égayent ce repas improbable.",
           "7": "Malgré votre maîtrise habituelle des arts culinaires, cette viande trop longtemps exposée aux éléments dégage une puanteur infecte dès les premiers instants de cuisson. Les quelques bouchées que vous avez le courage d'avaler vous tordent l'estomac de crampes douloureuses."
@@ -616,10 +616,10 @@
       },
       "inspectCarcass": {
         "outcomes": {
-          "0": "Votre inspection méthodique révèle une mort récente et naturelle, sans trace de maladie ou d'empoisonnement. Rassuré par cette constatation, vous pouvez envisager la suite de vos actions en toute sécurité.",
+          "0": "Vous examinez la dépouille avec méthode : la mort est récente et naturelle, sans trace de maladie ni de poison. Rassuré, vous pouvez envisager la suite en toute sécurité.",
           "1": "En manipulant la dépouille pour l'examiner, le renard lève soudainement sa tête. Surpris, vous n'avez pas le temps de réagir et l'animal vous mord violemment avant de prendre la fuite.",
-          "2": "En manipulant la dépouille pour l'examiner, le renard lève soudainement sa tête. L'animal tente de vous mordre mais vous parvenez à esquiver son attaque. Vous vous préparez à un combat sanglant mais la bête s'enfuit vers la montagne. Il vous faut calmer les battements de votre coeur avant de reprendre votre route.",
-          "3": "Votre serpent familier dresse soudain sa tête et siffle d'alarme : il perçoit un relent d'herbes vénéneuses près de la gueule entrouverte. L'animal a sans doute succombé à un appât empoisonné destiné aux nuisibles. Vous notez cette précieuse information.",
+          "2": "Pendant que vous manipulez la dépouille, le renard relève soudain la tête et tente de vous mordre. Vous esquivez de justesse, prêt au combat, mais la bête s'enfuit vers la montagne. Il vous faut un moment pour calmer les battements de votre cœur.",
+          "3": "Soudain, votre serpent dresse la tête et siffle : il perçoit un relent d'herbes vénéneuses près de la gueule entrouverte. Le renard a sans doute succombé à un appât empoisonné destiné aux nuisibles. Vous en prenez note.",
           "4": "En soulevant délicatement le corps pour l'examiner, vous découvrez un petit paquet de cuir coincé sous la carcasse, dissimulé dans les herbes humides. Un voyageur l'aura perdu sans s'en apercevoir. Vous le récupérez avant de remettre respectueusement l'animal en place.",
           "5": "Ému par ce spectacle de mort prématurée, vous murmurez une courte bénédiction pour l'âme du renard et disposez tendrement quelques brins d'herbe sur sa tête. Ce geste de compassion apaise les troubles de votre conscience.",
           "6": "Vous scrutez chaque détail avec une minutie excessive, retournant la dépouille sous tous les angles. Hélas, cette inspection prolongée ne vous apprend rien de plus et vous fait perdre un temps précieux."
@@ -629,9 +629,9 @@
       "buryCarcass": {
         "outcomes": {
           "0": "Armé de vos mains et d'une pierre plate, vous creusez avec patience une sépulture convenable. Le petit tertre que vous érigez ensuite transforme ce coin de route en un lieu de paix qui réchauffe votre cœur.",
-          "1": "Votre noble prestance et votre recueillement transforment cet humble enterrement en véritable cérémonie. Tel un chapelain bénissant un défunt, vous honorez la dépouille d'une cérémonie simple mais digne et reprenez votre route.",
+          "1": "Vous vous recueillez, et cet humble enterrement prend des airs de cérémonie. Tel un chapelain bénissant un défunt, vous honorez la dépouille de quelques gestes simples et dignes, puis reprenez votre route.",
           "2": "Pressé d'en finir, vous creusez à la hâte un trou trop superficiel. La terre mal tassée s'effrite déjà, et une odeur désagréable persiste malgré vos efforts. Votre geste, bien qu'animé de bonnes intentions, semble avoir été vain.",
-          "3": "Votre propre renard observe la scène avec une attention bouleversante, puis pousse un petit gémissement plaintif qui vous va droit au cœur. Touché par l'émotion de votre compagnon, vous redoublez de soin et achevez cette tâche funèbre avec douceur.",
+          "3": "Immobile, votre renard observe la scène, puis pousse un petit gémissement plaintif qui vous va droit au cœur. Vous redoublez de soin et achevez cette tâche funèbre avec douceur.",
           "4": "Dépourvu d'outils de terrassement, vous improvisez en traînant le corps hors du passage principal et en le recouvrant d'un amas de branchages et de feuilles mortes. Cette sépulture de fortune, bien que sommaire, rend le lieu plus accueillant pour les autres voyageurs."
         },
         "text": "Enterrer dignement le renard."
@@ -639,8 +639,8 @@
       "skip": {
         "outcomes": {
           "0": "Vous détournez délibérément le regard de cette vision macabre et poursuivez votre route d'un pas ferme. Après tout, la mort fait partie du cycle naturel, et vous avez des préoccupations plus urgentes que le sort d'un animal sauvage.",
-          "1": "Au moment précis où vous passez près de la dépouille, celle-ci est prises de spasmes. Surpris par ces sursauts inattendus, vous reculez brusquement et vous cognez douloureusement contre un arbre proche.",
-          "2": "Votre renard s'arrête net pour renifler longuement la dépouille de son congénère, refusant obstinément d'avancer malgré vos encouragements. Cette attitude vous agace profondément, et vous le tirez à vous en maugréant contre sa sensibilité déplacée.",
+          "1": "Au moment précis où vous passez près de la dépouille, celle-ci est prise de spasmes. Surpris, vous reculez brusquement et vous cognez douloureusement contre un arbre.",
+          "2": "Devant la dépouille de son congénère, votre renard s'arrête net et la renifle longuement, refusant d'avancer malgré vos encouragements. Agacé, vous le tirez à vous en maugréant contre sa sensibilité déplacée.",
           "3": "Déterminé à ne pas perdre une seule minute de votre temps précieux, vous accélérez le pas et filez sans accorder un regard à cette scène morbide."
         },
         "text": "Ignorer la scène."
@@ -648,13 +648,13 @@
       "end": {
         "outcomes": {
           "0": "Vous demeurez immobile un long moment, partagé entre diverses émotions contradictoires. Finalement, la logique implacable du voyage reprend le dessus sur vos hésitations. Vous reprenez votre route, l'esprit encore légèrement troublé par cette rencontre inattendue avec la mort.",
-          "1": "Votre loup fidèle jette un regard long et silencieux vers le corps inerte, comme s'il rendait un dernier hommage à ce frère des bois. Puis, sans un bruit, il se remet en marche à vos côtés. Ce mutuel silence scelle tacitement votre décision de poursuivre votre périple.",
+          "1": "Longuement, votre loup regarde le corps inerte, comme pour rendre un dernier hommage à ce frère des bois. Puis, sans un bruit, il se remet en marche à vos côtés. Vous le suivez sans un mot.",
           "2": "Un bref élan de cynisme balaie toute trace d'empathie dans votre cœur endurci. La mort fait partie de la vie, point final. Vous haussez les épaules avec indifférence et vous éloignez sans un regard en arrière pour cette banale scène de mortalité.",
-          "3": "Sans que vous ayez le temps de réagir, votre T-Rex se rue sur la carcasse avec un rugissement de satisfaction et l'engloutit d'une seule bouchée monstrueuse sous vos yeux ébahis. Repus et satisfait, il trottine ensuite gaiement à vos côtés comme si de rien n'était, léchant encore ses babines tachées de sang."
+          "3": "Avant que vous ayez pu réagir, votre T-Rex se rue sur la carcasse avec un rugissement de satisfaction et l'engloutit d'une seule bouchée. Repu, il trottine ensuite gaiement à vos côtés, en se léchant les babines."
         }
       }
     },
-    "text": "Tandis que vous traversez le Croisement des Destins, une vision inattendue vous arrête : le corps encore tiède d'un renard gît à demi dissimulé par des herbes. Aucune trace de lutte évidente, pas de flèches, pas de morsure sanglante nette. La chair exhale une odeur métallique mêlée à un relent plus âcre. Quelques mouches tournent déjà, prête à coloniser la dépouille."
+    "text": "Au Croisement des Destins, vous vous arrêtez net : le corps encore tiède d'un renard gît à demi caché par les herbes. Pas de trace de lutte, ni flèche ni morsure. La chair exhale une odeur métallique, mêlée d'un relent plus âcre, et quelques mouches tournent déjà."
   },
   "2": {
     "possibilities": {
@@ -705,37 +705,37 @@
     "possibilities": {
       "alert": {
         "outcomes": {
-          "0": "Votre cri d'alarme résonne entre les façades de Claire de Ville ! Deux gardes en patrouille accourent immédiatement et reconnaissent avec stupeur leur collègue corrompu. La victime, soulagée par votre intervention courageuse, vous remet discrètement un objet précieux qu'elle gardait sur elle, murmurant des remerciements émus tandis que le garde véreux est emmené vers les geôles de la ville.",
-          "1": "Votre appel à l'aide attire l'attention de deux gardes de patrouille... qui se révèlent être les complices du voleur ! Face à votre insistance et votre refus de détourner le regard de cette injustice, ils n'ont d'autre choix que de vous faire taire. Le combat est brutal et inégal : malgré votre vaillance, vous êtes sévèrement blessé. Lorsque vous reprenez vos esprits, étourdi et meurtri, la rue est déserte. Seules quelques taches de sang témoignent du drame qui s'est déroulé ici.",
-          "2": "Votre voix puissante et votre prestance attirent immédiatement l'attention ! Le garde corrompu, reconnaissant en vous un adversaire de taille, lâche sa victime et disparaît dans les ruelles avant l'arrivée de ses collègues. La femme, tremblante mais reconnaissante, vous offre quelques pièces en guise de remerciement.",
-          "3": "Votre réputation de héros précède votre cri ! Les gardes honnêtes accourent avec zèle et appréhendent leur collègue indigne. Le capitaine de la garde, impressionné par votre sens de la justice, vous remet personnellement une récompense substantielle et un objet d'équipement de qualité.",
-          "4": "Malheureusement, votre faible prestance et votre voix incertaine n'attirent pas l'attention des autorités. Le garde corrompu vous lance un regard menaçant qui vous glace le sang, et vous vous éloignez précipitamment, honteux de votre lâcheté."
+          "0": "Vous criez à pleins poumons. Deux gardes en patrouille accourent et reconnaissent leur collègue avec stupeur. Pendant qu'on l'emmène vers les geôles, la femme vous glisse un objet qu'elle gardait sur elle, en murmurant des remerciements.",
+          "1": "Deux gardes en patrouille accourent à vos cris. Ce sont les complices du voleur. Ils vous font taire à coups de poing et de botte. Quand vous reprenez vos esprits, étourdi et meurtri, la ruelle est déserte.",
+          "2": "Vous appelez la garde d'une voix qui porte. Le garde corrompu vous jauge, lâche sa victime et disparaît dans les ruelles avant l'arrivée de ses collègues. Tremblante, la femme vous offre quelques pièces en remerciement.",
+          "3": "Des gardes accourent à votre appel et arrêtent leur collègue sans discuter : on sait ici que votre parole compte. Le capitaine de la garde vient vous remettre en personne une récompense et une pièce d'équipement de qualité.",
+          "4": "Vous appelez à l'aide d'une voix mal assurée, et personne ne vient. Le garde corrompu vous lance un regard qui vous glace le sang. Vous vous éloignez en hâte, honteux de votre lâcheté."
         },
         "text": "Alerter la garde sur les agissements de ce renégat."
       },
       "intimidate": {
         "outcomes": {
-          "0": "Votre seule présence imposante et votre main posée sur la garde de votre arme suffisent à faire comprendre vos intentions. Le garde corrompu, évaluant rapidement la situation, lâche sa victime et s'enfuit dans les ruelles sombres de Claire de Ville. La femme, encore tremblante, vous remercie chaleureusement pour votre intervention.",
-          "1": "Votre aura menaçante et votre sinistre réputation font pâlir le garde véreux ! Il abandonne immédiatement sa victime et détale comme un lapin. La femme vous regarde avec un mélange de gratitude et de crainte, avant de s'éloigner rapidement elle aussi, vous laissant seul au milieu de la ruelle.",
-          "2": "Votre tentative d'intimidation échoue lamentablement face au garde aguerri. Il éclate de rire devant votre posture peu convaincante et vous menace de son autorité. Humilié, vous battez en retraite sous ses moqueries.",
-          "3": "Votre imposant familier surgit à vos côtés avec un grondement menaçant ! Le garde corrompu, terrorisé par cette démonstration de force, lâche sa victime et s'enfuit en trébuchant. La femme vous offre quelques pièces en remerciement.",
-          "4": "Votre intervention musclée attire l'attention d'autres gardes qui, malheureusement, prennent le parti de leur collègue. Vous devez fuir précipitamment pour éviter l'arrestation, laissant la pauvre femme à son triste sort."
+          "0": "Vous vous approchez, la main sur la garde de votre arme. Le garde corrompu évalue la situation, lâche sa victime et file dans les ruelles. Encore tremblante, la femme vous remercie avec chaleur.",
+          "1": "Le garde véreux vous reconnaît et pâlit. Il abandonne sa victime et détale comme un lapin. La femme vous regarde avec un mélange de gratitude et de crainte, puis s'éloigne en hâte elle aussi.",
+          "2": "Vous bombez le torse, et le garde éclate de rire. Il vous rappelle qui porte l'uniforme, ici. Humilié, vous battez en retraite sous ses moqueries.",
+          "3": "Dans un grondement, votre familier vient se placer à vos côtés. Terrorisé, le garde corrompu lâche sa victime et s'enfuit en trébuchant. La femme vous offre quelques pièces en remerciement.",
+          "4": "Vous empoignez le garde, ce qui attire d'autres hommes en uniforme. Ils prennent le parti de leur collègue. Vous devez fuir pour éviter l'arrestation, en laissant la pauvre femme à son sort."
         },
         "text": "Intimider le garde pour qu'il cesse ses méfaits."
       },
       "end": {
         "outcomes": {
-          "0": "Vous demeurez figé, observant la scène avec une fascination morbide. Faut-il intervenir ? Appeler à l'aide ? Votre indécision vous paralyse jusqu'à ce que le garde, ayant achevé son méfait, remarque votre présence. Il vous fixe d'un regard menaçant avant de disparaître dans les ruelles. Vous reprenez finalement votre route, troublé par votre propre passivité.",
-          "1": "Tétanisé par cette démonstration flagrante de corruption au cœur même de Claire de Ville, vous restez bouche bée pendant de longues minutes. Lorsque le garde finit par vous remarquer, son regard noir vous glace le sang. Vous vous hâtez de dégager, le cœur battant, ayant perdu un temps précieux dans cette observation stérile.",
-          "2": "Votre familier observe également la scène avec curiosité, mais contrairement à vous, il agit ! Il bondit vers le garde en aboyant/sifflant/criant, créant une diversion qui permet à la femme de s'échapper. Le garde, surpris, s'enfuit également. Vous récupérez votre compagnon et vous éloignez."
+          "0": "Vous restez figé. Faut-il intervenir ? Appeler à l'aide ? Le garde achève son méfait, remarque votre présence, vous fixe d'un regard menaçant, puis disparaît dans les ruelles. Vous vous éloignez enfin, troublé par votre propre passivité.",
+          "1": "Vous restez bouche bée devant tant d'aplomb, en plein Claire de Ville. Quand le garde finit par vous remarquer, son regard noir vous glace le sang. Vous filez, le cœur battant, sans avoir rien fait.",
+          "2": "Contrairement à vous, votre familier agit : il bondit vers le garde à grand bruit, et la femme en profite pour s'échapper. Surpris, le garde s'enfuit à son tour. Vous récupérez votre compagnon et vous éloignez."
         }
       },
       "skip": {
         "outcomes": {
           "0": "Vous détournez délibérément le regard de cette scène déplaisante et vous éloignez d'un pas pressé. Après tout, ce ne sont pas vos affaires, et Claire de Ville a assez de problèmes sans que vous vous en mêliez.",
-          "1": "Alors que vous passez votre chemin sans un regard, votre pied heurte une pierre mal placée ! Vous vous étalez de tout votre long sur les pavés inégaux de Claire de Ville, sous les regards moqueurs des passants. Votre chute attire l'attention sur la scène du vol, et le garde corrompu s'enfuit précipitamment.",
-          "2": "Votre indifférence face à l'injustice ne passe pas inaperçue. Plusieurs citoyens vous observent avec mépris tandis que vous vous éloignez sans intervenir. Votre réputation en souffre légèrement.",
-          "3": "Vous passez votre chemin, mais votre compagnon animal semble troublé par la scène. Il tire sur sa laisse ou pousse des gémissements plaintifs, vous retardant légèrement dans votre progression.",
+          "1": "Vous passez sans un regard, et votre pied heurte un pavé mal scellé. Vous vous étalez de tout votre long, sous les rires des passants. Tout le monde se retourne vers la ruelle, et le garde corrompu préfère s'éclipser.",
+          "2": "Plusieurs habitants vous regardent avec mépris tandis que vous vous éloignez sans intervenir. On se souviendra de votre indifférence.",
+          "3": "Vous passez votre chemin, mais votre compagnon, troublé par la scène, traîne en arrière et gémit. Il vous faut un moment pour le convaincre de vous suivre.",
           "4": "Absorbé par vos propres pensées, vous ne remarquez même pas vraiment la scène et continuez naturellement votre route à travers les rues de Claire de Ville."
         },
         "text": "Poursuivre votre route sans vous impliquer."
@@ -743,26 +743,26 @@
       "surpriseAttack": {
         "outcomes": {
           "0": "Profitant de l'effet de surprise, vous assénez un coup précis qui met le garde hors d'état de nuire ! Alors qu'il s'effondre, un objet de valeur tombe de sa ceinture : le produit de ses rapines précédentes. La femme vous remercie avec effusion avant de s'évanouir dans la foule.",
-          "1": "Au dernier instant, le garde perçoit votre mouvement ! Il pivote avec une rapidité surprenante et dégaine son arme. Le combat est féroce et brutal : ses coups disciplinés trouvent vos défenses trop faibles. Vous vous effondrez, grièvement blessé, tandis que votre adversaire s'enfuit en jurant. La femme a également disparu dans la confusion.",
-          "2": "Votre attaque permet à la femme de s'échapper, mais le garde esquive habilement et riposte ! Le duel qui s'ensuit dans les rues de Claire de Ville attire l'attention. Finalement, le garde corrompu prend la fuite. Vous retrouvez la femme un peu plus loin : reconnaissante mais pauvre, elle ne peut vous offrir que quelques maigres pièces.",
-          "3": "Votre rapidité fulgurante ne lui laisse aucune chance ! En un éclair, le garde est au sol et la femme libérée. Impressionnée par votre prouesse martiale, elle vous révèle être une marchande déguisée et vous offre un objet de grande valeur en guise de gratitude.",
-          "4": "Votre attaque vicieuse et brutale met rapidement le garde à terre ! Alors qu'il gémit de douleur, vous fouillez sans vergogne ses poches et récupérez le butin de ses méfaits. La femme, choquée par votre violence excessive, s'enfuit elle aussi, vous laissant avec votre conscience et vos gains mal acquis.",
-          "5": "Malheureusement, vous manquez cruellement d'expérience au combat ! Votre attaque mal coordonnée est facilement contrée. Le garde vous inflige une correction humiliante sous les yeux de témoins avant de s'enfuir avec son butin.",
-          "6": "Votre familier bondit aux côtés de votre attaque ! Ensemble, vous maîtrisez rapidement le garde sans lui causer de blessures graves. Les autres gardes arrivent et, reconnaissant votre légitimité, vous remercient pour avoir démasqué ce renégat. Vous recevez une belle récompense."
+          "1": "Au dernier instant, le garde perçoit votre mouvement, pivote et dégaine. Ses coups sont précis, et votre protection trop légère. Vous vous effondrez, grièvement blessé, tandis qu'il s'enfuit en jurant. La femme a disparu dans la confusion.",
+          "2": "La femme profite de votre attaque pour s'échapper, mais le garde esquive et riposte. Le duel attire du monde, et il finit par prendre la fuite. Vous retrouvez la femme un peu plus loin : elle n'a que quelques maigres pièces à vous offrir.",
+          "3": "Le garde est au sol avant d'avoir compris ce qui lui arrivait. La femme, libérée, vous avoue qu'elle est une marchande déguisée, et vous offre un objet de grande valeur en remerciement.",
+          "4": "Vous frappez le garde par derrière, plus fort que nécessaire. Pendant qu'il gémit à terre, vous lui faites les poches et empochez le butin de ses méfaits. Choquée par votre violence, la femme s'enfuit sans demander son reste.",
+          "5": "Vous manquez d'expérience au combat, et cela se voit : le garde pare votre attaque sans effort. Il vous inflige une correction humiliante devant témoins, puis s'enfuit avec son butin.",
+          "6": "D'un bond, votre familier se joint à votre attaque. À vous deux, vous maîtrisez le garde sans le blesser gravement. Ses collègues arrivent, vous écoutent, et vous remercient d'avoir démasqué ce renégat par une belle récompense."
         },
         "text": "Attaquer le garde par surprise pour sauver la victime."
       },
       "negotiateBribe": {
         "outcomes": {
-          "0": "Vous approchez discrètement et glissez quelques pièces au garde en murmurant que vous souhaitez qu'il la laisse partir. Le corrompu, reconnaissant un confrère dans la malveillance, empoche l'argent avec un sourire entendu et libère la femme. Elle vous lance un regard reconnaissant mêlé de dégoût avant de disparaître.",
-          "1": "Votre réputation de personne honorable vous précède ! Lorsque vous tentez de corrompre le garde, celui-ci éclate de rire en s'étonnant que ce soit vous qui lui offriez un pot-de-vin. Il libère la femme de lui-même, amusé par votre tentative maladroite de négociation.",
+          "0": "Vous glissez quelques pièces au garde en lui murmurant de la laisser partir. Il empoche l'argent avec un sourire entendu, comme entre gens du même monde, et libère la femme. Elle vous lance un regard où la reconnaissance se mêle au dégoût.",
+          "1": "Vous tendez quelques pièces au garde, qui vous reconnaît et éclate de rire : vous, offrir un pot-de-vin ? Amusé par votre maladresse, il libère la femme de lui-même.",
           "2": "Le garde accepte votre argent... puis exige davantage ! Coincé dans ce chantage, vous devez payer une somme exorbitante pour libérer la pauvre femme. Vous vous éloignez la bourse vide mais la conscience légèrement apaisée.",
-          "3": "Votre offre de corruption attire l'attention d'autres gardes honnêtes ! Réalisant votre erreur, vous devez fuir précipitamment, laissant votre argent derrière vous dans votre fuite chaotique."
+          "3": "D'autres gardes, honnêtes ceux-là, vous voient tendre l'argent. Comprenant votre erreur, vous prenez la fuite, en laissant vos pièces derrière vous."
         },
         "text": "Payer le garde pour qu'il libère sa victime."
       }
     },
-    "text": "Dans une ruelle étroite de Claire de Ville, à l'écart de l'agitation du grand marché, une scène troublante attire votre attention : un garde de la cité, reconnaissable à son tabard aux armes de la ville, a acculé une femme terrorisée contre un mur de pierre. Ses mains tremblantes tiennent maladroitement sa bourse, tentant vainement de la soustraire à l'emprise du garde qui use de son autorité pour la dépouiller. Il gronde qu'il s'agit d'une taxe municipale impayée, d'une voix qui ne trompe personne. Les quelques passants qui aperçoivent la scène détournent prudemment le regard : dénoncer un garde, même corrompu, peut s'avérer dangereux dans cette ville marchande où l'ordre règne en maître..."
+    "text": "Dans une ruelle de Claire de Ville, à l'écart du grand marché, un garde aux armes de la cité a acculé une femme contre un mur. Il lui arrache sa bourse en parlant de taxe impayée, d'une voix qui ne trompe personne. Les passants détournent le regard."
   },
   "21": {
     "possibilities": {
