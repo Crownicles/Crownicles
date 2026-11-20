@@ -44,7 +44,7 @@
           "1": "Ensemble, vous remontez une prise comme le vieux pêcheur n'en avait pas vu depuis longtemps. Ravi, il vous offre un objet qu'il gardait depuis des années en guise de porte-bonheur.",
           "2": "Grâce à vous, le pêcheur sort de l'eau un poisson de belle taille. Reconnaissant, il vous donne quelques pièces et vous signale les passages les plus dangereux de la rivière.",
           "3": "Le poisson tire plus fort que vous deux réunis. Vous glissez sur les rochers humides et tombez dans les rapides. Le pêcheur vous repêche de justesse, sonné et trempé jusqu'aux os.",
-          "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette 'prise' et vous laisse repartir en vous remerciant de vos efforts."
+          "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette drôle de prise et vous laisse repartir en vous remerciant de vos efforts."
         },
         "text": "Prêter main-forte au pêcheur en difficulté."
       },
@@ -61,7 +61,7 @@
       "push": {
         "outcomes": {
           "0": "Vous poussez le pêcheur dans les rapides, et vous le regrettez aussitôt. Vous plongez, luttez contre le courant et le ramenez sur la berge. Choqué mais vivant, le vieil homme accepte vos excuses et quelques pièces de dédommagement.",
-          "1": "Le pêcheur bascule dans un remous. Vous sautez pour le rattraper, et le courant vous emporte tous les deux jusqu'à un banc de sable, trempés et meurtris. Furieux, il exige une forte compensation pour ce 'petit jeu'.",
+          "1": "Le pêcheur bascule dans un remous. Vous sautez pour le rattraper, et le courant vous emporte tous les deux jusqu'à un banc de sable, trempés et meurtris. Furieux, il exige une forte compensation pour cette mauvaise plaisanterie.",
           "2": "Le pêcheur tombe à l'eau en lâchant tout son matériel. Vous le repêchez, mais sa canne est partie avec le courant, et votre dédommagement ne le console pas. Un peu plus loin, vous retrouvez un de ses objets échoué sur la berge, et vous le gardez.",
           "3": "Le pêcheur perd l'équilibre et s'agrippe à vous. Vous basculez ensemble dans la rivière, qui vous traîne sur quelques mètres avant de vous laisser regagner la rive, blessés tous les deux.",
           "4": "Le pêcheur s'écarte au dernier moment, et c'est vous que votre élan envoie dans les eaux glacées de la Rivière Vacarme. Le vieil homme vous aide à en sortir, trempé, frigorifié et humilié.",
@@ -133,7 +133,7 @@
         }
       }
     },
-    "text": "Aux abords du Bois Hurlant, une femme encapuchonnée sort de l'ombre et vous aborde, le regard inquiet. « N'entrez pas par le sentier principal, souffle-t-elle. Ces bois grouillent de coupe-jarrets. Je connais un passage par l'ouest, bien plus sûr. »"
+    "text": "Aux abords du Bois Hurlant, une femme encapuchonnée sort de l'ombre et vous aborde, le regard inquiet. Elle vous déconseille le sentier principal, infesté de coupe-jarrets, et vous propose un passage par l'ouest, qu'elle assure bien plus sûr."
   },
   "12": {
     "possibilities": {
@@ -205,15 +205,15 @@
       "visitInn": {
         "outcomes": {
           "0": "L'aubergiste vous reconnaît : votre nom est de ceux qu'on accueille volontiers. Il vous offre sa meilleure chambre et un repas copieux. Au matin, toute votre fatigue a disparu.",
-          "1": "L'aubergiste de 'La Halte Dorée' vous accueille chaleureusement. Vous négociez un prix raisonnable pour une chambre confortable et profitez d'une nuit réparatrice bien méritée.",
-          "2": "L'aubergiste vous reconnaît et hésite, nerveux. Il finit par vous proposer une chambre, à un prix exorbitant : votre présence, dit-il, risque de faire fuir ses autres clients.",
+          "1": "L'aubergiste de la Halte Dorée vous accueille chaleureusement. Vous négociez un prix raisonnable pour une chambre confortable et profitez d'une nuit réparatrice bien méritée.",
+          "2": "L'aubergiste vous reconnaît et hésite, nerveux. Il finit par vous proposer une chambre à un prix exorbitant, en prétextant que votre présence risque de faire fuir ses autres clients.",
           "3": "L'auberge affiche complet : une caravane de marchands a pris tous les lits avant vous. Déçu, vous devez chercher un autre endroit où passer la nuit.",
           "4": "L'aubergiste voit à votre allure que vous avez de la route derrière vous. Contre une modeste contribution, il vous confie ce qu'il sait des chemins des environs.",
           "5": "L'établissement semble avoir connu des jours meilleurs. L'aubergiste, désabusé, vous propose une chambre basique à prix réduit, s'excusant pour le manque de confort.",
           "6": "L'aubergiste, grand amoureux des animaux, fond devant votre compagnon à quatre pattes. Il vous offre le gîte et le couvert à tous les deux.",
           "7": "Vous entrez à la Halte Dorée, et votre T-Rex vous suit en bon compagnon. C'est la panique dans toute l'auberge. Croyant à une attaque, l'aubergiste vous apporte la caisse et vous supplie de ressortir."
         },
-        "text": "Chercher refuge à l'auberge 'La Halte Dorée'."
+        "text": "Chercher refuge à l'auberge La Halte Dorée."
       },
       "exploreMarket": {
         "outcomes": {
@@ -239,7 +239,7 @@
           "4": "Les conversations s'arrêtent à votre approche. Personne n'accepte de vous adresser la parole, et quelqu'un file prévenir les gardes.",
           "5": "Un informateur louche vous aborde dans une ruelle. Il prétend détenir des renseignements précieux, et vous les fait payer au prix fort.",
           "6": "Une veuve âgée, touchée que vous preniez le temps de l'écouter, vous raconte l'histoire tragique du Bois Hurlant et vous met en garde contre ses dangers.",
-          "7": "Un homme encapuchonné vous tire dans une ruelle : il a, dit-il, des informations pour quelqu'un de votre espèce. Vous flairez l'arnaque et le livrez aux gardes. L'homme était recherché, et ils vous remercient, non sans vous regarder de travers."
+          "7": "Un homme encapuchonné vous tire dans une ruelle et prétend détenir des informations pour quelqu'un de votre espèce. Vous flairez l'arnaque et le livrez aux gardes. L'homme était recherché, et ils vous remercient, non sans vous regarder de travers."
         },
         "text": "Chercher des informations auprès des habitants."
       },
@@ -252,7 +252,7 @@
           "4": "Les gardes vous regardent avec suspicion : votre nom leur dit quelque chose. Ils vous conseillent fermement de ne pas vous mêler de leurs affaires.",
           "5": "Les gardes reconnaissent votre visage sur un avis de recherche et tentent de vous arrêter. S'ensuit une course-poursuite dans les rues de Claire de Ville, que vous gagnez haut la main.",
           "6": "Les gardes reconnaissent votre visage sur un avis de recherche et se lancent à vos trousses. Une dague vous entaille le dos, et la douleur vous donne des ailes : vous finissez par les semer, hagard.",
-          "7": "Les gardes se méfient de vous, mais l'un d'eux, pris de pitié, vous laisse une chance de vous racheter. Vous travaillez à ses côtés et, malgré vos maladresses, vous lui rendez service. Sa patience, dit-il, lui vient des leçons de Sir Rowan."
+          "7": "Les gardes se méfient de vous, mais l'un d'eux, pris de pitié, vous laisse une chance de vous racheter. Vous travaillez à ses côtés et, malgré vos maladresses, vous lui rendez service. En chemin, il vous confie qu'il doit sa patience aux leçons de Sir Rowan."
         },
         "text": "Proposer votre aide aux gardes."
       },
@@ -334,7 +334,7 @@
       "trade": {
         "outcomes": {
           "0": "Les marchands vous connaissent de réputation et vous accueillent avec chaleur. Ils vous proposent leurs meilleures marchandises à un prix honnête, et vous ressortez satisfait de votre achat.",
-          "1": "Les marchands échangent un regard, puis vous proposent à voix basse des marchandises 'tombées du chariot', à prix bradé. Vous ressortez avec un objet d'origine douteuse, et vous ne posez pas de questions.",
+          "1": "Les marchands échangent un regard, puis vous proposent à voix basse des marchandises tombées d'on ne sait quel chariot, à prix bradé. Vous ressortez avec un objet d'origine douteuse, et vous ne posez pas de questions.",
           "2": "Les marchands vous reconnaissent et menacent d'appeler les gardes : ils ne veulent pas d'ennuis avec les autorités. Vous n'achetez leur silence qu'au prix fort, et votre fierté en souffre autant que votre bourse.",
           "3": "Les marchands savent à qui ils ont affaire et sortent de l'arrière-boutique leurs plus belles pièces. Après une présentation passionnée, ils vous en cèdent une à un prix raisonnable.",
           "4": "Les marchands sourient de vous voir marchander si mal, et avec tant de sincérité. Amusés, ils vous cèdent l'objet que vous convoitiez pour une somme modique. Vous ressortez ravi de cette bonne affaire.",
@@ -561,8 +561,8 @@
       },
       "investigate": {
         "outcomes": {
-          "0": "Vous relevez marques de craie, numéros de travées, comptes griffonnés à la hâte, et entre deux notes, un nom revient : baron Almerac. À côté, la mention d'une « coupe de deniers » et d'intérêts impayés : l'argent se serait tari avant la pierre.",
-          "1": "Dans une niche, vous trouvez un billet froissé et déchiré, dont vous déchiffrez quelques mots : « Fièvre des marais - que Dieu nous garde ». Le manque d'argent n'est peut-être pas la seule épreuve qui a eu raison de ce chantier.",
+          "0": "Vous relevez marques de craie, numéros de travées, comptes griffonnés à la hâte, et entre deux notes, un nom revient : baron Almerac. À côté, il est question de deniers coupés et d'intérêts impayés : l'argent se serait tari avant la pierre.",
+          "1": "Dans une niche, vous trouvez un billet froissé et déchiré. Vous y déchiffrez quelques mots sur une fièvre des marais, et une prière griffonnée à la hâte. Le manque d'argent n'est peut-être pas la seule épreuve qui a eu raison de ce chantier.",
           "2": "Vous épluchez les indices jusqu'à l'égarement. Les pistes se contredisent, les marques effacées ne livrent rien. Vous perdez un temps précieux sans rien apprendre sur l'histoire de ces lieux."
         },
         "text": "Enquêter sur les raisons de l'abandon."
@@ -725,7 +725,7 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous restez figé. Faut-il intervenir ? Appeler à l'aide ? Le garde achève son méfait, remarque votre présence, vous fixe d'un regard menaçant, puis disparaît dans les ruelles. Vous vous éloignez enfin, troublé par votre propre passivité.",
+          "0": "Vous restez figé, sans savoir s'il faut intervenir ou appeler à l'aide. Le garde achève son méfait, remarque votre présence, vous fixe d'un regard menaçant, puis disparaît dans les ruelles. Vous vous éloignez enfin, troublé par votre propre passivité.",
           "1": "Vous restez bouche bée devant tant d'aplomb, en plein Claire de Ville. Quand le garde finit par vous remarquer, son regard noir vous glace le sang. Vous filez, le cœur battant, sans avoir rien fait.",
           "2": "Contrairement à vous, votre familier agit : il bondit vers le garde à grand bruit, et la femme en profite pour s'échapper. Surpris, le garde s'enfuit à son tour. Vous récupérez votre compagnon et vous éloignez."
         }
@@ -755,7 +755,7 @@
       "negotiateBribe": {
         "outcomes": {
           "0": "Vous glissez quelques pièces au garde en lui murmurant de la laisser partir. Il empoche l'argent avec un sourire entendu, comme entre gens du même monde, et libère la femme. Elle vous lance un regard où la reconnaissance se mêle au dégoût.",
-          "1": "Vous tendez quelques pièces au garde, qui vous reconnaît et éclate de rire : vous, offrir un pot-de-vin ? Amusé par votre maladresse, il libère la femme de lui-même.",
+          "1": "Vous tendez quelques pièces au garde, qui vous reconnaît et éclate de rire : il ne s'attendait pas à recevoir un pot-de-vin de vous. Amusé par votre maladresse, il libère la femme de lui-même.",
           "2": "Le garde accepte votre argent... puis exige davantage ! Coincé dans ce chantage, vous devez payer une somme exorbitante pour libérer la pauvre femme. Vous vous éloignez la bourse vide mais la conscience légèrement apaisée.",
           "3": "D'autres gardes, honnêtes ceux-là, vous voient tendre l'argent. Comprenant votre erreur, vous prenez la fuite, en laissant vos pièces derrière vous."
         },
