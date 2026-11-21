@@ -196,6 +196,7 @@
     "recalledTitle": "{{pseudo}}un recordatorio familiar",
     "recalled_male": "Al oír tu llamada, {{petDisplay}} abandona su búsqueda y vuelve hacia ti, con la cola baja y los ojos llenos de reproche. No trae nada de su viaje interrumpido. Puedes ver la decepción en sus ojos: estará resentido contigo durante un tiempo.",
     "recalled_female": "Al oír tu llamada, {{petDisplay}} abandona su búsqueda y vuelve hacia ti, con la cola baja y los ojos llenos de reproche. No trae nada de su viaje interrumpido. Puedes ver la decepción en sus ojos: estará resentida contigo durante un tiempo.",
+    "loveLost": "\n\n{emote:expedition.love} Votre familier a perdu **{{loveLost}}** points d'amour.",
     "finishedTitle": "{{pseudo}}¡La expedición ha terminado!",
     "finishedDescription": {
       "talisman": {
@@ -903,6 +904,7 @@
       "shopEmptyDescription": "No hay servicios que ofrecer por el momento.",
       "equipmentChangedTitle": "{{pseudo}}, ¡el equipamiento ha cambiado!",
       "equipmentChangedDescription": "El equipo seleccionado ya no es el mismo en esa posición del inventario: se ha desplazado desde que se abrió el menú. No se ha gastado nada y el menú se ha actualizado con tu inventario actual.",
+      "offerChanged": "Cette offre n'est plus valable : la situation a changé depuis l'ouverture du menu. Rien n'a été dépensé.",
       "exitInn": "Fuera de peligro",
       "reactions": {
         "exit": {
@@ -2811,7 +2813,12 @@
     "swapSection": "{emote:equipCommand.swap} **swap:**",
     "noItems": "¡No tienes que manejar ningún equipo!",
     "closeTitle": "{{pseudo}}cierre del equipo",
-    "closeDescription": "Ha cerrado el menú de equipamiento."
+    "closeDescription": "Ha cerrado el menú de equipamiento.",
+    "errors": {
+      "invalid": "Cette action n'est plus possible : votre équipement a changé entre-temps.",
+      "noItem": "Aucun objet n'est équipé dans cette catégorie, il n'y a rien à ranger.",
+      "reserveFull": "Votre réserve est pleine : libérez de la place avant d'y ranger cet objet."
+    }
   },
   "drink": {
     "errors": {
