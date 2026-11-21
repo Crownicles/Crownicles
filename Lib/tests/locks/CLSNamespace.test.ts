@@ -1,7 +1,9 @@
 import {
 	afterEach, describe, expect, it, vi
 } from "vitest";
-import type { Namespace } from "cls-hooked";
+import {
+	getNamespace, Namespace
+} from "cls-hooked";
 import {
 	_resetUseCLSForTests,
 	assertUnderLock,
@@ -102,7 +104,7 @@ describe("getCrowniclesNamespace", () => {
 	it("returns the namespace registered in cls-hooked under the Crownicles name", () => {
 		const namespace = getCrowniclesNamespace();
 
-		expect(namespace.name).toBe(CROWNICLES_CLS_NAMESPACE);
+		expect(getNamespace(CROWNICLES_CLS_NAMESPACE)).toBe(namespace);
 		expect(getCrowniclesNamespace()).toBe(namespace);
 	});
 });

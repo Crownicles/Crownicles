@@ -108,3 +108,53 @@ describe("per level reward tables cover every reachable building level", () => {
 		expect(GuildDomainConstants.PANTRY_AUTO_FILL[0].every(rate => rate === 0)).toBe(true);
 	});
 });
+
+describe("GuildDomainConstants treasury deposit penalty", () => {
+	it("withholds a rounded share of the deposit", () => {
+		expect(GuildDomainConstants.computeTreasuryPenalty(1000)).toBe(50);
+		expect(GuildDomainConstants.computeTreasuryPenalty(1010)).toBe(51);
+		expect(GuildDomainConstants.computeTreasuryGain(1010)).toBe(959);
+	});
+
+	it("caps the withheld amount", () => {
+		const max = GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX;
+
+		expect(GuildDomainConstants.computeTreasuryPenalty(1_000_000)).toBe(max);
+		expect(GuildDomainConstants.computeTreasuryGain(1_000_000)).toBe(1_000_000 - max);
+	});
+});
+
+describe("GuildDomainConstants per level tables", () => {
+	it("reads the value of the building level", () => {
+		expect(GuildDomainConstants.getShelterSlots(2)).toBe(GuildDomainConstants.SHELTER_SLOTS[2]);
+		expect(GuildDomainConstants.getFoodCaps(2)).toBe(GuildDomainConstants.PANTRY_FOOD_CAPS[2]);
+		expect(GuildDomainConstants.getAutoFillRates(2)).toBe(GuildDomainConstants.PANTRY_AUTO_FILL[2]);
+		expect(GuildDomainConstants.getTrainingLovePerDay(2)).toBe(GuildDomainConstants.TRAINING_LOVE_PER_DAY[2]);
+	});
+
+	it("falls back on the level 0 values, or no love, for an unknown level", () => {
+		expect(GuildDomainConstants.getShelterSlots(99)).toBe(GuildDomainConstants.SHELTER_SLOTS[0]);
+		expect(GuildDomainConstants.getFoodCaps(99)).toBe(GuildDomainConstants.PANTRY_FOOD_CAPS[0]);
+		expect(GuildDomainConstants.getAutoFillRates(99)).toBe(GuildDomainConstants.PANTRY_AUTO_FILL[0]);
+		expect(GuildDomainConstants.getTrainingLovePerDay(99)).toBe(0);
+	});
+});
+
+describe("GuildDomainConstants building upgrades", () => {
+	it("gives the cost and the guild level of the next building level", () => {
+		const shelterLevels = GuildDomainConstants.BUILDINGS[GuildBuilding.SHELTER].levels;
+
+		expect(GuildDomainConstants.getBuildingUpgradeCost(GuildBuilding.SHELTER, 1)).toBe(shelterLevels[1].cost);
+		expect(GuildDomainConstants.getBuildingRequiredGuildLevel(GuildBuilding.SHELTER, 1)).toBe(shelterLevels[1].guildLevel);
+	});
+
+	it("stops at the maximal level of the building", () => {
+		const maxLevel = GuildDomainConstants.BUILDINGS[GuildBuilding.PANTRY].maxLevel;
+
+		expect(GuildDomainConstants.getBuildingUpgradeCost(GuildBuilding.PANTRY, maxLevel - 1)).not.toBeNull();
+		expect(GuildDomainConstants.getBuildingUpgradeCost(GuildBuilding.PANTRY, maxLevel)).toBeNull();
+		expect(GuildDomainConstants.getBuildingRequiredGuildLevel(GuildBuilding.PANTRY, maxLevel - 1)).not.toBeNull();
+		expect(GuildDomainConstants.getBuildingRequiredGuildLevel(GuildBuilding.PANTRY, maxLevel)).toBeNull();
+	});
+});
+
