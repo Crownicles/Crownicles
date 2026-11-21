@@ -88,7 +88,7 @@
     "possibilities": {
       "followHint": {
         "outcomes": {
-          "0": "L'inconnue disait vrai. Le sentier de l'ouest contourne les repaires de bandits du Bois Hurlant, et vous arrivez en vue de Claire de Ville sans avoir croisé personne.",
+          "0": "L'inconnue disait vrai. Le sentier de l'ouest contourne les repaires de bandits du Bois Hurlant, et vous ressortez du bois sans avoir croisé personne.",
           "1": "Le piège se referme. À peine engagé sur le chemin de l'ouest, vous voyez des brigands surgir des fourrés. Ils vous rossent, vident vos poches et vous laissent pour mort au pied d'un arbre.",
           "2": "Le piège se referme. Des brigands surgissent des fourrés du chemin de l'ouest, vous dévisagent, puis rengainent en ricanant : ils vous ont reconnu, et on ne dépouille pas l'un des siens.",
           "3": "Le piège se referme. Des brigands surgissent des fourrés et vous tombent dessus. Vous tenez un moment, puis une lame vous entaille la cuisse. Vous jetez votre bourse au sol et fuyez en boitant.",
@@ -120,7 +120,7 @@
       },
       "oppositeSide": {
         "outcomes": {
-          "0": "Par méfiance, vous contournez tout le Bois Hurlant par l'est. Le détour vous coûte beaucoup de temps, mais vous arrivez en vue de Claire de Ville sans avoir risqué votre vie.",
+          "0": "Par méfiance, vous contournez tout le Bois Hurlant par l'est. Le détour vous coûte beaucoup de temps, mais vous ne risquez pas votre vie.",
           "1": "En contournant par l'est, vous croisez une patrouille de gardes de Claire de Ville. Ils ont entendu parler de vous en bien : ils vous escortent sans rien demander et partagent leurs rations.",
           "2": "En chemin, vous remarquez les ruines d'un ancien poste de garde que d'autres auraient prises pour un tas de pierres. Sous une dalle, une cache d'équipements anciens est encore intacte."
         },
@@ -194,10 +194,10 @@
         "outcomes": {
           "0": "Le forgeron, un homme robuste aux mains calleuses, vous accueille avec chaleur : on lui a dit du bien de vous. Il vous montre ses plus belles pièces et vous offre un petit objet de sa fabrication en guise de bienvenue.",
           "1": "Le maître-forgeron vous jauge d'un coup d'œil et vous tend ses dernières créations à essayer. Vos remarques lui plaisent : il vous remet l'une de ses pièces, d'artisan à combattant.",
-          "2": "Le forgeron vous toise : il sait qui vous êtes. Malgré votre or sonnant et trébuchant, il refuse de vous vendre quoi que ce soit et vous montre la porte.",
+          "2": "Le forgeron vous toise : il sait qui vous êtes. Malgré votre or sonnant et trébuchant, il refuse de vous vendre la moindre pièce de sa vitrine et vous montre la porte.",
           "3": "Le forgeron a entendu parler de vos méfaits et refuse de vous servir. Vous haussez le ton, il soulève son marteau sans cesser de vous regarder. Vous ressortez de la forge, humilié.",
           "4": "Vous soupesez une épée bien forgée, qui vous échappe des mains et fracasse une vitrine d'exposition. Rouge de colère, le forgeron exige réparation sur-le-champ.",
-          "5": "Un coup d'œil vous suffit : le travail exposé est médiocre. Gêné, le forgeron reconnaît qu'il traverse une mauvaise passe. Vous ressortez de la forge sans rien acheter.",
+          "5": "Un coup d'œil vous suffit : rien dans la vitrine n'égale ce que vous portez déjà. Le forgeron en convient de bonne grâce, et vous ressortez sans rien acheter.",
           "6": "La forge résonne du martèlement de l'enclume, et le forgeron est trop occupé pour vous accorder un regard. Vous patientez un moment, puis ressortez bredouille."
         },
         "text": "Visiter la forge réputée."
@@ -207,7 +207,7 @@
           "0": "L'aubergiste vous reconnaît : votre nom est de ceux qu'on accueille volontiers. Il vous offre sa meilleure chambre et un repas copieux. Au matin, toute votre fatigue a disparu.",
           "1": "L'aubergiste de la Halte des Braves vous accueille chaleureusement. Vous négociez un prix raisonnable pour une chambre confortable et profitez d'une nuit réparatrice bien méritée.",
           "2": "L'aubergiste vous reconnaît et hésite, nerveux. Il finit par vous proposer une chambre à un prix exorbitant, en prétextant que votre présence risque de faire fuir ses autres clients.",
-          "3": "L'auberge affiche complet : une caravane de marchands a pris tous les lits avant vous. Déçu, vous devez chercher un autre endroit où passer la nuit.",
+          "3": "La Halte des Braves affiche complet : une caravane de marchands a pris tous les lits avant vous. Vous patientez une bonne heure dans la salle commune avant qu'une place se libère.",
           "4": "L'aubergiste voit à votre allure que vous avez de la route derrière vous. Contre une modeste contribution, il vous confie ce qu'il sait des chemins des environs.",
           "5": "La Halte des Braves est bondée, comme toujours. Il ne reste qu'un réduit sous les combles, que l'aubergiste vous cède à prix réduit en s'excusant du manque de confort.",
           "6": "L'aubergiste, grand amoureux des animaux, fond devant votre compagnon à quatre pattes. Il vous offre le gîte et le couvert à tous les deux.",
@@ -222,7 +222,7 @@
           "2": "Les marchands vous observent avec méfiance : on leur a parlé de vous. Les prix grimpent dès que vous approchez, et certains refusent même de vous servir.",
           "3": "Un pickpocket novice glisse la main vers votre bourse. Vous lui saisissez le poignet avant qu'il ne l'atteigne, et récupérez au passage quelques pièces volées à d'autres.",
           "4": "Dans la cohue du marché, vous baissez votre garde un instant. Un voleur expérimenté en profite pour vous soulager d'une partie de votre bourse.",
-          "5": "Des brigands qui ont des comptes à régler avec vous vous tombent dessus entre deux étals. Le combat est rude. Vous les repoussez, non sans quelques blessures.",
+          "5": "Des brigands qui ont des comptes à régler avec vous vous tombent dessus entre deux étals. Le temps que la garde accoure, vous les avez repoussés, non sans quelques blessures.",
           "6": "Les trouble-fêtes habituels du marché vous regardent passer et préfèrent s'occuper de quelqu'un d'autre. Vous déambulez tranquillement entre les étals.",
           "7": "En aidant spontanément un marchand âgé à porter ses marchandises, vous gagnez sa reconnaissance. Il partage avec vous quelques pièces et des informations utiles sur la région.",
           "8": "Entre les étals, un mendiant vous demande une pièce. À peine avez-vous sorti votre bourse qu'il vous l'arrache et disparaît dans la foule.",
@@ -233,7 +233,7 @@
       "seekInformation": {
         "outcomes": {
           "0": "Les habitants vous reconnaissent et se pressent autour de vous. Chacun y va de son conseil sur les dangers des routes, et vous quittez la ville mieux informé que quiconque.",
-          "1": "Vous savez quelles questions poser. Les habitants finissent par vous indiquer un passage discret par la montagne, qui évite les brigands du Grand Axe.",
+          "1": "Vous savez quelles questions poser. Les habitants finissent par vous indiquer une route discrète, qui évite les bandits du Bois Hurlant.",
           "2": "Vous prenez le temps d'écouter, et cela paie : un vieil homme vous indique une cache d'objets abandonnée par d'anciens aventuriers.",
           "3": "Les habitants se méfient de vous. Ils vous donnent quelques renseignements sans importance et gardent le reste pour eux.",
           "4": "Les conversations s'arrêtent à votre approche. Personne n'accepte de vous adresser la parole, et quelqu'un file prévenir les gardes.",
@@ -562,7 +562,7 @@
       "investigate": {
         "outcomes": {
           "0": "Vous relevez marques de craie, numéros de travées, comptes griffonnés à la hâte, et entre deux notes, un nom revient : baron Almerac. À côté, il est question de deniers coupés et d'intérêts impayés : l'argent se serait tari avant la pierre.",
-          "1": "Dans une niche, vous trouvez un billet froissé et déchiré. Vous y déchiffrez quelques mots sur une fièvre des marais, et une prière griffonnée à la hâte. Le manque d'argent n'est peut-être pas la seule épreuve qui a eu raison de ce chantier.",
+          "1": "Dans une niche, vous trouvez un billet froissé et déchiré. Vous y déchiffrez quelques mots sur une fièvre arrivée par le port, et une prière griffonnée à la hâte. Le manque d'argent n'est peut-être pas la seule épreuve qui a eu raison de ce chantier.",
           "2": "Vous épluchez les indices jusqu'à l'égarement. Les pistes se contredisent, les marques effacées ne livrent rien. Vous perdez un temps précieux sans rien apprendre sur l'histoire de ces lieux."
         },
         "text": "Enquêter sur les raisons de l'abandon."
@@ -732,7 +732,7 @@
       },
       "skip": {
         "outcomes": {
-          "0": "Vous détournez délibérément le regard de cette scène déplaisante et vous éloignez d'un pas pressé. Après tout, ce ne sont pas vos affaires, et Claire de Ville a assez de problèmes sans que vous vous en mêliez.",
+          "0": "Vous détournez délibérément le regard de cette scène déplaisante et vous éloignez d'un pas pressé. Après tout, ce ne sont pas vos affaires : la garde de Claire de Ville n'a qu'à faire le ménage dans ses rangs.",
           "1": "Vous passez sans un regard, et votre pied heurte un pavé mal scellé. Vous vous étalez de tout votre long, sous les rires des passants. Tout le monde se retourne vers la ruelle, et le garde corrompu préfère s'éclipser.",
           "2": "Plusieurs habitants vous regardent avec mépris tandis que vous vous éloignez sans intervenir. On se souviendra de votre indifférence.",
           "3": "Vous passez votre chemin, mais votre compagnon, troublé par la scène, traîne en arrière et gémit. Il vous faut un moment pour le convaincre de vous suivre.",
