@@ -93,7 +93,7 @@ const WEAPON = {
 	}
 };
 
-function enchanter(): ReactionCollectorCityData["enchanter"] {
+function enchanter(): NonNullable<ReactionCollectorCityData["enchanter"]> {
 	return {
 		enchantableItems: [WEAPON],
 		isInventoryEmpty: false,

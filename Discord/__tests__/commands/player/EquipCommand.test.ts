@@ -21,8 +21,8 @@ import {
 	ItemCategory, ItemConstants, ItemNature
 } from "../../../../Lib/src/constants/ItemConstants";
 import {
-	clickOn, collectorPacket, componentsOf, dispatch, embedsOf, ERROR_COLOR, fakeClick, fakeCommand, fakeUser,
-	lastMessage, mainItem, sentPackets, setupRendering, singleMessage, supportItem
+	clickOn, collectorPacket, componentsOf, dispatch, embedsOf, ERROR_COLOR, fakeClick, FakeCommand, fakeCommand, fakeUser,
+	lastMessage, latestCollector, mainItem, sentPackets, setupRendering, singleMessage, supportItem
 } from "../../mocks/DiscordRenderHarness";
 
 beforeAll(() => {
@@ -74,7 +74,7 @@ function categories(weapon: Partial<EquipCategoryData> = {}): EquipCategoryData[
 	];
 }
 
-async function openEquip(equipCategories = categories()): Promise<ReturnType<typeof fakeCommand>> {
+async function openEquip(equipCategories = categories()): Promise<FakeCommand> {
 	const command = fakeCommand("Hero");
 	await dispatch(command.context, collectorPacket(new ReactionCollectorEquip(equipCategories)));
 	return command;
@@ -132,7 +132,7 @@ describe("equip menu", () => {
 		const { interaction } = await openEquip();
 		await clickOn(interaction.collectors[0], fakeClick(interaction.user, "EQUIP_CAT_0"));
 
-		await clickOn(interaction.collectors.at(-1)!, fakeClick(interaction.user, "EQUIP_ITEM_0_2"));
+		await clickOn(latestCollector(interaction), fakeClick(interaction.user, "EQUIP_ITEM_0_2"));
 
 		const [request] = sentPackets(CommandEquipActionReq);
 		expect(request.packet).toMatchObject({
@@ -161,7 +161,7 @@ describe("equip menu", () => {
 		const { interaction } = await openEquip(categories({ canDeposit: true }));
 		await clickOn(interaction.collectors[0], fakeClick(interaction.user, "EQUIP_CAT_0"));
 
-		await clickOn(interaction.collectors.at(-1)!, fakeClick(interaction.user, "EQUIP_DEPOSIT_0"));
+		await clickOn(latestCollector(interaction), fakeClick(interaction.user, "EQUIP_DEPOSIT_0"));
 
 		expect(sentPackets(CommandEquipActionReq)[0].packet).toMatchObject({
 			action: ItemConstants.EQUIP_ACTIONS.DEPOSIT,
@@ -173,7 +173,7 @@ describe("equip menu", () => {
 		const { interaction } = await openEquip();
 		await clickOn(interaction.collectors[0], fakeClick(interaction.user, "EQUIP_CAT_0"));
 
-		await clickOn(interaction.collectors.at(-1)!, fakeClick(interaction.user, "EQUIP_BACK_CATS"));
+		await clickOn(latestCollector(interaction), fakeClick(interaction.user, "EQUIP_BACK_CATS"));
 
 		expect(componentsOf(lastMessage(interaction)).at(-1)?.custom_id).toBe("EQUIP_CLOSE");
 	});

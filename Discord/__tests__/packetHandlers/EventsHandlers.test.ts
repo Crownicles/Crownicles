@@ -33,6 +33,7 @@ import {
 } from "../../../Lib/src/constants/QuestConstants";
 import { TokensConstants } from "../../../Lib/src/constants/TokensConstants";
 import { PetConstants } from "../../../Lib/src/constants/PetConstants";
+import { PetFood } from "../../../Lib/src/types/PetFood";
 import {
 	answeredClick, dispatch, embedsOf, ERROR_COLOR, fakeCommand, FakeInteraction, RenderedEmbed, RenderedMessage, setupRendering,
 	singleMessage
@@ -294,7 +295,7 @@ describe("guild events", () => {
 
 	it("tells that the guild storage is full", async () => {
 		const { embed } = await postedEvent(makePacket(NoFoodSpaceInGuildPacket, {
-			food: PetConstants.PET_FOOD.COMMON_FOOD, quantity: 4
+			food: PetFood.CANDY, quantity: 4
 		}));
 
 		expect(embed.color).toBe(ERROR_COLOR);
