@@ -196,6 +196,7 @@
     "recalledTitle": "{{pseudo}}, pet recalled",
     "recalled_male": "Hearing your call, {{petDisplay}} abandons his quest and returns to you, tail low and eyes full of reproach. He brings nothing back from his interrupted journey. You can see the disappointment in his eyes - he'll resent you for a while.",
     "recalled_female": "Hearing your call, {{petDisplay}} abandons her quest and returns to you, tail low and eyes full of reproach. She brings nothing back from her interrupted journey. You can see the disappointment in her eyes - she'll resent you for a while.",
+    "loveLost": "\n\n{emote:expedition.love} Votre familier a perdu **{{loveLost}}** points d'amour.",
     "finishedTitle": "{{pseudo}}, expedition is over!",
     "finishedDescription": {
       "talisman": {
@@ -903,6 +904,7 @@
       "shopEmptyDescription": "No services available at the moment.",
       "equipmentChangedTitle": "{{pseudo}}, the equipment has changed!",
       "equipmentChangedDescription": "The selected item is no longer in that inventory slot: it has been moved since the menu was opened. Nothing has been spent, and the menu has been updated to reflect your current inventory.",
+      "offerChanged": "Cette offre n'est plus valable : la situation a changé depuis l'ouverture du menu. Rien n'a été dépensé.",
       "exitInn": "Exit Hostel",
       "reactions": {
         "exit": {
@@ -2811,7 +2813,12 @@
     "swapSection": "{emote:equipCommand.swap} **Exchange :**",
     "noItems": "You have no equipment to manage!",
     "closeTitle": "{{pseudo}}, equipment closed",
-    "closeDescription": "You closed the equipment menu."
+    "closeDescription": "You closed the equipment menu.",
+    "errors": {
+      "invalid": "Cette action n'est plus possible : votre équipement a changé entre-temps.",
+      "noItem": "Aucun objet n'est équipé dans cette catégorie, il n'y a rien à ranger.",
+      "reserveFull": "Votre réserve est pleine : libérez de la place avant d'y ranger cet objet."
+    }
   },
   "drink": {
     "errors": {
