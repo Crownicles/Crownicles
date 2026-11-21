@@ -63,6 +63,7 @@ import {
 	CommandReportGardenPlantRes, CommandReportGardenWaterRes, CommandReportPlantTransferRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { asPlayer } from "../ModelStubs";
 
 const KEYCLOAK_ID = "gardener";
 const NOW = new Date("2026-06-01T12:00:00Z").valueOf();
@@ -91,10 +92,6 @@ function gardenerRow(): GardenerRow {
 		save: vi.fn().mockResolvedValue(undefined),
 		getCurrentCityId: (): string => "city"
 	};
-}
-
-function asPlayer(row: GardenerRow): Player {
-	return row as unknown as Player; // Only the garden fields, the model needs a database
 }
 
 function makeHome(features: Partial<HomeLevel["features"]> = {}): void {

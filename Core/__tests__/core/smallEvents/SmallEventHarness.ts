@@ -11,6 +11,7 @@ import {
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingUtils } from "../../../src/core/utils/BlockingUtils";
 import type { EditValueParameters } from "../../../src/core/database/game/EditValueParameters";
+import { asPlayer } from "../ModelStubs";
 
 /**
  * Shared harness of the small event tests (#5165): a player fixture whose value mutators update its state like the
@@ -91,12 +92,7 @@ export function createTestPlayer(overrides: Partial<Omit<TestPlayer, NumericFiel
 	return player;
 }
 
-/**
- * The fixture stands for the model: the small events only call the members it implements
- */
-export function asPlayer(player: TestPlayer): Player {
-	return player as unknown as Player;
-}
+export { asPlayer };
 
 /**
  * Body of the `vi.mock` factory of `withLockedPlayerAndMissionsSafe`: the critical section receives the caller's player,

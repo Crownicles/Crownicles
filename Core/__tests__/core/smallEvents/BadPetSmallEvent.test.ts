@@ -10,6 +10,8 @@ import { PetDataController } from "../../../src/data/Pet";
 import { PetUtils } from "../../../src/core/utils/PetUtils";
 import { Guild } from "../../../src/core/database/game/models/Guild";
 import { withLockedPlayerAndMissionsSafe } from "../../../src/core/utils/withLockedPlayerAndMissionsSafe";
+import { withLockedPlayerAndMissions } from "../../../src/core/utils/withLockedPlayerAndMissions";
+import { LockedRowNotFoundError } from "../../../../Lib/src/locks/withLockedEntities";
 import { InventorySlots } from "../../../src/core/database/game/models/InventorySlot";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
@@ -24,6 +26,9 @@ import {
 
 vi.mock("../../../src/core/utils/withLockedPlayerAndMissionsSafe", async () => ({
 	withLockedPlayerAndMissionsSafe: vi.fn((await import("./SmallEventHarness")).lockedPlayerPassthrough)
+}));
+vi.mock("../../../src/core/utils/withLockedPlayerAndMissions", () => ({
+	withLockedPlayerAndMissions: vi.fn()
 }));
 
 const BAD_PET = SmallEventConstants.BAD_PET;
@@ -141,6 +146,7 @@ describe("Moltiar, the bad pet small event", () => {
 
 	beforeEach(() => {
 		player = createBadPetPlayer();
+		vi.mocked(withLockedPlayerAndMissions).mockImplementation((_playerId, body) => body(asPlayer(player)) as never);
 		petEntity = mockPetEntity();
 		mockPetModel();
 		vi.spyOn(InventorySlots, "getPlayerActiveObjects").mockResolvedValue({} as never);
@@ -272,19 +278,44 @@ describe("Moltiar, the bad pet small event", () => {
 		expect(petEntity.changeLovePoints).not.toHaveBeenCalled();
 	});
 
-	it("resolves the outcome under the locks of the pet and of the guild, taken with the player ones", async () => {
+	it("resolves the outcome under the lock of the pet, taken with the player ones", async () => {
 		vi.mocked(withLockedPlayerAndMissionsSafe).mockClear();
-		await choose(ACTIONS.WAIT);
-		player.guildId = null;
 		await choose(ACTIONS.WAIT);
 		player.petId = null;
 		await choose(ACTIONS.WAIT);
 
 		expect(vi.mocked(withLockedPlayerAndMissionsSafe).mock.calls.map(([lockedPlayer, context, _body, keys]) => [lockedPlayer, context, keys])).toEqual([
-			[player, "badPet endCallback", [PetEntity.lockKey(7), Guild.lockKey(3)]],
 			[player, "badPet endCallback", [PetEntity.lockKey(7)]],
 			[player, "badPet endCallback", []]
 		]);
+		expect(withLockedPlayerAndMissions).not.toHaveBeenCalled();
+	});
+
+	it("also locks the guild when the chosen action takes its food", async () => {
+		vi.spyOn(Guild, "withLocked").mockResolvedValue(false);
+		await choose(ACTIONS.GIVE_MEAT);
+
+		expect(vi.mocked(withLockedPlayerAndMissions).mock.calls.map(([playerId, _body, keys]) => [playerId, keys])).toEqual([
+			[player.id, [PetEntity.lockKey(7), Guild.lockKey(3)]]
+		]);
+	});
+
+	it("resolves a food action without the food of a guild disbanded during the choice", async () => {
+		vi.mocked(withLockedPlayerAndMissions).mockRejectedValueOnce(new LockedRowNotFoundError("guilds", 3));
+		vi.mocked(withLockedPlayerAndMissionsSafe).mockClear();
+		vi.mocked(withLockedPlayerAndMissionsSafe).mockImplementationOnce((_player, _context, body) => body(asPlayer(Object.assign(createBadPetPlayer(), { guildId: null }))));
+
+		const packet = await choose(ACTIONS.GIVE_MEAT);
+
+		expect(packet.interactionType).toBe(OUTCOMES.GIVE_MEAT_NO_FOOD);
+		expect(vi.mocked(withLockedPlayerAndMissionsSafe).mock.calls.map(([, , , keys]) => keys)).toEqual([[PetEntity.lockKey(7)]]);
+	});
+
+	it("does not hide an unexpected error of the critical section of a food action", async () => {
+		const run = await runSmallEvent(smallEventFuncs, player, { testArgs: [ACTIONS.GIVE_MEAT] });
+		vi.mocked(withLockedPlayerAndMissions).mockRejectedValueOnce(new Error("database down"));
+
+		await expect(react(run, reaction => (reaction.data as ReactionCollectorBadPetReaction).id === ACTIONS.GIVE_MEAT)).rejects.toThrow("database down");
 	});
 
 	it("does not change the love of a pet that is no longer the one of the player once the lock is taken", async () => {

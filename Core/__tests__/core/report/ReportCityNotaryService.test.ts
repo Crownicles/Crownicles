@@ -67,6 +67,7 @@ import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import {
 	asPlayer, CityHandlerPlayer, describePackets, lockedEntitiesOf, makeHandlerPlayer
 } from "./CityHandlerFixture";
+import { makeHome } from "../ModelStubs";
 
 const HOME_CITY_ID = "boug_coton";
 const OTHER_CITY_ID = "ville_forte";
@@ -80,12 +81,6 @@ function getCity(cityId: string): City {
 		throw new Error(`Unknown city ${cityId}`);
 	}
 	return city;
-}
-
-function makeHome(cityId: string): Home {
-	return Object.assign(Object.create(Home.prototype) as Home, {
-		id: 3, ownerId: 1, cityId, level: 1
-	});
 }
 
 function makeApartment(cityId: string, rent: number, ownerId = 1): Apartment {
@@ -111,7 +106,7 @@ function lockRows(lockedPlayer: CityHandlerPlayer, apartment: Apartment | null =
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(OTHER_CITY_ID));
+	vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({ cityId: OTHER_CITY_ID }));
 	vi.mocked(Apartments.getOfPlayerInCity).mockResolvedValue(null);
 	vi.mocked(Apartments.getOfPlayer).mockResolvedValue([]);
 });
@@ -241,7 +236,7 @@ describe("handleApartmentClaimRentReaction", () => {
 	}
 
 	it("credits the accumulated rent without blessing, restarts the rent clock and reports the credited amount", async () => {
-		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(city.id));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({ cityId: city.id }));
 		const player = makeHandlerPlayer(0);
 		const apartment = makeApartment(city.id, 500);
 
@@ -264,7 +259,7 @@ describe("handleApartmentClaimRentReaction", () => {
 	});
 
 	it("credits a rent of exactly the claim minimum", async () => {
-		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(city.id));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({ cityId: city.id }));
 		const player = makeHandlerPlayer(0);
 
 		await claim(player, makeApartment(city.id, HomeConstants.MIN_RENT_TO_CLAIM));
@@ -273,7 +268,7 @@ describe("handleApartmentClaimRentReaction", () => {
 	});
 
 	it("credits nothing below the claim minimum and tells the current rent", async () => {
-		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(city.id));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({ cityId: city.id }));
 		const player = makeHandlerPlayer(0);
 
 		const response = await claim(player, makeApartment(city.id, HomeConstants.MIN_RENT_TO_CLAIM - 1));
@@ -297,7 +292,7 @@ describe("handleApartmentClaimRentReaction", () => {
 	});
 
 	it("credits nothing on the apartment of another player", async () => {
-		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(city.id));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({ cityId: city.id }));
 		const player = makeHandlerPlayer(0);
 
 		const response = await claim(player, makeApartment(city.id, 5_000, player.id + 1));
@@ -307,7 +302,7 @@ describe("handleApartmentClaimRentReaction", () => {
 	});
 
 	it("still credits the rent of an apartment whose city disappeared, without reply", async () => {
-		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome("unknown_city"));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({ cityId: "unknown_city" }));
 		const player = makeHandlerPlayer(0);
 
 		const lowResponse = await claim(player, makeApartment("unknown_city", HomeConstants.MIN_RENT_TO_CLAIM - 1));

@@ -85,6 +85,17 @@ interface PlayerAndHome {
 	cookingSlots: number;
 }
 
+type HomeWithCookingSlots = Pick<PlayerAndHome, "home" | "cookingSlots">;
+
+/**
+ * Player and home read under the lock of a craft
+ */
+interface LockedPlayerAndHome {
+	player: Locked<Player>;
+	home: Locked<Home>;
+	cookingSlots: number;
+}
+
 interface ValidatedPinRecipe {
 	recipe: CookingRecipeData;
 	guild: Guild | null;
@@ -133,21 +144,29 @@ function consumePendingWoodConfirmation(keycloakId: string): PendingWoodConfirma
 	return confirmation;
 }
 
-async function getPlayerAndHome(keycloakId: string): Promise<PlayerAndHome | null> {
-	const player = await Players.getByKeycloakId(keycloakId);
-	if (!player) {
-		return null;
-	}
-	const home = await Homes.getOfPlayer(player.id);
+async function getHomeWithCookingSlots(playerId: number): Promise<HomeWithCookingSlots | null> {
+	const home = await Homes.getOfPlayer(playerId);
 	const cookingSlots = home?.getLevel()?.features.cookingSlots ?? 0;
 	if (!home || cookingSlots <= 0) {
 		return null;
 	}
 	return {
-		player,
 		home,
 		cookingSlots
 	};
+}
+
+async function getPlayerAndHome(keycloakId: string): Promise<PlayerAndHome | null> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	if (!player) {
+		return null;
+	}
+	const homeWithSlots = await getHomeWithCookingSlots(player.id);
+	return homeWithSlots
+		? {
+			player, ...homeWithSlots
+		}
+		: null;
 }
 
 interface CookingMenuSnapshotParams {
@@ -703,8 +722,8 @@ interface CraftErrorInfo {
 }
 
 interface CookingCraftContext {
-	player: Player;
-	home: Home;
+	player: Locked<Player>;
+	home: Locked<Home>;
 	cookingSlots: number;
 	slot: CookingSlotData | undefined;
 	recipe: CookingRecipeData | undefined;
@@ -712,8 +731,8 @@ interface CookingCraftContext {
 }
 
 interface ReadyCookingCraftContext {
-	player: Player;
-	home: Home;
+	player: Locked<Player>;
+	home: Locked<Home>;
 	cookingSlots: number;
 	slotRecipe: NonNullable<CookingSlotData["recipe"]>;
 	recipe: CookingRecipeData;
@@ -774,7 +793,7 @@ function getTimePotionLimitError(slot: CookingSlotData | undefined, requestedRec
 }
 
 async function loadCookingCraftContext(
-	data: PlayerAndHome,
+	data: LockedPlayerAndHome,
 	packet: CommandReportCookingCraftReq
 ): Promise<CookingCraftContext> {
 	const {
@@ -1021,11 +1040,19 @@ async function executeReadyCookingCraftUnderLock(
  * so a concurrent craft that already used them is refused instead of cooking again.
  */
 async function craftUnderLock(
-	data: PlayerAndHome,
+	lockedPlayer: Locked<Player>,
+	lockedHomeId: number,
 	packet: CommandReportCookingCraftReq,
 	context: PacketContext
 ): Promise<CrowniclesPacket[]> {
-	const craftContext = await loadCookingCraftContext(data, packet);
+	// The home is read again under its lock: the one read before the lock may be stale, or no longer the player's
+	const homeWithSlots = await getHomeWithCookingSlots(lockedPlayer.id);
+	if (!homeWithSlots || homeWithSlots.home.id !== lockedHomeId) {
+		return [];
+	}
+	const craftContext = await loadCookingCraftContext({
+		player: lockedPlayer, ...homeWithSlots
+	}, packet);
 	const validationError = getTimePotionLimitError(craftContext.slot, packet.recipeId) ?? validateCraftRequest(
 		craftContext.slot,
 		craftContext.recipe,
@@ -1068,10 +1095,7 @@ export async function handleCookingCraft(
 	try {
 		return await withLockedPlayerAndMissions(
 			data.player.id,
-			lockedPlayer => craftUnderLock({
-				...data,
-				player: lockedPlayer
-			}, packet, context),
+			lockedPlayer => craftUnderLock(lockedPlayer, data.home.id, packet, context),
 			getCraftLockKeys(data, packet.recipeId)
 		);
 	}

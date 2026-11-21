@@ -1,3 +1,32 @@
+import { readFileSync } from "node:fs";
+
+/**
+ * Lines of the logic of a file that mostly holds data: from the declaration of the first function to the closing
+ * brace of the last one. Computed from the function names so that the range follows the code when lines move
+ */
+function range(file, firstFunction, lastFunction = firstFunction) {
+	const lines = readFileSync(new URL(file, import.meta.url), "utf8").split("\n");
+	// "Class.method" looks for the method after the declaration of the class, for names shared by several classes
+	const declarationLine = qualifiedName => {
+		const [className, name] = qualifiedName.includes(".") ? qualifiedName.split(".") : [null, qualifiedName];
+		const classLine = className === null ? 0 : lines.findIndex(line => new RegExp(`\\bclass ${className}\\b`, "u").test(line));
+		const declaration = new RegExp(`^(\\s*)(export\\s+)?((public|private|protected|static|async|get|function)\\s+)*${name}\\s*(<[^>]*>)?\\(`, "u");
+		const index = classLine === -1 ? -1 : lines.findIndex((line, lineIndex) => lineIndex >= classLine && declaration.test(line));
+		if (index === -1) {
+			throw new Error(`stryker.config.mjs: no function ${qualifiedName} in ${file}`);
+		}
+		return index;
+	};
+	const start = declarationLine(firstFunction);
+	const lastStart = declarationLine(lastFunction);
+	const indent = /^\s*/u.exec(lines[lastStart])[0];
+	const end = lines.findIndex((line, index) => index > lastStart && line === `${indent}}`);
+	if (end === -1) {
+		throw new Error(`stryker.config.mjs: no end for the function ${lastFunction} in ${file}`);
+	}
+	return `${file}:${start + 1}-${end + 1}`;
+}
+
 /**
  * Mutation testing (#5165): checks that the unit tests fail when the code under test changes.
  * Only the files listed in `mutate` are mutated. Add a file once its tests are written.
@@ -11,26 +40,26 @@ export default {
 		configFile: "vitest.config.mts"
 	},
 	mutate: [
-		"src/constants/ClassInfoConstants.ts:73-84",
-		"src/constants/CookingConstants.ts:293-295",
-		"src/constants/CookingConstants.ts:418-427",
-		"src/constants/ExpeditionConstants.ts:766-803",
-		"src/constants/GardenConstants.ts:57-67",
-		"src/constants/GuildDomainConstants.ts:241-254",
-		"src/constants/GuildDomainConstants.ts:300-342",
-		"src/constants/ItemConstants.ts:20-32",
-		"src/constants/ItemMaterialCategoryConstants.ts:45-63",
-		"src/constants/KingChallengeConstants.ts:91-160",
-		"src/constants/PlantConstants.ts:252-254",
-		"src/constants/PlantConstants.ts:327-450",
-		"src/constants/TokensConstants.ts:35-40",
+		range("src/constants/ClassInfoConstants.ts", "getClassLineageName", "getClassLineage"),
+		range("src/constants/CookingConstants.ts", "hasUnlockedCookingSpecialties"),
+		range("src/constants/CookingConstants.ts", "isRecipeEligibleForSlot"),
+		range("src/constants/ExpeditionConstants.ts", "generateTerrainBasedRisk", "getRiskCategoryLevel"),
+		range("src/constants/GardenConstants.ts", "getEffectiveGrowthTime", "getWateringAdvanceSeconds"),
+		range("src/constants/GuildDomainConstants.ts", "computeTreasuryPenalty", "computeTreasuryGain"),
+		range("src/constants/GuildDomainConstants.ts", "getShelterSlots", "getBuildingRequiredGuildLevel"),
+		range("src/constants/ItemConstants.ts", "itemCategoryToString"),
+		range("src/constants/ItemMaterialCategoryConstants.ts", "pickDistinctMaterials"),
+		range("src/constants/KingChallengeConstants.ts", "roundThreshold", "sumRewards"),
+		range("src/constants/PlantConstants.ts", "hasHomeStorageLink"),
+		range("src/constants/PlantConstants.ts", "getHerbalistPrice", "lootRandomPlant"),
+		range("src/constants/TokensConstants.ts", "buildRefillExpression"),
 		"src/locks/**/*.ts",
 		"src/packets/interaction/ReactionCollector*.ts",
-		"src/types/Effect.ts:39-71",
+		range("src/types/Effect.ts", "getById", "v4Id"),
 		"src/types/FightActionResult.ts",
-		"src/types/HomeFeatures.ts:20-31",
-		"src/types/HomeLevel.ts:144-180",
-		"src/types/ItemEnchantment.ts:115-158",
+		range("src/types/HomeFeatures.ts", "getSlotCountForCategory"),
+		range("src/types/HomeLevel.ts", "getNextUpgrade", "getNextLevelInfo"),
+		range("src/types/ItemEnchantment.ts", "ItemEnchantment.constructor", "ItemEnchantment.getEnchantmentCost"),
 		"src/types/TimeTypes.ts",
 		"src/utils/**/*.ts"
 	],

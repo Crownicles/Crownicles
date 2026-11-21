@@ -71,6 +71,7 @@ import {
 	CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { asPlayer } from "../ModelStubs";
 
 const KEYCLOAK_ID = "cook-keycloak-id";
 const HOME_ID = 12;
@@ -115,10 +116,6 @@ function cookRow(overrides: Partial<CookRow> = {}): CookRow {
 let cook: CookRow;
 let lockedCook: CookRow;
 let lockedGuild: Guild | null;
-
-function asPlayer(row: CookRow): Player {
-	return row as unknown as Player; // The fake only holds the fields the cooking flow reads, the model needs a database
-}
 
 function setCook(overrides: Partial<CookRow> = {}): void {
 	cook = cookRow(overrides);
@@ -538,6 +535,24 @@ describe("craft validation", () => {
 		expect(await handleCookingCraft(KEYCLOAK_ID, {
 			slotIndex: 0, recipeId: "potion_health_1"
 		}, context)).toEqual([]);
+		expect(executeCraft).not.toHaveBeenCalled();
+	});
+
+	it("should cook nothing when the home read under the lock is no longer the locked one", async () => {
+		vi.mocked(Homes.getOfPlayer)
+			.mockResolvedValueOnce({
+				id: HOME_ID,
+				getLevel: () => ({ features: { cookingSlots: COOKING_SLOTS } })
+			} as unknown as Home)
+			.mockResolvedValueOnce({
+				id: HOME_ID + 1,
+				getLevel: () => ({ features: { cookingSlots: COOKING_SLOTS } })
+			} as unknown as Home);
+
+		expect(await handleCookingCraft(KEYCLOAK_ID, {
+			slotIndex: 0, recipeId: "potion_health_1"
+		}, context)).toEqual([]);
+		expect(CookingService.getSlotRecipes).not.toHaveBeenCalled();
 		expect(executeCraft).not.toHaveBeenCalled();
 	});
 

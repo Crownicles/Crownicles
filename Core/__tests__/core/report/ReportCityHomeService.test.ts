@@ -72,6 +72,7 @@ import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import {
 	asPlayer, CityHandlerPlayer, describePackets, lockedEntitiesOf, makeHandlerPlayer
 } from "./CityHandlerFixture";
+import { makeHome } from "../ModelStubs";
 
 const HOME_CITY_ID = "boug_coton";
 const OTHER_CITY_ID = "ville_forte";
@@ -88,12 +89,6 @@ function getCity(cityId: string): City {
 		throw new Error(`Unknown city ${cityId}`);
 	}
 	return city;
-}
-
-function makeHome(cityId: string, level: number): Home {
-	return Object.assign(Object.create(Home.prototype) as Home, {
-		id: HOME_ID, ownerId: 1, cityId, level, save: vi.fn().mockResolvedValue(undefined)
-	});
 }
 
 function makeApartment(id: number, cityId: string, rent: number): Apartment {
@@ -201,7 +196,9 @@ describe("handleBuyHomeReaction", () => {
 
 	it("buys nothing and tells the offer changed when the locked player already owns a home", async () => {
 		const player = makeHandlerPlayer(price);
-		const home = makeHome(OTHER_CITY_ID, 3);
+		const home = makeHome({
+		cityId: OTHER_CITY_ID, level: 3
+	});
 		vi.mocked(Homes.getOfPlayer).mockResolvedValue(home);
 		lockRows(player);
 		const response: CrowniclesPacket[] = [];
@@ -265,7 +262,9 @@ describe("handleUpgradeHomeReaction", () => {
 
 	it("upgrades nothing when the player has no home in the city", async () => {
 		const player = makeHandlerPlayer(price, 100);
-		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(OTHER_CITY_ID, 1));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({
+		cityId: OTHER_CITY_ID, level: 1
+	}));
 
 		await handleUpgradeHomeReaction(asPlayer(player), city, manageData({
 			upgrade, currentMoney: 0
@@ -280,7 +279,9 @@ describe("handleUpgradeHomeReaction", () => {
 
 	it("raises the locked home by one level, debits the listed price and reschedules the garden", async () => {
 		const player = makeHandlerPlayer(price, 100);
-		const home = makeHome(city.id, 1);
+		const home = makeHome({
+		cityId: city.id, level: 1
+	});
 		vi.mocked(Homes.getOfPlayer).mockResolvedValue(home);
 		lockRows(player, [[Home, HOME_ID, home]]);
 		const response: CrowniclesPacket[] = [];
@@ -308,7 +309,9 @@ describe("handleUpgradeHomeReaction", () => {
 
 	it("re-checks the locked rows: no upgrade when the money was spent or the home moved meanwhile", async () => {
 		const player = makeHandlerPlayer(price, 100);
-		const home = makeHome(city.id, 1);
+		const home = makeHome({
+		cityId: city.id, level: 1
+	});
 		vi.mocked(Homes.getOfPlayer).mockResolvedValue(home);
 		const poorLockedPlayer = makeHandlerPlayer(price - 1, 100);
 		lockRows(poorLockedPlayer, [[Home, HOME_ID, home]]);
@@ -317,7 +320,9 @@ describe("handleUpgradeHomeReaction", () => {
 		await handleUpgradeHomeReaction(asPlayer(player), city, manageData({
 			upgrade, currentMoney: 0
 		}), poorResponse);
-		const movedHome = makeHome(OTHER_CITY_ID, 1);
+		const movedHome = makeHome({
+		cityId: OTHER_CITY_ID, level: 1
+	});
 		lockRows(player, [[Home, HOME_ID, movedHome]]);
 		const movedResponse: CrowniclesPacket[] = [];
 		await handleUpgradeHomeReaction(asPlayer(player), city, manageData({
@@ -341,7 +346,9 @@ describe("handleUpgradeHomeReaction with an outdated offer", () => {
 
 	async function upgradeLockedHome(lockedHome: Home, lockedPlayer: CityHandlerPlayer): Promise<CrowniclesPacket[]> {
 		const player = makeHandlerPlayer(upgrade.price * 10, 100);
-		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(city.id, 1));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({
+		cityId: city.id, level: 1
+	}));
 		lockRows(lockedPlayer, [[Home, HOME_ID, lockedHome]]);
 		const response: CrowniclesPacket[] = [];
 		await handleUpgradeHomeReaction(asPlayer(player), city, manageData({
@@ -352,7 +359,9 @@ describe("handleUpgradeHomeReaction with an outdated offer", () => {
 
 	it("does not buy the next level at the displayed price when the home was upgraded since the menu was opened", async () => {
 		const lockedPlayer = makeHandlerPlayer(upgrade.price * 10, 100);
-		const upgradedHome = makeHome(city.id, 2);
+		const upgradedHome = makeHome({
+		cityId: city.id, level: 2
+	});
 
 		const response = await upgradeLockedHome(upgradedHome, lockedPlayer);
 
@@ -366,7 +375,9 @@ describe("handleUpgradeHomeReaction with an outdated offer", () => {
 
 	it("does not upgrade when the locked player no longer reaches the level required by the displayed upgrade", async () => {
 		const lockedPlayer = makeHandlerPlayer(upgrade.price * 10, HomeLevel.LEVEL_2.requiredPlayerLevel - 1);
-		const home = makeHome(city.id, 1);
+		const home = makeHome({
+		cityId: city.id, level: 1
+	});
 
 		const response = await upgradeLockedHome(home, lockedPlayer);
 
@@ -383,7 +394,9 @@ describe("handleMoveHomeReaction", () => {
 	function prepareMove(player: CityHandlerPlayer, sourceRent: number | null, destinationApartment: Apartment | null = null): {
 		home: Home; sourceApartment: Apartment | null;
 	} {
-		const home = makeHome(HOME_CITY_ID, 1);
+		const home = makeHome({
+		cityId: HOME_CITY_ID, level: 1
+	});
 		const sourceApartment = sourceRent === null ? null : makeApartment(SOURCE_APARTMENT_ID, HOME_CITY_ID, sourceRent);
 		vi.mocked(Homes.getOfPlayer).mockResolvedValue(home);
 		vi.mocked(Apartments.getOfPlayerInCity).mockImplementation(async (_playerId, cityId) => await Promise.resolve(cityId === HOME_CITY_ID ? sourceApartment : destinationApartment));
@@ -408,7 +421,9 @@ describe("handleMoveHomeReaction", () => {
 	it("does nothing without move price or without home", async () => {
 		const player = makeHandlerPlayer(movePrice);
 		const response: CrowniclesPacket[] = [];
-		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(HOME_CITY_ID, 1));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({
+		cityId: HOME_CITY_ID, level: 1
+	}));
 
 		await handleMoveHomeReaction(asPlayer(player), destination, manageData({ currentMoney: 0 }), response);
 		vi.mocked(Homes.getOfPlayer).mockResolvedValue(null);
@@ -501,7 +516,9 @@ describe("handleMoveHomeReaction", () => {
 	it("moves nothing when the locked home is no longer in the city the move started from", async () => {
 		const player = makeHandlerPlayer(movePrice);
 		const { home } = prepareMove(player, null);
-		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(destination.id, 1));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({
+		cityId: destination.id, level: 1
+	}));
 
 		const response = await move(player);
 

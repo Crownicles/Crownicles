@@ -63,6 +63,7 @@ import { ItemSlotData } from "../../../src/core/utils/ItemSlotUtils";
 import {
 	asPlayer, lockedEntitiesOf, makeHandlerPlayer
 } from "./CityHandlerFixture";
+import { makeHome } from "../ModelStubs";
 
 const KEYCLOAK_ID = "chest-player";
 const HOME_ID = 3;
@@ -109,12 +110,6 @@ function itemOf(slot: ItemSlotData): ItemSlotData {
 	};
 }
 
-function makeHome(level = 4): Home {
-	return Object.assign(Object.create(Home.prototype) as Home, {
-		id: HOME_ID, ownerId: 1, cityId: "boug_coton", level
-	});
-}
-
 async function act(action: ChestAction, slot: number, chestSlotNumber = -1): Promise<{
 	result: Awaited<ReturnType<typeof handleChestAction>>;
 	response: CrowniclesPacket[];
@@ -140,7 +135,7 @@ let home: Home;
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	home = makeHome();
+	home = makeHome({ level: 4 });
 	vi.mocked(Players.getByKeycloakId).mockResolvedValue(asPlayer(player));
 	vi.mocked(Homes.getOfPlayer).mockResolvedValue(home);
 	vi.mocked(buildChestData).mockResolvedValue(REFRESHED_CHEST);
@@ -154,7 +149,7 @@ describe("handleChestAction context", () => {
 	it("refuses a player without home, an unknown player and a home of an unknown level, without locking", async () => {
 		vi.mocked(Homes.getOfPlayer).mockResolvedValueOnce(null);
 		const homeless = await act(HomeConstants.CHEST_ACTIONS.DEPOSIT, 0);
-		vi.mocked(Homes.getOfPlayer).mockResolvedValueOnce(makeHome(99));
+		vi.mocked(Homes.getOfPlayer).mockResolvedValueOnce(makeHome({ level: 99 }));
 		const brokenHome = await act(HomeConstants.CHEST_ACTIONS.DEPOSIT, 0);
 		vi.mocked(Players.getByKeycloakId).mockResolvedValueOnce(null);
 		const unknown = await act(HomeConstants.CHEST_ACTIONS.DEPOSIT, 0);
