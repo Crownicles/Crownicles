@@ -101,6 +101,33 @@ describe("Mission interfaces", () => {
 		vi.useRealTimers();
 	});
 
+	describe("states the player reaches", () => {
+		const interfaces = import.meta.glob<{ missionInterface: IMission }>("../../../src/core/missions/interfaces/*.ts", { eager: true });
+		const missionNamed = (id: string): IMission => interfaces[`../../../src/core/missions/interfaces/${id}.ts`].missionInterface;
+		const player = buildPlayer({
+			level: 80, score: 5000, petId: 3, guildId: 2, class: 16
+		});
+
+		// The MissionsController only progresses a mission whose parameters match: a state mission must accept any update
+		it.each([
+			"buyApartment", "buyApartments", "buyHome", "chooseClass", "guildLevel", "haveGardenTalisman", "havePet", "havePotions",
+			"joinGuild", "joinGuildHouse", "maxTokensReached", "reachGlory", "reachLevel", "reachScore", "showPetsToTalvar"
+		])("%s has a single variant, saves nothing and progresses on any update", id => {
+			const missionInterface = missionNamed(id);
+
+			expect(missionInterface.generateRandomVariant(MissionDifficulty.HARD, player)).toBe(0);
+			expect(missionInterface.areParamsMatchingVariantAndBlob(0, {}, null)).toBe(true);
+			expect(missionInterface.updateSaveBlob(0, null, {})).toBeNull();
+		});
+
+		it.each(["drinkPotionRarity", "fightHealthPercent", "sellItemWithGivenCost"])("%s has a single variant and saves nothing", id => {
+			const missionInterface = missionNamed(id);
+
+			expect(missionInterface.generateRandomVariant(MissionDifficulty.EASY, player)).toBe(0);
+			expect(missionInterface.updateSaveBlob(0, blob("x"), {})).toBeNull();
+		});
+	});
+
 	describe("counters of an action", () => {
 		it.each([
 			["buyItemFromAlderic", buyItemFromAlderic],
