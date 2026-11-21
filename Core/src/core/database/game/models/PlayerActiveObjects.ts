@@ -25,3 +25,5 @@ export interface PlayerActiveObjects {
 }
 
 export type EquippedMainItemSlot = keyof Pick<PlayerActiveObjects, "weapon" | "armor">;
+
+export const EQUIPPED_MAIN_ITEM_SLOTS: readonly EquippedMainItemSlot[] = ["weapon", "armor"];

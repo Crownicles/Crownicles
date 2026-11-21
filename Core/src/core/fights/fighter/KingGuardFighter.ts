@@ -35,10 +35,6 @@ export class KingGuardFighter extends AiPlayerFighter {
 		return undefined;
 	}
 
-	public override getMainActiveObjects(): Promise<PlayerActiveObjects> {
-		return Promise.resolve(this.activeObjects);
-	}
-
 	protected override countItemsWithTag(tag: string): Promise<number> {
 		const equippedItems = [
 			this.activeObjects.weapon.item,

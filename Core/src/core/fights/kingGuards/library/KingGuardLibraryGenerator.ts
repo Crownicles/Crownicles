@@ -278,12 +278,13 @@ function pickBestItem<T>(random: Random, guard: Player, candidates: {
 	equippedWith: (item: T) => PlayerActiveObjects;
 }): T {
 	const ranked = candidates.items
-		.map(item => ({
-			item,
-			power: guard.getCumulativeAttack(candidates.equippedWith(item))
-				+ guard.getCumulativeDefense(candidates.equippedWith(item))
-				+ guard.getCumulativeSpeed(candidates.equippedWith(item))
-		}))
+		.map(item => {
+			const stats = guard.getCumulativeStats(candidates.equippedWith(item));
+			return {
+				item,
+				power: stats.attack + stats.defense + stats.speed
+			};
+		})
 		.sort((a, b) => b.power - a.power);
 	return random.pick(ranked.slice(0, BEST_ITEMS_CHOICE)).item;
 }
