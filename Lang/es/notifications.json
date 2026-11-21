@@ -1,16 +1,16 @@
 {
   "quests": {
-    "title_obtained": "{{pseudo}}, vous obtenez une nouvelle quête !",
-    "title_progressed": "{{pseudo}}, votre quête progresse !",
-    "title_completed": "{{pseudo}}, vous accomplissez une quête !",
+    "title_obtained": "{{pseudo}}, ¡recibes una nueva misión!",
+    "title_progressed": "{{pseudo}}, ¡tu misión avanza!",
+    "title_completed": "{{pseudo}}, ¡estás completando una misión!",
     "description": "> {{description}}",
-    "stepDone": "{emote:quests.stepDone} Étape accomplie",
-    "nextStep": "{emote:quests.stepCurrent} Prochaine étape",
-    "nextStepValue": "**Étape {{stepNumber}}** : {{label}}\n{{hint}}",
-    "completed": "{emote:quests.completed} Quête accomplie",
-    "completedValue": "Toutes les étapes de cette quête sont accomplies : elle rejoint vos quêtes terminées.",
-    "journal": "{emote:quests.icon} Journal de quêtes",
-    "journalValue": "Suivez la progression de toutes vos quêtes avec la commande {command:missions}."
+    "stepDone": "{emote:quests.stepDone} Paso completado",
+    "nextStep": "{emote:quests.stepCurrent} Siguiente paso",
+    "nextStepValue": "**Etapa {{stepNumber}}**: {{label}}\n{{hint}}",
+    "completed": "{emote:quests.completed} Misión completada",
+    "completedValue": "Se han completado todos los pasos de esta misión: pasa a formar parte de tus misiones completadas.",
+    "journal": "{emote:quests.icon} Diario de misiones",
+    "journalValue": "Sigue el progreso de todas tus misiones con el comando {command:missions}."
   },
   "kingChallenge": {
     "title_one": "{{pseudo}}, ¡habéis superado la fase {{tier}}/{{tierCount}} del desafío del rey!",
