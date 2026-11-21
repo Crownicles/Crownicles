@@ -14,6 +14,8 @@ vi.mock("../../../src/core/missions/MissionsController", () => ({
 
 vi.mock("../../../src/core/utils/MaterialLootUtils", () => ({ updateCollectMaterialsMission: vi.fn().mockResolvedValue(undefined) }));
 
+vi.mock("../../../src/core/utils/withLockedPlayerAndMissions", () => ({ withLockedPlayerAndMissions: vi.fn() }));
+
 vi.mock("../../../../Lib/src/locks/withLockedEntities", async importOriginal => ({
 	...await importOriginal<typeof import("../../../../Lib/src/locks/withLockedEntities")>(),
 	withLockedEntities: vi.fn()
@@ -44,6 +46,7 @@ import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import * as ItemUtils from "../../../src/core/utils/ItemUtils";
+import { withLockedPlayerAndMissions } from "../../../src/core/utils/withLockedPlayerAndMissions";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { CookingRecipeDataController } from "../../../src/data/CookingRecipeData";
 import { PotionDataController } from "../../../src/data/Potion";
@@ -184,6 +187,7 @@ beforeEach(() => {
 		getLevel: () => ({ features: { cookingSlots: COOKING_SLOTS } })
 	} as unknown as Home); // Only the cooking slots of the home level are read
 	vi.mocked(withLockedEntities).mockImplementation((keys, body) => body(keys.map(key => (key.model === Guild ? lockedGuild : lockedCook)) as never));
+	vi.mocked(withLockedPlayerAndMissions).mockImplementation((_playerId, body) => body(asPlayer(lockedCook)));
 	vi.spyOn(Guilds, "getById").mockResolvedValue(null);
 	vi.spyOn(Materials, "consumeMaterial").mockResolvedValue(undefined as never);
 	vi.spyOn(Materials, "giveMaterial").mockResolvedValue(undefined as never);
@@ -196,6 +200,7 @@ beforeEach(() => {
 afterEach(() => {
 	vi.restoreAllMocks();
 	vi.mocked(MissionsController.update).mockClear();
+	vi.mocked(withLockedPlayerAndMissions).mockClear();
 	vi.mocked(updateCollectMaterialsMission).mockClear();
 	logCookingUse.mockClear();
 });
@@ -493,6 +498,57 @@ describe("craft validation", () => {
 		expect(packet.error).toBe(CookingCraftErrors.TIME_POTION_WEEKLY_LIMIT);
 	});
 
+	it("should lock the home with the player, and the guild pantry only for pet food", async () => {
+		setCook({ guildId: 9 });
+		vi.mocked(CookingService.getSlotRecipes).mockResolvedValue([]);
+
+		await handleCookingCraft(KEYCLOAK_ID, {
+			slotIndex: 0, recipeId: "petfood_salad_1"
+		}, context);
+		await handleCookingCraft(KEYCLOAK_ID, {
+			slotIndex: 0, recipeId: "potion_health_1"
+		}, context);
+		await handleCookingCraft(KEYCLOAK_ID, {
+			slotIndex: 0, recipeId: "unknown_recipe"
+		}, context);
+		setCook({ guildId: null });
+		await handleCookingCraft(KEYCLOAK_ID, {
+			slotIndex: 0, recipeId: "petfood_salad_1"
+		}, context);
+
+		expect(vi.mocked(withLockedPlayerAndMissions).mock.calls.map(([playerId, _body, keys]) => [playerId, keys])).toEqual([
+			[cook.id, [Home.lockKey(HOME_ID), Guild.lockKey(9)]],
+			[cook.id, [Home.lockKey(HOME_ID)]],
+			[cook.id, [Home.lockKey(HOME_ID)]],
+			[cook.id, [Home.lockKey(HOME_ID)]]
+		]);
+	});
+
+	it("should check the ingredients of the player read under the lock", async () => {
+		await craftBlocked([slotFor("potion_health_1", 0, { canCraft: false })]);
+
+		expect(CookingService.getSlotRecipes).toHaveBeenCalledWith({
+			player: lockedCook, homeId: HOME_ID, cookingSlots: COOKING_SLOTS
+		});
+	});
+
+	it("should answer nothing when the player, their home or their guild disappeared before the lock", async () => {
+		vi.mocked(withLockedPlayerAndMissions).mockRejectedValue(new LockedRowNotFoundError("home", HOME_ID));
+
+		expect(await handleCookingCraft(KEYCLOAK_ID, {
+			slotIndex: 0, recipeId: "potion_health_1"
+		}, context)).toEqual([]);
+		expect(executeCraft).not.toHaveBeenCalled();
+	});
+
+	it("should not swallow an unexpected error of the critical section", async () => {
+		vi.mocked(withLockedPlayerAndMissions).mockRejectedValue(new Error("database down"));
+
+		await expect(handleCookingCraft(KEYCLOAK_ID, {
+			slotIndex: 0, recipeId: "potion_health_1"
+		}, context)).rejects.toThrow("database down");
+	});
+
 	it("should pick the requested recipe among several offers of the same station", async () => {
 		vi.mocked(CookingService.getSlotRecipes).mockResolvedValue([
 			slotFor("potion_health_1", SPECIALTY_SLOT_INDEX, { canCraft: false }),
@@ -537,6 +593,10 @@ describe("craft outputs", () => {
 				xpGained: 77, materialSaved: 68
 			}));
 
+			expect(executeCraft).toHaveBeenCalledWith({
+				player: lockedCook, recipe: CookingRecipeDataController.instance.getById("potion_health_1"), homeId: HOME_ID
+			});
+
 			const packet = response[0] as CommandReportCookingCraftRes;
 			expect(packet).toBeInstanceOf(CommandReportCookingCraftRes);
 			const potion = PotionDataController.instance.getById(packet.potionId ?? -1);
@@ -554,12 +614,12 @@ describe("craft outputs", () => {
 			expect(Object.keys(packet)).not.toContain("inventorySwapPackets");
 			expect(Object.keys(packet)).not.toContain("bonusHonored");
 			expect(response[1]).toBe(inventorySwap);
-			expect(ItemUtils.giveItemToPlayer).toHaveBeenCalledWith(expect.any(Array), context, cook, potion);
-			expect(MissionsController.update).toHaveBeenCalledWith(cook, response, { missionId: "cookRecipes" });
-			expect(MissionsController.update).toHaveBeenCalledWith(cook, response, {
+			expect(ItemUtils.giveItemToPlayer).toHaveBeenCalledWith(expect.any(Array), context, lockedCook, potion);
+			expect(MissionsController.update).toHaveBeenCalledWith(lockedCook, response, { missionId: "cookRecipes" });
+			expect(MissionsController.update).toHaveBeenCalledWith(lockedCook, response, {
 				missionId: "cookPotionRarity", params: { rarity: ItemRarity.COMMON }
 			});
-			expect(MissionsController.update).not.toHaveBeenCalledWith(cook, response, expect.objectContaining({ missionId: "reachCookingLevel" }));
+			expect(MissionsController.update).not.toHaveBeenCalledWith(lockedCook, response, expect.objectContaining({ missionId: "reachCookingLevel" }));
 			expect(logCookingUse).toHaveBeenCalledWith(expect.objectContaining({
 				keycloakId: KEYCLOAK_ID,
 				cityId: "city",
@@ -583,7 +643,7 @@ describe("craft outputs", () => {
 		});
 
 		it("should update the cooking level mission on a level up and relay the new grade and badge", async () => {
-			cook.cookingLevel = 11;
+			lockedCook.cookingLevel = 11;
 
 			const response = await craft("potion_health_1", craftResult({
 				levelUp: true, newLevel: 11, newGrade: "scullion", masterChefBadgeEarned: true
@@ -592,7 +652,7 @@ describe("craft outputs", () => {
 			expect(response[0]).toMatchObject({
 				cookingLevelUp: true, newCookingLevel: 11, newCookingGrade: "scullion", masterChefBadgeEarned: true
 			});
-			expect(MissionsController.update).toHaveBeenCalledWith(cook, response, {
+			expect(MissionsController.update).toHaveBeenCalledWith(lockedCook, response, {
 				missionId: "reachCookingLevel", count: 11, set: true
 			});
 		});
@@ -611,8 +671,8 @@ describe("craft outputs", () => {
 			expect(packet).toMatchObject({
 				success: false, potionId: undefined, failedPotionId: undefined
 			});
-			expect(cook.giveItem).not.toHaveBeenCalled();
-			expect(MissionsController.update).not.toHaveBeenCalledWith(cook, expect.anything(), expect.objectContaining({ missionId: "cookPotionRarity" }));
+			expect(lockedCook.giveItem).not.toHaveBeenCalled();
+			expect(MissionsController.update).not.toHaveBeenCalledWith(lockedCook, expect.anything(), expect.objectContaining({ missionId: "cookPotionRarity" }));
 		});
 
 		it("should give a consolation potion without effect when the roll reaches the consolation chance", async () => {
@@ -624,18 +684,18 @@ describe("craft outputs", () => {
 			const consolation = PotionDataController.instance.getById((packet as CommandReportCookingCraftRes).failedPotionId ?? -1);
 			expect(consolation?.nature).toBe(ItemNature.NONE);
 			expect(consolation?.rarity).toBe(2);
-			expect(cook.giveItem).toHaveBeenCalledWith(consolation);
+			expect(lockedCook.giveItem).toHaveBeenCalledWith(consolation);
 			expect(ItemUtils.giveItemToPlayer).not.toHaveBeenCalled();
 			expect(logCookingUse).toHaveBeenCalledWith(expect.objectContaining({ potionId: consolation?.id }));
 		});
 
 		it("should go through the inventory choice when the consolation potion does not fit", async () => {
 			vi.spyOn(RandomUtils.crowniclesRandom, "realZeroToOneInclusive").mockReturnValue(0);
-			cook.giveItem.mockResolvedValue(false);
+			lockedCook.giveItem.mockResolvedValue(false);
 
 			await craft("potion_health_1", craftResult({ success: false }));
 
-			expect(ItemUtils.giveItemToPlayer).toHaveBeenCalledWith(expect.any(Array), context, cook, expect.objectContaining({ nature: ItemNature.NONE }));
+			expect(ItemUtils.giveItemToPlayer).toHaveBeenCalledWith(expect.any(Array), context, lockedCook, expect.objectContaining({ nature: ItemNature.NONE }));
 		});
 
 		it("should not give a consolation potion for a failed material craft", async () => {
@@ -656,14 +716,14 @@ describe("craft outputs", () => {
 			const response = await craft("material_alloy_1", craftResult({ bonusOutput: true }));
 
 			const quantity = (recipe?.outputMaterialQuantity ?? 0) + 1;
-			expect(Materials.giveMaterial).toHaveBeenCalledWith(cook.id, recipe?.outputMaterialId, quantity);
+			expect(Materials.giveMaterial).toHaveBeenCalledWith(lockedCook.id, recipe?.outputMaterialId, quantity);
 			expect(response[0]).toMatchObject({
 				material: {
 					materialId: recipe?.outputMaterialId, quantity
 				},
 				bonusOutput: true
 			});
-			expect(updateCollectMaterialsMission).toHaveBeenCalledWith(cook, response, [{
+			expect(updateCollectMaterialsMission).toHaveBeenCalledWith(lockedCook, response, [{
 				materialId: recipe?.outputMaterialId, quantity
 			}]);
 			expect(logCookingUse).toHaveBeenCalledWith(expect.objectContaining({ materialOutputId: recipe?.outputMaterialId }));
@@ -701,7 +761,7 @@ describe("craft outputs", () => {
 				}
 			});
 			expect(Materials.giveMaterial).not.toHaveBeenCalled();
-			expect(updateCollectMaterialsMission).toHaveBeenCalledWith(cook, response, []);
+			expect(updateCollectMaterialsMission).toHaveBeenCalledWith(lockedCook, response, []);
 		});
 
 		it("should feed a hungry pet with the surplus and recycle the rest into the first ingredient", async () => {
@@ -713,7 +773,7 @@ describe("craft outputs", () => {
 			const [packet] = await craft("petfood_salad_1", craftResult({ bonusOutput: true }));
 
 			expect(lockedGuild.addFood).toHaveBeenCalledWith(PetConstants.PET_FOOD.HERBIVOROUS_FOOD, 1, NumberChangeReason.COOKING);
-			expect(CookingService.feedPetFromSurplus).toHaveBeenCalledWith(cook, pet, PetConstants.PET_FOOD.HERBIVOROUS_FOOD);
+			expect(CookingService.feedPetFromSurplus).toHaveBeenCalledWith(lockedCook, pet, PetConstants.PET_FOOD.HERBIVOROUS_FOOD);
 			expect(Materials.giveMaterial).not.toHaveBeenCalled();
 			expect(packet).toMatchObject({
 				petFood: {
@@ -731,14 +791,14 @@ describe("craft outputs", () => {
 			const recycled = salad().materials[0].materialId;
 			expect(lockedGuild.addFood).not.toHaveBeenCalled();
 			expect(lockedGuild.save).not.toHaveBeenCalled();
-			expect(Materials.giveMaterial).toHaveBeenCalledWith(cook.id, recycled, 2);
+			expect(Materials.giveMaterial).toHaveBeenCalledWith(lockedCook.id, recycled, 2);
 			expect(response[0]).toMatchObject({
 				petFood: {
 					quantity: 2, storedQuantity: 0, surplusMaterialId: recycled, surplusMaterialQuantity: 2
 				}
 			});
 			expect((response[0] as CommandReportCookingCraftRes).petFood?.fedFromSurplus).toBeUndefined();
-			expect(updateCollectMaterialsMission).toHaveBeenCalledWith(cook, response, [{
+			expect(updateCollectMaterialsMission).toHaveBeenCalledWith(lockedCook, response, [{
 				materialId: recycled, quantity: 2
 			}]);
 			expect(logCookingUse).toHaveBeenCalledWith(expect.objectContaining({
@@ -771,26 +831,14 @@ describe("craft outputs", () => {
 	});
 
 	describe("pinned recipe", () => {
-		it("should unpin the recipe once cooked, without leaving the player dirty", async () => {
+		it("should unpin the recipe once cooked, saving the locked player", async () => {
 			setCook({ pinnedCookingRecipeId: "potion_health_1" });
+			vi.mocked(CookingService.getPinnedRecipeInfo).mockResolvedValue({ recipeId: "potion_health_1" } as PinnedRecipeInfo);
 
 			await craft("potion_health_1", craftResult());
 
 			expect(lockedCook.pinnedCookingRecipeId).toBeNull();
 			expect(lockedCook.save).toHaveBeenCalledOnce();
-			expect(cook.pinnedCookingRecipeId).toBeNull();
-			expect(cook.changed).toHaveBeenCalledWith("pinnedCookingRecipeId", false);
-		});
-
-		it("should keep a different pin set meanwhile from another shard", async () => {
-			setCook({ pinnedCookingRecipeId: "potion_health_1" });
-			lockedCook.pinnedCookingRecipeId = "potion_energy_1";
-
-			await craft("potion_health_1", craftResult());
-
-			expect(lockedCook.pinnedCookingRecipeId).toBe("potion_energy_1");
-			expect(lockedCook.save).not.toHaveBeenCalled();
-			expect(cook.pinnedCookingRecipeId).toBe("potion_health_1");
 		});
 
 		it("should not touch the pin when cooking another recipe", async () => {
@@ -811,8 +859,6 @@ describe("craft outputs", () => {
 
 			expect(packet).toMatchObject({ success: true });
 			expect(lockedCook.timePotionsCookedThisWeek).toBe(4);
-			expect(cook.timePotionsCookedThisWeek).toBe(4);
-			expect(cook.changed).toHaveBeenCalledWith("timePotionsCookedThisWeek", false);
 		});
 
 		it("should give the time potion back when the craft fails", async () => {
@@ -822,11 +868,10 @@ describe("craft outputs", () => {
 			await craft("potion_time_speedup_1", craftResult({ success: false }));
 
 			expect(lockedCook.timePotionsCookedThisWeek).toBe(3);
-			expect(cook.timePotionsCookedThisWeek).toBe(3);
 			expect(lockedCook.save).toHaveBeenCalledTimes(2);
 		});
 
-		it("should give the time potion back when the craft throws", async () => {
+		it("should let a craft error out of the critical section, so its transaction gives the time potion back", async () => {
 			setCook({ timePotionsCookedThisWeek: 3 });
 			vi.mocked(CookingService.getSlotRecipes).mockResolvedValue([slotFor("potion_time_speedup_1", 1)]);
 			executeCraft.mockRejectedValue(new Error("craft failed"));
@@ -834,8 +879,6 @@ describe("craft outputs", () => {
 			await expect(handleCookingCraft(KEYCLOAK_ID, {
 				slotIndex: 1, recipeId: "potion_time_speedup_1"
 			}, context)).rejects.toThrow("craft failed");
-
-			expect(lockedCook.timePotionsCookedThisWeek).toBe(3);
 		});
 
 		it("should refuse without consuming anything once the weekly limit was reached meanwhile", async () => {
@@ -851,7 +894,6 @@ describe("craft outputs", () => {
 			});
 			expect(lockedCook.timePotionsCookedThisWeek).toBe(TIME_POTION_WEEKLY_CRAFT_LIMIT);
 			expect(lockedCook.save).not.toHaveBeenCalled();
-			expect(cook.timePotionsCookedThisWeek).toBe(TIME_POTION_WEEKLY_CRAFT_LIMIT);
 		});
 
 		it("should not count other recipes against the weekly limit", async () => {
