@@ -1,4 +1,5 @@
-/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
+/* @lockInherited — executeSmallEvent runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback; the collector end callback, run after it, takes its own locks. */
+import { Model } from "sequelize";
 import {
 	SmallEventExecutionContext, SmallEventFuncs
 } from "../../data/SmallEvent";
@@ -29,10 +30,12 @@ import { Constants } from "../../../../Lib/src/constants/Constants";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../utils/PetUtils";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
-import { Guilds } from "../database/game/models/Guild";
+import { Guild } from "../database/game/models/Guild";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { LockKey } from "../../../../Lib/src/locks/withLockedEntities";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 /**
  * Result of a bad pet action handler
@@ -166,6 +169,21 @@ function handlePlead(_petEntity: PetEntity, petModel: Pet, _player: Player): Pro
 }
 
 /**
+ * Take one food of the given type from the stock of the guild, read under its lock
+ * @returns false when the guild has none left
+ */
+function takeGuildFood(guildId: number, guildFoodKey: GuildFoodPropertyKey): Promise<boolean> {
+	return Guild.withLocked(guildId, async lockedGuild => {
+		if (lockedGuild[guildFoodKey] <= 0) {
+			return false;
+		}
+		lockedGuild[guildFoodKey] -= 1;
+		await lockedGuild.save();
+		return true;
+	});
+}
+
+/**
  * Handle giving food to pet - generic handler for both meat and vegetables
  * @param guildFoodKey - The key for the guild food property (carnivorousFood or herbivorousFood)
  * @param petModel - Pet model to check diet compatibility
@@ -190,18 +208,12 @@ async function handleGiveFood(guildFoodKey: GuildFoodPropertyKey, petModel: Pet,
 			dislikesOutcome: OUTCOME_TYPES.GIVE_VEG_DISLIKES
 		};
 
-	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
-
-	if (!guild || guild[guildFoodKey] <= 0) {
+	if (!player.guildId || !await takeGuildFood(player.guildId, guildFoodKey)) {
 		return {
 			loveLost: LOVE_LOST.GIVE_FOOD.NO_FOOD,
 			interactionType: foodConfig.noFoodOutcome
 		};
 	}
-
-	// Decrement the food stock
-	guild[guildFoodKey] -= 1;
-	await guild.save();
 
 	if (foodConfig.canEat) {
 		return {
@@ -486,6 +498,51 @@ async function executeActionHandler(reactionId: string | undefined, player: Play
  */
 
 /**
+ * Rows the outcome changes besides the player ones: the pet loses love and the guild can lose food.
+ * Locked together with the player rows, in canonical order, since the end callback runs after the lock of the report.
+ */
+function getOutcomeLockKeys(player: Player): LockKey<Model>[] {
+	return [
+		...player.petId ? [PetEntity.lockKey(player.petId)] : [],
+		...player.guildId ? [Guild.lockKey(player.guildId)] : []
+	];
+}
+
+/**
+ * Resolve the chosen action on the locked rows and answer its outcome
+ * @param lockedPlayer - The player, read under the lock
+ * @param petIdAtEvent - The pet whose row was locked: a pet that changed meanwhile is left untouched
+ * @param reactionId - The chosen action, undefined when the collector timed out
+ * @param response - Packets answered to the player
+ */
+async function resolveOutcomeUnderLock(
+	lockedPlayer: Player,
+	petIdAtEvent: number | null,
+	reactionId: string | undefined,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	const result = lockedPlayer.petId === petIdAtEvent
+		? await executeActionHandler(reactionId, lockedPlayer)
+		: {
+			loveLost: SmallEventConstants.BAD_PET.LOVE_LOST.WAIT,
+			interactionType: SmallEventConstants.BAD_PET.ACTION_IDS.WAIT,
+			petEntity: null
+		};
+
+	await applyLoveLoss(result.petEntity, result.loveLost, lockedPlayer, response);
+
+	const petData = await getPetData(lockedPlayer);
+
+	response.push(makePacket(SmallEventBadPetPacket, {
+		loveLost: result.loveLost,
+		interactionType: result.interactionType,
+		petId: petData.petTypeId,
+		sex: petData.sex,
+		petNickname: petData.nickname
+	}));
+}
+
+/**
  * Create the end callback for the reaction collector
  */
 function getEndCallback(player: Player): EndCallback {
@@ -495,19 +552,12 @@ function getEndCallback(player: Player): EndCallback {
 		const reaction = collector.getFirstReaction();
 		const reactionId = (reaction?.reaction.data as { id?: string } | undefined)?.id;
 
-		const result = await executeActionHandler(reactionId, player);
-
-		await applyLoveLoss(result.petEntity, result.loveLost, player, response);
-
-		const petData = await getPetData(player);
-
-		response.push(makePacket(SmallEventBadPetPacket, {
-			loveLost: result.loveLost,
-			interactionType: result.interactionType,
-			petId: petData.petTypeId,
-			sex: petData.sex,
-			petNickname: petData.nickname
-		}));
+		await withLockedPlayerAndMissionsSafe(
+			player,
+			"badPet endCallback",
+			lockedPlayer => resolveOutcomeUnderLock(lockedPlayer, player.petId, reactionId, response),
+			getOutcomeLockKeys(player)
+		);
 	};
 }
 
