@@ -42,21 +42,7 @@ export async function handleCommandTestPacketRes(packet: CommandTestPacketRes, c
 		return;
 	}
 
-	if (packet.isError) {
-		// An embed and not a content: a city menu answered with the same packets turns the reply into components V2, which refuse a content
-		const payload = { embeds: [buildTestErrorEmbed(packet.result)] };
-		if (interaction.replied) {
-			await interaction.channel.send(payload);
-		}
-		else {
-			await interaction.editReply(payload);
-		}
-		return;
-	}
-
-	const embed = buildTestResultEmbed(packet.commandName, packet.result, interaction.user.displayAvatarURL());
-	const payload = buildPayloadWithAttachments(embed, packet.fileName, packet.fileContentBase64);
-
+	const payload = buildTestResultPayload(packet, interaction.user.displayAvatarURL());
 	if (interaction.replied) {
 		await interaction.channel.send(payload);
 	}
@@ -68,23 +54,30 @@ export async function handleCommandTestPacketRes(packet: CommandTestPacketRes, c
 /**
  * Build test command result embed
  */
-function buildTestResultEmbed(commandName: string, result: string, userAvatarUrl?: string): CrowniclesEmbed {
+function buildTestResultEmbed(packet: CommandTestPacketRes, userAvatarUrl?: string): CrowniclesEmbed {
 	return new CrowniclesEmbed()
 		.setAuthor({
-			name: `Commande test ${commandName} exécutée :`,
+			name: `Commande test ${packet.commandName} exécutée :`,
 			iconURL: userAvatarUrl
 		})
-		.setDescription(result)
+		.setDescription(packet.result)
 		.setColor(<HexColorString> ColorConstants.SUCCESSFUL);
 }
 
 /**
- * Build the embed of a test command that failed
+ * Build the message of a test command result. A failure is an embed and not a content: a city menu answered with
+ * the same packets turns the reply into components V2, which refuse a content
  */
-function buildTestErrorEmbed(result: string): CrowniclesEmbed {
-	return new CrowniclesEmbed()
-		.setDescription(result)
-		.setErrorColor();
+function buildTestResultPayload(packet: CommandTestPacketRes, userAvatarUrl?: string): ReturnType<typeof buildPayloadWithAttachments> {
+	if (packet.isError) {
+		return {
+			embeds: [
+				new CrowniclesEmbed().setDescription(packet.result)
+					.setErrorColor()
+			]
+		};
+	}
+	return buildPayloadWithAttachments(buildTestResultEmbed(packet, userAvatarUrl), packet.fileName, packet.fileContentBase64);
 }
 
 /**
@@ -130,22 +123,12 @@ async function sendResultWithoutInteraction(packet: CommandTestPacketRes, contex
 
 	const textChannel = channel as GuildTextBasedChannel;
 
-	if (packet.isError) {
-		await textChannel.send({ embeds: [buildTestErrorEmbed(packet.result)] }).catch((e: unknown) => {
-			CrowniclesLogger.errorWithObj("Failed to deliver test command error result", e);
-		});
-		return;
-	}
-
 	const userId = context.discord?.user;
 	const user = userId
 		? await crowniclesClient.users.fetch(userId).catch(() => null)
 		: null;
 
-	const embed = buildTestResultEmbed(packet.commandName, packet.result, user?.displayAvatarURL());
-	const payload = buildPayloadWithAttachments(embed, packet.fileName, packet.fileContentBase64);
-
-	await textChannel.send(payload).catch((e: unknown) => {
+	await textChannel.send(buildTestResultPayload(packet, user?.displayAvatarURL())).catch((e: unknown) => {
 		CrowniclesLogger.errorWithObj("Failed to deliver test command result in fallback", e);
 	});
 }
