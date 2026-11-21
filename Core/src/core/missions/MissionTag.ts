@@ -10,12 +10,8 @@ export class MissionTag implements IMission {
 	}
 
 	areParamsMatchingVariantAndBlob(_variant: number, params: MissionParams): boolean {
-		for (const tag in this.tagNames) {
-			if (tag in (params.tags as string[])) {
-				return true;
-			}
-		}
-		return false;
+		const tags = params.tags as string[];
+		return this.tagNames.some(tag => tags.includes(tag));
 	}
 
 	generateRandomVariant(): number {

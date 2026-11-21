@@ -30,11 +30,11 @@ const giveMissionTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	}
 
 	let difficulty = args[1];
-	if (difficulty in [
+	if ([
 		"easy",
 		"medium",
 		"hard"
-	]) {
+	].includes(difficulty)) {
 		difficulty = difficulty[0];
 	}
 	if (!difficulty || difficulty !== "e" && difficulty !== "m" && difficulty !== "h") {
