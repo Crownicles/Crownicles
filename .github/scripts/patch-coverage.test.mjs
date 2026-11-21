@@ -38,6 +38,21 @@ diff --git a/Core/src/core/Types.ts b/Core/src/core/Types.ts
 +export type Id = number;
 `;
 
+test("a renamed file only adds the lines it changes", () => {
+	const renamed = `diff --git a/Core/src/Old.ts b/Core/src/New.ts
+similarity index 97%
+rename from Core/src/Old.ts
+rename to Core/src/New.ts
+--- a/Core/src/Old.ts
++++ b/Core/src/New.ts
+@@ -5 +5 @@ const a = 4
+-const a = 5
++const changed = 1;
+`;
+
+	assert.deepEqual([...parseAddedLines(renamed)], [["Core/src/New.ts", [5]]]);
+});
+
 test("the hits of every measured line are read from the lcov report", () => {
 	const coverage = parseLcov(LCOV);
 
