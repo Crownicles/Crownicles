@@ -214,7 +214,10 @@ export function setupRendering(): void {
 		missingTranslationsTracked = true;
 		i18next.default.options.saveMissing = true;
 		i18next.default.on("missingKey", (_languages: readonly string[], namespace: string, key: string) => {
-			missingTranslations.push(`${namespace}:${key}`);
+			// DisplayUtils.getPetDisplay translates an inline template on purpose: i18next returns it interpolated
+			if (!key.includes("{{")) {
+				missingTranslations.push(`${namespace}:${key}`);
+			}
 		});
 	}
 }
