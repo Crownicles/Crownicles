@@ -31,7 +31,7 @@ async function main([module, base, head]) {
 		return 1;
 	}
 	const { default: config } = await import(pathToFileURL(resolve(module, "stryker.config.mjs")).href);
-	const changedFiles = execFileSync("git", ["diff", "--name-only", "--diff-filter=AM", base, head, "--", `${module}/src`], { encoding: "utf8" })
+	const changedFiles = execFileSync("git", ["diff", "--name-only", "--diff-filter=AMR", base, head, "--", `${module}/src`], { encoding: "utf8" })
 		.split("\n")
 		.filter(Boolean)
 		.map(file => file.slice(module.length + 1));
@@ -39,6 +39,6 @@ async function main([module, base, head]) {
 	return 0;
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
 	process.exitCode = await main(process.argv.slice(2));
 }

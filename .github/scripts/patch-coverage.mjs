@@ -12,7 +12,8 @@ import {
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
-const MAX_ANNOTATIONS = 50;
+// GitHub only displays the first 10 warnings of a step
+const MAX_ANNOTATIONS = 10;
 
 /**
  * Hits of every measured line of every file of an lcov report, the paths being relative to the module
@@ -155,7 +156,8 @@ export function formatReport(result, minPercent) {
 }
 
 function addedLinesOf(base, head, modules) {
-	const diff = execFileSync("git", ["diff", "--unified=0", "--no-color", "--no-renames", base, head, "--", ...modules.map(module => `${module}/src`)], {
+	// Renames are detected so that a moved file only counts the lines it changes
+	const diff = execFileSync("git", ["diff", "--unified=0", "--no-color", "--find-renames", base, head, "--", ...modules.map(module => `${module}/src`)], {
 		encoding: "utf8",
 		maxBuffer: 64 * 1024 * 1024
 	});
@@ -171,15 +173,13 @@ function coverageOf(module) {
 }
 
 /**
- * Point the uncovered added lines out in the diff of the pull request
+ * Point the uncovered added lines out in the diff of the pull request, one annotation per file
  */
 function annotateUncoveredLines(files) {
-	const annotations = files.flatMap(file => toRanges(file.uncovered).map(range => ({
-		path: file.path, range
-	})));
-	for (const { path, range } of annotations.slice(0, MAX_ANNOTATIONS)) {
-		const [start, end = start] = range.split("-");
-		console.log(`::warning file=${path},line=${start},endLine=${end}::Added lines not covered by the unit tests`);
+	for (const file of files.filter(({ uncovered }) => uncovered.length > 0).slice(0, MAX_ANNOTATIONS)) {
+		const ranges = toRanges(file.uncovered);
+		const [start, end = start] = ranges[0].split("-");
+		console.log(`::warning file=${file.path},line=${start},endLine=${end}::Added lines not covered by the unit tests: ${ranges.join(", ")}`);
 	}
 }
 
@@ -203,6 +203,6 @@ function main([base, head, minPercentArgument, ...modules]) {
 	return result.percent >= minPercent ? 0 : 1;
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
 	process.exitCode = main(process.argv.slice(2));
 }
