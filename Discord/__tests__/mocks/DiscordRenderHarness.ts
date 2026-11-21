@@ -2,7 +2,7 @@ import {
 	expect, vi
 } from "vitest";
 import {
-	CommandInteraction, Message, ReactionCollector
+	ButtonInteraction, CommandInteraction, Message, ReactionCollector
 } from "discord.js";
 // skipcq: JS-C1003 - i18next does not expose itself as an ES Module.
 import * as i18next from "i18next";
@@ -465,4 +465,28 @@ export function sentPackets<T extends CrowniclesPacket>(packetClass?: abstract n
 		.map(([context, packet]) => ({
 			context, packet: packet as T
 		}));
+}
+
+/**
+ * Click of the player on a menu of his command, cached as the front-end does before telling Core, with the context Core
+ * answers the click with
+ */
+export function answeredClick(command: {
+	interaction: FakeInteraction; context: PacketContext;
+}, customId = "menu-button"): {
+	click: FakeClick; context: PacketContext;
+} {
+	const click = fakeClick(command.interaction.user, customId);
+	// The fake implements the members of a button interaction the front-end calls, not the whole discord.js class
+	DiscordCache.cacheButtonInteraction(CrowniclesInteraction.cast(click as unknown as ButtonInteraction, command.interaction.userLanguage));
+	return {
+		click,
+		context: {
+			...command.context,
+			discord: {
+				...command.context.discord!,
+				buttonInteraction: click.id
+			}
+		}
+	};
 }
