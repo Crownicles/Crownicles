@@ -3,33 +3,116 @@
     "accept": {
       "outcomes": {
         "0": {},
-        "1": {},
+        "1": {
+          "requirements": {
+            "level": {
+              "max": 25
+            }
+          }
+        },
         "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "karma": 3
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              3
+            ]
+          }
+        },
+        "4": {
+          "requirements": {
+            "validClassIds": [
+              24
+            ]
+          },
           "effect": "sleeping",
-          "health": 35
+          "health": 25
         }
       }
     },
     "compromise": {
       "outcomes": {
-        "0": {},
-        "1": {
+        "0": {
           "effect": "sleeping",
           "tags": [
             "drinkAlcohol"
           ]
+        },
+        "1": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "karma": 2
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 250
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "3": {
+          "requirements": {
+            "defense": {
+              "min": 250
+            }
+          }
+        },
+        "4": {
+          "requirements": {
+            "petRarity": {
+              "min": 4
+            }
+          }
         }
       }
     },
     "deny": {
       "outcomes": {
         "0": {
+          "health": -25,
           "effect": "hurt",
-          "health": -25
+          "karma": -3
         },
         "1": {
-          "effect": "sick",
-          "health": -10
+          "requirements": {
+            "level": {
+              "max": 25
+            }
+          },
+          "health": -10,
+          "effect": "sick"
+        },
+        "2": {
+          "requirements": {
+            "attack": {
+              "min": 250
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 250
+            }
+          }
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              1
+            ]
+          }
         }
       }
     },
@@ -38,6 +121,31 @@
         "0": {
           "effect": "occupied",
           "lostTime": 135
+        },
+        "1": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 135
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 250
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "petRarity": {
+              "min": 4
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 5
         }
       }
     }

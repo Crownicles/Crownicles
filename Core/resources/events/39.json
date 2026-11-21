@@ -3,12 +3,22 @@
     "convoy": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
           "money": 350,
           "mapTypesDestination": [
             "ro"
           ]
         },
         "1": {
+          "requirements": {
+            "petRarity": {
+              "min": 2
+            }
+          },
           "money": 150,
           "randomItem": {},
           "mapTypesDestination": [
@@ -25,6 +35,11 @@
           ]
         },
         "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
           "effect": "hurt",
           "health": -20,
           "money": -300,
@@ -34,6 +49,167 @@
           "mapTypesDestination": [
             "ro"
           ]
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "money": 80,
+          "mapTypesDestination": [
+            "ro"
+          ]
+        },
+        "5": {
+          "requirements": {
+            "attack": {
+              "min": 250
+            }
+          },
+          "money": 220,
+          "mapTypesDestination": [
+            "ro"
+          ]
+        }
+      }
+    },
+    "meal": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "karma": {
+              "min": 0
+            }
+          },
+          "karma": 1,
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 120
+        },
+        "1": {},
+        "2": {
+          "requirements": {
+            "petRarity": {
+              "min": 3
+            }
+          },
+          "money": 120,
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 90
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "max": 25
+            }
+          },
+          "randomItem": {},
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 90
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "money": 100,
+          "forceStayInCity": true,
+          "effect": "occupied",
+          "lostTime": 120
+        }
+      }
+    },
+    "steal": {
+      "outcomes": {
+        "0": {
+          "karma": -5,
+          "effect": "hurt",
+          "health": -20
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "max": 40
+            }
+          },
+          "karma": -3
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 250
+            }
+          },
+          "money": 180,
+          "karma": -5
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "money": 20,
+          "karma": -3
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              24,
+              95
+            ]
+          },
+          "money": 140,
+          "karma": -4
+        },
+        "5": {
+          "requirements": {
+            "defense": {
+              "min": 250
+            }
+          },
+          "karma": -5,
+          "health": -6
+        }
+      }
+    },
+    "follow": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "1": {
+          "requirements": {
+            "speed": {
+              "min": 220
+            }
+          },
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "max": 25
+            }
+          },
+          "money": 30,
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "scared"
         }
       }
     },
@@ -44,27 +220,32 @@
           "lostTime": 10
         },
         "1": {
+          "requirements": {
+            "level": {
+              "max": 50
+            }
+          },
           "money": -300
-        }
-      }
-    },
-    "meal": {
-      "outcomes": {
-        "0": {
-          "forceStayInCity": true,
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
           "effect": "occupied",
-          "lostTime": 120
+          "lostTime": 10
         },
-        "1": {}
-      }
-    },
-    "steal": {
-      "outcomes": {
-        "0": {
-          "effect": "hurt",
-          "health": -20
-        },
-        "1": {}
+        "3": {
+          "requirements": {
+            "attack": {
+              "min": 250
+            }
+          },
+          "money": 60,
+          "effect": "occupied",
+          "lostTime": 10
+        }
       }
     }
   },
