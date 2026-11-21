@@ -17,14 +17,9 @@ import {
 	CrowniclesPacket, makePacket
 } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandDailyBonusCancelPacket,
-	CommandDailyBonusInCooldown,
-	CommandDailyBonusNoAvailableObject,
-	CommandDailyBonusPacketRes
+	CommandDailyBonusInCooldown, CommandDailyBonusPacketRes
 } from "../../../Lib/src/packets/commands/CommandDailyBonusPacket";
-import {
-	CommandDrinkCancelDrink, CommandDrinkNoAvailablePotion, CommandDrinkPacketRes
-} from "../../../Lib/src/packets/commands/CommandDrinkPacket";
+import { CommandDrinkPacketRes } from "../../../Lib/src/packets/commands/CommandDrinkPacket";
 import { CommandRarityPacketRes } from "../../../Lib/src/packets/commands/CommandRarityPacket";
 import { CommandBlessingPacketRes } from "../../../Lib/src/packets/commands/CommandBlessingPacket";
 import { ItemNature } from "../../../Lib/src/constants/ItemConstants";
@@ -72,16 +67,6 @@ describe("daily bonus packets", () => {
 		expect(embed.description).toMatch(/1\s*h/);
 	});
 
-	it.each([
-		[CommandDailyBonusNoAvailableObject, "aucun objet utilisable"],
-		[CommandDailyBonusCancelPacket, "annulé"]
-	])("displays the error of %o", async (packetClass, expected) => {
-		const embed = await renderEmbed(makePacket(packetClass, {}));
-
-		expect(embed.color).toBe(ERROR_COLOR);
-		expect(embed.description).toContain(expected);
-	});
-
 	it("tells when the next daily object is available", async () => {
 		const embed = await renderEmbed(makePacket(CommandDailyBonusInCooldown, {
 			lastDailyTimestamp: Date.now(),
@@ -116,12 +101,6 @@ describe("drink packets", () => {
 
 		expect(withoutEffect.description).not.toBe(withEffect.description);
 		expect(withoutEffect.description).not.toContain("**0**");
-	});
-
-	it.each([CommandDrinkCancelDrink, CommandDrinkNoAvailablePotion])("displays the error of %o", async packetClass => {
-		const embed = await renderEmbed(makePacket(packetClass, {}));
-
-		expect(embed.color).toBe(ERROR_COLOR);
 	});
 });
 

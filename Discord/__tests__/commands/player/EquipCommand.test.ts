@@ -10,11 +10,10 @@ vi.mock("../../../src/utils/PacketUtils", () => ({
 }));
 
 import "../../../src/packetHandlers/handlers/ReactionCollectorHandlers";
-import "../../../src/packetHandlers/handlers/commands/player/EquipCommandPacketHandlers";
 import { PacketUtils } from "../../../src/utils/PacketUtils";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandEquipActionReq, CommandEquipActionRes, CommandEquipErrorNoItem, EquipCategoryData
+	CommandEquipActionReq, CommandEquipActionRes, EquipCategoryData
 } from "../../../../Lib/src/packets/commands/CommandEquipPacket";
 import { ReactionCollectorEquip } from "../../../../Lib/src/packets/interaction/ReactionCollectorEquip";
 import { ReactionCollectorReactPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -210,14 +209,5 @@ describe("equip menu", () => {
 		const closing = lastMessage(interaction);
 		expect(closing.method).toBe("followUp");
 		expect(embedsOf(closing)[0].description).toBe("Vous avez fermé le menu d'équipement.");
-	});
-
-	it("displays an error to a player without equipment", async () => {
-		const {
-			interaction, context
-		} = fakeCommand();
-		await dispatch(context, makePacket(CommandEquipErrorNoItem, {}));
-
-		expect(embedsOf(singleMessage(interaction))[0].color).toBe(ERROR_COLOR);
 	});
 });

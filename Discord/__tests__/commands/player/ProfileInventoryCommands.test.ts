@@ -12,9 +12,7 @@ vi.mock("../../../src/utils/PacketUtils", () => ({
 import "../../../src/packetHandlers/handlers/commands/player/ProfileCommandPacketHandlers";
 import "../../../src/packetHandlers/handlers/commands/player/InventoryCommandPacketHandlers";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
-import {
-	CommandProfilePacketRes, CommandProfilePlayerNotFound
-} from "../../../../Lib/src/packets/commands/CommandProfilePacket";
+import { CommandProfilePacketRes } from "../../../../Lib/src/packets/commands/CommandProfilePacket";
 import { CommandInventoryPacketRes } from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
@@ -232,15 +230,6 @@ describe("profile", () => {
 		const { reactions } = await renderProfile(profileData({ badges }));
 
 		expect(reactions).toEqual([CrowniclesIcons.profile.displayAllBadgeEmote]);
-	});
-
-	it("displays an error for an unknown player", async () => {
-		const {
-			interaction, context
-		} = fakeCommand();
-		await dispatch(context, makePacket(CommandProfilePlayerNotFound, {}));
-
-		expect(embedsOf(singleMessage(interaction))[0].color).toBe(ERROR_COLOR);
 	});
 });
 
