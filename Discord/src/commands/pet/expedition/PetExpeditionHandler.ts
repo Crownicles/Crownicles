@@ -243,8 +243,12 @@ async function handleExpeditionLoveLossResponse(
 		)
 		.setDescription(
 			i18n.t(keys.description, {
-				lng, context: sexContext, petDisplay, loveLost: packet.loveLost
-			})
+				lng, context: sexContext, petDisplay
+			}) + (packet.loveLost > 0
+				? i18n.t("commands:petExpedition.loveLost", {
+					lng, loveLost: packet.loveLost
+				})
+				: "")
 		);
 
 	await sendResponse(context, embed);

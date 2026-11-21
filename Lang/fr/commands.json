@@ -196,6 +196,7 @@
     "recalledTitle": "{{pseudo}}, familier rappelé",
     "recalled_male": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — il vous en voudra pendant un moment.",
     "recalled_female": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Elle ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — elle vous en voudra pendant un moment.",
+    "loveLost": "\n\n{emote:expedition.love} Votre familier a perdu **{{loveLost}}** points d'amour.",
     "finishedTitle": "{{pseudo}}, expédition terminée !",
     "finishedDescription": {
       "talisman": {
@@ -1501,7 +1502,7 @@
         "confirmPurchase": "Installer le domaine",
         "confirmRelocate": "Déplacer le domaine",
         "purchaseTitle": "{{pseudo}}, domaine installé !",
-        "purchaseDescription": "{emote:city.guildDomain.menu} Le notaire vous félicite chaleureusement et vous remet les actes officiels scellés du sceau de la ville. Le domaine de votre guilde est désormais enraciné dans cette cité. Les premiers ouvriers se mettent déjà au travail pour préparer le terrain.",
+        "purchaseDescription": "{emote:city.guildDomain.menu} Le notaire vous félicite chaleureusement et vous remet les actes officiels scellés du sceau de la ville. Le domaine de votre guilde est désormais enraciné dans cette cité. Les premiers ouvriers se mettent déjà au travail pour préparer le terrain. L'acquisition a coûté **{{cost}} {emote:unitValues.money}** à la trésorerie.",
         "relocateTitle": "{{pseudo}}, domaine déplacé !",
         "relocateDescription": "{emote:city.guildDomain.menu} Le notaire finalise les documents de transfert et vous les remet avec un sourire professionnel. Les chariots de déménagement sont déjà en route. Le domaine de votre guilde s'installera bientôt dans cette ville, pour **{{cost}} {emote:unitValues.money}** de la trésorerie.",
         "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} Après avoir consciencieusement examiné les finances de votre guilde, le notaire secoue la tête avec regret. La trésorerie ne contient pas assez de fonds pour cette opération — il vous manque **{{missingTreasury}} {emote:unitValues.money}**. Il vous encourage à revenir lorsque la guilde aura économisé suffisamment.",
@@ -2811,7 +2812,12 @@
     "swapSection": "{emote:equipCommand.swap} **Échanger :**",
     "noItems": "Vous n'avez aucun équipement à gérer !",
     "closeTitle": "{{pseudo}}, fermeture de l'équipement",
-    "closeDescription": "Vous avez fermé le menu d'équipement."
+    "closeDescription": "Vous avez fermé le menu d'équipement.",
+    "errors": {
+      "invalid": "Cette action n'est plus possible : votre équipement a changé entre-temps.",
+      "noItem": "Aucun objet n'est équipé dans cette catégorie, il n'y a rien à ranger.",
+      "reserveFull": "Votre réserve est pleine : libérez de la place avant d'y ranger cet objet."
+    }
   },
   "drink": {
     "errors": {

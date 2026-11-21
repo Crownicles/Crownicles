@@ -1,6 +1,6 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
-	Message, parseEmoji
+	Message, MessageFlags, parseEmoji
 } from "discord.js";
 import { ICommand } from "../ICommand";
 import {
@@ -17,11 +17,12 @@ import {
 	CrowniclesNestedMenus, CrowniclesNestedMenu, CrowniclesNestedMenuCollector
 } from "../../messages/CrowniclesNestedMenus";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import i18n from "../../translations/i18n";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
-	ItemCategory, ItemConstants
+	EquipError, ItemCategory, ItemConstants
 } from "../../../../Lib/src/constants/ItemConstants";
 import { DiscordMQTT } from "../../bot/DiscordMQTT";
 import { PacketUtils } from "../../utils/PacketUtils";
@@ -418,6 +419,20 @@ interface EquipActionParams {
 	nestedMenus: CrowniclesNestedMenus;
 }
 
+async function sendEquipActionError(ctx: EquipMenuContext, error: EquipError): Promise<void> {
+	await ctx.interaction.followUp({
+		embeds: [
+			new CrowniclesErrorEmbed(
+				ctx.interaction.user,
+				ctx.context,
+				ctx.interaction,
+				i18n.t(`commands:equip.errors.${error}`, { lng: ctx.lng })
+			)
+		],
+		flags: MessageFlags.Ephemeral
+	});
+}
+
 async function sendEquipAction({
 	ctx,
 	action,
@@ -435,6 +450,7 @@ async function sendEquipAction({
 			const response = responsePacket as unknown as CommandEquipActionRes;
 
 			if (!response.success) {
+				await sendEquipActionError(ctx, response.error ?? ItemConstants.EQUIP_ERRORS.INVALID);
 				return;
 			}
 
