@@ -19,6 +19,7 @@ import {
 } from "../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../Lib/src/constants/TimeConstants";
 import { CookingOutputType } from "../../../Lib/src/constants/CookingConstants";
+import { CookingCraftErrors } from "../../../Lib/src/types/CookingTypes";
 
 type ReportCookingServiceModule = typeof import("../../src/core/report/ReportCookingService");
 type ReportGardenServiceModule = typeof import("../../src/core/report/ReportGardenService");
@@ -126,13 +127,7 @@ describe("cooking and garden resources under concurrent requests", () => {
 		expect((await Player.findByPk(player.id))?.furnacePosition).toBe(player.furnacePosition + 1);
 	});
 
-	/*
-	 * Bug: CookingService.executeCraft consumes the ingredients outside of any player lock (only time potions take it),
-	 * so concurrent crafts validated on the same stock all run: each one grants its output and its cooking XP while the
-	 * plant storage is read-modify-written by all of them, and the late ones throw from consumeMaterials after their
-	 * plants were consumed. Observed: 4 crafts out of 6 cooked from a single set of ingredients.
-	 */
-	it.fails("never cooks more recipes than the ingredients allow under concurrent crafts", async () => {
+	it("cooks a single recipe from a single set of ingredients and refuses the concurrent crafts", async () => {
 		const keycloakId = "concurrent-crafts";
 		const {
 			player, home
@@ -153,12 +148,22 @@ describe("cooking and garden resources under concurrent requests", () => {
 			await materials.giveMaterial(player.id, material.materialId, material.quantity);
 		}
 
-		const results = await Promise.allSettled(Array.from({ length: N_CONCURRENT }, () => reportCooking.handleCookingCraft(keycloakId, {
+		const responses = await runAllOrThrow(Array.from({ length: N_CONCURRENT }, () => reportCooking.handleCookingCraft(keycloakId, {
 			slotIndex: slot.slotIndex, recipeId: slot.recipe?.id ?? ""
 		}, contextOf(keycloakId))));
 
-		const cooked = results.filter(result => result.status === "fulfilled" && (result.value[0] as { error?: string }).error === undefined);
-		expect(cooked.length).toBeLessThanOrEqual(1);
+		const answers = responses.map(response => response[0] as unknown as {
+			error?: string;
+			material?: { materialId: number; quantity: number };
+		}); // The first packet always answers the craft
+		const cooked = answers.filter(answer => answer.error === undefined);
+		expect(cooked).toHaveLength(1);
+		expect(answers.filter(answer => answer.error === CookingCraftErrors.CRAFT_UNAVAILABLE)).toHaveLength(N_CONCURRENT - 1);
+		expect(await storedPlants(home.id)).toBe(0);
+		const output = cooked[0].material;
+		if (output) {
+			expect(await materialQuantity(player.id, output.materialId)).toBe(output.quantity);
+		}
 	});
 
 	it("stores a ready plant exactly once under concurrent harvests", async () => {
