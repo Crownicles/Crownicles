@@ -38,6 +38,27 @@ export function parseLcov(content) {
 }
 
 /**
+ * Path of the new version of a file from a "+++" header of a diff, null for a deleted file
+ */
+function newFilePath(header) {
+	const path = header.slice(4).trim();
+	return path === "/dev/null" ? null : path.replace(/^b\//u, "");
+}
+
+/**
+ * Line numbers a hunk header ("@@ -a,b +c,d @@") adds, none when the line is not a hunk header
+ */
+function hunkAddedLines(line) {
+	const hunk = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/u.exec(line);
+	if (!hunk) {
+		return [];
+	}
+	const start = Number(hunk[1]);
+	const count = hunk[2] === undefined ? 1 : Number(hunk[2]);
+	return Array.from({ length: count }, (_, index) => start + index);
+}
+
+/**
  * Lines added by a `git diff --unified=0`, by file
  * @returns {Map<string, number[]>}
  */
@@ -46,20 +67,13 @@ export function parseAddedLines(diff) {
 	let current = null;
 	for (const line of diff.split("\n")) {
 		if (line.startsWith("+++ ")) {
-			const path = line.slice(4).trim();
-			current = path === "/dev/null" ? null : path.replace(/^b\//u, "");
+			current = newFilePath(line);
 			if (current !== null && !files.has(current)) {
 				files.set(current, []);
 			}
-			continue;
 		}
-		const hunk = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/u.exec(line);
-		if (hunk && current !== null) {
-			const start = Number(hunk[1]);
-			const count = hunk[2] === undefined ? 1 : Number(hunk[2]);
-			for (let lineNumber = start; lineNumber < start + count; lineNumber++) {
-				files.get(current).push(lineNumber);
-			}
+		else if (current !== null) {
+			files.get(current).push(...hunkAddedLines(line));
 		}
 	}
 	return files;

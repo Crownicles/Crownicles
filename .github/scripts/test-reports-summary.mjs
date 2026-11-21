@@ -94,28 +94,43 @@ function mutationSummary(modules, minFileScore) {
 	};
 }
 
-function main(argv) {
-	const [kind, ...rest] = argv;
+/**
+ * The kind of summary, its modules and the optional floor of the mutation score of a file
+ * @returns {{ kind: string, modules: string[], minFileScore: number | null } | null} null when the arguments are invalid
+ */
+function parseArguments([kind, ...rest]) {
 	const floorIndex = rest.indexOf("--min-file-score");
 	const minFileScore = floorIndex === -1 ? null : Number(rest[floorIndex + 1]);
 	const modules = floorIndex === -1 ? rest : rest.filter((_, index) => index !== floorIndex && index !== floorIndex + 1);
-	if (!["coverage", "mutation"].includes(kind) || modules.length === 0 || Number.isNaN(minFileScore)) {
+	const valid = ["coverage", "mutation"].includes(kind) && modules.length > 0 && !Number.isNaN(minFileScore);
+	return valid
+		? {
+			kind, modules, minFileScore
+		}
+		: null;
+}
+
+function coverageSummary(modules) {
+	return {
+		lines: [
+			"### Unit test coverage",
+			"",
+			`| Module | ${COVERAGE_METRICS.join(" | ")} |`,
+			`|---|${COVERAGE_METRICS.map(() => "---").join("|")}|`,
+			...modules.map(coverageRow)
+		],
+		failed: false
+	};
+}
+
+function main(argv) {
+	const args = parseArguments(argv);
+	if (!args) {
 		console.error("Usage: node test-reports-summary.mjs <coverage|mutation> <module>... [--min-file-score <percent>]");
 		return 1;
 	}
 
-	const { lines, failed } = kind === "coverage"
-		? {
-			lines: [
-				"### Unit test coverage",
-				"",
-				`| Module | ${COVERAGE_METRICS.join(" | ")} |`,
-				`|---|${COVERAGE_METRICS.map(() => "---").join("|")}|`,
-				...modules.map(coverageRow)
-			],
-			failed: false
-		}
-		: mutationSummary(modules, minFileScore);
+	const { lines, failed } = args.kind === "coverage" ? coverageSummary(args.modules) : mutationSummary(args.modules, args.minFileScore);
 	const summary = `${lines.join("\n")}\n`;
 	console.log(summary);
 	if (process.env.GITHUB_STEP_SUMMARY) {
