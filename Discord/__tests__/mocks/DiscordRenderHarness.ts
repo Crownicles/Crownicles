@@ -266,6 +266,7 @@ export type RenderedComponent = {
 		label: string; value: string; description?: string;
 	}[];
 	components?: RenderedComponent[];
+	accessory?: RenderedComponent;
 };
 
 type JsonPayload = {
@@ -282,11 +283,17 @@ export function embedsOf(message: RenderedMessage): RenderedEmbed[] {
 	return toJson(message).embeds ?? [];
 }
 
+function interactiveComponents(component: RenderedComponent): RenderedComponent[] {
+	const children = [...component.components ?? [], ...component.accessory ? [component.accessory] : []];
+	return component.custom_id || component.url ? [component] : children.flatMap(interactiveComponents);
+}
+
 /**
- * Every interactive component (buttons and select menus) of a message, flattened from their action rows
+ * Every interactive component (buttons and select menus) of a message, flattened from their action rows and from the
+ * containers and sections of the components V2 messages
  */
 export function componentsOf(message: RenderedMessage): RenderedComponent[] {
-	return (toJson(message).components ?? []).flatMap(row => row.components ?? [row]);
+	return (toJson(message).components ?? []).flatMap(interactiveComponents);
 }
 
 const NAMESPACES = [
