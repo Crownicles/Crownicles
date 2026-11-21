@@ -103,7 +103,6 @@ vi.mock("../../../src/core/fights/fighter/PlayerFighter", () => ({
 import {
 	doPVEBoss, getPveMonsterLevel, persistPveBossPostFightUnderLock
 } from "../../../src/core/report/ReportPveService";
-import { Player } from "../../../src/core/database/game/models/Player";
 import { Guild } from "../../../src/core/database/game/models/Guild";
 import { PlayerFighter } from "../../../src/core/fights/fighter/PlayerFighter";
 import {
@@ -146,6 +145,7 @@ import {
 import {
 	CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { asPlayer } from "../ModelStubs";
 
 const MAP_ID = 42;
 const START_TRAVEL = new Date("2026-03-01T10:00:00Z");
@@ -192,10 +192,6 @@ function pveRow(overrides: Partial<PveRow> = {}): PveRow {
 		save: vi.fn().mockResolvedValue(undefined),
 		...overrides
 	};
-}
-
-function asPlayer(row: PveRow): Player {
-	return row as unknown as Player; // Only the fields read by the boss flow, the model needs a database
 }
 
 let row: PveRow;

@@ -85,6 +85,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { MapLink } from "../../../src/data/MapLink";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { asPlayer } from "../ModelStubs";
 
 const context = { keycloakId: "explorer" } as PacketContext;
 const MINUTE = 60_000;
@@ -114,10 +115,6 @@ function explorerRow(overrides: Partial<ExplorerRow> = {}): ExplorerRow {
 		runWithTokenCapReference: vi.fn((body: () => Promise<unknown>) => body()),
 		...overrides
 	};
-}
-
-function asPlayer(row: ExplorerRow): Player {
-	return row as unknown as Player; // Only the fields read by the big event flow, the model needs a database
 }
 
 function firstMapLink(): MapLink {

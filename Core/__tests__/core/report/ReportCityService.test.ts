@@ -83,6 +83,7 @@ import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationC
 import {
 	makeCityPlayer, makeInventorySlot
 } from "./CityPlayerFixture";
+import { makeHome } from "../ModelStubs";
 
 // Boug Coton: home prices x0.95, apartment for 6000. Ville Forte: home prices x1.01, apartment for 9000
 const HOME_CITY_ID = "boug_coton";
@@ -102,12 +103,6 @@ function getCity(cityId: string): City {
 		throw new Error(`Unknown city ${cityId}`);
 	}
 	return city;
-}
-
-function makeHome(cityId: string, level: number): Home {
-	return Object.assign(Object.create(Home.prototype) as Home, {
-		id: 3, ownerId: 1, cityId, level
-	});
 }
 
 function makeApartment(cityId: string, rentDays: number, id = 5): Apartment {
@@ -169,8 +164,12 @@ describe("buildHomeData manage options", () => {
 	});
 
 	it("offers the upgrade of the home of the city at the city price of the next level", async () => {
-		const enough = await buildHomeData(playerData(LEVEL_2_PRICE, HomeLevel.LEVEL_2.requiredPlayerLevel), homeData(makeHome(HOME_CITY_ID, 1)), getCity(HOME_CITY_ID));
-		const short = await buildHomeData(playerData(LEVEL_2_PRICE - 1, HomeLevel.LEVEL_2.requiredPlayerLevel), homeData(makeHome(HOME_CITY_ID, 1)), getCity(HOME_CITY_ID));
+		const enough = await buildHomeData(playerData(LEVEL_2_PRICE, HomeLevel.LEVEL_2.requiredPlayerLevel), homeData(makeHome({
+		cityId: HOME_CITY_ID, level: 1
+	})), getCity(HOME_CITY_ID));
+		const short = await buildHomeData(playerData(LEVEL_2_PRICE - 1, HomeLevel.LEVEL_2.requiredPlayerLevel), homeData(makeHome({
+		cityId: HOME_CITY_ID, level: 1
+	})), getCity(HOME_CITY_ID));
 
 		expect(enough.manage).toEqual({
 			upgrade: {
@@ -184,7 +183,9 @@ describe("buildHomeData manage options", () => {
 	});
 
 	it("tells the player the level required for the next upgrade when he is too low", async () => {
-		const data = await buildHomeData(playerData(1_000_000, HomeLevel.LEVEL_2.requiredPlayerLevel - 1), homeData(makeHome(HOME_CITY_ID, 1)), getCity(HOME_CITY_ID));
+		const data = await buildHomeData(playerData(1_000_000, HomeLevel.LEVEL_2.requiredPlayerLevel - 1), homeData(makeHome({
+		cityId: HOME_CITY_ID, level: 1
+	})), getCity(HOME_CITY_ID));
 
 		expect(data.manage).toEqual({
 			currentMoney: 1_000_000, isMaxLevel: false, requiredPlayerLevelForUpgrade: HomeLevel.LEVEL_2.requiredPlayerLevel
@@ -192,7 +193,9 @@ describe("buildHomeData manage options", () => {
 	});
 
 	it("tells the player his home is at the maximum level", async () => {
-		const data = await buildHomeData(playerData(1_000_000, 1_000), homeData(makeHome(HOME_CITY_ID, 8)), getCity(HOME_CITY_ID));
+		const data = await buildHomeData(playerData(1_000_000, 1_000), homeData(makeHome({
+		cityId: HOME_CITY_ID, level: 8
+	})), getCity(HOME_CITY_ID));
 
 		expect(data.manage).toEqual({
 			currentMoney: 1_000_000, isMaxLevel: true, requiredPlayerLevelForUpgrade: undefined
@@ -200,7 +203,9 @@ describe("buildHomeData manage options", () => {
 	});
 
 	it("offers to move a home from another city, cheaper towards the least populated city", async () => {
-		const home = makeHome(OTHER_CITY_ID, 1);
+		const home = makeHome({
+		cityId: OTHER_CITY_ID, level: 1
+	});
 		vi.mocked(Homes.getHomesCount).mockResolvedValue([
 			{
 				cityId: OTHER_CITY_ID, count: 1
@@ -240,7 +245,9 @@ describe("buildHomeData owned home", () => {
 			})
 		];
 
-		const data = await buildHomeData(player, homeData(makeHome(HOME_CITY_ID, 1)), getCity(HOME_CITY_ID));
+		const data = await buildHomeData(player, homeData(makeHome({
+		cityId: HOME_CITY_ID, level: 1
+	})), getCity(HOME_CITY_ID));
 
 		expect(data.owned).toMatchObject({
 			level: 1,
@@ -257,7 +264,9 @@ describe("buildHomeData owned home", () => {
 		const garden = {} as Awaited<ReturnType<typeof buildGardenData>>;
 		vi.mocked(buildGardenData).mockResolvedValue(garden);
 
-		const data = await buildHomeData(playerData(0, 1_000), homeData(makeHome(HOME_CITY_ID, 2)), getCity(HOME_CITY_ID));
+		const data = await buildHomeData(playerData(0, 1_000), homeData(makeHome({
+		cityId: HOME_CITY_ID, level: 2
+	})), getCity(HOME_CITY_ID));
 
 		expect(data.owned?.garden).toBe(garden);
 	});
@@ -265,7 +274,9 @@ describe("buildHomeData owned home", () => {
 	it("gives remote access to the chest from an apartment, with the bed capped at the apartment level and no upgrade station nor garden", async () => {
 		vi.mocked(Apartments.getOfPlayerInCity).mockResolvedValue(makeApartment(HOME_CITY_ID, 0));
 
-		const data = await buildHomeData(playerData(0, 1_000), homeData(makeHome(OTHER_CITY_ID, 8)), getCity(HOME_CITY_ID));
+		const data = await buildHomeData(playerData(0, 1_000), homeData(makeHome({
+		cityId: OTHER_CITY_ID, level: 8
+	})), getCity(HOME_CITY_ID));
 
 		expect(data.owned).toMatchObject({
 			level: 8,
@@ -286,13 +297,17 @@ describe("buildHomeData owned home", () => {
 	it("keeps the bed of a small home reached from an apartment at its own level", async () => {
 		vi.mocked(Apartments.getOfPlayerInCity).mockResolvedValue(makeApartment(HOME_CITY_ID, 0));
 
-		const data = await buildHomeData(playerData(0), homeData(makeHome(OTHER_CITY_ID, 2)), getCity(HOME_CITY_ID));
+		const data = await buildHomeData(playerData(0), homeData(makeHome({
+		cityId: OTHER_CITY_ID, level: 2
+	})), getCity(HOME_CITY_ID));
 
 		expect(data.owned?.features.bedHealthRegeneration).toBe(HomeLevel.LEVEL_2.features.bedHealthRegeneration);
 	});
 
 	it("gives no home access in a city where the player has neither the home nor an apartment", async () => {
-		const data = await buildHomeData(playerData(0), homeData(makeHome(OTHER_CITY_ID, 2)), getCity(HOME_CITY_ID));
+		const data = await buildHomeData(playerData(0), homeData(makeHome({
+		cityId: OTHER_CITY_ID, level: 2
+	})), getCity(HOME_CITY_ID));
 
 		expect(data.owned).toBeUndefined();
 	});
@@ -300,7 +315,9 @@ describe("buildHomeData owned home", () => {
 
 describe("buildApartmentNotaryData", () => {
 	it("sells the apartment of the city to a home owner, telling how much is missing", async () => {
-		const home = makeHome(OTHER_CITY_ID, 1);
+		const home = makeHome({
+		cityId: OTHER_CITY_ID, level: 1
+	});
 		const affordable = await buildApartmentNotaryData(makeCityPlayer(APARTMENT_PRICE), getCity(HOME_CITY_ID), home, NOW);
 		const expensive = await buildApartmentNotaryData(makeCityPlayer(APARTMENT_PRICE - 10), getCity(HOME_CITY_ID), home, NOW);
 
@@ -317,7 +334,9 @@ describe("buildApartmentNotaryData", () => {
 
 	it("does not sell an apartment to a player without home nor a second one in the same city", async () => {
 		vi.mocked(Apartments.getOfPlayer).mockResolvedValue([makeApartment(HOME_CITY_ID, 0)]);
-		const alreadyOwned = await buildApartmentNotaryData(makeCityPlayer(1_000_000), getCity(HOME_CITY_ID), makeHome(OTHER_CITY_ID, 1), NOW);
+		const alreadyOwned = await buildApartmentNotaryData(makeCityPlayer(1_000_000), getCity(HOME_CITY_ID), makeHome({
+		cityId: OTHER_CITY_ID, level: 1
+	}), NOW);
 		vi.mocked(Apartments.getOfPlayer).mockResolvedValue([]);
 		const homeless = await buildApartmentNotaryData(makeCityPlayer(1_000_000), getCity(HOME_CITY_ID), null, NOW);
 
@@ -332,7 +351,9 @@ describe("buildApartmentNotaryData", () => {
 		const broken = makeApartment("unknown_city", 10, 4);
 		vi.mocked(Apartments.getOfPlayer).mockResolvedValue([rentedRich, rentedPoor, empty, broken]);
 
-		const data = await buildApartmentNotaryData(makeCityPlayer(0), getCity(OTHER_CITY_ID), makeHome(HOME_CITY_ID, 1), NOW);
+		const data = await buildApartmentNotaryData(makeCityPlayer(0), getCity(OTHER_CITY_ID), makeHome({
+		cityId: HOME_CITY_ID, level: 1
+	}), NOW);
 
 		expect(data.ownedApartments.map(apartment => [apartment.apartmentId, apartment.cityId, apartment.accumulatedRent, apartment.isRented, apartment.canClaim]))
 			.toEqual([
@@ -349,7 +370,9 @@ describe("buildApartmentNotaryData", () => {
 		const days = HomeConstants.MIN_RENT_TO_CLAIM / HomeConstants.DAILY_RENT;
 		vi.mocked(Apartments.getOfPlayer).mockResolvedValue([makeApartment(HOME_CITY_ID, days)]);
 
-		const data = await buildApartmentNotaryData(makeCityPlayer(0), getCity(OTHER_CITY_ID), makeHome(HOME_CITY_ID, 1), NOW);
+		const data = await buildApartmentNotaryData(makeCityPlayer(0), getCity(OTHER_CITY_ID), makeHome({
+		cityId: HOME_CITY_ID, level: 1
+	}), NOW);
 
 		expect(data.ownedApartments[0]).toMatchObject({
 			accumulatedRent: HomeConstants.MIN_RENT_TO_CLAIM, canClaim: true
@@ -440,7 +463,9 @@ describe("buildUpgradeStationData", () => {
 
 describe("buildChestData", () => {
 	it("lists the stored items, the depositable items and the inventory capacity including the home bonus", async () => {
-		const home = makeHome(HOME_CITY_ID, 4);
+		const home = makeHome({
+		cityId: HOME_CITY_ID, level: 4
+	});
 		vi.mocked(HomeChestSlots.getOfHome).mockResolvedValue([
 			makeChestSlot(1, COMMON_ARMOR_ID),
 			makeChestSlot(2, 0)
@@ -494,7 +519,9 @@ describe("buildChestData", () => {
 	});
 
 	it("counts one slot per category for a player without inventory info and skips the plants without garden", async () => {
-		const chest = await buildChestData(makeHome(HOME_CITY_ID, 1), HomeLevel.LEVEL_1, [], makeCityPlayer(0));
+		const chest = await buildChestData(makeHome({
+		cityId: HOME_CITY_ID, level: 1
+	}), HomeLevel.LEVEL_1, [], makeCityPlayer(0));
 
 		expect(chest.inventoryCapacity).toEqual({
 			weapon: 1, armor: 1, potion: 1, object: 1

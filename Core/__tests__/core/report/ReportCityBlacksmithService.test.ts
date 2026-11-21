@@ -63,6 +63,7 @@ import { makeInventorySlot } from "./CityPlayerFixture";
 import {
 	asPlayer, CityHandlerPlayer, describePackets, makeHandlerPlayer
 } from "./CityHandlerFixture";
+import { makeHome } from "../ModelStubs";
 
 /*
  * Real item data: the common weapon 2 needs the common materials 24 and 70 for its first upgrade, which costs
@@ -467,12 +468,6 @@ describe("home upgrade station", () => {
 		} as ReactionCollectorCityData;
 	}
 
-	function makeHome(level: number): Home {
-		return Object.assign(Object.create(Home.prototype) as Home, {
-			id: 3, ownerId: 1, cityId: "boug_coton", level
-		});
-	}
-
 	describe("validateUpgradeItemRequest", () => {
 		const reaction = {
 			slot: 0, itemCategory: ItemCategory.WEAPON
@@ -543,7 +538,7 @@ describe("home upgrade station", () => {
 			const data = stationData(player, [weapon], ALL_MATERIALS);
 			giveInventory(weapon);
 			giveMaterials(ALL_MATERIALS);
-			vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(1));
+			vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({ level: 1 }));
 			lockPlayer(player);
 
 			const response = await upgradeAtHome(player, data);
@@ -570,7 +565,7 @@ describe("home upgrade station", () => {
 			const data = stationData(player, [weapon], ALL_MATERIALS);
 			giveInventory(weapon);
 			giveMaterials(new Map([[24, 1]]));
-			vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(1));
+			vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({ level: 1 }));
 			lockPlayer(player);
 
 			const response = await upgradeAtHome(player, data);
@@ -587,7 +582,7 @@ describe("home upgrade station", () => {
 			giveInventory(weapon);
 			giveMaterials(ALL_MATERIALS);
 			lockPlayer(player);
-			vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome(1));
+			vi.mocked(Homes.getOfPlayer).mockResolvedValue(makeHome({ level: 1 }));
 			vi.mocked(Materials.consumeMaterials).mockResolvedValue(false);
 			const consumptionFailed = await upgradeAtHome(player, data);
 			vi.mocked(Homes.getOfPlayer).mockResolvedValue(null);
