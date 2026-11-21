@@ -36,13 +36,24 @@ vi.mock("../../../src/core/database/game/models/PlayerPlantSlot", () => ({
 vi.mock("../../../src/core/database/game/models/PlayerMissionsInfo", () => ({
 	PlayerMissionsInfos: { getOfPlayer: vi.fn() }
 }));
+vi.mock("../../../src/core/database/game/models/Setting", () => ({
+	Settings: {
+		ENCHANTER_CITY: { getValue: vi.fn() },
+		ENCHANTER_ENCHANTMENT_ID: { getValue: vi.fn() },
+		NEXT_ENCHANTER_CITY: { getValue: vi.fn() },
+		NEXT_ENCHANTER_ENCHANTMENT_ID: { getValue: vi.fn() }
+	}
+}));
 vi.mock("../../../src/core/report/ReportGardenService", () => ({
 	buildGardenData: vi.fn()
 }));
 
 import {
-	buildApartmentNotaryData, buildChestData, buildEnchanterData, buildHomeData, buildUpgradeStationData
+	buildApartmentNotaryData, buildAvailableEnchanterData, buildChestData, buildEnchanterData, buildHomeData, buildUpgradeStationData
 } from "../../../src/core/report/ReportCityService";
+import { Settings } from "../../../src/core/database/game/models/Setting";
+import { MapLocationDataController } from "../../../src/data/MapLocation";
+import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import {
 	Home, Homes
 } from "../../../src/core/database/game/models/Home";
@@ -556,5 +567,90 @@ describe("buildEnchanterData", () => {
 		expect(data.enchantmentCost).toEqual(enchantment.getEnchantmentCost(true));
 		expect(data.enchantmentCost.money).toBeLessThan(enchantment.getEnchantmentCost(false).money);
 		expect(data.tomorrow).toEqual(tomorrow);
+	});
+});
+
+describe("buildAvailableEnchanterData", () => {
+	const enchantment = ItemEnchantment.PVE_ATTACK_1;
+	const nextEnchantment = ItemEnchantment.DEFENSE_1;
+
+	function settle(settings: {
+		city: string; enchantmentId: string; nextCity: string; nextEnchantmentId: string;
+	}): void {
+		vi.mocked(Settings.ENCHANTER_CITY.getValue).mockResolvedValue(settings.city);
+		vi.mocked(Settings.ENCHANTER_ENCHANTMENT_ID.getValue).mockResolvedValue(settings.enchantmentId);
+		vi.mocked(Settings.NEXT_ENCHANTER_CITY.getValue).mockResolvedValue(settings.nextCity);
+		vi.mocked(Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.getValue).mockResolvedValue(settings.nextEnchantmentId);
+	}
+
+	beforeEach(() => {
+		vi.mocked(PlayerMissionsInfos.getOfPlayer).mockResolvedValue({ gems: 0 } as PlayerMissionsInfo);
+		settle({
+			city: HOME_CITY_ID, enchantmentId: enchantment.id, nextCity: OTHER_CITY_ID, nextEnchantmentId: nextEnchantment.id
+		});
+	});
+
+	it("opens the enchanter of the day in its city, telling where it goes next", async () => {
+		const nextMapLocation = MapLocationDataController.instance.getById(getCity(OTHER_CITY_ID).maps[0]);
+
+		const data = await buildAvailableEnchanterData({
+			inventory: [], player: makeCityPlayer(0)
+		}, HOME_CITY_ID);
+
+		expect(data).toMatchObject({
+			enchantmentId: enchantment.id,
+			enchantmentCost: enchantment.getEnchantmentCost(false),
+			mageReduction: false,
+			tomorrow: {
+				cityMapLocationId: nextMapLocation?.id,
+				cityMapTypeId: nextMapLocation?.type,
+				enchantmentId: nextEnchantment.id,
+				enchantmentType: nextEnchantment.kind.type.id
+			}
+		});
+	});
+
+	it("gives a mage the reduced price", async () => {
+		const mage = Object.assign(makeCityPlayer(0), { class: ClassConstants.CLASSES_ID.MYSTIC_MAGE });
+
+		const data = await buildAvailableEnchanterData({
+			inventory: [], player: mage
+		}, HOME_CITY_ID);
+
+		expect(data?.mageReduction).toBe(true);
+		expect(data?.enchantmentCost).toEqual(enchantment.getEnchantmentCost(true));
+	});
+
+	it("has no enchanter in another city or with an unknown enchantment of the day", async () => {
+		const elsewhere = await buildAvailableEnchanterData({
+			inventory: [], player: makeCityPlayer(0)
+		}, OTHER_CITY_ID);
+		settle({
+			city: HOME_CITY_ID, enchantmentId: "unknownEnchantment", nextCity: OTHER_CITY_ID, nextEnchantmentId: nextEnchantment.id
+		});
+		const unknown = await buildAvailableEnchanterData({
+			inventory: [], player: makeCityPlayer(0)
+		}, HOME_CITY_ID);
+
+		expect([elsewhere, unknown]).toEqual([undefined, undefined]);
+	});
+
+	it("omits the next stop when the next enchanter settings are invalid", async () => {
+		settle({
+			city: HOME_CITY_ID, enchantmentId: enchantment.id, nextCity: "unknown_city", nextEnchantmentId: nextEnchantment.id
+		});
+		const unknownCity = await buildAvailableEnchanterData({
+			inventory: [], player: makeCityPlayer(0)
+		}, HOME_CITY_ID);
+		settle({
+			city: HOME_CITY_ID, enchantmentId: enchantment.id, nextCity: OTHER_CITY_ID, nextEnchantmentId: "unknownEnchantment"
+		});
+		const unknownEnchantment = await buildAvailableEnchanterData({
+			inventory: [], player: makeCityPlayer(0)
+		}, HOME_CITY_ID);
+
+		expect(unknownCity?.enchantmentId).toBe(enchantment.id);
+		expect(unknownCity?.tomorrow).toBeUndefined();
+		expect(unknownEnchantment?.tomorrow).toBeUndefined();
 	});
 });

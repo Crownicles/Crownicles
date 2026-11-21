@@ -20,7 +20,10 @@ export default {
 		"src/core/report/ReportCityGuildDomainService.ts",
 		"src/core/report/ReportCityHomeService.ts",
 		"src/core/report/ReportCityNotaryService.ts",
+		"src/core/report/ReportCityRoyalBlacksmithService.ts",
+		"src/core/report/ReportCityScrapDealerService.ts",
 		"src/core/report/ReportCityService.ts",
+		"src/core/report/ReportCityShopService.ts",
 		"src/core/report/ReportRoyalBlacksmithService.ts"
 	],
 	// Imports reach ../Lib through relative paths that a copied sandbox would break: mutate the files in place (restored at the end)
