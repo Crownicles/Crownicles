@@ -1290,34 +1290,34 @@
     "possibilities": {
       "deny": {
         "outcomes": {
-          "0": "Vous ne pensez pas que ce soit une bonne idée de boire des choses inconnues pour tester, alors vous déclinez poliment la proposition du barman. Cependant, vous lui commandez une bonne pinte de bière, que vous videz tranquillement en discutant avec des habitués.",
-          "1": "Vous agressez littéralement le barman lui demandant s'il vous prend pour un gougnafier à essayer de vous faire boire n'importe quelle cochonnerie. Il vous exclut de son bar, alors vous vous vengez en y allumant un feu, puis reprenez votre chemin.",
-          "2": "Vous expliquez au barman que vous n'avez pas trop envie de boire quelque chose d'inconnu, et encore moins de servir de cobaye. Il vous rassure en vous disant qu'il a juste mélangé deux alcools et quelques extraits de plantes sans danger. Vous buvez donc, et lui dites vos impressions."
+          "0": "Vous ne pensez pas que ce soit une bonne idée de boire des choses inconnues, alors vous déclinez poliment la proposition de l'aubergiste. Vous lui commandez plutôt une bonne pinte de bière, que vous videz tranquillement en discutant avec des habitués.",
+          "1": "Vous prenez très mal la proposition et accusez l'aubergiste de vouloir vous faire boire n'importe quelle cochonnerie. Il vous jette dehors. Pour vous venger, vous renversez un tonneau de bière devant sa porte, puis vous éloignez sans demander votre reste.",
+          "2": "Vous expliquez à l'aubergiste que vous n'avez pas trop envie de servir de cobaye. Il vous rassure : il a juste mélangé deux alcools et quelques extraits de plantes sans danger. Vous buvez donc, et lui donnez vos impressions."
         },
         "text": "Refuser sa proposition."
       },
       "end": {
         "outcomes": {
-          "0": "Vous l'ignorez, et repartez juste de son auberge."
+          "0": "Vous ignorez l'aubergiste et ressortez de l'auberge."
         }
       },
       "steal": {
         "outcomes": {
-          "0": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous prenez la fuite.",
-          "1": "Vous lui expliquez que vous n'avez pas trop envie de lui servir de cobaye, alors le barman, semblant déçu, vous laisse. Vous vous attelez donc à la tâche qui vous faisait envie depuis votre entrée dans le bar : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous finissez la nuit en prison et dédommagez ces gens."
+          "0": "Vous déclinez l'offre, et l'aubergiste, déçu, vous laisse. Vous vous attelez alors à la tâche qui vous faisait envie depuis votre entrée : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous prenez la fuite.",
+          "1": "Vous déclinez l'offre, et l'aubergiste, déçu, vous laisse. Vous vous attelez alors à la tâche qui vous faisait envie depuis votre entrée : dépouiller discrètement les clients. Vous faites les poches à trois personnes sans souci, mais la quatrième vous remarque et crie au voleur. Vous finissez la nuit au cachot et dédommagez vos victimes."
         },
         "text": "Refuser, et tenter de voler des gens."
       },
       "test": {
         "outcomes": {
           "0": "Vous acceptez sa proposition, et buvez le liquide épais qu'il vous tend. C'est délicieux et cela répand en vous une douce chaleur.",
-          "1": "Vous prenez sans plus de cérémonie la chope qu'il vous tend, remplie d'un liquide épais et verdâtre. Vous buvez celui-ci d'une traite. Quelques secondes après, vous réalisez l'horrible goût que ça a, et vomissez le tout par terre. Le barman s'excuse et vous donne une poignée de pièces en dédommagement, mais vous vous sentez malade.",
-          "2": "Vous acceptez sa requête, et il vous donne une chope. Vous la buvez, et sentez un petit arrière goût pas piqué des hannetons. Vous donnez au barman vos impressions, il vous remercie, puis vous reprenez votre route."
+          "1": "Vous prenez sans plus de cérémonie la chope qu'il vous tend, remplie d'un liquide épais et verdâtre. Vous la buvez d'une traite. Quelques secondes après, vous réalisez l'horrible goût que ça a, et vomissez le tout par terre. L'aubergiste s'excuse et vous donne une poignée de pièces en dédommagement, mais vous vous sentez malade.",
+          "2": "Vous acceptez sa requête, et il vous donne une chope. Vous la buvez, et sentez un petit arrière-goût pas piqué des hannetons. Vous donnez vos impressions à l'aubergiste, qui vous remercie."
         },
         "text": "Accepter de servir de cobaye."
       }
     },
-    "text": "Vous entrez dans un bar, et le barman vous interpelle, vous disant qu'il aimerait \"tester de nouvelles boissons\" sur vous."
+    "text": "Vous entrez à l'auberge Au Coin du Feu, et l'aubergiste vous interpelle depuis son comptoir : il aimerait vous faire goûter de nouvelles boissons de sa composition."
   },
   "36": {
     "possibilities": {
@@ -1356,7 +1356,7 @@
         "text": "Aller voir le bijoutier et discuter."
       }
     },
-    "text": "Au cours de votre très long périple, vous arrivez aux abords d'un petit village fort charmant. Le lieu est si modeste que, d'un simple coup d'œil, vous devinez qu'il ne compte que deux commerces : une bijouterie et une auberge. Un passant vous apprend que la bijouterie est tenue par un vieillard qui réalise de magnifiques bijoux et colliers. Quant à l'auberge, elle est dirigée par un couple, et il paraît qu'elle a un grand succès."
+    "text": "Au cours de votre très long périple, vous arrivez à Boug-Coton, un petit village fort charmant. Sur la place, deux enseignes attirent votre regard : celle d'une bijouterie et celle de l'Auberge du Seigneur. Un passant vous apprend que la bijouterie est tenue par un vieillard qui réalise de magnifiques bijoux et colliers. Quant à l'auberge, elle est dirigée par un couple, et son succès attire jusqu'aux nobles de la région."
   },
   "37": {
     "possibilities": {
@@ -1653,7 +1653,7 @@
         "text": "S'abriter dans une église Kyutiste."
       }
     },
-    "text": "Faisant route vers l'Est en pleine nuit, vous marchez. Il fait sombre mais la lune est claire. Vous apercevez devant vous un être éclairé par la lumière de la lune. Il est grand, vêtu de noir; vous voyez un liquide dégouliner d'une de ses mains, la nuit illumine la peau pâle de l'individu qui ne vous a pas encore repéré. Que faire ?"
+    "text": "Vous marchez en pleine nuit sur le Grand Axe. Il fait sombre mais la lune est claire. Vous apercevez devant vous un être éclairé par la lumière de la lune. Il est grand, vêtu de noir ; vous voyez un liquide dégouliner d'une de ses mains, et la nuit illumine la peau pâle de l'individu, qui ne vous a pas encore repéré. Que faire ?"
   },
   "44": {
     "possibilities": {
@@ -1806,11 +1806,11 @@
       },
       "help": {
         "outcomes": {
-          "0": "Avec l'aide de tout le village, vous organisez le siège du château. Aucune réaction n'est observée dans le château où l'on semble s'accommoder des légers désagréments causés par le blocage des routes aux alentours. Après quelques heures, les grilles du pont levis s'abaissent et une trentaine d'hommes se ruent vers le campement que vous avez établi. Une lutte sanglante s'engage alors. Dans la cohue, vous attrapez un cheval et fuyez.",
+          "0": "Avec l'aide de tout le village, vous organisez le siège de la tour. Aucune réaction n'est observée à l'intérieur, où l'on semble s'accommoder des légers désagréments causés par le blocage des chemins aux alentours. Après quelques heures, la herse se lève et une poignée d'hommes en armes se ruent vers le campement que vous avez établi. Une lutte sanglante s'engage alors. Dans la cohue, vous attrapez un cheval et fuyez.",
           "1": "Vous et les villageois organisez une rébellion ! Malheureusement, lorsque vous décidez d'attaquer un garde, les villageois trop effrayés ne vous suivent pas et s'enfuient. Votre adversaire vous donne un violent coup de poing qui vous fait tomber à la renverse, le garde en profite pour vous voler votre bourse.",
-          "2": "Vous décidez d'organiser une révolte ! Cependant un villageois vous trahit afin d'obtenir une récompense. Les gardes du château se hâtent de vous appréhender. Vous parvenez à leur fausser compagnie, non sans avoir essuyé quelques coups.",
+          "2": "Vous décidez d'organiser une révolte ! Cependant un villageois vous trahit afin d'obtenir une récompense. Les gardes du seigneur se hâtent de vous appréhender. Vous parvenez à leur fausser compagnie, non sans avoir essuyé quelques coups.",
           "3": "Vous profitez de votre statut de chevalier pour visiter le châtelain. Après les introductions, vous lui révélez la raison de votre venue en enfonçant une dague dans le cœur. Les gardes réagissent immédiatement et vous entourent. L'un d'entre eux vous donne un coup d'épée que vous parvenez à esquiver, mais un autre se précipite sur vous et vous transperce de sa lame.",
-          "4": "Vous tentez d'assiéger le château du seigneur avec le village mais la nuit tombe, vous décidez donc de dormir devant le château. Le seigneur en profite pour sortir avec ses hommes et arrive jusqu'à votre campement, mais un villageois alerte tout le monde. Vous vous précipitez sur le seigneur et le pourfendez d'un agile coup d'épée. Les gardes se rendent et les villageois vous donnent une bourse remplie d'or pour vous remercier de les avoir aidé !",
+          "4": "Vous tentez d'assiéger la tour du seigneur avec le village, mais la nuit tombe, et vous décidez donc de dormir au pied des remparts. Le seigneur en profite pour sortir avec ses hommes et arrive jusqu'à votre campement, mais un villageois alerte tout le monde. Vous vous précipitez sur le seigneur et le pourfendez d'un agile coup d'épée. Les gardes se rendent et les villageois vous donnent une bourse remplie d'or pour vous remercier de les avoir aidés !",
           "5": "Vous allez voir le seigneur et lui annoncez que son village compte organiser une rébellion. Après avoir longuement discuté, vous parvenez à gagner sa confiance et en profitez pour lui enfoncer une dague dans le cœur. Les gardes loyaux au seigneur se précipitent sur vous et vous immobilisent. L'un d'eux propose de vous exécuter devant le village tout entier pour faire passer le message mais la révolte fait alors rage ! Les villageois finissent par réussir à faire fuir les gardes et vous offrent une large bourse d'or pour vous remercier.",
           "6": "Vous allez voir le seigneur et lui annoncez qu'une rébellion s'organise. Après avoir longuement discuté, vous parvenez à gagner sa confiance et lui enfoncez une dague dans le cœur. Les gardes loyaux au dirigeant vous attaquent, mais d'autres qui ne souhaitaient que sa mort vous aident à fuir. De retour au village, on vous offre un peu d'argent et un objet pouvant être utile."
         },
@@ -1819,7 +1819,7 @@
       "tell": {
         "outcomes": {
           "0": "Vous allez visiter le seigneur, lui parlez de la demande du villageois et l'aidez à le retrouver. Il vous remercie et vous repartez.",
-          "1": "Vous allez visiter le seigneur et lui contez la traîtrise régnant dans le village voisin, vous lui annoncez que vous êtes prêt à lui donner le nom des dissidents en échange d'une importante somme d'argent. Il accepte votre offre et vous le conduisez jusqu'aux traîtres, qu'il exécute sous vos yeux. Sur la route, vous vérifiez la bourse qu'il vous a donné et vous rendez compte qu'elle ne contient que peu de pièces !",
+          "1": "Vous allez visiter le seigneur et lui contez la traîtrise qui règne au village. Vous lui annoncez que vous êtes prêt à lui donner le nom des dissidents en échange d'une importante somme d'argent. Il accepte votre offre et vous le conduisez jusqu'aux traîtres, qu'il exécute sous vos yeux. Sur la route, vous vérifiez la bourse qu'il vous a donnée et vous rendez compte qu'elle ne contient que peu de pièces !",
           "2": "Vous allez visiter le seigneur et lui parlez de la demande du villageois et lui expliquez que vous pouvez l'aider à retrouver le rebelle, mais qu'en échange vous souhaitez une belle somme d'argent. Il accepte et vous demande de l'aider à le retrouver. Ensemble, vous y parvenez mais lorsque vous demandez l'argent au seigneur, celui-ci se défile. Un duel s'engage mais le seigneur ne fait pas le poids face à vos talents d'épéiste. Il n'avait cependant pas beaucoup de richesses sur lui.",
           "3": "Vous allez visiter le seigneur, mais les gardes ne vous laissent pas passer. Vous leur faites savoir que c'est important, mais ils ne veulent rien entendre. Sous leur menaces, vous repartez en poussant un juron, impuissant.",
           "4": "Vous décidez de répéter au seigneur ce que vous avez entendu, mais sur votre route vous croisez un villageois qui semble avoir deviné votre intention de trahir le village. Vous tentez de forcer le passage mais des renforts sont vites arrivés. Encerclé par la foule haineuse, vous êtes mis à terre et violemment frappé."
@@ -1827,7 +1827,7 @@
         "text": "Répéter au seigneur ce que vous avez entendu."
       }
     },
-    "text": "Vous êtes tellement épuisé que vous avez du mal à marcher. C'est alors que vous apercevez un village, vous êtes sauvé ! Vous arrivez non sans peine jusqu'au village et parvenez à sympathiser avec un groupe de villageois qui acceptent de vous nourrir et vous trouvent un endroit où dormir. Vous pensez bientôt partir, mais l'un des villageois vient vous demander une faveur. Vous faisant miroiter de grandes richesses, l'habitant vous supplie de les débarrasser du châtelain voisin."
+    "text": "Vous êtes tellement épuisé que vous avez du mal à marcher. C'est alors que vous apercevez les remparts effondrés de Ville Forte, vous êtes sauvé ! Vous arrivez non sans peine jusqu'aux quelques maisons encore debout et parvenez à sympathiser avec des villageois qui acceptent de vous nourrir et vous trouvent un endroit où dormir. Vous pensez bientôt partir, mais l'un d'eux vient vous demander une faveur. Vous faisant miroiter de grandes richesses, il vous supplie de les débarrasser du seigneur qui s'est retranché dans la dernière tour intacte des anciennes fortifications."
   },
   "48": {
     "possibilities": {
@@ -1934,15 +1934,15 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Les villageois vous proposent d'y goûter et vous ne dites pas non à l'offre. En effet, le jus est rafraîchissant et la chair apaise votre appétit. Vous remerciez les villageois pour cette découverte en leur donnant quelques pièces.",
-          "1": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Alors que l'un d'eux vous explique, les autres commencent à se rapprocher de vous. Brusquement, quelqu'un vous fait une clé de bras tandis que les autres se jettent sur vous pour vous dérober vos affaires. Après avoir été passé à tabac, vous reprenez péniblement vos esprits.",
-          "2": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Vous les remerciez pour ces précieuses informations."
+          "0": "Vous vous approchez des villageois et les questionnez sur leur récolte. Ils vous expliquent que la chair se mange une fois la coque ouverte, et que leur jus est réputé à travers tout le pays. Ils vous proposent d'y goûter et vous ne dites pas non : le jus est rafraîchissant et la chair apaise votre appétit. Vous remerciez les villageois en leur donnant quelques pièces.",
+          "1": "Vous vous approchez des villageois et les questionnez sur leur récolte. Alors que l'un d'eux vous explique, les autres commencent à se rapprocher de vous. Brusquement, quelqu'un vous fait une clé de bras tandis que les autres se jettent sur vous pour vous dérober vos affaires. Après avoir été passé à tabac, vous reprenez péniblement vos esprits.",
+          "2": "Vous vous approchez des villageois et les questionnez sur leur récolte. Ils vous expliquent comment on ouvre la coque, et pourquoi leurs noix s'échangent à prix d'or sur les marchés du royaume. Vous les remerciez pour ces précieuses informations."
         },
-        "text": "Aborder les villageois pour les questionner."
+        "text": "Aborder les villageois pour les questionner sur leur récolte."
       },
       "end": {
         "outcomes": {
-          "0": "Vous regardez un moment le spectacle des villageois en train de récolter ces fruits singuliers sous le soleil ardent.",
+          "0": "Vous regardez un moment le spectacle des villageois en train de récolter les noix de coco sous le soleil ardent.",
           "1": "Un de ces fruits tombe à côté de vous. Vous le prenez dans vos mains et l'examinez avec attention."
         }
       },
@@ -1963,7 +1963,7 @@
         "text": "Continuer votre sieste au pied de l'arbre."
       }
     },
-    "text": "Lors de votre périple, vous atteignez un petit hameau du nom de village Coco, il fait très chaud et vous avez besoin de vous reposer. Les lieux ne vous semblant pas hostiles, vous faites donc une halte dans cette oasis. Alors que vous vous reposez au pied d'un cocotier, vous apercevez un groupe de villageois escaladant les arbres pour attraper des fruits que vous n'aviez jamais vus auparavant, ils sont ronds comme des ballons et durs comme du bois et ne vous semblent pas appétissants."
+    "text": "Lors de votre périple, vous atteignez le Village Coco. Il fait très chaud et vous avez besoin de vous reposer : vous faites donc une halte dans l'oasis. Alors que vous vous reposez au pied d'un cocotier, vous apercevez un groupe de villageois qui escaladent les arbres pour cueillir les fameuses noix de coco du village, rondes comme des ballons et dures comme du bois. Elles ne vous semblent pourtant pas très appétissantes."
   },
   "51": {
     "possibilities": {
@@ -2413,14 +2413,14 @@
       "end": {
         "outcomes": {
           "0": "Vous avez choisi de simplement regarder les feux d'artifice et de rester pour voir le village tomber dans le désespoir, appuyé contre un arbre juste à l'extérieur du village. Mais, même après minuit, rien ne s'est passé. Il semble que ces prétendues bêtes ne soient qu'une imposture et vous partez.",
-          "1": "Vous décidez de surveiller le grenier depuis la taverne locale, mais vous vous laissez distraire par une délicieuse bière. Vous êtes ivre mort et perdez vos esprits. En vous réveillant, vous remarquez qu'ils ont simplement jeté votre corps inconscient sur la route et que vous avez quelques pièces de monnaie en moins.",
-          "2": "Décidant de ne rien faire, vous entrez dans la taverne locale et louez une chambre pour la nuit. Mais pendant votre sommeil, des personnages vêtus de noir vous attaquent, vous frappent pour vous soumettre et vous voler. Ils vous laissent en sang sur le sol et vous avertissent de ne plus jamais fouiner dans leurs affaires...",
+          "1": "Vous décidez de surveiller la grange depuis l'Auberge du Seigneur, mais vous vous laissez distraire par une délicieuse bière. Vous êtes ivre mort et perdez vos esprits. En vous réveillant, vous remarquez qu'on a simplement jeté votre corps inconscient sur la route et que vous avez quelques pièces de monnaie en moins.",
+          "2": "Décidant de ne rien faire, vous entrez à l'Auberge du Seigneur et louez une chambre pour la nuit. Mais pendant votre sommeil, des personnages vêtus de noir surgissent des caves, vous frappent pour vous soumettre et vous volent. Ils vous laissent en sang sur le sol et vous avertissent de ne plus fouiner dans leurs affaires.",
           "3": "Puisque vous êtes déjà sur place, réflexion faite : pourquoi ne pas aller acheter des objets ? Vous flânez dans le marché local, et vous arrêtez chez le forgeron et armurier local. Au bout d'un certain temps, vous trouvez quelque chose."
         }
       },
       "faceThem": {
         "outcomes": {
-          "0": "Vous vous rendez dans le sous-sol du grenier et tombez nez à nez avec des personnages en robe noire se tenant en cercle, couverts de plumes et de sang partout. Alors que vous essayez d'en frapper un, vous hésitez. Ces hommes ne sont que d'ordinaires parieurs de combats de coqs et non des bêtes. Mais les hommes vous remarquent et, par peur, se liguent contre vous, vous renversent et prennent rapidement la fuite.",
+          "0": "Vous vous rendez dans le sous-sol de la grange et tombez nez à nez avec des personnages en robe noire se tenant en cercle, couverts de plumes et de sang. Alors que vous essayez d'en frapper un, vous hésitez. Ces hommes ne sont que d'ordinaires parieurs de combats de coqs et non des bêtes. Mais les hommes vous remarquent et, par peur, se liguent contre vous, vous renversent et prennent rapidement la fuite.",
           "1": "En entrant dans la pièce, une mortifiante odeur de pourriture vous submerge. Du sang et des détritus sont répandus dans toute la pièce et une sorte de brume rouge se propage. Tout a probablement commencé à pourrir il y a plusieurs jours. Vous ne supportez ni la vue ni l'odeur et vous fuyez l'endroit avec un sentiment d'écoeurement profond.",
           "2": "En ouvrant la porte, vous découvrez trois formes vêtues de noir sur le point de sacrifier une jeune fille. Vous dégainez rapidement votre lame et abattez les coupables. En jetant la lame tachée de sang de côté, vous sauvez la demoiselle en détresse et la faites sortir. Le lendemain, vous êtes célébré comme un héros et un protecteur du mal.",
           "3": "En descendant les escaliers, vous vous retrouvez entouré de statues en bois aux formes étranges, tordues dans une attitude grossière, de mystérieuses horreurs faites de bois. Mais il n'y a personne. Après avoir enquêté dans la pièce effrayante, vous trouvez une boîte avec quelque chose à l'intérieur..."

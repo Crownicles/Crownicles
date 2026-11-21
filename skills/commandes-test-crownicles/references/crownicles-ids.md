@@ -888,22 +888,22 @@ Généré depuis le code du jeu. Les familiers prennent un sexe en plus de l'ID 
 | 32 | Vous continuez votre chemin tranquillement dans une forêt, lorsque vous entendez un cri. La voix semble être celle d'un homme. Vous décidez |
 | 33 | Vous arrivez dans une ferme où se déroule un grand festin. Les gens paraissent accueillants. |
 | 34 | À votre arrivée au village, des passants vous reconnaissent et vous abordent. Ils se rappellent parfaitement de l'aide que vous leur aviez a |
-| 35 | Vous entrez dans un bar, et le barman vous interpelle, vous disant qu'il aimerait "tester de nouvelles boissons" sur vous. |
-| 36 | Au cours de votre très long périple, vous arrivez aux abords d'un petit village fort charmant. Le lieu est si modeste que, d'un simple coup |
+| 35 | Vous entrez à l'auberge Au Coin du Feu, et l'aubergiste vous interpelle depuis son comptoir : il aimerait vous faire goûter de nouvelles boi |
+| 36 | Au cours de votre très long périple, vous arrivez à Boug-Coton, un petit village fort charmant. Sur la place, deux enseignes attirent votre |
 | 37 | Vous marchez tranquillement sur la route grimpante, le temps est clair et le chemin de pierre en bon état. Vous pensez aux différentes desti |
 | 38 | Faisant route, vous croisez un marchand itinérant, qui vous interpelle. Il dit avoir des objets qui pourraient vous intéresser, et ce à des |
 | 39 | Durant votre périple, vous arrivez dans une ville en bord de mer. Vous faites là-bas la rencontre d'un homme, disant s'appeler Price et être |
 | 40 | Vous vous enfoncez dans une forêt sombre, et apercevez la silhouette d'un homme au loin. Vous décidez de vous approcher et comprenez que c'e |
 | 41 | Alors que vous continuez votre chemin, vous arrivez à une ville. Juste après, un groupe d'homme arrive vers vous et vous attrape, puis vous |
 | 42 | Au détour d'un chemin, une jeune femme apparaît. Vous ne saisissez d'abord pas très bien ce qu'elle dit mais finissez par comprendre qu'elle |
-| 43 | Faisant route vers l'Est en pleine nuit, vous marchez. Il fait sombre mais la lune est claire. Vous apercevez devant vous un être éclairé pa |
+| 43 | Vous marchez en pleine nuit sur le Grand Axe. Il fait sombre mais la lune est claire. Vous apercevez devant vous un être éclairé par la lumi |
 | 44 | Lors de votre long périple, vous vous retrouvez au bord d'une large rivière. Ne pouvant la traverser, vous décidez de la longer jusqu'à trou |
 | 45 | En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êt |
 | 46 | En passant dans un petit village, vous tombez sur le plus célèbre ménestrel connu dans la région et au-delà des frontières, nommé Pérotin. C |
-| 47 | Vous êtes tellement épuisé que vous avez du mal à marcher. C'est alors que vous apercevez un village, vous êtes sauvé ! Vous arrivez non san |
+| 47 | Vous êtes tellement épuisé que vous avez du mal à marcher. C'est alors que vous apercevez les remparts effondrés de Ville Forte, vous êtes s |
 | 48 | Vous êtes à la recherche d'un artéfact. Vous le convoitez car celui-ci, d'après les légendes, offrirait richesse et pouvoir à son possesseur |
 | 49 | Après vous être baladé plusieurs minutes sur la plage vous croisez une étrange petite créature, c'est un bernard-l'hermite ! Il semble s'êtr |
-| 50 | Lors de votre périple, vous atteignez un petit hameau du nom de village Coco, il fait très chaud et vous avez besoin de vous reposer. Les li |
+| 50 | Lors de votre périple, vous atteignez le Village Coco. Il fait très chaud et vous avez besoin de vous reposer : vous faites donc une halte d |
 | 51 | Alors que vous atteignez le pied du Mont Célestrum, vous repérez un escalier tortueux, taillé dans le flanc gauche du Mont. En vous en rappr |
 | 52 | Alors que vous faites étape à Boug-Coton, vous êtes interpellé par des enfants vous demandant de jouer avec eux. |
 | 53 | Alors que vous passez au bord du lac Mirage, vous remarquez un homme vous faisant signe d'un peu plus loin. Intrigué, vous décidez de le rej |
