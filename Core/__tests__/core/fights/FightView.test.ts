@@ -100,6 +100,74 @@ describe("FightView.addActionToHistory", () => {
 		});
 	});
 
+	it("splits the stat changes, alterations and damages between the fighter and its opponent", () => {
+		const packet = historyOf({
+			attackStatus: FightActionStatus.CRITICAL,
+			damages: 80,
+			buffs: [
+				{
+					selfTarget: false, stat: FightStatBuffed.ATTACK, value: 0.8, operator: FightStatModifierOperation.MULTIPLIER
+				},
+				{
+					selfTarget: false, stat: FightStatBuffed.BREATH, value: -2, operator: FightStatModifierOperation.ADDITION
+				},
+				{
+					selfTarget: true, stat: FightStatBuffed.DEFENSE, value: 1.3, operator: FightStatModifierOperation.MULTIPLIER
+				},
+				{
+					selfTarget: true, stat: FightStatBuffed.ENERGY, value: 25, operator: FightStatModifierOperation.ADDITION
+				},
+				{
+					selfTarget: true, stat: FightStatBuffed.DAMAGE, value: 15, operator: FightStatModifierOperation.ADDITION
+				},
+				{
+					selfTarget: false, stat: FightStatBuffed.SPEED, value: 10, operator: FightStatModifierOperation.ADDITION
+				}
+			],
+			alterations: [{
+				selfTarget: false, alteration: "poisoned"
+			}, {
+				selfTarget: true, alteration: "full"
+			}]
+		});
+
+		expect(packet).toMatchObject({
+			fightActionId: "summonAttack",
+			monsterId: "goblin",
+			status: FightActionStatus.CRITICAL,
+			customMessage: false,
+			fightActionEffectDealt: {
+				attack: -20, breath: -2, newAlteration: "poisoned", damages: 80
+			},
+			fightActionEffectReceived: {
+				defense: 30, energy: 25, newAlteration: "full", damages: 15
+			}
+		});
+		// An added speed is not displayed as a change in %
+		expect(packet.fightActionEffectDealt?.speed).toBeUndefined();
+		expect(packet.usedFightActionId).toBeUndefined();
+	});
+
+	it("describes the action actually used when another one was selected", () => {
+		const packet = historyOf({
+			attackStatus: FightActionStatus.NORMAL,
+			damages: 0,
+			usedAction: {
+				id: "simpleAttack",
+				result: {
+					attackStatus: FightActionStatus.MISSED, damages: 5
+				}
+			}
+		} as FightActionResult);
+
+		expect(packet).toMatchObject({
+			fightActionId: "summonAttack",
+			usedFightActionId: "simpleAttack",
+			status: FightActionStatus.MISSED,
+			fightActionEffectDealt: { damages: 5 }
+		});
+	});
+
 	it("tells no summoning for an attack without summoned allies", () => {
 		const packet = historyOf({
 			attackStatus: FightActionStatus.NORMAL, damages: 40
