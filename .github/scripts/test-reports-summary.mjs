@@ -31,15 +31,17 @@ function coverageRow(module) {
 function mutationRows(module) {
 	const report = readJson(join(module, "reports", "mutation", "mutation.json"));
 	if (!report) {
-		return [`| ${module} | n/a | | | |`];
+		return [`| ${module} | n/a | | | | |`];
 	}
 	return Object.entries(report.files).map(([file, { mutants }]) => {
 		const valid = mutants.filter(mutant => !INVALID_STATUSES.includes(mutant.status));
 		const detected = valid.filter(mutant => DETECTED_STATUSES.includes(mutant.status)).length;
+		const killed = valid.filter(mutant => mutant.status === "Killed").length;
+		const timeout = valid.filter(mutant => mutant.status === "Timeout").length;
 		const survived = valid.filter(mutant => mutant.status === "Survived").length;
 		const noCoverage = valid.filter(mutant => mutant.status === "NoCoverage").length;
 		const score = valid.length === 0 ? "n/a" : `${(100 * detected / valid.length).toFixed(2)} %`;
-		return `| ${module}/${file} | ${score} | ${detected} | ${survived} | ${noCoverage} |`;
+		return `| ${module}/${file} | ${score} | ${killed} | ${timeout} | ${survived} | ${noCoverage} |`;
 	});
 }
 
@@ -54,8 +56,8 @@ const TABLES = {
 	mutation: modules => [
 		"### Mutation score",
 		"",
-		"| File | Score | Killed | Survived | No coverage |",
-		"|---|---|---|---|---|",
+		"| File | Score | Killed | Timeout | Survived | No coverage |",
+		"|---|---|---|---|---|---|",
 		...modules.flatMap(mutationRows)
 	]
 };
