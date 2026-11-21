@@ -35,6 +35,7 @@ import { PlayerCookingRecipe } from "../../../src/core/database/game/models/Play
 import { CookingRecipeDataController } from "../../../src/data/CookingRecipeData";
 import { MaterialDataController } from "../../../src/data/Material";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
+import { PetFood } from "../../../../Lib/src/types/PetFood";
 
 /**
  * Minimal recipe factory for testing
@@ -671,7 +672,9 @@ describe("CookingService - recipe availability", () => {
 	it("should only let a pet food recipe be cooked by a guild member", () => {
 		const petFood = createTestRecipe({
 			outputType: CookingOutputType.PET_FOOD,
-			petFood: { type: PetConstants.PET_FOOD.HERBIVOROUS_FOOD, quantity: 2 },
+			petFood: {
+				type: PetFood.SALAD, quantity: 2, lovePoints: 3
+			},
 			plants: recipe.plants,
 			materials: recipe.materials
 		});
@@ -782,7 +785,7 @@ describe("CookingService.executeCraft", () => {
 	const mockWorld = (): void => {
 		vi.spyOn(HomePlantStorages, "getForPlant").mockResolvedValue(null);
 		vi.spyOn(PlayerPlantSlots, "consumeCarriedPlants").mockResolvedValue(1);
-		consumeMaterials = vi.spyOn(Materials, "consumeMaterials").mockResolvedValue(undefined);
+		consumeMaterials = vi.spyOn(Materials, "consumeMaterials").mockResolvedValue(true);
 		vi.spyOn(PlayerBadgesManager, "addBadge").mockResolvedValue(false);
 		vi.spyOn(RecipeDiscoveryService, "discoverCookingLevelRecipes").mockResolvedValue([]);
 		bool = vi.spyOn(RandomUtils.crowniclesRandom, "bool");
@@ -1067,7 +1070,9 @@ describe("CookingService - weekly time potions", () => {
 describe("CookingService - pet food", () => {
 	const petFoodRecipe = createTestRecipe({
 		outputType: CookingOutputType.PET_FOOD,
-		petFood: { type: PetConstants.PET_FOOD.CARNIVOROUS_FOOD, quantity: 3 }
+		petFood: {
+			type: PetFood.MEAT, quantity: 3, lovePoints: 3
+		}
 	});
 	const carnivorousIndex = PetConstants.PET_FOOD_BY_ID.indexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD);
 	const carnivorousCap = GuildDomainConstants.getFoodCaps(0)[carnivorousIndex];
@@ -1080,7 +1085,7 @@ describe("CookingService - pet food", () => {
 		expect(CookingService.canStorePetFoodReward(createTestRecipe(), null)).toBe(true);
 		expect(CookingService.canStorePetFoodReward(petFoodRecipe, null)).toBe(false);
 		expect(CookingService.canStorePetFoodReward({
-			...petFoodRecipe, petFood: undefined
+			...petFoodRecipe, petFood: null
 		}, makeGuild(0, {}))).toBe(false);
 		expect(CookingService.canStorePetFoodReward(petFoodRecipe, makeGuild(0, { [PetConstants.PET_FOOD.CARNIVOROUS_FOOD]: carnivorousCap - 3 }))).toBe(true);
 		expect(CookingService.canStorePetFoodReward(petFoodRecipe, makeGuild(0, { [PetConstants.PET_FOOD.CARNIVOROUS_FOOD]: carnivorousCap - 2 }))).toBe(false);
