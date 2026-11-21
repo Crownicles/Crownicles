@@ -3,6 +3,7 @@ import type { LockKey } from "../../../../Lib/src/locks/withLockedEntities";
 import type { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ZERO_STATS } from "../../../../Lib/src/types/StatValues";
 import type { Player } from "../../../src/core/database/game/models/Player";
+import { Guild } from "../../../src/core/database/game/models/Guild";
 
 /**
  * Player of a city handler: money moves as the real `spendMoney` / `addMoney` would move it, without missions nor logs
@@ -84,4 +85,47 @@ export function lockedEntitiesOf(entities: [LockKey["model"], number, unknown][]
  */
 export function describePackets(response: CrowniclesPacket[]): [string, Record<string, unknown>][] {
 	return response.map(packet => [packet.constructor.name, { ...packet }]);
+}
+
+/**
+ * Guild row as locked by a city handler: building levels and food stocks are read and written through
+ * `getDataValue` / `setDataValue` (backed by a plain record here), the other columns are plain fields
+ */
+export function makeHandlerGuild(fields: Partial<{
+	id: number;
+	chiefId: number;
+	level: number;
+	treasury: number;
+	domainCityId: string | null;
+	pantryLevel: number;
+}>, dataValues: Record<string, number> = {}): Guild & {
+	save: ReturnType<typeof vi.fn>;
+	addExperience: ReturnType<typeof vi.fn>;
+} {
+	const values: Record<string, unknown> = {
+		shopLevel: 0,
+		shelterLevel: 0,
+		pantryLevel: fields.pantryLevel ?? 0,
+		trainingGroundLevel: 0,
+		commonFood: 0,
+		herbivorousFood: 0,
+		carnivorousFood: 0,
+		ultimateFood: 0,
+		...dataValues
+	};
+	return Object.assign(Object.create(Guild.prototype) as Guild, {
+		id: 7,
+		chiefId: 1,
+		level: 1,
+		treasury: 0,
+		domainCityId: null,
+		pantryLevel: 0,
+		...fields,
+		getDataValue: (key: string): unknown => values[key],
+		setDataValue: (key: string, value: unknown): void => {
+			values[key] = value;
+		},
+		save: vi.fn().mockResolvedValue(undefined),
+		addExperience: vi.fn().mockResolvedValue(undefined)
+	});
 }
