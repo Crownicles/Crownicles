@@ -234,6 +234,32 @@ function buildSimpleResponseEmbed(options: SimpleEmbedOptions): CrowniclesEmbed 
 	return embed;
 }
 
+/**
+ * Farewell of a freed pet, with the feisty cost paid on the spot and the meat it left to the guild
+ * @param paidCost - cost to announce, 0 when it was already shown on the confirmation
+ */
+function buildFreedPetDescription(
+	lng: Language,
+	packet: CommandPetFreeAcceptPacketRes | CommandPetFreeShelterSuccessPacketRes,
+	paidCost = 0
+): string {
+	let description = i18n.t("commands:petFree.acceptedDesc", {
+		lng, pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex)
+	});
+
+	if (paidCost > 0) {
+		description += `\n${i18n.t("commands:petFree.feistyCostPaid", {
+			lng, cost: paidCost
+		})}`;
+	}
+
+	if (packet.luckyMeat) {
+		description += `\n${i18n.t("commands:petFree.luckyMeat", { lng })}`;
+	}
+
+	return description;
+}
+
 export async function handleCommandPetFreeRefusePacketRes(context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (originalInteraction) {
@@ -255,10 +281,7 @@ export async function handleCommandPetFreeAcceptPacketRes(packet: CommandPetFree
 		const embed = buildSimpleResponseEmbed({
 			interaction: originalInteraction,
 			titleKey: "commands:petFree.acceptedTitle",
-			description: i18n.t("commands:petFree.acceptedDesc", {
-				lng,
-				pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex)
-			})
+			description: buildFreedPetDescription(lng, packet)
 		});
 		await MessagesUtils.editClickReply(context, { embeds: [embed] });
 	}
@@ -273,24 +296,8 @@ export async function handleCommandPetFreeShelterSuccessPacketRes(packet: Comman
 	}
 
 	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
-	const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex);
-
-	let description = i18n.t("commands:petFree.acceptedDesc", {
-		lng, pet: petDisplay
-	});
-
-	if (packet.freeCost > 0) {
-		description += `\n${i18n.t("commands:petFree.feistyCostPaid", {
-			lng, cost: packet.freeCost
-		})}`;
-	}
-
-	if (packet.luckyMeat) {
-		description += `\n${i18n.t("commands:petFree.luckyMeat", { lng })}`;
-	}
-
 	const embed = buildSimpleResponseEmbed({
-		interaction, titleKey: "commands:petFree.acceptedTitle", description
+		interaction, titleKey: "commands:petFree.acceptedTitle", description: buildFreedPetDescription(lng, packet, packet.freeCost)
 	});
 	await interaction.editReply({
 		embeds: [embed], components: []
