@@ -73,7 +73,7 @@
   "unknownPlayer": "Nickname 404",
   "petNickNotValid": "The rules for naming a pet are as follows:\n$t(error:stringRules)",
   "guildDescriptionNotValid": "The rules for describing a guild are as follows:\n$t(error:stringRules)",
-  "stringRules": "- Use at least one letter\n- Do not put more than 2 consecutive spaces\n- Special characters are not allowed\n- Between {{min}} and {{max}} characters",
+  "stringRules": "- Utiliser au moins une lettre\n- Pas deux espaces ni deux signes de ponctuation à la suite\n- Pas plus de deux lettres accentuées à la suite\n- Les caractères spéciaux ne sont pas autorisés\n- Entre {{min}} et {{max}} caractères",
   "notInAGuild": "You must belong to a guild to perform this command.",
   "notAuthorizedError": "You do not have the required permissions to execute this command within your guild; please ask one of your superiors if needed.",
   "levelTooLow": "You must be **level {{level, number}}** to use this command! Come back later!",
