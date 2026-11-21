@@ -160,3 +160,12 @@ Avant de rendre un texte, vérifie chaque point :
 4. Il ne contredit ni le canon du lieu ni le menu de la ville, et ne suppose pas la destination suivante.
 5. Chaque condition se montre dans le texte, et chaque seuil correspond au mot de l'échelle.
 6. Chaque issue a une mécanique qui correspond au texte, et chaque profil de joueur a au moins une issue.
+
+## Journal des retours du propriétaire
+
+Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89) servent de jeu de référence pour réécrire les autres plus vite. Chaque fois que le propriétaire fait corriger l'un d'eux, on en tire la règle générale, on l'ajoute à la bonne section de ce skill avec un exemple avant/après, et on la note ici en une ligne.
+
+- **Event 30** : vocabulaire rare, expressions inventées, décor inutile, phrases alambiquées, réactions peu crédibles, mots ambigus. Voir « Exemples relevés en relecture ».
+- **Seuils** : « fort » veut dire le premier dixième des joueurs réguliers, pas le premier cinquième. Voir « L'échelle des seuils ».
+- **Classes et familiers** : une issue qui ne concerne que 1 à 2 % des joueurs est voulue.
+- **Events 69 et 76** : une intro trop raccourcie perd ce qui motive les choix ; jusqu'à 400 caractères quand c'est nécessaire. Voir « Structure d'un event ».
