@@ -6,6 +6,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../../../src/data/FightAction";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
+import { FightActionStatus } from "../../../../../../Lib/src/types/FightActionStatus";
 import { TestFighter } from "./TestFighter";
 import type { FightController } from "../../../../../src/core/fights/FightController";
 import { MonsterFighter } from "../../../../../src/core/fights/fighter/MonsterFighter";
@@ -22,7 +23,9 @@ function counter(params: {
 	const sender = new TestFighter();
 	const receiver = params.receiver ?? new TestFighter();
 	receiver.fightActionsHistory.push({ id: params.copiedActionId } as FightAction);
-	vi.spyOn(FightActionDataController, "getFightActionFunction").mockReturnValue(() => ({ damages: params.copiedDamage }));
+	vi.spyOn(FightActionDataController, "getFightActionFunction").mockReturnValue(() => ({
+		damages: params.copiedDamage, attackStatus: FightActionStatus.NORMAL, customMessage: true
+	}));
 	return counterAttackUse(sender, receiver, COUNTER_ATTACK, 3, null as unknown as FightController);
 }
 
@@ -38,6 +41,14 @@ describe("counterAttack", () => {
 
 		expect(result.usedAction?.id).toBe(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK);
 		expect(result.usedAction?.result.damages).toBe(100);
+	});
+
+	it("displays the replayed action as a regular use, even when it has a custom message", () => {
+		const result = counter({
+			copiedActionId: FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK, copiedDamage: 100
+		});
+
+		expect(result.usedAction?.result.customMessage).toBe(false);
 	});
 
 	it("strikes harder when it replays the attack of a monster", () => {
