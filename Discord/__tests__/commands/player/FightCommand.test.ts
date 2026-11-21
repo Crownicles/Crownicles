@@ -258,6 +258,27 @@ describe("end of fight", () => {
 		expect(embed.description).toContain("Statistiques de Rival");
 		expect(interaction.reactions).toEqual([CrowniclesIcons.fightCommand.handshake]);
 	});
+
+	it.each([
+		[40, false],
+		[41, true]
+	])("mentions the overtime only once the turns exceed the limit (%s turns)", async (turns, overtime) => {
+		const {
+			interaction, context
+		} = fakeCommand("Fighter");
+
+		await dispatch(context, makePacket(CommandFightEndOfFightPacket, {
+			winner: fighter("Fighter-keycloak-id", 400),
+			looser: fighter("rival-keycloak-id", 0),
+			draw: false,
+			turns,
+			maxTurns: 40
+		}));
+
+		const { description } = embedsOf(singleMessage(interaction))[0];
+		expect(description).toContain(`${turns}/40`);
+		expect(description?.includes("(prolongations)")).toBe(overtime);
+	});
 });
 
 function reward(overrides: Partial<FightRewardPacket> = {}): FightRewardPacket {

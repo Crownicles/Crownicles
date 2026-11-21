@@ -5,7 +5,7 @@ import {
 	escapeUsername, StringUtils
 } from "../../../utils/StringUtils";
 import {
-	ExpeditionLocationType, getPetExpeditionPreference, PetExpeditionPreferences
+	ExpeditionConstants, ExpeditionLocationType, getPetExpeditionPreference, PetExpeditionPreferences
 } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../../Lib/src/CrowniclesIcons";
@@ -87,6 +87,11 @@ const CANNOT_START_RANDOM_KEYS = [
 ] as const;
 
 /**
+ * Random translation keys without sex variant: there is no pet whose sex could be used
+ */
+const CANNOT_START_UNSEXED_KEYS: readonly string[] = [ExpeditionConstants.ERROR_CODES.NO_PET];
+
+/**
  * Get description for cannot start expedition reasons
  */
 function getCannotStartDescription(
@@ -112,7 +117,7 @@ function getCannotStartDescription(
 
 	if (reason && CANNOT_START_RANDOM_KEYS.includes(reason as typeof CANNOT_START_RANDOM_KEYS[number])) {
 		return StringUtils.getRandomTranslation(`commands:petExpedition.${reason}`, lng, {
-			context: sexContext,
+			...CANNOT_START_UNSEXED_KEYS.includes(reason) ? {} : { context: sexContext },
 			petDisplay,
 			lovePoints: packet.petLovePoints ?? 0
 		});

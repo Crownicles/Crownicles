@@ -130,8 +130,7 @@ describe("pet free confirmation", () => {
 		expect(embedsOf(singleMessage(click))[0].description).toContain("Adieu **");
 	});
 
-	// Bug: Core credits the guild with a piece of meat when an own pet leaves (luckyMeat), but handleCommandPetFreeAcceptPacketRes never tells it, unlike the shelter flow. The feisty cost is shown on the confirmation, before the click
-	it.fails("tells the player about the meat his freed pet left to the guild", async () => {
+	it("tells the player about the meat his freed pet left to the guild", async () => {
 		const { interaction } = await openConfirmation(0);
 
 		const click = await answerClick(interaction, "accept", makePacket(CommandPetFreeAcceptPacketRes, {
@@ -139,6 +138,18 @@ describe("pet free confirmation", () => {
 		}));
 
 		expect(embedsOf(singleMessage(click))[0].description).toContain("morceau de viande");
+	});
+
+	it("neither repeats the feisty cost already shown on the confirmation nor announces meat the pet did not leave", async () => {
+		const { interaction } = await openConfirmation(0);
+
+		const click = await answerClick(interaction, "accept", makePacket(CommandPetFreeAcceptPacketRes, {
+			petId: 1, petSex: "m", petNickname: "Rex", freeCost: 500, luckyMeat: false
+		}));
+
+		const { description } = embedsOf(singleMessage(click))[0];
+		expect(description).not.toContain("morceau de viande");
+		expect(description).not.toContain("coûté");
 	});
 
 	it("displays the cancellation in the reply to the refuse click", async () => {
