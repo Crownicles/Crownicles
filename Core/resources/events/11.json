@@ -102,13 +102,7 @@
           "money": 200,
           "karma": -8
         },
-        "2": {
-          "requirements": {
-            "level": {
-              "min": 60
-            }
-          }
-        },
+        "2": {},
         "3": {
           "requirements": {
             "level": {

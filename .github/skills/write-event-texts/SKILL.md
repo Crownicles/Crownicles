@@ -107,6 +107,8 @@ On n'édite que `Lang/fr` : les autres langues viennent de Crowdin.
 - **Chaque profil doit avoir au moins une issue possible**, karma et familier compris.
   - Le test `eventsRequirements.test.ts` ignore le karma et les familiers.
   - Or une liste d'issues valides vide fait planter `pickRandomOutcome` : `random-js` lève une erreur sur `pick([])`.
+  - Le test `eventsRequirements.test.ts` explore toutes les conditions (karma, familier, cuisine, matériaux, enchantement compris) et donne le profil sans issue.
+  - Piège fréquent : deux plages qui ne se touchent pas (`speed` `max` 200 et `min` 250 laissent 201 à 249 sans issue). Les plages opposées doivent se recouvrir ou se toucher, sinon il faut une issue sans condition.
 
 ### Texte et mécanique
 
@@ -174,4 +176,5 @@ Les 21 events déjà réécrits (1, 2, 10 à 20, 30, 39, 46, 56, 69, 71, 76, 89)
 - **Seuils** : « fort » veut dire le premier dixième des joueurs réguliers, pas le premier cinquième. Voir « L'échelle des seuils ».
 - **Classes et familiers** : une issue qui ne concerne que 1 à 2 % des joueurs est voulue.
 - **Events 69 et 76** : une intro trop raccourcie perd ce qui motive les choix ; jusqu'à 400 caractères quand c'est nécessaire. Voir « Structure d'un event ».
+- **Trous de couverture (events 2, 11, 13, 15, 16, 17, 20)** : des plages qui ne se touchent pas laissaient des joueurs sans issue ; le test de couverture vérifie maintenant toutes les conditions. Voir « Combien et lesquelles ».
 - **Cuisine, matériaux, équipement** : des issues doivent dépendre du niveau de cuisine, des matériaux et des enchantements ou améliorations de l'équipement, et certaines peuvent consommer des matériaux. Voir « L'échelle des seuils ».

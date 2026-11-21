@@ -84,11 +84,6 @@
     "hunt": {
       "outcomes": {
         "0": {
-          "requirements": {
-            "attack": {
-              "max": 150
-            }
-          },
           "effect": "occupied",
           "lostTime": 120
         },

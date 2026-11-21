@@ -190,7 +190,7 @@
           "forceStayInCity": true,
           "requirements": {
             "speed": {
-              "max": 150
+              "max": 199
             }
           },
           "money": -120
@@ -371,12 +371,7 @@
           "karma": 10
         },
         "3": {
-          "forceStayInCity": true,
-          "requirements": {
-            "karma": {
-              "min": 0
-            }
-          }
+          "forceStayInCity": true
         },
         "4": {
           "forceStayInCity": true,

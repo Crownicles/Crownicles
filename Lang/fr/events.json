@@ -333,7 +333,7 @@
     "possibilities": {
       "trade": {
         "outcomes": {
-          "0": "Les marchands vous connaissent de réputation et vous accueillent avec chaleur. Ils vous proposent leurs meilleures marchandises à un prix honnête, et vous ressortez satisfait de votre achat.",
+          "0": "Les marchands vous accueillent avec chaleur et vous proposent leurs meilleures marchandises à un prix honnête. Vous ressortez satisfait de votre achat.",
           "1": "Les marchands échangent un regard, puis vous proposent à voix basse des marchandises tombées d'on ne sait quel chariot, à prix bradé. Vous ressortez avec un objet d'origine douteuse, et vous ne posez pas de questions.",
           "2": "Les marchands vous reconnaissent et menacent d'appeler les gardes : ils ne veulent pas d'ennuis avec les autorités. Vous n'achetez leur silence qu'au prix fort, et votre fierté en souffre autant que votre bourse.",
           "3": "Les marchands savent à qui ils ont affaire et sortent de l'arrière-boutique leurs plus belles pièces. Après une présentation passionnée, ils vous en cèdent une à un prix raisonnable.",

@@ -5,7 +5,7 @@
         "0": {
           "requirements": {
             "karma": {
-              "min": 30
+              "min": 0
             }
           },
           "money": -120,
@@ -15,11 +15,8 @@
         "1": {
           "requirements": {
             "karma": {
-              "max": -20,
-              "min": -100
-            },
-            "level": {
-              "min": 40
+              "min": -100,
+              "max": -1
             }
           },
           "money": -80,

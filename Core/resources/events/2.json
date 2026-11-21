@@ -5,7 +5,7 @@
         "0": {
           "requirements": {
             "speed": {
-              "max": 200
+              "max": 249
             }
           },
           "effect": "lost"
@@ -169,7 +169,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "max": 200
+              "max": 299
             }
           },
           "health": -25,

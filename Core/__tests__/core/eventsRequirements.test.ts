@@ -3,39 +3,31 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const EVENTS_DIR = path.resolve(__dirname, '../../resources/events');
+const PETS_DIR = path.resolve(__dirname, '../../resources/pets');
+
+type Range = { min?: number; max?: number };
 
 interface OutcomeRequirements {
-	level?: {
-		min?: number;
-		max?: number;
-	};
-	health?: {
-		min?: number;
-		max?: number;
-	};
-	defense?: {
-		min?: number;
-		max?: number;
-	};
-	attack?: {
-		min?: number;
-		max?: number;
-	};
-	speed?: {
-		min?: number;
-		max?: number;
-	};
-	campaignCurrentMissionId?: number;
-	petTypeId?: number;
-	petRarity?: {
-		min?: number;
-		max?: number;
-	};
+	level?: Range;
+	karma?: Range;
+	health?: Range;
+	attack?: Range;
+	defense?: Range;
+	speed?: Range;
+	cookingLevel?: Range;
+	weaponLevel?: Range;
+	armorLevel?: Range;
+	petRarity?: Range;
 	validClassIds?: number[];
+	validPetTypeIds?: number[];
+	campaignCurrentMissionId?: number;
+	materials?: { quantity?: Range };
+	enchantment?: object;
 }
 
 interface Outcome {
 	requirements?: OutcomeRequirements;
+	consumeMaterials?: { quantity: number };
 }
 
 interface Possibility {
@@ -46,86 +38,139 @@ interface Event {
 	possibilities?: Record<string, Possibility>;
 }
 
-function isRangeValid(
-	range: { min?: number; max?: number } | undefined,
-	value: number
-): boolean {
-	if (!range) return true;
-	if (range.min !== undefined && value < range.min) return false;
-	if (range.max !== undefined && value > range.max) return false;
-	return true;
-}
+const RANGE_KEYS = ['level', 'karma', 'health', 'attack', 'defense', 'speed', 'cookingLevel', 'weaponLevel', 'armorLevel'] as const;
 
-function isOutcomeValidForStats(
-	requirements: OutcomeRequirements | undefined,
-	stats: {
-		level: number;
-		health: number;
-		defense: number;
-		attack: number;
-		speed: number;
-		class: number;
-	}
-): boolean {
-	if (!requirements) return true;
+const PET_RARITIES: Record<number, number> = Object.fromEntries(
+	fs.readdirSync(PETS_DIR)
+		.filter(f => f.endsWith('.json'))
+		.map(f => [parseInt(f, 10), JSON.parse(fs.readFileSync(path.join(PETS_DIR, f), 'utf-8')).rarity as number])
+);
 
-	return (
-		isRangeValid(requirements.level, stats.level) &&
-		isRangeValid(requirements.health, stats.health) &&
-		isRangeValid(requirements.defense, stats.defense) &&
-		isRangeValid(requirements.attack, stats.attack) &&
-		isRangeValid(requirements.speed, stats.speed) &&
-		(requirements.validClassIds === undefined || requirements.validClassIds.includes(stats.class))
-	);
-}
+/**
+ * A player profile: one value per checked dimension. A pet is a type and a rarity (or none),
+ * materials are either none or plenty of everything, and the equipment either has no enchantment or has every one.
+ */
+type Profile = Record<string, unknown>;
 
-function getAllLevelBoundaries(outcomes: Record<string, Outcome>): number[] {
-	const boundaries = new Set<number>([0, 1]); // Always include level 0 and 1
+type Dimension = {
+	name: string;
+	values: unknown[];
+	/** Whether the outcome constrains this dimension */
+	constrains: (outcome: Outcome) => boolean;
+	/** Whether the outcome is possible for this value of the dimension */
+	accepts: (outcome: Outcome, value: unknown) => boolean;
+};
 
-	for (const outcome of Object.values(outcomes)) {
-		if (outcome.requirements?.level?.min !== undefined) {
-			boundaries.add(outcome.requirements.level.min);
-			boundaries.add(outcome.requirements.level.min - 1); // Just below the min
-		}
-		if (outcome.requirements?.level?.max !== undefined) {
-			boundaries.add(outcome.requirements.level.max);
-			boundaries.add(outcome.requirements.level.max + 1); // Just above the max
-		}
-	}
+const isInRange = (range: Range | undefined, value: number): boolean =>
+	!range || ((range.min === undefined || value >= range.min) && (range.max === undefined || value <= range.max));
 
-	return Array.from(boundaries).filter(level => level >= 0).sort((a, b) => a - b);
-}
-
-function getAllStatBoundaries(outcomes: Record<string, Outcome>, statKey: keyof OutcomeRequirements): number[] {
-	const boundaries = new Set<number>([0, 1, 50, 100]); // Common test values
-
-	for (const outcome of Object.values(outcomes)) {
-		const stat = outcome.requirements?.[statKey];
-		if (stat && typeof stat === 'object' && 'min' in stat) {
-			if (stat.min !== undefined) {
-				boundaries.add(stat.min);
-				boundaries.add(stat.min - 1);
-			}
-			if (stat.max !== undefined) {
-				boundaries.add(stat.max);
-				boundaries.add(stat.max + 1);
+function rangeBoundaries(outcomes: Outcome[], key: typeof RANGE_KEYS[number]): number[] {
+	const values = new Set<number>([key === 'karma' ? 0 : 1]);
+	for (const outcome of outcomes) {
+		const range = outcome.requirements?.[key];
+		for (const bound of [range?.min, range?.max]) {
+			if (bound !== undefined) {
+				[bound - 1, bound, bound + 1].forEach(v => values.add(v));
 			}
 		}
 	}
-
-	return Array.from(boundaries).filter(val => val >= 0).sort((a, b) => a - b);
+	// Karma can be negative; a player in an event has at least 1 health point
+	return [...values].filter(v => key === 'karma' || v >= (key === 'health' ? 1 : 0));
 }
 
-function getAllClasses(outcomes: Record<string, Outcome>): number[] {
-	const classes = new Set<number>([1, 2, 3, 4, 5]); // Assume common class IDs
+function buildDimensions(outcomes: Outcome[]): Dimension[] {
+	const dimensions: Dimension[] = RANGE_KEYS.map(key => ({
+		name: key,
+		values: rangeBoundaries(outcomes, key),
+		constrains: o => o.requirements?.[key] !== undefined,
+		accepts: (o, value) => isInRange(o.requirements?.[key], value as number)
+	}));
 
-	for (const outcome of Object.values(outcomes)) {
-		if (outcome.requirements?.validClassIds) {
-			outcome.requirements.validClassIds.forEach(classId => classes.add(classId));
+	const classes = [...new Set(outcomes.flatMap(o => o.requirements?.validClassIds ?? []))];
+	dimensions.push({
+		name: 'class',
+		values: [-1, ...classes],
+		constrains: o => o.requirements?.validClassIds !== undefined,
+		accepts: (o, value) => !o.requirements?.validClassIds || o.requirements.validClassIds.includes(value as number)
+	});
+
+	const petTypes = [...new Set(outcomes.flatMap(o => o.requirements?.validPetTypeIds ?? []))];
+	const rarities = new Set<number>();
+	for (const o of outcomes) {
+		const range = o.requirements?.petRarity;
+		for (const bound of [range?.min, range?.max]) {
+			if (bound !== undefined) {
+				[bound - 1, bound, bound + 1].forEach(r => rarities.add(r));
+			}
 		}
 	}
+	const pets: ({ type: number; rarity: number } | null)[] = [
+		null,
+		...petTypes.map(type => ({ type, rarity: PET_RARITIES[type] ?? 0 })),
+		...[...rarities].filter(r => r >= 1).map(rarity => ({ type: -1, rarity }))
+	];
+	dimensions.push({
+		name: 'pet',
+		values: pets,
+		constrains: o => o.requirements?.validPetTypeIds !== undefined || o.requirements?.petRarity !== undefined,
+		accepts: (o, value) => {
+			const pet = value as { type: number; rarity: number } | null;
+			const req = o.requirements;
+			if (req?.validPetTypeIds && (!pet || !req.validPetTypeIds.includes(pet.type))) {
+				return false;
+			}
+			return !req?.petRarity || (pet !== null && isInRange(req.petRarity, pet.rarity));
+		}
+	});
 
-	return Array.from(classes);
+	dimensions.push({
+		name: 'materials',
+		values: [0, Number.MAX_SAFE_INTEGER],
+		constrains: o => o.requirements?.materials !== undefined || o.consumeMaterials !== undefined,
+		accepts: (o, value) => isInRange(o.requirements?.materials?.quantity ?? (o.requirements?.materials ? { min: 1 } : undefined), value as number)
+			&& (!o.consumeMaterials || (value as number) >= o.consumeMaterials.quantity)
+	});
+
+	dimensions.push({
+		name: 'enchantment',
+		values: [false, true],
+		constrains: o => o.requirements?.enchantment !== undefined,
+		accepts: (o, value) => !o.requirements?.enchantment || value as boolean
+	});
+
+	dimensions.push({
+		name: 'campaign',
+		values: [null],
+		constrains: o => o.requirements?.campaignCurrentMissionId !== undefined,
+		accepts: o => o.requirements?.campaignCurrentMissionId === undefined
+	});
+
+	return dimensions.filter(d => outcomes.some(d.constrains) || d.name === 'level');
+}
+
+/**
+ * Explore the profiles dimension by dimension and return one without any possible outcome, or null.
+ * A branch stops as soon as a remaining outcome has no condition on the dimensions left to explore.
+ */
+function findProfileWithoutOutcome(candidates: Outcome[], dimensions: Dimension[], index: number, profile: Profile): Profile | null {
+	if (candidates.length === 0) {
+		return profile;
+	}
+	const remaining = dimensions.slice(index);
+	if (candidates.some(o => remaining.every(d => !d.constrains(o)))) {
+		return null;
+	}
+	const dimension = dimensions[index];
+	for (const value of dimension.values) {
+		const gap = findProfileWithoutOutcome(candidates.filter(o => dimension.accepts(o, value)), dimensions, index + 1, {
+			...profile,
+			[dimension.name]: value
+		});
+		if (gap) {
+			return gap;
+		}
+	}
+	return null;
 }
 
 describe('Event requirements validation', () => {
@@ -139,105 +184,23 @@ describe('Event requirements validation', () => {
 		describe(`${file}`, () => {
 			for (const [possibilityName, possibility] of Object.entries(possibilities)) {
 				it(`possibility '${possibilityName}' always has at least one accessible outcome`, () => {
-					const outcomes = possibility.outcomes || {};
-
-					if (Object.keys(outcomes).length === 0) {
-						// No outcomes defined - this might be valid for some events
+					const outcomes = Object.values(possibility.outcomes || {});
+					if (outcomes.length === 0) {
 						return;
 					}
 
-					// Test various combinations of stats
-					const levelBoundaries = getAllLevelBoundaries(outcomes);
-					const healthBoundaries = getAllStatBoundaries(outcomes, 'health');
-					const defenseBoundaries = getAllStatBoundaries(outcomes, 'defense');
-					const attackBoundaries = getAllStatBoundaries(outcomes, 'attack');
-					const speedBoundaries = getAllStatBoundaries(outcomes, 'speed');
-					const classes = getAllClasses(outcomes);
-
-					// Test a reasonable subset of combinations (not all to avoid performance issues)
-					const testCombinations = [];
-
-					// Test key level boundaries with average stats
-					for (const level of levelBoundaries.slice(0, 10)) { // Limit to first 10 levels
-						for (const playerClass of classes.slice(0, 3)) { // Test first 3 classes
-							testCombinations.push({
-								level,
-								health: 100,
-								defense: 50,
-								attack: 50,
-								speed: 50,
-								class: playerClass
-							});
-						}
-					}
-
-					// Test boundary cases for other stats with reasonable levels
-					const testLevels = [1, 50, 100].filter(l => l <= Math.max(...levelBoundaries));
-					for (const level of testLevels) {
-						for (const health of healthBoundaries.slice(0, 5)) {
-							testCombinations.push({
-								level,
-								health,
-								defense: 50,
-								attack: 50,
-								speed: 50,
-								class: 1
-							});
-						}
-					}
-
-					let hasFailure = false;
-					const failures: string[] = [];
-
-					for (const stats of testCombinations) {
-						const validOutcomes = Object.entries(outcomes).filter(([_, outcome]) =>
-							isOutcomeValidForStats(outcome.requirements, stats)
-						);
-
-						if (validOutcomes.length === 0) {
-							hasFailure = true;
-							failures.push(
-								`No valid outcomes for stats: level=${stats.level}, health=${stats.health}, ` +
-								`defense=${stats.defense}, attack=${stats.attack}, speed=${stats.speed}, class=${stats.class}`
-							);
-						}
-					}
-
-					if (hasFailure) {
-						console.error(`\nFailures in ${file} - ${possibilityName}:`);
-						failures.slice(0, 5).forEach(failure => console.error(`  ${failure}`));
-						if (failures.length > 5) {
-							console.error(`  ... and ${failures.length - 5} more failures`);
-						}
-
-						console.error('\nAvailable outcomes:');
-						Object.entries(outcomes).forEach(([id, outcome]) => {
-							console.error(`  ${id}: ${JSON.stringify(outcome.requirements || {})}`);
-						});
-					}
-
-					expect(hasFailure).toBe(false);
+					const gap = findProfileWithoutOutcome(outcomes, buildDimensions(outcomes), 0, {});
+					expect(gap, `no outcome for the player profile ${JSON.stringify(gap)}`).toBeNull();
 				});
 
 				it(`possibility '${possibilityName}' has no impossible outcomes (min > max)`, () => {
-					const outcomes = possibility.outcomes || {};
-
-					for (const [outcomeId, outcome] of Object.entries(outcomes)) {
-						if (outcome.requirements) {
-							const req = outcome.requirements;
-
-							// Check each stat range
-							['level', 'health', 'defense', 'attack', 'speed', 'petRarity'].forEach(statKey => {
-								const stat = req[statKey as keyof OutcomeRequirements];
-								if (stat && typeof stat === 'object' && 'min' in stat && 'max' in stat) {
-									const { min, max } = stat;
-									if (min !== undefined && max !== undefined && min > max) {
-										throw new Error(
-											`Outcome ${outcomeId} has impossible ${statKey} requirement: min(${min}) > max(${max})`
-										);
-									}
-								}
-							});
+					for (const [outcomeId, outcome] of Object.entries(possibility.outcomes || {})) {
+						const req = outcome.requirements ?? {};
+						for (const key of [...RANGE_KEYS, 'petRarity'] as const) {
+							const range = req[key];
+							if (range?.min !== undefined && range.max !== undefined && range.min > range.max) {
+								throw new Error(`Outcome ${outcomeId} has impossible ${key} requirement: min(${range.min}) > max(${range.max})`);
+							}
 						}
 					}
 				});
