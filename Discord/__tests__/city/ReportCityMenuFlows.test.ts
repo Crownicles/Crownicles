@@ -21,6 +21,7 @@ import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
 import { ItemEnchantment } from "../../../Lib/src/types/ItemEnchantment";
 import { MapLocationConstants } from "../../../Lib/src/constants/MapLocationConstants";
 import { ReportCityMenuIds } from "../../src/commands/player/report/ReportCityMenuConstants";
+import { ScrapDealerMenuIds } from "../../src/commands/player/report/scrapDealer/ScrapDealerMenuConstants";
 import {
 	clickOn, collectorPacket, componentsOf, dispatch, FakeInteraction, fakeClick, fakeCommand, lastMessage, renderedText,
 	sentPackets, setupRendering, singleMessage
@@ -290,5 +291,68 @@ describe("enchanter", () => {
 
 		expect(customIds(interaction)).not.toContain(`${ReportCityMenuIds.ENCHANT_ITEM_PREFIX}0`);
 		expect(customIds(interaction)).not.toContain(ReportCityMenuIds.ENCHANTER_DISENCHANT_MENU);
+	});
+});
+
+describe("scrap dealer", () => {
+	const withScrapDealer = {
+		availableServices: [CITY_SERVICES.SCRAP_DEALER],
+		scrapDealer: {
+			recyclableItems: [
+				{
+					slot: 1,
+					category: ItemCategory.WEAPON,
+					itemId: WEAPON.details.id,
+					details: WEAPON.details,
+					recoveredMaterials: [
+						{
+							materialId: 1, quantity: 3
+						}
+					],
+					recoveredMoney: 45
+				}
+			]
+		}
+	};
+
+	it("previews what recycling an item gives back before telling Core", async () => {
+		const interaction = await openCity(withScrapDealer);
+		await click(interaction, ReportCityMenuIds.SCRAP_DEALER_MENU);
+		expect(customIds(interaction)).toContain(`${ScrapDealerMenuIds.SELECT_ITEM_PREFIX}0`);
+
+		await click(interaction, `${ScrapDealerMenuIds.SELECT_ITEM_PREFIX}0`);
+
+		const preview = renderedText(lastMessage(interaction));
+		expect(preview).toContain("Chlorate de potassium");
+		expect(preview).toContain("45");
+		expect(sentPackets(ReactionCollectorReactPacket)).toEqual([]);
+
+		await click(interaction, ScrapDealerMenuIds.CONFIRM_RECYCLE);
+
+		expect(sentReactionTypes(new ReactionCollectorCity(cityData(withScrapDealer)))).toEqual(["ReactionCollectorScrapDealerRecycleReaction"]);
+	});
+
+	it("goes back from the preview to the list, then to the city", async () => {
+		const interaction = await openCity(withScrapDealer);
+		await click(interaction, ReportCityMenuIds.SCRAP_DEALER_MENU);
+		await click(interaction, `${ScrapDealerMenuIds.SELECT_ITEM_PREFIX}0`);
+
+		await click(interaction, ScrapDealerMenuIds.BACK_TO_LIST);
+		expect(customIds(interaction)).toContain(`${ScrapDealerMenuIds.SELECT_ITEM_PREFIX}0`);
+		await click(interaction, ScrapDealerMenuIds.BACK_TO_CITY);
+
+		expect(customIds(interaction)).toContain(ReportCityMenuIds.MAIN_MENU_EXIT_CITY);
+		expect(sentPackets(ReactionCollectorReactPacket)).toEqual([]);
+	});
+
+	it("tells that nothing can be recycled", async () => {
+		const interaction = await openCity({
+			availableServices: [CITY_SERVICES.SCRAP_DEALER],
+			scrapDealer: { recyclableItems: [] }
+		});
+
+		await click(interaction, ReportCityMenuIds.SCRAP_DEALER_MENU);
+
+		expect(customIds(interaction)).not.toContain(`${ScrapDealerMenuIds.SELECT_ITEM_PREFIX}0`);
 	});
 });
