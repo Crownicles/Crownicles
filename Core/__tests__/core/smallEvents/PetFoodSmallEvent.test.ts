@@ -24,12 +24,14 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFoodSmallEvent";
 import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
 import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { withLockedPlayerAndMissionsSafe } from "../../../src/core/utils/withLockedPlayerAndMissionsSafe";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import {
-	asPlayer, createTestPlayer, endWithoutReaction, ignoresOtherPlayers, isBlocked, packetOf, reactWith, runSmallEvent, SmallEventRun, TEST_NOW, TestPlayer, useSmallEventHarness
+	asPlayer, createTestPlayer, endWithoutReaction, ignoresOtherPlayers, isBlocked, packetOf, packetsOf, reactWith, runSmallEvent, SmallEventRun, TEST_NOW, TestPlayer, useSmallEventHarness
 } from "./SmallEventHarness";
 
-vi.mock("../../../src/core/utils/withLockedPlayerSafe", async () => ({
-	withLockedPlayerSafe: (await import("./SmallEventHarness")).lockedPlayerPassthrough
+vi.mock("../../../src/core/utils/withLockedPlayerAndMissionsSafe", async () => ({
+	withLockedPlayerAndMissionsSafe: vi.fn((await import("./SmallEventHarness")).lockedPlayerPassthrough)
 }));
 
 const OUTCOMES = SmallEventConstants.PET_FOOD.OUTCOMES;
@@ -199,6 +201,46 @@ describe("pet food small event", () => {
 		}));
 		expect(petEntity.save).not.toHaveBeenCalled();
 		expect(isBlocked(player)).toBe(false);
+	});
+
+	describe("locks", () => {
+		it("saves the love of the pet under the lock of its row, taken with the player ones", async () => {
+			mockPetEntity();
+			vi.mocked(withLockedPlayerAndMissionsSafe).mockClear();
+
+			await endWithoutReaction(await findFood(player));
+
+			expect(withLockedPlayerAndMissionsSafe).toHaveBeenCalledWith(player, "petFood endCallback", expect.any(Function), [PetEntity.lockKey(7)]);
+		});
+
+		it("does nothing without locking when the player had no pet anymore at the end of the event", async () => {
+			const petEntity = mockPetEntity();
+			const run = await findFood(player);
+			player.petId = null;
+			vi.mocked(withLockedPlayerAndMissionsSafe).mockClear();
+
+			const response = await endWithoutReaction(run);
+
+			expect(packetsOf(response, SmallEventPetFoodPacket)).toEqual([]);
+			expect(withLockedPlayerAndMissionsSafe).not.toHaveBeenCalled();
+			expect(petEntity.save).not.toHaveBeenCalled();
+			expect(isBlocked(player)).toBe(false);
+		});
+
+		it("leaves alone a pet that is no longer the one of the player once the lock is taken", async () => {
+			const petEntity = mockPetEntity();
+			const run = await findFood(player);
+			vi.mocked(withLockedPlayerAndMissionsSafe).mockImplementationOnce((_player, _context, body) => body(asPlayer(createTestPlayer({ petId: 8 }))));
+			mockRolls(0);
+			const warn = vi.spyOn(CrowniclesLogger, "warn").mockImplementation(() => undefined);
+
+			const response = await reactWith(run, ReactionCollectorPetFoodInvestigateReaction);
+
+			expect(packetsOf(response, SmallEventPetFoodPacket)).toEqual([]);
+			expect(warn).toHaveBeenCalledExactlyOnceWith(expect.stringContaining(`pet of player ${player.id} changed`));
+			expect(applyEffect).not.toHaveBeenCalled();
+			expect(petEntity.save).not.toHaveBeenCalled();
+		});
 	});
 
 	describe("investigation", () => {
