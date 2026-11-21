@@ -59,10 +59,10 @@ export function checkNameString(name: string, range: ConstantRange): boolean {
 	 * Here are the scenarios where the name is not valid and checked by this regex :
 	 * The name contains only numbers ^[0-9 ]+$ (only numbers and spaces)
 	 * ( {2}) is used to check if there are 2 spaces in a row
-	 * ([ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû]{2}) is used to check if there are 2 special characters in a row
+	 * ([ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû]{3}) is used to check if there are 3 special characters in a row (French words such as "créée" have 2)
 	 * ([!,'.:()-]{2}) is used to check if there are 2 punctuation characters in a row
 	 */
-	const regexSpecialCases = /^[0-9 ]+$|( {2})|([ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû]{2})|([!,'.:()-]{2})/u;
+	const regexSpecialCases = /^[0-9 ]+$|( {2})|([ÇçÜüÉéÂâÄäÀàÊêËëÈèÏïÎîÔôÖöÛû]{3})|([!,'.:()-]{2})/u;
 
 	// We also check for the length of the name
 	return regexAllowed.test(name) && !regexSpecialCases.test(name) && name.length >= range.MIN && name.length <= range.MAX;

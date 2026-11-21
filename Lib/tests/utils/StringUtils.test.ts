@@ -79,7 +79,7 @@ describe("checkNameString", () => {
 		["too long", "abcdefghijk"],
 		["only digits and spaces", "12 34"],
 		["two spaces in a row at the end", "abc  "],
-		["two accented letters in a row at the end", "abcéé"],
+		["three accented letters in a row at the end", "abcééé"],
 		["two punctuation marks in a row", "ab!!cd"],
 		["a dash next to a punctuation mark", "ab-.cd"],
 		["a forbidden character", "abc_def"],
@@ -106,9 +106,17 @@ describe("checkNameString", () => {
 		expect(checkNameString("  abcd", range)).toBe(false);
 	});
 
-	it("refuses two accented letters in a row anywhere in a name", () => {
-		expect(checkNameString("aééb", range)).toBe(false);
-		expect(checkNameString("éàbcd", range)).toBe(false);
+	it("refuses three accented letters in a row anywhere in a name", () => {
+		expect(checkNameString("aéééb", range)).toBe(false);
+		expect(checkNameString("éàêbcd", range)).toBe(false);
+	});
+
+	it.each([
+		"créée",
+		"réélu",
+		"préétabli"
+	])("accepts the French word %j, which has two accented letters in a row", name => {
+		expect(checkNameString(name, range)).toBe(true);
 	});
 
 	it.each([
