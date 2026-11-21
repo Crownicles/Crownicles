@@ -7,10 +7,39 @@
           "health": -30
         },
         "1": {
+          "requirements": {
+            "karma": {
+              "min": 65
+            }
+          },
           "health": 40
         },
         "2": {
           "health": 40
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "min": 130
+            }
+          },
+          "health": 55
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              44
+            ]
+          },
+          "health": 45
+        },
+        "5": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "lost"
         }
       }
     },
@@ -19,37 +48,174 @@
         "0": {},
         "1": {},
         "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
           "randomItem": {}
         },
         "3": {
+          "requirements": {
+            "level": {
+              "max": 55
+            }
+          },
           "effect": "occupied",
           "lostTime": 10
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              54
+            ]
+          }
         }
       }
     },
     "end": {
       "outcomes": {
-        "0": {},
-        "1": {}
+        "0": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "karma": -3
+        },
+        "1": {},
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              55
+            ]
+          },
+          "health": 15
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "karma": 2
+        },
+        "4": {
+          "requirements": {
+            "petRarity": {
+              "min": 4
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20,
+          "money": 90
+        }
       }
     },
     "steal": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "attack": {
+              "min": 700
+            }
+          },
           "money": 525,
-          "randomItem": {}
+          "randomItem": {},
+          "karma": -16
         },
         "1": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
           "effect": "hurt",
-          "health": -60
+          "health": -60,
+          "karma": -5
         },
         "2": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
           "effect": "occupied",
           "lostTime": 40,
-          "money": -250
+          "money": -250,
+          "karma": -10
         },
         "3": {
-          "health": -15
+          "health": -15,
+          "karma": -4
+        },
+        "4": {
+          "requirements": {
+            "defense": {
+              "min": 520
+            }
+          },
+          "money": 180,
+          "karma": -5
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "karma": -4
+        }
+      }
+    },
+    "clearChannel": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 20,
+          "karma": 3
+        },
+        "1": {
+          "requirements": {
+            "attack": {
+              "min": 700
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 10,
+          "money": 95,
+          "karma": 4
+        },
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              1
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 10,
+          "health": 20,
+          "karma": 3
+        },
+        "3": {
+          "requirements": {
+            "validClassIds": [
+              24
+            ]
+          },
+          "randomItem": {},
+          "karma": 3
         }
       }
     }
@@ -58,8 +224,5 @@
     {
       "mapId": 7
     }
-  ],
-  "tags": [
-    "meetHermit"
   ]
 }

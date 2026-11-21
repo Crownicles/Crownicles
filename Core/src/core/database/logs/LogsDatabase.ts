@@ -210,6 +210,7 @@ export interface ExpeditionRewards {
 export interface ExpeditionRecallParams extends ExpeditionStartParams {
 	loveChange: number;
 }
+import { LogsPlayersKarma } from "./models/LogsPlayersKarma";
 
 /**
  * This class is used to log all the changes in the game database
@@ -600,6 +601,16 @@ export class LogsDatabase extends Database {
 	 */
 	public logTokensChange(keycloakId: string, value: number, reason: NumberChangeReason): Promise<void> {
 		return LogsDatabase.logNumberChange(keycloakId, value, reason, LogsPlayersTokens);
+	}
+
+	/**
+	 * Log a player's karma change
+	 * @param keycloakId
+	 * @param value
+	 * @param reason
+	 */
+	public logKarmaChange(keycloakId: string, value: number, reason: NumberChangeReason): Promise<void> {
+		return LogsDatabase.logNumberChange(keycloakId, value, reason, LogsPlayersKarma);
 	}
 
 	/**

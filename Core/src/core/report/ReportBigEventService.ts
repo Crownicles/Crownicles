@@ -15,6 +15,7 @@ import {
 import { PossibilityEntry } from "../../data/events/Possibility";
 import {
 	applyPossibilityOutcome,
+	getValidOutcomesForPlayer,
 	PossibilityOutcomeEntry
 } from "../../data/events/PossibilityOutcome";
 import { verifyPossibilityOutcomeCondition } from "../../data/events/PossibilityOutcomeCondition";
@@ -101,7 +102,7 @@ function handleFirstReportEnd(event: BigEvent, possibility: PossibilityEntry, fr
  */
 async function pickRandomOutcome(possibility: PossibilityEntry, freshPlayer: Player): Promise<PossibilityOutcomeEntry> {
 	const validOutcomes: PossibilityOutcomeEntry[] = [];
-	for (const [key, outcome] of Object.entries(possibility[1].outcomes)) {
+	for (const [key, outcome] of await getValidOutcomesForPlayer(possibility[1].outcomes, freshPlayer)) {
 		if (!outcome.condition || await verifyPossibilityOutcomeCondition(outcome.condition, freshPlayer)) {
 			validOutcomes.push([key, outcome]);
 		}

@@ -1,28 +1,105 @@
 {
   "possibilities": {
-    "cutTree": {
+    "chopTree": {
       "outcomes": {
         "0": {
           "effect": "occupied",
           "lostTime": 30
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 10,
+          "randomItem": {}
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "sleeping"
+        },
+        "3": {
+          "requirements": {
+            "attack": {
+              "max": 250
+            }
+          },
+          "effect": "sleeping"
+        },
+        "4": {
+          "requirements": {
+            "attack": {
+              "min": 250
+            }
+          }
+        }
+      }
+    },
+    "climbOver": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "speed": {
+              "min": 200
+            }
+          }
+        },
+        "1": {
+          "requirements": {
+            "speed": {
+              "max": 500
+            }
+          },
+          "health": -8
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "max": 350
+            }
+          },
+          "health": -20,
+          "effect": "hurt"
+        }
+      }
+    },
+    "findPath": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "level": {
+              "min": 40
+            }
+          }
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "min": 60
+            }
+          }
+        },
+        "2": {
+          "effect": "lost"
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "max": 40
+            }
+          },
+          "health": -4,
+          "effect": "lost"
         }
       }
     },
     "end": {
       "outcomes": {
         "0": {
+          "money": -300,
           "effect": "occupied",
-          "lostTime": 100
-        }
-      }
-    },
-    "otherWay": {
-      "outcomes": {
-        "0": {},
-        "1": {
-          "effect": "occupied",
-          "health": -5,
-          "lostTime": 30
+          "lostTime": 60
         }
       }
     }

@@ -286,6 +286,8 @@ export class Player extends Model {
 
 	declare timePotionsCookedThisWeek: number;
 
+	declare karma: number;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -1479,6 +1481,33 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Add karma to the player
+	 * @param karmas
+	 * @param reason
+	 * @param _response
+	 */
+	public async addKarma(karmas: number, _response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
+		await this.mutateLocked(locked => {
+			locked.karma += karmas;
+		});
+		crowniclesInstance?.logsDatabase.logKarmaChange(this.keycloakId, this.karma, reason)
+			.then();
+	}
+
+	/**
+	 * Set the karma of the player to a specific value
+	 * @param karmas
+	 * @param reason
+	 */
+	public async setKarma(karmas: number, reason: NumberChangeReason): Promise<void> {
+		await this.mutateLocked(locked => {
+			locked.karma = karmas;
+		});
+		crowniclesInstance?.logsDatabase.logKarmaChange(this.keycloakId, this.karma, reason)
+			.then();
+	}
+
+	/**
 	 * Check if the player has enough energy to join the island or fight
 	 */
 	hasEnoughEnergyToFight(playerActiveObjects: PlayerActiveObjects): boolean {
@@ -2076,6 +2105,10 @@ export function initModel(sequelize: Sequelize): void {
 		health: {
 			type: DataTypes.INTEGER,
 			defaultValue: EntityConstants.DEFAULT_VALUES.HEALTH
+		},
+		karma: {
+			type: DataTypes.INTEGER,
+			defaultValue: EntityConstants.DEFAULT_VALUES.KARMA
 		},
 		fightPointsLost: {
 			type: DataTypes.INTEGER,

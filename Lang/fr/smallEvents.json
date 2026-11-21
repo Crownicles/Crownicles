@@ -503,6 +503,21 @@
         "Vous croisez {{playerDisplay}}, qui semble perdu et s'empresse de vous demander quel chemin emprunter pour arriver à destination. Malheureusement, vous ne pouvez pas l'aider, et le réconfortez un peu avant de reprendre votre route.",
         "Vous croisez {{playerDisplay}}, qui semble s'être égaré, visiblement désorienté. Il vous regarde avec espoir, cherchant de l'aide pour retrouver son chemin.",
         "Vous remarquez que {{playerDisplay}} tourne en rond, après l'avoir croisé plusieurs fois en chemin. Vous vous approchez de lui et lui demandez s'il a besoin d'aide. Il vous explique qu'il est perdu et vous demande de l'accompagner vers sa destination."
+      ],
+      "working": [
+        "Vous croisez {{playerDisplay}} occupé à son travail. Il vous adresse un bref salut avant de reprendre ses tâches.",
+        "{{playerDisplay}} est absorbé par ses responsabilités et ne peut s'attarder. Vous poursuivez votre route sans le déranger.",
+        "{{playerDisplay}} est en plein travail, manches retroussées et suant sous l'effort. Il vous fait un signe de la main mais ne peut s'arrêter, visiblement pris par une tâche urgente."
+      ],
+      "burning": [
+        "Vous croisez {{playerDisplay}} qui est entouré de flammes ! Il court dans tous les sens en criant, essayant d'éteindre le feu qui le consume.",
+        "{{playerDisplay}} passe près de vous en hurlant de douleur, des flammes dansant autour de son corps. Vous reculez prudemment pour éviter d'être touché par le feu.",
+        "Vous remarquez {{playerDisplay}} qui se roule par terre, tentant désespérément d'éteindre les flammes qui l'entourent. La situation semble critique !"
+      ],
+      "burned": [
+        "Vous croisez {{playerDisplay}} qui porte des marques de brûlures visibles sur ses vêtements et sa peau. Il avance d'un pas prudent, visiblement encore affecté par un récent accident avec le feu.",
+        "{{playerDisplay}} passe près de vous en grimaçant de douleur. Ses habits sont noircis et fumants, il semble avoir eu maille à partir avec des flammes récemment.",
+        "Vous remarquez {{playerDisplay}} qui se déplace lentement, ses cheveux roussis et sa peau rougie témoignant d'une récente exposition à une chaleur intense. Il vous salue faiblement avant de poursuivre son chemin."
       ]
     }
   },
@@ -1994,7 +2009,7 @@
       "Le sage nain observe **{{pet}}** avec une méfiance inhabituelle. Il confie qu'il a déjà eu le plaisir d'admirer une créature de cette sorte, mais que celle-ci le met mal à l'aise. Il murmure que cette créature semble être là sans vraiment l'être, comme un écho ou une ombre vivante. Il s'éloigne en secouant la tête, laissant échapper qu'il doit méditer sur ce mystère."
     ],
     "badge": [
-      "Le regard de Talvar se fait grave, puis s’illumine d’une lueur de fierté. Chaque geste, chaque expression trahit une admiration sincère. Il reconnaît pleinement la valeur de vos actes, saluant votre courage, votre discernement et le respect dont vous avez fait preuve envers les créatures. En guise de reconnaissance, il vous remet le badge {emote:badges.animal_lover}, un présent lourd de sens. Cette marque d’estime scelle votre lien. Vous vous séparez dans un silence chargé de respect, unis par une compréhension tacite que seuls partagent ceux qui ont œuvré pour une cause plus grande qu’eux-mêmes."
+      "Le regard de Talvar se fait grave, puis s'illumine d'une lueur de fierté. Chaque geste, chaque expression trahit une admiration sincère. Il reconnaît pleinement la valeur de vos actes, saluant votre courage, votre discernement et le respect dont vous avez fait preuve envers les créatures. En guise de reconnaissance, il vous remet le badge {emote:badges.animal_lover}, un présent lourd de sens. Cette marque d'estime scelle votre lien. Vous vous séparez dans un silence chargé de respect, unis par une compréhension tacite que seuls partagent ceux qui ont œuvré pour une cause plus grande qu'eux-mêmes."
     ]
   },
   "infoFight": {

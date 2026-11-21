@@ -30,6 +30,10 @@ export class MaterialDataController extends DataControllerString<Material> {
 		return materials;
 	}
 
+	public getAllMaterials(): Material[] {
+		return this.getValuesArray();
+	}
+
 	public getRandomMaterialFromRarity(rarity: MaterialRarity): Material | null {
 		const materials = this.getValuesArray().filter(material => material.rarity === rarity);
 		if (materials.length === 0) {
