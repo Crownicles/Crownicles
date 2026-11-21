@@ -23,6 +23,7 @@ import { GuildUtils } from "../utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 import type {
 	GuildDomainPurchaseLogParams,
 	GuildDomainUpgradeLogParams
@@ -46,6 +47,68 @@ function logGuildDomainUpgrade(params: GuildDomainUpgradeLogParams | null): void
 	crowniclesInstance?.logsDatabase.logGuildDomainUpgrade(params).then();
 }
 
+type GuildDomainNotaryOutcome =
+	| { kind: "alreadyHere" }
+	| {
+		kind: "insufficient"; missing: number;
+	}
+	| {
+		kind: "ok"; guild: Guild; isRelocation: boolean; fromCityId: string | null; cost: number;
+	};
+
+/**
+ * Validate and pay the purchase or relocation of the domain, on the locked guild row
+ */
+async function applyGuildDomainNotaryUnderLock(guild: Locked<Guild>, player: Player, city: City): Promise<GuildDomainNotaryOutcome | null> {
+	if (guild.chiefId !== player.id) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use guild domain notary but is not guild chief.`);
+		return null;
+	}
+
+	// A confirmation queued behind the one that brought the domain here must not pay a relocation to the same city
+	if (guild.domainCityId === city.id) {
+		return { kind: "alreadyHere" };
+	}
+
+	const isRelocation = guild.domainCityId !== null;
+	const fromCityId = guild.domainCityId;
+	const cost = isRelocation
+		? GuildDomainConstants.DOMAIN_RELOCATION_COST
+		: GuildDomainConstants.DOMAIN_PURCHASE_COST;
+
+	if (guild.treasury < cost) {
+		return {
+			kind: "insufficient", missing: cost - guild.treasury
+		};
+	}
+
+	guild.treasury -= cost;
+	guild.domainCityId = city.id;
+	await guild.save();
+
+	return {
+		kind: "ok", guild, isRelocation, fromCityId, cost
+	};
+}
+
+/**
+ * Push the refusal packet matching an outcome that did not change the domain
+ * @returns true when the domain was bought or relocated
+ */
+function pushGuildDomainNotaryRefusal(outcome: GuildDomainNotaryOutcome, response: CrowniclesPacket[]): outcome is Extract<GuildDomainNotaryOutcome, { kind: "ok" }> {
+	if (outcome.kind === "alreadyHere") {
+		response.push(makePacket(CommandReportCityOfferChangedRes, {}));
+		return false;
+	}
+	if (outcome.kind === "insufficient") {
+		response.push(makePacket(CommandReportGuildDomainNotEnoughTreasuryRes, {
+			missingTreasury: outcome.missing
+		}));
+		return false;
+	}
+	return true;
+}
+
 export async function handleGuildDomainNotaryReaction(player: Player, city: City, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
@@ -53,8 +116,6 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use guild domain notary but has no guild.`);
 		return;
 	}
-
-	const guildId = player.guildId;
 
 	/*
 	 * Lock the guild row for the entire validate-mutate-save sequence so
@@ -64,60 +125,15 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 	 * treasury negative). The chief eligibility check is also moved
 	 * inside the lock since chiefId can change concurrently.
 	 */
-	const outcome = await Guild.withLocked(guildId, async guild => {
-		if (guild.chiefId !== player.id) {
-			CrowniclesLogger.error(`Player ${player.keycloakId} tried to use guild domain notary but is not guild chief.`);
-			return null;
-		}
+	const outcome = await Guild.withLocked(player.guildId, guild => applyGuildDomainNotaryUnderLock(guild, player, city));
 
-		// A confirmation queued behind the one that brought the domain here must not pay a relocation to the same city
-		if (guild.domainCityId === city.id) {
-			return { kind: "alreadyHere" as const };
-		}
-
-		const isRelocation = guild.domainCityId !== null;
-		const fromCityId = guild.domainCityId;
-		const cost = isRelocation
-			? GuildDomainConstants.DOMAIN_RELOCATION_COST
-			: GuildDomainConstants.DOMAIN_PURCHASE_COST;
-
-		if (guild.treasury < cost) {
-			return {
-				kind: "insufficient" as const, missing: cost - guild.treasury
-			};
-		}
-
-		guild.treasury -= cost;
-		guild.domainCityId = city.id;
-		await guild.save();
-
-		return {
-			kind: "ok" as const, guild, isRelocation, fromCityId, cost
-		};
-	});
-
-	if (outcome === null) {
+	if (outcome === null || !pushGuildDomainNotaryRefusal(outcome, response)) {
 		return;
 	}
 
-	if (outcome.kind === "alreadyHere") {
-		response.push(makePacket(CommandReportCityOfferChangedRes, {}));
-		return;
-	}
-
-	if (outcome.kind === "insufficient") {
-		response.push(makePacket(CommandReportGuildDomainNotEnoughTreasuryRes, {
-			missingTreasury: outcome.missing
-		}));
-		return;
-	}
-
-	if (outcome.isRelocation) {
-		response.push(makePacket(CommandReportGuildDomainRelocateRes, { cost: outcome.cost }));
-	}
-	else {
-		response.push(makePacket(CommandReportGuildDomainPurchaseRes, { cost: outcome.cost }));
-	}
+	response.push(outcome.isRelocation
+		? makePacket(CommandReportGuildDomainRelocateRes, { cost: outcome.cost })
+		: makePacket(CommandReportGuildDomainPurchaseRes, { cost: outcome.cost }));
 
 	logGuildDomainPurchase({
 		keycloakId: player.keycloakId,
